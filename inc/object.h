@@ -38,6 +38,16 @@
 
 
 
+        /* include required header files */
+#if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
+#       include <stdbool.h>
+#else
+#       error "building refpersys requires a C99 compiler"
+#endif
+
+
+
+
         /* forward-declare the object type; this type is analogous to bismon's
          * object_stBM struct; I'm guessing that the object_stBM struct is
          * treated as an opaque type through the objectval_tyBM type since doing
@@ -47,6 +57,19 @@
          * the definition of the rps_object type to the src/object.c file which
          * will implement the object type interface's callable units */
 typedef struct __rps_object rps_object;
+
+
+
+
+        /* declare the rps_object_new() constructor; this would be analogous to
+         * bismon's makeobj_BM() function which is defined in the object_BM.c
+         * source file; I'm deliberately following the convention of returning
+         * an error code from every function that may possibly fail; need to
+         * confirm from Dr. Basile if this would be the right approach, and if
+         * not, understand why so; I also have to figure out how this function
+         * is related to the makeobjofid_BM() function declared in the
+         * fundec1_BM.h header file */
+extern bool rps_object_new(rps_object **obj);
 
 
 
