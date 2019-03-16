@@ -85,6 +85,8 @@ typedef uint64_t rps_serial63;
 /*
  *      rps_serial63_new() - generates a new random object ID serial
  *
+ *      TODO: elaborate detailed description
+ *
  *      Return:
  *        - new random object ID serial
  *
@@ -100,6 +102,8 @@ extern rps_serial63 rps_serial63_new(void);
  *      rps_serial63_valid() - checks validity of object ID serial
  *        - s63: contextual object ID serial
  *
+ *      TODO: elaborate detailed description
+ *
  *      Return:
  *        - true if @s63 is valid
  *        - false if @s63 is invalid
@@ -109,9 +113,28 @@ extern rps_serial63 rps_serial63_new(void);
  */
 static inline bool rps_serial63_valid(rps_serial63 s63)
 {
+                /* @s63 must fall within the permissible maximum and minimum
+                 * values for object ID serials */
         return (s63 > RPS_SERIAL63_MIN && s63 < RPS_SERIAL63_MAX);
 }
 
+
+
+
+/*
+ *      rps_serial63_str() - stringifies an object ID serial
+ *        - s63: contextual object ID serial
+ *        - str: 16-byte string representation
+ *
+ *      TODO: elaborate detailed description
+ *
+ *      Return:
+ *        - TODO
+ *
+ *      See:
+ *        - serial63tocbuf16_BM() in Bismon's id_BM.h
+ */
+extern int rps_serial63_str(rps_serial63 s63, char str[static 16]);
 
 
 
