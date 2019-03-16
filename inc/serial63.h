@@ -144,6 +144,24 @@ static inline bool rps_serial63_valid(rps_serial63 s63)
 
 
 
+/*
+ *      rps_serial63_parse() - parses string to an object ID serial
+ *        - bfr: TODO: figure it out
+ *        - pend: TODO: figure it out
+ *
+ *      TODO: elaborate detailed description
+ *
+ *      Return:
+ *        - parsed object ID serial
+ *
+ *      See:
+ *        - parse_serial63_BM() in Bismon's id_BM.h
+ */
+extern rps_serial63 rps_serial63_parse(const char *bfr, const char **pend);
+
+
+
+
         /* close support for C++ */
 #if (defined __cplusplus)
         }
