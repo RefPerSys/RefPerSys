@@ -30,6 +30,9 @@
 #if (!defined __REFPERSYS_SERIAL63_DEFINED)
 #       define __REFPERSYS_SERIAL63_DEFINED
 
+
+
+
         /*  open support for C++ */
 #if (defined __cplusplus)
         extern "C" {
@@ -39,11 +42,8 @@
 
 
         /* include required header files */
-#if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
-#       include <stdint.h>
-#else
-#       error "building refpersys requires a C99 compiler"
-#endif
+#include <stdint.h>
+#include "./assert.h"
 
 
 
@@ -59,6 +59,9 @@ typedef uint64_t rps_serial63;
 #if (defined __cplusplus)
         }
 #endif
+
+
+
 
 #endif /* (!defined __REFPERSYS_OBJECT_DEFINED) */
 
