@@ -35,7 +35,17 @@
 
         /* ensure C99 dialect is being used for compilation */
 #if (!defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
-#       error "building refpersys requires a C99 compiler"
+#       error "building refpersys requires the C99 dialect"
+#endif
+
+
+
+
+        /* ensure a GCC-compatible compiler is being used for compilation;
+         * TODO: check with Dr. Basile if Clang is acceptable, or else we'll
+         * need to add a GCC-specific check */
+#if (!defined __GNUC__ )
+#       error "building refpersys requires a GCC-compatible compiler"
 #endif
 
 
