@@ -6,3 +6,5 @@ debian:
   image: gcc
   script:
     - gcc -Wall -Wextra -std=c99 *.h
+    - gcc -Wall -Wextra -std=c99 *.c
+    - ./a.out
