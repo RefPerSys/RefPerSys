@@ -1,9 +1,9 @@
 /*
- * File: refpersys/inc/object.h
+ * File: refpersys/inc/objid.h
  *
  * Description:
  *      This file is part of the Reflective Persistent System. It declares the
- *      object type and its interface.
+ *      object ype and its interface.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -27,8 +27,8 @@
 
 
         /* create header guard */
-#if (!defined __REFPERSYS_OBJECT_DEFINED)
-#       define __REFPERSYS_OBJECT_DEFINED
+#if (!defined __REFPERSYS_OBJECTID_DEFINED)
+#       define __REFPERSYS_OBJECTID_DEFINED
 
         /*  open support for C++ */
 #if (defined __cplusplus)
@@ -40,7 +40,7 @@
 
         /* include required header files */
 #if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
-#       include <stdbool.h>
+#       include <stdint.h>
 #else
 #       error "building refpersys requires a C99 compiler"
 #endif
@@ -69,7 +69,7 @@ typedef struct __rps_object rps_object;
          * not, understand why so; I also have to figure out how this function
          * is related to the makeobjofid_BM() function declared in the
          * fundec1_BM.h header file */
-extern bool rps_object_new(rps_object **obj);
+extern void rps_object_spawn(rps_object *obj);
 
 
 
