@@ -61,14 +61,17 @@ typedef struct __rps_object rps_object;
 
 
 
-        /* declare the rps_object_new() constructor; this would be analogous to
-         * bismon's makeobj_BM() function which is defined in the object_BM.c
-         * source file; I'm deliberately following the convention of returning
-         * an error code from every function that may possibly fail; need to
-         * confirm from Dr. Basile if this would be the right approach, and if
-         * not, understand why so; I also have to figure out how this function
-         * is related to the makeobjofid_BM() function declared in the
-         * fundec1_BM.h header file */
+/*
+ *      rps_object_spawn() - spawns new object
+ *        - obj: contextual object
+ *
+ *      The rps_object_spawn() interface function creates a new object instance
+ *      @obj through the factory pattern.
+ *
+ *      See:
+ *        - bismon makeobj_BM()
+ *        - bismon_makeobjofid_BM()
+ */
 extern void rps_object_spawn(rps_object *obj);
 
 
