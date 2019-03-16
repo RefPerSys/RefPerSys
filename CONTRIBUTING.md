@@ -1,5 +1,9 @@
 # Contribution Guidelines for `refpersys`
 
+These are the development guidelines for the `refpersys` project. At this stage,
+these conventions are largely a work in progress, and should *not* be considered
+as canonical as they would evolve as required.
+
 ## Coding Conventions
 
   * use K&R C style
