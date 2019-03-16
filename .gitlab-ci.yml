@@ -5,4 +5,4 @@ debian:
   stage: build
   image: gcc
   script:
-    - agcc -Wall -Wextra -std=c99 *.h
+    - gcc -Wall -Wextra -std=c99 *.h
