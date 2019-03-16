@@ -34,6 +34,7 @@
 
 
         /* include required header files */
+#include <stdbool.h>
 #include <stdint.h>
 #include "./ctcheck.h"
 
@@ -51,6 +52,20 @@
         /* declare the rps_serial63 type; this is analogous to the Bismon
          * serial64_tyBM type in the header file id_BM.h */
 typedef uint64_t rps_serial63;
+
+
+
+
+/*
+ *      rps_serial63_new() - generates a new random object ID serial
+ *
+ *      Return:
+ *        - new random object ID serial
+ *
+ *      See:
+ *        - randomserial63_BM() in Bismon's id_BM.h
+ */
+extern rps_serial63 rps_serial63_new(void);
 
 
 
