@@ -126,7 +126,8 @@ static inline bool rps_serial63_valid(rps_serial63 s63)
  *        - s63: contextual object ID serial
  *        - str: 16-byte string representation
  *
- *      TODO: elaborate detailed description
+ *      TODO: elaborate detailed description, especially on static array size
+ *      feature of C99
  *
  *      Return:
  *        - TODO
@@ -134,7 +135,12 @@ static inline bool rps_serial63_valid(rps_serial63 s63)
  *      See:
  *        - serial63tocbuf16_BM() in Bismon's id_BM.h
  */
-extern int rps_serial63_str(rps_serial63 s63, char str[static 16]);
+#if (defined __cplusplus)
+        extern int rps_serial63_str(rps_serial63 s63, char str[]);
+#else
+        extern int rps_serial63_str(rps_serial63 s63, char str[static 16]);
+#endif
+
 
 
 
