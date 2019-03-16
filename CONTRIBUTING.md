@@ -16,15 +16,15 @@
 ## Workflow
 
   * create issue on tracker
-  * assign issue to developer
-  * assigned developer branches off master with branch name reflected issue number
-  * developer makes regular, small commits on issue branch through `git -asm "<one-line message">`
-  * developer runs `git rebase master` when done with feature development on issue branch
-  * developer opens a merge request to a `staging` branch
-  * team lead runs `git rebase master` on `staging` branch and merges developer's issue branch
-  * team lead runs `git rebase -i` to squash issue branch commits to a single well-documented commit
-  * team lead opens merge request to master branch
-  * project manager reviews and merges `staging` branch to `master`
+  * assign issue to contributor
+  * assigned contributor branches off master with branch name reflected issue number
+  * contributor makes regular, small commits on issue branch through `git -asm`
+  * `git rebase master` when done with feature development
+  * open a merge request to a `staging` branch
+  * `git rebase master` on `staging` branch and merges issue branch
+  * `git rebase -i` to squash issue branch commits to a single well-documented commit
+  * open merge request to master branch
+  * review and merge `staging` branch to `master`
 
 The rationale for this approach is as follows:
   * merge conflicts are minimised
