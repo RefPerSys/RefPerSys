@@ -41,7 +41,6 @@ CMD_CC  = gcc
 CMD_SO  = $(CMD_CC)
 CMD_LD  = $(CMD_CC)
 CMD_COV = gcov
-CMD_RUN = ./$(OUT_LD)
 
 
 
