@@ -57,6 +57,32 @@ typedef uint64_t rps_serial63;
 
 
 /*
+ *      RPS_SERIAL63_MIN - minimum object ID serial value
+ *
+ *      The RPS_SERIAL63_MIN symbolic constant defines the minimum value of an
+ *      object ID serial.
+ *
+ *      TODO: explain why it is 62 * 62
+ */
+#define RPS_SERIAL63_MIN ((uint64_t) 3884)
+
+
+
+
+/*
+ *      RPS_SERIAL63_MAX - maximum object ID serial value
+ *
+ *      The RPS_SERIAL63_MAX symbolic constant defines the maximum value of an
+ *      object ID serial.
+ *
+ *      TODO: explain why it is 10 * 62 * (62* 62*62) * (62*62*62) * (62*62*62)
+ */
+#define RPS_SERIAL63_MAX ((uint64_t) 8392993658683402240)
+
+
+
+
+/*
  *      rps_serial63_new() - generates a new random object ID serial
  *
  *      Return:
@@ -66,6 +92,25 @@ typedef uint64_t rps_serial63;
  *        - randomserial63_BM() in Bismon's id_BM.h
  */
 extern rps_serial63 rps_serial63_new(void);
+
+
+
+
+/*
+ *      rps_serial63_valid() - checks validity of object ID serial
+ *        - s63: contextual object ID serial
+ *
+ *      Return:
+ *        - true if @s63 is valid
+ *        - false if @s63 is invalid
+ *
+ *      See:
+ *        - validserial63_BM() in Bismon's id_BM.h
+ */
+static inline bool rps_serial63_valid(rps_serial63 s63)
+{
+        return (s63 > RPS_SERIAL63_MIN && s63 < RPS_SERIAL63_MAX);
+}
 
 
 
