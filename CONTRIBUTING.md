@@ -26,3 +26,9 @@
   * team lead opens merge request to master branch
   * project manager reviews and merges `staging` branch to `master`
 
+The rationale for this approach is as follows:
+  * merge conflicts are minimised
+  * development history is preserved
+  * `master` branch is kept clean
+  * `git log --graph` output is nice and tidy
+
