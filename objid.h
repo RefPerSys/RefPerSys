@@ -1,3 +1,4 @@
+#include <stdint.h> 
   struct objid
   {
     uint64_t id_hi;
