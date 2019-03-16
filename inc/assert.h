@@ -33,21 +33,15 @@
 
 
 
+        /* include required header files */
+#include "./ctcheck.h"
+
+
+
+
         /*  open support for C++ */
 #if (defined __cplusplus)
         extern "C" {
-#endif
-
-
-
-
-/*
- *      rps_assert_stdc() - checks C99 and above available
- */
-#if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
-#       define rps_assert_stdc()
-#else
-#       error "building refpersys requires a C99 compiler"
 #endif
 
 

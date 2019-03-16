@@ -1,9 +1,9 @@
 /*
- * File: refpersys/inc/serial63.h
+ * File: refpersys/inc/ctcheck.h
  *
  * Description:
- *      This file is part of the Reflective Persistent System. It declares the
- *      object ID serial type and its interface.
+ *      This file is part of the Reflective Persistent System. It defines the
+ *      compile-time check macros.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -27,15 +27,16 @@
 
 
         /* create header guard */
-#if (!defined __REFPERSYS_SERIAL63_DEFINED)
-#       define __REFPERSYS_SERIAL63_DEFINED
+#if (!defined __REFPERSYS_ASSERTMACROS_DEFINED)
+#       define __REFPERSYS_ASSERTMACROS_DEFINED
 
 
 
 
-        /* include required header files */
-#include <stdint.h>
-#include "./ctcheck.h"
+        /* ensure C99 dialect is being used for compilation */
+#if (!defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
+#       error "building refpersys requires a C99 compiler"
+#endif
 
 
 
@@ -48,9 +49,14 @@
 
 
 
-        /* declare the rps_serial63 type; this is analogous to the Bismon
-         * serial64_tyBM type in the header file id_BM.h */
-typedef uint64_t rps_serial63;
+/*
+ *      rps_assert_stdc() - checks C99 and above available
+ */
+#if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
+#       define rps_assert_stdc()
+#else
+#       error "building refpersys requires a C99 compiler"
+#endif
 
 
 
@@ -63,5 +69,5 @@ typedef uint64_t rps_serial63;
 
 
 
-#endif /* (!defined __REFPERSYS_OBJECT_DEFINED) */
+#endif /* (!defined __REFPERSYS_ASSERTMACROS_DEFINED) */
 

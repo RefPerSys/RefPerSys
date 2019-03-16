@@ -33,17 +33,17 @@
 
 
 
+        /* include required header files */
+#include <stdint.h>
+#include "./ctcheck.h"
+
+
+
+
         /*  open support for C++ */
 #if (defined __cplusplus)
         extern "C" {
 #endif
-
-
-
-
-        /* include required header files */
-#include <stdint.h>
-#include "./assert.h"
 
 
 
