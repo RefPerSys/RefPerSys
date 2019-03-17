@@ -1,5 +1,5 @@
 /*
- * File: refpersys/inc/serial63.h
+ * File: refpersys/src/serial63.h
  *
  * Description:
  *      This file is part of the Reflective Persistent System. It declares the
@@ -37,7 +37,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "./bucket.h"
+#include "bucket.h"
 
 
 

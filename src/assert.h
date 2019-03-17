@@ -1,9 +1,9 @@
 /*
- * File: refpersys/inc/bucket.h
+ * File: refpersys/src/assert.h
  *
  * Description:
  *      This file is part of the Reflective Persistent System. It declares the
- *      object bucket type and its interface.
+ *      assertion macros.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -27,15 +27,14 @@
 
 
         /* create header guard */
-#if (!defined __REFPERSYS_BUCKET_DEFINED)
-#       define __REFPERSYS_BUCKET_DEFINED
+#if (!defined __REFPERSYS_ASSERTMACROS_DEFINED)
+#       define __REFPERSYS_ASSERTMACROS_DEFINED
 
 
 
 
         /* include required header files */
-#include <stddef.h>
-
+#include <assert.h>
 
 
 
@@ -43,17 +42,6 @@
 #if (defined __cplusplus)
         extern "C" {
 #endif
-
-
-
-
-/*
- *      RPS_BUCKET_MAX - maximum object buckets
- *
- *      The RPS_BUCKET_MAX symbolic constant defines the maximum object buckets.
- *      TODO: explain why it is 10 * 62, and its significance
- */
-#define RPS_BUCKET_MAX ((size_t) 620)
 
 
 
@@ -66,5 +54,5 @@
 
 
 
-#endif /* (!defined __REFPERSYS_BUCKET_DEFINED) */
+#endif /* (!defined __REFPERSYS_ASSERTMACROS_DEFINED) */
 

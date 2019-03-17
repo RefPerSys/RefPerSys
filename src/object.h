@@ -1,5 +1,5 @@
 /*
- * File: refpersys/inc/objid.h
+ * File: refpersys/src/objid.h
  *
  * Description:
  *      This file is part of the Reflective Persistent System. It declares the
