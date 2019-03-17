@@ -7,4 +7,5 @@ debian:
   script:
     - gcc -Wall -Wextra -std=c99 *.h
     - gcc -Wall -Wextra -std=c99 *.c
+    - g++ *.cpp
     - ./a.out
