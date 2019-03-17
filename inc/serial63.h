@@ -136,12 +136,24 @@ static inline bool rps_serial63_valid(rps_serial63 s63)
 
 
 
-        /* rps_serial63_buckfit() is analogous to bucknumserial63_BM(); I'm
+        /* rps_serial63_objbkfit() is analogous to bucknumserial63_BM(); I'm
          * guessing that this function returns the number of object buckets that
          * can fit within @s63; TODO: confirm from Dr. Basile */
-static inline size_t rps_serial63_buckfit(rps_serial63 s63)
+static inline size_t rps_serial63_objbkfit(rps_serial63 s63)
 {
         return s63 / (RPS_SERIAL63_DELTA / RPS_OBJBK_MAX);
+}
+
+
+
+
+        /* rps_serial63_objbknofit() is analogous to buckoffnumserial63_BM();
+         * again, I'm assuming that this function returns the number of object
+         * buckets that **don't** fit within @s63, since the modulo operator
+         * returns the remainder; TODO: confirm from Dr. Basile */
+static inline size_t rps_serial63_objbknofit(rps_serial63 s63)
+{
+        return s63 % (RPS_SERIAL63_DELTA / RPS_OBJBK_MAX);
 }
 
 
