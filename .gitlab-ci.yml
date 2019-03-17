@@ -6,4 +6,4 @@ debian:
   image: gcc
   script:
     - make
-
+    - bld/refpersys
