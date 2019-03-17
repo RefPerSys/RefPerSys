@@ -47,10 +47,16 @@ CMD_COV = gcov
 
 	# define command options
 OPT_CC  = -c -fPIC -std=c99 -Wall -g -O0 -coverage
-OPT_SO  = -shared -g -O1 -coverage
-OPT_LD  = -std=c99 -Wall -g -O0 -coverage
+OPT_SO  = -shared -g -O2 -coverage
+OPT_LD  = -std=c99 -Wall -g -O2 -coverage
 OPT_COV = -o $(DIR_BLD)
 
 
 
+
+	# rule to build refparsys executable
+all:
+	rm -rf $(DIR_BLD)
+	mkdir $(DIR_BLD)
+	$(CMD_LD) $(OPT_LD) src/refparsys.c -o $(DIR_BLD)/refparsys
 

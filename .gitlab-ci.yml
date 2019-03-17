@@ -5,6 +5,6 @@ debian:
   stage: build
   image: gcc
   script:
-    - gcc -Wall -Wextra -std=c99 *.c
+    - g++ *.c
     - g++ mt64.h
     - ./a.out

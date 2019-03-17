@@ -26,8 +26,17 @@
 
 
 
+        /* include required header files */
+#include <stdio.h>
+#include "../inc/ctcheck.h"
+
+
+
+
+        /* main entry point */
 int main(int argc, char **argv)
 {
+        printf("Hello world, from refparsys!\n");
         return 0;
 }
 
