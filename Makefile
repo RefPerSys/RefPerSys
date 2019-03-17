@@ -54,3 +54,9 @@ OPT_COV = -o $(DIR_BLD)
 
 
 
+	# rule to build refparsys executable
+all:
+	rm -rf $(DIR_BLD)
+	mkdir $(DIR_BLD)
+	$(CMD_CC) $(OPT_CC) src/refparsys.c -o $(DIR_BLD)/bld
+
