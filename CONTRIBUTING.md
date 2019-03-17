@@ -17,22 +17,9 @@ as canonical as they would evolve as required.
   * interface code goes to header files in `inc` directory
   * implementation code goes to source files in `src` directory
 
+
 ## Workflow
 
-  * create issue on tracker
-  * assign issue to contributor
-  * `git checkout -b` off master with branch name reflecting issue number
-  * contributor makes regular, small commits on issue branch through `git -asm`
-  * `git rebase master` when done with feature development
-  * open a merge request to a `staging` branch
-  * `git rebase master` on `staging` branch and `git merge --no-ff` issue branch
-  * `git rebase -i` to squash issue branch commits to a single well-documented commit
-  * open merge request to master branch
-  * review and `git merge --no-ff` `staging` branch to `master`
-
-The rationale for this approach is as follows:
-  * merge conflicts are minimised
-  * development history is preserved
-  * `master` branch is kept clean
-  * `git log --graph` output is nice and tidy
+  * each contributor commits to the `master` branch
+  * the issue tracker on GitLab is used to track the progress of tasks
 
