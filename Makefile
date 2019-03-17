@@ -37,7 +37,7 @@ DIR_TEST = test
 
 
 	# define commands
-CMD_CC  = gcc
+CMD_CC  = g++
 CMD_SO  = $(CMD_CC)
 CMD_LD  = $(CMD_CC)
 CMD_COV = gcov
@@ -46,9 +46,9 @@ CMD_COV = gcov
 
 
 	# define command options
-OPT_CC  = -c -fPIC -std=c99 -Wall -g -O0 -coverage
+OPT_CC  = -c -fPIC -Wall -g -O0 -coverage
 OPT_SO  = -shared -g -O2 -coverage
-OPT_LD  = -std=c99 -Wall -g -O2 -coverage
+OPT_LD  = -Wall -g -O2 -coverage
 OPT_COV = -o $(DIR_BLD)
 
 
