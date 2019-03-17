@@ -34,9 +34,11 @@
 
 
         /* include required header files */
+#include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include "./ctcheck.h"
+#include "./objbk.h"
 
 
 
@@ -83,6 +85,19 @@ typedef uint64_t rps_serial63;
 
 
 /*
+ *      RPS_SERIAL63_DELTA - delta of object ID serial maxima and minima
+ *
+ *      The RPS_SERIAL63_DELTA symbolic constant defines the difference between
+ *      the the maxiumum and minimum values of an object ID serial.
+ *
+ *      TODO: explain why it is RPS_SERIAL63_MAX - RPS_SERIAL63_MIN
+ */
+#define RPS_SERIAL63_DELTA (RPS_SERIAL63_MAX - RPS_SERIAL63_MIN)
+
+
+
+
+/*
  *      rps_serial63_new() - generates a new random object ID serial
  *
  *      TODO: elaborate detailed description
@@ -116,6 +131,17 @@ static inline bool rps_serial63_valid(rps_serial63 s63)
                 /* @s63 must fall within the permissible maximum and minimum
                  * values for object ID serials */
         return (s63 > RPS_SERIAL63_MIN && s63 < RPS_SERIAL63_MAX);
+}
+
+
+
+
+        /* rps_serial63_buckfit() is analogous to bucknumserial63_BM(); I'm
+         * guessing that this function returns the number of object buckets that
+         * can fit within @s63; TODO: confirm from Dr. Basile */
+static inline size_t rps_serial63_buckfit(rps_serial63 s63)
+{
+        return s63 / (RPS_SERIAL63_DELTA / RPS_OBJBK_MAX);
 }
 
 
