@@ -5,6 +5,5 @@ debian:
   stage: build
   image: gcc
   script:
-    - g++ *.c
-    - g++ mt64.hpp
-    - ./a.out
+    - make
+
