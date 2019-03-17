@@ -59,5 +59,5 @@ OPT_COV = -o $(DIR_BLD)
 all:
 	rm -rf $(DIR_BLD)
 	mkdir $(DIR_BLD)
-	$(CMD_LD) $(OPT_LD) src/*.c -o $(DIR_BLD)/refpersys
+	$(CMD_LD) $(OPT_LD) src/refpersys.c -o $(DIR_BLD)/refpersys
 
