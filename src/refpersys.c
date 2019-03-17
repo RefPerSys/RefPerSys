@@ -37,6 +37,7 @@ int main(int argc, char **argv)
 {
         printf("Hello world, from refpersys!\n");
         testmt64();  /* do something */
+        testmt64();  /* do it again */
         return 0;
 }
 
