@@ -1,5 +1,5 @@
 /*
- * File: refpersys/inc/bucket.h
+ * File: refpersys/src/bucket.h
  *
  * Description:
  *      This file is part of the Reflective Persistent System. It declares the
@@ -35,7 +35,6 @@
 
         /* include required header files */
 #include <stddef.h>
-#include "./ctcheck.h"
 
 
 

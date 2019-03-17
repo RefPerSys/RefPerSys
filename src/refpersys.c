@@ -28,7 +28,6 @@
 
         /* include required header files */
 #include <stdio.h>
-#include "../inc/ctcheck.h"
 
 
 

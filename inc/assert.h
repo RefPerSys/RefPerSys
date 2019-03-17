@@ -1,5 +1,5 @@
 /*
- * File: refpersys/inc/assert.h
+ * File: refpersys/src/assert.h
  *
  * Description:
  *      This file is part of the Reflective Persistent System. It declares the
@@ -34,8 +34,7 @@
 
 
         /* include required header files */
-#include "./ctcheck.h"
-
+#include <assert.h>
 
 
 
