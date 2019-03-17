@@ -28,7 +28,7 @@
 
         /* include required header files */
 #include <stdio.h>
-
+#include "../inc/mt64.h"
 
 
 
