@@ -34,8 +34,7 @@
 
 
         /* include required header files */
-#include "./ctcheck.h"
-
+#include <assert.h>
 
 
 
