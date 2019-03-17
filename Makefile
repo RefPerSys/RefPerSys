@@ -30,6 +30,7 @@
 DIR_BLD  = bld
 DIR_BIN  = $(DIR_BLD)/bin
 DIR_COV  = $(DIR_BLD)/cov
+DIR_INC  = inc
 DIR_SRC  = src
 DIR_TEST = test
 
