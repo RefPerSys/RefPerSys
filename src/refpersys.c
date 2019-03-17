@@ -1,9 +1,9 @@
 /*
- * File: refpersys/src/refparsys.c
+ * File: refpersys/src/refpersys.c
  *
  * Description:
  *      This file is part of the Reflective Persistent System. It implements the
- *      refparsys executable
+ *      refpersys executable
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -36,7 +36,7 @@
         /* main entry point */
 int main(int argc, char **argv)
 {
-        printf("Hello world, from refparsys!\n");
+        printf("Hello world, from refpersys!\n");
         return 0;
 }
 

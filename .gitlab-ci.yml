@@ -6,5 +6,5 @@ debian:
   image: gcc
   script:
     - g++ *.c
-    - g++ mt64.h
+    - g++ mt64.hpp
     - ./a.out
