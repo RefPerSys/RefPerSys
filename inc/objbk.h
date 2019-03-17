@@ -1,5 +1,5 @@
 /*
- * File: refpersys/inc/objbk.h
+ * File: refpersys/inc/bucket.h
  *
  * Description:
  *      This file is part of the Reflective Persistent System. It declares the
@@ -27,8 +27,8 @@
 
 
         /* create header guard */
-#if (!defined __REFPERSYS_OBJBK_DEFINED)
-#       define __REFPERSYS_OBJBK_DEFINED
+#if (!defined __REFPERSYS_BUCKET_DEFINED)
+#       define __REFPERSYS_BUCKET_DEFINED
 
 
 
@@ -49,12 +49,12 @@
 
 
 /*
- *      RPS_OBJBK_MAX - maximum object buckets
+ *      RPS_BUCKET_MAX - maximum object buckets
  *
- *      The RPS_OBJBK_MAX symbolic constant defines the maximum object buckets.
+ *      The RPS_BUCKET_MAX symbolic constant defines the maximum object buckets.
  *      TODO: explain why it is 10 * 62, and its significance
  */
-#define RPS_OBJBK_MAX ((size_t) 620)
+#define RPS_BUCKET_MAX ((size_t) 620)
 
 
 
@@ -67,5 +67,5 @@
 
 
 
-#endif /* (!defined __REFPERSYS_OBJBK_DEFINED) */
+#endif /* (!defined __REFPERSYS_BUCKET_DEFINED) */
 
