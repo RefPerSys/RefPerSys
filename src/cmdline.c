@@ -34,6 +34,7 @@
 
 
 static char version_bfr[1024];
+const char *argp_program_bug_address = "basile@starynkevitch.net";
 const char *argp_program_version = version_bfr;
 
 
