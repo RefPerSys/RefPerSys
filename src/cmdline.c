@@ -91,8 +91,6 @@ static void version_parse(void)
 {
         const char *format = "refpersys: version information\n"
                              "\t last git commit: %s\n";
-        /*const char *lastcommit = "git log --format=oneline --abbrev=12"
-                                 " --abbrev-commit -q  | head -1";*/
 
         snprintf(version_bfr, VERSION_BFRLEN, format, RPS_VERSION_LASTCOMMIT);
 }
