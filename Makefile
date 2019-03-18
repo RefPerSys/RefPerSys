@@ -38,7 +38,7 @@ DIR_TEST = test
 
 
 	# define commands
-CMD_CC  = g++
+CMD_CC  = gcc
 CMD_SO  = $(CMD_CC)
 CMD_LD  = $(CMD_CC)
 CMD_COV = gcov
@@ -59,5 +59,5 @@ OPT_COV = -o $(DIR_BLD)
 all:
 	rm -rf $(DIR_BLD)
 	mkdir $(DIR_BLD)
-	$(CMD_LD) $(OPT_LD) src/refpersys.c -o $(DIR_BLD)/refpersys
+	$(CMD_LD) $(OPT_LD) src/refpersys.c src/cmdline.c -o $(DIR_BLD)/refpersys
 
