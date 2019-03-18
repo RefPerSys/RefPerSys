@@ -130,21 +130,30 @@ static error_t argopt_parse(int key, char *arg, struct argp_state *state)
 }
 
 
-        /* undefine the symbolic constants defined in this section so that they
-         * may safely be reused in the following sections if required */
-#undef NAME_PRAND
-#undef KEY_PRAND
-#undef DOC_PRAND
-#undef VERSION_BFRLEN
-#undef MSG_NOARGS
-
-
 /** MAIN ENTRY POINT **********************************************************/
 
 
+        /* process refpersys command invoked with with arguments */
 int main(int argc, char **argv)
 {
-        //return rps_cmdline_parse(argc, argv);
-        return EXIT_SUCCESS;
+        struct argp argopt = {
+                .options = argopt_vec,
+                .parser = argopt_parse,
+                .args_doc = NULL,
+                .doc = NULL
+        };
+
+                /* parse refpersys version metadata generated at compile time */
+        version_parse();
+
+                /* ensure we have at least one command line argument in addition
+                 * to the refpersys command */
+        if (argc < 2) {
+                printf(MSG_NOARGS);
+                exit(EXIT_SUCCESS);
+        }
+
+                /* parse argument options */
+        return argp_parse(&argopt, argc, argv, 0, NULL, NULL);
 }
 
