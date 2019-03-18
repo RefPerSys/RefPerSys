@@ -42,6 +42,8 @@ CMD_CC  = gcc
 CMD_SO  = $(CMD_CC)
 CMD_LD  = $(CMD_CC)
 CMD_COV = gcov
+CMD_LASTCOMMIT = git log --format=oneline --abbrev=12 \
+	         --abbrev-commit -q | head -1
 
 
 
@@ -57,9 +59,16 @@ OPT_COV = -o $(DIR_BLD)
 INP_LD = $(DIR_SRC)/refpersys.c $(DIR_SRC)/cmdline.c
 
 
+OUT_GENFILE = $(DIR_INC)/.version.gen.h
+
+
+
 	# rule to build refparsys executable
 all:
 	rm -rf $(DIR_BLD)
 	mkdir $(DIR_BLD)
+	$(CMD_LASTCOMMIT) | awk 'BEGIN {print ""} {print "#define RPS_VERSION_LASTCOMMIT  \"" $$0 "\""} END {}' > $(OUT_GENFILE)
 	$(CMD_LD) $(OPT_LD) $(INP_LD) -o $(DIR_BLD)/refpersys
+
+
 

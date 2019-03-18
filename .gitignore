@@ -1,5 +1,6 @@
-# Build directory
+# Generated artefacts
 bld/
+inc/.version.gen.h
 
 # Prerequisites
 *.d
