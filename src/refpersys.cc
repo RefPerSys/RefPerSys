@@ -95,7 +95,7 @@ static struct argp_option argopt_vec[] = {
 
         /* parse version metadata from the .version.gen.h header file generated
          * at compile time */
-static void version_parse(void)
+static inline void version_parse(void)
 {
         const char *format = "refpersys: version information\n"
                              "\t last git commit: %s\n";
