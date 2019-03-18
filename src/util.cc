@@ -1,5 +1,8 @@
+/* TODO: refactor with Niklas */
+
 #include <random>
-#include "../inc/mt64.hpp"
+#include "../inc/util.h"
+
 
 static thread_local int counter = 0;
 uint64_t rps_random_uint64(void)

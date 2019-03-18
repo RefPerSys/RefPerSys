@@ -39,7 +39,6 @@
 # define directory paths
 DIR_BLD  = bld
 DIR_BIN  = $(DIR_BLD)/bin
-DIR_COV  = $(DIR_BLD)/cov
 DIR_INC  = inc
 DIR_SRC  = src
 DIR_TEST = test
@@ -68,7 +67,7 @@ OPT_COV = -o $(DIR_BLD)
 
 
 # define inputs
-INP_LD = $(DIR_SRC)/refpersys.cc
+INP_LD = $(DIR_SRC)/refpersys.cc $(DIR_SRC)/util.cc
 
 
 OUT_GENFILE = $(DIR_INC)/.version.gen.h

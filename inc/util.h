@@ -33,6 +33,7 @@
         /* include required header files */
 #include <stdint.h>
 
+
         /* Mersenne twister */
 extern uint64_t rps_random_uint64(void);
 

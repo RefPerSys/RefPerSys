@@ -37,6 +37,7 @@
 #include <inttypes.h>
 #include <argp.h>
 #include "../inc/.version.gen.h"
+#include "../inc/util.h"
 
 
 /** COMMAND LINE ARGUMENT PARSING *********************************************/
@@ -103,14 +104,6 @@ static void version_parse(void)
 }
 
 
-        /* define helper function to execute the NAME_PRAND argument option */
-static void exec_prand(void)
-{
-        //printf("rps_random_uint64(): %" PRIu64 "\n", rps_random_uint64());
-        printf("rps_random_uint64(): %" PRIu64 "\n", 5UL);
-}
-
-
         /* define the argument option parsing callback */
 static error_t argopt_parse(int key, char *arg, struct argp_state *state)
 {
@@ -118,7 +111,8 @@ static error_t argopt_parse(int key, char *arg, struct argp_state *state)
                  * turn as required */
         switch (key) {
         case KEY_PRAND:
-                exec_prand();
+                printf("rps_random_uint64(): %" PRIu64 "\n",
+                       rps_random_uint64());
                 break;
 
         default:
