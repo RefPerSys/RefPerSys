@@ -92,6 +92,44 @@ static struct argp_option argopt_vec[] = {
 };
 
 
+        /* parse version metadata from the .version.gen.h header file generated
+         * at compile time */
+static void version_parse(void)
+{
+        const char *format = "refpersys: version information\n"
+                             "\t last git commit: %s\n";
+
+        snprintf(version_bfr, VERSION_BFRLEN, format, RPS_VERSION_LASTCOMMIT);
+}
+
+
+        /* define helper function to execute the NAME_PRAND argument option */
+static void exec_prand(void)
+{
+        //printf("rps_random_uint64(): %" PRIu64 "\n", rps_random_uint64());
+        printf("rps_random_uint64(): %" PRIu64 "\n", 5UL);
+}
+
+
+        /* define the argument option parsing callback */
+static error_t argopt_parse(int key, char *arg, struct argp_state *state)
+{
+                /* switch through argument option keys, handling each case in
+                 * turn as required */
+        switch (key) {
+        case KEY_PRAND:
+                exec_prand();
+                break;
+
+        default:
+                return ARGP_ERR_UNKNOWN;
+        }
+
+                /* signal that no error has occurred */
+        return 0;
+}
+
+
         /* undefine the symbolic constants defined in this section so that they
          * may safely be reused in the following sections if required */
 #undef NAME_PRAND
