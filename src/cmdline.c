@@ -109,6 +109,8 @@ static void exec_prand(void)
         /* define the argument option parsing callback */
 static error_t argopt_parse(int key, char *arg, struct argp_state *state)
 {
+                /* switch through argument option keys, handling each case in
+                 * turn as required */
         switch (key) {
         case KEY_PRAND:
                 exec_prand();
@@ -118,6 +120,7 @@ static error_t argopt_parse(int key, char *arg, struct argp_state *state)
                 return ARGP_ERR_UNKNOWN;
         }
 
+                /* signal that no error has occurred */
         return 0;
 }
 
@@ -143,6 +146,7 @@ int rps_cmdline_parse(int argc, char **argv)
                 exit(EXIT_FAILURE);
         }
 
+                /* parse argument options */
         return argp_parse(&argp, argc, argv, 0, NULL, NULL);
 }
 
