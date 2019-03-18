@@ -63,6 +63,35 @@
                    "\trun refpersys --help to display options\n"
 
 
+        /* define buffer to hold version metadata generated at compile time;
+         * TODO: confirm from Dr. Basile if this needs to be thread_local */
+static char version_bfr[VERSION_BFRLEN];
+
+
+        /* set the address to e-mail bug reports; this global is provided by the
+         * ARGP library */
+const char *argp_program_bug_address = "basile@starynkevitch.net";
+
+
+        /* set the version information; this global is provided by the ARGP
+         * library */
+const char *argp_program_version = version_bfr;
+
+
+        /* define ARGP-specific vector to hold argument options;
+         * TODO: confirm from Dr. Basile if this needs to be thread_local */
+static struct argp_option argopt_vec[] = {
+        {
+                .name = NAME_PRAND,
+                .key = KEY_PRAND,
+                .arg = NULL,
+                .flags = 0,
+                .doc = DOC_PRAND
+        },
+        { NULL }
+};
+
+
         /* undefine the symbolic constants defined in this section so that they
          * may safely be reused in the following sections if required */
 #undef NAME_PRAND
