@@ -68,7 +68,7 @@ OPT_COV = -o $(DIR_BLD)
 
 
 # define inputs
-INP_LD = $(DIR_SRC)/refpersys.c
+INP_LD = $(DIR_SRC)/refpersys.cc
 
 
 OUT_GENFILE = $(DIR_INC)/.version.gen.h
