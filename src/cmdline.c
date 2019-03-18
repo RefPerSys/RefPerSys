@@ -33,8 +33,24 @@
 #include "../inc/.version.gen.h"
 
 
+static char version_bfr[1024];
+const char *argp_program_version = version_bfr;
+
+
+static void version_set(void)
+{
+        const char *format = "refpersys: version information\n"
+                             "\t last git commit: %s\n";
+        /*const char *lastcommit = "git log --format=oneline --abbrev=12"
+                                 " --abbrev-commit -q  | head -1";*/
+
+        snprintf(version_bfr, 1024, format, RPS_VERSION_LASTCOMMIT);
+}
+
+
 int rps_cmdline_parse(int argc, char **argv)
 {
+        version_set();
         return 0;
 }
 
