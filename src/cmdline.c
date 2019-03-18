@@ -37,7 +37,7 @@ static char version_bfr[1024];
 const char *argp_program_version = version_bfr;
 
 
-static void version_set(void)
+static void version_parse(void)
 {
         const char *format = "refpersys: version information\n"
                              "\t last git commit: %s\n";
@@ -50,7 +50,18 @@ static void version_set(void)
 
 int rps_cmdline_parse(int argc, char **argv)
 {
-        version_set();
+                /* parse refpersys version metadata generated at compile time */
+        version_parse();
+
+                /* ensure we have at least one command line argument in addition
+                 * to the refpersys command */
+        if (argc < 2) {
+                printf("refpersys: no options specified\n");
+                printf("run refpersys --help to display options\n");
+
+                exit(EXIT_FAILURE);
+        }
+
         return 0;
 }
 
