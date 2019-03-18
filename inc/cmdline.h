@@ -1,9 +1,9 @@
 /*
- * File: refpersys/src/refpersys.c
+ * File: refpersys/inc/cmdline.h
  *
  * Description:
- *      This file is part of the Reflective Persistent System. It implements the
- *      refpersys executable
+ *      This file is part of the Reflective Persistent System. It declares the
+ *      command line parsing interface.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -26,15 +26,25 @@
 
 
 
-        /* include required header files */
-#include <stdio.h>
-#include "../inc/cmdline.h"
+        /* create header guard */
+#if (!defined __REFPERSYS_CMDLINE_DEFINED)
+#       define __REFPERSYS_CMDLINE_DEFINED
 
 
+        /*  open support for C++ */
+#if (defined __cplusplus)
+        extern "C" {
+#endif
 
-        /* main entry point */
-int main(int argc, char **argv)
-{
-        return rps_cmdline_parse(argc, argv);
-}
+
+extern int rps_cmdline_parse(int argc, char **argv);
+
+
+        /* close support for C++ */
+#if (defined __cplusplus)
+        }
+#endif
+
+
+#endif /* (!defined __REFPERSYS_CMDLINE_DEFINED) */
 
