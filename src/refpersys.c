@@ -1,5 +1,5 @@
 /*
- * File: refpersys/src/refpersys.cpp
+ * File: refpersys/src/refpersys.cc
  *
  * Description:
  *      This file is part of the Reflective Persistent System. It implements the
@@ -28,13 +28,15 @@
 
         /* include required header files */
 #include <stdio.h>
-#include "../inc/cmdline.h"
+#include <stdlib.h>
+//#include "../inc/cmdline.h"
 
 
 
         /* main entry point */
 int main(int argc, char **argv)
 {
-        return rps_cmdline_parse(argc, argv);
+        //return rps_cmdline_parse(argc, argv);
+        return EXIT_SUCCESS;
 }
 

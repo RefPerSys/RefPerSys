@@ -48,7 +48,7 @@ DIR_TEST = test
 
 
 # define commands
-CMD_CC  = gcc
+CMD_CC  = g++
 CMD_SO  = $(CMD_CC)
 CMD_LD  = $(CMD_CC)
 CMD_LASTCOMMIT = git log --format=oneline --abbrev=12 \
@@ -61,14 +61,14 @@ CMD_LASTCOMMIT = git log --format=oneline --abbrev=12 \
 
 # No coverage, we know that Refpersys is likely to have some code
 # which in practice cannot be reached.
-OPT_CC  = -c -fPIC -Wall -g -O0 
-OPT_SO  = -shared -g -O2 
+OPT_CC  = -c -fPIC -Wall -g -O0
+OPT_SO  = -shared -g -O2
 OPT_LD  = -Wall -g -O2
 OPT_COV = -o $(DIR_BLD)
 
 
 # define inputs
-INP_LD = $(DIR_SRC)/refpersys.c $(DIR_SRC)/cmdline.c
+INP_LD = $(DIR_SRC)/refpersys.c
 
 
 OUT_GENFILE = $(DIR_INC)/.version.gen.h
