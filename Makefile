@@ -53,11 +53,13 @@ OPT_LD  = -Wall -g -O2 -coverage
 OPT_COV = -o $(DIR_BLD)
 
 
+	# define inputs
+INP_LD = $(DIR_SRC)/refpersys.c $(DIR_SRC)/cmdline.c
 
 
 	# rule to build refparsys executable
 all:
 	rm -rf $(DIR_BLD)
 	mkdir $(DIR_BLD)
-	$(CMD_LD) $(OPT_LD) src/refpersys.c src/cmdline.c -o $(DIR_BLD)/refpersys
+	$(CMD_LD) $(OPT_LD) $(INP_LD) -o $(DIR_BLD)/refpersys
 
