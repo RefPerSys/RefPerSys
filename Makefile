@@ -38,7 +38,7 @@ DIR_TEST = test
 
 
 	# define commands
-CMD_CC  = g++
+CMD_CC  = gcc
 CMD_SO  = $(CMD_CC)
 CMD_LD  = $(CMD_CC)
 CMD_COV = gcov
@@ -54,7 +54,7 @@ OPT_COV = -o $(DIR_BLD)
 
 
 	# define inputs
-INP_LD = $(DIR_SRC)/refpersys.c $(DIR_SRC)/cmdline.c $(DIR_SRC)/random.cpp
+INP_LD = $(DIR_SRC)/refpersys.c $(DIR_SRC)/cmdline.c
 
 
 	# rule to build refparsys executable
