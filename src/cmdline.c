@@ -143,7 +143,7 @@ int rps_cmdline_parse(int argc, char **argv)
                  * to the refpersys command */
         if (argc < 2) {
                 printf(MSG_NOARGS);
-                exit(EXIT_FAILURE);
+                exit(EXIT_SUCCESS);
         }
 
                 /* parse argument options */
