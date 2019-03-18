@@ -1,5 +1,5 @@
 /*
- * File: refpersys/src/refpersys.c
+ * File: refpersys/src/refpersys.cpp
  *
  * Description:
  *      This file is part of the Reflective Persistent System. It implements the
