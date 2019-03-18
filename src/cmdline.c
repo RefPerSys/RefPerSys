@@ -129,7 +129,7 @@ static error_t argopt_parse(int key, char *arg, struct argp_state *state)
          * declared in refpersys/inc/cmdline.h */
 int rps_cmdline_parse(int argc, char **argv)
 {
-        auto struct argp argp = {
+        struct argp argopt = {
                 .options = argopt_vec,
                 .parser = argopt_parse,
                 .args_doc = NULL,
@@ -147,6 +147,6 @@ int rps_cmdline_parse(int argc, char **argv)
         }
 
                 /* parse argument options */
-        return argp_parse(&argp, argc, argv, 0, NULL, NULL);
+        return argp_parse(&argopt, argc, argv, 0, NULL, NULL);
 }
 
