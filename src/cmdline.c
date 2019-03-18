@@ -33,11 +33,53 @@
 #include "../inc/.version.gen.h"
 
 
-static char version_bfr[1024];
+        /* define long names for argument options */
+#define NAME_PRAND "print-random-uint64"
+
+
+        /* define keys for argument options */
+#define KEY_PRAND 'r'
+
+
+        /* define documentation strings for arguments options */
+#define DOC_PRAND "Print random 64-bit unsigned integer"
+
+
+        /* define length of buffer to hold version metadata */
+#define VERSION_BFRLEN 1024
+
+
+        /* define buffer to hold version metadata generated at compile time;
+         * TODO: confirm from Dr. Basile if this needs to be thread_local */
+static char version_bfr[VERSION_BFRLEN];
+
+
+        /* set the address to e-mail bug reports; this global is provided by the
+         * ARGP library */
 const char *argp_program_bug_address = "basile@starynkevitch.net";
+
+
+        /* set the version information; this global is provided by the ARGP
+         * library */
 const char *argp_program_version = version_bfr;
 
 
+        /* define ARGP-specific vector to hold argument options;
+         * TODO: confirm from Dr. Basile if this needs to be thread_local */
+static struct argp_option argopt_vec[] = {
+        {
+                .name = NAME_PRAND,
+                .key = KEY_PRAND,
+                .arg = NULL,
+                .flags = 0,
+                .doc = DOC_PRAND
+        },
+        { NULL }
+};
+
+
+        /* parse version metadata from the .version.gen.h header file generated
+         * at compile time */
 static void version_parse(void)
 {
         const char *format = "refpersys: version information\n"
@@ -49,8 +91,11 @@ static void version_parse(void)
 }
 
 
+        /* define the rps_cmdline_parse() interface function; this function was
+         * declared in refpersys/inc/cmdline.h */
 int rps_cmdline_parse(int argc, char **argv)
 {
+
                 /* parse refpersys version metadata generated at compile time */
         version_parse();
 
