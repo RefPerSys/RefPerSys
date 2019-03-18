@@ -26,11 +26,13 @@
 
         /* include required header files */
 #include <stddef.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <argp.h>
 #include "../inc/.version.gen.h"
+//#include "../inc/mt64.hpp"
 
 
         /* define long names for argument options */
@@ -47,6 +49,11 @@
 
         /* define length of buffer to hold version metadata */
 #define VERSION_BFRLEN 1024
+
+
+        /* define error message to display if no argument is provided */
+#define MSG_NOARGS "refpersys: no options specified\n" \
+                   "\trun refpersys --help to display options\n"
 
 
         /* define buffer to hold version metadata generated at compile time;
@@ -87,7 +94,31 @@ static void version_parse(void)
         /*const char *lastcommit = "git log --format=oneline --abbrev=12"
                                  " --abbrev-commit -q  | head -1";*/
 
-        snprintf(version_bfr, 1024, format, RPS_VERSION_LASTCOMMIT);
+        snprintf(version_bfr, VERSION_BFRLEN, format, RPS_VERSION_LASTCOMMIT);
+}
+
+
+        /* define helper function to execute the NAME_PRAND argument option */
+static void exec_prand(void)
+{
+        //printf("rps_random_uint64(): %" PRIu64 "\n", rps_random_uint64());
+        printf("rps_random_uint64(): %" PRIu64 "\n", 5UL);
+}
+
+
+        /* define the argument option parsing callback */
+static error_t argopt_parse(int key, char *arg, struct argp_state *state)
+{
+        switch (key) {
+        case KEY_PRAND:
+                exec_prand();
+                break;
+
+        default:
+                return ARGP_ERR_UNKNOWN;
+        }
+
+        return 0;
 }
 
 
@@ -95,6 +126,12 @@ static void version_parse(void)
          * declared in refpersys/inc/cmdline.h */
 int rps_cmdline_parse(int argc, char **argv)
 {
+        auto struct argp argp = {
+                .options = argopt_vec,
+                .parser = argopt_parse,
+                .args_doc = NULL,
+                .doc = NULL
+        };
 
                 /* parse refpersys version metadata generated at compile time */
         version_parse();
@@ -102,12 +139,10 @@ int rps_cmdline_parse(int argc, char **argv)
                 /* ensure we have at least one command line argument in addition
                  * to the refpersys command */
         if (argc < 2) {
-                printf("refpersys: no options specified\n");
-                printf("run refpersys --help to display options\n");
-
+                printf(MSG_NOARGS);
                 exit(EXIT_FAILURE);
         }
 
-        return 0;
+        return argp_parse(&argp, argc, argv, 0, NULL, NULL);
 }
 
