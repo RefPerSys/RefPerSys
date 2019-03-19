@@ -45,7 +45,7 @@
  */
 extern rps_serial63 rps_serial63_make(void)
 {
-        register rps_serial63 s63 = (rps_serial63) 0;
+        rps_serial63 s63 = (rps_serial63) 0;
 
                 /* keep polling rps_random_uint64() until a valid random object
                  * ID serial is found; the original implementation used GNOME
