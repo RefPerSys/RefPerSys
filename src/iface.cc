@@ -43,7 +43,7 @@
 /*
  *      rps_serial63_make() - declared in refpersys/inc/iface.h
  */
-extern rps_serial63 rps_serial63_new(void)
+extern rps_serial63 rps_serial63_make(void)
 {
         register rps_serial63 s63 = (rps_serial63) 0;
 
