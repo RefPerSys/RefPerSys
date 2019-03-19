@@ -73,13 +73,18 @@ INP_LD = $(DIR_SRC)/refpersys.cc $(DIR_SRC)/util.cc
 OUT_GENFILE = $(DIR_INC)/.version.gen.h
 
 
-
 # rule to build refparsys executable
-all:
-	rm -rf $(DIR_BLD)
+all: clean
 	mkdir $(DIR_BLD)
 	$(CMD_LASTCOMMIT) | awk 'BEGIN {print ""} {print "#define RPS_VERSION_LASTCOMMIT  \"" $$0 "\""} END {}' > $(OUT_GENFILE)
 	$(CMD_LD) $(OPT_LD) $(INP_LD) -o $(DIR_BLD)/refpersys
+
+
+# rule to clean build artefacts
+clean:
+	rm -rf $(DIR_BLD)
+
+
 
 
 
