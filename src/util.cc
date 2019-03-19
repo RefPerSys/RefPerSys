@@ -1,10 +1,9 @@
-#include <random>
-#include <iostream>
-#include <ctime>
+/* TODO: refactor with Niklas */
 
-extern "C" {
-   uint64_t rps_random_uint64(void);
-}
+#include <random>
+#include "../inc/util.h"
+
+
 static thread_local int counter = 0;
 uint64_t rps_random_uint64(void)
 {
@@ -17,3 +16,4 @@ uint64_t rps_random_uint64(void)
     static thread_local std::uniform_int_distribution<unsigned long long> dis;
     return dis(gen);
 }
+
