@@ -1,6 +1,13 @@
 # Generated artefacts
-bld/
-inc/.version.gen.h
+*/*.mkd
+_*.c
+_*.h
+*/*.mkd
+
+refpersys
+
+# Backup
+*~
 
 # Prerequisites
 *.d

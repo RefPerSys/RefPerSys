@@ -29,11 +29,17 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef REFPERSYS_UTIL_INCLUDED
+#define REFPERSYS_UTIL_INCLUDED
 
         /* include required header files */
 #include <stdint.h>
 
+/* in generated _timestamp.c */
+extern "C" const char rps_git_commit[];
+extern "C" const char rps_build_timestamp[];
 
-        /* Mersenne twister */
-extern uint64_t rps_random_uint64(void);
+/* Mersenne twister */
+extern "C" uint64_t rps_random_uint64(void);
 
+#endif /*REFPERSYS_UTIL_INCLUDED*/

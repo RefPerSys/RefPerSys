@@ -33,56 +33,62 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################
 
-
-
-
-# define directory paths
-DIR_BLD  = bld
-DIR_BIN  = $(DIR_BLD)/bin
-DIR_INC  = inc
-DIR_SRC  = src
-DIR_TEST = test
+REFPERSYS_SOURCES := src/iface.cc src/refpersys.cc src/util.cc
+REFPERSYS_OBJECTS := $(patsubst src/%.cc, src/%.o, $(REFPERSYS_SOURCES))
 
 
 
 
 # define commands
-CMD_CC  = g++
-CMD_SO  = $(CMD_CC)
-CMD_LD  = $(CMD_CC)
+CXX  = g++
+RM = rm -vf
+MV = mv -vf
 CMD_LASTCOMMIT = git log --format=oneline --abbrev=12 \
 	         --abbrev-commit -q | head -1
 
 
 
 
-# define command options.
-
 # No coverage, we know that Refpersys is likely to have some code
 # which in practice cannot be reached.
-OPT_CC  = -c -fPIC -Wall -g -O0
-OPT_SO  = -shared -g -O2
-OPT_LD  = -Wall -g -O2
-OPT_COV = -o $(DIR_BLD)
+OPTIMFLAGS= -g -O1
+WARNFLAGS= -Wall -Wextra
+INCFLAGS= -I. -Iinc/ -Imps/
+CXXFLAGS:= $(OPTIMFLAGS) $(WARNFLAGS) $(INCFLAGS)
+CFLAGS:=  $(OPTIMFLAGS) $(WARNFLAGS) $(INCFLAGS)
+LDFLAGS:= -pthread
+LIBES:=  -lpthread -ldl -lm 
+.PHONY: all clean
 
+## the default target
+all: refpersys
 
-# define inputs
-INP_LD = $(DIR_SRC)/refpersys.cc $(DIR_SRC)/iface.cc $(DIR_SRC)/util.cc
+# rule to build refpersys executable
+refpersys: $(REFPERSYS_OBJECTS) mps/mps.o _timestamp.o
+	$(LINK.cc) $^ -o $@ $(LIBES)
+	$(MV) _timestamp.c _timestamp.c~
+	$(RM) _timestamp.o
 
+## automatic makefile dependencies, see
+## https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html
+-include $(wildcard src/*.mkd)
+-include $(wildcard mps/*.mkd)
 
-OUT_GENFILE = $(DIR_INC)/.version.gen.h
+_timestamp.c:
+	echo '// generated temporary' $@ 'file - DONT EDIT' > $@-tmp
+	$(CMD_LASTCOMMIT) | awk 'BEGIN {print ""} {print "const char rps_git_commit[] = \"" $$0 "\";"} END {}' >> $@-tmp
+	date +'const char rps_build_timestamp[] = "%c %Z";%n' >> $@-tmp
+	mv $@-tmp $@
 
+src/%.o: src/%.cc
+	$(COMPILE.cc) -o $@ $< -MMD -MT $@ -MF $(patsubst src/%.o, src/%.mkd, $@)
 
-# rule to build refparsys executable
-all: clean
-	mkdir $(DIR_BLD)
-	$(CMD_LASTCOMMIT) | awk 'BEGIN {print ""} {print "#define RPS_VERSION_LASTCOMMIT  \"" $$0 "\""} END {}' > $(OUT_GENFILE)
-	$(CMD_LD) $(OPT_LD) $(INP_LD) -o $(DIR_BLD)/refpersys
-
-
+mps/%.o: mps/%.c
+	$(COMPILE.c)  -o $@ $< -MMD -MT $@ -MF $(patsubst src/%.o, src/%.mkd, $@)
 # rule to clean build artefacts
 clean:
-	rm -rf $(DIR_BLD)
+	$(RM) refpersys *.o */*.o *~ */*~ _*.h _*.c _*.cc
+	$(RM) */*.mkd *-tmp
 
 
 
