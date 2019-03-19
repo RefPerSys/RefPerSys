@@ -36,8 +36,7 @@
 #include <stddef.h>
 #include <inttypes.h>
 #include <argp.h>
-#include "../inc/.version.gen.h"
-#include "../inc/util.h"
+#include "util.h"
 
 
 /** COMMAND LINE ARGUMENT PARSING *********************************************/
@@ -55,7 +54,7 @@
 #define DOC_PRAND "Print random 64-bit unsigned integer"
 
 
-        /* define length of buffer to hold version metadata */
+/* define length of buffer to hold version metadata */
 #define VERSION_BFRLEN 1024
 
 
@@ -93,14 +92,14 @@ static struct argp_option argopt_vec[] = {
 };
 
 
-        /* parse version metadata from the .version.gen.h header file generated
-         * at compile time */
+/* some metadata from generated _timestamp.c */
 static inline void version_parse(void)
 {
-        const char *format = "refpersys: version information\n"
-                             "\t last git commit: %s\n";
-
-        snprintf(version_bfr, VERSION_BFRLEN, format, RPS_VERSION_LASTCOMMIT);
+  snprintf(version_bfr, VERSION_BFRLEN,
+	   "refpersys: version information\n"
+	   "\t last git commit: %s\n"
+	   "build time: %s\n", rps_git_commit,
+	   rps_build_timestamp);
 }
 
 
