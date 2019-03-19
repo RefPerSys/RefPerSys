@@ -6,6 +6,4 @@ debian:
   image: gcc
   script:
     - make
-    - bld/refpersys
-    - gcc -o mpstest mps.o hellomps.c -lpthread
-    - ./mpstest
+    -  ./refpersys --print-random-uint64
