@@ -1,0 +1,10 @@
+# code/w3mv/.p4ignore -- Perforce files to ignore from Visual Studio 
+# $Id: //info.ravenbrook.com/project/mps/version/1.117/code/w3mv/.p4ignore#1 $
+# Subproject build results
+*/Debug
+*/Release
+# Temporary user preferences
+*.vcxproj.user
+# Mystery rubbish
+*.sdf
+*.opensdf
