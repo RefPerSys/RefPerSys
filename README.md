@@ -12,9 +12,17 @@ license.
 
 ## Building and dependencies.
 
-GNU make 4 is required. And GCC 8 or some recent C++ compiler.
+[GNU `make`](https://www.gnu.org/software/make/) 4 is required. And
+[GCC](http://gcc.gnu.org/) 8 -or later- or some recent C++14 compiler.
 
 Use `make` or `make -j` to build this project.
+
+As usual, run `make -p` to understand the built-in rules and take
+advantage of them.
+
+To debug the build machinery, consider using
+[remake](http://bashdb.sourceforge.net/remake/), probably as `remake
+-x`
 
 ## Contributing
 
