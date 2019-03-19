@@ -1,9 +1,9 @@
-/*
- * File: refpersys/src/serial63.h
+/*******************************************************************************
+ * File: refpersys/inc/iface.h
  *
  * Description:
  *      This file is part of the Reflective Persistent System. It declares the
- *      object ID serial type and its interface.
+ *      refpersys interface callable units.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -15,31 +15,31 @@
  *      <https://refpersys.gitlab.io>
  *
  * License:
- *      Released under the GNU General Public License version 3 (GPLv3)
- *      <http://opensource.org/licenses/GPL-3.0>. See the accompanying LICENSE
- *      file for complete licensing details.
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
  *
- *      BY CONTINUING TO USE AND/OR DISTRIBUTE THIS FILE, YOU ACKNOWLEDGE THAT
- *      YOU HAVE UNDERSTOOD THESE LICENSE TERMS AND ACCEPT THEM.
- */
-
-
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 
 
         /* create header guard */
-#if (!defined __REFPERSYS_SERIAL63_DEFINED)
-#       define __REFPERSYS_SERIAL63_DEFINED
-
-
+#if (!defined __REFPERSYS_IFACE_DEFINED)
+#       define __REFPERSYS_IFACE_DEFINED
 
 
         /* include required header files */
 #include <stddef.h>
-#include <stdbool.h>
 #include <stdint.h>
-#include "bucket.h"
-
-
+#include <stdbool.h>
+#include "types.h"
 
 
         /*  open support for C++ */
@@ -48,56 +48,13 @@
 #endif
 
 
-
-
-        /* declare the rps_serial63 type; this is analogous to the Bismon
-         * serial64_tyBM type in the header file id_BM.h */
-typedef uint64_t rps_serial63;
-
-
+/******************************************************************************
+ * Section: Object ID Serial (rps_serial63)
+ ******************************************************************************/
 
 
 /*
- *      RPS_SERIAL63_MIN - minimum object ID serial value
- *
- *      The RPS_SERIAL63_MIN symbolic constant defines the minimum value of an
- *      object ID serial.
- *
- *      TODO: explain why it is 62 * 62
- */
-#define RPS_SERIAL63_MIN ((uint64_t) 3884)
-
-
-
-
-/*
- *      RPS_SERIAL63_MAX - maximum object ID serial value
- *
- *      The RPS_SERIAL63_MAX symbolic constant defines the maximum value of an
- *      object ID serial.
- *
- *      TODO: explain why it is 10 * 62 * (62* 62*62) * (62*62*62) * (62*62*62)
- */
-#define RPS_SERIAL63_MAX ((uint64_t) 8392993658683402240)
-
-
-
-
-/*
- *      RPS_SERIAL63_DELTA - delta of object ID serial maxima and minima
- *
- *      The RPS_SERIAL63_DELTA symbolic constant defines the difference between
- *      the the maxiumum and minimum values of an object ID serial.
- *
- *      TODO: explain why it is RPS_SERIAL63_MAX - RPS_SERIAL63_MIN
- */
-#define RPS_SERIAL63_DELTA (RPS_SERIAL63_MAX - RPS_SERIAL63_MIN)
-
-
-
-
-/*
- *      rps_serial63_new() - generates a new random object ID serial
+ *      rps_serial63_make() - generates a new random object ID serial
  *
  *      TODO: elaborate detailed description
  *
@@ -107,9 +64,7 @@ typedef uint64_t rps_serial63;
  *      See:
  *        - randomserial63_BM() in Bismon's id_BM.h
  */
-extern rps_serial63 rps_serial63_new(void);
-
-
+extern rps_serial63 rps_serial63_make(void);
 
 
 /*
@@ -133,29 +88,23 @@ static inline bool rps_serial63_valid(rps_serial63 s63)
 }
 
 
-
-
-        /* rps_serial63_bucketfit() is analogous to bucknumserial63_BM(); I'm
+        /* rps_serial63_bucket_fit() is analogous to bucknumserial63_BM(); I'm
          * guessing that this function returns the number of object buckets that
          * can fit within @s63; TODO: confirm from Dr. Basile */
-static inline size_t rps_serial63_bucketfit(rps_serial63 s63)
+static inline size_t rps_serial63_bucket_fit(rps_serial63 s63)
 {
         return s63 / (RPS_SERIAL63_DELTA / RPS_BUCKET_MAX);
 }
 
 
-
-
-        /* rps_serial63_bucketnofit() is analogous to buckoffnumserial63_BM();
+        /* rps_serial63_bucket_no_fit() is analogous to buckoffnumserial63_BM();
          * again, I'm assuming that this function returns the number of object
          * buckets that **don't** fit within @s63, since the modulo operator
          * returns the remainder; TODO: confirm from Dr. Basile */
-static inline size_t rps_serial63_bucketnofit(rps_serial63 s63)
+static inline size_t rps_serial63_bucket_no_fit(rps_serial63 s63)
 {
         return s63 % (RPS_SERIAL63_DELTA / RPS_BUCKET_MAX);
 }
-
-
 
 
 /*
@@ -172,13 +121,7 @@ static inline size_t rps_serial63_bucketnofit(rps_serial63 s63)
  *      See:
  *        - serial63tocbuf16_BM() in Bismon's id_BM.h
  */
-#if (defined __cplusplus)
-        extern int rps_serial63_str(rps_serial63 s63, char str[]);
-#else
-        extern int rps_serial63_str(rps_serial63 s63, char str[static 16]);
-#endif
-
-
+extern int rps_serial63_str(rps_serial63 s63, char str[]);
 
 
 /*
@@ -197,15 +140,11 @@ static inline size_t rps_serial63_bucketnofit(rps_serial63 s63)
 extern rps_serial63 rps_serial63_parse(const char *bfr, const char **pend);
 
 
-
-
         /* close support for C++ */
 #if (defined __cplusplus)
         }
 #endif
 
 
-
-
-#endif /* (!defined __REFPERSYS_OBJECT_DEFINED) */
+#endif /* (!defined __REFPERSYS_IFACE_DEFINED) */
 

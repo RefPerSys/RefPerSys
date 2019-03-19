@@ -1,9 +1,9 @@
 /*
- * File: refpersys/src/serial63.c
+ * File: refpersys/src/iface.cc
  *
  * Description:
  *      This file is part of the Reflective Persistent System. It implements the
- *      object ID serial type interface.
+ *      refpersys interface.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -15,36 +15,37 @@
  *      <https://refpersys.gitlab.io>
  *
  * License:
- *      Released under the GNU General Public License version 3 (GPLv3)
- *      <http://opensource.org/licenses/GPL-3.0>. See the accompanying LICENSE
- *      file for complete licensing details.
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
  *
- *      BY CONTINUING TO USE AND/OR DISTRIBUTE THIS FILE, YOU ACKNOWLEDGE THAT
- *      YOU HAVE UNDERSTOOD THESE LICENSE TERMS AND ACCEPT THEM.
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 
 
         /* include required header files */
-#include "../inc/serial63.h"
+#include "../inc/util.h"
+#include "../inc/iface.h"
 
 
-
-
-        /* this extern will be removed once the rps_random_uint64() function is
-         * ready; as of now, it's needed for rps_stream_new()  */
-extern uint64_t rps_random_uint64(void);
-
-
+/******************************************************************************
+ * Section: Object ID Serial (rps_serial63)
+ ******************************************************************************/
 
 
 /*
- *      rps_serial63_new() - declared in refpersys/src/serial63.h
+ *      rps_serial63_make() - declared in refpersys/inc/iface.h
  */
-extern rps_serial63 rps_serial63_new(void)
+extern rps_serial63 rps_serial63_make(void)
 {
-        register rps_serial63 s63 = (rps_serial63) 0;
+        rps_serial63 s63 = (rps_serial63) 0;
 
                 /* keep polling rps_random_uint64() until a valid random object
                  * ID serial is found; the original implementation used GNOME
