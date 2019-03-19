@@ -24,6 +24,11 @@ To debug the build machinery, consider using
 [remake](http://bashdb.sourceforge.net/remake/), probably as `remake
 -x`
 
+Later, we might change the build automation, perhaps to
+[omake](http://projects.camlcity.org/projects/omake.html), since
+`omake` uses file contents, not file modification times, for build
+decision.
+
 ## Contributing
 
 Please refer to the `CONTRIBUTING.md` file for coding conventions.
