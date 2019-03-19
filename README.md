@@ -38,9 +38,13 @@ Please refer to the `CONTRIBUTING.md` file for coding conventions.
 The Refpersys runtime is implemented in C++, with hand-written C++
 code in `src/*.cc`, hand-written C++ headers in `inc/*.h`
 
-It may later also use generated C++ code in some `_*.cc` file and generated
-C++ headers in some `_*.h` files.
+It may later also use generated C++ code in some `_*.cc` file, some
+generated C code in some `_*.c` and generated C or C++ headers in some
+`_*.h` files.
 
 The Refpersys runtime is using [Ravenbrook
 MPS](https://www.ravenbrook.com/project/mps) (a sophisticated garbage
 collection framework). MPS related files are under `mps/`.
+
+The subdirectory `mps/` is obtained from MPS 1.117.0; That `mps/`
+contains all the files from `mps-kit-1.117.0/code/`
