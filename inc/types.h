@@ -55,6 +55,15 @@
 typedef uint64_t rps_serial63;
 
 
+        /* number of digits in an object ID serial when represented the form of
+         * base 62 digits */
+#define RPS_SERIAL63_DIGITS 11
+
+
+        /* object ID serials are represented compactly in base 62 */
+#define RPS_SERIAL63_BASE 62
+
+
 /*
  *      RPS_SERIAL63_MIN - minimum object ID serial value
  *

@@ -116,7 +116,7 @@ static inline size_t rps_serial63_bucket_no_fit(rps_serial63 s63)
  *      feature of C99
  *
  *      Return:
- *        - TODO
+ *        - Number of bytes written to @str
  *
  *      See:
  *        - serial63tocbuf16_BM() in Bismon's id_BM.h
