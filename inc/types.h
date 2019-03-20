@@ -140,6 +140,23 @@ typedef struct rps_object_st {
 } rps_object;
 
 
+/******************************************************************************
+ * Section: Object Value
+ ******************************************************************************/
+
+
+        /* TODO: define it based on typedforward_tyBM */
+typedef struct rps_forward_st { } rps_forward;
+
+
+        /* corresponds to Bismon's seqobval_stBM */
+typedef struct rps_value_st
+{
+        rps_forward fwd;
+        const rps_object *objs[];
+} rps_value;
+
+
         /* close support for C++ */
 #if (defined __cplusplus)
         }
