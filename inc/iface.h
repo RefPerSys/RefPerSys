@@ -146,18 +146,12 @@ extern rps_serial63 rps_serial63_parse(const char *bfr, const char **pend);
 
 
 /*
- *      rps_object_make() - make a fresh new object
- *        - obj: contextual object
+ * The `rps_object_make` function is making a fresh empty object with
+ * a unique and random oid.
  *
- *      The rps_object_make() interface function creates a new object instance
- *      @obj through the factory pattern.
- *
- *       rps_object_make_with_objid is creating an object with a given
- *       oid and check that the given oid is valid and was not already
- *       used.
- *
- *    On out-of-memory condition (a very rare event) these functions panic and abort.
- *    But both functions are using MPS allocation.
+ * The `rps_object_make_with_objid` is making an object of a given
+ * valid oid. If trhe oid is not valid, it returns null; if the oid is
+ * the objid of some existing object, it returns that existing object.
  */
 extern rps_object* rps_object_make(void);
 extern rps_object* rps_object_make_with_objid(rps_objid oid);
