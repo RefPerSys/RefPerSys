@@ -157,6 +157,24 @@ typedef struct rps_value_st
 } rps_value;
 
 
+/******************************************************************************
+ * Section: Object Value Tuple
+ ******************************************************************************/
+
+
+        /* corresponds to tupleval_tyBM */
+typedef rps_value rps_valuetuple;
+
+
+/******************************************************************************
+ * Section: Object Value Set
+ ******************************************************************************/
+
+
+        /* corresponds to setval_tyBM */
+typedef rps_value rps_valueset;
+
+
         /* close support for C++ */
 #if (defined __cplusplus)
         }
