@@ -125,6 +125,19 @@ typedef struct rps_objid_st {
 } rps_objid;
 
 
+/******************************************************************************
+ * Section: Object
+ ******************************************************************************/
+
+
+        /* TODO: the object type is still incomplete, and its member fields are
+         * not fully defined yet */
+typedef struct rps_object_st {
+        #warning "TODO: rps_object_st is still incomplete"
+        /* some fields are needed before objid */
+        const rps_objid objid;
+        /* many fields are needed after objid */
+} rps_object;
 
 
         /* close support for C++ */
