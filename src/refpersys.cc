@@ -139,7 +139,10 @@ int main(int argc, char **argv)
                 .options = argopt_vec,
                 .parser = argopt_parse,
                 .args_doc = NULL,
-                .doc = NULL
+                .doc = NULL,
+                .children = NULL,
+                .help_filter = NULL,
+                .argp_domain = NULL
         };
 
                 /* parse refpersys version metadata generated at compile time */
