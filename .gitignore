@@ -9,8 +9,11 @@ refpersys
 # Backup
 *~
 
-# Prerequisites
-*.d
+# Backup after indentation with astyle --style=gnu -s2
+*.orig
+
+# Prerequisites (for make)
+*.mkd
 
 # Object files
 *.o
