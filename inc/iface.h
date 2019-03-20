@@ -152,6 +152,8 @@ extern rps_serial63 rps_serial63_parse(const char *bfr, const char **pend);
  * The `rps_object_make_with_objid` is making an object of a given
  * valid oid. If trhe oid is not valid, it returns null; if the oid is
  * the objid of some existing object, it returns that existing object.
+ *
+ * Both functions are doing some MPS allocation, in an AMS pool.
  ***/
 extern rps_object* rps_object_make(void);
 extern rps_object* rps_object_make_with_objid(rps_objid oid);
