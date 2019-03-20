@@ -4,6 +4,14 @@ The Reflective Persistent System language
 
 For Linux/x86-64 only.
 
+We have multi-threading in mind, but in some limited way. We think of
+a pool of a few dozen Pthreads at most (but not of a thousand
+Pthreads).
+
+We absolutely want to avoid any
+[GIL](https://en.wikipedia.org/wiki/Global_interpreter_lock)
+
+
 ## License
 
 This project is GPLv3+ licensed, but contain some code from
