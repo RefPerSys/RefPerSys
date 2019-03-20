@@ -111,6 +111,22 @@ typedef uint64_t rps_serial63;
 #define RPS_BUCKET_MAX ((size_t) 620)
 
 
+/******************************************************************************
+ * Section: Object ID
+ ******************************************************************************/
+
+
+        /* TODO: object IDs are currently 128 bits, but may be reduced down to
+         * 96 bits; accordingly, the rps_serial63 type will also need to be
+         * redefined */
+typedef struct rps_objid_st {
+        rps_serial63 hi;
+        rps_serial63 lo;
+} rps_objid;
+
+
+
+
         /* close support for C++ */
 #if (defined __cplusplus)
         }
