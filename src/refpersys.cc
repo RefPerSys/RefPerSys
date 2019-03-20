@@ -107,6 +107,11 @@ static inline void version_parse(void)
         /* define the argument option parsing callback */
 static error_t argopt_parse(int key, char *arg, struct argp_state *state)
 {
+                /* we're not using @arg and @state for the time-being, so cast
+                 * them to (void) to prevent -Wunused-parameter warning */
+        (void) arg;
+        (void) state;
+
                 /* switch through argument option keys, handling each case in
                  * turn as required */
         switch (key) {
