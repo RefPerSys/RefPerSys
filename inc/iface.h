@@ -140,6 +140,29 @@ extern int rps_serial63_str(rps_serial63 s63, char str[]);
 extern rps_serial63 rps_serial63_parse(const char *bfr, const char **pend);
 
 
+/******************************************************************************
+ * Section: Object
+ ******************************************************************************/
+
+
+/*
+ *      rps_object_make() - make a fresh new object
+ *        - obj: contextual object
+ *
+ *      The rps_object_make() interface function creates a new object instance
+ *      @obj through the factory pattern.
+ *
+ *       rps_object_make_with_objid is creating an object with a given
+ *       oid and check that the given oid is valid and was not already
+ *       used.
+ *
+ *    On out-of-memory condition (a very rare event) these functions panic and abort.
+ *    But both functions are using MPS allocation.
+ */
+extern rps_object* rps_object_make(void);
+extern rps_object* rps_object_make_with_objid(rps_objid oid);
+
+
         /* close support for C++ */
 #if (defined __cplusplus)
         }
