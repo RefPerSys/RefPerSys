@@ -95,11 +95,12 @@ static struct argp_option argopt_vec[] = {
 /* some metadata from generated _timestamp.c */
 static inline void version_parse(void)
 {
-  snprintf(version_bfr, VERSION_BFRLEN,
-	   "refpersys: version information\n"
-	   "\t last git commit: %s\n"
-	   "build time: %s\n", rps_git_commit,
-	   rps_build_timestamp);
+        snprintf(version_bfr, VERSION_BFRLEN,
+	         "refpersys: version information\n"
+	         "\tlast git commit: %s\n"
+	         "\tbuild time: %s\n",
+                 rps_git_commit,
+	         rps_build_timestamp);
 }
 
 
