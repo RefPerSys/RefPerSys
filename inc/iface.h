@@ -145,19 +145,25 @@ extern rps_serial63 rps_serial63_parse(const char *bfr, const char **pend);
  ******************************************************************************/
 
 
-/*
+/***
  * The `rps_object_make` function is making a fresh empty object with
  * a unique and random oid.
  *
  * The `rps_object_make_with_objid` is making an object of a given
  * valid oid. If trhe oid is not valid, it returns null; if the oid is
  * the objid of some existing object, it returns that existing object.
- */
+ ***/
 extern rps_object* rps_object_make(void);
 extern rps_object* rps_object_make_with_objid(rps_objid oid);
 
 
-        /* close support for C++ */
+/***
+ * The ̀rps_object_find_by_objid` function is finding an existing object of
+ * given oid. When the oid is invalid, or when no such object exists,
+ * null is returned. That function does not allocate anything.
+ ***/
+extern rps_object* rps_object_find_by_objid(rps_objid oid);
+
 #if (defined __cplusplus)
         }
 #endif
