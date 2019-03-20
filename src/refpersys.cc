@@ -89,7 +89,7 @@ static struct argp_option argopt_vec[] = {
                 .doc = DOC_PRAND,
                 .group = 0
         },
-        { NULL }
+        {  }
 };
 
 
