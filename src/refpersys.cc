@@ -86,7 +86,8 @@ static struct argp_option argopt_vec[] = {
                 .key = KEY_PRAND,
                 .arg = NULL,
                 .flags = 0,
-                .doc = DOC_PRAND
+                .doc = DOC_PRAND,
+                .group = 0
         },
         { NULL }
 };
