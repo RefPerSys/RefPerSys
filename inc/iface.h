@@ -88,22 +88,15 @@ extern "C" {
   }
 
 
-  /* rps_serial63_bucket_fit() is analogous to bucknumserial63_BM(); I'm
-   * guessing that this function returns the number of object buckets that
-   * can fit within @s63; TODO: confirm from Dr. Basile */
-  static inline size_t rps_serial63_bucket_fit(rps_serial63 s63)
+  /***
+   * rps_serial63_bucket() gets the bucket in which an object ID serial is
+   * grouped. Buckets are groupings of object ID serials starting with the same
+   * sequence of base 62 digits, and are used for tracing objects with a given
+   * object ID.
+   ***/
+  static inline uint64_t rps_serial63_bucket(rps_serial63 s63)
   {
     return s63 / (RPS_SERIAL63_DELTA / RPS_BUCKET_MAX);
-  }
-
-
-  /* rps_serial63_bucket_no_fit() is analogous to buckoffnumserial63_BM();
-   * again, I'm assuming that this function returns the number of object
-   * buckets that **don't** fit within @s63, since the modulo operator
-   * returns the remainder; TODO: confirm from Dr. Basile */
-  static inline size_t rps_serial63_bucket_no_fit(rps_serial63 s63)
-  {
-    return s63 % (RPS_SERIAL63_DELTA / RPS_BUCKET_MAX);
   }
 
 
