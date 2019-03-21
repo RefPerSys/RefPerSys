@@ -146,6 +146,15 @@ extern "C" {
    * Section: Typed Types (WIP)
    ****************************************************************************/
 
+  /* corresponds to gctyenum_BM; enumerates garbage collected types of
+   * refpersys */
+  typedef enum RPS_GCTYPE_ENUM {
+#warning TODO: RPS_GCTYPE_ENUM is still incomplete
+        RPS_GCTYPE_INT = -1,
+        RPS_GCTYPE_NONE = 0
+        /* many more enumerators after this */
+  } RPS_GCTYPE;
+
 
 /* corresponds to typedhead_tyBM */
 typedef struct rps_typedhead_st {
