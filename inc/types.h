@@ -155,9 +155,17 @@ extern "C" {
   typedef enum RPS_GCTYPE_ENUM
   {
 #warning TODO: RPS_GCTYPE_ENUM is still incomplete
-    RPS_GCTYPE_INT = -1,
-    RPS_GCTYPE_NONE = 0
-                      /* many more enumerators after this */
+    RPS_GCTYPE_INT = -1,   /* tagged integer */
+    RPS_GCTYPE_NONE = 0,   /* nil */
+    RPS_GCTYPE_STRING,     /* boxed string */
+    RPS_GCTYPE_DOUBLE,     /* boxed double */
+    RPS_GCTYPE_SET,        /* boxed set */
+    RPS_GCTYPE_TUPLE,      /* boxed tuple */
+    RPS_GCTYPE_NODE,       /* boxed node */
+    RPS_GCTYPE_CLOSURE,    /* boxed closure */
+    RPS_GCTYPE_OBJECT,     /* boxed object */
+    RPS_GCTYPE_UNSPECIFIED /* unspecified value */
+
   } RPS_GCTYPE;
 
 
