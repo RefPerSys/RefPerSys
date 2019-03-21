@@ -43,6 +43,7 @@ REFPERSYS_OBJECTS := $(patsubst src/%.cc, src/%.o, $(REFPERSYS_SOURCES))
 CXX  = g++
 RM = rm -vf
 MV = mv -vf
+AS = astyle
 CMD_LASTCOMMIT = git log --format=oneline --abbrev=12 \
 	         --abbrev-commit -q | head -1
 
@@ -57,7 +58,8 @@ INCFLAGS= -I. -Iinc/ -Imps/
 CXXFLAGS:= $(OPTIMFLAGS) $(WARNFLAGS) $(INCFLAGS)
 CFLAGS:=  $(OPTIMFLAGS) $(WARNFLAGS) $(INCFLAGS)
 LDFLAGS:= -pthread
-LIBES:=  -lpthread -ldl -lm 
+LIBES:=  -lpthread -ldl -lm
+ASFLAGS:= --style=gnu -s2
 .PHONY: all clean
 
 ## the default target
@@ -85,12 +87,14 @@ src/%.o: src/%.cc
 
 mps/%.o: mps/%.c
 	$(COMPILE.c)  -o $@ $< -MMD -MT $@ -MF $(patsubst src/%.o, src/%.mkd, $@)
+
 # rule to clean build artefacts
 clean:
 	$(RM) refpersys *.o */*.o *~ */*~ _*.h _*.c _*.cc
 	$(RM) */*.mkd *-tmp
+	$(RM) */*.orig
 
-
-
-
+# rule to beautify files to GNU styling standards
+indent:
+	$(AS) $(ASFLAGS) inc/*.h src/*.cc
 
