@@ -32,7 +32,7 @@
 #ifndef REFPERSYS_UTIL_INCLUDED
 #define REFPERSYS_UTIL_INCLUDED
 
-        /* include required header files */
+/* include required header files */
 #include <stdint.h>
 
 /* in generated _timestamp.c */
@@ -42,4 +42,5 @@ extern "C" const char rps_build_timestamp[];
 /* Mersenne twister */
 extern "C" uint64_t rps_random_uint64(void);
 
-#endif /*REFPERSYS_UTIL_INCLUDED*/
+#endif /* REFPERSYS_UTIL_INCLUDED */
+

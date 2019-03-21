@@ -30,7 +30,7 @@
  */
 
 
-        /* include required header files */
+/* include required header files */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -42,15 +42,15 @@
 /** COMMAND LINE ARGUMENT PARSING *********************************************/
 
 
-        /* define long names for argument options */
+/* define long names for argument options */
 #define NAME_PRAND "print-random-uint64"
 
 
-        /* define keys for argument options */
+/* define keys for argument options */
 #define KEY_PRAND 'r'
 
 
-        /* define documentation strings for arguments options */
+/* define documentation strings for arguments options */
 #define DOC_PRAND "Print random 64-bit unsigned integer"
 
 
@@ -58,105 +58,109 @@
 #define VERSION_BFRLEN 1024
 
 
-        /* define error message to display if no argument is provided */
+/* define error message to display if no argument is provided */
 #define MSG_NOARGS "refpersys: no options specified\n" \
                    "\trun refpersys --help to display options\n"
 
 
-        /* define buffer to hold version metadata generated at compile time;
-         * TODO: confirm from Dr. Basile if this needs to be thread_local */
+/* define buffer to hold version metadata generated at compile time;
+ * TODO: confirm from Dr. Basile if this needs to be thread_local */
 static char version_bfr[VERSION_BFRLEN];
 
 
-        /* set the address to e-mail bug reports; this global is provided by the
-         * ARGP library */
+/* set the address to e-mail bug reports; this global is provided by the
+ * ARGP library */
 const char *argp_program_bug_address = "basile@starynkevitch.net";
 
 
-        /* set the version information; this global is provided by the ARGP
-         * library */
+/* set the version information; this global is provided by the ARGP
+ * library */
 const char *argp_program_version = version_bfr;
 
 
-        /* define ARGP-specific vector to hold argument options;
-         * TODO: confirm from Dr. Basile if this needs to be thread_local */
-static struct argp_option argopt_vec[] = {
-        {
-                .name = NAME_PRAND,
-                .key = KEY_PRAND,
-                .arg = NULL,
-                .flags = 0,
-                .doc = DOC_PRAND,
-                .group = 0
-        },
-        {  }
+/* define ARGP-specific vector to hold argument options;
+ * TODO: confirm from Dr. Basile if this needs to be thread_local */
+static struct argp_option argopt_vec[] =
+{
+  {
+    .name = NAME_PRAND,
+    .key = KEY_PRAND,
+    .arg = NULL,
+    .flags = 0,
+    .doc = DOC_PRAND,
+    .group = 0
+  },
+  {  }
 };
 
 
 /* some metadata from generated _timestamp.c */
 static inline void version_parse(void)
 {
-        snprintf(version_bfr, VERSION_BFRLEN,
-	         "refpersys: version information\n"
-	         "\tlast git commit: %s\n"
-	         "\tbuild time: %s\n",
-                 rps_git_commit,
-	         rps_build_timestamp);
+  snprintf(version_bfr, VERSION_BFRLEN,
+           "refpersys: version information\n"
+           "\tlast git commit: %s\n"
+           "\tbuild time: %s\n",
+           rps_git_commit,
+           rps_build_timestamp);
 }
 
 
-        /* define the argument option parsing callback */
+/* define the argument option parsing callback */
 static error_t argopt_parse(int key, char *arg, struct argp_state *state)
 {
-                /* we're not using @arg and @state for the time-being, so cast
-                 * them to (void) to prevent -Wunused-parameter warning */
-        (void) arg;
-        (void) state;
+  /* we're not using @arg and @state for the time-being, so cast
+   * them to (void) to prevent -Wunused-parameter warning */
+  (void) arg;
+  (void) state;
 
-                /* switch through argument option keys, handling each case in
-                 * turn as required */
-        switch (key) {
-        case KEY_PRAND:
-                printf("rps_random_uint64(): %" PRIu64 "\n",
-                       rps_random_uint64());
-                break;
+  /* switch through argument option keys, handling each case in
+   * turn as required */
+  switch (key)
+    {
+    case KEY_PRAND:
+      printf("rps_random_uint64(): %" PRIu64 "\n",
+             rps_random_uint64());
+      break;
 
-        default:
-                return ARGP_ERR_UNKNOWN;
-        }
+    default:
+      return ARGP_ERR_UNKNOWN;
+    }
 
-                /* signal that no error has occurred */
-        return 0;
+  /* signal that no error has occurred */
+  return 0;
 }
 
 
 /** MAIN ENTRY POINT **********************************************************/
 
 
-        /* process refpersys command invoked with with arguments */
+/* process refpersys command invoked with with arguments */
 int main(int argc, char **argv)
 {
-        struct argp argopt = {
-                .options = argopt_vec,
-                .parser = argopt_parse,
-                .args_doc = NULL,
-                .doc = NULL,
-                .children = NULL,
-                .help_filter = NULL,
-                .argp_domain = NULL
-        };
+  struct argp argopt =
+  {
+    .options = argopt_vec,
+    .parser = argopt_parse,
+    .args_doc = NULL,
+    .doc = NULL,
+    .children = NULL,
+    .help_filter = NULL,
+    .argp_domain = NULL
+  };
 
-                /* parse refpersys version metadata generated at compile time */
-        version_parse();
+  /* parse refpersys version metadata generated at compile time */
+  version_parse();
 
-                /* ensure we have at least one command line argument in addition
-                 * to the refpersys command */
-        if (argc < 2) {
-                printf(MSG_NOARGS);
-                exit(EXIT_SUCCESS);
-        }
+  /* ensure we have at least one command line argument in addition
+   * to the refpersys command */
+  if (argc < 2)
+    {
+      printf(MSG_NOARGS);
+      exit(EXIT_SUCCESS);
+    }
 
-                /* parse argument options */
-        return argp_parse(&argopt, argc, argv, 0, NULL, NULL);
+  /* parse argument options */
+  return argp_parse(&argopt, argc, argv, 0, NULL, NULL);
 }
 
