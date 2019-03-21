@@ -146,6 +146,17 @@ extern "C" {
    * Section: Typed Types (WIP)
    ****************************************************************************/
 
+
+/* corresponds to typedhead_tyBM */
+typedef struct rps_typedhead_st {
+        RPS_GCTYPE gctype:24;
+        uint32_t gchead:8;
+        union {
+                rps_hash hash;
+                uint32_t rlen;
+        };
+} rps_typedhead;
+
   /* corresponds to typedsize_tyBM */
   typedef struct rps_typedsz_st {
           rps_typedhead head;
