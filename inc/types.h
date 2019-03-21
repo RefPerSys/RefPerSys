@@ -148,14 +148,17 @@ extern "C" {
 
 
   /* TODO: define it based on typedforward_tyBM */
-  typedef struct rps_forward_st { } rps_forward;
+  typedef struct rps_typedfwd_st {
+          rps_typedsz size;
+          void *forward;
+  } rps_typedfwd;
 
 
   /* corresponds to Bismon's seqobval_stBM */
   typedef struct rps_value_st
   {
-    rps_forward fwd;
-    const rps_object *objs[];
+    rps_typedfwd forward;
+    const rps_object *objects[];
   } rps_value;
 
 
