@@ -152,35 +152,40 @@ extern "C" {
 
   /* corresponds to gctyenum_BM; enumerates garbage collected types of
    * refpersys */
-  typedef enum RPS_GCTYPE_ENUM {
+  typedef enum RPS_GCTYPE_ENUM
+  {
 #warning TODO: RPS_GCTYPE_ENUM is still incomplete
-        RPS_GCTYPE_INT = -1,
-        RPS_GCTYPE_NONE = 0
-        /* many more enumerators after this */
+    RPS_GCTYPE_INT = -1,
+    RPS_GCTYPE_NONE = 0
+                      /* many more enumerators after this */
   } RPS_GCTYPE;
 
 
-/* corresponds to typedhead_tyBM */
-typedef struct rps_typedhead_st {
-        RPS_GCTYPE gctype:24;
-        uint32_t gchead:8;
-        union {
-                rps_hash hash;
-                uint32_t rlen;
-        };
-} rps_typedhead;
+  /* corresponds to typedhead_tyBM */
+  typedef struct rps_typedhead_st
+  {
+    RPS_GCTYPE gctype:24;
+    uint32_t gchead:8;
+    union
+    {
+      rps_hash hash;
+      uint32_t rlen;
+    };
+  } rps_typedhead;
 
   /* corresponds to typedsize_tyBM */
-  typedef struct rps_typedsz_st {
-          rps_typedhead head;
-          uint32_t size;
+  typedef struct rps_typedsz_st
+  {
+    rps_typedhead head;
+    uint32_t size;
   } rps_typedsz;
 
 
   /* corresponds to typedforward_tyBM */
-  typedef struct rps_typedfwd_st {
-          rps_typedsz size;
-          void *forward;
+  typedef struct rps_typedfwd_st
+  {
+    rps_typedsz size;
+    void *forward;
   } rps_typedfwd;
 
 
