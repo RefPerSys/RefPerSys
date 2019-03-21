@@ -143,15 +143,26 @@ extern "C" {
 
 
   /****************************************************************************
-   * Section: Object Value
+   * Section: Typed Types (WIP)
    ****************************************************************************/
 
+  /* corresponds to typedsize_tyBM */
+  typedef struct rps_typedsz_st {
+          rps_typedhead head;
+          uint32_t size;
+  } rps_typedsz;
 
-  /* TODO: define it based on typedforward_tyBM */
+
+  /* corresponds to typedforward_tyBM */
   typedef struct rps_typedfwd_st {
           rps_typedsz size;
           void *forward;
   } rps_typedfwd;
+
+
+  /****************************************************************************
+   * Section: Object Value
+   ****************************************************************************/
 
 
   /* corresponds to Bismon's seqobval_stBM */
