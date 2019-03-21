@@ -146,6 +146,10 @@ extern "C" {
    * Section: Typed Types (WIP)
    ****************************************************************************/
 
+  /* corresponds to hash_tyBM;
+   * TODO: need to define */
+  typedef struct rps_hash_st { } rps_hash;
+
   /* corresponds to gctyenum_BM; enumerates garbage collected types of
    * refpersys */
   typedef enum RPS_GCTYPE_ENUM {
