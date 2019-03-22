@@ -38,6 +38,7 @@
 /* include required header files */
 #include <stdint.h>
 #include <vector>
+#include "util.h"
 
 
 /* open support for C++ */
@@ -239,26 +240,37 @@ extern "C" {
 }
 #endif
 
-// temporarily imported from inc/iface.h
-extern rps_serial63 rps_serial63_make(void);
 
 namespace rps
 {
+
+// represents a 63-bit serial code
+class Serial63
+{
+public:
+  inline Serial63()
+    : m_word(rps_random_uint64())
+  { }
+
+private:
+  uint64_t m_word;
+};
+
+
 // represents an object ID
 class ObjectId
 {
 public:
   inline ObjectId()
-  {
-    this->m_hi = rps_serial63_make();
-    this->m_lo = rps_serial63_make();
-  }
+    : m_hi()
+    , m_lo()
+  { }
 
   ~ObjectId();
 
 private:
-  rps_serial63 m_hi;
-  rps_serial63 m_lo;
+  Serial63 m_hi;
+  Serial63 m_lo;
 };
 
 // enumerates the refpersys value types
