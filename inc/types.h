@@ -37,6 +37,7 @@
 
 /* include required header files */
 #include <stdint.h>
+#include <vector>
 
 
 /* open support for C++ */
@@ -291,7 +292,7 @@ class SequenceValue : public ImmutableValue
                 ~SequenceValue();
 
         private:
-                rps_object *objects[];
+                std::vector<rps_object*> objects;
 };
 
 
@@ -310,6 +311,15 @@ class DoubleValue : public ScalarValue
         public:
                 DoubleValue();
                 ~DoubleValue();
+};
+
+
+// represents a set, which is an immutable sequence value
+class SetValue : public SequenceValue
+{
+        public:
+                SetValue();
+                ~SetValue();
 };
 
 
