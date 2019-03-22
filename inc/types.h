@@ -200,6 +200,19 @@ extern "C" {
 
   namespace rps
   {
+          enum ValType {
+#warning TODO: rps::ValType is still incomplete
+    INT = -1,   /* tagged integer */
+    NONE = 0,   /* nil */
+    STRING,     /* boxed string */
+    DOUBLE,     /* boxed double */
+    SET,        /* boxed set */
+    TUPLE,      /* boxed tuple */
+    NODE,       /* boxed node */
+    CLOSURE,    /* boxed closure */
+    OBJECT,     /* boxed object */
+    UNSPECIFIED /* unspecified value */
+          };
 
           class TypedHead {
                   public:
@@ -207,7 +220,7 @@ extern "C" {
                           ~TypedHead();
 
                   private:
-                          RPS_GCTYPE m_type:24;
+                          ValType m_type:24;
                           uint32_t m_head:8;
                           union {
                                   rps_hash m_hash;
