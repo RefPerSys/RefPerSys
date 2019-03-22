@@ -295,8 +295,13 @@ enum ValueType
 class Value
 {
 public:
-  inline Value();
-  inline ~Value();
+  inline Value(ValueType type, uintptr_t word)
+    : m_type(type)
+    , m_word(word)
+  { }
+
+  inline ~Value()
+  { }
 
 private:
   ValueType m_type;
