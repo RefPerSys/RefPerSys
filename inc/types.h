@@ -254,8 +254,13 @@ public:
   static const uint64_t MAXBUCKET = RPS_BUCKET_MAX;
 
   inline Serial63()
-    : m_word(rps_random_uint64())
-  { }
+  {
+    do
+      {
+        m_word = rps_random_uint64();
+      }
+    while (!this->valid());
+  }
 
   inline ~Serial63()
   { }
