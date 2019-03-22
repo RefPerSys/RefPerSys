@@ -201,13 +201,30 @@ extern "C" {
   namespace rps
   {
 
+          class TypedHead {
+                  public:
+                          TypedHead();
+                          ~TypedHead();
+
+                  private:
+                          RPS_GCTYPE m_type:24;
+                          uint32_t m_head:8;
+                          union {
+                                  rps_hash m_hash;
+                                  uint32_t m_rlen;
+                          };
+          };
+
   // corresponds to typedsize_tyBM
   // will replace rps_typedsize_st if approved by Dr. Basile
-  class TypedSize
+  class TypedSize : public TypedHead
   {
   public:
     TypedSize();
     ~TypedSize();
+
+  private:
+    uint32_t m_size;
   };
 
 
@@ -220,7 +237,7 @@ extern "C" {
     ~TypedForward();
 
   private:
-    void *forward;
+    void *m_forward;
   };
   }     // namespace rps
 
