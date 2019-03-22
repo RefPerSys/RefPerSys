@@ -283,6 +283,18 @@ class ImmutableValue : public Value
 };
 
 
+// represents a sequence value (or sequence of values)
+class SequenceValue : public ImmutableValue
+{
+        public:
+                SequenceValue();
+                ~SequenceValue();
+
+        private:
+                rps_object *objects[];
+};
+
+
 // represents a scalar string value
 class StringValue : public ScalarValue
 {
@@ -320,7 +332,7 @@ public:
   ~TypedHead();
 
 private:
-  ValType m_type:24;
+  ValueType m_type:24;
   uint32_t m_head:8;
   union
   {
