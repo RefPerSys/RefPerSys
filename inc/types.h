@@ -248,6 +248,9 @@ namespace rps
 class Serial63
 {
 public:
+  static const uint64_t MIN = RPS_SERIAL63_MIN;
+  static const uint64_t MAX = RPS_SERIAL63_MAX;
+
   inline Serial63()
     : m_word(rps_random_uint64())
   { }
@@ -255,7 +258,11 @@ public:
   inline ~Serial63()
   { }
 
-  bool valid();
+  inline bool valid()
+  {
+    return m_word > Serial63::MIN && m_word < Serial63::MAX;
+  }
+
   uint64_t buckect();
   int base62(char str);
   static Serial63 parse(const char *str);
