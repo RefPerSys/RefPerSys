@@ -246,7 +246,6 @@ namespace rps
 // enumerates the refpersys value types
 enum ValueType
 {
-#warning TODO: rps::ValType is still incomplete
   STRING, // scalar string
   DOUBLE, // scalar double
   SET,    // immutable set
@@ -272,6 +271,18 @@ class MarkSweepValue : public Value
         public:
                 MarkSweepValue();
                 ~MarkSweepValue();
+};
+
+
+// represents a value object
+class ValueObject : public MarkSweepValue
+{
+        public:
+                ValueObject();
+                ~ValueObject();
+
+        private:
+                rps_objid m_objid;
 };
 
 
@@ -301,7 +312,7 @@ class SequenceValue : public ImmutableValue
                 ~SequenceValue();
 
         private:
-                std::vector<rps_object*> objects;
+                std::vector<ValueObject*> m_objects;
 };
 
 
