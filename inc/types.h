@@ -244,19 +244,13 @@ namespace rps
 
 // corresponds to gctyenum_BM
 // will replace RPS_GCTYPE if approved by Dr. Basile
-enum ValType
+enum ValueType
 {
 #warning TODO: rps::ValType is still incomplete
-  INT = -1,   // tagged integer
-  NONE = 0,   // nil
-  STRING,     // boxed string
-  DOUBLE,     // boxed double
-  SET,        // boxed set
-  TUPLE,      // boxed tuple
-  NODE,       // boxed node
-  CLOSURE,    // boxed closure
-  OBJECT,     // boxed object
-  UNSPECIFIED // unspecified value
+  STRING, // scalar string
+  DOUBLE, // scalar double
+  SET,    // immutable set
+  TUPLE   // immuatable tuple
 };
 
 
