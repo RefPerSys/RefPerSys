@@ -182,6 +182,7 @@ extern "C" {
   } rps_typedhead;
 
   /* corresponds to typedsize_tyBM */
+  /* TODO: replace with class TypedSize? */
   typedef struct rps_typedsz_st
   {
     rps_typedhead head;
@@ -190,12 +191,38 @@ extern "C" {
 
 
   /* corresponds to typedforward_tyBM */
+  /* TODO: replace with class TypedForward? */
   typedef struct rps_typedfwd_st
   {
     rps_typedsz size;
     void *forward;
   } rps_typedfwd;
 
+  namespace rps
+  {
+
+  // corresponds to typedsize_tyBM
+  // will replace rps_typedsize_st if approved by Dr. Basile
+  class TypedSize
+  {
+  public:
+    TypedSize();
+    ~TypedSize();
+  };
+
+
+  // corresponds to typedforward_tyBM
+  // will replace rps_typedfwd_st if approved by Dr. Basile
+  class TypedForward : public TypedSize
+  {
+  public:
+    TypedForward();
+    ~TypedForward();
+
+  private:
+    void *forward;
+  };
+  }     // namespace rps
 
   /****************************************************************************
    * Section: Object Value
