@@ -242,8 +242,7 @@ extern "C" {
 namespace rps
 {
 
-// corresponds to gctyenum_BM
-// will replace RPS_GCTYPE if approved by Dr. Basile
+// enumerates the refpersys value types
 enum ValueType
 {
 #warning TODO: rps::ValType is still incomplete
@@ -251,6 +250,18 @@ enum ValueType
   DOUBLE, // scalar double
   SET,    // immutable set
   TUPLE   // immuatable tuple
+};
+
+
+// represents a refpersys value
+class Value
+{
+        public:
+                Value();
+                ~Value();
+
+        private:
+                ValueType m_type;
 };
 
 
