@@ -323,6 +323,15 @@ class SetValue : public SequenceValue
 };
 
 
+// represents a tuple, which is an immutable sequence value
+class TupleValue : public SequenceValue
+{
+        public:
+                TupleValue();
+                ~TupleValue();
+};
+
+
 // corresponds to hash_tyBM
 // will replace rps_hash if approved by Dr. Basile
 class Hash
