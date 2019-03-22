@@ -252,6 +252,14 @@ public:
     : m_word(rps_random_uint64())
   { }
 
+  inline ~Serial63()
+  { }
+
+  bool valid();
+  uint64_t buckect();
+  int base62(char str);
+  static Serial63 parse(const char *str);
+
 private:
   uint64_t m_word;
 };
