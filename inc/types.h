@@ -262,6 +262,7 @@ public:
 
 private:
   ValueType m_type;
+  uintptr_t m_word;
 };
 
 
