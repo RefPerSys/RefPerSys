@@ -322,8 +322,16 @@ public:
 class ValueObject : public MarkSweepValue
 {
 public:
-  inline ValueObject();
-  inline ~ValueObject();
+  inline ValueObject()
+    : m_objid()
+  { }
+
+  inline ValueObject(ObjectId id)
+    : m_objid(id)
+  { }
+
+  inline ~ValueObject()
+  { }
 
 private:
   ObjectId m_objid;
