@@ -280,7 +280,16 @@ class ImmutableValue : public Value
         public:
                 ImmutableValue();
                 ~ImmutableValue();
-}
+};
+
+
+// represents a scalar string value
+class StringValue : public ScalarValue
+{
+        public:
+                StringValue();
+                ~StringValue();
+};
 
 
 // corresponds to hash_tyBM
