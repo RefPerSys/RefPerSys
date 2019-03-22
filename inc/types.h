@@ -256,99 +256,99 @@ enum ValueType
 // represents a refpersys value
 class Value
 {
-        public:
-                Value();
-                ~Value();
+public:
+  Value();
+  ~Value();
 
-        private:
-                ValueType m_type;
+private:
+  ValueType m_type;
 };
 
 
 // represents a value that is mark-swept by MPS
 class MarkSweepValue : public Value
 {
-        public:
-                MarkSweepValue();
-                ~MarkSweepValue();
+public:
+  MarkSweepValue();
+  ~MarkSweepValue();
 };
 
 
 // represents a value object
 class ValueObject : public MarkSweepValue
 {
-        public:
-                ValueObject();
-                ~ValueObject();
+public:
+  ValueObject();
+  ~ValueObject();
 
-        private:
-                rps_objid m_objid;
+private:
+  rps_objid m_objid;
 };
 
 
 // represents a scalar value
 class ScalarValue : public Value
 {
-        public:
-                ScalarValue();
-                ~ScalarValue();
+public:
+  ScalarValue();
+  ~ScalarValue();
 };
 
 
 // represents an immutable value
 class ImmutableValue : public Value
 {
-        public:
-                ImmutableValue();
-                ~ImmutableValue();
+public:
+  ImmutableValue();
+  ~ImmutableValue();
 };
 
 
 // represents a sequence value (or sequence of values)
 class SequenceValue : public ImmutableValue
 {
-        public:
-                SequenceValue();
-                ~SequenceValue();
+public:
+  SequenceValue();
+  ~SequenceValue();
 
-        private:
-                std::vector<ValueObject*> m_objects;
+private:
+  std::vector<ValueObject*> m_objects;
 };
 
 
 // represents a scalar string value
 class StringValue : public ScalarValue
 {
-        public:
-                StringValue();
-                ~StringValue();
+public:
+  StringValue();
+  ~StringValue();
 };
 
 
 // represents a scalar double value
 class DoubleValue : public ScalarValue
 {
-        public:
-                DoubleValue();
-                ~DoubleValue();
+public:
+  DoubleValue();
+  ~DoubleValue();
 };
 
 
 // represents a set, which is an immutable sequence value
 class SetValue : public SequenceValue
 {
-        public:
-                SetValue();
-                ~SetValue();
+public:
+  SetValue();
+  ~SetValue();
 };
 
 
 // represents a tuple, which is an immutable sequence value
 class TupleValue : public SequenceValue
 {
-        public:
-                TupleValue();
-                ~TupleValue();
+public:
+  TupleValue();
+  ~TupleValue();
 };
 
 } // namespace rps
