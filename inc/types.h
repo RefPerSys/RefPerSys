@@ -265,6 +265,24 @@ class Value
 };
 
 
+// represents a scalar value
+class ScalarValue : public Value
+{
+        public:
+                ScalarValue();
+                ~ScalarValue();
+};
+
+
+// represents an immutable value
+class ImmutableValue : public Value
+{
+        public:
+                ImmutableValue();
+                ~ImmutableValue();
+}
+
+
 // corresponds to hash_tyBM
 // will replace rps_hash if approved by Dr. Basile
 class Hash
