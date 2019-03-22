@@ -146,12 +146,14 @@ extern "C" {
    * Section: Typed Types (WIP)
    ****************************************************************************/
 
-  /* corresponds to hash_tyBM;
-   * TODO: need to define */
+  /* corresponds to hash_tyBM */
+  /* TODO: need to define */
+  /* TODO: replace with class rps::Hash? */
   typedef struct rps_hash_st { } rps_hash;
 
   /* corresponds to gctyenum_BM; enumerates garbage collected types of
    * refpersys */
+  /* TODO: replace with enum rps::ValType? */
   typedef enum RPS_GCTYPE_ENUM
   {
 #warning TODO: RPS_GCTYPE_ENUM is still incomplete
@@ -170,6 +172,7 @@ extern "C" {
 
 
   /* corresponds to typedhead_tyBM */
+  /* TODO: replace with class rps::TypedHead? */
   typedef struct rps_typedhead_st
   {
     RPS_GCTYPE gctype:24;
@@ -182,7 +185,7 @@ extern "C" {
   } rps_typedhead;
 
   /* corresponds to typedsize_tyBM */
-  /* TODO: replace with class TypedSize? */
+  /* TODO: replace with class rps::TypedSize? */
   typedef struct rps_typedsz_st
   {
     rps_typedhead head;
@@ -191,68 +194,13 @@ extern "C" {
 
 
   /* corresponds to typedforward_tyBM */
-  /* TODO: replace with class TypedForward? */
+  /* TODO: replace with class rps::TypedForward? */
   typedef struct rps_typedfwd_st
   {
     rps_typedsz size;
     void *forward;
   } rps_typedfwd;
 
-  namespace rps
-  {
-          enum ValType {
-#warning TODO: rps::ValType is still incomplete
-    INT = -1,   /* tagged integer */
-    NONE = 0,   /* nil */
-    STRING,     /* boxed string */
-    DOUBLE,     /* boxed double */
-    SET,        /* boxed set */
-    TUPLE,      /* boxed tuple */
-    NODE,       /* boxed node */
-    CLOSURE,    /* boxed closure */
-    OBJECT,     /* boxed object */
-    UNSPECIFIED /* unspecified value */
-          };
-
-          class TypedHead {
-                  public:
-                          TypedHead();
-                          ~TypedHead();
-
-                  private:
-                          ValType m_type:24;
-                          uint32_t m_head:8;
-                          union {
-                                  rps_hash m_hash;
-                                  uint32_t m_rlen;
-                          };
-          };
-
-  // corresponds to typedsize_tyBM
-  // will replace rps_typedsize_st if approved by Dr. Basile
-  class TypedSize : public TypedHead
-  {
-  public:
-    TypedSize();
-    ~TypedSize();
-
-  private:
-    uint32_t m_size;
-  };
-
-
-  // corresponds to typedforward_tyBM
-  // will replace rps_typedfwd_st if approved by Dr. Basile
-  class TypedForward : public TypedSize
-  {
-  public:
-    TypedForward();
-    ~TypedForward();
-
-  private:
-    void *m_forward;
-  };
-  }     // namespace rps
 
   /****************************************************************************
    * Section: Object Value
@@ -289,6 +237,83 @@ extern "C" {
 #if (defined __cplusplus)
 }
 #endif
+
+
+namespace rps
+{
+
+// corresponds to gctyenum_BM
+// will replace RPS_GCTYPE if approved by Dr. Basile
+enum ValType
+{
+#warning TODO: rps::ValType is still incomplete
+  INT = -1,   // tagged integer
+  NONE = 0,   // nil
+  STRING,     // boxed string
+  DOUBLE,     // boxed double
+  SET,        // boxed set
+  TUPLE,      // boxed tuple
+  NODE,       // boxed node
+  CLOSURE,    // boxed closure
+  OBJECT,     // boxed object
+  UNSPECIFIED // unspecified value
+};
+
+
+// corresponds to hash_tyBM
+// will replace rps_hash if approved by Dr. Basile
+class Hash
+{
+public:
+  Hash();
+  ~Hash();
+};
+
+
+// corresponds to typedhead_tyBM
+// will replace rps_typedhead if approved by Dr. Basile
+class TypedHead
+{
+public:
+  TypedHead();
+  ~TypedHead();
+
+private:
+  ValType m_type:24;
+  uint32_t m_head:8;
+  union
+  {
+    Hash m_hash;
+    uint32_t m_rlen;
+  };
+};
+
+// corresponds to typedsize_tyBM
+// will replace rps_typedsize_st if approved by Dr. Basile
+class TypedSize : public TypedHead
+{
+public:
+  TypedSize();
+  ~TypedSize();
+
+private:
+  uint32_t m_size;
+};
+
+
+// corresponds to typedforward_tyBM
+// will replace rps_typedfwd_st if approved by Dr. Basile
+class TypedForward : public TypedSize
+{
+public:
+  TypedForward();
+  ~TypedForward();
+
+private:
+  void *m_forward;
+};
+
+} // namespace rps
 
 
 #endif /* (!defined __REFPERSYS_TYPES_DEFINED) */
