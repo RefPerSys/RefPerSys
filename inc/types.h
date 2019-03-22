@@ -266,6 +266,15 @@ class Value
 };
 
 
+// represents a value that is mark-swept by MPS
+class MarkSweepValue : public Value
+{
+        public:
+                MarkSweepValue();
+                ~MarkSweepValue();
+};
+
+
 // represents a scalar value
 class ScalarValue : public Value
 {
