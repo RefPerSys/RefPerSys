@@ -64,7 +64,7 @@ extern "C" {
    *      See:
    *        - randomserial63_BM() in Bismon's id_BM.h
    */
-  extern rps_serial63 rps_serial63_make(void);
+  //extern rps_serial63 rps_serial63_make(void);
 
 
   /*

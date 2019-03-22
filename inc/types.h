@@ -239,9 +239,27 @@ extern "C" {
 }
 #endif
 
+// temporarily imported from inc/iface.h
+extern rps_serial63 rps_serial63_make(void);
 
 namespace rps
 {
+// represents an object ID
+class ObjectId
+{
+public:
+  inline ObjectId()
+  {
+    this->m_hi = rps_serial63_make();
+    this->m_lo = rps_serial63_make();
+  }
+
+  ~ObjectId();
+
+private:
+  rps_serial63 m_hi;
+  rps_serial63 m_lo;
+};
 
 // enumerates the refpersys value types
 enum ValueType
@@ -283,7 +301,7 @@ public:
   inline ~ValueObject();
 
 private:
-  rps_objid m_objid;
+  ObjectId m_objid;
 };
 
 
