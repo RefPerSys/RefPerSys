@@ -257,8 +257,8 @@ enum ValueType
 class Value
 {
 public:
-  Value();
-  ~Value();
+  inline Value();
+  inline ~Value();
 
 private:
   ValueType m_type;
@@ -270,8 +270,8 @@ private:
 class MarkSweepValue : public Value
 {
 public:
-  MarkSweepValue();
-  ~MarkSweepValue();
+  inline MarkSweepValue();
+  inline ~MarkSweepValue();
 };
 
 
@@ -279,8 +279,8 @@ public:
 class ValueObject : public MarkSweepValue
 {
 public:
-  ValueObject();
-  ~ValueObject();
+  inline ValueObject();
+  inline ~ValueObject();
 
 private:
   rps_objid m_objid;
@@ -291,8 +291,8 @@ private:
 class ScalarValue : public Value
 {
 public:
-  ScalarValue();
-  ~ScalarValue();
+  inline ScalarValue();
+  inline ~ScalarValue();
 };
 
 
@@ -300,8 +300,8 @@ public:
 class ImmutableValue : public Value
 {
 public:
-  ImmutableValue();
-  ~ImmutableValue();
+  inline ImmutableValue();
+  inline ~ImmutableValue();
 };
 
 
@@ -309,8 +309,8 @@ public:
 class SequenceValue : public ImmutableValue
 {
 public:
-  SequenceValue();
-  ~SequenceValue();
+  inline SequenceValue();
+  inline ~SequenceValue();
 
 private:
   std::vector<ValueObject*> m_objects;
@@ -321,8 +321,8 @@ private:
 class StringValue : public ScalarValue
 {
 public:
-  StringValue();
-  ~StringValue();
+  inline StringValue();
+  inline ~StringValue();
 };
 
 
@@ -330,8 +330,8 @@ public:
 class DoubleValue : public ScalarValue
 {
 public:
-  DoubleValue();
-  ~DoubleValue();
+  inline DoubleValue();
+  inline ~DoubleValue();
 };
 
 
@@ -339,8 +339,8 @@ public:
 class SetValue : public SequenceValue
 {
 public:
-  SetValue();
-  ~SetValue();
+  inline SetValue();
+  inline ~SetValue();
 };
 
 
@@ -348,8 +348,8 @@ public:
 class TupleValue : public SequenceValue
 {
 public:
-  TupleValue();
-  ~TupleValue();
+  inline TupleValue();
+  inline ~TupleValue();
 };
 
 } // namespace rps
