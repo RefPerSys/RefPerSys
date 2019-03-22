@@ -331,60 +331,6 @@ class TupleValue : public SequenceValue
                 ~TupleValue();
 };
 
-
-// corresponds to hash_tyBM
-// will replace rps_hash if approved by Dr. Basile
-class Hash
-{
-public:
-  Hash();
-  ~Hash();
-};
-
-
-// corresponds to typedhead_tyBM
-// will replace rps_typedhead if approved by Dr. Basile
-class TypedHead
-{
-public:
-  TypedHead();
-  ~TypedHead();
-
-private:
-  ValueType m_type:24;
-  uint32_t m_head:8;
-  union
-  {
-    Hash m_hash;
-    uint32_t m_rlen;
-  };
-};
-
-// corresponds to typedsize_tyBM
-// will replace rps_typedsize_st if approved by Dr. Basile
-class TypedSize : public TypedHead
-{
-public:
-  TypedSize();
-  ~TypedSize();
-
-private:
-  uint32_t m_size;
-};
-
-
-// corresponds to typedforward_tyBM
-// will replace rps_typedfwd_st if approved by Dr. Basile
-class TypedForward : public TypedSize
-{
-public:
-  TypedForward();
-  ~TypedForward();
-
-private:
-  void *m_forward;
-};
-
 } // namespace rps
 
 
