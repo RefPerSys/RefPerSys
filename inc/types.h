@@ -292,6 +292,15 @@ class StringValue : public ScalarValue
 };
 
 
+// represents a scalar double value
+class DoubleValue : public ScalarValue
+{
+        public:
+                DoubleValue();
+                ~DoubleValue();
+};
+
+
 // corresponds to hash_tyBM
 // will replace rps_hash if approved by Dr. Basile
 class Hash
