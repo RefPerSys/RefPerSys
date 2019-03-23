@@ -361,11 +361,12 @@ private:
 };
 
 
-// represents a scalar value
+// represents a scalar value that is AMCZ allocated by MPS
 class ScalarValue : public Value
 {
-public:
+protected:
   inline ScalarValue();
+  void* operator new(size_t size);
 
 private:
   size_t m_size;                      // actual size of m_bfr
