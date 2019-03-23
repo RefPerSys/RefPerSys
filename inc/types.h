@@ -337,6 +337,7 @@ class MutableValue : public Value
 {
 protected:
   inline MutableValue();
+  inline ~MutableValue();
   void* operator new(size_t size);
 };
 
@@ -374,11 +375,12 @@ private:
 };
 
 
-// represents an immutable value
+// represents an immutable value that is AMC allocated by MPS
 class ImmutableValue : public Value
 {
-public:
+protected:
   inline ImmutableValue();
+  void* operator new(size_t size);
 };
 
 
