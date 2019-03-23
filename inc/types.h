@@ -433,7 +433,6 @@ class TupleValue : public SequenceValue
 {
 public:
   inline TupleValue();
-  inline ~TupleValue();
 };
 
 } // namespace rps
