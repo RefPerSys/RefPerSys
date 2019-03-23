@@ -335,9 +335,9 @@ private:
 // represents a mutable value that is AMS allocated by MPS
 class MutableValue : public Value
 {
-public:
+protected:
   inline MutableValue();
-  inline ~MutableValue();
+  void* operator new(size_t size);
 };
 
 
