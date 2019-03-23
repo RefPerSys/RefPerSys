@@ -228,7 +228,8 @@ extern "C" {
 
 
   /* corresponds to tupleval_tyBM */
-  class rps_valuetuple : rps_sequence_st {
+  class rps_valuetuple : rps_sequence_st
+  {
   };
 
 
@@ -238,7 +239,8 @@ extern "C" {
 
 
   /* corresponds to setval_tyBM */
-  class rps_valueset : rps_sequence_st {
+  class rps_valueset : rps_sequence_st
+  {
   };
 
 
@@ -331,15 +333,17 @@ public:
   // should follow the rule of five of C++11
 
 private:
-  union {
+  union
+  {
     void* m_ptr;
     intptr_t m_int;
   };
-}; // end of Rps_Value 
+}; // end of Rps_Value
 
 
-  class ValueData {
-  };
+class ValueData
+{
+};
 
 #warning wrong code below: see issue#11 and recent emails
 // represents a mutable value that is AMS allocated by MPS
