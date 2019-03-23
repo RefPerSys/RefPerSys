@@ -215,11 +215,11 @@ extern "C" {
 
 
   /* corresponds to Bismon's seqobval_stBM */
-  typedef struct rps_value_st
+  typedef struct rps_sequence_st
   {
     rps_typedfwd forward;
     const rps_object *objects[RPS_FLEXIBLE_DIM];
-  } rps_value;
+  } rps_sequence;
 
 
   /****************************************************************************
@@ -228,7 +228,8 @@ extern "C" {
 
 
   /* corresponds to tupleval_tyBM */
-  typedef rps_value rps_valuetuple;
+  class rps_valuetuple : rps_sequence_st {
+  };
 
 
   /****************************************************************************
@@ -237,7 +238,8 @@ extern "C" {
 
 
   /* corresponds to setval_tyBM */
-  typedef rps_value rps_valueset;
+  class rps_valueset : rps_sequence_st {
+  };
 
 
   /* close support for C++ */
@@ -306,7 +308,7 @@ private:
 
 
 // represents a refpersys value
-class Value
+class Rps_Value
 {
 public:
 // enumerates the refpersys value types
@@ -318,22 +320,30 @@ public:
     TUPLE   // immuatable tuple
   };
 
-  inline Value(Value::Type type, intptr_t tagptr)
-    : m_type(type)
-    , m_tagptr(tagptr)
+  // for tagged integers
+  inline Value(intptr_t i)
+    : m_int((i<<1)|1)
   { }
 
   inline ~Value()
   { }
 
+  // should follow the rule of five of C++11
+
 private:
-  Value::Type m_type;
-  intptr_t m_tagptr;
+  union {
+    void* m_ptr;
+    intptr_t m_int;
+  };
 };
 
 
+  class ValueData {
+  };
+
+#warning wrong code below: see issue#11 and recent emails
 // represents a mutable value that is AMS allocated by MPS
-class MutableValue : public Value
+class MutableValue : public ValueData
 {
 protected:
   inline MutableValue();
