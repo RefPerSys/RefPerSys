@@ -366,7 +366,6 @@ class ScalarValue : public Value
 {
 public:
   inline ScalarValue();
-  inline ~ScalarValue();
 
 private:
   size_t m_size;                      // actual size of m_bfr
