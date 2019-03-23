@@ -37,6 +37,7 @@
 
 /* include required header files */
 #include <stdint.h>
+#include <stdlib.h>
 #include <cstddef>
 #include "util.h"
 
@@ -461,8 +462,8 @@ public:
 #endif /* (!defined __REFPERSYS_TYPES_DEFINED) */
 
 static thread_local mps_arena_t arena;       // MPS arena
-static thread_local mps_pool_t obj_pool;     // MPS pool
-static thread_local mps_ap_t obj_ap;         // MPS allocation point
+static thread_local mps_pool_t pool;     // MPS pool
+static thread_local mps_ap_t allocpt;         // MPS allocation point
 
 #define ALIGNMENT sizeof(mps_word_t)
 
@@ -482,7 +483,22 @@ public:
 class Rps_Value_Data_Mostly_Copying : public Rps_Value_Data
 {
 protected:
-  void* operator new(size_t size);
+  void* operator new(size_t size)
+  {
+    mps_addr_t addr;
+
+    do
+      {
+        mps_res_t res = mps_reserve(&addr, allocpt, size);
+        if (res != MPS_RES_OK)
+          {
+            abort();
+          }
+      }
+    while (!mps_commit(allocpt, addr, size));
+    return addr;
+  }
+
 };
 
 class Rps_Value_Sequence : public Rps_Value_Data_Mostly_Copying
