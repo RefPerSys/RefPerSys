@@ -480,22 +480,26 @@ public:
   }
 };
 
+// need to fix: should we use alignof?
+#define ALIGN(x) (x)
+
 class Rps_Value_Data_Mostly_Copying : public Rps_Value_Data
 {
 protected:
   void* operator new(size_t size)
   {
     mps_addr_t addr;
+    size_t aligned_size = ALIGN(size);
 
     do
       {
-        mps_res_t res = mps_reserve(&addr, allocpt, size);
+        mps_res_t res = mps_reserve(&addr, allocpt, aligned_size);
         if (res != MPS_RES_OK)
           {
             abort();
           }
       }
-    while (!mps_commit(allocpt, addr, size));
+    while (!mps_commit(allocpt, addr, aligned_size));
     return addr;
   }
 
