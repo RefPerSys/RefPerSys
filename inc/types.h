@@ -37,6 +37,7 @@
 
 /* include required header files */
 #include <stdint.h>
+#include <cstddef>
 #include "util.h"
 
 
@@ -366,6 +367,10 @@ class ScalarValue : public Value
 public:
   inline ScalarValue();
   inline ~ScalarValue();
+
+private:
+  size_t m_size;                      // actual size of m_bfr
+  const char m_bfr[RPS_FLEXIBLE_DIM]; // flexible array to hold scalar value
 };
 
 
@@ -394,11 +399,13 @@ private:
 // represents a scalar string value
 class StringValue : public ScalarValue
 {
-  uint32_t _strsize; // allocated size, in bytes, with a terminating 0 byte
-  const char _strbytes[RPS_FLEXIBLE_DIM]; // actual size is _strsize
-  inline StringValue();
 public:
   static const StringValue* make(const char*);
+
+private:
+  //uint32_t _strsize; // allocated size, in bytes, with a terminating 0 byte
+  //const char _strbytes[RPS_FLEXIBLE_DIM]; // actual size is _strsize
+  inline StringValue();
 };
 
 
