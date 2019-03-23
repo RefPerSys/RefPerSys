@@ -388,7 +388,6 @@ class SequenceValue : public ImmutableValue
 {
 public:
   inline SequenceValue();
-  inline ~SequenceValue();
 
 private:
   size_t m_size;
