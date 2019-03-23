@@ -39,6 +39,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <cstddef>
+#include <cstdio>
+#include <cassert>
 #include "util.h"
 
 #include "mps/mps.h"
@@ -509,7 +511,7 @@ protected:
             abort();
           }
       }
-    while (!mps_commit(allocpt, addr, aligned_size));
+    while (!mps_commit(allocpt, addr, size));
     return addr;
   }
 
