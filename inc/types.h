@@ -299,21 +299,21 @@ private:
   Serial63 m_lo;
 };
 
-// enumerates the refpersys value types
-enum ValueType
-{
-  STRING, // scalar string
-  DOUBLE, // scalar double
-  SET,    // immutable set
-  TUPLE   // immuatable tuple
-};
-
 
 // represents a refpersys value
 class Value
 {
 public:
-  inline Value(ValueType type, uintptr_t word)
+// enumerates the refpersys value types
+  enum Type
+  {
+    STRING, // scalar string
+    DOUBLE, // scalar double
+    SET,    // immutable set
+    TUPLE   // immuatable tuple
+  };
+
+  inline Value(Value::Type type, uintptr_t word)
     : m_type(type)
     , m_word(word)
   { }
@@ -322,7 +322,7 @@ public:
   { }
 
 private:
-  ValueType m_type;
+  Value::Type m_type;
   uintptr_t m_word;
 };
 
