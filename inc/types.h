@@ -321,11 +321,11 @@ public:
   };
 
   // for tagged integers
-  inline Value(intptr_t i)
+  inline Rps_Value(intptr_t i)
     : m_int((i<<1)|1)
   { }
 
-  inline ~Value()
+  inline ~Rps_Value()
   { }
 
   // should follow the rule of five of C++11
@@ -335,7 +335,7 @@ private:
     void* m_ptr;
     intptr_t m_int;
   };
-};
+}; // end of Rps_Value 
 
 
   class ValueData {
@@ -371,9 +371,11 @@ private:
   ObjectId m_objid;
 };
 
-
+////////////////////////////////////////////////////////////////
+#warning code below should follow indications in issue #11 and emails
+#if 0
 // represents a scalar value that is AMCZ allocated by MPS
-class ScalarValue : public Value
+class ScalarValue : public Rps_Value
 {
 protected:
   inline ScalarValue();
@@ -444,6 +446,7 @@ class TupleValue : public SequenceValue
 public:
   inline TupleValue();
 };
+#endif 0
 
 } // namespace rps
 
