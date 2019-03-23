@@ -313,9 +313,9 @@ public:
     TUPLE   // immuatable tuple
   };
 
-  inline Value(Value::Type type, uintptr_t word)
+  inline Value(Value::Type type, intptr_t tagptr)
     : m_type(type)
-    , m_word(word)
+    , m_tagptr(tagptr)
   { }
 
   inline ~Value()
@@ -323,7 +323,7 @@ public:
 
 private:
   Value::Type m_type;
-  uintptr_t m_word;
+  intptr_t m_tagptr;
 };
 
 
