@@ -37,7 +37,6 @@
 
 /* include required header files */
 #include <stdint.h>
-#include <vector>
 #include "util.h"
 
 
@@ -387,7 +386,8 @@ public:
   inline ~SequenceValue();
 
 private:
-  std::vector<ValueObject*> m_objects;
+  size_t m_size;
+  ValueObject *m_objects[RPS_FLEXIBLE_DIM];
 };
 
 
