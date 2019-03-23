@@ -483,9 +483,12 @@ public:
 class Rps_Value_Data_Mostly_Copying : public Rps_Value_Data
 {
 protected:
-  void* operator new(size_t size)
+  // the optional gap is needed for "flexible array members" trick
+  void* operator new(size_t size, size_t gap=0)
   {
     mps_addr_t addr;
+
+    size += gap;
 
     do
       {
