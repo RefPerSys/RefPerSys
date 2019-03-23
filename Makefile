@@ -33,7 +33,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################
 
-REFPERSYS_SOURCES := src/iface.cc src/refpersys.cc src/util.cc src/Rps_Value_Data.cpp
+REFPERSYS_SOURCES := src/iface.cc src/refpersys.cc src/util.cc
 REFPERSYS_OBJECTS := $(patsubst src/%.cc, src/%.o, $(REFPERSYS_SOURCES))
 
 
