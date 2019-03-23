@@ -480,25 +480,32 @@ public:
   }
 };
 
-// need to fix: should we use alignof?
-#define ALIGN(x) (x)
 
 class Rps_Value_Data_Mostly_Copying : public Rps_Value_Data
 {
 protected:
-  // the optional gap is needed for "flexible array members" trick
+  // The optional gap of operator new is needed for "flexible array
+  // members" trick. The caller should check or ensure that both `size`
+  // and `gap` are suitably aligned to alignof(void*) which is probably
+  // 8 bytes.
+  //
+  // This code is critical for performance. We should expect zillions
+  // of allocations.
   void* operator new(size_t size, size_t gap=0)
   {
     mps_addr_t addr;
-    size_t aligned_size = ALIGN(size);
 
+    assert (size % alignof(void*) == 0);
+    assert (gap % alignof(void*) == 0);
     size += gap;
 
     do
       {
-        mps_res_t res = mps_reserve(&addr, allocpt, aligned_size);
+        mps_res_t res = mps_reserve(&addr, allocpt, size);
         if (res != MPS_RES_OK)
           {
+	    ///@@ TODO: perhaps improve the error message to give the size
+	    perror("out of memory");
             abort();
           }
       }
@@ -506,7 +513,10 @@ protected:
     return addr;
   }
 
-};
+}; // end of Rps_Value_Data_Mostly_Copying
+
+
+
 
 class Rps_Value_Sequence : public Rps_Value_Data_Mostly_Copying
 {
