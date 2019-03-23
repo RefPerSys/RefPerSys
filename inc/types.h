@@ -425,7 +425,6 @@ class SetValue : public SequenceValue
 {
 public:
   inline SetValue();
-  inline ~SetValue();
 };
 
 
