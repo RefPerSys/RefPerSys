@@ -40,6 +40,9 @@
 #include <cstddef>
 #include "util.h"
 
+#include "mps/mps.h"
+#include "mps/mpsavm.h"
+
 
 /* see https://en.wikipedia.org/wiki/Flexible_array_member
    wikipage. C++ don't really have them, we are mimicking them as the
@@ -52,199 +55,199 @@ extern "C" {
 #endif
 
 
-    /****************************************************************************
-     * Section: Object ID Serial (rps_serial63)
-     ****************************************************************************/
+  /****************************************************************************
+   * Section: Object ID Serial (rps_serial63)
+   ****************************************************************************/
 
 
-    /* declare the rps_serial63 type; this is analogous to the Bismon
-     * serial64_tyBM type in the header file id_BM.h */
-    typedef uint64_t rps_serial63;
+  /* declare the rps_serial63 type; this is analogous to the Bismon
+   * serial64_tyBM type in the header file id_BM.h */
+  typedef uint64_t rps_serial63;
 
 
-    /* number of digits in an object ID serial when represented the form of
-     * base 62 digits */
+  /* number of digits in an object ID serial when represented the form of
+   * base 62 digits */
 #define RPS_SERIAL63_DIGITS 11
 
 
-    /* object ID serials are represented compactly in base 62 */
+  /* object ID serials are represented compactly in base 62 */
 #define RPS_SERIAL63_BASE 62
 
 
-    /*
-     *      RPS_SERIAL63_MIN - minimum object ID serial value
-     *
-     *      The RPS_SERIAL63_MIN symbolic constant defines the minimum value of an
-     *      object ID serial.
-     *
-     *      TODO: explain why it is 62 * 62
-     */
+  /*
+   *      RPS_SERIAL63_MIN - minimum object ID serial value
+   *
+   *      The RPS_SERIAL63_MIN symbolic constant defines the minimum value of an
+   *      object ID serial.
+   *
+   *      TODO: explain why it is 62 * 62
+   */
 #define RPS_SERIAL63_MIN ((uint64_t) 3884)
 
 
-    /*
-     *      RPS_SERIAL63_MAX - maximum object ID serial value
-     *
-     *      The RPS_SERIAL63_MAX symbolic constant defines the maximum value of an
-     *      object ID serial.
-     *
-     *      TODO: explain why it is 10 * 62 * (62* 62*62) * (62*62*62) * (62*62*62)
-     */
+  /*
+   *      RPS_SERIAL63_MAX - maximum object ID serial value
+   *
+   *      The RPS_SERIAL63_MAX symbolic constant defines the maximum value of an
+   *      object ID serial.
+   *
+   *      TODO: explain why it is 10 * 62 * (62* 62*62) * (62*62*62) * (62*62*62)
+   */
 #define RPS_SERIAL63_MAX ((uint64_t) 8392993658683402240)
 
 
-    /*
-     *      RPS_SERIAL63_DELTA - delta of object ID serial maxima and minima
-     *
-     *      The RPS_SERIAL63_DELTA symbolic constant defines the difference between
-     *      the the maxiumum and minimum values of an object ID serial.
-     *
-     *      TODO: explain why it is RPS_SERIAL63_MAX - RPS_SERIAL63_MIN
-     */
+  /*
+   *      RPS_SERIAL63_DELTA - delta of object ID serial maxima and minima
+   *
+   *      The RPS_SERIAL63_DELTA symbolic constant defines the difference between
+   *      the the maxiumum and minimum values of an object ID serial.
+   *
+   *      TODO: explain why it is RPS_SERIAL63_MAX - RPS_SERIAL63_MIN
+   */
 #define RPS_SERIAL63_DELTA (RPS_SERIAL63_MAX - RPS_SERIAL63_MIN)
 
 
-    /****************************************************************************
-     * Section: Object Bucket (rps_bucket)
-     ****************************************************************************/
+  /****************************************************************************
+   * Section: Object Bucket (rps_bucket)
+   ****************************************************************************/
 
 
-    /*
-     *      RPS_BUCKET_MAX - maximum object buckets
-     *
-     *      The RPS_BUCKET_MAX symbolic constant defines the maximum object buckets.
-     *      TODO: explain why it is 10 * 62, and its significance
-     */
+  /*
+   *      RPS_BUCKET_MAX - maximum object buckets
+   *
+   *      The RPS_BUCKET_MAX symbolic constant defines the maximum object buckets.
+   *      TODO: explain why it is 10 * 62, and its significance
+   */
 #define RPS_BUCKET_MAX ((size_t) 620)
 
 
-    /****************************************************************************
-     * Section: Object ID
-     ****************************************************************************/
+  /****************************************************************************
+   * Section: Object ID
+   ****************************************************************************/
 
 
-    /* TODO: object IDs are currently 128 bits, but may be reduced down to
-     * 96 bits; accordingly, the rps_serial63 type will also need to be
-     * redefined */
-    typedef struct rps_objid_st
-    {
-        rps_serial63 hi;
-        rps_serial63 lo;
-    } rps_objid;
+  /* TODO: object IDs are currently 128 bits, but may be reduced down to
+   * 96 bits; accordingly, the rps_serial63 type will also need to be
+   * redefined */
+  typedef struct rps_objid_st
+  {
+    rps_serial63 hi;
+    rps_serial63 lo;
+  } rps_objid;
 
 
-    /****************************************************************************
-     * Section: Object
-     ****************************************************************************/
+  /****************************************************************************
+   * Section: Object
+   ****************************************************************************/
 
 
-    /* TODO: the object type is still incomplete, and its member fields are
-     * not fully defined yet */
-    typedef struct rps_object_st
-    {
+  /* TODO: the object type is still incomplete, and its member fields are
+   * not fully defined yet */
+  typedef struct rps_object_st
+  {
 #warning "TODO: rps_object_st is still incomplete"
-        /* some fields are needed before objid */
-        const rps_objid objid;
-        /* many fields are needed after objid */
-    } rps_object;
+    /* some fields are needed before objid */
+    const rps_objid objid;
+    /* many fields are needed after objid */
+  } rps_object;
 
 
-    /****************************************************************************
-     * Section: Typed Types (WIP)
-     ****************************************************************************/
+  /****************************************************************************
+   * Section: Typed Types (WIP)
+   ****************************************************************************/
 
-    /* corresponds to hash_tyBM */
-    /* TODO: need to define */
-    /* TODO: replace with class rps::Hash? */
-    typedef struct rps_hash_st { } rps_hash;
+  /* corresponds to hash_tyBM */
+  /* TODO: need to define */
+  /* TODO: replace with class rps::Hash? */
+  typedef struct rps_hash_st { } rps_hash;
 
-    /* corresponds to gctyenum_BM; enumerates garbage collected types of
-     * refpersys */
-    /* TODO: replace with enum rps::ValType? */
-    typedef enum RPS_VALTYPE_ENUM
-    {
+  /* corresponds to gctyenum_BM; enumerates garbage collected types of
+   * refpersys */
+  /* TODO: replace with enum rps::ValType? */
+  typedef enum RPS_VALTYPE_ENUM
+  {
 #warning TODO: RPS_GCTYPE_ENUM is still incomplete
-        RPS_GCTYPE_INT = -1,   /* tagged integer */
-        RPS_GCTYPE_NONE = 0,   /* nil */
-        RPS_GCTYPE_STRING,     /* boxed string */
-        RPS_GCTYPE_DOUBLE,     /* boxed double */
-        RPS_GCTYPE_SET,        /* boxed set */
-        RPS_GCTYPE_TUPLE,      /* boxed tuple */
-        RPS_GCTYPE_NODE,       /* boxed node */
-        RPS_GCTYPE_CLOSURE,    /* boxed closure */
-        RPS_GCTYPE_OBJECT,     /* boxed object */
-        RPS_GCTYPE_UNSPECIFIED /* unspecified value */
+    RPS_GCTYPE_INT = -1,   /* tagged integer */
+    RPS_GCTYPE_NONE = 0,   /* nil */
+    RPS_GCTYPE_STRING,     /* boxed string */
+    RPS_GCTYPE_DOUBLE,     /* boxed double */
+    RPS_GCTYPE_SET,        /* boxed set */
+    RPS_GCTYPE_TUPLE,      /* boxed tuple */
+    RPS_GCTYPE_NODE,       /* boxed node */
+    RPS_GCTYPE_CLOSURE,    /* boxed closure */
+    RPS_GCTYPE_OBJECT,     /* boxed object */
+    RPS_GCTYPE_UNSPECIFIED /* unspecified value */
 
-    } RPS_GCTYPE;
+  } RPS_GCTYPE;
 
 
-    /* corresponds to typedhead_tyBM */
-    /* TODO: replace with class rps::TypedHead? */
-    typedef struct rps_typedhead_st
+  /* corresponds to typedhead_tyBM */
+  /* TODO: replace with class rps::TypedHead? */
+  typedef struct rps_typedhead_st
+  {
+    RPS_GCTYPE gctype:24;
+    uint32_t gchead:8;
+    union
     {
-        RPS_GCTYPE gctype:24;
-        uint32_t gchead:8;
-        union
-        {
-            rps_hash hash;
-            uint32_t rlen;
-        };
-    } rps_typedhead;
-
-    /* corresponds to typedsize_tyBM */
-    /* TODO: replace with class rps::TypedSize? */
-    typedef struct rps_typedsz_st
-    {
-        rps_typedhead head;
-        uint32_t size;
-    } rps_typedsz;
-
-
-    /* corresponds to typedforward_tyBM */
-    /* TODO: replace with class rps::TypedForward? */
-    typedef struct rps_typedfwd_st
-    {
-        rps_typedsz size;
-        void *forward;
-    } rps_typedfwd;
-
-
-    /****************************************************************************
-     * Section: Object Value
-     ****************************************************************************/
-
-
-    /* corresponds to Bismon's seqobval_stBM */
-    typedef struct rps_sequence_st
-    {
-        rps_typedfwd forward;
-        const rps_object *objects[RPS_FLEXIBLE_DIM];
-    } rps_sequence;
-
-
-    /****************************************************************************
-     * Section: Object Value Tuple
-     ****************************************************************************/
-
-
-    /* corresponds to tupleval_tyBM */
-    class rps_valuetuple : rps_sequence_st
-    {
+      rps_hash hash;
+      uint32_t rlen;
     };
+  } rps_typedhead;
+
+  /* corresponds to typedsize_tyBM */
+  /* TODO: replace with class rps::TypedSize? */
+  typedef struct rps_typedsz_st
+  {
+    rps_typedhead head;
+    uint32_t size;
+  } rps_typedsz;
 
 
-    /****************************************************************************
-     * Section: Object Value Set
-     ****************************************************************************/
+  /* corresponds to typedforward_tyBM */
+  /* TODO: replace with class rps::TypedForward? */
+  typedef struct rps_typedfwd_st
+  {
+    rps_typedsz size;
+    void *forward;
+  } rps_typedfwd;
 
 
-    /* corresponds to setval_tyBM */
-    class rps_valueset : rps_sequence_st
-    {
-    };
+  /****************************************************************************
+   * Section: Object Value
+   ****************************************************************************/
 
 
-    /* close support for C++ */
+  /* corresponds to Bismon's seqobval_stBM */
+  typedef struct rps_sequence_st
+  {
+    rps_typedfwd forward;
+    const rps_object *objects[RPS_FLEXIBLE_DIM];
+  } rps_sequence;
+
+
+  /****************************************************************************
+   * Section: Object Value Tuple
+   ****************************************************************************/
+
+
+  /* corresponds to tupleval_tyBM */
+  class rps_valuetuple : rps_sequence_st
+  {
+  };
+
+
+  /****************************************************************************
+   * Section: Object Value Set
+   ****************************************************************************/
+
+
+  /* corresponds to setval_tyBM */
+  class rps_valueset : rps_sequence_st
+  {
+  };
+
+
+  /* close support for C++ */
 #if (defined __cplusplus)
 }
 #endif
@@ -257,38 +260,38 @@ namespace rps
 class Serial63
 {
 public:
-    static const uint64_t MIN = RPS_SERIAL63_MIN;
-    static const uint64_t MAX = RPS_SERIAL63_MAX;
-    static const uint64_t DELTA = Serial63::MAX - Serial63::MIN;
-    static const uint64_t MAXBUCKET = RPS_BUCKET_MAX;
+  static const uint64_t MIN = RPS_SERIAL63_MIN;
+  static const uint64_t MAX = RPS_SERIAL63_MAX;
+  static const uint64_t DELTA = Serial63::MAX - Serial63::MIN;
+  static const uint64_t MAXBUCKET = RPS_BUCKET_MAX;
 
-    inline Serial63()
-    {
-        do
-        {
-            m_word = rps_random_uint64();
-        }
-        while (!this->valid());
-    }
+  inline Serial63()
+  {
+    do
+      {
+        m_word = rps_random_uint64();
+      }
+    while (!this->valid());
+  }
 
-    inline ~Serial63()
-    { }
+  inline ~Serial63()
+  { }
 
-    inline bool valid()
-    {
-        return m_word > Serial63::MIN && m_word < Serial63::MAX;
-    }
+  inline bool valid()
+  {
+    return m_word > Serial63::MIN && m_word < Serial63::MAX;
+  }
 
-    inline uint64_t bucket()
-    {
-        return m_word / (Serial63::DELTA / Serial63::MAXBUCKET);
-    }
+  inline uint64_t bucket()
+  {
+    return m_word / (Serial63::DELTA / Serial63::MAXBUCKET);
+  }
 
-    int base62(char str);
-    static Serial63 parse(const char *str);
+  int base62(char str);
+  static Serial63 parse(const char *str);
 
 private:
-    uint64_t m_word;
+  uint64_t m_word;
 };
 
 
@@ -296,16 +299,16 @@ private:
 class ObjectId
 {
 public:
-    inline ObjectId()
-        : m_hi()
-        , m_lo()
-    { }
+  inline ObjectId()
+    : m_hi()
+    , m_lo()
+  { }
 
-    ~ObjectId();
+  ~ObjectId();
 
 private:
-    Serial63 m_hi;
-    Serial63 m_lo;
+  Serial63 m_hi;
+  Serial63 m_lo;
 };
 
 
@@ -314,30 +317,30 @@ class Rps_Value
 {
 public:
 // enumerates the refpersys value types
-    enum Type
-    {
-        STRING, // scalar string
-        DOUBLE, // scalar double
-        SET,    // immutable set
-        TUPLE   // immuatable tuple
-    };
+  enum Type
+  {
+    STRING, // scalar string
+    DOUBLE, // scalar double
+    SET,    // immutable set
+    TUPLE   // immuatable tuple
+  };
 
-    // for tagged integers
-    inline Rps_Value(intptr_t i)
-        : m_int((i<<1)|1)
-    { }
+  // for tagged integers
+  inline Rps_Value(intptr_t i)
+    : m_int((i<<1)|1)
+  { }
 
-    inline ~Rps_Value()
-    { }
+  inline ~Rps_Value()
+  { }
 
-    // should follow the rule of five of C++11
+  // should follow the rule of five of C++11
 
 private:
-    union
-        {
-            void* m_ptr;
-            intptr_t m_int;
-        };
+  union
+  {
+    void* m_ptr;
+    intptr_t m_int;
+  };
 }; // end of Rps_Value
 
 
@@ -350,9 +353,9 @@ class ValueData
 class MutableValue : public ValueData
 {
 protected:
-    inline MutableValue();
-    inline ~MutableValue();
-    void* operator new(size_t size);
+  inline MutableValue();
+  inline ~MutableValue();
+  void* operator new(size_t size);
 };
 
 
@@ -360,19 +363,19 @@ protected:
 class ValueObject : public MutableValue
 {
 public:
-    inline ValueObject()
-        : m_objid()
-    { }
+  inline ValueObject()
+    : m_objid()
+  { }
 
-    inline ValueObject(ObjectId id)
-        : m_objid(id)
-    { }
+  inline ValueObject(ObjectId id)
+    : m_objid(id)
+  { }
 
-    inline ~ValueObject()
-    { }
+  inline ~ValueObject()
+  { }
 
 private:
-    ObjectId m_objid;
+  ObjectId m_objid;
 };
 
 ////////////////////////////////////////////////////////////////
@@ -382,12 +385,12 @@ private:
 class ScalarValue : public Rps_Value
 {
 protected:
-    inline ScalarValue();
-    void* operator new(size_t size);
+  inline ScalarValue();
+  void* operator new(size_t size);
 
 private:
-    size_t m_size;                      // actual size of m_bfr
-    const char m_bfr[RPS_FLEXIBLE_DIM]; // flexible array to hold scalar value
+  size_t m_size;                      // actual size of m_bfr
+  const char m_bfr[RPS_FLEXIBLE_DIM]; // flexible array to hold scalar value
 };
 
 
@@ -395,8 +398,8 @@ private:
 class ImmutableValue : public Value
 {
 protected:
-    inline ImmutableValue();
-    void* operator new(size_t size);
+  inline ImmutableValue();
+  void* operator new(size_t size);
 };
 
 
@@ -404,11 +407,11 @@ protected:
 class SequenceValue : public ImmutableValue
 {
 public:
-    inline SequenceValue();
+  inline SequenceValue();
 
 private:
-    size_t m_size;
-    ValueObject *m_objects[RPS_FLEXIBLE_DIM];
+  size_t m_size;
+  ValueObject *m_objects[RPS_FLEXIBLE_DIM];
 };
 
 
@@ -416,12 +419,12 @@ private:
 class StringValue : public ScalarValue
 {
 public:
-    static const StringValue* make(const char *str);
+  static const StringValue* make(const char *str);
 
 private:
-    //uint32_t _strsize; // allocated size, in bytes, with a terminating 0 byte
-    //const char _strbytes[RPS_FLEXIBLE_DIM]; // actual size is _strsize
-    inline StringValue();
+  //uint32_t _strsize; // allocated size, in bytes, with a terminating 0 byte
+  //const char _strbytes[RPS_FLEXIBLE_DIM]; // actual size is _strsize
+  inline StringValue();
 };
 
 
@@ -429,10 +432,10 @@ private:
 class DoubleValue : public ScalarValue
 {
 public:
-    static const DoubleValue* make(double dbl);
+  static const DoubleValue* make(double dbl);
 
 private:
-    inline DoubleValue();
+  inline DoubleValue();
 };
 
 
@@ -440,7 +443,7 @@ private:
 class SetValue : public SequenceValue
 {
 public:
-    inline SetValue();
+  inline SetValue();
 };
 
 
@@ -448,7 +451,7 @@ public:
 class TupleValue : public SequenceValue
 {
 public:
-    inline TupleValue();
+  inline TupleValue();
 };
 #endif 0
 
@@ -457,27 +460,32 @@ public:
 
 #endif /* (!defined __REFPERSYS_TYPES_DEFINED) */
 
-#include <iostream>            // for cout and cin
+static thread_local mps_arena_t arena;       // MPS arena
+static thread_local mps_pool_t obj_pool;     // MPS pool
+static thread_local mps_ap_t obj_ap;         // MPS allocation point
 
+#define ALIGNMENT sizeof(mps_word_t)
 
 
 class Rps_Value_Data                    // begin declaration of the class
 {
-    const RPS_VALTYPE_ENUM _gctype;
+  const RPS_VALTYPE_ENUM _gctype;
 protected:
-    Rps_Value_Data(RPS_VALTYPE_ENUM ty) : _gctype(ty) {};
+  Rps_Value_Data(RPS_VALTYPE_ENUM ty) : _gctype(ty) {};
 public:
-    RPS_VALTYPE_ENUM type() const {
-        return _gctype;
-    }
+  RPS_VALTYPE_ENUM type() const
+  {
+    return _gctype;
+  }
 };
 
-class Rps_Value_Data_Mostly_Copying       : public Rps_Value_Data                  // begin declaration of the class
+class Rps_Value_Data_Mostly_Copying : public Rps_Value_Data
 {
-
+protected:
+  void* operator new(size_t size);
 };
 
-class Rps_Value_Sequence       : public Rps_Value_Data_Mostly_Copying                  // begin declaration of the class
+class Rps_Value_Sequence : public Rps_Value_Data_Mostly_Copying
 {
 
 };
