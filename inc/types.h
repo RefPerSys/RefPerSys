@@ -41,6 +41,11 @@
 #include "util.h"
 
 
+/* see https://en.wikipedia.org/wiki/Flexible_array_member
+   wikipage. C++ don't really have them, we are mimicking them as the
+   last member of some struct which is an array of dimension 0 */
+#define RPS_FLEXIBLE_DIM 0
+
 /* open support for C++ */
 #if (defined __cplusplus)
 extern "C" {
@@ -213,7 +218,7 @@ extern "C" {
   typedef struct rps_value_st
   {
     rps_typedfwd forward;
-    const rps_object *objects[];
+    const rps_object *objects[RPS_FLEXIBLE_DIM];
   } rps_value;
 
 
@@ -389,9 +394,11 @@ private:
 // represents a scalar string value
 class StringValue : public ScalarValue
 {
-public:
+  uint32_t _strsize; // allocated size, in bytes, with a terminating 0 byte
+  const char _strbytes[RPS_FLEXIBLE_DIM]; // actual size is _strsize
   inline StringValue();
-  inline ~StringValue();
+public:
+  static const StringValue* make(const char*);
 };
 
 
