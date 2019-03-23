@@ -413,8 +413,10 @@ private:
 class DoubleValue : public ScalarValue
 {
 public:
+  static const DoubleValue* make(const char*);
+
+private:
   inline DoubleValue();
-  inline ~DoubleValue();
 };
 
 
