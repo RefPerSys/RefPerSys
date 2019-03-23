@@ -400,7 +400,7 @@ private:
 class StringValue : public ScalarValue
 {
 public:
-  static const StringValue* make(const char*);
+  static const StringValue* make(const char *str);
 
 private:
   //uint32_t _strsize; // allocated size, in bytes, with a terminating 0 byte
@@ -413,7 +413,7 @@ private:
 class DoubleValue : public ScalarValue
 {
 public:
-  static const DoubleValue* make(const char*);
+  static const DoubleValue* make(double dbl);
 
 private:
   inline DoubleValue();
