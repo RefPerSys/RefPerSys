@@ -379,7 +379,6 @@ class ImmutableValue : public Value
 {
 public:
   inline ImmutableValue();
-  inline ~ImmutableValue();
 };
 
 
