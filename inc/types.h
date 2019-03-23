@@ -332,17 +332,17 @@ private:
 };
 
 
-// represents a value that is mark-swept by MPS
-class MarkSweepValue : public Value
+// represents a mutable value that is AMS allocated by MPS
+class MutableValue : public Value
 {
 public:
-  inline MarkSweepValue();
-  inline ~MarkSweepValue();
+  inline MutableValue();
+  inline ~MutableValue();
 };
 
 
 // represents a value object
-class ValueObject : public MarkSweepValue
+class ValueObject : public MutableValue
 {
 public:
   inline ValueObject()
