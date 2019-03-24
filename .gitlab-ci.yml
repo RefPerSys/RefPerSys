@@ -1,3 +1,6 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: "normal"
+
 stages:
   - build
 
@@ -5,7 +8,7 @@ debian:
   stage: build
   image: gcc
   script:
-    - git submodule init
-    - git submodule update
+    #- git submodule init
+    #- git submodule update
     - make
     -  ./refpersys --print-random-uint64
