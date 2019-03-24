@@ -85,7 +85,7 @@ _timestamp.c:
 src/%.o: src/%.cc
 	$(COMPILE.cc) -o $@ $< -MMD -MT $@ -MF $(patsubst src/%.o, src/%.mkd, $@)
 
-mps/%.o: mps/%.c
+mps/%.o: mps/code/%.c
 	$(COMPILE.c)  -o $@ $< -MMD -MT $@ -MF $(patsubst src/%.o, src/%.mkd, $@)
 
 # rule to clean build artefacts
