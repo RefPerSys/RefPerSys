@@ -525,3 +525,12 @@ class Rps_Value_Sequence : public Rps_Value_Data_Mostly_Copying
 
 };
 
+class Rps_Sequence_Data : public Rps_Value_Data_Mostly_Copying
+{
+public:
+  inline Rps_Sequence_Data();
+
+private:
+  size_t m_size;
+  rps::ValueObject *m_objects[RPS_FLEXIBLE_DIM];
+};
