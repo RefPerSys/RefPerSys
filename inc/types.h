@@ -382,81 +382,6 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////
-#warning code below should follow indications in issue #11 and emails
-#if 0
-// represents a scalar value that is AMCZ allocated by MPS
-class ScalarValue : public Rps_Value
-{
-protected:
-    inline ScalarValue();
-    void* operator new(size_t size);
-
-private:
-    size_t m_size;                      // actual size of m_bfr
-    const char m_bfr[RPS_FLEXIBLE_DIM]; // flexible array to hold scalar value
-};
-
-
-// represents an immutable value that is AMC allocated by MPS
-class ImmutableValue : public Value
-{
-protected:
-    inline ImmutableValue();
-    void* operator new(size_t size);
-};
-
-
-// represents a sequence value (or sequence of values)
-class SequenceValue : public ImmutableValue
-{
-public:
-    inline SequenceValue();
-
-private:
-    size_t m_size;
-    ValueObject *m_objects[RPS_FLEXIBLE_DIM];
-};
-
-
-// represents a scalar string value
-class StringValue : public ScalarValue
-{
-public:
-    static const StringValue* make(const char *str);
-
-private:
-    //uint32_t _strsize; // allocated size, in bytes, with a terminating 0 byte
-    //const char _strbytes[RPS_FLEXIBLE_DIM]; // actual size is _strsize
-    inline StringValue();
-};
-
-
-// represents a scalar double value
-class DoubleValue : public ScalarValue
-{
-public:
-    static const DoubleValue* make(double dbl);
-
-private:
-    inline DoubleValue();
-};
-
-
-// represents a set, which is an immutable sequence value
-class SetValue : public SequenceValue
-{
-public:
-    inline SetValue();
-};
-
-
-// represents a tuple, which is an immutable sequence value
-class TupleValue : public SequenceValue
-{
-public:
-    inline TupleValue();
-};
-#endif 0
 
 } // namespace rps
 
@@ -467,7 +392,7 @@ static thread_local mps_arena_t arena;       // MPS arena
 static thread_local mps_pool_t pool;     // MPS pool
 static thread_local mps_ap_t allocpt;         // MPS allocation point
 
-#define ALIGNMENT sizeof(mps_word_t)
+#define ALIGNMENT alignof(mps_word_t)
 
 
 class Rps_Value_Data                    // begin declaration of the class
