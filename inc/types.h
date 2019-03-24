@@ -442,20 +442,6 @@ protected:
 
 }; // end of Rps_Value_Data_Mostly_Copying
 
-class Rps_Value_Sequence : public Rps_Value_Data_Mostly_Copying
-{
-
-};
-
-class Rps_Value_Tuple : public Rps_Value_Sequence
-{
-
-};
-
-class Rps_Value_Set : public Rps_Value_Sequence
-{
-
-};
 
 class Rps_Sequence_Data : public Rps_Value_Data_Mostly_Copying
 {
