@@ -43,8 +43,8 @@
 #include <cassert>
 #include "util.h"
 
-#include "mps/mps.h"
-#include "mps/mpsavm.h"
+#include "mps/code/mps.h"
+#include "mps/code/mpsavm.h"
 
 
 /* see https://en.wikipedia.org/wiki/Flexible_array_member
