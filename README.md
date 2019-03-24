@@ -23,6 +23,13 @@ license.
 [GNU `make`](https://www.gnu.org/software/make/) 4 is required. And
 [GCC](http://gcc.gnu.org/) 8 -or later- or some recent C++14 compiler.
 
+One must explicitly pull in the submodule as follows
+
+```
+git submodule init
+git submodule update
+```
+
 Use `make` or `make -j` to build this project.
 
 As usual, run `make -p` to understand the built-in rules and take
