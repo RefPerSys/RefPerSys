@@ -1,0 +1,3 @@
+[submodule "mps"]
+	path = mps
+	url = https://github.com/Ravenbrook/mps.git
