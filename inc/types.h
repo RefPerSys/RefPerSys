@@ -305,6 +305,16 @@ public:
 class Rps_Value_Data_Mostly_Copying : public Rps_Value_Data
 {
 protected:
+  static thread_local mps_arena_t _arena;  // MPS arena
+  static thread_local mps_pool_t _pool;    // MPS pool
+  static thread_local mps_ap_t _allocpt;   // MPS allocation point
+
+  // Default constructor
+  inline Rps_Value_Data_Mostly_Copying(RPS_VALTYPE_ENUM type)
+    : Rps_Value_Data(type)
+  { }
+
+
   // The optional gap of operator new is needed for "flexible array
   // members" trick. The caller should check or ensure that both `size`
   // and `gap` are suitably aligned to alignof(void*) which is probably
@@ -322,7 +332,7 @@ protected:
 
     do
       {
-        mps_res_t res = mps_reserve(&addr, allocpt, size);
+        mps_res_t res = mps_reserve(&addr, _allocpt, size);
 
         if (rps_unlikely(res != MPS_RES_OK))
           {
@@ -330,14 +340,10 @@ protected:
             abort();
           }
       }
-    while (!mps_commit(allocpt, addr, size));
+    while (!mps_commit(_allocpt, addr, size));
 
     return addr;
   }
-
-
-  Rps_Value_Data_Mostly_Copying(RPS_VALTYPE_ENUM ty)
-    : Rps_Value_Data(ty) {};
 }; // end of Rps_Value_Data_Mostly_Copying
 
 
