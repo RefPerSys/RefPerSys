@@ -51,22 +51,21 @@ extern "C" uint64_t rps_random_uint64(void);
 #define rps_unlikely(p) __builtin_expect(!!(P),0)
 
 
-
 // branch prediction macro to indicate likely condition
 // adapted from MOM_LIKELY() macro in meltmoni.hh
 #define rps_likely(p) !__builtin_expect(!(P),0)
 
 
+// prints an error message indicating MPS reservation failure
 static inline void rps_perror_mps_reserve(size_t size)
 {
-                char errmsg[100];
-                snprintf(errmsg, sizeof(errmsg),
-                         "MPS error: unable to reserve %lu bytes",
-                         size);
+  char errmsg[100];
+
+  snprintf(errmsg, sizeof(errmsg),
+           "MPS error: unable to reserve %lu bytes",
+           size);
+  perror(errmsg);
 }
-
-
-
 
 
 #endif /* REFPERSYS_UTIL_INCLUDED */
