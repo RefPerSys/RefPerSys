@@ -295,7 +295,25 @@ public:
 class Rps_Value_Data_Mostly_Copying : public Rps_Value_Data
 {
 public:
-  static void init_mps(void);
+  static void init_mps(void)
+  {
+    const size_t arenasize = 32ul * 1024 * 1024;
+    mps_arg_s args[1];
+
+    MPS_ARGS_BEGIN(args)
+    {
+      MPS_ARGS_ADD(args, MPS_KEY_ARENA_SIZE, arenasize);
+      res = mps_arena_create_k(&Rps_Value_Data_Mostly_Copying::_arena,
+                               mps_arena_class_vm(), args);
+    }
+    MPS_ARGS_END(args);
+
+    if (res != MPS_RES_OK)
+      {
+        perror("Couldn't create arena");
+        abort();
+      }
+  }
 
 protected:
   static thread_local mps_arena_t _arena;  // MPS arena
