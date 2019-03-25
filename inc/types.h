@@ -304,7 +304,6 @@ public:
 
 class Rps_Value_Data_Mostly_Copying : public Rps_Value_Data
 {
-  /* should have our own arena,  pool, allocpt */
 protected:
   // The optional gap of operator new is needed for "flexible array
   // members" trick. The caller should check or ensure that both `size`
@@ -313,7 +312,7 @@ protected:
   //
   // This code is critical for performance. We should expect zillions
   // of allocations.
-  void* operator new(size_t size, size_t gap=0)
+  void* operator new(size_t size, size_t gap = 0)
   {
     mps_addr_t addr;
 
@@ -324,14 +323,15 @@ protected:
     do
       {
         mps_res_t res = mps_reserve(&addr, allocpt, size);
+
         if (rps_unlikely(res != MPS_RES_OK))
           {
-            ///@@ TODO: perhaps improve the error message to give the size
-            perror("out of memory");
+            rps_perror_mps_reserve(size);
             abort();
           }
       }
     while (!mps_commit(allocpt, addr, size));
+
     return addr;
   }
 
