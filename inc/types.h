@@ -274,16 +274,6 @@ private:
 
 #endif /* (!defined __REFPERSYS_TYPES_DEFINED) */
 
-#warning this is wrong (arena, pool, allocpt)
-/*** TODO: every class Rps_Value_Data_Mostly_Copying,
-     Rps_Value_Data_Scalar_Copying, Rps_Value_Data_Mark_Sweep should
-     have its own static thread_local arena, pool, allocpt */
-static thread_local mps_arena_t arena;       // MPS arena
-static thread_local mps_pool_t pool;     // MPS pool
-static thread_local mps_ap_t allocpt;         // MPS allocation point
-
-#define ALIGNMENT alignof(mps_word_t)
-
 
 class Rps_Object_Data;
 typedef Rps_Object_Data* RpsObjectRef;
