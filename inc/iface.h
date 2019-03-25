@@ -148,8 +148,8 @@ extern "C" {
    *
    * Both functions are doing some MPS allocation, in an AMS pool.
    ***/
-  extern rps_object* rps_object_make(void);
-  extern rps_object* rps_object_make_with_objid(rps_objid oid);
+  extern RpsObjectRef rps_object_make(void);
+  extern RpsObjectRef rps_object_make_with_objid(rps_objid oid);
 
 
   /***
@@ -157,7 +157,7 @@ extern "C" {
    * given oid. When the oid is invalid, or when no such object exists,
    * null is returned. That function does not allocate anything.
    ***/
-  extern rps_object* rps_object_find_by_objid(rps_objid oid);
+  extern RpsObjectRef rps_object_find_by_objid(rps_objid oid);
 
 #if (defined __cplusplus)
 }

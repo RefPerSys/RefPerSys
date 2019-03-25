@@ -143,7 +143,7 @@ typedef struct rps_objid_st
 {
   rps_serial63 hi;
   rps_serial63 lo; // if we reduce the number of bits (e.g. to 96 or
-		   // 104), lo could fit in 32 or a few more bits
+  // 104), lo could fit in 32 or a few more bits
 } rps_objid;
 
 
@@ -304,6 +304,9 @@ public:
 class Rps_Value_Data_Mostly_Copying : public Rps_Value_Data
 {
 public:
+  /* This code looks very good, but should be moved into some *.cc
+     file. No need to inline that. */
+#warning init_mps should go elsewhere, since it is rarely called.
   static void init_mps(void)
   {
     const size_t arenasize = 32ul * 1024 * 1024;
@@ -343,6 +346,12 @@ protected:
   //
   // This code is critical for performance. We should expect zillions
   // of allocations.
+
+  // Basile made a mistake in asking for such an 'operator new'. It is
+  // subtle but against MPS invariant.
+
+  // read carefully
+#warning operator new is probably wrong, a design bug by Basile
   void* operator new(size_t size, size_t gap = 0)
   {
     mps_addr_t addr;
