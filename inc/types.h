@@ -324,7 +324,7 @@ protected:
     do
       {
         mps_res_t res = mps_reserve(&addr, allocpt, size);
-        if (res != MPS_RES_OK)
+        if (rps_unlikely(res != MPS_RES_OK))
           {
             ///@@ TODO: perhaps improve the error message to give the size
             perror("out of memory");
@@ -334,6 +334,8 @@ protected:
     while (!mps_commit(allocpt, addr, size));
     return addr;
   }
+
+
   Rps_Value_Data_Mostly_Copying(RPS_VALTYPE_ENUM ty)
     : Rps_Value_Data(ty) {};
 }; // end of Rps_Value_Data_Mostly_Copying
