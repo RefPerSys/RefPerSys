@@ -69,7 +69,9 @@ typedef uint64_t rps_serial63;
 #define RPS_SERIAL63_DIGITS 11
 
 
-/* object ID serials are represented compactly in base 62 */
+/* object ID serials are represented compactly in base 62, because
+   there are 2*26 letters a...z and A...Z and 10 digits 0...9, so
+   2*26+10 is 62 */
 #define RPS_SERIAL63_BASE 62
 
 
@@ -79,7 +81,13 @@ typedef uint64_t rps_serial63;
  *      The RPS_SERIAL63_MIN symbolic constant defines the minimum value of an
  *      object ID serial.
  *
- *      TODO: explain why it is 62 * 62
+ *      62*62, because we want the minimal serial to be _00000000100
+ *      since we don't want too many 0-s, a serial like _00000000000
+ *      is too confusing to read.
+ *
+ *      In practice, serials are random, and won't have that much 0
+ *      digits anyway.
+ *
  */
 #define RPS_SERIAL63_MIN ((uint64_t) 3884)
 
@@ -90,7 +98,9 @@ typedef uint64_t rps_serial63;
  *      The RPS_SERIAL63_MAX symbolic constant defines the maximum value of an
  *      object ID serial.
  *
- *      TODO: explain why it is 10 * 62 * (62* 62*62) * (62*62*62) * (62*62*62)
+ *      The last serial would be _9ZZZZZZZZZZ, so one more is
+ *      corresponding to 10 * 62 * (62* 62*62) * (62*62*62) *
+ *      (62*62*62)
  */
 #define RPS_SERIAL63_MAX ((uint64_t) 8392993658683402240)
 
@@ -114,8 +124,10 @@ typedef uint64_t rps_serial63;
 /*
  *      RPS_BUCKET_MAX - maximum object buckets
  *
- *      The RPS_BUCKET_MAX symbolic constant defines the maximum object buckets.
- *      TODO: explain why it is 10 * 62, and its significance
+ *      The RPS_BUCKET_MAX symbolic constant defines the maximum
+ *      object buckets.  The first two "digits" of a serial define its
+ *      bucket, so if it starts with _1a the bucket number would be
+ *      1*62+11.
  */
 #define RPS_BUCKET_MAX ((size_t) 620)
 
@@ -126,12 +138,12 @@ typedef uint64_t rps_serial63;
 
 
 /* TODO: object IDs are currently 128 bits, but may be reduced down to
- * 96 bits; accordingly, the rps_serial63 type will also need to be
- * redefined */
+ * 96 bits or a few more */
 typedef struct rps_objid_st
 {
   rps_serial63 hi;
-  rps_serial63 lo;
+  rps_serial63 lo; // if we reduce the number of bits (e.g. to 96 or
+		   // 104), lo could fit in 32 or a few more bits
 } rps_objid;
 
 
@@ -139,16 +151,13 @@ typedef struct rps_objid_st
  * Section: Object
  ****************************************************************************/
 
+/* objects are a some kind of values, but they go into AMS zones,
+   because they should not be moved by the MPS GC, since they contain
+   a mutex. */
 
-/* TODO: the object type is still incomplete, and its member fields are
- * not fully defined yet */
-typedef struct rps_object_st
-{
-#warning "TODO: rps_object_st is still incomplete"
-  /* some fields are needed before objid */
-  const rps_objid objid;
-  /* many fields are needed after objid */
-} rps_object;
+/* an object is represented by a memory zone of type Rps_Object_Data,
+   so object references are pointers to such zones. See type
+   RpsObjectRef below. */
 
 
 /****************************************************************************
@@ -158,7 +167,7 @@ typedef struct rps_object_st
 /* corresponds to hash_tyBM */
 /* TODO: need to define */
 /* TODO: replace with class rps::Hash? */
-typedef struct rps_hash_st { } rps_hash;
+typedef uint32_t rps_hash; // an hash number is a non-zero 32 bits int
 
 /* corresponds to gctyenum_BM; enumerates garbage collected types of
  * refpersys */
