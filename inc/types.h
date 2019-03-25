@@ -299,6 +299,7 @@ public:
   {
     const size_t arenasize = 32ul * 1024 * 1024;
     mps_arg_s args[1];
+    mps_res_t res;
 
     MPS_ARGS_BEGIN(args)
     {
