@@ -34,6 +34,8 @@
 
 /* include required header files */
 #include <stdint.h>
+#include <stddef.h>
+#include <stdio.h>
 
 /* in generated _timestamp.c */
 extern "C" const char rps_git_commit[];
@@ -53,6 +55,16 @@ extern "C" uint64_t rps_random_uint64(void);
 // branch prediction macro to indicate likely condition
 // adapted from MOM_LIKELY() macro in meltmoni.hh
 #define rps_likely(p) !__builtin_expect(!(P),0)
+
+
+static inline void rps_perror_mps_reserve(size_t size)
+{
+                char errmsg[100];
+                snprintf(errmsg, sizeof(errmsg),
+                         "MPS error: unable to reserve %lu bytes",
+                         size);
+}
+
 
 
 
