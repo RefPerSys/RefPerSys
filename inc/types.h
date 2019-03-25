@@ -294,6 +294,9 @@ public:
 
 class Rps_Value_Data_Mostly_Copying : public Rps_Value_Data
 {
+public:
+  static void init_mps(void);
+
 protected:
   static thread_local mps_arena_t _arena;  // MPS arena
   static thread_local mps_pool_t _pool;    // MPS pool
