@@ -342,10 +342,11 @@ protected:
 
 class Rps_Value_Data_Scalar_Copying : public Rps_Value_Data
 {
-  /* we have our own arena,  pool, allocpt and operator new */
-#warning  Rps_Value_Data_Scalar_Copying should be coded
 protected:
-};				// end of Rps_Value_Data_Scalar_Copying
+  static thread_local mps_arena_t _arena;  // MPS arena
+  static thread_local mps_pool_t _pool;    // MPS pool
+  static thread_local mps_ap_t _allocpt;   // MPS allocation point
+};  // end of Rps_Value_Data_Scalar_Copying
 
 
 
