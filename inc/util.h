@@ -42,5 +42,20 @@ extern "C" const char rps_build_timestamp[];
 /* Mersenne twister */
 extern "C" uint64_t rps_random_uint64(void);
 
+
+
+// branch prediction macro to indicate unlikely condition
+// adapted from MOM_UNLIKELY() macro in meltmoni.hh
+#define rps_unlikely(p) __builtin_expect(!!(P),0)
+
+
+
+// branch prediction macro to indicate likely condition
+// adapted from MOM_LIKELY() macro in meltmoni.hh
+#define rps_likely(p) !__builtin_expect(!(P),0)
+
+
+
+
 #endif /* REFPERSYS_UTIL_INCLUDED */
 
