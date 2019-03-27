@@ -11,23 +11,23 @@ thread_local mps_ap_t Rps_Value_Data_Mostly_Copying::_allocpt = nullptr;
 // the arena is requested from the OS
 void Rps_Value_Data_Mostly_Copying::init_arena(void)
 {
-    const size_t arenasize = 32ul * 1024 * 1024;
-    mps_arg_s args[1];
-    mps_res_t res;
+  const size_t arenasize = 32ul * 1024 * 1024;
+  mps_arg_s args[1];
+  mps_res_t res;
 
-    MPS_ARGS_BEGIN(args)
+  MPS_ARGS_BEGIN(args)
+  {
+    MPS_ARGS_ADD(args, MPS_KEY_ARENA_SIZE, arenasize);
+    res = mps_arena_create_k(&Rps_Value_Data_Mostly_Copying::_arena,
+                             mps_arena_class_vm(), args);
+  }
+  MPS_ARGS_END(args);
+
+  if (res != MPS_RES_OK)
     {
-      MPS_ARGS_ADD(args, MPS_KEY_ARENA_SIZE, arenasize);
-      res = mps_arena_create_k(&Rps_Value_Data_Mostly_Copying::_arena,
-                               mps_arena_class_vm(), args);
+      perror("Couldn't create arena");
+      abort();
     }
-    MPS_ARGS_END(args);
-
-    if (res != MPS_RES_OK)
-      {
-        perror("Couldn't create arena");
-        abort();
-      }
 }
 
 
@@ -37,13 +37,13 @@ void Rps_Value_Data_Mostly_Copying::init_arena(void)
 // need need to be passed object format and object chain parameters
 void Rps_Value_Data_Mostly_Copying::init_pool(void)
 {
-        // TODO: do we need to create object format?
-        // TODO: do we need to create object chain?
+  // TODO: do we need to create object format?
+  // TODO: do we need to create object chain?
 
-        mps_res_t res = mps_pool_create_k(&Rps_Value_Data_Mostly_Copying::_pool,
-                                          Rps_Value_Data_Mostly_Copying::_arena,
-                                          mps_class_amc(),
-                                          mps_args_none);
+  mps_res_t res = mps_pool_create_k(&Rps_Value_Data_Mostly_Copying::_pool,
+                                    Rps_Value_Data_Mostly_Copying::_arena,
+                                    mps_class_amc(),
+                                    mps_args_none);
 
   if (rps_unlikely(res != MPS_RES_OK))
     {

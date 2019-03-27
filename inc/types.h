@@ -44,9 +44,9 @@
 #include "util.h"
 
 extern "C" {
-        #include "mps/code/mps.h"
-        #include "mps/code/mpsavm.h"
-        #include "mps/code/mpscamc.h"
+#include "mps/code/mps.h"
+#include "mps/code/mpsavm.h"
+#include "mps/code/mpscamc.h"
 }
 
 
