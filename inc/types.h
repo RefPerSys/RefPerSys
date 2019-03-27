@@ -357,6 +357,7 @@ protected:
 
 private:
   static void init_arena(void);
+  static void init_pool(void);
   static void init_ap(void);
 }; // end of Rps_Value_Data_Mostly_Copying
 
