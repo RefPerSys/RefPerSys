@@ -8,6 +8,7 @@ thread_local mps_ap_t Rps_Value_Data_Mostly_Copying::_allocpt = nullptr;
 
 
 // initialise MPS arena
+// the arena is requested from the OS
 void Rps_Value_Data_Mostly_Copying::init_arena(void)
 {
     const size_t arenasize = 32ul * 1024 * 1024;
@@ -30,10 +31,27 @@ void Rps_Value_Data_Mostly_Copying::init_arena(void)
 }
 
 
+// initialise MPS allocation point
+// the allocation point allows fast inline allocation for objects from the MPS
+// pool
+void Rps_Value_Data_Mostly_Copying::init_ap(void)
+{
+  mps_res_t res = mps_ap_create_k(&Rps_Value_Data_Mostly_Copying::_allocpt,
+                                  Rps_Value_Data_Mostly_Copying::_pool,
+                                  mps_args_none);
+
+  if (rps_unlikely(res != MPS_RES_OK))
+    {
+      perror("Couldn't create allocation point");
+      abort();
+    }
+}
+
 
 // initialise MPS area, pool, and allocation pointer
 void Rps_Value_Data_Mostly_Copying::init_mps(void)
 {
   Rps_Value_Data_Mostly_Copying::init_arena();
+  Rps_Value_Data_Mostly_Copying::init_ap();
 }
 
