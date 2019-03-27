@@ -310,6 +310,7 @@ public:
   static void init_mps(void);
 
 protected:
+#warning FIXME _arena is probably a single static member of Rps_Value_Data
   static thread_local mps_arena_t _arena;  // MPS arena
   static thread_local mps_pool_t _pool;    // MPS pool
   static thread_local mps_ap_t _allocpt;   // MPS allocation point
