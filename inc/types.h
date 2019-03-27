@@ -43,8 +43,10 @@
 #include <cassert>
 #include "util.h"
 
-#include "mps/code/mps.h"
-#include "mps/code/mpsavm.h"
+extern "C" {
+        #include "mps/code/mps.h"
+        #include "mps/code/mpsavm.h"
+}
 
 
 /* see https://en.wikipedia.org/wiki/Flexible_array_member
@@ -304,29 +306,7 @@ public:
 class Rps_Value_Data_Mostly_Copying : public Rps_Value_Data
 {
 public:
-  /* This code looks very good, but should be moved into some *.cc
-     file. No need to inline that. */
-#warning init_mps should go elsewhere, since it is rarely called.
-  static void init_mps(void)
-  {
-    const size_t arenasize = 32ul * 1024 * 1024;
-    mps_arg_s args[1];
-    mps_res_t res;
-
-    MPS_ARGS_BEGIN(args)
-    {
-      MPS_ARGS_ADD(args, MPS_KEY_ARENA_SIZE, arenasize);
-      res = mps_arena_create_k(&Rps_Value_Data_Mostly_Copying::_arena,
-                               mps_arena_class_vm(), args);
-    }
-    MPS_ARGS_END(args);
-
-    if (res != MPS_RES_OK)
-      {
-        perror("Couldn't create arena");
-        abort();
-      }
-  }
+  static void init_mps(void);
 
 protected:
   static thread_local mps_arena_t _arena;  // MPS arena
