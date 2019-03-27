@@ -19,15 +19,21 @@ void Rps_Value_Data_Mostly_Copying::init_arena(void)
   {
     MPS_ARGS_ADD(args, MPS_KEY_ARENA_SIZE, arenasize);
     res = mps_arena_create_k(&Rps_Value_Data_Mostly_Copying::_arena,
-                             mps_arena_class_vm(), args);
+                             mps_arena_class_vm(),
+                             args);
   }
   MPS_ARGS_END(args);
 
-  if (res != MPS_RES_OK)
+  if (rps_unlikely(res != MPS_RES_OK))
     {
       perror("Couldn't create arena");
       abort();
     }
+
+  // make sure we can pick up finalisation messages
+  // TODO: need to check if it's OK to call here at this point
+  mps_message_type_enable(Rps_Value_Data_Mostly_Copying::_arena,
+                          mps_message_type_finalization());
 }
 
 
