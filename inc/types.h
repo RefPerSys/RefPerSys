@@ -354,6 +354,9 @@ protected:
 
     return addr;
   }
+
+private:
+  static void init_arena(void);
 }; // end of Rps_Value_Data_Mostly_Copying
 
 
