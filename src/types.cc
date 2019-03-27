@@ -31,6 +31,28 @@ void Rps_Value_Data_Mostly_Copying::init_arena(void)
 }
 
 
+// initialise MPS pool as Automatic Mostly Copying Type
+// TODO: need Dr. Basile's advice on object format and object chains; for the
+// time being, mps_pool_create_k() is being passed mps_args_none, but probably
+// need need to be passed object format and object chain parameters
+void Rps_Value_Data_Mostly_Copying::init_pool(void)
+{
+        // TODO: do we need to create object format?
+        // TODO: do we need to create object chain?
+
+        mps_res_t res = mps_pool_create_k(&Rps_Value_Data_Mostly_Copying::_pool,
+                                          Rps_Value_Data_Mostly_Copying::_arena,
+                                          mps_class_amc(),
+                                          mps_args_none);
+
+  if (rps_unlikely(res != MPS_RES_OK))
+    {
+      perror("Couldn't create AMC pool");
+      abort();
+    }
+}
+
+
 // initialise MPS allocation point
 // the allocation point allows fast inline allocation for objects from the MPS
 // pool
@@ -52,6 +74,7 @@ void Rps_Value_Data_Mostly_Copying::init_ap(void)
 void Rps_Value_Data_Mostly_Copying::init_mps(void)
 {
   Rps_Value_Data_Mostly_Copying::init_arena();
+  Rps_Value_Data_Mostly_Copying::init_pool();
   Rps_Value_Data_Mostly_Copying::init_ap();
 }
 
