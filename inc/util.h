@@ -45,11 +45,6 @@ extern "C" const char rps_git_commit[];
 extern "C" const char rps_build_timestamp[];
 
 
-// TODO: remove dead code if approved by Dr. Basile
-#if 0
-/* Mersenne twister */
-extern "C" uint64_t rps_random_uint64(void);
-#endif
 
 
 
@@ -75,26 +70,25 @@ static inline void rps_perror_mps_reserve(size_t size)
 }
 
 
+
+
+
 // Singleton to generate random numbers through the Mersenne Twister algorithm
 class RpsRandom
 {
 public:
-  // gets singleton instance, creating it if required
+  // gets singleton thread-local instance; this is likely to be unneeded
   static RpsRandom *getInstance(void)
   {
-    if (rps_unlikely (!_pInstance))
-      {
-        _pInstance = new RpsRandom;
-      }
-
-    return _pInstance;
+    return &_instance;
   }
 
   // generates 32-bit random number by seeding a Mersenne Twister with a random
   // entropy pool
-  uint32_t generate32(void)
+  uint32_t generate32_here(void)
   {
-    if (rps_unlikely (++_counter % 65536 == 0))
+    // we post-increment, since we need to seed when used first
+    if (rps_unlikely (_counter++ % 65536 == 0))
       {
         std::random_device rd;
         std::seed_seq seeds { rd(), rd(), rd(), rd(), rd(), rd(), rd() };
@@ -103,34 +97,34 @@ public:
 
     return _twister();
   }
-
+  static uint32_t generate32(void) { return _instance.generate32_here(); };
+  static uint32_t generate32_nonzero(void) {
+    uint32_t u;
+    do { u= generate32(); } while(u==0); 
+    return u;
+  }
   // generates 64-bit random number by combining two 32-bit random
   // numbers through bit manipulation
-  uint64_t generate64(void)
+  uint64_t generate64_here(void)
   {
     return (static_cast<uint64_t>(generate32()) << 32)
-           | static_cast<uint64_t>(generate32());
+      | static_cast<uint64_t>(generate32());
   }
+  static uint64_t generate64(void) { return _instance.generate64_here(); };
 
 private:
   // thread-safe global singleton instance
-  static thread_local RpsRandom* _pInstance;
+  static thread_local RpsRandom _instance;
 
   // Mersenne Twister
-  static thread_local std::mt19937 _twister;
+  std::mt19937 _twister;
 
   // random number counter
-  static thread_local uint_fast64_t _counter;
+  uint_fast64_t _counter;
 
   // private default constructor
-  RpsRandom()
-  { }
-
-  // private copy constructor
-  RpsRandom(RpsRandom const&);
-
-  // private assignment operator
-  RpsRandom& operator =(RpsRandom const&);
+  // TODO: check that random_device is used once
+  RpsRandom() : _twister(std::mt19937(std::random_device{}())), _counter(0) {};
 
 }; // end class RpsRandom
 
