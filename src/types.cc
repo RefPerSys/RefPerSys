@@ -9,7 +9,7 @@ thread_local mps_ap_t Rps_Value_Data_Mostly_Copying::_allocpt = nullptr;
 
 // initialize MPS arena
 // the arena is requested from the OS
-void 
+void
 Rps_Value_Data_Mostly_Copying::init_arena(void)
 {
   // we may have to tune that `arenasize` a bit. Basile's guess is
@@ -48,13 +48,13 @@ Rps_Value_Data_Mostly_Copying::init_arena(void)
 // TODO: need Dr. Basile's advice on object format and object chains; for the
 // time being, mps_pool_create_k() is being passed mps_args_none, but probably
 // need need to be passed object format and object chain parameters
-void 
+void
 Rps_Value_Data_Mostly_Copying::init_pool(void)
 {
   // Basile thinks: if that short routine is called *only* from
   // Rps_Value_Data_Mostly_Copying::init_mps we could move its code
   // there.
-  
+
   // TODO: do we need to create object format? Basile don't know yet. That could be decided later.
   // TODO: do we need to create object chain? Basile don't know yet. That could be decided later.
   // Basile reminds: the priority is the primordial persistence milestone.
@@ -75,7 +75,7 @@ Rps_Value_Data_Mostly_Copying::init_pool(void)
 // initialise MPS allocation point
 // the allocation point allows fast inline allocation for objects from the MPS
 // pool
-void 
+void
 Rps_Value_Data_Mostly_Copying::init_ap(void)
 {
   mps_res_t res = mps_ap_create_k(&Rps_Value_Data_Mostly_Copying::_allocpt,
@@ -93,7 +93,7 @@ Rps_Value_Data_Mostly_Copying::init_ap(void)
 
 
 // initialise MPS area, pool, and allocation pointer
-void 
+void
 Rps_Value_Data_Mostly_Copying::init_mps(void)
 {
   // Basile thinks: If these routines are only called here, we might want to move

@@ -32,17 +32,24 @@
 #ifndef REFPERSYS_UTIL_INCLUDED
 #define REFPERSYS_UTIL_INCLUDED
 
+
 /* include required header files */
 #include <stdint.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <random>
+
 
 /* in generated _timestamp.c */
 extern "C" const char rps_git_commit[];
 extern "C" const char rps_build_timestamp[];
 
+
+// TODO: remove dead code if approved by Dr. Basile
+#if 0
 /* Mersenne twister */
 extern "C" uint64_t rps_random_uint64(void);
+#endif
 
 
 
@@ -66,6 +73,75 @@ static inline void rps_perror_mps_reserve(size_t size)
            size);
   perror(errmsg);
 }
+
+
+// Singleton to generate random numbers through the Mersenne Twister algorithm
+class RpsRandom
+{
+public:
+  // gets singleton instance, creating it if required
+  static RpsRandom *getInstance(void)
+  {
+    if (rps_unlikely (!_pInstance))
+      {
+        _pInstance = new RpsRandom;
+      }
+
+    return _pInstance;
+  }
+
+  // generates 32-bit random number by seeding a Mersenne Twister with a random
+  // entropy pool
+  uint32_t generate32(void)
+  {
+    if (rps_unlikely (++_counter % 65536 == 0))
+      {
+        std::random_device rd;
+        std::seed_seq seeds { rd(), rd(), rd(), rd(), rd(), rd(), rd() };
+        _twister.seed(seeds);
+      }
+
+    return _twister();
+  }
+
+  // generates 64-bit random number by combining two 32-bit random
+  // numbers through bit manipulation
+  uint64_t generate64(void)
+  {
+    return (static_cast<uint64_t>(generate32()) << 32)
+           | static_cast<uint64_t>(generate32());
+  }
+
+private:
+  // thread-safe global singleton instance
+  static thread_local RpsRandom* _pInstance;
+
+  // Mersenne Twister
+  static thread_local std::mt19937 _twister;
+
+  // random number counter
+  static thread_local uint_fast64_t _counter;
+
+  // private default constructor
+  RpsRandom()
+  { }
+
+  // private copy constructor
+  RpsRandom(RpsRandom const&);
+
+  // private assignment operator
+  RpsRandom& operator =(RpsRandom const&);
+
+}; // end class RpsRandom
+
+
+// 96-bit object ID represented in base 62
+class RpsObjectId
+{
+private:
+  uint64_t _hi; // most significant 64-bits
+  uint32_t _lo; // least significant 32-bits
+}; // end class RpsObjectId
 
 
 #endif /* REFPERSYS_UTIL_INCLUDED */

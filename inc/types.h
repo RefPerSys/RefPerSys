@@ -211,7 +211,8 @@ public:
   {
     do
       {
-        m_word = rps_random_uint64();
+        //m_word = rps_random_uint64();
+        m_word = RpsRandom::getInstance()->generate64();
       }
     while (!this->valid());
   }

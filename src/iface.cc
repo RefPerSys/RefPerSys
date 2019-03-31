@@ -59,7 +59,8 @@ extern rps_serial63 rps_serial63_make(void)
    * and whether we need to be concerned about endianness */
   do
     {
-      s63 = (rps_serial63) rps_random_uint64();
+      //s63 = (rps_serial63) rps_random_uint64();
+      s63 = RpsRandom::getInstance()->generate64();
     }
   while (!rps_serial63_valid(s63));
 
