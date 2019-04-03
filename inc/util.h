@@ -156,13 +156,6 @@ private:
 }; // end class RpsRandom
 
 
-// 96-bit object ID represented in base 62
-class RpsObjectId
-{
-private:
-  uint64_t _hi; // most significant 64-bits
-  uint32_t _lo; // least significant 32-bits
-}; // end class RpsObjectId
 
 
 #endif /* REFPERSYS_UTIL_INCLUDED */

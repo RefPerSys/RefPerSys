@@ -96,5 +96,5 @@ clean:
 
 # rule to beautify files to GNU styling standards
 indent:
-	$(AS) $(ASFLAGS) inc/*.h src/*.cc
+	$(AS) $(ASFLAGS) inc/*.h inc/*.hh src/*.cc
 
