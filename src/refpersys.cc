@@ -119,8 +119,8 @@ static error_t argopt_parse(int key, char *arg, struct argp_state *state)
   switch (key)
     {
     case KEY_PRAND:
-      printf("RpsRandom::getInstance()->generate64(): %" PRIu64 "\n",
-             RpsRandom::getInstance()->generate64());
+      printf("RpsRandom::generate64(): %" PRIu64 "\n",
+             RpsRandom::generate64());
       break;
 
     default:

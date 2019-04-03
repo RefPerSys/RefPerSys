@@ -5,6 +5,7 @@ _*.h
 */*.mkd
 *.orig
 refpersys
+mps/
 
 # Backup
 *~
