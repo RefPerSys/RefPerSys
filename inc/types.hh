@@ -2,6 +2,9 @@
 #define RPS_TYPES_DEFINED
 
 
+#include <cassert>
+
+
 // 96-bit object ID represented in base 62
 class RpsObjectId
 {
@@ -20,7 +23,9 @@ public:
   RpsObjectId(uint64_t msb = 0, uint32_t lsb = 0)
           : _hi(msb)
           , _lo(lsb)
-           { }
+  {
+          assert((msb == 0 && lsb == 0) || hash() != 0);
+  }
 
   // overloaded constructor
   RpsObjectId(std::nullptr_t)
@@ -90,6 +95,12 @@ public:
   uint32_t get_lsb_32() const
   {
           return _lo;
+  }
+
+  // gets the hash value
+  uint32_t get_hash() const
+  {
+    return (_hi % 2147473837) + ((_hi >> 32) ^ (_lo * 17 + 201151));
   }
 
 private:
