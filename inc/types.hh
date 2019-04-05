@@ -1,6 +1,7 @@
 #if (!defined RPS_TYPES_DEFINED)
 #define RPS_TYPES_DEFINED
 
+
 // 96-bit object ID represented in base 62
 class RpsObjectId
 {
@@ -12,19 +13,19 @@ public:
 
   // checks whether this object ID is equal to another
   // uses concept that XOR is identical to !=
-  bool operator == (const RpsObjectId& cmp)
+  bool operator == (const RpsObjectId &cmp)
   {
     return (_hi == cmp._hi) && (_lo == cmp._lo);
   }
 
   // checks whether this object ID is not equal to another
-  bool operator != (const RpsObjectId& cmp)
+  bool operator != (const RpsObjectId &cmp)
   {
     return !(*this == cmp);
   }
 
   // checks whether this object ID is greater than another
-  bool operator > (const RpsObjectId& cmp)
+  bool operator > (const RpsObjectId &cmp)
   {
     if (_hi < cmp._hi)
       {
@@ -41,21 +42,33 @@ public:
   }
 
   // checks whether this object ID is less than another
-  bool operator < (const RpsObjectId& cmp)
+  bool operator < (const RpsObjectId &cmp)
   {
     return cmp > *this;
   }
 
   // checks whether this object ID is greater than or equal to another
-  bool operator >= (const RpsObjectId& cmp)
+  bool operator >= (const RpsObjectId &cmp)
   {
     return !(*this < cmp);
   }
 
   // checks whether this object ID is less than or equal to another
-  bool operator <= (const RpsObjectId& cmp)
+  bool operator <= (const RpsObjectId &cmp)
   {
     return !(*this > cmp);
+  }
+
+  // gets the most significant 64-bits
+  uint64_t get_msb_64() const
+  {
+          return _hi;
+  }
+
+  // gets the least significant 32-bits
+  uint32_t get_lsb_32() const
+  {
+          return _lo;
   }
 
 private:
