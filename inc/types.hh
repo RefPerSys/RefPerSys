@@ -14,7 +14,7 @@ public:
   // uses concept that XOR is identical to !=
   bool operator == (const RpsObjectId& cmp)
   {
-    return !(_hi ^ cmp._hi) && !(_lo ^ cmp._lo);
+    return (_hi == cmp._hi) && (_lo == cmp._lo);
   }
 
   // checks whether this object ID is not equal to another
