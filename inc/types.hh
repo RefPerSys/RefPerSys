@@ -11,6 +11,27 @@ public:
                               "abcdefghijklmnopqrstuvwxyz"
                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+  // default constructor
+  RpsObjectId()
+          : RpsObjectId(0, 0)
+  { }
+
+  // overload constructor
+  RpsObjectId(uint64_t msb = 0, uint32_t lsb = 0)
+          : _hi(msb)
+          , _lo(lsb)
+           { }
+
+  // overloaded constructor
+  RpsObjectId(std::nullptr_t)
+          : RpsObjectId()
+  { }
+
+  // default copy constructor
+  RpsObjectId(const RpsObjectId &rhs)
+          : RpsObjectId(rhs.get_msb_64(), rhs.get_lsb_32())
+  { }
+
   // checks whether this object ID is equal to another
   // uses concept that XOR is identical to !=
   bool operator == (const RpsObjectId &cmp)
