@@ -3,6 +3,7 @@
 
 
 #include <cassert>
+#include "util.h"
 
 
 // 96-bit object ID represented in base 62
@@ -13,28 +14,61 @@ public:
   static constexpr DIGITS[] = "0123456789"
                               "abcdefghijklmnopqrstuvwxyz"
                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  static constexpr MSB_MIN = (uint64_t) 62 * 62 * 62;
+  static constexpr MSB_MAX = (uint64_t) 10 * 62 * MSB_MIN * MSB_MIN * MSB_MIN;
+  static constexpr LSB_MIN = (uint32_t) 62 * 62;
+  static constexpr LSB_MAX = (uint32_t) 62 * LSB_MIN * LSB_MIN * LSB_MIN;
+
+
+  // generates a random object ID
+  static RpsObjectId generate_random()
+  {
+    while (true)
+      {
+        auto msb = RpsRandom::generate64_nonzero() % RpsObjectId::MSB_MAX;
+        if (rps_unlikely (msb < MSB_MIN))
+          {
+            continue;
+          }
+
+        auto lsb = RpsRandom::generate32_nonzero() % RpsObjectId::LSB_MAX;
+        if (rps_unlikely (lsb < LSB_MIN))
+          {
+            continue;
+          }
+
+        auto oid = RpsObjectId(msb, lsb);
+        if (rps_unlikely (oid.get_hash() == 0))
+          {
+            continue;
+          }
+
+        return oid;
+      }
+  }
+
 
   // default constructor
   RpsObjectId()
-          : RpsObjectId(0, 0)
+    : RpsObjectId(0, 0)
   { }
 
   // overload constructor
-  RpsObjectId(uint64_t msb = 0, uint32_t lsb = 0)
-          : _hi(msb)
-          , _lo(lsb)
+  RpsObjectId(uint64_t msb, uint32_t lsb)
+    : _hi(msb)
+    , _lo(lsb)
   {
-          assert((msb == 0 && lsb == 0) || hash() != 0);
+    assert((msb == 0 && lsb == 0) || get_hash() != 0);
   }
 
   // overloaded constructor
   RpsObjectId(std::nullptr_t)
-          : RpsObjectId()
+    : RpsObjectId(RpsObjectId::generate_random())
   { }
 
   // default copy constructor
   RpsObjectId(const RpsObjectId &rhs)
-          : RpsObjectId(rhs.get_msb_64(), rhs.get_lsb_32())
+    : RpsObjectId(rhs.get_msb_64(), rhs.get_lsb_32())
   { }
 
   // checks whether this object ID is equal to another
@@ -88,13 +122,13 @@ public:
   // gets the most significant 64-bits
   uint64_t get_msb_64() const
   {
-          return _hi;
+    return _hi;
   }
 
   // gets the least significant 32-bits
   uint32_t get_lsb_32() const
   {
-          return _lo;
+    return _lo;
   }
 
   // gets the hash value
