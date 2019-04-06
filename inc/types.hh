@@ -143,8 +143,56 @@ private:
 }; // end class RpsObjectId
 
 
+// represents a memory zone in the MPS AMS pool
+class RpsMarkSweepZone;
+
+
 // represents the MPS memory zone allocated for RpsObject instances
-class RpsObjectMemoryZone;
+class RpsObjectZone : public RpsMarkSweepZone
+{
+public:
+  uint32_t get_hash() const
+  {
+    return _id.get_hash();
+  }
+
+  // compares an object zone instance with another for equality
+  // this function is required since we can't overload the
+  // equality operator with RpsObjectZone*
+  bool is_eq(const RpsObjectZone* rhs)
+  {
+    if (!rhs)
+      {
+        return false;
+      }
+
+    if (this != rhs && _id != rhs->_id)
+      {
+        return false;
+      }
+
+    return true;
+  }
+
+  // overloaded equality operator
+  bool operator == (RpsObjectZone& rhs) const
+  {
+    return is_eq(&rhs);
+  }
+
+  // overloaded inequality operator
+  bool operator != (RpsObjectZone& rhs) const
+  {
+    return !is_eq(&rhs);
+  }
+private:
+  RpsObjectId _id;
+
+  // private constructor
+  RpsObjectZone(RpsObjectID id)
+    : _id(id)
+  { }
+};
 
 
 // represents a reference to a Refpersys object
@@ -214,7 +262,7 @@ public:
   }
 
 private:
-  RpsObjectMemoryZone *zone; // pointer to MPS memory zone for objects
+  RpsObjectZone *zone; // pointer to MPS memory zone for objects
 };
 
 
