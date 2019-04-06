@@ -1,6 +1,6 @@
 # refpersys
 
-The Reflective Persistent System language is a **research project**, taking many good ideas from [Bismon](http://github.com/bstarynk/bismon) but avoiding bad ideas from it.
+The Reflective Persistent System language is a **research project**, taking many good ideas from [Bismon](http://github.com/bstarynk/bismon), sharing a lot of goals (except static source code analysis) with it but avoiding bad ideas from it.
 
 For Linux/x86-64 only.
 
