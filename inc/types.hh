@@ -142,5 +142,81 @@ private:
   uint32_t _lo; // least significant 32-bits
 }; // end class RpsObjectId
 
+
+// represents the MPS memory zone allocated for RpsObject instances
+class RpsObjectMemoryZone;
+
+
+// represents a reference to a Refpersys object
+class RpsObjectReference
+{
+public:
+
+  // default constructor
+  RpsObject(RpsObjectZone *zone = nullptr)
+    : _zone(zone)
+  { }
+
+  // overloaded functor
+  operator bool () const
+  {
+    return _zone != nullptr;
+  }
+
+  // overloaded negation operator
+  operator bool ! () const
+  {
+    return _zone == nullptr
+  }
+
+  // overloaded cast operator
+  operator const RpsObjectZone* () const
+  {
+    return get_zone();
+  }
+
+  // overloaded cast operator
+  operator RpsObjectZone* () const
+  {
+    return get_zone();
+  }
+
+  // overloaded cast operator
+  operator RpsObjectZone* ()
+  {
+    return get_zone();
+  }
+
+  // overloaded indirection operator
+  RpsObjectZone* operator -> () const
+  {
+    return get_zone();
+  }
+
+  // overloaded indirection operator
+  RpsObjectZone* operator -> ()
+  {
+    return get_zone();
+  }
+
+  // accessor to get pointer to MPS memory zone for objects
+  RpsObjectZone *get_zone() const
+  {
+    assert(_zone != nullptr);
+    return _zone;
+  }
+
+  // mutator to set pointer to MPS memory zone for objects
+  void set_zone(RpsObjectZone *zone)
+  {
+    assert(zone != nullptr);
+    _zone = zone;
+  }
+
+private:
+  RpsObjectMemoryZone *zone; // pointer to MPS memory zone for objects
+};
+
+
 #endif // !defined RPS_TYPES_DEFINED
 
