@@ -266,5 +266,73 @@ private:
 };
 
 
+// represents the data of a Refpersys value
+class RpsValueData;
+
+
+// represents a reference to a Refpersys value
+class RpsValueRef
+{
+  friend class RpsValueZone;
+
+private:
+  union
+  {
+    RpsValueData* _valdata;
+    intptr_t _intdata;
+  };
+
+public:
+  RpsValueRef()
+    : _valdata(nullptr)
+  { }
+
+  RpsValueRef(const RpsValueData *valdata)
+    : _valdata(valdata)
+  { }
+
+  RpsValueRef(int64_t intdata)
+    : _intdata(intdata)
+  { }
+
+  RpsValueRef(const RpsValueRef& src)
+    : _valdata(src._valdata)
+  { }
+
+  RpsValueRef(const RpsValueRef& src)
+    : _intdata(src._intdata)
+  { }
+
+  RpsValueRef& operator= (const RpsValueRef& rhs)
+  {
+    _valdata = rhs._valdata;
+    return *this;
+  };
+
+  // TODO: need to add move assignment operator; Abhishek is still trying to
+  // understand the concept of move assignment
+  RpsValueRef& operator= (RpsValue&& rhs) noexcept
+
+  bool is_int() const
+  {
+    // QUERY: Abhishek thinks that this checks for the least significant bit;
+    // does that mean that we are considering pointers with their least bit set
+    // as integers? I was under (perhaps incorrectly) the impression that we
+    // would be using the MSB to indicate whether a pointer is an integer
+    return (_intdata & 0x1) != 0;
+  };
+
+  bool is_value() const
+  {
+    return !is_int();
+  }
+
+  bool has_value() const
+  {
+    return is_value() && _valdata != nullptr;
+  }
+} // end of RpsValueRef
+
+
 #endif // !defined RPS_TYPES_DEFINED
 
