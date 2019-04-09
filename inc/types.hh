@@ -310,8 +310,9 @@ protected:
     _valtype = type;
   }
 
+  /// allocation respecting the MPS allocation point protocol.
   template <typename T, typename... Args>
-  static T* allocate(uint32_t gap, Args... args)
+  static T* allocate_with_gap(uint32_t gap, Args... args)
   {
     auto sz = sizeof(T);
     assert(sz % alignof(T) == 0);
@@ -336,7 +337,14 @@ protected:
 
     return res;
   }
-
+  
+  /// allocation without any gap; we need a different name to avoid
+  /// collision with previous template
+  template <typename T, typename... Args>
+  static T* allocate(Args... args)
+  {
+    return allocate_with_gap<T,...Args>(0, args...);
+  }
 private:
   RpsType _valtype;
 
