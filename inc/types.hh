@@ -311,14 +311,16 @@ protected:
   }
 
   template <typename T, typename... Args>
-  static T* allocate(Args... args)
+  static T* allocate(uint32_t gap, Args... args)
   {
     auto sz = sizeof(T);
     assert(sz % alignof(T) == 0);
+    assert(gap % alignof(T) == 0);
     assert(T::_allocpt != nullptr);
 
     mps_addr_t addr = nullptr;
     T* res = nullptr;
+    sz += gap;
 
     do
       {
