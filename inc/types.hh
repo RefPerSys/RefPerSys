@@ -266,14 +266,33 @@ private:
 };
 
 
+// enumerates the Refpersys types
+enum RpsType
+{
+  RPS_TYPE_INTEGER = -1,
+  RPS_TYPE_NONE = 0,
+  RPS_TYPE_STRING,
+  RPS_TYPE_DOUBLE,
+  RPS_TYPE_SET,
+  RPS_TYPE_TUPLE,
+  RPS_TYPE_OBJECT
+}; // end of RpsType
+
+
 // represents the data of a Refpersys value
-class RpsValueData;
+class alignas(alignof(RpsValueRef)) RpsValueData
+{
+  friend class RpsValueData;
+
+private:
+  RpsType _valtype;
+}; // end of RpsValueData
 
 
 // represents a reference to a Refpersys value
 class RpsValueRef
 {
-  friend class RpsValueZone;
+  friend class RpsValueData;
 
 private:
   union
@@ -331,7 +350,7 @@ public:
   {
     return is_value() && _valdata != nullptr;
   }
-} // end of RpsValueRef
+}; // end of RpsValueRef
 
 
 #endif // !defined RPS_TYPES_DEFINED
