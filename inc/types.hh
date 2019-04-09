@@ -286,8 +286,8 @@ class alignas(alignof(RpsValueRef)) RpsValueData
 
 public:
   // alignment of value type
-  template<typename ValueType>
-  static constexpr unsigned ALIGNMENT = alignof(ValueType);
+  template<typename T>
+  static constexpr unsigned ALIGNMENT = alignof(T);
 
   // default constructor
   RpsValueData(RpsType type)
@@ -308,6 +308,31 @@ protected:
   {
     assert(type > RPS_TYPE_NONE);
     _valtype = type;
+  }
+
+  template <typename T, typename... Args>
+  static T* allocate(Args... args)
+  {
+    auto sz = sizeof(T);
+    assert(sz % alignof(T) == 0);
+    assert(T::_allocpt != nullptr);
+
+    mps_addr_t addr = nullptr;
+    T* res = nullptr;
+
+    do
+      {
+        mps_res_t res = mps_reserve(&addr, T::_allocpt, sz);
+        if (!res)
+          {
+            RpsValueData::on_mps_fail(sz);
+          }
+
+        res = new (addr) T(args...);
+      }
+    while (!mps_commit(T::_allocpt, addr, sz));
+
+    return res;
   }
 
 private:
