@@ -282,7 +282,28 @@ enum RpsType
 // represents the data of a Refpersys value
 class alignas(alignof(RpsValueRef)) RpsValueData
 {
-  friend class RpsValueData;
+  friend class RpsValueRef;
+
+public:
+  RpsValueData(RpsType type)
+    : _valtype(type)
+  {
+    assert(type > RPS_TYPE_NONE)
+  }
+
+  // accessor to get type
+  RpsType get_type() const
+  {
+    return _valtype;
+  }
+
+protected:
+  // mutator to set type
+  void set_type(RpsType type)
+  {
+    assert(type > RPS_TYPE_NONE);
+    _valtype = type;
+  }
 
 private:
   RpsType _valtype;
