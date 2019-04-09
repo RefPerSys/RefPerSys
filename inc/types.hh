@@ -285,6 +285,11 @@ class alignas(alignof(RpsValueRef)) RpsValueData
   friend class RpsValueRef;
 
 public:
+  // alignment of value type
+  template<typename ValueType>
+  static constexpr unsigned ALIGNMENT = alignof(ValueType);
+
+  // default constructor
   RpsValueData(RpsType type)
     : _valtype(type)
   {
@@ -307,6 +312,47 @@ protected:
 
 private:
   RpsType _valtype;
+
+  // handles MPS failure event
+  [[noreturn]] static void on_mps_fail(const RpsValueData *vdata,
+                                       uint64_t reqsz,
+                                       const char* msg = nullptr)
+  {
+    if (msg)
+      {
+        fprintf(stderr,
+                "failed to allocate %ld bytes for %p (%s)\n",
+                reqsz,
+                (const void*) this,
+                msg);
+      }
+    else
+      {
+        fprintf(stderr,
+                "failed to allocate %ld bytes for %p\n",
+                wantedsize,
+                (const void*) this);
+      }
+
+    abort();
+  }
+
+  // overloaded MSP failure event handler
+  [[noreturn]] static void on_mps_fail(uint64_t reqsz,
+                                       const char* msg = nullptr)
+  {
+    if (msg)
+      {
+        fprintf(stderr, "failed to allocate %ld bytes (%s)\n", reqsz, msg);
+      }
+    else
+      {
+        fprintf(stderr, "failed to allocate %ld\n", reqsz);
+      }
+
+    abort();
+  }
+
 }; // end of RpsValueData
 
 
