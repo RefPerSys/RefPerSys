@@ -3,6 +3,8 @@
 
 
 #include <cassert>
+#include <cstring>
+#include <unistr.h>
 #include "util.h"
 
 
@@ -278,8 +280,64 @@ enum RpsType
   RPS_TYPE_OBJECT
 }; // end of RpsType
 
+class RpsValueData;
 
-// represents the data of a Refpersys value
+/// represents a Refpersys value
+/// RpsValue <=> PbValue
+class RpsValue
+{
+  friend class RpsValueData;
+
+private:
+  union
+  {
+    RpsValueData* _valdata;
+    intptr_t _intdata;
+  };
+
+public:
+  RpsValue()
+    : _valdata(nullptr)
+  { }
+
+  RpsValue(const RpsValueData *valdata)
+    : _valdata(valdata)
+  { }
+
+  RpsValue(const RpsValue& src)
+    : _valdata(src._valdata)
+  { }
+
+  RpsValue& operator= (const RpsValue& rhs)
+  {
+    _valdata = rhs._valdata;
+    return *this;
+  };
+
+  // TODO: need to add move assignment operator; Abhishek is still trying to
+  // understand the concept of move assignment
+  RpsValue& operator= (RpsValue&& rhs) noexcept;
+
+  /// the least significant bit indicates whether or not RpsValue is a tagged
+  /// integer or not
+  bool is_int() const
+  {
+    return (_intdata & 0x1) != 0;
+  };
+
+  bool is_value() const
+  {
+    return !is_int();
+  }
+
+  bool has_value() const
+  {
+    return is_value() && _valdata != nullptr;
+  }
+}; // end of RpsValueRef
+
+/// represents the data of a Refpersys value
+/// RpsValueData <=> PbZoneValue
 class alignas(alignof(RpsValue)) RpsValueData
 {
   friend class RpsValue;
@@ -293,7 +351,7 @@ public:
   RpsValueData(RpsType type)
     : _valtype(type)
   {
-    assert(type > RPS_TYPE_NONE)
+    assert(type > RPS_TYPE_NONE);
   }
 
   // accessor to get type
@@ -391,58 +449,84 @@ private:
 }; // end of RpsValueData
 
 
-/// represents a Refpersys value
-class RpsValue
+
+
+/// RpsScalarData <=> PbScalarCopyingZoneValue
+class RpsScalarData : public RpsValueData
 {
   friend class RpsValueData;
 
+protected:
+  static thread_local mps_ap_t _allocpt;
+
+  // default constructor
+  RpsScalarData(RpsType type)
+    : RpsValueData(type)
+  { }
+}; // end class RpsScalarData
+
+
+/// RpsDouble <=> PbDoubleZone
+class RpsDouble : public RpsScalarData
+{
+public:
+  static constexpr RpsType TYPE = RPS_TYPE_DOUBLE;
+
+  static RpsDouble* create(double unboxed = 0.0);
+
 private:
-  union
-  {
-    RpsValueData* _valdata;
-    intptr_t _intdata;
-  };
+  intptr_t _unused;
+  double _unboxed;
+
+  RpsDouble(double unboxed = 0.0)
+    : RpsScalarData(RPS_TYPE_DOUBLE)
+    , _unboxed(unboxed)
+  { }
+}; // end of RpsDouble
+
+
+/// RpsString <=> PbScalarCopyingZoneValue
+class RpsString : public RpsScalarData
+{
+  friend class RpsScalarData;
+  friend class RpsValueData;
 
 public:
-  RpsValue()
-    : _valdata(nullptr)
-  { }
+  static constexpr RpsType TYPE = RPS_TYPE_STRING;
 
-  RpsValue(const RpsValueData *valdata)
-    : _valdata(valdata)
-  { }
+  static uint32_t get_hash(const char* str, size_t len = -1);
+  static RpsString* make(const char* str, size_t len = -1);
 
-  RpsValue(const RpsValue& src)
-    : _valdata(src._valdata)
-  { }
-
-  RpsValue& operator= (const RpsValue& rhs)
+  static size_t get_gap_size(size_t sz)
   {
-    _valdata = rhs._valdata;
-    return *this;
-  };
-
-  // TODO: need to add move assignment operator; Abhishek is still trying to
-  // understand the concept of move assignment
-  RpsValue& operator= (RpsValue&& rhs) noexcept
-
-  /// the least significant bit indicates whether or not RpsValue is a tagged
-  /// integer or not
-  bool is_int() const
-  {
-    return (_intdata & 0x1) != 0;
-  };
-
-  bool is_value() const
-  {
-    return !is_int();
+    return (sz + sizeof (void*) +1 ) & (~(size_t) (alignof(RpsValue) - 1));
   }
 
-  bool has_value() const
+  uint32_t size() const
   {
-    return is_value() && _valdata != nullptr;
+    return _len;
+  };
+
+protected:
+  RpsString(const char *str, size_t len = -1)
+    : RpsScalarData(RPS_TYPE_STRING)
+    , _hash(0)
+    , _len((size_t) len < 0 ? (str ? strlen(str) : 0) : len)
+  {
+    assert(u8_check((const uint8_t*) str, len) == nullptr);
+
+    memcpy(_bytes, str, len);
+    _hash = get_hash(_bytes, len);
+    _bytes[len] = '\0';
   }
-}; // end of RpsValueRef
+
+private:
+  intptr_t _unused;
+  size_t _len;
+  uint32_t _hash;
+  char _bytes[];
+
+}; // end of RpsString
 
 
 #endif // !defined RPS_TYPES_DEFINED
