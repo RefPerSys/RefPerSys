@@ -530,5 +530,19 @@ private:
 }; // end of RpsString
 
 
+/// RpsAmcValueData <=> PbMostlyCopyingZoneValue
+class RpsAmcValueData : public RpsValueData
+{
+  friend class RpsValueData;
+
+protected:
+  static thread_local mps_ap_t _allocpt;
+
+  RpsAmcValueData(RpsType type)
+    : RpsValueData(type)
+  { }
+}; // end of class RpsAmcValueData
+
+
 #endif // !defined RPS_TYPES_DEFINED
 
