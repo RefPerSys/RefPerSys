@@ -463,6 +463,9 @@ protected:
   RpsScalarData(RpsType type)
     : RpsValueData(type)
   { }
+
+private:
+  intptr_t _unused;
 }; // end class RpsScalarData
 
 
@@ -475,7 +478,6 @@ public:
   static RpsDouble* create(double unboxed = 0.0);
 
 private:
-  intptr_t _unused;
   double _unboxed;
 
   RpsDouble(double unboxed = 0.0)
@@ -499,7 +501,7 @@ public:
 
   static size_t get_gap_size(size_t sz)
   {
-    return (sz + sizeof (void*) +1 ) & (~(size_t) (alignof(RpsValue) - 1));
+    return (sz + sizeof (void*) + 1 ) & (~(size_t) (alignof(RpsValue) - 1));
   }
 
   uint32_t size() const
@@ -521,7 +523,6 @@ protected:
   }
 
 private:
-  intptr_t _unused;
   size_t _len;
   uint32_t _hash;
   char _bytes[];
