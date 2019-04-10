@@ -280,9 +280,9 @@ enum RpsType
 
 
 // represents the data of a Refpersys value
-class alignas(alignof(RpsValueRef)) RpsValueData
+class alignas(alignof(RpsValue)) RpsValueData
 {
-  friend class RpsValueRef;
+  friend class RpsValue;
 
 public:
   // alignment of value type
@@ -337,7 +337,7 @@ protected:
 
     return res;
   }
-  
+
   /// allocation without any gap; we need a different name to avoid
   /// collision with previous template
   template <typename T, typename... Args>
@@ -391,8 +391,8 @@ private:
 }; // end of RpsValueData
 
 
-// represents a reference to a Refpersys value
-class RpsValueRef
+/// represents a Refpersys value
+class RpsValue
 {
   friend class RpsValueData;
 
@@ -404,27 +404,19 @@ private:
   };
 
 public:
-  RpsValueRef()
+  RpsValue()
     : _valdata(nullptr)
   { }
 
-  RpsValueRef(const RpsValueData *valdata)
+  RpsValue(const RpsValueData *valdata)
     : _valdata(valdata)
   { }
 
-  RpsValueRef(int64_t intdata)
-    : _intdata(intdata)
-  { }
-
-  RpsValueRef(const RpsValueRef& src)
+  RpsValue(const RpsValue& src)
     : _valdata(src._valdata)
   { }
 
-  RpsValueRef(const RpsValueRef& src)
-    : _intdata(src._intdata)
-  { }
-
-  RpsValueRef& operator= (const RpsValueRef& rhs)
+  RpsValue& operator= (const RpsValue& rhs)
   {
     _valdata = rhs._valdata;
     return *this;
@@ -432,14 +424,12 @@ public:
 
   // TODO: need to add move assignment operator; Abhishek is still trying to
   // understand the concept of move assignment
-  RpsValueRef& operator= (RpsValue&& rhs) noexcept
+  RpsValue& operator= (RpsValue&& rhs) noexcept
 
+  /// the least significant bit indicates whether or not RpsValue is a tagged
+  /// integer or not
   bool is_int() const
   {
-    // QUERY: Abhishek thinks that this checks for the least significant bit;
-    // does that mean that we are considering pointers with their least bit set
-    // as integers? I was under (perhaps incorrectly) the impression that we
-    // would be using the MSB to indicate whether a pointer is an integer
     return (_intdata & 0x1) != 0;
   };
 
