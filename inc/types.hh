@@ -544,5 +544,33 @@ protected:
 }; // end of class RpsAmcValueData
 
 
+/// RpsAmcHashedValueData <=> PbMostlyCopyingZoneValue
+class RpsAmcHashedValueData : public RpsAmcValueData
+{
+  friend class RpsValueData;
+  friend class RpsAmcValueData;
+
+public:
+  uint32_t get_hash() const
+  {
+    return _hash;
+  };
+
+protected:
+  uint32_t _hash;
+
+  RpsAmcHashedValueData(RpsType type, uint32_t hash = 0)
+    : RpsAmcValueData(type)
+    , _hash(hash)
+  { }
+
+  void set_hash(uint32_t hash)
+  {
+    assert(hash != 0);
+    _hash = hash;
+  };
+};				// end class PbCopyingHashedZoneValue
+
+
 #endif // !defined RPS_TYPES_DEFINED
 
