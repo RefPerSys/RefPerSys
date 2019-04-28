@@ -6,7 +6,8 @@ _*.h
 *.orig
 refpersys
 mps/
-
+OMake*.omc
+.omakedb*
 # Backup
 *~
 
