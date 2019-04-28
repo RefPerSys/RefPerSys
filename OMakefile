@@ -1,0 +1,96 @@
+########################################################################
+## file OMakefile
+##
+## Description:
+##      This file is part of the Reflective Persistent System.
+##
+##      It is its OMakefile, for the omake automation builder.
+##      It is a small adaptation of standard OMakefile-s (MIT licensed)
+##
+## Author(s):
+##      Basile Starynkevitch <basile@starynkevitch.net>
+##      Niklas Rosencrantz <niklasro@gmail.com>
+##      Abhishek Chakravarti <abhishek@taranjali.org>
+##
+##      © Copyright 2019 The Reflective Persistent System Team
+##      <https://refpersys.gitlab.io>
+##
+## License:
+##    This program is free software: you can redistribute it and/or modify
+##    it under the terms of the GNU General Public License as published by
+##    the Free Software Foundation, either version 3 of the License, or
+##    (at your option) any later version.
+##
+##    This program is distributed in the hope that it will be useful,
+##    but WITHOUT ANY WARRANTY; without even the implied warranty of
+##    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##    GNU General Public License for more details.
+##
+##    You should have received a copy of the GNU General Public License
+##    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+
+########################################################################
+# Phony targets are scoped, so you probably want to declare them first.
+#
+
+.PHONY: all install clean
+
+.DEFAULT: all
+
+########################################################################
+# Subdirectories.
+# You may want to include some subdirectories in this project.
+# If so, define the subdirectory targets and uncomment this section.
+#
+
+# .SUBDIRS:
+
+########################################################################
+# C and C++ configuration.
+#
+
+################################################
+# Configuration.  You might want to modify any of these
+# configuration variables.
+#
+DIALECTFLAGS = -std=gnu++17
+OPTIMFLAGS = -O1 -g
+WARNFLAGS = -Wall -Wextra
+CXX= g++
+CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(WARNFLAGS)
+
+# ASFLAGS +=
+LDFLAGS += -L/usr/local/lib -rdynamic -lmps -lunistring -lpthread
+
+INCLUDES += /usr/local/include
+REFPERSYS_BASE_FILES[] =
+   main_rps
+   garbcoll_rps
+   objects_rps
+   values_rps
+
+
+REFPERSYS_BASE_HEADERS[] = refpersys
+
+CXXProgram(refpersys, $(REFPERSYS_BASE_FILES))
+
+
+
+CLEAN[] =
+  .omakedb
+  .*~
+  *~
+  *.orig
+  *.o
+  *omc
+  .omak*
+  core
+  refpersys
+
+clean:
+    rm -vf $(CLEAN)
+
+all: refpersys
+	sync
