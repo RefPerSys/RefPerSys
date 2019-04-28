@@ -1871,8 +1871,8 @@ class Rps_GarbageCollector
   // forbid instantiation:
   Rps_GarbageCollector() = delete;
   static unsigned constexpr _gc_thrmagic_ = 951957269 /*0x38bdb715*/;
-  // a global flag which becomes set when GC is needed
-  static std::atomic<bool> _gc_wanted;
+  // a global flag which becomes set when GC is needed, any other thread might set it at any time.  It is used by maybe_garbcoll which should be called quite often, typically every few milliseconds.
+  static volatile std::atomic<bool> _gc_wanted;
   ////////////////
   // each worker thread should have its own
   struct thread_allocation_data
@@ -1892,9 +1892,12 @@ class Rps_GarbageCollector
 public:
   static void scan_call_stack(Rps_CallFrameZone*callfram);
   static void run_garbcoll(Rps_CallFrameZone*callfram);
+  // worker threads should call this very often, typically once every
+  // few milliseconds:
   static void maybe_garbcoll(Rps_CallFrameZone*callfram)
   {
-    if (_gc_wanted.load()) run_garbcoll(callfram);
+    if (_gc_wanted.load())
+      run_garbcoll(callfram);
   };
   static void*allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*callfram)
   {

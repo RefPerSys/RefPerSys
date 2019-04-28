@@ -102,6 +102,7 @@ Rps_MemoryBlock::allocate_aligned_zone(size_t size, size_t align)
 
 
 
+volatile
 std::atomic<bool> Rps_GarbageCollector::_gc_wanted;
 
 thread_local Rps_GarbageCollector::thread_allocation_data*
