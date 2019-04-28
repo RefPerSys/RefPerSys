@@ -46,9 +46,9 @@ const struct argp_option rps_argopt_vec[] =
   {
     .name = "print-random-id",
     .key = Rps_Key_PrintRandomId,
-    .arg = NULL,
+    .arg = "count",
     .flags = OPTION_ARG_OPTIONAL,
-    .doc = "print a random objectid",
+    .doc = "print one or several random objectid[s]",
     .group = 0,
   },
   {
@@ -128,14 +128,24 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
     {
     case Rps_Key_PrintRandomId:
     {
-      auto rdid = Rps_Id::random();
-      char cbuf[24];
-      memset (cbuf,0,sizeof(cbuf));
-      rdid.to_cbuf24(cbuf);
-      printf("random object id: %s (hi=%#llx,lo=%#llx) h=%u\n",
-             cbuf,
-             (unsigned long long)rdid.hi(), (unsigned long long)rdid.lo(),
-             (unsigned)rdid.hash());
+      int count = 1;
+      const char*countstr = arg;
+      if (countstr && countstr[0])
+        count = std::stoi(countstr);
+      if (count > 1)
+        printf("printing %d random id\n", count);
+      for (int ix=0; ix<count; ix++)
+        {
+          auto rdid = Rps_Id::random();
+          char cbuf[24];
+          memset (cbuf,0,sizeof(cbuf));
+          rdid.to_cbuf24(cbuf);
+          printf("random object id#%d: %s (hi=%#llx,lo=%#llx) h=%u\n",
+                 ix,
+                 cbuf,
+                 (unsigned long long)rdid.hi(), (unsigned long long)rdid.lo(),
+                 (unsigned)rdid.hash());
+        }
     }
     break;
     case Rps_Key_ExplainTypes:
