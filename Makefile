@@ -53,7 +53,9 @@ REFPERSYS_BASE_FILES = 				\
    objects_rps					\
    random_rps					\
    garbcoll_rps					\
+   perstore_rps                                 \
    values_rps
+
 REFPERSYS_BASE_HEADERS = inc-refpersys
 ### end of variables to be kept in sync with those in OMakefile
 ################

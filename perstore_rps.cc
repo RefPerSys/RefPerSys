@@ -28,6 +28,21 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+/*****
+ * Possible printable, non-letter, non-ASCII Unicode UTF-8 characters
+ * that could appear in the persistent store files may include some of
+ * the following: 
+ *
+ *     the € U+20AC EURO SIGN
+ *     the £ U+00A3 POUND SIGN
+ *     the § U+00A7 SECTION SIGN
+ *     the ¥ U+00A5 YEN SIGN
+ *     the ¤ U+00A4 CURRENCY SIGN
+ *     the ° U+00B0 DEGREE SIGN
+ * 
+ * TODO: add any relevant other characters above, if needed.
+ *****/
+
 #include "refpersys.hh"
 
 

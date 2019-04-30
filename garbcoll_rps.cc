@@ -71,7 +71,7 @@ Rps_MemoryBlock::operator new(size_t size)
             RPS_FATAL("failed to munmap @%p (%m)", ad);
           ad = (void*)nextad;
           if ((char*)ad + size < endad && munmap((char*)ad+size, (char*)endad - ((char*)ad + size)))
-            RPS_FATAL("failed to munmap @%p (%m)", (void*) ((char*) ad+size));
+            RPS_FATAL("failed to munmap @%p (%m)", ad+size);
         }
     };
   return ad;
@@ -101,36 +101,5 @@ Rps_MemoryBlock::allocate_aligned_zone(size_t size, size_t align)
 } // end Rps_MemoryBlock::operator delete
 
 
-
-volatile
-std::atomic<bool> Rps_GarbageCollector::_gc_wanted;
-
-thread_local Rps_GarbageCollector::thread_allocation_data*
-Rps_GarbageCollector::_gc_thralloc_;
-
-Rps_GarbageCollector::global_allocation_data
-Rps_GarbageCollector::_gc_globalloc_;
-
-void
-Rps_GarbageCollector::run_garbcoll(Rps_CallFrameZone*callfram)
-{
-  _gc_wanted.store(true);
-  if (callfram)
-    scan_call_stack(callfram);
-  // we need to synchronize with other worker threads
-#warning unimplemented Rps_MemoryBlock::run_garbcoll
-  RPS_FATAL("Rps_MemoryBlock::run_garbcoll unimplemented");
-} // end Rps_GarbageCollector::run_garbcoll
-
-
-void
-Rps_GarbageCollector::scan_call_stack(Rps_CallFrameZone*callfram)
-{
-  assert (callfram != nullptr);
-  /// we should scan and forward all the pointers on the call stack,
-  /// starting with the topmost callfram
-#warning unimplemented Rps_MemoryBlock::scan_call_stack
-  RPS_FATAL("Rps_MemoryBlock::scan_call_stack unimplemented");
-} // end Rps_GarbageCollector::scan_call_stack
 
 /// end of file garbcoll_rps.cc
