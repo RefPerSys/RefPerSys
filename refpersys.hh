@@ -93,6 +93,7 @@ static_assert(alignof(mps_word_t) == alignof(void*));
 extern void print_types_info(void);
 
 class Rps_CallFrameZone;
+class Rps_GarbageCollector;
 
 #define RPS_FLEXIBLE_DIM 0	/* for flexible array members */
 
@@ -102,9 +103,9 @@ class Rps_CallFrameZone;
 
 
 extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
-#define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {				\
-    fprintf(stderr, "RefPerSys FATAL:%s:%d: <%s>\n " Fmt "\n\n",	\
-            Fil, Lin, __func__, ##__VA_ARGS__);				\
+#define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {                   \
+    fprintf(stderr, "RefPerSys FATAL:%s:%d: <%s>\n " Fmt "\n\n",       \
+            Fil, Lin, __func__, ##__VA_ARGS__);                 \
     rps_fatal_stop_at (Fil,Lin); } while(0)
 
 #define RPS_FATAL_AT(Fil,Lin,Fmt,...) RPS_FATAL_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
@@ -117,8 +118,16 @@ typedef uint32_t Rps_BlockIndex;
 // memory
 class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MemoryBlock
 {
+  friend class Rps_GarbageCollector;
 public:
   static constexpr size_t _bl_minsize_ = 4*sizeof(void*);
+  enum BlockKind_en
+  {
+    blk_none=0,
+    blk_birth,
+    blk_largenew,
+    blk_marked,
+  };
 protected:
   const uint32_t _bl_kindnum;
   const Rps_BlockIndex _bl_ix;
@@ -128,8 +137,8 @@ private:
   void* const _bl_endptr;
   Rps_MemoryBlock* _bl_next;
   Rps_MemoryBlock* _bl_prev;
-  virtual ~Rps_MemoryBlock() = 0;
 protected:
+  virtual ~Rps_MemoryBlock() = 0;
   void* operator new(size_t size);
   void operator delete(void*);
   intptr_t _bl_meta[_bl_metasize_];
@@ -145,7 +154,88 @@ protected:
     return ptr;
   }
   void* allocate_aligned_zone (size_t size, size_t align);
-};				// end Rps_MemoryBock
+  template <class Meta> Meta& raw_metadata()
+  {
+    static_assert(sizeof(Meta) <= sizeof(_bl_meta));
+    static_assert(alignof(Meta) <= alignof(_bl_meta));
+    return *reinterpret_cast<Meta*>(_bl_meta);
+  };
+public:
+  unsigned remaining_bytes() const
+  {
+    assert ((char*)_bl_curptr <= (char*)_bl_endptr);
+    return (char*)_bl_endptr - (char*)_bl_curptr;
+  };
+};				// end Rps_MemoryBlock
+
+
+class Rps_BirthMemoryBlock : public Rps_MemoryBlock
+{
+  friend class Rps_GarbageCollector;
+  struct birthmetadata_st
+  {
+  };
+  struct birthmetadata_st& metadata()
+  {
+    return raw_metadata<birthmetadata_st>();
+  };
+  Rps_BirthMemoryBlock(Rps_BlockIndex ix) :
+    Rps_MemoryBlock(blk_birth, ix, RPS_SMALL_BLOCK_SIZE - sizeof(Rps_BirthMemoryBlock)) {};
+  ~Rps_BirthMemoryBlock() {};
+public:
+  static constexpr unsigned _remain_threshold_ = RPS_SMALL_BLOCK_SIZE/5;
+  bool almost_full() const
+  {
+    return remaining_bytes() < _remain_threshold_;
+  };
+};				// end Rps_BirthMemoryBlock
+
+
+
+class  alignas(RPS_LARGE_BLOCK_SIZE) Rps_LargeNewMemoryBlock
+  : public Rps_MemoryBlock
+{
+  friend class Rps_GarbageCollector;
+  struct largenewmetadata_st
+  {
+  };
+  struct largenewmetadata_st& metadata()
+  {
+    return raw_metadata<largenewmetadata_st>();
+  };
+  Rps_LargeNewMemoryBlock(Rps_BlockIndex ix) :
+    Rps_MemoryBlock(blk_largenew, ix, RPS_LARGE_BLOCK_SIZE - sizeof(Rps_LargeNewMemoryBlock)) {};
+  ~Rps_LargeNewMemoryBlock() {};
+public:
+  static constexpr unsigned _remain_threshold_ = RPS_LARGE_BLOCK_SIZE/5;
+  bool almost_full() const
+  {
+    return remaining_bytes() < _remain_threshold_;
+  };
+};				// end Rps_LargeNewMemoryBlock
+
+
+class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MarkedMemoryBlock
+  : public Rps_MemoryBlock
+{
+  friend class Rps_GarbageCollector;
+  struct markedmetadata_st
+  {
+  };
+  struct markedmetadata_st& metadata()
+  {
+    return raw_metadata<markedmetadata_st>();
+  };
+  Rps_MarkedMemoryBlock(Rps_BlockIndex ix) :
+    Rps_MemoryBlock(blk_marked, ix, RPS_SMALL_BLOCK_SIZE - sizeof(Rps_MarkedMemoryBlock)) {};
+  ~Rps_MarkedMemoryBlock() {};
+public:
+  static constexpr unsigned _remain_threshold_ = RPS_SMALL_BLOCK_SIZE/5;
+  bool almost_full() const
+  {
+    return remaining_bytes() < _remain_threshold_;
+  };
+};				// end Rps_MarkedMemoryBlock
 
 
 
@@ -461,6 +551,7 @@ class Rps_SequenceObrefZone;
 class Rps_Value
 {
   friend class Rps_ZoneValue;
+  friend class Rps_GarbageCollector;
   union
   {
     const Rps_ZoneValue* _datav;
@@ -562,14 +653,10 @@ public:
 class alignas(alignof(Rps_Value)) Rps_ZoneValue
 {
   friend class Rps_Value;
+  friend class Rps_GarbageCollector;
   enum Rps_Type _vtyp;
 protected:
   struct zone_tag {};
-  static inline void* allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram);
-  static void* operator new  (std::size_t siz, zone_tag, Rps_CallFrameZone*callfram)
-  {
-    return allocate_rps_zone(siz,callfram);
-  }
   static void* operator new (std::size_t, void*ptr)
   {
     return ptr;
@@ -580,7 +667,7 @@ public:
                                          unsigned gap, Args... args)
   {
     assert (gap % alignof(ValClass) == 0);
-    void* ptr = allocate_rps_zone(sizeof(ValClass)+gap,calfram);
+    void* ptr = ValClass::allocate_rps_zone(sizeof(ValClass)+gap,calfram);
     ValClass* result = new(ptr) ValClass(args...);
     return result;
   }
@@ -614,7 +701,7 @@ public:
     size_t siz = sizeof(ValClass);
     assert (siz % alignof(ValClass) == 0);
     ValClass* result = nullptr;
-    void* ptr = allocate_rps_zone(siz,calfram);
+    void* ptr = ValClass::allocate_rps_zone(siz,calfram);
     result = new(ptr) ValClass(args...);
     return result;
   }
@@ -700,6 +787,7 @@ public:
 class Rps_CallFrameZone : public Rps_ZoneValue
 {
   friend class Rps_Loader;
+  friend class Rps_GarbageCollector;
   const unsigned _cf_size;
   int _cf_state;
   Rps_CallFrameZone* _cf_prev;
@@ -764,28 +852,26 @@ public:
 #define RPS_CURFRAME ((Rps_CallFrameZone*)&_)
 #define RPS_WRITE_BARRIER() rps_write_barrier(RPS_CURFRAME)
 
-#define RPS_LOCALFRAME_AT_BIS(Lin,PrevFrame,Descr,...)		\
+#define RPS_LOCALFRAME_AT(Lin,PrevFrame,Descr,...)		\
   struct rps_localvars_##Lin { __VA_ARGS__ };			\
   constexpr unsigned _rps_localframesize_##Lin			\
   = sizeof(rps_localvars_##Lin)/sizeof(Rps_ZoneValue*);		\
   class  Rps_Framecl_##Lin :					\
     public Rps_SizedCallFrameZone<_rps_localframesize_##Lin> {	\
-  public:							\
-  Rps_Framecl_##Lin (Rps_CallFrameZone*cfra##Lin,		\
-                         Rps_ObjectRef descr##Lin)		\
-    :  Rps_SizedCallFrameZone<_rps_localframesize_##Lin>	\
-    (cfra##Lin,descr##Lin) {};					\
-  ~Rps_Framecl_##Lin () {};					\
 public:								\
-__VA_ARGS__							\
+Rps_Framecl_##Lin(Rps_CallFrameZone*callingframe##Lin,		\
+                         Rps_ObjectRef descr##Lin)		\
+: Rps_SizedCallFrameZone<_rps_localframesize_##Lin>		\
+ (callingframe##Lin,descr##Lin) {};				\
+__VA_ARGS__;							\
 } /*end class  Rps_Framecl_##Lin*/;				\
 Rps_Framecl_##Lin _(PrevFrame,Descr)
 
-#define RPS_LOCALFRAME_AT(Lin,PrevFrame,Descr,...) RPS_LOCALFRAME_AT_BIS(Lin,PrevFrame,Descr,##__VA_ARGS__)
+#define RPS_LOCALFRAME_AT_BIS(Lin,PrevFrame,Descr,...) \
+  RPS_LOCALFRAME_AT(Lin,PrevFrame,Descr,__VA_ARGS__)
 
-/// when using RPS_LOCALFRAME don't forget the semicolon before the closing parenthesis
 #define RPS_LOCALFRAME(PrevFrame,Descr,...) \
-  RPS_LOCALFRAME_AT(__LINE__,(PrevFrame),(Descr), ##__VA_ARGS__)
+  RPS_LOCALFRAME_AT_BIS(__LINE__,(PrevFrame),(Descr), __VA_ARGS__)
 
 #ifdef RPS_HAVE_MPS
 ////////////////////////////////////////////////////////////////
@@ -852,6 +938,11 @@ protected:
 #ifdef RPS_HAVE_MPS
   static thread_local mps_ap_t mps_allocpoint_;
 #endif /*RPS_HAVE_MPS*/
+  static inline void* allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram);
+  static void* operator new  (std::size_t siz, zone_tag, Rps_CallFrameZone*callfram)
+  {
+    return allocate_rps_zone(siz,callfram);
+  }
   Rps_PointerCopyingZoneValue(Rps_Type ty) : Rps_ZoneValue(ty) {};
 public:
 };				// end class Rps_PointerCopyingZoneValue
@@ -873,6 +964,12 @@ class Rps_MutableCopyingZoneValue : public Rps_PointerCopyingZoneValue
   friend class Rps_ZoneValue;
   Rps_MutableCopyingZoneValue(Rps_Type ty)
     : Rps_PointerCopyingZoneValue(ty) {};
+protected:
+  static inline void* allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram);
+  static void* operator new  (std::size_t siz, zone_tag, Rps_CallFrameZone*callfram)
+  {
+    return allocate_rps_zone(siz,callfram);
+  }
 public:
 };				// end class Rps_MutableCopyingZoneValue
 
@@ -894,6 +991,12 @@ protected:
   static thread_local mps_ap_t mps_allocpoint_;
 #endif /*RPS_HAVE_MPS*/
   Rps_ScalarCopyingZoneValue(Rps_Type ty) : Rps_ZoneValue(ty) {};
+protected:
+  static inline void* allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram);
+  static void* operator new  (std::size_t siz, zone_tag, Rps_CallFrameZone*callfram)
+  {
+    return allocate_rps_zone(siz,callfram);
+  }
 public:
 };				// end class Rps_ScalarCopyingZoneValue
 
@@ -922,6 +1025,12 @@ protected:
   virtual size_t mps_size(void) const =0;
   static thread_local mps_ap_t mps_allocpoint_;
 #endif /*RPS_HAVE_MPS*/
+protected:
+  static inline void* allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram);
+  static void* operator new  (std::size_t siz, zone_tag, Rps_CallFrameZone*callfram)
+  {
+    return allocate_rps_zone(siz,callfram);
+  }
 public:
 };				// end class Rps_MarkSweepZoneValue
 
@@ -1163,6 +1272,10 @@ private:
     Rps_SequenceObrefZone(Rps_TyTuple, siz,
                           hash_of_array(Rps_TyTuple, siz, arr),
                           arr) { };
+  static void* operator new (std::size_t, void*ptr)
+  {
+    return ptr;
+  };
 public:
   static constexpr Rps_Type zone_type = Rps_TyTuple;
   static Rps_TupleObrefZone* make(Rps_CallFrameZone*,uint32_t siz, const Rps_ObjectRef*arr);
@@ -1224,6 +1337,10 @@ class Rps_SetObrefZone : public Rps_SequenceObrefZone
   friend class Rps_ZoneValue;
   friend class Rps_TupleObrefZone;
 private:
+  static void* operator new (std::size_t, void*ptr)
+  {
+    return ptr;
+  };
   Rps_SetObrefZone(uint32_t siz, const Rps_ObjectRef*arr) :
     Rps_SequenceObrefZone(Rps_TySet, siz,
                           hash_of_array(Rps_TySet, siz, arr),
@@ -1342,6 +1459,10 @@ private:
     char _strbytes[RPS_FLEXIBLE_DIM];
   };
 protected:
+  static void* operator new (std::size_t, void*ptr)
+  {
+    return ptr;
+  };
   Rps_StringZone(const char*sbytes, int32_t slen= -1, bool skipcheck=false) :
     Rps_ScalarCopyingZoneValue(Rps_TyString),
     _strlen((uint32_t)(slen<0)?(sbytes?(slen=strlen(sbytes)):(slen=0)):slen), _strhash(0)
@@ -1518,6 +1639,10 @@ class Rps_ObjectZone : public  Rps_MarkSweepZoneValue
     : Rps_ObjectZone(oid)
   {
     assert (&buck == &bucket(oid));
+  };
+  static void* operator new (std::size_t, void*ptr)
+  {
+    return ptr;
   };
 
 protected:
@@ -1740,13 +1865,155 @@ Rps_Value::as_object() const
 
 
 ////////////////////////////////////////////////////////////////
-void*
-Rps_ZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram)
+/**
+ * The garbage collector
+ *
+ * There is no actual instance of Rps_GarbageCollector, but that class is
+ * grouping static data and member functions related to garbage
+ * collection and allocation support.  Perhaps it should be a C++
+ * namespace, not a C++ class.
+ */
+class Rps_GarbageCollector
 {
-#warning unimplemented ZoneValue::allocate_rps_zone
-  RPS_FATAL("unimplemented ZoneValue::allocate_rps_zone totalsize=%zd callfram@%p",
-            totalsize, (void*)callfram);
-}      // end of Rps_ZoneValue::allocate_rps_zone
+  // forbid instantiation:
+  Rps_GarbageCollector() = delete;
+  static unsigned constexpr _gc_thrmagic_ = 951957269 /*0x38bdb715*/;
+  // a global flag which becomes set when GC is needed
+  static std::atomic<bool> _gc_wanted;
+  ////////////////
+  // each worker thread should have its own
+  struct thread_allocation_data
+  {
+    const unsigned _tha_magic; // always _gc_thrmagic_
+    Rps_BirthMemoryBlock* _tha_birthblock;
+  };
+  static thread_local thread_allocation_data* _gc_thralloc_;
+  ////////////////
+  // for non-worker thread and large allocation, we have a global
+  // static
+  struct global_allocation_data
+  {
+    std::mutex _gla_mutex;
+    Rps_BirthMemoryBlock* _gla_birthblock;
+    Rps_LargeNewMemoryBlock* _gla_largenewblock;
+  };
+  static global_allocation_data _gc_globalloc_;
+  ////////////////
+public:
+  static void scan_call_stack(Rps_CallFrameZone*callfram);
+  static void run_garbcoll(Rps_CallFrameZone*callfram);
+  static void maybe_garbcoll(Rps_CallFrameZone*callfram)
+  {
+    if (_gc_wanted.load()) run_garbcoll(callfram);
+  };
+  static void*allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*callfram)
+  {
+    void* ad = nullptr;
+    assert (size < RPS_SMALL_BLOCK_SIZE - Rps_MarkedMemoryBlock::_remain_threshold_ - 4*sizeof(void*));
+    maybe_garbcoll(callfram);
+#warning Rps_GarbageCollector::allocated_marked_maybe_gc unimplemented
+    RPS_FATAL("Rps_GarbageCollector::allocated_marked_maybe_gc unimplemented size=%zd", size);
+  };
+  static void*allocate_birth_maybe_gc(size_t size, Rps_CallFrameZone*callfram)
+  {
+    void* ad = nullptr;
+    assert (size < RPS_LARGE_BLOCK_SIZE - Rps_LargeNewMemoryBlock::_remain_threshold_ - 4*sizeof(void*));
+    assert (size % (2*alignof(Rps_Value)) == 0);
+    maybe_garbcoll(callfram);
+    if (size < RPS_SMALL_BLOCK_SIZE - Rps_BirthMemoryBlock::_remain_threshold_ - 4*sizeof(void*))
+      {
+        if (_gc_thralloc_)
+          {
+            Rps_BirthMemoryBlock*birthblock = _gc_thralloc_->_tha_birthblock;
+            while (!ad)
+              {
+                if (birthblock && birthblock->remaining_bytes() > size)
+                  {
+                    ad = birthblock->allocate_zone(size);
+                  }
+                else
+                  {
+                    _gc_wanted.store(true);
+                    Rps_GarbageCollector::run_garbcoll(callfram);
+                    // on the next loop, allocation should succeed
+                    continue;
+                  };
+              };
+          }
+        else   // no _gc_thralloc_
+          {
+            void* ad = nullptr;
+            while (!ad)
+              {
+                {
+                  std::lock_guard<std::mutex> _gu(_gc_globalloc_._gla_mutex);
+                  Rps_BirthMemoryBlock*globirthblock = _gc_globalloc_._gla_birthblock;
+                  if (globirthblock && globirthblock->remaining_bytes() > size)
+                    {
+                      ad = globirthblock->allocate_zone(size);
+                      break;
+                    }
+                  else
+                    {
+                      _gc_wanted.store(true);
+                    }
+                }
+                if (!ad)
+                  Rps_GarbageCollector::maybe_garbcoll (callfram);
+              }
+          }
+      } // end small size
+    else if (size < RPS_LARGE_BLOCK_SIZE  - Rps_LargeNewMemoryBlock::_remain_threshold_ - 4*sizeof(void*))
+      {
+        void* ad = nullptr;
+        while (!ad)
+          {
+            {
+              std::lock_guard<std::mutex> _gu(_gc_globalloc_._gla_mutex);
+              Rps_LargeNewMemoryBlock*glolargenewblock = _gc_globalloc_._gla_largenewblock;
+              if (glolargenewblock && glolargenewblock->remaining_bytes() > size)
+                {
+                  ad = glolargenewblock->allocate_zone(size);
+                  break;
+                }
+              else
+                {
+                  _gc_wanted.store(true);
+                }
+            }
+            if (!ad)
+              Rps_GarbageCollector::maybe_garbcoll (callfram);
+          };
+      } // end large size
+    else RPS_FATAL("too big size %zd for allocate_birth_maybe_gc", size);
+  };
+};				// end class Rps_GarbageCollector
+
+
+////////////////////////////////////////////////////////////////
+void*
+Rps_PointerCopyingZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram)
+{
+  return Rps_GarbageCollector::allocate_birth_maybe_gc(totalsize, callfram);
+}      // end of Rps_PointerCopyingZoneValue::allocate_rps_zone
+
+void*
+Rps_MutableCopyingZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram)
+{
+  return Rps_GarbageCollector::allocate_birth_maybe_gc(totalsize, callfram);
+}      // end of Rps_MutableCopyingZoneValue::allocate_rps_zone
+
+void*
+Rps_ScalarCopyingZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram)
+{
+  return Rps_GarbageCollector::allocate_birth_maybe_gc(totalsize, callfram);
+}      // end of Rps_ScalarCopyingZoneValue::allocate_rps_zone
+
+void*
+Rps_MarkSweepZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram)
+{
+  return Rps_GarbageCollector::allocate_marked_maybe_gc(totalsize, callfram);
+}      // end of Rps_MarkSweepZoneValue::allocate_rps_zone
 
 #endif /*REFPERSYS_INCLUDED*/
 // end of file refpersys.hh */
