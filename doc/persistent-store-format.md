@@ -53,9 +53,9 @@ JSON format.
 
 **name** = { unicode character } ;
 
-**component** = "(", **oid**, [ "," ], { (**oid**, [ "," ]) }, ")" ;
+**component** = "comp", "=", "(", **oid**, [ "," ], { (**oid**, [ "," ]) }, ")" ;
 
-**payload** = "(", **oid**, [ "," ], { (**oid**, [ "," ]) }, ")" ;
+**payload** = "pload", "=", "(", **oid**, [ "," ], { (**oid**, [ "," ]) }, ")" ;
 
 
 ## Example
@@ -67,17 +67,17 @@ whitespace):
 oid : class @ mtime (
         name = ...,
         space = ...,
-        components = (
+        comp = (
                 oid,
                 oid,
                 ...
         ),
-        payloads = (
+        pload = (
                 oid,
                 oid,
                 ...
         ),
-        attributes = (
+        attr = (
                 oid = "for string",
                 oid = 1234.5678,
                 oid = {                 # for sets
