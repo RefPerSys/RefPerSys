@@ -57,6 +57,17 @@ JSON format.
 
 **payload** = "pload", "=", "(", **oid**, [ "," ], { (**oid**, [ "," ]) }, ")" ;
 
+**attribute** = "attr", "=", { **string** }, [ "," ], { **double** }, [ "," ],
+              { **set** }, [ "," ], { **tuple** } ;
+
+**string** = **oid**, "=", unicode character, { unicode character } ;
+
+**double** = **oid**, "=", floating point number ;
+
+**set** = **oid**, "=", "{", **oid**, [ "," ], { **oid** }, "}" ;
+
+**tuple** = **oid**, "=", "[", **oid**, [ "," ], { **oid** }, "]" ;
+
 
 ## Example
 
