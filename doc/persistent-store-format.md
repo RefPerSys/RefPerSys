@@ -49,7 +49,7 @@ JSON format.
 
 **class** = **oid** ;
 
-**mtime** = [ floating point number ]
+**mtime** = [ floating point number ] ;
 
 **name** = { unicode character } ;
 
