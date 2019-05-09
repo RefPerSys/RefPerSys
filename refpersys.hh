@@ -102,6 +102,11 @@ class Rps_GarbageCollector;
 #define RPS_SMALL_BLOCK_SIZE (8<<20)
 #define RPS_LARGE_BLOCK_SIZE (8*RPS_SMALL_BLOCK_SIZE)
 
+// give, using some a table of primes, some prime number above or below a
+// given integer, and reasonably close to it (e.g. less than 20% from
+// it).
+extern "C" int64_t rps_prime_above (int64_t n);
+extern "C" int64_t rps_prime_below (int64_t n);
 
 extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 #define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {                   \
@@ -1087,8 +1092,9 @@ public:
 class Rps_QuasiAttributeArray : public Rps_PointerCopyingZoneValue
 {
   friend class Rps_ObjectZone;
-  uint16_t _qsizattr;	// allocated size
-  uint16_t _qnbattrs;	// used number of entries
+  // on a 64 bits machine, we are 8 byte aligned, so both of them are:
+  uint32_t _qsizattr;	// allocated size
+  uint32_t _qnbattrs;	// used number of entries
   std::pair<Rps_ObjectRef,Rps_Value> _qatentries[RPS_FLEXIBLE_DIM];
   // this constructor is private, it is called inside Rps_ObjectZone
   Rps_QuasiAttributeArray(unsigned siz, unsigned nb, const std::pair<Rps_ObjectRef,Rps_Value>*arr)
@@ -1098,9 +1104,10 @@ class Rps_QuasiAttributeArray : public Rps_PointerCopyingZoneValue
     assert(siz <= nb);
     assert(nb==0 || arr != nullptr);
     memset((void*)_qatentries, 0, siz*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
-    if (nb>0)
+    if (nb>0 && arr)
       memcpy((void*)_qatentries, arr, nb*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
   }
+  static inline const std::pair<Rps_ObjectRef,Rps_Value> nullpair{nullptr,nullptr};
 public:
   std::pair<Rps_ObjectRef,Rps_Value>* begin()
   {
@@ -1110,20 +1117,20 @@ public:
   {
     return _qatentries+_qnbattrs;
   }
-  uint16_t allocated_size() const
+  uint32_t allocated_size() const
   {
     return _qsizattr;
   };
-  uint16_t count() const
+  uint32_t count() const
   {
-    _qnbattrs;
+    return _qnbattrs;
   };
   const std::pair<Rps_ObjectRef,Rps_Value>&operator [] (int ix) const
   {
     if (ix<0) ix += _qnbattrs;
-    if (ix>=0 && ix < _qnbattrs)
+    if (ix>=0 && ix < (int)_qnbattrs)
       return _qatentries[ix];
-    return std::pair<Rps_ObjectRef,Rps_Value>(nullptr,nullptr);
+    return nullpair;
   };
   const std::pair<Rps_ObjectRef,Rps_Value>&unsafe_at(int ix) const
   {
@@ -1133,7 +1140,7 @@ public:
   put_at(int ix, Rps_ObjectRef keyob, Rps_Value va)
   {
     if (ix<0) ix += _qnbattrs;
-    if (ix>=0 && ix<_qnbattrs && keyob && va)
+    if (ix>=0 && ix<(int)_qnbattrs && keyob && va)
       {
         _qatentries[ix].first = keyob;
         _qatentries[ix].second = va;
@@ -1143,7 +1150,8 @@ public:
   const Rps_ObjectRef attr_at(int ix) const
   {
     if (ix<0) ix += _qnbattrs;
-    if (ix>=0 && ix<_qnbattrs) return _qatentries[ix].first;
+    if (ix>=0 && ix<(int)_qnbattrs)
+      return _qatentries[ix].first;
     return nullptr;
   }
   const Rps_ObjectRef unsafe_attr_at(int ix) const
@@ -1153,7 +1161,8 @@ public:
   const Rps_Value val_at(int ix) const
   {
     if (ix<0) ix += _qnbattrs;
-    if (ix>=0 && ix<_qnbattrs) return _qatentries[ix].second;
+    if (ix>=0 && ix<(int)_qnbattrs)
+      return _qatentries[ix].second;
     return nullptr;
   }
   const Rps_Value unsafe_val_at(int ix) const
@@ -1165,12 +1174,13 @@ public:
 ////////////////
 /// quasi components vectors are not first-class values, just
 /// quasivalues, but are pointed from most objects, those having
-/// up to a few thousands components.
+/// some components.
 class Rps_QuasiComponentVector : public Rps_PointerCopyingZoneValue
 {
   friend class Rps_ObjectZone;
-  uint16_t _qsizarr;	// allocated size
-  uint16_t _qnbcomp;	// used number of entries
+  // on a 64 bits machine, we are 8 byte aligned, so both of them are:
+  uint32_t _qsizarr;	// allocated size
+  uint32_t _qnbcomp;	// used number of components
   Rps_Value _qarrval[RPS_FLEXIBLE_DIM];
   // this constructor is private, it is called inside Rps_ObjectZone
   Rps_QuasiComponentVector(unsigned siz, unsigned nb, const Rps_Value*arr)
@@ -1180,28 +1190,30 @@ class Rps_QuasiComponentVector : public Rps_PointerCopyingZoneValue
     assert(siz <= nb);
     assert(nb==0 || arr != nullptr);
     memset((void*)_qarrval, 0, siz*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
-    if (nb>0)
+    if (nb>0 && arr)
       memcpy((void*)_qarrval, arr, nb*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
   }
 public:
-  uint16_t allocated_size() const
+  uint32_t allocated_size() const
   {
     return _qsizarr;
   };
-  uint16_t count() const
+  uint32_t count() const
   {
     return _qnbcomp;
   };
   Rps_Value operator [] (int ix) const
   {
     if (ix<0) ix += _qnbcomp;
-    if (ix>=0 && ix<_qnbcomp) return _qarrval[ix];
+    if (ix>=0 && ix<(int)_qnbcomp)
+      return _qarrval[ix];
     return nullptr;
   };
   Rps_Value& operator [] (int ix)
   {
     if (ix<0) ix += _qnbcomp;
-    if (ix>=0 && ix<_qnbcomp) return _qarrval[ix];
+    if (ix>=0 && ix<(int)_qnbcomp)
+      return _qarrval[ix];
     throw std::out_of_range("QuasiComponentVector out of range");
   };
   Rps_Value unsafe_at(int ix) const

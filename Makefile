@@ -54,6 +54,7 @@ REFPERSYS_BASE_FILES = 				\
    random_rps					\
    garbcoll_rps					\
    perstore_rps                                 \
+   primes_rps                                   \
    values_rps
 
 REFPERSYS_BASE_HEADERS = inc-refpersys

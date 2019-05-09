@@ -70,6 +70,7 @@ REFPERSYS_BASE_FILES[] =
    garbcoll_rps
    objects_rps
    perstore_rps
+   primes_rps
    values_rps
 
 

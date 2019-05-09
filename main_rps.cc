@@ -39,6 +39,8 @@ enum rps_option_key_en
   Rps_Key_PrintRandomId = 1024,
   Rps_Key_ParseId,
   Rps_Key_ExplainTypes,
+  Rps_Key_PrimeAbove,
+  Rps_Key_PrimeBelow,
 };
 
 const struct argp_option rps_argopt_vec[] =
@@ -49,6 +51,22 @@ const struct argp_option rps_argopt_vec[] =
     .arg = "count",
     .flags = OPTION_ARG_OPTIONAL,
     .doc = "print one or several random objectid[s]",
+    .group = 0,
+  },
+  {
+    .name = "prime-above",
+    .key = Rps_Key_PrimeAbove,
+    .arg = "number",
+    .flags = OPTION_ARG_OPTIONAL,
+    .doc = "print a prime above a given number",
+    .group = 0,
+  },
+  {
+    .name = "prime-below",
+    .key = Rps_Key_PrimeBelow,
+    .arg = "number",
+    .flags = OPTION_ARG_OPTIONAL,
+    .doc = "print a prime below a given number",
     .group = 0,
   },
   {
@@ -146,6 +164,26 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
                  (unsigned long long)rdid.hi(), (unsigned long long)rdid.lo(),
                  (unsigned)rdid.hash());
         }
+    }
+    break;
+    case Rps_Key_PrimeAbove:
+    {
+      long num = 0;
+      const char*numstr = arg;
+      if (numstr && numstr[0])
+        num = std::stoi(numstr);
+      long pr = rps_prime_above(num);
+      printf("A prime above %ld is %ld\n", num, pr);
+    }
+    break;
+    case Rps_Key_PrimeBelow:
+    {
+      long num = 0;
+      const char*numstr = arg;
+      if (numstr && numstr[0])
+        num = std::stoi(numstr);
+      long pr = rps_prime_below(num);
+      printf("A prime below %ld is %ld\n", num, pr);
     }
     break;
     case Rps_Key_ExplainTypes:
