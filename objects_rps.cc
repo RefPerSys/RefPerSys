@@ -103,7 +103,42 @@ Rps_ObjectZone::~Rps_ObjectZone()  /// only called by finalizer
 } // end of Rps_ObjectZone::~Rps_ObjectZone
 
 
+void Rps_ObjectZone::do_resize_components (unsigned size)
+{
+#warning unimplemented Rps_ObjectZone::do_resize_components
+  RPS_FATAL("unimplemented Rps_ObjectZone::do_resize_components @%p size=%u",
+            (void*)this, size);
+} // end Rps_ObjectZone::do_resize_components
 
+
+void Rps_ObjectZone::do_reset_components (unsigned size)
+{
+#warning unimplemented Rps_ObjectZone::do_reset_components
+  RPS_FATAL("unimplemented Rps_ObjectZone::do_reset_components @%p size=%u",
+            (void*)this, size);
+} // end Rps_ObjectZone::do_reset_components
+
+void Rps_ObjectZone::do_append_component(Rps_Value val)
+{
+#warning unimplemented Rps_ObjectZone::do_append_component
+  RPS_FATAL("unimplemented Rps_ObjectZone::do_append_component @%p val@%p",
+            (void*)this, (void*)val.unsafe_data());
+} // end Rps_ObjectZone::do_append_component
+
+
+void Rps_ObjectZone::do_put_attr(Rps_ObjectRef keyob, Rps_Value valat)
+{
+#warning unimplemented Rps_ObjectZone::do_put_attr
+  RPS_FATAL("unimplemented Rps_ObjectZone::do_put_attr key@%p val@%p",
+            (void*)this, (void*)keyob.optr(), (void*)valat.unsafe_data());
+} // end Rps_ObjectZone::do_put_attr
+
+void Rps_ObjectZone::do_remove_attr(Rps_ObjectRef keyob)
+{
+#warning unimplemented Rps_ObjectZone::do_remove_attr
+  RPS_FATAL("unimplemented Rps_ObjectZone::do_remove_attr key@%p",
+            (void*)this, (void*)keyob.optr());
+} // end Rps_ObjectZone::do_remove_attr
 
 #ifdef RPS_HAVE_MPS
 const void*

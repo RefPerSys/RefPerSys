@@ -1734,14 +1734,17 @@ class Rps_ObjectZone : public  Rps_MarkSweepZoneValue
   std::atomic<Rps_ObjectZone*> _ob_atomclass;
   // TODO: we need not only the lock but also some kind of object buckets
   Rps_ObjectZone(const Rps_Id& oid, Rps_ObjectRef obclass= nullptr)
-    : Rps_MarkSweepZoneValue(Rps_TyObject), _ob_id(oid), _ob_mtxlock(), _ob_atomclass(obclass)
+    : Rps_MarkSweepZoneValue(Rps_TyObject), _ob_id(oid), _ob_mtxlock(), _ob_atomclass(obclass),
+      _obat_kind(atk_none), _obat_null(), _ob_compvec(nullptr)
   {
   };
   virtual ~Rps_ObjectZone(); /// related to mps_finalize
+#ifdef RPS_HAVE_MPS
   virtual size_t mps_size(void) const
   {
     return sizeof(Rps_ObjectZone);
   };
+#endif /*RPS_HAVE_MPS*/
   // object buckets are useful to manage the association between ids and objects
   struct BucketOb_st
   {
@@ -1784,7 +1787,6 @@ protected:
     return mps_really_skip();
   };
 #endif /*RPS_HAVE_MPS*/
-#warning missing attributes and components in Rps_ObjectZone
   /*** Objects are quite common, and their attributes and
        components also.  Most objects have few attributes, we should
        special-case for that with efficiency in mind. For few
@@ -1804,6 +1806,24 @@ protected:
        components or thousands of attributes should be handled, but
        could be coded later, or at least could be optimized later.
    ***/
+private:
+  ///// attributes of objects
+  enum attrkind_en {atk_none, atk_small, atk_medium, atk_big};
+  attrkind_en _obat_kind;
+  static constexpr unsigned at_small_thresh= 10;
+  static constexpr unsigned at_sorted_thresh= 101; // a prime
+  union
+  {
+    std::nullptr_t _obat_null;		    // when atk_none
+    /// small unordered attributes, up to at_small_thresh entries:
+    Rps_QuasiAttributeArray* _obat_small_atar; // when atk_small
+    // medium-sized ascending-ordered attributes, up to at_sorted_thresh entries:
+    Rps_QuasiAttributeArray* _obat_sorted_atar; // when atk_medium
+    // big-sized attributes in a std::map
+    std::map<Rps_ObjectRef, Rps_Value> _obat_map_atar; // when atk_big
+  };
+  ///// components of objects
+  Rps_QuasiComponentVector* _ob_compvec;
 public:
   /// find an object of given id, or else null:
   static Rps_ObjectZone*find_by_id(const Rps_Id&id);
@@ -1903,6 +1923,113 @@ public:
     auto obcla = _ob_atomclass.load();
     return obcla;
   }
+  //// methods for attributes
+  int nb_attrs() const
+  {
+    switch (_obat_kind)
+      {
+      case atk_none:
+        return 0;
+      case atk_small:
+        return _obat_small_atar->count();
+      case atk_medium:
+        return _obat_sorted_atar->count();
+      case atk_big:
+        return _obat_map_atar.size();
+      }
+  };
+  Rps_Value get_attr(Rps_ObjectRef keyob) const
+  {
+    switch (_obat_kind)
+      {
+      case atk_none:
+        return nullptr;
+      case atk_small:
+      {
+        auto smalattrs = _obat_small_atar;
+        for (auto it: *smalattrs)
+          {
+            if (it.first == keyob)
+              return it.second;
+          }
+        break;
+      }
+      case atk_medium:
+      {
+        unsigned ln = _obat_sorted_atar->count();
+        assert (ln <= at_sorted_thresh);
+        unsigned lo=0, hi=ln;
+        while (lo+4 < hi)
+          {
+            unsigned md = (lo+hi)/2;
+            Rps_ObjectRef midob = _obat_sorted_atar->unsafe_attr_at(md);
+            if (keyob == midob) return _obat_sorted_atar->unsafe_val_at(md);
+            else if (midob > keyob)
+              hi = md;
+            else
+              lo = md;
+          }
+        for (unsigned md = lo; md <hi; md++)
+          {
+            Rps_ObjectRef midob = _obat_sorted_atar->unsafe_attr_at(md);
+            if (keyob == midob) return _obat_sorted_atar->unsafe_val_at(md);
+          }
+        break;
+      }
+      case atk_big:
+      {
+        auto it = _obat_map_atar.find(keyob);
+        if (it != _obat_map_atar.end())
+          return it->second;
+        return nullptr;
+      }
+      return nullptr;
+      }
+  };				// end get_attr
+  void do_put_attr(Rps_ObjectRef keyob, Rps_Value valat);
+  Rps_ObjectRef put_attr(Rps_ObjectRef keyob, Rps_Value valat)
+  {
+    do_put_attr(keyob, valat);
+    return this;
+  };
+  void do_remove_attr(Rps_ObjectRef keyob);
+  Rps_ObjectRef remove_attr(Rps_ObjectRef keyob)
+  {
+    do_remove_attr(keyob);
+    return this;
+  };
+  //// methods for components
+  unsigned nb_comps() const
+  {
+    if (_ob_compvec) return _ob_compvec->count();
+    return 0;
+  };
+  Rps_Value get_comp(int ix) const
+  {
+    if (_ob_compvec) return (*_ob_compvec)[ix];
+    return nullptr;
+  };
+  /// resize the component vector to the given size, so grow or shrink them
+  void do_resize_components (unsigned size);
+  Rps_ObjectRef resize_components(unsigned size)
+  {
+    do_resize_components(size);
+    return this;
+  };
+  /// reserve the component vector to the given size, with an empty count
+  void do_reset_components (unsigned size);
+  Rps_ObjectRef reset_components(unsigned size)
+  {
+    do_reset_components(size);
+    return this;
+  }
+  /// append a component
+  void do_append_component(Rps_Value val);
+  Rps_ObjectRef append_component(Rps_Value val)
+  {
+    do_append_component(val);
+    return this;
+  }
 };				// end class Rps_ObjectZone
 
 #ifdef RPS_HAVE_MPS
@@ -1912,6 +2039,8 @@ static_assert(sizeof(Rps_ObjectZone) >= sizeof(Rps_PaddingMPSZoneValue));
 static_assert(alignof(Rps_ObjectZone) >= alignof(Rps_PaddingMPSZoneValue));
 #endif /*RPS_HAVE_MPS*/
 
+
+////////////////
 
 bool Rps_ObjectRef::operator == (const Rps_ObjectRef& oth) const
 {
