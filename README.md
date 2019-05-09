@@ -173,8 +173,14 @@ than MPS), with the following ideas:
   is 8 megabytes (i.e. `RPS_SMALL_BLOCK_SIZE`), or large blocks of 8
   megawords (i.e. `RPS_LARGE_BLOCK_SIZE`). Values are inside such
   memory zones. Mutable objects may contain -perhaps indirectly-
-  pointers to quasivalues, that is to GC-ed zones which are not
-  first-class values.
+  pointers to *quasivalues* (notably in their payload), that is to
+  garbage collected zones which are not first-class values. A typical
+  example of quasivalue could be some bucket in some (fully
+  RefPerSys-implemented) array hash table (appearing as the payload of
+  some object), in which buckets would be some small and mutable
+  dynamic arrays of entries with colliding hashes. Such buckets indeed
+  garbage collected zones, but are not themselves values (since they
+  are mutable, but not reified as objects).
 
 * The GC allocation operations are explicitly given the pointer to the
   local frame (i.e. `&_`, named `RPS_CURFRAME`), which is linked to
@@ -193,5 +199,8 @@ local frame, then code ``` _.tmp1 = g(RPS_CURFRAME, _.x); _.z =
 f(RPS_CURFRAME, _.tmp1, _.y); ```
   
 * A [*write barrier*](https://en.wikipedia.org/wiki/Write_barrier)
-  should be called after object updates, and before any other
-  allocation or update of some other object. In practice, code `_.foo.rps_write_barrier(RPS_CURFRAME)` or more simply `_.foo.RPS_WRITE_BARRIER()`
+  should be called after object or quasivalue updates, and before any
+  other allocation or update of some other object, value, or
+  quasivalue. In practice, code
+  `_.foo.rps_write_barrier(RPS_CURFRAME)` or more simply
+  `_.foo.RPS_WRITE_BARRIER()`
