@@ -56,6 +56,7 @@
 #include <algorithm>
 #include <mutex>
 #include <atomic>
+#include <stdexcept>
 
 #include <cassert>
 #include <cstring>
@@ -1080,26 +1081,135 @@ public:
 
 
 ////////////////
-/// quasi attribute arrays are not first-class values, but are pointed from
-/// most objects, those having few attributes.
+/// quasi attribute arrays are not first-class values, just
+/// quasivalues, but are pointed from most objects, those having few
+/// attributes (up to perhaps a hundred of them)
 class Rps_QuasiAttributeArray : public Rps_PointerCopyingZoneValue
 {
   friend class Rps_ObjectZone;
-  unsigned short _qsizattr;	// allocated size
-  unsigned short _qnbattrs;	// used number of entries
+  uint16_t _qsizattr;	// allocated size
+  uint16_t _qnbattrs;	// used number of entries
   std::pair<Rps_ObjectRef,Rps_Value> _qatentries[RPS_FLEXIBLE_DIM];
+  // this constructor is private, it is called inside Rps_ObjectZone
   Rps_QuasiAttributeArray(unsigned siz, unsigned nb, const std::pair<Rps_ObjectRef,Rps_Value>*arr)
     : Rps_PointerCopyingZoneValue(Rps_TyQuasiAttributeArray), _qsizattr(siz), _qnbattrs(nb)
   {
-    assert(nb < std::numeric_limits<unsigned short>::max());
+    assert(nb < std::numeric_limits<uint16_t>::max());
     assert(siz <= nb);
     assert(nb==0 || arr != nullptr);
     memset((void*)_qatentries, 0, siz*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
     if (nb>0)
       memcpy((void*)_qatentries, arr, nb*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
   }
+public:
+  std::pair<Rps_ObjectRef,Rps_Value>* begin()
+  {
+    return _qatentries;
+  }
+  std::pair<Rps_ObjectRef,Rps_Value>* end()
+  {
+    return _qatentries+_qnbattrs;
+  }
+  uint16_t allocated_size() const
+  {
+    return _qsizattr;
+  };
+  uint16_t count() const
+  {
+    _qnbattrs;
+  };
+  const std::pair<Rps_ObjectRef,Rps_Value>&operator [] (int ix) const
+  {
+    if (ix<0) ix += _qnbattrs;
+    if (ix>=0 && ix < _qnbattrs)
+      return _qatentries[ix];
+    return std::pair<Rps_ObjectRef,Rps_Value>(nullptr,nullptr);
+  };
+  const std::pair<Rps_ObjectRef,Rps_Value>&unsafe_at(int ix) const
+  {
+    return _qatentries[ix];
+  };
+  Rps_QuasiAttributeArray&
+  put_at(int ix, Rps_ObjectRef keyob, Rps_Value va)
+  {
+    if (ix<0) ix += _qnbattrs;
+    if (ix>=0 && ix<_qnbattrs && keyob && va)
+      {
+        _qatentries[ix].first = keyob;
+        _qatentries[ix].second = va;
+      }
+    return *this;
+  };
+  const Rps_ObjectRef attr_at(int ix) const
+  {
+    if (ix<0) ix += _qnbattrs;
+    if (ix>=0 && ix<_qnbattrs) return _qatentries[ix].first;
+    return nullptr;
+  }
+  const Rps_ObjectRef unsafe_attr_at(int ix) const
+  {
+    return _qatentries[ix].first;
+  }
+  const Rps_Value val_at(int ix) const
+  {
+    if (ix<0) ix += _qnbattrs;
+    if (ix>=0 && ix<_qnbattrs) return _qatentries[ix].second;
+    return nullptr;
+  }
+  const Rps_Value unsafe_val_at(int ix) const
+  {
+    return _qatentries[ix].second;
+  }
 };				// end class Rps_QuasiAttributeArray
 
+////////////////
+/// quasi components vectors are not first-class values, just
+/// quasivalues, but are pointed from most objects, those having
+/// up to a few thousands components.
+class Rps_QuasiComponentVector : public Rps_PointerCopyingZoneValue
+{
+  friend class Rps_ObjectZone;
+  uint16_t _qsizarr;	// allocated size
+  uint16_t _qnbcomp;	// used number of entries
+  Rps_Value _qarrval[RPS_FLEXIBLE_DIM];
+  // this constructor is private, it is called inside Rps_ObjectZone
+  Rps_QuasiComponentVector(unsigned siz, unsigned nb, const Rps_Value*arr)
+    : Rps_PointerCopyingZoneValue(Rps_TyQuasiComponentVector), _qsizarr(siz), _qnbcomp(nb)
+  {
+    assert(nb < std::numeric_limits<uint16_t>::max());
+    assert(siz <= nb);
+    assert(nb==0 || arr != nullptr);
+    memset((void*)_qarrval, 0, siz*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
+    if (nb>0)
+      memcpy((void*)_qarrval, arr, nb*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
+  }
+public:
+  uint16_t allocated_size() const
+  {
+    return _qsizarr;
+  };
+  uint16_t count() const
+  {
+    return _qnbcomp;
+  };
+  Rps_Value operator [] (int ix) const
+  {
+    if (ix<0) ix += _qnbcomp;
+    if (ix>=0 && ix<_qnbcomp) return _qarrval[ix];
+    return nullptr;
+  };
+  Rps_Value& operator [] (int ix)
+  {
+    if (ix<0) ix += _qnbcomp;
+    if (ix>=0 && ix<_qnbcomp) return _qarrval[ix];
+    throw std::out_of_range("QuasiComponentVector out of range");
+  };
+  Rps_Value unsafe_at(int ix) const
+  {
+    return  _qarrval[ix];
+  };
+#warning Rps_QuasiComponentVector is incomplete
+};    // end class Rps_QuasiComponentVector
 
 ////////////////////////////////////////////////////////////////
 /// the loader is stack allocated and has a pseudo call frame.
@@ -1663,14 +1773,24 @@ protected:
   };
 #endif /*RPS_HAVE_MPS*/
 #warning missing attributes and components in Rps_ObjectZone
-  /*** TODO: Objects are quite common, and their attributes and
+  /*** Objects are quite common, and their attributes and
        components also.  Most objects have few attributes, we should
-       special-case for that. For few attributes, the best is probably
-       a small array of (attribute-key-object, attribue-value) pairs
-       which is seeked linearly, but is cache friendly. For the
-       unusual case of many attributes, we could have a std::map or a
-       std::unordered_map. So attributes are represented as a tagged
-       union, and the usual case is a pointer to Rps_QuasiAttributeArray.
+       special-case for that with efficiency in mind. For few
+       attributes, the best is probably a small array of
+       (attribute-key-object, attribute-value) pairs which is seeked
+       linearly, but is cache friendly. For the unusual case of a
+       hundred or much more of attributes, we could have a std::map or
+       a std::unordered_map. In the more common case of at most a few
+       dozens of attributes, putting then in some sorted array
+       accessed dichotomically is a good solution. So attributes are
+       represented as a tagged union, and the usual case is a pointer
+       to Rps_QuasiAttributeArray. Likewise, most objects have not
+       many components, and these components are in some small dynamic
+       array.
+
+       The pathological case of an object with many thousands of
+       components or thousands of attributes should be handled, but
+       could be coded later, or at least could be optimized later.
    ***/
 public:
   /// find an object of given id, or else null:
@@ -1919,7 +2039,8 @@ public:
   };
   // Call this quick function to give the intention of having the GC
   // being soon called, hopefully in the next few milliseconds.
-  static void want_to_garbcoll(void) {
+  static void want_to_garbcoll(void)
+  {
     _gc_wanted.store(true);
   }
   ////////////////////////////////////////////////////////////////
