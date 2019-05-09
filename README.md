@@ -152,6 +152,9 @@ have *many* of them) and might be quite unsuitable for programs having
 references](https://en.wikipedia.org/wiki/Circular_reference), and
 reflexive programs have lots of them.
 
+
+### Garbage collection ideas
+
 So we probably are heading towards developing our own *precise* and
 multi-thread friendly GC (hopefully "better" than Boehm, but worse
 than MPS), with the following ideas:
@@ -204,3 +207,12 @@ f(RPS_CURFRAME, _.tmp1, _.y); ```
   quasivalue. In practice, code
   `_.foo.rps_write_barrier(RPS_CURFRAME)` or more simply
   `_.foo.RPS_WRITE_BARRIER()`
+
+* Every garbage-collection aware thread (a thread allocating GC-ed
+  values, mutating GC-ed quasivalues or objects, running the GC
+  forcibly) should call quite often, typically once per few
+  milliseconds, the `Rps_GarbageCollector::maybe_garbcoll` routine. If
+  this is not possible (e.g. before a potentially blocking `read` or
+  `poll` system call), special precautions should be taken. Forgetting
+  to call that `maybe_garbcoll` function often enough (typically every
+  few milliseconds) could maybe crash the system.

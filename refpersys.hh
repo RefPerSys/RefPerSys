@@ -1900,12 +1900,30 @@ class Rps_GarbageCollector
   static global_allocation_data _gc_globalloc_;
   ////////////////
 public:
+  // Scan a call stack and all the local frames in it:
   static void scan_call_stack(Rps_CallFrameZone*callfram);
+  // Forcibly run the garbage collector:
   static void run_garbcoll(Rps_CallFrameZone*callfram);
+  // Maybe run the garbage collector. Each allocating thread is
+  // promising to call that at least once every few milliseconds,
+  // unless special precautions are taken (disabling allocation and GC
+  // in some non-worker thread doing a blocking operation like poll(2)
+  // or read(2)...). Calling it more often makes almost no harm
+  // (except a tiny performance loss). Calling it not often enough is
+  // a severe condition and should be avoided, since it will impact
+  // usability, latency and could even crash the system.
   static void maybe_garbcoll(Rps_CallFrameZone*callfram)
   {
-    if (_gc_wanted.load()) run_garbcoll(callfram);
+    if (_gc_wanted.load())
+      run_garbcoll(callfram);
   };
+  // Call this quick function to give the intention of having the GC
+  // being soon called, hopefully in the next few milliseconds.
+  static void want_to_garbcoll(void) {
+    _gc_wanted.store(true);
+  }
+  ////////////////////////////////////////////////////////////////
+  /// various allocation primitives.
   static void*allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*callfram)
   {
     void* ad = nullptr;
