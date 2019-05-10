@@ -58,7 +58,8 @@ const struct argp_option rps_argopt_vec[] =
     .key = Rps_Key_PrimeAbove,
     .arg = "number",
     .flags = OPTION_ARG_OPTIONAL,
-    .doc = "print a prime above a given number",
+    .doc = "print a prime above a given number"
+    " (see also the 'primes' program from BSD games)",
     .group = 0,
   },
   {
@@ -88,16 +89,22 @@ const struct argp_option rps_argopt_vec[] =
   { },
 };
 
-typedef std::map<intptr_t,void*> rps_map_intptr_t_to_pointer;
-typedef std::unordered_map<intptr_t,void*> rps_unordered_map_intptr_to_pointer;
-typedef std::variant<std::string,void*> rps_variant_string_or_pointer;
-typedef std::map<std::string,void*> rps_map_string_to_pointer;
 
 void print_types_info(void)
 {
   printf("%-36s:   size  align   (in bytes)\n", "**TYPE**");
 #define EXPLAIN_TYPE(Ty) printf("%-36s: %5d %5d\n", #Ty,	\
 				(int)sizeof(Ty), (int)alignof(Ty))
+
+#define EXPLAIN_TYPE2(Ty1,Ty2) printf("%-36s: %5d %5d\n",		\
+				      #Ty1 "," #Ty2, 			\
+				      (int)sizeof(Ty1,Ty2),		\
+				      (int)alignof(Ty1,Ty2))
+
+#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3) printf("%-36s: %5d %5d\n",		\
+					  #Ty1 "," #Ty2 "," #Ty3,	\
+					  (int)sizeof(Ty1,Ty2,Ty3),	\
+					  (int)alignof(Ty1,Ty2,Ty3))
   EXPLAIN_TYPE(int);
   EXPLAIN_TYPE(double);
   EXPLAIN_TYPE(char);
@@ -118,12 +125,22 @@ void print_types_info(void)
   EXPLAIN_TYPE(Rps_DoubleZone);
   EXPLAIN_TYPE(Rps_StringZone);
   EXPLAIN_TYPE(Rps_PaylSetObjrefZone);
+  ///
+  EXPLAIN_TYPE(Rps_QuasiAttributeArray);
+  EXPLAIN_TYPE(Rps_QuasiComponentVector);
+  EXPLAIN_TYPE(Rps_QuasiToken);
+  ///
+  EXPLAIN_TYPE(Rps_MemoryBlock);
+  EXPLAIN_TYPE(Rps_BirthMemoryBlock);
+  EXPLAIN_TYPE(Rps_LargeNewMemoryBlock);
+  EXPLAIN_TYPE(Rps_MarkedMemoryBlock);
+  ///
   EXPLAIN_TYPE(std::set<intptr_t>);
   EXPLAIN_TYPE(std::set<std::string>);
-  EXPLAIN_TYPE(rps_map_intptr_t_to_pointer);
-  EXPLAIN_TYPE(rps_unordered_map_intptr_to_pointer);
-  EXPLAIN_TYPE(rps_map_string_to_pointer);
-  EXPLAIN_TYPE(rps_variant_string_or_pointer);
+  EXPLAIN_TYPE2(std::map<intptr_t,void*>);
+  EXPLAIN_TYPE2(std::map<std::string,void*>);
+  EXPLAIN_TYPE2(std::unordered_map<intptr_t,void*>);
+  EXPLAIN_TYPE2(std::variant<std::string,void*>);
   EXPLAIN_TYPE(std::vector<intptr_t>);
   EXPLAIN_TYPE(std::atomic<intptr_t>);
   EXPLAIN_TYPE(std::string);
@@ -137,6 +154,9 @@ void print_types_info(void)
   putchar('\n');
   fflush(nullptr);
 } // end print_types_info
+
+
+
 
 error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
 {
@@ -173,7 +193,7 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
       if (numstr && numstr[0])
         num = std::stoi(numstr);
       long pr = rps_prime_above(num);
-      printf("A prime above %ld is %ld\n", num, pr);
+      printf("A prime above %ld is %ld (but see also primes program from BSD games)\n", num, pr);
     }
     break;
     case Rps_Key_PrimeBelow:
