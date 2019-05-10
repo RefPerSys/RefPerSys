@@ -1223,6 +1223,8 @@ public:
 #warning Rps_QuasiComponentVector is incomplete
 };    // end class Rps_QuasiComponentVector
 
+
+//
 ////////////////////////////////////////////////////////////////
 /// the loader is stack allocated and has a pseudo call frame.
 class Rps_Loader : Rps_ZoneValue
@@ -2294,6 +2296,69 @@ Rps_MarkSweepZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZo
 {
   return Rps_GarbageCollector::allocate_marked_maybe_gc(totalsize, callfram);
 }      // end of Rps_MarkSweepZoneValue::allocate_rps_zone
+
+
+class Rps_Token
+{
+public:
+  enum TYPE
+  {
+    RPS_TOKEN_TYPE_OBJECT,
+    RPS_TOKEN_TYPE_OBJECTID,
+    RPS_TOKEN_TYPE_BASE62DIGIT,
+    RPS_TOKEN_TYPE_CLASS,
+    RPS_TOKEN_TYPE_MTIME,
+    RPS_TOKEN_TYPE_NAME,
+    RPS_TOKEN_TYPE_COMPONENT,
+    RPS_TOKEN_TYPE_PAYLOAD,
+    RPS_TOKEN_TYPE_ATTRIBUTE,
+    RPS_TOKEN_TYPE_STRING,
+    RPS_TOKEN_TYPE_DOUBLE,
+    RPS_TOKEN_TYPE_INTEGER,
+    RPS_TOKEN_TYPE_SET,
+    RPS_TOKEN_TYPE_TUPLE
+  };
+
+  struct Location
+  {
+    std::string file;
+    size_t line;
+    size_t column;
+  };
+
+  union Value
+  {
+    intptr_t value_integer;
+    char value_base62digit;
+    double value_double;
+    double value_mtime;
+    std::string value_string;
+    std::string value_name;
+    Rps_Id value_objectid;
+    Rps_ObjectValue value_object;
+    Rps_ObjectValue value_class;
+    Rps_QuasiComponentVector value_component;
+    Rps_PayloadZone<Rps_ObjectValue> value_payload;
+    Rps_SetValue value_set;
+    Rps_TupleValue value_tuple;
+    Rps_QuasiAttributeArray value_attribute;
+  };
+
+  Rps_Token(Rps_Token::TYPE type,
+            const Rps_Token::Value& val,
+            const Rps_Token::Location& loc);
+
+private:
+  ~Rps_Token();
+
+  Rps_Token::TYPE _type;
+  Rps_Token::Value _value;
+  Rps_Token::Location _location;
+};
+
+class Rps_Lexer; // Abhishek will now work on this
+
+
 
 #endif /*REFPERSYS_INCLUDED*/
 // end of file refpersys.hh */
