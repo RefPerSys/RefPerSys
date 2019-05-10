@@ -129,14 +129,14 @@ void Rps_ObjectZone::do_append_component(Rps_Value val)
 void Rps_ObjectZone::do_put_attr(Rps_ObjectRef keyob, Rps_Value valat)
 {
 #warning unimplemented Rps_ObjectZone::do_put_attr
-  RPS_FATAL("unimplemented Rps_ObjectZone::do_put_attr key@%p val@%p",
+  RPS_FATAL("unimplemented Rps_ObjectZone::do_put_attr @%p key@%p val@%p",
             (void*)this, (void*)keyob.optr(), (void*)valat.unsafe_data());
 } // end Rps_ObjectZone::do_put_attr
 
 void Rps_ObjectZone::do_remove_attr(Rps_ObjectRef keyob)
 {
 #warning unimplemented Rps_ObjectZone::do_remove_attr
-  RPS_FATAL("unimplemented Rps_ObjectZone::do_remove_attr key@%p",
+  RPS_FATAL("unimplemented Rps_ObjectZone::do_remove_attr @%p key@%p",
             (void*)this, (void*)keyob.optr());
 } // end Rps_ObjectZone::do_remove_attr
 
