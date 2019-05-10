@@ -75,8 +75,14 @@ Rps_Loader::example_gc_func(Rps_CallFrameZone*callfram)
 {
   RPS_LOCALFRAME(callfram, /*descr:*/nullptr,
                  Rps_Value w1;
+		 Rps_QuasiToken* tok2;
                 );
+  /// example of accessing some loader-specific data
   _.w1 = RPS_LDATA(lp_v1);
+  /// example of allocation of some lexical token
+  _.tok2 = Rps_QuasiToken::make_from_int (34, RPS_CURFRAME);
+  /// For Abhishek: dont forget to explicitly use A-normal forms in
+  /// your loader and lexer and parser code.
 } // end of Rps_Loader::example_gc_func
 
 
