@@ -200,6 +200,11 @@ f(g(x),y)` is forbidden in C++ (where `f` and `g` are C++ functions
 using the GC). Instead, reserve a local slot such as `_.tmp1` in the
 local frame, then code ``` _.tmp1 = g(RPS_CURFRAME, _.x); _.z =
 f(RPS_CURFRAME, _.tmp1, _.y); ```
+In less pedantic terms, we should do **only one call** (to GC-aware
+functions) **or one allocation per statement**; and **every such
+call** to some allocation primitive, or to a GC-aware function,
+**should pass the `RPS_CURFRAME`** and **use `RPL_LOCALFRAME` in the
+calling function**.
   
 * A [*write barrier*](https://en.wikipedia.org/wiki/Write_barrier)
   should be called after object or quasivalue updates, and before any
