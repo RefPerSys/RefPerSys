@@ -109,9 +109,11 @@ extern "C" int64_t rps_prime_above (int64_t n);
 extern "C" int64_t rps_prime_below (int64_t n);
 
 extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
-#define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {                   \
-    fprintf(stderr, "RefPerSys FATAL:%s:%d: <%s>\n " Fmt "\n\n",       \
-            Fil, Lin, __func__, ##__VA_ARGS__);                 \
+
+#define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {			\
+    fprintf(stderr,						\
+	    "RefPerSys FATAL:%s:%d: <%s>\n " Fmt "\n\n",	\
+            Fil, Lin, __func__, ##__VA_ARGS__);			\
     rps_fatal_stop_at (Fil,Lin); } while(0)
 
 #define RPS_FATAL_AT(Fil,Lin,Fmt,...) RPS_FATAL_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
@@ -333,7 +335,7 @@ public:
 };				// end class Rps_ObjectRef
 
 
-
+////////////////////////////////////////////////////////////////
 typedef uint32_t Rps_HashInt;
 enum Rps_Type
 {
@@ -342,22 +344,39 @@ enum Rps_Type
   Rps_TyForwardedMPS = -50,
   Rps_TyPaddingMPS = -51,
 #endif /*RPS_HAVE_MPS*/
+  ///
+  /// these are GC-scanned, but not GC-allocated:
   Rps_TyDumper = -32,
   Rps_TyLoader = -31,
   Rps_TyCallFrame = -30,
-  Rps_TyPayload = -4,
+  Rps_TyPayload = -5,
+  ///
+  /// Quasi-values are indeed garbage collected, so GC-scanned and
+  /// GC-allocated, but not "first class citizens" as genuine values
+  /// are... So they don't directly go inside RpsValue-s.
+  Rps_TyQuasiToken = -4,
   Rps_TyQuasiAttributeArray = -3,
   Rps_TyQuasiComponentVector = -2,
-  /// values
-  Rps_TyInt = -1, // tagged integers
+  ///
+  /// Values that could go into Rps_Value.
+  Rps_TyInt = -1, // for tagged integers
   Rps_TyNone = 0, // for nil
-  /// boxed genuine values, that could be in Rps_Value's data.
+  ///
+  /// Boxed genuine values, are "first class citizens" that could be
+  /// in Rps_Value's data. Of course they are both GC-allocated and
+  /// GC-scanned.
   Rps_TyString,
   Rps_TyDouble,
   Rps_TySet,
   Rps_TyTuple,
   Rps_TyObject,
 };
+
+
+////////////////////////////////////////////////////////////////
+
+
+
 
 class Rps_Random
 {
@@ -407,7 +426,7 @@ public:
 
 
 
-
+////////////////////////////////////////////////////////////////
 class Rps_Id
 {
   friend class Rps_ObjectRef;
@@ -660,6 +679,7 @@ class alignas(alignof(Rps_Value)) Rps_ZoneValue
 {
   friend class Rps_Value;
   friend class Rps_GarbageCollector;
+  friend class Rps_QuasiToken;
   enum Rps_Type _vtyp;
 protected:
   struct zone_tag {};
@@ -2298,63 +2318,143 @@ Rps_MarkSweepZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZo
 }      // end of Rps_MarkSweepZoneValue::allocate_rps_zone
 
 
-class Rps_Token
+
+////////////////////////////////////////////////////////////////
+/// lexical tokens are quasivalues, garbage collected, but not "first
+/// class citizen" values. They only exist during load time.
+class Rps_QuasiToken : public  Rps_PointerCopyingZoneValue
 {
+  friend class Rps_PointerCopyingZoneValue;
+  friend class Rps_ZoneValue;
 public:
-  enum TYPE
+  enum TYPE_en
   {
-    RPS_TOKEN_TYPE_OBJECT,
+    RPS_TOKEN_TYPE_NONE,
     RPS_TOKEN_TYPE_OBJECTID,
-    RPS_TOKEN_TYPE_BASE62DIGIT,
-    RPS_TOKEN_TYPE_CLASS,
-    RPS_TOKEN_TYPE_MTIME,
     RPS_TOKEN_TYPE_NAME,
-    RPS_TOKEN_TYPE_COMPONENT,
-    RPS_TOKEN_TYPE_PAYLOAD,
-    RPS_TOKEN_TYPE_ATTRIBUTE,
     RPS_TOKEN_TYPE_STRING,
     RPS_TOKEN_TYPE_DOUBLE,
     RPS_TOKEN_TYPE_INTEGER,
-    RPS_TOKEN_TYPE_SET,
-    RPS_TOKEN_TYPE_TUPLE
+    RPS_TOKEN_TYPE_DELIMITER,
+    //TODO: perhaps add more token types, if needed
   };
 
-  struct Location
+  enum DELIMITER_en
   {
-    std::string file;
-    size_t line;
-    size_t column;
+    RPS_DELIM_NONE,
+    RPS_DELIM_LEFTPAREN,	// for '('
+    RPS_DELIM_RIGHTPAREN, 	// for ')'
+    //TODO: add much more delimiters
   };
 
-  union Value
+
+  struct LOCATION_st
   {
-    intptr_t value_integer;
-    char value_base62digit;
-    double value_double;
-    double value_mtime;
-    std::string value_string;
-    std::string value_name;
-    Rps_Id value_objectid;
-    Rps_ObjectValue value_object;
-    Rps_ObjectValue value_class;
-    Rps_QuasiComponentVector value_component;
-    Rps_PayloadZone<Rps_ObjectValue> value_payload;
-    Rps_SetValue value_set;
-    Rps_TupleValue value_tuple;
-    Rps_QuasiAttributeArray value_attribute;
+    const std::string* loc_filepathptr;	// pointer to some file path string
+    int loc_lineno;
   };
-
-  Rps_Token(Rps_Token::TYPE type,
-            const Rps_Token::Value& val,
-            const Rps_Token::Location& loc);
+  static constexpr LOCATION_st empty_location {nullptr,0};
 
 private:
-  ~Rps_Token();
 
-  Rps_Token::TYPE _type;
-  Rps_Token::Value _value;
-  Rps_Token::Location _location;
-};
+  Rps_QuasiToken::TYPE_en _tk_type;
+  union
+  {
+    void* _tk_unusedptr;
+    intptr_t _tk_integer;
+    double _tk_double;
+    Rps_StringValue _tk_string;
+    ///TODO: maybe define some Rps_NameValue and use it below
+    Rps_StringValue _tk_name;
+    Rps_Id _tk_objectid;
+    DELIMITER_en _tk_delim;
+  };
+  Rps_QuasiToken::LOCATION_st _tk_location;
+  struct tag_string {};
+  struct tag_name {};
+  static void* operator new (std::size_t, void*ptr)
+  {
+    return ptr;
+  };
+  Rps_QuasiToken()
+    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+      _tk_type(RPS_TOKEN_TYPE_NONE),
+      _tk_unusedptr(nullptr)
+  {
+  };
+  friend Rps_QuasiToken*Rps_ZoneValue::rps_allocate<Rps_QuasiToken>
+  (Rps_CallFrameZone*,intptr_t,const LOCATION_st*);
+  Rps_QuasiToken(intptr_t i,
+                 const LOCATION_st* ploc=nullptr)
+    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+      _tk_type(RPS_TOKEN_TYPE_INTEGER),
+      _tk_integer(i),
+      _tk_location(ploc?(*ploc):empty_location)
+  {
+  };
+  friend Rps_QuasiToken*Rps_ZoneValue::rps_allocate<Rps_QuasiToken>
+  (Rps_CallFrameZone*,double,const LOCATION_st*);
+  Rps_QuasiToken(double d, const LOCATION_st* ploc=nullptr)
+    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+      _tk_type(RPS_TOKEN_TYPE_DOUBLE),
+      _tk_double(d),
+      _tk_location(ploc?(*ploc):empty_location)
+  {
+  };
+  friend Rps_QuasiToken*Rps_ZoneValue::rps_allocate<Rps_QuasiToken>
+  (Rps_CallFrameZone*,tag_string, Rps_StringValue,const LOCATION_st*);
+  Rps_QuasiToken(tag_string, Rps_StringValue strv, const LOCATION_st* ploc=nullptr)
+    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+      _tk_type(RPS_TOKEN_TYPE_STRING),
+      _tk_string(strv),
+      _tk_location(ploc?(*ploc):empty_location)
+  {
+  };
+  friend Rps_QuasiToken*Rps_ZoneValue::rps_allocate<Rps_QuasiToken>
+  (Rps_CallFrameZone*,tag_name, Rps_StringValue,const LOCATION_st*);
+  Rps_QuasiToken(tag_name, Rps_StringValue strv, const LOCATION_st* ploc=nullptr)
+    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+      _tk_type(RPS_TOKEN_TYPE_STRING),
+      _tk_name(strv),
+      _tk_location(ploc?(*ploc):empty_location)
+  {
+  };
+  Rps_QuasiToken(Rps_StringValue strv, const LOCATION_st* ploc=nullptr)
+    : Rps_QuasiToken(tag_string{}, strv, ploc) {};
+  Rps_QuasiToken(DELIMITER_en delim, const LOCATION_st* ploc=nullptr)
+    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+      _tk_type(RPS_TOKEN_TYPE_DELIMITER),
+      _tk_delim(delim),
+      _tk_location(ploc?(*ploc):empty_location)
+  {
+  };
+  ~Rps_QuasiToken() {};		// no-op, since garbage collected
+
+public:
+  /// the lexer should use these makers
+  static Rps_QuasiToken*make_from_int (intptr_t i, Rps_CallFrameZone* callframe, const LOCATION_st* ploc=nullptr)
+  {
+    return Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(callframe, i, ploc);
+  };
+  static Rps_QuasiToken*make_from_int(intptr_t i, Rps_CallFrameZone* callframe, const LOCATION_st& loc)
+  {
+    return make_from_int(i, callframe, &loc);
+  };
+  ///
+  static Rps_QuasiToken*make_from_double (double d, Rps_CallFrameZone* callframe, const LOCATION_st* ploc=nullptr)
+  {
+    return Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(callframe, d, ploc);
+  };
+  static Rps_QuasiToken*make_from_double (double d, Rps_CallFrameZone* callframe, const LOCATION_st& loc)
+  {
+    return make_from_double(d, callframe, &loc);
+  };
+  static Rps_QuasiToken*make_from_string (const std::string&str, Rps_CallFrameZone* callframe, const LOCATION_st* ploc=nullptr);
+  static Rps_QuasiToken*make_from_string (const std::string&str, Rps_CallFrameZone* callframe, const LOCATION_st& loc)
+  {
+    return make_from_string(str, callframe, &loc);
+  };
+};				// end class Rps_QuasiToken
 
 class Rps_Lexer; // Abhishek will now work on this
 
