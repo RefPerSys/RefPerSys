@@ -75,10 +75,11 @@ from the agenda, then running that tasklet.
 
 ## License and copyright
 
-This *research* project is GPLv3+ licensed and copyrighted by the
-RefPerSys team, current made of:
+This *research* project is
+[GPLv3+](https://www.gnu.org/licenses/gpl.html) licensed and
+copyrighted by the RefPerSys team, currently made of:
 
- *      Basile Starynkevitch <basile@starynkevitch.net>
+ *      Basile Starynkevitch <basile@starynkevitch.net>, homepage http://starynkevitch.net/Basile/
  *      Niklas Rosencrantz <niklasro@gmail.com>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
 
