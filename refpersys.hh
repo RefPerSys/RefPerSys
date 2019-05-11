@@ -2362,10 +2362,11 @@ public:
     RPS_TOKEN_TYPE_STRING,
     RPS_TOKEN_TYPE_DOUBLE,
     RPS_TOKEN_TYPE_INTEGER,
-    RPS_TOKEN_TYPE_DELIMITER,
-    //TODO: perhaps add more token types, if needed
+    RPS_TOKEN_TYPE_PARENTHESIS,
   };
 
+#if 0
+#warning dead code to be removed after review
   enum DELIMITER_en
   {
     RPS_DELIM_NONE,
@@ -2373,6 +2374,7 @@ public:
     RPS_DELIM_RIGHTPAREN, 	// for ')'
     //TODO: add much more delimiters
   };
+#endif
 
 
   struct LOCATION_st
@@ -2394,7 +2396,8 @@ private:
     ///TODO: maybe define some Rps_NameValue and use it below
     Rps_StringValue _tk_name;
     Rps_Id _tk_objectid;
-    DELIMITER_en _tk_delim;
+    //DELIMITER_en _tk_delim;
+    char _tk_paren;
   };
   Rps_QuasiToken::LOCATION_st _tk_location;
   struct tag_string {};
@@ -2448,10 +2451,13 @@ private:
   };
   Rps_QuasiToken(Rps_StringValue strv, const LOCATION_st* ploc=nullptr)
     : Rps_QuasiToken(tag_string{}, strv, ploc) {};
-  Rps_QuasiToken(DELIMITER_en delim, const LOCATION_st* ploc=nullptr)
+
+  //Rps_QuasiToken(DELIMITER_en delim, const LOCATION_st* ploc=nullptr)
+  Rps_QuasiToken(char paren, const LOCATION_st* ploc = nullptr)
     : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
-      _tk_type(RPS_TOKEN_TYPE_DELIMITER),
-      _tk_delim(delim),
+      _tk_type(RPS_TOKEN_TYPE_PARENTHESIS),
+      //_tk_delim(delim),
+      _tk_paren(paren),
       _tk_location(ploc?(*ploc):empty_location)
   {
   };
@@ -2483,7 +2489,51 @@ public:
   };
 };				// end class Rps_QuasiToken
 
-class Rps_Lexer; // Abhishek will now work on this
+class Rps_Lexer {
+        public:
+                Rps_Lexer(const char* file);
+                void start(void);
+                bool next(void);
+                Rps_QuasiToken* tokenize(void);
+
+        private:
+                // adapted from
+                // https://gist.github.com/arrieta/1a309138689e09375b90b3b1aa768e20
+                bool is_whitespace(char c)
+                {
+                        switch (c) {
+                                case ' ':
+                                case '\t':
+                                case '\r':
+                                case '\n':
+                                return true;
+                        default:
+                                return false;
+                        }
+                }
+
+                bool is_integer_digit(char c)
+                {
+                        return (c >= '0' && c <= '9') || c == '+' || c == '-';
+                }
+
+                bool is_double_digit(char c)
+                {
+                        return is_integer_digit(c) || c == '.';
+                }
+
+                bool is_objid_digit(char c)
+                {
+                        return (c >= '0' && c <= '9')
+                                || (c >= 'A' && c <= 'Z')
+                                || (c >= 'a' && c <= 'z')
+                                || c == '_';
+                }
+
+                char* _file;
+                char* _dump;
+                char* _iter;
+};
 
 
 
