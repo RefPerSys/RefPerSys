@@ -75,7 +75,7 @@ Rps_Loader::example_gc_func(Rps_CallFrameZone*callfram)
 {
   RPS_LOCALFRAME(callfram, /*descr:*/nullptr,
                  Rps_Value w1;
-		 Rps_QuasiToken* tok2;
+                 Rps_QuasiToken* tok2;
                 );
   /// example of accessing some loader-specific data
   _.w1 = RPS_LDATA(lp_v1);
