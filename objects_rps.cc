@@ -68,10 +68,13 @@ Rps_ObjectZone::make_of_id(Rps_CallFrameZone*callfram,const Rps_Id&id)
 } // end Rps_ObjectZone::make_of_id
 
 
+
+
 Rps_ObjectZone*
 Rps_ObjectZone::make(Rps_CallFrameZone*callfram)
 {
-  for (;;)   // this loop usually runs once (except on unlikely collisions)
+  for (;;)   // this loop usually runs once (except on very unlikely
+    // objid-s collisions)
     {
       auto id = Rps_Id::random();
       assert (id && id.valid());
@@ -90,6 +93,8 @@ Rps_ObjectZone::make(Rps_CallFrameZone*callfram)
     }
 }			      // end of Rps_ObjectZone::make
 
+
+
 Rps_ObjectZone::~Rps_ObjectZone()  /// only called by finalizer
 {
   // should clear the object
@@ -103,27 +108,50 @@ Rps_ObjectZone::~Rps_ObjectZone()  /// only called by finalizer
 } // end of Rps_ObjectZone::~Rps_ObjectZone
 
 
-void Rps_ObjectZone::do_resize_components (unsigned size)
+
+
+/// Resize the quasi component vector to the given size, so grow or
+/// shrink them, or create that quasivalue and register it in this
+/// object.
+void
+Rps_ObjectZone::do_resize_components (unsigned size)
 {
+  if (!_ob_compvec)
+    {
+      // Less common case of an object not having yet any quasi
+      // component vector.
+    }
+  else
+    {
+      // Usual case, there is a quasi component vector, we may need to
+      // either shrink or resize it.
+    }
 #warning unimplemented Rps_ObjectZone::do_resize_components
   RPS_FATAL("unimplemented Rps_ObjectZone::do_resize_components @%p size=%u",
             (void*)this, size);
 } // end Rps_ObjectZone::do_resize_components
 
 
-void Rps_ObjectZone::do_reset_components (unsigned size)
+
+
+void
+Rps_ObjectZone::do_reset_components (unsigned size)
 {
 #warning unimplemented Rps_ObjectZone::do_reset_components
   RPS_FATAL("unimplemented Rps_ObjectZone::do_reset_components @%p size=%u",
             (void*)this, size);
 } // end Rps_ObjectZone::do_reset_components
 
-void Rps_ObjectZone::do_append_component(Rps_Value val)
+
+
+void
+Rps_ObjectZone::do_append_component(Rps_Value val)
 {
 #warning unimplemented Rps_ObjectZone::do_append_component
   RPS_FATAL("unimplemented Rps_ObjectZone::do_append_component @%p val@%p",
             (void*)this, (void*)val.unsafe_data());
 } // end Rps_ObjectZone::do_append_component
+
 
 
 void Rps_ObjectZone::do_put_attr(Rps_ObjectRef keyob, Rps_Value valat)
@@ -133,12 +161,19 @@ void Rps_ObjectZone::do_put_attr(Rps_ObjectRef keyob, Rps_Value valat)
             (void*)this, (void*)keyob.optr(), (void*)valat.unsafe_data());
 } // end Rps_ObjectZone::do_put_attr
 
+
 void Rps_ObjectZone::do_remove_attr(Rps_ObjectRef keyob)
 {
 #warning unimplemented Rps_ObjectZone::do_remove_attr
   RPS_FATAL("unimplemented Rps_ObjectZone::do_remove_attr @%p key@%p",
             (void*)this, (void*)keyob.optr());
 } // end Rps_ObjectZone::do_remove_attr
+
+
+
+
+
+
 
 #ifdef RPS_HAVE_MPS
 const void*
