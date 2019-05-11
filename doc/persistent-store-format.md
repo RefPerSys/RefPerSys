@@ -71,36 +71,27 @@ JSON format.
 
 ## Example
 
-An example of an object persisted on to file would be as follows (with optional
-whitespace):
+An example of an object persisted on to file would be as given below.
+Whitespaces are optional, and are included only for improving readability.
+Whitespace characters include spaces, tabs, and carriage returns. In our format,
+sets are enclosed in braces, and tuples in brackets. `object` would be the
+starting symbol.
 
 ```
-oid : class @ mtime (
-        name = ...,
-        space = ...,
-        comp = (
-                oid,
-                oid,
-                ...
-        ),
-        pload = (
-                oid,
-                oid,
-                ...
-        ),
+object = (
+        id = _07YGv5jImHw03JSziA,
+        class = _0OE0PJ2Nihp00j9HvR,
+        mtime = _87QUZDREppL01GjRJx,
+        name = "sample_object_for_example",
+        comp = (_04YQEJtbxJ704mmY6j, _8WQ1IHwxDOf02U1G9I),
+        load = (_90WQpRgSoN8018gLbJ, _3EMmRTwppRq00YOpJZ),
         attr = (
-                oid = "for string",
-                oid = 1234.5678,
-                oid = {                 # for sets
-                        oid,
-                        oid,
-                        ...
-                },
-                oid = [                 # for tuples
-                        oid,
-                        oid,
-                        ...
-                ]
+                _4cG7qyo0038046cBsf = "string", # for string
+                _1OlebU0NNqG03H0h1E = 1234.567, # for double
+                #for set
+                _2EXYXvXKfNL04gTxus = {_4eK0IPW6HT604zz8s6, _0A5YBlxJgIM03Hs6f9},
+                #for tuple
+                _0j2JzHrzA0604avLAv = [_5JSE68ZYK4003UVdVc, _73UWhRTzDSw0373KVm],
         )
 )
 ```
