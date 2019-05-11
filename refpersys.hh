@@ -381,8 +381,18 @@ enum Rps_Type
 class Rps_Random
 {
   static thread_local Rps_Random _rand_thr_;
+  /// the thread local random state
   unsigned long _rand_count;
   std::mt19937 _rand_generator;
+  /// we could need very quick and poor small random numbers on just 4
+  /// bits. For these, we care less about the random quality, but even
+  /// more about speed. So we keep one 32 bits of random number in
+  /// advance, and a count of the remaining random bits in it.
+  uint32_t _rand_advance;
+  uint8_t _rand_remainbits;
+  /// private constructor
+  Rps_Random () : _rand_count(0), _rand_generator(), _rand_advance(0), _rand_remainbits(0) {};
+  ///
   uint32_t generate_32u(void)
   {
     if (RPS_UNLIKELY(_rand_count++ % 65536 == 0))
@@ -409,6 +419,17 @@ class Rps_Random
   {
     return (static_cast<uint64_t>(generate_32u())<<32) | static_cast<uint64_t>(generate_32u());
   };
+  uint8_t generate_quickly_4bits()
+  {
+    if (RPS_UNLIKELY(_rand_remainbits < 4))
+      {
+        _rand_advance = generate_32u();
+        _rand_remainbits = 32;
+      }
+    uint8_t res = _rand_remainbits & 0xf;
+    _rand_remainbits -= 4;
+    return res;
+  };
 public:
   static uint32_t random_32u(void)
   {
@@ -421,6 +442,10 @@ public:
   static uint32_t random_nonzero_32u(void)
   {
     return _rand_thr_.generate_nonzero_32u();
+  };
+  static uint8_t random_quickly_4bits()
+  {
+    return _rand_thr_.generate_quickly_4bits();
   };
 };				// end class Rps_Random
 
@@ -1741,6 +1766,8 @@ class Rps_PaylSetObjrefZone
   friend class Rps_MarkSweepZoneValue;
 };				// end Rps_PaylSetObjrefZone;
 
+
+
 ////////////////
 class Rps_ObjectZone : public  Rps_MarkSweepZoneValue
 {
@@ -1791,7 +1818,7 @@ class Rps_ObjectZone : public  Rps_MarkSweepZoneValue
   {
     return ptr;
   };
-
+  ///
 protected:
 #ifdef RPS_HAVE_MPS
   /// scan the object, return next address
