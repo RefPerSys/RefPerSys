@@ -1859,6 +1859,7 @@ private:
   ///// attributes of objects
   enum attrkind_en {atk_none, atk_small, atk_medium, atk_big};
   attrkind_en _obat_kind;
+  ///// thresholds below are fuzzy. We add a bit of randomness.
   static constexpr unsigned at_small_thresh= 10;
   static constexpr unsigned at_sorted_thresh= 101; // a prime
   union
@@ -2035,6 +2036,7 @@ public:
       return nullptr;
       }
   };				// end get_attr
+#warning mutating primitives may need an additional callframe argument, see README.md
   void do_put_attr(Rps_ObjectRef keyob, Rps_Value valat);
   Rps_ObjectRef put_attr(Rps_ObjectRef keyob, Rps_Value valat)
   {

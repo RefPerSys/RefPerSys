@@ -75,10 +75,11 @@ from the agenda, then running that tasklet.
 
 ## License and copyright
 
-This *research* project is GPLv3+ licensed and copyrighted by the
-RefPerSys team, current made of:
+This *research* project is
+[GPLv3+](https://www.gnu.org/licenses/gpl.html) licensed and
+copyrighted by the RefPerSys team, currently made of:
 
- *      Basile Starynkevitch <basile@starynkevitch.net>
+ *      Basile Starynkevitch <basile@starynkevitch.net>, homepage http://starynkevitch.net/Basile/
  *      Niklas Rosencrantz <niklasro@gmail.com>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
 
@@ -221,3 +222,13 @@ calling function**.
   `poll` system call), special precautions should be taken. Forgetting
   to call that `maybe_garbcoll` function often enough (typically every
   few milliseconds) could maybe crash the system.
+
+* Consequently, as a rule of thumb, any routine which can directly *or
+  indirectly* allocate GC-ed values or quasi-values, or directly *or
+  indirectly* mutate GC-ed values or quasi-values, should take a
+  `callframe` argument. We might need to consider: putting that
+  specific `callframe` argument in some *global* register, using GCC
+  `register` ... `asm` extension to [define global register
+  variables](https://gcc.gnu.org/onlinedocs/gcc/Global-Register-Variables.html)
+  and compile with the `-ffixed-`*reg* [code generation
+  option](https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html).
