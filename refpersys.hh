@@ -96,6 +96,7 @@ extern void print_types_info(void);
 
 // generated in _timestamp_rps.cc
 extern "C" const char timestamp_rps[];
+extern "C" unsigned long timenum_rps;
 extern "C" const char gitid_rps[];
 extern "C" const char md5sum_rps[];
 extern "C" const char cwd_rps[];

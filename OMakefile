@@ -106,6 +106,7 @@ _timestamp_rps.cc: $(addsuffixes .cc, $(REFPERSYS_BASE_FILES)) $(addsuffixes .hh
 	echo caret= $^ at= $@
 	echo '// generated file ' $@ ' - DONT EDIT' > $@.tmp
 	echo 'extern "C" const char timestamp_rps[];' >> $@.tmp
+	echo 'extern "C" unsigned long timenum_rps;' >> $@.tmp
 	echo 'extern "C" const char gitid_rps[];' >> $@.tmp
 	echo 'extern "C" const char md5sum_rps[];' >> $@.tmp
 	echo 'extern "C" const char cwd_rps[];' >> $@.tmp
@@ -114,7 +115,7 @@ _timestamp_rps.cc: $(addsuffixes .cc, $(REFPERSYS_BASE_FILES)) $(addsuffixes .hh
 	echo 'extern "C" const char buildhost_rps[];' >> $@.tmp
 	echo 'extern "C" const char sourcefiles_rps[];' >> $@.tmp
 	echo 'extern "C" const char headerfiles_rps[];' >> $@.tmp
-	date +'const char timestamp_rps[] = "%c";' >> $@.tmp
+	date +'const char timestamp_rps[] = "%c"; unsigned long timenum_rps=%s;' >> $@.tmp
 	(/bin/echo -n 'const char gitid_rps[]="'; \
 	 git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n'; \
 	 echo '";')  >> $@.tmp

@@ -176,7 +176,7 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
     case Rps_Key_Version:
     {
       printf("RefPerSys version information::\n");
-      printf(" timestamp:     %s\n", timestamp_rps);
+      printf(" timestamp:     %s (%ul)\n", timestamp_rps, timenum_rps);
       printf(" gitid:         %s\n", gitid_rps);
       printf(" md5sum of C++: %s\n", md5sum_rps);
       printf(" build cwd:     %s\n", cwd_rps);
