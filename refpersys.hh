@@ -2036,13 +2036,13 @@ public:
       return nullptr;
       }
   };				// end get_attr
-#warning mutating primitives may need an additional callframe argument, see README.md
   void do_put_attr(Rps_ObjectRef keyob, Rps_Value valat);
   Rps_ObjectRef put_attr(Rps_ObjectRef keyob, Rps_Value valat)
   {
     do_put_attr(keyob, valat);
     return this;
   };
+#warning mutating primitives may need an additional callframe argument, see README.md
   void do_remove_attr(Rps_ObjectRef keyob);
   Rps_ObjectRef remove_attr(Rps_ObjectRef keyob)
   {
@@ -2491,50 +2491,52 @@ public:
   };
 };				// end class Rps_QuasiToken
 
-class Rps_Lexer {
-        public:
-                Rps_Lexer(const char* file);
-                void start(void);
-                bool next(void);
-                Rps_QuasiToken* tokenize(void);
+class Rps_Lexer
+{
+public:
+  Rps_Lexer(const char* file);
+  void start(void);
+  bool next(void);
+  Rps_QuasiToken* tokenize(void);
 
-        private:
-                // adapted from
-                // https://gist.github.com/arrieta/1a309138689e09375b90b3b1aa768e20
-                bool is_whitespace(char c)
-                {
-                        switch (c) {
-                                case ' ':
-                                case '\t':
-                                case '\r':
-                                case '\n':
-                                return true;
-                        default:
-                                return false;
-                        }
-                }
+private:
+  // adapted from
+  // https://gist.github.com/arrieta/1a309138689e09375b90b3b1aa768e20
+  bool is_whitespace(char c)
+  {
+    switch (c)
+      {
+      case ' ':
+      case '\t':
+      case '\r':
+      case '\n':
+        return true;
+      default:
+        return false;
+      }
+  }
 
-                bool is_integer_digit(char c)
-                {
-                        return (c >= '0' && c <= '9') || c == '+' || c == '-';
-                }
+  bool is_integer_digit(char c)
+  {
+    return (c >= '0' && c <= '9') || c == '+' || c == '-';
+  }
 
-                bool is_double_digit(char c)
-                {
-                        return is_integer_digit(c) || c == '.';
-                }
+  bool is_double_digit(char c)
+  {
+    return is_integer_digit(c) || c == '.';
+  }
 
-                bool is_objid_digit(char c)
-                {
-                        return (c >= '0' && c <= '9')
-                                || (c >= 'A' && c <= 'Z')
-                                || (c >= 'a' && c <= 'z')
-                                || c == '_';
-                }
+  bool is_objid_digit(char c)
+  {
+    return (c >= '0' && c <= '9')
+           || (c >= 'A' && c <= 'Z')
+           || (c >= 'a' && c <= 'z')
+           || c == '_';
+  }
 
-                char* _file;
-                char* _dump;
-                char* _iter;
+  char* _file;
+  char* _dump;
+  char* _iter;
 };
 
 

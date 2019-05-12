@@ -346,38 +346,38 @@ Rps_StringZone::hash_cstr(const char*cstr, int32_t slen)
 
 
 Rps_StringZone*
-Rps_StringZone::make(Rps_CallFrameZone*callfram,const char*sbytes, int32_t slen)
+Rps_StringZone::make(Rps_CallFrameZone*callingfra,const char*sbytes, int32_t slen)
 {
   if (!sbytes) slen= 0;
   else if (slen<0) slen = strlen(sbytes);
   if (slen>(int32_t)maxsize)
     fail_too_big_zone((uint32_t)slen, "too big string");
   uint32_t gap = byte_gap_for_size(slen);
-  auto zstr = Rps_StringZone::rps_allocate_with_gap<Rps_StringZone>(callfram, gap, sbytes, slen, false);
+  auto zstr = Rps_StringZone::rps_allocate_with_gap<Rps_StringZone>(callingfra, gap, sbytes, slen, false);
   return zstr;
 } // end Rps_StringZone::make
 
 Rps_TupleObrefZone*
-Rps_TupleObrefZone::make(Rps_CallFrameZone*callfram,uint32_t siz, const Rps_ObjectRef*arr)
+Rps_TupleObrefZone::make(Rps_CallFrameZone*callingfra,uint32_t siz, const Rps_ObjectRef*arr)
 {
   if (!arr) siz=0;
   else if (siz>maxsize)
     fail_too_big_zone(siz, "too big tuple");
   auto gap = byte_gap_for_size(siz);
-  auto ztup = Rps_TupleObrefZone::rps_allocate_with_gap<Rps_TupleObrefZone>(callfram, gap, siz, arr);
+  auto ztup = Rps_TupleObrefZone::rps_allocate_with_gap<Rps_TupleObrefZone>(callingfra, gap, siz, arr);
   return ztup;
 } // end Rps_TupleObrefZone::make
 
 
 
 Rps_SetObrefZone*
-Rps_SetObrefZone::make(Rps_CallFrameZone*callfram,uint32_t siz, const Rps_ObjectRef*arr)
+Rps_SetObrefZone::make(Rps_CallFrameZone*callingfra,uint32_t siz, const Rps_ObjectRef*arr)
 {
   if (!arr) siz=0;
   else if (siz>maxsize)
     fail_too_big_zone(siz, "too big set");
   auto gap = byte_gap_for_size(siz);
-  auto zqset = Rps_SetObrefZone::rps_allocate_with_gap<Rps_SetObrefZone>(callfram, gap, nullptr, siz, arr);
+  auto zqset = Rps_SetObrefZone::rps_allocate_with_gap<Rps_SetObrefZone>(callingfra, gap, nullptr, siz, arr);
   std::sort(zqset->_obarr, zqset->_obarr+siz);
   uint32_t card = 0;
   for (auto ix=0U; ix<siz; ix++)
@@ -393,7 +393,7 @@ Rps_SetObrefZone::make(Rps_CallFrameZone*callfram,uint32_t siz, const Rps_Object
       zqset->mutate(Rps_TyTuple);
       auto zqtup = zqset;
       auto cardgap = byte_gap_for_size(card);
-      zqset = Rps_SetObrefZone::rps_allocate_with_gap<Rps_SetObrefZone>(callfram,cardgap, nullptr, card, zqtup->_obarr+siz-card);
+      zqset = Rps_SetObrefZone::rps_allocate_with_gap<Rps_SetObrefZone>(callingfra,cardgap, nullptr, card, zqtup->_obarr+siz-card);
       uint32_t nbel = 0U;
       for (auto ix=0U; ix<siz; ix++)
         {
@@ -413,7 +413,7 @@ Rps_SetObrefZone::make(Rps_CallFrameZone*callfram,uint32_t siz, const Rps_Object
 
 
 ////////////////
-Rps_TupleValue::Rps_TupleValue(Rps_CallFrameZone*callfram,collect_tag, uint32_t siz, const Rps_Value*arr)
+Rps_TupleValue::Rps_TupleValue(Rps_CallFrameZone*callingfra,collect_tag, uint32_t siz, const Rps_Value*arr)
   : Rps_TupleValue(nullptr)
 {
   if (!arr) siz = 0;
@@ -443,10 +443,10 @@ Rps_TupleValue::Rps_TupleValue(Rps_CallFrameZone*callfram,collect_tag, uint32_t 
           continue;
         }
     }
-  put_tuple(Rps_TupleObrefZone::make(callfram,vecob.size(), vecob.data()));
+  put_tuple(Rps_TupleObrefZone::make(callingfra,vecob.size(), vecob.data()));
 }
 
-Rps_TupleValue::Rps_TupleValue(Rps_CallFrameZone*callfram,collect_tag, const std::initializer_list<const Rps_Value> il)
+Rps_TupleValue::Rps_TupleValue(Rps_CallFrameZone*callingfra,collect_tag, const std::initializer_list<const Rps_Value> il)
   : Rps_TupleValue(nullptr)
 {
   /// we could want to special-case the frequent occurrence of small
@@ -472,7 +472,7 @@ Rps_TupleValue::Rps_TupleValue(Rps_CallFrameZone*callfram,collect_tag, const std
           continue;
         }
     }
-  put_tuple(Rps_TupleObrefZone::make(callfram,vecob.size(), vecob.data()));
+  put_tuple(Rps_TupleObrefZone::make(callingfra,vecob.size(), vecob.data()));
 } // end Rps_TupleValue::Rps_TupleValue(collect_tag, … il)
 /* end of file value_rps.cc */
 

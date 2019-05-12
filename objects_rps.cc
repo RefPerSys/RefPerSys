@@ -49,7 +49,7 @@ Rps_ObjectZone::find_by_id(const Rps_Id& id)
 
 
 Rps_ObjectZone*
-Rps_ObjectZone::make_of_id(Rps_CallFrameZone*callfram,const Rps_Id&id)
+Rps_ObjectZone::make_of_id(Rps_CallFrameZone*callingfra,const Rps_Id&id)
 {
   if (!id) return nullptr;
   if (!id.valid()) return nullptr;
@@ -58,7 +58,7 @@ Rps_ObjectZone::make_of_id(Rps_CallFrameZone*callfram,const Rps_Id&id)
   auto it = curbuck._bu_map.find(id);
   if (it != curbuck._bu_map.end())
     return it->second;
-  auto newob = rps_allocate<Rps_ObjectZone>(callfram,id);
+  auto newob = rps_allocate<Rps_ObjectZone>(callingfra,id);
   curbuck._bu_map.insert({id,newob});
 #ifdef RPS_HAVE_MPS
   mps_addr_t obad = (mps_addr_t)newob;
@@ -71,7 +71,7 @@ Rps_ObjectZone::make_of_id(Rps_CallFrameZone*callfram,const Rps_Id&id)
 
 
 Rps_ObjectZone*
-Rps_ObjectZone::make(Rps_CallFrameZone*callfram)
+Rps_ObjectZone::make(Rps_CallFrameZone*callingfra)
 {
   for (;;)   // this loop usually runs once (except on very unlikely
     // objid-s collisions)
@@ -83,7 +83,7 @@ Rps_ObjectZone::make(Rps_CallFrameZone*callfram)
       auto it = curbuck._bu_map.find(id);
       if (it != curbuck._bu_map.end())
         continue;
-      auto newob = rps_allocate<Rps_ObjectZone>(callfram,id);
+      auto newob = rps_allocate<Rps_ObjectZone>(callingfra,id);
       curbuck._bu_map.insert({id,newob});
 #ifdef RPS_HAVE_MPS
       mps_addr_t obad = (mps_addr_t)newob;

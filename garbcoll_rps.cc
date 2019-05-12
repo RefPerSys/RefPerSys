@@ -111,11 +111,11 @@ Rps_GarbageCollector::global_allocation_data
 Rps_GarbageCollector::_gc_globalloc_;
 
 void
-Rps_GarbageCollector::run_garbcoll(Rps_CallFrameZone*callfram)
+Rps_GarbageCollector::run_garbcoll(Rps_CallFrameZone*callingfra)
 {
   _gc_wanted.store(true);
-  if (callfram)
-    scan_call_stack(callfram);
+  if (callingfra)
+    scan_call_stack(callingfra);
   // we need to synchronize with other worker threads
 #warning unimplemented Rps_MemoryBlock::run_garbcoll
   RPS_FATAL("Rps_MemoryBlock::run_garbcoll unimplemented");
@@ -123,11 +123,11 @@ Rps_GarbageCollector::run_garbcoll(Rps_CallFrameZone*callfram)
 
 
 void
-Rps_GarbageCollector::scan_call_stack(Rps_CallFrameZone*callfram)
+Rps_GarbageCollector::scan_call_stack(Rps_CallFrameZone*callingfra)
 {
-  assert (callfram != nullptr);
+  assert (callingfra != nullptr);
   /// we should scan and forward all the pointers on the call stack,
-  /// starting with the topmost callfram
+  /// starting with the topmost callingfra
 #warning unimplemented Rps_MemoryBlock::scan_call_stack
   RPS_FATAL("Rps_MemoryBlock::scan_call_stack unimplemented");
 } // end Rps_GarbageCollector::scan_call_stack
