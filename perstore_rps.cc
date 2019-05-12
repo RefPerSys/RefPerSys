@@ -71,9 +71,9 @@ Rps_Loader::example_func()
 /// an other example of internal loader function which uses the GC,
 /// e.g. because it is allocating data.
 void
-Rps_Loader::example_gc_func(Rps_CallFrameZone*callfram)
+Rps_Loader::example_gc_func(Rps_CallFrameZone*callingfra)
 {
-  RPS_LOCALFRAME(callfram, /*descr:*/nullptr,
+  RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
                  Rps_Value w1;
                  Rps_QuasiToken* tok2;
                 );
@@ -120,9 +120,9 @@ Rps_Dumper::example_func()
 /// an other example of internal dumper function which uses the GC,
 /// e.g. because it is allocating data.
 void
-Rps_Dumper::example_gc_func(Rps_CallFrameZone*callfram)
+Rps_Dumper::example_gc_func(Rps_CallFrameZone*callingfra)
 {
-  RPS_LOCALFRAME(callfram, /*descr:*/nullptr,
+  RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
                  Rps_Value w1;
                 );
   _.w1 = RPS_DUDAT(dp_v1);

@@ -2037,13 +2037,13 @@ public:
       return nullptr;
       }
   };				// end get_attr
-#warning mutating primitives may need an additional callframe argument, see README.md
   void do_put_attr(Rps_ObjectRef keyob, Rps_Value valat);
   Rps_ObjectRef put_attr(Rps_ObjectRef keyob, Rps_Value valat)
   {
     do_put_attr(keyob, valat);
     return this;
   };
+#warning mutating primitives may need an additional callframe argument, see README.md
   void do_remove_attr(Rps_ObjectRef keyob);
   Rps_ObjectRef remove_attr(Rps_ObjectRef keyob)
   {
@@ -2495,7 +2495,6 @@ public:
 class Rps_Lexer
 {
 public:
-
   // The Rps_Lexer constructor loads the contents of the store file at
   // initialisation.
   // TODO: Abhishek needs Dr. Basile's guidance on whether this is a good idea;
