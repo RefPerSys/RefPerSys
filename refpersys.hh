@@ -61,6 +61,7 @@
 #include <cassert>
 #include <cstring>
 #include <cmath>
+#include <cstdio>
 
 #include <argp.h>
 #include <ctype.h>
@@ -2494,9 +2495,59 @@ public:
 class Rps_Lexer
 {
 public:
-  Rps_Lexer(const char* file);
-  void start(void);
-  bool next(void);
+  // The Rps_Lexer constructor loads the contents of the store file at
+  // initialisation.
+  // TODO: Abhishek needs Dr. Basile's guidance on whether this is a good idea;
+  // Abhishek thinks it's possibly a bad idea since store files are expected to
+  // grow large
+  Rps_Lexer(Rps_CallFrameZone *frame, const char* file)
+  {
+    // TODO: Abhishek will replace stdio FILE routines with C++ ones
+    FILE* file_hnd;
+    long file_sz;
+    RPS_LOCALFRAME(frame, nullptr, char* file_bfr;);
+
+    file_hnd = fopen(file, "r");
+    if(!file_hnd)
+      {
+        perror("error in loading store file");
+        exit(1);
+      }
+
+    fseek(file_hnd, 0L, SEEK_END);
+    file_sz = ftell(file_hnd);
+    rewind(file_hnd);
+
+// TODO: Abhishek is stuck at this point;
+// Abhishek needs Dr. Basile's guidance on which GC-function is required
+
+    if(fread(_.file_bfr, file_sz, 1, file_hnd) != 1)
+      {
+        fclose(file_hnd);
+        fputs("failed to read store file", stderr);
+        exit(1);
+      }
+
+    _dump = _.file_bfr;
+    fclose(file_hnd);
+  }
+
+  void start(void)
+  {
+    _iter = _dump;
+  }
+
+  bool next(void)
+  {
+    if (*(_iter + 1))
+      {
+        _iter++;
+        return true;
+      }
+
+    return false;
+  }
+
   Rps_QuasiToken* tokenize(void);
 
 private:
