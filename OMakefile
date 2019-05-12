@@ -76,7 +76,7 @@ REFPERSYS_BASE_FILES[] =
 
 REFPERSYS_BASE_HEADERS[] = refpersys
 
-CXXProgram(refpersys, $(REFPERSYS_BASE_FILES))
+CXXProgram(refpersys, $(REFPERSYS_BASE_FILES) _timestamp_rps)
 
 
 
@@ -90,9 +90,52 @@ CLEAN[] =
   .omak*
   core
   refpersys
+  _*.c
+  _*.h
+  _*.cc
+  _*.hh
 
 clean:
     rm -vf $(CLEAN)
 
 all: refpersys
+	mv -v _timestamp_rps.cc _timestamp_rps.cc~
 	sync
+
+_timestamp_rps.cc: $(addsuffixes .cc, $(REFPERSYS_BASE_FILES)) $(addsuffixes .hh, $(REFPERSYS_BASE_HEADERS))
+	echo caret= $^ at= $@
+	echo '// generated file ' $@ ' - DONT EDIT' > $@.tmp
+	echo 'extern "C" const char timestamp_rps[];' >> $@.tmp
+	echo 'extern "C" const char gitid_rps[];' >> $@.tmp
+	echo 'extern "C" const char md5sum_rps[];' >> $@.tmp
+	echo 'extern "C" const char cwd_rps[];' >> $@.tmp
+#	echo 'extern "C" const char lastgitcommit_rps[];' >> $@.tmp
+	echo 'extern "C" const char cxxcompiler_rps[];' >> $@.tmp
+	echo 'extern "C" const char buildhost_rps[];' >> $@.tmp
+	echo 'extern "C" const char sourcefiles_rps[];' >> $@.tmp
+	echo 'extern "C" const char headerfiles_rps[];' >> $@.tmp
+	date +'const char timestamp_rps[] = "%c";' >> $@.tmp
+	(/bin/echo -n 'const char gitid_rps[]="'; \
+	 git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n'; \
+	 echo '";')  >> $@.tmp
+	(/bin/echo -n 'const char md5sum_rps[]="'; \
+	 cat $+ | md5sum | cut '-d '  -f1 | tr -d '\n'; \
+	/bin/echo '";')  >> $@.tmp
+	(/bin/echo -n 'const char cwd_rps[]="'; pwd | tr -d '\n'; echo '";')  >> $@.tmp
+	(/bin/echo -n 'const char cxxcompiler_rps[]="' ; \
+	 $(CXX) --version | head -1 | tr -d '\n'; \
+	 /bin/echo '";') >> $@.tmp
+#	(/bin/echo -n 'const char lastgitcommit_rps[]="' ; \
+#	 git log --format=oneline --abbrev=12 --abbrev-commit -q  \
+#	     | head -1 | tr -d '\n\\\\' ; \
+#	 /bin/echo '";') >> $@.tmp
+	(/bin/echo -n 'const char buildhost_rps[]="' ; \
+	 hostname -f  | tr -d '\n'; \
+	/bin/echo '";')  >> $@.tmp
+	(/bin/echo -n 'const char sourcefiles_rps[]="' ; \
+	 echo $(addsuffixes .cc, $(REFPERSYS_BASE_FILES))  | tr -d '\n'; \
+	/bin/echo '";')  >> $@.tmp
+	(/bin/echo -n 'const char headerfiles_rps[]="' ; \
+	 echo $(addsuffixes .hh, $(REFPERSYS_BASE_HEADERS))  | tr -d '\n'; \
+	/bin/echo '";')  >> $@.tmp
+	mv  $@.tmp $@

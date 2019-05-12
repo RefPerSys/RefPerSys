@@ -37,6 +37,7 @@ thread_local Rps_Random Rps_Random::_rand_thr_;
 enum rps_option_key_en
 {
   Rps_Key_PrintRandomId = 1024,
+  Rps_Key_Version,
   Rps_Key_ParseId,
   Rps_Key_ExplainTypes,
   Rps_Key_PrimeAbove,
@@ -76,6 +77,14 @@ const struct argp_option rps_argopt_vec[] =
     .arg = NULL,
     .flags = OPTION_ARG_OPTIONAL,
     .doc = "print information about types",
+    .group = 0,
+  },
+  {
+    .name = "version",
+    .key = Rps_Key_Version,
+    .arg = NULL,
+    .flags = OPTION_ARG_OPTIONAL,
+    .doc = "print version informatrion",
     .group = 0,
   },
   {
@@ -164,6 +173,20 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
   (void) state;
   switch (key)
     {
+    case Rps_Key_Version:
+    {
+      printf("RefPerSys version information::\n");
+      printf(" timestamp:     %s\n", timestamp_rps);
+      printf(" gitid:         %s\n", gitid_rps);
+      printf(" md5sum of C++: %s\n", md5sum_rps);
+      printf(" build cwd:     %s\n", cwd_rps);
+      printf(" build host:    %s\n", buildhost_rps);
+      printf(" C++ compiler:  %s\n", cxxcompiler_rps);
+      printf(" C++ sources:   %s\n", sourcefiles_rps);
+      printf(" C++ headers:   %s\n", headerfiles_rps);
+      putchar('\n');
+    }
+    break;
     case Rps_Key_PrintRandomId:
     {
       int count = 1;

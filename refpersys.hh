@@ -94,6 +94,17 @@ static_assert(alignof(mps_word_t) == alignof(void*));
 
 extern void print_types_info(void);
 
+// generated in _timestamp_rps.cc
+extern "C" const char timestamp_rps[];
+extern "C" const char gitid_rps[];
+extern "C" const char md5sum_rps[];
+extern "C" const char cwd_rps[];
+extern "C" const char lastgitcommit_rps[];
+extern "C" const char cxxcompiler_rps[];
+extern "C" const char buildhost_rps[];
+extern "C" const char sourcefiles_rps[];
+extern "C" const char headerfiles_rps[];
+
 class Rps_CallFrameZone;
 class Rps_GarbageCollector;
 
@@ -1863,6 +1874,8 @@ private:
   ///// thresholds below are fuzzy. We add a bit of randomness.
   static constexpr unsigned at_small_thresh= 10;
   static constexpr unsigned at_sorted_thresh= 101; // a prime
+  ///// initial size of _obat_small_atar:
+  static constexpr unsigned at_small_initsize= 3;
   union
   {
     std::nullptr_t _obat_null;		    // when atk_none
