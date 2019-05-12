@@ -233,4 +233,6 @@ calling function**.
   and compile with the `-ffixed-`*reg* [code generation
   option](https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html).
   By coding convention, that calling callframe argument should be
-  preferably named `callingfra`.
+  preferably named `callingfra`, and should be the *first* argument of
+  every function or methods (member functions in C++ classes)
+  requiring the GC.

@@ -114,7 +114,7 @@ Rps_ObjectZone::~Rps_ObjectZone()  /// only called by finalizer
 /// shrink them, or create that quasivalue and register it in this
 /// object.
 void
-Rps_ObjectZone::do_resize_components (unsigned size)
+Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callfra, unsigned size)
 {
   if (!_ob_compvec)
     {
@@ -135,7 +135,7 @@ Rps_ObjectZone::do_resize_components (unsigned size)
 
 
 void
-Rps_ObjectZone::do_reset_components (unsigned size)
+Rps_ObjectZone::do_reset_components (Rps_CallFrameZone*callingfra, unsigned size)
 {
 #warning unimplemented Rps_ObjectZone::do_reset_components
   RPS_FATAL("unimplemented Rps_ObjectZone::do_reset_components @%p size=%u",
@@ -145,7 +145,7 @@ Rps_ObjectZone::do_reset_components (unsigned size)
 
 
 void
-Rps_ObjectZone::do_append_component(Rps_Value val)
+Rps_ObjectZone::do_append_component(Rps_CallFrameZone*callingfra,Rps_Value val)
 {
 #warning unimplemented Rps_ObjectZone::do_append_component
   RPS_FATAL("unimplemented Rps_ObjectZone::do_append_component @%p val@%p",
@@ -154,7 +154,7 @@ Rps_ObjectZone::do_append_component(Rps_Value val)
 
 
 
-void Rps_ObjectZone::do_put_attr(Rps_ObjectRef keyob, Rps_Value valat)
+void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob, Rps_Value valat)
 {
 #warning unimplemented Rps_ObjectZone::do_put_attr
   RPS_FATAL("unimplemented Rps_ObjectZone::do_put_attr @%p key@%p val@%p",
@@ -162,7 +162,7 @@ void Rps_ObjectZone::do_put_attr(Rps_ObjectRef keyob, Rps_Value valat)
 } // end Rps_ObjectZone::do_put_attr
 
 
-void Rps_ObjectZone::do_remove_attr(Rps_ObjectRef keyob)
+void Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob)
 {
 #warning unimplemented Rps_ObjectZone::do_remove_attr
   RPS_FATAL("unimplemented Rps_ObjectZone::do_remove_attr @%p key@%p",

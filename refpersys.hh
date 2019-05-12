@@ -1289,7 +1289,7 @@ class Rps_Loader : Rps_ZoneValue
   /// add private member functions; each of them can access the
   /// quasipointer Foo of the loader using RPS_LDATA(Foo) notation.
   void example_func(void);
-  void example_gc_func(Rps_CallFrameZone*callfram);
+  void example_gc_func(Rps_CallFrameZone*callingfra);
   //// TODO: Abhishek, please add other loading functions here.
 protected:
   struct loadpointers_st& rps_loadpointers()
@@ -1339,7 +1339,7 @@ class Rps_Dumper : Rps_ZoneValue
   /// add private member functions; each of them can access the
   /// quasipointer Foo of the dumper using RPS_DUDAT(Foo) notation.
   void example_func(void);
-  void example_gc_func(Rps_CallFrameZone*callfram);
+  void example_gc_func(Rps_CallFrameZone*callingfra);
   //// TODO: Abhishek, please add other functions for dumping
   ////
   struct dumpointers_st& rps_dumpointers()
@@ -1448,9 +1448,9 @@ private:
 public:
   static constexpr Rps_Type zone_type = Rps_TyTuple;
   static Rps_TupleObrefZone* make(Rps_CallFrameZone*,uint32_t siz, const Rps_ObjectRef*arr);
-  static Rps_TupleObrefZone* make(Rps_CallFrameZone*callfram,const std::initializer_list<const Rps_ObjectRef> il)
+  static Rps_TupleObrefZone* make(Rps_CallFrameZone*callingfra,const std::initializer_list<const Rps_ObjectRef> il)
   {
-    return make(callfram,il.size(), il.begin());
+    return make(callingfra,il.size(), il.begin());
   };
 };				// end of Rps_TupleObrefZone
 Rps_Value::Rps_Value(tuple_tag, const Rps_TupleObrefZone*ptup) :
@@ -1468,22 +1468,22 @@ public:
     put_data(ptup);
   };
   Rps_TupleValue(Rps_Value val) : Rps_Value(val.as_tuple()) {};
-  Rps_TupleValue(Rps_CallFrameZone*callfram,uint32_t siz, Rps_ObjectRef const* arr)
-    : Rps_Value(Rps_TupleObrefZone::make(callfram,siz, arr)) {};
-  Rps_TupleValue(Rps_CallFrameZone*callfram,const std::initializer_list<const Rps_ObjectRef> il)
-    : Rps_Value(Rps_TupleObrefZone::make(callfram,il)) {};
+  Rps_TupleValue(Rps_CallFrameZone*callingfra,uint32_t siz, Rps_ObjectRef const* arr)
+    : Rps_Value(Rps_TupleObrefZone::make(callingfra,siz, arr)) {};
+  Rps_TupleValue(Rps_CallFrameZone*callingfra,const std::initializer_list<const Rps_ObjectRef> il)
+    : Rps_Value(Rps_TupleObrefZone::make(callingfra,il)) {};
   struct collect_tag {};
   // make a tuple from a collection of values, using only objects and
   // sequences from them and ignoring other values
-  Rps_TupleValue(Rps_CallFrameZone*callfram,collect_tag, const std::initializer_list<const Rps_Value> il);
-  Rps_TupleValue(Rps_CallFrameZone*callfram,collect_tag, uint32_t siz, const Rps_Value*arr);
-  static Rps_TupleValue collect(Rps_CallFrameZone*callfram,const std::initializer_list<const Rps_Value> il)
+  Rps_TupleValue(Rps_CallFrameZone*callingfra,collect_tag, const std::initializer_list<const Rps_Value> il);
+  Rps_TupleValue(Rps_CallFrameZone*callingfra,collect_tag, uint32_t siz, const Rps_Value*arr);
+  static Rps_TupleValue collect(Rps_CallFrameZone*callingfra,const std::initializer_list<const Rps_Value> il)
   {
-    return Rps_TupleValue(callfram,collect_tag{}, il);
+    return Rps_TupleValue(callingfra,collect_tag{}, il);
   };
-  static Rps_TupleValue collect(Rps_CallFrameZone*callfram,uint32_t siz, const Rps_Value*arr)
+  static Rps_TupleValue collect(Rps_CallFrameZone*callingfra,uint32_t siz, const Rps_Value*arr)
   {
-    return Rps_TupleValue(callfram,collect_tag{}, siz, arr);
+    return Rps_TupleValue(callingfra,collect_tag{}, siz, arr);
   };
 };				// end Rps_TupleValue
 
@@ -1520,10 +1520,10 @@ private:
                           arr) { };
 public:
   static constexpr Rps_Type zone_type = Rps_TySet;
-  static Rps_SetObrefZone* make(Rps_CallFrameZone*callfram,uint32_t siz, const Rps_ObjectRef*arr);
-  static Rps_SetObrefZone* make(Rps_CallFrameZone*callfram,const std::initializer_list<const Rps_ObjectRef> il)
+  static Rps_SetObrefZone* make(Rps_CallFrameZone*callingfra,uint32_t siz, const Rps_ObjectRef*arr);
+  static Rps_SetObrefZone* make(Rps_CallFrameZone*callingfra,const std::initializer_list<const Rps_ObjectRef> il)
   {
-    return make(callfram,il.size(), il.begin());
+    return make(callingfra,il.size(), il.begin());
   };
 }; // end of Rps_SetObrefZone
 
@@ -1533,10 +1533,10 @@ class Rps_SetValue : public Rps_Value
 {
 public:
   Rps_SetValue(Rps_Value val) : Rps_Value(val.as_set()) {};
-  Rps_SetValue(Rps_CallFrameZone*callfram,uint32_t siz, Rps_ObjectRef const* arr)
-    : Rps_Value(Rps_SetObrefZone::make(callfram,siz, arr)) {};
-  Rps_SetValue(Rps_CallFrameZone*callfram,const std::initializer_list<const Rps_ObjectRef> il)
-    : Rps_Value(Rps_SetObrefZone::make(callfram,il)) {};
+  Rps_SetValue(Rps_CallFrameZone*callingfra,uint32_t siz, Rps_ObjectRef const* arr)
+    : Rps_Value(Rps_SetObrefZone::make(callingfra,siz, arr)) {};
+  Rps_SetValue(Rps_CallFrameZone*callingfra,const std::initializer_list<const Rps_ObjectRef> il)
+    : Rps_Value(Rps_SetObrefZone::make(callingfra,il)) {};
 };				// end Rps_SetValue
 
 const Rps_SetObrefZone*
@@ -1643,7 +1643,7 @@ protected:
     _strbytes[slen] = 0;
   };
 public:
-  static Rps_StringZone* make(Rps_CallFrameZone*callfram,const char*sbytes, int32_t slen= -1);
+  static Rps_StringZone* make(Rps_CallFrameZone*callingfra,const char*sbytes, int32_t slen= -1);
   static constexpr Rps_Type zone_type = Rps_TyString;
   uint32_t size() const
   {
@@ -1674,25 +1674,25 @@ class Rps_StringValue : public Rps_Value
 {
   Rps_StringValue(nullptr_t) : Rps_Value(nullptr) {};
 public:
-  void put_string(Rps_CallFrameZone*callfram,const char*cstr, int slen= -1)
+  void put_string(Rps_CallFrameZone*callingfra,const char*cstr, int slen= -1)
   {
     if (!cstr) slen=0;
-    else put_data(Rps_StringZone::make(callfram,cstr,slen));
+    else put_data(Rps_StringZone::make(callingfra,cstr,slen));
   };
-  void put_string(Rps_CallFrameZone*callfram,const std::string&str)
+  void put_string(Rps_CallFrameZone*callingfra,const std::string&str)
   {
-    put_string(callfram,str.c_str(), str.size());
+    put_string(callingfra,str.c_str(), str.size());
   };
   Rps_StringValue() : Rps_StringValue(nullptr) {};
-  Rps_StringValue(Rps_CallFrameZone*callfram,const char*cstr, int slen= -1)
+  Rps_StringValue(Rps_CallFrameZone*callingfra,const char*cstr, int slen= -1)
     : Rps_StringValue(nullptr)
   {
-    put_string(callfram,cstr, slen);
+    put_string(callingfra,cstr, slen);
   };
-  Rps_StringValue(Rps_CallFrameZone*callfram,const std::string&str)
+  Rps_StringValue(Rps_CallFrameZone*callingfra,const std::string&str)
     : Rps_StringValue(nullptr)
   {
-    put_string(callfram,str);
+    put_string(callingfra,str);
   };
   // return a *copy* of the string, since the contained Rps_StringZone
   // is potentially *moved* by MPS at arbitrary times.
@@ -2036,17 +2036,17 @@ public:
       return nullptr;
       }
   };				// end get_attr
-  void do_put_attr(Rps_ObjectRef keyob, Rps_Value valat);
-  Rps_ObjectRef put_attr(Rps_ObjectRef keyob, Rps_Value valat)
+  void do_put_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob, Rps_Value valat);
+  Rps_ObjectRef put_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob, Rps_Value valat)
   {
-    do_put_attr(keyob, valat);
+    do_put_attr(callfra, keyob, valat);
     return this;
   };
-#warning mutating primitives may need an additional callframe argument, see README.md
-  void do_remove_attr(Rps_ObjectRef keyob);
-  Rps_ObjectRef remove_attr(Rps_ObjectRef keyob)
+#warning mutating primitives may need an additional callingfra argument, see README.md
+  void do_remove_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob);
+  Rps_ObjectRef remove_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob)
   {
-    do_remove_attr(keyob);
+    do_remove_attr(callfra, keyob);
     return this;
   };
   //// methods for components
@@ -2061,24 +2061,24 @@ public:
     return nullptr;
   };
   /// resize the component vector to the given size, so grow or shrink them
-  void do_resize_components (unsigned size);
-  Rps_ObjectRef resize_components(unsigned size)
+  void do_resize_components (Rps_CallFrameZone*callfra, unsigned size);
+  Rps_ObjectRef resize_components(Rps_CallFrameZone*callfra, unsigned size)
   {
-    do_resize_components(size);
+    do_resize_components(callfra, size);
     return this;
   };
   /// reserve the component vector to the given size, with an empty count
-  void do_reset_components (unsigned size);
-  Rps_ObjectRef reset_components(unsigned size)
+  void do_reset_components (Rps_CallFrameZone*callfra, unsigned size);
+  Rps_ObjectRef reset_components(Rps_CallFrameZone*callfra, unsigned size)
   {
-    do_reset_components(size);
+    do_reset_components(callfra, size);
     return this;
   }
   /// append a component
-  void do_append_component(Rps_Value val);
-  Rps_ObjectRef append_component(Rps_Value val)
+  void do_append_component(Rps_CallFrameZone*callfra, Rps_Value val);
+  Rps_ObjectRef append_component(Rps_CallFrameZone*callfra, Rps_Value val)
   {
-    do_append_component(val);
+    do_append_component(callfra, val);
     return this;
   }
 };				// end class Rps_ObjectZone
@@ -2213,9 +2213,9 @@ class Rps_GarbageCollector
   ////////////////
 public:
   // Scan a call stack and all the local frames in it:
-  static void scan_call_stack(Rps_CallFrameZone*callfram);
+  static void scan_call_stack(Rps_CallFrameZone*callingfra);
   // Forcibly run the garbage collector:
-  static void run_garbcoll(Rps_CallFrameZone*callfram);
+  static void run_garbcoll(Rps_CallFrameZone*callingfra);
   // Maybe run the garbage collector. Each allocating thread is
   // promising to call that at least once every few milliseconds,
   // unless special precautions are taken (disabling allocation and GC
@@ -2224,10 +2224,10 @@ public:
   // (except a tiny performance loss). Calling it not often enough is
   // a severe condition and should be avoided, since it will impact
   // usability, latency and could even crash the system.
-  static void maybe_garbcoll(Rps_CallFrameZone*callfram)
+  static void maybe_garbcoll(Rps_CallFrameZone*callingfra)
   {
     if (_gc_wanted.load())
-      run_garbcoll(callfram);
+      run_garbcoll(callingfra);
   };
   // Call this quick function to give the intention of having the GC
   // being soon called, hopefully in the next few milliseconds.
@@ -2237,20 +2237,20 @@ public:
   }
   ////////////////////////////////////////////////////////////////
   /// various allocation primitives.
-  static void*allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*callfram)
+  static void*allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*callingfra)
   {
     void* ad = nullptr;
     assert (size < RPS_SMALL_BLOCK_SIZE - Rps_MarkedMemoryBlock::_remain_threshold_ - 4*sizeof(void*));
-    maybe_garbcoll(callfram);
+    maybe_garbcoll(callingfra);
 #warning Rps_GarbageCollector::allocated_marked_maybe_gc unimplemented
     RPS_FATAL("Rps_GarbageCollector::allocated_marked_maybe_gc unimplemented size=%zd", size);
   };
-  static void*allocate_birth_maybe_gc(size_t size, Rps_CallFrameZone*callfram)
+  static void*allocate_birth_maybe_gc(size_t size, Rps_CallFrameZone*callingfra)
   {
     void* ad = nullptr;
     assert (size < RPS_LARGE_BLOCK_SIZE - Rps_LargeNewMemoryBlock::_remain_threshold_ - 4*sizeof(void*));
     assert (size % (2*alignof(Rps_Value)) == 0);
-    maybe_garbcoll(callfram);
+    maybe_garbcoll(callingfra);
     if (size < RPS_SMALL_BLOCK_SIZE - Rps_BirthMemoryBlock::_remain_threshold_ - 4*sizeof(void*))
       {
         if (_gc_thralloc_)
@@ -2265,7 +2265,7 @@ public:
                 else
                   {
                     _gc_wanted.store(true);
-                    Rps_GarbageCollector::run_garbcoll(callfram);
+                    Rps_GarbageCollector::run_garbcoll(callingfra);
                     // on the next loop, allocation should succeed
                     continue;
                   };
@@ -2290,7 +2290,7 @@ public:
                     }
                 }
                 if (!ad)
-                  Rps_GarbageCollector::maybe_garbcoll (callfram);
+                  Rps_GarbageCollector::maybe_garbcoll (callingfra);
               }
           }
       } // end small size
@@ -2313,7 +2313,7 @@ public:
                 }
             }
             if (!ad)
-              Rps_GarbageCollector::maybe_garbcoll (callfram);
+              Rps_GarbageCollector::maybe_garbcoll (callingfra);
           };
       } // end large size
     else RPS_FATAL("too big size %zd for allocate_birth_maybe_gc", size);
@@ -2323,27 +2323,27 @@ public:
 
 ////////////////////////////////////////////////////////////////
 void*
-Rps_PointerCopyingZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram)
+Rps_PointerCopyingZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callingfra)
 {
-  return Rps_GarbageCollector::allocate_birth_maybe_gc(totalsize, callfram);
+  return Rps_GarbageCollector::allocate_birth_maybe_gc(totalsize, callingfra);
 }      // end of Rps_PointerCopyingZoneValue::allocate_rps_zone
 
 void*
-Rps_MutableCopyingZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram)
+Rps_MutableCopyingZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callingfra)
 {
-  return Rps_GarbageCollector::allocate_birth_maybe_gc(totalsize, callfram);
+  return Rps_GarbageCollector::allocate_birth_maybe_gc(totalsize, callingfra);
 }      // end of Rps_MutableCopyingZoneValue::allocate_rps_zone
 
 void*
-Rps_ScalarCopyingZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram)
+Rps_ScalarCopyingZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callingfra)
 {
-  return Rps_GarbageCollector::allocate_birth_maybe_gc(totalsize, callfram);
+  return Rps_GarbageCollector::allocate_birth_maybe_gc(totalsize, callingfra);
 }      // end of Rps_ScalarCopyingZoneValue::allocate_rps_zone
 
 void*
-Rps_MarkSweepZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram)
+Rps_MarkSweepZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callingfra)
 {
-  return Rps_GarbageCollector::allocate_marked_maybe_gc(totalsize, callfram);
+  return Rps_GarbageCollector::allocate_marked_maybe_gc(totalsize, callingfra);
 }      // end of Rps_MarkSweepZoneValue::allocate_rps_zone
 
 
@@ -2467,27 +2467,27 @@ private:
 
 public:
   /// the lexer should use these makers
-  static Rps_QuasiToken*make_from_int (intptr_t i, Rps_CallFrameZone* callframe, const LOCATION_st* ploc=nullptr)
+  static Rps_QuasiToken*make_from_int (intptr_t i, Rps_CallFrameZone* callingfra, const LOCATION_st* ploc=nullptr)
   {
-    return Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(callframe, i, ploc);
+    return Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(callingfra, i, ploc);
   };
-  static Rps_QuasiToken*make_from_int(intptr_t i, Rps_CallFrameZone* callframe, const LOCATION_st& loc)
+  static Rps_QuasiToken*make_from_int(intptr_t i, Rps_CallFrameZone* callingfra, const LOCATION_st& loc)
   {
-    return make_from_int(i, callframe, &loc);
+    return make_from_int(i, callingfra, &loc);
   };
   ///
-  static Rps_QuasiToken*make_from_double (double d, Rps_CallFrameZone* callframe, const LOCATION_st* ploc=nullptr)
+  static Rps_QuasiToken*make_from_double (double d, Rps_CallFrameZone* callingfra, const LOCATION_st* ploc=nullptr)
   {
-    return Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(callframe, d, ploc);
+    return Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(callingfra, d, ploc);
   };
-  static Rps_QuasiToken*make_from_double (double d, Rps_CallFrameZone* callframe, const LOCATION_st& loc)
+  static Rps_QuasiToken*make_from_double (double d, Rps_CallFrameZone* callingfra, const LOCATION_st& loc)
   {
-    return make_from_double(d, callframe, &loc);
+    return make_from_double(d, callingfra, &loc);
   };
-  static Rps_QuasiToken*make_from_string (const std::string&str, Rps_CallFrameZone* callframe, const LOCATION_st* ploc=nullptr);
-  static Rps_QuasiToken*make_from_string (const std::string&str, Rps_CallFrameZone* callframe, const LOCATION_st& loc)
+  static Rps_QuasiToken*make_from_string (const std::string&str, Rps_CallFrameZone* callingfra, const LOCATION_st* ploc=nullptr);
+  static Rps_QuasiToken*make_from_string (const std::string&str, Rps_CallFrameZone* callingfra, const LOCATION_st& loc)
   {
-    return make_from_string(str, callframe, &loc);
+    return make_from_string(str, callingfra, &loc);
   };
 };				// end class Rps_QuasiToken
 
