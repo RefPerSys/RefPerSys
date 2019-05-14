@@ -158,7 +158,7 @@ Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned new
              alsiz*sizeof(Rps_Value),
              (unsigned)alsiz,
              (const Rps_Value*)nullptr);
-	  unsigned nbcomp = std::min((unsigned)_.oldcompvec->_qnbcomp, (unsigned)newnbcomp);
+          unsigned nbcomp = std::min((unsigned)_.oldcompvec->_qnbcomp, (unsigned)newnbcomp);
           memcpy((void*)_.newcompvec->_qarrval,
                  (void*)_.oldcompvec->_qarrval,
                  nbcomp*sizeof(Rps_Value));
@@ -177,12 +177,42 @@ Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned new
 
 
 void
-Rps_ObjectZone::do_reserve_components (Rps_CallFrameZone*callingfra, unsigned alsize)
+Rps_ObjectZone::do_reserve_components (Rps_CallFrameZone*callingfra, unsigned newsize)
 {
-#warning unimplemented Rps_ObjectZone::do_reserve_components
-  RPS_FATAL("unimplemented Rps_ObjectZone::do_reserve_components @%p alsize=%u",
-            (void*)this, alsize);
-} // end Rps_ObjectZone::do_reset_components
+  RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
+                 Rps_ObjectRef thisob;
+                 Rps_QuasiComponentVector* oldcompvec;
+                 Rps_QuasiComponentVector* newcompvec;
+                );
+  _.oldcompvec = _ob_compvec;
+  _.thisob = this;
+  auto newalsiz = (newsize<Rps_QuasiComponentVector::_min_alloc_size_
+                   ?Rps_QuasiComponentVector::_min_alloc_size_
+                   :rps_prime_above(newsize));
+  auto oldalsiz = _.oldcompvec?_.oldcompvec->allocated_size():0;
+  if (newsize == 0)
+    {
+      _.newcompvec = nullptr;
+    }
+  else if (newalsiz != oldalsiz)
+    {
+      _.newcompvec =
+        Rps_QuasiComponentVector::rps_allocate_with_gap<Rps_QuasiComponentVector>
+        (RPS_CURFRAME,
+         sizeof(Rps_QuasiComponentVector),
+         newalsiz*sizeof(Rps_Value),
+         (unsigned)newalsiz,
+         (const Rps_Value*)nullptr);
+    }
+  else
+    {
+      _.newcompvec = _.oldcompvec;
+      memset (_.oldcompvec->_qarrval, 0,
+              oldalsiz*sizeof(Rps_Value));
+    }
+  _ob_compvec = _.newcompvec;
+  RPS_WRITE_BARRIER();
+} // end Rps_ObjectZone::do_reserve_components
 
 
 
