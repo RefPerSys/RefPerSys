@@ -2506,27 +2506,52 @@ public:
   };
 };				// end class Rps_QuasiToken
 
+
+
+////////////////////////////////////////////////////////////////
 class Rps_LexedFile
 {
+  std::string _lfil_path;
+  // for getline(3)
+  char* _lfil_linbuf; // malloc-ed by getline
+  size_t _lfil_linsiz; // the allocated size of _lfil_linbuf, for getline
+  ssize_t _lfil_linlen; // the actual line length
+  int _lfil_lineno;	// current line number, starting from one
+  //
+  char* _lfil_iter;
+  FILE* _lfil_hnd;
+  size_t _lfil_sz;
 public:
   Rps_LexedFile(const std::string& file_path);
   ~Rps_LexedFile();
 
-  void start(void)
+  void restart_line (void)
   {
-    _iter = _dump;
-  }
+    _lfil_iter = _lfil_linbuf;
+  };
 
+  // gives false when the end of current line is reached.
   bool next(void)
   {
-    if (*(_iter + 1))
+    if (*(_lfil_iter + 1))
       {
-        _iter++;
+        _lfil_iter++;
         return true;
       }
 
     return false;
-  }
+  };
+
+  // get a new line, and gives false when end of file is reached
+  bool get_line(void)
+  {
+    assert (_lfil_hnd != nullptr);
+    _lfil_linlen = getline (&_lfil_linbuf, &_lfil_linsiz, _lfil_hnd);
+    if (_lfil_linlen<0)
+      return false;
+    _lfil_lineno++;
+    return true;
+  };
 
   Rps_QuasiToken* tokenize(void);
 
@@ -2565,12 +2590,7 @@ private:
            || c == '_';
   }
 
-  char* _file;
-  char* _dump;
-  char* _iter;
-  FILE* _file_hnd;
-  size_t _file_sz;
-};
+};				// end class Rps_LexedFile
 
 
 

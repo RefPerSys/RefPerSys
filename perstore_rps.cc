@@ -47,27 +47,43 @@
 
 
 Rps_LexedFile::Rps_LexedFile(const std::string& file_path)
+  : _lfil_path(file_path),
+    _lfil_linbuf(nullptr), _lfil_linsiz(0), _lfil_linlen(0),
+    _lfil_lineno(0),
+    _lfil_iter(nullptr), _lfil_hnd(nullptr),
+    _lfil_sz(0)
 {
 
-  if (!(_file_hnd = fopen(file_path.c_str(), "r")))
-    {
-      perror("error in loading store file");
-      exit(1);
-    }
+  // Failing to open a lexed file is a fatal condition during load.
+  if (!(_lfil_hnd = fopen(file_path.c_str(), "r")))
+    RPS_FATAL("failed to open lexed file %s at load time - %m",
+              file_path.c_str());
+  _lfil_path = file_path;
 
-  fseek(_file_hnd, 0L, SEEK_END);
-  _file_sz = ftell(_file_hnd);
-  rewind(_file_hnd);
+  // We need to be sure the file is seekable. Some pseudo-files, such
+  // as /dev/stdin, might not be.
+  if (fseek(_lfil_hnd, 0L, SEEK_END))
+    RPS_FATAL("failed to seek eof of lexed file %s at load time - %m",
+              file_path.c_str());
+  _lfil_sz = ftell(_lfil_hnd);
+  rewind(_lfil_hnd);
 
-}
+} // end of Rps_LexedFile::Rps_LexedFile
+
+
 
 Rps_LexedFile::~Rps_LexedFile()
 {
-  if (_file_hnd)
+  free(_lfil_linbuf), _lfil_linbuf = nullptr;
+  _lfil_linsiz = 0;
+  if (_lfil_hnd)
     {
-      fclose(_file_hnd);
+      if (fclose(_lfil_hnd))
+        RPS_FATAL("failed to close lexed file %s at load time - %m",
+                  _lfil_path.c_str());
+      _lfil_hnd = nullptr;
     }
-}
+} // end of Rps_LexedFile::~Rps_LexedFile
 
 
 
