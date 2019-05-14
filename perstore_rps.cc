@@ -46,6 +46,30 @@
 #include "refpersys.hh"
 
 
+Rps_LexedFile::Rps_LexedFile(const std::string& file_path)
+{
+
+  if (!(_file_hnd = fopen(file_path.c_str(), "r")))
+    {
+      perror("error in loading store file");
+      exit(1);
+    }
+
+  fseek(_file_hnd, 0L, SEEK_END);
+  _file_sz = ftell(_file_hnd);
+  rewind(_file_hnd);
+
+}
+
+Rps_LexedFile::~Rps_LexedFile()
+{
+  if (_file_hnd)
+    {
+      fclose(_file_hnd);
+    }
+}
+
+
 
 void
 Rps_Loader::do_load(void)

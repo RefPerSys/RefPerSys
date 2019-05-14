@@ -2506,45 +2506,11 @@ public:
   };
 };				// end class Rps_QuasiToken
 
-class Rps_Lexer
+class Rps_LexedFile
 {
 public:
-  // The Rps_Lexer constructor loads the contents of the store file at
-  // initialisation.
-  // TODO: Abhishek needs Dr. Basile's guidance on whether this is a good idea;
-  // Abhishek thinks it's possibly a bad idea since store files are expected to
-  // grow large
-  Rps_Lexer(Rps_CallFrameZone *frame, const char* file)
-  {
-    // TODO: Abhishek will replace stdio FILE routines with C++ ones
-    FILE* file_hnd;
-    long file_sz;
-    RPS_LOCALFRAME(frame, nullptr, char* file_bfr;);
-
-    file_hnd = fopen(file, "r");
-    if(!file_hnd)
-      {
-        perror("error in loading store file");
-        exit(1);
-      }
-
-    fseek(file_hnd, 0L, SEEK_END);
-    file_sz = ftell(file_hnd);
-    rewind(file_hnd);
-
-// TODO: Abhishek is stuck at this point;
-// Abhishek needs Dr. Basile's guidance on which GC-function is required
-
-    if(fread(_.file_bfr, file_sz, 1, file_hnd) != 1)
-      {
-        fclose(file_hnd);
-        fputs("failed to read store file", stderr);
-        exit(1);
-      }
-
-    _dump = _.file_bfr;
-    fclose(file_hnd);
-  }
+  Rps_LexedFile(const std::string& file_path);
+  ~Rps_LexedFile();
 
   void start(void)
   {
@@ -2602,6 +2568,8 @@ private:
   char* _file;
   char* _dump;
   char* _iter;
+  FILE* _file_hnd;
+  size_t _file_sz;
 };
 
 
