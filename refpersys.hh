@@ -2527,12 +2527,15 @@ public:
 
   void restart_line (void)
   {
+    assert (_lfil_linbuf != nullptr);
     _lfil_iter = _lfil_linbuf;
   };
 
   // gives false when the end of current line is reached.
   bool next(void)
   {
+    assert (_lfil_linbuf != nullptr);
+    assert (_lfil_iter != nullptr);
     if (*(_lfil_iter + 1))
       {
         _lfil_iter++;
@@ -2550,6 +2553,7 @@ public:
     if (_lfil_linlen<0)
       return false;
     _lfil_lineno++;
+    _lfil_iter = _lfil_linbuf;
     return true;
   };
 
