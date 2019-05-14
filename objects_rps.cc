@@ -138,7 +138,6 @@ Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned siz
          (unsigned)alsiz,
          (const Rps_Value*)nullptr);
       _ob_compvec = _.newcompvec;
-      RPS_WRITE_BARRIER();
     }
   else
     {
@@ -162,9 +161,13 @@ Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned siz
                  std::min((unsigned)_.oldcompvec->_qsizarr, (unsigned)alsiz));
           _.newcompvec->_qnbcomp = std::min((unsigned)_.oldcompvec->_qnbcomp, (unsigned)alsiz);
           _ob_compvec = _.newcompvec;
-          RPS_WRITE_BARRIER();
+        }
+      else
+        {
+          _.oldcompvec->_qnbcomp = std::min((unsigned)_.oldcompvec->_qnbcomp, (unsigned)alsiz);
         }
     }
+  RPS_WRITE_BARRIER();
 } // end Rps_ObjectZone::do_resize_components
 
 
