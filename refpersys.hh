@@ -1229,6 +1229,9 @@ public:
   }
 };				// end class Rps_QuasiAttributeArray
 
+
+
+
 ////////////////
 /// quasi components vectors are not first-class values, just
 /// quasivalues, but are pointed from most objects, those having
@@ -1236,6 +1239,8 @@ public:
 class Rps_QuasiComponentVector : public Rps_PointerCopyingZoneValue
 {
   friend class Rps_ObjectZone;
+  friend class Rps_ZoneValue;
+  friend class Rps_PointerCopyingZoneValue;
   // on a 64 bits machine, we are 8 byte aligned, so both of them are:
   uint32_t _qsizarr;	// allocated size
   uint32_t _qnbcomp;	// used number of components
@@ -1252,6 +1257,11 @@ class Rps_QuasiComponentVector : public Rps_PointerCopyingZoneValue
       memcpy((void*)_qarrval, arr, nb*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
   }
 public:
+  static void* operator new (std::size_t, void*ptr)
+  {
+    return ptr;
+  };
+  static unsigned constexpr _min_alloc_size_ = 5;
   uint32_t allocated_size() const
   {
     return _qsizarr;

@@ -114,21 +114,57 @@ Rps_ObjectZone::~Rps_ObjectZone()  /// only called by finalizer
 /// shrink them, or create that quasivalue and register it in this
 /// object.
 void
-Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callfra, unsigned size)
+Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned size)
 {
+  RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
+                 Rps_ObjectRef thisob;
+                 Rps_QuasiComponentVector* oldcompvec;
+                 Rps_QuasiComponentVector* newcompvec;
+                );
+  _.oldcompvec = _ob_compvec;
+  _.thisob = this;
   if (!_ob_compvec)
     {
       // Less common case of an object not having yet any quasi
       // component vector.
+      auto alsiz = (size<Rps_QuasiComponentVector::_min_alloc_size_
+                    ?Rps_QuasiComponentVector::_min_alloc_size_
+                    :rps_prime_above(size));
+      _.newcompvec =
+        Rps_QuasiComponentVector::rps_allocate_with_gap<Rps_QuasiComponentVector>
+        (RPS_CURFRAME,
+         sizeof(Rps_QuasiComponentVector),
+         alsiz*sizeof(Rps_Value),
+         (unsigned)alsiz,
+         (const Rps_Value*)nullptr);
+      _ob_compvec = _.newcompvec;
+      RPS_WRITE_BARRIER();
     }
   else
     {
+      assert (_ob_compvec->_qnbcomp <= _ob_compvec->_qsizarr);
       // Usual case, there is a quasi component vector, we may need to
       // either shrink or resize it.
+      auto alsiz = (size<Rps_QuasiComponentVector::_min_alloc_size_
+                    ?Rps_QuasiComponentVector::_min_alloc_size_
+                    :rps_prime_above(size));
+      if (alsiz != _ob_compvec->_qsizarr)
+        {
+          _.newcompvec =
+            Rps_QuasiComponentVector::rps_allocate_with_gap<Rps_QuasiComponentVector>
+            (RPS_CURFRAME,
+             sizeof(Rps_QuasiComponentVector),
+             alsiz*sizeof(Rps_Value),
+             (unsigned)alsiz,
+             (const Rps_Value*)nullptr);
+          memcpy((void*)_.newcompvec->_qarrval,
+                 (void*)_.oldcompvec->_qarrval,
+                 std::min((unsigned)_.oldcompvec->_qsizarr, (unsigned)alsiz));
+          _.newcompvec->_qnbcomp = std::min((unsigned)_.oldcompvec->_qnbcomp, (unsigned)alsiz);
+          _ob_compvec = _.newcompvec;
+          RPS_WRITE_BARRIER();
+        }
     }
-#warning unimplemented Rps_ObjectZone::do_resize_components
-  RPS_FATAL("unimplemented Rps_ObjectZone::do_resize_components @%p size=%u",
-            (void*)this, size);
 } // end Rps_ObjectZone::do_resize_components
 
 
