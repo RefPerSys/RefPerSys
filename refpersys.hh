@@ -2085,18 +2085,19 @@ public:
     if (_ob_compvec) return (*_ob_compvec)[ix];
     return nullptr;
   };
-  /// resize the component vector to the given size, so grow or shrink them
-  void do_resize_components (Rps_CallFrameZone*callfra, unsigned size);
+  /// Resize the component vector to the given number of components,
+  /// so perhaps grow or shrink it, if so needed.
+  void do_resize_components (Rps_CallFrameZone*callfra, unsigned newnbcomp);
   Rps_ObjectRef resize_components(Rps_CallFrameZone*callfra, unsigned size)
   {
     do_resize_components(callfra, size);
     return this;
   };
-  /// reserve the component vector to the given size, with an empty count
-  void do_reset_components (Rps_CallFrameZone*callfra, unsigned size);
-  Rps_ObjectRef reset_components(Rps_CallFrameZone*callfra, unsigned size)
+  /// reserve the component vector to the given allocated size, with an empty count
+  void do_reserve_components (Rps_CallFrameZone*callfra, unsigned size);
+  Rps_ObjectRef reserve_components(Rps_CallFrameZone*callfra, unsigned size)
   {
-    do_reset_components(callfra, size);
+    do_reserve_components(callfra, size);
     return this;
   }
   /// append a component

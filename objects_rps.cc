@@ -114,7 +114,7 @@ Rps_ObjectZone::~Rps_ObjectZone()  /// only called by finalizer
 /// shrink them, or create that quasivalue and register it in this
 /// object.
 void
-Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned size)
+Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned newnbcomp)
 {
   RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
                  Rps_ObjectRef thisob;
@@ -127,9 +127,9 @@ Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned siz
     {
       // Less common case of an object not having yet any quasi
       // component vector.
-      auto alsiz = (size<Rps_QuasiComponentVector::_min_alloc_size_
+      auto alsiz = (newnbcomp<Rps_QuasiComponentVector::_min_alloc_size_
                     ?Rps_QuasiComponentVector::_min_alloc_size_
-                    :rps_prime_above(size));
+                    :rps_prime_above(newnbcomp));
       _.newcompvec =
         Rps_QuasiComponentVector::rps_allocate_with_gap<Rps_QuasiComponentVector>
         (RPS_CURFRAME,
@@ -137,6 +137,7 @@ Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned siz
          alsiz*sizeof(Rps_Value),
          (unsigned)alsiz,
          (const Rps_Value*)nullptr);
+      _.newcompvec->_qnbcomp = newnbcomp;
       _ob_compvec = _.newcompvec;
     }
   else
@@ -144,9 +145,10 @@ Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned siz
       assert (_ob_compvec->_qnbcomp <= _ob_compvec->_qsizarr);
       // Usual case, there is a quasi component vector, we may need to
       // either shrink or resize it.
-      auto alsiz = (size<Rps_QuasiComponentVector::_min_alloc_size_
+      auto alsiz = (newnbcomp<Rps_QuasiComponentVector::_min_alloc_size_
                     ?Rps_QuasiComponentVector::_min_alloc_size_
-                    :rps_prime_above(size));
+                    :rps_prime_above(newnbcomp));
+      assert (alsiz >= newnbcomp);
       if (alsiz != _ob_compvec->_qsizarr)
         {
           _.newcompvec =
@@ -156,15 +158,16 @@ Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned siz
              alsiz*sizeof(Rps_Value),
              (unsigned)alsiz,
              (const Rps_Value*)nullptr);
+	  unsigned nbcomp = std::min((unsigned)_.oldcompvec->_qnbcomp, (unsigned)newnbcomp);
           memcpy((void*)_.newcompvec->_qarrval,
                  (void*)_.oldcompvec->_qarrval,
-                 std::min((unsigned)_.oldcompvec->_qsizarr, (unsigned)alsiz));
-          _.newcompvec->_qnbcomp = std::min((unsigned)_.oldcompvec->_qnbcomp, (unsigned)alsiz);
+                 nbcomp*sizeof(Rps_Value));
+          _.newcompvec->_qnbcomp = nbcomp;
           _ob_compvec = _.newcompvec;
         }
       else
         {
-          _.oldcompvec->_qnbcomp = std::min((unsigned)_.oldcompvec->_qnbcomp, (unsigned)alsiz);
+          _.oldcompvec->_qnbcomp = std::min((unsigned)_.oldcompvec->_qnbcomp,  (unsigned)newnbcomp);
         }
     }
   RPS_WRITE_BARRIER();
@@ -174,11 +177,11 @@ Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned siz
 
 
 void
-Rps_ObjectZone::do_reset_components (Rps_CallFrameZone*callingfra, unsigned size)
+Rps_ObjectZone::do_reserve_components (Rps_CallFrameZone*callingfra, unsigned alsize)
 {
-#warning unimplemented Rps_ObjectZone::do_reset_components
-  RPS_FATAL("unimplemented Rps_ObjectZone::do_reset_components @%p size=%u",
-            (void*)this, size);
+#warning unimplemented Rps_ObjectZone::do_reserve_components
+  RPS_FATAL("unimplemented Rps_ObjectZone::do_reserve_components @%p alsize=%u",
+            (void*)this, alsize);
 } // end Rps_ObjectZone::do_reset_components
 
 
