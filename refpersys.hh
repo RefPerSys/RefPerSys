@@ -260,6 +260,13 @@ public:
 
 
 
+
+/// In rare occasions (some kind of array hash table, perhaps) we may
+/// need a pointer value which is non null but still morally "empty":
+/// this is rarely useful, and any code using that should be carefully
+/// written.
+#define RPS_EMPTYSLOT   ((const void*)(((intptr_t*)nullptr)+1))
+
 class Rps_ZoneValue;
 class Rps_ObjectZone;
 class Rps_ObjectRef
@@ -275,24 +282,37 @@ public:
     return const_cast<const Rps_ObjectZone*>(_optr);
   };
   // rule of five
-  Rps_ObjectRef(Rps_ObjectZone*oz = nullptr) : _optr(oz) {};
+  Rps_ObjectRef(Rps_ObjectZone*oz = nullptr) : _optr(oz) {
+    if (RPS_UNLIKELY((oz == (Rps_ObjectZone*)RPS_EMPTYSLOT)))
+      _optr = nullptr;
+  };
   ~Rps_ObjectRef()
   {
     _optr = nullptr;
   };
   Rps_ObjectRef(const Rps_ObjectRef&oth)
   {
-    _optr = oth._optr;
+    if (RPS_UNLIKELY((oth._optr == (Rps_ObjectZone*)RPS_EMPTYSLOT)))
+      _optr = nullptr;
+    else
+      _optr = oth._optr;
   };
-  Rps_ObjectRef(Rps_ObjectRef&&oth) : _optr(std::exchange(oth._optr, nullptr)) {};
+  Rps_ObjectRef(Rps_ObjectRef&&oth) : _optr(std::exchange(oth._optr, nullptr)) {
+    if (RPS_UNLIKELY((_optr == (Rps_ObjectZone*)RPS_EMPTYSLOT)))
+      _optr = nullptr;
+  };
   Rps_ObjectRef& operator = (const Rps_ObjectRef& oth)
   {
     _optr = oth._optr;
+    if (RPS_UNLIKELY((_optr == (Rps_ObjectZone*)RPS_EMPTYSLOT)))
+      _optr = nullptr;
     return *this;
   }
   Rps_ObjectRef& operator = (Rps_ObjectRef&& oth)
   {
     std::swap(_optr, oth._optr);
+    if (RPS_UNLIKELY((_optr == (Rps_ObjectZone*)RPS_EMPTYSLOT)))
+      _optr = nullptr;
     return *this;
   }
   const Rps_ObjectZone& operator * (void) const
@@ -337,6 +357,8 @@ public:
   };
   void set_obptr(Rps_ObjectZone*zob)
   {
+    if (RPS_UNLIKELY(zob == (Rps_ObjectZone*)RPS_EMPTYSLOT))
+      zob = nullptr;
     _optr = zob;
   };
   inline bool operator == (const Rps_ObjectRef& oth) const;
@@ -1150,6 +1172,8 @@ public:
 class Rps_QuasiAttributeArray : public Rps_PointerCopyingZoneValue
 {
   friend class Rps_ObjectZone;
+  friend class Rps_ZoneValue;
+  friend class Rps_PointerCopyingZoneValue;
   // on a 64 bits machine, we are 8 byte aligned, so both of them are:
   uint32_t _qsizattr;	// allocated size
   uint32_t _qnbattrs;	// used number of entries
@@ -1167,6 +1191,10 @@ class Rps_QuasiAttributeArray : public Rps_PointerCopyingZoneValue
   }
   static inline const std::pair<Rps_ObjectRef,Rps_Value> nullpair{nullptr,nullptr};
 public:
+  static void* operator new (std::size_t, void*ptr)
+  {
+    return ptr;
+  };
   std::pair<Rps_ObjectRef,Rps_Value>* begin()
   {
     return _qatentries;
