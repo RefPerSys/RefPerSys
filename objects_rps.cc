@@ -219,9 +219,54 @@ Rps_ObjectZone::do_reserve_components (Rps_CallFrameZone*callingfra, unsigned ne
 void
 Rps_ObjectZone::do_append_component(Rps_CallFrameZone*callingfra,Rps_Value val)
 {
-#warning unimplemented Rps_ObjectZone::do_append_component
-  RPS_FATAL("unimplemented Rps_ObjectZone::do_append_component @%p val@%p",
-            (void*)this, (void*)val.unsafe_data());
+  RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
+                 Rps_ObjectRef thisob;
+                 Rps_QuasiComponentVector* oldcompvec;
+                 Rps_QuasiComponentVector* newcompvec;
+                );
+  _.oldcompvec = _ob_compvec;
+  _.thisob = this;
+  if (RPS_UNLIKELY(_ob_compvec == nullptr))
+    {
+      auto alsiz = Rps_QuasiComponentVector::_min_alloc_size_;
+      assert (alsiz > 1);
+      _.newcompvec =
+        Rps_QuasiComponentVector::rps_allocate_with_gap<Rps_QuasiComponentVector>
+        (RPS_CURFRAME,
+         sizeof(Rps_QuasiComponentVector),
+         alsiz*sizeof(Rps_Value),
+         (unsigned)alsiz,
+         (const Rps_Value*)nullptr);
+      _.newcompvec->_qnbcomp = 1;
+      _.newcompvec->_qarrval[0] = val;
+      _ob_compvec = _.newcompvec;
+    }
+  else
+    {
+      unsigned oldsiz = _ob_compvec->allocated_size();
+      unsigned oldnbcomp = _ob_compvec->_qnbcomp;
+      if (RPS_LIKELY(oldnbcomp + 1 < oldsiz))
+        {
+          _ob_compvec->_qarrval[oldnbcomp] = val;
+          _ob_compvec->_qnbcomp = oldnbcomp+1;
+        }
+      else
+        {
+          unsigned newsiz = rps_prime_above(9*oldnbcomp/8 + 3);
+          assert (newsiz > oldnbcomp+1);
+          _.newcompvec =
+            Rps_QuasiComponentVector::rps_allocate_with_gap<Rps_QuasiComponentVector>
+            (RPS_CURFRAME,
+             sizeof(Rps_QuasiComponentVector),
+             newsiz*sizeof(Rps_Value),
+             (unsigned)newsiz,
+             (const Rps_Value*)_.oldcompvec->_qarrval);
+          _.newcompvec->_qarrval[oldnbcomp] = val;
+          _.newcompvec->_qnbcomp = oldnbcomp+1;
+          _ob_compvec = _.newcompvec;
+        }
+    };
+  RPS_WRITE_BARRIER();
 } // end Rps_ObjectZone::do_append_component
 
 
