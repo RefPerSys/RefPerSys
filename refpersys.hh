@@ -281,8 +281,13 @@ public:
   {
     return const_cast<const Rps_ObjectZone*>(_optr);
   };
+  bool is_empty() const
+  {
+    return _optr == nullptr || _optr == (Rps_ObjectZone*)RPS_EMPTYSLOT;
+  }
   // rule of five
-  Rps_ObjectRef(Rps_ObjectZone*oz = nullptr) : _optr(oz) {
+  Rps_ObjectRef(Rps_ObjectZone*oz = nullptr) : _optr(oz)
+  {
     if (RPS_UNLIKELY((oz == (Rps_ObjectZone*)RPS_EMPTYSLOT)))
       _optr = nullptr;
   };
@@ -297,7 +302,8 @@ public:
     else
       _optr = oth._optr;
   };
-  Rps_ObjectRef(Rps_ObjectRef&&oth) : _optr(std::exchange(oth._optr, nullptr)) {
+  Rps_ObjectRef(Rps_ObjectRef&&oth) : _optr(std::exchange(oth._optr, nullptr))
+  {
     if (RPS_UNLIKELY((_optr == (Rps_ObjectZone*)RPS_EMPTYSLOT)))
       _optr = nullptr;
   };
@@ -697,6 +703,10 @@ public:
   const Rps_ZoneValue* unsafe_data() const
   {
     return _datav;
+  };
+  bool is_empty() const
+  {
+    return _datav == nullptr || _datav == (Rps_ZoneValue*)RPS_EMPTYSLOT;
   };
   struct int_tag {};
   Rps_Value(int_tag, intptr_t i) : _intv((i<<1)|1) {};
@@ -1191,6 +1201,16 @@ class Rps_QuasiAttributeArray : public Rps_PointerCopyingZoneValue
   }
   static inline const std::pair<Rps_ObjectRef,Rps_Value> nullpair{nullptr,nullptr};
 public:
+  struct entry_compare_st
+  {
+    bool operator ()
+    (const std::pair<Rps_ObjectRef,Rps_Value>&p1,
+     const std::pair<Rps_ObjectRef,Rps_Value>&p2)
+    const
+    {
+      return p1.first < p2.first;
+    }
+  };
   static void* operator new (std::size_t, void*ptr)
   {
     return ptr;
