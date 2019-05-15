@@ -236,3 +236,25 @@ calling function**.
   preferably named `callingfra`, and should be the *first* argument of
   every function or methods (member functions in C++ classes)
   requiring the GC.
+
+
+### useful references
+
+For Bismon, see http://github.com/bstarynk/bismon and read its [dfraft
+Bismon report](http://starynkevitch.net/Basile/chariot-bismon-doc.pdf)
+(updated quite often).
+
+For the C++17 language, see this [C++ reference](https://en.cppreference.com/w/cpp).
+
+For Linux programming, see [Advanced Linux
+Programming](http://www.makelinux.net/alp/) and the
+[syscalls(2)](http://man7.org/linux/man-pages/man2/syscalls.2.html)
+`man` page.
+
+For [GCC](http://gcc.gnu.org/), see notably its [Invoking
+GCC](https://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html) chapter.
+
+For garbage collection, read Paul Wilson's [Uniprocessor Garbage
+Collection
+Techniques](https://www3.nd.edu/~dthain/courses/cse40243/spring2006/gc-survey.pdf)
+old paper, then read the [GC handbook](http://gchandbook.org/)
