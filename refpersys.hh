@@ -1907,31 +1907,54 @@ protected:
     return mps_really_skip();
   };
 #endif /*RPS_HAVE_MPS*/
-  /*** Objects are quite common, and their attributes and
-       components also.  Most objects have few attributes, we should
-       special-case for that with efficiency in mind. For few
+  /*** Objects are quite common, and their attributes and components
+       also.  Most objects have few attributes, since attributes are
+       generalizing fields of objects (e.g. those of Java, Python,
+       Common Lisp, or JavaScript); so we should special-case for that
+       (as a plain array of entries) with efficiency in mind.  For few
        attributes, the best is probably a small array of
        (attribute-key-object, attribute-value) pairs which is seeked
-       linearly, but is cache friendly. For the unusual case of a
-       hundred or much more of attributes, we could have a std::map or
-       a std::unordered_map. In the more common case of at most a few
-       dozens of attributes, putting then in some sorted array
-       accessed dichotomically is a good solution. So attributes are
-       represented as a tagged union, and the usual case is a pointer
-       to Rps_QuasiAttributeArray. Likewise, most objects have not
-       many components, and these components are in some small dynamic
-       array.
+       linearly, but is cache friendly.  In the more common case of at
+       most a few dozens of attributes, putting then in some sorted
+       array accessed dichotomically is a good solution.  For the very
+       unusual case of hundred or much more of attributes, we could
+       have a std::map (since we might want to iterate on attributes
+       in reproducible way, e.g. by their ascending order).  So
+       attributes are represented as a tagged union, and the usual
+       case is a pointer to Rps_QuasiAttributeArray. Likewise, most
+       objects have not many components, and these components are in
+       some small dynamic array.
 
        The pathological case of an object with many thousands of
-       components or thousands of attributes should be handled, but
-       could be coded later, or at least could be optimized later.
+       components or thousands of attributes should be handled in
+       principe, but could be coded later, or at least could be
+       optimized much later.  We expect most objects to have no more
+       than few dozen attributes, and no more than a few hundred
+       components.  Any bigger case is pathological, and smaller
+       objects are much more common than huge ones.
    ***/
 private:
-  ///// attributes of objects
+  //////////////// Attributes of objects.
+  //
+  ///// Bear in mind that we expect in most objects less than about a
+  ///// few dozens of them, since attributes are generalizing fields
+  ///// of objects (e.g. those of Java, Python, Common Lisp, or
+  ///// JavaScript).  Objects with hundred of attributes are
+  ///// practically rare, and big objects with thousands of them are
+  ///// highly improbable (but semantically still possible, in
+  ///// theory!) and that either is a practical symptom of a huge
+  ///// engineering mess or would happen when RefPerSys would *invent*
+  ///// attributes.
   enum attrkind_en {atk_none, atk_small, atk_medium, atk_big};
   attrkind_en _obat_kind;
-  ///// thresholds below are fuzzy. We add a bit of randomness.
+  ///// Thresholds below are fuzzy.  We add a bit of randomness; and
+  ///// these are thresholds to make a growing decision, not for the
+  ///// actually grown size which is a slightly bigger prime.
   static constexpr unsigned at_small_thresh= 10;
+  ///// Above the sorted threshold, give or take a few units, we use a
+  ///// std::map. But that case is practically rare enough that we
+  ///// don't care, since very few objects would have more than a
+  ///// hundred attributes.
   static constexpr unsigned at_sorted_thresh= 101; // a prime
   ///// initial size of _obat_small_atar:
   static constexpr unsigned at_small_initsize= 3;
@@ -1945,8 +1968,44 @@ private:
     // big-sized attributes in a std::map
     std::map<Rps_ObjectRef, Rps_Value> _obat_map_atar; // when atk_big
   };
-  ///// components of objects
+  /* Nota Bene: the transition from small to sorted attributes happens
+     smoothly and with some random noise, since we want to avoid too
+     frequent oscillations between them (e.g. in the case when we add
+     a few attributes, remove a few others of them, and so forth,
+     around the thresholds.).  And likewise for the even less likely
+     transition from sorted attributes to a big map of them. */
+  //////////////// components of objects
   Rps_QuasiComponentVector* _ob_compvec;
+  //////////////// methods
+private:
+  // approximate binary search dichotomy, internal method only
+  std::pair<int,int> dichotomy_medium_sorted(Rps_ObjectRef keyob, Rps_QuasiAttributeArray*arr=nullptr) const
+  {
+    if (arr==nullptr)
+      arr = _obat_sorted_atar;
+    assert (_obat_kind == atk_medium);
+    assert (arr != nullptr);
+    assert (keyob);
+    unsigned ln = arr->count();
+    int lo = 0, hi = (int)ln;
+    while (lo+4 < hi)
+      {
+        unsigned md = (lo+hi)/2;
+        Rps_ObjectRef midob = arr->unsafe_attr_at(md);
+        assert (midob);
+        if (keyob == midob)
+          {
+            lo = md;
+            hi = md;
+            break;
+          }
+        else if (midob > keyob)
+          hi = md;
+        else
+          lo = md;
+      }
+    return std::pair{lo,hi};
+  };
 public:
   /// find an object of given id, or else null:
   static Rps_ObjectZone*find_by_id(const Rps_Id&id);
@@ -2082,16 +2141,11 @@ public:
         unsigned ln = _obat_sorted_atar->count();
         assert (ln <= at_sorted_thresh);
         unsigned lo=0, hi=ln;
-        while (lo+4 < hi)
-          {
-            unsigned md = (lo+hi)/2;
-            Rps_ObjectRef midob = _obat_sorted_atar->unsafe_attr_at(md);
-            if (keyob == midob) return _obat_sorted_atar->unsafe_val_at(md);
-            else if (midob > keyob)
-              hi = md;
-            else
-              lo = md;
-          }
+        {
+          auto p = dichotomy_medium_sorted(keyob);
+          lo= p.first;
+          hi= p.second;
+        }
         for (unsigned md = lo; md <hi; md++)
           {
             Rps_ObjectRef midob = _obat_sorted_atar->unsafe_attr_at(md);
@@ -2641,19 +2695,19 @@ private:
   // TODO: Abhishek will implement this
   bool is_objid(const char* bfr, size_t* start, size_t* end)
   {
-          return false;
+    return false;
   }
 
   // TODO: Abhishek will implement this
   bool is_double(const char* bfr, size_t* start, size_t* end)
   {
-          return false;
+    return false;
   }
 
   // TODO: Abhishek will implement this
   bool is_int(const char* bfr, size_t* start, size_t* end)
   {
-          return false;
+    return false;
   }
 };				// end class Rps_LexedFile
 
