@@ -44,6 +44,10 @@
  *****/
 
 #include "refpersys.hh"
+#include <ctype.h>
+
+// adapted from
+// https://gist.github.com/arrieta/1a309138689e09375b90b3b1aa768e20
 
 
 Rps_LexedFile::Rps_LexedFile(const std::string& file_path)
@@ -85,6 +89,34 @@ Rps_LexedFile::~Rps_LexedFile()
     }
 } // end of Rps_LexedFile::~Rps_LexedFile
 
+
+
+Rps_QuasiToken* Rps_LexedFile::tokenize(void)
+{
+  size_t start, end;
+
+  do
+    {
+      if (isspace(*_lfil_iter))
+        {
+          _lfil_iter++;
+          continue;
+        }
+
+      // TODO: Abhishek will expand the following if statements with
+      // the appropriate Rps_QuasiToken::make_from_...() method
+      // the start and end variables hold the starting and ending positions of
+      // the token
+      if (this->is_objid(_lfil_iter, start, end));
+      if (this->is_double(_lfil_iter, start, end));
+      if (this->is_int(_lfil_iter, start, end));
+    }
+  while (this->read_char());
+
+  // this is only temporary to allow the build to succeed;
+  // Abhishek will replace this
+  return nullptr;
+}
 
 
 void

@@ -2439,6 +2439,7 @@ public:
     RPS_TOKEN_TYPE_DOUBLE,
     RPS_TOKEN_TYPE_INTEGER,
     RPS_TOKEN_TYPE_PARENTHESIS,
+    RPS_TOKEN_TYPE_WHITESPACE
   };
 
 #if 0
@@ -2584,14 +2585,14 @@ public:
   Rps_LexedFile(const std::string& file_path);
   ~Rps_LexedFile();
 
-  void restart_line (void)
+  void reset_line (void)
   {
     assert (_lfil_linbuf != nullptr);
     _lfil_iter = _lfil_linbuf;
   };
 
   // gives false when the end of current line is reached.
-  bool next(void)
+  bool read_char(void)
   {
     assert (_lfil_linbuf != nullptr);
     assert (_lfil_iter != nullptr);
@@ -2605,7 +2606,7 @@ public:
   };
 
   // get a new line, and gives false when end of file is reached
-  bool get_line(void)
+  bool read_line(void)
   {
     assert (_lfil_hnd != nullptr);
     _lfil_linlen = getline (&_lfil_linbuf, &_lfil_linsiz, _lfil_hnd);
@@ -2619,22 +2620,6 @@ public:
   Rps_QuasiToken* tokenize(void);
 
 private:
-  // adapted from
-  // https://gist.github.com/arrieta/1a309138689e09375b90b3b1aa768e20
-  bool is_whitespace(char c)
-  {
-    switch (c)
-      {
-      case ' ':
-      case '\t':
-      case '\r':
-      case '\n':
-        return true;
-      default:
-        return false;
-      }
-  }
-
   bool is_integer_digit(char c)
   {
     return (c >= '0' && c <= '9') || c == '+' || c == '-';
@@ -2652,6 +2637,14 @@ private:
            || (c >= 'a' && c <= 'z')
            || c == '_';
   }
+
+  bool is_objid(const char* bfr, size_t& start, size_t& end);
+  bool is_double(const char* bfr, size_t& start, size_t& end);
+  bool is_int(const char* bfr, size_t& start, size_t& end);
+
+  Rps_Id scan_for_objid(bool& found);
+  double scan_for_double(bool& found);
+  int scan_for_int(bool& found);
 
 };				// end class Rps_LexedFile
 
