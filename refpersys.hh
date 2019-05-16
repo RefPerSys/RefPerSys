@@ -2638,14 +2638,23 @@ private:
            || c == '_';
   }
 
-  bool is_objid(const char* bfr, size_t& start, size_t& end);
-  bool is_double(const char* bfr, size_t& start, size_t& end);
-  bool is_int(const char* bfr, size_t& start, size_t& end);
+  // TODO: Abhishek will implement this
+  bool is_objid(const char* bfr, size_t* start, size_t* end)
+  {
+          return false;
+  }
 
-  Rps_Id scan_for_objid(bool& found);
-  double scan_for_double(bool& found);
-  int scan_for_int(bool& found);
+  // TODO: Abhishek will implement this
+  bool is_double(const char* bfr, size_t* start, size_t* end)
+  {
+          return false;
+  }
 
+  // TODO: Abhishek will implement this
+  bool is_int(const char* bfr, size_t* start, size_t* end)
+  {
+          return false;
+  }
 };				// end class Rps_LexedFile
 
 

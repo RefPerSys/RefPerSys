@@ -107,9 +107,9 @@ Rps_QuasiToken* Rps_LexedFile::tokenize(void)
       // the appropriate Rps_QuasiToken::make_from_...() method
       // the start and end variables hold the starting and ending positions of
       // the token
-      if (this->is_objid(_lfil_iter, start, end));
-      if (this->is_double(_lfil_iter, start, end));
-      if (this->is_int(_lfil_iter, start, end));
+      if (this->is_objid(_lfil_iter, &start, &end));
+      if (this->is_double(_lfil_iter, &start, &end));
+      if (this->is_int(_lfil_iter, &start, &end));
     }
   while (this->read_char());
 
