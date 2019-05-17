@@ -271,12 +271,283 @@ Rps_ObjectZone::do_append_component(Rps_CallFrameZone*callingfra,Rps_Value val)
 
 
 
-void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob, Rps_Value valat)
+void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyobarg, Rps_Value valatarg)
 {
-#warning unimplemented Rps_ObjectZone::do_put_attr
-  RPS_FATAL("unimplemented Rps_ObjectZone::do_put_attr @%p key@%p val@%p",
-            (void*)this, (void*)keyob.optr(), (void*)valat.unsafe_data());
+  RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
+                 Rps_ObjectRef thisob;
+                 Rps_ObjectRef keyob;
+                 Rps_Value valat;
+                 Rps_ObjectRef altkeyob; // some "current" or "next" key
+                 Rps_Value curvalat;
+                 Rps_QuasiAttributeArray*oldattrs;
+                 Rps_QuasiAttributeArray*newattrs;
+                );
+  if (!keyobarg || !valatarg)
+    return;
+  _.thisob = this;
+  _.keyob = keyobarg;
+  _.valat = valatarg;
+  switch (_obat_kind)
+    {
+    case atk_none:
+    {
+      _.newattrs =
+        Rps_QuasiAttributeArray::rps_allocate_with_gap<Rps_QuasiAttributeArray>
+        (RPS_CURFRAME,
+         sizeof(Rps_QuasiAttributeArray),
+         at_small_initsize,
+         0,
+         nullptr
+        );
+      _.newattrs->_qatentries[0].first = _.keyob;
+      _.newattrs->_qatentries[0].second = _.valat;
+      _.newattrs->_qnbattrs = 1;
+      _obat_kind = atk_small;
+      _obat_small_atar = _.newattrs;
+    }
+    break;
+    case atk_small:
+    {
+      assert (_obat_small_atar != nullptr);
+      _.oldattrs = _obat_small_atar;
+      unsigned oldalsize = _.oldattrs->_qsizattr;
+      unsigned oldnbattr = _.oldattrs->_qnbattrs;
+      assert (oldnbattr <= oldalsize && oldalsize <= at_small_thresh);
+      if (RPS_LIKELY(oldnbattr+1 < oldalsize))
+        {
+          // enough space, no need to reallocate
+          _.oldattrs->_qatentries[oldnbattr].first = nullptr;
+          int pos = -1;
+          bool found = false;
+          unsigned newnbattr = oldnbattr;
+          for (int ix=0; ix<oldnbattr; ix++)
+            {
+              if (_.oldattrs->_qatentries[ix].first == _.keyob)
+                {
+                  pos = ix;
+                  found = true;
+                  break;
+                }
+              else if (_.oldattrs->_qatentries[ix].first.is_empty())
+                {
+                  if (pos<0)
+                    pos = ix;
+                  continue;
+                }
+            };
+          if (pos < 0)
+            pos = oldnbattr;
+          _.oldattrs->_qatentries[pos].first = _.keyob;
+          _.oldattrs->_qatentries[pos].second = _.valat;
+          if (!found)
+            _.oldattrs->_qnbattrs = oldnbattr+1;
+        }
+      else
+        {
+          unsigned newsize = rps_prime_above(9*oldnbattr/8+3);
+          unsigned newcnt = 0;
+          _.newattrs =
+            Rps_QuasiAttributeArray::rps_allocate_with_gap<Rps_QuasiAttributeArray>
+            (RPS_CURFRAME,
+             sizeof(Rps_QuasiAttributeArray),
+             newsize,
+             0,
+             nullptr
+            );
+          /// The needed transition from small to sorted
+          /// QuasiAttributeArray-s may happen smoothly and with a
+          /// little random noise between 0 and 7 included, since we
+          /// want to avoid too frequent oscillations between them
+          /// (e.g. in the case when we add a few attributes, remove a
+          /// few others of them, and so forth, around the
+          /// thresholds.).
+          if (newsize < at_sorted_thresh
+              || newsize < at_sorted_thresh - 1 +  (Rps_Random::random_quickly_4bits() & 7))
+            {
+              // grow the _obat_small_atar up to newsize
+              for (unsigned ix=0; ix<oldnbattr; ix++)
+                {
+                  _.altkeyob = _.oldattrs->_qatentries[ix].first;
+                  if (_.altkeyob.is_empty())
+                    continue;
+                  _.curvalat = _.oldattrs->_qatentries[ix].second;
+                  if (_.curvalat.is_empty())
+                    continue;
+                  _.newattrs->_qatentries[newcnt].first = _.altkeyob;
+                  _.newattrs->_qatentries[newcnt].second = _.curvalat;
+                }
+              assert (newcnt < newsize);
+              _.newattrs->_qnbattrs = newcnt;
+              _obat_small_atar = _.newattrs;
+              _obat_kind = atk_small;
+            }
+          else
+            {
+              // Here, the _obat_small_atar grows to become a
+              // _obat_sorted_atar, that is, we actually make the
+              // small to sorted transition.
+              for (unsigned ix=0; ix<oldnbattr; ix++)
+                {
+                  _.altkeyob = _.oldattrs->_qatentries[ix].first;
+                  if (_.altkeyob.is_empty())
+                    continue;
+                  _.curvalat = _.oldattrs->_qatentries[ix].second;
+                  if (_.curvalat.is_empty())
+                    continue;
+                  _.newattrs->_qatentries[newcnt].first = _.altkeyob;
+                  _.newattrs->_qatentries[newcnt].second = _.curvalat;
+                }
+              assert (newcnt < newsize);
+              _.newattrs->_qnbattrs = newcnt;
+              std::sort (_.newattrs->begin(), _.newattrs->end(),
+                         Rps_QuasiAttributeArray::entry_compare_st{});
+              _obat_sorted_atar = _.newattrs;
+              _obat_kind = atk_medium;
+            }
+        }
+    }
+    break;
+    case atk_medium:
+    {
+      assert (_obat_sorted_atar != nullptr);
+      _.oldattrs = _obat_sorted_atar;
+      unsigned oldalsize = _.oldattrs->_qsizattr;
+      unsigned oldnbattr = _.oldattrs->_qnbattrs;
+      assert (oldnbattr <= oldalsize && oldalsize <= at_sorted_thresh);
+      if (RPS_LIKELY(oldnbattr+1 < at_sorted_thresh
+                     && oldnbattr+1 < oldalsize))
+        {
+          /// No need to regrow the sorted quasi-attribute-array, but
+          /// we need to perhaps insert the entry at the right place,
+          /// to keep that array sorted. Using a dichotomical binary
+          /// search and/or insertion.
+          int inspos = -1;
+          // Equality test on objects is significantly faster than
+          // 'less than' or 'greater than' tests. So, ...
+
+          int lo = 0, hi = oldnbattr;
+          {
+            auto p = dichotomy_medium_sorted(_.keyob, _.oldattrs);
+            lo = p.first;
+            hi = p.second;
+          }
+          assert (lo >= 0 && hi <= oldnbattr);
+          if ( _.keyob < (_.altkeyob =  _.oldattrs->_qatentries[lo].first))
+            {
+              // insert before lo
+              for (int ix=oldnbattr; ix>lo; ix--)
+                _.oldattrs->_qatentries[ix] = _.oldattrs->_qatentries[ix-1];
+              _.oldattrs->_qatentries[lo].first = _.keyob;
+              _.oldattrs->_qatentries[lo].second = _.valat;
+              _.oldattrs->_qnbattrs = oldnbattr+1;
+            }
+          else if (hi>0
+                   && _.keyob > (_.altkeyob =  _.oldattrs->_qatentries[hi-1].first))
+            {
+              // insert after hi
+              for (int ix=oldnbattr; ix>hi; ix--)
+                _.oldattrs->_qatentries[ix] = _.oldattrs->_qatentries[ix-1];
+              _.oldattrs->_qatentries[hi].first = _.keyob;
+              _.oldattrs->_qatentries[hi].second = _.valat;
+              _.oldattrs->_qnbattrs = oldnbattr+1;
+            }
+          else
+            {
+              //  Since _.oldattrs is sorted but not-small, and previous
+              //  tests failed, we can:
+              assert (hi+1<oldnbattr);
+              // loop between lo included & hi excluded
+              for (int k=lo; k<hi; k++)
+                {
+                  _.altkeyob = _.oldattrs->_qatentries[k].first;
+                  if (_.altkeyob == _.keyob)
+                    {
+                      // replace the key's value
+                      _.oldattrs->_qatentries[k].second = _.valat;
+                      break;
+                    }
+                  else if (_.keyob <
+                           (_.altkeyob = _.oldattrs->_qatentries[k+1].first))
+                    {
+                      // insert the key between k and k+1
+                      for (int ix=oldnbattr; ix>k; ix--)
+                        _.oldattrs->_qatentries[ix] = _.oldattrs->_qatentries[ix-1];
+                      _.oldattrs->_qatentries[hi].first = _.keyob;
+                      _.oldattrs->_qatentries[hi].second = _.valat;
+                      _.oldattrs->_qnbattrs = oldnbattr+1;
+                      break;
+                    }
+                }
+            }
+        }
+      else if (oldnbattr+1 < at_sorted_thresh
+               || oldnbattr + 1 < at_sorted_thresh + 1 + (Rps_Random::random_quickly_4bits() & 7))
+        {
+          /// we need to grow the sorted quasi-attribute-array
+          unsigned newsize = rps_prime_above(9*oldnbattr/8+3);
+          _.newattrs =
+            Rps_QuasiAttributeArray::rps_allocate_with_gap<Rps_QuasiAttributeArray>
+            (RPS_CURFRAME,
+             sizeof(Rps_QuasiAttributeArray),
+             newsize,
+             0,
+             nullptr
+            );
+          unsigned newcnt = 0;
+          bool reached = false;
+          for (int ix=0; ix<oldnbattr; ix++)
+            {
+              if (reached)
+                _.newattrs->_qatentries[newcnt++] = _.oldattrs->_qatentries[ix];
+              else
+                {
+                  _.altkeyob = _.oldattrs->_qatentries[ix].first;
+                  if (_.altkeyob < _.keyob)
+                    _.newattrs->_qatentries[newcnt++] = _.oldattrs->_qatentries[ix];
+                  else if (_.altkeyob > _.keyob)
+                    {
+                      reached = true;
+                      _.newattrs->_qatentries[newcnt].first = _.keyob;
+                      _.newattrs->_qatentries[newcnt].second = _.valat;
+                      newcnt++;
+                      _.newattrs->_qatentries[newcnt++] = _.oldattrs->_qatentries[ix];
+                    }
+                  else
+                    {
+                      assert (_.altkeyob == _.keyob);
+                      reached = true;
+                      _.newattrs->_qatentries[newcnt].first = _.keyob;
+                      _.newattrs->_qatentries[newcnt].second = _.valat;
+                      newcnt++;
+                    }
+                }
+            }
+          _.newattrs->_qnbattrs = newcnt;
+          _obat_sorted_atar = _.newattrs;
+        }
+      else
+        {
+          // the _obat_sorted_atar should be transformed in
+          // _obat_map_atar
+          _obat_sorted_atar = nullptr;
+          _obat_kind = atk_big;
+          // we need to construct that _obat_map_atar:
+          (void) new ((void*)&_obat_map_atar) typeof(_obat_map_atar);
+          for (int ix=0; ix<oldnbattr; ix++)
+            _obat_map_atar.emplace(_.oldattrs->_qatentries[ix]);
+        }
+    }
+    break;
+    case atk_big:
+    {
+      _obat_map_atar.insert({_.keyob, _.valat});
+    }
+    break;
+    } // end switch _obat_kind
+  RPS_WRITE_BARRIER();
 } // end Rps_ObjectZone::do_put_attr
+
+
 
 
 void Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob)
