@@ -153,11 +153,6 @@ void print_types_info(void)
   EXPLAIN_TYPE(std::atomic<intptr_t>);
   EXPLAIN_TYPE(std::string);
   EXPLAIN_TYPE(std::mutex);
-#ifdef RPS_HAVE_MPS
-  EXPLAIN_TYPE(mps_ss_t);
-  EXPLAIN_TYPE(mps_arena_t);
-  EXPLAIN_TYPE(mps_ap_t);
-#endif /*RPS_HAVE_MPS*/
 #undef EXPLAIN_TYPE
   putchar('\n');
   fflush(nullptr);

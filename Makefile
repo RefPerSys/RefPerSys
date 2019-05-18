@@ -44,7 +44,7 @@ OPTIMFLAGS = -O1 -g
 WARNFLAGS = -Wall -Wextra
 CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(WARNFLAGS)
 
-LDFLAGS += -L/usr/local/lib  -rdynamic -lmps -lunistring -lpthread
+LDFLAGS += -L/usr/local/lib  -rdynamic -lunistring -lpthread
 
 INCLUDES += /usr/local/include
 REFPERSYS_BASE_FILES = 				\

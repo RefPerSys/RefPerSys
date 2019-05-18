@@ -59,10 +59,6 @@ Rps_ObjectZone::make_of_id(Rps_CallFrameZone*callingfra,const Rps_Id&id)
     return it->second;
   auto newob = rps_allocate<Rps_ObjectZone>(callingfra,id);
   curbuck._bu_map.insert({id,newob});
-#ifdef RPS_HAVE_MPS
-  mps_addr_t obad = (mps_addr_t)newob;
-  mps_finalize(_mps_valzone_arena, &obad);
-#endif /*RPS_HAVE_MPS*/
   return newob;
 } // end Rps_ObjectZone::make_of_id
 
@@ -84,10 +80,6 @@ Rps_ObjectZone::make(Rps_CallFrameZone*callingfra)
         continue;
       auto newob = rps_allocate<Rps_ObjectZone>(callingfra,id);
       curbuck._bu_map.insert({id,newob});
-#ifdef RPS_HAVE_MPS
-      mps_addr_t obad = (mps_addr_t)newob;
-      mps_finalize(_mps_valzone_arena, &obad);
-#endif /*RPS_HAVE_MPS*/
       return newob;
     }
 }			      // end of Rps_ObjectZone::make
@@ -617,27 +609,5 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
 
 
 
-
-#ifdef RPS_HAVE_MPS
-const void*
-Rps_ObjectZone::mps_really_scan(mps_ss_t ss)
-{
-#warning incomplete Rps_ObjectZone::mps_really_scan
-  auto obcla = object_class();
-  void*curcomp = obcla;
-  MPS_SCAN_BEGIN(ss);
-  mps_res_t res = MPS_FIX12(ss, &curcomp);
-  if (res != MPS_RES_OK)   /// this should never happen
-    {
-      char cbuf[24];
-      objid().to_cbuf24(cbuf);
-      RPS_FATAL("failed to scan class of object %s @%p (res#%d)\n",
-                cbuf, (void*)this, res);
-    };
-  MPS_SCAN_END(ss);
-  // no need to overwrite the class, since it is an object which cannot move
-  return  reinterpret_cast<void*>(this+1);
-} // end Rps_ObjectZone::mps_really_scan
-#endif /*RPS_HAVE_MPS*/
 
 // end of file objects_rps.cc

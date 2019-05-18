@@ -1,5 +1,10 @@
 # refpersys
 
+
+This project has moved to https://gitlab.com/bstarynk/refpersys/
+
+That old repository https://gitlab.com/refpersys/refpersys is now a playground for Niklas Rosencrantz.
+
 ## A research project
 
 The Reflective Persistent System language is a **research project**, taking many good ideas from [Bismon](http://github.com/bstarynk/bismon), sharing a lot of goals (except static source code analysis) with it but avoiding bad ideas from it.
@@ -17,6 +22,13 @@ We absolutely want to avoid any
 
 Don't expect anything useful from RefPerSys before at least 2022. But
 you could have fun sharing our ideas and experimenting yours.
+
+We considered previously to use the garbage collector from [Ravenbrook
+MPS](https://www.ravenbrook.com/project/mps/). Since that project is
+now obsolete, we gave up that idea.
+
+**Don't expect RefPerSys to be a realistic project.** It is not (and
+certainly not before 2025).
 
 ## persistent values
 
@@ -125,15 +137,7 @@ analysis* (the later being an unusual feature - most build automation
 tools using modification time of files).
 
 ### Build instructions
-You need gcc version 7, g++, omake, libunistring-dev and the libmps library in /usr/lib on a debian system.
-Clone this repository, pull the submodule:
- `git submodule update --init --recursive`
- Compile mps:
- `cd mps/code`
- `cc -O2 -c mps.c`
- From the mps.o object file, create the libmps library:
- `ar rcs libmps.a mps.o`
- Then copy this .a file to /usr/lib and you should then be able to run the make command from the refpersys directory.
+You A recent C++17 compiler such as `g++` (We use GCC 7 or 8 or 9) or `clang++` , `omake`, `libunistring-dev`
  
 
 ## Garbage collection
@@ -154,8 +158,7 @@ We have considered to use [Ravenbrook
 MPS](https://www.ravenbrook.com/project/mps/). Unfortunately for us,
 that very good GC implementation seems unmaintained, and with almost a
 hundred thousand lines of code is very difficult to grasp, understand,
-and adopt. So MPS specific code is wrapped around `#ifdef
-RPS_HAVE_MPS` ... `#endif`.
+and adopt. Finally, using MPS is not reasonable in our eyes.
 
 We also did consider using [Boehm
 GC](http://www.hboehm.info/gc/). That conservative GC is really simple

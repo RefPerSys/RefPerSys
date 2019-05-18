@@ -70,15 +70,6 @@
 
 #include "unistr.h"
 
-#ifdef RPS_HAVE_MPS
-#error Ravenbrook MPS is probably obsolete for RefPerSys
-extern "C" {
-#include "mps.h"
-#include "mpsavm.h"
-};				// end extern "C" for mps.h
-static_assert(sizeof(mps_word_t) == sizeof(void*));
-static_assert(alignof(mps_word_t) == alignof(void*));
-#endif /*RPS_HAVE_MPS*/
 
 // mark unlikely conditions to help optimization
 #ifdef __GNUC__
@@ -380,10 +371,6 @@ typedef uint32_t Rps_HashInt;
 enum Rps_Type
 {
   /// non-value types (or quasi-values)
-#ifdef RPS_HAVE_MPS
-  Rps_TyForwardedMPS = -50,
-  Rps_TyPaddingMPS = -51,
-#endif /*RPS_HAVE_MPS*/
   ///
   /// these are GC-scanned, but not GC-allocated:
   Rps_TyDumper = -32,
@@ -730,10 +717,6 @@ public:
 ////////////////////////////////////////////////////////////////
 /// A garbage collected memory zone inherits from Rps_ZoneValue.
 
-#ifdef RPS_HAVE_MPS
-/// Depending on its MPS allocation pool class, it actually will
-/// inherit from various subclasses of Rps_ZoneValue.
-#endif /*RPS_HAVE_MPS*/
 
 
 // these macros are usable inside any function using RPS_LOCALFRAME
@@ -766,29 +749,6 @@ public:
     ValClass* result = new(ptr) ValClass(args...);
     return result;
   }
-#ifdef RPS_HAVE_MPS
-  template <typename ValClass, class ...Args>
-  static ValClass* mps_allocate_with_gap(unsigned gap, Args... args)
-  {
-    ValClass* result = nullptr;
-    size_t siz = sizeof(ValClass);
-    assert (siz % alignof(ValClass) == 0);
-    assert (gap % alignof(ValClass) == 0);
-    assert (ValClass::mps_allocpoint_ != nullptr);
-    mps_addr_t ptr = nullptr;
-    siz += gap;
-    do
-      {
-        mps_res_t res = mps_reserve(&ptr, ValClass::mps_allocpoint_, siz);
-        if (res != MPS_RES_OK)
-          RPS_FATAL("allocation failure (#%d) for %zd - %m\n",
-                    res, siz);
-        result = new (ptr) ValClass(args...);
-      }
-    while (!mps_commit(ValClass::mps_allocpoint_, ptr, siz));
-    return result;
-  }
-#endif /*RPS_HAVE_MPS*/
 public:
   template <typename ValClass, class ...Args>
   static ValClass* rps_allocate(Rps_CallFrameZone*calfram, Args... args)
@@ -800,23 +760,6 @@ public:
     result = new(ptr) ValClass(args...);
     return result;
   }
-#ifdef RPS_HAVE_MPS
-  template <typename ValClass, class ...Args>
-  static ValClass* allocate_mps(Args... args)
-  {
-    mps_addr_t ptr = nullptr;
-    assert (ValClass::mps_allocpoint_ != nullptr);
-    do
-      {
-        mps_res_t res = mps_reserve(&ptr, ValClass::mps_allocpoint_, siz);
-        if (res != MPS_RES_OK)
-          RPS_FATAL("allocation failure (#%d) for %zd - %m\n",
-                    res, siz);
-        result = ::operator new (ptr) ValClass(args...);
-      }
-    while (!mps_commit(ValClass::allocpoint_, ptr, siz));
-  }
-#endif /*RPS_HAVE_MPS*/
 
   Rps_ZoneValue(Rps_Type ty) : _vtyp(ty)
   {
@@ -864,15 +807,6 @@ protected:
     assert ((int)ty >= 0);
     _vtyp = ty;
   };
-#ifdef RPS_HAVE_MPS
-  static mps_arena_t _mps_valzone_arena;
-  static mps_fmt_t _mps_valzone_fmt;
-  static mps_res_t mps_valzone_scan(mps_ss_t ss, mps_addr_t base, mps_addr_t limit);
-  static mps_addr_t mps_valzone_skip(mps_addr_t base);
-  static void mps_valzone_fwd(mps_addr_t oldad, mps_addr_t newad);
-  static mps_addr_t mps_valzone_isfwd(mps_addr_t addr);
-  static void mps_valzone_pad(mps_addr_t addr, size_t size);
-#endif /*RPS_HAVE_MPS*/
 public:
   static void initialize(void);
 };				// end of Rps_ZoneValue
@@ -968,50 +902,7 @@ Rps_Framecl_##Lin _(PrevFrame,Descr)
 #define RPS_LOCALFRAME(PrevFrame,Descr,...) \
   RPS_LOCALFRAME_AT_BIS(__LINE__,(PrevFrame),(Descr), __VA_ARGS__)
 
-#ifdef RPS_HAVE_MPS
-////////////////////////////////////////////////////////////////
-class Rps_ForwardedMPSZoneValue : public Rps_ZoneValue
-{
-  friend class Rps_ZoneValue;
-  void* _fwdptr;
-  size_t _fwdsiz;
-public:
-  Rps_ForwardedMPSZoneValue(void*fptr = nullptr, size_t siz = 0) : Rps_ZoneValue(Rps_TyForwardedMPS), _fwdptr(fptr), _fwdsiz(siz) {};
-  void* forwardptr(void) const
-  {
-    return _fwdptr;
-  };
-  size_t forwardsize(void) const
-  {
-    return _fwdsiz;
-  };
-  void set_forwardptr(void*p = nullptr, size_t siz = 0)
-  {
-    _fwdptr = p;
-    _fwdsiz = siz;
-  };
-};
 
-
-
-
-class Rps_PaddingMPSZoneValue : public Rps_ZoneValue
-{
-  friend class Rps_ZoneValue;
-  size_t _padsize;
-public:
-  Rps_PaddingMPSZoneValue(size_t siz)
-    : Rps_ZoneValue(Rps_TyPaddingMPS), _padsize(siz) {};
-  size_t padsize(void) const
-  {
-    return _padsize;
-  };
-  void* next_byte(void) const
-  {
-    return (void*)((reinterpret_cast<const char*>(this))+_padsize);
-  }
-};				// end class Rps_PaddingMPSZoneValue
-#endif /*RPS_HAVE_MPS*/
 ////////////////////////////////////////////////////////////////
 
 
@@ -1023,16 +914,10 @@ public:
  *  forwarded.  It might perhaps also contain mutable non-GC-pointer
  *  data.
  ***/
-#ifdef RPS_HAVE_MPS
-//// for AMC allocation pool class of MPS
-#endif /*RPS_HAVE_MPS*/
 class Rps_PointerCopyingZoneValue : public Rps_ZoneValue
 {
   friend class Rps_ZoneValue;
 protected:
-#ifdef RPS_HAVE_MPS
-  static thread_local mps_ap_t mps_allocpoint_;
-#endif /*RPS_HAVE_MPS*/
   static inline void* allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram);
   static void* operator new  (std::size_t siz, zone_tag, Rps_CallFrameZone*callfram)
   {
@@ -1075,16 +960,10 @@ public:
  * memory zone which is copied or moved by the GC and does not contain
  * any internal pointers to GC-ed zones.
  ***/
-#ifdef RPS_HAVE_MPS
-//// for AMCZ allocation pool class of MPS
-#endif /*RPS_HAVE_MPS*/
 class Rps_ScalarCopyingZoneValue : public Rps_ZoneValue
 {
   friend class Rps_ZoneValue;
 protected:
-#ifdef RPS_HAVE_MPS
-  static thread_local mps_ap_t mps_allocpoint_;
-#endif /*RPS_HAVE_MPS*/
   Rps_ScalarCopyingZoneValue(Rps_Type ty) : Rps_ZoneValue(ty) {};
 protected:
   static inline void* allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram);
@@ -1104,9 +983,6 @@ public:
  * objects, or GC-ed zones containing C++ container fields, are
  * instances of subclasses of Rps_MarkSweepZoneValue.
  ***/
-#ifdef RPS_HAVE_MPS
-//// for AMS allocation pool class of MPS
-#endif /*RPS_HAVE_MPS*/
 class Rps_MarkSweepZoneValue : public Rps_ZoneValue
 {
   friend class Rps_ZoneValue;
@@ -1114,12 +990,6 @@ class Rps_MarkSweepZoneValue : public Rps_ZoneValue
 protected:
   virtual ~Rps_MarkSweepZoneValue() {};
   Rps_MarkSweepZoneValue(Rps_Type ty) : Rps_ZoneValue(ty) {};
-#ifdef RPS_HAVE_MPS
-  virtual const void* mps_scan(mps_ss_t ss) =0;
-  virtual const void* mps_skip(void) const =0;
-  virtual size_t mps_size(void) const =0;
-  static thread_local mps_ap_t mps_allocpoint_;
-#endif /*RPS_HAVE_MPS*/
 protected:
   static inline void* allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram);
   static void* operator new  (std::size_t siz, zone_tag, Rps_CallFrameZone*callfram)
@@ -1489,15 +1359,6 @@ protected:
 
 
 
-#ifdef RPS_HAVE_MPS
-static_assert(sizeof(Rps_SequenceObrefZone) >= sizeof(Rps_ForwardedMPSZoneValue));
-static_assert(alignof(Rps_SequenceObrefZone) >= alignof(Rps_ForwardedMPSZoneValue));
-
-static_assert(sizeof(Rps_SequenceObrefZone) >= sizeof(Rps_PaddingMPSZoneValue));
-static_assert(alignof(Rps_SequenceObrefZone) >= alignof(Rps_PaddingMPSZoneValue));
-#endif /*RPS_HAVE_MPS*/
-
-
 
 ////////////////
 class Rps_TupleObrefZone : public Rps_SequenceObrefZone
@@ -1667,15 +1528,6 @@ public:
   };
 };				// end Rps_DoubleValue
 
-
-#ifdef RPS_HAVE_MPS
-static_assert(sizeof(Rps_DoubleZone) >= sizeof(Rps_ForwardedMPSZoneValue));
-static_assert(alignof(Rps_DoubleZone) >= alignof(Rps_ForwardedMPSZoneValue));
-static_assert(sizeof(Rps_DoubleZone) >= sizeof(Rps_PaddingMPSZoneValue));
-static_assert(alignof(Rps_DoubleZone) >= alignof(Rps_PaddingMPSZoneValue));
-#endif /*RPS_HAVE_MPS*/
-
-
 ////////////////
 
 class Rps_StringZone : public Rps_ScalarCopyingZoneValue
@@ -1719,8 +1571,8 @@ public:
   {
     return _strlen;
   };
-  /// use very carefully, since Rps_StringZone-s are moved by MPS at any
-  /// time.
+  /// use very carefully, since Rps_StringZone-s are moved by the
+  /// garbage collector.
   const char*unsafe_strbytes() const
   {
     return _strbytes;
@@ -1733,12 +1585,6 @@ public:
 };				// end of Rps_StringZone
 
 
-#ifdef RPS_HAVE_MPS
-static_assert(sizeof(Rps_StringZone) >= sizeof(Rps_ForwardedMPSZoneValue));
-static_assert(alignof(Rps_StringZone) >= alignof(Rps_ForwardedMPSZoneValue));
-static_assert(sizeof(Rps_StringZone) >= sizeof(Rps_PaddingMPSZoneValue));
-static_assert(alignof(Rps_StringZone) >= alignof(Rps_PaddingMPSZoneValue));
-#endif /*RPS_HAVE_MPS*/
 
 class Rps_StringValue : public Rps_Value
 {
@@ -1765,7 +1611,7 @@ public:
     put_string(callingfra,str);
   };
   // return a *copy* of the string, since the contained Rps_StringZone
-  // is potentially *moved* by MPS at arbitrary times.
+  // is potentially *moved* by our garbage collector at arbitrary times.
   std::string string() const
   {
     auto data = unsafe_data();
@@ -1778,8 +1624,8 @@ public:
     if (data) return reinterpret_cast<const Rps_StringZone*>(data)->size();
     else return 0;
   }
-  /// use very carefully, since Rps_StringZone-s are moved by MPS at any
-  /// time.
+  /// use very carefully, since Rps_StringZone-s are moved by our
+  /// garbage collector.
   const char*unsafe_strbytes() const
   {
     auto data = unsafe_data();
@@ -1797,9 +1643,6 @@ class Rps_PayloadInternalData
 protected:
   Rps_ObjectZone* _py_owner;
   virtual ~Rps_PayloadInternalData();
-#ifdef RPS_HAVE_MPS
-  virtual void* mps_scan(mps_ss_t ss) =0;
-#endif /*RPS_HAVE_MPS*/
 };				// end Rps_PayloadInternalData
 
 
@@ -1820,9 +1663,6 @@ class Rps_SetObjrefInternalData : Rps_PayloadInternalData
   friend class Rps_PaylSetObjrefZone;
   std::set<Rps_ObjectRef> _ida_set;
 #warning Rps_SetObjrefInternalData should be implemented
-#ifdef RPS_HAVE_MPS
-  virtual void* mps_scan(mps_ss_t ss);
-#endif /*RPS_HAVE_MPS*/
 public:
   virtual ~Rps_SetObjrefInternalData();
 };				// end Rps_SetObjrefInternalData
@@ -1857,13 +1697,7 @@ class Rps_ObjectZone : public  Rps_MarkSweepZoneValue
       _obat_kind(atk_none), _obat_null(), _ob_compvec(nullptr)
   {
   };
-  virtual ~Rps_ObjectZone(); /// related to mps_finalize
-#ifdef RPS_HAVE_MPS
-  virtual size_t mps_size(void) const
-  {
-    return sizeof(Rps_ObjectZone);
-  };
-#endif /*RPS_HAVE_MPS*/
+  virtual ~Rps_ObjectZone(); /// called by the GC
   // object buckets are useful to manage the association between ids and objects
   struct BucketOb_st
   {
@@ -1890,22 +1724,6 @@ class Rps_ObjectZone : public  Rps_MarkSweepZoneValue
   };
   ///
 protected:
-#ifdef RPS_HAVE_MPS
-  /// scan the object, return next address
-  const void* mps_really_scan(mps_ss_t ss);
-  const void* mps_really_skip(void) const
-  {
-    return this+1;
-  };
-  virtual const void* mps_scan(mps_ss_t ss)
-  {
-    return mps_really_scan(ss);
-  };
-  virtual const void* mps_skip(void) const
-  {
-    return mps_really_skip();
-  };
-#endif /*RPS_HAVE_MPS*/
   /*** Objects are quite common, and their attributes and components
        also.  Most objects have few attributes, since attributes are
        generalizing fields of objects (e.g. those of Java, Python,
@@ -2212,12 +2030,6 @@ public:
   }
 };				// end class Rps_ObjectZone
 
-#ifdef RPS_HAVE_MPS
-static_assert(sizeof(Rps_ObjectZone) >= sizeof(Rps_ForwardedMPSZoneValue));
-static_assert(alignof(Rps_ObjectZone) >= alignof(Rps_ForwardedMPSZoneValue));
-static_assert(sizeof(Rps_ObjectZone) >= sizeof(Rps_PaddingMPSZoneValue));
-static_assert(alignof(Rps_ObjectZone) >= alignof(Rps_PaddingMPSZoneValue));
-#endif /*RPS_HAVE_MPS*/
 
 
 ////////////////

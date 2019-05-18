@@ -97,193 +97,16 @@ fail:
 } // end Rps_Id::Rps_Id (const char*, char**, bool*)
 
 
-#ifdef RPS_HAVE_MPS
-mps_arena_t Rps_ZoneValue::_mps_valzone_arena;
-mps_fmt_t Rps_ZoneValue::_mps_valzone_fmt;
-#endif /*RPS_HAVE_MPS*/
-
-#warning the MPS routines could be wrong
 
 void
 Rps_ZoneValue::initialize(void)
 {
-#ifdef RPS_HAVE_MPS
-  mps_res_t res;
-  // create our arena
-  MPS_ARGS_BEGIN(args)
-  {
-    MPS_ARGS_ADD(args, MPS_KEY_ARENA_SIZE, 128 * 1024 * 1024);
-    res = mps_arena_create_k(&_mps_valzone_arena, mps_arena_class_vm(), args);
-  }
-  MPS_ARGS_END(args);
-  if (res != MPS_RES_OK)
-    RPS_FATAL("Couldn't create _mps_valzone_arena (#%d) - %m", res);
-  // create our object format
-  MPS_ARGS_BEGIN(args)
-  {
-    MPS_ARGS_ADD(args, MPS_KEY_FMT_ALIGN, 2*alignof(Rps_Value));
-    MPS_ARGS_ADD(args, MPS_KEY_FMT_SCAN, mps_valzone_scan);
-    MPS_ARGS_ADD(args, MPS_KEY_FMT_SKIP, mps_valzone_skip);
-    MPS_ARGS_ADD(args, MPS_KEY_FMT_FWD, mps_valzone_fwd);
-    MPS_ARGS_ADD(args, MPS_KEY_FMT_ISFWD, mps_valzone_isfwd);
-    MPS_ARGS_ADD(args, MPS_KEY_FMT_PAD, mps_valzone_pad);
-    res = mps_fmt_create_k(&_mps_valzone_fmt, _mps_valzone_arena, args);
-  }
-  MPS_ARGS_END(args);
-  if (res != MPS_RES_OK)
-    RPS_FATAL( "Couldn't create _mps_valzone_fmt (#%d) - %m", res);
-#endif /*RPS_HAVE_MPS*/
+  RPS_FATAL("unimplemented Rps_ZoneValue::initialize");
 } // end Rps_ZoneValue::initialize
 
 
 
 ////////////////////////////////////////////////////////////////
-#ifdef RPS_HAVE_MPS
-/// MPS related code
-mps_res_t
-Rps_ZoneValue::mps_valzone_scan(mps_ss_t ss, mps_addr_t base, mps_addr_t limit)
-{
-  MPS_SCAN_BEGIN(ss)
-  {
-    while (base < limit)
-      {
-        auto pzon = reinterpret_cast<Rps_ZoneValue*>(base);
-        switch (pzon->type())
-          {
-          case Rps_TyForwardedMPS:
-          {
-            auto zfwd = reinterpret_cast<const Rps_ForwardedMPSZoneValue*>(pzon);
-            base = reinterpret_cast<mps_addr_t>
-                   ((char*)zfwd + zfwd->forwardsize());
-          }
-          continue;
-          case Rps_TyPaddingMPS:
-          {
-            auto zpad = reinterpret_cast<const Rps_PaddingMPSZoneValue*>(pzon);
-            base = reinterpret_cast<mps_addr_t>(zpad->next_byte());
-          }
-          continue;
-          case Rps_TyString:
-          {
-            auto zstr = reinterpret_cast<const Rps_StringZone*>(pzon);
-            base = (mps_addr_t) reinterpret_cast<const void*>
-                   (zstr->_strbytes + Rps_StringZone::byte_gap_for_size(zstr->size()));
-          }
-          continue;
-          case Rps_TyDouble:
-          {
-            auto zdbl =  reinterpret_cast<const Rps_DoubleZone*>(pzon);
-            base =  (mps_addr_t) reinterpret_cast<const void*> (zdbl+1);
-          }
-          continue;
-          case Rps_TyTuple:
-          case Rps_TySet:
-          {
-            auto zseq = reinterpret_cast<Rps_SequenceObrefZone*>(pzon);
-            auto size = zseq->size();
-            for (unsigned ix=0; ix < size; ix++)
-              {
-                auto curptr = zseq->_obarr[ix].obptr();
-                if (curptr)
-                  {
-                    void*curcomp = curptr;
-                    mps_res_t res = MPS_FIX12(ss, &curcomp);
-                    if (res == MPS_RES_OK)
-                      (zseq->_obarr[ix]).set_obptr(reinterpret_cast<Rps_ObjectZone*>(curcomp));
-                  }
-              }
-            base = reinterpret_cast<mps_addr_t>	(zseq->_obarr+size);
-          }
-          continue;
-          case Rps_TyObject:
-          {
-            auto zob = reinterpret_cast<Rps_ObjectZone*>(pzon);
-            const void*p = zob->mps_really_scan(ss);
-            base = reinterpret_cast<mps_addr_t>((void*)p);
-          }
-          continue;
-          }
-        RPS_FATAL("corrupted scanned zone @%p of type %d\n",
-                  (void*)pzon, (int)pzon->type());
-      }
-  }
-  MPS_SCAN_END(ss);
-  return MPS_RES_OK;
-} // end Rps_ZoneValue::mps_valzone_scan
-
-
-mps_addr_t
-Rps_ZoneValue::mps_valzone_skip(mps_addr_t base)
-{
-  auto pzon = reinterpret_cast<Rps_ZoneValue*>(base);
-  switch (pzon->type())
-    {
-    case Rps_TyForwardedMPS:
-    {
-      auto zfwd = reinterpret_cast<const Rps_ForwardedMPSZoneValue*>(pzon);
-      return reinterpret_cast<mps_addr_t>
-             ((char*)zfwd + zfwd->forwardsize());
-    }
-    case Rps_TyPaddingMPS:
-    {
-      auto zpad = reinterpret_cast<const Rps_PaddingMPSZoneValue*>(pzon);
-      return reinterpret_cast<mps_addr_t>(zpad->next_byte());
-    }
-    case Rps_TyString:
-    {
-      auto zstr = reinterpret_cast<const Rps_StringZone*>(pzon);
-      return (mps_addr_t) reinterpret_cast<const void*>
-             (zstr->_strbytes + Rps_StringZone::byte_gap_for_size(zstr->size()));
-    }
-    case Rps_TyDouble:
-    {
-      auto zdbl = reinterpret_cast<const Rps_DoubleZone*>(pzon);
-      return (mps_addr_t) reinterpret_cast<const void*> (zdbl+1);
-    }
-    case Rps_TyTuple:
-    case Rps_TySet:
-    {
-      auto zseq = reinterpret_cast<Rps_SequenceObrefZone*>(pzon);
-      auto size = zseq->size();
-      return reinterpret_cast<mps_addr_t>	(zseq->_obarr+size);
-    }
-    case Rps_TyObject:
-    {
-      auto zob = reinterpret_cast<Rps_ObjectZone*>(pzon);
-      return reinterpret_cast<mps_addr_t>(zob+1);
-    }
-    }
-  RPS_FATAL("corrupted skipped zone @%p of type %d\n",
-            (void*)pzon, (int)pzon->type());
-} // end Rps_ZoneValue::mps_valzone_skip
-
-
-void
-Rps_ZoneValue::mps_valzone_fwd(mps_addr_t oldad, mps_addr_t newad)
-{
-  auto pzon = reinterpret_cast<Rps_ZoneValue*>(oldad);
-  auto bytsiz = (char*)mps_valzone_skip(oldad) - (char*)pzon;
-  assert ((unsigned) bytsiz >= (unsigned) sizeof(Rps_ForwardedMPSZoneValue));
-  (void) new((void*)oldad) Rps_ForwardedMPSZoneValue(newad, bytsiz);
-} // end of Rps_ZoneValue::mps_valzone_fwd
-
-
-mps_addr_t
-Rps_ZoneValue::mps_valzone_isfwd(mps_addr_t addr)
-{
-  auto pfwd = reinterpret_cast<Rps_ForwardedMPSZoneValue*>(addr);
-  if (pfwd->type() == Rps_TyForwardedMPS) return pfwd->forwardptr();
-  return nullptr;
-} // end Rps_ZoneValue::mps_valzone_isfwd
-
-void
-Rps_ZoneValue::mps_valzone_pad(mps_addr_t addr, size_t size)
-{
-  assert (size >= sizeof(Rps_PaddingMPSZoneValue));
-  new (addr) Rps_PaddingMPSZoneValue(size);
-} // end Rps_ZoneValue::mps_valzone_pad
-#endif /*RPS_HAVE_MPS*/
-
 ////////////////////////////////////////////////////////////////
 
 Rps_HashInt
@@ -314,11 +137,6 @@ Rps_SequenceObrefZone::hash_of_array(Rps_Type ty, uint32_t siz, const Rps_Object
 } /*end Rps_SequenceObrefZone::hash_of_array*/
 
 
-#ifdef RPS_HAVE_MPS
-thread_local mps_ap_t Rps_ScalarCopyingZoneValue::mps_allocpoint_;
-thread_local mps_ap_t Rps_PointerCopyingZoneValue::mps_allocpoint_;
-thread_local mps_ap_t Rps_MarkSweepZoneValue::mps_allocpoint_;
-#endif /*RPS_HAVE_MPS*/
 
 Rps_HashInt
 Rps_StringZone::hash_cstr(const char*cstr, int32_t slen)
