@@ -8,7 +8,6 @@
 ##
 ## Author(s):
 ##      Basile Starynkevitch <basile@starynkevitch.net>
-##      Niklas Rosencrantz <niklasro@gmail.com>
 ##      Abhishek Chakravarti <abhishek@taranjali.org>
 ##
 ##      © Copyright 2019 The Reflective Persistent System Team

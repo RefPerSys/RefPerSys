@@ -8,7 +8,6 @@
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Niklas Rosencrantz <niklasro@gmail.com>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *
  *      © Copyright 2019 The Reflective Persistent System Team
@@ -129,7 +128,7 @@ Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned new
       // component vector.
       auto alsiz = (newnbcomp<Rps_QuasiComponentVector::_min_alloc_size_
                     ?Rps_QuasiComponentVector::_min_alloc_size_
-                    :rps_prime_above(newnbcomp));
+                    :rps_prime_above(newnbcomp+newnbcomp/32+2));
       _.newcompvec =
         Rps_QuasiComponentVector::rps_allocate_with_gap<Rps_QuasiComponentVector>
         (RPS_CURFRAME,
@@ -147,7 +146,7 @@ Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned new
       // either shrink or resize it.
       auto alsiz = (newnbcomp<Rps_QuasiComponentVector::_min_alloc_size_
                     ?Rps_QuasiComponentVector::_min_alloc_size_
-                    :rps_prime_above(newnbcomp));
+                    :rps_prime_above(newnbcomp+newnbcomp/32+2));
       assert (alsiz >= newnbcomp);
       if (alsiz != _ob_compvec->_qsizarr)
         {
@@ -188,7 +187,7 @@ Rps_ObjectZone::do_reserve_components (Rps_CallFrameZone*callingfra, unsigned ne
   _.thisob = this;
   auto newalsiz = (newsize<Rps_QuasiComponentVector::_min_alloc_size_
                    ?Rps_QuasiComponentVector::_min_alloc_size_
-                   :rps_prime_above(newsize));
+                   :rps_prime_above(newsize+newsize/32+2));
   auto oldalsiz = _.oldcompvec?_.oldcompvec->allocated_size():0;
   if (newsize == 0)
     {
@@ -252,7 +251,7 @@ Rps_ObjectZone::do_append_component(Rps_CallFrameZone*callingfra,Rps_Value val)
         }
       else
         {
-          unsigned newsiz = rps_prime_above(9*oldnbcomp/8 + 3);
+          unsigned newsiz = rps_prime_above(oldnbcomp + oldnbcomp/32 + 3);
           assert (newsiz > oldnbcomp+1);
           _.newcompvec =
             Rps_QuasiComponentVector::rps_allocate_with_gap<Rps_QuasiComponentVector>
@@ -312,7 +311,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
       _.oldattrs = _obat_small_atar;
       unsigned oldalsize = _.oldattrs->_qsizattr;
       unsigned oldnbattr = _.oldattrs->_qnbattrs;
-      assert (oldnbattr <= oldalsize && oldalsize <= at_small_thresh);
+      assert (oldnbattr <= oldalsize && oldalsize <= at_small_thresh+at_fuss+1);
       if (RPS_LIKELY(oldnbattr+1 < oldalsize))
         {
           // enough space, no need to reallocate
@@ -344,7 +343,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
         }
       else
         {
-          unsigned newsize = rps_prime_above(9*oldnbattr/8+3);
+          unsigned newsize = rps_prime_above(oldnbattr+oldnbattr/32+3);
           unsigned newcnt = 0;
           _.newattrs =
             Rps_QuasiAttributeArray::rps_allocate_with_gap<Rps_QuasiAttributeArray>
@@ -356,13 +355,13 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
             );
           /// The needed transition from small to sorted
           /// QuasiAttributeArray-s may happen smoothly and with a
-          /// little random noise between 0 and 7 included, since we
-          /// want to avoid too frequent oscillations between them
-          /// (e.g. in the case when we add a few attributes, remove a
-          /// few others of them, and so forth, around the
-          /// thresholds.).
+          /// little random noise between 0 and 7 (i.e. at_fuss-1)
+          /// included, since we want to avoid too frequent
+          /// oscillations between them (e.g. in the case when we add
+          /// a few attributes, remove a few others of them, and so
+          /// forth, around the thresholds.).
           if (newsize < at_sorted_thresh
-              || newsize < at_sorted_thresh - 1 +  (Rps_Random::random_quickly_4bits() & 7))
+              || newsize < at_sorted_thresh - 1 +  (Rps_Random::random_quickly_4bits() & (at_fuss-1)))
             {
               // grow the _obat_small_atar up to newsize
               for (unsigned ix=0; ix<oldnbattr; ix++)
@@ -413,7 +412,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
       _.oldattrs = _obat_sorted_atar;
       unsigned oldalsize = _.oldattrs->_qsizattr;
       unsigned oldnbattr = _.oldattrs->_qnbattrs;
-      assert (oldnbattr <= oldalsize && oldalsize <= at_sorted_thresh);
+      assert (oldnbattr <= oldalsize && oldalsize <= at_sorted_thresh+at_fuss+1);
       if (RPS_LIKELY(oldnbattr+1 < at_sorted_thresh
                      && oldnbattr+1 < oldalsize))
         {
@@ -481,10 +480,10 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
             }
         }
       else if (oldnbattr+1 < at_sorted_thresh
-               || oldnbattr + 1 < at_sorted_thresh + 1 + (Rps_Random::random_quickly_4bits() & 7))
+               || oldnbattr + 1 < at_sorted_thresh + 1 + (Rps_Random::random_quickly_4bits() & (at_fuss-1)))
         {
           /// we need to grow the sorted quasi-attribute-array
-          unsigned newsize = rps_prime_above(9*oldnbattr/8+3);
+          unsigned newsize = rps_prime_above(oldnbattr+oldnbattr/32+3);
           _.newattrs =
             Rps_QuasiAttributeArray::rps_allocate_with_gap<Rps_QuasiAttributeArray>
             (RPS_CURFRAME,
@@ -548,13 +547,69 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
 } // end Rps_ObjectZone::do_put_attr
 
 
+////////////////
 
-
-void Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob)
+void
+Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyobarg)
 {
+  RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
+                 Rps_ObjectRef thisob;
+                 Rps_ObjectRef keyob;
+                 Rps_ObjectRef altkeyob; // some "current" or "next" key
+                 Rps_Value curvalat;
+                 Rps_QuasiAttributeArray*oldattrs;
+                 Rps_QuasiAttributeArray*newattrs;
+                );
+  if (!keyobarg)
+    return;
+  _.thisob = this;
+  _.keyob = keyobarg;
+  switch (_obat_kind)
+    {
+    case atk_none:
+      return;
+    case atk_small:
+    {
+      assert (_obat_small_atar != nullptr);
+      _.oldattrs = _obat_small_atar;
+      unsigned oldalsize = _.oldattrs->_qsizattr;
+      unsigned oldnbattr = _.oldattrs->_qnbattrs;
+      unsigned newalsize = oldalsize;
+      assert (oldnbattr <= oldalsize
+              && oldalsize <= at_small_thresh+at_fuss+1);
+      if (oldnbattr < at_small_initsize && oldalsize > at_small_initsize+1)
+        newalsize = at_small_initsize;
+      else if (oldnbattr+2 < 2*oldalsize/3 && oldalsize>at_small_initsize)
+        newalsize = rps_prime_above(oldnbattr+1);
+      else if (oldnbattr+2 < 2*oldalsize/3 && oldnbattr<at_small_thresh)
+        newalsize = rps_prime_above(oldnbattr+1);
+      else if (oldnbattr+2 < 2*oldalsize/3
+               && oldnbattr<at_small_thresh + (Rps_Random::random_quickly_4bits() & (at_fuss-1)))
+        newalsize = rps_prime_above(oldnbattr+1);
+      if (newalsize < oldalsize)
+        {
+          /// shrink
+        }
+    }
+    break;
+    case atk_medium:
+    {
+      assert (_obat_sorted_atar != nullptr);
+      _.oldattrs = _obat_sorted_atar;
+      unsigned oldalsize = _.oldattrs->_qsizattr;
+      unsigned oldnbattr = _.oldattrs->_qnbattrs;
+      assert (oldnbattr <= oldalsize
+              && oldalsize <= at_sorted_thresh+at_fuss+1);
+    }
+    break;
+    case atk_big:
+    {
+    }
+    break;
+    } // end switch _obat_kind
 #warning unimplemented Rps_ObjectZone::do_remove_attr
   RPS_FATAL("unimplemented Rps_ObjectZone::do_remove_attr @%p key@%p",
-            (void*)this, (void*)keyob.optr());
+            (void*)this, (void*)keyobarg.optr());
 } // end Rps_ObjectZone::do_remove_attr
 
 

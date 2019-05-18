@@ -1,5 +1,7 @@
 # refpersys
 
+## A research project
+
 The Reflective Persistent System language is a **research project**, taking many good ideas from [Bismon](http://github.com/bstarynk/bismon), sharing a lot of goals (except static source code analysis) with it but avoiding bad ideas from it.
 
 For Linux/x86-64 only. Don't even think of running that on non-Linux
@@ -13,6 +15,8 @@ Pthreads).
 We absolutely want to avoid any
 [GIL](https://en.wikipedia.org/wiki/Global_interpreter_lock)
 
+Don't expect anything useful from RefPerSys before at least 2022. But
+you could have fun sharing our ideas and experimenting yours.
 
 ## persistent values
 
@@ -80,7 +84,6 @@ This *research* project is
 copyrighted by the RefPerSys team, currently made of:
 
  *      Basile Starynkevitch <basile@starynkevitch.net>, homepage http://starynkevitch.net/Basile/
- *      Niklas Rosencrantz <niklasro@gmail.com>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
 
 ## Contributing
@@ -269,3 +272,9 @@ For garbage collection, read Paul Wilson's [Uniprocessor Garbage
 Collection
 Techniques](https://www3.nd.edu/~dthain/courses/cse40243/spring2006/gc-survey.pdf)
 old paper, then read the [GC handbook](http://gchandbook.org/)
+
+
+## past contributors
+
+Thanks to Niklas Rosencrantz (Sweden) for past minor contributions.
+
