@@ -2529,6 +2529,7 @@ public:
     return true;
   };
 
+  /// Generates the token for the current line
   Rps_QuasiToken* tokenize(Rps_CallFrameZone* callframe);
 };				// end class Rps_LexedFile
 
