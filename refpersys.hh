@@ -1956,6 +1956,8 @@ private:
   ///// don't care, since very few objects would have more than a
   ///// hundred attributes.
   static constexpr unsigned at_sorted_thresh= 101; // a prime
+  ///// the "fuzziness"
+  static constexpr unsigned at_fuss = 8; // a power of two, at most 16!
   ///// initial size of _obat_small_atar:
   static constexpr unsigned at_small_initsize= 3;
   union
