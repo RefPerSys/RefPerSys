@@ -2494,8 +2494,7 @@ public:
     RPS_TOKEN_TYPE_STRING,
     RPS_TOKEN_TYPE_DOUBLE,
     RPS_TOKEN_TYPE_INTEGER,
-    RPS_TOKEN_TYPE_PARENTHESIS,
-    RPS_TOKEN_TYPE_WHITESPACE
+    RPS_TOKEN_TYPE_PARENTHESIS
   };
 
 #if 0
@@ -2513,7 +2512,7 @@ public:
   struct LOCATION_st
   {
     const std::string* loc_filepathptr;	// pointer to some file path string
-    int loc_lineno;
+    ssize_t loc_lineno;
   };
   static constexpr LOCATION_st empty_location {nullptr,0};
 
@@ -2597,29 +2596,72 @@ private:
   ~Rps_QuasiToken() {};		// no-op, since garbage collected
 
 public:
-  /// the lexer should use these makers
-  static Rps_QuasiToken*make_from_int (intptr_t i, Rps_CallFrameZone* callingfra, const LOCATION_st* ploc=nullptr)
+
+  /// Generates an integer quasi-token
+  static Rps_QuasiToken*
+  make_from_int(intptr_t i,
+                Rps_CallFrameZone* frame,
+                const LOCATION_st* ploc = nullptr)
   {
-    return Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(callingfra, i, ploc);
+    return Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(frame, i, ploc);
   };
-  static Rps_QuasiToken*make_from_int(intptr_t i, Rps_CallFrameZone* callingfra, const LOCATION_st& loc)
+
+  /// Overloaded method to generate integer quasi-token
+  static Rps_QuasiToken*
+  make_from_int(intptr_t i,
+                Rps_CallFrameZone* callframe,
+                const LOCATION_st& loc)
   {
-    return make_from_int(i, callingfra, &loc);
+    return make_from_int(i, callframe, &loc);
   };
-  ///
-  static Rps_QuasiToken*make_from_double (double d, Rps_CallFrameZone* callingfra, const LOCATION_st* ploc=nullptr)
+
+  /// Generates a double quasi-token
+  static Rps_QuasiToken*
+  make_from_double(double d,
+                   Rps_CallFrameZone* frame,
+                   const LOCATION_st* ploc = nullptr)
   {
-    return Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(callingfra, d, ploc);
+    return Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(frame, d, ploc);
   };
-  static Rps_QuasiToken*make_from_double (double d, Rps_CallFrameZone* callingfra, const LOCATION_st& loc)
+
+  /// Overloaded method to generate a double quasi-token
+  static Rps_QuasiToken*
+  make_from_double(double d,
+                   Rps_CallFrameZone* frame,
+                   const LOCATION_st& loc)
   {
-    return make_from_double(d, callingfra, &loc);
+    return make_from_double(d, frame, &loc);
   };
-  static Rps_QuasiToken*make_from_string (const std::string&str, Rps_CallFrameZone* callingfra, const LOCATION_st* ploc=nullptr);
-  static Rps_QuasiToken*make_from_string (const std::string&str, Rps_CallFrameZone* callingfra, const LOCATION_st& loc)
+
+  /// Generates a string quasi-token
+  static Rps_QuasiToken*
+  make_from_string(const std::string& s,
+                   Rps_CallFrameZone* frame,
+                   const LOCATION_st* ploc = nullptr);
+
+  /// Overloaded method to generate a string quasi-token
+  static Rps_QuasiToken*
+  make_from_string(const std::string& s,
+                   Rps_CallFrameZone* frame,
+                   const LOCATION_st& loc)
   {
-    return make_from_string(str, callingfra, &loc);
+    return make_from_string(s, frame, &loc);
   };
+
+  /// Generates an object ID quasi-token
+  static Rps_QuasiToken*
+  make_from_objid(const Rps_Id& id,
+                  Rps_CallFrameZone* frame,
+                  const LOCATION_st* ploc = nullptr);
+
+  /// Overloaded method to generate an object ID quasi-token
+  static Rps_QuasiToken*
+  make_from_objid(const Rps_Id& id,
+                  Rps_CallFrameZone* frame,
+                  const LOCATION_st& loc)
+  {
+    return make_from_objid(id, frame, &loc);
+  }
 };				// end class Rps_QuasiToken
 
 
@@ -2648,7 +2690,7 @@ public:
   };
 
   // gives false when the end of current line is reached.
-  bool read_char(void)
+  bool next(void)
   {
     assert (_lfil_linbuf != nullptr);
     assert (_lfil_iter != nullptr);
@@ -2665,52 +2707,18 @@ public:
   bool read_line(void)
   {
     assert (_lfil_hnd != nullptr);
+
     _lfil_linlen = getline (&_lfil_linbuf, &_lfil_linsiz, _lfil_hnd);
-    if (_lfil_linlen<0)
+    if (_lfil_linlen < 0)
       return false;
+
     _lfil_lineno++;
     _lfil_iter = _lfil_linbuf;
+
     return true;
   };
 
-  Rps_QuasiToken* tokenize(void);
-
-private:
-  bool is_integer_digit(char c)
-  {
-    return (c >= '0' && c <= '9') || c == '+' || c == '-';
-  }
-
-  bool is_double_digit(char c)
-  {
-    return is_integer_digit(c) || c == '.';
-  }
-
-  bool is_objid_digit(char c)
-  {
-    return (c >= '0' && c <= '9')
-           || (c >= 'A' && c <= 'Z')
-           || (c >= 'a' && c <= 'z')
-           || c == '_';
-  }
-
-  // TODO: Abhishek will implement this
-  bool is_objid(const char* bfr, size_t* start, size_t* end)
-  {
-    return false;
-  }
-
-  // TODO: Abhishek will implement this
-  bool is_double(const char* bfr, size_t* start, size_t* end)
-  {
-    return false;
-  }
-
-  // TODO: Abhishek will implement this
-  bool is_int(const char* bfr, size_t* start, size_t* end)
-  {
-    return false;
-  }
+  Rps_QuasiToken* tokenize(Rps_CallFrameZone* callframe);
 };				// end class Rps_LexedFile
 
 

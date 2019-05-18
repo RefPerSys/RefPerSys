@@ -121,6 +121,17 @@ has](http://projects.camlcity.org/projects/dl/omake-0.10.3/doc/html/omake-quicks
 analysis* (the later being an unusual feature - most build automation
 tools using modification time of files).
 
+### Build instructions
+You need gcc version 7, g++, omake, libunistring-dev and the libmps library in /usr/lib on a debian system.
+Clone this repository, pull the submodule:
+ `git submodule update --init --recursive`
+ Compile mps:
+ `cd mps/code`
+ `cc -O2 -c mps.c`
+ From the mps.o object file, create the libmps library:
+ `ar rcs libmps.a mps.o`
+ Then copy this .a file to /usr/lib and you should then be able to run the make command from the refpersys directory.
+ 
 
 ## Garbage collection
 
