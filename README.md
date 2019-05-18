@@ -122,7 +122,7 @@ analysis* (the later being an unusual feature - most build automation
 tools using modification time of files).
 
 ### Build instructions
-You need gcc version 7, omake and the libmps library in /usr/lib on a debian system.
+You need gcc version 7, g++, omake, libunistring-dev and the libmps library in /usr/lib on a debian system.
 Clone this repository, pull the submodule:
  `git submodule update --init --recursive`
  Compile mps:
@@ -130,7 +130,7 @@ Clone this repository, pull the submodule:
  `cc -O2 -c mps.c`
  From the mps.o object file, create the libmps library:
  `ar rcs libmps.a mps.o`
- Then copy this .a file to /usr/lib and you should then be able to run the make command from the refpersys directory
+ Then copy this .a file to /usr/lib and you should then be able to run the make command from the refpersys directory.
  
 
 ## Garbage collection
