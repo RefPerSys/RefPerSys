@@ -91,31 +91,39 @@ Rps_LexedFile::~Rps_LexedFile()
 
 
 
-Rps_QuasiToken* Rps_LexedFile::tokenize(void)
+Rps_QuasiToken* Rps_LexedFile::tokenize(Rps_CallFrameZone* callframe)
 {
-  size_t start, end;
+  RPS_LOCALFRAME(callframe, /*descr:*/nullptr,
+                 Rps_QuasiToken *result;
+                );
+  char *end;
+  Rps_QuasiToken::LOCATION_st loc = {&_lfil_path, _lfil_linlen};
 
-  do
+  // skip leading whitespace
+  while (isspace(*_lfil_iter))
+    _lfil_iter++;
+
+  // tokenize int if encountered
+  auto i = strtol(_lfil_iter, &end, 10);
+  if (end && end > _lfil_iter)
+    _.result = Rps_QuasiToken::make_from_int(i, callframe, loc);
+
+  // tokenize double if encountered
+  auto d = strtod(_lfil_iter, &end);
+  if (end && end > _lfil_iter)
+    _.result = Rps_QuasiToken::make_from_double(d, callframe, loc);
+
+  // tokenize objid if encountered
+  if (*_lfil_iter == '_' && isalnum(*(_lfil_iter + 1)))
     {
-      if (isspace(*_lfil_iter))
-        {
-          _lfil_iter++;
-          continue;
-        }
+      bool ok;
+      Rps_Id id(_lfil_iter, (const char**) &end, &ok);
 
-      // TODO: Abhishek will expand the following if statements with
-      // the appropriate Rps_QuasiToken::make_from_...() method
-      // the start and end variables hold the starting and ending positions of
-      // the token
-      if (this->is_objid(_lfil_iter, &start, &end));
-      if (this->is_double(_lfil_iter, &start, &end));
-      if (this->is_int(_lfil_iter, &start, &end));
+      if (ok)
+        _.result = Rps_QuasiToken::make_from_objid(id, callframe, loc);
     }
-  while (this->read_char());
 
-  // this is only temporary to allow the build to succeed;
-  // Abhishek will replace this
-  return nullptr;
+  return _.result;
 }
 
 
