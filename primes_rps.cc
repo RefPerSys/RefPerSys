@@ -44,6 +44,9 @@ extern "C" int64_t rps_prime_below (int64_t n);
 // https://github.com/kimwalisch/primesieve which is a very clever program.
 
 
+//// the actual numbers have been gotten with
+//// makeprimes  2333444555666 10 'primesieve -t18 -p'
+//// which took 13439 seconds to run on a AMD Ryzen Threadripper 2970WX
 static const int64_t rps_primes_tab[] =
 {
 //// piping primesieve -t18 -p 2 2333444555666
