@@ -2176,6 +2176,12 @@ public:
   {
     _gc_wanted.store(true);
   }
+  static void write_barrier(Rps_CallFrameZone*callingfra, Rps_ZoneValue*zva)
+  {
+#warning Rps_GarbageCollector::write_barrier unimplemented
+    RPS_FATAL(" Rps_GarbageCollector::write_barrier unimplemented callingfra@%p zva@%p",
+              (void*)callingfra, (void*)zva);
+  }
   ////////////////////////////////////////////////////////////////
   /// various allocation primitives.
   static void*allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*callingfra)
@@ -2263,6 +2269,13 @@ public:
 
 
 ////////////////////////////////////////////////////////////////
+
+void
+Rps_ZoneValue::rps_write_barrier(Rps_CallFrameZone*callingfra)
+{
+  Rps_GarbageCollector::write_barrier(callingfra, this);
+} // end of Rps_ZoneValue::rps_write_barrier
+
 void*
 Rps_PointerCopyingZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callingfra)
 {
