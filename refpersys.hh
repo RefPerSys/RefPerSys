@@ -1939,7 +1939,7 @@ public:
         return _obat_map_atar.size();
       }
   };
-  Rps_Value get_attr(Rps_ObjectRef keyob) const
+  Rps_Value do_get_attr(Rps_ObjectRef keyob) const
   {
     switch (_obat_kind)
       {
@@ -1981,7 +1981,12 @@ public:
       }
       return nullptr;
       }
-  };				// end get_attr
+  };				// end do_get_attr
+  Rps_Value get_attr(Rps_ObjectRef keyob) const
+  {
+    // we'll probably special case some keys here later
+    return do_get_attr(keyob);
+  }
   void do_put_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob, Rps_Value valat);
   Rps_ObjectRef put_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob, Rps_Value valat)
   {
