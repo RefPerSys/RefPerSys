@@ -412,7 +412,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
           /// we need to perhaps insert the entry at the right place,
           /// to keep that array sorted. Using a dichotomical binary
           /// search and/or insertion.
-          int inspos = -1;
+          //
           // Equality test on objects is significantly faster than
           // 'less than' or 'greater than' tests. So, ...
 
@@ -422,7 +422,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
             lo = p.first;
             hi = p.second;
           }
-          assert (lo >= 0 && hi <= oldnbattr);
+          assert (lo >= 0 && hi <= (int)oldnbattr && lo < hi);
           if ( _.keyob < (_.altkeyob =  _.oldattrs->_qatentries[lo].first))
             {
               // insert before lo
@@ -581,6 +581,55 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
       if (newalsize < oldalsize)
         {
           /// shrink
+          _.newattrs =
+            Rps_QuasiAttributeArray::rps_allocate_with_gap<Rps_QuasiAttributeArray>
+            (RPS_CURFRAME,
+             sizeof(Rps_QuasiAttributeArray),
+             newalsize,
+             0,
+             nullptr
+            );
+          unsigned newnbattr = 0;
+          for (unsigned ix=0; ix<oldnbattr; ix++)
+            {
+              _.altkeyob = _.oldattrs->_qatentries[ix].first;
+              if (_.altkeyob == _.keyob)
+                continue;
+              if (Rps_ObjectRef(_.altkeyob).is_empty())  // unlikely to happen,
+                // perhaps impossible
+                continue;
+              _.newattrs->_qatentries[newnbattr++]
+                = _.oldattrs->_qatentries[ix];
+            }
+          assert (newnbattr <= oldnbattr);
+          _.newattrs->_qnbattrs = newnbattr;
+          _obat_small_atar = _.newattrs;
+        }
+      else
+        {
+          /// simply remove the entry
+          int pos = -1;
+          for (unsigned ix=0; ix<oldnbattr; ix++)
+            {
+              _.altkeyob = _.oldattrs->_qatentries[ix].first;
+              if (_.altkeyob == _.keyob)
+                {
+                  assert (pos<0);
+                  pos = (int)ix;
+                  break;
+                }
+            };
+          if (pos>=0)
+            {
+              assert (oldnbattr>0);
+              for (int ix=pos; ix<oldnbattr; ix++)
+                _.oldattrs->_qatentries[ix] = _.oldattrs->_qatentries[ix+1];
+              _.oldattrs->_qnbattrs = oldnbattr-1;
+              _.oldattrs->_qatentries[oldnbattr-1].first = nullptr;
+              _.oldattrs->_qatentries[oldnbattr-1].second = nullptr;
+            }
+          else
+            /*missing removed attribute*/ return;
         }
     }
     break;
@@ -592,16 +641,112 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
       unsigned oldnbattr = _.oldattrs->_qnbattrs;
       assert (oldnbattr <= oldalsize
               && oldalsize <= at_sorted_thresh+at_fuss+1);
+      int lo = 0, hi = oldnbattr;
+      {
+        auto p = dichotomy_medium_sorted(_.keyob, _.oldattrs);
+        lo = p.first;
+        hi = p.second;
+      }
+      assert (lo >= 0 && hi <= oldnbattr && lo < hi);
+      int pos = -1;
+      for (int ix=lo; ix<hi; ix++)
+        {
+          _.altkeyob = _.oldattrs->_qatentries[ix].first;
+          if (_.altkeyob == _.keyob)
+            {
+              assert (pos<0);
+              pos = (int)ix;
+              break;
+            }
+        }
+      if (pos>=0)
+        {
+          assert (oldnbattr>0);
+          for (int ix=pos; ix<oldnbattr; ix++)
+            _.oldattrs->_qatentries[ix] = _.oldattrs->_qatentries[ix+1];
+          _.oldattrs->_qnbattrs = oldnbattr-1;
+          _.oldattrs->_qatentries[oldnbattr-1].first = nullptr;
+          _.oldattrs->_qatentries[oldnbattr-1].second = nullptr;
+        }
+      else
+        /*missing removed attribute:*/
+        return;
+      if (3*oldnbattr < 2*oldalsize)
+        {
+          unsigned newalsize = oldalsize;
+          assert (oldnbattr <= oldalsize
+                  && oldalsize <= at_small_thresh+at_fuss+1);
+          if (oldnbattr < at_small_initsize && oldalsize > at_small_initsize+1)
+            newalsize = at_small_initsize;
+          else if (oldnbattr+1 < 2*oldalsize/3 && oldalsize>at_small_initsize)
+            newalsize = rps_prime_above(oldnbattr);
+          else if (oldnbattr+1 < 2*oldalsize/3 && oldnbattr<at_small_thresh)
+            newalsize = rps_prime_above(oldnbattr);
+          else if (oldnbattr+1 < 2*oldalsize/3
+                   && oldnbattr<at_small_thresh + (Rps_Random::random_quickly_4bits() & (at_fuss-1)))
+            newalsize = rps_prime_above(oldnbattr);
+          assert (newalsize <= oldalsize);
+          if (newalsize < oldalsize)
+            {
+              _.newattrs =
+                Rps_QuasiAttributeArray::rps_allocate_with_gap<Rps_QuasiAttributeArray>
+                (RPS_CURFRAME,
+                 sizeof(Rps_QuasiAttributeArray),
+                 newalsize,
+                 0,
+                 nullptr
+                );
+              unsigned newnbattr = 0;
+              for (unsigned ix=0; ix<oldnbattr; ix++)
+                {
+                  _.altkeyob = _.oldattrs->_qatentries[ix].first;
+                  assert (_.altkeyob != _.keyob);
+                  if (Rps_ObjectRef(_.altkeyob).is_empty())  // unlikely to happen,
+                    // perhaps impossible
+                    continue;
+                  _.newattrs->_qatentries[newnbattr++]
+                    = _.oldattrs->_qatentries[ix];
+                }
+              assert (newnbattr <= oldnbattr);
+              _.newattrs->_qnbattrs = newnbattr;
+              _obat_small_atar = _.newattrs;
+            }
+        }
     }
     break;
     case atk_big:
     {
+      assert (!_obat_map_atar.empty());
+      auto oldnbattr = _obat_map_atar.size();
+      bool found = _obat_map_atar.erase(_.keyob) >0;
+      if (found)
+        {
+          if (oldnbattr < at_sorted_thresh
+              || oldnbattr < at_sorted_thresh+ (Rps_Random::random_quickly_4bits() & (at_fuss-1)))
+            {
+              unsigned newalsize = rps_prime_above(oldnbattr);
+              _.newattrs =
+                Rps_QuasiAttributeArray::rps_allocate_with_gap<Rps_QuasiAttributeArray>
+                (RPS_CURFRAME,
+                 sizeof(Rps_QuasiAttributeArray),
+                 newalsize,
+                 0,
+                 nullptr
+                );
+              unsigned newnbattr = 0;
+              for (auto it : _obat_map_atar)
+                _.newattrs->_qatentries[newnbattr++]= it;
+              typedef std::map<Rps_ObjectRef, Rps_Value> sorted_map_t;
+              _obat_map_atar.~sorted_map_t();
+              memset ((void*)&_obat_map_atar, 0, sizeof(_obat_map_atar));
+              _obat_sorted_atar  = _.newattrs;
+              _obat_kind = atk_medium;
+            }
+        }
     }
     break;
     } // end switch _obat_kind
-#warning unimplemented Rps_ObjectZone::do_remove_attr
-  RPS_FATAL("unimplemented Rps_ObjectZone::do_remove_attr @%p key@%p",
-            (void*)this, (void*)keyobarg.optr());
+  RPS_WRITE_BARRIER();
 } // end Rps_ObjectZone::do_remove_attr
 
 

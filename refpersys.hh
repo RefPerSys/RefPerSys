@@ -2126,10 +2126,10 @@ Rps_Value::as_object() const
 /**
  * The garbage collector
  *
- * There is no actual instance of Rps_GarbageCollector, but that class is
- * grouping static data and member functions related to garbage
- * collection and allocation support.  Perhaps it should be a C++
- * namespace, not a C++ class.
+ * There is no actual instance of Rps_GarbageCollector, but that class
+ * is grouping static data and static member functions related to
+ * garbage collection and allocation support.  Perhaps it should be a
+ * C++ namespace, not a C++ class.
  */
 class Rps_GarbageCollector
 {
