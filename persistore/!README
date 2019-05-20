@@ -1,1 +1,6 @@
 This directory will hold the persistent store of RefPerSys
+
+This !README is a conceptually temporary file, required by the `git`
+program.
+
+See on https://gitlab.com/bstarynk/refpersys/milestones/1 the explanation about the primordial persistence milestone.
