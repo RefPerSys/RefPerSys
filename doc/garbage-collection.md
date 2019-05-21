@@ -69,8 +69,43 @@ mutator threads are started specially : we should define some
 `Rps_MutatorThread` class, subclass of
 [`std::thread`](https://en.cppreference.com/w/cpp/thread/thread/thread)
 constructed without argument (so a thread object which is not yet a
-genuine Pthread).
+genuine Pthread). Special precautions
+(i.e. `Rps_MutatorThread::disable_garbage_collector` then
+`Rps_MutatorThread::enable_garbage_collector`) need to be taken, in
+mutator threads, for the few operating system *blocking operations*
+(e.g. [poll(2)](http://man7.org/linux/man-pages/man2/poll.2.html),
+blocking [recv(2)](http://man7.org/linux/man-pages/man2/recv.2.html)
+or [read(2)](http://man7.org/linux/man-pages/man2/read.2.html) from a
+*non-seekable* file such as a
+[socket(7)](http://man7.org/linux/man-pages/man7/socket.7.html) or a
+[pipe(7)](http://man7.org/linux/man-pages/man7/pipe.7.html) or a
+[pty(7)](http://man7.org/linux/man-pages/man7/pty.7.html), maybe
+blocking [send(2)](http://man7.org/linux/man-pages/man2/send.2.html)
+or [write(2)](http://man7.org/linux/man-pages/man2/write.2.html) to a
+*non-seekable* file (also most [device
+files](https://en.wikipedia.org/wiki/Device_file#Character_devices)). In
+practice, we want to have some [event
+loop](https://en.wikipedia.org/wiki/Event_loop) threads, and
+`libonion`-created threads for HTTP service.
 
-When any thread not explicitly started as some mutator thread is
-allocating or updating quasi-values, that operation is still possible but
-runs slower (using some global mutex).
+When any thread (including the main thread) is not *explicitly*
+started as some mutator thread (since it is not a subclass of
+``Rps_MutatorThread`) is allocating or updating quasi-values, that
+operation is still possible but runs slower, using some single global
+mutex, à la
+[GIL](https://en.wikipedia.org/wiki/Global_interpreter_lock).
+
+
+## threads in the loader
+
+Since the loader is practically reading *plain* files sitting in the
+[page cache](https://en.wikipedia.org/wiki/Page_cache), the underlying
+[read(2)](http://man7.org/linux/man-pages/man2/read.2.html) is never
+blocking, since the plain file is seekable (e.g. with [fseek(3)](
+https://en.cppreference.com/w/c/io/fseek)... or just
+[lseek(2)](http://man7.org/linux/man-pages/man2/lseek.2.html). The
+loader would use
+[rewind(3)](http://man7.org/linux/man-pages/man3/rewind.3.html)
+between first and second passes.
+
+So a multi-threaded loader would use `Rps_MutatorThread`.
