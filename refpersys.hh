@@ -54,6 +54,7 @@
 #include <initializer_list>
 #include <algorithm>
 #include <mutex>
+#include <thread>
 #include <atomic>
 #include <stdexcept>
 
@@ -2123,6 +2124,7 @@ Rps_Value::as_object() const
 
 
 ////////////////////////////////////////////////////////////////
+class Rps_MutatorThread;
 /**
  * The garbage collector
  *
@@ -2133,6 +2135,7 @@ Rps_Value::as_object() const
  */
 class Rps_GarbageCollector
 {
+  friend class Rps_MutatorThread;
   // forbid instantiation:
   Rps_GarbageCollector() = delete;
   static unsigned constexpr _gc_thrmagic_ = 951957269 /*0x38bdb715*/;
@@ -2181,8 +2184,32 @@ public:
   {
     _gc_wanted.store(true);
   }
+  //////////////// write barrier
+  /**
+   * The write barrier should be very efficient, since it is crucial
+   * for performance, because it will be called very often.
+   * Conceptually, and by definition of the write barrier, the garbage
+   * collector needs to process the unordered set of updated
+   * quasivalues since the previous call to the GC.  Practically, when
+   * there is a birth region, we use a Chesney like approach.
+   **/
+protected:
+  // called when the birth region is missing or full:
+  static void run_write_barrier(Rps_CallFrameZone*callingfra, Rps_ZoneValue*zva=nullptr);
+public:
   static void write_barrier(Rps_CallFrameZone*callingfra, Rps_ZoneValue*zva)
   {
+    maybe_garbcoll(callingfra);
+    if (!zva) return;
+    if (_gc_thralloc_)
+      {
+        /// add the pointer at end of birthblock
+        Rps_BirthMemoryBlock*birthblock = _gc_thralloc_->_tha_birthblock;
+        if (birthblock && birthblock->remaining_bytes() > sizeof(zva))
+          {
+          }
+        else run_write_barrier(callingfra, zva);
+      }
 #warning Rps_GarbageCollector::write_barrier unimplemented
     RPS_FATAL(" Rps_GarbageCollector::write_barrier unimplemented callingfra@%p zva@%p",
               (void*)callingfra, (void*)zva);
@@ -2305,7 +2332,41 @@ Rps_MarkSweepZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZo
   return Rps_GarbageCollector::allocate_marked_maybe_gc(totalsize, callingfra);
 }      // end of Rps_MarkSweepZoneValue::allocate_rps_zone
 
-
+////////////////////////////////////////////////////////////////
+class Rps_MutatorThread: public std::thread
+{
+  friend class Rps_GarbageCollector;
+public:
+  Rps_MutatorThread();
+  ~Rps_MutatorThread();
+  void disable_garbage_collector(void);
+  void enable_garbage_collector(void);
+  void do_without_garbage_collector(const std::function<void(void)>&fun)
+  {
+    disable_garbage_collector();
+    fun();
+    enable_garbage_collector();
+  };
+#warning Rps_MutatorThread incomplete
+#if 0 /// wrong code below. Don't compile yet!
+  /// see https://en.wikipedia.org/wiki/Substitution_failure_is_not_an_error
+  template <typename ResType, typename ...Args>
+  ResType do_without_garbage_collector(const std::function<ResType(Args args...)>& fun, Args... args...)
+  {
+    disable_garbage_collector();
+    ResType res = std::invoke(fun, args...);
+    enable_garbage_collector();
+    return res;
+  };
+  template <class... Args>
+  void do_without_garbage_collector(const std::function<void(Args... args)>&fun)
+  {
+    disable_garbage_collector();
+    fun(args...);
+    enable_garbage_collector();
+  };
+#endif //wrong code
+};				// end class Rps_MutatorThread
 
 ////////////////////////////////////////////////////////////////
 /// lexical tokens are quasivalues, garbage collected, but not "first

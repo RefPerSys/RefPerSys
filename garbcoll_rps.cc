@@ -131,4 +131,46 @@ Rps_GarbageCollector::scan_call_stack(Rps_CallFrameZone*callingfra)
   RPS_FATAL("Rps_MemoryBlock::scan_call_stack unimplemented");
 } // end Rps_GarbageCollector::scan_call_stack
 
+
+void
+Rps_GarbageCollector::run_write_barrier(Rps_CallFrameZone*callingfra, Rps_ZoneValue*zva)
+{
+#warning unimplemented Rps_GarbageCollector::run_write_barrier
+  RPS_FATAL("Rps_GarbageCollector::run_write_barrier unimplemented callingfra@%p zva@%p",
+            (void*)callingfra, (void*)zva);
+} // end Rps_GarbageCollector::run_write_barrier
+
+
+
+////////////////////////////////////////////////////////////////
+Rps_MutatorThread::Rps_MutatorThread()
+  : std::thread()
+{
+#warning unimplemented Rps_MutatorThread::Rps_MutatorThread()
+  RPS_FATAL("Rps_MutatorThread::Rps_MutatorThread unimplemented");
+} // end Rps_MutatorThread::Rps_MutatorThread()
+
+
+
+Rps_MutatorThread::~Rps_MutatorThread()
+{
+#warning unimplemented Rps_MutatorThread::~Rps_MutatorThread()
+  RPS_FATAL("Rps_MutatorThread::~Rps_MutatorThread unimplemented");
+} // end Rps_MutatorThread::~Rps_MutatorThread()
+
+
+void
+Rps_MutatorThread::disable_garbage_collector(void)
+{
+#warning unimplemented Rps_MutatorThread::disable_garbage_collector
+  RPS_FATAL("unimplemented Rps_MutatorThread::disable_garbage_collector");
+} // end Rps_MutatorThread::disable_garbage_collector
+
+void
+Rps_MutatorThread::enable_garbage_collector(void)
+{
+#warning unimplemented Rps_MutatorThread::enable_garbage_collector
+  RPS_FATAL("unimplemented Rps_MutatorThread::enable_garbage_collector");
+} // end Rps_MutatorThread::enable_garbage_collector
+
 /// end of file garbcoll_rps.cc
