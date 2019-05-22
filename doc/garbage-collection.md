@@ -71,8 +71,9 @@ mutator threads are started specially : we should define some
 constructed without argument (so a thread object which is not yet a
 genuine Pthread). Special precautions
 (i.e. `Rps_MutatorThread::disable_garbage_collector` then
-`Rps_MutatorThread::enable_garbage_collector`) need to be taken, in
-mutator threads, for the few operating system *blocking operations*
+`Rps_MutatorThread::enable_garbage_collector` or
+`Rps_MutatorThread::do_without_garbage_collector`) need to be taken,
+in mutator threads, for the few operating system *blocking operations*
 (e.g. mutex locking and thread synchronization operations, or
 [poll(2)](http://man7.org/linux/man-pages/man2/poll.2.html), blocking
 [recv(2)](http://man7.org/linux/man-pages/man2/recv.2.html) or
