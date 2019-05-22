@@ -73,9 +73,10 @@ genuine Pthread). Special precautions
 (i.e. `Rps_MutatorThread::disable_garbage_collector` then
 `Rps_MutatorThread::enable_garbage_collector`) need to be taken, in
 mutator threads, for the few operating system *blocking operations*
-(e.g. [poll(2)](http://man7.org/linux/man-pages/man2/poll.2.html),
-blocking [recv(2)](http://man7.org/linux/man-pages/man2/recv.2.html)
-or [read(2)](http://man7.org/linux/man-pages/man2/read.2.html) from a
+(e.g. mutex locking and thread synchronization operations, or
+[poll(2)](http://man7.org/linux/man-pages/man2/poll.2.html), blocking
+[recv(2)](http://man7.org/linux/man-pages/man2/recv.2.html) or
+[read(2)](http://man7.org/linux/man-pages/man2/read.2.html) from a
 *non-seekable* file such as a
 [socket(7)](http://man7.org/linux/man-pages/man7/socket.7.html) or a
 [pipe(7)](http://man7.org/linux/man-pages/man7/pipe.7.html) or a
@@ -102,10 +103,11 @@ Since the loader is practically reading *plain* files sitting in the
 [page cache](https://en.wikipedia.org/wiki/Page_cache), the underlying
 [read(2)](http://man7.org/linux/man-pages/man2/read.2.html) is never
 blocking, since the plain file is seekable (e.g. with [fseek(3)](
-https://en.cppreference.com/w/c/io/fseek)... or just
-[lseek(2)](http://man7.org/linux/man-pages/man2/lseek.2.html). The
-loader would use
+https://en.cppreference.com/w/c/io/fseek), etc... or just
+[lseek(2)](http://man7.org/linux/man-pages/man2/lseek.2.html)...). The
+loader code would of course use
 [rewind(3)](http://man7.org/linux/man-pages/man3/rewind.3.html)
-between first and second passes.
+between first and second passes, since it uses `<stdio.h>`.
 
-So a multi-threaded loader would use `Rps_MutatorThread`.
+So a multi-threaded loader would use `Rps_MutatorThread` to create its
+threads.
