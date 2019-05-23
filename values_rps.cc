@@ -97,7 +97,7 @@ fail:
 } // end Rps_Id::Rps_Id (const char*, char**, bool*)
 
 
-
+#ifdef RPS_ONLY_ID_CODE
 void
 Rps_ZoneValue::initialize(void)
 {
@@ -291,5 +291,10 @@ Rps_TupleValue::Rps_TupleValue(Rps_CallFrameZone*callingfra,collect_tag, const s
     }
   put_tuple(Rps_TupleObrefZone::make(callingfra,vecob.size(), vecob.data()));
 } // end Rps_TupleValue::Rps_TupleValue(collect_tag, … il)
+
+
+
+
+#endif /*RPS_ONLY_ID_CODE*/
 /* end of file value_rps.cc */
 

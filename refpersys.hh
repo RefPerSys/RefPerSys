@@ -83,7 +83,6 @@
 #define RPS_UNUSED
 #endif
 
-extern void print_types_info(void);
 
 // generated in _timestamp_rps.cc
 extern "C" const char timestamp_rps[];
@@ -97,6 +96,16 @@ extern "C" const char buildhost_rps[];
 extern "C" const char sourcefiles_rps[];
 extern "C" const char headerfiles_rps[];
 
+
+/***
+ * any makeconst C++ metaprogram would need to use only the code
+ * compiled with -DRPS_ONLY_ID_CODE, in particular any future
+ * adaptation of
+ * https://github.com/bstarynk/bismon/blob/master/BM_makeconst.cc
+ ***/
+
+#ifndef RPS_ONLY_ID_CODE
+extern void print_types_info(void);
 class Rps_CallFrameZone;
 class Rps_GarbageCollector;
 
@@ -476,14 +485,17 @@ public:
     return _rand_thr_.generate_quickly_4bits();
   };
 };				// end class Rps_Random
-
+#endif /*no RPS_ONLY_ID_CODE*/
 
 
 ////////////////////////////////////////////////////////////////
+
 class Rps_Id
 {
+#ifndef RPS_ONLY_ID_CODE
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
+#endif /*RPS_ONLY_ID_CODE*/
   uint64_t _id_hi;
   uint64_t _id_lo;
 public:
@@ -579,6 +591,7 @@ public:
   {
     assert((h==0 && l==0) || hash() != 0);
   };
+#ifndef RPS_ONLY_ID_CODE
   static Rps_Id random()
   {
     for(;;)
@@ -591,8 +604,9 @@ public:
         return Rps_Id(hi,lo);
       };
   };
-  Rps_Id () : Rps_Id(0,0) {};
   Rps_Id (std::nullptr_t) : Rps_Id(random()) {};
+#endif /*RPS_ONLY_ID_CODE*/
+  Rps_Id () : Rps_Id(0,0) {};
   Rps_Id (const char*buf, const char**pend, bool *pok);
   Rps_Id (const Rps_Id&oid) : Rps_Id(oid.hi(), oid.lo()) {};
   void to_cbuf24(char cbuf[/*24*/]) const;
@@ -621,6 +635,7 @@ public:
 };				// end class Rps_Id
 
 
+#ifndef RPS_ONLY_ID_CODE
 ////////////////
 class Rps_TupleObrefZone;
 class Rps_SetObrefZone;
@@ -2613,6 +2628,6 @@ public:
 };				// end class Rps_LexedFile
 
 
-
+#endif /*RPS_ONLY_ID_CODE*/
 #endif /*REFPERSYS_INCLUDED*/
 // end of file refpersys.hh */
