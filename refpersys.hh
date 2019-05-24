@@ -111,9 +111,18 @@ class Rps_GarbageCollector;
 
 #define RPS_FLEXIBLE_DIM 0	/* for flexible array members */
 
+/// In rare occasions (some kind of array hash table, perhaps) we may
+/// need a pointer value which is non null but still morally "empty":
+/// this is rarely useful, and any code using that should be carefully
+/// written.
+#define RPS_EMPTYSLOT   ((const void*)(((intptr_t*)nullptr)+1))
+
 // size of blocks, in bytes
 #define RPS_SMALL_BLOCK_SIZE (8<<20)
 #define RPS_LARGE_BLOCK_SIZE (8*RPS_SMALL_BLOCK_SIZE)
+
+static_assert(RPS_SMALL_BLOCK_SIZE & (~ (RPS_SMALL_BLOCK_SIZE-1)),
+              "RPS_SMALL_BLOCK_SIZE should be some power of two");
 
 // give, using some a table of primes, some prime number above or below a
 // given integer, and reasonably close to it (e.g. less than 20% from
@@ -158,8 +167,20 @@ private:
   void* const _bl_endptr;
   Rps_MemoryBlock* _bl_next;
   Rps_MemoryBlock* _bl_prev;
+  static std::mutex _bl_lock_;
+  static std::map<intptr_t,Rps_MemoryBlock*> _bl_blocksmap_;
+  static std::vector<Rps_MemoryBlock*> _bl_blocksvect_;
 protected:
-  virtual ~Rps_MemoryBlock() = 0;
+  static void remove_block(Rps_MemoryBlock*bl);
+  virtual ~Rps_MemoryBlock()
+  {
+    remove_block(this);
+    _bl_curptr = nullptr;
+    const_cast<void*&>(_bl_endptr) = nullptr;
+    _bl_next = nullptr;
+    _bl_prev = 0;
+    const_cast<Rps_BlockIndex&>(_bl_ix) = 0;
+  };
   void* operator new(size_t size);
   void operator delete(void*);
   intptr_t _bl_meta[_bl_metasize_];
@@ -187,6 +208,17 @@ public:
     assert ((char*)_bl_curptr <= (char*)_bl_endptr);
     return (char*)_bl_endptr - (char*)_bl_curptr;
   };
+  static Rps_MemoryBlock*block_at_addr(const void*ad)
+  {
+    if (!ad || ad ==  RPS_EMPTYSLOT) return nullptr;
+    std::lock_guard<std::mutex> guard(_bl_lock_);
+    auto it = _bl_blocksmap_.find((intptr_t)ad
+                                  & (~ (RPS_SMALL_BLOCK_SIZE-1)));
+    if (it == _bl_blocksmap_.end())
+      return nullptr;
+    else
+      return it->second;
+  };				// end block_at_addr
 };				// end Rps_MemoryBlock
 
 
@@ -261,11 +293,6 @@ public:
 
 
 
-/// In rare occasions (some kind of array hash table, perhaps) we may
-/// need a pointer value which is non null but still morally "empty":
-/// this is rarely useful, and any code using that should be carefully
-/// written.
-#define RPS_EMPTYSLOT   ((const void*)(((intptr_t*)nullptr)+1))
 
 class Rps_ZoneValue;
 class Rps_ObjectZone;

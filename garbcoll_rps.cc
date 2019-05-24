@@ -30,6 +30,12 @@
 
 #include "refpersys.hh"
 
+std::mutex Rps_MemoryBlock::_bl_lock_;
+
+std::map<intptr_t,Rps_MemoryBlock*> Rps_MemoryBlock::_bl_blocksmap_;
+
+std::vector<Rps_MemoryBlock*> Rps_MemoryBlock::_bl_blocksvect_;
+
 void*
 Rps_MemoryBlock::operator new(size_t size)
 {
@@ -83,10 +89,38 @@ Rps_MemoryBlock::Rps_MemoryBlock(unsigned kindnum, Rps_BlockIndex ix, size_t siz
   _bl_endptr((char*)this+size),
   _bl_next(nullptr), _bl_prev(nullptr)
 {
+  assert ((intptr_t)this % RPS_SMALL_BLOCK_SIZE == 0);
+  assert (ix >= 0);
+  intptr_t ad = (intptr_t) this;
+  std::lock_guard<std::mutex> guard(_bl_lock_);
+  _bl_blocksmap_.insert({ad,this});
+  auto itb = _bl_blocksmap_.lower_bound((intptr_t)((intptr_t*)ad-1));
+  auto ita = _bl_blocksmap_.upper_bound((intptr_t)((intptr_t*)ad+1));
+  if (itb != _bl_blocksmap_.end())
+    _bl_prev = itb->second;
+  if (ita != _bl_blocksmap_.end())
+    _bl_next = ita->second;
+  if (_bl_blocksvect_.size() <= ix)
+    _bl_blocksvect_.resize(rps_prime_above((17*ix)/16+1));
+  _bl_blocksvect_[ix] = this;
 } // end Rps_MemoryBlock::Rps_MemoryBlock
 
+
 void
-Rps_MemoryBlock::operator delete(void*)
+Rps_MemoryBlock::remove_block(Rps_MemoryBlock*bl)
+{
+  assert (bl != nullptr && dynamic_cast<Rps_MemoryBlock*>(bl) != nullptr);
+  intptr_t ad = (intptr_t) bl;
+  Rps_BlockIndex ix = bl->_bl_ix;
+  std::lock_guard<std::mutex> guard(_bl_lock_);
+  _bl_blocksmap_.erase(ad);
+  assert (ix < _bl_blocksvect_.size());
+  _bl_blocksvect_[ix] = nullptr;
+} // end Rps_MemoryBlock::remove_block
+
+
+void
+Rps_MemoryBlock::operator delete(void*ptr)
 {
 #warning unimplemented Rps_MemoryBlock::operator delete
   RPS_FATAL("Rps_MemoryBlock::operator delete\n");
