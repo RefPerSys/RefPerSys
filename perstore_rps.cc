@@ -43,8 +43,24 @@
  *****/
 
 #include "refpersys.hh"
-#include <ctype.h>
 
+
+Rps_QuasiToken*
+Rps_QuasiToken::make_from_string(Rps_CallFrameZone* callingfra,
+                                 const std::string& s,
+                                 const LOCATION_st* ploc)
+{
+  RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
+                 Rps_StringValue sval;
+                 Rps_QuasiToken* qtok;
+                );
+  _.sval = Rps_StringValue(callingfra, s);
+  _.qtok =
+    Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(callingfra,
+        _.sval,
+        ploc);
+  return _.qtok;
+}
 // adapted from
 // https://gist.github.com/arrieta/1a309138689e09375b90b3b1aa768e20
 
@@ -90,9 +106,9 @@ Rps_LexedFile::~Rps_LexedFile()
 
 
 
-Rps_QuasiToken* Rps_LexedFile::tokenize(Rps_CallFrameZone* callframe)
+Rps_QuasiToken* Rps_LexedFile::tokenize(Rps_CallFrameZone* callingfra)
 {
-  RPS_LOCALFRAME(callframe, /*descr:*/nullptr,
+  RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
                  Rps_QuasiToken *result;
                 );
   char *end;
@@ -105,12 +121,12 @@ Rps_QuasiToken* Rps_LexedFile::tokenize(Rps_CallFrameZone* callframe)
   // tokenize int if encountered
   auto i = strtol(_lfil_iter, &end, 10);
   if (end && end > _lfil_iter)
-    _.result = Rps_QuasiToken::make_from_int(i, callframe, loc);
+    _.result = Rps_QuasiToken::make_from_int(RPS_CURFRAME, i, loc);
 
   // tokenize double if encountered
   auto d = strtod(_lfil_iter, &end);
   if (end && end > _lfil_iter)
-    _.result = Rps_QuasiToken::make_from_double(d, callframe, loc);
+    _.result = Rps_QuasiToken::make_from_double(RPS_CURFRAME, d, loc);
 
   // tokenize objid if encountered
   if (*_lfil_iter == '_' && isalnum(*(_lfil_iter + 1)))
@@ -119,7 +135,7 @@ Rps_QuasiToken* Rps_LexedFile::tokenize(Rps_CallFrameZone* callframe)
       Rps_Id id(_lfil_iter, (const char**) &end, &ok);
 
       if (ok)
-        _.result = Rps_QuasiToken::make_from_objid(id, callframe, loc);
+        _.result = Rps_QuasiToken::make_from_objid(RPS_CURFRAME, id, loc);
     }
 
   return _.result;
@@ -159,7 +175,7 @@ Rps_Loader::example_gc_func(Rps_CallFrameZone*callingfra)
   /// example of accessing some loader-specific data
   _.w1 = RPS_LDATA(lp_v1);
   /// example of allocation of some lexical token
-  _.tok2 = Rps_QuasiToken::make_from_int (34, RPS_CURFRAME);
+  _.tok2 = Rps_QuasiToken::make_from_int (RPS_CURFRAME, 34);
   /// For Abhishek: dont forget to explicitly use A-normal forms in
   /// your loader and lexer and parser code.
 } // end of Rps_Loader::example_gc_func

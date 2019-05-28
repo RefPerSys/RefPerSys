@@ -97,13 +97,12 @@ fail:
 } // end Rps_Id::Rps_Id (const char*, char**, bool*)
 
 
-#ifdef RPS_ONLY_ID_CODE
+#ifndef RPS_ONLY_ID_CODE
 void
 Rps_ZoneValue::initialize(void)
 {
   RPS_FATAL("unimplemented Rps_ZoneValue::initialize");
 } // end Rps_ZoneValue::initialize
-
 
 
 ////////////////////////////////////////////////////////////////

@@ -444,15 +444,19 @@ enum Rps_Type
 {
   /// non-value types (or quasi-values)
   ///
-  /// these are GC-scanned, but not GC-allocated:
+  /// these are GC-scanned, but not GC-allocated, just stack allocated:
   Rps_TyDumper = -32,
   Rps_TyLoader = -31,
   Rps_TyCallFrame = -30,
+  /// these are GC-allocated quasivalues:
   Rps_TyPayload = -5,
+  ///
   ///
   /// Quasi-values are indeed garbage collected, so GC-scanned and
   /// GC-allocated, but not "first class citizens" as genuine values
   /// are... So they don't directly go inside RpsValue-s.
+  ///
+  /// but see also, and keep in sync with, rps_ty_min_quasi below.
   Rps_TyQuasiToken = -4,
   Rps_TyQuasiAttributeArray = -3,
   Rps_TyQuasiComponentVector = -2,
@@ -471,6 +475,7 @@ enum Rps_Type
   Rps_TyObject,
 };
 
+static constexpr Rps_Type rps_ty_min_quasi = Rps_TyQuasiToken;
 
 ////////////////////////////////////////////////////////////////
 
@@ -849,7 +854,11 @@ public:
 
   Rps_ZoneValue(Rps_Type ty) : _vtyp(ty)
   {
-    assert ((int)ty>=0);
+    assert ((int)ty>0
+            || ty==Rps_TyCallFrame
+            || ((int)ty<Rps_TyInt && ty>=rps_ty_min_quasi)
+            || ty==Rps_TyDumper
+            || ty==Rps_TyLoader);
   };
 public:
   inline void rps_write_barrier(Rps_CallFrameZone*fr);
@@ -1672,7 +1681,10 @@ protected:
     _strbytes[slen] = 0;
   };
 public:
-  static Rps_StringZone* make(Rps_CallFrameZone*callingfra,const char*sbytes, int32_t slen= -1);
+  friend Rps_StringZone*
+  Rps_ZoneValue::rps_allocate_with_gap<Rps_StringZone,const char*,int32_t,bool>
+  (Rps_CallFrameZone*,unsigned,const char*,int32_t,bool);
+  static Rps_StringZone* make(Rps_CallFrameZone*callingfra, const char*sbytes, int32_t slen= -1);
   static constexpr Rps_Type zone_type = Rps_TyString;
   uint32_t size() const
   {
@@ -1699,7 +1711,7 @@ class Rps_StringValue : public Rps_Value
 public:
   void put_string(Rps_CallFrameZone*callingfra,const char*cstr, int slen= -1)
   {
-    if (!cstr) slen=0;
+    if (!cstr || cstr==RPS_EMPTYSLOT) slen=0;
     else put_data(Rps_StringZone::make(callingfra,cstr,slen));
   };
   void put_string(Rps_CallFrameZone*callingfra,const std::string&str)
@@ -1707,12 +1719,12 @@ public:
     put_string(callingfra,str.c_str(), str.size());
   };
   Rps_StringValue() : Rps_StringValue(nullptr) {};
-  Rps_StringValue(Rps_CallFrameZone*callingfra,const char*cstr, int slen= -1)
+  Rps_StringValue(Rps_CallFrameZone*callingfra, const char*cstr, int slen= -1)
     : Rps_StringValue(nullptr)
   {
-    put_string(callingfra,cstr, slen);
+    put_string(callingfra, cstr, slen);
   };
-  Rps_StringValue(Rps_CallFrameZone*callingfra,const std::string&str)
+  Rps_StringValue(Rps_CallFrameZone*callingfra, const std::string&str)
     : Rps_StringValue(nullptr)
   {
     put_string(callingfra,str);
@@ -2504,19 +2516,10 @@ public:
     RPS_TOKEN_TYPE_STRING,
     RPS_TOKEN_TYPE_DOUBLE,
     RPS_TOKEN_TYPE_INTEGER,
-    RPS_TOKEN_TYPE_PARENTHESIS
+    RPS_TOKEN_TYPE_LEFT_PARENTHESIS,
+    RPS_TOKEN_TYPE_RIGHT_PARENTHESIS
   };
 
-#if 0
-#warning dead code to be removed after review
-  enum DELIMITER_en
-  {
-    RPS_DELIM_NONE,
-    RPS_DELIM_LEFTPAREN,	// for '('
-    RPS_DELIM_RIGHTPAREN, 	// for ')'
-    //TODO: add much more delimiters
-  };
-#endif
 
 
   struct LOCATION_st
@@ -2538,12 +2541,12 @@ private:
     ///TODO: maybe define some Rps_NameValue and use it below
     Rps_StringValue _tk_name;
     Rps_Id _tk_objectid;
-    //DELIMITER_en _tk_delim;
-    char _tk_paren;
   };
   Rps_QuasiToken::LOCATION_st _tk_location;
   struct tag_string {};
   struct tag_name {};
+  struct tag_left_parenthesis {};
+  struct tag_right_parenthesis {};
   static void* operator new (std::size_t, void*ptr)
   {
     return ptr;
@@ -2586,7 +2589,7 @@ private:
   (Rps_CallFrameZone*,tag_name, Rps_StringValue,const LOCATION_st*);
   Rps_QuasiToken(tag_name, Rps_StringValue strv, const LOCATION_st* ploc=nullptr)
     : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
-      _tk_type(RPS_TOKEN_TYPE_STRING),
+      _tk_type(RPS_TOKEN_TYPE_NAME),
       _tk_name(strv),
       _tk_location(ploc?(*ploc):empty_location)
   {
@@ -2594,12 +2597,26 @@ private:
   Rps_QuasiToken(Rps_StringValue strv, const LOCATION_st* ploc=nullptr)
     : Rps_QuasiToken(tag_string{}, strv, ploc) {};
 
-  //Rps_QuasiToken(DELIMITER_en delim, const LOCATION_st* ploc=nullptr)
-  Rps_QuasiToken(char paren, const LOCATION_st* ploc = nullptr)
+  Rps_QuasiToken(tag_left_parenthesis, const LOCATION_st* ploc = nullptr)
     : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
-      _tk_type(RPS_TOKEN_TYPE_PARENTHESIS),
-      //_tk_delim(delim),
-      _tk_paren(paren),
+      _tk_type(RPS_TOKEN_TYPE_LEFT_PARENTHESIS),
+      _tk_unusedptr(nullptr),
+      _tk_location(ploc?(*ploc):empty_location)
+  {
+  };
+  Rps_QuasiToken(tag_right_parenthesis, const LOCATION_st* ploc = nullptr)
+    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+      _tk_type(RPS_TOKEN_TYPE_RIGHT_PARENTHESIS),
+      _tk_unusedptr(nullptr),
+      _tk_location(ploc?(*ploc):empty_location)
+  {
+  };
+  friend Rps_QuasiToken*Rps_ZoneValue::rps_allocate<Rps_QuasiToken>
+  (Rps_CallFrameZone*,const Rps_Id&,const LOCATION_st*);
+  Rps_QuasiToken(const Rps_Id&oid, const LOCATION_st* ploc=nullptr)
+    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+      _tk_type(RPS_TOKEN_TYPE_OBJECTID),
+      _tk_objectid(oid),
       _tk_location(ploc?(*ploc):empty_location)
   {
   };
@@ -2609,68 +2626,77 @@ public:
 
   /// Generates an integer quasi-token
   static Rps_QuasiToken*
-  make_from_int(intptr_t i,
-                Rps_CallFrameZone* frame,
+  make_from_int(Rps_CallFrameZone* callingfra,
+                intptr_t i,
                 const LOCATION_st* ploc = nullptr)
   {
-    return Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(frame, i, ploc);
+    return
+      Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(callingfra,
+          i, ploc);
   };
 
   /// Overloaded method to generate integer quasi-token
   static Rps_QuasiToken*
-  make_from_int(intptr_t i,
-                Rps_CallFrameZone* callframe,
+  make_from_int(Rps_CallFrameZone* callingfra,
+                intptr_t i,
                 const LOCATION_st& loc)
   {
-    return make_from_int(i, callframe, &loc);
+    return make_from_int(callingfra, i, &loc);
   };
 
   /// Generates a double quasi-token
   static Rps_QuasiToken*
-  make_from_double(double d,
-                   Rps_CallFrameZone* frame,
+  make_from_double(Rps_CallFrameZone* callingfra,
+                   double d,
                    const LOCATION_st* ploc = nullptr)
   {
-    return Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(frame, d, ploc);
+    return
+      Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(callingfra,
+          d, ploc);
   };
 
   /// Overloaded method to generate a double quasi-token
   static Rps_QuasiToken*
-  make_from_double(double d,
-                   Rps_CallFrameZone* frame,
+  make_from_double(Rps_CallFrameZone* callingfra,
+                   double d,
                    const LOCATION_st& loc)
   {
-    return make_from_double(d, frame, &loc);
+    return make_from_double(callingfra, d, &loc);
   };
 
   /// Generates a string quasi-token
   static Rps_QuasiToken*
-  make_from_string(const std::string& s,
-                   Rps_CallFrameZone* frame,
+  make_from_string(Rps_CallFrameZone* callingfra,
+                   const std::string& s,
                    const LOCATION_st* ploc = nullptr);
 
   /// Overloaded method to generate a string quasi-token
   static Rps_QuasiToken*
-  make_from_string(const std::string& s,
-                   Rps_CallFrameZone* frame,
+  make_from_string(Rps_CallFrameZone* callingfra,
+                   const std::string& s,
                    const LOCATION_st& loc)
   {
-    return make_from_string(s, frame, &loc);
+    return make_from_string(callingfra, s, &loc);
   };
 
   /// Generates an object ID quasi-token
   static Rps_QuasiToken*
-  make_from_objid(const Rps_Id& id,
-                  Rps_CallFrameZone* frame,
-                  const LOCATION_st* ploc = nullptr);
+  make_from_objid(Rps_CallFrameZone* callingfra,
+                  const Rps_Id& id,
+                  const LOCATION_st* ploc = nullptr)
+  {
+    return
+      Rps_QuasiToken::rps_allocate<Rps_QuasiToken>(callingfra,
+          id, ploc);
+  };
 
   /// Overloaded method to generate an object ID quasi-token
   static Rps_QuasiToken*
-  make_from_objid(const Rps_Id& id,
-                  Rps_CallFrameZone* frame,
+  make_from_objid(Rps_CallFrameZone* callingfra,
+                  const Rps_Id& id,
                   const LOCATION_st& loc)
   {
-    return make_from_objid(id, frame, &loc);
+    return make_from_objid(callingfra, id, &loc);
   }
 };				// end class Rps_QuasiToken
 
