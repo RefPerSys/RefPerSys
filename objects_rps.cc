@@ -758,20 +758,6 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
 
 
 
-void
-Rps_ObjectRef::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
-{
-  RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
-                 Rps_ObjectRef thisob;
-                 Rps_ObjectRef ob1;
-                 Rps_ObjectRef ob2;
-                 Rps_ObjectRef ob3;
-                );
-#warning unimplemented Rps_ObjectRef::tiny_benchmark_1
-  RPS_FATAL("unimplemented Rps_ObjectRef::tiny_benchmark_1 num %u", num);
-} // end of Rps_ObjectRef::tiny_benchmark_1
-
-
 
 
 // end of file objects_rps.cc

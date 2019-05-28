@@ -68,6 +68,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <errno.h>
+#include <time.h>
 
 #include "unistr.h"
 
@@ -96,6 +97,36 @@ extern "C" const char buildhost_rps[];
 extern "C" const char sourcefiles_rps[];
 extern "C" const char headerfiles_rps[];
 
+
+// see http://man7.org/linux/man-pages/man2/clock_gettime.2.html
+static inline double
+rps_monotonic_real_time(void)
+{
+  struct timespec ts =  {0,0};
+  if (clock_gettime(CLOCK_MONOTONIC, &ts))
+    return NAN;
+  return 1.0*ts.tv_sec + 1.0e-9*ts.tv_nsec;
+} // end rps_monotonic_real_time
+
+
+static inline double
+rps_process_cpu_time(void)
+{
+  struct timespec ts =  {0,0};
+  if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts))
+    return NAN;
+  return 1.0*ts.tv_sec + 1.0e-9*ts.tv_nsec;
+} // end rps_process_cpu_time
+
+
+static inline double
+rps_thread_cpu_time(void)
+{
+  struct timespec ts =  {0,0};
+  if (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts))
+    return NAN;
+  return 1.0*ts.tv_sec + 1.0e-9*ts.tv_nsec;
+} // end rps_thread_cpu_time
 
 /***
  * any makeconst C++ metaprogram would need to use only the code
@@ -1532,14 +1563,18 @@ public:
 
 Rps_Value::Rps_Value(set_tag, const Rps_SetObrefZone*pset) :
   Rps_Value(pset) {};
+
 class Rps_SetValue : public Rps_Value
 {
 public:
+  Rps_SetValue() : Rps_SetValue(nullptr) {};
+  Rps_SetValue(std::nullptr_t) : Rps_Value(nullptr) {};
   Rps_SetValue(Rps_Value val) : Rps_Value(val.as_set()) {};
   Rps_SetValue(Rps_CallFrameZone*callingfra,uint32_t siz, Rps_ObjectRef const* arr)
     : Rps_Value(Rps_SetObrefZone::make(callingfra,siz, arr)) {};
   Rps_SetValue(Rps_CallFrameZone*callingfra,const std::initializer_list<const Rps_ObjectRef> il)
     : Rps_Value(Rps_SetObrefZone::make(callingfra,il)) {};
+  static Rps_SetValue tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num);
 };				// end Rps_SetValue
 
 const Rps_SetObrefZone*
@@ -1840,6 +1875,7 @@ private:
   ///// attributes.
   enum attrkind_en {atk_none, atk_small, atk_medium, atk_big};
   attrkind_en _obat_kind;
+public:
   ///// Thresholds below are fuzzy.  We add a bit of randomness; and
   ///// these are thresholds to make a growing decision, not for the
   ///// actually grown size which is a slightly bigger prime.
@@ -1853,6 +1889,8 @@ private:
   static constexpr unsigned at_fuss = 8; // a power of two, at most 16!
   ///// initial size of _obat_small_atar:
   static constexpr unsigned at_small_initsize= 3;
+  ///
+private:
   union
   {
     std::nullptr_t _obat_null;		    // when atk_none

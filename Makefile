@@ -47,14 +47,15 @@ CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(WARNFLAGS)
 LDFLAGS += -L/usr/local/lib  -rdynamic -lunistring -lpthread
 
 INCLUDES += /usr/local/include
-REFPERSYS_BASE_FILES = 				\
+REFPERSYS_BASE_FILES =				\
    main_rps					\
    objects_rps					\
    random_rps					\
    garbcoll_rps					\
-   perstore_rps                                 \
-   primes_rps                                   \
-   values_rps
+   perstore_rps					\
+   primes_rps					\
+   values_rps					\
+   minitests_rps
 
 REFPERSYS_BASE_HEADERS = inc-refpersys
 ### end of variables to be kept in sync with those in OMakefile
