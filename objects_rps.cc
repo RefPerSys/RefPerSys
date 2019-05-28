@@ -99,6 +99,13 @@ Rps_ObjectZone::~Rps_ObjectZone()  /// only called by finalizer
 } // end of Rps_ObjectZone::~Rps_ObjectZone
 
 
+void
+Rps_ObjectZone::scan_object_content(Rps_CallFrameZone*callingfra) const
+{
+#warning unimplemented Rps_ObjectZone::scan_object_content
+  RPS_FATAL("unimplemented Rps_ObjectZone::scan_object_content this@%p callingfra@%p",
+            (const void*)this, (void*)callingfra);
+} // end Rps_CallFrameZone::scan_object_content
 
 
 /// Resize the quasi component vector to the given size, so grow or
@@ -751,6 +758,18 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
 
 
 
+void
+Rps_ObjectRef::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
+{
+  RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
+                 Rps_ObjectRef thisob;
+                 Rps_ObjectRef ob1;
+                 Rps_ObjectRef ob2;
+                 Rps_ObjectRef ob3;
+                );
+#warning unimplemented Rps_ObjectRef::tiny_benchmark_1
+  RPS_FATAL("unimplemented Rps_ObjectRef::tiny_benchmark_1 num %u", num);
+} // end of Rps_ObjectRef::tiny_benchmark_1
 
 
 

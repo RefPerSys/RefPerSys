@@ -41,6 +41,7 @@ enum rps_option_key_en
   Rps_Key_ExplainTypes,
   Rps_Key_PrimeAbove,
   Rps_Key_PrimeBelow,
+  Rps_Key_ObjectTinyBenchmark1,
 };
 
 const struct argp_option rps_argopt_vec[] =
@@ -68,6 +69,14 @@ const struct argp_option rps_argopt_vec[] =
     .arg = "number",
     .flags = OPTION_ARG_OPTIONAL,
     .doc = "print a prime below a given number",
+    .group = 0,
+  },
+  {
+    .name = "object-tinybenchmark1",
+    .key = Rps_Key_ObjectTinyBenchmark1,
+    .arg = "count",
+    .flags = OPTION_ARG_OPTIONAL,
+    .doc = "run the object tinybenchmark1 COUNT times",
     .group = 0,
   },
   {
@@ -221,6 +230,20 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
         num = std::stoi(numstr);
       long pr = rps_prime_below(num);
       printf("A prime below %ld is %ld\n", num, pr);
+    }
+    break;
+    case Rps_Key_ObjectTinyBenchmark1:
+    {
+      unsigned num = 0;
+      constexpr unsigned minbench = 1000;
+      const char*numstr = arg;
+      if (numstr && numstr[0])
+        num = std::stoi(numstr);
+      if (num<minbench)
+        num = minbench;
+      printf("before running Rps_ObjectRef::tinybenchmark1 with count %u.\n", num);
+      fflush(nullptr);
+      Rps_ObjectRef::tiny_benchmark_1(nullptr, num);
     }
     break;
     case Rps_Key_ExplainTypes:

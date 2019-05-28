@@ -298,7 +298,10 @@ class Rps_ZoneValue;
 class Rps_ObjectZone;
 class Rps_ObjectRef
 {
+  friend class Rps_GarbageCollector;
   Rps_ObjectZone*_optr;
+protected:
+  inline void scan_objectref(Rps_CallFrameZone* callingfra) const;
 public:
   Rps_ObjectZone* optr() const
   {
@@ -400,6 +403,7 @@ public:
   inline bool operator < (const Rps_ObjectRef& oth) const;
   inline bool operator > (const Rps_ObjectRef& oth) const;
   inline bool operator >= (const Rps_ObjectRef& oth) const;
+  static void tiny_benchmark_1(Rps_CallFrameZone* callingfra, unsigned count);
 };				// end class Rps_ObjectRef
 
 
@@ -674,12 +678,13 @@ class Rps_Value
   friend class Rps_GarbageCollector;
   union
   {
-    const Rps_ZoneValue* _datav;
+    mutable const Rps_ZoneValue* _datav;
     intptr_t _intv;
   };
   static_assert(sizeof(_datav) == sizeof(_intv));
   static_assert(alignof(_datav) == alignof(_intv));
 protected:
+
   void put_data(const Rps_ZoneValue*pz)
   {
     _datav = pz;
@@ -753,6 +758,13 @@ public:
   inline const Rps_TupleObrefZone* as_tuple() const;
   inline const Rps_SetObrefZone* as_set() const;
   inline const Rps_SequenceObrefZone*as_sequence() const;
+  Rps_ZoneValue*scanned_quasivalue(Rps_CallFrameZone*callingfra) const;
+protected:
+  void scan_value(Rps_CallFrameZone* callingfra) const
+  {
+    if (is_empty() || is_int()) return;
+    _datav = scanned_quasivalue(callingfra);
+  };
 };				// end of Rps_Value
 
 
@@ -844,6 +856,13 @@ public:
   {
     fail_too_big_zone(this, wantedsize, reason);
   }
+  inline Rps_ZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra);
+  static void scan_quasivalue(Rps_ZoneValue* &zv, Rps_CallFrameZone* callingfra)
+  {
+    if  (zv == nullptr || zv == RPS_EMPTYSLOT)
+      return;
+    zv = zv->scanned_quasivalue(callingfra);
+  }
 protected:
   void mutate_type(Rps_Type ty)
   {
@@ -881,6 +900,7 @@ protected:
     _cf_descr = nullptr;
     memset(_cf_valarr, 0, _cf_size*sizeof(Rps_ZoneValue*));
   };
+  inline Rps_CallFrameZone* scanned_quasivalue(Rps_CallFrameZone* callingfra);
 public:
   static constexpr Rps_CallFrameZone* _bottom_frame_ = nullptr;
   int state() const
@@ -960,6 +980,7 @@ Rps_Framecl_##Lin _(PrevFrame,Descr)
 class Rps_PointerCopyingZoneValue : public Rps_ZoneValue
 {
   friend class Rps_ZoneValue;
+  friend class Rps_GarbageCollector;
 protected:
   static inline void* allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram);
   static void* operator new  (std::size_t siz, zone_tag, Rps_CallFrameZone*callfram)
@@ -967,6 +988,7 @@ protected:
     return allocate_rps_zone(siz,callfram);
   }
   Rps_PointerCopyingZoneValue(Rps_Type ty) : Rps_ZoneValue(ty) {};
+  inline Rps_PointerCopyingZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra);
 public:
 };				// end class Rps_PointerCopyingZoneValue
 ////////////////////////////////////////////////////////////////
@@ -985,6 +1007,7 @@ public:
 class Rps_MutableCopyingZoneValue : public Rps_PointerCopyingZoneValue
 {
   friend class Rps_ZoneValue;
+  friend class Rps_GarbageCollector;
   Rps_MutableCopyingZoneValue(Rps_Type ty)
     : Rps_PointerCopyingZoneValue(ty) {};
 protected:
@@ -993,6 +1016,7 @@ protected:
   {
     return allocate_rps_zone(siz,callfram);
   }
+  inline Rps_MutableCopyingZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra);
 public:
 };				// end class Rps_MutableCopyingZoneValue
 
@@ -1006,6 +1030,7 @@ public:
 class Rps_ScalarCopyingZoneValue : public Rps_ZoneValue
 {
   friend class Rps_ZoneValue;
+  friend class Rps_GarbageCollector;
 protected:
   Rps_ScalarCopyingZoneValue(Rps_Type ty) : Rps_ZoneValue(ty) {};
 protected:
@@ -1014,6 +1039,7 @@ protected:
   {
     return allocate_rps_zone(siz,callfram);
   }
+  inline Rps_ScalarCopyingZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra);
 public:
 };				// end class Rps_ScalarCopyingZoneValue
 
@@ -1030,6 +1056,7 @@ class Rps_MarkSweepZoneValue : public Rps_ZoneValue
 {
   friend class Rps_ZoneValue;
   friend class Rps_ObjectZone;
+  friend class Rps_GarbageCollector;
 protected:
   virtual ~Rps_MarkSweepZoneValue() {};
   Rps_MarkSweepZoneValue(Rps_Type ty) : Rps_ZoneValue(ty) {};
@@ -1039,6 +1066,7 @@ protected:
   {
     return allocate_rps_zone(siz,callfram);
   }
+  inline Rps_MarkSweepZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra);
 public:
 };				// end class Rps_MarkSweepZoneValue
 
@@ -1096,6 +1124,7 @@ class Rps_QuasiAttributeArray : public Rps_PointerCopyingZoneValue
   friend class Rps_ObjectZone;
   friend class Rps_ZoneValue;
   friend class Rps_PointerCopyingZoneValue;
+  friend class Rps_GarbageCollector;
   // on a 64 bits machine, we are 8 byte aligned, so both of them are:
   uint32_t _qsizattr;	// allocated size
   uint32_t _qnbattrs;	// used number of entries
@@ -1725,12 +1754,14 @@ class Rps_PaylSetObjrefZone
 class Rps_ObjectZone : public  Rps_MarkSweepZoneValue
 {
   friend class Rps_ZoneValue;
+  friend class Rps_ObjectRef;
   friend class Rps_MarkSweepZoneValue;
+  friend class Rps_GarbageCollector;
   friend void print_types_info(void);
   const Rps_Id _ob_id;
   // we need some lock; we could later improve it, see perhaps
   // https://www.arangodb.com/2018/05/an-implementation-of-phase-fair-reader-writer-locks/
-  std::mutex _ob_mtxlock;
+  mutable std::mutex _ob_mtxlock;
   /// the class of an object is so frequently used that it is an
   /// atomic pointer that does not need to be fetched under the mutex.
   std::atomic<Rps_ObjectZone*> _ob_atomclass;
@@ -1766,6 +1797,8 @@ class Rps_ObjectZone : public  Rps_MarkSweepZoneValue
     return ptr;
   };
   ///
+protected:
+  void scan_object_content(Rps_CallFrameZone*callingfra) const;
 protected:
   /*** Objects are quite common, and their attributes and components
        also.  Most objects have few attributes, since attributes are
@@ -2120,6 +2153,13 @@ bool  Rps_ObjectRef::operator > (const Rps_ObjectRef& oth) const
 {
   return oth < *this;
 }
+void
+Rps_ObjectRef::scan_objectref(Rps_CallFrameZone* callingfra) const
+{
+  if (!is_empty())
+    _optr->scan_object_content(callingfra);
+} // end Rps_ObjectRef::scan_objectref
+
 
 Rps_Value::Rps_Value(object_tag, const Rps_ObjectZone*pob) :
   Rps_Value(pob) {};
