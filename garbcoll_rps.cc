@@ -35,6 +35,20 @@ std::mutex Rps_MemoryBlock::_bl_lock_;
 std::map<intptr_t,Rps_MemoryBlock*> Rps_MemoryBlock::_bl_blocksmap_;
 
 std::vector<Rps_MemoryBlock*> Rps_MemoryBlock::_bl_blocksvect_;
+std::mutex Rps_MarkedMemoryBlock::_glob_mablock_mtx_;
+Rps_MarkedMemoryBlock* Rps_MarkedMemoryBlock::_glo_markedblock_;
+
+
+std::atomic<bool> Rps_GarbageCollector::_gc_wanted;
+
+thread_local Rps_GarbageCollector::thread_allocation_data*
+Rps_GarbageCollector::_gc_thralloc_;
+
+Rps_GarbageCollector::global_allocation_data
+Rps_GarbageCollector::_gc_globalloc_;
+
+
+
 
 void*
 Rps_MemoryBlock::operator new(size_t size)
@@ -135,14 +149,6 @@ Rps_MemoryBlock::allocate_aligned_zone(size_t size, size_t align)
 
 
 
-std::atomic<bool> Rps_GarbageCollector::_gc_wanted;
-
-thread_local Rps_GarbageCollector::thread_allocation_data*
-Rps_GarbageCollector::_gc_thralloc_;
-
-Rps_GarbageCollector::global_allocation_data
-Rps_GarbageCollector::_gc_globalloc_;
-
 void
 Rps_GarbageCollector::run_garbcoll(Rps_CallFrameZone*callingfra)
 {
@@ -175,6 +181,23 @@ Rps_GarbageCollector::run_write_barrier(Rps_CallFrameZone*callingfra, Rps_ZoneVa
 } // end Rps_GarbageCollector::run_write_barrier
 
 
+void*
+Rps_GarbageCollector::allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*callingfra)
+{
+  void* ad = nullptr;
+  assert (size < RPS_SMALL_BLOCK_SIZE - Rps_MarkedMemoryBlock::_remain_threshold_ - 4*sizeof(void*));
+  maybe_garbcoll(callingfra);
+  {
+    std::lock_guard<std::mutex>
+    _gu(Rps_MarkedMemoryBlock::_glob_mablock_mtx_);
+    if (Rps_MarkedMemoryBlock::_glo_markedblock_ == nullptr)
+      {
+        /// should allocate that _glo_markedblock_
+      };
+  };
+#warning Rps_GarbageCollector::allocated_marked_maybe_gc unimplemented
+  RPS_FATAL("Rps_GarbageCollector::allocated_marked_maybe_gc unimplemented size=%zd", size);
+} // end Rps_GarbageCollector::allocate_marked_maybe_gc
 
 ////////////////////////////////////////////////////////////////
 Rps_MutatorThread::Rps_MutatorThread()

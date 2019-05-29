@@ -304,6 +304,8 @@ class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MarkedMemoryBlock
   : public Rps_MemoryBlock
 {
   friend class Rps_GarbageCollector;
+  static std::mutex _glob_mablock_mtx_; // global mutex for marked blocks
+  static Rps_MarkedMemoryBlock* _glo_markedblock_; // the global marked block
   struct markedmetadata_st
   {
   };
@@ -396,7 +398,7 @@ public:
   {
     return _optr;
   };
-  operator Rps_ObjectZone* () const
+  operator Rps_ObjectZone* ()
   {
     return _optr;
   };
@@ -435,6 +437,7 @@ public:
   inline bool operator < (const Rps_ObjectRef& oth) const;
   inline bool operator > (const Rps_ObjectRef& oth) const;
   inline bool operator >= (const Rps_ObjectRef& oth) const;
+  static inline Rps_ObjectRef make(Rps_CallFrameZone*callingfra);
   static void tiny_benchmark_1(Rps_CallFrameZone* callingfra, unsigned count);
 };				// end class Rps_ObjectRef
 
@@ -2162,9 +2165,14 @@ public:
   }
 };				// end class Rps_ObjectZone
 
-
+Rps_ObjectRef
+Rps_ObjectRef::make(Rps_CallFrameZone*callingfra)
+{
+  return Rps_ObjectZone::make(callingfra);
+}
 
 ////////////////
+
 
 bool Rps_ObjectRef::operator == (const Rps_ObjectRef& oth) const
 {
@@ -2349,14 +2357,7 @@ public:
   }
   ////////////////////////////////////////////////////////////////
   /// various allocation primitives.
-  static void*allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*callingfra)
-  {
-    void* ad = nullptr;
-    assert (size < RPS_SMALL_BLOCK_SIZE - Rps_MarkedMemoryBlock::_remain_threshold_ - 4*sizeof(void*));
-    maybe_garbcoll(callingfra);
-#warning Rps_GarbageCollector::allocated_marked_maybe_gc unimplemented
-    RPS_FATAL("Rps_GarbageCollector::allocated_marked_maybe_gc unimplemented size=%zd", size);
-  };
+  static void*allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*callingfra);
   static void*allocate_birth_maybe_gc(size_t size, Rps_CallFrameZone*callingfra)
   {
     void* ad = nullptr;
