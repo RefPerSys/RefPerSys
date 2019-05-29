@@ -1,0 +1,22 @@
+# initdata.rps -- primordial persistent data for bootstrapping
+
+
+object = (
+        id = _07YGv5jImHw03JSziA,
+        class = _0OE0PJ2Nihp00j9HvR,
+        mtime = 1510325491.740,
+        name = "sample_object_for_example",
+        comp = (_04YQEJtbxJ704mmY6j, _8WQ1IHwxDOf02U1G9I),
+        load = (_90WQpRgSoN8018gLbJ, _3EMmRTwppRq00YOpJZ),
+        attr = (
+                # for string
+                _4cG7qyo0038046cBsf = "string",
+                # for double
+                _1OlebU0NNqG03H0h1E = 1234.567,
+                #for set
+                _2EXYXvXKfNL04gTxus = {_4eK0IPW6HT604zz8s6, _0A5YBlxJgIM03Hs6f9}
+                #for tuple
+                _0j2JzHrzA0604avLAv = [_5JSE68ZYK4003UVdVc, _73UWhRTzDSw0373KVm]
+        )
+)
+
