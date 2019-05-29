@@ -57,6 +57,7 @@
 #include <thread>
 #include <atomic>
 #include <stdexcept>
+#include <functional>
 
 #include <cassert>
 #include <cstring>
