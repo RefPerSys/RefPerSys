@@ -95,7 +95,9 @@ This *research* project is
 [GPLv3+](https://www.gnu.org/licenses/gpl.html) licensed and
 copyrighted by the RefPerSys team, currently made of:
 
- *      Basile Starynkevitch <basile@starynkevitch.net>, homepage http://starynkevitch.net/Basile/
+ *      Basile Starynkevitch <basile@starynkevitch.net>, 
+        homepage http://starynkevitch.net/Basile/
+		near Paris, France. So usual timezone `TZ=MEST`
  *      Abhishek Chakravarti <abhishek@taranjali.org>
 
 ## Contributing
