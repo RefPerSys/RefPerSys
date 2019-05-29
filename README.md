@@ -137,8 +137,9 @@ analysis* (the later being an unusual feature - most build automation
 tools using modification time of files).
 
 ### Build instructions
-You A recent C++17 compiler such as `g++` (We use GCC 7 or 8 or 9) or `clang++` , `omake`, `libunistring-dev`
+You need a recent C++17 compiler such as `g++` (We use GCC 7 or 8 or 9) or `clang++` , `omake`, `libunistring-dev`
  
+You also should do a `make clean` or `omake clean` after any `git pull`
 
 ## Garbage collection
 
