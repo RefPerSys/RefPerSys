@@ -188,6 +188,8 @@ public:
     blk_none=0,
     blk_birth,
     blk_largenew,
+    blk_smallold,
+    blk_largeold,
     blk_marked,
   };
 protected:
@@ -292,7 +294,36 @@ public:
   {
     return remaining_bytes() < _remain_threshold_;
   };
+  static Rps_BirthMemoryBlock* make(void); // in garbcoll_rps.cc
 };				// end Rps_BirthMemoryBlock
+
+
+class Rps_SmallOldMemoryBlock : public Rps_MemoryBlock
+{
+  friend class Rps_GarbageCollector;
+  struct birthmetadata_st
+  {
+  };
+  struct birthmetadata_st& metadata()
+  {
+    return raw_metadata<birthmetadata_st>();
+  };
+  Rps_SmallOldMemoryBlock(Rps_BlockIndex ix,
+                          std::function<void(Rps_MemoryBlock*)> before=nullptr,
+                          std::function<void(Rps_MemoryBlock*)> after=nullptr) :
+    Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
+                    blk_birth, ix,
+                    RPS_SMALL_BLOCK_SIZE - sizeof(Rps_SmallOldMemoryBlock),
+                    before, after) {};
+  ~Rps_SmallOldMemoryBlock() {};
+public:
+  static constexpr unsigned _remain_threshold_ = RPS_SMALL_BLOCK_SIZE/5;
+  bool almost_full() const
+  {
+    return remaining_bytes() < _remain_threshold_;
+  };
+  static Rps_SmallOldMemoryBlock* make(void); // in garbcoll_rps.cc
+};				// end Rps_SmallOldMemoryBlock
 
 
 
@@ -321,7 +352,39 @@ public:
   {
     return remaining_bytes() < _remain_threshold_;
   };
+  static Rps_LargeNewMemoryBlock* make(void); // in garbcoll_rps.cc
 };				// end Rps_LargeNewMemoryBlock
+
+
+
+class  alignas(RPS_LARGE_BLOCK_SIZE) Rps_LargeOldMemoryBlock
+  : public Rps_MemoryBlock
+{
+  friend class Rps_GarbageCollector;
+  struct largenewmetadata_st
+  {
+  };
+  struct largenewmetadata_st& metadata()
+  {
+    return raw_metadata<largenewmetadata_st>();
+  };
+  Rps_LargeOldMemoryBlock(Rps_BlockIndex ix,
+                          std::function<void(Rps_MemoryBlock*)> before=nullptr,
+                          std::function<void(Rps_MemoryBlock*)> after=nullptr) :
+    Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
+                    blk_largenew, ix,
+                    RPS_LARGE_BLOCK_SIZE - sizeof(Rps_LargeOldMemoryBlock),
+                    before, after) {};
+  ~Rps_LargeOldMemoryBlock() {};
+public:
+  static constexpr unsigned _remain_threshold_ = RPS_LARGE_BLOCK_SIZE/5;
+  bool almost_full() const
+  {
+    return remaining_bytes() < _remain_threshold_;
+  };
+  static Rps_LargeOldMemoryBlock* make(void); // in garbcoll_rps.cc
+};				// end Rps_LargeOldMemoryBlock
+
 
 
 class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MarkedMemoryBlock
@@ -346,6 +409,7 @@ class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MarkedMemoryBlock
                     before, after) {};
   ~Rps_MarkedMemoryBlock() {};
 public:
+  static Rps_MarkedMemoryBlock* make(void); // in garbcoll_rps.cc
   static constexpr unsigned _remain_threshold_ = RPS_SMALL_BLOCK_SIZE/5;
   bool almost_full() const
   {

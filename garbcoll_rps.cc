@@ -151,8 +151,51 @@ Rps_MemoryBlock::allocate_aligned_zone(size_t size, size_t align)
   RPS_FATAL("Rps_MemoryBlock::allocate_aligned_zone(size %zd, align %zd)\n", size, align);
 } // end Rps_MemoryBlock::operator delete
 
+////////////////
+
+Rps_BirthMemoryBlock*
+Rps_BirthMemoryBlock::make(void)
+{
+#warning unimplemented Rps_BirthMemoryBlock::make
+  RPS_FATAL("Rps_BirthMemoryBlock::make unimplemented");
+} // end of Rps_BirthMemoryBlock::make
 
 
+Rps_SmallOldMemoryBlock*
+Rps_SmallOldMemoryBlock::make(void)
+{
+#warning unimplemented Rps_SmallOldMemoryBlock::make
+  RPS_FATAL("Rps_SmallOldMemoryBlock::make unimplemented");
+} // end of Rps_SmallOldMemoryBlock::make
+
+
+Rps_LargeNewMemoryBlock*
+Rps_LargeNewMemoryBlock::make(void)
+{
+#warning unimplemented Rps_LargeNewMemoryBlock::make
+  RPS_FATAL("Rps_LargeNewMemoryBlock::make unimplemented");
+} // end of Rps_LargeNewMemoryBlock::make
+
+
+
+Rps_LargeOldMemoryBlock*
+Rps_LargeOldMemoryBlock::make(void)
+{
+#warning unimplemented Rps_LargeOldMemoryBlock::make
+  RPS_FATAL("Rps_LargeOldMemoryBlock::make unimplemented");
+} // end of Rps_LargeOldMemoryBlock::make
+
+
+Rps_MarkedMemoryBlock*
+Rps_MarkedMemoryBlock::make(void)
+{
+#warning unimplemented Rps_MarkedMemoryBlock::make
+  RPS_FATAL("Rps_MarkedMemoryBlock::make unimplemented");
+} // end of Rps_MarkedMemoryBlock::make
+
+
+
+////////////////
 void
 Rps_GarbageCollector::run_garbcoll(Rps_CallFrameZone*callingfra)
 {
