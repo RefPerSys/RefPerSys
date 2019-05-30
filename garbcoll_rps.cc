@@ -99,15 +99,17 @@ Rps_MemoryBlock::operator new(size_t size)
 
 
 Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx, unsigned kindnum, Rps_BlockIndex ix, size_t size, std::function<void(Rps_MemoryBlock*)> before, std::function<void(Rps_MemoryBlock*)> after) :
-  _bl_kindnum(kindnum), _bl_ix(ix), _bl_curptr(_bl_data),
+  _bl_kindnum(kindnum), _bl_ix(0), _bl_curptr(_bl_data),
   _bl_endptr((char*)this+size),
   _bl_next(nullptr), _bl_prev(nullptr)
 {
   assert ((intptr_t)this % RPS_SMALL_BLOCK_SIZE == 0);
-  assert (ix >= 0);
   intptr_t ad = (intptr_t) this;
   std::lock_guard gu(mtx);
-  before(this);
+  assert (_bl_blocksmap_.find(ad) == _bl_blocksmap_.end());
+  if (before)
+    before(this);
+  _bl_ix = ix;
   _bl_blocksmap_.insert({ad,this});
   auto itb = _bl_blocksmap_.lower_bound((intptr_t)((intptr_t*)ad-1));
   auto ita = _bl_blocksmap_.upper_bound((intptr_t)((intptr_t*)ad+1));
@@ -115,10 +117,36 @@ Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx, unsigned kindnum, Rps_BlockInde
     _bl_prev = itb->second;
   if (ita != _bl_blocksmap_.end())
     _bl_next = ita->second;
-  if (_bl_blocksvect_.size() <= ix)
+  int altix = 0;
+  if (ix <= 0)   // in particular, when ix is _no_index_
+    {
+      if (_bl_prev && (altix=_bl_prev->_bl_ix)>0)
+        {
+          ix = altix;
+        }
+      else if (_bl_next && (altix=_bl_next->_bl_ix)>1)
+        {
+          ix = altix-1;
+        }
+      else
+        {
+          assert (!_bl_prev && !_bl_next);
+          ix = 1;
+        }
+    };
+  assert (ix > 0);
+  if (_bl_blocksvect_.size() + 1 <= ix)
     _bl_blocksvect_.resize(rps_prime_above((17*ix)/16+1));
-  _bl_blocksvect_[ix] = this;
-  after(this);
+  _bl_blocksvect_.insert(_bl_blocksvect_.begin()+ix, this);
+  auto nbbl = _bl_blocksvect_.size();
+  for (int nix=ix; nix<nbbl; nix++)
+    {
+      auto nbl = _bl_blocksvect_[nix];
+      if (!nbl) continue;
+      nbl->_bl_ix = nix;
+    }
+  if (after)
+    after(this);
 } // end Rps_MemoryBlock::Rps_MemoryBlock
 
 

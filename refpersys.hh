@@ -194,7 +194,7 @@ public:
   };
 protected:
   const uint32_t _bl_kindnum;
-  const Rps_BlockIndex _bl_ix;
+  Rps_BlockIndex _bl_ix;
   static constexpr unsigned _bl_metasize_ = 8;
 private:
   void* _bl_curptr;
@@ -219,6 +219,7 @@ protected:
   void operator delete(void*);
   intptr_t _bl_meta[_bl_metasize_];
   intptr_t _bl_data[RPS_FLEXIBLE_DIM];
+  static constexpr Rps_BlockIndex _no_index_ = 0;
   Rps_MemoryBlock(std::mutex&mtx,
                   unsigned kindnum, Rps_BlockIndex ix, size_t size,
                   std::function<void(Rps_MemoryBlock*)> before=nullptr,
@@ -246,10 +247,6 @@ protected:
     static_assert(alignof(Meta) <= alignof(_bl_meta));
     return *reinterpret_cast<Meta*>(_bl_meta);
   };
-  template <class BlockClass>
-  static BlockClass* make_block(size_t size)
-  {
-  }
 public:
   unsigned remaining_bytes() const
   {
