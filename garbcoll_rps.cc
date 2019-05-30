@@ -56,8 +56,13 @@ Rps_MemoryBlock::operator new(size_t size)
   assert (size % RPS_SMALL_BLOCK_SIZE == 0);
   void* ad = mmap(nullptr, size,  //
                   PROT_READ | PROT_WRITE, //
-                  MAP_ANON | MAP_SHARED | MAP_HUGETLB, //
+                  MAP_ANON | MAP_PRIVATE | MAP_HUGETLB, //
                   -1, 0);
+  if (ad == MAP_FAILED)
+    ad = mmap(nullptr, size,  //
+              PROT_READ | PROT_WRITE, //
+              MAP_ANON | MAP_PRIVATE, //
+              -1, 0);
   if (ad == MAP_FAILED)
     RPS_FATAL("failed to get memory block of %zd Mbytes (%m)",
               size >> 20);
@@ -98,7 +103,12 @@ Rps_MemoryBlock::operator new(size_t size)
 
 
 
-Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx, unsigned kindnum, Rps_BlockIndex ix, size_t size, std::function<void(Rps_MemoryBlock*)> before, std::function<void(Rps_MemoryBlock*)> after) :
+Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx,
+				 unsigned kindnum, 
+				 Rps_BlockIndex ix, 
+				 size_t size, 
+				 std::function<void(Rps_MemoryBlock*)> before,
+				 std::function<void(Rps_MemoryBlock*)> after) :
   _bl_kindnum(kindnum), _bl_ix(0), _bl_curptr(_bl_data),
   _bl_endptr((char*)this+size),
   _bl_next(nullptr), _bl_prev(nullptr)
@@ -111,12 +121,19 @@ Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx, unsigned kindnum, Rps_BlockInde
     before(this);
   _bl_ix = ix;
   _bl_blocksmap_.insert({ad,this});
-  auto itb = _bl_blocksmap_.lower_bound((intptr_t)((intptr_t*)ad-1));
-  auto ita = _bl_blocksmap_.upper_bound((intptr_t)((intptr_t*)ad+1));
+  // TODO: something wrong below
+  auto itb = _bl_blocksmap_.lower_bound((intptr_t)((intptr_t*)ad-2));
+  auto ita = _bl_blocksmap_.upper_bound((intptr_t)((intptr_t*)ad+2));
   if (itb != _bl_blocksmap_.end())
-    _bl_prev = itb->second;
+    {
+      _bl_prev = itb->second;
+      assert ((char*)_bl_prev < (char*)this);
+    }
   if (ita != _bl_blocksmap_.end())
-    _bl_next = ita->second;
+    {
+      _bl_next = ita->second;
+      assert ((char*)_bl_next > (char*)this);
+    }
   int altix = 0;
   if (ix <= 0)   // in particular, when ix is _no_index_
     {
@@ -217,8 +234,9 @@ Rps_LargeOldMemoryBlock::make(void)
 Rps_MarkedMemoryBlock*
 Rps_MarkedMemoryBlock::make(void)
 {
-#warning unimplemented Rps_MarkedMemoryBlock::make
-  RPS_FATAL("Rps_MarkedMemoryBlock::make unimplemented");
+  Rps_MarkedMemoryBlock* bl =
+    new Rps_MarkedMemoryBlock(Rps_MemoryBlock::_no_index_);
+  return bl;
 } // end of Rps_MarkedMemoryBlock::make
 
 
@@ -268,6 +286,8 @@ Rps_GarbageCollector::allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*ca
     if (Rps_MarkedMemoryBlock::_glo_markedblock_ == nullptr)
       {
         /// should allocate that _glo_markedblock_
+        Rps_MarkedMemoryBlock::_glo_markedblock_ =
+          Rps_MarkedMemoryBlock::make();
       };
   };
 #warning Rps_GarbageCollector::allocated_marked_maybe_gc unimplemented

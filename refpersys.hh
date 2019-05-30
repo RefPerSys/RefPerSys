@@ -167,7 +167,7 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 #define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {			\
     fprintf(stderr,						\
 	    "RefPerSys FATAL:%s:%d: <%s>\n " Fmt "\n\n",	\
-            Fil, Lin, __func__, ##__VA_ARGS__);			\
+            Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);     	\
     rps_fatal_stop_at (Fil,Lin); } while(0)
 
 #define RPS_FATAL_AT(Fil,Lin,Fmt,...) RPS_FATAL_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
