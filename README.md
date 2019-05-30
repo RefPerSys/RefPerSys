@@ -3,11 +3,16 @@
 
 This project has moved to https://gitlab.com/bstarynk/refpersys/
 
-That old repository https://gitlab.com/refpersys/refpersys is now a playground for Niklas Rosencrantz.
+That previous old repository https://gitlab.com/refpersys/refpersys is
+now a playground for Niklas Rosencrantz (Sweden) and others.
 
 ## A research project
 
-The Reflective Persistent System language is a **research project**, taking many good ideas from [Bismon](http://github.com/bstarynk/bismon), sharing a lot of goals (except static source code analysis) with it but avoiding bad ideas from it.
+The Reflective Persistent System language is a **research project**,
+taking many good ideas from
+[Bismon](http://github.com/bstarynk/bismon), sharing a lot of goals
+(*except* static source code analysis) with it but avoiding bad ideas
+from it.
 
 For Linux/x86-64 only. Don't even think of running that on non-Linux
 systems, unless you provide patches for that. And we need a 64 bits
@@ -20,7 +25,7 @@ Pthreads).
 We absolutely want to avoid any
 [GIL](https://en.wikipedia.org/wiki/Global_interpreter_lock)
 
-Don't expect anything useful from RefPerSys before at least 2022. But
+Don't expect anything useful from RefPerSys before at least 2023. But
 you could have fun sharing our ideas and experimenting yours.
 
 We considered previously to use the garbage collector from [Ravenbrook
@@ -100,13 +105,24 @@ copyrighted by the RefPerSys team, currently made of:
 		near Paris, France. So usual timezone `TZ=MEST`
  *      Abhishek Chakravarti <abhishek@taranjali.org>
 
+Some files might be "borrowed" from other similar GPLv3+ licensed
+projects (notably [Bismon](from
+[Bismon](http://github.com/bstarynk/bismon)...) and could retain their
+original copyright owner.
+
 ## Contributing
 
-Please refer to the `CONTRIBUTING.md` file for coding conventions.
+Please ask, by email, the above RefPerSys team for C++ coding
+conventions before starting non-trivial contributions to the C++
+runtime of RefPerSys.  If you are contributing to its C++ runtime,
+please **run `make clean` or `omake clean` after any `git pull`**.
+
+The GPLv3+ license of RefPerSys is unlikely to change before 2025 (and
+probably even after).
 
 ## File conventions
 
-The Refpersys runtime is implemented in C++17, with hand-written C++
+The RefPerSys runtime is implemented in C++17, with hand-written C++
 code in `*_rps.cc`, and has a single C++ header file `refpersys.hh`.
 We don't claim to be C++ gurus. Most C++ experts could write more
 genuine C++ code than we do and will find our C++ code pityful. We
