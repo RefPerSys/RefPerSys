@@ -37,7 +37,7 @@ std::map<intptr_t,Rps_MemoryBlock*> Rps_MemoryBlock::_bl_blocksmap_;
 std::vector<Rps_MemoryBlock*> Rps_MemoryBlock::_bl_blocksvect_;
 std::mutex Rps_MarkedMemoryBlock::_glob_mablock_mtx_;
 Rps_MarkedMemoryBlock* Rps_MarkedMemoryBlock::_glo_markedblock_;
-
+std::set<Rps_MarkedMemoryBlock*> Rps_MarkedMemoryBlock::_glob_set_mablocks;
 
 std::atomic<bool> Rps_GarbageCollector::_gc_wanted;
 
@@ -104,11 +104,11 @@ Rps_MemoryBlock::operator new(size_t size)
 
 
 Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx,
-				 unsigned kindnum, 
-				 Rps_BlockIndex ix, 
-				 size_t size, 
-				 std::function<void(Rps_MemoryBlock*)> before,
-				 std::function<void(Rps_MemoryBlock*)> after) :
+                                 unsigned kindnum,
+                                 Rps_BlockIndex ix,
+                                 size_t size,
+                                 std::function<void(Rps_MemoryBlock*)> before,
+                                 std::function<void(Rps_MemoryBlock*)> after) :
   _bl_kindnum(kindnum), _bl_ix(0), _bl_curptr(_bl_data),
   _bl_endptr((char*)this+size),
   _bl_next(nullptr), _bl_prev(nullptr)
@@ -120,7 +120,6 @@ Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx,
   if (before)
     before(this);
   _bl_ix = ix;
-  _bl_blocksmap_.insert({ad,this});
   // TODO: something wrong below
   auto itb = _bl_blocksmap_.lower_bound((intptr_t)((intptr_t*)ad-2));
   auto ita = _bl_blocksmap_.upper_bound((intptr_t)((intptr_t*)ad+2));
@@ -134,6 +133,7 @@ Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx,
       _bl_next = ita->second;
       assert ((char*)_bl_next > (char*)this);
     }
+  _bl_blocksmap_.insert({ad,this});
   int altix = 0;
   if (ix <= 0)   // in particular, when ix is _no_index_
     {
@@ -283,15 +283,18 @@ Rps_GarbageCollector::allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*ca
   {
     std::lock_guard<std::mutex>
     _gu(Rps_MarkedMemoryBlock::_glob_mablock_mtx_);
-    if (Rps_MarkedMemoryBlock::_glo_markedblock_ == nullptr)
+    if (Rps_MarkedMemoryBlock::_glo_markedblock_ == nullptr
+        || (Rps_MarkedMemoryBlock::_glo_markedblock_->remaining_bytes()
+            < size))
       {
         /// should allocate that _glo_markedblock_
         Rps_MarkedMemoryBlock::_glo_markedblock_ =
           Rps_MarkedMemoryBlock::make();
       };
+    ad = Rps_MarkedMemoryBlock::_glo_markedblock_->allocate_zone(size);
   };
-#warning Rps_GarbageCollector::allocated_marked_maybe_gc unimplemented
-  RPS_FATAL("Rps_GarbageCollector::allocated_marked_maybe_gc unimplemented size=%zd", size);
+  assert (ad != nullptr);
+  return ad;
 } // end Rps_GarbageCollector::allocate_marked_maybe_gc
 
 ////////////////////////////////////////////////////////////////

@@ -389,6 +389,7 @@ class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MarkedMemoryBlock
 {
   friend class Rps_GarbageCollector;
   static std::mutex _glob_mablock_mtx_; // global mutex for marked blocks
+  static std::set<Rps_MarkedMemoryBlock*> _glob_set_mablocks;
   static Rps_MarkedMemoryBlock* _glo_markedblock_; // the global marked block
   struct markedmetadata_st
   {
@@ -403,8 +404,14 @@ class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MarkedMemoryBlock
     Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
                     blk_marked, ix,
                     RPS_SMALL_BLOCK_SIZE - sizeof(Rps_MarkedMemoryBlock),
-                    before, after) {};
-  ~Rps_MarkedMemoryBlock() {};
+                    before, after)
+  {
+    _glob_set_mablocks.insert(this);
+  };
+  ~Rps_MarkedMemoryBlock()
+  {
+    _glob_set_mablocks.erase(this);
+  };
 public:
   static Rps_MarkedMemoryBlock* make(void); // in garbcoll_rps.cc
   static constexpr unsigned _remain_threshold_ = RPS_SMALL_BLOCK_SIZE/5;
