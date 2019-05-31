@@ -110,17 +110,17 @@ Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx,
                                  std::function<void(Rps_MemoryBlock*)> before,
                                  std::function<void(Rps_MemoryBlock*)> after) :
   _bl_kindnum(kindnum), _bl_ix(0), _bl_curptr(_bl_data),
-  _bl_endptr((char*)this+size),
+  _bl_endptr(((char*)this)+(unsigned)size-sizeof(intptr_t)),
   _bl_next(nullptr), _bl_prev(nullptr)
 {
   assert ((intptr_t)this % RPS_SMALL_BLOCK_SIZE == 0);
   intptr_t ad = (intptr_t) this;
+  assert ((const char*)_bl_curptr < (const char*)_bl_endptr);
   std::lock_guard gu(mtx);
   assert (_bl_blocksmap_.find(ad) == _bl_blocksmap_.end());
   if (before)
     before(this);
   _bl_ix = ix;
-  // TODO: something wrong below
   auto itb = _bl_blocksmap_.lower_bound((intptr_t)((intptr_t*)ad-2));
   auto ita = _bl_blocksmap_.upper_bound((intptr_t)((intptr_t*)ad+2));
   if (itb != _bl_blocksmap_.end())
