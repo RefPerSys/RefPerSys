@@ -412,9 +412,11 @@ class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MarkedMemoryBlock
     Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
                     blk_marked, ix,
                     Rps_MemoryBlock::size_tag{},
-                    RPS_SMALL_BLOCK_SIZE - sizeof(Rps_MarkedMemoryBlock),
+                    RPS_SMALL_BLOCK_SIZE - sizeof(struct markedmetadata_st),
                     before, after)
   {
+    assert (sizeof(this) == RPS_SMALL_BLOCK_SIZE);
+    assert (remaining_bytes() > 256*sizeof(intptr_t));
     _glob_set_mablocks.insert(this);
   };
   ~Rps_MarkedMemoryBlock()
