@@ -94,7 +94,8 @@ Rps_MemoryBlock::operator new(size_t size)
           if (nextad > (uintptr_t)ad  && munmap(ad, nextad - (uintptr_t)ad))
             RPS_FATAL("failed to munmap @%p (%m)", ad);
           ad = (void*)nextad;
-          if ((char*)ad + size < endad && munmap((char*)ad+size, (char*)endad - ((char*)ad + size)))
+          if ((char*)ad + size < endad
+              && munmap((char*)ad+size, (char*)endad - ((char*)ad + size)))
             RPS_FATAL("failed to munmap @%p (%m)", (void*) ((char*) ad+size));
         }
     };
@@ -106,15 +107,20 @@ Rps_MemoryBlock::operator new(size_t size)
 Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx,
                                  unsigned kindnum,
                                  Rps_BlockIndex ix,
+                                 Rps_MemoryBlock::size_tag,
                                  size_t size,
                                  std::function<void(Rps_MemoryBlock*)> before,
                                  std::function<void(Rps_MemoryBlock*)> after) :
-  _bl_kindnum(kindnum), _bl_ix(0), _bl_curptr(_bl_data),
-  _bl_endptr(((char*)this)+(unsigned)size-sizeof(intptr_t)),
+  _bl_kindnum(kindnum), _bl_ix(0), _bl_curptr(this->_bl_data),
+  _bl_endptr(((char*)this)+size-sizeof(intptr_t)),
   _bl_next(nullptr), _bl_prev(nullptr)
 {
+  assert (size >= RPS_SMALL_BLOCK_SIZE && size <= RPS_LARGE_BLOCK_SIZE);
+  assert (size % RPS_SMALL_BLOCK_SIZE == 0);
   assert ((intptr_t)this % RPS_SMALL_BLOCK_SIZE == 0);
   intptr_t ad = (intptr_t) this;
+  assert ((const char*)_bl_endptr > (const char*)this);
+  assert ((const char*)_bl_curptr > (const char*)this);
   assert ((const char*)_bl_curptr < (const char*)_bl_endptr);
   std::lock_guard gu(mtx);
   assert (_bl_blocksmap_.find(ad) == _bl_blocksmap_.end());

@@ -62,14 +62,14 @@ Rps_SetValue::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
     {
       _.arrval[i] = Rps_Value(Rps_ObjectRef::make(RPS_CURFRAME));
       _.arrob[i] = Rps_ObjectRef::make(RPS_CURFRAME);
-      if (i == benchsize/2) 
-	t1 = rps_thread_cpu_time();
+      if (i == benchsize/2)
+        t1 = rps_thread_cpu_time();
     }
   t2 = rps_thread_cpu_time();
   std::cout << "tiny_benchmark_1 (" << __FILE__ << ":" << __LINE__
             << ") made " << (2*benchsize) << " objects in "
             << (t2-t0) << " thread-CPU seconds, half of them in "
-	    << (t1-t0)  << " thread-CPU seconds, so "
+            << (t1-t0)  << " thread-CPU seconds, so "
             << 1.0e6*(t2-t0)/(2*benchsize) << " µsec/obj." << std::endl;
 #warning unimplemented Rps_SetValue::tiny_benchmark_1
   RPS_FATAL("unimplemented Rps_SetValue::tiny_benchmark_1 num=%u", num);

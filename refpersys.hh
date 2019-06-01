@@ -220,16 +220,20 @@ protected:
   intptr_t _bl_meta[_bl_metasize_];
   intptr_t _bl_data[RPS_FLEXIBLE_DIM];
   static constexpr Rps_BlockIndex _no_index_ = 0;
+  struct unlocked_tag {};
+  struct size_tag {};
   Rps_MemoryBlock(std::mutex&mtx,
-                  unsigned kindnum, Rps_BlockIndex ix, size_t size,
+                  unsigned kindnum, Rps_BlockIndex ix,
+                  size_tag, size_t size,
                   std::function<void(Rps_MemoryBlock*)> before=nullptr,
                   std::function<void(Rps_MemoryBlock*)> after=nullptr);
-  struct unlocked_tag {};
   Rps_MemoryBlock(unlocked_tag,
-                  unsigned kindnum, Rps_BlockIndex ix, size_t size,
+                  unsigned kindnum, Rps_BlockIndex ix,
+                  size_tag, size_t size,
                   std::function<void(Rps_MemoryBlock*)> before=nullptr,
                   std::function<void(Rps_MemoryBlock*)> after=nullptr)
-    : Rps_MemoryBlock(_bl_lock_, kindnum, ix, size,
+    : Rps_MemoryBlock(_bl_lock_, kindnum, ix,
+                      size_tag{}, size,
                       before, after) {};
   void* allocate_zone(size_t size)
   {
@@ -282,6 +286,7 @@ class Rps_BirthMemoryBlock : public Rps_MemoryBlock
                        std::function<void(Rps_MemoryBlock*)> after=nullptr) :
     Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
                     blk_birth, ix,
+                    size_tag{},
                     RPS_SMALL_BLOCK_SIZE - sizeof(Rps_BirthMemoryBlock),
                     before, after) {};
   ~Rps_BirthMemoryBlock() {};
@@ -310,6 +315,7 @@ class Rps_SmallOldMemoryBlock : public Rps_MemoryBlock
                           std::function<void(Rps_MemoryBlock*)> after=nullptr) :
     Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
                     blk_birth, ix,
+                    size_tag{},
                     RPS_SMALL_BLOCK_SIZE - sizeof(Rps_SmallOldMemoryBlock),
                     before, after) {};
   ~Rps_SmallOldMemoryBlock() {};
@@ -340,6 +346,7 @@ class  alignas(RPS_LARGE_BLOCK_SIZE) Rps_LargeNewMemoryBlock
                           std::function<void(Rps_MemoryBlock*)> after=nullptr) :
     Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
                     blk_largenew, ix,
+                    Rps_MemoryBlock::size_tag{},
                     RPS_LARGE_BLOCK_SIZE - sizeof(Rps_LargeNewMemoryBlock),
                     before, after) {};
   ~Rps_LargeNewMemoryBlock() {};
@@ -370,6 +377,7 @@ class  alignas(RPS_LARGE_BLOCK_SIZE) Rps_LargeOldMemoryBlock
                           std::function<void(Rps_MemoryBlock*)> after=nullptr) :
     Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
                     blk_largenew, ix,
+                    Rps_MemoryBlock::size_tag{},
                     RPS_LARGE_BLOCK_SIZE - sizeof(Rps_LargeOldMemoryBlock),
                     before, after) {};
   ~Rps_LargeOldMemoryBlock() {};
@@ -403,6 +411,7 @@ class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MarkedMemoryBlock
                         std::function<void(Rps_MemoryBlock*)> after=nullptr	) :
     Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
                     blk_marked, ix,
+                    Rps_MemoryBlock::size_tag{},
                     RPS_SMALL_BLOCK_SIZE - sizeof(Rps_MarkedMemoryBlock),
                     before, after)
   {
