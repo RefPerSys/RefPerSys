@@ -55,10 +55,10 @@
 # configuration variables.
 #
 DIALECTFLAGS = -std=gnu++17
-# optimization flags: -Og is better for debugging, -O1 or -O2 is
+# optimization flags: -O0 or -Og is better for debugging, -O1 or -O2 is
 # better for benchmarking and both can be used with -g for debugging
 # info...
-OPTIMFLAGS = -Og -g
+OPTIMFLAGS = -O0 -g
 WARNFLAGS = -Wall -Wextra
 CXX= g++
 CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(WARNFLAGS)
