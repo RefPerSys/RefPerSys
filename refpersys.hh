@@ -648,8 +648,21 @@ class Rps_Random
         _rand_advance = generate_32u();
         _rand_remainbits = 32;
       }
-    uint8_t res = _rand_remainbits & 0xf;
+    uint8_t res = _rand_advance & 0xf;
     _rand_remainbits -= 4;
+    _rand_advance = _rand_advance>>4;
+    return res;
+  };
+  uint8_t generate_quickly_8bits()
+  {
+    if (RPS_UNLIKELY(_rand_remainbits < 8))
+      {
+        _rand_advance = generate_32u();
+        _rand_remainbits = 32;
+      }
+    uint8_t res = _rand_advance & 0xff;
+    _rand_advance = _rand_advance>>8;
+    _rand_remainbits -= 8;
     return res;
   };
 public:
@@ -668,6 +681,10 @@ public:
   static uint8_t random_quickly_4bits()
   {
     return _rand_thr_.generate_quickly_4bits();
+  };
+  static uint8_t random_quickly_8bits()
+  {
+    return _rand_thr_.generate_quickly_8bits();
   };
 };				// end class Rps_Random
 #endif /*no RPS_ONLY_ID_CODE*/
