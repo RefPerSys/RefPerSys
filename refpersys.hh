@@ -287,7 +287,7 @@ class Rps_BirthMemoryBlock : public Rps_MemoryBlock
     Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
                     blk_birth, ix,
                     size_tag{},
-                    RPS_SMALL_BLOCK_SIZE - sizeof(Rps_BirthMemoryBlock),
+                    RPS_SMALL_BLOCK_SIZE,
                     before, after) {};
   ~Rps_BirthMemoryBlock() {};
 public:
@@ -298,8 +298,11 @@ public:
   };
   static Rps_BirthMemoryBlock* make(void); // in garbcoll_rps.cc
 };				// end Rps_BirthMemoryBlock
+static_assert(sizeof(Rps_BirthMemoryBlock)==RPS_SMALL_BLOCK_SIZE);
 
 
+
+////////////////
 class Rps_SmallOldMemoryBlock : public Rps_MemoryBlock
 {
   friend class Rps_GarbageCollector;
@@ -316,7 +319,7 @@ class Rps_SmallOldMemoryBlock : public Rps_MemoryBlock
     Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
                     blk_birth, ix,
                     size_tag{},
-                    RPS_SMALL_BLOCK_SIZE - sizeof(Rps_SmallOldMemoryBlock),
+                    RPS_SMALL_BLOCK_SIZE,
                     before, after) {};
   ~Rps_SmallOldMemoryBlock() {};
 public:
@@ -327,7 +330,7 @@ public:
   };
   static Rps_SmallOldMemoryBlock* make(void); // in garbcoll_rps.cc
 };				// end Rps_SmallOldMemoryBlock
-
+static_assert(sizeof(Rps_SmallOldMemoryBlock)==RPS_SMALL_BLOCK_SIZE);
 
 
 class  alignas(RPS_LARGE_BLOCK_SIZE) Rps_LargeNewMemoryBlock
@@ -347,7 +350,7 @@ class  alignas(RPS_LARGE_BLOCK_SIZE) Rps_LargeNewMemoryBlock
     Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
                     blk_largenew, ix,
                     Rps_MemoryBlock::size_tag{},
-                    RPS_LARGE_BLOCK_SIZE - sizeof(Rps_LargeNewMemoryBlock),
+                    RPS_LARGE_BLOCK_SIZE,
                     before, after) {};
   ~Rps_LargeNewMemoryBlock() {};
 public:
@@ -358,6 +361,7 @@ public:
   };
   static Rps_LargeNewMemoryBlock* make(void); // in garbcoll_rps.cc
 };				// end Rps_LargeNewMemoryBlock
+static_assert(sizeof(Rps_LargeNewMemoryBlock)==RPS_LARGE_BLOCK_SIZE);
 
 
 
@@ -378,7 +382,7 @@ class  alignas(RPS_LARGE_BLOCK_SIZE) Rps_LargeOldMemoryBlock
     Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
                     blk_largenew, ix,
                     Rps_MemoryBlock::size_tag{},
-                    RPS_LARGE_BLOCK_SIZE - sizeof(Rps_LargeOldMemoryBlock),
+                    RPS_LARGE_BLOCK_SIZE,
                     before, after) {};
   ~Rps_LargeOldMemoryBlock() {};
 public:
@@ -389,9 +393,10 @@ public:
   };
   static Rps_LargeOldMemoryBlock* make(void); // in garbcoll_rps.cc
 };				// end Rps_LargeOldMemoryBlock
+static_assert(sizeof(Rps_LargeOldMemoryBlock)==RPS_LARGE_BLOCK_SIZE);
 
 
-
+////////////////
 class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MarkedMemoryBlock
   : public Rps_MemoryBlock
 {
@@ -412,10 +417,10 @@ class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MarkedMemoryBlock
     Rps_MemoryBlock(Rps_MemoryBlock::unlocked_tag{},
                     blk_marked, ix,
                     Rps_MemoryBlock::size_tag{},
-                    RPS_SMALL_BLOCK_SIZE - sizeof(struct markedmetadata_st),
+                    RPS_SMALL_BLOCK_SIZE,
                     before, after)
   {
-    assert (sizeof(this) == RPS_SMALL_BLOCK_SIZE);
+    assert (sizeof(Rps_MarkedMemoryBlock) == RPS_SMALL_BLOCK_SIZE);
     assert (remaining_bytes() > 256*sizeof(intptr_t));
     _glob_set_mablocks.insert(this);
   };
@@ -431,6 +436,7 @@ public:
     return remaining_bytes() < _remain_threshold_;
   };
 };				// end Rps_MarkedMemoryBlock
+static_assert(sizeof(Rps_MarkedMemoryBlock)==RPS_SMALL_BLOCK_SIZE);
 
 
 
