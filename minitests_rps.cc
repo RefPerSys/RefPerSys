@@ -85,12 +85,13 @@ Rps_SetValue::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
           break;
         case 1:
         case 2:
-          _.arrval[Rps_Random::random_32u() % benchsize]
-            = Rps_Value(_.arrob[Rps_Random::random_32u() % benchsize]);
+          _.arrval[Rps_Random::random_quickly_8bits() % benchsize]
+            = Rps_Value(_.arrob[Rps_Random::random_quickly_8bits()
+                                % benchsize]);
           break;
         case 3:
         case 4:
-          _.arrval[Rps_Random::random_32u() % benchsize]
+          _.arrval[Rps_Random::random_quickly_8bits() % benchsize]
             = Rps_IntValue(Rps_Random::random_quickly_8bits() - 100);
           break;
         case 5:
@@ -101,13 +102,31 @@ Rps_SetValue::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
           memset (cbuf, 0, sizeof(cbuf));
           randid.to_cbuf24(cbuf);
           cbuf[ Rps_Random::random_quickly_4bits() + 4] = (char)0;
-          _.arrval[Rps_Random::random_32u() % benchsize]
+          _.arrval[Rps_Random::random_quickly_8bits() % benchsize]
             = Rps_StringValue(RPS_CURFRAME,cbuf+1);
           break;
         }
         case 7:
         case 8:
+        {
+          auto& destob =
+            _.arrob[Rps_Random::random_quickly_8bits() % benchsize];
+          if (destob)
+            destob->put_attr(RPS_CURFRAME,
+                             _.arrob[Rps_Random::random_quickly_8bits() % benchsize],
+                             _.arrval[Rps_Random::random_quickly_8bits() % benchsize]);
+          break;
+        }
         case 9:
+        {
+          auto& destob =
+            _.arrob[Rps_Random::random_quickly_8bits() % benchsize];
+          if (destob)
+            destob->append_component
+            (RPS_CURFRAME,
+             _.arrval[Rps_Random::random_quickly_8bits() % benchsize]);
+          break;
+        }
         case 10:
         case 11:
         case 12:
