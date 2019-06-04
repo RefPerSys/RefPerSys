@@ -757,6 +757,25 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
 } // end Rps_ObjectZone::do_remove_attr
 
 
+void
+Rps_ObjectZone::foreach_attribute(const std::function<void(Rps_ObjectRef)>&fun)
+{
+  assert (fun);
+  RPS_FATAL("unimplemented Rps_ObjectZone::foreach_attribute");
+#warning Rps_ObjectZone::foreach_attribute unimplemented
+} // end of Rps_ObjectZone::foreach_attribute
+
+Rps_SetValue
+Rps_ObjectZone::set_of_attrs(Rps_CallFrameZone*callingfra) const
+{
+  RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
+                 Rps_ObjectRef thisob;
+                );
+  _.thisob = Rps_ObjectRef(const_cast<Rps_ObjectZone*>(this));
+  RPS_FATAL("unimplemented Rps_ObjectZone::set_of_attrs");
+#warning Rps_ObjectZone::set_of_attrs unimplemented
+} // end of Rps_ObjectZone::foreach_attribute
+
 
 
 

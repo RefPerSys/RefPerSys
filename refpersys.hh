@@ -174,6 +174,17 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 #define RPS_FATAL(Fmt,...) RPS_FATAL_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
+
+#define RPS_FATALOUT_AT_BIS(Fil,Lin,...) do {	\
+    std::clog << (Fil) << ":" << Lin << ":: "	\
+<< __VA_ARGS__ << std::endl;			\
+    rps_fatal_stop_at (Fil,Lin); } while(0)
+
+#define RPS_FATALOUT_AT(Fil,Lin,...) RPS_FATALOUT_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
+
+// typical usage would be RPS_FATALOUT("x=" << x)
+#define RPS_FATALOUT(...) RPS_FATALOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
+
 typedef uint32_t Rps_BlockIndex;
 
 // blocks are always dynamically allocated, and are using mmap-ed
@@ -2254,13 +2265,16 @@ public:
     do_put_attr(callfra, keyob, valat);
     return this;
   };
-#warning mutating primitives may need an additional callingfra argument, see README.md
-  void do_remove_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob);
-  Rps_ObjectRef remove_attr(Rps_CallFrameZone*callfra, Rps_ObjectRef keyob)
+  void do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob);
+  Rps_ObjectRef remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob)
   {
-    do_remove_attr(callfra, keyob);
+    do_remove_attr(callingfra, keyob);
     return this;
   };
+  /// iterate on all attributes
+  void foreach_attribute(const std::function<void(Rps_ObjectRef)>&fun);
+  /// build the set of all attributes in an object
+  Rps_SetValue set_of_attrs(Rps_CallFrameZone*callingfra) const;
   //// methods for components
   unsigned nb_comps() const
   {
