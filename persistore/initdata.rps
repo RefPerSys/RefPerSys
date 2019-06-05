@@ -31,12 +31,27 @@
 ##    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##***************************************************************************
 
-!_07YGv5jImHw03JSziA (
-        @class _0OE0PJ2Nihp00j9HvR
+
+
+# The primordial CLASS object is the "base" for all objects in Refpersys.
+# This is very incomplete at the current stage. Abhishek is guessing that this
+# primordial CLASS object would require closures for common functionality of all
+# objects.
+!_7yYCtEQKshP00noCyM (
+        @name "primordial CLASS object"
         @mtime 1510325491.740
-        @name "sample_object_for_example"
+) !_7yYCtEQKshP00noCyM
+
+
+
+
+# This is the first sample object of the primordial CLASS.
+!_07YGv5jImHw03JSziA (
+        @class _0OE0PJ2Nihp00j9HvR  | primordial CLASS object |
+        @mtime 1510325491.740
+        @name "sample object for example"
         @comp (_04YQEJtbxJ704mmY6j _8WQ1IHwxDOf02U1G9I)
-        @payload (_90WQpRgSoN8018gLbJ, _3EMmRTwppRq00YOpJZ)
+        @payload (_90WQpRgSoN8018gLbJ _3EMmRTwppRq00YOpJZ)
         @attr (
                 _4cG7qyo0038046cBsf "string"   | string attribute |
                 _1OlebU0NNqG03H0h1E 1234.567   | double attribute |
