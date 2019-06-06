@@ -54,6 +54,8 @@ Rps_SetValue::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
                  Rps_SetValue setresv;
                  Rps_Value arrval[benchsize];
                  Rps_ObjectRef arrob[benchsize];
+                 Rps_SetValue setv;
+                 Rps_TupleValue tupv;
                 );
   assert (num > 10);
   double t0 = 0.0, t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0, t5 = 0.0, t6 = 0.0;
@@ -126,6 +128,7 @@ Rps_SetValue::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
           break;
         }
         case 9:
+        case 10:
           // append a random component
         {
           auto& destob =
@@ -136,7 +139,7 @@ Rps_SetValue::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
              _.arrval[Rps_Random::random_quickly_8bits() % benchsize]);
           break;
         }
-        case 10:
+        case 11:
           // if possible, swap a random _.arrob entry with a random
           // _.arrval entry (if it holds an object)
         {
@@ -152,11 +155,22 @@ Rps_SetValue::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
             };
         }
         break;
-        case 11:
         case 12:
+          // create some random set
+        {
+#warning Rps_SetValue::tiny_benchmark_1 should create some random set
+        }
+        break;
         case 13:
+          // create some random tuple
+        {
+#warning Rps_SetValue::tiny_benchmark_1 should create some random tuple
+        }
+        break;
         case 14:
+	  // maybe remove an attribute
         case 15:
+	  // maybe remove a component
           break;
         }
     }

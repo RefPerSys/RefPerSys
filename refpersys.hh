@@ -1656,6 +1656,7 @@ public:
     assert (ptup == nullptr || ptup->type() == Rps_TyTuple);
     put_data(ptup);
   };
+  Rps_TupleValue() : Rps_TupleValue(nullptr) {};
   Rps_TupleValue(Rps_Value val) : Rps_Value(val.as_tuple()) {};
   Rps_TupleValue(Rps_CallFrameZone*callingfra,uint32_t siz, Rps_ObjectRef const* arr)
     : Rps_Value(Rps_TupleObrefZone::make(callingfra,siz, arr)) {};
