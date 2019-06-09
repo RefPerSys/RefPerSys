@@ -177,10 +177,10 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 #define RPS_FATALOUT_AT_BIS(Fil,Lin,...) do {	\
     std::clog << (Fil) << ":" << Lin << ":: "	\
-<< __VA_ARGS__ << std::endl;			\
+	      << __VA_ARGS__ << std::endl;	\
     rps_fatal_stop_at (Fil,Lin); } while(0)
 
-#define RPS_FATALOUT_AT(Fil,Lin,...) RPS_FATALOUT_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
+#define RPS_FATALOUT_AT(Fil,Lin,...) RPS_FATALOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
 
 // typical usage would be RPS_FATALOUT("x=" << x)
 #define RPS_FATALOUT(...) RPS_FATALOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
@@ -586,8 +586,9 @@ enum Rps_Type
   /// are... So they don't directly go inside RpsValue-s.
   ///
   /// but see also, and keep in sync with, rps_ty_min_quasi below.
-  Rps_TyQuasiToken = -4,
-  Rps_TyQuasiAttributeArray = -3,
+  Rps_TyQuasiToken = -5,
+  Rps_TyQuasiAttributeArray = -4,
+  Rps_TyQuasiObjectVector = -3,
   Rps_TyQuasiComponentVector = -2,
   ///
   /// Values that could go into Rps_Value.
@@ -1437,6 +1438,8 @@ public:
     return ptr;
   };
   static unsigned constexpr _min_alloc_size_ = 5;
+  static Rps_QuasiComponentVector* make_cleared(unsigned allsize);
+  static Rps_QuasiComponentVector* make_inited(unsigned allsize, const std::initializer_list<Rps_Value>&il);
   uint32_t allocated_size() const
   {
     return _qsizarr;
@@ -1444,6 +1447,16 @@ public:
   uint32_t count() const
   {
     return _qnbcomp;
+  };
+  Rps_QuasiComponentVector& resize(unsigned newcount)
+  {
+    if (newcount > allocated_size())
+      throw std::out_of_range("QuasiComponentVector::resize out of range");
+    _qnbcomp = newcount;
+    int delta = (int)allocated_size() - (int)newcount;
+    if (delta>0)
+      memset((void*)(_qarrval+newcount), 0, delta*sizeof(Rps_Value));
+    return *this;
   };
   Rps_Value operator [] (int ix) const
   {
@@ -1457,7 +1470,7 @@ public:
     if (ix<0) ix += _qnbcomp;
     if (ix>=0 && ix<(int)_qnbcomp)
       return _qarrval[ix];
-    throw std::out_of_range("QuasiComponentVector out of range");
+    throw std::out_of_range("QuasiComponentVector [] out of range");
   };
   Rps_Value unsafe_at(int ix) const
   {
@@ -1465,6 +1478,78 @@ public:
   };
 #warning Rps_QuasiComponentVector is incomplete
 };    // end class Rps_QuasiComponentVector
+
+
+////////////////
+/// quasi objects vectors are not first-class values, just
+/// quasivalues, but are pointed from most objects, those having
+/// some components.
+class Rps_QuasiObjectVector : public Rps_PointerCopyingZoneValue
+{
+  friend class Rps_ObjectZone;
+  friend class Rps_ZoneValue;
+  friend class Rps_PointerCopyingZoneValue;
+  // on a 64 bits machine, we are 8 byte aligned, so both of them are:
+  uint32_t _qsizarr;	// allocated size
+  uint32_t _qnbobj;	// used number of objrefs
+  Rps_ObjectRef _qarrobj[RPS_FLEXIBLE_DIM];
+  // this constructor is usually private...
+  Rps_QuasiObjectVector(unsigned siz, unsigned nb, const Rps_ObjectRef*arr)
+    : Rps_PointerCopyingZoneValue(Rps_TyQuasiObjectVector), _qsizarr(siz), _qnbobj(nb)
+  {
+    assert(nb < std::numeric_limits<uint16_t>::max());
+    assert(siz <= nb);
+    assert(nb==0 || arr != nullptr);
+    memset((void*)_qarrobj, 0, siz*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
+    if (nb>0 && arr)
+      memcpy((void*)_qarrobj, arr, nb*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
+  }
+public:
+  static void* operator new (std::size_t, void*ptr)
+  {
+    return ptr;
+  };
+  static unsigned constexpr _min_alloc_size_ = 5;
+  uint32_t allocated_size() const
+  {
+    return _qsizarr;
+  };
+  uint32_t count() const
+  {
+    return _qnbobj;
+  };
+  Rps_ObjectRef operator [] (int ix) const
+  {
+    if (ix<0) ix += _qnbobj;
+    if (ix>=0 && ix<(int)_qnbobj)
+      return _qarrobj[ix];
+    return nullptr;
+  };
+  Rps_ObjectRef& operator [] (int ix)
+  {
+    if (ix<0) ix += _qnbobj;
+    if (ix>=0 && ix<(int)_qnbobj)
+      return _qarrobj[ix];
+    throw std::out_of_range("QuasiObjectVector out of range");
+  };
+  Rps_ObjectRef unsafe_at(int ix) const
+  {
+    return  _qarrobj[ix];
+  };
+  Rps_QuasiObjectVector& resize(unsigned newcount)
+  {
+    if (newcount > allocated_size())
+      throw std::out_of_range("QuasiObjectVector::resize out of range");
+    _qnbobj = newcount;
+    int delta = (int)allocated_size() - (int)newcount;
+    if (delta>0)
+      memset((void*)(_qarrobj+newcount), 0, delta*sizeof(Rps_Value));
+    return *this;
+  };
+  static Rps_QuasiObjectVector* make_cleared(unsigned allsize);
+  static Rps_QuasiObjectVector* make_inited(unsigned allsize, const std::initializer_list<Rps_ObjectRef>&il);
+#warning Rps_QuasiObjectVector is incomplete
+};    // end class Rps_QuasiObjectVector
 
 
 //

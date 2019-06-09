@@ -777,6 +777,22 @@ Rps_ObjectZone::set_of_attrs(Rps_CallFrameZone*callingfra) const
 } // end of Rps_ObjectZone::foreach_attribute
 
 
+Rps_QuasiObjectVector*
+Rps_QuasiObjectVector::make_cleared(unsigned alsize)
+{
+  RPS_FATALOUT("unimplemented Rps_QuasiObjectVector::make_cleared"
+               << alsize);
+#warning Rps_QuasiObjectVector::make_cleared unimplemented
+} // end Rps_QuasiObjectVector::make_cleared
 
+
+Rps_QuasiObjectVector*
+Rps_QuasiObjectVector::make_inited(unsigned alsize,
+                                   const std::initializer_list<Rps_ObjectRef>&il)
+{
+  RPS_FATALOUT("unimplemented Rps_QuasiObjectVector::make_inited"
+               << alsize);
+#warning Rps_QuasiObjectVector::make_inited unimplemented
+} // end Rps_QuasiObjectVector::make_inited
 
 // end of file objects_rps.cc
