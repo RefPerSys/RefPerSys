@@ -1438,8 +1438,8 @@ public:
     return ptr;
   };
   static unsigned constexpr _min_alloc_size_ = 5;
-  static Rps_QuasiComponentVector* make_cleared(unsigned allsize);
-  static Rps_QuasiComponentVector* make_inited(unsigned allsize, const std::initializer_list<Rps_Value>&il);
+  static Rps_QuasiComponentVector* make_cleared(Rps_CallFrameZone*callingfra, unsigned allsize);
+  static Rps_QuasiComponentVector* make_inited(Rps_CallFrameZone*callingfra, unsigned allsize, const std::initializer_list<Rps_Value>&il);
   uint32_t allocated_size() const
   {
     return _qsizarr;
@@ -1546,8 +1546,8 @@ public:
       memset((void*)(_qarrobj+newcount), 0, delta*sizeof(Rps_Value));
     return *this;
   };
-  static Rps_QuasiObjectVector* make_cleared(unsigned allsize);
-  static Rps_QuasiObjectVector* make_inited(unsigned allsize, const std::initializer_list<Rps_ObjectRef>&il);
+  static Rps_QuasiObjectVector* make_cleared(Rps_CallFrameZone*callingfra, unsigned allsize);
+  static Rps_QuasiObjectVector* make_inited(Rps_CallFrameZone*callingfra, unsigned allsize, const std::initializer_list<Rps_ObjectRef>&il);
 #warning Rps_QuasiObjectVector is incomplete
 };    // end class Rps_QuasiObjectVector
 

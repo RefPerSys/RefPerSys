@@ -293,19 +293,19 @@ Rps_TupleValue::Rps_TupleValue(Rps_CallFrameZone*callingfra,collect_tag, const s
 
 
 Rps_QuasiComponentVector*
-Rps_QuasiComponentVector::make_cleared(unsigned alsize)
+Rps_QuasiComponentVector::make_cleared(Rps_CallFrameZone*callingfra, unsigned alsize)
 {
-  RPS_FATALOUT("unimplemented Rps_QuasiComponentVector::make_cleared"
+  RPS_FATALOUT("unimplemented Rps_QuasiComponentVector::make_cleared "
                << alsize);
 #warning Rps_QuasiComponentVector::make_cleared unimplemented
 } // end Rps_QuasiComponentVector::make_cleared
 
 
 Rps_QuasiComponentVector*
-Rps_QuasiComponentVector::make_inited(unsigned alsize,
+Rps_QuasiComponentVector::make_inited(Rps_CallFrameZone*callingfra, unsigned alsize,
                                       const std::initializer_list<Rps_Value>&il)
 {
-  RPS_FATALOUT("unimplemented Rps_QuasiComponentVector::make_inited"
+  RPS_FATALOUT("unimplemented Rps_QuasiComponentVector::make_inited "
                << alsize);
 #warning Rps_QuasiComponentVector::make_inited unimplemented
 } // end Rps_QuasiComponentVector::make_inited
