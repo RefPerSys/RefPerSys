@@ -64,7 +64,7 @@ CXX= g++
 CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(WARNFLAGS)
 
 # ASFLAGS +=
-LDFLAGS += -L/usr/local/lib -rdynamic -lunistring -lpthread
+LDFLAGS += -L/usr/local/lib -rdynamic -lunistring -lbacktrace -lpthread -ldl
 
 INCLUDES += /usr/local/include
 REFPERSYS_BASE_FILES[] =

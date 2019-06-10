@@ -31,6 +31,11 @@
 
 #include "refpersys.hh"
 
+struct backtrace_state* rps_backtrace_state;
+const char* rps_progname;
+
+void* rps_proghdl;
+
 thread_local Rps_Random Rps_Random::_rand_thr_;
 
 enum rps_option_key_en
@@ -278,8 +283,6 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
 } // end rps_argopt_parse
 
 
-
-
 int
 main(int argc, char** argv)
 {
@@ -293,14 +296,121 @@ main(int argc, char** argv)
     .help_filter = NULL,
     .argp_domain = NULL
   };
+  assert(argc>0);
+  rps_progname = argv[0];
+  rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
+  if (!rps_proghdl)
+    {
+      fprintf(stderr, "%s failed to dlopen whole program (%s)\n", rps_progname,
+              dlerror());
+      exit(EXIT_FAILURE);
+    };
+  rps_backtrace_state =
+    backtrace_create_state(rps_progname, (int)true,
+                           Rps_BackTrace::bt_error_cb,
+                           nullptr);
   if (argc < 2)
     {
       printf("missing argument to %s, try %s --help\n", argv[0], argv[0]);
       exit(EXIT_FAILURE);
     }
+
   argp_parse (&argopt, argc, argv, 0, NULL, NULL);
   return 0;
 } // end of main
+
+
+
+void
+Rps_BackTrace::bt_error_method(const char*msg, int errnum)
+{
+  assert (msg != nullptr);
+  fprintf(stderr, "BackTrace Error <%s:%d> %s (#%d)",
+          __FILE__, __LINE__,
+          msg?msg:"???",
+          errnum);
+  fflush(nullptr);
+} // end Rps_BackTrace::bt_error_method
+
+
+
+void
+Rps_BackTrace::bt_error_cb (void *data, const char *msg,
+                                 int errnum)
+{
+  assert (data != nullptr);
+  Rps_BackTrace* btp = static_cast<Rps_BackTrace*>(data);
+  assert (btp->magicnum() == _bt_magicnum_);
+  btp->bt_error_method(msg, errnum);
+} // end of Rps_BackTrace::bt_error_cb
+
+
+int
+Rps_BackTrace::bt_simple_method(uintptr_t ad)
+{
+  if (_bt_simplecb)
+    return _bt_simplecb(this,ad);
+  else
+    {
+      Dl_info dif = {};
+      memset ((void*)&dif, 0, sizeof(dif));
+      if (dladdr((void*)ad, &dif))
+        {
+          int delta = (uintptr_t) dif.dli_saddr - ad;
+          std::string fnamestr;
+          if (strstr(dif.dli_fname, ".so"))
+            fnamestr = std::string(basename(dif.dli_fname));
+          if (delta != 0)
+            {
+              if (fnamestr.empty())
+                fprintf (stderr, "%p: %s+%d\n",
+                         (void*)ad, dif.dli_sname, delta);
+              else
+                fprintf (stderr, "%p: %40s+%d %s\n",
+                         (void*)ad, dif.dli_sname, delta,
+			 fnamestr.c_str());
+            }
+          else
+            {
+              if (fnamestr.empty())
+                fprintf (stderr, "%p: %s+%d\n",
+                         (void*)ad, dif.dli_sname, delta);
+              else
+                fprintf (stderr, "%p: %40s+%d %s\n",
+                         (void*)ad, dif.dli_sname,
+			 delta, fnamestr.c_str());
+            }
+        }
+      else fprintf(stderr, "%p.\n", (void*)ad);
+    }
+  fflush(nullptr);
+} // end of  Rps_BackTrace::bt_simple_method
+
+int
+Rps_BackTrace::bt_simple_cb(void*data, uintptr_t pc)
+{
+  assert (data != nullptr);
+  Rps_BackTrace* btp = static_cast<Rps_BackTrace*>(data);
+  assert (btp->magicnum() == _bt_magicnum_);
+  return btp->bt_simple_method(pc);
+} // end  Rps_BackTrace::bt_simple_cb
+
+
+Rps_BackTrace::Rps_BackTrace(const char*name, const void*data)
+  : _bt_magic(_bt_magicnum_),
+    _bt_name(name?name:"??"),
+    _bt_data(data)
+{
+} // end of Rps_BackTrace::Rps_BackTrace
+
+Rps_BackTrace::~Rps_BackTrace()
+{
+  assert (magicnum() == _bt_magicnum_);
+  _bt_data = nullptr;
+} // end Rps_BackTrace::~Rps_BackTrace
+
+
+
 
 void
 rps_fatal_stop_at (const char *fil, int lin)

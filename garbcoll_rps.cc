@@ -305,12 +305,18 @@ Rps_GarbageCollector::allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*ca
 
 ////////////////////////////////////////////////////////////////
 Rps_MutatorThread::Rps_MutatorThread()
-  : std::thread()
+  : _mthr_prefix(), std::thread()
 {
 #warning unimplemented Rps_MutatorThread::Rps_MutatorThread()
   RPS_FATAL("Rps_MutatorThread::Rps_MutatorThread unimplemented");
 } // end Rps_MutatorThread::Rps_MutatorThread()
 
+Rps_MutatorThread::Rps_MutatorThread(const char*name)
+  : Rps_MutatorThread()
+{
+  if (name && name[0])
+    _mthr_prefix = std::string(name);
+} // end of Rps_MutatorThread::Rps_MutatorThread(const char*name)
 
 
 Rps_MutatorThread::~Rps_MutatorThread()

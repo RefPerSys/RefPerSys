@@ -297,7 +297,7 @@ Rps_QuasiComponentVector::make_cleared(Rps_CallFrameZone*callingfra, unsigned al
 {
   RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
                  Rps_QuasiComponentVector* qvec;
-		 );
+                );
   RPS_FATALOUT("unimplemented Rps_QuasiComponentVector::make_cleared "
                << alsize);
 #warning Rps_QuasiComponentVector::make_cleared unimplemented
@@ -310,7 +310,7 @@ Rps_QuasiComponentVector::make_inited(Rps_CallFrameZone*callingfra, unsigned als
 {
   RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
                  Rps_QuasiComponentVector* qvec;
-		 );
+                );
   RPS_FATALOUT("unimplemented Rps_QuasiComponentVector::make_inited "
                << alsize);
 #warning Rps_QuasiComponentVector::make_inited unimplemented

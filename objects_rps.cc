@@ -782,7 +782,7 @@ Rps_QuasiObjectVector::make_cleared(Rps_CallFrameZone*callingfra, unsigned alsiz
 {
   RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
                  Rps_QuasiObjectVector* qvec;
-		 );
+                );
   RPS_FATALOUT("unimplemented Rps_QuasiObjectVector::make_cleared "
                << alsize);
 #warning Rps_QuasiObjectVector::make_cleared unimplemented
@@ -795,7 +795,7 @@ Rps_QuasiObjectVector::make_inited(Rps_CallFrameZone*callingfra, unsigned alsize
 {
   RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
                  Rps_QuasiObjectVector* qvec;
-		 );
+                );
   RPS_FATALOUT("unimplemented Rps_QuasiObjectVector::make_inited "
                << alsize);
 #warning Rps_QuasiObjectVector::make_inited unimplemented

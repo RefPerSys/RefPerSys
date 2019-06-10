@@ -70,8 +70,11 @@
 #include <sys/mman.h>
 #include <errno.h>
 #include <time.h>
+#include <dlfcn.h>
 
 #include "unistr.h"
+
+#include "backtrace.h"
 
 
 // mark unlikely conditions to help optimization
@@ -98,6 +101,12 @@ extern "C" const char buildhost_rps[];
 extern "C" const char sourcefiles_rps[];
 extern "C" const char headerfiles_rps[];
 
+
+/// backtrace support
+extern "C" struct backtrace_state* rps_backtrace_state;
+
+/// the program name
+extern "C" const char* rps_progname;
 
 // see http://man7.org/linux/man-pages/man2/clock_gettime.2.html
 static inline double
@@ -2701,7 +2710,11 @@ Rps_MarkSweepZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZo
 class Rps_MutatorThread: public std::thread
 {
   friend class Rps_GarbageCollector;
+  // for http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html ::
+  std::string _mthr_prefix;
 public:
+  // the name below should be really short, e.g. less than 6 bytes
+  Rps_MutatorThread(const char*name);
   Rps_MutatorThread();
   ~Rps_MutatorThread();
   void disable_garbage_collector(void);
@@ -2933,6 +2946,30 @@ public:
   }
 };				// end class Rps_QuasiToken
 
+
+////////////////
+class Rps_BackTrace
+{
+  friend int main(int, char**);
+public:
+  static constexpr unsigned _bt_magicnum_ = 0x32079c15;
+  Rps_BackTrace(const char*name, const void*data = nullptr);
+  virtual ~Rps_BackTrace();
+  virtual void bt_error_method(const char*msg, int errnum);
+  virtual int bt_simple_method(uintptr_t);
+private:
+  const unsigned _bt_magic;
+  std::string _bt_name;
+  std::function<int(Rps_BackTrace*,uintptr_t)> _bt_simplecb;
+  const void* _bt_data;
+  static void bt_error_cb(void*data, const char*msg, int errnum);
+  static int bt_simple_cb(void *data, uintptr_t pc);
+public:
+  unsigned magicnum() const
+  {
+    return _bt_magic;
+  };
+};				// end class Rps_BackTrace
 
 
 ////////////////////////////////////////////////////////////////
