@@ -154,6 +154,12 @@ has](http://projects.camlcity.org/projects/dl/omake-0.10.3/doc/html/omake-quicks
 analysis* (the later being an unusual feature - most build automation
 tools using modification time of files).
 
+You should have compiled and installed Ian Taylor's
+[libbacktrace](https://github.com/ianlancetaylor/libbacktrace),
+e.g. under `/usr/local/`. You may need to add `/usr/local/lib/` in
+your `/etc/ld.so.conf` and run `ldconfig -v -a` after installation of
+that `libbacktrace`.
+
 ### Build instructions
 You need a recent C++17 compiler such as `g++` (We use GCC 7 or 8 or 9) or `clang++` , `omake`, `libunistring-dev`
  
