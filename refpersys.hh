@@ -2957,17 +2957,36 @@ public:
   virtual ~Rps_BackTrace();
   virtual void bt_error_method(const char*msg, int errnum);
   virtual int bt_simple_method(uintptr_t);
+  virtual int bt_full_method(uintptr_t pc,
+                             const char *filename, int lineno,
+                             const char *function);
 private:
   const unsigned _bt_magic;
   std::string _bt_name;
   std::function<int(Rps_BackTrace*,uintptr_t)> _bt_simplecb;
+  std::function<int(Rps_BackTrace*,uintptr_t, const char* /*filnam*/,
+                    int /*lineno*/, const char* /*funam*/)> _bt_fullcb;
   const void* _bt_data;
   static void bt_error_cb(void*data, const char*msg, int errnum);
   static int bt_simple_cb(void *data, uintptr_t pc);
+  static int bt_full_cb(void *data, uintptr_t pc,
+                        const char *filename, int lineno,
+                        const char *function);
 public:
   unsigned magicnum() const
   {
     return _bt_magic;
+  };
+  Rps_BackTrace& set_simple_cb(const std::function<int(Rps_BackTrace*,uintptr_t)>& cb)
+  {
+    _bt_simplecb = cb;
+    return *this;
+  };
+  Rps_BackTrace& set_full_cb(const std::function<int(Rps_BackTrace*,uintptr_t, const char* /*filnam*/,
+                             int /*lineno*/, const char* /*funam*/)> &cb)
+  {
+    _bt_fullcb = cb;
+    return *this;
   };
 };				// end class Rps_BackTrace
 
@@ -3024,7 +3043,7 @@ public:
     return true;
   };
 
-  /// Generates the token for the current line
+  /// Generates the token, as a stream, from the current line
   Rps_QuasiToken* tokenize(Rps_CallFrameZone* callframe);
 };				// end class Rps_LexedFile
 
