@@ -63,6 +63,14 @@ Rps_SetValue::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
                 );
   assert (num > 10);
   double t0 = 0.0, t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0, t5 = 0.0, t6 = 0.0;
+  {
+    char msgbuf[64];
+    memset(msgbuf, 0, sizeof(msgbuf));
+    snprintf(msgbuf, sizeof(msgbuf), "starting tiny_benchmark_1 num#%u",
+             num);
+    Rps_BackTrace::run_full_backtrace(1, msgbuf);
+    fflush(nullptr);
+  };
   t0 = rps_thread_cpu_time();
   assert (t0 > 0.0);
   for (auto i = 0u; i<benchsize; i++)
