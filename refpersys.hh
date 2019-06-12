@@ -2669,7 +2669,9 @@ public:
               Rps_GarbageCollector::maybe_garbcoll (callingfra);
           };
       } // end large size
-    else RPS_FATAL("too big size %zd for allocate_birth_maybe_gc", size);
+    else
+      RPS_FATAL("too big size %zd for allocate_birth_maybe_gc", size);
+    return ad;
   };
 };				// end class Rps_GarbageCollector
 
@@ -2953,6 +2955,7 @@ class Rps_BackTrace
   friend int main(int, char**);
 public:
   static constexpr unsigned _bt_magicnum_ = 0x32079c15;
+  static constexpr unsigned _bt_maxdepth_ = 80;
   Rps_BackTrace(const char*name, const void*data = nullptr);
   virtual ~Rps_BackTrace();
   virtual void bt_error_method(const char*msg, int errnum);
@@ -2973,9 +2976,13 @@ private:
                         const char *filename, int lineno,
                         const char *function);
 public:
-  unsigned magicnum() const
+  unsigned magicnum(void) const
   {
     return _bt_magic;
+  };
+  const std::string&name (void) const
+  {
+    return _bt_name;
   };
   Rps_BackTrace& set_simple_cb(const std::function<int(Rps_BackTrace*,uintptr_t)>& cb)
   {
@@ -2988,6 +2995,45 @@ public:
     _bt_fullcb = cb;
     return *this;
   };
+  int do_simple_backtrace(int skip)
+  {
+    return backtrace_simple(rps_backtrace_state, skip,
+                            bt_simple_cb,
+                            bt_error_cb,
+                            this
+                           );
+  };
+  /// simple backtrace on stderr::
+  static void run_simple_backtrace(int skip, const char*name=nullptr);
+  Rps_BackTrace& simple_backtrace(int skip, int*res=nullptr)
+  {
+    int r = do_simple_backtrace(skip);
+    if (res) *res = r;
+    return *this;
+  };
+  ///
+  int do_full_backtrace(int skip)
+  {
+    return backtrace_full(rps_backtrace_state, skip,
+                          bt_full_cb,
+                          bt_error_cb,
+                          this
+                         );
+  }
+  Rps_BackTrace& full_backtrace(int skip, int *res=nullptr)
+  {
+    int r = do_full_backtrace(skip);
+    if (res) *res = r;
+    return *this;
+  }
+  //// full backtrace on stderr::
+  static void run_full_backtrace(int skip, const char*name=nullptr);
+  static void print_backtrace(int skip, FILE* fil)
+  {
+    assert (fil != nullptr);
+    backtrace_print(rps_backtrace_state, skip, fil);
+  };
+
 };				// end class Rps_BackTrace
 
 

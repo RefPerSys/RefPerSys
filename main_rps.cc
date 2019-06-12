@@ -348,6 +348,7 @@ Rps_BackTrace::bt_error_cb (void *data, const char *msg,
 int
 Rps_BackTrace::bt_simple_method(uintptr_t ad)
 {
+  if (ad == 0) return 0;
   if (_bt_simplecb)
     return _bt_simplecb(this,ad);
   Dl_info dif = {};
@@ -379,8 +380,9 @@ Rps_BackTrace::bt_simple_method(uintptr_t ad)
                      delta, fnamestr.c_str());
         }
     }
-  else fprintf(stderr, "%p.\n", (void*)ad);
-  fflush(nullptr);
+  else
+    fprintf(stderr, "%p.\n", (void*)ad);
+  fflush(stderr);
   return 0;
 } // end of  Rps_BackTrace::bt_simple_method
 
@@ -388,6 +390,7 @@ int
 Rps_BackTrace::bt_simple_cb(void*data, uintptr_t pc)
 {
   assert (data != nullptr);
+  if (pc == 0) return 1;
   Rps_BackTrace* btp = static_cast<Rps_BackTrace*>(data);
   assert (btp->magicnum() == _bt_magicnum_);
   return btp->bt_simple_method(pc);
@@ -399,6 +402,8 @@ Rps_BackTrace::bt_full_method(uintptr_t pc,
                               const char *filename, int lineno,
                               const char *function)
 {
+  if (pc == 0)
+    return 1;
   if (_bt_fullcb)
     return _bt_fullcb(this,pc,filename,lineno,function);
   if (!filename) filename="?.?";
@@ -433,6 +438,10 @@ Rps_BackTrace::bt_full_method(uintptr_t pc,
                      delta, fnamestr.c_str());
         }
     }
+  else
+    fprintf(stderr, "%p. (%s:%d) %s\n",
+            (void*)pc, filename, lineno, function);
+  fflush(stderr);
   return 0;
 } // end Rps_BackTrace::bt_full_method
 
@@ -442,6 +451,7 @@ Rps_BackTrace::bt_full_cb(void *data, uintptr_t pc,
                           const char *function)
 {
   assert (data != nullptr);
+  if (pc == 0) return 1;
   Rps_BackTrace* btp = static_cast<Rps_BackTrace*>(data);
   assert (btp->magicnum() == _bt_magicnum_);
   return btp->bt_full_method(pc, filename, lineno, function);
@@ -461,14 +471,71 @@ Rps_BackTrace::~Rps_BackTrace()
 } // end Rps_BackTrace::~Rps_BackTrace
 
 
+void
+Rps_BackTrace::run_simple_backtrace(int skip, const char*name)
+{
+  Rps_BackTrace bt(name?name:"plain");
+  int depthcount = 0;
+  bt.set_simple_cb([&,stderr](Rps_BackTrace*btp, uintptr_t pc)
+  {
+    assert (btp != nullptr && btp-> magicnum() ==  _bt_magicnum_);
+    depthcount++;
+    if (depthcount > (int)_bt_maxdepth_)
+      {
+        fprintf(stderr, "\n.... etc .....\n");
+        return depthcount;
+      }
+    if (depthcount %5 == 0)
+      fputc('\n', stderr);
+    fprintf(stderr, "[%d] ", depthcount);
+    return btp->bt_simple_method(pc);
+  });
+  fprintf(stderr, "SIMPLE BACKTRACE (%s)\n", bt.name().c_str());
+  bt.simple_backtrace(skip);
+  fprintf(stderr, "***** end of %d simple backstrace (%s) *****\n",
+          depthcount, bt.name().c_str());
+  fflush(stderr);
+} // end Rps_BackTrace::run_simple_backtrace
 
 
 void
-rps_fatal_stop_at (const char *fil, int lin)
+Rps_BackTrace::run_full_backtrace(int skip, const char*name)
 {
-#warning rps_fatal_stop_at should show a backtrace
-  // FIXME: should show a backtrace
-  assert(fil != nullptr);
+  Rps_BackTrace bt(name?name:"full");
+  int depthcount = 0;
+  bt.set_full_cb([&,stderr](Rps_BackTrace*btp, uintptr_t pc,
+                            const char*filnam, int lineno, const char*funam)
+  {
+    assert (btp != nullptr && btp-> magicnum() ==  _bt_magicnum_);
+    depthcount++;
+    if (depthcount > (int)_bt_maxdepth_)
+      {
+        fprintf(stderr, "\n.... etc .....\n");
+        return depthcount;
+      }
+    if (depthcount %5 == 0) fputc('\n', stderr);
+    fprintf(stderr, "[%d] ", depthcount);
+    return btp->bt_full_method(pc, filnam, lineno, funam);
+  });
+  fprintf(stderr, "FULL BACKTRACE (%s)\n", bt.name().c_str());
+  bt.full_backtrace(skip);
+  fprintf(stderr, "***** end of %d full backstrace (%s) *****\n",
+          depthcount, bt.name().c_str());
+  fflush(stderr);
+} // end Rps_BackTrace::run_full_backtrace
+
+void
+rps_fatal_stop_at (const char *filnam, int lin)
+{
+  assert(filnam != nullptr);
   assert (lin>=0);
+  char errbuf[80];
+  memset (errbuf, 0, sizeof(errbuf));
+  snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
+  fprintf(stderr, "FATAL: gitid %s, built timestamp %s, host %s, md5sum %s\n",
+          gitid_rps, timestamp_rps, buildhost_rps, md5sum_rps);
+  fflush(stderr);
+  Rps_BackTrace::run_full_backtrace(1, errbuf);
+  fflush(nullptr);
   abort();
 } // end rps_fatal_stop_at
