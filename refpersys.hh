@@ -2959,10 +2959,10 @@ public:
   Rps_BackTrace(const char*name, const void*data = nullptr);
   virtual ~Rps_BackTrace();
   virtual void bt_error_method(const char*msg, int errnum);
-  virtual int bt_simple_method(uintptr_t);
+  virtual int bt_simple_method(uintptr_t, bool nofun=false);
   virtual int bt_full_method(uintptr_t pc,
                              const char *filename, int lineno,
-                             const char *function);
+                             const char *function, bool nofun=false);
 private:
   const unsigned _bt_magic;
   std::string _bt_name;

@@ -346,10 +346,10 @@ Rps_BackTrace::bt_error_cb (void *data, const char *msg,
 
 
 int
-Rps_BackTrace::bt_simple_method(uintptr_t ad)
+Rps_BackTrace::bt_simple_method(uintptr_t ad, bool nofun)
 {
   if (ad == 0) return 0;
-  if (_bt_simplecb)
+  if (!nofun && _bt_simplecb)
     return _bt_simplecb(this,ad);
   Dl_info dif = {};
   memset ((void*)&dif, 0, sizeof(dif));
@@ -390,21 +390,21 @@ int
 Rps_BackTrace::bt_simple_cb(void*data, uintptr_t pc)
 {
   assert (data != nullptr);
-  if (pc == 0) return 1;
+  if (pc == 0 || pc == (uintptr_t)-1) return 1;
   Rps_BackTrace* btp = static_cast<Rps_BackTrace*>(data);
   assert (btp->magicnum() == _bt_magicnum_);
-  return btp->bt_simple_method(pc);
+  return btp->bt_simple_method(pc,true);
 } // end  Rps_BackTrace::bt_simple_cb
 
 
 int
 Rps_BackTrace::bt_full_method(uintptr_t pc,
                               const char *filename, int lineno,
-                              const char *function)
+                              const char *function, bool nofun)
 {
-  if (pc == 0)
+  if (pc == 0 || pc == (uintptr_t)-1)
     return 1;
-  if (_bt_fullcb)
+  if (!nofun && _bt_fullcb)
     return _bt_fullcb(this,pc,filename,lineno,function);
   if (!filename) filename="?.?";
   if (!function) function="???";
@@ -451,10 +451,10 @@ Rps_BackTrace::bt_full_cb(void *data, uintptr_t pc,
                           const char *function)
 {
   assert (data != nullptr);
-  if (pc == 0) return 1;
+  if (pc == 0 || pc == (uintptr_t)-1) return 1;
   Rps_BackTrace* btp = static_cast<Rps_BackTrace*>(data);
   assert (btp->magicnum() == _bt_magicnum_);
-  return btp->bt_full_method(pc, filename, lineno, function);
+  return btp->bt_full_method(pc, filename, lineno, function, true);
 } // end Rps_BackTrace::bt_full_cb
 
 Rps_BackTrace::Rps_BackTrace(const char*name, const void*data)
@@ -532,7 +532,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
   char errbuf[80];
   memset (errbuf, 0, sizeof(errbuf));
   snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
-  fprintf(stderr, "FATAL: gitid %s, built timestamp %s, host %s, md5sum %s\n",
+  fprintf(stderr, "FATAL: gitid %s, built timestamp %s,\n"
+	  "\t host %s, md5sum %s\n",
           gitid_rps, timestamp_rps, buildhost_rps, md5sum_rps);
   fflush(stderr);
   Rps_BackTrace::run_full_backtrace(1, errbuf);
