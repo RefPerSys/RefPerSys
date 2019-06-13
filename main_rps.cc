@@ -345,6 +345,159 @@ Rps_BackTrace::bt_error_cb (void *data, const char *msg,
 } // end of Rps_BackTrace::bt_error_cb
 
 
+
+void
+rps_print_simple_backtrace_level(Rps_BackTrace* btp, FILE*outf, const char*beforebuf, uintptr_t pc)
+{
+  if (btp == nullptr || btp->magicnum() != Rps_BackTrace::_bt_magicnum_)
+    RPS_FATAL("bad btp@%p", (void*)btp);
+  if (!outf)
+    RPS_FATAL("missing outf");
+  if (!beforebuf)
+    beforebuf = "*";
+  if (pc==0 || pc==(uintptr_t)-1)
+    {
+      fprintf(outf, "%s *********\n", beforebuf);
+      return;
+    }
+  const char*demangled = nullptr;
+  Dl_info dif = {};
+  memset ((void*)&dif, 0, sizeof(dif));
+  if (dladdr((void*)pc, &dif))
+    {
+      int delta = (uintptr_t) dif.dli_saddr - pc;
+      std::string fnamestr;
+      if (dif.dli_fname && strstr(dif.dli_fname, ".so"))
+        fnamestr = std::string(basename(dif.dli_fname));
+      std::string funamestr;
+      if (dif.dli_sname != nullptr)
+        {
+          if (dif.dli_sname[0] == '_')
+            {
+              int status = -1;
+              demangled  = abi::__cxa_demangle(dif.dli_sname, NULL, 0, &status);
+              if (demangled && demangled[0])
+                funamestr = std::string (demangled);
+            };
+          if (funamestr.empty())
+            funamestr = std::string(dif.dli_sname);
+        }
+      else funamestr = "??";
+      if (delta != 0)
+        {
+          if (fnamestr.empty())
+            fprintf (outf, "%s %p: %s+%d\n",
+                     beforebuf, (void*)pc, funamestr.c_str(), delta);
+          else
+            fprintf (outf, "%s %p: %40s+%d %s\n",
+                     beforebuf, (void*)pc, funamestr.c_str(), delta,
+                     fnamestr.c_str());
+        }
+      else
+        {
+          if (fnamestr.empty())
+            fprintf (outf, "%s %p: %s+%d\n",
+                     beforebuf, (void*)pc, funamestr.c_str(), delta);
+          else
+            fprintf (outf, "%s %p: %40s+%d %s\n",
+                     beforebuf, (void*)pc, funamestr.c_str(),
+                     delta, fnamestr.c_str());
+        }
+    }
+  else
+    fprintf(outf, "%s %p.\n", beforebuf, (void*)pc);
+  if (demangled)
+    free((void*)demangled), demangled = nullptr;
+  fflush(outf);
+} // end of rps_print_simple_backtrace_level
+
+
+
+
+void rps_print_full_backtrace_level
+(Rps_BackTrace* btp,
+ FILE*outf, const char*beforebuf,
+ uintptr_t pc, const char *filename, int lineno,
+ const char *function)
+{
+  if (btp == nullptr || btp->magicnum() != Rps_BackTrace::_bt_magicnum_)
+    RPS_FATAL("bad btp@%p", (void*)btp);
+  if (!outf)
+    RPS_FATAL("missing outf");
+  if (!beforebuf)
+    beforebuf = "*";
+  if (pc==0 || pc==(uintptr_t)-1)
+    {
+      fprintf(outf, "%s *********\n", beforebuf);
+      return;
+    }
+  std::string locstr;
+  std::string funamestr;
+  char locbuf[80];
+  Dl_info dif = {};
+  const char* demangled = nullptr;
+  bool wantdladdr = false;
+  memset ((void*)&dif, 0, sizeof(dif));
+  if (function)
+    {
+      if (function[0] == '_')
+        {
+          int status = -1;
+          demangled  = abi::__cxa_demangle(function, NULL, 0, &status);
+          if (demangled && demangled[0])
+            funamestr = std::string (demangled);
+        }
+      else funamestr = std::string (function);
+    }
+  else
+    wantdladdr = true;
+  memset(locbuf, 0, sizeof(locbuf));
+  if (filename)
+    {
+      snprintf(locbuf, sizeof(locbuf), "%s:%d",
+               basename(filename), lineno);
+      locstr = std::string(locbuf);
+    }
+  else
+    wantdladdr = true;
+  if (wantdladdr && dladdr((void*)pc, &dif))
+    {
+      int delta = (uintptr_t) dif.dli_saddr - pc;
+      if (locstr.empty() && dif.dli_fname && strstr(dif.dli_fname, ".so"))
+        {
+          if (delta != 0)
+            snprintf(locbuf, sizeof(locbuf),
+                     "!%s+%d", basename(dif.dli_fname), delta);
+          else snprintf(locbuf, sizeof(locbuf),
+                          "!%s", basename(dif.dli_fname));
+          locstr = std::string (locbuf);
+        };
+      if (funamestr.empty())
+        {
+          if (dif.dli_sname && dif.dli_sname[0] == '_')
+            {
+              int status = -1;
+              demangled  = abi::__cxa_demangle(dif.dli_sname, NULL, 0, &status);
+              if (demangled && demangled[0])
+                funamestr = std::string (demangled);
+            }
+          else if (dif.dli_sname)
+            funamestr = std::string(dif.dli_sname);
+          if (funamestr.empty())
+            {
+              funamestr = std::string("?_?");
+            }
+        }
+    };
+  fprintf(outf, "%s %p %s %s\n",
+          beforebuf, (void*)pc, funamestr.c_str(), locstr.c_str());
+  fflush(outf);
+  if (demangled)
+    free((void*)demangled), demangled=nullptr;
+} // end of rps_print_full_backtrace_level
+
+
+
 int
 Rps_BackTrace::bt_simple_method(uintptr_t ad, bool nofun)
 {
@@ -352,6 +505,7 @@ Rps_BackTrace::bt_simple_method(uintptr_t ad, bool nofun)
   if (!nofun && _bt_simplecb)
     return _bt_simplecb(this,ad);
   Dl_info dif = {};
+  const char* demangled = nullptr;
   memset ((void*)&dif, 0, sizeof(dif));
   if (dladdr((void*)ad, &dif))
     {
@@ -359,24 +513,38 @@ Rps_BackTrace::bt_simple_method(uintptr_t ad, bool nofun)
       std::string fnamestr;
       if (strstr(dif.dli_fname, ".so"))
         fnamestr = std::string(basename(dif.dli_fname));
+      std::string funamestr;
+      if (dif.dli_sname != nullptr)
+        {
+          if (dif.dli_sname[0] == '_')
+            {
+              int status = -1;
+              demangled  = abi::__cxa_demangle(dif.dli_sname, NULL, 0, &status);
+              if (demangled && demangled[0])
+                funamestr = std::string (demangled);
+            };
+          if (funamestr.empty())
+            funamestr = std::string(dif.dli_sname);
+        }
+      else funamestr = "??";
       if (delta != 0)
         {
           if (fnamestr.empty())
             fprintf (stderr, "%p: %s+%d\n",
-                     (void*)ad, dif.dli_sname, delta);
+                     (void*)ad, funamestr.c_str(), delta);
           else
             fprintf (stderr, "%p: %40s+%d %s\n",
-                     (void*)ad, dif.dli_sname, delta,
+                     (void*)ad, funamestr.c_str(), delta,
                      fnamestr.c_str());
         }
       else
         {
           if (fnamestr.empty())
             fprintf (stderr, "%p: %s+%d\n",
-                     (void*)ad, dif.dli_sname, delta);
+                     (void*)ad, funamestr.c_str(), delta);
           else
             fprintf (stderr, "%p: %40s+%d %s\n",
-                     (void*)ad, dif.dli_sname,
+                     (void*)ad, funamestr.c_str(),
                      delta, fnamestr.c_str());
         }
     }
@@ -421,7 +589,7 @@ Rps_BackTrace::bt_full_method(uintptr_t pc,
         {
           if (fnamestr.empty())
             fprintf (stderr, "%p: %s (%s:%d) %s+%d\n",
-                     (void*)pc, function, filename, lineno, dif.dli_sname, delta);
+                     (void*)pc, function, filename, lineno,  dif.dli_sname, delta);
           else
             fprintf (stderr, "%p:  %s (%s:%d) %40s+%d %s\n",
                      (void*)pc, function, filename, lineno, dif.dli_sname, delta,
@@ -533,7 +701,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
   memset (errbuf, 0, sizeof(errbuf));
   snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
   fprintf(stderr, "FATAL: gitid %s, built timestamp %s,\n"
-	  "\t host %s, md5sum %s\n",
+          "\t host %s, md5sum %s\n",
           gitid_rps, timestamp_rps, buildhost_rps, md5sum_rps);
   fflush(stderr);
   Rps_BackTrace::run_full_backtrace(1, errbuf);

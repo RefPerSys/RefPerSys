@@ -72,6 +72,10 @@
 #include <time.h>
 #include <dlfcn.h>
 
+// for programmatic C++ name demangling, see also
+// https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h
+#include <cxxabi.h>
+
 #include "unistr.h"
 
 #include "backtrace.h"
@@ -2950,9 +2954,24 @@ public:
 
 
 ////////////////
+class Rps_BackTrace;
+extern "C" void rps_print_simple_backtrace_level
+(Rps_BackTrace* btp, FILE*outf, const char*beforemsg, uintptr_t pc);
+extern "C" void rps_print_full_backtrace_level
+(Rps_BackTrace* btp,
+ FILE*outf, const char*beforemsg,
+ uintptr_t pc, const char *filename, int lineno,
+ const char *function);
 class Rps_BackTrace
 {
   friend int main(int, char**);
+  friend void rps_print_simple_backtrace_level
+  (Rps_BackTrace* btp, FILE*outf, const char*beforemsg, uintptr_t pc);
+  friend void rps_print_full_backtrace_level
+  (Rps_BackTrace* btp,
+   FILE*outf, const char*beforemsg,
+   uintptr_t pc, const char *filename, int lineno,
+   const char *function);
 public:
   static constexpr unsigned _bt_magicnum_ = 0x32079c15;
   static constexpr unsigned _bt_maxdepth_ = 80;
