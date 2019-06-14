@@ -289,11 +289,11 @@ protected:
                       before, after) {};
   void* allocate_zone(size_t size)
   {
-    assert(size % (2*alignof(void*)) == 0);
-    assert(size >= _bl_minsize_);
+    RPS_ASSERTPRINTF(size % (2*alignof(void*)) == 0, "size=%zd", size);
+    RPS_ASSERTPRINTF(size >= _bl_minsize_, "size=%zd", size);
     void*ptr = _bl_curptr;
     _bl_curptr = (char*)_bl_curptr + size;
-    assert (_bl_curptr <= _bl_endptr);
+    RPS_ASSERT (_bl_curptr <= _bl_endptr);
     return ptr;
   }
   void* allocate_aligned_zone (size_t size, size_t align);
@@ -306,7 +306,7 @@ protected:
 public:
   unsigned remaining_bytes() const
   {
-    assert ((char*)_bl_curptr <= (char*)_bl_endptr);
+    RPS_ASSERT ((char*)_bl_curptr <= (char*)_bl_endptr);
     return (char*)_bl_endptr - (char*)_bl_curptr;
   };
   static Rps_MemoryBlock*block_at_addr(const void*ad)
@@ -472,8 +472,8 @@ class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MarkedMemoryBlock
                     RPS_SMALL_BLOCK_SIZE,
                     before, after)
   {
-    assert (sizeof(Rps_MarkedMemoryBlock) == RPS_SMALL_BLOCK_SIZE);
-    assert (remaining_bytes() > 256*sizeof(intptr_t));
+    static_assert (sizeof(Rps_MarkedMemoryBlock) == RPS_SMALL_BLOCK_SIZE);
+    RPS_ASSERT (remaining_bytes() > 256*sizeof(intptr_t));
     _glob_set_mablocks.insert(this);
   };
   ~Rps_MarkedMemoryBlock()
@@ -553,7 +553,7 @@ public:
   }
   const Rps_ObjectZone& operator * (void) const
   {
-    assert(_optr != nullptr);
+    RPS_ASSERT(_optr != nullptr);
     return *_optr;
   };
   bool operator ! () const
@@ -574,17 +574,17 @@ public:
   };
   const Rps_ObjectZone* operator -> (void) const
   {
-    assert(_optr != nullptr);
+    RPS_ASSERT(_optr != nullptr);
     return _optr;
   };
   Rps_ObjectZone* operator * (void)
   {
-    assert(_optr != nullptr);
+    RPS_ASSERT(_optr != nullptr);
     return _optr;
   };
   Rps_ObjectZone* operator -> (void)
   {
-    assert(_optr != nullptr);
+    RPS_ASSERT(_optr != nullptr);
     return _optr;
   };
   Rps_ObjectZone*obptr() const
@@ -781,7 +781,7 @@ public:
   static unsigned bucket_num(uint64_t hi)
   {
     unsigned b = hi / (max_hi / maxbuckets);
-    assert(b<=maxbuckets);
+    RPS_ASSERTPRINTF(b<=maxbuckets, "b=%u", b);
     return b;
   };
   unsigned bucket_num(void) const
@@ -844,7 +844,7 @@ public:
   };
   Rps_Id(uint64_t h, uint32_t l=0) : _id_hi(h), _id_lo(l)
   {
-    assert((h==0 && l==0) || hash() != 0);
+    RPS_ASSERT((h==0 && l==0) || hash() != 0);
   };
 #ifndef RPS_ONLY_ID_CODE
   static Rps_Id random()
@@ -1023,7 +1023,7 @@ public:
   static ValClass* rps_allocate_with_gap(Rps_CallFrameZone*calfram,
                                          unsigned gap, Args... args)
   {
-    assert (gap % alignof(ValClass) == 0);
+    RPS_ASSERTPRINTF (gap % alignof(ValClass) == 0, "gap=%u", gap);
     void* ptr = ValClass::allocate_rps_zone(sizeof(ValClass)+gap,calfram);
     ValClass* result = new(ptr) ValClass(args...);
     return result;
@@ -1033,7 +1033,7 @@ public:
   static ValClass* rps_allocate(Rps_CallFrameZone*calfram, Args... args)
   {
     size_t siz = sizeof(ValClass);
-    assert (siz % alignof(ValClass) == 0);
+    RPS_ASSERTPRINTF (siz % alignof(ValClass) == 0, "siz=%zd", siz);
     ValClass* result = nullptr;
     void* ptr = ValClass::allocate_rps_zone(siz,calfram);
     result = new(ptr) ValClass(args...);
@@ -1042,11 +1042,11 @@ public:
 
   Rps_ZoneValue(Rps_Type ty) : _vtyp(ty)
   {
-    assert ((int)ty>0
-            || ty==Rps_TyCallFrame
-            || ((int)ty<Rps_TyInt && ty>=rps_ty_min_quasi)
-            || ty==Rps_TyDumper
-            || ty==Rps_TyLoader);
+    RPS_ASSERT ((int)ty>0
+                || ty==Rps_TyCallFrame
+                || ((int)ty<Rps_TyInt && ty>=rps_ty_min_quasi)
+                || ty==Rps_TyDumper
+                || ty==Rps_TyLoader);
   };
 public:
   inline void rps_write_barrier(Rps_CallFrameZone*fr);
@@ -1094,7 +1094,7 @@ public:
 protected:
   void mutate_type(Rps_Type ty)
   {
-    assert ((int)ty >= 0);
+    RPS_ASSERT ((int)ty >= 0);
     _vtyp = ty;
   };
 public:
@@ -1310,7 +1310,7 @@ protected:
     Rps_PointerCopyingZoneValue(ty), _hash(h) {};
   void set_hash(Rps_HashInt h)
   {
-    assert(h != 0);
+    RPS_ASSERT(h != 0);
     _hash = h;
   };
 public:
@@ -1332,7 +1332,7 @@ protected:
     : Rps_CopyingHashedZoneValue(ty, h), _size(siz) {};
   void set_size(uint32_t siz)
   {
-    assert (_size == 0);
+    RPS_ASSERT (_size == 0);
     _size = siz;
   };
 public:
@@ -1361,9 +1361,9 @@ class Rps_QuasiAttributeArray : public Rps_PointerCopyingZoneValue
   Rps_QuasiAttributeArray(unsigned siz, unsigned nb, const std::pair<Rps_ObjectRef,Rps_Value>*arr)
     : Rps_PointerCopyingZoneValue(Rps_TyQuasiAttributeArray), _qsizattr(siz), _qnbattrs(nb)
   {
-    assert(nb < std::numeric_limits<uint16_t>::max());
-    assert(siz <= nb);
-    assert(nb==0 || arr != nullptr);
+    RPS_ASSERTPRINTF(nb < std::numeric_limits<uint16_t>::max(), "nb=%u", nb);
+    RPS_ASSERTPRINTF(siz <= nb, "siz=%u, nb=%u", siz, nb);
+    RPS_ASSERT(nb==0 || arr != nullptr);
     memset((void*)_qatentries, 0, siz*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
     if (nb>0 && arr)
       memcpy((void*)_qatentries, arr, nb*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
@@ -1466,9 +1466,9 @@ class Rps_QuasiComponentVector : public Rps_PointerCopyingZoneValue
   Rps_QuasiComponentVector(unsigned siz, unsigned nb, const Rps_Value*arr)
     : Rps_PointerCopyingZoneValue(Rps_TyQuasiComponentVector), _qsizarr(siz), _qnbcomp(nb)
   {
-    assert(nb < std::numeric_limits<uint16_t>::max());
-    assert(siz <= nb);
-    assert(nb==0 || arr != nullptr);
+    RPS_ASSERTPRINTF(nb < std::numeric_limits<uint16_t>::max(), "nb=%u", nb);
+    RPS_ASSERTPRINTF(siz <= nb, "siz=%u, nb=%u", siz, nb);
+    RPS_ASSERT(nb==0 || arr != nullptr);
     memset((void*)_qarrval, 0, siz*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
     if (nb>0 && arr)
       memcpy((void*)_qarrval, arr, nb*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
@@ -1538,9 +1538,9 @@ class Rps_QuasiObjectVector : public Rps_PointerCopyingZoneValue
   Rps_QuasiObjectVector(unsigned siz, unsigned nb, const Rps_ObjectRef*arr)
     : Rps_PointerCopyingZoneValue(Rps_TyQuasiObjectVector), _qsizarr(siz), _qnbobj(nb)
   {
-    assert(nb < std::numeric_limits<uint16_t>::max());
-    assert(siz <= nb);
-    assert(nb==0 || arr != nullptr);
+    RPS_ASSERTPRINTF(nb < std::numeric_limits<uint32_t>::max()/4, "nb=%u", nb);
+    RPS_ASSERTPRINTF(siz <= nb, "siz=%u, nb=%u", siz, nb);
+    RPS_ASSERT(nb==0 || arr != nullptr);
     memset((void*)_qarrobj, 0, siz*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
     if (nb>0 && arr)
       memcpy((void*)_qarrobj, arr, nb*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
@@ -1625,7 +1625,7 @@ protected:
   Rps_Loader(const char*dirname) : Rps_ZoneValue(Rps_TyLoader),
     _ld_pseudoframe(nullptr,nullptr), _ld_dirname(dirname)
   {
-    assert (dirname != nullptr);
+    RPS_ASSERT (dirname != nullptr);
   };
   ~Rps_Loader() {};
 public:
@@ -1676,7 +1676,7 @@ protected:
   Rps_Dumper(const char*dirname) : Rps_ZoneValue(Rps_TyDumper),
     _du_pseudoframe(nullptr,nullptr), _du_dirname(dirname)
   {
-    assert (dirname != nullptr);
+    RPS_ASSERT (dirname != nullptr);
   };
   ~Rps_Dumper() {};
 public:
@@ -1727,7 +1727,7 @@ protected:
   };
   void mutate(Rps_Type ty)
   {
-    assert (ty == Rps_TyTuple || ty == Rps_TySet);
+    RPS_ASSERT (ty == Rps_TyTuple || ty == Rps_TySet);
     mutate_type(ty);
     compute_hash();
   };
@@ -1735,7 +1735,7 @@ protected:
   // to be updated.
   void mutate_nohash(Rps_Type ty)
   {
-    assert (ty == Rps_TyTuple || ty == Rps_TySet);
+    RPS_ASSERT (ty == Rps_TyTuple || ty == Rps_TySet);
     mutate_type(ty);
   }
 };				// end Rps_SequenceObrefZone
@@ -1779,7 +1779,7 @@ class Rps_TupleValue : public Rps_Value
 public:
   void put_tuple(const Rps_TupleObrefZone*ptup)
   {
-    assert (ptup == nullptr || ptup->type() == Rps_TyTuple);
+    RPS_ASSERT (ptup == nullptr || ptup->type() == Rps_TyTuple);
     put_data(ptup);
   };
   Rps_TupleValue() : Rps_TupleValue(nullptr) {};
@@ -1894,7 +1894,7 @@ private:
   Rps_DoubleZone(double d=0.0) :
     Rps_ScalarCopyingZoneValue(Rps_TyDouble), _dbl(d)
   {
-    assert (!std::isnan(d));
+    RPS_ASSERT (!std::isnan(d));
   };
 public:
   static constexpr Rps_Type zone_type = Rps_TyDouble;
@@ -1948,7 +1948,7 @@ protected:
     _strlen((uint32_t)(slen<0)?(sbytes?(slen=strlen(sbytes)):(slen=0)):slen), _strhash(0)
   {
     if (!skipcheck)
-      assert(u8_check((const uint8_t*)sbytes, slen) == nullptr);
+      RPS_ASSERT(u8_check((const uint8_t*)sbytes, slen) == nullptr);
     memcpy(_strbytes, sbytes, slen);
     _strhash = hash_cstr(_strbytes, slen);
     _strbytes[slen] = 0;
@@ -2110,7 +2110,7 @@ class Rps_ObjectZone : public  Rps_MarkSweepZoneValue
   Rps_ObjectZone(const Rps_Id& oid, const BucketOb_st& buck)
     : Rps_ObjectZone(oid)
   {
-    assert (&buck == &bucket(oid));
+    RPS_ASSERT (&buck == &bucket(oid));
   };
   static void* operator new (std::size_t, void*ptr)
   {
@@ -2201,16 +2201,16 @@ private:
   {
     if (arr==nullptr)
       arr = _obat_sorted_atar;
-    assert (_obat_kind == atk_medium);
-    assert (arr != nullptr);
-    assert (keyob);
+    RPS_ASSERT (_obat_kind == atk_medium);
+    RPS_ASSERT (arr != nullptr);
+    RPS_ASSERT (keyob);
     unsigned ln = arr->count();
     int lo = 0, hi = (int)ln;
     while (lo+4 < hi)
       {
         unsigned md = (lo+hi)/2;
         Rps_ObjectRef midob = arr->unsafe_attr_at(md);
-        assert (midob);
+        RPS_ASSERT (midob);
         if (keyob == midob)
           {
             lo = md;
@@ -2247,7 +2247,7 @@ public:
     if (!oth) return false;
     if (this != oth)
       {
-        assert (_ob_id != oth->_ob_id);
+        RPS_ASSERT (_ob_id != oth->_ob_id);
         return false;
       }
     return true;
@@ -2357,7 +2357,7 @@ public:
       case atk_medium:
       {
         unsigned ln = _obat_sorted_atar->count();
-        assert (ln <= at_sorted_thresh);
+        RPS_ASSERTPRINTF (ln <= at_sorted_thresh, "ln=%u", ln);
         unsigned lo=0, hi=ln;
         {
           auto p = dichotomy_medium_sorted(keyob);
@@ -2633,8 +2633,9 @@ public:
   static void*allocate_birth_maybe_gc(size_t size, Rps_CallFrameZone*callingfra)
   {
     void* ad = nullptr;
-    assert (size < RPS_LARGE_BLOCK_SIZE - Rps_LargeNewMemoryBlock::_remain_threshold_ - 4*sizeof(void*));
-    assert (size % (2*alignof(Rps_Value)) == 0);
+    RPS_ASSERTPRINTF (size < RPS_LARGE_BLOCK_SIZE - Rps_LargeNewMemoryBlock::_remain_threshold_ - 4*sizeof(void*),
+                      "size=%zd", size);
+    RPS_ASSERTPRINTF (size % (2*alignof(Rps_Value)) == 0, "size=%zd", size);
     maybe_garbcoll(callingfra);
     if (size < RPS_SMALL_BLOCK_SIZE - Rps_BirthMemoryBlock::_remain_threshold_ - 4*sizeof(void*))
       {
@@ -3077,7 +3078,7 @@ public:
   static void run_full_backtrace(int skip, const char*name=nullptr);
   static void print_backtrace(int skip, FILE* fil)
   {
-    assert (fil != nullptr);
+    RPS_ASSERT (fil != nullptr);
     backtrace_print(rps_backtrace_state, skip, fil);
   };
 
@@ -3103,15 +3104,15 @@ public:
 
   void reset_line (void)
   {
-    assert (_lfil_linbuf != nullptr);
+    RPS_ASSERT (_lfil_linbuf != nullptr);
     _lfil_iter = _lfil_linbuf;
   };
 
   // gives false when the end of current line is reached.
   bool next(void)
   {
-    assert (_lfil_linbuf != nullptr);
-    assert (_lfil_iter != nullptr);
+    RPS_ASSERT (_lfil_linbuf != nullptr);
+    RPS_ASSERT (_lfil_iter != nullptr);
     if (*(_lfil_iter + 1))
       {
         _lfil_iter++;
@@ -3124,7 +3125,7 @@ public:
   // get a new line, and gives false when end of file is reached
   bool read_line(void)
   {
-    assert (_lfil_hnd != nullptr);
+    RPS_ASSERT (_lfil_hnd != nullptr);
 
     _lfil_linlen = getline (&_lfil_linbuf, &_lfil_linsiz, _lfil_hnd);
     if (_lfil_linlen < 0)

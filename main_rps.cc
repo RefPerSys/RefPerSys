@@ -259,7 +259,7 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
       const char*idstr = arg;
       const char*end = nullptr;
       bool ok = false;
-      assert (idstr != nullptr);
+      RPS_ASSERT (idstr != nullptr);
       Rps_Id pid (idstr, &end, &ok);
       if (ok)
         {
@@ -296,7 +296,7 @@ main(int argc, char** argv)
     .help_filter = NULL,
     .argp_domain = NULL
   };
-  assert(argc>0);
+  RPS_ASSERT(argc>0);
   rps_progname = argv[0];
   rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
   if (!rps_proghdl)
@@ -309,6 +309,11 @@ main(int argc, char** argv)
     backtrace_create_state(rps_progname, (int)true,
                            Rps_BackTrace::bt_error_cb,
                            nullptr);
+  if (!rps_backtrace_state)
+    {
+      fprintf(stderr, "%s failed to make backtrace state.\n", rps_progname);
+      exit(EXIT_FAILURE);
+    }
   if (argc < 2)
     {
       printf("missing argument to %s, try %s --help\n", argv[0], argv[0]);
@@ -320,7 +325,7 @@ main(int argc, char** argv)
 } // end of main
 
 
-
+/// notice that Rps_BackTrace should use assert, not RPS_ASSERT!
 void
 Rps_BackTrace::bt_error_method(const char*msg, int errnum)
 {

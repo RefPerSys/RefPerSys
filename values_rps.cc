@@ -35,7 +35,7 @@ Rps_Id::to_cbuf24(char cbuf[]) const
   /// example cbuf = "_0abcdefghijABCDEFG"
   ///                  |0         |11    |19
   static_assert(sizeof("_0abcdefghijABCDEFG")-1 == 1+nbdigits_hi+nbdigits_lo);
-  assert (cbuf != nullptr);
+  RPS_ASSERT (cbuf != nullptr);
   memset(cbuf, 0, buflen);
   char*last = cbuf+nbdigits_hi;
   auto pc = last;
@@ -113,13 +113,13 @@ Rps_SequenceObrefZone::hash_of_array(Rps_Type ty, uint32_t siz, const Rps_Object
 {
   Rps_HashInt h1 = (Rps_HashInt)(31*(int)ty + 29);
   Rps_HashInt h2 = 11+(431*(siz&0x3fffff))+7*(int)ty;
-  assert (siz == 0 || arr != nullptr);
-  assert (siz < maxsize);
+  RPS_ASSERT (siz == 0 || arr != nullptr);
+  RPS_ASSERT (siz < maxsize);
   for (auto ix=0u; ix<siz; ix++)
     {
       auto curobref = arr[ix];
       if (!curobref) continue;
-      assert (curobref->type() == Rps_TyObject);
+      RPS_ASSERT (curobref->type() == Rps_TyObject);
       auto curhash = curobref->hash();
       if (ix %2 == 0)
         h1 = (449*h1) ^ (curhash+1000);
@@ -130,7 +130,7 @@ Rps_SequenceObrefZone::hash_of_array(Rps_Type ty, uint32_t siz, const Rps_Object
   if (RPS_UNLIKELY(h==0))
     {
       h = (h1&0xfffff) + 541*(h2&0xfffff) + 10;
-      assert (h!=0);
+      RPS_ASSERT (h!=0);
     }
   return h;
 } /*end Rps_SequenceObrefZone::hash_of_array*/
@@ -155,7 +155,7 @@ Rps_StringZone::hash_cstr(const char*cstr, int32_t slen)
   if (RPS_UNLIKELY(h == 0))
     {
       h = 3*(h1&0xffff) + 17*(h2&0xffff) + (slen&0xffff) + 2;
-      assert (h != 0);
+      RPS_ASSERT (h != 0);
     }
   return h;
 } // end Rps_StringZone::hash_cstr
@@ -205,7 +205,7 @@ Rps_SetObrefZone::make(Rps_CallFrameZone*callingfra,uint32_t siz, const Rps_Obje
     }
   if (RPS_UNLIKELY(card != siz))
     {
-      assert (card < siz);
+      RPS_ASSERT (card < siz);
       zqset->mutate(Rps_TyTuple);
       auto zqtup = zqset;
       auto cardgap = byte_gap_for_size(card);
@@ -221,7 +221,7 @@ Rps_SetObrefZone::make(Rps_CallFrameZone*callingfra,uint32_t siz, const Rps_Obje
           else if (curel != zqtup->_obarr[ix-1])
             zqset->_obarr[nbel++] = curel;;
         }
-      assert (nbel == card);
+      RPS_ASSERT (nbel == card);
     };
   zqset->compute_hash();
   return zqset;

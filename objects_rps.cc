@@ -72,7 +72,7 @@ Rps_ObjectZone::make(Rps_CallFrameZone*callingfra)
     // objid-s collisions)
     {
       auto id = Rps_Id::random();
-      assert (id && id.valid());
+      RPS_ASSERT (id && id.valid());
       auto& curbuck = bucket(id);
       auto buckguard = std::lock_guard<std::mutex>(curbuck._bu_mtx);
       auto it = curbuck._bu_map.find(id);
@@ -140,13 +140,13 @@ Rps_ObjectZone::do_resize_components (Rps_CallFrameZone*callingfra, unsigned new
     }
   else
     {
-      assert (_ob_compvec->_qnbcomp <= _ob_compvec->_qsizarr);
+      RPS_ASSERT (_ob_compvec->_qnbcomp <= _ob_compvec->_qsizarr);
       // Usual case, there is a quasi component vector, we may need to
       // either shrink or resize it.
       auto alsiz = (newnbcomp<Rps_QuasiComponentVector::_min_alloc_size_
                     ?Rps_QuasiComponentVector::_min_alloc_size_
                     :rps_prime_above(newnbcomp+newnbcomp/32+2));
-      assert (alsiz >= newnbcomp);
+      RPS_ASSERT (alsiz >= newnbcomp);
       if (alsiz != _ob_compvec->_qsizarr)
         {
           _.newcompvec =
@@ -227,7 +227,7 @@ Rps_ObjectZone::do_append_component(Rps_CallFrameZone*callingfra,Rps_Value val)
   if (RPS_UNLIKELY(_ob_compvec == nullptr))
     {
       auto alsiz = Rps_QuasiComponentVector::_min_alloc_size_;
-      assert (alsiz > 1);
+      RPS_ASSERT (alsiz > 1);
       _.newcompvec =
         Rps_QuasiComponentVector::rps_allocate_with_gap<Rps_QuasiComponentVector>
         (RPS_CURFRAME,
@@ -251,7 +251,7 @@ Rps_ObjectZone::do_append_component(Rps_CallFrameZone*callingfra,Rps_Value val)
       else
         {
           unsigned newsiz = rps_prime_above(oldnbcomp + oldnbcomp/32 + 3);
-          assert (newsiz > oldnbcomp+1);
+          RPS_ASSERT (newsiz > oldnbcomp+1);
           _.newcompvec =
             Rps_QuasiComponentVector::rps_allocate_with_gap<Rps_QuasiComponentVector>
             (RPS_CURFRAME,
@@ -306,11 +306,11 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
     break;
     case atk_small:
     {
-      assert (_obat_small_atar != nullptr);
+      RPS_ASSERT (_obat_small_atar != nullptr);
       _.oldattrs = _obat_small_atar;
       unsigned oldalsize = _.oldattrs->_qsizattr;
       unsigned oldnbattr = _.oldattrs->_qnbattrs;
-      assert (oldnbattr <= oldalsize && oldalsize <= at_small_thresh+at_fuss+1);
+      RPS_ASSERT (oldnbattr <= oldalsize && oldalsize <= at_small_thresh+at_fuss+1);
       if (RPS_LIKELY(oldnbattr+1 < oldalsize))
         {
           // enough space, no need to reallocate
@@ -374,7 +374,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
                   _.newattrs->_qatentries[newcnt].first = _.altkeyob;
                   _.newattrs->_qatentries[newcnt].second = _.curvalat;
                 }
-              assert (newcnt < newsize);
+              RPS_ASSERT (newcnt < newsize);
               _.newattrs->_qnbattrs = newcnt;
               _obat_small_atar = _.newattrs;
               _obat_kind = atk_small;
@@ -395,7 +395,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
                   _.newattrs->_qatentries[newcnt].first = _.altkeyob;
                   _.newattrs->_qatentries[newcnt].second = _.curvalat;
                 }
-              assert (newcnt < newsize);
+              RPS_ASSERT (newcnt < newsize);
               _.newattrs->_qnbattrs = newcnt;
               std::sort (_.newattrs->begin(), _.newattrs->end(),
                          Rps_QuasiAttributeArray::entry_compare_st{});
@@ -407,11 +407,11 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
     break;
     case atk_medium:
     {
-      assert (_obat_sorted_atar != nullptr);
+      RPS_ASSERT (_obat_sorted_atar != nullptr);
       _.oldattrs = _obat_sorted_atar;
       unsigned oldalsize = _.oldattrs->_qsizattr;
       unsigned oldnbattr = _.oldattrs->_qnbattrs;
-      assert (oldnbattr <= oldalsize && oldalsize <= at_sorted_thresh+at_fuss+1);
+      RPS_ASSERT (oldnbattr <= oldalsize && oldalsize <= at_sorted_thresh+at_fuss+1);
       if (RPS_LIKELY(oldnbattr+1 < at_sorted_thresh
                      && oldnbattr+1 < oldalsize))
         {
@@ -429,7 +429,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
             lo = p.first;
             hi = p.second;
           }
-          assert (lo >= 0 && hi <= (int)oldnbattr && lo < hi);
+          RPS_ASSERT (lo >= 0 && hi <= (int)oldnbattr && lo < hi);
           if ( _.keyob < (_.altkeyob =  _.oldattrs->_qatentries[lo].first))
             {
               // insert before lo
@@ -453,7 +453,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
             {
               //  Since _.oldattrs is sorted but not-small, and previous
               //  tests failed, we can:
-              assert (hi+1<oldnbattr);
+              RPS_ASSERT (hi+1<oldnbattr);
               // loop between lo included & hi excluded
               for (int k=lo; k<hi; k++)
                 {
@@ -512,7 +512,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
                     }
                   else
                     {
-                      assert (_.altkeyob == _.keyob);
+                      RPS_ASSERT (_.altkeyob == _.keyob);
                       reached = true;
                       _.newattrs->_qatentries[newcnt].first = _.keyob;
                       _.newattrs->_qatentries[newcnt].second = _.valat;
@@ -569,13 +569,13 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
       return;
     case atk_small:
     {
-      assert (_obat_small_atar != nullptr);
+      RPS_ASSERT (_obat_small_atar != nullptr);
       _.oldattrs = _obat_small_atar;
       unsigned oldalsize = _.oldattrs->_qsizattr;
       unsigned oldnbattr = _.oldattrs->_qnbattrs;
       unsigned newalsize = oldalsize;
-      assert (oldnbattr <= oldalsize
-              && oldalsize <= at_small_thresh+at_fuss+1);
+      RPS_ASSERT (oldnbattr <= oldalsize
+                  && oldalsize <= at_small_thresh+at_fuss+1);
       if (oldnbattr < at_small_initsize && oldalsize > at_small_initsize+1)
         newalsize = at_small_initsize;
       else if (oldnbattr+2 < 2*oldalsize/3 && oldalsize>at_small_initsize)
@@ -608,7 +608,7 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
               _.newattrs->_qatentries[newnbattr++]
                 = _.oldattrs->_qatentries[ix];
             }
-          assert (newnbattr <= oldnbattr);
+          RPS_ASSERT (newnbattr <= oldnbattr);
           _.newattrs->_qnbattrs = newnbattr;
           _obat_small_atar = _.newattrs;
         }
@@ -621,14 +621,14 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
               _.altkeyob = _.oldattrs->_qatentries[ix].first;
               if (_.altkeyob == _.keyob)
                 {
-                  assert (pos<0);
+                  RPS_ASSERT (pos<0);
                   pos = (int)ix;
                   break;
                 }
             };
           if (pos>=0)
             {
-              assert (oldnbattr>0);
+              RPS_ASSERT (oldnbattr>0);
               for (int ix=pos; ix<oldnbattr; ix++)
                 _.oldattrs->_qatentries[ix] = _.oldattrs->_qatentries[ix+1];
               _.oldattrs->_qnbattrs = oldnbattr-1;
@@ -642,33 +642,33 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
     break;
     case atk_medium:
     {
-      assert (_obat_sorted_atar != nullptr);
+      RPS_ASSERT (_obat_sorted_atar != nullptr);
       _.oldattrs = _obat_sorted_atar;
       unsigned oldalsize = _.oldattrs->_qsizattr;
       unsigned oldnbattr = _.oldattrs->_qnbattrs;
-      assert (oldnbattr <= oldalsize
-              && oldalsize <= at_sorted_thresh+at_fuss+1);
+      RPS_ASSERT (oldnbattr <= oldalsize
+                  && oldalsize <= at_sorted_thresh+at_fuss+1);
       int lo = 0, hi = oldnbattr;
       {
         auto p = dichotomy_medium_sorted(_.keyob, _.oldattrs);
         lo = p.first;
         hi = p.second;
       }
-      assert (lo >= 0 && hi <= oldnbattr && lo < hi);
+      RPS_ASSERT (lo >= 0 && hi <= oldnbattr && lo < hi);
       int pos = -1;
       for (int ix=lo; ix<hi; ix++)
         {
           _.altkeyob = _.oldattrs->_qatentries[ix].first;
           if (_.altkeyob == _.keyob)
             {
-              assert (pos<0);
+              RPS_ASSERT (pos<0);
               pos = (int)ix;
               break;
             }
         }
       if (pos>=0)
         {
-          assert (oldnbattr>0);
+          RPS_ASSERT (oldnbattr>0);
           for (int ix=pos; ix<oldnbattr; ix++)
             _.oldattrs->_qatentries[ix] = _.oldattrs->_qatentries[ix+1];
           _.oldattrs->_qnbattrs = oldnbattr-1;
@@ -681,8 +681,8 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
       if (3*oldnbattr < 2*oldalsize)
         {
           unsigned newalsize = oldalsize;
-          assert (oldnbattr <= oldalsize
-                  && oldalsize <= at_small_thresh+at_fuss+1);
+          RPS_ASSERT (oldnbattr <= oldalsize
+                      && oldalsize <= at_small_thresh+at_fuss+1);
           if (oldnbattr < at_small_initsize && oldalsize > at_small_initsize+1)
             newalsize = at_small_initsize;
           else if (oldnbattr+1 < 2*oldalsize/3 && oldalsize>at_small_initsize)
@@ -692,7 +692,7 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
           else if (oldnbattr+1 < 2*oldalsize/3
                    && oldnbattr<at_small_thresh + (Rps_Random::random_quickly_4bits() & (at_fuss-1)))
             newalsize = rps_prime_above(oldnbattr);
-          assert (newalsize <= oldalsize);
+          RPS_ASSERT (newalsize <= oldalsize);
           if (newalsize < oldalsize)
             {
               _.newattrs =
@@ -707,14 +707,14 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
               for (unsigned ix=0; ix<oldnbattr; ix++)
                 {
                   _.altkeyob = _.oldattrs->_qatentries[ix].first;
-                  assert (_.altkeyob != _.keyob);
+                  RPS_ASSERT (_.altkeyob != _.keyob);
                   if (Rps_ObjectRef(_.altkeyob).is_empty())  // unlikely to happen,
                     // perhaps impossible
                     continue;
                   _.newattrs->_qatentries[newnbattr++]
                     = _.oldattrs->_qatentries[ix];
                 }
-              assert (newnbattr <= oldnbattr);
+              RPS_ASSERT (newnbattr <= oldnbattr);
               _.newattrs->_qnbattrs = newnbattr;
               _obat_small_atar = _.newattrs;
             }
@@ -723,7 +723,7 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
     break;
     case atk_big:
     {
-      assert (!_obat_map_atar.empty());
+      RPS_ASSERT (!_obat_map_atar.empty());
       auto oldnbattr = _obat_map_atar.size();
       bool found = _obat_map_atar.erase(_.keyob) >0;
       if (found)
@@ -760,7 +760,7 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
 void
 Rps_ObjectZone::foreach_attribute(const std::function<void(Rps_ObjectRef)>&fun)
 {
-  assert (fun);
+  RPS_ASSERT (fun);
   RPS_FATAL("unimplemented Rps_ObjectZone::foreach_attribute");
 #warning Rps_ObjectZone::foreach_attribute unimplemented
 } // end of Rps_ObjectZone::foreach_attribute

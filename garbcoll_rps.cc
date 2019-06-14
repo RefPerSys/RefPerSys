@@ -53,7 +53,7 @@ Rps_GarbageCollector::_gc_globalloc_;
 void*
 Rps_MemoryBlock::operator new(size_t size)
 {
-  assert (size % RPS_SMALL_BLOCK_SIZE == 0);
+  RPS_ASSERTPRINTF (size % RPS_SMALL_BLOCK_SIZE == 0, "size=%zd", size);
   void* ad = mmap(nullptr, size,  //
                   PROT_READ | PROT_WRITE, //
                   MAP_ANON | MAP_PRIVATE | MAP_HUGETLB, //
@@ -115,15 +115,15 @@ Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx,
   _bl_endptr(((char*)this)+size-sizeof(intptr_t)),
   _bl_next(nullptr), _bl_prev(nullptr)
 {
-  assert (size >= RPS_SMALL_BLOCK_SIZE && size <= RPS_LARGE_BLOCK_SIZE);
-  assert (size % RPS_SMALL_BLOCK_SIZE == 0);
-  assert ((intptr_t)this % RPS_SMALL_BLOCK_SIZE == 0);
+  RPS_ASSERTPRINTF (size >= RPS_SMALL_BLOCK_SIZE && size <= RPS_LARGE_BLOCK_SIZE, "size=%zd", size);
+  RPS_ASSERTPRINTF (size % RPS_SMALL_BLOCK_SIZE == 0, "size=%zd", size);
+  RPS_ASSERTPRINTF ((intptr_t)this % RPS_SMALL_BLOCK_SIZE == 0, "this@%p", (void*)this);
   intptr_t ad = (intptr_t) this;
-  assert ((const char*)_bl_endptr > (const char*)this);
-  assert ((const char*)_bl_curptr > (const char*)this);
-  assert ((const char*)_bl_curptr < (const char*)_bl_endptr);
+  RPS_ASSERT ((const char*)_bl_endptr > (const char*)this);
+  RPS_ASSERT ((const char*)_bl_curptr > (const char*)this);
+  RPS_ASSERT ((const char*)_bl_curptr < (const char*)_bl_endptr);
   std::lock_guard gu(mtx);
-  assert (_bl_blocksmap_.find(ad) == _bl_blocksmap_.end());
+  RPS_ASSERT (_bl_blocksmap_.find(ad) == _bl_blocksmap_.end());
   if (before)
     before(this);
   _bl_ix = ix;
@@ -132,12 +132,12 @@ Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx,
   if (itb != _bl_blocksmap_.end())
     {
       _bl_prev = itb->second;
-      assert ((char*)_bl_prev < (char*)this);
+      RPS_ASSERT ((char*)_bl_prev < (char*)this);
     }
   if (ita != _bl_blocksmap_.end())
     {
       _bl_next = ita->second;
-      assert ((char*)_bl_next > (char*)this);
+      RPS_ASSERT ((char*)_bl_next > (char*)this);
     }
   _bl_blocksmap_.insert({ad,this});
   int altix = 0;
@@ -153,11 +153,11 @@ Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx,
         }
       else
         {
-          assert (!_bl_prev && !_bl_next);
+          RPS_ASSERT (!_bl_prev && !_bl_next);
           ix = 1;
         }
     };
-  assert (ix > 0);
+  RPS_ASSERT (ix > 0);
   if (_bl_blocksvect_.size() + 1 <= ix)
     _bl_blocksvect_.resize(rps_prime_above((17*ix)/16+1));
   _bl_blocksvect_.insert(_bl_blocksvect_.begin()+ix, this);
@@ -178,12 +178,12 @@ Rps_MemoryBlock::Rps_MemoryBlock(std::mutex&mtx,
 void
 Rps_MemoryBlock::remove_block(Rps_MemoryBlock*bl)
 {
-  assert (bl != nullptr && dynamic_cast<Rps_MemoryBlock*>(bl) != nullptr);
+  RPS_ASSERT (bl != nullptr && dynamic_cast<Rps_MemoryBlock*>(bl) != nullptr);
   intptr_t ad = (intptr_t) bl;
   Rps_BlockIndex ix = bl->_bl_ix;
   std::lock_guard<std::mutex> guard(_bl_lock_);
   _bl_blocksmap_.erase(ad);
-  assert (ix < _bl_blocksvect_.size());
+  RPS_ASSERTPRINTF (ix < _bl_blocksvect_.size(), "ix=%u", (unsigned)ix);
   _bl_blocksvect_[ix] = nullptr;
 } // end Rps_MemoryBlock::remove_block
 
@@ -263,7 +263,7 @@ Rps_GarbageCollector::run_garbcoll(Rps_CallFrameZone*callingfra)
 void
 Rps_GarbageCollector::scan_call_stack(Rps_CallFrameZone*callingfra)
 {
-  assert (callingfra != nullptr);
+  RPS_ASSERT (callingfra != nullptr);
   /// we should scan and forward all the pointers on the call stack,
   /// starting with the topmost callingfra
 #warning unimplemented Rps_MemoryBlock::scan_call_stack
@@ -284,7 +284,7 @@ void*
 Rps_GarbageCollector::allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*callingfra)
 {
   void* ad = nullptr;
-  assert (size < RPS_SMALL_BLOCK_SIZE - Rps_MarkedMemoryBlock::_remain_threshold_ - 4*sizeof(void*));
+  RPS_ASSERT (size < RPS_SMALL_BLOCK_SIZE - Rps_MarkedMemoryBlock::_remain_threshold_ - 4*sizeof(void*));
   maybe_garbcoll(callingfra);
   {
     std::lock_guard<std::mutex>
@@ -299,7 +299,7 @@ Rps_GarbageCollector::allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*ca
       };
     ad = Rps_MarkedMemoryBlock::_glo_markedblock_->allocate_zone(size);
   };
-  assert (ad != nullptr);
+  RPS_ASSERT (ad != nullptr);
   return ad;
 } // end Rps_GarbageCollector::allocate_marked_maybe_gc
 
