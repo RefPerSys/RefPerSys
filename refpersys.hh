@@ -178,8 +178,8 @@ extern "C" int64_t rps_prime_below (int64_t n);
 extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 #define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {			\
-    fprintf(stderr,						\
-	    "RefPerSys FATAL:%s:%d: <%s>\n " Fmt "\n\n",	\
+    fprintf(stderr, "\n\n"		       			\
+	    "*** RefPerSys FATAL:%s:%d: <%s>\n " Fmt "\n\n",	\
             Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);     	\
     rps_fatal_stop_at (Fil,Lin); } while(0)
 
@@ -2978,10 +2978,10 @@ public:
   Rps_BackTrace(const char*name, const void*data = nullptr);
   virtual ~Rps_BackTrace();
   virtual void bt_error_method(const char*msg, int errnum);
-  virtual int bt_simple_method(uintptr_t, bool nofun=false);
+  virtual int bt_simple_method(uintptr_t);
   virtual int bt_full_method(uintptr_t pc,
                              const char *filename, int lineno,
-                             const char *function, bool nofun=false);
+                             const char *function);
 private:
   const unsigned _bt_magic;
   std::string _bt_name;

@@ -68,7 +68,7 @@ Rps_SetValue::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
     memset(msgbuf, 0, sizeof(msgbuf));
     snprintf(msgbuf, sizeof(msgbuf), "starting tiny_benchmark_1 num#%u",
              num);
-    Rps_BackTrace::run_full_backtrace(1, msgbuf);
+    Rps_BackTrace::run_full_backtrace(2, msgbuf);
     fflush(nullptr);
   };
   t0 = rps_thread_cpu_time();

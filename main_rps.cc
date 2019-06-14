@@ -363,13 +363,15 @@ rps_print_simple_backtrace_level(Rps_BackTrace* btp, FILE*outf, const char*befor
   const char*demangled = nullptr;
   Dl_info dif = {};
   memset ((void*)&dif, 0, sizeof(dif));
+  std::string filnamestr;
+  std::string funamestr;
   if (dladdr((void*)pc, &dif))
     {
-      int delta = (uintptr_t) dif.dli_saddr - pc;
-      std::string fnamestr;
+      int delta = pc - (uintptr_t) dif.dli_saddr;
       if (dif.dli_fname && strstr(dif.dli_fname, ".so"))
-        fnamestr = std::string(basename(dif.dli_fname));
-      std::string funamestr;
+        filnamestr = std::string(basename(dif.dli_fname));
+      else if (dif.dli_fname && strstr(dif.dli_fname, rps_progname))
+        filnamestr = std::string(basename(rps_progname));
       if (dif.dli_sname != nullptr)
         {
           if (dif.dli_sname[0] == '_')
@@ -385,23 +387,23 @@ rps_print_simple_backtrace_level(Rps_BackTrace* btp, FILE*outf, const char*befor
       else funamestr = "??";
       if (delta != 0)
         {
-          if (fnamestr.empty())
-            fprintf (outf, "%s %p: %s+%d\n",
-                     beforebuf, (void*)pc, funamestr.c_str(), delta);
+          if (funamestr.empty())
+            fprintf (outf, "%s %p: %s+%#%x\n",
+                     beforebuf, (void*)pc, filnamestr.c_str(), delta);
           else
-            fprintf (outf, "%s %p: %40s+%d %s\n",
-                     beforebuf, (void*)pc, funamestr.c_str(), delta,
-                     fnamestr.c_str());
+            fprintf (outf, "%s %p: %40s+%#x %s\n",
+                     beforebuf, (void*)pc, filnamestr.c_str(), delta,
+                     funamestr.c_str());
         }
       else
         {
-          if (fnamestr.empty())
-            fprintf (outf, "%s %p: %s+%d\n",
-                     beforebuf, (void*)pc, funamestr.c_str(), delta);
+          if (funamestr.empty())
+            fprintf (outf, "%s %p: %s+%#%x\n",
+                     beforebuf, (void*)pc, filnamestr.c_str(), delta);
           else
-            fprintf (outf, "%s %p: %40s+%d %s\n",
-                     beforebuf, (void*)pc, funamestr.c_str(),
-                     delta, fnamestr.c_str());
+            fprintf (outf, "%s %p: %40s+%#%x %s\n",
+                     beforebuf, (void*)pc, filnamestr.c_str(),
+                     delta, funamestr.c_str());
         }
     }
   else
@@ -462,16 +464,25 @@ void rps_print_full_backtrace_level
     wantdladdr = true;
   if (wantdladdr && dladdr((void*)pc, &dif))
     {
-      int delta = (uintptr_t) dif.dli_saddr - pc;
+      int delta = pc - (uintptr_t) dif.dli_saddr;
       if (locstr.empty() && dif.dli_fname && strstr(dif.dli_fname, ".so"))
         {
           if (delta != 0)
             snprintf(locbuf, sizeof(locbuf),
-                     "!%s+%d", basename(dif.dli_fname), delta);
+                     "!%s+%#x", basename(dif.dli_fname), delta);
           else snprintf(locbuf, sizeof(locbuf),
                           "!%s", basename(dif.dli_fname));
           locstr = std::string (locbuf);
-        };
+        }
+      else if (locstr.empty() && dif.dli_fname && strstr(dif.dli_fname, rps_progname))
+        {
+          if (delta != 0)
+            snprintf(locbuf, sizeof(locbuf),
+                     "!!%s+%#x", basename(dif.dli_fname), delta);
+          else snprintf(locbuf, sizeof(locbuf),
+                          "!!%s", basename(dif.dli_fname));
+          locstr = std::string (locbuf);
+        }
       if (funamestr.empty())
         {
           if (dif.dli_sname && dif.dli_sname[0] == '_')
@@ -499,59 +510,13 @@ void rps_print_full_backtrace_level
 
 
 int
-Rps_BackTrace::bt_simple_method(uintptr_t ad, bool nofun)
+Rps_BackTrace::bt_simple_method(uintptr_t ad)
 {
-  if (ad == 0) return 0;
-  if (!nofun && _bt_simplecb)
+  if (ad == 0 || ad == (uintptr_t)-1) return 0;
+  if (_bt_simplecb)
     return _bt_simplecb(this,ad);
-  Dl_info dif = {};
-  const char* demangled = nullptr;
-  memset ((void*)&dif, 0, sizeof(dif));
-  if (dladdr((void*)ad, &dif))
-    {
-      int delta = (uintptr_t) dif.dli_saddr - ad;
-      std::string fnamestr;
-      if (strstr(dif.dli_fname, ".so"))
-        fnamestr = std::string(basename(dif.dli_fname));
-      std::string funamestr;
-      if (dif.dli_sname != nullptr)
-        {
-          if (dif.dli_sname[0] == '_')
-            {
-              int status = -1;
-              demangled  = abi::__cxa_demangle(dif.dli_sname, NULL, 0, &status);
-              if (demangled && demangled[0])
-                funamestr = std::string (demangled);
-            };
-          if (funamestr.empty())
-            funamestr = std::string(dif.dli_sname);
-        }
-      else funamestr = "??";
-      if (delta != 0)
-        {
-          if (fnamestr.empty())
-            fprintf (stderr, "%p: %s+%d\n",
-                     (void*)ad, funamestr.c_str(), delta);
-          else
-            fprintf (stderr, "%p: %40s+%d %s\n",
-                     (void*)ad, funamestr.c_str(), delta,
-                     fnamestr.c_str());
-        }
-      else
-        {
-          if (fnamestr.empty())
-            fprintf (stderr, "%p: %s+%d\n",
-                     (void*)ad, funamestr.c_str(), delta);
-          else
-            fprintf (stderr, "%p: %40s+%d %s\n",
-                     (void*)ad, funamestr.c_str(),
-                     delta, fnamestr.c_str());
-        }
-    }
-  else
-    fprintf(stderr, "%p.\n", (void*)ad);
-  fflush(stderr);
-  return 0;
+  rps_print_simple_backtrace_level(this,stderr,"*",ad);
+  return 1;
 } // end of  Rps_BackTrace::bt_simple_method
 
 int
@@ -561,55 +526,21 @@ Rps_BackTrace::bt_simple_cb(void*data, uintptr_t pc)
   if (pc == 0 || pc == (uintptr_t)-1) return 1;
   Rps_BackTrace* btp = static_cast<Rps_BackTrace*>(data);
   assert (btp->magicnum() == _bt_magicnum_);
-  return btp->bt_simple_method(pc,true);
+  return btp->bt_simple_method(pc);
 } // end  Rps_BackTrace::bt_simple_cb
 
 
 int
 Rps_BackTrace::bt_full_method(uintptr_t pc,
                               const char *filename, int lineno,
-                              const char *function, bool nofun)
+                              const char *function)
 {
   if (pc == 0 || pc == (uintptr_t)-1)
     return 1;
-  if (!nofun && _bt_fullcb)
+  if (_bt_fullcb)
     return _bt_fullcb(this,pc,filename,lineno,function);
-  if (!filename) filename="?.?";
-  if (!function) function="???";
-  Dl_info dif = {};
-  memset ((void*)&dif, 0, sizeof(dif));
-  if (dladdr((void*)pc, &dif))
-    {
-      std::string fnamestr;
-      if (strstr(dif.dli_fname, ".so"))
-        fnamestr = std::string(basename(dif.dli_fname));
-      if (!filename) filename="??";
-      int delta = (uintptr_t) dif.dli_saddr - pc;
-      if (delta != 0)
-        {
-          if (fnamestr.empty())
-            fprintf (stderr, "%p: %s (%s:%d) %s+%d\n",
-                     (void*)pc, function, filename, lineno,  dif.dli_sname, delta);
-          else
-            fprintf (stderr, "%p:  %s (%s:%d) %40s+%d %s\n",
-                     (void*)pc, function, filename, lineno, dif.dli_sname, delta,
-                     fnamestr.c_str());
-        }
-      else
-        {
-          if (fnamestr.empty())
-            fprintf (stderr, "%p: %s (%s:%d) %s+%d\n",
-                     (void*)pc,function, filename, lineno,  dif.dli_sname, delta);
-          else
-            fprintf (stderr, "%p: %s (%s:%d) %40s+%d %s\n",
-                     (void*)pc, function, filename, lineno,dif.dli_sname,
-                     delta, fnamestr.c_str());
-        }
-    }
-  else
-    fprintf(stderr, "%p. (%s:%d) %s\n",
-            (void*)pc, filename, lineno, function);
-  fflush(stderr);
+  rps_print_full_backtrace_level(this,stderr,"*",
+                                 pc,filename,lineno,function);
   return 0;
 } // end Rps_BackTrace::bt_full_method
 
@@ -622,7 +553,7 @@ Rps_BackTrace::bt_full_cb(void *data, uintptr_t pc,
   if (pc == 0 || pc == (uintptr_t)-1) return 1;
   Rps_BackTrace* btp = static_cast<Rps_BackTrace*>(data);
   assert (btp->magicnum() == _bt_magicnum_);
-  return btp->bt_full_method(pc, filename, lineno, function, true);
+  return btp->bt_full_method(pc, filename, lineno, function);
 } // end Rps_BackTrace::bt_full_cb
 
 Rps_BackTrace::Rps_BackTrace(const char*name, const void*data)
@@ -655,12 +586,16 @@ Rps_BackTrace::run_simple_backtrace(int skip, const char*name)
       }
     if (depthcount %5 == 0)
       fputc('\n', stderr);
-    fprintf(stderr, "[%d] ", depthcount);
-    return btp->bt_simple_method(pc);
+    char countbuf[16];
+    memset (countbuf, 0, sizeof(countbuf));
+    snprintf(countbuf, sizeof(countbuf), "[%d] ", depthcount);
+    rps_print_simple_backtrace_level(btp, stderr, countbuf, pc);
+    fflush(stderr);
+    return 0;
   });
   fprintf(stderr, "SIMPLE BACKTRACE (%s)\n", bt.name().c_str());
   bt.simple_backtrace(skip);
-  fprintf(stderr, "***** end of %d simple backstrace (%s) *****\n",
+  fprintf(stderr, "***** end of %d simple backtrace levels (%s) *****\n",
           depthcount, bt.name().c_str());
   fflush(stderr);
 } // end Rps_BackTrace::run_simple_backtrace
@@ -675,19 +610,26 @@ Rps_BackTrace::run_full_backtrace(int skip, const char*name)
                             const char*filnam, int lineno, const char*funam)
   {
     assert (btp != nullptr && btp-> magicnum() ==  _bt_magicnum_);
+    if (pc == 0 || pc == (uintptr_t)-1)
+      return -1;
     depthcount++;
     if (depthcount > (int)_bt_maxdepth_)
       {
         fprintf(stderr, "\n.... etc .....\n");
         return depthcount;
       }
-    if (depthcount %5 == 0) fputc('\n', stderr);
-    fprintf(stderr, "[%d] ", depthcount);
-    return btp->bt_full_method(pc, filnam, lineno, funam);
+    if (depthcount %5 == 0)
+      fputc('\n', stderr);
+    char countbuf[16];
+    memset (countbuf, 0, sizeof(countbuf));
+    snprintf(countbuf, sizeof(countbuf), "[%d] ", depthcount);
+    rps_print_full_backtrace_level(btp, stderr, countbuf,
+                                   pc, filnam, lineno, funam);
+    return 0;
   });
   fprintf(stderr, "FULL BACKTRACE (%s)\n", bt.name().c_str());
   bt.full_backtrace(skip);
-  fprintf(stderr, "***** end of %d full backstrace (%s) *****\n",
+  fprintf(stderr, "***** end of %d full backtrace levels (%s) *****\n",
           depthcount, bt.name().c_str());
   fflush(stderr);
 } // end Rps_BackTrace::run_full_backtrace
@@ -704,7 +646,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
           "\t host %s, md5sum %s\n",
           gitid_rps, timestamp_rps, buildhost_rps, md5sum_rps);
   fflush(stderr);
-  Rps_BackTrace::run_full_backtrace(1, errbuf);
+  Rps_BackTrace::run_full_backtrace(3, errbuf);
   fflush(nullptr);
   abort();
 } // end rps_fatal_stop_at
