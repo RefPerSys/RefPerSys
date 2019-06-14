@@ -284,6 +284,8 @@ void*
 Rps_GarbageCollector::allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*callingfra)
 {
   void* ad = nullptr;
+  if (RPS_UNLIKELY(size % rps_allocation_unit == 0))
+    size = (size | (rps_allocation_unit-1))+1;
   RPS_ASSERT (size < RPS_SMALL_BLOCK_SIZE - Rps_MarkedMemoryBlock::_remain_threshold_ - 4*sizeof(void*));
   maybe_garbcoll(callingfra);
   {

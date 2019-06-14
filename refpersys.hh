@@ -202,11 +202,10 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
     if (RPS_UNLIKELY(!(Cond))) {				\
       fprintf(stderr, "\n\n"					\
 	      "*** RefPerSys ASSERTPRINTF failed:%s\n"		\
-	      "%s:%d: <%s>\n"					\
-	      "\n", #Cond,					\
-	      Fil,Lin,Func);					\
-      fprintf(stderr, Fmt "\n\n", ##__VA_ARGS__);		\
-      rps_fatal_stop_at(Fil,Lin); }} while(0)
+	      "%s:%d: <%s>\n", #Cond,				\
+	      Fil, Lin, Func);					\
+      fprintf(stderr, "!*!*! " Fmt "\n\n", ##__VA_ARGS__);	\
+      rps_fatal_stop_at(Fil, Lin); }} while(0)
 
 #define RPS_ASSERTPRINTF_AT(Fil,Lin,Func,Cond,Fmt,...) RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,##__VA_ARGS__)
 #define RPS_ASSERTPRINTF(Cond,Fmt,...) RPS_ASSERTPRINTF_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,(Cond),Fmt,##__VA_ARGS__)
@@ -228,6 +227,9 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 typedef uint32_t Rps_BlockIndex;
 
+static constexpr unsigned rps_allocation_unit = 2*sizeof(void*);
+static_assert ((rps_allocation_unit & (rps_allocation_unit-1)) == 0,
+               "rps_allocation_unit is not a power of two");
 // blocks are always dynamically allocated, and are using mmap-ed
 // memory
 class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MemoryBlock
@@ -1572,12 +1574,16 @@ class Rps_QuasiObjectVector : public Rps_PointerCopyingZoneValue
     if (nb>0 && arr)
       memcpy((void*)_qarrobj, arr, nb*sizeof(std::pair<Rps_ObjectRef,Rps_Value>));
   }
+  Rps_QuasiObjectVector(unsigned alsiz) :
+    Rps_QuasiObjectVector(alsiz, 0, nullptr) {};
 public:
   static void* operator new (std::size_t, void*ptr)
   {
     return ptr;
   };
   static unsigned constexpr _min_alloc_size_ = 5;
+  static unsigned constexpr _max_alloc_size_ =
+    (7*RPS_SMALL_BLOCK_SIZE/8*sizeof(Rps_ObjectRef));
   uint32_t allocated_size() const
   {
     return _qsizarr;
@@ -2660,6 +2666,8 @@ public:
   static void*allocate_birth_maybe_gc(size_t size, Rps_CallFrameZone*callingfra)
   {
     void* ad = nullptr;
+    if (RPS_UNLIKELY(size % rps_allocation_unit == 0))
+      size = (size | (rps_allocation_unit-1))+1;
     RPS_ASSERTPRINTF (size < RPS_LARGE_BLOCK_SIZE - Rps_LargeNewMemoryBlock::_remain_threshold_ - 4*sizeof(void*),
                       "size=%zd", size);
     RPS_ASSERTPRINTF (size % (2*alignof(Rps_Value)) == 0, "size=%zd", size);
