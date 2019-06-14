@@ -187,6 +187,34 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 #define RPS_FATAL(Fmt,...) RPS_FATAL_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
+#ifndef NDEBUG
+#define RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond) do {      	\
+    if (RPS_UNLIKELY(!(Cond))) {			\
+  fprintf(stderr, "\n\n"				\
+	  "*** RefPerSys ASSERT failed:%s\n"		\
+	  "%s:%d: <%s>\n\n", #Cond,			\
+	  Fil,Lin,Func);				\
+  rps_fatal_stop_at(Fil,Lin); }} while(0)
+
+#define RPS_ASSERT_AT(Fil,Lin,Func,Cond) RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond)
+#define RPS_ASSERT(Cond) RPS_ASSERT_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,(Cond))
+#define RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,...) do {	\
+    if (RPS_UNLIKELY(!(Cond))) {				\
+      fprintf(stderr, "\n\n"					\
+	      "*** RefPerSys ASSERTPRINTF failed:%s\n"		\
+	      "%s:%d: <%s>\n"					\
+	      "\n", #Cond,					\
+	      Fil,Lin,Func);					\
+      fprintf(stderr, Fmt "\n\n", ##__VA_ARGS__);		\
+      rps_fatal_stop_at(Fil,Lin); }} while(0)
+
+#define RPS_ASSERTPRINTF_AT(Fil,Lin,Func,Cond,Fmt,...) RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,##__VA_ARGS__)
+#define RPS_ASSERTPRINTF(Cond,Fmt,...) RPS_ASSERTPRINTF_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,(Cond),Fmt,##__VA_ARGS__)
+#else
+#define RPS_ASSERT(Cond) do { if (false && (Cond)) rps_fatal_stop_at(__FILE_,__LINE__); } while(0)
+#define RPS_ASSERTPRINTF(Cond,Fmt,...)  do { if (false && (Cond)) \
+      fprintf(stderr, Fmt "\n", ##__VA_ARGS__); } while(0)
+#endif /*NDEBUG*/
 
 #define RPS_FATALOUT_AT_BIS(Fil,Lin,...) do {	\
     std::clog << (Fil) << ":" << Lin << ":: "	\
