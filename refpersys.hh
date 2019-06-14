@@ -619,7 +619,7 @@ enum class Rps_Type : int16_t
   Loader = -31,
   CallFrame = -30,
   /// these are GC-allocated quasivalues:
-  Payload = -5,
+  QuasiPayload = -6,
   ///
   ///
   /// Quasi-values are indeed garbage collected, so GC-scanned and
@@ -645,8 +645,35 @@ enum class Rps_Type : int16_t
   Tuple,
   Object,
 };
+static constexpr Rps_Type rps_ty_min_quasi = Rps_Type::QuasiPayload;
 
-static constexpr Rps_Type rps_ty_min_quasi = Rps_Type::QuasiToken;
+// any type of GC-allocated quasi-value
+static inline bool
+rps_is_type_of_quasi_value(const Rps_Type ty)
+{
+  return ty >= rps_ty_min_quasi && ty < Rps_Type::Int
+         || ty >= Rps_Type::String && ty <= Rps_Type::Object;
+} // end rps_is_type_of_quasi_value
+
+// any type of GC-movable quasi-value
+static inline bool
+rps_is_type_of_movable_quasi_value(const Rps_Type ty)
+{
+  return ty == Rps_Type::QuasiAttributeArray
+         || ty == Rps_Type::QuasiComponentVector
+         || ty == Rps_Type::QuasiObjectVector
+         || ty == Rps_Type::Tuple || ty == Rps_Type::Set
+         || ty == Rps_Type::Double || ty == Rps_Type::String
+         || ty == Rps_Type::QuasiToken;
+} // end rps_is_type_of_movable_quasi_value
+
+// any type of GC-allocated quasi value without internal value components
+static inline bool
+rps_is_type_of_scalar_quasi_value(const Rps_Type ty)
+{
+  return ty == Rps_Type::Double || ty == Rps_Type::String;
+} // end rps_is_type_of_scalar_quasi_value
+
 
 ////////////////////////////////////////////////////////////////
 
@@ -2044,7 +2071,7 @@ template  <class PayloadDataType> class Rps_PayloadZone : Rps_MarkSweepZoneValue
   friend PayloadDataType;
   PayloadDataType _py_data;
 protected:
-  Rps_PayloadZone() : Rps_MarkSweepZoneValue(Rps_Type::Payload), _py_data() {};
+  Rps_PayloadZone() : Rps_MarkSweepZoneValue(Rps_Type::QuasiPayload), _py_data() {};
   ~Rps_PayloadZone() {};
 };				// end Rps_PayloadZone
 
