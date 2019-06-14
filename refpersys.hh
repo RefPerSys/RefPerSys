@@ -610,16 +610,16 @@ public:
 
 ////////////////////////////////////////////////////////////////
 typedef uint32_t Rps_HashInt;
-enum Rps_Type
+enum class Rps_Type : int16_t
 {
   /// non-value types (or quasi-values)
   ///
   /// these are GC-scanned, but not GC-allocated, just stack allocated:
-  Rps_TyDumper = -32,
-  Rps_TyLoader = -31,
-  Rps_TyCallFrame = -30,
+  Dumper = -32,
+  Loader = -31,
+  CallFrame = -30,
   /// these are GC-allocated quasivalues:
-  Rps_TyPayload = -5,
+  Payload = -5,
   ///
   ///
   /// Quasi-values are indeed garbage collected, so GC-scanned and
@@ -627,26 +627,26 @@ enum Rps_Type
   /// are... So they don't directly go inside RpsValue-s.
   ///
   /// but see also, and keep in sync with, rps_ty_min_quasi below.
-  Rps_TyQuasiToken = -5,
-  Rps_TyQuasiAttributeArray = -4,
-  Rps_TyQuasiObjectVector = -3,
-  Rps_TyQuasiComponentVector = -2,
+  QuasiToken = -5,
+  QuasiAttributeArray = -4,
+  QuasiObjectVector = -3,
+  QuasiComponentVector = -2,
   ///
   /// Values that could go into Rps_Value.
-  Rps_TyInt = -1, // for tagged integers
-  Rps_TyNone = 0, // for nil
+  Int = -1, // for tagged integers
+  None = 0, // for nil
   ///
   /// Boxed genuine values, are "first class citizens" that could be
   /// in Rps_Value's data. Of course they are both GC-allocated and
   /// GC-scanned.
-  Rps_TyString,
-  Rps_TyDouble,
-  Rps_TySet,
-  Rps_TyTuple,
-  Rps_TyObject,
+  String,
+  Double,
+  Set,
+  Tuple,
+  Object,
 };
 
-static constexpr Rps_Type rps_ty_min_quasi = Rps_TyQuasiToken;
+static constexpr Rps_Type rps_ty_min_quasi = Rps_Type::QuasiToken;
 
 ////////////////////////////////////////////////////////////////
 
@@ -1043,10 +1043,10 @@ public:
   Rps_ZoneValue(Rps_Type ty) : _vtyp(ty)
   {
     RPS_ASSERT ((int)ty>0
-                || ty==Rps_TyCallFrame
-                || ((int)ty<Rps_TyInt && ty>=rps_ty_min_quasi)
-                || ty==Rps_TyDumper
-                || ty==Rps_TyLoader);
+                || ty==Rps_Type::CallFrame
+                || ((int)ty<(int)Rps_Type::Int && ty>=rps_ty_min_quasi)
+                || ty==Rps_Type::Dumper
+                || ty==Rps_Type::Loader);
   };
 public:
   inline void rps_write_barrier(Rps_CallFrameZone*fr);
@@ -1116,7 +1116,7 @@ protected:
   Rps_CallFrameZone (unsigned siz,
                      Rps_CallFrameZone*callingframe,
                      Rps_ObjectRef descr)
-    : Rps_ZoneValue(Rps_TyCallFrame), _cf_size(siz), _cf_state(0),
+    : Rps_ZoneValue(Rps_Type::CallFrame), _cf_size(siz), _cf_state(0),
       _cf_prev(callingframe), _cf_descr(descr)
   {
     memset(_cf_valarr, 0, siz*sizeof(Rps_ZoneValue*));
@@ -1359,7 +1359,7 @@ class Rps_QuasiAttributeArray : public Rps_PointerCopyingZoneValue
   std::pair<Rps_ObjectRef,Rps_Value> _qatentries[RPS_FLEXIBLE_DIM];
   // this constructor is private, it is called inside Rps_ObjectZone
   Rps_QuasiAttributeArray(unsigned siz, unsigned nb, const std::pair<Rps_ObjectRef,Rps_Value>*arr)
-    : Rps_PointerCopyingZoneValue(Rps_TyQuasiAttributeArray), _qsizattr(siz), _qnbattrs(nb)
+    : Rps_PointerCopyingZoneValue(Rps_Type::QuasiAttributeArray), _qsizattr(siz), _qnbattrs(nb)
   {
     RPS_ASSERTPRINTF(nb < std::numeric_limits<uint16_t>::max(), "nb=%u", nb);
     RPS_ASSERTPRINTF(siz <= nb, "siz=%u, nb=%u", siz, nb);
@@ -1464,7 +1464,7 @@ class Rps_QuasiComponentVector : public Rps_PointerCopyingZoneValue
   Rps_Value _qarrval[RPS_FLEXIBLE_DIM];
   // this constructor is private, it is called inside Rps_ObjectZone
   Rps_QuasiComponentVector(unsigned siz, unsigned nb, const Rps_Value*arr)
-    : Rps_PointerCopyingZoneValue(Rps_TyQuasiComponentVector), _qsizarr(siz), _qnbcomp(nb)
+    : Rps_PointerCopyingZoneValue(Rps_Type::QuasiComponentVector), _qsizarr(siz), _qnbcomp(nb)
   {
     RPS_ASSERTPRINTF(nb < std::numeric_limits<uint16_t>::max(), "nb=%u", nb);
     RPS_ASSERTPRINTF(siz <= nb, "siz=%u, nb=%u", siz, nb);
@@ -1536,7 +1536,7 @@ class Rps_QuasiObjectVector : public Rps_PointerCopyingZoneValue
   Rps_ObjectRef _qarrobj[RPS_FLEXIBLE_DIM];
   // this constructor is usually private...
   Rps_QuasiObjectVector(unsigned siz, unsigned nb, const Rps_ObjectRef*arr)
-    : Rps_PointerCopyingZoneValue(Rps_TyQuasiObjectVector), _qsizarr(siz), _qnbobj(nb)
+    : Rps_PointerCopyingZoneValue(Rps_Type::QuasiObjectVector), _qsizarr(siz), _qnbobj(nb)
   {
     RPS_ASSERTPRINTF(nb < std::numeric_limits<uint32_t>::max()/4, "nb=%u", nb);
     RPS_ASSERTPRINTF(siz <= nb, "siz=%u, nb=%u", siz, nb);
@@ -1622,7 +1622,7 @@ protected:
       *reinterpret_cast<struct loadpointers_st*>(_ld_pseudoframe.data());
   };
 #define RPS_LDATA(Field) rps_loadpointers().Field
-  Rps_Loader(const char*dirname) : Rps_ZoneValue(Rps_TyLoader),
+  Rps_Loader(const char*dirname) : Rps_ZoneValue(Rps_Type::Loader),
     _ld_pseudoframe(nullptr,nullptr), _ld_dirname(dirname)
   {
     RPS_ASSERT (dirname != nullptr);
@@ -1673,7 +1673,7 @@ class Rps_Dumper : Rps_ZoneValue
   };
 #define RPS_DUDAT(Field) rps_dumpointers().Field
 protected:
-  Rps_Dumper(const char*dirname) : Rps_ZoneValue(Rps_TyDumper),
+  Rps_Dumper(const char*dirname) : Rps_ZoneValue(Rps_Type::Dumper),
     _du_pseudoframe(nullptr,nullptr), _du_dirname(dirname)
   {
     RPS_ASSERT (dirname != nullptr);
@@ -1727,7 +1727,7 @@ protected:
   };
   void mutate(Rps_Type ty)
   {
-    RPS_ASSERT (ty == Rps_TyTuple || ty == Rps_TySet);
+    RPS_ASSERT (ty == Rps_Type::Tuple || ty == Rps_Type::Set);
     mutate_type(ty);
     compute_hash();
   };
@@ -1735,7 +1735,7 @@ protected:
   // to be updated.
   void mutate_nohash(Rps_Type ty)
   {
-    RPS_ASSERT (ty == Rps_TyTuple || ty == Rps_TySet);
+    RPS_ASSERT (ty == Rps_Type::Tuple || ty == Rps_Type::Set);
     mutate_type(ty);
   }
 };				// end Rps_SequenceObrefZone
@@ -1753,15 +1753,15 @@ class Rps_TupleObrefZone : public Rps_SequenceObrefZone
   friend class Rps_SetObrefZone;
 private:
   Rps_TupleObrefZone(uint32_t siz, const Rps_ObjectRef*arr) :
-    Rps_SequenceObrefZone(Rps_TyTuple, siz,
-                          hash_of_array(Rps_TyTuple, siz, arr),
+    Rps_SequenceObrefZone(Rps_Type::Tuple, siz,
+                          hash_of_array(Rps_Type::Tuple, siz, arr),
                           arr) { };
   static void* operator new (std::size_t, void*ptr)
   {
     return ptr;
   };
 public:
-  static constexpr Rps_Type zone_type = Rps_TyTuple;
+  static constexpr Rps_Type zone_type = Rps_Type::Tuple;
   static Rps_TupleObrefZone* make(Rps_CallFrameZone*,uint32_t siz, const Rps_ObjectRef*arr);
   static Rps_TupleObrefZone* make(Rps_CallFrameZone*callingfra,const std::initializer_list<const Rps_ObjectRef> il)
   {
@@ -1779,7 +1779,7 @@ class Rps_TupleValue : public Rps_Value
 public:
   void put_tuple(const Rps_TupleObrefZone*ptup)
   {
-    RPS_ASSERT (ptup == nullptr || ptup->type() == Rps_TyTuple);
+    RPS_ASSERT (ptup == nullptr || ptup->type() == Rps_Type::Tuple);
     put_data(ptup);
   };
   Rps_TupleValue() : Rps_TupleValue(nullptr) {};
@@ -1827,15 +1827,15 @@ private:
     return ptr;
   };
   Rps_SetObrefZone(uint32_t siz, const Rps_ObjectRef*arr) :
-    Rps_SequenceObrefZone(Rps_TySet, siz,
-                          hash_of_array(Rps_TySet, siz, arr),
+    Rps_SequenceObrefZone(Rps_Type::Set, siz,
+                          hash_of_array(Rps_Type::Set, siz, arr),
                           arr) { };
   Rps_SetObrefZone(std::nullptr_t, uint32_t siz, const Rps_ObjectRef*arr) :
-    Rps_SequenceObrefZone(Rps_TySet, siz,
+    Rps_SequenceObrefZone(Rps_Type::Set, siz,
                           0,
                           arr) { };
 public:
-  static constexpr Rps_Type zone_type = Rps_TySet;
+  static constexpr Rps_Type zone_type = Rps_Type::Set;
   static Rps_SetObrefZone* make(Rps_CallFrameZone*callingfra,uint32_t siz, const Rps_ObjectRef*arr);
   static Rps_SetObrefZone* make(Rps_CallFrameZone*callingfra,const std::initializer_list<const Rps_ObjectRef> il)
   {
@@ -1877,7 +1877,7 @@ Rps_Value::as_sequence() const
   if (has_data())
     {
       auto da = unsafe_data();
-      if (da->type() == Rps_TySet || da->type() == Rps_TyTuple)
+      if (da->type() == Rps_Type::Set || da->type() == Rps_Type::Tuple)
         return (const Rps_SequenceObrefZone*)da;
     };
   return nullptr;
@@ -1892,12 +1892,12 @@ private:
   intptr_t _unused;
   double _dbl;
   Rps_DoubleZone(double d=0.0) :
-    Rps_ScalarCopyingZoneValue(Rps_TyDouble), _dbl(d)
+    Rps_ScalarCopyingZoneValue(Rps_Type::Double), _dbl(d)
   {
     RPS_ASSERT (!std::isnan(d));
   };
 public:
-  static constexpr Rps_Type zone_type = Rps_TyDouble;
+  static constexpr Rps_Type zone_type = Rps_Type::Double;
   static Rps_DoubleZone* make(double d=0.0);
 };				// end Rps_DoubleZone
 
@@ -1944,7 +1944,7 @@ protected:
     return ptr;
   };
   Rps_StringZone(const char*sbytes, int32_t slen= -1, bool skipcheck=false) :
-    Rps_ScalarCopyingZoneValue(Rps_TyString),
+    Rps_ScalarCopyingZoneValue(Rps_Type::String),
     _strlen((uint32_t)(slen<0)?(sbytes?(slen=strlen(sbytes)):(slen=0)):slen), _strhash(0)
   {
     if (!skipcheck)
@@ -1958,7 +1958,7 @@ public:
   Rps_ZoneValue::rps_allocate_with_gap<Rps_StringZone,const char*,int32_t,bool>
   (Rps_CallFrameZone*,unsigned,const char*,int32_t,bool);
   static Rps_StringZone* make(Rps_CallFrameZone*callingfra, const char*sbytes, int32_t slen= -1);
-  static constexpr Rps_Type zone_type = Rps_TyString;
+  static constexpr Rps_Type zone_type = Rps_Type::String;
   uint32_t size() const
   {
     return _strlen;
@@ -2044,7 +2044,7 @@ template  <class PayloadDataType> class Rps_PayloadZone : Rps_MarkSweepZoneValue
   friend PayloadDataType;
   PayloadDataType _py_data;
 protected:
-  Rps_PayloadZone() : Rps_MarkSweepZoneValue(Rps_TyPayload), _py_data() {};
+  Rps_PayloadZone() : Rps_MarkSweepZoneValue(Rps_Type::Payload), _py_data() {};
   ~Rps_PayloadZone() {};
 };				// end Rps_PayloadZone
 
@@ -2087,7 +2087,7 @@ class Rps_ObjectZone : public  Rps_MarkSweepZoneValue
   std::atomic<Rps_ObjectZone*> _ob_atomclass;
   // TODO: we need not only the lock but also some kind of object buckets
   Rps_ObjectZone(const Rps_Id& oid, Rps_ObjectRef obclass= nullptr)
-    : Rps_MarkSweepZoneValue(Rps_TyObject), _ob_id(oid), _ob_mtxlock(), _ob_atomclass(obclass),
+    : Rps_MarkSweepZoneValue(Rps_Type::Object), _ob_id(oid), _ob_mtxlock(), _ob_atomclass(obclass),
       _obat_kind(atk_none), _obat_null(), _ob_compvec(nullptr)
   {
   };
@@ -2241,7 +2241,7 @@ public:
   {
     return _ob_id;
   };
-  static constexpr Rps_Type zone_type = Rps_TyObject;
+  static constexpr Rps_Type zone_type = Rps_Type::Object;
   bool same (const Rps_ObjectZone*oth) const
   {
     if (!oth) return false;
@@ -2833,7 +2833,7 @@ private:
     return ptr;
   };
   Rps_QuasiToken()
-    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+    : Rps_PointerCopyingZoneValue(Rps_Type::QuasiToken),
       _tk_type(RPS_TOKEN_TYPE_NONE),
       _tk_unusedptr(nullptr)
   {
@@ -2842,7 +2842,7 @@ private:
   (Rps_CallFrameZone*,intptr_t,const LOCATION_st*);
   Rps_QuasiToken(intptr_t i,
                  const LOCATION_st* ploc=nullptr)
-    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+    : Rps_PointerCopyingZoneValue(Rps_Type::QuasiToken),
       _tk_type(RPS_TOKEN_TYPE_INTEGER),
       _tk_integer(i),
       _tk_location(ploc?(*ploc):empty_location)
@@ -2851,7 +2851,7 @@ private:
   friend Rps_QuasiToken*Rps_ZoneValue::rps_allocate<Rps_QuasiToken>
   (Rps_CallFrameZone*,double,const LOCATION_st*);
   Rps_QuasiToken(double d, const LOCATION_st* ploc=nullptr)
-    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+    : Rps_PointerCopyingZoneValue(Rps_Type::QuasiToken),
       _tk_type(RPS_TOKEN_TYPE_DOUBLE),
       _tk_double(d),
       _tk_location(ploc?(*ploc):empty_location)
@@ -2860,7 +2860,7 @@ private:
   friend Rps_QuasiToken*Rps_ZoneValue::rps_allocate<Rps_QuasiToken>
   (Rps_CallFrameZone*,tag_string, Rps_StringValue,const LOCATION_st*);
   Rps_QuasiToken(tag_string, Rps_StringValue strv, const LOCATION_st* ploc=nullptr)
-    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+    : Rps_PointerCopyingZoneValue(Rps_Type::QuasiToken),
       _tk_type(RPS_TOKEN_TYPE_STRING),
       _tk_string(strv),
       _tk_location(ploc?(*ploc):empty_location)
@@ -2869,7 +2869,7 @@ private:
   friend Rps_QuasiToken*Rps_ZoneValue::rps_allocate<Rps_QuasiToken>
   (Rps_CallFrameZone*,tag_name, Rps_StringValue,const LOCATION_st*);
   Rps_QuasiToken(tag_name, Rps_StringValue strv, const LOCATION_st* ploc=nullptr)
-    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+    : Rps_PointerCopyingZoneValue(Rps_Type::QuasiToken),
       _tk_type(RPS_TOKEN_TYPE_NAME),
       _tk_name(strv),
       _tk_location(ploc?(*ploc):empty_location)
@@ -2879,14 +2879,14 @@ private:
     : Rps_QuasiToken(tag_string{}, strv, ploc) {};
 
   Rps_QuasiToken(tag_left_parenthesis, const LOCATION_st* ploc = nullptr)
-    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+    : Rps_PointerCopyingZoneValue(Rps_Type::QuasiToken),
       _tk_type(RPS_TOKEN_TYPE_LEFT_PARENTHESIS),
       _tk_unusedptr(nullptr),
       _tk_location(ploc?(*ploc):empty_location)
   {
   };
   Rps_QuasiToken(tag_right_parenthesis, const LOCATION_st* ploc = nullptr)
-    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+    : Rps_PointerCopyingZoneValue(Rps_Type::QuasiToken),
       _tk_type(RPS_TOKEN_TYPE_RIGHT_PARENTHESIS),
       _tk_unusedptr(nullptr),
       _tk_location(ploc?(*ploc):empty_location)
@@ -2895,7 +2895,7 @@ private:
   friend Rps_QuasiToken*Rps_ZoneValue::rps_allocate<Rps_QuasiToken>
   (Rps_CallFrameZone*,const Rps_Id&,const LOCATION_st*);
   Rps_QuasiToken(const Rps_Id&oid, const LOCATION_st* ploc=nullptr)
-    : Rps_PointerCopyingZoneValue(Rps_TyQuasiToken),
+    : Rps_PointerCopyingZoneValue(Rps_Type::QuasiToken),
       _tk_type(RPS_TOKEN_TYPE_OBJECTID),
       _tk_objectid(oid),
       _tk_location(ploc?(*ploc):empty_location)

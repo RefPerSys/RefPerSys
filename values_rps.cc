@@ -119,7 +119,7 @@ Rps_SequenceObrefZone::hash_of_array(Rps_Type ty, uint32_t siz, const Rps_Object
     {
       auto curobref = arr[ix];
       if (!curobref) continue;
-      RPS_ASSERT (curobref->type() == Rps_TyObject);
+      RPS_ASSERT (curobref->type() == Rps_Type::Object);
       auto curhash = curobref->hash();
       if (ix %2 == 0)
         h1 = (449*h1) ^ (curhash+1000);
@@ -206,7 +206,7 @@ Rps_SetObrefZone::make(Rps_CallFrameZone*callingfra,uint32_t siz, const Rps_Obje
   if (RPS_UNLIKELY(card != siz))
     {
       RPS_ASSERT (card < siz);
-      zqset->mutate(Rps_TyTuple);
+      zqset->mutate(Rps_Type::Tuple);
       auto zqtup = zqset;
       auto cardgap = byte_gap_for_size(card);
       zqset = Rps_SetObrefZone::rps_allocate_with_gap<Rps_SetObrefZone>(callingfra,cardgap, nullptr, card, zqtup->_obarr+siz-card);
