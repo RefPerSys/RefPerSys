@@ -1123,12 +1123,12 @@ public:
   {
     fail_too_big_zone(this, wantedsize, reason);
   }
-  inline Rps_ZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra);
-  static void scan_quasivalue(Rps_ZoneValue* &zv, Rps_CallFrameZone* callingfra)
+  inline Rps_ZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra, unsigned depth=0);
+  static void scan_quasivalue(Rps_ZoneValue* &zv, Rps_CallFrameZone* callingfra, unsigned depth=0)
   {
     if  (zv == nullptr || zv == RPS_EMPTYSLOT || ((intptr_t)zv) & 1)
       return;
-    zv = zv->scanned_quasivalue(callingfra);
+    zv = zv->scanned_quasivalue(callingfra,depth);
   }
 protected:
   void mutate_type(Rps_Type ty)
@@ -1291,7 +1291,7 @@ protected:
   {
     return allocate_rps_zone(siz,callfram);
   }
-  inline Rps_MutableCopyingZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra);
+  inline Rps_MutableCopyingZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra, unsigned depth=0);
 public:
 };				// end class Rps_MutableCopyingZoneValue
 
@@ -1314,7 +1314,7 @@ protected:
   {
     return allocate_rps_zone(siz,callfram);
   }
-  inline Rps_ScalarCopyingZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra);
+  inline Rps_ScalarCopyingZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra,unsigned depth=0);
 public:
 };				// end class Rps_ScalarCopyingZoneValue
 
@@ -1341,7 +1341,7 @@ protected:
   {
     return allocate_rps_zone(siz,callfram);
   }
-  inline Rps_MarkSweepZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra);
+  inline Rps_MarkSweepZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra, unsigned depth=0);
 public:
 };				// end class Rps_MarkSweepZoneValue
 
@@ -2628,7 +2628,7 @@ public:
   // Scan a call stack and all the local frames in it:
   static void scan_call_stack(Rps_CallFrameZone*callingfra);
   // Scan a quasi-value
-  static inline Rps_ZoneValue* scan_quasi_value(Rps_CallFrameZone*callingfra, Rps_ZoneValue*zv);
+  static inline Rps_ZoneValue* scan_quasi_value(Rps_CallFrameZone*callingfra, Rps_ZoneValue*zv, unsigned depth=0);
   // Forcibly run the garbage collector:
   static void run_garbcoll(Rps_CallFrameZone*callingfra);
   // Maybe run the garbage collector. Each allocating thread is
@@ -2799,19 +2799,40 @@ Rps_MarkSweepZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZo
 
 
 Rps_ZoneValue*
-Rps_ZoneValue::scanned_quasivalue(Rps_CallFrameZone*callingfra)
+Rps_ZoneValue::scanned_quasivalue(Rps_CallFrameZone*callingfra, unsigned depth)
 {
-  return Rps_GarbageCollector::scan_quasi_value(callingfra, this);
+  return Rps_GarbageCollector::scan_quasi_value(callingfra, this, depth);
 } // end of Rps_ZoneValue::scanned_quasivalue
 
 
 
 Rps_ZoneValue*
-Rps_GarbageCollector::scan_quasi_value(Rps_CallFrameZone*callingfra, Rps_ZoneValue*zv)
+Rps_GarbageCollector::scan_quasi_value(Rps_CallFrameZone*callingfra, Rps_ZoneValue*zv, unsigned depth)
 {
+  if (!zv || (void*)zv == RPS_EMPTYSLOT) return nullptr;
+  auto ty = Rps_ZoneValue::get_type(zv);
+  switch (ty)
+    {
+    case Rps_Type::Dumper:
+    case Rps_Type::Loader:
+    case Rps_Type::CallFrame:
+    case Rps_Type::QuasiPayload:
+    case Rps_Type::QuasiToken:
+    case Rps_Type::QuasiAttributeArray:
+    case Rps_Type::QuasiObjectVector:
+    case Rps_Type::QuasiComponentVector:
+    case Rps_Type::Int:
+    case Rps_Type::None:
+    case Rps_Type::String:
+    case Rps_Type::Double:
+    case Rps_Type::Set:
+    case Rps_Type::Tuple:
+    case Rps_Type::Object:
+      break;
+    }
 #warning unimplemented Rps_GarbageCollector::scan_quasi_value
-  RPS_FATAL("unimplemented Rps_GarbageCollector::scan_quasi_value callingfra@%p zv@%p",
-            (void*)callingfra, (void*)zv);
+  RPS_FATAL("unimplemented Rps_GarbageCollector::scan_quasi_value callingfra@%p zv@%p of ty#%d",
+            (void*)callingfra, (void*)zv, (int)ty);
 } // end of Rps_GarbageCollector::scan_quasi_value
 
 ////////////////////////////////////////////////////////////////
