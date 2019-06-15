@@ -1215,17 +1215,38 @@ public:
   {
     return const_cast<void*>((const void*)_cf_valarr);
   };
+  const char* filename() const {
+#ifdef NDEBUG
+    return _cf_filnam;
+#else
+    return nullptr;
+#endif /*NDEBUG*/
+  }; // end filename
+  const int lineno() const {
+#ifdef NDEBUG
+    return _cf_lineno;
+#else
+    return 0;
+#endif /*NDEBUG*/
+  }; // end lineno
 };				// end Rps_CallFrameZone
 
 template<unsigned siz> class Rps_SizedCallFrameZone
   : public Rps_CallFrameZone
 {
+  Rps_ZoneValue*_csf_valarr[siz];
 public:
+  void* data() const
+  {
+    return const_cast<void*>((const void*)_csf_valarr);
+  };
   Rps_SizedCallFrameZone(Rps_CallFrameZone*callingframe,
                          Rps_ObjectRef descr,
                          const char*filename=nullptr,
                          const int lineno=0) :
-    Rps_CallFrameZone(siz, callingframe, descr, filename, lineno) {};
+    Rps_CallFrameZone(siz, callingframe, descr, filename, lineno) {
+    RPS_ASSERT((void*)&_csf_valarr == data());
+  };
   ~Rps_SizedCallFrameZone() {};
   static constexpr unsigned _const_size_ = siz;
 };				// end Rps_SizedCallFrameZone
