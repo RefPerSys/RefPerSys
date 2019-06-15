@@ -200,6 +200,7 @@ Rps_SetValue::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
           break;
         }
     }
+  return _.setv;
 } // end Rps_SetValue::tiny_benchmark_1
 
 

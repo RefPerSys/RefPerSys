@@ -653,8 +653,8 @@ static constexpr Rps_Type rps_ty_min_quasi = Rps_Type::QuasiPayload;
 static inline bool
 rps_is_type_of_quasi_value(const Rps_Type ty)
 {
-  return ty >= rps_ty_min_quasi && ty < Rps_Type::Int
-         || ty >= Rps_Type::String && ty <= Rps_Type::Object;
+  return (ty >= rps_ty_min_quasi && ty < Rps_Type::Int)
+         || (ty >= Rps_Type::String && ty <= Rps_Type::Object);
 } // end rps_is_type_of_quasi_value
 
 // any type of GC-movable quasi-value
@@ -1068,7 +1068,17 @@ public:
     result = new(ptr) ValClass(args...);
     return result;
   }
-
+  static Rps_Type get_type(const void*zv)
+  {
+    if (zv == nullptr || (void*)zv == RPS_EMPTYSLOT)
+      return Rps_Type::None;
+    if ((intptr_t)zv & 1)
+      return Rps_Type::Int;
+    RPS_ASSERTPRINTF(rps_is_type_of_quasi_value(((Rps_ZoneValue*)zv)->_vtyp),
+                     "zv @%p has bad type #%d",
+                     zv, (int)(((Rps_ZoneValue*)zv)->_vtyp));
+    return ((Rps_ZoneValue*)zv)->_vtyp;
+  };
   Rps_ZoneValue(Rps_Type ty) : _vtyp(ty)
   {
     RPS_ASSERT ((int)ty>0
@@ -1116,7 +1126,7 @@ public:
   inline Rps_ZoneValue* scanned_quasivalue(Rps_CallFrameZone* callingfra);
   static void scan_quasivalue(Rps_ZoneValue* &zv, Rps_CallFrameZone* callingfra)
   {
-    if  (zv == nullptr || zv == RPS_EMPTYSLOT)
+    if  (zv == nullptr || zv == RPS_EMPTYSLOT || ((intptr_t)zv) & 1)
       return;
     zv = zv->scanned_quasivalue(callingfra);
   }
@@ -1160,6 +1170,10 @@ protected:
   inline Rps_CallFrameZone* scanned_quasivalue(Rps_CallFrameZone* callingfra);
 public:
   static constexpr Rps_CallFrameZone* _bottom_frame_ = nullptr;
+  int size() const
+  {
+    return _cf_size;
+  };
   int state() const
   {
     return _cf_state;
@@ -1180,6 +1194,10 @@ public:
   {
     if (ix>=0 && ix<(int)_cf_size) return _cf_valarr[ix];
     return nullptr;
+  };
+  Rps_ZoneValue* unsafe_at(int ix)
+  {
+    return _cf_valarr[ix];
   };
   void* data() const
   {
@@ -2609,6 +2627,8 @@ class Rps_GarbageCollector
 public:
   // Scan a call stack and all the local frames in it:
   static void scan_call_stack(Rps_CallFrameZone*callingfra);
+  // Scan a quasi-value
+  static inline Rps_ZoneValue* scan_quasi_value(Rps_CallFrameZone*callingfra, Rps_ZoneValue*zv);
   // Forcibly run the garbage collector:
   static void run_garbcoll(Rps_CallFrameZone*callingfra);
   // Maybe run the garbage collector. Each allocating thread is
@@ -2775,6 +2795,24 @@ Rps_MarkSweepZoneValue::allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZo
 {
   return Rps_GarbageCollector::allocate_marked_maybe_gc(totalsize, callingfra);
 }      // end of Rps_MarkSweepZoneValue::allocate_rps_zone
+
+
+
+Rps_ZoneValue*
+Rps_ZoneValue::scanned_quasivalue(Rps_CallFrameZone*callingfra)
+{
+  return Rps_GarbageCollector::scan_quasi_value(callingfra, this);
+} // end of Rps_ZoneValue::scanned_quasivalue
+
+
+
+Rps_ZoneValue*
+Rps_GarbageCollector::scan_quasi_value(Rps_CallFrameZone*callingfra, Rps_ZoneValue*zv)
+{
+#warning unimplemented Rps_GarbageCollector::scan_quasi_value
+  RPS_FATAL("unimplemented Rps_GarbageCollector::scan_quasi_value callingfra@%p zv@%p",
+            (void*)callingfra, (void*)zv);
+} // end of Rps_GarbageCollector::scan_quasi_value
 
 ////////////////////////////////////////////////////////////////
 class Rps_MutatorThread: public std::thread

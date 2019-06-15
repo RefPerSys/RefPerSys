@@ -266,8 +266,22 @@ Rps_GarbageCollector::scan_call_stack(Rps_CallFrameZone*callingfra)
   RPS_ASSERT (callingfra != nullptr);
   /// we should scan and forward all the pointers on the call stack,
   /// starting with the topmost callingfra
-#warning unimplemented Rps_MemoryBlock::scan_call_stack
-  RPS_FATAL("Rps_MemoryBlock::scan_call_stack unimplemented");
+  for (Rps_CallFrameZone*curfram = callingfra; curfram != nullptr;
+       curfram = curfram->prev())
+    {
+      int siz = curfram->size();
+      curfram->descr().scan_objectref(callingfra);
+      for (int ix=0; ix<siz; ix++)
+        {
+          auto curqvalptr = curfram->unsafe_at(ix);
+          if (!curqvalptr)
+            continue;
+          Rps_Type curtyp = Rps_ZoneValue::get_type(curqvalptr);
+          if (!rps_is_type_of_quasi_value(curtyp))
+            continue;
+          Rps_ZoneValue::scan_quasivalue(curqvalptr,callingfra);
+        }
+    }
 } // end Rps_GarbageCollector::scan_call_stack
 
 
@@ -307,7 +321,7 @@ Rps_GarbageCollector::allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*ca
 
 ////////////////////////////////////////////////////////////////
 Rps_MutatorThread::Rps_MutatorThread()
-  : _mthr_prefix(), std::thread()
+  : std::thread(), _mthr_prefix()
 {
 #warning unimplemented Rps_MutatorThread::Rps_MutatorThread()
   RPS_FATAL("Rps_MutatorThread::Rps_MutatorThread unimplemented");

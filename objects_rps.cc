@@ -317,8 +317,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
           _.oldattrs->_qatentries[oldnbattr].first = nullptr;
           int pos = -1;
           bool found = false;
-          unsigned newnbattr = oldnbattr;
-          for (int ix=0; ix<oldnbattr; ix++)
+          for (int ix=0; ix<(int)oldnbattr; ix++)
             {
               if (_.oldattrs->_qatentries[ix].first == _.keyob)
                 {
@@ -453,7 +452,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
             {
               //  Since _.oldattrs is sorted but not-small, and previous
               //  tests failed, we can:
-              RPS_ASSERT (hi+1<oldnbattr);
+              RPS_ASSERT (hi+1<(int)oldnbattr);
               // loop between lo included & hi excluded
               for (int k=lo; k<hi; k++)
                 {
@@ -493,7 +492,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
             );
           unsigned newcnt = 0;
           bool reached = false;
-          for (int ix=0; ix<oldnbattr; ix++)
+          for (int ix=0; ix<(int)oldnbattr; ix++)
             {
               if (reached)
                 _.newattrs->_qatentries[newcnt++] = _.oldattrs->_qatentries[ix];
@@ -531,7 +530,7 @@ void Rps_ObjectZone::do_put_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef key
           _obat_kind = atk_big;
           // we need to construct that _obat_map_atar:
           (void) new ((void*)&_obat_map_atar) typeof(_obat_map_atar);
-          for (int ix=0; ix<oldnbattr; ix++)
+          for (int ix=0; ix<(int)oldnbattr; ix++)
             _obat_map_atar.emplace(_.oldattrs->_qatentries[ix]);
         }
     }
@@ -629,7 +628,7 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
           if (pos>=0)
             {
               RPS_ASSERT (oldnbattr>0);
-              for (int ix=pos; ix<oldnbattr; ix++)
+              for (int ix=pos; ix<(int)oldnbattr; ix++)
                 _.oldattrs->_qatentries[ix] = _.oldattrs->_qatentries[ix+1];
               _.oldattrs->_qnbattrs = oldnbattr-1;
               _.oldattrs->_qatentries[oldnbattr-1].first = nullptr;
@@ -654,7 +653,7 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
         lo = p.first;
         hi = p.second;
       }
-      RPS_ASSERT (lo >= 0 && hi <= oldnbattr && lo < hi);
+      RPS_ASSERT (lo >= 0 && hi <= (int)oldnbattr && lo < hi);
       int pos = -1;
       for (int ix=lo; ix<hi; ix++)
         {
@@ -669,7 +668,7 @@ Rps_ObjectZone::do_remove_attr(Rps_CallFrameZone*callingfra, Rps_ObjectRef keyob
       if (pos>=0)
         {
           RPS_ASSERT (oldnbattr>0);
-          for (int ix=pos; ix<oldnbattr; ix++)
+          for (int ix=pos; ix<(int)oldnbattr; ix++)
             _.oldattrs->_qatentries[ix] = _.oldattrs->_qatentries[ix+1];
           _.oldattrs->_qnbattrs = oldnbattr-1;
           _.oldattrs->_qatentries[oldnbattr-1].first = nullptr;
@@ -801,7 +800,7 @@ Rps_QuasiObjectVector::make_inited(Rps_CallFrameZone*callingfra, unsigned alsize
                  Rps_QuasiObjectVector* qvec;
                 );
   RPS_FATALOUT("unimplemented Rps_QuasiObjectVector::make_inited "
-               << alsize);
+               << alsize<< " il@"<< &il);
 #warning Rps_QuasiObjectVector::make_inited unimplemented
 } // end Rps_QuasiObjectVector::make_inited
 
