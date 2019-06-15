@@ -1149,15 +1149,27 @@ class Rps_CallFrameZone : public Rps_ZoneValue
   const unsigned _cf_size;
   int _cf_state;
   Rps_CallFrameZone* _cf_prev;
+#ifndef NDEBUG
+  const char* _cf_filnam;
+  const int _cf_lineno;
+#endif /*NDEBUG*/
   Rps_ObjectRef _cf_descr;
 protected:
   Rps_ZoneValue* _cf_valarr[RPS_FLEXIBLE_DIM];
   Rps_CallFrameZone (unsigned siz,
                      Rps_CallFrameZone*callingframe,
-                     Rps_ObjectRef descr)
+                     Rps_ObjectRef descr,
+                     const char*filename =nullptr,
+                     const int lineno=0)
     : Rps_ZoneValue(Rps_Type::CallFrame), _cf_size(siz), _cf_state(0),
-      _cf_prev(callingframe), _cf_descr(descr)
+      _cf_prev(callingframe),
+#ifndef NDEBUG
+      _cf_filnam(filename),
+      _cf_lineno(lineno),
+#endif /*NDEBUG*/
+      _cf_descr(descr)
   {
+    RPS_ASSERT(filename==nullptr || (*filename != (char)0 && lineno>0));
     memset(_cf_valarr, 0, siz*sizeof(Rps_ZoneValue*));
   };
   ~Rps_CallFrameZone()
@@ -1210,8 +1222,10 @@ template<unsigned siz> class Rps_SizedCallFrameZone
 {
 public:
   Rps_SizedCallFrameZone(Rps_CallFrameZone*callingframe,
-                         Rps_ObjectRef descr) :
-    Rps_CallFrameZone(siz, callingframe, descr) {};
+                         Rps_ObjectRef descr,
+                         const char*filename=nullptr,
+                         const int lineno=0) :
+    Rps_CallFrameZone(siz, callingframe, descr, filename, lineno) {};
   ~Rps_SizedCallFrameZone() {};
   static constexpr unsigned _const_size_ = siz;
 };				// end Rps_SizedCallFrameZone
@@ -1219,7 +1233,7 @@ public:
 #define RPS_CURFRAME ((Rps_CallFrameZone*)&_)
 #define RPS_WRITE_BARRIER() rps_write_barrier(RPS_CURFRAME)
 
-#define RPS_LOCALFRAME_AT(Lin,PrevFrame,Descr,...)		\
+#define RPS_LOCALFRAME_AT(Lin,Fil,PrevFrame,Descr,...)		\
   struct rps_localvars_##Lin { __VA_ARGS__ };			\
   constexpr unsigned _rps_localframesize_##Lin			\
   = sizeof(rps_localvars_##Lin)/sizeof(Rps_ZoneValue*);		\
@@ -1227,18 +1241,19 @@ public:
     public Rps_SizedCallFrameZone<_rps_localframesize_##Lin> {	\
 public:								\
 Rps_Framecl_##Lin(Rps_CallFrameZone*callingframe##Lin,		\
-                         Rps_ObjectRef descr##Lin)		\
+		  Rps_ObjectRef descr##Lin,			\
+const char*filnam##Lin=nullptr, const int lineno##Lin=0)	\
 : Rps_SizedCallFrameZone<_rps_localframesize_##Lin>		\
- (callingframe##Lin,descr##Lin) {};				\
+(callingframe##Lin,descr##Lin,filnam##Lin,lineno##Lin) {};     	\
 __VA_ARGS__;							\
 } /*end class  Rps_Framecl_##Lin*/;				\
-Rps_Framecl_##Lin _(PrevFrame,Descr)
+Rps_Framecl_##Lin _(PrevFrame,Descr,Fil,Lin)
 
-#define RPS_LOCALFRAME_AT_BIS(Lin,PrevFrame,Descr,...) \
-  RPS_LOCALFRAME_AT(Lin,PrevFrame,Descr,__VA_ARGS__)
+#define RPS_LOCALFRAME_AT_BIS(Lin,Fil,PrevFrame,Descr,...)	\
+  RPS_LOCALFRAME_AT(Lin,Fil,PrevFrame,Descr,__VA_ARGS__)
 
 #define RPS_LOCALFRAME(PrevFrame,Descr,...) \
-  RPS_LOCALFRAME_AT_BIS(__LINE__,(PrevFrame),(Descr), __VA_ARGS__)
+  RPS_LOCALFRAME_AT_BIS(__LINE__,__FILE__,(PrevFrame),(Descr),__VA_ARGS__)
 
 
 ////////////////////////////////////////////////////////////////
