@@ -46,7 +46,7 @@ Rps_GarbageCollector::_gc_thralloc_;
 
 Rps_GarbageCollector::global_allocation_data
 Rps_GarbageCollector::_gc_globalloc_;
-
+std::atomic<unsigned long> Rps_GarbageCollector::_gc_count;
 
 
 
@@ -252,9 +252,9 @@ void
 Rps_GarbageCollector::run_garbcoll(Rps_CallFrameZone*callingfra)
 {
   _gc_wanted.store(true);
+  // we need to synchronize with other worker threads
   if (callingfra)
     scan_call_stack(callingfra);
-  // we need to synchronize with other worker threads
 #warning unimplemented Rps_MemoryBlock::run_garbcoll
   RPS_FATAL("Rps_MemoryBlock::run_garbcoll unimplemented");
 } // end Rps_GarbageCollector::run_garbcoll
@@ -320,11 +320,14 @@ Rps_GarbageCollector::allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*ca
 } // end Rps_GarbageCollector::allocate_marked_maybe_gc
 
 ////////////////////////////////////////////////////////////////
+std::mutex Rps_MutatorThread::_mthr_mtx_;
+std::set<Rps_MutatorThread*> Rps_MutatorThread::_mthr_thread_set_;
+////////////////
 Rps_MutatorThread::Rps_MutatorThread()
-  : std::thread(), _mthr_prefix()
+  : std::thread(), _mthr_prefix(), _mthr_gc_count(0)
 {
-#warning unimplemented Rps_MutatorThread::Rps_MutatorThread()
-  RPS_FATAL("Rps_MutatorThread::Rps_MutatorThread unimplemented");
+  std::lock_guard<std::mutex> gu(_mthr_mtx_);
+  _mthr_thread_set_.insert(this);
 } // end Rps_MutatorThread::Rps_MutatorThread()
 
 Rps_MutatorThread::Rps_MutatorThread(const char*name)
@@ -337,6 +340,8 @@ Rps_MutatorThread::Rps_MutatorThread(const char*name)
 
 Rps_MutatorThread::~Rps_MutatorThread()
 {
+  std::lock_guard<std::mutex> gu(_mthr_mtx_);
+  _mthr_thread_set_.erase(this);
 #warning unimplemented Rps_MutatorThread::~Rps_MutatorThread()
   RPS_FATAL("Rps_MutatorThread::~Rps_MutatorThread unimplemented");
 } // end Rps_MutatorThread::~Rps_MutatorThread()

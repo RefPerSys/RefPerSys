@@ -1215,14 +1215,16 @@ public:
   {
     return const_cast<void*>((const void*)_cf_valarr);
   };
-  const char* filename() const {
+  const char* filename() const
+  {
 #ifdef NDEBUG
     return _cf_filnam;
 #else
     return nullptr;
 #endif /*NDEBUG*/
   }; // end filename
-  const int lineno() const {
+  const int lineno() const
+  {
 #ifdef NDEBUG
     return _cf_lineno;
 #else
@@ -1244,7 +1246,8 @@ public:
                          Rps_ObjectRef descr,
                          const char*filename=nullptr,
                          const int lineno=0) :
-    Rps_CallFrameZone(siz, callingframe, descr, filename, lineno) {
+    Rps_CallFrameZone(siz, callingframe, descr, filename, lineno)
+  {
     RPS_ASSERT((void*)&_csf_valarr == data());
   };
   ~Rps_SizedCallFrameZone() {};
@@ -2641,6 +2644,8 @@ class Rps_GarbageCollector
   static unsigned constexpr _gc_thrmagic_ = 951957269 /*0x38bdb715*/;
   // a global flag which becomes set when GC is needed
   static std::atomic<bool> _gc_wanted;
+  // the global GC count
+  static std::atomic<unsigned long> _gc_count;
   ////////////////
   // each worker thread should have its own
   struct thread_allocation_data
@@ -2877,6 +2882,9 @@ class Rps_MutatorThread: public std::thread
   friend class Rps_GarbageCollector;
   // for http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html ::
   std::string _mthr_prefix;
+  std::atomic<unsigned long> _mthr_gc_count;
+  static std::mutex _mthr_mtx_;
+  static std::set<Rps_MutatorThread*> _mthr_thread_set_;
 public:
   // the name below should be really short, e.g. less than 6 bytes
   Rps_MutatorThread(const char*name);
