@@ -3,8 +3,6 @@
 
 This project has moved to https://gitlab.com/bstarynk/refpersys/
 
-That previous old repository https://gitlab.com/refpersys/refpersys is
-now a playground for Niklas Rosencrantz (Sweden) and others.
 
 ## A research project
 
@@ -301,6 +299,23 @@ Collection
 Techniques](https://www3.nd.edu/~dthain/courses/cse40243/spring2006/gc-survey.pdf)
 old paper, then read the [GC handbook](http://gchandbook.org/)
 
+## useful and relevant libraries
+
+We already need the following libraries:
+
+* [libunistring](https://www.gnu.org/software/libunistring/) for [UTF-8](https://en.wikipedia.org/wiki/UTF-8) support, since [UTF-8 is everywhere](http://utf8everywhere.org/)
+* [libbacktrace](https://github.com/ianlancetaylor/libbacktrace) for [backtraces](https://en.wikipedia.org/wiki/Stack_trace)
+
+We may want to use, either soon or within a few years, (usually after 2022) interesting C or C++ libraries such as:
+
+* [libonion](https://www.coralbits.com/libonion/) or[Wt](https://www.webtoolkit.eu/wt) should be very soon (even in 2019) useful for the web interface
+* [libevent](http://libevent.org/) or [libev](http://software.schmorp.de/pkg/libev.html) for some [event loop](https://en.wikipedia.org/wiki/Event_loop) (quite soon).
+* [TensorFlow](https://www.tensorflow.org/) for [machine learning](https://en.wikipedia.org/wiki/Machine_learning) purposes
+* [Gudhi](http://gudhi.gforge.inria.fr/) for [topological data analysis](https://en.wikipedia.org/wiki/Topological_data_analysis)
+* [libcurl](https://curl.haxx.se/libcurl/) for [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) client 
+* [GMPlib](https://gmplib.org/) for [Arbitrary Precision Arithmetic](https://en.wikipedia.org/wiki/Arbitrary-precision_arithmetic) or *Bignums*.
+
+We should list other libraries interesting for us here.
 
 ## past contributors
 
