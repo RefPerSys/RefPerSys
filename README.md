@@ -308,14 +308,17 @@ We already need the following libraries:
 
 We may want to use, either soon or within a few years, (usually after 2022) interesting C or C++ libraries such as:
 
-* [libonion](https://www.coralbits.com/libonion/) or[Wt](https://www.webtoolkit.eu/wt) should be very soon (even in 2019) useful for the web interface
+* [libonion](https://www.coralbits.com/libonion/) or [Wt](https://www.webtoolkit.eu/wt) should be very soon (even in 2019) useful for the web interface
 * [libevent](http://libevent.org/) or [libev](http://software.schmorp.de/pkg/libev.html) for some [event loop](https://en.wikipedia.org/wiki/Event_loop) (quite soon).
 * [TensorFlow](https://www.tensorflow.org/) for [machine learning](https://en.wikipedia.org/wiki/Machine_learning) purposes
 * [Gudhi](http://gudhi.gforge.inria.fr/) for [topological data analysis](https://en.wikipedia.org/wiki/Topological_data_analysis)
 * [libcurl](https://curl.haxx.se/libcurl/) for [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) client 
 * [GMPlib](https://gmplib.org/) for [Arbitrary Precision Arithmetic](https://en.wikipedia.org/wiki/Arbitrary-precision_arithmetic) or *Bignums*.
+* [0mq](http://zeromq.org/) for distributed messaging, in relation with [distributed computing](https://en.wikipedia.org/wiki/Distributed_computing) and [message passing](https://en.wikipedia.org/wiki/Message_passing) approaches.
+* [JsonCPP](https://github.com/open-source-parsers/jsoncpp) could be useful for [JSON](http://json.org/).
+* [POCO](https://pocoproject.org/) is a useful C++ generic framework library, and [Qt](http://qt.io/) might also be useful, even without its GUI aspect.
 
-We should list other libraries interesting for us here.
+We should list other libraries interesting for us here, just in case (to avoid forgetting them).
 
 ## past contributors
 
