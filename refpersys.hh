@@ -2883,6 +2883,7 @@ class Rps_MutatorThread: public std::thread
   // for http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html ::
   std::string _mthr_prefix;
   std::atomic<unsigned long> _mthr_gc_count;
+  std::atomic<Rps_CallFrameZone*> _mthr_callingfra;
   static std::mutex _mthr_mtx_;
   static std::set<Rps_MutatorThread*> _mthr_thread_set_;
 public:
@@ -2890,11 +2891,11 @@ public:
   Rps_MutatorThread(const char*name);
   Rps_MutatorThread();
   ~Rps_MutatorThread();
-  void disable_garbage_collector(void);
+  void disable_garbage_collector(Rps_CallFrameZone* callingfra);
   void enable_garbage_collector(void);
-  void do_without_garbage_collector(const std::function<void(void)>&fun)
+  void do_without_garbage_collector(Rps_CallFrameZone* callingfra, const std::function<void(void)>&fun)
   {
-    disable_garbage_collector();
+    disable_garbage_collector(callingfra);
     fun();
     enable_garbage_collector();
   };

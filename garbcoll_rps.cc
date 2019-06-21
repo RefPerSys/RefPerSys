@@ -324,7 +324,8 @@ std::mutex Rps_MutatorThread::_mthr_mtx_;
 std::set<Rps_MutatorThread*> Rps_MutatorThread::_mthr_thread_set_;
 ////////////////
 Rps_MutatorThread::Rps_MutatorThread()
-  : std::thread(), _mthr_prefix(), _mthr_gc_count(0)
+  : std::thread(), _mthr_prefix(), _mthr_gc_count(0),
+    _mthr_callingfra(nullptr)
 {
   std::lock_guard<std::mutex> gu(_mthr_mtx_);
   _mthr_thread_set_.insert(this);
@@ -342,23 +343,32 @@ Rps_MutatorThread::~Rps_MutatorThread()
 {
   std::lock_guard<std::mutex> gu(_mthr_mtx_);
   _mthr_thread_set_.erase(this);
-#warning unimplemented Rps_MutatorThread::~Rps_MutatorThread()
-  RPS_FATAL("Rps_MutatorThread::~Rps_MutatorThread unimplemented");
+  _mthr_callingfra.store(nullptr);
 } // end Rps_MutatorThread::~Rps_MutatorThread()
 
 
 void
-Rps_MutatorThread::disable_garbage_collector(void)
+Rps_MutatorThread::disable_garbage_collector(Rps_CallFrameZone*callingfra)
 {
-#warning unimplemented Rps_MutatorThread::disable_garbage_collector
-  RPS_FATAL("unimplemented Rps_MutatorThread::disable_garbage_collector");
+  std::lock_guard<std::mutex> gu(_mthr_mtx_);
+  auto old = _mthr_callingfra.exchange(callingfra);
+  if (old)
+    RPS_FATAL("recursive disable_garbage_collector callingfra@%p, old@%p",
+              (void*)callingfra, (void*)old);
+  // we need to forbid allocation....
+#warning missing code in Rps_MutatorThread::disable_garbage_collector
+  RPS_FATAL("missing code in Rps_MutatorThread::disable_garbage_collector callingfra@%p",
+            (void*)callingfra);
 } // end Rps_MutatorThread::disable_garbage_collector
 
 void
 Rps_MutatorThread::enable_garbage_collector(void)
 {
-#warning unimplemented Rps_MutatorThread::enable_garbage_collector
-  RPS_FATAL("unimplemented Rps_MutatorThread::enable_garbage_collector");
+  std::lock_guard<std::mutex> gu(_mthr_mtx_);
+  auto old = _mthr_callingfra.exchange(nullptr);
+  if (!old)
+    RPS_FATAL("enable_garbage_collector unmatched with previous disable_garbage_collector old@%p",
+              (void*)old);
 } // end Rps_MutatorThread::enable_garbage_collector
 
 /// end of file garbcoll_rps.cc
