@@ -47,8 +47,8 @@ Rps_GarbageCollector::_gc_thralloc_;
 Rps_GarbageCollector::global_allocation_data
 Rps_GarbageCollector::_gc_globalloc_;
 std::atomic<unsigned long> Rps_GarbageCollector::_gc_count;
-
-
+std::mutex Rps_GarbageCollector::_gc_mtx;
+std::condition_variable Rps_GarbageCollector::_gc_condvar;
 
 void*
 Rps_MemoryBlock::operator new(size_t size)
@@ -252,11 +252,14 @@ void
 Rps_GarbageCollector::run_garbcoll(Rps_CallFrameZone*callingfra)
 {
   _gc_wanted.store(true);
+  /// not sure of that....
+  _gc_condvar.notify_all();
+  /// we should synchronize
+#warning unimplemented Rps_MemoryBlock::run_garbcoll
+  RPS_FATAL("Rps_MemoryBlock::run_garbcoll unimplemented");
   // we need to synchronize with other worker threads
   if (callingfra)
     scan_call_stack(callingfra);
-#warning unimplemented Rps_MemoryBlock::run_garbcoll
-  RPS_FATAL("Rps_MemoryBlock::run_garbcoll unimplemented");
 } // end Rps_GarbageCollector::run_garbcoll
 
 

@@ -55,6 +55,7 @@
 #include <algorithm>
 #include <mutex>
 #include <thread>
+#include <condition_variable>
 #include <atomic>
 #include <stdexcept>
 #include <functional>
@@ -2646,6 +2647,10 @@ class Rps_GarbageCollector
   static std::atomic<bool> _gc_wanted;
   // the global GC count
   static std::atomic<unsigned long> _gc_count;
+  // the global GC mutex
+  static std::mutex _gc_mtx;
+  // the global GC condition variable
+  static std::condition_variable _gc_condvar;
   ////////////////
   // each worker thread should have its own
   struct thread_allocation_data

@@ -97,7 +97,9 @@ operation is still possible but runs slower, using some single global
 mutex, à la
 [GIL](https://en.wikipedia.org/wiki/Global_interpreter_lock).
 
-
+We probably want to have one thread synchronizing garbage collecton
+(not sure!), it would be started before loading the persistent state.
+	
 ## threads in the loader
 
 Since the loader is practically reading *plain* files sitting in the
