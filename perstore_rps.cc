@@ -106,32 +106,49 @@ Rps_LexedFile::~Rps_LexedFile()
 
 
 
-Rps_QuasiToken* Rps_LexedFile::tokenize(Rps_CallFrameZone* callingfra)
+Rps_QuasiToken* 
+Rps_LexedFile::tokenize(Rps_CallFrameZone* callingfra)
 {
   RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
                  Rps_QuasiToken *result;
                 );
-  char *end;
   Rps_QuasiToken::LOCATION_st loc = {&_lfil_path, _lfil_linlen};
 
   // skip leading whitespace
   while (isspace(*_lfil_iter))
     _lfil_iter++;
 
-  // tokenize int if encountered
-  auto i = strtol(_lfil_iter, &end, 10);
-  if (end && end > _lfil_iter)
-    _.result = Rps_QuasiToken::make_from_int(RPS_CURFRAME, i, loc);
+  /** We should do both strtol and strtod once a + or - sign followed
+   *  by a digit is seen, or just a digit.  We then use the longest
+   *  parse.
+   **/
+  if (*_lfil_iter &&
+      ( (isdigit(_lfil_iter[0]))
+        || ((_lfil_iter[0] == '+' || _lfil_iter[0] == '-')
+            && isdigit(_lfil_iter[1]))))
+    {
+      // got some number. is it an int or a float?
 
-  // tokenize double if encountered
-  auto d = strtod(_lfil_iter, &end);
-  if (end && end > _lfil_iter)
-    _.result = Rps_QuasiToken::make_from_double(RPS_CURFRAME, d, loc);
+      // tokenize int if encountered
+      char *endint = nullptr;
+      char *endfloat = nullptr;
+      auto i = strtol(_lfil_iter, &endint, 0);
+      auto d = strtod(_lfil_iter, &endfloat);
+      if (endint && endint > _lfil_iter && (!endfloat || endfloat == endint))
+        {
+          _.result = Rps_QuasiToken::make_from_int(RPS_CURFRAME, i, loc);
+        }
+      else if (endint > _lfil_iter && endfloat && endfloat > endint)
+        {
+          _.result = Rps_QuasiToken::make_from_double(RPS_CURFRAME, d, loc);
+        }
+    } // end if number
 
   // tokenize objid if encountered
   if (*_lfil_iter == '_' && isalnum(*(_lfil_iter + 1)))
     {
-      bool ok;
+      bool ok = false;
+      char *end= nullptr;
       Rps_Id id(_lfil_iter, (const char**) &end, &ok);
 
       if (ok)
