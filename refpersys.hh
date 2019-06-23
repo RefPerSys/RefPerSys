@@ -2884,6 +2884,7 @@ class Rps_MutatorThread: public std::thread
   std::string _mthr_prefix;
   std::atomic<unsigned long> _mthr_gc_count;
   std::atomic<Rps_CallFrameZone*> _mthr_callingfra;
+  Rps_GarbageCollector::thread_allocation_data* _mthr_thralloc;
   static std::mutex _mthr_mtx_;
   static std::set<Rps_MutatorThread*> _mthr_thread_set_;
 public:

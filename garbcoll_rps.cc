@@ -325,7 +325,7 @@ std::set<Rps_MutatorThread*> Rps_MutatorThread::_mthr_thread_set_;
 ////////////////
 Rps_MutatorThread::Rps_MutatorThread()
   : std::thread(), _mthr_prefix(), _mthr_gc_count(0),
-    _mthr_callingfra(nullptr)
+    _mthr_callingfra(nullptr), _mthr_thralloc(nullptr)
 {
   std::lock_guard<std::mutex> gu(_mthr_mtx_);
   _mthr_thread_set_.insert(this);
@@ -347,6 +347,7 @@ Rps_MutatorThread::~Rps_MutatorThread()
 } // end Rps_MutatorThread::~Rps_MutatorThread()
 
 
+
 void
 Rps_MutatorThread::disable_garbage_collector(Rps_CallFrameZone*callingfra)
 {
@@ -355,11 +356,14 @@ Rps_MutatorThread::disable_garbage_collector(Rps_CallFrameZone*callingfra)
   if (old)
     RPS_FATAL("recursive disable_garbage_collector callingfra@%p, old@%p",
               (void*)callingfra, (void*)old);
-  // we need to forbid allocation....
-#warning missing code in Rps_MutatorThread::disable_garbage_collector
-  RPS_FATAL("missing code in Rps_MutatorThread::disable_garbage_collector callingfra@%p",
-            (void*)callingfra);
+  RPS_ASSERTPRINTF(_mthr_thralloc == nullptr, "_mthr_thralloc@%p",
+                   (void*)_mthr_thralloc);
+  // forbid birth allocation
+  _mthr_thralloc = Rps_GarbageCollector::_gc_thralloc_;
+  Rps_GarbageCollector::_gc_thralloc_ = nullptr;
 } // end Rps_MutatorThread::disable_garbage_collector
+
+
 
 void
 Rps_MutatorThread::enable_garbage_collector(void)
@@ -369,6 +373,11 @@ Rps_MutatorThread::enable_garbage_collector(void)
   if (!old)
     RPS_FATAL("enable_garbage_collector unmatched with previous disable_garbage_collector old@%p",
               (void*)old);
+  // reinstate birth allocation
+  RPS_ASSERT(_mthr_thralloc != nullptr);
+  Rps_GarbageCollector::_gc_thralloc_ = _mthr_thralloc;
+  _mthr_thralloc = nullptr;
 } // end Rps_MutatorThread::enable_garbage_collector
+
 
 /// end of file garbcoll_rps.cc
