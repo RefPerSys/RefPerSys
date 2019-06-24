@@ -283,6 +283,8 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
 } // end rps_argopt_parse
 
 
+
+////////////////////////////////////////////////////////////////
 int
 main(int argc, char** argv)
 {
@@ -319,10 +321,10 @@ main(int argc, char** argv)
       printf("missing argument to %s, try %s --help\n", argv[0], argv[0]);
       exit(EXIT_FAILURE);
     }
-
   argp_parse (&argopt, argc, argv, 0, NULL, NULL);
   return 0;
 } // end of main
+
 
 
 /// notice that Rps_BackTrace should use assert, not RPS_ASSERT!
@@ -639,6 +641,50 @@ Rps_BackTrace::run_full_backtrace(int skip, const char*name)
   fflush(stderr);
 } // end Rps_BackTrace::run_full_backtrace
 
+
+
+Rps_BackTrace_Helper::Rps_BackTrace_Helper(const char*fil, int line, int skip, const char*name)
+  : _bth_magic(_bth_magicnum_), _bth_count(0),
+    _bth_lineno(line), _bth_skip(skip),
+    _bth_bufsiz(0),
+    _bth_bufptr(nullptr),
+    _bth_filename(fil),
+    _bth_out(nullptr),
+    _bth_backtrace(name,(void*)this)
+{
+  _bth_backtrace.set_full_cb
+  ([=](Rps_BackTrace*btp, uintptr_t pc, const char*filnam, int lineno, const char*funam)
+  {
+    if (pc == 0 || pc == (uintptr_t)-1)
+      return -1;
+    if (!_bth_out) return -1;
+    Rps_BackTrace_Helper*bth = reinterpret_cast<Rps_BackTrace_Helper*>(const_cast<void*>(btp->data()));
+    FILE* foutlin = open_memstream(&_bth_bufptr, &_bth_bufsiz);
+    if (!foutlin) RPS_FATAL("failed to open_memstream");
+    assert (bth != nullptr && bth->has_good_magic());
+    assert (btp == &bth->_bth_backtrace);
+    bth->_bth_count++;
+    char countbuf[16];
+    memset (countbuf, 0, sizeof(countbuf));
+    snprintf(countbuf, sizeof(countbuf), "[%d] ", bth->_bth_count);
+    rps_print_full_backtrace_level(&bth->_bth_backtrace, foutlin, countbuf, pc, filnam, lineno, funam);
+    fputc((char)0, foutlin);
+    fflush(foutlin);
+    *_bth_out << _bth_bufptr << std::endl;
+    fclose(foutlin);
+    return 0;
+  });
+} // end Rps_BackTrace_Helper::Rps_BackTrace_Helper
+
+void
+Rps_BackTrace_Helper::do_out(void) const
+{
+  _bth_backtrace.run_full_backtrace(_bth_skip);
+} // end Rps_BackTrace_Helper::do_out
+
+
+
+////////////////
 void
 rps_fatal_stop_at (const char *filnam, int lin)
 {

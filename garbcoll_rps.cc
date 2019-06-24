@@ -322,6 +322,17 @@ Rps_GarbageCollector::allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*ca
   return ad;
 } // end Rps_GarbageCollector::allocate_marked_maybe_gc
 
+
+void
+Rps_GarbageCollector::initialize(void)
+{
+  RPS_WARNOUT("incomplete Rps_GarbageCollector::initialize:"
+              << RPS_BACKTRACE_HERE(1,"GC-INIT"));
+#warning Rps_GarbageCollector::initialize is incomplete
+} // end of Rps_GarbageCollector::initialize
+
+
+
 ////////////////////////////////////////////////////////////////
 std::mutex Rps_MutatorThread::_mthr_mtx_;
 std::set<Rps_MutatorThread*> Rps_MutatorThread::_mthr_thread_set_;

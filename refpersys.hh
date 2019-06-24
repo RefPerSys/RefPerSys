@@ -176,6 +176,10 @@ static_assert(RPS_SMALL_BLOCK_SIZE & (~ (RPS_SMALL_BLOCK_SIZE-1)),
 extern "C" int64_t rps_prime_above (int64_t n);
 extern "C" int64_t rps_prime_below (int64_t n);
 
+
+
+
+//////////////// fatal error - aborting
 extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 #define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {			\
@@ -188,6 +192,47 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 #define RPS_FATAL(Fmt,...) RPS_FATAL_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
+#define RPS_FATALOUT_AT_BIS(Fil,Lin,...) do {	\
+    std::clog << "** RefPerSys FATAL! "		\
+	      << (Fil) << ":" << Lin << ":: "	\
+	      << __VA_ARGS__ << std::endl;	\
+    rps_fatal_stop_at (Fil,Lin); } while(0)
+
+#define RPS_FATALOUT_AT(Fil,Lin,...) RPS_FATALOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
+
+// typical usage would be RPS_FATALOUT("x=" << x)
+#define RPS_FATALOUT(...) RPS_FATALOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
+
+
+//////////////// warning
+
+#define RPS_WARN_AT_BIS(Fil,Lin,Fmt,...) do {			\
+    fprintf(stderr, "\n\n"		       			\
+	    "*** RefPerSys WARN:%s:%d: <%s>\n " Fmt "\n\n",	\
+            Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);     	\
+    fflush(stderr); } while(0)
+
+#define RPS_WARN_AT(Fil,Lin,Fmt,...) RPS_WARN_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
+
+// typical usage could be RPS_WARN("something bad x=%d", x)
+#define RPS_WARN(Fmt,...) RPS_WARN_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
+
+#define RPS_WARNOUT_AT_BIS(Fil,Lin,...) do {	\
+    std::clog << "** RefPerSys WARN! "		\
+	      << (Fil) << ":" << Lin << ":: "	\
+	      << __VA_ARGS__ << std::endl;	\
+    std::clog << std::flush; } while(0)
+
+#define RPS_WARNOUT_AT(Fil,Lin,...) RPS_WARNOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
+
+// typical usage would be RPS_WARNOUT("annoying x=" << x)
+#define RPS_WARNOUT(...) RPS_WARNOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
+
+
+
+
+
+//////////////// assert
 #ifndef NDEBUG
 #define RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond) do {      	\
     if (RPS_UNLIKELY(!(Cond))) {			\
@@ -215,16 +260,6 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 #define RPS_ASSERTPRINTF(Cond,Fmt,...)  do { if (false && (Cond)) \
       fprintf(stderr, Fmt "\n", ##__VA_ARGS__); } while(0)
 #endif /*NDEBUG*/
-
-#define RPS_FATALOUT_AT_BIS(Fil,Lin,...) do {	\
-    std::clog << (Fil) << ":" << Lin << ":: "	\
-	      << __VA_ARGS__ << std::endl;	\
-    rps_fatal_stop_at (Fil,Lin); } while(0)
-
-#define RPS_FATALOUT_AT(Fil,Lin,...) RPS_FATALOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
-
-// typical usage would be RPS_FATALOUT("x=" << x)
-#define RPS_FATALOUT(...) RPS_FATALOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
 
 typedef uint32_t Rps_BlockIndex;
 
@@ -1720,6 +1755,8 @@ protected:
   };
   ~Rps_Loader() {};
 public:
+  static constexpr const char* default_directory_name = "persistore";
+  static constexpr const char* manifest_file_name = "Manifest_RPS";
   Rps_CallFrameZone* call_frame(void)
   {
     return &_ld_pseudoframe;
@@ -2640,6 +2677,7 @@ class Rps_MutatorThread;
 class Rps_GarbageCollector
 {
   friend class Rps_MutatorThread;
+  friend int main(int, char**);
   // forbid instantiation:
   Rps_GarbageCollector() = delete;
   static unsigned constexpr _gc_thrmagic_ = 951957269 /*0x38bdb715*/;
@@ -2706,6 +2744,8 @@ public:
    * there is a birth region, we use a Chesney like approach.
    **/
 protected:
+  // called from main
+  static void initialize(void);
   // called when the birth region is missing or full:
   static void run_write_barrier(Rps_CallFrameZone*callingfra, Rps_ZoneValue*zva=nullptr);
 public:
@@ -3129,6 +3169,7 @@ public:
 
 ////////////////
 class Rps_BackTrace;
+class Rps_BackTrace_Helper;
 extern "C" void rps_print_simple_backtrace_level
 (Rps_BackTrace* btp, FILE*outf, const char*beforemsg, uintptr_t pc);
 extern "C" void rps_print_full_backtrace_level
@@ -3138,6 +3179,7 @@ extern "C" void rps_print_full_backtrace_level
  const char *function);
 class Rps_BackTrace
 {
+  friend class Rps_BackTrace_Helper;
   friend int main(int, char**);
   friend void rps_print_simple_backtrace_level
   (Rps_BackTrace* btp, FILE*outf, const char*beforemsg, uintptr_t pc);
@@ -3169,6 +3211,10 @@ private:
                         const char *filename, int lineno,
                         const char *function);
 public:
+  const void* data(void) const
+  {
+    return _bt_data;
+  };
   unsigned magicnum(void) const
   {
     return _bt_magic;
@@ -3226,9 +3272,54 @@ public:
     RPS_ASSERT (fil != nullptr);
     backtrace_print(rps_backtrace_state, skip, fil);
   };
-
 };				// end class Rps_BackTrace
 
+class Rps_BackTrace_Helper
+{
+  static constexpr unsigned _bth_magicnum_ = 689179293 /*0x29140a9d*/;
+  unsigned _bth_magic; // always _bth_magicnum_
+  mutable unsigned _bth_count;
+  int _bth_lineno;
+  int _bth_skip;
+  mutable size_t _bth_bufsiz;
+  mutable char* _bth_bufptr;
+  std::string _bth_filename;
+  mutable std::unique_ptr<std::ostream> _bth_out;
+  Rps_BackTrace _bth_backtrace;
+public:
+  bool has_good_magic() const
+  {
+    return _bth_magic == _bth_magicnum_;
+  };
+  Rps_BackTrace_Helper(const char*fil, int line, int skip, const char*name);
+  void do_out(void) const;
+  std::ostream* swap_output(std::ostream*out) const
+  {
+    auto o = _bth_out.get();
+    auto outp = std::unique_ptr<std::ostream> (out);
+    std::swap(_bth_out, outp);
+    return o;
+  }
+  ~Rps_BackTrace_Helper()
+  {
+    free(_bth_bufptr), _bth_bufptr=nullptr;
+  };
+};				// end of Rps_Backtrace_Helper
+
+static inline
+std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph)
+{
+  auto o = rph.swap_output(&out);
+  out << std::endl;
+  rph.do_out();
+  rph.swap_output(o);
+  out << std::endl;
+  return out;
+} // end of << for Rps_Backtrace_Helper
+
+// can appear in RPS_WARNOUT etc...
+#define RPS_BACKTRACE_HERE(Skip,Name) \
+  Rps_BackTrace_Helper(__FILE__,__LINE__,(Skip),(Name))
 
 ////////////////////////////////////////////////////////////////
 class Rps_LexedFile

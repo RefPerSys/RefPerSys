@@ -106,7 +106,7 @@ Rps_LexedFile::~Rps_LexedFile()
 
 
 
-Rps_QuasiToken* 
+Rps_QuasiToken*
 Rps_LexedFile::tokenize(Rps_CallFrameZone* callingfra)
 {
   RPS_LOCALFRAME(callingfra, /*descr:*/nullptr,
