@@ -29,7 +29,7 @@
 ##***************************************************************************
 
 OMAKE= omake
-.PHONY: all clean indent archive directclean
+.PHONY: all clean indent archive directclean test1 
 # if you don't have omake, use "make refpersys" and "make directclean"
 
 # if you don't have ccache, run without it using make CCACHE=
@@ -50,7 +50,6 @@ INCLUDES += /usr/local/include
 REFPERSYS_BASE_FILES =				\
    main_rps					\
    objects_rps					\
-   random_rps					\
    garbcoll_rps					\
    perstore_rps					\
    primes_rps					\
@@ -101,4 +100,6 @@ refpersys: $(patsubst %,%.o,$(REFPERSYS_BASE_FILES))
 directclean:
 	$(RM) *.o *~ *% *.orig refpersys core
 
+test1: refpersys
+	./refpersys --object-tinybenchmark1
 ## end of refpersys Makefile
