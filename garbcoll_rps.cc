@@ -255,8 +255,9 @@ Rps_GarbageCollector::run_garbcoll(Rps_CallFrameZone*callingfra)
   /// not sure of that....
   _gc_condvar.notify_all();
   /// we should synchronize
-#warning unimplemented Rps_MemoryBlock::run_garbcoll
-  RPS_FATAL("Rps_MemoryBlock::run_garbcoll unimplemented");
+#warning unimplemented Rps_GarbageCollector::run_garbcoll
+  RPS_FATAL("Rps_GarbageCollector::run_garbcoll unimplemented callingfra@%p",
+            (void*)callingfra);
   // we need to synchronize with other worker threads
   if (callingfra)
     scan_call_stack(callingfra);
@@ -328,6 +329,9 @@ Rps_GarbageCollector::initialize(void)
 {
   RPS_WARNOUT("incomplete Rps_GarbageCollector::initialize:"
               << RPS_BACKTRACE_HERE(1,"GC-INIT"));
+  // TODO: we probably (not sure yet) need to start a garbage
+  // collection management thread, whose main role is GC
+  // synchronization...
 #warning Rps_GarbageCollector::initialize is incomplete
 } // end of Rps_GarbageCollector::initialize
 
