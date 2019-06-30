@@ -2772,7 +2772,7 @@ public:
   static void*allocate_birth_maybe_gc(size_t size, Rps_CallFrameZone*callingfra)
   {
     void* ad = nullptr;
-    if (RPS_UNLIKELY(size % rps_allocation_unit == 0))
+    if (RPS_UNLIKELY(size % rps_allocation_unit != 0))
       size = (size | (rps_allocation_unit-1))+1;
     RPS_ASSERTPRINTF (size < RPS_LARGE_BLOCK_SIZE - Rps_LargeNewMemoryBlock::_remain_threshold_ - 4*sizeof(void*),
                       "size=%zd", size);
