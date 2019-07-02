@@ -56,7 +56,7 @@ REFPERSYS_BASE_FILES =				\
    values_rps					\
    minitests_rps
 
-REFPERSYS_BASE_HEADERS = inc-refpersys
+REFPERSYS_BASE_HEADERS = refpersys inline_rps
 ### end of variables to be kept in sync with those in OMakefile
 ################
 

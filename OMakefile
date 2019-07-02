@@ -77,7 +77,7 @@ REFPERSYS_BASE_FILES[] =
    minitests_rps
 
 
-REFPERSYS_BASE_HEADERS[] = refpersys
+REFPERSYS_BASE_HEADERS[] = refpersys inline_rps
 
 CXXProgram(refpersys, $(REFPERSYS_BASE_FILES) _timestamp_rps)
 
