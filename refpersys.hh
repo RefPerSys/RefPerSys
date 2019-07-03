@@ -1849,7 +1849,7 @@ private:
 public:
   static constexpr Rps_Type zone_type = Rps_Type::Tuple;
   static Rps_TupleObrefZone* make(Rps_CallFrameZone*,uint32_t siz, const Rps_ObjectRef*arr);
-  static Rps_TupleObrefZone* make(Rps_CallFrameZone*callingfra,const std::initializer_list<const Rps_ObjectRef> il)
+  static Rps_TupleObrefZone* make(Rps_CallFrameZone*callingfra, const std::initializer_list<const Rps_ObjectRef> il)
   {
     return make(callingfra,il.size(), il.begin());
   };
@@ -1924,9 +1924,9 @@ public:
   Rps_SetValue() : Rps_SetValue(nullptr) {};
   Rps_SetValue(std::nullptr_t) : Rps_Value(nullptr) {};
   Rps_SetValue(Rps_Value val) : Rps_Value(val.as_set()) {};
-  Rps_SetValue(Rps_CallFrameZone*callingfra,uint32_t siz, Rps_ObjectRef const* arr)
+  Rps_SetValue(Rps_CallFrameZone*callingfra, uint32_t siz, Rps_ObjectRef const* arr)
     : Rps_Value(Rps_SetObrefZone::make(callingfra,siz, arr)) {};
-  Rps_SetValue(Rps_CallFrameZone*callingfra,const std::initializer_list<const Rps_ObjectRef> il)
+  Rps_SetValue(Rps_CallFrameZone*callingfra, const std::initializer_list<const Rps_ObjectRef> il)
     : Rps_Value(Rps_SetObrefZone::make(callingfra,il)) {};
   static Rps_SetValue tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num);
 };				// end Rps_SetValue
@@ -2247,33 +2247,7 @@ private:
   //////////////// methods
 private:
   // approximate binary search dichotomy, internal method only
-  std::pair<int,int> dichotomy_medium_sorted(Rps_ObjectRef keyob, Rps_QuasiAttributeArray*arr=nullptr) const
-  {
-    if (arr==nullptr)
-      arr = _obat_sorted_atar;
-    RPS_ASSERT (_obat_kind == atk_medium);
-    RPS_ASSERT (arr != nullptr);
-    RPS_ASSERT (keyob);
-    unsigned ln = arr->count();
-    int lo = 0, hi = (int)ln;
-    while (lo+4 < hi)
-      {
-        unsigned md = (lo+hi)/2;
-        Rps_ObjectRef midob = arr->unsafe_attr_at(md);
-        RPS_ASSERT (midob);
-        if (keyob == midob)
-          {
-            lo = md;
-            hi = md;
-            break;
-          }
-        else if (midob > keyob)
-          hi = md;
-        else
-          lo = md;
-      }
-    return std::pair{lo,hi};
-  };
+  inline std::pair<int,int> dichotomy_medium_sorted(Rps_ObjectRef keyob, Rps_QuasiAttributeArray*arr=nullptr) const;
 public:
   /// find an object of given id, or else null:
   static Rps_ObjectZone*find_by_id(const Rps_Id&id);
@@ -2374,63 +2348,8 @@ public:
     return obcla;
   }
   //// methods for attributes
-  int nb_attrs() const
-  {
-    switch (_obat_kind)
-      {
-      case atk_none:
-        return 0;
-      case atk_small:
-        return _obat_small_atar->count();
-      case atk_medium:
-        return _obat_sorted_atar->count();
-      case atk_big:
-        return _obat_map_atar.size();
-      }
-  };
-  Rps_Value do_get_attr(Rps_ObjectRef keyob) const
-  {
-    switch (_obat_kind)
-      {
-      case atk_none:
-        return nullptr;
-      case atk_small:
-      {
-        auto smalattrs = _obat_small_atar;
-        for (auto it: *smalattrs)
-          {
-            if (it.first == keyob)
-              return it.second;
-          }
-        break;
-      }
-      case atk_medium:
-      {
-        unsigned ln = _obat_sorted_atar->count();
-        RPS_ASSERTPRINTF (ln <= at_sorted_thresh, "ln=%u", ln);
-        unsigned lo=0, hi=ln;
-        {
-          auto p = dichotomy_medium_sorted(keyob);
-          lo= p.first;
-          hi= p.second;
-        }
-        for (unsigned md = lo; md <hi; md++)
-          {
-            Rps_ObjectRef midob = _obat_sorted_atar->unsafe_attr_at(md);
-            if (keyob == midob) return _obat_sorted_atar->unsafe_val_at(md);
-          }
-        break;
-      }
-      case atk_big:
-      {
-        auto it = _obat_map_atar.find(keyob);
-        if (it != _obat_map_atar.end())
-          return it->second;
-        return nullptr;
-      }
-      return nullptr;
-      }
-  };				// end do_get_attr
+  inline int nb_attrs() const;
+  inline Rps_Value do_get_attr(Rps_ObjectRef keyob) const;
   Rps_Value get_attr(Rps_ObjectRef keyob) const
   {
     // we'll probably special case some keys here later
@@ -2546,6 +2465,8 @@ class Rps_GarbageCollector
   static std::mutex _gc_mtx;
   // the global GC condition variable
   static std::condition_variable _gc_condvar;
+  // the global GC synchronizing thread
+  static std::thread _gc_syncthread;
   ////////////////
   // each worker thread should have its own
   struct thread_allocation_data
@@ -2626,84 +2547,7 @@ public:
   ////////////////////////////////////////////////////////////////
   /// various allocation primitives.
   static void*allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*callingfra);
-  static void*allocate_birth_maybe_gc(size_t size, Rps_CallFrameZone*callingfra)
-  {
-    void* ad = nullptr;
-    if (RPS_UNLIKELY(size % rps_allocation_unit != 0))
-      size = (size | (rps_allocation_unit-1))+1;
-    RPS_ASSERTPRINTF (size < RPS_LARGE_BLOCK_SIZE - Rps_LargeNewMemoryBlock::_remain_threshold_ - 4*sizeof(void*),
-                      "size=%zd", size);
-    RPS_ASSERTPRINTF (size % (2*alignof(Rps_Value)) == 0, "size=%zd", size);
-    maybe_garbcoll(callingfra);
-    if (size < RPS_SMALL_BLOCK_SIZE - Rps_BirthMemoryBlock::_remain_threshold_ - 4*sizeof(void*))
-      {
-        if (_gc_thralloc_)
-          {
-            Rps_BirthMemoryBlock*birthblock = _gc_thralloc_->_tha_birthblock;
-            while (!ad)
-              {
-                if (birthblock && birthblock->remaining_bytes() > size)
-                  {
-                    ad = birthblock->allocate_zone(size);
-                  }
-                else
-                  {
-                    _gc_wanted.store(true);
-                    Rps_GarbageCollector::run_garbcoll(callingfra);
-                    // on the next loop, allocation should succeed
-                    continue;
-                  };
-              };
-          }
-        else   // no _gc_thralloc_
-          {
-            void* ad = nullptr;
-            while (!ad)
-              {
-                {
-                  std::lock_guard<std::mutex> _gu(_gc_globalloc_._gla_mutex);
-                  Rps_BirthMemoryBlock*globirthblock = _gc_globalloc_._gla_birthblock;
-                  if (globirthblock && globirthblock->remaining_bytes() > size)
-                    {
-                      ad = globirthblock->allocate_zone(size);
-                      break;
-                    }
-                  else
-                    {
-                      _gc_wanted.store(true);
-                    }
-                }
-                if (!ad)
-                  Rps_GarbageCollector::maybe_garbcoll (callingfra);
-              }
-          }
-      } // end small size
-    else if (size < RPS_LARGE_BLOCK_SIZE  - Rps_LargeNewMemoryBlock::_remain_threshold_ - 4*sizeof(void*))
-      {
-        void* ad = nullptr;
-        while (!ad)
-          {
-            {
-              std::lock_guard<std::mutex> _gu(_gc_globalloc_._gla_mutex);
-              Rps_LargeNewMemoryBlock*glolargenewblock = _gc_globalloc_._gla_largenewblock;
-              if (glolargenewblock && glolargenewblock->remaining_bytes() > size)
-                {
-                  ad = glolargenewblock->allocate_zone(size);
-                  break;
-                }
-              else
-                {
-                  _gc_wanted.store(true);
-                }
-            }
-            if (!ad)
-              Rps_GarbageCollector::maybe_garbcoll (callingfra);
-          };
-      } // end large size
-    else
-      RPS_FATAL("too big size %zd for allocate_birth_maybe_gc", size);
-    return ad;
-  };
+  static inline void*allocate_birth_maybe_gc(size_t size, Rps_CallFrameZone*callingfra);
 };				// end class Rps_GarbageCollector
 
 

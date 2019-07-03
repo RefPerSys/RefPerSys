@@ -49,6 +49,7 @@ Rps_GarbageCollector::_gc_globalloc_;
 std::atomic<unsigned long> Rps_GarbageCollector::_gc_count;
 std::mutex Rps_GarbageCollector::_gc_mtx;
 std::condition_variable Rps_GarbageCollector::_gc_condvar;
+std::thread Rps_GarbageCollector::_gc_syncthread;
 
 void*
 Rps_MemoryBlock::operator new(size_t size)
