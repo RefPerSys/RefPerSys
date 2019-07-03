@@ -2465,8 +2465,9 @@ class Rps_GarbageCollector
   static std::mutex _gc_mtx;
   // the global GC condition variable
   static std::condition_variable _gc_condvar;
-  // the global GC synchronizing thread
+  // the global GC synchronizing thread and its routine
   static std::thread _gc_syncthread;
+  static void syncthread_routine(void);
   ////////////////
   // each worker thread should have its own
   struct thread_allocation_data

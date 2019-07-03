@@ -326,6 +326,16 @@ Rps_GarbageCollector::allocate_marked_maybe_gc(size_t size, Rps_CallFrameZone*ca
 
 
 void
+Rps_GarbageCollector::syncthread_routine(void)
+{
+  while(true)
+    {
+#warning unimplemented Rps_GarbageCollector::syncthread_routine
+      RPS_FATAL("Rps_GarbageCollector::syncthread_routine unimplemented");
+    };
+} // end Rps_GarbageCollector::syncthread_routine
+
+void
 Rps_GarbageCollector::initialize(void)
 {
   RPS_WARNOUT("incomplete Rps_GarbageCollector::initialize:"
