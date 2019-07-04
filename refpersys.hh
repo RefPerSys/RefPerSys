@@ -93,6 +93,7 @@
 #define RPS_UNUSED
 #endif
 
+#define RPS_FRIEND_CLASS(Suffix) friend class Rps_##Suffix
 
 // generated in _timestamp_rps.cc
 extern "C" const char timestamp_rps[];
@@ -244,7 +245,7 @@ static_assert ((rps_allocation_unit & (rps_allocation_unit-1)) == 0,
 // memory
 class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MemoryBlock
 {
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(GarbageCollector);
 public:
   static constexpr size_t _bl_minsize_ = 4*sizeof(void*);
   enum BlockKind_en
@@ -337,7 +338,7 @@ public:
 
 class Rps_BirthMemoryBlock : public Rps_MemoryBlock
 {
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(GarbageCollector);
   struct birthmetadata_st
   {
   };
@@ -369,7 +370,7 @@ static_assert(sizeof(Rps_BirthMemoryBlock)==RPS_SMALL_BLOCK_SIZE);
 ////////////////
 class Rps_SmallOldMemoryBlock : public Rps_MemoryBlock
 {
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(GarbageCollector);
   struct birthmetadata_st
   {
   };
@@ -400,7 +401,7 @@ static_assert(sizeof(Rps_SmallOldMemoryBlock)==RPS_SMALL_BLOCK_SIZE);
 class  alignas(RPS_LARGE_BLOCK_SIZE) Rps_LargeNewMemoryBlock
   : public Rps_MemoryBlock
 {
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(GarbageCollector);
   struct largenewmetadata_st
   {
   };
@@ -432,7 +433,7 @@ static_assert(sizeof(Rps_LargeNewMemoryBlock)==RPS_LARGE_BLOCK_SIZE);
 class  alignas(RPS_LARGE_BLOCK_SIZE) Rps_LargeOldMemoryBlock
   : public Rps_MemoryBlock
 {
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(GarbageCollector);
   struct largenewmetadata_st
   {
   };
@@ -464,7 +465,7 @@ static_assert(sizeof(Rps_LargeOldMemoryBlock)==RPS_LARGE_BLOCK_SIZE);
 class  alignas(RPS_SMALL_BLOCK_SIZE) Rps_MarkedMemoryBlock
   : public Rps_MemoryBlock
 {
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(GarbageCollector);
   static std::mutex _glob_mablock_mtx_; // global mutex for marked blocks
   static std::set<Rps_MarkedMemoryBlock*> _glob_set_mablocks;
   static Rps_MarkedMemoryBlock* _glo_markedblock_; // the global marked block
@@ -510,7 +511,7 @@ class Rps_ZoneValue;
 class Rps_ObjectZone;
 class Rps_ObjectRef
 {
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(GarbageCollector);
   Rps_ObjectZone*_optr;
 protected:
   inline void scan_objectref(Rps_CallFrameZone* callingfra) const;
@@ -771,8 +772,8 @@ public:
 class Rps_Id
 {
 #ifndef RPS_ONLY_ID_CODE
-  friend class Rps_ObjectRef;
-  friend class Rps_ObjectZone;
+  RPS_FRIEND_CLASS(ObjectRef);
+  RPS_FRIEND_CLASS(ObjectZone);
 #endif /*RPS_ONLY_ID_CODE*/
   uint64_t _id_hi;
   uint64_t _id_lo;
@@ -921,8 +922,8 @@ class Rps_SequenceObrefZone;
 
 class Rps_Value
 {
-  friend class Rps_ZoneValue;
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(GarbageCollector);
   union
   {
     mutable const Rps_ZoneValue* _datav;
@@ -1031,9 +1032,9 @@ protected:
 /// have special types and are quasi-values.
 class alignas(alignof(Rps_Value)) Rps_ZoneValue
 {
-  friend class Rps_Value;
-  friend class Rps_GarbageCollector;
-  friend class Rps_QuasiToken;
+  RPS_FRIEND_CLASS(Value);
+  RPS_FRIEND_CLASS(GarbageCollector);
+  RPS_FRIEND_CLASS(QuasiToken);
   enum Rps_Type _vtyp;
 protected:
   struct zone_tag {};
@@ -1138,8 +1139,8 @@ public:
 
 class Rps_CallFrameZone : public Rps_ZoneValue
 {
-  friend class Rps_Loader;
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(Loader);
+  RPS_FRIEND_CLASS(GarbageCollector);
   const unsigned _cf_size;
   int _cf_state;
   Rps_CallFrameZone* _cf_prev;
@@ -1287,8 +1288,8 @@ Rps_Framecl_##Lin _(PrevFrame,Descr,Fil,Lin)
  ***/
 class Rps_PointerCopyingZoneValue : public Rps_ZoneValue
 {
-  friend class Rps_ZoneValue;
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(GarbageCollector);
 protected:
   static inline void* allocate_rps_zone(std::size_t totalsize, Rps_CallFrameZone*callfram);
   static void* operator new  (std::size_t siz, zone_tag, Rps_CallFrameZone*callfram)
@@ -1314,8 +1315,8 @@ public:
  ***/
 class Rps_MutableCopyingZoneValue : public Rps_PointerCopyingZoneValue
 {
-  friend class Rps_ZoneValue;
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(GarbageCollector);
   Rps_MutableCopyingZoneValue(Rps_Type ty)
     : Rps_PointerCopyingZoneValue(ty) {};
 protected:
@@ -1337,8 +1338,8 @@ public:
  ***/
 class Rps_ScalarCopyingZoneValue : public Rps_ZoneValue
 {
-  friend class Rps_ZoneValue;
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(GarbageCollector);
 protected:
   Rps_ScalarCopyingZoneValue(Rps_Type ty) : Rps_ZoneValue(ty) {};
 protected:
@@ -1362,9 +1363,9 @@ public:
  ***/
 class Rps_MarkSweepZoneValue : public Rps_ZoneValue
 {
-  friend class Rps_ZoneValue;
-  friend class Rps_ObjectZone;
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(ObjectZone);
+  RPS_FRIEND_CLASS(GarbageCollector);
 protected:
   virtual ~Rps_MarkSweepZoneValue() {};
   Rps_MarkSweepZoneValue(Rps_Type ty) : Rps_ZoneValue(ty) {};
@@ -1382,8 +1383,8 @@ public:
 
 class Rps_CopyingHashedZoneValue : public Rps_PointerCopyingZoneValue
 {
-  friend class Rps_ZoneValue;
-  friend class Rps_PointerCopyingZoneValue;
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(PointerCopyingZoneValue);
 protected:
   Rps_HashInt _hash;
   Rps_CopyingHashedZoneValue(Rps_Type ty, Rps_HashInt h=0) :
@@ -1404,8 +1405,8 @@ public:
 
 class Rps_CopyingSizedZoneValue : public Rps_CopyingHashedZoneValue
 {
-  friend class Rps_CopyingHashedZoneValue;
-  friend class Rps_ZoneValue;
+  RPS_FRIEND_CLASS(CopyingHashedZoneValue);
+  RPS_FRIEND_CLASS(ZoneValue);
 protected:
   uint32_t _size;
   Rps_CopyingSizedZoneValue(Rps_Type ty, uint32_t siz=0, Rps_HashInt h=0)
@@ -1429,10 +1430,10 @@ public:
 /// attributes (up to perhaps a hundred of them)
 class Rps_QuasiAttributeArray : public Rps_PointerCopyingZoneValue
 {
-  friend class Rps_ObjectZone;
-  friend class Rps_ZoneValue;
-  friend class Rps_PointerCopyingZoneValue;
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(ObjectZone);
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(PointerCopyingZoneValue);
+  RPS_FRIEND_CLASS(GarbageCollector);
   // on a 64 bits machine, we are 8 byte aligned, so both of them are:
   uint32_t _qsizattr;	// allocated size
   uint32_t _qnbattrs;	// used number of entries
@@ -1535,9 +1536,9 @@ public:
 /// some components.
 class Rps_QuasiComponentVector : public Rps_PointerCopyingZoneValue
 {
-  friend class Rps_ObjectZone;
-  friend class Rps_ZoneValue;
-  friend class Rps_PointerCopyingZoneValue;
+  RPS_FRIEND_CLASS(ObjectZone);
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(PointerCopyingZoneValue);
   // on a 64 bits machine, we are 8 byte aligned, so both of them are:
   uint32_t _qsizarr;	// allocated size
   uint32_t _qnbcomp;	// used number of components
@@ -1607,9 +1608,9 @@ public:
 /// some components.
 class Rps_QuasiObjectVector : public Rps_PointerCopyingZoneValue
 {
-  friend class Rps_ObjectZone;
-  friend class Rps_ZoneValue;
-  friend class Rps_PointerCopyingZoneValue;
+  RPS_FRIEND_CLASS(ObjectZone);
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(PointerCopyingZoneValue);
   // on a 64 bits machine, we are 8 byte aligned, so both of them are:
   uint32_t _qsizarr;	// allocated size
   uint32_t _qnbobj;	// used number of objrefs
@@ -1777,7 +1778,7 @@ public:
 ////////////////
 class Rps_SequenceObrefZone : public Rps_CopyingSizedZoneValue
 {
-  friend class Rps_ZoneValue;
+  RPS_FRIEND_CLASS(ZoneValue);
 public:
   static size_t byte_gap_for_size(uint32_t siz)
   {
@@ -1833,10 +1834,10 @@ protected:
 ////////////////
 class Rps_TupleObrefZone : public Rps_SequenceObrefZone
 {
-  friend class Rps_SequenceObrefZone;
-  friend class Rps_PointerCopyingZoneValue;
-  friend class Rps_ZoneValue;
-  friend class Rps_SetObrefZone;
+  RPS_FRIEND_CLASS(SequenceObrefZone);
+  RPS_FRIEND_CLASS(PointerCopyingZoneValue);
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(SetObrefZone);
 private:
   Rps_TupleObrefZone(uint32_t siz, const Rps_ObjectRef*arr) :
     Rps_SequenceObrefZone(Rps_Type::Tuple, siz,
@@ -1892,10 +1893,10 @@ public:
 
 class Rps_SetObrefZone : public Rps_SequenceObrefZone
 {
-  friend class Rps_SequenceObrefZone;
-  friend class Rps_PointerCopyingZoneValue;
-  friend class Rps_ZoneValue;
-  friend class Rps_TupleObrefZone;
+  RPS_FRIEND_CLASS(SequenceObrefZone);
+  RPS_FRIEND_CLASS(PointerCopyingZoneValue);
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(TupleObrefZone);
 private:
   static void* operator new (std::size_t, void*ptr)
   {
@@ -1971,9 +1972,9 @@ public:
 
 class Rps_StringZone : public Rps_ScalarCopyingZoneValue
 {
-  friend class Rps_ScalarCopyingZoneValue;
-  friend class Rps_ZoneValue;
-  friend class Rps_StringValue;
+  RPS_FRIEND_CLASS(ScalarCopyingZoneValue);
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(StringValue);
 public:
   static Rps_HashInt hash_cstr(const char*cstr, int32_t slen= -1);
   static size_t byte_gap_for_size(uint32_t siz)
@@ -2081,7 +2082,7 @@ public:
 template <typename DataType> class Rps_PayloadZone;
 class Rps_PayloadInternalData
 {
-  friend class Rps_PayloadZone<Rps_PayloadInternalData>;
+  RPS_FRIEND_CLASS(PayloadZone<Rps_PayloadInternalData>);
 protected:
   Rps_ObjectZone* _py_owner;
   virtual ~Rps_PayloadInternalData();
@@ -2102,7 +2103,7 @@ protected:
 
 class Rps_SetObjrefInternalData : Rps_PayloadInternalData
 {
-  friend class Rps_PaylSetObjrefZone;
+  RPS_FRIEND_CLASS(PaylSetObjrefZone);
   std::set<Rps_ObjectRef> _ida_set;
 #warning Rps_SetObjrefInternalData should be implemented
 public:
@@ -2114,8 +2115,8 @@ class Rps_PaylSetObjrefZone
   : public Rps_PayloadZone<Rps_SetObjrefInternalData>
 {
   friend Rps_SetObjrefInternalData;
-  friend class Rps_ZoneValue;
-  friend class Rps_MarkSweepZoneValue;
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(MarkSweepZoneValue);
 };				// end Rps_PaylSetObjrefZone;
 
 
@@ -2123,10 +2124,10 @@ class Rps_PaylSetObjrefZone
 ////////////////
 class Rps_ObjectZone : public  Rps_MarkSweepZoneValue
 {
-  friend class Rps_ZoneValue;
-  friend class Rps_ObjectRef;
-  friend class Rps_MarkSweepZoneValue;
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(ZoneValue);
+  RPS_FRIEND_CLASS(ObjectRef);
+  RPS_FRIEND_CLASS(MarkSweepZoneValue);
+  RPS_FRIEND_CLASS(GarbageCollector);
   friend void print_types_info(void);
   const Rps_Id _ob_id;
   // we need some lock; we could later improve it, see perhaps
@@ -2452,7 +2453,7 @@ class Rps_MutatorThread;
  */
 class Rps_GarbageCollector
 {
-  friend class Rps_MutatorThread;
+  RPS_FRIEND_CLASS(MutatorThread);
   friend int main(int, char**);
   // forbid instantiation:
   Rps_GarbageCollector() = delete;
@@ -2555,7 +2556,7 @@ public:
 ////////////////////////////////////////////////////////////////
 class Rps_MutatorThread: public std::thread
 {
-  friend class Rps_GarbageCollector;
+  RPS_FRIEND_CLASS(GarbageCollector);
   // for http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html ::
   std::string _mthr_prefix;
   std::atomic<unsigned long> _mthr_gc_count;
@@ -2602,8 +2603,8 @@ public:
 /// class citizen" values. They only exist during load time.
 class Rps_QuasiToken : public  Rps_PointerCopyingZoneValue
 {
-  friend class Rps_PointerCopyingZoneValue;
-  friend class Rps_ZoneValue;
+  RPS_FRIEND_CLASS(PointerCopyingZoneValue);
+  RPS_FRIEND_CLASS(ZoneValue);
 public:
   enum TYPE_en
   {
@@ -2810,7 +2811,7 @@ extern "C" void rps_print_full_backtrace_level
  const char *function);
 class Rps_BackTrace
 {
-  friend class Rps_BackTrace_Helper;
+  RPS_FRIEND_CLASS(BackTrace_Helper);
   friend int main(int, char**);
   friend void rps_print_simple_backtrace_level
   (Rps_BackTrace* btp, FILE*outf, const char*beforemsg, uintptr_t pc);
