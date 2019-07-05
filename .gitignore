@@ -17,6 +17,9 @@ OMake*.omc
 # Backup after indentation with astyle --style=gnu -s2
 *.orig
 
+# valgrind core dumps
+vgcore.*
+
 # Prerequisites (for make)
 *.mkd
 

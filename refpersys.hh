@@ -166,6 +166,32 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 
 
+//////////////// inform
+
+#define RPS_INFORM_AT_BIS(Fil,Lin,Fmt,...) do {			\
+    fprintf(stderr, "\n\n"		       			\
+	    "*** RefPerSys INFORM:%s:%d: <%s>\n " Fmt "\n\n",	\
+            Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);     	\
+    fflush(stderr); } while(0)
+
+#define RPS_INFORM_AT(Fil,Lin,Fmt,...) RPS_INFORM_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
+
+// typical usage could be RPS_INFORM("something bad x=%d", x)
+#define RPS_INFORM(Fmt,...) RPS_INFORM_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
+
+#define RPS_INFORMOUT_AT_BIS(Fil,Lin,...) do {	\
+    std::clog << "** RefPerSys INFORM! "		\
+	      << (Fil) << ":" << Lin << ":: "	\
+	      << __VA_ARGS__ << std::endl;	\
+    std::clog << std::flush; } while(0)
+
+#define RPS_INFORMOUT_AT(Fil,Lin,...) RPS_INFORMOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
+
+// typical usage would be RPS_INFORMOUT("annoying x=" << x)
+#define RPS_INFORMOUT(...) RPS_INFORMOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
+
+
+
 //////////////// assert
 #ifndef NDEBUG
 #define RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond) do {      	\
@@ -197,8 +223,10 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 
 static inline double rps_monotonic_real_time(void);
+double rps_elapsed_real_time(void);
 static inline double rps_process_cpu_time(void);
 static inline double rps_thread_cpu_time(void);
+extern "C" const char* rps_hostname(void);
 
 
 /***

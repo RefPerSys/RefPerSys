@@ -38,6 +38,18 @@ void* rps_proghdl;
 
 thread_local Rps_Random Rps_Random::_rand_thr_;
 
+typedef std::function<void(void)> rps_todo_func_t;
+static std::vector<rps_todo_func_t> rps_main_todo_vect;
+
+const char*
+rps_hostname(void)
+{
+  static char hnambuf[64];
+  if (RPS_UNLIKELY(!hnambuf[0]))
+    gethostname(hnambuf, sizeof(hnambuf)-1);
+  return hnambuf;
+} // end rps_hostname
+
 enum rps_option_key_en
 {
   Rps_Key_PrintRandomId = 1024,
@@ -246,9 +258,16 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
         num = std::stoi(numstr);
       if (num<minbench)
         num = minbench;
-      printf("before running Rps_ObjectRef::tinybenchmark1 with count %u.\n", num);
+      RPS_INFORM("should do Rps_ObjectRef::tinybenchmark1 with count %u.\n", num);
       fflush(nullptr);
-      Rps_ObjectRef::tiny_benchmark_1(nullptr, num);
+      rps_main_todo_vect.push_back([=]
+      {
+        RPS_INFORMOUT("running Rps_ObjectRef::tinybenchmark1 with count " << num
+                      << RPS_BACKTRACE_HERE(1,"todo tinybenchmark1"));
+        Rps_ObjectRef::tiny_benchmark_1(nullptr, num);
+        RPS_INFORM("done Rps_ObjectRef::tinybenchmark1 with count=%u monotonic %.3f, process %.3f sec.",
+                   num, rps_monotonic_real_time(), rps_process_cpu_time());
+      });
     }
     break;
     case Rps_Key_ExplainTypes:
@@ -285,9 +304,17 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
 
 
 ////////////////////////////////////////////////////////////////
+
+static double rps_start_monotonic_time;
+double rps_elapsed_real_time(void)
+{
+  return rps_monotonic_real_time() - rps_start_monotonic_time;
+}
+
 int
 main(int argc, char** argv)
 {
+  rps_start_monotonic_time = rps_monotonic_real_time();
   struct argp argopt =
   {
     .options = rps_argopt_vec,
@@ -321,7 +348,19 @@ main(int argc, char** argv)
       printf("missing argument to %s, try %s --help\n", argv[0], argv[0]);
       exit(EXIT_FAILURE);
     }
+  pthread_setname_np(pthread_self(), "rps-main");
+  rps_main_todo_vect.reserve(2*argc+10);
   argp_parse (&argopt, argc, argv, 0, NULL, NULL);
+  RPS_INFORM("starting RefPerSys %s process %d on host %s\n"
+             "... gitid %.16s built %s",
+             argv[0], (int)getpid(), rps_hostname(), gitid_rps, timestamp_rps);
+  Rps_GarbageCollector::initialize();
+  for (auto todo_fun : rps_main_todo_vect)
+    todo_fun();
+  RPS_INFORM("end of RefPerSys process %d on host %s\n"
+             "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
+             (int)getpid(), rps_hostname(), gitid_rps, timestamp_rps,
+             rps_elapsed_real_time(), rps_process_cpu_time());
   return 0;
 } // end of main
 
@@ -395,7 +434,7 @@ rps_print_simple_backtrace_level(Rps_BackTrace* btp, FILE*outf, const char*befor
       if (delta != 0)
         {
           if (funamestr.empty())
-            fprintf (outf, "%s %p: %s+%#%x\n",
+            fprintf (outf, "%s %p: %s+%#x\n",
                      beforebuf, (void*)pc, filnamestr.c_str(), delta);
           else
             fprintf (outf, "%s %p: %40s+%#x %s\n",
@@ -634,7 +673,10 @@ Rps_BackTrace::run_full_backtrace(int skip, const char*name)
                                    pc, filnam, lineno, funam);
     return 0;
   });
-  fprintf(stderr, "FULL BACKTRACE (%s)\n", bt.name().c_str());
+  char thnam[40];
+  memset(thnam, 0, sizeof(thnam));
+  pthread_getname_np(pthread_self(), thnam, sizeof(thnam)-1);
+  fprintf(stderr, "FULL BACKTRACE (%s) <%s>\n", bt.name().c_str(), thnam);
   bt.full_backtrace(skip);
   fprintf(stderr, "***** end of %d full backtrace levels (%s) *****\n",
           depthcount, bt.name().c_str());
@@ -693,9 +735,10 @@ rps_fatal_stop_at (const char *filnam, int lin)
   char errbuf[80];
   memset (errbuf, 0, sizeof(errbuf));
   snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
-  fprintf(stderr, "FATAL: gitid %s, built timestamp %s,\n"
-          "\t host %s, md5sum %s\n",
-          gitid_rps, timestamp_rps, buildhost_rps, md5sum_rps);
+  fprintf(stderr, "FATAL: RefPerSys gitid %s, built timestamp %s,\n"
+          "\t on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
+          gitid_rps, timestamp_rps, rps_hostname(), md5sum_rps,
+          rps_elapsed_real_time(), rps_process_cpu_time());
   fflush(stderr);
   Rps_BackTrace::run_full_backtrace(3, errbuf);
   fflush(nullptr);

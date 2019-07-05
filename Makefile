@@ -37,6 +37,9 @@ CCACHE= ccache
 CXX= $(CCACHE) g++
 RM= rm -vf
 
+# REFPERSYS_WRAPPER could be set to valgrind for tests
+REFPERSYS_WRAPPER=
+
 ################
 ### keep carefully these variables in sync with those in OMakefile
 DIALECTFLAGS = -std=gnu++17
@@ -91,7 +94,7 @@ archive: # should have an omake target like that doing
 ### future, omake is really preferable because it builds targets based
 ### on content of files, not on modification time of files. And this
 ### would become important once refpersys is *generating* C++ code.
-refpersys: $(patsubst %,%.o,$(REFPERSYS_BASE_FILES))
+refpersys: $(patsubst %,%.o,$(REFPERSYS_BASE_FILES) _timestamp_rps)
 	$(LINK.cc) -o $@ $^ $(LDFLAGS)
 
 %_rps.o: %_rps.cc $(patsubst %,%.hh,$(REFPERSYS_BASE_HEADERS))
@@ -101,5 +104,5 @@ directclean:
 	$(RM) *.o *~ *% *.orig refpersys core
 
 test1: refpersys
-	./refpersys --object-tinybenchmark1
+	$(REFPERSYS_WRAPPER) ./refpersys --object-tinybenchmark1
 ## end of refpersys Makefile
