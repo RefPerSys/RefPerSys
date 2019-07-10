@@ -31,80 +31,93 @@
 ##    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##***************************************************************************
 
+#! some spare objids to be later used below: _0MJMsklLPxK0172YEu
+#! _3BzJgYZ8dz200B7ioL _4EBkpYs6lLg03R2hNl _50qbFlPpJOY02qSlyx
+# TODO: remove them once we have used them.
 
 
-# The primordial CLASS object is the "base" for all objects in Refpersys.
-# This is very incomplete at the current stage. Abhishek is guessing that this
-# primordial CLASS object would require closures for common functionality of all
-# objects.
+### the `comment` object
+!_1om48kc3k5R02d3jtW (
+     @name "comment"
+     @mtime 1510325491.740
+## TODO: what is the class of that _1om48kc3k5R02d3jtW or `comment` object?
+     @attr (
+       * |comment:| _1om48kc3k5R02d3jtW  
+         "`comment` is used to annotate objects with a persistent comment."
+     )
+) !_1om48kc3k5R02d3jtW // end of object: `comment` 
+
+# The primordial `class` object is the "base" for all objects in
+# Refpersys.  
+
+### the `class` object
 !_7yYCtEQKshP00noCyM (
-        @name "primordial CLASS object"
+        @name "class"
         @mtime 1510325491.740
-) !_7yYCtEQKshP00noCyM
+## TODO: what is the class of that |class=| _7yYCtEQKshP00noCyM.
+## TODO: what are the attributes of that `class` object?
+## TODO: do we have components here?
+## TODO: what is the payload of `class` ?
+) !_7yYCtEQKshP00noCyM // end of object: `class`
 
 
 
 
-# Abhishek is guessing that the initdata.rps file needs to define the
-# "primitive" or fundamental data types, such as bool, int, char in the C
-# language. Abhishek is guessing that these fundamental types will all be class
-# objects (e.g. as in Python, where every class is an object) that are "derived"
-# from the primordial CLASS object _7yYCtEQKshP00noCyM (defined above).
-# Accordingly, Abhishek is defining the primitive Boolean class object. Abhishek
-# is requesting Dr. Basile to kindly review and suggest whether Abhishek is
-# going in the right direction.
+# The initdata.rps file needs to define the "primitive" or fundamental
+# data types, such as bool, int, char in the C language.
+
+## the `boolean` object is:
 !_2g3nC4TJ3aK00Vo7w5 (
-        @class _0OE0PJ2Nihp00j9HvR  | derived from primordial CLASS object |
-        @name "primitive Boolean class object"
+        @class _0OE0PJ2Nihp00j9HvR  |= the `class` object |
+        @name "boolean"
         @mtime 1510325491.740
-) !_2g3nC4TJ3aK00Vo7w5
+## TODO: what are the class, attributes, components of `boolean` ?
+) !_2g3nC4TJ3aK00Vo7w5 // end of `boolean` object
 
 
 
 
-# Based on the above pimitive Boolean class object, Abhishek is guessing that
-# the Boolean constants True and False may also be represented as objects
-# belonging to the class _2g3nC4TJ3aK00Vo7w5. Defined below is the Boolean
-# constant TRUE as an object of the primitive Boolean class object.
+# the constant `true` as an instance of  `boolean` object.
 !_71NDtQ0FXzF024RdTD (
         @class _2g3nC4TJ3aK00Vo7w5 | derived from primitve Boolean class object |
-        @name "primitive Boolean constant object TRUE"
+        @name "true"
         @mtime 1510325491.740
-) !_71NDtQ0FXzF024RdTD
+## TODO: missing attributes and components of `true`
+) !_71NDtQ0FXzF024RdTD // end of `true` object
 
 
 
-
-# Similar to the above, Abhishek is trying to define the Boolean constant FALSE.
-!_8roOKXdVcOy041nr9I (
-        @class _2g3nC4TJ3aK00Vo7w5 | derived from primitve Boolean class object |
-        @name "primitive Boolean constant object TRUE"
-        @mtime 1510325491.740
-) !_8roOKXdVcOy041nr9I
+## TODO: 
+## discuss if we really need a `false` object similar to Scheme #f
+## or just use NIL for that false value.
 
 
 
-
+# unchanged, for 
 # This is the first sample object of the primordial CLASS.
 !_07YGv5jImHw03JSziA (
-        @class _0OE0PJ2Nihp00j9HvR  | primordial CLASS object |
+        @class _0OE0PJ2Nihp00j9HvR  |=class|
         @mtime 1510325491.740
-        @name "sample object for example"
         @comp (_04YQEJtbxJ704mmY6j _8WQ1IHwxDOf02U1G9I)
-        @payload (_90WQpRgSoN8018gLbJ _3EMmRTwppRq00YOpJZ)
+        ##WRONG @payload (_90WQpRgSoN8018gLbJ _3EMmRTwppRq00YOpJZ)
         @attr (
-                _4cG7qyo0038046cBsf "string"   | string attribute |
-                _1OlebU0NNqG03H0h1E 1234.567   | double attribute |
+               * _4cG7qyo0038046cBsf "string"   | string attribute |
+               * _1OlebU0NNqG03H0h1E 1234.567   | double attribute |
 
                 # set attributes are enclosed in curly braces
-                _2EXYXvXKfNL04gTxus {
+               * _2EXYXvXKfNL04gTxus {
                         _4eK0IPW6HT604zz8s6 _0A5YBlxJgIM03Hs6f9
                 }
 
                 # tuple attributes are enclosed in square brackets
-                _0j2JzHrzA0604avLAv [
+               * _0j2JzHrzA0604avLAv [
                         _5JSE68ZYK4003UVdVc _73UWhRTzDSw0373KVm
-                ]
+               ]
         )
-) !_07YGv5jImHw03JSziA
+) !_07YGv5jImHw03JSziA // end of sample object
 
+
+
+### FIXME: other objects should be defined below....
+
+#### end of file initdata.rps
