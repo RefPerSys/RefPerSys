@@ -45,6 +45,46 @@
 
 
 
+# Abhishek is guessing that the initdata.rps file needs to define the
+# "primitive" or fundamental data types, such as bool, int, char in the C
+# language. Abhishek is guessing that these fundamental types will all be class
+# objects (e.g. as in Python, where every class is an object) that are "derived"
+# from the primordial CLASS object _7yYCtEQKshP00noCyM (defined above).
+# Accordingly, Abhishek is defining the primitive Boolean class object. Abhishek
+# is requesting Dr. Basile to kindly review and suggest whether Abhishek is
+# going in the right direction.
+!_2g3nC4TJ3aK00Vo7w5 (
+        @class _0OE0PJ2Nihp00j9HvR  | derived from primordial CLASS object |
+        @name "primitive Boolean class object"
+        @mtime 1510325491.740
+) !_2g3nC4TJ3aK00Vo7w5
+
+
+
+
+# Based on the above pimitive Boolean class object, Abhishek is guessing that
+# the Boolean constants True and False may also be represented as objects
+# belonging to the class _2g3nC4TJ3aK00Vo7w5. Defined below is the Boolean
+# constant TRUE as an object of the primitive Boolean class object.
+!_71NDtQ0FXzF024RdTD (
+        @class _2g3nC4TJ3aK00Vo7w5 | derived from primitve Boolean class object |
+        @name "primitive Boolean constant object TRUE"
+        @mtime 1510325491.740
+) !_71NDtQ0FXzF024RdTD
+
+
+
+
+# Similar to the above, Abhishek is trying to define the Boolean constant FALSE.
+!_8roOKXdVcOy041nr9I (
+        @class _2g3nC4TJ3aK00Vo7w5 | derived from primitve Boolean class object |
+        @name "primitive Boolean constant object TRUE"
+        @mtime 1510325491.740
+) !_8roOKXdVcOy041nr9I
+
+
+
+
 # This is the first sample object of the primordial CLASS.
 !_07YGv5jImHw03JSziA (
         @class _0OE0PJ2Nihp00j9HvR  | primordial CLASS object |
