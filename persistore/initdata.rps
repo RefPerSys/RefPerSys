@@ -42,13 +42,16 @@
      @mtime 1510325491.740
 ## TODO: what is the class of that _1om48kc3k5R02d3jtW or `comment` object?
      @attr (
-       * |comment:| _1om48kc3k5R02d3jtW  
+       * |comment:| _1om48kc3k5R02d3jtW
          "`comment` is used to annotate objects with a persistent comment."
      )
-) !_1om48kc3k5R02d3jtW // end of object: `comment` 
+) !_1om48kc3k5R02d3jtW // end of object: `comment`
+
+
+
 
 # The primordial `class` object is the "base" for all objects in
-# Refpersys.  
+# Refpersys.
 
 ### the `class` object
 !_7yYCtEQKshP00noCyM (
@@ -63,12 +66,19 @@
 
 
 
-# The initdata.rps file needs to define the "primitive" or fundamental
-# data types, such as bool, int, char in the C language.
-
-## the `boolean` object is:
-!_2g3nC4TJ3aK00Vo7w5 (
+## the `enum` object, using one of the spare object IDs defined above.
+!_0MJMsklLPxK0172YEu (
         @class _0OE0PJ2Nihp00j9HvR  |= the `class` object |
+        @name "enum"
+        @mtime 1510325491.740
+) !_0MJMsklLPxK0172YEu // end of object: `enum`
+
+
+
+
+## the `boolean` object is an `enum` object (defined above):
+!_2g3nC4TJ3aK00Vo7w5 (
+        @class _0MJMsklLPxK0172YEu |= the `enum` object |
         @name "boolean"
         @mtime 1510325491.740
 ## TODO: what are the class, attributes, components of `boolean` ?
@@ -79,7 +89,7 @@
 
 # the constant `true` as an instance of  `boolean` object.
 !_71NDtQ0FXzF024RdTD (
-        @class _2g3nC4TJ3aK00Vo7w5 | derived from primitve Boolean class object |
+        @class _2g3nC4TJ3aK00Vo7w5 |= derived from primitve Boolean class object |
         @name "true"
         @mtime 1510325491.740
 ## TODO: missing attributes and components of `true`
@@ -87,13 +97,19 @@
 
 
 
-## TODO: 
+## TODO:
 ## discuss if we really need a `false` object similar to Scheme #f
 ## or just use NIL for that false value.
 
+## the constant `NIL`
+_3BzJgYZ8dz200B7ioL (
+        @name "NIL"
+        @class _0OE0PJ2Nihp00j9HvR  |= the `class` object |
+        @mtime 1510325491.740
+) _3BzJgYZ8dz200B7ioL ( // end of `NIL` object
 
 
-# unchanged, for 
+# unchanged, for
 # This is the first sample object of the primordial CLASS.
 !_07YGv5jImHw03JSziA (
         @class _0OE0PJ2Nihp00j9HvR  |=class|
