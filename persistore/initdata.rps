@@ -31,9 +31,7 @@
 ##    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##***************************************************************************
 
-#! some spare objids to be later used below: _0MJMsklLPxK0172YEu
-#! _3BzJgYZ8dz200B7ioL _4EBkpYs6lLg03R2hNl _50qbFlPpJOY02qSlyx
-# TODO: remove them once we have used them.
+
 
 
 ### the `comment` object
@@ -134,6 +132,23 @@ _3BzJgYZ8dz200B7ioL (
 
 
 
-### FIXME: other objects should be defined below....
+
+## the Boolean operator `or`
+!_4EBkpYs6lLg03R2hNl (
+        @class _2g3nC4TJ3aK00Vo7w5 |= derived from primitve Boolean class object |
+        @name "or"
+        @mtime 1510325491.740
+) !_4EBkpYs6lLg03R2hNl
+
+
+
+
+## the Boolean operator `and`
+!_50qbFlPpJOY02qSlyx (
+        @class _2g3nC4TJ3aK00Vo7w5 |= derived from primitve Boolean class object |
+        @name "and"
+        @mtime 1510325491.740
+) !_50qbFlPpJOY02qSlyx
+
 
 #### end of file initdata.rps
