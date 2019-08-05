@@ -707,7 +707,9 @@ static inline bool rps_is_type_of_scalar_quasi_value(const Rps_Type ty);
 
 class Rps_Random
 {
+  friend int main(int, char**);
   static thread_local Rps_Random _rand_thr_;
+  static bool _rand_deterministic_;
   /// the thread local random state
   unsigned long _rand_count;
   std::mt19937 _rand_generator;
@@ -717,18 +719,36 @@ class Rps_Random
   /// advance, and a count of the remaining random bits in it.
   uint32_t _rand_advance;
   uint8_t _rand_remainbits;
+  unsigned _rand_threadrank;
+  static std::atomic<unsigned> _rand_threadcount;
+  static constexpr const unsigned _rand_reseed_period_ = 65536;
+  /// private initializer
+  void init_deterministic (void);
+  /// private deterministic reseeder
+  void deterministic_reseed (void);
   /// private constructor
-  Rps_Random () : _rand_count(0), _rand_generator(), _rand_advance(0), _rand_remainbits(0) {};
+  Rps_Random () :
+    _rand_count(0), _rand_generator(), _rand_advance(0), _rand_remainbits(0),
+    _rand_threadrank(std::atomic_fetch_add(&_rand_threadcount,1U))
+  {
+    if (_rand_deterministic_)
+      init_deterministic();
+  };
   ///
   uint32_t generate_32u(void)
   {
-    if (RPS_UNLIKELY(_rand_count++ % 65536 == 0))
+    if (RPS_UNLIKELY(_rand_count++ % _rand_reseed_period_ == 0))
       {
-        std::random_device randev;
-        auto s1=randev(), s2=randev(), s3=randev(), s4=randev(),
-             s5=randev(), s6=randev(), s7=randev();
-        std::seed_seq seq {s1,s2,s3,s4,s5,s6,s7};
-        _rand_generator.seed(seq);
+        if (RPS_UNLIKELY(_rand_deterministic_))
+          deterministic_reseed();
+        else
+          {
+            std::random_device randev;
+            auto s1=randev(), s2=randev(), s3=randev(), s4=randev(),
+                 s5=randev(), s6=randev(), s7=randev();
+            std::seed_seq seq {s1,s2,s3,s4,s5,s6,s7};
+            _rand_generator.seed(seq);
+          }
       }
     return _rand_generator();
   };

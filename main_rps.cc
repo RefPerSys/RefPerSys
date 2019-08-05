@@ -76,8 +76,7 @@ const struct argp_option rps_argopt_vec[] =
     .key = Rps_Key_PrimeAbove,
     .arg = "number",
     .flags = OPTION_ARG_OPTIONAL,
-    .doc = "print a prime above a given number"
-    " (see also the 'primes' program from BSD games)",
+    .doc = "print a prime above a given number",
     .group = 0,
   },
   {
@@ -104,6 +103,7 @@ const struct argp_option rps_argopt_vec[] =
     .doc = "print information about types",
     .group = 0,
   },
+#warning need some --deterministic-random=<seed> option
   {
     .name = "version",
     .key = Rps_Key_Version,
@@ -723,6 +723,21 @@ Rps_BackTrace_Helper::do_out(void) const
 {
   _bth_backtrace.run_full_backtrace(_bth_skip);
 } // end Rps_BackTrace_Helper::do_out
+
+////////////////////////////////////////////////////////////////
+std::atomic<unsigned> Rps_Random::_rand_threadcount;
+bool Rps_Random::_rand_deterministic_;
+void Rps_Random::init_deterministic(void)
+{
+#warning unimplemented Rps_Random::init_deterministic
+  RPS_FATAL("Rps_Random::init_deterministic unimplemented");
+} // end of  Rps_Random::init_deterministic
+
+void Rps_Random::deterministic_reseed(void)
+{
+#warning unimplemented Rps_Random::deterministic_reseed
+  RPS_FATAL("Rps_Random::deterministic_reseed unimplemented");
+} // end of Rps_Random::deterministic_reseed
 
 
 
