@@ -29,7 +29,7 @@
 ##***************************************************************************
 
 OMAKE= omake
-.PHONY: all clean indent archive directclean test1 
+.PHONY: all clean indent archive directclean test1 test1_det_a test1_det_b
 # if you don't have omake, use "make refpersys" and "make directclean"
 
 # if you don't have ccache, run without it using make CCACHE=
@@ -105,4 +105,9 @@ directclean:
 
 test1: refpersys
 	$(REFPERSYS_WRAPPER) ./refpersys --object-tinybenchmark1
+
+test1_det_a: refpersys
+	$(REFPERSYS_WRAPPER) ./refpersys --deterministic=1234  --object-tinybenchmark1
+test1_det_b: refpersys
+	$(REFPERSYS_WRAPPER) ./refpersys --deterministic=45678  --object-tinybenchmark1
 ## end of refpersys Makefile
