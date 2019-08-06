@@ -56,6 +56,7 @@ enum rps_option_key_en
   Rps_Key_Version,
   Rps_Key_ParseId,
   Rps_Key_ExplainTypes,
+  Rps_Key_Deterministic,
   Rps_Key_PrimeAbove,
   Rps_Key_PrimeBelow,
   Rps_Key_ObjectTinyBenchmark1,
@@ -69,6 +70,14 @@ const struct argp_option rps_argopt_vec[] =
     .arg = "count",
     .flags = OPTION_ARG_OPTIONAL,
     .doc = "print one or several random objectid[s]",
+    .group = 0,
+  },
+  {
+    .name = "deterministic",
+    .key = Rps_Key_Deterministic,
+    .arg = "seed",
+    .flags = OPTION_ARG_OPTIONAL,
+    .doc = "seed PRNGs in a deterministic way with given SEED",
     .group = 0,
   },
   {
@@ -229,6 +238,16 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
         }
     }
     break;
+    case Rps_Key_Deterministic:
+    {
+      long num = 0;
+      const char*numstr = arg;
+      if (numstr && numstr[0])
+        num = std::stoi(numstr);
+      printf("deterministic pseudo-random number generator seed is %ld\n", num);
+      Rps_Random::start_deterministic(num);
+    }
+    break;
     case Rps_Key_PrimeAbove:
     {
       long num = 0;
@@ -236,7 +255,7 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
       if (numstr && numstr[0])
         num = std::stoi(numstr);
       long pr = rps_prime_above(num);
-      printf("A prime above %ld is %ld (but see also primes program from BSD games)\n", num, pr);
+      printf("A prime above %ld is %ld\n", num, pr);
     }
     break;
     case Rps_Key_PrimeBelow:
@@ -730,25 +749,32 @@ bool Rps_Random::_rand_is_deterministic_;
 std::ranlux48 Rps_Random::_rand_gen_deterministic_;
 std::mutex Rps_Random::_rand_mtx_deterministic_;
 
+
+// static method called once by main
 void
 Rps_Random::start_deterministic(long seed)
 {
-#warning unimplemented Rps_Random::start_deterministic
-  RPS_FATAL("Rps_Random::start_deterministic unimplemented %ld", seed);
+  std::lock_guard<std::mutex> guard(_rand_mtx_deterministic_);
+  _rand_gen_deterministic_.seed (seed);
+  _rand_is_deterministic_ = true;
 } // end of Rps_Random::start_deterministic
 
+
+// private initializer, thread specific
 void
 Rps_Random::init_deterministic(void)
 {
-#warning unimplemented Rps_Random::init_deterministic
-  RPS_FATAL("Rps_Random::init_deterministic unimplemented");
+  std::lock_guard<std::mutex> guard(_rand_mtx_deterministic_);
+  RPS_ASSERT(_rand_is_deterministic_);
+  _rand_generator.seed(_rand_gen_deterministic_());
 } // end of  Rps_Random::init_deterministic
 
 void
 Rps_Random::deterministic_reseed(void)
 {
-#warning unimplemented Rps_Random::deterministic_reseed
-  RPS_FATAL("Rps_Random::deterministic_reseed unimplemented");
+  std::lock_guard<std::mutex> guard(_rand_mtx_deterministic_);
+  RPS_ASSERT(_rand_is_deterministic_);
+  _rand_generator.seed(_rand_gen_deterministic_());
 } // end of Rps_Random::deterministic_reseed
 
 
