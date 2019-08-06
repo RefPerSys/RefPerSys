@@ -707,9 +707,10 @@ static inline bool rps_is_type_of_scalar_quasi_value(const Rps_Type ty);
 
 class Rps_Random
 {
-  friend int main(int, char**);
   static thread_local Rps_Random _rand_thr_;
-  static bool _rand_deterministic_;
+  static bool _rand_is_deterministic_;
+  static std::ranlux48 _rand_gen_deterministic_;
+  static std::mutex _rand_mtx_deterministic_;
   /// the thread local random state
   unsigned long _rand_count;
   std::mt19937 _rand_generator;
@@ -731,7 +732,7 @@ class Rps_Random
     _rand_count(0), _rand_generator(), _rand_advance(0), _rand_remainbits(0),
     _rand_threadrank(std::atomic_fetch_add(&_rand_threadcount,1U))
   {
-    if (_rand_deterministic_)
+    if (_rand_is_deterministic_)
       init_deterministic();
   };
   ///
@@ -739,7 +740,7 @@ class Rps_Random
   {
     if (RPS_UNLIKELY(_rand_count++ % _rand_reseed_period_ == 0))
       {
-        if (RPS_UNLIKELY(_rand_deterministic_))
+        if (RPS_UNLIKELY(_rand_is_deterministic_))
           deterministic_reseed();
         else
           {
@@ -791,6 +792,7 @@ class Rps_Random
     return res;
   };
 public:
+  static void start_deterministic(long seed); // to be called from main
   static uint32_t random_32u(void)
   {
     return _rand_thr_.generate_32u();

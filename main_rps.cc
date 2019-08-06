@@ -726,14 +726,26 @@ Rps_BackTrace_Helper::do_out(void) const
 
 ////////////////////////////////////////////////////////////////
 std::atomic<unsigned> Rps_Random::_rand_threadcount;
-bool Rps_Random::_rand_deterministic_;
-void Rps_Random::init_deterministic(void)
+bool Rps_Random::_rand_is_deterministic_;
+std::ranlux48 Rps_Random::_rand_gen_deterministic_;
+std::mutex Rps_Random::_rand_mtx_deterministic_;
+
+void
+Rps_Random::start_deterministic(long seed)
+{
+#warning unimplemented Rps_Random::start_deterministic
+  RPS_FATAL("Rps_Random::start_deterministic unimplemented %ld", seed);
+} // end of Rps_Random::start_deterministic
+
+void
+Rps_Random::init_deterministic(void)
 {
 #warning unimplemented Rps_Random::init_deterministic
   RPS_FATAL("Rps_Random::init_deterministic unimplemented");
 } // end of  Rps_Random::init_deterministic
 
-void Rps_Random::deterministic_reseed(void)
+void
+Rps_Random::deterministic_reseed(void)
 {
 #warning unimplemented Rps_Random::deterministic_reseed
   RPS_FATAL("Rps_Random::deterministic_reseed unimplemented");
