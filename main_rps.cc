@@ -112,13 +112,12 @@ const struct argp_option rps_argopt_vec[] =
     .doc = "print information about types",
     .group = 0,
   },
-#warning need some --deterministic-random=<seed> option
   {
     .name = "version",
     .key = Rps_Key_Version,
     .arg = NULL,
     .flags = OPTION_ARG_OPTIONAL,
-    .doc = "print version informatrion",
+    .doc = "print version information",
     .group = 0,
   },
   {
