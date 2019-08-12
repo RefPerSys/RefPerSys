@@ -331,10 +331,13 @@ Rps_GarbageCollector::syncthread_routine(void)
   using namespace std::chrono_literals;
   long loopcnt=0;
   pthread_setname_np(pthread_self(), "rps-gcsync");
+  printf("syncthread_routine here %s:%d\n", __FILE__, __LINE__);
+  fflush(nullptr);
   usleep (50000); // 50 milliseconds
   RPS_INFORMOUT("start of Rps_GarbageCollector::syncthread_routine "
                 << std::this_thread::get_id()
                 << RPS_BACKTRACE_HERE(1,"GC syncthread routine"));
+  usleep (10000); // 10 milliseconds
   while(true)
     {
       loopcnt++;
@@ -353,11 +356,11 @@ Rps_GarbageCollector::initialize(void)
   // TODO: we probably (not sure yet) need to start a garbage
   // collection management thread, whose main role is GC
   // synchronization...
-  _gc_syncthread = std::thread(Rps_GarbageCollector::syncthread_routine);
-  _gc_syncthread.detach();
-  RPS_WARNOUT("incomplete Rps_GarbageCollector::initialize:"
-              << RPS_BACKTRACE_HERE(1,"GC-INIT"));
-#warning Rps_GarbageCollector::initialize is incomplete
+  {
+    auto thr = std::thread(Rps_GarbageCollector::syncthread_routine);
+    thr.detach();
+    std::swap(_gc_syncthread, thr);
+  }
 } // end of Rps_GarbageCollector::initialize
 
 

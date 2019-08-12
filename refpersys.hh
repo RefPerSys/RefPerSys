@@ -183,7 +183,7 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
     std::clog << "** RefPerSys INFORM! "		\
 	      << (Fil) << ":" << Lin << ":: "	\
 	      << __VA_ARGS__ << std::endl;	\
-    std::clog << std::flush; } while(0)
+    std::clog << std::flush; fflush(nullptr); } while(0)
 
 #define RPS_INFORMOUT_AT(Fil,Lin,...) RPS_INFORMOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
 
