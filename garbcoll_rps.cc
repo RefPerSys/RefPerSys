@@ -253,6 +253,7 @@ void
 Rps_GarbageCollector::run_garbcoll(Rps_CallFrameZone*callingfra)
 {
   _gc_wanted.store(true);
+  printf("*run_garbcoll %s:%d\n", __FILE__,__LINE__); fflush(nullptr);
   /// not sure of that....
   _gc_condvar.notify_all();
   /// we should synchronize
@@ -331,7 +332,7 @@ Rps_GarbageCollector::syncthread_routine(void)
   using namespace std::chrono_literals;
   long loopcnt=0;
   pthread_setname_np(pthread_self(), "rps-gcsync");
-  printf("syncthread_routine here %s:%d\n", __FILE__, __LINE__);
+  printf("\n **syncthread_routine here %s:%d\n", __FILE__, __LINE__);
   fflush(nullptr);
   usleep (50000); // 50 milliseconds
   RPS_INFORMOUT("start of Rps_GarbageCollector::syncthread_routine "
@@ -341,9 +342,17 @@ Rps_GarbageCollector::syncthread_routine(void)
   while(true)
     {
       loopcnt++;
+      printf("\n **syncthread_routine %s:%d loop #%ld\n", __FILE__, __LINE__, loopcnt);
+  fflush(nullptr);
       std::unique_lock<std::mutex> _gu(_gc_mtx);
       auto now = std::chrono::system_clock::now();
       auto cw = _gc_condvar.wait_until(_gu, now+5s);
+      if (cw == std::cv_status::timeout) {
+	RPS_WARN("Rps_GarbageCollector::syncthread_routine loopcnt#%ld timedout",
+		 loopcnt);
+	loopcnt--;
+	continue;
+      }
 #warning unimplemented Rps_GarbageCollector::syncthread_routine
       RPS_WARN("Rps_GarbageCollector::syncthread_routine unimplemented, loop#%ld monotonic=%.3f s",
                loopcnt, rps_monotonic_real_time());

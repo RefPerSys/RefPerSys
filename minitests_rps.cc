@@ -63,6 +63,7 @@ Rps_SetValue::tiny_benchmark_1(Rps_CallFrameZone*callingfra, unsigned num)
                 );
   RPS_ASSERT (num > 10);
   RPS_ASSERTPRINTF(num > 10, "num=%u", num);
+  usleep (65536);
   double t0 = 0.0, t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0, t5 = 0.0, t6 = 0.0;
   {
     char msgbuf[64];
