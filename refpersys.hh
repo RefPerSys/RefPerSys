@@ -2473,11 +2473,12 @@ class Rps_MutatorThread: public std::thread
   Rps_GarbageCollector::thread_allocation_data* _mthr_thralloc;
   static std::mutex _mthr_mtx_;
   static std::set<Rps_MutatorThread*> _mthr_thread_set_;
+  static thread_local Rps_MutatorThread* _mthr_current_;
 public:
   // the name below should be really short, e.g. less than 6 bytes
   Rps_MutatorThread(const char*name);
   Rps_MutatorThread();
-  ~Rps_MutatorThread();
+  virtual ~Rps_MutatorThread();
   void disable_garbage_collector(Rps_CallFrameZone* callingfra);
   void enable_garbage_collector(void);
   void do_without_garbage_collector(Rps_CallFrameZone* callingfra, const std::function<void(void)>&fun)
@@ -2486,6 +2487,10 @@ public:
     fun();
     enable_garbage_collector();
   };
+  static Rps_MutatorThread* this_mutator_thread(void)
+  {
+    return _mthr_current_;
+  }
 #warning Rps_MutatorThread incomplete
 #if 0 /// wrong code below. Don't compile yet!
   /// see https://en.wikipedia.org/wiki/Substitution_failure_is_not_an_error

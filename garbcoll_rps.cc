@@ -253,10 +253,15 @@ void
 Rps_GarbageCollector::run_garbcoll(Rps_CallFrameZone*callingfra)
 {
   _gc_wanted.store(true);
-  printf("*run_garbcoll %s:%d\n", __FILE__,__LINE__); fflush(nullptr);
+  printf("*run_garbcoll %s:%d\n", __FILE__,__LINE__);
+  fflush(nullptr);
   /// not sure of that....
   _gc_condvar.notify_all();
-  /// we should synchronize
+  /// we should synchronize, till every allocating thread should do
+  /// this run_garbcoll
+  {
+    std::unique_lock<std::mutex> lk(_gc_mtx);
+  }
 #warning unimplemented Rps_GarbageCollector::run_garbcoll
   RPS_FATAL("Rps_GarbageCollector::run_garbcoll unimplemented callingfra@%p",
             (void*)callingfra);
@@ -343,16 +348,17 @@ Rps_GarbageCollector::syncthread_routine(void)
     {
       loopcnt++;
       printf("\n **syncthread_routine %s:%d loop #%ld\n", __FILE__, __LINE__, loopcnt);
-  fflush(nullptr);
+      fflush(nullptr);
       std::unique_lock<std::mutex> _gu(_gc_mtx);
       auto now = std::chrono::system_clock::now();
       auto cw = _gc_condvar.wait_until(_gu, now+5s);
-      if (cw == std::cv_status::timeout) {
-	RPS_WARN("Rps_GarbageCollector::syncthread_routine loopcnt#%ld timedout",
-		 loopcnt);
-	loopcnt--;
-	continue;
-      }
+      if (cw == std::cv_status::timeout)
+        {
+          RPS_WARN("Rps_GarbageCollector::syncthread_routine loopcnt#%ld timedout",
+                   loopcnt);
+          loopcnt--;
+          continue;
+        }
 #warning unimplemented Rps_GarbageCollector::syncthread_routine
       RPS_WARN("Rps_GarbageCollector::syncthread_routine unimplemented, loop#%ld monotonic=%.3f s",
                loopcnt, rps_monotonic_real_time());
@@ -377,6 +383,7 @@ Rps_GarbageCollector::initialize(void)
 ////////////////////////////////////////////////////////////////
 std::mutex Rps_MutatorThread::_mthr_mtx_;
 std::set<Rps_MutatorThread*> Rps_MutatorThread::_mthr_thread_set_;
+thread_local Rps_MutatorThread* Rps_MutatorThread::_mthr_current_;
 ////////////////
 Rps_MutatorThread::Rps_MutatorThread()
   : std::thread(), _mthr_prefix(), _mthr_gc_count(0),
@@ -384,6 +391,7 @@ Rps_MutatorThread::Rps_MutatorThread()
 {
   std::lock_guard<std::mutex> gu(_mthr_mtx_);
   _mthr_thread_set_.insert(this);
+  _mthr_current_ = this;
 } // end Rps_MutatorThread::Rps_MutatorThread()
 
 Rps_MutatorThread::Rps_MutatorThread(const char*name)
@@ -397,6 +405,7 @@ Rps_MutatorThread::Rps_MutatorThread(const char*name)
 Rps_MutatorThread::~Rps_MutatorThread()
 {
   std::lock_guard<std::mutex> gu(_mthr_mtx_);
+  _mthr_current_ = nullptr;
   _mthr_thread_set_.erase(this);
   _mthr_callingfra.store(nullptr);
 } // end Rps_MutatorThread::~Rps_MutatorThread()
