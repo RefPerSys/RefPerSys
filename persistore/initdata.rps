@@ -211,4 +211,13 @@
         @mtime 1510325491.740
 ) !_29BQ5udoYOv02p6ReA // end greater_than object
 
+
+## the comparison operator `greater_than_equal` performs a >= comparison between
+## two operands, and is derived from the `comparison_operator` object.
+!_9IDUpMLXzmv039apjK (
+	@class _5E3B4DVItaj01d8Hlb  |= the `comparison_operator` object |
+        @name greater_than_equal
+        @mtime 1510325491.740
+) !_9IDUpMLXzmv039apjK // end greater_than_equal object
+
 #### end of file initdata.rps
