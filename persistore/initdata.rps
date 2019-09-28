@@ -151,15 +151,9 @@
 
 
 
-## FIXME: are the `or` and `and` operators below bitwise operators?
-## if yes, state that clearly
-## if not, rename them as `or_else` & `and_then` for readability purposes.
-
-
-## the Boolean operator `or_else` ##WRONG: not `or`
+## the Boolean operator `or_else` performs a logical inclusive or on two
+## predicates.
 !_4EBkpYs6lLg03R2hNl (
-## WRONG,  name it `or_else` if it is not, and still is a lazy operator
-## wrong:        @class _2g3nC4TJ3aK00Vo7w5 |=boolean|
         @name or_else
         @mtime 1510325491.740
 ) !_4EBkpYs6lLg03R2hNl
