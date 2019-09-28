@@ -159,6 +159,14 @@
 ) !_4EBkpYs6lLg03R2hNl
 
 
+## the Boolean operator `xor_else` performs a logical exclusive or on two
+## predicates.
+!_2l8uZoeTkXs02dgV3E (
+	@name xor_else
+	@mtime 1510325491.740
+) !_2l8uZoeTkXs02dgV3E
+
+
 ## the Boolean operator `and_then` performs a logical and on two
 ## predicates.
 !_50qbFlPpJOY02qSlyx (
