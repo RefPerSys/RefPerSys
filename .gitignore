@@ -74,4 +74,5 @@ core
 
 # Vim swap files
 *.swp
+*.swo
 
