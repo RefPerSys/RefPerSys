@@ -159,11 +159,9 @@
 ) !_4EBkpYs6lLg03R2hNl
 
 
-
-
-## the Boolean operator `and_then` ##WRONG: not `and`
+## the Boolean operator `and_then` performs a logical and on two
+## predicates.
 !_50qbFlPpJOY02qSlyx (
-## wrong:        @class _2g3nC4TJ3aK00Vo7w5 |=boolean|
         @name and_then
         @mtime 1510325491.740
 ) !_50qbFlPpJOY02qSlyx
