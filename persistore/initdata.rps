@@ -185,4 +185,13 @@
 ) !_50qbFlPpJOY02qSlyx
 
 
+## the Boolean operator `logical_not` performs a logical NOT on a Boolean
+## expression.
+!_29BQ5udoYOv02p6ReA (
+	@class _05lXct8IC703Vx436
+        @name logical_not
+        @mtime 1510325491.740
+) !_29BQ5udoYOv02p6ReA
+
+
 #### end of file initdata.rps
