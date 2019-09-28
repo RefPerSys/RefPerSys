@@ -71,3 +71,7 @@ vgcore.*
 
 # core file
 core
+
+# Vim swap files
+*.swp
+
