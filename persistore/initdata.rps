@@ -194,4 +194,15 @@
 ) !_29BQ5udoYOv02p6ReA // end logical_not object
 
 
+## the class of all comparison operators, which in itself is derived from the
+## `class` object.
+!_5E3B4DVItaj01d8Hlb (
+        @class _0OE0PJ2Nihp00j9HvR  |= the `class` object |
+        @name comparison_operator
+        @mtime 1510325491.740
+) !_5E3B4DVItaj01d8Hlb // end comparison_operator class object
+
+
+
+
 #### end of file initdata.rps
