@@ -155,43 +155,43 @@
         @class _0OE0PJ2Nihp00j9HvR  |= the `class` object |
         @name boolean_operator
         @mtime 1510325491.740
-) !_05lXct8IC703Vx436
+) !_05lXct8IC703Vx436 // end boolean_operator class object
 
 
-## the Boolean operator `or_else` performs a logical inclusive or on two
-## predicates.
+## the Boolean operator `or_else` performs a logical inclusive OR on two
+## predicates, and is derived from the `boolean_operator` object.
 !_4EBkpYs6lLg03R2hNl (
-	@class _05lXct8IC703Vx436
+	@class _05lXct8IC703Vx436  |= the `boolean_operator` object |
         @name or_else
         @mtime 1510325491.740
-) !_4EBkpYs6lLg03R2hNl
+) !_4EBkpYs6lLg03R2hNl  // end or_else object
 
 
-## the Boolean operator `xor_else` performs a logical exclusive or on two
-## predicates.
+## the Boolean operator `xor_else` performs a logical exclusive OR on two
+## predicates, and is derived from the `boolean_operator` object.
 !_2l8uZoeTkXs02dgV3E (
-	@class _05lXct8IC703Vx436
+	@class _05lXct8IC703Vx436  |= the `boolean_operator` object |
 	@name xor_else
 	@mtime 1510325491.740
-) !_2l8uZoeTkXs02dgV3E
+) !_2l8uZoeTkXs02dgV3E  // end xor_else object
 
 
-## the Boolean operator `and_then` performs a logical and on two
-## predicates.
+## the Boolean operator `and_then` performs a logical AND on two
+## predicates, and is derived from the `boolean_operator` object.
 !_50qbFlPpJOY02qSlyx (
-	@class _05lXct8IC703Vx436
+	@class _05lXct8IC703Vx436  |= the `boolean_operator` object |
         @name and_then
         @mtime 1510325491.740
-) !_50qbFlPpJOY02qSlyx
+) !_50qbFlPpJOY02qSlyx  // end and_then object
 
 
 ## the Boolean operator `logical_not` performs a logical NOT on a Boolean
-## expression.
+## expression, and is derived from the `boolean_operator` object.
 !_29BQ5udoYOv02p6ReA (
-	@class _05lXct8IC703Vx436
+	@class _05lXct8IC703Vx436  |= the `boolean_operator` object |
         @name logical_not
         @mtime 1510325491.740
-) !_29BQ5udoYOv02p6ReA
+) !_29BQ5udoYOv02p6ReA // end logical_not object
 
 
 #### end of file initdata.rps
