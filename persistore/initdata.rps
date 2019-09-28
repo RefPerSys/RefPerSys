@@ -149,11 +149,19 @@
 ) !_07YGv5jImHw03JSziA // end of sample object
 
 
+## the class of all Boolean operators, which in itself is derived from the
+## `class` object.
+!_05lXct8IC703Vx436 (
+        @class _0OE0PJ2Nihp00j9HvR  |= the `class` object |
+        @name boolean_operator
+        @mtime 1510325491.740
+) !_05lXct8IC703Vx436
 
 
 ## the Boolean operator `or_else` performs a logical inclusive or on two
 ## predicates.
 !_4EBkpYs6lLg03R2hNl (
+	@class _05lXct8IC703Vx436
         @name or_else
         @mtime 1510325491.740
 ) !_4EBkpYs6lLg03R2hNl
@@ -162,6 +170,7 @@
 ## the Boolean operator `xor_else` performs a logical exclusive or on two
 ## predicates.
 !_2l8uZoeTkXs02dgV3E (
+	@class _05lXct8IC703Vx436
 	@name xor_else
 	@mtime 1510325491.740
 ) !_2l8uZoeTkXs02dgV3E
@@ -170,6 +179,7 @@
 ## the Boolean operator `and_then` performs a logical and on two
 ## predicates.
 !_50qbFlPpJOY02qSlyx (
+	@class _05lXct8IC703Vx436
         @name and_then
         @mtime 1510325491.740
 ) !_50qbFlPpJOY02qSlyx
