@@ -229,4 +229,13 @@
         @mtime 1510325491.740
 ) !_5QNvkeKO1KD04EHq5a // end less_than object
 
+
+## the comparison operator `less_than_equal` performs a <= comparison between
+## two operands, and is derived from the `comparison_operator` object.
+!_2zkaeXuCzBb02eWmdL (
+	@class _5E3B4DVItaj01d8Hlb  |= the `comparison_operator` object |
+        @name less_than_equal
+        @mtime 1510325491.740
+) !_2zkaeXuCzBb02eWmdL // end less_than_equal object
+
 #### end of file initdata.rps
