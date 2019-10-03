@@ -81,7 +81,6 @@
 
 
 
-## the `boolean` object is an `enum` object (defined above):
 !_2g3nC4TJ3aK00Vo7w5 (
         @class _0MJMsklLPxK0172YEu |= the `enum` object |
         @name boolean
@@ -89,8 +88,8 @@
 ## TODO: what are the class, attributes, components of `boolean` ?
      @attr (
        * |comment:| _1om48kc3k5R02d3jtW
-## TODO: give a useful comment on `boolean`
-         "`boolean` is used ..for what???.."
+         "The `boolean` object is an `enum` object that represents"
+         "a Boolean value."
      )
 ) !_2g3nC4TJ3aK00Vo7w5 // end of `boolean` object
 
