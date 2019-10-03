@@ -36,6 +36,8 @@
 
 ### the `object` object
 !_7vZEtamkewu03mNr9g (
+## TODO: what is thje class of  object`
+## TODO: add a `comment` attribute
      @name object
      @mtime 1510325491.740
 )
@@ -96,6 +98,7 @@
          "The `boolean` object is an `enum` object that represents"
          "a Boolean value."
      )
+## TODO: what about the methods of `boolean` ?	
 ) !_2g3nC4TJ3aK00Vo7w5 // end of `boolean` object
 
 
@@ -169,6 +172,7 @@
 	@class _05lXct8IC703Vx436  |= the `boolean_operator` object |
         @name or_else
         @mtime 1510325491.740
+	## TODO : what is the class here
         @attr (
        		* |= comment: | _1om48kc3k5R02d3jtW
                   "The Boolean operator `or_else` performs a logical"
