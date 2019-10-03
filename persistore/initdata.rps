@@ -34,14 +34,22 @@
 
 
 
+### the `object` object
+!_7vZEtamkewu03mNr9g (
+     @name object
+     @mtime 1510325491.740
+)
+
+
+
+
 ### the `comment` object
 !_1om48kc3k5R02d3jtW (
-## names are just names, not strings
      @name comment
      @mtime 1510325491.740
-## TODO: what is the class of that _1om48kc3k5R02d3jtW or `comment` object?
+     @class _7vZEtamkewu03mNr9g |= the `object` object |
      @attr (
-       * |comment:| _1om48kc3k5R02d3jtW
+       * |= comment:| _1om48kc3k5R02d3jtW
          "`comment` is used to annotate objects with a persistent comment."
      )
 ) !_1om48kc3k5R02d3jtW // end of object: `comment`
@@ -49,14 +57,11 @@
 
 
 
-# The primordial `class` object is the "base" for all objects in
-# Refpersys.
-
 ### the `class` object
 !_7yYCtEQKshP00noCyM (
         @name class
         @mtime 1510325491.740
-## TODO: what is the class of that |class=| _7yYCtEQKshP00noCyM.
+     	@class _7vZEtamkewu03mNr9g |= the `object` object |
 ## TODO: what are the attributes of that `class` object?
 ## TODO: do we have components here?
 ## TODO: what is the payload of `class` ?
