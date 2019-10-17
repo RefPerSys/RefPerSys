@@ -1,0 +1,87 @@
+\documentclass[11pt,a4paper,svgnames]{article}
+\usepackage{babel}
+\usepackage{fontspec}
+\usepackage{luacode}
+\usepackage{relsize}
+%\usepackage[useregional]{datetime2}
+%see https://tex.stackexchange.com/a/317859/42406
+%\usepackage[utf8]{luainputenc}
+\usepackage[T1]{fontenc}
+%\usepackage{xcolor}
+\usepackage{hyperref}
+%\usepackage{alltt}
+%\usepackage{wasysym}
+\usepackage{xcolor}
+\usepackage{times}
+%\usepackage[square]{natbib}
+\usepackage{textcomp}
+\usepackage{setspace}
+\usepackage[backend=biber,bibencoding=utf8]{biblatex}
+\addbibresource{../refpersys-bib.bib}
+\usepackage[a4paper, margin=4cm]{geometry}
+\setstretch{1.2}
+\date{october 2019}
+\newcommand*{\ac}[1]{\mbox{#1}}
+\tolerance=600
+
+\begin{luacode*}
+  local gitpip=io.popen("git log --no-color --format=oneline -1 --abbrev=16 --abbrev-commit -q | cut -d' ' -f1")
+  gitid=gitpip:read()
+  gitpip:close()
+\end{luacode*}
+\newcommand{\mygitid}{\luadirect{tex.print(gitid)}}
+\newcommand{\RefPerSys}{{\textit{\textsc{RefPerSys}}}}
+
+ % see https://tex.stackexchange.com/a/51349/42406
+\hypersetup{
+  colorlinks   = true, %Colours links instead of ugly boxes
+  urlcolor     = NavyBlue, %Colour for external hyperlinks
+  linkcolor    = DarkGreen, %Colour of internal links
+  citecolor   = DarkMagenta, %Colour of citations
+  frenchlinks = true,
+}
+
+\begin{document}
+\title {\textit{\textsc{RefPerSys}} high-level goals and design
+  ideas\thanks{git id \texttt{\mygitid}}}
+\author {Basile
+  \textsc{Starynkevitch}\thanks{\href{http://starynkevitch.net/Basile/}{\texttt{starynkevitch.net/Basile/}}
+    and
+    \href{mailto:basile@starynkevitch.net}{\texttt{basile@starynkevitch.net}},
+    92340 Bourg La Reine {\relsize{-1}(near Paris)}, France.}}
+
+\maketitle
+
+\section{design goals}
+
+The \RefPerSys~ system share several goals and design ideas (but no
+code) with \href{http://github.com/bstarynk/bismon}{\texttt{bismon}}
+\cite{Starynkevitch:2019:bismon-draft} but of course \emph{not}
+\texttt{bismon}'s application to
+\href{https://en.wikipedia.org/wiki/Static_program_analysis}{static
+  source code analysis}. \textbf{\RefPerSys~ is a long term\footnote{I
+  don't expect any significant research results before $\approx
+  2025$.}  risky
+  \href{https://en.wikipedia.org/wiki/Research}{research} project and
+  a \href{https://www.gnu.org/philosophy/free-sw.en.html}{free
+    software} licensed under
+  \href{https://www.gnu.org/licenses/gpl-3.0.html}{GPLv3+}, and
+  targetted \emph{only} for \textsc{Linux x86-64} computers.}. A Linux
+system\footnote{My own \texttt{ours.starynkevitch.net} computer, running \textsc{Debian/Unstable}, has 64
+Gibytes of RAM, 24 cores (AMD 2970WX) and terabytes of disk space, including a terabyte of SSD.}
+with at least 16 Gibytes of RAM, 4 cores, and 100 Gibytes of disk is
+required.
+
+
+\clearpage
+
+
+\printbibliography
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Local Variables: ;;
+%% compile-command: "./build.sh" ;;
+%% End: ;;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
