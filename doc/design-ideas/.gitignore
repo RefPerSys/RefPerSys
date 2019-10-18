@@ -1,0 +1,9 @@
+# file refpersys/doc/design-ideas/.gitignore
+refpersys-design.aux
+refpersys-design.bbl
+refpersys-design.bcf
+refpersys-design.blg
+refpersys-design.log
+refpersys-design.pdf
+refpersys-design.run.xml
+refpersys-design.toc
