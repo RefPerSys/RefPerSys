@@ -1,0 +1,3 @@
+# file refpersys/plugins/.gitignore
+*.o
+*.so

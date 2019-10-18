@@ -1,0 +1,2 @@
+This refpersys/plugins/ directory will later contain *.so plugins that
+should be dlopen(3)-ed.
