@@ -21,7 +21,7 @@
 \usepackage{graphicx}
 \usepackage{setspace}
 \usepackage[backend=biber,bibencoding=utf8]{biblatex}
-\addbibresource{../refpersys-bib.bib}
+\addbibresource{../bib-refpersys.bib}
 \usepackage[a4paper, margin=4cm]{geometry}
 \setstretch{1.2}
 \date{october 2019}
@@ -506,7 +506,28 @@ Ordinary software projects tend to follow a spiral development model
 \end{figure}
 
 But \RefPerSys' development follows a strange loop
-\cite{hofstadter:2007:strange-loop}, since it is bootstrapped in an \href{https://en.wikipedia.org/wiki/Software\_prototyping\#Evolutionary\_prototyping}{evolutionary prototyping} manner. It is more like a spiral staircase 
+\cite{hofstadter:2007:strange-loop}, since it is bootstrapped in an
+\href{https://en.wikipedia.org/wiki/Software\_prototyping\#Evolutionary\_prototyping}{evolutionary
+  prototyping} manner. It is more like a spiral staircase like in
+figure \ref{fig:bootstrap-stair}. The initial (floor) is just a
+persistent system, and we gradually add new code implementing more
+feature (first entirely hand-written, later more and more parts of it
+replaced by {\RefPerSys} generated code). Of course the fun is in
+replacing existing hand-written code (or low-level DSL) by more
+expressive and generated one. So we will continuously rewrite past
+formalizations as a more clever and expressive ones, taking more and
+more advantage of {\RefPerSys} whole-system introspective abilities.
+All of \href{https://en.wikipedia.org/wiki/Eurisko}{\textsc{Eurisko}}
+\cite{Lenat:1983:Eurisko},
+\href{https://en.wikipedia.org/wiki/Cyc}{\textsc{Cyc}}
+\cite{Lenat:1991:ev-cycl} and
+\href{https://en.wikipedia.org/wiki/Self\_(programming_language)}{\textsc{Self}}\footnote{\textsc{Self} was even able (in hours of CPU time) to redefines
+its integers -even for arithmetic used inside its compiler- as
+\href{https://en.wikipedia.org/wiki/Arbitrary-precision_arithmetic}{bignums}.}
+\cite{chambers:1991:efficient} (or even
+\href{https://iolanguage.org/}{\textsc{Io}} or
+\href{https://en.wikipedia.org/wiki/Smalltalk}{\textsc{Smalltalk}})
+systems and their incremental development process are inspirational.
 
 \begin{figure}[h]
   \begin{center}
