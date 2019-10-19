@@ -179,7 +179,8 @@ of these concepts. \textbf{\RefPerSys~ is a long term\footnote{I don't
   an \href{https://en.wikipedia.org/wiki/Open_science}{open science}
   mindset and
   \href{https://ropensci.github.io/reproducibility-guide/sections/introduction/}{reproducible
-    experiment} ethics \cite{zuboff:2015:big-other}, and a
+    experiment} ethics \cite{zuboff:2015:big-other,
+    oneil:2016:weapons}, and a
   \href{https://www.gnu.org/philosophy/free-sw.en.html}{free software}
   licensed under
   \href{https://www.gnu.org/licenses/gpl-3.0.html}{GPLv3+}, and
@@ -412,6 +413,21 @@ that code and running it at runtime. The
 \href{https://github.com/bstarynk/misc-basile/blob/master/manydl.c}{\texttt{manydl.c}}
 program show that this can practically be done many dozen of thousands
 of times on Linux desktops).
+
+
+Most Linux distributions contain lots of useful libraries or software
+components for {\RefPerSys} long-term goals, notably machine learning
+open source libraries like
+\href{https://www.tensorflow.org/}{\textsc{TensorFlow}}
+\cite{charniak:2019:deep-learning} or
+\href{https://gudhi.inria.fr/}{\textsc{Gudhi}}
+\cite{chazal:2016:high}. We don't want to rewrite them inside
+\RefPerSys. Hence, we will need in {\RefPerSys} to generate some glue
+code, like \href{http://swig.org/}{\textsc{Swig}} does, from some
+declarative description (probably some frames or knowledge bases) of
+the
+\href{https://en.wikipedia.org/wiki/Application_programming_interface}{API}
+of these available libraries.
 
 \clearpage
 
