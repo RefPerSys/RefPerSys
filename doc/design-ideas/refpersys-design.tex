@@ -374,6 +374,21 @@ enable \textbf{introspection}, by permitting primitives inspecting the
 current call stack, perhaps using Ian Taylor's
 \href{https://github.com/ianlancetaylor/libbacktrace}{\texttt{libbacktrace}}.
 
+
+{\RefPerSys} should (like \textsc{Caia} and its predecessor
+\textsc{Malice} did
+\cite{Pitrat:2009:AST,Pitrat:1996:FGCS,Pitrat:2009:ArtifBeings}) have
+some expert system shell \cite{kumar:2015:importance-expert-systems,
+  nigro:2008:meta} and meta-rules to ``dynamically compile'' some
+subset of expert system rules and knowledge bases to procedural code
+(e.g. with a metaprogramming approach of generating \emph{C} code, or
+\href{https://gcc.gnu.org/onlinedocs/jit/}{\texttt{libgccjit}}
+compiled code, then
+\href{http://man7.org/linux/man-pages/man3/dlopen.3.html}{\texttt{dlopen(3)}}-ing
+that code and running it at runtime. The
+\href{https://github.com/bstarynk/misc-basile/blob/master/manydl.c}{\texttt{manydl.c}}
+program show that this can practically be done many dozen of thousands
+of times on Linux desktops).
 \clearpage
 
 
