@@ -7,6 +7,8 @@
 %\usepackage[useregional]{datetime2}
 %see https://tex.stackexchange.com/a/317859/42406
 %\usepackage[utf8]{luainputenc}
+%see https://tex.stackexchange.com/a/29594/42406
+\usepackage{titling}
 \usepackage[T1]{fontenc}
 %\usepackage{xcolor}
 \usepackage{hyperref}
@@ -16,6 +18,7 @@
 \usepackage{times}
 %\usepackage[square]{natbib}
 \usepackage{textcomp}
+\usepackage{graphicx}
 \usepackage{setspace}
 \usepackage[backend=biber,bibencoding=utf8]{biblatex}
 \addbibresource{../refpersys-bib.bib}
@@ -45,6 +48,7 @@
   citecolor   = DarkMagenta, %Colour of citations
   frenchlinks = true,
 }
+\setlength{\droptitle}{-10em}   % This is your set screw
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -56,7 +60,8 @@
   ideas\thanks{This document has git commit \texttt{\mygitid},
     was Lua-{\LaTeX} generated on \textit{\mydatetime}, see
     \href{http://gitlab.com/bstarynk/refpersys}{\texttt{gitlab.com/bstarynk/refpersys/}}
-    and its \texttt{doc/design-ideas} subdirectory.}}  \author {Basile
+    and its \texttt{doc/design-ideas} subdirectory. Its draft is downloadable, as a \href{https://en.wikipedia.org/wiki/PDF}{PDF} file, from \href{http://starynkevitch.net/Basile/refpersys-design.pdf}{\texttt{starynkevitch.net/Basile/refpersys-design.pdf}} \ldots}}
+\author {Basile
   \textsc{Starynkevitch}\thanks{See
     \href{http://starynkevitch.net/Basile/}{\texttt{starynkevitch.net/Basile/}}
     and contact
@@ -118,6 +123,20 @@
   \href{https://en.wikipedia.org/wiki/Cycle_graph}{cycles}
   \cite{Hofstadter:1979:GEB}), we recommend to read it twice (skipping
   footnotes and references on the first read).
+
+  \bigskip
+
+
+  \begin{quote}
+  \begin{relsize}{-1}
+  \includegraphics[width=75pt]{CC-BY-SA-icon} This entire document is
+  licensed under the Creative Commons Attribution-ShareAlike 4.0
+  International License. To view a copy of this license, visit
+  \href{http://creativecommons.org/licenses/by-sa/4.0/}{\texttt{creativecommons.org/licenses/by-sa/4.0/}}
+  or send a letter to Creative Commons, PO Box 1866, Mountain View, CA
+  94042, USA.
+  \end{relsize}
+  \end{quote}
   
 \end{titlepage}
 
@@ -131,68 +150,72 @@
 \section{design goals}
 
 The \RefPerSys\footnote{For a \textbf{Ref}lexive \textbf{Per}sistent
-\textbf{Sys}tem}~ system shares several -but not all- goals and design
-ideas (but no code) with
+  \textbf{Sys}tem}~ system shares several -but not all- goals and
+design ideas (but no code) with
 \href{http://github.com/bstarynk/bismon}{\texttt{bismon}}
 \cite{Starynkevitch:2019:bismon-draft} but of course \emph{not}
 \texttt{bismon}'s application\footnote{I Basile am not allowed and not
-funded to directly work on
-\href{https://en.wikipedia.org/wiki/Artificial_general_intelligence}{AGI}
--which still is my major personal scientific interest- but I do get
-funded on applied research projects like
-\href{https://www.decoder-project.eu/}{\textsc{Decoder}} and try to
-push some AGI ideas into them.} to
+  funded to directly work on
+  \href{https://en.wikipedia.org/wiki/Artificial_general_intelligence}{AGI}
+  -which still is my major personal scientific interest- but I do get
+  funded on applied research projects like
+  \href{https://www.decoder-project.eu/}{\textsc{Decoder}} and try to
+  push some AGI ideas into them.} to
 \href{https://en.wikipedia.org/wiki/Static_program_analysis}{static
   source code analysis}. Like \texttt{bismon}, {\RefPerSys} is a
 \textbf{reflexive} (it uses
-\href{https://en.wikipedia.org/wiki/Reflection_(computer_programming)}{reflection}), \textbf{\href{https://en.wikipedia.org/wiki/Virtual\_machine\_introspection}{introspective}}
+\href{https://en.wikipedia.org/wiki/Reflection_(computer_programming)}{reflection}),
+\textbf{\href{https://en.wikipedia.org/wiki/Virtual\_machine\_introspection}{introspective}}
 and \textbf{orthogonally
   \href{https://en.wikipedia.org/wiki/Persistence_(computer_science)}{persistent}}
 system, but not for
 \href{https://en.wikipedia.org/wiki/Static_program_analysis}{static
   program analysis}. Please read Bismon's draft report
-\cite{Starynkevitch:2019:bismon-draft} for a more precise definition of
-these concepts. \textbf{\RefPerSys~ is a long term\footnote{I don't
-  expect any significant AGI research results before $\approx 2026$.}
-  risky \href{https://en.wikipedia.org/wiki/Research}{research}
-  project with an
-  \href{https://en.wikipedia.org/wiki/Open_science}{open science}
+\cite{Starynkevitch:2019:bismon-draft} for a more precise definition
+of these concepts. \textbf{\RefPerSys~ is a long term\footnote{I don't
+    expect any significant AGI research results before $\approx
+    2026$.}  risky
+  \href{https://en.wikipedia.org/wiki/Research}{research} project with
+  an \href{https://en.wikipedia.org/wiki/Open_science}{open science}
   mindset and
   \href{https://ropensci.github.io/reproducibility-guide/sections/introduction/}{reproducible
-    experiment} ethics, and a
+    experiment} ethics \cite{zuboff:2015:big-other}, and a
   \href{https://www.gnu.org/philosophy/free-sw.en.html}{free software}
   licensed under
   \href{https://www.gnu.org/licenses/gpl-3.0.html}{GPLv3+}, and
   targetted \emph{only} for \textsc{Linux x86-64} computers.}. A Linux
 system\footnote{My own \texttt{ours.starynkevitch.net} computer,
-running \textit{Debian/Unstable}, has 64 Gibytes of RAM, 24 cores (AMD
-2970WX) and terabytes of disk space, including a terabyte of SSD.}
-with at least 16 Gibytes of RAM, 4 \textit{x86-64} cores, and 220
-Gibytes of disk is required. The grand ambition of {\RefPerSys} is to
-become later an infrastructure for some strong
+  running \textit{Debian/Unstable}, has 64 Gibytes of RAM, 24 cores
+  (AMD 2970WX) and terabytes of disk space, including a terabyte of
+  SSD.}  with at least 16 Gibytes of RAM, 4 \textit{x86-64} cores, and
+220 Gibytes of disk is required. The grand ambition of {\RefPerSys} is
+to become later an infrastructure for some strong
 \href{https://en.wikipedia.org/wiki/Artificial_general_intelligence}{AGI}
 system à la \textsc{Caia}\footnote{With explicit permission from
-J.Pitrat, \textsc{Caia} source code -entirely generated by itself,
-about half a million lines of C code- is available on \href{http://starynkevitch.net/Basile/}{my (Basile's) web page} as
-\href{http://starynkevitch.net/Basile/caia-su-24feb2016.tar.bz2}{\texttt{caia-su-24feb2016.tar.bz2}},
-and you could build it with \texttt{gcc -O -g [A-Z]*.c -rdynamic -ldl}
-then run \texttt{./a.out}. However, since I Basile sadly failed to
-convince J.Pitrat that open source software are -in our
-XXI\textsuperscript{th} century- also an important way to transmit
-research ideas, there are no complete instructions to use it. Hence
-\textsc{Caia} has an undocumented user interface as user-friendly as
-the one of \href{https://www.gnu.org/software/ed/}{\texttt{ed}} but
-convenient enough to J.Pitrat alone! If you are capable of reading
-some comments in French and guessing the semantics of declarative
-``expert system'' like rules (\textsc{Caia} has more than a dozen of
-thousands of them), run it, then type \texttt{L EDITE} and start
-reverse-engineering that brillant \textsc{Caia} system.}  by Jacques
+  J.Pitrat, \textsc{Caia} source code -entirely generated by itself,
+  about half a million lines of C code- is available on
+  \href{http://starynkevitch.net/Basile/}{my (Basile's) web page} as
+  \href{http://starynkevitch.net/Basile/caia-su-24feb2016.tar.bz2}{\texttt{caia-su-24feb2016.tar.bz2}},
+  and you could build it with \texttt{gcc -O -g [A-Z]*.c -rdynamic
+    -ldl} then run \texttt{./a.out}. However, since I Basile sadly
+  failed to convince J.Pitrat that open source
+  \cite{Lerner-Tirole:2000:economics-open-source,
+    Weber:2004:SuccessOpenSource} software are -in our
+  XXI\textsuperscript{th} century- also an important way to transmit
+  research ideas, there are no complete instructions to use it. Hence
+  \textsc{Caia} has an undocumented user interface as user-friendly as
+  the one of \href{https://www.gnu.org/software/ed/}{\texttt{ed}} but
+  convenient enough to J.Pitrat alone! If you are capable of reading
+  some comments in French and guessing the semantics of declarative
+  ``expert system'' like rules (\textsc{Caia} has more than a dozen of
+  thousands of them), run it, then type \texttt{L EDITE} and start
+  reverse-engineering that brillant \textsc{Caia} system.}  by Jacques
 Pitrat\footnote{Jacques Pitrat has passed away on October
-14\textsuperscript{th}, 2019. See quickly also his old web page on
-\href{http://jacques.pitrat.pagesperso-orange.fr/}{\texttt{jacques.pitrat.pagesperso-orange.fr}}
-and his interesting blog on
-\href{http://bootstrappingartificialintelligence.fr/WordPress3/}{\texttt{bootstrappingartificialintelligence.fr/WordPress3}}
-\ldots} \cite{Pitrat:1996:FGCS, Pitrat:2009:AST,
+  14\textsuperscript{th}, 2019. See quickly also his old web page on
+  \href{http://jacques.pitrat.pagesperso-orange.fr/}{\texttt{jacques.pitrat.pagesperso-orange.fr}}
+  and his interesting blog on
+  \href{http://bootstrappingartificialintelligence.fr/WordPress3/}{\texttt{bootstrappingartificialintelligence.fr/WordPress3}}
+  \ldots} \cite{Pitrat:1996:FGCS, Pitrat:2009:AST,
   Pitrat:2009:ArtifBeings}, but before even approaching that goal a
 big lot of work is required, and {\RefPerSys} should be valuable by
 itself for other less ambitious and more pragmatical purposes, perhaps
@@ -389,6 +412,7 @@ that code and running it at runtime. The
 \href{https://github.com/bstarynk/misc-basile/blob/master/manydl.c}{\texttt{manydl.c}}
 program show that this can practically be done many dozen of thousands
 of times on Linux desktops).
+
 \clearpage
 
 
