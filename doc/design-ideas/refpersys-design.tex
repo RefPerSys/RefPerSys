@@ -109,7 +109,7 @@
   etc... By the way, all these open source projects could be useful to
   or inspirational for \RefPerSys.} and computer scientists interested in
   an experimental open science approach to reflexive systems,
-  orthogonal persistency, symbolic artificial intelligence, knowledge
+  orthogonal persistence, symbolic artificial intelligence, knowledge
   engines, etc....
 
 
@@ -423,6 +423,26 @@ that code and running it at runtime. The
 program show that this can practically be done many dozen of thousands
 of times on Linux desktops).
 
+{\RefPerSys} will extensively use
+\href{https://en.wikipedia.org/wiki/Metaprogramming}{\textbf{metaprogramming}}
+techniques, so it \textbf{should generate code} (like \textsc{Caia}
+do) in a
+\href{https://en.wikipedia.org/wiki/Source-to-source_compiler}{transpiler}
+approach (in C, C++, -compiled into
+\href{https://en.wikipedia.org/wiki/Plug-in\_(computing)}{plugins} and
+later
+\href{https://en.wikipedia.org/wiki/Dynamic\_loading}{dynamically
+  loaded} with \href{}{\texttt{dlopen(3)}}- maybe also JavaScript and
+HTML5 if we decide to have a web user interface). {\RefPerSys} could
+also later use
+\href{https://en.wikipedia.org/wiki/Just-in-time_compilation}{just-in-time
+  compilation} libraries such as
+\href{https://gcc.gnu.org/onlinedocs/jit/}{\texttt{libgccjit}}. The
+domain-specific language of \RefPerSys\footnote{That domain-specific
+language has to be defined and implemented in a bootstrapped manner.}
+(a declarative one, with ``expert system rules'') should gradually
+increase its expressiveness and become more and more declarative and
+closer to mathematical formalisms.
 
 Most Linux distributions contain lots of useful libraries or software
 components for {\RefPerSys} long-term goals, notably machine learning
@@ -430,14 +450,46 @@ open source libraries like
 \href{https://www.tensorflow.org/}{\textsc{TensorFlow}}
 \cite{charniak:2019:deep-learning} or
 \href{https://gudhi.inria.fr/}{\textsc{Gudhi}}
-\cite{chazal:2016:high}. We don't want to rewrite them inside
-\RefPerSys. Hence, we will need in {\RefPerSys} to generate some glue
-code, like \href{http://swig.org/}{\textsc{Swig}} does, from some
-declarative description (probably some frames or knowledge bases) of
-the
+\cite{chazal:2016:high}. We might at some point also need messaging
+libraries like \href{https://zeromq.org/}{\textsc{0mq}}, graphical
+user interfaces libraries à la \href{http://qt.io/}{\textsc{Qt}} or
+more probably web servicing libraries like
+\href{https://github.com/davidmoreno/onion/}{\texttt{libonion}} or
+\href{https://www.webtoolkit.eu/wt}{\textsc{Wt}}. To decrease efforts,
+we don't want to rewrite such libraries inside {\RefPerSys} (considered
+as a very high level,
+\href{https://en.wikipedia.org/wiki/Declarative\_programming}{declarative},
+\href{https://en.wikipedia.org/wiki/Domain-specific\_language}{domain-specific
+  language}). Hence, we will need in {\RefPerSys} to generate some
+glue code, like \href{http://swig.org/}{\textsc{Swig}} does, from some
+\textbf{declarative description} (probably some frames or knowledge
+bases) of the
 \href{https://en.wikipedia.org/wiki/Application_programming_interface}{API}
 of these available libraries.
 
+{\RefPerSys} should at first be \textbf{orthogonally
+  \href{https://en.wikipedia.org/wiki/Persistence\_(computer\_science)}{persistent}}. Like
+\textsc{Bismon} \cite{Starynkevitch:2019:bismon-draft} it will load
+its state (its entire garbage-collected
+\href{https://en.wikipedia.org/wiki/Memory\_management#HEAP}{heap})
+from files at startup, and will dump its state\footnote{In a manner
+inspired by \textsc{Sbcl}
+\href{http://www.sbcl.org/manual/index.html\#Saving-a-Core-Image}{\texttt{save-lisp-and-die}}
+primitive, or \href{https://www.polyml.org/}{\textsc{PolyML}}
+\href{https://www.polyml.org/documentation/Reference/PolyMLStructure.html\#export}{\texttt{export}}
+primitive, or
+\href{https://en.wikipedia.org/wiki/Marshalling_(computer_science)}{marshalling}
+\href{https://caml.inria.fr/pub/docs/manual-ocaml/libref/Marshal.html}{facilities} of \textsc{Ocaml} or \textsc{Python}
+\href{https://docs.python.org/3/library/pickle.html}{\texttt{pickle}}
+module.} into files at shutdown. These state files are
+textual\footnote{We should decide if we use some
+\href{http://json.org/}{\textsc{Json}} or
+\href{http://yaml.org/}{\textsc{Yaml}} notation, or our own one for
+\RefPerSys.} and \texttt{git}-versioned, and should be portable to
+other 64 bits Linux computers. A
+\href{https://en.wikipedia.org/wiki/Manifest\_file}{manifest file}
+describing the collection of files keeping the state is probably
+needed.
 
 \subsection{{\RefPerSys} strange development cycle}
 \label{subsec:strange-devel}
