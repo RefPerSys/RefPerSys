@@ -1,7 +1,8 @@
 #!/bin/bash -x
 echo $0 starting in $(pwd)
 rm -vf  refpersys-design.{aux,bcf,blg,log,run.xml,toc}
-for svgfile in ../CC-BY-SA-icon.svg spiral-model-softdevel.svg ; do
+for svgfile in ../CC-BY-SA-icon.svg \
+		   spiral-model-softdevel.svg spiral-stairs.svg ; do
     svgbase=$(basename $svgfile .svg)
     inkscape --without-gui --export-pdf=$svgbase.pdf $svgfile
     inkscape --without-gui --export-eps=$svgbase.eps $svgfile
