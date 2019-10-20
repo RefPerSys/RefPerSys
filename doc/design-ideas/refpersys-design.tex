@@ -573,9 +573,9 @@ heap of most
 \href{https://www.gnu.org/software/guile/}{\textsc{Guile}},
 \href{https://golang.org/}{\textsc{Go}},
 \href{http://sbcl.org/}{\textsc{Sbcl}}, etc \ldots). The
-\textcolor{red}{\textbf{\relsize{+1}{still incomplete}}} figure
-\ref{fig:persistent-heap} should give an intuition about that heap,
-when it is inside the
+%%\textcolor{red}{\textbf{\relsize{+1}{still incomplete}}}
+figure \ref{fig:persistent-heap} should give an intuition about that
+heap, when it is inside the
 \href{https://en.wikipedia.org/wiki/Virtual_address_space}{virtual
   address space} of some \texttt{refpersys} process. We strongly want
 to avoid any
@@ -591,20 +591,85 @@ algorithms similar to those of copying garbage collectors
     \includegraphics[width=0.8\textwidth]{heap-refpersys}
   \end{center}
 
-%  \begin{quote}
-%    \begin{relsize}{-0.2}
-%    Each new feature -or small incremental change or a few of them
-%    (small \texttt{git commit}s) - of {\RefPerSys} enables us to build
-%    and \textbf{generate} the next version of {\RefPerSys}, and a next
-%    feature is then added to that \textit{improved} version, and so on
-%    repeatedly, etc....
-%    \end{relsize}
-%  \end{quote}
+\begin{quote}
+  \begin{relsize}{-0.2}
+    \begin{tabular}{ll}
+      \texttt{\textbf{\textit{\#123}}} & a tagged 63 bits integer \\
+      \texttt{\textit{vg1}} & a global persisted variable \\
+      \texttt{\textit{vt2}} & a static transient variable \\
+      \texttt{\textbf{ob1}} & a mutable persistent object \\
+      \texttt{\textbf{iv2}} & an immutable constant composite value \\
+      \texttt{\textbf{iv4}} & an immutable but \textbf{dead} constant composite value (should be GC-ed) \\
+      \texttt{\textbf{tob1}} & a transient mutable object \\
+      \texttt{str1} & a constant \textsc{utf-8} string value \texttt{"abc"} \\
+      \texttt{vec} & a constant vector of floats {$ [1.0; 3.0] $} \\
+      \texttt{\textit{lv2}} & a local variable inside its call frame \\
+      \textit{cfr1} &  a \textbf{call frame} (simplified) \\
+      \textit{\textbf{thread1}} & a \textbf{working thread} and its call stack (simplified) \\
+    \end{tabular}
+    \medskip
+
+    In real life, the heap may be quite large (gigabytes) and contain
+    hundreds of global roots or transient roots, millions of objects
+    (sometimes transient, often persistent) and many millions
+    immutable values (some of them composite and containing values,
+    other scalar and containing non-pointer data like strings or
+    vectors of float do, and dozen of working threads, each having
+    thousands of call frames with dozens of local variables each.
+   \end{relsize}
+\end{quote}
   
-  \caption{the  \textbf{{\RefPerSys} persistent heap}  (simplified but \textcolor{red}{\textbf{\large {incomplete figure}}})}
+  \caption{the  \textbf{{\RefPerSys} persistent heap}  (simplified)}
   \label{fig:persistent-heap}
 \end{figure}
 
+That figure \ref{fig:persistent-heap} shows a few global and transient
+roots (both being processed by the garbage collector), and several
+threads each having its call stack (made of call frames) with local
+variables in it. The heap is actually a large directed graph and may
+contain cycles (e.g. $ ob1 \rightarrow iv1 \rightarrow ob3 \rightarrow
+ob2 \rightarrow ob3 $). Most values are immutable values (some of them
+being composite, such as \texttt{iv1}). Some immutable values are
+scalar (e.g. strings). Notice that \texttt{iv4} is a dead value,
+unreachable from others; it should be later garbage collected.  Only
+objects have a content which may change. Since {\RefPerSys} is
+multi-threaded, the access inside every object should be thread-safe
+and usually is protected by a \href{https://en.wikipedia.org/wiki/Lock\_(computer\_science)}{\textit{mutex}} (or \textit{read write
+  lock}) which is part of that object\footnote{Or by atomic pointers,
+probably the {\RefPerSys} class of an object is, inside it, given by
+some C++ field with an
+\href{https://en.cppreference.com/w/cpp/atomic/atomic}{\texttt{std::atomic}}
+pointer type, for efficiency reasons.}.
+
+
+Conceptually, the garbage collection should traverse the graph of
+references. Each {\RefPerSys} value (immutable or object) is
+represented by a machine word (aligned, 64 bits) which usually
+contains a pointer, but sometimes some
+\href{https://en.wikipedia.org/wiki/Tagged\_pointer}{tagged integer}.
+Immutable values are often ``small'' (a few dozens of words) but
+objects are necessarily heavier since they contain some kind of
+lock. \href{https://en.wikipedia.org/wiki/Closure\_(computer_programming)}{closures}
+are immutable values, containing an object representing and giving
+their function code (as a C function pointer inside that object), and
+additional closed values.
+
+Some values (or objects) are dead; in the figure
+\ref{fig:persistent-heap}, the immutable value \texttt{iv4} is not
+reachable from roots or local variables on the call stack of working
+threads. So it is dead and should eventually be reclaimed by the
+garbage collector.
+
+The \textbf{persistence} machinery is conceptually simple: start from
+global roots and travers the memory graph but ignore transient objects
+and memoize previously seen objects. Of course, objects should not be
+persisted twice, and are referred by the \textbf{object id} or
+\textbf{oid} in the state files produced by the dump. That
+\textit{oid} is alphanumeric, randomly generated and so hopefully
+globally unique -like {\relsize{-1}{\texttt{\_2om48kc3k5R02d3ktW}}}
+for example- in our current implementation; exactly like
+\href{https://en.wikipedia.org/wiki/Universally_unique_identifier}{\textsc{Uuid}s}
+should be.
 
 \clearpage
 
