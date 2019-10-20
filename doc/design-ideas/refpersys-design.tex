@@ -660,16 +660,25 @@ reachable from roots or local variables on the call stack of working
 threads. So it is dead and should eventually be reclaimed by the
 garbage collector.
 
-The \textbf{persistence} machinery is conceptually simple: start from
-global roots and travers the memory graph but ignore transient objects
-and memoize previously seen objects. Of course, objects should not be
-persisted twice, and are referred by the \textbf{object id} or
-\textbf{oid} in the state files produced by the dump. That
-\textit{oid} is alphanumeric, randomly generated and so hopefully
-globally unique -like {\relsize{-1}{\texttt{\_2om48kc3k5R02d3ktW}}}
-for example- in our current implementation; exactly like
+The \textbf{persistence} machinery - the dump - is conceptually simple
+and could run in several threads: start from global roots and travers
+the memory graph but ignore transient objects and memoize previously
+seen objects. Of course, objects should not be persisted twice, and
+are referred by the \textbf{object id} or \textbf{oid} in the state
+files produced by the dump. That \textit{oid} is alphanumeric,
+randomly generated and so hopefully globally unique -like
+{\relsize{-1}{\texttt{\_2om48kc3k5R02d3ktW}}} for example- in our
+current implementation; exactly like
 \href{https://en.wikipedia.org/wiki/Universally_unique_identifier}{\textsc{Uuid}s}
 should be.
+
+The initial loading machinery (recreating a suitable heap from its
+previous dumped state) is first creating empty all objects, then later
+filling each of them. However, we may want to load the heap in
+parallel, suing several threads. This could be easy if, after having
+created all objects as empty, and loaded plugins
+(i.e. \texttt{dlopen}-ing many \texttt{*.so} files), {\RefPerSys}
+processes each state file in a potentially different loading thread.
 
 \clearpage
 
