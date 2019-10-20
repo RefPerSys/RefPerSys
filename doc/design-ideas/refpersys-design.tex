@@ -561,28 +561,28 @@ systems and their incremental development process are inspirational.
 \label{subsec:persistheap}
 
 When {\RefPerSys} is running in some multi-threaded \textsc{Linux}
-\href{https://en.wikipedia.org/wiki/Process\_(computing)}{process}, the
-     {\RefPerSys} persistent heap is (like Bismon's one
-     \cite{Starynkevitch:2019:bismon-draft}) semantically like the
-     memory heap of most
-     \href{https://en.wikipedia.org/wiki/Dynamic\_programming\_language}{dynamic
-       programming languages} (such as
-     \href{https://python.org/}{\textsc{Python}},
-     \href{https://www.gnu.org/software/guile/}{\textsc{Guile}},
-     \href{https://golang.org/}{\textsc{Go}},
-     \href{http://sbcl.org/}{\textsc{Sbcl}}, etc \ldots). The
-     \textcolor{red}{\textbf{\relsize{+1}{still incomplete}}} figure
-     \ref{fig:persistent-heap} should give an intuition about that
-     heap, when it is inside the
-     \href{https://en.wikipedia.org/wiki/Virtual_address_space}{virtual
-       address space} of some \texttt{refpersys} process. We strongly
-     want to avoid any
-     \href{https://en.wikipedia.org/wiki/Global\_interpreter\_lock}{GIL},
-     but multi-threaded precise efficient garbage collector
-     implementations are quite difficult to code. However, notice that
-     the persistence (on disk files) of a heap uses algorithms similar
-     to those of copying garbage collectors
-     \cite{wilson:1992:uniprocessorgc, jones:2016:gchandbook}.
+\href{https://en.wikipedia.org/wiki/Process\_(computing)}{process},
+the {\RefPerSys} persistent heap is (like Bismon's one
+\cite{Starynkevitch:2019:bismon-draft}) semantically like the memory
+heap of most
+\href{https://en.wikipedia.org/wiki/Dynamic\_programming\_language}{dynamic
+  programming languages} (such as
+\href{https://python.org/}{\textsc{Python}},
+\href{https://www.gnu.org/software/guile/}{\textsc{Guile}},
+\href{https://golang.org/}{\textsc{Go}},
+\href{http://sbcl.org/}{\textsc{Sbcl}}, etc \ldots). The
+\textcolor{red}{\textbf{\relsize{+1}{still incomplete}}} figure
+\ref{fig:persistent-heap} should give an intuition about that heap,
+when it is inside the
+\href{https://en.wikipedia.org/wiki/Virtual_address_space}{virtual
+  address space} of some \texttt{refpersys} process. We strongly want
+to avoid any
+\href{https://en.wikipedia.org/wiki/Global\_interpreter\_lock}{GIL},
+but multi-threaded precise efficient garbage collector implementations
+are quite difficult to code. However, notice that the persistence
+(dump as textual \texttt{git}-versioned disk files) of a heap uses
+algorithms similar to those of copying garbage collectors
+\cite{wilson:1992:uniprocessorgc, jones:2016:gchandbook}.
 
 \begin{figure}[h]
   \begin{center}
