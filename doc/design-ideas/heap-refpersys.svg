@@ -35,15 +35,15 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1080"
+     inkscape:window-width="1908"
+     inkscape:window-height="1015"
      id="namedview121"
      showgrid="true"
-     inkscape:zoom="2.0289107"
-     inkscape:cx="208.36689"
-     inkscape:cy="207.87402"
+     inkscape:zoom="3.3683088"
+     inkscape:cx="168.93425"
+     inkscape:cy="215.80928"
      inkscape:window-x="3440"
-     inkscape:window-y="0"
+     inkscape:window-y="28"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg119">
     <inkscape:grid
@@ -392,4 +392,39 @@
      height="14.419792"
      x="91.241524"
      y="135.56938" />
+  <rect
+     style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:5.74727249;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+     id="rect880"
+     width="15.730682"
+     height="10.487122"
+     x="63.057388"
+     y="99.51989" />
+  <rect
+     style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:5.9454546;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+     id="rect887"
+     width="26.217804"
+     height="13.108902"
+     x="84.031631"
+     y="110.00701" />
+  <g
+     id="Background"
+     transform="matrix(0.10487122,0,0,0.10487122,-0.28483135,102.66602)">
+    <polygon
+       id="polygon908"
+       points="1304,281 1472,350.5 1304,420 968,420 968,281 "
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-opacity:1" />
+  </g>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.78798008px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.52435607"
+     x="102.15443"
+     y="142.24673"
+     id="text923"><tspan
+       sodipodi:role="line"
+       id="tspan921"
+       x="102.15443"
+       y="142.24673"
+       style="stroke-width:0.52435607">str1 <tspan
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.38969707px;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#a02c2c"
+   id="tspan925">&quot;abc&quot;</tspan></tspan></text>
 </svg>
