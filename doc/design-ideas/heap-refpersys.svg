@@ -39,19 +39,62 @@
      inkscape:window-height="1015"
      id="namedview121"
      showgrid="true"
-     inkscape:zoom="3.3683088"
-     inkscape:cx="168.93425"
-     inkscape:cy="215.80928"
+     inkscape:zoom="1"
+     inkscape:cx="138.8589"
+     inkscape:cy="209.09201"
      inkscape:window-x="3440"
      inkscape:window-y="28"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg119">
+     inkscape:current-layer="svg119"
+     inkscape:snap-bbox="true"
+     inkscape:object-nodes="false"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:object-paths="true">
     <inkscape:grid
        type="xygrid"
        id="grid182" />
   </sodipodi:namedview>
   <defs
-     id="defs2" />
+     id="defs2">
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Mend"
+       style="overflow:visible;"
+       inkscape:isstock="true">
+      <path
+         id="path894"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#de540a;stroke-width:1pt;stroke-opacity:1;fill:#de540a;fill-opacity:1"
+         transform="scale(0.4) rotate(180) translate(10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;"
+       inkscape:isstock="true">
+      <path
+         id="path888"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <inkscape:path-effect
+       effect="bspline"
+       id="path-effect883"
+       is_visible="true"
+       weight="33.333333"
+       steps="2"
+       helper_size="0"
+       apply_no_weight="true"
+       apply_with_weight="true"
+       only_selected="false" />
+  </defs>
   <g
      id="g48">
     <g
@@ -427,4 +470,9 @@
        style="stroke-width:0.52435607">str1 <tspan
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.38969707px;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#a02c2c"
    id="tspan925">&quot;abc&quot;</tspan></tspan></text>
+  <path
+     style="fill:none;stroke:#de540a;stroke-width:0.59454548;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:none"
+     d="m 28.974243,68.058524 34.083145,19.677915 10.58956,39.520771 10.99129,6.34582 14.131444,2.62178"
+     id="path1539"
+     inkscape:connector-curvature="0" />
 </svg>
