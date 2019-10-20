@@ -152,11 +152,18 @@
 \label{sec:ambitions-goals}
 
 
-\subsection{\textsc{RefPerSys} core idea[l]s}
+\subsection{\textsc{RefPerSys} core idea{\texttt{[\textit{l}]\textsuperscript{?}}}s}
 \label{subsec:coreidea}
 
-The title of this subsection is not a typo. We indeed mean both ideas
-and ideals.
+The title of this subsection is \emph{not} a typo\footnote{It is a
+geeky pun on words with
+\href{https://en.wikipedia.org/wiki/Unix_shell}{shell}
+\href{https://en.wikipedia.org/wiki/Glob_(programming)}{globbing} and
+\href{https://en.wikipedia.org/wiki/Regular\_expression}{regexpr} like
+syntax.}. We indeed mean both \textit{ideas} (that is, software design
+and architectural concepts, guiding our daily implementation efforts)
+and \textit{ideals} (that is, long term research objectives and
+ambitions).
 
 The \RefPerSys\footnote{For a \textbf{Ref}lexive \textbf{Per}sistent
   \textbf{Sys}tem}~ system shares several -but not all- goals and
@@ -496,22 +503,22 @@ needed.
 
 Ordinary software projects tend to follow a spiral development model
 \cite{boehm:1988:spiral} as shown in figure \ref{fig:tradspiral}.
-
+%
 \begin{figure}[h]
   \begin{center}
     \includegraphics[width=0.8\textwidth]{spiral-model-softdevel}
   \end{center}
-  \caption{the traditional spiral development model (from Wikipedia \href{https://en.wikipedia.org/wiki/Spiral_model}{spiral model})}
+  \caption{the \textbf{traditional spiral development} model (from Wikipedia \href{https://en.wikipedia.org/wiki/Spiral_model}{spiral model})}
   \label{fig:tradspiral}
 \end{figure}
-
+%
 But \RefPerSys' development follows a strange loop
 \cite{hofstadter:2007:strange-loop}, since it is bootstrapped in an
 \href{https://en.wikipedia.org/wiki/Software\_prototyping\#Evolutionary\_prototyping}{evolutionary
   prototyping} manner. It is more like a spiral staircase like in
 figure \ref{fig:bootstrap-stair}. The initial (floor) is just a
 persistent system, and we gradually add new code implementing more
-feature (first entirely hand-written, later more and more parts of it
+features (first entirely hand-written, later more and more parts of it
 replaced by {\RefPerSys} generated code). Of course the fun is in
 replacing existing hand-written code (or low-level DSL) by more
 expressive and generated one. So we will continuously rewrite past
@@ -533,16 +540,69 @@ systems and their incremental development process are inspirational.
   \begin{center}
     \includegraphics[width=0.8\textwidth]{spiral-stairs}
   \end{center}
-  
+
+  \begin{quote}
+    \begin{relsize}{-0.2}
     Each new feature -or small incremental change or a few of them
     (small \texttt{git commit}s) - of {\RefPerSys} enables us to build
     and \textbf{generate} the next version of {\RefPerSys}, and a next
     feature is then added to that \textit{improved} version, and so on
     repeatedly, etc....
-    
-  \caption{the {\RefPerSys} staircase development model {\relsize{-1}{(from a \href{https://thenounproject.com/term/spiral-stairs/956427/}{figure of Spiral stairs} by Lluisa Iborra from the Noun Project)}}}
+    \end{relsize}
+  \end{quote}
+  
+  \caption{the strange \textbf{{\RefPerSys} staircase development model} {\relsize{-1}{(from a \href{https://thenounproject.com/term/spiral-stairs/956427/}{figure of Spiral stairs} by Lluisa Iborra from the Noun Project)}}}
   \label{fig:bootstrap-stair}
 \end{figure}
+
+\bigskip
+
+\subsection{\textsc{RefPerSys} persistent heap}
+\label{subsec:persistheap}
+
+When {\RefPerSys} is running in some multi-threaded \textsc{Linux}
+\href{https://en.wikipedia.org/wiki/Process\_(computing)}{process}, the
+     {\RefPerSys} persistent heap is (like Bismon's one
+     \cite{Starynkevitch:2019:bismon-draft}) semantically like the
+     memory heap of most
+     \href{https://en.wikipedia.org/wiki/Dynamic\_programming\_language}{dynamic
+       programming languages} (such as
+     \href{https://python.org/}{\textsc{Python}},
+     \href{https://www.gnu.org/software/guile/}{\textsc{Guile}},
+     \href{https://golang.org/}{\textsc{Go}},
+     \href{http://sbcl.org/}{\textsc{Sbcl}}, etc \ldots). The
+     \textcolor{red}{\textbf{\relsize{+1}{still incomplete}}} figure
+     \ref{fig:persistent-heap} should give an intuition about that
+     heap, when it is inside the
+     \href{https://en.wikipedia.org/wiki/Virtual_address_space}{virtual
+       address space} of some \texttt{refpersys} process. We strongly
+     want to avoid any
+     \href{https://en.wikipedia.org/wiki/Global\_interpreter\_lock}{GIL},
+     but multi-threaded precise efficient garbage collector
+     implementations are quite difficult to code. However, notice that
+     the persistence (on disk files) of a heap uses algorithms similar
+     to those of copying garbage collectors
+     \cite{wilson:1992:uniprocessorgc, jones:2016:gchandbook}.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{heap-refpersys}
+  \end{center}
+
+%  \begin{quote}
+%    \begin{relsize}{-0.2}
+%    Each new feature -or small incremental change or a few of them
+%    (small \texttt{git commit}s) - of {\RefPerSys} enables us to build
+%    and \textbf{generate} the next version of {\RefPerSys}, and a next
+%    feature is then added to that \textit{improved} version, and so on
+%    repeatedly, etc....
+%    \end{relsize}
+%  \end{quote}
+  
+  \caption{the  \textbf{{\RefPerSys} persistent heap}  (simplified but \textcolor{red}{\textbf{\large {incomplete figure}}})}
+  \label{fig:persistent-heap}
+\end{figure}
+
 
 \clearpage
 
