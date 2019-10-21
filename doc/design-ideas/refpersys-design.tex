@@ -642,10 +642,14 @@ some C++ field with an
 pointer type, for efficiency reasons.}.
 
 
-Conceptually, the garbage collection should traverse the graph of
-references. Each {\RefPerSys} value (immutable or object) is
-represented by a machine word (aligned, 64 bits) which usually
-contains a pointer, but sometimes some
+Conceptually, {\RefPerSys}
+\href{https://en.wikipedia.org/wiki/Tracing_garbage_collection}{tracing
+  precise garbage collector} should traverse the graph of references
+to {\RefPerSys} values, starting from global or transient roots and
+local variables inside call frames of working threads. Each
+{\RefPerSys} value (immutable or object) is represented by a machine
+word (aligned, 64 bits) which usually contains a pointer, but
+sometimes some
 \href{https://en.wikipedia.org/wiki/Tagged\_pointer}{tagged integer}.
 Immutable values are often ``small'' (a few dozens of words) but
 objects are necessarily heavier since they contain some kind of
@@ -660,23 +664,35 @@ reachable from roots or local variables on the call stack of working
 threads. So it is dead and should eventually be reclaimed by the
 garbage collector.
 
+\textbf{Values} -either immutable values or changeable objects- in
+{\RefPerSys} can be either \textbf{persistent} (dumped in
+textual state files\footnote{In the current implementation,
+{\RefPerSys} state files and their manifest file should appear
+under \texttt{persistore/} subdirectory.}, then reloaded at
+restart of \texttt{refpersys} process) or \textbf{transient}
+(that is, not dumped and not appearing in state files).
+
 The \textbf{persistence} machinery - the dump - is conceptually simple
 and could run in several threads: start from global roots and travers
-the memory graph but ignore transient objects and memoize previously
-seen objects. Of course, objects should not be persisted twice, and
-are referred by the \textbf{object id} or \textbf{oid} in the state
-files produced by the dump. That \textit{oid} is alphanumeric,
-randomly generated and so hopefully globally unique -like
-{\relsize{-1}{\texttt{\_2om48kc3k5R02d3ktW}}} for example- in our
-current implementation; exactly like
+the memory graph but ignore transient objects and transient roots and
+memoize previously seen persistent objects. Of course, objects should
+not be persisted twice, and are referred by the \textbf{object id} or
+\textbf{oid} in the state files produced by the dump. That
+\textit{oid} is alphanumeric, randomly generated and so hopefully
+globally unique -like {\relsize{-1}{\texttt{\_2om48kc3k5R02d3ktW}}}
+for example- in our current implementation; exactly like
 \href{https://en.wikipedia.org/wiki/Universally_unique_identifier}{\textsc{Uuid}s}
-should be.
+should be. Notice the conceptual similarity between {\RefPerSys} dump
+algorithm and its tracing garbage collector: both are traversing the
+graph of references inside the heap.
 
-The initial loading machinery (recreating a suitable heap from its
+The initial loading machinery (recreating a suitable heap - and
+rebuilding a graph of references inspired by figure
+\ref{fig:persistent-heap}, without any transient stuff) from its
 previous dumped state) is first creating empty all objects, then later
-filling each of them. However, we may want to load the heap in
-parallel, suing several threads. This could be easy if, after having
-created all objects as empty, and loaded plugins
+filling each of them. However, for efficiency, we may want to load the
+heap in parallel, using several loader threads. This could be easy if,
+after having created all objects as empty, and loaded plugins
 (i.e. \texttt{dlopen}-ing many \texttt{*.so} files), {\RefPerSys}
 processes each state file in a potentially different loading thread.
 
