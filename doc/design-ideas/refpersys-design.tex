@@ -4,6 +4,8 @@
 \usepackage{luacode}
 \usepackage{fancyhdr}
 \usepackage{relsize}
+%https://tex.stackexchange.com/a/8633/42406
+\usepackage{float}
 %\usepackage[useregional]{datetime2}
 %see https://tex.stackexchange.com/a/317859/42406
 %\usepackage[utf8]{luainputenc}
@@ -586,7 +588,7 @@ are quite difficult to code. However, notice that the persistence
 algorithms similar to those of copying garbage collectors
 \cite{wilson:1992:uniprocessorgc, jones:2016:gchandbook}.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{center}
     \includegraphics[width=0.8\textwidth]{heap-refpersys}
   \end{center}
@@ -695,6 +697,127 @@ heap in parallel, using several loader threads. This could be easy if,
 after having created all objects as empty, and loaded plugins
 (i.e. \texttt{dlopen}-ing many \texttt{*.so} files), {\RefPerSys}
 processes each state file in a potentially different loading thread.
+
+\bigskip
+
+\section{the data and object models of \RefPerSys}
+\label{sec:dataobjmodel}
+
+\subsection{data at the low and high levels}
+\label{subsec:datalowhigh}
+
+{\RefPerSys} mostly handle values\footnote{In particular, only
+\textsc{closures} are
+\href{https://en.wikipedia.org/wiki/Function_application}{applied}, to
+arguments which are values (read more about
+\href{https://en.wikipedia.org/wiki/Lambda_calculus}{$\lambda$-calculus});
+or messages are sent, to values with perhaps additional value
+arguments.}, which can be either ``light'' immutable values or
+  ``heavy'' mutable objects. Our data model is inspired by the
+  \href{https://en.wikipedia.org/wiki/ObjVlisp}{\textsc{ObjVLisp}}
+  model (or
+  \href{https://en.wikipedia.org/wiki/Common_Lisp_Object_System}{\textsc{CLOS}},
+  see also the
+  \href{http://www.lispworks.com/documentation/HyperSpec/Front/index.htm}{Common
+    Lisp HyperSpec}) common in most Lisp implementations
+  \cite{queinnec:2003:lisp, cointe:1987:metaclasses,
+    briot:1987:uniform} and inspired by
+  \href{https://en.wikipedia.org/wiki/Smalltalk}{\textsc{Smalltalk}}
+  \cite{kay:1996:early-smalltalk}. Also, a value can be transient or
+  persistent. Each {\RefPerSys} value fits in one 64 bits machine
+  word\footnote{Remember: {\RefPerSys} targets only Linux x86-64
+  systems!}, so is nicely represented as a pointer or a tagged integer
+  (63 bits, with the least significant bit being set to 1). Values are
+  usually pointers to complex structures, so, per the
+  \href{https://github.com/hjl-tools/x86-psABI/wiki/x86-64-psABI-1.0.pdf}{x86-64
+    calling conventions}, are word aligned (address multiple of 8
+  bytes). Let's call \emph{genuine values} those that are not
+  \href{https://medium.com/@hinchman_amanda/null-pointer-references-the-billion-dollar-mistake-1e616534d485}{\texttt{null}}
+  and not tagged pointers (so either immutable values or objects in
+  figure \ref{fig:persistent-heap}). These genuine values are
+  practically implemented as a \href{
+    https://en.wikipedia.org/wiki/Tagged_union}{tagged
+    union}\footnote{An old example of tagged unions in C is the
+  \href{https://tronche.com/gui/x/xlib/events/structures.html}{X11
+    event structure}, but
+  \href{https://www.gnu.org/software/guile/manual/html\_node/A-Simple-Representation.html}{\textsc{Guile}}
+  and
+  \href{https://caml.inria.fr/pub/docs/manual-ocaml/intfc.html}{\textsc{Ocaml}}
+  use similar implementation tricks.} and each of them start with a
+  field (probably 16 bits) identifying their concrete type.
+
+  For pragmatical reasons, our values should be ordered and hashed,
+  since many data structures \cite{cormen:2009:introduction} either
+  uses some ordering
+  (e.g. \href{https://en.wikipedia.org/wiki/Red-black_tree}{red-black
+    trees} or some hash-code e.g. various kinds of
+  \href{https://en.wikipedia.org/wiki/Hash_table}{hash
+    tables}. Because of the weird and counter-intuitive semantics of
+  \href{http://floating-point-gui.de}{floating point} numbers, the
+  \href{https://en.wikipedia.org/wiki/NaN}{\textsc{NaN}} should be
+  handled specifically (it is unordered), if we
+  \href{https://en.wikipedia.org/wiki/Object\_type\_(object-oriented\_programming)\#Boxing}{box}
+  IEEE \texttt{double}s.
+
+\subsection{immutable values}
+\label{subsec:immutable-values}
+
+By definition, immutable values don't change. All their useful
+bits\footnote{For housekeeping purposes, our garbage collector may
+reserve a few bits, e.g. for
+\href{https://www.memorymanagement.org/glossary/t.html}{tri-color}
+marking \cite{wilson:1992:uniprocessorgc}} stay unchanged as long as
+the value is alive. Some values are scalar (strings, vectors of
+floats, perhaps bitmaps\footnote{In practice, bitmaps or pixmaps would
+rather be the payload of some objects, see below.} if we reify
+them). Other values are composite.
+
+Since objects are fundamental, we want to keep agglomerations of
+them. In particular, {\RefPerSys} will reify tuples of objects and
+sets of objects as values, and they are the common composite values of
+\RefPerSys. A tuple is obviously represented by boxing a sequence of
+object references (i.e. pointers). A set would be represented by an
+ordered sequence of objects, with membership efficiently testable by a
+\href{https://en.wikipedia.org/wiki/Time\_complexity}{$O(log~ n)$} time
+\href{https://en.wikipedia.org/wiki/Binary_search_algorithm}{binary
+  search algorithm}). We expect most of tuples and sets to be small
+and fitting in an
+\href{https://en.wikipedia.org/wiki/Cache\_hierarchy}{L1 or L2 cache
+  line}, so their processing should be efficient.
+
+\subsection{mutable objects}
+\label{subsec:mutable-objects}
+
+Practically speaking, mutable objects are heavy, since they should
+carry inside them locking devices\footnote{At the implementation
+level, think of some
+\href{https://computing.llnl.gov/tutorials/pthreads/\#Mutexes}{mutex}
+or
+\href{http://tuxthink.blogspot.com/2013/02/using-read-write-lock-in-pthreads.html}{read-write
+  lock, so
+  \href{https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread\_mutex\_init.html}{\texttt{pthread\_mutex\_init}}
+  or
+  \href{https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_rwlock_init.html}{\texttt{pthread\_rwlock\_init}}}
+or \href{https://en.cppreference.com/w/cpp/thread}{C++11
+  equivalents}.} for multi-threading support. And each object carries
+an association between attributes (playing the role of arbitrary keys)
+and their corresponding value. In addition, an object can carry its
+payload\footnote{Every payload belongs to a single object, its owner!}
+for stuff which does not fit into that model. For example, an object
+may carry as its payload a dictionnary associating machine strings to
+values, or an hash-table of triplets, or an opened \texttt{FILE*}
+handle, or \href{https://en.wikipedia.org/wiki/File\_descriptor}{file
+  descriptor}\footnote{\href{https://en.wikipedia.org/wiki/Finalizer}{Finalizers}
+are practically not enough to handle these, even if they are useful,
+in our GC, as a last resort mesure!} etc \ldots. Of course every
+object has its class (which is itself an object, having a
+\href{https://en.wikipedia.org/wiki/Metaclass}{metaclass}) and carries
+a function pointer\footnote{That function pointer should be, for
+efficiency reasons (we don't want to lock an object to get that
+pointer!)
+\href{https://en.cppreference.com/w/c/atomic}{\texttt{atomic}} in C
+parlance, and might be set using
+\href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}.}.
 
 \clearpage
 
