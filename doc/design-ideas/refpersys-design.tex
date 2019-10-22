@@ -703,6 +703,87 @@ processes each state file in a potentially different loading thread.
 \section{the data and object models of \RefPerSys}
 \label{sec:dataobjmodel}
 
+\subsection{how data should be processed in \RefPerSys}
+\label{subsec:howdata}
+
+{\RefPerSys} aiming to be first a good old fashioned AI system
+(\href{http://bootstrappingartificialintelligence.fr/WordPress3/2013/12/the-future-of-ai-is-the-good-old-fashioned-artificial-intelligence/}{\textsc{Gofai}}),
+better known as
+\href{https://en.wikipedia.org/wiki/Symbolic\_artificial\_intelligence}{symbolic
+  artificial intelligence} system, it is targetting mostly
+\href{https://en.wikipedia.org/wiki/Computer\_algebra}{symbolic
+  computation}, in particular using a
+\href{https://en.wikipedia.org/wiki/Semantic\_network}{semantic
+  network} or other forms of mathematical finite but large
+\href{https://en.wikipedia.org/wiki/Graph\_(discrete\_mathematics)}{graph}
+representations, in particular
+\href{https://en.wikipedia.org/wiki/Abstract\_syntax\_tree}{abstract
+  syntax trees}\footnote{Practically speaking, abstract syntax trees
+are in fact at least finite
+\href{https://en.wikipedia.org/wiki/Directed_acyclic_graph}{directed
+  oriented graphs} and could even have cycles if you relate a
+\href{https://en.wikipedia.org/wiki/Symbol\_(programming)}{symbol} to
+its properties.} of generated programs, of internal rules or
+expressions, by some internal metaprogramming machinery. So
+{\RefPerSys}
+\href{https://en.wikipedia.org/wiki/Object_(computer_science)}{objects}
+should have a finite but changing set of
+\href{https://en.wikipedia.org/wiki/Attribute_(computing)}{attributes}
+or
+\href{https://en.wikipedia.org/wiki/Property_(programming)}{properties}
+and be organized, as in most
+\href{https://en.wikipedia.org/wiki/Object-oriented_programming}{object-oriented
+  languages}. Hence,
+\href{https://en.wikipedia.org/wiki/Electronic\_document}{documents},
+\href{https://en.wikipedia.org/wiki/Hypertext}{hypertext}, high-level
+\href{https://en.wikipedia.org/wiki/Source\_code}{source code},
+\href{https://en.wikipedia.org/wiki/Ontology\_(information\_science)}{ontologies},
+\href{https://en.wikipedia.org/wiki/Knowledge\_base}{knowledge bases},
+\href{https://en.wikipedia.org/wiki/Expert\_system}{expert systems},
+implementation of some
+\href{https://en.wikipedia.org/wiki/Inference_engine}{inference
+  engine} guided by
+\href{https://en.wiktionary.org/wiki/metarule}{metarules}, etc \ldots~
+should all be easily and conveniently representable\footnote{So
+\href{https://en.wikipedia.org/wiki/Artifact_(software_development)}{artifacts}
+like \href{https://en.wikipedia.org/wiki/XML}{\textsc{Xml}} documents,
+\href{https://en.wikipedia.org/wiki/HTML5}{\textsc{Html5}} or
+\href{https://en.wikipedia.org/wiki/XHTML}{\textsc{Xhtml}} hypertexts,
+\href{http://json.org/}{\textsc{Json}} data,
+\href{https://yaml.org/}{\textsc{Yaml}} representations should all be
+easily representable and inspirational for {\RefPerSys} data and its
+processing.}  and processable, as some evolving subgraph of
+{\RefPerSys} values.
+
+Since {\RefPerSys} objects are the only mutable values, they keep not
+only their synchronization data, but also attributes or properties,
+components, and some extra payload. See also \S
+\ref{subsec:mutable-objects} below.
+
+The {\RefPerSys} worker threads, organized in a small
+\href{https://en.wikipedia.org/wiki/Thread_pool}{thread
+  pool}\footnote{Threads are heavy resources, each of them needing a
+call stack and, practically speaking, a processor core to run. We
+surely want to have at most a dozen of worker threads.} are somehow
+organized in some
+\href{https://en.wikipedia.org/wiki/Agenda}{\textbf{agenda}}\footnote{In
+Latin, ``agenda'' means ``things which have to be done or
+completed''.}  mechanism. Informally, the agenda is a clever
+organization (perhaps a few mostly
+\href{https://en.wikipedia.org/wiki/FIFO}{FIFO}
+\href{https://en.wikipedia.org/wiki/Queue\_(abstract\_data\_type)}{queue}
+of elementary tasklets, or something more complex). Each such tasklet
+runs for a short time\footnote{In practice, several dozens of
+milliseconds, to play nice with human interaction and be friendly with
+our garbage collector} and may, while running, update that agenda by
+adding further runnable tasklets to it, or by removing some of
+them. The agenda itself should be somehow reified and partly
+persistent, and tasklets are {\RefPerSys} objects. Of course some
+tasklets (e.g. those directly related to the user interface,
+e.g. \href{https://en.wikipedia.org/wiki/Ajax_(programming)}{\textsc{Ajax}}
+or \href{http://qt.io/}{\textsc{Qt}} callbacks) are transient.
+
+\label{subsec:datalowhigh}
 \subsection{data at the low and high levels}
 \label{subsec:datalowhigh}
 
@@ -746,13 +827,16 @@ arguments.}, which can be either ``light'' immutable values or
   use similar implementation tricks.} and each of them start with a
   field (probably 16 bits) identifying their concrete type.
 
-  For pragmatical reasons, our values should be ordered and hashed,
-  since many data structures \cite{cormen:2009:introduction} either
-  uses some ordering
-  (e.g. \href{https://en.wikipedia.org/wiki/Red-black_tree}{red-black
-    trees} or some hash-code e.g. various kinds of
+  For pragmatical reasons, our values should be both ordered and
+  hashed, since many
+  \href{https://en.wikipedia.org/wiki/Data\_structure}{data
+    structures} \cite{cormen:2009:introduction}, specified as some
+  \href{https://en.wikipedia.org/wiki/Abstract_data_type}{abstract
+    data type}, either uses some ordering
+  (e.g. in \href{https://en.wikipedia.org/wiki/Red-black_tree}{red-black
+    trees}) or some hash-code (e.g. various kinds of
   \href{https://en.wikipedia.org/wiki/Hash_table}{hash
-    tables}. Because of the weird and counter-intuitive semantics of
+    tables}). Because of the weird and counter-intuitive semantics of
   \href{http://floating-point-gui.de}{floating point} numbers, the
   \href{https://en.wikipedia.org/wiki/NaN}{\textsc{NaN}} should be
   handled specifically (it is unordered), if we
@@ -772,13 +856,15 @@ floats, perhaps bitmaps\footnote{In practice, bitmaps or pixmaps would
 rather be the payload of some objects, see below.} if we reify
 them). Other values are composite.
 
-Since objects are fundamental, we want to keep agglomerations of
-them. In particular, {\RefPerSys} will reify tuples of objects and
-sets of objects as values, and they are the common composite values of
-\RefPerSys. A tuple is obviously represented by boxing a sequence of
-object references (i.e. pointers). A set would be represented by an
-ordered sequence of objects, with membership efficiently testable by a
-\href{https://en.wikipedia.org/wiki/Time\_complexity}{$O(log~ n)$} time
+Since objects are fundamental, we want to keep finite collections of
+them. In particular, {\RefPerSys} will reify (represent as first-class
+values) \textbf{tuples} of objects and finite \textbf{sets} of objects
+as values, and they are the common composite values of \RefPerSys. A
+tuple is obviously represented by boxing a sequence of object
+references (i.e. pointers). A set would be represented by an ordered
+sequence of objects, with membership efficiently testable by a
+\href{https://en.wikipedia.org/wiki/Time\_complexity}{$O(log~ n)$}
+time
 \href{https://en.wikipedia.org/wiki/Binary_search_algorithm}{binary
   search algorithm}). We expect most of tuples and sets to be small
 and fitting in an
