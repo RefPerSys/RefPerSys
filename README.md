@@ -41,7 +41,7 @@ If you happen to know about any research call for proposals or funding
 opportunities in Europe (Euro zone) about this (e.g. related to
 [artificial general
 intelligence](https://en.wikipedia.org/wiki/Artificial_general_intelligence)
-please mention them to [Basile
+goals) please mention them to [Basile
 Starynkevitch](http://starynkevitch.net/Basile/) (France) by email to
 `basile@starynkevitch.net`.
 
