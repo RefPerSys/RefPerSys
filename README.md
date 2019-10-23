@@ -33,6 +33,10 @@ now obsolete, we gave up that idea.
 **Don't expect RefPerSys to be a realistic project.** It is not (and
 certainly not before 2025).
 
+Some draft design ideas are written in the [RefPerSys design
+draft](http://starynkevitch.net/Basile/refpersys-design.pdf) which is
+very incomplete **work in progress**.
+
 ## persistent values
 
 Like *Bismon*, RefPerSys is managing an evolving,
