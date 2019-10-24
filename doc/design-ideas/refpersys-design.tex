@@ -198,9 +198,9 @@ perhaps decades\footnote{An interesting parallel could be controlled
     Law}: \textit{``It always takes longer than you expect, even when
     you take into account Hofstadter's Law''}
   \cite{Hofstadter:1979:GEB} and Brook's observations
-  \cite{Brooks:1987:NSB, Brooks:1995:MM} that ``if one women can give
-  birth in 9 months, 9 women cannot five birth toi a baby in one
-  month''. For ``giving birth'' to {\RefPerSys}, a small team could
+  \cite{Brooks:1987:NSB, Brooks:1995:MM} that \emph{``if one woman can give
+  birth in 9 months, 9 women cannot give birth to a baby in one
+  month''}. For ``giving birth'' to {\RefPerSys}, a small team could
   need at least 9 years. However, intermediate results or side effects
   are not predictable but could be useful even during the {\RefPerSys}
   project.
@@ -217,9 +217,9 @@ work needed without any ``artificial intelligence'', just for the
 infrastructure).
 
 
-An even partially successful \textsc{AGI} system might be useful too
-coordinate other existing software (described thru some knowledge
-given declaratively). Imagine how complex future
+An even partially successful \textsc{AGI} system might be useful to
+coordinate, run and manage other existing software (described thru
+some knowledge given declaratively). Imagine how complex future
 \href{https://en.wikipedia.org/wiki/Digital_twin}{digital twins} of
 the entire Earth planet, designed to tackle with global warming, would
 need to be. For such dramatically complex usage, an AGI system (like
@@ -643,6 +643,23 @@ systems and their incremental development process are inspirational.
   \caption{the strange \textbf{{\RefPerSys} staircase development model} {\relsize{-1}{(from a \href{https://thenounproject.com/term/spiral-stairs/956427/}{figure of Spiral stairs} by Lluisa Iborra from the Noun Project)}}}
   \label{fig:bootstrap-stair}
 \end{figure}
+
+The first significant milestone of {\RefPerSys} should be the ability
+to re-generate all its textual source files (and maybe even
+\texttt{git add} then\texttt{git commit} them). That would require
+first implementing some simple template based
+machinery\footnote{Perhaps inspired by simple designs like
+  \href{https://docs.djangoproject.com/en/2.2/topics/templates/}{\textsc{Django}
+    tempates}, but driven by frame-based {\RefPerSys} objects.}, withe
+the ability, like
+\href{https://en.wikipedia.org/wiki/Quine\_(computing)}{\textsc{Quine}}
+programs do, to regenerate all {\RefPerSys} source code (e.g. in C++,
+a \texttt{Makefile}, etc...). Actually {\RefPerSys} needs to
+conceptually have \textbf{self-modifying code}
+\cite{Tschudin:2005:HarnessingSC}, practically implemented by
+systematicallly doing most function calls thru indirect function
+pointers (which gets updated with
+\href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}).
 
 \bigskip
 
