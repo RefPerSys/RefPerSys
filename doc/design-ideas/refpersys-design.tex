@@ -23,12 +23,55 @@
 \usepackage{graphicx}
 \usepackage{setspace}
 \usepackage[backend=biber,bibencoding=utf8]{biblatex}
+%https://www.overleaf.com/learn/latex/Glossaries
+\usepackage[utf8]{inputenc}
+\usepackage{glossaries}
 \addbibresource{../bib-refpersys.bib}
 \usepackage[a4paper, margin=4cm]{geometry}
 \setstretch{1.2}
-\date{october 2019}
+\date{October 2019}
 \newcommand*{\ac}[1]{\mbox{#1}}
 \tolerance=600
+
+
+\makenoidxglossaries
+
+\newglossaryentry{AGI}
+{
+    name=Artificial General Intelligence,
+    description={
+        \href{https://en.wikipedia.org/wiki/Artificial_general_intelligence}{Artificial general intelligence} (\textbf{AGI}) refers to the specific capacity of a machine 
+	to learn and understand any intellectual task that can be performed by a 
+	human being. It is the primary goal of some artificial intelligence research, 
+	and is sometimes referred to as ``strong AI'' or ``full AI''
+    }
+}
+
+\newglossaryentry{metaknowledge}
+{
+    name=metaknowledge,
+    description={
+        \href{https://en.wikipedia.org/wiki/Metaknowledge}{Metaknowedge} is knowledge about knowledge, and is an inclusive term
+	spanning several disciplines. Bibliography, the academic study of books,
+	and epistemology, the philosophical study of knowledge, are examples of
+	metaknowledge. Even the tagging of documents could be considered as
+	metaknowledge. In AGI, metaknowledge refers to the knowledge about
+	knowledge-based systems. A declarative system might be guided by metarules, that is ``expert system'' rules to compile or interpret other rules (maybe themselves).
+    }
+}
+
+\newglossaryentry{reflection} { name=Reflection, description={
+    \href{https://en.wikipedia.org/wiki/Reflection_(computer_programming)}{Reflection}
+    is (according to \emph{Wikipedia}) ``the ability of a process to
+    examine, introspect, and modify its own structure and behavior'',
+    and related to
+    \href{https://en.wikipedia.org/wiki/Self-reflection}{Self-reflection},
+    the capacity of humans (and hopefully of artificial cognitive
+    systems, like {\RefPerSys} should become) ``to exercise
+    introspection and to attempt to learn more about their fundamental
+    nature and essence''.  } }
+
+
 
 \begin{luacode*}
   local gitpip=io.popen("git log --no-color --format=oneline -1 --abbrev=16 --abbrev-commit -q | cut -d' ' -f1")
@@ -63,12 +106,18 @@
     was Lua-{\LaTeX} generated on \textit{\mydatetime}, see
     \href{http://gitlab.com/bstarynk/refpersys}{\texttt{gitlab.com/bstarynk/refpersys/}}
     and its \texttt{doc/design-ideas} subdirectory. Its draft is downloadable, as a \href{https://en.wikipedia.org/wiki/PDF}{PDF} file, from \href{http://starynkevitch.net/Basile/refpersys-design.pdf}{\texttt{starynkevitch.net/Basile/refpersys-design.pdf}} \ldots}}
-\author {Basile
-  \textsc{Starynkevitch}\thanks{See
+\author {
+  Basile \textsc{Starynkevitch}\thanks{See
     \href{http://starynkevitch.net/Basile/}{\texttt{starynkevitch.net/Basile/}}
     and contact
     \href{mailto:basile@starynkevitch.net}{\texttt{basile@starynkevitch.net}},
-    92340 Bourg La Reine {\relsize{-1}(near Paris)}, France.}}
+    92340 Bourg La Reine {\relsize{-1}(near Paris)}, France.}
+  \and Abhishek \textsc{Chakravarti}\thanks{
+    \href{mailto:chakravarti.avishek@gmail.com}{\texttt{chakravarti.avishek@gmail.com}},
+    FL 3C, 62B PGH Shah Road, Kolkata 700032, India.}
+}
+
+
 
 \begin{titlepage}
   \thispagestyle{empty}
@@ -90,7 +139,7 @@
     \href{mailto:basile@starynkevitch.net}{\texttt{basile@starynkevitch.net}}.} but serious \textbf{research project}
     for many years, mostly aimed to experiment \textbf{open science}
     ideas close to
-    {AGI}\footnote{{\href{https://en.wikipedia.org/wiki/Artificial\_general\_intelligence}{Artificial
+    \gls{AGI}\footnote{{\href{https://en.wikipedia.org/wiki/Artificial\_general\_intelligence}{Artificial
         General Intelligence}}} dreams, and we don't expect useful or
     interesting results before several years of hard work.
   \end{abstract}
@@ -154,35 +203,34 @@
 \bigskip
 
 
-\section{social necessity of \href{https://en.wikipedia.org/wiki/Artificial_general_intelligence}{AGI} systems with a long term development}
+\section{Social Necessity of \href{https://en.wikipedia.org/wiki/Artificial_general_intelligence}{AGI} Systems with  Long Term Development}
 \label{sec:social}
 
-\textbf{A}rtificial \textbf{G}eneral \textbf{I}ntelligence
-(\emph{AGI}) systems are increasingly needed in our complex, but
-fragile, world facing dramatic and extremely complex planet-wide
-challenges (global warming, demographic and democratic or political
-crisis, economical concerns, financial crisis, and increasing
-inequalities).
+Our complex, but fragile, world is facing dramatic and extremely challenging
+planet-wide issues, such global warming, demographic and political crises,
+economic and financial emergencies, and growing inqualities. In the light of
+such challenges, \textbf{A}rtificial \textbf{G}eneral \textbf{I}ntelligence
+(\emph{AGI}) systems are increasingly relevant. \textcolor{red}{@@TODO: explain
+how?}
 
-As the very progressive and slow (but Darwinian) evolution of human
-intelligence shows, our (limited) intelligence (as the
-\emph{\href{https://fr.wikipedia.org/wiki/Homo_sapiens}{Homo Sapiens}
-  Sapiens}\footnote{In latin, that means ``the human who knows what
-  he/she knows'' and interestingly relates to both meta-knowledge and
-  reflectivity.}  species) took more than a million years (so about 30
-thousands generations) to progressively evolve from a monkey-like
-state.
+As the slow, progressive Darwinian evolution of human intelligence shows, the
+limited intelligence of the 
+\emph{\href{https://en.wikipedia.org/wiki/Homo_sapiens}{Homo Sapiens}}
+\footnote{In Latin, \emph{Homo Sapiens} means ``the human who knows what it
+knows'' and, interestingly enough, relates to both \gls{metaknowledge} and
+\gls{reflection}.} species took more than a million years (about 30,000 
+generations) to continually evolve from an ape-like state.
 
-We don't believe in a single and simple model of intelligence. Any AGI
-software system should be very complex. Inspired by observing huuman
-natural intelligence (which is not yet understood and not yet
-modelled\footnote{Despite the European taxpayer spending half a
-  billion euro on the \href{https://www.humanbrainproject.eu}{Human
-    Brain Project}; which did not produce a complete reproducible
-  working artificial model of the human intelligence, but of course
-  did fund interesting and quite successful research!}), we suppose
-that any AGI system needs obviously to have a very complex and
-self-improving organization.
+Our observation of natural human intelligence (which has not yet been fully
+understood or modelled\footnote{
+    Half a billion euros of European taxpayers' money were spent on the
+    \href{https://www.humanbrainproject.eu}{Human Brain Project}, but did not
+    lead to a complete, reproducible, artificial model of human intelligence;
+    of course, it did fund interesting and successful research!
+}
+) has led us to believe that there is no single, simple model of intelligence. 
+Similarly, any AGI system must necessarily have a very complex and self-improving
+organisation.
 
 We are aware than any progress towards AGI will be slow (many years,
 perhaps decades\footnote{An interesting parallel could be controlled
@@ -348,7 +396,7 @@ system (such as a recent \textit{\textsc{Debian}} or
 \textit{\textsc{Ubuntu}} desktop), with many useful packages, and
 administred by some human person\footnote{For obvious cybersecurity
 reasons, automatic administration of that Linux distribution is out of
-scope. Also, since Basile Starynkevitch is still working (in october
+scope. Also, since Basile Starynkevitch is still working (in October
 2019) in a cybersecurity
 \href{http://www-list.cea.fr/en/technological-research/research-programmes/embedded-systems/validation-and-verification}{lab}
 (of about 25 permanent staff) at
@@ -1025,6 +1073,9 @@ with thru external functions requiring fixed, unchangeable, pointers.
 \textcolor{red}{@@TODO: should explain a lot more}
 \clearpage
 
+\printnoidxglossaries
+
+\bigskip
 
 \printbibliography
 
