@@ -23,12 +23,30 @@
 \usepackage{graphicx}
 \usepackage{setspace}
 \usepackage[backend=biber,bibencoding=utf8]{biblatex}
+%https://www.overleaf.com/learn/latex/Glossaries
+\usepackage[utf8]{inputenc}
+\usepackage{glossaries}
 \addbibresource{../bib-refpersys.bib}
 \usepackage[a4paper, margin=4cm]{geometry}
 \setstretch{1.2}
 \date{october 2019}
 \newcommand*{\ac}[1]{\mbox{#1}}
 \tolerance=600
+
+
+\makenoidxglossaries
+\newglossaryentry{AGI}
+{
+    name=Artificial General Intelligence,
+    description={
+        Artificial general intelligence refers to the specific capacity of a machine 
+	to learn and understand any intellectual task that can be performed by a 
+	human being. It is the primary goal of artificial intelligence research, 
+	and is sometimes referred to as ``strong AI'' or ``full AI''
+    }
+}
+
+
 
 \begin{luacode*}
   local gitpip=io.popen("git log --no-color --format=oneline -1 --abbrev=16 --abbrev-commit -q | cut -d' ' -f1")
@@ -70,6 +88,7 @@
     \href{mailto:basile@starynkevitch.net}{\texttt{basile@starynkevitch.net}},
     92340 Bourg La Reine {\relsize{-1}(near Paris)}, France.}}
 
+
 \begin{titlepage}
   \thispagestyle{empty}
   \maketitle
@@ -90,7 +109,7 @@
     \href{mailto:basile@starynkevitch.net}{\texttt{basile@starynkevitch.net}}.} but serious \textbf{research project}
     for many years, mostly aimed to experiment \textbf{open science}
     ideas close to
-    {AGI}\footnote{{\href{https://en.wikipedia.org/wiki/Artificial\_general\_intelligence}{Artificial
+    \gls{AGI}\footnote{{\href{https://en.wikipedia.org/wiki/Artificial\_general\_intelligence}{Artificial
         General Intelligence}}} dreams, and we don't expect useful or
     interesting results before several years of hard work.
   \end{abstract}
@@ -1025,8 +1044,8 @@ with thru external functions requiring fixed, unchangeable, pointers.
 \textcolor{red}{@@TODO: should explain a lot more}
 \clearpage
 
-
 \printbibliography
+\printnoidxglossaries
 
 \end{document}
 
