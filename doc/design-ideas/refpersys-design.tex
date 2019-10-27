@@ -1031,21 +1031,35 @@ and fitting in an
 
 In {\RefPerSys},
 \href{https://en.wikipedia.org/wiki/Closure_(computer_programming)}{closures}
--that is first-class procedural values- are also immutable values. The
-closed values -binding free variables of the closure- inside such
-closures are arbitrary, but fixed, and won't change during the
-lifetime of that closure. The function code inside them is given by
-some fixed object reifying that code, and probably useful to generate
-the ``source'' code (e.g. as generated \emph{C} or \emph{C++} code) of
-that function. The
-\href{https://en.wikipedia.org/wiki/Name_mangling}{mangled name}
--later
-\href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}-ed
+-that is first-class procedural values, like in
+\textsc{Scheme}\footnote{Try for example \textsc{Gnu}
+\href{https://www.gnu.org/software/guile/}{\textsc{Guile}} following
+\href{http://starynkevitch.net/Basile/guile-tutorial-1.html}{this
+  tutorial}.} \cite{kelsey:1998:r5rs, matthews:2005:operational,
+  Queinnec:1996:LSP, Queinnec:2004:ContinWeb, abelson:1996:sicp},
+\href{http://hop.inria.fr/home/index.html}{\textsc{Hop}} or
+\href{https://www-sop.inria.fr/mimosa/fp/Bigloo/}{\textsc{Bigloo}}
+\cite{serrano:1995:bigloo},
+\href{http://www.lispworks.com/documentation/HyperSpec/Front/index.htm}{\textsc{Common
+    Lisp}},
+\href{https://en.wikipedia.org/wiki/JavaScript}{\textsc{JavaScript}} -
+are also immutable values. The closed values -binding free variables
+of the closure- inside such closures are arbitrary, but fixed, and
+won't change during the lifetime of that closure. The function code
+inside them is given by some fixed object reifying that code, and
+probably useful to generate the ``source'' code (e.g. as generated
+\emph{C} or \emph{C++} code) of that function. The
+\href{https://en.wikipedia.org/wiki/Name_mangling}{mangled name},
+later
+``\href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}-ed'',
 of that function in its
 \href{https://en.wikipedia.org/wiki/Executable_and_Linkable_Format}{ELF}
-\texttt{*.so} shared object file is somhow related\footnote{For a
+\texttt{*.so}
+\href{https://en.wikipedia.org/wiki/Library\_(computing)\#Shared\_libraries}{shared
+  object} file \cite{drepper:2011:write-shared-lib,
+  levine:1999:linkers-loaders} is somehow related\footnote{For a
 fictional example, an object of oid \texttt{\_6lNdgIkKhwD04laO94}
-might be related to some ELF function of name similar to
+might be related to some ELF function of name close to
 \texttt{rps\_6lNdgIkKhwD04laO94}, etc \ldots} to the \emph{objid} of
 that object.
 
