@@ -12,8 +12,8 @@
 %see https://tex.stackexchange.com/a/29594/42406
 \usepackage{titling}
 \usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 %\usepackage{xcolor}
-\usepackage{hyperref}
 %\usepackage{alltt}
 %\usepackage{wasysym}
 \usepackage{xcolor}
@@ -24,8 +24,9 @@
 \usepackage{setspace}
 \usepackage[backend=biber,bibencoding=utf8]{biblatex}
 %https://www.overleaf.com/learn/latex/Glossaries
-\usepackage[utf8]{inputenc}
-\usepackage{glossaries}
+\usepackage{hyperref}
+\usepackage{makeidx}
+\usepackage[xindy]{glossaries}
 \addbibresource{../bib-refpersys.bib}
 \usepackage[a4paper, margin=4cm]{geometry}
 \setstretch{1.2}
@@ -126,7 +127,9 @@
   \bigskip
 
   \begin{abstract}
-    \textit{\textsc{RefPerSys}} is a \textsc{\textbf{Ref}}lexive and
+    \textit{\textsc{RefPerSys}}
+    \index{RefPerSys@\textit{\textsc{RefPerSys}}}
+    is a \textsc{\textbf{Ref}}lexive and
     orthogonally \textsc{\textbf{Per}}sistent \textsc{\textbf{Sys}}tem
     (as a GPLv3+ licensed free software\footnote{Some code is
     available on
@@ -170,8 +173,9 @@
 
 
   \medskip
-  \textbf{Nota Bene:} this report contains
-  \href{https://en.wikipedia.org/wiki/Hyperlink}{hyperlinks} so its
+  \textbf{Nota Bene:} this report contains many
+  \href{https://en.wikipedia.org/wiki/Hyperlink}{hyperlinks} to
+  relevant sources so its
   \href{https://en.wikipedia.org/wiki/PDF}{PDF} should rather be read
   on a computer screen, e.g. with
   \href{https://en.wikipedia.org/wiki/Evince}{\texttt{evince}}. Since
@@ -213,7 +217,7 @@ such challenges, \textbf{A}rtificial \textbf{G}eneral \textbf{I}ntelligence
 (\emph{AGI}) systems are increasingly relevant. \textcolor{red}{@@TODO: explain
 how?}
 
-As the slow, progressive Darwinian evolution of human intelligence shows, the
+As the slow, progressive Darwinian evolution \index{evolution!Darwinian} of human intelligence shows, the
 limited intelligence of the 
 \emph{\href{https://en.wikipedia.org/wiki/Homo_sapiens}{Homo Sapiens}}
 \footnote{In Latin, \emph{Homo Sapiens} means ``the human who knows what it
@@ -253,14 +257,14 @@ perhaps decades\footnote{An interesting parallel could be controlled
   are not predictable but could be useful even during the {\RefPerSys}
   project.
 
-We believe in free software (read also
+We believe in free software \index{free software} (read also
 \href{https://www.fsf.org/about/what-is-free-software}{this}), and we
 strongly believe that an AGI prototype should be some free software,
 exactly like most infrastructure software are (notably
 \textsc{Linux}). See also the
 \href{https://www.softwareheritage.org/}{\textsc{Software Heritage}
-  project} for interesting insights. \textsc{RefPerSys} wants to be an
-AGI infrastructure, and there is work for many years (several years of
+  project} \index{softwareheritage@\textsc{Software Heritage}} for interesting insights. \textsc{RefPerSys} wants to be an
+AGI infrastructure \index{infrastructure}, and there is work for many years (several years of
 work needed without any ``artificial intelligence'', just for the
 infrastructure).
 
@@ -1078,6 +1082,10 @@ with thru external functions requiring fixed, unchangeable, pointers.
 \bigskip
 
 \printbibliography
+
+\bigskip
+
+\printindex
 
 \end{document}
 
