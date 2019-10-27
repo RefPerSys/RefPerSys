@@ -503,10 +503,12 @@ build automation tool is preferable to \textsc{Gnu}
 
 For pragmatical reasons, \textbf{{\RefPerSys} needs a good
   \href{https://en.wikipedia.org/wiki/Tracing\_garbage\_collection}{garbage
-    collector}} (or GC \cite{jones:2016:gchandbook}), since fully
-compile-time GC \cite{mazur:2004:compile} are too difficult to
-implement. Since multi-core x86-64 machines are very common, it should
-take advantage of them, so \textbf{{\RefPerSys} should follow a
+    collector}} (or GC \cite{appel:1991:garbage,
+  wilson:1992:uniprocessorgc, baker:1995:cons,
+  jones:2016:gchandbook}), since fully compile-time GC
+\cite{mazur:2004:compile} are too difficult to implement. Since
+multi-core x86-64 machines are very common, it should take advantage
+of them, so \textbf{{\RefPerSys} should follow a
   \href{https://en.wikipedia.org/wiki/Thread_(computing)}{multi-threaded}
   approach} above \textsc{Posix} \cite{barney:2010:pthreads} or
 \href{https://en.cppreference.com/w/cpp/thread}{C++11 threads}. Our GC
@@ -782,18 +784,25 @@ algorithms similar to those of copying garbage collectors
 That figure \ref{fig:persistent-heap} shows a few global and transient
 roots (both being processed by the garbage collector), and several
 threads each having its call stack (made of call frames) with local
-variables in it. The heap is actually a large directed graph and may
-contain cycles (e.g. $ ob1 \rightarrow iv1 \rightarrow ob3 \rightarrow
-ob2 \rightarrow ob3 $). Most values are immutable values (some of them
+variables in it. In that figure, if $\mu$ and $\mu'$ are two memory
+zones or locations (like for an object such as \texttt{ob1}, or for an
+immutable value \texttt{iv2}), there is an arrow $\mu \rightarrow
+\mu'$ if some field $\phi$ of $\mu$ refers to $\mu'$, that is (in C
+like notation) if \fbox{$\mu$\texttt{\textbf{->}}$\phi = \mu'$}. Different
+arrow colors could mean different fields $\phi, \phi' \ldots$ etc
+\ldots The heap is actually a large directed graph and may contain
+cycles (e.g. $ ob1 \rightarrow iv1 \rightarrow ob3 \rightarrow ob2
+\rightarrow ob3 $). Most values are immutable values (some of them
 being composite, such as \texttt{iv1}). Some immutable values are
 scalar (e.g. strings). Notice that \texttt{iv4} is a dead value,
 unreachable from others; it should be later garbage collected.  Only
 objects have a content which may change. Since {\RefPerSys} is
 multi-threaded, the access inside every object should be thread-safe
-and usually is protected by a \href{https://en.wikipedia.org/wiki/Lock\_(computer\_science)}{\textit{mutex}} (or \textit{read write
-  lock}) which is part of that object\footnote{Or by atomic pointers,
-probably the {\RefPerSys} class of an object is, inside it, given by
-some C++ field with an
+and usually is protected by a
+\href{https://en.wikipedia.org/wiki/Lock\_(computer\_science)}{\textit{mutex}}
+(or \textit{read write lock}) which is part of that object\footnote{Or
+by atomic pointers, probably the {\RefPerSys} class of an object is,
+inside it, given by some C++ field with an
 \href{https://en.cppreference.com/w/cpp/atomic/atomic}{\texttt{std::atomic}}
 pointer type, for efficiency reasons.}.
 
@@ -833,8 +842,8 @@ and could run in several threads: start from global roots and travers
 the memory graph but ignore transient objects and transient roots and
 memoize previously seen persistent objects. Of course, objects should
 not be persisted twice, and are referred by the \textbf{object id} or
-\textbf{oid} in the state files produced by the dump. That
-\textit{oid} is alphanumeric, randomly generated and so hopefully
+\textbf{objid} in the state files produced by the dump. That
+\textit{objid} \index{objid@\textit{objid}} is alphanumeric, randomly generated and so hopefully
 globally unique -like {\relsize{-1}{\texttt{\_2om48kc3k5R02d3ktW}}}
 for example- in our current implementation; exactly like
 \href{https://en.wikipedia.org/wiki/Universally_unique_identifier}{\textsc{Uuid}s}
@@ -1058,7 +1067,7 @@ of that function in its
 \href{https://en.wikipedia.org/wiki/Library\_(computing)\#Shared\_libraries}{shared
   object} file \cite{drepper:2011:write-shared-lib,
   levine:1999:linkers-loaders} is somehow related\footnote{For a
-fictional example, an object of oid \texttt{\_6lNdgIkKhwD04laO94}
+fictional example, an object of objid \texttt{\_6lNdgIkKhwD04laO94}
 might be related to some ELF function of name close to
 \texttt{rps\_6lNdgIkKhwD04laO94}, etc \ldots} to the \emph{objid} of
 that object.
@@ -1105,12 +1114,63 @@ efficiency reasons (we don't want to lock an object to get that
 pointer!)
 \href{https://en.cppreference.com/w/c/atomic}{\texttt{atomic}} in C
 parlance, and might be set using
-\href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}.}.
+\href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}.}, for {\RefPerSys} closures.
 
 Notice that a generational GC approach moving data is possible for
 some immutable values, but not for objects and their optional payload,
 since {\RefPerSys} objects contain locks and payloads that are dealt
 with thru external functions requiring fixed, unchangeable, pointers.
+
+\subsubsection{objects as frame-like data}
+\label{subsubsec:obj-frame}
+
+{\RefPerSys} objects are quite flexible, even more than
+\textsc{JavaScript}\footnote{Remember that in \textsc{JavaScript}
+\textbf{\texttt{ob.fl}} is defined to be the same as
+\texttt{ob['fl']}, the equivalent of fetching attribute or field
+\texttt{fl} from an object \texttt{ob}. And \textbf{\texttt{ob[1]}} is
+like component of index 1 in object \texttt{ob}.} ones; they take some
+inspiration from \textsc{Rll} \cite{greiner:1980:representation},
+\textsc{Eurisko} \cite{Lenat:1983:Eurisko, Lenat:1983:theory},
+\href{https://en.wikipedia.org/wiki/Cyc}{\textsc{Cyc}} and its
+\textsc{Cycl} \cite{Lenat:1991:ev-cycl}, and more recently the
+\href{https://en.wikipedia.org/wiki/Semantic_Web}{\textit{Semantic
+    Web}} and its
+\href{https://www.w3.org/TR/owl-ref/}{\textsc{Owl}}. An object has
+attributes (usually a few ones, but perhaps many of them) and
+components (again, perhaps 0 or a few of them, but in rares cases
+thousands of them), and some optional payload (quite often, it is
+missing). Notice the similarity with \textsc{JavaScript} objects
+(which calls \emph{fields} with \emph{keys} what {\RefPerSys} calls
+attributes, and array elements what are {\RefPerSys}
+components). However, \textsc{JavaScript} is (like
+\href{http://iolanguage.com/}{\textsc{Io}} or \textsc{Self}
+\cite{chambers:1991:efficient}) a
+\href{https://en.wikipedia.org/wiki/Prototype-based_programming}{prototype-based}
+object programming language, while {\RefPerSys} remains, like
+\href{https://en.wikipedia.org/wiki/Java_(programming_language)}{\textsc{Java}}
+or
+\href{https://en.wikipedia.org/wiki/C_Sharp_(programming_language)}{\textsc{C\#}},
+or \textsc{Common Lisp} (and of course
+\href{https://en.cppreference.com/w/cpp}{\textsc{C++}} or
+\href{https://golang.org/}{\textsc{Go}}), a more or less
+\href{https://en.wikipedia.org/wiki/Class_(computer_programming)}{class-based}
+object programming language with single
+\href{https://en.wikipedia.org/wiki/Inheritance_(object-oriented_programming)}{inheritance}:
+in {\RefPerSys} (like in \textsc{C\#} or \textsc{Java}) all objects
+are indirect instances of the same single toplevel class (which is
+reified as an object, using some
+\href{https://en.wikipedia.org/wiki/Metaclass}{metaclass} machinery).
+
+Thru their flexible attributes, {\RefPerSys} objects can be used to
+represent
+\href{https://en.wikipedia.org/wiki/Frame_(artificial_intelligence)}{\emph{frames}}
+(read about \href{https://en.wikipedia.org/wiki/Frame_language}{frame
+  languages}) or
+\href{https://en.wikipedia.org/wiki/Semantic_network}{semantic
+  networks} and other forms of
+\href{https://en.wikipedia.org/wiki/Graph_database}{graph databases}
+(held entirely in memory).
 
 \textcolor{red}{@@TODO: should explain a lot more}
 \clearpage
