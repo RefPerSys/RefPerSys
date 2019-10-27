@@ -1012,11 +1012,15 @@ them). Other values are composite.
 
 Since objects are fundamental, we want to keep finite collections of
 them. In particular, {\RefPerSys} will reify (represent as first-class
-values) \textbf{tuples} of objects and finite \textbf{sets} of objects
-as values, and they are the common composite values of \RefPerSys. A
-tuple is obviously represented by boxing a sequence of object
-references (i.e. pointers). A set would be represented by an ordered
-sequence of objects, with membership efficiently testable by a
+\emph{immutable} values)
+\href{https://en.wikipedia.org/wiki/Tuple}{\textbf{tuples}}
+\index{tuple} of objects and finite
+\href{https://en.wikipedia.org/wiki/Set_(abstract_data_type)}{\textbf{sets}}
+of objects as values, and also , and they are the common composite
+values of \RefPerSys. A tuple is obviously represented by boxing a
+sequence of object references (i.e. pointers). A set would be
+represented by an ordered sequence of object pointers, with membership
+efficiently testable by a
 \href{https://en.wikipedia.org/wiki/Time\_complexity}{$O(log~ n)$}
 time
 \href{https://en.wikipedia.org/wiki/Binary_search_algorithm}{binary
@@ -1024,6 +1028,25 @@ time
 and fitting in an
 \href{https://en.wikipedia.org/wiki/Cache\_hierarchy}{L1 or L2 cache
   line}, so their processing should be efficient.
+
+In {\RefPerSys},
+\href{https://en.wikipedia.org/wiki/Closure_(computer_programming)}{closures}
+are also immutable values. The closed values -binding free variables
+of the closure- inside such closures are arbitrary, but fixed, and
+won't change during the lifetime of that closure. The function code
+inside them is given by some fixed object reifying that code, and
+probably useful to generate the ``source'' code (e.g. as generated
+\emph{C} or \emph{C++} code) of that function. The
+\href{https://en.wikipedia.org/wiki/Name_mangling}{mangled name}
+-later
+\href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}-ed
+of that function in its
+\href{https://en.wikipedia.org/wiki/Executable_and_Linkable_Format}{ELF}
+\texttt{*.so} shared object file is somhow related\footnote{For a
+fictional example, an object of oid \texttt{\_6lNdgIkKhwD04laO94}
+might be related to some ELF function of name similar to
+\texttt{rps\_6lNdgIkKhwD04laO94}, etc \ldots} to the \emph{objid} of
+that object.
 
 \textcolor{red}{@@TODO: should explain implementation details in C terms?}
 
