@@ -39,32 +39,36 @@
 {
     name=Artificial General Intelligence,
     description={
-        Artificial general intelligence refers to the specific capacity of a machine 
+        \href{https://en.wikipedia.org/wiki/Artificial_general_intelligence}{Artificial general intelligence} (\textbf{AGI}) refers to the specific capacity of a machine 
 	to learn and understand any intellectual task that can be performed by a 
-	human being. It is the primary goal of artificial intelligence research, 
+	human being. It is the primary goal of some artificial intelligence research, 
 	and is sometimes referred to as ``strong AI'' or ``full AI''
     }
 }
-\newglossaryentry{meta-knowledge}
+
+\newglossaryentry{metaknowledge}
 {
-    name=meta-knowledge,
+    name=metaknowledge,
     description={
-        Meta-knowedge is knowledge about knowledge, and is an inclusive term
+        \href{https://en.wikipedia.org/wiki/Metaknowledge}{Metaknowedge} is knowledge about knowledge, and is an inclusive term
 	spanning several disciplines. Bibliography, the academic study of books,
 	and epistemology, the philosophical study of knowledge, are examples of
-	meta-knowledge. Even the tagging of documents could be considered as
-	meta-knowledge. In AGI, meta-knowledge refers to the knowledge about
-	knowledge-based systems.
-    }
-}
-\newglossaryentry{reflection}
-{
-    name=Reflection,
-    description={
-	    TODO
+	metaknowledge. Even the tagging of documents could be considered as
+	metaknowledge. In AGI, metaknowledge refers to the knowledge about
+	knowledge-based systems. A declarative system might be guided by metarules, that is ``expert system'' rules to compile or interpret other rules (maybe themselves).
     }
 }
 
+\newglossaryentry{reflection} { name=Reflection, description={
+    \href{https://en.wikipedia.org/wiki/Reflection_(computer_programming)}{Reflection}
+    is (according to \emph{Wikipedia}) ``the ability of a process to
+    examine, introspect, and modify its own structure and behavior'',
+    and related to
+    \href{https://en.wikipedia.org/wiki/Self-reflection}{Self-reflection},
+    the capacity of humans (and hopefully of artificial cognitive
+    systems, like {\RefPerSys} should become) ``to exercise
+    introspection and to attempt to learn more about their fundamental
+    nature and essence''.  } }
 
 
 \begin{luacode*}
@@ -211,7 +215,7 @@ As the slow, progressive Darwinian evolution of human intelligence shows, the
 limited intelligence of the 
 \emph{\href{https://en.wikipedia.org/wiki/Homo_sapiens}{Homo Sapiens}}
 \footnote{In Latin, \emph{Homo Sapiens} means ``the human who knows what it
-knows'' and, interestingly enough, relates to both \gls{meta-knowledge} and
+knows'' and, interestingly enough, relates to both \gls{metaknowledge} and
 \gls{reflection}.} species took more than a million years (about 30,000 
 generations) to continually evolve from an ape-like state.
 
@@ -1066,6 +1070,10 @@ with thru external functions requiring fixed, unchangeable, pointers.
 
 \textcolor{red}{@@TODO: should explain a lot more}
 \clearpage
+
+\printnoidxglossaries
+
+\bigskip
 
 \printbibliography
 \printnoidxglossaries
