@@ -1046,9 +1046,9 @@ In {\RefPerSys},
 \href{https://en.wikipedia.org/wiki/Closure_(computer_programming)}{closures}
 -that is first-class procedural values, like in
 \textsc{Scheme}\footnote{Try for example \textsc{Gnu}
-\href{https://www.gnu.org/software/guile/}{\textsc{Guile}} following
-\href{http://starynkevitch.net/Basile/guile-tutorial-1.html}{this
-  tutorial}.} \cite{kelsey:1998:r5rs, matthews:2005:operational,
+  \href{https://www.gnu.org/software/guile/}{\textsc{Guile}} following
+  \href{http://starynkevitch.net/Basile/guile-tutorial-1.html}{this
+    tutorial}.} \cite{kelsey:1998:r5rs, matthews:2005:operational,
   Queinnec:1996:LSP, Queinnec:2004:ContinWeb, abelson:1996:sicp},
 \href{http://hop.inria.fr/home/index.html}{\textsc{Hop}} or
 \href{https://www-sop.inria.fr/mimosa/fp/Bigloo/}{\textsc{Bigloo}}
@@ -1071,10 +1071,19 @@ of that function in its
 \href{https://en.wikipedia.org/wiki/Library\_(computing)\#Shared\_libraries}{shared
   object} file \cite{drepper:2011:write-shared-lib,
   levine:1999:linkers-loaders} is somehow related\footnote{For a
-fictional example, an object of objid \texttt{\_6lNdgIkKhwD04laO94}
-might be related to some ELF function of name close to
-\texttt{rps\_6lNdgIkKhwD04laO94}, etc \ldots} to the \emph{objid} of
-that object.
+  fictional example, an object of objid \texttt{\_6lNdgIkKhwD04laO94}
+  might be related to some ELF function of name close to
+  \texttt{rps\_6lNdgIkKhwD04laO94}, etc \ldots} to the \emph{objid} of
+that object. Closures are absolutely essential in {\RefPerSys}, since
+they are the only way to refer to executable machine code. Even method
+implementations are using closures, since the
+\href{https://en.wikipedia.org/wiki/Virtual_method_table}{virtual
+  method table} in {\RefPerSys} classes (actually, their payload) is
+referring to closures (is is an association between selectors (like in
+\href{https://en.wikipedia.org/wiki/Objective-C\#Messages}{Objective-C},
+but reified as objects) and closures implementing methods, à la
+\textsc{ObjVLisp} \cite{cointe:1987:metaclasses,
+  abadi:1995:imperative}).
 
 \textcolor{red}{@@TODO: should explain implementation details in C terms?}
 
