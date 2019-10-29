@@ -1094,7 +1094,7 @@ Practically speaking, mutable objects are heavy, since they should
 carry inside them locking devices\footnote{At the implementation
 level, think of some
 \href{https://computing.llnl.gov/tutorials/pthreads/\#Mutexes}{mutex}
-or
+or preferably some
 \href{http://tuxthink.blogspot.com/2013/02/using-read-write-lock-in-pthreads.html}{read-write
   lock, so
   \href{https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread\_mutex\_init.html}{\texttt{pthread\_mutex\_init}}
@@ -1177,7 +1177,10 @@ reified as an object, using some
 
 Thru their flexible attributes (each of them can be fetched, added,
 removed or changed during the lifetime of the containing object),
-{\RefPerSys} objects can be used to represent
+{\RefPerSys} objects\footnote{{\RefPerSys} objects are also -conceptually-
+  inspired by the
+  \href{https://developer.gnome.org/gobject/stable/}{\textsc{GObject}
+    framework} of \textsc{Gnome}.} can be used to represent
 \href{https://en.wikipedia.org/wiki/Frame_(artificial_intelligence)}{\emph{frames}}
 (read about \href{https://en.wikipedia.org/wiki/Frame_language}{frame
   languages}) or
