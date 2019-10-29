@@ -123,9 +123,9 @@ original copyright owner.
 
 ## Contributing
 
-Please ask, by email, the above RefPerSys team for C++ coding
-conventions before starting non-trivial contributions to the C++
-runtime of RefPerSys.  If you are contributing to its C++ runtime,
+Please ask, by email, the above RefPerSys team for C coding
+conventions before starting non-trivial contributions to the C
+runtime of RefPerSys.  If you are contributing to its C runtime,
 please **run `make clean` or `omake clean` after any `git pull`**.
 
 The GPLv3+ license of RefPerSys is unlikely to change before 2025 (and
@@ -133,27 +133,15 @@ probably even after).
 
 ## File conventions
 
-The RefPerSys runtime is implemented in C++17, with hand-written C++
-code in `*_rps.cc`, and has a single C++ header file `refpersys.hh`.
-We don't claim to be C++ gurus. Most C++ experts could write more
-genuine C++ code than we do and will find our C++ code pityful. We
-just want our runtime to work, not to serve as an example of well
-written C++17 code.
+The RefPerSys runtime is implemented in C11, with hand-written C
+code in `*_rps.c`, and has a single C++ header file `refpersys.h`.
 
-It may later also use generated C++ code in some `_*.cc` file, some
-generated C code in some `_*.c` and generated C or C++ headers in some
-`_*.h` files. By convention, files starting with an underscore are
-generated (but they may, or not, being git versioned).
+It may later also use generated C code in some `_*.c` and generated C
+or headers in some `_*.h` files. By convention, files starting with an
+underscore are generated (but they may, or not, being `git` versioned).
 
-We could need later some C++ generating program (maybe similar in
-spirit to Bismon's
-[BM_makeconst.cc](https://github.com/bstarynk/bismon/blob/master/BM_makeconst.cc). it
-would then be named `rps_*` for the executable, and fits in a single
-self-sufficient `rps_*.cc` C++ file. Perhaps we'll later have some
-`rps_makeconst` executable to generate some C++, and its source in
-some `rps_makeconst.cc`. So the convention is that any future C++
-generating source code is in some `rps_*.cc` C++ file.
-
+We may try to put generated C files that are `git` versioned under
+`generated/`
 
 ## Building and dependencies.
 
@@ -172,7 +160,6 @@ your `/etc/ld.so.conf` and run `ldconfig -v -a` after installation of
 that `libbacktrace`.
 
 ### Build instructions
-You need a recent C++17 compiler such as `g++` (We use GCC 7 or 8 or 9) or `clang++` , `omake`, `libunistring-dev`
  
 You also should do a `make clean` or `omake clean` after any `git pull`
 
@@ -190,21 +177,6 @@ and is expected to have read *very carefully* the [Tracing Garbage
 Collection](https://en.wikipedia.org/wiki/Tracing_garbage_collection)
 wikipage.
 
-We have considered to use [Ravenbrook
-MPS](https://www.ravenbrook.com/project/mps/). Unfortunately for us,
-that very good GC implementation seems unmaintained, and with almost a
-hundred thousand lines of code is very difficult to grasp, understand,
-and adopt. Finally, using MPS is not reasonable in our eyes.
-
-We also did consider using [Boehm
-GC](http://www.hboehm.info/gc/). That conservative GC is really simple
-to use (basically, use `GC_MALLOC` instead of `malloc`, etc...) and is
-[C++ friendly](https://stackoverflow.com/a/8019003/841108). However,
-it is rather slow (even for allocations of GC-ed zones, and we would
-have *many* of them) and might be quite unsuitable for programs having
-*lots* of [circular
-references](https://en.wikipedia.org/wiki/Circular_reference), and
-reflexive programs have lots of them.
 
 
 ### Garbage collection ideas
@@ -263,32 +235,21 @@ calling function**.
 * A [*write barrier*](https://en.wikipedia.org/wiki/Write_barrier)
   should be called after object or quasivalue updates, and before any
   other allocation or update of some other object, value, or
-  quasivalue. In practice, code
-  `_.foo.rps_write_barrier(RPS_CURFRAME)` or more simply
-  `_.foo.RPS_WRITE_BARRIER()`
+  quasivalue. In practice, code `rps_write_barrier(_.foo, RPS_CURFRAME)`
 
 * Every garbage-collection aware thread (a thread allocating GC-ed
   values, mutating GC-ed quasivalues or objects, running the GC
   forcibly) should call quite often, typically once per few
-  milliseconds, the `Rps_GarbageCollector::maybe_garbcoll` routine. If
+  milliseconds, the `rps_maybe_garbcoll` routine. If
   this is not possible (e.g. before a potentially blocking `read` or
   `poll` system call), special precautions should be taken. Forgetting
-  to call that `maybe_garbcoll` function often enough (typically every
+  to call that `rps_maybe_garbcoll` function often enough (typically every
   few milliseconds) could maybe crash the system.
 
 * Consequently, as a rule of thumb, any routine which can directly *or
   indirectly* allocate GC-ed values or quasi-values, or directly *or
   indirectly* mutate GC-ed values or quasi-values, should take a
-  calling callframe argument. We might need to consider: putting that
-  specific `callframe` argument in some *global* register, using GCC
-  `register` ... `asm` extension to [define global register
-  variables](https://gcc.gnu.org/onlinedocs/gcc/Global-Register-Variables.html)
-  and compile with the `-ffixed-`*reg* [code generation
-  option](https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html).
-  By coding convention, that calling callframe argument should be
-  preferably named `callingfra`, and should be the *first* argument of
-  every function or methods (member functions in C++ classes)
-  requiring the GC.
+  calling callframe argument. 
 
 
 ### useful references
@@ -297,7 +258,7 @@ For Bismon, see http://github.com/bstarynk/bismon and read its [dfraft
 Bismon report](http://starynkevitch.net/Basile/chariot-bismon-doc.pdf)
 (updated quite often).
 
-For the C++17 language, see this [C++ reference](https://en.cppreference.com/w/cpp).
+For the C11 language, see this [C reference](https://en.cppreference.com/w/c) and [the final draft standard `n1570`](http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf) and the [Modern C](https://modernc.gforge.inria.fr/) book.
 
 For Linux programming, see [Advanced Linux
 Programming](http://www.makelinux.net/alp/) and the
@@ -321,6 +282,7 @@ We already need the following libraries:
 
 We may want to use, either soon or within a few years, (usually after 2022) interesting C or C++ libraries such as:
 
+* [Jansson](http://www.digip.org/jansson/), a C library for JSON
 * [libonion](https://www.coralbits.com/libonion/) or [Wt](https://www.webtoolkit.eu/wt) should be very soon (even in 2019) useful for the web interface
 * [libevent](http://libevent.org/) or [libev](http://software.schmorp.de/pkg/libev.html) for some [event loop](https://en.wikipedia.org/wiki/Event_loop) (quite soon).
 * [TensorFlow](https://www.tensorflow.org/) for [machine learning](https://en.wikipedia.org/wiki/Machine_learning) purposes
@@ -340,5 +302,6 @@ Thanks to Niklas Rosencrantz (Sweden) for past minor contributions.
 
 ## See also
 
-
-https://gitlab.com/abhishekchakravarti/scheme-interpreter-exercise/
+The draft [refpersys
+design](http://starynkevitch.net/Basile/refpersys-design.pdf)
+document.
