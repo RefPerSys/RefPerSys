@@ -114,6 +114,7 @@ copyrighted by the RefPerSys team, currently made of:
         homepage http://starynkevitch.net/Basile/
 		near Paris, France. So usual timezone `TZ=MEST`
  *      Abhishek Chakravarti <abhishek@taranjali.org>
+ *      Nimesh Neema <nimeshneema@gmail.com>
 
 Some files might be "borrowed" from other similar GPLv3+ licensed
 projects (notably [Bismon](from
