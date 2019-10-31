@@ -417,7 +417,7 @@ and \href{https://en.wikipedia.org/wiki/Porting}{porting} {\RefPerSys}
 to some other versioning system -or to some other
 \href{http://pages.cs.wisc.edu/~remzi/OSTEP/}{operating system} than
 \textsc{Linux}- would be a quite difficult task.} textual files
-(e.g. \textit{C++} or \textit{C} files\footnote{However, notice that
+(e.g. hopefully generated \textit{C} files\footnote{However, notice that
 bootstrapped language implementations like
 \href{http://s48.org/}{Scheme 48} or \href{https://ocaml.org/}{Ocaml}
 are keeping some
@@ -806,8 +806,8 @@ and usually is protected by a
 \href{https://en.wikipedia.org/wiki/Lock\_(computer\_science)}{\textit{mutex}}
 (or \textit{read write lock}) which is part of that object\footnote{Or
 by atomic pointers, probably the {\RefPerSys} class of an object is,
-inside it, given by some C++ field with an
-\href{https://en.cppreference.com/w/cpp/atomic/atomic}{\texttt{std::atomic}}
+inside it, given by some C field with an
+\href{https://en.cppreference.com/w/c/atomic}{\texttt{\_Atomic}}
 pointer type, for efficiency reasons.}.
 
 
@@ -1061,7 +1061,7 @@ of the closure- inside such closures are arbitrary, but fixed, and
 won't change during the lifetime of that closure. The function code
 inside them is given by some fixed object reifying that code, and
 probably useful to generate the ``source'' code (e.g. as generated
-\emph{C} or \emph{C++} code) of that function. The
+\emph{C} code) of that function. The
 \href{https://en.wikipedia.org/wiki/Name_mangling}{mangled name},
 later
 ``\href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}-ed'',
@@ -1100,8 +1100,7 @@ or preferably some
   \href{https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread\_mutex\_init.html}{\texttt{pthread\_mutex\_init}}
   or
   \href{https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_rwlock_init.html}{\texttt{pthread\_rwlock\_init}}}
-or \href{https://en.cppreference.com/w/cpp/thread}{C++11
-  equivalents}.} for multi-threading support. And each object carries
+or.} for multi-threading support. And each object carries
 an association between attributes (playing the role of arbitrary keys)
 and their corresponding value. In addition, an object can carry its
 payload\footnote{Every payload belongs to a single object, its owner!}
@@ -1196,6 +1195,16 @@ removed or changed during the lifetime of the containing object),
 \subsubsection{concrete examples of objects}
 \label{subsubsec:obj-examples}
 
+In the below examples, $\rho$ \emph{``some foo''}  would be
+the ``reification'' of \textit{some foo}, that is a {\RefPerSys} value
+for that \textit{some foo}. When we are certain that \textit{some foo}
+is represented by a {\RefPerSys} mutable \emph{object} (not some immutable value), we
+would write $\Omega$  \emph{``some foo''} instead of
+$\rho$  \emph{``some foo''} \ldots.
+
+\medskip
+
+  
 
 \textcolor{red}{@@TODO: {\relsize{+2}{TO BE WRITTEN}}}
 
