@@ -163,6 +163,53 @@ rps_id_cmp(const rps_id_t *lhs, const rps_id_t *rhs)
 }
 
 
+/* checks if an object ID is less than another one; this is a convenience
+ * wrapper around rps_id_cmp() */
+inline bool
+rps_id_lt(const rps_id_t *lhs, const rps_id_t *rhs)
+{
+  return rps_id_cmp (lhs, rhs) == RPS_CMPFLAG_LT;
+}
+
+
+/* checks if an object ID is less than or equal to another one; this is a
+ * convenience wrapper around rps_id_cmp() */
+inline bool
+rps_id_lteq(const rps_id_t *lhs, const rps_id_t *rhs)
+{
+  rps_cmpflag cmp = rps_id_cmp (lhs, rhs);
+  return cmp == RPS_CMPFLAG_LT || cmp == RPS_CMPFLAG_EQ;
+}
+
+
+/* checks if an object ID is equal to another one; this is a convenience wrapper
+ * around rps_id_cmp() */
+inline bool
+rps_id_eq(const rps_id_t *lhs, const rps_id_t *rhs)
+{
+  return rps_id_cmp (lhs, rhs) == RPS_CMPFLAG_EQ;
+}
+
+
+/* checks if an object ID is greater than another one; this is a convenience
+ * wrapper around rps_id_cmp() */
+inline bool
+rps_id_gt(const rps_id_t *lhs, const rps_id_t *rhs)
+{
+  return rps_id_cmp (lhs, rhs) == RPS_CMPFLAG_GT;
+}
+
+
+/* checks if an object ID is greater than or equal to another one; this is a
+ * convenience wrapper around rps_id_cmp() */
+inline bool
+rps_id_gteq(const rps_id_t *lhs, const rps_id_t *rhs)
+{
+  rps_cmpflag cmp = rps_id_cmp (lhs, rhs);
+  return cmp == RPS_CMPFLAG_GT || cmp == RPS_CMPFLAG_EQ;
+}
+
+
 // gives true if conversion from id to char-buffer cbuf succeeded:
 extern bool rps_idtocbuf32(rps_id_t id, char cbuf[static 32]);
 
