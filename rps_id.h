@@ -42,15 +42,38 @@
     "abcdefghijklmnopqrstuvwxyz"          \
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+
+/**
+ * Type rps_hashint_t
+ */
 typedef uint32_t rps_hashint_t;
 typedef uint64_t rps_serial63_t; /* but the most significant bit is 0 */
 
-struct rps_rawid_st {
-  rps_serial63_t rps_idhi;
-  rps_serial63_t rps_idlo;
-};
 
-typedef struct rps_rawid_st rps_rawid_t;
+
+/**
+ * Represents an object ID.
+ */
+typedef struct __rps_id_st {
+	rps_serial63_t id_hi;
+	rps_serial63_t id_lo;
+} rps_id_t;
+
+
+inline rps_serial63_t
+rps_id_hi(const rps_id_t *id)
+{
+	return id->id_hi;
+}
+
+
+inline rps_serial63_t
+rps_id_lo(const rps_id_t *id)
+{
+	return id->lo;
+}
+
+
 
 // gives true if conversion from id to char-buffer cbuf succeeded:
 extern bool rps_idtocbuf32(rps_rawid_t id, char cbuf[static 32]);
