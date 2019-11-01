@@ -31,6 +31,9 @@
 
 #ifndef RPS_ID_INCLUDED
 
+/* enable access to non-standard GNU extension functions
+ * see https://stackoverflow.com/questions/5582211/ */
+/* TODO: ask about which extension functions would be required */
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -43,17 +46,31 @@
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
-/**
- * Type rps_hashint_t
- */
+/* represents an integer hash */
 typedef uint32_t rps_hashint_t;
+
+
+
 typedef uint64_t rps_serial63_t; /* but the most significant bit is 0 */
 
+/* the minimum high order value of an rps_serial63_t type */
+#define RPS_SERIAL63_HI_MIN ((rps_serial63_t) 62 * 62 * 62)
+
+/* the maximum high order value of an rps_serial63_t type */
+#define RPS_SERIAL63_HI_MAX                                         \
+	((rps_serial63_t) 10 * 62 * (62 * 62 * 62) * (62 * 62 * 62) \
+	 * (62 * 62 * 62))
+
+/* the minimum low order value of an rps_serial63_t type */
+#define RPS_SERIAL63_LO_MIN ((rps_serial63_t) 62 * 62)
+
+/* the maximum low order value of an rps_serial63_t type */
+#define RPS_SERIAL63_LO_MAX \
+	((rps_serial63_t) 62 * (62 * 62 * 62) * (62 * 62 * 62))
 
 
-/**
- * Represents an object ID.
- */
+
+/* represents and object ID */
 typedef struct __rps_id_st {
 	rps_serial63_t _hi;
 	rps_serial63_t _lo;
@@ -92,6 +109,18 @@ rps_id_hash(const rps_id_t *id)
 {
 	return (id->_hi % 2147473837) 
 		+ ((id->_hi >> 32) ^ (id->_lo * 17 + 201151));
+}
+
+
+/* checks whether an object ID is valid */
+inline bool
+rps_id_valid(const rps_id_t *id)
+{
+	return id->_hi >= RPS_SERIAL63_HI_MIN
+		&& id->_hi < RPS_SERIAL63_HI_MAX
+		&& id->_lo >= RPS_SERIAL63_LO_MIN
+		&& id->_lo < RPS_SERIAL63_LO_MAX
+		&& rps_id_hash (id) != 0;
 }
 
 
