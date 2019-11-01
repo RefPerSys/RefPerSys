@@ -1210,9 +1210,51 @@ to {\RefPerSys} consciously decided to contribute to {\RefPerSys} on
 his own free will. We believe, similarily, that \texttt{git} users
 also have decided to use it with their freedom. We are not
 lawyers.}. So a typical contributor would be ``reified'' by an object
-representing him.
+of objid {\relsize{-1}{\texttt{\_3a9otsskmcJ04v9S7n}}} representing
+him, shown in figure \ref{fig:contributor-basile}.
+
+\begin{figure}[h]
+  \begin{center}
+  \begin{tabular}{ll}
+    \hline
+    $\Omega$ ``first name'' : & string \texttt{"Basile"} \\
+    $\Omega$ ``last name'' : & string \texttt{"Starynkevitch"} \\
+    $\Omega$ ``email'' : & string {\relsize{-1}{\texttt{"basile@starynkevitch.net"}}} \\
+    $\Omega$ ``year of birth'' : & tagged integer \texttt{\#1959} \\
+    $\Omega$ ``friends'' : & set {\relsize{-1}{\texttt{\{ \_6eO8kozzUh801dHVt7 \_7zpWFJ2npj001ZfVvq \}}}} \\
+    \hline
+  \end{tabular}
+  
+  \vspace{1em}
+  
+    $\Omega$ ``Basile \textsc{Starynkevitch}'' $\equiv$ \texttt{\_3a9otsskmcJ04v9S7n}
+  \end{center}
+  \caption{An example of object representing a contributor}
+  \label{fig:contributor-basile}
+\end{figure}
+
+The {\RefPerSys} system could flexibly add additional information,
+e.g. with an attribute \textit{$\Omega$ ``authored''} associated to
+some tuples of objects authored by that $\Omega$ ``Basile
+\textsc{Starynkevitch}''. Should his email change, that could be
+represented by overwriting attribute $\Omega$ ``email'' with a string
+such as {\relsize{-1}{\texttt{"basile@refpersys.org"}}}. It is
+important that attributes are themselves objects: one could imagine
+that the object $\Omega$ ``email'' could contain an attribute $\Omega$
+``how to display'' associated with a closure, which would be applied
+to show that email cleverly (e.g. as some \texttt{<a
+  href='mailto:}\ldots\texttt{'>} \textsc{html5} element).
+
+
+Obviously, some kind of data don't fit exactly into such simple
+objects. Some objects might represent a big hashtable of triplets, and
+such data has to be the payload of that object.
+
+\smallskip
 
 \textcolor{red}{@@TODO: {\relsize{+2}{TO BE WRITTEN}}}
+
+\bigskip
 
 \section{Persistence in \RefPerSys}
 \label{sec:persistence}
