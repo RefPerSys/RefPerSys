@@ -12,8 +12,8 @@
 %see https://tex.stackexchange.com/a/29594/42406
 \usepackage{titling}
 \usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 %\usepackage{xcolor}
-\usepackage{hyperref}
 %\usepackage{alltt}
 %\usepackage{wasysym}
 \usepackage{xcolor}
@@ -24,8 +24,9 @@
 \usepackage{setspace}
 \usepackage[backend=biber,bibencoding=utf8]{biblatex}
 %https://www.overleaf.com/learn/latex/Glossaries
-\usepackage[utf8]{inputenc}
-\usepackage{glossaries}
+\usepackage{hyperref}
+\usepackage{makeidx}
+\usepackage[xindy]{glossaries}
 \addbibresource{../bib-refpersys.bib}
 \usepackage[a4paper, margin=4cm]{geometry}
 \setstretch{1.2}
@@ -113,6 +114,9 @@
   \and Abhishek \textsc{Chakravarti}\thanks{
     \href{mailto:chakravarti.avishek@gmail.com}{\texttt{chakravarti.avishek@gmail.com}},
     FL 3C, 62B PGH Shah Road, Kolkata 700032, India.}
+  \and Nimesh \textsc{Neema}\thanks{
+    \href{mailto:nimeshneema@gmail.com}{\texttt{nimeshneema@gmail.com}},
+    206 Sundaram, 38/2, Biyabani, Indore 452002, India.}
 }
 
 
@@ -124,7 +128,9 @@
   \bigskip
 
   \begin{abstract}
-    \textit{\textsc{RefPerSys}} is a \textsc{\textbf{Ref}}lexive and
+    \textit{\textsc{RefPerSys}}
+    \index{RefPerSys@\textit{\textsc{RefPerSys}}}
+    is a \textsc{\textbf{Ref}}lexive and
     orthogonally \textsc{\textbf{Per}}sistent \textsc{\textbf{Sys}}tem
     (as a GPLv3+ licensed free software\footnote{Some code is
     available on
@@ -168,8 +174,9 @@
 
 
   \medskip
-  \textbf{Nota Bene:} this report contains
-  \href{https://en.wikipedia.org/wiki/Hyperlink}{hyperlinks} so its
+  \textbf{Nota Bene:} this report contains many
+  \href{https://en.wikipedia.org/wiki/Hyperlink}{hyperlinks} to
+  relevant sources so its
   \href{https://en.wikipedia.org/wiki/PDF}{PDF} should rather be read
   on a computer screen, e.g. with
   \href{https://en.wikipedia.org/wiki/Evince}{\texttt{evince}}. Since
@@ -211,7 +218,7 @@ such challenges, \textbf{A}rtificial \textbf{G}eneral \textbf{I}ntelligence
 (\emph{AGI}) systems are increasingly relevant. \textcolor{red}{@@TODO: explain
 how?}
 
-As the slow, progressive Darwinian evolution of human intelligence shows, the
+As the slow, progressive Darwinian evolution \index{evolution!Darwinian} of human intelligence shows, the
 limited intelligence of the 
 \emph{\href{https://en.wikipedia.org/wiki/Homo_sapiens}{Homo Sapiens}}
 \footnote{In Latin, \emph{Homo Sapiens} means ``the human who knows what it
@@ -251,14 +258,14 @@ perhaps decades\footnote{An interesting parallel could be controlled
   are not predictable but could be useful even during the {\RefPerSys}
   project.
 
-We believe in free software (read also
+We believe in free software \index{free software} (read also
 \href{https://www.fsf.org/about/what-is-free-software}{this}), and we
 strongly believe that an AGI prototype should be some free software,
 exactly like most infrastructure software are (notably
 \textsc{Linux}). See also the
 \href{https://www.softwareheritage.org/}{\textsc{Software Heritage}
-  project} for interesting insights. \textsc{RefPerSys} wants to be an
-AGI infrastructure, and there is work for many years (several years of
+  project} \index{softwareheritage@\textsc{Software Heritage}} for interesting insights. \textsc{RefPerSys} wants to be an
+AGI infrastructure \index{infrastructure}, and there is work for many years (several years of
 work needed without any ``artificial intelligence'', just for the
 infrastructure).
 
@@ -379,9 +386,10 @@ or
 \href{http://bootstrappingartificialintelligence.fr/WordPress3/?s=CAIA}{of
   \textsc{Caia}}) a slow, incremental and gradual
 \href{https://en.wikipedia.org/wiki/Bootstrapping}{bootstrapping}
-process with a meta-programming \cite{dormoy:1992:meta} approach :
-features added to {\RefPerSys} in January 2020 are used to implement
-new features worked on a later {\RefPerSys} in March 2020.
+process with a meta-programming \cite{dormoy:1992:meta,
+  hernandez-phillips:2019:debugging-bootstrap} approach : features
+added to {\RefPerSys} in January 2020 are used to implement new
+features worked on a later {\RefPerSys} in March 2020.
 
 As every practical software, {\RefPerSys} targets some defined
 machines: common Linux distribution running on some
@@ -407,7 +415,7 @@ and \href{https://en.wikipedia.org/wiki/Porting}{porting} {\RefPerSys}
 to some other versioning system -or to some other
 \href{http://pages.cs.wisc.edu/~remzi/OSTEP/}{operating system} than
 \textsc{Linux}- would be a quite difficult task.} textual files
-(e.g. \textit{C++} or \textit{C} files\footnote{However, notice that
+(e.g. hopefully generated \textit{C} files\footnote{However, notice that
 bootstrapped language implementations like
 \href{http://s48.org/}{Scheme 48} or \href{https://ocaml.org/}{Ocaml}
 are keeping some
@@ -497,10 +505,12 @@ build automation tool is preferable to \textsc{Gnu}
 
 For pragmatical reasons, \textbf{{\RefPerSys} needs a good
   \href{https://en.wikipedia.org/wiki/Tracing\_garbage\_collection}{garbage
-    collector}} (or GC \cite{jones:2016:gchandbook}), since fully
-compile-time GC \cite{mazur:2004:compile} are too difficult to
-implement. Since multi-core x86-64 machines are very common, it should
-take advantage of them, so \textbf{{\RefPerSys} should follow a
+    collector}} (or GC \cite{appel:1991:garbage,
+  wilson:1992:uniprocessorgc, baker:1995:cons,
+  jones:2016:gchandbook}), since fully compile-time GC
+\cite{mazur:2004:compile} are too difficult to implement. Since
+multi-core x86-64 machines are very common, it should take advantage
+of them, so \textbf{{\RefPerSys} should follow a
   \href{https://en.wikipedia.org/wiki/Thread_(computing)}{multi-threaded}
   approach} above \textsc{Posix} \cite{barney:2010:pthreads} or
 \href{https://en.cppreference.com/w/cpp/thread}{C++11 threads}. Our GC
@@ -776,19 +786,26 @@ algorithms similar to those of copying garbage collectors
 That figure \ref{fig:persistent-heap} shows a few global and transient
 roots (both being processed by the garbage collector), and several
 threads each having its call stack (made of call frames) with local
-variables in it. The heap is actually a large directed graph and may
-contain cycles (e.g. $ ob1 \rightarrow iv1 \rightarrow ob3 \rightarrow
-ob2 \rightarrow ob3 $). Most values are immutable values (some of them
+variables in it. In that figure, if $\mu$ and $\mu'$ are two memory
+zones or locations (like for an object such as \texttt{ob1}, or for an
+immutable value \texttt{iv2}), there is an arrow $\mu \rightarrow
+\mu'$ if some field $\phi$ of $\mu$ refers to $\mu'$, that is (in C
+like notation) if \fbox{$\mu$\texttt{\textbf{->}}$\phi = \mu'$}. Different
+arrow colors could mean different fields $\phi, \phi' \ldots$ etc
+\ldots The heap is actually a large directed graph and may contain
+cycles (e.g. $ ob1 \rightarrow iv1 \rightarrow ob3 \rightarrow ob2
+\rightarrow ob3 $). Most values are immutable values (some of them
 being composite, such as \texttt{iv1}). Some immutable values are
 scalar (e.g. strings). Notice that \texttt{iv4} is a dead value,
 unreachable from others; it should be later garbage collected.  Only
 objects have a content which may change. Since {\RefPerSys} is
 multi-threaded, the access inside every object should be thread-safe
-and usually is protected by a \href{https://en.wikipedia.org/wiki/Lock\_(computer\_science)}{\textit{mutex}} (or \textit{read write
-  lock}) which is part of that object\footnote{Or by atomic pointers,
-probably the {\RefPerSys} class of an object is, inside it, given by
-some C++ field with an
-\href{https://en.cppreference.com/w/cpp/atomic/atomic}{\texttt{std::atomic}}
+and usually is protected by a
+\href{https://en.wikipedia.org/wiki/Lock\_(computer\_science)}{\textit{mutex}}
+(or \textit{read write lock}) which is part of that object\footnote{Or
+by atomic pointers, probably the {\RefPerSys} class of an object is,
+inside it, given by some C field with an
+\href{https://en.cppreference.com/w/c/atomic}{\texttt{\_Atomic}}
 pointer type, for efficiency reasons.}.
 
 
@@ -827,8 +844,8 @@ and could run in several threads: start from global roots and travers
 the memory graph but ignore transient objects and transient roots and
 memoize previously seen persistent objects. Of course, objects should
 not be persisted twice, and are referred by the \textbf{object id} or
-\textbf{oid} in the state files produced by the dump. That
-\textit{oid} is alphanumeric, randomly generated and so hopefully
+\textbf{objid} in the state files produced by the dump. That
+\textit{objid} \index{objid@\textit{objid}} is alphanumeric, randomly generated and so hopefully
 globally unique -like {\relsize{-1}{\texttt{\_2om48kc3k5R02d3ktW}}}
 for example- in our current implementation; exactly like
 \href{https://en.wikipedia.org/wiki/Universally_unique_identifier}{\textsc{Uuid}s}
@@ -1006,11 +1023,15 @@ them). Other values are composite.
 
 Since objects are fundamental, we want to keep finite collections of
 them. In particular, {\RefPerSys} will reify (represent as first-class
-values) \textbf{tuples} of objects and finite \textbf{sets} of objects
-as values, and they are the common composite values of \RefPerSys. A
-tuple is obviously represented by boxing a sequence of object
-references (i.e. pointers). A set would be represented by an ordered
-sequence of objects, with membership efficiently testable by a
+\emph{immutable} values)
+\href{https://en.wikipedia.org/wiki/Tuple}{\textbf{tuples}}
+\index{tuple} of objects and finite
+\href{https://en.wikipedia.org/wiki/Set_(abstract_data_type)}{\textbf{sets}}
+of objects as values, and also , and they are the common composite
+values of \RefPerSys. A tuple is obviously represented by boxing a
+sequence of object references (i.e. pointers). A set would be
+represented by an ordered sequence of object pointers, with membership
+efficiently testable by a
 \href{https://en.wikipedia.org/wiki/Time\_complexity}{$O(log~ n)$}
 time
 \href{https://en.wikipedia.org/wiki/Binary_search_algorithm}{binary
@@ -1018,6 +1039,49 @@ time
 and fitting in an
 \href{https://en.wikipedia.org/wiki/Cache\_hierarchy}{L1 or L2 cache
   line}, so their processing should be efficient.
+
+In {\RefPerSys},
+\href{https://en.wikipedia.org/wiki/Closure_(computer_programming)}{closures}
+-that is first-class procedural values, like in
+\textsc{Scheme}\footnote{Try for example \textsc{Gnu}
+  \href{https://www.gnu.org/software/guile/}{\textsc{Guile}} following
+  \href{http://starynkevitch.net/Basile/guile-tutorial-1.html}{this
+    tutorial}.} \cite{kelsey:1998:r5rs, matthews:2005:operational,
+  Queinnec:1996:LSP, Queinnec:2004:ContinWeb, abelson:1996:sicp},
+\href{http://hop.inria.fr/home/index.html}{\textsc{Hop}} or
+\href{https://www-sop.inria.fr/mimosa/fp/Bigloo/}{\textsc{Bigloo}}
+\cite{serrano:1995:bigloo},
+\href{http://www.lispworks.com/documentation/HyperSpec/Front/index.htm}{\textsc{Common
+    Lisp}},
+\href{https://en.wikipedia.org/wiki/JavaScript}{\textsc{JavaScript}} -
+are also immutable values. The closed values -binding free variables
+of the closure- inside such closures are arbitrary, but fixed, and
+won't change during the lifetime of that closure. The function code
+inside them is given by some fixed object reifying that code, and
+probably useful to generate the ``source'' code (e.g. as generated
+\emph{C} code) of that function. The
+\href{https://en.wikipedia.org/wiki/Name_mangling}{mangled name},
+later
+``\href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}-ed'',
+of that function in its
+\href{https://en.wikipedia.org/wiki/Executable_and_Linkable_Format}{ELF}
+\texttt{*.so}
+\href{https://en.wikipedia.org/wiki/Library\_(computing)\#Shared\_libraries}{shared
+  object} file \cite{drepper:2011:write-shared-lib,
+  levine:1999:linkers-loaders} is somehow related\footnote{For a
+  fictional example, an object of objid \texttt{\_6lNdgIkKhwD04laO94}
+  might be related to some ELF function of name close to
+  \texttt{rps\_6lNdgIkKhwD04laO94}, etc \ldots} to the \emph{objid} of
+that object. Closures are absolutely essential in {\RefPerSys}, since
+they are the only way to refer to executable machine code. Even method
+implementations are using closures, since the
+\href{https://en.wikipedia.org/wiki/Virtual_method_table}{virtual
+  method table} in {\RefPerSys} classes (actually, their payload) is
+referring to closures (is is an association between selectors (like in
+\href{https://en.wikipedia.org/wiki/Objective-C\#Messages}{Objective-C},
+but reified as objects) and closures implementing methods, à la
+\textsc{ObjVLisp} \cite{cointe:1987:metaclasses,
+  abadi:1995:imperative}).
 
 \textcolor{red}{@@TODO: should explain implementation details in C terms?}
 
@@ -1028,14 +1092,13 @@ Practically speaking, mutable objects are heavy, since they should
 carry inside them locking devices\footnote{At the implementation
 level, think of some
 \href{https://computing.llnl.gov/tutorials/pthreads/\#Mutexes}{mutex}
-or
+or preferably some
 \href{http://tuxthink.blogspot.com/2013/02/using-read-write-lock-in-pthreads.html}{read-write
   lock, so
   \href{https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread\_mutex\_init.html}{\texttt{pthread\_mutex\_init}}
   or
   \href{https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_rwlock_init.html}{\texttt{pthread\_rwlock\_init}}}
-or \href{https://en.cppreference.com/w/cpp/thread}{C++11
-  equivalents}.} for multi-threading support. And each object carries
+or.} for multi-threading support. And each object carries
 an association between attributes (playing the role of arbitrary keys)
 and their corresponding value. In addition, an object can carry its
 payload\footnote{Every payload belongs to a single object, its owner!}
@@ -1061,14 +1124,107 @@ efficiency reasons (we don't want to lock an object to get that
 pointer!)
 \href{https://en.cppreference.com/w/c/atomic}{\texttt{atomic}} in C
 parlance, and might be set using
-\href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}.}.
+\href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}.}, for {\RefPerSys} closures.
 
 Notice that a generational GC approach moving data is possible for
 some immutable values, but not for objects and their optional payload,
 since {\RefPerSys} objects contain locks and payloads that are dealt
 with thru external functions requiring fixed, unchangeable, pointers.
 
+\subsubsection{objects as frame-like data}
+\label{subsubsec:obj-frame}
+
+{\RefPerSys} objects are quite flexible, even more than
+\textsc{JavaScript}\footnote{Remember that in \textsc{JavaScript}
+\textbf{\texttt{ob.fl}} is defined to be the same as
+\texttt{ob['fl']}, the equivalent of fetching attribute or field
+\texttt{fl} from an object \texttt{ob}. And \textbf{\texttt{ob[1]}} is
+like component of index 1 in object \texttt{ob}.} ones; they take some
+inspiration from \textsc{Rll} \cite{greiner:1980:representation},
+\textsc{Eurisko} \cite{Lenat:1983:Eurisko, Lenat:1983:theory},
+\href{https://en.wikipedia.org/wiki/Cyc}{\textsc{Cyc}} and its
+\textsc{Cycl} \cite{Lenat:1991:ev-cycl}, and more recently the
+\href{https://en.wikipedia.org/wiki/Semantic_Web}{\textit{Semantic
+    Web}} and its
+\href{https://www.w3.org/TR/owl-ref/}{\textsc{Owl}}. An object has
+attributes (usually a few ones, but perhaps many of them) and
+components (again, perhaps 0 or a few of them, but in rares cases
+thousands of them), and some optional payload (quite often, it is
+missing). Notice the similarity with \textsc{JavaScript} objects
+(which calls \emph{fields} with \emph{keys} what {\RefPerSys} calls
+attributes, and array elements what are {\RefPerSys}
+components). However, \textsc{JavaScript} is (like
+\href{http://iolanguage.com/}{\textsc{Io}} or \textsc{Self}
+\cite{chambers:1991:efficient}) a
+\href{https://en.wikipedia.org/wiki/Prototype-based_programming}{prototype-based}
+object programming language, while {\RefPerSys} remains, like
+\href{https://en.wikipedia.org/wiki/Java_(programming_language)}{\textsc{Java}}
+or
+\href{https://en.wikipedia.org/wiki/C_Sharp_(programming_language)}{\textsc{C\#}},
+or \textsc{Common Lisp} (and of course
+\href{https://en.cppreference.com/w/cpp}{\textsc{C++}} or
+\href{https://golang.org/}{\textsc{Go}}), a more or less
+\href{https://en.wikipedia.org/wiki/Class_(computer_programming)}{class-based}
+object programming language with single
+\href{https://en.wikipedia.org/wiki/Inheritance_(object-oriented_programming)}{inheritance}:
+in {\RefPerSys} (like in \textsc{C\#} or \textsc{Java}) all objects
+are indirect instances of the same single toplevel class (which is
+reified as an object, using some
+\href{https://en.wikipedia.org/wiki/Metaclass}{metaclass} machinery).
+
+Thru their flexible attributes (each of them can be fetched, added,
+removed or changed during the lifetime of the containing object),
+{\RefPerSys} objects\footnote{{\RefPerSys} objects are also -conceptually-
+  inspired by the
+  \href{https://developer.gnome.org/gobject/stable/}{\textsc{GObject}
+    framework} of \textsc{Gnome}.} can be used to represent
+\href{https://en.wikipedia.org/wiki/Frame_(artificial_intelligence)}{\emph{frames}}
+(read about \href{https://en.wikipedia.org/wiki/Frame_language}{frame
+  languages}) or
+\href{https://en.wikipedia.org/wiki/Semantic_network}{semantic
+  networks} and other forms of
+\href{https://en.wikipedia.org/wiki/Graph_database}{graph databases}
+(held entirely in memory).
+
 \textcolor{red}{@@TODO: should explain a lot more}
+
+
+
+\subsubsection{concrete examples of objects}
+\label{subsubsec:obj-examples}
+
+In the below examples, $\rho$ \emph{``some foo''}  would be
+the ``reification'' of \textit{some foo}, that is a {\RefPerSys} value
+for that \textit{some foo}. When we are certain that \textit{some foo}
+is represented by a {\RefPerSys} mutable \emph{object} (not some immutable value), we
+would write $\Omega$  \emph{``some foo''} instead of
+$\rho$  \emph{``some foo''} \ldots.
+
+\medskip
+
+  
+
+\textcolor{red}{@@TODO: {\relsize{+2}{TO BE WRITTEN}}}
+
+\section{Persistence in \RefPerSys}
+\label{sec:persistence}
+
+The persistence of {\RefPerSys} is an essential feature. The
+\texttt{refpersys} program starts by loading its persistent state
+(from various textual files under \texttt{persistore/}
+directory\footnote{Of course, some other directory can be given thru
+explicit program arguments to the \texttt{refpersys} executable.}). In
+the usual case, a \texttt{refpersys} process dumps its persistent state before
+exiting.
+
+\textcolor{red}{@@TODO: improve}
+
+\subsection{The textual data format of \RefPerSys}
+\label{subsec:data-format}
+
+\textcolor{red}{@@TODO: should be written, e.g. explanation of the files under \texttt{persistore/} and of their JSON syntax}
+
+
 \clearpage
 
 \printnoidxglossaries
@@ -1077,6 +1233,10 @@ with thru external functions requiring fixed, unchangeable, pointers.
 
 \printbibliography
 \printnoidxglossaries
+
+\bigskip
+
+\printindex
 
 \end{document}
 
