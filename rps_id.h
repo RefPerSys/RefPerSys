@@ -83,9 +83,10 @@ typedef int rps_cmpflag;
 
 
 /* represents and object ID */
-typedef struct __rps_id_st {
-	rps_serial63_t _hi;
-	rps_serial63_t _lo;
+typedef struct __rps_id_st
+{
+  rps_serial63_t _hi;
+  rps_serial63_t _lo;
 } rps_id_t;
 
 
@@ -93,7 +94,7 @@ typedef struct __rps_id_st {
 inline rps_serial63_t
 rps_id_hi(const rps_id_t *id)
 {
-	return id->_hi;
+  return id->_hi;
 }
 
 
@@ -101,7 +102,7 @@ rps_id_hi(const rps_id_t *id)
 inline rps_serial63_t
 rps_id_lo(const rps_id_t *id)
 {
-	return id->_lo;
+  return id->_lo;
 }
 
 
@@ -110,7 +111,7 @@ rps_id_lo(const rps_id_t *id)
 inline bool
 rps_id_empty(const rps_id_t *id)
 {
-	return id->_hi == 0 && id->_lo == 0;
+  return id->_hi == 0 && id->_lo == 0;
 }
 
 
@@ -119,8 +120,8 @@ rps_id_empty(const rps_id_t *id)
 inline rps_hashint_t
 rps_id_hash(const rps_id_t *id)
 {
-	return (id->_hi % 2147473837) 
-		+ ((id->_hi >> 32) ^ (id->_lo * 17 + 201151));
+  return (id->_hi % 2147473837)
+         + ((id->_hi >> 32) ^ (id->_lo * 17 + 201151));
 }
 
 
@@ -128,11 +129,11 @@ rps_id_hash(const rps_id_t *id)
 inline bool
 rps_id_valid(const rps_id_t *id)
 {
-	return id->_hi >= RPS_SERIAL63_HI_MIN
-		&& id->_hi < RPS_SERIAL63_HI_MAX
-		&& id->_lo >= RPS_SERIAL63_LO_MIN
-		&& id->_lo < RPS_SERIAL63_LO_MAX
-		&& rps_id_hash (id) != 0;
+  return id->_hi >= RPS_SERIAL63_HI_MIN
+         && id->_hi < RPS_SERIAL63_HI_MAX
+         && id->_lo >= RPS_SERIAL63_LO_MIN
+         && id->_lo < RPS_SERIAL63_LO_MAX
+         && rps_id_hash (id) != 0;
 }
 
 
@@ -140,22 +141,25 @@ rps_id_valid(const rps_id_t *id)
 inline rps_cmpflag
 rps_id_cmp(const rps_id_t *lhs, const rps_id_t *rhs)
 {
-	if (lhs->_hi == rhs->_hi) {
-		if (lhs->_lo == rhs->_lo)
-			return RPS_CMPFLAG_EQ;
-		else if (lhs->_lo < rhs->_lo)
-			return RPS_CMPFLAG_LT;
-		else
-			return RPS_CMPFLAG_GT;
-	}
+  if (lhs->_hi == rhs->_hi)
+    {
+      if (lhs->_lo == rhs->_lo)
+        return RPS_CMPFLAG_EQ;
+      else if (lhs->_lo < rhs->_lo)
+        return RPS_CMPFLAG_LT;
+      else
+        return RPS_CMPFLAG_GT;
+    }
 
-	else if (lhs->_hi < rhs->_hi) {
-		return RPS_CMPFLAG_LT;
-	}
+  else if (lhs->_hi < rhs->_hi)
+    {
+      return RPS_CMPFLAG_LT;
+    }
 
-	else {
-		return RPS_CMPFLAG_GT;
-	}
+  else
+    {
+      return RPS_CMPFLAG_GT;
+    }
 }
 
 
@@ -168,7 +172,7 @@ extern bool rps_idtocbuf32(rps_id_t id, char cbuf[static 32]);
       memset(cbuf_##Cnt, 0, sizeof(cbuf_##Cnt));		\
       rps_idtocbuf32(id_##Cnt, cbuf_##Cnt)?cbuf_##Cnt:"???"; })
 
-#define RPS_ID_AS_CBUF_CNT(Id,Cnt)  RPS_ID_AS_CBUF_CNTBIS(Id,Cnt)  
+#define RPS_ID_AS_CBUF_CNT(Id,Cnt)  RPS_ID_AS_CBUF_CNTBIS(Id,Cnt)
 #define RPS_ID_AS_CBUF(Id) RPS_ID_AS_CBUF_CNT(Id,__COUNT__)
 
 #endif /*RPS_ID_INCLUDED*/
