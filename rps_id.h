@@ -69,6 +69,18 @@ typedef uint64_t rps_serial63_t; /* but the most significant bit is 0 */
 	((rps_serial63_t) 62 * (62 * 62 * 62) * (62 * 62 * 62))
 
 
+/* flag to indicate comparison result */
+typedef int rps_cmpflag;
+
+/* indicates a less-than comparison result */
+#define RPS_CMPFLAG_LT ((rps_cmpflag) -1)
+
+/* indicates an equality comparison result */
+#define RPS_CMPFLAG_EQ ((rps_cmpflag) 0)
+
+/* indicates a greater-than comparison result */
+#define RPS_CMPFLAG_GT ((rps_cmpflag) 1)
+
 
 /* represents and object ID */
 typedef struct __rps_id_st {
@@ -121,6 +133,29 @@ rps_id_valid(const rps_id_t *id)
 		&& id->_lo >= RPS_SERIAL63_LO_MIN
 		&& id->_lo < RPS_SERIAL63_LO_MAX
 		&& rps_id_hash (id) != 0;
+}
+
+
+/* compares two object IDs */
+inline rps_cmpflag
+rps_id_cmp(const rps_id_t *lhs, const rps_id_t *rhs)
+{
+	if (lhs->_hi == rhs->_hi) {
+		if (lhs->_lo == rhs->_lo)
+			return RPS_CMPFLAG_EQ;
+		else if (lhs->_lo < rhs->_lo)
+			return RPS_CMPFLAG_LT;
+		else
+			return RPS_CMPFLAG_GT;
+	}
+
+	else if (lhs->_hi < rhs->_hi) {
+		return RPS_CMPFLAG_LT;
+	}
+
+	else {
+		return RPS_CMPFLAG_GT;
+	}
 }
 
 
