@@ -39,6 +39,7 @@
 #endif
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define RPS_B62DIGITS                     \
     "0123456789"                          \
