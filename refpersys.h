@@ -71,9 +71,9 @@
 #define thread_local _Thread_local
 
 /// naming conventions: all our API names start with RPS in upper,
-/// lower, or mixed cases
-/* TODO: can we adopt the convention that only constants are in uppercase? */
-
+/// lower, or mixed cases; the GTK naming conventions are very nice to
+/// read, and are inspirational. However, we explicitly require a C11
+/// compiler, so a recent GCC like at least GCC-8.
 
 
 #include "rps_hints.h"

@@ -34,7 +34,7 @@
 
 /* enable access to non-standard GNU extension functions
  * see https://stackoverflow.com/questions/5582211/ */
-/* TODO: ask about which extension functions would be required */
+/* We explicit want to use all GNU extensions */
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -109,6 +109,8 @@ typedef struct rps_id_st
 } rps_id_t;
 
 
+#warning TODO: why use rps_id_t pointers? We can pass a two-word structure by value....
+
 /* gets the high order bits of an object ID */
 inline rps_serial63_t
 rps_id_hi(const rps_id_t *id)
@@ -135,7 +137,7 @@ rps_id_buckets(const rps_id_t *id)
 
 
 /* checks whether an object ID is empty */
-/* TODO: is rps_id_null better terminology? */
+/* */
 inline bool
 rps_id_empty(const rps_id_t *id)
 {
@@ -144,7 +146,8 @@ rps_id_empty(const rps_id_t *id)
 
 
 /* gets the integer hash of an object ID */
-/* TODO: remove magic numbers or explain them */
+/* The magic numbers below a prime, on purpose, but choosen
+   arbitrarily. We want something fast! */
 inline rps_hashint_t
 rps_id_hash(const rps_id_t *id)
 {

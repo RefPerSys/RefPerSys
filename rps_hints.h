@@ -29,11 +29,12 @@
  ******************************************************************************/
 
 
-/* TODO: merge this file later into refpersys.h */
+/* IMPORTANT TODO: merge this file later into refpersys.h */
 
 
 #if !defined RPS_HINTS_INCLUDED
 
+#warning TODO: stick to uppercase macro names
 
 /* hints that a predicate is likely to be true */
 #if (defined __GNUC__)
