@@ -79,16 +79,16 @@ typedef uint64_t rps_serial63_t; /* but the most significant bit is 0 */
 #define RPS_SERIAL63_BUCKET_MAX ((uint64_t) 10 * 62)
 
 
-/* flag to indicate comparison result */
-typedef int rps_cmpflag;
+/* flag to indicate comparison result; something similar to strcmp result */
+typedef int rps_cmpflag_t;
 
-/* indicates a less-than comparison result */
+/* indicates a less-than comparison result ; any integer < 0 is ok*/
 #define RPS_CMPFLAG_LT ((rps_cmpflag) -1)
 
 /* indicates an equality comparison result */
 #define RPS_CMPFLAG_EQ ((rps_cmpflag) 0)
 
-/* indicates a greater-than comparison result */
+/* indicates a greater-than comparison result ; any integer > 0 is ok */
 #define RPS_CMPFLAG_GT ((rps_cmpflag) 1)
 
 
@@ -102,7 +102,7 @@ rps_serial63_buckets(const uint64_t s)
 
 
 /* represents and object ID */
-typedef struct __rps_id_st
+typedef struct rps_id_st
 {
   rps_serial63_t _hi;
   rps_serial63_t _lo;
@@ -175,7 +175,7 @@ rps_id_cmp(const rps_id_t *lhs, const rps_id_t *rhs);
 inline bool
 rps_id_lt(const rps_id_t *lhs, const rps_id_t *rhs)
 {
-  return rps_id_cmp (lhs, rhs) == RPS_CMPFLAG_LT;
+  return rps_id_cmp (lhs, rhs) < 0;
 }
 
 
@@ -184,8 +184,7 @@ rps_id_lt(const rps_id_t *lhs, const rps_id_t *rhs)
 inline bool
 rps_id_lteq(const rps_id_t *lhs, const rps_id_t *rhs)
 {
-  rps_cmpflag cmp = rps_id_cmp (lhs, rhs);
-  return cmp == RPS_CMPFLAG_LT || cmp == RPS_CMPFLAG_EQ;
+  return rps_id_cmp (lhs, rhs) <= 0;
 }
 
 
@@ -203,7 +202,7 @@ rps_id_eq(const rps_id_t *lhs, const rps_id_t *rhs)
 inline bool
 rps_id_gt(const rps_id_t *lhs, const rps_id_t *rhs)
 {
-  return rps_id_cmp (lhs, rhs) == RPS_CMPFLAG_GT;
+  return rps_id_cmp (lhs, rhs) > 0;
 }
 
 
@@ -212,8 +211,7 @@ rps_id_gt(const rps_id_t *lhs, const rps_id_t *rhs)
 inline bool
 rps_id_gteq(const rps_id_t *lhs, const rps_id_t *rhs)
 {
-  rps_cmpflag cmp = rps_id_cmp (lhs, rhs);
-  return cmp == RPS_CMPFLAG_GT || cmp == RPS_CMPFLAG_EQ;
+  return rps_id_cmp (lhs, rhs) > 0;
 }
 
 
