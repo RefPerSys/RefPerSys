@@ -31,6 +31,7 @@
 
 #ifndef RPS_ID_INCLUDED
 
+
 /* enable access to non-standard GNU extension functions
  * see https://stackoverflow.com/questions/5582211/ */
 /* TODO: ask about which extension functions would be required */
@@ -38,8 +39,11 @@
 #define _GNU_SOURCE
 #endif
 
+
 #include <stdint.h>
 #include <stdbool.h>
+#include "rps_hints.h" /* TODO: merge this file later into refpersys.h */
+
 
 #define RPS_B62DIGITS                     \
     "0123456789"                          \
@@ -90,7 +94,7 @@ typedef int rps_cmpflag;
 
 /* gets the number number of buckets in an rps_serial63_t type */
 /* TODO: explain buckets */
-inline uint64_t
+inline rps_pure uint64_t
 rps_serial63_buckets(const uint64_t s)
 {
   return s / (RPS_SERIAL63_HI_MAX / RPS_SERIAL63_BUCKET_MAX);
@@ -162,7 +166,7 @@ rps_id_valid(const rps_id_t *id)
 
 
 /* compares two object IDs */
-extern rps_cmpflag
+extern rps_hot rps_cmpflag
 rps_id_cmp(const rps_id_t *lhs, const rps_id_t *rhs);
 
 
