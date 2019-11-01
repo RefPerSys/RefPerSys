@@ -1,5 +1,5 @@
 /****************************************************************
- * file rps_id.h
+ * File: rps_id.c
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
@@ -11,7 +11,7 @@
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
  *      © Copyright 2019 The Reflective Persistent System Team
- *      <https://refpersys.gitlab.io>
+ *      <https://refpersys.org>
  *
  * License:
  *    This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,16 @@
 
 
 /******************************************************************************
- * Inline rps_id Declarations
+ * Inline rps_serial63_t Declarations
+ */
+
+
+extern inline uint64_t
+rps_serial63_buckets(const uint64_t s);
+
+
+/******************************************************************************
+ * Inline rps_id_t Declarations
  */
 
 
@@ -41,6 +50,9 @@ rps_id_hi(const rps_id_t *id);
 
 extern inline rps_serial63_t
 rps_id_lo(const rps_id_t *id);
+
+extern inline uint64_t
+rps_id_buckets(const rps_id_t *id);
 
 extern inline bool
 rps_id_empty(const rps_id_t *id);

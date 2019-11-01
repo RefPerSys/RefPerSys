@@ -1,5 +1,5 @@
 /****************************************************************
- * file rps_id.h
+ * File: rps_id.h
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
@@ -11,7 +11,7 @@
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
  *      © Copyright 2019 The Reflective Persistent System Team
- *      <https://refpersys.gitlab.io>
+ *      <https://refpersys.org>
  *
  * License:
  *    This program is free software: you can redistribute it and/or modify
@@ -70,6 +70,11 @@ typedef uint64_t rps_serial63_t; /* but the most significant bit is 0 */
 	((rps_serial63_t) 62 * (62 * 62 * 62) * (62 * 62 * 62))
 
 
+/* the maximum number of buckets in an rps_serial63_t type */
+/* TODO: explain buckets */
+#define RPS_SERIAL63_BUCKET_MAX ((uint64_t) 10 * 62)
+
+
 /* flag to indicate comparison result */
 typedef int rps_cmpflag;
 
@@ -81,6 +86,15 @@ typedef int rps_cmpflag;
 
 /* indicates a greater-than comparison result */
 #define RPS_CMPFLAG_GT ((rps_cmpflag) 1)
+
+
+/* gets the number number of buckets in an rps_serial63_t type */
+/* TODO: explain buckets */
+inline uint64_t
+rps_serial63_buckets(const uint64_t s)
+{
+  return s / (RPS_SERIAL63_HI_MAX / RPS_SERIAL63_BUCKET_MAX);
+}
 
 
 /* represents and object ID */
@@ -104,6 +118,15 @@ inline rps_serial63_t
 rps_id_lo(const rps_id_t *id)
 {
   return id->_lo;
+}
+
+
+/* gets the number of buckets for an object ID */
+/* TODO: explain the significance of buckets */
+inline uint64_t
+rps_id_buckets(const rps_id_t *id)
+{
+  return rps_serial63_buckets (id->_hi);
 }
 
 
