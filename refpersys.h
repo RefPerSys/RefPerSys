@@ -72,16 +72,54 @@
 
 /// naming conventions: all our API names start with RPS in upper,
 /// lower, or mixed cases
+/* TODO: can we adopt the convention that only constants are in uppercase? */
 
-#ifdef __GNUC__
-#define RPS_UNLIKELY(P) __builtin_expect(!!(P),0)
-#define RPS_LIKELY(P) !__builtin_expect(!(P),0)
-#define RPS_UNUSED __attribute__((unused))
-#else /* not a GNU compiler */
-#define RPS_UNLIKELY(P) (P)
-#define RPS_LIKELY(P) (P)
-#define RPS_UNUSED
-#endif /*__GNUC__*/
+
+/******************************************************************************
+ * GNU C Hints
+ */
+
+
+/* hints that a predicate is likely to be true */
+#if (defined __GNUC__)
+#	define rps_likely(p) (__builtin_expect(!!(p), 1))
+#else
+#	define rps_likely(p) (p)
+#	warning rps_likely() has no effect
+#endif
+
+/* hints that a predicate is likely to be false */
+#if (defined __GNUC__)
+#	define rps_unlikely(p) (__builtin_expect(!!(p), 0))
+#else
+#	define rps_unlikely(p) (p)
+#	warning rps_unlikely() has no effect
+#endif
+
+/* hints that a variable or function is unused */
+#if (defined __GNUC__)
+#	define rps_unused __attribute__((unused))
+#else
+#	define rps_unused
+#	warning rps_unused has no effect
+#endif
+
+/* hints that a function is pure */
+#if (defined __GNUC__)
+#	define rps_pure __attribute__((pure))
+#else
+#	define rps_pure
+#	warning rps_pure has no effect
+#endif
+
+/* hints that a function is hot */
+#if (defined __GNUC__)
+#	define rps_hot __attribute__((hot))
+#else
+#	define rps_hot
+#	warning rps_hot has no effect
+#endif
+
 
 #include "rps_id.h"
 #warning code should be written here.
