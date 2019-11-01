@@ -162,29 +162,8 @@ rps_id_valid(const rps_id_t *id)
 
 
 /* compares two object IDs */
-inline rps_cmpflag
-rps_id_cmp(const rps_id_t *lhs, const rps_id_t *rhs)
-{
-  if (lhs->_hi == rhs->_hi)
-    {
-      if (lhs->_lo == rhs->_lo)
-        return RPS_CMPFLAG_EQ;
-      else if (lhs->_lo < rhs->_lo)
-        return RPS_CMPFLAG_LT;
-      else
-        return RPS_CMPFLAG_GT;
-    }
-
-  else if (lhs->_hi < rhs->_hi)
-    {
-      return RPS_CMPFLAG_LT;
-    }
-
-  else
-    {
-      return RPS_CMPFLAG_GT;
-    }
-}
+extern rps_cmpflag
+rps_id_cmp(const rps_id_t *lhs, const rps_id_t *rhs);
 
 
 /* checks if an object ID is less than another one; this is a convenience
