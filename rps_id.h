@@ -37,7 +37,7 @@
 
 #include <stdint.h>
 
-#define RPS_B62DIGITS 
+#define RPS_B62DIGITS                     \
     "0123456789"                          \
     "abcdefghijklmnopqrstuvwxyz"          \
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -55,28 +55,48 @@ typedef uint64_t rps_serial63_t; /* but the most significant bit is 0 */
  * Represents an object ID.
  */
 typedef struct __rps_id_st {
-	rps_serial63_t id_hi;
-	rps_serial63_t id_lo;
+	rps_serial63_t _hi;
+	rps_serial63_t _lo;
 } rps_id_t;
 
 
+/* gets the high order bits of an object ID */
 inline rps_serial63_t
 rps_id_hi(const rps_id_t *id)
 {
-	return id->id_hi;
+	return id->_hi;
 }
 
 
+/* gets the low order bits of an object ID */
 inline rps_serial63_t
 rps_id_lo(const rps_id_t *id)
 {
-	return id->lo;
+	return id->_lo;
 }
 
 
+/* checks whether an object ID is empty */
+/* TODO: is rps_id_null better terminology? */
+inline bool
+rps_id_empty(const rps_id_t *id)
+{
+	return id->_hi == 0 && id->_lo == 0;
+}
+
+
+/* gets the integer hash of an object ID */
+/* TODO: remove magic numbers or explain them */
+inline rps_hashint_t
+rps_id_hash(const rps_id_t *id)
+{
+	return (id->_hi % 2147473837) 
+		+ ((id->_hi >> 32) ^ (id->_lo * 17 + 201151));
+}
+
 
 // gives true if conversion from id to char-buffer cbuf succeeded:
-extern bool rps_idtocbuf32(rps_rawid_t id, char cbuf[static 32]);
+extern bool rps_idtocbuf32(rps_id_t id, char cbuf[static 32]);
 
 #define RPS_ID_AS_CBUF_CNTBIS(Id,Cnt) ({			\
       static thread_local cbuf_##Cnt[32];			\
