@@ -60,6 +60,9 @@ rps_id_empty(const rps_id_t id);
 extern inline rps_hashint_t
 rps_id_hash(const rps_id_t id);
 
+extern inline rps_cmpflag_t
+rps_id_cmp(const rps_id_t lhs, const rps_id_t rhs);
+
 extern inline bool
 rps_id_lt(const rps_id_t lhs, const rps_id_t rhs);
 
@@ -74,34 +77,4 @@ rps_id_gt(const rps_id_t lhs, const rps_id_t rhs);
 
 extern inline bool
 rps_id_gteq(const rps_id_t lhs, const rps_id_t rhs);
-
-
-/******************************************************************************
- * rps_id_t Implementation
- */
-
-
-extern RPS_HOT rps_cmpflag_t
-rps_id_cmp(const rps_id_t lhs, const rps_id_t rhs)
-{
-  if (lhs._hi == rhs._hi)
-    {
-      if (lhs._lo == rhs._lo)
-        return RPS_CMPFLAG_EQ;
-      else if (lhs._lo < rhs._lo)
-        return RPS_CMPFLAG_LT;
-      else
-        return RPS_CMPFLAG_GT;
-    }
-
-  else if (lhs._hi < rhs._hi)
-    {
-      return RPS_CMPFLAG_LT;
-    }
-
-  else
-    {
-      return RPS_CMPFLAG_GT;
-    }
-}
 
