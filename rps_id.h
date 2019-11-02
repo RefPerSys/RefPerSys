@@ -94,7 +94,7 @@ typedef int rps_cmpflag_t;
 
 /* gets the number number of buckets in an rps_serial63_t type */
 /* TODO: explain buckets */
-inline rps_pure uint64_t
+inline RPS_PURE uint64_t
 rps_serial63_buckets(const uint64_t s)
 {
   return s / (RPS_SERIAL63_HI_MAX / RPS_SERIAL63_BUCKET_MAX);
@@ -168,7 +168,7 @@ rps_id_valid(const rps_id_t id)
 
 
 /* compares two object IDs */
-extern rps_hot rps_cmpflag_t
+extern RPS_HOT rps_cmpflag_t
 rps_id_cmp(const rps_id_t lhs, const rps_id_t rhs);
 
 

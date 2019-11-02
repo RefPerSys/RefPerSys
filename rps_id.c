@@ -36,7 +36,7 @@
  */
 
 
-extern inline rps_pure uint64_t
+extern inline RPS_PURE uint64_t
 rps_serial63_buckets(const uint64_t s);
 
 
@@ -81,7 +81,7 @@ rps_id_gteq(const rps_id_t lhs, const rps_id_t rhs);
  */
 
 
-extern rps_hot rps_cmpflag_t
+extern RPS_HOT rps_cmpflag_t
 rps_id_cmp(const rps_id_t lhs, const rps_id_t rhs)
 {
   if (lhs._hi == rhs._hi)

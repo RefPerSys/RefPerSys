@@ -34,46 +34,44 @@
 
 #if !defined RPS_HINTS_INCLUDED
 
-#warning TODO: stick to uppercase macro names
-
 /* hints that a predicate is likely to be true */
 #if (defined __GNUC__)
-#	define rps_likely(p) (__builtin_expect(!!(p), 1))
+#	define RPS_LIKELY(p) (__builtin_expect(!!(p), 1))
 #else
-#	define rps_likely(p) (p)
-#	warning rps_likely() has no effect
+#	define RPS_LIKELY(p) (p)
+#	warning RPS_LIKELY() macro has no effect
 #endif
 
 /* hints that a predicate is likely to be false */
 #if (defined __GNUC__)
-#	define rps_unlikely(p) (__builtin_expect(!!(p), 0))
+#	define RPS_UNLIKELY(p) (__builtin_expect(!!(p), 0))
 #else
-#	define rps_unlikely(p) (p)
-#	warning rps_unlikely() has no effect
+#	define RPS_UNLIKELY(p) (p)
+#	warning RPS_UNLIKELY() macro has no effect
 #endif
 
 /* hints that a variable or function is unused */
 #if (defined __GNUC__)
-#	define rps_unused __attribute__((unused))
+#	define RPS_UNUSED __attribute__((unused))
 #else
-#	define rps_unused
-#	warning rps_unused has no effect
+#	define RPS_UNUSED
+#	warning RPS_UNUSED attribute has no effect
 #endif
 
 /* hints that a function is pure */
 #if (defined __GNUC__)
-#	define rps_pure __attribute__((pure))
+#	define RPS_PURE __attribute__((pure))
 #else
-#	define rps_pure
-#	warning rps_pure has no effect
+#	define RPS_PURE
+#	warning RPS_PURE attribute has no effect
 #endif
 
 /* hints that a function is hot */
 #if (defined __GNUC__)
-#	define rps_hot __attribute__((hot))
+#	define RPS_HOT __attribute__((hot))
 #else
-#	define rps_hot
-#	warning rps_hot has no effect
+#	define RPS_HOT
+#	warning RPS_HOT attribute has no effect
 #endif
 
 #endif /* !defined RPS_HINTS_INCLUDED */
