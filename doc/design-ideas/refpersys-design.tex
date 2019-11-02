@@ -870,10 +870,58 @@ after having created all objects as empty, and loaded plugins
 (i.e. \texttt{dlopen}-ing many \texttt{*.so} files), {\RefPerSys}
 processes each state file in a potentially different loading thread.
 
+\medskip
+\subsection{Agenda and multi-threading in \RefPerSys}
+\label{subsec:agenda-thread}
+
+Once {\RefPerSys} persistence is implemented and provides some
+meta-programming facilities, we can define and use some agenda
+machinery. The insight is that {\RefPerSys} is running several worker
+threads known to its garbage collector. Our \textbf{agenda}
+\index{agenda} is the central mechanism of {\RefPerSys} feeding these
+worker threads with some work to do, using \textbf{tasklets}
+representing a small amount of work to be done.
+
+\medskip
+
+Each worker thread is indefinitely looping like this:
+\begin{enumerate}
+\item it runs rarely some householding processing, notably garbage
+  collection work. This is where garbage collection gets synchronized.
+\item it waits, if so needed, for the agenda to become non-empty
+\item it choose a tasklet $\tau$ to run inside the agenda. That
+  tasklet is removed from the agenda.
+\item it runs that tasklet $\tau$ for a small amount of time (a few
+  dozen of milliseconds, typically), called a \textbf{step}. Of course
+  during that step the agenda can (and usually will) change, and
+  perhaps the same tasklet $\tau$ would be added again into the
+  agenda, with maybe several other tasklets. Or on the contrary,
+  running $\tau$ could remove one or several other tasklets $\tau_1,
+  \tau_2 \ldots$ from the agenda, and add other ones $\tau'_1, \tau'_2, \ldots$ there.
+\item that loop is repeated (unless {\RefPerSys} is stopped).
+\end{enumerate}
+
+The number of worker threads is fixed and small. Typically one worker
+thread per processor core (so 3 on a small laptop, 20 or 30 on a big
+desktop). Of course the agenda mechanism requires synchronization thru
+locks or mutexes and \textsc{Pthread} condition variables.
+
+In addition of the worker thread, some additional slave threads could
+be needed, in particular to handle some event loop (and serve HTTP
+requests).  Of course the running steps should appropriately lock
+objects, to avoid aftermath and synchronize properly their mutation.
+
 \bigskip
 
-\section{the data and object models of \RefPerSys}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The data and object models of \RefPerSys}
 \label{sec:dataobjmodel}
+
+The data is what is processed by {\RefPerSys}, and is made of values
+(and internally for the GC, also quasi-value). The object model is
+defining our classes, our single inheritance mechanism, our message
+sending protocol.
 
 \subsection{how data should be processed in \RefPerSys}
 \label{subsec:howdata}
@@ -931,7 +979,7 @@ Since {\RefPerSys} objects are the only mutable values, they keep not
 only their synchronization data, but also attributes or properties,
 components, and some extra \index{payload}
 \textbf{payload}\footnote{From the GC point of view, payloads are
-quasi-values \index{quasi-value}}}. See also \S
+quasi-values \index{quasi-value} \ldots}. See also \S
   \ref{subsec:mutable-objects} below.
 
 The {\RefPerSys} worker threads, organized in a small
@@ -959,7 +1007,6 @@ or \href{http://qt.io/}{\textsc{Qt}} callbacks) are transient.
 
 \label{subsec:datalowhigh}
 \subsection{data at the low and high levels}
-\label{subsec:datalowhigh}
 
 {\RefPerSys} mostly handle values\footnote{In particular, only
 \textsc{closures} are
@@ -987,11 +1034,12 @@ systems!}, so is nicely represented as a pointer or a tagged integer
 usually pointers to complex structures, so, per the
 \href{https://github.com/hjl-tools/x86-psABI/wiki/x86-64-psABI-1.0.pdf}{x86-64
   calling conventions}, are word aligned (address multiple of 8
-bytes). Let's call \emph{genuine values} \index{genuine!value} those that are not
+bytes). Let's call \emph{genuine values} \index{genuine!value} those
+that are not
 \href{https://medium.com/@hinchman_amanda/null-pointer-references-the-billion-dollar-mistake-1e616534d485}{\texttt{null}}
 and not tagged pointers (so either immutable values or objects in
-figure \ref{fig:persistent-heap}). These genuine values are
-practically implemented as a \href{
+figure \ref{fig:persistent-heap}). These \textbf{genuine values} (and
+also quasi-values) are practically implemented as a \href{
   https://en.wikipedia.org/wiki/Tagged_union}{tagged
   union}\footnote{An old example of tagged unions in C is the
 \href{https://tronche.com/gui/x/xlib/events/structures.html}{X11 event
@@ -1267,6 +1315,7 @@ such data has to be the payload of that object.
 
 \bigskip
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Persistence in \RefPerSys}
 \label{sec:persistence}
 
