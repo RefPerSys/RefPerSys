@@ -101,7 +101,9 @@ rps_serial63_buckets(const uint64_t s)
 }
 
 
-/* represents and object ID */
+/* represents an object ID; note that it's more efficient to pass and return
+ * two-word structs than their pointers on the x86_64 Linux ABI. rps_serial63_t
+ * is a native word on x86_64 since it is guaranteed to be 64-bits wide. */
 typedef struct rps_id_st
 {
   rps_serial63_t _hi;
@@ -109,39 +111,36 @@ typedef struct rps_id_st
 } rps_id_t;
 
 
-#warning TODO: why use rps_id_t pointers? We can pass a two-word structure by value....
-
 /* gets the high order bits of an object ID */
 inline rps_serial63_t
-rps_id_hi(const rps_id_t *id)
+rps_id_hi(const rps_id_t id)
 {
-  return id->_hi;
+  return id._hi;
 }
 
 
 /* gets the low order bits of an object ID */
 inline rps_serial63_t
-rps_id_lo(const rps_id_t *id)
+rps_id_lo(const rps_id_t id)
 {
-  return id->_lo;
+  return id._lo;
 }
 
 
 /* gets the number of buckets for an object ID */
 /* TODO: explain the significance of buckets */
 inline uint64_t
-rps_id_buckets(const rps_id_t *id)
+rps_id_buckets(const rps_id_t id)
 {
-  return rps_serial63_buckets (id->_hi);
+  return rps_serial63_buckets (id._hi);
 }
 
 
 /* checks whether an object ID is empty */
-/* */
 inline bool
-rps_id_empty(const rps_id_t *id)
+rps_id_empty(const rps_id_t id)
 {
-  return id->_hi == 0 && id->_lo == 0;
+  return id._hi == 0 && id._lo == 0;
 }
 
 
@@ -149,34 +148,34 @@ rps_id_empty(const rps_id_t *id)
 /* The magic numbers below a prime, on purpose, but choosen
    arbitrarily. We want something fast! */
 inline rps_hashint_t
-rps_id_hash(const rps_id_t *id)
+rps_id_hash(const rps_id_t id)
 {
-  return (id->_hi % 2147473837)
-         + ((id->_hi >> 32) ^ (id->_lo * 17 + 201151));
+  return (id._hi % 2147473837)
+         + ((id._hi >> 32) ^ (id._lo * 17 + 201151));
 }
 
 
 /* checks whether an object ID is valid */
 inline bool
-rps_id_valid(const rps_id_t *id)
+rps_id_valid(const rps_id_t id)
 {
-  return id->_hi >= RPS_SERIAL63_HI_MIN
-         && id->_hi < RPS_SERIAL63_HI_MAX
-         && id->_lo >= RPS_SERIAL63_LO_MIN
-         && id->_lo < RPS_SERIAL63_LO_MAX
+  return id._hi >= RPS_SERIAL63_HI_MIN
+         && id._hi < RPS_SERIAL63_HI_MAX
+         && id._lo >= RPS_SERIAL63_LO_MIN
+         && id._lo < RPS_SERIAL63_LO_MAX
          && rps_id_hash (id) != 0;
 }
 
 
 /* compares two object IDs */
 extern rps_hot rps_cmpflag_t
-rps_id_cmp(const rps_id_t *lhs, const rps_id_t *rhs);
+rps_id_cmp(const rps_id_t lhs, const rps_id_t rhs);
 
 
 /* checks if an object ID is less than another one; this is a convenience
  * wrapper around rps_id_cmp() */
 inline bool
-rps_id_lt(const rps_id_t *lhs, const rps_id_t *rhs)
+rps_id_lt(const rps_id_t lhs, const rps_id_t rhs)
 {
   return rps_id_cmp (lhs, rhs) < 0;
 }
@@ -185,7 +184,7 @@ rps_id_lt(const rps_id_t *lhs, const rps_id_t *rhs)
 /* checks if an object ID is less than or equal to another one; this is a
  * convenience wrapper around rps_id_cmp() */
 inline bool
-rps_id_lteq(const rps_id_t *lhs, const rps_id_t *rhs)
+rps_id_lteq(const rps_id_t lhs, const rps_id_t rhs)
 {
   return rps_id_cmp (lhs, rhs) <= 0;
 }
@@ -194,7 +193,7 @@ rps_id_lteq(const rps_id_t *lhs, const rps_id_t *rhs)
 /* checks if an object ID is equal to another one; this is a convenience wrapper
  * around rps_id_cmp() */
 inline bool
-rps_id_eq(const rps_id_t *lhs, const rps_id_t *rhs)
+rps_id_eq(const rps_id_t lhs, const rps_id_t rhs)
 {
   return rps_id_cmp (lhs, rhs) == RPS_CMPFLAG_EQ;
 }
@@ -203,7 +202,7 @@ rps_id_eq(const rps_id_t *lhs, const rps_id_t *rhs)
 /* checks if an object ID is greater than another one; this is a convenience
  * wrapper around rps_id_cmp() */
 inline bool
-rps_id_gt(const rps_id_t *lhs, const rps_id_t *rhs)
+rps_id_gt(const rps_id_t lhs, const rps_id_t rhs)
 {
   return rps_id_cmp (lhs, rhs) > 0;
 }
@@ -212,7 +211,7 @@ rps_id_gt(const rps_id_t *lhs, const rps_id_t *rhs)
 /* checks if an object ID is greater than or equal to another one; this is a
  * convenience wrapper around rps_id_cmp() */
 inline bool
-rps_id_gteq(const rps_id_t *lhs, const rps_id_t *rhs)
+rps_id_gteq(const rps_id_t lhs, const rps_id_t rhs)
 {
   return rps_id_cmp (lhs, rhs) > 0;
 }
