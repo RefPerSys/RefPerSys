@@ -823,7 +823,14 @@ objects are necessarily heavier since they contain some kind of
 lock. \href{https://en.wikipedia.org/wiki/Closure\_(computer_programming)}{closures}
 are immutable values, containing an object representing and giving
 their function code (as a C function pointer inside that object), and
-additional closed values.
+additional closed values. In practice our garbage collector processes
+not only values (either immutable values or objects), but also
+\textbf{quasi-values}: these are a single memory zone which is
+allocated using the garbage collector allocation protocol, traversed
+by the GC when something points to it, appears inside other values (in
+particular, as payload of objects), but by convention should not be
+passed as a genuine value. So the figure \ref{fig:persistent-heap} is
+a simplification.
 
 Some values (or objects) are dead; in the figure
 \ref{fig:persistent-heap}, the immutable value \texttt{iv4} is not
