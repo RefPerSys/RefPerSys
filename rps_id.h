@@ -83,13 +83,13 @@ typedef uint64_t rps_serial63_t; /* but the most significant bit is 0 */
 typedef int rps_cmpflag_t;
 
 /* indicates a less-than comparison result ; any integer < 0 is ok*/
-#define RPS_CMPFLAG_LT ((rps_cmpflag) -1)
+#define RPS_CMPFLAG_LT ((rps_cmpflag_t) -1)
 
 /* indicates an equality comparison result */
-#define RPS_CMPFLAG_EQ ((rps_cmpflag) 0)
+#define RPS_CMPFLAG_EQ ((rps_cmpflag_t) 0)
 
 /* indicates a greater-than comparison result ; any integer > 0 is ok */
-#define RPS_CMPFLAG_GT ((rps_cmpflag) 1)
+#define RPS_CMPFLAG_GT ((rps_cmpflag_t) 1)
 
 
 /* gets the number number of buckets in an rps_serial63_t type */
@@ -169,7 +169,7 @@ rps_id_valid(const rps_id_t *id)
 
 
 /* compares two object IDs */
-extern rps_hot rps_cmpflag
+extern rps_hot rps_cmpflag_t
 rps_id_cmp(const rps_id_t *lhs, const rps_id_t *rhs);
 
 
