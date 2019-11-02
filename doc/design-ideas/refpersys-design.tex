@@ -814,9 +814,9 @@ Conceptually, {\RefPerSys}
   precise garbage collector} should traverse the graph of references
 to {\RefPerSys} values, starting from global or transient roots and
 local variables inside call frames of working threads. Each
-{\RefPerSys} value (immutable or object) is represented by a machine
-word (aligned, 64 bits) which usually contains a pointer, but
-sometimes some
+{\RefPerSys} \textbf{value} \index{value} (immutable or object) is
+represented by a machine word (aligned, 64 bits) which usually
+contains a pointer, but sometimes some
 \href{https://en.wikipedia.org/wiki/Tagged\_pointer}{tagged integer}.
 Immutable values are often ``small'' (a few dozens of words) but
 objects are necessarily heavier since they contain some kind of
@@ -825,12 +825,12 @@ are immutable values, containing an object representing and giving
 their function code (as a C function pointer inside that object), and
 additional closed values. In practice our garbage collector processes
 not only values (either immutable values or objects), but also
-\textbf{quasi-values}: these are a single memory zone which is
-allocated using the garbage collector allocation protocol, traversed
-by the GC when something points to it, appears inside other values (in
-particular, as payload of objects), but by convention should not be
-passed as a genuine value. So the figure \ref{fig:persistent-heap} is
-a simplification.
+\textbf{quasi-values} \index{quasi-value}: these are a single memory
+zone which is allocated using the garbage collector allocation
+protocol, traversed by the GC when something points to it, appears
+inside other values (in particular, as payload \index{payload} of objects), but by
+convention should not be passed as a genuine value. So the figure
+\ref{fig:persistent-heap} is a simplification.
 
 Some values (or objects) are dead; in the figure
 \ref{fig:persistent-heap}, the immutable value \texttt{iv4} is not
@@ -929,8 +929,10 @@ processing.}  and processable, as some evolving subgraph of
 
 Since {\RefPerSys} objects are the only mutable values, they keep not
 only their synchronization data, but also attributes or properties,
-components, and some extra payload. See also \S
-\ref{subsec:mutable-objects} below.
+components, and some extra \index{payload}
+\textbf{payload}\footnote{From the GC point of view, payloads are
+quasi-values \index{quasi-value}}}. See also \S
+  \ref{subsec:mutable-objects} below.
 
 The {\RefPerSys} worker threads, organized in a small
 \href{https://en.wikipedia.org/wiki/Thread_pool}{thread
@@ -965,47 +967,49 @@ or \href{http://qt.io/}{\textsc{Qt}} callbacks) are transient.
 arguments which are values (read more about
 \href{https://en.wikipedia.org/wiki/Lambda_calculus}{$\lambda$-calculus});
 or messages are sent, to values with perhaps additional value
-arguments.}, which can be either ``light'' immutable values or
-  ``heavy'' mutable objects. Our data model is inspired by the
-  \href{https://en.wikipedia.org/wiki/ObjVlisp}{\textsc{ObjVLisp}}
-  model (or
-  \href{https://en.wikipedia.org/wiki/Common_Lisp_Object_System}{\textsc{CLOS}},
-  see also the
-  \href{http://www.lispworks.com/documentation/HyperSpec/Front/index.htm}{Common
-    Lisp HyperSpec}) common in most Lisp implementations
-  \cite{queinnec:2003:lisp, cointe:1987:metaclasses,
-    briot:1987:uniform} and inspired by
-  \href{https://en.wikipedia.org/wiki/Smalltalk}{\textsc{Smalltalk}}
-  \cite{kay:1996:early-smalltalk}. Also, a value can be transient or
-  persistent. Each {\RefPerSys} value fits in one 64 bits machine
-  word\footnote{Remember: {\RefPerSys} targets only Linux x86-64
-  systems!}, so is nicely represented as a pointer or a tagged integer
-  (63 bits, with the least significant bit being set to 1). Values are
-  usually pointers to complex structures, so, per the
-  \href{https://github.com/hjl-tools/x86-psABI/wiki/x86-64-psABI-1.0.pdf}{x86-64
-    calling conventions}, are word aligned (address multiple of 8
-  bytes). Let's call \emph{genuine values} those that are not
-  \href{https://medium.com/@hinchman_amanda/null-pointer-references-the-billion-dollar-mistake-1e616534d485}{\texttt{null}}
-  and not tagged pointers (so either immutable values or objects in
-  figure \ref{fig:persistent-heap}). These genuine values are
-  practically implemented as a \href{
-    https://en.wikipedia.org/wiki/Tagged_union}{tagged
-    union}\footnote{An old example of tagged unions in C is the
-  \href{https://tronche.com/gui/x/xlib/events/structures.html}{X11
-    event structure}, but
-  \href{https://www.gnu.org/software/guile/manual/html\_node/A-Simple-Representation.html}{\textsc{Guile}}
-  and
-  \href{https://caml.inria.fr/pub/docs/manual-ocaml/intfc.html}{\textsc{Ocaml}}
-  use similar implementation tricks.} and each of them start with a
-  field (probably 16 bits) identifying their concrete type.
+arguments. Internally, our GC also handle quasi-values.}, which can be
+either ``light'' immutable values or ``heavy'' mutable objects. Our
+data model is inspired by the
+\href{https://en.wikipedia.org/wiki/ObjVlisp}{\textsc{ObjVLisp}} model
+(or
+\href{https://en.wikipedia.org/wiki/Common_Lisp_Object_System}{\textsc{CLOS}},
+see also the
+\href{http://www.lispworks.com/documentation/HyperSpec/Front/index.htm}{Common
+  Lisp HyperSpec}) common in most Lisp implementations
+\cite{queinnec:2003:lisp, cointe:1987:metaclasses, briot:1987:uniform}
+and inspired by
+\href{https://en.wikipedia.org/wiki/Smalltalk}{\textsc{Smalltalk}}
+\cite{kay:1996:early-smalltalk}. Also, a value can be transient or
+persistent. Each {\RefPerSys} value fits in one 64 bits machine
+word\footnote{Remember: {\RefPerSys} targets only Linux x86-64
+systems!}, so is nicely represented as a pointer or a tagged integer
+(63 bits, with the least significant bit being set to 1). Values are
+usually pointers to complex structures, so, per the
+\href{https://github.com/hjl-tools/x86-psABI/wiki/x86-64-psABI-1.0.pdf}{x86-64
+  calling conventions}, are word aligned (address multiple of 8
+bytes). Let's call \emph{genuine values} \index{genuine!value} those that are not
+\href{https://medium.com/@hinchman_amanda/null-pointer-references-the-billion-dollar-mistake-1e616534d485}{\texttt{null}}
+and not tagged pointers (so either immutable values or objects in
+figure \ref{fig:persistent-heap}). These genuine values are
+practically implemented as a \href{
+  https://en.wikipedia.org/wiki/Tagged_union}{tagged
+  union}\footnote{An old example of tagged unions in C is the
+\href{https://tronche.com/gui/x/xlib/events/structures.html}{X11 event
+  structure}, but
+\href{https://www.gnu.org/software/guile/manual/html\_node/A-Simple-Representation.html}{\textsc{Guile}}
+and
+\href{https://caml.inria.fr/pub/docs/manual-ocaml/intfc.html}{\textsc{Ocaml}}
+use similar implementation tricks.} and each of them start with a
+field (probably 16 bits) identifying their concrete type.
 
-  For pragmatical reasons, our values should be both ordered and
+  For pragmatical reasons, our values\footnote{Of course, quasi-values
+  need not to be ordered and hashed!} should be both ordered and
   hashed, since many
   \href{https://en.wikipedia.org/wiki/Data\_structure}{data
     structures} \cite{cormen:2009:introduction}, specified as some
   \href{https://en.wikipedia.org/wiki/Abstract_data_type}{abstract
-    data type}, either uses some ordering
-  (e.g. in \href{https://en.wikipedia.org/wiki/Red-black_tree}{red-black
+    data type}, either uses some ordering (e.g. in
+  \href{https://en.wikipedia.org/wiki/Red-black_tree}{red-black
     trees}) or some hash-code (e.g. various kinds of
   \href{https://en.wikipedia.org/wiki/Hash_table}{hash
     tables}). Because of the weird and counter-intuitive semantics of
