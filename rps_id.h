@@ -30,6 +30,7 @@
 
 
 #ifndef RPS_ID_INCLUDED
+#define RPS_ID_INCLUDED
 
 
 /* enable access to non-standard GNU extension functions
@@ -120,7 +121,7 @@ rps_id_hi(const rps_id_t id)
 
 
 /* gets the low order bits of an object ID */
-inline rps_serial63_t
+static inline rps_serial63_t
 rps_id_lo(const rps_id_t id)
 {
   return id._lo;
@@ -235,7 +236,6 @@ rps_id_gteq(const rps_id_t lhs, const rps_id_t rhs)
 {
   return rps_id_cmp (lhs, rhs) > 0;
 }
-
 
 // gives true if conversion from id to char-buffer cbuf succeeded:
 extern bool rps_idtocbuf32(rps_id_t id, char cbuf[static 32]);

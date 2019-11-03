@@ -40,7 +40,6 @@ CFLAGS += -Wall -Wextra -O1 -g
 
 
 CFILES[] =
-   rps_id
    rps_primes
    main_rps
 

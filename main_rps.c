@@ -30,7 +30,7 @@
 
 #include "refpersys.h"
 
-int main(int argc, char**argv)
+int main(int RPS_UNUSED argc, char RPS_UNUSED **argv)
 {
 } /* end of main */
 

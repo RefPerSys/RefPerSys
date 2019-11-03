@@ -73,14 +73,14 @@ rps_prime_above (int64_t n)
 {
   unsigned numprimes = sizeof (primes_tab_RPS) / sizeof (primes_tab_RPS[0]);
   int lo = 0, hi = numprimes;
-  if (n >= primes_tab_BM[numprimes - 1])
+  if (n >= primes_tab_RPS[numprimes - 1])
     return 0;
   if (n < 2)
     return 2;
   while (lo + 6 < hi)
     {
       int md = (lo + hi) / 2;
-      if (primes_tab_BM[md] > n)
+      if (primes_tab_RPS[md] > n)
         hi = md;
       else
         lo = md;
@@ -90,8 +90,8 @@ rps_prime_above (int64_t n)
   if (hi < (int) numprimes - 1)
     hi++;
   for (int ix = lo; ix < hi; ix++)
-    if (primes_tab_BM[ix] > n)
-      return primes_tab_BM[ix];
+    if (primes_tab_RPS[ix] > n)
+      return primes_tab_RPS[ix];
   return 0;
 }
 
@@ -107,7 +107,7 @@ rps_prime_below (int64_t n)
   while (lo + 6 < hi)
     {
       int md = (lo + hi) / 2;
-      if (primes_tab_BM[md] > n)
+      if (primes_tab_RPS[md] > n)
         hi = md;
       else
         lo = md;
