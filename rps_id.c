@@ -28,5 +28,18 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+#include "SFMT.h"
 #include "rps_id.h"
+
+
+extern RPS_HOT rps_serial63_t
+rps_serial63_random(void)
+{
+	const int SEED = 1234;
+
+	sfmt_t sfmt;
+	sfmt_init_gen_rand (&sfmt, SEED);
+
+	return (rps_serial63_t) sfmt_genrand_res53 (&sfmt);
+}
 

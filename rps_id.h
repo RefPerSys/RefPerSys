@@ -80,6 +80,10 @@ typedef uint64_t rps_serial63_t; /* but the most significant bit is 0 */
 #define RPS_SERIAL63_BUCKET_MAX ((uint64_t) 10 * 62)
 
 
+extern RPS_HOT rps_serial63_t
+rps_serial63_random(void);
+
+
 /* flag to indicate comparison result; something similar to strcmp result */
 typedef int rps_cmpflag_t;
 
