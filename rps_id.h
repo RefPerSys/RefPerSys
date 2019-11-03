@@ -247,15 +247,19 @@ rps_id_gteq(const rps_id_t lhs, const rps_id_t rhs)
   return rps_id_cmp (lhs, rhs) > 0;
 }
 
-// gives true if conversion from id to char-buffer cbuf succeeded:
-extern bool rps_idtocbuf32(rps_id_t id, char cbuf[static 32]);
+/* gives true if conversion from id to char-buffer cbuf succeeds */
+extern bool rps_id_tocbuf32(rps_id_t id, char cbuf[static 32]);
 
+
+/* TODO: why do we need this macro? */
 #define RPS_ID_AS_CBUF_CNTBIS(Id,Cnt) ({			\
       static thread_local cbuf_##Cnt[32];			\
       rps_rawid_t id_##Cnt = (Id);				\
       memset(cbuf_##Cnt, 0, sizeof(cbuf_##Cnt));		\
       rps_idtocbuf32(id_##Cnt, cbuf_##Cnt)?cbuf_##Cnt:"???"; })
 
+/* TODO: why do we need these macros? */
+/* TODO: where is __COUNT__ defined? do we mean GCC-defined  __COUNTER__? */
 #define RPS_ID_AS_CBUF_CNT(Id,Cnt)  RPS_ID_AS_CBUF_CNTBIS(Id,Cnt)
 #define RPS_ID_AS_CBUF(Id) RPS_ID_AS_CBUF_CNT(Id,__COUNT__)
 

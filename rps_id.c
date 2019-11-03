@@ -28,6 +28,7 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+#include <time.h>
 #include "SFMT.h"
 #include "rps_id.h"
 
@@ -35,10 +36,11 @@
 extern RPS_HOT rps_serial63_t
 rps_serial63_random(void)
 {
-	const int SEED = 1234;
+	struct timespec seed;
+	clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &seed);
 
 	sfmt_t sfmt;
-	sfmt_init_gen_rand (&sfmt, SEED);
+	sfmt_init_gen_rand (&sfmt, seed.tv_nsec);
 
 	return (rps_serial63_t) sfmt_genrand_res53 (&sfmt);
 }
