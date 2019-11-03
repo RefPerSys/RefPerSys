@@ -34,9 +34,10 @@
 
 CC = gcc
 CFLAGS += -Wall -Wextra -O1 -g
+INCLUDES += lib/sfmt
+LIBS = lib/sfmt/libsfmt
 # ASFLAGS +=
 # LDFLAGS +=
-# INCLUDES +=
 
 
 CFILES[] =
