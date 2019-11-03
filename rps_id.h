@@ -80,6 +80,7 @@ typedef uint64_t rps_serial63_t; /* but the most significant bit is 0 */
 #define RPS_SERIAL63_BUCKET_MAX ((uint64_t) 10 * 62)
 
 
+/* generates a new random rps_serial63_t value */
 extern RPS_HOT rps_serial63_t
 rps_serial63_random(void);
 
@@ -114,6 +115,11 @@ typedef struct rps_id_st
   rps_serial63_t _hi;
   rps_serial63_t _lo;
 } rps_id_t;
+
+
+/* generates a new random object ID */
+extern RPS_HOT rps_id_t
+rps_id_new(void);
 
 
 /* gets the high order bits of an object ID */

@@ -43,3 +43,26 @@ rps_serial63_random(void)
 	return (rps_serial63_t) sfmt_genrand_res53 (&sfmt);
 }
 
+
+extern RPS_HOT rps_id_t
+rps_id_new(void)
+{
+	register rps_serial63_t hi, lo;
+
+	while (true) {
+		hi = rps_serial63_random ();
+		if (RPS_UNLIKELY (hi < RPS_SERIAL63_HI_MIN))
+			continue;
+
+		lo = rps_serial63_random ();
+		if (RPS_UNLIKELY (lo < RPS_SERIAL63_LO_MIN))
+			continue;
+
+		if (RPS_UNLIKELY (rps_id_has (hi, lo) == 0))
+			continue;
+	}
+
+	rps_id_t id = {._hi = hi, .lo = lo};
+	return id;
+}
+
