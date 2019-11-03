@@ -559,7 +559,17 @@ control \cite{fouet-starynkevitch:describing-control:1987,
   Starynkevitch-1990-EUM, Pitrat:2009:ArtifBeings}. This should also
 enable \textbf{introspection}, by permitting primitives inspecting the
 current call stack, perhaps using Ian Taylor's
-\href{https://github.com/ianlancetaylor/libbacktrace}{\texttt{libbacktrace}}.
+\href{https://github.com/ianlancetaylor/libbacktrace}{\texttt{libbacktrace}}. Also,
+such an introspection might perhaps be implemented \cite{mitchell:2001:alp} with two nearly
+twin \texttt{refpersys} processes, one of them driving a \texttt{gdb}
+process\footnote{Imagine some
+\href{http://man7.org/linux/man-pages/man3/popen.3.html}{\texttt{popen}}
+or some
+\href{https://developer.gnome.org/glib/stable/glib-Spawning-Processes.html\#g-spawn-async}{\texttt{g\_spawn\_async}}
+or some
+\href{https://pocoproject.org/docs/Poco.Process.html}{\texttt{Poco::Process}}
+of some \texttt{gdb refpersys 1234} process debugging the other one of
+pid 1234.}.
 
 
 {\RefPerSys} should (like \textsc{Caia} and its predecessor
@@ -1037,25 +1047,27 @@ compilers.} compilation techniques \cite{Aho:2006:dragon-book}, and in
      frameworks).
 \medskip
 
-\href{https://en.wikipedia.org/wiki/Reflection_(computer_programming)}{Reflection}
-is ``the ability of a process to examine, introspect, and modify its
-own structure and behavior'' and also, for
-\href{https://en.wikipedia.org/wiki/Self-reflection}{self-reflection},
-the capacity `` to exercise introspection and to attempt to learn more
-about their fundamental nature and essence''. (Wikipedia). It is
-advocated (in \cite{Pitrat:2009:ArtifBeings}) that a similar approach
-is (painfully) achievable in AI systems, and it would need both clever
-\href{https://en.wikipedia.org/wiki/Backtracking}{backtracking} and
-\href{https://en.wikipedia.org/wiki/Stack_trace}{backtracing}
-techniques. Libraries such as Ian Taylor's
-\href{https://github.com/ianlancetaylor/libbacktrace}{\texttt{libbacktrace}}
-(which wants most of the code to be compiled with
-\href{https://en.wikipedia.org/wiki/DWARF}{\textsc{Dwarf} debugging}
-information\footnote{In practice we should compile our or other C or
-C++ code with both \texttt{-O2 -g} passed while
-\href{https://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html}{invoking}
-\texttt{gcc} or \texttt{g++}, and this is indeed possible and
-practically works well enough.}) are helpful.
+%- \href{https://en.wikipedia.org/wiki/Reflection_(computer_programming)}{Reflection}
+%- is ``the ability of a process to examine, introspect, and modify its
+%- own structure and behavior'' and also, for
+%- \href{https://en.wikipedia.org/wiki/Self-reflection}{self-reflection},
+%- the capacity `` to exercise introspection and to attempt to learn more
+%- about their fundamental nature and essence''. (Wikipedia). It is
+%- advocated (in \cite{Pitrat:2009:ArtifBeings}) that a similar approach
+%- is (painfully) achievable in AI systems, and it would need both clever
+%- \href{https://en.wikipedia.org/wiki/Backtracking}{backtracking} and
+%- \href{https://en.wikipedia.org/wiki/Stack_trace}{backtracing}
+%- techniques. Libraries such as Ian Taylor's
+%- \href{https://github.com/ianlancetaylor/libbacktrace}{\texttt{libbacktrace}}
+%- (which wants most of the code to be compiled with
+%- \href{https://en.wikipedia.org/wiki/DWARF}{\textsc{Dwarf} debugging}
+%- information\footnote{In practice we should compile our or other C or
+%- C++ code with both \texttt{-O2 -g} passed while
+%- \href{https://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html}{invoking}
+%- \texttt{gcc} or \texttt{g++}, and this is indeed possible and
+%- practically works well enough.}) are helpful.
+
+
 \bigskip
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
