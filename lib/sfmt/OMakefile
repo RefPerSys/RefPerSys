@@ -24,26 +24,22 @@
 
 # .PHONY: all install clean
 
+
 ########################################################################
-# Subdirectories.
-# You may want to include some subdirectories in this project.
-# If so, define the subdirectory targets and uncomment this section.
+# C configuration.
+# Delete this section if you are not building C files.
 #
 
-.SUBDIRS: lib/sfmt
-
 CC = gcc
-CFLAGS += -Wall -Wextra -O1 -g
+CFLAGS += -O3 -finline-functions -fomit-frame-pointer -DNDEBUG -fno-strict-aliasing --param max-inline-insns-single=1800 -Wmissing-prototypes -Wall -std=c99 -DSFMT_MEXP=19937
+
 # ASFLAGS +=
 # LDFLAGS +=
 # INCLUDES +=
 
+LIBFILES[] = SFMT
 
-CFILES[] =
-   rps_primes
-   main_rps
+LIB = libsfmt
 
-MAIN = refpersys
-
-.DEFAULT: $(CProgram $(MAIN), $(CFILES))
+.DEFAULT: $(StaticCLibrary $(LIB), $(LIBFILES))
 
