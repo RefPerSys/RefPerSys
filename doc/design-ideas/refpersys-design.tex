@@ -874,7 +874,8 @@ after having created all objects as empty, and loaded plugins
 (i.e. \texttt{dlopen}-ing many \texttt{*.so} files), {\RefPerSys}
 processes each state file in a potentially different loading thread.
 
-\medskip
+\bigskip
+
 \subsection{Agenda and multi-threading in \RefPerSys}
 \label{subsec:agenda-thread}
 
@@ -916,6 +917,145 @@ be needed, in particular to handle some event loop (and serve HTTP
 requests).  Of course the running steps should appropriately lock
 objects, to avoid aftermath and synchronize properly their mutation.
 
+\bigskip
+
+\subsection{Metaprogramming and introspection in \RefPerSys}
+\label{subsec:metaprog-introspec}
+
+\textbf{Metaprogramming} \index{metaprogramming} is defined
+\href{https://en.wikipedia.org/wiki/Metaprogramming}{in Wikipedia} as
+``a programming technique in which computer programs have the ability
+to treat other programs as their data. It means that a program can be
+designed to read, generate, analyze or transform other programs, and
+even modify itself while running''. That design idea is central to
+many Artificial Intelligence systems and AI inspired
+languages\footnote{See also \href{http://s48.org}{\textsc{Scheme 48}},
+\href{http://sbcl.org/}{\textsc{Sbcl}},
+\href{http://https://www.rust-lang.org/}{\textsc{Rust}}, even
+\href{https://en.cppreference.com/w/cpp/language/templates}{C++
+  \emph{templates}}, \href{https://www.call-cc.org/}{\textsc{Chicken
+    Scheme}}, \href{
+  http://okmij.org/ftp/ML/MetaOCaml.html}{\textsc{MetaOcaml}}, the
+\href{http://eclipseclp.org/}{\textsc{ECLiPSe} Constraint Programming
+  System}, \href{https://www.rascal-mpl.org/}{\textsc{Rascal}},
+\href{http://nemerle.org/}{\textsc{Nemerle}},
+\href{http://coccinelle.lip6.fr/}{\textsc{Coccinelle}},
+\href{{https://ocsigen.org/}}{\textsc{Ocsigen}},
+\href{http://www.gprolog.org/}{\textsc{Gnu Prolog}},
+\href{http://www.clipsrules.net/}{\textsc{Clips}},
+\href{https://logological.org/gpp}{\textsc{Gpp}},
+\href{http://swig.org/}{\textsc{Swig}},
+\href{https://www.antlr.org/}{\textsc{Antlr}},
+\href{https://github.com/drh/iburg}{\textsc{Iburg}},
+\href{https://www.gnu.org/software/bison/}{Gnu \textsc{Bison}}, etc
+\ldots} and is also common in software enginneering\footnote{A typical
+example is the \href{http://gcc.gnu.org}{\textsc{Gcc}} compiler, or
+\href{https://en.wikipedia.org/wiki/Autoconf}{\textsc{Autoconf}}, and
+\href{https://en.wikipedia.org/wiki/Source-to-source_compiler}{transpiler
+  approaches}} \cite{Lenat:1983:Eurisko, Lenat:1983:theory,
+  Lenat:1991:ev-cycl, Pitrat:1996:FGCS, Pitrat:2009:AST,
+  Pitrat:2009:ArtifBeings, Pitrat:blog, Queinnec:1996:LSP,
+  Queinnec:2004:ContinWeb, Starynkevitch-1990-EUM,
+  Starynkevitch-DSL2011, Starynkevitch-GCCMELTweb,
+  Starynkevitch:2007:Multistage, Starynkevitch:2019:bismon-draft,
+  Tschudin:2005:HarnessingSC, abelson:1996:sicp, briot:1987:uniform,
+  chambers:1991:efficient, cointe:1987:metaclasses, dormoy:1992:meta,
+  fouet-starynkevitch:describing-control:1987,
+  greiner:1980:representation,
+  hernandez-phillips:2019:debugging-bootstrap,hofstadter:2007:strange-loop,
+  kay:1996:early-smalltalk, kelsey:1998:r5rs,
+  kumar:2015:importance-expert-systems, matthews:2005:operational,
+  mazur:2004:compile, nigro:2008:meta, queinnec:2003:lisp,
+  Starynkevitch:2009:grow, serrano:1995:bigloo}.  Generating some
+``source'' code at build time is usual practice, advocated also by the
+\href{https://ninja-build.org/}{\textsc{Ninja} build system}, and
+theorized (around 1930, before even computers existed) in the
+\href{https://en.wikipedia.org/wiki/Church-Turing_thesis}{\textsc{Church-Turing}
+  thesis}. Related concepts include the famous (but
+\href{https://en.wikipedia.org/wiki/Undecidable_problem}{undecidable})
+\href{https://en.wikipedia.org/wiki/Halting_problem}{\textbf{halting
+    problem}} (whose proof involves a metaprogramming approach
+\cite{Hofstadter:1979:GEB}),
+\href{https://en.wikipedia.org/wiki/Hygienic_macro}{hygienic macros},
+and \href{https://en.wikipedia.org/wiki/Rice's_theorem}{Rice's
+  theorem}.
+
+Practically speaking \cite{abelson:1996:sicp}, metaprogramming is
+easier achieved by explicitly representing (maybe incomplete) code
+with
+\href{https://en.wikipedia.org/wiki/Abstract_syntax_tree}{abstract
+  syntax trees} \index{abstract syntax tree} \index{tree!abstract
+  syntax} (or \index{AST} AST), maybe with some holes for
+\href{https://en.wikipedia.org/wiki/Metavariable}{metavariables} for
+their later
+\href{https://en.wikipedia.org/wiki/Explicit_substitution}{explicit
+  substitution}, in the spirit of
+\href{https://docs.djangoproject.com/en/2.2/topics/templates/}{\textsc{Django}
+  templates} or of
+\href{https://lispcookbook.github.io/cl-cookbook/macros.html}{\textsc{Common
+    Lisp} macros} or
+\href{https://en.wikibooks.org/wiki/Scheme_Programming/Macros}{\textsc{Scheme}
+  macros}. A practical way to implement such a template machinery for
+generating C or C++ code is given by
+\href{https://gcc.gnu.org/wiki/MELT tutorial}{\textsc{Gcc Melt} code
+  chunks} \cite{Starynkevitch-DSL2011, Starynkevitch-GCCMELTweb,
+  Starynkevitch:2009:grow, Starynkevitch:2007:Multistage}, where a
+piece of C (or C++) code with holes (or metavariables)
+\texttt{\$hellochunk} and \texttt{\$msg} is given thru the
+``macro-string''
+\verb!#{/*$hellochunk#_here*/ printf("hello %s\n", $msg);}#! ... \\
+Later, such a macro-string or code chunk can be expanded by filling
+the holes, that is expanding the metavariables (e.g.\texttt{\$msg})
+appropriately. Such an expansion might be recursive, since some hole
+filling (or metavariable replacement) could in turn trigger expansions
+of other macro-strings. In practice, {\RefPerSys} will use similar
+code chunks and macro-expansion to generate its C (or C++) code, and
+some initial ad-hoc
+\href{https://en.wikipedia.org/wiki/Integrated_development_environment}{integrated
+  development environment} \index{integrated development environment}
+(or \index{IDE} IDE) will have to be coded, handling passively some
+persistent store. The expansion will be done thru some scripting
+language (or \emph{domain specific language}, a.k.a. DSL) which has to
+be implemented inside our IDE.
+
+
+Metaprogramming involves code generation (using
+\href{https://en.wikipedia.org/wiki/Source-to-source_compiler}{source-to-source}
+ahead-of-time and/or
+\href{https://en.wikipedia.org/wiki/Just-in-time_compilation}{just-in-time}\footnote{Several
+JIT compilation libraries exist, notably
+\href{https://gcc.gnu.org/onlinedocs/jit/}{\texttt{libgccjit}}
+provided inside recent \href{http://gcc.gnu.org}{\textsc{Gcc}}
+compilers.} compilation techniques \cite{Aho:2006:dragon-book}, and in
+     {\RefPerSys} is useful for many tasks, such as generating the
+     garbage collection support routines for scanning or forwarding,
+     and the loading and dumping routines needed for persistence (in
+     the spirit of
+     \href{https://en.wikipedia.org/wiki/RPCGEN}{\textsc{RpcGen}},
+     \href{http://swig.org/}{\textsc{Swig}} and other
+     \href{https://en.wikipedia.org/wiki/Serialization}{serialization}
+     frameworks).
+\medskip
+
+\href{https://en.wikipedia.org/wiki/Reflection_(computer_programming)}{Reflection}
+is ``the ability of a process to examine, introspect, and modify its
+own structure and behavior'' and also, for
+\href{https://en.wikipedia.org/wiki/Self-reflection}{self-reflection},
+the capacity `` to exercise introspection and to attempt to learn more
+about their fundamental nature and essence''. (Wikipedia). It is
+advocated (in \cite{Pitrat:2009:ArtifBeings}) that a similar approach
+is (painfully) achievable in AI systems, and it would need both clever
+\href{https://en.wikipedia.org/wiki/Backtracking}{backtracking} and
+\href{https://en.wikipedia.org/wiki/Stack_trace}{backtracing}
+techniques. Libraries such as Ian Taylor's
+\href{https://github.com/ianlancetaylor/libbacktrace}{\texttt{libbacktrace}}
+(which wants most of the code to be compiled with
+\href{https://en.wikipedia.org/wiki/DWARF}{\textsc{Dwarf} debugging}
+information\footnote{In practice we should compile our or other C or
+C++ code with both \texttt{-O2 -g} passed while
+\href{https://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html}{invoking}
+\texttt{gcc} or \texttt{g++}, and this is indeed possible and
+practically works well enough.}) are helpful.
 \bigskip
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
