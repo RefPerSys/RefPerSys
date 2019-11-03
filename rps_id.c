@@ -37,7 +37,10 @@ extern RPS_HOT rps_serial63_t
 rps_serial63_random(void)
 {
 	struct timespec seed;
-	clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &seed);
+	if (RPS_UNLIKELY (clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &seed))) {
+		printf ("failed to determine CPU time [%d:%d]", __FILE__, __LINE__);
+		abort ();
+	}
 
 	sfmt_t sfmt;
 	sfmt_init_gen_rand (&sfmt, seed.tv_nsec);
