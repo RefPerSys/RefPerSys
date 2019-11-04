@@ -36,38 +36,40 @@
 extern RPS_HOT rps_serial63_t
 rps_serial63_random(void)
 {
-	struct timespec seed;
-	if (RPS_UNLIKELY (clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &seed))) {
-		printf ("failed to determine CPU time [%d:%d]", __FILE__, __LINE__);
-		abort ();
-	}
+  struct timespec seed;
+  if (RPS_UNLIKELY (clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &seed)))
+    {
+      printf ("failed to determine CPU time [%d:%d]", __FILE__, __LINE__);
+      abort ();
+    }
 
-	sfmt_t sfmt;
-	sfmt_init_gen_rand (&sfmt, seed.tv_nsec);
+  sfmt_t sfmt;
+  sfmt_init_gen_rand (&sfmt, seed.tv_nsec);
 
-	return (rps_serial63_t) sfmt_genrand_res53 (&sfmt);
+  return (rps_serial63_t) sfmt_genrand_res53 (&sfmt);
 }
 
 
 extern RPS_HOT rps_id_t
 rps_id_new(void)
 {
-	register rps_serial63_t hi, lo;
+  register rps_serial63_t hi, lo;
 
-	while (true) {
-		hi = rps_serial63_random ();
-		if (RPS_UNLIKELY (hi < RPS_SERIAL63_HI_MIN))
-			continue;
+  while (true)
+    {
+      hi = rps_serial63_random ();
+      if (RPS_UNLIKELY (hi < RPS_SERIAL63_HI_MIN))
+        continue;
 
-		lo = rps_serial63_random ();
-		if (RPS_UNLIKELY (lo < RPS_SERIAL63_LO_MIN))
-			continue;
+      lo = rps_serial63_random ();
+      if (RPS_UNLIKELY (lo < RPS_SERIAL63_LO_MIN))
+        continue;
 
-		if (RPS_UNLIKELY (rps_id_has (hi, lo) == 0))
-			continue;
-	}
+      if (RPS_UNLIKELY (rps_id_has (hi, lo) == 0))
+        continue;
+    }
 
-	rps_id_t id = {._hi = hi, .lo = lo};
-	return id;
+  rps_id_t id = {._hi = hi, .lo = lo};
+  return id;
 }
 

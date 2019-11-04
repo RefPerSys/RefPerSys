@@ -32,8 +32,9 @@
 
 #include "refpersys.h"
 // an array of primes, gotten with something similar to
-//   /usr/games/primes 3  | awk '($1>p+p/9){print $1, ","; p=$1}' 
-static const int64_t primes_tab_RPS[] = {
+//   /usr/games/primes 3  | awk '($1>p+p/9){print $1, ","; p=$1}'
+static const int64_t primes_tab_RPS[] =
+{
   3, 5, 7, 11, 13, 17, 19, 23, 29, 37, 43, 53, 59, 67, 79, 89, 101, 113,
   127, 149, 167, 191, 223, 251, 281, 313, 349, 389, 433, 487, 547, 613,
   683, 761, 853, 953, 1061, 1181, 1319, 1471, 1637, 1823, 2027, 2267,
