@@ -1,9 +1,8 @@
 /****************************************************************
- * file refpersys.h
+ * file rps_main.c
  *
  * Description:
- *      This file is part of the Reflective Persistent System.
- *      It is its only C header file.
+ *      The main function of RefPerSys.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -41,6 +40,7 @@ randfd_open(void)
 		/* see https://unix.stackexchange.com/questions/324209/ */
 		randfd = open ("/dev/urandom", O_RDONLY);
 		if (RPS_UNLIKELY (!randfd)) {
+#warning FIXME: use RPS_FATAL
 			printf ("failed to open /dev/urandom\n");
 			abort ();
 		}
