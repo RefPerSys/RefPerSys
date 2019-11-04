@@ -1828,8 +1828,17 @@ carrying a payload with some {\relsize{-1}{\texttt{FILE*
 \label{subsec:objmodel}
 
 Every {\RefPerSys} value belongs to some single class, reified as a
-particular {\RefPerSys} object. The figure \ref{fig:inheritance} shows
-the single-inheritance graph of {\RefPerSys} values.
+particular {\RefPerSys} object. We first explain the inheritance graph, and then the message sending protocol.
+
+\subsubsection{{\RefPerSys} inheritance graph}
+\label{subsubsec:inheritance}
+
+Every non-nil {\RefPerSys} value belongs to a single class, defining
+its behavior by the set of slelector it is understanding for message
+sending. The figure \ref{fig:inheritance} shows (with simplification)
+the single-inheritance graph of {\RefPerSys} values. In practice we
+expect many hundreds of classes and at least many hundred thousands
+values in a mature persistent store.
 
 \begin{figure}[h]
   \begin{center}
@@ -1868,6 +1877,64 @@ and several immutable values:
 \item the \texttt{"hello"} string;
 \item set of two chunk metavariables \texttt{\{ $\Omega(\textrm{\texttt{\$i}}), \Omega(\textrm{\texttt{\$fil}}) $ \}} which appears as value of attribute $\Omega$ ``metavariables'' in figure \ref{fig:code-chunk}
 \end{itemize}
+
+\medskip
+
+A {\RefPerSys} class object should contain, in its payload some
+\emph{class information}:
+\begin{itemize}
+\item the sequence of its direct then indirect superclasses
+\item a flexible
+  \href{https://en.wikipedia.org/wiki/Dispatch_table}{dispatch table}
+  or \href{https://en.wikipedia.org/wiki/Virtual_method_table}{virtual
+    method table}\footnote{Our methods are \emph{always} virtual, like
+  for \textsc{Smalltalk}; Conceptually {\RefPerSys} don't have any non
+  virtual methods.} associating selectors to closures handling
+  messages with them. We call that association the direct \emph{method
+  dictionary} of that class. It should be implemented efficiently
+  (perhaps using caching techniques local to each occurence of
+  sending).
+\end{itemize}
+
+Both are changeable. Any object can change its class at will at any
+time. A class can have new methods added or removed at any time. A
+class can change its superclass at will\footnote{However, this should
+be done with care, avoiding additional circularities in the
+inheritance graph.}.
+
+\medskip
+
+\subsubsection{{\RefPerSys} message sending}
+\label{subsubsec:message}
+
+Our message sending protocol is inspired by those of
+\textsc{SmallTalk}, \textsc{Common Lisp}, \textsc{Ocaml},
+\textsc{Java}. Every message send has a reciever $\rho$ (the target of
+the message sending), a selector - some object $\omega_{sel}$ (what do
+we send) and optional extra arguments $\alpha_1 \ldots \alpha_n$ (so
+$n = 0$ when we don't have extra arguments). Conceptually, what is
+happening is some loop:
+
+\begin{itemize}
+\item let $\kappa$ be initially the class of $\rho$, the reciever or target.
+\item look into the method dictionary $\delta$ of class $\kappa$; if
+  the selector $\omega_{sel}$ is associated to method $\mu$ (some
+  closure), apply that $\mu$ to $\rho$, $\alpha_1, \ldots \alpha_n$;
+  the result of this application is the result of the message sending.
+\item if $\kappa$ is the topmost \textsc{value} class, the message
+    sending has failed.
+  \item otherwise, replace $\kappa$ by its direct superclass $\kappa'$
+    and repeat the method lookup (second step here).
+\end{itemize}
+
+In practice, we might try to use caching techniques (but later) à la
+\textsc{Self} or \textsc{JavaScript} implementation to accelerate
+message sending. We should define what happens when no method is found
+(perhaps using some \textsc{message-not-understood} builtin selector à
+la \textsc{SmallTalk} \cite{kay:1996:early-smalltalk}), taking
+$\omega_{sel}, \alpha_1, \ldots \alpha_n$ as arguments, or triggering
+some exception machinery.
+
 \bigskip
 
 
