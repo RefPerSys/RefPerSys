@@ -892,11 +892,22 @@ processes each state file in a potentially different loading thread.
 
 Once {\RefPerSys} persistence is implemented and provides some
 meta-programming facilities, we can define and use some agenda
-machinery. The insight is that {\RefPerSys} is running several worker
-threads known to its garbage collector. Our \textbf{agenda}
-\index{agenda} is the central mechanism of {\RefPerSys} feeding these
-worker threads with some work to do, using \textbf{tasklets}
-representing a small amount of work to be done.
+machinery. The insight is that {\RefPerSys} is running several
+\cite{barney:2010:pthreads, butenhof:1997:programming} \textbf{worker
+  threads}\footnote{Concretely, this means
+\href{http://man7.org/linux/man-pages/man7/pthreads.7.html}{\texttt{pthreads(7)}},
+perhaps wrapped as
+\href{https://en.cppreference.com/w/cpp/thread}{\textsc{C++11}
+  threads},
+\href{https://doc.qt.io/qt-5/thread-basics.html}{\textsc{Qt5}
+  threads},
+\href{https://developer.gnome.org/glib/stable/glib-Threads.html}{\textsc{Glib}
+  threads}, etc ....}  known to its garbage collector (which might
+also need its own managing and synchronizing thread, which will mostly
+stay idle.). Our \textbf{agenda} \index{agenda} is the central
+mechanism of {\RefPerSys} feeding these worker threads with some work
+to do, using \textbf{tasklets} representing a small amount of work to
+be done.
 
 \medskip
 
