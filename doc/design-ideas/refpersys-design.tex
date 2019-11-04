@@ -1818,7 +1818,31 @@ carrying a payload with some {\relsize{-1}{\texttt{FILE*
 
 \textcolor{red}{@@TODO: {\relsize{+2}{TO BE WRITTEN}}}
 
+
+%%%%%%%%%%%%%%%%
+
+\medskip
+
+\subsection{the {\RefPerSys} object model}
+\label{subsec:objmodel}
+
+Every {\RefPerSys} value belongs to some single class, reified as a
+particular {\RefPerSys} object. The figure \ref{fig:inheritance} shows
+the single-inheritance graph of {\RefPerSys} values.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{dot-classhier}
+  \end{center}
+  \caption{The %
+    \textcolor{red}{\textbf{incomplete}} %
+    inheritance graph in \RefPerSys : $a \rightarrow b \equiv a \mathrm{is an instance of} b$}
+  \label{fig:inheritance}
+\end{figure}
+
 \bigskip
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Persistence in \RefPerSys}

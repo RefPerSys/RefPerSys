@@ -2,6 +2,7 @@
 // the RefPerSys class hierarchy
 
 digraph classçhierarchy {
+// XXXX -> YYYY : means XXXX is instance of YYYY
 object_class -> class_class { label = "object <i>class</i>" }
 class_class -> class_class { label = "class <i>metaclass</i>" }
 }
