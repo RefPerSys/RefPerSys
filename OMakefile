@@ -42,9 +42,29 @@ LIBS = lib/sfmt/libsfmt
 
 CFILES[] =
    rps_primes
-   main_rps
+   rps_main
+
+CLEAN[] =
+  .omakedb
+  *~
+  *.orig
+  *.o
+  *omc
+  .omak*
+  refpersys
+
+STYLE[] =
+    *.h
+    *.c
 
 MAIN = refpersys
 
 .DEFAULT: $(CProgram $(MAIN), $(CFILES))
+.PHONY: clean style
+
+clean: 
+	rm -vf $(CLEAN)
+
+style:
+	astyle --style=gnu -s2 $(STYLE)
 

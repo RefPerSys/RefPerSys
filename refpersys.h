@@ -48,6 +48,7 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <poll.h>
 #include <sys/ioctl.h>
@@ -66,7 +67,7 @@
 
 #include <unistr.h>
 /* IMPORTANT TODO: Uncomment later after fixing issue */
-/* #include <glib.h> */ 
+/* #include <glib.h> */
 
 /// Glibc dont have yet threads.h
 #define thread_local _Thread_local
