@@ -1746,10 +1746,62 @@ that the object $\Omega$ ``email'' could contain an attribute $\Omega$
 to show that email cleverly (e.g. as some \texttt{<a
   href='mailto:}\ldots\texttt{'>} \textsc{html5} element).
 
+\smallskip
+
+Another example of object might be some code chunk to safely print
+into \texttt{\$fil} an integer \texttt{\$i}, e.g. {\relsize{-1}{\texttt{\#\{ if
+  (\$fil != NULL) fprintf(\$fil, "\%d", \$i);\}\#}}} might be
+represented as in figure \ref{fig:code-chunk}:
+
+
+\begin{figure}[h]
+  \begin{center}
+  \begin{tabular}{llr}
+    \hline
+    $\in$ & $\Omega$ ``code chunk class'' & the class \\
+    $\Omega$ ``metavariables'' : & set \texttt{\{} {\relsize{-1}{$\Omega$ ``\texttt{\$i}'', $\Omega$ ``\texttt{\$fil}'' }} \texttt{\}}  & {\relsize{-1}{attribute}} \\
+    $\Omega$  ``target language'' : & $\Omega$  ``\emph{C} language'' & {\relsize{-1}{attribute}} \\
+    $[0]$  &  string {\relsize{-1}{\texttt{" if ("}}} & {\relsize{-1}{component}} \\
+    $[1]$  &  object {\relsize{-1}{ $\Omega$  ``\texttt{\$fil}''}} & {\relsize{-1}{component}} \\
+    $[2]$  &  string {\relsize{-1}{\texttt{" != NULL) fprintf("}}} & {\relsize{-1}{component}} \\
+    $[3]$  &  object {\relsize{-1}{ $\Omega$  ``\texttt{\$fil}''}} & {\relsize{-1}{component}} \\
+    $[4]$  &  string {\relsize{-1}{\texttt{", {\textbackslash}"{\%d}{\textbackslash}", "}}} & {\relsize{-1}{component}} \\
+    $[5]$  &  object {\relsize{-1}{ $\Omega$  ``\texttt{\$i}''}} & {\relsize{-1}{component}} \\
+    $[6]$  &  string {\relsize{-1}{\texttt{");"}}} & {\relsize{-1}{component}} \\
+    \hline
+  \end{tabular}
+
+  \vspace{1em}
+  
+    $\Omega$ ``some code chunk'' $\equiv$ \texttt{\_59RzaVi7hKb00xkX1S}
+  \end{center}
+  \caption{An example of object representing some code chunk}
+  \label{fig:code-chunk}
+\end{figure}
+
+\smallskip
+
+In practice, such a code chunk representation could be more compact;
+we could assume that both the {\relsize{-1}{\textbf{\texttt{if}}}}
+keyword of C and the {\relsize{-1}{\texttt{fprintf}}} and
+{\relsize{-1}{\texttt{NULL}}} C identifiers occur frequently enough to
+be refactored and each reified into its own object. Of course, it
+might make sense to add an $\Omega$ ``author'' attribute in our code
+chunk, whose value would be our \texttt{\_3a9otsskmcJ04v9S7n} object
+of figure \ref{fig:contributor-basile} above.
+  
+\bigskip
 
 Obviously, some kind of data don't fit exactly into such simple
 objects. Some objects might represent a big hashtable of triplets, and
-such data has to be the payload of that object.
+such data has to be the payload of that object. Other objects might
+reify sorted dictionnaries mapping strings to values, and their
+payload could be some
+\href{https://en.wikipedia.org/wiki/Red-black_tree}{red-black trees}
+whose internal nodes would be GC-managed quasi-values. And an opened
+\texttt{FILE*} would be represented and reified as some object
+carrying a payload with some {\relsize{-1}{\texttt{FILE*
+      rps\_filehandle;}}} field.
 
 \smallskip
 
