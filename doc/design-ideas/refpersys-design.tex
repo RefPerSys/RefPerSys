@@ -901,18 +901,51 @@ representing a small amount of work to be done.
 
 Each worker thread is indefinitely looping like this:
 \begin{enumerate}
-\item it runs rarely some householding processing, notably garbage
-  collection work. This is where garbage collection gets synchronized.
-\item it waits, if so needed, for the agenda to become non-empty
-\item it choose a tasklet $\tau$ to run inside the agenda. That
-  tasklet is removed from the agenda.
+\item it runs occasionally some housekeeping processing, notably
+  garbage collection work. This is where garbage collection gets
+  synchronized. Occasionally, some new tasklets could be
+  ``auto-magically'' inserted in the agenda at this point\footnote{Or
+  such tasklets could be very carefully added into the agenda from
+  non-worker threads organized in a producer-consumer fashion -such as
+  those started by \texttt{libonion}-, respecting our GC
+  invariants. This is a delicate issue !}, e.g. to run some code when
+  some input data is available on some
+  \href{https://en.wikipedia.org/wiki/File_descriptor}{file
+    descriptor} for a
+  \href{http://man7.org/linux/man-pages/man7/pipe.7.html}{\texttt{pipe(7)}}
+  or a
+  \href{http://man7.org/linux/man-pages/man7/tcp.7.html}{\texttt{tcp(7)}}
+  socket, or to run some code every tenth of second, or to handle
+  graceful termination when getting a \texttt{SIGTERM}\footnote{Read
+  also
+  \href{http://man7.org/linux/man-pages/man7/signal-safety.7.html}{\texttt{signal-safety(7)}}
+  and consider using
+  \href{http://man7.org/linux/man-pages/man2/signalfd.2.html}{\texttt{signalfd(2)}}
+  or pipe-to-self tricks inspired by
+  \href{https://doc.qt.io/qt-5/unix-signals.html}{\textsc{Qt} approach
+    to \textsc{Unix} signal handling}. Notice that
+  \href{http://man7.org/linux/man-pages/man2/timerfd\_create.2.html}{\texttt{timerfd\_create(2)}}
+  might also be useful for tasklets to be added periodically in some
+  \href{https://en.wikipedia.org/wiki/Event_loop}{event loop} around
+  \href{http://man7.org/linux/man-pages/man2/poll.2.html}{\texttt{poll(2)}}.}
+  \href{http://man7.org/linux/man-pages/man7/signal.7.html}{\texttt{signal(7)}}.
+\item it waits, if so needed (probably using \textsc{Pthreads}
+  condition variables), for the agenda to become non-empty
+\item it chooses a tasklet $\tau$ to run inside the agenda. That
+  tasklet is taken, so removed from the agenda.
 \item it runs that tasklet $\tau$ for a small amount of time (a few
-  dozen of milliseconds, typically), called a \textbf{step}. Of course
-  during that step the agenda can (and usually will) change, and
-  perhaps the same tasklet $\tau$ would be added again into the
-  agenda, with maybe several other tasklets. Or on the contrary,
-  running $\tau$ could remove one or several other tasklets $\tau_1,
-  \tau_2 \ldots$ from the agenda, and add other ones $\tau'_1, \tau'_2, \ldots$ there.
+  dozen of milliseconds, typically), called a
+  \textbf{step}\footnote{Calling blocking system calls such as
+  \href{http://man7.org/linux/man-pages/man2/poll.2.html}{\texttt{poll(2)}}
+  or
+  \href{http://man7.org/linux/man-pages/man2/read.2.html}{\texttt{read(2)}}
+  from a pipe or socket should be forbidden here, because a step
+  should run quickly, in milliseconds.}. Of course during that step
+  the agenda can (and usually will) change, and perhaps the same
+  tasklet $\tau$ would be added again into the agenda, with maybe
+  several other tasklets. Or on the contrary, running $\tau$ could
+  remove one or several other tasklets $\tau_1, \tau_2 \ldots$ from
+  the agenda, and add other ones $\tau'_1, \tau'_2, \ldots$ there.
 \item that loop is repeated (unless {\RefPerSys} is stopped).
 \end{enumerate}
 
@@ -926,6 +959,15 @@ In addition of the worker thread, some additional slave threads could
 be needed, in particular to handle some event loop (and serve HTTP
 requests).  Of course the running steps should appropriately lock
 objects, to avoid aftermath and synchronize properly their mutation.
+
+
+The concrete organization of the {\RefPerSys} agenda has to be
+precisely defined. It could be, as
+\href{http://github.com/bstarynk/bismon}{\textsc{Bismon}} has, a small
+data structure made of several first-in first-out queues, e.g. a queue
+of high priority tasklets, another of medium priority tasklets, one of
+low priority tasklets, etc..., with the agenda mechanism choosing in
+the non-empty queue of highest priority its tasklet staying in front.
 
 \bigskip
 
