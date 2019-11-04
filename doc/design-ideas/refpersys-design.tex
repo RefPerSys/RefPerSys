@@ -1099,6 +1099,44 @@ techniques.
  \href{https://en.wikipedia.org/wiki/Expert\_system}{expert system} or
  \href{https://en.wikipedia.org/wiki/Knowledge_base}{knowledge base}
  component of {\RefPerSys}.
+
+ \smallskip
+
+ Since we aim to be able to re-generate most (and hopefully all) of
+ {\RefPerSys} code (in C or in C++), having simple \textbf{coding
+   conventions} does matter: every \RefPerSys-defined C or C++
+ identifier should start with \texttt{rps\_} in lower, upper, or mixed
+ case (e.g. also \texttt{RPS\_} or \texttt{Rps\_}). Every C or C++
+ function, even \texttt{static inline} ones appearing in header files,
+ has its name starting with \texttt{rps\_} and is \emph{globally}
+ unique to the entire \texttt{refpersys} program. The C (or C++) code
+ should be automatically indented\footnote{With the social convention
+ that {\RefPerSys} contributors are running \texttt{omake indent} or
+ \texttt{make indent} before every \texttt{git commit}!} using
+ \href{https://www.gnu.org/software/indent/}{Gnu \textsc{Indent}} or
+ \href{http://astyle.sourceforge.net/}{\textsc{Astyle}}. Every named
+ \texttt{struct} (in C) should have its tag matching
+ \texttt{rps\_*st}. Every \texttt{typedef}-ed data type should have
+ its name matching \texttt{rps\_*t}. Every named \texttt{enum} should
+ have its tag matching \texttt{rps\_*en} and the various enumerated
+ values like \texttt{RPS\_*}. Even in cases the C (or the C++)
+ language allows several name spaces\footnote{In C, having both a type
+ and a label named \texttt{foo} is permitted, but we refuse such
+ non-sense.}, we don't use that facility. Hence we refuse to code the
+ common \texttt{typedef struct rpsfoo\_t rpsfoo\_t;} but prefer
+ instead (inspired by \href{http://gtk.org}{\textsc{Gtk}}) coding
+ \texttt{typedef struct rps\_\textit{foo}\_st
+   rps\_\textit{foo}\_t}. Of course, names of
+ \href{https://en.wikipedia.org/wiki/Local\_variable}{local variables}
+ (that is
+ \href{https://en.wikipedia.org/wiki/Automatic_variable}{automatic
+   variables} with their
+ \href{https://en.wikipedia.org/wiki/Scope\_(computer\_science)\#Lexical\_scoping}{lexical
+   scope} limited to some small C or C++
+ \href{https://en.wikipedia.org/wiki/Block\_(programming)}{block})
+ could be as short as a single letter such as \texttt{i}. In general,
+ our C or C++ code is written with the hope of being easily able to
+ regenerate it.
  
 \bigskip
 
@@ -1108,9 +1146,9 @@ techniques.
 \label{sec:dataobjmodel}
 
 The data is what is processed by {\RefPerSys}, and is made of values
-(and internally for the GC, also quasi-value). The object model is
-defining our classes, our single inheritance mechanism, our message
-sending protocol.
+(and, internally for the GC, also of quasi-values, which are pointers
+to GC-managed memory zones). The object model is defining our classes,
+our single inheritance mechanism, our message sending protocol.
 
 \subsection{how data should be processed in \RefPerSys}
 \label{subsec:howdata}
