@@ -53,11 +53,18 @@ CLEAN[] =
   .omak*
   refpersys
 
+STYLE[] =
+    *.h
+    *.c
+
 MAIN = refpersys
 
 .DEFAULT: $(CProgram $(MAIN), $(CFILES))
-.PHONY: clean
+.PHONY: clean style
 
 clean: 
 	rm -vf $(CLEAN)
+
+style:
+	astyle --style=gnu -s2 $(STYLE)
 
