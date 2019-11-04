@@ -1087,6 +1087,36 @@ compilers.} compilation techniques \cite{Aho:2006:dragon-book}, and in
      \href{http://swig.org/}{\textsc{Swig}} and other
      \href{https://en.wikipedia.org/wiki/Serialization}{serialization}
      frameworks).
+
+ In \RefPerSys, metaprogramming is often and practically achieved
+ (like in \cite{Starynkevitch-DSL2011,
+   Starynkevitch:2019:bismon-draft, Pitrat:1996:FGCS,
+   Pitrat:2009:ArtifBeings} and our
+ \href{https://github.com/bstarynk/misc-basile/blob/master/manydl.c}{\texttt{manydl.c}}
+ example program), by generating some C or C++ code in a temporary
+ file\footnote{There are practical reasons to generate these temporary
+ files outside of \texttt{/tmp/}, which gets cleaned at reboot.} like
+ \texttt{/tmp/rpsgen123.c}, compiling that file
+ \cite{drepper:2011:write-shared-lib} into a generated plugin
+ \texttt{/tmp/rpsgen123.so} by running a process such as
+        {\relsize{-1}{\texttt{gcc -fPIC -Wall -O -g -shared
+              /tmp/rpsgen123.c -l\textit{something} -o
+              /tmp/rpsgen123.so}}} and waiting for its successful
+        completion, then
+        \href{http://man7.org/linux/man-pages/man3/dlopen.3.html}{\texttt{dlopen(3)}}-ing
+        that newly generated \texttt{/tmp/rpsgen123.so}, in a manner
+        compatible with our garbage collection and agenda
+        invariants. We might later care about carefully
+        \href{http://man7.org/linux/man-pages/man3/dlclose.3.html}{\texttt{dlclose(3)}}-ing
+        that generated plugin, but in practice we accept some limited
+        virtual memory plugin leak, and we could just dump
+        appropriately our persistent state by mentioning in some
+        generated
+        \href{https://en.wikipedia.org/wiki/Manifest_file}{Manifest
+          file} those plugins which should be saved (as generated C
+        code) with the state.
+ 
+ 
 \medskip
 
 \href{https://en.wikipedia.org/wiki/Reflection_(computer_programming)}{Reflection}
