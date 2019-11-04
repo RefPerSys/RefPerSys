@@ -18,6 +18,7 @@
 %\usepackage{alltt}
 %\usepackage{wasysym}
 \usepackage{xcolor}
+\usepackage{amssymb}
 \usepackage{times}
 %\usepackage[square]{natbib}
 \usepackage{textcomp}
@@ -1833,13 +1834,40 @@ the single-inheritance graph of {\RefPerSys} values.
 \begin{figure}[h]
   \begin{center}
     \includegraphics[width=0.8\textwidth]{dot-classhier}
+    \medskip
+    \begin{relsize}{-1}
+    \begin{itemize}
+    \item \colorbox{pink}{objects (pink background)}
+    \item \colorbox{Azure}{immutable values (azure background, horizontal lines)}
+    \item \textcolor{black}{$v \longrightarrow \omega$} (straight  black arrow) means : $v$ is instance of class $\omega$
+    \item \textcolor{blue}{$\omega_1 - ~ \rightarrow \omega_2 $} (dashed blue arrow) means : class $\omega_1$ is subclass of $\omega_2$
+    \end{itemize}
+    \end{relsize}
   \end{center}
-  \caption{The %
-    \textcolor{red}{\textbf{incomplete}} %
-    inheritance graph in \RefPerSys : $a \rightarrow b \equiv a \mathrm{is an instance of} b$}
+  \caption{ The %
+    % \textcolor{red}{\textbf{incomplete}} %
+    simplified inheritance graph in \RefPerSys 
+    }
   \label{fig:inheritance}
 \end{figure}
 
+That figure \ref{fig:inheritance} shows several objects:
+\begin{itemize}
+\item the \texttt{\textsc{object}} class, superclass of every object;
+\item the \texttt{\textsc{class}} metaclass, class of every class;
+\item the \texttt{\textsc{value}} class, ultimate class of every value;
+\item the \texttt{\textsc{code chunk}} class, for code chunks like in figure \ref{fig:code-chunk};
+\item the \texttt{\textsc{contributor}} class, for reified contributors like in figure \ref{fig:contributor-basile};
+\item the \texttt{\textsc{string}} class, of immutable string values;
+\item the \texttt{\textsc{set}} class, of immutable set of objects;
+\item the \texttt{\textsc{Basile}} contributor object of figure \ref{fig:contributor-basile};
+\item some \textit{code-chunk} object,  like in figure \ref{fig:code-chunk};
+\end{itemize}
+and several immutable values:
+\begin{itemize}
+\item the \texttt{"hello"} string;
+\item set of two chunk metavariables \texttt{\{ $\Omega(\textrm{\texttt{\$i}}), \Omega(\textrm{\texttt{\$fil}}) $ \}} which appears as value of attribute $\Omega$ ``metavariables'' in figure \ref{fig:code-chunk}
+\end{itemize}
 \bigskip
 
 
