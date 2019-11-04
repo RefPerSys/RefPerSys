@@ -1621,7 +1621,33 @@ exiting.
 \subsection{The textual data format of \RefPerSys}
 \label{subsec:data-format}
 
-\textcolor{red}{@@TODO: should be written, e.g. explanation of the files under \texttt{persistore/} and of their JSON syntax}
+We probably will use a \href{http://hjson.org}{\textsc{HJson}} format
+to persist our state, since \textsc{HJson} is slighly less verbose
+than \textsc{Json} (less double quotes \texttt{"} needed), and almost
+as easy to parse. Our immutable values could easily be represented in
+textual syntax, for example a set of three objects of objids
+\texttt{\_0iaOiLq4pj20097DNb}, \texttt{\_1R4TeqlLvhS03o0mGN},
+\texttt{\_7m9EMmdyQKU00euKwB} might be represented as the following
+\textsc{Hjson} object:
+\begin{quote}
+\begin{relsize}{-1}
+  \begin{tabular}{lllll}
+    \texttt{\{} & \texttt{vtyp} & \texttt{:} & \texttt{set,} & ~  \\
+    ~           & \texttt{elem} & \texttt{:} & \texttt{[} & \texttt{\_0iaOiLq4pj20097DNb,}  \\
+    ~           & ~             & ~          & ~           & \texttt{\_1R4TeqlLvhS03o0mGN,} \\
+    ~           & ~             & ~          & ~           & \texttt{\_7m9EMmdyQKU00euKwB ] \}} \\
+  \end{tabular}
+\end{relsize}
+\end{quote}
+
+\medskip
+
+The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
+
+\textcolor{red}{@@TODO: should be written}
+
+\textcolor{red}{@@TODO: explanation of the files (including the
+  manifest file) under \texttt{persistore/} and of their HJSON syntax}
 
 
 \clearpage
