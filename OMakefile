@@ -42,7 +42,7 @@ LIBS = lib/sfmt/libsfmt
 
 CFILES[] =
    rps_primes
-   main_rps
+   rps_main
 
 MAIN = refpersys
 
