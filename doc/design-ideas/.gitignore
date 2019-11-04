@@ -17,4 +17,6 @@ heap-refpersys.eps
 heap-refpersys.pdf
 refpersys-design.glo
 refpersys-design.ist
-
+dot*.pdf
+dot*.eps
+dot*.svg

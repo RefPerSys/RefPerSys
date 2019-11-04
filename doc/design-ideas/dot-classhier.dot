@@ -1,0 +1,7 @@
+// file refpersys/design-ideas/dot-classhier.dot
+// the RefPerSys class hierarchy
+
+digraph classçhierarchy {
+object_class -> class_class { label = "object <i>class</i>" }
+class_class -> class_class { label = "class <i>metaclass</i>" }
+}

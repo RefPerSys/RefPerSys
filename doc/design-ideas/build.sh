@@ -1,6 +1,8 @@
 #!/bin/bash -x
 echo $0 starting in $(pwd)
 rm -vf  refpersys-design.{aux,bcf,blg,log,run.xml,toc}
+
+## see http://inkscape.org/
 for svgfile in ../CC-BY-SA-icon.svg \
 		   spiral-model-softdevel.svg spiral-stairs.svg \
 	       heap-refpersys.svg ; do
@@ -8,6 +10,16 @@ for svgfile in ../CC-BY-SA-icon.svg \
     inkscape --without-gui --export-pdf=$svgbase.pdf $svgfile
     inkscape --without-gui --export-eps=$svgbase.eps $svgfile
 done
+
+## see http://graphviz.org/
+for dotfile in *.dot ; do
+    dotbase=$(basename $dotfile .dot)
+    dot $dotfile -O -o$dotbase.eps $dotfile
+    dot $dotfile -O -o$dotbase.pdf $dotfile
+    dot $dotfile -O -o$dotbase.svg $dotfile
+done
+
+
 lualatex --shell-escape  --halt-on-error refpersys-design
 biber refpersys-design
 lualatex --shell-escape  --halt-on-error refpersys-design
