@@ -4,6 +4,7 @@
 \usepackage{luacode}
 \usepackage{fancyhdr}
 \usepackage{relsize}
+\usepackage{alltt}
 %https://tex.stackexchange.com/a/8633/42406
 \usepackage{float}
 %\usepackage[useregional]{datetime2}
@@ -17,6 +18,7 @@
 %\usepackage{alltt}
 %\usepackage{wasysym}
 \usepackage{xcolor}
+\usepackage{amssymb}
 \usepackage{times}
 %\usepackage[square]{natbib}
 \usepackage{textcomp}
@@ -559,7 +561,17 @@ control \cite{fouet-starynkevitch:describing-control:1987,
   Starynkevitch-1990-EUM, Pitrat:2009:ArtifBeings}. This should also
 enable \textbf{introspection}, by permitting primitives inspecting the
 current call stack, perhaps using Ian Taylor's
-\href{https://github.com/ianlancetaylor/libbacktrace}{\texttt{libbacktrace}}.
+\href{https://github.com/ianlancetaylor/libbacktrace}{\texttt{libbacktrace}}. Also,
+such an introspection might perhaps be implemented \cite{mitchell:2001:alp} with two nearly
+twin \texttt{refpersys} processes, one of them driving a \texttt{gdb}
+process\footnote{Imagine some
+\href{http://man7.org/linux/man-pages/man3/popen.3.html}{\texttt{popen}}
+or some
+\href{https://developer.gnome.org/glib/stable/glib-Spawning-Processes.html\#g-spawn-async}{\texttt{g\_spawn\_async}}
+or some
+\href{https://pocoproject.org/docs/Poco.Process.html}{\texttt{Poco::Process}}
+of some \texttt{gdb refpersys 1234} process debugging the other one of
+pid 1234.}.
 
 
 {\RefPerSys} should (like \textsc{Caia} and its predecessor
@@ -874,34 +886,79 @@ after having created all objects as empty, and loaded plugins
 (i.e. \texttt{dlopen}-ing many \texttt{*.so} files), {\RefPerSys}
 processes each state file in a potentially different loading thread.
 
-\medskip
+\bigskip
+
 \subsection{Agenda and multi-threading in \RefPerSys}
 \label{subsec:agenda-thread}
 
 Once {\RefPerSys} persistence is implemented and provides some
 meta-programming facilities, we can define and use some agenda
-machinery. The insight is that {\RefPerSys} is running several worker
-threads known to its garbage collector. Our \textbf{agenda}
-\index{agenda} is the central mechanism of {\RefPerSys} feeding these
-worker threads with some work to do, using \textbf{tasklets}
-representing a small amount of work to be done.
+machinery. The insight is that {\RefPerSys} is running several
+\cite{barney:2010:pthreads, butenhof:1997:programming} \textbf{worker
+  threads}\footnote{Concretely, this means
+\href{http://man7.org/linux/man-pages/man7/pthreads.7.html}{\texttt{pthreads(7)}},
+perhaps wrapped as
+\href{https://en.cppreference.com/w/cpp/thread}{\textsc{C++11}
+  threads},
+\href{https://doc.qt.io/qt-5/thread-basics.html}{\textsc{Qt5}
+  threads},
+\href{https://developer.gnome.org/glib/stable/glib-Threads.html}{\textsc{Glib}
+  threads}, etc ....}  known to its garbage collector (which might
+also need its own managing and synchronizing thread, which will mostly
+stay idle.). Our \textbf{agenda} \index{agenda} is the central
+mechanism of {\RefPerSys} feeding these worker threads with some work
+to do, using \textbf{tasklets} representing a small amount of work to
+be done.
 
 \medskip
 
 Each worker thread is indefinitely looping like this:
 \begin{enumerate}
-\item it runs rarely some householding processing, notably garbage
-  collection work. This is where garbage collection gets synchronized.
-\item it waits, if so needed, for the agenda to become non-empty
-\item it choose a tasklet $\tau$ to run inside the agenda. That
-  tasklet is removed from the agenda.
+\item it runs occasionally some housekeeping processing, notably
+  garbage collection work. This is where garbage collection gets
+  synchronized. Occasionally, some new tasklets could be
+  ``auto-magically'' inserted in the agenda at this point\footnote{Or
+  such tasklets could be very carefully added into the agenda from
+  non-worker threads organized in a producer-consumer fashion -such as
+  those started by \texttt{libonion}-, respecting our GC
+  invariants. This is a delicate issue !}, e.g. to run some code when
+  some input data is available on some
+  \href{https://en.wikipedia.org/wiki/File_descriptor}{file
+    descriptor} for a
+  \href{http://man7.org/linux/man-pages/man7/pipe.7.html}{\texttt{pipe(7)}}
+  or a
+  \href{http://man7.org/linux/man-pages/man7/tcp.7.html}{\texttt{tcp(7)}}
+  socket, or to run some code every tenth of second, or to handle
+  graceful termination when getting a \texttt{SIGTERM}\footnote{Read
+  also
+  \href{http://man7.org/linux/man-pages/man7/signal-safety.7.html}{\texttt{signal-safety(7)}}
+  and consider using
+  \href{http://man7.org/linux/man-pages/man2/signalfd.2.html}{\texttt{signalfd(2)}}
+  or pipe-to-self tricks inspired by
+  \href{https://doc.qt.io/qt-5/unix-signals.html}{\textsc{Qt} approach
+    to \textsc{Unix} signal handling}. Notice that
+  \href{http://man7.org/linux/man-pages/man2/timerfd\_create.2.html}{\texttt{timerfd\_create(2)}}
+  might also be useful for tasklets to be added periodically in some
+  \href{https://en.wikipedia.org/wiki/Event_loop}{event loop} around
+  \href{http://man7.org/linux/man-pages/man2/poll.2.html}{\texttt{poll(2)}}.}
+  \href{http://man7.org/linux/man-pages/man7/signal.7.html}{\texttt{signal(7)}}.
+\item it waits, if so needed (probably using \textsc{Pthreads}
+  condition variables), for the agenda to become non-empty
+\item it chooses a tasklet $\tau$ to run inside the agenda. That
+  tasklet is taken, so removed from the agenda.
 \item it runs that tasklet $\tau$ for a small amount of time (a few
-  dozen of milliseconds, typically), called a \textbf{step}. Of course
-  during that step the agenda can (and usually will) change, and
-  perhaps the same tasklet $\tau$ would be added again into the
-  agenda, with maybe several other tasklets. Or on the contrary,
-  running $\tau$ could remove one or several other tasklets $\tau_1,
-  \tau_2 \ldots$ from the agenda, and add other ones $\tau'_1, \tau'_2, \ldots$ there.
+  dozen of milliseconds, typically), called a
+  \textbf{step}\footnote{Calling blocking system calls such as
+  \href{http://man7.org/linux/man-pages/man2/poll.2.html}{\texttt{poll(2)}}
+  or
+  \href{http://man7.org/linux/man-pages/man2/read.2.html}{\texttt{read(2)}}
+  from a pipe or socket should be forbidden here, because a step
+  should run quickly, in milliseconds.}. Of course during that step
+  the agenda can (and usually will) change, and perhaps the same
+  tasklet $\tau$ would be added again into the agenda, with maybe
+  several other tasklets. Or on the contrary, running $\tau$ could
+  remove one or several other tasklets $\tau_1, \tau_2 \ldots$ from
+  the agenda, and add other ones $\tau'_1, \tau'_2, \ldots$ there.
 \item that loop is repeated (unless {\RefPerSys} is stopped).
 \end{enumerate}
 
@@ -916,6 +973,256 @@ be needed, in particular to handle some event loop (and serve HTTP
 requests).  Of course the running steps should appropriately lock
 objects, to avoid aftermath and synchronize properly their mutation.
 
+
+The concrete organization of the {\RefPerSys} agenda has to be
+precisely defined. It could be, as
+\href{http://github.com/bstarynk/bismon}{\textsc{Bismon}} has, a small
+data structure made of several first-in first-out queues, e.g. a queue
+of high priority tasklets, another of medium priority tasklets, one of
+low priority tasklets, etc..., with the agenda mechanism choosing in
+the non-empty queue of highest priority its tasklet staying in front.
+
+\bigskip
+
+\subsection{Metaprogramming and introspection in \RefPerSys}
+\label{subsec:metaprog-introspec}
+
+\textbf{Metaprogramming} \index{metaprogramming} is defined
+\href{https://en.wikipedia.org/wiki/Metaprogramming}{in Wikipedia} as
+``a programming technique in which computer programs have the ability
+to treat other programs as their data. It means that a program can be
+designed to read, generate, analyze or transform other programs, and
+even modify itself while running''. That design idea is central to
+many Artificial Intelligence systems and AI inspired
+languages\footnote{See also \href{http://s48.org}{\textsc{Scheme 48}},
+\href{http://sbcl.org/}{\textsc{Sbcl}},
+\href{http://https://www.rust-lang.org/}{\textsc{Rust}}, even
+\href{https://en.cppreference.com/w/cpp/language/templates}{C++
+  \emph{templates}}, \href{https://www.call-cc.org/}{\textsc{Chicken
+    Scheme}}, \href{
+  http://okmij.org/ftp/ML/MetaOCaml.html}{\textsc{MetaOcaml}}, the
+\href{http://eclipseclp.org/}{\textsc{ECLiPSe} Constraint Programming
+  System}, \href{https://www.rascal-mpl.org/}{\textsc{Rascal}},
+\href{http://nemerle.org/}{\textsc{Nemerle}},
+\href{http://coccinelle.lip6.fr/}{\textsc{Coccinelle}},
+\href{{https://ocsigen.org/}}{\textsc{Ocsigen}},
+\href{http://www.gprolog.org/}{\textsc{Gnu Prolog}},
+\href{http://www.clipsrules.net/}{\textsc{Clips}},
+\href{https://logological.org/gpp}{\textsc{Gpp}},
+\href{http://swig.org/}{\textsc{Swig}},
+\href{https://www.antlr.org/}{\textsc{Antlr}},
+\href{https://github.com/drh/iburg}{\textsc{Iburg}},
+\href{https://www.gnu.org/software/bison/}{Gnu \textsc{Bison}}, etc
+\ldots} and is also common in software enginneering\footnote{A typical
+example is the \href{http://gcc.gnu.org}{\textsc{Gcc}} compiler, or
+\href{https://en.wikipedia.org/wiki/Autoconf}{\textsc{Autoconf}}, and
+\href{https://en.wikipedia.org/wiki/Source-to-source_compiler}{transpiler
+  approaches}} \cite{Lenat:1983:Eurisko, Lenat:1983:theory,
+  Lenat:1991:ev-cycl, Pitrat:1996:FGCS, Pitrat:2009:AST,
+  Pitrat:2009:ArtifBeings, Pitrat:blog, Queinnec:1996:LSP,
+  Queinnec:2004:ContinWeb, Starynkevitch-1990-EUM,
+  Starynkevitch-DSL2011, Starynkevitch-GCCMELTweb,
+  Starynkevitch:2007:Multistage, Starynkevitch:2019:bismon-draft,
+  Tschudin:2005:HarnessingSC, abelson:1996:sicp, briot:1987:uniform,
+  chambers:1991:efficient, cointe:1987:metaclasses, dormoy:1992:meta,
+  fouet-starynkevitch:describing-control:1987,
+  greiner:1980:representation,
+  hernandez-phillips:2019:debugging-bootstrap,hofstadter:2007:strange-loop,
+  kay:1996:early-smalltalk, kelsey:1998:r5rs,
+  kumar:2015:importance-expert-systems, matthews:2005:operational,
+  mazur:2004:compile, nigro:2008:meta, queinnec:2003:lisp,
+  Starynkevitch:2009:grow, serrano:1995:bigloo}.  Generating some
+``source'' code at build time is usual practice, advocated also by the
+\href{https://ninja-build.org/}{\textsc{Ninja} build system}, and
+theorized (around 1930, before even computers existed) in the
+\href{https://en.wikipedia.org/wiki/Church-Turing_thesis}{\textsc{Church-Turing}
+  thesis}. Related concepts include the famous (but
+\href{https://en.wikipedia.org/wiki/Undecidable_problem}{undecidable})
+\href{https://en.wikipedia.org/wiki/Halting_problem}{\textbf{halting
+    problem}} (whose proof involves a metaprogramming approach
+\cite{Hofstadter:1979:GEB}),
+\href{https://en.wikipedia.org/wiki/Hygienic_macro}{hygienic macros},
+and \href{https://en.wikipedia.org/wiki/Rice's_theorem}{Rice's
+  theorem}.
+
+Practically speaking \cite{abelson:1996:sicp}, metaprogramming is
+easier achieved by explicitly representing (maybe incomplete) code
+with
+\href{https://en.wikipedia.org/wiki/Abstract_syntax_tree}{abstract
+  syntax trees} \index{abstract syntax tree} \index{tree!abstract
+  syntax} (or \index{AST} AST), maybe with some holes for
+\href{https://en.wikipedia.org/wiki/Metavariable}{metavariables} for
+their later
+\href{https://en.wikipedia.org/wiki/Explicit_substitution}{explicit
+  substitution}, in the spirit of
+\href{https://docs.djangoproject.com/en/2.2/topics/templates/}{\textsc{Django}
+  templates} or of
+\href{https://lispcookbook.github.io/cl-cookbook/macros.html}{\textsc{Common
+    Lisp} macros} or
+\href{https://en.wikibooks.org/wiki/Scheme_Programming/Macros}{\textsc{Scheme}
+  macros}. A practical way to implement such a template machinery for
+generating C or C++ code is given by
+\href{https://gcc.gnu.org/wiki/MELT tutorial}{\textsc{Gcc Melt} code
+  chunks} \cite{Starynkevitch-DSL2011, Starynkevitch-GCCMELTweb,
+  Starynkevitch:2009:grow, Starynkevitch:2007:Multistage}, where a
+piece of C (or C++) code with holes (or metavariables)
+\texttt{\$hellochunk} and \texttt{\$msg} is given thru the
+``macro-string''
+\verb!#{/*$hellochunk#_here*/ printf("hello %s\n", $msg);}#! ... \\
+Later, such a macro-string or code chunk can be expanded by filling
+the holes, that is expanding the metavariables (e.g.\texttt{\$msg})
+appropriately. Such an expansion might be recursive, since some hole
+filling (or metavariable replacement) could in turn trigger expansions
+of other macro-strings. In practice, {\RefPerSys} will use similar
+code chunks and macro-expansion to generate its C (or C++) code, and
+some initial ad-hoc
+\href{https://en.wikipedia.org/wiki/Integrated_development_environment}{integrated
+  development environment} \index{integrated development environment}
+(or \index{IDE} IDE) will have to be coded, handling passively some
+persistent store. The expansion will be done thru some scripting
+language (or \emph{domain specific language}, a.k.a. DSL) which has to
+be implemented inside our IDE.
+
+
+Metaprogramming involves code generation (using
+\href{https://en.wikipedia.org/wiki/Source-to-source_compiler}{source-to-source}
+ahead-of-time and/or
+\href{https://en.wikipedia.org/wiki/Just-in-time_compilation}{just-in-time}\footnote{Several
+JIT compilation libraries exist, notably
+\href{https://gcc.gnu.org/onlinedocs/jit/}{\texttt{libgccjit}}
+provided inside recent \href{http://gcc.gnu.org}{\textsc{Gcc}}
+compilers.} compilation techniques \cite{Aho:2006:dragon-book}, and in
+     {\RefPerSys} is useful for many tasks, such as generating the
+     garbage collection support routines for scanning or forwarding,
+     and the loading and dumping routines needed for persistence (in
+     the spirit of
+     \href{https://en.wikipedia.org/wiki/RPCGEN}{\textsc{RpcGen}},
+     \href{http://swig.org/}{\textsc{Swig}} and other
+     \href{https://en.wikipedia.org/wiki/Serialization}{serialization}
+     frameworks).
+
+ In \RefPerSys, metaprogramming is often and practically achieved
+ (like in \cite{Starynkevitch-DSL2011,
+   Starynkevitch:2019:bismon-draft, Pitrat:1996:FGCS,
+   Pitrat:2009:ArtifBeings} and our
+ \href{https://github.com/bstarynk/misc-basile/blob/master/manydl.c}{\texttt{manydl.c}}
+ example program), by generating some C or C++ code in a temporary
+ file\footnote{There are practical reasons to generate these temporary
+ files outside of \texttt{/tmp/}, which gets cleaned at reboot.} like
+ \texttt{/tmp/rpsgen123.c}, compiling that file
+ \cite{drepper:2011:write-shared-lib} into a generated plugin
+ \texttt{/tmp/rpsgen123.so} by running a process such as
+        {\relsize{-1}{\texttt{gcc -fPIC -Wall -O -g -shared
+              /tmp/rpsgen123.c -l\textit{something} -o
+              /tmp/rpsgen123.so}}} and waiting for its successful
+        completion, then
+        \href{http://man7.org/linux/man-pages/man3/dlopen.3.html}{\texttt{dlopen(3)}}-ing
+        that newly generated \texttt{/tmp/rpsgen123.so}, in a manner
+        compatible with our garbage collection and agenda
+        invariants. We might later care about carefully
+        \href{http://man7.org/linux/man-pages/man3/dlclose.3.html}{\texttt{dlclose(3)}}-ing
+        that generated plugin, but in practice we accept some limited
+        virtual memory plugin leak, and we could just dump
+        appropriately our persistent state by mentioning in some
+        generated
+        \href{https://en.wikipedia.org/wiki/Manifest_file}{Manifest
+          file} those plugins which should be saved (as generated C
+        code) with the state.
+ 
+ 
+\medskip
+
+\href{https://en.wikipedia.org/wiki/Reflection_(computer_programming)}{Reflection}
+is ``the ability of a process to examine, introspect, and modify its
+own structure and behavior'' and also, for
+\href{https://en.wikipedia.org/wiki/Self-reflection}{self-reflection},
+the capacity `` to exercise introspection and to attempt to learn more
+about their fundamental nature and essence''. (Wikipedia). It is
+advocated (in \cite{Pitrat:2009:ArtifBeings}) that a similar approach
+is (painfully) achievable in AI systems, and it would need both clever
+\href{https://en.wikipedia.org/wiki/Backtracking}{backtracking} and
+\href{https://en.wikipedia.org/wiki/Stack_trace}{backtracing}
+techniques.
+ Libraries such as Ian Taylor's
+ \href{https://github.com/ianlancetaylor/libbacktrace}{\texttt{libbacktrace}}
+ (which wants most of the code to be compiled with
+ \href{https://en.wikipedia.org/wiki/DWARF}{\textsc{Dwarf} debugging}
+ information\footnote{In practice we should compile our or other C or
+ C++ code with both \texttt{-O2 -g} passed while
+ \href{https://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html}{invoking}
+ \texttt{gcc} or \texttt{g++}, and this is indeed possible and
+ practically works well enough.}) are helpful.
+
+ Our precise garbage collector (see \S \ref{sec:dataobjmodel} below
+ and \cite{rafkind:2009:precise-gc}, or
+ \href{http://starynkevitch.net/Basile/qishintro.html}{\textsc{Qish}})
+ wants local variables holding garbage collected pointers to be known
+ to the GC. In practice, the {\RefPerSys} call frame is some explicit
+ local \texttt{struct} named \texttt{\_} in generated C
+ code\footnote{Like \href{http://github.com/bstarynk/bismon/}{Bismon}
+ does, see its \texttt{LOCAL\_BM} macro. See also the
+ \texttt{CAMLparam$i$} and \texttt{CAMLlocal$j$} C macros of
+ \href{https://caml.inria.fr/pub/docs/manual-ocaml/intfc.htm}{\textsc{Ocaml}},
+ and the \texttt{Py\_VISIT} and \texttt{Py\_DECREF} and other macros
+ of
+ \href{https://docs.python.org/3/extending/}{\textsc{Python}}, the \href{http://www.sbcl.org/manual/index.html\#Foreign-Function-Interface}{\textit{foreign function interface} of \textsc{Sbcl}}, etc \ldots}. Such
+ explicited local frames can often be optimized by \texttt{gcc} or
+ \texttt{g++} (invoked with \texttt{-O2}).
+
+ As suggested by Pitrat (see \cite{Pitrat:1996:FGCS, Pitrat:2009:AST,
+   Pitrat:2009:ArtifBeings}), call stack reflection and backtrace is
+ the elementary brick of more sophisticated \emph{introspection}
+ techniques. At some point, our {\RefPerSys} system should inspect its
+ call stack and may take decisions after that. A typical approach
+ would be to run such introspection once in a while (e.g. every 0.1
+ second on the average\footnote{Timing considerations are essential,
+ practically speaking, in \RefPerSys. See
+ \href{http://man7.org/linux/man-pages/man7/time.7.html}{\texttt{time(7)}}
+ man page.}, in the
+ \href{https://en.wikipedia.org/wiki/Inference_engine}{inference
+   engine} of some
+ \href{https://en.wikipedia.org/wiki/Expert\_system}{expert system} or
+ \href{https://en.wikipedia.org/wiki/Knowledge_base}{knowledge base}
+ component of {\RefPerSys}.
+
+ \smallskip
+
+ Since we aim to be able to re-generate most (and hopefully all) of
+ {\RefPerSys} code (in C or in C++), having simple \textbf{coding
+   conventions} does matter: every \RefPerSys-defined C or C++
+ identifier should start with \texttt{rps\_} in lower, upper, or mixed
+ case (e.g. also \texttt{RPS\_} or \texttt{Rps\_}). Every C or C++
+ function, even \texttt{static inline} ones appearing in header files,
+ has its name starting with \texttt{rps\_} and is \emph{globally}
+ unique to the entire \texttt{refpersys} program. The C (or C++) code
+ should be automatically indented\footnote{With the social convention
+ that {\RefPerSys} contributors are running \texttt{omake indent} or
+ \texttt{make indent} before every \texttt{git commit}!} using
+ \href{https://www.gnu.org/software/indent/}{Gnu \textsc{Indent}} or
+ \href{http://astyle.sourceforge.net/}{\textsc{Astyle}}. Every named
+ \texttt{struct} (in C) should have its tag matching
+ \texttt{rps\_*st}. Every \texttt{typedef}-ed data type should have
+ its name matching \texttt{rps\_*t}. Every named \texttt{enum} should
+ have its tag matching \texttt{rps\_*en} and the various enumerated
+ values like \texttt{RPS\_*}. Even in cases the C (or the C++)
+ language allows several name spaces\footnote{In C, having both a type
+ and a label named \texttt{foo} is permitted, but we refuse such
+ non-sense.}, we don't use that facility. Hence we refuse to code the
+ common \texttt{typedef struct rpsfoo\_t rpsfoo\_t;} but prefer
+ instead (inspired by \href{http://gtk.org}{\textsc{Gtk}}) coding
+ \texttt{typedef struct rps\_\textit{foo}\_st
+   rps\_\textit{foo}\_t}. Of course, names of
+ \href{https://en.wikipedia.org/wiki/Local\_variable}{local variables}
+ (that is
+ \href{https://en.wikipedia.org/wiki/Automatic_variable}{automatic
+   variables} with their
+ \href{https://en.wikipedia.org/wiki/Scope\_(computer\_science)\#Lexical\_scoping}{lexical
+   scope} limited to some small C or C++
+ \href{https://en.wikipedia.org/wiki/Block\_(programming)}{block})
+ could be as short as a single letter such as \texttt{i}. In general,
+ our C or C++ code is written with the hope of being easily able to
+ regenerate it.
+ 
 \bigskip
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -924,9 +1231,9 @@ objects, to avoid aftermath and synchronize properly their mutation.
 \label{sec:dataobjmodel}
 
 The data is what is processed by {\RefPerSys}, and is made of values
-(and internally for the GC, also quasi-value). The object model is
-defining our classes, our single inheritance mechanism, our message
-sending protocol.
+(and, internally for the GC, also of quasi-values, which are pointers
+to GC-managed memory zones). The object model is defining our classes,
+our single inheritance mechanism, our message sending protocol.
 
 \subsection{how data should be processed in \RefPerSys}
 \label{subsec:howdata}
@@ -1034,9 +1341,10 @@ and inspired by
 \cite{kay:1996:early-smalltalk}. Also, a value can be transient or
 persistent. Each {\RefPerSys} value fits in one 64 bits machine
 word\footnote{Remember: {\RefPerSys} targets only Linux x86-64
-systems!}, so is nicely represented as a pointer or a tagged integer
-(63 bits, with the least significant bit being set to 1). Values are
-usually pointers to complex structures, so, per the
+systems!}, so is nicely represented as an aligned pointer (ending with
+a 0 bit) or a tagged integer (63 bits, with the least significant bit
+being set to 1). Values are usually pointers to complex structures,
+so, per the
 \href{https://github.com/hjl-tools/x86-psABI/wiki/x86-64-psABI-1.0.pdf}{x86-64
   calling conventions}, are word aligned (address multiple of 8
 bytes). Let's call \emph{genuine values} \index{genuine!value} those
@@ -1092,7 +1400,10 @@ called \emph{transient} values.
 \subsubsection{implementation details}
 \label{subsubsec:implementation-details}
 
-{\RefPerSys} takes advantage of some practical features\footnote{We don't really care if these features are not exactly standard C11 \cite{c11-standard:2011}.} of C on Linux x86-64:
+{\RefPerSys} takes advantage of some practical features\footnote{We
+don't really care if these features are not exactly standard C11
+\cite{c11-standard:2011}, because we strongly believe they are present
+on practical Linux x86-64 computers.} of C on Linux x86-64:
 
 \begin{itemize}
   \item Practically, machine data pointers should be at least 64 bits
@@ -1113,24 +1424,26 @@ called \emph{transient} values.
     
   \item Limited
     \href{https://en.wikipedia.org/wiki/Type_punning}{type-punning}
-    abilities. Assume we have two \texttt{struct}-ures definitions, so
-    \texttt{struct s1} and \texttt{struct s2}. Assume that both
-    \texttt{s1} and \texttt{s2} \emph{start} with the same
-    \emph{common} fields \texttt{unsigned num;} then
-    \texttt{void*ptr;} followed by \texttt{char str[24];}. Assume that
-    a pointer \texttt{p} points to a valid memory zone, whose
-    alignment (respectively size) are at least all of
-    \texttt{alignof(struct s1)}, \texttt{sizeof(struct s1)},
-    \texttt{alignof(struct s2)}, \texttt{sizeof(struct s2)}: so we
-    have \texttt{alignof(typeof(*p)) >= alignof(struct s1) \&\&
-      sizeof(*p) >= sizeof(struct s1)} and \texttt{alignof(typeof(*p))
-      >= alignof(struct s2) \&\& sizeof(*p) >= sizeof(struct
-      s2)}. Then: \texttt{((struct s1*)p)->num} and \texttt{((struct
-      s2*)p)->num} both refer to the same memory location and number
-    there; \texttt{((struct s1*)p)->ptr} and \texttt{((struct
-      s2*)p)->ptr} both refer to the same memory location and pointer
-    there; and of course \texttt{((struct s1*)p)->str} and
-    \texttt{((struct s2*)p)->str} is the \emph{same} string. See also
+    abilities. {\relsize{-0.5}{Assume we have two \texttt{struct}-ures
+        definitions, so \texttt{struct s1} and \texttt{struct
+          s2}. Assume that both \texttt{s1} and \texttt{s2}
+        \emph{start} with the same \emph{common} fields
+        \texttt{unsigned num;} then \texttt{void*ptr;} followed by
+        \texttt{char str[24];}. Assume that a pointer \texttt{p}
+        points to a valid memory zone, whose alignment (respectively
+        size) are at least all of \texttt{alignof(struct s1)},
+        \texttt{sizeof(struct s1)}, \texttt{alignof(struct s2)},
+        \texttt{sizeof(struct s2)}: so we have
+        \texttt{alignof(typeof(*p)) >= alignof(struct s1) \&\&
+          sizeof(*p) >= sizeof(struct s1)} and
+        \texttt{alignof(typeof(*p)) >= alignof(struct s2) \&\&
+          sizeof(*p) >= sizeof(struct s2)}. Then: \texttt{((struct
+          s1*)p)->num} and \texttt{((struct s2*)p)->num} both refer to
+        the same memory location and number there; \texttt{((struct
+          s1*)p)->ptr} and \texttt{((struct s2*)p)->ptr} both refer to
+        the same memory location and pointer there; and of course
+        \texttt{((struct s1*)p)->str} and \texttt{((struct
+          s2*)p)->str} is the \emph{same} string.}} See also
     \texttt{may\_alias}, \texttt{warn\_if\_not\_aligned},
     \texttt{aligned}, \texttt{transparent\_union} \textsc{Gcc}
     \href{https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html}{type
@@ -1165,6 +1478,42 @@ called \emph{transient} values.
 \end{itemize}
 
 \smallskip
+
+Practically speaking, every {\RefPerSys} value or quasi-value which
+sits in memory\footnote{This excludes tagged integers, and that memory
+zone is at least word aligned to 8 bytes.} is represented in some
+\texttt{struct} starting with an \texttt{const int16\_t rps\_kind;}
+field discriminating the value type, followed by some \texttt{volatile
+  int16\_t rps\_gcdata;} field reserved for garbage collection
+internals. For instance, our string values could have their C type (of their memory zone) declared as:
+\begin{relsize}{-1.5}
+\begin{alltt}
+  \textbf{struct} rps\_string\_st \{
+    // common fields to every {\RefPerSys} value in memory:
+    \textbf{const} int16\_t rps\_kind;      // always RPS\_KIND\_STRING
+    \textbf{volatile} int16\_t rps\_gcdata; // for garbage collection
+    // string specific fields:
+    \textbf{const} uint32\_t rps\_strsize;      // string size in bytes
+    \textbf{const} uint32\_t rps\_strlen;       // string length in Unicode characters
+    uint32\_t rps\_strhash;            // string hash-code
+    \textbf{const} char rps\_strdata[];        // nul-terminated string bytes
+  \}  \textbf{\_\_attribute\_\_} ((aligned (2 * \textbf{sizeof}(void*))));
+\end{alltt}
+\end{relsize}
+
+Of course, the \texttt{rps\_strdata} field above is a
+\href{https://en.wikipedia.org/wiki/Flexible_array_member}{flexible
+  array member}, and by convention contains \texttt{rps\_strsize + 1}
+bytes, is validly \textsc{Utf-8} encoded, aligned to 4 bytes and
+nul-byte terminated. Hash codes cannot be 0 and are lazily computed
+(so the \texttt{rps\_strhash} field is computed once when it was
+0). The \texttt{RPS\_KIND\_STRING} is some enumerator inside a global
+\texttt{enum}. Strings are ordered naturally, using \texttt{strcmp} on
+their \texttt{rps\_strdata} bytes.
+
+
+\smallskip
+
 
 
 \textcolor{red}{@@TODO: should explain more implementation details in C terms?}
@@ -1378,13 +1727,14 @@ him, shown in figure \ref{fig:contributor-basile}.
 
 \begin{figure}[h]
   \begin{center}
-  \begin{tabular}{ll}
+  \begin{tabular}{llr}
     \hline
-    $\Omega$ ``first name'' : & string \texttt{"Basile"} \\
-    $\Omega$ ``last name'' : & string \texttt{"Starynkevitch"} \\
-    $\Omega$ ``email'' : & string {\relsize{-1}{\texttt{"basile@starynkevitch.net"}}} \\
-    $\Omega$ ``year of birth'' : & tagged integer \texttt{\#1959} \\
-    $\Omega$ ``friends'' : & set {\relsize{-1}{\texttt{\{ \_6eO8kozzUh801dHVt7 \_7zpWFJ2npj001ZfVvq \}}}} \\
+    $\in$ & $\Omega$ `` contributor class'' & the class \\
+    $\Omega$ ``first name'' : & string \texttt{"Basile"} & {\relsize{-1}{attribute}} \\
+    $\Omega$ ``last name'' : & string \texttt{"Starynkevitch"} & {\relsize{-1}{attribute}} \\
+    $\Omega$ ``email'' : & string {\relsize{-1}{\texttt{"basile@starynkevitch.net"}}} & {\relsize{-1}{attribute}} \\
+    $\Omega$ ``year of birth'' : & tagged integer \texttt{\#1959} & {\relsize{-1}{attribute}}  \\
+    $\Omega$ ``friends'' : & set {\relsize{-1}{\texttt{\{ \_6eO8kozzUh801dHVt7 \_7zpWFJ2npj001ZfVvq \}}}} & {\relsize{-1}{attribute}} \\
     \hline
   \end{tabular}
   
@@ -1408,16 +1758,186 @@ that the object $\Omega$ ``email'' could contain an attribute $\Omega$
 to show that email cleverly (e.g. as some \texttt{<a
   href='mailto:}\ldots\texttt{'>} \textsc{html5} element).
 
+\smallskip
+
+Another example of object might be some code chunk to safely print
+into \texttt{\$fil} an integer \texttt{\$i}, e.g. {\relsize{-1}{\texttt{\#\{ if
+  (\$fil != NULL) fprintf(\$fil, "\%d", \$i);\}\#}}} might be
+represented as in figure \ref{fig:code-chunk}:
+
+
+\begin{figure}[h]
+  \begin{center}
+  \begin{tabular}{llr}
+    \hline
+    $\in$ & $\Omega$ ``code chunk class'' & the class \\
+    $\Omega$ ``metavariables'' : & set \texttt{\{} {\relsize{-1}{$\Omega$ ``\texttt{\$i}'', $\Omega$ ``\texttt{\$fil}'' }} \texttt{\}}  & {\relsize{-1}{attribute}} \\
+    $\Omega$  ``target language'' : & $\Omega$  ``\emph{C} language'' & {\relsize{-1}{attribute}} \\
+    $[0]$  &  string {\relsize{-1}{\texttt{" if ("}}} & {\relsize{-1}{component}} \\
+    $[1]$  &  object {\relsize{-1}{ $\Omega$  ``\texttt{\$fil}''}} & {\relsize{-1}{component}} \\
+    $[2]$  &  string {\relsize{-1}{\texttt{" != NULL) fprintf("}}} & {\relsize{-1}{component}} \\
+    $[3]$  &  object {\relsize{-1}{ $\Omega$  ``\texttt{\$fil}''}} & {\relsize{-1}{component}} \\
+    $[4]$  &  string {\relsize{-1}{\texttt{", {\textbackslash}"{\%d}{\textbackslash}", "}}} & {\relsize{-1}{component}} \\
+    $[5]$  &  object {\relsize{-1}{ $\Omega$  ``\texttt{\$i}''}} & {\relsize{-1}{component}} \\
+    $[6]$  &  string {\relsize{-1}{\texttt{");"}}} & {\relsize{-1}{component}} \\
+    \hline
+  \end{tabular}
+
+  \vspace{1em}
+  
+    $\Omega$ ``some code chunk'' $\equiv$ \texttt{\_59RzaVi7hKb00xkX1S}
+  \end{center}
+  \caption{An example of object representing some code chunk}
+  \label{fig:code-chunk}
+\end{figure}
+
+\smallskip
+
+In practice, such a code chunk representation could be more compact;
+we could assume that both the {\relsize{-1}{\textbf{\texttt{if}}}}
+keyword of C and the {\relsize{-1}{\texttt{fprintf}}} and
+{\relsize{-1}{\texttt{NULL}}} C identifiers occur frequently enough to
+be refactored and each reified into its own object. Of course, it
+might make sense to add an $\Omega$ ``author'' attribute in our code
+chunk, whose value would be our \texttt{\_3a9otsskmcJ04v9S7n} object
+of figure \ref{fig:contributor-basile} above.
+  
+\bigskip
 
 Obviously, some kind of data don't fit exactly into such simple
 objects. Some objects might represent a big hashtable of triplets, and
-such data has to be the payload of that object.
+such data has to be the payload of that object. Other objects might
+reify sorted dictionnaries mapping strings to values, and their
+payload could be some
+\href{https://en.wikipedia.org/wiki/Red-black_tree}{red-black trees}
+whose internal nodes would be GC-managed quasi-values. And an opened
+\texttt{FILE*} would be represented and reified as some object
+carrying a payload with some {\relsize{-1}{\texttt{FILE*
+      rps\_filehandle;}}} field.
 
 \smallskip
 
 \textcolor{red}{@@TODO: {\relsize{+2}{TO BE WRITTEN}}}
 
+
+%%%%%%%%%%%%%%%%
+
+\medskip
+
+\subsection{the {\RefPerSys} object model}
+\label{subsec:objmodel}
+
+Every {\RefPerSys} value belongs to some single class, reified as a
+particular {\RefPerSys} object. We first explain the inheritance graph, and then the message sending protocol.
+
+\subsubsection{{\RefPerSys} inheritance graph}
+\label{subsubsec:inheritance}
+
+Every non-nil {\RefPerSys} value belongs to a single class, defining
+its behavior by the set of slelector it is understanding for message
+sending. The figure \ref{fig:inheritance} shows (with simplification)
+the single-inheritance graph of {\RefPerSys} values. In practice we
+expect many hundreds of classes and at least many hundred thousands
+values in a mature persistent store.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{dot-classhier}
+    \medskip
+    \begin{relsize}{-1}
+    \begin{itemize}
+    \item \colorbox{pink}{objects (pink background)}
+    \item \colorbox{Azure}{immutable values (azure background, horizontal lines)}
+    \item \textcolor{black}{$v \longrightarrow \omega$} (straight  black arrow) means : $v$ is instance of class $\omega$
+    \item \textcolor{blue}{$\omega_1 - ~ \rightarrow \omega_2 $} (dashed blue arrow) means : class $\omega_1$ is subclass of $\omega_2$
+    \end{itemize}
+    \end{relsize}
+  \end{center}
+  \caption{ The %
+    % \textcolor{red}{\textbf{incomplete}} %
+    simplified inheritance graph in \RefPerSys 
+    }
+  \label{fig:inheritance}
+\end{figure}
+
+That figure \ref{fig:inheritance} shows several objects:
+\begin{itemize}
+\item the \texttt{\textsc{object}} class, superclass of every object;
+\item the \texttt{\textsc{class}} metaclass, class of every class;
+\item the \texttt{\textsc{value}} class, ultimate class of every value;
+\item the \texttt{\textsc{code chunk}} class, for code chunks like in figure \ref{fig:code-chunk};
+\item the \texttt{\textsc{contributor}} class, for reified contributors like in figure \ref{fig:contributor-basile};
+\item the \texttt{\textsc{string}} class, of immutable string values;
+\item the \texttt{\textsc{set}} class, of immutable set of objects;
+\item the \texttt{\textsc{Basile}} contributor object of figure \ref{fig:contributor-basile};
+\item some \textit{code-chunk} object,  like in figure \ref{fig:code-chunk};
+\end{itemize}
+and several immutable values:
+\begin{itemize}
+\item the \texttt{"hello"} string;
+\item set of two chunk metavariables \texttt{\{ $\Omega(\textrm{\texttt{\$i}}), \Omega(\textrm{\texttt{\$fil}}) $ \}} which appears as value of attribute $\Omega$ ``metavariables'' in figure \ref{fig:code-chunk}
+\end{itemize}
+
+\medskip
+
+A {\RefPerSys} class object should contain, in its payload some
+\emph{class information}:
+\begin{itemize}
+\item the sequence of its direct then indirect superclasses
+\item a flexible
+  \href{https://en.wikipedia.org/wiki/Dispatch_table}{dispatch table}
+  or \href{https://en.wikipedia.org/wiki/Virtual_method_table}{virtual
+    method table}\footnote{Our methods are \emph{always} virtual, like
+  for \textsc{Smalltalk}; Conceptually {\RefPerSys} don't have any non
+  virtual methods.} associating selectors to closures handling
+  messages with them. We call that association the direct \emph{method
+  dictionary} of that class. It should be implemented efficiently
+  (perhaps using caching techniques local to each occurence of
+  sending).
+\end{itemize}
+
+Both are changeable. Any object can change its class at will at any
+time. A class can have new methods added or removed at any time. A
+class can change its superclass at will\footnote{However, this should
+be done with care, avoiding additional circularities in the
+inheritance graph.}.
+
+\medskip
+
+\subsubsection{{\RefPerSys} message sending}
+\label{subsubsec:message}
+
+Our message sending protocol is inspired by those of
+\textsc{SmallTalk}, \textsc{Common Lisp}, \textsc{Ocaml},
+\textsc{Java}. Every message send has a reciever $\rho$ (the target of
+the message sending), a selector - some object $\omega_{sel}$ (what do
+we send) and optional extra arguments $\alpha_1 \ldots \alpha_n$ (so
+$n = 0$ when we don't have extra arguments). Conceptually, what is
+happening is some loop:
+
+\begin{itemize}
+\item let $\kappa$ be initially the class of $\rho$, the reciever or target.
+\item look into the method dictionary $\delta$ of class $\kappa$; if
+  the selector $\omega_{sel}$ is associated to method $\mu$ (some
+  closure), apply that $\mu$ to $\rho$, $\alpha_1, \ldots \alpha_n$;
+  the result of this application is the result of the message sending.
+\item if $\kappa$ is the topmost \textsc{value} class, the message
+    sending has failed.
+  \item otherwise, replace $\kappa$ by its direct superclass $\kappa'$
+    and repeat the method lookup (second step here).
+\end{itemize}
+
+In practice, we might try to use caching techniques (but later) à la
+\textsc{Self} or \textsc{JavaScript} implementation to accelerate
+message sending. We should define what happens when no method is found
+(perhaps using some \textsc{message-not-understood} builtin selector à
+la \textsc{SmallTalk} \cite{kay:1996:early-smalltalk}), taking
+$\omega_{sel}, \alpha_1, \ldots \alpha_n$ as arguments, or triggering
+some exception machinery.
+
 \bigskip
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Persistence in \RefPerSys}
@@ -1436,7 +1956,33 @@ exiting.
 \subsection{The textual data format of \RefPerSys}
 \label{subsec:data-format}
 
-\textcolor{red}{@@TODO: should be written, e.g. explanation of the files under \texttt{persistore/} and of their JSON syntax}
+We probably will use a \href{http://hjson.org}{\textsc{HJson}} format
+to persist our state, since \textsc{HJson} is slighly less verbose
+than \textsc{Json} (less double quotes \texttt{"} needed), and almost
+as easy to parse. Our immutable values could easily be represented in
+textual syntax, for example a set of three objects of objids
+\texttt{\_0iaOiLq4pj20097DNb}, \texttt{\_1R4TeqlLvhS03o0mGN},
+\texttt{\_7m9EMmdyQKU00euKwB} might be represented as the following
+\textsc{Hjson} object:
+\begin{quote}
+\begin{relsize}{-1}
+  \begin{tabular}{lllll}
+    \texttt{\{} & \texttt{vtyp} & \texttt{:} & \texttt{set,} & ~  \\
+    ~           & \texttt{elem} & \texttt{:} & \texttt{[} & \texttt{\_0iaOiLq4pj20097DNb,}  \\
+    ~           & ~             & ~          & ~           & \texttt{\_1R4TeqlLvhS03o0mGN,} \\
+    ~           & ~             & ~          & ~           & \texttt{\_7m9EMmdyQKU00euKwB ] \}} \\
+  \end{tabular}
+\end{relsize}
+\end{quote}
+and we could decide to remove the commas inside our brackets \texttt{[} {\relsize{-1}{elements}} ... \texttt{]}.
+\medskip
+
+The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
+
+\textcolor{red}{@@TODO: should be written}
+
+\textcolor{red}{@@TODO: explanation of the files (including the
+  manifest file) under \texttt{persistore/} and of their HJSON syntax}
 
 
 \clearpage
