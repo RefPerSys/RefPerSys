@@ -77,6 +77,9 @@
 // https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h
 #include <cxxabi.h>
 
+/// HJSON-CPP, installed from https://github.com/hjson/hjson-cpp
+#include "hjson/hjson.h"
+
 #include "unistr.h"
 
 #include "backtrace.h"
