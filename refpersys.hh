@@ -8,9 +8,11 @@
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
+ *      Nimesh Neema <nimeshneema@gmail.com>
+ *      
  *
  *      © Copyright 2019 The Reflective Persistent System Team
- *      <https://refpersys.gitlab.io>
+ *      team@refpersys.org
  *
  * License:
  *    This program is free software: you can redistribute it and/or modify
@@ -648,7 +650,6 @@ public:
   inline bool operator > (const Rps_ObjectRef& oth) const;
   inline bool operator >= (const Rps_ObjectRef& oth) const;
   static inline Rps_ObjectRef make(Rps_CallFrameZone*callingfra);
-  static void tiny_benchmark_1(Rps_CallFrameZone* callingfra, unsigned count);
 };				// end class Rps_ObjectRef
 
 
