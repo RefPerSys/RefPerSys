@@ -29,12 +29,13 @@
 
 #include "refpersys.h"
 
+static thread_local int randfd = 0;
+
 
 /* open /dev/urandom file descriptor */
 static int
 randfd_open(void)
 {
-	static int randfd = 0;
 
 	if (RPS_UNLIKELY (randfd < 2)) {
 		/* see https://unix.stackexchange.com/questions/324209/ */
