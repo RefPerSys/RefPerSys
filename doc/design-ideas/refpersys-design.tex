@@ -1709,9 +1709,22 @@ removed or changed during the lifetime of the containing object),
 \href{https://en.wikipedia.org/wiki/Graph_database}{graph databases}
 (held entirely in memory).
 
+{\RefPerSys} objects keep (like \textsc{Bismon} objects do
+\cite{Starynkevitch:2019:bismon-draft}) their modification time (or
+\emph{objmtime}) and that timestamp\footnote{the timestamp is
+implemented as a \texttt{double} floating point representing elapsed
+seconds since the
+\href{https://en.wikipedia.org/wiki/Unix_time}{\textsc{Unix} Epoch},
+obtained with
+\href{http://man7.org/linux/man-pages/man2/clock_gettime.2.html}{\texttt{clock\_gettime(2)}}
+using \texttt{CLOCK\_REALTIME}.} may be useful to decide some further
+processing (à la \texttt{make}).
+
+\smallskip
+
 \textcolor{red}{@@TODO: should explain a lot more}
 
-
+\bigskip
 
 \subsubsection{concrete examples of objects}
 \label{subsubsec:obj-examples}
