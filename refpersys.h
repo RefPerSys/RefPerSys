@@ -80,6 +80,17 @@
 
 
 #include "rps_hints.h"
+
+
+/* aborts after displaying a fatal error message */
+#define RPS_FATAL(msg, ...)                                  \
+do {                                                         \
+  fprintf (stderr, "FATAL ERROR in %s [%s:%d]: " msg "\n\n", \
+	   __func__, __FILE__, __LINE__, ##__VA_ARGS__);     \
+  abort ();                                                  \
+} while (0)
+
+
 #include "rps_id.h"
 #warning code should be written here.
 

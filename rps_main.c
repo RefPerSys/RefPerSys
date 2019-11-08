@@ -37,17 +37,15 @@ static int
 randfd_open(void)
 {
 
-	if (RPS_UNLIKELY (randfd < 2)) {
-		/* see https://unix.stackexchange.com/questions/324209/ */
-		randfd = open ("/dev/urandom", O_RDONLY);
-		if (RPS_UNLIKELY (!randfd)) {
-#warning FIXME: use RPS_FATAL
-			printf ("failed to open /dev/urandom\n");
-			abort ();
-		}
-	}
+  if (RPS_UNLIKELY (randfd < 2))
+    {
+      /* see https://unix.stackexchange.com/questions/324209/ */
+      randfd = open ("/dev/urandom", O_RDONLY);
+      if (RPS_UNLIKELY (!randfd))
+        RPS_FATAL ("failed to open /dev/urandom");
+    }
 
-	return randfd;
+  return randfd;
 }
 
 
@@ -55,20 +53,21 @@ randfd_open(void)
 static void
 randfd_close(void)
 {
-	if (RPS_LIKELY (randfd > 2)) {
-		close (randfd);
-		randfd = 0;
-	}
+  if (RPS_LIKELY (randfd > 2))
+    {
+      close (randfd);
+      randfd = 0;
+    }
 }
 
 
 int main(int argc, char **argv)
 {
-	/* TODO: parse argc and argv for command line options */
-	(void) argc;
-	(void) argv;
+  /* TODO: parse argc and argv for command line options */
+  (void) argc;
+  (void) argv;
 
-	randfd_close ();
+  randfd_close ();
 } /* end of main */
 
 ///// end of file main_rps.c
