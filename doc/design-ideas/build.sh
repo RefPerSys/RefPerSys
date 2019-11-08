@@ -26,6 +26,7 @@ ls -ls --sort=time dot*
 printf "\n\n ================ latexing and bibering refpersys-design\n"
 lualatex --shell-escape  --halt-on-error refpersys-design
 biber refpersys-design
+makeindex refpersys-design
 lualatex --shell-escape  --halt-on-error refpersys-design
 [ -f refpersys-design.idx ] && texindy -v -C utf8 -I latex refpersys-design.idx
 if lualatex --shell-escape  --halt-on-error refpersys-design ; then
