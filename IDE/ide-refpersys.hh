@@ -72,5 +72,53 @@
 
 #include "refpersys.hh"
 
+typedef std::uint32_t rps_gapnum_t;
+class Rps_Gap {
+  rps_gapnum_t _gap;
+public:
+  Rps_Gap(std::uint64_t g=0) : _gap((rps_gapnum_t)g) {};
+  Rps_Gap(rps_gapnum_t g=0) : _gap(g) {};
+  rps_gapnum_t get() const { return _gap; };
+  operator rps_gapnum_t (void) const { return get(); };
+  Rps_Gap& put(rps_gapnum_t n) { _gap = n; return *this; };
+  ~Rps_Gap() {};
+  // rule of five:
+  Rps_Gap(const Rps_Gap& src) : Rps_Gap(src._gap) {};
+  Rps_Gap(Rps_Gap&& oth) noexcept : _gap(oth._gap) {};
+  Rps_Gap& operator= (const Rps_Gap& oth) { _gap = oth._gap; return *this; };
+  Rps_Gap&operator= (Rps_Gap&&oth) noexcept {
+    std::swap (_gap, oth._gap);
+    return *this;
+  };
+};				// end Rps_Gap
+     
+
+struct rps_plain_tag {}; // for new below
+
+
+// quasi-value zone
+class Rps_QuasiValueZ {
+  Rps_Type _rps_type;
+  volatile int16_t _rps_gcflags;
+  uint32_t _rps_qvrank; // rank inside _rps_ptrvector
+  static std::vector<Rps_QuasiValueZ*> _rps_ptrvector;
+  static std::mutex _rps_mtxvector;
+  Rps_QuasiValueZ(Rps_Type ty, uint32_t rank)
+    : _rps_type(ty), _rps_gcflags(0), _rps_qvrank(rank) {};
+protected:
+  Rps_QuasiValueZ(Rps_Type ty);
+  virtual ~Rps_QuasiValueZ();
+  virtual Rps_Type type() const { return _rps_type; };
+  int16_t gc_flags() const { return _rps_gcflags; };
+  void* operator new (size_t siz) {
+    return ::operator new (siz); };
+  void* operator new (size_t siz, rps_plain_tag) {
+    return ::operator new (siz); };
+  void* operator new (size_t siz, Rps_Gap gap) {
+    return ::operator new(siz+gap.get());    
+  };
+  void operator delete(void*p) noexcept { ::operator delete(p); };
+};			       // end clas Rps_QuasiValueZ
+
 #endif /*IDEREFPERSYS_INCLUDED*/
 ////////// end of file ide-refpersys.hh

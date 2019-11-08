@@ -272,25 +272,9 @@ enum class Rps_Type : int16_t
 {
   /// non-value types (or quasi-values)
   ///
-  /// these are GC-scanned, but not GC-allocated, just stack allocated:
-  Dumper = -32,
-  Loader = -31,
-  CallFrame = -30,
-  /// these are GC-allocated quasivalues:
-  QuasiPayload = -6,
-  ///
-  ///
-  /// Quasi-values are indeed garbage collected, so GC-scanned and
-  /// GC-allocated, but not "first class citizens" as genuine values
-  /// are... So they don't directly go inside RpsValue-s.
-  ///
-  /// but see also, and keep in sync with, rps_ty_min_quasi below.
-  QuasiToken = -5,
-  QuasiAttributeArray = -4,
-  QuasiObjectVector = -3,
-  QuasiComponentVector = -2,
   ///
   /// Values that could go into Rps_Value.
+  QuasiPayload= -2, // 
   Int = -1, // for tagged integers
   None = 0, // for nil
   ///

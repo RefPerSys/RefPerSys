@@ -76,17 +76,6 @@ rps_is_type_of_quasi_value(const Rps_Type ty)
          || (ty >= Rps_Type::String && ty <= Rps_Type::Object);
 } // end rps_is_type_of_quasi_value
 
-// any type of GC-movable quasi-value
-static inline bool
-rps_is_type_of_movable_quasi_value(const Rps_Type ty)
-{
-  return ty == Rps_Type::QuasiAttributeArray
-         || ty == Rps_Type::QuasiComponentVector
-         || ty == Rps_Type::QuasiObjectVector
-         || ty == Rps_Type::Tuple || ty == Rps_Type::Set
-         || ty == Rps_Type::Double || ty == Rps_Type::String
-         || ty == Rps_Type::QuasiToken;
-} // end rps_is_type_of_movable_quasi_value
 
 // any type of GC-allocated quasi value without internal value components
 static inline bool

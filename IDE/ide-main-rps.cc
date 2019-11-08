@@ -52,11 +52,11 @@ makewin_iderps(void)
 static double rps_start_monotonic_time;
 double rps_elapsed_real_time(void)
 {
-  return rps_monotonic_real_time() - rps_start_monotonic_time;
+    return rps_monotonic_real_time() - rps_start_monotonic_time;
 }
 
 int main(int argc, char **argv) {
-  rps_start_monotonic_time = rps_monotonic_real_time();
+    rps_start_monotonic_time = rps_monotonic_real_time();
     auto window = makewin_iderps();
     window->show(argc, argv);
     return Fl::run();
