@@ -1,0 +1,528 @@
+/****************************************************************
+ * file utilities_rps.cc
+ *
+ * Description:
+ *      This file is part of the Reflective Persistent System.
+ *
+ *      It has some utilities code.
+ *
+ * Author(s):
+ *      Basile Starynkevitch <basile@starynkevitch.net>
+ *      Abhishek Chakravarti <abhishek@taranjali.org>
+ *      Nimesh Neema <nimeshneema@gmail.com>
+ *
+ *      © Copyright 2019 The Reflective Persistent System Team
+ *      team@refpersys.org
+ *
+ * License:
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
+
+#include "refpersys.hh"
+
+struct backtrace_state* rps_backtrace_state;
+const char* rps_progname;
+
+void* rps_proghdl;
+
+thread_local Rps_Random Rps_Random::_rand_thr_;
+
+typedef std::function<void(void)> rps_todo_func_t;
+static std::vector<rps_todo_func_t> rps_main_todo_vect;
+
+
+//// read a file entirely as a single string
+//// adapted from https://stackoverflow.com/a/525103/841108
+std::string
+rps_read_file_as_string(const std::string &fileName)
+{
+  std::ifstream ifs(fileName.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+
+  std::ifstream::pos_type fileSize = ifs.tellg();
+  ifs.seekg(0, std::ios::beg);
+
+  std::vector<char> bytes(rps_prime_above((unsigned)fileSize+30) & ~0xf);
+    ifs.read(bytes.data(), fileSize);
+
+    return std::string(bytes.data(), fileSize);
+} // end rps_read_file_as_string
+
+
+
+/// notice that Rps_BackTrace should use assert, not RPS_ASSERT!
+void
+Rps_BackTrace::bt_error_method(const char*msg, int errnum)
+{
+  assert (msg != nullptr);
+  fprintf(stderr, "BackTrace Error <%s:%d> %s (#%d)",
+          __FILE__, __LINE__,
+          msg?msg:"???",
+          errnum);
+  fflush(nullptr);
+} // end Rps_BackTrace::bt_error_method
+
+
+
+void
+Rps_BackTrace::bt_error_cb (void *data, const char *msg,
+                            int errnum)
+{
+  assert (data != nullptr);
+  Rps_BackTrace* btp = static_cast<Rps_BackTrace*>(data);
+  assert (btp->magicnum() == _bt_magicnum_);
+  btp->bt_error_method(msg, errnum);
+} // end of Rps_BackTrace::bt_error_cb
+
+
+
+void
+rps_print_simple_backtrace_level(Rps_BackTrace* btp, FILE*outf, const char*beforebuf, uintptr_t pc)
+{
+  if (btp == nullptr || btp->magicnum() != Rps_BackTrace::_bt_magicnum_)
+    RPS_FATAL("bad btp@%p", (void*)btp);
+  if (!outf)
+    RPS_FATAL("missing outf");
+  if (!beforebuf)
+    beforebuf = "*";
+  if (pc==0 || pc==(uintptr_t)-1)
+    {
+      fprintf(outf, "%s *********\n", beforebuf);
+      return;
+    }
+  const char*demangled = nullptr;
+  Dl_info dif = {};
+  memset ((void*)&dif, 0, sizeof(dif));
+  std::string filnamestr;
+  std::string funamestr;
+  if (dladdr((void*)pc, &dif))
+    {
+      int delta = pc - (uintptr_t) dif.dli_saddr;
+      if (dif.dli_fname && strstr(dif.dli_fname, ".so"))
+        filnamestr = std::string(basename(dif.dli_fname));
+      else if (dif.dli_fname && strstr(dif.dli_fname, rps_progname))
+        filnamestr = std::string(basename(rps_progname));
+      if (dif.dli_sname != nullptr)
+        {
+          if (dif.dli_sname[0] == '_')
+            {
+              int status = -1;
+              demangled  = abi::__cxa_demangle(dif.dli_sname, NULL, 0, &status);
+              if (demangled && demangled[0])
+                funamestr = std::string (demangled);
+            };
+          if (funamestr.empty())
+            funamestr = std::string(dif.dli_sname);
+        }
+      else funamestr = "??";
+      if (delta != 0)
+        {
+          if (funamestr.empty())
+            fprintf (outf, "%s %p: %s+%#x\n",
+                     beforebuf, (void*)pc, filnamestr.c_str(), delta);
+          else
+            fprintf (outf, "%s %p: %40s+%#x %s\n",
+                     beforebuf, (void*)pc, filnamestr.c_str(), delta,
+                     funamestr.c_str());
+        }
+      else
+        {
+          if (funamestr.empty())
+            fprintf (outf, "%s %p: %s+%#%x\n",
+                     beforebuf, (void*)pc, filnamestr.c_str(), delta);
+          else
+            fprintf (outf, "%s %p: %40s+%#%x %s\n",
+                     beforebuf, (void*)pc, filnamestr.c_str(),
+                     delta, funamestr.c_str());
+        }
+    }
+  else
+    fprintf(outf, "%s %p.\n", beforebuf, (void*)pc);
+  if (demangled)
+    free((void*)demangled), demangled = nullptr;
+  fflush(outf);
+} // end of rps_print_simple_backtrace_level
+
+
+
+
+void rps_print_full_backtrace_level
+(Rps_BackTrace* btp,
+ FILE*outf, const char*beforebuf,
+ uintptr_t pc, const char *filename, int lineno,
+ const char *function)
+{
+  if (btp == nullptr || btp->magicnum() != Rps_BackTrace::_bt_magicnum_)
+    RPS_FATAL("bad btp@%p", (void*)btp);
+  if (!outf)
+    RPS_FATAL("missing outf");
+  if (!beforebuf)
+    beforebuf = "*";
+  if (pc==0 || pc==(uintptr_t)-1)
+    {
+      fprintf(outf, "%s *********\n", beforebuf);
+      return;
+    }
+  std::string locstr;
+  std::string funamestr;
+  char locbuf[80];
+  Dl_info dif = {};
+  const char* demangled = nullptr;
+  bool wantdladdr = false;
+  memset ((void*)&dif, 0, sizeof(dif));
+  if (function)
+    {
+      if (function[0] == '_')
+        {
+          int status = -1;
+          demangled  = abi::__cxa_demangle(function, NULL, 0, &status);
+          if (demangled && demangled[0])
+            funamestr = std::string (demangled);
+        }
+      else funamestr = std::string (function);
+    }
+  else
+    wantdladdr = true;
+  memset(locbuf, 0, sizeof(locbuf));
+  if (filename)
+    {
+      snprintf(locbuf, sizeof(locbuf), "%s:%d",
+               basename(filename), lineno);
+      locstr = std::string(locbuf);
+    }
+  else
+    wantdladdr = true;
+  if (wantdladdr && dladdr((void*)pc, &dif))
+    {
+      int delta = pc - (uintptr_t) dif.dli_saddr;
+      if (locstr.empty() && dif.dli_fname && strstr(dif.dli_fname, ".so"))
+        {
+          if (delta != 0)
+            snprintf(locbuf, sizeof(locbuf),
+                     "!%s+%#x", basename(dif.dli_fname), delta);
+          else snprintf(locbuf, sizeof(locbuf),
+                          "!%s", basename(dif.dli_fname));
+          locstr = std::string (locbuf);
+        }
+      else if (locstr.empty() && dif.dli_fname && strstr(dif.dli_fname, rps_progname))
+        {
+          if (delta != 0)
+            snprintf(locbuf, sizeof(locbuf),
+                     "!!%s+%#x", basename(dif.dli_fname), delta);
+          else snprintf(locbuf, sizeof(locbuf),
+                          "!!%s", basename(dif.dli_fname));
+          locstr = std::string (locbuf);
+        }
+      if (funamestr.empty())
+        {
+          if (dif.dli_sname && dif.dli_sname[0] == '_')
+            {
+              int status = -1;
+              demangled  = abi::__cxa_demangle(dif.dli_sname, NULL, 0, &status);
+              if (demangled && demangled[0])
+                funamestr = std::string (demangled);
+            }
+          else if (dif.dli_sname)
+            funamestr = std::string(dif.dli_sname);
+          if (funamestr.empty())
+            {
+              funamestr = std::string("?_?");
+            }
+        }
+    };
+  fprintf(outf, "%s %p %s %s\n",
+          beforebuf, (void*)pc, funamestr.c_str(), locstr.c_str());
+  fflush(outf);
+  if (demangled)
+    free((void*)demangled), demangled=nullptr;
+} // end of rps_print_full_backtrace_level
+
+
+
+int
+Rps_BackTrace::bt_simple_method(uintptr_t ad)
+{
+  if (ad == 0 || ad == (uintptr_t)-1) return 0;
+  if (_bt_simplecb)
+    return _bt_simplecb(this,ad);
+  rps_print_simple_backtrace_level(this,stderr,"*",ad);
+  return 1;
+} // end of  Rps_BackTrace::bt_simple_method
+
+int
+Rps_BackTrace::bt_simple_cb(void*data, uintptr_t pc)
+{
+  assert (data != nullptr);
+  if (pc == 0 || pc == (uintptr_t)-1) return 1;
+  Rps_BackTrace* btp = static_cast<Rps_BackTrace*>(data);
+  assert (btp->magicnum() == _bt_magicnum_);
+  return btp->bt_simple_method(pc);
+} // end  Rps_BackTrace::bt_simple_cb
+
+
+int
+Rps_BackTrace::bt_full_method(uintptr_t pc,
+                              const char *filename, int lineno,
+                              const char *function)
+{
+  if (pc == 0 || pc == (uintptr_t)-1)
+    return 1;
+  if (_bt_fullcb)
+    return _bt_fullcb(this,pc,filename,lineno,function);
+  rps_print_full_backtrace_level(this,stderr,"*",
+                                 pc,filename,lineno,function);
+  return 0;
+} // end Rps_BackTrace::bt_full_method
+
+int
+Rps_BackTrace::bt_full_cb(void *data, uintptr_t pc,
+                          const char *filename, int lineno,
+                          const char *function)
+{
+  assert (data != nullptr);
+  if (pc == 0 || pc == (uintptr_t)-1) return 1;
+  Rps_BackTrace* btp = static_cast<Rps_BackTrace*>(data);
+  assert (btp->magicnum() == _bt_magicnum_);
+  return btp->bt_full_method(pc, filename, lineno, function);
+} // end Rps_BackTrace::bt_full_cb
+
+Rps_BackTrace::Rps_BackTrace(const char*name, const void*data)
+  : _bt_magic(_bt_magicnum_),
+    _bt_name(name?name:"??"),
+    _bt_data(data), _bt_simplecb(), _bt_fullcb()
+{
+} // end of Rps_BackTrace::Rps_BackTrace
+
+Rps_BackTrace::~Rps_BackTrace()
+{
+  assert (magicnum() == _bt_magicnum_);
+  _bt_data = nullptr;
+} // end Rps_BackTrace::~Rps_BackTrace
+
+
+void
+Rps_BackTrace::run_simple_backtrace(int skip, const char*name)
+{
+  Rps_BackTrace bt(name?name:"plain");
+  int depthcount = 0;
+  bt.set_simple_cb([&,stderr](Rps_BackTrace*btp, uintptr_t pc)
+  {
+    assert (btp != nullptr && btp-> magicnum() ==  _bt_magicnum_);
+    depthcount++;
+    if (depthcount > (int)_bt_maxdepth_)
+      {
+        fprintf(stderr, "\n.... etc .....\n");
+        return depthcount;
+      }
+    if (depthcount %5 == 0)
+      fputc('\n', stderr);
+    char countbuf[16];
+    memset (countbuf, 0, sizeof(countbuf));
+    snprintf(countbuf, sizeof(countbuf), "[%d] ", depthcount);
+    rps_print_simple_backtrace_level(btp, stderr, countbuf, pc);
+    fflush(stderr);
+    return 0;
+  });
+  fprintf(stderr, "SIMPLE BACKTRACE (%s)\n", bt.name().c_str());
+  bt.simple_backtrace(skip);
+  fprintf(stderr, "***** end of %d simple backtrace levels (%s) *****\n",
+          depthcount, bt.name().c_str());
+  fflush(stderr);
+} // end Rps_BackTrace::run_simple_backtrace
+
+
+void
+Rps_BackTrace::run_full_backtrace(int skip, const char*name)
+{
+  Rps_BackTrace bt(name?name:"full");
+  int depthcount = 0;
+  bt.set_full_cb([&,stderr](Rps_BackTrace*btp, uintptr_t pc,
+                            const char*filnam, int lineno, const char*funam)
+  {
+    assert (btp != nullptr && btp-> magicnum() ==  _bt_magicnum_);
+    if (pc == 0 || pc == (uintptr_t)-1)
+      return -1;
+    depthcount++;
+    if (depthcount > (int)_bt_maxdepth_)
+      {
+        fprintf(stderr, "\n.... etc .....\n");
+        return depthcount;
+      }
+    if (depthcount %5 == 0)
+      fputc('\n', stderr);
+    char countbuf[16];
+    memset (countbuf, 0, sizeof(countbuf));
+    snprintf(countbuf, sizeof(countbuf), "[%d] ", depthcount);
+    rps_print_full_backtrace_level(btp, stderr, countbuf,
+                                   pc, filnam, lineno, funam);
+    return 0;
+  });
+  char thnam[40];
+  memset(thnam, 0, sizeof(thnam));
+  pthread_getname_np(pthread_self(), thnam, sizeof(thnam)-1);
+  fprintf(stderr, "FULL BACKTRACE (%s) <%s>\n", bt.name().c_str(), thnam);
+  bt.full_backtrace(skip);
+  fprintf(stderr, "***** end of %d full backtrace levels (%s) *****\n",
+          depthcount, bt.name().c_str());
+  fflush(stderr);
+} // end Rps_BackTrace::run_full_backtrace
+
+
+
+Rps_BackTrace_Helper::Rps_BackTrace_Helper(const char*fil, int line, int skip, const char*name)
+  : _bth_magic(_bth_magicnum_), _bth_count(0),
+    _bth_lineno(line), _bth_skip(skip),
+    _bth_bufsiz(0),
+    _bth_bufptr(nullptr),
+    _bth_filename(fil),
+    _bth_out(nullptr),
+    _bth_backtrace(name,(void*)this)
+{
+  _bth_backtrace.set_full_cb
+  ([=](Rps_BackTrace*btp, uintptr_t pc, const char*filnam, int lineno, const char*funam)
+  {
+    if (pc == 0 || pc == (uintptr_t)-1)
+      return -1;
+    if (!_bth_out) return -1;
+    Rps_BackTrace_Helper*bth = reinterpret_cast<Rps_BackTrace_Helper*>(const_cast<void*>(btp->data()));
+    FILE* foutlin = open_memstream(&_bth_bufptr, &_bth_bufsiz);
+    if (!foutlin) RPS_FATAL("failed to open_memstream");
+    assert (bth != nullptr && bth->has_good_magic());
+    assert (btp == &bth->_bth_backtrace);
+    bth->_bth_count++;
+    char countbuf[16];
+    memset (countbuf, 0, sizeof(countbuf));
+    snprintf(countbuf, sizeof(countbuf), "[%d] ", bth->_bth_count);
+    rps_print_full_backtrace_level(&bth->_bth_backtrace, foutlin, countbuf, pc, filnam, lineno, funam);
+    fputc((char)0, foutlin);
+    fflush(foutlin);
+    *_bth_out << _bth_bufptr << std::endl;
+    fclose(foutlin);
+    return 0;
+  });
+} // end Rps_BackTrace_Helper::Rps_BackTrace_Helper
+
+void
+Rps_BackTrace_Helper::do_out(void) const
+{
+  _bth_backtrace.run_full_backtrace(_bth_skip);
+} // end Rps_BackTrace_Helper::do_out
+
+////////////////////////////////////////////////////////////////
+std::atomic<unsigned> Rps_Random::_rand_threadcount;
+bool Rps_Random::_rand_is_deterministic_;
+std::ranlux48 Rps_Random::_rand_gen_deterministic_;
+std::mutex Rps_Random::_rand_mtx_deterministic_;
+
+
+// static method called once by main
+void
+Rps_Random::start_deterministic(long seed)
+{
+  std::lock_guard<std::mutex> guard(_rand_mtx_deterministic_);
+  _rand_gen_deterministic_.seed (seed);
+  _rand_is_deterministic_ = true;
+} // end of Rps_Random::start_deterministic
+
+
+// private initializer, thread specific
+void
+Rps_Random::init_deterministic(void)
+{
+  std::lock_guard<std::mutex> guard(_rand_mtx_deterministic_);
+  RPS_ASSERT(_rand_is_deterministic_);
+  _rand_generator.seed(_rand_gen_deterministic_());
+} // end of  Rps_Random::init_deterministic
+
+void
+Rps_Random::deterministic_reseed(void)
+{
+  std::lock_guard<std::mutex> guard(_rand_mtx_deterministic_);
+  RPS_ASSERT(_rand_is_deterministic_);
+  _rand_generator.seed(_rand_gen_deterministic_());
+} // end of Rps_Random::deterministic_reseed
+
+
+
+
+////////////////
+void
+rps_fatal_stop_at (const char *filnam, int lin)
+{
+  assert(filnam != nullptr);
+  assert (lin>=0);
+  char errbuf[80];
+  memset (errbuf, 0, sizeof(errbuf));
+  snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
+  fprintf(stderr, "FATAL: RefPerSys-IDE gitid %s, built timestamp %s,\n"
+          "\t on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
+          rpside_gitid, rpside_timestamp, rps_hostname(), rpside_md5sum,
+          rps_elapsed_real_time(), rps_process_cpu_time());
+  fflush(stderr);
+  Rps_BackTrace::run_full_backtrace(3, errbuf);
+  fflush(nullptr);
+  abort();
+} // end rps_fatal_stop_at
+
+
+const char*
+rps_hostname(void)
+{
+  static char hnambuf[64];
+  if (RPS_UNLIKELY(!hnambuf[0]))
+    gethostname(hnambuf, sizeof(hnambuf)-1);
+  return hnambuf;
+} // end rps_hostname
+
+
+void
+rps_print_types_info(void)
+{
+  printf("%-36s:   size  align   (in bytes)\n", "**TYPE**");
+#define EXPLAIN_TYPE(Ty) printf("%-36s: %5d %5d\n", #Ty,	\
+				(int)sizeof(Ty), (int)alignof(Ty))
+
+#define EXPLAIN_TYPE2(Ty1,Ty2) printf("%-36s: %5d %5d\n",		\
+				      #Ty1 "," #Ty2, 			\
+				      (int)sizeof(Ty1,Ty2),		\
+				      (int)alignof(Ty1,Ty2))
+
+#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3) printf("%-36s: %5d %5d\n",		\
+					  #Ty1 "," #Ty2 "," #Ty3,	\
+					  (int)sizeof(Ty1,Ty2,Ty3),	\
+					  (int)alignof(Ty1,Ty2,Ty3))
+  EXPLAIN_TYPE(int);
+  EXPLAIN_TYPE(double);
+  EXPLAIN_TYPE(char);
+  EXPLAIN_TYPE(bool);
+  EXPLAIN_TYPE(Rps_HashInt);
+  EXPLAIN_TYPE(intptr_t);
+  EXPLAIN_TYPE(Rps_Id);
+  EXPLAIN_TYPE(Rps_Type);
+  ///
+  EXPLAIN_TYPE(std::set<intptr_t>);
+  EXPLAIN_TYPE(std::set<std::string>);
+  EXPLAIN_TYPE2(std::map<intptr_t,void*>);
+  EXPLAIN_TYPE2(std::map<std::string,void*>);
+  EXPLAIN_TYPE2(std::unordered_map<intptr_t,void*>);
+  EXPLAIN_TYPE2(std::variant<std::string,void*>);
+  EXPLAIN_TYPE(std::vector<intptr_t>);
+  EXPLAIN_TYPE(std::atomic<intptr_t>);
+  EXPLAIN_TYPE(std::string);
+  EXPLAIN_TYPE(std::mutex);
+#undef EXPLAIN_TYPE
+  putchar('\n');
+  fflush(nullptr);
+} // end rps_print_types_info
+
+

@@ -8,11 +8,12 @@ OPTIMFLAGS= -g -O1
 INCLFLAGS= -I/usr/local/include
 WARNFLAGS= -Wall -Wextra 
 CXXFLAGS= $(DIALECTFLAGS) $(OPTIMFLAGS) $(shell fltk-config --cxxflags) $(INCLFLAGS) -I.. $(WARNFLAGS)
-LIBES=  -lhjson -lunistring -lbacktrace -ldl $(shell fltk-config --ldflags)
+LIBES=  -lhjson -lunistring -lbacktrace -ldl $(shell fltk-config --ldflags) -lpthread
 LDFLAGS +=  -L/usr/local/lib  -rdynamic
 
 
-SOURCES= $(wildcard ide-*-rps.cc)
+SOURCES= $(wildcard ide-*-rps.cc) ../primes_rps.cc  ../utilities_rps.cc
+
 HEADERS= $(wildcard ide-*-rps.hh)
 OBJECTS= $(patsubst %.cc, %.o, $(SOURCES)) 
 .PHONY: all clean indent
@@ -20,7 +21,7 @@ OBJECTS= $(patsubst %.cc, %.o, $(SOURCES))
 all: ide-refpersys
 
 clean:
-	$(RM) *.o *~ *.orig ide-refpersys
+	$(RM) *.o *~ *.orig _timestamp* ide-refpersys
 
 _timestamp.c:
 	./generate-timestamp.sh $@ > $@-tmp
