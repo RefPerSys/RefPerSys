@@ -118,7 +118,21 @@ protected:
     return ::operator new(siz+gap.get());    
   };
   void operator delete(void*p) noexcept { ::operator delete(p); };
-};			       // end clas Rps_QuasiValueZ
+};			       // end class Rps_QuasiValueZ
+
+class Rps_Displayer {
+  Fl_Text_Buffer* rps_disp_buffer;
+  int rps_disp_indent;
+};			       // end Rps_Displayer
+
+
+class Rps_ValueZ : public Rps_QuasiValueZ {
+protected:
+  Rps_QuasiValueZ(Rps_Type ty);
+public:
+  virtual void display(Rps_Displayer&disp) =0;
+  virtual Hjson::Value serialize(void) =0;
+};			       // end Rps_ValueZ
 
 #endif /*IDEREFPERSYS_INCLUDED*/
 ////////// end of file ide-refpersys.hh

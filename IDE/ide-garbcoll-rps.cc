@@ -62,8 +62,8 @@ Rps_QuasiValueZ::Rps_QuasiValueZ(Rps_Type ty)
             }
     }
     if (_rps_qvrank == 0) {
-      _rps_ptrvector.push_back(this);
-      _rps_qvrank = _rps_ptrvector.size() -1;
+        _rps_ptrvector.push_back(this);
+        _rps_qvrank = _rps_ptrvector.size() -1;
     }
     _rps_type = ty;
 } // end of Rps_QuasiValueZ::Rps_QuasiValueZ
