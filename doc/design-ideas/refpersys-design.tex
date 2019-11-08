@@ -834,7 +834,7 @@ local variables inside call frames of working threads. Each
 represented by a machine word (aligned, 64 bits) which usually
 contains a pointer, but sometimes some
 \href{https://en.wikipedia.org/wiki/Tagged\_pointer}{tagged integer}.
-Immutable values are often ``small'' (a few dozens of words) but
+Immutable values are often ``small'' (typically, less than a few dozens of words of memory, sometimes a lot more) but
 objects are necessarily heavier since they contain some kind of
 lock. \href{https://en.wikipedia.org/wiki/Closure\_(computer_programming)}{closures}
 are immutable values, containing an object representing and giving
@@ -1596,6 +1596,17 @@ but reified as objects) and closures implementing methods, à la
 \textsc{ObjVLisp} \cite{cointe:1987:metaclasses,
   abadi:1995:imperative}).
 
+We may consider also having in {\RefPerSys} immutable
+node\footnote{\RefPerSys nodes are generalizing \textsc{Bismon} nodes
+\cite{Starynkevitch:2019:bismon-draft}, which are immutable, have an
+object connective and a sequence of sons which are arbitrary
+values. Perhaps ``node'' is a wrong word and we could name them
+``records'' or ``structures''.}  instances: like mutable objects (see \S
+\ref{subsec:mutable-objects} below), each of them would have a class
+(with single-inheritance), attributes and components. But since they
+are immutable, they have no objid, no locking mechanism, and their
+class, attributes and components would be fixed and defined at their
+creation time.
 
 \subsection{mutable objects}
 \label{subsec:mutable-objects}
@@ -1698,9 +1709,22 @@ removed or changed during the lifetime of the containing object),
 \href{https://en.wikipedia.org/wiki/Graph_database}{graph databases}
 (held entirely in memory).
 
+{\RefPerSys} objects keep (like \textsc{Bismon} objects do
+\cite{Starynkevitch:2019:bismon-draft}) their modification time (or
+\emph{objmtime}) and that timestamp\footnote{The timestamp is
+implemented as a \texttt{double} floating point representing elapsed
+seconds since the
+\href{https://en.wikipedia.org/wiki/Unix_time}{\textsc{Unix} Epoch},
+obtained with
+\href{http://man7.org/linux/man-pages/man2/clock_gettime.2.html}{\texttt{clock\_gettime(2)}}
+using \texttt{CLOCK\_REALTIME}.} may be useful to decide some further
+processing (à la \texttt{make}).
+
+\smallskip
+
 \textcolor{red}{@@TODO: should explain a lot more}
 
-
+\bigskip
 
 \subsubsection{concrete examples of objects}
 \label{subsubsec:obj-examples}
