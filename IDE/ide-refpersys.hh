@@ -127,11 +127,13 @@ class Rps_Displayer {
 };			       // end Rps_Displayer
 
 
+class Rps_ObjectZ;
 class Rps_ValueZ : public Rps_QuasiValueZ {
 protected:
   Rps_ValueZ(Rps_Type ty) : Rps_QuasiValueZ(ty) {};
 public:
   virtual rps_hashint_t hash() const =0;
+  virtual Rps_ObjectZ* valclass() const =0;
   virtual void display(Rps_Displayer&disp, unsigned depth=0) =0;
   virtual Hjson::Value serialize(void) =0;
 };			       // end Rps_ValueZ
@@ -149,6 +151,9 @@ public:
   virtual Hjson::Value serialize(void) =0;
 };			       // end Rps_HashedValueZ
 
+////////////////////////////////////////////////////////////////
+extern "C" Rps_ObjectZ* rps_string_class;
+
 class Rps_StringValueZ : public Rps_HashedValueZ {
   uint32_t _str_bsize;		// byte size
   uint32_t _str_ulen;		// UTF-8 length
@@ -159,6 +164,7 @@ class Rps_StringValueZ : public Rps_HashedValueZ {
   };
   virtual ~Rps_StringValueZ();
 public:
+  virtual  Rps_ObjectZ* valclass() const {return  rps_string_class;};
   static Rps_StringValueZ* make(const char*str);
   static Rps_StringValueZ* make(const std::string s)
   { return make(s.c_str()); };
@@ -167,7 +173,47 @@ public:
   const char*cbytes() const { return _str_bytes; };
   uint32_t utf8len() const { return _str_ulen; };
   uint32_t bytsize() const { return _str_bsize; };
-};
+};				// end Rps_StringValueZ
 
+////////////////////////////////////////////////////////////////
+// a slow, simple, but boxed integer
+extern "C" Rps_ObjectZ* rps_int_class;
+class Rps_IntegerValueZ : public Rps_ValueZ {
+  const int64_t _ival;
+  Rps_IntegerValueZ(int64_t i) :
+    Rps_ValueZ(Rps_Type::Int), _ival(i) {};
+  virtual ~Rps_IntegerValueZ();
+public:
+  virtual  Rps_ObjectZ* valclass() const {return  rps_int_class;};
+  static Rps_IntegerValueZ* make(int64_t);
+  virtual void display(Rps_Displayer&disp, unsigned depth=0);
+  virtual Hjson::Value serialize(void);
+  int64_t ival() const { return _ival; };
+  virtual rps_hashint_t hash() const {
+    rps_hashint_t h = (rps_hashint_t)_ival ^ (rps_hashint_t)(_ival % 1000000579);
+    if (RPS_UNLIKELY(h==0))
+      h=((_ival % 1000000933) & 0xffffff) + 5689;
+    return h; };
+}; // end Rps_IntegerValueZ
+  
+  
+////////////////////////////////////////////////////////////////
+// a slow, simple, but boxed double
+extern "C" Rps_ObjectZ* rps_double_class;
+class Rps_DoubleValueZ : public Rps_ValueZ {
+  const double _dval;
+  Rps_DoubleValueZ(double x) :
+    Rps_ValueZ(Rps_Type::Double), _dval(x) {};
+  virtual ~Rps_DoubleValueZ();
+public:
+  virtual  Rps_ObjectZ* valclass() const {return  rps_double_class;};
+  static Rps_DoubleValueZ* make(double d);
+  virtual void display(Rps_Displayer&disp, unsigned depth=0);
+  virtual Hjson::Value serialize(void);
+  double dval() const { return _dval; };
+  virtual rps_hashint_t hash() const;
+}; // end Rps_DoubleValueZ
+  
+  
 #endif /*IDEREFPERSYS_INCLUDED*/
 ////////// end of file ide-refpersys.hh
