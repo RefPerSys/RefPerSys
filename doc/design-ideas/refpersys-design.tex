@@ -28,6 +28,7 @@
 %https://www.overleaf.com/learn/latex/Glossaries
 \usepackage{hyperref}
 \usepackage{makeidx}
+\usepackage[nounderscore]{syntax}
 \makeindex
 \usepackage[xindy]{glossaries}
 \addbibresource{../bib-refpersys.bib}
@@ -2025,6 +2026,27 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
   \item Each RefPerSys object representation may have an HJSON comment key.
 \end{itemize}
 
+\textbf{separator} = ``,'' | \textbf{LF} (* line feed *) ; \\
+\textbf{oid} = ``\_'' , \{ \textbf{BASE62-CHARACTER} \} ; \\
+\textbf{value} = \textbf{int-value} | \textbf{float-value} | \textbf{string-value} 
+	       | \textbf{set-value} | \textbf{tuple-value} ; \\
+\textbf{int-value} = ``\{'' , ``vtype'' , ``:'' , ``int'' , \textbf{separator} ,
+	           ``value'' , ``:'' , \textbf{INTEGER} | \textbf{NIL} ,
+		   \textbf{separator} , ``\}'' ; \\
+\textbf{float-value} = ``\{'' , ``vtype'' , ``:'' , ``int'' , \textbf{separator} ,
+	           ``value'' , ``:'' , \textbf{FLOAT} | \textbf{NIL} ,
+		   \textbf{separator} , ``\}'' ; \\
+\textbf{string-value} = ``\{'' , ``vtype'' , ``:'' , ``int'' , \textbf{separator} ,
+	           ``value'' , ``:'' , \textbf{STRING} | \textbf{NIL} ,
+		   \textbf{separator} , ``\}'' ; \\
+\textbf{set-value} = ``\{'' , ``vtype'' , ``:'' , ``set'' , \textbf{separator} , 
+                   ``value'' , ``:'' , 
+		   ``['' , \{ \textbf{oid} (* unique unordered *) , \textbf{separator} \} 
+		   | \textbf{NIL} , ``]'' , \textbf{separator} , ``\}'' ; \\
+\textbf{tuple-value} = ``\{'' , ``vtype'' , ``:'' , ``tuple'' , \textbf{separator} , 
+                   ``value'' , ``:'' , 
+		   ``['' , \{ \textbf{oid} (* ordered *) , \textbf{separator} \} 
+		   | \textbf{NIL} , ``]'' , \textbf{separator} , ``\}'' ;
 
 \clearpage
 \printnoidxglossaries
