@@ -65,6 +65,7 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Box.H>
+#include <FL/Fl_Text_Buffer.H>
 ////////////////
 
 /// HJSON-CPP, installed from https://github.com/hjson/hjson-cpp
@@ -122,17 +123,51 @@ protected:
 
 class Rps_Displayer {
   Fl_Text_Buffer* rps_disp_buffer;
-  int rps_disp_indent;
+  int rps_disp_maxdepth;
 };			       // end Rps_Displayer
 
 
 class Rps_ValueZ : public Rps_QuasiValueZ {
 protected:
-  Rps_QuasiValueZ(Rps_Type ty);
+  Rps_ValueZ(Rps_Type ty) : Rps_QuasiValueZ(ty) {};
 public:
-  virtual void display(Rps_Displayer&disp) =0;
+  virtual rps_hashint_t hash() const =0;
+  virtual void display(Rps_Displayer&disp, unsigned depth=0) =0;
   virtual Hjson::Value serialize(void) =0;
 };			       // end Rps_ValueZ
+
+
+
+class Rps_HashedValueZ : public Rps_ValueZ {
+  rps_hashint_t _hash;
+protected:
+  Rps_HashedValueZ(Rps_Type ty, rps_hashint_t h)
+    : Rps_ValueZ(ty), _hash(h) {};
+public:
+  virtual rps_hashint_t hash() const { return _hash; };
+  virtual void display(Rps_Displayer&disp, unsigned depth=0) =0;
+  virtual Hjson::Value serialize(void) =0;
+};			       // end Rps_HashedValueZ
+
+class Rps_StringValueZ : public Rps_HashedValueZ {
+  uint32_t _str_bsize;		// byte size
+  uint32_t _str_ulen;		// UTF-8 length
+  const char _str_bytes[4];
+  Rps_StringValueZ(rps_hashint_t h, const char*bytes) :
+    Rps_HashedValueZ(Rps_Type::String, h), _str_bytes("\0\0\0") {
+    strcpy(const_cast<char*>(_str_bytes), bytes);
+  };
+  virtual ~Rps_StringValueZ();
+public:
+  static Rps_StringValueZ* make(const char*str);
+  static Rps_StringValueZ* make(const std::string s)
+  { return make(s.c_str()); };
+  virtual void display(Rps_Displayer&disp, unsigned depth=0);
+  virtual Hjson::Value serialize(void);
+  const char*cbytes() const { return _str_bytes; };
+  uint32_t utf8len() const { return _str_ulen; };
+  uint32_t bytsize() const { return _str_bsize; };
+};
 
 #endif /*IDEREFPERSYS_INCLUDED*/
 ////////// end of file ide-refpersys.hh

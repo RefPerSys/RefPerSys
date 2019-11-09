@@ -58,11 +58,11 @@ public:
   static constexpr uint64_t delta_lo = max_lo - min_lo;
   static constexpr unsigned nbdigits_lo = 7;
   static constexpr unsigned maxbuckets = 10*62;
-  static Rps_HashInt hash(uint64_t hi, uint64_t lo)
+  static rps_hashint_t hash(uint64_t hi, uint64_t lo)
   {
     return (hi % 2147473837) + ((hi >> 32) ^ (lo * 17 + 201151));
   }
-  Rps_HashInt hash() const
+  rps_hashint_t hash() const
   {
     return hash(_id_hi, _id_lo);
   };

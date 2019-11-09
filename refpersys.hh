@@ -267,7 +267,10 @@ std::string rps_read_file_as_string(const std::string &fileName);
 
 
 ////////////////////////////////////////////////////////////////
-typedef uint32_t Rps_HashInt;
+typedef uint32_t rps_hashint_t;
+
+extern "C" rps_hashint_t rps_cstring_hash(const char*str);
+
 enum class Rps_Type : int16_t
 {
   /// non-value types (or quasi-values)

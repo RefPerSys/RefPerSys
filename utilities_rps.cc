@@ -505,7 +505,7 @@ rps_print_types_info(void)
     EXPLAIN_TYPE(double);
     EXPLAIN_TYPE(char);
     EXPLAIN_TYPE(bool);
-    EXPLAIN_TYPE(Rps_HashInt);
+    EXPLAIN_TYPE(rps_hashint_t);
     EXPLAIN_TYPE(intptr_t);
     EXPLAIN_TYPE(Rps_Id);
     EXPLAIN_TYPE(Rps_Type);
@@ -526,3 +526,29 @@ rps_print_types_info(void)
 } // end rps_print_types_info
 
 
+rps_hashint_t
+rps_cstring_hash(const char*str)
+{
+    // most constants are primes below
+    if (str==nullptr || str==RPS_EMPTYSLOT) return 0;
+    rps_hashint_t h1=165161, h2=168;
+    const char*pc;
+    uint32_t l=0;
+    for (pc = str; pc[0] != 0 && pc[1] != 0; pc += 2) {
+        h1 = (h1*18341) ^ ((39461*pc[0]) + (h2 & 0xffff));
+        h2 = (h2*3943+31) ^ ((7451*pc[1])+2459);
+        l += 2;
+        if (RPS_UNLIKELY(l % 16 == 0))
+            h2 += 211*(h1&0xffff) + l;
+    }
+    if (pc[0]) {
+        h1 += pc[0]*2389;
+        l++;
+    }
+    rps_hashint_t h= (h1+17) ^ (h2+2341);
+    if (RPS_UNLIKELY(h==0))
+        h = (h1&0xffff) + (h2&0xffff) + (l&0xffff) + 17;
+    return h;
+} // end rps_cstring_hash
+
+//////////////// end of file utilities_rps.cc
