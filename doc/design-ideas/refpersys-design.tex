@@ -28,6 +28,7 @@
 %https://www.overleaf.com/learn/latex/Glossaries
 \usepackage{hyperref}
 \usepackage{makeidx}
+\makeindex
 \usepackage[xindy]{glossaries}
 \addbibresource{../bib-refpersys.bib}
 \usepackage[a4paper, margin=4cm]{geometry}
@@ -118,7 +119,8 @@
     FL 3C, 62B PGH Shah Road, Kolkata 700032, India.}
   \and Nimesh \textsc{Neema}\thanks{
     \href{mailto:nimeshneema@gmail.com}{\texttt{nimeshneema@gmail.com}},
-    206 Sundaram Apartment, 38/2, Biyabani, Indore 452002, India.}
+    206 Sundaram Apartment, 38/2, Biyabani, Indore 452002, India.}\\
+\href{http://refpersys.org/}{\texttt{\textbf{refpersys.org}}}
 }
 
 
@@ -2009,17 +2011,27 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
   manifest file) under \texttt{persistore/} and of their HJSON syntax}
 
 
+\subsection{EBNF Grammar of Data Format}
+\label{subsec:data-format-ebnf}
+
+\begin{itemize}
+  \item Each store document must contain at least one RefPerSys object.
+  \item Each RefPerSys object must be represented as an HJSON object.
+  \item Each RefPerSys object is defined through HJSON keys.
+  \item Each RefPerSys object representation must have an HJSON object ID key.
+  \item Each RefPerSys object representation must have an HJSON type key.
+  \item Each RefPerSys object representation must have an HJSON  name key.
+  \item Each RefPerSys object representation must have an HJSON class key.
+  \item Each RefPerSys object representation must have an HJSON modification time key.
+  \item Each RefPerSys object representation may have an HJSON comment key.
+\end{itemize}
+
+
 \clearpage
-
 \printnoidxglossaries
-
 \bigskip
-
 \printbibliography
-\printnoidxglossaries
-
 \bigskip
-
 \printindex
 
 \end{document}
