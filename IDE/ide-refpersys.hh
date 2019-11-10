@@ -160,6 +160,16 @@ public:
   virtual Hjson::Value serialize(void) =0;
 };			       // end Rps_HashedValueZ
 
+extern bool rps_object_less (Rps_ObjectZ* l, Rps_ObjectZ* r);
+extern bool rps_object_lessequal (Rps_ObjectZ* l, Rps_ObjectZ* r);
+struct Rps_LessObjPtr
+{
+  bool operator() (Rps_ObjectZ* l, Rps_ObjectZ* r) const
+  {
+    return rps_object_less(l,r);
+  };
+};
+
 ////////////////////////////////////////////////////////////////
 extern "C" Rps_ObjectZ* rps_string_class;
 
@@ -235,6 +245,7 @@ public:
 class Rps_SequenceValueZ : public Rps_HashedValueZ {
   uint32_t _seq_len;	       // the actual number of objects
   Rps_ObjectZ* _seq_obarr[1];  // actually a flexible array number
+protected:
   Rps_SequenceValueZ(Rps_Type ty, unsigned alsiz, uint32_t len=0, Rps_ObjectZ*arr=nullptr, rps_hashint_t h=0):
     Rps_HashedValueZ(ty,  h), _seq_len(len), _seq_obarr{nullptr} {
     RPS_ASSERT(len<=alsiz);
@@ -242,12 +253,11 @@ class Rps_SequenceValueZ : public Rps_HashedValueZ {
      if (arr != nullptr)
        memcpy(_seq_obarr, arr, len*sizeof(Rps_ObjectZ*));
   };
-protected:
   Rps_ObjectZ* unsafe_nth(unsigned rk) const {
     RPS_ASSERT(rk<_seq_len);
     return _seq_obarr[rk];
   };
-  virtual void compute_hash(void);
+  virtual void compute_hash(void) =0;
 public:
   virtual rps_hashint_t hash() const {
     if (RPS_UNLIKELY(_hash) == 0)
@@ -276,7 +286,7 @@ public:
   uint32_t seqlength() const { return _seq_len; };
   Rps_ObjectZ* nth(int ix) const {
     if (ix<0) ix += _seq_len;
-    if (ix>=0 && ix<_seq_len) return _seq_obarr[ix];
+    if (ix>=0 && ix<(int)_seq_len) return _seq_obarr[ix];
     return nullptr;
   };
   iterator_t begin() const {
@@ -288,6 +298,19 @@ public:
 };			       // end of  Rps_SequenceValueZ
 
 
+////////////////////////////////////////////////////////////////
+// immutable sets of objects
+extern "C" Rps_ObjectZ* rps_set_class;
+class Rps_SetValueZ : public Rps_SequenceValueZ {
+  Rps_SetValueZ(unsigned alsiz, uint32_t len=0, Rps_ObjectZ*arr=nullptr, rps_hashint_t h=0)
+    : Rps_SequenceValueZ(Rps_Type::Set, alsiz, len, arr, h) {};
+  virtual ~Rps_SetValueZ() {};
+  virtual void compute_hash(void);
+public:
+  uint32_t cardinal() const { return seqlength(); };
+  bool contains(Rps_ObjectZ*ob);
+  static Rps_SetValueZ* make(const std::set<Rps_ObjectZ*,Rps_LessObjPtr>&setob);
+}; 				// end Rps_SetValueZ
 
 
 #endif /*IDEREFPERSYS_INCLUDED*/
