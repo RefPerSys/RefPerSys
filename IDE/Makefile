@@ -19,7 +19,7 @@ OBJECTS= $(patsubst %.cc, %.o, $(SOURCES))
 
 ## see also http://make.mad-scientist.net/papers/advanced-auto-dependency-generation
 MAKEDEPS= $(patsubst %.cc, %.mkd, $(SOURCES))
-GITID := $(shell git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n')
+GITID := $(shell ./generate-gitid.sh)
 
 .PHONY: all clean indent
 

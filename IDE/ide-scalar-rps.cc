@@ -32,6 +32,13 @@
 #include "ide-refpersys.hh"
 
 
+#ifndef RPS_GITID
+#error RPS_GITID should be set in compilation command
+#endif /*no RPS_GITID*/
+
+const char rpside_scalar_gitid[] = RPS_GITID;
+const char rpside_scalar_date[] = __DATE__; 
+
 ////////////////////////////////////////////////////////////////
 //////////////// strings
 Rps_ObjectZ* rps_string_class;

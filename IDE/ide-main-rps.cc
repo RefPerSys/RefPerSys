@@ -34,6 +34,16 @@
 
 #include "cxxopts.hpp"
 
+extern "C" const char rpside_garbcoll_gitid[];
+extern "C" const char rpside_garbcoll_date[];
+
+#ifndef RPS_GITID
+#error RPS_GITID should be set in compilation command
+#endif /*no RPS_GITID*/
+
+const char rpside_main_gitid[] = RPS_GITID;
+const char rpside_main_date[] = __DATE__; 
+
 ///inspired by https://www.fltk.org/doc-1.3/basics.html
 
 static Fl_Window*
