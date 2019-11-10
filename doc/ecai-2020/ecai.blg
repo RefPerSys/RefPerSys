@@ -1,5 +1,0 @@
-[0] Config.pm:304> INFO - This is Biber 2.13
-[0] Config.pm:307> INFO - Logfile is 'ecai.blg'
-[24] biber:315> INFO - === Sun Nov 10, 2019, 17:07:39
-[48] Utils.pm:316> ERROR - Cannot find 'ecai.bcf'!
-[48] Biber.pm:114> INFO - ERRORS: 1
