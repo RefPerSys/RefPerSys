@@ -9,6 +9,6 @@ printf "Generating LaTeX file...\n"
 #TDOD: why does lualatex not produce the correct formatting? need to find out
 
 pdflatex --shell-escape --halt-on-error ecai2020-highlight-refpersys
-biber ecai2020-highlight-refpersys
+bibtex ecai2020-highlight-refpersys
 pdflatex --shell-escape --halt-on-error ecai2020-highlight-refpersys
 
