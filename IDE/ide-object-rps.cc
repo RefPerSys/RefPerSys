@@ -37,7 +37,7 @@
 #endif /*no RPS_GITID*/
 
 const char rpside_object_gitid[] = RPS_GITID;
-const char rpside_object_date[] = __DATE__; 
+const char rpside_object_date[] = __DATE__;
 
 
 //////////////// end of file ide-object-rps.cc

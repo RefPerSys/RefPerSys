@@ -42,7 +42,7 @@ extern "C" const char rpside_garbcoll_date[];
 #endif /*no RPS_GITID*/
 
 const char rpside_main_gitid[] = RPS_GITID;
-const char rpside_main_date[] = __DATE__; 
+const char rpside_main_date[] = __DATE__;
 
 ///inspired by https://www.fltk.org/doc-1.3/basics.html
 

@@ -144,10 +144,16 @@ public:
 
 
 class Rps_HashedValueZ : public Rps_ValueZ {
-  rps_hashint_t _hash;
 protected:
+  mutable rps_hashint_t _hash;
   Rps_HashedValueZ(Rps_Type ty, rps_hashint_t h)
     : Rps_ValueZ(ty), _hash(h) {};
+  Rps_HashedValueZ& set_hash(rps_hashint_t h) {
+    RPS_ASSERT(_hash == 0);
+    RPS_ASSERT(h != 0);
+    _hash = h;
+    return *this;
+  };
 public:
   virtual rps_hashint_t hash() const { return _hash; };
   virtual void display(Rps_Displayer&disp, unsigned depth=0) =0;
@@ -160,7 +166,7 @@ extern "C" Rps_ObjectZ* rps_string_class;
 class Rps_StringValueZ : public Rps_HashedValueZ {
   uint32_t _str_bsize;		// byte size
   uint32_t _str_ulen;		// UTF-8 length
-  const char _str_bytes[4];
+  const char _str_bytes[4];     /// actually a flexible array memeber
   Rps_StringValueZ(rps_hashint_t h, const char*bytes) :
     Rps_HashedValueZ(Rps_Type::String, h), _str_bytes("\0\0\0") {
     strcpy(const_cast<char*>(_str_bytes), bytes);
@@ -223,6 +229,66 @@ public:
   virtual rps_hashint_t hash() const;
 }; // end Rps_DoubleValueZ
   
+
+////////////////////////////////////////////////////////////////
+// superclass for sequences (both tuples and sets) of objects
+class Rps_SequenceValueZ : public Rps_HashedValueZ {
+  uint32_t _seq_len;	       // the actual number of objects
+  Rps_ObjectZ* _seq_obarr[1];  // actually a flexible array number
+  Rps_SequenceValueZ(Rps_Type ty, unsigned alsiz, uint32_t len=0, Rps_ObjectZ*arr=nullptr, rps_hashint_t h=0):
+    Rps_HashedValueZ(ty,  h), _seq_len(len), _seq_obarr{nullptr} {
+    RPS_ASSERT(len<=alsiz);
+     memset(_seq_obarr, 0, alsiz*sizeof(Rps_ObjectZ*));
+     if (arr != nullptr)
+       memcpy(_seq_obarr, arr, len*sizeof(Rps_ObjectZ*));
+  };
+protected:
+  Rps_ObjectZ* unsafe_nth(unsigned rk) const {
+    RPS_ASSERT(rk<_seq_len);
+    return _seq_obarr[rk];
+  };
+  virtual void compute_hash(void);
+public:
+  virtual rps_hashint_t hash() const {
+    if (RPS_UNLIKELY(_hash) == 0)
+      const_cast<Rps_SequenceValueZ*>(this)->compute_hash();
+    return _hash;
+  };
+  /// for range for loops such as for (auto*it: *seq) {}, see
+  /// https://en.cppreference.com/w/cpp/language/range-for
+  typedef Rps_ObjectZ*const*iterator_t;
+  struct reverse_iterator_t {
+    iterator_t revit;
+    reverse_iterator_t(Rps_ObjectZ*const*p) : revit(p) {};
+    bool operator != (reverse_iterator_t right) const { return revit != right.revit; };
+    reverse_iterator_t operator ++ (void)  { revit--; return *this; };
+  };
+  struct Reverse_Iteration {
+    const Rps_SequenceValueZ* revseq;
+    Reverse_Iteration(const Rps_SequenceValueZ*seq) : revseq(seq) {};
+    reverse_iterator_t begin() const
+    { return reverse_iterator_t(revseq->_seq_obarr+revseq->_seq_len-1); };
+    reverse_iterator_t end() const
+    {return reverse_iterator_t(revseq->_seq_obarr-1); };
+  };
+  const Reverse_Iteration reverse() const { return Reverse_Iteration(this); };
+  int64_t allocated_seqsize() const { return rps_prime_above(_seq_len); };
+  uint32_t seqlength() const { return _seq_len; };
+  Rps_ObjectZ* nth(int ix) const {
+    if (ix<0) ix += _seq_len;
+    if (ix>=0 && ix<_seq_len) return _seq_obarr[ix];
+    return nullptr;
+  };
+  iterator_t begin() const {
+    return _seq_obarr;
+  };
+  iterator_t end() const {
+    return _seq_obarr + _seq_len;
+  };
+};			       // end of  Rps_SequenceValueZ
+
+
+
 
 #endif /*IDEREFPERSYS_INCLUDED*/
 ////////// end of file ide-refpersys.hh

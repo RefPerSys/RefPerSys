@@ -40,8 +40,8 @@ extern "C" const char rpside_garbcoll_date[];
 #endif /*no RPS_GITID*/
 
 const char rpside_garbcoll_gitid[] = RPS_GITID;
-const char rpside_garbcoll_date[] = __DATE__; 
-  
+const char rpside_garbcoll_date[] = __DATE__;
+
 std::vector<Rps_QuasiValueZ*> Rps_QuasiValueZ::_rps_ptrvector{nullptr};
 std::mutex Rps_QuasiValueZ::_rps_mtxvector;
 

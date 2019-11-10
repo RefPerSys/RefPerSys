@@ -37,7 +37,7 @@
 #endif /*no RPS_GITID*/
 
 const char rpside_scalar_gitid[] = RPS_GITID;
-const char rpside_scalar_date[] = __DATE__; 
+const char rpside_scalar_date[] = __DATE__;
 
 ////////////////////////////////////////////////////////////////
 //////////////// strings

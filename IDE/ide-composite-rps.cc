@@ -37,7 +37,7 @@
 #endif /*no RPS_GITID*/
 
 const char rpside_composite_gitid[] = RPS_GITID;
-const char rpside_composite_date[] = __DATE__; 
+const char rpside_composite_date[] = __DATE__;
 
 
 //////////////// end of file ide-composite-rps.cc
