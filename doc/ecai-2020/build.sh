@@ -1,7 +1,18 @@
 #!/bin/bash -x
 
 echo $0 Starting in $(pwd)
-rm -rfv ecai2020-highlight-refpersys.{aux,bcf,blg,log,pdf}
+rm -rfv ecai2020-highlight-refpersys.{aux,bcf,blg,log,pdf} generated-ecai2020-gitid.tex
+
+printf "\n\n generating ecai2020-gitid\n"
+
+rawgittag="$(git log --format=oneline -1 --abbrev=16 --abbrev-commit -q|cut -d' ' -f1)"
+
+if git status -s | grep -q '^.M' > /dev/null ; then
+    gittag=$(printf "%s++" "$rawgittag")
+else
+    gittag=$(printf "%s..." "$rawgittag")
+fi
+printf "\\\\newcommand{\\\\rpsgitcommit}[0]{%s}\n" "$gittag" > generated-ecai2020-gitid.tex
 
 printf "\n\n ================ SVG processing by inkscape of "; echo *.svg "files."
 for svgfile in *.svg ; do

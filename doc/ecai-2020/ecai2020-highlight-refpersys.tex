@@ -10,6 +10,9 @@
                   % Do NOT use for camera-ready version of paper.
 
 \newcommand{\RefPerSys}{{\textit{\textsc{RefPerSys}}}}
+
+% defines the \rpsgitcommit command:
+\input{generated-ecai2020-gitid}
 \begin{document}
 
 \title{development and architecture of {\RefPerSys}\\ {\relsize{-1}{a
@@ -98,6 +101,14 @@ code.
 helped improve this paper considerably
 
 \bibliography{../bib-refpersys}
+
+%%% for a draft that should be acceptable
+\begin{flushright}
+  \begin{relsize}{-1}
+    our draft \texttt{git commit} is \texttt{\textit{\rpsgitcommit}}
+  \end{relsize}
+\end{flushright}
+
 \end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
