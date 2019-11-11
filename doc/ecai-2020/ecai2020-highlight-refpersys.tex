@@ -23,7 +23,9 @@ A Reflective Persistent System}
   \textsc{\textbf{Per}}sistent \textsc{\textbf{Sys}}tem (as a GPLv3+ licensed 
   free software running on Linux; it is a hobby but serious research project 
   expected to last for many years, with the aim of experimenting
-  with open science ideas close to Artificial General Intelligence dreams.
+  with open science ideas close to Artificial General Intelligence dreams. This
+  work has been largely inspired by the works of J. Pitrat (see 
+  \cite{Pitrat:2009:ArtifBeings} and \cite{Pitrat:1996:FGCS}).
 \end{abstract}
 
 \section{PAGE LIMIT}
@@ -295,7 +297,7 @@ Our algorithms were implemented using the \emph{single program,
   multiple data} model (SPMD). SPMD involves writing a single code
 that will run on all the processors co-operating on a task. The data
 are partitioned among the processors which know what portions of the
-data they will work on \cite{kn:Golub89}.
+data they will work on.
 
 \subsection{Structure of processes and processors}
 \label{procstruct}
@@ -321,16 +323,16 @@ P_{\rm{r}}/2\rfloor+\lfloor P_{\rm{c}}/2\rfloor$.
 
 A specific message is routed through the processors using the
 \emph{find-row--find-column} algorithm (FRFC) detailed in
-\cite{kn:deCarlini91}.  The message is sent from the \emph{originator}
+.  The message is sent from the \emph{originator}
 processor vertically until it reaches a processor sitting in the same
 row as the \emph{target} processor. The message is then moved
 horizontally across the processors in that row until it reaches the
 target processor. An accumulation based on the recursive doubling
-technique \cite[pp. 56--61]{kn:Modi88}, would require the same number
+technique, would require the same number
 of steps as the RCB requires. If either the row or column of the
 originator and target processors are the same then the message will
 travel only in a horizontal or vertical direction, respectively (see
-\cite{kn:Smith85}).
+).
 
 \section{DATA PARTITIONING}
 \label{datapart}
@@ -341,7 +343,7 @@ among the processors, we divide the set of variables
 $\{\,W_{p}\,\}_{p=1}^{P}$ of $s=N/P$ elements each. We assume without
 loss of generality that $N$ is an integer multiple of $P$. We define
 each subset as $W_{p}=\{(p-1)s+j\}_{j=1}^{s}$ (see
-\cite{kn:Schofield89}, \cite{kn:daCunha92a} and \cite{kn:Atkin} for
+for
 details).
 
 Each processor $p$ is responsible for performing the computations over
@@ -430,15 +432,14 @@ $w$ vector, yield the desired set of $s$ elements of $v$.
 
 \subsection{Matrix--vector product---finite-difference approximation}
 We now consider a preconditioned version of the conjugate-gradients
-method \cite{kn:Golub89}. Note that we do not need to form $A$
+method. Note that we do not need to form $A$
 explicitly.  This implies a very low degree of information exchange
 between the processors which can be effectively exploited with
 transputers, since the required values of $u$ can be exchanged
 independently through each link.
 
 The preconditioning used in our implementations is the polynomial
-preconditioning (see \cite{kn:Saad85}, \cite{kn:Eisenstat81},
-\cite{kn:Adams85} and \cite{kn:Johnson83}), which can be implemented
+preconditioning (see), which can be implemented
 very efficiently in a parallel architecture since it is expressed as a
 sequence of saxpys and matrix--vector products.
 
@@ -488,7 +489,7 @@ conjugate-gradients method may be successfully parallelized by using
 highly efficient parallel implementations of the linear algebra
 operations involved. We have used the same approach to parallelize
 other iterative methods with similar degrees of efficiency (see
-\cite{kn:daCunha92a} and \cite {kn:daCunha92b}).
+ and).
 
 \ack We would like to thank the referees for their comments, which
 helped improve this paper considerably
