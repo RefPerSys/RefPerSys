@@ -30,4 +30,6 @@ bibtex ecai2020-highlight-refpersys
 pdflatex --shell-escape --halt-on-error ecai2020-highlight-refpersys
 bibtex ecai2020-highlight-refpersys
 pdflatex --shell-escape --halt-on-error ecai2020-highlight-refpersys
+bibtex ecai2020-highlight-refpersys
+pdflatex --shell-escape --halt-on-error ecai2020-highlight-refpersys
 
