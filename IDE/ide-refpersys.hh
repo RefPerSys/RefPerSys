@@ -60,6 +60,7 @@
 #include <atomic>
 #include <stdexcept>
 #include <functional>
+#include <shared_mutex>
 
 // FLTKL 1.3 - see www.fltk.org
 #include <FL/Fl.H>
@@ -142,7 +143,6 @@ public:
 };			       // end Rps_ValueZ
 
 
-
 class Rps_HashedValueZ : public Rps_ValueZ {
 protected:
   mutable rps_hashint_t _hash;
@@ -169,6 +169,33 @@ struct Rps_LessObjPtr
     return rps_object_less(l,r);
   };
 };
+////////////////////////////////////////////////////////////////
+
+class Rps_ObjectZ : public Rps_ValueZ {
+  const Rps_Id _obj_id;
+  std::atomic<Rps_ObjectZ*> _obj_class;
+  std::shared_mutex _obj_lock;
+  std::map<Rps_ObjectZ*,Rps_ValueZ*,Rps_LessObjPtr> _obj_attrmap;
+  std::vector<Rps_ValueZ*> _obj_compvec;
+#warning missing payload in Rps_ObjectZ
+  Rps_ObjectZ(const Rps_Id&id, Rps_ObjectZ*obcla)
+    : Rps_ValueZ(Rps_Type::Object),
+      _obj_class(obcla),
+      _obj_lock(),
+      _obj_attrmap(),
+      _obj_compvec()
+  {
+  };
+  virtual ~Rps_ObjectZ() {};
+public:
+  virtual rps_hashint_t hash() const {return _obj_id.hash(); };
+  virtual Rps_ObjectZ* valclass() const {return _obj_class.load(); };
+  virtual Rps_Type vtype() const { return Rps_Type::Object; };
+  virtual void gcmark(Rps_GarbageCollector&gc, unsigned depth) const;
+  virtual void display(Rps_Displayer&disp, unsigned depth=0);
+  virtual Hjson::Value serialize(void);
+  virtual Hjson::Value serialize_content(void);
+};				// end class Rps_ObjectZ
 
 ////////////////////////////////////////////////////////////////
 extern "C" Rps_ObjectZ* rps_string_class;
@@ -246,7 +273,7 @@ class Rps_SequenceValueZ : public Rps_HashedValueZ {
   uint32_t _seq_len;	       // the actual number of objects
   Rps_ObjectZ* _seq_obarr[1];  // actually a flexible array number
 protected:
-  Rps_SequenceValueZ(Rps_Type ty, unsigned alsiz, uint32_t len=0, Rps_ObjectZ*arr=nullptr, rps_hashint_t h=0):
+  Rps_SequenceValueZ(Rps_Type ty, unsigned alsiz, uint32_t len=0, Rps_ObjectZ**arr=nullptr, rps_hashint_t h=0):
     Rps_HashedValueZ(ty,  h), _seq_len(len), _seq_obarr{nullptr} {
     RPS_ASSERT(len<=alsiz);
      memset(_seq_obarr, 0, alsiz*sizeof(Rps_ObjectZ*));
@@ -302,11 +329,16 @@ public:
 // immutable sets of objects
 extern "C" Rps_ObjectZ* rps_set_class;
 class Rps_SetValueZ : public Rps_SequenceValueZ {
-  Rps_SetValueZ(unsigned alsiz, uint32_t len=0, Rps_ObjectZ*arr=nullptr, rps_hashint_t h=0)
+  Rps_SetValueZ(unsigned alsiz, uint32_t len=0, Rps_ObjectZ**arr=nullptr, rps_hashint_t h=0)
     : Rps_SequenceValueZ(Rps_Type::Set, alsiz, len, arr, h) {};
   virtual ~Rps_SetValueZ() {};
   virtual void compute_hash(void);
 public:
+  virtual Rps_ObjectZ* valclass() const { return rps_set_class; };
+  virtual Rps_Type vtype() const {return Rps_Type::Set; };
+  virtual void gcmark(Rps_GarbageCollector&gc, unsigned depth) const;
+  virtual void display(Rps_Displayer&disp, unsigned depth);
+  virtual Hjson::Value serialize(void);
   uint32_t cardinal() const { return seqlength(); };
   bool contains(Rps_ObjectZ*ob);
   static Rps_SetValueZ* make(const std::set<Rps_ObjectZ*,Rps_LessObjPtr>&setob);

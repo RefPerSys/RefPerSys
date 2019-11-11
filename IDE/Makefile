@@ -35,7 +35,7 @@ _timestamp.c:
 	mv $@-tmp $@
 
 %.o %.mkd: %.cc
-	$(COMPILE.cc) -DRPS_GITID=\"$(GITID)\" $< -MT $@ -MMD -MP -MF $(basename $<).mkd -o $@
+	$(COMPILE.cc) -DRPS_GITID=\"$(GITID)\" $< -MT $@ -MMD -MP -MF $(basename $^).mkd -o $@
 
 ide-refpersys: $(OBJECTS) _timestamp.o
 	mv -vf _timestamp.c _timestamp.c~

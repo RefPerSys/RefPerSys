@@ -68,4 +68,28 @@ Rps_SetValueZ::compute_hash(void) {
               (unsigned)card);
 #warning Rps_SetValueZ::compute_hash unimplemented
 } // end Rps_SetValueZ::compute_hash
+
+void
+Rps_SetValueZ::gcmark(Rps_GarbageCollector&gc, unsigned depth) const
+{
+    RPS_FATAL("Rps_SetValueZ::gcmark unimplemented depth=%u",
+              (unsigned)depth);
+#warning Rps_SetValueZ::gcmark unimplemented
+} // end Rps_SetValueZ::gcmark
+
+void
+Rps_SetValueZ::display(Rps_Displayer&disp, unsigned depth)
+{
+    RPS_FATAL("Rps_SetValueZ::display unimplemented depth=%u",
+              (unsigned)depth);
+#warning Rps_SetValueZ::display unimplemented
+} // end Rps_SetValueZ::display
+
+
+Hjson::Value
+Rps_SetValueZ::serialize(void) {
+    RPS_FATAL("Rps_SetValueZ::serialize unimplemented");
+#warning Rps_SetValueZ::serialize unimplemented
+} // end Rps_SetValueZ::serialize
+
 //////////////// end of file ide-composite-rps.cc

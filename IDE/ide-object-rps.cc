@@ -39,5 +39,30 @@
 const char rpside_object_gitid[] = RPS_GITID;
 const char rpside_object_date[] = __DATE__;
 
+void
+Rps_ObjectZ::gcmark(Rps_GarbageCollector&gc, unsigned depth) const {
+    RPS_FATAL("unimplemented Rps_ObjectZ::gcmark depth %u", depth);
+#warning unimplemented Rps_ObjectZ::gcmark
+} // end Rps_ObjectZ::gcmark
+
+void
+Rps_ObjectZ::display(Rps_Displayer&disp, unsigned depth) {
+    RPS_FATAL("unimplemented Rps_ObjectZ::display depth %u", depth);
+#warning unimplemented Rps_ObjectZ::display
+} // end Rps_ObjectZ::display
+
+Hjson::Value
+Rps_ObjectZ::serialize(void) {
+    RPS_FATAL("unimplemented Rps_ObjectZ::serialize");
+#warning unimplemented Rps_ObjectZ::serialize
+} // end Rps_ObjectZ::serialize
+
+
+Hjson::Value
+Rps_ObjectZ::serialize_content(void)
+{
+    RPS_FATAL("unimplemented Rps_ObjectZ::serialize_content");
+#warning unimplemented Rps_ObjectZ::serialize_content
+} // end Rps_ObjectZ::serialize_content
 
 //////////////// end of file ide-object-rps.cc
