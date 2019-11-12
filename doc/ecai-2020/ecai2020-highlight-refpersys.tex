@@ -29,6 +29,7 @@
 \begin{abstract}
   %% TODO: REWRITE ABSTRACT not scientific enough.
   \textcolor{red}{REWRITE THIS}
+  
   \textsc{\textbf{RefPerSys}} is a \textsc{\textbf{Ref}}lexive and orthogonally 
   \textsc{\textbf{Per}}sistent \textsc{\textbf{Sys}}tem (as a GPLv3+ licensed 
   free software running on Linux; it is a still unfunded research project 
@@ -49,25 +50,26 @@ Multi-agent Systems, Semantic Technologies.
 \section{MOTIVATIONS}
 \label{sec:motivations}
 
-\textcolor{red}{REVIEW THIS:} A symbolic AI software system
-running on \textsc{Linux} needs today to manage a large amount of
-information and knowledge organized as some complex graph
-(a.k.a. \emph{ontologies} \cite{DeNicola:2009:OntologyBuilding},
-\emph{semantic networks} \cite{VanDeRiet:1992:Ling-instr-know},
-\emph{frames} \cite{Bobrow-Winograd:1977:KRL,
-  greiner:1980:representation, Lenat:1983:Eurisko, Lenat:1983:theory,
-  Lenat:1991:ev-cycl}) inside the computer memory. That big graph
-should be orthogonally persistent \cite{Dearle:2010:orthopersist}
-(like in \textsc{Bismon} \cite{Starynkevitch:2019:bismon-draft}) on
-disk, and be loaded from files at startup time on mornings of worked
-days, and later dumped to disk, as a set of \emph{state files}, before
-normal termination when leaving office at evening. Using textual
-formats on these files facilitate their management with existing
-distributed version control systems such as
-\href{http://git-scm.com}{\texttt{git}} or software development forges
-like \href{http://gitlab.com/}{\texttt{gitlab}} and ensures some data
-portability. Careful runtime generation, by metaprogramming
-approaches, of \emph{C++} code (à la \textsc{Gcc Melt}
+\textcolor{red}{REVIEW THIS:}
+
+A symbolic AI software system running on \textsc{Linux} needs today to
+manage a large amount of information and knowledge organized as some
+complex graph (a.k.a. \emph{ontologies}
+\cite{DeNicola:2009:OntologyBuilding}, \emph{semantic networks}
+\cite{VanDeRiet:1992:Ling-instr-know}, \emph{frames}
+\cite{Bobrow-Winograd:1977:KRL, greiner:1980:representation,
+  Lenat:1983:Eurisko, Lenat:1983:theory, Lenat:1991:ev-cycl}) inside
+the computer memory. That big graph should be orthogonally persistent
+\cite{Dearle:2010:orthopersist} (like in \textsc{Bismon}
+\cite{Starynkevitch:2019:bismon-draft}) on disk, and be loaded from
+files at startup time on mornings of worked days, and later dumped to
+disk, as a set of \emph{state files}, before normal termination when
+leaving office at evening. Using textual formats on these files
+facilitate their management with existing distributed version control
+systems such as \href{http://git-scm.com}{\texttt{git}} or software
+development forges like \href{http://gitlab.com/}{\texttt{gitlab}} and
+ensures some data portability. Careful runtime generation, by
+metaprogramming approaches, of \emph{C++} code (à la \textsc{Gcc Melt}
 \cite{Starynkevitch-DSL2011, Starynkevitch:2009:grow,
   Starynkevitch:2007:Multistage} or \textsc{Bismon}), compiled by
 \texttt{g++} into \texttt{dlopen}-ed plugins\footnote{In practice, as
@@ -100,8 +102,44 @@ code.
 \section{A STAIRCASE DEVELOPMENT MODEL}
 \label{sec:staircase}
 
-\textcolor{red}{TO BE WRITTEN WITH FIGURE:}
-%% copy text and figure from refpersys-design.tex & spiral-stairs.svg
+%% copied text and figure from refpersys-design.tex & spiral-stairs.svg
+{\RefPerSys} development model is similar to a staircase, as depicted
+in figure \ref{fig:bootstrap-stair}. The initial floor is just a
+hand-coded persistent system, and we gradually add new code
+implementing more features (first entirely hand-written, later more
+and more parts of it replaced by {\RefPerSys} generated code). We are
+progressively replacing existing hand-written code (or low-level DSL)
+by more expressive and generated one. So we will continuously rewrite
+past formalizations as a more clever and expressive ones, taking more
+and more advantage of {\RefPerSys} whole-system introspective and
+metaprogramming abilities.
+
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=0.32\textwidth]{spiral-stairs}
+  \end{center}
+
+  \begin{quote}
+    \begin{relsize}{-0.4}
+    Each new feature -or small incremental change or a few of them
+    (small \texttt{git commit}s) - of {\RefPerSys} enables us to build
+    and \textbf{generate} the next version of {\RefPerSys}, and a next
+    feature is then added to that \textit{improved} version, and so on
+    repeatedly, etc....
+    \end{relsize}
+  \end{quote}
+  
+  \caption{the strange \textbf{{\RefPerSys} staircase development model} {\relsize{-1}{(from a \href{https://thenounproject.com/term/spiral-stairs/956427/}{figure of Spiral stairs} by Lluisa Iborra from the Noun Project)}}}
+  \label{fig:bootstrap-stair}
+\end{figure}
+
+So the {\RefPerSys} project is taking a bootstrapping approach
+\cite{Pitrat:1996:FGCS, Pitrat:2009:ArtifBeings,
+  hernandez-phillips:2019:debugging-bootstrap} : progressively old
+code (perhaps even hand-written, or generated) is replaced by
+``better'' code emitted by metaprogramming techniques above higher
+level formalizations.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ack We would like to thank the referees for their comments, which
