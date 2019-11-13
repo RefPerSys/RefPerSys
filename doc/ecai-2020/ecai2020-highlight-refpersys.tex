@@ -6,7 +6,7 @@
 \usepackage{relsize}
 \usepackage{hyperref}
 %%% call for papers: http://ecai2020.eu/call-for-papers/mainconference/
-%%\ecaisubmission   % inserts page numbers. Use only for submission of paper.
+\ecaisubmission   % inserts page numbers. Use only for submission of paper.
                   % Do NOT use for camera-ready version of paper.
 
 \newcommand{\RefPerSys}{{\textit{\textsc{RefPerSys}}}}
@@ -18,9 +18,9 @@
 \title{development and architecture of {\RefPerSys}\\ {\relsize{-1}{a
       multi-threaded \textsc{ref}lective \textsc{per}sistent \textsc{sys}tem} for AI}}
 
-\author{Basile Starynkevitch\institute{France, email: \href{mailto:basile@starynkevitch.net}{\texttt{basile@starynkevitch.net}}}
-\and Abhishek Chakravarti \institute{India, email: \href{mailto:chakravarti.avishek@gmail.com}{\texttt{chakravarti.avishek@gmail.com}}}
-\and  Nimesh Neema\institute{India, email: \href{mailto:nimeshneema@gmail.com}{\texttt{nimeshneema@gmail.com}}}\\
+\author{Basile Starynkevitch\institute{Bourg La Reine, France, email: \href{mailto:basile@starynkevitch.net}{\texttt{basile@starynkevitch.net}}}
+\and Abhishek Chakravarti \institute{Kolkata, India, email: \href{mailto:chakravarti.avishek@gmail.com}{\texttt{chakravarti.avishek@gmail.com}}}
+\and  Nimesh Neema\institute{Indore, India, email: \href{mailto:nimeshneema@gmail.com}{\texttt{nimeshneema@gmail.com}}}\\
 \href{http://refpersys.org/}{\texttt{refpersys.org}}}
 
 \maketitle
@@ -80,10 +80,11 @@ generated then dynamically loaded by \texttt{dlopen} at runtime on
 \textsc{Linux} desktops.} provides some code portability. Current
 desktop computers are powerful enough to keep a large memory heap in
 RAM\footnote{Notice that the C++ source of software (such as the
-\textsc{Gcc} compiler) made of millions of lines of code fits entirely
-in the 64 Gbytes RAM of a powerful desktop. But compiling such a code
-base takes hours of computer time.}, and that entire heap can be
-persisted on disk, like relational database management systems
+\textsc{Gcc} compiler, the \textsc{Qt} GUI toolkit, or the
+\textsc{PostGreSQL} database) made of millions of lines of code fits
+entirely in the 64 Gbytes RAM of a powerful desktop. But compiling
+such a code base takes hours of computer time.}, and that entire heap
+can be persisted on disk, like relational database management systems
 \cite{levene:2012:relational-databases} such as
 \href{http://sqlite.org/}{\textsc{Sqlite}} or \textit{NoSQL} databases
 \cite{RAJ-2018-NoSQL} do. Current processors are multi-core, so
@@ -99,20 +100,27 @@ produce plugins without the need of a textual representation of some
 \href{https://en.wikipedia.org/wiki/Abstract_syntax_tree}{AST} of the
 code.
 
-\section{A STAIRCASE DEVELOPMENT MODEL}
-\label{sec:staircase}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{THE {\RefPerSys} ROADMAP}
+\label{sec:roadmap}
+
+\subsection{A staircase development model}
+\label{subsec:stairecase}
 
 %% copied text and figure from refpersys-design.tex & spiral-stairs.svg
 {\RefPerSys} development model is similar to a staircase, as depicted
-in figure \ref{fig:bootstrap-stair}. The initial floor is just a
-hand-coded persistent system, and we gradually add new code
-implementing more features (first entirely hand-written, later more
-and more parts of it replaced by {\RefPerSys} generated code). We are
-progressively replacing existing hand-written code (or low-level DSL)
-by more expressive and generated one. So we will continuously rewrite
-past formalizations as a more clever and expressive ones, taking more
-and more advantage of {\RefPerSys} whole-system introspective and
-metaprogramming abilities.
+in figure \ref{fig:bootstrap-stair}. It is different from the
+traditional spiral development model \cite{boehm:1988:spiral}. The
+initial floor of that staircase is just a C++ hand-coded persistent
+system, and we gradually add new code implementing more features
+(first entirely hand-written, later more and more parts of it replaced
+by {\RefPerSys} generated code). We are progressively replacing
+existing hand-written code (or low-level DSL) by more expressive and
+generated one. So we will continuously rewrite past formalizations as
+a more clever and expressive ones, taking more and more advantage of
+{\RefPerSys} whole-system introspective and metaprogramming abilities.
 
 
 \begin{figure}[h]
@@ -138,8 +146,67 @@ So the {\RefPerSys} project is taking a bootstrapping approach
 \cite{Pitrat:1996:FGCS, Pitrat:2009:ArtifBeings,
   hernandez-phillips:2019:debugging-bootstrap} : progressively old
 code (perhaps even hand-written, or generated) is replaced by
-``better'' code emitted by metaprogramming techniques above higher
+``better'' code emitted by metaprogramming techniques from higher
 level formalizations.
+
+%%%%%%%%%%%%%%%%
+\subsection{Initial architecture of \RefPerSys}
+\label{subsec:initarchi}
+
+The initial architecture\footnote{The GPLv3+ code of \textsc{Bismon},
+mostly in C, is available on
+\href{https://github.com/bstarynk/bismon/}{\texttt{github.com/bstarynk/bismon/}}. But
+     {\RefPerSys} is coded in C++, only for \textsc{Linux/x86-64}, on
+     \href{https://gitlab.com/bstarynk/refpersys}{\texttt{gitlab.com/bstarynk/refpersys}}
+     and share almost no code with \textsc{Bismon}.}, prototyped in
+C++17, of {\RefPerSys} is close to \textsc{Bismon}'s one. But it
+should evolve very differently. Our persistent and garbage-collected
+\cite{jones:2016:gchandbook} heap is made of \emph{values}. Most
+values are immutable and rather light. Some values are mutable
+\emph{objects}, which are quite heavy, since synchronized between
+threads so carrying their read-write lock. Values are represented in
+64 bits machine words: either a tagged integer, or containing a
+pointer to some aligned memory zone. Most values are persistent -so
+dumped then later reloaded thru state files- but some are transient,
+since it makes no sense to keep them on disk. Transient values, often
+transient objects, include reification of GUI windows or Web widgets,
+HTTP connections, ongoing processes, in particular compilation
+commands of newly generated plugins, etc... Values are both ordered
+and hashable, so fit nicely inside standard C++ containers like
+\texttt{std::set} or \texttt{std::unordered\_map}. Every mutable
+object has a globally unique, fixed, and random \emph{objid}, which
+fits in 16 bytes and is textually represented -in state files- with a
+string such as \texttt{\_7VnQtHZ63pA02rCekc}.
+
+Immutable values include \textsc{Utf-8} strings, boxed \textsc{Ieee}
+64 bits floats without \texttt{NaN} to stay ordered, tuples of
+references to objects, ordered sets of objects, closures -whose code
+is represented by some object, and with arbitrary values as closed
+values-, and immutable instances.
+
+Mutable objects carry their constant \emph{objid}, their lock, their
+class -which could change at runtime and is an object-, attributes,
+components, and some optional smart \texttt{std::unique\_ptr} pointer
+to the payload of that object. An attribute associates a key -itself
+some object reference- to a value, so attributes are collected in some
+mutable C++ \texttt{std::map}. The components are organized as a
+\texttt{std::vector} of values. The payload belongs to its owning
+object and carry extra data, such as mutable hashed sets, class
+information -sequence of superclasses and method dispatch table-,
+string buffers, opened file or socket handles, GUI or widgets etc...
+
+The initial {\RefPerSys} should contain some ad-hoc integrated
+development environment, used just to fill the persistent heap and
+generate some of its C++ code.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{METAPROGRAMMING IN \RefPerSys}
+\label{sec:metaprogramming}
+
+\textcolor{red}{TO BE WRITTEN}
+
+\bigskip
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ack We would like to thank the referees for their comments, which
@@ -150,7 +217,7 @@ helped improve this paper considerably
 %%% for a draft that should be acceptable
 \begin{flushright}
   \begin{relsize}{-1}
-    our draft \texttt{git commit} is \texttt{\textit{\rpsgitcommit}}
+    our draft \texttt{git} id is \texttt{\textit{\rpsgitcommit}}
   \end{relsize}
 \end{flushright}
 
