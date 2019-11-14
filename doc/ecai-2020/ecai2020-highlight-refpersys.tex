@@ -15,8 +15,8 @@
 \input{generated-ecai2020-gitid}
 \begin{document}
 
-\title{development and architecture of {\RefPerSys}\\ {\relsize{-1}{a
-      multi-threaded \textsc{ref}lective \textsc{per}sistent \textsc{sys}tem} for AI}}
+\title{Development and Architecture of {\RefPerSys}\\ {\relsize{-1}{A
+      Multi-Threaded \textsc{Ref}lective \textsc{Per}sistent \textsc{Sys}tem} for AI}}
 
 \author{Basile Starynkevitch\institute{Bourg La Reine, France, email: \href{mailto:basile@starynkevitch.net}{\texttt{basile@starynkevitch.net}}}
 \and Abhishek Chakravarti \institute{Kolkata, India, email: \href{mailto:chakravarti.avishek@gmail.com}{\texttt{chakravarti.avishek@gmail.com}}}
@@ -52,16 +52,16 @@ Multi-agent Systems, Semantic Technologies.
 
 \textcolor{red}{REVIEW THIS:}
 
-A symbolic AI software system running on \textsc{Linux} needs today to
+A symbolic AI software system running on \textsc{Linux} nowadays needs to
 manage a large amount of information and knowledge organized as some
-complex graph (a.k.a. \emph{ontologies}
-\cite{DeNicola:2009:OntologyBuilding}, \emph{semantic networks}
-\cite{VanDeRiet:1992:Ling-instr-know}, \emph{frames}
+complex graph (also known as an \emph{ontology}
+\cite{DeNicola:2009:OntologyBuilding}, a \emph{semantic network}
+\cite{VanDeRiet:1992:Ling-instr-know}, or a \emph{frame}
 \cite{Bobrow-Winograd:1977:KRL, greiner:1980:representation,
   Lenat:1983:Eurisko, Lenat:1983:theory, Lenat:1991:ev-cycl}) inside
-the computer memory. That big graph should be orthogonally persistent
-\cite{Dearle:2010:orthopersist} (like in \textsc{Bismon}
-\cite{Starynkevitch:2019:bismon-draft}) on disk, and be loaded from
+the computer memory. This large graph should be orthogonally persistent
+\cite{Dearle:2010:orthopersist} (such as in the \textsc{Bismon}
+\cite{Starynkevitch:2019:bismon-draft} system) on disk, and be loaded from
 files at startup time on mornings of worked days, and later dumped to
 disk, as a set of \emph{state files}, before normal termination when
 leaving office at evening. Using textual formats on these files
