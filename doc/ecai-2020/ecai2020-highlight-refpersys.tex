@@ -67,18 +67,19 @@ complex graph (also known as an \emph{ontology}
 %\cite{Bobrow-Winograd:1977:KRL, greiner:1980:representation,
 %  Lenat:1983:Eurisko, Lenat:1983:theory, Lenat:1991:ev-cycl}) inside
 %%
-\cite{Bobrow-Winograd:1977:KRL}) inside
-the computer memory. This large graph should be orthogonally persistent
+\cite{Bobrow-Winograd:1977:KRL, Lenat:1983:theory}) inside the
+computer memory. This large graph should be orthogonally persistent
 \cite{Dearle:2010:orthopersist} (such as in \textsc{Bismon}
 \cite{Starynkevitch:2019:bismon-draft}) on disk, and be loaded from
 files at startup time on mornings of worked days, and later dumped to
-disk, as a set of \emph{state files}, before normal termination when
-leaving office at evening. Having these files in a textual format
-facilitates their management with existing distributed version control
-systems such as \href{http://git-scm.com}{\texttt{git}} or software
-development forges like \href{http://gitlab.com/}{\texttt{gitlab}} and
-ensures some data portability. Carefully generating the runtime, through
-metaprogramming approaches, as \emph{C++} code (à la \textsc{Gcc Melt}
+disk, as a set of \emph{state files} in \href{http://hjson.org/}{\textsc{Hjson}} format, before
+normal termination when leaving office at evening. Having these files
+in a textual format facilitates their management with existing
+distributed version control systems such as
+\href{http://git-scm.com}{\texttt{git}} or software development forges
+like \href{http://gitlab.com/}{\texttt{gitlab}} and ensures some data
+portability. Carefully generating the runtime, through metaprogramming
+approaches, as \emph{C++} code (à la \textsc{Gcc Melt}
 %%
 %\cite{Starynkevitch-DSL2011, Starynkevitch:2009:grow,
   %Starynkevitch:2007:Multistage} or \textsc{Bismon}) that is subsequently compiled by
@@ -108,7 +109,7 @@ But compiling such a code base takes hours of computer time.}, and this entire h
 can be persisted on disk, similar to how database management systems
 %\cite{levene:2012:relational-databases} such as
 %\href{http://sqlite.org/}{\textsc{Sqlite}} or \textit{NoSQL}\cite{RAJ-2018-NoSQL} work. 
-such as \href{http://sqlite.org/}{\textsc{Sqlite}} or \href{https://en.wikipedia.org/wiki/NoSQL}\textit{NoSQL} work. 
+such as \href{http://sqlite.org/}{\textsc{Sqlite}} or \href{https://en.wikipedia.org/wiki/NoSQL}{\textit{NoSQL}} work. 
 
 Current processors are multi-core, so running a good enough multi-threaded program on them
 \cite{butenhof:1997:programming} should be beneficial for
@@ -237,23 +238,25 @@ navigating of objects through their \emph{objids}.
 \label{sec:metaprogramming}
 
 An essential insight of {\RefPerSys} is metaprogramming, practically
-done by generating \emph{C++17} code for a Linux system. This is
-strongly inspired by previous work, see \cite{Pitrat:1996:FGCS,
-  Pitrat:2009:ArtifBeings, Starynkevitch:2019:bismon-draft,
-  Starynkevitch-DSL2011, Starynkevitch:2007:Multistage}. The choice of
-the actual programming language used to generate code\footnote{In
-practice, some C++ code is emitted in a file similar to
-\texttt{/tmp/generated.cc}, compiled as a plugin by forking
-\texttt{g++ -O -fPIC -shared} into a \texttt{/tmp/generated.so}, which
-is later \texttt{dlopen}-ed, all by the same process running the
-\texttt{./refpersys} executable.} in within {\RefPerSys} is mostly
-arbitrary and guided by non-technical concerns: which programming
-language is known to all the {\RefPerSys} team, while being compatible
-with a lot of existing open source libraries and APIs? That
-programming language happens to be C++ (better than C, because of its
-standard containers), but our expansion machinery is inspired by
-\textsc{Lisp} macros \cite{Queinnec:1996:LSP} or \textsc{Django}
-templates.
+done by generating \emph{C++17} code at runtime for a Linux
+system. This is strongly inspired by previous work, see
+\cite{Pitrat:1996:FGCS, Pitrat:2009:ArtifBeings,
+  Starynkevitch:2019:bismon-draft, Starynkevitch-DSL2011,
+  Starynkevitch:2007:Multistage}. The choice of the actual programming
+language used to generate code\footnote{In practice, some C++ code is
+emitted in a file similar to \texttt{/tmp/generated.cc}, compiled as a
+plugin by forking \texttt{g++ -O -g -fPIC -shared} into a
+\texttt{/tmp/generated.so}, which is later \texttt{dlopen}-ed, all by
+the same process running the \texttt{./refpersys} executable.} in
+within {\RefPerSys} is mostly arbitrary and guided by non-technical
+concerns: which programming language is known to all the {\RefPerSys}
+team, while being compatible with a lot of existing open source
+libraries and APIs? That programming language happens to be C++
+(better than C, because of its containers), but our
+expansion machinery is inspired by \textsc{Melt} code chunks
+\cite{Starynkevitch-DSL2011}, \textsc{Lisp} macros
+\cite{Queinnec:1996:LSP} or \textsc{Django} templates, driven by
+``expert system''-like meta rules (such as in \cite{Pitrat:1996:FGCS}) potentially applicable to themselves.
 
 
 %\textcolor{red}{TO BE WRITTEN}
@@ -265,11 +268,10 @@ We have discussed how we are trying to develop {\RefPerSys} organically,
 using metaprogramming techniques to eventually build a fully bootstrapped
 Quine system. Our approach is to gradually replace hand-written code with
 increasingly expressive generated code, relying on the growing metaprogramming
-and reflective properties of the system.
+and reflective properties of the system. See also \cite{starynkevitch:2019:refpersys-design}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ack We would like to thank the referees for their comments, which
-helped improve this paper considerably
+\ack Thanks to François Bancilhon for proof-reading this draft.
 
 \bibliography{../bib-refpersys}
 
