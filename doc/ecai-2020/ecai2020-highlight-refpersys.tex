@@ -204,6 +204,26 @@ fill the persistent heap and generate some of its C++ code.
 \section{METAPROGRAMMING IN \RefPerSys}
 \label{sec:metaprogramming}
 
+An essential insight of {\RefPerSys} is metaprogramming, practically
+done by generating \emph{C++17} code for a Linux system. This is
+strongly inspired by previous work, see \cite{Pitrat:1996:FGCS,
+  Pitrat:2009:ArtifBeings, Starynkevitch:2019:bismon-draft,
+  Starynkevitch-DSL2011, Starynkevitch:2007:Multistage}. The choice of
+the actual programming language used to generate code\footnote{In
+practice, some C++ code is emitted in a file similar to
+\texttt{/tmp/generated.cc}, compiled as a plugin by forking
+\texttt{g++ -O -fPIC -shared} into a \texttt{/tmp/generated.so}, which
+is later \texttt{dlopen}-ed, all by the same process running the
+\texttt{./refpersys} executable.} in within {\RefPerSys} is mostly
+arbitrary and guided by non-technical concerns: which programming
+language is known to all the {\RefPerSys} team, while being compatible
+with a lot of existing open source libraries and APIs? That
+programming language happens to be C++ (better than C, because of its
+standard containers), but our expansion machinery is inspired by
+\textsc{Lisp} macros \cite{Queinnec:1996:LSP} or \textsc{Django}
+templates.
+
+
 \textcolor{red}{TO BE WRITTEN}
 
 \bigskip
