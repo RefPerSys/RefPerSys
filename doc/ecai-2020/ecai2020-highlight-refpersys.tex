@@ -50,8 +50,6 @@ Multi-agent Systems, Semantic Technologies.
 \section{MOTIVATIONS}
 \label{sec:motivations}
 
-\textcolor{red}{REVIEW THIS:}
-
 A symbolic AI software system running on \textsc{Linux} nowadays needs to
 manage a large amount of information and knowledge organized as some
 complex graph (also known as an \emph{ontology}
@@ -60,37 +58,42 @@ complex graph (also known as an \emph{ontology}
 \cite{Bobrow-Winograd:1977:KRL, greiner:1980:representation,
   Lenat:1983:Eurisko, Lenat:1983:theory, Lenat:1991:ev-cycl}) inside
 the computer memory. This large graph should be orthogonally persistent
-\cite{Dearle:2010:orthopersist} (such as in the \textsc{Bismon}
-\cite{Starynkevitch:2019:bismon-draft} system) on disk, and be loaded from
+\cite{Dearle:2010:orthopersist} (such as in \textsc{Bismon}
+\cite{Starynkevitch:2019:bismon-draft}) on disk, and be loaded from
 files at startup time on mornings of worked days, and later dumped to
 disk, as a set of \emph{state files}, before normal termination when
-leaving office at evening. Using textual formats on these files
-facilitate their management with existing distributed version control
+leaving office at evening. Having these files in a textual format
+facilitates their management with existing distributed version control
 systems such as \href{http://git-scm.com}{\texttt{git}} or software
 development forges like \href{http://gitlab.com/}{\texttt{gitlab}} and
-ensures some data portability. Careful runtime generation, by
-metaprogramming approaches, of \emph{C++} code (à la \textsc{Gcc Melt}
+ensures some data portability. Carefully generating the runtime, through
+metaprogramming approaches, as \emph{C++} code (à la \textsc{Gcc Melt}
 \cite{Starynkevitch-DSL2011, Starynkevitch:2009:grow,
-  Starynkevitch:2007:Multistage} or \textsc{Bismon}), compiled by
+  Starynkevitch:2007:Multistage} or \textsc{Bismon}) that is subsequently compiled by
 \texttt{g++} into \texttt{dlopen}-ed plugins\footnote{In practice, as
-shown by the \texttt{manydl.c} sample code written for J.Pitrat, on
+demonstrated by the \texttt{manydl.c} sample code written for J. Pitrat, on
 \href{http://github.com/bstarynk/misc-basile/}{\texttt{github.com/bstarynk/misc-basile/}},
 several hundreds of thousands of \texttt{*.so} plugins can be
-generated then dynamically loaded by \texttt{dlopen} at runtime on
-\textsc{Linux} desktops.} provides some code portability. Current
+generated and then dynamically loaded by \texttt{dlopen} at runtime on
+\textsc{Linux} desktops.} provides some amount of code portability. Current
 desktop computers are powerful enough to keep a large memory heap in
 RAM\footnote{Notice that the C++ source of software (such as the
 \textsc{Gcc} compiler, the \textsc{Qt} GUI toolkit, or the
 \textsc{PostGreSQL} database) made of millions of lines of code fits
 entirely in the 64 Gbytes RAM of a powerful desktop. But compiling
-such a code base takes hours of computer time.}, and that entire heap
-can be persisted on disk, like relational database management systems
+such a code base takes hours of computer time.}, and this entire heap
+%%
+%can be persisted on disk, in a manner similar to relational database management systems
+%\cite{levene:2012:relational-databases} such as
+%\href{http://sqlite.org/}{\textsc{Sqlite}} or \textit{NoSQL} databases
+%\cite{RAJ-2018-NoSQL} do. 
+can be persisted on disk, similar to how database management systems
 \cite{levene:2012:relational-databases} such as
-\href{http://sqlite.org/}{\textsc{Sqlite}} or \textit{NoSQL} databases
-\cite{RAJ-2018-NoSQL} do. Current processors are multi-core, so
-running on them a good enough multi-threaded program
+\href{http://sqlite.org/}{\textsc{Sqlite}} or \textit{NoSQL}\cite{RAJ-2018-NoSQL} work. 
+
+Current processors are multi-core, so running a good enough multi-threaded program on them
 \cite{butenhof:1997:programming} should be beneficial for
-performance. Backtracing libraries such as I.Taylor's
+performance. Backtracing libraries such as I. Taylor's
 \href{https://github.com/ianlancetaylor/libbacktrace}{\texttt{libbacktrace}}
 facilitate introspection of the current thread's call stack, if the
 \emph{C++} code has been compiled, using \texttt{g++ -O2 -g}, with
