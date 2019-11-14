@@ -77,11 +77,14 @@ several hundreds of thousands of \texttt{*.so} plugins can be
 generated and then dynamically loaded by \texttt{dlopen} at runtime on
 \textsc{Linux} desktops.} provides some amount of code portability. Current
 desktop computers are powerful enough to keep a large memory heap in
-RAM\footnote{Notice that the C++ source of software (such as the
+%%
+%RAM\footnote{Notice that the C++ source of software (such as the
+%\textsc{Gcc} compiler, the \textsc{Qt} GUI toolkit, or the
+%\textsc{PostGreSQL} database) made of millions of lines of code fits
+RAM\footnote{Notice that the millions of SLOC for mature software (such as the
 \textsc{Gcc} compiler, the \textsc{Qt} GUI toolkit, or the
-\textsc{PostGreSQL} database) made of millions of lines of code fits
-entirely in the 64 Gbytes RAM of a powerful desktop. But compiling
-such a code base takes hours of computer time.}, and this entire heap
+\textsc{PostGreSQL} database), fits entirely in the 64 GB RAM of a powerful desktop. 
+But compiling such a code base takes hours of computer time.}, and this entire heap
 %%
 %can be persisted on disk, in a manner similar to relational database management systems
 %\cite{levene:2012:relational-databases} such as
