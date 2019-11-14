@@ -192,16 +192,16 @@ values are immutable and rather light. Some values are mutable
 \emph{objects}, which are quite heavy, since synchronized between
 threads so carrying their read-write lock. Values are represented in
 64 bits machine words: either a tagged integer, or containing a
-pointer to some aligned memory zone. Most values are persistent -so
-dumped then later reloaded thru state files- but some are transient,
+pointer to some aligned memory zone. Most values are persistent---so
+dumped then later reloaded through state files---but some are transient,
 since it makes no sense to keep them on disk. Transient values, often
 transient objects, include reification of GUI windows or Web widgets,
 HTTP connections, ongoing processes, in particular compilation
-commands of newly generated plugins, etc... Values are both ordered
+commands of newly generated plugins, etc.. Values are both ordered
 and hashable, so fit nicely inside standard C++ containers like
 \texttt{std::set} or \texttt{std::unordered\_map}. Every mutable
 object has a globally unique, fixed, and random \emph{objid}, which
-fits in 16 bytes and is textually represented -in state files- with a
+fits in 16 bytes and is textually represented---in state files---with a
 string such as \texttt{\_7VnQtHZ63pA02rCekc}.
 
 Immutable values include \textsc{Utf-8} strings, boxed \textsc{Ieee}
@@ -259,6 +259,13 @@ templates.
 %\textcolor{red}{TO BE WRITTEN}
 
 \bigskip
+
+\section{CONCLUSION}
+We have discussed how we are trying to develop {\RefPerSys} organically,
+using metaprogramming techniques to eventually build a fully bootstrapped
+Quine system. Our approach is to gradually replace hand-written code with
+increasingly expressive generated code, relying on the growing metaprogramming
+and reflective properties of the system.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ack We would like to thank the referees for their comments, which
