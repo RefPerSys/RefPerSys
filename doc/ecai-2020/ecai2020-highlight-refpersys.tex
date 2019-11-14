@@ -157,7 +157,7 @@ code (perhaps even hand-written, or generated) is replaced by
 level formalizations.
 
 %%%%%%%%%%%%%%%%
-\subsection{Initial architecture of \RefPerSys}
+\subsection{Initial Architecture of \RefPerSys}
 \label{subsec:initarchi}
 
 The initial architecture\footnote{The GPLv3+ code of \textsc{Bismon},
@@ -200,11 +200,17 @@ mutable C++ \texttt{std::map}. The components are organized as a
 \texttt{std::vector} of values. The payload belongs to its owning
 object and carry extra data, such as mutable hashed sets, class
 information -sequence of superclasses and method dispatch table-,
-string buffers, opened file or socket handles, GUI or widgets etc...
+string buffers, opened file or socket handles, GUI or widgets etc..
 
-The initial {\RefPerSys} should contain some ad-hoc integrated
-development environment above the \textsc{Fltk} toolkit, used just to
-fill the persistent heap and generate some of its C++ code.
+%%%
+%The initial {\RefPerSys} should contain some ad-hoc integrated
+%development environment above the \textsc{Fltk} toolkit, used just to
+%fill the persistent heap and generate some of its C++ code.
+%%%
+{\RefPerSys} will initially have an ad-hoc IDE---built with the \textsc{Fltk}
+toolkit---to just fill the persistent heap and generate some of its C++
+code. This IDE will support the syntax highlighting, autocompletion and
+navigating of objects through their \emph{objids}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -244,7 +250,7 @@ helped improve this paper considerably
 %%% for a draft that should be acceptable
 \begin{flushright}
   \begin{relsize}{-1}
-    our draft \texttt{git} id is \texttt{\textit{\rpsgitcommit}}
+    Our draft \texttt{git} ID is \texttt{\textit{\rpsgitcommit}}
   \end{relsize}
 \end{flushright}
 
