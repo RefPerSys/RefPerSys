@@ -2027,18 +2027,9 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
   \item Each RefPerSys object representation may have an HJSON comment key.
 \end{itemize}
 
-\textbf{oid} = ``\_'' , \{ \textbf{BASE62-CHARACTER} \} ; \\
-\textbf{value} = \textbf{int-value} | \textbf{float-value} | \textbf{string-value} 
-	       | \textbf{set-value} | \textbf{tuple-value} ; \\
-\textbf{int-value} = ``\{'' , ``vtype'' , ``:'' , ``int'' , 
-	           ``value'' , ``:'' , \textbf{INTEGER} | \textbf{NIL} ,
-		   ``\}'' ; \\
-\textbf{float-value} = ``\{'' , ``vtype'' , ``:'' , ``int'' , 
-	           ``value'' , ``:'' , \textbf{FLOAT} | \textbf{NIL} ,
-		   ``\}'' ; \\
-\textbf{string-value} = ``\{'' , ``vtype'' , ``:'' , ``int'' , 
-	           ``value'' , ``:'' , \textbf{STRING} | \textbf{NIL} ,
-		   ``\}'' ; \\
+\textbf{oid} = ``\_'' , \{ \textbf{BASE62} \} ; \\
+\textbf{value} = \textbf{INTEGER} | \textbf{FLOAT} | \textbf{STRING} 
+	       | \textbf{set-value} | \textbf{tuple-value}  | \textbf{closure-value} ; \\
 \textbf{set-value} = ``\{'' , ``vtype'' , ``:'' , ``set'' , 
                    ``value'' , ``:'' , 
 		   ``['' , \{ \textbf{oid} (* unique unordered *) , \} 
@@ -2047,8 +2038,8 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
                    ``value'' , ``:'' , 
 		   ``['' , \{ \textbf{oid} (* ordered *) , \} 
 		   | \textbf{NIL} , ``]'' ,  ``\}'' ; \\
-\textbf{closed-value} = \textbf{int-value} | \textbf{float-value} | \textbf{string-value}
-                      | \textbf{set-value} | \textbf{tuple-value} ;
+\textbf{closed-value} = \textbf{INTEGER} | \textbf{FLOAT} | \textbf{STRING}
+                      | \textbf{set-value} | \textbf{tuple-value} ; \\
 \textbf{closure-value} = ``\{'' , ``vtype'' , ``:'' , ``closure'' , 
 		       ``function'' , ``:'' , \textbf{oid} , 
 		       ``environment'' , ``:'' , ``['' , \{\textbf{closed-value}\} , "]" , "\}"
