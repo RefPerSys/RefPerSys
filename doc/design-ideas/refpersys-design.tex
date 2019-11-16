@@ -2027,32 +2027,31 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
   \item Each RefPerSys object representation may have an HJSON comment key.
 \end{itemize}
 
-\textbf{separator} = ``,'' | \textbf{LF} (* line feed *) ; \\
 \textbf{oid} = ``\_'' , \{ \textbf{BASE62-CHARACTER} \} ; \\
 \textbf{value} = \textbf{int-value} | \textbf{float-value} | \textbf{string-value} 
 	       | \textbf{set-value} | \textbf{tuple-value} ; \\
-\textbf{int-value} = ``\{'' , ``vtype'' , ``:'' , ``int'' , \textbf{separator} ,
+\textbf{int-value} = ``\{'' , ``vtype'' , ``:'' , ``int'' , 
 	           ``value'' , ``:'' , \textbf{INTEGER} | \textbf{NIL} ,
-		   \textbf{separator} , ``\}'' ; \\
-\textbf{float-value} = ``\{'' , ``vtype'' , ``:'' , ``int'' , \textbf{separator} ,
+		   ``\}'' ; \\
+\textbf{float-value} = ``\{'' , ``vtype'' , ``:'' , ``int'' , 
 	           ``value'' , ``:'' , \textbf{FLOAT} | \textbf{NIL} ,
-		   \textbf{separator} , ``\}'' ; \\
-\textbf{string-value} = ``\{'' , ``vtype'' , ``:'' , ``int'' , \textbf{separator} ,
+		   ``\}'' ; \\
+\textbf{string-value} = ``\{'' , ``vtype'' , ``:'' , ``int'' , 
 	           ``value'' , ``:'' , \textbf{STRING} | \textbf{NIL} ,
-		   \textbf{separator} , ``\}'' ; \\
-\textbf{set-value} = ``\{'' , ``vtype'' , ``:'' , ``set'' , \textbf{separator} , 
+		   ``\}'' ; \\
+\textbf{set-value} = ``\{'' , ``vtype'' , ``:'' , ``set'' , 
                    ``value'' , ``:'' , 
-		   ``['' , \{ \textbf{oid} (* unique unordered *) , \textbf{separator} \} 
-		   | \textbf{NIL} , ``]'' , \textbf{separator} , ``\}'' ; \\
-\textbf{tuple-value} = ``\{'' , ``vtype'' , ``:'' , ``tuple'' , \textbf{separator} , 
+		   ``['' , \{ \textbf{oid} (* unique unordered *) , \} 
+		   | \textbf{NIL} , ``]'' ,  ``\}'' ; \\
+\textbf{tuple-value} = ``\{'' , ``vtype'' , ``:'' , ``tuple'' , 
                    ``value'' , ``:'' , 
-		   ``['' , \{ \textbf{oid} (* ordered *) , \textbf{separator} \} 
-		   | \textbf{NIL} , ``]'' , \textbf{separator} , ``\}'' ; \\
+		   ``['' , \{ \textbf{oid} (* ordered *) , \} 
+		   | \textbf{NIL} , ``]'' ,  ``\}'' ; \\
 \textbf{closed-value} = \textbf{int-value} | \textbf{float-value} | \textbf{string-value}
                       | \textbf{set-value} | \textbf{tuple-value} ;
-\textbf{closure-value} = ``\{'' , ``vtype'' , ``:'' , ``closure'' , \textbf{separator} ,
-		       ``function'' , ``:'' , \textbf{oid} , \textbf{separator} ,
-		       ``environment'' , ``:'' , ``['' , {\textbf{closed-value}} , "]" , "\}"
+\textbf{closure-value} = ``\{'' , ``vtype'' , ``:'' , ``closure'' , 
+		       ``function'' , ``:'' , \textbf{oid} , 
+		       ``environment'' , ``:'' , ``['' , \{\textbf{closed-value}\} , "]" , "\}"
 
 \clearpage
 \printnoidxglossaries
