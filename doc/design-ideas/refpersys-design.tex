@@ -2047,7 +2047,12 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
 \textbf{tuple-value} = ``\{'' , ``vtype'' , ``:'' , ``tuple'' , \textbf{separator} , 
                    ``value'' , ``:'' , 
 		   ``['' , \{ \textbf{oid} (* ordered *) , \textbf{separator} \} 
-		   | \textbf{NIL} , ``]'' , \textbf{separator} , ``\}'' ;
+		   | \textbf{NIL} , ``]'' , \textbf{separator} , ``\}'' ; \\
+\textbf{closed-value} = \textbf{int-value} | \textbf{float-value} | \textbf{string-value}
+                      | \textbf{set-value} | \textbf{tuple-value} ;
+\textbf{closure-value} = ``\{'' , ``vtype'' , ``:'' , ``closure'' , \textbf{separator} ,
+		       ``function'' , ``:'' , \textbf{oid} , \textbf{separator} ,
+		       ``environment'' , ``:'' , ``['' , {\textbf{closed-value}} , "]" , "\}"
 
 \clearpage
 \printnoidxglossaries
