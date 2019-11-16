@@ -2029,20 +2029,19 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
 
 \textbf{oid} = ``\_'' , \{ \textbf{BASE62} \} ; \\
 \textbf{value} = \textbf{INTEGER} | \textbf{FLOAT} | \textbf{STRING} 
-	       | \textbf{set-value} | \textbf{tuple-value}  | \textbf{closure-value} ; \\
-\textbf{set-value} = ``\{'' , ``vtype'' , ``:'' , ``set'' , 
-                   ``value'' , ``:'' , 
-		   ``['' , \{ \textbf{oid} (* unique unordered *) , \} 
-		   | \textbf{NIL} , ``]'' ,  ``\}'' ; \\
-\textbf{tuple-value} = ``\{'' , ``vtype'' , ``:'' , ``tuple'' , 
-                   ``value'' , ``:'' , 
-		   ``['' , \{ \textbf{oid} (* ordered *) , \} 
-		   | \textbf{NIL} , ``]'' ,  ``\}'' ; \\
+	       | \textbf{set} | \textbf{tuple}  | \textbf{closure} ; \\
+\textbf{set} = ``\{'' , ``vtype'' , ``:'' , ``set'' , 
+             ``elements'' , ``:'' , 
+	     ``['' , \{ \textbf{oid} (* unique unordered *) \} 
+	     ``]'' ,  ``\}'' ; \\
+\textbf{tuple} = ``\{'' , ``vtype'' , ``:'' , ``tuple'' , 
+                   ``components'' , ``:'' ,  ``['' , \{ \textbf{oid} (* ordered *) \} 
+		   ``\}'' ; \\
 \textbf{closed-value} = \textbf{INTEGER} | \textbf{FLOAT} | \textbf{STRING}
                       | \textbf{set-value} | \textbf{tuple-value} ; \\
-\textbf{closure-value} = ``\{'' , ``vtype'' , ``:'' , ``closure'' , 
-		       ``function'' , ``:'' , \textbf{oid} , 
-		       ``environment'' , ``:'' , ``['' , \{\textbf{closed-value}\} , "]" , "\}"
+\textbf{closure} = ``\{'' , ``vtype'' , ``:'' , ``closure'' , 
+	         ``function'' , ``:'' , \textbf{oid} , 
+		 ``environment'' , ``:'' , ``['' , \{ \textbf{closed-value} \} , "]" , "\}" ;
 
 \clearpage
 \printnoidxglossaries
