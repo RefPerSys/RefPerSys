@@ -348,16 +348,6 @@ int
 main(int argc, char** argv)
 {
   rps_start_monotonic_time = rps_monotonic_real_time();
-  struct argp argopt =
-  {
-    .options = rps_argopt_vec,
-    .parser = rps_argopt_parse,
-    .args_doc = NULL,
-    .doc = NULL,
-    .children = NULL,
-    .help_filter = NULL,
-    .argp_domain = NULL
-  };
   RPS_ASSERT(argc>0);
   rps_progname = argv[0];
   rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
@@ -376,14 +366,7 @@ main(int argc, char** argv)
       fprintf(stderr, "%s failed to make backtrace state.\n", rps_progname);
       exit(EXIT_FAILURE);
     }
-  if (argc < 2)
-    {
-      printf("missing argument to %s, try %s --help\n", argv[0], argv[0]);
-      exit(EXIT_FAILURE);
-    }
   pthread_setname_np(pthread_self(), "rps-main");
-  rps_main_todo_vect.reserve(2*argc+10);
-  argp_parse (&argopt, argc, argv, 0, NULL, NULL);
   RPS_INFORM("starting RefPerSys %s process %d on host %s\n"
              "... gitid %.16s built %s",
              argv[0], (int)getpid(), rps_hostname(), gitid_rps, timestamp_rps);
