@@ -60,6 +60,7 @@ enum rps_option_key_en
   Rps_Key_PrimeAbove,
   Rps_Key_PrimeBelow,
   Rps_Key_ObjectTinyBenchmark1,
+  Rps_Key_QtGui,
 };
 
 const struct argp_option rps_argopt_vec[] =
@@ -127,6 +128,14 @@ const struct argp_option rps_argopt_vec[] =
     .flags = 0,
     .doc = "parse a objectid",
     .group = 0,
+  },
+  {
+      .name = "qt-gui",
+      .key = Rps_Key_QtGui,
+      .arg = NULL,
+      .flags = OPTION_ARG_OPTIONAL,
+      .doc = "run Qt GUI",
+      .group = 0,
   },
   { },
 };
@@ -312,6 +321,9 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
         }
       else fprintf(stderr, "failed to parse id %s\n", idstr);
     }
+    break;
+    case Rps_Key_QtGui:
+#warning Window drawing code needs to be added here
     break;
     default:
       return ARGP_ERR_UNKNOWN;
