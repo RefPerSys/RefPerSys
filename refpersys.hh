@@ -73,6 +73,9 @@
 #include <time.h>
 #include <dlfcn.h>
 
+#include <QApplication>
+#include <QLabel>
+
 // for programmatic C++ name demangling, see also
 // https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h
 #include <cxxabi.h>

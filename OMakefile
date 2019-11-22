@@ -60,11 +60,13 @@ DIALECTFLAGS = -std=gnu++17
 # info...
 OPTIMFLAGS = -O0 -g
 WARNFLAGS = -Wall -Wextra
+QTINC = -I. -isystem /usr/include/qt -isystem /usr/include/qt/QtWidgets -isystem /usr/include/qt/QtGui -isystem /usr/include/qt/QtCore -fPIC
+QTLIBS=-lQt5Core -lQt5Gui
 CXX= g++
-CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(WARNFLAGS)
+CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(WARNFLAGS) $(QTINC)
 
 # ASFLAGS +=
-LDFLAGS += -L/usr/local/lib -rdynamic -lhjson -lunistring -lbacktrace -lpthread -ldl
+LDFLAGS += -L/usr/local/lib -rdynamic $(QTLIBS) -lhjson -lunistring -lbacktrace -lpthread -ldl
 
 INCLUDES += /usr/local/include
 REFPERSYS_BASE_FILES[] =
