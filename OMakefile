@@ -76,6 +76,8 @@ REFPERSYS_BASE_FILES[] =
    values_rps
    minitests_rps
 
+%qrps.cc: %qrps.hh
+	moc $(INCLUDES) $(CXXFLAGS) $(LDFLAGS) $< - $@
 
 REFPERSYS_BASE_HEADERS[] = refpersys inline_rps
 
