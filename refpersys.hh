@@ -2919,6 +2919,27 @@ public:
 };				// end class Rps_LexedFile
 
 
+class Rps_GuiApplication
+{
+    public:
+        Rps_GuiApplication(int argc, char **argv)
+            : _app (argc, argv), _label ("RefPerSys")
+        { }
+
+        ~Rps_GuiApplication()
+        { }
+
+        void run(void)
+        {
+            _label.show();
+            _app.exec ();
+        }
+
+    private:
+            QApplication _app;
+            QLabel _label;
+};
+
 #endif /*RPS_ONLY_ID_CODE*/
 
 

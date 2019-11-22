@@ -61,7 +61,7 @@ DIALECTFLAGS = -std=gnu++17
 OPTIMFLAGS = -O0 -g
 WARNFLAGS = -Wall -Wextra
 QTINC = -I. -isystem /usr/include/qt -isystem /usr/include/qt/QtWidgets -isystem /usr/include/qt/QtGui -isystem /usr/include/qt/QtCore -fPIC
-QTLIBS=-lQt5Core -lQt5Gui
+QTLIBS = /usr/lib/libQt5Widgets.so /usr/lib/libQt5Gui.so /usr/lib/libQt5Core.so /usr/lib/libGL.so
 CXX= g++
 CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(WARNFLAGS) $(QTINC)
 

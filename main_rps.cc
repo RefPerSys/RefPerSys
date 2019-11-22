@@ -323,7 +323,10 @@ error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
     }
     break;
     case Rps_Key_QtGui:
-#warning Window drawing code needs to be added here
+    {
+        Rps_GuiApplication gui (1, NULL);
+        gui.run();
+    }
     break;
     default:
       return ARGP_ERR_UNKNOWN;
