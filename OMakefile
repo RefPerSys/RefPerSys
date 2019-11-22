@@ -58,15 +58,18 @@ DIALECTFLAGS = -std=gnu++17
 # optimization flags: -O0 or -Og is better for debugging, -O1 or -O2 is
 # better for benchmarking and both can be used with -g for debugging
 # info...
-OPTIMFLAGS = -O0 -g
+CODGENFLAGS = -fPIC
+OPTIMFLAGS = -O0 -g 
 WARNFLAGS = -Wall -Wextra
-QTINC = -I. -isystem /usr/include/qt -isystem /usr/include/qt/QtWidgets -isystem /usr/include/qt/QtGui -isystem /usr/include/qt/QtCore -fPIC
-QTLIBS = /usr/lib/libQt5Widgets.so /usr/lib/libQt5Gui.so /usr/lib/libQt5Core.so /usr/lib/libGL.so
+# list of packages, for pkg-config. See https://www.freedesktop.org/wiki/Software/pkg-config/
+PACKAGES = Qt5Core Qt5Gui Qt5Widgets
+QTINCFLAGS = $(shell pkg-config --cflags $(PACKAGES))
+QTLIBS=  $(shell pkg-config --libs $(PACKAGES))
 CXX= g++
-CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(WARNFLAGS) $(QTINC)
+CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(CODGENFLAGS) $(WARNFLAGS) $(QTINCFLAGS)
 
 # ASFLAGS +=
-LDFLAGS += -L/usr/local/lib -rdynamic $(QTLIBS) -lhjson -lunistring -lbacktrace -lpthread -ldl
+LDFLAGS +=  $(CODGENFLAGS) -L/usr/local/lib -rdynamic $(QTLIBS) -lhjson -lunistring -lbacktrace -lpthread -ldl
 
 INCLUDES += /usr/local/include
 REFPERSYS_BASE_FILES[] =
