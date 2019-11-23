@@ -1,10 +1,9 @@
 /****************************************************************
- * file objects_rps.cc
+ * file qthead_qrps.hh
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
- *
- *      Low-level implementation of objects.
+ *      It is its internal Qt5/C++ declaring Qt classes
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -29,7 +28,7 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+#ifndef QTHEAD_QRPS_INCLUDED
+#define QTHEAD_QRPS_INCLUDED 1
 
-#include "refpersys.hh"
-
-// end of file objects_rps.cc
+#endif /*QTHEAD_QRPS_INCLUDED*/

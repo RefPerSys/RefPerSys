@@ -1,10 +1,10 @@
 /****************************************************************
- * file objects_rps.cc
+ * file appli_qrps.cc
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      Low-level implementation of objects.
+ *      It has the Qt5 code related to the Qt5 application
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -28,8 +28,3 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
-
-#include "refpersys.hh"
-
-// end of file objects_rps.cc
