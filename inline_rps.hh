@@ -39,6 +39,8 @@
 #error wrong direct inclusion of "inline_rps.hh"
 #endif /*REFPERSYS_INCLUDED*/
 
+
+//////////////////////////////////////////////////////////// time functions
 // see http://man7.org/linux/man-pages/man2/clock_gettime.2.html
 static inline double
 rps_monotonic_real_time(void)
@@ -70,6 +72,7 @@ rps_thread_cpu_time(void)
 } // end rps_thread_cpu_time
 
 
+//////////////////////////////////////////////////////////// backtracing
 static inline
 std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph)
 {
@@ -80,6 +83,58 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph)
   out << std::endl;
   return out;
 } // end of << for Rps_Backtrace_Helper
+
+
+//////////////////////////////////////////////////////////// values
+Rps_Value::Rps_Value() : _wptr(nullptr) {};
+
+Rps_Value::Rps_Value(nullptr_t) : _wptr(nullptr) {};
+
+Rps_Value::Rps_Value(Rps_EmptyTag) : _wptr (RPS_EMPTYSLOT) {};
+
+Rps_Value::Rps_Value(intptr_t i, Rps_IntTag) :
+  _ival(((i >> 1) << 1) | 1) {};
+
+Rps_Value::Rps_Value(const Rps_ZoneValue*ptr, Rps_ValPtrTag) :
+  _pval(ptr)
+{
+  RPS_ASSERT(ptr == nullptr || ptr == RPS_EMPTYSLOT
+	     || (((intptr_t)ptr) & (sizeof(void*)-1)) == 0);
+}
+
+bool Rps_Value::is_int() const
+{
+  return (_ival & 1) != 0;
+};
+
+bool Rps_Value::is_ptr() const
+{
+  return !is_int()
+         && _wptr != nullptr
+         && _wptr != RPS_EMPTYSLOT
+         && (((intptr_t)_pval) & (sizeof(void*)-1)) == 0;
+}
+
+const Rps_ZoneValue*
+Rps_Value::as_ptr() const
+{
+  if (is_ptr()) return _pval;
+  else throw std::runtime_error("as_ptr: value is not genuine pointer");
+}
+
+bool
+Rps_Value::operator == (const Rps_Value v) const
+{
+  return v._wptr == _wptr;  // end Rps_Value::operator ==
+}
+
+bool
+Rps_Value::operator != (const Rps_Value v) const
+{
+  return v._wptr != _wptr;  // end Rps_Value::operator !=
+}
+
+
 
 #endif /*INLINE_RPS_INCLUDED*/
 // end of internal header file inline_rps.hh

@@ -260,11 +260,12 @@ static constexpr unsigned rps_allocation_unit = 2*sizeof(void*);
 static_assert ((rps_allocation_unit & (rps_allocation_unit-1)) == 0,
                "rps_allocation_unit is not a power of two");
 
-class Rps_ZoneValue;
-class Rps_ObjectZone;
-class Rps_ObjectRef
+class Rps_QuasiZone; // GC-managed piece of memory
+class Rps_ZoneValue; // memory for values
+class Rps_ObjectZone; // memory for objects
+
+class Rps_ObjectRef // reference to objects, per C++ rule of five.
 {
-  RPS_FRIEND_CLASS(GarbageCollector);
   Rps_ObjectZone*_optr;
 protected:
 public:
@@ -394,6 +395,48 @@ enum class Rps_Type : int16_t
 
 ////////////////////////////////////////////////////////////////
 
+class Rps_Value
+{
+public:
+  struct Rps_IntTag {};
+  struct Rps_ValPtrTag {};
+  struct Rps_EmptyTag {};
+  inline Rps_Value ();
+  inline Rps_Value (nullptr_t);
+  inline Rps_Value (Rps_EmptyTag);
+  inline Rps_Value (intptr_t i, Rps_IntTag);
+  inline Rps_Value (const Rps_ZoneValue*ptr, Rps_ValPtrTag);
+  /// C++ rule of five
+  inline Rps_Value(const Rps_Value& other);
+  inline Rps_Value(Rps_Value&& other);
+  inline Rps_Value& operator = (const Rps_Value& other);
+  inline Rps_Value& operator = (Rps_Value&& other);
+  inline ~Rps_Value();
+  Rps_Value(intptr_t i) : Rps_Value(i, Rps_IntTag{}) {};
+  Rps_Value(const Rps_ZoneValue*ptr) : Rps_Value(ptr, Rps_ValPtrTag{}) {};
+  Rps_Value(const Rps_ZoneValue& zv) : Rps_Value(&zv, Rps_ValPtrTag{}) {};
+  inline bool operator == (const Rps_Value v) const;
+  inline bool operator <= (const Rps_Value v) const;
+  inline bool operator < (const Rps_Value v) const;
+  inline bool operator != (const Rps_Value v) const;
+  inline bool operator >= (const Rps_Value v) const;
+  inline bool operator > (const Rps_Value v) const;
+  inline bool is_int() const;
+  inline bool is_ptr() const;
+  inline bool is_null() const;
+  inline bool is_empty() const;
+  inline intptr_t as_int() const;
+  inline const Rps_ZoneValue* as_ptr() const;
+private:
+  union
+  {
+    intptr_t _ival;
+    const Rps_ZoneValue* _pval;
+    const void* _wptr;
+  };
+} __attribute__((aligned(rps_allocation_unit)));    // end of Rps_Value
+
+////////////////////////////////////////////////////////////////
 
 
 
@@ -510,7 +553,7 @@ public:
 
 
 ////////////////////////////////////////////////////////////////
-//// The objid support is in a separate file. 
+//// The objid support is in a separate file.
 #include "oid_rps.hh"
 ////////////////////////////////////////////////////////////////
 
