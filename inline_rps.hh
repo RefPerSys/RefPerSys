@@ -88,6 +88,8 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph)
 //////////////////////////////////////////////////////////// values
 Rps_Value::Rps_Value() : _wptr(nullptr) {};
 
+Rps_Value::~Rps_Value()  { _wptr = nullptr; };
+
 Rps_Value::Rps_Value(nullptr_t) : _wptr(nullptr) {};
 
 Rps_Value::Rps_Value(Rps_EmptyTag) : _wptr (RPS_EMPTYSLOT) {};
