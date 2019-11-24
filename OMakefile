@@ -83,8 +83,10 @@ INCLUDES += /usr/local/include
 ## the base files of ordinary hand-written C++ source files
 REFPERSYS_BASE_FILES[] =
    main_rps
+   garbcoll_rps
    objects_rps
    primes_rps
+   store_rps
    values_rps
 
 

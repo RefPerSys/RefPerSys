@@ -667,6 +667,10 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph);
 
 extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
 
+extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc
+
+extern "C" void rps_garbage_collect (void);
+
 #include "inline_rps.hh"
 
 #endif /*REFPERSYS_INCLUDED*/
