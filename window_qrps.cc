@@ -32,7 +32,7 @@
 #include "refpersys.hh"
 #include "qthead_qrps.hh"
 
-RpsQWindow::RpsQWindow () : QWindow(nullptr) {
+RpsQWindow::RpsQWindow () : QWindow((QWindow*)nullptr) {
 } // end RpsQWindow::RpsQWindow 
 
 

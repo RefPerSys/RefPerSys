@@ -105,7 +105,7 @@ _qthead_qrps.inc.hh: qthead_qrps.hh
 
 CGeneratedFiles(_qthead_qrps.inc.hh)
 
-CXXProgram(refpersys, $(REFPERSYS_BASE_FILES) _timestamp_rps)
+CXXProgram(refpersys, $(REFPERSYS_BASE_FILES) $(REFPERSYS_QTBASE_FILES) _timestamp_rps)
 
 
 

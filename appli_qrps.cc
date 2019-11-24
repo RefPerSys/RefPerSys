@@ -34,14 +34,20 @@
 #include "qthead_qrps.hh"
 
 RpsQApplication::RpsQApplication(int &argc, char*argv[])
+  : QApplication(argc, argv)
 {
 } // end of RpsQApplication::RpsQApplication
 
+void
 RpsQApplication::dump_state(QString dirpath)
 {
 } // end of RpsQApplication::dump_state
 
 
+void rps_run_application(int &argc, char**argv) {
+  RPS_INFORM("rps_run_application: start of %s gitid %s host %s pid %d\n",
+	     argv[0], rps_gitid, rps_hostname, (int)getpid());
+} // end of rps_run_application
 
 //////////////// moc generated file
 #include "_qthead_qrps.inc.hh"

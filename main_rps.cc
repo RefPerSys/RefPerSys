@@ -207,6 +207,7 @@ main(int argc, char** argv)
              "... gitid %.16s built %s",
              argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp);
   //// FIXME: should have some real code here
+  rps_run_application(argc, argv);
   RPS_INFORM("end of RefPerSys process %d on host %s\n"
              "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
              (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
