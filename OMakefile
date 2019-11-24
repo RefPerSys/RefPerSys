@@ -100,8 +100,10 @@ REFPERSYS_QTBASE_FILES[] =
 REFPERSYS_QTBASE_HEADERS[] =
    qthead_qrps
 
-%qrps.cc: %qrps.hh
-	moc $(INCLUDES) $(CXXFLAGS) $(LDFLAGS) $< - $@
+_qthead_qrps.inc.hh: qthead_qrps.hh
+	$(QT5MOC) $(PREFIXED_INCLUDES) $(PKGINCFLAGS) -DRPS_GITID=\"$(RPSGITID)\"   $< -o $@
+
+CGeneratedFiles(_qthead_qrps.inc.hh)
 
 CXXProgram(refpersys, $(REFPERSYS_BASE_FILES) _timestamp_rps)
 

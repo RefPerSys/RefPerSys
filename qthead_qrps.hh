@@ -31,4 +31,34 @@
 #ifndef QTHEAD_QRPS_INCLUDED
 #define QTHEAD_QRPS_INCLUDED 1
 
+// ensure that "refpersys.hh" has been included before
+#ifndef REFPERSYS_INCLUDED
+#error the refpersys.hh header should be included before this one
+#endif /*REFPERSYS_INCLUDED*/
+
+class RpsQApplication;
+class RpsQWindow;
+
+#include <QApplication>
+#include <QWindow>
+
+//////////////////////////////////////////////////////////// RpsQApplication
+//// our application class
+class RpsQApplication : public QApplication {
+  Q_OBJECT
+public:
+  RpsQApplication (int &argc, char*argv[]); // constructor
+public slots:
+  void dump_state(QString dirpath=".");
+};				// end of class RpsQApplication
+
+//////////////////////////////////////////////////////////// RpsQWindow
+//// our top window class
+class RpsQWindow : public QWindow {
+  Q_OBJECT
+public:
+  RpsQWindow ();
+signals:
+};				// end of RpsQWindow
+
 #endif /*QTHEAD_QRPS_INCLUDED*/

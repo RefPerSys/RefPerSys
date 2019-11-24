@@ -28,3 +28,9 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
+
+
+#include "refpersys.hh"
+#include "qthead_qrps.hh"
+
+//////////////////////////////////////// end of file appli_qrps.cc
