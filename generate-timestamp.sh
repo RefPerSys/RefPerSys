@@ -22,8 +22,12 @@ fi
 git archive -o /tmp/refpersys-$$.tar.gz HEAD 
 trap "/bin/rm /tmp/refpersys-$$.tar.gz" EXIT INT 
 
-(echo -n 'const char rps_md5sum[]="' ; cat $(tar tf /tmp/refpersys-$$.tar.gz) | md5sum | tr -d '\n -'  ;  echo '";')
+cp -va /tmp/refpersys-$$.tar.gz $HOME/tmp/refpersys.tar.gz >& /dev/stderr
 
-(echo -n 'const char*const rps_files[]= {' ; tar tf /tmp/refpersys-$$.tar.gz | tr -s " \n"  | sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
+(echo -n 'const char rps_md5sum[]="' ; cat $(tar tf /tmp/refpersys-$$.tar.gz | grep -v '/$') | md5sum | tr -d '\n -'  ;  echo '";')
+
+(echo -n 'const char*const rps_files[]= {' ; tar tf /tmp/refpersys-$$.tar.gz | grep -v '/$' | tr -s " \n"  | sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
 
 printf "const char rps_makefile[]=\"%s\";\n"   $(realpath Makefile)
+printf "const char rps_omakefile[]=\"%s\";\n"   $(realpath OMakefile)
+printf "const char rps_omakeroot[]=\"%s\";\n"   $(realpath OMakeroot)
