@@ -10,9 +10,10 @@
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
+ *      Nimesh Neema <nimeshneema@gmail.com>
  *
  *      © Copyright 2019 The Reflective Persistent System Team
- *      <https://refpersys.gitlab.io>
+ *      team@refpersys.org & http://refpersys.org/
  *
  * License:
  *    This program is free software: you can redistribute it and/or modify
@@ -160,179 +161,14 @@ void print_types_info(void)
   EXPLAIN_TYPE(double);
   EXPLAIN_TYPE(char);
   EXPLAIN_TYPE(bool);
-  EXPLAIN_TYPE(Rps_HashInt);
-  EXPLAIN_TYPE(intptr_t);
   EXPLAIN_TYPE(Rps_Id);
   EXPLAIN_TYPE(Rps_Type);
-  EXPLAIN_TYPE(Rps_ObjectRef);
-  EXPLAIN_TYPE(Rps_ZoneValue);
-  EXPLAIN_TYPE(Rps_MarkSweepZoneValue);
-  EXPLAIN_TYPE(Rps_CopyingSizedZoneValue);
-  EXPLAIN_TYPE(Rps_Value);
-  EXPLAIN_TYPE(Rps_ObjectZone);
-  EXPLAIN_TYPE(Rps_QuasiAttributeArray);
-  EXPLAIN_TYPE(Rps_TupleObrefZone);
-  EXPLAIN_TYPE(Rps_SetObrefZone);
-  EXPLAIN_TYPE(Rps_DoubleZone);
-  EXPLAIN_TYPE(Rps_StringZone);
-  EXPLAIN_TYPE(Rps_PaylSetObjrefZone);
-  ///
-  EXPLAIN_TYPE(Rps_QuasiAttributeArray);
-  EXPLAIN_TYPE(Rps_QuasiComponentVector);
-  EXPLAIN_TYPE(Rps_QuasiToken);
-  ///
-  EXPLAIN_TYPE(Rps_MemoryBlock);
-  EXPLAIN_TYPE(Rps_BirthMemoryBlock);
-  EXPLAIN_TYPE(Rps_LargeNewMemoryBlock);
-  EXPLAIN_TYPE(Rps_MarkedMemoryBlock);
-  ///
-  EXPLAIN_TYPE(std::set<intptr_t>);
-  EXPLAIN_TYPE(std::set<std::string>);
-  EXPLAIN_TYPE2(std::map<intptr_t,void*>);
-  EXPLAIN_TYPE2(std::map<std::string,void*>);
-  EXPLAIN_TYPE2(std::unordered_map<intptr_t,void*>);
-  EXPLAIN_TYPE2(std::variant<std::string,void*>);
-  EXPLAIN_TYPE(std::vector<intptr_t>);
-  EXPLAIN_TYPE(std::atomic<intptr_t>);
-  EXPLAIN_TYPE(std::string);
-  EXPLAIN_TYPE(std::mutex);
 #undef EXPLAIN_TYPE
   putchar('\n');
   fflush(nullptr);
 } // end print_types_info
 
 
-
-
-error_t rps_argopt_parse(int key, char*arg, struct argp_state*state)
-{
-  (void) arg;
-  (void) state;
-  switch (key)
-    {
-    case Rps_Key_Version:
-    {
-      printf("RefPerSys version information::\n");
-      printf(" timestamp:     %s (%lu)\n", timestamp_rps, timenum_rps);
-      printf(" gitid:         %s\n", gitid_rps);
-      printf(" md5sum of C++: %s\n", md5sum_rps);
-      printf(" build cwd:     %s\n", cwd_rps);
-      printf(" build host:    %s\n", buildhost_rps);
-      printf(" C++ compiler:  %s\n", cxxcompiler_rps);
-      printf(" C++ sources:   %s\n", sourcefiles_rps);
-      printf(" C++ headers:   %s\n", headerfiles_rps);
-      putchar('\n');
-    }
-    break;
-    case Rps_Key_PrintRandomId:
-    {
-      int count = 1;
-      const char*countstr = arg;
-      if (countstr && countstr[0])
-        count = std::stoi(countstr);
-      if (count > 1)
-        printf("printing %d random id\n", count);
-      for (int ix=0; ix<count; ix++)
-        {
-          auto rdid = Rps_Id::random();
-          char cbuf[24];
-          memset (cbuf,0,sizeof(cbuf));
-          rdid.to_cbuf24(cbuf);
-          printf("random object id#%d: %s (hi=%#llx,lo=%#llx) h=%u\n",
-                 ix,
-                 cbuf,
-                 (unsigned long long)rdid.hi(), (unsigned long long)rdid.lo(),
-                 (unsigned)rdid.hash());
-        }
-    }
-    break;
-    case Rps_Key_Deterministic:
-    {
-      long num = 0;
-      const char*numstr = arg;
-      if (numstr && numstr[0])
-        num = std::stoi(numstr);
-      printf("deterministic pseudo-random number generator seed is %ld\n", num);
-      Rps_Random::start_deterministic(num);
-    }
-    break;
-    case Rps_Key_PrimeAbove:
-    {
-      long num = 0;
-      const char*numstr = arg;
-      if (numstr && numstr[0])
-        num = std::stoi(numstr);
-      long pr = rps_prime_above(num);
-      printf("A prime above %ld is %ld\n", num, pr);
-    }
-    break;
-    case Rps_Key_PrimeBelow:
-    {
-      long num = 0;
-      const char*numstr = arg;
-      if (numstr && numstr[0])
-        num = std::stoi(numstr);
-      long pr = rps_prime_below(num);
-      printf("A prime below %ld is %ld\n", num, pr);
-    }
-    break;
-    case Rps_Key_ObjectTinyBenchmark1:
-    {
-      unsigned num = 0;
-      constexpr unsigned minbench = 1000;
-      const char*numstr = arg;
-      if (numstr && numstr[0])
-        num = std::stoi(numstr);
-      if (num<minbench)
-        num = minbench;
-      RPS_INFORM("should do Rps_ObjectRef::tinybenchmark1 with count %u.\n", num);
-      fflush(nullptr);
-      rps_main_todo_vect.push_back([=]
-      {
-        RPS_INFORMOUT("running Rps_ObjectRef::tinybenchmark1 with count " << num
-                      << RPS_BACKTRACE_HERE(1,"todo tinybenchmark1"));
-        Rps_ObjectRef::tiny_benchmark_1(nullptr, num);
-        RPS_INFORM("done Rps_ObjectRef::tinybenchmark1 with count=%u monotonic %.3f, process %.3f sec.",
-                   num, rps_monotonic_real_time(), rps_process_cpu_time());
-      });
-    }
-    break;
-    case Rps_Key_ExplainTypes:
-      print_types_info();
-      break;
-    case Rps_Key_ParseId:
-    {
-      const char*idstr = arg;
-      const char*end = nullptr;
-      bool ok = false;
-      RPS_ASSERT (idstr != nullptr);
-      Rps_Id pid (idstr, &end, &ok);
-      if (ok)
-        {
-          char cbuf[24];
-          memset (cbuf,0,sizeof(cbuf));
-          pid.to_cbuf24(cbuf);
-          printf("parsed '%s' as object id %s (hi=%#llx,lo=%#llx) h=%u\n",
-                 idstr, cbuf,
-                 (unsigned long long)pid.hi(), (unsigned long long)pid.lo(),
-                 (unsigned)pid.hash());
-          if (end && *end)
-            printf("trailing '%s' of '%s' is not parsed\n", end, idstr);
-        }
-      else fprintf(stderr, "failed to parse id %s\n", idstr);
-    }
-    break;
-    case Rps_Key_QtGui:
-    {
-        Rps_GuiApplication gui (1, NULL);
-        gui.run();
-    }
-    break;
-    default:
-      return ARGP_ERR_UNKNOWN;
-    }
-  return 0;
-} // end rps_argopt_parse
 
 
 
@@ -369,13 +205,12 @@ main(int argc, char** argv)
   pthread_setname_np(pthread_self(), "rps-main");
   RPS_INFORM("starting RefPerSys %s process %d on host %s\n"
              "... gitid %.16s built %s",
-             argv[0], (int)getpid(), rps_hostname(), gitid_rps, timestamp_rps);
-  Rps_GarbageCollector::initialize();
-  for (auto todo_fun : rps_main_todo_vect)
-    todo_fun();
+             argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp);
+  //// FIXME: should have some real code here
+  rps_run_application(argc, argv);
   RPS_INFORM("end of RefPerSys process %d on host %s\n"
              "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
-             (int)getpid(), rps_hostname(), gitid_rps, timestamp_rps,
+             (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
              rps_elapsed_real_time(), rps_process_cpu_time());
   return 0;
 } // end of main
@@ -787,7 +622,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
   snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
   fprintf(stderr, "FATAL: RefPerSys gitid %s, built timestamp %s,\n"
           "\t on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
-          gitid_rps, timestamp_rps, rps_hostname(), md5sum_rps,
+          rps_gitid, rps_timestamp, rps_hostname(), rps_md5sum,
           rps_elapsed_real_time(), rps_process_cpu_time());
   fflush(stderr);
   Rps_BackTrace::run_full_backtrace(3, errbuf);

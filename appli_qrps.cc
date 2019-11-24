@@ -1,10 +1,10 @@
 /****************************************************************
- * file garbcoll_rps.cc
+ * file appli_qrps.cc
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for the garbage collector.
+ *      It has the Qt5 code related to the Qt5 application
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -29,14 +29,27 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+
 #include "refpersys.hh"
+#include "qthead_qrps.hh"
 
-void rps_garbage_collect (void)
+RpsQApplication::RpsQApplication(int &argc, char*argv[])
+  : QApplication(argc, argv)
 {
-  RPS_FATAL("unimplemented rps_garbage_collect");
-#warning rps_dump_into unimplemented
-} // end of rps_garbage_collect
+} // end of RpsQApplication::RpsQApplication
+
+void
+RpsQApplication::dump_state(QString dirpath)
+{
+} // end of RpsQApplication::dump_state
 
 
-//////////////////////////////////////////////////////////// end of file garbcoll_rps.cc
+void rps_run_application(int &argc, char**argv) {
+  RPS_INFORM("rps_run_application: start of %s gitid %s host %s pid %d\n",
+	     argv[0], rps_gitid, rps_hostname(), (int)getpid());
+} // end of rps_run_application
 
+//////////////// moc generated file
+#include "_qthead_qrps.inc.hh"
+
+//////////////////////////////////////// end of file appli_qrps.cc

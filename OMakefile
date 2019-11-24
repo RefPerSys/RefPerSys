@@ -1,8 +1,8 @@
 ########################################################################
-## file OMakefile
+## file OMakefile - see also OMakeroot
 ##
 ## Description:
-##      This file is part of the Reflective Persistent System.
+##      This file is part of the Reflective Persistent System. refpersys.org
 ##
 ##      It is its OMakefile, for the omake automation builder.
 ##      It is a small adaptation of standard OMakefile-s (MIT licensed)
@@ -10,9 +10,10 @@
 ## Author(s):
 ##      Basile Starynkevitch <basile@starynkevitch.net>
 ##      Abhishek Chakravarti <abhishek@taranjali.org>
+##      Nimesh Neema <nimeshneema@gmail.com>
 ##
 ##      © Copyright 2019 The Reflective Persistent System Team
-##      <https://refpersys.gitlab.io>
+##      team@refpersys.org
 ##
 ## License:
 ##    This program is free software: you can redistribute it and/or modify
@@ -59,34 +60,54 @@ DIALECTFLAGS = -std=gnu++17
 # better for benchmarking and both can be used with -g for debugging
 # info...
 CODGENFLAGS = -fPIC
-OPTIMFLAGS = -O0 -g 
+OPTIMFLAGS = -Og -g3 
 WARNFLAGS = -Wall -Wextra
-# list of packages, for pkg-config. See https://www.freedesktop.org/wiki/Software/pkg-config/
+# See https://www.freedesktop.org/wiki/Software/pkg-config/
+PKGCONFIG = pkg-config
+RPSGITID = $(shell ./generate-gitid.sh)
+QT5MOC = moc
+
+# list of packages, for pkg-config.
+
 PACKAGES = Qt5Core Qt5Gui Qt5Widgets
-QTINCFLAGS = $(shell pkg-config --cflags $(PACKAGES))
-QTLIBS=  $(shell pkg-config --libs $(PACKAGES))
+PKGINCFLAGS = $(shell $(PKGCONFIG) --cflags $(PACKAGES))
+PKGLIBS=  $(shell $(PKGCONFIG) --libs $(PACKAGES))
 CXX= g++
-CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(CODGENFLAGS) $(WARNFLAGS) $(QTINCFLAGS)
+CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(CODGENFLAGS) $(WARNFLAGS) $(PKGINCFLAGS) -DRPS_GITID="$(RPSGITID)"
 
 # ASFLAGS +=
-LDFLAGS +=  $(CODGENFLAGS) -L/usr/local/lib -rdynamic $(QTLIBS) -lhjson -lunistring -lbacktrace -lpthread -ldl
+LDFLAGS +=  $(CODGENFLAGS) -L/usr/local/lib -rdynamic $(PKGLIBS) -lhjson -lunistring -lbacktrace -lpthread -ldl
 
 INCLUDES += /usr/local/include
+
+## the base files of ordinary hand-written C++ source files
 REFPERSYS_BASE_FILES[] =
    main_rps
    garbcoll_rps
    objects_rps
-   perstore_rps
    primes_rps
+   store_rps
    values_rps
-   minitests_rps
 
-%qrps.cc: %qrps.hh
-	moc $(INCLUDES) $(CXXFLAGS) $(LDFLAGS) $< - $@
 
+## the base files of ordinary hand-written C++ header files
 REFPERSYS_BASE_HEADERS[] = refpersys inline_rps
 
-CXXProgram(refpersys, $(REFPERSYS_BASE_FILES) _timestamp_rps)
+## the base files of ordinary hand-written Qt/C++ source files
+REFPERSYS_QTBASE_FILES[] =
+   appli_qrps
+   window_qrps
+
+## the base files of ordinary hand-written Qt/C++ header files with Q_OBJECT
+REFPERSYS_QTBASE_HEADERS[] =
+   qthead_qrps
+
+_qthead_qrps.inc.hh: qthead_qrps.hh
+	$(QT5MOC) $(PREFIXED_INCLUDES) $(PKGINCFLAGS) -DRPS_GITID=\"$(RPSGITID)\"   $< -o $@
+
+CGeneratedFiles(_qthead_qrps.inc.hh)
+
+CXXProgram(refpersys, $(REFPERSYS_BASE_FILES) $(REFPERSYS_QTBASE_FILES) _timestamp_rps)
 
 
 
@@ -110,44 +131,11 @@ clean:
     rm -vf $(CLEAN)
 
 all: refpersys
-	mv -v _timestamp_rps.cc _timestamp_rps.cc~
+	mv -v _timestamp_rps.c _timestamp_rps.c~
 	sync
 
-_timestamp_rps.cc: $(addsuffixes .cc, $(REFPERSYS_BASE_FILES)) $(addsuffixes .hh, $(REFPERSYS_BASE_HEADERS))
-	echo caret= $^ at= $@
-	echo '// generated file ' $@ ' - DONT EDIT' > $@.tmp
-	echo 'extern "C" const char timestamp_rps[];' >> $@.tmp
-	echo 'extern "C" unsigned long timenum_rps;' >> $@.tmp
-	echo 'extern "C" const char gitid_rps[];' >> $@.tmp
-	echo 'extern "C" const char md5sum_rps[];' >> $@.tmp
-	echo 'extern "C" const char cwd_rps[];' >> $@.tmp
-#	echo 'extern "C" const char lastgitcommit_rps[];' >> $@.tmp
-	echo 'extern "C" const char cxxcompiler_rps[];' >> $@.tmp
-	echo 'extern "C" const char buildhost_rps[];' >> $@.tmp
-	echo 'extern "C" const char sourcefiles_rps[];' >> $@.tmp
-	echo 'extern "C" const char headerfiles_rps[];' >> $@.tmp
-	date +'const char timestamp_rps[] = "%c"; unsigned long timenum_rps=%s;' >> $@.tmp
-	(/bin/echo -n 'const char gitid_rps[]="'; \
-	 git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n'; \
-	 echo '";')  >> $@.tmp
-	(/bin/echo -n 'const char md5sum_rps[]="'; \
-	 cat $+ | md5sum | cut '-d '  -f1 | tr -d '\n'; \
-	/bin/echo '";')  >> $@.tmp
-	(/bin/echo -n 'const char cwd_rps[]="'; pwd | tr -d '\n'; echo '";')  >> $@.tmp
-	(/bin/echo -n 'const char cxxcompiler_rps[]="' ; \
-	 $(CXX) --version | head -1 | tr -d '\n'; \
-	 /bin/echo '";') >> $@.tmp
-#	(/bin/echo -n 'const char lastgitcommit_rps[]="' ; \
-#	 git log --format=oneline --abbrev=12 --abbrev-commit -q  \
-#	     | head -1 | tr -d '\n\\\\' ; \
-#	 /bin/echo '";') >> $@.tmp
-	(/bin/echo -n 'const char buildhost_rps[]="' ; \
-	 hostname -f  | tr -d '\n'; \
-	/bin/echo '";')  >> $@.tmp
-	(/bin/echo -n 'const char sourcefiles_rps[]="' ; \
-	 echo $(addsuffixes .cc, $(REFPERSYS_BASE_FILES))  | tr -d '\n'; \
-	/bin/echo '";')  >> $@.tmp
-	(/bin/echo -n 'const char headerfiles_rps[]="' ; \
-	 echo $(addsuffixes .hh, $(REFPERSYS_BASE_HEADERS))  | tr -d '\n'; \
-	/bin/echo '";')  >> $@.tmp
-	mv  $@.tmp $@
+_timestamp_rps.c: $(addsuffixes .cc, $(REFPERSYS_BASE_FILES) $(REFPERSYS_QTBASE_FILES)) $(addsuffixes .hh, $(REFPERSYS_BASE_HEADERS)$(REFPERSYS_QTBASE_HEADERS)) generate-timestamp.sh
+   ./generate-timestamp.sh $@ > $@.tmp
+   mv  $@.tmp $@
+
+# end of file OMakefile

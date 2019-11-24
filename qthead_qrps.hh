@@ -1,10 +1,9 @@
 /****************************************************************
- * file garbcoll_rps.cc
+ * file qthead_qrps.hh
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
- *
- *      It has the code for the garbage collector.
+ *      It is its internal Qt5/C++ declaring Qt classes
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -29,14 +28,37 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-#include "refpersys.hh"
+#ifndef QTHEAD_QRPS_INCLUDED
+#define QTHEAD_QRPS_INCLUDED 1
 
-void rps_garbage_collect (void)
-{
-  RPS_FATAL("unimplemented rps_garbage_collect");
-#warning rps_dump_into unimplemented
-} // end of rps_garbage_collect
+// ensure that "refpersys.hh" has been included before
+#ifndef REFPERSYS_INCLUDED
+#error the refpersys.hh header should be included before this one
+#endif /*REFPERSYS_INCLUDED*/
 
+class RpsQApplication;
+class RpsQWindow;
 
-//////////////////////////////////////////////////////////// end of file garbcoll_rps.cc
+#include <QApplication>
+#include <QWindow>
 
+//////////////////////////////////////////////////////////// RpsQApplication
+//// our application class
+class RpsQApplication : public QApplication {
+  Q_OBJECT
+public:
+  RpsQApplication (int &argc, char*argv[]); // constructor
+public slots:
+  void dump_state(QString dirpath=".");
+};				// end of class RpsQApplication
+
+//////////////////////////////////////////////////////////// RpsQWindow
+//// our top window class
+class RpsQWindow : public QWindow {
+  Q_OBJECT
+public:
+  RpsQWindow ();
+signals:
+};				// end of RpsQWindow
+
+#endif /*QTHEAD_QRPS_INCLUDED*/

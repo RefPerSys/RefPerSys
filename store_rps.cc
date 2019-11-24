@@ -1,10 +1,10 @@
 /****************************************************************
- * file garbcoll_rps.cc
+ * file store_rps.cc
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for the garbage collector.
+ *      It has the code for the persistent store.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -31,12 +31,13 @@
 
 #include "refpersys.hh"
 
-void rps_garbage_collect (void)
+
+void rps_dump_into (const std::string dirpath)
 {
-  RPS_FATAL("unimplemented rps_garbage_collect");
+  RPS_FATAL("unimplemented rps_dump_into '%s'", dirpath.c_str());
 #warning rps_dump_into unimplemented
-} // end of rps_garbage_collect
+} // end of rps_dump_into
 
 
-//////////////////////////////////////////////////////////// end of file garbcoll_rps.cc
-
+//////////////////////////////////////////////////////////// end of file store_rps.cc
+  

@@ -28,9 +28,7 @@
 ##    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##***************************************************************************
 
-OMAKE= omake
 .PHONY: all clean indent archive directclean test1 test1_det_a vgtest1_det_a test1_det_b vgtest1_det_b
-# if you don't have omake, use "make refpersys" and "make directclean"
 
 # if you don't have ccache, run without it using make CCACHE=
 CCACHE= ccache
@@ -42,16 +40,21 @@ VALGRINDFLAGS= -v --leak-check=full
 # REFPERSYS_WRAPPER could be set to valgrind for tests
 REFPERSYS_WRAPPER=
 
+
+PKGCONFIG= pkg-config
+PACKAGES= 
 ################
 ### keep carefully these variables in sync with those in OMakefile
 DIALECTFLAGS = -std=gnu++17
 OPTIMFLAGS = -O1 -g
 WARNFLAGS = -Wall -Wextra
-CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(WARNFLAGS)
 
-LDFLAGS += -L/usr/local/lib  -rdynamic -lunistring -lpthread
 
-INCLUDES += /usr/local/include
+CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(WARNFLAGS) $(INCLUDEFLAGS) \
+   $(shell $(PKGCONFIG) --cflags $(PACKAGES))
+
+LDFLAGS += -L/usr/local/lib  $(shell $(PKGCONFIG) --libs $(PACKAGES)) 
+
 REFPERSYS_BASE_FILES =				\
    main_rps					\
    objects_rps					\
@@ -59,17 +62,21 @@ REFPERSYS_BASE_FILES =				\
    perstore_rps					\
    primes_rps					\
    values_rps					\
-   minitests_rps
+   minitests_rps                                \
+   gui_qrps
 
 REFPERSYS_BASE_HEADERS = refpersys inline_rps
-### end of variables to be kept in sync with those in OMakefile
+
+OBJECTS= $(patsubst
 ################
 
-all:
-	$(OMAKE) all
+all: refpersys
 
 clean:
-	$(OMAKE) clean
+	$(RM) *.o refpersys
+
+refpersys: __timestamp.o $(patsubst %,%.o,$(REFPERSYS_BASE_FILES))
+	$(LINK.cc) $^ -o $@
 
 indent: # should have an omake target like that doing
 	for f in [a-z]*.cc [a-z]*.hh ; do \
@@ -101,6 +108,8 @@ refpersys: $(patsubst %,%.o,$(REFPERSYS_BASE_FILES) _timestamp_rps)
 
 %_rps.o: %_rps.cc $(patsubst %,%.hh,$(REFPERSYS_BASE_HEADERS))
 	$(COMPILE.cc)  -o $@ $<
+_%_qrps.moc.hh: %_qrps.hh
+	$(QT5MOC) -o $@ $<
 
 directclean:
 	$(RM) *.o *~ *% *.orig refpersys core

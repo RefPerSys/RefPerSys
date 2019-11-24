@@ -1,10 +1,10 @@
 /****************************************************************
- * file garbcoll_rps.cc
+ * file gui_qrps.cc
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for the garbage collector.
+ *      It has the Qt5 Graphical User Interface Q_OBJECT code
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -12,7 +12,7 @@
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
  *      © Copyright 2019 The Reflective Persistent System Team
- *      team@refpersys.org & http://refpersys.org/
+ *      team@refpersys.org
  *
  * License:
  *    This program is free software: you can redistribute it and/or modify
@@ -28,15 +28,39 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
+#ifndef REFPERSYS_INCLUDED
+#error header refpersys.hh should be included before this one
+#endif /*REFPERSYS_INCLUDED*/
 
-#include "refpersys.hh"
+#ifndef QTGUIQRPS_INCLUDED
+#define QTGUIQRPS_INCLUDED 1
 
-void rps_garbage_collect (void)
-{
-  RPS_FATAL("unimplemented rps_garbage_collect");
-#warning rps_dump_into unimplemented
-} // end of rps_garbage_collect
+#include <QApplication>
+#include <QWidget>
+#include <QtWidgets>
 
 
-//////////////////////////////////////////////////////////// end of file garbcoll_rps.cc
+/// think of future Qt6 compatibility
 
+class RpsWindow;
+class RpsApplication : public QApplication {
+  Q_OBJECT
+public:
+  // the vector of windows
+  std::vector<std::unique_ptr<RpsWindow>> app_winvec;
+  RpsApplication(int &argc, char **argv);
+  virtual ~RpsApplication();
+};				// end RpsApplication
+
+
+class RpsWindow : public QWindow {
+  Q_OBJECT
+  QVBoxLayout topvbox;
+public:
+  RpsWindow();
+  virtual ~RpsWindow();
+};				// end RpsWindow
+
+
+#endif /*QTGUIQRPS_INCLUDED*/
+/************* end  of file qtgui_qrps.hh ************/
