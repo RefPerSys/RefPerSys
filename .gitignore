@@ -76,3 +76,5 @@ core
 *.swp
 *.swo
 
+# Qt5 moc generated file
+_*.inc.hh

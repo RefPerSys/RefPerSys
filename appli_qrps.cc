@@ -33,4 +33,17 @@
 #include "refpersys.hh"
 #include "qthead_qrps.hh"
 
+RpsQApplication::RpsQApplication(int &argc, char*argv[])
+{
+} // end of RpsQApplication::RpsQApplication
+
+RpsQApplication::dump_state(QString dirpath)
+{
+} // end of RpsQApplication::dump_state
+
+
+
+//////////////// moc generated file
+#include "_qthead_qrps.inc.hh"
+
 //////////////////////////////////////// end of file appli_qrps.cc
