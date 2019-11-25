@@ -4,6 +4,8 @@ refpersys-design.bbl
 refpersys-design.bcf
 refpersys-design.blg
 refpersys-design.log
+refpersys-design.idx
+refpersys-design.ind
 refpersys-design.pdf
 refpersys-design.run.xml
 refpersys-design.toc
@@ -15,3 +17,7 @@ spiral-stairs.eps
 spiral-stairs.pdf
 heap-refpersys.eps
 heap-refpersys.pdf
+dot-classhier.eps
+dot-classhier.svg
+dot-classhier.pdf
+

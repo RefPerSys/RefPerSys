@@ -1863,18 +1863,20 @@ its version \texttt{1.3}.  We need \href{http://qt.io}{\textsc{Qt5}},
       \texttt{unistring}} (for UTF-8 processing) and maybe
     \href{https://www.antlr.org/}{ANTLR4} (as a parser generator).
 
-\subsection{\RefPerSys workflow}
+\subsection{{\RefPerSys} workflow}
 \label{subsec:workflow}
 
 As long as we are very few and part-time on that {\RefPerSys} project,
 we essentially use \href{https://git-scm.com/}{\texttt{git}} as an
-improved centralized version control system à la
+improved \textit{centralized} version control system à la
 \href{https://subversion.apache.org/}{\texttt{svn}} (so the
-distributed nature of \texttt{git} is irrelevant for us in 2019).  By
-social convention: we \texttt{git commit} often (e.g. every hour or
-two of work). Before that, we \texttt{omake indent} and we ensure that
-the code is buildable with \texttt{omake clean} followed by
-\texttt{omake --project} before any \texttt{git commit}
+\textit{distributed} nature of \texttt{git} is irrelevant for us in
+2019. Itc could become important when the {\RefPerSys} matures and
+generates a lot of files).  By social convention: we \texttt{git
+  commit} often (e.g. every hour or two of work). Before that, we
+\texttt{omake indent} and we ensure that the code is buildable with
+\texttt{omake clean} followed by \texttt{omake --project} before any
+\texttt{git commit}
 
 Our \texttt{git commit} messages given by \texttt{git log} are
 starting with a short sentence in English (ASCII characters only).  If

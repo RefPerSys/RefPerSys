@@ -1,0 +1,60 @@
+// file refpersys/design-ideas/dot-classhier.dot
+// the RefPerSys class hierarchy
+
+digraph class_hierarchy_gr {
+// XXXX -> YYYY : means XXXX is instance of YYYY
+
+/// nodes
+object_class [ style="rounded, filled",
+   label = <object<br/><i>class</i>>, fillcolor="pink"  ];
+
+class_class [ style="rounded, filled",
+   label = <class<br/><i>metaclass</i>>, fillcolor="pink"  ];
+
+value_class [ style="rounded, filled",
+   label = <value<br/><i>class</i>>, fillcolor="pink"  ];
+
+codechunk_class [ style="rounded, filled",
+   label = <code chunk<br/><i>class</i>>, fillcolor="pink"  ];
+
+contributor_class [ style="rounded, filled",
+   label = <contributor<br/><i>class</i>>, fillcolor="pink"  ];
+
+string_class  [ style="rounded, filled",
+   label = <string<br/><i>class</i>>, fillcolor="pink"  ];
+   
+set_class  [ style="rounded, filled",
+   label = <set<br/><i>class</i>>, fillcolor="pink"  ];
+
+hello_string [ style="diagonals, filled",
+   label = <"hello"<br/><i>string</i>>, fillcolor="azure"  ];
+
+ifil_set  [ style="diagonals, filled",
+   label = <{$i, $fil} <br/><i>set</i>>, fillcolor="azure"  ];
+   
+code_chunk [ style="rounded, filled",
+   label = <some<br/><i>code-chunk</i>>, fillcolor="pink"  ];
+
+basile_contrib [ style="rounded, filled",
+   label = <basile<br/><i>contributor</i>>, fillcolor="pink"  ];
+
+/// X is-instance Y arrows
+object_class -> class_class [ color=black, width=2 ];
+class_class -> object_class [ color=black, width=2 ];
+value_class -> class_class [ color=black, width=2 ];
+string_class -> class_class [ color=black, width=2 ];
+hello_string -> string_class [ color=black, width=2 ];
+code_chunk -> codechunk_class [ color=black, width=2 ];
+basile_contrib -> contributor_class [ color=black, width=2 ];
+codechunk_class -> class_class [ color=black, width=2 ];
+contributor_class -> class_class [ color=black, width=2 ];
+ifil_set -> set_class [ color=black, width=2 ];
+
+/// C1 subclass of C2 arrows
+string_class -> value_class  [ color=blue, style=dashed, width=3 ];
+set_class -> value_class  [ color=blue, style=dashed, width=3 ];
+object_class  -> value_class  [ color=blue, style=dashed, width=3 ];
+codechunk_class -> object_class  [ color=blue, style=dashed, width=3 ];
+contributor_class -> object_class  [ color=blue, style=dashed, width=3 ];
+class_class -> object_class  [ color=blue, style=dashed, width=3 ];
+}
