@@ -252,8 +252,14 @@ static_assert(RPS_SMALL_BLOCK_SIZE & (~ (RPS_SMALL_BLOCK_SIZE-1)),
 // it).
 extern "C" int64_t rps_prime_above (int64_t n);
 extern "C" int64_t rps_prime_below (int64_t n);
-
-
+// safely give a prime of given rank from the table
+extern "C" int64_t rps_prime_ranked (int rk);
+// give some prime greater or equal to a given integer, and set the
+// rank if non-null pointer
+extern "C" int64_t rps_prime_greaterequal_ranked (int64_t n, int*prank);
+// give some prime less or equal to a given integer, and set the
+// rank if non-null pointer
+extern "C" int64_t rps_prime_lessequal_ranked (int64_t n, int*prank);
 
 
 static constexpr unsigned rps_allocation_unit = 2*sizeof(void*);
@@ -705,9 +711,25 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph);
 #define RPS_BACKTRACE_HERE(Skip,Name) \
   Rps_BackTrace_Helper(__FILE__,__LINE__,(Skip),(Name))
 
+//////////////////////////////////////////////////////////// quasi zones
+class Rps_QuasiZone
+{
+  Rps_Type _type;
+  volatile std::atomic_uint16_t _gcinfo;
+  // we keep each quasi-zone in the _zonvec
+  static std::mutex _mtx;
+  static std::vector<Rps_QuasiZone*> _zonvec;
+  uint32_t _rank;		// the rank in _zonvec;
+protected:
+  void* operator new (std::size_t siz);
+  void* operator new (std::size_t siz, unsigned gap);
+  Rps_QuasiZone(Rps_Type typ);
+  virtual ~Rps_QuasiZone() =0;
+  virtual uint32_t wordsize() const =0;
+};				// end class Rps_QuasiZone;
+
+
 ////////////////////////////////////////////////////////////////
-
-
 extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
 
 extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc

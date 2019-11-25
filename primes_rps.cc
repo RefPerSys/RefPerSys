@@ -122,6 +122,16 @@ static const int64_t rps_primes_tab[] =
 /// end, read 85041558143 primes, printed 265 primes, so 0.00000% cpu 13439.95 s
 };
 
+int64_t
+rps_prime_ranked (int rk)
+{
+  constexpr unsigned numprimes = sizeof (rps_primes_tab) / sizeof (rps_primes_tab[0]);
+  if (rk < 0)
+    return 0;
+  if (rk < (int)numprimes)
+    return rps_primes_tab[rk];
+  return 0;
+} // end of rps_prime_ranked
 
 int64_t
 rps_prime_above (int64_t n)
@@ -151,6 +161,39 @@ rps_prime_above (int64_t n)
 }
 
 int64_t
+rps_prime_greaterequal_ranked (int64_t n, int*prank)
+{
+  constexpr unsigned numprimes = sizeof (rps_primes_tab) / sizeof (rps_primes_tab[0]);
+  if (prank) *prank = -1;
+  int lo = 0, hi = numprimes;
+  if (n >= rps_primes_tab[numprimes - 1])
+    return 0;
+  if (n < 2)
+    return 2;
+  while (lo + 8 < hi)
+    {
+      int md = (lo + hi) / 2;
+      if (rps_primes_tab[md] > n)
+        hi = md;
+      else
+        lo = md;
+    };
+  if (hi < (int) numprimes - 1)
+    hi++;
+  if (hi < (int) numprimes - 1)
+    hi++;
+  for (int ix = lo; ix < hi; ix++)
+    if (rps_primes_tab[ix] >= n)
+      {
+        if (prank) *prank =  ix;
+        return rps_primes_tab[ix];
+      }
+  return 0;
+} // end of rps_prime_greaterequal_ranked
+
+
+
+int64_t
 rps_prime_below (int64_t n)
 {
   constexpr unsigned numprimes = sizeof (rps_primes_tab) / sizeof (rps_primes_tab[0]);
@@ -175,6 +218,38 @@ rps_prime_below (int64_t n)
     if (rps_primes_tab[ix] < n)
       return rps_primes_tab[ix];
   return 0;
-}
+} // end rps_prime_below
+
+
+int64_t
+rps_prime_lessequal_ranked (int64_t n, int*prank)
+{
+  constexpr unsigned numprimes = sizeof (rps_primes_tab) / sizeof (rps_primes_tab[0]);
+  if (prank) *prank = -1;
+  int lo = 0, hi = numprimes;
+  if (n >= rps_primes_tab[numprimes - 1])
+    return 0;
+  if (n < 2)
+    return 2;
+  while (lo + 8 < hi)
+    {
+      int md = (lo + hi) / 2;
+      if (rps_primes_tab[md] > n)
+        hi = md;
+      else
+        lo = md;
+    };
+  if (hi < (int) numprimes - 1)
+    hi++;
+  if (hi < (int) numprimes - 1)
+    hi++;
+  for (int ix = hi; ix >= 0; ix--)
+    if (rps_primes_tab[ix] <= n)
+      {
+        if (prank) *prank = ix;
+        return rps_primes_tab[ix];
+      }
+  return 0;
+} // end rps_prime_lessequal_ranked
 
 // eof primes_rps.cc
