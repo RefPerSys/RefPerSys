@@ -46,6 +46,7 @@
 
 #include <set>
 #include <map>
+#include <deque>
 #include <variant>
 #include <unordered_map>
 #include <new>
@@ -712,20 +713,40 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph);
   Rps_BackTrace_Helper(__FILE__,__LINE__,(Skip),(Name))
 
 //////////////////////////////////////////////////////////// quasi zones
+
+class Rps_GarbageCollector {
+  const std::function<void(void)> &_gc_rootmarkers;
+  std::deque<Rps_ObjectRef> _gc_obscanque;
+private:
+  inline Rps_GarbageCollector(const std::function<void(void)> &rootmarkers);
+  inline ~Rps_GarbageCollector();
+  void run_gc(void);
+};				// end class Rps_GarbageCollector
+
 class Rps_QuasiZone
 {
-  Rps_Type _type;
+  friend class Rps_GarbageCollector;
+  const Rps_Type _type;
   volatile std::atomic_uint16_t _gcinfo;
   // we keep each quasi-zone in the _zonvec
   static std::mutex _mtx;
   static std::vector<Rps_QuasiZone*> _zonvec;
   uint32_t _rank;		// the rank in _zonvec;
+  inline void* operator new (std::size_t siz, std::nullptr_t);
+  inline void* operator new (std::size_t siz, unsigned wordgap);
 protected:
-  void* operator new (std::size_t siz);
-  void* operator new (std::size_t siz, unsigned gap);
-  Rps_QuasiZone(Rps_Type typ);
+  template <typename ZoneClass, class ...Args> static ZoneClass*
+  rps_allocate(Args... args) {
+    return new(nullptr) ZoneClass(args...);
+  };
+  template <typename ZoneClass, class ...Args> static ZoneClass*
+  rps_allocate_with_wordgap(unsigned wordgap, Args... args) {
+    return new(wordgap) ZoneClass(args...);
+  };
+  inline Rps_QuasiZone(Rps_Type typ);
   virtual ~Rps_QuasiZone() =0;
   virtual uint32_t wordsize() const =0;
+  virtual Rps_Type type() const { return _type; };
 };				// end class Rps_QuasiZone;
 
 

@@ -137,6 +137,17 @@ Rps_Value::operator != (const Rps_Value v) const
 }
 
 
+inline void*
+Rps_QuasiZone::operator new (std::size_t siz, std::nullptr_t)
+{ return ::operator new (siz);
+} // end plain Rps_QuasiZone::operator new 
+
+
+inline void*
+Rps_QuasiZone::operator new (std::size_t siz, unsigned wordgap)
+{ return ::operator new (siz + wordgap * sizeof(void*));
+} // end wordgapped Rps_QuasiZone::operator new
+
 
 #endif /*INLINE_RPS_INCLUDED*/
 // end of internal header file inline_rps.hh
