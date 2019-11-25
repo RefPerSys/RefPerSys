@@ -127,26 +127,119 @@ Rps_Value::as_ptr() const
 bool
 Rps_Value::operator == (const Rps_Value v) const
 {
-  return v._wptr == _wptr;  // end Rps_Value::operator ==
-}
+  if  (v._wptr == _wptr) return true;
+  if (is_empty() || is_null()) return v.is_empty() || v.is_null();
+  if (is_int()) return false;
+  return (*as_ptr()) == (*v.as_ptr());
+}   // end Rps_Value::operator ==
 
 bool
 Rps_Value::operator != (const Rps_Value v) const
 {
-  return v._wptr != _wptr;  // end Rps_Value::operator !=
+  return !(*this == v);  // end Rps_Value::operator !=
 }
 
+bool
+Rps_Value::operator <= (const Rps_Value v) const
+{
+  if  (v._wptr == _wptr)
+    return true;
+  if (is_empty() || is_null())
+    return true;
+  if (v.is_empty() || v.is_null())
+    return false;
+  if (is_int())
+    return (v.is_int() && (as_int() <= v.as_int() || v.is_ptr()));
+  if (is_ptr() && v.is_ptr())
+    return (*as_ptr()) <= (*v.as_ptr());
+  return false;
+}   // end Rps_Value::operator <=
 
+bool
+Rps_Value::operator < (const Rps_Value v) const
+{
+  if  (v._wptr == _wptr)
+    return false;
+  if (is_empty() || is_null())
+    return !(v.is_empty() || v.is_null());
+  if (v.is_empty() || v.is_null())
+    return false;
+  if (is_int())
+    return (v.is_int() && (as_int() < v.as_int() || v.is_ptr()));
+  if (is_ptr() && v.is_ptr())
+    return (*as_ptr()) <= (*v.as_ptr());
+  return false;
+}   // end Rps_Value::operator <
+
+bool
+Rps_Value::operator > (const Rps_Value v) const
+{ return *this < v;
+} // end Rps_Value::operator <
+bool
+Rps_Value::operator >= (const Rps_Value v) const
+{ return *this <= v;
+} // end Rps_Value::operator >=
+
+////////////////////////////////////////////////////// quasi zones
 inline void*
 Rps_QuasiZone::operator new (std::size_t siz, std::nullptr_t)
-{ return ::operator new (siz);
+{
+  RPS_ASSERT(siz % sizeof(void*) == 0);
+  return ::operator new (siz);
 } // end plain Rps_QuasiZone::operator new 
 
 
 inline void*
 Rps_QuasiZone::operator new (std::size_t siz, unsigned wordgap)
-{ return ::operator new (siz + wordgap * sizeof(void*));
+{
+  RPS_ASSERT(siz % sizeof(void*) == 0);
+  return ::operator new (siz + wordgap * sizeof(void*));
 } // end wordgapped Rps_QuasiZone::operator new
+
+
+//////////////////////////////////////////////////////////// zone values
+Rps_ZoneValue::Rps_ZoneValue(Rps_Type typ)
+  : Rps_QuasiZone(typ) {
+  RPS_ASSERT (typ >= Rps_Type::None);
+} // end of Rps_ZoneValue::Rps_ZoneValue
+
+ bool
+ Rps_ZoneValue::operator == (const Rps_ZoneValue&zv) const
+ {
+   if (this == &zv) return true;
+   if (this->stored_type() != zv.stored_type()) return false;
+   return equal(zv);
+ }     // end Rps_ZoneValue::operator ==
+
+ bool
+ Rps_ZoneValue::operator <= (const Rps_ZoneValue&zv) const
+ {
+   if (this == &zv) return true;
+   if (this->stored_type() > zv.stored_type()) return false;
+   if (this->stored_type() < zv.stored_type()) return true;
+   return less(zv);
+ }     // end Rps_ZoneValue::operator <=
+
+ bool
+ Rps_ZoneValue::operator >= (const Rps_ZoneValue&zv) const
+ {
+   return  zv <= (*this);
+ } // end Rps_ZoneValue::operator >=
+
+ bool
+ Rps_ZoneValue::operator < (const Rps_ZoneValue&zv) const
+ {
+   if (this == &zv) return false;
+   if (this->stored_type() > zv.stored_type()) return false;
+   if (this->stored_type() < zv.stored_type()) return true;
+   return less(zv);
+ }     // end Rps_ZoneValue::operator <
+
+bool
+ Rps_ZoneValue::operator > (const Rps_ZoneValue&zv) const
+ {
+   return  zv < (*this);
+ } // end Rps_ZoneValue::operator >
 
 
 #endif /*INLINE_RPS_INCLUDED*/

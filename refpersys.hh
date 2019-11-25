@@ -712,7 +712,7 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph);
 #define RPS_BACKTRACE_HERE(Skip,Name) \
   Rps_BackTrace_Helper(__FILE__,__LINE__,(Skip),(Name))
 
-//////////////////////////////////////////////////////////// quasi zones
+////////////////////////////////////////////////////// garbage collector
 
 class Rps_GarbageCollector {
   const std::function<void(void)> &_gc_rootmarkers;
@@ -722,6 +722,8 @@ private:
   inline ~Rps_GarbageCollector();
   void run_gc(void);
 };				// end class Rps_GarbageCollector
+
+////////////////////////////////////////////////////// quasi zones
 
 class Rps_QuasiZone
 {
@@ -734,7 +736,8 @@ class Rps_QuasiZone
   uint32_t _rank;		// the rank in _zonvec;
   inline void* operator new (std::size_t siz, std::nullptr_t);
   inline void* operator new (std::size_t siz, unsigned wordgap);
-protected:
+public:
+  Rps_Type stored_type(void) const { return _type; };
   template <typename ZoneClass, class ...Args> static ZoneClass*
   rps_allocate(Args... args) {
     return new(nullptr) ZoneClass(args...);
@@ -743,12 +746,35 @@ protected:
   rps_allocate_with_wordgap(unsigned wordgap, Args... args) {
     return new(wordgap) ZoneClass(args...);
   };
+protected:
   inline Rps_QuasiZone(Rps_Type typ);
   virtual ~Rps_QuasiZone() =0;
   virtual uint32_t wordsize() const =0;
   virtual Rps_Type type() const { return _type; };
 };				// end class Rps_QuasiZone;
 
+
+
+//////////////////////////////////////////////////////////// zone values
+class Rps_ZoneValue : public Rps_QuasiZone {
+  friend class Rps_Value;
+  friend class Rps_GarbageCollector;
+protected:
+  inline Rps_ZoneValue(Rps_Type typ);
+public:
+  virtual void gc_mark(Rps_GarbageCollector&) =0;
+  virtual bool equal(const Rps_ZoneValue&zv) const =0;
+  virtual bool less(const Rps_ZoneValue&zv) const =0;
+  inline bool operator == (const Rps_ZoneValue&zv) const;
+  bool operator != (const Rps_ZoneValue&zv) const { return !(*this == zv); };
+  virtual bool lessequal(const Rps_ZoneValue&zv) const {
+    return *this == zv || less(zv);
+  }
+  inline bool operator < (const Rps_ZoneValue&zv) const;
+  inline bool operator <= (const Rps_ZoneValue&zv) const;
+  inline bool operator > (const Rps_ZoneValue&zv) const;
+  inline bool operator >= (const Rps_ZoneValue&zv) const;
+};    // end class Rps_ZoneValue
 
 ////////////////////////////////////////////////////////////////
 extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
