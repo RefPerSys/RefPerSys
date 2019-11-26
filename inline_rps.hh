@@ -248,5 +248,27 @@ Rps_ZoneValue::operator > (const Rps_ZoneValue&zv) const
 } // end Rps_ZoneValue::operator >
 
 
+//////////////////////////////////////////////////////////// strings
+Rps_HashInt
+rps_hash_cstr(const char*cstr, int len)
+{
+  Rps_HashInt h = 0;
+  int64_t ht[2] = {0,0};
+  int utf8len = rps_compute_cstr_two_64bits_hash(ht, cstr, len);
+  if (utf8len>=0)
+    {
+      h = Rps_HashInt (ht[0] ^  ht[1]);
+      if (RPS_UNLIKELY(h == 0))
+        {
+          h = ((Rps_HashInt (ht[0] >> 24)) & 0xffffff)
+              + ((Rps_HashInt (ht[1] >> 27)) & 0xffffff)
+              + (utf8len & 0xfff) + 17;
+          RPS_ASSERT(h != 0);
+        }
+      return h;
+    }
+  return 0;
+}     // end of rps_hash_cstr
+
 #endif /*INLINE_RPS_INCLUDED*/
 // end of internal header file inline_rps.hh

@@ -82,6 +82,9 @@
 // https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h
 #include <cxxabi.h>
 
+
+// GNU libunistring https://www.gnu.org/software/libunistring/
+// we use UTF-8 strings
 #include "unistr.h"
 
 #include "backtrace.h"
@@ -791,7 +794,13 @@ public:
 };    // end class Rps_ZoneValue
 
 //////////////////////////////////////////////////////////// immutable strings
-extern "C" bool rps_compute_cstr_two_64bits_hash(const char*cstr, int len, int64_t ht[2]);
+
+// compute a long hash in ht[0] and ht[1]. Return the number of UTF-8
+// character or else 0 if cstr with len bytes is not proper UTF-8
+extern "C"
+int rps_compute_cstr_two_64bits_hash(int64_t ht[2], const char*cstr, int len= -1);
+
+static inline Rps_HashInt rps_hash_cstr(const char*cstr, int len= -1);
 
 class Rps_String : public Rps_ZoneValue
 {
