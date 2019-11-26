@@ -186,7 +186,7 @@ rps_prime_greaterequal_ranked (int64_t n, int*prank)
     if (rps_primes_tab[ix] >= n)
       {
         if (prank)
-	  *prank =  ix;
+          *prank =  ix;
         return rps_primes_tab[ix];
       }
   return 0;
@@ -248,7 +248,7 @@ rps_prime_lessequal_ranked (int64_t n, int*prank)
     if (rps_primes_tab[ix] <= n)
       {
         if (prank)
-	  *prank = ix;
+          *prank = ix;
         return rps_primes_tab[ix];
       }
   return 0;

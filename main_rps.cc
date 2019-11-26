@@ -131,12 +131,12 @@ const struct argp_option rps_argopt_vec[] =
     .group = 0,
   },
   {
-      .name = "qt-gui",
-      .key = Rps_Key_QtGui,
-      .arg = NULL,
-      .flags = OPTION_ARG_OPTIONAL,
-      .doc = "run Qt GUI",
-      .group = 0,
+    .name = "qt-gui",
+    .key = Rps_Key_QtGui,
+    .arg = NULL,
+    .flags = OPTION_ARG_OPTIONAL,
+    .doc = "run Qt GUI",
+    .group = 0,
   },
   { },
 };

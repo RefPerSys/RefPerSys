@@ -13,6 +13,7 @@ OMake*.omc
 
 # Backup
 *~
+*~%
 
 # Backup after indentation with astyle --style=gnu -s2
 *.orig

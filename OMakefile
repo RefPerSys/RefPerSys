@@ -35,7 +35,7 @@
 # Phony targets are scoped, so you probably want to declare them first.
 #
 
-.PHONY: all install clean
+.PHONY: all install clean indent
 
 .DEFAULT: all
 
@@ -65,6 +65,8 @@ WARNFLAGS = -Wall -Wextra
 # See https://www.freedesktop.org/wiki/Software/pkg-config/
 PKGCONFIG = pkg-config
 RPSGITID = $(shell ./generate-gitid.sh)
+ASTYLE = astyle
+ASTYLEFLAGS = --style=gnu -s2
 QT5MOC = moc
 
 # list of packages, for pkg-config.
@@ -86,6 +88,7 @@ REFPERSYS_BASE_FILES[] =
    garbcoll_rps
    objects_rps
    primes_rps
+   scalar_rps
    store_rps
    values_rps
 
@@ -134,8 +137,11 @@ all: refpersys
 	mv -v _timestamp_rps.c _timestamp_rps.c~
 	sync
 
-_timestamp_rps.c: $(addsuffixes .cc, $(REFPERSYS_BASE_FILES) $(REFPERSYS_QTBASE_FILES)) $(addsuffixes .hh, $(REFPERSYS_BASE_HEADERS)$(REFPERSYS_QTBASE_HEADERS)) generate-timestamp.sh
+_timestamp_rps.c: $(addsuffixes .cc, $(REFPERSYS_BASE_FILES) $(REFPERSYS_QTBASE_FILES)) $(addsuffixes .hh, $(REFPERSYS_BASE_HEADERS) $(REFPERSYS_QTBASE_HEADERS)) generate-timestamp.sh
    ./generate-timestamp.sh $@ > $@.tmp
    mv  $@.tmp $@
+
+indent:
+	./indent-cxx-files.sh  $(addsuffixes .cc, $(REFPERSYS_BASE_FILES) $(REFPERSYS_QTBASE_FILES)) $(addsuffixes .hh, $(REFPERSYS_BASE_HEADERS) $(REFPERSYS_QTBASE_HEADERS)) 
 
 # end of file OMakefile

@@ -40,4 +40,4 @@ void rps_dump_into (const std::string dirpath)
 
 
 //////////////////////////////////////////////////////////// end of file store_rps.cc
-  
+

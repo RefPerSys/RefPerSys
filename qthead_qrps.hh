@@ -44,7 +44,8 @@ class RpsQWindow;
 
 //////////////////////////////////////////////////////////// RpsQApplication
 //// our application class
-class RpsQApplication : public QApplication {
+class RpsQApplication : public QApplication
+{
   Q_OBJECT
 public:
   RpsQApplication (int &argc, char*argv[]); // constructor
@@ -54,7 +55,8 @@ public slots:
 
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
-class RpsQWindow : public QMainWindow {
+class RpsQWindow : public QMainWindow
+{
   Q_OBJECT
 public:
   RpsQWindow (QWidget *parent = nullptr);
@@ -62,8 +64,8 @@ public:
 signals:
 
 private slots:
-    void onMenuDump();
-    void onMenuGarbageCollect();
+  void onMenuDump();
+  void onMenuGarbageCollect();
 };				// end of RpsQWindow
 
 #endif /*QTHEAD_QRPS_INCLUDED*/

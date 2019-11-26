@@ -714,7 +714,8 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph);
 
 ////////////////////////////////////////////////////// garbage collector
 
-class Rps_GarbageCollector {
+class Rps_GarbageCollector
+{
   const std::function<void(void)> &_gc_rootmarkers;
   std::deque<Rps_ObjectRef> _gc_obscanque;
 private:
@@ -737,26 +738,35 @@ class Rps_QuasiZone
   inline void* operator new (std::size_t siz, std::nullptr_t);
   inline void* operator new (std::size_t siz, unsigned wordgap);
 public:
-  Rps_Type stored_type(void) const { return _type; };
+  Rps_Type stored_type(void) const
+  {
+    return _type;
+  };
   template <typename ZoneClass, class ...Args> static ZoneClass*
-  rps_allocate(Args... args) {
+  rps_allocate(Args... args)
+  {
     return new(nullptr) ZoneClass(args...);
   };
   template <typename ZoneClass, class ...Args> static ZoneClass*
-  rps_allocate_with_wordgap(unsigned wordgap, Args... args) {
+  rps_allocate_with_wordgap(unsigned wordgap, Args... args)
+  {
     return new(wordgap) ZoneClass(args...);
   };
 protected:
   inline Rps_QuasiZone(Rps_Type typ);
   virtual ~Rps_QuasiZone() =0;
   virtual uint32_t wordsize() const =0;
-  virtual Rps_Type type() const { return _type; };
+  virtual Rps_Type type() const
+  {
+    return _type;
+  };
 };				// end class Rps_QuasiZone;
 
 
 
 //////////////////////////////////////////////////////////// zone values
-class Rps_ZoneValue : public Rps_QuasiZone {
+class Rps_ZoneValue : public Rps_QuasiZone
+{
   friend class Rps_Value;
   friend class Rps_GarbageCollector;
 protected:
@@ -766,14 +776,25 @@ public:
   virtual bool equal(const Rps_ZoneValue&zv) const =0;
   virtual bool less(const Rps_ZoneValue&zv) const =0;
   inline bool operator == (const Rps_ZoneValue&zv) const;
-  bool operator != (const Rps_ZoneValue&zv) const { return !(*this == zv); };
-  virtual bool lessequal(const Rps_ZoneValue&zv) const {
+  bool operator != (const Rps_ZoneValue&zv) const
+  {
+    return !(*this == zv);
+  };
+  virtual bool lessequal(const Rps_ZoneValue&zv) const
+  {
     return *this == zv || less(zv);
   }
   inline bool operator < (const Rps_ZoneValue&zv) const;
   inline bool operator <= (const Rps_ZoneValue&zv) const;
   inline bool operator > (const Rps_ZoneValue&zv) const;
   inline bool operator >= (const Rps_ZoneValue&zv) const;
+};    // end class Rps_ZoneValue
+
+//////////////////////////////////////////////////////////// immutable strings
+extern "C" bool rps_compute_cstr_two_64bits_hash(const char*cstr, int len, int64_t ht[2]);
+
+class Rps_String : public Rps_ZoneValue
+{
 };    // end class Rps_ZoneValue
 
 ////////////////////////////////////////////////////////////////

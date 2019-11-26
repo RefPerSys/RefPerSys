@@ -35,43 +35,43 @@
 #include <QMenu>
 #include <QMenuBar>
 
-RpsQWindow::RpsQWindow (QWidget *parent) 
-    : QMainWindow (parent)
+RpsQWindow::RpsQWindow (QWidget *parent)
+  : QMainWindow (parent)
 {
-    QPixmap dump_px ("dump_icon.png");
-    QPixmap gc_px ("gc_icon.png");
-    QPixmap quit_px ("quit_icon.png");
+  QPixmap dump_px ("dump_icon.png");
+  QPixmap gc_px ("gc_icon.png");
+  QPixmap quit_px ("quit_icon.png");
 
-    QAction *dump_ax = new QAction (dump_px, "&Dump", this);
-    QAction *gc_ax = new QAction (gc_px, "&Garbage Collect", this);
-    QAction *quit_ax = new QAction (quit_px, "&Quit", this);
+  QAction *dump_ax = new QAction (dump_px, "&Dump", this);
+  QAction *gc_ax = new QAction (gc_px, "&Garbage Collect", this);
+  QAction *quit_ax = new QAction (quit_px, "&Quit", this);
 
-    quit_ax->setShortcut (tr ("CTR+Q"));
+  quit_ax->setShortcut (tr ("CTR+Q"));
 
-    QMenu *app_menu;
-    app_menu = menuBar ()->addMenu ("&App");
-    app_menu->addAction (dump_ax);
-    app_menu->addAction (gc_ax);
-    app_menu->addSeparator ();
-    app_menu->addAction (quit_ax);
+  QMenu *app_menu;
+  app_menu = menuBar ()->addMenu ("&App");
+  app_menu->addAction (dump_ax);
+  app_menu->addAction (gc_ax);
+  app_menu->addSeparator ();
+  app_menu->addAction (quit_ax);
 
-    qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
+  qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
 
-    connect (quit_ax, &QAction::triggered, qApp, &QApplication::quit);
-    connect (dump_ax, &QAction::triggered, this, &RpsQWindow::onMenuDump);
-    connect (gc_ax, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
-} // end RpsQWindow::RpsQWindow 
+  connect (quit_ax, &QAction::triggered, qApp, &QApplication::quit);
+  connect (dump_ax, &QAction::triggered, this, &RpsQWindow::onMenuDump);
+  connect (gc_ax, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
+} // end RpsQWindow::RpsQWindow
 
 
 void RpsQWindow::onMenuDump()
 {
-    /* TODO: need to connect to dump routine and display its output */
+  /* TODO: need to connect to dump routine and display its output */
 }
 
 
 void RpsQWindow::onMenuGarbageCollect()
 {
-    /* TODO: need to connect to GC routine */
+  /* TODO: need to connect to GC routine */
 }
 
 //////////////////////////////////////// end of file window_qrps.cc
