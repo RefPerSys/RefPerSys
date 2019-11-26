@@ -118,6 +118,7 @@ CLEAN[] =
   .omakedb
   .*~
   *~
+  *~%
   *.orig
   *.o
   *omc
