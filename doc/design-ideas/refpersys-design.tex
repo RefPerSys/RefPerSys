@@ -1876,7 +1876,9 @@ generates a lot of files).  By social convention: we \texttt{git
   commit} often (e.g. every hour or two of work). Before that, we
 \texttt{omake indent} and we ensure that the code is buildable with
 \texttt{omake clean} followed by \texttt{omake --project} before any
-\texttt{git commit}
+\texttt{git commit}. We format and indent manually written C++ code
+with \texttt{omake indent} or using our \texttt{indent-cxx-files.sh}
+shell script before any \texttt{git push}.
 
 Our \texttt{git commit} messages given by \texttt{git log} are
 starting with a short sentence in English (ASCII characters only).  If
