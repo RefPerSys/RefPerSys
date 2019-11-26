@@ -60,6 +60,10 @@ public:
   RpsQWindow (QWidget *parent = nullptr);
   virtual ~RpsQWindow () {};
 signals:
+
+private slots:
+    void onMenuDump();
+    void onMenuGarbageCollect();
 };				// end of RpsQWindow
 
 #endif /*QTHEAD_QRPS_INCLUDED*/
