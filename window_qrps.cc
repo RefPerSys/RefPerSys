@@ -32,7 +32,32 @@
 #include "refpersys.hh"
 #include "qthead_qrps.hh"
 
-RpsQWindow::RpsQWindow () : QWindow((QWindow*)nullptr) {
+#include <QMenu>
+#include <QMenuBar>
+
+RpsQWindow::RpsQWindow (QWidget *parent) 
+    : QMainWindow (parent)
+{
+    QPixmap dump_px ("dump_icon.png");
+    QPixmap gc_px ("gc_icon.png");
+    QPixmap quit_px ("quit_icon.png");
+
+    QAction *dump_ax = new QAction (dump_px, "&Dump", this);
+    QAction *gc_ax = new QAction (gc_px, "&Garbage Collect", this);
+    QAction *quit_ax = new QAction (quit_px, "&Quit", this);
+
+    quit_ax->setShortcut (tr ("CTR+Q"));
+
+    QMenu *app_menu;
+    app_menu = menuBar ()->addMenu ("&App");
+    app_menu->addAction (dump_ax);
+    app_menu->addAction (gc_ax);
+    app_menu->addSeparator ();
+    app_menu->addAction (quit_ax);
+
+    qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
+
+    connect (quit_ax, &QAction::triggered, qApp, &QApplication::quit);
 } // end RpsQWindow::RpsQWindow 
 
 

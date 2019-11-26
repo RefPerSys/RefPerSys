@@ -40,7 +40,7 @@ class RpsQApplication;
 class RpsQWindow;
 
 #include <QApplication>
-#include <QWindow>
+#include <QMainWindow>
 
 //////////////////////////////////////////////////////////// RpsQApplication
 //// our application class
@@ -54,10 +54,11 @@ public slots:
 
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
-class RpsQWindow : public QWindow {
+class RpsQWindow : public QMainWindow {
   Q_OBJECT
 public:
-  RpsQWindow ();
+  RpsQWindow (QWidget *parent = nullptr);
+  virtual ~RpsQWindow () {};
 signals:
 };				// end of RpsQWindow
 
