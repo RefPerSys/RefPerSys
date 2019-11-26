@@ -30,6 +30,12 @@
 
 #include "refpersys.hh"
 
+extern "C" const char rps_scalar_gitid[];
+const char rps_scalar_gitid[]= RPS_GITID;
+
+extern "C" const char rps_scalar_date[];
+const char rps_scalar_date[]= __DATE__;
+
 int rps_compute_cstr_two_64bits_hash(int64_t ht[2], const char*cstr, int len)
 {
   if (!ht || !cstr)

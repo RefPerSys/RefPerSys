@@ -31,6 +31,13 @@
 
 #include "refpersys.hh"
 
+
+extern "C" const char rps_garbcoll_gitid[];
+const char rps_garbcoll_gitid[]= RPS_GITID;
+
+extern "C" const char rps_garbcoll_date[];
+const char rps_garbcoll_date[]= __DATE__;
+
 void rps_garbage_collect (void)
 {
   RPS_FATAL("unimplemented rps_garbage_collect");

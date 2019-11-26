@@ -32,4 +32,10 @@
 
 #include "refpersys.hh"
 
+extern "C" const char rps_objects_gitid[];
+const char rps_objects_gitid[]= RPS_GITID;
+
+extern "C" const char rps_objects_date[];
+const char rps_objects_date[]= __DATE__;
+
 // end of file objects_rps.cc

@@ -31,6 +31,12 @@
 
 #include <cstdint>
 
+extern "C" const char rps_primes_gitid[];
+const char rps_primes_gitid[]= RPS_GITID;
+
+extern "C" const char rps_primes_date[];
+const char rps_primes_date[]= __DATE__;
+
 extern "C" int64_t rps_prime_above (int64_t n);
 extern "C" int64_t rps_prime_below (int64_t n);
 

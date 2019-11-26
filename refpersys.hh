@@ -776,6 +776,7 @@ protected:
   inline Rps_ZoneValue(Rps_Type typ);
 public:
   virtual void gc_mark(Rps_GarbageCollector&) =0;
+  virtual Rps_HashInt val_hash () const =0;
   virtual bool equal(const Rps_ZoneValue&zv) const =0;
   virtual bool less(const Rps_ZoneValue&zv) const =0;
   inline bool operator == (const Rps_ZoneValue&zv) const;
@@ -793,6 +794,27 @@ public:
   inline bool operator >= (const Rps_ZoneValue&zv) const;
 };    // end class Rps_ZoneValue
 
+/////////////////////////////////////////////////// lazy hashed values
+class Rps_LazyHashedZoneValue : public Rps_ZoneValue
+{
+private:
+  mutable volatile std::atomic<Rps_HashInt> _lazyhash;
+protected:
+  virtual Rps_HashInt compute_hash(void) const =0;
+  inline Rps_LazyHashedZoneValue(Rps_Type typ);
+  virtual ~Rps_LazyHashedZoneValue() =0;
+public:
+  virtual Rps_HashInt val_hash () const
+  {
+    volatile Rps_HashInt h = _lazyhash.load();
+    if (RPS_UNLIKELY(h == 0))
+      {
+        h = compute_hash();
+        RPS_ASSERT (h != 0);
+        _lazyhash.store(h);
+      }
+  };
+};				// end of Rps_LazyHashedZoneValue
 //////////////////////////////////////////////////////////// immutable strings
 
 // compute a long hash in ht[0] and ht[1]. Return the number of UTF-8
@@ -802,8 +824,24 @@ int rps_compute_cstr_two_64bits_hash(int64_t ht[2], const char*cstr, int len= -1
 
 static inline Rps_HashInt rps_hash_cstr(const char*cstr, int len= -1);
 
-class Rps_String : public Rps_ZoneValue
+class Rps_String : public Rps_LazyHashedZoneValue
 {
+  const uint32_t _bytsiz;
+  const uint32_t _utf8len;
+  union
+  {
+    const char _sbuf[RPS_FLEXIBLE_DIM];
+    char _alignbuf[rps_allocation_unit] __attribute__((aligned(rps_allocation_unit)));
+  };
+  inline Rps_String (const char*cstr, int len= -1);
+  static inline const char*normalize_cstr(const char*cstr);
+  static inline int normalize_len(const char*cstr, int len);
+  static inline uint32_t safe_utf8len(const char*cstr, int len);
+protected:
+  virtual Rps_HashInt compute_hash(void) const
+  {
+    return rps_hash_cstr(_sbuf);
+  };
 };    // end class Rps_ZoneValue
 
 ////////////////////////////////////////////////////////////////

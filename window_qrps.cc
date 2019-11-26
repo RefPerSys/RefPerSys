@@ -35,6 +35,13 @@
 #include <QMenu>
 #include <QMenuBar>
 
+extern "C" const char rps_window_gitid[];
+const char rps_window_gitid[]= RPS_GITID;
+
+extern "C" const char rps_window_date[];
+const char rps_window_date[]= __DATE__;
+
+
 RpsQWindow::RpsQWindow (QWidget *parent)
   : QMainWindow (parent)
 {

@@ -33,6 +33,12 @@
 #include "refpersys.hh"
 #include "qthead_qrps.hh"
 
+extern "C" const char rps_appli_gitid[];
+const char rps_appli_gitid[]= RPS_GITID;
+
+extern "C" const char rps_appli_date[];
+const char rps_appli_date[]= __DATE__;
+
 RpsQApplication::RpsQApplication(int &argc, char*argv[])
   : QApplication(argc, argv)
 {

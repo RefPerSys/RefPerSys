@@ -32,6 +32,13 @@
 
 #include "refpersys.hh"
 
+
+extern "C" const char rps_main_gitid[];
+const char rps_main_gitid[]= RPS_GITID;
+
+extern "C" const char rps_objects_date[];
+const char rps_main_date[]= __DATE__;
+
 struct backtrace_state* rps_backtrace_state;
 const char* rps_progname;
 

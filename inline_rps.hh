@@ -248,6 +248,12 @@ Rps_ZoneValue::operator > (const Rps_ZoneValue&zv) const
 } // end Rps_ZoneValue::operator >
 
 
+/////////////////////////////////////////////////// lazy hashed values
+Rps_LazyHashedZoneValue::Rps_LazyHashedZoneValue(Rps_Type typ) :
+  Rps_ZoneValue(typ), _lazyhash(0)
+{
+};				// end Rps_LazyHashedZoneValue
+
 //////////////////////////////////////////////////////////// strings
 Rps_HashInt
 rps_hash_cstr(const char*cstr, int len)
@@ -269,6 +275,48 @@ rps_hash_cstr(const char*cstr, int len)
     }
   return 0;
 }     // end of rps_hash_cstr
+
+
+const char*
+Rps_String::normalize_cstr(const char*cstr)
+{
+  if (cstr == nullptr || cstr == (const char*)RPS_EMPTYSLOT
+      || !*cstr) return "";
+  return cstr;
+} // end Rps_String::normalize_cstr
+
+
+int
+Rps_String::normalize_len(const char*cstr, int len)
+{
+  if (cstr == nullptr || cstr == (const char*)RPS_EMPTYSLOT
+      || !*cstr) return 0;
+  if (len>0) return len;
+  return strlen(cstr);
+} // end Rps_String::normalize_len
+
+uint32_t
+Rps_String::safe_utf8len(const char*cstr, int len)
+{
+  if (cstr == nullptr || cstr == (const char*)RPS_EMPTYSLOT
+      || !*cstr) return 0;
+  if (len<0)
+    len = strlen(cstr);
+  if (RPS_UNLIKELY(u8_check((const uint8_t*)cstr, (size_t)len) != nullptr))
+    RPS_FATAL("corrupted UTF8 string %.*s", len, cstr);
+  return u8_mblen((const uint8_t*)cstr, (size_t)len);
+} // end of Rps_String::safe_utf8len
+
+Rps_String::Rps_String (const char*cstr, int len)
+  : Rps_LazyHashedZoneValue (Rps_Type::String),
+    _bytsiz(normalize_len(cstr,len)),
+    _utf8len(safe_utf8len(cstr,len))
+{
+  cstr = normalize_cstr(cstr);
+  if (_utf8len>0)
+    memcpy(_alignbuf, cstr, _bytsiz);
+} // end of Rps_String::Rps_String
+
 
 #endif /*INLINE_RPS_INCLUDED*/
 // end of internal header file inline_rps.hh

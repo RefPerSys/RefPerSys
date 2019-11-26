@@ -30,6 +30,13 @@
 
 #include "refpersys.hh"
 
+extern "C" const char rps_values_gitid[];
+const char rps_values_gitid[]= RPS_GITID;
+
+extern "C" const char rps_values_date[];
+const char rps_values_date[]= __DATE__;
+
+
 void
 Rps_Id::to_cbuf24(char cbuf[]) const
 {

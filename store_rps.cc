@@ -4,7 +4,8 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for the persistent store.
+ *      It has the code for the persistent store, in HJSON format.
+ *      See also http://hjson.org/ & https://github.com/hjson/hjson-cpp
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -30,6 +31,12 @@
  ******************************************************************************/
 
 #include "refpersys.hh"
+
+extern "C" const char rps_store_gitid[];
+const char rps_store_gitid[]= RPS_GITID;
+
+extern "C" const char rps_store_date[];
+const char rps_store_date[]= __DATE__;
 
 
 void rps_dump_into (const std::string dirpath)
