@@ -186,6 +186,10 @@ Rps_Value::operator >= (const Rps_Value v) const
 } // end Rps_Value::operator >=
 
 ////////////////////////////////////////////////////// quasi zones
+Rps_QuasiZone::Rps_QuasiZone(Rps_Type ty)
+  : _type(ty), _gcinfo(0) {};
+
+
 inline void*
 Rps_QuasiZone::operator new (std::size_t siz, std::nullptr_t)
 {

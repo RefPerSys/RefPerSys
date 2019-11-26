@@ -36,6 +36,10 @@ const char rps_scalar_gitid[]= RPS_GITID;
 extern "C" const char rps_scalar_date[];
 const char rps_scalar_date[]= __DATE__;
 
+Rps_QuasiZone::~Rps_QuasiZone()
+{
+}
+
 int rps_compute_cstr_two_64bits_hash(int64_t ht[2], const char*cstr, int len)
 {
   if (!ht || !cstr)
@@ -89,3 +93,19 @@ int rps_compute_cstr_two_64bits_hash(int64_t ht[2], const char*cstr, int len)
   ht[1] = h1;
   return utf8cnt;
 } // end of rps_compute_cstr_two_64bits_hash
+
+
+Rps_String*
+Rps_String::make(const char*cstr, int len)
+{
+  cstr = normalize_cstr(cstr);
+  len = normalize_len(cstr, len);
+  if (u8_check(reinterpret_cast<const uint8_t*>(cstr), len))
+    throw std::domain_error("invalid UTF-8 string");
+  Rps_String* str
+    = rps_allocate_with_wordgap<Rps_String> (len/sizeof(void*)+1, cstr, len);
+  return str;
+} // end of Rps_String::make
+
+
+//////////////////////////////////////////////// end of file scalar_rps.cc

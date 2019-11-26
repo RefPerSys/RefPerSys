@@ -802,8 +802,12 @@ private:
 protected:
   virtual Rps_HashInt compute_hash(void) const =0;
   inline Rps_LazyHashedZoneValue(Rps_Type typ);
-  virtual ~Rps_LazyHashedZoneValue() =0;
+  virtual ~Rps_LazyHashedZoneValue() {};
 public:
+  Rps_HashInt lazy_hash() const
+  {
+    return _lazyhash.load();
+  };
   virtual Rps_HashInt val_hash () const
   {
     volatile Rps_HashInt h = _lazyhash.load();
@@ -826,6 +830,8 @@ static inline Rps_HashInt rps_hash_cstr(const char*cstr, int len= -1);
 
 class Rps_String : public Rps_LazyHashedZoneValue
 {
+  friend Rps_String*
+  Rps_QuasiZone::rps_allocate_with_wordgap<Rps_String,const char*,int>(unsigned,const char*,int);
   const uint32_t _bytsiz;
   const uint32_t _utf8len;
   union
@@ -833,6 +839,7 @@ class Rps_String : public Rps_LazyHashedZoneValue
     const char _sbuf[RPS_FLEXIBLE_DIM];
     char _alignbuf[rps_allocation_unit] __attribute__((aligned(rps_allocation_unit)));
   };
+protected:
   inline Rps_String (const char*cstr, int len= -1);
   static inline const char*normalize_cstr(const char*cstr);
   static inline int normalize_len(const char*cstr, int len);
@@ -842,7 +849,37 @@ protected:
   {
     return rps_hash_cstr(_sbuf);
   };
-};    // end class Rps_ZoneValue
+  virtual void gc_mark(Rps_GarbageCollector&) { };
+public:
+  virtual uint32_t wordsize() const
+  {
+    return (sizeof(Rps_String)+_bytsiz+1)/sizeof(void*);
+  };
+  static Rps_String* make(const char*cstr, int len= -1);
+  const char*cstr() const
+  {
+    return _sbuf;
+  };
+  bool equal(const Rps_ZoneValue&zv) const
+  {
+    if (zv.stored_type() == Rps_Type::String)
+      {
+        auto othstr = reinterpret_cast<const Rps_String*>(&zv);
+        auto lh = lazy_hash();
+        auto othlh = othstr->lazy_hash();
+        if (lh != 0 && othlh != 0 && lh != othlh) return false;
+        return !strcmp(cstr(), othstr->cstr());
+      }
+    else return false;
+  }
+  virtual bool less(const Rps_ZoneValue&zv) const
+  {
+    if (zv.stored_type() > Rps_Type::String) return false;
+    if (zv.stored_type() < Rps_Type::String) return true;
+    auto othstr = reinterpret_cast<const Rps_String*>(&zv);
+    return strcmp(cstr(), othstr->cstr()) < 0;
+  };
+};    // end class Rps_String
 
 ////////////////////////////////////////////////////////////////
 extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
