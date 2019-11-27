@@ -1607,6 +1607,41 @@ are immutable, they have no objid, no locking mechanism, and their
 class, attributes and components would be fixed and defined at their
 creation time.
 
+In C++ code, values are \texttt{Rps\_Value}, a ``smart'' value container, actually a single word.
+
+\subsubection{immutable scalar values}
+\label{subsubsec:immutable-scalar}
+
+Immutable scalar values include:
+\begin{itemize}
+  \item \textbf{strings}, \index{string} persisted as \textsc{Hjson} strings; their internal
+    representation is \texttt{Rps\_String} using an \textsc{Utf-8}
+    encoding. In C++, use \texttt{Rps\_String::make} to make one, or
+    construct an \texttt{Rps\_Value} with a C \textsc{Utf-8} encoded
+    string, a \texttt{std::string}, or a \texttt{QString}.
+    \item boxed \textbf{doubles}\footnote{See
+    \href{http://floating-point-gui.de}{\texttt{floating-point-gui.de}}
+      for more about
+      \href{https://en.wikipedia.org/wiki/IEEE\_754}{\textsc{Ieee 754}
+        double precision numbers} on current computers. This is
+      actually a difficult topic.} (which cannot hold an
+    \textsc{Ieee-754} \texttt{NaN}, which is incomparable), persisted
+    as \textsc{Hjson} doubles; their internal boxed representation is
+    \texttt{Rps\_Double}. In C++, use \texttt{Rps\_Double::make} to make one, or
+    construct an \texttt{Rps\_Value} with a C \texttt{double}.
+\end{itemize}
+
+\subsubection{immutable composite values}
+\label{subsubsec:immutable-composite}
+
+Immutable composite values include:
+\begin{itemize}
+\item \textbf{tuples} of object references \textcolor{red}{@@TODO: should explain more}
+\item \textbf{set} of object references \textcolor{red}{@@TODO: should explain more}
+\end{itemize}
+\textcolor{red}{@@TODO: should explain a lot more}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{mutable objects}
 \label{subsec:mutable-objects}
 
@@ -1653,6 +1688,10 @@ Notice that a generational GC approach moving data is possible for
 some immutable values, but not for objects and their optional payload,
 since {\RefPerSys} objects contain locks and payloads that are dealt
 with through external functions requiring fixed, unchangeable, pointers.
+
+In C++ code, object references are \texttt{Rps\_ObjectRef}, a
+``smart'' object container, actually a single word. They are persisted
+by their \textid{objid} in \textsc{Hjson} format.
 
 \subsubsection{objects as frame-like data}
 \label{subsubsec:obj-frame}
