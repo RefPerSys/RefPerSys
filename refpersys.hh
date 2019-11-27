@@ -274,6 +274,10 @@ class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
 
+typedef uint32_t Rps_HashInt;
+
+
+
 class Rps_ObjectRef // reference to objects, per C++ rule of five.
 {
   Rps_ObjectZone*_optr;
@@ -379,11 +383,11 @@ public:
   inline bool operator < (const Rps_ObjectRef& oth) const;
   inline bool operator > (const Rps_ObjectRef& oth) const;
   inline bool operator >= (const Rps_ObjectRef& oth) const;
+  inline Rps_HashInt obhash (void) const;
 };				// end class Rps_ObjectRef
 
 
 ////////////////////////////////////////////////////////////////
-typedef uint32_t Rps_HashInt;
 enum class Rps_Type : int16_t
 {
   /// non-value types (or quasi-values)
@@ -935,6 +939,139 @@ public:
     return _dval < othdbl->dval();
   };
 }; // end class Rps_Double
+
+
+
+
+//////////////////////////////////////////////////////////// object zones
+class Rps_ObjectZone : public Rps_ZoneValue
+{
+  const Rps_Id _oid;
+public:
+  const Rps_Id oid() const
+  {
+    return _oid;
+  };
+  Rps_HashInt obhash() const
+  {
+    return _oid.hash();
+  };
+};				// end class Rps_ObjectZone
+
+/////////////////////////// sequences (tuples or sets) of Rps_ObjectRef
+class Rps_SetOb;
+class Rps_TupleOb;
+template<typename RpsSeq, Rps_Type seqty, unsigned k1, unsigned k2, unsigned k3>
+class Rps_SeqObjRef : public Rps_LazyHashedZoneValue
+{
+  friend class Rps_SetOb;
+  friend class Rps_TupleOb;
+  friend RpsSeq*
+  Rps_QuasiZone::rps_allocate_with_wordgap<RpsSeq,unsigned>(unsigned,unsigned);
+  const unsigned _seqlen;
+  Rps_ObjectRef _seqob[RPS_FLEXIBLE_DIM+1];
+  Rps_SeqObjRef(unsigned len) : Rps_LazyHashedZoneValue(seqty), _seqlen(len)
+  {
+    memset (_seqob, 0, sizeof(Rps_ObjectRef)*len);
+  };
+public:
+  unsigned cnt() const
+  {
+    return _seqlen;
+  };
+  typedef const Rps_ObjectRef*iterator_t;
+  iterator_t begin() const
+  {
+    return const_cast<const Rps_ObjectRef*>(_seqob);
+  };
+  iterator_t end() const
+  {
+    return const_cast<const Rps_ObjectRef*>(_seqob) + _seqlen;
+  };
+protected:
+  virtual Rps_HashInt compute_hash(void) const
+  {
+    Rps_HashInt h0= 3317+(k3&0xff), h1= 31*_seqlen;
+    for (unsigned ix=0; ix<_seqlen; ix += 2)
+      {
+        if (RPS_UNLIKELY(_seqob[ix].is_empty()))
+          throw std::runtime_error("corrupted sequence of objects");
+        h0 = (h0 * k1) ^ (_seqob[ix]->obhash() * k2 + ix);
+        auto nextob = _seqob[ix+1];
+        if (RPS_UNLIKELY(nextob.is_empty())) break;
+        h1 = (h1 * k2) ^ (nextob->obhash() * k3 - (h0&0xfff));
+      };
+    Rps_HashInt h = 5*h0 + 11*h1;
+    if (RPS_UNLIKELY(h == 0))
+      h = ((h0 & 0xfffff) ^ (h1 & 0xfffff)) + (k1/128 + (_seqlen & 0xff) + 3);
+    RPS_ASSERT(h != 0);
+    return h;
+  };
+  virtual bool equal(const Rps_ZoneValue&zv) const
+  {
+    if (zv.stored_type() == seqty)
+      {
+        auto oth = reinterpret_cast<const RpsSeq*>(&zv);
+        if (RPS_LIKELY(reinterpret_cast<const Rps_LazyHashedZoneValue*>(this)->val_hash()
+                       != reinterpret_cast<const Rps_LazyHashedZoneValue*>(oth)->val_hash()))
+          return false;
+        auto curcnt = cnt();
+        if (RPS_LIKELY(oth->cnt() != curcnt))
+          return false;
+        for (unsigned ix = 0; ix < curcnt; ix++)
+          if (_seqob[ix] != oth->_seqob[ix])
+            return false;
+        return true;
+      }
+    return false;
+  }
+  virtual bool less(const Rps_ZoneValue&zv) const
+  {
+    if (zv.stored_type() == seqty)
+      {
+        auto oth = reinterpret_cast<const RpsSeq*>(&zv);
+        if (RPS_LIKELY(reinterpret_cast<const Rps_LazyHashedZoneValue*>(this)->val_hash()
+                       != reinterpret_cast<const Rps_LazyHashedZoneValue*>(oth)->val_hash()))
+          return false;
+        return std::lexicographical_compare(begin(), end(),
+                                            oth->begin(), oth->end());
+      }
+    return false;
+  };
+};    // end of Rps_SeqObjRef
+
+
+/////////////////////////// sets of Rps_ObjectRef
+unsigned constexpr rps_set_k1 = 7933;
+unsigned constexpr rps_set_k2 = 8963;
+unsigned constexpr rps_set_k3 = 19073;
+class Rps_SetOb: public Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3>
+{
+public:
+  typedef Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3> parentseq_t;
+protected:
+  friend Rps_SetOb*
+  Rps_QuasiZone::rps_allocate_with_wordgap<Rps_SetOb,unsigned>(unsigned,unsigned);
+  Rps_SetOb(unsigned len)
+    :parentseq_t (len) {};
+#warning Rps_SetOb very incomplete
+};// end of Rps_SetOb
+
+/////////////////////////// tuples of Rps_ObjectRef
+unsigned constexpr rps_tuple_k1 = 5939;
+unsigned constexpr rps_tuple_k2 = 18917;
+unsigned constexpr rps_tuple_k3 = 6571;
+class Rps_TupleOb: public Rps_SeqObjRef<Rps_TupleOb, Rps_Type::Tuple, rps_tuple_k1, rps_tuple_k2, rps_tuple_k3>
+{
+public:
+  typedef Rps_SeqObjRef<Rps_TupleOb, Rps_Type::Tuple, rps_tuple_k1, rps_tuple_k2, rps_tuple_k3> parentseq_t;
+protected:
+  Rps_TupleOb(unsigned len)
+    : parentseq_t (len) {};
+  friend Rps_TupleOb*
+  Rps_QuasiZone::rps_allocate_with_wordgap<Rps_TupleOb,unsigned>(unsigned,unsigned);
+#warning Rps_TupleOb very incomplete
+};// end of Rps_TupleOb
 
 ////////////////////////////////////////////////////////////////
 extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc

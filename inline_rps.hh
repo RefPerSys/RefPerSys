@@ -306,6 +306,7 @@ Rps_Value::Rps_Value(const std::string&str)
 Rps_Value::Rps_Value(const char*str, int len)
   : Rps_Value(Rps_String::make(str, len), Rps_ValPtrTag{}) {};
 
+
 const char*
 Rps_String::normalize_cstr(const char*cstr)
 {
@@ -375,6 +376,56 @@ Rps_Double::make(double d)
     throw std::invalid_argument("NaN cannot be given to Rps_Double::make");
   return Rps_QuasiZone::rps_allocate<Rps_Double,double>(d);
 } // end  Rps_Double::make
+
+//////////////////////////////////////////////////////////// objects
+Rps_HashInt
+Rps_ObjectRef::obhash(void) const
+{
+  if (is_empty()) return 0;
+  return _optr->obhash();
+}      // end Rps_ObjectRef::obhash
+
+bool
+Rps_ObjectRef::operator == (const Rps_ObjectRef& oth) const
+{
+  if (is_empty()) return oth.is_empty();
+  if (oth.is_empty()) return false;
+  return _optr == oth._optr;
+}
+
+bool
+Rps_ObjectRef::operator != (const Rps_ObjectRef& oth) const
+{
+  return ! (*this == oth);
+}
+
+bool
+Rps_ObjectRef::operator <= (const Rps_ObjectRef& oth) const
+{
+  if (is_empty()) return true;
+  if (oth.is_empty()) return false;
+  return _optr->oid() <= oth._optr->oid();
+}
+
+bool
+Rps_ObjectRef::operator < (const Rps_ObjectRef& oth) const
+{
+  if (is_empty()) return !oth.is_empty();
+  if (oth.is_empty()) return false;
+  return _optr->oid() < oth._optr->oid();
+}
+
+bool
+Rps_ObjectRef::operator >= (const Rps_ObjectRef& oth) const
+{
+  return oth <= *this;
+}
+
+bool
+Rps_ObjectRef::operator > (const Rps_ObjectRef& oth) const
+{
+  return oth < *this;
+}
 
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh
