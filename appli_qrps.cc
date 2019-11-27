@@ -39,6 +39,13 @@ const char rps_appli_gitid[]= RPS_GITID;
 extern "C" const char rps_appli_date[];
 const char rps_appli_date[]= __DATE__;
 
+// this function is here, because other files might not include <QString>
+const Rps_String*
+Rps_String::make(const QString&qs)
+{
+  return Rps_String::make(qs.toStdString());
+} // end Rps_String::make(const QString&qs)
+
 RpsQApplication::RpsQApplication(int &argc, char*argv[])
   : QApplication(argc, argv)
 {

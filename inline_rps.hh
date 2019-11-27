@@ -207,6 +207,26 @@ Rps_QuasiZone::operator new (std::size_t siz, unsigned wordgap)
 
 
 //////////////////////////////////////////////////////////// zone values
+
+bool Rps_Value::is_empty() const
+{
+  return _wptr == nullptr || _wptr == RPS_EMPTYSLOT;
+}
+
+bool Rps_Value::is_null() const
+{
+  return _wptr == nullptr;
+}
+
+std::intptr_t
+Rps_Value::as_int() const
+{
+  if (!is_int()) throw std::invalid_argument("value is not an int");
+  return _ival>>1;
+}
+
+Rps_Value::Rps_Value(const Rps_Value&oth) : _wptr(oth._wptr) {};
+
 Rps_ZoneValue::Rps_ZoneValue(Rps_Type typ)
   : Rps_QuasiZone(typ)
 {
@@ -280,6 +300,11 @@ rps_hash_cstr(const char*cstr, int len)
   return 0;
 }     // end of rps_hash_cstr
 
+Rps_Value::Rps_Value(const std::string&str)
+  : Rps_Value(Rps_String::make(str.c_str(), str.size()), Rps_ValPtrTag{}) {};
+
+Rps_Value::Rps_Value(const char*str, int len)
+  : Rps_Value(Rps_String::make(str, len), Rps_ValPtrTag{}) {};
 
 const char*
 Rps_String::normalize_cstr(const char*cstr)
@@ -309,7 +334,7 @@ Rps_String::safe_utf8len(const char*cstr, int len)
   if (RPS_UNLIKELY(u8_check((const uint8_t*)cstr, (size_t)len) != nullptr))
     RPS_FATAL("corrupted UTF8 string %.*s", len, cstr);
   return u8_mblen((const uint8_t*)cstr, (size_t)len);
-} // end of Rps_String::safe_utf8len
+}; // end of Rps_String::safe_utf8len
 
 Rps_String::Rps_String (const char*cstr, int len)
   : Rps_LazyHashedZoneValue (Rps_Type::String),
@@ -319,8 +344,37 @@ Rps_String::Rps_String (const char*cstr, int len)
   cstr = normalize_cstr(cstr);
   if (_utf8len>0)
     memcpy(_alignbuf, cstr, _bytsiz);
-} // end of Rps_String::Rps_String
+}; // end of Rps_String::Rps_String
 
+const Rps_String*
+Rps_String::make(const std::string&s)
+{
+  return Rps_String::make(s.c_str(), s.size());
+} // end Rps_String::make(const std::string&s)
+//////////////////////////////////////////////////////////// boxed doubles
+Rps_Value::Rps_Value (double d, Rps_DoubleTag)
+  : Rps_Value(Rps_Double::make(d), Rps_ValPtrTag())
+{
+  if (RPS_UNLIKELY(std::isnan(d)))
+    throw std::invalid_argument("NaN cannot be an Rps_Value");
+};      // end Rps_Value::Rps_Value (double d, Rps_DoubleTag)
+
+Rps_Value::Rps_Value (double d) : Rps_Value::Rps_Value (d, Rps_DoubleTag{}) {};
+
+Rps_Double::Rps_Double(double d)
+  : Rps_LazyHashedZoneValue(Rps_Type::Double), _dval(d)
+{
+  if (RPS_UNLIKELY(std::isnan(d)))
+    throw std::invalid_argument("NaN cannot be given to Rps_Double");
+} // end of Rps_Double::Rps_Double
+
+const Rps_Double*
+Rps_Double::make(double d)
+{
+  if (RPS_UNLIKELY(std::isnan(d)))
+    throw std::invalid_argument("NaN cannot be given to Rps_Double::make");
+  return Rps_QuasiZone::rps_allocate<Rps_Double,double>(d);
+} // end  Rps_Double::make
 
 #endif /*INLINE_RPS_INCLUDED*/
-// end of internal header file inline_rps.hh
+////////////////////////////////////////////////// end of internal header file inline_rps.hh

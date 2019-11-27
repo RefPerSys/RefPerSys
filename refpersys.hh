@@ -75,13 +75,13 @@
 #include <time.h>
 #include <dlfcn.h>
 
-#include <QApplication>
-#include <QLabel>
 
 // for programmatic C++ name demangling, see also
 // https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h
 #include <cxxabi.h>
 
+/// forward declaration of QString-s from Qt5
+class QString;
 
 // GNU libunistring https://www.gnu.org/software/libunistring/
 // we use UTF-8 strings
@@ -409,12 +409,14 @@ class Rps_Value
 {
 public:
   struct Rps_IntTag {};
+  struct Rps_DoubleTag {};
   struct Rps_ValPtrTag {};
   struct Rps_EmptyTag {};
   inline Rps_Value ();
   inline Rps_Value (nullptr_t);
   inline Rps_Value (Rps_EmptyTag);
   inline Rps_Value (intptr_t i, Rps_IntTag);
+  inline Rps_Value (double d, Rps_DoubleTag);
   inline Rps_Value (const Rps_ZoneValue*ptr, Rps_ValPtrTag);
   /// C++ rule of five
   inline Rps_Value(const Rps_Value& other);
@@ -423,6 +425,9 @@ public:
   inline Rps_Value& operator = (Rps_Value&& other);
   inline ~Rps_Value();
   Rps_Value(intptr_t i) : Rps_Value(i, Rps_IntTag{}) {};
+  inline Rps_Value(const std::string&str);
+  inline Rps_Value(double d);
+  inline Rps_Value(const char*str, int len= -1);
   Rps_Value(const Rps_ZoneValue*ptr) : Rps_Value(ptr, Rps_ValPtrTag{}) {};
   Rps_Value(const Rps_ZoneValue& zv) : Rps_Value(&zv, Rps_ValPtrTag{}) {};
   inline bool operator == (const Rps_Value v) const;
@@ -817,6 +822,7 @@ public:
         RPS_ASSERT (h != 0);
         _lazyhash.store(h);
       }
+    return h;
   };
 };				// end of Rps_LazyHashedZoneValue
 //////////////////////////////////////////////////////////// immutable strings
@@ -855,12 +861,14 @@ public:
   {
     return (sizeof(Rps_String)+_bytsiz+1)/sizeof(void*);
   };
-  static Rps_String* make(const char*cstr, int len= -1);
+  static const Rps_String* make(const char*cstr, int len= -1);
+  static const Rps_String* make(const QString&qs);
+  static inline const Rps_String* make(const std::string&s);
   const char*cstr() const
   {
     return _sbuf;
   };
-  bool equal(const Rps_ZoneValue&zv) const
+  virtual bool equal(const Rps_ZoneValue&zv) const
   {
     if (zv.stored_type() == Rps_Type::String)
       {
@@ -880,6 +888,53 @@ public:
     return strcmp(cstr(), othstr->cstr()) < 0;
   };
 };    // end class Rps_String
+
+
+//////////////// boxed doubles
+class Rps_Double  : public Rps_LazyHashedZoneValue
+{
+  friend Rps_Double*
+  Rps_QuasiZone::rps_allocate<Rps_Double,double>(double);
+  const double _dval;
+protected:
+  inline Rps_Double (double d=0.0);
+protected:
+  virtual Rps_HashInt compute_hash(void) const
+  {
+    auto rh = std::hash<double> {}((double)_dval);
+    Rps_HashInt h = static_cast<Rps_HashInt> (rh);
+    if (RPS_UNLIKELY(h == 0))
+      h = 987383;
+    return h;
+  };
+  virtual void gc_mark(Rps_GarbageCollector&) { };
+public:
+  double dval() const
+  {
+    return _dval;
+  };
+  virtual uint32_t wordsize() const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  static inline const Rps_Double*make(double d=0.0);
+  virtual bool equal(const Rps_ZoneValue&zv) const
+  {
+    if (zv.stored_type() == Rps_Type::Double)
+      {
+        auto othdbl = reinterpret_cast<const Rps_Double*>(&zv);
+        return _dval == othdbl->dval();
+      };
+    return false;
+  };
+  virtual bool less(const Rps_ZoneValue&zv) const
+  {
+    if (zv.stored_type() > Rps_Type::Double) return false;
+    if (zv.stored_type() < Rps_Type::Double) return true;
+    auto othdbl = reinterpret_cast<const Rps_Double*>(&zv);
+    return _dval < othdbl->dval();
+  };
+}; // end class Rps_Double
 
 ////////////////////////////////////////////////////////////////
 extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc

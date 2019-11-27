@@ -95,7 +95,7 @@ int rps_compute_cstr_two_64bits_hash(int64_t ht[2], const char*cstr, int len)
 } // end of rps_compute_cstr_two_64bits_hash
 
 
-Rps_String*
+const Rps_String*
 Rps_String::make(const char*cstr, int len)
 {
   cstr = normalize_cstr(cstr);

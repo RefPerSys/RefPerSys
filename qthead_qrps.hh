@@ -40,6 +40,7 @@ class RpsQApplication;
 class RpsQWindow;
 
 #include <QApplication>
+#include <QApplication>
 #include <QMainWindow>
 
 //////////////////////////////////////////////////////////// RpsQApplication
