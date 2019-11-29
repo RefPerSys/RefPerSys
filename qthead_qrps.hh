@@ -50,8 +50,13 @@ class RpsQApplication : public QApplication
   Q_OBJECT
 public:
   RpsQApplication (int &argc, char*argv[]); // constructor
+  RpsQWindow *getWindow(size_t index);
+
 public slots:
   void dump_state(QString dirpath=".");
+
+private:
+    std::vector<RpsQWindow*> _wnd_vec;
 };				// end of class RpsQApplication
 
 //////////////////////////////////////////////////////////// RpsQWindow
@@ -62,6 +67,7 @@ class RpsQWindow : public QMainWindow
 public:
   RpsQWindow (QWidget *parent = nullptr);
   virtual ~RpsQWindow () {};
+
 signals:
 
 private slots:

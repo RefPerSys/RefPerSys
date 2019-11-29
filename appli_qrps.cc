@@ -49,6 +49,12 @@ Rps_String::make(const QString&qs)
 RpsQApplication::RpsQApplication(int &argc, char*argv[])
   : QApplication(argc, argv)
 {
+    /* TODO: replace with smart pointer */
+    RpsQWindow *wnd = new RpsQWindow ();
+    wnd->resize (250, 150);
+    wnd->setWindowTitle ("RefPerSys");
+
+    this->_wnd_vec.push_back (wnd);
 } // end of RpsQApplication::RpsQApplication
 
 void
@@ -57,18 +63,19 @@ RpsQApplication::dump_state(QString dirpath)
 } // end of RpsQApplication::dump_state
 
 
+RpsQWindow *RpsQApplication::getWindow(size_t index)
+{
+    return this->_wnd_vec.at (index);
+}
+
+
 void rps_run_application(int &argc, char **argv)
 {
   RPS_INFORM("rps_run_application: start of %s gitid %s host %s pid %d\n",
              argv[0], rps_gitid, rps_hostname(), (int)getpid());
 
   RpsQApplication app (argc, argv);
-
-  RpsQWindow wnd;
-  wnd.resize (250, 150);
-  wnd.setWindowTitle ("RefPerSys");
-  wnd.show ();
-
+  app.getWindow (0)->show ();
   (void) app.exec ();
 } // end of rps_run_application
 
