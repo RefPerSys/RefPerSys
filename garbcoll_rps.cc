@@ -41,9 +41,24 @@ const char rps_garbcoll_date[]= __DATE__;
 void rps_garbage_collect (void)
 {
   RPS_FATAL("unimplemented rps_garbage_collect");
-#warning rps_dump_into unimplemented
+#warning rps_garbage_collect unimplemented
 } // end of rps_garbage_collect
 
+void
+Rps_GarbageCollector::mark_obj(Rps_ObjectRef ob)
+{
+  if (!ob) return;
+  RPS_FATAL("unimplemented Rps_GarbageCollector::mark_obj");
+#warning Rps_GarbageCollector::mark_obj  unimplemented
+} // end of Rps_GarbageCollector::mark_obj
+
+void
+Rps_GarbageCollector::mark_value(Rps_Value val)
+{
+  if (val.is_empty() || val.is_int()) return;
+  RPS_FATAL("unimplemented Rps_GarbageCollector::mark_value");
+#warning Rps_GarbageCollector::mark_value unimplemented
+} // end of Rps_GarbageCollector::mark_value
 
 //////////////////////////////////////////////////////////// end of file garbcoll_rps.cc
 

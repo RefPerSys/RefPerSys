@@ -106,5 +106,30 @@ fail:
 
 
 
+//////////////////////////////////////////////// sets
+
+Rps_SetOb::Rps_SetOb(const std::set<Rps_ObjectRef>& setob, Rps_SetOb::Rps_SetTag)
+  : Rps_SetOb::Rps_SetOb((unsigned) setob.size(), Rps_SetOb::Rps_SetTag{})
+{
+  int ix=0;
+  for (auto ob : setob) {
+    RPS_ASSERT (ob);
+    _seqob[ix++] = ob;
+  }
+} // end Rps_SetOb::Rps_SetOb
+
+const Rps_SetOb*
+Rps_SetOb::make(const std::set<Rps_ObjectRef>& setob) {
+  auto setsiz = setob.size();
+  if (RPS_UNLIKELY(setsiz >= Rps_SeqObjRef::maxsize))
+    throw std::length_error("Rps_SetOb::make with too many elements");
+  for (auto ob : setob)
+    if (RPS_UNLIKELY(!ob))
+      throw std::invalid_argument("empty element to Rps_SetOb::make");
+  return
+    rps_allocate_with_wordgap<Rps_SetOb,const std::set<Rps_ObjectRef>&,Rps_SetTag>
+    (setsiz,setob,Rps_SetTag{});
+} // end of Rps_SetOb::make
+
 /* end of file value_rps.cc */
 

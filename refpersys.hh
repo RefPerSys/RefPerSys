@@ -734,6 +734,9 @@ private:
   inline Rps_GarbageCollector(const std::function<void(void)> &rootmarkers);
   inline ~Rps_GarbageCollector();
   void run_gc(void);
+public:
+  void mark_obj(Rps_ObjectRef ob);
+  void mark_value(Rps_Value val);
 };				// end class Rps_GarbageCollector
 
 ////////////////////////////////////////////////////// quasi zones
@@ -975,6 +978,8 @@ class Rps_SeqObjRef : public Rps_LazyHashedZoneValue
     memset (_seqob, 0, sizeof(Rps_ObjectRef)*len);
   };
 public:
+  static unsigned constexpr maxsize
+  = std::numeric_limits<unsigned>::max() / 2;
   unsigned cnt() const
   {
     return _seqlen;
@@ -987,6 +992,12 @@ public:
   iterator_t end() const
   {
     return const_cast<const Rps_ObjectRef*>(_seqob) + _seqlen;
+  };
+  virtual uint32_t wordsize() const { return (sizeof(*this) + _seqlen * sizeof(_seqob[0])) / sizeof(void*); };
+  virtual void gc_mark(Rps_GarbageCollector&gc) {
+    for (auto ob: *this)
+      if (ob)
+	gc.mark_obj(ob);
   };
 protected:
   virtual Rps_HashInt compute_hash(void) const
@@ -1048,12 +1059,17 @@ unsigned constexpr rps_set_k3 = 19073;
 class Rps_SetOb: public Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3>
 {
 public:
+  struct Rps_SetTag {
+  };
+  friend class Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3>;
   typedef Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3> parentseq_t;
+  Rps_SetOb(unsigned len, Rps_SetTag) :parentseq_t (len) {};
+  Rps_SetOb(const std::set<Rps_ObjectRef>& setob, Rps_SetTag);
 protected:
   friend Rps_SetOb*
-  Rps_QuasiZone::rps_allocate_with_wordgap<Rps_SetOb,unsigned>(unsigned,unsigned);
-  Rps_SetOb(unsigned len)
-    :parentseq_t (len) {};
+  Rps_QuasiZone::rps_allocate_with_wordgap<Rps_SetOb,unsigned,Rps_SetTag>(unsigned,unsigned,Rps_SetTag);
+public:
+  static const Rps_SetOb*make(const std::set<Rps_ObjectRef>& setob);
 #warning Rps_SetOb very incomplete
 };// end of Rps_SetOb
 
@@ -1064,12 +1080,14 @@ unsigned constexpr rps_tuple_k3 = 6571;
 class Rps_TupleOb: public Rps_SeqObjRef<Rps_TupleOb, Rps_Type::Tuple, rps_tuple_k1, rps_tuple_k2, rps_tuple_k3>
 {
 public:
+  struct Rps_TupleTag {};
+  friend class  Rps_SeqObjRef<Rps_TupleOb, Rps_Type::Tuple, rps_tuple_k1, rps_tuple_k2, rps_tuple_k3>;
   typedef Rps_SeqObjRef<Rps_TupleOb, Rps_Type::Tuple, rps_tuple_k1, rps_tuple_k2, rps_tuple_k3> parentseq_t;
 protected:
-  Rps_TupleOb(unsigned len)
+  Rps_TupleOb(unsigned len, Rps_TupleTag)
     : parentseq_t (len) {};
   friend Rps_TupleOb*
-  Rps_QuasiZone::rps_allocate_with_wordgap<Rps_TupleOb,unsigned>(unsigned,unsigned);
+  Rps_QuasiZone::rps_allocate_with_wordgap<Rps_TupleOb,unsigned,Rps_TupleTag>(unsigned,unsigned,Rps_TupleTag);
 #warning Rps_TupleOb very incomplete
 };// end of Rps_TupleOb
 
