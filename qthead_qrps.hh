@@ -50,13 +50,13 @@ class RpsQApplication : public QApplication
   Q_OBJECT
 public:
   RpsQApplication (int &argc, char*argv[]); // constructor
-  RpsQWindow *getWindow(size_t index);
+  std::shared_ptr<RpsQWindow> getWindow(size_t index);
 
 public slots:
   void dump_state(QString dirpath=".");
 
 private:
-    std::vector<RpsQWindow*> _wnd_vec;
+    std::vector<std::shared_ptr<RpsQWindow>> _wnd_vec;
 };				// end of class RpsQApplication
 
 //////////////////////////////////////////////////////////// RpsQWindow

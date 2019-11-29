@@ -49,8 +49,7 @@ Rps_String::make(const QString&qs)
 RpsQApplication::RpsQApplication(int &argc, char*argv[])
   : QApplication(argc, argv)
 {
-    /* TODO: replace with smart pointer */
-    RpsQWindow *wnd = new RpsQWindow ();
+    std::shared_ptr<RpsQWindow> wnd (new RpsQWindow ());
     wnd->resize (250, 150);
     wnd->setWindowTitle ("RefPerSys");
 
@@ -63,7 +62,7 @@ RpsQApplication::dump_state(QString dirpath)
 } // end of RpsQApplication::dump_state
 
 
-RpsQWindow *RpsQApplication::getWindow(size_t index)
+std::shared_ptr<RpsQWindow> RpsQApplication::getWindow(size_t index)
 {
     return this->_wnd_vec.at (index);
 }
