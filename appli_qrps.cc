@@ -57,10 +57,19 @@ RpsQApplication::dump_state(QString dirpath)
 } // end of RpsQApplication::dump_state
 
 
-void rps_run_application(int &argc, char**argv)
+void rps_run_application(int &argc, char **argv)
 {
   RPS_INFORM("rps_run_application: start of %s gitid %s host %s pid %d\n",
              argv[0], rps_gitid, rps_hostname(), (int)getpid());
+
+  RpsQApplication app (argc, argv);
+
+  RpsQWindow wnd;
+  wnd.resize (250, 150);
+  wnd.setWindowTitle ("RefPerSys");
+  wnd.show ();
+
+  (void) app.exec ();
 } // end of rps_run_application
 
 //////////////// moc generated file

@@ -64,15 +64,23 @@ RpsQWindow::RpsQWindow (QWidget *parent)
 
   qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
 
-  connect (quit_ax, &QAction::triggered, qApp, &QApplication::quit);
   connect (dump_ax, &QAction::triggered, this, &RpsQWindow::onMenuDump);
   connect (gc_ax, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
+  connect (quit_ax, &QAction::triggered, this, &RpsQWindow::onMenuQuit);
 } // end RpsQWindow::RpsQWindow
 
 
+void RpsQWindow::onMenuQuit()
+{
+    /* TODO: rps_dump_into () causing fatal error */
+    rps_dump_into ();
+    QApplication::quit ();
+}
+
 void RpsQWindow::onMenuDump()
 {
-  /* TODO: need to connect to dump routine and display its output */
+    /* TODO: rps_dump_into () causing fatal error */
+    rps_dump_into ();
 }
 
 
