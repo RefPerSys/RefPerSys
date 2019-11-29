@@ -56,6 +56,9 @@ public slots:
   void dump_state(QString dirpath=".");
 
 private:
+    // we're using std::shared_ptr instead of std::unique_ptr because we need
+    // to return a copy of the pointers held by _wnd_vec, and creating a copy
+    // of std::unique_ptr leads to a compilation error.
     std::vector<std::shared_ptr<RpsQWindow>> _wnd_vec;
 };				// end of class RpsQApplication
 
