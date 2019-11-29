@@ -50,7 +50,7 @@ RpsQApplication::RpsQApplication(int &argc, char*argv[])
   : QApplication(argc, argv)
 {
     std::shared_ptr<RpsQWindow> wnd (new RpsQWindow ());
-    wnd->resize (250, 150);
+    wnd->resize (640, 480); // TODO: get dimensions from $HOME/.RefPerSys
     wnd->setWindowTitle ("RefPerSys");
 
     this->_wnd_vec.push_back (wnd);
