@@ -52,15 +52,22 @@ Rps_StringValue::Rps_StringValue(const QString&qs)
 } // end of Rps_StringValue::Rps_StringValue(const QString&qs)
 
 ////////////////
+void
+RpsQApplication::add_new_window(void)
+{
+  std::lock_guard gu(app_mutex);
+  auto window = new RpsQWindow();
+  window->setWindowTitle(QString("RefPerSys #%").arg(app_windvec.size()));
+  window->resize (640, 480); // TODO: get dimensions from $HOME/.RefPerSys
+  app_windvec.emplace_back(window);
+} // end of RpsQApplication::add_new_window
 
 RpsQApplication::RpsQApplication(int &argc, char*argv[])
   : QApplication(argc, argv)
 {
-  std::shared_ptr<RpsQWindow> wnd (new RpsQWindow ());
-  wnd->resize (640, 480); // TODO: get dimensions from $HOME/.RefPerSys
-  wnd->setWindowTitle ("RefPerSys");
-
-  this->_wnd_vec.push_back (wnd);
+  app_windvec.reserve(16);
+  app_windvec.push_back(nullptr); // we don't want a 0 index.
+  add_new_window();
 } // end of RpsQApplication::RpsQApplication
 
 void
@@ -69,9 +76,14 @@ RpsQApplication::dump_state(QString dirpath)
 } // end of RpsQApplication::dump_state
 
 
-std::shared_ptr<RpsQWindow> RpsQApplication::getWindow(size_t index)
+RpsQWindow* RpsQApplication::getWindowPtr(int ix)
 {
-  return this->_wnd_vec.at (index);
+  std::lock_guard gu(app_mutex);
+  if (ix < 0)
+    ix += app_windvec.size();
+  if (ix <= 0 || ix > app_windvec.size())
+    return nullptr;
+  return app_windvec.at(ix).get();
 }
 
 
@@ -81,7 +93,7 @@ void rps_run_application(int &argc, char **argv)
              argv[0], rps_gitid, rps_hostname(), (int)getpid());
 
   RpsQApplication app (argc, argv);
-  app.getWindow (0)->show ();
+  app.add_new_window();
   (void) app.exec ();
 } // end of rps_run_application
 

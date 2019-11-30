@@ -45,21 +45,28 @@ class RpsQWindow;
 
 //////////////////////////////////////////////////////////// RpsQApplication
 //// our application class
-class RpsQApplication : public QApplication
+class RpsQApplication
+  : public QApplication
 {
-  Q_OBJECT
+  Q_OBJECT;
 public:
   RpsQApplication (int &argc, char*argv[]); // constructor
-  std::shared_ptr<RpsQWindow> getWindow(size_t index);
+  RpsQWindow* getWindowPtr(int index);
+  RpsQWindow& getWindow(int index)
+  {
+    auto w = getWindowPtr(index);
+    if (!w)
+      throw std::runtime_error("bad window index in RpsQApplication::getWindow");
+    return *w;
+  };
 
 public slots:
   void dump_state(QString dirpath=".");
+  void add_new_window(void);
 
 private:
-  // we're using std::shared_ptr instead of std::unique_ptr because we need
-  // to return a copy of the pointers held by _wnd_vec, and creating a copy
-  // of std::unique_ptr leads to a compilation error.
-  std::vector<std::shared_ptr<RpsQWindow>> _wnd_vec;
+  std::mutex app_mutex;
+  std::vector <std::unique_ptr<RpsQWindow>> app_windvec;
 };				// end of class RpsQApplication
 
 //////////////////////////////////////////////////////////// RpsQWindow
