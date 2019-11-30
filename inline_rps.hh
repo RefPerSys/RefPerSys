@@ -134,6 +134,29 @@ bool Rps_Value::is_object() const
          && as_ptr()->stored_type() == Rps_Type::Object;
 } //end  Rps_Value::is_object()
 
+
+Rps_HashInt
+Rps_Value::valhash() const noexcept
+{
+  if (is_empty()) return 0;
+  if (is_int())
+    {
+      intptr_t i = to_int();
+      Rps_HashInt h = i ^ (i>>27);
+      if (RPS_UNLIKELY(!h))
+        h = (i & 0xfffff) + 13;
+      RPS_ASSERT(h != 0);
+      return h;
+    }
+  else if (is_ptr())
+    {
+      const Rps_ZoneValue*pval = as_ptr();
+      RPS_ASSERT(pval != nullptr);
+      return pval->val_hash();
+    };
+  return 0;
+} // end of Rps_Value::valhash()
+
 bool Rps_Value::is_set() const
 {
   return is_ptr()
@@ -428,6 +451,16 @@ Rps_Value::as_int() const
   if (!is_int()) throw std::invalid_argument("value is not an int");
   return _ival>>1;
 }
+
+intptr_t
+Rps_Value::to_int(intptr_t def) const
+{
+  if (is_int())
+    {
+      return _ival>>1;
+    }
+  else return def;
+} // end Rps_Value::to_int
 
 Rps_Value::Rps_Value(const Rps_Value&oth) : _wptr(oth._wptr) {};
 

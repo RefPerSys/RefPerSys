@@ -49,6 +49,7 @@
 #include <deque>
 #include <variant>
 #include <unordered_map>
+#include <unordered_set>
 #include <new>
 #include <random>
 #include <iostream>
@@ -493,6 +494,7 @@ public:
   inline const Rps_String* to_string( const Rps_String*defstr
                                       = nullptr) const;
   inline const std::string to_cppstring(std::string defstr= "") const;
+  inline Rps_HashInt valhash() const noexcept;
 private:
   union
   {
@@ -502,6 +504,24 @@ private:
   };
 } __attribute__((aligned(rps_allocation_unit)));    // end of Rps_Value
 
+
+namespace std
+{
+template <> struct hash<Rps_ObjectRef>
+{
+  std::size_t operator()(Rps_ObjectRef const& obr) const noexcept
+  {
+    return obr.obhash();
+  };
+};
+template <> struct hash<Rps_Value>
+{
+  std::size_t operator()(Rps_Value const& val) const noexcept
+  {
+    return val.valhash();
+  };
+};
+};
 
 //////////////// specialized subclasses of Rps_Value
 
@@ -843,8 +863,10 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph);
 
 class Rps_GarbageCollector
 {
-  const std::function<void(void)> &_gc_rootmarkers;
-  std::deque<Rps_ObjectRef> _gc_obscanque;
+  std::mutex gc_mtx;
+  const std::function<void(void)> &gc_rootmarkers;
+  std::deque<Rps_ObjectRef> gc_obscanque;
+  std::unordered_set<Rps_ObjectRef> gc_visitedobset;
 private:
   inline Rps_GarbageCollector(const std::function<void(void)> &rootmarkers);
   inline ~Rps_GarbageCollector();

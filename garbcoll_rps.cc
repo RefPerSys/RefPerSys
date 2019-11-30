@@ -48,14 +48,20 @@ void
 Rps_GarbageCollector::mark_obj(Rps_ObjectRef ob)
 {
   if (!ob) return;
-  RPS_FATAL("unimplemented Rps_GarbageCollector::mark_obj");
-#warning Rps_GarbageCollector::mark_obj  unimplemented
+  std::lock_guard<std::mutex> gu(gc_mtx);
+  if (gc_visitedobset.find(ob) == gc_visitedobset.end())
+    {
+      gc_visitedobset.insert(ob);
+      gc_obscanque.push_back(ob);
+      /// FIXME, we probably want to mark inside the object zone...
+    }
 } // end of Rps_GarbageCollector::mark_obj
 
 void
 Rps_GarbageCollector::mark_value(Rps_Value val)
 {
   if (val.is_empty() || val.is_int()) return;
+  /// FIXME, we probably want to mark inside the value...
   RPS_FATAL("unimplemented Rps_GarbageCollector::mark_value");
 #warning Rps_GarbageCollector::mark_value unimplemented
 } // end of Rps_GarbageCollector::mark_value
