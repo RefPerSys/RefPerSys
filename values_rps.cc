@@ -112,14 +112,16 @@ Rps_SetOb::Rps_SetOb(const std::set<Rps_ObjectRef>& setob, Rps_SetOb::Rps_SetTag
   : Rps_SetOb::Rps_SetOb((unsigned) setob.size(), Rps_SetOb::Rps_SetTag{})
 {
   int ix=0;
-  for (auto ob : setob) {
-    RPS_ASSERT (ob);
-    _seqob[ix++] = ob;
-  }
+  for (auto ob : setob)
+    {
+      RPS_ASSERT (ob);
+      _seqob[ix++] = ob;
+    }
 } // end Rps_SetOb::Rps_SetOb
 
 const Rps_SetOb*
-Rps_SetOb::make(const std::set<Rps_ObjectRef>& setob) {
+Rps_SetOb::make(const std::set<Rps_ObjectRef>& setob)
+{
   auto setsiz = setob.size();
   if (RPS_UNLIKELY(setsiz >= Rps_SeqObjRef::maxsize))
     throw std::length_error("Rps_SetOb::make with too many elements");

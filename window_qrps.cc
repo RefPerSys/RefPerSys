@@ -53,6 +53,7 @@ RpsQWindow::RpsQWindow (QWidget *parent)
   QAction *dump_ax = new QAction (dump_px, "&Dump", this);
   QAction *gc_ax = new QAction (gc_px, "&Garbage Collect", this);
   QAction *quit_ax = new QAction (quit_px, "&Quit", this);
+  QAction *exit_ax = new QAction (quit_px, "e&Xit", this);
 
   quit_ax->setShortcut (tr ("CTR+Q"));
 
@@ -62,10 +63,12 @@ RpsQWindow::RpsQWindow (QWidget *parent)
   app_menu->addAction (gc_ax);
   app_menu->addSeparator ();
   app_menu->addAction (quit_ax);
+  app_menu->addAction (exit_ax);
 
   connect (dump_ax, &QAction::triggered, this, &RpsQWindow::onMenuDump);
   connect (gc_ax, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
   connect (quit_ax, &QAction::triggered, this, &RpsQWindow::onMenuQuit);
+  connect (quit_ax, &QAction::triggered, this, &RpsQWindow::onMenuExit);
 
   QPixmap about_px ("gc_icon.png");
   QAction *about_ax = new QAction (about_px, "&About", this);
@@ -82,15 +85,26 @@ RpsQWindow::RpsQWindow (QWidget *parent)
 
 void RpsQWindow::onMenuQuit()
 {
-    /* TODO: rps_dump_into () causing fatal error */
-    rps_dump_into ();
-    QApplication::quit ();
+
+  RPS_WARN("RpsQWindow::onMenuQuit is incomplete.\n"
+           "it should show a modal dialog to confirm quitting without dumping");
+#warning TODO: RpsQWindow::onMenuQuit is incomplete
+  // see https://doc.qt.io/qt-5/qmessagebox.html
+  QApplication::quit ();
+}
+
+
+void RpsQWindow::onMenuExit()
+{
+  /* TODO: rps_dump_into () causing fatal error */
+  rps_dump_into ();
+  QApplication::quit ();
 }
 
 void RpsQWindow::onMenuDump()
 {
-    /* TODO: rps_dump_into () causing fatal error */
-    rps_dump_into ();
+  /* TODO: rps_dump_into () causing fatal error */
+  rps_dump_into ();
 }
 
 

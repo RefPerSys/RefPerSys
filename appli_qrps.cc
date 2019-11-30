@@ -49,11 +49,11 @@ Rps_String::make(const QString&qs)
 RpsQApplication::RpsQApplication(int &argc, char*argv[])
   : QApplication(argc, argv)
 {
-    std::shared_ptr<RpsQWindow> wnd (new RpsQWindow ());
-    wnd->resize (640, 480); // TODO: get dimensions from $HOME/.RefPerSys
-    wnd->setWindowTitle ("RefPerSys");
+  std::shared_ptr<RpsQWindow> wnd (new RpsQWindow ());
+  wnd->resize (640, 480); // TODO: get dimensions from $HOME/.RefPerSys
+  wnd->setWindowTitle ("RefPerSys");
 
-    this->_wnd_vec.push_back (wnd);
+  this->_wnd_vec.push_back (wnd);
 } // end of RpsQApplication::RpsQApplication
 
 void
@@ -64,7 +64,7 @@ RpsQApplication::dump_state(QString dirpath)
 
 std::shared_ptr<RpsQWindow> RpsQApplication::getWindow(size_t index)
 {
-    return this->_wnd_vec.at (index);
+  return this->_wnd_vec.at (index);
 }
 
 

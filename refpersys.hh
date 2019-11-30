@@ -979,7 +979,7 @@ class Rps_SeqObjRef : public Rps_LazyHashedZoneValue
   };
 public:
   static unsigned constexpr maxsize
-  = std::numeric_limits<unsigned>::max() / 2;
+    = std::numeric_limits<unsigned>::max() / 2;
   unsigned cnt() const
   {
     return _seqlen;
@@ -993,11 +993,15 @@ public:
   {
     return const_cast<const Rps_ObjectRef*>(_seqob) + _seqlen;
   };
-  virtual uint32_t wordsize() const { return (sizeof(*this) + _seqlen * sizeof(_seqob[0])) / sizeof(void*); };
-  virtual void gc_mark(Rps_GarbageCollector&gc) {
+  virtual uint32_t wordsize() const
+  {
+    return (sizeof(*this) + _seqlen * sizeof(_seqob[0])) / sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc)
+  {
     for (auto ob: *this)
       if (ob)
-	gc.mark_obj(ob);
+        gc.mark_obj(ob);
   };
 protected:
   virtual Rps_HashInt compute_hash(void) const
@@ -1059,7 +1063,8 @@ unsigned constexpr rps_set_k3 = 19073;
 class Rps_SetOb: public Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3>
 {
 public:
-  struct Rps_SetTag {
+  struct Rps_SetTag
+  {
   };
   friend class Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3>;
   typedef Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3> parentseq_t;
