@@ -77,6 +77,7 @@ private slots:
   void onMenuDump();
   void onMenuGarbageCollect();
   void onMenuQuit();
+  void onMenuAbout();
 };				// end of RpsQWindow
 
 #endif /*QTHEAD_QRPS_INCLUDED*/

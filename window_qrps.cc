@@ -34,6 +34,7 @@
 
 #include <QMenu>
 #include <QMenuBar>
+#include <QMessageBox>
 
 extern "C" const char rps_window_gitid[];
 const char rps_window_gitid[]= RPS_GITID;
@@ -62,11 +63,20 @@ RpsQWindow::RpsQWindow (QWidget *parent)
   app_menu->addSeparator ();
   app_menu->addAction (quit_ax);
 
-  qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
-
   connect (dump_ax, &QAction::triggered, this, &RpsQWindow::onMenuDump);
   connect (gc_ax, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
   connect (quit_ax, &QAction::triggered, this, &RpsQWindow::onMenuQuit);
+
+  QPixmap about_px ("gc_icon.png");
+  QAction *about_ax = new QAction (about_px, "&About", this);
+
+  QMenu *help_menu;
+  help_menu = menuBar ()->addMenu ("&Help");
+  help_menu->addAction (about_ax);
+  connect (about_ax, &QAction::triggered, this, &RpsQWindow::onMenuAbout);
+
+  qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
+
 } // end RpsQWindow::RpsQWindow
 
 
@@ -88,5 +98,13 @@ void RpsQWindow::onMenuGarbageCollect()
 {
   /* TODO: need to connect to GC routine */
 }
+
+
+void RpsQWindow::onMenuAbout()
+{
+  /* TODO: show current Git ID */
+  QMessageBox::information (this, "About RefPerSys", "Git ID:");
+}
+
 
 //////////////////////////////////////// end of file window_qrps.cc
