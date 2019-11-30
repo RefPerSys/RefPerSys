@@ -520,6 +520,7 @@ public:
   inline Rps_StringValue(const std::string str);
   inline Rps_StringValue(const Rps_Value val);
   inline Rps_StringValue(const Rps_String* strv);
+  Rps_StringValue(const QString& qstr);
   inline Rps_StringValue(nullptr_t);
 }; // end class Rps_StringValue
 
