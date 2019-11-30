@@ -68,7 +68,7 @@ RpsQWindow::RpsQWindow (QWidget *parent)
   connect (dump_ax, &QAction::triggered, this, &RpsQWindow::onMenuDump);
   connect (gc_ax, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
   connect (quit_ax, &QAction::triggered, this, &RpsQWindow::onMenuQuit);
-  connect (quit_ax, &QAction::triggered, this, &RpsQWindow::onMenuExit);
+  connect (exit_ax, &QAction::triggered, this, &RpsQWindow::onMenuExit);
 
   QPixmap about_px ("gc_icon.png");
   QAction *about_ax = new QAction (about_px, "&About", this);
@@ -97,8 +97,15 @@ void RpsQWindow::onMenuQuit()
 void RpsQWindow::onMenuExit()
 {
   /* TODO: rps_dump_into () causing fatal error */
-  rps_dump_into ();
-  QApplication::quit ();
+
+  auto msg = QString ("Are you sure you want to dump and exit?");
+  auto btn = QMessageBox::Yes | QMessageBox::No;
+  auto reply = QMessageBox::question (this, "RefPerSys", msg, btn);
+
+  if (reply == QMessageBox::Yes) {
+    rps_dump_into ();
+    QApplication::quit ();
+  }
 }
 
 void RpsQWindow::onMenuDump()
