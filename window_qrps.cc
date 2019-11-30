@@ -99,15 +99,8 @@ void RpsQWindow::onMenuQuit()
 void RpsQWindow::onMenuExit()
 {
   /* TODO: rps_dump_into () causing fatal error */
-
-  auto msg = QString ("Are you sure you want to dump and exit?");
-  auto btn = QMessageBox::Yes | QMessageBox::No;
-  auto reply = QMessageBox::question (this, "RefPerSys", msg, btn);
-
-  if (reply == QMessageBox::Yes) {
-    rps_dump_into ();
-    QApplication::quit ();
-  }
+  rps_dump_into ();
+  QApplication::quit ();
 }
 
 void RpsQWindow::onMenuDump()
@@ -126,9 +119,9 @@ void RpsQWindow::onMenuGarbageCollect()
 void RpsQWindow::onMenuAbout()
 {
   QString msg ("Git ID: ");
-  msg.append (RPS_GITID);
+  msg.append (rps_window_gitid);
   msg.append ("\nDate: ");
-  msg.append (__DATE__);
+  msg.append (rps_window_date);
 
   QMessageBox::information (this, "About RefPerSys", msg);
 }
