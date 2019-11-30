@@ -71,6 +71,10 @@ public:
   RpsQWindow (QWidget *parent = nullptr);
   virtual ~RpsQWindow () {};
 
+private:
+  void drawAppMenu();
+  void drawHelpMenu();
+
 signals:
 
 private slots:

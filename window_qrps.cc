@@ -46,6 +46,15 @@ const char rps_window_date[]= __DATE__;
 RpsQWindow::RpsQWindow (QWidget *parent)
   : QMainWindow (parent)
 {
+  this->drawAppMenu ();
+  this->drawHelpMenu ();
+
+  qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
+} // end RpsQWindow::RpsQWindow
+
+
+void RpsQWindow::drawAppMenu()
+{
   QPixmap dump_px ("dump_icon.png");
   QPixmap gc_px ("gc_icon.png");
   QPixmap quit_px ("quit_icon.png");
@@ -71,18 +80,21 @@ RpsQWindow::RpsQWindow (QWidget *parent)
   connect (gc_ax, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
   connect (quit_ax, &QAction::triggered, this, &RpsQWindow::onMenuQuit);
   connect (exit_ax, &QAction::triggered, this, &RpsQWindow::onMenuExit);
+}
 
-  QPixmap about_px ("gc_icon.png");
+
+void RpsQWindow::drawHelpMenu()
+{
+  QPixmap about_px ("about_icon.png");
+
   QAction *about_ax = new QAction (about_px, "&About", this);
 
   QMenu *help_menu;
   help_menu = menuBar ()->addMenu ("&Help");
   help_menu->addAction (about_ax);
+
   connect (about_ax, &QAction::triggered, this, &RpsQWindow::onMenuAbout);
-
-  qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
-
-} // end RpsQWindow::RpsQWindow
+}
 
 
 void RpsQWindow::onMenuQuit()
