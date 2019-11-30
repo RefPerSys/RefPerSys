@@ -85,12 +85,12 @@ RpsQWindow::RpsQWindow (QWidget *parent)
 
 void RpsQWindow::onMenuQuit()
 {
+  auto msg = QString ("Are you sure you want to quit without dumping?");
+  auto btn = QMessageBox::Yes | QMessageBox::No;
+  auto reply = QMessageBox::question (this, "RefPerSys", msg, btn);
 
-  RPS_WARN("RpsQWindow::onMenuQuit is incomplete.\n"
-           "it should show a modal dialog to confirm quitting without dumping");
-#warning TODO: RpsQWindow::onMenuQuit is incomplete
-  // see https://doc.qt.io/qt-5/qmessagebox.html
-  QApplication::quit ();
+  if (reply == QMessageBox::Yes)
+    QApplication::quit ();
 }
 
 
