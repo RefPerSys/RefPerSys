@@ -108,8 +108,8 @@ fail:
 
 //////////////////////////////////////////////// sets
 
-Rps_SetOb::Rps_SetOb(const std::set<Rps_ObjectRef>& setob, Rps_SetOb::Rps_SetTag)
-  : Rps_SetOb::Rps_SetOb((unsigned) setob.size(), Rps_SetOb::Rps_SetTag{})
+Rps_SetOb::Rps_SetOb(const std::set<Rps_ObjectRef>& setob, Rps_SetTag)
+  : Rps_SetOb::Rps_SetOb((unsigned) setob.size(), Rps_SetTag{})
 {
   int ix=0;
   for (auto ob : setob)

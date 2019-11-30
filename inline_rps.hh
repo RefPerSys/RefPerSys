@@ -174,6 +174,37 @@ Rps_Value::to_set(const Rps_SetOb*defset) const
   else return defset;
 } // end Rps_Value::to_set
 
+
+Rps_SetValue::Rps_SetValue (const std::set<Rps_ObjectRef>& obset)
+  : Rps_Value (Rps_SetOb::make(obset), Rps_ValPtrTag{})
+{
+} // end of Rps_SetValue::Rps_SetValue of set
+
+Rps_SetValue::Rps_SetValue (const std::vector<Rps_ObjectRef>& obvec)
+  : Rps_Value (Rps_SetOb::make(obvec), Rps_ValPtrTag{})
+{
+} // end of Rps_SetValue::Rps_SetValue of vector
+
+Rps_SetValue::Rps_SetValue (const std::initializer_list<Rps_ObjectRef>& obil, Rps_SetTag)
+  : Rps_Value (Rps_SetOb::make(obil), Rps_ValPtrTag{})
+{
+} // end of Rps_SetValue::Rps_SetValue of initializer_list
+
+Rps_SetValue::Rps_SetValue(const std::vector<Rps_Value>& vecval)
+  : Rps_Value (Rps_SetOb::collect(vecval), Rps_ValPtrTag{})
+{
+} // end of Rps_SetValue::Rps_SetValue of vector of values
+
+Rps_SetValue::Rps_SetValue(const std::initializer_list<Rps_Value>&valil)
+  : Rps_Value (Rps_SetOb::collect(valil), Rps_ValPtrTag{})
+{
+} // end of Rps_SetValue::Rps_SetValue of initializer_list of values
+
+Rps_SetValue::Rps_SetValue(const Rps_Value val)
+  : Rps_Value (val.is_set()?val.as_set():nullptr, Rps_ValPtrTag{})
+{
+} // end Rps_SetValue::Rps_SetValue dynamic
+
 const Rps_TupleOb*
 Rps_Value::as_tuple() const
 {
@@ -189,6 +220,33 @@ Rps_Value::to_tuple(const Rps_TupleOb*deftup) const
     return reinterpret_cast<const Rps_TupleOb*>(const_cast<Rps_ZoneValue*>(_pval));
   else return deftup;
 } // end Rps_Value::to_tuple
+
+
+
+Rps_TupleValue::Rps_TupleValue (const std::vector<Rps_ObjectRef>& obvec)
+  : Rps_Value (Rps_TupleOb::make(obvec), Rps_ValPtrTag{})
+{
+} // end of Rps_TupleValue::Rps_TupleValue of vector
+
+Rps_TupleValue::Rps_TupleValue (const std::initializer_list<Rps_ObjectRef>& obil, Rps_TupleTag)
+  : Rps_Value (Rps_TupleOb::make(obil), Rps_ValPtrTag{})
+{
+} // end of Rps_TupleValue::Rps_TupleValue of initializer_list
+
+Rps_TupleValue::Rps_TupleValue(const std::vector<Rps_Value>& vecval)
+  : Rps_Value (Rps_TupleOb::collect(vecval), Rps_ValPtrTag{})
+{
+} // end of Rps_TupleValue::Rps_TupleValue of vector of values
+
+Rps_TupleValue::Rps_TupleValue(const std::initializer_list<Rps_Value>&valil)
+  : Rps_Value (Rps_TupleOb::collect(valil), Rps_ValPtrTag{})
+{
+} // end of Rps_TupleValue::Rps_TupleValue of initializer_list of values
+
+Rps_TupleValue::Rps_TupleValue(const Rps_Value val)
+  : Rps_Value (val.is_set()?val.as_set():nullptr, Rps_ValPtrTag{})
+{
+} // end Rps_TupleValue::Rps_TupleValue dynamic
 
 const Rps_String*
 Rps_Value::as_string() const

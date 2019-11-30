@@ -506,6 +506,7 @@ private:
 
 class Rps_ObjectValue : public Rps_Value
 {
+public:
   inline Rps_ObjectValue(const Rps_ObjectRef obr);
   inline Rps_ObjectValue(const Rps_Value val, const Rps_ObjectZone*defob=nullptr);
   inline Rps_ObjectValue(const Rps_ObjectZone* obz=nullptr);
@@ -514,6 +515,7 @@ class Rps_ObjectValue : public Rps_Value
 
 class Rps_StringValue : public Rps_Value
 {
+public:
   inline Rps_StringValue(const char*cstr, int len= -1);
   inline Rps_StringValue(const std::string str);
   inline Rps_StringValue(const Rps_Value val);
@@ -523,9 +525,49 @@ class Rps_StringValue : public Rps_Value
 
 class Rps_DoubleValue : public Rps_Value
 {
+public:
   inline Rps_DoubleValue (double d=0.0);
   inline Rps_DoubleValue(const Rps_Value val);
 }; // end class Rps_DoubleValue
+
+struct Rps_SetTag
+{
+};				// end empty struct Rps_SetTag
+
+struct Rps_TupleTag
+{
+}; // end empty struct Rps_TupleTag
+
+class Rps_SetValue : public Rps_Value
+{
+public:
+  /// related to Rps_SetOb::make :
+  inline Rps_SetValue (const std::set<Rps_ObjectRef>& obset);
+  inline Rps_SetValue (const std::vector<Rps_ObjectRef>& obvec);
+  inline Rps_SetValue (const std::initializer_list<Rps_ObjectRef>& obil, Rps_SetTag);
+  Rps_SetValue (const std::initializer_list<Rps_ObjectRef>& obil) :
+    Rps_SetValue(obil, Rps_SetTag{}) {};
+  /// related to Rps_SetOb::collect :
+  inline Rps_SetValue(const std::vector<Rps_Value>& vecval);
+  inline Rps_SetValue(const std::initializer_list<Rps_Value>&valil);
+  // "dynamic" casting :
+  inline Rps_SetValue(const Rps_Value);
+};    // end class Rps_SetValue
+
+class Rps_TupleValue : public Rps_Value
+{
+public:
+  /// related to Rps_TupleOb::make :
+  inline Rps_TupleValue (const std::vector<Rps_ObjectRef>& obvec);
+  inline Rps_TupleValue (const std::initializer_list<Rps_ObjectRef>&compil, Rps_TupleTag);
+  Rps_TupleValue(const std::initializer_list<Rps_ObjectRef>&compil)
+    : Rps_TupleValue(compil, Rps_TupleTag{}) {};
+  /// related to Rps_TupleOb::collect :
+  inline Rps_TupleValue (const std::vector<Rps_Value>& vecval);
+  inline Rps_TupleValue (const std::initializer_list<Rps_Value>&valil);
+  // "dynamic" casting :
+  inline Rps_TupleValue(Rps_Value val);
+};    // end class Rps_TupleValue
 ////////////////////////////////////////////////////////////////
 
 
@@ -1142,9 +1184,6 @@ unsigned constexpr rps_set_k3 = 19073;
 class Rps_SetOb: public Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3>
 {
 public:
-  struct Rps_SetTag
-  {
-  };
   friend class Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3>;
   typedef Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3> parentseq_t;
   Rps_SetOb(unsigned len, Rps_SetTag) :parentseq_t (len) {};
@@ -1170,7 +1209,6 @@ unsigned constexpr rps_tuple_k3 = 6571;
 class Rps_TupleOb: public Rps_SeqObjRef<Rps_TupleOb, Rps_Type::Tuple, rps_tuple_k1, rps_tuple_k2, rps_tuple_k3>
 {
 public:
-  struct Rps_TupleTag {};
   friend class  Rps_SeqObjRef<Rps_TupleOb, Rps_Type::Tuple, rps_tuple_k1, rps_tuple_k2, rps_tuple_k3>;
   typedef Rps_SeqObjRef<Rps_TupleOb, Rps_Type::Tuple, rps_tuple_k1, rps_tuple_k2, rps_tuple_k3> parentseq_t;
 protected:
