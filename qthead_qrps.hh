@@ -79,8 +79,8 @@ public:
   virtual ~RpsQWindow () {};
 
 private:
-  void drawAppMenu();
-  void drawHelpMenu();
+  void setupAppMenu();
+  void setupHelpMenu();
 
 signals:
 

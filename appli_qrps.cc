@@ -57,8 +57,9 @@ RpsQApplication::add_new_window(void)
 {
   std::lock_guard gu(app_mutex);
   auto window = new RpsQWindow();
-  window->setWindowTitle(QString("RefPerSys #%").arg(app_windvec.size()));
+  window->setWindowTitle(QString("RefPerSys #%1").arg(app_windvec.size()));
   window->resize (640, 480); // TODO: get dimensions from $HOME/.RefPerSys
+  window->show();
   app_windvec.emplace_back(window);
 } // end of RpsQApplication::add_new_window
 
@@ -93,7 +94,6 @@ void rps_run_application(int &argc, char **argv)
              argv[0], rps_gitid, rps_hostname(), (int)getpid());
 
   RpsQApplication app (argc, argv);
-  app.add_new_window();
   (void) app.exec ();
 } // end of rps_run_application
 

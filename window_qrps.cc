@@ -46,14 +46,15 @@ const char rps_window_date[]= __DATE__;
 RpsQWindow::RpsQWindow (QWidget *parent)
   : QMainWindow (parent)
 {
-  this->drawAppMenu ();
-  this->drawHelpMenu ();
+  this->setupAppMenu ();
+  this->setupHelpMenu ();
 
   qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
 } // end RpsQWindow::RpsQWindow
 
 
-void RpsQWindow::drawAppMenu()
+void
+RpsQWindow::setupAppMenu()
 {
   QPixmap dump_px ("dump_icon.png");
   QPixmap gc_px ("gc_icon.png");
@@ -64,14 +65,19 @@ void RpsQWindow::drawAppMenu()
   QAction *gc_ax = new QAction (gc_px, "&Garbage Collect", this);
   QAction *quit_ax = new QAction (quit_px, "&Quit", this);
   QAction *exit_ax = new QAction (exit_px, "e&Xit", this);
+  QAction *newin_ax = new QAction (exit_px, "New &Window", this);
 
   quit_ax->setShortcut (tr ("CTRL+Q"));
   exit_ax->setShortcut (tr ("CTRL+X"));
+  dump_ax->setShortcut (tr ("CTRL+D"));
+  gc_ax->setShortcut (tr ("CTRL+G"));
+  newin_ax->setShortcut (tr ("CTRL+W"));
 
   QMenu *app_menu;
   app_menu = menuBar ()->addMenu ("&App");
   app_menu->addAction (dump_ax);
   app_menu->addAction (gc_ax);
+  app_menu->addAction (newin_ax);
   app_menu->addSeparator ();
   app_menu->addAction (quit_ax);
   app_menu->addAction (exit_ax);
@@ -80,10 +86,13 @@ void RpsQWindow::drawAppMenu()
   connect (gc_ax, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
   connect (quit_ax, &QAction::triggered, this, &RpsQWindow::onMenuQuit);
   connect (exit_ax, &QAction::triggered, this, &RpsQWindow::onMenuExit);
-}
+  connect (newin_ax, &QAction::triggered,
+           dynamic_cast<RpsQApplication*>(RpsQApplication::instance()),
+           &RpsQApplication::add_new_window);
+} // end RpsQWindow::setupAppMenu
 
 
-void RpsQWindow::drawHelpMenu()
+void RpsQWindow::setupHelpMenu()
 {
   QPixmap about_px ("about_icon.png");
 
@@ -94,7 +103,7 @@ void RpsQWindow::drawHelpMenu()
   help_menu->addAction (about_ax);
 
   connect (about_ax, &QAction::triggered, this, &RpsQWindow::onMenuAbout);
-}
+} // end  RpsQWindow::setupHelpMenu
 
 
 void RpsQWindow::onMenuQuit()
@@ -105,38 +114,54 @@ void RpsQWindow::onMenuQuit()
 
   if (reply == QMessageBox::Yes)
     QApplication::quit ();
-}
+} // end  RpsQWindow::onMenuQuit
 
 
-void RpsQWindow::onMenuExit()
+void
+RpsQWindow::onMenuExit()
 {
-  /* TODO: rps_dump_into () causing fatal error */
   rps_dump_into ();
   QApplication::quit ();
-}
+} // end RpsQWindow::onMenuExit
 
-void RpsQWindow::onMenuDump()
+void
+RpsQWindow::onMenuDump()
 {
-  /* TODO: rps_dump_into () causing fatal error */
   rps_dump_into ();
-}
+} // end RpsQWindow::onMenuDump
 
 
-void RpsQWindow::onMenuGarbageCollect()
+
+void
+RpsQWindow::onMenuGarbageCollect()
 {
-  /* TODO: need to connect to GC routine */
-}
+  rps_garbage_collect();
+} // end RpsQWindow::onMenuGarbageCollect
 
 
-void RpsQWindow::onMenuAbout()
+
+void
+RpsQWindow::onMenuAbout()
 {
-  QString msg ("Git ID: ");
-  msg.append (rps_window_gitid);
-  msg.append ("\nDate: ");
-  msg.append (rps_window_date);
+  QString msg ("RefPerSys Git ID: ");
+  msg.append (rps_gitid);
+  msg.append ("\n");
+  msg.append ("Build date: ");
+  msg.append (rps_timestamp);
+  msg.append ("\n");
+  msg.append ("Md5sum of source: ");
+  msg.append (rps_md5sum);
+  msg.append ("\n");
+  msg.append ("last git commit: ");
+  msg.append(rps_lastgitcommit);
+  msg.append ("\n");
+  msg.append ("RefPerSys directory: ");
+  msg.append(rps_directory);
+  msg.append("\n");
+  msg.append("see http://refpersys.org/\n");
 
   QMessageBox::information (this, "About RefPerSys", msg);
-}
+} // end RpsQWindow::onMenuAbout
 
 
 //////////////////////////////////////// end of file window_qrps.cc
