@@ -102,8 +102,12 @@ void RpsQWindow::onMenuGarbageCollect()
 
 void RpsQWindow::onMenuAbout()
 {
-  /* TODO: show current Git ID */
-  QMessageBox::information (this, "About RefPerSys", "Git ID:");
+  QString msg ("Git ID: ");
+  msg.append (RPS_GITID);
+  msg.append ("\nDate: ");
+  msg.append (__DATE__);
+
+  QMessageBox::information (this, "About RefPerSys", msg);
 }
 
 
