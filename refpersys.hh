@@ -872,6 +872,7 @@ private:
   inline ~Rps_GarbageCollector();
   void run_gc(void);
 public:
+  void mark_obj(Rps_ObjectZone* ob);
   void mark_obj(Rps_ObjectRef ob);
   void mark_value(Rps_Value val);
 };				// end class Rps_GarbageCollector
@@ -1115,6 +1116,7 @@ public:
   };
   virtual bool equal(const Rps_ZoneValue&zv) const;
   virtual bool less(const Rps_ZoneValue&zv) const;
+  virtual void mark_gc_inside(Rps_GarbageCollector&gc);
 };				// end class Rps_ObjectZone
 
 //////////////////////////////////////////////////////////// object payloads
@@ -1125,8 +1127,8 @@ protected:
   inline Rps_Payload(Rps_ObjectZone*);
   inline Rps_Payload(Rps_ObjectRef);
   virtual ~Rps_Payload() =0;
-  virtual void gc_mark(Rps_GarbageCollector&gc) =0;
 public:
+  virtual void gc_mark(Rps_GarbageCollector&gc) =0;
   Rps_ObjectZone* owner() const
   {
     return payl_owner;

@@ -46,6 +46,30 @@ Rps_ObjectZone::gc_mark(Rps_GarbageCollector&gc)
   gc.mark_obj(this);
 } // end of Rps_ObjectZone::gc_mark
 
+void
+Rps_ObjectZone::mark_gc_inside(Rps_GarbageCollector&gc)
+{
+  std::lock_guard<std::shared_mutex> gu(ob_mtx);
+#warning perhaps the _gcinfo should be used here
+  Rps_ObjectZone* obcla = ob_class.load();
+  RPS_ASSERT(obcla != nullptr);
+  gc.mark_obj(obcla);
+  for (auto atit: ob_attrs)
+    {
+      gc.mark_obj(atit.first);
+      if (atit.second.is_ptr())
+        gc.mark_value(atit.second);
+    }
+  for (auto compv: ob_comps)
+    {
+      if (compv.is_ptr())
+        gc.mark_value(compv);
+    };
+  Rps_Payload*payl = ob_payload.load();
+  if (payl)
+    payl->gc_mark(gc);
+} // end Rps_ObjectZone::mark_gc_inside
+
 bool
 Rps_ObjectZone::equal(const Rps_ZoneValue&zv) const
 {

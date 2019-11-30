@@ -58,6 +58,14 @@ Rps_GarbageCollector::mark_obj(Rps_ObjectRef ob)
 } // end of Rps_GarbageCollector::mark_obj
 
 void
+Rps_GarbageCollector::mark_obj(Rps_ObjectZone* ob)
+{
+  if (!ob) return;
+  Rps_ObjectRef rob(ob);
+  mark_obj(rob);
+} // end of Rps_GarbageCollector::mark_obj
+
+void
 Rps_GarbageCollector::mark_value(Rps_Value val)
 {
   if (val.is_empty() || val.is_int()) return;
