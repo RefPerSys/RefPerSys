@@ -33,6 +33,8 @@
 #include "refpersys.hh"
 #include "qthead_qrps.hh"
 
+#include <QCommandLineParser>
+
 extern "C" const char rps_appli_gitid[];
 const char rps_appli_gitid[]= RPS_GITID;
 
@@ -66,6 +68,8 @@ RpsQApplication::add_new_window(void)
 RpsQApplication::RpsQApplication(int &argc, char*argv[])
   : QApplication(argc, argv)
 {
+  setApplicationName("RefPerSys");
+  setApplicationVersion(rps_lastgitcommit);
   app_windvec.reserve(16);
   app_windvec.push_back(nullptr); // we don't want a 0 index.
   add_new_window();
@@ -94,6 +98,21 @@ void rps_run_application(int &argc, char **argv)
              argv[0], rps_gitid, rps_hostname(), (int)getpid());
 
   RpsQApplication app (argc, argv);
+  {
+    QCommandLineParser argparser;
+    argparser.setApplicationDescription("a REFlexive PERsistent SYStem");
+    argparser.addHelpOption();
+    argparser.addVersionOption();
+    const QCommandLineOption loadOption("L", "The load directory.", "load");
+    argparser.addOption(loadOption);
+
+    argparser.process(app);
+    if (argparser.isSet(loadOption))
+      {
+        const QString loadpathqs = argparser.value(loadOption);
+#warning should handle load option here
+      }
+  }
   (void) app.exec ();
 } // end of rps_run_application
 
