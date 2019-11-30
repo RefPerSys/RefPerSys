@@ -189,5 +189,97 @@ Rps_SetOb::collect(const std::vector<Rps_Value>&vecval)
 
 
 
+//////////////////////////////////////// tuples
+const Rps_TupleOb*
+Rps_TupleOb::make(const std::vector<Rps_ObjectRef>& vecob)
+{
+  unsigned nbob = 0;
+  {
+    for (auto ob: vecob)
+      if (ob)
+        nbob++;
+  }
+  if (RPS_UNLIKELY(nbob > maxsize))
+    throw std::length_error("Rps_TupleOb::make too many objects");
+  if (RPS_LIKELY(nbob == vecob.size()))
+    {
+      auto tup =
+        rps_allocate_with_wordgap<Rps_TupleOb, unsigned, Rps_TupleTag>
+        (nbob, nbob, Rps_TupleTag{});
+      memcpy (tup->raw_data(), vecob.data(), nbob * sizeof(Rps_ObjectRef));
+      return tup;
+    }
+  else
+    {
+      std::vector<Rps_ObjectRef> vec;
+      vec.reserve(nbob);
+      for (auto ob: vecob)
+        if (ob)
+          vec.push_back(ob);
+      return make(vec);
+    }
+} // end Rps_TupleOb::make from vector
+
+const Rps_TupleOb*
+Rps_TupleOb::make(const std::initializer_list<Rps_ObjectRef>&compil)
+{
+  std::vector<Rps_ObjectRef> vec(compil);
+  return make(vec);
+} // end of Rps_TupleOb::make from initializer_list
+
+const Rps_TupleOb*
+Rps_TupleOb::collect(const std::vector<Rps_Value>& vecval)
+{
+  unsigned nbcomp = 0;
+  for (auto v : vecval)
+    {
+      if (v.is_object() && v.to_object() != nullptr)
+        nbcomp++;
+      else if (v.is_tuple())
+        nbcomp += v.to_tuple()->cnt();
+      else if (v.is_set())
+        nbcomp += v.to_set()->cnt();
+      else continue;
+      if (RPS_UNLIKELY(nbcomp > maxsize))
+        throw std::length_error("Rps_TupleOb::collect too many objects");
+    }
+  std::vector<Rps_ObjectRef> vecob;
+  vecob.reserve(nbcomp);
+  for (auto v : vecval)
+    {
+      if (v.is_object())
+        {
+          auto ob = v.to_object();
+          if (ob)
+            vecob.push_back(ob);
+        }
+      else if (v.is_tuple())
+        {
+          auto tup = v.to_tuple();
+          for (auto ob : *tup)
+            if (ob)
+              vecob.push_back(ob);
+        }
+      else if (v.is_set())
+        {
+          auto set = v.to_set();
+          for (auto ob : *set)
+            if (ob)
+              vecob.push_back(ob);
+        }
+      else continue;
+    }
+  return make(vecob);
+} // end of Rps_TupleOb::collect from vector
+
+
+const Rps_TupleOb*
+Rps_TupleOb::collect(const std::initializer_list<Rps_Value>&valil)
+{
+  std::vector<Rps_Value> vecval(valil);
+  return collect(vecval);
+} // end Rps_TupleOb::collect from initializer_list
+
+
 /* end of file value_rps.cc */
 

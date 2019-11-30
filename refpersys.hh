@@ -1004,6 +1004,10 @@ class Rps_SeqObjRef : public Rps_LazyHashedZoneValue
   {
     memset (_seqob, 0, sizeof(Rps_ObjectRef)*len);
   };
+  Rps_ObjectRef*raw_data()
+  {
+    return _seqob;
+  };
 public:
   static unsigned constexpr maxsize
     = std::numeric_limits<unsigned>::max() / 2;
@@ -1126,6 +1130,13 @@ protected:
     : parentseq_t (len) {};
   friend Rps_TupleOb*
   Rps_QuasiZone::rps_allocate_with_wordgap<Rps_TupleOb,unsigned,Rps_TupleTag>(unsigned,unsigned,Rps_TupleTag);
+public:
+  // make a tuple from given object references
+  static const Rps_TupleOb*make(const std::vector<Rps_ObjectRef>& vecob);
+  static const Rps_TupleOb*make(const std::initializer_list<Rps_ObjectRef>&compil);
+  // collect a tuple from several objects, tuples, or sets
+  static const Rps_TupleOb*collect(const std::vector<Rps_Value>& vecval);
+  static const Rps_TupleOb*collect(const std::initializer_list<Rps_Value>&valil);
 #warning Rps_TupleOb very incomplete
 };// end of Rps_TupleOb
 

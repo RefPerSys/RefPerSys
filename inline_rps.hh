@@ -160,6 +160,14 @@ Rps_Value::as_set() const
   else throw std::domain_error("Rps_Value::as_set: value is not genuine set");
 } // end Rps_Value::as_set
 
+const Rps_SetOb*
+Rps_Value::to_set(const Rps_SetOb*defset) const
+{
+  if (is_set())
+    return reinterpret_cast<const Rps_SetOb*>(const_cast<Rps_ZoneValue*>(_pval));
+  else return defset;
+} // end Rps_Value::to_set
+
 const Rps_TupleOb*
 Rps_Value::as_tuple() const
 {
@@ -167,6 +175,14 @@ Rps_Value::as_tuple() const
     return reinterpret_cast<const Rps_TupleOb*>(_pval);
   else throw std::domain_error("Rps_Value::as_tuple: value is not genuine tuple");
 } // end Rps_Value::as_tuple
+
+const Rps_TupleOb*
+Rps_Value::to_tuple(const Rps_TupleOb*deftup) const
+{
+  if (is_tuple())
+    return reinterpret_cast<const Rps_TupleOb*>(const_cast<Rps_ZoneValue*>(_pval));
+  else return deftup;
+} // end Rps_Value::to_tuple
 
 const Rps_String*
 Rps_Value::as_string() const
@@ -183,6 +199,15 @@ Rps_Value::as_object() const
     return reinterpret_cast<Rps_ObjectZone*>(const_cast<Rps_ZoneValue*>(_pval));
   else throw std::domain_error("Rps_Value::as_object: value is not genuine object");
 } // end Rps_Value::as_object
+
+const Rps_ObjectZone*
+Rps_Value::to_object(const Rps_ObjectZone*defob) const
+{
+  if (is_object())
+    return reinterpret_cast<Rps_ObjectZone*>(const_cast<Rps_ZoneValue*>(_pval));
+  else return defob;
+} // end Rps_Value::to_object
+
 
 bool
 Rps_Value::operator == (const Rps_Value v) const
