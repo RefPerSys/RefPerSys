@@ -38,4 +38,35 @@ const char rps_objects_gitid[]= RPS_GITID;
 extern "C" const char rps_objects_date[];
 const char rps_objects_date[]= __DATE__;
 
+
+void
+Rps_ObjectZone::gc_mark(Rps_GarbageCollector&gc)
+{
+  RPS_FATAL("unimplemented Rps_ObjectZone::gc_mark");
+#warning unimplemented Rps_ObjectZone::gc_mark
+} // end of Rps_ObjectZone::gc_mark
+
+bool
+Rps_ObjectZone::equal(const Rps_ZoneValue&zv) const
+{
+  if (zv.stored_type() == Rps_Type::Object)
+    {
+      auto othob = reinterpret_cast<const Rps_ObjectZone*>(&zv);
+      return this == othob;
+    }
+  return false;
+} // end of Rps_ObjectZone::equal
+
+bool
+Rps_ObjectZone::less(const Rps_ZoneValue&zv) const
+{
+  if (zv.stored_type() > Rps_Type::Object) return false;
+  if (zv.stored_type() < Rps_Type::Object) return true;
+  {
+    auto othob = reinterpret_cast<const Rps_ObjectZone*>(&zv);
+    return this->oid() < othob->oid();
+  }
+} // end of Rps_ObjectZone::less
+
+
 // end of file objects_rps.cc

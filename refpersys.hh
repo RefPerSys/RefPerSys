@@ -1077,6 +1077,13 @@ public:
   {
     return _oid.hash();
   };
+  virtual void gc_mark(Rps_GarbageCollector&gc);
+  virtual Rps_HashInt val_hash () const
+  {
+    return obhash();
+  };
+  virtual bool equal(const Rps_ZoneValue&zv) const;
+  virtual bool less(const Rps_ZoneValue&zv) const;
 };				// end class Rps_ObjectZone
 
 /////////////////////////// sequences (tuples or sets) of Rps_ObjectRef
