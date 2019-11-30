@@ -1478,44 +1478,29 @@ on practical Linux x86-64 computers.} of C on Linux x86-64:
 
 \smallskip
 
-Practically speaking, every {\RefPerSys} value or quasi-value which
-sits in memory\footnote{This excludes tagged integers, and that memory
-zone is at least word aligned to 8 bytes.} is represented in some
-\texttt{struct} starting with an \texttt{const int16\_t rps\_kind;}
-field discriminating the value type, followed by some \texttt{volatile
-  int16\_t rps\_gcdata;} field reserved for garbage collection
-internals. For instance, our string values could have their C type (of their memory zone) declared as:
-\begin{relsize}{-1.5}
-\begin{alltt}
-  \textbf{struct} rps\_string\_st \{
-    // common fields to every {\RefPerSys} value in memory:
-    \textbf{const} int16\_t rps\_kind;      // always RPS\_KIND\_STRING
-    \textbf{volatile} int16\_t rps\_gcdata; // for garbage collection
-    // string specific fields:
-    \textbf{const} uint32\_t rps\_strsize;      // string size in bytes
-    \textbf{const} uint32\_t rps\_strlen;       // string length in Unicode characters
-    uint32\_t rps\_strhash;            // string hash-code
-    \textbf{const} char rps\_strdata[];        // nul-terminated string bytes
-  \}  \textbf{\_\_attribute\_\_} ((aligned (2 * \textbf{sizeof}(void*))));
-\end{alltt}
-\end{relsize}
-
-Of course, the \texttt{rps\_strdata} field above is a
+Practically speaking, every {\RefPerSys} value or quasi-value (see our
+\texttt{Rps\_QuasiZone} class) which sits in memory\footnote{This
+excludes tagged integers, and that memory zone is at least word
+aligned to 8 bytes.} is represented in some \texttt{class} inherited
+from \texttt{Rps\_ZoneValue} For instance, our string values have
+their memory zone type declared as \texttt{Rps\_String}, but we use
+the \texttt{Rps\_StringValue} class to construct them. In
+\texttt{Rps\_String} the field \texttt{\_sbuf} is a
 \href{https://en.wikipedia.org/wiki/Flexible_array_member}{flexible
-  array member}, and by convention contains \texttt{rps\_strsize + 1}
-bytes, is validly \textsc{Utf-8} encoded, aligned to 4 bytes and
-nul-byte terminated. Hash codes cannot be 0 and are lazily computed
-(so the \texttt{rps\_strhash} field is computed once when it was
-0). The \texttt{RPS\_KIND\_STRING} is some enumerator inside a global
-\texttt{enum}. Strings are ordered naturally, using \texttt{strcmp} on
-their \texttt{rps\_strdata} bytes.
+  array member}, and by convention contains \texttt{\_bytsiz + 1}
+bytes (terminated with a 0 byte), is validly \textsc{Utf-8} encoded,
+aligned to 4 bytes and nul-byte terminated. Hash codes cannot be 0 and
+are lazily computed (so the \texttt{rps\_strhash} field is computed
+once when it was 0). The \texttt{Rps\_Type::String} is some enumerator
+inside a global \texttt{enum}. Strings are ordered naturally, using
+\texttt{strcmp} on their \texttt{rps\_strdata} bytes.
 
 
 \smallskip
 
 
 
-\textcolor{red}{@@TODO: should explain more implementation details in C terms?}
+\textcolor{red}{@@TODO: should explain more implementation details in C++ terms?}
 
 
 \medskip
@@ -1607,7 +1592,10 @@ are immutable, they have no objid, no locking mechanism, and their
 class, attributes and components would be fixed and defined at their
 creation time.
 
-In C++ code, values are \texttt{Rps\_Value}, a ``smart'' value container, actually a single word.
+In C++ code, values are \texttt{Rps\_Value}, a ``smart'' value
+container, actually a single word. That class is specialized into
+helper subclasses, such as \texttt{Rps\_StringValue},
+\texttt{Rps\_DoubleValue} etc.
 
 \subsubsection{immutable scalar values}
 \label{subsubsec:immutable-scalar}
@@ -1617,7 +1605,7 @@ Immutable scalar values include:
   \item \textbf{strings}, \index{string} persisted as \textsc{Hjson} strings; their internal
     representation is \texttt{Rps\_String} using an \textsc{Utf-8}
     encoding. In C++, use \texttt{Rps\_String::make} to make one, or
-    construct an \texttt{Rps\_Value} with a C \textsc{Utf-8} encoded
+    construct an \texttt{Rps\_StringValue} with a C or C++ \textsc{Utf-8} encoded
     string, a \texttt{std::string}, or a \texttt{QString}.
     \item boxed \textbf{doubles}\footnote{See
     \href{http://floating-point-gui.de}{\texttt{floating-point-gui.de}}
@@ -1628,7 +1616,7 @@ Immutable scalar values include:
     \textsc{Ieee-754} \texttt{NaN}, which is incomparable), persisted
     as \textsc{Hjson} doubles; their internal boxed representation is
     \texttt{Rps\_Double}. In C++, use \texttt{Rps\_Double::make} to make one, or
-    construct an \texttt{Rps\_Value} with a C \texttt{double}.
+    construct an \texttt{Rps\_DoubleValue} with a C \texttt{double}.
 \end{itemize}
 
 \subsubsection{immutable composite values}
@@ -1636,8 +1624,15 @@ Immutable scalar values include:
 
 Immutable composite values include:
 \begin{itemize}
-\item \textbf{tuples} of object references \textcolor{red}{@@TODO: should explain more}
-\item \textbf{set} of object references; in C++ build them using \texttt{Rps\_Setob::make}. \textcolor{red}{@@TODO: should explain more}
+\item \textbf{tuples} of object references. Their memory
+  representation is a \texttt{Rps\_TupleOb} zone, and it has both
+  \texttt{Rps\_TupleOb::make} and \texttt{Rps\_TupleOb::collect} static functions. But use
+  \texttt{Rps\_TupleValue} to build them. \textcolor{red}{@@TODO:
+    should explain more}
+\item \textbf{set} of object references; Their memory
+  representation is a \texttt{Rps\_SetOb} zone, and it has both
+  \texttt{Rps\_SetOb::make} and \texttt{Rps\_SetOb::collect} static functions. But use
+  \texttt{Rps\_SetValue} to build them.  \textcolor{red}{@@TODO: should explain more}
 \end{itemize}
 \textcolor{red}{@@TODO: should explain a lot more}
 
