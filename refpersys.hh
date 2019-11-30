@@ -295,6 +295,16 @@ public:
   {
     return _optr == nullptr || _optr == (Rps_ObjectZone*)RPS_EMPTYSLOT;
   }
+  Rps_ObjectZone* to_object() const
+  {
+    if (is_empty()) return nullptr;
+    return _optr;
+  }
+  const Rps_ObjectZone* to_constant_object() const
+  {
+    if (is_empty()) return nullptr;
+    return _optr;
+  }
   // rule of five
   Rps_ObjectRef(const Rps_ObjectZone*oz = nullptr)
     : _optr(const_cast<Rps_ObjectZone*>(oz))
@@ -414,6 +424,7 @@ enum class Rps_Type : int16_t
 class Rps_ObjectRef;
 class Rps_ObjectZone;
 class Rps_String;
+class Rps_Double;
 class Rps_SetOb;
 class Rps_TupleOb;
 
@@ -454,6 +465,7 @@ public:
   inline bool is_object() const;
   inline bool is_set() const;
   inline bool is_string() const;
+  inline bool is_double() const;
   inline bool is_tuple() const;
   inline bool is_null() const;
   inline bool is_empty() const;
@@ -464,15 +476,22 @@ public:
   inline const Rps_TupleOb* as_tuple() const;
   inline  Rps_ObjectZone* as_object() const;
   inline const Rps_String* as_string() const;
+  inline const Rps_Double* as_boxed_double() const;
+  inline double as_double() const;
+  inline const std::string as_cppstring() const;
+  inline const char* as_cstring() const;
   // convert or give default
   inline intptr_t to_int(intptr_t def=0) const;
   inline const Rps_ZoneValue* to_ptr(const Rps_ZoneValue*zp = nullptr) const;
   inline const Rps_SetOb* to_set(const Rps_SetOb*defset= nullptr) const;
+  inline const Rps_Double* to_boxed_double(const Rps_Double*defdbl= nullptr) const;
+  inline double to_double(double def=std::nan("")) const;
   inline const Rps_TupleOb* to_tuple(const Rps_TupleOb* deftup= nullptr) const;
   inline const Rps_ObjectZone* to_object(const Rps_ObjectZone*defob
                                          =nullptr) const;
   inline const Rps_String* to_string( const Rps_String*defstr
                                       = nullptr) const;
+  inline const std::string to_cppstring(std::string defstr= "") const;
 private:
   union
   {
@@ -482,6 +501,31 @@ private:
   };
 } __attribute__((aligned(rps_allocation_unit)));    // end of Rps_Value
 
+
+//////////////// specialized subclasses of Rps_Value
+
+class Rps_ObjectValue : public Rps_Value
+{
+  inline Rps_ObjectValue(const Rps_ObjectRef obr);
+  inline Rps_ObjectValue(const Rps_Value val, const Rps_ObjectZone*defob=nullptr);
+  inline Rps_ObjectValue(const Rps_ObjectZone* obz=nullptr);
+  inline Rps_ObjectValue(nullptr_t);
+}; // end class Rps_ObjectValue
+
+class Rps_StringValue : public Rps_Value
+{
+  inline Rps_StringValue(const char*cstr, int len= -1);
+  inline Rps_StringValue(const std::string str);
+  inline Rps_StringValue(const Rps_Value val);
+  inline Rps_StringValue(const Rps_String* strv);
+  inline Rps_StringValue(nullptr_t);
+}; // end class Rps_StringValue
+
+class Rps_DoubleValue : public Rps_Value
+{
+  inline Rps_DoubleValue (double d=0.0);
+  inline Rps_DoubleValue(const Rps_Value val);
+}; // end class Rps_DoubleValue
 ////////////////////////////////////////////////////////////////
 
 
@@ -901,6 +945,10 @@ public:
   const char*cstr() const
   {
     return _sbuf;
+  };
+  const std::string cppstring() const
+  {
+    return std::string(_sbuf);
   };
   virtual bool equal(const Rps_ZoneValue&zv) const
   {

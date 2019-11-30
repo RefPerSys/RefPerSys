@@ -152,6 +152,12 @@ bool Rps_Value::is_string() const
          && as_ptr()->stored_type() == Rps_Type::String;
 } //end  Rps_Value::is_string()
 
+bool Rps_Value::is_double() const
+{
+  return is_ptr()
+         && as_ptr()->stored_type() == Rps_Type::Double;
+} //end  Rps_Value::is_double()
+
 const Rps_SetOb*
 Rps_Value::as_set() const
 {
@@ -192,6 +198,40 @@ Rps_Value::as_string() const
   else throw std::domain_error("Rps_Value::as_string: value is not genuine string");
 } // end Rps_Value::as_string
 
+const std::string
+Rps_Value::as_cppstring() const
+{
+  if (is_string())
+    return to_string()->cppstring();
+  else
+    throw std::domain_error("Rps_Value::as_cppstring: value is not genuine string");
+} // end Rps_Value::as_cppstring
+
+const char*
+Rps_Value::as_cstring() const
+{
+  if (is_string())
+    return to_string()->cstr();
+  else
+    throw std::domain_error("Rps_Value::as_string: value is not genuine string");
+} // end Rps_Value::as_cstring
+
+const Rps_String*
+Rps_Value::to_string(const Rps_String*defstr) const
+{
+  if (is_string())
+    return reinterpret_cast<const Rps_String*>(const_cast<Rps_ZoneValue*>(_pval));
+  else return defstr;
+} // end Rps_Value::to_string
+
+const std::string
+Rps_Value::to_cppstring(std::string defstr) const
+{
+  auto strp = to_string();
+  if (strp) return strp->cppstring();
+  else return defstr;
+} // end of Rps_Value::to_cppstring
+
 Rps_ObjectZone*
 Rps_Value::as_object() const
 {
@@ -207,6 +247,30 @@ Rps_Value::to_object(const Rps_ObjectZone*defob) const
     return reinterpret_cast<Rps_ObjectZone*>(const_cast<Rps_ZoneValue*>(_pval));
   else return defob;
 } // end Rps_Value::to_object
+
+const Rps_Double*
+Rps_Value::as_boxed_double() const
+{
+  if (is_double())
+    return reinterpret_cast<const Rps_Double*>(_pval);
+  else throw std::domain_error("Rps_Value::as_boxed_double: value is not genuine double");
+} // end Rps_Value::as_boxed_double
+
+double
+Rps_Value::as_double() const
+{
+  if (is_double())
+    return as_boxed_double()->dval();
+  else throw std::domain_error("Rps_Value::as_double: value is not genuine double");
+} // end Rps_Value::as_boxed_double
+
+double
+Rps_Value::to_double(double def) const
+{
+  if (is_double())
+    return as_double();
+  else return def;
+} // end Rps_Value::to_double
 
 
 bool
@@ -434,6 +498,32 @@ Rps_String::make(const std::string&s)
 {
   return Rps_String::make(s.c_str(), s.size());
 } // end Rps_String::make(const std::string&s)
+
+
+Rps_StringValue::Rps_StringValue (const char*cstr, int len)
+  : Rps_Value(Rps_String::make(cstr, len), Rps_ValPtrTag{})
+{
+} // end Rps_StringValue::Rps_StringValue (const char*cstr, int len)
+
+Rps_StringValue::Rps_StringValue(const std::string str)
+  : Rps_Value(Rps_String::make(str), Rps_ValPtrTag{})
+{
+} // end Rps_StringValue::Rps_StringValue
+
+Rps_StringValue::Rps_StringValue(const Rps_Value val)
+  : Rps_Value(val.is_string()?(val.to_string()):nullptr, Rps_ValPtrTag{})
+{
+} // end Rps_StringValue::Rps_StringValue(const Rps_Value val)
+
+Rps_StringValue::Rps_StringValue(const Rps_String* strv)
+  : Rps_Value(strv, Rps_ValPtrTag{})
+{
+} // end Rps_StringValue::Rps_StringValue(const Rps_String* strv)
+
+Rps_StringValue::Rps_StringValue(nullptr_t)
+  : Rps_Value(nullptr)
+{
+} // end of Rps_StringValue::Rps_StringValue(nullptr_t)
 //////////////////////////////////////////////////////////// boxed doubles
 Rps_Value::Rps_Value (double d, Rps_DoubleTag)
   : Rps_Value(Rps_Double::make(d), Rps_ValPtrTag())
@@ -443,6 +533,12 @@ Rps_Value::Rps_Value (double d, Rps_DoubleTag)
 };      // end Rps_Value::Rps_Value (double d, Rps_DoubleTag)
 
 Rps_Value::Rps_Value (double d) : Rps_Value::Rps_Value (d, Rps_DoubleTag{}) {};
+
+const Rps_Double* Rps_Value::to_boxed_double(const Rps_Double*defdbl) const
+{
+  if (is_double()) return reinterpret_cast<const Rps_Double*>(_pval);
+  else return defdbl;
+}
 
 Rps_Double::Rps_Double(double d)
   : Rps_LazyHashedZoneValue(Rps_Type::Double), _dval(d)
@@ -458,6 +554,16 @@ Rps_Double::make(double d)
     throw std::invalid_argument("NaN cannot be given to Rps_Double::make");
   return Rps_QuasiZone::rps_allocate<Rps_Double,double>(d);
 } // end  Rps_Double::make
+
+Rps_DoubleValue::Rps_DoubleValue (double d)
+  : Rps_Value(Rps_Double::make(d), Rps_ValPtrTag{})
+{
+} // end Rps_DoubleValue::Rps_DoubleValue (double d=0.0)
+
+Rps_DoubleValue::Rps_DoubleValue(const Rps_Value val)
+  : Rps_Value(val.is_double()?val.to_boxed_double():nullptr,  Rps_ValPtrTag{})
+{
+} // end Rps_DoubleValue::Rps_DoubleValue
 
 //////////////////////////////////////////////////////////// objects
 Rps_HashInt
@@ -508,6 +614,18 @@ Rps_ObjectRef::operator > (const Rps_ObjectRef& oth) const
 {
   return oth < *this;
 }
+
+Rps_ObjectValue::Rps_ObjectValue(const Rps_ObjectRef obr)
+  : Rps_Value (obr.to_object(), Rps_ValPtrTag{}) {};
+
+Rps_ObjectValue::Rps_ObjectValue(const Rps_Value val, const Rps_ObjectZone*defob)
+  : Rps_Value (val.is_object()?val.to_object():defob, Rps_ValPtrTag{}) {};
+
+Rps_ObjectValue::Rps_ObjectValue(const Rps_ObjectZone* obz)
+  : Rps_Value (obz, Rps_ValPtrTag{}) {};
+
+Rps_ObjectValue::Rps_ObjectValue(nullptr_t)
+  : Rps_Value (nullptr, Rps_ValPtrTag{}) {};
 
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh
