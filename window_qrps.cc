@@ -49,13 +49,15 @@ RpsQWindow::RpsQWindow (QWidget *parent)
   QPixmap dump_px ("dump_icon.png");
   QPixmap gc_px ("gc_icon.png");
   QPixmap quit_px ("quit_icon.png");
+  QPixmap exit_px ("exit_icon.png");
 
   QAction *dump_ax = new QAction (dump_px, "&Dump", this);
   QAction *gc_ax = new QAction (gc_px, "&Garbage Collect", this);
   QAction *quit_ax = new QAction (quit_px, "&Quit", this);
-  QAction *exit_ax = new QAction (quit_px, "e&Xit", this);
+  QAction *exit_ax = new QAction (exit_px, "e&Xit", this);
 
-  quit_ax->setShortcut (tr ("CTR+Q"));
+  quit_ax->setShortcut (tr ("CTRL+Q"));
+  exit_ax->setShortcut (tr ("CTRL+X"));
 
   QMenu *app_menu;
   app_menu = menuBar ()->addMenu ("&App");
