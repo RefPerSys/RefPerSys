@@ -296,9 +296,10 @@ public:
     return _optr == nullptr || _optr == (Rps_ObjectZone*)RPS_EMPTYSLOT;
   }
   // rule of five
-  Rps_ObjectRef(Rps_ObjectZone*oz = nullptr) : _optr(oz)
+  Rps_ObjectRef(const Rps_ObjectZone*oz = nullptr)
+    : _optr(const_cast<Rps_ObjectZone*>(oz))
   {
-    if (RPS_UNLIKELY((oz == (Rps_ObjectZone*)RPS_EMPTYSLOT)))
+    if (RPS_UNLIKELY((oz == (const Rps_ObjectZone*)RPS_EMPTYSLOT)))
       _optr = nullptr;
   };
   ~Rps_ObjectRef()
@@ -407,8 +408,16 @@ enum class Rps_Type : int16_t
   Object,
 };
 
-////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////// values
 
+//// forward declarations
+class Rps_ObjectRef;
+class Rps_ObjectZone;
+class Rps_String;
+class Rps_SetOb;
+class Rps_TupleOb;
+
+//////////////// our value, a single word
 class Rps_Value
 {
 public:
@@ -442,10 +451,28 @@ public:
   inline bool operator > (const Rps_Value v) const;
   inline bool is_int() const;
   inline bool is_ptr() const;
+  inline bool is_object() const;
+  inline bool is_set() const;
+  inline bool is_string() const;
+  inline bool is_tuple() const;
   inline bool is_null() const;
   inline bool is_empty() const;
+  // convert, or else throw exception on failure
   inline intptr_t as_int() const;
   inline const Rps_ZoneValue* as_ptr() const;
+  inline const Rps_SetOb* as_set() const;
+  inline const Rps_TupleOb* as_tuple() const;
+  inline  Rps_ObjectZone* as_object() const;
+  inline const Rps_String* as_string() const;
+  // convert or give default
+  inline intptr_t to_int(intptr_t def=0) const;
+  inline const Rps_ZoneValue* to_ptr(const Rps_ZoneValue*zp = nullptr) const;
+  inline const Rps_SetOb* to_set(const Rps_SetOb*defset= nullptr) const;
+  inline const Rps_TupleOb* to_tuple(const Rps_TupleOb* deftup= nullptr) const;
+  inline const Rps_ObjectZone* to_object(const Rps_ObjectZone*defob
+                                         =nullptr) const;
+  inline const Rps_String* to_string( const Rps_String*defstr
+                                      = nullptr) const;
 private:
   union
   {
@@ -1074,7 +1101,13 @@ protected:
   friend Rps_SetOb*
   Rps_QuasiZone::rps_allocate_with_wordgap<Rps_SetOb,unsigned,Rps_SetTag>(unsigned,unsigned,Rps_SetTag);
 public:
+  // make a set from given object references
   static const Rps_SetOb*make(const std::set<Rps_ObjectRef>& setob);
+  static const Rps_SetOb*make(const std::vector<Rps_ObjectRef>& vecob);
+  static const Rps_SetOb*make(const std::initializer_list<Rps_ObjectRef>&elemil);
+  // collect a set from several objects, tuples, or sets
+  static const Rps_SetOb*collect(const std::vector<Rps_Value>& vecval);
+  static const Rps_SetOb*collect(const std::initializer_list<Rps_Value>&valil);
 #warning Rps_SetOb very incomplete
 };// end of Rps_SetOb
 

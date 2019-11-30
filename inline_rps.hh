@@ -124,8 +124,65 @@ const Rps_ZoneValue*
 Rps_Value::as_ptr() const
 {
   if (is_ptr()) return _pval;
-  else throw std::runtime_error("as_ptr: value is not genuine pointer");
+  else throw std::runtime_error("Rps_Value::as_ptr: value is not genuine pointer");
 }
+
+
+bool Rps_Value::is_object() const
+{
+  return is_ptr()
+         && as_ptr()->stored_type() == Rps_Type::Object;
+} //end  Rps_Value::is_object()
+
+bool Rps_Value::is_set() const
+{
+  return is_ptr()
+         && as_ptr()->stored_type() == Rps_Type::Set;
+} //end  Rps_Value::is_set()
+
+bool Rps_Value::is_tuple() const
+{
+  return is_ptr()
+         && as_ptr()->stored_type() == Rps_Type::Tuple;
+} //end  Rps_Value::is_tuple()
+
+bool Rps_Value::is_string() const
+{
+  return is_ptr()
+         && as_ptr()->stored_type() == Rps_Type::String;
+} //end  Rps_Value::is_string()
+
+const Rps_SetOb*
+Rps_Value::as_set() const
+{
+  if (is_set())
+    return reinterpret_cast<const Rps_SetOb*>(_pval);
+  else throw std::domain_error("Rps_Value::as_set: value is not genuine set");
+} // end Rps_Value::as_set
+
+const Rps_TupleOb*
+Rps_Value::as_tuple() const
+{
+  if (is_tuple())
+    return reinterpret_cast<const Rps_TupleOb*>(_pval);
+  else throw std::domain_error("Rps_Value::as_tuple: value is not genuine tuple");
+} // end Rps_Value::as_tuple
+
+const Rps_String*
+Rps_Value::as_string() const
+{
+  if (is_string())
+    return reinterpret_cast<const Rps_String*>(_pval);
+  else throw std::domain_error("Rps_Value::as_string: value is not genuine string");
+} // end Rps_Value::as_string
+
+Rps_ObjectZone*
+Rps_Value::as_object() const
+{
+  if (is_object())
+    return reinterpret_cast<Rps_ObjectZone*>(const_cast<Rps_ZoneValue*>(_pval));
+  else throw std::domain_error("Rps_Value::as_object: value is not genuine object");
+} // end Rps_Value::as_object
 
 bool
 Rps_Value::operator == (const Rps_Value v) const

@@ -119,6 +119,8 @@ Rps_SetOb::Rps_SetOb(const std::set<Rps_ObjectRef>& setob, Rps_SetOb::Rps_SetTag
     }
 } // end Rps_SetOb::Rps_SetOb
 
+
+
 const Rps_SetOb*
 Rps_SetOb::make(const std::set<Rps_ObjectRef>& setob)
 {
@@ -131,7 +133,61 @@ Rps_SetOb::make(const std::set<Rps_ObjectRef>& setob)
   return
     rps_allocate_with_wordgap<Rps_SetOb,const std::set<Rps_ObjectRef>&,Rps_SetTag>
     (setsiz,setob,Rps_SetTag{});
-} // end of Rps_SetOb::make
+} // end of Rps_SetOb::make with set
+
+
+
+
+const Rps_SetOb*
+Rps_SetOb::make(const std::initializer_list<Rps_ObjectRef>&elemil)
+{
+  std::set<Rps_ObjectRef>elemset;
+  for (auto elem: elemil)
+    if (elem)
+      elemset.insert(elem);
+  return make(elemset);
+} // end of Rps_SetOb::make with initializer_list
+
+
+
+const Rps_SetOb*
+Rps_SetOb::make(const std::vector<Rps_ObjectRef>&vecob)
+{
+  std::set<Rps_ObjectRef>elemset;
+  for (auto ob: vecob)
+    if (ob)
+      elemset.insert(ob);
+  return make(elemset);
+} // end of Rps_SetOb::make with vector
+
+
+const Rps_SetOb*
+Rps_SetOb::collect(const std::vector<Rps_Value>&vecval)
+{
+  std::set<Rps_ObjectRef>elemset;
+  for (auto val: vecval)
+    {
+      if (val.is_object())
+        elemset.insert(Rps_ObjectRef(val.as_object()));
+      else if (val.is_tuple())
+        {
+          auto tup = val.as_tuple();
+          for (auto ob: *tup)
+            if (ob)
+              elemset.insert(ob);
+        }
+      else if (val.is_set())
+        {
+          auto set = val.as_set();
+          for (auto ob: *set)
+            elemset.insert(ob);
+        }
+    }
+  return make(elemset);
+} // end of Rps_SetOb::collect with vector
+
+
+
 
 /* end of file value_rps.cc */
 
