@@ -49,13 +49,15 @@ RpsQWindow::RpsQWindow (QWidget *parent)
   QPixmap dump_px ("dump_icon.png");
   QPixmap gc_px ("gc_icon.png");
   QPixmap quit_px ("quit_icon.png");
+  QPixmap exit_px ("exit_icon.png");
 
   QAction *dump_ax = new QAction (dump_px, "&Dump", this);
   QAction *gc_ax = new QAction (gc_px, "&Garbage Collect", this);
   QAction *quit_ax = new QAction (quit_px, "&Quit", this);
-  QAction *exit_ax = new QAction (quit_px, "e&Xit", this);
+  QAction *exit_ax = new QAction (exit_px, "e&Xit", this);
 
-  quit_ax->setShortcut (tr ("CTR+Q"));
+  quit_ax->setShortcut (tr ("CTRL+Q"));
+  exit_ax->setShortcut (tr ("CTRL+X"));
 
   QMenu *app_menu;
   app_menu = menuBar ()->addMenu ("&App");
@@ -68,7 +70,7 @@ RpsQWindow::RpsQWindow (QWidget *parent)
   connect (dump_ax, &QAction::triggered, this, &RpsQWindow::onMenuDump);
   connect (gc_ax, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
   connect (quit_ax, &QAction::triggered, this, &RpsQWindow::onMenuQuit);
-  connect (quit_ax, &QAction::triggered, this, &RpsQWindow::onMenuExit);
+  connect (exit_ax, &QAction::triggered, this, &RpsQWindow::onMenuExit);
 
   QPixmap about_px ("gc_icon.png");
   QAction *about_ax = new QAction (about_px, "&About", this);
@@ -85,20 +87,27 @@ RpsQWindow::RpsQWindow (QWidget *parent)
 
 void RpsQWindow::onMenuQuit()
 {
+  auto msg = QString ("Are you sure you want to quit without dumping?");
+  auto btn = QMessageBox::Yes | QMessageBox::No;
+  auto reply = QMessageBox::question (this, "RefPerSys", msg, btn);
 
-  RPS_WARN("RpsQWindow::onMenuQuit is incomplete.\n"
-           "it should show a modal dialog to confirm quitting without dumping");
-#warning TODO: RpsQWindow::onMenuQuit is incomplete
-  // see https://doc.qt.io/qt-5/qmessagebox.html
-  QApplication::quit ();
+  if (reply == QMessageBox::Yes)
+    QApplication::quit ();
 }
 
 
 void RpsQWindow::onMenuExit()
 {
   /* TODO: rps_dump_into () causing fatal error */
-  rps_dump_into ();
-  QApplication::quit ();
+
+  auto msg = QString ("Are you sure you want to dump and exit?");
+  auto btn = QMessageBox::Yes | QMessageBox::No;
+  auto reply = QMessageBox::question (this, "RefPerSys", msg, btn);
+
+  if (reply == QMessageBox::Yes) {
+    rps_dump_into ();
+    QApplication::quit ();
+  }
 }
 
 void RpsQWindow::onMenuDump()
