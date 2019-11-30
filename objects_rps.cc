@@ -42,8 +42,8 @@ const char rps_objects_date[]= __DATE__;
 void
 Rps_ObjectZone::gc_mark(Rps_GarbageCollector&gc)
 {
-  RPS_FATAL("unimplemented Rps_ObjectZone::gc_mark");
-#warning unimplemented Rps_ObjectZone::gc_mark
+  std::lock_guard<std::shared_mutex> gu(ob_mtx);
+  gc.mark_obj(this);
 } // end of Rps_ObjectZone::gc_mark
 
 bool

@@ -56,6 +56,7 @@
 #include <initializer_list>
 #include <algorithm>
 #include <mutex>
+#include <shared_mutex>
 #include <thread>
 #include <condition_variable>
 #include <atomic>
@@ -1065,17 +1066,25 @@ public:
 
 
 //////////////////////////////////////////////////////////// object zones
+class Rps_Payload;
 class Rps_ObjectZone : public Rps_ZoneValue
 {
-  const Rps_Id _oid;
+  const Rps_Id ob_oid;
+  std::shared_mutex ob_mtx;
+  std::atomic<Rps_ObjectZone*> ob_class;
+  std::map<Rps_ObjectRef, Rps_Value> ob_attrs;
+  std::vector<Rps_Value> ob_comps;
+  std::atomic<Rps_Payload*> ob_payload;
+  Rps_ObjectZone(Rps_Id oid);
+  Rps_ObjectZone(void);
 public:
   const Rps_Id oid() const
   {
-    return _oid;
+    return ob_oid;
   };
   Rps_HashInt obhash() const
   {
-    return _oid.hash();
+    return ob_oid.hash();
   };
   virtual void gc_mark(Rps_GarbageCollector&gc);
   virtual Rps_HashInt val_hash () const
@@ -1085,6 +1094,22 @@ public:
   virtual bool equal(const Rps_ZoneValue&zv) const;
   virtual bool less(const Rps_ZoneValue&zv) const;
 };				// end class Rps_ObjectZone
+
+//////////////////////////////////////////////////////////// object payloads
+class Rps_Payload : public Rps_QuasiZone
+{
+  Rps_ObjectZone* payl_owner;
+protected:
+  inline Rps_Payload(Rps_ObjectZone*);
+  inline Rps_Payload(Rps_ObjectRef);
+  virtual ~Rps_Payload() =0;
+  virtual void gc_mark(Rps_GarbageCollector&gc) =0;
+public:
+  Rps_ObjectZone* owner() const
+  {
+    return payl_owner;
+  };
+};				// end Rps_Payload
 
 /////////////////////////// sequences (tuples or sets) of Rps_ObjectRef
 class Rps_SetOb;
