@@ -863,6 +863,7 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph);
 
 class Rps_GarbageCollector
 {
+  friend class Rps_QuasiZone;
   std::mutex gc_mtx;
   const std::function<void(void)> &gc_rootmarkers;
   std::deque<Rps_ObjectRef> gc_obscanque;
@@ -882,18 +883,22 @@ public:
 class Rps_QuasiZone
 {
   friend class Rps_GarbageCollector;
-  const Rps_Type _type;
-  volatile std::atomic_uint16_t _gcinfo;
-  // we keep each quasi-zone in the _zonvec
-  static std::mutex _mtx;
-  static std::vector<Rps_QuasiZone*> _zonvec;
-  uint32_t _rank;		// the rank in _zonvec;
+  const Rps_Type qz_type;
+  volatile std::atomic_uint16_t qz_gcinfo;
+  // we keep each quasi-zone in the qz_zonvec
+  static std::mutex qz_mtx;
+  static std::vector<Rps_QuasiZone*> qz_zonvec;
+  uint32_t qz_rank;		// the rank in qz_zonvec;
   inline void* operator new (std::size_t siz, std::nullptr_t);
   inline void* operator new (std::size_t siz, unsigned wordgap);
+  static constexpr uint16_t qz_gcmark_bit = 1;
 public:
+  inline bool is_gcmarked(Rps_GarbageCollector&) const;
+  inline void set_gcmark(Rps_GarbageCollector&);
+  inline void clear_gcmark(Rps_GarbageCollector&);
   Rps_Type stored_type(void) const
   {
-    return _type;
+    return qz_type;
   };
   template <typename ZoneClass, class ...Args> static ZoneClass*
   rps_allocate(Args... args)
@@ -911,7 +916,7 @@ protected:
   virtual uint32_t wordsize() const =0;
   virtual Rps_Type type() const
   {
-    return _type;
+    return qz_type;
   };
 };				// end class Rps_QuasiZone;
 

@@ -414,8 +414,34 @@ Rps_Value::operator >= (const Rps_Value v) const
 
 ////////////////////////////////////////////////////// quasi zones
 Rps_QuasiZone::Rps_QuasiZone(Rps_Type ty)
-  : _type(ty), _gcinfo(0) {};
+  : qz_type(ty), qz_gcinfo(0)
+{
+};
 
+// the GC related routines below don't really use the
+// Rps_GarbageCollector but needs one for typing safety.
+
+// test the GC mark
+bool
+Rps_QuasiZone::is_gcmarked(Rps_GarbageCollector&) const
+{
+  auto gcinf = qz_gcinfo.load();
+  return gcinf & qz_gcmark_bit;
+} // end Rps_QuasiZone::is_gcmarked
+
+// set the GC mark
+void
+Rps_QuasiZone::set_gcmark(Rps_GarbageCollector&)
+{
+  qz_gcinfo.fetch_or(qz_gcmark_bit);
+} // end Rps_QuasiZone::set_gcmark
+
+// clear the GC mark
+void
+Rps_QuasiZone::clear_gcmark(Rps_GarbageCollector&)
+{
+  qz_gcinfo.fetch_and(~qz_gcmark_bit);
+} // end Rps_QuasiZone::clear _gcmark
 
 inline void*
 Rps_QuasiZone::operator new (std::size_t siz, std::nullptr_t)
