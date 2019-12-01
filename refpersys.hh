@@ -429,6 +429,8 @@ class Rps_String;
 class Rps_Double;
 class Rps_SetOb;
 class Rps_TupleOb;
+class Rps_GarbageCollector;
+
 
 //////////////// our value, a single word
 class Rps_Value
@@ -456,6 +458,7 @@ public:
   inline Rps_Value(const char*str, int len= -1);
   Rps_Value(const Rps_ZoneValue*ptr) : Rps_Value(ptr, Rps_ValPtrTag{}) {};
   Rps_Value(const Rps_ZoneValue& zv) : Rps_Value(&zv, Rps_ValPtrTag{}) {};
+  inline void gc_mark(Rps_GarbageCollector&gc);
   inline bool operator == (const Rps_Value v) const;
   inline bool operator <= (const Rps_Value v) const;
   inline bool operator < (const Rps_Value v) const;
@@ -860,17 +863,19 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph);
   Rps_BackTrace_Helper(__FILE__,__LINE__,(Skip),(Name))
 
 ////////////////////////////////////////////////////// garbage collector
-
+extern "C" void rps_garbage_collect(void);
 class Rps_GarbageCollector
 {
+  friend void rps_garbage_collect(void);
+  static std::atomic<Rps_GarbageCollector*> gc_this;
   friend class Rps_QuasiZone;
   std::mutex gc_mtx;
-  const std::function<void(void)> &gc_rootmarkers;
+  std::atomic<bool> gc_running;
+  const std::function<void(Rps_GarbageCollector*)> &gc_rootmarkers;
   std::deque<Rps_ObjectRef> gc_obscanque;
-  std::unordered_set<Rps_ObjectRef> gc_visitedobset;
 private:
-  inline Rps_GarbageCollector(const std::function<void(void)> &rootmarkers);
-  inline ~Rps_GarbageCollector();
+  Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers);
+  ~Rps_GarbageCollector();
   void run_gc(void);
 public:
   void mark_obj(Rps_ObjectZone* ob);
@@ -895,10 +900,14 @@ class Rps_QuasiZone
   static constexpr uint16_t qz_gcmark_bit = 1;
 public:
   static void initialize(void);
+  static inline Rps_QuasiZone*nth_zone(uint32_t rk);
+  static inline Rps_QuasiZone*raw_nth_zone(uint32_t rk, Rps_GarbageCollector&);
   inline bool is_gcmarked(Rps_GarbageCollector&) const;
   inline void set_gcmark(Rps_GarbageCollector&);
   inline void clear_gcmark(Rps_GarbageCollector&);
-  void clear_all_gcmarks(Rps_GarbageCollector&);
+  static void clear_all_gcmarks(Rps_GarbageCollector&);
+  inline static void run_locked_gc(Rps_GarbageCollector&, std::function<void(Rps_GarbageCollector&)>);
+  inline static void every_zone(Rps_GarbageCollector&, std::function<void(Rps_GarbageCollector&, Rps_QuasiZone*)>);
   Rps_Type stored_type(void) const
   {
     return qz_type;

@@ -149,7 +149,18 @@ Rps_Value::as_ptr() const
 }
 
 
-bool Rps_Value::is_object() const
+void
+Rps_Value::gc_mark(Rps_GarbageCollector&gc)
+{
+  if (!is_ptr()) return;
+  if (_pval->is_gcmarked(gc)) return;
+  Rps_ZoneValue* pzv = const_cast<Rps_ZoneValue*>(_pval);
+  pzv->set_gcmark(gc);
+  pzv->gc_mark(gc);
+} // end Rps_Value::gc_mark
+
+bool
+Rps_Value::is_object() const
 {
   return is_ptr()
          && as_ptr()->stored_type() == Rps_Type::Object;
@@ -439,6 +450,44 @@ Rps_QuasiZone::Rps_QuasiZone(Rps_Type ty)
 {
   register_in_zonevec();
 } // end of Rps_QuasiZone::Rps_QuasiZone
+
+void
+Rps_QuasiZone::every_zone(Rps_GarbageCollector&gc, std::function<void(Rps_GarbageCollector&, Rps_QuasiZone*)>fun)
+{
+  std::lock_guard<std::mutex> gu(qz_mtx);
+  auto nbzones = (uint32_t)qz_zonvec.size();
+  for (uint32_t zix=1; zix<nbzones; zix++)
+    {
+      auto curzon = qz_zonvec[zix];
+      if (!curzon)
+        continue;
+      RPS_ASSERT(curzon->qz_rank == zix);
+      fun(gc, curzon);
+    }
+} // end Rps_QuasiZone::every_zone
+
+Rps_QuasiZone*
+Rps_QuasiZone::nth_zone(uint32_t rk)
+{
+  std::lock_guard<std::mutex> gu(qz_mtx);
+  if (rk<=0 || rk>=qz_zonvec.size()) return nullptr;
+  return qz_zonvec[rk];
+} // end  Rps_QuasiZone::nth_zone
+
+Rps_QuasiZone*
+Rps_QuasiZone::raw_nth_zone(uint32_t rk, Rps_GarbageCollector&)
+{
+  if (rk<=0 || rk>=qz_zonvec.size()) return nullptr;
+  return qz_zonvec[rk];
+} // end Rps_QuasiZone::raw_nth_zone
+
+void
+Rps_QuasiZone::run_locked_gc(Rps_GarbageCollector&gc, std::function<void(Rps_GarbageCollector&)>fun)
+{
+  std::lock_guard<std::mutex> gu(qz_mtx);
+  fun(gc);
+} // end Rps_QuasiZone::run_locked_gc
+
 
 // the GC related routines below don't really use the
 // Rps_GarbageCollector but needs one for typing safety.

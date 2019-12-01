@@ -38,8 +38,35 @@ const char rps_garbcoll_gitid[]= RPS_GITID;
 extern "C" const char rps_garbcoll_date[];
 const char rps_garbcoll_date[]= __DATE__;
 
-void rps_garbage_collect (void)
+std::atomic<Rps_GarbageCollector*>
+Rps_GarbageCollector::gc_this;
+Rps_GarbageCollector::Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers) :
+  gc_mtx(), gc_running(false), gc_rootmarkers(rootmarkers),
+  gc_obscanque()
 {
+  RPS_ASSERT(gc_this.load() == nullptr);
+  gc_this.store(this);
+} // end Rps_GarbageCollector::Rps_GarbageCollector
+
+
+Rps_GarbageCollector::~Rps_GarbageCollector()
+{
+  RPS_ASSERT(gc_this.load() == this);
+  RPS_ASSERT(gc_running.load() == false);
+  RPS_ASSERT(gc_obscanque.empty());
+  gc_this.store(nullptr);
+} // end Rps_GarbageCollector::~Rps_GarbageCollector
+
+void
+rps_garbage_collect (void)
+{
+  RPS_ASSERT(Rps_GarbageCollector::gc_this.load() == nullptr);
+  static Rps_Value dummyref;
+  Rps_GarbageCollector the_gc([](Rps_GarbageCollector*gc)
+  {
+    dummyref.gc_mark(*gc);
+  });
+  the_gc.run_gc();
   RPS_FATAL("unimplemented rps_garbage_collect");
 #warning rps_garbage_collect unimplemented
 } // end of rps_garbage_collect
@@ -48,14 +75,43 @@ void
 Rps_GarbageCollector::mark_obj(Rps_ObjectRef ob)
 {
   if (!ob) return;
-  std::lock_guard<std::mutex> gu(gc_mtx);
-  if (gc_visitedobset.find(ob) == gc_visitedobset.end())
+  RPS_ASSERT(gc_running.load());
+  if (!ob->is_gcmarked(*this))
     {
-      gc_visitedobset.insert(ob);
+      ob->set_gcmark(*this);
       gc_obscanque.push_back(ob);
-      /// FIXME, we probably want to mark inside the object zone...
     }
 } // end of Rps_GarbageCollector::mark_obj
+
+
+void
+Rps_GarbageCollector::run_gc(void)
+{
+  RPS_ASSERT(gc_running.load());
+  Rps_QuasiZone::run_locked_gc
+  (*this,
+   [] (Rps_GarbageCollector&gc)
+  {
+    Rps_QuasiZone::clear_all_gcmarks(gc);
+    while (!gc.gc_obscanque.empty())
+      {
+        auto obfront = gc.gc_obscanque.front();
+        gc.gc_obscanque.pop_front();
+        RPS_ASSERT(obfront);
+        obfront->mark_gc_inside(gc);
+      };
+  });
+  Rps_QuasiZone::every_zone
+  (*this,
+   [] (Rps_GarbageCollector&gc, Rps_QuasiZone*qz)
+  {
+    if (qz->is_gcmarked(gc))
+      return;
+    RPS_ASSERT(Rps_QuasiZone::raw_nth_zone(qz->qz_rank,gc) == qz);
+    delete qz;
+  });
+#warning Rps_GarbageCollector::run_gc could be inncomplete or rong
+} // end Rps_GarbageCollector::run_gc
 
 void
 Rps_GarbageCollector::mark_obj(Rps_ObjectZone* ob)
