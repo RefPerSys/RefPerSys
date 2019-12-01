@@ -113,6 +113,18 @@ std::mutex Rps_QuasiZone::qz_mtx;
 std::vector<Rps_QuasiZone*> Rps_QuasiZone::qz_zonvec(100);
 uint32_t Rps_QuasiZone::qz_cnt;
 
+void
+Rps_QuasiZone::initialize(void)
+{
+  static bool inited;
+  if (inited) return;
+  inited = true;
+  std::lock_guard<std::mutex> gu(qz_mtx);
+  qz_zonvec.reserve(100);
+  qz_zonvec.push_back(nullptr);
+} // end Rps_QuasiZone::initialize
+
+
 Rps_QuasiZone::~Rps_QuasiZone()
 {
   unregister_in_zonevec();
@@ -159,6 +171,17 @@ Rps_QuasiZone::unregister_in_zonevec(void)
   qz_zonvec[this->qz_rank] = nullptr;
   qz_cnt--;
 } // end of Rps_QuasiZone::unregister_in_zonevec
+
+void
+Rps_QuasiZone::clear_all_gcmarks(Rps_GarbageCollector&gc)
+{
+  std::lock_guard<std::mutex> gu(qz_mtx);
+  for (Rps_QuasiZone *qz : qz_zonvec)
+    {
+      if (!qz) continue;
+      qz->clear_gcmark(gc);
+    }
+} // end of Rps_QuasiZone::clear_all_gcmarks
 
 //////////////////////////////////////////////// sets
 

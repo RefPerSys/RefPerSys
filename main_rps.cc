@@ -213,6 +213,7 @@ main(int argc, char** argv)
   RPS_INFORM("starting RefPerSys %s process %d on host %s\n"
              "... gitid %.16s built %s",
              argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp);
+  Rps_QuasiZone::initialize();
   //// FIXME: should have some real code here
   rps_run_application(argc, argv);
   RPS_INFORM("end of RefPerSys process %d on host %s\n"

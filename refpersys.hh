@@ -894,9 +894,11 @@ class Rps_QuasiZone
   inline void* operator new (std::size_t siz, unsigned wordgap);
   static constexpr uint16_t qz_gcmark_bit = 1;
 public:
+  static void initialize(void);
   inline bool is_gcmarked(Rps_GarbageCollector&) const;
   inline void set_gcmark(Rps_GarbageCollector&);
   inline void clear_gcmark(Rps_GarbageCollector&);
+  void clear_all_gcmarks(Rps_GarbageCollector&);
   Rps_Type stored_type(void) const
   {
     return qz_type;
