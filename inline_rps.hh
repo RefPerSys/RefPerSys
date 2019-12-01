@@ -416,7 +416,8 @@ Rps_Value::operator >= (const Rps_Value v) const
 Rps_QuasiZone::Rps_QuasiZone(Rps_Type ty)
   : qz_type(ty), qz_gcinfo(0)
 {
-};
+  register_in_zonevec();
+} // end of Rps_QuasiZone::Rps_QuasiZone
 
 // the GC related routines below don't really use the
 // Rps_GarbageCollector but needs one for typing safety.

@@ -106,6 +106,60 @@ fail:
 
 
 
+//////////////////////////////////////////////// quasi values
+
+
+std::mutex Rps_QuasiZone::qz_mtx;
+std::vector<Rps_QuasiZone*> Rps_QuasiZone::qz_zonvec(100);
+uint32_t Rps_QuasiZone::qz_cnt;
+
+Rps_QuasiZone::~Rps_QuasiZone()
+{
+  unregister_in_zonevec();
+} // end of Rps_QuasiZone::~Rps_QuasiZone
+
+void
+Rps_QuasiZone::register_in_zonevec(void)
+{
+  std::lock_guard<std::mutex> gu(qz_mtx);
+  if (RPS_UNLIKELY(9 * qz_zonvec.capacity() <= 8 * qz_zonvec.size()))
+    {
+      auto newcap = rps_prime_above(19*qz_zonvec.size()/16
+                                    + 200);
+      qz_zonvec.reserve(newcap);
+    }
+  if (RPS_LIKELY(qz_zonvec.size() > 128))
+    {
+      uint32_t rk = 1 + Rps_Random::random_32u() % (qz_zonvec.size() - 16);
+      uint32_t endrk = rk + 24;
+      if (endrk > (uint32_t)qz_zonvec.size())
+        endrk = (uint32_t)qz_zonvec.size();
+      for (uint32_t ix= rk; ix < endrk; ix++)
+        if (qz_zonvec[ix] == nullptr)
+          {
+            qz_zonvec[ix] = this;
+            this->qz_rank = ix;
+            qz_cnt++;
+            return;
+          }
+    }
+  this->qz_rank = (uint32_t)qz_zonvec.size();
+  qz_cnt++;
+  qz_zonvec.push_back(this);
+} // end of Rps_QuasiZone::register_in_zonevec
+
+void
+Rps_QuasiZone::unregister_in_zonevec(void)
+{
+  std::lock_guard<std::mutex> gu(qz_mtx);
+  RPS_ASSERT(this->qz_rank>0
+             && this->qz_rank < (uint32_t)qz_zonvec.size());
+  RPS_ASSERT(qz_cnt>0 && qz_cnt<(uint32_t)qz_zonvec.size());
+  RPS_ASSERT(qz_zonvec[this->qz_rank] == this);
+  qz_zonvec[this->qz_rank] = nullptr;
+  qz_cnt--;
+} // end of Rps_QuasiZone::unregister_in_zonevec
+
 //////////////////////////////////////////////// sets
 
 Rps_SetOb::Rps_SetOb(const std::set<Rps_ObjectRef>& setob, Rps_SetTag)

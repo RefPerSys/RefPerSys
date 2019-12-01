@@ -888,6 +888,7 @@ class Rps_QuasiZone
   // we keep each quasi-zone in the qz_zonvec
   static std::mutex qz_mtx;
   static std::vector<Rps_QuasiZone*> qz_zonvec;
+  static uint32_t qz_cnt;
   uint32_t qz_rank;		// the rank in qz_zonvec;
   inline void* operator new (std::size_t siz, std::nullptr_t);
   inline void* operator new (std::size_t siz, unsigned wordgap);
@@ -910,9 +911,11 @@ public:
   {
     return new(wordgap) ZoneClass(args...);
   };
+  void register_in_zonevec(void);
+  void unregister_in_zonevec(void);
 protected:
   inline Rps_QuasiZone(Rps_Type typ);
-  virtual ~Rps_QuasiZone() =0;
+  virtual ~Rps_QuasiZone();
   virtual uint32_t wordsize() const =0;
   virtual Rps_Type type() const
   {
