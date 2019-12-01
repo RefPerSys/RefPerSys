@@ -458,6 +458,7 @@ public:
   inline Rps_Value(const char*str, int len= -1);
   Rps_Value(const Rps_ZoneValue*ptr) : Rps_Value(ptr, Rps_ValPtrTag{}) {};
   Rps_Value(const Rps_ZoneValue& zv) : Rps_Value(&zv, Rps_ValPtrTag{}) {};
+#warning the gc_mark probably needed a depth argument, to avoid too deep recursions
   inline void gc_mark(Rps_GarbageCollector&gc);
   inline bool operator == (const Rps_Value v) const;
   inline bool operator <= (const Rps_Value v) const;
