@@ -302,10 +302,10 @@ rps_print_simple_backtrace_level(Rps_BackTrace* btp, FILE*outf, const char*befor
       else
         {
           if (funamestr.empty())
-            fprintf (outf, "%s %p: %s+%#%x\n",
+            fprintf (outf, "%s %p: %s+%#x\n",
                      beforebuf, (void*)pc, filnamestr.c_str(), delta);
           else
-            fprintf (outf, "%s %p: %40s+%#%x %s\n",
+            fprintf (outf, "%s %p: %40s+%#x %s\n",
                      beforebuf, (void*)pc, filnamestr.c_str(),
                      delta, funamestr.c_str());
         }
