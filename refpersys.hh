@@ -3,7 +3,7 @@
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
- *      It is its only C++ header file.
+ *      It is almost its only public C++ header file.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -1300,6 +1300,7 @@ extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps
 
 extern "C" void rps_garbage_collect (void);
 
+extern "C" void rps_print_types_info (void);
 #include "inline_rps.hh"
 
 #endif /*REFPERSYS_INCLUDED*/

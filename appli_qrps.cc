@@ -94,6 +94,7 @@ RpsQWindow* RpsQApplication::getWindowPtr(int ix)
 
 void rps_run_application(int &argc, char **argv)
 {
+  bool batch = false;
   RPS_INFORM("rps_run_application: start of %s gitid %s host %s pid %d\n",
              argv[0], rps_gitid, rps_hostname(), (int)getpid());
 
@@ -103,17 +104,31 @@ void rps_run_application(int &argc, char **argv)
     argparser.setApplicationDescription("a REFlexive PERsistent SYStem");
     argparser.addHelpOption();
     argparser.addVersionOption();
-    const QCommandLineOption loadOption("L", "The load directory.", "load");
+    // load directory
+    const QCommandLineOption loadOption(QStringList() << "L" << "load",
+                                        "The load directory", "load-dir");
     argparser.addOption(loadOption);
-
+    // type information
+    const QCommandLineOption typeOption("type-info", "Show type information.");
+    argparser.addOption(typeOption);
+    // batch flag
+    const QCommandLineOption batchOption(QStringList() << "B" << "batch", "batch mode, without any windows");
+    argparser.addOption(batchOption);
+    //
     argparser.process(app);
     if (argparser.isSet(loadOption))
       {
         const QString loadpathqs = argparser.value(loadOption);
+        RPS_WARNOUT ("RefPerSys should load from " << loadpathqs.toStdString());
 #warning should handle load option here
-      }
+      };
+    if (argparser.isSet(typeOption))
+      rps_print_types_info ();
+    if (argparser.isSet(batchOption))
+      batch = true;
   }
-  (void) app.exec ();
+  if (!batch)
+    (void) app.exec ();
 } // end of rps_run_application
 
 //////////////// moc generated file

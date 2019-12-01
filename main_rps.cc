@@ -31,6 +31,7 @@
  ******************************************************************************/
 
 #include "refpersys.hh"
+#include "qthead_qrps.hh"
 
 
 extern "C" const char rps_main_gitid[];
@@ -58,6 +59,8 @@ rps_hostname(void)
   return hnambuf;
 } // end rps_hostname
 
+
+/**** old obsolete code
 enum rps_option_key_en
 {
   Rps_Key_PrintRandomId = 1024,
@@ -147,20 +150,21 @@ const struct argp_option rps_argopt_vec[] =
   },
   { },
 };
+***/
 
 
-void print_types_info(void)
+void rps_print_types_info(void)
 {
-  printf("%-36s:   size  align   (in bytes)\n", "**TYPE**");
-#define EXPLAIN_TYPE(Ty) printf("%-36s: %5d %5d\n", #Ty,	\
+  printf("%-38s:   size  align   (in bytes)\n", "**TYPE**");
+#define EXPLAIN_TYPE(Ty) printf("%-38s: %5d %5d\n", #Ty,	\
 				(int)sizeof(Ty), (int)alignof(Ty))
 
-#define EXPLAIN_TYPE2(Ty1,Ty2) printf("%-36s: %5d %5d\n",		\
+#define EXPLAIN_TYPE2(Ty1,Ty2) printf("%-38s: %5d %5d\n",		\
 				      #Ty1 "," #Ty2, 			\
 				      (int)sizeof(Ty1,Ty2),		\
 				      (int)alignof(Ty1,Ty2))
 
-#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3) printf("%-36s: %5d %5d\n",		\
+#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3) printf("%-38s: %5d %5d\n",		\
 					  #Ty1 "," #Ty2 "," #Ty3,	\
 					  (int)sizeof(Ty1,Ty2,Ty3),	\
 					  (int)alignof(Ty1,Ty2,Ty3))
@@ -168,12 +172,37 @@ void print_types_info(void)
   EXPLAIN_TYPE(double);
   EXPLAIN_TYPE(char);
   EXPLAIN_TYPE(bool);
+  EXPLAIN_TYPE(std::shared_mutex);
+  EXPLAIN_TYPE(std::string);
+  EXPLAIN_TYPE2(std::map<Rps_ObjectRef, Rps_Value>);
+  EXPLAIN_TYPE(QString);
+  ///
+  EXPLAIN_TYPE(RpsQApplication);
+  EXPLAIN_TYPE(RpsQWindow);
+  EXPLAIN_TYPE(Rps_BackTrace);
+  EXPLAIN_TYPE(Rps_Double);
+  EXPLAIN_TYPE(Rps_DoubleValue);
+  EXPLAIN_TYPE(Rps_GarbageCollector);
+  EXPLAIN_TYPE(Rps_HashInt);
   EXPLAIN_TYPE(Rps_Id);
+  EXPLAIN_TYPE(Rps_ObjectRef);
+  EXPLAIN_TYPE(Rps_ObjectValue);
+  EXPLAIN_TYPE(Rps_ObjectZone);
+  EXPLAIN_TYPE(Rps_Payload);
+  EXPLAIN_TYPE(Rps_QuasiZone);
+  EXPLAIN_TYPE(Rps_SetOb);
+  EXPLAIN_TYPE(Rps_SetValue);
+  EXPLAIN_TYPE(Rps_String);
+  EXPLAIN_TYPE(Rps_StringValue);
+  EXPLAIN_TYPE(Rps_TupleOb);
+  EXPLAIN_TYPE(Rps_TupleValue);
   EXPLAIN_TYPE(Rps_Type);
+  EXPLAIN_TYPE(Rps_Value);
+  EXPLAIN_TYPE(Rps_ZoneValue);
 #undef EXPLAIN_TYPE
   putchar('\n');
   fflush(nullptr);
-} // end print_types_info
+} // end rps_print_types_info
 
 
 
