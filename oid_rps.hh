@@ -153,6 +153,7 @@ public:
   Rps_Id (const char*buf, const char**pend, bool *pok);
   Rps_Id (const Rps_Id&oid) : Rps_Id(oid.hi(), oid.lo()) {};
   void to_cbuf24(char cbuf[/*24*/]) const;
+  inline std::string to_string() const;
 /// hashing, comparing, and equality testing operations on Rps_Id-s
   struct Hasher
   {

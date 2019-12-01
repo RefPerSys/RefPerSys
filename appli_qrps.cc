@@ -108,6 +108,10 @@ void rps_run_application(int &argc, char **argv)
     const QCommandLineOption loadOption(QStringList() << "L" << "load",
                                         "The load directory", "load-dir");
     argparser.addOption(loadOption);
+    // random oids
+    const QCommandLineOption randoidOption("random-oid",
+                                           "output some random oids", "nb-oids");
+    argparser.addOption(randoidOption);
     // type information
     const QCommandLineOption typeOption("type-info", "Show type information.");
     argparser.addOption(typeOption);
@@ -126,6 +130,31 @@ void rps_run_application(int &argc, char **argv)
       rps_print_types_info ();
     if (argparser.isSet(batchOption))
       batch = true;
+    if (argparser.isSet(randoidOption))
+      {
+        int nbrand = 5;
+        const QString randoidqs = argparser.value(randoidOption);
+        sscanf(randoidqs.toStdString().c_str(), "%d", &nbrand);
+        if (nbrand <= 0) nbrand = 2;
+        else if (nbrand > 100) nbrand = 100;
+        RPS_INFORM("output of %d random objids\n", nbrand);
+        printf("*    %-20s" "\t  %-19s" "   %-12s" "\t %-10s\n",
+               " objid", "hi", "lo", "hash");
+        printf("========================================================"
+               "===========================\n");
+        for (int ix = 0; ix<nbrand; ix++)
+          {
+            auto rid = Rps_Id::random();
+            printf("! %22s" "\t  %19lld" " %12lld" "\t %10u\n",
+                   rid.to_string().c_str(),
+                   (long long) rid.hi(),
+                   (long long) rid.lo(),
+                   (unsigned) rid.hash());
+          }
+        printf("--------------------------------------------------------"
+               "---------------------------\n");
+        fflush(nullptr);
+      }
   }
   if (!batch)
     (void) app.exec ();

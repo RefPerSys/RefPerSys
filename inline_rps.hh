@@ -72,6 +72,27 @@ rps_thread_cpu_time(void)
 } // end rps_thread_cpu_time
 
 
+//////////////////////////////////////////////////////////// objids
+std::string
+Rps_Id::to_string() const
+{
+  char cbuf[24];
+  memset (cbuf, 0, sizeof(cbuf));
+  to_cbuf24(cbuf);
+  return std::string(cbuf);
+} // end of Rps_Id::to_string
+
+static inline
+std::ostream& operator << (std::ostream& out, const Rps_Id id)
+{
+
+  char cbuf[24];
+  memset (cbuf, 0, sizeof(cbuf));
+  id.to_cbuf24(cbuf);
+  out << cbuf;
+  return out;
+} // end output of Rps_Id
+
 //////////////////////////////////////////////////////////// backtracing
 static inline
 std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph)
