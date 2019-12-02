@@ -32,6 +32,29 @@
 
 #include "refpersys.hh"
 
+#include <QString>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+
+class Rps_Loader {
+  std::string ld_topdir;
+public:
+  Rps_Loader(const std::string&topdir) :
+    ld_topdir(topdir) {};
+  void parse_manifest_file(void);
+};				// end class Rps_Loader
+
+
+class Rps_Dumper {
+  std::string du_topdir;
+public:
+  Rps_Dumper(const std::string&topdir) :
+    du_topdir(topdir) {};
+};				// end class Rps_Dumper
+
+
+
 extern "C" const char rps_store_gitid[];
 const char rps_store_gitid[]= RPS_GITID;
 
@@ -46,9 +69,19 @@ void rps_dump_into (const std::string dirpath)
 } // end of rps_dump_into
 
 //////////////////////////////////////////////////////////////// load
+
+void
+Rps_Loader::parse_manifest_file(void) {
+  std::string manifpath = ld_topdir + "/" + RPS_MANIFEST_HJSON;
+  if (access(manifpath.c_str(), R_OK))
+    RPS_FATAL("Rps_Loader::parse_manifest_file cannot access %s - %m",
+	      manifpath.c_str());
+} // end Rps_Loader::parse_manifest_file
+
 void rps_load_from (const std::string& dirpath)
 {
   RPS_WARN("unimplemented rps_load_from '%s'", dirpath.c_str());
+  Rps_Loader loader(dirpath);
 #warning rps_load_from unimplemented
 } // end of rps_load_from
 

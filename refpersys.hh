@@ -85,6 +85,7 @@
 /// forward declaration of QString-s from Qt5
 class QString;
 
+
 // GNU libunistring https://www.gnu.org/software/libunistring/
 // we use UTF-8 strings
 #include "unistr.h"
@@ -432,7 +433,8 @@ class Rps_Double;
 class Rps_SetOb;
 class Rps_TupleOb;
 class Rps_GarbageCollector;
-
+class Rps_Loader; // in store_rps.cc
+class Rps_Dumper; // in store_rps.cc 
 
 //////////////// our value, a single word
 class Rps_Value
@@ -1306,6 +1308,8 @@ public:
 };// end of Rps_TupleOb
 
 ////////////////////////////////////////////////////////////////
+
+#define RPS_MANIFEST_HJSON "rps_manifest.hjson"
 extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
 
 extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc
