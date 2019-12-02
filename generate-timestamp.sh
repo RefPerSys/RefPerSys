@@ -26,8 +26,9 @@ cp -va /tmp/refpersys-$$.tar.gz $HOME/tmp/refpersys.tar.gz >& /dev/stderr
 
 (echo -n 'const char rps_md5sum[]="' ; cat $(tar tf /tmp/refpersys-$$.tar.gz | grep -v '/$') | md5sum | tr -d '\n -'  ;  echo '";')
 
-(echo -n 'const char*const rps_files[]= {' ; tar tf /tmp/refpersys-$$.tar.gz | grep -v '/$' | tr -s " \n"  | sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
+(echo  'const char*const rps_files[]= {' ; tar tf /tmp/refpersys-$$.tar.gz | grep -v '/$' | tr -s " \n"  | sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
 
-printf "const char rps_makefile[]=\"%s\";\n"   $(realpath Makefile)
+(echo  'const char*const rps_subdirectories[]= {' ; tar tf /tmp/refpersys-$$.tar.gz | grep  '/$' | tr -s " \n"  | sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
+
 printf "const char rps_omakefile[]=\"%s\";\n"   $(realpath OMakefile)
 printf "const char rps_omakeroot[]=\"%s\";\n"   $(realpath OMakeroot)
