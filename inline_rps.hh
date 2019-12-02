@@ -43,6 +43,15 @@
 //////////////////////////////////////////////////////////// time functions
 // see http://man7.org/linux/man-pages/man2/clock_gettime.2.html
 static inline double
+rps_wallclock_real_time(void)
+{
+  struct timespec ts =  {0,0};
+  if (clock_gettime(CLOCK_REALTIME, &ts))
+    return NAN;
+  return 1.0*ts.tv_sec + 1.0e-9*ts.tv_nsec;
+} // end rps_wallclock_real_time
+
+static inline double
 rps_monotonic_real_time(void)
 {
   struct timespec ts =  {0,0};
