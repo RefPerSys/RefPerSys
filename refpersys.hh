@@ -434,7 +434,7 @@ class Rps_SetOb;
 class Rps_TupleOb;
 class Rps_GarbageCollector;
 class Rps_Loader; // in store_rps.cc
-class Rps_Dumper; // in store_rps.cc 
+class Rps_Dumper; // in store_rps.cc
 
 //////////////// our value, a single word
 class Rps_Value

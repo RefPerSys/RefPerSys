@@ -37,7 +37,8 @@
 #include <QFile>
 #include <QFileInfo>
 
-class Rps_Loader {
+class Rps_Loader
+{
   std::string ld_topdir;
 public:
   Rps_Loader(const std::string&topdir) :
@@ -46,7 +47,8 @@ public:
 };				// end class Rps_Loader
 
 
-class Rps_Dumper {
+class Rps_Dumper
+{
   std::string du_topdir;
 public:
   Rps_Dumper(const std::string&topdir) :
@@ -71,17 +73,21 @@ void rps_dump_into (const std::string dirpath)
 //////////////////////////////////////////////////////////////// load
 
 void
-Rps_Loader::parse_manifest_file(void) {
+Rps_Loader::parse_manifest_file(void)
+{
   std::string manifpath = ld_topdir + "/" + RPS_MANIFEST_HJSON;
   if (access(manifpath.c_str(), R_OK))
     RPS_FATAL("Rps_Loader::parse_manifest_file cannot access %s - %m",
-	      manifpath.c_str());
+              manifpath.c_str());
+  RPS_WARN("Rps_Loader::parse_manifest_file should parse %s",
+           manifpath.c_str());
 } // end Rps_Loader::parse_manifest_file
 
 void rps_load_from (const std::string& dirpath)
 {
   RPS_WARN("unimplemented rps_load_from '%s'", dirpath.c_str());
   Rps_Loader loader(dirpath);
+  loader.parse_manifest_file();
 #warning rps_load_from unimplemented
 } // end of rps_load_from
 
