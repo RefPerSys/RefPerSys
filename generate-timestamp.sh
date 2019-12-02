@@ -1,7 +1,7 @@
 #!/bin/bash
 printf "// generated file %s -- DONT EDIT\n" $1
 date +"const char rps_timestamp[]=\"%c\";%nconst unsigned long rps_timelong=%sL;%n"
-printf "const char rps_directory[]=\"%s\";\n" $(pwd)
+printf "const char rps_topdirectory[]=\"%s\";\n" $(realpath $(pwd))
 
 if git status|grep -q 'nothing to commit' ; then
     endgitid='";'

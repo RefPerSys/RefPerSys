@@ -108,7 +108,7 @@ class QString;
 // generated in _timestamp_rps.c
 extern "C" const char rps_timestamp[];
 extern "C" unsigned long rps_timelong;
-extern "C" const char rps_directory[];
+extern "C" const char rps_topdirectory[];
 extern "C" const char rps_gitid[];
 extern "C" const char rps_lastgittag[];
 extern "C" const char rps_lastgitcommit[];
@@ -1308,6 +1308,8 @@ public:
 extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
 
 extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc
+
+extern "C" void rps_load_from (const std::string& dirpath); // in store_rps.cc
 
 extern "C" void rps_garbage_collect (void);
 

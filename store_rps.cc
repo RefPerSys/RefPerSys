@@ -38,13 +38,19 @@ const char rps_store_gitid[]= RPS_GITID;
 extern "C" const char rps_store_date[];
 const char rps_store_date[]= __DATE__;
 
-
+//////////////////////////////////////////////////////////////// dump
 void rps_dump_into (const std::string dirpath)
 {
   RPS_FATAL("unimplemented rps_dump_into '%s'", dirpath.c_str());
 #warning rps_dump_into unimplemented
 } // end of rps_dump_into
 
+//////////////////////////////////////////////////////////////// load
+void rps_load_from (const std::string& dirpath)
+{
+  RPS_WARN("unimplemented rps_load_from '%s'", dirpath.c_str());
+#warning rps_load_from unimplemented
+} // end of rps_load_from
 
 //////////////////////////////////////////////////////////// end of file store_rps.cc
 

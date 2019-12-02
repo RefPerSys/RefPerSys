@@ -155,8 +155,8 @@ RpsQWindow::onMenuAbout()
   msg.append ("last git commit: ");
   msg.append(rps_lastgitcommit);
   msg.append ("\n");
-  msg.append ("RefPerSys directory: ");
-  msg.append(rps_directory);
+  msg.append ("RefPerSys top directory: ");
+  msg.append(rps_topdirectory);
   msg.append("\n");
   msg.append("see http://refpersys.org/\n");
 

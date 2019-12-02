@@ -99,6 +99,7 @@ void rps_run_application(int &argc, char **argv)
              argv[0], rps_gitid, rps_hostname(), (int)getpid());
 
   RpsQApplication app (argc, argv);
+  std::string loadtopdir(rps_topdirectory);
   {
     QCommandLineParser argparser;
     argparser.setApplicationDescription("a REFlexive PERsistent SYStem");
@@ -123,8 +124,7 @@ void rps_run_application(int &argc, char **argv)
     if (argparser.isSet(loadOption))
       {
         const QString loadpathqs = argparser.value(loadOption);
-        RPS_WARNOUT ("RefPerSys should load from " << loadpathqs.toStdString());
-#warning should handle load option here
+        loadtopdir = loadpathqs.toStdString();
       };
     if (argparser.isSet(typeOption))
       rps_print_types_info ();
@@ -157,6 +157,7 @@ void rps_run_application(int &argc, char **argv)
         fflush(nullptr);
       }
   }
+  rps_load_from (loadtopdir);
   if (!batch)
     (void) app.exec ();
 } // end of rps_run_application
