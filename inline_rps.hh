@@ -159,13 +159,15 @@ Rps_Value::as_ptr() const
 
 
 void
-Rps_Value::gc_mark(Rps_GarbageCollector&gc)
+Rps_Value::gc_mark(Rps_GarbageCollector&gc, unsigned depth)
 {
   if (!is_ptr()) return;
   if (_pval->is_gcmarked(gc)) return;
   Rps_ZoneValue* pzv = const_cast<Rps_ZoneValue*>(_pval);
   pzv->set_gcmark(gc);
-  pzv->gc_mark(gc);
+  if (RPS_UNLIKELY(depth > max_gc_mark_depth))
+    throw std::runtime_error("too deep gc_mark");
+  pzv->gc_mark(gc, depth);
 } // end Rps_Value::gc_mark
 
 bool

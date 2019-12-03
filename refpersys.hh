@@ -463,8 +463,8 @@ public:
   inline Rps_Value(const char*str, int len= -1);
   Rps_Value(const Rps_ZoneValue*ptr) : Rps_Value(ptr, Rps_ValPtrTag{}) {};
   Rps_Value(const Rps_ZoneValue& zv) : Rps_Value(&zv, Rps_ValPtrTag{}) {};
-#warning the gc_mark probably needed a depth argument, to avoid too deep recursions
-  inline void gc_mark(Rps_GarbageCollector&gc);
+  static constexpr unsigned max_gc_mark_depth = 100;
+  inline void gc_mark(Rps_GarbageCollector&gc, unsigned depth= 0);
   inline bool operator == (const Rps_Value v) const;
   inline bool operator <= (const Rps_Value v) const;
   inline bool operator < (const Rps_Value v) const;
@@ -950,7 +950,7 @@ class Rps_ZoneValue : public Rps_QuasiZone
 protected:
   inline Rps_ZoneValue(Rps_Type typ);
 public:
-  virtual void gc_mark(Rps_GarbageCollector&) =0;
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) =0;
   virtual Rps_HashInt val_hash () const =0;
   virtual bool equal(const Rps_ZoneValue&zv) const =0;
   virtual bool less(const Rps_ZoneValue&zv) const =0;
@@ -1025,7 +1025,7 @@ protected:
   {
     return rps_hash_cstr(_sbuf);
   };
-  virtual void gc_mark(Rps_GarbageCollector&) { };
+  virtual void gc_mark(Rps_GarbageCollector&, unsigned) { };
 public:
   virtual uint32_t wordsize() const
   {
@@ -1081,7 +1081,7 @@ protected:
       h = 987383;
     return h;
   };
-  virtual void gc_mark(Rps_GarbageCollector&) { };
+  virtual void gc_mark(Rps_GarbageCollector&, unsigned) { };
 public:
   double dval() const
   {
@@ -1134,7 +1134,7 @@ public:
   {
     return ob_oid.hash();
   };
-  virtual void gc_mark(Rps_GarbageCollector&gc);
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned);
   virtual Rps_HashInt val_hash () const
   {
     return obhash();
@@ -1153,7 +1153,7 @@ protected:
   inline Rps_Payload(Rps_ObjectRef);
   virtual ~Rps_Payload() =0;
 public:
-  virtual void gc_mark(Rps_GarbageCollector&gc) =0;
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) =0;
   Rps_ObjectZone* owner() const
   {
     return payl_owner;
@@ -1200,7 +1200,7 @@ public:
   {
     return (sizeof(*this) + _seqlen * sizeof(_seqob[0])) / sizeof(void*);
   };
-  virtual void gc_mark(Rps_GarbageCollector&gc)
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned)
   {
     for (auto ob: *this)
       if (ob)
