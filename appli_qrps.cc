@@ -78,6 +78,7 @@ RpsQApplication::RpsQApplication(int &argc, char*argv[])
 void
 RpsQApplication::dump_state(QString dirpath)
 {
+  rps_dump_into(dirpath.toStdString());
 } // end of RpsQApplication::dump_state
 
 
