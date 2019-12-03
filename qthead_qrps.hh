@@ -60,6 +60,11 @@ public:
     return *w;
   };
 
+  size_t getWindowCount()
+  {
+      return app_windvec.size () - 1; // offset for null element at index 0
+  }
+
 public slots:
   void dump_state(QString dirpath=".");
   void add_new_window(void);
@@ -90,6 +95,7 @@ private slots:
   void onMenuQuit();
   void onMenuAbout();
   void onMenuExit();
+  void onMenuClose();
 };				// end of RpsQWindow
 
 #endif /*QTHEAD_QRPS_INCLUDED*/

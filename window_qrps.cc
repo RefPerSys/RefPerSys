@@ -65,13 +65,15 @@ RpsQWindow::setupAppMenu()
   QAction *gc_ax = new QAction (gc_px, "&Garbage Collect", this);
   QAction *quit_ax = new QAction (quit_px, "&Quit", this);
   QAction *exit_ax = new QAction (exit_px, "e&Xit", this);
+  QAction *close_ax = new QAction (exit_px, "&Close", this);
   QAction *newin_ax = new QAction (exit_px, "New &Window", this);
 
   quit_ax->setShortcut (tr ("CTRL+Q"));
   exit_ax->setShortcut (tr ("CTRL+X"));
   dump_ax->setShortcut (tr ("CTRL+D"));
   gc_ax->setShortcut (tr ("CTRL+G"));
-  newin_ax->setShortcut (tr ("CTRL+W"));
+  newin_ax->setShortcut (tr ("CTRL+W")); //TODO: doesn't CTRL+N seem better?
+  close_ax->setShortcut (tr ("CTRL+C"));
 
   QMenu *app_menu;
   app_menu = menuBar ()->addMenu ("&App");
@@ -79,6 +81,7 @@ RpsQWindow::setupAppMenu()
   app_menu->addAction (gc_ax);
   app_menu->addAction (newin_ax);
   app_menu->addSeparator ();
+  app_menu->addAction (close_ax);
   app_menu->addAction (quit_ax);
   app_menu->addAction (exit_ax);
 
@@ -89,6 +92,7 @@ RpsQWindow::setupAppMenu()
   connect (newin_ax, &QAction::triggered,
            dynamic_cast<RpsQApplication*>(RpsQApplication::instance()),
            &RpsQApplication::add_new_window);
+  connect (close_ax, &QAction::triggered, this, &RpsQWindow::onMenuClose);
 } // end RpsQWindow::setupAppMenu
 
 
@@ -106,7 +110,8 @@ void RpsQWindow::setupHelpMenu()
 } // end  RpsQWindow::setupHelpMenu
 
 
-void RpsQWindow::onMenuQuit()
+void 
+RpsQWindow::onMenuQuit()
 {
   auto msg = QString ("Are you sure you want to quit without dumping?");
   auto btn = QMessageBox::Yes | QMessageBox::No;
@@ -115,6 +120,21 @@ void RpsQWindow::onMenuQuit()
   if (reply == QMessageBox::Yes)
     QApplication::quit ();
 } // end  RpsQWindow::onMenuQuit
+
+
+void
+RpsQWindow::onMenuClose()
+{
+    auto app = dynamic_cast<RpsQApplication*> (RpsQApplication::instance());
+
+    // TODO: this is still buggy. The intention is that RpsQWindow::onMenuQuit()
+    // should be called for the last window. I think that the close signal needs
+    // to be mapped to pop the relevant RpsQApplication::app_windvec element
+    if (app->getWindowCount () > 1)
+      this->close();
+    else
+      this->onMenuQuit ();
+}
 
 
 void
