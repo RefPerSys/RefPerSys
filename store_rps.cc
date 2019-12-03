@@ -37,6 +37,14 @@
 #include <QFile>
 #include <QFileInfo>
 
+
+extern "C" const char rps_store_gitid[];
+const char rps_store_gitid[]= RPS_GITID;
+
+extern "C" const char rps_store_date[];
+const char rps_store_date[]= __DATE__;
+
+//////////////////////////////////////////////// loader
 class Rps_Loader
 {
   std::string ld_topdir;
@@ -44,9 +52,43 @@ public:
   Rps_Loader(const std::string&topdir) :
     ld_topdir(topdir) {};
   void parse_manifest_file(void);
+  std::string string_of_loaded_file(const std::string& relpath);
 };				// end class Rps_Loader
 
 
+std::string
+Rps_Loader::string_of_loaded_file(const std::string&relpath)
+{
+  constexpr size_t maxfilen = 1024*1024; // a megabyte
+  std::string fullpath = ld_topdir + "/" + relpath;
+  if (access(fullpath.c_str(), R_OK))
+    {
+      int e = errno;
+      RPS_WARN("loader cannot access %s - %s",
+               fullpath, strerror(e));
+      throw std::runtime_error(fullpath + ":" + strerror(e));
+    }
+  std::string res;
+  int lincnt=0;
+  std::ifstream inp(fullpath);
+  for (std::string linbuf; std::getline(inp, linbuf); )
+    {
+      lincnt++;
+      if (u8_check(reinterpret_cast<const uint8_t*> (linbuf.c_str()),
+                   linbuf.size()))
+        {
+          RPS_WARN("non UTF8 line#%d in %s:\n%s",
+                   lincnt, fullpath.c_str(), linbuf.c_str());
+          char errbuf[40];
+          snprintf(errbuf, sizeof(errbuf), "non UTF8 line#%d", lincnt);
+          throw std::runtime_error(std::string(errbuf) + " in " + fullpath);
+        }
+      res += linbuf;
+    }
+  return res;
+} // end Rps_Loader::string_of_loaded_file
+
+//////////////////////////////////////////////// dumper
 class Rps_Dumper
 {
   std::string du_topdir;
@@ -55,13 +97,6 @@ public:
     du_topdir(topdir) {};
 };				// end class Rps_Dumper
 
-
-
-extern "C" const char rps_store_gitid[];
-const char rps_store_gitid[]= RPS_GITID;
-
-extern "C" const char rps_store_date[];
-const char rps_store_date[]= __DATE__;
 
 //////////////////////////////////////////////////////////////// dump
 void rps_dump_into (const std::string dirpath)

@@ -62,7 +62,7 @@ public:
 
   size_t getWindowCount()
   {
-      return app_windvec.size () - 1; // offset for null element at index 0
+    return app_windvec.size () - 1; // offset for null element at index 0
   }
 
 public slots:

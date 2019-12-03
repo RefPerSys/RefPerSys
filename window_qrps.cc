@@ -110,7 +110,7 @@ void RpsQWindow::setupHelpMenu()
 } // end  RpsQWindow::setupHelpMenu
 
 
-void 
+void
 RpsQWindow::onMenuQuit()
 {
   auto msg = QString ("Are you sure you want to quit without dumping?");
@@ -125,15 +125,15 @@ RpsQWindow::onMenuQuit()
 void
 RpsQWindow::onMenuClose()
 {
-    auto app = dynamic_cast<RpsQApplication*> (RpsQApplication::instance());
+  auto app = dynamic_cast<RpsQApplication*> (RpsQApplication::instance());
 
-    // TODO: this is still buggy. The intention is that RpsQWindow::onMenuQuit()
-    // should be called for the last window. I think that the close signal needs
-    // to be mapped to pop the relevant RpsQApplication::app_windvec element
-    if (app->getWindowCount () > 1)
-      this->close();
-    else
-      this->onMenuQuit ();
+  // TODO: this is still buggy. The intention is that RpsQWindow::onMenuQuit()
+  // should be called for the last window. I think that the close signal needs
+  // to be mapped to pop the relevant RpsQApplication::app_windvec element
+  if (app->getWindowCount () > 1)
+    this->close();
+  else
+    this->onMenuQuit ();
 }
 
 
