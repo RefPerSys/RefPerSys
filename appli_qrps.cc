@@ -61,20 +61,21 @@ const char* rps_homedir(void)
 {
   static std::mutex homedirmtx;
   std::lock_guard<std::mutex> gu(homedirmtx);
-  if (RPS_UNLIKELY(rps_bufpath_homedir[0] == (char)0)) {
-    const char*rpshome = getenv("REFPERSYS_HOME");
-    const char*home = getenv("HOME");
-    const char*path = rpshome?rpshome:home;
-    if (!path)
-      RPS_FATAL("no RefPerSys home ($REFPERSYS_HOME or $HOME)");
-    char* rp = realpath(path, nullptr);
-    if (!rp)
-      RPS_FATAL("realpath failed on RefPerSys home %s - %m",
-		       path);
-    if (strlen(rp) >= sizeof(rps_bufpath_homedir) -1)
-      RPS_FATAL("too long realpath %s on RefPerSys home %s", rp, path);
-    strncpy(rps_bufpath_homedir, rp, sizeof(rps_bufpath_homedir) -1);
-  }
+  if (RPS_UNLIKELY(rps_bufpath_homedir[0] == (char)0))
+    {
+      const char*rpshome = getenv("REFPERSYS_HOME");
+      const char*home = getenv("HOME");
+      const char*path = rpshome?rpshome:home;
+      if (!path)
+        RPS_FATAL("no RefPerSys home ($REFPERSYS_HOME or $HOME)");
+      char* rp = realpath(path, nullptr);
+      if (!rp)
+        RPS_FATAL("realpath failed on RefPerSys home %s - %m",
+                  path);
+      if (strlen(rp) >= sizeof(rps_bufpath_homedir) -1)
+        RPS_FATAL("too long realpath %s on RefPerSys home %s", rp, path);
+      strncpy(rps_bufpath_homedir, rp, sizeof(rps_bufpath_homedir) -1);
+    }
   return rps_bufpath_homedir;
 } // end rps_homedir
 
@@ -134,7 +135,7 @@ void rps_run_application(int &argc, char **argv)
     const QCommandLineOption rpshomeOption("refpersys-home",
                                            "RefPerSys homedir, default to $REFPERSYS_HOME or $HOME", "refpersys-home");
     argparser.addOption(rpshomeOption);
-    
+
     // load directory
     const QCommandLineOption loadOption(QStringList() << "L" << "load",
                                         "The load directory", "load-dir");
@@ -155,27 +156,27 @@ void rps_run_application(int &argc, char **argv)
     if (argparser.isSet(rpshomeOption))
       {
         const QString rhomqs = argparser.value(rpshomeOption);
-	std::string rhompath = rhomqs.toStdString();
-	struct stat rhomstat;
-	memset (&rhomstat, 0, sizeof(rhomstat));
-	if (stat(rhompath.c_str(), &rhomstat))
-	  RPS_FATAL("failed to stat --refpersys-home %s: %m",
-		    rhompath.c_str());
-	if (!S_ISDIR(rhomstat.st_mode))
-	  RPS_FATAL("given --refpersys-home %s is not a directory",
-		    rhompath.c_str());
-	if (rhomstat.st_mode & (S_IRUSR|S_IXUSR) !=  (S_IRUSR|S_IXUSR))
-	  RPS_FATAL("given --refpersys-home %s is not user readable and executable",
-		    rhompath.c_str());
-	char*rhomrp = realpath(rhompath.c_str(), nullptr);
-	if (!rhomrp)
-	  RPS_FATAL("realpath failed on given --refpersys-home %s - %m",
-		    rhompath.c_str());
-	if (strlen(rhomrp) >= sizeof(rps_bufpath_homedir) -1)
-	  RPS_FATAL("too long realpath %s on given --refpersys-home %s - %m",
-		    rhomrp, rhompath.c_str());
-	strncpy(rps_bufpath_homedir, rhomrp, sizeof(rps_bufpath_homedir) -1);
-	free (rhomrp), rhomrp = nullptr;
+        std::string rhompath = rhomqs.toStdString();
+        struct stat rhomstat;
+        memset (&rhomstat, 0, sizeof(rhomstat));
+        if (stat(rhompath.c_str(), &rhomstat))
+          RPS_FATAL("failed to stat --refpersys-home %s: %m",
+                    rhompath.c_str());
+        if (!S_ISDIR(rhomstat.st_mode))
+          RPS_FATAL("given --refpersys-home %s is not a directory",
+                    rhompath.c_str());
+        if (rhomstat.st_mode & (S_IRUSR|S_IXUSR) !=  (S_IRUSR|S_IXUSR))
+          RPS_FATAL("given --refpersys-home %s is not user readable and executable",
+                    rhompath.c_str());
+        char*rhomrp = realpath(rhompath.c_str(), nullptr);
+        if (!rhomrp)
+          RPS_FATAL("realpath failed on given --refpersys-home %s - %m",
+                    rhompath.c_str());
+        if (strlen(rhomrp) >= sizeof(rps_bufpath_homedir) -1)
+          RPS_FATAL("too long realpath %s on given --refpersys-home %s - %m",
+                    rhomrp, rhompath.c_str());
+        strncpy(rps_bufpath_homedir, rhomrp, sizeof(rps_bufpath_homedir) -1);
+        free (rhomrp), rhomrp = nullptr;
       };
     RPS_INFORM("using %s as the RefPerSys home directory", rps_homedir());
     //// --load <dir>

@@ -60,32 +60,38 @@ public:
 std::string
 Rps_Loader::load_real_path(const std::string& path)
 {
-  if (path.size() > 2 && path[0] == '/') {
-    if (access(path.c_str(), R_OK))
-      {
-	int e = errno;
-	RPS_WARN("loader cannot access %s - %s",
-		 path.c_str(), strerror(e));
-	throw std::runtime_error(path + ":" + strerror(e));
-      }
-    char*rp = realpath(path.c_str(), nullptr);
-    if (!rp)
-      throw std::runtime_error(std::string("realpath failed:") + path);
-    std::string restr (rp);
-    free (rp), rp = nullptr;
-    return restr;
-  }
+  if (path.size() > 2 && path[0] == '/')
+    {
+      if (access(path.c_str(), R_OK))
+        {
+          int e = errno;
+          RPS_WARN("loader cannot access %s - %s",
+                   path.c_str(), strerror(e));
+          throw std::runtime_error(path + ":" + strerror(e));
+        }
+      char*rp = realpath(path.c_str(), nullptr);
+      if (!rp)
+        throw std::runtime_error(std::string("realpath failed:") + path);
+      std::string restr (rp);
+      free (rp), rp = nullptr;
+      return restr;
+    }
   std::string candipath;// candidate path
   candipath = ld_topdir + "/" + path;
-  if (!access(candipath.c_str(), R_OK)) {
-    char*rp = realpath(candipath.c_str(), nullptr);
-    if (!rp)
-      throw std::runtime_error(std::string("realpath failed:") + candipath);
-    std::string restr (rp);
-    free (rp), rp = nullptr;
-    return restr;
-  }
+  if (!access(candipath.c_str(), R_OK))
+    {
+      char*rp = realpath(candipath.c_str(), nullptr);
+      if (!rp)
+        throw std::runtime_error(std::string("realpath failed:") + candipath);
+      std::string restr (rp);
+      free (rp), rp = nullptr;
+      return restr;
+    }
+  throw std::runtime_error(std::string("cannot file load real path for ") + path);
+#warning Rps_Loader::load_real_path is incomplete
 } // end Rps_Loader::load_real_path
+
+
 
 std::string
 Rps_Loader::string_of_loaded_file(const std::string&relpath)
@@ -108,6 +114,7 @@ Rps_Loader::string_of_loaded_file(const std::string&relpath)
           throw std::runtime_error(std::string(errbuf) + " in " + fullpath);
         }
       res += linbuf;
+      res += '\n';
     }
   return res;
 } // end Rps_Loader::string_of_loaded_file
@@ -139,8 +146,13 @@ Rps_Loader::parse_manifest_file(void)
     RPS_FATAL("Rps_Loader::parse_manifest_file cannot access %s - %m",
               manifpath.c_str());
   std::string manifstr = string_of_loaded_file(RPS_MANIFEST_HJSON);
-  Hjson::Value manifhjson = Hjson::Unmarshal(manifstr.c_str(), manifstr.size());
-  RPS_WARNOUT("Rps_Loader::parse_manifest_file should parse " << manifhjson.to_string());
+  RPS_WARNOUT("Rps_Loader::parse_manifest_file should parse:"
+              << std::endl
+              << manifstr << std::endl);
+#warning the below call to Hjson::Unmarshal fail so should be commented out
+  Hjson::Value manifhjson
+    = Hjson::Unmarshal(manifstr.c_str(), manifstr.size());
+  RPS_WARNOUT("Rps_Loader::parse_manifest_file parsed " << manifhjson.to_string());
 } // end Rps_Loader::parse_manifest_file
 
 void rps_load_from (const std::string& dirpath)
