@@ -59,7 +59,6 @@ rps_hostname(void)
   return hnambuf;
 } // end rps_hostname
 
-
 /**** old obsolete code
 enum rps_option_key_en
 {

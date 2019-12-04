@@ -1498,7 +1498,15 @@ inside a global \texttt{enum}. Strings are ordered naturally, using
 
 \smallskip
 
-
+The \texttt{refpersys} executable is handling files either from the
+{\RefPerSys} home directory (obtained inside C++ code using
+a \texttt{rps\_homedir()} call), given by \texttt{\$REFPERSYS\_HOME} or
+\texttt{\$HOME} environment variables or thru the
+\texttt{-{-}refpersys-home} program argument, or from the {\RefPerSys}
+load directory (by default the source directory, or given thru the
+\texttt{-{-}load} program argument). User preferences should go into the
+       {\RefPerSys} home directory, e.g. as the
+       \texttt{.refpersys.hjson} file there.
 
 \textcolor{red}{@@TODO: should explain more implementation details in C++ terms?}
 

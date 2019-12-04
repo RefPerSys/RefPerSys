@@ -53,21 +53,45 @@ public:
     ld_topdir(topdir) {};
   void parse_manifest_file(void);
   std::string string_of_loaded_file(const std::string& relpath);
+  std::string load_real_path(const std::string& path);
 };				// end class Rps_Loader
 
+
+std::string
+Rps_Loader::load_real_path(const std::string& path)
+{
+  if (path.size() > 2 && path[0] == '/') {
+    if (access(path.c_str(), R_OK))
+      {
+	int e = errno;
+	RPS_WARN("loader cannot access %s - %s",
+		 path.c_str(), strerror(e));
+	throw std::runtime_error(path + ":" + strerror(e));
+      }
+    char*rp = realpath(path.c_str(), nullptr);
+    if (!rp)
+      throw std::runtime_error(std::string("realpath failed:") + path);
+    std::string restr (rp);
+    free (rp), rp = nullptr;
+    return restr;
+  }
+  std::string candipath;// candidate path
+  candipath = ld_topdir + "/" + path;
+  if (!access(candipath.c_str(), R_OK)) {
+    char*rp = realpath(candipath.c_str(), nullptr);
+    if (!rp)
+      throw std::runtime_error(std::string("realpath failed:") + candipath);
+    std::string restr (rp);
+    free (rp), rp = nullptr;
+    return restr;
+  }
+} // end Rps_Loader::load_real_path
 
 std::string
 Rps_Loader::string_of_loaded_file(const std::string&relpath)
 {
   constexpr size_t maxfilen = 1024*1024; // a megabyte
-  std::string fullpath = ld_topdir + "/" + relpath;
-  if (access(fullpath.c_str(), R_OK))
-    {
-      int e = errno;
-      RPS_WARN("loader cannot access %s - %s",
-               fullpath, strerror(e));
-      throw std::runtime_error(fullpath + ":" + strerror(e));
-    }
+  std::string fullpath = load_real_path(relpath);
   std::string res;
   int lincnt=0;
   std::ifstream inp(fullpath);
@@ -114,8 +138,9 @@ Rps_Loader::parse_manifest_file(void)
   if (access(manifpath.c_str(), R_OK))
     RPS_FATAL("Rps_Loader::parse_manifest_file cannot access %s - %m",
               manifpath.c_str());
-  RPS_WARN("Rps_Loader::parse_manifest_file should parse %s",
-           manifpath.c_str());
+  std::string manifstr = string_of_loaded_file(RPS_MANIFEST_HJSON);
+  Hjson::Value manifhjson = Hjson::Unmarshal(manifstr.c_str(), manifstr.size());
+  RPS_WARNOUT("Rps_Loader::parse_manifest_file should parse " << manifhjson.to_string());
 } // end Rps_Loader::parse_manifest_file
 
 void rps_load_from (const std::string& dirpath)

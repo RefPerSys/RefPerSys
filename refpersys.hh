@@ -74,6 +74,8 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <errno.h>
 #include <time.h>
 #include <dlfcn.h>
@@ -86,6 +88,8 @@
 /// forward declaration of QString-s from Qt5
 class QString;
 
+// HJson CPP https://github.com/hjson/hjson-cpp
+#include "hjson/hjson.h"
 
 // GNU libunistring https://www.gnu.org/software/libunistring/
 // we use UTF-8 strings
@@ -124,6 +128,9 @@ extern "C" struct backtrace_state* rps_backtrace_state;
 /// the program name
 extern "C" const char* rps_progname;
 
+/// the refpersys homedir, e.g. $REFPERSYS_HOME or $HOME or given with
+/// --refpersys-home <dir>
+extern "C" const char* rps_homedir(void);
 
 //////////////// fatal error - aborting
 extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
@@ -1311,6 +1318,8 @@ public:
 ////////////////////////////////////////////////////////////////
 
 #define RPS_MANIFEST_HJSON "rps_manifest.hjson"
+#define RPS_USERPREFERENCE_HJSON ".refpersys.hjson"
+
 extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
 
 extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc

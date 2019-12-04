@@ -1,2 +1,6 @@
 // file rps_manifest.hjson
-// see refpersys.org
+// see http://refpersys.org/
+{
+  format: RefPerSysFormat2019A
+}
+// end of file rps_manifest.hjson
