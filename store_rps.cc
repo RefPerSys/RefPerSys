@@ -149,10 +149,18 @@ Rps_Loader::parse_manifest_file(void)
   RPS_WARNOUT("Rps_Loader::parse_manifest_file should parse:"
               << std::endl
               << manifstr << std::endl);
+  RPS_ASSERT (manifstr.size()>0);
 #warning the below call to Hjson::Unmarshal fail so should be commented out
   Hjson::Value manifhjson
     = Hjson::Unmarshal(manifstr.c_str(), manifstr.size());
-  RPS_WARNOUT("Rps_Loader::parse_manifest_file parsed " << manifhjson.to_string());
+  if (manifhjson.type() != Hjson::Value::Type::MAP)
+    RPS_FATAL("Rps_Loader::parse_manifest_file bad HJson type #%d",
+              (int)manifhjson.type());
+  RPS_WARNOUT("Rps_Loader::parse_manifest_file got map of "
+              << manifhjson.size() << " entries of format "
+              << manifhjson["format"].to_string());
+  RPS_WARNOUT("Rps_Loader::parse_manifest_file parsed "
+              << Hjson::MarshalJson(manifhjson));
 } // end Rps_Loader::parse_manifest_file
 
 void rps_load_from (const std::string& dirpath)
