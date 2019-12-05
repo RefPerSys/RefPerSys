@@ -149,8 +149,9 @@ public:
   };
   Rps_Id (std::nullptr_t) : Rps_Id(random()) {};
 #endif /*RPS_ONLY_ID_CODE*/
-  Rps_Id () : Rps_Id(0,0) {};
-  Rps_Id (const char*buf, const char**pend, bool *pok);
+  Rps_Id () : Rps_Id((uint64_t)0, (uint32_t)0) {};
+  Rps_Id (const char*buf, const char**pend=nullptr, bool *pok=nullptr);
+  Rps_Id (const std::string&str) : Rps_Id(str.c_str()) {};
   Rps_Id (const Rps_Id&oid) : Rps_Id(oid.hi(), oid.lo()) {};
   void to_cbuf24(char cbuf[/*24*/]) const;
   inline std::string to_string() const;

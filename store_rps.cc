@@ -51,12 +51,14 @@ const char rps_store_date[]= __DATE__;
 class Rps_Loader
 {
   std::string ld_topdir;
+  std::set<Rps_Id> ld_spaceset;
 public:
   Rps_Loader(const std::string&topdir) :
     ld_topdir(topdir) {};
   void parse_manifest_file(void);
   std::string string_of_loaded_file(const std::string& relpath);
   std::string load_real_path(const std::string& path);
+  void load_all_state_files(void);
 };				// end class Rps_Loader
 
 
@@ -91,7 +93,7 @@ Rps_Loader::load_real_path(const std::string& path)
       return restr;
     }
   throw std::runtime_error(std::string("cannot file load real path for ") + path);
-#warning Rps_Loader::load_real_path is incomplete
+#warning Rps_Loader::load_real_path could be incomplete
 } // end Rps_Loader::load_real_path
 
 
@@ -158,8 +160,21 @@ Rps_Loader::parse_manifest_file(void)
     RPS_FATAL("Rps_Loader::parse_manifest_file bad HJson type #%d",
               (int)manifhjson.type());
   if (manifhjson["format"].to_string() != RPS_MANIFEST_FORMAT)
-    RPS_FATAL("manifest map in %s should have format: %s",
-              manifpath.c_str (), RPS_MANIFEST_FORMAT);
+    RPS_FATAL("manifest map in %s should have format: '%s' but got '%s'",
+              manifpath.c_str (), RPS_MANIFEST_FORMAT,
+              manifhjson["format"].to_string().c_str());
+  auto spsethjson = manifhjson["spaceset"];
+  if (spsethjson.type() !=  Hjson::Value::Type::VECTOR)
+    RPS_FATAL("manifest map in %s should have spaceset: {...}",
+              manifpath.c_str ());
+  size_t sizespset = spsethjson.size();
+  for (int ix=0; ix<(int)sizespset; ix++)
+    {
+      std::string curspidstr = spsethjson[ix].to_string();
+      Rps_Id curspid (curspidstr);
+      RPS_ASSERT(curspid);
+      ld_spaceset.insert(curspid);
+    }
   RPS_WARNOUT("Rps_Loader::parse_manifest_file incompletely parsed "
               << Hjson::MarshalJson(manifhjson));
 #warning incomplete Rps_Loader::parse_manifest_file
