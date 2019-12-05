@@ -858,12 +858,14 @@ threads. So it is dead and should eventually be reclaimed by the
 garbage collector.
 
 \textbf{Values} -either immutable values or changeable objects- in
-{\RefPerSys} can be either \textbf{persistent} (dumped in
-textual state files\footnote{In the current implementation,
-{\RefPerSys} state files and their manifest file should appear
-under \texttt{persistore/} subdirectory.}, then reloaded at
-restart of \texttt{refpersys} process) or \textbf{transient}
-(that is, not dumped and not appearing in state files).
+       {\RefPerSys} can be either \textbf{persistent} (dumped in
+       textual state files\footnote{In the current implementation,
+       {\RefPerSys} state files should appear under
+       \texttt{persistore/} subdirectory, and the manifest file is
+       \texttt{rps\_manifest.hjson} at the top directory.}, then
+       reloaded at restart of \texttt{refpersys} process) or
+       \textbf{transient} (that is, not dumped and not appearing in
+       state files).
 
 The \textbf{persistence} machinery - the dump - is conceptually simple
 and could run in several threads: start from global roots and traverse
@@ -2140,7 +2142,12 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
 \subsection{EBNF Grammar of Data Format}
 \label{subsec:data-format-ebnf}
 
-\begin{itemize}
+\textcolor{red}{\textbf{the above text is wrong and incomplete. TODO: rewrite that!}}
+
+ \textcolor{red}{\textbf{No need of English explanation mimicking EBNF syntax}}
+
+%% this is completely wrong and useless. EBNF should be self-explanatory
+ \begin{itemize}
   \item Each store document must contain at least one RefPerSys object.
   \item Each RefPerSys object must be represented as an HJSON object.
   \item Each RefPerSys object is defined through HJSON keys.
@@ -2151,6 +2158,12 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
   \item Each RefPerSys object representation must have an HJSON modification time key.
   \item Each RefPerSys object representation may have an HJSON comment key.
 \end{itemize}
+
+\textcolor{red}{\textbf{Too verbose, and incorrect typography. See
+    \href{http://starynkevitch.net/Basile/bismon-chariot-doc.pdf}{Bismon
+      draft report} figure 5 \emph{syntax of values in dumped data
+    file} for inspiration}}
+%%% use \begin{tabular} here
 
 \textbf{oid} = ``\_'' , \{ \textbf{BASE62} \} ; \\
 \textbf{value} = \textbf{INTEGER} | \textbf{FLOAT} | \textbf{STRING} 
