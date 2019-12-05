@@ -44,6 +44,9 @@ const char rps_store_gitid[]= RPS_GITID;
 extern "C" const char rps_store_date[];
 const char rps_store_date[]= __DATE__;
 
+
+// same as used in rps_manifest.hjson file
+#define RPS_MANIFEST_FORMAT "RefPerSysFormat2019A"
 //////////////////////////////////////////////// loader
 class Rps_Loader
 {
@@ -156,11 +159,12 @@ Rps_Loader::parse_manifest_file(void)
   if (manifhjson.type() != Hjson::Value::Type::MAP)
     RPS_FATAL("Rps_Loader::parse_manifest_file bad HJson type #%d",
               (int)manifhjson.type());
-  RPS_WARNOUT("Rps_Loader::parse_manifest_file got map of "
-              << manifhjson.size() << " entries of format "
-              << manifhjson["format"].to_string());
-  RPS_WARNOUT("Rps_Loader::parse_manifest_file parsed "
+  if (manifhjson["format"].to_string() != RPS_MANIFEST_FORMAT)
+    RPS_FATAL("manifest map in %s should have format: %s",
+              manifpath.c_str (), RPS_MANIFEST_FORMAT);
+  RPS_WARNOUT("Rps_Loader::parse_manifest_file incompletely parsed "
               << Hjson::MarshalJson(manifhjson));
+#warning incomplete Rps_Loader::parse_manifest_file
 } // end Rps_Loader::parse_manifest_file
 
 void rps_load_from (const std::string& dirpath)

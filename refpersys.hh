@@ -247,7 +247,6 @@ static inline double rps_thread_cpu_time(void);
 extern "C" const char* rps_hostname(void);
 
 
-extern void print_types_info(void);
 
 #define RPS_FLEXIBLE_DIM 0	/* for flexible array members */
 
