@@ -165,7 +165,7 @@ void rps_run_application(int &argc, char **argv)
         if (!S_ISDIR(rhomstat.st_mode))
           RPS_FATAL("given --refpersys-home %s is not a directory",
                     rhompath.c_str());
-        if (rhomstat.st_mode & (S_IRUSR|S_IXUSR) !=  (S_IRUSR|S_IXUSR))
+        if ((rhomstat.st_mode & (S_IRUSR|S_IXUSR)) !=  (S_IRUSR|S_IXUSR))
           RPS_FATAL("given --refpersys-home %s is not user readable and executable",
                     rhompath.c_str());
         char*rhomrp = realpath(rhompath.c_str(), nullptr);
