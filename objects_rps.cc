@@ -39,6 +39,58 @@ extern "C" const char rps_objects_date[];
 const char rps_objects_date[]= __DATE__;
 
 
+std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher> Rps_ObjectZone::ob_idmap_(50777);
+std::mutex Rps_ObjectZone::ob_idmtx_;
+
+void
+Rps_ObjectZone::register_objzone(Rps_ObjectZone*obz)
+{
+  RPS_ASSERT(obz != nullptr);
+  std::lock_guard<std::mutex> gu(ob_idmtx_);
+  auto oid = obz->oid();
+  if (ob_idmap_.find(oid) != ob_idmap_.end())
+    RPS_FATALOUT("Rps_ObjectZone::register_objzone duplicate oid " << oid);
+  ob_idmap_.insert({oid,obz});
+} // end Rps_ObjectZone::register_objzone
+
+Rps_Id
+Rps_ObjectZone::fresh_random_oid(Rps_ObjectZone*ob)
+{
+  Rps_Id oid;
+  std::lock_guard<std::mutex> gu(ob_idmtx_);
+  while(true)
+    {
+      oid = Rps_Id::random();
+      if (RPS_UNLIKELY(ob_idmap_.find(oid) != ob_idmap_.end()))
+        continue;
+      ob_idmap_.insert({oid,ob});
+      return oid;
+    }
+}
+
+Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
+  : Rps_ZoneValue(Rps_Type::Object),
+    ob_oid(oid), ob_mtx(), ob_class(nullptr),
+    ob_attrs(), ob_comps(), ob_payload(nullptr)
+{
+  if (!dontregister)
+    register_objzone(this);
+} // end Rps_ObjectZone::Rps_ObjectZone
+
+Rps_ObjectZone::Rps_ObjectZone() :
+  Rps_ObjectZone::Rps_ObjectZone(fresh_random_oid(this), false)
+{
+} // end Rps_ObjectZone::Rps_ObjectZone
+
+Rps_ObjectZone*
+Rps_ObjectZone::make(void)
+{
+  Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(Rps_Id(),true);
+  Rps_Id oid = fresh_random_oid(obz);
+  *(const_cast<Rps_Id*>(&obz->ob_oid)) = oid;
+  return obz;
+} // end Rps_ObjectZone::make
+
 void
 Rps_ObjectZone::gc_mark(Rps_GarbageCollector&gc, unsigned)
 {

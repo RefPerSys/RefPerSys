@@ -1123,15 +1123,31 @@ public:
 class Rps_Payload;
 class Rps_ObjectZone : public Rps_ZoneValue
 {
+
+  friend Rps_ObjectZone*
+  Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(Rps_Id,bool);
   const Rps_Id ob_oid;
   std::shared_mutex ob_mtx;
   std::atomic<Rps_ObjectZone*> ob_class;
   std::map<Rps_ObjectRef, Rps_Value> ob_attrs;
   std::vector<Rps_Value> ob_comps;
   std::atomic<Rps_Payload*> ob_payload;
-  Rps_ObjectZone(Rps_Id oid);
+  Rps_ObjectZone(Rps_Id oid, bool dontregister=false);
   Rps_ObjectZone(void);
+  static std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher> ob_idmap_;
+  static std::mutex ob_idmtx_;
+  static void register_objzone(Rps_ObjectZone*);
+  static Rps_Id fresh_random_oid(Rps_ObjectZone*ob =nullptr);
 public:
+  virtual uint32_t wordsize() const
+  {
+    return sizeof(Rps_ObjectZone)/sizeof(void*);
+  };
+  static Rps_ObjectZone*make(void);
+  static Rps_ObjectZone*make_or_find(Rps_Id);
+  static Rps_ObjectZone*make_new(Rps_Id);
+  static Rps_ObjectZone*find(Rps_Id);
+  static Rps_ObjectZone*make_loaded(Rps_Id, Rps_Loader&);
   const Rps_Id oid() const
   {
     return ob_oid;
