@@ -1319,6 +1319,17 @@ public:
 #define RPS_MANIFEST_HJSON "rps_manifest.hjson"
 #define RPS_USERPREFERENCE_HJSON ".refpersys.hjson"
 
+//// global roots for garbage collection and persistence
+/// the called function cannot add, remove or query the global root set
+extern "C" void rps_each_root_object (const std::function<void(Rps_ObjectRef)>&fun);
+extern "C" void rps_add_root_object (const Rps_ObjectRef);
+extern "C" bool rps_remove_root_object (const Rps_ObjectRef);
+extern "C" bool rps_is_root_object (const Rps_ObjectRef);
+extern "C" std::set<Rps_ObjectRef> rps_set_root_objects(void);
+extern "C" unsigned rps_nb_root_objects(void);
+
+////////////////
+
 extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
 
 extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc

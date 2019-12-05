@@ -881,6 +881,16 @@ should be. Notice the conceptual similarity between {\RefPerSys} dump
 algorithm and its tracing garbage collector: both are traversing the
 graph of references inside the heap.
 
+The global roots are objects. Use the C++ functions
+\texttt{rps\_each\_root\_object} to iterate on them,
+\texttt{rps\_add\_root\_object} to add one,
+\texttt{rps\_remove\_root\_object} to remove one,
+\texttt{rps\_is\_root\_object} to test if an object is a global root,
+\texttt{rps\_set\_root\_objects} to get the set of all of them,
+and\texttt{rps\_nb\_root\_objects} to get their number. Of course,
+some global roots can be transient objects, but all of them are roots
+for the garbage collector.
+
 The initial loading machinery (recreating a suitable heap - and
 rebuilding a graph of references inspired by figure
 \ref{fig:persistent-heap}, without any transient stuff) from its

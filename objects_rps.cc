@@ -92,5 +92,67 @@ Rps_ObjectZone::less(const Rps_ZoneValue&zv) const
   }
 } // end of Rps_ObjectZone::less
 
+////////////////////////////////////////////////////////////////
+///// global roots for garbage collection and persistence
+
+static std::set<Rps_ObjectRef> rps_object_root_set;
+static std::mutex rps_object_root_mtx;
+
+void
+rps_each_root_object (const std::function<void(Rps_ObjectRef)>&fun)
+{
+  std::lock_guard<std::mutex> gu(rps_object_root_mtx);
+  for (auto ob: rps_object_root_set)
+    fun(ob);
+} // end rps_each_root_object
+
+
+void
+rps_add_root_object (const Rps_ObjectRef ob)
+{
+  if (!ob) return;
+  std::lock_guard<std::mutex> gu(rps_object_root_mtx);
+  rps_object_root_set.insert(ob);
+} // end rps_add_root_object
+
+
+bool
+rps_remove_root_object (const Rps_ObjectRef ob)
+{
+  if (!ob) return false;
+  std::lock_guard<std::mutex> gu(rps_object_root_mtx);
+  auto it = rps_object_root_set.find(ob);
+  if (it == rps_object_root_set.end())
+    return false;
+  rps_object_root_set.erase(it);
+  return true;
+} // end rps_remove_root_object
+
+bool rps_is_root_object (const Rps_ObjectRef ob)
+{
+  if (!ob)
+    return false;
+  std::lock_guard<std::mutex> gu(rps_object_root_mtx);
+  auto it = rps_object_root_set.find(ob);
+  return it != rps_object_root_set.end();
+} // end rps_is_root_object
+
+std::set<Rps_ObjectRef>
+rps_set_root_objects(void)
+{
+  std::set<Rps_ObjectRef> set;
+
+  std::lock_guard<std::mutex> gu(rps_object_root_mtx);
+  for (Rps_ObjectRef ob: rps_object_root_set)
+    set.insert(ob);
+  return set;
+} // end rps_set_root_objects
+
+unsigned
+rps_nb_root_objects(void)
+{
+  std::lock_guard<std::mutex> gu(rps_object_root_mtx);
+  return (unsigned) rps_object_root_set.size();
+} // end rps_nb_root_objects
 
 // end of file objects_rps.cc
