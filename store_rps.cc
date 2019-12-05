@@ -149,11 +149,9 @@ Rps_Loader::parse_manifest_file(void)
     RPS_FATAL("Rps_Loader::parse_manifest_file cannot access %s - %m",
               manifpath.c_str());
   std::string manifstr = string_of_loaded_file(RPS_MANIFEST_HJSON);
-  RPS_WARNOUT("Rps_Loader::parse_manifest_file should parse:"
-              << std::endl
-              << manifstr << std::endl);
-  RPS_ASSERT (manifstr.size()>0);
-#warning the below call to Hjson::Unmarshal fail so should be commented out
+  if (manifstr.size() < 20)
+    RPS_FATAL("Rps_Loader::parse_manifest_file nearly empty file %s",
+              manifpath.c_str());
   Hjson::Value manifhjson
     = Hjson::Unmarshal(manifstr.c_str(), manifstr.size());
   if (manifhjson.type() != Hjson::Value::Type::MAP)
