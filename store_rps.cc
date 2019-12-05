@@ -167,6 +167,8 @@ Rps_Loader::parse_manifest_file(void)
 #warning incomplete Rps_Loader::parse_manifest_file
 } // end Rps_Loader::parse_manifest_file
 
+
+
 void rps_load_from (const std::string& dirpath)
 {
   RPS_WARN("unimplemented rps_load_from '%s'", dirpath.c_str());
