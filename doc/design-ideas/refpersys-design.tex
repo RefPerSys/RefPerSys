@@ -213,6 +213,7 @@
 \bigskip
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Social Necessity of \href{https://en.wikipedia.org/wiki/Artificial_general_intelligence}{AGI} Systems with  Long Term Development}
 \label{sec:social}
 
@@ -293,10 +294,11 @@ further or alternative experimentations. And
 for nearly a decade is not too much for such a perspective.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{\textsc{RefPerSys} ambitions and goals}
 \label{sec:ambitions-goals}
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\textsc{RefPerSys} core idea{\texttt{[\textit{l}]\textsuperscript{?}}}s}
 \label{subsec:coreidea}
 
@@ -656,6 +658,7 @@ other 64 bits Linux computers. A
 describing the collection of files keeping the state is probably
 needed.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{{\RefPerSys} strange development cycle}
 \label{subsec:strange-devel}
 
@@ -734,6 +737,7 @@ pointers (which gets updated with
 
 \bigskip
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\textsc{RefPerSys} persistent heap}
 \label{subsec:persistheap}
 
@@ -887,6 +891,7 @@ processes each state file in a potentially different loading thread.
 
 \bigskip
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Agenda and multi-threading in \RefPerSys}
 \label{subsec:agenda-thread}
 
@@ -983,6 +988,7 @@ the non-empty queue of highest priority its tasklet staying in front.
 
 \bigskip
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Metaprogramming and introspection in \RefPerSys}
 \label{subsec:metaprog-introspec}
 
@@ -1225,7 +1231,6 @@ techniques.
 \bigskip
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \section{The data and object models of \RefPerSys}
 \label{sec:dataobjmodel}
 
@@ -1234,6 +1239,7 @@ The data is what is processed by {\RefPerSys}, and is made of values
 to GC-managed memory zones). The object model is defining our classes,
 our single inheritance mechanism, our message sending protocol.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{how data should be processed in \RefPerSys}
 \label{subsec:howdata}
 
@@ -1316,6 +1322,7 @@ tasklets (e.g. those directly related to the user interface,
 e.g. \href{https://en.wikipedia.org/wiki/Ajax_(programming)}{\textsc{Ajax}}
 or \href{http://qt.io/}{\textsc{Qt}} callbacks) are transient.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \label{subsec:datalowhigh}
 \subsection{data at the low and high levels}
 
@@ -1512,7 +1519,8 @@ load directory (by default the source directory, or given thru the
 
 
 \medskip
-  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{immutable values}
 \label{subsec:immutable-values}
 
@@ -1852,7 +1860,9 @@ represented as in figure \ref{fig:code-chunk}:
 \end{figure}
 
 \RefPerSys is coded \textbf{only} for \textsc{Linux/x86-64} with an English locale, using UTF-8.
-%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{File naming}
 \label{subsec:file-naming}
 
@@ -1885,6 +1895,7 @@ start.  The copyright owner is the {\RefPerSys} team. We mention
 \href{http://refpersys.org/}{\texttt{refpersys.org}}, and we list
 every human member of it.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Building \texttt{refpersys} executable}
 \label{subsec:building}
 
@@ -1905,6 +1916,7 @@ its version \texttt{1.3}.  We need \href{http://qt.io}{\textsc{Qt5}},
       \texttt{unistring}} (for UTF-8 processing) and maybe
     \href{https://www.antlr.org/}{ANTLR4} (as a parser generator).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{{\RefPerSys} workflow}
 \label{subsec:workflow}
 
@@ -1962,6 +1974,7 @@ carrying a payload with some {\relsize{-1}{\texttt{FILE*
 
 \medskip
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{the {\RefPerSys} object model}
 \label{subsec:objmodel}
 
@@ -2091,6 +2104,7 @@ exiting.
 
 \textcolor{red}{@@TODO: improve}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The textual data format of \RefPerSys}
 \label{subsec:data-format}
 
@@ -2122,7 +2136,7 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
 \textcolor{red}{@@TODO: explanation of the files (including the
   manifest file) under \texttt{persistore/} and of their HJSON syntax}
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{EBNF Grammar of Data Format}
 \label{subsec:data-format-ebnf}
 
