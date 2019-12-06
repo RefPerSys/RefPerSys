@@ -35,6 +35,8 @@ lualatex --shell-escape  --halt-on-error refpersys-design
 biber refpersys-design
 lualatex --shell-escape  --halt-on-error refpersys-design
 [ -f refpersys-design.idx ] && texindy -v -C utf8 -I latex refpersys-design.idx
+lualatex --shell-escape  --halt-on-error refpersys-design
+[ -f refpersys-design.idx ] && texindy -v -C utf8 -I latex refpersys-design.idx
 if lualatex --shell-escape  --halt-on-error refpersys-design ; then
     if [ "$1" != noinstall ]; then 
 	[ -x $HOME/bin/install-refpersys-design-report.sh ] && $HOME/bin/install-refpersys-design-report.sh

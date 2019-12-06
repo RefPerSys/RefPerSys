@@ -1869,6 +1869,8 @@ represented as in figure \ref{fig:code-chunk}:
     \hline
   \end{tabular}
   \end{center}
+  \caption{a simplified example of code chunk}
+  \label{fig:code-chunk}
 \end{figure}
 
 \RefPerSys is coded \textbf{only} for \textsc{Linux/x86-64} with an English locale, using UTF-8.
@@ -2113,6 +2115,46 @@ directory\footnote{Of course, some other directory can be given through
 explicit program arguments to the \texttt{refpersys} executable.}). In
 the usual case, a \texttt{refpersys} process dumps its persistent state before
 exiting.
+
+A \href{https://en.wikipedia.org/wiki/Manifest_file}{manifest file}
+named \texttt{rps\_manifest.hjson} is
+\index{rps\_manifest.hjson@\texttt{rps\_manifest.hjson}} describing
+the entire persisted state and referencing indirectly other files. The figure \ref{fig:manifest-file} is giving the synntax of that file.
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tabular}{llllr}
+      \textit{manifest} & $\leftarrow$ \texttt{\large\textbf{\{}} & & \\
+      &  \texttt{format:} ~ {\relsize{-1}{\texttt{RefPerSysFormat2019A}}}
+      & mandatory format id \\
+      &  \texttt{spaceset:} ~ \texttt{\textbf{[}} ~ $id_{space}$ \ldots ~ \texttt{\textbf{]}} 
+      & oids of spaces \\
+      & \texttt{globalroots:} ~ \texttt{\textbf{[}} ~ $id_{root}$ \ldots ~ \texttt{\textbf{]}} 
+      & oids of global roots \\
+      & \texttt{plugins:} ~ \texttt{\textbf{[}} ~ $id_{plugin}$ \ldots ~ \texttt{\textbf{]}} 
+      & oids of \texttt{dlopen}-ed plugins \\
+      ~            & \texttt{\large\textbf{\}}} & & \\
+    \end{tabular}
+  \end{center}
+  \caption{syntax of the manifest file \texttt{rps\_manifest.hjson}}
+  \label{fig:manifest-file}
+\end{figure}
+
+If \texttt{\_8J6vNYtP5E800eCr5q} is a space oid $id_{space}$, then the persistent
+space data is in file
+{\relsize{-1}{\texttt{persistore/sp\_8J6vNYtP5E800eCr5q-rps.hjson}}}.
+
+For plugins, if \texttt{\_7GIB3ma21I200tfqDs} is a plugin oid $id_{plugin}$, its
+generated C++ source code should go into the file
+{\relsize{-1}{\texttt{generated/rps\_7GIB3ma21I200tfqDs-mod.cc}}} and
+the corresponding
+\href{http://man7.org/linux/man-pages/man3/dlopen.3.html}{{\relsize{-1}{dlopen}}}-ed
+plugin in
+{\relsize{-1}{\texttt{plugins/rps\_7GIB3ma21I200tfqDs-mod.so}}}
+\textsc{Elf} shared object file.
+
+The loader will \texttt{rps\_add\_root\_object} every root object of given $id_{root}$.
+
 
 \textcolor{red}{@@TODO: improve}
 
