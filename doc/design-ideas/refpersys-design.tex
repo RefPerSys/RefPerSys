@@ -2162,7 +2162,32 @@ The loader will \texttt{rps\_add\_root\_object} every root object of given $id_{
 \subsection{The textual data format of \RefPerSys}
 \label{subsec:data-format}
 
-We probably will use a \href{http://hjson.org}{\textsc{HJson}} format
+Each space file of $id_{space}$ starts with a prologue whose syntax is in figure
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tabular}{llllr}
+      \textit{space-prologue} & $\leftarrow$ \texttt{\large\textbf{\{}} & & \\
+      &  \texttt{format:} ~ {\relsize{-1}{\texttt{RefPerSysFormat2019A}}}
+      & mandatory format id \\
+      &  \texttt{spaceid:} ~  $id_{space}$  
+      & the id of the current space \\
+      & \texttt{nbobjects:} ~ \textit{number-of-objects} \\
+      & \texttt{\large\textbf{\}}}
+    \end{tabular}
+  \end{center}
+  \caption{syntax of the prologue of space $id_{space}$}
+  \label{fig:space-prologue}
+\end{figure}
+
+then each object of some given \textit{oid} is preceded by a comment
+like \texttt{//+ob\textit{\textbf{oid}}}, for example an object of oid
+\texttt{\_3fzIPzNlWFV01GGQSt} starts with a comment
+       {\relsize{-1}{\texttt{//+ob\_3fzIPzNlWFV01GGQSt}}} line.
+
+
+       
+{\textcolor{red}{@@TODO: \textbf{review} and improve !}} We probably will use a \href{http://hjson.org}{\textsc{HJson}} format
 to persist our state, since \textsc{HJson} is slighly less verbose
 than \textsc{Json} (less double quotes \texttt{"} needed), and almost
 as easy to parse. Our immutable values could easily be represented in

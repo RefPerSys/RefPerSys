@@ -3,3 +3,11 @@
 ##
 ##      © Copyright 2019 The Reflective Persistent System Team
 ##      team@refpersys.org & http://refpersys.org/
+################
+## the prologue
+{
+  format: RefPerSysFormat2019A
+  spacid: _8J6vNYtP5E800eCr5q
+}
+
+## every object starts with some //+ob<id> line

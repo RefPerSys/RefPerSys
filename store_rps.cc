@@ -61,7 +61,10 @@ public:
   Rps_Loader(const std::string&topdir) :
     ld_topdir(topdir) {};
   void parse_manifest_file(void);
+  void first_pass_space(Rps_Id spacid);
+  void second_pass_space(Rps_Id spacid);
   std::string string_of_loaded_file(const std::string& relpath);
+  std::string space_file_path(Rps_Id spacid);
   std::string load_real_path(const std::string& path);
   void load_all_state_files(void);
 };				// end class Rps_Loader
@@ -103,6 +106,22 @@ Rps_Loader::load_real_path(const std::string& path)
 
 
 
+
+std::string 
+Rps_Loader::space_file_path(Rps_Id spacid)
+{
+  if (!spacid.valid())
+    throw std::runtime_error("Rps_Loader::space_file_path invalid spacid");
+  return std::string{"persistore/sp"} + spacid.to_string() + "-rps.hjson";
+} // end Rps_Loader::space_file_path
+
+void  
+Rps_Loader::first_pass_space(Rps_Id spacid)
+{
+  auto spacepath = load_real_path(space_file_path(spacid));
+  std::ifstream ins(spacepath);
+} // end Rps_Loader::first_pass_space
+
 std::string
 Rps_Loader::string_of_loaded_file(const std::string&relpath)
 {
@@ -128,6 +147,7 @@ Rps_Loader::string_of_loaded_file(const std::string&relpath)
     }
   return res;
 } // end Rps_Loader::string_of_loaded_file
+
 
 //////////////////////////////////////////////// dumper
 class Rps_Dumper
