@@ -112,7 +112,7 @@ Rps_GarbageCollector::run_gc(void)
     RPS_ASSERT(Rps_QuasiZone::raw_nth_zone(qz->qz_rank,gc) == qz);
     delete qz;
   });
-#warning Rps_GarbageCollector::run_gc could be inncomplete or rong
+#warning Rps_GarbageCollector::run_gc could be inncomplete or wrong
 } // end Rps_GarbageCollector::run_gc
 
 void
@@ -127,8 +127,7 @@ void
 Rps_GarbageCollector::mark_value(Rps_Value val)
 {
   if (val.is_empty() || val.is_int()) return;
-  /// FIXME, we probably want to mark inside the value...
-  RPS_FATAL("unimplemented Rps_GarbageCollector::mark_value");
+  val.gc_mark(*this);
 #warning Rps_GarbageCollector::mark_value unimplemented
 } // end of Rps_GarbageCollector::mark_value
 
