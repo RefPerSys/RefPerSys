@@ -51,7 +51,12 @@ const char rps_store_date[]= __DATE__;
 class Rps_Loader
 {
   std::string ld_topdir;
+  /// set of space ids
   std::set<Rps_Id> ld_spaceset;
+  /// set of global roots id
+  std::set<Rps_Id> ld_globrootsidset;
+  /// mapping from plugins id to their dlopen-ed handle
+  std::map<Rps_Id,void*> ld_pluginsmap;
 public:
   Rps_Loader(const std::string&topdir) :
     ld_topdir(topdir) {};
@@ -163,9 +168,11 @@ Rps_Loader::parse_manifest_file(void)
     RPS_FATAL("manifest map in %s should have format: '%s' but got '%s'",
               manifpath.c_str (), RPS_MANIFEST_FORMAT,
               manifhjson["format"].to_string().c_str());
+  /// parse spaceset
+  {
   auto spsethjson = manifhjson["spaceset"];
   if (spsethjson.type() !=  Hjson::Value::Type::VECTOR)
-    RPS_FATAL("manifest map in %s should have spaceset: {...}",
+    RPS_FATAL("manifest map in %s should have spaceset: [...]",
               manifpath.c_str ());
   size_t sizespset = spsethjson.size();
   for (int ix=0; ix<(int)sizespset; ix++)
@@ -175,6 +182,38 @@ Rps_Loader::parse_manifest_file(void)
       RPS_ASSERT(curspid);
       ld_spaceset.insert(curspid);
     }
+  }
+  /// parse globalroots
+  {
+  auto globrootshjson = manifhjson["globalroots"];
+  if (spsethjson.type() !=  Hjson::Value::Type::VECTOR)
+    RPS_FATAL("manifest map in %s should have globalroots: [...]",
+              manifpath.c_str ());
+  size_t sizeglobroots = globrootshjson.size();
+  for (int ix=0; ix<(int)sizeglobroots; ix++)
+    {
+      std::string curgrootidstr = globrootshjson[ix].to_string();
+      Rps_Id curgrootid (curgrootidstr);
+      RPS_ASSERT(curgrootid);
+      ld_globrootsidset.insert(curgrootid);
+    }
+  }
+  /// parse plugins
+  {
+  auto pluginshjson = manifhjson["plugins"];
+  if (spsethjson.type() !=  Hjson::Value::Type::VECTOR)
+    RPS_FATAL("manifest map in %s should have plugins: [...]",
+              manifpath.c_str ());
+  size_t sizeplugins = pluginshjson.size();
+  for (int ix=0; ix<(int)sizeplugins; ix++)
+    {
+      std::string curpluginidstr = pluginshjson[ix].to_string();
+      Rps_Id curpluginid (curpluginidstr);
+      RPS_ASSERT(curpluginid);
+      ld_pluginsmap.insert(curpluginid);
+    }
+  }
+  ////
   RPS_WARNOUT("Rps_Loader::parse_manifest_file incompletely parsed "
               << Hjson::MarshalJson(manifhjson));
 #warning incomplete Rps_Loader::parse_manifest_file

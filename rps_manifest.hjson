@@ -41,5 +41,9 @@
   spaceset: [
     _8J6vNYtP5E800eCr5q
   ]
+  globalroots: [
+  ]
+  plugins: [
+  ]
 }
 // end of file rps_manifest.hjson
