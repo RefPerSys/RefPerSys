@@ -170,48 +170,54 @@ Rps_Loader::parse_manifest_file(void)
               manifhjson["format"].to_string().c_str());
   /// parse spaceset
   {
-  auto spsethjson = manifhjson["spaceset"];
-  if (spsethjson.type() !=  Hjson::Value::Type::VECTOR)
-    RPS_FATAL("manifest map in %s should have spaceset: [...]",
-              manifpath.c_str ());
-  size_t sizespset = spsethjson.size();
-  for (int ix=0; ix<(int)sizespset; ix++)
-    {
-      std::string curspidstr = spsethjson[ix].to_string();
-      Rps_Id curspid (curspidstr);
-      RPS_ASSERT(curspid);
-      ld_spaceset.insert(curspid);
-    }
+    auto spsethjson = manifhjson["spaceset"];
+    if (spsethjson.type() !=  Hjson::Value::Type::VECTOR)
+      RPS_FATAL("manifest map in %s should have spaceset: [...]",
+                manifpath.c_str ());
+    size_t sizespset = spsethjson.size();
+    for (int ix=0; ix<(int)sizespset; ix++)
+      {
+        std::string curspidstr = spsethjson[ix].to_string();
+        Rps_Id curspid (curspidstr);
+        RPS_ASSERT(curspid);
+        ld_spaceset.insert({curspid});
+      }
   }
   /// parse globalroots
   {
-  auto globrootshjson = manifhjson["globalroots"];
-  if (spsethjson.type() !=  Hjson::Value::Type::VECTOR)
-    RPS_FATAL("manifest map in %s should have globalroots: [...]",
-              manifpath.c_str ());
-  size_t sizeglobroots = globrootshjson.size();
-  for (int ix=0; ix<(int)sizeglobroots; ix++)
-    {
-      std::string curgrootidstr = globrootshjson[ix].to_string();
-      Rps_Id curgrootid (curgrootidstr);
-      RPS_ASSERT(curgrootid);
-      ld_globrootsidset.insert(curgrootid);
-    }
+    auto globrootshjson = manifhjson["globalroots"];
+    if (globrootshjson.type() !=  Hjson::Value::Type::VECTOR)
+      RPS_FATAL("manifest map in %s should have globalroots: [...]",
+                manifpath.c_str ());
+    size_t sizeglobroots = globrootshjson.size();
+    for (int ix=0; ix<(int)sizeglobroots; ix++)
+      {
+        std::string curgrootidstr = globrootshjson[ix].to_string();
+        Rps_Id curgrootid (curgrootidstr);
+        RPS_ASSERT(curgrootid);
+        ld_globrootsidset.insert(curgrootid);
+      }
   }
   /// parse plugins
   {
-  auto pluginshjson = manifhjson["plugins"];
-  if (spsethjson.type() !=  Hjson::Value::Type::VECTOR)
-    RPS_FATAL("manifest map in %s should have plugins: [...]",
-              manifpath.c_str ());
-  size_t sizeplugins = pluginshjson.size();
-  for (int ix=0; ix<(int)sizeplugins; ix++)
-    {
-      std::string curpluginidstr = pluginshjson[ix].to_string();
-      Rps_Id curpluginid (curpluginidstr);
-      RPS_ASSERT(curpluginid);
-      ld_pluginsmap.insert(curpluginid);
-    }
+    auto pluginshjson = manifhjson["plugins"];
+    if (pluginshjson.type() !=  Hjson::Value::Type::VECTOR)
+      RPS_FATAL("manifest map in %s should have plugins: [...]",
+                manifpath.c_str ());
+    size_t sizeplugins = pluginshjson.size();
+    for (int ix=0; ix<(int)sizeplugins; ix++)
+      {
+        std::string curpluginidstr = pluginshjson[ix].to_string();
+        Rps_Id curpluginid (curpluginidstr);
+        RPS_ASSERT(curpluginid && curpluginid.valid());
+        std::string pluginpath = load_real_path(std::string{"plugins/rps"} + curpluginid.to_string() + "-mod.so");
+        RPS_INFORMOUT("should load plugin #" << ix << " from " << pluginpath);
+        void* dlh = dlopen(pluginpath.c_str(), RTLD_NOW | RTLD_GLOBAL);
+        if (!dlh)
+          RPS_FATAL("failed to load plugin #%d file %s: %s",
+                    ix, pluginpath.c_str(), dlerror());
+        ld_pluginsmap.insert({curpluginid, dlh});
+      }
   }
   ////
   RPS_WARNOUT("Rps_Loader::parse_manifest_file incompletely parsed "
