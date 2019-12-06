@@ -2233,6 +2233,39 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
 	         ``function'' , ``:'' , \textbf{oid} , 
 		 ``environment'' , ``:'' , ``['' , \{ \textbf{closed-value} \} , "]" , "\}" ;
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The GUI of \RefPerSys}
+\label{sec:gui}
+
+The GUI of \RefPerSys is built using the Qt5 toolkit. An important consideration
+in the selection of this toolkit was its C++ API, in addition to it being a stable
+and mature toolkit.
+
+\textcolor{red}{@@TODO: add more details of windows}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Menu Items}
+\label{subsec:gui-menu}
+
+\begin{itemize}
+  \item The \textbf{App} Menu
+    \begin{itemize}
+      \item \textbf{Dump}: dump the persistent heap
+      \item \textbf{Garbage Collect}: invokes the gargage collector
+      \item \textbf{New Window}: create a new window
+      \item \textbf{Close}: close the current window without dumping
+      \item \textbf{Quit}: quit the application without dumping
+      \item \textbf{Exit}: exit the application after dumping
+    \end{itemize}
+  \item The \textbf{Help} Menu
+    \begin{itemize}
+      \item \textbf{About}: display program information
+    \end{itemize}
+\end{itemize}
+
+\label{subsec:data-format}
 \clearpage
 \printnoidxglossaries
 \bigskip
