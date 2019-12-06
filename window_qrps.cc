@@ -127,13 +127,14 @@ RpsQWindow::onMenuClose()
 {
   auto app = dynamic_cast<RpsQApplication*> (RpsQApplication::instance());
 
-  // TODO: this is still buggy. The intention is that RpsQWindow::onMenuQuit()
-  // should be called for the last window. I think that the close signal needs
-  // to be mapped to pop the relevant RpsQApplication::app_windvec element
   if (app->getWindowCount () > 1)
+  {
+    app->lowerWindowCount ();
     this->close();
-  else
+  }
+  else {
     this->onMenuQuit ();
+  }
 }
 
 

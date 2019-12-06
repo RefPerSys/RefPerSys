@@ -62,7 +62,13 @@ public:
 
   size_t getWindowCount()
   {
-    return app_windvec.size () - 1; // offset for null element at index 0
+    //return app_windvec.size () - 1; // offset for null element at index 0
+    return app_wndcount;
+  }
+
+  void lowerWindowCount()
+  {
+      app_wndcount--;
   }
 
 public slots:
@@ -72,6 +78,7 @@ public slots:
 private:
   std::mutex app_mutex;
   std::vector <std::unique_ptr<RpsQWindow>> app_windvec;
+  size_t app_wndcount;
 };				// end of class RpsQApplication
 
 //////////////////////////////////////////////////////////// RpsQWindow

@@ -88,10 +88,12 @@ RpsQApplication::add_new_window(void)
   window->resize (640, 480); // TODO: get dimensions from $HOME/.RefPerSys
   window->show();
   app_windvec.emplace_back(window);
+  app_wndcount++;
 } // end of RpsQApplication::add_new_window
 
 RpsQApplication::RpsQApplication(int &argc, char*argv[])
   : QApplication(argc, argv)
+  , app_wndcount (0)
 {
   setApplicationName("RefPerSys");
   setApplicationVersion(rps_lastgitcommit);
