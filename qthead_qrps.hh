@@ -68,7 +68,7 @@ public:
 
   void lowerWindowCount()
   {
-      app_wndcount--;
+    app_wndcount--;
   }
 
 public slots:

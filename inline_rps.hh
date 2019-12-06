@@ -772,6 +772,13 @@ Rps_ObjectRef::obhash(void) const
   return _optr->obhash();
 }      // end Rps_ObjectRef::obhash
 
+void
+Rps_ObjectRef::gc_mark(Rps_GarbageCollector&gc)
+{
+  if (is_empty()) return;
+  _optr->gc_mark(gc);
+} // end Rps_ObjectRef::gc_mark
+
 bool
 Rps_ObjectRef::operator == (const Rps_ObjectRef& oth) const
 {

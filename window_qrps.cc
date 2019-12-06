@@ -128,13 +128,14 @@ RpsQWindow::onMenuClose()
   auto app = dynamic_cast<RpsQApplication*> (RpsQApplication::instance());
 
   if (app->getWindowCount () > 1)
-  {
-    app->lowerWindowCount ();
-    this->close();
-  }
-  else {
-    this->onMenuQuit ();
-  }
+    {
+      app->lowerWindowCount ();
+      this->close();
+    }
+  else
+    {
+      this->onMenuQuit ();
+    }
 }
 
 

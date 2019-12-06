@@ -285,6 +285,7 @@ static_assert ((rps_allocation_unit & (rps_allocation_unit-1)) == 0,
 class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
+class Rps_GarbageCollector;
 
 typedef uint32_t Rps_HashInt;
 
@@ -407,6 +408,7 @@ public:
   inline bool operator > (const Rps_ObjectRef& oth) const;
   inline bool operator >= (const Rps_ObjectRef& oth) const;
   inline Rps_HashInt obhash (void) const;
+  inline void gc_mark(Rps_GarbageCollector&);
 };				// end class Rps_ObjectRef
 
 
@@ -1156,7 +1158,7 @@ public:
   {
     return ob_oid.hash();
   };
-  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned);
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
   virtual Rps_HashInt val_hash () const
   {
     return obhash();

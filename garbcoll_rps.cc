@@ -61,10 +61,12 @@ void
 rps_garbage_collect (void)
 {
   RPS_ASSERT(Rps_GarbageCollector::gc_this.load() == nullptr);
-  static Rps_Value dummyref;
   Rps_GarbageCollector the_gc([](Rps_GarbageCollector*gc)
   {
-    dummyref.gc_mark(*gc);
+    rps_each_root_object([=](Rps_ObjectRef obr)
+    {
+      obr.gc_mark(*gc);
+    });
   });
   the_gc.run_gc();
   RPS_FATAL("unimplemented rps_garbage_collect");
