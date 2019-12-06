@@ -1149,7 +1149,7 @@ public:
   static Rps_ObjectZone*make_or_find(Rps_Id);
   static Rps_ObjectZone*make_new(Rps_Id);
   static Rps_ObjectZone*find(Rps_Id);
-  static Rps_ObjectZone*make_loaded(Rps_Id, Rps_Loader&);
+  static Rps_ObjectZone*make_loaded(Rps_Id, Rps_Loader*);
   const Rps_Id oid() const
   {
     return ob_oid;

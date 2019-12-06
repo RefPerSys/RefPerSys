@@ -91,6 +91,17 @@ Rps_ObjectZone::make(void)
   return obz;
 } // end Rps_ObjectZone::make
 
+Rps_ObjectZone*
+Rps_ObjectZone::make_loaded(Rps_Id oid, Rps_Loader* ld)
+{
+#warning Rps_ObjectZone::make_loaded might be incomplete
+  RPS_ASSERT(oid.valid());
+  RPS_ASSERT(ld != nullptr);
+  Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(oid, false);
+  return obz;
+} // end Rps_ObjectZone::make_loaded
+
+
 void
 Rps_ObjectZone::gc_mark(Rps_GarbageCollector&gc, unsigned)
 {

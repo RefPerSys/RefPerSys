@@ -9,9 +9,10 @@
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
+ *      Nimesh Neema <nimeshneema@gmail.com>
  *
  *      © Copyright 2019 The Reflective Persistent System Team
- *      <https://refpersys.gitlab.io>
+ *      team@refpersys.org & http://refpersys.org/
  *
  * License:
  *    This program is free software: you can redistribute it and/or modify

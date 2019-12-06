@@ -57,6 +57,8 @@ class Rps_Loader
   std::set<Rps_Id> ld_globrootsidset;
   /// mapping from plugins id to their dlopen-ed handle
   std::map<Rps_Id,void*> ld_pluginsmap;
+  /// set of loaded objects
+  std::set<Rps_ObjectRef> ld_objects;
 public:
   Rps_Loader(const std::string&topdir) :
     ld_topdir(topdir) {};
@@ -107,7 +109,7 @@ Rps_Loader::load_real_path(const std::string& path)
 
 
 
-std::string 
+std::string
 Rps_Loader::space_file_path(Rps_Id spacid)
 {
   if (!spacid.valid())
@@ -115,12 +117,65 @@ Rps_Loader::space_file_path(Rps_Id spacid)
   return std::string{"persistore/sp"} + spacid.to_string() + "-rps.hjson";
 } // end Rps_Loader::space_file_path
 
-void  
+void
 Rps_Loader::first_pass_space(Rps_Id spacid)
 {
   auto spacepath = load_real_path(space_file_path(spacid));
   std::ifstream ins(spacepath);
+  std::string prologstr;
+  int obcnt = 0;
+  unsigned lincnt = 0;
+  for (std::string linbuf; std::getline(ins, linbuf); )
+    {
+      if (u8_check(reinterpret_cast<const uint8_t*> (linbuf.c_str()),
+                   linbuf.size()))
+        {
+          lincnt++;
+          RPS_WARN("non UTF8 line#%d in %s:\n%s",
+                   lincnt, spacepath.c_str(), linbuf.c_str());
+          char errbuf[40];
+          snprintf(errbuf, sizeof(errbuf), "non UTF8 line#%d", lincnt);
+          throw std::runtime_error(std::string(errbuf) + " in " + spacepath);
+        }
+      if (RPS_UNLIKELY(obcnt == 0))
+        {
+          prologstr += linbuf;
+          prologstr += '\n';
+#warning  Rps_Loader::first_pass_space should parse prologstr
+        }
+      int eol= -1;
+      char obidbuf[24];
+      memset (obidbuf, 0, sizeof(obidbuf));
+      if (linbuf.size() > 23
+          && linbuf[0] == '/'
+          && linbuf[1] == '/'
+          && linbuf[2] == 'o'
+          && sscanf(linbuf.c_str(), "//ob+%22[0-9a-zA-Z_]%n", obidbuf, &eol)
+          && eol>0 && obidbuf[0] == '_')
+        {
+          const char*endoid = nullptr;
+          bool ok=false;
+          Rps_Id oid(obidbuf, &endoid, &ok);
+          if (!ok || (endoid && *endoid)
+              || !oid.valid())
+            {
+              RPS_WARN("bad oid line#%d in %s:\n%s",
+                       lincnt, spacepath.c_str(), linbuf.c_str());
+              throw std::runtime_error(std::string("bad oid in ") + spacepath);
+            }
+          Rps_ObjectRef obref(Rps_ObjectZone::make_loaded(oid, this));
+          if (ld_objects.find(obref) != ld_objects.end())
+            {
+              RPS_WARN("duplicate object of oid %s in  line#%d in %s",
+                       oid.to_string().c_str(), lincnt, spacepath.c_str());
+              throw std::runtime_error(std::string("duplicate oid in ") + spacepath);
+            }
+          ld_objects.insert(obref);
+        }
+    }
 } // end Rps_Loader::first_pass_space
+
+
 
 std::string
 Rps_Loader::string_of_loaded_file(const std::string&relpath)
