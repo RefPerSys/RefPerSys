@@ -40,7 +40,7 @@ basile_contrib [ style="rounded, filled",
 
 /// X is-instance Y arrows
 object_class -> class_class [ color=black, width=2 ];
-class_class -> object_class [ color=black, width=2 ];
+class_class -> class_class [ color=black, width=2 ];
 value_class -> class_class [ color=black, width=2 ];
 string_class -> class_class [ color=black, width=2 ];
 hello_string -> string_class [ color=black, width=2 ];
