@@ -151,10 +151,16 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           if (prologhjson.type() != Hjson::Value::Type::MAP)
             RPS_FATAL("Rps_Loader::first_pass_space %s bad HJson type #%d",
                       spacepath.c_str(), (int)prologhjson.type());
-          if (prologhjson["format"].to_string() != RPS_MANIFEST_FORMAT)
-            RPS_FATAL("space %s in %s should have format: '%s' but got '%s'",
-                      spacepath.c_str (), RPS_MANIFEST_FORMAT,
-                      prologhjson["format"].to_string().c_str());
+          Hjson::Value formathjson = prologhjson["format"];
+          if (formathjson.type() !=Hjson::Value::Type::STRING)
+            RPS_FATALOUT("space file " << spacepath
+                         << " with bad format type#" << (int)formathjson.type());
+          if (formathjson.to_string() != RPS_MANIFEST_FORMAT)
+            RPS_FATALOUT("space file " << spacepath
+                         << "should have format: "
+                         << RPS_MANIFEST_FORMAT
+                         << " but got "
+                         << (formathjson.to_string()));
           if (prologhjson["spaceid"].to_string() != spacid.to_string())
             RPS_FATAL("space %s in %s should have spaceid: '%s' but got '%s'",
                       spacepath.c_str (), spacid.to_string().c_str(),
