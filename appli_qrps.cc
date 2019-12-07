@@ -123,9 +123,24 @@ RpsQWindow* RpsQApplication::getWindowPtr(int ix)
 void rps_run_application(int &argc, char **argv)
 {
   bool batch = false;
-  RPS_INFORM("rps_run_application: start of %s gitid %s host %s pid %d\n",
-             argv[0], rps_gitid, rps_hostname(), (int)getpid());
-
+  {
+    char cwdbuf[128];
+    memset (cwdbuf, 0, sizeof(cwdbuf));
+    getcwd(cwdbuf, sizeof(cwdbuf)-1);
+    RPS_INFORM("rps_run_application: start of %s\n"
+               ".. gitid %s\n"
+               ".. build timestamp %s\n"
+               ".. last git commit %s\n"
+               ".. md5sum %s\n"
+               ".. in %s\n"
+               ".. on host %s pid %d\n",
+               argv[0], rps_gitid,
+               rps_timestamp,
+               rps_lastgitcommit,
+               rps_md5sum,
+               cwdbuf,
+               rps_hostname(), (int)getpid());
+  }
   RpsQApplication app (argc, argv);
   std::string loadtopdir(rps_topdirectory);
   {
