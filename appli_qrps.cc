@@ -202,7 +202,7 @@ void rps_run_application(int &argc, char **argv)
         if (nbrand <= 0) nbrand = 2;
         else if (nbrand > 100) nbrand = 100;
         RPS_INFORM("output of %d random objids generated on %.2f\n", nbrand,
-                   rps_monotonic_real_time());
+                   rps_wallclock_real_time());
         printf("*    %-20s" "\t  %-19s" "   %-12s" "\t %-10s\n",
                " objid", "hi", "lo", "hash");
         printf("========================================================"
