@@ -141,6 +141,19 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
         {
           prologstr += linbuf;
           prologstr += '\n';
+          Hjson::Value prologhjson
+            = Hjson::Unmarshal(prologstr.c_str(), prologstr.size());
+          if (prologhjson.type() != Hjson::Value::Type::MAP)
+            RPS_FATAL("Rps_Loader::first_pass_space %s bad HJson type #%d",
+                      spacepath.c_str(), (int)prologhjson.type());
+          if (prologhjson["format"].to_string() != RPS_MANIFEST_FORMAT)
+            RPS_FATAL("space %s in %s should have format: '%s' but got '%s'",
+                      spacepath.c_str (), RPS_MANIFEST_FORMAT,
+                      prologhjson["format"].to_string().c_str());
+          if (prologhjson["spaceid"].to_string() != spacid.to_string())
+            RPS_FATAL("space %s in %s should have spaceid: '%s' but got '%s'",
+                      spacepath.c_str (), spacid.to_string().c_str(),
+                      prologhjson["spaceid"].to_string().c_str());
 #warning  Rps_Loader::first_pass_space should parse prologstr
         }
       int eol= -1;
@@ -171,6 +184,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
               throw std::runtime_error(std::string("duplicate oid in ") + spacepath);
             }
           ld_objects.insert(obref);
+          obcnt++;
         }
     }
 } // end Rps_Loader::first_pass_space
