@@ -63,6 +63,7 @@ public:
   Rps_Loader(const std::string&topdir) :
     ld_topdir(topdir) {};
   void parse_manifest_file(void);
+#warning the first_pass_space probably should return a map associating objectids to line numbers
   void first_pass_space(Rps_Id spacid);
   void second_pass_space(Rps_Id spacid);
   std::string string_of_loaded_file(const std::string& relpath);
@@ -205,6 +206,54 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
 } // end Rps_Loader::first_pass_space
 
 
+void
+Rps_Loader::second_pass_space(Rps_Id spacid)
+{
+  auto spacepath = load_real_path(space_file_path(spacid));
+  std::ifstream ins(spacepath);
+  unsigned lincnt = 0;
+  unsigned obcnt = 0;
+  std::string objbuf;
+  for (std::string linbuf; std::getline(ins, linbuf); )
+    {
+      int eol= -1;
+      char obidbuf[24];
+      memset (obidbuf, 0, sizeof(obidbuf));
+      if (linbuf.size() > 23
+          && linbuf[0] == '/'
+          && linbuf[1] == '/'
+          && linbuf[2] == 'o'
+          && sscanf(linbuf.c_str(), "//ob+%22[0-9a-zA-Z_]%n", obidbuf, &eol)
+          && eol>0 && obidbuf[0] == '_')
+        {
+          objbuf.clear();
+          obcnt++;
+          const char*endoid = nullptr;
+          bool ok=false;
+          Rps_Id oid(obidbuf, &endoid, &ok);
+          RPS_ASSERT(ok && oid.valid());
+          RPS_WARNOUT("unimplemented second pass oid:" << oid << " obcnt#" << obcnt << std::endl);
+        }
+    } // end for getline
+} // end of Rps_Loader::second_pass_space
+
+
+void
+Rps_Loader::load_all_state_files(void)
+{
+  int spacecnt1 = 0, spacecnt2 = 0;
+  for (Rps_Id spacid: ld_spaceset)
+    {
+      first_pass_space(spacid);
+      spacecnt1++;
+    }
+  for (Rps_Id spacid: ld_spaceset)
+    {
+      second_pass_space(spacid);
+      spacecnt2++;
+    }
+} // end Rps_Loader::load_all_state_files
+
 
 std::string
 Rps_Loader::string_of_loaded_file(const std::string&relpath)
@@ -324,8 +373,8 @@ Rps_Loader::parse_manifest_file(void)
       }
   }
   ////
-  RPS_WARNOUT("Rps_Loader::parse_manifest_file incompletely parsed "
-              << Hjson::MarshalJson(manifhjson));
+  RPS_INFORMOUT("Rps_Loader::parse_manifest_file parsed "
+                << Hjson::MarshalJson(manifhjson));
 #warning incomplete Rps_Loader::parse_manifest_file
 } // end Rps_Loader::parse_manifest_file
 
@@ -336,6 +385,7 @@ void rps_load_from (const std::string& dirpath)
   RPS_WARN("unimplemented rps_load_from '%s'", dirpath.c_str());
   Rps_Loader loader(dirpath);
   loader.parse_manifest_file();
+  loader.load_all_state_files();
 #warning rps_load_from unimplemented
 } // end of rps_load_from
 
