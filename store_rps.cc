@@ -117,6 +117,9 @@ Rps_Loader::space_file_path(Rps_Id spacid)
   return std::string{"persistore/sp"} + spacid.to_string() + "-rps.hjson";
 } // end Rps_Loader::space_file_path
 
+
+
+
 void
 Rps_Loader::first_pass_space(Rps_Id spacid)
 {
@@ -124,6 +127,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
   std::ifstream ins(spacepath);
   std::string prologstr;
   int obcnt = 0;
+  int expectedcnt = 0;
   unsigned lincnt = 0;
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
@@ -154,6 +158,8 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
             RPS_FATAL("space %s in %s should have spaceid: '%s' but got '%s'",
                       spacepath.c_str (), spacid.to_string().c_str(),
                       prologhjson["spaceid"].to_string().c_str());
+          Hjson::Value nbobjectshjson =  prologhjson["nbobjects"];
+          expectedcnt =nbobjectshjson.to_int64();
 #warning  Rps_Loader::first_pass_space should parse prologstr
         }
       int eol= -1;
@@ -187,6 +193,15 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           obcnt++;
         }
     }
+  if (obcnt != expectedcnt)
+    {
+      RPS_WARN("got %d objects in loaded space %s but expected %d of them",
+               obcnt,  spacepath.c_str(), expectedcnt);
+      throw std::runtime_error(std::string("unexpected object count in ")
+                               + spacepath);
+    }
+  RPS_INFORMOUT("read " << obcnt
+                << " objects while loading first pass of" << spacepath);
 } // end Rps_Loader::first_pass_space
 
 
