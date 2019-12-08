@@ -130,18 +130,20 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
   int obcnt = 0;
   int expectedcnt = 0;
   unsigned lincnt = 0;
+  RPS_INFORM("Rps_Loader::first_pass_space start spacepath=%s", spacepath.c_str());
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
+      lincnt++;
       if (u8_check(reinterpret_cast<const uint8_t*> (linbuf.c_str()),
                    linbuf.size()))
         {
-          lincnt++;
           RPS_WARN("non UTF8 line#%d in %s:\n%s",
                    lincnt, spacepath.c_str(), linbuf.c_str());
           char errbuf[40];
           snprintf(errbuf, sizeof(errbuf), "non UTF8 line#%d", lincnt);
           throw std::runtime_error(std::string(errbuf) + " in " + spacepath);
         }
+      RPS_INFORM("lincnt#%d\n..linbuf:%s", lincnt, linbuf.c_str());
       if (RPS_UNLIKELY(obcnt == 0))
         {
           prologstr += linbuf;
@@ -154,7 +156,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           && linbuf[0] == '/'
           && linbuf[1] == '/'
           && linbuf[2] == 'o'
-          && sscanf(linbuf.c_str(), "//ob+%22[0-9a-zA-Z_]%n", obidbuf, &eol)
+          && sscanf(linbuf.c_str(), "//ob+%22[0-9a-zA-Z_]%n", obidbuf, &eol)>=1
           && eol>0 && obidbuf[0] == '_')
         {
           RPS_INFORM("got ob linbuf %s line#%d obcnt#%d", linbuf, lincnt, obcnt);
@@ -225,6 +227,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
   std::ifstream ins(spacepath);
   unsigned lincnt = 0;
   unsigned obcnt = 0;
+  RPS_INFORM("Rps_Loader::second_pass_space start spacepath=%s", spacepath.c_str());
   std::string objbuf;
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
@@ -235,7 +238,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
           && linbuf[0] == '/'
           && linbuf[1] == '/'
           && linbuf[2] == 'o'
-          && sscanf(linbuf.c_str(), "//ob+%22[0-9a-zA-Z_]%n", obidbuf, &eol)
+          && sscanf(linbuf.c_str(), "//ob+%22[0-9a-zA-Z_]%n", obidbuf, &eol)>=1
           && eol>0 && obidbuf[0] == '_')
         {
           objbuf.clear();
