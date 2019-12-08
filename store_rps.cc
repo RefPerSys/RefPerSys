@@ -146,28 +146,6 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
         {
           prologstr += linbuf;
           prologstr += '\n';
-          Hjson::Value prologhjson
-            = Hjson::Unmarshal(prologstr.c_str(), prologstr.size());
-          if (prologhjson.type() != Hjson::Value::Type::MAP)
-            RPS_FATAL("Rps_Loader::first_pass_space %s bad HJson type #%d",
-                      spacepath.c_str(), (int)prologhjson.type());
-          Hjson::Value formathjson = prologhjson["format"];
-          if (formathjson.type() !=Hjson::Value::Type::STRING)
-            RPS_FATALOUT("space file " << spacepath
-                         << " with bad format type#" << (int)formathjson.type());
-          if (formathjson.to_string() != RPS_MANIFEST_FORMAT)
-            RPS_FATALOUT("space file " << spacepath
-                         << "should have format: "
-                         << RPS_MANIFEST_FORMAT
-                         << " but got "
-                         << (formathjson.to_string()));
-          if (prologhjson["spaceid"].to_string() != spacid.to_string())
-            RPS_FATAL("space %s in %s should have spaceid: '%s' but got '%s'",
-                      spacepath.c_str (), spacid.to_string().c_str(),
-                      prologhjson["spaceid"].to_string().c_str());
-          Hjson::Value nbobjectshjson =  prologhjson["nbobjects"];
-          expectedcnt =nbobjectshjson.to_int64();
-#warning  Rps_Loader::first_pass_space should parse prologstr
         }
       int eol= -1;
       char obidbuf[24];
@@ -179,6 +157,34 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           && sscanf(linbuf.c_str(), "//ob+%22[0-9a-zA-Z_]%n", obidbuf, &eol)
           && eol>0 && obidbuf[0] == '_')
         {
+          RPS_INFORM("got ob linbuf %s line#%d obcnt#%d", linbuf, lincnt, obcnt);
+          if (RPS_UNLIKELY(obcnt == 0))
+            {
+              Hjson::Value prologhjson
+                = Hjson::Unmarshal(prologstr.c_str(), prologstr.size());
+              if (prologhjson.type() != Hjson::Value::Type::MAP)
+                RPS_FATAL("Rps_Loader::first_pass_space %s bad HJson type #%d",
+                          spacepath.c_str(), (int)prologhjson.type());
+              RPS_INFORM("Rps_Loader::first_pass_space %s prologstr=<%s>\n"
+                         ".. prologhjson=%s",
+                         spacepath.c_str(), prologstr.c_str(), Hjson::Marshal(prologhjson).c_str());
+              Hjson::Value formathjson = prologhjson["format"];
+              if (formathjson.type() !=Hjson::Value::Type::STRING)
+                RPS_FATALOUT("space file " << spacepath
+                             << " with bad format type#" << (int)formathjson.type());
+              if (formathjson.to_string() != RPS_MANIFEST_FORMAT)
+                RPS_FATALOUT("space file " << spacepath
+                             << "should have format: "
+                             << RPS_MANIFEST_FORMAT
+                             << " but got "
+                             << (formathjson.to_string()));
+              if (prologhjson["spaceid"].to_string() != spacid.to_string())
+                RPS_FATAL("space %s in %s should have spaceid: '%s' but got '%s'",
+                          spacepath.c_str (), spacid.to_string().c_str(),
+                          prologhjson["spaceid"].to_string().c_str());
+              Hjson::Value nbobjectshjson =  prologhjson["nbobjects"];
+              expectedcnt =nbobjectshjson.to_int64();
+            }
           const char*endoid = nullptr;
           bool ok=false;
           Rps_Id oid(obidbuf, &endoid, &ok);
@@ -253,11 +259,14 @@ Rps_Loader::load_all_state_files(void)
       first_pass_space(spacid);
       spacecnt1++;
     }
+  RPS_INFORMOUT("loaded " << spacecnt1 << " space files in first pass");
   for (Rps_Id spacid: ld_spaceset)
     {
       second_pass_space(spacid);
       spacecnt2++;
     }
+  RPS_INFORMOUT("loaded " << spacecnt1 << " space files in second pass with "
+                << ld_objects.size() << " objects");
 } // end Rps_Loader::load_all_state_files
 
 
@@ -283,6 +292,8 @@ Rps_Loader::string_of_loaded_file(const std::string&relpath)
         }
       res += linbuf;
       res += '\n';
+      if (RPS_UNLIKELY(res.size() > maxfilen))
+        RPS_FATAL("too big file %zd of path %s", res.size(), fullpath);
     }
   return res;
 } // end Rps_Loader::string_of_loaded_file
