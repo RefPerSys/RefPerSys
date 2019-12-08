@@ -2220,6 +2220,7 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
 \label{subsec:data-format-ebnf}
 
 \begin {figure} [h]
+  
   \begin {center}
     \begin {tabular} {l c l l}
       \emph {\textbf {value}} & $\leftarrow$ & \emph {\textbf {int}}
@@ -2228,6 +2229,8 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
         & double precision floating point numbers \\
       & $|$ & \emph {\textbf {string}} 
         & string of Unicode characters enclosed in double quotes \\
+      & $|$ & \emph {\textbf {object}} 
+	& mutable \emph {\textbf {value}} with unique object ID \\
       & $|$ & \emph {\textbf {set}}
 	& set of unordered unique \emph {\textbf {object}}s \\
       & $|$ & \emph {\textbf {tuple}}
@@ -2236,7 +2239,38 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
 	& function closing over an environment of \emph {\textbf{value}}s
     \end {tabular}
   \end {center}
-  \caption {EBNF Syntax of Values}
+
+  \begin {center}
+    \begin {tabular} {l c l l}
+      \emph {\textbf {int}} & $\leftarrow$ & $\mathbb {Z}$
+        & an integer represented as an HJSON number type
+    \end {tabular}
+  \end {center}
+
+  \begin {center}
+    \begin {tabular} {l c l l}
+      \emph {\textbf {float}} & $\leftarrow$ & $\mathbb {R}$
+        & a real number represented as an HJSON number type
+    \end {tabular}
+  \end {center}
+
+  \begin {center}
+    \begin {tabular} {l c l l}
+      \emph {\textbf {string}} & $\leftarrow$ 
+	& \texttt {"}\alpha\texttt {"}, \alpha \subseteq \{Unicode\}
+        & a Unicode string represented as an HJSON string type
+    \end {tabular}
+  \end {center}
+
+  \begin {center}
+    \begin {tabular} {l c l l}
+      \emph {\textbf {object}} & $\leftarrow$ 
+	& \_\alpha, \alpha \subseteq \{Base-62\}
+        & a Base-62 number prefixed with an underscore
+    \end {tabular}
+  \end {center}
+
+  \caption {Syntax of Values}
 \end {figure}
 
 
