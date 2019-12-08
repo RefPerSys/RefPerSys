@@ -65,7 +65,6 @@ public:
   Rps_Loader(const std::string&topdir) :
     ld_topdir(topdir) {};
   void parse_manifest_file(void);
-#warning the first_pass_space probably should return a map associating objectids to line numbers
   void first_pass_space(Rps_Id spacid);
   void second_pass_space(Rps_Id spacid);
   std::string string_of_loaded_file(const std::string& relpath);
@@ -230,7 +229,24 @@ Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                 << " lineno=" <<lineno
                 << " objid=" <<objid
                 << " objbuf:\n" << objbuf);
+  Hjson::Value objhjson
+    = Hjson::Unmarshal(objbuf.c_str(), objbuf.size());
+  if (objhjson.type() != Hjson::Value::Type::MAP)
+    RPS_FATALOUT("parse_hjson_buffer_second_pass spacid=" << spacid
+                 << " lineno:" << lineno
+                 << " objid:" << objid
+                 << " bad objbuf:" << std::endl
+                 << objbuf);
+#warning incomplete Rps_Loader::parse_hjson_buffer_second_pass
+  RPS_INFORMOUT("parse_hjson_buffer_second_pass spacid=" << spacid
+                << " lineno:" << lineno
+                << " objid:" << objid
+                << " objhjson: " << Hjson::Marshal(objhjson)
+                << std::endl
+                << " objbuf:" << std::endl
+                << objbuf << std::endl);
 } // end of Rps_Loader::parse_hjson_buffer_second_pass
+
 
 void
 Rps_Loader::second_pass_space(Rps_Id spacid)
@@ -239,10 +255,13 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
   std::ifstream ins(spacepath);
   unsigned lincnt = 0;
   unsigned obcnt = 0;
+  Rps_Id prevoid;
+  unsigned prevlin=0;
   RPS_INFORM("Rps_Loader::second_pass_space start spacepath=%s", spacepath.c_str());
   std::string objbuf;
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
+      lincnt++;
       int eol= -1;
       char obidbuf[24];
       memset (obidbuf, 0, sizeof(obidbuf));
@@ -253,15 +272,32 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
           && sscanf(linbuf.c_str(), "//ob+%22[0-9a-zA-Z_]%n", obidbuf, &eol)>=1
           && eol>0 && obidbuf[0] == '_')
         {
+          if (objbuf.size() > 0 && prevoid && prevlin>0)
+            {
+              parse_hjson_buffer_second_pass(spacid, prevlin, prevoid, objbuf);
+              prevoid = Rps_Id(nullptr);
+            }
           objbuf.clear();
+          objbuf = linbuf;
           obcnt++;
           const char*endoid = nullptr;
           bool ok=false;
           Rps_Id oid(obidbuf, &endoid, &ok);
           RPS_ASSERT(ok && oid.valid());
-          RPS_WARNOUT("unimplemented second pass oid:" << oid << " obcnt#" << obcnt << std::endl);
+          prevoid = oid;
+          prevlin = lincnt;
+        }
+      else if (objbuf.size() > 0)
+        {
+          objbuf += linbuf;
+          objbuf += '\n';
         }
     } // end for getline
+  if (objbuf.size() > 0 && prevoid && prevlin>0)
+    {
+      parse_hjson_buffer_second_pass(spacid, prevlin, prevoid, objbuf);
+      prevoid = Rps_Id(nullptr);
+    }
 } // end of Rps_Loader::second_pass_space
 
 
