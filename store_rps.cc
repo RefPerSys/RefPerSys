@@ -59,6 +59,8 @@ class Rps_Loader
   std::map<Rps_Id,void*> ld_pluginsmap;
   /// set of loaded objects
   std::set<Rps_ObjectRef> ld_objects;
+  void parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
+                                       Rps_Id objid, const std::string& objbuf);
 public:
   Rps_Loader(const std::string&topdir) :
     ld_topdir(topdir) {};
@@ -143,7 +145,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           snprintf(errbuf, sizeof(errbuf), "non UTF8 line#%d", lincnt);
           throw std::runtime_error(std::string(errbuf) + " in " + spacepath);
         }
-      RPS_INFORM("lincnt#%d\n..linbuf:%s", lincnt, linbuf.c_str());
+      //RPS_INFORM("lincnt#%d\n..linbuf:%s", lincnt, linbuf.c_str());
       if (RPS_UNLIKELY(obcnt == 0))
         {
           prologstr += linbuf;
@@ -159,7 +161,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           && sscanf(linbuf.c_str(), "//ob+%22[0-9a-zA-Z_]%n", obidbuf, &eol)>=1
           && eol>0 && obidbuf[0] == '_')
         {
-          RPS_INFORM("got ob linbuf %s line#%d obcnt#%d", linbuf, lincnt, obcnt);
+          RPS_INFORM("got ob linbuf %s line#%d obcnt#%d", linbuf.c_str(), lincnt, obcnt);
           if (RPS_UNLIKELY(obcnt == 0))
             {
               Hjson::Value prologhjson
@@ -181,7 +183,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
                              << " but got "
                              << (formathjson.to_string()));
               if (prologhjson["spaceid"].to_string() != spacid.to_string())
-                RPS_FATAL("space %s in %s should have spaceid: '%s' but got '%s'",
+                RPS_FATAL("spacefile %s should have spaceid: '%s' but got '%s'",
                           spacepath.c_str (), spacid.to_string().c_str(),
                           prologhjson["spaceid"].to_string().c_str());
               Hjson::Value nbobjectshjson =  prologhjson["nbobjects"];
@@ -219,6 +221,16 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
                 << " objects while loading first pass of" << spacepath);
 } // end Rps_Loader::first_pass_space
 
+
+void
+Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
+    Rps_Id objid, const std::string& objbuf)
+{
+  RPS_INFORMOUT("parse_hjson_buffer_second_pass start spacid=" << spacid
+                << " lineno=" <<lineno
+                << " objid=" <<objid
+                << " objbuf:\n" << objbuf);
+} // end of Rps_Loader::parse_hjson_buffer_second_pass
 
 void
 Rps_Loader::second_pass_space(Rps_Id spacid)
@@ -296,7 +308,7 @@ Rps_Loader::string_of_loaded_file(const std::string&relpath)
       res += linbuf;
       res += '\n';
       if (RPS_UNLIKELY(res.size() > maxfilen))
-        RPS_FATAL("too big file %zd of path %s", res.size(), fullpath);
+        RPS_FATAL("too big file %zd of path %s", res.size(), fullpath.c_str());
     }
   return res;
 } // end Rps_Loader::string_of_loaded_file
