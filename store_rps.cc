@@ -59,6 +59,7 @@ class Rps_Loader
   std::map<Rps_Id,void*> ld_pluginsmap;
   /// set of loaded objects
   std::set<Rps_ObjectRef> ld_objects;
+  bool is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid);
   void parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                                        Rps_Id objid, const std::string& objbuf);
 public:
@@ -121,6 +122,31 @@ Rps_Loader::space_file_path(Rps_Id spacid)
 
 
 
+bool
+Rps_Loader::is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid)
+{
+  if (pobid)
+    *pobid = Rps_Id(nullptr);
+  if (linbuf.size() < strlen ("//+ob") + Rps_Id::nbchars)
+    return false;
+  if (linbuf[0] != '/' || linbuf[1] != '/'
+      || linbuf[2] != '+'
+      || linbuf[3] != 'o'
+      || linbuf[4] != 'b')
+    return false;
+  const char*end=nullptr;
+  bool ok=false;
+  Rps_Id oid(linbuf.c_str()+strlen("//+ob"), &end, &ok);
+  if (!end || (*end && !isspace(*end)))
+    return false;
+  if (!ok)
+    return false;
+  if (!oid.valid())
+    return false;
+  if (pobid)
+    *pobid = oid;
+  return true;
+} // end Rps_Loader::is_object_starting_line
 
 void
 Rps_Loader::first_pass_space(Rps_Id spacid)
@@ -144,23 +170,20 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           snprintf(errbuf, sizeof(errbuf), "non UTF8 line#%d", lincnt);
           throw std::runtime_error(std::string(errbuf) + " in " + spacepath);
         }
-      //RPS_INFORM("lincnt#%d\n..linbuf:%s", lincnt, linbuf.c_str());
+      RPS_INFORM("lincnt#%d, lin.siz#%zd\n..linbuf:%s", lincnt,
+                 linbuf.size(), linbuf.c_str());
       if (RPS_UNLIKELY(obcnt == 0))
         {
           prologstr += linbuf;
           prologstr += '\n';
         }
-      int eol= -1;
-      char obidbuf[24];
-      memset (obidbuf, 0, sizeof(obidbuf));
-      if (linbuf.size() > 23
-          && linbuf[0] == '/'
-          && linbuf[1] == '/'
-          && linbuf[2] == 'o'
-          && sscanf(linbuf.c_str(), "//ob+%22[0-9a-zA-Z_]%n", obidbuf, &eol)>=1
-          && eol>0 && obidbuf[0] == '_')
+      Rps_Id curobjid;
+      if (is_object_starting_line(spacid, lincnt, linbuf, &curobjid))
         {
-          RPS_INFORM("got ob linbuf %s line#%d obcnt#%d", linbuf.c_str(), lincnt, obcnt);
+          RPS_INFORMOUT("got ob spacid:" << spacid
+                        << " linbuf: " << linbuf
+                        << " lincnt#" << lincnt
+                        << " curobjid:" << curobjid);
           if (RPS_UNLIKELY(obcnt == 0))
             {
               Hjson::Value prologhjson
@@ -188,22 +211,13 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
               Hjson::Value nbobjectshjson =  prologhjson["nbobjects"];
               expectedcnt =nbobjectshjson.to_int64();
             }
-          const char*endoid = nullptr;
-          bool ok=false;
-          Rps_Id oid(obidbuf, &endoid, &ok);
-          if (!ok || (endoid && *endoid)
-              || !oid.valid())
-            {
-              RPS_WARN("bad oid line#%d in %s:\n%s",
-                       lincnt, spacepath.c_str(), linbuf.c_str());
-              throw std::runtime_error(std::string("bad oid in ") + spacepath);
-            }
-          Rps_ObjectRef obref(Rps_ObjectZone::make_loaded(oid, this));
+          Rps_ObjectRef obref(Rps_ObjectZone::make_loaded(curobjid, this));
           if (ld_objects.find(obref) != ld_objects.end())
             {
               RPS_WARN("duplicate object of oid %s in  line#%d in %s",
-                       oid.to_string().c_str(), lincnt, spacepath.c_str());
-              throw std::runtime_error(std::string("duplicate oid in ") + spacepath);
+                       curobjid.to_string().c_str(), lincnt, spacepath.c_str());
+              throw std::runtime_error(std::string("duplicate objid "
+                                                   + curobjid.to_string() + " in " + spacepath));
             }
           ld_objects.insert(obref);
           obcnt++;
@@ -262,15 +276,8 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
       lincnt++;
-      int eol= -1;
-      char obidbuf[24];
-      memset (obidbuf, 0, sizeof(obidbuf));
-      if (linbuf.size() > 23
-          && linbuf[0] == '/'
-          && linbuf[1] == '/'
-          && linbuf[2] == 'o'
-          && sscanf(linbuf.c_str(), "//ob+%22[0-9a-zA-Z_]%n", obidbuf, &eol)>=1
-          && eol>0 && obidbuf[0] == '_')
+      Rps_Id curobjid;
+      if (is_object_starting_line(spacid,lincnt,linbuf,&curobjid))
         {
           if (objbuf.size() > 0 && prevoid && prevlin>0)
             {
@@ -278,13 +285,9 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
               prevoid = Rps_Id(nullptr);
             }
           objbuf.clear();
-          objbuf = linbuf;
+          objbuf = linbuf + '\n';
           obcnt++;
-          const char*endoid = nullptr;
-          bool ok=false;
-          Rps_Id oid(obidbuf, &endoid, &ok);
-          RPS_ASSERT(ok && oid.valid());
-          prevoid = oid;
+          prevoid = curobjid;
           prevlin = lincnt;
         }
       else if (objbuf.size() > 0)
