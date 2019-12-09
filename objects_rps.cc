@@ -101,6 +101,17 @@ Rps_ObjectZone::make_loaded(Rps_Id oid, Rps_Loader* ld)
   return obz;
 } // end Rps_ObjectZone::make_loaded
 
+Rps_ObjectZone*
+Rps_ObjectZone::find(Rps_Id oid)
+{
+  if (!oid.valid())
+    return nullptr;
+  std::lock_guard<std::mutex> gu(ob_idmtx_);
+  auto obr = ob_idmap_.find(oid);
+  if (obr != ob_idmap_.end())
+    return obr->second;
+  return nullptr;
+} // end Rps_ObjectZone::find
 
 void
 Rps_ObjectZone::gc_mark(Rps_GarbageCollector&gc, unsigned)

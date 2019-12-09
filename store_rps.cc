@@ -251,14 +251,22 @@ Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                  << " objid:" << objid
                  << " bad objbuf:" << std::endl
                  << objbuf);
+  Hjson::Value oidhjson = objhjson["oid"];
+  if (oidhjson.to_string() != objid.to_string())
+    RPS_FATALOUT("parse_hjson_buffer_second_pass spacid=" << spacid
+                 << " lineno:" << lineno
+                 << " objid:" << objid
+                 << " unexpected");
+  auto obz = Rps_ObjectZone::find(objid);
+  RPS_ASSERT (obz);
 #warning incomplete Rps_Loader::parse_hjson_buffer_second_pass
-  RPS_INFORMOUT("parse_hjson_buffer_second_pass spacid=" << spacid
-                << " lineno:" << lineno
-                << " objid:" << objid
-                << " objhjson: " << Hjson::Marshal(objhjson)
-                << std::endl
-                << " objbuf:" << std::endl
-                << objbuf << std::endl);
+// RPS_INFORMOUT("parse_hjson_buffer_second_pass spacid=" << spacid
+//               << " lineno:" << lineno
+//               << " objid:" << objid
+//               << " objhjson: " << Hjson::Marshal(objhjson)
+//               << std::endl
+//               << " objbuf:" << std::endl
+//               << objbuf << std::endl);
 } // end of Rps_Loader::parse_hjson_buffer_second_pass
 
 
