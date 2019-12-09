@@ -2232,7 +2232,7 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
       & $|$ & \emph {\textbf {object}} 
 	& mutable \emph {\textbf {value}} with unique object ID \\
       & $|$ & \emph {\textbf {set}}
-	& set of unordered unique \emph {\textbf {object}}s \\
+	& set of ordered unique \emph {\textbf {object}}s \\
       & $|$ & \emph {\textbf {tuple}}
 	& set of ordered (and possibly duplicate) \emph {\textbf {object}}s \\
       & $|$ & \emph {\textbf {closure}}
@@ -2242,31 +2242,37 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
 
   \begin {center}
     \begin {tabular} {l c l l}
-      \emph {\textbf {int}} & $\leftarrow$ & $\mathbb {Z}$
-        & an integer represented as an HJSON number type
+      \emph {\textbf {int}} & $\leftarrow$ & \alpha,
+        & a 63-bit integer represented as an HJSON number type \\
+      & $|$ & \alpha \, \in \, $\mathbb {Z}$, \\
+      & $|$ & $-2^{63}$ \, \leq \, \alpha \, \leq \, $2^{63}$
     \end {tabular}
   \end {center}
 
   \begin {center}
     \begin {tabular} {l c l l}
-      \emph {\textbf {float}} & $\leftarrow$ & $\mathbb {R}$
-        & a real number represented as an HJSON number type
+      \emph {\textbf {float}} & $\leftarrow$ & \alpha,
+        & an IEEE 754 floating point number \\
+      & $|$ & \alpha \, \in \, \{\textbf {F}\}, \\
+      & $|$ & \textbf {F} \, = \, \{IEEE 754 floating point numbers\}
     \end {tabular}
   \end {center}
 
   \begin {center}
     \begin {tabular} {l c l l}
-      \emph {\textbf {string}} & $\leftarrow$ 
-	& \texttt {"}\alpha\texttt {"}, \alpha \subseteq \{Unicode\}
-        & a Unicode string represented as an HJSON string type
+      \emph {\textbf {string}} & $\leftarrow$ & \texttt {"}\alpha\texttt {"}, 
+        & a Unicode string represented as an HJSON string type \\
+      & $|$ & \alpha \, \subseteq \, \{\textbf {U}\}, \\
+      & $|$ & \textbf {U} \, = \, \{Unicode characters\}
     \end {tabular}
   \end {center}
 
   \begin {center}
     \begin {tabular} {l c l l}
-      \emph {\textbf {object}} & $\leftarrow$ 
-	& \_\alpha, \alpha \subseteq \{Base-62\}
-        & a Base-62 number prefixed with an underscore
+      \emph {\textbf {object}} & $\leftarrow$ & \_\alpha,
+        & a Base-62 number prefixed with an underscore \\
+      & $|$ & \alpha \, \subseteq \, \{\textbf {B}\}, \\
+      & $|$ & \textbf {B} \, = \, \{Base-62 characters\}
     \end {tabular}
   \end {center}
 
