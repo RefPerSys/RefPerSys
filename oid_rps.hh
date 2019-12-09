@@ -58,6 +58,7 @@ public:
   static constexpr uint64_t max_lo = (uint64_t)62 * (62L * 62 * 62) * (62 * 62 * 62); /// about 3.52161e+12
   static constexpr uint64_t delta_lo = max_lo - min_lo;
   static constexpr unsigned nbdigits_lo = 7;
+  static constexpr unsigned nbchars = nbdigits_hi + nbdigits_lo + 1;
   static constexpr unsigned maxbuckets = 10*62;
   static Rps_HashInt hash(uint64_t hi, uint64_t lo)
   {
