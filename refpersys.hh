@@ -286,6 +286,8 @@ class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
 class Rps_GarbageCollector;
+class Rps_Loader;
+
 
 typedef uint32_t Rps_HashInt;
 
@@ -318,6 +320,7 @@ public:
     if (is_empty()) return nullptr;
     return _optr;
   }
+  Rps_ObjectRef(const Hjson::Value &, Rps_Loader*); //in store_rps.cc
   // rule of five
   Rps_ObjectRef(const Rps_ObjectZone*oz = nullptr)
     : _optr(const_cast<Rps_ObjectZone*>(oz))
@@ -459,6 +462,7 @@ public:
   inline Rps_Value (intptr_t i, Rps_IntTag);
   inline Rps_Value (double d, Rps_DoubleTag);
   inline Rps_Value (const Rps_ZoneValue*ptr, Rps_ValPtrTag);
+  Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld); // in store_rps.cc
   /// C++ rule of five
   inline Rps_Value(const Rps_Value& other);
   inline Rps_Value(Rps_Value&& other);

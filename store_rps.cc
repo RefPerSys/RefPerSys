@@ -361,6 +361,21 @@ Rps_Loader::string_of_loaded_file(const std::string&relpath)
 } // end Rps_Loader::string_of_loaded_file
 
 
+
+Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)
+  : Rps_Value(nullptr) {
+  /// see https://github.com/hjson/hjson-cpp/issues/22
+#warning Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld) unimplemented
+  RPS_WARN("unimplemented Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)");
+} // end of Rps_Value::Rps_Value(const Hjson::value &hjv, Rps_Loader*ld)
+
+
+Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)
+  : Rps_ObjectRef(nullptr) {
+  RPS_WARN("unimplemented Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)");
+  #warning unimplemented Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)
+} // end Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)
+
 //////////////////////////////////////////////// dumper
 class Rps_Dumper
 {
