@@ -2208,21 +2208,21 @@ textual syntax, for example a set of three objects of objids
 and we could decide to remove the commas inside our brackets \texttt{[} {\relsize{-1}{elements}} ... \texttt{]}.
 \medskip
 
-The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
-
-\textcolor{red}{@@TODO: should be written}
-
-\textcolor{red}{@@TODO: explanation of the files (including the
-  manifest file) under \texttt{persistore/} and of their HJSON syntax}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{EBNF Grammar of Data Format}
 \label{subsec:data-format-ebnf}
 
-\begin {figure} [h]
+
+The figure \ref{fig:hjson-scalar-or-object-values} gives the \textsc{Hjson} syntax of
+scalar values or object references in persisted state files.  The figure
+\ref{fig:hjson-composite-values} \textcolor{red}{is @INCOMPLETE@ and} gives
+the \textsc{Hjson} syntax of composite values in persisted state files.
+
+\begin{figure}[h]
   
   \begin {center}
-    \begin {tabular} {l c l l}
+    \begin{tabular}{l c l l}
       \emph {\textbf {value}} & $\leftarrow$ & \emph {\textbf {int}}
         & tagged integers    \\
       & $|$ & \emph {\textbf {float}}
@@ -2230,86 +2230,89 @@ The  complete \textsc{HJson} syntax of {\RefPerSys} values is:
       & $|$ & \emph {\textbf {string}} 
         & string of Unicode characters enclosed in double quotes \\
       & $|$ & \emph {\textbf {object}} 
-	& mutable \emph {\textbf {value}} with unique object ID \\
+	& reference to mutable \emph {object} with a globally unique objid \\
       & $|$ & \emph {\textbf {set}}
 	& set of ordered unique \emph {\textbf {object}}s \\
       & $|$ & \emph {\textbf {tuple}}
 	& set of ordered (and possibly duplicate) \emph {\textbf {object}}s \\
       & $|$ & \emph {\textbf {closure}}
 	& function closing over an environment of \emph {\textbf{value}}s
-    \end {tabular}
-  \end {center}
-
-  \begin {center}
-    \begin {tabular} {l c l l}
+    \end{tabular}
+    
+    \begin{tabular}{l c l l}
       \emph {\textbf {int}} & $\leftarrow$ & \alpha,
         & a 63-bit integer represented as an HJSON number type \\
-      & $|$ & \alpha \, \in \, $\mathbb {Z}$, \\
-      & $|$ & $-2^{63}$ \, \leq \, \alpha \, \leq \, $2^{63}$
-    \end {tabular}
-  \end {center}
-
-  \begin {center}
-    \begin {tabular} {l c l l}
+      & ~ & \alpha \, \in \, $\mathbb {Z}$, \\
+      & ~ & $-2^{62}$ \, \leq \, \alpha \, \leq \, $2^{62} - 1$
+    \end{tabular}
+    
+    \begin{tabular}{l c l l}
       \emph {\textbf {float}} & $\leftarrow$ & \alpha,
         & an IEEE 754 floating point number \\
-      & $|$ & \alpha \, \in \, \{\textbf {F}\}, \\
-      & $|$ & \textbf {F} \, = \, \{IEEE 754 floating point numbers\}
-    \end {tabular}
-  \end {center}
-
-  \begin {center}
-    \begin {tabular} {l c l l}
+      & ~ & \alpha \, \in \, \{\textbf {F}\}, \\
+      & ~ & \textbf {F} \, = \, \{IEEE 754 floating point numbers\}
+    \end{tabular}
+    
+    \begin{tabular}{lcll}
       \emph {\textbf {string}} & $\leftarrow$ & \texttt {"}\alpha\texttt {"}, 
         & a Unicode string represented as an HJSON string type \\
-      & $|$ & \alpha \, \subseteq \, \{\textbf {U}\}, \\
-      & $|$ & \textbf {U} \, = \, \{Unicode characters\}
+      & ~ & \alpha \, \subseteq \, \{\textbf {U}\}, \\
+      & ~ & \textbf {U} \, = \, \{Unicode characters\}
     \end {tabular}
-  \end {center}
-
-  \begin {center}
-    \begin {tabular} {l c l l}
+    
+    \begin{tabular}{lcll}
       \emph {\textbf {object}} & $\leftarrow$ & \_\alpha,
         & a Base-62 number prefixed with an underscore \\
-      & $|$ & \alpha \, \subseteq \, \{\textbf {B}\}, \\
-      & $|$ & \textbf {B} \, = \, \{Base-62 characters\}
+      & ~ & \alpha \, \subseteq \, \{\textbf {B}\}, \\
+      & ~ & \textbf {B} \, = \, \{Base-62 characters\}
     \end {tabular}
-  \end {center}
+    
+  \end{center}
+
+  \caption {Syntax of scalar values and object references}
+\label{fig:hjson-scalar-or-object-values}
+  
+\end {figure}
+%%%%%%%%%%%%%%%%
+
+\begin{figure}[h]
   
   \begin {center}
-    \begin {tabular} {l c l l}
+    \begin{tabular}{lcll}
       \emph {\textbf {set}} & $\leftarrow$ & \{ \\
       & & \texttt {vtype: set} \\
-      & & \texttt {elem: [ \alpha \, \beta \, \gamma \, \ldots]} \\
+      & & \texttt {elem: [ $\omega_1, \omega_2, \omega_3, \ldots$ ]} \\
       & & \} \\
-      & $|$ & \alpha, \, \beta, \, \gamma, \, \in \, \{\textbf {O}\}, \\
-      & $|$ & \textbf {O} \, = \, \{\textbf {\emph {object}}s\}
-    \end {tabular}
+      & ~ & where the $\omega_i$ are \textbf{object}s represented by \textit{objid}-s \\
+    \end{tabular}
+
+    \textcolor{red}{@@TODO: syntax of tuples, closures, ...}
+    
   \end {center}
-
-  \caption {Syntax of Values}
-\end {figure}
-
+  \caption {Syntax of composite values}
+\label{fig:hjson-composite-values}
+  
+\end{figure}
 
 %%%%%
 %% TODO: remove this  "commented-out" block
-\iffalse
-\textbf{oid} = ``\_'' , \{ \textbf{BASE62} \} ; \\
-\textbf{value} = \textbf{INTEGER} | \textbf{FLOAT} | \textbf{STRING} 
-	       | \textbf{set} | \textbf{tuple}  | \textbf{closure} ; \\
-\textbf{set} = ``\{'' , ``vtype'' , ``:'' , ``set'' , 
-             ``elements'' , ``:'' , 
-	     ``['' , \{ \textbf{oid} (* unique unordered *) \} 
-	     ``]'' ,  ``\}'' ; \\
-\textbf{tuple} = ``\{'' , ``vtype'' , ``:'' , ``tuple'' , 
-                   ``components'' , ``:'' ,  ``['' , \{ \textbf{oid} (* ordered *) \} 
-		   ``\}'' ; \\
-\textbf{closed-value} = \textbf{INTEGER} | \textbf{FLOAT} | \textbf{STRING}
-                      | \textbf{set-value} | \textbf{tuple-value} ; \\
-\textbf{closure} = ``\{'' , ``vtype'' , ``:'' , ``closure'' , 
-	         ``function'' , ``:'' , \textbf{oid} , 
-		 ``environment'' , ``:'' , ``['' , \{ \textbf{closed-value} \} , "]" , "\}" ;
-\fi
+%% \iffalse
+%% \textbf{oid} = ``\_'' , \{ \textbf{BASE62} \} ; \\
+%% \textbf{value} = \textbf{INTEGER} | \textbf{FLOAT} | \textbf{STRING} 
+%% 	       | \textbf{set} | \textbf{tuple}  | \textbf{closure} ; \\
+%% \textbf{set} = ``\{'' , ``vtype'' , ``:'' , ``set'' , 
+%%              ``elements'' , ``:'' , 
+%% 	     ``['' , \{ \textbf{oid} (* unique unordered *) \} 
+%% 	     ``]'' ,  ``\}'' ; \\
+%% \textbf{tuple} = ``\{'' , ``vtype'' , ``:'' , ``tuple'' , 
+%%                    ``components'' , ``:'' ,  ``['' , \{ \textbf{oid} (* ordered *) \} 
+%% 		   ``\}'' ; \\
+%% \textbf{closed-value} = \textbf{INTEGER} | \textbf{FLOAT} | \textbf{STRING}
+%%                       | \textbf{set-value} | \textbf{tuple-value} ; \\
+%% \textbf{closure} = ``\{'' , ``vtype'' , ``:'' , ``closure'' , 
+%% 	         ``function'' , ``:'' , \textbf{oid} , 
+%% 		 ``environment'' , ``:'' , ``['' , \{ \textbf{closed-value} \} , "]" , "\}" ;
+%% \fi
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
