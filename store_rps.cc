@@ -367,13 +367,33 @@ Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)
 {
   RPS_ASSERT(ld != nullptr);
   std::int64_t i=0;
+  double d=0.0;
+  std::string str = "";
+  std::size_t siz=0;
+  Hjson::Value hjcomp;
+  /// see https://github.com/hjson/hjson-cpp/issues/22
+  /// so use https://github.com/bstarynk/hjson-cpp
   if (hjv.is_int64(&i))
     {
       *this = Rps_Value(i, Rps_IntTag{});
       return;
     }
-  /// see https://github.com/hjson/hjson-cpp/issues/22
-  /// so use https://github.com/bstarynk/hjson-cpp
+  else if (hjv.is_double(&d)) {
+    *this = Rps_Value(d, Rps_DoubleTag{});
+    return;
+  }
+  else if (hjv.is_null()) {
+    *this = Rps_Value(nullptr);
+    return;
+  }
+  else if (hjv.is_string(&str)) {
+    /// should probably special-case when str looks like an objid
+  }
+  else if (hjv.is_map(&siz) && siz==1 && hjv.is_map_with_key("string")
+	   && (hjcomp=hjv["string"]).is_string(&str)) {
+    *this = Rps_StringValue(str);
+    return;
+  }
 #warning Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld) unimplemented
   RPS_WARN("unimplemented Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)");
 } // end of Rps_Value::Rps_Value(const Hjson::value &hjv, Rps_Loader*ld)
