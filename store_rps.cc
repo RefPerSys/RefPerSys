@@ -57,8 +57,8 @@ class Rps_Loader
   std::set<Rps_Id> ld_globrootsidset;
   /// mapping from plugins id to their dlopen-ed handle
   std::map<Rps_Id,void*> ld_pluginsmap;
-  /// set of loaded objects
-  std::set<Rps_ObjectRef> ld_objects;
+  /// map of loaded objects
+  std::map<Rps_Id,Rps_ObjectRef> ld_mapobjects;
   bool is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid);
   void parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                                        Rps_Id objid, const std::string& objbuf);
@@ -71,6 +71,13 @@ public:
   std::string string_of_loaded_file(const std::string& relpath);
   std::string space_file_path(Rps_Id spacid);
   std::string load_real_path(const std::string& path);
+  Rps_ObjectRef find_object_by_oid(Rps_Id oid)
+  {
+    auto it = ld_mapobjects.find(oid);
+    if (it != ld_mapobjects.end())
+      return it->second;
+    return Rps_ObjectRef(nullptr);
+  };
   void load_all_state_files(void);
 };				// end class Rps_Loader
 
@@ -212,14 +219,14 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
               expectedcnt =nbobjectshjson.to_int64();
             }
           Rps_ObjectRef obref(Rps_ObjectZone::make_loaded(curobjid, this));
-          if (ld_objects.find(obref) != ld_objects.end())
+          if (ld_mapobjects.find(curobjid) != ld_mapobjects.end())
             {
               RPS_WARN("duplicate object of oid %s in  line#%d in %s",
                        curobjid.to_string().c_str(), lincnt, spacepath.c_str());
               throw std::runtime_error(std::string("duplicate objid "
                                                    + curobjid.to_string() + " in " + spacepath));
             }
-          ld_objects.insert(obref);
+          ld_mapobjects.insert({curobjid,obref});
           obcnt++;
         }
     }
@@ -328,7 +335,7 @@ Rps_Loader::load_all_state_files(void)
       spacecnt2++;
     }
   RPS_INFORMOUT("loaded " << spacecnt1 << " space files in second pass with "
-                << ld_objects.size() << " objects");
+                << ld_mapobjects.size() << " objects");
 } // end Rps_Loader::load_all_state_files
 
 
@@ -378,22 +385,26 @@ Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)
       *this = Rps_Value(i, Rps_IntTag{});
       return;
     }
-  else if (hjv.is_double(&d)) {
-    *this = Rps_Value(d, Rps_DoubleTag{});
-    return;
-  }
-  else if (hjv.is_null()) {
-    *this = Rps_Value(nullptr);
-    return;
-  }
-  else if (hjv.is_string(&str)) {
-    /// should probably special-case when str looks like an objid
-  }
+  else if (hjv.is_double(&d))
+    {
+      *this = Rps_Value(d, Rps_DoubleTag{});
+      return;
+    }
+  else if (hjv.is_null())
+    {
+      *this = Rps_Value(nullptr);
+      return;
+    }
+  else if (hjv.is_string(&str))
+    {
+      /// should probably special-case when str looks like an objid
+    }
   else if (hjv.is_map(&siz) && siz==1 && hjv.is_map_with_key("string")
-	   && (hjcomp=hjv["string"]).is_string(&str)) {
-    *this = Rps_StringValue(str);
-    return;
-  }
+           && (hjcomp=hjv["string"]).is_string(&str))
+    {
+      *this = Rps_StringValue(str);
+      return;
+    }
 #warning Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld) unimplemented
   RPS_WARN("unimplemented Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)");
 } // end of Rps_Value::Rps_Value(const Hjson::value &hjv, Rps_Loader*ld)
@@ -402,7 +413,22 @@ Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)
 Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)
   : Rps_ObjectRef(nullptr)
 {
+  RPS_ASSERT(ld != nullptr);
+  std::string str = "";
+  Rps_Id oid;
+  if (hjv.is_string(&str) && (oid = Rps_Id(str)).valid())
+    {
+      Rps_ObjectRef obr= ld->find_object_by_oid(oid);
+      if (!obr)
+        {
+          RPS_WARNOUT("unknown oid " << oid);
+          throw  std::runtime_error(std::string{"unknown oid "} + oid.to_string());
+        }
+      *this = obr;
+      return;
+    }
   RPS_WARN("unimplemented Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)");
+  throw  std::runtime_error("unimplemented Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)");
 #warning unimplemented Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)
 } // end Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)
 
