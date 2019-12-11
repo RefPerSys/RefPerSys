@@ -2294,6 +2294,17 @@ the \textsc{Hjson} syntax of composite values in persisted state files.
       & ~ & \} 
 	&  \textbf{O} = \{\emph{\textbf{object}}s represented by \textit{objid}s\} \\
     \end{tabular}
+
+    \begin{tabular}{lcll}
+      \emph{\textbf{closure}} & $\leftarrow$ & \{ \\
+      & ~ & \texttt{vtype: closure} \\
+      & ~ & \texttt{fn: $f$}
+        & $f$ \, \in \, \{\textbf{O}\}, \\
+      & ~ & \texttt{env: [ $\omega_1, \omega_2, \omega_3, \ldots$ ]} 
+        & $\omega_i$ \, \in \, \{\textbf{O}\}, \\
+      & ~ & \} 
+	&  \textbf{O} = \{\emph{\textbf{object}}s represented by \textit{objid}s\} \\
+    \end{tabular}
     
   \end {center}
   \caption {Syntax of composite values}
