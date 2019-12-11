@@ -2247,24 +2247,22 @@ the \textsc{Hjson} syntax of composite values in persisted state files.
     \end{tabular}
     
     \begin{tabular}{l c l l}
-      \emph {\textbf {float}} & $\leftarrow$ & \alpha,
-        & an IEEE 754 floating point number \\
-      & ~ & \alpha \, \in \, \{\textbf {F}\}, \\
-      & ~ & \textbf {F} \, = \, \{IEEE 754 floating point numbers\}
+      \emph {\textbf {float}} & $\leftarrow$ & \textit{floating-point-number},
+        & an IEEE 754 double, with a dot 
     \end{tabular}
     
     \begin{tabular}{lcll}
       \emph {\textbf {string}} & $\leftarrow$ & \texttt {"}\alpha\texttt {"}, 
-        & a Unicode string represented as an HJSON string type \\
-      & ~ & \alpha \, \subseteq \, \{\textbf {U}\}, \\
-      & ~ & \textbf {U} \, = \, \{Unicode characters\}
+        & a UTF-8 string represented as an HJSON string type \\
+%      & ~ & \alpha \, \subseteq \, \{\textbf {U}\}, \\
+%      & ~ & \textbf {U} \, = \, \{Unicode characters\}
     \end {tabular}
     
     \begin{tabular}{lcll}
       \emph {\textbf {object}} & $\leftarrow$ & \_\alpha,
         & a Base-62 number prefixed with an underscore \\
-      & ~ & \alpha \, \subseteq \, \{\textbf {B}\}, \\
-      & ~ & \textbf {B} \, = \, \{Base-62 characters\}
+%      & ~ & \alpha \, \subseteq \, \{\textbf {B}\}, \\
+%      & ~ & \textbf {B} \, = \, \{Base-62 characters\}
     \end {tabular}
     
   \end{center}
@@ -2281,29 +2279,24 @@ the \textsc{Hjson} syntax of composite values in persisted state files.
     \begin{tabular}{lcll}
       \emph {\textbf {set}} & $\leftarrow$ & \{ \\
       & ~ & \texttt {vtype: set} \\
-      & ~ & \texttt {elem: [ $\omega_1\, \omega_2\, \omega_3\, \ldots$ ]} \\
+      & ~ & \texttt {elem: [ $\omega_1$, $\omega_2$, $\omega_3$, \ldots ]} \\
       & ~ & \} \\
-      & ~ & where the $\omega_i$ are \textbf{object}s represented by \textit{objid}-s \\
+      & ~ & where the $\omega_i$ are \textbf{object}s represented by \textit{objid}-s 
     \end{tabular}
 
     \begin{tabular}{lcll}
       \emph{\textbf{tuple}} & $\leftarrow$ & \{ \\
       & ~ & \texttt{vtype: tuple} \\
-      & ~ & \texttt{comp: [ $\omega_1\, \omega_2\, \omega_3\, \ldots$ ]} 
-        & $\omega_i$\, \in\, \{\textbf{O}\}, \\
-      & ~ & \} 
-	&  \textbf{O} = \{\emph{\textbf{object}}s represented by \textit{objid}s\} \\
+      & ~ & \texttt{comp: [ $\omega_1$, $\omega_2$, $\omega_3$, \ldots ]}  \\
+      & ~ & where the $\omega_i$ are \textbf{object}s represented by \textit{objid}-s 
     \end{tabular}
 
     \begin{tabular}{lcll}
       \emph{\textbf{closure}} & $\leftarrow$ & \{ \\
       & ~ & \texttt{vtype: closure} \\
-      & ~ & \texttt{fn: $f$}
-        & $f$ \, \in \, \{\textbf{O}\}, \\
-      & ~ & \texttt{env: [ $\omega_1\, \omega_2\, \omega_3\, \ldots$ ]} 
-        & $\omega_i$\, \in\, \{\textbf{O}\}, \\
-      & ~ & \} 
-	&  \textbf{O} = \{\emph{\textbf{object}}s represented by \textit{objid}s\} \\
+      & ~ & \texttt{fn: $\omega_{fun}$} & the object giving a function\\
+      & ~ & \texttt{env: [ $v_1$, $v_2$, \ldots ]} \\
+      & ~ & ~ & where the $v_i$ are closed values.
     \end{tabular}
     
   \end {center}
