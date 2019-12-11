@@ -200,6 +200,19 @@ Rps_Value::valhash() const noexcept
   return 0;
 } // end of Rps_Value::valhash()
 
+Rps_Value&
+Rps_Value::operator=(Rps_Value&&r)
+{
+  _wptr = r._wptr;
+  return *this;
+}
+Rps_Value&
+Rps_Value::operator=(const Rps_Value&oth)
+{
+  _wptr = oth._wptr;
+  return *this;
+}
+
 bool Rps_Value::is_set() const
 {
   return is_ptr()

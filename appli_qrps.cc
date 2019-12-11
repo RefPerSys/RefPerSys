@@ -114,7 +114,7 @@ RpsQWindow* RpsQApplication::getWindowPtr(int ix)
   std::lock_guard gu(app_mutex);
   if (ix < 0)
     ix += app_windvec.size();
-  if (ix <= 0 || ix > app_windvec.size())
+  if (ix <= 0 || ix > (int)app_windvec.size())
     return nullptr;
   return app_windvec.at(ix).get();
 }

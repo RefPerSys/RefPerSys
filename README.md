@@ -171,6 +171,11 @@ e.g. under `/usr/local/`. You may need to add `/usr/local/lib/` in
 your `/etc/ld.so.conf` and run `ldconfig -v -a` after installation of
 that `libbacktrace`.
 
+An [Hjson](http://hjson.org/) C++ library is needed, so Basile&apos;s
+variant https://github.com/bstarynk/hjson-cpp (sadly, the upstream
+version is not enough, see its
+[issue#22](https://github.com/hjson/hjson-cpp/issues/22)...).
+
 ### Build instructions
 You need a recent C++17 compiler such as `g++` (We use GCC 7 or 8 or 9) or `clang++` , `omake`, `libunistring-dev`
  
