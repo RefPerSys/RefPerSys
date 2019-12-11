@@ -433,6 +433,7 @@ enum class Rps_Type : int16_t
   Set,
   Tuple,
   Object,
+  Closure,
 };
 
 //////////////////////////////////////////////////////////////// values
@@ -1243,6 +1244,7 @@ protected:
         if (RPS_UNLIKELY(_seqob[ix].is_empty()))
           throw std::runtime_error("corrupted sequence of objects");
         h0 = (h0 * k1) ^ (_seqob[ix]->obhash() * k2 + ix);
+	if (ix+1 >= _seqlen) break;
         auto nextob = _seqob[ix+1];
         if (RPS_UNLIKELY(nextob.is_empty())) break;
         h1 = (h1 * k2) ^ (nextob->obhash() * k3 - (h0&0xfff));
@@ -1276,9 +1278,6 @@ protected:
     if (zv.stored_type() == seqty)
       {
         auto oth = reinterpret_cast<const RpsSeq*>(&zv);
-        if (RPS_LIKELY(reinterpret_cast<const Rps_LazyHashedZoneValue*>(this)->val_hash()
-                       != reinterpret_cast<const Rps_LazyHashedZoneValue*>(oth)->val_hash()))
-          return false;
         return std::lexicographical_compare(begin(), end(),
                                             oth->begin(), oth->end());
       }
@@ -1335,6 +1334,114 @@ public:
   static const Rps_TupleOb*collect(const std::initializer_list<Rps_Value>&valil);
 #warning Rps_TupleOb very incomplete
 };// end of Rps_TupleOb
+
+
+////////////////////////////////////////////////////////////////
+
+/////////////////////////// tree zones, with connective and sons
+class Rps_ClosureZone;
+template<typename RpsTree, Rps_Type treety, unsigned k1, unsigned k2, unsigned k3, unsigned k4>
+class Rps_TreeZone : public Rps_LazyHashedZoneValue
+{
+  friend class Rps_ClosureZone;
+  friend RpsTree*
+  Rps_QuasiZone::rps_allocate_with_wordgap<RpsTree,unsigned>(unsigned,unsigned);
+  const unsigned _treelen;
+  Rps_ObjectRef _treeconnob;
+  Rps_Value _treesons[RPS_FLEXIBLE_DIM+1];
+  Rps_TreeZone(unsigned len) : Rps_LazyHashedZoneValue(treety), _treelen(len)
+  {
+    memset (_treesons, 0, sizeof(Rps_Value)*len);
+  };
+  Rps_Value*raw_data_sons()
+  {
+    return _treesons;
+  };
+public:
+  static unsigned constexpr maxsize
+    = std::numeric_limits<unsigned>::max() / 2;
+  unsigned cnt() const
+  {
+    return _treelen;
+  };
+  Rps_ObjectRef conn() const {
+    return _treeconnob;
+  }
+  typedef const Rps_Value*iterator_t;
+  iterator_t begin() const
+  {
+    return const_cast<const Rps_Value*>(_treesons);
+  };
+  iterator_t end() const
+  {
+    return const_cast<const Rps_Value*>(_treesons) + _treelen;
+  };
+  virtual uint32_t wordsize() const
+  {
+    return (sizeof(*this) + _treelen * sizeof(_treesons[0])) / sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth)
+  {
+    gc.mark_obj(_treeconnob);
+    for (auto vson: *this)
+      if (vson)
+        gc.mark_value(vson, depth+1);
+  };
+protected:
+  virtual Rps_HashInt compute_hash(void) const
+  {
+    Rps_HashInt h0= 3317+(k1&0xff)+_treeconnob->obhash()*k3, h1= 211*_treelen;
+    for (unsigned ix=0; ix<_treelen; ix += 2)
+      {
+        if (RPS_LIKELY(!_treesons[ix].is_empty()))
+	  h0 = (h0 * k1) ^ (_treesons[ix].valhash() * k2 + ix);
+	if (ix+1 >= _treelen) break;
+        auto nextson = _treesons[ix+1];
+        if (RPS_LIKELY(!nextson.is_empty()))
+        h1 = (h1 * k2) ^ (nextson.valhash() * k4 - (h0&0xfff));
+      };
+    Rps_HashInt h = 53*h0 + 17*h1;
+    if (RPS_UNLIKELY(h == 0))
+      h = ((h0 & 0xfffff) ^ (h1 & 0xfffff)) + (k3/128 + (_treelen & 0xff) + 13);
+    RPS_ASSERT(h != 0);
+    return h;
+  };
+  virtual bool equal(const Rps_ZoneValue&zv) const
+  {
+    if (zv.stored_type() == treety)
+      {
+        auto oth = reinterpret_cast<const RpsTree*>(&zv);
+        if (RPS_LIKELY(reinterpret_cast<const Rps_LazyHashedZoneValue*>(this)->val_hash()
+                       != reinterpret_cast<const Rps_LazyHashedZoneValue*>(oth)->val_hash()))
+          return false;
+        auto curcnt = cnt();
+        if (RPS_LIKELY(oth->cnt() != curcnt))
+          return false;
+	if (RPS_LIKELY(_treeconnob != oth->_treeconnob))
+	  return false;
+        for (unsigned ix = 0; ix < curcnt; ix++)
+          if (_treesons[ix] != oth->_treesons[ix])
+            return false;
+        return true;
+      }
+    return false;
+  }
+  virtual bool less(const Rps_ZoneValue&zv) const
+  {
+    if (zv.stored_type() == treety)
+      {
+        auto oth = reinterpret_cast<const RpsTree*>(&zv);
+	if (_treeconnob < oth->_treeconnob)
+	  return true;
+	if (_treeconnob > oth->_treeconnob)
+	  return false;
+	RPS_ASSERT(_treeconnob == oth->_treeconnob);
+        return std::lexicographical_compare(begin(), end(),
+                                            oth->begin(), oth->end());
+      }
+    return false;
+  };
+};    // end of Rps_TreeZone
 
 ////////////////////////////////////////////////////////////////
 
