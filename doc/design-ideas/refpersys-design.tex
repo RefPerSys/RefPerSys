@@ -2254,8 +2254,8 @@ the \textsc{Hjson} syntax of composite values in persisted state files.
     \begin{tabular}{lcll}
       \emph {\textbf {string}} & $\leftarrow$ & \texttt {"}\alpha\texttt {"}, 
       & a UTF-8 string represented as an HJSON string type \\
-      ~ & $|$ & \texttt{\textbf{\{} string:}} $\sigma$ \texttt{\textbf{\}}}
-        & when $\sigma$ looks like an objid \\
+      ~ & $|$ & \texttt{\textbf{\{} string:} $\sigma$ \texttt{\textbf{\}}}
+        & when string $\sigma$ looks like an objid \\
 %      & ~ & \alpha \, \subseteq \, \{\textbf {U}\}, \\
 %      & ~ & \textbf {U} \, = \, \{Unicode characters\}
     \end {tabular}
