@@ -2276,17 +2276,24 @@ the \textsc{Hjson} syntax of composite values in persisted state files.
 %%%%%%%%%%%%%%%%
 
 \begin{figure}[h]
-  
   \begin {center}
+
     \begin{tabular}{lcll}
       \emph {\textbf {set}} & $\leftarrow$ & \{ \\
-      & & \texttt {vtype: set} \\
-      & & \texttt {elem: [ $\omega_1, \omega_2, \omega_3, \ldots$ ]} \\
-      & & \} \\
+      & ~ & \texttt {vtype: set} \\
+      & ~ & \texttt {elem: [ $\omega_1, \omega_2, \omega_3, \ldots$ ]} \\
+      & ~ & \} \\
       & ~ & where the $\omega_i$ are \textbf{object}s represented by \textit{objid}-s \\
     \end{tabular}
 
-    \textcolor{red}{@@TODO: syntax of tuples, closures, ...}
+    \begin{tabular}{lcll}
+      \emph{\textbf{tuple}} & $\leftarrow$ & \{ \\
+      & ~ & \texttt{vtype: tuple} \\
+      & ~ & \texttt{comp: [ $\omega_1, \omega_2, \omega_3, \ldots$ ]} 
+        & $\omega_i$ \, \in \, \{\textbf{O}\}, \\
+      & ~ & \} 
+	&  \textbf{O} = \{\emph{\textbf{object}}s represented by \textit{objid}s\} \\
+    \end{tabular}
     
   \end {center}
   \caption {Syntax of composite values}
