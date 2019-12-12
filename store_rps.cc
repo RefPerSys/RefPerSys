@@ -450,6 +450,21 @@ Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)
                && hjv.is_map_with_key("fn")
                && hjv.is_map_with_key("env"))
         {
+          auto hjfn = hjv["fn"];
+          auto hjenv = hjv["env"];
+          auto funobr = Rps_ObjectRef(hjfn, ld);
+          if (hjenv.is_vector(&siz))
+            {
+              std::vector<Rps_Value> vecenv;
+              vecenv.reserve(siz+1);
+              for (int ix=0; ix <(int)siz; ix++)
+                {
+                  auto curval = Rps_Value(hjenv[ix], ld);
+                  vecenv.push_back(curval);
+                };
+              *this = Rps_ClosureValue(funobr, vecenv);
+              return;
+            }
 #warning TODO: decode closure
         }
     }

@@ -1491,6 +1491,7 @@ public:
 
 class Rps_ClosureValue : public Rps_Value
 {
+public:
   // related to Rps_ClosureZone::make
   inline Rps_ClosureValue(const Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
   inline Rps_ClosureValue(const Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);
