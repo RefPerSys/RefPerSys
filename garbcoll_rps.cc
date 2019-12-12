@@ -124,7 +124,7 @@ Rps_GarbageCollector::mark_obj(Rps_ObjectZone* ob)
 } // end of Rps_GarbageCollector::mark_obj
 
 void
-Rps_GarbageCollector::mark_value(Rps_Value val)
+Rps_GarbageCollector::mark_value(Rps_Value val, unsigned depth)
 {
   if (val.is_empty() || val.is_int()) return;
   val.gc_mark(*this);

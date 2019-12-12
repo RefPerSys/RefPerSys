@@ -445,6 +445,7 @@ class Rps_String;
 class Rps_Double;
 class Rps_SetOb;
 class Rps_TupleOb;
+class Rps_ClosureZone;
 class Rps_GarbageCollector;
 class Rps_Loader; // in store_rps.cc
 class Rps_Dumper; // in store_rps.cc
@@ -488,11 +489,20 @@ public:
   inline bool is_ptr() const;
   inline bool is_object() const;
   inline bool is_set() const;
+  inline bool is_closure() const;
   inline bool is_string() const;
   inline bool is_double() const;
   inline bool is_tuple() const;
   inline bool is_null() const;
   inline bool is_empty() const;
+  operator bool () const
+  {
+    return !is_empty();
+  };
+  bool operator ! () const
+  {
+    return is_empty();
+  };
   // convert, or else throw exception on failure
   inline intptr_t as_int() const;
   inline const Rps_ZoneValue* as_ptr() const;
@@ -500,6 +510,7 @@ public:
   inline const Rps_TupleOb* as_tuple() const;
   inline  Rps_ObjectZone* as_object() const;
   inline const Rps_String* as_string() const;
+  inline const Rps_ClosureZone* as_closure() const;
   inline const Rps_Double* as_boxed_double() const;
   inline double as_double() const;
   inline const std::string as_cppstring() const;
@@ -511,6 +522,7 @@ public:
   inline const Rps_Double* to_boxed_double(const Rps_Double*defdbl= nullptr) const;
   inline double to_double(double def=std::nan("")) const;
   inline const Rps_TupleOb* to_tuple(const Rps_TupleOb* deftup= nullptr) const;
+  inline const Rps_ClosureZone* to_closure(const Rps_ClosureZone* defclos= nullptr) const;
   inline const Rps_ObjectZone* to_object(const Rps_ObjectZone*defob
                                          =nullptr) const;
   inline const Rps_String* to_string( const Rps_String*defstr
@@ -899,7 +911,7 @@ private:
 public:
   void mark_obj(Rps_ObjectZone* ob);
   void mark_obj(Rps_ObjectRef ob);
-  void mark_value(Rps_Value val);
+  void mark_value(Rps_Value val, unsigned depth=0);
 };				// end class Rps_GarbageCollector
 
 ////////////////////////////////////////////////////// quasi zones
@@ -1244,7 +1256,7 @@ protected:
         if (RPS_UNLIKELY(_seqob[ix].is_empty()))
           throw std::runtime_error("corrupted sequence of objects");
         h0 = (h0 * k1) ^ (_seqob[ix]->obhash() * k2 + ix);
-	if (ix+1 >= _seqlen) break;
+        if (ix+1 >= _seqlen) break;
         auto nextob = _seqob[ix+1];
         if (RPS_UNLIKELY(nextob.is_empty())) break;
         h1 = (h1 * k2) ^ (nextob->obhash() * k3 - (h0&0xfff));
@@ -1349,7 +1361,7 @@ class Rps_TreeZone : public Rps_LazyHashedZoneValue
   const unsigned _treelen;
   Rps_ObjectRef _treeconnob;
   Rps_Value _treesons[RPS_FLEXIBLE_DIM+1];
-  Rps_TreeZone(unsigned len) : Rps_LazyHashedZoneValue(treety), _treelen(len)
+  Rps_TreeZone(unsigned len, Rps_ObjectRef obr=nullptr) : Rps_LazyHashedZoneValue(treety), _treelen(len), _treeconnob(obr)
   {
     memset (_treesons, 0, sizeof(Rps_Value)*len);
   };
@@ -1364,7 +1376,8 @@ public:
   {
     return _treelen;
   };
-  Rps_ObjectRef conn() const {
+  Rps_ObjectRef conn() const
+  {
     return _treeconnob;
   }
   typedef const Rps_Value*iterator_t;
@@ -1393,16 +1406,20 @@ protected:
     Rps_HashInt h0= 3317+(k1&0xff)+_treeconnob->obhash()*k3, h1= 211*_treelen;
     for (unsigned ix=0; ix<_treelen; ix += 2)
       {
-        if (RPS_LIKELY(!_treesons[ix].is_empty()))
-	  h0 = (h0 * k1) ^ (_treesons[ix].valhash() * k2 + ix);
-	if (ix+1 >= _treelen) break;
+        auto curson = _treesons[ix];
+        if (RPS_LIKELY(!curson.is_empty()))
+          h0 = (h0 * k1) ^ (curson.valhash() * k2 + ix);
+        if (ix+1 >= _treelen)
+          break;
         auto nextson = _treesons[ix+1];
         if (RPS_LIKELY(!nextson.is_empty()))
-        h1 = (h1 * k2) ^ (nextson.valhash() * k4 - (h0&0xfff));
+          h1 = (h1 * k3) ^ (nextson.valhash() * k4 - (h0&0xfff));
       };
     Rps_HashInt h = 53*h0 + 17*h1;
     if (RPS_UNLIKELY(h == 0))
-      h = ((h0 & 0xfffff) ^ (h1 & 0xfffff)) + (k3/128 + (_treelen & 0xff) + 13);
+      h = ((h0 & 0xfffff)
+           ^ (h1 & 0xfffff)) + (k3/128
+                                + (_treeconnob->obhash()%65353) + (_treelen & 0xff) + 13);
     RPS_ASSERT(h != 0);
     return h;
   };
@@ -1417,8 +1434,8 @@ protected:
         auto curcnt = cnt();
         if (RPS_LIKELY(oth->cnt() != curcnt))
           return false;
-	if (RPS_LIKELY(_treeconnob != oth->_treeconnob))
-	  return false;
+        if (RPS_LIKELY(_treeconnob != oth->_treeconnob))
+          return false;
         for (unsigned ix = 0; ix < curcnt; ix++)
           if (_treesons[ix] != oth->_treesons[ix])
             return false;
@@ -1431,17 +1448,55 @@ protected:
     if (zv.stored_type() == treety)
       {
         auto oth = reinterpret_cast<const RpsTree*>(&zv);
-	if (_treeconnob < oth->_treeconnob)
-	  return true;
-	if (_treeconnob > oth->_treeconnob)
-	  return false;
-	RPS_ASSERT(_treeconnob == oth->_treeconnob);
+        if (_treeconnob < oth->_treeconnob)
+          return true;
+        if (_treeconnob > oth->_treeconnob)
+          return false;
+        RPS_ASSERT(_treeconnob == oth->_treeconnob);
         return std::lexicographical_compare(begin(), end(),
                                             oth->begin(), oth->end());
       }
     return false;
   };
 };    // end of Rps_TreeZone
+
+
+//////////////////////////////////////////////// closures
+
+unsigned constexpr rps_closure_k1 = 8161;
+unsigned constexpr rps_closure_k2 = 9151;
+unsigned constexpr rps_closure_k3 = 10151;
+unsigned constexpr rps_closure_k4 = 13171;
+struct Rps_ClosureTag {};
+class Rps_ClosureZone :
+  public Rps_TreeZone<Rps_ClosureZone, Rps_Type::Closure,
+  rps_closure_k1, rps_closure_k2, rps_closure_k3, rps_closure_k4>
+{
+public:
+  typedef  Rps_TreeZone<Rps_ClosureZone, Rps_Type::Closure,
+           rps_closure_k1, rps_closure_k2, rps_closure_k3, rps_closure_k4> parenttree_t;
+  friend parenttree_t;
+protected:
+  Rps_ClosureZone(unsigned len, Rps_ObjectRef connob, Rps_ClosureTag) :
+    parenttree_t(len, connob)
+  {
+  };
+  friend Rps_ClosureZone*
+  Rps_QuasiZone::rps_allocate_with_wordgap<Rps_ClosureZone,unsigned,Rps_ObjectRef,Rps_ClosureTag>(unsigned,unsigned,Rps_ObjectRef,Rps_ClosureTag);
+public:
+  /// make a closure with given connective and values
+  static Rps_ClosureZone* make(Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
+  static Rps_ClosureZone* make(Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);
+};    // end Rps_ClosureZone
+
+class Rps_ClosureValue : public Rps_Value
+{
+  // related to Rps_ClosureZone::make
+  inline Rps_ClosureValue(const Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
+  inline Rps_ClosureValue(const Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);
+  // "dynamic" casting
+  inline Rps_ClosureValue(Rps_Value val);
+};    // end Rps_ClosureValue
 
 ////////////////////////////////////////////////////////////////
 

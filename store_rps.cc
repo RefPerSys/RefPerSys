@@ -399,10 +399,14 @@ Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)
   else if (hjv.is_string(&str))
     {
       if (str.size() == Rps_Id::nbchars + 1 && str[0] == '_'
-	  && std::all_of(str.begin()+1, str.end(),
-			 [](char c) { return strchr(Rps_Id::b62digits, c) != nullptr; })) {
-	*this = Rps_ObjectValue(Rps_ObjectRef(hjv, ld));
-	return;
+          && std::all_of(str.begin()+1, str.end(),
+                         [](char c)
+      {
+        return strchr(Rps_Id::b62digits, c) != nullptr;
+        }))
+      {
+        *this = Rps_ObjectValue(Rps_ObjectRef(hjv, ld));
+        return;
       }
       *this = Rps_StringValue(str);
       return;
@@ -414,35 +418,41 @@ Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)
       return;
     }
   else if (hjv.is_map(&siz) &&  hjv.is_map_with_key("vtype")
-	   && (hjvtype=hjv["vtype"].is_string(&str))) {
-    if (str == "set" && siz==2 && hjv.is_map_with_key("elem")
-	&& (hjcomp=hjv["elem"]).is_vector(&siz)) {
-      std::set<Rps_ObjectRef> setobr;
-      for (int ix=0; ix<(int)siz; ix++) {
-	auto obrelem = Rps_ObjectRef(hjcomp[ix], ld);
-	if (obrelem)
-	  setobr.insert(obrelem);
-      }
-      *this= Rps_SetValue(setobr);
-      return;
-    }
-    else if (str == "tuple" && siz==2 && hjv.is_map_with_key("elem")
-	&& (hjcomp=hjv["comp"]).is_vector(&siz)) {
-      std::vector<Rps_ObjectRef> vecobr;
-      vecobr.reserve(siz);
-      for (int ix=0; ix<(int)siz; ix++) {
-	auto obrcomp = Rps_ObjectRef(hjcomp[ix], ld);
-	vecobr.push_back(obrcomp);
-      };
-      *this= Rps_TupleValue(vecobr);
-      return;
-    }
-    else if (str == "closure" && siz==3
-	     && hjv.is_map_with_key("fn")
-	     && hjv.is_map_with_key("env")) {
+           && (hjvtype=hjv["vtype"].is_string(&str)))
+    {
+      if (str == "set" && siz==2 && hjv.is_map_with_key("elem")
+          && (hjcomp=hjv["elem"]).is_vector(&siz))
+        {
+          std::set<Rps_ObjectRef> setobr;
+          for (int ix=0; ix<(int)siz; ix++)
+            {
+              auto obrelem = Rps_ObjectRef(hjcomp[ix], ld);
+              if (obrelem)
+                setobr.insert(obrelem);
+            }
+          *this= Rps_SetValue(setobr);
+          return;
+        }
+      else if (str == "tuple" && siz==2 && hjv.is_map_with_key("elem")
+               && (hjcomp=hjv["comp"]).is_vector(&siz))
+        {
+          std::vector<Rps_ObjectRef> vecobr;
+          vecobr.reserve(siz);
+          for (int ix=0; ix<(int)siz; ix++)
+            {
+              auto obrcomp = Rps_ObjectRef(hjcomp[ix], ld);
+              vecobr.push_back(obrcomp);
+            };
+          *this= Rps_TupleValue(vecobr);
+          return;
+        }
+      else if (str == "closure" && siz==3
+               && hjv.is_map_with_key("fn")
+               && hjv.is_map_with_key("env"))
+        {
 #warning TODO: decode closure
+        }
     }
-  }
 #warning Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld) unimplemented
   RPS_WARN("unimplemented Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)");
 } // end of Rps_Value::Rps_Value(const Hjson::value &hjv, Rps_Loader*ld)

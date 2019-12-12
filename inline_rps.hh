@@ -219,6 +219,12 @@ bool Rps_Value::is_set() const
          && as_ptr()->stored_type() == Rps_Type::Set;
 } //end  Rps_Value::is_set()
 
+bool Rps_Value::is_closure() const
+{
+  return is_ptr()
+         && as_ptr()->stored_type() == Rps_Type::Closure;
+} //end  Rps_Value::is_closure()
+
 bool Rps_Value::is_tuple() const
 {
   return is_ptr()
@@ -252,6 +258,24 @@ Rps_Value::to_set(const Rps_SetOb*defset) const
     return reinterpret_cast<const Rps_SetOb*>(const_cast<Rps_ZoneValue*>(_pval));
   else return defset;
 } // end Rps_Value::to_set
+
+
+const Rps_ClosureZone*
+Rps_Value::as_closure() const
+{
+  if (is_closure())
+    return reinterpret_cast<const Rps_ClosureZone*>(_pval);
+  else throw std::domain_error("Rps_Value::as_closure: value is not genuine closure");
+} // end Rps_Value::as_closure
+
+
+const Rps_ClosureZone*
+Rps_Value::to_closure(const Rps_ClosureZone*defcloz) const
+{
+  if (is_closure())
+    return reinterpret_cast<const Rps_ClosureZone*>(const_cast<Rps_ZoneValue*>(_pval));
+  else return defcloz;
+} // end Rps_Value::to_closure
 
 
 Rps_SetValue::Rps_SetValue (const std::set<Rps_ObjectRef>& obset)
@@ -845,6 +869,24 @@ Rps_ObjectValue::Rps_ObjectValue(const Rps_ObjectZone* obz)
 
 Rps_ObjectValue::Rps_ObjectValue(nullptr_t)
   : Rps_Value (nullptr, Rps_ValPtrTag{}) {};
+
+
+//////////////// closures
+
+Rps_ClosureValue::Rps_ClosureValue (const Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil)
+  : Rps_Value (Rps_ClosureZone::make(connob,valil), Rps_ValPtrTag{})
+{
+} // end of Rps_ClosureValue::Rps_ClosureValue of initializer_list
+
+Rps_ClosureValue::Rps_ClosureValue (const Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec)
+  : Rps_Value (Rps_ClosureZone::make(connob,valvec), Rps_ValPtrTag{})
+{
+} // end of Rps_ClosureValue::Rps_ClosureValue of vector
+
+Rps_ClosureValue::Rps_ClosureValue(const Rps_Value val)
+  : Rps_Value (val.is_closure()?val.as_closure():nullptr, Rps_ValPtrTag{})
+{
+} // end Rps_ClosureValue::Rps_ClosureValue dynamic
 
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh
