@@ -151,10 +151,24 @@ public:
   };
   Rps_Id (std::nullptr_t) : Rps_Id(random()) {};
 #endif /*RPS_ONLY_ID_CODE*/
+  // rule of five
+  Rps_Id (Rps_Id&& oth) :
+    _id_hi(oth._id_hi), _id_lo(oth._id_lo) {};
+  Rps_Id(const Rps_Id&oth)  :
+    _id_hi(oth._id_hi), _id_lo(oth._id_lo) {};
+  Rps_Id& operator = (const Rps_Id &oth) {
+    _id_hi = oth._id_hi;
+    _id_lo = oth._id_lo;
+    return *this;      
+  };
+  Rps_Id& operator = (Rps_Id&&oth) {
+    std::swap(_id_hi, oth._id_hi);
+    std::swap(_id_lo, oth._id_lo);
+    return *this;
+  }
   Rps_Id () : Rps_Id((uint64_t)0, (uint32_t)0) {};
   Rps_Id (const char*buf, const char**pend=nullptr, bool *pok=nullptr);
   Rps_Id (const std::string&str) : Rps_Id(str.c_str()) {};
-  Rps_Id (const Rps_Id&oid) : Rps_Id(oid.hi(), oid.lo()) {};
   void to_cbuf24(char cbuf[/*24*/]) const;
   inline std::string to_string() const;
 /// hashing, comparing, and equality testing operations on Rps_Id-s

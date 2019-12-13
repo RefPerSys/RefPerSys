@@ -465,7 +465,6 @@ Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)
               *this = Rps_ClosureValue(funobr, vecenv);
               return;
             }
-#warning TODO: decode closure
         }
     }
 #warning Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld) unimplemented
