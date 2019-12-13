@@ -498,19 +498,63 @@ Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)
 //////////////////////////////////////////////// dumper
 class Rps_Dumper
 {
+  friend void rps_dump_into (const std::string dirpath);
+  friend void rps_dump_scan_object(Rps_Dumper*, Rps_ObjectRef obr);
+  friend void rps_dump_scan_value(Rps_Dumper*, Rps_Value obr, unsigned depth);
+  friend Hjson::Value rump_dump_hjson_value(Rps_Dumper*, Rps_Value obr);
+  friend Hjson::Value rump_dump_hjson_object_ref(Rps_Dumper*, Rps_ObjectRef obr);
   std::string du_topdir;
+  std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
+  std::deque<Rps_ObjectRef> du_scanque;
 public:
   Rps_Dumper(const std::string&topdir) :
     du_topdir(topdir) {};
+  void scan_object(const Rps_ObjectRef obr);
+  void scan_value(const Rps_Value val, unsigned depth);
+  Hjson::Value hjson_value(const Rps_Value val);
+  Hjson::Value hjson_objectref(const Rps_ObjectRef obr);
+  bool is_dumpable_objref(const Rps_ObjectRef obr);
+  bool is_dumpable_value(const Rps_Value val);
 };				// end class Rps_Dumper
 
+
+void
+Rps_Dumper::scan_object(const Rps_ObjectRef obr)
+{
+  if (!obr)
+    return;
+  RPS_FATALOUT("Rps_Dumper::scan_object unimplemented " << obr->oid());
+#warning Rps_Dumper::scan_object unimplemented
+} // end Rps_Dumper::scan_object
+
+void
+Rps_Dumper::scan_value(const Rps_Value val, unsigned depth)
+{
+  if (!val)
+    return;
+  RPS_FATALOUT("Rps_Dumper::scan_value unimplemented depth#" << depth);
+#warning Rps_Dumper::scan_value unimplemented
+} // end Rps_Dumper::scan_value
+
+void
+rps_dump_scan_object(Rps_Dumper*du, const Rps_ObjectRef obr)
+{
+  RPS_ASSERT(du != nullptr);
+  du->scan_object(obr);
+} // end rps_dump_scan_object
+
+void rps_dump_scan_value(Rps_Dumper*du, const Rps_Value val, unsigned depth)
+{
+  RPS_ASSERT(du != nullptr);
+  du->scan_value(val, depth);
+} // end rps_dump_scan_value
 
 void
 Rps_TupleOb::dump_scan(Rps_Dumper*du, unsigned depth)
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATAL("unimplemented Rps_TupleOb::dump_scan depth %u", depth);
-#warning unimplemented Rps_TupleOb::dump_scan
+  for (auto obr: *this)
+    du->scan_object(obr);
 }
 
 Hjson::Value
@@ -527,8 +571,8 @@ void
 Rps_SetOb::dump_scan(Rps_Dumper*du, unsigned depth)
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATAL("unimplemented Rps_SetOb::dump_scan depth %u", depth);
-#warning unimplemented Rps_SetOb::dump_scan
+  for (auto obr: *this)
+    du->scan_object(obr);
 }
 
 Hjson::Value

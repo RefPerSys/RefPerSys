@@ -1543,6 +1543,14 @@ extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
 
 extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc
 
+extern "C" void rps_dump_scan_object(Rps_Dumper*, const Rps_ObjectRef obr);
+extern "C" void rps_dump_scan_value(Rps_Dumper*, const Rps_Value obr, unsigned depth);
+extern "C" Hjson::Value rump_dump_hjson_value(Rps_Dumper*, const Rps_Value val);
+extern "C" Hjson::Value rump_dump_hjson_objectref(Rps_Dumper*, const Rps_ObjectRef obr);
+extern "C" bool rps_is_dumpable_objref(Rps_Dumper*, const Rps_ObjectRef obr);
+extern "C" bool rps_is_dumpable_value(Rps_Dumper*, const Rps_Value val);
+
+
 extern "C" void rps_load_from (const std::string& dirpath); // in store_rps.cc
 
 extern "C" void rps_garbage_collect (void);
