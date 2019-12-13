@@ -105,4 +105,17 @@ Rps_String::make(const char*cstr, int len)
 } // end of Rps_String::make
 
 
+Hjson::Value
+Rps_String::dump_hjson(Rps_Dumper*du)
+{
+  RPS_ASSERT(du != nullptr);
+  if (cstr()[0] == '_')
+    {
+      Hjson::Value vmap(Hjson::Value::MAP);
+      vmap["str"] = cstr();
+      return vmap;
+    }
+  else
+    return Hjson::Value(cstr());
+} // end Rps_String::dump_hjson
 //////////////////////////////////////////////// end of file scalar_rps.cc

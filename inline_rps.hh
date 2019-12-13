@@ -816,6 +816,24 @@ Rps_ObjectRef::gc_mark(Rps_GarbageCollector&gc)
   _optr->gc_mark(gc);
 } // end Rps_ObjectRef::gc_mark
 
+void
+Rps_ObjectRef::dump_scan(Rps_Dumper*du, unsigned depth)
+{
+  RPS_ASSERT(du != nullptr);
+  if (is_empty())
+    return;
+  _optr->dump_scan(du,depth);
+} // end Rps_ObjectRef::dump_scan
+
+Hjson::Value
+Rps_ObjectRef::dump_hjson(Rps_Dumper*du)
+{
+  RPS_ASSERT(du != nullptr);
+  if (is_empty())
+    return Hjson::Value(Hjson::Value::HJSON_NULL);
+  return _optr->dump_hjson(du);
+} // end Rps_ObjectRef::dump_hjson
+
 bool
 Rps_ObjectRef::operator == (const Rps_ObjectRef& oth) const
 {

@@ -287,6 +287,7 @@ class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
 class Rps_GarbageCollector;
 class Rps_Loader;
+class Rps_Dumper;
 
 
 typedef uint32_t Rps_HashInt;
@@ -412,6 +413,8 @@ public:
   inline bool operator >= (const Rps_ObjectRef& oth) const;
   inline Rps_HashInt obhash (void) const;
   inline void gc_mark(Rps_GarbageCollector&);
+  inline void dump_scan(Rps_Dumper* du, unsigned depth);
+  inline Hjson::Value dump_hjson(Rps_Dumper* du);
 };				// end class Rps_ObjectRef
 
 
@@ -479,6 +482,8 @@ public:
   Rps_Value(const Rps_ZoneValue& zv) : Rps_Value(&zv, Rps_ValPtrTag{}) {};
   static constexpr unsigned max_gc_mark_depth = 100;
   inline void gc_mark(Rps_GarbageCollector&gc, unsigned depth= 0);
+  void dump_scan(Rps_Dumper* du, unsigned depth);
+  Hjson::Value dump_hjson(Rps_Dumper* du);
   inline bool operator == (const Rps_Value v) const;
   inline bool operator <= (const Rps_Value v) const;
   inline bool operator < (const Rps_Value v) const;
@@ -976,6 +981,8 @@ protected:
   inline Rps_ZoneValue(Rps_Type typ);
 public:
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) =0;
+  virtual void dump_scan(Rps_Dumper* du, unsigned depth) =0;
+  virtual Hjson::Value dump_hjson(Rps_Dumper* du) =0;
   virtual Rps_HashInt val_hash () const =0;
   virtual bool equal(const Rps_ZoneValue&zv) const =0;
   virtual bool less(const Rps_ZoneValue&zv) const =0;
@@ -1056,6 +1063,8 @@ public:
   {
     return (sizeof(Rps_String)+_bytsiz+1)/sizeof(void*);
   };
+  virtual void dump_scan(Rps_Dumper*, unsigned) {};
+  virtual Hjson::Value dump_hjson(Rps_Dumper*);
   static const Rps_String* make(const char*cstr, int len= -1);
   static const Rps_String* make(const QString&qs);
   static inline const Rps_String* make(const std::string&s);
@@ -1107,6 +1116,11 @@ protected:
     return h;
   };
   virtual void gc_mark(Rps_GarbageCollector&, unsigned) { };
+  virtual void dump_scan(Rps_Dumper*, unsigned) {};
+  virtual Hjson::Value dump_hjson(Rps_Dumper*)
+  {
+    return Hjson::Value(_dval);
+  };
 public:
   double dval() const
   {
@@ -1176,6 +1190,8 @@ public:
     return ob_oid.hash();
   };
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
+  virtual void dump_scan(Rps_Dumper*du, unsigned depth=0);
+  virtual Hjson::Value dump_hjson(Rps_Dumper*);
   virtual Rps_HashInt val_hash () const
   {
     return obhash();
@@ -1195,6 +1211,8 @@ protected:
   virtual ~Rps_Payload() =0;
 public:
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) =0;
+  virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) =0;
+  virtual Hjson::Value dump_hjson(Rps_Dumper*) =0;
   Rps_ObjectZone* owner() const
   {
     return payl_owner;
@@ -1320,6 +1338,8 @@ public:
   // collect a set from several objects, tuples, or sets
   static const Rps_SetOb*collect(const std::vector<Rps_Value>& vecval);
   static const Rps_SetOb*collect(const std::initializer_list<Rps_Value>&valil);
+  virtual void dump_scan(Rps_Dumper*du, unsigned depth=0);
+  virtual Hjson::Value dump_hjson(Rps_Dumper*);
 #warning Rps_SetOb very incomplete
 };// end of Rps_SetOb
 
@@ -1344,6 +1364,8 @@ public:
   // collect a tuple from several objects, tuples, or sets
   static const Rps_TupleOb*collect(const std::vector<Rps_Value>& vecval);
   static const Rps_TupleOb*collect(const std::initializer_list<Rps_Value>&valil);
+  virtual void dump_scan(Rps_Dumper*du, unsigned depth=0);
+  virtual Hjson::Value dump_hjson(Rps_Dumper*);
 #warning Rps_TupleOb very incomplete
 };// end of Rps_TupleOb
 
@@ -1484,6 +1506,8 @@ protected:
   friend Rps_ClosureZone*
   Rps_QuasiZone::rps_allocate_with_wordgap<Rps_ClosureZone,unsigned,Rps_ObjectRef,Rps_ClosureTag>(unsigned,unsigned,Rps_ObjectRef,Rps_ClosureTag);
 public:
+  virtual void dump_scan(Rps_Dumper*du, unsigned depth=0);
+  virtual Hjson::Value dump_hjson(Rps_Dumper*);
   /// make a closure with given connective and values
   static Rps_ClosureZone* make(Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
   static Rps_ClosureZone* make(Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);

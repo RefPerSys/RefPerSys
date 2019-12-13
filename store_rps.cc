@@ -505,6 +505,75 @@ public:
 };				// end class Rps_Dumper
 
 
+void
+Rps_TupleOb::dump_scan(Rps_Dumper*du, unsigned depth)
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_FATAL("unimplemented Rps_TupleOb::dump_scan depth %u", depth);
+#warning unimplemented Rps_TupleOb::dump_scan
+}
+
+Hjson::Value
+Rps_TupleOb::dump_hjson(Rps_Dumper*du)
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_FATAL("unimplemented Rps_TupleOb::dump_hjson");
+#warning unimplemented Rps_TupleOb::dump_hjson
+} // end Rps_TupleOb::dump_hjson
+
+
+////////////////
+void
+Rps_SetOb::dump_scan(Rps_Dumper*du, unsigned depth)
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_FATAL("unimplemented Rps_SetOb::dump_scan depth %u", depth);
+#warning unimplemented Rps_SetOb::dump_scan
+}
+
+Hjson::Value
+Rps_SetOb::dump_hjson(Rps_Dumper*du)
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_FATAL("unimplemented Rps_SetOb::dump_hjson");
+#warning unimplemented Rps_SetOb::dump_hjson
+} // end Rps_SetOb::dump_hjson
+
+////////////////
+void
+Rps_ClosureZone::dump_scan(Rps_Dumper*du, unsigned depth)
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_FATAL("unimplemented Rps_ClosureZone::dump_scan depth %u", depth);
+#warning unimplemented Rps_ClosureZone::dump_scan
+}
+
+Hjson::Value
+Rps_ClosureZone::dump_hjson(Rps_Dumper*du)
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_FATAL("unimplemented Rps_ClosureZone::dump_hjson");
+#warning unimplemented Rps_ClosureZone::dump_hjson
+} // end Rps_ClosureZone::dump_hjson
+
+
+////////////////
+void
+Rps_ObjectZone::dump_scan(Rps_Dumper*du, unsigned depth)
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_FATAL("unimplemented Rps_ObjectZone::dump_scan depth %u", depth);
+#warning unimplemented Rps_ObjectZone::dump_scan
+}
+
+Hjson::Value
+Rps_ObjectZone::dump_hjson(Rps_Dumper*du)
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_FATAL("unimplemented Rps_ObjectZone::dump_hjson");
+#warning unimplemented Rps_ObjectZone::dump_hjson
+} // end Rps_ObjectZone::dump_hjson
+
 //////////////////////////////////////////////////////////////// dump
 void rps_dump_into (const std::string dirpath)
 {
