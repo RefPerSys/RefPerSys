@@ -246,10 +246,10 @@ void
 Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
     Rps_Id objid, const std::string& objbuf)
 {
-  RPS_INFORMOUT("parse_hjson_buffer_second_pass start spacid=" << spacid
-                << " lineno=" <<lineno
-                << " objid=" <<objid
-                << " objbuf:\n" << objbuf);
+  /// RPS_INFORMOUT("parse_hjson_buffer_second_pass start spacid=" << spacid
+  ///               << " lineno=" <<lineno
+  ///               << " objid=" <<objid
+  ///               << " objbuf:\n" << objbuf);
   Hjson::Value objhjson
     = Hjson::Unmarshal(objbuf.c_str(), objbuf.size());
   if (objhjson.type() != Hjson::Value::Type::MAP)
@@ -266,14 +266,14 @@ Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                  << " unexpected");
   auto obz = Rps_ObjectZone::find(objid);
   RPS_ASSERT (obz);
+  obz->loader_set_class (this, Rps_ObjectRef(objhjson["class"], this));
+  obz->loader_set_mtime (this, objhjson["mtime"].to_double());
 #warning incomplete Rps_Loader::parse_hjson_buffer_second_pass
-// RPS_INFORMOUT("parse_hjson_buffer_second_pass spacid=" << spacid
-//               << " lineno:" << lineno
-//               << " objid:" << objid
-//               << " objhjson: " << Hjson::Marshal(objhjson)
-//               << std::endl
-//               << " objbuf:" << std::endl
-//               << objbuf << std::endl);
+ RPS_WARNOUT("Rps_Loader::parse_hjson_buffer_second_pass incomplete spacid=" << spacid
+               << " lineno:" << lineno
+               << " objid:" << objid
+               << " objhjson: " << Hjson::Marshal(objhjson)
+               << std::endl);
 } // end of Rps_Loader::parse_hjson_buffer_second_pass
 
 

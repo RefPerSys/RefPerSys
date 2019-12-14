@@ -1157,11 +1157,13 @@ class Rps_Payload;
 class Rps_ObjectZone : public Rps_ZoneValue
 {
 
+  friend class Rps_Loader;
   friend Rps_ObjectZone*
   Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(Rps_Id,bool);
   const Rps_Id ob_oid;
   std::shared_mutex ob_mtx;
   std::atomic<Rps_ObjectZone*> ob_class;
+  std::atomic<double> ob_mtime;
   std::map<Rps_ObjectRef, Rps_Value> ob_attrs;
   std::vector<Rps_Value> ob_comps;
   std::atomic<Rps_Payload*> ob_payload;
@@ -1171,6 +1173,18 @@ class Rps_ObjectZone : public Rps_ZoneValue
   static std::mutex ob_idmtx_;
   static void register_objzone(Rps_ObjectZone*);
   static Rps_Id fresh_random_oid(Rps_ObjectZone*ob =nullptr);
+protected:
+  void loader_set_class (Rps_Loader*ld, Rps_ObjectZone*obzclass) {
+    RPS_ASSERT(ld != nullptr);
+    RPS_ASSERT(obzclass != nullptr);
+    ob_class.store(obzclass);
+  };
+  void loader_set_mtime (Rps_Loader*ld, double mtim) {
+    RPS_ASSERT(ld != nullptr);
+    RPS_ASSERT(mtim>0.0);
+    ob_mtime.store(mtim);
+  };
+    
 public:
   virtual uint32_t wordsize() const
   {
@@ -1192,7 +1206,7 @@ public:
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0);
   virtual Hjson::Value dump_hjson(Rps_Dumper*);
-  virtual Rps_HashInt val_hash () const
+  virtual Rps_HashInt val_hash (void) const
   {
     return obhash();
   };
