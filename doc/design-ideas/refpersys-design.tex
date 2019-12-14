@@ -2180,10 +2180,12 @@ Each space file of $id_{space}$ starts with a prologue whose syntax is in figure
   \label{fig:space-prologue}
 \end{figure}
 
-then each object of some given \textit{oid} is preceded by a comment
-like \texttt{//+ob\textit{\textbf{oid}}}, for example an object of oid
-\texttt{\_3fzIPzNlWFV01GGQSt} starts with a comment
-       {\relsize{-1}{\texttt{//+ob\_3fzIPzNlWFV01GGQSt}}} line.
+then each object content of some given \textit{oid} is preceded by a
+comment like \texttt{//+ob\textit{\textbf{oid}}}, for example an
+object of oid \texttt{\_3fzIPzNlWFV01GGQSt} starts with a comment
+{\relsize{-1}{\texttt{//+ob\_3fzIPzNlWFV01GGQSt}}} line. The following
+object content is described in figure \ref{fig:hjson-object-contents}
+below.
 
 
        
@@ -2214,10 +2216,13 @@ and we could decide to remove the commas inside our brackets \texttt{[} {\relsiz
 \label{subsec:data-format-ebnf}
 
 
-The figure \ref{fig:hjson-scalar-or-object-values} gives the \textsc{Hjson} syntax of
-scalar values or object references in persisted state files.  The figure
-\ref{fig:hjson-composite-values} \textcolor{red}{is @INCOMPLETE@ and} gives
-the \textsc{Hjson} syntax of composite values in persisted state files.
+The figure \ref{fig:hjson-scalar-or-object-values} gives the
+\textsc{Hjson} syntax of scalar values or object references in
+persisted state files.  The figure \ref{fig:hjson-composite-values}
+\textcolor{red}{is @INCOMPLETE@ and} gives the \textsc{Hjson} syntax
+of composite values in persisted state files.  The figure
+\ref{fig:hjson-object-contents} gives the \textsc{Hjson} syntax of
+object contents inside space files.
 
 \begin{figure}[h]
   
@@ -2307,6 +2312,24 @@ the \textsc{Hjson} syntax of composite values in persisted state files.
   
 \end{figure}
 
+%%%%%%%%%%%%%%%%
+
+\begin{figure}[h]
+  \begin {center}
+    \begin{tabular}{lcll}
+      \emph{\textbf{object-content}} & $\leftarrow$ & \textbf{\texttt{\{}} \\
+      ~ & ~ & \texttt{oid:} \textit{oid} & the oid of the current object \\
+      ~ & ~ & \texttt{mtime:} \textit{modtime} & its modification time  \\
+      ~ & ~ & \texttt{class:} \textit{class-oid} & the oid of its class  \\
+      ~ & $[$ & \texttt{payload:} \textit{payload-kind} $]$ & optional payload kind \\
+      ~ & ~ & \textcolor{red}{@@@ incomplete @@@} \\
+      ~ & ~ & \textbf{\texttt{\}}}
+    \end{tabular}
+  \end {center}
+  \caption {Syntax of object contents inside space files}
+\label{fig:hjson-object-contents}
+  
+\end{figure}
 %%%%%
 %% TODO: remove this  "commented-out" block
 %% \iffalse
