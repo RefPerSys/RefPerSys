@@ -535,6 +535,22 @@ Rps_Dumper::scan_value(const Rps_Value val, unsigned depth)
 #warning Rps_Dumper::scan_value unimplemented
 } // end Rps_Dumper::scan_value
 
+
+bool
+Rps_Dumper::is_dumpable_objref(const Rps_ObjectRef obr)
+{
+  RPS_FATALOUT("Rps_Dumper::is_dumpable_objref unimplemented");
+#warning Rps_Dumper::is_dumpable_objref unimplemented
+} // end Rps_Dumper::is_dumpable_objref
+
+
+bool
+Rps_Dumper::is_dumpable_value(const Rps_Value val)
+{
+  RPS_FATALOUT("Rps_Dumper::is_dumpable_value unimplemented");
+#warning Rps_Dumper::is_dumpable_value unimplemented
+} // end Rps_Dumper::is_dumpable_value
+
 void
 rps_dump_scan_object(Rps_Dumper*du, const Rps_ObjectRef obr)
 {
@@ -587,9 +603,16 @@ void
 Rps_ClosureZone::dump_scan(Rps_Dumper*du, unsigned depth)
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATAL("unimplemented Rps_ClosureZone::dump_scan depth %u", depth);
-#warning unimplemented Rps_ClosureZone::dump_scan
-}
+  auto obrcon = conn();
+  du->scan_object(obrcon);
+  if (du->is_dumpable_objref(obrcon))
+    {
+      for (auto v: *this)
+        du->scan_value(v, depth+1);
+    }
+} // end Rps_ClosureZone::dump_scan
+
+
 
 Hjson::Value
 Rps_ClosureZone::dump_hjson(Rps_Dumper*du)
