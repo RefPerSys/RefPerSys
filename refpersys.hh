@@ -1161,7 +1161,7 @@ class Rps_ObjectZone : public Rps_ZoneValue
   friend Rps_ObjectZone*
   Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(Rps_Id,bool);
   const Rps_Id ob_oid;
-  std::shared_mutex ob_mtx;
+  std::recursive_mutex ob_mtx;
   std::atomic<Rps_ObjectZone*> ob_class;
   std::atomic<double> ob_mtime;
   std::map<Rps_ObjectRef, Rps_Value> ob_attrs;
@@ -1184,7 +1184,23 @@ protected:
     RPS_ASSERT(mtim>0.0);
     ob_mtime.store(mtim);
   };
-    
+  void loader_put_attr(Rps_Loader*ld, const Rps_ObjectRef keyatob, const Rps_Value atval)
+  {
+    RPS_ASSERT(ld != nullptr);
+    RPS_ASSERT(keyatob);
+    RPS_ASSERT(atval);
+    ob_attrs.insert({keyatob, atval});
+  };
+  void loader_reserve_comps(Rps_Loader*ld, unsigned nbcomps)
+  {
+    RPS_ASSERT(ld != nullptr);
+    ob_comps.reserve(nbcomps);
+  }
+  void loader_add_comp(Rps_Loader*ld, const Rps_Value compval)
+  {
+    RPS_ASSERT(ld != nullptr);
+    ob_comps.push_back(compval);
+  }
 public:
   virtual uint32_t wordsize() const
   {
