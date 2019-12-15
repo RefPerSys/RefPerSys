@@ -137,6 +137,9 @@ Rps_Value::Rps_Value(const Rps_ZoneValue*ptr, Rps_ValPtrTag) :
              || (((intptr_t)ptr) & (sizeof(void*)-1)) == 0);
 }
 
+Rps_Value::Rps_Value(Rps_Value&&oth) :
+  _wptr(oth._wptr) {};
+
 bool Rps_Value::is_int() const
 {
   return (_ival & 1) != 0;

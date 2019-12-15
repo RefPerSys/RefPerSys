@@ -268,13 +268,53 @@ Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
   RPS_ASSERT (obz);
   obz->loader_set_class (this, Rps_ObjectRef(objhjson["class"], this));
   obz->loader_set_mtime (this, objhjson["mtime"].to_double());
-#warning incomplete Rps_Loader::parse_hjson_buffer_second_pass
- RPS_WARNOUT("Rps_Loader::parse_hjson_buffer_second_pass incomplete spacid=" << spacid
-               << " lineno:" << lineno
-               << " objid:" << objid
-               << " objhjson: " << Hjson::Marshal(objhjson)
-               << std::endl);
+  if (objhjson.is_map_with_key("components"))
+    {
+      auto comphjson = objhjson["components"];
+      std::size_t siz= 0;
+      if (comphjson.is_vector(&siz))
+        {
+          obz->loader_reserve_comps(this, (unsigned)siz);
+          for (int ix=0; ix<(int)siz; ix++)
+            {
+              auto valcomp = Rps_Value(comphjson[ix], this);
+              obz->loader_add_comp(this, valcomp);
+            }
+        }
+    }
+  if (objhjson.is_map_with_key("attributes"))
+    {
+      auto attrhjson = objhjson["attributes"];
+      std::size_t siz= 0;
+      if (attrhjson.is_vector(&siz))
+        {
+          for (int ix=0; ix<(int)siz; ix++)
+            {
+              auto enthjson = attrhjson[ix];
+              std::size_t entsiz= 0;
+              if (enthjson.is_map(&entsiz) && entsiz>=2
+                  && enthjson.is_map_with_key("at")
+                  && enthjson.is_map_with_key("va")
+                 )
+                {
+                  auto atobr =  Rps_ObjectRef(enthjson["at"], this);
+                  auto atval = Rps_Value(enthjson["va"], this);
+                  obz->loader_put_attr(this, atobr, atval);
+                }
+            }
+        }
+    }
+  if (objhjson.is_map_with_key("payload"))
+    {
+#warning incomplete Rps_Loader::parse_hjson_buffer_second_pass for payload
+      RPS_WARNOUT("Rps_Loader::parse_hjson_buffer_second_pass incomplete spacid=" << spacid
+                  << " lineno:" << lineno
+                  << " objid:" << objid
+                  << " payloadhjson: " << Hjson::Marshal(objhjson["payload"])
+                  << std::endl);
+    }
 } // end of Rps_Loader::parse_hjson_buffer_second_pass
+
 
 
 void
@@ -539,16 +579,25 @@ Rps_Dumper::scan_value(const Rps_Value val, unsigned depth)
 bool
 Rps_Dumper::is_dumpable_objref(const Rps_ObjectRef obr)
 {
-  RPS_FATALOUT("Rps_Dumper::is_dumpable_objref unimplemented");
-#warning Rps_Dumper::is_dumpable_objref unimplemented
+  if (!obr)
+    return false;
+  if (du_mapobjects.find(obr->oid()) != du_mapobjects.end())
+    return true;
+  RPS_FATALOUT("Rps_Dumper::is_dumpable_objref partly unimplemented");
+#warning Rps_Dumper::is_dumpable_objref partly unimplemented
 } // end Rps_Dumper::is_dumpable_objref
 
 
 bool
 Rps_Dumper::is_dumpable_value(const Rps_Value val)
 {
-  RPS_FATALOUT("Rps_Dumper::is_dumpable_value unimplemented");
-#warning Rps_Dumper::is_dumpable_value unimplemented
+  if (!val) return true;
+  if (val.is_int() || val.is_string() || val.is_set() || val.is_tuple())
+    return true;
+  if (val.is_object())
+    return is_dumpable_objref(val.to_object());
+  RPS_FATALOUT("Rps_Dumper::is_dumpable_value partly unimplemented");
+#warning Rps_Dumper::is_dumpable_value partly unimplemented
 } // end Rps_Dumper::is_dumpable_value
 
 void

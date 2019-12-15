@@ -1174,12 +1174,14 @@ class Rps_ObjectZone : public Rps_ZoneValue
   static void register_objzone(Rps_ObjectZone*);
   static Rps_Id fresh_random_oid(Rps_ObjectZone*ob =nullptr);
 protected:
-  void loader_set_class (Rps_Loader*ld, Rps_ObjectZone*obzclass) {
+  void loader_set_class (Rps_Loader*ld, Rps_ObjectZone*obzclass)
+  {
     RPS_ASSERT(ld != nullptr);
     RPS_ASSERT(obzclass != nullptr);
     ob_class.store(obzclass);
   };
-  void loader_set_mtime (Rps_Loader*ld, double mtim) {
+  void loader_set_mtime (Rps_Loader*ld, double mtim)
+  {
     RPS_ASSERT(ld != nullptr);
     RPS_ASSERT(mtim>0.0);
     ob_mtime.store(mtim);
