@@ -116,14 +116,14 @@ Rps_ObjectZone::find(Rps_Id oid)
 void
 Rps_ObjectZone::gc_mark(Rps_GarbageCollector&gc, unsigned)
 {
-  std::lock_guard<std::shared_mutex> gu(ob_mtx);
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
   gc.mark_obj(this);
 } // end of Rps_ObjectZone::gc_mark
 
 void
 Rps_ObjectZone::mark_gc_inside(Rps_GarbageCollector&gc)
 {
-  std::lock_guard<std::shared_mutex> gu(ob_mtx);
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
 #warning perhaps the _gcinfo should be used here
   Rps_ObjectZone* obcla = ob_class.load();
   RPS_ASSERT(obcla != nullptr);
