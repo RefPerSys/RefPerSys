@@ -2322,8 +2322,14 @@ object contents inside space files.
       ~ & ~ & \texttt{mtime:} \textit{modtime} & its modification time  \\
       ~ & ~ & \texttt{class:} \textit{class-oid} & the oid of its class  \\
       ~ & $[$ & \texttt{payload:} \textit{payload-kind} $]$ & optional payload kind \\
+      ~ & $[$ & \texttt{components:}  \textbf{\texttt{[}} \textit{value}  \ldots \textbf{\texttt{]}}  $]$ & optional components \\
+      ~ & $[$ & \texttt{attributes:}  \textbf{\texttt{[}} \textit{attr-entry} \ldots \textbf{\texttt{]}} $]$ & optional attributes \\
       ~ & ~ & \textcolor{red}{@@@ incomplete @@@} \\
-      ~ & ~ & \textbf{\texttt{\}}}
+      ~ & ~ & \textbf{\texttt{\}}} \\
+      \emph{\textbf{attr-entry}} & $\leftarrow$ \textbf{\texttt{\{}} \\
+      ~ & ~ & \texttt{at:} \textit{object} & the oid of the attribute key \\
+      ~ & ~ & \texttt{va:} \textit{value} & the corresponding attribute value \\
+      ~ &  \textbf{\texttt{\}}} & \\
     \end{tabular}
   \end {center}
   \caption {Syntax of object contents inside space files}
