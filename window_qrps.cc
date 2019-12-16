@@ -35,6 +35,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QVBoxLayout>
 
 extern "C" const char rps_window_gitid[];
 const char rps_window_gitid[]= RPS_GITID;
@@ -50,6 +51,11 @@ RpsQWindow::RpsQWindow (QWidget *parent)
   this->setupHelpMenu ();
 
   qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
+
+  auto vbox = new QVBoxLayout (this);
+  vbox->setSpacing (1);
+  vbox->addWidget (menuBar ());
+  setLayout (vbox);
 } // end RpsQWindow::RpsQWindow
 
 
