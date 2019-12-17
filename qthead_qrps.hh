@@ -101,6 +101,7 @@ private slots:
   void onMenuGarbageCollect();
   void onMenuQuit();
   void onMenuAbout();
+  void onMenuDebug();
   void onMenuExit();
   void onMenuClose();
 };				// end of RpsQWindow

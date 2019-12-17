@@ -105,14 +105,18 @@ RpsQWindow::setupAppMenu()
 void RpsQWindow::setupHelpMenu()
 {
   QPixmap about_px ("about_icon.png");
+  QPixmap debug_px ("debug_icon.png");
 
   QAction *about_ax = new QAction (about_px, "&About", this);
+  QAction *debug_ax = new QAction (debug_px, "&Debug", this);
 
   QMenu *help_menu;
   help_menu = menuBar ()->addMenu ("&Help");
   help_menu->addAction (about_ax);
+  help_menu->addAction (debug_ax);
 
   connect (about_ax, &QAction::triggered, this, &RpsQWindow::onMenuAbout);
+  connect (debug_ax, &QAction::triggered, this, &RpsQWindow::onMenuDebug);
 } // end  RpsQWindow::setupHelpMenu
 
 
@@ -167,7 +171,6 @@ RpsQWindow::onMenuGarbageCollect()
 } // end RpsQWindow::onMenuGarbageCollect
 
 
-
 void
 RpsQWindow::onMenuAbout()
 {
@@ -192,4 +195,10 @@ RpsQWindow::onMenuAbout()
 } // end RpsQWindow::onMenuAbout
 
 
+void
+RpsQWindow::onMenuDebug()
+{
+} // end RpsQWindow::onMenuDebug
+
 //////////////////////////////////////// end of file window_qrps.cc
+
