@@ -42,6 +42,7 @@ class RpsQWindow;
 #include <QApplication>
 #include <QApplication>
 #include <QMainWindow>
+#include <QPlainTextEdit>
 
 //////////////////////////////////////////////////////////// RpsQApplication
 //// our application class
@@ -93,6 +94,8 @@ public:
 private:
   void setupAppMenu();
   void setupHelpMenu();
+
+  QPlainTextEdit *m_ptedit;
 
 signals:
 

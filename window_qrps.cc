@@ -57,7 +57,14 @@ RpsQWindow::RpsQWindow (QWidget *parent)
 
   auto vbox = new QVBoxLayout (this);
   vbox->setSpacing (1);
+ 
+  menuBar ()->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding); 
   vbox->addWidget (menuBar ());
+
+  this->m_ptedit = new QPlainTextEdit ();
+  this->m_ptedit->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding);
+  vbox->addWidget (this->m_ptedit);
+
   setLayout (vbox);
 } // end RpsQWindow::RpsQWindow
 
@@ -207,10 +214,8 @@ RpsQWindow::onMenuDebug()
         return;
     }
    
-    QLabel *label = new QLabel ();
-    label->setText (log.readAll ());
-    label->show ();
-#warning "Memory leak and incorrect layout need to be fixed"
+    this->m_ptedit->setPlainText (log.readAll ());
+    this->m_ptedit->show ();
     log.close ();
 } // end RpsQWindow::onMenuDebug
 
