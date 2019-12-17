@@ -36,6 +36,9 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <QFile>
+#include <QLabel>
+#include <QDebug>
 
 extern "C" const char rps_window_gitid[];
 const char rps_window_gitid[]= RPS_GITID;
@@ -198,6 +201,17 @@ RpsQWindow::onMenuAbout()
 void
 RpsQWindow::onMenuDebug()
 {
+    QFile log ("_refpersys.log");
+    if (!log.open (QFile::ReadOnly | QFile::Text)) {
+        qDebug () << "Failed to open debug log";
+        return;
+    }
+   
+    QLabel *label = new QLabel ();
+    label->setText (log.readAll ());
+    label->show ();
+#warning "Memory leak and incorrect layout need to be fixed"
+    log.close ();
 } // end RpsQWindow::onMenuDebug
 
 //////////////////////////////////////// end of file window_qrps.cc
