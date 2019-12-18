@@ -229,4 +229,37 @@ rps_nb_root_objects(void)
   return (unsigned) rps_object_root_set.size();
 } // end rps_nb_root_objects
 
+
+
+/***************** class info payload **********/
+
+void
+Rps_PayloadClassInfo::gc_mark(Rps_GarbageCollector&gc, unsigned depth)
+{
+  gc.mark_obj(pclass_super);
+  for (auto it: pclass_methdict)
+    {
+      gc.mark_obj(it.first);
+      gc.mark_value(it.second, depth+1);
+    }
+} // end Rps_PayloadClassInfo::gc_mark
+
+void
+Rps_PayloadClassInfo::dump_scan(Rps_Dumper*du, unsigned depth)
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_FATAL("unimplemented Rps_PayloadClassInfo::dump_scan depth#%u", depth);
+#warning unimplemented Rps_PayloadClassInfo::dump_scan
+} // end Rps_PayloadClassInfo::dump_scan
+
+
+void
+Rps_PayloadClassInfo::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj)
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
+  RPS_FATAL("unimplemented Rps_PayloadClassInfo::dump_hjson_content");
+#warning unimplemented Rps_PayloadClassInfo::dump_hjson_content
+} // end Rps_PayloadClassInfo::dump_hjson_content
+
 // end of file objects_rps.cc

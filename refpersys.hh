@@ -421,13 +421,25 @@ public:
 ////////////////////////////////////////////////////////////////
 enum class Rps_Type : int16_t
 {
+  ////////////////
+  /// payloads are negative, below -1
+  PaylStrBuf = -8, // mutable string buffer
+  PaylRelation = -7, // mutable binary relation between objects
+  PaylAssoc = -6, // mutable association from object to values
+  PaylVectVal = -5, // mutable vector of values payload
+  PaylVectOb = -4, // mutable vector of objects payload
+  PaylSetOb = -3, // mutable set of objects payload
+  PaylClassInfo = -2, // class information payload
+  Payl__LeastRank = -2,
+  ////////////////
   /// non-value types (or quasi-values)
   ///
   ///
-  /// Values that could go into Rps_Value.
   Int = -1, // for tagged integers
   None = 0, // for nil
+  ////////////////
   ///
+  /// Values that could go into Rps_Value:
   /// Boxed genuine values, are "first class citizens" that could be
   /// in Rps_Value's data. Of course they are both GC-allocated and
   /// GC-scanned.
@@ -452,6 +464,10 @@ class Rps_ClosureZone;
 class Rps_GarbageCollector;
 class Rps_Loader; // in store_rps.cc
 class Rps_Dumper; // in store_rps.cc
+class Rps_ClosureValue;
+class Rps_SetValue;
+class Rps_TupleValue;
+
 
 //////////////// our value, a single word
 class Rps_Value
@@ -1238,18 +1254,27 @@ class Rps_Payload : public Rps_QuasiZone
 {
   Rps_ObjectZone* payl_owner;
 protected:
-  inline Rps_Payload(Rps_ObjectZone*);
-  inline Rps_Payload(Rps_ObjectRef);
-  virtual ~Rps_Payload() =0;
+  inline Rps_Payload(Rps_Type, Rps_ObjectZone*);
+  inline Rps_Payload(Rps_Type, Rps_ObjectRef);
+  virtual ~Rps_Payload()
+  {
+    payl_owner = nullptr;
+  };
 public:
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) =0;
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) =0;
-  virtual Hjson::Value dump_hjson(Rps_Dumper*) =0;
+  virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&) =0;
   Rps_ObjectZone* owner() const
   {
     return payl_owner;
   };
 };				// end Rps_Payload
+
+
+
+
+
+
 
 /////////////////////////// sequences (tuples or sets) of Rps_ObjectRef
 class Rps_SetOb;
@@ -1554,6 +1579,56 @@ public:
   // "dynamic" casting
   inline Rps_ClosureValue(Rps_Value val);
 };    // end Rps_ClosureValue
+
+
+
+
+////// class information payload
+class Rps_PayloadClassInfo : public Rps_Payload
+{
+  Rps_ObjectRef pclass_super;
+  std::map<Rps_ObjectRef,Rps_ClosureValue> pclass_methdict;
+  inline Rps_PayloadClassInfo(Rps_ObjectZone*owner);
+  Rps_PayloadClassInfo(Rps_ObjectRef obr) :
+    Rps_PayloadClassInfo(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadClassInfo()
+  {
+    pclass_super=nullptr;
+    pclass_methdict.clear();
+  };
+protected:
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth);
+  virtual void dump_scan(Rps_Dumper*du, unsigned depth);
+  virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&);
+public:
+  Rps_ObjectRef superclass() const
+  {
+    return pclass_super;
+  };
+  void put_superclass(Rps_ObjectRef obr)
+  {
+    pclass_super = obr;
+  };
+  Rps_ClosureValue get_own_method(Rps_ObjectRef obsel)
+  {
+    if (!obsel) return Rps_ClosureValue(nullptr);
+    auto it = pclass_methdict.find(obsel);
+    if (it != pclass_methdict.end()) return it->second;
+    return Rps_ClosureValue(nullptr);
+  };
+  void put_own_method(Rps_ObjectRef obsel, Rps_ClosureValue clov)
+  {
+    if (obsel && clov && clov.is_closure())
+      pclass_methdict.insert({obsel,clov});
+  };
+  void remove_own_method(Rps_ObjectRef obsel)
+  {
+    if (obsel)
+      pclass_methdict.erase(obsel);
+  };
+};				// end Rps_PayloadClassInfo
+
+
 
 ////////////////////////////////////////////////////////////////
 

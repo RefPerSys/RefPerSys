@@ -1249,7 +1249,8 @@ techniques.
 The data is what is processed by {\RefPerSys}, and is made of values
 (and, internally for the GC, also of quasi-values, which are pointers
 to GC-managed memory zones). The object model is defining our classes,
-our single inheritance mechanism, our message sending protocol.
+our single inheritance mechanism, our message sending protocol (see \S
+\ref{subsubsec:message-sending}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{how data should be processed in \RefPerSys}
@@ -1875,7 +1876,42 @@ represented as in figure \ref{fig:code-chunk}:
 
 \RefPerSys is coded \textbf{only} for \textsc{Linux/x86-64} with an English locale, using UTF-8.
 
+\medskip
 
+\subsubsection{object payloads}
+\label{subsubsec:obj-payloads}
+
+Objects may have some \emph{optional} \index{payload} unique
+\textbf{payload}. The payload is owned by a single object (its
+owner). The payload data is generally mutable, and contains stuff
+which does not fit into the object model (see \S \ref{subsec:objmodel}
+below). The payload may be persistent, but some payloads are obviously
+transient (e.g. an opened file handle, or a Qt widget). At the
+implementation level, a payload is some garbage-collected quasi-value
+\index{quasi-value} whose ``type'' starts with \texttt{Payl} in
+C++. By convention, the class of an object may require a particular
+payload: for example objects which are classes have to have a payload
+which is a class information.
+
+Payload may be:
+\begin{itemize}
+\item a class information (inside classes,
+  \texttt{Rps\_Type::PaylClassInfo} and \texttt{Rps\_PayloadClassInfo}) which gives the superclass object
+  and the dictionnary of methods (see \S
+  \ref{subsubsec:message-sending}).
+\item a mutable set of objects  \texttt{Rps\_Type::PaylSetOb}
+\item a mutable vector of objects  \texttt{Rps\_Type::PaylVectOb}
+\item a mutable vector of values  \texttt{Rps\_Type::PaylVectVal}
+\item a mutable association from objects to values
+  \texttt{Rps\_Type::PaylAssoc}
+\item a mutable binary relation between objects
+  \texttt{Rps\_Type::PaylRelation}
+\item a mutable string buffer
+  \texttt{Rps\_Type::PaylStrBuf}
+  \item etc  \ldots
+\end{itemize}
+
+\bigskip
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{File naming}
 \label{subsec:file-naming}
@@ -1993,13 +2029,15 @@ carrying a payload with some {\relsize{-1}{\texttt{FILE*
 \label{subsec:objmodel}
 
 Every {\RefPerSys} value belongs to some single class, reified as a
-particular {\RefPerSys} object. We first explain the inheritance graph, and then the message sending protocol.
+particular {\RefPerSys} object. We first explain the inheritance graph
+(see \S \ref{subsubsec:inheritance}), and then the message sending
+protocol (see \S \ref{subsubsec:message-sending}).
 
 \subsubsection{{\RefPerSys} inheritance graph}
 \label{subsubsec:inheritance}
 
 Every non-nil {\RefPerSys} value belongs to a single class, defining
-its behavior by the set of selector it is understanding for message
+its behavior by the set of selectors it is understanding for message
 sending. The figure \ref{fig:inheritance} shows (with simplification)
 the single-inheritance graph of {\RefPerSys} values. In practice we
 expect many hundreds of classes and at least many hundred thousands
@@ -2070,7 +2108,7 @@ inheritance graph.}.
 \medskip
 
 \subsubsection{{\RefPerSys} message sending}
-\label{subsubsec:message}
+\label{subsubsec:message-sending}
 
 Our message sending protocol is inspired by those of
 \textsc{SmallTalk}, \textsc{Common Lisp}, \textsc{OCaml},
@@ -2200,14 +2238,16 @@ textual syntax, for example a set of three objects of objids
 \begin{quote}
 \begin{relsize}{-1}
   \begin{tabular}{lllll}
-    \texttt{\{} & \texttt{vtyp} & \texttt{:} & \texttt{set,} & ~  \\
-    ~           & \texttt{elem} & \texttt{:} & \texttt{[} & \texttt{\_0iaOiLq4pj20097DNb,}  \\
-    ~           & ~             & ~          & ~           & \texttt{\_1R4TeqlLvhS03o0mGN,} \\
+    \texttt{\{} & \texttt{vtyp} & \texttt{:} & \texttt{set} & ~  \\
+    ~           & \texttt{elem} & \texttt{:} & \texttt{[} & \texttt{\_0iaOiLq4pj20097DNb}  \\
+    ~           & ~             & ~          & ~           & \texttt{\_1R4TeqlLvhS03o0mGN} \\
     ~           & ~             & ~          & ~           & \texttt{\_7m9EMmdyQKU00euKwB ] \}} \\
   \end{tabular}
 \end{relsize}
 \end{quote}
-and we could decide to remove the commas inside our brackets \texttt{[} {\relsize{-1}{elements}} ... \texttt{]}.
+
+\smallskip
+Notice that in \href{http://hjson.org/}{\textsc{Hjson}} commas are not required.
 \medskip
 
 
@@ -2387,7 +2427,6 @@ and mature toolkit.
     \end{itemize}
 \end{itemize}
 
-\label{subsec:data-format}
 \clearpage
 \printnoidxglossaries
 \bigskip

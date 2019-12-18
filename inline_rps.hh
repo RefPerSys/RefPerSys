@@ -907,7 +907,26 @@ Rps_ClosureValue::Rps_ClosureValue (const Rps_ObjectRef connob, const std::vecto
 Rps_ClosureValue::Rps_ClosureValue(const Rps_Value val)
   : Rps_Value (val.is_closure()?val.as_closure():nullptr, Rps_ValPtrTag{})
 {
-} // end Rps_ClosureValue::Rps_ClosureValue dynamic
+}; // end Rps_ClosureValue::Rps_ClosureValue dynamic
+
+
+/************************** PAYLOADS *************************************/
+/*************************************************************************/
+
+Rps_Payload::Rps_Payload(Rps_Type ptyp, Rps_ObjectZone*obz)
+  : Rps_QuasiZone(ptyp), payl_owner(obz)
+{
+  RPS_ASSERT(ptyp <= Rps_Type::Payl__LeastRank);
+  RPS_ASSERT(obz != nullptr && obz->stored_type() == Rps_Type::Object);
+} // end Rps_Payload::Rps_Payload
+
+Rps_Payload::Rps_Payload(Rps_Type ptyp, Rps_ObjectRef obr)
+  : Rps_QuasiZone(ptyp), payl_owner(obr.optr())
+{
+  RPS_ASSERT(ptyp <= Rps_Type::Payl__LeastRank);
+  RPS_ASSERT(obr && obr->stored_type() == Rps_Type::Object);
+} // end Rps_Payload::Rps_Payload
+
 
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh
