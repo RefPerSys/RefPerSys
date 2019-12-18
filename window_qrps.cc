@@ -57,8 +57,8 @@ RpsQWindow::RpsQWindow (QWidget *parent)
 
   auto vbox = new QVBoxLayout (this);
   vbox->setSpacing (1);
- 
-  menuBar ()->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding); 
+
+  menuBar ()->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding);
   vbox->addWidget (menuBar ());
 
   this->m_ptedit = new QPlainTextEdit ();
@@ -208,15 +208,16 @@ RpsQWindow::onMenuAbout()
 void
 RpsQWindow::onMenuDebug()
 {
-    QFile log ("_refpersys.log");
-    if (!log.open (QFile::ReadOnly | QFile::Text)) {
-        qDebug () << "Failed to open debug log";
-        return;
+  QFile log ("_refpersys.log");
+  if (!log.open (QFile::ReadOnly | QFile::Text))
+    {
+      qDebug () << "Failed to open debug log";
+      return;
     }
-   
-    this->m_ptedit->setPlainText (log.readAll ());
-    this->m_ptedit->show ();
-    log.close ();
+
+  this->m_ptedit->setPlainText (log.readAll ());
+  this->m_ptedit->show ();
+  log.close ();
 } // end RpsQWindow::onMenuDebug
 
 //////////////////////////////////////// end of file window_qrps.cc
