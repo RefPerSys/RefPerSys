@@ -1261,6 +1261,11 @@ protected:
     payl_owner = nullptr;
   };
 public:
+  Rps_Payload(Rps_Type ty, Rps_ObjectZone*obz, Rps_Loader*ld) : Rps_Payload(ty,obz)
+  {
+    RPS_ASSERT(ld != nullptr);
+  };
+  virtual void load_hjson(Rps_Loader*ld, const Hjson::Value& hjv) =0;
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) =0;
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) =0;
   virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&) =0;
@@ -1582,10 +1587,12 @@ public:
 
 
 
-
-////// class information payload
+////////////////////////////////////////////////////////////////
+////// class information payload - for PaylClassInfo
 class Rps_PayloadClassInfo : public Rps_Payload
 {
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
   Rps_ObjectRef pclass_super;
   std::map<Rps_ObjectRef,Rps_ClosureValue> pclass_methdict;
   inline Rps_PayloadClassInfo(Rps_ObjectZone*owner);
@@ -1597,10 +1604,12 @@ class Rps_PayloadClassInfo : public Rps_Payload
     pclass_methdict.clear();
   };
 protected:
-  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth);
-  virtual void dump_scan(Rps_Dumper*du, unsigned depth);
+  virtual void gc_mark(Rps_GarbageCollector&gc);
+  virtual void dump_scan(Rps_Dumper*du);
   virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&);
 public:
+  inline Rps_PayloadClassInfo(Rps_ObjectZone*owner, Rps_Loader*ld);
+  virtual void load_hjson(Rps_Loader*ld, const Hjson::Value& hjv);
   Rps_ObjectRef superclass() const
   {
     return pclass_super;
@@ -1629,6 +1638,72 @@ public:
 };				// end Rps_PayloadClassInfo
 
 
+
+////////////////////////////////////////////////////////////////
+////// mutable set of objects payload - for PaylSetOb
+class Rps_PayloadSetOb : public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  std::set<Rps_ObjectRef> psetob;
+  inline Rps_PayloadSetOb(Rps_ObjectZone*owner);
+  Rps_PayloadSetOb(Rps_ObjectRef obr) :
+    Rps_PayloadSetOb(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadSetOb()
+  {
+    psetob.clear();
+  };
+protected:
+  virtual void gc_mark(Rps_GarbageCollector&gc);
+  virtual void dump_scan(Rps_Dumper*du);
+  virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&);
+public:
+  inline Rps_PayloadSetOb(Rps_ObjectZone*obz, Rps_Loader*ld);
+  virtual void load_hjson(Rps_Loader*ld, const Hjson::Value& hjv);
+  bool contains(const Rps_ObjectZone* obelem) const
+  {
+    return obelem && psetob.find(Rps_ObjectRef(obelem)) != psetob.end();
+  };
+  bool contains(const Rps_ObjectRef obr) const
+  {
+    return obr && psetob.find(obr) != psetob.end();
+  };
+  unsigned cardinal(void) const
+  {
+    return (unsigned) psetob.size();
+  };
+  void add(const Rps_ObjectZone* obelem)
+  {
+    if (obelem) psetob.insert(Rps_ObjectRef(obelem));
+  };
+  void add (const Rps_ObjectRef obrelem)
+  {
+    if (obrelem) psetob.insert(obrelem);
+  };
+  void remove(const Rps_ObjectZone* obelem)
+  {
+    if (obelem) psetob.erase(Rps_ObjectRef(obelem));
+  };
+  void remove (const Rps_ObjectRef obrelem)
+  {
+    if (obrelem) psetob.erase(obrelem);
+  };
+  Rps_SetValue to_set() const
+  {
+    return Rps_SetValue(psetob);
+  };
+  Rps_TupleValue to_tuple() const
+  {
+    std::vector<Rps_ObjectRef> vecob;
+    vecob.reserve(cardinal());
+    for (auto obrelem: psetob)
+      {
+        RPS_ASSERT(obrelem);
+        vecob.push_back(obrelem);
+      };
+    return Rps_TupleValue(vecob);
+  };
+};				// end Rps_PayloadSetOb
 
 ////////////////////////////////////////////////////////////////
 

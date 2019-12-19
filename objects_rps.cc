@@ -234,21 +234,21 @@ rps_nb_root_objects(void)
 /***************** class info payload **********/
 
 void
-Rps_PayloadClassInfo::gc_mark(Rps_GarbageCollector&gc, unsigned depth)
+Rps_PayloadClassInfo::gc_mark(Rps_GarbageCollector&gc)
 {
   gc.mark_obj(pclass_super);
   for (auto it: pclass_methdict)
     {
       gc.mark_obj(it.first);
-      gc.mark_value(it.second, depth+1);
+      gc.mark_value(it.second, 1);
     }
 } // end Rps_PayloadClassInfo::gc_mark
 
 void
-Rps_PayloadClassInfo::dump_scan(Rps_Dumper*du, unsigned depth)
+Rps_PayloadClassInfo::dump_scan(Rps_Dumper*du)
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATAL("unimplemented Rps_PayloadClassInfo::dump_scan depth#%u", depth);
+  RPS_FATAL("unimplemented Rps_PayloadClassInfo::dump_scan depth");
 #warning unimplemented Rps_PayloadClassInfo::dump_scan
 } // end Rps_PayloadClassInfo::dump_scan
 
@@ -261,5 +261,51 @@ Rps_PayloadClassInfo::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj)
   RPS_FATAL("unimplemented Rps_PayloadClassInfo::dump_hjson_content");
 #warning unimplemented Rps_PayloadClassInfo::dump_hjson_content
 } // end Rps_PayloadClassInfo::dump_hjson_content
+
+void
+Rps_PayloadClassInfo::load_hjson(Rps_Loader*ld, Hjson::Value const&hj)
+{
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
+  RPS_FATAL("unimplemented Rps_PayloadClassInfo::load_hjson");
+#warning unimplemented Rps_PayloadClassInfo::load_hjson
+} // end Rps_PayloadClassInfo::load_hjson
+
+
+/***************** mutable set of objects payload **********/
+
+void
+Rps_PayloadSetOb::gc_mark(Rps_GarbageCollector&gc)
+{
+  for (auto obr: psetob)
+    gc.mark_obj(obr);
+} // end Rps_PayloadSetOb::gc_mark
+
+void
+Rps_PayloadSetOb::dump_scan(Rps_Dumper*du)
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_FATAL("unimplemented Rps_PayloadSetOb::dump_scan");
+#warning unimplemented Rps_PayloadSetOb::dump_scan
+} // end Rps_PayloadSetOb::dump_scan
+
+
+void
+Rps_PayloadSetOb::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj)
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
+  RPS_FATAL("unimplemented Rps_PayloadSetOb::dump_hjson_content");
+#warning unimplemented Rps_PayloadSetOb::dump_hjson_content
+} // end Rps_PayloadSetOb::dump_hjson_content
+
+void
+Rps_PayloadSetOb::load_hjson(Rps_Loader*ld, Hjson::Value const&hj)
+{
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
+  RPS_FATAL("unimplemented Rps_PayloadSetOb::load_hjson");
+#warning unimplemented Rps_PayloadSetOb::load_hjson
+} // end Rps_PayloadSetOb::load_hjson
 
 // end of file objects_rps.cc

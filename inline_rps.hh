@@ -927,6 +927,36 @@ Rps_Payload::Rps_Payload(Rps_Type ptyp, Rps_ObjectRef obr)
   RPS_ASSERT(obr && obr->stored_type() == Rps_Type::Object);
 } // end Rps_Payload::Rps_Payload
 
+////// class information payload - for PaylClassInfo
+Rps_PayloadClassInfo::Rps_PayloadClassInfo(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylClassInfo, owner), pclass_super(nullptr), pclass_methdict()
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadClassInfo::Rps_PayloadClassInfo
+
+Rps_PayloadClassInfo::Rps_PayloadClassInfo(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylClassInfo, owner, ld),
+    pclass_super(nullptr), pclass_methdict()
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadClassInfo::Rps_PayloadClassInfo ..loading
+
+
+
+////// mutable set of objects payload - for PaylSetOb
+Rps_PayloadSetOb::Rps_PayloadSetOb(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylSetOb, owner), psetob()
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadSetOb::Rps_PayloadSetOb
+
+Rps_PayloadSetOb::Rps_PayloadSetOb(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylSetOb, owner, ld),
+    psetob()
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadSetOb::Rps_PayloadSetOb ..loading
+
 
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh
