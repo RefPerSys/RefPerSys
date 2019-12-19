@@ -1250,6 +1250,10 @@ public:
 };				// end class Rps_ObjectZone
 
 //////////////////////////////////////////////////////////// object payloads
+
+//// signature of extern "C" functions for payload loading; their name starts with rpsldpy_
+typedef void rpsldpysig_t(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv);
+
 class Rps_Payload : public Rps_QuasiZone
 {
   Rps_ObjectZone* payl_owner;
@@ -1589,6 +1593,8 @@ public:
 
 ////////////////////////////////////////////////////////////////
 ////// class information payload - for PaylClassInfo
+
+extern "C" rpsldpysig_t rpsldpy_class;
 class Rps_PayloadClassInfo : public Rps_Payload
 {
   friend class Rps_ObjectRef;
@@ -1641,6 +1647,7 @@ public:
 
 ////////////////////////////////////////////////////////////////
 ////// mutable set of objects payload - for PaylSetOb
+extern "C" rpsldpysig_t rpsldpy_setob;
 class Rps_PayloadSetOb : public Rps_Payload
 {
   friend class Rps_ObjectRef;

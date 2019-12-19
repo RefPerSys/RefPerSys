@@ -786,5 +786,26 @@ void rps_load_from (const std::string& dirpath)
 #warning rps_load_from unimplemented
 } // end of rps_load_from
 
+
+/// loading of class information payload
+void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv)
+{
+  RPS_ASSERT(obz != nullptr);
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(hjv.type() == Hjson::Value::Type::MAP);
+  RPS_FATAL("rpsldpy_class unimplemented");
+#warning rpsldpy_class unimplemented
+} // end of rpsldpy_class
+
+/// loading of class information payload
+void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv)
+{
+  RPS_ASSERT(obz != nullptr);
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(hjv.type() == Hjson::Value::Type::MAP);
+  RPS_FATAL("rpsldpy_setob unimplemented");
+#warning rpsldpy_setob unimplemented
+} // end of rpsldpy_setob
+
 //////////////////////////////////////////////////////////// end of file store_rps.cc
 

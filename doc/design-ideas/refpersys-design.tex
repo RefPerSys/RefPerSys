@@ -2353,6 +2353,21 @@ object contents inside space files.
 \end{figure}
 
 %%%%%%%%%%%%%%%%
+The syntax of object contents is given in figure
+\ref{fig:hjson-object-contents}. The \textit{payload-kind} there is
+either some C identifier (if it starts with a letter: \texttt{A}
+\ldots \texttt{Z} or \texttt{a} \ldots \texttt{z}) or some objid (if
+it starts with an underscore \texttt{\_} ...). When it is some C identifier
+\textit{ident}, an \texttt{extern "C"} function (of signature
+\texttt{rpsldpysig\_t}, defined in file \texttt{refpersys.hh}) named
+\texttt{rpsldpy\_\textit{ident}} is found by
+\href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}
+tehn invoked at load time. When it is some objid \textit{objid}, the
+\texttt{rpsldpy\textit{objid}} function is called. For example, class
+objects have \texttt{payload: class} as a \textsc{Hjson} field in
+their state file, so are loaded by calling \texttt{rpsldpy\_class}. If
+(later) we would have \texttt{payload: \_2j66FFjmS7n03HNNBn}, then
+\texttt{rpsldpy\_2j66FFjmS7n03HNNBn} should be called.
 
 \begin{figure}[h]
   \begin {center}
