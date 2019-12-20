@@ -1265,7 +1265,8 @@ protected:
     payl_owner = nullptr;
   };
 public:
-  Rps_Payload(Rps_Type ty, Rps_ObjectZone*obz, Rps_Loader*ld) : Rps_Payload(ty,obz)
+  Rps_Payload(Rps_Type ty, Rps_ObjectZone*obz, Rps_Loader*ld)
+    : Rps_Payload(ty,obz)
   {
     RPS_ASSERT(ld != nullptr);
   };
@@ -1711,6 +1712,65 @@ public:
     return Rps_TupleValue(vecob);
   };
 };				// end Rps_PayloadSetOb
+
+
+////////////////////////////////////////////////////////////////
+////// mutable vector of objects payload - for PaylVectOb
+extern "C" rpsldpysig_t rpsldpy_setob;
+class Rps_PayloadVectOb : public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  std::vector<Rps_ObjectRef> pvectob;
+  inline Rps_PayloadVectOb(Rps_ObjectZone*owner);
+  Rps_PayloadVectOb(Rps_ObjectRef obr) :
+    Rps_PayloadVectOb(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadVectOb()
+  {
+    pvectob.clear();
+  };
+protected:
+  virtual void gc_mark(Rps_GarbageCollector&gc);
+  virtual void dump_scan(Rps_Dumper*du);
+  virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&);
+public:
+  inline Rps_PayloadVectOb(Rps_ObjectZone*obz, Rps_Loader*ld);
+  virtual void load_hjson(Rps_Loader*ld, const Hjson::Value& hjv);
+  unsigned size(void) const
+  {
+    return (unsigned) pvectob.size();
+  };
+  Rps_ObjectRef at(int ix) const
+  {
+    if (ix<0)
+      ix += size();
+    if (ix>=0 && ix<size())
+      return pvectob[ix];
+    throw std::out_of_range("Rps_PayloadVectOb bad index");
+  };
+  void reserve(unsigned rsiz)
+  {
+    pvectob.reserve(rsiz);
+  };
+  void reserve_more(unsigned gap)
+  {
+    pvectob.reserve(size()+gap);
+  };
+  void push_back(const Rps_ObjectZone* obcomp)
+  {
+    if (obcomp)
+      pvectob.push_back(Rps_ObjectRef(obcomp));
+  };
+  void push_back (const Rps_ObjectRef obrcomp)
+  {
+    if (obrcomp)
+      pvectob.push_back(obrcomp);
+  };
+  Rps_TupleValue to_tuple() const
+  {
+    return Rps_TupleValue(pvectob);
+  };
+};				// end Rps_PayloadVectOb
 
 ////////////////////////////////////////////////////////////////
 
