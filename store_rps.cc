@@ -676,7 +676,7 @@ Rps_TupleOb::dump_scan(Rps_Dumper*du, unsigned depth) const
 }
 
 Hjson::Value
-Rps_TupleOb::dump_hjson(Rps_Dumper*du)
+Rps_TupleOb::dump_hjson(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   RPS_FATAL("unimplemented Rps_TupleOb::dump_hjson");
@@ -694,7 +694,7 @@ Rps_SetOb::dump_scan(Rps_Dumper*du, unsigned depth) const
 }
 
 Hjson::Value
-Rps_SetOb::dump_hjson(Rps_Dumper*du)
+Rps_SetOb::dump_hjson(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   RPS_FATAL("unimplemented Rps_SetOb::dump_hjson");
@@ -718,7 +718,7 @@ Rps_ClosureZone::dump_scan(Rps_Dumper*du, unsigned depth) const
 
 
 Hjson::Value
-Rps_ClosureZone::dump_hjson(Rps_Dumper*du)
+Rps_ClosureZone::dump_hjson(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   RPS_FATAL("unimplemented Rps_ClosureZone::dump_hjson");
@@ -736,7 +736,7 @@ Rps_ObjectZone::dump_scan(Rps_Dumper*du, unsigned depth) const
 }
 
 Hjson::Value
-Rps_ObjectZone::dump_hjson(Rps_Dumper*du)
+Rps_ObjectZone::dump_hjson(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   RPS_FATAL("unimplemented Rps_ObjectZone::dump_hjson");

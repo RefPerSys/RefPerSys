@@ -829,7 +829,7 @@ Rps_ObjectRef::dump_scan(Rps_Dumper*du, unsigned depth) const
 } // end Rps_ObjectRef::dump_scan
 
 Hjson::Value
-Rps_ObjectRef::dump_hjson(Rps_Dumper*du)
+Rps_ObjectRef::dump_hjson(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   if (is_empty())

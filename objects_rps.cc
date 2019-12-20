@@ -258,7 +258,7 @@ Rps_PayloadClassInfo::dump_scan(Rps_Dumper*du) const
 
 
 void
-Rps_PayloadClassInfo::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj)
+Rps_PayloadClassInfo::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
 {
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
@@ -295,7 +295,7 @@ Rps_PayloadSetOb::dump_scan(Rps_Dumper*du) const
 
 
 void
-Rps_PayloadSetOb::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj)
+Rps_PayloadSetOb::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
 {
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
@@ -335,7 +335,7 @@ Rps_PayloadVectOb::dump_scan(Rps_Dumper*du) const
 
 
 void
-Rps_PayloadVectOb::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj)
+Rps_PayloadVectOb::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
 {
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);

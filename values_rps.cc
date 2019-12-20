@@ -285,7 +285,8 @@ Rps_TupleOb::make(const std::vector<Rps_ObjectRef>& vecob)
       auto tup =
         rps_allocate_with_wordgap<Rps_TupleOb, unsigned, Rps_TupleTag>
         (nbob, nbob, Rps_TupleTag{});
-      memcpy (tup->raw_data(), vecob.data(), nbob * sizeof(Rps_ObjectRef));
+      auto rd = tup->raw_data();
+      for (int ix=0; ix<nbob; ix++) rd[ix] = vecob[ix];
       return tup;
     }
   else

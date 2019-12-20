@@ -106,7 +106,7 @@ Rps_String::make(const char*cstr, int len)
 
 
 Hjson::Value
-Rps_String::dump_hjson(Rps_Dumper*du)
+Rps_String::dump_hjson(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   if (cstr()[0] == '_')
