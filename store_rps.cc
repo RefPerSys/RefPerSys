@@ -51,6 +51,8 @@ const char rps_store_date[]= __DATE__;
 class Rps_Loader
 {
   std::string ld_topdir;
+  /// dlsym and dlopen are not reentrant, so we need a mutex
+  std::mutex ld_mtx;
   /// set of space ids
   std::set<Rps_Id> ld_spaceset;
   /// set of global roots id
@@ -59,6 +61,8 @@ class Rps_Loader
   std::map<Rps_Id,void*> ld_pluginsmap;
   /// map of loaded objects
   std::map<Rps_Id,Rps_ObjectRef> ld_mapobjects;
+  /// dictionnary of payload loaders - used as a cache to avoid most dlsym-s
+  std::map<std::string,rpsldpysig_t*> ld_payloadercache;
   bool is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid);
   void parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                                        Rps_Id objid, const std::string& objbuf);
@@ -306,12 +310,62 @@ Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
     }
   if (objhjson.is_map_with_key("payload"))
     {
+      rpsldpysig_t*pldfun = nullptr;
+      auto paylstr = objhjson["payload"].to_string();
+      {
+        std::lock_guard<std::mutex> gu(ld_mtx);
+        auto ldit = ld_payloadercache.find(paylstr);
+        if (RPS_UNLIKELY(ldit == ld_payloadercache.end()))
+          {
+            char firstc = paylstr.at(0);
+            if (isalpha(firstc))
+              {
+                std::string symstr = std::string(RPS_PAYLOADING_PREFIX) + paylstr;
+                void* symad = dlsym(rps_proghdl, symstr.c_str());
+                if (!symad)
+                  RPS_FATALOUT("cannot dlsym " << symstr << " for payload of objid:" <<  objid
+                               << " lineno:" << lineno << ", spacid:" << spacid
+                               << ":: " << dlerror());
+                pldfun = (rpsldpysig_t*)symad;
+                ld_payloadercache.insert({paylstr, pldfun});
+              }
+            else if (firstc=='_')
+              {
+                auto pyid = Rps_Id(paylstr);
+                if (!pyid.valid())
+                  RPS_FATALOUT("Rps_Loader::parse_hjson_buffer_second_pass spacid:" << spacid
+                               << " lineno:" << lineno
+                               << " objid:" << objid
+                               << " invalid id payload:" << paylstr);
+              }
+            else
+              RPS_FATALOUT("Rps_Loader::parse_hjson_buffer_second_pass spacid:" << spacid
+                           << " lineno:" << lineno
+                           << " objid:" << objid
+                           << " invalid payload:" << paylstr);
+          }
+        else
+          pldfun = ldit->second;
+      };
 #warning incomplete Rps_Loader::parse_hjson_buffer_second_pass for payload
       RPS_WARNOUT("Rps_Loader::parse_hjson_buffer_second_pass incomplete spacid=" << spacid
                   << " lineno:" << lineno
                   << " objid:" << objid
-                  << " payloadhjson: " << Hjson::Marshal(objhjson["payload"])
+                  << " payload: " << paylstr
                   << std::endl);
+      if (pldfun)
+        {
+          (*pldfun)(obz,this,objhjson);
+        }
+      else
+        {
+          RPS_FATALOUT("Rps_Loader::parse_hjson_buffer_second_pass in spacid=" << spacid
+                       << " lineno:" << lineno
+                       << " objid:" << objid
+                       << " payload: " << paylstr
+                       << " without loading function"
+                       << std::endl);
+        }
     }
 } // end of Rps_Loader::parse_hjson_buffer_second_pass
 
@@ -755,19 +809,22 @@ Rps_Loader::parse_manifest_file(void)
       RPS_FATAL("manifest map in %s should have plugins: [...]",
                 manifpath.c_str ());
     size_t sizeplugins = pluginshjson.size();
-    for (int ix=0; ix<(int)sizeplugins; ix++)
-      {
-        std::string curpluginidstr = pluginshjson[ix].to_string();
-        Rps_Id curpluginid (curpluginidstr);
-        RPS_ASSERT(curpluginid && curpluginid.valid());
-        std::string pluginpath = load_real_path(std::string{"plugins/rps"} + curpluginid.to_string() + "-mod.so");
-        RPS_INFORMOUT("should load plugin #" << ix << " from " << pluginpath);
-        void* dlh = dlopen(pluginpath.c_str(), RTLD_NOW | RTLD_GLOBAL);
-        if (!dlh)
-          RPS_FATAL("failed to load plugin #%d file %s: %s",
-                    ix, pluginpath.c_str(), dlerror());
-        ld_pluginsmap.insert({curpluginid, dlh});
-      }
+    {
+      std::lock_guard<std::mutex> gu(ld_mtx);
+      for (int ix=0; ix<(int)sizeplugins; ix++)
+        {
+          std::string curpluginidstr = pluginshjson[ix].to_string();
+          Rps_Id curpluginid (curpluginidstr);
+          RPS_ASSERT(curpluginid && curpluginid.valid());
+          std::string pluginpath = load_real_path(std::string{"plugins/rps"} + curpluginid.to_string() + "-mod.so");
+          RPS_INFORMOUT("should load plugin #" << ix << " from " << pluginpath);
+          void* dlh = dlopen(pluginpath.c_str(), RTLD_NOW | RTLD_GLOBAL);
+          if (!dlh)
+            RPS_FATAL("failed to load plugin #%d file %s: %s",
+                      ix, pluginpath.c_str(), dlerror());
+          ld_pluginsmap.insert({curpluginid, dlh});
+        }
+    }
   }
   ////
   RPS_INFORMOUT("Rps_Loader::parse_manifest_file parsed "
@@ -787,17 +844,25 @@ void rps_load_from (const std::string& dirpath)
 } // end of rps_load_from
 
 
+
+
 /// loading of class information payload
 void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(hjv.type() == Hjson::Value::Type::MAP);
-  RPS_FATAL("rpsldpy_class unimplemented");
+  RPS_WARNOUT("rpsldpy_class unimplemented"
+              << " object " << obz->oid()
+              << std::endl
+              << " hjv " <<Hjson::MarshalJson(hjv));
 #warning rpsldpy_class unimplemented
 } // end of rpsldpy_class
 
-/// loading of class information payload
+
+
+
+/// loading of set of objects payload
 void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv)
 {
   RPS_ASSERT(obz != nullptr);
@@ -806,6 +871,8 @@ void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv)
   RPS_FATAL("rpsldpy_setob unimplemented");
 #warning rpsldpy_setob unimplemented
 } // end of rpsldpy_setob
+
+
 
 //////////////////////////////////////////////////////////// end of file store_rps.cc
 

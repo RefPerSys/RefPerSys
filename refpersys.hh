@@ -245,7 +245,7 @@ double rps_elapsed_real_time(void);
 static inline double rps_process_cpu_time(void);
 static inline double rps_thread_cpu_time(void);
 extern "C" const char* rps_hostname(void);
-
+extern "C" void*rps_proghdl; // dlopen handle of whole program
 
 
 #define RPS_FLEXIBLE_DIM 0	/* for flexible array members */
@@ -1253,7 +1253,7 @@ public:
 
 //// signature of extern "C" functions for payload loading; their name starts with rpsldpy_
 typedef void rpsldpysig_t(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv);
-
+#define RPS_PAYLOADING_PREFIX "rpsldpy_"
 class Rps_Payload : public Rps_QuasiZone
 {
   Rps_ObjectZone* payl_owner;
