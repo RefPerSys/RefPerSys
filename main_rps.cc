@@ -188,6 +188,9 @@ void rps_print_types_info(void)
   EXPLAIN_TYPE(Rps_ObjectValue);
   EXPLAIN_TYPE(Rps_ObjectZone);
   EXPLAIN_TYPE(Rps_Payload);
+  EXPLAIN_TYPE(Rps_PayloadClassInfo);
+  EXPLAIN_TYPE(Rps_PayloadSetOb);
+  EXPLAIN_TYPE(Rps_PayloadVectOb);
   EXPLAIN_TYPE(Rps_QuasiZone);
   EXPLAIN_TYPE(Rps_SetOb);
   EXPLAIN_TYPE(Rps_SetValue);

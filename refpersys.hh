@@ -1744,7 +1744,7 @@ public:
   {
     if (ix<0)
       ix += size();
-    if (ix>=0 && ix<size())
+    if (ix>=0 && ix<(int)size())
       return pvectob[ix];
     throw std::out_of_range("Rps_PayloadVectOb bad index");
   };

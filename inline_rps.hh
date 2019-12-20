@@ -958,5 +958,20 @@ Rps_PayloadSetOb::Rps_PayloadSetOb(Rps_ObjectZone*owner, Rps_Loader*ld)
 }      // end Rps_PayloadSetOb::Rps_PayloadSetOb ..loading
 
 
+////// mutable vector of objects payload - for PaylVectOb
+Rps_PayloadVectOb::Rps_PayloadVectOb(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylVectOb, owner), pvectob()
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadVectOb::Rps_PayloadVectOb
+
+Rps_PayloadVectOb::Rps_PayloadVectOb(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylVectOb, owner, ld),
+    pvectob()
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadVectOb::Rps_PayloadVectOb ..loading
+
+
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh
