@@ -820,7 +820,7 @@ Rps_ObjectRef::gc_mark(Rps_GarbageCollector&gc)
 } // end Rps_ObjectRef::gc_mark
 
 void
-Rps_ObjectRef::dump_scan(Rps_Dumper*du, unsigned depth)
+Rps_ObjectRef::dump_scan(Rps_Dumper*du, unsigned depth) const
 {
   RPS_ASSERT(du != nullptr);
   if (is_empty())

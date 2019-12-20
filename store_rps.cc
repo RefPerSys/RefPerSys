@@ -668,7 +668,7 @@ void rps_dump_scan_value(Rps_Dumper*du, const Rps_Value val, unsigned depth)
 } // end rps_dump_scan_value
 
 void
-Rps_TupleOb::dump_scan(Rps_Dumper*du, unsigned depth)
+Rps_TupleOb::dump_scan(Rps_Dumper*du, unsigned depth) const
 {
   RPS_ASSERT(du != nullptr);
   for (auto obr: *this)
@@ -686,7 +686,7 @@ Rps_TupleOb::dump_hjson(Rps_Dumper*du)
 
 ////////////////
 void
-Rps_SetOb::dump_scan(Rps_Dumper*du, unsigned depth)
+Rps_SetOb::dump_scan(Rps_Dumper*du, unsigned depth) const
 {
   RPS_ASSERT(du != nullptr);
   for (auto obr: *this)
@@ -703,7 +703,7 @@ Rps_SetOb::dump_hjson(Rps_Dumper*du)
 
 ////////////////
 void
-Rps_ClosureZone::dump_scan(Rps_Dumper*du, unsigned depth)
+Rps_ClosureZone::dump_scan(Rps_Dumper*du, unsigned depth) const
 {
   RPS_ASSERT(du != nullptr);
   auto obrcon = conn();
@@ -728,7 +728,7 @@ Rps_ClosureZone::dump_hjson(Rps_Dumper*du)
 
 ////////////////
 void
-Rps_ObjectZone::dump_scan(Rps_Dumper*du, unsigned depth)
+Rps_ObjectZone::dump_scan(Rps_Dumper*du, unsigned depth) const
 {
   RPS_ASSERT(du != nullptr);
   RPS_FATAL("unimplemented Rps_ObjectZone::dump_scan depth %u", depth);

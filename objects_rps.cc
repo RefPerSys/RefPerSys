@@ -245,11 +245,15 @@ Rps_PayloadClassInfo::gc_mark(Rps_GarbageCollector&gc)
 } // end Rps_PayloadClassInfo::gc_mark
 
 void
-Rps_PayloadClassInfo::dump_scan(Rps_Dumper*du)
+Rps_PayloadClassInfo::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATAL("unimplemented Rps_PayloadClassInfo::dump_scan depth");
-#warning unimplemented Rps_PayloadClassInfo::dump_scan
+  rps_dump_scan_object(du, pclass_super);
+  for (auto it : pclass_methdict)
+    {
+      rps_dump_scan_object(du, it.first);
+      rps_dump_scan_value(du, it.second, 1);
+    }
 } // end Rps_PayloadClassInfo::dump_scan
 
 
@@ -282,7 +286,7 @@ Rps_PayloadSetOb::gc_mark(Rps_GarbageCollector&gc)
 } // end Rps_PayloadSetOb::gc_mark
 
 void
-Rps_PayloadSetOb::dump_scan(Rps_Dumper*du)
+Rps_PayloadSetOb::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   RPS_FATAL("unimplemented Rps_PayloadSetOb::dump_scan");
@@ -322,7 +326,7 @@ Rps_PayloadVectOb::gc_mark(Rps_GarbageCollector&gc)
 } // end Rps_PayloadVectOb::gc_mark
 
 void
-Rps_PayloadVectOb::dump_scan(Rps_Dumper*du)
+Rps_PayloadVectOb::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   RPS_FATAL("unimplemented Rps_PayloadVectOb::dump_scan");
