@@ -32,6 +32,10 @@
   mtime: 1575698824.78
   class: _41OFI3r0S1t03qdB2E
   payload: class
+## actually this is wrong... superclass is probably `value`
+  superclass: _5yhJGgxLwLp00X0xEQ
+  dictmeth: [
+  ]
 }
 
 
@@ -42,4 +46,9 @@
   mtime: 1575698824.78
   class: _41OFI3r0S1t03qdB2E
   payload: class
+  superclass: _5yhJGgxLwLp00X0xEQ
+  dictmeth: [
+  ]
 }
+
+ ### end of file
