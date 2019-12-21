@@ -1252,7 +1252,7 @@ public:
 //////////////////////////////////////////////////////////// object payloads
 
 //// signature of extern "C" functions for payload loading; their name starts with rpsldpy_
-typedef void rpsldpysig_t(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv);
+typedef void rpsldpysig_t(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv, Rps_Id spacid, unsigned lineno);
 #define RPS_PAYLOADING_PREFIX "rpsldpy_"
 class Rps_Payload : public Rps_QuasiZone
 {

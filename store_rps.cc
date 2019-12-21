@@ -360,7 +360,7 @@ Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                   << std::endl);
       if (pldfun)
         {
-          (*pldfun)(obz,this,objhjson);
+          (*pldfun)(obz,this,objhjson,spacid,lineno);
         }
       else
         {
@@ -852,13 +852,14 @@ void rps_load_from (const std::string& dirpath)
 
 
 /// loading of class information payload
-void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv)
+void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(hjv.type() == Hjson::Value::Type::MAP);
   if (!hjv.is_map_with_key("superclass") || !hjv.is_map_with_key("methodict"))
     RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+		 << " in space " << spacid << " lineno#" << lineno
 		 << " has incomplete payload"
 		 << std::endl
 		 << " hjv " <<Hjson::MarshalJson(hjv));
@@ -868,6 +869,7 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv)
   size_t nbmeth = 0;
   if (!hjvmethodict.is_vector(&nbmeth))
     RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+		 << " in space " << spacid << " lineno#" << lineno
 		 << " has bad methodict"
 		 << std::endl
 		 << " hjvmethodict " <<Hjson::MarshalJson(hjvmethodict));
@@ -879,6 +881,7 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv)
 	|| !hjvcurmeth.is_map_with_key("methclos")
 	)
       RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+		 << " in space " << spacid << " lineno#" << lineno
 		   << " has bad methodict entry#" << methix
 		   << std::endl
 		   << " hjvcurmeth " <<Hjson::MarshalJson(hjvcurmeth));
@@ -886,6 +889,7 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv)
     auto valclo = Rps_Value(hjvcurmeth["methclos"], ld);
     if (!obsel || !valclo.is_closure())
       RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+		 << " in space " << spacid << " lineno#" << lineno
 		   << " with bad methodict entry#" << methix
 		   << std::endl
 		   << " hjvcurmeth " <<Hjson::MarshalJson(hjvcurmeth));      
@@ -901,7 +905,7 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv)
 
 
 /// loading of set of objects payload
-void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv)
+void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
