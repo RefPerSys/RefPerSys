@@ -69,8 +69,6 @@ rps_garbage_collect (void)
     });
   });
   the_gc.run_gc();
-  RPS_FATAL("unimplemented rps_garbage_collect");
-#warning rps_garbage_collect unimplemented
 } // end of rps_garbage_collect
 
 void
@@ -112,7 +110,7 @@ Rps_GarbageCollector::run_gc(void)
     RPS_ASSERT(Rps_QuasiZone::raw_nth_zone(qz->qz_rank,gc) == qz);
     delete qz;
   });
-#warning Rps_GarbageCollector::run_gc could be inncomplete or wrong
+#warning Rps_GarbageCollector::run_gc could be incomplete or wrong
 } // end Rps_GarbageCollector::run_gc
 
 void
@@ -127,8 +125,7 @@ void
 Rps_GarbageCollector::mark_value(Rps_Value val, unsigned depth)
 {
   if (val.is_empty() || val.is_int()) return;
-  val.gc_mark(*this);
-#warning Rps_GarbageCollector::mark_value unimplemented
+  val.gc_mark(*this,depth);
 } // end of Rps_GarbageCollector::mark_value
 
 //////////////////////////////////////////////////////////// end of file garbcoll_rps.cc
