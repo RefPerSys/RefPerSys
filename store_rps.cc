@@ -149,14 +149,19 @@ Rps_Loader::is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::s
   bool ok=false;
   Rps_Id oid(linbuf.c_str()+strlen("//+ob"), &end, &ok);
   if (!end || (*end && !isspace(*end)))
-    return false;
+    goto bad;
   if (!ok)
-    return false;
+    goto bad;
   if (!oid.valid())
-    return false;
+    goto bad;
   if (pobid)
     *pobid = oid;
   return true;
+ bad:
+  RPS_WARNOUT("bad object starting line in space " << spacid << " line#" << lineno
+	      << ":" << std::endl
+	      << linbuf);
+  return false;
 } // end Rps_Loader::is_object_starting_line
 
 void
