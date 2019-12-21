@@ -186,8 +186,8 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           snprintf(errbuf, sizeof(errbuf), "non UTF8 line#%d", lincnt);
           throw std::runtime_error(std::string(errbuf) + " in " + spacepath);
         }
-      RPS_INFORM("lincnt#%d, lin.siz#%zd\n..linbuf:%s", lincnt,
-                 linbuf.size(), linbuf.c_str());
+      //RPS_INFORM("lincnt#%d, lin.siz#%zd\n..linbuf:%s", lincnt,
+      //           linbuf.size(), linbuf.c_str());
       if (RPS_UNLIKELY(obcnt == 0))
         {
           prologstr += linbuf;
