@@ -2388,9 +2388,32 @@ their state file, so are loaded by calling \texttt{rpsldpy\_class}. If
     \end{tabular}
   \end {center}
   \caption {Syntax of object contents inside space files}
-\label{fig:hjson-object-contents}
-  
+\label{fig:hjson-object-contents}  
 \end{figure}
+
+
+The \textsc{Hjson} representation of payloads vary. The figure
+\ref{fig:hjson-class-payload} explains class related payload.
+
+\begin{figure}[h]
+  \begin {center}
+    \begin{tabular}{llll}
+      \emph{\textbf{class-payload}} & : & ~ & \\
+      ~ & \texttt{payload:} \texttt{class} &  \\
+      ~ & \texttt{superclass:} \textit{object} & the oid of the superclass \\
+      ~ & \texttt{methodict:} \textbf{\texttt{[}} &   \emph{\textbf{method-entry}} \ldots  \textbf{\texttt{]}} \\
+      \hline \\
+      \emph{\textbf{method-entry}} & $\leftarrow$ \textbf{\texttt{\{}} \\
+      ~ &  \texttt{methosel:} \textit{oid} & the oid of the method selector \\
+      ~ &  \texttt{methclos:} \textit{closure} & the corresponding method closure \\
+      ~ &  \textbf{\texttt{\}}} & \\      
+    \end{tabular}
+  \end {center}
+  \caption {Syntax of class payload}
+\label{fig:hjson-class-payload}  
+\end{figure}
+
+
 %%%%%
 %% TODO: remove this  "commented-out" block
 %% \iffalse
