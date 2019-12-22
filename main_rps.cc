@@ -171,7 +171,13 @@ void rps_print_types_info(void)
   EXPLAIN_TYPE(double);
   EXPLAIN_TYPE(char);
   EXPLAIN_TYPE(bool);
+  EXPLAIN_TYPE(void*);
+  EXPLAIN_TYPE(std::mutex);
   EXPLAIN_TYPE(std::shared_mutex);
+  EXPLAIN_TYPE(std::recursive_mutex);
+  EXPLAIN_TYPE(std::lock_guard<std::shared_mutex>);
+  EXPLAIN_TYPE(std::lock_guard<std::recursive_mutex>);
+  EXPLAIN_TYPE(std::lock_guard<std::shared_mutex>);
   EXPLAIN_TYPE(std::string);
   EXPLAIN_TYPE2(std::map<Rps_ObjectRef, Rps_Value>);
   EXPLAIN_TYPE(QString);
