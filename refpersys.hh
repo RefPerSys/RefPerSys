@@ -412,7 +412,7 @@ public:
   inline bool operator > (const Rps_ObjectRef& oth) const;
   inline bool operator >= (const Rps_ObjectRef& oth) const;
   inline Rps_HashInt obhash (void) const;
-  inline void gc_mark(Rps_GarbageCollector&);
+  inline void gc_mark(Rps_GarbageCollector&) const;
   inline void dump_scan(Rps_Dumper* du, unsigned depth) const;
   inline Hjson::Value dump_hjson(Rps_Dumper* du) const;
 };				// end class Rps_ObjectRef
@@ -497,7 +497,7 @@ public:
   Rps_Value(const Rps_ZoneValue*ptr) : Rps_Value(ptr, Rps_ValPtrTag{}) {};
   Rps_Value(const Rps_ZoneValue& zv) : Rps_Value(&zv, Rps_ValPtrTag{}) {};
   static constexpr unsigned max_gc_mark_depth = 100;
-  inline void gc_mark(Rps_GarbageCollector&gc, unsigned depth= 0);
+  inline void gc_mark(Rps_GarbageCollector&gc, unsigned depth= 0) const;
   void dump_scan(Rps_Dumper* du, unsigned depth) const;
   Hjson::Value dump_hjson(Rps_Dumper* du) const;
   inline bool operator == (const Rps_Value v) const;
@@ -997,7 +997,7 @@ class Rps_ZoneValue : public Rps_QuasiZone
 protected:
   inline Rps_ZoneValue(Rps_Type typ);
 public:
-  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) =0;
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) const =0;
   virtual void dump_scan(Rps_Dumper* du, unsigned depth) const =0;
   virtual Hjson::Value dump_hjson(Rps_Dumper* du) const =0;
   virtual Rps_HashInt val_hash () const =0;
@@ -1074,7 +1074,7 @@ protected:
   {
     return rps_hash_cstr(_sbuf);
   };
-  virtual void gc_mark(Rps_GarbageCollector&, unsigned) { };
+  virtual void gc_mark(Rps_GarbageCollector&, unsigned) const { };
 public:
   virtual uint32_t wordsize() const
   {
@@ -1132,7 +1132,7 @@ protected:
       h = 987383;
     return h;
   };
-  virtual void gc_mark(Rps_GarbageCollector&, unsigned) { };
+  virtual void gc_mark(Rps_GarbageCollector&, unsigned) const { };
   virtual void dump_scan(Rps_Dumper*, unsigned) const {};
   virtual Hjson::Value dump_hjson(Rps_Dumper*) const
   {
@@ -1175,10 +1175,11 @@ class Rps_ObjectZone : public Rps_ZoneValue
 {
 
   friend class Rps_Loader;
+  friend class Rps_Payload;
   friend Rps_ObjectZone*
   Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(Rps_Id,bool);
   const Rps_Id ob_oid;
-  std::recursive_mutex ob_mtx;
+  mutable std::recursive_mutex ob_mtx;
   std::atomic<Rps_ObjectZone*> ob_class;
   std::atomic<double> ob_mtime;
   std::map<Rps_ObjectRef, Rps_Value> ob_attrs;
@@ -1225,18 +1226,20 @@ public:
   inline Rps_ObjectRef get_class(void) const;
   inline double get_mtime(void) const;
   template<class PaylClass, class ...Args>
-  PaylClass* put_new_payload(Args... args) {
+  PaylClass* put_new_payload(Args... args)
+  {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate<PaylClass,Args...>(args...);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate<PaylClass,Args...>(this,args...);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
     return newpayl;
   };
   template<class PaylClass, class ...Args>
-  PaylClass* put_new_payload_with_wordgap(unsigned wordgap, Args... args) {
+  PaylClass* put_new_payload_with_wordgap(unsigned wordgap, Args... args)
+  {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass,Args...>(wordgap,args...);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass,Args...>(wordgap,this,args...);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
@@ -1259,7 +1262,7 @@ public:
   {
     return ob_oid.hash();
   };
-  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0) const;
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Hjson::Value dump_hjson(Rps_Dumper*) const;
   virtual Rps_HashInt val_hash (void) const
@@ -1278,6 +1281,7 @@ typedef void rpsldpysig_t(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value&
 #define RPS_PAYLOADING_PREFIX "rpsldpy_"
 class Rps_Payload : public Rps_QuasiZone
 {
+  friend class Rps_ObjectZone;
   Rps_ObjectZone* payl_owner;
 protected:
   inline Rps_Payload(Rps_Type, Rps_ObjectZone*);
@@ -1292,8 +1296,8 @@ public:
   {
     RPS_ASSERT(ld != nullptr);
   };
-  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) =0;
-  virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const =0;
+  virtual void gc_mark(Rps_GarbageCollector&gc) const =0;
+  virtual void dump_scan(Rps_Dumper*du) const =0;
   virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&) const =0;
   Rps_ObjectZone* owner() const
   {
@@ -1347,7 +1351,7 @@ public:
   {
     return (sizeof(*this) + _seqlen * sizeof(_seqob[0])) / sizeof(void*);
   };
-  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned)
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned) const
   {
     for (auto ob: *this)
       if (ob)
@@ -1503,7 +1507,7 @@ public:
   {
     return (sizeof(*this) + _treelen * sizeof(_treesons[0])) / sizeof(void*);
   };
-  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth)
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) const
   {
     gc.mark_obj(_treeconnob);
     for (auto vson: *this)
@@ -1621,21 +1625,27 @@ class Rps_PayloadClassInfo : public Rps_Payload
 {
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
+  friend Rps_PayloadClassInfo*
+  Rps_QuasiZone::rps_allocate<Rps_PayloadClassInfo,Rps_ObjectZone*>(Rps_ObjectZone*);
   Rps_ObjectRef pclass_super;
   std::map<Rps_ObjectRef,Rps_ClosureValue> pclass_methdict;
-  inline Rps_PayloadClassInfo(Rps_ObjectZone*owner);
-  Rps_PayloadClassInfo(Rps_ObjectRef obr) :
-    Rps_PayloadClassInfo(obr?obr.optr():nullptr) {};
   virtual ~Rps_PayloadClassInfo()
   {
     pclass_super=nullptr;
     pclass_methdict.clear();
   };
 protected:
-  virtual void gc_mark(Rps_GarbageCollector&gc);
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&) const;
+  inline Rps_PayloadClassInfo(Rps_ObjectZone*owner);
+  Rps_PayloadClassInfo(Rps_ObjectRef obr) :
+    Rps_PayloadClassInfo(obr?obr.optr():nullptr) {};
 public:
+  virtual uint32_t wordsize(void) const
+  {
+    return sizeof(*this)/sizeof(void*);
+  };
   inline Rps_PayloadClassInfo(Rps_ObjectZone*owner, Rps_Loader*ld);
   Rps_ObjectRef superclass() const
   {
@@ -1682,7 +1692,7 @@ class Rps_PayloadSetOb : public Rps_Payload
     psetob.clear();
   };
 protected:
-  virtual void gc_mark(Rps_GarbageCollector&gc);
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&) const;
 public:
@@ -1749,7 +1759,7 @@ class Rps_PayloadVectOb : public Rps_Payload
     pvectob.clear();
   };
 protected:
-  virtual void gc_mark(Rps_GarbageCollector&gc);
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&) const;
 public:

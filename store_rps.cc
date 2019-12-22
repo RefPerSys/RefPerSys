@@ -861,8 +861,11 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv, R
                  << " has incomplete payload"
                  << std::endl
                  << " hjv " <<Hjson::MarshalJson(hjv));
-  auto obclass = Rps_ObjectRef(hjv["superclass"], ld);
-  RPS_ASSERT(obclass);
+  auto paylclainf = obz->put_new_payload<Rps_PayloadClassInfo>();
+  RPS_ASSERT(paylclainf != nullptr);
+  auto obsuperclass = Rps_ObjectRef(hjv["superclass"], ld);
+  RPS_ASSERT(obsuperclass);
+  paylclainf->put_superclass(obsuperclass);
   Hjson::Value hjvmethodict = hjv["methodict"];
   size_t nbmeth = 0;
   if (!hjvmethodict.is_vector(&nbmeth))
@@ -892,12 +895,8 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv, R
                      << " with bad methodict entry#" << methix
                      << std::endl
                      << " hjvcurmeth " <<Hjson::MarshalJson(hjvcurmeth));
+      paylclainf->put_own_method(obsel,valclo);
     }
-  RPS_WARNOUT("rpsldpy_class incompletely unimplemented"
-              << " object " << obz->oid()
-              << std::endl
-              << " hjv " <<Hjson::MarshalJson(hjv));
-#warning rpsldpy_class incompletely unimplemented
 } // end of rpsldpy_class
 
 

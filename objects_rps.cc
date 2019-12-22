@@ -114,7 +114,7 @@ Rps_ObjectZone::find(Rps_Id oid)
 } // end Rps_ObjectZone::find
 
 void
-Rps_ObjectZone::gc_mark(Rps_GarbageCollector&gc, unsigned)
+Rps_ObjectZone::gc_mark(Rps_GarbageCollector&gc, unsigned) const
 {
   std::lock_guard<std::recursive_mutex> gu(ob_mtx);
   gc.mark_obj(this);
@@ -141,7 +141,7 @@ Rps_ObjectZone::mark_gc_inside(Rps_GarbageCollector&gc)
     };
   Rps_Payload*payl = ob_payload.load();
   if (payl)
-    payl->gc_mark(gc, 0);
+    payl->gc_mark(gc);
 } // end Rps_ObjectZone::mark_gc_inside
 
 bool
@@ -234,7 +234,7 @@ rps_nb_root_objects(void)
 /***************** class info payload **********/
 
 void
-Rps_PayloadClassInfo::gc_mark(Rps_GarbageCollector&gc)
+Rps_PayloadClassInfo::gc_mark(Rps_GarbageCollector&gc) const
 {
   gc.mark_obj(pclass_super);
   for (auto it: pclass_methdict)
@@ -271,7 +271,7 @@ Rps_PayloadClassInfo::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
 /***************** mutable set of objects payload **********/
 
 void
-Rps_PayloadSetOb::gc_mark(Rps_GarbageCollector&gc)
+Rps_PayloadSetOb::gc_mark(Rps_GarbageCollector&gc) const
 {
   for (auto obr: psetob)
     gc.mark_obj(obr);
@@ -302,7 +302,7 @@ Rps_PayloadSetOb::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
 /***************** mutable vector of objects payload **********/
 
 void
-Rps_PayloadVectOb::gc_mark(Rps_GarbageCollector&gc)
+Rps_PayloadVectOb::gc_mark(Rps_GarbageCollector&gc) const
 {
   for (auto obr: pvectob)
     gc.mark_obj(obr);

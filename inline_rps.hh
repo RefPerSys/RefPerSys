@@ -162,7 +162,7 @@ Rps_Value::as_ptr() const
 
 
 void
-Rps_Value::gc_mark(Rps_GarbageCollector&gc, unsigned depth)
+Rps_Value::gc_mark(Rps_GarbageCollector&gc, unsigned depth) const
 {
   if (!is_ptr()) return;
   if (_pval->is_gcmarked(gc)) return;
@@ -835,7 +835,7 @@ Rps_ObjectRef::obhash(void) const
 }      // end Rps_ObjectRef::obhash
 
 void
-Rps_ObjectRef::gc_mark(Rps_GarbageCollector&gc)
+Rps_ObjectRef::gc_mark(Rps_GarbageCollector&gc) const
 {
   if (is_empty()) return;
   _optr->gc_mark(gc);
