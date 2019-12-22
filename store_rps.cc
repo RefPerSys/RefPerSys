@@ -207,9 +207,6 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
               if (prologhjson.type() != Hjson::Value::Type::MAP)
                 RPS_FATAL("Rps_Loader::first_pass_space %s bad HJson type #%d",
                           spacepath.c_str(), (int)prologhjson.type());
-              RPS_INFORM("Rps_Loader::first_pass_space %s prologstr=<%s>\n"
-                         ".. prologhjson=%s",
-                         spacepath.c_str(), prologstr.c_str(), Hjson::Marshal(prologhjson).c_str());
               Hjson::Value formathjson = prologhjson["format"];
               if (formathjson.type() !=Hjson::Value::Type::STRING)
                 RPS_FATALOUT("space file " << spacepath
@@ -850,12 +847,13 @@ void rps_load_from (const std::string& dirpath)
 
 
 
-
-/// loading of class information payload
+/// loading of class information payload; see
+/// Rps_PayloadClassInfo::dump_hjson_content in objects_rps.cc
 void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(hjv.type() == Hjson::Value::Type::MAP);
   if (!hjv.is_map_with_key("superclass") || !hjv.is_map_with_key("methodict"))
     RPS_FATALOUT("rpsldpy_class: object " << obz->oid()

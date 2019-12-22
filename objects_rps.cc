@@ -260,6 +260,7 @@ Rps_PayloadClassInfo::dump_scan(Rps_Dumper*du) const
 void
 Rps_PayloadClassInfo::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
 {
+  /// see function rpsldpy_class in store_rps.cc
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
   RPS_FATAL("unimplemented Rps_PayloadClassInfo::dump_hjson_content");

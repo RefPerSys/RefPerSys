@@ -557,7 +557,7 @@ private:
     const Rps_ZoneValue* _pval;
     const void* _wptr;
   };
-} __attribute__((aligned(rps_allocation_unit)));    // end of Rps_Value
+};    // end of Rps_Value
 
 
 namespace std
@@ -984,7 +984,7 @@ protected:
   {
     return qz_type;
   };
-};				// end class Rps_QuasiZone;
+} __attribute__((aligned(rps_allocation_unit)));				// end class Rps_QuasiZone;
 
 
 
@@ -1220,6 +1220,9 @@ protected:
     ob_comps.push_back(compval);
   }
 public:
+  inline Rps_Payload*get_payload(void) const;
+  inline Rps_ObjectRef get_class(void) const;
+  inline double get_mtime(void) const;
   virtual uint32_t wordsize() const
   {
     return sizeof(Rps_ObjectZone)/sizeof(void*);

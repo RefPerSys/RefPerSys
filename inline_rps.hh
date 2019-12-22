@@ -804,7 +804,29 @@ Rps_DoubleValue::Rps_DoubleValue(const Rps_Value val)
 {
 } // end Rps_DoubleValue::Rps_DoubleValue
 
-//////////////////////////////////////////////////////////// objects
+
+
+
+//////////////////////////////////////////////////////////// objects zones
+Rps_Payload*
+Rps_ObjectZone::get_payload(void) const
+{
+  return ob_payload.load();
+} // end Rps_ObjectZone::get_payload(void)
+
+Rps_ObjectRef
+Rps_ObjectZone::get_class(void) const
+{
+  return Rps_ObjectRef(ob_class.load());
+} // end Rps_ObjectZone::get_class
+
+double
+Rps_ObjectZone::get_mtime(void) const
+{
+  return ob_mtime.load();
+} // end Rps_ObjectZone::get_mtime
+
+//////////////////////////////////////////////////////////// objects references
 Rps_HashInt
 Rps_ObjectRef::obhash(void) const
 {
