@@ -263,8 +263,16 @@ Rps_PayloadClassInfo::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
   /// see function rpsldpy_class in store_rps.cc
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
-  RPS_FATAL("unimplemented Rps_PayloadClassInfo::dump_hjson_content");
-#warning unimplemented Rps_PayloadClassInfo::dump_hjson_content
+  hj["superclass"] = pclass_super.dump_hjson(du);
+  auto hjvectmeth = Hjson::Value(Hjson::Value::Type::VECTOR);
+  for (auto it : pclass_methdict)
+    {
+      auto hjcurmeth = Hjson::Value(Hjson::Value::Type::MAP);
+      hjcurmeth["methosel"] = rps_dump_hjson_objectref(du,it.first);
+      hjcurmeth["methclos"] = rps_dump_hjson_value(du,it.second);
+      hjvectmeth.push_back(hjcurmeth);
+    }
+  hj["methodict"] = hjvectmeth;
 } // end Rps_PayloadClassInfo::dump_hjson_content
 
 
