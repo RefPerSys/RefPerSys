@@ -204,7 +204,10 @@ void rps_run_application(int &argc, char **argv)
       };
     /// --type-info
     if (argparser.isSet(typeOption))
-      rps_print_types_info ();
+      {
+        rps_print_types_info ();
+        batch = true;
+      }
     /// --batch or -B
     if (argparser.isSet(batchOption))
       batch = true;
