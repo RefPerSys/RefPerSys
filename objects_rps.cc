@@ -266,15 +266,6 @@ Rps_PayloadClassInfo::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
 #warning unimplemented Rps_PayloadClassInfo::dump_hjson_content
 } // end Rps_PayloadClassInfo::dump_hjson_content
 
-void
-Rps_PayloadClassInfo::load_hjson(Rps_Loader*ld, Hjson::Value const&hj)
-{
-  RPS_ASSERT(ld != nullptr);
-  RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
-  RPS_FATAL("unimplemented Rps_PayloadClassInfo::load_hjson");
-#warning unimplemented Rps_PayloadClassInfo::load_hjson
-} // end Rps_PayloadClassInfo::load_hjson
-
 
 /***************** mutable set of objects payload **********/
 
@@ -302,15 +293,6 @@ Rps_PayloadSetOb::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
   RPS_FATAL("unimplemented Rps_PayloadSetOb::dump_hjson_content");
 #warning unimplemented Rps_PayloadSetOb::dump_hjson_content
 } // end Rps_PayloadSetOb::dump_hjson_content
-
-void
-Rps_PayloadSetOb::load_hjson(Rps_Loader*ld, Hjson::Value const&hj)
-{
-  RPS_ASSERT(ld != nullptr);
-  RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
-  RPS_FATAL("unimplemented Rps_PayloadSetOb::load_hjson");
-#warning unimplemented Rps_PayloadSetOb::load_hjson
-} // end Rps_PayloadSetOb::load_hjson
 
 
 
@@ -343,13 +325,5 @@ Rps_PayloadVectOb::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
 #warning unimplemented Rps_PayloadVectOb::dump_hjson_content
 } // end Rps_PayloadVectOb::dump_hjson_content
 
-void
-Rps_PayloadVectOb::load_hjson(Rps_Loader*ld, Hjson::Value const&hj)
-{
-  RPS_ASSERT(ld != nullptr);
-  RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
-  RPS_FATAL("unimplemented Rps_PayloadVectOb::load_hjson");
-#warning unimplemented Rps_PayloadVectOb::load_hjson
-} // end Rps_PayloadVectOb::load_hjson
 
 // end of file objects_rps.cc

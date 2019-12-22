@@ -157,10 +157,10 @@ Rps_Loader::is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::s
   if (pobid)
     *pobid = oid;
   return true;
- bad:
+bad:
   RPS_WARNOUT("bad object starting line in space " << spacid << " line#" << lineno
-	      << ":" << std::endl
-	      << linbuf);
+              << ":" << std::endl
+              << linbuf);
   return false;
 } // end Rps_Loader::is_object_starting_line
 
@@ -859,41 +859,42 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv, R
   RPS_ASSERT(hjv.type() == Hjson::Value::Type::MAP);
   if (!hjv.is_map_with_key("superclass") || !hjv.is_map_with_key("methodict"))
     RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
-		 << " in space " << spacid << " lineno#" << lineno
-		 << " has incomplete payload"
-		 << std::endl
-		 << " hjv " <<Hjson::MarshalJson(hjv));
+                 << " in space " << spacid << " lineno#" << lineno
+                 << " has incomplete payload"
+                 << std::endl
+                 << " hjv " <<Hjson::MarshalJson(hjv));
   auto obclass = Rps_ObjectRef(hjv["superclass"], ld);
   RPS_ASSERT(obclass);
   Hjson::Value hjvmethodict = hjv["methodict"];
   size_t nbmeth = 0;
   if (!hjvmethodict.is_vector(&nbmeth))
     RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
-		 << " in space " << spacid << " lineno#" << lineno
-		 << " has bad methodict"
-		 << std::endl
-		 << " hjvmethodict " <<Hjson::MarshalJson(hjvmethodict));
-  for (int methix=0; methix<(int)nbmeth; methix++) {
-    size_t curlen=0;
-    Hjson::Value hjvcurmeth = hjvmethodict[methix];
-    if (!hjvcurmeth.is_map(&curlen) || curlen != 2
-	|| !hjvcurmeth.is_map_with_key("methosel")
-	|| !hjvcurmeth.is_map_with_key("methclos")
-	)
-      RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
-		 << " in space " << spacid << " lineno#" << lineno
-		   << " has bad methodict entry#" << methix
-		   << std::endl
-		   << " hjvcurmeth " <<Hjson::MarshalJson(hjvcurmeth));
-    auto obsel = Rps_ObjectRef(hjvcurmeth["methosel"], ld);
-    auto valclo = Rps_Value(hjvcurmeth["methclos"], ld);
-    if (!obsel || !valclo.is_closure())
-      RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
-		 << " in space " << spacid << " lineno#" << lineno
-		   << " with bad methodict entry#" << methix
-		   << std::endl
-		   << " hjvcurmeth " <<Hjson::MarshalJson(hjvcurmeth));      
-  }    
+                 << " in space " << spacid << " lineno#" << lineno
+                 << " has bad methodict"
+                 << std::endl
+                 << " hjvmethodict " <<Hjson::MarshalJson(hjvmethodict));
+  for (int methix=0; methix<(int)nbmeth; methix++)
+    {
+      size_t curlen=0;
+      Hjson::Value hjvcurmeth = hjvmethodict[methix];
+      if (!hjvcurmeth.is_map(&curlen) || curlen != 2
+          || !hjvcurmeth.is_map_with_key("methosel")
+          || !hjvcurmeth.is_map_with_key("methclos")
+         )
+        RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+                     << " in space " << spacid << " lineno#" << lineno
+                     << " has bad methodict entry#" << methix
+                     << std::endl
+                     << " hjvcurmeth " <<Hjson::MarshalJson(hjvcurmeth));
+      auto obsel = Rps_ObjectRef(hjvcurmeth["methosel"], ld);
+      auto valclo = Rps_Value(hjvcurmeth["methclos"], ld);
+      if (!obsel || !valclo.is_closure())
+        RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+                     << " in space " << spacid << " lineno#" << lineno
+                     << " with bad methodict entry#" << methix
+                     << std::endl
+                     << " hjvcurmeth " <<Hjson::MarshalJson(hjvcurmeth));
+    }
   RPS_WARNOUT("rpsldpy_class incompletely unimplemented"
               << " object " << obz->oid()
               << std::endl

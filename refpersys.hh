@@ -1270,7 +1270,6 @@ public:
   {
     RPS_ASSERT(ld != nullptr);
   };
-  virtual void load_hjson(Rps_Loader*ld, const Hjson::Value& hjv) =0;
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) =0;
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const =0;
   virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&) const =0;
@@ -1616,7 +1615,6 @@ protected:
   virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&) const;
 public:
   inline Rps_PayloadClassInfo(Rps_ObjectZone*owner, Rps_Loader*ld);
-  virtual void load_hjson(Rps_Loader*ld, const Hjson::Value& hjv);
   Rps_ObjectRef superclass() const
   {
     return pclass_super;
@@ -1667,7 +1665,6 @@ protected:
   virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&) const;
 public:
   inline Rps_PayloadSetOb(Rps_ObjectZone*obz, Rps_Loader*ld);
-  virtual void load_hjson(Rps_Loader*ld, const Hjson::Value& hjv);
   bool contains(const Rps_ObjectZone* obelem) const
   {
     return obelem && psetob.find(Rps_ObjectRef(obelem)) != psetob.end();
@@ -1735,7 +1732,6 @@ protected:
   virtual void dump_hjson_content(Rps_Dumper*, Hjson::Value&) const;
 public:
   inline Rps_PayloadVectOb(Rps_ObjectZone*obz, Rps_Loader*ld);
-  virtual void load_hjson(Rps_Loader*ld, const Hjson::Value& hjv);
   unsigned size(void) const
   {
     return (unsigned) pvectob.size();
