@@ -109,7 +109,7 @@ fail:
 //////////////////////////////////////////////// quasi values
 
 
-std::mutex Rps_QuasiZone::qz_mtx;
+std::recursive_mutex Rps_QuasiZone::qz_mtx;
 std::vector<Rps_QuasiZone*> Rps_QuasiZone::qz_zonvec(100);
 uint32_t Rps_QuasiZone::qz_cnt;
 
@@ -119,7 +119,7 @@ Rps_QuasiZone::initialize(void)
   static bool inited;
   if (inited) return;
   inited = true;
-  std::lock_guard<std::mutex> gu(qz_mtx);
+  std::lock_guard<std::recursive_mutex> gu(qz_mtx);
   qz_zonvec.reserve(100);
   qz_zonvec.push_back(nullptr);
 } // end Rps_QuasiZone::initialize
@@ -135,7 +135,7 @@ Rps_QuasiZone::~Rps_QuasiZone()
 void
 Rps_QuasiZone::register_in_zonevec(void)
 {
-  std::lock_guard<std::mutex> gu(qz_mtx);
+  std::lock_guard<std::recursive_mutex> gu(qz_mtx);
   if (RPS_UNLIKELY(9 * qz_zonvec.capacity() <= 8 * qz_zonvec.size()))
     {
       auto newcap = rps_prime_above(19*qz_zonvec.size()/16
@@ -165,7 +165,7 @@ Rps_QuasiZone::register_in_zonevec(void)
 void
 Rps_QuasiZone::unregister_in_zonevec(void)
 {
-  std::lock_guard<std::mutex> gu(qz_mtx);
+  std::lock_guard<std::recursive_mutex> gu(qz_mtx);
   RPS_ASSERT(this->qz_rank>0
              && this->qz_rank < (uint32_t)qz_zonvec.size());
   RPS_ASSERT(qz_cnt>0 && qz_cnt<(uint32_t)qz_zonvec.size());
@@ -177,7 +177,7 @@ Rps_QuasiZone::unregister_in_zonevec(void)
 void
 Rps_QuasiZone::clear_all_gcmarks(Rps_GarbageCollector&gc)
 {
-  std::lock_guard<std::mutex> gu(qz_mtx);
+  std::lock_guard<std::recursive_mutex> gu(qz_mtx);
   for (Rps_QuasiZone *qz : qz_zonvec)
     {
       if (!qz) continue;

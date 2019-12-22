@@ -116,8 +116,10 @@ Rps_ObjectZone::find(Rps_Id oid)
 void
 Rps_ObjectZone::gc_mark(Rps_GarbageCollector&gc, unsigned) const
 {
+  if (is_gcmarked(gc)) return;
   std::lock_guard<std::recursive_mutex> gu(ob_mtx);
   gc.mark_obj(this);
+  const_cast<Rps_ObjectZone*>(this)->set_gcmark(gc);
 } // end of Rps_ObjectZone::gc_mark
 
 void
@@ -165,6 +167,12 @@ Rps_ObjectZone::less(const Rps_ZoneValue&zv) const
     return this->oid() < othob->oid();
   }
 } // end of Rps_ObjectZone::less
+
+std::string
+Rps_ObjectZone::string_oid(void) const
+{
+  return oid().to_string();
+}
 
 ////////////////////////////////////////////////////////////////
 ///// global roots for garbage collection and persistence

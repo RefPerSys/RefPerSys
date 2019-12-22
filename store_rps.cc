@@ -83,6 +83,7 @@ public:
     return Rps_ObjectRef(nullptr);
   };
   void load_all_state_files(void);
+  void load_install_roots(void);
 };				// end class Rps_Loader
 
 
@@ -625,21 +626,24 @@ Rps_Dumper::scan_object(const Rps_ObjectRef obr)
 void
 Rps_Dumper::scan_value(const Rps_Value val, unsigned depth)
 {
-  if (!val)
+  if (!val || val.is_empty() || !val.is_ptr())
     return;
-  RPS_FATALOUT("Rps_Dumper::scan_value unimplemented depth#" << depth);
-#warning Rps_Dumper::scan_value unimplemented
+  val.to_ptr()->dump_scan(this,depth);
 } // end Rps_Dumper::scan_value
 
 Hjson::Value
 Rps_Dumper::hjson_value(Rps_Value val)
 {
-  if (is_dumpable_value(val))
+  if (!val || val.is_empty())
+    return Hjson::Value(nullptr);
+  else if (val.is_int())
+    return Hjson::Value(val.as_int(), Hjson::Int64_tag{});
+  else if (val.is_ptr() && is_dumpable_value(val))
     {
-      RPS_FATALOUT("Rps_Dumper::hjson_value unimplemented");
-#warning Rps_Dumper::hjson_value unimplemented
+      return val.to_ptr()->dump_hjson(this);
     }
-  else return Hjson::Value(nullptr);
+  else
+    return Hjson::Value(nullptr);
 } // end Rps_Dumper::hjson_value
 
 bool
@@ -878,12 +882,23 @@ Rps_Loader::parse_manifest_file(void)
 
 
 
+void Rps_Loader::load_install_roots(void)
+{
+  for (Rps_Id curootid: ld_globrootsidset)
+    {
+      std::lock_guard<std::mutex> gu(ld_mtx);
+      Rps_ObjectRef curootobr = find_object_by_oid(curootid);
+      RPS_ASSERT(curootobr);
+      rps_add_root_object (curootobr);
+    };
+} // end Rps_Loader::load_install_roots
+
 void rps_load_from (const std::string& dirpath)
 {
-  RPS_WARN("unimplemented rps_load_from '%s'", dirpath.c_str());
   Rps_Loader loader(dirpath);
   loader.parse_manifest_file();
   loader.load_all_state_files();
+  loader.load_install_roots();
 #warning rps_load_from unimplemented
 } // end of rps_load_from
 

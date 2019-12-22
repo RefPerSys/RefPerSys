@@ -153,6 +153,17 @@ bool Rps_Value::is_ptr() const
          && (((intptr_t)_pval) & (sizeof(void*)-1)) == 0;
 }
 
+Rps_Type
+Rps_Value::type() const
+{
+  if (is_int())
+    return Rps_Type::Int;
+  else if (is_empty())
+    return Rps_Type::None;
+  else
+    return _pval->type();
+} // end Rps_Value::type()
+
 const Rps_ZoneValue*
 Rps_Value::as_ptr() const
 {
@@ -160,6 +171,12 @@ Rps_Value::as_ptr() const
   else throw std::runtime_error("Rps_Value::as_ptr: value is not genuine pointer");
 }
 
+const Rps_ZoneValue*
+Rps_Value::to_ptr(const Rps_ZoneValue*defzp) const
+{
+  if (is_ptr()) return _pval;
+  else return defzp;
+}
 
 void
 Rps_Value::gc_mark(Rps_GarbageCollector&gc, unsigned depth) const
@@ -505,7 +522,7 @@ Rps_QuasiZone::Rps_QuasiZone(Rps_Type ty)
 void
 Rps_QuasiZone::every_zone(Rps_GarbageCollector&gc, std::function<void(Rps_GarbageCollector&, Rps_QuasiZone*)>fun)
 {
-  std::lock_guard<std::mutex> gu(qz_mtx);
+  std::lock_guard<std::recursive_mutex> gu(qz_mtx);
   auto nbzones = (uint32_t)qz_zonvec.size();
   for (uint32_t zix=1; zix<nbzones; zix++)
     {
@@ -520,7 +537,7 @@ Rps_QuasiZone::every_zone(Rps_GarbageCollector&gc, std::function<void(Rps_Garbag
 Rps_QuasiZone*
 Rps_QuasiZone::nth_zone(uint32_t rk)
 {
-  std::lock_guard<std::mutex> gu(qz_mtx);
+  std::lock_guard<std::recursive_mutex> gu(qz_mtx);
   if (rk<=0 || rk>=qz_zonvec.size()) return nullptr;
   return qz_zonvec[rk];
 } // end  Rps_QuasiZone::nth_zone
@@ -535,7 +552,7 @@ Rps_QuasiZone::raw_nth_zone(uint32_t rk, Rps_GarbageCollector&)
 void
 Rps_QuasiZone::run_locked_gc(Rps_GarbageCollector&gc, std::function<void(Rps_GarbageCollector&)>fun)
 {
-  std::lock_guard<std::mutex> gu(qz_mtx);
+  std::lock_guard<std::recursive_mutex> gu(qz_mtx);
   fun(gc);
 } // end Rps_QuasiZone::run_locked_gc
 

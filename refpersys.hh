@@ -506,6 +506,7 @@ public:
   inline bool operator != (const Rps_Value v) const;
   inline bool operator >= (const Rps_Value v) const;
   inline bool operator > (const Rps_Value v) const;
+  inline Rps_Type type() const;
   inline bool is_int() const;
   inline bool is_ptr() const;
   inline bool is_object() const;
@@ -920,16 +921,32 @@ class Rps_GarbageCollector
 {
   friend void rps_garbage_collect(void);
   static std::atomic<Rps_GarbageCollector*> gc_this;
+  static std::atomic<uint64_t> gc_count;
   friend class Rps_QuasiZone;
   std::mutex gc_mtx;
   std::atomic<bool> gc_running;
   const std::function<void(Rps_GarbageCollector*)> &gc_rootmarkers;
   std::deque<Rps_ObjectRef> gc_obscanque;
+  uint64_t gc_nbscan;
+  uint64_t gc_nbmark;
+  uint64_t gc_nbdelete;
 private:
   Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers);
   ~Rps_GarbageCollector();
   void run_gc(void);
 public:
+  uint64_t nb_scans() const
+  {
+    return gc_nbscan;
+  };
+  uint64_t nb_marks() const
+  {
+    return gc_nbmark;
+  };
+  uint64_t nb_deletions() const
+  {
+    return gc_nbdelete;
+  };
   void mark_obj(Rps_ObjectZone* ob);
   void mark_obj(Rps_ObjectRef ob);
   void mark_value(Rps_Value val, unsigned depth=0);
@@ -941,9 +958,9 @@ class Rps_QuasiZone
 {
   friend class Rps_GarbageCollector;
   const Rps_Type qz_type;
-  volatile std::atomic_uint16_t qz_gcinfo;
+  volatile mutable std::atomic_uint16_t qz_gcinfo;
   // we keep each quasi-zone in the qz_zonvec
-  static std::mutex qz_mtx;
+  static std::recursive_mutex qz_mtx;
   static std::vector<Rps_QuasiZone*> qz_zonvec;
   static uint32_t qz_cnt;
   uint32_t qz_rank;		// the rank in qz_zonvec;
@@ -1222,6 +1239,7 @@ protected:
     ob_comps.push_back(compval);
   }
 public:
+  std::string string_oid(void) const;
   inline Rps_Payload*get_payload(void) const;
   inline Rps_ObjectRef get_class(void) const;
   inline double get_mtime(void) const;
