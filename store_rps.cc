@@ -596,8 +596,8 @@ class Rps_Dumper
   friend void rps_dump_into (const std::string dirpath);
   friend void rps_dump_scan_object(Rps_Dumper*, Rps_ObjectRef obr);
   friend void rps_dump_scan_value(Rps_Dumper*, Rps_Value obr, unsigned depth);
-  friend Hjson::Value rump_dump_hjson_value(Rps_Dumper*, Rps_Value obr);
-  friend Hjson::Value rump_dump_hjson_object_ref(Rps_Dumper*, Rps_ObjectRef obr);
+  friend Hjson::Value rps_dump_hjson_value(Rps_Dumper*, Rps_Value obr);
+  friend Hjson::Value rps_dump_hjson_object_ref(Rps_Dumper*, Rps_ObjectRef obr);
   std::string du_topdir;
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
@@ -631,6 +631,16 @@ Rps_Dumper::scan_value(const Rps_Value val, unsigned depth)
 #warning Rps_Dumper::scan_value unimplemented
 } // end Rps_Dumper::scan_value
 
+Hjson::Value
+Rps_Dumper::hjson_value(Rps_Value val)
+{
+  if (is_dumpable_value(val))
+    {
+      RPS_FATALOUT("Rps_Dumper::hjson_value unimplemented");
+#warning Rps_Dumper::hjson_value unimplemented
+    }
+  else return Hjson::Value(nullptr);
+} // end Rps_Dumper::hjson_value
 
 bool
 Rps_Dumper::is_dumpable_objref(const Rps_ObjectRef obr)
@@ -656,6 +666,19 @@ Rps_Dumper::is_dumpable_value(const Rps_Value val)
 #warning Rps_Dumper::is_dumpable_value partly unimplemented
 } // end Rps_Dumper::is_dumpable_value
 
+bool rps_is_dumpable_objref(Rps_Dumper*du, const Rps_ObjectRef obr)
+{
+  RPS_ASSERT(du != nullptr);
+  return du->is_dumpable_objref(obr);
+} // end rps_is_dumpable_objref
+
+bool rps_is_dumpable_value(Rps_Dumper*du, const Rps_Value val)
+{
+
+  RPS_ASSERT(du != nullptr);
+  return du->is_dumpable_value(val);
+} // end rps_is_dumpable_value
+
 void
 rps_dump_scan_object(Rps_Dumper*du, const Rps_ObjectRef obr)
 {
@@ -668,6 +691,25 @@ void rps_dump_scan_value(Rps_Dumper*du, const Rps_Value val, unsigned depth)
   RPS_ASSERT(du != nullptr);
   du->scan_value(val, depth);
 } // end rps_dump_scan_value
+
+Hjson::Value
+rps_dump_hjson_value(Rps_Dumper*du, Rps_Value val)
+{
+  RPS_ASSERT(du != nullptr);
+  if (!val || !rps_is_dumpable_value(du,val))
+    return Hjson::Value(nullptr);
+  else return du->hjson_value(val);
+} // end rps_dump_hjson_value
+
+Hjson::Value
+rps_dump_hjson_objectref(Rps_Dumper*du, Rps_ObjectRef obr)
+{
+  RPS_ASSERT(du != nullptr);
+  if (!obr || !rps_is_dumpable_objref(du,obr))
+    return Hjson::Value(nullptr);
+  else
+    return Hjson::Value(obr->oid().to_string());
+} // end rps_dump_hjson_object_ref
 
 void
 Rps_TupleOb::dump_scan(Rps_Dumper*du, unsigned depth) const

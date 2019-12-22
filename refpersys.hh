@@ -1822,8 +1822,8 @@ extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps
 
 extern "C" void rps_dump_scan_object(Rps_Dumper*, const Rps_ObjectRef obr);
 extern "C" void rps_dump_scan_value(Rps_Dumper*, const Rps_Value obr, unsigned depth);
-extern "C" Hjson::Value rump_dump_hjson_value(Rps_Dumper*, const Rps_Value val);
-extern "C" Hjson::Value rump_dump_hjson_objectref(Rps_Dumper*, const Rps_ObjectRef obr);
+extern "C" Hjson::Value rps_dump_hjson_value(Rps_Dumper*, const Rps_Value val);
+extern "C" Hjson::Value rps_dump_hjson_objectref(Rps_Dumper*, const Rps_ObjectRef obr);
 extern "C" bool rps_is_dumpable_objref(Rps_Dumper*, const Rps_ObjectRef obr);
 extern "C" bool rps_is_dumpable_value(Rps_Dumper*, const Rps_Value val);
 
