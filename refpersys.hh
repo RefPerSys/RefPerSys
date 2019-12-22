@@ -984,7 +984,8 @@ protected:
   {
     return qz_type;
   };
-} __attribute__((aligned(rps_allocation_unit)));				// end class Rps_QuasiZone;
+} __attribute__((aligned(rps_allocation_unit)));
+// end class Rps_QuasiZone;
 
 
 
@@ -1223,6 +1224,24 @@ public:
   inline Rps_Payload*get_payload(void) const;
   inline Rps_ObjectRef get_class(void) const;
   inline double get_mtime(void) const;
+  template<class PaylClass, class ...Args>
+  PaylClass* put_new_payload(Args... args) {
+    std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate<PaylClass,Args...>(args...);
+    Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
+    if (oldpayl)
+      delete oldpayl;
+    return newpayl;
+  };
+  template<class PaylClass, class ...Args>
+  PaylClass* put_new_payload_with_wordgap(unsigned wordgap, Args... args) {
+    std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass,Args...>(wordgap,args...);
+    Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
+    if (oldpayl)
+      delete oldpayl;
+    return newpayl;
+  };
   virtual uint32_t wordsize() const
   {
     return sizeof(Rps_ObjectZone)/sizeof(void*);
