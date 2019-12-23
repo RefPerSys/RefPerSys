@@ -41,7 +41,7 @@ const char rps_garbcoll_date[]= __DATE__;
 std::atomic<Rps_GarbageCollector*> Rps_GarbageCollector::gc_this;
 std::atomic<uint64_t> Rps_GarbageCollector::gc_count;
 
-Rps_GarbageCollector::Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers) :
+Rps_GarbageCollector::Rps_GarbageCollector(const std::function<unsigned(Rps_GarbageCollector*)> &rootmarkers) :
   gc_mtx(), gc_running(false), gc_rootmarkers(rootmarkers),
   gc_obscanque(), gc_nbscan(0), gc_nbmark(0), gc_nbdelete(0)
 {
@@ -65,24 +65,16 @@ rps_garbage_collect (void)
   RPS_ASSERT(Rps_GarbageCollector::gc_this.load() == nullptr);
   double startrealt = rps_monotonic_real_time();
   double startcput = rps_process_cpu_time();
-  long nbroots=0;
-  long*pnbroots= &nbroots;
-  Rps_GarbageCollector the_gc([=](Rps_GarbageCollector*gc)
-  {
-    RPS_INFORM("rps_garbage_collect starting count#%ld",
-               Rps_GarbageCollector::gc_count.load());
-    rps_each_root_object([=](Rps_ObjectRef obr)
-    {
-      obr.gc_mark(*gc);
-      (*pnbroots)++;
-    });
-  });
-  the_gc.run_gc();
+  Rps_GarbageCollector the_gc;
   auto gcnt = Rps_GarbageCollector::gc_count.load();
+  RPS_INFORM("rps_garbage_collect before run; count#%ld",
+	     gcnt);
+  the_gc.run_gc();
   double endrealt = rps_monotonic_real_time();
   double endcput = rps_process_cpu_time();
+  auto nbroots = the_gc.nb_roots();
   RPS_INFORM("rps_garbage_collect completed; count#%ld, %ld roots, %ld scans, %ld marks, %ld deletions, real %.3f, cpu %.3f sec",
-             gcnt, nbroots, (long)(the_gc.nb_scans()),  (long)(the_gc.nb_marks()),  (long)(the_gc.nb_deletions()),
+             gcnt, (long) nbroots, (long)(the_gc.nb_scans()),  (long)(the_gc.nb_marks()),  (long)(the_gc.nb_deletions()),
              endrealt-startrealt, endcput-startcput);
 } // end of rps_garbage_collect
 
@@ -98,18 +90,33 @@ Rps_GarbageCollector::mark_obj(Rps_ObjectRef ob)
     }
 } // end of Rps_GarbageCollector::mark_obj
 
+void
+Rps_GarbageCollector::mark_gcroots(void)
+{
+  unsigned nbroots=0;
+  unsigned*pnbroots= &nbroots;
+  rps_each_root_object([=](Rps_ObjectRef obr)
+    {
+      obr.gc_mark(*this);
+      (*pnbroots)++;
+    });
+  if (gc_rootmarkers)
+    nbroots += gc_rootmarkers(this);
+  gc_nbroots = nbroots;
+} // end Rps_GarbageCollector::mark_gcroots
+
 
 void
 Rps_GarbageCollector::run_gc(void)
 {
   RPS_ASSERT(!gc_running.load());
+  gc_running.store(true);
   Rps_QuasiZone::run_locked_gc
   (*this,
    [] (Rps_GarbageCollector&gc)
   {
-    gc.gc_running.store(true);
     Rps_QuasiZone::clear_all_gcmarks(gc);
-    gc.gc_rootmarkers(&gc);
+    gc.mark_gcroots();
     while (!gc.gc_obscanque.empty())
       {
         auto obfront = gc.gc_obscanque.front();
@@ -130,6 +137,7 @@ Rps_GarbageCollector::run_gc(void)
     delete qz;
     gc.gc_nbdelete++;
   });
+  gc_running.store(false);
 #warning Rps_GarbageCollector::run_gc could be incomplete or wrong
 } // end Rps_GarbageCollector::run_gc
 

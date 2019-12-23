@@ -925,16 +925,22 @@ class Rps_GarbageCollector
   friend class Rps_QuasiZone;
   std::mutex gc_mtx;
   std::atomic<bool> gc_running;
-  const std::function<void(Rps_GarbageCollector*)> &gc_rootmarkers;
+  const std::function<unsigned(Rps_GarbageCollector*)> gc_rootmarkers;
   std::deque<Rps_ObjectRef> gc_obscanque;
   uint64_t gc_nbscan;
   uint64_t gc_nbmark;
   uint64_t gc_nbdelete;
+  uint64_t gc_nbroots;
 private:
-  Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers);
+  Rps_GarbageCollector(const std::function<unsigned(Rps_GarbageCollector*)> &rootmarkers=nullptr);
   ~Rps_GarbageCollector();
   void run_gc(void);
+  void mark_gcroots(void);
 public:
+  uint64_t nb_roots() const
+  {
+    return gc_nbroots;
+  };
   uint64_t nb_scans() const
   {
     return gc_nbscan;
