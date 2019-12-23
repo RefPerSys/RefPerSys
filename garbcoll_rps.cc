@@ -68,7 +68,7 @@ rps_garbage_collect (void)
   Rps_GarbageCollector the_gc;
   auto gcnt = Rps_GarbageCollector::gc_count.load();
   RPS_INFORM("rps_garbage_collect before run; count#%ld",
-	     gcnt);
+             gcnt);
   the_gc.run_gc();
   double endrealt = rps_monotonic_real_time();
   double endcput = rps_process_cpu_time();
@@ -96,10 +96,10 @@ Rps_GarbageCollector::mark_gcroots(void)
   unsigned nbroots=0;
   unsigned*pnbroots= &nbroots;
   rps_each_root_object([=](Rps_ObjectRef obr)
-    {
-      obr.gc_mark(*this);
-      (*pnbroots)++;
-    });
+  {
+    obr.gc_mark(*this);
+    (*pnbroots)++;
+  });
   if (gc_rootmarkers)
     nbroots += gc_rootmarkers(this);
   gc_nbroots = nbroots;

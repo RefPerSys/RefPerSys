@@ -831,6 +831,19 @@ Rps_ObjectZone::get_payload(void) const
   return ob_payload.load();
 } // end Rps_ObjectZone::get_payload(void)
 
+void
+Rps_ObjectZone::clear_payload(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  Rps_Payload*oldpayl = ob_payload.exchange(nullptr);
+  if (oldpayl)
+    {
+      if (oldpayl->owner() == this)
+        oldpayl->clear_owner();
+      delete oldpayl;
+    }
+} // end Rps_ObjectZone::clear_payload
+
 Rps_ObjectRef
 Rps_ObjectZone::get_class(void) const
 {

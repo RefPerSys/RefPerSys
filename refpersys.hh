@@ -1250,6 +1250,7 @@ public:
   inline Rps_Payload*get_payload(void) const;
   inline Rps_ObjectRef get_class(void) const;
   inline double get_mtime(void) const;
+  inline void clear_payload(void);
   template<class PaylClass, class ...Args>
   PaylClass* put_new_payload(Args... args)
   {
@@ -1312,6 +1313,10 @@ protected:
   inline Rps_Payload(Rps_Type, Rps_ObjectZone*);
   inline Rps_Payload(Rps_Type, Rps_ObjectRef);
   virtual ~Rps_Payload()
+  {
+    payl_owner = nullptr;
+  };
+  void clear_owner(void)
   {
     payl_owner = nullptr;
   };

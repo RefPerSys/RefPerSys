@@ -83,7 +83,12 @@ Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
 Rps_ObjectZone::~Rps_ObjectZone()
 {
   RPS_INFORMOUT("destroying object " << oid());
-}
+  clear_payload();
+  ob_attrs.clear();
+  ob_comps.clear();
+  ob_class.store(nullptr);
+  ob_mtime.store(0.0);
+} // end Rps_ObjectZone::~Rps_ObjectZone()
 
 Rps_ObjectZone::Rps_ObjectZone() :
   Rps_ObjectZone::Rps_ObjectZone(fresh_random_oid(this), false)
@@ -154,7 +159,7 @@ Rps_ObjectZone::mark_gc_inside(Rps_GarbageCollector&gc)
         gc.mark_value(compv);
     };
   Rps_Payload*payl = ob_payload.load();
-  if (payl)
+  if (payl && payl->owner() == this)
     payl->gc_mark(gc);
 } // end Rps_ObjectZone::mark_gc_inside
 
