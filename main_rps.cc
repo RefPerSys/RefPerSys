@@ -501,7 +501,9 @@ Rps_BackTrace::bt_full_cb(void *data, uintptr_t pc,
 Rps_BackTrace::Rps_BackTrace(const char*name, const void*data)
   : _bt_magic(_bt_magicnum_),
     _bt_name(name?name:"??"),
-    _bt_data(data), _bt_simplecb(), _bt_fullcb()
+    _bt_simplecb(),
+    _bt_fullcb(),
+    _bt_data(data)
 {
 } // end of Rps_BackTrace::Rps_BackTrace
 
