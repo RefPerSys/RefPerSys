@@ -590,14 +590,15 @@ class Rps_Dumper
   friend void rps_dump_into (const std::string dirpath);
   friend void rps_dump_scan_object(Rps_Dumper*, Rps_ObjectRef obr);
   friend void rps_dump_scan_value(Rps_Dumper*, Rps_Value obr, unsigned depth);
-  friend Hjson::Value rps_dump_hjson_value(Rps_Dumper*, Rps_Value obr);
-  friend Hjson::Value rps_dump_hjson_object_ref(Rps_Dumper*, Rps_ObjectRef obr);
+  friend Hjson::Value rps_dump_hjson_value(Rps_Dumper*, Rps_Value val);
+  friend Hjson::Value rps_dump_hjson_objectref(Rps_Dumper*, Rps_ObjectRef obr);
   std::string du_topdir;
+  std::recursive_mutex du_mtx;
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
 public:
   Rps_Dumper(const std::string&topdir) :
-    du_topdir(topdir) {};
+    du_topdir(topdir), du_mtx(), du_mapobjects(), du_scanque() {};
   void scan_object(const Rps_ObjectRef obr);
   void scan_value(const Rps_Value val, unsigned depth);
   Hjson::Value hjson_value(const Rps_Value val);
@@ -612,8 +613,12 @@ Rps_Dumper::scan_object(const Rps_ObjectRef obr)
 {
   if (!obr)
     return;
-  RPS_FATALOUT("Rps_Dumper::scan_object unimplemented " << obr->oid());
-#warning Rps_Dumper::scan_object unimplemented
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  if (du_mapobjects.find(obr->oid()) != du_mapobjects.end())
+    return;
+#warning Rps_Dumper::scan_object should test for transient objects
+  du_mapobjects.insert({obr->oid(), obr});
+  RPS_INFORMOUT("Rps_Dumper::scan_object adding oid " << obr->oid());
 } // end Rps_Dumper::scan_object
 
 void
@@ -644,10 +649,11 @@ Rps_Dumper::is_dumpable_objref(const Rps_ObjectRef obr)
 {
   if (!obr)
     return false;
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
   if (du_mapobjects.find(obr->oid()) != du_mapobjects.end())
     return true;
-  RPS_FATALOUT("Rps_Dumper::is_dumpable_objref partly unimplemented");
 #warning Rps_Dumper::is_dumpable_objref partly unimplemented
+  return false;
 } // end Rps_Dumper::is_dumpable_objref
 
 
@@ -706,7 +712,7 @@ rps_dump_hjson_objectref(Rps_Dumper*du, Rps_ObjectRef obr)
     return Hjson::Value(nullptr);
   else
     return Hjson::Value(obr->oid().to_string());
-} // end rps_dump_hjson_object_ref
+} // end rps_dump_hjson_objectref
 
 void
 Rps_TupleOb::dump_scan(Rps_Dumper*du, unsigned depth) const
@@ -720,8 +726,29 @@ Hjson::Value
 Rps_TupleOb::dump_hjson(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATAL("unimplemented Rps_TupleOb::dump_hjson");
-#warning unimplemented Rps_TupleOb::dump_hjson
+  auto  hjtup = Hjson::Value(Hjson::Value::Type::MAP);
+  hjtup["vtype"] = Hjson::Value("tuple");
+  auto hjvec = Hjson::Value(Hjson::Value::Type::VECTOR);
+  for (auto obr: *this)
+    if (rps_is_dumpable_objref(du,obr))
+      hjvec.push_back(rps_dump_hjson_objectref(du,obr));
+  hjtup["comp"] = hjvec;
+  return hjtup;
+#warning for Nimesh: body of Rps_TupleOb::dump_json for JsonCPP below
+#if 0 && JsonCPP
+  // untested, could even not compile
+  auto jtup = Json::Value(Json::objectValue);
+  jtup["vtype"] = Json::Value("tuple");
+  auto jvec = Json::Value(Json::arrayValue);
+  jvec.resize(cnt()); // reservation
+  int ix=0;
+  for (auto obr: *this)
+    if (rps_is_dumpable_objref(du,obr))
+      jvec[ix++] = rps_dump_json_objectref(du,obr);
+  jvec.resize(ix);  // shrink to fit
+  jtup["comp"] = jvec;
+  return jtup;
+#endif /*0 && JsonCPP*/
 } // end Rps_TupleOb::dump_hjson
 
 
@@ -738,8 +765,14 @@ Hjson::Value
 Rps_SetOb::dump_hjson(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATAL("unimplemented Rps_SetOb::dump_hjson");
-#warning unimplemented Rps_SetOb::dump_hjson
+  auto  hjset = Hjson::Value(Hjson::Value::Type::MAP);
+  hjset["vtype"] = Hjson::Value("set");
+  auto hjvec = Hjson::Value(Hjson::Value::Type::VECTOR);
+  for (auto obr: *this)
+    if (rps_is_dumpable_objref(du,obr))
+      hjvec.push_back(rps_dump_hjson_objectref(du,obr));
+  hjset["elem"] = hjvec;
+  return hjset;
 } // end Rps_SetOb::dump_hjson
 
 ////////////////
@@ -762,26 +795,32 @@ Hjson::Value
 Rps_ClosureZone::dump_hjson(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATAL("unimplemented Rps_ClosureZone::dump_hjson");
-#warning unimplemented Rps_ClosureZone::dump_hjson
+  if (!rps_is_dumpable_objref(du,conn()))
+    return Hjson::Value(nullptr);
+  auto  hjclo = Hjson::Value(Hjson::Value::Type::MAP);
+  hjclo["vtype"] = Hjson::Value("closure");
+  hjclo["fn"] = rps_dump_hjson_objectref(du,conn());
+  auto hjvec = Hjson::Value(Hjson::Value::Type::VECTOR);
+  for (Rps_Value sonval: *this)
+    hjvec.push_back(rps_dump_hjson_value(du,sonval));
+  hjclo["env"] = hjvec;
+  return hjclo;
 } // end Rps_ClosureZone::dump_hjson
 
 
 ////////////////
 void
-Rps_ObjectZone::dump_scan(Rps_Dumper*du, unsigned depth) const
+Rps_ObjectZone::dump_scan(Rps_Dumper*du, unsigned) const
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATAL("unimplemented Rps_ObjectZone::dump_scan depth %u", depth);
-#warning unimplemented Rps_ObjectZone::dump_scan
+  rps_dump_scan_object(du,Rps_ObjectRef(this));
 }
 
 Hjson::Value
 Rps_ObjectZone::dump_hjson(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATAL("unimplemented Rps_ObjectZone::dump_hjson");
-#warning unimplemented Rps_ObjectZone::dump_hjson
+  return rps_dump_hjson_objectref(du,Rps_ObjectRef(this));
 } // end Rps_ObjectZone::dump_hjson
 
 //////////////////////////////////////////////////////////////// dump
