@@ -314,8 +314,8 @@ void
 Rps_PayloadSetOb::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATAL("unimplemented Rps_PayloadSetOb::dump_scan");
-#warning unimplemented Rps_PayloadSetOb::dump_scan
+  for (auto obr: psetob)
+    rps_dump_scan_object(du, obr);
 } // end Rps_PayloadSetOb::dump_scan
 
 
@@ -345,8 +345,8 @@ void
 Rps_PayloadVectOb::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATAL("unimplemented Rps_PayloadVectOb::dump_scan");
-#warning unimplemented Rps_PayloadVectOb::dump_scan
+  for (auto obr: pvectob)
+    rps_dump_scan_object(du, obr);
 } // end Rps_PayloadVectOb::dump_scan
 
 
