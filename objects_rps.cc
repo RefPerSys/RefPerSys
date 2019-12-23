@@ -53,6 +53,7 @@ Rps_ObjectZone::register_objzone(Rps_ObjectZone*obz)
   ob_idmap_.insert({oid,obz});
 } // end Rps_ObjectZone::register_objzone
 
+
 Rps_Id
 Rps_ObjectZone::fresh_random_oid(Rps_ObjectZone*ob)
 {
@@ -68,6 +69,7 @@ Rps_ObjectZone::fresh_random_oid(Rps_ObjectZone*ob)
     }
 }
 
+
 Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
   : Rps_ZoneValue(Rps_Type::Object),
     ob_oid(oid), ob_mtx(), ob_class(nullptr),
@@ -77,10 +79,17 @@ Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
     register_objzone(this);
 } // end Rps_ObjectZone::Rps_ObjectZone
 
+
+Rps_ObjectZone::~Rps_ObjectZone()
+{
+  RPS_INFORMOUT("destroying object " << oid());
+}
+
 Rps_ObjectZone::Rps_ObjectZone() :
   Rps_ObjectZone::Rps_ObjectZone(fresh_random_oid(this), false)
 {
 } // end Rps_ObjectZone::Rps_ObjectZone
+
 
 Rps_ObjectZone*
 Rps_ObjectZone::make(void)
@@ -91,6 +100,7 @@ Rps_ObjectZone::make(void)
   return obz;
 } // end Rps_ObjectZone::make
 
+
 Rps_ObjectZone*
 Rps_ObjectZone::make_loaded(Rps_Id oid, Rps_Loader* ld)
 {
@@ -98,8 +108,10 @@ Rps_ObjectZone::make_loaded(Rps_Id oid, Rps_Loader* ld)
   RPS_ASSERT(oid.valid());
   RPS_ASSERT(ld != nullptr);
   Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(oid, false);
+  RPS_INFORMOUT("make_loaded oid="<< oid << ", obz=" << (void*)obz);
   return obz;
 } // end Rps_ObjectZone::make_loaded
+
 
 Rps_ObjectZone*
 Rps_ObjectZone::find(Rps_Id oid)

@@ -1204,6 +1204,7 @@ class Rps_ObjectZone : public Rps_ZoneValue
   std::atomic<Rps_Payload*> ob_payload;
   Rps_ObjectZone(Rps_Id oid, bool dontregister=false);
   Rps_ObjectZone(void);
+  ~Rps_ObjectZone();
   static std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher> ob_idmap_;
   static std::mutex ob_idmtx_;
   static void register_objzone(Rps_ObjectZone*);

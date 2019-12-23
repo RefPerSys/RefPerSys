@@ -69,6 +69,8 @@ rps_garbage_collect (void)
   long*pnbroots= &nbroots;
   Rps_GarbageCollector the_gc([=](Rps_GarbageCollector*gc)
   {
+    RPS_INFORM("rps_garbage_collect starting count#%ld",
+               Rps_GarbageCollector::gc_count.load());
     rps_each_root_object([=](Rps_ObjectRef obr)
     {
       obr.gc_mark(*gc);
@@ -105,7 +107,9 @@ Rps_GarbageCollector::run_gc(void)
   (*this,
    [] (Rps_GarbageCollector&gc)
   {
+    gc.gc_running.store(true);
     Rps_QuasiZone::clear_all_gcmarks(gc);
+    gc.gc_rootmarkers(&gc);
     while (!gc.gc_obscanque.empty())
       {
         auto obfront = gc.gc_obscanque.front();
