@@ -118,7 +118,6 @@ Rps_Loader::load_real_path(const std::string& path)
       return restr;
     }
   throw std::runtime_error(std::string("cannot file load real path for ") + path);
-#warning Rps_Loader::load_real_path could be incomplete
 } // end Rps_Loader::load_real_path
 
 
@@ -350,12 +349,6 @@ Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
         else
           pldfun = ldit->second;
       };
-#warning incomplete Rps_Loader::parse_hjson_buffer_second_pass for payload
-      RPS_WARNOUT("Rps_Loader::parse_hjson_buffer_second_pass incomplete spacid=" << spacid
-                  << " lineno:" << lineno
-                  << " objid:" << objid
-                  << " payload: " << paylstr
-                  << std::endl);
       if (pldfun)
         {
           (*pldfun)(obz,this,objhjson,spacid,lineno);
