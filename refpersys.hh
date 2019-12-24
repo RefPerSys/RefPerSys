@@ -1305,6 +1305,10 @@ public:
 //// signature of extern "C" functions for payload loading; their name starts with rpsldpy_
 typedef void rpsldpysig_t(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv, Rps_Id spacid, unsigned lineno);
 #define RPS_PAYLOADING_PREFIX "rpsldpy_"
+
+
+
+///////////////////////////////////////////// payload superclass
 class Rps_Payload : public Rps_QuasiZone
 {
   friend class Rps_ObjectZone;
@@ -1325,6 +1329,10 @@ public:
     : Rps_Payload(ty,obz)
   {
     RPS_ASSERT(ld != nullptr);
+  };
+  virtual bool is_erasable(void) const
+  {
+    return true;
   };
   virtual void gc_mark(Rps_GarbageCollector&gc) const =0;
   virtual void dump_scan(Rps_Dumper*du) const =0;
@@ -1675,6 +1683,10 @@ public:
   virtual uint32_t wordsize(void) const
   {
     return sizeof(*this)/sizeof(void*);
+  };
+  virtual bool is_erasable(void) const
+  {
+    return false;
   };
   inline Rps_PayloadClassInfo(Rps_ObjectZone*owner, Rps_Loader*ld);
   Rps_ObjectRef superclass() const
