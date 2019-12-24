@@ -839,7 +839,14 @@ Rps_ObjectZone::clear_payload(void)
   if (oldpayl)
     {
       if (oldpayl->owner() == this)
-        oldpayl->clear_owner();
+        {
+          if (!oldpayl->is_erasable())
+            {
+              ob_payload.store(oldpayl);
+              throw std::runtime_error("unerasable payload cannot be removed");
+            }
+          oldpayl->clear_owner();
+        }
       delete oldpayl;
     }
 } // end Rps_ObjectZone::clear_payload

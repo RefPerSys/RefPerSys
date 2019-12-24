@@ -1911,6 +1911,12 @@ Payload may be:
   \item etc  \ldots
 \end{itemize}
 
+Some payloads could be erased or replaced by another kind of payload,
+but some payloads are not erasable; for example, it makes no sense to
+replace a class information payload by a string buffer one in the same
+class object. Hence payloads have a \texttt{is_erasable} member
+function in C++.
+
 \bigskip
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{File naming}
