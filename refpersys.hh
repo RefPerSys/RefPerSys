@@ -122,6 +122,42 @@ extern "C" const char rps_md5sum[];
 extern "C" const char*const rps_files[];
 extern "C" const char*const rps_subdirectories[];
 
+
+class RpsColophon
+{
+public:
+  static inline std::string timestamp()
+  {
+    return std::string (rps_timestamp);
+  }
+
+  static inline std::string git_id()
+  {
+    return std::string (rps_gitid);
+  }
+
+  static inline std::string source_md5()
+  {
+    return std::string (rps_md5sum);
+  }
+
+  static inline std::string last_git_commit()
+  {
+    return std::string (rps_lastgitcommit);
+  }
+
+  static inline std::string top_directory()
+  {
+    return std::string (rps_topdirectory);
+  }
+
+  static inline std::string website()
+  {
+    return std::string ("http://refpersys.org/");
+  }
+};
+
+
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_state;
 

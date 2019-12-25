@@ -186,17 +186,12 @@ void
 RpsQWindow::onMenuAbout()
 {
   std::ostringstream msg;
-  msg << "RefPerSys Git ID: " 
-      << rps_gitid
-      << "\nBuild Date: "
-      << rps_timestamp
-      << "\nMD5 Sum of Source: "
-      << rps_md5sum
-      << "\nLast Git Commit: "
-      << rps_lastgitcommit
-      << "\nRefPerSys Top Directory: "
-      << rps_topdirectory
-      << "\n\nSee http://refpersys.org/\n";
+  msg << "RefPerSys Git ID: " << RpsColophon::git_id()
+      << "\nBuild Date: " << RpsColophon::timestamp()
+      << "\nMD5 Sum of Source: " << RpsColophon::source_md5()
+      << "\nLast Git Commit: " << RpsColophon::last_git_commit()
+      << "\nRefPerSys Top Directory: " << RpsColophon::top_directory()
+      << "\n\nSee " << RpsColophon::website();
 
   QMessageBox::information (this, "About RefPerSys", msg.str().c_str());
 } // end RpsQWindow::onMenuAbout
@@ -213,7 +208,7 @@ RpsQWindow::onMenuDebug()
     }
 
   this->m_ptedit->setReadOnly (true);
-  auto flag = this->m_ptedit->textInteractionFlags () 
+  auto flag = this->m_ptedit->textInteractionFlags ()
               | Qt::TextSelectableByKeyboard;
   this->m_ptedit->setTextInteractionFlags (flag);
 
