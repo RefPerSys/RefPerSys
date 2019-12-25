@@ -62,9 +62,8 @@ RpsQWindow::RpsQWindow (QWidget *parent)
   menuBar ()->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding);
   vbox->addWidget (menuBar ());
 
-  this->m_ptedit = new QPlainTextEdit ();
-  this->m_ptedit->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding);
-  vbox->addWidget (this->m_ptedit);
+  setup_debug_widget();
+  vbox->addWidget (m_debug_widget);
 
   setLayout (vbox);
 } // end RpsQWindow::RpsQWindow
@@ -132,14 +131,34 @@ void RpsQWindow::setupHelpMenu()
 
 
 void
+RpsQWindow::setup_debug_widget()
+{
+  m_debug_widget = new QPlainTextEdit();
+  m_debug_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  m_debug_widget->setReadOnly(true);
+  m_debug_widget->setTextInteractionFlags(
+    m_debug_widget->textInteractionFlags() | Qt::TextSelectableByKeyboard
+  );
+}
+
+
+void
+RpsQWindow::setup_debug_timer()
+{
+  m_debug_timer = new QTimer(this);
+  connect(m_debug_timer, SIGNAL(timeout()), this, SLOT(update_debug_widget()));
+}
+
+
+void
 RpsQWindow::onMenuQuit()
 {
-  auto msg = QString ("Are you sure you want to quit without dumping?");
+  auto msg = QString("Are you sure you want to quit without dumping?");
   auto btn = QMessageBox::Yes | QMessageBox::No;
-  auto reply = QMessageBox::question (this, "RefPerSys", msg, btn);
+  auto reply = QMessageBox::question(this, "RefPerSys", msg, btn);
 
   if (reply == QMessageBox::Yes)
-    QApplication::quit ();
+    QApplication::quit();
 } // end  RpsQWindow::onMenuQuit
 
 
@@ -200,22 +219,30 @@ RpsQWindow::onMenuAbout()
 void
 RpsQWindow::onMenuDebug()
 {
+  m_debug_timer->start(1000);
+  update_debug_widget();
+} // end RpsQWindow::onMenuDebug
+
+
+void
+RpsQWindow::update_debug_widget()
+{
   QFile log ("_refpersys.log");
-  if (!log.open (QFile::ReadOnly | QFile::Text))
+
+  if (log.open (QFile::ReadOnly | QFile::Text))
     {
-      qDebug () << "Failed to open debug log";
-      return;
+      m_debug_widget->setPlainText (log.readAll());
+      m_debug_widget->show();
+      log.close();
     }
 
-  this->m_ptedit->setReadOnly (true);
-  auto flag = this->m_ptedit->textInteractionFlags ()
-              | Qt::TextSelectableByKeyboard;
-  this->m_ptedit->setTextInteractionFlags (flag);
+  else
+    {
+      qDebug() << "Failed to open debug log";
+      return;
+    }
+}
 
-  this->m_ptedit->setPlainText (log.readAll ());
-  this->m_ptedit->show ();
-  log.close ();
-} // end RpsQWindow::onMenuDebug
 
 //////////////////////////////////////// end of file window_qrps.cc
 

@@ -40,9 +40,9 @@ class RpsQApplication;
 class RpsQWindow;
 
 #include <QApplication>
-#include <QApplication>
 #include <QMainWindow>
 #include <QPlainTextEdit>
+#include <QTimer>
 
 //////////////////////////////////////////////////////////// RpsQApplication
 //// our application class
@@ -94,8 +94,11 @@ public:
 private:
   void setupAppMenu();
   void setupHelpMenu();
+  void setup_debug_widget();
+  void setup_debug_timer();
 
-  QPlainTextEdit *m_ptedit;
+  QPlainTextEdit* m_debug_widget;
+  QTimer* m_debug_timer;
 
 signals:
 
@@ -107,6 +110,7 @@ private slots:
   void onMenuDebug();
   void onMenuExit();
   void onMenuClose();
+  void update_debug_widget();
 };				// end of RpsQWindow
 
 #endif /*QTHEAD_QRPS_INCLUDED*/
