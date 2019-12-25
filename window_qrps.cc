@@ -215,6 +215,11 @@ RpsQWindow::onMenuDebug()
       return;
     }
 
+  this->m_ptedit->setReadOnly (true);
+  auto flag = this->m_ptedit->textInteractionFlags () 
+              | Qt::TextSelectableByKeyboard;
+  this->m_ptedit->setTextInteractionFlags (flag);
+
   this->m_ptedit->setPlainText (log.readAll ());
   this->m_ptedit->show ();
   log.close ();
