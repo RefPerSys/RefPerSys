@@ -63,7 +63,7 @@ RpsQWindow::RpsQWindow (QWidget *parent)
   vbox->addWidget (menuBar ());
 
   setup_debug_widget();
-  vbox->addWidget (m_debug_widget);
+  vbox->addWidget (&m_debug_widget);
 
   setLayout (vbox);
 } // end RpsQWindow::RpsQWindow
@@ -133,11 +133,10 @@ void RpsQWindow::setupHelpMenu()
 void
 RpsQWindow::setup_debug_widget()
 {
-  m_debug_widget = new QPlainTextEdit();
-  m_debug_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  m_debug_widget->setReadOnly(true);
-  m_debug_widget->setTextInteractionFlags(
-    m_debug_widget->textInteractionFlags() | Qt::TextSelectableByKeyboard
+  m_debug_widget.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  m_debug_widget.setReadOnly(true);
+  m_debug_widget.setTextInteractionFlags(
+    m_debug_widget.textInteractionFlags() | Qt::TextSelectableByKeyboard
   );
 }
 
@@ -145,8 +144,7 @@ RpsQWindow::setup_debug_widget()
 void
 RpsQWindow::setup_debug_timer()
 {
-  m_debug_timer = new QTimer(this);
-  connect(m_debug_timer, SIGNAL(timeout()), this, SLOT(update_debug_widget()));
+  connect(&m_debug_timer, SIGNAL(timeout()), this, SLOT(update_debug_widget()));
 }
 
 
@@ -219,7 +217,7 @@ RpsQWindow::onMenuAbout()
 void
 RpsQWindow::onMenuDebug()
 {
-  m_debug_timer->start(1000);
+  m_debug_timer.start(1000);
   update_debug_widget();
 } // end RpsQWindow::onMenuDebug
 
@@ -231,8 +229,8 @@ RpsQWindow::update_debug_widget()
 
   if (log.open (QFile::ReadOnly | QFile::Text))
     {
-      m_debug_widget->setPlainText (log.readAll());
-      m_debug_widget->show();
+      m_debug_widget.setPlainText (log.readAll());
+      m_debug_widget.show();
       log.close();
     }
 

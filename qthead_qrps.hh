@@ -97,8 +97,8 @@ private:
   void setup_debug_widget();
   void setup_debug_timer();
 
-  QPlainTextEdit* m_debug_widget;
-  QTimer* m_debug_timer;
+  QPlainTextEdit m_debug_widget;
+  QTimer m_debug_timer;
 
 signals:
 
