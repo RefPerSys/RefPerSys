@@ -31,6 +31,7 @@
 
 #include "refpersys.hh"
 #include "qthead_qrps.hh"
+#include <sstream>
 
 #include <QMenu>
 #include <QMenuBar>
@@ -184,24 +185,20 @@ RpsQWindow::onMenuGarbageCollect()
 void
 RpsQWindow::onMenuAbout()
 {
-  QString msg ("RefPerSys Git ID: ");
-  msg.append (rps_gitid);
-  msg.append ("\n");
-  msg.append ("Build date: ");
-  msg.append (rps_timestamp);
-  msg.append ("\n");
-  msg.append ("Md5sum of source: ");
-  msg.append (rps_md5sum);
-  msg.append ("\n");
-  msg.append ("last git commit: ");
-  msg.append(rps_lastgitcommit);
-  msg.append ("\n");
-  msg.append ("RefPerSys top directory: ");
-  msg.append(rps_topdirectory);
-  msg.append("\n");
-  msg.append("see http://refpersys.org/\n");
+  std::ostringstream msg;
+  msg << "RefPerSys Git ID: " 
+      << rps_gitid
+      << "\nBuild Date: "
+      << rps_timestamp
+      << "\nMD5 Sum of Source: "
+      << rps_md5sum
+      << "\nLast Git Commit: "
+      << rps_lastgitcommit
+      << "\nRefPerSys Top Directory: "
+      << rps_topdirectory
+      << "\n\nSee http://refpersys.org/\n";
 
-  QMessageBox::information (this, "About RefPerSys", msg);
+  QMessageBox::information (this, "About RefPerSys", msg.str().c_str());
 } // end RpsQWindow::onMenuAbout
 
 
