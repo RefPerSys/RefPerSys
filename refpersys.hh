@@ -1907,8 +1907,8 @@ public:
 
 ////////////////////////////////////////////////////////////////
 
-#define RPS_MANIFEST_HJSON "rps_manifest.hjson"
-#define RPS_USERPREFERENCE_HJSON ".refpersys.hjson"
+#define RPS_MANIFEST_JSON "rps_manifest.json"
+#define RPS_USERPREFERENCE_JSON ".refpersys.json"
 
 //// global roots for garbage collection and persistence
 /// the called function cannot add, remove or query the global root set

@@ -839,33 +839,37 @@ void rps_dump_into (const std::string dirpath)
 void
 Rps_Loader::parse_manifest_file(void)
 {
-  std::string manifpath = ld_topdir + "/" + RPS_MANIFEST_HJSON;
+  std::string manifpath = ld_topdir + "/" + RPS_MANIFEST_JSON;
   if (access(manifpath.c_str(), R_OK))
     RPS_FATAL("Rps_Loader::parse_manifest_file cannot access %s - %m",
               manifpath.c_str());
-  std::string manifstr = string_of_loaded_file(RPS_MANIFEST_HJSON);
+  std::string manifstr = string_of_loaded_file(RPS_MANIFEST_JSON);
   if (manifstr.size() < 20)
     RPS_FATAL("Rps_Loader::parse_manifest_file nearly empty file %s",
               manifpath.c_str());
-  Hjson::Value manifhjson
-    = Hjson::Unmarshal(manifstr.c_str(), manifstr.size());
-  if (manifhjson.type() != Hjson::Value::Type::MAP)
-    RPS_FATAL("Rps_Loader::parse_manifest_file bad HJson type #%d",
-              (int)manifhjson.type());
-  if (manifhjson["format"].to_string() != RPS_MANIFEST_FORMAT)
-    RPS_FATAL("manifest map in %s should have format: '%s' but got '%s'",
+  Json::Reader jsonreader(Json::Features::all());
+  Json::Value manifjson;
+  if (!jsonreader.parse(manifstr, manifjson, false))
+    RPS_FATAL("Rps_Loader::parse_manifest_file failed to parse %s : %s",
+	      manifpath.c_str(), jsonreader.getFormattedErrorMessages().c_str());
+  if (manifjson.type () != Json::objectValue)
+    RPS_FATAL("Rps_Loader::parse_manifest_file wants a Json object in %s",
+	      manifpath.c_str());
+  if (manifjson["format"].asString() != RPS_MANIFEST_FORMAT)
+    RPS_FATAL("manifest map in %s should have format: '%s' but got:\n"
+	      "%s",
               manifpath.c_str (), RPS_MANIFEST_FORMAT,
-              manifhjson["format"].to_string().c_str());
+              manifjson["format"].toStyledString().c_str());
   /// parse spaceset
   {
-    auto spsethjson = manifhjson["spaceset"];
-    if (spsethjson.type() !=  Hjson::Value::Type::VECTOR)
+    auto spsetjson = manifjson["spaceset"];
+    if (spsetjson.type() !=  Json::arrayValue)
       RPS_FATAL("manifest map in %s should have spaceset: [...]",
                 manifpath.c_str ());
-    size_t sizespset = spsethjson.size();
+    size_t sizespset = spsetjson.size();
     for (int ix=0; ix<(int)sizespset; ix++)
       {
-        std::string curspidstr = spsethjson[ix].to_string();
+        std::string curspidstr = spsetjson[ix].asString();
         Rps_Id curspid (curspidstr);
         RPS_ASSERT(curspid);
         ld_spaceset.insert({curspid});
@@ -873,14 +877,14 @@ Rps_Loader::parse_manifest_file(void)
   }
   /// parse globalroots
   {
-    auto globrootshjson = manifhjson["globalroots"];
-    if (globrootshjson.type() !=  Hjson::Value::Type::VECTOR)
+    auto globrootsjson = manifjson["globalroots"];
+    if (globrootsjson.type() !=  Json::arrayValue)
       RPS_FATAL("manifest map in %s should have globalroots: [...]",
                 manifpath.c_str ());
-    size_t sizeglobroots = globrootshjson.size();
+    size_t sizeglobroots = globrootsjson.size();
     for (int ix=0; ix<(int)sizeglobroots; ix++)
       {
-        std::string curgrootidstr = globrootshjson[ix].to_string();
+        std::string curgrootidstr = globrootsjson[ix].asString();
         Rps_Id curgrootid (curgrootidstr);
         RPS_ASSERT(curgrootid);
         ld_globrootsidset.insert(curgrootid);
@@ -888,16 +892,16 @@ Rps_Loader::parse_manifest_file(void)
   }
   /// parse plugins
   {
-    auto pluginshjson = manifhjson["plugins"];
-    if (pluginshjson.type() !=  Hjson::Value::Type::VECTOR)
+    auto pluginsjson = manifjson["plugins"];
+    if (pluginsjson.type() !=  Json::arrayValue)
       RPS_FATAL("manifest map in %s should have plugins: [...]",
                 manifpath.c_str ());
-    size_t sizeplugins = pluginshjson.size();
+    size_t sizeplugins = pluginsjson.size();
     {
       std::lock_guard<std::mutex> gu(ld_mtx);
       for (int ix=0; ix<(int)sizeplugins; ix++)
         {
-          std::string curpluginidstr = pluginshjson[ix].to_string();
+          std::string curpluginidstr = pluginsjson[ix].asString();
           Rps_Id curpluginid (curpluginidstr);
           RPS_ASSERT(curpluginid && curpluginid.valid());
           std::string pluginpath = load_real_path(std::string{"plugins/rps"} + curpluginid.to_string() + "-mod.so");
@@ -912,7 +916,7 @@ Rps_Loader::parse_manifest_file(void)
   }
   ////
   RPS_INFORMOUT("Rps_Loader::parse_manifest_file parsed "
-                << Hjson::MarshalJson(manifhjson));
+                << manifjson);
 #warning incomplete Rps_Loader::parse_manifest_file
 } // end Rps_Loader::parse_manifest_file
 
