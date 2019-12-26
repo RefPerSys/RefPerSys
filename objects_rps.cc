@@ -283,22 +283,22 @@ Rps_PayloadClassInfo::dump_scan(Rps_Dumper*du) const
 
 
 void
-Rps_PayloadClassInfo::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
+Rps_PayloadClassInfo::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
   /// see function rpsldpy_class in store_rps.cc
   RPS_ASSERT(du != nullptr);
-  RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
-  hj["superclass"] = pclass_super.dump_hjson(du);
-  auto hjvectmeth = Hjson::Value(Hjson::Value::Type::VECTOR);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  jv["superclass"] = pclass_super.dump_json(du);
+  auto jvvectmeth = Json::Value(Json::arrayValue);
   for (auto it : pclass_methdict)
     {
-      auto hjcurmeth = Hjson::Value(Hjson::Value::Type::MAP);
-      hjcurmeth["methosel"] = rps_dump_hjson_objectref(du,it.first);
-      hjcurmeth["methclos"] = rps_dump_hjson_value(du,it.second);
-      hjvectmeth.push_back(hjcurmeth);
+      auto jvcurmeth = Json::Value(Json::objectValue);
+      jvcurmeth["methosel"] = rps_dump_json_objectref(du,it.first);
+      jvcurmeth["methclos"] = rps_dump_json_value(du,it.second);
+      jvvectmeth.append(jvcurmeth);
     }
-  hj["methodict"] = hjvectmeth;
-} // end Rps_PayloadClassInfo::dump_hjson_content
+  jv["methodict"] = jvvectmeth;
+} // end Rps_PayloadClassInfo::dump_json_content
 
 
 /***************** mutable set of objects payload **********/
@@ -320,13 +320,13 @@ Rps_PayloadSetOb::dump_scan(Rps_Dumper*du) const
 
 
 void
-Rps_PayloadSetOb::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
+Rps_PayloadSetOb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
   RPS_ASSERT(du != nullptr);
-  RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
-  RPS_FATAL("unimplemented Rps_PayloadSetOb::dump_hjson_content");
-#warning unimplemented Rps_PayloadSetOb::dump_hjson_content
-} // end Rps_PayloadSetOb::dump_hjson_content
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  RPS_FATAL("unimplemented Rps_PayloadSetOb::dump_json_content");
+#warning unimplemented Rps_PayloadSetOb::dump_json_content
+} // end Rps_PayloadSetOb::dump_json_content
 
 
 
@@ -351,13 +351,13 @@ Rps_PayloadVectOb::dump_scan(Rps_Dumper*du) const
 
 
 void
-Rps_PayloadVectOb::dump_hjson_content(Rps_Dumper*du, Hjson::Value&hj) const
+Rps_PayloadVectOb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
   RPS_ASSERT(du != nullptr);
-  RPS_ASSERT(hj.type() == Hjson::Value::Type::MAP);
-  RPS_FATAL("unimplemented Rps_PayloadVectOb::dump_hjson_content");
-#warning unimplemented Rps_PayloadVectOb::dump_hjson_content
-} // end Rps_PayloadVectOb::dump_hjson_content
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  RPS_FATAL("unimplemented Rps_PayloadVectOb::dump_json_content");
+#warning unimplemented Rps_PayloadVectOb::dump_json_content
+} // end Rps_PayloadVectOb::dump_json_content
 
 
 // end of file objects_rps.cc

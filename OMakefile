@@ -78,7 +78,7 @@ CXX= g++
 CXXFLAGS += $(DIALECTFLAGS) $(OPTIMFLAGS) $(CODGENFLAGS) $(WARNFLAGS) $(PKGINCFLAGS) -DRPS_GITID='"$(RPSGITID)"'
 
 # ASFLAGS +=
-LDFLAGS +=  $(CODGENFLAGS) -L/usr/local/lib -rdynamic $(PKGLIBS) -lhjson -lunistring -lbacktrace -lpthread -ldl
+LDFLAGS +=  $(CODGENFLAGS) -L/usr/local/lib -rdynamic $(PKGLIBS) -lunistring -lbacktrace -lpthread -ldl
 
 INCLUDES += /usr/local/include
 

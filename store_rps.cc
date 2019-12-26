@@ -4,8 +4,9 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for the persistent store, in HJSON format.
- *      See also http://hjson.org/ & https://github.com/hjson/hjson-cpp
+ *      It has the code for the persistent store, in JSON format.  See
+ *      also http://json.org/ &
+ *      https://github.com/open-source-parsers/jsoncpp/
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -45,8 +46,32 @@ extern "C" const char rps_store_date[];
 const char rps_store_date[]= __DATE__;
 
 
-// same as used in rps_manifest.hjson file
+// same as used in rps_manifest.json file
 #define RPS_MANIFEST_FORMAT "RefPerSysFormat2019A"
+
+Json::Value rps_string_to_json(const std::string&str)
+{
+  Json::CharReaderBuilder jsonreaderbuilder;
+  std::unique_ptr<Json::CharReader> pjsonreader(jsonreaderbuilder.newCharReader());
+  Json::Value jv;
+  Json::String errstr;
+  RPS_ASSERT(pjsonreader);
+  if (!pjsonreader->parse(str.c_str(), str.c_str() + str.size(), &jv, &errstr))
+    throw std::runtime_error(std::string("JSON parsing error:") + errstr);
+  return jv;
+} // end rps_string_to_json
+
+
+std::string
+rps_json_to_string(const Json::Value&jv)
+{
+  Json::StreamWriterBuilder builder;
+  builder["commentStyle"] = "None";
+  builder["indentation"] = " ";
+  auto str = Json::writeString(builder, jv);
+  return str;
+} // end rps_json_to_string
+
 //////////////////////////////////////////////// loader
 class Rps_Loader
 {
@@ -64,8 +89,8 @@ class Rps_Loader
   /// dictionnary of payload loaders - used as a cache to avoid most dlsym-s
   std::map<std::string,rpsldpysig_t*> ld_payloadercache;
   bool is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid);
-  void parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
-                                       Rps_Id objid, const std::string& objbuf);
+  void parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
+                                      Rps_Id objid, const std::string& objbuf);
 public:
   Rps_Loader(const std::string&topdir) :
     ld_topdir(topdir) {};
@@ -128,7 +153,7 @@ Rps_Loader::space_file_path(Rps_Id spacid)
 {
   if (!spacid.valid())
     throw std::runtime_error("Rps_Loader::space_file_path invalid spacid");
-  return std::string{"persistore/sp"} + spacid.to_string() + "-rps.hjson";
+  return std::string{"persistore/sp"} + spacid.to_string() + "-rps.json";
 } // end Rps_Loader::space_file_path
 
 
@@ -202,27 +227,26 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
                         << " curobjid:" << curobjid);
           if (RPS_UNLIKELY(obcnt == 0))
             {
-              Hjson::Value prologhjson
-                = Hjson::Unmarshal(prologstr.c_str(), prologstr.size());
-              if (prologhjson.type() != Hjson::Value::Type::MAP)
-                RPS_FATAL("Rps_Loader::first_pass_space %s bad HJson type #%d",
-                          spacepath.c_str(), (int)prologhjson.type());
-              Hjson::Value formathjson = prologhjson["format"];
-              if (formathjson.type() !=Hjson::Value::Type::STRING)
+              Json::Value prologjson = rps_string_to_json(prologstr);
+              if (prologjson.type() != Json::objectValue)
+                RPS_FATAL("Rps_Loader::first_pass_space %s bad Json type #%d",
+                          spacepath.c_str(), (int)prologjson.type());
+              Json::Value formatjson = prologjson["format"];
+              if (formatjson.type() !=Json::stringValue)
                 RPS_FATALOUT("space file " << spacepath
-                             << " with bad format type#" << (int)formathjson.type());
-              if (formathjson.to_string() != RPS_MANIFEST_FORMAT)
+                             << " with bad format type#" << (int)formatjson.type());
+              if (formatjson.asString() != RPS_MANIFEST_FORMAT)
                 RPS_FATALOUT("space file " << spacepath
                              << "should have format: "
                              << RPS_MANIFEST_FORMAT
                              << " but got "
-                             << (formathjson.to_string()));
-              if (prologhjson["spaceid"].to_string() != spacid.to_string())
+                             << formatjson);
+              if (prologjson["spaceid"].asString() != spacid.to_string())
                 RPS_FATAL("spacefile %s should have spaceid: '%s' but got '%s'",
                           spacepath.c_str (), spacid.to_string().c_str(),
-                          prologhjson["spaceid"].to_string().c_str());
-              Hjson::Value nbobjectshjson =  prologhjson["nbobjects"];
-              expectedcnt =nbobjectshjson.to_int64();
+                          prologjson["spaceid"].asString().c_str());
+              Json::Value nbobjectsjson =  prologjson["nbobjects"];
+              expectedcnt =nbobjectsjson.asInt();
             }
           Rps_ObjectRef obref(Rps_ObjectZone::make_loaded(curobjid, this));
           if (ld_mapobjects.find(curobjid) != ld_mapobjects.end())
@@ -249,71 +273,73 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
 
 
 void
-Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
+Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
     Rps_Id objid, const std::string& objbuf)
 {
-  /// RPS_INFORMOUT("parse_hjson_buffer_second_pass start spacid=" << spacid
+  /// RPS_INFORMOUT("parse_json_buffer_second_pass start spacid=" << spacid
   ///               << " lineno=" <<lineno
   ///               << " objid=" <<objid
   ///               << " objbuf:\n" << objbuf);
-  Hjson::Value objhjson
-    = Hjson::Unmarshal(objbuf.c_str(), objbuf.size());
-  if (objhjson.type() != Hjson::Value::Type::MAP)
-    RPS_FATALOUT("parse_hjson_buffer_second_pass spacid=" << spacid
+  Json::Value objjson = rps_string_to_json(objbuf);
+  if (objjson.type() != Json::arrayValue)
+    RPS_FATALOUT("parse_json_buffer_second_pass spacid=" << spacid
                  << " lineno:" << lineno
                  << " objid:" << objid
                  << " bad objbuf:" << std::endl
                  << objbuf);
-  Hjson::Value oidhjson = objhjson["oid"];
-  if (oidhjson.to_string() != objid.to_string())
-    RPS_FATALOUT("parse_hjson_buffer_second_pass spacid=" << spacid
+  Json::Value oidjson = objjson["oid"];
+  if (oidjson.asString() != objid.to_string())
+    RPS_FATALOUT("parse_json_buffer_second_pass spacid=" << spacid
                  << " lineno:" << lineno
                  << " objid:" << objid
                  << " unexpected");
   auto obz = Rps_ObjectZone::find(objid);
   RPS_ASSERT (obz);
-  obz->loader_set_class (this, Rps_ObjectRef(objhjson["class"], this));
-  obz->loader_set_mtime (this, objhjson["mtime"].to_double());
-  if (objhjson.is_map_with_key("components"))
+  obz->loader_set_class (this, Rps_ObjectRef(objjson["class"], this));
+  obz->loader_set_mtime (this, objjson["mtime"].asDouble());
+  if (objjson.isMember("components"))
     {
-      auto comphjson = objhjson["components"];
-      std::size_t siz= 0;
-      if (comphjson.is_vector(&siz))
+      auto compjson = objjson["components"];
+      int siz= 0;
+      if (compjson.isArray())
         {
+          siz = compjson.size();
           obz->loader_reserve_comps(this, (unsigned)siz);
           for (int ix=0; ix<(int)siz; ix++)
             {
-              auto valcomp = Rps_Value(comphjson[ix], this);
+              auto valcomp = Rps_Value(compjson[ix], this);
               obz->loader_add_comp(this, valcomp);
             }
         }
     }
-  if (objhjson.is_map_with_key("attributes"))
+  if (objjson.isMember("attributes"))
     {
-      auto attrhjson = objhjson["attributes"];
-      std::size_t siz= 0;
-      if (attrhjson.is_vector(&siz))
+      auto attrjson = objjson["attributes"];
+      int siz= 0;
+      if (attrjson.isArray())
         {
+          siz = attrjson.size();
           for (int ix=0; ix<(int)siz; ix++)
             {
-              auto enthjson = attrhjson[ix];
-              std::size_t entsiz= 0;
-              if (enthjson.is_map(&entsiz) && entsiz>=2
-                  && enthjson.is_map_with_key("at")
-                  && enthjson.is_map_with_key("va")
+              auto entjson = attrjson[ix];
+              int entsiz= 0;
+              if (entjson.isObject()
+                  && (entsiz=entjson.size()) >= 2
+                  && entjson.isMember("at")
+                  && entjson.isMember("va")
                  )
                 {
-                  auto atobr =  Rps_ObjectRef(enthjson["at"], this);
-                  auto atval = Rps_Value(enthjson["va"], this);
+                  auto atobr =  Rps_ObjectRef(entjson["at"], this);
+                  auto atval = Rps_Value(entjson["va"], this);
                   obz->loader_put_attr(this, atobr, atval);
                 }
             }
         }
     }
-  if (objhjson.is_map_with_key("payload"))
+  if (objjson.isMember("payload"))
     {
       rpsldpysig_t*pldfun = nullptr;
-      auto paylstr = objhjson["payload"].to_string();
+      auto paylstr = objjson["payload"].asString();
       {
         std::lock_guard<std::mutex> gu(ld_mtx);
         auto ldit = ld_payloadercache.find(paylstr);
@@ -335,13 +361,13 @@ Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
               {
                 auto pyid = Rps_Id(paylstr);
                 if (!pyid.valid())
-                  RPS_FATALOUT("Rps_Loader::parse_hjson_buffer_second_pass spacid:" << spacid
+                  RPS_FATALOUT("Rps_Loader::parse_json_buffer_second_pass spacid:" << spacid
                                << " lineno:" << lineno
                                << " objid:" << objid
                                << " invalid id payload:" << paylstr);
               }
             else
-              RPS_FATALOUT("Rps_Loader::parse_hjson_buffer_second_pass spacid:" << spacid
+              RPS_FATALOUT("Rps_Loader::parse_json_buffer_second_pass spacid:" << spacid
                            << " lineno:" << lineno
                            << " objid:" << objid
                            << " invalid payload:" << paylstr);
@@ -351,11 +377,11 @@ Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
       };
       if (pldfun)
         {
-          (*pldfun)(obz,this,objhjson,spacid,lineno);
+          (*pldfun)(obz,this,objjson,spacid,lineno);
         }
       else
         {
-          RPS_FATALOUT("Rps_Loader::parse_hjson_buffer_second_pass in spacid=" << spacid
+          RPS_FATALOUT("Rps_Loader::parse_json_buffer_second_pass in spacid=" << spacid
                        << " lineno:" << lineno
                        << " objid:" << objid
                        << " payload: " << paylstr
@@ -363,7 +389,7 @@ Rps_Loader::parse_hjson_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                        << std::endl);
         }
     }
-} // end of Rps_Loader::parse_hjson_buffer_second_pass
+} // end of Rps_Loader::parse_json_buffer_second_pass
 
 
 
@@ -386,7 +412,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
         {
           if (objbuf.size() > 0 && prevoid && prevlin>0)
             {
-              parse_hjson_buffer_second_pass(spacid, prevlin, prevoid, objbuf);
+              parse_json_buffer_second_pass(spacid, prevlin, prevoid, objbuf);
               prevoid = Rps_Id(nullptr);
             }
           objbuf.clear();
@@ -403,7 +429,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
     } // end for getline
   if (objbuf.size() > 0 && prevoid && prevlin>0)
     {
-      parse_hjson_buffer_second_pass(spacid, prevlin, prevoid, objbuf);
+      parse_json_buffer_second_pass(spacid, prevlin, prevoid, objbuf);
       prevoid = Rps_Id(nullptr);
     }
 } // end of Rps_Loader::second_pass_space
@@ -459,7 +485,7 @@ Rps_Loader::string_of_loaded_file(const std::string&relpath)
 
 
 
-Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)
+Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
   : Rps_Value(nullptr)
 {
   RPS_ASSERT(ld != nullptr);
@@ -467,27 +493,28 @@ Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)
   double d=0.0;
   std::string str = "";
   std::size_t siz=0;
-  Hjson::Value hjcomp;
-  Hjson::Value hjvtype;
-  /// see https://github.com/hjson/hjson-cpp/issues/22
-  /// so use https://github.com/bstarynk/hjson-cpp
-  if (hjv.is_int64(&i))
+  Json::Value jcomp;
+  Json::Value jvtype;
+  if (jv.isInt64())
     {
+      i = jv.asInt64();
       *this = Rps_Value(i, Rps_IntTag{});
       return;
     }
-  else if (hjv.is_double(&d))
+  else if (jv.isDouble())
     {
+      double d = jv.asDouble();
       *this = Rps_Value(d, Rps_DoubleTag{});
       return;
     }
-  else if (hjv.is_null())
+  else if (jv.isNull())
     {
       *this = Rps_Value(nullptr);
       return;
     }
-  else if (hjv.is_string(&str))
+  else if (jv.isString())
     {
+      str = jv.asString();
       if (str.size() == Rps_Id::nbchars + 1 && str[0] == '_'
           && std::all_of(str.begin()+1, str.end(),
                          [](char c)
@@ -495,61 +522,66 @@ Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)
         return strchr(Rps_Id::b62digits, c) != nullptr;
         }))
       {
-        *this = Rps_ObjectValue(Rps_ObjectRef(hjv, ld));
+        *this = Rps_ObjectValue(Rps_ObjectRef(jv, ld));
         return;
       }
       *this = Rps_StringValue(str);
       return;
     }
-  else if (hjv.is_map(&siz) && siz==1 && hjv.is_map_with_key("string")
-           && (hjcomp=hjv["string"]).is_string(&str))
+  else if (jv.isObject() && jv.size()==1 && jv.isMember("string")
+           && (jcomp=jv["string"]).isString())
     {
+      str=jcomp.asString();
       *this = Rps_StringValue(str);
       return;
     }
-  else if (hjv.is_map(&siz) &&  hjv.is_map_with_key("vtype")
-           && (hjvtype=hjv["vtype"].is_string(&str)))
+  else if (jv.isObject() &&  jv.isMember("vtype")
+           && ((jvtype=jv["vtype"]).isString())
+           && !(str=jvtype.asString()).empty())
     {
-      if (str == "set" && siz==2 && hjv.is_map_with_key("elem")
-          && (hjcomp=hjv["elem"]).is_vector(&siz))
+      if (str == "set" && siz==2 && jv.isMember("elem")
+          && (jcomp=jv["elem"]).isArray()
+          && (siz=jcomp.size()))
         {
           std::set<Rps_ObjectRef> setobr;
           for (int ix=0; ix<(int)siz; ix++)
             {
-              auto obrelem = Rps_ObjectRef(hjcomp[ix], ld);
+              auto obrelem = Rps_ObjectRef(jcomp[ix], ld);
               if (obrelem)
                 setobr.insert(obrelem);
             }
           *this= Rps_SetValue(setobr);
           return;
         }
-      else if (str == "tuple" && siz==2 && hjv.is_map_with_key("elem")
-               && (hjcomp=hjv["comp"]).is_vector(&siz))
+      else if (str == "tuple" && siz==2 && jv.isMember("elem")
+               && (jcomp=jv["comp"]).isArray()
+               && (siz=jcomp.size()))
         {
           std::vector<Rps_ObjectRef> vecobr;
           vecobr.reserve(siz);
           for (int ix=0; ix<(int)siz; ix++)
             {
-              auto obrcomp = Rps_ObjectRef(hjcomp[ix], ld);
+              auto obrcomp = Rps_ObjectRef(jcomp[ix], ld);
               vecobr.push_back(obrcomp);
             };
           *this= Rps_TupleValue(vecobr);
           return;
         }
       else if (str == "closure" && siz==3
-               && hjv.is_map_with_key("fn")
-               && hjv.is_map_with_key("env"))
+               && jv.isMember("fn")
+               && jv.isMember("env"))
         {
-          auto hjfn = hjv["fn"];
-          auto hjenv = hjv["env"];
-          auto funobr = Rps_ObjectRef(hjfn, ld);
-          if (hjenv.is_vector(&siz))
+          auto jfn = jv["fn"];
+          auto jenv = jv["env"];
+          auto funobr = Rps_ObjectRef(jfn, ld);
+          if (jenv.isArray())
             {
+              auto siz = jenv.size();
               std::vector<Rps_Value> vecenv;
               vecenv.reserve(siz+1);
               for (int ix=0; ix <(int)siz; ix++)
                 {
-                  auto curval = Rps_Value(hjenv[ix], ld);
+                  auto curval = Rps_Value(jenv[ix], ld);
                   vecenv.push_back(curval);
                 };
               *this = Rps_ClosureValue(funobr, vecenv);
@@ -557,18 +589,18 @@ Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)
             }
         }
     }
-#warning Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld) unimplemented
-  RPS_WARN("unimplemented Rps_Value::Rps_Value(const Hjson::Value &hjv, Rps_Loader*ld)");
-} // end of Rps_Value::Rps_Value(const Hjson::value &hjv, Rps_Loader*ld)
+#warning Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld) unimplemented
+  RPS_WARN("unimplemented Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)");
+} // end of Rps_Value::Rps_Value(const Json::value &jv, Rps_Loader*ld)
 
 
-Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)
+Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
   : Rps_ObjectRef(nullptr)
 {
   RPS_ASSERT(ld != nullptr);
   std::string str = "";
   Rps_Id oid;
-  if (hjv.is_string(&str) && (oid = Rps_Id(str)).valid())
+  if (jv.isString() && !((str=jv.asString()).empty()) && (oid = Rps_Id(str)).valid())
     {
       Rps_ObjectRef obr= ld->find_object_by_oid(oid);
       if (!obr)
@@ -579,10 +611,10 @@ Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)
       *this = obr;
       return;
     }
-  RPS_WARN("unimplemented Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)");
-  throw  std::runtime_error("unimplemented Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)");
-#warning unimplemented Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)
-} // end Rps_ObjectRef::Rps_ObjectRef(const Hjson::Value &hjv, Rps_Loader*ld)
+  RPS_WARN("unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)");
+  throw  std::runtime_error("unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)");
+#warning unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
+} // end Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
 
 
 
@@ -594,8 +626,8 @@ class Rps_Dumper
   friend void rps_dump_into (const std::string dirpath);
   friend void rps_dump_scan_object(Rps_Dumper*, Rps_ObjectRef obr);
   friend void rps_dump_scan_value(Rps_Dumper*, Rps_Value obr, unsigned depth);
-  friend Hjson::Value rps_dump_hjson_value(Rps_Dumper*, Rps_Value val);
-  friend Hjson::Value rps_dump_hjson_objectref(Rps_Dumper*, Rps_ObjectRef obr);
+  friend Json::Value rps_dump_json_value(Rps_Dumper*, Rps_Value val);
+  friend Json::Value rps_dump_json_objectref(Rps_Dumper*, Rps_ObjectRef obr);
   std::string du_topdir;
   std::recursive_mutex du_mtx;
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
@@ -605,8 +637,8 @@ public:
     du_topdir(topdir), du_mtx(), du_mapobjects(), du_scanque() {};
   void scan_object(const Rps_ObjectRef obr);
   void scan_value(const Rps_Value val, unsigned depth);
-  Hjson::Value hjson_value(const Rps_Value val);
-  Hjson::Value hjson_objectref(const Rps_ObjectRef obr);
+  Json::Value json_value(const Rps_Value val);
+  Json::Value json_objectref(const Rps_ObjectRef obr);
   bool is_dumpable_objref(const Rps_ObjectRef obr);
   bool is_dumpable_value(const Rps_Value val);
 };				// end class Rps_Dumper
@@ -633,20 +665,20 @@ Rps_Dumper::scan_value(const Rps_Value val, unsigned depth)
   val.to_ptr()->dump_scan(this,depth);
 } // end Rps_Dumper::scan_value
 
-Hjson::Value
-Rps_Dumper::hjson_value(Rps_Value val)
+Json::Value
+Rps_Dumper::json_value(Rps_Value val)
 {
   if (!val || val.is_empty())
-    return Hjson::Value(nullptr);
+    return Json::Value(nullptr);
   else if (val.is_int())
-    return Hjson::Value(val.as_int(), Hjson::Int64_tag{});
+    return Json::Value(val.as_int());
   else if (val.is_ptr() && is_dumpable_value(val))
     {
-      return val.to_ptr()->dump_hjson(this);
+      return val.to_ptr()->dump_json(this);
     }
   else
-    return Hjson::Value(nullptr);
-} // end Rps_Dumper::hjson_value
+    return Json::Value(nullptr);
+} // end Rps_Dumper::json_value
 
 bool
 Rps_Dumper::is_dumpable_objref(const Rps_ObjectRef obr)
@@ -699,24 +731,24 @@ void rps_dump_scan_value(Rps_Dumper*du, const Rps_Value val, unsigned depth)
   du->scan_value(val, depth);
 } // end rps_dump_scan_value
 
-Hjson::Value
-rps_dump_hjson_value(Rps_Dumper*du, Rps_Value val)
+Json::Value
+rps_dump_json_value(Rps_Dumper*du, Rps_Value val)
 {
   RPS_ASSERT(du != nullptr);
   if (!val || !rps_is_dumpable_value(du,val))
-    return Hjson::Value(nullptr);
-  else return du->hjson_value(val);
-} // end rps_dump_hjson_value
+    return Json::Value(nullptr);
+  else return du->json_value(val);
+} // end rps_dump_json_value
 
-Hjson::Value
-rps_dump_hjson_objectref(Rps_Dumper*du, Rps_ObjectRef obr)
+Json::Value
+rps_dump_json_objectref(Rps_Dumper*du, Rps_ObjectRef obr)
 {
   RPS_ASSERT(du != nullptr);
   if (!obr || !rps_is_dumpable_objref(du,obr))
-    return Hjson::Value(nullptr);
+    return Json::Value(nullptr);
   else
-    return Hjson::Value(obr->oid().to_string());
-} // end rps_dump_hjson_objectref
+    return Json::Value(obr->oid().to_string());
+} // end rps_dump_json_objectref
 
 void
 Rps_TupleOb::dump_scan(Rps_Dumper*du, unsigned depth) const
@@ -726,21 +758,10 @@ Rps_TupleOb::dump_scan(Rps_Dumper*du, unsigned depth) const
     du->scan_object(obr);
 }
 
-Hjson::Value
-Rps_TupleOb::dump_hjson(Rps_Dumper*du) const
+Json::Value
+Rps_TupleOb::dump_json(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  auto  hjtup = Hjson::Value(Hjson::Value::Type::MAP);
-  hjtup["vtype"] = Hjson::Value("tuple");
-  auto hjvec = Hjson::Value(Hjson::Value::Type::VECTOR);
-  for (auto obr: *this)
-    if (rps_is_dumpable_objref(du,obr))
-      hjvec.push_back(rps_dump_hjson_objectref(du,obr));
-  hjtup["comp"] = hjvec;
-  return hjtup;
-#warning for Nimesh: body of Rps_TupleOb::dump_json for JsonCPP below
-#if 0 && JsonCPP
-  // untested, could even not compile
   auto jtup = Json::Value(Json::objectValue);
   jtup["vtype"] = Json::Value("tuple");
   auto jvec = Json::Value(Json::arrayValue);
@@ -752,8 +773,7 @@ Rps_TupleOb::dump_hjson(Rps_Dumper*du) const
   jvec.resize(ix);  // shrink to fit
   jtup["comp"] = jvec;
   return jtup;
-#endif /*0 && JsonCPP*/
-} // end Rps_TupleOb::dump_hjson
+} // end Rps_TupleOb::dump_json
 
 
 ////////////////
@@ -765,19 +785,19 @@ Rps_SetOb::dump_scan(Rps_Dumper*du, unsigned depth) const
     du->scan_object(obr);
 }
 
-Hjson::Value
-Rps_SetOb::dump_hjson(Rps_Dumper*du) const
+Json::Value
+Rps_SetOb::dump_json(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  auto  hjset = Hjson::Value(Hjson::Value::Type::MAP);
-  hjset["vtype"] = Hjson::Value("set");
-  auto hjvec = Hjson::Value(Hjson::Value::Type::VECTOR);
+  auto  jset = Json::Value(Json::objectValue);
+  jset["vtype"] = Json::Value("set");
+  auto jvec = Json::Value(Json::arrayValue);
   for (auto obr: *this)
     if (rps_is_dumpable_objref(du,obr))
-      hjvec.push_back(rps_dump_hjson_objectref(du,obr));
-  hjset["elem"] = hjvec;
-  return hjset;
-} // end Rps_SetOb::dump_hjson
+      jvec.append(rps_dump_json_objectref(du,obr));
+  jset["elem"] = jvec;
+  return jset;
+} // end Rps_SetOb::dump_json
 
 ////////////////
 void
@@ -795,21 +815,21 @@ Rps_ClosureZone::dump_scan(Rps_Dumper*du, unsigned depth) const
 
 
 
-Hjson::Value
-Rps_ClosureZone::dump_hjson(Rps_Dumper*du) const
+Json::Value
+Rps_ClosureZone::dump_json(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   if (!rps_is_dumpable_objref(du,conn()))
-    return Hjson::Value(nullptr);
-  auto  hjclo = Hjson::Value(Hjson::Value::Type::MAP);
-  hjclo["vtype"] = Hjson::Value("closure");
-  hjclo["fn"] = rps_dump_hjson_objectref(du,conn());
-  auto hjvec = Hjson::Value(Hjson::Value::Type::VECTOR);
+    return Json::Value(nullptr);
+  auto  hjclo = Json::Value(Json::objectValue);
+  hjclo["vtype"] = Json::Value("closure");
+  hjclo["fn"] = rps_dump_json_objectref(du,conn());
+  auto jvec = Json::Value(Json::arrayValue);
   for (Rps_Value sonval: *this)
-    hjvec.push_back(rps_dump_hjson_value(du,sonval));
-  hjclo["env"] = hjvec;
+    jvec.append(rps_dump_json_value(du,sonval));
+  hjclo["env"] = jvec;
   return hjclo;
-} // end Rps_ClosureZone::dump_hjson
+} // end Rps_ClosureZone::dump_json
 
 
 ////////////////
@@ -820,12 +840,12 @@ Rps_ObjectZone::dump_scan(Rps_Dumper*du, unsigned) const
   rps_dump_scan_object(du,Rps_ObjectRef(this));
 }
 
-Hjson::Value
-Rps_ObjectZone::dump_hjson(Rps_Dumper*du) const
+Json::Value
+Rps_ObjectZone::dump_json(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  return rps_dump_hjson_objectref(du,Rps_ObjectRef(this));
-} // end Rps_ObjectZone::dump_hjson
+  return rps_dump_json_objectref(du,Rps_ObjectRef(this));
+} // end Rps_ObjectZone::dump_json
 
 //////////////////////////////////////////////////////////////// dump
 void rps_dump_into (const std::string dirpath)
@@ -847,17 +867,13 @@ Rps_Loader::parse_manifest_file(void)
   if (manifstr.size() < 20)
     RPS_FATAL("Rps_Loader::parse_manifest_file nearly empty file %s",
               manifpath.c_str());
-  Json::Reader jsonreader(Json::Features::all());
-  Json::Value manifjson;
-  if (!jsonreader.parse(manifstr, manifjson, false))
-    RPS_FATAL("Rps_Loader::parse_manifest_file failed to parse %s : %s",
-	      manifpath.c_str(), jsonreader.getFormattedErrorMessages().c_str());
+  Json::Value manifjson = rps_string_to_json(manifstr);
   if (manifjson.type () != Json::objectValue)
     RPS_FATAL("Rps_Loader::parse_manifest_file wants a Json object in %s",
-	      manifpath.c_str());
+              manifpath.c_str());
   if (manifjson["format"].asString() != RPS_MANIFEST_FORMAT)
     RPS_FATAL("manifest map in %s should have format: '%s' but got:\n"
-	      "%s",
+              "%s",
               manifpath.c_str (), RPS_MANIFEST_FORMAT,
               manifjson["format"].toStyledString().c_str());
   /// parse spaceset
@@ -915,8 +931,10 @@ Rps_Loader::parse_manifest_file(void)
     }
   }
   ////
-  RPS_INFORMOUT("Rps_Loader::parse_manifest_file parsed "
-                << manifjson);
+  RPS_INFORMOUT("Rps_Loader::parse_manifest_file parsed:"
+                << std::endl
+                << manifjson
+                << std::endl);
 #warning incomplete Rps_Loader::parse_manifest_file
 } // end Rps_Loader::parse_manifest_file
 
@@ -936,62 +954,74 @@ void Rps_Loader::load_install_roots(void)
 void rps_load_from (const std::string& dirpath)
 {
   Rps_Loader loader(dirpath);
-  loader.parse_manifest_file();
-  loader.load_all_state_files();
-  loader.load_install_roots();
+  try
+    {
+      loader.parse_manifest_file();
+      loader.load_all_state_files();
+      loader.load_install_roots();
+    }
+  catch (const std::exception& exc)
+    {
+      RPS_FATALOUT("failed to load " << dirpath
+                   << "," << std::endl
+                   << "... got exception of type "
+                   << typeid(exc).name()
+                   << ":"
+                   << exc.what());
+    }
 #warning rps_load_from unimplemented
 } // end of rps_load_from
 
 
 
 /// loading of class information payload; see
-/// Rps_PayloadClassInfo::dump_hjson_content in objects_rps.cc
-void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv, Rps_Id spacid, unsigned lineno)
+/// Rps_PayloadClassInfo::dump_json_content in objects_rps.cc
+void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(obz->get_payload() == nullptr);
-  RPS_ASSERT(hjv.type() == Hjson::Value::Type::MAP);
-  if (!hjv.is_map_with_key("superclass") || !hjv.is_map_with_key("methodict"))
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  if (!jv.isMember("superclass") || !jv.isMember("methodict"))
     RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
                  << " in space " << spacid << " lineno#" << lineno
                  << " has incomplete payload"
                  << std::endl
-                 << " hjv " <<Hjson::MarshalJson(hjv));
+                 << " jv " << (jv));
   auto paylclainf = obz->put_new_payload<Rps_PayloadClassInfo>();
   RPS_ASSERT(paylclainf != nullptr);
-  auto obsuperclass = Rps_ObjectRef(hjv["superclass"], ld);
+  auto obsuperclass = Rps_ObjectRef(jv["superclass"], ld);
   RPS_ASSERT(obsuperclass);
   paylclainf->put_superclass(obsuperclass);
-  Hjson::Value hjvmethodict = hjv["methodict"];
-  size_t nbmeth = 0;
-  if (!hjvmethodict.is_vector(&nbmeth))
+  Json::Value jvmethodict = jv["methodict"];
+  unsigned nbmeth = 0;
+  if (!jvmethodict.isArray() || (nbmeth=jvmethodict.size())==0)
     RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
                  << " in space " << spacid << " lineno#" << lineno
                  << " has bad methodict"
                  << std::endl
-                 << " hjvmethodict " <<Hjson::MarshalJson(hjvmethodict));
+                 << " jvmethodict " <<(jvmethodict));
   for (int methix=0; methix<(int)nbmeth; methix++)
     {
       size_t curlen=0;
-      Hjson::Value hjvcurmeth = hjvmethodict[methix];
-      if (!hjvcurmeth.is_map(&curlen) || curlen != 2
-          || !hjvcurmeth.is_map_with_key("methosel")
-          || !hjvcurmeth.is_map_with_key("methclos")
+      Json::Value jvcurmeth = jvmethodict[methix];
+      if (!jvcurmeth.isObject()
+          || !jvcurmeth.isMember("methosel")
+          || !jvcurmeth.isMember("methclos")
          )
         RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
                      << " in space " << spacid << " lineno#" << lineno
                      << " has bad methodict entry#" << methix
                      << std::endl
-                     << " hjvcurmeth " <<Hjson::MarshalJson(hjvcurmeth));
-      auto obsel = Rps_ObjectRef(hjvcurmeth["methosel"], ld);
-      auto valclo = Rps_Value(hjvcurmeth["methclos"], ld);
+                     << " jvcurmeth " << (jvcurmeth));
+      auto obsel = Rps_ObjectRef(jvcurmeth["methosel"], ld);
+      auto valclo = Rps_Value(jvcurmeth["methclos"], ld);
       if (!obsel || !valclo.is_closure())
         RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
                      << " in space " << spacid << " lineno#" << lineno
                      << " with bad methodict entry#" << methix
                      << std::endl
-                     << " hjvcurmeth " <<Hjson::MarshalJson(hjvcurmeth));
+                     << " jvcurmeth: " <<jvcurmeth);
       paylclainf->put_own_method(obsel,valclo);
     }
 } // end of rpsldpy_class
@@ -1000,11 +1030,11 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv, R
 
 
 /// loading of set of objects payload
-void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Hjson::Value& hjv, Rps_Id spacid, unsigned lineno)
+void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
-  RPS_ASSERT(hjv.type() == Hjson::Value::Type::MAP);
+  RPS_ASSERT(jv.type() == Json::objectValue);
   RPS_FATAL("rpsldpy_setob unimplemented");
 #warning rpsldpy_setob unimplemented
 } // end of rpsldpy_setob
