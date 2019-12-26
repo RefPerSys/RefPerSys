@@ -88,6 +88,9 @@
 /// forward declaration of QString-s from Qt5
 class QString;
 
+// JsonCPP https://github.com/open-source-parsers/jsoncpp
+#include "json/json.h"
+
 // HJson CPP https://github.com/hjson/hjson-cpp
 #include "hjson/hjson.h"
 
