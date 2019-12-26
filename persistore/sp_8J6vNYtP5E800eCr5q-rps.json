@@ -1,0 +1,54 @@
+// file persistore/sp_8J6vNYtP5E800eCr5q-rps.json
+// in http://refpersys.org/
+//
+//      © Copyright 2019 The Reflective Persistent System Team
+//      team@refpersys.org & http://refpersys.org/
+////////////////
+// the prologue
+{
+    "format": "RefPerSysFormat2019A",
+    "spaceid": "_8J6vNYtP5E800eCr5q",  
+  "nbobjects": 2
+}
+
+/// comments starting with # are not even kept
+# some random oid-s
+
+#-  _4MPKnnHrjPA02sQ4CA _2Y3a5YxNGqS016S6JJ _9BCwsEUpZUu00h7wzf
+#-  _2LUlp2ZUoWj00VYitJ _04IU8ckRKDS00rxJGE _4fDPBcUuMqP00UkY7A
+#-  _1QHh4b7l6VC04DCn5n _4oJBHEFllhe04njB94 _0pjAqnz1W7o02KTAGk
+#-  _4yQVttYghdE02kva8B _9fVwUD72KrO006tfGs _1JH5yXhnww002tut1i
+#-  _9uwZtDshW4401x6MsY _6fmq7pZkmNd03UyPuO _3Q3hJsSgCDN03GTYW5
+#-  _7X9eGs8601M021nMue _36I1BY2NetN03WjrOv _2i66FFjmS7n03HNNBn
+
+// every object starts with some //+ob<id> line
+
+
+////////////////////////////////////////////////////////////////
+//////////////// the `object` class
+//+ob_5yhJGgxLwLp00X0xEQ
+{
+    "oid": "_5yhJGgxLwLp00X0xEQ",
+    "mtime": 1575698824.78,
+    "class": "_41OFI3r0S1t03qdB2E",
+    "payload": "class",
+# actually this is wrong... superclass is probably `value`
+    "superclass": "_5yhJGgxLwLp00X0xEQ",
+    "methodict": [
+  ]
+}
+
+
+//////////////// the `class` class
+//+ob_41OFI3r0S1t03qdB2E
+{
+    "oid": "_41OFI3r0S1t03qdB2E",
+    "mtime": 1575698824.78,
+    "class": "_41OFI3r0S1t03qdB2E",
+    "payload": "class",
+    "superclass": "_5yhJGgxLwLp00X0xEQ",
+    "methodict": [
+    ]
+}
+
+ /// end of file persistore/sp_8J6vNYtP5E800eCr5q-rps.json

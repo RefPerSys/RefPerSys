@@ -407,12 +407,28 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
       lincnt++;
+      if (linbuf.size() > 0 && linbuf[0] == '#')
+	continue;
       Rps_Id curobjid;
       if (is_object_starting_line(spacid,lincnt,linbuf,&curobjid))
         {
           if (objbuf.size() > 0 && prevoid && prevlin>0)
             {
-              parse_json_buffer_second_pass(spacid, prevlin, prevoid, objbuf);
+              try
+                {
+                  parse_json_buffer_second_pass(spacid, prevlin, prevoid, objbuf);
+                }
+              catch (const std::exception& exc)
+                {
+                  RPS_FATALOUT("failed second pass in " << spacid
+                               << " prevoid:" << prevoid
+                               << " line#" << prevlin
+                               << std::endl
+                               << "... got exception of type "
+                               << typeid(exc).name()
+                               << ":"
+                               << exc.what());
+                };
               prevoid = Rps_Id(nullptr);
             }
           objbuf.clear();
@@ -429,9 +445,23 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
     } // end for getline
   if (objbuf.size() > 0 && prevoid && prevlin>0)
     {
-      parse_json_buffer_second_pass(spacid, prevlin, prevoid, objbuf);
+      try
+        {
+          parse_json_buffer_second_pass(spacid, prevlin, prevoid, objbuf);
+        }
+      catch (const std::exception& exc)
+        {
+          RPS_FATALOUT("failed second pass in " << spacid
+                       << " prevoid:" << prevoid
+                       << " line#" << prevlin
+                       << std::endl
+                       << "... got exception of type "
+                       << typeid(exc).name()
+                       << ":"
+                       << exc.what());
+        };
       prevoid = Rps_Id(nullptr);
-    }
+    };
 } // end of Rps_Loader::second_pass_space
 
 
