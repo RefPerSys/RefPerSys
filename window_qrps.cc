@@ -79,8 +79,8 @@ RpsQWindow::setupAppMenu()
 
   QAction *dump = new QAction(pixmap->get("RPS_ICON_DUMP"), "&Dump", this);
   QAction *gc = new QAction(
-    pixmap->get("RPS_ICON_GC"), 
-    "&Garbage Collect", 
+    pixmap->get("RPS_ICON_GC"),
+    "&Garbage Collect",
     this
   );
   QAction *quit = new QAction(pixmap->get("RPS_ICON_QUIT"), "&Quit", this);
