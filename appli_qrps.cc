@@ -121,7 +121,7 @@ RpsQWindow* RpsQApplication::getWindowPtr(int ix)
 }
 
 
-void 
+void
 RpsQApplication::register_pixmap()
 {
   auto pixmap = RpsQPixMap::instance();

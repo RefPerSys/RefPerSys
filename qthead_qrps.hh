@@ -76,7 +76,7 @@ public:
 private:
   // Private constructor.
   inline RpsQPixMap()
-      : m_pixmap()
+    : m_pixmap()
   { }
 
   // Private destructor.
