@@ -663,6 +663,10 @@ class Rps_Dumper
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
   std::string du_tempsuffix;
+  // we maintain the set of opened file paths, since they are opened
+  // with the temporary suffix above, and renamed by
+  // rename_opened_files below.
+  std::set<std::string> du_openedpathset;
   // a random temporary suffix for written files
   static std::string make_temporary_suffix(void)
   {
@@ -673,10 +677,17 @@ class Rps_Dumper
     return std::string(buf);
   };
 private:
+  std::string temporary_opened_path(const std::string& relpath) const
+  {
+    RPS_ASSERT(relpath.size()>0 && relpath[0] != '/');
+    return du_topdir + "/" + relpath + du_tempsuffix;
+  };
   void scan_roots(void);
   Rps_ObjectRef pop_object_to_scan(void);
   void scan_loop_pass(void);
   void scan_object_contents(Rps_ObjectRef obr);
+  std::unique_ptr<std::ofstream> open_output_file(const std::string& relpath);
+  void rename_opened_files(void);
 public:
   std::string get_temporary_suffix(void) const
   {
@@ -688,7 +699,7 @@ public:
   };
   Rps_Dumper(const std::string&topdir) :
     du_topdir(topdir), du_mtx(), du_mapobjects(), du_scanque(),
-    du_tempsuffix(make_temporary_suffix()) {};
+    du_tempsuffix(make_temporary_suffix()), du_openedpathset() {};
   void scan_object(const Rps_ObjectRef obr);
   void scan_value(const Rps_Value val, unsigned depth);
   Json::Value json_value(const Rps_Value val);
@@ -759,6 +770,55 @@ Rps_Dumper::is_dumpable_value(const Rps_Value val)
 #warning Rps_Dumper::is_dumpable_value partly unimplemented
 } // end Rps_Dumper::is_dumpable_value
 
+std::unique_ptr<std::ofstream>
+Rps_Dumper::open_output_file(const std::string& relpath)
+{
+  RPS_ASSERT(relpath.size()>1 && relpath[0] != '/');
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  if (RPS_UNLIKELY(du_openedpathset.find(relpath) != du_openedpathset.end()))
+    {
+      RPS_WARNOUT("duplicate opened dump file " << relpath);
+      throw std::runtime_error(std::string{"duplicate opened dump file "} + relpath);
+    }
+  std::string tempathstr =  temporary_opened_path(relpath);
+  auto poutf= std::make_unique<std::ofstream>(tempathstr);
+  if (!poutf || !poutf->is_open())
+    {
+      RPS_WARNOUT("dump failed to open " << tempathstr);
+      throw std::runtime_error(std::string{"duplicate failed to open "} + tempathstr + ":" + strerror(errno));
+    }
+  du_openedpathset.insert(relpath);
+  return poutf;
+} // end Rps_Dumper::open_output_file
+
+
+void
+Rps_Dumper::rename_opened_files(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  for (std::string curelpath: du_openedpathset)
+    {
+      std::string curpath = du_topdir + "/" + curelpath;
+      if (!access(curpath.c_str(), F_OK))
+        {
+          std::string bak0path = curpath + "~";
+          if (!access(bak0path.c_str(), F_OK))
+            {
+              std::string bak1path = bak0path + "~";
+              (void) rename(bak0path.c_str(), bak1path.c_str());
+            };
+          if (rename(curpath.c_str(), bak0path.c_str()))
+            RPS_WARNOUT("dump failed to backup " << curpath << " to " << bak0path << ":" << strerror(errno));
+        };
+      std::string tempath = temporary_opened_path(curelpath);
+      if (rename(tempath.c_str(), curpath.c_str()))
+        RPS_FATALOUT("dump failed to rename " << tempath << " as " << curpath);
+    };
+  du_openedpathset.clear();
+} // end Rps_Dumper::rename_opened_files
+
+
+//////////////// public interface to dumper::::
 bool rps_is_dumpable_objref(Rps_Dumper*du, const Rps_ObjectRef obr)
 {
   RPS_ASSERT(du != nullptr);
@@ -943,6 +1003,9 @@ Rps_Dumper::scan_object_contents(Rps_ObjectRef obr)
   obr->dump_scan_contents(this);
 } // end Rps_Dumper::scan_object_contents
 
+
+
+////////////////////////////////////////////////////////////////
 void rps_dump_into (const std::string dirpath)
 {
   std::string realdirpath;
@@ -956,11 +1019,37 @@ void rps_dump_into (const std::string dirpath)
     realdirpath=rp;
     free (rp);
   }
+  std::string cwdpath;
+  {
+    // not very good, but in practice good enough before bootstrapping
+    // see https://softwareengineering.stackexchange.com/q/289427/40065
+    char cwdbuf[256];
+    memset(cwdbuf, 0, sizeof(cwdbuf));
+    if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+      RPS_FATAL("getcwd failed: %m");
+    cwdpath = std::string(cwdbuf);
+  }
+  /// ensure that realdirpath exists
+  {
+    RPS_ASSERT(strrchr(realdirpath.c_str(), '/') != nullptr);
+  }
   Rps_Dumper dumper(realdirpath);
   RPS_INFORMOUT("start dumping into " << dumper.get_top_dir()
                 << " with temporary suffix " << dumper.get_temporary_suffix());
   try
     {
+      if (realdirpath != cwdpath)
+        {
+          QDir realqdir{QString(realdirpath.c_str())};
+          if (!realqdir.mkpath("."))
+            {
+              RPS_WARNOUT("failed to make dump directory " << realdirpath
+                          << ":" << strerror(errno));
+              throw std::runtime_error(std::string{"failed to make dump directory:"} + realdirpath);
+            }
+          else
+            RPS_INFORMOUT("made real dump directory: " << realdirpath);
+        }
       dumper.scan_roots();
       dumper.scan_loop_pass();
     }
