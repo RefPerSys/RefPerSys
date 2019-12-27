@@ -281,7 +281,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
   ///               << " objid=" <<objid
   ///               << " objbuf:\n" << objbuf);
   Json::Value objjson = rps_string_to_json(objbuf);
-  if (objjson.type() != Json::arrayValue)
+  if (objjson.type() != Json::objectValue)
     RPS_FATALOUT("parse_json_buffer_second_pass spacid=" << spacid
                  << " lineno:" << lineno
                  << " objid:" << objid
@@ -1025,12 +1025,13 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
   paylclainf->put_superclass(obsuperclass);
   Json::Value jvmethodict = jv["methodict"];
   unsigned nbmeth = 0;
-  if (!jvmethodict.isArray() || (nbmeth=jvmethodict.size())==0)
+  if (!jvmethodict.isArray())
     RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
                  << " in space " << spacid << " lineno#" << lineno
                  << " has bad methodict"
                  << std::endl
                  << " jvmethodict " <<(jvmethodict));
+  nbmeth = jvmethodict.size();
   for (int methix=0; methix<(int)nbmeth; methix++)
     {
       size_t curlen=0;
