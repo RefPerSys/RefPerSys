@@ -487,6 +487,7 @@ enum class Rps_Type : int16_t
 {
   ////////////////
   /// payloads are negative, below -1
+  PaylSpace = -9, // space payload
   PaylStrBuf = -8, // mutable string buffer
   PaylRelation = -7, // mutable binary relation between objects
   PaylAssoc = -6, // mutable association from object to values
@@ -1294,27 +1295,34 @@ protected:
     RPS_ASSERT(mtim>0.0);
     ob_mtime.store(mtim);
   };
-  void loader_put_attr(Rps_Loader*ld, const Rps_ObjectRef keyatob, const Rps_Value atval)
+  void loader_set_space (Rps_Loader*ld, Rps_ObjectZone*obzspace)
+  {
+    RPS_ASSERT(ld != nullptr);
+    RPS_ASSERT(obzspace != nullptr);
+    ob_space.store(obzspace);
+  };
+  void loader_put_attr (Rps_Loader*ld, const Rps_ObjectRef keyatob, const Rps_Value atval)
   {
     RPS_ASSERT(ld != nullptr);
     RPS_ASSERT(keyatob);
     RPS_ASSERT(atval);
     ob_attrs.insert({keyatob, atval});
   };
-  void loader_reserve_comps(Rps_Loader*ld, unsigned nbcomps)
+  void loader_reserve_comps (Rps_Loader*ld, unsigned nbcomps)
   {
     RPS_ASSERT(ld != nullptr);
     ob_comps.reserve(nbcomps);
-  }
-  void loader_add_comp(Rps_Loader*ld, const Rps_Value compval)
+  };
+  void loader_add_comp (Rps_Loader*ld, const Rps_Value compval)
   {
     RPS_ASSERT(ld != nullptr);
     ob_comps.push_back(compval);
-  }
+  };
 public:
   std::string string_oid(void) const;
   inline Rps_Payload*get_payload(void) const;
   inline Rps_ObjectRef get_class(void) const;
+  inline Rps_ObjectRef get_space(void) const;
   inline double get_mtime(void) const;
   inline void clear_payload(void);
   template<class PaylClass, class ...Args>
@@ -1916,13 +1924,16 @@ class Rps_PayloadSpace : public Rps_Payload
 {
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
+  friend rpsldpysig_t rpsldpy_space;
+  friend Rps_PayloadSpace*
+  Rps_QuasiZone::rps_allocate<Rps_PayloadSpace,Rps_ObjectZone*>(Rps_ObjectZone*);
+protected:
   inline Rps_PayloadSpace(Rps_ObjectZone*owner);
   Rps_PayloadSpace(Rps_ObjectRef obr) :
     Rps_PayloadSpace(obr?obr.optr():nullptr) {};
   virtual ~Rps_PayloadSpace()
   {
   };
-protected:
   virtual uint32_t wordsize(void) const
   {
     return sizeof(*this)/sizeof(void*);

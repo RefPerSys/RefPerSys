@@ -384,4 +384,27 @@ Rps_PayloadVectOb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 } // end Rps_PayloadVectOb::dump_json_content
 
 
+/***************** space payload **********/
+
+void
+Rps_PayloadSpace::gc_mark(Rps_GarbageCollector&gc) const
+{
+} // end Rps_PayloadSpace::gc_mark
+
+void
+Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du != nullptr);
+} // end Rps_PayloadSpace::dump_scan
+
+
+void
+Rps_PayloadSpace::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  /// see function rpsldpy_space in store_rps.cc
+  RPS_ASSERT(du != nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+} // end Rps_PayloadSpace::dump_json_content
+
+
 // end of file objects_rps.cc

@@ -857,6 +857,12 @@ Rps_ObjectZone::get_class(void) const
   return Rps_ObjectRef(ob_class.load());
 } // end Rps_ObjectZone::get_class
 
+Rps_ObjectRef
+Rps_ObjectZone::get_space(void) const
+{
+  return Rps_ObjectRef(ob_space.load());
+} // end Rps_ObjectZone::get_space
+
 double
 Rps_ObjectZone::get_mtime(void) const
 {
@@ -999,6 +1005,20 @@ Rps_PayloadClassInfo::Rps_PayloadClassInfo(Rps_ObjectZone*owner, Rps_Loader*ld)
 {
   RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
 }      // end Rps_PayloadClassInfo::Rps_PayloadClassInfo ..loading
+
+
+////// space payload - for PaylSpace
+Rps_PayloadSpace::Rps_PayloadSpace(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylSpace, owner)
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadSpace::Rps_PayloadSpace
+
+Rps_PayloadSpace::Rps_PayloadSpace(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylSpace, owner, ld)
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadSpace::Rps_PayloadSpace ..loading
 
 
 

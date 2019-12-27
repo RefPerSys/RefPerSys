@@ -318,7 +318,10 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                  << " unexpected");
   auto obz = Rps_ObjectZone::find(objid);
   RPS_ASSERT (obz);
+  auto obzspace = Rps_ObjectZone::find(spacid);
   obz->loader_set_class (this, Rps_ObjectRef(objjson["class"], this));
+  RPS_ASSERT (obzspace);
+  obz->loader_set_space (this, obzspace);
   obz->loader_set_mtime (this, objjson["mtime"].asDouble());
   if (objjson.isMember("components"))
     {
@@ -888,7 +891,7 @@ rps_dump_json_objectref(Rps_Dumper*du, Rps_ObjectRef obr)
 } // end rps_dump_json_objectref
 
 void
-Rps_TupleOb::dump_scan(Rps_Dumper*du, unsigned depth) const
+Rps_TupleOb::dump_scan(Rps_Dumper*du, unsigned) const
 {
   RPS_ASSERT(du != nullptr);
   for (auto obr: *this)
@@ -915,7 +918,7 @@ Rps_TupleOb::dump_json(Rps_Dumper*du) const
 
 ////////////////
 void
-Rps_SetOb::dump_scan(Rps_Dumper*du, unsigned depth) const
+Rps_SetOb::dump_scan(Rps_Dumper*du, unsigned) const
 {
   RPS_ASSERT(du != nullptr);
   for (auto obr: *this)
@@ -1285,9 +1288,8 @@ void rpsldpy_space(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  RPS_WARNOUT("rpsldpy_space unimplemented, obz:" << obz->oid() << " spacid:" << spacid << " lineno:" << lineno
-              << "jv:" << std::endl << jv);
-#warning rpsldpy_setob unimplemented
+  auto paylspace = obz->put_new_payload<Rps_PayloadSpace>();
+  RPS_ASSERT(paylspace != nullptr);
 } // end of rpsldpy_setob
 
 
