@@ -68,7 +68,7 @@ public:
   }
 
   /// Gets a registered image asset.
-  inline QPixmap get(std::string id)
+  inline QPixmap& get(std::string id)
   {
     return m_pixmap[id];
   }
