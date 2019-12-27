@@ -159,7 +159,7 @@ public:
   Rps_Id& operator = (const Rps_Id &oth) {
     _id_hi = oth._id_hi;
     _id_lo = oth._id_lo;
-    return *this;      
+    return *this;
   };
   Rps_Id& operator = (Rps_Id&&oth) {
     std::swap(_id_hi, oth._id_hi);

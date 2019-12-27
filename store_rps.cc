@@ -681,6 +681,7 @@ class Rps_Dumper
 {
   friend class Rps_PayloadSpace;
   friend void rps_dump_into (const std::string dirpath);
+  friend void rps_dump_scan_code_addr(Rps_Dumper*, const void*);
   friend void rps_dump_scan_object(Rps_Dumper*, Rps_ObjectRef obr);
   friend void rps_dump_scan_value(Rps_Dumper*, Rps_Value obr, unsigned depth);
   friend Json::Value rps_dump_json_value(Rps_Dumper*, Rps_Value val);
@@ -717,7 +718,7 @@ private:
   void scan_object_contents(Rps_ObjectRef obr);
   std::unique_ptr<std::ofstream> open_output_file(const std::string& relpath);
   void rename_opened_files(void);
-  void add_code_addr(const void*);
+  void scan_code_addr(const void*);
 public:
   std::string get_temporary_suffix(void) const
   {
@@ -831,10 +832,15 @@ Rps_Dumper::open_output_file(const std::string& relpath)
   return poutf;
 } // end Rps_Dumper::open_output_file
 
+
 void
-Rps_Dumper::add_code_addr(const void*ad)
+Rps_Dumper::scan_code_addr(const void*ad)
 {
-  if (!ad) return;
+  // if we wanted *to be more efficient, we should parse
+  // /proc/self/maps at start of dump. See
+  // http://man7.org/linux/man-pages/man5/proc.5.html
+  if (!ad)
+    return;
   Dl_info di;
   memset(&di, 0, sizeof(di));
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
@@ -858,10 +864,18 @@ Rps_Dumper::add_code_addr(const void*ad)
         {
           Rps_ObjectZone* obz = Rps_ObjectZone::find(plugid);
           if (obz)
-            du_pluginobset.insert(Rps_ObjectRef(obz));
+            {
+              Rps_ObjectRef plugobr(obz);
+              if (du_pluginobset.find(plugobr)
+                  == du_pluginobset.end())
+                {
+                  du_pluginobset.insert(plugobr);
+                  scan_object(plugobr);
+                }
+            };
         }
     }
-} // end of Rps_Dumper::add_code_addr
+} // end of Rps_Dumper::scan_code_addr
 
 
 void
@@ -903,6 +917,14 @@ bool rps_is_dumpable_value(Rps_Dumper*du, const Rps_Value val)
   RPS_ASSERT(du != nullptr);
   return du->is_dumpable_value(val);
 } // end rps_is_dumpable_value
+
+void
+rps_dump_scan_code_addr(Rps_Dumper*du, const void* ad)
+{
+  RPS_ASSERT(du != nullptr);
+  if (ad)
+    du->scan_code_addr(ad);
+} // end rps_dump_scan_code_addr
 
 void
 rps_dump_scan_object(Rps_Dumper*du, const Rps_ObjectRef obr)

@@ -1970,7 +1970,11 @@ extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
 
 extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc
 
+// scan a code address, e.g. a C function pointer whose address is inside some dlopen-ed plugin
+extern "C" void rps_dump_scan_code_addr(Rps_Dumper*, const void*);
+// scan an object
 extern "C" void rps_dump_scan_object(Rps_Dumper*, const Rps_ObjectRef obr);
+// scan a value
 extern "C" void rps_dump_scan_value(Rps_Dumper*, const Rps_Value val, unsigned depth);
 extern "C" Json::Value rps_dump_json_value(Rps_Dumper*, const Rps_Value val);
 extern "C" Json::Value rps_dump_json_objectref(Rps_Dumper*, const Rps_ObjectRef obr);
