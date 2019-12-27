@@ -408,7 +408,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
     {
       lincnt++;
       if (linbuf.size() > 0 && linbuf[0] == '#')
-	continue;
+        continue;
       Rps_Id curobjid;
       if (is_object_starting_line(spacid,lincnt,linbuf,&curobjid))
         {
@@ -662,9 +662,33 @@ class Rps_Dumper
   std::recursive_mutex du_mtx;
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
+  std::string du_tempsuffix;
+  // a random temporary suffix for written files
+  static std::string make_temporary_suffix(void)
+  {
+    Rps_Id randid(nullptr);
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%.7s-p%d%%",
+             randid.to_string().c_str(), (int)getpid());
+    return std::string(buf);
+  };
+private:
+  void scan_roots(void);
+  Rps_ObjectRef pop_object_to_scan(void);
+  void scan_loop_pass(void);
+  void scan_object_contents(Rps_ObjectRef obr);
 public:
+  std::string get_temporary_suffix(void) const
+  {
+    return du_tempsuffix;
+  };
+  std::string get_top_dir() const
+  {
+    return du_topdir;
+  };
   Rps_Dumper(const std::string&topdir) :
-    du_topdir(topdir), du_mtx(), du_mapobjects(), du_scanque() {};
+    du_topdir(topdir), du_mtx(), du_mapobjects(), du_scanque(),
+    du_tempsuffix(make_temporary_suffix()) {};
   void scan_object(const Rps_ObjectRef obr);
   void scan_value(const Rps_Value val, unsigned depth);
   Json::Value json_value(const Rps_Value val);
@@ -878,8 +902,79 @@ Rps_ObjectZone::dump_json(Rps_Dumper*du) const
 } // end Rps_ObjectZone::dump_json
 
 //////////////////////////////////////////////////////////////// dump
+
+void
+Rps_Dumper::scan_roots(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  rps_each_root_object([=](Rps_ObjectRef obr)
+  {
+    rps_dump_scan_object(this,obr);
+  });
+} // end Rps_Dumper::scan_roots
+
+Rps_ObjectRef
+Rps_Dumper::pop_object_to_scan(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  if (du_scanque.empty())
+    return Rps_ObjectRef(nullptr);
+  auto obr = du_scanque.front();
+  du_scanque.pop_front();
+  return obr;
+} // end Rps_Dumper::pop_object_to_scan
+
+
+void
+Rps_Dumper::scan_loop_pass(void)
+{
+  Rps_ObjectRef curobr;
+  int count=0;
+  while ((curobr=pop_object_to_scan()))
+    {
+      count++;
+      scan_object_contents(curobr);
+    };
+} // end Rps_Dumper::scan_loop_pass
+
+void
+Rps_Dumper::scan_object_contents(Rps_ObjectRef obr)
+{
+  obr->dump_scan_contents(this);
+} // end Rps_Dumper::scan_object_contents
+
 void rps_dump_into (const std::string dirpath)
 {
+  std::string realdirpath;
+  {
+    char* rp = realpath(dirpath.c_str(), nullptr);
+    if (!rp)
+      {
+        RPS_WARN("cannot dump into %s: %m", dirpath.c_str());
+        throw std::runtime_error(std::string{"cannot dump into "} + dirpath);
+      };
+    realdirpath=rp;
+    free (rp);
+  }
+  Rps_Dumper dumper(realdirpath);
+  RPS_INFORMOUT("start dumping into " << dumper.get_top_dir()
+                << " with temporary suffix " << dumper.get_temporary_suffix());
+  try
+    {
+      dumper.scan_roots();
+      dumper.scan_loop_pass();
+    }
+  catch (const std::exception& exc)
+    {
+      RPS_WARNOUT("failure in dump to " << dumper.get_top_dir()
+                  << std::endl
+                  << "... got exception of type "
+                  << typeid(exc).name()
+                  << ":"
+                  << exc.what());
+      throw;
+    };
+  ///
   RPS_FATAL("unimplemented rps_dump_into '%s'", dirpath.c_str());
 #warning rps_dump_into unimplemented
 } // end of rps_dump_into

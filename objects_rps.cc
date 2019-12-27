@@ -163,6 +163,30 @@ Rps_ObjectZone::mark_gc_inside(Rps_GarbageCollector&gc)
     payl->gc_mark(gc);
 } // end Rps_ObjectZone::mark_gc_inside
 
+void
+Rps_ObjectZone::dump_scan_contents(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  Rps_ObjectZone* obcla = ob_class.load();
+  RPS_ASSERT(obcla != nullptr);
+  rps_dump_scan_object(du, obcla);
+  for (auto atit: ob_attrs)
+    {
+      rps_dump_scan_object(du, atit.first);
+      if (atit.second.is_ptr())
+        rps_dump_scan_value(du, atit.second, 0);
+    }
+  for (auto compv: ob_comps)
+    {
+      if (compv.is_ptr())
+        rps_dump_scan_value(du, compv, 0);
+    };
+  Rps_Payload*payl = ob_payload.load();
+  if (payl && payl->owner() == this)
+    payl->dump_scan(du);
+} // end Rps_ObjectZone::dump_scan_contents
+
 bool
 Rps_ObjectZone::equal(const Rps_ZoneValue&zv) const
 {

@@ -1262,6 +1262,7 @@ class Rps_ObjectZone : public Rps_ZoneValue
 {
 
   friend class Rps_Loader;
+  friend class Rps_Dumper;
   friend class Rps_Payload;
   friend Rps_ObjectZone*
   Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(Rps_Id,bool);
@@ -1354,6 +1355,7 @@ public:
   };
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0) const;
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
+  void dump_scan_contents(Rps_Dumper*du) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
   virtual Rps_HashInt val_hash (void) const
   {
@@ -1927,7 +1929,7 @@ extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
 extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc
 
 extern "C" void rps_dump_scan_object(Rps_Dumper*, const Rps_ObjectRef obr);
-extern "C" void rps_dump_scan_value(Rps_Dumper*, const Rps_Value obr, unsigned depth);
+extern "C" void rps_dump_scan_value(Rps_Dumper*, const Rps_Value val, unsigned depth);
 extern "C" Json::Value rps_dump_json_value(Rps_Dumper*, const Rps_Value val);
 extern "C" Json::Value rps_dump_json_objectref(Rps_Dumper*, const Rps_ObjectRef obr);
 extern "C" bool rps_is_dumpable_objref(Rps_Dumper*, const Rps_ObjectRef obr);
