@@ -45,9 +45,14 @@ class RpsQWindow;
 #include <QTimer>
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// Singleton to cleanly manage GUI icons and other image assets.
+//////////////////////////////////////////////////////////////////////////////
 class RpsQPixMap
 {
 public:
+
+  /// Gets the singleton instance.
   static inline RpsQPixMap* instance()
   {
     if (m_instance == nullptr)
@@ -56,27 +61,37 @@ public:
     return m_instance;
   }
 
+  /// Registers a new image asset.
   inline void add(std::string id, std::string path)
   {
     m_pixmap[id] = QPixmap(path.c_str());
   }
 
+  /// Gets a registered image asset.
   inline QPixmap get(std::string id)
   {
     return m_pixmap[id];
   }
 
 private:
+  // Private constructor.
   inline RpsQPixMap()
       : m_pixmap()
   { }
 
+  // Private destructor.
   inline ~RpsQPixMap()
   {
     delete m_instance;
   }
 
+  // Singleton instance.
   static RpsQPixMap* m_instance;
+
+  // Map of IDs and image assets.
+  //
+  // I've chosen an std::string for the image ID in order to avoid possible
+  // enum collisions between different image asset classes.
   std::map<std::string, QPixmap> m_pixmap;
 };
 
