@@ -679,6 +679,7 @@ Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
 //////////////////////////////////////////////// dumper
 class Rps_Dumper
 {
+  friend class Rps_PayloadSpace;
   friend void rps_dump_into (const std::string dirpath);
   friend void rps_dump_scan_object(Rps_Dumper*, Rps_ObjectRef obr);
   friend void rps_dump_scan_value(Rps_Dumper*, Rps_Value obr, unsigned depth);
@@ -689,6 +690,8 @@ class Rps_Dumper
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
   std::string du_tempsuffix;
+  std::set<Rps_ObjectRef> du_spacobset;
+  std::set<Rps_ObjectRef> du_pluginobset;
   // we maintain the set of opened file paths, since they are opened
   // with the temporary suffix above, and renamed by
   // rename_opened_files below.
@@ -714,6 +717,7 @@ private:
   void scan_object_contents(Rps_ObjectRef obr);
   std::unique_ptr<std::ofstream> open_output_file(const std::string& relpath);
   void rename_opened_files(void);
+  void add_code_addr(const void*);
 public:
   std::string get_temporary_suffix(void) const
   {
@@ -732,6 +736,12 @@ public:
   Json::Value json_objectref(const Rps_ObjectRef obr);
   bool is_dumpable_objref(const Rps_ObjectRef obr);
   bool is_dumpable_value(const Rps_Value val);
+  void add_space(Rps_ObjectRef obr)
+  {
+    RPS_ASSERT(obr);
+    std::lock_guard<std::recursive_mutex> gu(du_mtx);
+    du_spacobset.insert(obr);
+  };
 };				// end class Rps_Dumper
 
 
@@ -820,6 +830,38 @@ Rps_Dumper::open_output_file(const std::string& relpath)
   du_openedpathset.insert(relpath);
   return poutf;
 } // end Rps_Dumper::open_output_file
+
+void
+Rps_Dumper::add_code_addr(const void*ad)
+{
+  if (!ad) return;
+  Dl_info di;
+  memset(&di, 0, sizeof(di));
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  if (!dladdr(ad, &di))
+    return;
+  if (!di.dli_fname)
+    return;
+  const char*lastslash = strrchr(di.dli_fname, '/');
+  if (!lastslash)
+    return;
+  char idbuf[32];
+  memset (idbuf, 0, sizeof(idbuf));
+  int endpos = -1;
+  if (sscanf(lastslash+1, "rps_%19[a-zA-Z0-9]-mod.so%n", idbuf, &endpos) >= 1
+      && endpos>20)
+    {
+      const char* endid=nullptr;
+      bool okid=false;
+      Rps_Id plugid (idbuf, &endid, &okid);
+      if (plugid.valid() && *endid == (char)0 && okid)
+        {
+          Rps_ObjectZone* obz = Rps_ObjectZone::find(plugid);
+          if (obz)
+            du_pluginobset.insert(Rps_ObjectRef(obz));
+        }
+    }
+} // end of Rps_Dumper::add_code_addr
 
 
 void
@@ -1037,6 +1079,14 @@ Rps_Dumper::scan_object_contents(Rps_ObjectRef obr)
 {
   obr->dump_scan_contents(this);
 } // end Rps_Dumper::scan_object_contents
+
+
+void
+Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du != nullptr);
+  du->add_space(owner());
+} // end Rps_PayloadSpace::dump_scan
 
 
 

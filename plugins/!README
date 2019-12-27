@@ -1,2 +1,4 @@
 This refpersys/plugins/ directory will later contain *.so plugins that
-should be dlopen(3)-ed.
+should be dlopen(3)-ed.  As documented, a plugin named
+rps_7GIB3ma21I200tfqDs-mod.so corresponds to the object of id
+_7GIB3ma21I200tfqDs
