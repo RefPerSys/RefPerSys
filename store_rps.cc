@@ -743,8 +743,10 @@ Rps_Dumper::scan_object(const Rps_ObjectRef obr)
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   if (du_mapobjects.find(obr->oid()) != du_mapobjects.end())
     return;
-#warning Rps_Dumper::scan_object should test for transient objects
+  if (!obr->get_space()) // transient
+    return;
   du_mapobjects.insert({obr->oid(), obr});
+  du_scanque.push_back(obr);
   RPS_INFORMOUT("Rps_Dumper::scan_object adding oid " << obr->oid());
 } // end Rps_Dumper::scan_object
 
@@ -779,8 +781,10 @@ Rps_Dumper::is_dumpable_objref(const Rps_ObjectRef obr)
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   if (du_mapobjects.find(obr->oid()) != du_mapobjects.end())
     return true;
-#warning Rps_Dumper::is_dumpable_objref partly unimplemented
-  return false;
+  auto obrspace = obr->get_space();
+  if (!obrspace) // transient
+    return false;
+  return true;
 } // end Rps_Dumper::is_dumpable_objref
 
 
@@ -1017,11 +1021,15 @@ Rps_Dumper::scan_loop_pass(void)
   Rps_ObjectRef curobr;
   int count=0;
   // no locking here, it happens in pop_object_to_scan & scan_object_contents
+  RPS_INFORMOUT("scan_loop_pass start");
   while ((curobr=pop_object_to_scan()))
     {
       count++;
+      RPS_INFORMOUT("scan_loop_pass count#" << count
+                    << " curobr=" << curobr->oid());
       scan_object_contents(curobr);
     };
+  RPS_INFORMOUT("scan_loop_pass end count#" << count);
 } // end Rps_Dumper::scan_loop_pass
 
 void
