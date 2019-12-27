@@ -1974,6 +1974,8 @@ extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps
 extern "C" void rps_dump_scan_code_addr(Rps_Dumper*, const void*);
 // scan an object
 extern "C" void rps_dump_scan_object(Rps_Dumper*, const Rps_ObjectRef obr);
+// scan in a space a component object
+extern "C" void rps_dump_scan_space_component(Rps_Dumper*, Rps_ObjectRef obrspace, Rps_ObjectRef obrcomp);
 // scan a value
 extern "C" void rps_dump_scan_value(Rps_Dumper*, const Rps_Value val, unsigned depth);
 extern "C" Json::Value rps_dump_json_value(Rps_Dumper*, const Rps_Value val);

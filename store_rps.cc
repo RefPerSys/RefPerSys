@@ -683,6 +683,7 @@ class Rps_Dumper
   friend void rps_dump_into (const std::string dirpath);
   friend void rps_dump_scan_code_addr(Rps_Dumper*, const void*);
   friend void rps_dump_scan_object(Rps_Dumper*, Rps_ObjectRef obr);
+  friend void rps_dump_scan_space_component(Rps_Dumper*, Rps_ObjectRef obrspace, Rps_ObjectRef obrcomp);
   friend void rps_dump_scan_value(Rps_Dumper*, Rps_Value obr, unsigned depth);
   friend Json::Value rps_dump_json_value(Rps_Dumper*, Rps_Value val);
   friend Json::Value rps_dump_json_objectref(Rps_Dumper*, Rps_ObjectRef obr);
@@ -691,7 +692,7 @@ class Rps_Dumper
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
   std::string du_tempsuffix;
-  std::set<Rps_ObjectRef> du_spacobset;
+  std::map<Rps_ObjectRef,std::set<Rps_ObjectRef>> du_spacemap; // map from spaces to objects inside
   std::set<Rps_ObjectRef> du_pluginobset;
   // we maintain the set of opened file paths, since they are opened
   // with the temporary suffix above, and renamed by
@@ -737,11 +738,18 @@ public:
   Json::Value json_objectref(const Rps_ObjectRef obr);
   bool is_dumpable_objref(const Rps_ObjectRef obr);
   bool is_dumpable_value(const Rps_Value val);
-  void add_space(Rps_ObjectRef obr)
+  void scan_space_component(Rps_ObjectRef obrspace, Rps_ObjectRef obrcomp)
   {
-    RPS_ASSERT(obr);
+    RPS_ASSERT(obrspace);
+    RPS_ASSERT(obrcomp);
     std::lock_guard<std::recursive_mutex> gu(du_mtx);
-    du_spacobset.insert(obr);
+    auto itspace = du_spacemap.find(obrspace);
+    if (itspace == du_spacemap.end())
+      {
+        auto p = du_spacemap.emplace(obrspace,std::set<Rps_ObjectRef>());
+        itspace = p.first;
+      };
+    itspace->second.insert(obrcomp);
   };
 };				// end class Rps_Dumper
 
@@ -926,6 +934,14 @@ rps_dump_scan_code_addr(Rps_Dumper*du, const void* ad)
     du->scan_code_addr(ad);
 } // end rps_dump_scan_code_addr
 
+
+void
+rps_dump_scan_space_component(Rps_Dumper*du, Rps_ObjectRef obrspace, Rps_ObjectRef obrcomp)
+{
+  RPS_ASSERT(du != nullptr);
+  du->scan_space_component(obrspace, obrcomp);
+} // end rps_dump_scan_space_component
+
 void
 rps_dump_scan_object(Rps_Dumper*du, const Rps_ObjectRef obr)
 {
@@ -1100,6 +1116,8 @@ void
 Rps_Dumper::scan_object_contents(Rps_ObjectRef obr)
 {
   obr->dump_scan_contents(this);
+  Rps_ObjectRef spacobr(obr->get_space());
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
 } // end Rps_Dumper::scan_object_contents
 
 
@@ -1107,7 +1125,6 @@ void
 Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  du->add_space(owner());
 } // end Rps_PayloadSpace::dump_scan
 
 

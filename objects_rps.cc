@@ -174,6 +174,7 @@ Rps_ObjectZone::dump_scan_contents(Rps_Dumper*du) const
   Rps_ObjectZone* obspace = ob_space.load();
   RPS_ASSERT(obspace != nullptr);
   rps_dump_scan_object(du, obspace);
+  rps_dump_scan_space_component(du, Rps_ObjectRef(obspace), Rps_ObjectRef(this));
   for (auto atit: ob_attrs)
     {
       rps_dump_scan_object(du, atit.first);
