@@ -75,43 +75,44 @@ RpsQWindow::RpsQWindow (QWidget *parent)
 void
 RpsQWindow::setupAppMenu()
 {
-  QPixmap dump_px ("dump_icon.png");
-  QPixmap gc_px ("gc_icon.png");
-  QPixmap quit_px ("quit_icon.png");
-  QPixmap exit_px ("exit_icon.png");
+  auto pixmap = RpsQPixMap::instance();
 
-  QAction *dump_ax = new QAction (dump_px, "&Dump", this);
-  QAction *gc_ax = new QAction (gc_px, "&Garbage Collect", this);
-  QAction *quit_ax = new QAction (quit_px, "&Quit", this);
-  QAction *exit_ax = new QAction (exit_px, "e&Xit", this);
-  QAction *close_ax = new QAction (exit_px, "&Close", this);
-  QAction *newin_ax = new QAction (exit_px, "New &Window", this);
+  QAction *dump = new QAction(pixmap->get("RPS_ICON_DUMP"), "&Dump", this);
+  QAction *gc = new QAction(
+    pixmap->get("RPS_ICON_GC"), 
+    "&Garbage Collect", 
+    this
+  );
+  QAction *quit = new QAction(pixmap->get("RPS_ICON_QUIT"), "&Quit", this);
+  QAction *exit = new QAction(pixmap->get("RPS_ICON_EXIT"), "e&Xit", this);
+  QAction *close = new QAction(pixmap->get("RPS_ICON_CLOSE"), "&Close", this);
+  QAction *newin = new QAction(pixmap->get("RPS_ICON_NEW"), "New &Window", this);
 
-  quit_ax->setShortcut (tr ("CTRL+Q"));
-  exit_ax->setShortcut (tr ("CTRL+X"));
-  dump_ax->setShortcut (tr ("CTRL+D"));
-  gc_ax->setShortcut (tr ("CTRL+G"));
-  newin_ax->setShortcut (tr ("CTRL+W")); //TODO: doesn't CTRL+N seem better?
-  close_ax->setShortcut (tr ("CTRL+C"));
+  quit->setShortcut (tr ("CTRL+Q"));
+  exit->setShortcut (tr ("CTRL+X"));
+  dump->setShortcut (tr ("CTRL+D"));
+  gc->setShortcut (tr ("CTRL+G"));
+  newin->setShortcut (tr ("CTRL+W")); //TODO: doesn't CTRL+N seem better?
+  close->setShortcut (tr ("CTRL+C"));
 
   QMenu *app_menu;
   app_menu = menuBar ()->addMenu ("&App");
-  app_menu->addAction (dump_ax);
-  app_menu->addAction (gc_ax);
-  app_menu->addAction (newin_ax);
+  app_menu->addAction (dump);
+  app_menu->addAction (gc);
+  app_menu->addAction (newin);
   app_menu->addSeparator ();
-  app_menu->addAction (close_ax);
-  app_menu->addAction (quit_ax);
-  app_menu->addAction (exit_ax);
+  app_menu->addAction (close);
+  app_menu->addAction (quit);
+  app_menu->addAction (exit);
 
-  connect (dump_ax, &QAction::triggered, this, &RpsQWindow::onMenuDump);
-  connect (gc_ax, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
-  connect (quit_ax, &QAction::triggered, this, &RpsQWindow::onMenuQuit);
-  connect (exit_ax, &QAction::triggered, this, &RpsQWindow::onMenuExit);
-  connect (newin_ax, &QAction::triggered,
+  connect (dump, &QAction::triggered, this, &RpsQWindow::onMenuDump);
+  connect (gc, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
+  connect (quit, &QAction::triggered, this, &RpsQWindow::onMenuQuit);
+  connect (exit, &QAction::triggered, this, &RpsQWindow::onMenuExit);
+  connect (newin, &QAction::triggered,
            dynamic_cast<RpsQApplication*>(RpsQApplication::instance()),
            &RpsQApplication::add_new_window);
-  connect (close_ax, &QAction::triggered, this, &RpsQWindow::onMenuClose);
+  connect (close, &QAction::triggered, this, &RpsQWindow::onMenuClose);
 } // end RpsQWindow::setupAppMenu
 
 

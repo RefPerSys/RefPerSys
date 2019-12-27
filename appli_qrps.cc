@@ -95,6 +95,7 @@ RpsQApplication::RpsQApplication(int &argc, char*argv[])
   : QApplication(argc, argv)
   , app_wndcount (0)
 {
+  register_pixmap();
   setApplicationName("RefPerSys");
   setApplicationVersion(rps_lastgitcommit);
   app_windvec.reserve(16);
@@ -117,6 +118,22 @@ RpsQWindow* RpsQApplication::getWindowPtr(int ix)
   if (ix <= 0 || ix > (int)app_windvec.size())
     return nullptr;
   return app_windvec.at(ix).get();
+}
+
+
+void 
+RpsQApplication::register_pixmap()
+{
+  auto pixmap = RpsQPixMap::instance();
+
+  pixmap->add("RPS_ICON_NEW", "new_icon.png");
+  pixmap->add("RPS_ICON_DUMP", "dump_icon.png");
+  pixmap->add("RPS_ICON_GC", "gc_icon.png");
+  pixmap->add("RPS_ICON_QUIT", "quit_icon.png");
+  pixmap->add("RPS_ICON_EXIT", "exit_icon.png");
+  pixmap->add("RPS_ICON_CLOSE", "close_icon.png");
+  pixmap->add("RPS_ICON_ABOUT", "about_icon.png");
+  pixmap->add("RPS_ICON_DEBUG", "debug_icon.png");
 }
 
 

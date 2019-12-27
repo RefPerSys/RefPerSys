@@ -45,37 +45,39 @@ class RpsQWindow;
 #include <QTimer>
 
 
-class RpsQPixMap {
-    public:
-        static inline RpsQPixMap* instance()
-        {
-            if (m_instance == nullptr)
-                m_instance = new RpsQPixMap();
+class RpsQPixMap
+{
+public:
+  static inline RpsQPixMap* instance()
+  {
+    if (m_instance == nullptr)
+      m_instance = new RpsQPixMap();
 
-            return m_instance;
-        }
+    return m_instance;
+  }
 
-        inline void add(std::string id, std::string path)
-        {
-            m_pixmap[id] = QPixmap(path.c_str());
-        }
+  inline void add(std::string id, std::string path)
+  {
+    m_pixmap[id] = QPixmap(path.c_str());
+  }
 
-        inline QPixmap get(std::string id)
-        {
-            m_pixmap[id];
-        }
+  inline QPixmap get(std::string id)
+  {
+    return m_pixmap[id];
+  }
 
-    private:
-        inline RpsQPixMap()
-        { }
+private:
+  inline RpsQPixMap()
+      : m_pixmap()
+  { }
 
-        inline ~RpsQPixMap()
-        {
-            delete m_instance;
-        }
+  inline ~RpsQPixMap()
+  {
+    delete m_instance;
+  }
 
-        static RpsQPixMap* m_instance;
-        std::map<std::string, QPixmap> m_pixmap;
+  static RpsQPixMap* m_instance;
+  std::map<std::string, QPixmap> m_pixmap;
 };
 
 
@@ -113,6 +115,8 @@ public slots:
   void add_new_window(void);
 
 private:
+  void register_pixmap();
+
   std::mutex app_mutex;
   std::vector <std::unique_ptr<RpsQWindow>> app_windvec;
   size_t app_wndcount;

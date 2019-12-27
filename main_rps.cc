@@ -215,7 +215,6 @@ void rps_print_types_info(void)
 
 
 
-
 ////////////////////////////////////////////////////////////////
 
 static double rps_start_monotonic_time;
@@ -246,6 +245,7 @@ main(int argc, char** argv)
       fprintf(stderr, "%s failed to make backtrace state.\n", rps_progname);
       exit(EXIT_FAILURE);
     }
+
   pthread_setname_np(pthread_self(), "rps-main");
   RPS_INFORM("starting RefPerSys %s process %d on host %s\n"
              "... gitid %.16s built %s",
