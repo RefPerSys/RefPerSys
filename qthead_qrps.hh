@@ -44,6 +44,42 @@ class RpsQWindow;
 #include <QPlainTextEdit>
 #include <QTimer>
 
+
+class RpsQPixMap {
+    public:
+        static inline RpsQPixMap* instance()
+        {
+            if (m_instance == nullptr)
+                m_instance = new RpsQPixMap();
+
+            return m_instance;
+        }
+
+        inline void add(std::string id, std::string path)
+        {
+            m_pixmap[id] = QPixmap(path.c_str());
+        }
+
+        inline QPixmap get(std::string id)
+        {
+            m_pixmap[id];
+        }
+
+    private:
+        inline RpsQPixMap()
+        { }
+
+        inline ~RpsQPixMap()
+        {
+            delete m_instance;
+        }
+
+        static RpsQPixMap* m_instance;
+        std::map<std::string, QPixmap> m_pixmap;
+};
+
+
+
 //////////////////////////////////////////////////////////// RpsQApplication
 //// our application class
 class RpsQApplication

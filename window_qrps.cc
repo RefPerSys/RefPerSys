@@ -48,6 +48,9 @@ extern "C" const char rps_window_date[];
 const char rps_window_date[]= __DATE__;
 
 
+RpsQPixMap* RpsQPixMap::m_instance = nullptr;
+
+
 RpsQWindow::RpsQWindow (QWidget *parent)
   : QMainWindow (parent)
 {
