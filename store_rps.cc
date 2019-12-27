@@ -161,33 +161,55 @@ Rps_Loader::space_file_path(Rps_Id spacid)
 bool
 Rps_Loader::is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid)
 {
+  const char*reason = nullptr;
   if (pobid)
     *pobid = Rps_Id(nullptr);
-  if (linbuf.size() < strlen ("//+ob") + Rps_Id::nbchars)
-    return false;
+  Rps_Id oid;
+  const char*end=nullptr;
+  bool ok=false;
   if (linbuf[0] != '/' || linbuf[1] != '/'
       || linbuf[2] != '+'
       || linbuf[3] != 'o'
       || linbuf[4] != 'b')
     return false;
-  const char*end=nullptr;
-  bool ok=false;
-  Rps_Id oid(linbuf.c_str()+strlen("//+ob"), &end, &ok);
-  if (!end || (*end && !isspace(*end)))
-    goto bad;
+  if (linbuf.size() < strlen ("//+ob") + Rps_Id::nbchars)
+    {
+      reason = "too short";
+      goto bad;
+    }
+  {
+    Rps_Id tempoid(linbuf.c_str()+strlen("//+ob"), &end, &ok);
+    if (!end || (*end && !isspace(*end)))
+      {
+        reason= "too long";
+        goto bad;
+      }
+    oid = tempoid;
+  };
   if (!ok)
-    goto bad;
+    {
+      reason= "bad oid";
+      goto bad;
+    }
   if (!oid.valid())
-    goto bad;
+    {
+      reason= "invalid oid";
+      goto bad;
+    }
   if (pobid)
     *pobid = oid;
   return true;
 bad:
+  if (!reason)
+    reason="???";
   RPS_WARNOUT("bad object starting line in space " << spacid << " line#" << lineno
+              << " - " << reason
               << ":" << std::endl
               << linbuf);
   return false;
 } // end Rps_Loader::is_object_starting_line
+
+
 
 void
 Rps_Loader::first_pass_space(Rps_Id spacid)
@@ -224,7 +246,8 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           RPS_INFORMOUT("got ob spacid:" << spacid
                         << " linbuf: " << linbuf
                         << " lincnt#" << lincnt
-                        << " curobjid:" << curobjid);
+                        << " curobjid:" << curobjid
+                        << " count:" << (obcnt+1));
           if (RPS_UNLIKELY(obcnt == 0))
             {
               Json::Value prologjson = rps_string_to_json(prologstr);
@@ -520,7 +543,6 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
 {
   RPS_ASSERT(ld != nullptr);
   std::int64_t i=0;
-  double d=0.0;
   std::string str = "";
   std::size_t siz=0;
   Json::Value jcomp;
@@ -534,6 +556,7 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
   else if (jv.isDouble())
     {
       double d = jv.asDouble();
+      RPS_ASSERT(!std::isnan(d));
       *this = Rps_Value(d, Rps_DoubleTag{});
       return;
     }
@@ -641,9 +664,9 @@ Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
       *this = obr;
       return;
     }
-  RPS_WARN("unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)");
-  throw  std::runtime_error("unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)");
-#warning unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
+  RPS_WARN("partly unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)");
+  throw  std::runtime_error("partly unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)");
+#warning partly unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
 } // end Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
 
 
@@ -990,6 +1013,7 @@ Rps_Dumper::scan_loop_pass(void)
 {
   Rps_ObjectRef curobr;
   int count=0;
+  // no locking here, it happens in pop_object_to_scan & scan_object_contents
   while ((curobr=pop_object_to_scan()))
     {
       count++;
@@ -1251,6 +1275,18 @@ void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   RPS_FATAL("rpsldpy_setob unimplemented");
+#warning rpsldpy_setob unimplemented
+} // end of rpsldpy_setob
+
+
+/// loading of space payload
+void rpsldpy_space(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+{
+  RPS_ASSERT(obz != nullptr);
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  RPS_WARNOUT("rpsldpy_space unimplemented, obz:" << obz->oid() << " spacid:" << spacid << " lineno:" << lineno
+              << "jv:" << std::endl << jv);
 #warning rpsldpy_setob unimplemented
 } // end of rpsldpy_setob
 

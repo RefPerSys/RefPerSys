@@ -1269,6 +1269,7 @@ class Rps_ObjectZone : public Rps_ZoneValue
   const Rps_Id ob_oid;
   mutable std::recursive_mutex ob_mtx;
   std::atomic<Rps_ObjectZone*> ob_class;
+  std::atomic<Rps_ObjectZone*> ob_space;
   std::atomic<double> ob_mtime;
   std::map<Rps_ObjectRef, Rps_Value> ob_attrs;
   std::vector<Rps_Value> ob_comps;
@@ -1907,6 +1908,36 @@ public:
     return Rps_TupleValue(pvectob);
   };
 };				// end Rps_PayloadVectOb
+
+////////////////////////////////////////////////////////////////
+////// mutable space payload
+extern "C" rpsldpysig_t rpsldpy_space;
+class Rps_PayloadSpace : public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  inline Rps_PayloadSpace(Rps_ObjectZone*owner);
+  Rps_PayloadSpace(Rps_ObjectRef obr) :
+    Rps_PayloadSpace(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadSpace()
+  {
+  };
+protected:
+  virtual uint32_t wordsize(void) const
+  {
+    return sizeof(*this)/sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  virtual bool is_erasable(void) const
+  {
+    return false;
+  };
+public:
+  inline Rps_PayloadSpace(Rps_ObjectZone*obz, Rps_Loader*ld);
+};				// end Rps_PayloadSpace
+
 
 ////////////////////////////////////////////////////////////////
 
