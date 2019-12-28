@@ -501,6 +501,10 @@ Rps_Loader::load_all_state_files(void)
       spacecnt1++;
     }
   RPS_INFORMOUT("loaded " << spacecnt1 << " space files in first pass");
+  /// conceptually, the second pass might be done in parallel
+  /// (multi-threaded, with different threads workinng on different
+  /// spaces), but this require more clever locking and
+  /// synchronization
   for (Rps_Id spacid: ld_spaceset)
     {
       second_pass_space(spacid);
@@ -698,7 +702,7 @@ class Rps_Dumper
     std::set<Rps_ObjectRef> sp_setob;
     du_space_st(Rps_Id id) : sp_id(id), sp_setob() {};
   };
-  std::map<Rps_ObjectRef,std::unique_ptr<du_space_st>> du_spacemap; // map from spaces to objects inside
+  std::map<Rps_ObjectRef,std::shared_ptr<du_space_st>> du_spacemap; // map from spaces to objects inside
   std::set<Rps_ObjectRef> du_pluginobset;
   // we maintain the set of opened file paths, since they are opened
   // with the temporary suffix above, and renamed by
@@ -722,6 +726,8 @@ private:
   void scan_roots(void);
   Rps_ObjectRef pop_object_to_scan(void);
   void scan_loop_pass(void);
+  void write_all_space_files(void);
+  void write_space_file(Rps_ObjectRef spacobr);
   void scan_object_contents(Rps_ObjectRef obr);
   std::unique_ptr<std::ofstream> open_output_file(const std::string& relpath);
   void rename_opened_files(void);
@@ -752,7 +758,7 @@ public:
     auto itspace = du_spacemap.find(obrspace);
     if (itspace == du_spacemap.end())
       {
-        auto p = du_spacemap.emplace(obrspace,std::make_unique<du_space_st>(obrspace->oid()));
+        auto p = du_spacemap.emplace(obrspace,std::make_shared<du_space_st>(obrspace->oid()));
         itspace = p.first;
       };
     itspace->second->sp_setob.insert(obrcomp);
@@ -1128,6 +1134,45 @@ Rps_Dumper::scan_object_contents(Rps_ObjectRef obr)
 
 
 void
+Rps_Dumper::write_all_space_files(void)
+{
+  std::set<Rps_ObjectRef> spaceset;
+  {
+    std::lock_guard<std::recursive_mutex> gu(du_mtx);
+    for (auto it: du_spacemap)
+      spaceset.insert(it.first);
+  }
+  int nbspace = 0;
+  for (Rps_ObjectRef spacobr : spaceset)
+    {
+      write_space_file(spacobr);
+      nbspace++;
+    }
+  RPS_INFORMOUT("wrote " << nbspace << " space files into " << du_topdir);
+} // end Rps_Dumper::write_all_space_files
+
+void
+Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
+{
+  du_space_st* curspa = nullptr;
+  {
+    std::lock_guard<std::recursive_mutex> gu(du_mtx);
+    curspa = du_spacemap[spacobr].get();
+  }
+  RPS_ASSERT(curspa);
+  std::string curelpath;
+  std::set<Rps_ObjectRef> curspaset;
+  std::unique_ptr<std::ofstream> pouts;
+  {
+    std::lock_guard<std::recursive_mutex> gu(du_mtx);
+    curelpath = std::string{"persistore/sp"} + curspa->sp_id.to_string() + "-rps.json";
+    pouts = open_output_file(curelpath);
+    curspaset = curspa->sp_setob;
+  }
+  RPS_ASSERT(pouts);
+} // end Rps_Dumper::write_space_file
+
+void
 Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
@@ -1182,6 +1227,7 @@ void rps_dump_into (const std::string dirpath)
         }
       dumper.scan_roots();
       dumper.scan_loop_pass();
+      dumper.write_all_space_files();
     }
   catch (const std::exception& exc)
     {
