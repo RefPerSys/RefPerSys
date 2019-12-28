@@ -1167,9 +1167,9 @@ Rps_Dumper::write_generated_roots_file(void)
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
   *pouts << std::endl
-	 << "#ifndef RPS_ROOT_OB" << std::endl
-	 << "#error RPS_ROOT_OB(Oid) macro undefined" << std::endl
-	 << "#endif /*undefined RPS_ROOT_OB*/" << std::endl << std::endl;
+         << "#ifndef RPS_ROOT_OB" << std::endl
+         << "#error RPS_ROOT_OB(Oid) macro undefined" << std::endl
+         << "#endif /*undefined RPS_ROOT_OB*/" << std::endl << std::endl;
   int rootcnt = 0;
   //  std::ofstream& out = *pouts;
   rps_each_root_object([=, &pouts, &rootcnt](Rps_ObjectRef obr)
@@ -1178,10 +1178,10 @@ Rps_Dumper::write_generated_roots_file(void)
     rootcnt++;
   });
   *pouts << std::endl
-	 << "#undef RPS_NB_ROOT_OB" << std::endl
-	 << "#define RPS_NB_ROOT_OB " << rootcnt << std::endl;
+         << "#undef RPS_NB_ROOT_OB" << std::endl
+         << "#define RPS_NB_ROOT_OB " << rootcnt << std::endl;
   *pouts << std::endl
-	 << "#undef RPS_ROOT_OB" << std::endl;
+         << "#undef RPS_ROOT_OB" << std::endl;
   *pouts << "/// end of RefPerSys roots file " << rootpathstr << std::endl;
 } // end Rps_Dumper::write_generated_roots_file
 
@@ -1190,7 +1190,7 @@ Rps_Dumper::write_all_generated_files(void)
 {
   write_generated_roots_file();
   RPS_WARNOUT("Rps_Dumper::write_all_generated_files incomplete");
-  #warning Rps_Dumper::write_all_generated_files incomplete
+#warning Rps_Dumper::write_all_generated_files incomplete
 } // end Rps_Dumper::write_all_generated_files
 
 
@@ -1213,18 +1213,20 @@ Rps_Dumper::write_manifest_file(void)
   }
   {
     Json::Value jspaceset(Json::arrayValue);
-    for (auto it: du_spacemap) {
-      RPS_ASSERT(it.first);
-      jspaceset.append(Json::Value(it.first->oid().to_string()));
-    }
+    for (auto it: du_spacemap)
+      {
+        RPS_ASSERT(it.first);
+        jspaceset.append(Json::Value(it.first->oid().to_string()));
+      }
     jmanifest["spaceset"] = jspaceset;
   }
   {
     Json::Value jplugins(Json::arrayValue);
-    for (auto plugobr: du_pluginobset) {
-      RPS_ASSERT(plugobr);
-      jplugins.append(Json::Value(plugobr->oid().to_string()));
-    }
+    for (auto plugobr: du_pluginobset)
+      {
+        RPS_ASSERT(plugobr);
+        jplugins.append(Json::Value(plugobr->oid().to_string()));
+      }
     jmanifest["plugins"] = jplugins;
   }
   /// this is not used for loading, but could be useful for other purposes.
@@ -1300,12 +1302,13 @@ void rps_dump_into (const std::string dirpath)
     DIR* d = opendir(dirpath.c_str());
     if (d)
       closedir(d);
-    else {
-      if (mkdir(dirpath.c_str(), 0750))
-	RPS_WARN("failed to mkdir %s: %m", dirpath.c_str());
-      else
-	RPS_INFORM("made directory %s to dump into", dirpath.c_str());
-    }
+    else
+      {
+        if (mkdir(dirpath.c_str(), 0750))
+          RPS_WARN("failed to mkdir %s: %m", dirpath.c_str());
+        else
+          RPS_INFORM("made directory %s to dump into", dirpath.c_str());
+      }
   }
   std::string realdirpath;
   {
@@ -1342,21 +1345,21 @@ void rps_dump_into (const std::string dirpath)
           QDir realqdir{QString(realdirpath.c_str())};
           if (!realqdir.mkpath("persistore"))
             {
-              RPS_WARNOUT("failed to make dump sub-directory " << realdirpath 
+              RPS_WARNOUT("failed to make dump sub-directory " << realdirpath
                           << "/persistore:" << strerror(errno));
               throw std::runtime_error(std::string{"failed to make dump directory:"} + realdirpath + "/persistore");
             }
           else
-            RPS_INFORMOUT("made real dump sub-directory: " << realdirpath 
+            RPS_INFORMOUT("made real dump sub-directory: " << realdirpath
                           << "/persistore");
           if (!realqdir.mkpath("generated"))
             {
-              RPS_WARNOUT("failed to make dump sub-directory " << realdirpath 
+              RPS_WARNOUT("failed to make dump sub-directory " << realdirpath
                           << "/generated:" << strerror(errno));
               throw std::runtime_error(std::string{"failed to make dump directory:"} + realdirpath + "/persistore");
             }
           else
-            RPS_INFORMOUT("made real dump sub-directory: " << realdirpath 
+            RPS_INFORMOUT("made real dump sub-directory: " << realdirpath
                           << "/generated");
         }
       dumper.scan_roots();
@@ -1368,8 +1371,8 @@ void rps_dump_into (const std::string dirpath)
       double endelapsed = rps_elapsed_real_time();
       double endcputime = rps_process_cpu_time();
       RPS_INFORMOUT("dump into " << dumper.get_top_dir()
-		    << " completed in " << (endelapsed-startelapsed) << " wallclock, "
-		    << (endcputime-startcputime) << " cpu seconds");
+                    << " completed in " << (endelapsed-startelapsed) << " wallclock, "
+                    << (endcputime-startcputime) << " cpu seconds");
     }
   catch (const std::exception& exc)
     {

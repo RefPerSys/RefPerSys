@@ -281,7 +281,7 @@ void rps_run_application(int &argc, char **argv)
       {
         const QString dumpqs = argparser.value(dumpafterloadOption);
         dumpdirstr = dumpqs.toStdString();
-	RPS_INFORMOUT("should dump into " << dumpdirstr);
+        RPS_INFORMOUT("should dump into " << dumpdirstr);
       }
   }
   RPS_INFORMOUT("using " << rps_nbjobs << " jobs (or threads)");
