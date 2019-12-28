@@ -190,6 +190,9 @@ extern "C" struct backtrace_state* rps_backtrace_state;
 /// the program name
 extern "C" const char* rps_progname;
 
+
+/// the initial copyright year of RefPerSys
+#define RPS_INITIAL_COPYRIGHT_YEAR 2019
 // the number of jobs, that of threads, to run in parallel
 extern "C" int rps_nbjobs;
 #define RPS_NBJOBS_MIN 2
@@ -198,6 +201,8 @@ extern "C" int rps_nbjobs;
 /// the refpersys homedir, e.g. $REFPERSYS_HOME or $HOME or given with
 /// --refpersys-home <dir>
 extern "C" const char* rps_homedir(void);
+
+extern "C" void rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string linprefix, std::string linsuffix);
 
 //////////////// fatal error - aborting
 extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));

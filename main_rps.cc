@@ -59,6 +59,52 @@ rps_hostname(void)
   return hnambuf;
 } // end rps_hostname
 
+void rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string linprefix, std::string linsuffix)
+{
+  outs << linprefix
+       << "GENERATED file " << path  << " / DO NOT EDIT!"
+       << linsuffix << std::endl;
+  outs << linprefix
+       << "This file is part of the Reflective Persistent System."
+       << linsuffix << std::endl;
+  {
+    time_t nowtime = time(nullptr);
+    struct tm nowtm = {};
+    localtime_r(&nowtime, &nowtm);
+    outs << linprefix << " © Copyright " << RPS_INITIAL_COPYRIGHT_YEAR
+         << " - " << (nowtm.tm_year+1900)
+         << " The Reflective Persistent System Team."
+         << linsuffix << std::endl;
+    outs << linprefix
+         << " see http://refpersys.org/ and contact team@refpersys.org for more."
+         << linsuffix << std::endl;
+  }
+  outs << linprefix << "This program is free software: you can redistribute it and/or modify"
+       << linsuffix << std::endl;
+  outs << linprefix << "it under the terms of the GNU General Public License as published by"
+       << linsuffix << std::endl;
+  outs << linprefix << "the Free Software Foundation, either version 3 of the License, or"
+       << linsuffix << std::endl;
+  outs << linprefix << "(at your option) any later version."
+       << linsuffix << std::endl;
+  outs << linprefix << "_"
+       << linsuffix << std::endl;
+  outs << linprefix << "This program is distributed in the hope that it will be useful,"
+       << linsuffix << std::endl;
+  outs << linprefix << "but WITHOUT ANY WARRANTY; without even the implied warranty of"
+       << linsuffix << std::endl;
+  outs << linprefix << "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
+       << linsuffix << std::endl;
+  outs << linprefix << "GNU General Public License for more details."
+       << linsuffix << std::endl;
+  outs << linprefix << "_"
+       << linsuffix << std::endl;
+  outs << linprefix << "You should have received a copy of the GNU General Public License"
+       << linsuffix << std::endl;
+  outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
+       << linsuffix << std::endl;
+} // end rps_emit_gplv3_copyright_notice
+
 /**** old obsolete code
 enum rps_option_key_en
 {
