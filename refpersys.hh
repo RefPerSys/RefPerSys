@@ -80,6 +80,8 @@
 #include <errno.h>
 #include <time.h>
 #include <dlfcn.h>
+#include <dirent.h>
+
 
 
 // for programmatic C++ name demangling, see also

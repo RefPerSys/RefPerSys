@@ -1216,6 +1216,17 @@ Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
 ////////////////////////////////////////////////////////////////
 void rps_dump_into (const std::string dirpath)
 {
+  {
+    DIR* d = opendir(dirpath.c_str());
+    if (d)
+      closedir(d);
+    else {
+      if (mkdir(dirpath.c_str(), 0750))
+	RPS_WARN("failed to mkdir %s: %m", dirpath.c_str());
+      else
+	RPS_INFORM("made directory %s to dump into", dirpath.c_str());
+    }
+  }
   std::string realdirpath;
   {
     char* rp = realpath(dirpath.c_str(), nullptr);
@@ -1249,14 +1260,24 @@ void rps_dump_into (const std::string dirpath)
       if (realdirpath != cwdpath)
         {
           QDir realqdir{QString(realdirpath.c_str())};
-          if (!realqdir.mkpath("."))
+          if (!realqdir.mkpath("persistore"))
             {
-              RPS_WARNOUT("failed to make dump directory " << realdirpath
-                          << ":" << strerror(errno));
-              throw std::runtime_error(std::string{"failed to make dump directory:"} + realdirpath);
+              RPS_WARNOUT("failed to make dump sub-directory " << realdirpath 
+                          << "/persistore:" << strerror(errno));
+              throw std::runtime_error(std::string{"failed to make dump directory:"} + realdirpath + "/persistore");
             }
           else
-            RPS_INFORMOUT("made real dump directory: " << realdirpath);
+            RPS_INFORMOUT("made real dump sub-directory: " << realdirpath 
+                          << "/persistore");
+          if (!realqdir.mkpath("generated"))
+            {
+              RPS_WARNOUT("failed to make dump sub-directory " << realdirpath 
+                          << "/generated:" << strerror(errno));
+              throw std::runtime_error(std::string{"failed to make dump directory:"} + realdirpath + "/persistore");
+            }
+          else
+            RPS_INFORMOUT("made real dump sub-directory: " << realdirpath 
+                          << "/generated");
         }
       dumper.scan_roots();
       dumper.scan_loop_pass();
