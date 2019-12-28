@@ -1197,8 +1197,8 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
       *pouts << "//+ob" << curobr->oid().to_string() << std::endl;
       Json::Value jobject(Json::objectValue);
       jobject["oid"] = Json::Value (curobr->oid().to_string());
+      curobr->dump_json_content(this,jobject);
       jsonwriter->write(jobject, pouts.get());
-#warning incomplete, should dump the JSON content
       *pouts << std::endl;
     }
   *pouts << std::endl << std::endl;

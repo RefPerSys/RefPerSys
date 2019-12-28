@@ -1376,6 +1376,7 @@ public:
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   void dump_scan_contents(Rps_Dumper*du) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
+  void dump_json_content(Rps_Dumper*du, Json::Value&)  const;
   virtual Rps_HashInt val_hash (void) const
   {
     return obhash();

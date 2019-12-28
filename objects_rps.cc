@@ -191,6 +191,44 @@ Rps_ObjectZone::dump_scan_contents(Rps_Dumper*du) const
     payl->dump_scan(du);
 } // end Rps_ObjectZone::dump_scan_contents
 
+void
+Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
+{
+  RPS_ASSERT(du != nullptr);
+  RPS_ASSERT(json.type() == Json::objectValue);
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  Rps_ObjectZone* obcla = ob_class.load();
+  RPS_ASSERT(obcla != nullptr);
+  json["class"] = rps_dump_json_objectref(du,obcla);
+  json["mtime"] = Json::Value (get_mtime());
+  if (!ob_attrs.empty())
+    {
+      Json::Value jattrs(Json::arrayValue);
+      for (auto atit: ob_attrs)
+        {
+          if (!rps_is_dumpable_objref(du,atit.first))
+            continue;
+          Json::Value jcurat(Json::objectValue);
+          jcurat["at"] = rps_dump_json_objectref(du,atit.first);
+          jcurat["va"] = rps_dump_json_value(du,atit.second);
+          jattrs.append(jcurat);
+        };
+      json["attrs"] = jattrs;
+    }
+  if (!ob_comps.empty())
+    {
+      Json::Value jcomps(Json::arrayValue);
+      for (auto compv: ob_comps)
+        {
+          jcomps.append(rps_dump_json_value(du,compv));
+        };
+      json["comps"] = jcomps;
+    };
+  Rps_Payload*payl = ob_payload.load();
+  if (payl && payl->owner() == this)
+    payl->dump_json_content(du,json);
+} // end Rps_ObjectZone::dump_json_contents
+
 bool
 Rps_ObjectZone::equal(const Rps_ZoneValue&zv) const
 {
