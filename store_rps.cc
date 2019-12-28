@@ -728,6 +728,9 @@ private:
   Rps_ObjectRef pop_object_to_scan(void);
   void scan_loop_pass(void);
   void write_all_space_files(void);
+  void write_all_generated_files(void);
+  void write_generated_roots_file(void);
+  void write_manifest_file(void);
   void write_space_file(Rps_ObjectRef spacobr);
   void scan_object_contents(Rps_ObjectRef obr);
   std::unique_ptr<std::ofstream> open_output_file(const std::string& relpath);
@@ -1157,6 +1160,81 @@ Rps_Dumper::write_all_space_files(void)
 } // end Rps_Dumper::write_all_space_files
 
 void
+Rps_Dumper::write_generated_roots_file(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  auto rootpathstr = std::string{"generated/rps-roots.hh"};
+  auto pouts = open_output_file(rootpathstr);
+  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
+  *pouts << std::endl
+	 << "#ifndef RPS_ROOT_OB" << std::endl
+	 << "#error RPS_ROOT_OB(Oid) macro undefined" << std::endl
+	 << "#endif /*undefined RPS_ROOT_OB*/" << std::endl << std::endl;
+  int rootcnt = 0;
+  //  std::ofstream& out = *pouts;
+  rps_each_root_object([=, &pouts, &rootcnt](Rps_ObjectRef obr)
+  {
+    (*pouts) << "RPS_ROOT_OB(" << obr->oid() << ")" << std::endl;
+    rootcnt++;
+  });
+  *pouts << std::endl
+	 << "#undef RPS_NB_ROOT_OB" << std::endl
+	 << "#define RPS_NB_ROOT_OB " << rootcnt << std::endl;
+  *pouts << std::endl
+	 << "#undef RPS_ROOT_OB" << std::endl;
+  *pouts << "/// end of RefPerSys roots file " << rootpathstr << std::endl;
+} // end Rps_Dumper::write_generated_roots_file
+
+void
+Rps_Dumper::write_all_generated_files(void)
+{
+  write_generated_roots_file();
+  RPS_WARNOUT("Rps_Dumper::write_all_generated_files incomplete");
+  #warning Rps_Dumper::write_all_generated_files incomplete
+} // end Rps_Dumper::write_all_generated_files
+
+
+void
+Rps_Dumper::write_manifest_file(void)
+{
+  std::unique_ptr<Json::StreamWriter> jsonwriter(du_jsonwriterbuilder.newStreamWriter());
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  auto pouts = open_output_file(RPS_MANIFEST_JSON);
+  rps_emit_gplv3_copyright_notice(*pouts, RPS_MANIFEST_JSON, "//!! ", "");
+  Json::Value jmanifest(Json::objectValue);
+  jmanifest["format"] = Json::Value (RPS_MANIFEST_FORMAT);
+  {
+    Json::Value jglobalroots(Json::arrayValue);
+    rps_each_root_object([=,&jglobalroots](Rps_ObjectRef obr)
+    {
+      jglobalroots.append(Json::Value(obr->oid().to_string()));
+    });
+    jmanifest["globalroots"] = jglobalroots;
+  }
+  {
+    Json::Value jspaceset(Json::arrayValue);
+    for (auto it: du_spacemap) {
+      RPS_ASSERT(it.first);
+      jspaceset.append(Json::Value(it.first->oid().to_string()));
+    }
+    jmanifest["spaceset"] = jspaceset;
+  }
+  {
+    Json::Value jplugins(Json::arrayValue);
+    for (auto plugobr: du_pluginobset) {
+      RPS_ASSERT(plugobr);
+      jplugins.append(Json::Value(plugobr->oid().to_string()));
+    }
+    jmanifest["plugins"] = jplugins;
+  }
+  /// this is not used for loading, but could be useful for other purposes.
+  jmanifest["origitid"] = Json::Value (rps_gitid);
+  jsonwriter->write(jmanifest, pouts.get());
+  *pouts << std::endl <<  std::endl << "//// end of RefPerSys manifest file" << std::endl;
+} // end Rps_Dumper::write_manifest_file
+
+
+void
 Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
 {
   du_space_st* curspa = nullptr;
@@ -1178,7 +1256,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     curspaset = curspa->sp_setob;
   }
   RPS_ASSERT(pouts);
-  rps_emit_gplv3_copyright_notice(*pouts, curelpath, "////", "");
+  rps_emit_gplv3_copyright_notice(*pouts, curelpath, "//// ", "");
   *pouts << std::endl;
   // emit the prologue
   {
@@ -1216,6 +1294,8 @@ Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
 ////////////////////////////////////////////////////////////////
 void rps_dump_into (const std::string dirpath)
 {
+  double startelapsed = rps_elapsed_real_time();
+  double startcputime = rps_process_cpu_time();
   {
     DIR* d = opendir(dirpath.c_str());
     if (d)
@@ -1282,6 +1362,14 @@ void rps_dump_into (const std::string dirpath)
       dumper.scan_roots();
       dumper.scan_loop_pass();
       dumper.write_all_space_files();
+      dumper.write_all_generated_files();
+      dumper.write_manifest_file();
+      dumper.rename_opened_files();
+      double endelapsed = rps_elapsed_real_time();
+      double endcputime = rps_process_cpu_time();
+      RPS_INFORMOUT("dump into " << dumper.get_top_dir()
+		    << " completed in " << (endelapsed-startelapsed) << " wallclock, "
+		    << (endcputime-startcputime) << " cpu seconds");
     }
   catch (const std::exception& exc)
     {
@@ -1294,8 +1382,6 @@ void rps_dump_into (const std::string dirpath)
       throw;
     };
   ///
-  RPS_FATAL("unimplemented rps_dump_into '%s'", dirpath.c_str());
-#warning rps_dump_into unimplemented
 } // end of rps_dump_into
 
 //////////////////////////////////////////////////////////////// load
