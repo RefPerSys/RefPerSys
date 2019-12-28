@@ -692,7 +692,12 @@ class Rps_Dumper
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
   std::string du_tempsuffix;
-  std::map<Rps_ObjectRef,std::set<Rps_ObjectRef>> du_spacemap; // map from spaces to objects inside
+  struct du_space_st {
+    Rps_Id sp_id;
+    std::set<Rps_ObjectRef> sp_setob;
+    du_space_st(Rps_Id id) : sp_id(id), sp_setob() {};
+  };
+  std::map<Rps_ObjectRef,std::unique_ptr<du_space_st>> du_spacemap; // map from spaces to objects inside
   std::set<Rps_ObjectRef> du_pluginobset;
   // we maintain the set of opened file paths, since they are opened
   // with the temporary suffix above, and renamed by
@@ -746,10 +751,10 @@ public:
     auto itspace = du_spacemap.find(obrspace);
     if (itspace == du_spacemap.end())
       {
-        auto p = du_spacemap.emplace(obrspace,std::set<Rps_ObjectRef>());
+        auto p = du_spacemap.emplace(obrspace,std::make_unique<du_space_st>(obrspace->oid()));
         itspace = p.first;
       };
-    itspace->second.insert(obrcomp);
+    itspace->second->sp_setob.insert(obrcomp);
   };
 };				// end class Rps_Dumper
 
