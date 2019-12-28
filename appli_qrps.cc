@@ -189,6 +189,7 @@ void rps_run_application(int &argc, char **argv)
     const QCommandLineOption nbjobOption(QStringList() << "j" << "jobs", "number of threads", "nb-jobs");
     // dump after load
     const QCommandLineOption dumpafterloadOption(QStringList() << "D" << "dump", "dump after load", "dump-dir");
+    argparser.addOption(dumpafterloadOption);
     //
     argparser.process(app);
     ///// --refpersys-home <dir>
@@ -280,6 +281,7 @@ void rps_run_application(int &argc, char **argv)
       {
         const QString dumpqs = argparser.value(dumpafterloadOption);
         dumpdirstr = dumpqs.toStdString();
+	RPS_INFORMOUT("should dump into " << dumpdirstr);
       }
   }
   RPS_INFORMOUT("using " << rps_nbjobs << " jobs (or threads)");
