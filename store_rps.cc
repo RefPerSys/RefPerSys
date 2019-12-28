@@ -692,6 +692,7 @@ class Rps_Dumper
   friend Json::Value rps_dump_json_value(Rps_Dumper*, Rps_Value val);
   friend Json::Value rps_dump_json_objectref(Rps_Dumper*, Rps_ObjectRef obr);
   std::string du_topdir;
+  Json::StreamWriterBuilder du_jsonwriterbuilder;
   std::recursive_mutex du_mtx;
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
@@ -742,8 +743,12 @@ public:
     return du_topdir;
   };
   Rps_Dumper(const std::string&topdir) :
-    du_topdir(topdir), du_mtx(), du_mapobjects(), du_scanque(),
-    du_tempsuffix(make_temporary_suffix()), du_openedpathset() {};
+    du_topdir(topdir), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
+    du_tempsuffix(make_temporary_suffix()), du_openedpathset()
+  {
+    du_jsonwriterbuilder["commentStyle"] = "None";
+    du_jsonwriterbuilder["indentation"] = " ";
+  };
   void scan_object(const Rps_ObjectRef obr);
   void scan_value(const Rps_Value val, unsigned depth);
   Json::Value json_value(const Rps_Value val);
@@ -1162,14 +1167,42 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
   RPS_ASSERT(curspa);
   std::string curelpath;
   std::set<Rps_ObjectRef> curspaset;
+  Rps_Id spacid;
   std::unique_ptr<std::ofstream> pouts;
+  std::unique_ptr<Json::StreamWriter> jsonwriter(du_jsonwriterbuilder.newStreamWriter());
   {
     std::lock_guard<std::recursive_mutex> gu(du_mtx);
-    curelpath = std::string{"persistore/sp"} + curspa->sp_id.to_string() + "-rps.json";
+    spacid = curspa->sp_id;
+    curelpath = std::string{"persistore/sp"} + spacid.to_string() + "-rps.json";
     pouts = open_output_file(curelpath);
     curspaset = curspa->sp_setob;
   }
   RPS_ASSERT(pouts);
+  rps_emit_gplv3_copyright_notice(*pouts, curelpath, "////", "");
+  *pouts << std::endl;
+  // emit the prologue
+  {
+    *pouts << std::endl
+           << "///!!! prologue of RefPerSys space file:" << std::endl;
+    Json::Value jprologue(Json::objectValue);
+    jprologue["format"] = Json::Value (RPS_MANIFEST_FORMAT);
+    jprologue["spaceid"] = Json::Value (spacid.to_string());
+    jprologue["nbobjects"] = Json::Value ((int)(curspaset.size()));
+    jsonwriter->write(jprologue, pouts.get());
+    *pouts << std::endl;
+  }
+  for (auto curobr: curspaset)
+    {
+      *pouts << std::endl << std::endl;
+      *pouts << "//+ob" << curobr->oid().to_string() << std::endl;
+      Json::Value jobject(Json::objectValue);
+      jobject["oid"] = Json::Value (curobr->oid().to_string());
+      jsonwriter->write(jobject, pouts.get());
+#warning incomplete, should dump the JSON content
+      *pouts << std::endl;
+    }
+  *pouts << std::endl << std::endl;
+  *pouts << "//// end of RefPerSys generated space file " << curelpath << std::endl;
 } // end Rps_Dumper::write_space_file
 
 void
