@@ -140,6 +140,7 @@ RpsQApplication::register_pixmap()
 void rps_run_application(int &argc, char **argv)
 {
   bool batch = false;
+  std::string dumpdirstr;
   {
     char cwdbuf[128];
     memset (cwdbuf, 0, sizeof(cwdbuf));
@@ -186,6 +187,8 @@ void rps_run_application(int &argc, char **argv)
     argparser.addOption(batchOption);
     // number of jobs, for multi threading
     const QCommandLineOption nbjobOption(QStringList() << "j" << "jobs", "number of threads", "nb-jobs");
+    // dump after load
+    const QCommandLineOption dumpafterloadOption(QStringList() << "D" << "dump", "dump after load", "dump-dir");
     //
     argparser.process(app);
     ///// --refpersys-home <dir>
@@ -272,9 +275,20 @@ void rps_run_application(int &argc, char **argv)
           RPS_WARNOUT("invalid number of jobs (-j option) " << (nbjqs.toStdString()));
         rps_nbjobs = nbjobs;
       }
+    ///// --dump <dump-dir>
+    if (argparser.isSet(dumpafterloadOption))
+      {
+        const QString dumpqs = argparser.value(dumpafterloadOption);
+        dumpdirstr = dumpqs.toStdString();
+      }
   }
   RPS_INFORMOUT("using " << rps_nbjobs << " jobs (or threads)");
   rps_load_from (loadtopdir);
+  if (!dumpdirstr.empty())
+    {
+      RPS_INFORMOUT("dumping after load to " << dumpdirstr);
+      rps_dump_into(dumpdirstr);
+    }
   if (!batch)
     (void) app.exec ();
 } // end of rps_run_application
