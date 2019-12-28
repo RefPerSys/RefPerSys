@@ -190,6 +190,11 @@ extern "C" struct backtrace_state* rps_backtrace_state;
 /// the program name
 extern "C" const char* rps_progname;
 
+// the number of jobs, that of threads, to run in parallel
+extern "C" int rps_nbjobs;
+#define RPS_NBJOBS_MIN 2
+#define RPS_NBJOBS_MAX 20
+
 /// the refpersys homedir, e.g. $REFPERSYS_HOME or $HOME or given with
 /// --refpersys-home <dir>
 extern "C" const char* rps_homedir(void);

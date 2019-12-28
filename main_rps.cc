@@ -216,6 +216,7 @@ void rps_print_types_info(void)
 
 
 ////////////////////////////////////////////////////////////////
+int rps_nbjobs = RPS_NBJOBS_MIN + 1;
 
 static double rps_start_monotonic_time;
 double rps_elapsed_real_time(void)

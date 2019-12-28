@@ -692,7 +692,8 @@ class Rps_Dumper
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
   std::string du_tempsuffix;
-  struct du_space_st {
+  struct du_space_st
+  {
     Rps_Id sp_id;
     std::set<Rps_ObjectRef> sp_setob;
     du_space_st(Rps_Id id) : sp_id(id), sp_setob() {};

@@ -184,6 +184,8 @@ void rps_run_application(int &argc, char **argv)
     // batch flag
     const QCommandLineOption batchOption(QStringList() << "B" << "batch", "batch mode, without any windows");
     argparser.addOption(batchOption);
+    // number of jobs, for multi threading
+    const QCommandLineOption nbjobOption(QStringList() << "j" << "jobs", "number of threads", "nb-jobs");
     //
     argparser.process(app);
     ///// --refpersys-home <dir>
@@ -254,8 +256,24 @@ void rps_run_application(int &argc, char **argv)
         printf("--------------------------------------------------------"
                "---------------------------\n");
         fflush(nullptr);
+      };
+    if (argparser.isSet(nbjobOption))
+      {
+        int nbjobs = 3;
+        const QString nbjqs = argparser.value(nbjobOption);
+        if (sscanf(nbjqs.toStdString().c_str(), "%d", &nbjobs) >= 1)
+          {
+            if (nbjobs <= RPS_NBJOBS_MIN)
+              nbjobs = RPS_NBJOBS_MIN;
+            else if (nbjobs > RPS_NBJOBS_MAX)
+              nbjobs = RPS_NBJOBS_MAX;
+          }
+        else
+          RPS_WARNOUT("invalid number of jobs (-j option) " << (nbjqs.toStdString()));
+        rps_nbjobs = nbjobs;
       }
   }
+  RPS_INFORMOUT("using " << rps_nbjobs << " jobs (or threads)");
   rps_load_from (loadtopdir);
   if (!batch)
     (void) app.exec ();
