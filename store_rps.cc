@@ -1201,11 +1201,11 @@ Rps_Dumper::write_generated_names_file(void)
   rps_each_root_object([=, &pouts, &namecnt](Rps_ObjectRef obr)
   {
     Rps_PayloadSymbol* cursym = obr->get_dynamic_payload<Rps_PayloadSymbol>();
-    if (!cursym)
-      return;    
+    if (!cursym || cursym->symbol_is_weak())
+      return;
     std::lock_guard<std::recursive_mutex> gu(*(obr->objmtxptr()));
     (*pouts) << "RPS_INSTALL_NAMED_ROOT_OB(" << obr->oid()
-	     << "," << (cursym->symbol_name()) << ")" << std::endl;
+             << "," << (cursym->symbol_name()) << ")" << std::endl;
     namecnt++;
   });
   *pouts << std::endl
@@ -1260,6 +1260,22 @@ Rps_Dumper::write_manifest_file(void)
         jplugins.append(Json::Value(plugobr->oid().to_string()));
       }
     jmanifest["plugins"] = jplugins;
+  }
+  {
+    Json::Value jglobalnames(Json::arrayValue);
+    int namecnt = 0;
+    //  std::ofstream& out = *pouts;
+    rps_each_root_object([=, &pouts, &namecnt, &jglobalnames](Rps_ObjectRef obr)
+    {
+      Rps_PayloadSymbol* cursym = obr->get_dynamic_payload<Rps_PayloadSymbol>();
+      if (!cursym || cursym->symbol_is_weak())
+        return;
+      Json::Value jnaming(Json::objectValue);
+      jnaming["nam"] = Json::Value(cursym->symbol_name());
+      jnaming["obj"] = Json::Value(obr->oid().to_string());
+      jglobalnames.append(jnaming);
+    });
+    jmanifest["globalnames"] = jglobalnames;
   }
   /// this is not used for loading, but could be useful for other purposes.
   jmanifest["origitid"] = Json::Value (rps_gitid);

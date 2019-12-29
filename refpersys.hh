@@ -2137,7 +2137,8 @@ public:
   {
     return Rps_Value(symb_data.load(),this);
   };
-  const std::string& symbol_name(void) const {
+  const std::string& symbol_name(void) const
+  {
     return symb_name;
   };
   static bool valid_name(const char*str);
