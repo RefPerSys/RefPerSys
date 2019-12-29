@@ -140,9 +140,10 @@ private:
 
 class RpsQWindow;
 
-enum RpsQWindowMenu {
-    APP, 
-    HELP
+enum RpsQWindowMenu
+{
+  APP,
+  HELP
 };
 
 
@@ -214,10 +215,10 @@ public:
   /// Constructor
   inline RpsQMenuAppQuit(RpsQWindow* parent)
     : RpsQMenuAction(
-        parent, 
-        RpsQWindowMenu::APP, 
-        "RPS_ICON_QUIT", 
-        "&Quit", 
+        parent,
+        RpsQWindowMenu::APP,
+        "RPS_ICON_QUIT",
+        "&Quit",
         "CTRL+Q"
       )
   { }
@@ -238,10 +239,10 @@ public:
   /// Constructor
   inline RpsQMenuAppExit(RpsQWindow* parent)
     : RpsQMenuAction(
-        parent, 
-        RpsQWindowMenu::APP, 
-        "RPS_ICON_EXIT", 
-        "e&Xit", 
+        parent,
+        RpsQWindowMenu::APP,
+        "RPS_ICON_EXIT",
+        "e&Xit",
         "CTRL+X"
       )
   { }
@@ -262,10 +263,10 @@ public:
   /// Constructor
   inline RpsQMenuAppDump(RpsQWindow* parent)
     : RpsQMenuAction(
-        parent, 
-        RpsQWindowMenu::APP, 
-        "RPS_ICON_DUMP", 
-        "&Dump", 
+        parent,
+        RpsQWindowMenu::APP,
+        "RPS_ICON_DUMP",
+        "&Dump",
         "CTRL+D"
       )
   { }
@@ -286,10 +287,10 @@ public:
   /// Constructor
   inline RpsQMenuAppGC(RpsQWindow* parent)
     : RpsQMenuAction(
-        parent, 
-        RpsQWindowMenu::APP, 
-        "RPS_ICON_GC", 
-        "Collect &Garbage", 
+        parent,
+        RpsQWindowMenu::APP,
+        "RPS_ICON_GC",
+        "Collect &Garbage",
         "CTRL+G"
       )
   { }

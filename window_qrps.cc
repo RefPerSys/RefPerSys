@@ -90,7 +90,7 @@ RpsQWindow::setupAppMenu()
   app_menu->addAction (newin);
   app_menu->addSeparator ();
   app_menu->addAction (close);
-  
+
   m_menu_app_quit = new RpsQMenuAppQuit(this);
   m_menu_app_exit = new RpsQMenuAppExit(this);
 
