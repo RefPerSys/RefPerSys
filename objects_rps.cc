@@ -479,10 +479,16 @@ Rps_PayloadVectOb::dump_scan(Rps_Dumper*du) const
 void
 Rps_PayloadVectOb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
+  /// see function rpsldpy_vectob in store_rps.cc
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  RPS_FATAL("unimplemented Rps_PayloadVectOb::dump_json_content");
-#warning unimplemented Rps_PayloadVectOb::dump_json_content
+  Json::Value jarr(Json::arrayValue);
+  for (auto obr: pvectob)
+    if (rps_is_dumpable_objref(du,obr))
+      jarr.append(rps_dump_json_objectref(du,obr));
+    else
+      jarr.append(Json::Value(Json::nullValue));
+  jv["vectob"] = jarr;
 } // end Rps_PayloadVectOb::dump_json_content
 
 

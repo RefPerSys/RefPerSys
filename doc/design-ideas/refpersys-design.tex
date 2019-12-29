@@ -1897,7 +1897,7 @@ Payload may be:
   and the dictionnary of methods (see \S
   \ref{subsubsec:message-sending} and figure \ref{fig:json-class-payload}).
 \item a mutable set of objects  \texttt{Rps\_Type::PaylSetOb} (see figure \ref{fig:json-setob-payload}).
-\item a mutable vector of objects  \texttt{Rps\_Type::PaylVectOb}
+\item a mutable vector of objects  \texttt{Rps\_Type::PaylVectOb} (see figure \ref{fig:json-vectob-payload}).
 \item a mutable vector of values  \texttt{Rps\_Type::PaylVectVal}
 \item a mutable association from objects to values
   \texttt{Rps\_Type::PaylAssoc}
@@ -2426,6 +2426,23 @@ The \textsc{Json} representation of payloads vary. The figure
   \end {center}
   \caption {\textsc{Json} syntax of mutable set of objects payload}
 \label{fig:json-setob-payload}  
+\end{figure}
+
+
+ The figure \ref{fig:json-vectob-payload} gives the format of mutable
+ vector of objects payload. The \texttt{"vectob":} array might be
+ empty. Some components could be null.
+
+\begin{figure}[h]
+  \begin {center}
+    \begin{tabular}{llll}
+      \emph{\textbf{vector-objects-payload}} & : & ~ & \\
+      ~ & \texttt{"payload":} \texttt{"vectob"}\texttt{,} &  \\  
+      ~ & \texttt{"vectob":} \textbf{\texttt{[}} &  \textit{oid} \ldots  \textbf{\texttt{]}} & sorted oids of elements \\ 
+    \end{tabular}
+  \end {center}
+  \caption {\textsc{Json} syntax of mutable vector of objects payload}
+\label{fig:json-vector-payload}  
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

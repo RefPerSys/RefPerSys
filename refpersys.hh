@@ -1887,11 +1887,13 @@ public:
 
 ////////////////////////////////////////////////////////////////
 ////// mutable vector of objects payload - for PaylVectOb
-extern "C" rpsldpysig_t rpsldpy_setob;
+extern "C" rpsldpysig_t rpsldpy_vectob;
 class Rps_PayloadVectOb : public Rps_Payload
 {
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
+  friend Rps_PayloadVectOb*
+  Rps_QuasiZone::rps_allocate<Rps_PayloadVectOb,Rps_ObjectZone*>(Rps_ObjectZone*);
   std::vector<Rps_ObjectRef> pvectob;
   inline Rps_PayloadVectOb(Rps_ObjectZone*owner);
   Rps_PayloadVectOb(Rps_ObjectRef obr) :
@@ -1905,6 +1907,10 @@ protected:
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
 public:
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
   inline Rps_PayloadVectOb(Rps_ObjectZone*obz, Rps_Loader*ld);
   unsigned size(void) const
   {
@@ -1961,7 +1967,7 @@ protected:
   };
   virtual uint32_t wordsize(void) const
   {
-    return sizeof(*this)/sizeof(void*);
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
   };
   virtual void gc_mark(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
