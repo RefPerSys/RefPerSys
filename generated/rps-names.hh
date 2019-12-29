@@ -16,7 +16,7 @@
 //: along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef RPS_INSTALL_NAMED_ROOT_OB
-#error RPS_INSTALL_NAMED_ROOT_OB(Oid) macro undefined
+#error RPS_INSTALL_NAMED_ROOT_OB(Oid,Name) macro undefined
 #endif /*undefined RPS_INSTALL_NAMED_ROOT_OB*/
 
 
