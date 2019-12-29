@@ -844,6 +844,16 @@ Rps_ObjectZone::get_payload(void) const
   return ob_payload.load();
 } // end Rps_ObjectZone::get_payload(void)
 
+bool
+Rps_ObjectZone::has_erasable_payload(void) const
+{
+  auto py = ob_payload.load();
+  if (py != nullptr)
+    return py->is_erasable();
+  return false;
+} // end Rps_ObjectZone::has_erasable_payload
+
+
 void
 Rps_ObjectZone::clear_payload(void)
 {

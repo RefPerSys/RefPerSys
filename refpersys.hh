@@ -1380,12 +1380,17 @@ protected:
     ob_comps.push_back(compval);
   };
 public:
-  std::recursive_mutex* objmtx(void) const
+  std::recursive_mutex* objmtxptr(void) const
   {
     return &ob_mtx;
   };
   std::string string_oid(void) const;
   inline Rps_Payload*get_payload(void) const;
+  template <class PaylClass> PaylClass* get_dynamic_payload(void) const
+  {
+    return dynamic_cast<PaylClass*>(get_payload());
+  }
+  inline bool has_erasable_payload(void) const;
   inline Rps_ObjectRef get_class(void) const;
   inline Rps_ObjectRef get_space(void) const;
   inline double get_mtime(void) const;
@@ -2085,6 +2090,7 @@ class Rps_PayloadSymbol : public Rps_Payload
   Rps_QuasiZone::rps_allocate1<Rps_PayloadSymbol, Rps_ObjectZone*>(Rps_ObjectZone*);
   std::string symb_name;
   std::atomic<const void*> symb_data;
+  std::atomic<bool> symb_is_weak;
   static std::recursive_mutex symb_tablemtx;
   static std::map<std::string,Rps_PayloadSymbol*> symb_table;
 protected:
@@ -2106,13 +2112,22 @@ protected:
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
   virtual bool is_erasable(void) const
   {
-    return false;
+    return symb_is_weak.load();
   };
 public:
-  void load_register_name(const char*name, Rps_Loader*ld);
-  void load_register_name(const std::string& str, Rps_Loader*ld)
+  static void gc_mark_strong_symbols(Rps_GarbageCollector*gc);
+  void load_register_name(const char*name, Rps_Loader*ld,bool weak=false);
+  void load_register_name(const std::string& str, Rps_Loader*ld, bool weak=false)
   {
-    load_register_name (str.c_str(), ld);
+    load_register_name (str.c_str(), ld, weak);
+  };
+  bool is_weak(void) const
+  {
+    return symb_is_weak.load();
+  };
+  void set_weak(bool f)
+  {
+    symb_is_weak.store(f);
   };
   Rps_Value symbol_value(void) const
   {
@@ -2135,6 +2150,29 @@ public:
       };
     return nullptr;
   };
+  static bool register_name(std::string name, Rps_ObjectRef obj, bool weak);
+  static bool register_strong_name(std::string name, Rps_ObjectRef obj)
+  {
+    return register_name(name, obj, false);
+  }
+  static bool register_weak_name(std::string name, Rps_ObjectRef obj)
+  {
+    return register_name(name,obj, true);
+  }
+  static Rps_PayloadSymbol* find_named_payload(const std::string&str)
+  {
+    std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
+    auto it = symb_table.find(str);
+    if (it != symb_table.end())
+      {
+        auto symb = it->second;
+        if (symb)
+          return symb;
+      };
+    return nullptr;
+  };
+  static bool forget_name(std::string name);
+  static bool forget_object(Rps_ObjectRef obj);
 };				// end Rps_PayloadSymbol
 
 

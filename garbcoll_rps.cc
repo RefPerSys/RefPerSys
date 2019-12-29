@@ -117,6 +117,7 @@ Rps_GarbageCollector::run_gc(void)
   {
     Rps_QuasiZone::clear_all_gcmarks(gc);
     gc.mark_gcroots();
+    Rps_PayloadSymbol::gc_mark_strong_symbols(&gc);
     while (!gc.gc_obscanque.empty())
       {
         auto obfront = gc.gc_obscanque.front();

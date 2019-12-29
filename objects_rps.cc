@@ -541,7 +541,7 @@ Rps_PayloadSymbol::Rps_PayloadSymbol(Rps_ObjectZone*obz)
 } // end Rps_PayloadSymbol::Rps_PayloadSymbol
 
 void
-Rps_PayloadSymbol::load_register_name(const char*name, Rps_Loader*ld)
+Rps_PayloadSymbol::load_register_name(const char*name, Rps_Loader*ld, bool weak)
 {
   if (!valid_name(name))
     throw std::runtime_error(std::string("invalid symbol name:") + name);
@@ -553,6 +553,7 @@ Rps_PayloadSymbol::load_register_name(const char*name, Rps_Loader*ld)
     throw std::runtime_error(std::string("duplicate loaded symbol name:") + name + " for "
                              + owner()->oid().to_string());
   symb_table.insert({symb_name, this});
+  symb_is_weak.store(weak);
 } // end Rps_PayloadSymbol::load_register_name
 
 void
@@ -582,6 +583,86 @@ Rps_PayloadSymbol::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   auto symval = symbol_value();
   if (symval)
     jv["symval"] = rps_dump_json_value(du, symval);
+  if (is_weak())
+    jv["weak"] = Json::Value(true);
 } // end Rps_PayloadSymbol::dump_json_content
+
+void
+Rps_PayloadSymbol::gc_mark_strong_symbols(Rps_GarbageCollector*gc)
+{
+  RPS_ASSERT(gc != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
+  for (auto it: symb_table)
+    {
+      Rps_PayloadSymbol*cursymb = it.second;
+      RPS_ASSERT(cursymb);
+      if (cursymb->is_weak())
+        continue;
+      Rps_ObjectRef curown = cursymb->owner();
+      if (!curown)
+        continue;
+      gc->mark_obj(curown);
+    }
+}
+
+bool
+Rps_PayloadSymbol::register_name(std::string name, Rps_ObjectRef obj, bool weak)
+{
+  if (!obj)
+    return false;
+  if (!valid_name(name))
+    return false;
+  std::lock_guard<std::recursive_mutex> gu(*(obj->objmtxptr()));
+  if (obj->get_payload() != nullptr
+      && !obj->has_erasable_payload()) return false;
+  std::lock_guard<std::recursive_mutex> gusy(symb_tablemtx);
+  if (symb_table.find(name) != symb_table.end())
+    return false;
+  Rps_PayloadSymbol* paylsymb =
+    obj->put_new_plain_payload<Rps_PayloadSymbol>();
+  paylsymb->symb_name.assign(name);
+  symb_table.insert({paylsymb->symb_name, paylsymb});
+  paylsymb->symb_is_weak.store(weak);
+  return true;
+} // end Rps_PayloadSymbol::register_name
+
+
+
+bool Rps_PayloadSymbol::forget_name(std::string name)
+{
+  if (!valid_name(name))
+    return false;
+  std::lock_guard<std::recursive_mutex> gusy(symb_tablemtx);
+  auto it = symb_table.find(name);
+  if (it == symb_table.end())
+    return false;
+  Rps_PayloadSymbol* sy = it->second;
+  RPS_ASSERT(sy != nullptr);
+  Rps_ObjectRef obj = sy->owner();
+  if (!obj)
+    return false;
+  obj->clear_payload();
+  symb_table.erase(it);
+  return true;
+} // end Rps_PayloadSymbol::forget_name
+
+bool
+Rps_PayloadSymbol::forget_object(Rps_ObjectRef obj)
+{
+  if (!obj)
+    return false;
+  std::lock_guard<std::recursive_mutex> gu(*(obj->objmtxptr()));
+  Rps_PayloadSymbol* paylsymb = obj->get_dynamic_payload<Rps_PayloadSymbol>();
+  if (!paylsymb)
+    return false;
+  std::lock_guard<std::recursive_mutex> gusy(symb_tablemtx);
+  auto it = symb_table.find(paylsymb->symb_name);
+  if (it == symb_table.end())
+    return false;
+  obj->clear_payload();
+  symb_table.erase(it);
+  return true;
+} // end Rps_PayloadSymbol::forget_object
+
 
 // end of file objects_rps.cc

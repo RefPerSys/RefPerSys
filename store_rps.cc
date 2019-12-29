@@ -1643,6 +1643,7 @@ void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   const char* name = jv["name"].asCString();
+  bool weak = jv["weak"].asBool();
   if (!Rps_PayloadSymbol::valid_name(name))
     RPS_FATALOUT("rpsldpy_symbol: object " << obz->oid()
                  << " in space " << spacid << " lineno#" << lineno
@@ -1652,7 +1653,7 @@ void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
   RPS_FATALOUT("incomplete rpsldpy_symbol: object " << obz->oid()
                << " in space " << spacid << " lineno#" << lineno);
   Rps_PayloadSymbol* paylsymb = obz->put_new_plain_payload<Rps_PayloadSymbol>();
-  paylsymb->load_register_name(namestr,ld);
+  paylsymb->load_register_name(namestr,ld,weak);
 } // end rpsldpy_symbol
 //////////////////////////////////////////////////////////// end of file store_rps.cc
 
