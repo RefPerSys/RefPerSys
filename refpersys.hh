@@ -1813,6 +1813,8 @@ class Rps_PayloadSetOb : public Rps_Payload
 {
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
+  friend Rps_PayloadSetOb*
+  Rps_QuasiZone::rps_allocate<Rps_PayloadSetOb,Rps_ObjectZone*>(Rps_ObjectZone*);
   std::set<Rps_ObjectRef> psetob;
   inline Rps_PayloadSetOb(Rps_ObjectZone*owner);
   Rps_PayloadSetOb(Rps_ObjectRef obr) :
@@ -1822,6 +1824,8 @@ class Rps_PayloadSetOb : public Rps_Payload
     psetob.clear();
   };
 protected:
+  virtual uint32_t wordsize() const
+  {return (sizeof(*this)+sizeof(void*)-1) / sizeof(void*);};
   virtual void gc_mark(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
