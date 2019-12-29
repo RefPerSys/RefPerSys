@@ -682,7 +682,7 @@ public:
   inline Rps_StringValue(const Rps_Value val);
   inline Rps_StringValue(const Rps_String* strv);
   Rps_StringValue(const QString& qstr);
-  inline Rps_StringValue(nullptr_t);
+  inline Rps_StringValue(std::nullptr_t);
 }; // end class Rps_StringValue
 
 class Rps_DoubleValue : public Rps_Value
@@ -1054,6 +1054,7 @@ class Rps_QuasiZone
   static std::vector<Rps_QuasiZone*> qz_zonvec;
   static uint32_t qz_cnt;
   uint32_t qz_rank;		// the rank in qz_zonvec;
+protected:
   inline void* operator new (std::size_t siz, std::nullptr_t);
   inline void* operator new (std::size_t siz, unsigned wordgap);
   static constexpr uint16_t qz_gcmark_bit = 1;

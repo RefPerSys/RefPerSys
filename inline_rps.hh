@@ -128,7 +128,7 @@ Rps_Value::~Rps_Value()
   _wptr = nullptr;
 };
 
-Rps_Value::Rps_Value(nullptr_t) : _wptr(nullptr) {};
+Rps_Value::Rps_Value(std::nullptr_t) : _wptr(nullptr) {};
 
 Rps_Value::Rps_Value(Rps_EmptyTag) : _wptr (RPS_EMPTYSLOT) {};
 
@@ -789,7 +789,7 @@ Rps_StringValue::Rps_StringValue(const Rps_String* strv)
 {
 } // end Rps_StringValue::Rps_StringValue(const Rps_String* strv)
 
-Rps_StringValue::Rps_StringValue(nullptr_t)
+Rps_StringValue::Rps_StringValue(std::nullptr_t)
   : Rps_Value(nullptr)
 {
 } // end of Rps_StringValue::Rps_StringValue(nullptr_t)
@@ -966,7 +966,7 @@ Rps_ObjectValue::Rps_ObjectValue(const Rps_Value val, const Rps_ObjectZone*defob
 Rps_ObjectValue::Rps_ObjectValue(const Rps_ObjectZone* obz)
   : Rps_Value (obz, Rps_ValPtrTag{}) {};
 
-Rps_ObjectValue::Rps_ObjectValue(nullptr_t)
+Rps_ObjectValue::Rps_ObjectValue(std::nullptr_t)
   : Rps_Value (nullptr, Rps_ValPtrTag{}) {};
 
 
