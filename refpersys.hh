@@ -362,6 +362,8 @@ class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
 class Rps_GarbageCollector;
+class Rps_Payload;
+class Rps_PayloadSymbol;
 class Rps_Loader;
 class Rps_Dumper;
 
@@ -379,6 +381,7 @@ public:
   {
     return _optr;
   };
+  inline std::recursive_mutex* objmtx(void) const;
   const Rps_ObjectZone* const_optr() const
   {
     return const_cast<const Rps_ObjectZone*>(_optr);
@@ -499,6 +502,7 @@ enum class Rps_Type : int16_t
 {
   ////////////////
   /// payloads are negative, below -1
+  PaylSymbol = -10, // symbol payload
   PaylSpace = -9, // space payload
   PaylStrBuf = -8, // mutable string buffer
   PaylRelation = -7, // mutable binary relation between objects
@@ -549,17 +553,19 @@ class Rps_TupleValue;
 //////////////// our value, a single word
 class Rps_Value
 {
+  friend class Rps_PayloadSymbol;
 public:
   struct Rps_IntTag {};
   struct Rps_DoubleTag {};
   struct Rps_ValPtrTag {};
   struct Rps_EmptyTag {};
   inline Rps_Value ();
-  inline Rps_Value (nullptr_t);
+  inline Rps_Value (std::nullptr_t);
   inline Rps_Value (Rps_EmptyTag);
   inline Rps_Value (intptr_t i, Rps_IntTag);
   inline Rps_Value (double d, Rps_DoubleTag);
   inline Rps_Value (const Rps_ZoneValue*ptr, Rps_ValPtrTag);
+  inline Rps_Value (const void*ptr, const Rps_PayloadSymbol*symb);
   Rps_Value(const Json::Value &hjv, Rps_Loader*ld); // in store_rps.cc
   /// C++ rule of five
   inline Rps_Value(const Rps_Value& other);
@@ -573,6 +579,7 @@ public:
   inline Rps_Value(const char*str, int len= -1);
   Rps_Value(const Rps_ZoneValue*ptr) : Rps_Value(ptr, Rps_ValPtrTag{}) {};
   Rps_Value(const Rps_ZoneValue& zv) : Rps_Value(&zv, Rps_ValPtrTag{}) {};
+  inline const void* data_for_symbol(Rps_PayloadSymbol*) const;
   static constexpr unsigned max_gc_mark_depth = 100;
   inline void gc_mark(Rps_GarbageCollector&gc, unsigned depth= 0) const;
   void dump_scan(Rps_Dumper* du, unsigned depth) const;
@@ -664,7 +671,7 @@ public:
   inline Rps_ObjectValue(const Rps_ObjectRef obr);
   inline Rps_ObjectValue(const Rps_Value val, const Rps_ObjectZone*defob=nullptr);
   inline Rps_ObjectValue(const Rps_ObjectZone* obz=nullptr);
-  inline Rps_ObjectValue(nullptr_t);
+  inline Rps_ObjectValue(std::nullptr_t);
 }; // end class Rps_ObjectValue
 
 class Rps_StringValue : public Rps_Value
@@ -1332,6 +1339,10 @@ protected:
     ob_comps.push_back(compval);
   };
 public:
+  std::recursive_mutex* objmtx(void) const
+  {
+    return &ob_mtx;
+  };
   std::string string_oid(void) const;
   inline Rps_Payload*get_payload(void) const;
   inline Rps_ObjectRef get_class(void) const;
@@ -1979,6 +1990,66 @@ protected:
 public:
   inline Rps_PayloadSpace(Rps_ObjectZone*obz, Rps_Loader*ld);
 };				// end Rps_PayloadSpace
+
+
+////////////////////////////////////////////////////////////////
+////// symbol payload
+extern "C" rpsldpysig_t rpsldpy_symbol;
+class Rps_PayloadSymbol : public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend rpsldpysig_t rpsldpy_symbol;
+  friend Rps_PayloadSymbol*
+  Rps_QuasiZone::rps_allocate<Rps_PayloadSymbol,Rps_ObjectZone*,const char*>(Rps_ObjectZone*,const char*);
+  const std::string symb_name;
+  std::atomic<const void*> symb_data;
+  static std::recursive_mutex symb_tablemtx;
+  static std::map<std::string,Rps_PayloadSymbol*> symb_table;
+protected:
+  Rps_PayloadSymbol(Rps_ObjectZone*owner, const char*name);
+  Rps_PayloadSymbol(Rps_ObjectRef obr, const char*name) :
+    Rps_PayloadSymbol(obr?obr.optr():nullptr, name) {};
+  virtual ~Rps_PayloadSymbol()
+  {
+    std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
+    symb_table.erase(symb_name);
+  };
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  virtual bool is_erasable(void) const
+  {
+    return false;
+  };
+public:
+  Rps_Value symbol_value(void) const
+  {
+    return Rps_Value(symb_data.load(),this);
+  };
+  static bool valid_name(const char*str);
+  static bool valid_name(const std::string str)
+  {
+    return valid_name(str.c_str());
+  };
+  static Rps_ObjectRef find_named_object(const std::string&str)
+  {
+    std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
+    auto it = symb_table.find(str);
+    if (it != symb_table.end())
+      {
+        auto symb = it->second;
+        if (symb)
+          return symb->owner();
+      };
+    return nullptr;
+  };
+  inline Rps_PayloadSymbol(Rps_ObjectZone*obz, const std::string& nam, Rps_Loader*ld);
+};				// end Rps_PayloadSymbol
 
 
 ////////////////////////////////////////////////////////////////

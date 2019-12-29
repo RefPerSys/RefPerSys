@@ -118,6 +118,11 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph)
 //////////////////////////////////////////////////////////// values
 Rps_Value::Rps_Value() : _wptr(nullptr) {};
 
+Rps_Value::Rps_Value(const void*ptr, const Rps_PayloadSymbol*symb) : _wptr(ptr)
+{
+  RPS_ASSERT(symb != nullptr);
+};
+
 Rps_Value::~Rps_Value()
 {
   _wptr = nullptr;
@@ -189,6 +194,14 @@ Rps_Value::gc_mark(Rps_GarbageCollector&gc, unsigned depth) const
     throw std::runtime_error("too deep gc_mark");
   pzv->gc_mark(gc, depth);
 } // end Rps_Value::gc_mark
+
+
+const void*
+Rps_Value::data_for_symbol(Rps_PayloadSymbol*symb) const
+{
+  RPS_ASSERT(dynamic_cast<Rps_PayloadSymbol*>(symb) != nullptr);
+  return _wptr;
+} // end Rps_Value::data_for_symbol
 
 bool
 Rps_Value::is_object() const
@@ -1052,5 +1065,16 @@ Rps_PayloadVectOb::Rps_PayloadVectOb(Rps_ObjectZone*owner, Rps_Loader*ld)
 }      // end Rps_PayloadVectOb::Rps_PayloadVectOb ..loading
 
 
+
+
+///// symbol payload, for PaylSymbol
+
+Rps_PayloadSymbol::Rps_PayloadSymbol(Rps_ObjectZone*obz, const std::string& nam, Rps_Loader*ld)
+  : Rps_PayloadSymbol(obz,nam.c_str())
+{
+  RPS_ASSERT(ld != nullptr);
+  if (!valid_name(nam))
+    throw std::runtime_error(std::string("invalid loaded symbol name:") + nam);
+};
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh

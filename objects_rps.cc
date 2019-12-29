@@ -277,21 +277,21 @@ Rps_ObjectZone::autocomplete_oid(const char*prefix,
   {
     int ix=0;
     bufid[0] = '_';
-    for (ix=1; ix<Rps_Id::nbchars; ix++)
+    for (ix=1; ix<(int)Rps_Id::nbchars; ix++)
       {
         if (!strchr(Rps_Id::b62digits, prefix[ix]))
           break;
         bufid[ix] = prefix[ix];
       }
     lastix = ix;
-    for (ix=lastix; ix<Rps_Id::nbchars; ix++)
+    for (ix=lastix; ix<(int)Rps_Id::nbchars; ix++)
       {
         bufid[ix] = '0';
       };
   }
   Rps_Id idpref(bufid);
   constexpr char lastdigit = Rps_Id::b62digits[sizeof(Rps_Id::b62digits)-1];
-  for (int ix=lastix; ix<Rps_Id::nbchars; ix++)
+  for (int ix=lastix; ix<(int)Rps_Id::nbchars; ix++)
     {
       bufid[ix] = lastdigit;
     }
@@ -495,7 +495,7 @@ Rps_PayloadVectOb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 /***************** space payload **********/
 
 void
-Rps_PayloadSpace::gc_mark(Rps_GarbageCollector&gc) const
+Rps_PayloadSpace::gc_mark(Rps_GarbageCollector&) const
 {
 } // end Rps_PayloadSpace::gc_mark
 
@@ -507,5 +507,74 @@ Rps_PayloadSpace::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   RPS_ASSERT(jv.type() == Json::objectValue);
 } // end Rps_PayloadSpace::dump_json_content
 
+
+/***************** symbol payload **********/
+
+std::recursive_mutex Rps_PayloadSymbol::symb_tablemtx;
+std::map<std::string,Rps_PayloadSymbol*> Rps_PayloadSymbol::symb_table;
+
+bool
+Rps_PayloadSymbol::valid_name(const char*str)
+{
+  if (!str || str==(const char*)RPS_EMPTYSLOT)
+    return false;
+  if (!isalpha(str[0]))
+    return false;
+  for (const char*pc = str+1; *pc; pc++)
+    {
+      if (isalnum(*pc))
+        continue;
+      else if (*pc == '$' || *pc == '_')
+        {
+          if (!isalnum(pc[-1]))
+            return false;
+        }
+      else
+        return false;
+    };
+  return true;
+} // end Rps_PayloadSymbol::valid_name
+
+Rps_PayloadSymbol::Rps_PayloadSymbol(Rps_ObjectZone*obz, const char*nam)
+  : Rps_Payload(Rps_Type::PaylSymbol, obz), symb_name(nam)
+{
+  if (!valid_name(nam))
+    throw std::runtime_error(std::string("invalid symbol name:") + nam);
+  std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
+  if (RPS_UNLIKELY(symb_table.find(symb_name) != symb_table.end()))
+    throw std::runtime_error(std::string("duplicate symbol name:") + nam + " for "
+                             + obz->oid().to_string());
+  symb_table.insert({symb_name, this});
+} // end Rps_PayloadSymbol::Rps_PayloadSymbol
+
+
+void
+Rps_PayloadSymbol::gc_mark(Rps_GarbageCollector&gc) const
+{
+  auto symval = symbol_value();
+  if (symval)
+    gc.mark_value(symval);
+} // end Rps_PayloadSymbol::gc_mark
+
+void
+Rps_PayloadSymbol::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du != nullptr);
+  auto symval = symbol_value();
+  if (symval)
+    rps_dump_scan_value(du, symval, 0);
+} // end Rps_PayloadSymbol::dump_scan
+
+void
+Rps_PayloadSymbol::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  /// see function rpsldpy_symbol in store_rps.cc
+  RPS_ASSERT(du != nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  jv["name"] = Json::Value(symb_name);
+  auto symval = symbol_value();
+  if (symval)
+    jv["symval"] = rps_dump_json_value(du, symval);
+} // end Rps_PayloadSymbol::dump_json_content
 
 // end of file objects_rps.cc

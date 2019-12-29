@@ -1636,6 +1636,22 @@ void rpsldpy_space(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
 } // end of rpsldpy_setob
 
 
-
+/// loading of symbol payload
+void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+{
+  RPS_ASSERT(obz != nullptr);
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  const char* name = jv["name"].asCString();
+  if (!Rps_PayloadSymbol::valid_name(name))
+    RPS_FATALOUT("rpsldpy_symbol: object " << obz->oid()
+                 << " in space " << spacid << " lineno#" << lineno
+                 << " has bad name:"<< name);
+  std::string namestr{name};
+#warning rpsldpy_symbol incomplete
+  RPS_FATALOUT("incomplete rpsldpy_symbol: object " << obz->oid()
+               << " in space " << spacid << " lineno#" << lineno);
+  //auto paylsymb = obz->put_new_payload<Rps_PayloadSymbol>(namestr);
+} // end rpsldpy_symbol
 //////////////////////////////////////////////////////////// end of file store_rps.cc
 
