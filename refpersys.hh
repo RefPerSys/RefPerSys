@@ -1394,7 +1394,7 @@ public:
   PaylClass* put_new_plain_payload(void)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate<PaylClass>(this);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate1<PaylClass>(this);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
@@ -1404,7 +1404,7 @@ public:
   PaylClass* put_new_arg1_payload(Arg1Class arg1)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate2<PaylClass,Arg1Class>(this,arg1);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate<PaylClass,Arg1Class>(this,arg1);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
@@ -1850,7 +1850,7 @@ class Rps_PayloadClassInfo : public Rps_Payload
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
   friend Rps_PayloadClassInfo*
-  Rps_QuasiZone::rps_allocate<Rps_PayloadClassInfo,Rps_ObjectZone*>(Rps_ObjectZone*);
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadClassInfo,Rps_ObjectZone*>(Rps_ObjectZone*);
   Rps_ObjectRef pclass_super;
   std::map<Rps_ObjectRef,Rps_ClosureValue> pclass_methdict;
   virtual ~Rps_PayloadClassInfo()
@@ -1912,7 +1912,7 @@ class Rps_PayloadSetOb : public Rps_Payload
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
   friend Rps_PayloadSetOb*
-  Rps_QuasiZone::rps_allocate<Rps_PayloadSetOb,Rps_ObjectZone*>(Rps_ObjectZone*);
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadSetOb,Rps_ObjectZone*>(Rps_ObjectZone*);
   std::set<Rps_ObjectRef> psetob;
   inline Rps_PayloadSetOb(Rps_ObjectZone*owner);
   Rps_PayloadSetOb(Rps_ObjectRef obr) :
@@ -1985,7 +1985,7 @@ class Rps_PayloadVectOb : public Rps_Payload
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
   friend Rps_PayloadVectOb*
-  Rps_QuasiZone::rps_allocate<Rps_PayloadVectOb,Rps_ObjectZone*>(Rps_ObjectZone*);
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadVectOb,Rps_ObjectZone*>(Rps_ObjectZone*);
   std::vector<Rps_ObjectRef> pvectob;
   inline Rps_PayloadVectOb(Rps_ObjectZone*owner);
   Rps_PayloadVectOb(Rps_ObjectRef obr) :
@@ -2049,7 +2049,7 @@ class Rps_PayloadSpace : public Rps_Payload
   friend class Rps_ObjectZone;
   friend rpsldpysig_t rpsldpy_space;
   friend Rps_PayloadSpace*
-  Rps_QuasiZone::rps_allocate<Rps_PayloadSpace,Rps_ObjectZone*>(Rps_ObjectZone*);
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadSpace,Rps_ObjectZone*>(Rps_ObjectZone*);
 protected:
   inline Rps_PayloadSpace(Rps_ObjectZone*owner);
   Rps_PayloadSpace(Rps_ObjectRef obr) :
@@ -2081,6 +2081,8 @@ class Rps_PayloadSymbol : public Rps_Payload
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
   friend rpsldpysig_t rpsldpy_symbol;
+  friend Rps_PayloadSymbol*
+  Rps_QuasiZone::rps_allocate<Rps_PayloadSymbol,Rps_ObjectZone*,const char*>(Rps_ObjectZone*,const char*);
   friend Rps_PayloadSymbol*
   Rps_QuasiZone::rps_allocate2<Rps_PayloadSymbol,Rps_ObjectZone*,const char*>(Rps_ObjectZone*,const char*);
   const std::string symb_name;
