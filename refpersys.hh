@@ -1077,10 +1077,50 @@ public:
   {
     return new(nullptr) ZoneClass(args...);
   };
+  template <typename ZoneClass> static ZoneClass*
+  rps_allocate0(void)
+  {
+    return new(nullptr) ZoneClass();
+  };
+  template <typename ZoneClass, typename Arg1Class> static ZoneClass*
+  rps_allocate1(Arg1Class arg1)
+  {
+    return new(nullptr) ZoneClass(arg1);
+  };
+  template <typename ZoneClass, typename Arg1Class, typename Arg2Class> static ZoneClass*
+  rps_allocate2(Arg1Class arg1, Arg2Class arg2)
+  {
+    return new(nullptr) ZoneClass(arg1, arg2);
+  };
+  template <typename ZoneClass, typename Arg1Class, typename Arg2Class, typename Arg3Class> static ZoneClass*
+  rps_allocate3(Arg1Class arg1, Arg2Class arg2, Arg3Class arg3)
+  {
+    return new(nullptr) ZoneClass(arg1, arg2, arg3);
+  };
   template <typename ZoneClass, class ...Args> static ZoneClass*
   rps_allocate_with_wordgap(unsigned wordgap, Args... args)
   {
     return new(wordgap) ZoneClass(args...);
+  };
+  template <typename ZoneClass> static ZoneClass*
+  rps_allocate0_with_wordgap(unsigned wordgap)
+  {
+    return new(wordgap) ZoneClass();
+  };
+  template <typename ZoneClass, typename Arg1Class> static ZoneClass*
+  rps_allocate1_with_wordgap(unsigned wordgap, Arg1Class arg1)
+  {
+    return new(wordgap) ZoneClass(arg1);
+  };
+  template <typename ZoneClass, typename Arg1Class, typename Arg2Class> static ZoneClass*
+  rps_allocate2_with_wordgap(unsigned wordgap, Arg1Class arg1, Arg2Class arg2)
+  {
+    return new(wordgap) ZoneClass(arg1,arg2);
+  };
+  template <typename ZoneClass, typename Arg1Class, typename Arg2Class, typename Arg3Class> static ZoneClass*
+  rps_allocate3_with_wordgap(unsigned wordgap, Arg1Class arg1, Arg2Class arg2, Arg3Class arg3)
+  {
+    return new(wordgap) ZoneClass(arg1,arg2,arg3);
   };
   void register_in_zonevec(void);
   void unregister_in_zonevec(void);
@@ -1350,21 +1390,61 @@ public:
   inline Rps_ObjectRef get_space(void) const;
   inline double get_mtime(void) const;
   inline void clear_payload(void);
-  template<class PaylClass, class ...Args>
-  PaylClass* put_new_payload(Args... args)
+  template<class PaylClass>
+  PaylClass* put_new_plain_payload(void)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate<PaylClass,Args...>(this,args...);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate<PaylClass>(this);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
     return newpayl;
   };
-  template<class PaylClass, class ...Args>
-  PaylClass* put_new_payload_with_wordgap(unsigned wordgap, Args... args)
+  template<class PaylClass, typename Arg1Class>
+  PaylClass* put_new_arg1_payload(Arg1Class arg1)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass,Args...>(wordgap,this,args...);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate2<PaylClass,Arg1Class>(this,arg1);
+    Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
+    if (oldpayl)
+      delete oldpayl;
+    return newpayl;
+  };
+  template<class PaylClass, typename Arg1Class, typename Arg2Class>
+  PaylClass* put_new_arg2_payload(Arg1Class arg1, Arg2Class arg2)
+  {
+    std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate3<PaylClass,Arg1Class,Arg2Class>(this,arg1,arg2);
+    Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
+    if (oldpayl)
+      delete oldpayl;
+    return newpayl;
+  };
+  template<class PaylClass>
+  PaylClass* put_new_plain_payload_with_wordgap(unsigned wordgap)
+  {
+    std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass>(wordgap,this);
+    Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
+    if (oldpayl)
+      delete oldpayl;
+    return newpayl;
+  };
+  template<class PaylClass, typename Arg1Class>
+  PaylClass* put_new_arg1_payload_with_wordgap(unsigned wordgap, Arg1Class arg1)
+  {
+    std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass,Arg1Class>(wordgap,this,arg1);
+    Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
+    if (oldpayl)
+      delete oldpayl;
+    return newpayl;
+  };
+  template<class PaylClass, typename Arg1Class, typename Arg2Class>
+  PaylClass* put_new_arg2_payload_with_wordgap(unsigned wordgap, Arg1Class arg1, Arg2Class arg2)
+  {
+    std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass,Arg1Class,Arg2Class>(wordgap,this,arg1,arg2);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
@@ -2002,7 +2082,7 @@ class Rps_PayloadSymbol : public Rps_Payload
   friend class Rps_ObjectZone;
   friend rpsldpysig_t rpsldpy_symbol;
   friend Rps_PayloadSymbol*
-  Rps_QuasiZone::rps_allocate<Rps_PayloadSymbol,Rps_ObjectZone*,const char*>(Rps_ObjectZone*,const char*);
+  Rps_QuasiZone::rps_allocate2<Rps_PayloadSymbol,Rps_ObjectZone*,const char*>(Rps_ObjectZone*,const char*);
   const std::string symb_name;
   std::atomic<const void*> symb_data;
   static std::recursive_mutex symb_tablemtx;

@@ -1530,7 +1530,7 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
                  << " has incomplete payload"
                  << std::endl
                  << " jv " << (jv));
-  auto paylclainf = obz->put_new_payload<Rps_PayloadClassInfo>();
+  auto paylclainf = obz->put_new_plain_payload<Rps_PayloadClassInfo>();
   RPS_ASSERT(paylclainf != nullptr);
   auto obsuperclass = Rps_ObjectRef(jv["superclass"], ld);
   RPS_ASSERT(obsuperclass);
@@ -1586,7 +1586,7 @@ void rpsldpy_vectob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
                  << " has bad vectob"
                  << std::endl
                  << " jvectob " <<(jvectob));
-  auto paylvectob = obz->put_new_payload<Rps_PayloadVectOb>();
+  auto paylvectob = obz->put_new_plain_payload<Rps_PayloadVectOb>();
   RPS_ASSERT(paylvectob != nullptr);
   nbelem = jvectob.size();
   paylvectob->reserve(nbelem);
@@ -1612,7 +1612,7 @@ void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
                  << " has bad setob"
                  << std::endl
                  << " jsetob " <<(jsetob));
-  auto paylsetob = obz->put_new_payload<Rps_PayloadSetOb>();
+  auto paylsetob = obz->put_new_plain_payload<Rps_PayloadSetOb>();
   RPS_ASSERT(paylsetob != nullptr);
   nbelem = jsetob.size();
   for (int elemix=0; elemix<(int)nbelem; elemix++)
@@ -1631,7 +1631,7 @@ void rpsldpy_space(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  auto paylspace = obz->put_new_payload<Rps_PayloadSpace>();
+  auto paylspace = obz->put_new_plain_payload<Rps_PayloadSpace>();
   RPS_ASSERT(paylspace != nullptr);
 } // end of rpsldpy_setob
 
@@ -1651,7 +1651,7 @@ void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
 #warning rpsldpy_symbol incomplete
   RPS_FATALOUT("incomplete rpsldpy_symbol: object " << obz->oid()
                << " in space " << spacid << " lineno#" << lineno);
-  //auto paylsymb = obz->put_new_payload<Rps_PayloadSymbol>(namestr);
+  //auto paylsymb = obz->put_new_arg1_payload<Rps_PayloadSymbol,std::string>(namestr);
 } // end rpsldpy_symbol
 //////////////////////////////////////////////////////////// end of file store_rps.cc
 
