@@ -81,12 +81,10 @@ RpsQWindow::setupAppMenu()
     "&Garbage Collect",
     this
   );
-  QAction *quit = new QAction(pixmap->get("RPS_ICON_QUIT"), "&Quit", this);
   QAction *exit = new QAction(pixmap->get("RPS_ICON_EXIT"), "e&Xit", this);
   QAction *close = new QAction(pixmap->get("RPS_ICON_CLOSE"), "&Close", this);
   QAction *newin = new QAction(pixmap->get("RPS_ICON_NEW"), "New &Window", this);
 
-  quit->setShortcut (tr ("CTRL+Q"));
   exit->setShortcut (tr ("CTRL+X"));
   dump->setShortcut (tr ("CTRL+D"));
   gc->setShortcut (tr ("CTRL+G"));
@@ -100,12 +98,13 @@ RpsQWindow::setupAppMenu()
   app_menu->addAction (newin);
   app_menu->addSeparator ();
   app_menu->addAction (close);
-  app_menu->addAction (quit);
+  
+  m_menu_app_quit = new RpsQMenuAppQuit(this);
+
   app_menu->addAction (exit);
 
   connect (dump, &QAction::triggered, this, &RpsQWindow::onMenuDump);
   connect (gc, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
-  connect (quit, &QAction::triggered, this, &RpsQWindow::onMenuQuit);
   connect (exit, &QAction::triggered, this, &RpsQWindow::onMenuExit);
   connect (newin, &QAction::triggered,
            dynamic_cast<RpsQApplication*>(RpsQApplication::instance()),
@@ -260,6 +259,17 @@ void RpsQMenuHelpAbout::on_trigger()
       << "\n\nSee " << RpsColophon::website();
 
   QMessageBox::information (window(), "About RefPerSys", msg.str().c_str());
+}
+
+
+void RpsQMenuAppQuit::on_trigger()
+{
+  auto msg = QString("Are you sure you want to quit without dumping?");
+  auto btn = QMessageBox::Yes | QMessageBox::No;
+  auto reply = QMessageBox::question(window(), "RefPerSys", msg, btn);
+
+  if (reply == QMessageBox::Yes)
+    QApplication::quit();
 }
 
 

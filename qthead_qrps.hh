@@ -204,6 +204,30 @@ protected slots:
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// The App | Quit menu action for RpsQWindow.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQMenuAppQuit : public RpsQMenuAction
+{
+  Q_OBJECT
+public:
+  /// Constructor
+  inline RpsQMenuAppQuit(RpsQWindow* parent)
+    : RpsQMenuAction(
+        parent, 
+        RpsQWindowMenu::APP, 
+        "RPS_ICON_QUIT", 
+        "&Quit", 
+        "CTRL+Q"
+      )
+  { }
+
+protected slots:
+  /// Overridden slot for the trigger action.
+  void on_trigger();
+};
+
+
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
 class RpsQWindow : public QMainWindow
@@ -220,7 +244,8 @@ private:
   void setup_debug_timer();
 
 private:
-  RpsQMenuHelpAbout* m_menu_help_about;
+  RpsQMenuHelpAbout* m_menu_help_about; // TODO: replace with QList or std::vector
+  RpsQMenuAppQuit* m_menu_app_quit;
   QPlainTextEdit m_debug_widget;
   QTimer m_debug_timer;
 
