@@ -227,6 +227,7 @@ RpsQWindow::update_debug_widget()
 
 RpsQMenuAction::RpsQMenuAction(
   RpsQWindow* parent,
+  RpsQWindowMenu menu,
   std::string icon,
   std::string title,
   std::string shortcut
@@ -237,8 +238,8 @@ RpsQMenuAction::RpsQMenuAction(
   auto action = new QAction(pix, title.c_str(), m_parent);
   action->setShortcut(tr(shortcut.c_str()));
 
-  auto menu = m_parent->menuBar()->findChildren<QMenu*>().at(1);
-  menu->addAction(action);
+  auto item = m_parent->menuBar()->findChildren<QMenu*>().at(menu);
+  item->addAction(action);
   m_parent->connect(
     action,
     &QAction::triggered,

@@ -140,6 +140,11 @@ private:
 
 class RpsQWindow;
 
+enum RpsQWindowMenu {
+    APP, 
+    HELP
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Abstract base class for all RpsQWindow menu actions.
@@ -154,6 +159,7 @@ public:
   /// Constructor
   RpsQMenuAction(
     RpsQWindow* parent,
+    RpsQWindowMenu menu,
     std::string icon,
     std::string title,
     std::string shortcut = ""
@@ -189,7 +195,7 @@ class RpsQMenuHelpAbout : public RpsQMenuAction
 public:
   /// Constructor
   inline RpsQMenuHelpAbout(RpsQWindow* parent)
-    : RpsQMenuAction(parent, "RPS_ICON_ABOUT", "&About")
+    : RpsQMenuAction(parent, RpsQWindowMenu::HELP, "RPS_ICON_ABOUT", "&About")
   { }
 
 protected slots:
