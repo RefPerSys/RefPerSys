@@ -228,6 +228,30 @@ protected slots:
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// The App | Exit menu action for RpsQWindow.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQMenuAppExit : public RpsQMenuAction
+{
+  Q_OBJECT
+public:
+  /// Constructor
+  inline RpsQMenuAppExit(RpsQWindow* parent)
+    : RpsQMenuAction(
+        parent, 
+        RpsQWindowMenu::APP, 
+        "RPS_ICON_EXIT", 
+        "e&Xit", 
+        "CTRL+X"
+      )
+  { }
+
+protected slots:
+  /// Overridden slot for the trigger action.
+  void on_trigger();
+};
+
+
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
 class RpsQWindow : public QMainWindow
@@ -246,6 +270,7 @@ private:
 private:
   RpsQMenuHelpAbout* m_menu_help_about; // TODO: replace with QList or std::vector
   RpsQMenuAppQuit* m_menu_app_quit;
+  RpsQMenuAppExit* m_menu_app_exit;
   QPlainTextEdit m_debug_widget;
   QTimer m_debug_timer;
 
@@ -256,7 +281,6 @@ private slots:
   void onMenuGarbageCollect();
   void onMenuQuit();
   void onMenuDebug();
-  void onMenuExit();
   void onMenuClose();
   void update_debug_widget();
 };				// end of RpsQWindow

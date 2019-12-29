@@ -81,11 +81,9 @@ RpsQWindow::setupAppMenu()
     "&Garbage Collect",
     this
   );
-  QAction *exit = new QAction(pixmap->get("RPS_ICON_EXIT"), "e&Xit", this);
   QAction *close = new QAction(pixmap->get("RPS_ICON_CLOSE"), "&Close", this);
   QAction *newin = new QAction(pixmap->get("RPS_ICON_NEW"), "New &Window", this);
 
-  exit->setShortcut (tr ("CTRL+X"));
   dump->setShortcut (tr ("CTRL+D"));
   gc->setShortcut (tr ("CTRL+G"));
   newin->setShortcut (tr ("CTRL+W")); //TODO: doesn't CTRL+N seem better?
@@ -100,12 +98,10 @@ RpsQWindow::setupAppMenu()
   app_menu->addAction (close);
   
   m_menu_app_quit = new RpsQMenuAppQuit(this);
-
-  app_menu->addAction (exit);
+  m_menu_app_exit = new RpsQMenuAppExit(this);
 
   connect (dump, &QAction::triggered, this, &RpsQWindow::onMenuDump);
   connect (gc, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
-  connect (exit, &QAction::triggered, this, &RpsQWindow::onMenuExit);
   connect (newin, &QAction::triggered,
            dynamic_cast<RpsQApplication*>(RpsQApplication::instance()),
            &RpsQApplication::add_new_window);
@@ -173,13 +169,6 @@ RpsQWindow::onMenuClose()
     }
 }
 
-
-void
-RpsQWindow::onMenuExit()
-{
-  rps_dump_into ();
-  QApplication::quit ();
-} // end RpsQWindow::onMenuExit
 
 void
 RpsQWindow::onMenuDump()
@@ -270,6 +259,13 @@ void RpsQMenuAppQuit::on_trigger()
 
   if (reply == QMessageBox::Yes)
     QApplication::quit();
+}
+
+
+void RpsQMenuAppExit::on_trigger()
+{
+  rps_dump_into ();
+  QApplication::quit ();
 }
 
 
