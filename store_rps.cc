@@ -1578,8 +1578,24 @@ void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  RPS_FATAL("rpsldpy_setob unimplemented");
-#warning rpsldpy_setob unimplemented
+  Json::Value jsetob = jv["setob"];
+  unsigned nbelem = 0;
+  if (!jsetob.isArray())
+    RPS_FATALOUT("rpsldpy_setob: object " << obz->oid()
+                 << " in space " << spacid << " lineno#" << lineno
+                 << " has bad setob"
+                 << std::endl
+                 << " jsetob " <<(jsetob));
+  auto paylsetob = obz->put_new_payload<Rps_PayloadSetOb>();
+  RPS_ASSERT(paylsetob != nullptr);
+  nbelem = jsetob.size();
+  for (int elemix=0; elemix<(int)nbelem; elemix++)
+    {
+      Json::Value jvcurelem = jsetob[elemix];
+      auto obelem = Rps_ObjectRef(jvcurelem, ld);
+      if (obelem)
+	paylsetob->add(obelem);
+    }
 } // end of rpsldpy_setob
 
 
