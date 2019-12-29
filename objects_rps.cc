@@ -664,5 +664,27 @@ Rps_PayloadSymbol::forget_object(Rps_ObjectRef obj)
   return true;
 } // end Rps_PayloadSymbol::forget_object
 
+int
+Rps_PayloadSymbol::autocomplete_name(const char*prefix, const std::function<bool(const Rps_ObjectZone*,const std::string&)>&stopfun)
+{
+  if (!valid_name(prefix))
+    return 0;
+  int count = 0;
+  std::string prefixstr(prefix);
+  int prefixlen = strlen(prefix);
+  std::lock_guard<std::recursive_mutex> gusy(symb_tablemtx);
+  for (auto it = symb_table.lower_bound(prefixstr); it != symb_table.end(); it++) {
+    if (!it->second)
+      continue;
+    std::string curname = it->first;
+    if (strncmp(prefix,curname.c_str(),prefixlen))
+      break;
+    count++;
+    Rps_ObjectRef curobr = it->second->owner();
+    if (stopfun(curobr,curname))
+      break;
+  }
+  return count;
+} // end Rps_PayloadSymbol::autocomplete_name
 
 // end of file objects_rps.cc

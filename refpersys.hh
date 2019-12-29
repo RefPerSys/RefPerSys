@@ -2181,6 +2181,10 @@ public:
   };
   static bool forget_name(std::string name);
   static bool forget_object(Rps_ObjectRef obj);
+  // given a C string which looks like a C identifier starting with a letter,
+  // autocomplete that and call a given C++ closure on every possible object ref and name, till that
+  // closure returns true. Return the number of matches, or else 0
+  static int autocomplete_name(const char*prefix, const std::function<bool(const Rps_ObjectZone*,const std::string&)>&stopfun);
 };				// end Rps_PayloadSymbol
 
 
