@@ -225,20 +225,25 @@ RpsQWindow::update_debug_widget()
 }
 
 
-RpsQMenuHelpAbout::RpsQMenuHelpAbout(RpsQWindow* parent)
-  : RpsQMenuAction(parent)
+RpsQMenuAction::RpsQMenuAction(
+  RpsQWindow* parent,
+  std::string icon,
+  std::string title,
+  std::string shortcut
+)
+  : m_parent(parent)
 {
-  auto wnd = window();
-  auto icon = RpsQPixMap::instance()->get("RPS_ICON_ABOUT");
-  auto action = new QAction(icon, "&About", wnd);
+  auto pix = RpsQPixMap::instance()->get(icon);
+  auto action = new QAction(pix, title.c_str(), m_parent);
+  action->setShortcut(tr(shortcut.c_str()));
 
-  auto menu = wnd->menuBar()->findChildren<QMenu*>().at(1);
+  auto menu = m_parent->menuBar()->findChildren<QMenu*>().at(1);
   menu->addAction(action);
-  wnd->connect(
+  m_parent->connect(
     action,
     &QAction::triggered,
     this,
-    &RpsQMenuHelpAbout::on_trigger
+    &RpsQMenuAction::on_trigger
   );
 }
 

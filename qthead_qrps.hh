@@ -151,10 +151,13 @@ class RpsQMenuAction : public QObject
 {
   Q_OBJECT
 public:
-  /// Constructor initialises handle to parent window.
-  inline RpsQMenuAction(RpsQWindow* parent)
-    : m_parent(parent)
-  { }
+  /// Constructor
+  RpsQMenuAction(
+    RpsQWindow* parent,
+    std::string icon,
+    std::string title,
+    std::string shortcut = ""
+  );
 
   /// Destructor
   inline virtual ~RpsQMenuAction()
@@ -185,7 +188,9 @@ class RpsQMenuHelpAbout : public RpsQMenuAction
   Q_OBJECT
 public:
   /// Constructor
-  RpsQMenuHelpAbout(RpsQWindow* parent);
+  inline RpsQMenuHelpAbout(RpsQWindow* parent)
+    : RpsQMenuAction(parent, "RPS_ICON_ABOUT", "&About")
+  { }
 
 protected slots:
   /// Overridden slot for the trigger action.
