@@ -649,10 +649,7 @@ primitive, or
 \href{https://caml.inria.fr/pub/docs/manual-ocaml/libref/Marshal.html}{facilities} of \textsc{OCaml} or \textsc{Python}
 \href{https://docs.python.org/3/library/pickle.html}{\texttt{pickle}}
 module.} into files at shutdown. These state files are
-textual\footnote{We should decide if we use some
-\href{http://json.org/}{\textsc{Json}} or
-\href{http://yaml.org/}{\textsc{Yaml}} notation, or our own one for
-\RefPerSys.} and \texttt{git}-versioned, and should be portable to
+textual, in \href{http://json.org/}{\textsc{Json}} format, and \texttt{git}-versioned, and should be portable to
 other 64 bits Linux computers. A
 \href{https://en.wikipedia.org/wiki/Manifest\_file}{manifest file}
 describing the collection of files keeping the state is probably
@@ -862,7 +859,7 @@ garbage collector.
        textual state files\footnote{In the current implementation,
        {\RefPerSys} state files should appear under
        \texttt{persistore/} subdirectory, and the manifest file is
-       \texttt{rps\_manifest.hjson} at the top directory.}, then
+       \texttt{rps\_manifest.json} at the top directory.}, then
        reloaded at restart of \texttt{refpersys} process) or
        \textbf{transient} (that is, not dumped and not appearing in
        state files).
@@ -1526,7 +1523,7 @@ a \texttt{rps\_homedir()} call), given by \texttt{\$REFPERSYS\_HOME} or
 load directory (by default the source directory, or given thru the
 \texttt{-{-}load} program argument). User preferences should go into the
        {\RefPerSys} home directory, e.g. as the
-       \texttt{.refpersys.hjson} file there.
+       \texttt{.refpersys.json} file there.
 
 \textcolor{red}{@@TODO: should explain more implementation details in C++ terms?}
 
@@ -1631,7 +1628,7 @@ helper subclasses, such as \texttt{Rps\_StringValue},
 
 Immutable scalar values include:
 \begin{itemize}
-  \item \textbf{strings}, \index{string} persisted as \textsc{Hjson} strings; their internal
+  \item \textbf{strings}, \index{string} persisted as \textsc{Json} strings; their internal
     representation is \texttt{Rps\_String} using an \textsc{Utf-8}
     encoding. In C++, use \texttt{Rps\_String::make} to make one, or
     construct an \texttt{Rps\_StringValue} with a C or C++ \textsc{Utf-8} encoded
@@ -1643,7 +1640,7 @@ Immutable scalar values include:
         double precision numbers} on current computers. This is
       actually a difficult topic.} (which cannot hold an
     \textsc{Ieee-754} \texttt{NaN}, which is incomparable), persisted
-    as \textsc{Hjson} doubles; their internal boxed representation is
+    as \textsc{Json} doubles; their internal boxed representation is
     \texttt{Rps\_Double}. In C++, use \texttt{Rps\_Double::make} to make one, or
     construct an \texttt{Rps\_DoubleValue} with a C \texttt{double}.
 \end{itemize}
@@ -1715,7 +1712,7 @@ with through external functions requiring fixed, unchangeable, pointers.
 
 In C++ code, object references are \texttt{Rps\_ObjectRef}, a
 ``smart'' object container, actually a single word. They are persisted
-by their \textit{objid} in \textsc{Hjson} format.
+by their \textit{objid} in \textsc{Json} format as a string.
 
 \subsubsection{objects as frame-like data}
 \label{subsubsec:obj-frame}
@@ -1898,8 +1895,8 @@ Payload may be:
 \item a class information (inside classes,
   \texttt{Rps\_Type::PaylClassInfo} and \texttt{Rps\_PayloadClassInfo}) which gives the superclass object
   and the dictionnary of methods (see \S
-  \ref{subsubsec:message-sending}).
-\item a mutable set of objects  \texttt{Rps\_Type::PaylSetOb}
+  \ref{subsubsec:message-sending} and figure \ref{fig:json-class-payload}).
+\item a mutable set of objects  \texttt{Rps\_Type::PaylSetOb} (see figure \ref{fig:json-setob-payload}).
 \item a mutable vector of objects  \texttt{Rps\_Type::PaylVectOb}
 \item a mutable vector of values  \texttt{Rps\_Type::PaylVectVal}
 \item a mutable association from objects to values
@@ -1914,7 +1911,7 @@ Payload may be:
 Some payloads could be erased or replaced by another kind of payload,
 but some payloads are not erasable; for example, it makes no sense to
 replace a class information payload by a string buffer one in the same
-class object. Hence payloads have a \texttt{is_erasable} member
+class object. Hence payloads have a \texttt{is\_erasable} member
 function in C++.
 
 \bigskip
@@ -1956,9 +1953,9 @@ every human member of it.
 \label{subsec:building}
 
 \textbf{Dependencies:} We need the latest
-\href{https://github.com/hjson/hjson-cpp}{HJSON-CPP} library, at least
-its version \texttt{1.3}.  We need \href{http://qt.io}{\textsc{Qt5}},
-  at least version \texttt{5.10}. Our
+\href{https://github.com/open-source-parsers/jsoncpp}{JsonCpp} library, at least
+its version \texttt{1.7}.  We need \href{http://qt.io}{\textsc{Qt5}},
+  at least version \texttt{5.12}. Our
   \href{https://en.wikipedia.org/wiki/Build_automation}{build
     automation system} is
   \href{http://projects.camlcity.org/projects/omake.html}{\texttt{omake}}
@@ -2161,32 +2158,33 @@ the usual case, a \texttt{refpersys} process dumps its persistent state before
 exiting.
 
 A \href{https://en.wikipedia.org/wiki/Manifest_file}{manifest file}
-named \texttt{rps\_manifest.hjson} is
-\index{rps\_manifest.hjson@\texttt{rps\_manifest.hjson}} describing
-the entire persisted state and referencing indirectly other files. The figure \ref{fig:manifest-file} is giving the synntax of that file.
+named \texttt{rps\_manifest.json} is
+\index{rps\_manifest.json@\texttt{rps\_manifest.json}} describing the
+entire persisted state and referencing indirectly other files. The
+figure \ref{fig:manifest-file} is giving the syntax of that file.
 
 \begin{figure}[h]
   \begin{center}
     \begin{tabular}{llllr}
       \textit{manifest} & $\leftarrow$ \texttt{\large\textbf{\{}} & & \\
-      &  \texttt{format:} ~ {\relsize{-1}{\texttt{RefPerSysFormat2019A}}}
+      &  \texttt{"format":} ~ {\relsize{-1}{\texttt{"RefPerSysFormat2019A"}}}
       & mandatory format id \\
-      &  \texttt{spaceset:} ~ \texttt{\textbf{[}} ~ $id_{space}$ \ldots ~ \texttt{\textbf{]}} 
+      &  \texttt{"spaceset":} ~ \texttt{\textbf{[}} ~ $id_{space}$ \ldots ~ \texttt{\textbf{]}} 
       & oids of spaces \\
-      & \texttt{globalroots:} ~ \texttt{\textbf{[}} ~ $id_{root}$ \ldots ~ \texttt{\textbf{]}} 
+      & \texttt{"globalroots":} ~ \texttt{\textbf{[}} ~ $id_{root}$ \ldots ~ \texttt{\textbf{]}} 
       & oids of global roots \\
-      & \texttt{plugins:} ~ \texttt{\textbf{[}} ~ $id_{plugin}$ \ldots ~ \texttt{\textbf{]}} 
+      & \texttt{"plugins":} ~ \texttt{\textbf{[}} ~ $id_{plugin}$ \ldots ~ \texttt{\textbf{]}} 
       & oids of \texttt{dlopen}-ed plugins \\
       ~            & \texttt{\large\textbf{\}}} & & \\
     \end{tabular}
   \end{center}
-  \caption{syntax of the manifest file \texttt{rps\_manifest.hjson}}
+  \caption{syntax of the manifest file \texttt{rps\_manifest.json}}
   \label{fig:manifest-file}
 \end{figure}
 
 If \texttt{\_8J6vNYtP5E800eCr5q} is a space oid $id_{space}$, then the persistent
-space data is in file
-{\relsize{-1}{\texttt{persistore/sp\_8J6vNYtP5E800eCr5q-rps.hjson}}}.
+space data is in \textsc{Json} file
+{\relsize{-1}{\texttt{persistore/sp\_8J6vNYtP5E800eCr5q-rps.json}}}.
 
 For plugins, if \texttt{\_7GIB3ma21I200tfqDs} is a plugin oid $id_{plugin}$, its
 generated C++ source code should go into the file
@@ -2212,15 +2210,15 @@ Each space file of $id_{space}$ starts with a prologue whose syntax is in figure
   \begin{center}
     \begin{tabular}{llllr}
       \textit{space-prologue} & $\leftarrow$ \texttt{\large\textbf{\{}} & & \\
-      &  \texttt{format:} ~ {\relsize{-1}{\texttt{RefPerSysFormat2019A}}}
+      &  \texttt{"format":} ~ {\relsize{-1}{\texttt{"RefPerSysFormat2019A"}}}
       & mandatory format id \\
-      &  \texttt{spaceid:} ~  $id_{space}$  
+      &  \texttt{"spaceid":} ~  $id_{space}$  
       & the id of the current space \\
-      & \texttt{nbobjects:} ~ \textit{number-of-objects} \\
+      & \texttt{"nbobjects":} ~ \textit{number-of-objects} \\
       & \texttt{\large\textbf{\}}}
     \end{tabular}
   \end{center}
-  \caption{syntax of the prologue of space $id_{space}$}
+  \caption{\textsc{Json} syntax of the prologue of space $id_{space}$}
   \label{fig:space-prologue}
 \end{figure}
 
@@ -2228,32 +2226,28 @@ then each object content of some given \textit{oid} is preceded by a
 comment like \texttt{//+ob\textit{\textbf{oid}}}, for example an
 object of oid \texttt{\_3fzIPzNlWFV01GGQSt} starts with a comment
 {\relsize{-1}{\texttt{//+ob\_3fzIPzNlWFV01GGQSt}}} line. The following
-object content is described in figure \ref{fig:hjson-object-contents}
+object content is described in figure \ref{fig:json-object-contents}
 below.
 
 
        
-{\textcolor{red}{@@TODO: \textbf{review} and improve !}} We probably will use a \href{http://hjson.org}{\textsc{HJson}} format
-to persist our state, since \textsc{HJson} is slighly less verbose
-than \textsc{Json} (less double quotes \texttt{"} needed), and almost
-as easy to parse. Our immutable values could easily be represented in
+{\textcolor{red}{@@TODO: \textbf{review} and improve !}} We use a \href{http://json.org}{\textsc{Json}} format
+to persist our state. Our immutable values could easily be represented in
 textual syntax, for example a set of three objects of objids
 \texttt{\_0iaOiLq4pj20097DNb}, \texttt{\_1R4TeqlLvhS03o0mGN},
 \texttt{\_7m9EMmdyQKU00euKwB} might be represented as the following
-\textsc{Hjson} object:
+\textsc{Json} object:
 \begin{quote}
 \begin{relsize}{-1}
   \begin{tabular}{lllll}
-    \texttt{\{} & \texttt{vtyp} & \texttt{:} & \texttt{set} & ~  \\
-    ~           & \texttt{elem} & \texttt{:} & \texttt{[} & \texttt{\_0iaOiLq4pj20097DNb}  \\
-    ~           & ~             & ~          & ~           & \texttt{\_1R4TeqlLvhS03o0mGN} \\
-    ~           & ~             & ~          & ~           & \texttt{\_7m9EMmdyQKU00euKwB ] \}} \\
+    \texttt{\{} & \texttt{"vtyp"} & \texttt{:} & \texttt{set} & ~  \\
+    ~           & \texttt{"elem"} & \texttt{:} & \texttt{[} & \texttt{"\_0iaOiLq4pj20097DNb",}  \\
+    ~           & ~             & ~          & ~           & \texttt{"\_1R4TeqlLvhS03o0mGN",} \\
+    ~           & ~             & ~          & ~           & \texttt{"\_7m9EMmdyQKU00euKwB" ] \}} \\
   \end{tabular}
 \end{relsize}
 \end{quote}
 
-\smallskip
-Notice that in \href{http://hjson.org/}{\textsc{Hjson}} commas are not required.
 \medskip
 
 
@@ -2262,12 +2256,12 @@ Notice that in \href{http://hjson.org/}{\textsc{Hjson}} commas are not required.
 \label{subsec:data-format-ebnf}
 
 
-The figure \ref{fig:hjson-scalar-or-object-values} gives the
-\textsc{Hjson} syntax of scalar values or object references in
-persisted state files.  The figure \ref{fig:hjson-composite-values}
-\textcolor{red}{is @INCOMPLETE@ and} gives the \textsc{Hjson} syntax
+The figure \ref{fig:json-scalar-or-object-values} gives the
+\textsc{Json} syntax of scalar values or object references in
+persisted state files.  The figure \ref{fig:json-composite-values}
+\textcolor{red}{is @INCOMPLETE@ and} gives the \textsc{Json} syntax
 of composite values in persisted state files.  The figure
-\ref{fig:hjson-object-contents} gives the \textsc{Hjson} syntax of
+\ref{fig:json-object-contents} gives the \textsc{Json} syntax of
 object contents inside space files.
 
 \begin{figure}[h]
@@ -2292,7 +2286,7 @@ object contents inside space files.
     
     \begin{tabular}{l c l l}
       \emph {\textbf {int}} & $\leftarrow$ & \alpha,
-        & a 63-bit integer represented as an HJSON number type \\
+        & a 63-bit integer represented as an JSON number type \\
       & ~ & \alpha \, \in \, $\mathbb {Z}$, \\
       & ~ & $-2^{62}$ \, \leq \, \alpha \, \leq \, $2^{62} - 1$
     \end{tabular}
@@ -2304,8 +2298,8 @@ object contents inside space files.
     
     \begin{tabular}{lcll}
       \emph {\textbf {string}} & $\leftarrow$ & \texttt {"}\alpha\texttt {"}, 
-      & a UTF-8 string represented as an HJSON string type \\
-      ~ & $|$ & \texttt{\textbf{\{} string:} $\sigma$ \texttt{\textbf{\}}}
+      & a UTF-8 string represented as an JSON string type \\
+      ~ & $|$ & \texttt{\textbf{\{} "string":} $\sigma$ \texttt{\textbf{\}}}
         & when string $\sigma$ looks like an objid \\
 %      & ~ & \alpha \, \subseteq \, \{\textbf {U}\}, \\
 %      & ~ & \textbf {U} \, = \, \{Unicode characters\}
@@ -2320,8 +2314,8 @@ object contents inside space files.
     
   \end{center}
 
-  \caption {Syntax of scalar values and object references}
-\label{fig:hjson-scalar-or-object-values}
+  \caption {\textsc{Json} syntax of scalar values and object references}
+\label{fig:json-scalar-or-object-values}
   
 \end {figure}
 %%%%%%%%%%%%%%%%
@@ -2331,36 +2325,36 @@ object contents inside space files.
 
     \begin{tabular}{lcll}
       \emph {\textbf {set}} & $\leftarrow$ & \{ \\
-      & ~ & \texttt {vtype: set} \\
-      & ~ & \texttt {elem: [ $\omega_1$, $\omega_2$, $\omega_3$, \ldots ]} \\
+      & ~ & \texttt {"vtype": "set",} \\
+      & ~ & \texttt {"elem": [ $\omega_1$, $\omega_2$, $\omega_3$, \ldots ]} \\
       & ~ & \} \\
       & ~ & where the $\omega_i$ are \textbf{object}s represented by \textit{objid}-s 
     \end{tabular}
 
     \begin{tabular}{lcll}
       \emph{\textbf{tuple}} & $\leftarrow$ & \{ \\
-      & ~ & \texttt{vtype: tuple} \\
-      & ~ & \texttt{comp: [ $\omega_1$, $\omega_2$, $\omega_3$, \ldots ]}  \\
+      & ~ & \texttt{"vtype": "tuple",} \\
+      & ~ & \texttt{"comp": [ $\omega_1$, $\omega_2$, $\omega_3$, \ldots ]}  \\
       & ~ & where the $\omega_i$ are \textbf{object}s represented by \textit{objid}-s 
     \end{tabular}
 
     \begin{tabular}{lcll}
       \emph{\textbf{closure}} & $\leftarrow$ & \{ \\
-      & ~ & \texttt{vtype: closure} \\
-      & ~ & \texttt{fn: $\omega_{fun}$} & the object giving a function\\
-      & ~ & \texttt{env: [ $v_1$, $v_2$, \ldots ]} \\
-      & ~ & ~ & where the $v_i$ are closed values.
+      & ~ & \texttt{"vtype": "closure"} \\
+      & ~ & \texttt{"fn": $\omega_{fun}$} & the object giving a function\\
+      & ~ & \texttt{"env": [ $v_1$, $v_2$, \ldots ]} \\
+      & ~ & ~ & where the $v_i$ are \textsc{Json} for closed values.
     \end{tabular}
     
   \end {center}
-  \caption {Syntax of composite values}
-\label{fig:hjson-composite-values}
+  \caption {\textsc{Json} syntax of composite values}
+\label{fig:json-composite-values}
   
 \end{figure}
 
 %%%%%%%%%%%%%%%%
 The syntax of object contents is given in figure
-\ref{fig:hjson-object-contents}. The \textit{payload-kind} there is
+\ref{fig:json-object-contents}. The \textit{payload-kind} there is
 either some C identifier (if it starts with a letter: \texttt{A}
 \ldots \texttt{Z} or \texttt{a} \ldots \texttt{z}) or some objid (if
 it starts with an underscore \texttt{\_} ...). When it is some C identifier
@@ -2370,76 +2364,69 @@ it starts with an underscore \texttt{\_} ...). When it is some C identifier
 \href{http://man7.org/linux/man-pages/man3/dlsym.3.html}{\texttt{dlsym(3)}}
 tehn invoked at load time. When it is some objid \textit{objid}, the
 \texttt{rpsldpy\textit{objid}} function is called. For example, class
-objects have \texttt{payload: class} as a \textsc{Hjson} field in
+objects have \texttt{"payload": "class"} as a \textsc{Json} field in
 their state file, so are loaded by calling \texttt{rpsldpy\_class}. If
-(later) we would have \texttt{payload: \_2j66FFjmS7n03HNNBn}, then
+(later) we would have \texttt{"payload": "\_2j66FFjmS7n03HNNBn"}, then
 \texttt{rpsldpy\_2j66FFjmS7n03HNNBn} should be called.
 
 \begin{figure}[h]
   \begin {center}
     \begin{tabular}{lcll}
       \emph{\textbf{object-content}} & $\leftarrow$ & \textbf{\texttt{\{}} \\
-      ~ & ~ & \texttt{oid:} \textit{oid} & the oid of the current object \\
-      ~ & ~ & \texttt{mtime:} \textit{modtime} & its modification time  \\
-      ~ & ~ & \texttt{class:} \textit{class-oid} & the oid of its class  \\
-      ~ & $[$ & \texttt{payload:} \textit{payload-kind} $]$ & optional payload kind \\
-      ~ & $[$ & \texttt{components:}  \textbf{\texttt{[}} \textit{value}  \ldots \textbf{\texttt{]}}  $]$ & optional components \\
-      ~ & $[$ & \texttt{attributes:}  \textbf{\texttt{[}} \textit{attr-entry} \ldots \textbf{\texttt{]}} $]$ & optional attributes \\
+      ~ & ~ & \texttt{"oid":} \textit{oid}\texttt{,} & the string oid of the current object \\
+      ~ & ~ & \texttt{"mtime":} \textit{modtime}\textit{oid}\texttt{,}  & its modification time  \\
+      ~ & ~ & \texttt{"class":} \textit{class-oid}\textit{oid}\texttt{,}  & the oid of its class  \\
+      ~ & $[$ & \texttt{"payload":} \textit{payload-kind} $]$ & optional payload kind \\
+      ~ & $[$ & \texttt{"components":}  \textbf{\texttt{[}} \textit{value}  \ldots \textbf{\texttt{]}}\texttt{,}  $]$ & optional components \\
+      ~ & $[$ & \texttt{"attributes":}  \textbf{\texttt{[}} \textit{attr-entry} \ldots \textbf{\texttt{]}}\texttt{,} $]$ & optional attributes \\
       ~ & ~ & \textcolor{red}{@@@ incomplete @@@} \\
       ~ & ~ & \textbf{\texttt{\}}} \\
       \emph{\textbf{attr-entry}} & $\leftarrow$ \textbf{\texttt{\{}} \\
-      ~ & ~ & \texttt{at:} \textit{object} & the oid of the attribute key \\
-      ~ & ~ & \texttt{va:} \textit{value} & the corresponding attribute value \\
+      ~ & ~ & \texttt{"at":} \textit{object} & the oid of the attribute key \\
+      ~ & ~ & \texttt{"va":} \textit{value} & the corresponding attribute value \\
       ~ &  \textbf{\texttt{\}}} & \\
     \end{tabular}
   \end {center}
-  \caption {Syntax of object contents inside space files}
-\label{fig:hjson-object-contents}  
+  \caption {\textsc{Json} syntax of object contents inside space files}
+\label{fig:json-object-contents}  
 \end{figure}
 
 
-The \textsc{Hjson} representation of payloads vary. The figure
-\ref{fig:hjson-class-payload} explains class related payload.
+The \textsc{Json} representation of payloads vary. The figure
+\ref{fig:json-class-payload} explains class related payload.
 
 \begin{figure}[h]
   \begin {center}
     \begin{tabular}{llll}
       \emph{\textbf{class-payload}} & : & ~ & \\
-      ~ & \texttt{payload:} \texttt{class} &  \\
-      ~ & \texttt{superclass:} \textit{object} & the oid of the superclass \\
-      ~ & \texttt{dictmeth:} \textbf{\texttt{[}} &   \emph{\textbf{method-entry}} \ldots  \textbf{\texttt{]}} & method dictionnary \\
+      ~ & \texttt{"payload":} \texttt{"class"}\texttt{,} &  \\
+      ~ & \texttt{"superclass":} \textit{object}\texttt{,} & the oid of the superclass \\
+      ~ & \texttt{"dictmeth":} \textbf{\texttt{[}} &   \emph{\textbf{method-entry}} \ldots  \textbf{\texttt{]}} & method dictionnary \\
       \hline \\
       \emph{\textbf{method-entry}} & $\leftarrow$ \textbf{\texttt{\{}} \\
-      ~ &  \texttt{methosel:} \textit{oid} & the oid of the method selector \\
-      ~ &  \texttt{methclos:} \textit{closure} & the corresponding method closure \\
+      ~ &  \texttt{"methosel":} \textit{oid} & the oid of the method selector \\
+      ~ &  \texttt{"methclos":} \textit{closure} & the corresponding method closure \\
       ~ &  \textbf{\texttt{\}}} & \\      
     \end{tabular}
   \end {center}
-  \caption {Syntax of class payload}
-\label{fig:hjson-class-payload}  
+  \caption {\textsc{Json} syntax of class payload}
+\label{fig:json-class-payload}  
 \end{figure}
 
+ The figure \ref{fig:json-setob-payload} gives the format of mutable
+ set of objects payload. The \texttt{"setob":} array might be empty.
 
-%%%%%
-%% TODO: remove this  "commented-out" block
-%% \iffalse
-%% \textbf{oid} = ``\_'' , \{ \textbf{BASE62} \} ; \\
-%% \textbf{value} = \textbf{INTEGER} | \textbf{FLOAT} | \textbf{STRING} 
-%% 	       | \textbf{set} | \textbf{tuple}  | \textbf{closure} ; \\
-%% \textbf{set} = ``\{'' , ``vtype'' , ``:'' , ``set'' , 
-%%              ``elements'' , ``:'' , 
-%% 	     ``['' , \{ \textbf{oid} (* unique unordered *) \} 
-%% 	     ``]'' ,  ``\}'' ; \\
-%% \textbf{tuple} = ``\{'' , ``vtype'' , ``:'' , ``tuple'' , 
-%%                    ``components'' , ``:'' ,  ``['' , \{ \textbf{oid} (* ordered *) \} 
-%% 		   ``\}'' ; \\
-%% \textbf{closed-value} = \textbf{INTEGER} | \textbf{FLOAT} | \textbf{STRING}
-%%                       | \textbf{set-value} | \textbf{tuple-value} ; \\
-%% \textbf{closure} = ``\{'' , ``vtype'' , ``:'' , ``closure'' , 
-%% 	         ``function'' , ``:'' , \textbf{oid} , 
-%% 		 ``environment'' , ``:'' , ``['' , \{ \textbf{closed-value} \} , "]" , "\}" ;
-%% \fi
-
+\begin{figure}[h]
+  \begin {center}
+    \begin{tabular}{llll}
+      \emph{\textbf{set-objects-payload}} & : & ~ & \\
+      ~ & \texttt{"payload":} \texttt{"setob"}\texttt{,} &  \\  
+      ~ & \texttt{"setob":} \textbf{\texttt{[}} &  \textit{oid} \ldots  \textbf{\texttt{]}} & sorted oids of elements \\ 
+    \end{tabular}
+  \end {center}
+  \caption {\textsc{Json} syntax of mutable set of objects payload}
+\label{fig:json-setob-payload}  
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The GUI of \RefPerSys}
