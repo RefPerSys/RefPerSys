@@ -122,7 +122,7 @@ void RpsQWindow::setupHelpMenu()
   help_menu = menuBar ()->addMenu ("&Help");
 
   m_menu_help_about = new RpsQMenuHelpAbout(this);
-  
+
   help_menu->addAction (debug_ax);
   connect (debug_ax, &QAction::triggered, this, &RpsQWindow::onMenuDebug);
 } // end  RpsQWindow::setupHelpMenu
@@ -226,19 +226,20 @@ RpsQWindow::update_debug_widget()
 
 
 RpsQMenuHelpAbout::RpsQMenuHelpAbout(RpsQWindow* parent)
-    : m_parent(parent)
+  : RpsQMenuAction(parent)
 {
-    auto icon = RpsQPixMap::instance()->get("RPS_ICON_ABOUT");
-    auto action = new QAction(icon, "&About", m_parent);
+  auto wnd = window();
+  auto icon = RpsQPixMap::instance()->get("RPS_ICON_ABOUT");
+  auto action = new QAction(icon, "&About", wnd);
 
-    auto menu = m_parent->menuBar()->findChildren<QMenu*>().at(1);
-    menu->addAction(action);
-    m_parent->connect(
-      action, 
-      &QAction::triggered, 
-      this, 
-      &RpsQMenuHelpAbout::on_trigger
-    );
+  auto menu = wnd->menuBar()->findChildren<QMenu*>().at(1);
+  menu->addAction(action);
+  wnd->connect(
+    action,
+    &QAction::triggered,
+    this,
+    &RpsQMenuHelpAbout::on_trigger
+  );
 }
 
 
@@ -252,7 +253,7 @@ void RpsQMenuHelpAbout::on_trigger()
       << "\nRefPerSys Top Directory: " << RpsColophon::top_directory()
       << "\n\nSee " << RpsColophon::website();
 
-  QMessageBox::information (m_parent, "About RefPerSys", msg.str().c_str());
+  QMessageBox::information (window(), "About RefPerSys", msg.str().c_str());
 }
 
 

@@ -140,26 +140,56 @@ private:
 
 class RpsQWindow;
 
+
 ///////////////////////////////////////////////////////////////////////////////
-/// The Help | About menu action; this class will inherit from the
-/// RpsQMenuAction class (to be implemented). The rationale is to have a nice
-/// polymorphic menu object hierarchy that can be used by the RpsQWindow 
-/// class.
+/// Abstract base class for all RpsQWindow menu actions.
+///
+/// This abstract class helps create a nice polymorphic object hierarchy of
+/// menu actions for RpsQWindow instances.
 //////////////////////////////////////////////////////////////////////////////
-class RpsQMenuHelpAbout : public QObject
+class RpsQMenuAction : public QObject
+{
+  Q_OBJECT
+public:
+  /// Constructor initialises handle to parent window.
+  inline RpsQMenuAction(RpsQWindow* parent)
+    : m_parent(parent)
+  { }
+
+  /// Destructor
+  inline virtual ~RpsQMenuAction()
+  { }
+
+protected:
+  /// Accessor to get handle to parent window.
+  inline RpsQWindow* window()
+  {
+    return m_parent;
+  }
+
+protected slots:
+  /// Pure virtual slot for trigger action of derived menu action classes.
+  virtual void on_trigger() = 0;
+
+private:
+  // Handle to parent window.
+  RpsQWindow* m_parent;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// The Help | About menu action for RpsQWindow.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQMenuHelpAbout : public RpsQMenuAction
 {
   Q_OBJECT
 public:
   /// Constructor
   RpsQMenuHelpAbout(RpsQWindow* parent);
 
-private slots:
-  /// Slot for the trigger action.
+protected slots:
+  /// Overridden slot for the trigger action.
   void on_trigger();
-
-private:
-  /// Parent window
-  RpsQWindow* m_parent;
 };
 
 
