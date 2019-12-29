@@ -388,10 +388,14 @@ Rps_PayloadSetOb::dump_scan(Rps_Dumper*du) const
 void
 Rps_PayloadSetOb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
+  /// see function rpsldpy_setob in store_rps.cc
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  RPS_FATAL("unimplemented Rps_PayloadSetOb::dump_json_content");
-#warning unimplemented Rps_PayloadSetOb::dump_json_content
+  Json::Value jarr(Json::arrayValue);
+  for (auto obr: psetob)
+    if (rps_is_dumpable_objref(du,obr))
+      jarr.append(rps_dump_json_objectref(du,obr));
+  jv["setob"] = jarr;
 } // end Rps_PayloadSetOb::dump_json_content
 
 
