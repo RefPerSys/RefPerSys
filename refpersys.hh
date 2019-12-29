@@ -1404,7 +1404,7 @@ public:
   PaylClass* put_new_arg1_payload(Arg1Class arg1)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate<PaylClass,Arg1Class>(this,arg1);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate2<PaylClass,Arg1Class>(this,arg1);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
@@ -2082,21 +2082,20 @@ class Rps_PayloadSymbol : public Rps_Payload
   friend class Rps_ObjectZone;
   friend rpsldpysig_t rpsldpy_symbol;
   friend Rps_PayloadSymbol*
-  Rps_QuasiZone::rps_allocate<Rps_PayloadSymbol,Rps_ObjectZone*,const char*>(Rps_ObjectZone*,const char*);
-  friend Rps_PayloadSymbol*
-  Rps_QuasiZone::rps_allocate2<Rps_PayloadSymbol,Rps_ObjectZone*,const char*>(Rps_ObjectZone*,const char*);
-  const std::string symb_name;
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadSymbol, Rps_ObjectZone*>(Rps_ObjectZone*);
+  std::string symb_name;
   std::atomic<const void*> symb_data;
   static std::recursive_mutex symb_tablemtx;
   static std::map<std::string,Rps_PayloadSymbol*> symb_table;
 protected:
-  Rps_PayloadSymbol(Rps_ObjectZone*owner, const char*name);
-  Rps_PayloadSymbol(Rps_ObjectRef obr, const char*name) :
-    Rps_PayloadSymbol(obr?obr.optr():nullptr, name) {};
+  Rps_PayloadSymbol(Rps_ObjectZone*owner);
+  Rps_PayloadSymbol(Rps_ObjectRef obr) :
+    Rps_PayloadSymbol(obr?obr.optr():nullptr) {};
   virtual ~Rps_PayloadSymbol()
   {
     std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
-    symb_table.erase(symb_name);
+    if (!symb_name.empty())
+      symb_table.erase(symb_name);
   };
   virtual uint32_t wordsize(void) const
   {
@@ -2110,6 +2109,11 @@ protected:
     return false;
   };
 public:
+  void load_register_name(const char*name, Rps_Loader*ld);
+  void load_register_name(const std::string& str, Rps_Loader*ld)
+  {
+    load_register_name (str.c_str(), ld);
+  };
   Rps_Value symbol_value(void) const
   {
     return Rps_Value(symb_data.load(),this);
@@ -2131,7 +2135,6 @@ public:
       };
     return nullptr;
   };
-  inline Rps_PayloadSymbol(Rps_ObjectZone*obz, const std::string& nam, Rps_Loader*ld);
 };				// end Rps_PayloadSymbol
 
 

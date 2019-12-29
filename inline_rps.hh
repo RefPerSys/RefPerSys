@@ -1069,12 +1069,5 @@ Rps_PayloadVectOb::Rps_PayloadVectOb(Rps_ObjectZone*owner, Rps_Loader*ld)
 
 ///// symbol payload, for PaylSymbol
 
-Rps_PayloadSymbol::Rps_PayloadSymbol(Rps_ObjectZone*obz, const std::string& nam, Rps_Loader*ld)
-  : Rps_PayloadSymbol(obz,nam.c_str())
-{
-  RPS_ASSERT(ld != nullptr);
-  if (!valid_name(nam))
-    throw std::runtime_error(std::string("invalid loaded symbol name:") + nam);
-};
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh

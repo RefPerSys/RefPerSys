@@ -535,18 +535,25 @@ Rps_PayloadSymbol::valid_name(const char*str)
   return true;
 } // end Rps_PayloadSymbol::valid_name
 
-Rps_PayloadSymbol::Rps_PayloadSymbol(Rps_ObjectZone*obz, const char*nam)
-  : Rps_Payload(Rps_Type::PaylSymbol, obz), symb_name(nam)
+Rps_PayloadSymbol::Rps_PayloadSymbol(Rps_ObjectZone*obz)
+  : Rps_Payload(Rps_Type::PaylSymbol, obz)
 {
-  if (!valid_name(nam))
-    throw std::runtime_error(std::string("invalid symbol name:") + nam);
-  std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
-  if (RPS_UNLIKELY(symb_table.find(symb_name) != symb_table.end()))
-    throw std::runtime_error(std::string("duplicate symbol name:") + nam + " for "
-                             + obz->oid().to_string());
-  symb_table.insert({symb_name, this});
 } // end Rps_PayloadSymbol::Rps_PayloadSymbol
 
+void
+Rps_PayloadSymbol::load_register_name(const char*name, Rps_Loader*ld)
+{
+  if (!valid_name(name))
+    throw std::runtime_error(std::string("invalid symbol name:") + name);
+  RPS_ASSERT(symb_name.empty());
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
+  symb_name.assign(name);
+  if (RPS_UNLIKELY(symb_table.find(symb_name) != symb_table.end()))
+    throw std::runtime_error(std::string("duplicate loaded symbol name:") + name + " for "
+                             + owner()->oid().to_string());
+  symb_table.insert({symb_name, this});
+} // end Rps_PayloadSymbol::load_register_name
 
 void
 Rps_PayloadSymbol::gc_mark(Rps_GarbageCollector&gc) const

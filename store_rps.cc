@@ -1651,7 +1651,8 @@ void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
 #warning rpsldpy_symbol incomplete
   RPS_FATALOUT("incomplete rpsldpy_symbol: object " << obz->oid()
                << " in space " << spacid << " lineno#" << lineno);
-  //auto paylsymb = obz->put_new_arg1_payload<Rps_PayloadSymbol,std::string>(namestr);
+  Rps_PayloadSymbol* paylsymb = obz->put_new_plain_payload<Rps_PayloadSymbol>();
+  paylsymb->load_register_name(namestr,ld);
 } // end rpsldpy_symbol
 //////////////////////////////////////////////////////////// end of file store_rps.cc
 
