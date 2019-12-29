@@ -59,16 +59,14 @@ RpsQWindow::RpsQWindow (QWidget *parent)
 
   qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
 
-  auto vbox = new QVBoxLayout (this);
-  vbox->setSpacing (1);
+  auto vbox = new QVBoxLayout();
+  vbox->setSpacing(1);
 
   menuBar ()->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding);
-  vbox->addWidget (menuBar ());
+  vbox->addWidget(menuBar ());
 
   setup_debug_widget();
   vbox->addWidget (&m_debug_widget);
-
-  setLayout (vbox);
 } // end RpsQWindow::RpsQWindow
 
 
