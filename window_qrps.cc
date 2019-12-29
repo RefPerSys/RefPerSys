@@ -118,18 +118,14 @@ RpsQWindow::setupAppMenu()
 
 void RpsQWindow::setupHelpMenu()
 {
-  QPixmap about_px ("about_icon.png");
   QPixmap debug_px ("debug_icon.png");
-
-  QAction *about_ax = new QAction (about_px, "&About", this);
   QAction *debug_ax = new QAction (debug_px, "&Debug", this);
-
   QMenu *help_menu;
   help_menu = menuBar ()->addMenu ("&Help");
-  help_menu->addAction (about_ax);
-  help_menu->addAction (debug_ax);
 
-  connect (about_ax, &QAction::triggered, this, &RpsQWindow::onMenuAbout);
+  m_menu_help_about = new RpsQMenuHelpAbout(this);
+  
+  help_menu->addAction (debug_ax);
   connect (debug_ax, &QAction::triggered, this, &RpsQWindow::onMenuDebug);
 } // end  RpsQWindow::setupHelpMenu
 
@@ -204,21 +200,6 @@ RpsQWindow::onMenuGarbageCollect()
 
 
 void
-RpsQWindow::onMenuAbout()
-{
-  std::ostringstream msg;
-  msg << "RefPerSys Git ID: " << RpsColophon::git_id()
-      << "\nBuild Date: " << RpsColophon::timestamp()
-      << "\nMD5 Sum of Source: " << RpsColophon::source_md5()
-      << "\nLast Git Commit: " << RpsColophon::last_git_commit()
-      << "\nRefPerSys Top Directory: " << RpsColophon::top_directory()
-      << "\n\nSee " << RpsColophon::website();
-
-  QMessageBox::information (this, "About RefPerSys", msg.str().c_str());
-} // end RpsQWindow::onMenuAbout
-
-
-void
 RpsQWindow::onMenuDebug()
 {
   m_debug_timer.start(1000);
@@ -243,6 +224,37 @@ RpsQWindow::update_debug_widget()
       qDebug() << "Failed to open debug log";
       return;
     }
+}
+
+
+RpsQMenuHelpAbout::RpsQMenuHelpAbout(RpsQWindow* parent)
+    : m_parent(parent)
+{
+    auto icon = RpsQPixMap::instance()->get("RPS_ICON_ABOUT");
+    auto action = new QAction(icon, "&About", m_parent);
+
+    auto menu = m_parent->menuBar()->findChildren<QMenu*>().at(1);
+    menu->addAction(action);
+    m_parent->connect(
+      action, 
+      &QAction::triggered, 
+      this, 
+      &RpsQMenuHelpAbout::on_trigger
+    );
+}
+
+
+void RpsQMenuHelpAbout::on_trigger()
+{
+  std::ostringstream msg;
+  msg << "RefPerSys Git ID: " << RpsColophon::git_id()
+      << "\nBuild Date: " << RpsColophon::timestamp()
+      << "\nMD5 Sum of Source: " << RpsColophon::source_md5()
+      << "\nLast Git Commit: " << RpsColophon::last_git_commit()
+      << "\nRefPerSys Top Directory: " << RpsColophon::top_directory()
+      << "\n\nSee " << RpsColophon::website();
+
+  QMessageBox::information (m_parent, "About RefPerSys", msg.str().c_str());
 }
 
 

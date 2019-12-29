@@ -137,6 +137,32 @@ private:
   size_t app_wndcount;
 };				// end of class RpsQApplication
 
+
+class RpsQWindow;
+
+///////////////////////////////////////////////////////////////////////////////
+/// The Help | About menu action; this class will inherit from the
+/// RpsQMenuAction class (to be implemented). The rationale is to have a nice
+/// polymorphic menu object hierarchy that can be used by the RpsQWindow 
+/// class.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQMenuHelpAbout : public QObject
+{
+  Q_OBJECT
+public:
+  /// Constructor
+  RpsQMenuHelpAbout(RpsQWindow* parent);
+
+private slots:
+  /// Slot for the trigger action.
+  void on_trigger();
+
+private:
+  /// Parent window
+  RpsQWindow* m_parent;
+};
+
+
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
 class RpsQWindow : public QMainWindow
@@ -152,6 +178,8 @@ private:
   void setup_debug_widget();
   void setup_debug_timer();
 
+private:
+  RpsQMenuHelpAbout* m_menu_help_about;
   QPlainTextEdit m_debug_widget;
   QTimer m_debug_timer;
 
@@ -161,7 +189,6 @@ private slots:
   void onMenuDump();
   void onMenuGarbageCollect();
   void onMenuQuit();
-  void onMenuAbout();
   void onMenuDebug();
   void onMenuExit();
   void onMenuClose();
