@@ -729,6 +729,7 @@ private:
   void write_all_space_files(void);
   void write_all_generated_files(void);
   void write_generated_roots_file(void);
+  void write_generated_names_file(void);
   void write_manifest_file(void);
   void write_space_file(Rps_ObjectRef spacobr);
   void scan_object_contents(Rps_ObjectRef obr);
@@ -1185,9 +1186,41 @@ Rps_Dumper::write_generated_roots_file(void)
 } // end Rps_Dumper::write_generated_roots_file
 
 void
+Rps_Dumper::write_generated_names_file(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  auto rootpathstr = std::string{"generated/rps-names.hh"};
+  auto pouts = open_output_file(rootpathstr);
+  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
+  *pouts << std::endl
+         << "#ifndef RPS_INSTALL_NAMED_ROOT_OB" << std::endl
+         << "#error RPS_INSTALL_NAMED_ROOT_OB(Oid,Name) macro undefined" << std::endl
+         << "#endif /*undefined RPS_INSTALL_NAMED_ROOT_OB*/" << std::endl << std::endl;
+  int namecnt = 0;
+  //  std::ofstream& out = *pouts;
+  rps_each_root_object([=, &pouts, &namecnt](Rps_ObjectRef obr)
+  {
+    Rps_PayloadSymbol* cursym = obr->get_dynamic_payload<Rps_PayloadSymbol>();
+    if (!cursym)
+      return;    
+    std::lock_guard<std::recursive_mutex> gu(*(obr->objmtxptr()));
+    (*pouts) << "RPS_INSTALL_NAMED_ROOT_OB(" << obr->oid()
+	     << "," << (cursym->symbol_name()) << ")" << std::endl;
+    namecnt++;
+  });
+  *pouts << std::endl
+         << "#undef RPS_NB_NAMED_ROOT_OB" << std::endl
+         << "#define RPS_NB_NAMED_ROOT_OB " << namecnt << std::endl;
+  *pouts << std::endl
+         << "#undef RPS_INSTALL_ROOT_OB" << std::endl;
+  *pouts << "/// end of RefPerSys roots file " << rootpathstr << std::endl;
+} // end Rps_Dumper::write_generated_roots_file
+
+void
 Rps_Dumper::write_all_generated_files(void)
 {
   write_generated_roots_file();
+  write_generated_names_file();
   RPS_WARNOUT("Rps_Dumper::write_all_generated_files incomplete");
 #warning Rps_Dumper::write_all_generated_files incomplete
 } // end Rps_Dumper::write_all_generated_files

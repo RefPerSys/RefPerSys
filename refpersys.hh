@@ -2125,6 +2125,10 @@ public:
   {
     return symb_is_weak.load();
   };
+  bool symbol_is_weak(void) const
+  {
+    return symb_is_weak.load();
+  };
   void set_weak(bool f)
   {
     symb_is_weak.store(f);
@@ -2132,6 +2136,9 @@ public:
   Rps_Value symbol_value(void) const
   {
     return Rps_Value(symb_data.load(),this);
+  };
+  const std::string& symbol_name(void) const {
+    return symb_name;
   };
   static bool valid_name(const char*str);
   static bool valid_name(const std::string str)
