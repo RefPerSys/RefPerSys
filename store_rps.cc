@@ -220,7 +220,6 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
   int obcnt = 0;
   int expectedcnt = 0;
   unsigned lincnt = 0;
-  RPS_INFORM("Rps_Loader::first_pass_space start spacepath=%s", spacepath.c_str());
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
       lincnt++;
@@ -243,11 +242,11 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
       Rps_Id curobjid;
       if (is_object_starting_line(spacid, lincnt, linbuf, &curobjid))
         {
-          RPS_INFORMOUT("got ob spacid:" << spacid
-                        << " linbuf: " << linbuf
-                        << " lincnt#" << lincnt
-                        << " curobjid:" << curobjid
-                        << " count:" << (obcnt+1));
+	  // RPS_INFORMOUT("got ob spacid:" << spacid
+          //              << " linbuf: " << linbuf
+          //              << " lincnt#" << lincnt
+          //              << " curobjid:" << curobjid
+          //              << " count:" << (obcnt+1));
           if (RPS_UNLIKELY(obcnt == 0))
             {
               Json::Value prologjson = rps_string_to_json(prologstr);
@@ -428,7 +427,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
   unsigned obcnt = 0;
   Rps_Id prevoid;
   unsigned prevlin=0;
-  RPS_INFORM("Rps_Loader::second_pass_space start spacepath=%s", spacepath.c_str());
+  //  RPS_INFORM("Rps_Loader::second_pass_space start spacepath=%s", spacepath.c_str());
   std::string objbuf;
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
@@ -786,7 +785,7 @@ Rps_Dumper::scan_object(const Rps_ObjectRef obr)
     return;
   du_mapobjects.insert({obr->oid(), obr});
   du_scanque.push_back(obr);
-  RPS_INFORMOUT("Rps_Dumper::scan_object adding oid " << obr->oid());
+  //  RPS_INFORMOUT("Rps_Dumper::scan_object adding oid " << obr->oid());
 } // end Rps_Dumper::scan_object
 
 void
@@ -1121,12 +1120,12 @@ Rps_Dumper::scan_loop_pass(void)
   Rps_ObjectRef curobr;
   int count=0;
   // no locking here, it happens in pop_object_to_scan & scan_object_contents
-  RPS_INFORMOUT("scan_loop_pass start");
+  //  RPS_INFORMOUT("scan_loop_pass start");
   while ((curobr=pop_object_to_scan()))
     {
       count++;
-      RPS_INFORMOUT("scan_loop_pass count#" << count
-                    << " curobr=" << curobr->oid());
+      // RPS_INFORMOUT("scan_loop_pass count#" << count
+      //              << " curobr=" << curobr->oid());
       scan_object_contents(curobr);
     };
   RPS_INFORMOUT("scan_loop_pass end count#" << count);
@@ -1167,21 +1166,21 @@ Rps_Dumper::write_generated_roots_file(void)
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
   *pouts << std::endl
-         << "#ifndef RPS_ROOT_OB" << std::endl
-         << "#error RPS_ROOT_OB(Oid) macro undefined" << std::endl
-         << "#endif /*undefined RPS_ROOT_OB*/" << std::endl << std::endl;
+         << "#ifndef RPS_INSTALL_ROOT_OB" << std::endl
+         << "#error RPS_INSTALL_ROOT_OB(Oid) macro undefined" << std::endl
+         << "#endif /*undefined RPS_INSTALL_ROOT_OB*/" << std::endl << std::endl;
   int rootcnt = 0;
   //  std::ofstream& out = *pouts;
   rps_each_root_object([=, &pouts, &rootcnt](Rps_ObjectRef obr)
   {
-    (*pouts) << "RPS_ROOT_OB(" << obr->oid() << ")" << std::endl;
+    (*pouts) << "RPS_INSTALL_ROOT_OB(" << obr->oid() << ")" << std::endl;
     rootcnt++;
   });
   *pouts << std::endl
          << "#undef RPS_NB_ROOT_OB" << std::endl
          << "#define RPS_NB_ROOT_OB " << rootcnt << std::endl;
   *pouts << std::endl
-         << "#undef RPS_ROOT_OB" << std::endl;
+         << "#undef RPS_INSTALL_ROOT_OB" << std::endl;
   *pouts << "/// end of RefPerSys roots file " << rootpathstr << std::endl;
 } // end Rps_Dumper::write_generated_roots_file
 
@@ -1464,11 +1463,6 @@ Rps_Loader::parse_manifest_file(void)
     }
   }
   ////
-  RPS_INFORMOUT("Rps_Loader::parse_manifest_file parsed:"
-                << std::endl
-                << manifjson
-                << std::endl);
-#warning incomplete Rps_Loader::parse_manifest_file
 } // end Rps_Loader::parse_manifest_file
 
 
@@ -1482,7 +1476,22 @@ void Rps_Loader::load_install_roots(void)
       RPS_ASSERT(curootobr);
       rps_add_root_object (curootobr);
     };
+  {
+      std::lock_guard<std::mutex> gu(ld_mtx);
+#define RPS_INSTALL_ROOT_OB(Oid) do {                           \
+        const char *end##Oid = nullptr;                         \
+        bool ok##Oid = false;                                   \
+        auto id##Oid = Rps_Id(#Oid, &end##Oid, &ok##Oid);       \
+        RPS_ASSERT(end##Oid && *end##Oid == (char)0);           \
+        RPS_ASSERT(id##Oid && id##Oid.valid());                 \
+        rps_rootob##Oid = find_object_by_oid(id##Oid);          \
+        if (!rps_rootob##Oid)                                   \
+          RPS_FATAL("failed to install root " #Oid);            \
+      } while(0);
+#include "generated/rps-roots.hh"
+  }
 } // end Rps_Loader::load_install_roots
+
 
 void rps_load_from (const std::string& dirpath)
 {

@@ -2004,5 +2004,15 @@ extern "C" void rps_garbage_collect (void);
 extern "C" void rps_print_types_info (void);
 #include "inline_rps.hh"
 
+
+/// each root object is also a public variable
+#define RPS_INSTALL_ROOT_OB(Oid) extern "C" Rps_ObjectRef rps_rootob##Oid;
+#include "generated/rps-roots.hh"
+
+
+
+/// C++ code can refer to root objects
+#define RPS_ROOT_OB(Oid) rps_rootob##Oid
+
 #endif /*REFPERSYS_INCLUDED*/
 // end of file refpersys.hh */

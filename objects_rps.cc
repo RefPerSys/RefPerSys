@@ -113,7 +113,7 @@ Rps_ObjectZone::make_loaded(Rps_Id oid, Rps_Loader* ld)
   RPS_ASSERT(oid.valid());
   RPS_ASSERT(ld != nullptr);
   Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(oid, false);
-  RPS_INFORMOUT("make_loaded oid="<< oid << ", obz=" << (void*)obz);
+  //RPS_INFORMOUT("make_loaded oid="<< oid << ", obz=" << (void*)obz);
   return obz;
 } // end Rps_ObjectZone::make_loaded
 

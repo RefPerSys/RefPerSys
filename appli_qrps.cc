@@ -187,6 +187,7 @@ void rps_run_application(int &argc, char **argv)
     argparser.addOption(batchOption);
     // number of jobs, for multi threading
     const QCommandLineOption nbjobOption(QStringList() << "j" << "jobs", "number of threads", "nb-jobs");
+    argparser.addOption(nbjobOption);
     // dump after load
     const QCommandLineOption dumpafterloadOption(QStringList() << "D" << "dump", "dump after load", "dump-dir");
     argparser.addOption(dumpafterloadOption);
