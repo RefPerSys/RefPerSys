@@ -242,7 +242,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
       Rps_Id curobjid;
       if (is_object_starting_line(spacid, lincnt, linbuf, &curobjid))
         {
-	  // RPS_INFORMOUT("got ob spacid:" << spacid
+          // RPS_INFORMOUT("got ob spacid:" << spacid
           //              << " linbuf: " << linbuf
           //              << " lincnt#" << lincnt
           //              << " curobjid:" << curobjid
@@ -1477,7 +1477,7 @@ void Rps_Loader::load_install_roots(void)
       rps_add_root_object (curootobr);
     };
   {
-      std::lock_guard<std::mutex> gu(ld_mtx);
+    std::lock_guard<std::mutex> gu(ld_mtx);
 #define RPS_INSTALL_ROOT_OB(Oid) do {                           \
         const char *end##Oid = nullptr;                         \
         bool ok##Oid = false;                                   \
@@ -1594,7 +1594,7 @@ void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
       Json::Value jvcurelem = jsetob[elemix];
       auto obelem = Rps_ObjectRef(jvcurelem, ld);
       if (obelem)
-	paylsetob->add(obelem);
+        paylsetob->add(obelem);
     }
 } // end of rpsldpy_setob
 

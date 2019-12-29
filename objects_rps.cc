@@ -40,17 +40,20 @@ const char rps_objects_date[]= __DATE__;
 
 
 std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher> Rps_ObjectZone::ob_idmap_(50777);
-std::mutex Rps_ObjectZone::ob_idmtx_;
+
+std::map<Rps_Id,Rps_ObjectZone*> Rps_ObjectZone::ob_idbucketmap_[Rps_Id::maxbuckets];
+std::recursive_mutex Rps_ObjectZone::ob_idmtx_;
 
 void
 Rps_ObjectZone::register_objzone(Rps_ObjectZone*obz)
 {
   RPS_ASSERT(obz != nullptr);
-  std::lock_guard<std::mutex> gu(ob_idmtx_);
+  std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
   auto oid = obz->oid();
   if (ob_idmap_.find(oid) != ob_idmap_.end())
     RPS_FATALOUT("Rps_ObjectZone::register_objzone duplicate oid " << oid);
   ob_idmap_.insert({oid,obz});
+  ob_idbucketmap_[oid.bucket_num()].insert({oid,obz});
 } // end Rps_ObjectZone::register_objzone
 
 
@@ -58,7 +61,7 @@ Rps_Id
 Rps_ObjectZone::fresh_random_oid(Rps_ObjectZone*ob)
 {
   Rps_Id oid;
-  std::lock_guard<std::mutex> gu(ob_idmtx_);
+  std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
   while(true)
     {
       oid = Rps_Id::random();
@@ -82,12 +85,16 @@ Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
 
 Rps_ObjectZone::~Rps_ObjectZone()
 {
-  RPS_INFORMOUT("destroying object " << oid());
+  //  RPS_INFORMOUT("destroying object " << oid());
+  Rps_Id curid = oid();
   clear_payload();
   ob_attrs.clear();
   ob_comps.clear();
   ob_class.store(nullptr);
   ob_mtime.store(0.0);
+  std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
+  ob_idmap_.erase(curid);
+  ob_idbucketmap_[curid.bucket_num()].erase(curid);
 } // end Rps_ObjectZone::~Rps_ObjectZone()
 
 Rps_ObjectZone::Rps_ObjectZone() :
@@ -123,7 +130,7 @@ Rps_ObjectZone::find(Rps_Id oid)
 {
   if (!oid.valid())
     return nullptr;
-  std::lock_guard<std::mutex> gu(ob_idmtx_);
+  std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
   auto obr = ob_idmap_.find(oid);
   if (obr != ob_idmap_.end())
     return obr->second;
@@ -256,6 +263,55 @@ Rps_ObjectZone::string_oid(void) const
 {
   return oid().to_string();
 }
+
+int
+Rps_ObjectZone::autocomplete_oid(const char*prefix,
+                                 const std::function<bool(const Rps_ObjectZone*)>&stopfun)
+{
+  if (!prefix || prefix[0] != '_'
+      || !isdigit(prefix[1]) || !isalnum(prefix[2]) || !isalnum(prefix[3]))
+    return 0;
+  char bufid[24];
+  memset(bufid, 0, sizeof(bufid));
+  int lastix=0;
+  {
+    int ix=0;
+    bufid[0] = '_';
+    for (ix=1; ix<Rps_Id::nbchars; ix++)
+      {
+        if (!strchr(Rps_Id::b62digits, prefix[ix]))
+          break;
+        bufid[ix] = prefix[ix];
+      }
+    lastix = ix;
+    for (ix=lastix; ix<Rps_Id::nbchars; ix++)
+      {
+        bufid[ix] = '0';
+      };
+  }
+  Rps_Id idpref(bufid);
+  constexpr char lastdigit = Rps_Id::b62digits[sizeof(Rps_Id::b62digits)-1];
+  for (int ix=lastix; ix<Rps_Id::nbchars; ix++)
+    {
+      bufid[ix] = lastdigit;
+    }
+  Rps_Id idlast(bufid);
+  int count = 0;
+  std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
+  auto& curobuck = ob_idbucketmap_[idpref.bucket_num()];
+  for (auto it = curobuck.lower_bound(idpref); it != curobuck.end(); it++)
+    {
+      Rps_Id curid = it->first;
+      if (curid > idlast)
+        break;
+      count++;
+      Rps_ObjectRef curobr = it->second;
+      if (stopfun(curobr))
+        break;
+    }
+  return count;
+} // end Rps_ObjectZone::autocomplete_oid
+
 
 ////////////////////////////////////////////////////////////////
 ///// global roots for garbage collection and persistence

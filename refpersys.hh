@@ -1273,10 +1273,10 @@ public:
 class Rps_Payload;
 class Rps_ObjectZone : public Rps_ZoneValue
 {
-
   friend class Rps_Loader;
   friend class Rps_Dumper;
   friend class Rps_Payload;
+  friend class Rps_ObjectRef;
   friend Rps_ObjectZone*
   Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(Rps_Id,bool);
   const Rps_Id ob_oid;
@@ -1291,7 +1291,8 @@ class Rps_ObjectZone : public Rps_ZoneValue
   Rps_ObjectZone(void);
   ~Rps_ObjectZone();
   static std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher> ob_idmap_;
-  static std::mutex ob_idmtx_;
+  static std::map<Rps_Id,Rps_ObjectZone*> ob_idbucketmap_[Rps_Id::maxbuckets];
+  static std::recursive_mutex ob_idmtx_;
   static void register_objzone(Rps_ObjectZone*);
   static Rps_Id fresh_random_oid(Rps_ObjectZone*ob =nullptr);
 protected:
@@ -1386,6 +1387,11 @@ public:
   virtual bool equal(const Rps_ZoneValue&zv) const;
   virtual bool less(const Rps_ZoneValue&zv) const;
   virtual void mark_gc_inside(Rps_GarbageCollector&gc);
+  // given a C string which looks like an oid prefix, so starts with
+  // an underscore, a digit, and two alphanums, autocomplete that and
+  // call a given C++ closure on every possible object ref, till that
+  // closure returns true. Return the number of matches, or else 0
+  static int autocomplete_oid(const char*prefix, const std::function<bool(const Rps_ObjectZone*)>&stopfun);
 };				// end class Rps_ObjectZone
 
 //////////////////////////////////////////////////////////// object payloads
@@ -1825,7 +1831,9 @@ class Rps_PayloadSetOb : public Rps_Payload
   };
 protected:
   virtual uint32_t wordsize() const
-  {return (sizeof(*this)+sizeof(void*)-1) / sizeof(void*);};
+  {
+    return (sizeof(*this)+sizeof(void*)-1) / sizeof(void*);
+  };
   virtual void gc_mark(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
