@@ -75,27 +75,18 @@ RpsQWindow::setupAppMenu()
 {
   auto pixmap = RpsQPixMap::instance();
 
-  //QAction *dump = new QAction(pixmap->get("RPS_ICON_DUMP"), "&Dump", this);
-  QAction *gc = new QAction(
-    pixmap->get("RPS_ICON_GC"),
-    "&Garbage Collect",
-    this
-  );
   QAction *close = new QAction(pixmap->get("RPS_ICON_CLOSE"), "&Close", this);
   QAction *newin = new QAction(pixmap->get("RPS_ICON_NEW"), "New &Window", this);
 
-  //dump->setShortcut (tr ("CTRL+D"));
-  gc->setShortcut (tr ("CTRL+G"));
   newin->setShortcut (tr ("CTRL+W")); //TODO: doesn't CTRL+N seem better?
   close->setShortcut (tr ("CTRL+C"));
 
   QMenu *app_menu;
   app_menu = menuBar ()->addMenu ("&App");
-  //app_menu->addAction (dump);
 
   m_menu_app_dump = new RpsQMenuAppDump(this);
+  m_menu_app_gc = new RpsQMenuAppGC(this);
 
-  app_menu->addAction (gc);
   app_menu->addAction (newin);
   app_menu->addSeparator ();
   app_menu->addAction (close);
@@ -103,8 +94,6 @@ RpsQWindow::setupAppMenu()
   m_menu_app_quit = new RpsQMenuAppQuit(this);
   m_menu_app_exit = new RpsQMenuAppExit(this);
 
-  //connect (dump, &QAction::triggered, this, &RpsQWindow::onMenuDump);
-  connect (gc, &QAction::triggered, this, &RpsQWindow::onMenuGarbageCollect);
   connect (newin, &QAction::triggered,
            dynamic_cast<RpsQApplication*>(RpsQApplication::instance()),
            &RpsQApplication::add_new_window);
@@ -171,21 +160,6 @@ RpsQWindow::onMenuClose()
       this->onMenuQuit ();
     }
 }
-
-/*
-void
-RpsQWindow::onMenuDump()
-{
-  rps_dump_into ();
-} // end RpsQWindow::onMenuDump
-*/
-
-
-void
-RpsQWindow::onMenuGarbageCollect()
-{
-  rps_garbage_collect();
-} // end RpsQWindow::onMenuGarbageCollect
 
 
 void
@@ -275,6 +249,12 @@ void RpsQMenuAppExit::on_trigger()
 void RpsQMenuAppDump::on_trigger()
 {
   rps_dump_into();
+}
+
+
+void RpsQMenuAppGC::on_trigger()
+{
+  rps_garbage_collect();
 }
 
 

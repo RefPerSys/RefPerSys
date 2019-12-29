@@ -276,6 +276,30 @@ protected slots:
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// The App | GC menu action for RpsQWindow.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQMenuAppGC : public RpsQMenuAction
+{
+  Q_OBJECT
+public:
+  /// Constructor
+  inline RpsQMenuAppGC(RpsQWindow* parent)
+    : RpsQMenuAction(
+        parent, 
+        RpsQWindowMenu::APP, 
+        "RPS_ICON_GC", 
+        "Collect &Garbage", 
+        "CTRL+G"
+      )
+  { }
+
+protected slots:
+  /// Overridden slot for the trigger action.
+  void on_trigger();
+};
+
+
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
 class RpsQWindow : public QMainWindow
@@ -296,13 +320,13 @@ private:
   RpsQMenuAppQuit* m_menu_app_quit;
   RpsQMenuAppExit* m_menu_app_exit;
   RpsQMenuAppDump* m_menu_app_dump;
+  RpsQMenuAppGC* m_menu_app_gc;
   QPlainTextEdit m_debug_widget;
   QTimer m_debug_timer;
 
 signals:
 
 private slots:
-  void onMenuGarbageCollect();
   void onMenuQuit();
   void onMenuDebug();
   void onMenuClose();
