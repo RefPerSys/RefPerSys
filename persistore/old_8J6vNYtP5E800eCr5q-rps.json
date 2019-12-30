@@ -1,0 +1,151 @@
+// file persistore/sp_8J6vNYtP5E800eCr5q-rps.json
+// in http://refpersys.org/
+//
+//      © Copyright 2019 The Reflective Persistent System Team
+//      team@refpersys.org & http://refpersys.org/
+////////////////
+// the prologue
+{
+    "format": "RefPerSysFormat2019A",
+    "spaceid": "_8J6vNYtP5E800eCr5q",  
+    "nbobjects": 9
+}
+
+/// comments starting with # are not even kept
+# some random oid-s
+
+#-  _4MPKnnHrjPA02sQ4CA _2Y3a5YxNGqS016S6JJ _9BCwsEUpZUu00h7wzf
+#-  _2LUlp2ZUoWj00VYitJ _04IU8ckRKDS00rxJGE _4fDPBcUuMqP00UkY7A
+#-  _1QHh4b7l6VC04DCn5n _4oJBHEFllhe04njB94 _0pjAqnz1W7o02KTAGk
+#-  _4yQVttYghdE02kva8B _9fVwUD72KrO006tfGs _1JH5yXhnww002tut1i
+#-  
+#-    
+
+// every object starts with some //+ob<id> line
+
+
+////////////////////////////////////////////////////////////////
+//////////////// the `object` class
+//+ob_5yhJGgxLwLp00X0xEQ
+{
+    "oid": "_5yhJGgxLwLp00X0xEQ",
+    "mtime": 1575698824.78,
+    "class": "_41OFI3r0S1t03qdB2E",
+    "class_symb": "_7X9eGs8601M021nMue", 
+    "payload": "class",
+# actually this is wrong... superclass is probably `value`
+    "class_super": "_5yhJGgxLwLp00X0xEQ",
+    "class_methodict": [
+  ]
+}
+
+//////////////// the `object` symbol
+//+ob_7X9eGs8601M021nMue
+{
+    "oid": "_7X9eGs8601M021nMue",
+    "mtime": 1577699400.00,
+    "class": "_36I1BY2NetN03WjrOv",
+    "payload": "symbol",
+    "symb_name": "object",
+    "symb_val": "_5yhJGgxLwLp00X0xEQ"
+}
+
+////////////////////////////////////////////////////////////////
+
+
+
+//////////////// the `class` class
+//+ob_41OFI3r0S1t03qdB2E
+{
+    "oid": "_41OFI3r0S1t03qdB2E",
+    "mtime": 1575698824.78,
+    "class": "_41OFI3r0S1t03qdB2E",
+    "payload": "class",
+    "class_symb": "_6fmq7pZkmNd03UyPuO", 
+    "class_super": "_5yhJGgxLwLp00X0xEQ",
+    "class_methodict": [
+    ]
+}
+
+
+//////////////// the `class` symbol
+//+ob_6fmq7pZkmNd03UyPuO
+{
+    "oid": "_6fmq7pZkmNd03UyPuO",
+    "mtime": 1577699400.00,
+    "class": "_36I1BY2NetN03WjrOv",
+    "payload": "symbol",
+    "symb_name": "class",
+    "symb_val": "_41OFI3r0S1t03qdB2E"
+}
+
+
+////////////////////////////////////////////////////////////////
+
+//////////////// the `space` class
+//+ob_2i66FFjmS7n03HNNBx
+{
+    "oid": "_2i66FFjmS7n03HNNBx",
+    "mtime": 1575698824.78,
+    "class": "_41OFI3r0S1t03qdB2E",
+    "payload": "class",
+    "class_symb": "_9uwZtDshW4401x6MsY", 
+    "class_super": "_5yhJGgxLwLp00X0xEQ",
+    "class_methodict": [
+    ]
+}
+
+//////////////// the `space` symbol
+//+ob_9uwZtDshW4401x6MsY
+{
+    "oid": "_9uwZtDshW4401x6MsY",
+    "mtime": 1577699400.00,
+    "class": "_36I1BY2NetN03WjrOv",
+    "payload": "symbol",
+    "symb_name": "space",
+    "symb_val": "_2i66FFjmS7n03HNNBx"
+}
+
+
+
+////////////////////////////////////////////////////////////////
+
+//////////////// the `symbol` class
+//+ob_36I1BY2NetN03WjrOv
+{
+    "oid": "_36I1BY2NetN03WjrOv",
+    "mtime": 1575698824.78,
+    "class": "_41OFI3r0S1t03qdB2E",
+    "payload": "class",
+    "class_super": "_5yhJGgxLwLp00X0xEQ",
+    "class_symb": "_3Q3hJsSgCDN03GTYW5", 
+    "class_methodict": [
+    ]
+}
+
+
+//////////////// the `symbol` symbol
+//+ob_3Q3hJsSgCDN03GTYW5
+{
+    "oid": "_3Q3hJsSgCDN03GTYW5",
+    "mtime": 1577699400.00,
+    "class": "_36I1BY2NetN03WjrOv",
+    "payload": "symbol",
+    "symb_name": "symbol",
+    "symb_val": "_36I1BY2NetN03WjrOv"
+}
+
+
+////////////////////////////////////////////////////////////
+
+
+/// the initial space
+//+ob_8J6vNYtP5E800eCr5q
+{
+    "oid": "_8J6vNYtP5E800eCr5q",
+    "mtime": 1575698824.78,
+    "class": "_2i66FFjmS7n03HNNBx",
+    "payload": "space"
+}
+
+ /// end of file persistore/sp_8J6vNYtP5E800eCr5q-rps.json

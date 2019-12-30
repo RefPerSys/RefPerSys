@@ -1,57 +1,33 @@
-//  primordial manifest file of RefPerSys - rps_manifest.json
-//
-//
-// Description:
-//      This file is part of the Reflective Persistent System.
-//      It is the primordial persistence manifest file
-//
-// Author(s):
-//      Basile Starynkevitch <basile@starynkevitch.net>
-//      Abhishek Chakravarti <abhishek@taranjali.org>
-//      Nimesh Neema <nimeshneema@gmail.com>
-//
-//      © Copyright 2019 The Reflective Persistent System Team
-//      team@refpersys.org & http://refpersys.org/
-//
-// License:
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
-//
-//    You should have received a copy of the GNU General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//************************************************************************
-
-//  _8J6vNYtP5E800eCr5q _6cm5Oel9QtB01KCUBg _8PbZ3a5b0SD04ka4V2
-//  _1urNs8T6Y6m02yho8t _60FSrTQ5jZ902s8k6U _3XxxUaDzcjs02dyiTK
-//  _8Ka7LfEUI6s02bQ98L _3fzIPzNlWFV01GGQSo _0vcbDBwA15j02lkW0j
-//  _5EF6qqLTfJD01yaKqN _8GpXxKNcd2A01anhxO _5NHlHhvso3Z01y0dQy
-//  _1iawV5wHn5X02lIg2f _7GIB3ma21I200tfqDs _8d6Sf31tOL901ES4ZY
-//  _3C6hedPDfZb00UEh1I _5PmrGqGMxHi02FD73Q _9u9us7qDIRA02B3jlU
-//  _2fONfol6sf802v5YH9 _9TiNB3mekcs024vCFT
-
+//!! GENERATED file rps_manifest.json / DO NOT EDIT!
+//!! This file is part of the Reflective Persistent System.
+//!!  © Copyright 2019 - 2019 The Reflective Persistent System Team.
+//!!  see http://refpersys.org/ and contact team@refpersys.org for more.
+//!! _
+//!! This program is free software: you can redistribute it and/or modify
+//!! it under the terms of the GNU General Public License as published by
+//!! the Free Software Foundation, either version 3 of the License, or
+//!! (at your option) any later version.
+//!! _
+//!! This program is distributed in the hope that it will be useful,
+//!! but WITHOUT ANY WARRANTY; without even the implied warranty of
+//!! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//!! GNU General Public License for more details.
+//!! _
+//!! You should have received a copy of the GNU General Public License
+//!! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {
-    "format": "RefPerSysFormat2019A",
-  "spaceset": [
-    "_8J6vNYtP5E800eCr5q"
-  ],
-  "globalroots": [
-    // the `class` class:
-      "_41OFI3r0S1t03qdB2E",
-    // the `object` class:
-      "_5yhJGgxLwLp00X0xEQ",
-    // the `space` class,
-      "_2i66FFjmS7n03HNNBx",
-    // the `symbol` class,
-      "_36I1BY2NetN03WjrOv"  
-  ],
-  "plugins": [
-  ]
+ "format" : "RefPerSysFormat2019A",
+ "globalnames" : [],
+ "globalroots" : 
+ [
+  "_2i66FFjmS7n03HNNBx",
+  "_36I1BY2NetN03WjrOv",
+  "_41OFI3r0S1t03qdB2E",
+  "_5yhJGgxLwLp00X0xEQ"
+ ],
+ "origitid" : "03d6b914d8c166fd35841262e5469d4dd45e0283+",
+ "plugins" : [],
+ "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }
-// end of file rps_manifest.json
+
+//// end of RefPerSys manifest file

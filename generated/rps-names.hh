@@ -2,6 +2,7 @@
 //: This file is part of the Reflective Persistent System.
 //:  © Copyright 2019 - 2019 The Reflective Persistent System Team.
 //:  see http://refpersys.org/ and contact team@refpersys.org for more.
+//: _
 //: This program is free software: you can redistribute it and/or modify
 //: it under the terms of the GNU General Public License as published by
 //: the Free Software Foundation, either version 3 of the License, or
