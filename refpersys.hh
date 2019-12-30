@@ -494,8 +494,16 @@ public:
   inline void gc_mark(Rps_GarbageCollector&) const;
   inline void dump_scan(Rps_Dumper* du, unsigned depth) const;
   inline Json::Value dump_json(Rps_Dumper* du) const;
+  void output(std::ostream&os) const;
 };				// end class Rps_ObjectRef
 
+/// mostly for debugging
+inline std::ostream&
+operator << (std::ostream&out, Rps_ObjectRef obr)
+{
+  obr.output(out);
+  return out;
+}
 
 ////////////////////////////////////////////////////////////////
 enum class Rps_Type : int16_t
@@ -635,6 +643,8 @@ public:
                                       = nullptr) const;
   inline const std::string to_cppstring(std::string defstr= "") const;
   inline Rps_HashInt valhash() const noexcept;
+  inline void output(std::ostream&out, unsigned depth=0) const;
+  static constexpr unsigned max_output_depth = 5;
 private:
   union
   {
@@ -644,6 +654,14 @@ private:
   };
 };    // end of Rps_Value
 
+
+/// mostly for debugging
+inline std::ostream&
+operator << (std::ostream&out, Rps_Value val)
+{
+  val.output(out);
+  return out;
+}
 
 namespace std
 {
@@ -1149,6 +1167,7 @@ public:
   virtual void dump_scan(Rps_Dumper* du, unsigned depth) const =0;
   virtual Json::Value dump_json(Rps_Dumper* du) const =0;
   virtual Rps_HashInt val_hash () const =0;
+  virtual void val_output(std::ostream& outs, unsigned depth) const =0;
   virtual bool equal(const Rps_ZoneValue&zv) const =0;
   virtual bool less(const Rps_ZoneValue&zv) const =0;
   inline bool operator == (const Rps_ZoneValue&zv) const;
@@ -1228,6 +1247,7 @@ public:
   {
     return (sizeof(Rps_String)+_bytsiz+1)/sizeof(void*);
   };
+  virtual void val_output(std::ostream& outs, unsigned depth) const;
   virtual void dump_scan(Rps_Dumper*, unsigned) const {};
   virtual Json::Value dump_json(Rps_Dumper*) const;
   static const Rps_String* make(const char*cstr, int len= -1);
@@ -1287,6 +1307,7 @@ protected:
     return Json::Value(_dval);
   };
 public:
+  virtual void val_output(std::ostream& outs, unsigned depth) const;
   double dval() const
   {
     return _dval;
@@ -1481,6 +1502,7 @@ public:
   {
     return obhash();
   };
+  virtual void val_output(std::ostream& outs, unsigned depth) const;
   virtual bool equal(const Rps_ZoneValue&zv) const;
   virtual bool less(const Rps_ZoneValue&zv) const;
   virtual void mark_gc_inside(Rps_GarbageCollector&gc);
@@ -1662,6 +1684,7 @@ public:
   static const Rps_SetOb*collect(const std::initializer_list<Rps_Value>&valil);
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
+  virtual void val_output(std::ostream& outs, unsigned depth) const;
 #warning Rps_SetOb very incomplete
 };// end of Rps_SetOb
 
@@ -1688,6 +1711,7 @@ public:
   static const Rps_TupleOb*collect(const std::initializer_list<Rps_Value>&valil);
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
+  virtual void val_output(std::ostream& outs, unsigned depth) const;
 #warning Rps_TupleOb very incomplete
 };// end of Rps_TupleOb
 
@@ -1830,6 +1854,7 @@ protected:
 public:
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
+  virtual void val_output(std::ostream& outs, unsigned depth) const;
   /// make a closure with given connective and values
   static Rps_ClosureZone* make(Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
   static Rps_ClosureZone* make(Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);

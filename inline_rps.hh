@@ -196,6 +196,17 @@ Rps_Value::gc_mark(Rps_GarbageCollector&gc, unsigned depth) const
 } // end Rps_Value::gc_mark
 
 
+void
+Rps_Value::output(std::ostream&out, unsigned depth) const
+{
+  if (is_int())
+    out << as_int();
+  else if (is_empty())
+    out << "___";
+  else if (is_ptr())
+    as_ptr()->val_output(out,depth);
+} // end Rps_Value::output
+
 const void*
 Rps_Value::data_for_symbol(Rps_PayloadSymbol*symb) const
 {

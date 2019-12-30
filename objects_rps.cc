@@ -44,6 +44,22 @@ std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher> Rps_ObjectZone::ob_idm
 std::map<Rps_Id,Rps_ObjectZone*> Rps_ObjectZone::ob_idbucketmap_[Rps_Id::maxbuckets];
 std::recursive_mutex Rps_ObjectZone::ob_idmtx_;
 
+
+void
+Rps_ObjectRef::output(std::ostream&outs) const
+{
+  if (is_empty())
+    outs << "__";
+  else
+    outs << obptr()->oid().to_string();
+} // end Rps_ObjectRef::output
+
+void
+Rps_ObjectZone::val_output(std::ostream&out, unsigned int) const
+{
+  out << oid().to_string();
+} // end Rps_ObjectZone::val_output
+
 void
 Rps_ObjectZone::register_objzone(Rps_ObjectZone*obz)
 {

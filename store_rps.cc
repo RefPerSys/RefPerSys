@@ -1332,6 +1332,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
           {
             RPS_INFORMOUT("Rps_Dumper::write_space_file obclass " << obclass->oid().to_string()
                           << " for obr " <<curobr->oid().to_string());
+            usleep(1000);
             std::lock_guard<std::recursive_mutex> gu(*(obclass->objmtxptr()));
             auto classinfo = obclass->get_dynamic_payload<Rps_PayloadClassInfo>();
             if (classinfo)

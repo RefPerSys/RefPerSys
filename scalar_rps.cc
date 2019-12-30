@@ -118,4 +118,18 @@ Rps_String::dump_json(Rps_Dumper*du) const
   else
     return Json::Value(cstr());
 } // end Rps_String::dump_json
+
+void
+Rps_String::val_output(std::ostream&out, unsigned) const
+{
+  Json::Value jstr(cstr());
+  out << jstr;
+} // end Rps_String::val_output
+
+void
+Rps_Double::val_output(std::ostream&out, unsigned) const
+{
+  out << dval();
+} // end Rps_Double::val_output
+
 //////////////////////////////////////////////// end of file scalar_rps.cc

@@ -185,6 +185,7 @@ Rps_QuasiZone::clear_all_gcmarks(Rps_GarbageCollector&gc)
     }
 } // end of Rps_QuasiZone::clear_all_gcmarks
 
+
 //////////////////////////////////////////////// sets
 
 Rps_SetOb::Rps_SetOb(const std::set<Rps_ObjectRef>& setob, Rps_SetTag)
@@ -267,6 +268,21 @@ Rps_SetOb::collect(const std::vector<Rps_Value>&vecval)
 
 
 
+
+
+void
+Rps_SetOb::val_output(std::ostream&out, unsigned int) const
+{
+  out << "{";
+  int cnt=0;
+  for (Rps_ObjectRef ob: *this)
+    {
+      if (cnt>0) out <<", ";
+      out << ob;
+      cnt++;
+    }
+  out << "}";
+} // end Rps_SetOb::val_output
 
 //////////////////////////////////////// tuples
 const Rps_TupleOb*
@@ -362,6 +378,20 @@ Rps_TupleOb::collect(const std::initializer_list<Rps_Value>&valil)
 
 
 
+void
+Rps_TupleOb::val_output(std::ostream&out, unsigned int) const
+{
+  out << "[";
+  int cnt=0;
+  for (Rps_ObjectRef ob: *this)
+    {
+      if (cnt>0) out <<", ";
+      out << ob;
+      cnt++;
+    }
+  out << "]";
+} // end Rps_TupleOb::val_output
+
 ////////////////////////////////////////////////// closures
 Rps_ClosureZone*
 Rps_ClosureZone::make(Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil)
@@ -394,6 +424,27 @@ Rps_ClosureZone::make(Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec
     sonarr[ix++] = val;
   return cloz;
 } // end ClosureZone::make
+
+
+void Rps_ClosureZone::val_output(std::ostream&out, unsigned int depth) const
+{
+  out << "%" << conn();
+  if (depth > Rps_Value::max_output_depth)
+    {
+      out << "(...)";
+    }
+  else
+    {
+      out << "(";
+      int cnt=0;
+      for (auto val: *this)
+        {
+          if (cnt>0) out <<", ";
+          val.output(out, depth+1);
+        }
+      out << ")";
+    }
+} // end Rps_ClosureZone::val_output
 
 ////////////////
 /* end of file value_rps.cc */
