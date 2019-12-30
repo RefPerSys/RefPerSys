@@ -627,8 +627,10 @@ Rps_PayloadSymbol::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   if (is_weak())
     jv["symb_weak"] = Json::Value(true);
   RPS_INFORMOUT("Rps_PayloadSymbol::dump_json_content owner=" << owner()->oid().to_string()
-                << "jv=" << jv);
+                << " jv=" << jv);
 } // end Rps_PayloadSymbol::dump_json_content
+
+
 
 void
 Rps_PayloadSymbol::gc_mark_strong_symbols(Rps_GarbageCollector*gc)

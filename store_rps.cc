@@ -1323,12 +1323,15 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     {
       *pouts << std::endl << std::endl;
       *pouts << "//+ob" << curobr->oid().to_string() << std::endl;
+      RPS_INFORMOUT("Rps_Dumper::write_space_file emits " << curobr->oid().to_string());
       /// output a comment giving the class name for readability
       {
         Rps_ObjectRef obclass = curobr->get_class();
         Rps_ObjectRef obsymb;
         if (obclass)
           {
+            RPS_INFORMOUT("Rps_Dumper::write_space_file obclass " << obclass->oid().to_string()
+                          << " for obr " <<curobr->oid().to_string());
             std::lock_guard<std::recursive_mutex> gu(*(obclass->objmtxptr()));
             auto classinfo = obclass->get_dynamic_payload<Rps_PayloadClassInfo>();
             if (classinfo)
@@ -1336,12 +1339,18 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
           };
         if (obsymb)
           {
+            RPS_INFORMOUT("Rps_Dumper::write_space_file obsymb " << obsymb->oid().to_string()
+                          << " for obr " <<curobr->oid().to_string());
             std::lock_guard<std::recursive_mutex> gu(*(obsymb->objmtxptr()));
             auto symb = obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
             if (symb)
               *pouts << "//∈" /*U+2208 ELEMENT OF*/
                      << symb->symbol_name() << std::endl;
           }
+        else
+          RPS_INFORMOUT("Rps_Dumper::write_space_file no obsymb for obr "
+                        <<curobr->oid().to_string());
+
       }
       Json::Value jobject(Json::objectValue);
       jobject["oid"] = Json::Value (curobr->oid().to_string());
