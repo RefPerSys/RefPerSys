@@ -1017,14 +1017,15 @@ Rps_Payload::Rps_Payload(Rps_Type ptyp, Rps_ObjectRef obr)
 
 ////// class information payload - for PaylClassInfo
 Rps_PayloadClassInfo::Rps_PayloadClassInfo(Rps_ObjectZone*owner)
-  : Rps_Payload(Rps_Type::PaylClassInfo, owner), pclass_super(nullptr), pclass_methdict()
+  : Rps_Payload(Rps_Type::PaylClassInfo, owner),
+    pclass_super(nullptr), pclass_methdict(), pclass_symbname(nullptr)
 {
   RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
 }      // end Rps_PayloadClassInfo::Rps_PayloadClassInfo
 
 Rps_PayloadClassInfo::Rps_PayloadClassInfo(Rps_ObjectZone*owner, Rps_Loader*ld)
   : Rps_Payload(Rps_Type::PaylClassInfo, owner, ld),
-    pclass_super(nullptr), pclass_methdict()
+    pclass_super(nullptr), pclass_methdict(), pclass_symbname(nullptr)
 {
   RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
 }      // end Rps_PayloadClassInfo::Rps_PayloadClassInfo ..loading

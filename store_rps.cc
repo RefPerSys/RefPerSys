@@ -1584,6 +1584,11 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
   auto obsuperclass = Rps_ObjectRef(jv["superclass"], ld);
   RPS_ASSERT(obsuperclass);
   paylclainf->put_superclass(obsuperclass);
+  if (jv.isMember("class_symb"))
+    {
+      auto obsymb = Rps_ObjectRef(jv["class_symb"], ld);
+      paylclainf->loader_put_symbname(obsymb, ld);
+    }
   Json::Value jvmethodict = jv["methodict"];
   unsigned nbmeth = 0;
   if (!jvmethodict.isArray())

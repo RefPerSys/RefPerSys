@@ -384,6 +384,7 @@ void
 Rps_PayloadClassInfo::gc_mark(Rps_GarbageCollector&gc) const
 {
   gc.mark_obj(pclass_super);
+  gc.mark_obj(pclass_symbname);
   for (auto it: pclass_methdict)
     {
       gc.mark_obj(it.first);
@@ -396,6 +397,7 @@ Rps_PayloadClassInfo::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   rps_dump_scan_object(du, pclass_super);
+  rps_dump_scan_object(du, pclass_symbname);
   for (auto it : pclass_methdict)
     {
       rps_dump_scan_object(du, it.first);
@@ -410,6 +412,16 @@ Rps_PayloadClassInfo::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   /// see function rpsldpy_class in store_rps.cc
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
+  if (pclass_symbname)
+    {
+      std::lock_guard<std::recursive_mutex> gu(*(pclass_symbname->objmtxptr()));
+      auto symb = pclass_symbname->get_dynamic_payload<Rps_PayloadSymbol>();
+      if (symb)
+        {
+          jv["class_name"] = Json::Value(symb->symbol_name());
+          jv["class_symb"] = pclass_symbname.dump_json(du);
+        }
+    };
   jv["superclass"] = pclass_super.dump_json(du);
   auto jvvectmeth = Json::Value(Json::arrayValue);
   for (auto it : pclass_methdict)
@@ -422,6 +434,25 @@ Rps_PayloadClassInfo::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   jv["methodict"] = jvvectmeth;
 } // end Rps_PayloadClassInfo::dump_json_content
 
+void
+Rps_PayloadClassInfo::loader_put_symbname(Rps_ObjectRef obr, Rps_Loader*ld)
+{
+  RPS_ASSERT(ld != nullptr);
+  pclass_symbname = obr;
+} // end Rps_PayloadClassInfo::loader_put_symbname
+
+void
+Rps_PayloadClassInfo::put_symbname(Rps_ObjectRef obr)
+{
+  if (!obr)
+    return;
+  std::lock_guard<std::recursive_mutex> gu(*(obr->objmtxptr()));
+  auto symb = obr->get_dynamic_payload<Rps_PayloadSymbol>();
+  if (symb && symb->owner() == obr) {
+    symb->symbol_put_value(owner());
+    pclass_symbname = obr;
+  }
+} // end Rps_PayloadClassInfo::put_symbname
 
 /***************** mutable set of objects payload **********/
 
@@ -673,17 +704,18 @@ Rps_PayloadSymbol::autocomplete_name(const char*prefix, const std::function<bool
   std::string prefixstr(prefix);
   int prefixlen = strlen(prefix);
   std::lock_guard<std::recursive_mutex> gusy(symb_tablemtx);
-  for (auto it = symb_table.lower_bound(prefixstr); it != symb_table.end(); it++) {
-    if (!it->second)
-      continue;
-    std::string curname = it->first;
-    if (strncmp(prefix,curname.c_str(),prefixlen))
-      break;
-    count++;
-    Rps_ObjectRef curobr = it->second->owner();
-    if (stopfun(curobr,curname))
-      break;
-  }
+  for (auto it = symb_table.lower_bound(prefixstr); it != symb_table.end(); it++)
+    {
+      if (!it->second)
+        continue;
+      std::string curname = it->first;
+      if (strncmp(prefix,curname.c_str(),prefixlen))
+        break;
+      count++;
+      Rps_ObjectRef curobr = it->second->owner();
+      if (stopfun(curobr,curname))
+        break;
+    }
   return count;
 } // end Rps_PayloadSymbol::autocomplete_name
 

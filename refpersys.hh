@@ -1856,12 +1856,17 @@ class Rps_PayloadClassInfo : public Rps_Payload
   friend class Rps_ObjectZone;
   friend Rps_PayloadClassInfo*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadClassInfo,Rps_ObjectZone*>(Rps_ObjectZone*);
+  // the superclass:
   Rps_ObjectRef pclass_super;
+  // the dictionnary from selector to own methods
   std::map<Rps_ObjectRef,Rps_ClosureValue> pclass_methdict;
+  // the optional name (a symbol)
+  Rps_ObjectRef pclass_symbname;
   virtual ~Rps_PayloadClassInfo()
   {
-    pclass_super=nullptr;
+    pclass_super = nullptr;
     pclass_methdict.clear();
+    pclass_symbname = nullptr;
   };
 protected:
   virtual void gc_mark(Rps_GarbageCollector&gc) const;
@@ -1884,10 +1889,20 @@ public:
   {
     return pclass_super;
   };
+  Rps_ObjectRef symbname() const
+  {
+    return pclass_symbname;
+  };
   void put_superclass(Rps_ObjectRef obr)
   {
     pclass_super = obr;
   };
+  inline void clear_symbname(void)
+  {
+    pclass_symbname = nullptr;
+  };
+  void put_symbname(Rps_ObjectRef obr);
+  void loader_put_symbname(Rps_ObjectRef obr, Rps_Loader*ld);
   Rps_ClosureValue get_own_method(Rps_ObjectRef obsel)
   {
     if (!obsel) return Rps_ClosureValue(nullptr);
@@ -2136,6 +2151,9 @@ public:
   Rps_Value symbol_value(void) const
   {
     return Rps_Value(symb_data.load(),this);
+  };
+  void symbol_put_value(Rps_Value v) {
+    symb_data.store(v.data_for_symbol(this));
   };
   const std::string& symbol_name(void) const
   {
