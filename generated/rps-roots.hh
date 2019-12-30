@@ -19,11 +19,13 @@
 #error RPS_INSTALL_ROOT_OB(Oid) macro undefined
 #endif /*undefined RPS_INSTALL_ROOT_OB*/
 
+RPS_INSTALL_ROOT_OB(_2i66FFjmS7n03HNNBx)
+RPS_INSTALL_ROOT_OB(_36I1BY2NetN03WjrOv)
 RPS_INSTALL_ROOT_OB(_41OFI3r0S1t03qdB2E)
 RPS_INSTALL_ROOT_OB(_5yhJGgxLwLp00X0xEQ)
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 2
+#define RPS_NB_ROOT_OB 4
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh

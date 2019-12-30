@@ -8,7 +8,7 @@
 {
     "format": "RefPerSysFormat2019A",
     "spaceid": "_8J6vNYtP5E800eCr5q",  
-    "nbobjects": 4
+    "nbobjects": 5
 }
 
 /// comments starting with # are not even kept
@@ -19,7 +19,7 @@
 #-  _1QHh4b7l6VC04DCn5n _4oJBHEFllhe04njB94 _0pjAqnz1W7o02KTAGk
 #-  _4yQVttYghdE02kva8B _9fVwUD72KrO006tfGs _1JH5yXhnww002tut1i
 #-  _9uwZtDshW4401x6MsY _6fmq7pZkmNd03UyPuO _3Q3hJsSgCDN03GTYW5
-#-  _7X9eGs8601M021nMue _36I1BY2NetN03WjrOv 
+#-  _7X9eGs8601M021nMue  
 
 // every object starts with some //+ob<id> line
 
@@ -55,6 +55,20 @@
 //+ob_2i66FFjmS7n03HNNBx
 {
     "oid": "_2i66FFjmS7n03HNNBx",
+    "mtime": 1575698824.78,
+    "class": "_41OFI3r0S1t03qdB2E",
+    "payload": "class",
+    "superclass": "_5yhJGgxLwLp00X0xEQ",
+    "methodict": [
+    ]
+}
+
+
+
+//////////////// the `symbol` class
+//+ob_36I1BY2NetN03WjrOv
+{
+    "oid": "_36I1BY2NetN03WjrOv",
     "mtime": 1575698824.78,
     "class": "_41OFI3r0S1t03qdB2E",
     "payload": "class",

@@ -45,7 +45,11 @@
     // the `class` class:
       "_41OFI3r0S1t03qdB2E",
     // the `object` class:
-    "_5yhJGgxLwLp00X0xEQ"
+      "_5yhJGgxLwLp00X0xEQ",
+    // the `space` class,
+      "_2i66FFjmS7n03HNNBx",
+    // the `symbol` class,
+      "_36I1BY2NetN03WjrOv"  
   ],
   "plugins": [
   ]
