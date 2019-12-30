@@ -620,12 +620,12 @@ Rps_PayloadSymbol::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   RPS_ASSERT(owner());
-  jv["name"] = Json::Value(symb_name);
+  jv["symb_name"] = Json::Value(symb_name);
   Rps_Value symval = symbol_value();
   if (symval)
-    jv["symval"] = rps_dump_json_value(du, symval);
+    jv["symb_val"] = rps_dump_json_value(du, symval);
   if (is_weak())
-    jv["weak"] = Json::Value(true);
+    jv["symb_weak"] = Json::Value(true);
   RPS_INFORMOUT("Rps_PayloadSymbol::dump_json_content owner=" << owner()->oid().to_string()
                 << "jv=" << jv);
 } // end Rps_PayloadSymbol::dump_json_content
@@ -663,9 +663,11 @@ Rps_PayloadSymbol::register_name(std::string name, Rps_ObjectRef obj, bool weak)
     return false;
   Rps_PayloadSymbol* paylsymb =
     obj->put_new_plain_payload<Rps_PayloadSymbol>();
-  paylsymb->symb_name.assign(name);
+  paylsymb->symb_name = name;
   symb_table.insert({paylsymb->symb_name, paylsymb});
   paylsymb->symb_is_weak.store(weak);
+  RPS_INFORMOUT("Rps_PayloadSymbol::register_name name=" << name << " obj=" << obj->oid().to_string()
+                << " " << (weak?"weak":"strong"));
   return true;
 } // end Rps_PayloadSymbol::register_name
 

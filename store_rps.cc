@@ -574,7 +574,7 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
   else if (jv.isString())
     {
       str = jv.asString();
-      if (str.size() == Rps_Id::nbchars + 1 && str[0] == '_'
+      if (str.size() == Rps_Id::nbchars && str[0] == '_'
           && std::all_of(str.begin()+1, str.end(),
                          [](char c)
       {
@@ -1593,7 +1593,7 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  if (!jv.isMember("superclass") || !jv.isMember("methodict"))
+  if (!jv.isMember("class_super") || !jv.isMember("class_methodict"))
     RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
                  << " in space " << spacid << " lineno#" << lineno
                  << " has incomplete payload"
@@ -1601,7 +1601,7 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
                  << " jv " << (jv));
   auto paylclainf = obz->put_new_plain_payload<Rps_PayloadClassInfo>();
   RPS_ASSERT(paylclainf != nullptr);
-  auto obsuperclass = Rps_ObjectRef(jv["superclass"], ld);
+  auto obsuperclass = Rps_ObjectRef(jv["class_super"], ld);
   RPS_ASSERT(obsuperclass);
   paylclainf->put_superclass(obsuperclass);
   if (jv.isMember("class_symb"))
@@ -1609,12 +1609,12 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
       auto obsymb = Rps_ObjectRef(jv["class_symb"], ld);
       paylclainf->loader_put_symbname(obsymb, ld);
     }
-  Json::Value jvmethodict = jv["methodict"];
+  Json::Value jvmethodict = jv["class_methodict"];
   unsigned nbmeth = 0;
   if (!jvmethodict.isArray())
     RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
                  << " in space " << spacid << " lineno#" << lineno
-                 << " has bad methodict"
+                 << " has bad class_methodict"
                  << std::endl
                  << " jvmethodict " <<(jvmethodict));
   nbmeth = jvmethodict.size();
@@ -1720,8 +1720,8 @@ void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
                 << " jv=" << jv
                 << " spacid=" << spacid.to_string()
                 << " lineno:" << lineno);
-  const char* name = jv["name"].asCString();
-  bool weak = jv["weak"].asBool();
+  const char* name = jv["symb_name"].asCString();
+  bool weak = jv["symb_weak"].asBool();
   if (!Rps_PayloadSymbol::valid_name(name))
     RPS_FATALOUT("rpsldpy_symbol: object " << obz->oid()
                  << " in space " << spacid << " lineno#" << lineno
@@ -1729,7 +1729,7 @@ void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
   std::string namestr{name};
   Rps_PayloadSymbol* paylsymb = obz->put_new_plain_payload<Rps_PayloadSymbol>();
   paylsymb->load_register_name(namestr,ld,weak);
-  auto jsymbval = jv["symbval"];
+  auto jsymbval = jv["symb_val"];
   if (!jsymbval.isNull())
     paylsymb->symbol_put_value(Rps_Value(jsymbval,ld));
 } // end rpsldpy_symbol
