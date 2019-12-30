@@ -1615,7 +1615,14 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
   paylclainf->put_superclass(obsuperclass);
   if (jv.isMember("class_symb"))
     {
-      auto obsymb = Rps_ObjectRef(jv["class_symb"], ld);
+      Json::Value jclasssymb = jv["class_symb"];
+      auto obsymb = Rps_ObjectRef(jclasssymb, ld);
+      if (!obsymb)
+        RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+                     << " in space " << spacid << " lineno#" << lineno
+                     << " has bad class_symb"
+                     << std::endl
+                     << " jclasssymb " <<(jclasssymb));
       paylclainf->loader_put_symbname(obsymb, ld);
     }
   Json::Value jvmethodict = jv["class_methodict"];
