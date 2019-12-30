@@ -8,7 +8,7 @@
 {
     "format": "RefPerSysFormat2019A",
     "spaceid": "_8J6vNYtP5E800eCr5q",  
-    "nbobjects": 6
+    "nbobjects": 7
 }
 
 /// comments starting with # are not even kept
@@ -18,7 +18,7 @@
 #-  _2LUlp2ZUoWj00VYitJ _04IU8ckRKDS00rxJGE _4fDPBcUuMqP00UkY7A
 #-  _1QHh4b7l6VC04DCn5n _4oJBHEFllhe04njB94 _0pjAqnz1W7o02KTAGk
 #-  _4yQVttYghdE02kva8B _9fVwUD72KrO006tfGs _1JH5yXhnww002tut1i
-#-  _9uwZtDshW4401x6MsY _6fmq7pZkmNd03UyPuO _3Q3hJsSgCDN03GTYW5
+#-  _9uwZtDshW4401x6MsY _6fmq7pZkmNd03UyPuO 
 #-    
 
 // every object starts with some //+ob<id> line
@@ -86,9 +86,23 @@
     "class": "_41OFI3r0S1t03qdB2E",
     "payload": "class",
     "class_super": "_5yhJGgxLwLp00X0xEQ",
+    "class_symb": "_3Q3hJsSgCDN03GTYW5", 
     "class_methodict": [
     ]
 }
+
+
+//////////////// the `symbol` symbol
+//+ob_3Q3hJsSgCDN03GTYW5
+{
+    "oid": "_3Q3hJsSgCDN03GTYW5",
+    "mtime": 1577699400.00,
+    "class": "_36I1BY2NetN03WjrOv",
+    "payload": "symbol",
+    "symb_name": "symbol",
+    "symb_val": "_36I1BY2NetN03WjrOv"
+}
+
 
 
 /// the initial space
