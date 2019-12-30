@@ -448,10 +448,11 @@ Rps_PayloadClassInfo::put_symbname(Rps_ObjectRef obr)
     return;
   std::lock_guard<std::recursive_mutex> gu(*(obr->objmtxptr()));
   auto symb = obr->get_dynamic_payload<Rps_PayloadSymbol>();
-  if (symb && symb->owner() == obr) {
-    symb->symbol_put_value(owner());
-    pclass_symbname = obr;
-  }
+  if (symb && symb->owner() == obr)
+    {
+      symb->symbol_put_value(owner());
+      pclass_symbname = obr;
+    }
 } // end Rps_PayloadClassInfo::put_symbname
 
 /***************** mutable set of objects payload **********/
@@ -611,7 +612,7 @@ Rps_PayloadSymbol::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   jv["name"] = Json::Value(symb_name);
-  auto symval = symbol_value();
+  Rps_Value symval = symbol_value();
   if (symval)
     jv["symval"] = rps_dump_json_value(du, symval);
   if (is_weak())

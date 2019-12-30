@@ -2152,7 +2152,8 @@ public:
   {
     return Rps_Value(symb_data.load(),this);
   };
-  void symbol_put_value(Rps_Value v) {
+  void symbol_put_value(Rps_Value v)
+  {
     symb_data.store(v.data_for_symbol(this));
   };
   const std::string& symbol_name(void) const

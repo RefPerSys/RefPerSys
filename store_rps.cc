@@ -1323,6 +1323,26 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     {
       *pouts << std::endl << std::endl;
       *pouts << "//+ob" << curobr->oid().to_string() << std::endl;
+      /// output a comment giving the class name for readability
+      {
+        Rps_ObjectRef obclass = curobr->get_class();
+        Rps_ObjectRef obsymb;
+        if (obclass)
+          {
+            std::lock_guard<std::recursive_mutex> gu(*(obclass->objmtxptr()));
+            auto classinfo = obclass->get_dynamic_payload<Rps_PayloadClassInfo>();
+            if (classinfo)
+              obsymb = classinfo->symbname();
+          };
+        if (obsymb)
+          {
+            std::lock_guard<std::recursive_mutex> gu(*(obsymb->objmtxptr()));
+            auto symb = obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
+            if (symb)
+              *pouts << "//∈" /*U+2208 ELEMENT OF*/
+                     << symb->symbol_name() << std::endl;
+          }
+      }
       Json::Value jobject(Json::objectValue);
       jobject["oid"] = Json::Value (curobr->oid().to_string());
       curobr->dump_json_content(this,jobject);
@@ -1703,9 +1723,6 @@ void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
                  << " in space " << spacid << " lineno#" << lineno
                  << " has bad name:"<< name);
   std::string namestr{name};
-#warning rpsldpy_symbol incomplete
-  RPS_FATALOUT("incomplete rpsldpy_symbol: object " << obz->oid()
-               << " in space " << spacid << " lineno#" << lineno);
   Rps_PayloadSymbol* paylsymb = obz->put_new_plain_payload<Rps_PayloadSymbol>();
   paylsymb->load_register_name(namestr,ld,weak);
 } // end rpsldpy_symbol

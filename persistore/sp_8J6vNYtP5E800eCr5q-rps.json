@@ -8,7 +8,7 @@
 {
     "format": "RefPerSysFormat2019A",
     "spaceid": "_8J6vNYtP5E800eCr5q",  
-    "nbobjects": 5
+    "nbobjects": 6
 }
 
 /// comments starting with # are not even kept
@@ -19,7 +19,7 @@
 #-  _1QHh4b7l6VC04DCn5n _4oJBHEFllhe04njB94 _0pjAqnz1W7o02KTAGk
 #-  _4yQVttYghdE02kva8B _9fVwUD72KrO006tfGs _1JH5yXhnww002tut1i
 #-  _9uwZtDshW4401x6MsY _6fmq7pZkmNd03UyPuO _3Q3hJsSgCDN03GTYW5
-#-  _7X9eGs8601M021nMue  
+#-    
 
 // every object starts with some //+ob<id> line
 
@@ -31,11 +31,24 @@
     "oid": "_5yhJGgxLwLp00X0xEQ",
     "mtime": 1575698824.78,
     "class": "_41OFI3r0S1t03qdB2E",
+    "class_symb": "_7X9eGs8601M021nMue", 
     "payload": "class",
 # actually this is wrong... superclass is probably `value`
     "superclass": "_5yhJGgxLwLp00X0xEQ",
     "methodict": [
   ]
+}
+
+
+//////////////// the `object` symbol
+//+ob_7X9eGs8601M021nMue
+{
+    "oid": "_7X9eGs8601M021nMue",
+    "mtime": 1577699400.00,
+    "class": "_36I1BY2NetN03WjrOv",
+    "payload": "symbol",
+    "name": "object",
+    "symval": "_5yhJGgxLwLp00X0xEQ"
 }
 
 
