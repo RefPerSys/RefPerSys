@@ -1521,6 +1521,7 @@ public:
   {
     RPS_ASSERT(ld != nullptr);
   };
+  virtual const char*payload_type_name(void) const =0;
   virtual bool is_erasable(void) const
   {
     return true;
@@ -1876,6 +1877,10 @@ protected:
   Rps_PayloadClassInfo(Rps_ObjectRef obr) :
     Rps_PayloadClassInfo(obr?obr.optr():nullptr) {};
 public:
+  virtual const char*payload_type_name(void) const
+  {
+    return "class";
+  };
   virtual uint32_t wordsize(void) const
   {
     return sizeof(*this)/sizeof(void*);
@@ -1950,6 +1955,10 @@ protected:
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
 public:
+  virtual const char*payload_type_name(void) const
+  {
+    return "setob";
+  };
   inline Rps_PayloadSetOb(Rps_ObjectZone*obz, Rps_Loader*ld);
   bool contains(const Rps_ObjectZone* obelem) const
   {
@@ -2019,6 +2028,10 @@ protected:
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
 public:
+  virtual const char*payload_type_name(void) const
+  {
+    return "vectob";
+  };
   virtual uint32_t wordsize(void) const
   {
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
@@ -2089,6 +2102,10 @@ protected:
     return false;
   };
 public:
+  virtual const char*payload_type_name(void) const
+  {
+    return "space";
+  };
   inline Rps_PayloadSpace(Rps_ObjectZone*obz, Rps_Loader*ld);
 };				// end Rps_PayloadSpace
 
@@ -2130,6 +2147,10 @@ protected:
     return symb_is_weak.load();
   };
 public:
+  virtual const char*payload_type_name(void) const
+  {
+    return "symbol";
+  };
   static void gc_mark_strong_symbols(Rps_GarbageCollector*gc);
   void load_register_name(const char*name, Rps_Loader*ld,bool weak=false);
   void load_register_name(const std::string& str, Rps_Loader*ld, bool weak=false)
@@ -2150,7 +2171,7 @@ public:
   };
   Rps_Value symbol_value(void) const
   {
-    return Rps_Value(symb_data.load(),this);
+    return Rps_Value(symb_data.load(), this);
   };
   void symbol_put_value(Rps_Value v)
   {

@@ -120,7 +120,7 @@ Rps_Value::Rps_Value() : _wptr(nullptr) {};
 
 Rps_Value::Rps_Value(const void*ptr, const Rps_PayloadSymbol*symb) : _wptr(ptr)
 {
-  RPS_ASSERT(symb != nullptr);
+  RPS_ASSERT(symb != nullptr && symb->stored_type() == Rps_Type::PaylSymbol);
 };
 
 Rps_Value::~Rps_Value()

@@ -233,7 +233,10 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
     };
   Rps_Payload*payl = ob_payload.load();
   if (payl && payl->owner() == this)
-    payl->dump_json_content(du,json);
+    {
+      json["payload"] = Json::Value(payl->payload_type_name());
+      payl->dump_json_content(du,json);
+    }
 } // end Rps_ObjectZone::dump_json_contents
 
 bool
@@ -568,7 +571,8 @@ Rps_PayloadSymbol::valid_name(const char*str)
 } // end Rps_PayloadSymbol::valid_name
 
 Rps_PayloadSymbol::Rps_PayloadSymbol(Rps_ObjectZone*obz)
-  : Rps_Payload(Rps_Type::PaylSymbol, obz)
+  : Rps_Payload(Rps_Type::PaylSymbol, obz),
+    symb_name(), symb_data(nullptr), symb_is_weak(false)
 {
 } // end Rps_PayloadSymbol::Rps_PayloadSymbol
 
