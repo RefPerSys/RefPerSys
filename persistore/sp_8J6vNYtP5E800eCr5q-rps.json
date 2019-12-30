@@ -34,8 +34,8 @@
     "class_symb": "_7X9eGs8601M021nMue", 
     "payload": "class",
 # actually this is wrong... superclass is probably `value`
-    "superclass": "_5yhJGgxLwLp00X0xEQ",
-    "methodict": [
+    "class_super": "_5yhJGgxLwLp00X0xEQ",
+    "class_methodict": [
   ]
 }
 
@@ -59,8 +59,8 @@
     "mtime": 1575698824.78,
     "class": "_41OFI3r0S1t03qdB2E",
     "payload": "class",
-    "superclass": "_5yhJGgxLwLp00X0xEQ",
-    "methodict": [
+    "class_super": "_5yhJGgxLwLp00X0xEQ",
+    "class_methodict": [
     ]
 }
 
@@ -71,8 +71,8 @@
     "mtime": 1575698824.78,
     "class": "_41OFI3r0S1t03qdB2E",
     "payload": "class",
-    "superclass": "_5yhJGgxLwLp00X0xEQ",
-    "methodict": [
+    "class_super": "_5yhJGgxLwLp00X0xEQ",
+    "class_methodict": [
     ]
 }
 
@@ -85,8 +85,8 @@
     "mtime": 1575698824.78,
     "class": "_41OFI3r0S1t03qdB2E",
     "payload": "class",
-    "superclass": "_5yhJGgxLwLp00X0xEQ",
-    "methodict": [
+    "class_super": "_5yhJGgxLwLp00X0xEQ",
+    "class_methodict": [
     ]
 }
 

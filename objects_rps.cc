@@ -425,7 +425,7 @@ Rps_PayloadClassInfo::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
           jv["class_symb"] = pclass_symbname.dump_json(du);
         }
     };
-  jv["superclass"] = pclass_super.dump_json(du);
+  jv["class_super"] = pclass_super.dump_json(du);
   auto jvvectmeth = Json::Value(Json::arrayValue);
   for (auto it : pclass_methdict)
     {
@@ -434,7 +434,7 @@ Rps_PayloadClassInfo::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
       jvcurmeth["methclos"] = rps_dump_json_value(du,it.second);
       jvvectmeth.append(jvcurmeth);
     }
-  jv["methodict"] = jvvectmeth;
+  jv["class_methodict"] = jvvectmeth;
 } // end Rps_PayloadClassInfo::dump_json_content
 
 void
