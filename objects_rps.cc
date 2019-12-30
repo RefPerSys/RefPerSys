@@ -583,6 +583,7 @@ Rps_PayloadSymbol::load_register_name(const char*name, Rps_Loader*ld, bool weak)
     throw std::runtime_error(std::string("invalid symbol name:") + name);
   RPS_ASSERT(symb_name.empty());
   RPS_ASSERT(owner());
+  RPS_ASSERT(ld != nullptr);
   std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
   symb_name.assign(name);
   if (RPS_UNLIKELY(symb_table.find(symb_name) != symb_table.end()))
@@ -590,6 +591,9 @@ Rps_PayloadSymbol::load_register_name(const char*name, Rps_Loader*ld, bool weak)
                              + owner()->oid().to_string());
   symb_table.insert({symb_name, this});
   symb_is_weak.store(weak);
+  RPS_INFORMOUT("Rps_PayloadSymbol::load_register_name symb_name:" << symb_name
+                << " " << (weak?"weak":"strong")
+                << " owner:" << owner()->oid().to_string());
 } // end Rps_PayloadSymbol::load_register_name
 
 void
@@ -615,12 +619,15 @@ Rps_PayloadSymbol::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   /// see function rpsldpy_symbol in store_rps.cc
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
+  RPS_ASSERT(owner());
   jv["name"] = Json::Value(symb_name);
   Rps_Value symval = symbol_value();
   if (symval)
     jv["symval"] = rps_dump_json_value(du, symval);
   if (is_weak())
     jv["weak"] = Json::Value(true);
+  RPS_INFORMOUT("Rps_PayloadSymbol::dump_json_content owner=" << owner()->oid().to_string()
+                << "jv=" << jv);
 } // end Rps_PayloadSymbol::dump_json_content
 
 void

@@ -79,6 +79,8 @@ void rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::s
          << " see http://refpersys.org/ and contact team@refpersys.org for more."
          << linsuffix << std::endl;
   }
+  outs << linprefix << "_"
+       << linsuffix << std::endl;
   outs << linprefix << "This program is free software: you can redistribute it and/or modify"
        << linsuffix << std::endl;
   outs << linprefix << "it under the terms of the GNU General Public License as published by"
@@ -104,98 +106,6 @@ void rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::s
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
 } // end rps_emit_gplv3_copyright_notice
-
-/**** old obsolete code
-enum rps_option_key_en
-{
-  Rps_Key_PrintRandomId = 1024,
-  Rps_Key_Version,
-  Rps_Key_ParseId,
-  Rps_Key_ExplainTypes,
-  Rps_Key_Deterministic,
-  Rps_Key_PrimeAbove,
-  Rps_Key_PrimeBelow,
-  Rps_Key_ObjectTinyBenchmark1,
-  Rps_Key_QtGui,
-};
-
-const struct argp_option rps_argopt_vec[] =
-{
-  {
-    .name = "print-random-id",
-    .key = Rps_Key_PrintRandomId,
-    .arg = "count",
-    .flags = OPTION_ARG_OPTIONAL,
-    .doc = "print one or several random objectid[s]",
-    .group = 0,
-  },
-  {
-    .name = "deterministic",
-    .key = Rps_Key_Deterministic,
-    .arg = "seed",
-    .flags = OPTION_ARG_OPTIONAL,
-    .doc = "seed PRNGs in a deterministic way with given SEED",
-    .group = 0,
-  },
-  {
-    .name = "prime-above",
-    .key = Rps_Key_PrimeAbove,
-    .arg = "number",
-    .flags = OPTION_ARG_OPTIONAL,
-    .doc = "print a prime above a given number",
-    .group = 0,
-  },
-  {
-    .name = "prime-below",
-    .key = Rps_Key_PrimeBelow,
-    .arg = "number",
-    .flags = OPTION_ARG_OPTIONAL,
-    .doc = "print a prime below a given number",
-    .group = 0,
-  },
-  {
-    .name = "object-tinybenchmark1",
-    .key = Rps_Key_ObjectTinyBenchmark1,
-    .arg = "count",
-    .flags = OPTION_ARG_OPTIONAL,
-    .doc = "run the object tinybenchmark1 COUNT times",
-    .group = 0,
-  },
-  {
-    .name = "explain-types",
-    .key = Rps_Key_ExplainTypes,
-    .arg = NULL,
-    .flags = OPTION_ARG_OPTIONAL,
-    .doc = "print information about types",
-    .group = 0,
-  },
-  {
-    .name = "version",
-    .key = Rps_Key_Version,
-    .arg = NULL,
-    .flags = OPTION_ARG_OPTIONAL,
-    .doc = "print version information",
-    .group = 0,
-  },
-  {
-    .name = "parse-id",
-    .key = Rps_Key_ParseId,
-    .arg = "oid",
-    .flags = 0,
-    .doc = "parse a objectid",
-    .group = 0,
-  },
-  {
-    .name = "qt-gui",
-    .key = Rps_Key_QtGui,
-    .arg = NULL,
-    .flags = OPTION_ARG_OPTIONAL,
-    .doc = "run Qt GUI",
-    .group = 0,
-  },
-  { },
-};
-***/
 
 
 void rps_print_types_info(void)
