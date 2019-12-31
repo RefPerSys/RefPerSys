@@ -136,11 +136,15 @@ void rps_print_types_info(void)
   EXPLAIN_TYPE(std::lock_guard<std::shared_mutex>);
   EXPLAIN_TYPE(std::string);
   EXPLAIN_TYPE2(std::map<Rps_ObjectRef, Rps_Value>);
+  EXPLAIN_TYPE2(std::unordered_map<std::string, Rps_ObjectRef*>);
+  EXPLAIN_TYPE3(std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher>);
   EXPLAIN_TYPE(QString);
   ///
   EXPLAIN_TYPE(RpsQApplication);
   EXPLAIN_TYPE(RpsQWindow);
   EXPLAIN_TYPE(Rps_BackTrace);
+  EXPLAIN_TYPE(Rps_ClosureValue);
+  EXPLAIN_TYPE(Rps_ClosureZone);
   EXPLAIN_TYPE(Rps_Double);
   EXPLAIN_TYPE(Rps_DoubleValue);
   EXPLAIN_TYPE(Rps_GarbageCollector);
@@ -180,6 +184,33 @@ double rps_elapsed_real_time(void)
   return rps_monotonic_real_time() - rps_start_monotonic_time;
 }
 
+static void
+rps_check_mtime_files(void)
+{
+  struct stat selfstat = {};
+  if (stat("/proc/self/exe", &selfstat))
+    RPS_FATAL("stat /proc/self/exe: %m");
+  char exebuf[128];
+  memset (exebuf, 0, sizeof(exebuf));
+  readlink("/proc/self/exe", exebuf, sizeof(exebuf)-1);
+  for (const char*const*curpath = rps_files; *curpath; curpath++)
+    {
+      std::string curpathstr(*curpath);
+      std::string curfullpathstr= std::string{rps_topdirectory} + "/" + curpathstr;
+      struct stat curstat = {};
+      if (stat(curfullpathstr.c_str(), &curstat))
+        {
+          RPS_WARNOUT("rps_check_mtime_files: stat " << curfullpathstr << " failed: " << strerror(errno));
+          continue;
+        };
+      if (curstat.st_mtime > (time_t) rps_timelong)
+        RPS_WARNOUT("rps_check_mtime_files: " << curfullpathstr.c_str()
+                    << " is younger by "
+                    << (rps_timelong - curstat.st_mtime)
+                    << " seconds than current executable " << exebuf);
+    }
+} // end rps_check_mtime_files
+
 int
 main(int argc, char** argv)
 {
@@ -208,6 +239,7 @@ main(int argc, char** argv)
              "... gitid %.16s built %s",
              argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp);
   Rps_QuasiZone::initialize();
+  rps_check_mtime_files();
   //// FIXME: should have some real code here
   rps_run_application(argc, argv);
   RPS_INFORM("end of RefPerSys process %d on host %s\n"
@@ -641,5 +673,19 @@ rps_fatal_stop_at (const char *filnam, int lin)
 /// each global symbol is also a public variable, define them
 #define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name) Rps_ObjectRef RPS_SYMB_OB(Name);
 #include "generated/rps-names.hh"
+
+unsigned rps_hardcoded_number_of_roots(void)
+{
+#define RPS_INSTALL_ROOT_OB(Oid)
+#include "generated/rps-roots.hh"
+  return RPS_NB_ROOT_OB;
+} // end rps_hardcoded_number_of_roots
+
+unsigned rps_hardcoded_number_of_symbols(void)
+{
+#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam)
+#include "generated/rps-names.hh"
+  return RPS_NB_NAMED_ROOT_OB;
+} // end rps_hardcoded_number_of_symbols
 
 /// end of file main_rps.cc
