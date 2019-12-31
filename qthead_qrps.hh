@@ -356,7 +356,13 @@ class RpsQWindow : public QMainWindow
   Q_OBJECT
 public:
   RpsQWindow (QWidget *parent = nullptr);
-  virtual ~RpsQWindow () {};
+  virtual ~RpsQWindow()
+  { };
+
+  inline RpsQApplication* application()
+  {
+    return dynamic_cast<RpsQApplication*>(RpsQApplication::instance());
+  }
 
 private:
   void setupAppMenu();

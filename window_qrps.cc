@@ -206,7 +206,7 @@ void RpsQMenuAppExit::on_trigger()
 
 void RpsQMenuAppClose::on_trigger()
 {
-  auto app = dynamic_cast<RpsQApplication*>(RpsQApplication::instance());
+  auto app = window()->application();
 
   if (app->getWindowCount() > 1)
     {
@@ -239,8 +239,7 @@ void RpsQMenuAppGC::on_trigger()
 
 void RpsQMenuAppNew::on_trigger()
 {
-  auto app = dynamic_cast<RpsQApplication*>(RpsQApplication::instance());
-  app->add_new_window();
+  window()->application()->add_new_window();
 }
 
 
