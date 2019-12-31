@@ -2137,12 +2137,14 @@ public:
 
 ////////////////////////////////////////////////////////////////
 ////// symbol payload
+extern "C" void rps_initialize_symbols_after_loading (Rps_Loader*ld);
 extern "C" rpsldpysig_t rpsldpy_symbol;
 class Rps_PayloadSymbol : public Rps_Payload
 {
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
   friend rpsldpysig_t rpsldpy_symbol;
+  friend void rps_initialize_symbols_after_loading(Rps_Loader*ld);
   friend Rps_PayloadSymbol*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadSymbol, Rps_ObjectZone*>(Rps_ObjectZone*);
   std::string symb_name;
@@ -2150,6 +2152,7 @@ class Rps_PayloadSymbol : public Rps_Payload
   std::atomic<bool> symb_is_weak;
   static std::recursive_mutex symb_tablemtx;
   static std::map<std::string,Rps_PayloadSymbol*> symb_table;
+  static std::unordered_map<std::string,Rps_ObjectRef*> symb_hardcoded_hashtable;
 protected:
   Rps_PayloadSymbol(Rps_ObjectZone*owner);
   Rps_PayloadSymbol(Rps_ObjectRef obr) :
@@ -2266,6 +2269,11 @@ extern "C" bool rps_remove_root_object (const Rps_ObjectRef);
 extern "C" bool rps_is_root_object (const Rps_ObjectRef);
 extern "C" std::set<Rps_ObjectRef> rps_set_root_objects(void);
 extern "C" unsigned rps_nb_root_objects(void);
+extern "C" void rps_initialize_roots_after_loading (Rps_Loader*ld);
+extern "C" void rps_initialize_symbols_after_loading (Rps_Loader*ld);
+
+extern "C" unsigned rps_hardcoded_number_of_roots(void);
+extern "C" unsigned rps_hardcoded_number_of_symbols(void);
 
 ////////////////
 

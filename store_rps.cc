@@ -1212,7 +1212,7 @@ Rps_Dumper::write_generated_names_file(void)
          << "#undef RPS_NB_NAMED_ROOT_OB" << std::endl
          << "#define RPS_NB_NAMED_ROOT_OB " << namecnt << std::endl;
   *pouts << std::endl
-         << "#undef RPS_INSTALL_ROOT_OB" << std::endl;
+         << "#undef RPS_INSTALL_NAMED_ROOT_OB" << std::endl;
   *pouts << "/// end of RefPerSys roots file " << rootpathstr << std::endl;
 } // end Rps_Dumper::write_generated_roots_file
 
@@ -1594,7 +1594,6 @@ void Rps_Loader::load_install_roots(void)
   }
 } // end Rps_Loader::load_install_roots
 
-
 void rps_load_from (const std::string& dirpath)
 {
   Rps_Loader loader(dirpath);
@@ -1603,6 +1602,8 @@ void rps_load_from (const std::string& dirpath)
       loader.parse_manifest_file();
       loader.load_all_state_files();
       loader.load_install_roots();
+      rps_initialize_roots_after_loading(&loader);
+      rps_initialize_symbols_after_loading(&loader);
     }
   catch (const std::exception& exc)
     {

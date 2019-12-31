@@ -337,6 +337,7 @@ Rps_ObjectZone::autocomplete_oid(const char*prefix,
 
 static std::set<Rps_ObjectRef> rps_object_root_set;
 static std::mutex rps_object_root_mtx;
+static std::unordered_map<Rps_Id,Rps_ObjectRef*,Rps_Id::Hasher> rps_object_global_root_hashtable;
 
 void
 rps_each_root_object (const std::function<void(Rps_ObjectRef)>&fun)
@@ -353,6 +354,11 @@ rps_add_root_object (const Rps_ObjectRef ob)
   if (!ob) return;
   std::lock_guard<std::mutex> gu(rps_object_root_mtx);
   rps_object_root_set.insert(ob);
+  {
+    auto rootit = rps_object_global_root_hashtable.find(ob->oid());
+    if (RPS_UNLIKELY(rootit != rps_object_global_root_hashtable.end()))
+      *(rootit->second) = ob;
+  }
 } // end rps_add_root_object
 
 
@@ -364,9 +370,34 @@ rps_remove_root_object (const Rps_ObjectRef ob)
   auto it = rps_object_root_set.find(ob);
   if (it == rps_object_root_set.end())
     return false;
+  {
+    auto rootit = rps_object_global_root_hashtable.find(ob->oid());
+    if (RPS_UNLIKELY(rootit != rps_object_global_root_hashtable.end()))
+      (*(rootit->second)) = Rps_ObjectRef(nullptr);
+  }
   rps_object_root_set.erase(it);
   return true;
 } // end rps_remove_root_object
+
+void
+rps_initialize_roots_after_loading (Rps_Loader*ld)
+{
+  RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::mutex> gu(rps_object_root_mtx);
+  rps_object_global_root_hashtable.max_load_factor(3.5);
+  rps_object_global_root_hashtable.reserve(5*rps_hardcoded_number_of_roots()/4+3);
+#define RPS_INSTALL_ROOT_OB(Oid) {		\
+    const char*end##Oid = nullptr;		\
+    bool ok##Oid = false;			\
+    Rps_Id id##Oid(#Oid, &end##Oid, &ok##Oid);	\
+    RPS_ASSERT (end##Oid && !*end##Oid);	\
+    RPS_ASSERT (ok##Oid);			\
+    RPS_ASSERT (id##Oid.valid());		\
+    rps_object_global_root_hashtable[id##Oid]	\
+      = &RPS_ROOT_OB(Oid);			\
+  };
+#include "generated/rps-roots.hh"
+} // end of rps_initialize_roots_after_loading
 
 bool rps_is_root_object (const Rps_ObjectRef ob)
 {
@@ -474,6 +505,7 @@ Rps_PayloadClassInfo::put_symbname(Rps_ObjectRef obr)
     }
 } // end Rps_PayloadClassInfo::put_symbname
 
+
 /***************** mutable set of objects payload **********/
 
 void
@@ -563,6 +595,21 @@ Rps_PayloadSpace::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 
 std::recursive_mutex Rps_PayloadSymbol::symb_tablemtx;
 std::map<std::string,Rps_PayloadSymbol*> Rps_PayloadSymbol::symb_table;
+std::unordered_map<std::string,Rps_ObjectRef*> Rps_PayloadSymbol::symb_hardcoded_hashtable;
+
+void
+rps_initialize_symbols_after_loading(Rps_Loader*ld)
+{
+  RPS_ASSERT(ld != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(Rps_PayloadSymbol::symb_tablemtx);
+  Rps_PayloadSymbol::symb_hardcoded_hashtable.max_load_factor(2.5);
+  Rps_PayloadSymbol::symb_hardcoded_hashtable.reserve(5*rps_hardcoded_number_of_symbols()/4+3);
+#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name) {		\
+    Rps_PayloadSymbol::symb_hardcoded_hashtable[#Name]	\
+      = &RPS_SYMB_OB(Name);				\
+  };
+#include "generated/rps-names.hh"
+} // end of rps_initialize_symbols_after_loading
 
 bool
 Rps_PayloadSymbol::valid_name(const char*str)
@@ -684,6 +731,13 @@ Rps_PayloadSymbol::register_name(std::string name, Rps_ObjectRef obj, bool weak)
   paylsymb->symb_name = name;
   symb_table.insert({paylsymb->symb_name, paylsymb});
   paylsymb->symb_is_weak.store(weak);
+  {
+    auto symbit = symb_hardcoded_hashtable.find(name);
+    if (RPS_UNLIKELY(symbit != symb_hardcoded_hashtable.end()))
+      {
+        *(symbit->second) = obj;
+      }
+  }
   RPS_INFORMOUT("Rps_PayloadSymbol::register_name name=" << name << " obj=" << obj->oid().to_string()
                 << " " << (weak?"weak":"strong"));
   return true;
@@ -706,6 +760,13 @@ bool Rps_PayloadSymbol::forget_name(std::string name)
     return false;
   obj->clear_payload();
   symb_table.erase(it);
+  {
+    auto symbit = symb_hardcoded_hashtable.find(name);
+    if (RPS_UNLIKELY(symbit != symb_hardcoded_hashtable.end()))
+      {
+        *(symbit->second) = Rps_ObjectRef(nullptr);
+      }
+  }
   return true;
 } // end Rps_PayloadSymbol::forget_name
 
