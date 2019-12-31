@@ -375,6 +375,28 @@ protected slots:
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// The menu bar for RpsQWindow.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQWindowMenuBar
+{
+public:
+  RpsQWindowMenuBar(RpsQWindow* parent);
+  ~RpsQWindowMenuBar();
+
+private:
+  RpsQWindow* m_parent;
+  RpsQMenuHelpAbout* m_menu_help_about; // TODO: replace with QList or std::vector
+  RpsQMenuHelpDebug* m_menu_help_debug;
+  RpsQMenuAppQuit* m_menu_app_quit;
+  RpsQMenuAppExit* m_menu_app_exit;
+  RpsQMenuAppClose* m_menu_app_close;
+  RpsQMenuAppDump* m_menu_app_dump;
+  RpsQMenuAppGC* m_menu_app_gc;
+  RpsQMenuAppNew* m_menu_app_new;
+};
+
+
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
 class RpsQWindow : public QMainWindow
@@ -399,14 +421,7 @@ private:
 private:
   friend class RpsQMenuHelpDebug;
 
-  RpsQMenuHelpAbout* m_menu_help_about; // TODO: replace with QList or std::vector
-  RpsQMenuHelpDebug* m_menu_help_debug;
-  RpsQMenuAppQuit* m_menu_app_quit;
-  RpsQMenuAppExit* m_menu_app_exit;
-  RpsQMenuAppClose* m_menu_app_close;
-  RpsQMenuAppDump* m_menu_app_dump;
-  RpsQMenuAppGC* m_menu_app_gc;
-  RpsQMenuAppNew* m_menu_app_new;
+  RpsQWindowMenuBar m_menu_bar;
   QPlainTextEdit m_debug_widget;
   QTimer m_debug_timer;
 

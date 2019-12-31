@@ -52,48 +52,19 @@ RpsQPixMap* RpsQPixMap::m_instance = nullptr;
 
 
 RpsQWindow::RpsQWindow (QWidget *parent)
-  : QMainWindow (parent)
-{
-  this->setupAppMenu ();
-  this->setupHelpMenu ();
+  : QMainWindow(parent),
+    m_menu_bar(this)
 
+{
   qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
 
   auto vbox = new QVBoxLayout();
   vbox->setSpacing(1);
-
-  menuBar ()->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding);
-  vbox->addWidget(menuBar ());
+  vbox->addWidget(menuBar());
 
   setup_debug_widget();
-  vbox->addWidget (&m_debug_widget);
+  vbox->addWidget(&m_debug_widget);
 } // end RpsQWindow::RpsQWindow
-
-
-void
-RpsQWindow::setupAppMenu()
-{
-  QMenu *app_menu;
-  app_menu = menuBar ()->addMenu ("&App");
-
-  m_menu_app_dump = new RpsQMenuAppDump(this);
-  m_menu_app_gc = new RpsQMenuAppGC(this);
-  m_menu_app_new = new RpsQMenuAppNew(this);
-
-  app_menu->addSeparator ();
-
-  m_menu_app_close = new RpsQMenuAppClose(this);
-  m_menu_app_quit = new RpsQMenuAppQuit(this);
-  m_menu_app_exit = new RpsQMenuAppExit(this);
-} // end RpsQWindow::setupAppMenu
-
-
-void RpsQWindow::setupHelpMenu()
-{
-  menuBar ()->addMenu ("&Help");
-  m_menu_help_about = new RpsQMenuHelpAbout(this);
-  m_menu_help_debug = new RpsQMenuHelpDebug(this);
-} // end  RpsQWindow::setupHelpMenu
 
 
 void
@@ -234,6 +205,42 @@ void RpsQMenuAppGC::on_trigger()
 void RpsQMenuAppNew::on_trigger()
 {
   window()->application()->add_new_window();
+}
+
+
+RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
+  : m_parent(parent)
+{
+  auto app_menu = m_parent->menuBar()->addMenu("&App");
+  m_menu_app_dump = new RpsQMenuAppDump(m_parent);
+  m_menu_app_gc = new RpsQMenuAppGC(m_parent);
+  m_menu_app_new = new RpsQMenuAppNew(m_parent);
+  app_menu->addSeparator();
+  m_menu_app_close = new RpsQMenuAppClose(m_parent);
+  m_menu_app_quit = new RpsQMenuAppQuit(m_parent);
+  m_menu_app_exit = new RpsQMenuAppExit(m_parent);
+
+  m_parent->menuBar()->addMenu("&Help");
+  m_menu_help_about = new RpsQMenuHelpAbout(m_parent);
+  m_menu_help_debug = new RpsQMenuHelpDebug(m_parent);
+
+  m_parent->menuBar()->setSizePolicy(
+    QSizePolicy::Expanding, 
+    QSizePolicy::Expanding
+  );
+}
+ 
+
+RpsQWindowMenuBar::~RpsQWindowMenuBar()
+{
+  delete m_menu_help_about; // TODO: use smart pointers along with std::vector
+  delete m_menu_help_debug;
+  delete m_menu_app_quit;
+  delete m_menu_app_exit;
+  delete m_menu_app_close;
+  delete m_menu_app_dump;
+  delete m_menu_app_gc;
+  delete m_menu_app_new;
 }
 
 
