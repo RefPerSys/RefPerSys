@@ -413,8 +413,6 @@ public:
   }
 
 private:
-  void setupAppMenu();
-  void setupHelpMenu();
   void setup_debug_widget();
   void setup_debug_timer();
 
