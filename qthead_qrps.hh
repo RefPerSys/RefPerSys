@@ -325,6 +325,30 @@ protected slots:
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// The App | New Window menu action for RpsQWindow.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQMenuAppNew : public RpsQMenuAction
+{
+  Q_OBJECT
+public:
+  /// Constructor
+  inline RpsQMenuAppNew(RpsQWindow* parent)
+    : RpsQMenuAction(
+        parent,
+        RpsQWindowMenu::APP,
+        "RPS_ICON_NEW",
+        "New &Window",
+        "CTRL+W"
+      )
+  { }
+
+protected slots:
+  /// Overridden slot for the trigger action.
+  void on_trigger();
+};
+
+
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
 class RpsQWindow : public QMainWindow
@@ -347,15 +371,14 @@ private:
   RpsQMenuAppClose* m_menu_app_close;
   RpsQMenuAppDump* m_menu_app_dump;
   RpsQMenuAppGC* m_menu_app_gc;
+  RpsQMenuAppNew* m_menu_app_new;
   QPlainTextEdit m_debug_widget;
   QTimer m_debug_timer;
 
 signals:
 
 private slots:
-  void onMenuQuit();
   void onMenuDebug();
-  void onMenuClose();
   void update_debug_widget();
 };				// end of RpsQWindow
 
