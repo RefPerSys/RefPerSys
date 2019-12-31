@@ -100,6 +100,21 @@ Rps_GarbageCollector::mark_gcroots(void)
     obr.gc_mark(*this);
     (*pnbroots)++;
   });
+  ///
+  /// mark the hardcoded global roots
+#define RPS_INSTALL_ROOT_OB(Oid)    {           \
+   if (RPS_ROOT_OB(Oid))                        \
+     { RPS_ROOT_OB(Oid).gc_mark(*this); };	\
+  };
+#include "generated/rps-roots.hh"
+  ///
+  /// mark the hardcoded global symbols
+#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam)  {	\
+   if (RPS_SYMB_OB(Nam))			\
+     { RPS_SYMB_OB(Nam).gc_mark(*this); };	\
+};
+#include "generated/rps-names.hh"
+  ///
   if (gc_rootmarkers)
     nbroots += gc_rootmarkers(this);
   gc_nbroots = nbroots;

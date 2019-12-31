@@ -2295,14 +2295,19 @@ extern "C" void rps_print_types_info (void);
 #include "inline_rps.hh"
 
 
-/// each root object is also a public variable
-#define RPS_INSTALL_ROOT_OB(Oid) extern "C" Rps_ObjectRef rps_rootob##Oid;
-#include "generated/rps-roots.hh"
-
-
-
 /// C++ code can refer to root objects
 #define RPS_ROOT_OB(Oid) rps_rootob##Oid
+
+// C++ code can refer to named symbols
+#define RPS_SYMB_OB(Nam) rps_symbob_##Nam
+
+/// each root object is also a public variable
+#define RPS_INSTALL_ROOT_OB(Oid) extern "C" Rps_ObjectRef RPS_ROOT_OB(Oid);
+#include "generated/rps-roots.hh"
+
+// each named global symbol is also a public variable
+#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam) extern "C" Rps_ObjectRef RPS_SYMB_OB(Nam);
+#include "generated/rps-names.hh"
 
 #endif /*REFPERSYS_INCLUDED*/
 // end of file refpersys.hh */

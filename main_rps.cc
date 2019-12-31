@@ -635,8 +635,11 @@ rps_fatal_stop_at (const char *filnam, int lin)
 } // end rps_fatal_stop_at
 
 /// each root object is also a public variable, define them
-#define RPS_INSTALL_ROOT_OB(Oid) Rps_ObjectRef rps_rootob##Oid;
+#define RPS_INSTALL_ROOT_OB(Oid) Rps_ObjectRef RPS_ROOT_OB(Oid);
 #include "generated/rps-roots.hh"
 
+/// each global symbol is also a public variable, define them
+#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name) Rps_ObjectRef RPS_SYMB_OB(Name);
+#include "generated/rps-names.hh"
 
 /// end of file main_rps.cc

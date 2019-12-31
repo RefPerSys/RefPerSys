@@ -225,11 +225,11 @@ RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
   m_menu_help_debug = new RpsQMenuHelpDebug(m_parent);
 
   m_parent->menuBar()->setSizePolicy(
-    QSizePolicy::Expanding, 
+    QSizePolicy::Expanding,
     QSizePolicy::Expanding
   );
 }
- 
+
 
 RpsQWindowMenuBar::~RpsQWindowMenuBar()
 {
