@@ -254,6 +254,30 @@ protected slots:
 
 
 ///////////////////////////////////////////////////////////////////////////////
+/// The App | Close menu action for RpsQWindow.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQMenuAppClose : public RpsQMenuAction
+{
+  Q_OBJECT
+public:
+  /// Constructor
+  inline RpsQMenuAppClose(RpsQWindow* parent)
+    : RpsQMenuAction(
+        parent,
+        RpsQWindowMenu::APP,
+        "RPS_ICON_CLOSE",
+        "&Close",
+        "CTRL+C"
+      )
+  { }
+
+protected slots:
+  /// Overridden slot for the trigger action.
+  void on_trigger();
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
 /// The App | Dump menu action for RpsQWindow.
 //////////////////////////////////////////////////////////////////////////////
 class RpsQMenuAppDump : public RpsQMenuAction
@@ -320,6 +344,7 @@ private:
   RpsQMenuHelpAbout* m_menu_help_about; // TODO: replace with QList or std::vector
   RpsQMenuAppQuit* m_menu_app_quit;
   RpsQMenuAppExit* m_menu_app_exit;
+  RpsQMenuAppClose* m_menu_app_close;
   RpsQMenuAppDump* m_menu_app_dump;
   RpsQMenuAppGC* m_menu_app_gc;
   QPlainTextEdit m_debug_widget;

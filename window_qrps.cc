@@ -74,12 +74,9 @@ void
 RpsQWindow::setupAppMenu()
 {
   auto pixmap = RpsQPixMap::instance();
-
-  QAction *close = new QAction(pixmap->get("RPS_ICON_CLOSE"), "&Close", this);
   QAction *newin = new QAction(pixmap->get("RPS_ICON_NEW"), "New &Window", this);
 
   newin->setShortcut (tr ("CTRL+W")); //TODO: doesn't CTRL+N seem better?
-  close->setShortcut (tr ("CTRL+C"));
 
   QMenu *app_menu;
   app_menu = menuBar ()->addMenu ("&App");
@@ -89,15 +86,14 @@ RpsQWindow::setupAppMenu()
 
   app_menu->addAction (newin);
   app_menu->addSeparator ();
-  app_menu->addAction (close);
 
+  m_menu_app_close = new RpsQMenuAppClose(this);
   m_menu_app_quit = new RpsQMenuAppQuit(this);
   m_menu_app_exit = new RpsQMenuAppExit(this);
 
   connect (newin, &QAction::triggered,
            dynamic_cast<RpsQApplication*>(RpsQApplication::instance()),
            &RpsQApplication::add_new_window);
-  connect (close, &QAction::triggered, this, &RpsQWindow::onMenuClose);
 } // end RpsQWindow::setupAppMenu
 
 
@@ -243,6 +239,27 @@ void RpsQMenuAppExit::on_trigger()
 {
   rps_dump_into();
   QApplication::quit();
+}
+
+
+void RpsQMenuAppClose::on_trigger()
+{
+  auto app = dynamic_cast<RpsQApplication*>(RpsQApplication::instance());
+
+  if (app->getWindowCount() > 1)
+    {
+      app->lowerWindowCount();
+      window()->close();
+    }
+  else
+    {
+      auto msg = QString("Are you sure you want to quit without dumping?");
+      auto btn = QMessageBox::Yes | QMessageBox::No;
+      auto reply = QMessageBox::question(window(), "RefPerSys", msg, btn);
+
+      if (reply == QMessageBox::Yes)
+        QApplication::quit();
+    }
 }
 
 
