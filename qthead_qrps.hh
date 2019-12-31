@@ -206,6 +206,32 @@ protected slots:
 
 
 ///////////////////////////////////////////////////////////////////////////////
+/// The Help | Debug menu action for RpsQWindow.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQMenuHelpDebug : public RpsQMenuAction
+{
+  Q_OBJECT
+public:
+  /// Constructor
+  inline RpsQMenuHelpDebug(RpsQWindow* parent)
+    : RpsQMenuAction(
+        parent,
+        RpsQWindowMenu::HELP,
+        "RPS_ICON_DEBUG",
+        "&Debug",
+        "CTRL+D"
+      )
+  { }
+
+protected slots:
+  /// Overridden slot for the trigger action.
+  void on_trigger();
+};
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
 /// The App | Quit menu action for RpsQWindow.
 //////////////////////////////////////////////////////////////////////////////
 class RpsQMenuAppQuit : public RpsQMenuAction
@@ -371,7 +397,10 @@ private:
   void setup_debug_timer();
 
 private:
+  friend class RpsQMenuHelpDebug;
+
   RpsQMenuHelpAbout* m_menu_help_about; // TODO: replace with QList or std::vector
+  RpsQMenuHelpDebug* m_menu_help_debug;
   RpsQMenuAppQuit* m_menu_app_quit;
   RpsQMenuAppExit* m_menu_app_exit;
   RpsQMenuAppClose* m_menu_app_close;
@@ -384,7 +413,6 @@ private:
 signals:
 
 private slots:
-  void onMenuDebug();
   void update_debug_widget();
 };				// end of RpsQWindow
 

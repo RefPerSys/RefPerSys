@@ -90,15 +90,9 @@ RpsQWindow::setupAppMenu()
 
 void RpsQWindow::setupHelpMenu()
 {
-  QPixmap debug_px ("debug_icon.png");
-  QAction *debug_ax = new QAction (debug_px, "&Debug", this);
-  QMenu *help_menu;
-  help_menu = menuBar ()->addMenu ("&Help");
-
+  menuBar ()->addMenu ("&Help");
   m_menu_help_about = new RpsQMenuHelpAbout(this);
-
-  help_menu->addAction (debug_ax);
-  connect (debug_ax, &QAction::triggered, this, &RpsQWindow::onMenuDebug);
+  m_menu_help_debug = new RpsQMenuHelpDebug(this);
 } // end  RpsQWindow::setupHelpMenu
 
 
@@ -118,14 +112,6 @@ RpsQWindow::setup_debug_timer()
 {
   connect(&m_debug_timer, SIGNAL(timeout()), this, SLOT(update_debug_widget()));
 }
-
-
-void
-RpsQWindow::onMenuDebug()
-{
-  m_debug_timer.start(1000);
-  update_debug_widget();
-} // end RpsQWindow::onMenuDebug
 
 
 void
@@ -183,6 +169,14 @@ void RpsQMenuHelpAbout::on_trigger()
       << "\n\nSee " << RpsColophon::website();
 
   QMessageBox::information (window(), "About RefPerSys", msg.str().c_str());
+}
+
+
+void RpsQMenuHelpDebug::on_trigger()
+{
+  auto wnd = window();
+  wnd->m_debug_timer.start(1000);
+  wnd->update_debug_widget();
 }
 
 
