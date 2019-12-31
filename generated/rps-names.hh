@@ -28,5 +28,5 @@ RPS_INSTALL_NAMED_ROOT_OB(_9uwZtDshW4401x6MsY,space)
 #undef RPS_NB_NAMED_ROOT_OB
 #define RPS_NB_NAMED_ROOT_OB 4
 
-#undef RPS_INSTALL_ROOT_OB
+#undef RPS_INSTALL_NAMED_ROOT_OB
 /// end of RefPerSys roots file generated/rps-names.hh
