@@ -17,15 +17,37 @@
 //!! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {
  "format" : "RefPerSysFormat2019A",
- "globalnames" : [],
+ "globalnames" : 
+ [
+  {
+   "nam" : "symbol",
+   "obj" : "_3Q3hJsSgCDN03GTYW5"
+  },
+  {
+   "nam" : "class",
+   "obj" : "_6fmq7pZkmNd03UyPuO"
+  },
+  {
+   "nam" : "object",
+   "obj" : "_7X9eGs8601M021nMue"
+  },
+  {
+   "nam" : "space",
+   "obj" : "_9uwZtDshW4401x6MsY"
+  }
+ ],
  "globalroots" : 
  [
   "_2i66FFjmS7n03HNNBx",
   "_36I1BY2NetN03WjrOv",
+  "_3Q3hJsSgCDN03GTYW5",
   "_41OFI3r0S1t03qdB2E",
-  "_5yhJGgxLwLp00X0xEQ"
+  "_5yhJGgxLwLp00X0xEQ",
+  "_6fmq7pZkmNd03UyPuO",
+  "_7X9eGs8601M021nMue",
+  "_9uwZtDshW4401x6MsY"
  ],
- "origitid" : "03d6b914d8c166fd35841262e5469d4dd45e0283+",
+ "origitid" : "ef0de396910c5864141e9f0428674a4689b101a7+",
  "plugins" : [],
  "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }

@@ -20,9 +20,13 @@
 #error RPS_INSTALL_NAMED_ROOT_OB(Oid,Name) macro undefined
 #endif /*undefined RPS_INSTALL_NAMED_ROOT_OB*/
 
+RPS_INSTALL_NAMED_ROOT_OB(_3Q3hJsSgCDN03GTYW5,symbol)
+RPS_INSTALL_NAMED_ROOT_OB(_6fmq7pZkmNd03UyPuO,class)
+RPS_INSTALL_NAMED_ROOT_OB(_7X9eGs8601M021nMue,object)
+RPS_INSTALL_NAMED_ROOT_OB(_9uwZtDshW4401x6MsY,space)
 
 #undef RPS_NB_NAMED_ROOT_OB
-#define RPS_NB_NAMED_ROOT_OB 0
+#define RPS_NB_NAMED_ROOT_OB 4
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-names.hh
