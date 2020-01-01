@@ -582,6 +582,7 @@ public:
   inline Rps_Value (double d, Rps_DoubleTag);
   inline Rps_Value (const Rps_ZoneValue*ptr, Rps_ValPtrTag);
   inline Rps_Value (const void*ptr, const Rps_PayloadSymbol*symb);
+  inline Rps_Value (const void*ptr, const Rps_CallFrame*cframe);
   Rps_Value(const Json::Value &hjv, Rps_Loader*ld); // in store_rps.cc
   /// C++ rule of five
   inline Rps_Value(const Rps_Value& other);
@@ -1030,23 +1031,23 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph);
   Rps_BackTrace_Helper(__FILE__,__LINE__,(Skip),(Name))
 
 ////////////////////////////////////////////////////// garbage collector
-extern "C" void rps_garbage_collect(void);
+extern "C" void rps_garbage_collect(std::function<void(Rps_GarbageCollector*)>* fun=nullptr);
 class Rps_GarbageCollector
 {
-  friend void rps_garbage_collect(void);
+  friend void rps_garbage_collect(std::function<void(Rps_GarbageCollector*)>* fun);
   static std::atomic<Rps_GarbageCollector*> gc_this;
   static std::atomic<uint64_t> gc_count;
   friend class Rps_QuasiZone;
   std::mutex gc_mtx;
   std::atomic<bool> gc_running;
-  const std::function<unsigned(Rps_GarbageCollector*)> gc_rootmarkers;
+  const std::function<void(Rps_GarbageCollector*)> gc_rootmarkers;
   std::deque<Rps_ObjectRef> gc_obscanque;
   uint64_t gc_nbscan;
   uint64_t gc_nbmark;
   uint64_t gc_nbdelete;
   uint64_t gc_nbroots;
 private:
-  Rps_GarbageCollector(const std::function<unsigned(Rps_GarbageCollector*)> &rootmarkers=nullptr);
+  Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers=nullptr);
   ~Rps_GarbageCollector();
   void run_gc(void);
   void mark_gcroots(void);
@@ -1070,6 +1071,9 @@ public:
   void mark_obj(Rps_ObjectZone* ob);
   void mark_obj(Rps_ObjectRef ob);
   void mark_value(Rps_Value val, unsigned depth=0);
+  inline void mark_root_value(Rps_Value val);
+  inline void mark_root_objectref(Rps_ObjectRef obr);
+  inline void mark_call_stack(const Rps_CallFrame*topframe);
 };				// end class Rps_GarbageCollector
 
 ////////////////////////////////////////////////////// quasi zones
@@ -1120,6 +1124,11 @@ public:
       memset((void*)&cfram_data, 0, cfram_size*sizeof(void*));
   };
   void gc_mark_frame(Rps_GarbageCollector* gc) const;
+  Rps_CallFrame*previous_call_frame(void) const
+  {
+    return cfram_prev;
+  };
+
 };				// end class Rps_CallFrame
 
 #define RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,...)			\
@@ -1128,8 +1137,7 @@ public:									\
 static constexpr unsigned length##Lin =					\
   sizeof(struct {__VA_ARGS__; }) / sizeof(void*);			\
  Rps_FrameAt##Lin() : Rps_CallFrame(length##Lin,(Descr),(Prev))		\
-    {									\
-    };									\
+    { };				       				\
   __VA_ARGS__;								\
   } _;
 #define RPS_LOCALFRAME_AT(Lin,Descr,Prev,...) \
@@ -2378,7 +2386,6 @@ extern "C" bool rps_is_dumpable_value(Rps_Dumper*, const Rps_Value val);
 
 extern "C" void rps_load_from (const std::string& dirpath); // in store_rps.cc
 
-extern "C" void rps_garbage_collect (void);
 
 extern "C" void rps_print_types_info (void);
 #include "inline_rps.hh"

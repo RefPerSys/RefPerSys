@@ -41,7 +41,7 @@ const char rps_garbcoll_date[]= __DATE__;
 std::atomic<Rps_GarbageCollector*> Rps_GarbageCollector::gc_this;
 std::atomic<uint64_t> Rps_GarbageCollector::gc_count;
 
-Rps_GarbageCollector::Rps_GarbageCollector(const std::function<unsigned(Rps_GarbageCollector*)> &rootmarkers) :
+Rps_GarbageCollector::Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers) :
   gc_mtx(), gc_running(false), gc_rootmarkers(rootmarkers),
   gc_obscanque(), gc_nbscan(0), gc_nbmark(0), gc_nbdelete(0)
 {
@@ -63,17 +63,32 @@ void
 Rps_CallFrame::gc_mark_frame(Rps_GarbageCollector* gc) const
 {
   RPS_ASSERT(gc != nullptr);
-#warning Rps_CallFrame::gc_mark_frame unimplemented
-  RPS_FATAL(" Rps_CallFrame::gc_mark_frame unimplemented this@%p", this);
+  if (!cfram_descr.is_empty() && cfram_descr)
+    cfram_descr->gc_mark(*gc);
+  if (!cfram_state.is_empty() && cfram_state.is_ptr())
+    cfram_state.as_ptr()->gc_mark(*gc,0);
+  if (cfram_marker)
+    cfram_marker(gc);
+  unsigned siz=cfram_size;
+  for (unsigned ix=0; ix<siz; ix++)
+    {
+      Rps_Value curval(cfram_data[ix], this);
+      if (!curval.is_empty() && curval.is_ptr())
+        curval.as_ptr()->gc_mark(*gc,0);
+    }
 } // end Rps_CallFrame::gc_mark_frame
 
 void
-rps_garbage_collect (void)
+rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
 {
   RPS_ASSERT(Rps_GarbageCollector::gc_this.load() == nullptr);
   double startrealt = rps_monotonic_real_time();
   double startcput = rps_process_cpu_time();
-  Rps_GarbageCollector the_gc;
+  Rps_GarbageCollector the_gc([=](Rps_GarbageCollector*gc)
+  {
+    if (pfun)
+      (*pfun)(gc);
+  });
   auto gcnt = Rps_GarbageCollector::gc_count.load();
   RPS_INFORM("rps_garbage_collect before run; count#%ld",
              gcnt);
@@ -101,31 +116,27 @@ Rps_GarbageCollector::mark_obj(Rps_ObjectRef ob)
 void
 Rps_GarbageCollector::mark_gcroots(void)
 {
-  unsigned nbroots=0;
-  unsigned*pnbroots= &nbroots;
   rps_each_root_object([=](Rps_ObjectRef obr)
   {
-    obr.gc_mark(*this);
-    (*pnbroots)++;
+    this->mark_root_objectref(obr);
   });
   ///
   /// mark the hardcoded global roots
-#define RPS_INSTALL_ROOT_OB(Oid)    {           \
-   if (RPS_ROOT_OB(Oid))                        \
-     { RPS_ROOT_OB(Oid).gc_mark(*this); };	\
+#define RPS_INSTALL_ROOT_OB(Oid)    {			\
+   if (RPS_ROOT_OB(Oid))				\
+     { this->mark_root_objectref(RPS_ROOT_OB(Oid)); };	\
   };
 #include "generated/rps-roots.hh"
   ///
   /// mark the hardcoded global symbols
 #define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam)  {	\
    if (RPS_SYMB_OB(Nam))			\
-     { RPS_SYMB_OB(Nam).gc_mark(*this); };	\
+     { this->mark_root_objectref(RPS_SYMB_OB(Nam)); };	\
 };
 #include "generated/rps-names.hh"
   ///
   if (gc_rootmarkers)
-    nbroots += gc_rootmarkers(this);
-  gc_nbroots = nbroots;
+    gc_rootmarkers(this);
 } // end Rps_GarbageCollector::mark_gcroots
 
 

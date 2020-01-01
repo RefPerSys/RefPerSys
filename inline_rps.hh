@@ -123,6 +123,11 @@ Rps_Value::Rps_Value(const void*ptr, const Rps_PayloadSymbol*symb) : _wptr(ptr)
   RPS_ASSERT(symb != nullptr && symb->stored_type() == Rps_Type::PaylSymbol);
 };
 
+Rps_Value::Rps_Value(const void*ptr, const Rps_CallFrame*cframe) : _wptr(ptr)
+{
+  RPS_ASSERT(cframe != nullptr && cframe->stored_type() == Rps_Type::CallFrame);
+};
+
 Rps_Value::~Rps_Value()
 {
   _wptr = nullptr;
@@ -1089,7 +1094,38 @@ Rps_PayloadVectOb::Rps_PayloadVectOb(Rps_ObjectZone*owner, Rps_Loader*ld)
 
 
 
-///// symbol payload, for PaylSymbol
+///// garbage collector
+void
+Rps_GarbageCollector::mark_call_stack(const Rps_CallFrame*topframe)
+{
+  for (const Rps_CallFrame*curframe = topframe;
+       curframe != nullptr;
+       curframe = const_cast<const Rps_CallFrame*>(curframe->previous_call_frame()))
+    {
+      RPS_ASSERT(curframe->stored_type() == Rps_Type::CallFrame);
+      curframe->gc_mark_frame(this);
+    };
+} // end Rps_GarbageCollector::mark_call_stack
+
+void
+Rps_GarbageCollector::mark_root_value(Rps_Value val)
+{
+  if (val.is_ptr())
+    {
+      mark_value(val,0);
+      gc_nbroots++;
+    };
+}      // end Rps_GarbageCollector::mark_root_value
+
+void
+Rps_GarbageCollector::mark_root_objectref(Rps_ObjectRef obr)
+{
+  if (!obr.is_empty())
+    {
+      mark_obj(obr);
+      gc_nbroots++;
+    }
+}      // end Rps_GarbageCollector::mark_root_objectref
 
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh
