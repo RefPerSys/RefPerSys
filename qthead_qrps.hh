@@ -382,18 +382,17 @@ class RpsQWindowMenuBar
 {
 public:
   RpsQWindowMenuBar(RpsQWindow* parent);
-  ~RpsQWindowMenuBar();
 
 private:
   RpsQWindow* m_parent;
-  RpsQMenuHelpAbout* m_menu_help_about; // TODO: replace with QList or std::vector
-  RpsQMenuHelpDebug* m_menu_help_debug;
-  RpsQMenuAppQuit* m_menu_app_quit;
-  RpsQMenuAppExit* m_menu_app_exit;
-  RpsQMenuAppClose* m_menu_app_close;
-  RpsQMenuAppDump* m_menu_app_dump;
-  RpsQMenuAppGC* m_menu_app_gc;
-  RpsQMenuAppNew* m_menu_app_new;
+  std::shared_ptr<RpsQMenuAppDump> m_menu_app_dump;
+  std::shared_ptr<RpsQMenuAppGC> m_menu_app_gc;
+  std::shared_ptr<RpsQMenuAppNew> m_menu_app_new;
+  std::shared_ptr<RpsQMenuAppClose> m_menu_app_close;
+  std::shared_ptr<RpsQMenuAppQuit> m_menu_app_quit;
+  std::shared_ptr<RpsQMenuAppExit> m_menu_app_exit;
+  std::shared_ptr<RpsQMenuHelpAbout> m_menu_help_about;
+  std::shared_ptr<RpsQMenuHelpDebug> m_menu_help_debug;
 };
 
 

@@ -212,37 +212,23 @@ RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
   : m_parent(parent)
 {
   auto app_menu = m_parent->menuBar()->addMenu("&App");
-  m_menu_app_dump = new RpsQMenuAppDump(m_parent);
-  m_menu_app_gc = new RpsQMenuAppGC(m_parent);
-  m_menu_app_new = new RpsQMenuAppNew(m_parent);
+  m_menu_app_dump = std::make_shared<RpsQMenuAppDump>(m_parent);
+  m_menu_app_gc = std::make_shared<RpsQMenuAppGC>(m_parent);
+  m_menu_app_new = std::make_shared<RpsQMenuAppNew>(m_parent);
   app_menu->addSeparator();
-  m_menu_app_close = new RpsQMenuAppClose(m_parent);
-  m_menu_app_quit = new RpsQMenuAppQuit(m_parent);
-  m_menu_app_exit = new RpsQMenuAppExit(m_parent);
+  m_menu_app_close = std::make_shared<RpsQMenuAppClose>(m_parent);
+  m_menu_app_quit = std::make_shared<RpsQMenuAppQuit>(m_parent);
+  m_menu_app_exit = std::make_shared<RpsQMenuAppExit>(m_parent);
 
   m_parent->menuBar()->addMenu("&Help");
-  m_menu_help_about = new RpsQMenuHelpAbout(m_parent);
-  m_menu_help_debug = new RpsQMenuHelpDebug(m_parent);
+  m_menu_help_about = std::make_shared<RpsQMenuHelpAbout>(m_parent);
+  m_menu_help_debug = std::make_shared<RpsQMenuHelpDebug>(m_parent);
 
   m_parent->menuBar()->setSizePolicy(
     QSizePolicy::Expanding,
     QSizePolicy::Expanding
   );
 }
-
-
-RpsQWindowMenuBar::~RpsQWindowMenuBar()
-{
-  delete m_menu_help_about; // TODO: use smart pointers along with std::vector
-  delete m_menu_help_debug;
-  delete m_menu_app_quit;
-  delete m_menu_app_exit;
-  delete m_menu_app_close;
-  delete m_menu_app_dump;
-  delete m_menu_app_gc;
-  delete m_menu_app_new;
-}
-
 
 //////////////////////////////////////// end of file window_qrps.cc
 
