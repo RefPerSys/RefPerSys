@@ -1341,7 +1341,7 @@ public:
 
 //////////////////////////////////////////////////////////// object zones
 typedef Rps_Value rps_magicgetterfun_t(const Rps_Value val, const Rps_ObjectRef obattr);
-#define RPS_GETTERFUN_PREFIX "rpsget_"
+#define RPS_GETTERFUN_PREFIX "rpsget"
 // by convention, the extern "C" getter function inside attribute
 // _3kVHiDzT42h045vHWB would be named rpsget_3kVHiDzT42h045vHWB
 class Rps_Payload;
@@ -1396,6 +1396,12 @@ protected:
     RPS_ASSERT(keyatob);
     RPS_ASSERT(atval);
     ob_attrs.insert({keyatob, atval});
+  };
+  void loader_put_magicattrgetter(Rps_Loader*ld, rps_magicgetterfun_t*mfun)
+  {
+    RPS_ASSERT(ld != nullptr);
+    RPS_ASSERT(mfun != nullptr);
+    ob_magicgetterfun.store(mfun);
   };
   void loader_reserve_comps (Rps_Loader*ld, unsigned nbcomps)
   {

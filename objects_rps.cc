@@ -209,6 +209,11 @@ Rps_ObjectZone::dump_scan_contents(Rps_Dumper*du) const
       if (compv.is_ptr())
         rps_dump_scan_value(du, compv, 0);
     };
+  {
+    rps_magicgetterfun_t*mgfun = ob_magicgetterfun.load();
+    if (mgfun)
+      rps_dump_scan_code_addr(du, reinterpret_cast<const void*>(mgfun));
+  }
   Rps_Payload*payl = ob_payload.load();
   if (payl && payl->owner() == this)
     payl->dump_scan(du);
@@ -224,6 +229,11 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
   RPS_ASSERT(obcla != nullptr);
   json["class"] = rps_dump_json_objectref(du,obcla);
   json["mtime"] = Json::Value (get_mtime());
+  {
+    rps_magicgetterfun_t*mgfun = ob_magicgetterfun.load();
+    if (mgfun)
+      json["magicattr"] = Json::Value(true);
+  }
   if (!ob_attrs.empty())
     {
       Json::Value jattrs(Json::arrayValue);

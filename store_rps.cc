@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2020 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -360,6 +360,24 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                 }
             }
         }
+    }
+  if (objjson.isMember("magicattr"))
+    {
+      std::lock_guard<std::mutex> gu(ld_mtx);
+      char getfunambuf[sizeof(RPS_GETTERFUN_PREFIX)+8+Rps_Id::nbchars];
+      memset(getfunambuf, 0, sizeof(getfunambuf));
+      char obidbuf[32];
+      memset (obidbuf, 0, sizeof(obidbuf));
+      objid.to_cbuf24(obidbuf);
+      strcpy(getfunambuf, RPS_GETTERFUN_PREFIX);
+      strcat(getfunambuf+strlen(RPS_GETTERFUN_PREFIX), obidbuf);
+      RPS_ASSERT(strlen(getfunambuf)<sizeof(getfunambuf)-4);
+      void*funad = dlsym(rps_proghdl, getfunambuf);
+      if (!funad)
+        RPS_FATALOUT("cannot dlsym " << getfunambuf << " for magic attribute getter of objid:" <<  objid
+                     << " lineno:" << lineno << ", spacid:" << spacid
+                     << ":: " << dlerror());
+      obz->loader_put_magicattrgetter(this, reinterpret_cast<rps_magicgetterfun_t*>(funad));
     }
   if (objjson.isMember("payload"))
     {
