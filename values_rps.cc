@@ -441,7 +441,54 @@ Rps_ClosureZone::make(Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec
 } // end ClosureZone::make
 
 
-void Rps_ClosureZone::val_output(std::ostream&out, unsigned int depth) const
+Rps_Value
+Rps_ClosureValue::apply_vect(Rps_CallFrame*callerframe, const std::vector<Rps_Value>& argvec) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  if (is_empty() || !is_closure())
+    return nullptr;
+  Rps_ObjectRef obconn = connob();
+  if (!obconn)
+    return nullptr;
+  auto arity = argvec.size();
+  switch (arity)
+    {
+    case 0:
+      return apply0(callerframe);
+    case 1:
+      return apply1(callerframe, argvec[0]);
+    case 2:
+      return apply2(callerframe, argvec[0], argvec[1]);
+    case 3:
+      return apply3(callerframe, argvec[0], argvec[1], argvec[2]);
+    case 4:
+      return apply4(callerframe, argvec[0], argvec[1], argvec[2], argvec[3]);
+    default:
+    {
+      rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
+      if (!appfun)
+        return nullptr;
+      std::vector<Rps_Value> restvec(arity-4);
+      for (unsigned ix=4; ix<(unsigned)arity; ix++)
+        restvec[ix-4] = argvec[ix];
+      callerframe->set_closure(*this);
+      Rps_Value res= appfun(callerframe,argvec[0], argvec[1], argvec[2], argvec[3], &restvec);
+      callerframe->clear_closure();
+      return res;
+    }
+    }
+} // end Rps_ClosureValue::apply_vect
+
+Rps_Value
+Rps_ClosureValue::apply_ilist(Rps_CallFrame*callerframe, const std::initializer_list<Rps_Value>& argil) const
+{
+  std::vector <Rps_Value> argvec(argil);
+  return apply_vect(callerframe,argvec);
+} // end Rps_ClosureValue::apply_ilist
+
+
+void
+Rps_ClosureZone::val_output(std::ostream&out, unsigned int depth) const
 {
   out << "%" << conn();
   if (depth > Rps_Value::max_output_depth)

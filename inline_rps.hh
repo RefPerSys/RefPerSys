@@ -118,6 +118,11 @@ std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph)
 //////////////////////////////////////////////////////////// values
 Rps_Value::Rps_Value() : _wptr(nullptr) {};
 
+void Rps_Value::clear()
+{
+  _wptr = nullptr;
+};
+
 Rps_Value::Rps_Value(const void*ptr, const Rps_PayloadSymbol*symb) : _wptr(ptr)
 {
   RPS_ASSERT(symb != nullptr && symb->stored_type() == Rps_Type::PaylSymbol);
@@ -1019,6 +1024,267 @@ Rps_ClosureValue::Rps_ClosureValue(const Rps_Value val)
 {
 }; // end Rps_ClosureValue::Rps_ClosureValue dynamic
 
+Rps_ObjectRef
+Rps_ClosureValue::connob(void) const
+{
+  if (is_empty() || !is_closure())
+    return nullptr;
+  return to_closure()->conn();
+};
+
+/////// closure applications
+Rps_Value
+Rps_ClosureValue::apply0(Rps_CallFrame*callerframe) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  if (is_empty() || !is_closure())
+    return nullptr;
+  Rps_ObjectRef obconn = connob();
+  if (!obconn)
+    return nullptr;
+  rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
+  if (!appfun)
+    return nullptr;
+  callerframe->set_closure(*this);
+  Rps_Value res= appfun(callerframe, Rps_Value(nullptr), Rps_Value(nullptr),
+                        Rps_Value(nullptr), Rps_Value(nullptr),
+                        nullptr);
+  callerframe->clear_closure();
+  return res;
+} // end Rps_ClosureValue::apply0
+
+
+Rps_Value
+Rps_ClosureValue::apply1(Rps_CallFrame*callerframe, const Rps_Value arg0) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  if (is_empty() || !is_closure())
+    return nullptr;
+  Rps_ObjectRef obconn = connob();
+  if (!obconn)
+    return nullptr;
+  rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
+  if (!appfun)
+    return nullptr;
+  callerframe->set_closure(*this);
+  Rps_Value res= appfun(callerframe, arg0, Rps_Value(nullptr),
+                        Rps_Value(nullptr), Rps_Value(nullptr),
+                        nullptr);
+  callerframe->clear_closure();
+  return res;
+} // end Rps_ClosureValue::apply1
+
+
+
+Rps_Value
+Rps_ClosureValue::apply2(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                         const Rps_Value arg1) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  if (is_empty() || !is_closure())
+    return nullptr;
+  Rps_ObjectRef obconn = connob();
+  if (!obconn)
+    return nullptr;
+  rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
+  if (!appfun)
+    return nullptr;
+  callerframe->set_closure(*this);
+  Rps_Value res= appfun(callerframe, arg0, arg1,
+                        Rps_Value(nullptr), Rps_Value(nullptr),
+                        nullptr);
+  callerframe->clear_closure();
+  return res;
+} // end Rps_ClosureValue::apply2
+
+
+Rps_Value
+Rps_ClosureValue::apply3(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                         const Rps_Value arg1, const Rps_Value arg2) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  if (is_empty() || !is_closure())
+    return nullptr;
+  Rps_ObjectRef obconn = connob();
+  if (!obconn)
+    return nullptr;
+  rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
+  if (!appfun)
+    return nullptr;
+  callerframe->set_closure(*this);
+  Rps_Value res= appfun(callerframe, arg0, arg1,
+                        arg2, Rps_Value(nullptr),
+                        nullptr);
+  callerframe->clear_closure();
+  return res;
+} // end Rps_ClosureValue::apply3
+
+
+Rps_Value
+Rps_ClosureValue::apply4(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                         const Rps_Value arg1, const Rps_Value arg2,
+                         const Rps_Value arg3) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  if (is_empty() || !is_closure())
+    return nullptr;
+  Rps_ObjectRef obconn = connob();
+  if (!obconn)
+    return nullptr;
+  rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
+  if (!appfun)
+    return nullptr;
+  callerframe->set_closure(*this);
+  Rps_Value res= appfun(callerframe, arg0, arg1,
+                        arg2, arg3,
+                        nullptr);
+  callerframe->clear_closure();
+  return res;
+} // end Rps_ClosureValue::apply4
+
+
+
+Rps_Value
+Rps_ClosureValue::apply5(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                         const Rps_Value arg1, const Rps_Value arg2,
+                         const Rps_Value arg3, const Rps_Value arg4) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  if (is_empty() || !is_closure())
+    return nullptr;
+  Rps_ObjectRef obconn = connob();
+  if (!obconn)
+    return nullptr;
+  rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
+  if (!appfun)
+    return nullptr;
+  callerframe->set_closure(*this);
+  std::vector<Rps_Value> restvec(1);
+  restvec[0] = arg4;
+  Rps_Value res= appfun(callerframe, arg0, arg1,
+                        arg2, arg3,
+                        &restvec);
+  callerframe->clear_closure();
+  return res;
+} // end Rps_ClosureValue::apply5
+
+
+Rps_Value
+Rps_ClosureValue::apply6(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                         const Rps_Value arg1, const Rps_Value arg2,
+                         const Rps_Value arg3, const Rps_Value arg4,
+                         const Rps_Value arg5) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  if (is_empty() || !is_closure())
+    return nullptr;
+  Rps_ObjectRef obconn = connob();
+  if (!obconn)
+    return nullptr;
+  rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
+  if (!appfun)
+    return nullptr;
+  callerframe->set_closure(*this);
+  std::vector<Rps_Value> restvec(2);
+  restvec[0] = arg4;
+  restvec[1] = arg5;
+  Rps_Value res= appfun(callerframe, arg0, arg1,
+                        arg2, arg3,
+                        &restvec);
+  callerframe->clear_closure();
+  return res;
+} // end Rps_ClosureValue::apply6
+
+
+
+Rps_Value
+Rps_ClosureValue::apply7(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                         const Rps_Value arg1, const Rps_Value arg2,
+                         const Rps_Value arg3, const Rps_Value arg4,
+                         const Rps_Value arg5, const Rps_Value arg6) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  if (is_empty() || !is_closure())
+    return nullptr;
+  Rps_ObjectRef obconn = connob();
+  if (!obconn)
+    return nullptr;
+  rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
+  if (!appfun)
+    return nullptr;
+  callerframe->set_closure(*this);
+  std::vector<Rps_Value> restvec(3);
+  restvec[0] = arg4;
+  restvec[1] = arg5;
+  restvec[2] = arg6;
+  Rps_Value res= appfun(callerframe, arg0, arg1,
+                        arg2, arg3,
+                        &restvec);
+  callerframe->clear_closure();
+  return res;
+} // end Rps_ClosureValue::apply7
+
+
+
+Rps_Value
+Rps_ClosureValue::apply8(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                         const Rps_Value arg1, const Rps_Value arg2,
+                         const Rps_Value arg3, const Rps_Value arg4,
+                         const Rps_Value arg5, const Rps_Value arg6,
+                         const Rps_Value arg7) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  if (is_empty() || !is_closure())
+    return nullptr;
+  Rps_ObjectRef obconn = connob();
+  if (!obconn)
+    return nullptr;
+  rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
+  if (!appfun)
+    return nullptr;
+  callerframe->set_closure(*this);
+  std::vector<Rps_Value> restvec(4);
+  restvec[0] = arg4;
+  restvec[1] = arg5;
+  restvec[2] = arg6;
+  restvec[3] = arg7;
+  Rps_Value res= appfun(callerframe, arg0, arg1,
+                        arg2, arg3,
+                        &restvec);
+  callerframe->clear_closure();
+  return res;
+} // end Rps_ClosureValue::apply8
+
+
+Rps_Value
+Rps_ClosureValue::apply9(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                         const Rps_Value arg1, const Rps_Value arg2,
+                         const Rps_Value arg3, const Rps_Value arg4,
+                         const Rps_Value arg5, const Rps_Value arg6,
+                         const Rps_Value arg7, const Rps_Value arg8) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  if (is_empty() || !is_closure())
+    return nullptr;
+  Rps_ObjectRef obconn = connob();
+  if (!obconn)
+    return nullptr;
+  rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
+  if (!appfun)
+    return nullptr;
+  callerframe->set_closure(*this);
+  std::vector<Rps_Value> restvec(5);
+  restvec[0] = arg4;
+  restvec[1] = arg5;
+  restvec[2] = arg6;
+  restvec[3] = arg7;
+  restvec[4] = arg8;
+  Rps_Value res= appfun(callerframe, arg0, arg1,
+                        arg2, arg3,
+                        &restvec);
+  callerframe->clear_closure();
+  return res;
+} // end Rps_ClosureValue::apply9
 
 /************************** PAYLOADS *************************************/
 /*************************************************************************/

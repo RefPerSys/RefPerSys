@@ -94,7 +94,8 @@ Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
     ob_oid(oid), ob_mtx(), ob_class(nullptr),
     ob_space(nullptr), ob_mtime(0.0),
     ob_attrs(), ob_comps(), ob_payload(nullptr),
-    ob_magicgetterfun(nullptr)
+    ob_magicgetterfun(nullptr),
+    ob_applyingfun(nullptr)
 {
   if (!dontregister)
     register_objzone(this);
@@ -216,6 +217,11 @@ Rps_ObjectZone::dump_scan_contents(Rps_Dumper*du) const
     if (mgfun)
       rps_dump_scan_code_addr(du, reinterpret_cast<const void*>(mgfun));
   }
+  {
+    rps_applyingfun_t* apfun = ob_applyingfun.load();
+    if (apfun)
+      rps_dump_scan_code_addr(du, reinterpret_cast<const void*>(apfun));
+  }
   Rps_Payload*payl = ob_payload.load();
   if (payl && payl->owner() == this)
     payl->dump_scan(du);
@@ -232,6 +238,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
   RPS_ASSERT(obcla != nullptr);
   json["class"] = rps_dump_json_objectref(du,obcla);
   json["mtime"] = Json::Value (get_mtime());
+  /// magic getter function
   {
     rps_magicgetterfun_t*mgfun = ob_magicgetterfun.load();
     if (mgfun)
@@ -255,6 +262,31 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
       RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
                     << " has no magicgetter");
   }
+  /// applying function
+  {
+    rps_applyingfun_t*apfun = ob_applyingfun.load();
+    if (apfun)
+      {
+        Dl_info di = {};
+        if (dladdr((void*)apfun, &di))
+          {
+            RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+                          << " has applyingfun " << (void*)apfun
+                          << " dli_fname=" << (di.dli_fname?:"???")
+                          << " dli_sname=" << (di.dli_sname?:"???"));
+          }
+        else
+          {
+            RPS_WARNOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+                        << " has strange applyingfun " << (void*)apfun);
+          };
+        json["applying"] = Json::Value(true);
+      }
+    else
+      RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+                    << " has applying function");
+  }
+  /// attributes
   if (!ob_attrs.empty())
     {
       Json::Value jattrs(Json::arrayValue);

@@ -379,6 +379,24 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                      << ":: " << dlerror());
       obz->loader_put_magicattrgetter(this, reinterpret_cast<rps_magicgetterfun_t*>(funad));
     }
+  if (objjson.isMember("applying"))
+    {
+      std::lock_guard<std::mutex> gu(ld_mtx);
+      char appfunambuf[sizeof(RPS_APPLYINGFUN_PREFIX)+8+Rps_Id::nbchars];
+      memset(appfunambuf, 0, sizeof(appfunambuf));
+      char obidbuf[32];
+      memset (obidbuf, 0, sizeof(obidbuf));
+      objid.to_cbuf24(obidbuf);
+      strcpy(appfunambuf, RPS_APPLYINGFUN_PREFIX);
+      strcat(appfunambuf+strlen(RPS_APPLYINGFUN_PREFIX), obidbuf);
+      RPS_ASSERT(strlen(appfunambuf)<sizeof(appfunambuf)-4);
+      void*funad = dlsym(rps_proghdl, appfunambuf);
+      if (!funad)
+        RPS_FATALOUT("cannot dlsym " << appfunambuf << " for applying function of objid:" <<  objid
+                     << " lineno:" << lineno << ", spacid:" << spacid
+                     << ":: " << dlerror());
+      obz->loader_put_applyingfunction(this, reinterpret_cast<rps_applyingfun_t*>(funad));
+    }
   if (objjson.isMember("payload"))
     {
       rpsldpysig_t*pldfun = nullptr;

@@ -67,6 +67,8 @@ Rps_CallFrame::gc_mark_frame(Rps_GarbageCollector* gc)
     cfram_descr->gc_mark(*gc);
   if (!cfram_state.is_empty() && cfram_state.is_ptr())
     cfram_state.as_ptr()->gc_mark(*gc,0);
+  if (cfram_clos)
+    cfram_clos.as_ptr()->gc_mark(*gc,0);
   if (cfram_marker)
     cfram_marker(gc);
   unsigned siz=cfram_size;

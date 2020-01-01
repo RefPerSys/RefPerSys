@@ -660,6 +660,12 @@ public:
   inline void output(std::ostream&out, unsigned depth=0) const;
   static constexpr unsigned max_output_depth = 5;
   Rps_Value get_attr(Rps_CallFrame*stkf, const Rps_ObjectRef obattr) const;
+  inline void clear(void);
+  inline Rps_Value& operator = (std::nullptr_t)
+  {
+    clear();
+    return *this;
+  };
 private:
   union
   {
@@ -1099,64 +1105,6 @@ public:
   };
 };
 
-class Rps_CallFrame : public Rps_TypedZone
-{
-  const unsigned cfram_size;
-  Rps_ObjectRef cfram_descr;
-  Rps_CallFrame* cfram_prev;
-  Rps_Value cfram_state;
-  std::function<void(Rps_GarbageCollector*)> cfram_marker;
-  void* cfram_data[0];
-public:
-  Rps_CallFrame(unsigned size, Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
-    : Rps_TypedZone(Rps_Type::CallFrame),
-      cfram_size(size),
-      cfram_descr(obdescr),
-      cfram_prev(prev),
-      cfram_state(nullptr),
-      cfram_marker(),
-      cfram_data()
-  {
-    if (size>0)
-      memset((void*)&cfram_data, 0, size*sizeof(void*));
-  };
-  ~Rps_CallFrame()
-  {
-    cfram_descr = nullptr;
-    cfram_state = nullptr;
-    cfram_prev = nullptr;
-    if (cfram_size > 0)
-      memset((void*)&cfram_data, 0, cfram_size*sizeof(void*));
-  };
-  void gc_mark_frame(Rps_GarbageCollector* gc);
-  Rps_CallFrame*previous_call_frame(void) const
-  {
-    return cfram_prev;
-  };
-
-};				// end class Rps_CallFrame
-
-
-
-#define RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,...)	\
-  class Rps_FrameAt##Lin : public Rps_CallFrame {	\
-  struct FrameData##Lin {__VA_ARGS__; };		\
-public:							\
- Rps_FrameAt##Lin(Rps_ObjectRef obd##Lin,		\
-		  Rps_CallFrame* prev##Lin) :		\
-       Rps_CallFrame( (sizeof(FrameData##Lin)		\
-			     + sizeof(void*) - 1)      	\
-			    / sizeof(void*),		\
-			    obd##Lin, prev##Lin)	\
-    { };						\
-  __VA_ARGS__;						\
-  };							\
-  Rps_FrameAt##Lin _((Descr),(Prev))
-
-#define RPS_LOCALFRAME_AT(Lin,Descr,Prev,...) \
-  RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,__VA_ARGS__)
-#define RPS_LOCALFRAME(Descr,Prev,...) \
-  RPS_LOCALFRAME_AT(__LINE__,Descr,Prev,__VA_ARGS__)
 
 class Rps_QuasiZone : public Rps_TypedZone
 {
@@ -1432,10 +1380,22 @@ public:
 
 
 //////////////////////////////////////////////////////////// object zones
+
+/// magic getter C++ functions
 typedef Rps_Value rps_magicgetterfun_t(Rps_CallFrame*callerframe, const Rps_Value val, const Rps_ObjectRef obattr);
 #define RPS_GETTERFUN_PREFIX "rpsget"
-// by convention, the extern "C" getter function inside attribute
-// _3kVHiDzT42h045vHWB would be named rpsget_3kVHiDzT42h045vHWB
+// by convention, the extern "C" getter function inside fictuous attribute
+// _3kVHiDzT42h045vHaB would be named rpsget_3kVHiDzT42h045vHaB
+
+// application C++ functions
+// the applied closure is in field cfram_clos of the caller frame.
+// applying function
+typedef Rps_Value rps_applyingfun_t (Rps_CallFrame*callerframe,
+                                     const Rps_Value arg0, const Rps_Value arg1, const Rps_Value arg2,
+                                     const Rps_Value arg3, const std::vector<Rps_Value>* restargs);
+#define RPS_APPLYINGFUN_PREFIX "rpsapply"
+// by convention, the extern "C" applying function inside the fictuous connective _45vHaB3kVHiDzT42h0
+// would be named rpsapply_45vHaB3kVHiDzT42h0
 class Rps_Payload;
 class Rps_ObjectZone : public Rps_ZoneValue
 {
@@ -1456,6 +1416,7 @@ class Rps_ObjectZone : public Rps_ZoneValue
   std::vector<Rps_Value> ob_comps;
   std::atomic<Rps_Payload*> ob_payload;
   std::atomic<rps_magicgetterfun_t*> ob_magicgetterfun;
+  std::atomic<rps_applyingfun_t*> ob_applyingfun;
   /// constructors
   Rps_ObjectZone(Rps_Id oid, bool dontregister=false);
   Rps_ObjectZone(void);
@@ -1495,9 +1456,17 @@ protected:
   {
     RPS_ASSERT(ld != nullptr);
     RPS_ASSERT(mfun != nullptr);
-    Rps_ObjectRef thisob(this);
-    RPS_INFORMOUT("loader_put_magicattrgetter thisob=" << thisob << ", mfun=" << (void*)mfun);
+    // Rps_ObjectRef thisob(this);
+    // RPS_INFORMOUT("loader_put_magicattrgetter thisob=" << thisob << ", mfun=" << (void*)mfun);
     ob_magicgetterfun.store(mfun);
+  };
+  void loader_put_applyingfunction(Rps_Loader*ld, rps_applyingfun_t*afun)
+  {
+    RPS_ASSERT(ld != nullptr);
+    RPS_ASSERT(afun != nullptr);
+    // Rps_ObjectRef thisob(this);
+    // RPS_INFORMOUT("loader_put_magicattrgetter thisob=" << thisob << ", mfun=" << (void*)mfun);
+    ob_applyingfun.store(afun);
   };
   void loader_reserve_comps (Rps_Loader*ld, unsigned nbcomps)
   {
@@ -1528,6 +1497,10 @@ public:
   };
   inline Rps_ObjectRef get_space(void) const;
   inline double get_mtime(void) const;
+  inline rps_applyingfun_t*get_applyingfun(const Rps_ClosureValue&closv) const
+  {
+    return ob_applyingfun.load();
+  };
   inline void clear_payload(void);
   template<class PaylClass>
   PaylClass* put_new_plain_payload(void)
@@ -1984,9 +1957,120 @@ public:
   inline Rps_ClosureValue(const Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);
   // "dynamic" casting
   inline Rps_ClosureValue(Rps_Value val);
+// get the connective
+  inline Rps_ObjectRef connob(void) const;
+// clear the closure
+  inline Rps_ClosureValue& operator = (std::nullptr_t)
+  {
+    clear();
+    return *this;
+  };
+  // application
+  inline Rps_Value apply0(Rps_CallFrame*callerframe) const;
+  inline Rps_Value apply1(Rps_CallFrame*callerframe, const Rps_Value arg0) const;
+  inline Rps_Value apply2(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                          const Rps_Value arg1) const;
+  inline Rps_Value apply3(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                          const Rps_Value arg1, const Rps_Value arg2) const;
+  inline Rps_Value apply4(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                          const Rps_Value arg1, const Rps_Value arg2,
+                          const Rps_Value arg3) const;
+  inline Rps_Value apply5(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                          const Rps_Value arg1, const Rps_Value arg2,
+                          const Rps_Value arg3, const Rps_Value arg4) const;
+  inline Rps_Value apply6(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                          const Rps_Value arg1, const Rps_Value arg2,
+                          const Rps_Value arg3, const Rps_Value arg4,
+                          const Rps_Value arg5) const;
+  inline Rps_Value apply7(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                          const Rps_Value arg1, const Rps_Value arg2,
+                          const Rps_Value arg3, const Rps_Value arg4,
+                          const Rps_Value arg5, const Rps_Value arg6) const;
+  inline Rps_Value apply8(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                          const Rps_Value arg1, const Rps_Value arg2,
+                          const Rps_Value arg3, const Rps_Value arg4,
+                          const Rps_Value arg5, const Rps_Value arg6,
+                          const Rps_Value arg7) const;
+  inline Rps_Value apply9(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                          const Rps_Value arg1, const Rps_Value arg2,
+                          const Rps_Value arg3, const Rps_Value arg4,
+                          const Rps_Value arg5, const Rps_Value arg6,
+                          const Rps_Value arg7, const Rps_Value arg8) const;
+  Rps_Value apply_vect(Rps_CallFrame*callerframe, const std::vector<Rps_Value>& argvec) const;
+  Rps_Value apply_ilist(Rps_CallFrame*callerframe, const std::initializer_list<Rps_Value>& argil) const;
 };    // end Rps_ClosureValue
 
 
+class Rps_CallFrame : public Rps_TypedZone
+{
+  const unsigned cfram_size;
+  Rps_ObjectRef cfram_descr;
+  Rps_CallFrame* cfram_prev;
+  Rps_Value cfram_state;
+  Rps_ClosureValue cfram_clos; // the invoking closure, if any
+  std::function<void(Rps_GarbageCollector*)> cfram_marker;
+  void* cfram_data[0];
+public:
+  Rps_CallFrame(unsigned size, Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
+    : Rps_TypedZone(Rps_Type::CallFrame),
+      cfram_size(size),
+      cfram_descr(obdescr),
+      cfram_prev(prev),
+      cfram_state(nullptr),
+      cfram_clos(nullptr),
+      cfram_marker(),
+      cfram_data()
+  {
+    if (size>0)
+      memset((void*)&cfram_data, 0, size*sizeof(void*));
+  };
+  ~Rps_CallFrame()
+  {
+    cfram_descr = nullptr;
+    cfram_state = nullptr;
+    cfram_prev = nullptr;
+    cfram_clos = nullptr;
+    if (cfram_size > 0)
+      memset((void*)&cfram_data, 0, cfram_size*sizeof(void*));
+  };
+  void gc_mark_frame(Rps_GarbageCollector* gc);
+  void set_closure(Rps_ClosureValue clos)
+  {
+    RPS_ASSERT(!clos.is_empty() && clos.is_closure());
+    cfram_clos = clos;
+  };
+  void clear_closure(void)
+  {
+    cfram_clos = nullptr;
+  };
+  Rps_CallFrame*previous_call_frame(void) const
+  {
+    return cfram_prev;
+  };
+
+};				// end class Rps_CallFrame
+
+
+
+#define RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,...)	\
+  class Rps_FrameAt##Lin : public Rps_CallFrame {	\
+  struct FrameData##Lin {__VA_ARGS__; };		\
+public:							\
+ Rps_FrameAt##Lin(Rps_ObjectRef obd##Lin,		\
+		  Rps_CallFrame* prev##Lin) :		\
+       Rps_CallFrame( (sizeof(FrameData##Lin)		\
+			     + sizeof(void*) - 1)      	\
+			    / sizeof(void*),		\
+			    obd##Lin, prev##Lin)	\
+    { };						\
+  __VA_ARGS__;						\
+  };							\
+  Rps_FrameAt##Lin _((Descr),(Prev))
+
+#define RPS_LOCALFRAME_AT(Lin,Descr,Prev,...) \
+  RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,__VA_ARGS__)
+#define RPS_LOCALFRAME(Descr,Prev,...) \
+  RPS_LOCALFRAME_AT(__LINE__,Descr,Prev,__VA_ARGS__)
 
 ////////////////////////////////////////////////////////////////
 ////// class information payload - for PaylClassInfo
