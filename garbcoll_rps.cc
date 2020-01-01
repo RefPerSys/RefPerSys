@@ -60,7 +60,7 @@ Rps_GarbageCollector::~Rps_GarbageCollector()
 } // end Rps_GarbageCollector::~Rps_GarbageCollector
 
 void
-Rps_CallFrame::gc_mark_frame(Rps_GarbageCollector* gc) const
+Rps_CallFrame::gc_mark_frame(Rps_GarbageCollector* gc)
 {
   RPS_ASSERT(gc != nullptr);
   if (!cfram_descr.is_empty() && cfram_descr)

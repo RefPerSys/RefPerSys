@@ -10,7 +10,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2020 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -126,10 +126,24 @@ Rps_String::val_output(std::ostream&out, unsigned) const
   out << jstr;
 } // end Rps_String::val_output
 
+Rps_ObjectRef
+Rps_String::compute_class( Rps_CallFrame*) const
+{
+  RPS_FATAL("unimplemented Rps_String::compute_class");
+#warning unimplemented Rps_String::compute_class
+} // end Rps_String::compute_class
+
 void
 Rps_Double::val_output(std::ostream&out, unsigned) const
 {
   out << dval();
 } // end Rps_Double::val_output
+
+Rps_ObjectRef
+Rps_Double::compute_class( Rps_CallFrame*) const
+{
+  RPS_FATAL("unimplemented Rps_Double::compute_class");
+#warning unimplemented Rps_Double::compute_class
+} // end Rps_String::compute_class
 
 //////////////////////////////////////////////// end of file scalar_rps.cc

@@ -284,6 +284,14 @@ Rps_SetOb::val_output(std::ostream&out, unsigned int) const
   out << "}";
 } // end Rps_SetOb::val_output
 
+
+Rps_ObjectRef
+Rps_SetOb::compute_class( Rps_CallFrame*) const
+{
+  RPS_FATAL("unimplemented Rps_SetOb::compute_class");
+#warning unimplemented Rps_SetOb::compute_class
+} // end Rps_SetOb::compute_class
+
 //////////////////////////////////////// tuples
 const Rps_TupleOb*
 Rps_TupleOb::make(const std::vector<Rps_ObjectRef>& vecob)
@@ -378,6 +386,13 @@ Rps_TupleOb::collect(const std::initializer_list<Rps_Value>&valil)
 
 
 
+Rps_ObjectRef
+Rps_TupleOb::compute_class( Rps_CallFrame*) const
+{
+  RPS_FATAL("unimplemented Rps_TupleOb::compute_class");
+#warning unimplemented Rps_TupleOb::compute_class
+} // end Rps_TupleOb::compute_class
+
 void
 Rps_TupleOb::val_output(std::ostream&out, unsigned int) const
 {
@@ -446,10 +461,18 @@ void Rps_ClosureZone::val_output(std::ostream&out, unsigned int depth) const
     }
 } // end Rps_ClosureZone::val_output
 
+
+Rps_ObjectRef
+Rps_ClosureZone::compute_class( Rps_CallFrame*) const
+{
+  RPS_FATAL("unimplemented Rps_ClosureZone::compute_class");
+#warning unimplemented Rps_ClosureZone::compute_class
+} // end Rps_ClosureZone::compute_class
+
 //////////////// attributes
 
 Rps_Value
-Rps_Value::get_attr(const Rps_ObjectRef obattr, const Rps_CallFrame*stkf) const
+Rps_Value::get_attr(const Rps_ObjectRef obattr,  Rps_CallFrame*stkf) const
 {
   // in principle, obattr type is always Object, but we need to be
   // absolutely sure, even in case of bugs, so we do check it
@@ -468,5 +491,19 @@ Rps_Value::get_attr(const Rps_ObjectRef obattr, const Rps_CallFrame*stkf) const
   return nullptr;
 } // end Rps_Value::get_attr
 
+
+Rps_ObjectRef
+Rps_Value::compute_class( Rps_CallFrame*stkf) const
+{
+  if (is_empty()) return nullptr;
+  if (is_ptr())
+    return as_ptr()->compute_class(stkf);
+  if (is_int())
+    {
+#warning Rps_Value::compute_class unimplemented for integer
+      RPS_FATAL("Rps_Value::compute_class unimplemented for integer");
+    }
+  return nullptr;
+}
 /* end of file value_rps.cc */
 
