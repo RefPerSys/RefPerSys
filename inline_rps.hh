@@ -10,7 +10,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2020 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -538,7 +538,7 @@ Rps_Value::operator >= (const Rps_Value v) const
 
 ////////////////////////////////////////////////////// quasi zones
 Rps_QuasiZone::Rps_QuasiZone(Rps_Type ty)
-  : qz_type(ty), qz_gcinfo(0)
+  : Rps_TypedZone(ty)
 {
   register_in_zonevec();
 } // end of Rps_QuasiZone::Rps_QuasiZone

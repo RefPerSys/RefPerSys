@@ -11,7 +11,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2020 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -58,6 +58,14 @@ Rps_GarbageCollector::~Rps_GarbageCollector()
   RPS_ASSERT(gc_obscanque.empty());
   gc_this.store(nullptr);
 } // end Rps_GarbageCollector::~Rps_GarbageCollector
+
+void
+Rps_CallFrame::gc_mark_frame(Rps_GarbageCollector* gc) const
+{
+  RPS_ASSERT(gc != nullptr);
+#warning Rps_CallFrame::gc_mark_frame unimplemented
+  RPS_FATAL(" Rps_CallFrame::gc_mark_frame unimplemented this@%p", this);
+} // end Rps_CallFrame::gc_mark_frame
 
 void
 rps_garbage_collect (void)

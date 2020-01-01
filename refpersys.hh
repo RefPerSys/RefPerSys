@@ -366,6 +366,7 @@ class Rps_Payload;
 class Rps_PayloadSymbol;
 class Rps_Loader;
 class Rps_Dumper;
+class Rps_CallFrame;
 
 
 typedef uint32_t Rps_HashInt;
@@ -497,6 +498,12 @@ public:
   void output(std::ostream&os) const;
 };				// end class Rps_ObjectRef
 
+static_assert(sizeof(Rps_ObjectRef) == sizeof(void*),
+              "Rps_ObjectRef should have the size of a word");
+static_assert(alignof(Rps_ObjectRef) == alignof(void*),
+              "Rps_ObjectRef should have the alignment of a word");
+
+
 /// mostly for debugging
 inline std::ostream&
 operator << (std::ostream&out, Rps_ObjectRef obr)
@@ -506,8 +513,9 @@ operator << (std::ostream&out, Rps_ObjectRef obr)
 }
 
 ////////////////////////////////////////////////////////////////
-enum class Rps_Type : int16_t
+enum class Rps_Type : std::int16_t
 {
+  CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
   PaylSymbol = -10, // symbol payload
@@ -645,7 +653,7 @@ public:
   inline Rps_HashInt valhash() const noexcept;
   inline void output(std::ostream&out, unsigned depth=0) const;
   static constexpr unsigned max_output_depth = 5;
-  Rps_Value get_attr(const Rps_ObjectRef obattr) const;
+  Rps_Value get_attr(const Rps_ObjectRef obattr, const Rps_CallFrame*stkf=nullptr) const;
 private:
   union
   {
@@ -654,7 +662,10 @@ private:
     const void* _wptr;
   };
 };    // end of Rps_Value
-
+static_assert(sizeof(Rps_Value) == sizeof(void*),
+              "Rps_Value should have the size of a word");
+static_assert(alignof(Rps_Value) == alignof(void*),
+              "Rps_Value should have the alignment of a word");
 
 /// mostly for debugging
 inline std::ostream&
@@ -1063,11 +1074,72 @@ public:
 
 ////////////////////////////////////////////////////// quasi zones
 
-class Rps_QuasiZone
+class Rps_TypedZone
 {
   friend class Rps_GarbageCollector;
+  friend class Rps_CallFrame;
+protected:
   const Rps_Type qz_type;
   volatile mutable std::atomic_uint16_t qz_gcinfo;
+public:
+  Rps_TypedZone(const Rps_Type ty) : qz_type(ty), qz_gcinfo(0) {};
+  ~Rps_TypedZone() {};
+  Rps_Type stored_type(void) const
+  {
+    return qz_type;
+  };
+};
+
+class Rps_CallFrame : public Rps_TypedZone
+{
+  const unsigned cfram_size;
+  Rps_ObjectRef cfram_descr;
+  Rps_CallFrame* cfram_prev;
+  Rps_Value cfram_state;
+  std::function<void(Rps_GarbageCollector*)> cfram_marker;
+  void* cfram_data[0];
+public:
+  Rps_CallFrame(unsigned size, Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
+    : Rps_TypedZone(Rps_Type::CallFrame),
+      cfram_size(size),
+      cfram_descr(obdescr),
+      cfram_prev(prev),
+      cfram_state(nullptr),
+      cfram_marker(),
+      cfram_data()
+  {
+    if (size>0)
+      memset((void*)&cfram_data, 0, size*sizeof(void*));
+  };
+  ~Rps_CallFrame()
+  {
+    cfram_descr = nullptr;
+    cfram_state = nullptr;
+    cfram_prev = nullptr;
+    if (cfram_size > 0)
+      memset((void*)&cfram_data, 0, cfram_size*sizeof(void*));
+  };
+  void gc_mark_frame(Rps_GarbageCollector* gc) const;
+};				// end class Rps_CallFrame
+
+#define RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,...)			\
+  struct Rps_FrameAt##Lin : public Rps_CallFrame {			\
+public:									\
+static constexpr unsigned length##Lin =					\
+  sizeof(struct {__VA_ARGS__; }) / sizeof(void*);			\
+ Rps_FrameAt##Lin() : Rps_CallFrame(length##Lin,(Descr),(Prev))		\
+    {									\
+    };									\
+  __VA_ARGS__;								\
+  } _;
+#define RPS_LOCALFRAME_AT(Lin,Descr,Prev,...) \
+  RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,__VA_ARGS__)
+#define RPS_LOCALFRAME(Descr,Prev,...) \
+  RPS_LOCALFRAME_AT(__LINE__,Descr,Prev,__VA_ARGS__)
+
+class Rps_QuasiZone : public Rps_TypedZone
+{
+  friend class Rps_GarbageCollector;
   // we keep each quasi-zone in the qz_zonvec
   static std::recursive_mutex qz_mtx;
   static std::vector<Rps_QuasiZone*> qz_zonvec;
@@ -1087,10 +1159,6 @@ public:
   static void clear_all_gcmarks(Rps_GarbageCollector&);
   inline static void run_locked_gc(Rps_GarbageCollector&, std::function<void(Rps_GarbageCollector&)>);
   inline static void every_zone(Rps_GarbageCollector&, std::function<void(Rps_GarbageCollector&, Rps_QuasiZone*)>);
-  Rps_Type stored_type(void) const
-  {
-    return qz_type;
-  };
   template <typename ZoneClass, class ...Args> static ZoneClass*
   rps_allocate(Args... args)
   {
@@ -1340,7 +1408,7 @@ public:
 
 
 //////////////////////////////////////////////////////////// object zones
-typedef Rps_Value rps_magicgetterfun_t(const Rps_Value val, const Rps_ObjectRef obattr);
+typedef Rps_Value rps_magicgetterfun_t(const Rps_Value val, const Rps_ObjectRef obattr, const Rps_CallFrame*callerframe);
 #define RPS_GETTERFUN_PREFIX "rpsget"
 // by convention, the extern "C" getter function inside attribute
 // _3kVHiDzT42h045vHWB would be named rpsget_3kVHiDzT42h045vHWB
