@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2020 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -236,8 +236,9 @@ main(int argc, char** argv)
 
   pthread_setname_np(pthread_self(), "rps-main");
   RPS_INFORM("starting RefPerSys %s process %d on host %s\n"
-             "... gitid %.16s built %s",
-             argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp);
+             "... gitid %.16s built %s (main@%p)",
+             argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
+             (void*)main);
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
   //// FIXME: should have some real code here
