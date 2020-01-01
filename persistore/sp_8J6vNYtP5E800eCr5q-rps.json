@@ -47,7 +47,6 @@
  "class_name" : "symbol",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_3Q3hJsSgCDN03GTYW5",
- "magicattr" : true,
  "mtime" : 1575698824.78,
  "oid" : "_36I1BY2NetN03WjrOv",
  "payload" : "class"
@@ -58,7 +57,6 @@
 //∈symbol
 {
  "class" : "_36I1BY2NetN03WjrOv",
- "magicattr" : true,
  "mtime" : 1577699400.0,
  "oid" : "_3Q3hJsSgCDN03GTYW5",
  "payload" : "symbol",
@@ -90,7 +88,6 @@
  "class_name" : "object",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_7X9eGs8601M021nMue",
- "magicattr" : true,
  "mtime" : 1575698824.78,
  "oid" : "_5yhJGgxLwLp00X0xEQ",
  "payload" : "class"
@@ -101,7 +98,6 @@
 //∈symbol
 {
  "class" : "_36I1BY2NetN03WjrOv",
- "magicattr" : true,
  "mtime" : 1577699400.0,
  "oid" : "_6fmq7pZkmNd03UyPuO",
  "payload" : "symbol",
@@ -114,7 +110,6 @@
 //∈symbol
 {
  "class" : "_36I1BY2NetN03WjrOv",
- "magicattr" : true,
  "mtime" : 1577699400.0,
  "oid" : "_7X9eGs8601M021nMue",
  "payload" : "symbol",
@@ -127,7 +122,6 @@
 //∈space
 {
  "class" : "_2i66FFjmS7n03HNNBx",
- "magicattr" : true,
  "mtime" : 1575698824.78,
  "oid" : "_8J6vNYtP5E800eCr5q",
  "payload" : "space"

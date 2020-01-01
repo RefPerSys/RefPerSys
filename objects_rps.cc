@@ -92,7 +92,9 @@ Rps_ObjectZone::fresh_random_oid(Rps_ObjectZone*ob)
 Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
   : Rps_ZoneValue(Rps_Type::Object),
     ob_oid(oid), ob_mtx(), ob_class(nullptr),
-    ob_attrs(), ob_comps(), ob_payload(nullptr)
+    ob_space(nullptr), ob_mtime(0.0),
+    ob_attrs(), ob_comps(), ob_payload(nullptr),
+    ob_magicgetterfun(nullptr)
 {
   if (!dontregister)
     register_objzone(this);
@@ -225,6 +227,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(json.type() == Json::objectValue);
   std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  Rps_ObjectRef thisob(this);
   Rps_ObjectZone* obcla = ob_class.load();
   RPS_ASSERT(obcla != nullptr);
   json["class"] = rps_dump_json_objectref(du,obcla);
@@ -232,7 +235,25 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
   {
     rps_magicgetterfun_t*mgfun = ob_magicgetterfun.load();
     if (mgfun)
-      json["magicattr"] = Json::Value(true);
+      {
+        Dl_info di = {};
+        if (dladdr((void*)mgfun, &di))
+          {
+            RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+                          << " has magicgetter " << (void*)mgfun
+                          << " dli_fname=" << (di.dli_fname?:"???")
+                          << " dli_sname=" << (di.dli_sname?:"???"));
+          }
+        else
+          {
+            RPS_WARNOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+                        << " has strange magicgetter " << (void*)mgfun);
+          };
+        json["magicattr"] = Json::Value(true);
+      }
+    else
+      RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+                    << " has no magicgetter");
   }
   if (!ob_attrs.empty())
     {

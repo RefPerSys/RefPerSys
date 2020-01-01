@@ -286,7 +286,7 @@ Rps_SetOb::val_output(std::ostream&out, unsigned int) const
 
 
 Rps_ObjectRef
-Rps_SetOb::compute_class( Rps_CallFrame*) const
+Rps_SetOb::compute_class(Rps_CallFrame*) const
 {
   RPS_FATAL("unimplemented Rps_SetOb::compute_class");
 #warning unimplemented Rps_SetOb::compute_class
@@ -463,7 +463,7 @@ void Rps_ClosureZone::val_output(std::ostream&out, unsigned int depth) const
 
 
 Rps_ObjectRef
-Rps_ClosureZone::compute_class( Rps_CallFrame*) const
+Rps_ClosureZone::compute_class(Rps_CallFrame*) const
 {
   RPS_FATAL("unimplemented Rps_ClosureZone::compute_class");
 #warning unimplemented Rps_ClosureZone::compute_class
@@ -472,14 +472,15 @@ Rps_ClosureZone::compute_class( Rps_CallFrame*) const
 //////////////// attributes
 
 Rps_Value
-Rps_Value::get_attr(const Rps_ObjectRef obattr,  Rps_CallFrame*stkf) const
+Rps_Value::get_attr(Rps_CallFrame*stkf, const Rps_ObjectRef obattr) const
 {
   // in principle, obattr type is always Object, but we need to be
   // absolutely sure, even in case of bugs, so we do check it
   if (obattr.is_empty() || obattr->stored_type() != Rps_Type::Object)
     return nullptr;
   rps_magicgetterfun_t*getfun = obattr->ob_magicgetterfun.load();
-  if (getfun) return (*getfun)(*this, obattr, stkf);
+  if (getfun)
+    return (*getfun)(stkf, *this, obattr);
   if (is_object())
     {
       const Rps_ObjectZone*thisob = as_object();

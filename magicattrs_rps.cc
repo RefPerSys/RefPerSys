@@ -36,21 +36,46 @@ const char rps_magicattrs_gitid[]= RPS_GITID;
 extern "C" const char rps_magicattrs_date[];
 const char rps_magicattrs_date[]= __DATE__;
 
-/// the `class` magic attribute _36I1BY2NetN03WjrOv
-extern "C"  rps_magicgetterfun_t rpsget_36I1BY2NetN03WjrOv;
+/// the `class` magic attribute and class _41OFI3r0S1t03qdB2E
+extern "C" Rps_Value
+rpsget_41OFI3r0S1t03qdB2E(const Rps_Value valarg, const Rps_ObjectRef obattrarg,
+                          Rps_CallFrame*callerframe);
+
 Rps_Value
-rpsget_36I1BY2NetN03WjrOv(const Rps_Value valarg, const Rps_ObjectRef obattrarg,
-			  Rps_CallFrame*callerframe)
+rpsget_41OFI3r0S1t03qdB2E(const Rps_Value valarg, const Rps_ObjectRef obattrarg,
+                          Rps_CallFrame*callerframe)
 {
-  RPS_LOCALFRAME(RPS_ROOT_OB(_36I1BY2NetN03WjrOv),
+  RPS_LOCALFRAME(RPS_ROOT_OB(_41OFI3r0S1t03qdB2E),
                  callerframe,
                  Rps_Value val; // the value
                  Rps_ObjectRef obattr; // the attribute
                 );
   _.obattr = obattrarg;
   _.val = valarg;
-  RPS_ASSERT (_.obattr == RPS_ROOT_OB(_36I1BY2NetN03WjrOv));
+  RPS_ASSERT (_.obattr == RPS_ROOT_OB(_41OFI3r0S1t03qdB2E));
   return Rps_Value(_.val.compute_class(&_));
-} // end of rpsget_36I1BY2NetN03WjrOv
+} // end of rpsget_41OFI3r0S1t03qdB2E  - magic getter `class`
+
+/// the `space` magic attribute _9uwZtDshW4401x6MsY
+extern "C" Rps_Value
+rpsget_9uwZtDshW4401x6MsY(const Rps_Value valarg, const Rps_ObjectRef obattrarg,
+                          Rps_CallFrame*callerframe);
+
+Rps_Value
+rpsget_9uwZtDshW4401x6MsY(const Rps_Value valarg, const Rps_ObjectRef obattrarg,
+                          Rps_CallFrame*callerframe)
+{
+  RPS_LOCALFRAME(RPS_ROOT_OB(_9uwZtDshW4401x6MsY),
+                 callerframe,
+                 Rps_Value val; // the value
+                 Rps_ObjectRef obattr; // the attribute
+                );
+  _.obattr = obattrarg;
+  _.val = valarg;
+  RPS_ASSERT (_.obattr == RPS_ROOT_OB(_9uwZtDshW4401x6MsY));
+  if (!_.val.is_empty() && _.val.is_object())
+    return Rps_Value(_.val.as_object()->get_space());
+  return nullptr;
+} // end of rpsget_9uwZtDshW4401x6MsY - magic getter `space`
 
 // end of file magicattrs_rps.cc

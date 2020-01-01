@@ -659,7 +659,7 @@ public:
   inline Rps_HashInt valhash() const noexcept;
   inline void output(std::ostream&out, unsigned depth=0) const;
   static constexpr unsigned max_output_depth = 5;
-  Rps_Value get_attr(const Rps_ObjectRef obattr, Rps_CallFrame*stkf=nullptr) const;
+  Rps_Value get_attr(Rps_CallFrame*stkf, const Rps_ObjectRef obattr) const;
 private:
   union
   {
@@ -1253,7 +1253,7 @@ class Rps_ZoneValue : public Rps_QuasiZone
 protected:
   inline Rps_ZoneValue(Rps_Type typ);
 public:
-  virtual Rps_ObjectRef compute_class( Rps_CallFrame*stkf) const =0;
+  virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const =0;
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) const =0;
   virtual void dump_scan(Rps_Dumper* du, unsigned depth) const =0;
   virtual Json::Value dump_json(Rps_Dumper* du) const =0;
@@ -1334,7 +1334,7 @@ protected:
   };
   virtual void gc_mark(Rps_GarbageCollector&, unsigned) const { };
 public:
-  virtual Rps_ObjectRef compute_class( Rps_CallFrame*stkf) const;
+  virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
   virtual uint32_t wordsize() const
   {
     return (sizeof(Rps_String)+_bytsiz+1)/sizeof(void*);
@@ -1392,7 +1392,7 @@ protected:
       h = 987383;
     return h;
   };
-  virtual Rps_ObjectRef compute_class( Rps_CallFrame*stkf) const;
+  virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
   virtual void gc_mark(Rps_GarbageCollector&, unsigned) const { };
   virtual void dump_scan(Rps_Dumper*, unsigned) const {};
   virtual Json::Value dump_json(Rps_Dumper*) const
@@ -1432,7 +1432,7 @@ public:
 
 
 //////////////////////////////////////////////////////////// object zones
-typedef Rps_Value rps_magicgetterfun_t(const Rps_Value val, const Rps_ObjectRef obattr, const Rps_CallFrame*callerframe);
+typedef Rps_Value rps_magicgetterfun_t(Rps_CallFrame*callerframe, const Rps_Value val, const Rps_ObjectRef obattr);
 #define RPS_GETTERFUN_PREFIX "rpsget"
 // by convention, the extern "C" getter function inside attribute
 // _3kVHiDzT42h045vHWB would be named rpsget_3kVHiDzT42h045vHWB
@@ -1446,6 +1446,7 @@ class Rps_ObjectZone : public Rps_ZoneValue
   friend class Rps_Value;
   friend Rps_ObjectZone*
   Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(Rps_Id,bool);
+  /// fields
   const Rps_Id ob_oid;
   mutable std::recursive_mutex ob_mtx;
   std::atomic<Rps_ObjectZone*> ob_class;
@@ -1455,6 +1456,7 @@ class Rps_ObjectZone : public Rps_ZoneValue
   std::vector<Rps_Value> ob_comps;
   std::atomic<Rps_Payload*> ob_payload;
   std::atomic<rps_magicgetterfun_t*> ob_magicgetterfun;
+  /// constructors
   Rps_ObjectZone(Rps_Id oid, bool dontregister=false);
   Rps_ObjectZone(void);
   ~Rps_ObjectZone();
@@ -1493,6 +1495,8 @@ protected:
   {
     RPS_ASSERT(ld != nullptr);
     RPS_ASSERT(mfun != nullptr);
+    Rps_ObjectRef thisob(this);
+    RPS_INFORMOUT("loader_put_magicattrgetter thisob=" << thisob << ", mfun=" << (void*)mfun);
     ob_magicgetterfun.store(mfun);
   };
   void loader_reserve_comps (Rps_Loader*ld, unsigned nbcomps)

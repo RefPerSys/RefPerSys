@@ -127,7 +127,7 @@ Rps_String::val_output(std::ostream&out, unsigned) const
 } // end Rps_String::val_output
 
 Rps_ObjectRef
-Rps_String::compute_class( Rps_CallFrame*) const
+Rps_String::compute_class(Rps_CallFrame*) const
 {
   RPS_FATAL("unimplemented Rps_String::compute_class");
 #warning unimplemented Rps_String::compute_class
@@ -140,7 +140,7 @@ Rps_Double::val_output(std::ostream&out, unsigned) const
 } // end Rps_Double::val_output
 
 Rps_ObjectRef
-Rps_Double::compute_class( Rps_CallFrame*) const
+Rps_Double::compute_class(Rps_CallFrame*) const
 {
   RPS_FATAL("unimplemented Rps_Double::compute_class");
 #warning unimplemented Rps_Double::compute_class
