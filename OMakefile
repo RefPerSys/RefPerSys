@@ -12,7 +12,7 @@
 ##      Abhishek Chakravarti <abhishek@taranjali.org>
 ##      Nimesh Neema <nimeshneema@gmail.com>
 ##
-##      © Copyright 2019 The Reflective Persistent System Team
+##      © Copyright 2019 - 2020 The Reflective Persistent System Team
 ##      team@refpersys.org
 ##
 ## License:
@@ -84,8 +84,9 @@ INCLUDES += /usr/local/include
 
 ## the base files of ordinary hand-written C++ source files
 REFPERSYS_BASE_FILES[] =
-   main_rps
    garbcoll_rps
+   magicattrs_rps
+   main_rps
    objects_rps
    primes_rps
    scalar_rps
