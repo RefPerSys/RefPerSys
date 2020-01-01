@@ -10,7 +10,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2020 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -446,6 +446,25 @@ void Rps_ClosureZone::val_output(std::ostream&out, unsigned int depth) const
     }
 } // end Rps_ClosureZone::val_output
 
-////////////////
+//////////////// attributes
+
+Rps_Value
+Rps_Value::get_attr(const Rps_ObjectRef obattr) const {
+  // in principle, obattr type is always Object, but we need to be
+  // absolutely sure, even in case of bugs, so we do check it
+  if (obattr.is_empty() || obattr->stored_type() != Rps_Type::Object)
+    return nullptr;
+  rps_magicgetterfun_t*getfun = obattr->ob_magicgetterfun.load();
+  if (getfun) return (*getfun)(*this, obattr);
+  if (is_object()) {
+    const Rps_ObjectZone*thisob = as_object();
+    std::lock_guard gu(thisob->ob_mtx);
+    auto it = thisob->ob_attrs.find(obattr);
+    if (it != thisob->ob_attrs.end())
+      return it->second;
+  };
+  return nullptr;
+} // end Rps_Value::get_attr
+
 /* end of file value_rps.cc */
 

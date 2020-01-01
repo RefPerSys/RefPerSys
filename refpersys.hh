@@ -10,7 +10,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2020 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -645,6 +645,7 @@ public:
   inline Rps_HashInt valhash() const noexcept;
   inline void output(std::ostream&out, unsigned depth=0) const;
   static constexpr unsigned max_output_depth = 5;
+  Rps_Value get_attr(const Rps_ObjectRef obattr) const;
 private:
   union
   {
@@ -1339,6 +1340,10 @@ public:
 
 
 //////////////////////////////////////////////////////////// object zones
+typedef Rps_Value rps_magicgetterfun_t(const Rps_Value val, const Rps_ObjectRef obattr);
+#define RPS_GETTERFUN_PREFIX "rpsget_"
+// by convention, the extern "C" getter function inside attribute
+// _3kVHiDzT42h045vHWB would be named rpsget_3kVHiDzT42h045vHWB
 class Rps_Payload;
 class Rps_ObjectZone : public Rps_ZoneValue
 {
@@ -1346,6 +1351,7 @@ class Rps_ObjectZone : public Rps_ZoneValue
   friend class Rps_Dumper;
   friend class Rps_Payload;
   friend class Rps_ObjectRef;
+  friend class Rps_Value;
   friend Rps_ObjectZone*
   Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(Rps_Id,bool);
   const Rps_Id ob_oid;
@@ -1356,6 +1362,7 @@ class Rps_ObjectZone : public Rps_ZoneValue
   std::map<Rps_ObjectRef, Rps_Value> ob_attrs;
   std::vector<Rps_Value> ob_comps;
   std::atomic<Rps_Payload*> ob_payload;
+  std::atomic<rps_magicgetterfun_t*> ob_magicgetterfun;
   Rps_ObjectZone(Rps_Id oid, bool dontregister=false);
   Rps_ObjectZone(void);
   ~Rps_ObjectZone();
