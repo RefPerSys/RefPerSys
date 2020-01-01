@@ -123,7 +123,7 @@ Rps_Value::Rps_Value(const void*ptr, const Rps_PayloadSymbol*symb) : _wptr(ptr)
   RPS_ASSERT(symb != nullptr && symb->stored_type() == Rps_Type::PaylSymbol);
 };
 
-Rps_Value::Rps_Value(const void*ptr, const Rps_CallFrame*cframe) : _wptr(ptr)
+Rps_Value::Rps_Value(const void*ptr, Rps_CallFrame*cframe) : _wptr(ptr)
 {
   RPS_ASSERT(cframe != nullptr && cframe->stored_type() == Rps_Type::CallFrame);
 };
@@ -882,13 +882,13 @@ Rps_ObjectZone::clear_payload(void)
           if (!oldpayl->is_erasable())
             {
               ob_payload.store(oldpayl);
-	      RPS_WARNOUT("cannot remove unerasable payload " <<
-			  oldpayl->payload_type_name()
-			  << " from " << Rps_ObjectRef(this));
+              RPS_WARNOUT("cannot remove unerasable payload " <<
+                          oldpayl->payload_type_name()
+                          << " from " << Rps_ObjectRef(this));
               throw std::runtime_error(std::string("unerasable payload ")
-				       + oldpayl->payload_type_name()
-				       + std::string (" cannot be removed from ")
-				       + oid().to_string());
+                                       + oldpayl->payload_type_name()
+                                       + std::string (" cannot be removed from ")
+                                       + oid().to_string());
             }
           oldpayl->clear_owner();
         }
@@ -1102,11 +1102,11 @@ Rps_PayloadVectOb::Rps_PayloadVectOb(Rps_ObjectZone*owner, Rps_Loader*ld)
 
 ///// garbage collector
 void
-Rps_GarbageCollector::mark_call_stack(const Rps_CallFrame*topframe)
+Rps_GarbageCollector::mark_call_stack(Rps_CallFrame*topframe)
 {
-  for (const Rps_CallFrame*curframe = topframe;
-       curframe != nullptr;
-       curframe = const_cast<const Rps_CallFrame*>(curframe->previous_call_frame()))
+  for ( Rps_CallFrame*curframe = topframe;
+        curframe != nullptr;
+        curframe = (curframe->previous_call_frame()))
     {
       RPS_ASSERT(curframe->stored_type() == Rps_Type::CallFrame);
       curframe->gc_mark_frame(this);

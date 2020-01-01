@@ -581,8 +581,12 @@ public:
   inline Rps_Value (intptr_t i, Rps_IntTag);
   inline Rps_Value (double d, Rps_DoubleTag);
   inline Rps_Value (const Rps_ZoneValue*ptr, Rps_ValPtrTag);
+  Rps_Value(Rps_ObjectRef obr)
+    : Rps_Value((const Rps_ZoneValue*)(obr.optr()), Rps_ValPtrTag{})
+  {
+  };
   inline Rps_Value (const void*ptr, const Rps_PayloadSymbol*symb);
-  inline Rps_Value (const void*ptr, const Rps_CallFrame*cframe);
+  inline Rps_Value (const void*ptr, Rps_CallFrame*cframe);
   Rps_Value(const Json::Value &hjv, Rps_Loader*ld); // in store_rps.cc
   /// C++ rule of five
   inline Rps_Value(const Rps_Value& other);
@@ -638,6 +642,7 @@ public:
   inline double as_double() const;
   inline const std::string as_cppstring() const;
   inline const char* as_cstring() const;
+  Rps_ObjectRef compute_class(Rps_CallFrame*) const;
   // convert or give default
   inline intptr_t to_int(intptr_t def=0) const;
   inline const Rps_ZoneValue* to_ptr(const Rps_ZoneValue*zp = nullptr) const;
@@ -654,7 +659,7 @@ public:
   inline Rps_HashInt valhash() const noexcept;
   inline void output(std::ostream&out, unsigned depth=0) const;
   static constexpr unsigned max_output_depth = 5;
-  Rps_Value get_attr(const Rps_ObjectRef obattr, const Rps_CallFrame*stkf=nullptr) const;
+  Rps_Value get_attr(const Rps_ObjectRef obattr, Rps_CallFrame*stkf=nullptr) const;
 private:
   union
   {
@@ -1073,7 +1078,7 @@ public:
   void mark_value(Rps_Value val, unsigned depth=0);
   inline void mark_root_value(Rps_Value val);
   inline void mark_root_objectref(Rps_ObjectRef obr);
-  inline void mark_call_stack(const Rps_CallFrame*topframe);
+  inline void mark_call_stack(Rps_CallFrame*topframe);
 };				// end class Rps_GarbageCollector
 
 ////////////////////////////////////////////////////// quasi zones
@@ -1123,7 +1128,7 @@ public:
     if (cfram_size > 0)
       memset((void*)&cfram_data, 0, cfram_size*sizeof(void*));
   };
-  void gc_mark_frame(Rps_GarbageCollector* gc) const;
+  void gc_mark_frame(Rps_GarbageCollector* gc);
   Rps_CallFrame*previous_call_frame(void) const
   {
     return cfram_prev;
@@ -1131,15 +1136,23 @@ public:
 
 };				// end class Rps_CallFrame
 
-#define RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,...)			\
-  struct Rps_FrameAt##Lin : public Rps_CallFrame {			\
-public:									\
-static constexpr unsigned length##Lin =					\
-  sizeof(struct {__VA_ARGS__; }) / sizeof(void*);			\
- Rps_FrameAt##Lin() : Rps_CallFrame(length##Lin,(Descr),(Prev))		\
-    { };				       				\
-  __VA_ARGS__;								\
-  } _;
+
+
+#define RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,...)	\
+  class Rps_FrameAt##Lin : public Rps_CallFrame {	\
+  struct FrameData##Lin {__VA_ARGS__; };		\
+public:							\
+ Rps_FrameAt##Lin(Rps_ObjectRef obd##Lin,		\
+		  Rps_CallFrame* prev##Lin) :		\
+       Rps_CallFrame( (sizeof(FrameData##Lin)		\
+			     + sizeof(void*) - 1)      	\
+			    / sizeof(void*),		\
+			    obd##Lin, prev##Lin)	\
+    { };						\
+  __VA_ARGS__;						\
+  };							\
+  Rps_FrameAt##Lin _((Descr),(Prev))
+
 #define RPS_LOCALFRAME_AT(Lin,Descr,Prev,...) \
   RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,__VA_ARGS__)
 #define RPS_LOCALFRAME(Descr,Prev,...) \
@@ -1240,6 +1253,7 @@ class Rps_ZoneValue : public Rps_QuasiZone
 protected:
   inline Rps_ZoneValue(Rps_Type typ);
 public:
+  virtual Rps_ObjectRef compute_class( Rps_CallFrame*stkf) const =0;
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) const =0;
   virtual void dump_scan(Rps_Dumper* du, unsigned depth) const =0;
   virtual Json::Value dump_json(Rps_Dumper* du) const =0;
@@ -1320,6 +1334,7 @@ protected:
   };
   virtual void gc_mark(Rps_GarbageCollector&, unsigned) const { };
 public:
+  virtual Rps_ObjectRef compute_class( Rps_CallFrame*stkf) const;
   virtual uint32_t wordsize() const
   {
     return (sizeof(Rps_String)+_bytsiz+1)/sizeof(void*);
@@ -1377,6 +1392,7 @@ protected:
       h = 987383;
     return h;
   };
+  virtual Rps_ObjectRef compute_class( Rps_CallFrame*stkf) const;
   virtual void gc_mark(Rps_GarbageCollector&, unsigned) const { };
   virtual void dump_scan(Rps_Dumper*, unsigned) const {};
   virtual Json::Value dump_json(Rps_Dumper*) const
@@ -1502,6 +1518,10 @@ public:
   }
   inline bool has_erasable_payload(void) const;
   inline Rps_ObjectRef get_class(void) const;
+  virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const
+  {
+    return  get_class();
+  };
   inline Rps_ObjectRef get_space(void) const;
   inline double get_mtime(void) const;
   inline void clear_payload(void);
@@ -1774,6 +1794,7 @@ public:
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
   virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
 #warning Rps_SetOb very incomplete
 };// end of Rps_SetOb
 
@@ -1801,6 +1822,7 @@ public:
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
   virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
 #warning Rps_TupleOb very incomplete
 };// end of Rps_TupleOb
 
@@ -1944,6 +1966,7 @@ public:
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
   virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
   /// make a closure with given connective and values
   static Rps_ClosureZone* make(Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
   static Rps_ClosureZone* make(Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);
