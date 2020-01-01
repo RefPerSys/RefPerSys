@@ -1,6 +1,6 @@
 //!! GENERATED file rps_manifest.json / DO NOT EDIT!
 //!! This file is part of the Reflective Persistent System.
-//!!  © Copyright 2019 - 2019 The Reflective Persistent System Team.
+//!!  © Copyright 2019 - 2020 The Reflective Persistent System Team.
 //!!  see http://refpersys.org/ and contact team@refpersys.org for more.
 //!! _
 //!! This program is free software: you can redistribute it and/or modify
@@ -47,7 +47,7 @@
   "_7X9eGs8601M021nMue",
   "_9uwZtDshW4401x6MsY"
  ],
- "origitid" : "c0c87966dce3d48716f2fb0f0b89f38cadd3c4a4+",
+ "origitid" : "b933764bf14b687a2ec5aae2757e4d473d120a6b+",
  "plugins" : [],
  "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }
