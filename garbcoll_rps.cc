@@ -43,7 +43,10 @@ std::atomic<uint64_t> Rps_GarbageCollector::gc_count;
 
 Rps_GarbageCollector::Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers) :
   gc_mtx(), gc_running(false), gc_rootmarkers(rootmarkers),
-  gc_obscanque(), gc_nbscan(0), gc_nbmark(0), gc_nbdelete(0)
+  gc_obscanque(),
+  gc_nbscan(0), gc_nbmark(0), gc_nbdelete(0), gc_nbroots(0),
+  gc_startelapsedtime(rps_elapsed_real_time()),
+  gc_startprocesstime(rps_process_cpu_time())
 {
   RPS_ASSERT(gc_this.load() == nullptr);
   gc_this.store(this);
@@ -84,8 +87,6 @@ void
 rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
 {
   RPS_ASSERT(Rps_GarbageCollector::gc_this.load() == nullptr);
-  double startrealt = rps_monotonic_real_time();
-  double startcput = rps_process_cpu_time();
   Rps_GarbageCollector the_gc([=](Rps_GarbageCollector*gc)
   {
     if (pfun)
@@ -95,12 +96,10 @@ rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
   RPS_INFORM("rps_garbage_collect before run; count#%ld",
              gcnt);
   the_gc.run_gc();
-  double endrealt = rps_monotonic_real_time();
-  double endcput = rps_process_cpu_time();
   auto nbroots = the_gc.nb_roots();
   RPS_INFORM("rps_garbage_collect completed; count#%ld, %ld roots, %ld scans, %ld marks, %ld deletions, real %.3f, cpu %.3f sec",
              gcnt, (long) nbroots, (long)(the_gc.nb_scans()),  (long)(the_gc.nb_marks()),  (long)(the_gc.nb_deletions()),
-             endrealt-startrealt, endcput-startcput);
+             the_gc.elapsed_time(), the_gc.process_time());
 } // end of rps_garbage_collect
 
 void

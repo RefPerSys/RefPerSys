@@ -679,6 +679,20 @@ static_assert(sizeof(Rps_Value) == sizeof(void*),
 static_assert(alignof(Rps_Value) == alignof(void*),
               "Rps_Value should have the alignment of a word");
 
+struct Rps_TwoValues {
+  Rps_Value main_val;
+  Rps_Value xtra_val;
+  Rps_TwoValues(Rps_Value m=nullptr, Rps_Value x=nullptr)
+    : main_val(m), xtra_val(x) {};
+  Rps_Value main() const { return main_val;};
+  Rps_Value xtra() const { return xtra_val;};
+  operator Rps_Value (void) const { return main(); };
+  void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0) const {
+    if (main_val) main_val.gc_mark(gc,depth);
+    if (xtra_val) xtra_val.gc_mark(gc,depth);
+  };
+};				// end Rps_TwoValues
+
 /// mostly for debugging
 inline std::ostream&
 operator << (std::ostream&out, Rps_Value val)
@@ -1057,12 +1071,18 @@ class Rps_GarbageCollector
   uint64_t gc_nbmark;
   uint64_t gc_nbdelete;
   uint64_t gc_nbroots;
+  double gc_startelapsedtime;
+  double gc_startprocesstime;
 private:
   Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers=nullptr);
   ~Rps_GarbageCollector();
   void run_gc(void);
   void mark_gcroots(void);
 public:
+  double elapsed_time(void) const
+  { return rps_elapsed_real_time() - gc_startelapsedtime; };
+  double process_time(void) const
+  { return rps_process_cpu_time() - gc_startprocesstime; };
   uint64_t nb_roots() const
   {
     return gc_nbroots;
@@ -1390,7 +1410,7 @@ typedef Rps_Value rps_magicgetterfun_t(Rps_CallFrame*callerframe, const Rps_Valu
 // application C++ functions
 // the applied closure is in field cfram_clos of the caller frame.
 // applying function
-typedef Rps_Value rps_applyingfun_t (Rps_CallFrame*callerframe,
+typedef Rps_TwoValues rps_applyingfun_t (Rps_CallFrame*callerframe,
                                      const Rps_Value arg0, const Rps_Value arg1, const Rps_Value arg2,
                                      const Rps_Value arg3, const std::vector<Rps_Value>* restargs);
 #define RPS_APPLYINGFUN_PREFIX "rpsapply"
@@ -1487,7 +1507,10 @@ public:
   inline Rps_Payload*get_payload(void) const;
   template <class PaylClass> PaylClass* get_dynamic_payload(void) const
   {
-    return dynamic_cast<PaylClass*>(get_payload());
+    auto payl = get_payload();
+    if (!payl)
+      return nullptr;
+    return dynamic_cast<PaylClass*>(payl);
   }
   inline bool has_erasable_payload(void) const;
   inline Rps_ObjectRef get_class(void) const;
@@ -2071,6 +2094,16 @@ public:							\
   RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,__VA_ARGS__)
 #define RPS_LOCALFRAME(Descr,Prev,...) \
   RPS_LOCALFRAME_AT(__LINE__,Descr,Prev,__VA_ARGS__)
+
+#define RPS_LOCALRETURN(Val) do {			\
+  RPS_ASSERT(_.previous_call_frame() != nullptr);	\
+  _.previous_call_frame()->clear_closure();		\
+  return (Val); } while(0)
+
+#define RPS_LOCALRETURNTWO(MainVal,XtraVal) do {       	\
+  RPS_ASSERT(_.previous_call_frame() != nullptr);	\
+  _.previous_call_frame()->clear_closure();		\
+  return Rps_TwoValues((MainVal),(XtraVal)); } while(0)
 
 ////////////////////////////////////////////////////////////////
 ////// class information payload - for PaylClassInfo
