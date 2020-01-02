@@ -38,11 +38,14 @@
 
 class RpsQApplication;
 class RpsQWindow;
+class RpsQObjectLineEdit;// a line edit for a RefPerSys object
 
 #include <QApplication>
 #include <QMainWindow>
 #include <QPlainTextEdit>
 #include <QTimer>
+#include <QLineEdit>
+#include <QCompleter>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -184,7 +187,7 @@ protected slots:
 private:
   // Handle to parent window.
   RpsQWindow* m_parent;
-};
+};				// end RpsQMenuAction
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -202,7 +205,7 @@ public:
 protected slots:
   /// Overridden slot for the trigger action.
   void on_trigger();
-};
+};				// end RpsQMenuHelpAbout
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -226,7 +229,7 @@ public:
 protected slots:
   /// Overridden slot for the trigger action.
   void on_trigger();
-};
+};				// end RpsQMenuHelpDebug
 
 
 
@@ -252,7 +255,7 @@ public:
 protected slots:
   /// Overridden slot for the trigger action.
   void on_trigger();
-};
+};				// end RpsQMenuAppQuit
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -276,7 +279,7 @@ public:
 protected slots:
   /// Overridden slot for the trigger action.
   void on_trigger();
-};
+};				// end RpsQMenuAppExit
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -300,7 +303,7 @@ public:
 protected slots:
   /// Overridden slot for the trigger action.
   void on_trigger();
-};
+};				// end RpsQMenuAppClose
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -324,7 +327,7 @@ public:
 protected slots:
   /// Overridden slot for the trigger action.
   void on_trigger();
-};
+};				// end RpsQMenuAppDump
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -348,7 +351,7 @@ public:
 protected slots:
   /// Overridden slot for the trigger action.
   void on_trigger();
-};
+};				// end RpsQMenuAppGC
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -372,7 +375,7 @@ public:
 protected slots:
   /// Overridden slot for the trigger action.
   void on_trigger();
-};
+};				// end RpsQMenuAppNew
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -393,8 +396,31 @@ private:
   std::shared_ptr<RpsQMenuAppExit> m_menu_app_exit;
   std::shared_ptr<RpsQMenuHelpAbout> m_menu_help_about;
   std::shared_ptr<RpsQMenuHelpDebug> m_menu_help_debug;
-};
+};				// end RpsQWindowMenuBar
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// The line editor, with auto completion, for RefPerSys objects
+//////////////////////////////////////////////////////////////////////////////
+
+
+// the completer
+class RpsQObjectCompleter : public QCompleter /// in file window_qrps.cc
+{
+  Q_OBJECT
+public:
+  RpsQObjectCompleter(QObject*parent = nullptr);
+};					    // end RpsQObjectCompleter
+
+// the line edit
+class RpsQObjectLineEdit : public QLineEdit /// in file window_qrps.cc
+{
+  Q_OBJECT
+public:
+  RpsQObjectLineEdit(const QString &contents= "",
+                     const QString& placeholder= "", QWidget *parent = nullptr);
+};				// end RpsQObjectLineEdit
 
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class

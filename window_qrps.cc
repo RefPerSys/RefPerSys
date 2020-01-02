@@ -228,7 +228,27 @@ RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
     QSizePolicy::Expanding,
     QSizePolicy::Expanding
   );
-}
+}// end of RpsQWindowMenuBar::RpsQWindowMenuBar
+
+////////////////////////////////////////////////////////////////
+
+///// the completer for RefPerSys objects
+RpsQObjectCompleter::RpsQObjectCompleter(QObject*parent)
+  : QCompleter(parent)
+{
+#warning incomplete RpsQObjectCompleter::RpsQObjectCompleter
+  RPS_FATAL("incomplete RpsQObjectCompleter::RpsQObjectCompleter");
+} // end RpsQObjectCompleter::RpsQObjectCompleter
+
+
+///// the line edit for RefPerSys objects
+RpsQObjectLineEdit::RpsQObjectLineEdit(const QString &contents,
+                                       const QString& placeholder, QWidget *parent)
+  : QLineEdit(contents, parent)
+{
+#warning incomplete RpsQObjectLineEdit::RpsQObjectLineEdit
+  RPS_FATAL("incomplete RpsQObjectLineEdit::RpsQObjectLineEdit");
+} // end of RpsQObjectLineEdit::RpsQObjectLineEdit
 
 //////////////////////////////////////// end of file window_qrps.cc
 

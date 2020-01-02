@@ -679,15 +679,26 @@ static_assert(sizeof(Rps_Value) == sizeof(void*),
 static_assert(alignof(Rps_Value) == alignof(void*),
               "Rps_Value should have the alignment of a word");
 
-struct Rps_TwoValues {
+struct Rps_TwoValues
+{
   Rps_Value main_val;
   Rps_Value xtra_val;
   Rps_TwoValues(Rps_Value m=nullptr, Rps_Value x=nullptr)
     : main_val(m), xtra_val(x) {};
-  Rps_Value main() const { return main_val;};
-  Rps_Value xtra() const { return xtra_val;};
-  operator Rps_Value (void) const { return main(); };
-  void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0) const {
+  Rps_Value main() const
+  {
+    return main_val;
+  };
+  Rps_Value xtra() const
+  {
+    return xtra_val;
+  };
+  operator Rps_Value (void) const
+  {
+    return main();
+  };
+  void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0) const
+  {
     if (main_val) main_val.gc_mark(gc,depth);
     if (xtra_val) xtra_val.gc_mark(gc,depth);
   };
@@ -1080,9 +1091,13 @@ private:
   void mark_gcroots(void);
 public:
   double elapsed_time(void) const
-  { return rps_elapsed_real_time() - gc_startelapsedtime; };
+  {
+    return rps_elapsed_real_time() - gc_startelapsedtime;
+  };
   double process_time(void) const
-  { return rps_process_cpu_time() - gc_startprocesstime; };
+  {
+    return rps_process_cpu_time() - gc_startprocesstime;
+  };
   uint64_t nb_roots() const
   {
     return gc_nbroots;
@@ -1411,8 +1426,8 @@ typedef Rps_Value rps_magicgetterfun_t(Rps_CallFrame*callerframe, const Rps_Valu
 // the applied closure is in field cfram_clos of the caller frame.
 // applying function
 typedef Rps_TwoValues rps_applyingfun_t (Rps_CallFrame*callerframe,
-                                     const Rps_Value arg0, const Rps_Value arg1, const Rps_Value arg2,
-                                     const Rps_Value arg3, const std::vector<Rps_Value>* restargs);
+    const Rps_Value arg0, const Rps_Value arg1, const Rps_Value arg2,
+    const Rps_Value arg3, const std::vector<Rps_Value>* restargs);
 #define RPS_APPLYINGFUN_PREFIX "rpsapply"
 // by convention, the extern "C" applying function inside the fictuous connective _45vHaB3kVHiDzT42h0
 // would be named rpsapply_45vHaB3kVHiDzT42h0
