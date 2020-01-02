@@ -234,20 +234,75 @@ RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
 
 ///// the completer for RefPerSys objects
 RpsQObjectCompleter::RpsQObjectCompleter(QObject*parent)
-  : QCompleter(parent)
+  : QCompleter(parent),
+    qobcompl_strlistmodel(this)
 {
+  setModel(&qobcompl_strlistmodel);
 #warning incomplete RpsQObjectCompleter::RpsQObjectCompleter
   RPS_FATAL("incomplete RpsQObjectCompleter::RpsQObjectCompleter");
 } // end RpsQObjectCompleter::RpsQObjectCompleter
+
+void
+RpsQObjectCompleter::update_for_text(const QString&qstr)
+{
+  std::string str = qstr.toStdString();
+  qobcompl_strlistmodel.setStringList(QStringList{});
+  if (str.size() <= 2)
+    {
+      return;
+    }
+  else if (str[0] == '_' && isdigit(str[1]))
+    {
+      QStringList qslist;
+      auto stopfun = [=,&qslist](const Rps_ObjectZone*obz)
+      {
+        RPS_ASSERT(obz);
+        if (qslist.count() > max_nb_autocompletions+2)
+          return true;
+        Rps_Id obid = obz->oid();
+        char idbuf[32];
+        memset (idbuf, 0, sizeof(idbuf));
+        obid.to_cbuf24(idbuf);
+        QString qids(idbuf);
+        qslist << qids;
+        return false;
+      };
+      int nbcompl =
+        Rps_ObjectZone::autocomplete_oid(str.c_str(), stopfun);
+      if (nbcompl <= max_nb_autocompletions)
+        qobcompl_strlistmodel.setStringList(qslist);
+    }
+  else if (isalpha(str[0]))
+    {
+      QStringList qslist;
+      auto stopfun = [=,&qslist](const Rps_ObjectZone*obz, const std::string&nam)
+      {
+        RPS_ASSERT(obz);
+        if (qslist.count() > max_nb_autocompletions+2)
+          return true;
+        QString qnams(nam.c_str());
+        qslist << qnams;
+        return false;
+      };
+      int nbcompl = Rps_PayloadSymbol::autocomplete_name(str.c_str(), stopfun);
+
+      if (nbcompl <= max_nb_autocompletions)
+        qobcompl_strlistmodel.setStringList(qslist);
+    }
+} // end RpsQObjectCompleter::update_for_text
 
 
 ///// the line edit for RefPerSys objects
 RpsQObjectLineEdit::RpsQObjectLineEdit(const QString &contents,
                                        const QString& placeholder, QWidget *parent)
-  : QLineEdit(contents, parent)
+  : QLineEdit(contents, parent),
+    qoblinedit_completer(nullptr)
 {
+  qoblinedit_completer = std::make_unique<RpsQObjectCompleter>(this);
+  connect(this, SIGNAL(textEdited(const QString&)),
+          qoblinedit_completer.get(), SLOT(update_for_text(const QString&)));
 #warning incomplete RpsQObjectLineEdit::RpsQObjectLineEdit
-  RPS_FATAL("incomplete RpsQObjectLineEdit::RpsQObjectLineEdit");
+  RPS_WARN("incomplete RpsQObjectLineEdit::RpsQObjectLineEdit");
 } // end of RpsQObjectLineEdit::RpsQObjectLineEdit
 
 //////////////////////////////////////// end of file window_qrps.cc

@@ -46,6 +46,7 @@ class RpsQObjectLineEdit;// a line edit for a RefPerSys object
 #include <QTimer>
 #include <QLineEdit>
 #include <QCompleter>
+#include <QStringListModel>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -409,14 +410,21 @@ private:
 class RpsQObjectCompleter : public QCompleter /// in file window_qrps.cc
 {
   Q_OBJECT
+private:
+  QStringListModel qobcompl_strlistmodel;
 public:
   RpsQObjectCompleter(QObject*parent = nullptr);
+  static int constexpr max_nb_autocompletions = 32;
+public slots:
+  void update_for_text(const QString&);
 };					    // end RpsQObjectCompleter
 
 // the line edit
 class RpsQObjectLineEdit : public QLineEdit /// in file window_qrps.cc
 {
   Q_OBJECT
+private:
+  std::unique_ptr<RpsQObjectCompleter> qoblinedit_completer;
 public:
   RpsQObjectLineEdit(const QString &contents= "",
                      const QString& placeholder= "", QWidget *parent = nullptr);
