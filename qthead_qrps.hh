@@ -47,6 +47,10 @@ class RpsQObjectLineEdit;// a line edit for a RefPerSys object
 #include <QLineEdit>
 #include <QCompleter>
 #include <QStringListModel>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QFont>
+#include <QDialog>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -147,7 +151,8 @@ class RpsQWindow;
 enum RpsQWindowMenu
 {
   APP,
-  HELP
+  CREATE,
+  HELP,
 };
 
 
@@ -380,6 +385,30 @@ protected slots:
 
 
 ///////////////////////////////////////////////////////////////////////////////
+/// The Create | Class Window menu action for RpsQWindow.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQMenuCreateClass : public RpsQMenuAction
+{
+  Q_OBJECT
+public:
+  /// Constructor
+  inline RpsQMenuCreateClass(RpsQWindow* parent)
+    : RpsQMenuAction(
+        parent,
+        RpsQWindowMenu::CREATE,
+        "RPS_ICON_CLASS",
+        "&Class",
+        "CTRL+L"
+      )
+  { }
+
+protected slots:
+  /// Overridden slot for the trigger action.
+  void on_trigger();
+};				// end RpsQMenuCreateClass
+
+
+///////////////////////////////////////////////////////////////////////////////
 /// The menu bar for RpsQWindow.
 //////////////////////////////////////////////////////////////////////////////
 class RpsQWindowMenuBar
@@ -393,12 +422,26 @@ private:
   std::shared_ptr<RpsQMenuAppGC> m_menu_app_gc;
   std::shared_ptr<RpsQMenuAppNew> m_menu_app_new;
   std::shared_ptr<RpsQMenuAppClose> m_menu_app_close;
+  std::shared_ptr<RpsQMenuCreateClass> m_menu_create_class;
   std::shared_ptr<RpsQMenuAppQuit> m_menu_app_quit;
   std::shared_ptr<RpsQMenuAppExit> m_menu_app_exit;
   std::shared_ptr<RpsQMenuHelpAbout> m_menu_help_about;
   std::shared_ptr<RpsQMenuHelpDebug> m_menu_help_debug;
 };				// end RpsQWindowMenuBar
 
+
+
+class RpsQCreateClassDialog : public QDialog
+{
+public:
+  RpsQCreateClassDialog(RpsQWindow* parent);
+  ~RpsQCreateClassDialog();
+
+private:
+  RpsQWindow* m_parent;
+  QVBoxLayout* m_vbox;
+  QLabel* m_hint;
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////

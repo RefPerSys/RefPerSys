@@ -36,10 +36,10 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <QVBoxLayout>
 #include <QFile>
 #include <QLabel>
 #include <QDebug>
+#include <QFont>
 
 extern "C" const char rps_window_gitid[];
 const char rps_window_gitid[]= RPS_GITID;
@@ -208,6 +208,13 @@ void RpsQMenuAppNew::on_trigger()
 }
 
 
+void RpsQMenuCreateClass::on_trigger()
+{
+    auto dia = new RpsQCreateClassDialog(window());
+    dia->show();
+}
+
+
 RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
   : m_parent(parent)
 {
@@ -220,6 +227,9 @@ RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
   m_menu_app_quit = std::make_shared<RpsQMenuAppQuit>(m_parent);
   m_menu_app_exit = std::make_shared<RpsQMenuAppExit>(m_parent);
 
+  m_parent->menuBar()->addMenu("&Create");
+  m_menu_create_class = std::make_shared<RpsQMenuCreateClass>(m_parent);
+
   m_parent->menuBar()->addMenu("&Help");
   m_menu_help_about = std::make_shared<RpsQMenuHelpAbout>(m_parent);
   m_menu_help_debug = std::make_shared<RpsQMenuHelpDebug>(m_parent);
@@ -229,6 +239,28 @@ RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
     QSizePolicy::Expanding
   );
 }// end of RpsQWindowMenuBar::RpsQWindowMenuBar
+
+
+
+RpsQCreateClassDialog::RpsQCreateClassDialog(RpsQWindow* parent)
+  : m_parent(parent)
+{
+  std::string hint = "Enter the name of the class to create:";
+  m_hint = new QLabel(hint.c_str(), this);
+  m_hint->setFont(QFont("Arial", 12));
+
+  m_vbox = new QVBoxLayout();
+  m_vbox->addWidget(m_hint);
+  setLayout(m_vbox);
+}
+
+
+RpsQCreateClassDialog::~RpsQCreateClassDialog()
+{
+    delete m_hint;
+    delete m_vbox;
+}
+
 
 ////////////////////////////////////////////////////////////////
 
