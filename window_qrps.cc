@@ -252,9 +252,21 @@ RpsQCreateClassDialog::RpsQCreateClassDialog(RpsQWindow* parent)
     classname_label("class name:", this),
     classname_linedit(this),
     button_hbox(this),
-    ok_button(this),
-    cancel_button(this)
+    ok_button("Create Class", this),
+    cancel_button("cancel", this)
 {
+  // set widget names, useful for debugging, and later for style sheets.
+  setObjectName("RpsQCreateClassDialog");
+  dialog_vbox.setObjectName("RpsQCreateClassDialog_dialog_vbox");
+  superclass_hbox.setObjectName("RpsQCreateClassDialog_dialog_vbox");
+  superclass_label.setObjectName("RpsQCreateClassDialog_superclass_label");
+  superclass_linedit.setObjectName("RpsQCreateClassDialog_superclass_linedit");
+  classname_hbox.setObjectName("RpsQCreateClassDialog_classname_hbox");
+  classname_label.setObjectName("RpsQCreateClassDialog_classname_label");
+  classname_linedit.setObjectName("RpsQCreateClassDialog_classname_linedit");
+  button_hbox.setObjectName("RpsQCreateClassDialog_button_hbox");
+  ok_button.setObjectName("RpsQCreateClassDialog_ok_button");
+  cancel_button.setObjectName("RpsQCreateClassDialog_cancel_button");
   // set fonts of labels and linedits
   {
     auto labfont = QFont("Arial", 12);
