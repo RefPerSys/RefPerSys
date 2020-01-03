@@ -245,25 +245,33 @@ RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
 RpsQCreateClassDialog::RpsQCreateClassDialog(RpsQWindow* parent)
   : m_parent(parent)
 {
-  std::string hint = "Superclass:";
-  m_superclass_hint = new QLabel(hint.c_str(), this);
-  m_superclass_hint->setFont(QFont("Arial", 12));
+  spawn();
+  hook();
+  layout();
+}
 
-  //m_superclass = new RpsQObjectLineEdit(); //TODO: causes abort as incomplete
-  
+
+void RpsQCreateClassDialog::spawn()
+{
+  auto font = QFont("Arial", 12);
+
+  m_superclass_hint = new QLabel("Superclass:", this);
+  m_class_hint = new QLabel("Class:", this);
   m_ok = new QPushButton(tr("OK"));
-  m_ok->setFont(QFont("Arial", 12));
-
   m_cancel = new QPushButton(tr("Cancel"));
+  m_vbox = new QVBoxLayout();
+
+  m_superclass_hint->setFont(font);
+  m_class_hint->setFont(QFont("Arial", 12));
+  m_ok->setFont(QFont("Arial", 12));
   m_cancel->setFont(QFont("Arial", 12));
 
-  m_vbox = new QVBoxLayout();
-  m_vbox->addWidget(m_superclass_hint);
-  //m_vbox->addWidget(m_superclass);
-  m_vbox->addWidget(m_ok);
-  m_vbox->addWidget(m_cancel);
-  setLayout(m_vbox);
+  //m_superclass = new RpsQObjectLineEdit(); //TODO: causes abort as incomplete
+}
 
+
+void RpsQCreateClassDialog::hook()
+{
   connect(
     m_ok, 
     &QAbstractButton::clicked, 
@@ -280,9 +288,21 @@ RpsQCreateClassDialog::RpsQCreateClassDialog(RpsQWindow* parent)
 }
 
 
+void RpsQCreateClassDialog::layout()
+{
+  m_vbox->addWidget(m_superclass_hint);
+  //m_vbox->addWidget(m_superclass);
+  m_vbox->addWidget(m_class_hint);
+  m_vbox->addWidget(m_ok);
+  m_vbox->addWidget(m_cancel);
+  setLayout(m_vbox);
+}
+
+
 RpsQCreateClassDialog::~RpsQCreateClassDialog()
 {
     delete m_superclass_hint;
+    delete m_class_hint;
     delete m_ok;
     delete m_cancel;
     //delete m_superclass;
@@ -292,6 +312,10 @@ RpsQCreateClassDialog::~RpsQCreateClassDialog()
 
 void RpsQCreateClassDialog::on_ok_trigger()
 {
+  // TODO: create new class
+
+  std::string msg = "The new class has been created";
+  QMessageBox::information(m_parent, "Create Class", msg.c_str());
   close();
 }
 

@@ -478,10 +478,16 @@ private slots:
   void on_cancel_trigger();
 
 private:
+  void spawn();
+  void hook();
+  void layout();
+
+private:
   RpsQWindow* m_parent;
   QVBoxLayout* m_vbox;
   RpsQObjectLineEdit* m_superclass;
   QLabel* m_superclass_hint;
+  QLabel* m_class_hint;
   QPushButton* m_ok;
   QPushButton* m_cancel;
 };
