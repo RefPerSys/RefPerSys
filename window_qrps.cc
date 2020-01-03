@@ -243,79 +243,73 @@ RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
 
 
 RpsQCreateClassDialog::RpsQCreateClassDialog(RpsQWindow* parent)
-  : m_parent(parent)
+  : QDialog(parent),
+    dialog_vbox(this),
+    superclass_hbox(this),
+    superclass_label("superclass:", this),
+    superclass_linedit("", "super", this),
+    classname_hbox(this),
+    classname_label("class name:", this),
+    classname_linedit(this),
+    button_hbox(this),
+    ok_button(this),
+    cancel_button(this)
 {
-  spawn();
-  hook();
-  layout();
-}
+  // set fonts of labels and linedits
+  {
+    auto labfont = QFont("Arial", 12);
+    superclass_label.setFont(labfont);
+    classname_label.setFont(labfont);
+    auto editfont = QFont("Courier", 12);
+    superclass_linedit.setFont(editfont);
+  }
+  // ensure layout; maybe we should use style sheets?
+  {
+    dialog_vbox.addLayout(&superclass_hbox);
+    superclass_hbox.addWidget(&superclass_label);
+    superclass_hbox.addSpacing(2);
+    superclass_hbox.addWidget(&superclass_linedit);
+    dialog_vbox.addLayout(&classname_hbox);
+    classname_hbox.addWidget(&classname_label);
+    classname_hbox.addSpacing(2);
+    classname_hbox.addWidget(&classname_linedit);
+    dialog_vbox.addLayout(&button_hbox);
+    button_hbox.addWidget(&ok_button);
+    button_hbox.addSpacing(3);
+    button_hbox.addWidget(&cancel_button);
+  }
+  // define behavior
+  {
+    connect(
+      &ok_button,
+      &QAbstractButton::clicked,
+      this,
+      &RpsQCreateClassDialog::on_ok_trigger
+    );
+    connect(
+      &cancel_button,
+      &QAbstractButton::clicked,
+      this,
+      &RpsQCreateClassDialog::on_cancel_trigger
+    );
+  }
+} // end of RpsQCreateClassDialog::RpsQCreateClassDialog
 
 
-void RpsQCreateClassDialog::spawn()
-{
-  auto font = QFont("Arial", 12);
-
-  m_superclass_hint = new QLabel("Superclass:", this);
-  m_class_hint = new QLabel("Class:", this);
-  m_ok = new QPushButton(tr("OK"));
-  m_cancel = new QPushButton(tr("Cancel"));
-  m_vbox = new QVBoxLayout();
-
-  m_superclass_hint->setFont(font);
-  m_class_hint->setFont(QFont("Arial", 12));
-  m_ok->setFont(QFont("Arial", 12));
-  m_cancel->setFont(QFont("Arial", 12));
-
-  //m_superclass = new RpsQObjectLineEdit(); //TODO: causes abort as incomplete
-}
-
-
-void RpsQCreateClassDialog::hook()
-{
-  connect(
-    m_ok,
-    &QAbstractButton::clicked,
-    this,
-    &RpsQCreateClassDialog::on_ok_trigger
-  );
-
-  connect(
-    m_cancel,
-    &QAbstractButton::clicked,
-    this,
-    &RpsQCreateClassDialog::on_cancel_trigger
-  );
-}
-
-
-void RpsQCreateClassDialog::layout()
-{
-  m_vbox->addWidget(m_superclass_hint);
-  //m_vbox->addWidget(m_superclass);
-  m_vbox->addWidget(m_class_hint);
-  m_vbox->addWidget(m_ok);
-  m_vbox->addWidget(m_cancel);
-  setLayout(m_vbox);
-}
 
 
 RpsQCreateClassDialog::~RpsQCreateClassDialog()
 {
-  delete m_superclass_hint;
-  delete m_class_hint;
-  delete m_ok;
-  delete m_cancel;
-  //delete m_superclass;
-  delete m_vbox;
 }
 
 
 void RpsQCreateClassDialog::on_ok_trigger()
 {
   // TODO: create new class
-
+  RPS_WARN("unimplemented RpsQCreateClassDialog::on_ok_trigger");
+#warning unimplemented RpsQCreateClassDialog::on_ok_trigger
   std::string msg = "The new class has been created";
-  QMessageBox::information(m_parent, "Create Class", msg.c_str());
+  QMessageBox::information(parentWidget(), "Create Class", msg.c_str());
   close();
 }
 
@@ -335,7 +329,7 @@ RpsQObjectCompleter::RpsQObjectCompleter(QObject*parent)
 {
   setModel(&qobcompl_strlistmodel);
 #warning incomplete RpsQObjectCompleter::RpsQObjectCompleter
-  RPS_FATAL("incomplete RpsQObjectCompleter::RpsQObjectCompleter");
+  RPS_WARN("incomplete RpsQObjectCompleter::RpsQObjectCompleter");
 } // end RpsQObjectCompleter::RpsQObjectCompleter
 
 void

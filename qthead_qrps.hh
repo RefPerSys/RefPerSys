@@ -477,20 +477,19 @@ private slots:
   void on_ok_trigger();
   void on_cancel_trigger();
 
-private:
-  void spawn();
-  void hook();
-  void layout();
 
 private:
-  RpsQWindow* m_parent;
-  QVBoxLayout* m_vbox;
-  RpsQObjectLineEdit* m_superclass;
-  QLabel* m_superclass_hint;
-  QLabel* m_class_hint;
-  QPushButton* m_ok;
-  QPushButton* m_cancel;
-};
+  QVBoxLayout dialog_vbox;
+  QHBoxLayout superclass_hbox;
+  QLabel superclass_label;
+  RpsQObjectLineEdit superclass_linedit;
+  QHBoxLayout classname_hbox;
+  QLabel classname_label;
+  QLineEdit classname_linedit;
+  QHBoxLayout button_hbox;
+  QPushButton ok_button;
+  QPushButton cancel_button;
+};				// end RpsQCreateClassDialog
 
 
 //////////////////////////////////////////////////////////// RpsQWindow
