@@ -190,6 +190,17 @@ Rps_ObjectZone::mark_gc_inside(Rps_GarbageCollector&gc)
 } // end Rps_ObjectZone::mark_gc_inside
 
 void
+Rps_ObjectZone::put_space(Rps_ObjectRef obr)
+{
+  if (obr)
+    {
+      if (obr->get_class() != RPS_ROOT_OB(_2i66FFjmS7n03HNNBx))
+        throw std::runtime_error("invalid space object");
+    };
+  ob_space.store(obr);
+} // end Rps_ObjectZone::put_space
+
+void
 Rps_ObjectZone::dump_scan_contents(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
@@ -874,5 +885,80 @@ Rps_PayloadSymbol::autocomplete_name(const char*prefix, const std::function<bool
     }
   return count;
 } // end Rps_PayloadSymbol::autocomplete_name
+
+
+Rps_ObjectRef
+Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef superclassarg, std::string name)
+{
+  RPS_LOCALFRAME(nullptr,
+                 callerframe,
+                 Rps_ObjectRef obsuperclass;
+                 Rps_ObjectRef obsymbol; // the symbol
+                 Rps_ObjectRef obclass; //
+                );
+  _.obsuperclass = superclassarg;
+  if (RPS_UNLIKELY(!_.obsuperclass))
+    {
+      RPS_WARNOUT("make_named_class without superclass for name " << name);
+      throw std::runtime_error(std::string("make_named_class without superclass"));
+    }
+  // the superclassob should be instance of `class` class
+  if (RPS_UNLIKELY(_.obsuperclass->get_class() != RPS_ROOT_OB(_41OFI3r0S1t03qdB2E)))
+    {
+      RPS_WARNOUT("make_named_class with invalid superclass " << _.obsuperclass
+                  << " for name " << name);
+
+      throw std::runtime_error(std::string("make_named_class with invalid superclass"));
+    };
+  if (!Rps_PayloadSymbol::valid_name(name))
+    {
+      RPS_WARNOUT("make_named_class with superclass " << _.obsuperclass
+                  << " with invalid name " << name);
+      throw std::runtime_error(std::string("make_named_class with invalid name"));
+    }
+  _.obsymbol = Rps_PayloadSymbol::find_named_object(name);
+  if (!_.obsymbol)
+    _.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, name);
+  std::lock_guard<std::recursive_mutex> gusymb (*(_.obsymbol->objmtxptr()));
+  // obsymbol should be of class `symbol`
+  RPS_ASSERT(_.obsymbol->get_class() == RPS_ROOT_OB(_36I1BY2NetN03WjrOv));
+  auto paylsymbol = _.obsymbol-> get_dynamic_payload<Rps_PayloadSymbol>();
+  RPS_ASSERT (paylsymbol);
+  _.obclass = Rps_ObjectZone::make();
+  /// the class is class `class`
+  _.obclass->ob_class.store(RPS_ROOT_OB(_41OFI3r0S1t03qdB2E));
+  auto paylclainf = _.obclass->put_new_plain_payload<Rps_PayloadClassInfo>();
+  paylclainf->put_superclass(_.obsuperclass);
+  paylclainf->put_symbname(_.obsymbol);
+  paylsymbol->symbol_put_value(_.obclass);
+  _.obclass->put_space(RPS_ROOT_OB(_8J6vNYtP5E800eCr5q)); // the initial space
+  return _.obclass;
+} // end Rps_ObjectRef::make_named_class
+
+
+
+static std::mutex rps_symbol_mtx;
+Rps_ObjectRef
+Rps_ObjectRef::make_new_symbol(Rps_CallFrame*callerframe, std::string name, bool isweak)
+{
+  RPS_LOCALFRAME(nullptr,
+                 callerframe,
+                 Rps_ObjectRef obsymbol; // the symbol
+                );
+  std::lock_guard<std::mutex> gusymb (rps_symbol_mtx);
+  if (!Rps_PayloadSymbol::valid_name(name))
+    {
+      RPS_WARNOUT("make_new_symbol with invalid name " << name);
+      throw std::runtime_error(std::string("make_new_symbol with invalid name"));
+    }
+  if (Rps_PayloadSymbol::find_named_object(name))
+    {
+      RPS_WARNOUT("make_new_symbol with existing name " << name);
+      throw std::runtime_error(std::string("make_new_symbol with existing name"));
+    }
+  _.obsymbol = Rps_ObjectZone::make();
+  _.obsymbol->ob_class.store(RPS_ROOT_OB(_36I1BY2NetN03WjrOv)); // the `symbol` class
+  Rps_PayloadSymbol::register_name(name, _.obsymbol, isweak);
+} // end of Rps_ObjectRef::make_new_symbol
 
 // end of file objects_rps.cc

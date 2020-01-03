@@ -210,8 +210,8 @@ void RpsQMenuAppNew::on_trigger()
 
 void RpsQMenuCreateClass::on_trigger()
 {
-    auto dia = new RpsQCreateClassDialog(window());
-    dia->show();
+  auto dia = new RpsQCreateClassDialog(window());
+  dia->show();
 }
 
 
@@ -273,16 +273,16 @@ void RpsQCreateClassDialog::spawn()
 void RpsQCreateClassDialog::hook()
 {
   connect(
-    m_ok, 
-    &QAbstractButton::clicked, 
-    this, 
+    m_ok,
+    &QAbstractButton::clicked,
+    this,
     &RpsQCreateClassDialog::on_ok_trigger
   );
 
   connect(
-    m_cancel, 
-    &QAbstractButton::clicked, 
-    this, 
+    m_cancel,
+    &QAbstractButton::clicked,
+    this,
     &RpsQCreateClassDialog::on_cancel_trigger
   );
 }
@@ -301,12 +301,12 @@ void RpsQCreateClassDialog::layout()
 
 RpsQCreateClassDialog::~RpsQCreateClassDialog()
 {
-    delete m_superclass_hint;
-    delete m_class_hint;
-    delete m_ok;
-    delete m_cancel;
-    //delete m_superclass;
-    delete m_vbox;
+  delete m_superclass_hint;
+  delete m_class_hint;
+  delete m_ok;
+  delete m_cancel;
+  //delete m_superclass;
+  delete m_vbox;
 }
 
 

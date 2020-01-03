@@ -496,6 +496,18 @@ public:
   inline void dump_scan(Rps_Dumper* du, unsigned depth) const;
   inline Json::Value dump_json(Rps_Dumper* du) const;
   void output(std::ostream&os) const;
+  // these function throw an exception on failure
+  static Rps_ObjectRef make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef superclassob, std::string name);
+  static Rps_ObjectRef make_new_symbol(Rps_CallFrame*callerframe, std::string name, bool isweak);
+  static Rps_ObjectRef make_new_strong_symbol(Rps_CallFrame*callerframe, std::string name)
+  {
+    return make_new_symbol(callerframe, name, true);
+  };
+  static Rps_ObjectRef make_new_weak_symbol(Rps_CallFrame*callerframe, std::string name)
+  {
+    return make_new_symbol(callerframe, name, false);
+  };
+  static Rps_ObjectRef make_object(Rps_CallFrame*callerframe, Rps_ObjectRef classob);
 };				// end class Rps_ObjectRef
 
 static_assert(sizeof(Rps_ObjectRef) == sizeof(void*),
@@ -1534,6 +1546,7 @@ public:
     return  get_class();
   };
   inline Rps_ObjectRef get_space(void) const;
+  void put_space(Rps_ObjectRef obspace);
   inline double get_mtime(void) const;
   inline rps_applyingfun_t*get_applyingfun(const Rps_ClosureValue&closv) const
   {
