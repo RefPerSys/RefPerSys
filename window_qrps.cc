@@ -245,20 +245,60 @@ RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
 RpsQCreateClassDialog::RpsQCreateClassDialog(RpsQWindow* parent)
   : m_parent(parent)
 {
-  std::string hint = "Enter the name of the class to create:";
-  m_hint = new QLabel(hint.c_str(), this);
-  m_hint->setFont(QFont("Arial", 12));
+  std::string hint = "Superclass:";
+  m_superclass_hint = new QLabel(hint.c_str(), this);
+  m_superclass_hint->setFont(QFont("Arial", 12));
+
+  //m_superclass = new RpsQObjectLineEdit(); //TODO: causes abort as incomplete
+  
+  m_ok = new QPushButton(tr("OK"));
+  m_ok->setFont(QFont("Arial", 12));
+
+  m_cancel = new QPushButton(tr("Cancel"));
+  m_cancel->setFont(QFont("Arial", 12));
 
   m_vbox = new QVBoxLayout();
-  m_vbox->addWidget(m_hint);
+  m_vbox->addWidget(m_superclass_hint);
+  //m_vbox->addWidget(m_superclass);
+  m_vbox->addWidget(m_ok);
+  m_vbox->addWidget(m_cancel);
   setLayout(m_vbox);
+
+  connect(
+    m_ok, 
+    &QAbstractButton::clicked, 
+    this, 
+    &RpsQCreateClassDialog::on_ok_trigger
+  );
+
+  connect(
+    m_cancel, 
+    &QAbstractButton::clicked, 
+    this, 
+    &RpsQCreateClassDialog::on_cancel_trigger
+  );
 }
 
 
 RpsQCreateClassDialog::~RpsQCreateClassDialog()
 {
-    delete m_hint;
+    delete m_superclass_hint;
+    delete m_ok;
+    delete m_cancel;
+    //delete m_superclass;
     delete m_vbox;
+}
+
+
+void RpsQCreateClassDialog::on_ok_trigger()
+{
+  close();
+}
+
+
+void RpsQCreateClassDialog::on_cancel_trigger()
+{
+  close();
 }
 
 

@@ -49,8 +49,8 @@ class RpsQObjectLineEdit;// a line edit for a RefPerSys object
 #include <QStringListModel>
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QFont>
 #include <QDialog>
+#include <QPushButton>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -431,19 +431,6 @@ private:
 
 
 
-class RpsQCreateClassDialog : public QDialog
-{
-public:
-  RpsQCreateClassDialog(RpsQWindow* parent);
-  ~RpsQCreateClassDialog();
-
-private:
-  RpsQWindow* m_parent;
-  QVBoxLayout* m_vbox;
-  QLabel* m_hint;
-};
-
-
 ///////////////////////////////////////////////////////////////////////////////
 /// The line editor, with auto completion, for RefPerSys objects
 //////////////////////////////////////////////////////////////////////////////
@@ -472,6 +459,33 @@ public:
   RpsQObjectLineEdit(const QString &contents= "",
                      const QString& placeholder= "", QWidget *parent = nullptr);
 };				// end RpsQObjectLineEdit
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// The dialog box for creating new classes.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQCreateClassDialog : public QDialog
+{
+  Q_OBJECT
+public:
+  RpsQCreateClassDialog(RpsQWindow* parent);
+  ~RpsQCreateClassDialog();
+
+private slots:
+  void on_ok_trigger();
+  void on_cancel_trigger();
+
+private:
+  RpsQWindow* m_parent;
+  QVBoxLayout* m_vbox;
+  RpsQObjectLineEdit* m_superclass;
+  QLabel* m_superclass_hint;
+  QPushButton* m_ok;
+  QPushButton* m_cancel;
+};
+
 
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
