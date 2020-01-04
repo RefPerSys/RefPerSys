@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 9,
+ "nbobjects" : 11,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -86,9 +86,9 @@
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "object",
- "class_super" : "_5yhJGgxLwLp00X0xEQ",
+ "class_super" : "_6XLY6QfcDre02922jz",
  "class_symb" : "_7X9eGs8601M021nMue",
- "mtime" : 1575698824.78,
+ "mtime" : 1578114964.0,
  "oid" : "_5yhJGgxLwLp00X0xEQ",
  "payload" : "class"
 }
@@ -140,5 +140,29 @@
  "symb_val" : "_2i66FFjmS7n03HNNBx"
 }
 
+//// manual add of `value`  symbol and class
 
+//+ob_7ZRsf01mtit01xPUei
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1578114964.0,
+ "oid" : "_7ZRsf01mtit01xPUei",
+ "payload" : "symbol",
+ "symb_name" : "value",
+ "symb_val" : "_5yhJGgxLwLp00X0xEQ"
+}
+
+//+ob_6XLY6QfcDre02922jz
+//∈class
+{
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+    "class_name" : "value",
+    // no superclass
+ "class_symb" : "_7ZRsf01mtit01xPUei",
+ "mtime" : 1578114964.0,
+ "oid" : "_6XLY6QfcDre02922jz",
+ "payload" : "class"
+}
 //// end of RefPerSys generated space file persistore/sp_8J6vNYtP5E800eCr5q-rps.json
