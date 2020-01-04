@@ -282,6 +282,17 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 #define RPS_INFORMOUT(...) RPS_INFORMOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
 
 
+/// this macro RPS_NOPRINT and the following one RPS_NOPRINTOUT are
+/// optimized to no-op but still typechecked. They could be used as a
+/// drop-in replacement to RPS_INFORM and RPS_INFORMOUT, so that only
+/// a few letters of change are needed, while keeping a previous debug
+/// or information output....
+#define RPS_NOPRINT(Fmt,...) do { if (false) \
+      RPS_INFORM(Fmt,##__VA_ARGS__); }while(0)
+
+#define RPS_NOPRINTOUT(...) do { if(false) \
+      RPS_INFORMOUT(__VA_ARGS__); }while(0)
+
 
 //////////////// assert
 #ifndef NDEBUG
