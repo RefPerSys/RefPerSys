@@ -249,10 +249,20 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           //              << " count:" << (obcnt+1));
           if (RPS_UNLIKELY(obcnt == 0))
             {
-              Json::Value prologjson = rps_string_to_json(prologstr);
-              if (prologjson.type() != Json::objectValue)
-                RPS_FATAL("Rps_Loader::first_pass_space %s bad Json type #%d",
-                          spacepath.c_str(), (int)prologjson.type());
+              Json::Value prologjson;
+              try
+                {
+                  prologjson = rps_string_to_json(prologstr);
+                  if (prologjson.type() != Json::objectValue)
+                    RPS_FATAL("Rps_Loader::first_pass_space %s line#%d bad Json type #%d",
+                              spacepath.c_str(), (int)lincnt, (int)prologjson.type());
+                }
+              catch (std::exception& exc)
+                {
+                  RPS_FATALOUT("Rps_Loader::first_pass_space " << " spacepath:" << spacepath
+                               << " line#" << lincnt
+                               << " failed to parse: " << exc.what());
+                };
               Json::Value formatjson = prologjson["format"];
               if (formatjson.type() !=Json::stringValue)
                 RPS_FATALOUT("space file " << spacepath
@@ -302,13 +312,27 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
   ///               << " lineno=" <<lineno
   ///               << " objid=" <<objid
   ///               << " objbuf:\n" << objbuf);
-  Json::Value objjson = rps_string_to_json(objbuf);
-  if (objjson.type() != Json::objectValue)
-    RPS_FATALOUT("parse_json_buffer_second_pass spacid=" << spacid
-                 << " lineno:" << lineno
-                 << " objid:" << objid
-                 << " bad objbuf:" << std::endl
-                 << objbuf);
+  Json::Value objjson;
+  try
+    {
+      objjson = rps_string_to_json(objbuf);
+      if (objjson.type() != Json::objectValue)
+        RPS_FATALOUT("parse_json_buffer_second_pass spacid=" << spacid
+                     << " lineno:" << lineno
+                     << " objid:" << objid
+                     << " bad objbuf:" << std::endl
+                     << objbuf);
+    }
+  catch (std::exception& exc)
+    {
+      RPS_FATALOUT("parse_json_buffer_second_pass spacid=" << spacid
+                   << " lineno:" << lineno
+                   << " objid:" << objid
+                   << " parse failure "
+                   << exc.what()
+                   << " with objbuf:" << std::endl
+                   << objbuf);
+    }
   Json::Value oidjson = objjson["oid"];
   if (oidjson.asString() != objid.to_string())
     RPS_FATALOUT("parse_json_buffer_second_pass spacid=" << spacid
@@ -1514,10 +1538,18 @@ Rps_Loader::parse_manifest_file(void)
   if (manifstr.size() < 20)
     RPS_FATAL("Rps_Loader::parse_manifest_file nearly empty file %s",
               manifpath.c_str());
-  Json::Value manifjson = rps_string_to_json(manifstr);
-  if (manifjson.type () != Json::objectValue)
-    RPS_FATAL("Rps_Loader::parse_manifest_file wants a Json object in %s",
-              manifpath.c_str());
+  Json::Value manifjson;
+  try
+    {
+      manifjson = rps_string_to_json(manifstr);
+      if (manifjson.type () != Json::objectValue)
+        RPS_FATAL("Rps_Loader::parse_manifest_file wants a Json object in %s",
+                  manifpath.c_str());
+    }
+  catch  (const std::exception& exc)
+    {
+      RPS_FATALOUT("Rps_Loader::parse_manifest_file failed to parse: " << exc.what());
+    };
   if (manifjson["format"].asString() != RPS_MANIFEST_FORMAT)
     RPS_FATAL("manifest map in %s should have format: '%s' but got:\n"
               "%s",
