@@ -934,6 +934,8 @@ Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef supercl
                  Rps_ObjectRef obclass; //
                 );
   _.obsuperclass = superclassarg;
+  RPS_INFORMOUT("Rps_ObjectRef::make_named_class obsuperclass="
+                << _.obsuperclass << ", name=" << name << " start");
   if (RPS_UNLIKELY(!_.obsuperclass))
     {
       RPS_WARNOUT("make_named_class without superclass for name " << name);
@@ -953,15 +955,20 @@ Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef supercl
                   << " with invalid name " << name);
       throw std::runtime_error(std::string("make_named_class with invalid name"));
     }
+  RPS_INFORMOUT("Rps_ObjectRef::make_named_class valid name=" << name);
   _.obsymbol = Rps_PayloadSymbol::find_named_object(name);
   if (!_.obsymbol)
     _.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, name);
-  std::lock_guard<std::recursive_mutex> gusymb (*(_.obsymbol->objmtxptr()));
+  RPS_INFORMOUT("Rps_ObjectRef::make_named_class name=" << name <<", obsymbol=" << _.obsymbol);
+  std::unique_lock<std::recursive_mutex> gusymb (*(_.obsymbol->objmtxptr()));
   // obsymbol should be of class `symbol`
   RPS_ASSERT(_.obsymbol->get_class() == RPS_ROOT_OB(_36I1BY2NetN03WjrOv));
+  RPS_INFORMOUT("Rps_ObjectRef::make_named_class good obsymbol=" << _.obsymbol);
   auto paylsymbol = _.obsymbol-> get_dynamic_payload<Rps_PayloadSymbol>();
   RPS_ASSERT (paylsymbol);
   _.obclass = Rps_ObjectZone::make();
+  RPS_INFORMOUT("Rps_ObjectRef::make_named_class name=" << name << ", paylsymbol=" << paylsymbol
+                << ", obclass=" << _.obclass);
   /// the class is class `class`
   _.obclass->ob_class.store(RPS_ROOT_OB(_41OFI3r0S1t03qdB2E));
   auto paylclainf = _.obclass->put_new_plain_payload<Rps_PayloadClassInfo>();
@@ -969,6 +976,8 @@ Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef supercl
   paylclainf->put_symbname(_.obsymbol);
   paylsymbol->symbol_put_value(_.obclass);
   _.obclass->put_space(RPS_ROOT_OB(_8J6vNYtP5E800eCr5q)); // the initial space
+  RPS_INFORMOUT("Rps_ObjectRef::make_named_class name="<< name
+                << " gives obclass=" << _.obclass);
   return _.obclass;
 } // end Rps_ObjectRef::make_named_class
 

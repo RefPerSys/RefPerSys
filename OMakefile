@@ -56,11 +56,11 @@
 # configuration variables.
 #
 DIALECTFLAGS = -std=gnu++17
-# optimization flags: -O0 or -Og is better for debugging, -O1 or -O2 is
-# better for benchmarking and both can be used with -g for debugging
-# info...
+# optimization flags: -O0 or -Og is better for debugging, -O1 or -O2
+# is better for benchmarking and both can be used with -g, -g1, -g2,
+# -g3 for debugging info...
 CODGENFLAGS = -fPIC
-OPTIMFLAGS = -Og -g3 
+OPTIMFLAGS = -O0 -g3
 WARNFLAGS = -Wall -Wextra
 # See https://www.freedesktop.org/wiki/Software/pkg-config/
 PKGCONFIG = pkg-config

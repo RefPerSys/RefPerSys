@@ -275,6 +275,7 @@ RpsQCreateClassDialog::RpsQCreateClassDialog(RpsQWindow* parent)
     classname_label.setFont(labfont);
     auto editfont = QFont("Courier", 12);
     superclass_linedit.setFont(editfont);
+    classname_linedit.setFont(editfont);
   }
   // ensure layout; maybe we should use style sheets?
   {
@@ -334,7 +335,9 @@ void RpsQCreateClassDialog::on_ok_trigger()
   try
     {
       _.obsuperclass = Rps_ObjectRef::find_object(&_, strsuperclass);
+      RPS_INFORMOUT("RpsQCreateClassDialog::on_ok_trigger obsuperclass=" << _.obsuperclass);
       _.obnewclass = Rps_ObjectRef::make_named_class(&_, _.obsuperclass, strclassname);
+      RPS_INFORMOUT("RpsQCreateClassDialog::on_ok_trigger obnewclass=" << _.obnewclass);
       std::ostringstream outs;
       outs << "created new class " << _.obnewclass << " named " << strclassname
            << " of superclass " << _.obsuperclass;
@@ -343,6 +346,7 @@ void RpsQCreateClassDialog::on_ok_trigger()
     }
   catch (const std::exception& exc)
     {
+      RPS_WARNOUT("RpsQCreateClassDialog::on_ok_trigger exception " << exc.what());
       std::ostringstream outs;
       outs << "failed to create class named "
            << strclassname << " with superclass " << strsuperclass
