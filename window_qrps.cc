@@ -244,14 +244,14 @@ RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
 
 RpsQCreateClassDialog::RpsQCreateClassDialog(RpsQWindow* parent)
   : QDialog(parent),
-    dialog_vbox(this),
-    superclass_hbox(this),
+    dialog_vbox(),
+    superclass_hbox(),
     superclass_label("superclass:", this),
     superclass_linedit("", "super", this),
-    classname_hbox(this),
+    classname_hbox(),
     classname_label("class name:", this),
     classname_linedit(this),
-    button_hbox(this),
+    button_hbox(),
     ok_button("Create Class", this),
     cancel_button("cancel", this)
 {
@@ -267,6 +267,7 @@ RpsQCreateClassDialog::RpsQCreateClassDialog(RpsQWindow* parent)
   button_hbox.setObjectName("RpsQCreateClassDialog_button_hbox");
   ok_button.setObjectName("RpsQCreateClassDialog_ok_button");
   cancel_button.setObjectName("RpsQCreateClassDialog_cancel_button");
+  RPS_INFORMOUT("RpsQCreateClassDialog @" << this);
   // set fonts of labels and linedits
   {
     auto labfont = QFont("Arial", 12);
@@ -289,6 +290,7 @@ RpsQCreateClassDialog::RpsQCreateClassDialog(RpsQWindow* parent)
     button_hbox.addWidget(&ok_button);
     button_hbox.addSpacing(3);
     button_hbox.addWidget(&cancel_button);
+    setLayout(&dialog_vbox);
   }
   // define behavior
   {
@@ -317,19 +319,45 @@ RpsQCreateClassDialog::~RpsQCreateClassDialog()
 
 void RpsQCreateClassDialog::on_ok_trigger()
 {
+  RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
+                 nullptr,//parentframe
+                 Rps_ObjectRef obsymb;
+                 Rps_ObjectRef obnewclass;
+                 Rps_ObjectRef obsuperclass;
+                );
   // TODO: create new class
-  RPS_WARN("unimplemented RpsQCreateClassDialog::on_ok_trigger");
-#warning unimplemented RpsQCreateClassDialog::on_ok_trigger
-  std::string msg = "The new class has been created";
-  QMessageBox::information(parentWidget(), "Create Class", msg.c_str());
-  close();
-}
+  std::string strsuperclass = superclass_linedit.text().toStdString();
+  std::string strclassname = classname_linedit.text().toStdString();
+  RPS_WARNOUT("untested RpsQCreateClassDialog::on_ok_trigger strsuperclass="
+              << strsuperclass
+              << ", strclassname=" << strclassname);
+  try
+    {
+      _.obsuperclass = Rps_ObjectRef::find_object(&_, strsuperclass);
+      _.obnewclass = Rps_ObjectRef::make_named_class(&_, _.obsuperclass, strclassname);
+      std::ostringstream outs;
+      outs << "created new class " << _.obnewclass << " named " << strclassname
+           << " of superclass " << _.obsuperclass;
+      std::string msg = outs.str();
+      QMessageBox::information(parentWidget(), "Created Class", msg.c_str());
+    }
+  catch (const std::exception& exc)
+    {
+      std::ostringstream outs;
+      outs << "failed to create class named "
+           << strclassname << " with superclass " << strsuperclass
+           << std::endl;
+      outs<< exc.what();
+      QMessageBox::warning(parentWidget(), "Failed class creation", outs.str().c_str());
+    }
+  deleteLater(); // was close()
+}		 // end RpsQCreateClassDialog::on_ok_trigger
 
 
 void RpsQCreateClassDialog::on_cancel_trigger()
 {
-  close();
-}
+  deleteLater(); // was close()
+} // end RpsQCreateClassDialog::on_ok_trigger
 
 
 ////////////////////////////////////////////////////////////////
