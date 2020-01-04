@@ -401,6 +401,7 @@ public:
     if (is_empty()) return nullptr;
     return _optr;
   }
+  // get object from Json at load time
   Rps_ObjectRef(const Json::Value &, Rps_Loader*); //in store_rps.cc
   // rule of five
   Rps_ObjectRef(const Rps_ObjectZone*oz = nullptr)
@@ -496,8 +497,13 @@ public:
   inline void dump_scan(Rps_Dumper* du, unsigned depth) const;
   inline Json::Value dump_json(Rps_Dumper* du) const;
   void output(std::ostream&os) const;
-  // these function throw an exception on failure
+  ///////////
+  // these functions throw an exception on failure
+  // find an object with a given oid or name string
+  static Rps_ObjectRef find_object(Rps_CallFrame*callerframe,  const std::string& str);
+  // create a class of given super class and name
   static Rps_ObjectRef make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef superclassob, std::string name);
+  // create a symbol of given name
   static Rps_ObjectRef make_new_symbol(Rps_CallFrame*callerframe, std::string name, bool isweak);
   static Rps_ObjectRef make_new_strong_symbol(Rps_CallFrame*callerframe, std::string name)
   {
