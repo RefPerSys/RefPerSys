@@ -546,10 +546,9 @@ Rps_Value::compute_class( Rps_CallFrame*stkf) const
   if (is_empty()) return nullptr;
   if (is_ptr())
     return as_ptr()->compute_class(stkf);
-  if (is_int())
+  else if (is_int())
     {
-#warning Rps_Value::compute_class unimplemented for integer
-      RPS_FATAL("Rps_Value::compute_class unimplemented for integer");
+      return RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); // the `int` class
     }
   return nullptr;
 }
