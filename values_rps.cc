@@ -550,6 +550,10 @@ Rps_Value::compute_class( Rps_CallFrame*stkf) const
     {
       return RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); // the `int` class
     }
+  else if (is_string())
+    {
+      return RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); // the `string` class
+    }
   return nullptr;
 }
 /* end of file value_rps.cc */
