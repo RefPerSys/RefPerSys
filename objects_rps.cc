@@ -1005,6 +1005,7 @@ Rps_ObjectRef::make_new_symbol(Rps_CallFrame*callerframe, std::string name, bool
   _.obsymbol = Rps_ObjectZone::make();
   _.obsymbol->ob_class.store(RPS_ROOT_OB(_36I1BY2NetN03WjrOv)); // the `symbol` class
   Rps_PayloadSymbol::register_name(name, _.obsymbol, isweak);
+  return _.obsymbol;
 } // end of Rps_ObjectRef::make_new_symbol
 
 // end of file objects_rps.cc
