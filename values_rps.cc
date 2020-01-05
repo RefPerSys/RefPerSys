@@ -288,8 +288,7 @@ Rps_SetOb::val_output(std::ostream&out, unsigned int) const
 Rps_ObjectRef
 Rps_SetOb::compute_class(Rps_CallFrame*) const
 {
-  RPS_FATAL("unimplemented Rps_SetOb::compute_class");
-#warning unimplemented Rps_SetOb::compute_class
+  return RPS_ROOT_OB(_6JYterg6iAu00cV9Ye); // the `set` class
 } // end Rps_SetOb::compute_class
 
 //////////////////////////////////////// tuples
@@ -389,8 +388,7 @@ Rps_TupleOb::collect(const std::initializer_list<Rps_Value>&valil)
 Rps_ObjectRef
 Rps_TupleOb::compute_class( Rps_CallFrame*) const
 {
-  RPS_FATAL("unimplemented Rps_TupleOb::compute_class");
-#warning unimplemented Rps_TupleOb::compute_class
+  return RPS_ROOT_OB(_6NVM7sMcITg01ug5TC); // the `tuple` class
 } // end Rps_TupleOb::compute_class
 
 void
@@ -512,8 +510,7 @@ Rps_ClosureZone::val_output(std::ostream&out, unsigned int depth) const
 Rps_ObjectRef
 Rps_ClosureZone::compute_class(Rps_CallFrame*) const
 {
-  RPS_FATAL("unimplemented Rps_ClosureZone::compute_class");
-#warning unimplemented Rps_ClosureZone::compute_class
+  return RPS_ROOT_OB(_4jISxMJ4PYU0050nUl); // the `closure` class
 } // end Rps_ClosureZone::compute_class
 
 //////////////// attributes
@@ -544,8 +541,6 @@ Rps_ObjectRef
 Rps_Value::compute_class( Rps_CallFrame*stkf) const
 {
   if (is_empty()) return nullptr;
-  if (is_ptr())
-    return as_ptr()->compute_class(stkf);
   else if (is_int())
     return RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); // the `int` class
   else if (is_string())
@@ -554,6 +549,12 @@ Rps_Value::compute_class( Rps_CallFrame*stkf) const
     return RPS_ROOT_OB(_98sc8kSOXV003i86w5); // the `double` class
   else if (is_tuple())
     return RPS_ROOT_OB(_6NVM7sMcITg01ug5TC); // the `tuple` class
+  else if (is_set())
+    return RPS_ROOT_OB(_6JYterg6iAu00cV9Ye); // the `set` class
+  else if (is_closure())
+    return RPS_ROOT_OB(_4jISxMJ4PYU0050nUl); // the `closure` class
+  else if (is_ptr())
+    return as_ptr()->compute_class(stkf);
   return nullptr;
 }
 /* end of file value_rps.cc */

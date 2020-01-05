@@ -129,8 +129,7 @@ Rps_String::val_output(std::ostream&out, unsigned) const
 Rps_ObjectRef
 Rps_String::compute_class(Rps_CallFrame*) const
 {
-  RPS_FATAL("unimplemented Rps_String::compute_class");
-#warning unimplemented Rps_String::compute_class
+  return RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); // the `string` class
 } // end Rps_String::compute_class
 
 void
@@ -142,8 +141,7 @@ Rps_Double::val_output(std::ostream&out, unsigned) const
 Rps_ObjectRef
 Rps_Double::compute_class(Rps_CallFrame*) const
 {
-  RPS_FATAL("unimplemented Rps_Double::compute_class");
-#warning unimplemented Rps_Double::compute_class
+  return RPS_ROOT_OB(_98sc8kSOXV003i86w5); // the `double` class
 } // end Rps_String::compute_class
 
 //////////////////////////////////////////////// end of file scalar_rps.cc
