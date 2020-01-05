@@ -552,6 +552,8 @@ Rps_Value::compute_class( Rps_CallFrame*stkf) const
     return RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); // the `string` class
   else if (is_double())
     return RPS_ROOT_OB(_98sc8kSOXV003i86w5); // the `double` class
+  else if (is_tuple())
+    return RPS_ROOT_OB(_6NVM7sMcITg01ug5TC); // the `tuple` class
   return nullptr;
 }
 /* end of file value_rps.cc */
