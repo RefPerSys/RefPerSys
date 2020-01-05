@@ -454,8 +454,33 @@ RpsQCreateSymbolDialog::on_ok_trigger()
                  Rps_ObjectRef obsymb;
                 );
   std::string strsyname = syname_linedit.text().toStdString();
-  RPS_WARNOUT("incomplete RpsQCreateSymbolDialog::on_ok_trigger strsyname=" << strsyname);
-#warning incomplete RpsQCreateSymbolDialog::on_ok_trigger
+  RPS_WARNOUT("RpsQCreateSymbolDialog::on_ok_trigger strsyname=" << strsyname);
+  try
+    {
+      bool isweak = syname_weakchkbox.isChecked();
+      _.obsymb = Rps_ObjectRef::make_new_symbol(&_, strsyname, isweak);
+      RPS_INFORMOUT("RpsQCreateSymbolDialog::on_ok_trigger created symbol " << _.obsymb
+                    << " named " << strsyname);
+      if (!_.obsymb)
+        throw std::runtime_error(std::string("failed to create symbol:") + strsyname);
+      if (!isweak)
+        rps_add_root_object(_.obsymb);
+      std::ostringstream outs;
+      outs << "created new symbol " << _.obsymb << " named " << strsyname;
+      std::string msg = outs.str();
+      QMessageBox::information(parentWidget(), "Created Symbol", msg.c_str());
+    }
+  catch (const std::exception& exc)
+    {
+      RPS_WARNOUT("RpsQCreateSymbolDialog::on_ok_trigger exception " << exc.what());
+      std::ostringstream outs;
+      outs << "failed to create symbol named "
+           << strsyname
+           << std::endl;
+      outs<< exc.what();
+      QMessageBox::warning(parentWidget(), "Failed symbol creation", outs.str().c_str());
+    }
+  deleteLater();
 } // end RpsQCreateSymbolDialog::on_ok_trigger
 
 void
