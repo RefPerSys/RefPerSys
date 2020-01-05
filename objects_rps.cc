@@ -976,6 +976,7 @@ Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef supercl
   paylclainf->put_symbname(_.obsymbol);
   paylsymbol->symbol_put_value(_.obclass);
   _.obclass->put_space(RPS_ROOT_OB(_8J6vNYtP5E800eCr5q)); // the initial space
+  rps_add_root_object (_.obclass);
   RPS_INFORMOUT("Rps_ObjectRef::make_named_class name="<< name
                 << " gives obclass=" << _.obclass);
   return _.obclass;
@@ -1006,7 +1007,7 @@ Rps_ObjectRef::make_new_symbol(Rps_CallFrame*callerframe, std::string name, bool
   _.obsymbol->ob_class.store(RPS_ROOT_OB(_36I1BY2NetN03WjrOv)); // the `symbol` class
   Rps_PayloadSymbol::register_name(name, _.obsymbol, isweak);
   RPS_INFORMOUT("Rps_ObjectRef::make_new_symbol name=" << name
-		<< " gives obsymbol=" << _.obsymbol);
+                << " gives obsymbol=" << _.obsymbol);
   return _.obsymbol;
 } // end of Rps_ObjectRef::make_new_symbol
 

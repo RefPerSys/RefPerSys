@@ -861,7 +861,7 @@ Json::Value
 Rps_Dumper::json_value(Rps_Value val)
 {
   if (!val || val.is_empty())
-    return Json::Value(nullptr);
+    return Json::Value(Json::nullValue);
   else if (val.is_int())
     return Json::Value(val.as_int());
   else if (val.is_ptr() && is_dumpable_value(val))
@@ -869,7 +869,7 @@ Rps_Dumper::json_value(Rps_Value val)
       return val.to_ptr()->dump_json(this);
     }
   else
-    return Json::Value(nullptr);
+    return Json::Value(Json::nullValue);
 } // end Rps_Dumper::json_value
 
 bool
@@ -1040,7 +1040,7 @@ rps_dump_json_value(Rps_Dumper*du, Rps_Value val)
 {
   RPS_ASSERT(du != nullptr);
   if (!val || !rps_is_dumpable_value(du,val))
-    return Json::Value(nullptr);
+    return Json::Value(Json::nullValue);
   else return du->json_value(val);
 } // end rps_dump_json_value
 
@@ -1049,7 +1049,7 @@ rps_dump_json_objectref(Rps_Dumper*du, Rps_ObjectRef obr)
 {
   RPS_ASSERT(du != nullptr);
   if (!obr || !rps_is_dumpable_objref(du,obr))
-    return Json::Value(nullptr);
+    return Json::Value(Json::nullValue);
   else
     return Json::Value(obr->oid().to_string());
 } // end rps_dump_json_objectref
@@ -1124,7 +1124,7 @@ Rps_ClosureZone::dump_json(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   if (!rps_is_dumpable_objref(du,conn()))
-    return Json::Value(nullptr);
+    return Json::Value(Json::nullValue);
   auto  hjclo = Json::Value(Json::objectValue);
   hjclo["vtype"] = Json::Value("closure");
   hjclo["fn"] = rps_dump_json_objectref(du,conn());
