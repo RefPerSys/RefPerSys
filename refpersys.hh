@@ -72,6 +72,7 @@
 #include <cstring>
 #include <cmath>
 #include <cstdio>
+#include <clocale>
 
 #include <argp.h>
 #include <ctype.h>

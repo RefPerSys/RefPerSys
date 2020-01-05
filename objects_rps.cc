@@ -254,11 +254,9 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
     // centisecond. Since computers are not synchronized better than
     // that.
     double mt = get_mtime();
-    std::ostringstream outs;
-    outs.imbue(std::locale::classic());
-    outs.precision(2);
-    outs <<  mt;
-    double mtd = std::stof(outs.str());
+    char mtbuf[32];
+    snprintf(mtbuf, sizeof(mtbuf), "%.2f", mt);
+    double mtd = atof(mtbuf);
     json["mtime"] = Json::Value (mtd);
   }
   /// magic getter function

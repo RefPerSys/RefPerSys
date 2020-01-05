@@ -224,6 +224,7 @@ main(int argc, char** argv)
               dlerror());
       exit(EXIT_FAILURE);
     };
+  std::setlocale(LC_ALL, "POSIX");
   rps_backtrace_state =
     backtrace_create_state(rps_progname, (int)true,
                            Rps_BackTrace::bt_error_cb,
