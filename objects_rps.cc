@@ -128,6 +128,7 @@ Rps_ObjectZone::make(void)
   Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(Rps_Id(),true);
   Rps_Id oid = fresh_random_oid(obz);
   *(const_cast<Rps_Id*>(&obz->ob_oid)) = oid;
+  obz->ob_mtime.store(rps_wallclock_real_time());
   return obz;
 } // end Rps_ObjectZone::make
 
@@ -248,7 +249,15 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
   Rps_ObjectZone* obcla = ob_class.load();
   RPS_ASSERT(obcla != nullptr);
   json["class"] = rps_dump_json_objectref(du,obcla);
-  json["mtime"] = Json::Value (get_mtime());
+  {
+    // It makes no sense to persist a time with a precision above the
+    // centisecond. Since computers are not synchronized better than
+    // that.
+    double mt = get_mtime();
+    /// http://www.cplusplus.com/forum/beginner/170942/
+    mt = floor(mt*100.0)/100.0;
+    json["mtime"] = Json::Value (mt);
+  }
   /// magic getter function
   {
     rps_magicgetterfun_t*mgfun = ob_magicgetterfun.load();
