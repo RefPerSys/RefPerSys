@@ -547,13 +547,11 @@ Rps_Value::compute_class( Rps_CallFrame*stkf) const
   if (is_ptr())
     return as_ptr()->compute_class(stkf);
   else if (is_int())
-    {
-      return RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); // the `int` class
-    }
+    return RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); // the `int` class
   else if (is_string())
-    {
-      return RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); // the `string` class
-    }
+    return RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); // the `string` class
+  else if (is_double())
+    return RPS_ROOT_OB(_98sc8kSOXV003i86w5); // the `double` class
   return nullptr;
 }
 /* end of file value_rps.cc */
