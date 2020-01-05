@@ -518,11 +518,11 @@ public:
   static Rps_ObjectRef make_new_symbol(Rps_CallFrame*callerframe, std::string name, bool isweak);
   static Rps_ObjectRef make_new_strong_symbol(Rps_CallFrame*callerframe, std::string name)
   {
-    return make_new_symbol(callerframe, name, true);
+    return make_new_symbol(callerframe, name, false);
   };
   static Rps_ObjectRef make_new_weak_symbol(Rps_CallFrame*callerframe, std::string name)
   {
-    return make_new_symbol(callerframe, name, false);
+    return make_new_symbol(callerframe, name, true);
   };
   static Rps_ObjectRef make_object(Rps_CallFrame*callerframe, Rps_ObjectRef classob);
 };				// end class Rps_ObjectRef
