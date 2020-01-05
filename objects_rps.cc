@@ -976,6 +976,7 @@ Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef supercl
   paylclainf->put_symbname(_.obsymbol);
   paylsymbol->symbol_put_value(_.obclass);
   _.obclass->put_space(RPS_ROOT_OB(_8J6vNYtP5E800eCr5q)); // the initial space
+  _.obsymbol->put_space(RPS_ROOT_OB(_8J6vNYtP5E800eCr5q)); // the initial space
   rps_add_root_object (_.obclass);
   RPS_INFORMOUT("Rps_ObjectRef::make_named_class name="<< name
                 << " gives obclass=" << _.obclass);
