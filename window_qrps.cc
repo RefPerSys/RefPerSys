@@ -4,7 +4,7 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the Qt5 code related to the Qt5 window
+ *      It holds the Qt5 code related to the Qt5 top windows
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -208,39 +208,51 @@ void RpsQMenuAppNew::on_trigger()
 }
 
 
-void RpsQMenuCreateClass::on_trigger()
+void
+RpsQMenuCreateClass::on_trigger()
 {
   auto dia = new RpsQCreateClassDialog(window());
   dia->show();
 }
 
+void
+RpsQMenuCreateSymbol::on_trigger()
+{
+  auto dia = new RpsQCreateSymbolDialog(window());
+  dia->show();
+}
+
 
 RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
-  : m_parent(parent)
+  : menubar_parent(parent)
 {
-  auto app_menu = m_parent->menuBar()->addMenu("&App");
-  m_menu_app_dump = std::make_shared<RpsQMenuAppDump>(m_parent);
-  m_menu_app_gc = std::make_shared<RpsQMenuAppGC>(m_parent);
-  m_menu_app_new = std::make_shared<RpsQMenuAppNew>(m_parent);
+  auto app_menu = menubar_parent->menuBar()->addMenu("&App");
+  m_menu_app_dump = std::make_shared<RpsQMenuAppDump>(menubar_parent);
+  m_menu_app_gc = std::make_shared<RpsQMenuAppGC>(menubar_parent);
+  m_menu_app_new = std::make_shared<RpsQMenuAppNew>(menubar_parent);
   app_menu->addSeparator();
-  m_menu_app_close = std::make_shared<RpsQMenuAppClose>(m_parent);
-  m_menu_app_quit = std::make_shared<RpsQMenuAppQuit>(m_parent);
-  m_menu_app_exit = std::make_shared<RpsQMenuAppExit>(m_parent);
+  m_menu_app_close = std::make_shared<RpsQMenuAppClose>(menubar_parent);
+  m_menu_app_quit = std::make_shared<RpsQMenuAppQuit>(menubar_parent);
+  m_menu_app_exit = std::make_shared<RpsQMenuAppExit>(menubar_parent);
 
-  m_parent->menuBar()->addMenu("&Create");
-  m_menu_create_class = std::make_shared<RpsQMenuCreateClass>(m_parent);
+  menubar_parent->menuBar()->addMenu("&Create");
+  m_menu_create_class = std::make_shared<RpsQMenuCreateClass>(menubar_parent);
+  m_menu_create_symbol = std::make_shared<RpsQMenuCreateSymbol>(menubar_parent);
 
-  m_parent->menuBar()->addMenu("&Help");
-  m_menu_help_about = std::make_shared<RpsQMenuHelpAbout>(m_parent);
-  m_menu_help_debug = std::make_shared<RpsQMenuHelpDebug>(m_parent);
+  menubar_parent->menuBar()->addMenu("&Help");
+  m_menu_help_about = std::make_shared<RpsQMenuHelpAbout>(menubar_parent);
+  m_menu_help_debug = std::make_shared<RpsQMenuHelpDebug>(menubar_parent);
 
-  m_parent->menuBar()->setSizePolicy(
+  menubar_parent->menuBar()->setSizePolicy(
     QSizePolicy::Expanding,
     QSizePolicy::Expanding
   );
 }// end of RpsQWindowMenuBar::RpsQWindowMenuBar
 
 
+
+////////////////////////////////////////////////////////////////
+//// the dialog to create RefPerSys classes
 
 RpsQCreateClassDialog::RpsQCreateClassDialog(RpsQWindow* parent)
   : QDialog(parent),
@@ -315,7 +327,7 @@ RpsQCreateClassDialog::RpsQCreateClassDialog(RpsQWindow* parent)
 
 RpsQCreateClassDialog::~RpsQCreateClassDialog()
 {
-}
+} // end RpsQCreateClassDialog::~RpsQCreateClassDialog
 
 
 void RpsQCreateClassDialog::on_ok_trigger()
@@ -326,7 +338,7 @@ void RpsQCreateClassDialog::on_ok_trigger()
                  Rps_ObjectRef obnewclass;
                  Rps_ObjectRef obsuperclass;
                 );
-  // TODO: create new class
+  // create new class
   std::string strsuperclass = superclass_linedit.text().toStdString();
   std::string strclassname = classname_linedit.text().toStdString();
   RPS_WARNOUT("untested RpsQCreateClassDialog::on_ok_trigger strsuperclass="
@@ -358,11 +370,99 @@ void RpsQCreateClassDialog::on_ok_trigger()
 }		 // end RpsQCreateClassDialog::on_ok_trigger
 
 
-void RpsQCreateClassDialog::on_cancel_trigger()
+void
+RpsQCreateClassDialog::on_cancel_trigger()
 {
   deleteLater(); // was close()
-} // end RpsQCreateClassDialog::on_ok_trigger
+} // end RpsQCreateClassDialog::on_cancel_trigger
 
+
+
+////////////////////////////////////////////////////////////////
+
+/// the dialog to create RefPerSys symbols
+RpsQCreateSymbolDialog::RpsQCreateSymbolDialog(RpsQWindow* parent)
+  : QDialog(parent),
+    sydialog_vbox(),
+    syname_hbox(),
+    syname_label("new symbol name:", this),
+    syname_linedit(this),
+    syname_weakchkbox("weak?", this),
+    button_hbox(),
+    ok_button("Create Symbol", this),
+    cancel_button("cancel", this)
+{
+  // set widget names, useful for debugging, and later for style sheets.
+  setObjectName("RpsQCreateSymbolDialog");
+  sydialog_vbox.setObjectName("RpsQCreateSymbolDialog_sydialog_vbox");
+  syname_hbox.setObjectName("RpsQCreateSymbolDialog_syname_hbox");
+  syname_label.setObjectName("RpsQCreateSymbolDialog_syname_hbox");
+  syname_linedit.setObjectName("RpsQCreateSymbolDialog_syname_linedit");
+  syname_weakchkbox.setObjectName("RpsQCreateSymbolDialog_syname_weakchkbox");
+  button_hbox.setObjectName("RpsQCreateSymbolDialog_button_hbox");
+  ok_button.setObjectName("RpsQCreateSymbolDialog_ok_button");
+  cancel_button.setObjectName("RpsQCreateSymbolDialog_cancel_button");
+  RPS_INFORMOUT("RpsQCreateSymbolDialog @" << this);
+  // set fonts of labels and linedits
+  {
+    auto labfont = QFont("Arial", 12);
+    syname_label.setFont(labfont);
+    auto editfont = QFont("Courier", 12);
+    syname_linedit.setFont(editfont);
+  }
+  // ensure layout; maybe we should use style sheets?
+  {
+    sydialog_vbox.addLayout(&syname_hbox);
+    syname_hbox.addWidget(&syname_label);
+    syname_hbox.addSpacing(2);
+    syname_hbox.addWidget(&syname_linedit);
+    syname_hbox.addSpacing(2);
+    syname_hbox.addWidget(&syname_weakchkbox);
+    sydialog_vbox.addLayout(&button_hbox);
+    button_hbox.addWidget(&ok_button);
+    button_hbox.addSpacing(3);
+    button_hbox.addWidget(&cancel_button);
+    setLayout(&sydialog_vbox);
+  }
+  // define behavior
+  {
+    connect(
+      &ok_button,
+      &QAbstractButton::clicked,
+      this,
+      &RpsQCreateSymbolDialog::on_ok_trigger
+    );
+    connect(
+      &cancel_button,
+      &QAbstractButton::clicked,
+      this,
+      &RpsQCreateSymbolDialog::on_cancel_trigger
+    );
+  }
+} // end RpsQCreateSymbolDialog::RpsQCreateSymbolDialog
+
+
+RpsQCreateSymbolDialog::~RpsQCreateSymbolDialog()
+{
+} // end RpsQCreateSymbolDialog::~RpsQCreateSymbolDialog
+
+void
+RpsQCreateSymbolDialog::on_ok_trigger()
+{
+  RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
+                 nullptr,//parentframe
+                 Rps_ObjectRef obsymb;
+                );
+  std::string strsyname = syname_linedit.text().toStdString();
+  RPS_WARNOUT("incomplete RpsQCreateSymbolDialog::on_ok_trigger strsyname=" << strsyname);
+#warning incomplete RpsQCreateSymbolDialog::on_ok_trigger
+} // end RpsQCreateSymbolDialog::on_ok_trigger
+
+void
+RpsQCreateSymbolDialog::on_cancel_trigger()
+{
+  deleteLater(); // was close()
+} // end RpsQCreateSymbolDialog::on_cancel_trigger
 
 ////////////////////////////////////////////////////////////////
 
@@ -432,6 +532,7 @@ RpsQObjectLineEdit::RpsQObjectLineEdit(const QString &contents,
   : QLineEdit(contents, parent),
     qoblinedit_completer(nullptr)
 {
+  setPlaceholderText(placeholder);
   qoblinedit_completer = std::make_unique<RpsQObjectCompleter>(this);
   connect(this, SIGNAL(textEdited(const QString&)),
           qoblinedit_completer.get(), SLOT(update_for_text(const QString&)));

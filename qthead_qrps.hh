@@ -51,6 +51,7 @@ class RpsQObjectLineEdit;// a line edit for a RefPerSys object
 #include <QLabel>
 #include <QDialog>
 #include <QPushButton>
+#include <QCheckBox>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -408,21 +409,50 @@ protected slots:
 };				// end RpsQMenuCreateClass
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+/// The Create | Symbol Window menu action for RpsQWindow.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQMenuCreateSymbol : public RpsQMenuAction
+{
+  Q_OBJECT
+public:
+  /// Constructor
+  inline RpsQMenuCreateSymbol(RpsQWindow* parent)
+    : RpsQMenuAction(
+        parent,
+        RpsQWindowMenu::CREATE,
+        "RPS_ICON_CLASS",
+        "&Symbol",
+        "CTRL+S"
+      )
+  { }
+
+protected slots:
+  /// Overridden slot for the trigger action.
+  void on_trigger();
+};				// end RpsQMenuCreateSymbol
+
+
 ///////////////////////////////////////////////////////////////////////////////
 /// The menu bar for RpsQWindow.
 //////////////////////////////////////////////////////////////////////////////
+
+#warning FIXME: RpsQWindowMenuBar should probably inherit from QMenuBar or be renamed to something else....
+/// see https://doc.qt.io/qt-5/qmenubar.html
 class RpsQWindowMenuBar
 {
 public:
   RpsQWindowMenuBar(RpsQWindow* parent);
 
 private:
-  RpsQWindow* m_parent;
+  RpsQWindow* menubar_parent;
   std::shared_ptr<RpsQMenuAppDump> m_menu_app_dump;
   std::shared_ptr<RpsQMenuAppGC> m_menu_app_gc;
   std::shared_ptr<RpsQMenuAppNew> m_menu_app_new;
   std::shared_ptr<RpsQMenuAppClose> m_menu_app_close;
   std::shared_ptr<RpsQMenuCreateClass> m_menu_create_class;
+  std::shared_ptr<RpsQMenuCreateSymbol> m_menu_create_symbol;
   std::shared_ptr<RpsQMenuAppQuit> m_menu_app_quit;
   std::shared_ptr<RpsQMenuAppExit> m_menu_app_exit;
   std::shared_ptr<RpsQMenuHelpAbout> m_menu_help_about;
@@ -490,6 +520,33 @@ private:
   QPushButton ok_button;
   QPushButton cancel_button;
 };				// end RpsQCreateClassDialog
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// The dialog box for creating new symbols.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQCreateSymbolDialog : public QDialog
+{
+  Q_OBJECT
+public:
+  RpsQCreateSymbolDialog(RpsQWindow* parent);
+  ~RpsQCreateSymbolDialog();
+
+private slots:
+  void on_ok_trigger();
+  void on_cancel_trigger();
+
+
+private:
+  QVBoxLayout sydialog_vbox;
+  QHBoxLayout syname_hbox;
+  QLabel syname_label;
+  QLineEdit syname_linedit;
+  QCheckBox syname_weakchkbox;
+  QHBoxLayout button_hbox;
+  QPushButton ok_button;
+  QPushButton cancel_button;
+};				// end RpsQCreateSymbolDialog
 
 
 //////////////////////////////////////////////////////////// RpsQWindow
