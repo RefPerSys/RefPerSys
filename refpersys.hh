@@ -54,6 +54,7 @@
 #include <random>
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <limits>
 #include <initializer_list>
 #include <algorithm>
@@ -65,6 +66,7 @@
 #include <stdexcept>
 #include <functional>
 #include <typeinfo>
+#include <locale>
 
 #include <cassert>
 #include <cstring>
