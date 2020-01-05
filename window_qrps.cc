@@ -465,6 +465,7 @@ RpsQCreateSymbolDialog::on_ok_trigger()
         throw std::runtime_error(std::string("failed to create symbol:") + strsyname);
       if (!isweak)
         rps_add_root_object(_.obsymb);
+      _.obsymb->put_space(Rps_ObjectRef::root_space());
       std::ostringstream outs;
       outs << "created new symbol " << _.obsymb << " named " << strsyname;
       std::string msg = outs.str();

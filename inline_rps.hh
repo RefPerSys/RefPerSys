@@ -927,6 +927,11 @@ Rps_ObjectRef::obhash(void) const
   return _optr->obhash();
 }      // end Rps_ObjectRef::obhash
 
+Rps_ObjectRef
+Rps_ObjectRef::root_space() {
+  return RPS_ROOT_OB(_8J6vNYtP5E800eCr5q); 
+} // end Rps_ObjectRef::root_space
+
 void
 Rps_ObjectRef::gc_mark(Rps_GarbageCollector&gc) const
 {

@@ -511,6 +511,8 @@ public:
   inline void dump_scan(Rps_Dumper* du, unsigned depth) const;
   inline Json::Value dump_json(Rps_Dumper* du) const;
   void output(std::ostream&os) const;
+  /////////// the root space
+  static inline Rps_ObjectRef root_space(void);
   ///////////
   // these functions throw an exception on failure
   // find an object with a given oid or name string
@@ -527,6 +529,7 @@ public:
   {
     return make_new_symbol(callerframe, name, true);
   };
+  // create an object of given class
   static Rps_ObjectRef make_object(Rps_CallFrame*callerframe, Rps_ObjectRef classob);
 };				// end class Rps_ObjectRef
 
@@ -2580,9 +2583,6 @@ extern "C" void rps_load_from (const std::string& dirpath); // in store_rps.cc
 
 
 extern "C" void rps_print_types_info (void);
-#include "inline_rps.hh"
-
-
 /// C++ code can refer to root objects
 #define RPS_ROOT_OB(Oid) rps_rootob##Oid
 
@@ -2596,6 +2596,11 @@ extern "C" void rps_print_types_info (void);
 // each named global symbol is also a public variable
 #define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam) extern "C" Rps_ObjectRef RPS_SYMB_OB(Nam);
 #include "generated/rps-names.hh"
+
+
+#include "inline_rps.hh"
+
+
 
 #endif /*REFPERSYS_INCLUDED*/
 // end of file refpersys.hh */
