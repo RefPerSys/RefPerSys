@@ -2121,7 +2121,12 @@ public:
   {
     return cfram_prev;
   };
-
+  void set_additional_gc_marker(const std::function<void(Rps_GarbageCollector*)>& gcmarkfun) {
+    cfram_marker = gcmarkfun;
+  };
+  void clear_additional_gc_marker(void) {
+    cfram_marker = nullptr;
+  };
 };				// end class Rps_CallFrame
 
 
