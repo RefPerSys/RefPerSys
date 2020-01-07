@@ -20,12 +20,28 @@
  "globalnames" : 
  [
   {
+   "nam" : "email",
+   "obj" : "_0D6zqQNe4eC02bjfGs"
+  },
+  {
+   "nam" : "home_page",
+   "obj" : "_0LbCts6NacB03SMXz4"
+  },
+  {
+   "nam" : "first_name",
+   "obj" : "_3N8vZ2Cw62z024XxCg"
+  },
+  {
    "nam" : "symbol",
    "obj" : "_3Q3hJsSgCDN03GTYW5"
   },
   {
    "nam" : "class",
    "obj" : "_6fmq7pZkmNd03UyPuO"
+  },
+  {
+   "nam" : "last_name",
+   "obj" : "_6QAanFi9yLx00spBST"
   },
   {
    "nam" : "object",
@@ -38,9 +54,12 @@
  ],
  "globalroots" : 
  [
+  "_0D6zqQNe4eC02bjfGs",
+  "_0LbCts6NacB03SMXz4",
   "_2i66FFjmS7n03HNNBx",
   "_2A2mrPpR3Qf03p6o5b",
   "_36I1BY2NetN03WjrOv",
+  "_3N8vZ2Cw62z024XxCg",
   "_3Q3hJsSgCDN03GTYW5",
   "_41OFI3r0S1t03qdB2E",
   "_4jISxMJ4PYU0050nUl",
@@ -50,13 +69,14 @@
   "_6fmq7pZkmNd03UyPuO",
   "_6JYterg6iAu00cV9Ye",
   "_6NVM7sMcITg01ug5TC",
+  "_6QAanFi9yLx00spBST",
   "_6XLY6QfcDre02922jz",
   "_7X9eGs8601M021nMue",
   "_8J6vNYtP5E800eCr5q",
   "_98sc8kSOXV003i86w5",
   "_9uwZtDshW4401x6MsY"
  ],
- "origitid" : "6d8809f42cfc2fd693033bb73e9ee03ce8689b18+",
+ "origitid" : "bcf19f2b8a4ffb1b5f284df6f175fcbc3b40db6f+",
  "plugins" : [],
  "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }
