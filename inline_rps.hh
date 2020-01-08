@@ -928,9 +928,28 @@ Rps_ObjectRef::obhash(void) const
 }      // end Rps_ObjectRef::obhash
 
 Rps_ObjectRef
-Rps_ObjectRef::root_space() {
-  return RPS_ROOT_OB(_8J6vNYtP5E800eCr5q); 
+Rps_ObjectRef::root_space()
+{
+  return RPS_ROOT_OB(_8J6vNYtP5E800eCr5q);
 } // end Rps_ObjectRef::root_space
+
+Rps_ObjectRef
+Rps_ObjectRef::the_object_class()
+{
+  return RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ);
+} // end Rps_ObjectRef::the_object_class
+
+Rps_ObjectRef
+Rps_ObjectRef::the_symbol_class()
+{
+  return RPS_ROOT_OB(_36I1BY2NetN03WjrOv);
+} // end Rps_ObjectRef::the_symbol_class
+
+Rps_ObjectRef
+Rps_ObjectRef::the_class_class()
+{
+  return RPS_ROOT_OB(_41OFI3r0S1t03qdB2E);
+} // end Rps_ObjectRef::the_class_class
 
 void
 Rps_ObjectRef::gc_mark(Rps_GarbageCollector&gc) const

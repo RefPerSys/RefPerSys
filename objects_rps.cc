@@ -589,6 +589,21 @@ Rps_PayloadClassInfo::put_symbname(Rps_ObjectRef obr)
     }
 } // end Rps_PayloadClassInfo::put_symbname
 
+std::string
+Rps_PayloadClassInfo::class_name_str(void) const
+{
+  auto obrown = owner();
+  if (!obrown) return "";
+  Rps_ObjectRef obsymb = symbname();
+  if (!obsymb)
+    return obrown->oid().to_string();
+  {
+    std::lock_guard<std::recursive_mutex> gusymb(*(obsymb->objmtxptr()));
+    if (auto symbpayl = obsymb->get_dynamic_payload<Rps_PayloadSymbol>())
+      return symbpayl->symbol_name();
+  }
+  return obrown->oid().to_string();
+} // end Rps_PayloadClassInfo::class_name_str
 
 /***************** mutable set of objects payload **********/
 

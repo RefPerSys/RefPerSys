@@ -531,7 +531,16 @@ public:
   };
   // create an object of given class
   static Rps_ObjectRef make_object(Rps_CallFrame*callerframe, Rps_ObjectRef classob);
+  // the superclass of all objects, that is the `object` object
+  static inline Rps_ObjectRef the_object_class(void);
+  // the class of all classes, that is the `class` object
+  static inline Rps_ObjectRef the_class_class(void);
+  // the class of all symbols, that is the `symbol` object
+  static inline Rps_ObjectRef the_symbol_class(void);
 };				// end class Rps_ObjectRef
+
+
+
 
 static_assert(sizeof(Rps_ObjectRef) == sizeof(void*),
               "Rps_ObjectRef should have the size of a word");
@@ -2121,10 +2130,12 @@ public:
   {
     return cfram_prev;
   };
-  void set_additional_gc_marker(const std::function<void(Rps_GarbageCollector*)>& gcmarkfun) {
+  void set_additional_gc_marker(const std::function<void(Rps_GarbageCollector*)>& gcmarkfun)
+  {
     cfram_marker = gcmarkfun;
   };
-  void clear_additional_gc_marker(void) {
+  void clear_additional_gc_marker(void)
+  {
     cfram_marker = nullptr;
   };
 };				// end class Rps_CallFrame
@@ -2220,6 +2231,7 @@ public:
   {
     pclass_symbname = nullptr;
   };
+  std::string class_name_str(void) const;
   void put_symbname(Rps_ObjectRef obr);
   void loader_put_symbname(Rps_ObjectRef obr, Rps_Loader*ld);
   Rps_ClosureValue get_own_method(Rps_ObjectRef obsel)
