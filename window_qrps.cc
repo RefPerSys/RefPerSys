@@ -31,15 +31,7 @@
 
 #include "refpersys.hh"
 #include "qthead_qrps.hh"
-#include <sstream>
 
-#include <QMenu>
-#include <QMenuBar>
-#include <QMessageBox>
-#include <QFile>
-#include <QLabel>
-#include <QDebug>
-#include <QFont>
 
 extern "C" const char rps_window_gitid[];
 const char rps_window_gitid[]= RPS_GITID;

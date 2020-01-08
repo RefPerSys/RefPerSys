@@ -11,7 +11,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2020 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -33,7 +33,6 @@
 #include "refpersys.hh"
 #include "qthead_qrps.hh"
 
-#include <QCommandLineParser>
 
 extern "C" const char rps_appli_gitid[];
 const char rps_appli_gitid[]= RPS_GITID;

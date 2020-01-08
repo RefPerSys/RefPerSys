@@ -52,6 +52,14 @@ class RpsQObjectLineEdit;// a line edit for a RefPerSys object
 #include <QDialog>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QCommandLineParser>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QFile>
+#include <QLabel>
+#include <QDebug>
+#include <QFont>
 
 
 ///////////////////////////////////////////////////////////////////////////////
