@@ -79,10 +79,11 @@ const char* rps_homedir(void)
 } // end rps_homedir
 
 void
-RpsQApplication::add_new_window(void)
+RpsQApplication::do_add_new_window(void)
 {
   std::lock_guard gu(app_mutex);
   auto window = new RpsQWindow();
+#warning FIXME: reuse empty slots in app_windvec
   window->setWindowTitle(QString("RefPerSys #%1").arg(app_windvec.size()));
   window->resize (640, 480); // TODO: get dimensions from $HOME/.RefPerSys
   window->show();
@@ -90,23 +91,55 @@ RpsQApplication::add_new_window(void)
   app_wndcount++;
 } // end of RpsQApplication::add_new_window
 
-RpsQApplication::RpsQApplication(int &argc, char*argv[])
-  : QApplication(argc, argv)
-  , app_wndcount (0)
+
+void
+RpsQApplication::do_dump_then_exit(QString dir)
 {
-  register_pixmap();
+  rps_dump_into(dir.toStdString());
+  QApplication::exit(0);
+} // end RpsQApplication::do_dump_then_exit
+
+void
+RpsQWindow::do_quit()
+{
+  auto res = QMessageBox::question(this, "Quit RefPerSys?",
+				   "quit without dumping the persistent state?");
+
+  if (res == QMessageBox::Yes) 
+  QApplication::exit(0);
+} // end RpsQWindow::do_quit
+
+RpsQApplication::RpsQApplication(int &argc, char*argv[])
+  : QApplication(argc, argv),
+    app_mutex(),
+    app_windvec(),
+    app_wndcount (0)
+{
   setApplicationName("RefPerSys");
   setApplicationVersion(rps_lastgitcommit);
   app_windvec.reserve(16);
   app_windvec.push_back(nullptr); // we don't want a 0 index.
-  add_new_window();
+  do_add_new_window();
 } // end of RpsQApplication::RpsQApplication
 
 void
-RpsQApplication::dump_state(QString dirpath)
+RpsQApplication::do_remove_window(int ix) {
+  std::lock_guard guapp(app_mutex);
+  int wincount = app_windvec.size();
+  if (ix <= 0)
+    throw RPS_RUNTIME_ERROR_OUT("do_remove_window: negative index " << ix);
+  if (ix >= wincount)
+    throw RPS_RUNTIME_ERROR_OUT("do_remove_window: too large index " << ix
+				<< " is more than " << wincount);
+  app_windvec[ix].release();
+    
+} // end RpsQApplication::do_remove_window
+
+void
+RpsQApplication::do_dump_state(QString dirpath)
 {
   rps_dump_into(dirpath.toStdString());
-} // end of RpsQApplication::dump_state
+} // end of RpsQApplication::do_dump_state
 
 
 RpsQWindow* RpsQApplication::getWindowPtr(int ix)
@@ -119,21 +152,6 @@ RpsQWindow* RpsQApplication::getWindowPtr(int ix)
   return app_windvec.at(ix).get();
 }
 
-
-void
-RpsQApplication::register_pixmap()
-{
-  auto pixmap = RpsQPixMap::instance();
-
-  pixmap->add("RPS_ICON_NEW", "new_icon.png");
-  pixmap->add("RPS_ICON_DUMP", "dump_icon.png");
-  pixmap->add("RPS_ICON_GC", "gc_icon.png");
-  pixmap->add("RPS_ICON_QUIT", "quit_icon.png");
-  pixmap->add("RPS_ICON_EXIT", "exit_icon.png");
-  pixmap->add("RPS_ICON_CLOSE", "close_icon.png");
-  pixmap->add("RPS_ICON_ABOUT", "about_icon.png");
-  pixmap->add("RPS_ICON_DEBUG", "debug_icon.png");
-}
 
 
 void rps_run_application(int &argc, char **argv)
