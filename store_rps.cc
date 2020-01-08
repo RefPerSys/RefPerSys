@@ -1234,7 +1234,44 @@ Rps_Dumper::write_generated_roots_file(void)
   //  std::ofstream& out = *pouts;
   rps_each_root_object([=, &pouts, &rootcnt](Rps_ObjectRef obr)
   {
-    (*pouts) << "RPS_INSTALL_ROOT_OB(" << obr->oid() << ")" << std::endl;
+    RPS_ASSERT(obr);
+    (*pouts) << "RPS_INSTALL_ROOT_OB(" << obr->oid() << ") //";
+    std::lock_guard<std::recursive_mutex> guobr(*(obr->objmtxptr()));
+    Rps_ObjectRef obclass = obr->get_class();
+    RPS_ASSERT(obclass);
+    if (auto clapayl = obr->get_dynamic_payload<Rps_PayloadClassInfo>())
+      {
+        if (obclass == Rps_ObjectRef::the_class_class())
+          {
+            (*pouts) << clapayl->class_name_str() << "∈class";
+          }
+        else
+          {
+            auto claclapayl = obclass->get_dynamic_payload<Rps_PayloadClassInfo>();
+            RPS_ASSERT(claclapayl);
+            (*pouts) << clapayl->class_name_str() << "∈" << claclapayl->class_name_str();
+          }
+      }
+    else if (auto symbpayl = obr->get_dynamic_payload<Rps_PayloadSymbol>())
+      {
+        if (obclass == Rps_ObjectRef::the_symbol_class())
+          {
+            (*pouts) << symbpayl->symbol_name()  << "∈symbol";
+          }
+        else
+          {
+            auto claclapayl = obclass->get_dynamic_payload<Rps_PayloadClassInfo>();
+            RPS_ASSERT(claclapayl);
+            (*pouts) << symbpayl->symbol_name() << "∈" << claclapayl->class_name_str();
+          }
+      }
+    else
+      {
+        auto claclapayl = obclass->get_dynamic_payload<Rps_PayloadClassInfo>();
+        RPS_ASSERT(claclapayl);
+        (*pouts) << "∈" << claclapayl->class_name_str();
+      };
+    (*pouts) << std::endl;
     rootcnt++;
   });
   *pouts << std::endl
