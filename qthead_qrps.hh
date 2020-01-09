@@ -83,7 +83,8 @@ public:
       throw std::runtime_error("bad window index in RpsQApplication::getWindow");
     return *w;
   };
-  static RpsQApplication* the_app(void){
+  static RpsQApplication* the_app(void)
+  {
     return dynamic_cast<RpsQApplication*>(RpsQApplication::instance());
   };
 
@@ -196,6 +197,26 @@ class RpsQWindow : public QMainWindow
   Q_OBJECT
 public:
   RpsQWindow (QWidget *parent = nullptr);
+
+private:
+  // see https://doc.qt.io/qt-5/qtwidgets-mainwindows-menus-example.html
+  QMenu* win_app_menu;
+  QMenu* win_create_menu;
+  QMenu* win_help_menu;
+
+  // for app menu
+  QAction* win_apdump_action;
+  QAction* win_apgc_action;
+  QAction* win_apnewin_action;
+  QAction* win_apclose_action;
+  QAction* win_apquit_action;
+  QAction* win_apexit_action;
+
+  // for create menu
+  QAction* win_crclass_action;
+  QAction*win_crsymb_action;
+
+  // for help menu
 
 public slots:
   void do_quit(void);

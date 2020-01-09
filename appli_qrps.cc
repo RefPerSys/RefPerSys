@@ -103,10 +103,10 @@ void
 RpsQWindow::do_quit()
 {
   auto res = QMessageBox::question(this, "Quit RefPerSys?",
-				   "quit without dumping the persistent state?");
+                                   "quit without dumping the persistent state?");
 
-  if (res == QMessageBox::Yes) 
-  QApplication::exit(0);
+  if (res == QMessageBox::Yes)
+    QApplication::exit(0);
 } // end RpsQWindow::do_quit
 
 RpsQApplication::RpsQApplication(int &argc, char*argv[])
@@ -123,16 +123,17 @@ RpsQApplication::RpsQApplication(int &argc, char*argv[])
 } // end of RpsQApplication::RpsQApplication
 
 void
-RpsQApplication::do_remove_window(int ix) {
+RpsQApplication::do_remove_window(int ix)
+{
   std::lock_guard guapp(app_mutex);
   int wincount = app_windvec.size();
   if (ix <= 0)
     throw RPS_RUNTIME_ERROR_OUT("do_remove_window: negative index " << ix);
   if (ix >= wincount)
     throw RPS_RUNTIME_ERROR_OUT("do_remove_window: too large index " << ix
-				<< " is more than " << wincount);
+                                << " is more than " << wincount);
   app_windvec[ix].release();
-    
+
 } // end RpsQApplication::do_remove_window
 
 void

@@ -42,9 +42,55 @@ const char rps_window_date[]= __DATE__;
 
 
 RpsQWindow::RpsQWindow (QWidget *parent)
-  : QMainWindow(parent)
-
+  : QMainWindow(parent),
+    // we explicitly initialize every pointer field, for ease of
+    // debugging and more reproducible runs.  In principle this should
+    // be useless...
+    win_app_menu(nullptr),
+    win_create_menu(nullptr),
+    win_help_menu(nullptr),
+    win_apdump_action(nullptr),
+    win_apgc_action(nullptr),
+    win_apnewin_action(nullptr),
+    win_apquit_action(nullptr),
+    win_apexit_action(nullptr),
+    win_crclass_action(nullptr),
+    win_crsymb_action(nullptr)
 {
+  /// create the menus and their actions
+  {
+    auto mb = menuBar();
+    win_app_menu = mb->addMenu("App");
+    win_apdump_action = new QAction("&Dump", this);
+    win_apdump_action->setStatusTip("dump state to current directory");
+    win_apgc_action = new QAction("&Garbage collect", this);
+    win_apgc_action->setStatusTip("run the precise garbage collector");
+    win_apnewin_action = new QAction("new &Window", this);
+    win_apnewin_action->setStatusTip("Create a new window");
+    win_apclose_action = new QAction("&Close", this);
+    win_apclose_action->setStatusTip("close the current window");
+    win_apquit_action = new QAction("&Quit", this);
+    win_apquit_action->setStatusTip("Quit without saving state");
+    win_apexit_action = new QAction("e&Xit", this);
+    win_apexit_action->setStatusTip("Exit after saving state");
+    win_create_menu = mb->addMenu("Create");
+    win_crclass_action = new QAction("create &Class",this);
+    win_crclass_action->setStatusTip("create a new named class");
+    win_crsymb_action = new QAction("create &Symbol", this);
+    win_crsymb_action->setStatusTip("create a new symbol");
+    win_help_menu = mb->addMenu("Help");
+  }
+  /// add the actions to their menu
+  {
+    win_app_menu->addAction(win_apdump_action);
+    win_app_menu->addAction(win_apgc_action);
+    win_app_menu->addAction(win_apnewin_action);
+    win_app_menu->addAction(win_apclose_action);
+    win_app_menu->addAction(win_apquit_action);
+    win_app_menu->addAction(win_apexit_action);
+    win_create_menu->addAction(win_crclass_action);
+    win_create_menu->addAction(win_crsymb_action);
+  }
 } // end RpsQWindow::RpsQWindow
 
 
