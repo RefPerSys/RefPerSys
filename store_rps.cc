@@ -1862,10 +1862,10 @@ void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  RPS_INFORMOUT("rpsldpy_symbol: obz=" << obz->oid().to_string()
-                << " jv=" << jv
-                << " spacid=" << spacid.to_string()
-                << " lineno:" << lineno);
+  RPS_NOPRINTOUT("rpsldpy_symbol: obz=" << obz->oid().to_string()
+                 << " jv=" << jv
+                 << " spacid=" << spacid.to_string()
+                 << " lineno:" << lineno);
   const char* name = jv["symb_name"].asCString();
   bool weak = jv["symb_weak"].asBool();
   if (!Rps_PayloadSymbol::valid_name(name))
@@ -1879,5 +1879,6 @@ void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
   if (!jsymbval.isNull())
     paylsymb->symbol_put_value(Rps_Value(jsymbval,ld));
 } // end rpsldpy_symbol
+
 //////////////////////////////////////////////////////////// end of file store_rps.cc
 

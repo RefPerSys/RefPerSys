@@ -753,9 +753,9 @@ Rps_PayloadSymbol::load_register_name(const char*name, Rps_Loader*ld, bool weak)
                              + owner()->oid().to_string());
   symb_table.insert({symb_name, this});
   symb_is_weak.store(weak);
-  RPS_INFORMOUT("Rps_PayloadSymbol::load_register_name symb_name:" << symb_name
-                << " " << (weak?"weak":"strong")
-                << " owner:" << owner()->oid().to_string());
+  RPS_NOPRINTOUT("Rps_PayloadSymbol::load_register_name symb_name:" << symb_name
+                 << " " << (weak?"weak":"strong")
+                 << " owner:" << owner()->oid().to_string());
 } // end Rps_PayloadSymbol::load_register_name
 
 void
