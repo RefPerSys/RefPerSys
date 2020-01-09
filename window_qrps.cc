@@ -116,6 +116,21 @@ RpsQWindow::RpsQWindow (QWidget *parent)
   {
     rps_garbage_collect();
   });
+  connect(win_apnewin_action, &QAction::triggered,
+          RpsQApplication::the_app(), &RpsQApplication::do_add_new_window);
+  connect(win_crclass_action, &QAction::triggered,
+          [=](void)
+  {
+    auto dia = new RpsQCreateClassDialog(this);
+    dia->show();
+  });
+  connect(win_crsymb_action, &QAction::triggered,
+          [=](void)
+  {
+    auto dia = new RpsQCreateSymbolDialog(this);
+    dia->show();
+  });
+
 } // end RpsQWindow::RpsQWindow
 
 

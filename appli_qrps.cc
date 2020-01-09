@@ -145,7 +145,7 @@ RpsQApplication::do_dump_state(QString dirpath)
 void
 RpsQApplication::do_dump_current_state(void)
 {
-  rps_dump_into("");
+  rps_dump_into(".");
 } // end of RpsQApplication::do_dump_current_state
 
 
