@@ -206,8 +206,9 @@ rps_check_mtime_files(void)
       if (curstat.st_mtime > (time_t) rps_timelong)
         RPS_WARNOUT("rps_check_mtime_files: " << curfullpathstr.c_str()
                     << " is younger by "
-                    << (rps_timelong - curstat.st_mtime)
-                    << " seconds than current executable " << exebuf);
+                    << (curstat.st_mtime - (time_t) rps_timelong)
+                    << " seconds than current executable " << exebuf
+		    << ", so consider rebuilding with omake");
     }
 } // end rps_check_mtime_files
 
