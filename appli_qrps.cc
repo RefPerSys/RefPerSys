@@ -142,6 +142,21 @@ RpsQApplication::do_dump_state(QString dirpath)
   rps_dump_into(dirpath.toStdString());
 } // end of RpsQApplication::do_dump_state
 
+void
+RpsQApplication::do_dump_current_state(void)
+{
+  rps_dump_into("");
+} // end of RpsQApplication::do_dump_current_state
+
+
+void
+RpsQApplication::do_dump_current_then_exit(void)
+{
+  do_dump_then_exit(".");
+} // end of RpsQApplication::do_dump_current_then_exit
+
+
+
 
 RpsQWindow* RpsQApplication::getWindowPtr(int ix)
 {

@@ -92,8 +92,30 @@ RpsQWindow::RpsQWindow (QWidget *parent)
     win_create_menu->addAction(win_crclass_action);
     win_create_menu->addAction(win_crsymb_action);
   }
+  // our central widget
   win_centralmdi =  new QMdiArea(this);
   setCentralWidget(win_centralmdi);
+  // connect the behavior
+  connect(win_apdump_action, &QAction::triggered,
+          RpsQApplication::the_app(),
+          &RpsQApplication::do_dump_current_state);
+  connect(win_apexit_action, &QAction::triggered,
+          RpsQApplication::the_app(), &RpsQApplication::do_dump_current_then_exit);
+  connect(win_apquit_action, &QAction::triggered,
+          [=](void)
+  {
+    auto reply =
+      QMessageBox::question(this, "RefPerSys",
+                            "Quit without dump?",
+                            QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::Yes)
+      QApplication::quit();
+  });
+  connect(win_apgc_action, &QAction::triggered,
+          [=](void)
+  {
+    rps_garbage_collect();
+  });
 } // end RpsQWindow::RpsQWindow
 
 

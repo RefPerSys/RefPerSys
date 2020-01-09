@@ -91,8 +91,10 @@ public:
 
 public slots:
   void do_dump_state(QString dirpath=".");
+  void do_dump_current_state();
   void do_add_new_window(void);
   void do_dump_then_exit(QString dirpath=".");
+  void do_dump_current_then_exit(void);
   void do_remove_window(int index);
 
 private:
@@ -219,10 +221,10 @@ private:
 
   // for help menu
 #warning RpsQWindow help menu missing
-  
+
   /// the central widget
   QMdiArea* win_centralmdi;
-			  
+
 public slots:
   void do_quit(void);
 };				// end of RpsQWindow
