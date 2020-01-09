@@ -55,7 +55,8 @@ RpsQWindow::RpsQWindow (QWidget *parent)
     win_apquit_action(nullptr),
     win_apexit_action(nullptr),
     win_crclass_action(nullptr),
-    win_crsymb_action(nullptr)
+    win_crsymb_action(nullptr),
+    win_centralmdi(nullptr)
 {
   /// create the menus and their actions
   {
@@ -91,6 +92,8 @@ RpsQWindow::RpsQWindow (QWidget *parent)
     win_create_menu->addAction(win_crclass_action);
     win_create_menu->addAction(win_crsymb_action);
   }
+  win_centralmdi =  new QMdiArea(this);
+  setCentralWidget(win_centralmdi);
 } // end RpsQWindow::RpsQWindow
 
 

@@ -61,6 +61,7 @@
 #include <QLabel>
 #include <QDebug>
 #include <QFont>
+#include <QMdiArea>
 
 class RpsQApplication;
 class RpsQWindow;
@@ -217,7 +218,11 @@ private:
   QAction*win_crsymb_action;
 
   // for help menu
-
+#warning RpsQWindow help menu missing
+  
+  /// the central widget
+  QMdiArea* win_centralmdi;
+			  
 public slots:
   void do_quit(void);
 };				// end of RpsQWindow
