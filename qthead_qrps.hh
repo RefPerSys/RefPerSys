@@ -105,7 +105,8 @@ public slots:
   void do_add_new_window(void);
   void do_dump_then_exit(QString dirpath=".");
   void do_dump_current_then_exit(void);
-  void do_remove_window(int index);
+  void do_remove_window_by_index(int index);
+  void do_remove_window(RpsQWindow* win);
 
 private:
 
@@ -238,7 +239,10 @@ private:
 public slots:
   void do_quit(void);
 public:
-  int window_rank() const { return win_rank; };
+  int window_rank() const
+  {
+    return win_rank;
+  };
 };				// end of RpsQWindow
 
 #endif /*QTHEAD_QRPS_INCLUDED*/

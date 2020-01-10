@@ -249,7 +249,7 @@ RpsQApplication::RpsQApplication(int &argc, char*argv[])
 } // end of RpsQApplication::RpsQApplication
 
 void
-RpsQApplication::do_remove_window(int ix)
+RpsQApplication::do_remove_window_by_index(int ix)
 {
   std::lock_guard guapp(app_mutex);
   int wincount = app_windvec.size();
@@ -258,9 +258,18 @@ RpsQApplication::do_remove_window(int ix)
   if (ix >= wincount)
     throw RPS_RUNTIME_ERROR_OUT("do_remove_window: too large index " << ix
                                 << " is more than " << wincount);
+  RpsQWindow* win = app_windvec[ix].get();
+  win->close();
   app_windvec[ix].release();
-
 } // end RpsQApplication::do_remove_window
+
+void
+RpsQApplication::do_remove_window(RpsQWindow*win)
+{
+  if (win)
+    do_remove_window_by_index(win->window_rank());
+} // end RpsQApplication::do_remove_window
+
 
 void
 RpsQApplication::do_dump_state(QString dirpath)

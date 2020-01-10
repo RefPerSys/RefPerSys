@@ -131,6 +131,11 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     auto dia = new RpsQCreateSymbolDialog(this);
     dia->show();
   });
+  connect(win_apclose_action, &QAction::triggered,
+          [=](void)
+  {
+    RpsQApplication::the_app()->do_remove_window_by_index(window_rank());
+  });
 #warning TODO: closing or deletion of RpsQWindow should remove it in application app_windvec....
 } // end RpsQWindow::RpsQWindow
 
