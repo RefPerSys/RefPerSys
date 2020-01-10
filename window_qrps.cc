@@ -41,8 +41,9 @@ const char rps_window_date[]= __DATE__;
 
 
 
-RpsQWindow::RpsQWindow (QWidget *parent)
+RpsQWindow::RpsQWindow (QWidget *parent, int rank)
   : QMainWindow(parent),
+    win_rank(rank),
     // we explicitly initialize every pointer field, for ease of
     // debugging and more reproducible runs.  In principle this should
     // be useless...
@@ -130,7 +131,7 @@ RpsQWindow::RpsQWindow (QWidget *parent)
     auto dia = new RpsQCreateSymbolDialog(this);
     dia->show();
   });
-
+#warning TODO: closing or deletion of RpsQWindow should remove it in application app_windvec....
 } // end RpsQWindow::RpsQWindow
 
 

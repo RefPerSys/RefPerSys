@@ -62,6 +62,8 @@
 #include <QDebug>
 #include <QFont>
 #include <QMdiArea>
+#include <QScreen>
+#include <QDesktopWidget>
 
 class RpsQApplication;
 class RpsQWindow;
@@ -76,6 +78,14 @@ class RpsQApplication
   Q_OBJECT;
 public:
   RpsQApplication (int &argc, char*argv[]); // constructor
+  //// the json reading methods can fail by throwing some exception
+  // read a json default file ~/refpersys-user.json:
+  Json::Value read_user_json(void);
+  // read the application default file app-refpersys.json:
+  Json::Value read_application_json(void);
+  // read some json file in the current working directory:
+  Json::Value read_current_json(const std::string jsonpath);
+  // get the nth window:
   RpsQWindow* getWindowPtr(int index);
   RpsQWindow& getWindow(int index)
   {
@@ -199,9 +209,9 @@ class RpsQWindow : public QMainWindow
 {
   Q_OBJECT
 public:
-  RpsQWindow (QWidget *parent = nullptr);
-
+  RpsQWindow (QWidget *parent = nullptr, int rank=0);
 private:
+  int win_rank; // rank in application
   // see https://doc.qt.io/qt-5/qtwidgets-mainwindows-menus-example.html
   QMenu* win_app_menu;
   QMenu* win_create_menu;
@@ -227,6 +237,8 @@ private:
 
 public slots:
   void do_quit(void);
+public:
+  int window_rank() const { return win_rank; };
 };				// end of RpsQWindow
 
 #endif /*QTHEAD_QRPS_INCLUDED*/
