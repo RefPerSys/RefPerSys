@@ -268,9 +268,9 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
         if (dladdr((void*)mgfun, &di))
           {
             RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
-                          << " has magicgetter " << (void*)mgfun
-                          << " dli_fname=" << (di.dli_fname?:"???")
-                          << " dli_sname=" << (di.dli_sname?:"???"));
+                           << " has magicgetter " << (void*)mgfun
+                           << " dli_fname=" << (di.dli_fname?:"???")
+                           << " dli_sname=" << (di.dli_sname?:"???"));
           }
         else
           {
@@ -281,7 +281,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
       }
     else
       RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
-                    << " has no magicgetter");
+                     << " has no magicgetter");
   }
   /// applying function
   {
@@ -305,7 +305,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
       }
     else
       RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
-                    << " has applying function");
+                     << " has applying function");
   }
   /// attributes
   if (!ob_attrs.empty())
@@ -789,7 +789,7 @@ Rps_PayloadSymbol::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   if (is_weak())
     jv["symb_weak"] = Json::Value(true);
   RPS_NOPRINTOUT("Rps_PayloadSymbol::dump_json_content owner=" << owner()->oid().to_string()
-                << " jv=" << jv);
+                 << " jv=" << jv);
 } // end Rps_PayloadSymbol::dump_json_content
 
 

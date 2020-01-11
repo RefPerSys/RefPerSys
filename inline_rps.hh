@@ -907,6 +907,35 @@ Rps_ObjectZone::get_class(void) const
   return Rps_ObjectRef(ob_class.load());
 } // end Rps_ObjectZone::get_class
 
+
+/// See section "the RefPerSys object model" of
+/// refpersys-design.pdf document.
+bool
+Rps_ObjectZone::is_class(void) const
+{
+  auto curclass = get_class();
+  // for performance, we special-case a few common cases....
+  /// most classes are instances of the `class` class
+  /// _41OFI3r0S1t03qdB2E, so this is the usual and quick case....
+  if (curclass == RPS_ROOT_OB(_41OFI3r0S1t03qdB2E)) // `class` class
+    return true;
+  if (curclass == RPS_ROOT_OB(_36I1BY2NetN03WjrOv)) // `symbol` class
+    return false;
+  if (curclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
+    return false;
+  /// some classes might be instances of yet another metaclass, this is
+  /// rare, and we use C++ dynamic cast of payload
+  auto curpayl = get_dynamic_payload<Rps_PayloadClassInfo>();
+  if (RPS_UNLIKELY(curpayl))
+    // the astute reader would notice that C++ dynamic_cast is likely
+    // to implment itself the ObjVlisp model, but this is a C++
+    // implementation detail.
+    return true;
+  return false;
+} // end Rps_ObjectZone::is_class
+
+
+
 Rps_ObjectRef
 Rps_ObjectZone::get_space(void) const
 {

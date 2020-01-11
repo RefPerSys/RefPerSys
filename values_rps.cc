@@ -538,9 +538,10 @@ Rps_Value::get_attr(Rps_CallFrame*stkf, const Rps_ObjectRef obattr) const
 
 
 Rps_ObjectRef
-Rps_Value::compute_class( Rps_CallFrame*stkf) const
+Rps_Value::compute_class(Rps_CallFrame*stkf) const
 {
-  if (is_empty()) return nullptr;
+  if (is_empty())
+    return nullptr;
   else if (is_int())
     return RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); // the `int` class
   else if (is_string())
@@ -556,6 +557,8 @@ Rps_Value::compute_class( Rps_CallFrame*stkf) const
   else if (is_ptr())
     return as_ptr()->compute_class(stkf);
   return nullptr;
-}
+} // end Rps_Value::compute_class
+
+
 /* end of file value_rps.cc */
 

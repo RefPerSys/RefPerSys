@@ -1678,6 +1678,7 @@ public:
   {
     return ob_oid.hash();
   };
+  inline bool is_class(void) const; // test if object is a RefPerSys class
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0) const;
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   void dump_scan_contents(Rps_Dumper*du) const;
