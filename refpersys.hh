@@ -328,6 +328,21 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 #endif /*NDEBUG*/
 
 
+#define RPS_RUNTIME_ERROR_OUT_AT_BIS(Fil,Lin,...) ({	\
+      std::ostringstream outs##Lin;			\
+      outs##Lin << Fil << ":"<< Lin << "::"		\
+		<< __VA_ARGS__;				\
+      auto res##Lin =					\
+	std::runtime_error(outs##Lin.str());		\
+      res##Lin; })
+
+#define RPS_RUNTIME_ERROR_OUT_AT(Fil,Lin,...) RPS_RUNTIME_ERROR_OUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
+
+// typical usage would be throw RPS_RUNTIME_ERROR_OUT("annoying x=" << x)
+#define RPS_RUNTIME_ERROR_OUT(...) RPS_RUNTIME_ERROR_OUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
+
+
+
 static inline double rps_monotonic_real_time(void);
 static inline double rps_wallclock_real_time(void);
 double rps_elapsed_real_time(void);

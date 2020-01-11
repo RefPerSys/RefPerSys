@@ -36,9 +36,10 @@
 #error the refpersys.hh header should be included before this one
 #endif /*REFPERSYS_INCLUDED*/
 
-class RpsQApplication;
-class RpsQWindow;
-class RpsQObjectLineEdit;// a line edit for a RefPerSys object
+
+// By convention, only Qt related classes, using Q_OBJECT, should go
+// into this file...
+
 
 #include <QApplication>
 #include <QMainWindow>
@@ -60,58 +61,13 @@ class RpsQObjectLineEdit;// a line edit for a RefPerSys object
 #include <QLabel>
 #include <QDebug>
 #include <QFont>
+#include <QMdiArea>
+#include <QScreen>
+#include <QDesktopWidget>
 
-
-///////////////////////////////////////////////////////////////////////////////
-/// Singleton to cleanly manage GUI icons and other image assets.
-//////////////////////////////////////////////////////////////////////////////
-class RpsQPixMap
-{
-public:
-
-  /// Gets the singleton instance.
-  static inline RpsQPixMap* instance()
-  {
-    if (m_instance == nullptr)
-      m_instance = new RpsQPixMap();
-
-    return m_instance;
-  }
-
-  /// Registers a new image asset.
-  inline void add(std::string id, std::string path)
-  {
-    m_pixmap[id] = QPixmap(path.c_str());
-  }
-
-  /// Gets a registered image asset.
-  inline QPixmap& get(std::string id)
-  {
-    return m_pixmap[id];
-  }
-
-private:
-  // Private constructor.
-  inline RpsQPixMap()
-    : m_pixmap()
-  { }
-
-  // Private destructor.
-  inline ~RpsQPixMap()
-  {
-    delete m_instance;
-  }
-
-  // Singleton instance.
-  static RpsQPixMap* m_instance;
-
-  // Map of IDs and image assets.
-  //
-  // I've chosen an std::string for the image ID in order to avoid possible
-  // enum collisions between different image asset classes.
-  std::map<std::string, QPixmap> m_pixmap;
-};
-
+class RpsQApplication;
+class RpsQWindow;
+class RpsQObjectLineEdit;// a line edit for a RefPerSys object
 
 
 //////////////////////////////////////////////////////////// RpsQApplication
@@ -122,6 +78,14 @@ class RpsQApplication
   Q_OBJECT;
 public:
   RpsQApplication (int &argc, char*argv[]); // constructor
+  //// the json reading methods can fail by throwing some exception
+  // read a json default file ~/refpersys-user.json:
+  Json::Value read_user_json(void);
+  // read the application default file app-refpersys.json:
+  Json::Value read_application_json(void);
+  // read some json file in the current working directory:
+  Json::Value read_current_json(const std::string jsonpath);
+  // get the nth window:
   RpsQWindow* getWindowPtr(int index);
   RpsQWindow& getWindow(int index)
   {
@@ -130,343 +94,26 @@ public:
       throw std::runtime_error("bad window index in RpsQApplication::getWindow");
     return *w;
   };
-
-  size_t getWindowCount()
+  static RpsQApplication* the_app(void)
   {
-    //return app_windvec.size () - 1; // offset for null element at index 0
-    return app_wndcount;
-  }
-
-  void lowerWindowCount()
-  {
-    app_wndcount--;
-  }
+    return dynamic_cast<RpsQApplication*>(RpsQApplication::instance());
+  };
 
 public slots:
-  void dump_state(QString dirpath=".");
-  void add_new_window(void);
+  void do_dump_state(QString dirpath=".");
+  void do_dump_current_state();
+  void do_add_new_window(void);
+  void do_dump_then_exit(QString dirpath=".");
+  void do_dump_current_then_exit(void);
+  void do_remove_window_by_index(int index);
+  void do_remove_window(RpsQWindow* win);
 
 private:
-  void register_pixmap();
 
   std::mutex app_mutex;
   std::vector <std::unique_ptr<RpsQWindow>> app_windvec;
   size_t app_wndcount;
 };				// end of class RpsQApplication
-
-
-class RpsQWindow;
-
-enum RpsQWindowMenu
-{
-  APP,
-  CREATE,
-  HELP,
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// Abstract base class for all RpsQWindow menu actions.
-///
-/// This abstract class helps create a nice polymorphic object hierarchy of
-/// menu actions for RpsQWindow instances.
-//////////////////////////////////////////////////////////////////////////////
-class RpsQMenuAction : public QObject
-{
-  Q_OBJECT
-public:
-  /// Constructor
-  RpsQMenuAction(
-    RpsQWindow* parent,
-    RpsQWindowMenu menu,
-    std::string icon,
-    std::string title,
-    std::string shortcut = ""
-  );
-
-  /// Destructor
-  inline virtual ~RpsQMenuAction()
-  { }
-
-protected:
-  /// Accessor to get handle to parent window.
-  inline RpsQWindow* window()
-  {
-    return m_parent;
-  }
-
-protected slots:
-  /// Pure virtual slot for trigger action of derived menu action classes.
-  virtual void on_trigger() = 0;
-
-private:
-  // Handle to parent window.
-  RpsQWindow* m_parent;
-};				// end RpsQMenuAction
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// The Help | About menu action for RpsQWindow.
-//////////////////////////////////////////////////////////////////////////////
-class RpsQMenuHelpAbout : public RpsQMenuAction
-{
-  Q_OBJECT
-public:
-  /// Constructor
-  inline RpsQMenuHelpAbout(RpsQWindow* parent)
-    : RpsQMenuAction(parent, RpsQWindowMenu::HELP, "RPS_ICON_ABOUT", "&About")
-  { }
-
-protected slots:
-  /// Overridden slot for the trigger action.
-  void on_trigger();
-};				// end RpsQMenuHelpAbout
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// The Help | Debug menu action for RpsQWindow.
-//////////////////////////////////////////////////////////////////////////////
-class RpsQMenuHelpDebug : public RpsQMenuAction
-{
-  Q_OBJECT
-public:
-  /// Constructor
-  inline RpsQMenuHelpDebug(RpsQWindow* parent)
-    : RpsQMenuAction(
-        parent,
-        RpsQWindowMenu::HELP,
-        "RPS_ICON_DEBUG",
-        "&Debug",
-        "CTRL+D"
-      )
-  { }
-
-protected slots:
-  /// Overridden slot for the trigger action.
-  void on_trigger();
-};				// end RpsQMenuHelpDebug
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// The App | Quit menu action for RpsQWindow.
-//////////////////////////////////////////////////////////////////////////////
-class RpsQMenuAppQuit : public RpsQMenuAction
-{
-  Q_OBJECT
-public:
-  /// Constructor
-  inline RpsQMenuAppQuit(RpsQWindow* parent)
-    : RpsQMenuAction(
-        parent,
-        RpsQWindowMenu::APP,
-        "RPS_ICON_QUIT",
-        "&Quit",
-        "CTRL+Q"
-      )
-  { }
-
-protected slots:
-  /// Overridden slot for the trigger action.
-  void on_trigger();
-};				// end RpsQMenuAppQuit
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// The App | Exit menu action for RpsQWindow.
-//////////////////////////////////////////////////////////////////////////////
-class RpsQMenuAppExit : public RpsQMenuAction
-{
-  Q_OBJECT
-public:
-  /// Constructor
-  inline RpsQMenuAppExit(RpsQWindow* parent)
-    : RpsQMenuAction(
-        parent,
-        RpsQWindowMenu::APP,
-        "RPS_ICON_EXIT",
-        "e&Xit",
-        "CTRL+X"
-      )
-  { }
-
-protected slots:
-  /// Overridden slot for the trigger action.
-  void on_trigger();
-};				// end RpsQMenuAppExit
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// The App | Close menu action for RpsQWindow.
-//////////////////////////////////////////////////////////////////////////////
-class RpsQMenuAppClose : public RpsQMenuAction
-{
-  Q_OBJECT
-public:
-  /// Constructor
-  inline RpsQMenuAppClose(RpsQWindow* parent)
-    : RpsQMenuAction(
-        parent,
-        RpsQWindowMenu::APP,
-        "RPS_ICON_CLOSE",
-        "&Close",
-        "CTRL+C"
-      )
-  { }
-
-protected slots:
-  /// Overridden slot for the trigger action.
-  void on_trigger();
-};				// end RpsQMenuAppClose
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// The App | Dump menu action for RpsQWindow.
-//////////////////////////////////////////////////////////////////////////////
-class RpsQMenuAppDump : public RpsQMenuAction
-{
-  Q_OBJECT
-public:
-  /// Constructor
-  inline RpsQMenuAppDump(RpsQWindow* parent)
-    : RpsQMenuAction(
-        parent,
-        RpsQWindowMenu::APP,
-        "RPS_ICON_DUMP",
-        "&Dump",
-        "CTRL+D"
-      )
-  { }
-
-protected slots:
-  /// Overridden slot for the trigger action.
-  void on_trigger();
-};				// end RpsQMenuAppDump
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// The App | GC menu action for RpsQWindow.
-//////////////////////////////////////////////////////////////////////////////
-class RpsQMenuAppGC : public RpsQMenuAction
-{
-  Q_OBJECT
-public:
-  /// Constructor
-  inline RpsQMenuAppGC(RpsQWindow* parent)
-    : RpsQMenuAction(
-        parent,
-        RpsQWindowMenu::APP,
-        "RPS_ICON_GC",
-        "Collect &Garbage",
-        "CTRL+G"
-      )
-  { }
-
-protected slots:
-  /// Overridden slot for the trigger action.
-  void on_trigger();
-};				// end RpsQMenuAppGC
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// The App | New Window menu action for RpsQWindow.
-//////////////////////////////////////////////////////////////////////////////
-class RpsQMenuAppNew : public RpsQMenuAction
-{
-  Q_OBJECT
-public:
-  /// Constructor
-  inline RpsQMenuAppNew(RpsQWindow* parent)
-    : RpsQMenuAction(
-        parent,
-        RpsQWindowMenu::APP,
-        "RPS_ICON_NEW",
-        "New &Window",
-        "CTRL+W"
-      )
-  { }
-
-protected slots:
-  /// Overridden slot for the trigger action.
-  void on_trigger();
-};				// end RpsQMenuAppNew
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// The Create | Class Window menu action for RpsQWindow.
-//////////////////////////////////////////////////////////////////////////////
-class RpsQMenuCreateClass : public RpsQMenuAction
-{
-  Q_OBJECT
-public:
-  /// Constructor
-  inline RpsQMenuCreateClass(RpsQWindow* parent)
-    : RpsQMenuAction(
-        parent,
-        RpsQWindowMenu::CREATE,
-        "RPS_ICON_CLASS",
-        "&Class",
-        "CTRL+L"
-      )
-  { }
-
-protected slots:
-  /// Overridden slot for the trigger action.
-  void on_trigger();
-};				// end RpsQMenuCreateClass
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// The Create | Symbol Window menu action for RpsQWindow.
-//////////////////////////////////////////////////////////////////////////////
-class RpsQMenuCreateSymbol : public RpsQMenuAction
-{
-  Q_OBJECT
-public:
-  /// Constructor
-  inline RpsQMenuCreateSymbol(RpsQWindow* parent)
-    : RpsQMenuAction(
-        parent,
-        RpsQWindowMenu::CREATE,
-        "RPS_ICON_CLASS",
-        "&Symbol",
-        "CTRL+S"
-      )
-  { }
-
-protected slots:
-  /// Overridden slot for the trigger action.
-  void on_trigger();
-};				// end RpsQMenuCreateSymbol
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// The menu bar for RpsQWindow.
-//////////////////////////////////////////////////////////////////////////////
-
-#warning FIXME: RpsQWindowMenuBar should probably inherit from QMenuBar or be renamed to something else....
-/// see https://doc.qt.io/qt-5/qmenubar.html
-class RpsQWindowMenuBar
-{
-public:
-  RpsQWindowMenuBar(RpsQWindow* parent);
-
-private:
-  RpsQWindow* menubar_parent;
-  std::shared_ptr<RpsQMenuAppDump> m_menu_app_dump;
-  std::shared_ptr<RpsQMenuAppGC> m_menu_app_gc;
-  std::shared_ptr<RpsQMenuAppNew> m_menu_app_new;
-  std::shared_ptr<RpsQMenuAppClose> m_menu_app_close;
-  std::shared_ptr<RpsQMenuCreateClass> m_menu_create_class;
-  std::shared_ptr<RpsQMenuCreateSymbol> m_menu_create_symbol;
-  std::shared_ptr<RpsQMenuAppQuit> m_menu_app_quit;
-  std::shared_ptr<RpsQMenuAppExit> m_menu_app_exit;
-  std::shared_ptr<RpsQMenuHelpAbout> m_menu_help_about;
-  std::shared_ptr<RpsQMenuHelpDebug> m_menu_help_debug;
-};				// end RpsQWindowMenuBar
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -563,30 +210,39 @@ class RpsQWindow : public QMainWindow
 {
   Q_OBJECT
 public:
-  RpsQWindow (QWidget *parent = nullptr);
-  virtual ~RpsQWindow()
-  { };
+  RpsQWindow (QWidget *parent = nullptr, int rank=0);
+private:
+  int win_rank; // rank in application
+  // see https://doc.qt.io/qt-5/qtwidgets-mainwindows-menus-example.html
+  QMenu* win_app_menu;
+  QMenu* win_create_menu;
+  QMenu* win_help_menu;
 
-  inline RpsQApplication* application()
+  // for app menu
+  QAction* win_apdump_action;
+  QAction* win_apgc_action;
+  QAction* win_apnewin_action;
+  QAction* win_apclose_action;
+  QAction* win_apquit_action;
+  QAction* win_apexit_action;
+
+  // for create menu
+  QAction* win_crclass_action;
+  QAction*win_crsymb_action;
+
+  // for help menu
+#warning RpsQWindow help menu missing
+
+  /// the central widget
+  QMdiArea* win_centralmdi;
+
+public slots:
+  void do_quit(void);
+public:
+  int window_rank() const
   {
-    return dynamic_cast<RpsQApplication*>(RpsQApplication::instance());
-  }
-
-private:
-  void setup_debug_widget();
-  void setup_debug_timer();
-
-private:
-  friend class RpsQMenuHelpDebug;
-
-  RpsQWindowMenuBar m_menu_bar;
-  QPlainTextEdit m_debug_widget;
-  QTimer m_debug_timer;
-
-signals:
-
-private slots:
-  void update_debug_widget();
+    return win_rank;
+  };
 };				// end of RpsQWindow
 
 #endif /*QTHEAD_QRPS_INCLUDED*/

@@ -78,35 +78,219 @@ const char* rps_homedir(void)
   return rps_bufpath_homedir;
 } // end rps_homedir
 
+
+Json::Value
+RpsQApplication::read_application_json(void)
+{
+  std::string pathapp = rps_topdirectory;
+  pathapp += "/app-refpersys.json";
+  if (access(pathapp.c_str(), R_OK))
+    throw RPS_RUNTIME_ERROR_OUT("failed to access application JSON file "
+                                << pathapp << ":" << strerror(errno));
+  Json::Reader jread(Json::Features::all());
+  std::ifstream ins(pathapp);
+  if (!ins)
+    throw RPS_RUNTIME_ERROR_OUT("failed to open application JSON file "
+                                << pathapp << ":" << strerror(errno));
+
+  Json::Value root(Json::nullValue);
+  if (!jread.parse(ins,root,false))
+    throw RPS_RUNTIME_ERROR_OUT("failed to read application JSON file "
+                                << pathapp
+                                << ":" << jread.getFormattedErrorMessages());
+  return root;
+} // end RpsQApplication::read_application_json
+
+Json::Value
+RpsQApplication::read_user_json(void)
+{
+  std::string pathapp = rps_homedir();
+  pathapp += "/refpersys-user.json";
+  if (access(pathapp.c_str(), R_OK))
+    throw RPS_RUNTIME_ERROR_OUT("failed to access user JSON file "
+                                << pathapp << ":" << strerror(errno));
+  Json::Reader jread(Json::Features::all());
+  std::ifstream ins(pathapp);
+  if (!ins)
+    throw RPS_RUNTIME_ERROR_OUT("failed to open user JSON file "
+                                << pathapp << ":" << strerror(errno));
+  Json::Value root(Json::nullValue);
+  if (!jread.parse(ins,root,false))
+    throw RPS_RUNTIME_ERROR_OUT("failed to read user JSON file "
+                                << pathapp
+                                << ":" << jread.getFormattedErrorMessages());
+  return root;
+} // end RpsQApplication::read_user_json
+
+
+Json::Value
+RpsQApplication::read_current_json(std::string jsonpath)
+{
+  if (jsonpath.find('/') || jsonpath.find(".."))
+    throw RPS_RUNTIME_ERROR_OUT("read_current_json bad path " << jsonpath);
+  std::ifstream ins(jsonpath);
+  {
+    int olderrno = errno;
+    char cwdbuf[128];
+    memset(cwdbuf, 0, sizeof(cwdbuf));
+    getcwd(cwdbuf, sizeof(cwdbuf)-1);
+    if (!ins)
+      {
+        RPS_RUNTIME_ERROR_OUT("failed to open current JSON file "
+                              << jsonpath
+                              << " in " << cwdbuf
+                              << ":" << strerror(olderrno));
+      }
+  }
+  Json::Reader jread(Json::Features::all());
+  Json::Value root(Json::nullValue);
+  if (!jread.parse(ins,root,false))
+    throw RPS_RUNTIME_ERROR_OUT("failed to read current JSON file "
+                                << jsonpath
+                                << ":" << jread.getFormattedErrorMessages());
+  return root;
+} // end RpsQApplication::read_current_json
+
 void
-RpsQApplication::add_new_window(void)
+RpsQApplication::do_add_new_window(void)
 {
   std::lock_guard gu(app_mutex);
-  auto window = new RpsQWindow();
-  window->setWindowTitle(QString("RefPerSys #%1").arg(app_windvec.size()));
-  window->resize (640, 480); // TODO: get dimensions from $HOME/.RefPerSys
+  int winrk = -1;
+  RPS_ASSERT(app_windvec.size()>0);
+  for (int rk=1; rk<app_windvec.size(); rk++)
+    {
+      if (app_windvec[rk] == nullptr)
+        {
+          winrk = rk;
+          break;
+        }
+    };
+  if (winrk<0)
+    {
+      winrk = app_windvec.size();
+      app_windvec.push_back(nullptr);
+    }
+  auto window = new RpsQWindow(nullptr,winrk);
+  window->setWindowTitle(QString("RefPerSys #%1").arg(winrk));
+  int w = 256;
+  int h = 128;
+  Json::Value juser(Json::nullValue);
+  Json::Value japp(Json::nullValue);
+  try
+    {
+      juser = read_user_json();
+    }
+  catch (std::exception&exc)
+    {
+      RPS_WARNOUT("failed to read user JSON:"
+                  << std::endl << exc.what());
+    };
+  try
+    {
+      japp = read_application_json();
+    }
+  catch(std::exception&exc)
+    {
+      RPS_WARNOUT("failed to read application JSON:"
+                  << std::endl << exc.what());
+    };
+  if (juser.isMember("window-width"))
+    w = juser["window-width"].asInt();
+  else if (japp.isMember("window-width"))
+    w = japp["window-width"].asInt();
+  if (juser.isMember("window-height"))
+    w = juser["window-height"].asInt();
+  else if (japp.isMember("window-height"))
+    w = japp["window-height"].asInt();
+  auto screengeom = desktop()->screenGeometry();
+  if (w > (3*screengeom.width())/4)
+    w = 3*screengeom.width()/4;
+  if (w < screengeom.width()/4)
+    w = 16 + screengeom.width()/4;
+  if (h >  (3*screengeom.height())/4)
+    h = 3*screengeom.height()/4;
+  if (h < screengeom.height()/4)
+    h = 16 + screengeom.height()/4;
+  window->resize (w, h);
   window->show();
-  app_windvec.emplace_back(window);
+  app_windvec[winrk].reset(window);
   app_wndcount++;
 } // end of RpsQApplication::add_new_window
 
-RpsQApplication::RpsQApplication(int &argc, char*argv[])
-  : QApplication(argc, argv)
-  , app_wndcount (0)
+
+void
+RpsQApplication::do_dump_then_exit(QString dir)
 {
-  register_pixmap();
+  rps_dump_into(dir.toStdString());
+  QApplication::exit(0);
+} // end RpsQApplication::do_dump_then_exit
+
+void
+RpsQWindow::do_quit()
+{
+  auto res = QMessageBox::question(this, "Quit RefPerSys?",
+                                   "quit without dumping the persistent state?");
+
+  if (res == QMessageBox::Yes)
+    QApplication::exit(0);
+} // end RpsQWindow::do_quit
+
+RpsQApplication::RpsQApplication(int &argc, char*argv[])
+  : QApplication(argc, argv),
+    app_mutex(),
+    app_windvec(),
+    app_wndcount (0)
+{
   setApplicationName("RefPerSys");
   setApplicationVersion(rps_lastgitcommit);
   app_windvec.reserve(16);
   app_windvec.push_back(nullptr); // we don't want a 0 index.
-  add_new_window();
+  do_add_new_window();
 } // end of RpsQApplication::RpsQApplication
 
 void
-RpsQApplication::dump_state(QString dirpath)
+RpsQApplication::do_remove_window_by_index(int ix)
+{
+  std::lock_guard guapp(app_mutex);
+  int wincount = app_windvec.size();
+  if (ix <= 0)
+    throw RPS_RUNTIME_ERROR_OUT("do_remove_window: negative index " << ix);
+  if (ix >= wincount)
+    throw RPS_RUNTIME_ERROR_OUT("do_remove_window: too large index " << ix
+                                << " is more than " << wincount);
+  RpsQWindow* win = app_windvec[ix].get();
+  win->close();
+  app_windvec[ix].release();
+} // end RpsQApplication::do_remove_window
+
+void
+RpsQApplication::do_remove_window(RpsQWindow*win)
+{
+  if (win)
+    do_remove_window_by_index(win->window_rank());
+} // end RpsQApplication::do_remove_window
+
+
+void
+RpsQApplication::do_dump_state(QString dirpath)
 {
   rps_dump_into(dirpath.toStdString());
-} // end of RpsQApplication::dump_state
+} // end of RpsQApplication::do_dump_state
+
+void
+RpsQApplication::do_dump_current_state(void)
+{
+  rps_dump_into(".");
+} // end of RpsQApplication::do_dump_current_state
+
+
+void
+RpsQApplication::do_dump_current_then_exit(void)
+{
+  do_dump_then_exit(".");
+} // end of RpsQApplication::do_dump_current_then_exit
+
+
 
 
 RpsQWindow* RpsQApplication::getWindowPtr(int ix)
@@ -119,21 +303,6 @@ RpsQWindow* RpsQApplication::getWindowPtr(int ix)
   return app_windvec.at(ix).get();
 }
 
-
-void
-RpsQApplication::register_pixmap()
-{
-  auto pixmap = RpsQPixMap::instance();
-
-  pixmap->add("RPS_ICON_NEW", "new_icon.png");
-  pixmap->add("RPS_ICON_DUMP", "dump_icon.png");
-  pixmap->add("RPS_ICON_GC", "gc_icon.png");
-  pixmap->add("RPS_ICON_QUIT", "quit_icon.png");
-  pixmap->add("RPS_ICON_EXIT", "exit_icon.png");
-  pixmap->add("RPS_ICON_CLOSE", "close_icon.png");
-  pixmap->add("RPS_ICON_ABOUT", "about_icon.png");
-  pixmap->add("RPS_ICON_DEBUG", "debug_icon.png");
-}
 
 
 void rps_run_application(int &argc, char **argv)

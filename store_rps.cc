@@ -1420,14 +1420,14 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     {
       *pouts << std::endl << std::endl;
       *pouts << "//+ob" << curobr->oid().to_string() << std::endl;
-      RPS_INFORMOUT("Rps_Dumper::write_space_file emits " << curobr->oid().to_string());
+      RPS_NOPRINTOUT("Rps_Dumper::write_space_file emits " << curobr->oid().to_string());
       /// output a comment giving the class name for readability
       {
         Rps_ObjectRef obclass = curobr->get_class();
         Rps_ObjectRef obsymb;
         if (obclass)
           {
-            RPS_INFORMOUT("Rps_Dumper::write_space_file obclass " << obclass->oid().to_string()
+            RPS_NOPRINTOUT("Rps_Dumper::write_space_file obclass " << obclass->oid().to_string()
                           << " for obr " <<curobr->oid().to_string());
             usleep(1000);
             std::lock_guard<std::recursive_mutex> gu(*(obclass->objmtxptr()));
@@ -1437,7 +1437,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
           };
         if (obsymb)
           {
-            RPS_INFORMOUT("Rps_Dumper::write_space_file obsymb " << obsymb->oid().to_string()
+            RPS_NOPRINTOUT("Rps_Dumper::write_space_file obsymb " << obsymb->oid().to_string()
                           << " for obr " <<curobr->oid().to_string());
             std::lock_guard<std::recursive_mutex> gu(*(obsymb->objmtxptr()));
             auto symb = obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
@@ -1862,10 +1862,10 @@ void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  RPS_INFORMOUT("rpsldpy_symbol: obz=" << obz->oid().to_string()
-                << " jv=" << jv
-                << " spacid=" << spacid.to_string()
-                << " lineno:" << lineno);
+  RPS_NOPRINTOUT("rpsldpy_symbol: obz=" << obz->oid().to_string()
+                 << " jv=" << jv
+                 << " spacid=" << spacid.to_string()
+                 << " lineno:" << lineno);
   const char* name = jv["symb_name"].asCString();
   bool weak = jv["symb_weak"].asBool();
   if (!Rps_PayloadSymbol::valid_name(name))
@@ -1879,5 +1879,6 @@ void rpsldpy_symbol(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
   if (!jsymbval.isNull())
     paylsymb->symbol_put_value(Rps_Value(jsymbval,ld));
 } // end rpsldpy_symbol
+
 //////////////////////////////////////////////////////////// end of file store_rps.cc
 

@@ -40,206 +40,104 @@ extern "C" const char rps_window_date[];
 const char rps_window_date[]= __DATE__;
 
 
-RpsQPixMap* RpsQPixMap::m_instance = nullptr;
 
-
-RpsQWindow::RpsQWindow (QWidget *parent)
+RpsQWindow::RpsQWindow (QWidget *parent, int rank)
   : QMainWindow(parent),
-    m_menu_bar(this)
-
+    win_rank(rank),
+    // we explicitly initialize every pointer field, for ease of
+    // debugging and more reproducible runs.  In principle this should
+    // be useless...
+    win_app_menu(nullptr),
+    win_create_menu(nullptr),
+    win_help_menu(nullptr),
+    win_apdump_action(nullptr),
+    win_apgc_action(nullptr),
+    win_apnewin_action(nullptr),
+    win_apquit_action(nullptr),
+    win_apexit_action(nullptr),
+    win_crclass_action(nullptr),
+    win_crsymb_action(nullptr),
+    win_centralmdi(nullptr)
 {
-  qApp->setAttribute (Qt::AA_DontShowIconsInMenus, false);
-
-  auto vbox = new QVBoxLayout();
-  vbox->setSpacing(1);
-  vbox->addWidget(menuBar());
-
-  setup_debug_widget();
-  vbox->addWidget(&m_debug_widget);
+  /// create the menus and their actions
+  {
+    auto mb = menuBar();
+    win_app_menu = mb->addMenu("App");
+    win_apdump_action = new QAction("&Dump", this);
+    win_apdump_action->setStatusTip("dump state to current directory");
+    win_apgc_action = new QAction("&Garbage collect", this);
+    win_apgc_action->setStatusTip("run the precise garbage collector");
+    win_apnewin_action = new QAction("new &Window", this);
+    win_apnewin_action->setStatusTip("Create a new window");
+    win_apclose_action = new QAction("&Close", this);
+    win_apclose_action->setStatusTip("close the current window");
+    win_apquit_action = new QAction("&Quit", this);
+    win_apquit_action->setStatusTip("Quit without saving state");
+    win_apexit_action = new QAction("e&Xit", this);
+    win_apexit_action->setStatusTip("Exit after saving state");
+    win_create_menu = mb->addMenu("Create");
+    win_crclass_action = new QAction("create &Class",this);
+    win_crclass_action->setStatusTip("create a new named class");
+    win_crsymb_action = new QAction("create &Symbol", this);
+    win_crsymb_action->setStatusTip("create a new symbol");
+    win_help_menu = mb->addMenu("Help");
+  }
+  /// add the actions to their menu
+  {
+    win_app_menu->addAction(win_apdump_action);
+    win_app_menu->addAction(win_apgc_action);
+    win_app_menu->addAction(win_apnewin_action);
+    win_app_menu->addAction(win_apclose_action);
+    win_app_menu->addAction(win_apquit_action);
+    win_app_menu->addAction(win_apexit_action);
+    win_create_menu->addAction(win_crclass_action);
+    win_create_menu->addAction(win_crsymb_action);
+  }
+  // our central widget
+  win_centralmdi =  new QMdiArea(this);
+  setCentralWidget(win_centralmdi);
+  // connect the behavior
+  connect(win_apdump_action, &QAction::triggered,
+          RpsQApplication::the_app(),
+          &RpsQApplication::do_dump_current_state);
+  connect(win_apexit_action, &QAction::triggered,
+          RpsQApplication::the_app(), &RpsQApplication::do_dump_current_then_exit);
+  connect(win_apquit_action, &QAction::triggered,
+          [=](void)
+  {
+    auto reply =
+      QMessageBox::question(this, "RefPerSys",
+                            "Quit without dump?",
+                            QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::Yes)
+      QApplication::quit();
+  });
+  connect(win_apgc_action, &QAction::triggered,
+          [=](void)
+  {
+    rps_garbage_collect();
+  });
+  connect(win_apnewin_action, &QAction::triggered,
+          RpsQApplication::the_app(), &RpsQApplication::do_add_new_window);
+  connect(win_crclass_action, &QAction::triggered,
+          [=](void)
+  {
+    auto dia = new RpsQCreateClassDialog(this);
+    dia->show();
+  });
+  connect(win_crsymb_action, &QAction::triggered,
+          [=](void)
+  {
+    auto dia = new RpsQCreateSymbolDialog(this);
+    dia->show();
+  });
+  connect(win_apclose_action, &QAction::triggered,
+          [=](void)
+  {
+    RpsQApplication::the_app()->do_remove_window_by_index(window_rank());
+  });
+#warning TODO: closing or deletion of RpsQWindow should remove it in application app_windvec....
 } // end RpsQWindow::RpsQWindow
-
-
-void
-RpsQWindow::setup_debug_widget()
-{
-  m_debug_widget.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  m_debug_widget.setReadOnly(true);
-  m_debug_widget.setTextInteractionFlags(
-    m_debug_widget.textInteractionFlags() | Qt::TextSelectableByKeyboard
-  );
-}
-
-
-void
-RpsQWindow::setup_debug_timer()
-{
-  connect(&m_debug_timer, SIGNAL(timeout()), this, SLOT(update_debug_widget()));
-}
-
-
-void
-RpsQWindow::update_debug_widget()
-{
-  QFile log ("_refpersys.log");
-
-  if (log.open (QFile::ReadOnly | QFile::Text))
-    {
-      m_debug_widget.setPlainText (log.readAll());
-      m_debug_widget.show();
-      log.close();
-    }
-
-  else
-    {
-      qDebug() << "Failed to open debug log";
-      return;
-    }
-}
-
-
-RpsQMenuAction::RpsQMenuAction(
-  RpsQWindow* parent,
-  RpsQWindowMenu menu,
-  std::string icon,
-  std::string title,
-  std::string shortcut
-)
-  : m_parent(parent)
-{
-  auto pix = RpsQPixMap::instance()->get(icon);
-  auto action = new QAction(pix, title.c_str(), m_parent);
-  action->setShortcut(tr(shortcut.c_str()));
-
-  auto item = m_parent->menuBar()->findChildren<QMenu*>().at(menu);
-  item->addAction(action);
-  m_parent->connect(
-    action,
-    &QAction::triggered,
-    this,
-    &RpsQMenuAction::on_trigger
-  );
-}
-
-
-void RpsQMenuHelpAbout::on_trigger()
-{
-  std::ostringstream msg;
-  msg << "RefPerSys Git ID: " << RpsColophon::git_id()
-      << "\nBuild Date: " << RpsColophon::timestamp()
-      << "\nMD5 Sum of Source: " << RpsColophon::source_md5()
-      << "\nLast Git Commit: " << RpsColophon::last_git_commit()
-      << "\nRefPerSys Top Directory: " << RpsColophon::top_directory()
-      << "\n\nSee " << RpsColophon::website();
-
-  QMessageBox::information (window(), "About RefPerSys", msg.str().c_str());
-}
-
-
-void RpsQMenuHelpDebug::on_trigger()
-{
-  auto wnd = window();
-  wnd->m_debug_timer.start(1000);
-  wnd->update_debug_widget();
-}
-
-
-void RpsQMenuAppQuit::on_trigger()
-{
-  auto msg = QString("Are you sure you want to quit without dumping?");
-  auto btn = QMessageBox::Yes | QMessageBox::No;
-  auto reply = QMessageBox::question(window(), "RefPerSys", msg, btn);
-
-  if (reply == QMessageBox::Yes)
-    QApplication::quit();
-}
-
-
-void RpsQMenuAppExit::on_trigger()
-{
-  rps_dump_into();
-  QApplication::quit();
-}
-
-
-void RpsQMenuAppClose::on_trigger()
-{
-  auto app = window()->application();
-
-  if (app->getWindowCount() > 1)
-    {
-      app->lowerWindowCount();
-      window()->close();
-    }
-  else
-    {
-      auto msg = QString("Are you sure you want to quit without dumping?");
-      auto btn = QMessageBox::Yes | QMessageBox::No;
-      auto reply = QMessageBox::question(window(), "RefPerSys", msg, btn);
-
-      if (reply == QMessageBox::Yes)
-        QApplication::quit();
-    }
-}
-
-
-void RpsQMenuAppDump::on_trigger()
-{
-  rps_dump_into();
-}
-
-
-void RpsQMenuAppGC::on_trigger()
-{
-  rps_garbage_collect();
-}
-
-
-void RpsQMenuAppNew::on_trigger()
-{
-  window()->application()->add_new_window();
-}
-
-
-void
-RpsQMenuCreateClass::on_trigger()
-{
-  auto dia = new RpsQCreateClassDialog(window());
-  dia->show();
-}
-
-void
-RpsQMenuCreateSymbol::on_trigger()
-{
-  auto dia = new RpsQCreateSymbolDialog(window());
-  dia->show();
-}
-
-
-RpsQWindowMenuBar::RpsQWindowMenuBar(RpsQWindow* parent)
-  : menubar_parent(parent)
-{
-  auto app_menu = menubar_parent->menuBar()->addMenu("&App");
-  m_menu_app_dump = std::make_shared<RpsQMenuAppDump>(menubar_parent);
-  m_menu_app_gc = std::make_shared<RpsQMenuAppGC>(menubar_parent);
-  m_menu_app_new = std::make_shared<RpsQMenuAppNew>(menubar_parent);
-  app_menu->addSeparator();
-  m_menu_app_close = std::make_shared<RpsQMenuAppClose>(menubar_parent);
-  m_menu_app_quit = std::make_shared<RpsQMenuAppQuit>(menubar_parent);
-  m_menu_app_exit = std::make_shared<RpsQMenuAppExit>(menubar_parent);
-
-  menubar_parent->menuBar()->addMenu("&Create");
-  m_menu_create_class = std::make_shared<RpsQMenuCreateClass>(menubar_parent);
-  m_menu_create_symbol = std::make_shared<RpsQMenuCreateSymbol>(menubar_parent);
-
-  menubar_parent->menuBar()->addMenu("&Help");
-  m_menu_help_about = std::make_shared<RpsQMenuHelpAbout>(menubar_parent);
-  m_menu_help_debug = std::make_shared<RpsQMenuHelpDebug>(menubar_parent);
-
-  menubar_parent->menuBar()->setSizePolicy(
-    QSizePolicy::Expanding,
-    QSizePolicy::Expanding
-  );
-}// end of RpsQWindowMenuBar::RpsQWindowMenuBar
 
 
 

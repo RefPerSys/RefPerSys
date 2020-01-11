@@ -267,7 +267,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
         Dl_info di = {};
         if (dladdr((void*)mgfun, &di))
           {
-            RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+            RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
                           << " has magicgetter " << (void*)mgfun
                           << " dli_fname=" << (di.dli_fname?:"???")
                           << " dli_sname=" << (di.dli_sname?:"???"));
@@ -280,7 +280,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
         json["magicattr"] = Json::Value(true);
       }
     else
-      RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+      RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
                     << " has no magicgetter");
   }
   /// applying function
@@ -304,7 +304,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
         json["applying"] = Json::Value(true);
       }
     else
-      RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+      RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
                     << " has applying function");
   }
   /// attributes
@@ -753,9 +753,9 @@ Rps_PayloadSymbol::load_register_name(const char*name, Rps_Loader*ld, bool weak)
                              + owner()->oid().to_string());
   symb_table.insert({symb_name, this});
   symb_is_weak.store(weak);
-  RPS_INFORMOUT("Rps_PayloadSymbol::load_register_name symb_name:" << symb_name
-                << " " << (weak?"weak":"strong")
-                << " owner:" << owner()->oid().to_string());
+  RPS_NOPRINTOUT("Rps_PayloadSymbol::load_register_name symb_name:" << symb_name
+                 << " " << (weak?"weak":"strong")
+                 << " owner:" << owner()->oid().to_string());
 } // end Rps_PayloadSymbol::load_register_name
 
 void
@@ -788,7 +788,7 @@ Rps_PayloadSymbol::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
     jv["symb_val"] = rps_dump_json_value(du, symval);
   if (is_weak())
     jv["symb_weak"] = Json::Value(true);
-  RPS_INFORMOUT("Rps_PayloadSymbol::dump_json_content owner=" << owner()->oid().to_string()
+  RPS_NOPRINTOUT("Rps_PayloadSymbol::dump_json_content owner=" << owner()->oid().to_string()
                 << " jv=" << jv);
 } // end Rps_PayloadSymbol::dump_json_content
 
