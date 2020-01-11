@@ -33,6 +33,7 @@ RPS_INSTALL_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
 RPS_INSTALL_ROOT_OB(_5CYWxcChKN002rw1fI) //contributor_to_RefPerSys∈class
 RPS_INSTALL_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
 RPS_INSTALL_ROOT_OB(_6fmq7pZkmNd03UyPuO) //class∈symbol
+RPS_INSTALL_ROOT_OB(_6JbWqOsjX5T03M1eGM) //closure_for_method_selector∈symbol
 RPS_INSTALL_ROOT_OB(_6JYterg6iAu00cV9Ye) //set∈class
 RPS_INSTALL_ROOT_OB(_6NVM7sMcITg01ug5TC) //tuple∈class
 RPS_INSTALL_ROOT_OB(_6QAanFi9yLx00spBST) //last_name∈symbol
@@ -43,7 +44,7 @@ RPS_INSTALL_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
 RPS_INSTALL_ROOT_OB(_9uwZtDshW4401x6MsY) //space∈symbol
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 21
+#define RPS_NB_ROOT_OB 22
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
