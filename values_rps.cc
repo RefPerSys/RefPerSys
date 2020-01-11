@@ -559,6 +559,18 @@ Rps_Value::compute_class(Rps_CallFrame*stkf) const
   return nullptr;
 } // end Rps_Value::compute_class
 
+// the below member function computes, for the current value, the
+// closure for the RefPerSys method of selector obselector. It is so
+// important that it deserves a describing symbol of its own.
+Rps_ClosureValue
+Rps_Value::closure_for_method_selector(Rps_CallFrame*cframe, Rps_ObjectRef obselector) const
+{
+#warning unimplemented Rps_Value::closure_for_method_selector
+  /// temporarily only
+  RPS_FATALOUT("unimplemented closure_for_method_selector for value of class " <<
+               compute_class(cframe)
+               << " with selector " << obselector);
+} // end of Rps_Value::closure_for_method_selector
 
 /* end of file value_rps.cc */
 

@@ -631,10 +631,14 @@ class Rps_Value
 {
   friend class Rps_PayloadSymbol;
 public:
+  // the maximal depth of the inheritance graph. An arbitrary, but small limit.
+  static constexpr unsigned maximal_inheritance_depth = 32;
+  /// various C++ tags
   struct Rps_IntTag {};
   struct Rps_DoubleTag {};
   struct Rps_ValPtrTag {};
   struct Rps_EmptyTag {};
+  /// various constructors
   inline Rps_Value ();
   inline Rps_Value (std::nullptr_t);
   inline Rps_Value (Rps_EmptyTag);
@@ -660,6 +664,8 @@ public:
   inline Rps_Value(const char*str, int len= -1);
   Rps_Value(const Rps_ZoneValue*ptr) : Rps_Value(ptr, Rps_ValPtrTag{}) {};
   Rps_Value(const Rps_ZoneValue& zv) : Rps_Value(&zv, Rps_ValPtrTag{}) {};
+  ///
+  Rps_ClosureValue closure_for_method_selector(Rps_CallFrame*cframe, Rps_ObjectRef obselector) const;
   inline const void* data_for_symbol(Rps_PayloadSymbol*) const;
   static constexpr unsigned max_gc_mark_depth = 100;
   inline void gc_mark(Rps_GarbageCollector&gc, unsigned depth= 0) const;

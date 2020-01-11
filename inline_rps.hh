@@ -928,7 +928,7 @@ Rps_ObjectZone::is_class(void) const
   auto curpayl = get_dynamic_payload<Rps_PayloadClassInfo>();
   if (RPS_UNLIKELY(curpayl))
     // the astute reader would notice that C++ dynamic_cast is likely
-    // to implment itself the ObjVlisp model, but this is a C++
+    // to implement itself the ObjVlisp model, but this is a C++
     // implementation detail.
     return true;
   return false;
