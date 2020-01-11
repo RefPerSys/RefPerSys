@@ -563,13 +563,80 @@ Rps_Value::compute_class(Rps_CallFrame*stkf) const
 // closure for the RefPerSys method of selector obselector. It is so
 // important that it deserves a describing symbol of its own.
 Rps_ClosureValue
-Rps_Value::closure_for_method_selector(Rps_CallFrame*cframe, Rps_ObjectRef obselector) const
+Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef obselectorarg) const
 {
-#warning unimplemented Rps_Value::closure_for_method_selector
-  /// temporarily only
-  RPS_FATALOUT("unimplemented closure_for_method_selector for value of class " <<
-               compute_class(cframe)
-               << " with selector " << obselector);
+  // our frame descriptor is the `closure_for_method_selector` symbol
+  RPS_LOCALFRAME(RPS_ROOT_OB(_6JbWqOsjX5T03M1eGM),
+                 callerframe,
+                 Rps_Value val; // the current value
+                 Rps_ObjectRef obselect; // the attribute
+                 Rps_ObjectRef obcurclass; // the current class
+                 Rps_ClosureValue closval; // the resulting closure
+                );
+  _.val = Rps_Value(*this);
+  _.obselect = obselectorarg;
+  int loopcount = 0;
+  RPS_ASSERT(RPS_ROOT_OB(_6XLY6QfcDre02922jz)); // the `value` class exists, it has been loaded
+  while (loopcount++ <  maximal_inheritance_depth)
+    {
+      _.obcurclass = _.val.compute_class(&_);
+      RPS_ASSERT(_.obcurclass);
+      std::lock_guard<std::recursive_mutex> gucurclass(*(_.obcurclass->objmtxptr()));
+      if (_.obcurclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz) // the topmost `value` class ends the loop
+         )
+        {
+          /// if the `value` class is not a genuine RefPerSys class, it
+          /// means that RefPerSys persistent heap is broken beyond
+          /// repair.  So the asserts below are always satisfied.
+          auto valclasspayl = reinterpret_cast<Rps_PayloadClassInfo*>(_.obcurclass->get_payload());
+          RPS_ASSERT(valclasspayl != nullptr);
+          // the below check is faster than a C++ dynamic_cast:
+          RPS_ASSERT(valclasspayl->stored_type() == Rps_Type::PaylClassInfo);
+          _.closval = valclasspayl->get_own_method(_.obselect);
+          if (_.closval && _.closval.is_closure()) // should be always true! But we need to check
+            return _.closval;
+          else
+            return Rps_ClosureValue(nullptr);
+        }
+      /// usual common case:
+      if (_.obcurclass->get_class() == RPS_ROOT_OB(_41OFI3r0S1t03qdB2E) // the `class` class
+         )
+        {
+          auto valclasspayl = reinterpret_cast<Rps_PayloadClassInfo*>(_.obcurclass->get_payload());
+          RPS_ASSERT(valclasspayl != nullptr);
+          // the below check is faster than a C++ dynamic_cast:
+          RPS_ASSERT(valclasspayl->stored_type() == Rps_Type::PaylClassInfo);
+          _.closval = valclasspayl->get_own_method(_.obselect);
+          if (_.closval && _.closval.is_closure()) // should be always true! But we need to check
+            return _.closval;
+          else
+            {
+              _.obcurclass = valclasspayl->superclass();
+              continue;
+            }
+        }
+      /// special case for dynamic_cast, which is unlikely to happen
+      else if (auto valclasspayl = _.obcurclass->get_dynamic_payload<Rps_PayloadClassInfo>())
+        {
+          // could happen latter when _.obcurclass is a subclass of `class` but unlikely
+          RPS_ASSERT(valclasspayl != nullptr);
+          // the below check is faster than a C++ dynamic_cast:
+          RPS_ASSERT(valclasspayl->stored_type() == Rps_Type::PaylClassInfo);
+          _.closval = valclasspayl->get_own_method(_.obselect);
+          if (_.closval && _.closval.is_closure()) // should be always true! But we need to check
+            return _.closval;
+          else
+            {
+              _.obcurclass = valclasspayl->superclass();
+              continue;
+            }
+        }
+    };
+  /// we should never reach this point.... if we do, the persistent heap was corrupted...
+  _.obcurclass = _.val.compute_class(&_);
+  RPS_FATALOUT("failed to compute closure_for_method_selector for value " <<
+               _.val << " of class " << _.obcurclass
+               << " for selector " << _.obselect);
 } // end of Rps_Value::closure_for_method_selector
 
 /* end of file value_rps.cc */

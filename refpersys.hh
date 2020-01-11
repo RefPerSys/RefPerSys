@@ -2058,6 +2058,8 @@ public:
 class Rps_ClosureValue : public Rps_Value
 {
 public:
+  inline Rps_ClosureValue() : Rps_Value() {};
+  inline Rps_ClosureValue(std::nullptr_t) : Rps_Value(nullptr) {};
   // related to Rps_ClosureZone::make
   inline Rps_ClosureValue(const Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
   inline Rps_ClosureValue(const Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);
@@ -2203,6 +2205,7 @@ class Rps_PayloadClassInfo : public Rps_Payload
 {
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
+  friend class Rps_Value;
   friend Rps_PayloadClassInfo*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadClassInfo,Rps_ObjectZone*>(Rps_ObjectZone*);
   // the superclass:
@@ -2257,11 +2260,13 @@ public:
   std::string class_name_str(void) const;
   void put_symbname(Rps_ObjectRef obr);
   void loader_put_symbname(Rps_ObjectRef obr, Rps_Loader*ld);
-  Rps_ClosureValue get_own_method(Rps_ObjectRef obsel)
+  Rps_ClosureValue get_own_method(Rps_ObjectRef obsel) const
   {
-    if (!obsel) return Rps_ClosureValue(nullptr);
+    if (!obsel)
+      return Rps_ClosureValue(nullptr);
     auto it = pclass_methdict.find(obsel);
-    if (it != pclass_methdict.end()) return it->second;
+    if (it != pclass_methdict.end())
+      return it->second;
     return Rps_ClosureValue(nullptr);
   };
   void put_own_method(Rps_ObjectRef obsel, Rps_ClosureValue clov)
