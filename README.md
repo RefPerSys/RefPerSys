@@ -1,7 +1,8 @@
 # refpersys
 
 
-This project has moved to https://gitlab.com/bstarynk/refpersys/
+This project is on https://gitlab.com/bstarynk/refpersys/ and has its
+own web site on http://refpersys.org/ where more details are given.
 
 
 ## A research project
