@@ -439,7 +439,7 @@ Rps_ClosureZone::make(Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec
 } // end ClosureZone::make
 
 
-Rps_Value
+Rps_TwoValues
 Rps_ClosureValue::apply_vect(Rps_CallFrame*callerframe, const std::vector<Rps_Value>& argvec) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
@@ -477,7 +477,7 @@ Rps_ClosureValue::apply_vect(Rps_CallFrame*callerframe, const std::vector<Rps_Va
     }
 } // end Rps_ClosureValue::apply_vect
 
-Rps_Value
+Rps_TwoValues
 Rps_ClosureValue::apply_ilist(Rps_CallFrame*callerframe, const std::initializer_list<Rps_Value>& argil) const
 {
   std::vector <Rps_Value> argvec(argil);

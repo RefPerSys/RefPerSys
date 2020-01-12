@@ -749,6 +749,8 @@ struct Rps_TwoValues
 {
   Rps_Value main_val;
   Rps_Value xtra_val;
+  Rps_TwoValues(std::nullptr_t) :
+    main_val(nullptr), xtra_val(nullptr) {};
   Rps_TwoValues(Rps_Value m=nullptr, Rps_Value x=nullptr)
     : main_val(m), xtra_val(x) {};
   Rps_Value main() const
@@ -2074,38 +2076,38 @@ public:
     return *this;
   };
   // application
-  inline Rps_Value apply0(Rps_CallFrame*callerframe) const;
-  inline Rps_Value apply1(Rps_CallFrame*callerframe, const Rps_Value arg0) const;
-  inline Rps_Value apply2(Rps_CallFrame*callerframe, const Rps_Value arg0,
-                          const Rps_Value arg1) const;
-  inline Rps_Value apply3(Rps_CallFrame*callerframe, const Rps_Value arg0,
-                          const Rps_Value arg1, const Rps_Value arg2) const;
-  inline Rps_Value apply4(Rps_CallFrame*callerframe, const Rps_Value arg0,
-                          const Rps_Value arg1, const Rps_Value arg2,
-                          const Rps_Value arg3) const;
-  inline Rps_Value apply5(Rps_CallFrame*callerframe, const Rps_Value arg0,
-                          const Rps_Value arg1, const Rps_Value arg2,
-                          const Rps_Value arg3, const Rps_Value arg4) const;
-  inline Rps_Value apply6(Rps_CallFrame*callerframe, const Rps_Value arg0,
-                          const Rps_Value arg1, const Rps_Value arg2,
-                          const Rps_Value arg3, const Rps_Value arg4,
-                          const Rps_Value arg5) const;
-  inline Rps_Value apply7(Rps_CallFrame*callerframe, const Rps_Value arg0,
-                          const Rps_Value arg1, const Rps_Value arg2,
-                          const Rps_Value arg3, const Rps_Value arg4,
-                          const Rps_Value arg5, const Rps_Value arg6) const;
-  inline Rps_Value apply8(Rps_CallFrame*callerframe, const Rps_Value arg0,
-                          const Rps_Value arg1, const Rps_Value arg2,
-                          const Rps_Value arg3, const Rps_Value arg4,
-                          const Rps_Value arg5, const Rps_Value arg6,
-                          const Rps_Value arg7) const;
-  inline Rps_Value apply9(Rps_CallFrame*callerframe, const Rps_Value arg0,
-                          const Rps_Value arg1, const Rps_Value arg2,
-                          const Rps_Value arg3, const Rps_Value arg4,
-                          const Rps_Value arg5, const Rps_Value arg6,
-                          const Rps_Value arg7, const Rps_Value arg8) const;
-  Rps_Value apply_vect(Rps_CallFrame*callerframe, const std::vector<Rps_Value>& argvec) const;
-  Rps_Value apply_ilist(Rps_CallFrame*callerframe, const std::initializer_list<Rps_Value>& argil) const;
+  inline Rps_TwoValues apply0(Rps_CallFrame*callerframe) const;
+  inline Rps_TwoValues apply1(Rps_CallFrame*callerframe, const Rps_Value arg0) const;
+  inline Rps_TwoValues apply2(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                              const Rps_Value arg1) const;
+  inline Rps_TwoValues apply3(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                              const Rps_Value arg1, const Rps_Value arg2) const;
+  inline Rps_TwoValues apply4(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                              const Rps_Value arg1, const Rps_Value arg2,
+                              const Rps_Value arg3) const;
+  inline Rps_TwoValues apply5(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                              const Rps_Value arg1, const Rps_Value arg2,
+                              const Rps_Value arg3, const Rps_Value arg4) const;
+  inline Rps_TwoValues apply6(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                              const Rps_Value arg1, const Rps_Value arg2,
+                              const Rps_Value arg3, const Rps_Value arg4,
+                              const Rps_Value arg5) const;
+  inline Rps_TwoValues apply7(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                              const Rps_Value arg1, const Rps_Value arg2,
+                              const Rps_Value arg3, const Rps_Value arg4,
+                              const Rps_Value arg5, const Rps_Value arg6) const;
+  inline Rps_TwoValues apply8(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                              const Rps_Value arg1, const Rps_Value arg2,
+                              const Rps_Value arg3, const Rps_Value arg4,
+                              const Rps_Value arg5, const Rps_Value arg6,
+                              const Rps_Value arg7) const;
+  inline Rps_TwoValues apply9(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                              const Rps_Value arg1, const Rps_Value arg2,
+                              const Rps_Value arg3, const Rps_Value arg4,
+                              const Rps_Value arg5, const Rps_Value arg6,
+                              const Rps_Value arg7, const Rps_Value arg8) const;
+  Rps_TwoValues apply_vect(Rps_CallFrame*callerframe, const std::vector<Rps_Value>& argvec) const;
+  Rps_TwoValues apply_ilist(Rps_CallFrame*callerframe, const std::initializer_list<Rps_Value>& argil) const;
 };    // end Rps_ClosureValue
 
 

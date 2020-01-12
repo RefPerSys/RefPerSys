@@ -1086,7 +1086,7 @@ Rps_ClosureValue::connob(void) const
 };
 
 /////// closure applications
-Rps_Value
+Rps_TwoValues
 Rps_ClosureValue::apply0(Rps_CallFrame*callerframe) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
@@ -1094,20 +1094,20 @@ Rps_ClosureValue::apply0(Rps_CallFrame*callerframe) const
     return nullptr;
   Rps_ObjectRef obconn = connob();
   if (!obconn)
-    return nullptr;
+    return Rps_TwoValues(nullptr);
   rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
   if (!appfun)
-    return nullptr;
+    return Rps_TwoValues(nullptr);
   callerframe->set_closure(*this);
-  Rps_Value res= appfun(callerframe, Rps_Value(nullptr), Rps_Value(nullptr),
-                        Rps_Value(nullptr), Rps_Value(nullptr),
-                        nullptr);
+  Rps_TwoValues res= appfun(callerframe, Rps_Value(nullptr), Rps_Value(nullptr),
+                            Rps_Value(nullptr), Rps_Value(nullptr),
+                            nullptr);
   callerframe->clear_closure();
   return res;
 } // end Rps_ClosureValue::apply0
 
 
-Rps_Value
+Rps_TwoValues
 Rps_ClosureValue::apply1(Rps_CallFrame*callerframe, const Rps_Value arg0) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
@@ -1115,55 +1115,55 @@ Rps_ClosureValue::apply1(Rps_CallFrame*callerframe, const Rps_Value arg0) const
     return nullptr;
   Rps_ObjectRef obconn = connob();
   if (!obconn)
-    return nullptr;
+    return Rps_TwoValues(nullptr);
   rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
   if (!appfun)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   callerframe->set_closure(*this);
-  Rps_Value res= appfun(callerframe, arg0, Rps_Value(nullptr),
-                        Rps_Value(nullptr), Rps_Value(nullptr),
-                        nullptr);
+  Rps_TwoValues res= appfun(callerframe, arg0, Rps_Value(nullptr),
+                            Rps_Value(nullptr), Rps_Value(nullptr),
+                            nullptr);
   callerframe->clear_closure();
   return res;
 } // end Rps_ClosureValue::apply1
 
 
 
-Rps_Value
+Rps_TwoValues
 Rps_ClosureValue::apply2(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg1) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   if (is_empty() || !is_closure())
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
   if (!obconn)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
   if (!appfun)
     return nullptr;
   callerframe->set_closure(*this);
-  Rps_Value res= appfun(callerframe, arg0, arg1,
-                        Rps_Value(nullptr), Rps_Value(nullptr),
-                        nullptr);
+  Rps_TwoValues res= appfun(callerframe, arg0, arg1,
+                            Rps_Value(nullptr), Rps_Value(nullptr),
+                            nullptr);
   callerframe->clear_closure();
   return res;
 } // end Rps_ClosureValue::apply2
 
 
-Rps_Value
+Rps_TwoValues
 Rps_ClosureValue::apply3(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg1, const Rps_Value arg2) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   if (is_empty() || !is_closure())
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
   if (!obconn)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
   if (!appfun)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   callerframe->set_closure(*this);
   Rps_Value res= appfun(callerframe, arg0, arg1,
                         arg2, Rps_Value(nullptr),
@@ -1173,56 +1173,56 @@ Rps_ClosureValue::apply3(Rps_CallFrame*callerframe, const Rps_Value arg0,
 } // end Rps_ClosureValue::apply3
 
 
-Rps_Value
+Rps_TwoValues
 Rps_ClosureValue::apply4(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg1, const Rps_Value arg2,
                          const Rps_Value arg3) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   if (is_empty() || !is_closure())
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
   if (!obconn)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
   if (!appfun)
     return nullptr;
   callerframe->set_closure(*this);
-  Rps_Value res= appfun(callerframe, arg0, arg1,
-                        arg2, arg3,
-                        nullptr);
+  Rps_TwoValues res= appfun(callerframe, arg0, arg1,
+                            arg2, arg3,
+                            nullptr);
   callerframe->clear_closure();
   return res;
 } // end Rps_ClosureValue::apply4
 
 
 
-Rps_Value
+Rps_TwoValues
 Rps_ClosureValue::apply5(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg1, const Rps_Value arg2,
                          const Rps_Value arg3, const Rps_Value arg4) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   if (is_empty() || !is_closure())
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
   if (!obconn)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
   if (!appfun)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   callerframe->set_closure(*this);
   std::vector<Rps_Value> restvec(1);
   restvec[0] = arg4;
-  Rps_Value res= appfun(callerframe, arg0, arg1,
-                        arg2, arg3,
-                        &restvec);
+  Rps_TwoValues res= appfun(callerframe, arg0, arg1,
+                            arg2, arg3,
+                            &restvec);
   callerframe->clear_closure();
   return res;
 } // end Rps_ClosureValue::apply5
 
 
-Rps_Value
+Rps_TwoValues
 Rps_ClosureValue::apply6(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg1, const Rps_Value arg2,
                          const Rps_Value arg3, const Rps_Value arg4,
@@ -1230,10 +1230,10 @@ Rps_ClosureValue::apply6(Rps_CallFrame*callerframe, const Rps_Value arg0,
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   if (is_empty() || !is_closure())
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
   if (!obconn)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
   if (!appfun)
     return nullptr;
@@ -1241,16 +1241,16 @@ Rps_ClosureValue::apply6(Rps_CallFrame*callerframe, const Rps_Value arg0,
   std::vector<Rps_Value> restvec(2);
   restvec[0] = arg4;
   restvec[1] = arg5;
-  Rps_Value res= appfun(callerframe, arg0, arg1,
-                        arg2, arg3,
-                        &restvec);
+  Rps_TwoValues res= appfun(callerframe, arg0, arg1,
+                            arg2, arg3,
+                            &restvec);
   callerframe->clear_closure();
   return res;
 } // end Rps_ClosureValue::apply6
 
 
 
-Rps_Value
+Rps_TwoValues
 Rps_ClosureValue::apply7(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg1, const Rps_Value arg2,
                          const Rps_Value arg3, const Rps_Value arg4,
@@ -1258,13 +1258,13 @@ Rps_ClosureValue::apply7(Rps_CallFrame*callerframe, const Rps_Value arg0,
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   if (is_empty() || !is_closure())
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
   if (!obconn)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
   if (!appfun)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   callerframe->set_closure(*this);
   std::vector<Rps_Value> restvec(3);
   restvec[0] = arg4;
@@ -1279,7 +1279,7 @@ Rps_ClosureValue::apply7(Rps_CallFrame*callerframe, const Rps_Value arg0,
 
 
 
-Rps_Value
+Rps_TwoValues
 Rps_ClosureValue::apply8(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg1, const Rps_Value arg2,
                          const Rps_Value arg3, const Rps_Value arg4,
@@ -1288,10 +1288,10 @@ Rps_ClosureValue::apply8(Rps_CallFrame*callerframe, const Rps_Value arg0,
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   if (is_empty() || !is_closure())
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
   if (!obconn)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
   if (!appfun)
     return nullptr;
@@ -1301,15 +1301,15 @@ Rps_ClosureValue::apply8(Rps_CallFrame*callerframe, const Rps_Value arg0,
   restvec[1] = arg5;
   restvec[2] = arg6;
   restvec[3] = arg7;
-  Rps_Value res= appfun(callerframe, arg0, arg1,
-                        arg2, arg3,
-                        &restvec);
+  Rps_TwoValues res= appfun(callerframe, arg0, arg1,
+                            arg2, arg3,
+                            &restvec);
   callerframe->clear_closure();
   return res;
 } // end Rps_ClosureValue::apply8
 
 
-Rps_Value
+Rps_TwoValues
 Rps_ClosureValue::apply9(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg1, const Rps_Value arg2,
                          const Rps_Value arg3, const Rps_Value arg4,
@@ -1321,10 +1321,10 @@ Rps_ClosureValue::apply9(Rps_CallFrame*callerframe, const Rps_Value arg0,
     return nullptr;
   Rps_ObjectRef obconn = connob();
   if (!obconn)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
   if (!appfun)
-    return nullptr;
+    return  Rps_TwoValues(nullptr);
   callerframe->set_closure(*this);
   std::vector<Rps_Value> restvec(5);
   restvec[0] = arg4;
@@ -1332,11 +1332,11 @@ Rps_ClosureValue::apply9(Rps_CallFrame*callerframe, const Rps_Value arg0,
   restvec[2] = arg6;
   restvec[3] = arg7;
   restvec[4] = arg8;
-  Rps_Value res= appfun(callerframe, arg0, arg1,
-                        arg2, arg3,
-                        &restvec);
+  Rps_TwoValues res= appfun(callerframe, arg0, arg1,
+                            arg2, arg3,
+                            &restvec);
   callerframe->clear_closure();
-  return res;
+  return  res;
 } // end Rps_ClosureValue::apply9
 
 /************************** PAYLOADS *************************************/
