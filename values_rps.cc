@@ -648,34 +648,67 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
 ////////////////////////////////////////////////////////////////
 
 Rps_TwoValues
-Rps_Value::send0(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel) const
+Rps_Value::send0(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
+                 callerframe,
+		 Rps_Value selfv; // the receiver
+                 Rps_ClosureValue closv; // the closure
+                 Rps_ObjectRef obsel; // the selector
+                );
+  _.selfv = Rps_Value(*this);
+  _.obsel = obselarg;
 } // end Rps_Value::send0
 
 Rps_TwoValues
-Rps_Value::send1(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+Rps_Value::send1(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
 		 Rps_Value arg0) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
+                 callerframe,
+		 Rps_Value selfv; // the receiver
+                 Rps_ClosureValue closv; // the closure
+                 Rps_ObjectRef obsel; // the selector
+		 Rps_Value arg0v; // the argument#0
+                );
+  _.selfv = Rps_Value(*this);
+  _.obsel = obselarg;
+  _.arg0v = arg0;
 } // end Rps_Value::send1
 
+
 Rps_TwoValues
-Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
 		      Rps_Value arg0, const Rps_Value arg1) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
+                 callerframe,
+		 Rps_Value selfv; // the receiver
+                 Rps_ClosureValue closv; // the closure
+                 Rps_ObjectRef obsel; // the selector
+		 Rps_Value arg0v; // the argument#0
+		 Rps_Value arg1v; // the argument#1
+                );
+  _.selfv = Rps_Value(*this);
+  _.obsel = obselarg;
+  _.arg0v = arg0;
+  _.arg1v = arg1;
 } // end Rps_Value::send2
 
+
 Rps_TwoValues
-Rps_Value::send3(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+Rps_Value::send3(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
 		 const Rps_Value arg0, const Rps_Value arg1, const Rps_Value arg2) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
 } // end Rps_Value::send3
 
 Rps_TwoValues
-Rps_Value::send4(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+Rps_Value::send4(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
 		 const Rps_Value arg0, const Rps_Value arg1,
 		 const Rps_Value arg2, const Rps_Value arg3) const
 {
@@ -683,7 +716,7 @@ Rps_Value::send4(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
 } // end Rps_Value::send4
 
 Rps_TwoValues
-Rps_Value::send5(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+Rps_Value::send5(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
 		      const Rps_Value arg0, const Rps_Value arg1,
 		      const Rps_Value arg2, const Rps_Value arg3,
 		      const Rps_Value arg4) const
@@ -691,8 +724,9 @@ Rps_Value::send5(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
 } // end Rps_Value::send5
 
+
 Rps_TwoValues
-Rps_Value::send6(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+Rps_Value::send6(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
 		 const Rps_Value arg0, const Rps_Value arg1,
 		 const Rps_Value arg2, const Rps_Value arg3,
 		 const Rps_Value arg4, const Rps_Value arg5) const
@@ -700,8 +734,9 @@ Rps_Value::send6(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
 } // end Rps_Value::send6
 
+
 Rps_TwoValues
-Rps_Value::send7(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+Rps_Value::send7(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
 		 const Rps_Value arg0, const Rps_Value arg1,
 		 const Rps_Value arg2, const Rps_Value arg3,
 		 const Rps_Value arg4, const Rps_Value arg5,
@@ -711,7 +746,7 @@ Rps_Value::send7(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
 } // end Rps_Value::send7
 
 Rps_TwoValues
-Rps_Value::send8(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+Rps_Value::send8(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
 		 const Rps_Value arg0, const Rps_Value arg1,
 		 const Rps_Value arg2, const Rps_Value arg3,
 		 const Rps_Value arg4, const Rps_Value arg5,
@@ -720,14 +755,16 @@ Rps_Value::send8(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
 } // end Rps_Value::send8
 
+
 Rps_TwoValues
-Rps_Value::send_vect(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+Rps_Value::send_vect(Rps_CallFrame*cframe, const Rps_ObjectRef obselarg,
 		     const std::vector<Rps_Value>& argvec) const
 {
 } // end Rps_Value::send_vect
 
+
 Rps_TwoValues
-Rps_Value::send_ilist(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+Rps_Value::send_ilist(Rps_CallFrame*cframe, const Rps_ObjectRef obselarg,
 		      const std::initializer_list<Rps_Value>& argil) const
 {
 } // end Rps_Value::send_ilist
