@@ -624,7 +624,7 @@ class Rps_Dumper; // in store_rps.cc
 class Rps_ClosureValue;
 class Rps_SetValue;
 class Rps_TupleValue;
-
+struct Rps_TwoValues;
 
 //////////////// our value, a single word
 class Rps_Value
@@ -732,6 +732,38 @@ public:
     clear();
     return *this;
   };
+  Rps_TwoValues send0(Rps_CallFrame*cframe, const Rps_ObjectRef obsel) const;
+  Rps_TwoValues send1(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+		      Rps_Value arg0) const;
+  Rps_TwoValues send2(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+		      Rps_Value arg0, const Rps_Value arg1) const;
+  Rps_TwoValues send3(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+		      const Rps_Value arg0, const Rps_Value arg1, const Rps_Value arg2) const;
+  Rps_TwoValues send4(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+		      const Rps_Value arg0, const Rps_Value arg1,
+		      const Rps_Value arg2, const Rps_Value arg3) const;
+  Rps_TwoValues send5(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+		      const Rps_Value arg0, const Rps_Value arg1,
+		      const Rps_Value arg2, const Rps_Value arg3,
+		      const Rps_Value arg4) const;
+  Rps_TwoValues send6(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+		      const Rps_Value arg0, const Rps_Value arg1,
+		      const Rps_Value arg2, const Rps_Value arg3,
+		      const Rps_Value arg4, const Rps_Value arg5) const;
+  Rps_TwoValues send7(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+		      const Rps_Value arg0, const Rps_Value arg1,
+		      const Rps_Value arg2, const Rps_Value arg3,
+		      const Rps_Value arg4, const Rps_Value arg5,
+		      const Rps_Value arg6) const;
+  Rps_TwoValues send8(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+		      const Rps_Value arg0, const Rps_Value arg1,
+		      const Rps_Value arg2, const Rps_Value arg3,
+		      const Rps_Value arg4, const Rps_Value arg5,
+		      const Rps_Value arg6, const Rps_Value arg7) const;
+  Rps_TwoValues send_vect(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+			  const std::vector<Rps_Value>& argvec) const;
+  Rps_TwoValues send_ilist(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+			   const std::initializer_list<Rps_Value>& argil) const;
 private:
   union
   {
@@ -744,6 +776,10 @@ static_assert(sizeof(Rps_Value) == sizeof(void*),
               "Rps_Value should have the size of a word");
 static_assert(alignof(Rps_Value) == alignof(void*),
               "Rps_Value should have the alignment of a word");
+
+
+
+////////////////////////////////////////////////////////////////
 
 struct Rps_TwoValues
 {

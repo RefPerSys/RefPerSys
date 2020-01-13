@@ -639,5 +639,98 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
                << " for selector " << _.obselect);
 } // end of Rps_Value::closure_for_method_selector
 
+
+
+
+
+////////////////////////////////////////////////////////////////
+//////////////// message sending protocol //////////////////////
+////////////////////////////////////////////////////////////////
+
+Rps_TwoValues
+Rps_Value::send0(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+} // end Rps_Value::send0
+
+Rps_TwoValues
+Rps_Value::send1(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+		 Rps_Value arg0) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+} // end Rps_Value::send1
+
+Rps_TwoValues
+Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+		      Rps_Value arg0, const Rps_Value arg1) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+} // end Rps_Value::send2
+
+Rps_TwoValues
+Rps_Value::send3(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+		 const Rps_Value arg0, const Rps_Value arg1, const Rps_Value arg2) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+} // end Rps_Value::send3
+
+Rps_TwoValues
+Rps_Value::send4(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+		 const Rps_Value arg0, const Rps_Value arg1,
+		 const Rps_Value arg2, const Rps_Value arg3) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+} // end Rps_Value::send4
+
+Rps_TwoValues
+Rps_Value::send5(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+		      const Rps_Value arg0, const Rps_Value arg1,
+		      const Rps_Value arg2, const Rps_Value arg3,
+		      const Rps_Value arg4) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+} // end Rps_Value::send5
+
+Rps_TwoValues
+Rps_Value::send6(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+		 const Rps_Value arg0, const Rps_Value arg1,
+		 const Rps_Value arg2, const Rps_Value arg3,
+		 const Rps_Value arg4, const Rps_Value arg5) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+} // end Rps_Value::send6
+
+Rps_TwoValues
+Rps_Value::send7(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+		 const Rps_Value arg0, const Rps_Value arg1,
+		 const Rps_Value arg2, const Rps_Value arg3,
+		 const Rps_Value arg4, const Rps_Value arg5,
+		 const Rps_Value arg6) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+} // end Rps_Value::send7
+
+Rps_TwoValues
+Rps_Value::send8(Rps_CallFrame*callerframe, const Rps_ObjectRef obsel,
+		 const Rps_Value arg0, const Rps_Value arg1,
+		 const Rps_Value arg2, const Rps_Value arg3,
+		 const Rps_Value arg4, const Rps_Value arg5,
+		 const Rps_Value arg6, const Rps_Value arg7) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+} // end Rps_Value::send8
+
+Rps_TwoValues
+Rps_Value::send_vect(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+		     const std::vector<Rps_Value>& argvec) const
+{
+} // end Rps_Value::send_vect
+
+Rps_TwoValues
+Rps_Value::send_ilist(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+		      const std::initializer_list<Rps_Value>& argil) const
+{
+} // end Rps_Value::send_ilist
+
 /* end of file value_rps.cc */
 
