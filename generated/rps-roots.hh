@@ -30,6 +30,7 @@ RPS_INSTALL_ROOT_OB(_3Q3hJsSgCDN03GTYW5) //symbol∈symbol
 RPS_INSTALL_ROOT_OB(_41OFI3r0S1t03qdB2E) //class∈class
 RPS_INSTALL_ROOT_OB(_4jISxMJ4PYU0050nUl) //closure∈class
 RPS_INSTALL_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
+RPS_INSTALL_ROOT_OB(_5yQcFbU0seU018B48Z) //message_sending∈symbol
 RPS_INSTALL_ROOT_OB(_5CYWxcChKN002rw1fI) //contributor_to_RefPerSys∈class
 RPS_INSTALL_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
 RPS_INSTALL_ROOT_OB(_6fmq7pZkmNd03UyPuO) //class∈symbol
@@ -44,7 +45,7 @@ RPS_INSTALL_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
 RPS_INSTALL_ROOT_OB(_9uwZtDshW4401x6MsY) //space∈symbol
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 22
+#define RPS_NB_ROOT_OB 23
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh

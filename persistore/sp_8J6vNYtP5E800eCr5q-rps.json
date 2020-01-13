@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 30,
+ "nbobjects" : 31,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -224,6 +224,17 @@
  "mtime" : 1578114964.0,
  "oid" : "_5yhJGgxLwLp00X0xEQ",
  "payload" : "class"
+}
+
+
+//+ob_5yQcFbU0seU018B48Z
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1578953015.02,
+ "oid" : "_5yQcFbU0seU018B48Z",
+ "payload" : "symbol",
+ "symb_name" : "message_sending"
 }
 
 
