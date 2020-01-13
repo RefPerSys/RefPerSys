@@ -734,36 +734,42 @@ public:
   };
   Rps_TwoValues send0(Rps_CallFrame*cframe, const Rps_ObjectRef obsel) const;
   Rps_TwoValues send1(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
-		      Rps_Value arg0) const;
+                      Rps_Value arg0) const;
   Rps_TwoValues send2(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
-		      Rps_Value arg0, const Rps_Value arg1) const;
+                      Rps_Value arg0, const Rps_Value arg1) const;
   Rps_TwoValues send3(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
-		      const Rps_Value arg0, const Rps_Value arg1, const Rps_Value arg2) const;
+                      const Rps_Value arg0, const Rps_Value arg1, const Rps_Value arg2) const;
   Rps_TwoValues send4(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
-		      const Rps_Value arg0, const Rps_Value arg1,
-		      const Rps_Value arg2, const Rps_Value arg3) const;
+                      const Rps_Value arg0, const Rps_Value arg1,
+                      const Rps_Value arg2, const Rps_Value arg3) const;
   Rps_TwoValues send5(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
-		      const Rps_Value arg0, const Rps_Value arg1,
-		      const Rps_Value arg2, const Rps_Value arg3,
-		      const Rps_Value arg4) const;
+                      const Rps_Value arg0, const Rps_Value arg1,
+                      const Rps_Value arg2, const Rps_Value arg3,
+                      const Rps_Value arg4) const;
   Rps_TwoValues send6(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
-		      const Rps_Value arg0, const Rps_Value arg1,
-		      const Rps_Value arg2, const Rps_Value arg3,
-		      const Rps_Value arg4, const Rps_Value arg5) const;
+                      const Rps_Value arg0, const Rps_Value arg1,
+                      const Rps_Value arg2, const Rps_Value arg3,
+                      const Rps_Value arg4, const Rps_Value arg5) const;
   Rps_TwoValues send7(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
-		      const Rps_Value arg0, const Rps_Value arg1,
-		      const Rps_Value arg2, const Rps_Value arg3,
-		      const Rps_Value arg4, const Rps_Value arg5,
-		      const Rps_Value arg6) const;
+                      const Rps_Value arg0, const Rps_Value arg1,
+                      const Rps_Value arg2, const Rps_Value arg3,
+                      const Rps_Value arg4, const Rps_Value arg5,
+                      const Rps_Value arg6) const;
   Rps_TwoValues send8(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
-		      const Rps_Value arg0, const Rps_Value arg1,
-		      const Rps_Value arg2, const Rps_Value arg3,
-		      const Rps_Value arg4, const Rps_Value arg5,
-		      const Rps_Value arg6, const Rps_Value arg7) const;
+                      const Rps_Value arg0, const Rps_Value arg1,
+                      const Rps_Value arg2, const Rps_Value arg3,
+                      const Rps_Value arg4, const Rps_Value arg5,
+                      const Rps_Value arg6, const Rps_Value arg7) const;
+  Rps_TwoValues send9(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
+                      const Rps_Value arg0, const Rps_Value arg1,
+                      const Rps_Value arg2, const Rps_Value arg3,
+                      const Rps_Value arg4, const Rps_Value arg5,
+                      const Rps_Value arg6, const Rps_Value arg7,
+                      const Rps_Value arg8) const;
   Rps_TwoValues send_vect(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
-			  const std::vector<Rps_Value>& argvec) const;
+                          const std::vector<Rps_Value>& argvec) const;
   Rps_TwoValues send_ilist(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
-			   const std::initializer_list<Rps_Value>& argil) const;
+                           const std::initializer_list<Rps_Value>& argil) const;
 private:
   union
   {

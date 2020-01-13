@@ -653,89 +653,105 @@ Rps_Value::send0(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg) const
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
-		 Rps_Value selfv; // the receiver
+                 Rps_Value selfv; // the receiver
                  Rps_ClosureValue closv; // the closure
                  Rps_ObjectRef obsel; // the selector
                 );
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
+  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  if (_.closv.is_closure())
+    return _.closv.apply0(&_);
+  return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send0
 
 Rps_TwoValues
 Rps_Value::send1(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
-		 Rps_Value arg0) const
+                 Rps_Value arg0) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
-		 Rps_Value selfv; // the receiver
+                 Rps_Value selfv; // the receiver
                  Rps_ClosureValue closv; // the closure
                  Rps_ObjectRef obsel; // the selector
-		 Rps_Value arg0v; // the argument#0
+                 Rps_Value arg0v; // the argument#0
                 );
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
   _.arg0v = arg0;
+  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  if (_.closv.is_closure())
+    return _.closv.apply1(&_, _.arg0v);
+  return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send1
 
 
 Rps_TwoValues
 Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
-		      Rps_Value arg0, const Rps_Value arg1) const
+                 Rps_Value arg0, const Rps_Value arg1) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
-		 Rps_Value selfv; // the receiver
+                 Rps_Value selfv; // the receiver
                  Rps_ClosureValue closv; // the closure
                  Rps_ObjectRef obsel; // the selector
-		 Rps_Value arg0v; // the argument#0
-		 Rps_Value arg1v; // the argument#1
+                 Rps_Value arg0v; // the argument#0
+                 Rps_Value arg1v; // the argument#1
                 );
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
   _.arg0v = arg0;
   _.arg1v = arg1;
+  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  if (_.closv.is_closure())
+    return _.closv.apply2(&_, _.arg0v, _.arg1v);
+  return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send2
 
 
 Rps_TwoValues
 Rps_Value::send3(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
-		 const Rps_Value arg0, const Rps_Value arg1, const Rps_Value arg2) const
+                 const Rps_Value arg0, const Rps_Value arg1, const Rps_Value arg2) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
-		 Rps_Value selfv; // the receiver
+                 Rps_Value selfv; // the receiver
                  Rps_ClosureValue closv; // the closure
                  Rps_ObjectRef obsel; // the selector
-		 Rps_Value arg0v; // the argument#0
-		 Rps_Value arg1v; // the argument#1
-		 Rps_Value arg2v; // the argument#2
+                 Rps_Value arg0v; // the argument#0
+                 Rps_Value arg1v; // the argument#1
+                 Rps_Value arg2v; // the argument#2
                 );
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
   _.arg0v = arg0;
   _.arg1v = arg1;
   _.arg2v = arg2;
+  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  if (_.closv.is_closure())
+    return _.closv.apply3(&_, _.arg0v, _.arg1v, _.arg2v);
+  return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send3
 
 Rps_TwoValues
 Rps_Value::send4(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
-		 const Rps_Value arg0, const Rps_Value arg1,
-		 const Rps_Value arg2, const Rps_Value arg3) const
+                 const Rps_Value arg0, const Rps_Value arg1,
+                 const Rps_Value arg2, const Rps_Value arg3) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
-		 Rps_Value selfv; // the receiver
+                 Rps_Value selfv; // the receiver
                  Rps_ClosureValue closv; // the closure
                  Rps_ObjectRef obsel; // the selector
-		 Rps_Value arg0v; // the argument#0
-		 Rps_Value arg1v; // the argument#1
-		 Rps_Value arg2v; // the argument#2
-		 Rps_Value arg3v; // the argument#3
+                 Rps_Value arg0v; // the argument#0
+                 Rps_Value arg1v; // the argument#1
+                 Rps_Value arg2v; // the argument#2
+                 Rps_Value arg3v; // the argument#3
                 );
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
@@ -743,25 +759,29 @@ Rps_Value::send4(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg1v = arg1;
   _.arg2v = arg2;
   _.arg3v = arg3;
+  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  if (_.closv.is_closure())
+    return _.closv.apply3(&_, _.arg0v, _.arg1v, _.arg2v);
+  return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send4
 
 Rps_TwoValues
 Rps_Value::send5(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
-		      const Rps_Value arg0, const Rps_Value arg1,
-		      const Rps_Value arg2, const Rps_Value arg3,
-		      const Rps_Value arg4) const
+                 const Rps_Value arg0, const Rps_Value arg1,
+                 const Rps_Value arg2, const Rps_Value arg3,
+                 const Rps_Value arg4) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
-		 Rps_Value selfv; // the receiver
+                 Rps_Value selfv; // the receiver
                  Rps_ClosureValue closv; // the closure
                  Rps_ObjectRef obsel; // the selector
-		 Rps_Value arg0v; // the argument#0
-		 Rps_Value arg1v; // the argument#1
-		 Rps_Value arg2v; // the argument#2
-		 Rps_Value arg3v; // the argument#3
-		 Rps_Value arg4v; // the argument#4
+                 Rps_Value arg0v; // the argument#0
+                 Rps_Value arg1v; // the argument#1
+                 Rps_Value arg2v; // the argument#2
+                 Rps_Value arg3v; // the argument#3
+                 Rps_Value arg4v; // the argument#4
                 );
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
@@ -770,27 +790,31 @@ Rps_Value::send5(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg2v = arg2;
   _.arg3v = arg3;
   _.arg4v = arg4;
+  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  if (_.closv.is_closure())
+    return _.closv.apply5(&_, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v);
+  return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send5
 
 
 Rps_TwoValues
 Rps_Value::send6(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
-		 const Rps_Value arg0, const Rps_Value arg1,
-		 const Rps_Value arg2, const Rps_Value arg3,
-		 const Rps_Value arg4, const Rps_Value arg5) const
+                 const Rps_Value arg0, const Rps_Value arg1,
+                 const Rps_Value arg2, const Rps_Value arg3,
+                 const Rps_Value arg4, const Rps_Value arg5) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
-		 Rps_Value selfv; // the receiver
+                 Rps_Value selfv; // the receiver
                  Rps_ClosureValue closv; // the closure
                  Rps_ObjectRef obsel; // the selector
-		 Rps_Value arg0v; // the argument#0
-		 Rps_Value arg1v; // the argument#1
-		 Rps_Value arg2v; // the argument#2
-		 Rps_Value arg3v; // the argument#3
-		 Rps_Value arg4v; // the argument#4
-		 Rps_Value arg5v; // the argument#5
+                 Rps_Value arg0v; // the argument#0
+                 Rps_Value arg1v; // the argument#1
+                 Rps_Value arg2v; // the argument#2
+                 Rps_Value arg3v; // the argument#3
+                 Rps_Value arg4v; // the argument#4
+                 Rps_Value arg5v; // the argument#5
                 );
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
@@ -800,29 +824,33 @@ Rps_Value::send6(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg3v = arg3;
   _.arg4v = arg4;
   _.arg5v = arg5;
+  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  if (_.closv.is_closure())
+    return _.closv.apply6(&_, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v, _.arg5v);
+  return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send6
 
 
 Rps_TwoValues
 Rps_Value::send7(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
-		 const Rps_Value arg0, const Rps_Value arg1,
-		 const Rps_Value arg2, const Rps_Value arg3,
-		 const Rps_Value arg4, const Rps_Value arg5,
-		 const Rps_Value arg6) const
+                 const Rps_Value arg0, const Rps_Value arg1,
+                 const Rps_Value arg2, const Rps_Value arg3,
+                 const Rps_Value arg4, const Rps_Value arg5,
+                 const Rps_Value arg6) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
-		 Rps_Value selfv; // the receiver
+                 Rps_Value selfv; // the receiver
                  Rps_ClosureValue closv; // the closure
                  Rps_ObjectRef obsel; // the selector
-		 Rps_Value arg0v; // the argument#0
-		 Rps_Value arg1v; // the argument#1
-		 Rps_Value arg2v; // the argument#2
-		 Rps_Value arg3v; // the argument#3
-		 Rps_Value arg4v; // the argument#4
-		 Rps_Value arg5v; // the argument#5
-		 Rps_Value arg6v; // the argument#6
+                 Rps_Value arg0v; // the argument#0
+                 Rps_Value arg1v; // the argument#1
+                 Rps_Value arg2v; // the argument#2
+                 Rps_Value arg3v; // the argument#3
+                 Rps_Value arg4v; // the argument#4
+                 Rps_Value arg5v; // the argument#5
+                 Rps_Value arg6v; // the argument#6
                 );
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
@@ -833,29 +861,33 @@ Rps_Value::send7(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg4v = arg4;
   _.arg5v = arg5;
   _.arg6v = arg6;
+  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  if (_.closv.is_closure())
+    return _.closv.apply7(&_, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v, _.arg5v, _.arg6v);
+  return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send7
 
 Rps_TwoValues
 Rps_Value::send8(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
-		 const Rps_Value arg0, const Rps_Value arg1,
-		 const Rps_Value arg2, const Rps_Value arg3,
-		 const Rps_Value arg4, const Rps_Value arg5,
-		 const Rps_Value arg6, const Rps_Value arg7) const
+                 const Rps_Value arg0, const Rps_Value arg1,
+                 const Rps_Value arg2, const Rps_Value arg3,
+                 const Rps_Value arg4, const Rps_Value arg5,
+                 const Rps_Value arg6, const Rps_Value arg7) const
 {
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
-		 Rps_Value selfv; // the receiver
+                 Rps_Value selfv; // the receiver
                  Rps_ClosureValue closv; // the closure
                  Rps_ObjectRef obsel; // the selector
-		 Rps_Value arg0v; // the argument#0
-		 Rps_Value arg1v; // the argument#1
-		 Rps_Value arg2v; // the argument#2
-		 Rps_Value arg3v; // the argument#3
-		 Rps_Value arg4v; // the argument#4
-		 Rps_Value arg5v; // the argument#5
-		 Rps_Value arg6v; // the argument#6
-		 Rps_Value arg7v; // the argument#7
+                 Rps_Value arg0v; // the argument#0
+                 Rps_Value arg1v; // the argument#1
+                 Rps_Value arg2v; // the argument#2
+                 Rps_Value arg3v; // the argument#3
+                 Rps_Value arg4v; // the argument#4
+                 Rps_Value arg5v; // the argument#5
+                 Rps_Value arg6v; // the argument#6
+                 Rps_Value arg7v; // the argument#7
                 );
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
@@ -867,20 +899,101 @@ Rps_Value::send8(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg5v = arg5;
   _.arg6v = arg6;
   _.arg7v = arg7;
+  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  if (_.closv.is_closure())
+    return _.closv.apply8(&_, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v, _.arg5v, _.arg6v, _.arg7v);
+  return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send8
 
 
 Rps_TwoValues
-Rps_Value::send_vect(Rps_CallFrame*cframe, const Rps_ObjectRef obselarg,
-		     const std::vector<Rps_Value>& argvec) const
+Rps_Value::send9(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
+                 const Rps_Value arg0, const Rps_Value arg1,
+                 const Rps_Value arg2, const Rps_Value arg3,
+                 const Rps_Value arg4, const Rps_Value arg5,
+                 const Rps_Value arg6, const Rps_Value arg7,
+                 const Rps_Value arg9) const
 {
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
+                 callerframe,
+                 Rps_Value selfv; // the receiver
+                 Rps_ClosureValue closv; // the closure
+                 Rps_ObjectRef obsel; // the selector
+                 Rps_Value arg0v; // the argument#0
+                 Rps_Value arg1v; // the argument#1
+                 Rps_Value arg2v; // the argument#2
+                 Rps_Value arg3v; // the argument#3
+                 Rps_Value arg4v; // the argument#4
+                 Rps_Value arg5v; // the argument#5
+                 Rps_Value arg6v; // the argument#6
+                 Rps_Value arg7v; // the argument#7
+                 Rps_Value arg8v; // the argument#8
+                );
+  _.selfv = Rps_Value(*this);
+  _.obsel = obselarg;
+  _.arg0v = arg0;
+  _.arg1v = arg1;
+  _.arg2v = arg2;
+  _.arg3v = arg3;
+  _.arg4v = arg4;
+  _.arg5v = arg5;
+  _.arg6v = arg6;
+  _.arg7v = arg7;
+  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  if (_.closv.is_closure())
+    return _.closv.apply9(&_, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v, _.arg5v, _.arg6v, _.arg7v, _.arg8v);
+  return Rps_TwoValues(nullptr,nullptr);
+} // end Rps_Value::send9
+
+
+Rps_TwoValues
+Rps_Value::send_vect(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
+                     const std::vector<Rps_Value>& argvecarg) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
+                 callerframe,
+                 Rps_Value selfv; // the receiver
+                 Rps_ClosureValue closv; // the closure
+                 Rps_ObjectRef obsel; // the selector
+                );
+  std::vector<Rps_Value> argvect(argvecarg);
+  _.set_additional_gc_marker
+  ([=](Rps_GarbageCollector*gc)
+  {
+    for (auto v: argvect) gc->mark_value(v);
+  });
+  _.selfv = Rps_Value(*this);
+  _.obsel = obselarg;
+  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  if (_.closv.is_closure())
+    return _.closv.apply_vect(&_, argvect);
 } // end Rps_Value::send_vect
 
 
 Rps_TwoValues
-Rps_Value::send_ilist(Rps_CallFrame*cframe, const Rps_ObjectRef obselarg,
-		      const std::initializer_list<Rps_Value>& argil) const
+Rps_Value::send_ilist(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
+                      const std::initializer_list<Rps_Value>& argilarg) const
 {
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
+                 callerframe,
+                 Rps_Value selfv; // the receiver
+                 Rps_ClosureValue closv; // the closure
+                 Rps_ObjectRef obsel; // the selector
+                );
+  std::initializer_list<Rps_Value> argil(argilarg);
+  _.set_additional_gc_marker
+  ([=](Rps_GarbageCollector*gc)
+  {
+    for (auto v: argil) gc->mark_value(v);
+  });
+  _.selfv = Rps_Value(*this);
+  _.obsel = obselarg;
+  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  if (_.closv.is_closure())
+    return _.closv.apply_ilist(&_, argil);
 } // end Rps_Value::send_ilist
 
 /* end of file value_rps.cc */
