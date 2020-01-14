@@ -64,6 +64,7 @@
 #include <QMdiArea>
 #include <QScreen>
 #include <QDesktopWidget>
+#include <QThread>
 
 class RpsQApplication;
 class RpsQWindow;
@@ -75,6 +76,8 @@ class RpsQObjectLineEdit;// a line edit for a RefPerSys object
 class RpsQApplication
   : public QApplication
 {
+  friend void rps_run_application(int &argc, char **argv);
+  friend bool rps_is_main_gui_thread(void);
   Q_OBJECT;
 public:
   RpsQApplication (int &argc, char*argv[]); // constructor
@@ -110,6 +113,10 @@ public slots:
 
 private:
 
+  /// various ways to see the main GUI tread
+  static QThread* app_mainqthread;
+  static pthread_t app_mainselfthread;
+  static std::thread::id app_mainthreadid;
   std::mutex app_mutex;
   std::vector <std::unique_ptr<RpsQWindow>> app_windvec;
   size_t app_wndcount;

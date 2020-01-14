@@ -85,6 +85,7 @@
 #include <time.h>
 #include <dlfcn.h>
 #include <dirent.h>
+#include <pthread.h>
 
 
 
@@ -203,6 +204,9 @@ extern "C" const char* rps_progname;
 extern "C" int rps_nbjobs;
 #define RPS_NBJOBS_MIN 2
 #define RPS_NBJOBS_MAX 20
+
+/// is the current thread the main GUI Qt thread?
+extern "C" bool rps_is_main_gui_thread(void);
 
 /// the refpersys homedir, e.g. $REFPERSYS_HOME or $HOME or given with
 /// --refpersys-home <dir>

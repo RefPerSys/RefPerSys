@@ -78,6 +78,9 @@ const char* rps_homedir(void)
   return rps_bufpath_homedir;
 } // end rps_homedir
 
+QThread* RpsQApplication::app_mainqthread;
+pthread_t RpsQApplication::app_mainselfthread;
+std::thread::id RpsQApplication::app_mainthreadid;
 
 Json::Value
 RpsQApplication::read_application_json(void)
@@ -328,6 +331,9 @@ void rps_run_application(int &argc, char **argv)
                rps_hostname(), (int)getpid());
   }
   RpsQApplication app (argc, argv);
+  RpsQApplication::app_mainqthread = QThread::currentThread();
+  RpsQApplication::app_mainselfthread = pthread_self();
+  RpsQApplication::app_mainthreadid = std::this_thread::get_id();
   std::string loadtopdir(rps_topdirectory);
   {
     QCommandLineParser argparser;
@@ -463,6 +469,14 @@ void rps_run_application(int &argc, char **argv)
   if (!batch)
     (void) app.exec ();
 } // end of rps_run_application
+
+bool
+rps_is_main_gui_thread(void)
+{
+  return pthread_self() == RpsQApplication::app_mainselfthread
+         ||  RpsQApplication::app_mainqthread == QThread::currentThread()
+         ||  RpsQApplication::app_mainthreadid == std::this_thread::get_id();
+} // end rps_is_main_gui_thread
 
 //////////////// moc generated file
 #include "_qthead_qrps.inc.hh"
