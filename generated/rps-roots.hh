@@ -21,6 +21,7 @@
 #endif /*undefined RPS_INSTALL_ROOT_OB*/
 
 RPS_INSTALL_ROOT_OB(_0D6zqQNe4eC02bjfGs) //email∈symbol
+RPS_INSTALL_ROOT_OB(_0J1C39JoZiv03qA2HA) //mutable_set∈class
 RPS_INSTALL_ROOT_OB(_0LbCts6NacB03SMXz4) //home_page∈symbol
 RPS_INSTALL_ROOT_OB(_2i66FFjmS7n03HNNBx) //space∈class
 RPS_INSTALL_ROOT_OB(_2A2mrPpR3Qf03p6o5b) //int∈class
@@ -45,7 +46,7 @@ RPS_INSTALL_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
 RPS_INSTALL_ROOT_OB(_9uwZtDshW4401x6MsY) //space∈symbol
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 23
+#define RPS_NB_ROOT_OB 24
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
