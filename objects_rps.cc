@@ -1032,9 +1032,68 @@ Rps_ObjectRef::make_new_symbol(Rps_CallFrame*callerframe, std::string name, bool
   _.obsymbol = Rps_ObjectZone::make();
   _.obsymbol->ob_class.store(RPS_ROOT_OB(_36I1BY2NetN03WjrOv)); // the `symbol` class
   Rps_PayloadSymbol::register_name(name, _.obsymbol, isweak);
-  RPS_INFORMOUT("Rps_ObjectRef::make_new_symbol name=" << name
-                << " gives obsymbol=" << _.obsymbol);
+  RPS_NOPRINTOUT("Rps_ObjectRef::make_new_symbol name=" << name
+                 << " gives obsymbol=" << _.obsymbol);
   return _.obsymbol;
 } // end of Rps_ObjectRef::make_new_symbol
+
+Rps_ObjectRef
+Rps_ObjectRef::make_object(Rps_CallFrame*callerframe, Rps_ObjectRef classobarg, Rps_ObjectRef spaceobarg)
+{
+  RPS_LOCALFRAME(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ), //object∈class
+                 callerframe,
+                 Rps_ObjectRef classob; // the class
+                 Rps_ObjectRef spaceob; // the space
+                 Rps_ObjectRef resultob; // resulting object
+                );
+  _.classob = classobarg;
+  _.spaceob = spaceobarg;
+  if (_.spaceob
+      && RPS_UNLIKELY(!_.spaceob->is_instance_of(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx))))   //space∈class
+    {
+      RPS_WARNOUT("invalid spaceob " << _.spaceob
+                  << "for make_object");
+      throw RPS_RUNTIME_ERROR_OUT("invalid spaceob " << _.spaceob
+                                  << "for make_object");
+      if (!_.classob
+          || !_.classob->is_subclass_of(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)))   // object∈class
+        {
+          RPS_WARNOUT("invalid class " << _.classob
+                      << "for make_object");
+          throw RPS_RUNTIME_ERROR_OUT("invalid class " << _.classob
+                                      << "for make_object");
+        }
+    };
+  _.resultob = Rps_ObjectZone::make();
+  _.resultob->ob_class.store(_.classob);
+  _.resultob->put_space(_.spaceob);
+  /// FIXME: perhaps we should send some `initialize_object` message?
+  return _.resultob;
+} // end Rps_ObjectRef::make_object
+
+// create a mutable set oject:
+Rps_ObjectRef
+Rps_ObjectRef::make_mutable_set_object(Rps_CallFrame*callerframe, Rps_ObjectRef spaceobarg)
+{
+  RPS_LOCALFRAME(RPS_ROOT_OB(_0J1C39JoZiv03qA2HA), //mutable_set∈class
+                 callerframe,
+                 Rps_ObjectRef spaceob; // the space
+                 Rps_ObjectRef resultob; // resulting object
+                );
+  _.spaceob = spaceobarg;
+  if (_.spaceob
+      && RPS_UNLIKELY(!_.spaceob->is_instance_of(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx))))   //space∈class
+    {
+      RPS_WARNOUT("invalid spaceob " << _.spaceob
+                  << "for make_mutable_set_object");
+      throw RPS_RUNTIME_ERROR_OUT("invalid spaceob " << _.spaceob
+                                  << "for make_mutable_set_object");
+    };
+  _.resultob = Rps_ObjectZone::make();
+  _.resultob->ob_class.store(RPS_ROOT_OB(_0J1C39JoZiv03qA2HA)); //mutable_set∈class
+  _.resultob->put_new_plain_payload<Rps_PayloadSetOb>();
+  _.resultob->put_space(_.spaceob);
+  return _.resultob;
+} // end Rps_ObjectRef::make_mutable_set_object
 
 // end of file objects_rps.cc

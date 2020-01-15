@@ -550,13 +550,17 @@ public:
     return make_new_symbol(callerframe, name, true);
   };
   // create an object of given class
-  static Rps_ObjectRef make_object(Rps_CallFrame*callerframe, Rps_ObjectRef classob);
+  static Rps_ObjectRef make_object(Rps_CallFrame*callerframe, Rps_ObjectRef classob, Rps_ObjectRef spaceob=nullptr);
+  // create a mutable set oject
+  static Rps_ObjectRef make_mutable_set_object(Rps_CallFrame*callerframe, Rps_ObjectRef spaceob=nullptr);
   // the superclass of all objects, that is the `object` object
   static inline Rps_ObjectRef the_object_class(void);
   // the class of all classes, that is the `class` object
   static inline Rps_ObjectRef the_class_class(void);
   // the class of all symbols, that is the `symbol` object
   static inline Rps_ObjectRef the_symbol_class(void);
+  // the class of mutable sets, that is the `mutable_set` object
+  static inline Rps_ObjectRef the_mutable_set_class(void);
 };				// end class Rps_ObjectRef
 
 
@@ -736,6 +740,10 @@ public:
     clear();
     return *this;
   };
+  // test if this value is instance of obclass:
+  inline bool is_instance_of(Rps_CallFrame*callerframe, Rps_ObjectRef obclass) const;
+  // test if this value is a subclass of given obsuperclass:
+  inline bool is_subclass_of(Rps_CallFrame*callerframe, Rps_ObjectRef obsuperclass) const;
   Rps_TwoValues send0(Rps_CallFrame*cframe, const Rps_ObjectRef obsel) const;
   Rps_TwoValues send1(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
                       Rps_Value arg0) const;
@@ -1732,7 +1740,12 @@ public:
   {
     return ob_oid.hash();
   };
-  inline bool is_class(void) const; // test if object is a RefPerSys class
+  // test if object is a RefPerSys class:
+  inline bool is_class(void) const;
+  // test if this object is instance of obclass:
+  inline bool is_instance_of(Rps_ObjectRef obclass) const;
+  // test if this object is a suclass of given obsuperclass:
+  inline bool is_subclass_of(Rps_ObjectRef obsuperclass) const;
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0) const;
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   void dump_scan_contents(Rps_Dumper*du) const;

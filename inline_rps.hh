@@ -651,6 +651,37 @@ Rps_Value::as_int() const
   return _ival>>1;
 }
 
+// test if this value is an instance of given obclass
+bool
+Rps_Value::is_instance_of(Rps_CallFrame*callerframe, Rps_ObjectRef obclass) const
+{
+  RPS_ASSERT(!callerframe || callerframe->stored_type() == Rps_Type::CallFrame);
+  if (!obclass || !obclass->is_class())
+    return false;
+  Rps_ObjectRef thisclass = compute_class(callerframe);
+  if (thisclass == obclass)
+    return true;
+  RPS_ASSERT(thisclass);
+  return thisclass->is_instance_of(obclass);
+} // end Rps_Value::is_instance_of
+
+
+// test if this value is a subclass of given obsuperclass:
+bool
+Rps_Value::is_subclass_of(Rps_CallFrame*callerframe, Rps_ObjectRef obsuperclass) const
+{
+  RPS_ASSERT(!callerframe || callerframe->stored_type() == Rps_Type::CallFrame);
+  if (!obsuperclass || !obsuperclass->is_class())
+    return false;
+  Rps_ObjectRef thisclass = compute_class(callerframe);
+  if (thisclass == obsuperclass)
+    return true;
+  RPS_ASSERT(thisclass);
+  return thisclass->is_subclass_of(obsuperclass);
+} // end Rps_Value::is_subclass_of
+
+
+
 intptr_t
 Rps_Value::to_int(intptr_t def) const
 {
@@ -934,6 +965,81 @@ Rps_ObjectZone::is_class(void) const
   return false;
 } // end Rps_ObjectZone::is_class
 
+bool
+Rps_ObjectZone::is_instance_of(Rps_ObjectRef obclass) const
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  int cnt = 0;
+  Rps_ObjectRef obinitclass = obclass;
+  Rps_ObjectRef obcurclass = obclass;
+  if (!obinitclass || !obinitclass->is_class())
+    return false;
+  Rps_ObjectRef obthisclass = get_class();
+  /// if the heap is severely corrupted, we might loop
+  /// indefinitely... This should never happen, but we test against
+  /// it...
+  for (;;)
+    {
+      cnt++;
+      /// this should not happen, except if our inheritance graph is corrupted
+      if (RPS_UNLIKELY(cnt > Rps_Value::maximal_inheritance_depth))
+        {
+          RPS_WARNOUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
+                      << " of class " << obinitclass);
+          throw RPS_RUNTIME_ERROR_OUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
+                                      << " of class " << obinitclass);
+        }
+      if (obcurclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
+        return true;
+      if (obthisclass == obcurclass)
+        return true;
+      if (obcurclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz)) // `value` class
+        return false;
+      if (!obcurclass || !obcurclass->is_class())
+        return false;
+      auto curclasspayl = obcurclass->get_dynamic_payload<Rps_PayloadClassInfo>();
+      RPS_ASSERT(curclasspayl);
+      obcurclass = curclasspayl->superclass();
+    }
+} // end Rps_ObjectZone::is_instance_of
+
+bool
+Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  int cnt = 0;
+  Rps_ObjectRef obinitclass = obsuperclass;
+  Rps_ObjectRef obcurclass = obsuperclass;
+  if (!obinitclass || !obinitclass->is_class())
+    return false;
+  Rps_ObjectRef obthisclass = get_class();
+  /// if the heap is severely corrupted, we might loop
+  /// indefinitely... This should never happen, but we test against
+  /// it...
+  for (;;)
+    {
+      cnt++;
+      /// this should not happen, except if our inheritance graph is corrupted
+      if (RPS_UNLIKELY(cnt > Rps_Value::maximal_inheritance_depth))
+        {
+          RPS_WARNOUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
+                      << " of class " << obinitclass);
+          throw RPS_RUNTIME_ERROR_OUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
+                                      << " of class " << obinitclass);
+        }
+      if (obcurclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
+        return true;
+      if (obthisclass == obcurclass)
+        return true;
+      if (obcurclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz)) // `value` class
+        return false;
+      if (!obcurclass || !obcurclass->is_class())
+        return false;
+      auto curclasspayl = obcurclass->get_dynamic_payload<Rps_PayloadClassInfo>();
+      RPS_ASSERT(curclasspayl);
+      obcurclass = curclasspayl->superclass();
+    }
+} // end Rps_ObjectZone::is_superclass_of
 
 
 Rps_ObjectRef
@@ -977,8 +1083,14 @@ Rps_ObjectRef::the_symbol_class()
 Rps_ObjectRef
 Rps_ObjectRef::the_class_class()
 {
-  return RPS_ROOT_OB(_41OFI3r0S1t03qdB2E);
+  return RPS_ROOT_OB(_41OFI3r0S1t03qdB2E);//class∈class
 } // end Rps_ObjectRef::the_class_class
+
+Rps_ObjectRef
+Rps_ObjectRef::the_mutable_set_class()
+{
+  return RPS_ROOT_OB(_0J1C39JoZiv03qA2HA);//mutable_set∈class
+} // end Rps_ObjectRef::the_mutable_set_class
 
 void
 Rps_ObjectRef::gc_mark(Rps_GarbageCollector&gc) const
