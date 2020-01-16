@@ -659,9 +659,9 @@ Rps_Value::is_instance_of(Rps_CallFrame*callerframe, Rps_ObjectRef obclass) cons
   if (!obclass || !obclass->is_class())
     return false;
   Rps_ObjectRef thisclass = compute_class(callerframe);
+  RPS_ASSERT(thisclass);
   if (thisclass == obclass)
     return true;
-  RPS_ASSERT(thisclass);
   return thisclass->is_instance_of(obclass);
 } // end Rps_Value::is_instance_of
 
@@ -674,9 +674,9 @@ Rps_Value::is_subclass_of(Rps_CallFrame*callerframe, Rps_ObjectRef obsuperclass)
   if (!obsuperclass || !obsuperclass->is_class())
     return false;
   Rps_ObjectRef thisclass = compute_class(callerframe);
+  RPS_ASSERT(thisclass);
   if (thisclass == obsuperclass)
     return true;
-  RPS_ASSERT(thisclass);
   return thisclass->is_subclass_of(obsuperclass);
 } // end Rps_Value::is_subclass_of
 
