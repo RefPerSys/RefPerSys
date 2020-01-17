@@ -211,6 +211,35 @@ private:
 };				// end RpsQCreateSymbolDialog
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// The dialog box for creating new named instances.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQCreateNamedInstanceDialog : public QDialog
+{
+  Q_OBJECT
+public:
+  RpsQCreateNamedInstanceDialog(RpsQWindow* parent);
+  ~RpsQCreateNamedInstanceDialog();
+
+private slots:
+  void on_ok_trigger();
+  void on_cancel_trigger();
+
+
+private:
+  QVBoxLayout nidialog_vbox;
+  QHBoxLayout niname_hbox;
+  QLabel niname_label;
+  QLineEdit niname_linedit;
+  QHBoxLayout niclass_hbox;
+  QLabel niclass_label;
+  RpsQObjectLineEdit niclass_linedit;
+  QHBoxLayout button_hbox;
+  QPushButton ok_button;
+  QPushButton cancel_button;
+};				// end RpsQCreateNamedInstanceDialog
+
+
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
 class RpsQWindow : public QMainWindow
@@ -235,7 +264,8 @@ private:
 
   // for create menu
   QAction* win_crclass_action;
-  QAction*win_crsymb_action;
+  QAction* win_crsymb_action;
+  QAction* win_crnamedinstance_action;
 
   // for help menu
 #warning RpsQWindow help menu missing

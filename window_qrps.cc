@@ -57,6 +57,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_apexit_action(nullptr),
     win_crclass_action(nullptr),
     win_crsymb_action(nullptr),
+    win_crnamedinstance_action(nullptr),
     win_centralmdi(nullptr)
 {
   /// create the menus and their actions
@@ -80,6 +81,8 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_crclass_action->setStatusTip("create a new named class");
     win_crsymb_action = new QAction("create &Symbol", this);
     win_crsymb_action->setStatusTip("create a new symbol");
+    win_crnamedinstance_action = new QAction("create &Named instance", this);
+    win_crnamedinstance_action->setStatusTip("create a new named instance and its symbol");
     win_help_menu = mb->addMenu("Help");
   }
   /// add the actions to their menu
@@ -92,6 +95,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_app_menu->addAction(win_apexit_action);
     win_create_menu->addAction(win_crclass_action);
     win_create_menu->addAction(win_crsymb_action);
+    win_create_menu->addAction(win_crnamedinstance_action);
   }
   // our central widget
   win_centralmdi =  new QMdiArea(this);
@@ -129,6 +133,12 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
           [=](void)
   {
     auto dia = new RpsQCreateSymbolDialog(this);
+    dia->show();
+  });
+  connect(win_crnamedinstance_action, &QAction::triggered,
+          [=](void)
+  {
+    auto dia = new RpsQCreateNamedInstanceDialog(this);
     dia->show();
   });
   connect(win_apclose_action, &QAction::triggered,
@@ -286,7 +296,7 @@ RpsQCreateSymbolDialog::RpsQCreateSymbolDialog(RpsQWindow* parent)
   setObjectName("RpsQCreateSymbolDialog");
   sydialog_vbox.setObjectName("RpsQCreateSymbolDialog_sydialog_vbox");
   syname_hbox.setObjectName("RpsQCreateSymbolDialog_syname_hbox");
-  syname_label.setObjectName("RpsQCreateSymbolDialog_syname_hbox");
+  syname_label.setObjectName("RpsQCreateSymbolDialog_syname_label");
   syname_linedit.setObjectName("RpsQCreateSymbolDialog_syname_linedit");
   syname_weakchkbox.setObjectName("RpsQCreateSymbolDialog_syname_weakchkbox");
   button_hbox.setObjectName("RpsQCreateSymbolDialog_button_hbox");
@@ -379,6 +389,131 @@ RpsQCreateSymbolDialog::on_cancel_trigger()
 {
   deleteLater(); // was close()
 } // end RpsQCreateSymbolDialog::on_cancel_trigger
+
+
+
+////////////////////////////////////////////////////////////////
+
+/// the dialog to create RefPerSys named instances
+RpsQCreateNamedInstanceDialog::RpsQCreateNamedInstanceDialog(RpsQWindow* parent)
+  : QDialog(parent),
+    nidialog_vbox(),
+    niname_hbox(),
+    niname_label("new instance name:", this),
+    niname_linedit(this),
+    niclass_hbox(),
+    niclass_label("class:", this),
+    niclass_linedit("", "class of new instance", this),
+    button_hbox(),
+    ok_button("Create Named Instance", this),
+    cancel_button("cancel", this)
+{
+  // set widget names, useful for debugging, and later for style sheets.
+  setObjectName("RpsQCreateNamedInstanceDialog");
+  nidialog_vbox.setObjectName("RpsQCreateNamedInstanceDialog_nidialog_vbox");
+  niname_hbox.setObjectName("RpsQCreateNamedInstanceDialog_niname_hbox");
+  niname_label.setObjectName("RpsQCreateNamedInstanceDialog_niname_label");
+  niname_linedit.setObjectName("RpsQCreateNamedInstanceDialog_niname_linedit");
+  niclass_label.setObjectName("RpsQCreateNamedInstanceDialog_niclass_label");
+  button_hbox.setObjectName("RpsQCreateNamedInstanceDialog_button_hbox");
+  ok_button.setObjectName("RpsQCreateNamedInstanceDialog_ok_button");
+  cancel_button.setObjectName("RpsQCreateNamedInstanceDialog_cancel_button");
+  RPS_INFORMOUT("RpsQCreateNamedInstanceDialog @" << this);
+  // set fonts of labels and linedits
+  {
+    auto labfont = QFont("Arial", 12);
+    niname_label.setFont(labfont);
+    auto editfont = QFont("Courier", 12);
+    niname_linedit.setFont(editfont);
+  }
+  // ensure layout; maybe we should use style sheets?
+  {
+    nidialog_vbox.addLayout(&niname_hbox);
+    niname_hbox.addWidget(&niname_label);
+    niname_hbox.addSpacing(2);
+    niname_hbox.addWidget(&niname_linedit);
+    nidialog_vbox.addLayout(&niclass_hbox);
+    niclass_hbox.addSpacing(2);
+    niclass_hbox.addWidget(&niclass_label);
+    niclass_hbox.addWidget(&niclass_linedit);
+    nidialog_vbox.addLayout(&button_hbox);
+    button_hbox.addWidget(&ok_button);
+    button_hbox.addSpacing(3);
+    button_hbox.addWidget(&cancel_button);
+    setLayout(&nidialog_vbox);
+  }
+  // define behavior
+  {
+    connect(
+      &ok_button,
+      &QAbstractButton::clicked,
+      this,
+      &RpsQCreateNamedInstanceDialog::on_ok_trigger
+    );
+    connect(
+      &cancel_button,
+      &QAbstractButton::clicked,
+      this,
+      &RpsQCreateNamedInstanceDialog::on_cancel_trigger
+    );
+  }
+} // end RpsQCreateNamedInstanceDialog::RpsQCreateNamedInstanceDialog
+
+
+RpsQCreateNamedInstanceDialog::~RpsQCreateNamedInstanceDialog()
+{
+} // end RpsQCreateNamedInstanceDialog::~RpsQCreateNamedInstanceDialog
+
+void
+RpsQCreateNamedInstanceDialog::on_ok_trigger()
+{
+  RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
+                 nullptr,//parentframe
+                 Rps_ObjectRef obsymb;
+                );
+  std::string strnisyname = niname_linedit.text().toStdString();
+  std::string strniclaname = niclass_linedit.text().toStdString();
+  RPS_WARNOUT("RpsQCreateNamedInstanceDialog::on_ok_trigger strnisyname=" << strnisyname
+              << " strniclaname=" << strniclaname);
+  try
+    {
+      /****
+      _.obsymb = Rps_ObjectRef::make_new_strong_symbol(&_, strnisyname);
+      RPS_INFORMOUT("RpsQCreateNamedInstanceDialog::on_ok_trigger created symbol " << _.obsymb
+      << " named " << strnisyname);
+      if (!_.obsymb)
+      throw std::runtime_error(std::string("failed to create symbol:") + strnisyname);
+      rps_add_root_object(_.obsymb);
+      _.obsymb->put_space(Rps_ObjectRef::root_space());
+      ***/
+      std::ostringstream outs;
+      outs << "should create new named instance " << strnisyname << " of class " << strniclaname;
+      std::string msg = outs.str();
+#warning RpsQCreateNamedInstanceDialog::on_ok_trigger should create new named instance
+      QMessageBox::information(parentWidget(), "no yet Created Named Instance", msg.c_str());
+      RPS_WARNOUT("RpsQCreateNamedInstanceDialog::on_ok_trigger should create new named instance "
+                  << strnisyname << " of class " << strniclaname );
+    }
+  catch (const std::exception& exc)
+    {
+      RPS_WARNOUT("RpsQCreateNamedInstanceDialog::on_ok_trigger exception " << exc.what());
+      std::ostringstream outs;
+      outs << "failed to create symbol named "
+           << strnisyname
+           << std::endl;
+      outs << exc.what();
+      QMessageBox::warning(parentWidget(), "Failed symbol creation", outs.str().c_str());
+    }
+  deleteLater();
+} // end RpsQCreateNamedInstanceDialog::on_ok_trigger
+
+void
+RpsQCreateNamedInstanceDialog::on_cancel_trigger()
+{
+  deleteLater(); // was close()
+} // end RpsQCreateNamedInstanceDialog::on_cancel_trigger
+
+
 
 ////////////////////////////////////////////////////////////////
 

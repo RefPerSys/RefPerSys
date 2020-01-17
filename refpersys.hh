@@ -889,6 +889,9 @@ struct Rps_TupleTag
 {
 }; // end empty struct Rps_TupleTag
 
+
+
+////////////////
 class Rps_SetValue : public Rps_Value
 {
 public:
@@ -905,6 +908,10 @@ public:
   inline Rps_SetValue(const Rps_Value);
 };    // end class Rps_SetValue
 
+
+
+
+////////////////
 class Rps_TupleValue : public Rps_Value
 {
 public:
@@ -2258,8 +2265,13 @@ public:							\
   _.previous_call_frame()->clear_closure();		\
   return Rps_TwoValues((MainVal),(XtraVal)); } while(0)
 
+
+
+
+
 ////////////////////////////////////////////////////////////////
-////// class information payload - for PaylClassInfo
+////// class information payload - for PaylClassInfo, objects of class
+////// `class` _41OFI3r0S1t03qdB2E
 
 extern "C" rpsldpysig_t rpsldpy_class;
 class Rps_PayloadClassInfo : public Rps_Payload
@@ -2345,7 +2357,8 @@ public:
 
 
 ////////////////////////////////////////////////////////////////
-////// mutable set of objects payload - for PaylSetOb
+////// mutable set of objects payload - for PaylSetOb, objects of
+////// class `mutable_set` _0J1C39JoZiv03qA2HA
 extern "C" rpsldpysig_t rpsldpy_setob;
 class Rps_PayloadSetOb : public Rps_Payload
 {
@@ -2422,7 +2435,8 @@ public:
 
 
 ////////////////////////////////////////////////////////////////
-////// mutable vector of objects payload - for PaylVectOb
+////// mutable vector of objects payload - for PaylVectOb and objects
+////// of class `mutable_vector _8YknAApDQiF04BDe3W
 extern "C" rpsldpysig_t rpsldpy_vectob;
 class Rps_PayloadVectOb : public Rps_Payload
 {
@@ -2488,8 +2502,11 @@ public:
   };
 };				// end Rps_PayloadVectOb
 
+
+
 ////////////////////////////////////////////////////////////////
-////// mutable space payload
+////// mutable space payload, objects of class `space`
+////// _2i66FFjmS7n03HNNBx
 extern "C" rpsldpysig_t rpsldpy_space;
 class Rps_PayloadSpace : public Rps_Payload
 {
