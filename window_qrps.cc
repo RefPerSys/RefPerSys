@@ -505,6 +505,10 @@ RpsQCreateNamedInstanceDialog::on_ok_trigger()
       rps_add_root_object(_.obsymb);
       _.obsymb->put_space(Rps_ObjectRef::root_space());
       _.obnewinst = Rps_ObjectRef::make_object(&_, _.obclass, Rps_ObjectRef::root_space());
+      if (_.obclass == RPS_ROOT_OB(_0J1C39JoZiv03qA2HA)) // ̀ mutable_set` class
+        _.obnewinst ->put_new_plain_payload<Rps_PayloadSetOb>();
+      else if (_.obclass == RPS_ROOT_OB(_0J1C39JoZiv03qA2HA)) // ̀ mutable_vector` class
+        _.obnewinst ->put_new_plain_payload<Rps_PayloadVectOb>();
 #warning should put payload for a few special cases of RpsQCreateNamedInstanceDialog
       auto sypayl = _.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
       RPS_ASSERT(sypayl != nullptr);
