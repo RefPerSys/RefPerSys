@@ -470,6 +470,8 @@ RpsQCreateNamedInstanceDialog::on_ok_trigger()
   RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
                  nullptr,//parentframe
                  Rps_ObjectRef obsymb;
+                 Rps_ObjectRef obclass;
+                 Rps_ObjectRef obnewinst;
                 );
   std::string strnisyname = niname_linedit.text().toStdString();
   std::string strniclaname = niclass_linedit.text().toStdString();
@@ -477,22 +479,44 @@ RpsQCreateNamedInstanceDialog::on_ok_trigger()
               << " strniclaname=" << strniclaname);
   try
     {
-      /****
+      _.obclass = Rps_ObjectRef::find_object(&_, strniclaname);
+      if (!_.obclass)
+        throw RPS_RUNTIME_ERROR_OUT("create named instance: no class named " << strniclaname);
+      if (!_.obclass->is_class())
+        throw RPS_RUNTIME_ERROR_OUT("create named instance: invalid given class named " << strniclaname);
+      if (_.obclass == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b) // `int`
+          || _.obclass == RPS_ROOT_OB(_36I1BY2NetN03WjrOv) // `symbol`
+          || _.obclass == RPS_ROOT_OB(_41OFI3r0S1t03qdB2E) // `class`
+          || _.obclass == RPS_ROOT_OB(_4jISxMJ4PYU0050nUl) // `closure`
+          || _.obclass == RPS_ROOT_OB(_5CYWxcChKN002rw1fI) // `contributor_to_RefPerSys`
+          || _.obclass == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE) // `string`
+          || _.obclass == RPS_ROOT_OB(_6JYterg6iAu00cV9Ye) // `set`
+          || _.obclass == RPS_ROOT_OB(_6NVM7sMcITg01ug5TC) // `tuple`
+          || _.obclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz) // `value`
+          || _.obclass == RPS_ROOT_OB(_98sc8kSOXV003i86w5) // `double`
+         )
+        throw RPS_RUNTIME_ERROR_OUT("create named instance: forbidden class named " << strniclaname);
+
       _.obsymb = Rps_ObjectRef::make_new_strong_symbol(&_, strnisyname);
       RPS_INFORMOUT("RpsQCreateNamedInstanceDialog::on_ok_trigger created symbol " << _.obsymb
-      << " named " << strnisyname);
+                    << " named " << strnisyname);
       if (!_.obsymb)
-      throw std::runtime_error(std::string("failed to create symbol:") + strnisyname);
+        throw std::runtime_error(std::string("failed to create symbol:") + strnisyname);
       rps_add_root_object(_.obsymb);
       _.obsymb->put_space(Rps_ObjectRef::root_space());
-      ***/
+      _.obnewinst = Rps_ObjectRef::make_object(&_, _.obclass, Rps_ObjectRef::root_space());
+#warning should put payload for a few special cases of RpsQCreateNamedInstanceDialog
+      auto sypayl = _.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
+      RPS_ASSERT(sypayl != nullptr);
+      sypayl->symbol_put_value(Rps_ObjectValue(_.obsymb));
+      RPS_INFORMOUT("RpsQCreateNamedInstanceDialog created new named instance "
+                    << strnisyname << " as " << _.obnewinst
+                    << " of class " << strniclaname);
       std::ostringstream outs;
-      outs << "should create new named instance " << strnisyname << " of class " << strniclaname;
+      outs << "created new named instance " << strnisyname << " as " <<  _.obnewinst
+           << " of class " << strniclaname << " " << _.obclass;
       std::string msg = outs.str();
-#warning RpsQCreateNamedInstanceDialog::on_ok_trigger should create new named instance
-      QMessageBox::information(parentWidget(), "no yet Created Named Instance", msg.c_str());
-      RPS_WARNOUT("RpsQCreateNamedInstanceDialog::on_ok_trigger should create new named instance "
-                  << strnisyname << " of class " << strniclaname );
+      QMessageBox::information(parentWidget(), "Created Named Instance", msg.c_str());
     }
   catch (const std::exception& exc)
     {
