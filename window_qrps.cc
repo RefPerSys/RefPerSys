@@ -514,7 +514,7 @@ RpsQCreateNamedInstanceDialog::on_ok_trigger()
 #warning should put payload for a few special cases of RpsQCreateNamedInstanceDialog
       auto sypayl = _.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
       RPS_ASSERT(sypayl != nullptr);
-      sypayl->symbol_put_value(Rps_ObjectValue(_.obsymb));
+      sypayl->symbol_put_value(Rps_ObjectValue(_.obnewinst));
       RPS_INFORMOUT("RpsQCreateNamedInstanceDialog created new named instance "
                     << strnisyname << " as " << _.obnewinst
                     << " of class " << strniclaname);
