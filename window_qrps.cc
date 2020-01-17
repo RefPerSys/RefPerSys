@@ -480,6 +480,7 @@ RpsQCreateNamedInstanceDialog::on_ok_trigger()
   try
     {
       _.obclass = Rps_ObjectRef::find_object(&_, strniclaname);
+      RPS_INFORMOUT("RpsQCreateNamedInstanceDialog obclass=" << _.obclass);
       if (!_.obclass)
         throw RPS_RUNTIME_ERROR_OUT("create named instance: no class named " << strniclaname);
       if (!_.obclass->is_class())
@@ -496,10 +497,10 @@ RpsQCreateNamedInstanceDialog::on_ok_trigger()
           || _.obclass == RPS_ROOT_OB(_98sc8kSOXV003i86w5) // `double`
          )
         throw RPS_RUNTIME_ERROR_OUT("create named instance: forbidden class named " << strniclaname);
-
       _.obsymb = Rps_ObjectRef::make_new_strong_symbol(&_, strnisyname);
       RPS_INFORMOUT("RpsQCreateNamedInstanceDialog::on_ok_trigger created symbol " << _.obsymb
-                    << " named " << strnisyname);
+                    << " named " << strnisyname
+		    << " with obclass=" << _.obclass);
       if (!_.obsymb)
         throw std::runtime_error(std::string("failed to create symbol:") + strnisyname);
       rps_add_root_object(_.obsymb);
@@ -509,6 +510,7 @@ RpsQCreateNamedInstanceDialog::on_ok_trigger()
         _.obnewinst ->put_new_plain_payload<Rps_PayloadSetOb>();
       else if (_.obclass == RPS_ROOT_OB(_0J1C39JoZiv03qA2HA)) // ̀ mutable_vector` class
         _.obnewinst ->put_new_plain_payload<Rps_PayloadVectOb>();
+      rps_add_root_object(_.obnewinst);
 #warning should put payload for a few special cases of RpsQCreateNamedInstanceDialog
       auto sypayl = _.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
       RPS_ASSERT(sypayl != nullptr);
@@ -518,7 +520,7 @@ RpsQCreateNamedInstanceDialog::on_ok_trigger()
                     << " of class " << strniclaname);
       std::ostringstream outs;
       outs << "created new named instance " << strnisyname << " as " <<  _.obnewinst
-           << " of class " << strniclaname << " " << _.obclass;
+           << " of class " << strniclaname << " " << _.obnewinst->get_class();
       std::string msg = outs.str();
       QMessageBox::information(parentWidget(), "Created Named Instance", msg.c_str());
     }
