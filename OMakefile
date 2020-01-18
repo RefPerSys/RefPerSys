@@ -122,6 +122,7 @@ CLEAN[] =
   *~%
   *.orig
   *.o
+  *.gch
   *omc
   .omak*
   core*
