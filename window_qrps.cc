@@ -933,13 +933,21 @@ RpsQCreateContributorDialog::on_ok_trigger()
       if (!weburl.isValid()) 
 	throw  RPS_RUNTIME_ERROR_OUT("invalid homepage URL " << webpagestr);
       QNetworkRequest webreq(weburl);
-      QNetworkAccessManager webacc(this);
-      auto webrepl = webacc.head(webreq);
+      RPS_INFORMOUT("RpsQCreateContributorDialog after weburl for webpagestr:" << webpagestr);
+      QNetworkAccessManager* webacc = new QNetworkAccessManager(this);
+      RPS_INFORMOUT("RpsQCreateContributorDialog  webacc:" << webacc);
+      RPS_ASSERT(webacc != nullptr);
+      /// I am not sure that an HTTP request is happening here....
+      auto webrepl = webacc->head(webreq);
+      RPS_INFORMOUT("RpsQCreateContributorDialog  webrepl:" << webrepl
+		    << ", webacc=" << webacc);
       if (!webrepl) {
 	RPS_WARNOUT("failed to HTTP HEAD web page " << webpagestr);
+	webacc->deleteLater();
 	throw RPS_RUNTIME_ERROR_OUT("invalid homepage, HEAD request failed on " << webpagestr);
       };
-      delete webrepl;
+      webacc->deleteLater();
+      webrepl->deleteLater();
     }
   RPS_INFORMOUT("RpsQCreateContributorDialog should create contributor for:"
 		<< " firstnamestr=" << firstnamestr

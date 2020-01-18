@@ -68,6 +68,7 @@
 #include <QTextBrowser>
 #include <QUrl>
 #include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QNetworkAccessManager>
 
 class RpsQApplication;
