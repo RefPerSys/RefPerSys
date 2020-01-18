@@ -822,6 +822,14 @@ RpsQCreateContributorDialog::~RpsQCreateContributorDialog()
 void
 RpsQCreateContributorDialog::on_ok_trigger()
 {
+  RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
+                 nullptr,//parentframe
+                 Rps_ObjectRef obcontrib; // the new contributor object
+                 Rps_Value firstnamev; // first name, as a string
+		 Rps_Value lastnamev; // last name, as a string
+		 Rps_Value emailv; // email, as a string
+		 Rps_Value webpagev; // home web page URL, as a string	
+                );
   QString firstnameqs = firstname_edit.text();
   QString lastnameqs = lastname_edit.text();
   QString emailqs = email_edit.text();
@@ -949,12 +957,19 @@ RpsQCreateContributorDialog::on_ok_trigger()
       webacc->deleteLater();
       webrepl->deleteLater();
     }
+  ///
   RPS_INFORMOUT("RpsQCreateContributorDialog should create contributor for:"
 		<< " firstnamestr=" << firstnamestr
 		<< ", lastnamestr=" << lastnamestr
 		<< ", emailstr=" << emailstr
 		<< ", webpagestr=" << webpagestr
 		);
+  _.obcontrib =
+    Rps_ObjectRef::make_object(&_, //
+			       RPS_ROOT_OB(_5CYWxcChKN002rw1fI), //contributor_to_RefPerSys
+			       Rps_ObjectRef::root_space());
+#warning RpsQCreateContributorDialog should put_attr inside _.obcontrib
+  RPS_WARNOUT("RpsQCreateContributorDialog should put_attr inside obcontrib:" << obcontrib);
     
   } catch (std::exception& exc) {
     RPS_WARNOUT(
