@@ -256,7 +256,11 @@ private slots:
 
 private:
   QVBoxLayout dialog_vbox;
+  QHBoxLayout name_hbox;
+  QHBoxLayout email_hbox;
   QHBoxLayout button_hbox;
+  QLabel name_label;
+  QLabel email_label;
   QPushButton ok_button;
   QPushButton cancel_button;
 };

@@ -555,14 +555,22 @@ RpsQCreateNamedInstanceDialog::on_cancel_trigger()
 RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
   : QDialog(parent),
     dialog_vbox(),
+    name_hbox(),
+    email_hbox(),
     button_hbox(),
+    name_label("Contributor Name:", this),
+    email_label("Contributor Email:", this),
     ok_button("Create Contributor", this),
     cancel_button("Cancel", this)
 {
   // set widget names for debugging and future style sheets
   {
     dialog_vbox.setObjectName("RpsQCreateContributorDialog_dialog_vbox");
+    name_hbox.setObjectName("RpsQCreateContributorDialog_name_hbox");
+    email_hbox.setObjectName("RpsQCreateContributorDialog_email_hbox");
     button_hbox.setObjectName("RpsQCreateContributorDialog_button_hbox");
+    name_label.setObjectName("RpsQCreateContributorDialog_name_label");
+    email_label.setObjectName("RpsQCreateContributorDialog_email_label");
     ok_button.setObjectName("RpsQCreateContributorDialog_ok_button");
     cancel_button.setObjectName("RpsQCreateContributorDialog_cancel_button");
   }
@@ -570,16 +578,27 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
   // set widget fonts
   {
     auto arial = QFont("Arial", 12);
+    name_label.setFont(arial);
+    email_label.setFont(arial);
     ok_button.setFont(arial);
     cancel_button.setFont(arial);
   }
 
   // set widget layouts
   {
+    dialog_vbox.addLayout(&name_hbox);
+    name_hbox.addWidget(&name_label);
+    name_hbox.addSpacing(2);
+
+    dialog_vbox.addLayout(&email_hbox);
+    email_hbox.addWidget(&email_label);
+    email_hbox.addSpacing(2);
+
     dialog_vbox.addLayout(&button_hbox);
     button_hbox.addWidget(&ok_button);
     button_hbox.addSpacing(3);
     button_hbox.addWidget(&cancel_button);
+
     setLayout(&dialog_vbox);
   }
 
