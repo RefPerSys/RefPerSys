@@ -1664,6 +1664,8 @@ public:
   };
   inline Rps_ObjectRef get_space(void) const;
   void put_space(Rps_ObjectRef obspace);
+  Rps_Value get_attr1(Rps_CallFrame*stkf,const Rps_ObjectRef obattr0) const;
+  Rps_TwoValues get_attr2(Rps_CallFrame*stkf,const Rps_ObjectRef obattr0, const Rps_ObjectRef obattr1) const;
   // if obaattr is a magic attribute, throw an exception
   void remove_attr(const Rps_ObjectRef obattr);
   // put one, two, three, four attributes in the same object locking

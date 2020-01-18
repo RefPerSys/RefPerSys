@@ -216,11 +216,71 @@ Rps_ObjectZone::remove_attr(const Rps_ObjectRef obattr)
       throw RPS_RUNTIME_ERROR_OUT("cannot remove magic attribute " << obattr
                                   << " in " << Rps_ObjectRef(this));
   }
-  std::lock_guard gu(ob_mtx);
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
   ob_attrs.erase(obattr);
   ob_mtime.store(rps_wallclock_real_time());
 } // end Rps_ObjectZone::remove_attr
 
+
+Rps_Value
+Rps_ObjectZone::get_attr1(Rps_CallFrame*stkf,const Rps_ObjectRef obattr0) const
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  if (obattr0.is_empty() || obattr0->stored_type() != Rps_Type::Object)
+    return nullptr;
+  Rps_Value val0;
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  {
+    rps_magicgetterfun_t*getfun0 = obattr0->ob_magicgetterfun.load();
+    if (RPS_UNLIKELY(getfun0))
+      val0 = (*getfun0)(stkf, *this, obattr0);
+    else
+      {
+        auto it0 = ob_attrs.find(obattr0);
+        if (it0 != ob_attrs.end())
+          val0 = it0->second;
+      }
+  }
+  return val0;
+} // end Rps_ObjectZone::get_attr1
+
+
+
+Rps_TwoValues
+Rps_ObjectZone::get_attr2(Rps_CallFrame*stkf, const Rps_ObjectRef obattr0, const Rps_ObjectRef obattr1) const
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  if (obattr0.is_empty() || obattr0->stored_type() != Rps_Type::Object)
+    return Rps_TwoValues(nullptr,nullptr);
+  if (obattr1.is_empty() || obattr1->stored_type() != Rps_Type::Object)
+    return Rps_TwoValues(nullptr,nullptr);
+  Rps_Value val0;
+  Rps_Value val1;
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  {
+    rps_magicgetterfun_t*getfun0 = obattr0->ob_magicgetterfun.load();
+    if (RPS_UNLIKELY(getfun0))
+      val0 = (*getfun0)(stkf, *this, obattr0);
+    else
+      {
+        auto it0 = ob_attrs.find(obattr0);
+        if (it0 != ob_attrs.end())
+          val0 = it0->second;
+      }
+  }
+  {
+    rps_magicgetterfun_t*getfun1 = obattr1->ob_magicgetterfun.load();
+    if (RPS_UNLIKELY(getfun1))
+      val0 = (*getfun1)(stkf, *this, obattr1);
+    else
+      {
+        auto it1 = ob_attrs.find(obattr1);
+        if (it1 != ob_attrs.end())
+          val1 = it1->second;
+      }
+  }
+  return Rps_TwoValues(val0, val1);
+} // end Rps_ObjectZone::get_attr2
 
 
 void
