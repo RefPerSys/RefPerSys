@@ -1664,6 +1664,30 @@ public:
   };
   inline Rps_ObjectRef get_space(void) const;
   void put_space(Rps_ObjectRef obspace);
+  // if obaattr is a magic attribute, throw an exception
+  void remove_attr(const Rps_ObjectRef obattr);
+  // put one, two, three, four attributes in the same object locking
+  void put_attr(const Rps_ObjectRef obattr, const Rps_Value valattr);
+  void put_attr2( const Rps_ObjectRef obattr0, const Rps_Value valattr0,
+                  const Rps_ObjectRef obattr1, const Rps_Value valattr1);
+  void put_attr3(const Rps_ObjectRef obattr0, const Rps_Value valattr0,
+                 const Rps_ObjectRef obattr1, const Rps_Value valattr1,
+                 const Rps_ObjectRef obattr2, const Rps_Value valattr2);
+  void put_attr4(const Rps_ObjectRef obattr0, const Rps_Value valattr0,
+                 const Rps_ObjectRef obattr1, const Rps_Value valattr1,
+                 const Rps_ObjectRef obattr2, const Rps_Value valattr2,
+                 const Rps_ObjectRef obattr3, const Rps_Value valattr3);
+  // exchange one, two, three, four attributes in the same object locking with their old attribute value
+  void exchange_attr(const Rps_ObjectRef obattr, const Rps_Value valattr, Rps_Value*poldval);
+  void exchange_attr2(const Rps_ObjectRef obattr0, const Rps_Value valattr0, Rps_Value*poldval0,
+                      const Rps_ObjectRef obattr1, const Rps_Value valattr1, Rps_Value*poldval1);
+  void exchange_attr3(const Rps_ObjectRef obattr0, const Rps_Value valattr0, Rps_Value*poldval0,
+                      const Rps_ObjectRef obattr1, const Rps_Value valattr1, Rps_Value*poldval1,
+                      const Rps_ObjectRef obattr2, const Rps_Value valattr2, Rps_Value*poldval2);
+  void exchange_attr4(const Rps_ObjectRef obattr0, const Rps_Value valattr0, Rps_Value*poldval0,
+                      const Rps_ObjectRef obattr1, const Rps_Value valattr1, Rps_Value*poldval1,
+                      const Rps_ObjectRef obattr2, const Rps_Value valattr2, Rps_Value*poldval2,
+                      const Rps_ObjectRef obattr3, const Rps_Value valattr3, Rps_Value*poldval3);
   inline double get_mtime(void) const;
   inline rps_applyingfun_t*get_applyingfun(const Rps_ClosureValue&closv) const
   {
