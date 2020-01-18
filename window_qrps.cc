@@ -560,6 +560,8 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     button_hbox(),
     name_label("Contributor Name:", this),
     email_label("Contributor Email:", this),
+    name_edit(this),
+    email_edit(this),
     ok_button("Create Contributor", this),
     cancel_button("Cancel", this)
 {
@@ -571,6 +573,8 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     button_hbox.setObjectName("RpsQCreateContributorDialog_button_hbox");
     name_label.setObjectName("RpsQCreateContributorDialog_name_label");
     email_label.setObjectName("RpsQCreateContributorDialog_email_label");
+    name_edit.setObjectName("RpsQCreateContributorDialog_name_edit");
+    email_edit.setObjectName("RpsQCreateContributorDialog_email_edit");
     ok_button.setObjectName("RpsQCreateContributorDialog_ok_button");
     cancel_button.setObjectName("RpsQCreateContributorDialog_cancel_button");
   }
@@ -582,6 +586,10 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     email_label.setFont(arial);
     ok_button.setFont(arial);
     cancel_button.setFont(arial);
+
+    auto courier = QFont("Courier", 12);
+    name_edit.setFont(courier);
+    email_edit.setFont(courier);
   }
 
   // set widget layouts
@@ -589,10 +597,12 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     dialog_vbox.addLayout(&name_hbox);
     name_hbox.addWidget(&name_label);
     name_hbox.addSpacing(2);
+    name_hbox.addWidget(&name_edit);
 
     dialog_vbox.addLayout(&email_hbox);
     email_hbox.addWidget(&email_label);
     email_hbox.addSpacing(2);
+    email_hbox.addWidget(&email_edit);
 
     dialog_vbox.addLayout(&button_hbox);
     button_hbox.addWidget(&ok_button);

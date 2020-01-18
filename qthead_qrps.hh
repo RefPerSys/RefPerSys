@@ -261,6 +261,8 @@ private:
   QHBoxLayout button_hbox;
   QLabel name_label;
   QLabel email_label;
+  QLineEdit name_edit;
+  QLineEdit email_edit;
   QPushButton ok_button;
   QPushButton cancel_button;
 };
