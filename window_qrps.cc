@@ -969,6 +969,7 @@ RpsQCreateContributorDialog::on_ok_trigger()
     Rps_ObjectRef::make_object(&_, //
 			       RPS_ROOT_OB(_5CYWxcChKN002rw1fI), //contributor_to_RefPerSys
 			       Rps_ObjectRef::root_space());
+#warning in commit 8ff0d00e733f508ee605dfcb the calls to Rps_StringValue are buggy
   RPS_ASSERT(!firstnamestr.empty());
   _.firstnamev = Rps_StringValue(firstnamestr);
   RPS_ASSERT(!lastnamestr.empty());
