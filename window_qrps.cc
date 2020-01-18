@@ -969,7 +969,7 @@ RpsQCreateContributorDialog::on_ok_trigger()
 			       RPS_ROOT_OB(_5CYWxcChKN002rw1fI), //contributor_to_RefPerSys
 			       Rps_ObjectRef::root_space());
 #warning RpsQCreateContributorDialog should put_attr inside _.obcontrib
-  RPS_WARNOUT("RpsQCreateContributorDialog should put_attr inside obcontrib:" << obcontrib);
+  RPS_WARNOUT("RpsQCreateContributorDialog should put_attr inside obcontrib:" << _.obcontrib);
     
   } catch (std::exception& exc) {
     RPS_WARNOUT(
