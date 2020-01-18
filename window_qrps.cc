@@ -633,7 +633,15 @@ RpsQCreateContributorDialog::~RpsQCreateContributorDialog()
 void
 RpsQCreateContributorDialog::on_ok_trigger()
 {
+  std::string name = name_edit.text().toStdString();
+  std::string email = email_edit.text().toStdString();
+  RPS_WARNOUT(
+    "RpsQCreateContributorDialog::on_ok_trigger name=" << name << " email="
+    << email
+  );
+
   // TODO: contributor adding logic needs to be placed here
+  
   deleteLater();
 }  // end RpsQCreateContributorDialog::on_ok_trigger()
 
