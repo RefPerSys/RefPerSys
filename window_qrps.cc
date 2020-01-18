@@ -832,8 +832,7 @@ RpsQCreateContributorDialog::on_ok_trigger()
   std::string emailstr = emailqs.toStdString();
   std::string webpagestr = webpageqs.toStdString();
 
-  RPS_INFORMOUT(
-		"RpsQCreateContributorDialog::on_ok_trigger incomplete:"
+  RPS_INFORMOUT("RpsQCreateContributorDialog incomplete:"
 		<< " firstnamestr=" << firstnamestr
 		<< ", lastnamestr=" << lastnamestr
 		<< ", emailstr=" << emailstr
@@ -934,11 +933,24 @@ RpsQCreateContributorDialog::on_ok_trigger()
       if (!weburl.isValid()) 
 	throw  RPS_RUNTIME_ERROR_OUT("invalid homepage URL " << webpagestr);
       QNetworkRequest webreq(weburl);
+      QNetworkAccessManager webacc(this);
+      auto webrepl = webacc.head(webreq);
+      if (!webrepl) {
+	RPS_WARNOUT("failed to HTTP HEAD web page " << webpagestr);
+	throw RPS_RUNTIME_ERROR_OUT("invalid homepage, HEAD request failed on " << webpagestr);
+      };
+      delete webrepl;
     }
+  RPS_INFORMOUT("RpsQCreateContributorDialog should create contributor for:"
+		<< " firstnamestr=" << firstnamestr
+		<< ", lastnamestr=" << lastnamestr
+		<< ", emailstr=" << emailstr
+		<< ", webpagestr=" << webpagestr
+		);
     
   } catch (std::exception& exc) {
     RPS_WARNOUT(
-		"RpsQCreateContributorDialog::on_ok_trigger failed:"
+		"RpsQCreateContributorDialog failed:"
 		<< " firstnamestr=" << firstnamestr
 		<< ", lastnamestr=" << lastnamestr
 		<< ", emailstr=" << emailstr
