@@ -2428,11 +2428,13 @@ public:
   };
   void add(const Rps_ObjectZone* obelem)
   {
-    if (obelem) psetob.insert(Rps_ObjectRef(obelem));
+    if (obelem)
+      psetob.insert(Rps_ObjectRef(obelem));
   };
   void add (const Rps_ObjectRef obrelem)
   {
-    if (obrelem) psetob.insert(obrelem);
+    if (!obrelem.is_empty())
+      psetob.insert(obrelem);
   };
   void remove(const Rps_ObjectZone* obelem)
   {

@@ -825,6 +825,7 @@ RpsQCreateContributorDialog::on_ok_trigger()
   RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
                  nullptr,//parentframe
                  Rps_ObjectRef obcontrib; // the new contributor object
+                 Rps_ObjectRef obsetcontributors; // the existing set of contributors
                  Rps_Value firstnamev; // first name, as a string
 		 Rps_Value lastnamev; // last name, as a string
 		 Rps_Value emailv; // email, as a string
@@ -968,9 +969,51 @@ RpsQCreateContributorDialog::on_ok_trigger()
     Rps_ObjectRef::make_object(&_, //
 			       RPS_ROOT_OB(_5CYWxcChKN002rw1fI), //contributor_to_RefPerSys
 			       Rps_ObjectRef::root_space());
-#warning RpsQCreateContributorDialog should put_attr inside _.obcontrib
-  RPS_WARNOUT("RpsQCreateContributorDialog should put_attr inside obcontrib:" << _.obcontrib);
-    
+  RPS_ASSERT(!firstnamestr.empty());
+  _.firstnamev = Rps_StringValue(firstnamestr);
+  RPS_ASSERT(!lastnamestr.empty());
+  _.lastnamev = Rps_StringValue(lastnamestr);
+  RPS_ASSERT(!emailstr.empty());
+  _.emailv = Rps_StringValue(emailstr);
+  if (!webpagestr.empty()) {
+    _.webpagev = Rps_StringValue(webpagestr);
+  _.obcontrib->put_attr4(RPS_ROOT_OB(_3N8vZ2Cw62z024XxCg) /*=first_name*/, _.firstnamev,
+			 RPS_ROOT_OB(_6QAanFi9yLx00spBST) /*=last_name*/, _.lastnamev,
+			 RPS_ROOT_OB(_0D6zqQNe4eC02bjfGs) /*=email*/, _.emailv,
+			 RPS_ROOT_OB(_0LbCts6NacB03SMXz4) /*=home_page*/, _.webpagev);
+  }
+  else
+    _.obcontrib->put_attr3(RPS_ROOT_OB(_3N8vZ2Cw62z024XxCg) /*=first_name*/, _.firstnamev,
+			   RPS_ROOT_OB(_6QAanFi9yLx00spBST) /*=last_name*/, _.lastnamev,
+			   RPS_ROOT_OB(_0D6zqQNe4eC02bjfGs) /*=email*/, _.emailv);
+  RPS_INFORMOUT("RpsQCreateContributorDialog created contributor " << _.obcontrib
+		<< " with firstnamestr=" << firstnamestr
+		<< ", lastnamestr=" << lastnamestr
+		<< ", emailstr=" << emailstr
+		<< ", webpagestr=" << webpagestr
+		);
+  _.obsetcontributors = RPS_ROOT_OB(_1wihX3eWD9o00QnxUX); // our_contributors value
+  RPS_ASSERT(_.obsetcontributors
+	     && _.obsetcontributors->get_class() == Rps_ObjectRef::the_mutable_set_class()
+	     );
+  {
+  std::lock_guard<std::recursive_mutex> gu(*(_.obsetcontributors->objmtxptr()));
+  auto setpayl = _.obsetcontributors->get_dynamic_payload<Rps_PayloadSetOb>();
+  RPS_ASSERT(setpayl != nullptr);
+  setpayl->add(_.obcontrib);
+  }
+  RPS_INFORMOUT("RpsQCreateContributorDialog added contributor " << _.obcontrib
+		<< " to `our_contributors` " << _.obsetcontributors);
+  
+      std::ostringstream outs;
+      outs << "Created new RefPerSys contributor reified as " <<  _.obcontrib << std::endl
+	   << " with first-name: " << firstnamestr << std::endl
+	   << " with last-name: " << lastnamestr << std::endl
+	   << " with email: " << emailstr << std::endl;
+      if (!webpagestr.empty())
+	outs << " with home-page: " << webpagestr << std::endl;
+      std::string msg = outs.str();
+      QMessageBox::information(parentWidget(), "Created Contributor", msg.c_str());      
   } catch (std::exception& exc) {
     RPS_WARNOUT(
 		"RpsQCreateContributorDialog failed:"
