@@ -145,7 +145,8 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     auto dia = new RpsQCreateNamedInstanceDialog(this);
     dia->show();
   });
-  connect(win_crcontrib_action, &QAction::triggered, [=](void) {
+  connect(win_crcontrib_action, &QAction::triggered, [=](void)
+  {
     auto dia = new RpsQCreateContributorDialog(this);
     dia->show();
   });
@@ -508,7 +509,7 @@ RpsQCreateNamedInstanceDialog::on_ok_trigger()
       _.obsymb = Rps_ObjectRef::make_new_strong_symbol(&_, strnisyname);
       RPS_INFORMOUT("RpsQCreateNamedInstanceDialog::on_ok_trigger created symbol " << _.obsymb
                     << " named " << strnisyname
-		    << " with obclass=" << _.obclass);
+                    << " with obclass=" << _.obclass);
       if (!_.obsymb)
         throw std::runtime_error(std::string("failed to create symbol:") + strnisyname);
       rps_add_root_object(_.obsymb);
@@ -555,67 +556,244 @@ RpsQCreateNamedInstanceDialog::on_cancel_trigger()
 RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
   : QDialog(parent),
     dialog_vbox(),
-    name_hbox(),
+    firstname_hbox(),
+    lastname_hbox(),
     email_hbox(),
+    webpage_hbox(),
     button_hbox(),
-    name_label("Contributor Name:", this),
+    firstname_label("Contributor First Name:", this),
+    lastname_label("Contributor Last Name:", this),
     email_label("Contributor Email:", this),
-    name_edit(this),
+    webpage_label("Contributor Web page:", this),
+    firstname_edit(this),
+    lastname_edit(this),
     email_edit(this),
+    webpage_edit(this),
+    crcont_expltext(this),
     ok_button("Create Contributor", this),
     cancel_button("Cancel", this)
 {
   // set widget names for debugging and future style sheets
   {
     dialog_vbox.setObjectName("RpsQCreateContributorDialog_dialog_vbox");
-    name_hbox.setObjectName("RpsQCreateContributorDialog_name_hbox");
+    firstname_hbox.setObjectName("RpsQCreateContributorDialog_firstname_hbox");
+    lastname_hbox.setObjectName("RpsQCreateContributorDialog_lastname_hbox");
     email_hbox.setObjectName("RpsQCreateContributorDialog_email_hbox");
+    webpage_hbox.setObjectName("RpsQCreateContributorDialog_email_webpage");
     button_hbox.setObjectName("RpsQCreateContributorDialog_button_hbox");
-    name_label.setObjectName("RpsQCreateContributorDialog_name_label");
+    firstname_label.setObjectName("RpsQCreateContributorDialog_firstname_label");
+    lastname_label.setObjectName("RpsQCreateContributorDialog_lastname_label");
     email_label.setObjectName("RpsQCreateContributorDialog_email_label");
-    name_edit.setObjectName("RpsQCreateContributorDialog_name_edit");
+    webpage_label.setObjectName("RpsQCreateContributorDialog_webpage_label");
+    firstname_edit.setObjectName("RpsQCreateContributorDialog_firstname_edit");
+    lastname_edit.setObjectName("RpsQCreateContributorDialog_lastname_edit");
     email_edit.setObjectName("RpsQCreateContributorDialog_email_edit");
+    webpage_edit.setObjectName("RpsQCreateContributorDialog_webpage_edit");
+    crcont_expltext.setObjectName("RpsQCreateContributorDialog_crcont_expltext");
     ok_button.setObjectName("RpsQCreateContributorDialog_ok_button");
     cancel_button.setObjectName("RpsQCreateContributorDialog_cancel_button");
+  }
+
+  {
+    auto screengeom = RpsQApplication::the_app()->desktop()->screenGeometry();
+    int w = 700;
+    int h = 500;
+    if (w > (3*screengeom.width())/4)
+      w = 3*screengeom.width()/4;
+    else if (w < (screengeom.width())/2)
+      w = 16 + (screengeom.width())/2;
+    if (h >  (3*screengeom.height())/4)
+      h = 3*screengeom.height()/4;
+    else if (h < screengeom.height()/2)
+      h = 16 + screengeom.height()/2;
+    this->resize(w, h);
   }
 
   // set widget fonts
   {
     auto arial = QFont("Arial", 12);
-    name_label.setFont(arial);
+    firstname_label.setFont(arial);
+    lastname_label.setFont(arial);
     email_label.setFont(arial);
+    webpage_label.setFont(arial);
     ok_button.setFont(arial);
     cancel_button.setFont(arial);
 
     auto courier = QFont("Courier", 12);
-    name_edit.setFont(courier);
+    firstname_edit.setFont(courier);
+    lastname_edit.setFont(courier);
+    webpage_edit.setFont(courier);
     email_edit.setFont(courier);
+
   }
 
+  /// fill HTML code of explanatory text with a raw C++ string literal
+  crcont_expltext.setHtml(R"explaintext(
+<!doctype html>
+<html>
+<head>
+<title>RefPerSys personal data addition</title>
+</head>
+
+<body> 
+
+<h1><a href='http://refpersys.org/'>RefPerSys</a> personal data
+addition</h1> 
+
+<h2>Please read carefully this</h2>
+
+<p>This explain important things about your personal data in <a
+href='http://refpersys.org/'>RefPerSys</a>, so <b>read all this
+page</b> before clicking on the <i>Create Contributor</i> button
+below. Following hyperlinks here would open your Web browser.</p>
+
+<h2>Generalities</h2>
+
+<p>The <a href='http://refpersys.org/'>RefPerSys</a> system could use
+some personal data related to yourself. The rationale for having such
+limited personal data is given both in the <a
+href='http://starynkevitch.net/Basile/refpersys-design.pdf'><tt>refpersys-design.pdf</tt>
+draft</a>  document, and in the <a
+href='https://gitlab.com/bstarynk/refpersys/-/wikis/Personal-data-in-RefPerSys'>Personal
+data in RefPerSys</a> wikipage. You should have read and understood both of
+these.</p>
+
+<p>In Europe or for European citizens, the <a
+href='https://gdpr-info.eu/'>General Data Protection Regulation</a>
+<i>could</i> apply to such personal data. The human contributors of <a
+href='http://refpersys.org/'>RefPerSys</a> are not lawyers, so they
+don&apos;t really know the legal implications (perhaps the <i>GDPR</i>
+is not even relevant here!), but are acting in good faith.</p>
+
+<p><b>By completing this form</b> and clicking its <i>Create
+Contributor</i> button, <b>you <i>explicitly acknowledge</i> that the
+<i>Create Contributor</i> button below is adding some personal data
+related to yourself into the <i>persistent heap</i> of <a
+href='http://refpersys.org/'>RefPerSys</a></b>. You also acknowledge
+understanding that removing your personal data from that persistent
+heap is in practice not easily possible. You may later propapage this
+modified persistent heap to <a
+href='https://gitlab.com/bstarynk/refpersys'>our <tt>gitlab</tt>
+repository</a>, and associated personal information, by running on
+your free will the <tt>git commit -s</tt> command, followed by <tt>git
+push</tt>. See <a href='http://git-scm.com/'><tt>git</tt> website</a>
+for more information about <tt>git</tt>, and <a
+href='https://gitlab.com/'>the <tt>gitlab</tt> website</a> for more
+about <tt>gitlab</tt> and our <a
+href='https://gitlab.com/bstarynk/refpersys'><i>RefPerSys</i>
+repository</a> there.<p>
+
+<p>Please be kind to <b>fill this form inputs with <i>sincere</i>
+data</b>. You might use some pseudonym, if you wanted to, but the <a
+href='http://refpersys.org/#team_id'><i>RefPerSys</i> development
+team</a> prefers that you register, <b>on your free will</b>, your
+actual first and last (family) names, a working email, and optionally
+the real URL of your home page if you have one. No check is done on
+the data you have input, so please take time to <b>verify your data
+and fill it without mistakes</b>. Please check (e.g. by using <a
+href='http://man7.org/linux/man-pages/man1/grep.1.html</a><tt>grep</tt></a>
+on some <tt>persistore/*.json</tt> textual files containing persistent
+data, then your favorite <a
+href='https://en.wikipedia.org/wiki/Text_editor'>text editor</a> on
+them) that your persisted data is correct before your following
+<tt>git commit -s</tt> command.</p>
+
+<h2>How your personal data is processed:</h2>
+
+<p>Once you click on the <i>Create Contributor</i> button below, the
+following steps should happen: 
+
+<ul> 
+
+<li>a permanent object <i>ObContrib</i>, reifying you, of <i>RefPerSys</i> class <tt>contributor_to_RefPerSys</tt> (of
+oid <i><tt>_5CYWxcChKN002rw1fI</tt></i>) is created.</li>
+
+<li>the  <i>RefPerSys</i> object <i>ObContrib</i> is filled with attributes: <tt>first_name</tt> (of oid
+<i><tt>_3N8vZ2Cw62z024XxCg</tt></i>), <tt>last_name</tt> (of oid
+<i><tt>_6QAanFi9yLx00spBST</tt></i>), <tt>email</tt> (of oid
+<i><tt>_0D6zqQNe4eC02bjfGs</tt></i>), optional <tt>home_page</tt> (of
+oid <i><tt>_0LbCts6NacB03SMXz4</tt></i>) associated to strings.</li>
+
+<li>that the object <i>ObContrib</i> is added as an element to the
+<i><tt>_1wihX3eWD9o00QnxUX</tt></i> mutable set root object (that
+object is the value of RefPerSys symbol <tt>our_contributors</tt>),
+which collects all known contributors reifications.</li>
+
+</ul> 
+
+</p>
+
+<h2>Fictive example:</h2
+
+<p>A fictious and inspirational example of personal data could be:
+<ul>
+<li><i>first name:</i> <tt style='background-color:pink'>John</tt></li>
+<li><i>last name:</i> <tt style='background-color:pink'>Doe</tt></li>
+<li><i>email:</i> <tt style='background-color:pink'>john.doe@fake.email</tt></li>
+<li><i>web page:</i> <tt style='background-color:pink'>http://example.net/john-doe.html</tt></li>
+</ul><br/>
+
+<b>Please adapt that example</b> to your personal data, and <b>check
+your personal carefully</b> before clicking the <i>Create
+Contributor</i> button, since changing your data is currently uneasy
+(e.g. could require manual edition of some <tt>persistore/*.json</tt>
+file). Clicking that <i>Create Contributor</i> button is giving
+permission to update the persistent heap with your personal data.</p>
+
+<hr/>
+
+<p>Thanks for your cooperation. The <a
+href='mailto:team@refpersys.org'>RefPerSys team</a>.<p>
+
+</body>
+
+</html>
+)explaintext");
+  crcont_expltext.setReadOnly(true);
+  crcont_expltext.setOpenExternalLinks(true);
   // set widget layouts
   {
-    dialog_vbox.addLayout(&name_hbox);
-    name_hbox.addWidget(&name_label);
-    name_hbox.addSpacing(2);
-    name_hbox.addWidget(&name_edit);
+    dialog_vbox.addLayout(&firstname_hbox);
+    firstname_hbox.addWidget(&firstname_label);
+    firstname_hbox.addSpacing(2);
+    firstname_hbox.addWidget(&firstname_edit);
+
+    dialog_vbox.addLayout(&lastname_hbox);
+    lastname_hbox.addWidget(&lastname_label);
+    lastname_hbox.addSpacing(2);
+    lastname_hbox.addWidget(&lastname_edit);
 
     dialog_vbox.addLayout(&email_hbox);
     email_hbox.addWidget(&email_label);
     email_hbox.addSpacing(2);
     email_hbox.addWidget(&email_edit);
+    
+    dialog_vbox.addLayout(&webpage_hbox);
+    webpage_hbox.addWidget(&webpage_label);
+    webpage_hbox.addSpacing(2);
+    webpage_hbox.addWidget(&webpage_edit);
+    
+    dialog_vbox.addWidget(&crcont_expltext);
 
     dialog_vbox.addLayout(&button_hbox);
     button_hbox.addWidget(&ok_button);
     button_hbox.addSpacing(3);
     button_hbox.addWidget(&cancel_button);
 
+    
     setLayout(&dialog_vbox);
   }
+
+  // set explanatory placeholder texts
+  firstname_edit.setPlaceholderText("your first name - required");
+  lastname_edit.setPlaceholderText("your last or family name - required");
+  email_edit.setPlaceholderText("your email - required");
+  webpage_edit.setPlaceholderText("your homepage URL, optional");
 
   // connect widget slots
   {
     connect(
-      &ok_button, &QAbstractButton::clicked, this, 
+      &ok_button, &QAbstractButton::clicked, this,
       &RpsQCreateContributorDialog::on_ok_trigger
     );
     connect(
@@ -633,15 +811,20 @@ RpsQCreateContributorDialog::~RpsQCreateContributorDialog()
 void
 RpsQCreateContributorDialog::on_ok_trigger()
 {
-  std::string name = name_edit.text().toStdString();
+  std::string firstname = firstname_edit.text().toStdString();
+  std::string lastname = lastname_edit.text().toStdString();
   std::string email = email_edit.text().toStdString();
+  std::string webpage = email_edit.text().toStdString();
   RPS_WARNOUT(
-    "RpsQCreateContributorDialog::on_ok_trigger name=" << name << " email="
-    << email
+    "RpsQCreateContributorDialog::on_ok_trigger incomplete:"
+    << " firstname=" << firstname
+    << ", lastname=" << lastname
+    << ", email=" << email
+    << ", webpage=" << webpage
   );
 
-  // TODO: contributor adding logic needs to be placed here
-  
+#warning TODO: contributor adding logic needs to be placed here
+
   deleteLater();
 }  // end RpsQCreateContributorDialog::on_ok_trigger()
 
@@ -650,7 +833,7 @@ void
 RpsQCreateContributorDialog::on_cancel_trigger()
 {
   deleteLater();
-}
+} // end RpsQCreateContributorDialog::on_cancel_trigger
 
 
 ////////////////////////////////////////////////////////////////

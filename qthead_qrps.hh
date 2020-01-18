@@ -65,6 +65,7 @@
 #include <QScreen>
 #include <QDesktopWidget>
 #include <QThread>
+#include <QTextBrowser>
 
 class RpsQApplication;
 class RpsQWindow;
@@ -256,16 +257,23 @@ private slots:
 
 private:
   QVBoxLayout dialog_vbox;
-  QHBoxLayout name_hbox;
+  QHBoxLayout firstname_hbox;
+  QHBoxLayout lastname_hbox;
   QHBoxLayout email_hbox;
+  QHBoxLayout webpage_hbox;
   QHBoxLayout button_hbox;
-  QLabel name_label;
+  QLabel firstname_label;
+  QLabel lastname_label;
   QLabel email_label;
-  QLineEdit name_edit;
+  QLabel webpage_label;
+  QLineEdit firstname_edit;
+  QLineEdit lastname_edit;
   QLineEdit email_edit;
+  QLineEdit webpage_edit;
+  QTextBrowser crcont_expltext;
   QPushButton ok_button;
   QPushButton cancel_button;
-};
+};				// end of RpsQCreateContributorDialog
 
 
 //////////////////////////////////////////////////////////// RpsQWindow
