@@ -71,7 +71,7 @@ QT5MOC = moc
 
 # list of packages, for pkg-config.
 
-PACKAGES = Qt5Core Qt5Gui Qt5Widgets jsoncpp
+PACKAGES = Qt5Core Qt5Gui Qt5Widgets Qt5Network jsoncpp
 PKGINCFLAGS = $(shell $(PKGCONFIG) --cflags $(PACKAGES))
 PKGLIBS=  $(shell $(PKGCONFIG) --libs $(PACKAGES))
 CXX= g++

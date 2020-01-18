@@ -876,7 +876,8 @@ RpsQCreateContributorDialog::on_ok_trigger()
 	  throw RPS_RUNTIME_ERROR_OUT("first character Unicode#" << clast.unicode()
 				      << " in last name " << lastnamestr << " should be a letter");
 	if (!clast.isLetter() && clast != '-' && clast != ' ')
-	  throw RPS_RUNTIME_ERROR_OUT("invalid character Unicode#" << clast.unicode() << " in last name " << lastnamestr);
+	  throw RPS_RUNTIME_ERROR_OUT("invalid character Unicode#" << clast.unicode()
+				      << " in last name " << lastnamestr);
 	if (!clast.isLetter() && lastix>0 && !lastnameqs[lastix-1].isLetter())
 	  throw RPS_RUNTIME_ERROR_OUT("a non-letter in index " << lastix
 				      << " of last name " << lastnamestr
@@ -894,9 +895,47 @@ RpsQCreateContributorDialog::on_ok_trigger()
     {
       int emailsiz = emailqs.size();
       int emailen = emailstr.size();
-#warning missing email validation in RpsQCreateContributorDialog::on_ok_trigger
+      if (emailsiz != emailen) // we have non ASCII characters
+	throw RPS_RUNTIME_ERROR_OUT("non ASCII characters in email "<<emailstr);
+      if (emailen < 4)
+	throw RPS_RUNTIME_ERROR_OUT("too short email" << emailstr);
+      int nbat = 0;
+      int nbdot = 0;
+      int nbdash = 0;
+      int nbalnum = 0;
+      int emailix = 0;
+      for (char c: emailstr) {
+	if (c=='@') {
+	  if (nbat > 0)
+	    throw RPS_RUNTIME_ERROR_OUT("more than one @ in email " << emailstr);
+	  if (emailix >= emailen-1)
+	    throw RPS_RUNTIME_ERROR_OUT("ending @ in email " << emailstr);
+	  nbat++;
+	} else if (c=='.')
+	  nbdot++;
+	else if (isalnum(c)) 
+	  nbalnum++;
+	else if (c == '-' || c=='+' || c=='_') {
+	  if (emailix==0 || emailix>=emailen-2)
+	    throw RPS_RUNTIME_ERROR_OUT("strange dash or plus in email " << emailstr);
+	  nbdash++;
+	}
+	else
+	  throw RPS_RUNTIME_ERROR_OUT("invalid character in email " << emailstr);
+	emailix ++;
+      }
+      if (nbalnum < 2 || nbat == 0)
+	throw  RPS_RUNTIME_ERROR_OUT("bizarre email " << emailstr);
     }
 
+    /// validate home page
+    if (!webpageqs.isEmpty()) {
+      QUrl weburl (webpageqs);
+      if (!weburl.isValid()) 
+	throw  RPS_RUNTIME_ERROR_OUT("invalid homepage URL " << webpagestr);
+      QNetworkRequest webreq(weburl);
+    }
+    
   } catch (std::exception& exc) {
     RPS_WARNOUT(
 		"RpsQCreateContributorDialog::on_ok_trigger failed:"

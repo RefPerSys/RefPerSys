@@ -66,6 +66,8 @@
 #include <QDesktopWidget>
 #include <QThread>
 #include <QTextBrowser>
+#include <QUrl>
+#include <QNetworkRequest>
 
 class RpsQApplication;
 class RpsQWindow;
