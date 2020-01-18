@@ -705,10 +705,12 @@ following steps should happen:
 
 <ul> 
 
-<li>a permanent object <i>ObContrib</i>, reifying you, of <i>RefPerSys</i> class <tt>contributor_to_RefPerSys</tt> (of
-oid <i><tt>_5CYWxcChKN002rw1fI</tt></i>) is created.</li>
+<li>a permanent object <i>ObContrib</i>, reifying you, of
+<i>RefPerSys</i> class <tt>contributor_to_RefPerSys</tt> (of oid
+<i><tt>_5CYWxcChKN002rw1fI</tt></i>) is created.</li>
 
-<li>the  <i>RefPerSys</i> object <i>ObContrib</i> is filled with attributes: <tt>first_name</tt> (of oid
+<li>the <i>RefPerSys</i> object <i>ObContrib</i> is filled with
+attributes: <tt>first_name</tt> (of oid
 <i><tt>_3N8vZ2Cw62z024XxCg</tt></i>), <tt>last_name</tt> (of oid
 <i><tt>_6QAanFi9yLx00spBST</tt></i>), <tt>email</tt> (of oid
 <i><tt>_0D6zqQNe4eC02bjfGs</tt></i>), optional <tt>home_page</tt> (of
@@ -727,10 +729,16 @@ which collects all known contributors reifications.</li>
 
 <p>A fictious and inspirational example of personal data could be:
 <ul>
+
 <li><i>first name:</i> <tt style='background-color:pink'>John</tt></li>
+
 <li><i>last name:</i> <tt style='background-color:pink'>Doe</tt></li>
+
 <li><i>email:</i> <tt style='background-color:pink'>john.doe@fake.email</tt></li>
-<li><i>web page:</i> <tt style='background-color:pink'>http://example.net/john-doe.html</tt></li>
+
+<li><i>web page:</i> <tt
+style='background-color:pink'>http://example.net/john-doe.html</tt></li>
+
 </ul><br/>
 
 <b>Please adapt that example</b> to your personal data, and <b>check
@@ -739,6 +747,9 @@ Contributor</i> button, since changing your data is currently uneasy
 (e.g. could require manual edition of some <tt>persistore/*.json</tt>
 file). Clicking that <i>Create Contributor</i> button is giving
 permission to update the persistent heap with your personal data.</p>
+
+<p>Adding yourself as a contributor could require a working connection to
+the Internet, to check your email and home page.</p>
 
 <hr/>
 
@@ -811,19 +822,92 @@ RpsQCreateContributorDialog::~RpsQCreateContributorDialog()
 void
 RpsQCreateContributorDialog::on_ok_trigger()
 {
-  std::string firstname = firstname_edit.text().toStdString();
-  std::string lastname = lastname_edit.text().toStdString();
-  std::string email = email_edit.text().toStdString();
-  std::string webpage = email_edit.text().toStdString();
-  RPS_WARNOUT(
-    "RpsQCreateContributorDialog::on_ok_trigger incomplete:"
-    << " firstname=" << firstname
-    << ", lastname=" << lastname
-    << ", email=" << email
-    << ", webpage=" << webpage
-  );
+  QString firstnameqs = firstname_edit.text();
+  QString lastnameqs = lastname_edit.text();
+  QString emailqs = email_edit.text();
+  QString webpageqs = webpage_edit.text();
 
-#warning TODO: contributor adding logic needs to be placed here
+  std::string firstnamestr = firstnameqs.toStdString();
+  std::string lastnamestr = lastnameqs.toStdString();
+  std::string emailstr = emailqs.toStdString();
+  std::string webpagestr = webpageqs.toStdString();
+
+  RPS_INFORMOUT(
+		"RpsQCreateContributorDialog::on_ok_trigger incomplete:"
+		<< " firstnamestr=" << firstnamestr
+		<< ", lastnamestr=" << lastnamestr
+		<< ", emailstr=" << emailstr
+		<< ", webpagestr=" << webpagestr
+		);
+
+  try {
+    // validate the first name:
+    {
+      int firstix=0;
+      int firstsiz = firstnameqs.size();
+      if (firstsiz == 0)
+	throw RPS_RUNTIME_ERROR_OUT("empty first name");
+      for (QChar cfirst: firstnameqs) {
+	if (firstix==0 && !cfirst.isLetter())
+	  throw RPS_RUNTIME_ERROR_OUT("first character Unicode#" << cfirst.unicode()
+				      << " in first name " << firstnamestr << " should be a letter");
+	if (!cfirst.isLetter() && cfirst != '-' && cfirst != ' ')
+	  throw RPS_RUNTIME_ERROR_OUT("invalid character Unicode#" << cfirst.unicode() << " in first name " << firstnamestr);
+	if (!cfirst.isLetter() && firstix>0 && !firstnameqs[firstix-1].isLetter())
+	  throw RPS_RUNTIME_ERROR_OUT("a non-letter in index " << firstix
+				      << " of first name " << firstnamestr
+				      << " cannot be preceded by a non-letter");
+	if (firstix == firstsiz-1 && !(cfirst.isLetter() || cfirst == '.' || cfirst == '\''))
+	  throw RPS_RUNTIME_ERROR_OUT("last character Unicode#" << cfirst.unicode()
+				      << " in first name " << firstnamestr
+				      << " should be a letter, or a dot or a quote");
+	firstix++;
+      };
+    } // end of first name validation
+
+    // validate the last name:
+    {
+      int lastix=0;
+      int lastsiz = lastnameqs.size();
+      if (lastsiz == 0)
+	throw RPS_RUNTIME_ERROR_OUT("empty last name");
+      for (QChar clast: lastnameqs) {
+	if (lastix==0 && !clast.isLetter())
+	  throw RPS_RUNTIME_ERROR_OUT("first character Unicode#" << clast.unicode()
+				      << " in last name " << lastnamestr << " should be a letter");
+	if (!clast.isLetter() && clast != '-' && clast != ' ')
+	  throw RPS_RUNTIME_ERROR_OUT("invalid character Unicode#" << clast.unicode() << " in last name " << lastnamestr);
+	if (!clast.isLetter() && lastix>0 && !lastnameqs[lastix-1].isLetter())
+	  throw RPS_RUNTIME_ERROR_OUT("a non-letter in index " << lastix
+				      << " of last name " << lastnamestr
+				      << " cannot be preceded by a non-letter");
+	if (lastix == lastsiz-1 && !(clast.isLetter() || clast == '.' || clast == '\''))
+	  throw RPS_RUNTIME_ERROR_OUT("last character Unicode#" << clast.unicode()
+				      << " in last name " << lastnamestr
+				      << " should be a letter, or a dot or a quote");
+	lastix++;
+      };
+    } // end of last name validation
+
+
+    // validate the email
+    {
+      int emailsiz = emailqs.size();
+      int emailen = emailstr.size();
+#warning missing email validation in RpsQCreateContributorDialog::on_ok_trigger
+    }
+
+  } catch (std::exception& exc) {
+    RPS_WARNOUT(
+		"RpsQCreateContributorDialog::on_ok_trigger failed:"
+		<< " firstnamestr=" << firstnamestr
+		<< ", lastnamestr=" << lastnamestr
+		<< ", emailstr=" << emailstr
+		<< ", webpagestr=" << webpagestr
+		<< std::endl
+		<< "got exception:" << exc.what()
+		);
+  }
 
   deleteLater();
 }  // end RpsQCreateContributorDialog::on_ok_trigger()
