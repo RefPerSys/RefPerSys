@@ -553,8 +553,47 @@ RpsQCreateNamedInstanceDialog::on_cancel_trigger()
 
 
 RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
-  : QDialog(parent)
+  : QDialog(parent),
+    dialog_vbox(),
+    button_hbox(),
+    ok_button("Create Contributor", this),
+    cancel_button("Cancel", this)
 {
+  // set widget names for debugging and future style sheets
+  {
+    dialog_vbox.setObjectName("RpsQCreateContributorDialog_dialog_vbox");
+    button_hbox.setObjectName("RpsQCreateContributorDialog_button_hbox");
+    ok_button.setObjectName("RpsQCreateContributorDialog_ok_button");
+    cancel_button.setObjectName("RpsQCreateContributorDialog_cancel_button");
+  }
+
+  // set widget fonts
+  {
+    auto arial = QFont("Arial", 12);
+    ok_button.setFont(arial);
+    cancel_button.setFont(arial);
+  }
+
+  // set widget layouts
+  {
+    dialog_vbox.addLayout(&button_hbox);
+    button_hbox.addWidget(&ok_button);
+    button_hbox.addSpacing(3);
+    button_hbox.addWidget(&cancel_button);
+    setLayout(&dialog_vbox);
+  }
+
+  // connect widget slots
+  {
+    connect(
+      &ok_button, &QAbstractButton::clicked, this, 
+      &RpsQCreateContributorDialog::on_ok_trigger
+    );
+    connect(
+      &cancel_button, &QAbstractButton::clicked, this,
+      &RpsQCreateContributorDialog::on_cancel_trigger
+    );
+  }
 }  // end RpsQCreateContributorDialog::RpsQCreateContributorDialog()
 
 
@@ -565,7 +604,8 @@ RpsQCreateContributorDialog::~RpsQCreateContributorDialog()
 void
 RpsQCreateContributorDialog::on_ok_trigger()
 {
-  // TODO
+  // TODO: contributor adding logic needs to be placed here
+  deleteLater();
 }  // end RpsQCreateContributorDialog::on_ok_trigger()
 
 

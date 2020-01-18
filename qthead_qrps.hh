@@ -253,6 +253,12 @@ public:
 private slots:
   void on_ok_trigger();
   void on_cancel_trigger();
+
+private:
+  QVBoxLayout dialog_vbox;
+  QHBoxLayout button_hbox;
+  QPushButton ok_button;
+  QPushButton cancel_button;
 };
 
 
