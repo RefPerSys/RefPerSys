@@ -240,6 +240,22 @@ private:
 };				// end RpsQCreateNamedInstanceDialog
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// The dialog box for creating new contributors.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQCreateContributorDialog : public QDialog
+{
+  Q_OBJECT
+public:
+  RpsQCreateContributorDialog(RpsQWindow* parent);
+  ~RpsQCreateContributorDialog();
+
+private slots:
+  void on_ok_trigger();
+  void on_cancel_trigger();
+};
+
+
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
 class RpsQWindow : public QMainWindow
@@ -266,6 +282,7 @@ private:
   QAction* win_crclass_action;
   QAction* win_crsymb_action;
   QAction* win_crnamedinstance_action;
+  QAction* win_crcontrib_action;
 
   // for help menu
 #warning RpsQWindow help menu missing

@@ -83,6 +83,8 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_crsymb_action->setStatusTip("create a new symbol");
     win_crnamedinstance_action = new QAction("create &Named instance", this);
     win_crnamedinstance_action->setStatusTip("create a new named instance and its symbol");
+    win_crcontrib_action = new QAction("create &Contributor", this);
+    win_crcontrib_action->setStatusTip("create a new contributor");
     win_help_menu = mb->addMenu("Help");
   }
   /// add the actions to their menu
@@ -139,6 +141,10 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
           [=](void)
   {
     auto dia = new RpsQCreateNamedInstanceDialog(this);
+    dia->show();
+  });
+  connect(win_crcontrib_action, &QAction::triggered, [=](void) {
+    auto dia = new RpsQCreateContributorDialog(this);
     dia->show();
   });
   connect(win_apclose_action, &QAction::triggered,
@@ -543,6 +549,29 @@ RpsQCreateNamedInstanceDialog::on_cancel_trigger()
   deleteLater(); // was close()
 } // end RpsQCreateNamedInstanceDialog::on_cancel_trigger
 
+
+RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
+  : QDialog(parent)
+{
+}  // end RpsQCreateContributorDialog::RpsQCreateContributorDialog()
+
+
+RpsQCreateContributorDialog::~RpsQCreateContributorDialog()
+{
+}  // end RpsQCreateContributorDialog::~RpsQCreateContributorDialog()
+
+void
+RpsQCreateContributorDialog::on_ok_trigger()
+{
+  // TODO
+}  // end RpsQCreateContributorDialog::on_ok_trigger()
+
+
+void
+RpsQCreateContributorDialog::on_cancel_trigger()
+{
+  deleteLater();
+}
 
 
 ////////////////////////////////////////////////////////////////
