@@ -618,7 +618,6 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     lastname_label.setFont(arial);
     email_label.setFont(arial);
     webpage_label.setFont(arial);
-    nb_label.setFont(arial);
     ok_button.setFont(arial);
     cancel_button.setFont(arial);
 
@@ -627,6 +626,16 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     lastname_edit.setFont(courier);
     webpage_edit.setFont(courier);
     email_edit.setFont(courier);
+
+    nb_label.setFont(QFont("Arial", 8));
+  }
+
+  // set widget tooltips
+  {
+    firstname_label.setToolTip("Your first or personal name is required");
+    lastname_label.setToolTip("Your last or family name is required");
+    email_label.setToolTip("Your e-mail address is required");
+    webpage_label.setToolTip("The URL of your web page is optional");
   }
 
   /// fill HTML code of explanatory text with a raw C++ string literal
