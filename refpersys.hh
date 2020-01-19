@@ -582,6 +582,15 @@ operator << (std::ostream&out, Rps_ObjectRef obr)
   return out;
 }
 
+//////////////////////////////////////////////////////////////// constant objects
+
+// constant objects starts with
+#define RPS_CONSTANTOBJ_PREFIX "rpskob"
+
+#define RPS_INSTALL_CONSTANT_OB(Oid) extern "C" Rps_ObjectRef rpskob##Oid;
+#include "generated/rps-constants.hh"
+unsigned constexpr rps_nb_constants = RPS_NB_CONSTANT_OB;
+
 ////////////////////////////////////////////////////////////////
 enum class Rps_Type : std::int16_t
 {
@@ -1547,8 +1556,6 @@ public:
 
 //////////////////////////////////////////////////////////// object zones
 
-// constant objects starts with
-#define RPS_CONSTANTOBJ_PREFIX "rpskob"
 
 /// magic getter C++ functions
 typedef Rps_Value rps_magicgetterfun_t(Rps_CallFrame*callerframe, const Rps_Value val, const Rps_ObjectRef obattr);
@@ -2757,6 +2764,7 @@ extern "C" void rps_initialize_symbols_after_loading (Rps_Loader*ld);
 
 extern "C" unsigned rps_hardcoded_number_of_roots(void);
 extern "C" unsigned rps_hardcoded_number_of_symbols(void);
+extern "C" unsigned rps_hardcoded_number_of_constants(void);
 
 ////////////////
 

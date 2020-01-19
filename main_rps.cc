@@ -677,6 +677,10 @@ rps_fatal_stop_at (const char *filnam, int lin)
 #define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name) Rps_ObjectRef RPS_SYMB_OB(Name);
 #include "generated/rps-names.hh"
 
+/// each constant object is also a public variable, define them
+#define RPS_INSTALL_CONSTANT_OB(Oid) Rps_ObjectRef rpskob##Oid;
+#include "generated/rps-constants.hh"
+
 unsigned rps_hardcoded_number_of_roots(void)
 {
 #define RPS_INSTALL_ROOT_OB(Oid)
@@ -690,5 +694,12 @@ unsigned rps_hardcoded_number_of_symbols(void)
 #include "generated/rps-names.hh"
   return RPS_NB_NAMED_ROOT_OB;
 } // end rps_hardcoded_number_of_symbols
+
+unsigned rps_hardcoded_number_of_constants(void)
+{
+#define RPS_INSTALL_CONSTANT_OB(Oid)
+#include "generated/rps-constants.hh"
+  return RPS_NB_CONSTANT_OB;
+} // end of rps_hardcoded_number_of_constants
 
 /// end of file main_rps.cc
