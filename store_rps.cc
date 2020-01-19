@@ -944,6 +944,9 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
           continue;
         };
       const char*curpos = linbuf.c_str();
+      if (strstr((char*)curpos, RPS_CONSTANTOBJ_PREFIX))
+        RPS_INFORMOUT("detected line " << lincnt << " of " << fullpath
+                      << " with possible constant:" << linbuf);
       char*foundpos = nullptr;
       while ((foundpos = strstr((char*)curpos, RPS_CONSTANTOBJ_PREFIX)) != nullptr)
         {
@@ -1399,8 +1402,8 @@ Rps_Dumper::write_generated_constants_file(void)
   rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
   unsigned constcnt = 0;
   *pouts << std::endl << "/// collection of constant objects, mentioned in C++ files, "<< std::endl
-	 << "/// .... prefixed with '"
-	 <<  RPS_CONSTANTOBJ_PREFIX << "' followed by an oid." << std::endl;
+         << "/// .... prefixed with '"
+         <<  RPS_CONSTANTOBJ_PREFIX << "' followed by an oid." << std::endl;
   *pouts << std::endl
          << "#ifndef RPS_INSTALL_CONSTANT_OB" << std::endl
          << "#error RPS_INSTALL_CONSTANT_OB(Oid) macro undefined" << std::endl

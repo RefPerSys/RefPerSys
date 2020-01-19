@@ -17,7 +17,7 @@
 //: along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /// collection of constant objects, mentioned in C++ files, 
-///.... starting with rpskob followed by an oid.
+/// .... prefixed with 'rpskob' followed by an oid.
 
 #ifndef RPS_INSTALL_CONSTANT_OB
 #error RPS_INSTALL_CONSTANT_OB(Oid) macro undefined
