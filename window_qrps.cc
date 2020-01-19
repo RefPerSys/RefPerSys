@@ -640,14 +640,14 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
 <h1><a href='http://refpersys.org/'>RefPerSys</a> personal data
 addition</h1> 
 
-<h2>Please read carefully this</h2>
+<h2>Please read this carefully</h2>
 
-<p>This explain important things about your personal data in <a
+<p>This explains important things about your personal data in <a
 href='http://refpersys.org/'>RefPerSys</a>, so <b>read all this
 page</b> before clicking on the <i>Create Contributor</i> button
 below. Following hyperlinks here would open your Web browser.</p>
 
-<h2>Generalities</h2>
+<h2>General Points</h2>
 
 <p>The <a href='http://refpersys.org/'>RefPerSys</a> system could use
 some personal data related to yourself. The rationale for having such
@@ -671,7 +671,7 @@ Contributor</i> button, <b>you <i>explicitly acknowledge</i> that the
 related to yourself into the <i>persistent heap</i> of <a
 href='http://refpersys.org/'>RefPerSys</a></b>. You also acknowledge
 understanding that removing your personal data from that persistent
-heap is in practice not easily possible. You may later propapage this
+heap is in practice not easily possible. You may later propagate this
 modified persistent heap to <a
 href='https://gitlab.com/bstarynk/refpersys'>our <tt>gitlab</tt>
 repository</a>, and associated personal information, by running on
@@ -725,9 +725,9 @@ which collects all known contributors reifications.</li>
 
 </p>
 
-<h2>Fictive example:</h2
+<h2>Fictitious Example:</h2
 
-<p>A fictious and inspirational example of personal data could be:
+<p>A fictitious and inspirational example of personal data could be:
 <ul>
 
 <li><i>first name:</i> <tt style='background-color:pink'>John</tt></li>
