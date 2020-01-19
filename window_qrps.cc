@@ -571,6 +571,7 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     email_edit(this),
     webpage_edit(this),
     crcont_expltext(this),
+    agree_chk("I have read the above notice and agree to its terms.", this),
     ok_button("Create Contributor", this),
     cancel_button("Cancel", this)
 {
@@ -592,6 +593,7 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     email_edit.setObjectName("RpsQCreateContributorDialog_email_edit");
     webpage_edit.setObjectName("RpsQCreateContributorDialog_webpage_edit");
     crcont_expltext.setObjectName("RpsQCreateContributorDialog_crcont_expltext");
+    agree_chk.setObjectName("RpsQCreateContributorDialog_agree_chk");
     ok_button.setObjectName("RpsQCreateContributorDialog_ok_button");
     cancel_button.setObjectName("RpsQCreateContributorDialog_cancel_button");
   }
@@ -618,6 +620,7 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     lastname_label.setFont(arial);
     email_label.setFont(arial);
     webpage_label.setFont(arial);
+    agree_chk.setFont(arial);
     ok_button.setFont(arial);
     cancel_button.setFont(arial);
 
@@ -636,6 +639,7 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     lastname_label.setToolTip("Your last or family name is required");
     email_label.setToolTip("Your e-mail address is required");
     webpage_label.setToolTip("The URL of your web page is optional");
+    agree_chk.setToolTip("You must agree to the notice terms to continue");
   }
 
   /// fill HTML code of explanatory text with a raw C++ string literal
@@ -796,8 +800,9 @@ href='mailto:team@refpersys.org'>RefPerSys team</a>.<p>
     webpage_hbox.addWidget(&webpage_edit);
 
     dialog_vbox.addWidget(&nb_label);
-    
     dialog_vbox.addWidget(&crcont_expltext);
+    dialog_vbox.addWidget(&agree_chk);
+
 
     dialog_vbox.addLayout(&button_hbox);
     button_hbox.addWidget(&ok_button);

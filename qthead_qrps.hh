@@ -276,6 +276,7 @@ private:
   QLineEdit email_edit;
   QLineEdit webpage_edit;
   QTextBrowser crcont_expltext;
+  QCheckBox agree_chk;
   QPushButton ok_button;
   QPushButton cancel_button;
 };				// end of RpsQCreateContributorDialog
