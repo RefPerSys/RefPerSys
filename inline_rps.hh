@@ -1173,6 +1173,24 @@ Rps_ObjectValue::Rps_ObjectValue(std::nullptr_t)
   : Rps_Value (nullptr, Rps_ValPtrTag{}) {};
 
 
+/////////////////////////////////////////////////// once objects
+Rps_OnceObjByOid::Rps_OnceObjByOid(const char*file, int lineno, const char*oidstr)
+  : _once_file(file), _once_lineno(lineno),
+    _once_stroid(oidstr),
+    _once_oid(_once_stroid),
+    _once_flag(),
+    _once_obz(nullptr)
+{
+  std::lock_guard<std::mutex> gu(_once_mtx);
+  _once_map.insert({_once_oid,this});
+};
+
+Rps_OnceObjByOid::~Rps_OnceObjByOid()
+{
+  std::lock_guard<std::mutex> gu(_once_mtx);
+#warning incomplete Rps_OnceObjByOid::~Rps_OnceObjByOid
+} // end Rps_OnceObjByOid::~Rps_OnceObjByOid
+
 //////////////// closures
 
 Rps_ClosureValue::Rps_ClosureValue (const Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil)
@@ -1568,13 +1586,16 @@ Rps_PayloadQt<QtClass>::qtptr(void) const
 } // end Rps_PayloadQt<QtClass>::qtptr
 
 template <class QtClass>
-Rps_PayloadQt<QtClass>::~Rps_PayloadQt() {
-  if (owner()) {
-    std::lock_guard<std::recursive_mutex> gu(*(owner()->objmtxptr()));
-    if (_qtptr) {
-      _qtptr->deleteLater();
+Rps_PayloadQt<QtClass>::~Rps_PayloadQt()
+{
+  if (owner())
+    {
+      std::lock_guard<std::recursive_mutex> gu(*(owner()->objmtxptr()));
+      if (_qtptr)
+        {
+          _qtptr->deleteLater();
+        }
     }
-  }
 } // end Rps_PayloadQt<QtClass>::~Rps_PayloadQt
 
 

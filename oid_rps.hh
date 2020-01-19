@@ -4,14 +4,14 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *      It is its internal C++ header file for object-identifiers (oid-s).
- *      Also needed for our rps_make_const metaprogram.
+ *      
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2020 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:

@@ -764,6 +764,7 @@ class Rps_Dumper
   };
   std::map<Rps_ObjectRef,std::shared_ptr<du_space_st>> du_spacemap; // map from spaces to objects inside
   std::set<Rps_ObjectRef> du_pluginobset;
+  std::set<Rps_ObjectRef> du_constantobset;
   // we maintain the set of opened file paths, since they are opened
   // with the temporary suffix above, and renamed by
   // rename_opened_files below.
@@ -786,10 +787,13 @@ private:
   void scan_roots(void);
   Rps_ObjectRef pop_object_to_scan(void);
   void scan_loop_pass(void);
+  void scan_cplusplus_source_file_for_constants(const std::string&relfilename);
+  void scan_every_cplusplus_source_file_for_constants(void);
   void write_all_space_files(void);
   void write_all_generated_files(void);
   void write_generated_roots_file(void);
   void write_generated_names_file(void);
+  void write_generated_constants_file(void);
   void write_manifest_file(void);
   void write_space_file(Rps_ObjectRef spacobr);
   void scan_object_contents(Rps_ObjectRef obr);
@@ -919,6 +923,57 @@ Rps_Dumper::open_output_file(const std::string& relpath)
   du_openedpathset.insert(relpath);
   return poutf;
 } // end Rps_Dumper::open_output_file
+
+
+void
+Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilename)
+{
+  int nbconst = 0;
+  RPS_ASSERT(relfilename.size()>2 && isalpha(relfilename[0]));
+  std::string fullpath = std::string(rps_topdirectory) + "/" + relfilename;
+  std::ifstream ins(fullpath);
+  unsigned lincnt = 0;
+  for (std::string linbuf; std::getline(ins, linbuf); )
+    {
+      lincnt++;
+      if (u8_check(reinterpret_cast<const uint8_t*> (linbuf.c_str()),
+                   linbuf.size()))
+        {
+          RPS_WARNOUT("file " << fullpath << ", line " << lincnt
+                      << " non UTF8:" << linbuf);
+          continue;
+        };
+      const char*curpos = linbuf.c_str();
+      char*foundpos = nullptr;
+      while ((foundpos = strstr((char*)curpos, RPS_CONSTANTOBJ_PREFIX)) != nullptr)
+        {
+          const char*endpos=nullptr;
+          bool ok=false;
+          Rps_Id oid(curpos, &endpos, &ok);
+          if (ok)
+            {
+              Rps_ObjectZone* curobz = Rps_ObjectZone::find(oid);
+              Rps_ObjectRef obr(curobz);
+              if (obr)
+                {
+                  scan_object(obr);
+                  nbconst++;
+                  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+                  du_constantobset.insert(obr);
+                }
+              else
+                RPS_WARNOUT("unknown object of oid " << oid
+                            << " in file " << fullpath << " line " << lincnt);
+              curpos = endpos;
+            }
+          else break;
+        };
+    }
+  RPS_INFORMOUT("found " << nbconst
+                << " constant prefixed by " << RPS_CONSTANTOBJ_PREFIX
+                << " in file " << fullpath
+                << " of " << lincnt << " lines.");
+} // end Rps_Dumper::scan_cplusplus_source_file_for_constants
 
 
 void
@@ -1200,6 +1255,24 @@ Rps_Dumper::scan_object_contents(Rps_ObjectRef obr)
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
 } // end Rps_Dumper::scan_object_contents
 
+void
+Rps_Dumper::scan_every_cplusplus_source_file_for_constants(void)
+{
+  for (const char*const*pcurfilename = rps_files; *pcurfilename; pcurfilename)
+    {
+      const char*curpath = *pcurfilename;
+      int lencurpath = strlen(curpath);
+      if (lencurpath < 6 || strstr(curpath, "generated/"))
+        continue;
+      if (curpath[lencurpath-3] != '.') continue;
+      if ((curpath[lencurpath-2] == 'h' && curpath[lencurpath-1] == 'h')
+          || (curpath[lencurpath-2] == 'c' && curpath[lencurpath-1] == 'c'))
+        {
+          std::string relfilname = curpath;
+          scan_cplusplus_source_file_for_constants(relfilname);
+        };
+    }
+} // end of scan_every_cplusplus_source_file_for_constants
 
 void
 Rps_Dumper::write_all_space_files(void)
@@ -1314,10 +1387,37 @@ Rps_Dumper::write_generated_names_file(void)
 } // end Rps_Dumper::write_generated_roots_file
 
 void
+Rps_Dumper::write_generated_constants_file(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  auto rootpathstr = std::string{"generated/rps-constants.hh"};
+  auto pouts = open_output_file(rootpathstr);
+  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
+  unsigned constcnt = 0;
+  *pouts << std::endl
+         << "#ifndef RPS_INSTALL_CONSTANT_OB" << std::endl
+         << "#error RPS_INSTALL_CONSTANT_OB(Oid) macro undefined" << std::endl
+         << "#endif /*undefined RPS_INSTALL_CONSTANT_OB*/" << std::endl << std::endl;
+  for (Rps_ObjectRef constobr : du_constantobset)
+    {
+      RPS_ASSERT(constobr);
+      if (constcnt % 10 == 0)
+        *pouts << std::endl;
+      *pouts << "RPS_INSTALL_CONSTANT_OB(" << constobr->oid() << ")" << std::endl;
+      constcnt ++;
+    }
+  *pouts << std::endl
+         << "#undef  RPS_NB_CONSTANT_OB" << std::endl
+         << "#define RPS_NB_CONSTANT_OB " << constcnt << std::endl << std::endl;
+  *pouts << "/// end of RefPerSys constants file " << rootpathstr << std::endl;
+} // end Rps_Dumper::write_generated_constants_file
+
+void
 Rps_Dumper::write_all_generated_files(void)
 {
   write_generated_roots_file();
   write_generated_names_file();
+  write_generated_constants_file();
   RPS_WARNOUT("Rps_Dumper::write_all_generated_files incomplete");
 #warning Rps_Dumper::write_all_generated_files incomplete
 } // end Rps_Dumper::write_all_generated_files
@@ -1538,6 +1638,7 @@ void rps_dump_into (const std::string dirpath)
                           << "/generated");
         }
       dumper.scan_roots();
+      dumper.scan_every_cplusplus_source_file_for_constants();
       dumper.scan_loop_pass();
       dumper.write_all_space_files();
       dumper.write_all_generated_files();

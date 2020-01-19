@@ -1547,6 +1547,9 @@ public:
 
 //////////////////////////////////////////////////////////// object zones
 
+// constant objects starts with
+#define RPS_CONSTANTOBJ_PREFIX "rpskob"
+
 /// magic getter C++ functions
 typedef Rps_Value rps_magicgetterfun_t(Rps_CallFrame*callerframe, const Rps_Value val, const Rps_ObjectRef obattr);
 #define RPS_GETTERFUN_PREFIX "rpsget"
@@ -2784,6 +2787,37 @@ extern "C" void rps_print_types_info (void);
 
 // C++ code can refer to named symbols
 #define RPS_SYMB_OB(Nam) rps_symbob_##Nam
+
+
+// C++ code can refer to existing objects by Oid
+class Rps_OnceObjByOid
+{
+  friend class Rps_GarbageCollector;
+  const char* _once_file;
+  const int _once_lineno;
+  const char*_once_stroid;
+  const Rps_Id _once_oid;
+  std::once_flag _once_flag;
+  std::atomic<Rps_ObjectZone*> _once_obz;
+  static std::mutex _once_mtx;
+  static std::multimap<Rps_Id,Rps_OnceObjByOid*> _once_map;
+public:
+  inline Rps_OnceObjByOid(const char*file, int lineno, const char*oid);
+  inline ~Rps_OnceObjByOid();
+  inline Rps_ObjectRef get_once(void);
+};				// end Rps_OnceObjByOid
+
+#define RPS_ONCEOBJ_ATBIS(Lin,Oid) ({				\
+      static Rps_OnceObjByOid onceobj##Lin(__FILE__, Lin,	\
+					   #Oid);		\
+      Rps_ObjectRef onceref##Lin =				\
+	onceobj##Lin.get_once();				\
+      onceref##Lin;})
+
+#define  RPS_ONCEOBJ_AT(Lin,Oid) \
+  RPS_ONCEOBJ_ATBIS(Lin,Oid)
+
+#define RPS_ONCEOBJ(Oid) RPS_ONCEOBJ_AT(__LINE__,Oid)
 
 /// each root object is also a public variable
 #define RPS_INSTALL_ROOT_OB(Oid) extern "C" Rps_ObjectRef RPS_ROOT_OB(Oid);

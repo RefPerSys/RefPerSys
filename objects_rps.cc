@@ -1590,4 +1590,9 @@ Rps_ObjectRef::make_mutable_set_object(Rps_CallFrame*callerframe, Rps_ObjectRef 
   return _.resultob;
 } // end Rps_ObjectRef::make_mutable_set_object
 
+
+
+std::mutex Rps_OnceObjByOid::_once_mtx;
+std::multimap<Rps_Id, Rps_OnceObjByOid*> Rps_OnceObjByOid::_once_map;
+
 // end of file objects_rps.cc
