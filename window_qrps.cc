@@ -1067,7 +1067,19 @@ RpsQCreateContributorDialog::on_cancel_trigger()
 void 
 RpsQCreateContributorDialog::on_agree_change(int state)
 {
-  ok_button.setEnabled((state == Qt::Checked));
+  // ensure that the contributor has provided her first name, last name, e-mail
+  // and has checked the agreement checkbox
+
+  if (state == Qt::Checked) {
+    auto fname = firstname_edit.text();
+    auto lname = lastname_edit.text();
+    auto email = email_edit.text();
+
+    ok_button.setEnabled(fname.size() && lname.size() && email.size());
+  }
+  else {
+    ok_button.setEnabled(false);
+  }
 }  // end RpsQCreateContributorDialog::on_agree_change()
 
 
