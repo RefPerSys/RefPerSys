@@ -63,6 +63,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_command_textedit(nullptr),
     win_output_textedit(nullptr),
     win_objref(nullptr)
+#warning win_objref should be known to the garbage collector
 {
   /// create the menus and their actions
   {
