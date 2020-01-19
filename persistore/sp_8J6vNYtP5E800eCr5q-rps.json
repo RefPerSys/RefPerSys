@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 37,
+ "nbobjects" : 38,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -70,6 +70,17 @@
  "oid" : "_0LbCts6NacB03SMXz4",
  "payload" : "symbol",
  "symb_name" : "home_page"
+}
+
+
+//+ob_0XMNvzdABUM03Bj7WP
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1579415089.05,
+ "oid" : "_0XMNvzdABUM03Bj7WP",
+ "payload" : "symbol",
+ "symb_name" : "git_id"
 }
 
 
