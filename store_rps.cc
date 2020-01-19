@@ -975,9 +975,6 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
           continue;
         };
       const char*curpos = linbuf.c_str();
-      if (strstr((char*)curpos, RPS_CONSTANTOBJ_PREFIX))
-        RPS_INFORMOUT("detected line " << lincnt << " of " << fullpath
-                      << " with possible constant:" << linbuf);
       char*foundpos = nullptr;
       while ((foundpos = strstr((char*)curpos, RPS_CONSTANTOBJ_PREFIX)) != nullptr)
         {
@@ -1004,7 +1001,7 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
         };
     }
   RPS_INFORMOUT("found " << nbconst
-                << " constant prefixed by " << RPS_CONSTANTOBJ_PREFIX
+                << " constant[s] prefixed by " << RPS_CONSTANTOBJ_PREFIX
                 << " in file " << fullpath
                 << " of " << lincnt << " lines.");
 } // end Rps_Dumper::scan_cplusplus_source_file_for_constants
