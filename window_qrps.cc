@@ -829,13 +829,30 @@ href='mailto:team@refpersys.org'>RefPerSys team</a>.<p>
       &ok_button, &QAbstractButton::clicked, this,
       &RpsQCreateContributorDialog::on_ok_trigger
     );
+
     connect(
       &cancel_button, &QAbstractButton::clicked, this,
       &RpsQCreateContributorDialog::on_cancel_trigger
     );
+
     connect(
       &agree_chk, &QCheckBox::stateChanged, this,
       &RpsQCreateContributorDialog::on_agree_change
+    );
+
+    connect(
+      &firstname_edit, &QLineEdit::textEdited, this,
+      &RpsQCreateContributorDialog::on_fname_edit
+    );
+
+    connect(
+      &lastname_edit, &QLineEdit::textEdited, this,
+      &RpsQCreateContributorDialog::on_lname_edit
+    );
+
+    connect(
+      &email_edit, &QLineEdit::textEdited, this,
+      &RpsQCreateContributorDialog::on_email_edit
     );
   }
 }  // end RpsQCreateContributorDialog::RpsQCreateContributorDialog()
@@ -1081,6 +1098,57 @@ RpsQCreateContributorDialog::on_agree_change(int state)
     ok_button.setEnabled(false);
   }
 }  // end RpsQCreateContributorDialog::on_agree_change()
+
+
+void
+RpsQCreateContributorDialog::on_fname_edit(const QString& text)
+{
+  (void) text; // suppress unused parameter warning
+
+  // ensure that the contributor has provided her first name, last name, e-mail
+  // and has checked the agreement checkbox
+
+  auto fname = firstname_edit.text();
+  auto lname = lastname_edit.text();
+  auto email = email_edit.text();
+  auto agree = agree_chk.isChecked();
+
+  ok_button.setEnabled(fname.size() && lname.size() && email.size() && agree);
+}  // end RpsQCreateContributorDialog::on_fname_edit()
+
+
+void
+RpsQCreateContributorDialog::on_lname_edit(const QString& text)
+{
+  (void) text; // suprress unused parameter warning
+
+  // ensure that the contributor has provided her first name, last name, e-mail
+  // and has checked the agreement checkbox
+  
+  auto fname = firstname_edit.text();
+  auto lname = lastname_edit.text();
+  auto email = email_edit.text();
+  auto agree = agree_chk.isChecked();
+
+  ok_button.setEnabled(fname.size() && lname.size() && email.size() && agree);
+}  // end RpsQCreateContributorDialog::on_lname_edit()
+
+
+void
+RpsQCreateContributorDialog::on_email_edit(const QString& text)
+{
+  (void) text; // suprress unused parameter warning
+
+  // ensure that the contributor has provided her first name, last name, e-mail
+  // and has checked the agreement checkbox
+  
+  auto fname = firstname_edit.text();
+  auto lname = lastname_edit.text();
+  auto email = email_edit.text();
+  auto agree = agree_chk.isChecked();
+
+  ok_button.setEnabled(fname.size() && lname.size() && email.size() && agree);
+}  // end RpsQCreateContributorDialog::on_email_edit()
 
 
 ////////////////////////////////////////////////////////////////
