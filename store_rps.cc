@@ -89,6 +89,7 @@ class Rps_Loader
   /// dictionnary of payload loaders - used as a cache to avoid most dlsym-s
   std::map<std::string,rpsldpysig_t*> ld_payloadercache;
   bool is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid);
+  Rps_ObjectRef fetch_one_constant_at(const char*oid,int lin);
   void parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                                       Rps_Id objid, const std::string& objbuf);
 public:
@@ -96,6 +97,7 @@ public:
     ld_topdir(topdir) {};
   void parse_manifest_file(void);
   void first_pass_space(Rps_Id spacid);
+  void initialize_constant_objects(void);
   void second_pass_space(Rps_Id spacid);
   std::string string_of_loaded_file(const std::string& relpath);
   std::string space_file_path(Rps_Id spacid);
@@ -303,6 +305,34 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
                 << " objects while loading first pass of" << spacepath);
 } // end Rps_Loader::first_pass_space
 
+
+
+void
+Rps_Loader::initialize_constant_objects(void)
+{
+  std::lock_guard<std::mutex> gu(ld_mtx);
+#define RPS_INSTALL_CONSTANT_OB(Oid) \
+  rpskob##Oid = fetch_one_constant_at(#Oid, __LINE__);
+#include "generated/rps-constants.hh"
+} // end of Rps_Loader::initialize_constant_objects
+
+Rps_ObjectRef
+Rps_Loader::fetch_one_constant_at(const char*oidstr, int lin)
+{
+  const char*end = nullptr;
+  bool ok = false;
+  Rps_Id id(oidstr, &end, &ok);
+  RPS_ASSERT(end && *end==(char)0 && ok);
+  auto it = ld_mapobjects.find(id);
+  if (it == ld_mapobjects.end())
+    {
+      RPS_WARNOUT("failed to fetch constant " << oidstr
+                  << " at line " << lin << " of generated/rps-constants.hh");
+      return nullptr;
+    }
+  else
+    return it->second;
+} // end Rps_Loader::fetch_one_constant_at
 
 void
 Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
@@ -560,6 +590,7 @@ Rps_Loader::load_all_state_files(void)
       spacecnt1++;
     }
   RPS_INFORMOUT("loaded " << spacecnt1 << " space files in first pass");
+  initialize_constant_objects();
   /// conceptually, the second pass might be done in parallel
   /// (multi-threaded, with different threads workinng on different
   /// spaces), but this require more clever locking and
