@@ -1120,34 +1120,14 @@ RpsQCreateContributorDialog::on_fname_edit(const QString& text)
 void
 RpsQCreateContributorDialog::on_lname_edit(const QString& text)
 {
-  (void) text; // suprress unused parameter warning
-
-  // ensure that the contributor has provided her first name, last name, e-mail
-  // and has checked the agreement checkbox
-  
-  auto fname = firstname_edit.text();
-  auto lname = lastname_edit.text();
-  auto email = email_edit.text();
-  auto agree = agree_chk.isChecked();
-
-  ok_button.setEnabled(fname.size() && lname.size() && email.size() && agree);
+  RpsQCreateContributorDialog::on_fname_edit(text);
 }  // end RpsQCreateContributorDialog::on_lname_edit()
 
 
 void
 RpsQCreateContributorDialog::on_email_edit(const QString& text)
 {
-  (void) text; // suprress unused parameter warning
-
-  // ensure that the contributor has provided her first name, last name, e-mail
-  // and has checked the agreement checkbox
-  
-  auto fname = firstname_edit.text();
-  auto lname = lastname_edit.text();
-  auto email = email_edit.text();
-  auto agree = agree_chk.isChecked();
-
-  ok_button.setEnabled(fname.size() && lname.size() && email.size() && agree);
+  RpsQCreateContributorDialog::on_fname_edit(text);
 }  // end RpsQCreateContributorDialog::on_email_edit()
 
 
