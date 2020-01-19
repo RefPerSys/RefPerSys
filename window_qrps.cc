@@ -59,7 +59,10 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_crsymb_action(nullptr),
     win_crnamedinstance_action(nullptr),
     win_crcontrib_action(nullptr),
-    win_centralmdi(nullptr)
+    win_centralmdi(nullptr),
+    win_command_textedit(nullptr),
+    win_output_textedit(nullptr),
+    win_objref(nullptr)
 {
   /// create the menus and their actions
   {
@@ -104,6 +107,12 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
   // our central widget
   win_centralmdi =  new QMdiArea(this);
   setCentralWidget(win_centralmdi);
+  win_centralmdi->tileSubWindows();
+  win_command_textedit = new RpsQCommandTextEdit(this);
+  win_centralmdi->addSubWindow(win_command_textedit);
+  win_output_textedit = new RpsQOutputTextEdit(this);
+  win_centralmdi->addSubWindow(win_output_textedit);
+  
   // connect the behavior
   connect(win_apdump_action, &QAction::triggered,
           RpsQApplication::the_app(),
@@ -1174,6 +1183,22 @@ RpsQCreateContributorDialog::on_email_edit(const QString& text)
   RpsQCreateContributorDialog::on_fname_edit(text);
 }  // end RpsQCreateContributorDialog::on_email_edit()
 
+
+////////////////////////////////////////////////////////////////
+RpsQCommandTextEdit::RpsQCommandTextEdit(QWidget*parent) : QTextEdit(parent) {
+  setDocumentTitle("command");
+} // end RpsQCommandTextEdit::RpsQCommandTextEdit
+
+RpsQCommandTextEdit::~RpsQCommandTextEdit() {
+} // end RpsQCommandTextEdit::~RpsQCommandTextEdit
+
+////////////////////////////////////////////////////////////////
+RpsQOutputTextEdit::RpsQOutputTextEdit(QWidget*parent) : QTextEdit(parent) {
+  setDocumentTitle("output");
+} // end RpsQOutputTextEdit::RpsQOutputTextEdit
+
+RpsQOutputTextEdit::~RpsQOutputTextEdit() {
+} // end RpsQOutputTextEdit::~RpsQOutputTextEdit
 
 ////////////////////////////////////////////////////////////////
 

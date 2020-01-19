@@ -65,6 +65,7 @@
 #include <QScreen>
 #include <QDesktopWidget>
 #include <QThread>
+#include <QTextEdit>
 #include <QTextBrowser>
 #include <QUrl>
 #include <QNetworkRequest>
@@ -286,6 +287,24 @@ private:
 };				// end of RpsQCreateContributorDialog
 
 
+//////////////////////////////////////////////////////////// RpsQCommandTextEdit
+class RpsQCommandTextEdit : public QTextEdit {
+  Q_OBJECT;
+public:
+  RpsQCommandTextEdit(QWidget*parent);
+  ~RpsQCommandTextEdit();
+};				// end RpsQCommandTextEdit
+
+
+//////////////////////////////////////////////////////////// RpsQOutputTextEdit
+class RpsQOutputTextEdit : public QTextEdit {
+  Q_OBJECT;
+public:
+  RpsQOutputTextEdit(QWidget*parent);
+  ~RpsQOutputTextEdit();
+};				// end RpsQOutputTextEdit
+
+
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
 class RpsQWindow : public QMainWindow
@@ -319,6 +338,14 @@ private:
 
   /// the central widget
   QMdiArea* win_centralmdi;
+
+  /// the command text edit
+  RpsQCommandTextEdit* win_command_textedit;
+  /// the output text edit
+  RpsQOutputTextEdit* win_output_textedit;
+
+  /// the object reference
+  Rps_ObjectRef win_objref;
 
 public slots:
   void do_quit(void);
