@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 38,
+ "nbobjects" : 39,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -103,7 +103,7 @@
  "mtime" : 1579283407.8599999,
  "oid" : "_1wihX3eWD9o00QnxUX",
  "payload" : "setob",
- "setob" : []
+ "setob" : [ "_27YccqLPPc0049Q3vX" ]
 }
 
 
@@ -140,6 +140,38 @@
  "payload" : "symbol",
  "symb_name" : "double",
  "symb_val" : "_98sc8kSOXV003i86w5"
+}
+
+
+//+ob_27YccqLPPc0049Q3vX
+//∈contributor_to_RefPerSys
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_0D6zqQNe4eC02bjfGs",
+   "va" : "basile@starynkevitch.net"
+  },
+  {
+   "at" : "_0LbCts6NacB03SMXz4",
+   "va" : "http://starynkevitch.net/Basile/"
+  },
+  {
+   "at" : "_0XMNvzdABUM03Bj7WP",
+   "va" : "f09e55057bbccda93be5c3"
+  },
+  {
+   "at" : "_3N8vZ2Cw62z024XxCg",
+   "va" : "Basile"
+  },
+  {
+   "at" : "_6QAanFi9yLx00spBST",
+   "va" : "Starynkevitch"
+  }
+ ],
+ "class" : "_5CYWxcChKN002rw1fI",
+ "mtime" : 1579420442.8900001,
+ "oid" : "_27YccqLPPc0049Q3vX"
 }
 
 
