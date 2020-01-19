@@ -270,6 +270,7 @@ private:
   QLabel lastname_label;
   QLabel email_label;
   QLabel webpage_label;
+  QLabel nb_label;
   QLineEdit firstname_edit;
   QLineEdit lastname_edit;
   QLineEdit email_edit;

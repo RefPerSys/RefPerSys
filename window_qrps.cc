@@ -561,10 +561,11 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     email_hbox(),
     webpage_hbox(),
     button_hbox(),
-    firstname_label("Contributor First Name:", this),
-    lastname_label("Contributor Last Name:", this),
-    email_label("Contributor Email:", this),
+    firstname_label("Contributor First Name*:", this),
+    lastname_label("Contributor Last Name*:", this),
+    email_label("Contributor Email*:", this),
     webpage_label("Contributor Web page:", this),
+    nb_label("* indicates a required field", this),
     firstname_edit(this),
     lastname_edit(this),
     email_edit(this),
@@ -585,6 +586,7 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     lastname_label.setObjectName("RpsQCreateContributorDialog_lastname_label");
     email_label.setObjectName("RpsQCreateContributorDialog_email_label");
     webpage_label.setObjectName("RpsQCreateContributorDialog_webpage_label");
+    nb_label.setObjectName("RpsQCreateContributorDialog_nb_label");
     firstname_edit.setObjectName("RpsQCreateContributorDialog_firstname_edit");
     lastname_edit.setObjectName("RpsQCreateContributorDialog_lastname_edit");
     email_edit.setObjectName("RpsQCreateContributorDialog_email_edit");
@@ -616,6 +618,7 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     lastname_label.setFont(arial);
     email_label.setFont(arial);
     webpage_label.setFont(arial);
+    nb_label.setFont(arial);
     ok_button.setFont(arial);
     cancel_button.setFont(arial);
 
@@ -624,7 +627,6 @@ RpsQCreateContributorDialog::RpsQCreateContributorDialog(RpsQWindow* parent)
     lastname_edit.setFont(courier);
     webpage_edit.setFont(courier);
     email_edit.setFont(courier);
-
   }
 
   /// fill HTML code of explanatory text with a raw C++ string literal
@@ -783,6 +785,8 @@ href='mailto:team@refpersys.org'>RefPerSys team</a>.<p>
     webpage_hbox.addWidget(&webpage_label);
     webpage_hbox.addSpacing(2);
     webpage_hbox.addWidget(&webpage_edit);
+
+    dialog_vbox.addWidget(&nb_label);
     
     dialog_vbox.addWidget(&crcont_expltext);
 
@@ -791,15 +795,14 @@ href='mailto:team@refpersys.org'>RefPerSys team</a>.<p>
     button_hbox.addSpacing(3);
     button_hbox.addWidget(&cancel_button);
 
-    
     setLayout(&dialog_vbox);
   }
 
   // set explanatory placeholder texts
-  firstname_edit.setPlaceholderText("your first name - required");
-  lastname_edit.setPlaceholderText("your last or family name - required");
-  email_edit.setPlaceholderText("your email - required");
-  webpage_edit.setPlaceholderText("your homepage URL, optional");
+  firstname_edit.setPlaceholderText("e.g. Jane");
+  lastname_edit.setPlaceholderText("e.g. Doe");
+  email_edit.setPlaceholderText("e.g. jane.doe@example.com");
+  webpage_edit.setPlaceholderText("e.g. http://www.example.com");
 
   // connect widget slots
   {
