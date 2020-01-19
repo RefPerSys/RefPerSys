@@ -812,6 +812,7 @@ Rps_String::Rps_String (const char*cstr, int len)
   cstr = normalize_cstr(cstr);
   if (_utf8len>0)
     memcpy(_alignbuf, cstr, _bytsiz);
+  _alignbuf[_bytsiz] = (char)0;
 }; // end of Rps_String::Rps_String
 
 const Rps_String*
