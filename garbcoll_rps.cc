@@ -136,6 +136,13 @@ Rps_GarbageCollector::mark_gcroots(void)
 };
 #include "generated/rps-names.hh"
   ///
+  /// mark the constants
+#define RPS_INSTALL_CONSTANT_OB(Oid) {		\
+  if (rpskob##Oid)				\
+    this->mark_root_objectref(rpskob##Oid);	\
+};
+#include "generated/rps-constants.hh"
+  ///
   if (gc_rootmarkers)
     gc_rootmarkers(this);
 } // end Rps_GarbageCollector::mark_gcroots
