@@ -952,7 +952,7 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
         {
           const char*endpos=nullptr;
           bool ok=false;
-          Rps_Id oid(curpos, &endpos, &ok);
+          Rps_Id oid(foundpos + strlen(RPS_CONSTANTOBJ_PREFIX), &endpos, &ok);
           if (ok)
             {
               Rps_ObjectZone* curobz = Rps_ObjectZone::find(oid);
