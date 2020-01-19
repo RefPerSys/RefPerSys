@@ -1056,6 +1056,7 @@ RpsQCreateContributorDialog::on_ok_trigger()
 		  << " at git id " << rps_gitid
 		  );
     _.obsetcontributors = RPS_ROOT_OB(_1wihX3eWD9o00QnxUX); // our_contributors value
+    //RPS_ASSERT (_.obsetcontributors == rpskob_1wihX3eWD9o00QnxUX)
     RPS_ASSERT(_.obsetcontributors
 	       && _.obsetcontributors->get_class() == Rps_ObjectRef::the_mutable_set_class()
 	       );

@@ -1255,10 +1255,12 @@ Rps_Dumper::scan_object_contents(Rps_ObjectRef obr)
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
 } // end Rps_Dumper::scan_object_contents
 
+
+
 void
 Rps_Dumper::scan_every_cplusplus_source_file_for_constants(void)
 {
-  for (const char*const*pcurfilename = rps_files; *pcurfilename; pcurfilename)
+  for (const char*const*pcurfilename = rps_files; *pcurfilename; pcurfilename++)
     {
       const char*curpath = *pcurfilename;
       int lencurpath = strlen(curpath);
@@ -1386,6 +1388,8 @@ Rps_Dumper::write_generated_names_file(void)
   *pouts << "/// end of RefPerSys roots file " << rootpathstr << std::endl;
 } // end Rps_Dumper::write_generated_roots_file
 
+
+
 void
 Rps_Dumper::write_generated_constants_file(void)
 {
@@ -1394,6 +1398,9 @@ Rps_Dumper::write_generated_constants_file(void)
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
   unsigned constcnt = 0;
+  *pouts << std::endl << "/// collection of constant objects, mentioned in C++ files, "<< std::endl
+	 << "/// .... prefixed with '"
+	 <<  RPS_CONSTANTOBJ_PREFIX << "' followed by an oid." << std::endl;
   *pouts << std::endl
          << "#ifndef RPS_INSTALL_CONSTANT_OB" << std::endl
          << "#error RPS_INSTALL_CONSTANT_OB(Oid) macro undefined" << std::endl
@@ -1411,6 +1418,8 @@ Rps_Dumper::write_generated_constants_file(void)
          << "#define RPS_NB_CONSTANT_OB " << constcnt << std::endl << std::endl;
   *pouts << "/// end of RefPerSys constants file " << rootpathstr << std::endl;
 } // end Rps_Dumper::write_generated_constants_file
+
+
 
 void
 Rps_Dumper::write_all_generated_files(void)
@@ -1448,6 +1457,15 @@ Rps_Dumper::write_manifest_file(void)
         jspaceset.append(Json::Value(it.first->oid().to_string()));
       }
     jmanifest["spaceset"] = jspaceset;
+  }
+  {
+    Json::Value jconstset(Json::arrayValue);
+    for (Rps_ObjectRef obr: du_constantobset)
+      {
+        RPS_ASSERT(obr);
+        jconstset.append(Json::Value(obr->oid().to_string()));
+      }
+    jmanifest["constset"] = jconstset;
   }
   {
     Json::Value jplugins(Json::arrayValue);
