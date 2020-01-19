@@ -45,12 +45,12 @@ Rps_Value
 rpsget_41OFI3r0S1t03qdB2E(const Rps_Value valarg, const Rps_ObjectRef obattrarg,
                           Rps_CallFrame*callerframe)
 {
-  RPS_LOCALFRAME(RPS_ROOT_OB(_41OFI3r0S1t03qdB2E),
+  RPS_LOCALFRAME(rpskob_41OFI3r0S1t03qdB2E,
                  callerframe,
                  Rps_Value val; // the value
                  Rps_ObjectRef obattr; // the attribute
                 );
-  //RPS_ASSERT(RPS_ROOT_OB(_41OFI3r0S1t03qdB2E) == rpskob_41OFI3r0S1t03qdB2E);
+  RPS_ASSERT(RPS_ROOT_OB(_41OFI3r0S1t03qdB2E) == rpskob_41OFI3r0S1t03qdB2E);
   _.obattr = obattrarg;
   _.val = valarg;
   RPS_ASSERT (_.obattr == RPS_ROOT_OB(_41OFI3r0S1t03qdB2E));
@@ -66,14 +66,14 @@ Rps_Value
 rpsget_9uwZtDshW4401x6MsY(const Rps_Value valarg, const Rps_ObjectRef obattrarg,
                           Rps_CallFrame*callerframe)
 {
-  RPS_LOCALFRAME(RPS_ROOT_OB(_9uwZtDshW4401x6MsY),
+  RPS_LOCALFRAME(rpskob_9uwZtDshW4401x6MsY,
                  callerframe,
                  Rps_Value val; // the value
                  Rps_ObjectRef obattr; // the attribute
                 );
   _.obattr = obattrarg;
   _.val = valarg;
-  //RPS_ASSERT(RPS_ROOT_OB(_9uwZtDshW4401x6MsY) == rpskob_9uwZtDshW4401x6MsY);
+  RPS_ASSERT(RPS_ROOT_OB(_9uwZtDshW4401x6MsY) == rpskob_9uwZtDshW4401x6MsY);
   RPS_ASSERT (_.obattr == RPS_ROOT_OB(_9uwZtDshW4401x6MsY));
   if (!_.val.is_empty() && _.val.is_object())
     return Rps_Value(_.val.as_object()->get_space());
