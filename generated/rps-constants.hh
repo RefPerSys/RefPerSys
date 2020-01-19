@@ -24,7 +24,11 @@
 #endif /*undefined RPS_INSTALL_CONSTANT_OB*/
 
 
+RPS_INSTALL_CONSTANT_OB(_1wihX3eWD9o00QnxUX)
+RPS_INSTALL_CONSTANT_OB(_41OFI3r0S1t03qdB2E)
+RPS_INSTALL_CONSTANT_OB(_9uwZtDshW4401x6MsY)
+
 #undef  RPS_NB_CONSTANT_OB
-#define RPS_NB_CONSTANT_OB 0
+#define RPS_NB_CONSTANT_OB 3
 
 /// end of RefPerSys constants file generated/rps-constants.hh
