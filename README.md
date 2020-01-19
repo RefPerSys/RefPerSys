@@ -164,7 +164,8 @@ because [`omake`
 has](http://projects.camlcity.org/projects/dl/omake-0.10.3/doc/html/omake-quickstart.html)
 *automatic dependency analysis* and *content-based dependency
 analysis* (the later being an unusual feature - most build automation
-tools using modification time of files).
+tools using modification time of files). You may need to edit the
+`OMakeroot` or `OMakefile` files.
 
 You should have compiled and installed Ian Taylor's
 [libbacktrace](https://github.com/ianlancetaylor/libbacktrace),
@@ -172,15 +173,14 @@ e.g. under `/usr/local/`. You may need to add `/usr/local/lib/` in
 your `/etc/ld.so.conf` and run `ldconfig -v -a` after installation of
 that `libbacktrace`.
 
-An [Hjson](http://hjson.org/) C++ library is needed, so Basile&apos;s
-variant https://github.com/bstarynk/hjson-cpp (sadly, the upstream
-version is not enough, see its
-[issue#22](https://github.com/hjson/hjson-cpp/issues/22)...).
+The [JsonCPP](https://github.com/open-source-parsers/jsoncpp/) and
+[Qt5](http://qt.io/) C++ libraries are needed, and also a
+[mail](https://linux.die.net/man/1/mail) command in your `$PATH`.
 
 ### Build instructions
 You need a recent C++17 compiler such as `g++` (We use GCC 7 or 8 or 9) or `clang++` , `omake`, `libunistring-dev`
  
-You also should do a `make clean` or `omake clean` after any `git pull`
+You also should do a  `omake clean` after any `git pull`
 
 ## Garbage collection
 
