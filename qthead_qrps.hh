@@ -256,6 +256,7 @@ public:
   ~RpsQCreateContributorDialog();
 
 private slots:
+  void on_agree_change(int state);
   void on_ok_trigger();
   void on_cancel_trigger();
 

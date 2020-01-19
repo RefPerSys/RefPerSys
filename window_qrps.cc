@@ -775,8 +775,7 @@ href='mailto:team@refpersys.org'>RefPerSys team</a>.<p>
 
 </html>
 )explaintext");
-  crcont_expltext.setReadOnly(true);
-  crcont_expltext.setOpenExternalLinks(true);
+
   // set widget layouts
   {
     dialog_vbox.addLayout(&firstname_hbox);
@@ -803,7 +802,6 @@ href='mailto:team@refpersys.org'>RefPerSys team</a>.<p>
     dialog_vbox.addWidget(&crcont_expltext);
     dialog_vbox.addWidget(&agree_chk);
 
-
     dialog_vbox.addLayout(&button_hbox);
     button_hbox.addWidget(&ok_button);
     button_hbox.addSpacing(3);
@@ -812,11 +810,18 @@ href='mailto:team@refpersys.org'>RefPerSys team</a>.<p>
     setLayout(&dialog_vbox);
   }
 
-  // set explanatory placeholder texts
+  // set explanatory placeholder text
   firstname_edit.setPlaceholderText("e.g. John");
   lastname_edit.setPlaceholderText("e.g. Doe");
   email_edit.setPlaceholderText("e.g. john.doe@fake.email");
   webpage_edit.setPlaceholderText("e.g. http://www.example.net/john-doe.html");
+
+  // other settings
+  {
+    crcont_expltext.setReadOnly(true);
+    crcont_expltext.setOpenExternalLinks(true);
+    ok_button.setEnabled(false);
+  }
 
   // connect widget slots
   {
@@ -827,6 +832,10 @@ href='mailto:team@refpersys.org'>RefPerSys team</a>.<p>
     connect(
       &cancel_button, &QAbstractButton::clicked, this,
       &RpsQCreateContributorDialog::on_cancel_trigger
+    );
+    connect(
+      &agree_chk, &QCheckBox::stateChanged, this,
+      &RpsQCreateContributorDialog::on_agree_change
     );
   }
 }  // end RpsQCreateContributorDialog::RpsQCreateContributorDialog()
@@ -1053,6 +1062,13 @@ RpsQCreateContributorDialog::on_cancel_trigger()
 {
   deleteLater();
 } // end RpsQCreateContributorDialog::on_cancel_trigger
+
+
+void 
+RpsQCreateContributorDialog::on_agree_change(int state)
+{
+  ok_button.setEnabled((state == Qt::Checked));
+}  // end RpsQCreateContributorDialog::on_agree_change()
 
 
 ////////////////////////////////////////////////////////////////
