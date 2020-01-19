@@ -1071,7 +1071,7 @@ RpsQCreateContributorDialog::on_ok_trigger()
     std::string mailcmd;
     mailcmd = "mail -s 'new RefPerSys contributor' ";
     mailcmd += emailstr;
-    FILE* mailpipe = popen(mailcmd.c_str(), "r");
+    FILE* mailpipe = popen(mailcmd.c_str(), "w");
     if (!mailpipe)
       throw  RPS_RUNTIME_ERROR_OUT("failed to popen: " << mailcmd
 				   << ":" << strerror(errno));
@@ -1092,6 +1092,10 @@ RpsQCreateContributorDialog::on_ok_trigger()
 	     "to your ~/.bashrc or ~/.zshrc or interactive shell initialization.\n",
 	     _.obcontrib->oid().to_string().c_str());
     fprintf (mailpipe, "Consider also contacting team@refpersys.org please.\n");
+    fflush (mailpipe);
+    RPS_INFORMOUT("RpsQCreateContributorDialog mailpipe fd=" << fileno(mailpipe)
+		  << ", contrib=" << _.obcontrib
+		  << ", email=" << emailstr);
     int mailcode = pclose(mailpipe);
     mailpipe = nullptr;
     if (mailcode >0)
