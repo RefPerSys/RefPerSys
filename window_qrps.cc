@@ -880,7 +880,7 @@ RpsQCreateContributorDialog::on_ok_trigger()
 		 Rps_Value emailv; // email, as a string
 		 Rps_Value webpagev; // home web page URL, as a string
 		 Rps_Value gitidv; // the git id prefix, for tracability
-                );
+		 );
   QString firstnameqs = firstname_edit.text();
   QString lastnameqs = lastname_edit.text();
   QString emailqs = email_edit.text();
@@ -1008,75 +1008,95 @@ RpsQCreateContributorDialog::on_ok_trigger()
       webacc->deleteLater();
       webrepl->deleteLater();
     }
-  ///
-  RPS_INFORMOUT("RpsQCreateContributorDialog should create contributor for:"
-		<< " firstnamestr=" << firstnamestr
-		<< ", lastnamestr=" << lastnamestr
-		<< ", emailstr=" << emailstr
-		<< ", webpagestr=" << webpagestr
-		);
-  _.obcontrib =
-    Rps_ObjectRef::make_object(&_, //
-			       RPS_ROOT_OB(_5CYWxcChKN002rw1fI), //contributor_to_RefPerSys
-			       Rps_ObjectRef::root_space());
+    ///
+    RPS_INFORMOUT("RpsQCreateContributorDialog should create contributor for:"
+		  << " firstnamestr=" << firstnamestr
+		  << ", lastnamestr=" << lastnamestr
+		  << ", emailstr=" << emailstr
+		  << ", webpagestr=" << webpagestr
+		  );
+    _.obcontrib =
+      Rps_ObjectRef::make_object(&_, //
+				 RPS_ROOT_OB(_5CYWxcChKN002rw1fI), //contributor_to_RefPerSys
+				 Rps_ObjectRef::root_space());
 #warning in commit 8ff0d00e733f508ee605dfcb the calls to Rps_StringValue are buggy
-  RPS_ASSERT(!firstnamestr.empty());
-  _.firstnamev = Rps_StringValue(firstnamestr);
-  RPS_ASSERT(!lastnamestr.empty());
-  _.lastnamev = Rps_StringValue(lastnamestr);
-  RPS_ASSERT(!emailstr.empty());
-  _.emailv = Rps_StringValue(emailstr);
-  if (!webpagestr.empty()) {
-    _.webpagev = Rps_StringValue(webpagestr);
-  _.obcontrib->put_attr4(RPS_ROOT_OB(_3N8vZ2Cw62z024XxCg) /*=first_name*/, _.firstnamev,
-			 RPS_ROOT_OB(_6QAanFi9yLx00spBST) /*=last_name*/, _.lastnamev,
-			 RPS_ROOT_OB(_0D6zqQNe4eC02bjfGs) /*=email*/, _.emailv,
-			 RPS_ROOT_OB(_0LbCts6NacB03SMXz4) /*=home_page*/, _.webpagev);
-  }
-  else
-    _.obcontrib->put_attr3(RPS_ROOT_OB(_3N8vZ2Cw62z024XxCg) /*=first_name*/, _.firstnamev,
-			   RPS_ROOT_OB(_6QAanFi9yLx00spBST) /*=last_name*/, _.lastnamev,
-			   RPS_ROOT_OB(_0D6zqQNe4eC02bjfGs) /*=email*/, _.emailv);
-  // in all cases, for tracability, we put a git_id attribute in
-  // _.obcontrib; personal data are important enough to be
-  // easily tracable....
-  {
-    char gitidbuf[24];
-    memset(gitidbuf, 0, sizeof(gitidbuf));
-    strncpy(gitidbuf, rps_gitid, sizeof(gitidbuf)-2);
-    _.gitidv = Rps_StringValue(gitidbuf);
-    _.obcontrib->put_attr(RPS_ROOT_OB(_0XMNvzdABUM03Bj7WP), // git_id
-			  _.gitidv);
-  }
-  RPS_INFORMOUT("RpsQCreateContributorDialog created contributor " << _.obcontrib
-		<< " with firstnamestr=" << firstnamestr
-		<< ", lastnamestr=" << lastnamestr
-		<< ", emailstr=" << emailstr
-		<< ", webpagestr=" << webpagestr
-		<< " at git id " << rps_gitid
-		);
-  _.obsetcontributors = RPS_ROOT_OB(_1wihX3eWD9o00QnxUX); // our_contributors value
-  RPS_ASSERT(_.obsetcontributors
-	     && _.obsetcontributors->get_class() == Rps_ObjectRef::the_mutable_set_class()
-	     );
-  {
-  std::lock_guard<std::recursive_mutex> gu(*(_.obsetcontributors->objmtxptr()));
-  auto setpayl = _.obsetcontributors->get_dynamic_payload<Rps_PayloadSetOb>();
-  RPS_ASSERT(setpayl != nullptr);
-  setpayl->add(_.obcontrib);
-  }
-  RPS_INFORMOUT("RpsQCreateContributorDialog added contributor " << _.obcontrib
-		<< " to `our_contributors` " << _.obsetcontributors);
-  
-      std::ostringstream outs;
-      outs << "Created new RefPerSys contributor reified as " <<  _.obcontrib << std::endl
-	   << " with first-name: " << firstnamestr << std::endl
-	   << " with last-name: " << lastnamestr << std::endl
-	   << " with email: " << emailstr << std::endl;
-      if (!webpagestr.empty())
-	outs << " with home-page: " << webpagestr << std::endl;
-      std::string msg = outs.str();
-      QMessageBox::information(parentWidget(), "Created Contributor", msg.c_str());      
+    RPS_ASSERT(!firstnamestr.empty());
+    _.firstnamev = Rps_StringValue(firstnamestr);
+    RPS_ASSERT(!lastnamestr.empty());
+    _.lastnamev = Rps_StringValue(lastnamestr);
+    RPS_ASSERT(!emailstr.empty());
+    _.emailv = Rps_StringValue(emailstr);
+    if (!webpagestr.empty()) {
+      _.webpagev = Rps_StringValue(webpagestr);
+      _.obcontrib->put_attr4(RPS_ROOT_OB(_3N8vZ2Cw62z024XxCg) /*=first_name*/, _.firstnamev,
+			     RPS_ROOT_OB(_6QAanFi9yLx00spBST) /*=last_name*/, _.lastnamev,
+			     RPS_ROOT_OB(_0D6zqQNe4eC02bjfGs) /*=email*/, _.emailv,
+			     RPS_ROOT_OB(_0LbCts6NacB03SMXz4) /*=home_page*/, _.webpagev);
+    }
+    else
+      _.obcontrib->put_attr3(RPS_ROOT_OB(_3N8vZ2Cw62z024XxCg) /*=first_name*/, _.firstnamev,
+			     RPS_ROOT_OB(_6QAanFi9yLx00spBST) /*=last_name*/, _.lastnamev,
+			     RPS_ROOT_OB(_0D6zqQNe4eC02bjfGs) /*=email*/, _.emailv);
+    // in all cases, for tracability, we put a git_id attribute in
+    // _.obcontrib; personal data are important enough to be
+    // easily tracable....
+    {
+      char gitidbuf[24];
+      memset(gitidbuf, 0, sizeof(gitidbuf));
+      strncpy(gitidbuf, rps_gitid, sizeof(gitidbuf)-2);
+      _.gitidv = Rps_StringValue(gitidbuf);
+      _.obcontrib->put_attr(RPS_ROOT_OB(_0XMNvzdABUM03Bj7WP), // git_id
+			    _.gitidv);
+    }
+    RPS_INFORMOUT("RpsQCreateContributorDialog created contributor " << _.obcontrib
+		  << " with firstnamestr=" << firstnamestr
+		  << ", lastnamestr=" << lastnamestr
+		  << ", emailstr=" << emailstr
+		  << ", webpagestr=" << webpagestr
+		  << " at git id " << rps_gitid
+		  );
+    _.obsetcontributors = RPS_ROOT_OB(_1wihX3eWD9o00QnxUX); // our_contributors value
+    RPS_ASSERT(_.obsetcontributors
+	       && _.obsetcontributors->get_class() == Rps_ObjectRef::the_mutable_set_class()
+	       );
+    {
+      std::lock_guard<std::recursive_mutex> gu(*(_.obsetcontributors->objmtxptr()));
+      auto setpayl = _.obsetcontributors->get_dynamic_payload<Rps_PayloadSetOb>();
+      RPS_ASSERT(setpayl != nullptr);
+      setpayl->add(_.obcontrib);
+    }
+    RPS_INFORMOUT("RpsQCreateContributorDialog added contributor " << _.obcontrib
+		  << " to `our_contributors` " << _.obsetcontributors);
+
+    std::string mailcmd;
+    mailcmd = "mail -s 'new RefPerSys contributor' ";
+    mailcmd += emailstr;
+    FILE* mailpipe = popen(mailcmd.c_str(), "r");
+    if (!mailpipe)
+      throw  RPS_RUNTIME_ERROR_OUT("failed to popen: " << mailcmd
+				   << ":" << strerror(errno));
+    fprintf(mailpipe, "Hello %s %s,\n", firstnamestr.c_str(), lastnamestr.c_str());
+    fprintf(mailpipe, "Welcome to RefPerSys - see http://refpersys.org/ for more.\n");
+    std::ostringstream outs;
+    outs << "Created new RefPerSys contributor reified as " <<  _.obcontrib << std::endl
+	 << " with first-name: " << firstnamestr << std::endl
+	 << " with last-name: " << lastnamestr << std::endl
+	 << " with email: " << emailstr << std::endl;
+    if (!webpagestr.empty())
+      outs << " with home-page: " << webpagestr << std::endl;
+    std::string msg = outs.str();
+    fprintf (mailpipe, "%s\n\n", msg.c_str());
+    fprintf (mailpipe,
+	     "if your login shell is nearly POSIX compatible (e.g. is bash or zsh), consider adding\n"
+	     "    export REFPERSYS_USER_OID=%s\n"
+	     "to your ~/.bashrc or ~/.zshrc or interactive shell initialization.\n",
+	     _.obcontrib->oid().to_string().c_str());
+    fprintf (mailpipe, "Consider also contacting team@refpersys.org please.\n");
+    int mailcode = pclose(mailpipe);
+    mailpipe = nullptr;
+    if (mailcode >0)
+      RPS_WARNOUT("failed to pclose " << mailcmd << " got code:" << mailcode);
+    QMessageBox::information(parentWidget(), "Created Contributor", msg.c_str());      
   } catch (std::exception& exc) {
     RPS_WARNOUT(
 		"RpsQCreateContributorDialog failed:"
