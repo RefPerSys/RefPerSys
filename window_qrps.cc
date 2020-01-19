@@ -813,10 +813,10 @@ href='mailto:team@refpersys.org'>RefPerSys team</a>.<p>
   }
 
   // set explanatory placeholder texts
-  firstname_edit.setPlaceholderText("e.g. Jane");
+  firstname_edit.setPlaceholderText("e.g. John");
   lastname_edit.setPlaceholderText("e.g. Doe");
-  email_edit.setPlaceholderText("e.g. jane.doe@example.com");
-  webpage_edit.setPlaceholderText("e.g. http://www.example.com");
+  email_edit.setPlaceholderText("e.g. john.doe@fake.email");
+  webpage_edit.setPlaceholderText("e.g. http://www.example.net/john-doe.html");
 
   // connect widget slots
   {
