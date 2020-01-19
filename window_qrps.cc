@@ -862,6 +862,12 @@ RpsQCreateContributorDialog::~RpsQCreateContributorDialog()
 {
 }  // end RpsQCreateContributorDialog::~RpsQCreateContributorDialog()
 
+
+
+
+
+
+
 void
 RpsQCreateContributorDialog::on_ok_trigger()
 {
@@ -872,7 +878,8 @@ RpsQCreateContributorDialog::on_ok_trigger()
                  Rps_Value firstnamev; // first name, as a string
 		 Rps_Value lastnamev; // last name, as a string
 		 Rps_Value emailv; // email, as a string
-		 Rps_Value webpagev; // home web page URL, as a string	
+		 Rps_Value webpagev; // home web page URL, as a string
+		 Rps_Value gitidv; // the git id prefix, for tracability
                 );
   QString firstnameqs = firstname_edit.text();
   QString lastnameqs = lastname_edit.text();
@@ -1030,11 +1037,23 @@ RpsQCreateContributorDialog::on_ok_trigger()
     _.obcontrib->put_attr3(RPS_ROOT_OB(_3N8vZ2Cw62z024XxCg) /*=first_name*/, _.firstnamev,
 			   RPS_ROOT_OB(_6QAanFi9yLx00spBST) /*=last_name*/, _.lastnamev,
 			   RPS_ROOT_OB(_0D6zqQNe4eC02bjfGs) /*=email*/, _.emailv);
+  // in all cases, for tracability, we put a git_id attribute in
+  // _.obcontrib; personal data are important enough to be
+  // easily tracable....
+  {
+    char gitidbuf[24];
+    memset(gitidbuf, 0, sizeof(gitidbuf));
+    strncpy(gitidbuf, rps_gitid, sizeof(gitidbuf)-2);
+    _.gitidv = Rps_StringValue(gitidbuf);
+    _.obcontrib->put_attr(RPS_ROOT_OB(_0XMNvzdABUM03Bj7WP), // git_id
+			  _.gitidv);
+  }
   RPS_INFORMOUT("RpsQCreateContributorDialog created contributor " << _.obcontrib
 		<< " with firstnamestr=" << firstnamestr
 		<< ", lastnamestr=" << lastnamestr
 		<< ", emailstr=" << emailstr
 		<< ", webpagestr=" << webpagestr
+		<< " at git id " << rps_gitid
 		);
   _.obsetcontributors = RPS_ROOT_OB(_1wihX3eWD9o00QnxUX); // our_contributors value
   RPS_ASSERT(_.obsetcontributors
