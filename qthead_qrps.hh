@@ -257,6 +257,9 @@ public:
 
 private slots:
   void on_agree_change(int state);
+  void on_fname_edit(const QString& text);
+  void on_lname_edit(const QString& text);
+  void on_email_edit(const QString& text);
   void on_ok_trigger();
   void on_cancel_trigger();
 
