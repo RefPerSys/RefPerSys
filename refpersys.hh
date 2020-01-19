@@ -93,8 +93,10 @@
 // https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h
 #include <cxxabi.h>
 
-/// forward declaration of QString-s from Qt5
-class QString;
+#include <QObject>
+#include <QString>
+#include <QPointer>
+
 
 // JsonCPP https://github.com/open-source-parsers/jsoncpp
 #include "json/json.h"
@@ -2690,6 +2692,49 @@ public:
   static int autocomplete_name(const char*prefix, const std::function<bool(const Rps_ObjectZone*,const std::string&)>&stopfun);
 };				// end Rps_PayloadSymbol
 
+
+
+//////////////// template for payload holding Qt objects
+template <class QtClass> class Rps_PayloadQt : public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend Rps_PayloadQt*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadQt,Rps_ObjectZone*>(Rps_ObjectZone*);
+protected:
+  QPointer<QtClass> _qtptr;
+  Rps_PayloadQt(Rps_ObjectZone*owner)
+    :  Rps_Payload(owner), _qtptr(nullptr) {};
+  virtual ~Rps_PayloadQt();
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const =0;
+  virtual void dump_scan(Rps_Dumper*) const {};
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const {};
+  virtual bool is_erasable(void) const
+  {
+    return true;
+  };
+public:
+  inline Rps_PayloadQt& set_qtptr(QtClass* qptr);
+  inline Rps_PayloadQt& clear_qtptr(QtClass* qptr);
+  inline QtClass* qtptr(void) const;
+  QtClass& operator -> (void) const
+  {
+    if (owner())
+      return qtptr();
+    else throw RPS_RUNTIME_ERROR_OUT("unowned Qt payload:" << payload_type_name());
+  };
+  QtClass& operator * (void) const
+  {
+    if (owner())
+      return *qtptr();
+    else return nullptr;
+  }
+  virtual const char*payload_type_name(void) const;
+};				// end of template Rps_PayloadQt
 
 ////////////////////////////////////////////////////////////////
 

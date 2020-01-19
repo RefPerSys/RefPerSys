@@ -1531,7 +1531,56 @@ Rps_PayloadVectOb::Rps_PayloadVectOb(Rps_ObjectZone*owner, Rps_Loader*ld)
 
 
 
+//// Qt related payload
+template <class QtClass>
+const char*
+Rps_PayloadQt<QtClass>::payload_type_name(void) const
+{
+  static std::mutex mtx;
+  static std::string str;
+  std::lock_guard<std::mutex> gu(mtx);
+  if (RPS_UNLIKELY(str.empty()))
+    {
+      const char* cn = QtClass::staticMetaObject::className();
+      str = std::string("Rps_PayloadQt/") + cn;
+    }
+  return str.c_str();
+} // end Rps_PayloadQt::payload_type_name
 
+
+template <class QtClass>
+Rps_PayloadQt<QtClass>&
+Rps_PayloadQt<QtClass>::set_qtptr(QtClass* qptr)
+{
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> gu(*(owner()->objmtxptr()));
+  _qtptr = qptr;
+  return *this;
+} // end Rps_PayloadQt<QtClass>::set_qtptr
+
+template <class QtClass>
+QtClass*
+Rps_PayloadQt<QtClass>::qtptr(void) const
+{
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> gu(*(owner()->objmtxptr()));
+  return _qtptr;
+} // end Rps_PayloadQt<QtClass>::qtptr
+
+template <class QtClass>
+Rps_PayloadQt<QtClass>::~Rps_PayloadQt() {
+  if (owner()) {
+    std::lock_guard<std::recursive_mutex> gu(*(owner()->objmtxptr()));
+    if (_qtptr) {
+      _qtptr->deleteLater();
+    }
+  }
+} // end Rps_PayloadQt<QtClass>::~Rps_PayloadQt
+
+
+
+
+////////////////////////////////////////////////////////////////
 ///// garbage collector
 void
 Rps_GarbageCollector::mark_call_stack(Rps_CallFrame*topframe)
