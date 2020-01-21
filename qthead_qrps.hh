@@ -287,6 +287,30 @@ private:
 };				// end of RpsQCreateContributorDialog
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// The dialog box for creating new C++ plugins.
+//////////////////////////////////////////////////////////////////////////////
+class RpsQCreatePluginDialog : public QDialog
+{
+  Q_OBJECT
+public:
+  RpsQCreatePluginDialog(RpsQWindow* parent);
+  ~RpsQCreatePluginDialog();
+
+private slots:
+  void on_ok_trigger();
+  void on_cancel_trigger();
+
+private:
+  QVBoxLayout dialog_vbx;
+  QHBoxLayout button_hbx;
+  QLabel blurb_lbl;
+  QTextEdit code_txt;
+  QPushButton ok_btn;
+  QPushButton cancel_btn;
+};				// end of RpsQCreateContributorDialog
+
+
 //////////////////////////////////////////////////////////// RpsQCommandTextEdit
 class RpsQCommandTextEdit : public QTextEdit {
   Q_OBJECT;
@@ -332,6 +356,7 @@ private:
   QAction* win_crsymb_action;
   QAction* win_crnamedinstance_action;
   QAction* win_crcontrib_action;
+  QAction* win_crplugin_action;
 
   // for help menu
 #warning RpsQWindow help menu missing

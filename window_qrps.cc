@@ -90,6 +90,8 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_crnamedinstance_action->setStatusTip("create a new named instance and its symbol");
     win_crcontrib_action = new QAction("create &Contributor", this);
     win_crcontrib_action->setStatusTip("create a new contributor");
+    win_crplugin_action = new QAction("create &Plugin", this);
+    win_crplugin_action->setStatusTip("Create a new C++ plugin");
     win_help_menu = mb->addMenu("Help");
   }
   /// add the actions to their menu
@@ -104,6 +106,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_create_menu->addAction(win_crsymb_action);
     win_create_menu->addAction(win_crnamedinstance_action);
     win_create_menu->addAction(win_crcontrib_action);
+    win_create_menu->addAction(win_crplugin_action);
   }
   // our central widget
   win_centralmdi =  new QMdiArea(this);
@@ -149,20 +152,25 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     auto dia = new RpsQCreateSymbolDialog(this);
     dia->show();
   });
+
   connect(win_crnamedinstance_action, &QAction::triggered,
           [=](void)
   {
     auto dia = new RpsQCreateNamedInstanceDialog(this);
     dia->show();
   });
-  connect(win_crcontrib_action, &QAction::triggered, [=](void)
-  {
+
+  connect(win_crcontrib_action, &QAction::triggered, [=](void) {
     auto dia = new RpsQCreateContributorDialog(this);
     dia->show();
   });
-  connect(win_apclose_action, &QAction::triggered,
-          [=](void)
-  {
+  
+  connect(win_crplugin_action, &QAction::triggered, [=](void) {
+    auto dia = new RpsQCreatePluginDialog(this);
+    dia->show();
+  });
+
+  connect(win_apclose_action, &QAction::triggered, [=](void) {
     RpsQApplication::the_app()->do_remove_window_by_index(window_rank());
   });
 #warning TODO: closing or deletion of RpsQWindow should remove it in application app_windvec....
@@ -1183,6 +1191,74 @@ RpsQCreateContributorDialog::on_email_edit(const QString& text)
 {
   RpsQCreateContributorDialog::on_fname_edit(text);
 }  // end RpsQCreateContributorDialog::on_email_edit()
+
+
+RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
+  : QDialog(parent), dialog_vbx(), button_hbx(), 
+    blurb_lbl("Plugin Code:", this),code_txt("", this),
+    ok_btn("Compile and Run", this), cancel_btn("Cancel", this)
+{
+  // set widget names
+  dialog_vbx.setObjectName("RpsQCreatePluginDialog_dialog_vbx");
+  button_hbx.setObjectName("RpsQCreatePluginDialog_button_hbx");
+  blurb_lbl.setObjectName("RpsQCreatePluginDialog_blurb_lbl");
+  code_txt.setObjectName("RpsQCreatePluginDialog_code_txt");
+  ok_btn.setObjectName("RpsQCreatePluginDialog_ok_btn");
+  cancel_btn.setObjectName("RpsQCreatePlubinDialog_cancel_btn");
+
+  // set widget fonts
+  {
+    auto arial = QFont("Arial", 12);
+    blurb_lbl.setFont(arial);
+    ok_btn.setFont(arial);
+    cancel_btn.setFont(arial);
+
+    code_txt.setFont(QFont("Courier", 12));
+  }
+
+  // layout widgets
+  
+  dialog_vbx.addWidget(&blurb_lbl);
+  dialog_vbx.addWidget(&code_txt);
+  
+  dialog_vbx.addLayout(&button_hbx);
+  button_hbx.addWidget(&ok_btn);
+  button_hbx.addSpacing(3);
+  button_hbx.addWidget(&cancel_btn);
+
+  setLayout(&dialog_vbx);
+
+  // connect slots
+
+  connect(&ok_btn, &QAbstractButton::clicked, this,
+    &RpsQCreatePluginDialog::on_ok_trigger
+  );
+
+  connect(&cancel_btn, &QAbstractButton::clicked, this,
+    &RpsQCreatePluginDialog::on_cancel_trigger
+  );
+}
+
+
+RpsQCreatePluginDialog::~RpsQCreatePluginDialog()
+{
+}
+
+
+void
+RpsQCreatePluginDialog::on_ok_trigger()
+{
+  // TODO: Abhishek will complete
+
+    deleteLater();
+}
+
+
+void
+RpsQCreatePluginDialog::on_cancel_trigger()
+{
+    deleteLater();
+}
 
 
 ////////////////////////////////////////////////////////////////
