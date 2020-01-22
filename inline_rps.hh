@@ -983,7 +983,7 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obclass) const
     {
       cnt++;
       /// this should not happen, except if our inheritance graph is corrupted
-      if (RPS_UNLIKELY(cnt > Rps_Value::maximal_inheritance_depth))
+      if (RPS_UNLIKELY(cnt > (int)Rps_Value::maximal_inheritance_depth))
         {
           RPS_WARNOUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
                       << " of class " << obinitclass);
@@ -1021,7 +1021,7 @@ Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
     {
       cnt++;
       /// this should not happen, except if our inheritance graph is corrupted
-      if (RPS_UNLIKELY(cnt > Rps_Value::maximal_inheritance_depth))
+      if (RPS_UNLIKELY(cnt > (int)Rps_Value::maximal_inheritance_depth))
         {
           RPS_WARNOUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
                       << " of class " << obinitclass);
