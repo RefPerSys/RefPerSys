@@ -119,7 +119,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
   win_centralmdi->addSubWindow(win_command_textedit);
   win_output_textedit = new RpsQOutputTextEdit(this);
   win_centralmdi->addSubWindow(win_output_textedit);
-  
+
   // connect the behavior
   connect(win_apdump_action, &QAction::triggered,
           RpsQApplication::the_app(),
@@ -163,17 +163,20 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     dia->show();
   });
 
-  connect(win_crcontrib_action, &QAction::triggered, [=](void) {
+  connect(win_crcontrib_action, &QAction::triggered, [=](void)
+  {
     auto dia = new RpsQCreateContributorDialog(this);
     dia->show();
   });
-  
-  connect(win_crplugin_action, &QAction::triggered, [=](void) {
+
+  connect(win_crplugin_action, &QAction::triggered, [=](void)
+  {
     auto dia = new RpsQCreatePluginDialog(this);
     dia->show();
   });
 
-  connect(win_apclose_action, &QAction::triggered, [=](void) {
+  connect(win_apclose_action, &QAction::triggered, [=](void)
+  {
     RpsQApplication::the_app()->do_remove_window_by_index(window_rank());
   });
 #warning TODO: closing or deletion of RpsQWindow should remove it in application app_windvec....
@@ -1197,22 +1200,17 @@ RpsQCreateContributorDialog::on_email_edit(const QString& text)
 
 
 RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
-  : QDialog(parent), dialog_vbx(), button_hbx(), file_hbx(), build_hbx(),
-    code_lbl("Plugin Code:", this), file_lbl("File Name:", this),
-    build_lbl("Build Rule:", this), file_txt(this), build_txt(this),
+  : QDialog(parent), dialog_vbx(), button_hbx(), 
+    code_lbl("Plugin Code:", this), 
     code_txt(this), ok_btn("Compile and Run", this), cancel_btn("Cancel", this)
 {
+#warning perhaps mkstemps(3) should be called here.....
+  
   // set widget names
   dialog_vbx.setObjectName("RpsQCreatePluginDialog_dialog_vbx");
   button_hbx.setObjectName("RpsQCreatePluginDialog_button_hbx");
-  file_hbx.setObjectName("RpsQCreatePluginDialog_file_hbx");
-  build_hbx.setObjectName("RpsQCreatePluginDialog_build_hbx");
   code_lbl.setObjectName("RpsQCreatePluginDialog_code_lbl");
-  file_lbl.setObjectName("RpsQCreatePluginDialog_file_lbl");
-  build_lbl.setObjectName("RpsQCreatePluginDialog_build_lbl");
   code_txt.setObjectName("RpsQCreatePluginDialog_code_txt");
-  file_txt.setObjectName("RpsQCreatePluginDialog_file_txt");
-  build_txt.setObjectName("RpsQCreatePluginDialog_build_txt");
   ok_btn.setObjectName("RpsQCreatePluginDialog_ok_btn");
   cancel_btn.setObjectName("RpsQCreatePlubinDialog_cancel_btn");
 
@@ -1220,28 +1218,35 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
   {
     auto arial = QFont("Arial", 12);
     code_lbl.setFont(arial);
-    file_lbl.setFont(arial);
-    build_lbl.setFont(arial);
     ok_btn.setFont(arial);
     cancel_btn.setFont(arial);
 
     auto courier = QFont("Courier", 12);
     code_txt.setFont(courier);
-    file_txt.setFont(courier);
-    build_txt.setFont(courier);
+
+#warning code_txt could be initialized here, and documented on the wiki
+
+    /***
+     * we probably want code_txt to contain something inspired by
+     * (where XXXX are random but meaningful characters)
+     * // file /tmp/rpsXXXXX.cc
+     * #include "refpersys.hh"
+     * 
+     * extern "C" void XXXX_start (Rps_CallerFrame *caller);
+     * 
+     * void XXXX_start (Rps_CallerFrame *caller) {
+     *    RPS_LOCALFRAME(XXXXX, caller,
+     *    );
+     * } //end XXXX_start
+     *
+     * // end of file /tmp/rpsXXXXX.cc
+     ***/
+       
+
   }
 
   // layout widgets
- 
-  dialog_vbx.addLayout(&file_hbx);
-  file_hbx.addWidget(&file_lbl);
-  file_hbx.addSpacing(2);
-  file_hbx.addWidget(&file_txt);
 
-  dialog_vbx.addLayout(&build_hbx);
-  build_hbx.addWidget(&build_lbl);
-  build_hbx.addSpacing(2);
-  build_hbx.addWidget(&build_txt);
 
   dialog_vbx.addWidget(&code_lbl);
   dialog_vbx.addWidget(&code_txt);
@@ -1250,6 +1255,8 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
   button_hbx.addWidget(&ok_btn);
   button_hbx.addSpacing(3);
   button_hbx.addWidget(&cancel_btn);
+
+
 
   setLayout(&dialog_vbx);
 
@@ -1273,21 +1280,18 @@ RpsQCreatePluginDialog::~RpsQCreatePluginDialog()
 void
 RpsQCreatePluginDialog::on_ok_trigger()
 {
-  std::string file = file_txt.text().toStdString();
-  QString build = build_txt.text();
   std::string code = code_txt.toPlainText().toStdString();
 
-  RPS_INFORMOUT("RpsQCreatePluginDialog::on_ok_trigger(): "
-                << "file = " << file << "; build = " << build.toStdString()
-                << "; code = " << code);
+  RPS_INFORMOUT("RpsQCreatePluginDialog::on_ok_trigger() code = " << code);
 
-  std::ofstream out;
-  out.open(file, std::ios::out);
-  out << code << std::endl;
-  out.close();
+  {
+#warning RpsQCreatePluginDialog should use a temporary file here, using mkstemps(3)
+    std::ofstream out;
+    out.close();
+  }
 
   QProcess proc;
-  proc.start(build);
+#warning RpsQCreatePluginDialog the build command should be synthetised here 
   proc.waitForFinished();
 
   auto rc = proc.exitStatus();

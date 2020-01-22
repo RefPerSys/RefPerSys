@@ -304,13 +304,7 @@ private slots:
 private:
   QVBoxLayout dialog_vbx;
   QHBoxLayout button_hbx;
-  QHBoxLayout file_hbx;
-  QHBoxLayout build_hbx;
   QLabel code_lbl;
-  QLabel file_lbl;
-  QLabel build_lbl;
-  QLineEdit file_txt;
-  QLineEdit build_txt;
   QTextEdit code_txt;
   QPushButton ok_btn;
   QPushButton cancel_btn;
@@ -318,7 +312,8 @@ private:
 
 
 //////////////////////////////////////////////////////////// RpsQCommandTextEdit
-class RpsQCommandTextEdit : public QTextEdit {
+class RpsQCommandTextEdit : public QTextEdit
+{
   Q_OBJECT;
 public:
   RpsQCommandTextEdit(QWidget*parent);
@@ -327,7 +322,8 @@ public:
 
 
 //////////////////////////////////////////////////////////// RpsQOutputTextEdit
-class RpsQOutputTextEdit : public QTextEdit {
+class RpsQOutputTextEdit : public QTextEdit
+{
   Q_OBJECT;
 public:
   RpsQOutputTextEdit(QWidget*parent);
