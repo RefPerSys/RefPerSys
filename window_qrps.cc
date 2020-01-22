@@ -31,6 +31,8 @@
 
 #include "refpersys.hh"
 #include "qthead_qrps.hh"
+#include <iostream>
+#include <fstream>
 
 
 extern "C" const char rps_window_gitid[];
@@ -1194,31 +1196,53 @@ RpsQCreateContributorDialog::on_email_edit(const QString& text)
 
 
 RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
-  : QDialog(parent), dialog_vbx(), button_hbx(), 
-    blurb_lbl("Plugin Code:", this),code_txt("", this),
-    ok_btn("Compile and Run", this), cancel_btn("Cancel", this)
+  : QDialog(parent), dialog_vbx(), button_hbx(), file_hbx(), build_hbx(),
+    code_lbl("Plugin Code:", this), file_lbl("File Name:", this),
+    build_lbl("Build Rule:", this), file_txt(this), build_txt(this),
+    code_txt(this), ok_btn("Compile and Run", this), cancel_btn("Cancel", this)
 {
   // set widget names
   dialog_vbx.setObjectName("RpsQCreatePluginDialog_dialog_vbx");
   button_hbx.setObjectName("RpsQCreatePluginDialog_button_hbx");
-  blurb_lbl.setObjectName("RpsQCreatePluginDialog_blurb_lbl");
+  file_hbx.setObjectName("RpsQCreatePluginDialog_file_hbx");
+  build_hbx.setObjectName("RpsQCreatePluginDialog_build_hbx");
+  code_lbl.setObjectName("RpsQCreatePluginDialog_code_lbl");
+  file_lbl.setObjectName("RpsQCreatePluginDialog_file_lbl");
+  build_lbl.setObjectName("RpsQCreatePluginDialog_build_lbl");
   code_txt.setObjectName("RpsQCreatePluginDialog_code_txt");
+  file_txt.setObjectName("RpsQCreatePluginDialog_file_txt");
+  build_txt.setObjectName("RpsQCreatePluginDialog_build_txt");
   ok_btn.setObjectName("RpsQCreatePluginDialog_ok_btn");
   cancel_btn.setObjectName("RpsQCreatePlubinDialog_cancel_btn");
 
   // set widget fonts
   {
     auto arial = QFont("Arial", 12);
-    blurb_lbl.setFont(arial);
+    code_lbl.setFont(arial);
+    file_lbl.setFont(arial);
+    build_lbl.setFont(arial);
     ok_btn.setFont(arial);
     cancel_btn.setFont(arial);
 
-    code_txt.setFont(QFont("Courier", 12));
+    auto courier = QFont("Courier", 12);
+    code_txt.setFont(courier);
+    file_txt.setFont(courier);
+    build_txt.setFont(courier);
   }
 
   // layout widgets
-  
-  dialog_vbx.addWidget(&blurb_lbl);
+ 
+  dialog_vbx.addLayout(&file_hbx);
+  file_hbx.addWidget(&file_lbl);
+  file_hbx.addSpacing(2);
+  file_hbx.addWidget(&file_txt);
+
+  dialog_vbx.addLayout(&build_hbx);
+  build_hbx.addWidget(&build_lbl);
+  build_hbx.addSpacing(2);
+  build_hbx.addWidget(&build_txt);
+
+  dialog_vbx.addWidget(&code_lbl);
   dialog_vbx.addWidget(&code_txt);
   
   dialog_vbx.addLayout(&button_hbx);
@@ -1248,9 +1272,22 @@ RpsQCreatePluginDialog::~RpsQCreatePluginDialog()
 void
 RpsQCreatePluginDialog::on_ok_trigger()
 {
+  std::string file = file_txt.text().toStdString();
+  std::string build = build_txt.text().toStdString();
+  std::string code = code_txt.toPlainText().toStdString();
+
+  RPS_INFORMOUT("RpsQCreatePluginDialog::on_ok_trigger(): "
+                << "file = " << file << "; build = " << build 
+                << "; code = " << code);
+
+  std::ofstream out;
+  out.open(file, std::ios::out);
+  out << code << std::endl;
+  out.close();
+
   // TODO: Abhishek will complete
 
-    deleteLater();
+  deleteLater();
 }
 
 
