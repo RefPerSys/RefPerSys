@@ -33,6 +33,7 @@
 #include "qthead_qrps.hh"
 #include <iostream>
 #include <fstream>
+#include <QProcess>
 
 
 extern "C" const char rps_window_gitid[];
@@ -1273,11 +1274,11 @@ void
 RpsQCreatePluginDialog::on_ok_trigger()
 {
   std::string file = file_txt.text().toStdString();
-  std::string build = build_txt.text().toStdString();
+  QString build = build_txt.text();
   std::string code = code_txt.toPlainText().toStdString();
 
   RPS_INFORMOUT("RpsQCreatePluginDialog::on_ok_trigger(): "
-                << "file = " << file << "; build = " << build 
+                << "file = " << file << "; build = " << build.toStdString()
                 << "; code = " << code);
 
   std::ofstream out;
@@ -1285,6 +1286,14 @@ RpsQCreatePluginDialog::on_ok_trigger()
   out << code << std::endl;
   out.close();
 
+  QProcess proc;
+  proc.start(build);
+  proc.waitForFinished();
+  QString msg(proc.readAllStandardOutput());
+
+  RPS_INFORMOUT("RpsQCreatePluginDialog::on_ok_trigger(): build msg = "
+                << msg.toStdString());
+                
   // TODO: Abhishek will complete
 
   deleteLater();
