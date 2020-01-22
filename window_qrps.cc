@@ -1289,10 +1289,21 @@ RpsQCreatePluginDialog::on_ok_trigger()
   QProcess proc;
   proc.start(build);
   proc.waitForFinished();
+
+  auto rc = proc.exitStatus();
   QString msg(proc.readAllStandardOutput());
 
-  RPS_INFORMOUT("RpsQCreatePluginDialog::on_ok_trigger(): build msg = "
-                << msg.toStdString());
+  RPS_INFORMOUT("RpsQCreatePluginDialog::on_ok_trigger(): exit code = "
+                << rc << "; build msg = " << msg.toStdString());
+
+  if (rc == 0) {
+    QMessageBox::information(this, "Success!", 
+                             "The plugin was successfully built.");
+  }
+
+  else {
+    QMessageBox::information(this, "Failed to build plugin!", msg);
+  }
                 
   // TODO: Abhishek will complete
 
