@@ -28,6 +28,7 @@ RPS_INSTALL_ROOT_OB(_1wihX3eWD9o00QnxUX) //∈mutable_set
 RPS_INSTALL_ROOT_OB(_1DBiKRl70P304DEMoR) //our_contributors∈symbol
 RPS_INSTALL_ROOT_OB(_2i66FFjmS7n03HNNBx) //space∈class
 RPS_INSTALL_ROOT_OB(_2A2mrPpR3Qf03p6o5b) //int∈class
+RPS_INSTALL_ROOT_OB(_2SRhV7RJt3B01yArR6) //set_of_core_functions∈symbol
 RPS_INSTALL_ROOT_OB(_36I1BY2NetN03WjrOv) //symbol∈class
 RPS_INSTALL_ROOT_OB(_3N8vZ2Cw62z024XxCg) //first_name∈symbol
 RPS_INSTALL_ROOT_OB(_3Q3hJsSgCDN03GTYW5) //symbol∈symbol
@@ -38,6 +39,7 @@ RPS_INSTALL_ROOT_OB(_5yQcFbU0seU018B48Z) //message_sending∈symbol
 RPS_INSTALL_ROOT_OB(_5CYWxcChKN002rw1fI) //contributor_to_RefPerSys∈class
 RPS_INSTALL_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
 RPS_INSTALL_ROOT_OB(_6fmq7pZkmNd03UyPuO) //class∈symbol
+RPS_INSTALL_ROOT_OB(_6gxiw0snqrX01tZWW9) //∈mutable_set
 RPS_INSTALL_ROOT_OB(_6JbWqOsjX5T03M1eGM) //closure_for_method_selector∈symbol
 RPS_INSTALL_ROOT_OB(_6JYterg6iAu00cV9Ye) //set∈class
 RPS_INSTALL_ROOT_OB(_6NVM7sMcITg01ug5TC) //tuple∈class
@@ -48,9 +50,11 @@ RPS_INSTALL_ROOT_OB(_8J6vNYtP5E800eCr5q) //∈space
 RPS_INSTALL_ROOT_OB(_8YknAApDQiF04BDe3W) //mutable_vector∈class
 RPS_INSTALL_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
 RPS_INSTALL_ROOT_OB(_9uwZtDshW4401x6MsY) //space∈symbol
+RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
+RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 28
+#define RPS_NB_ROOT_OB 32
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh

@@ -37,6 +37,10 @@
    "obj" : "_1DBiKRl70P304DEMoR"
   },
   {
+   "nam" : "set_of_core_functions",
+   "obj" : "_2SRhV7RJt3B01yArR6"
+  },
+  {
    "nam" : "first_name",
    "obj" : "_3N8vZ2Cw62z024XxCg"
   },
@@ -79,6 +83,7 @@
   "_1DBiKRl70P304DEMoR",
   "_2i66FFjmS7n03HNNBx",
   "_2A2mrPpR3Qf03p6o5b",
+  "_2SRhV7RJt3B01yArR6",
   "_36I1BY2NetN03WjrOv",
   "_3N8vZ2Cw62z024XxCg",
   "_3Q3hJsSgCDN03GTYW5",
@@ -89,6 +94,7 @@
   "_5CYWxcChKN002rw1fI",
   "_62LTwxwKpQ802SsmjE",
   "_6fmq7pZkmNd03UyPuO",
+  "_6gxiw0snqrX01tZWW9",
   "_6JbWqOsjX5T03M1eGM",
   "_6JYterg6iAu00cV9Ye",
   "_6NVM7sMcITg01ug5TC",
@@ -98,9 +104,11 @@
   "_8J6vNYtP5E800eCr5q",
   "_8YknAApDQiF04BDe3W",
   "_98sc8kSOXV003i86w5",
-  "_9uwZtDshW4401x6MsY"
+  "_9uwZtDshW4401x6MsY",
+  "_9BnrMLXUhfG00llx8X",
+  "_9Gz1oNPCnkB00I6VRS"
  ],
- "origitid" : "bcec5a1e93cc7a9d794f0280863dfe01060c7847+",
+ "origitid" : "0916d6dadcb6aadd0c2644b58e4d0e687b00136e+",
  "plugins" : [],
  "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }
