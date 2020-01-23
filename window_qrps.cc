@@ -63,7 +63,9 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_crnamedinstance_action(nullptr),
     win_crcontrib_action(nullptr),
     win_centralmdi(nullptr),
+    win_command_subwin(nullptr),
     win_command_textedit(nullptr),
+    win_output_subwin(nullptr),
     win_output_textedit(nullptr),
     win_objref(nullptr)
 #warning win_objref should be known to the garbage collector
@@ -111,14 +113,20 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_create_menu->addAction(win_crcontrib_action);
     win_create_menu->addAction(win_crplugin_action);
   }
-  // our central widget
+  // our central widget and related subwindows and subwidgets
   win_centralmdi =  new QMdiArea(this);
   setCentralWidget(win_centralmdi);
   win_centralmdi->tileSubWindows();
+  win_command_subwin = new QMdiSubWindow(this);
   win_command_textedit = new RpsQCommandTextEdit(this);
-  win_centralmdi->addSubWindow(win_command_textedit);
+  win_command_subwin->setWindowTitle("command");
+  win_command_subwin->setWidget(win_command_textedit);
+  win_centralmdi->addSubWindow(win_command_subwin);
+  win_output_subwin = new QMdiSubWindow(this);
   win_output_textedit = new RpsQOutputTextEdit(this);
-  win_centralmdi->addSubWindow(win_output_textedit);
+  win_output_subwin->setWindowTitle("output");
+  win_output_subwin->setWidget(win_output_textedit);
+  win_centralmdi->addSubWindow(win_output_subwin);
 
   // connect the behavior
   connect(win_apdump_action, &QAction::triggered,

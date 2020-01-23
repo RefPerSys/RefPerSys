@@ -62,6 +62,7 @@
 #include <QDebug>
 #include <QFont>
 #include <QMdiArea>
+#include <QMdiSubWindow>
 #include <QScreen>
 #include <QDesktopWidget>
 #include <QThread>
@@ -363,13 +364,14 @@ private:
   // for help menu
 #warning RpsQWindow help menu missing
 
-  /// the central widget
-  QMdiArea* win_centralmdi;
 
-  /// the command text edit
-  RpsQCommandTextEdit* win_command_textedit;
-  /// the output text edit
-  RpsQOutputTextEdit* win_output_textedit;
+  QMdiArea* win_centralmdi;/// the central widget
+
+  QMdiSubWindow* win_command_subwin; /// the command subwindow
+  RpsQCommandTextEdit* win_command_textedit;/// the command text edit
+
+  QMdiSubWindow* win_output_subwin; /// the output subwindow
+  RpsQOutputTextEdit* win_output_textedit;/// the output text edit
 
   /// the object reference
   Rps_ObjectRef win_objref;
