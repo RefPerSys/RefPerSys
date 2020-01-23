@@ -48,9 +48,11 @@ RPS_INSTALL_ROOT_OB(_8J6vNYtP5E800eCr5q) //∈space
 RPS_INSTALL_ROOT_OB(_8YknAApDQiF04BDe3W) //mutable_vector∈class
 RPS_INSTALL_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
 RPS_INSTALL_ROOT_OB(_9uwZtDshW4401x6MsY) //space∈symbol
+RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
+RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 28
+#define RPS_NB_ROOT_OB 30
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
