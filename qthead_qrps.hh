@@ -309,6 +309,7 @@ private:
   QTextEdit code_txt;
   QPushButton ok_btn;
   QPushButton cancel_btn;
+  std::string random_id;
 };				// end of RpsQCreateContributorDialog
 
 

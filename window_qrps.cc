@@ -1213,6 +1213,7 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
     code_txt(this), ok_btn("Compile and Run", this), cancel_btn("Cancel", this)
 {
 #warning perhaps mkstemps(3) should be called here.....
+    random_id = Rps_Id::random().to_string();
   
   // set widget names
   dialog_vbx.setObjectName("RpsQCreatePluginDialog_dialog_vbx");
@@ -1249,8 +1250,18 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
      *
      * // end of file /tmp/rpsXXXXX.cc
      ***/
-       
 
+    std::ostringstream boilerplate;
+    boilerplate << "// file /tmp/rps" << random_id << ".cc" << std::endl
+                << "#include \"refpersys.hh\"" << std::endl << std::endl
+                << "extern \"C\" void " << random_id 
+                << "_start(Rps_CallerFrame* caller);" << std::endl << std::endl
+                << "void " << random_id << "_start(Rps_CallerFrame* caller) {"
+                << std::endl << "  RPS_LOCALFRAME(" << random_id
+                << ", caller, " << std::endl << "  );" << std::endl
+                << "} // end " << random_id << "_start" << std::endl << std::endl
+                << "// end of file /tmp/rps" << random_id << ".cc" << std::endl;
+    code_txt.setText(QString(boilerplate.str().c_str()));
   }
 
   // layout widgets
