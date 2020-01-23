@@ -1275,8 +1275,6 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
   button_hbx.addSpacing(3);
   button_hbx.addWidget(&cancel_btn);
 
-
-
   setLayout(&dialog_vbx);
 
   // connect slots
@@ -1305,7 +1303,9 @@ RpsQCreatePluginDialog::on_ok_trigger()
 
   {
 #warning RpsQCreatePluginDialog should use a temporary file here, using mkstemps(3)
+    auto fpath = "/tmp/rps" + random_id + ".cc";
     std::ofstream out;
+    out.open(fpath.c_str(), std::ios::out);
     out.close();
   }
 
