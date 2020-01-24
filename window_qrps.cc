@@ -1257,8 +1257,10 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
                 << "extern \"C\" void " << random_id 
                 << "_start(Rps_CallerFrame* caller);" << std::endl << std::endl
                 << "void " << random_id << "_start(Rps_CallerFrame* caller) {"
-                << std::endl << "  RPS_LOCALFRAME(" << random_id
-                << ", caller, " << std::endl << "  );" << std::endl
+                << std::endl << "  RPS_LOCALFRAME(" 
+                << "rpskob_9uwZtDshW4401x6MsY, caller, Rps_Value val; " 
+                << "Rps_ObjectRef obattr;"
+                << std::endl << "  );" << std::endl
                 << "} // end " << random_id << "_start" << std::endl << std::endl
                 << "// end of file /tmp/rps" << random_id << ".cc" << std::endl;
     code_txt.setText(QString(boilerplate.str().c_str()));
