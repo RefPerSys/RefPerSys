@@ -35,7 +35,7 @@
 # Phony targets are scoped, so you probably want to declare them first.
 #
 
-.PHONY: all install clean indent
+.PHONY: all install clean indent print-temporary-plugin-settings
 
 .DEFAULT: all
 
@@ -109,6 +109,13 @@ REFPERSYS_QTBASE_HEADERS[] =
 _qthead_qrps.inc.hh: qthead_qrps.hh
 	$(QT5MOC) $(PREFIXED_INCLUDES) $(PKGINCFLAGS) -DRPS_GITID=\"$(RPSGITID)\"   $< -o $@
 
+
+### 
+# print-temporary-plugin-settings:
+# 	printf "RPSPLUGIN_CXX=%s\n" $CXX
+# 	printf "RPSPLUGIN_CXXFLAGS='%s'\n" $CXXFLAGS
+# 	printf "RPSPLUGIN_LDFLAGS='%s'\n" $LDFLAGS
+
 CGeneratedFiles(_qthead_qrps.inc.hh)
 
 CXXProgram(refpersys, $(REFPERSYS_BASE_FILES) $(REFPERSYS_QTBASE_FILES) _timestamp_rps)
@@ -139,6 +146,7 @@ clean:
 all: refpersys
 	mv -v _timestamp_rps.c _timestamp_rps.c~
 	sync
+
 
 _timestamp_rps.c: $(addsuffixes .cc, $(REFPERSYS_BASE_FILES) $(REFPERSYS_QTBASE_FILES)) $(addsuffixes .hh, $(REFPERSYS_BASE_HEADERS) $(REFPERSYS_QTBASE_HEADERS)) generate-timestamp.sh
    ./generate-timestamp.sh $@ > $@.tmp
