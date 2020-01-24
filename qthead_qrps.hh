@@ -289,7 +289,7 @@ private:
 
 
 ///////////////////////////////////////////////////////////////////////////////
-/// The dialog box for creating new C++ plugins.
+/// The dialog box for creating then running new temporary C++ plugins.
 //////////////////////////////////////////////////////////////////////////////
 class RpsQCreatePluginDialog : public QDialog
 {
@@ -309,7 +309,20 @@ private:
   QTextEdit code_txt;
   QPushButton ok_btn;
   QPushButton cancel_btn;
-  std::string random_id;
+  Rps_Id random_id;
+public:
+  std::string temporary_cplusplus_file_path()
+  {
+    return std::string("/tmp/rps") + random_id.to_string() + ".cc";
+  }
+  std::string temporary_plugin_file_path()
+  {
+    return std::string("/tmp/rps") + random_id.to_string() + ".so";
+  }
+  std::string temporary_function_name()
+  {
+    return std::string("rpstemp_") + random_id.to_string();
+  };
 };				// end of RpsQCreateContributorDialog
 
 

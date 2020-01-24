@@ -1212,7 +1212,6 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
     code_lbl("Plugin Code:", this), 
     code_txt(this), ok_btn("Compile and Run", this), cancel_btn("Cancel", this)
 {
-#warning perhaps mkstemps(3) should be called here.....
     random_id = Rps_Id::random().to_string();
   
   // set widget names
@@ -1233,32 +1232,16 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
     auto courier = QFont("Courier", 12);
     code_txt.setFont(courier);
 
-#warning code_txt could be initialized here, and documented on the wiki
-
-    /***
-     * we probably want code_txt to contain something inspired by
-     * (where XXXX are random but meaningful characters)
-     * // file /tmp/rpsXXXXX.cc
-     * #include "refpersys.hh"
-     * 
-     * extern "C" void XXXX_start (Rps_CallerFrame *caller);
-     * 
-     * void XXXX_start (Rps_CallerFrame *caller) {
-     *    RPS_LOCALFRAME(XXXXX, caller,
-     *    );
-     * } //end XXXX_start
-     *
-     * // end of file /tmp/rpsXXXXX.cc
-     ***/
 
     std::ostringstream boilerplate;
     boilerplate << "// file /tmp/rps" << random_id << ".cc" << std::endl
                 << "#include \"refpersys.hh\"" << std::endl << std::endl
-                << "extern \"C\" void " << random_id 
-                << "_start(Rps_CallerFrame* caller);" << std::endl << std::endl
-                << "void " << random_id << "_start(Rps_CallerFrame* caller) {"
-                << std::endl << "  RPS_LOCALFRAME(" 
-                << "rpskob_9uwZtDshW4401x6MsY, caller, Rps_Value val; " 
+                << "extern \"C\" void "
+		<< (temporary_function_name()) << " (Rps_CallerFrame* caller);" << std::endl << std::endl
+                << "void "  << (temporary_function_name()) << " (Rps_CallerFrame* caller) {"
+                << std::endl << "  RPS_LOCALFRAME("
+      /// see https://gitlab.com/bstarynk/refpersys/-/wikis/call-frames-in-RefPerSys
+                << "nullptr, caller, Rps_Value val; " 
                 << "Rps_ObjectRef obattr;"
                 << std::endl << "  );" << std::endl
                 << "} // end " << random_id << "_start" << std::endl << std::endl
@@ -1299,41 +1282,77 @@ RpsQCreatePluginDialog::~RpsQCreatePluginDialog()
 void
 RpsQCreatePluginDialog::on_ok_trigger()
 {
+  typedef void pluginsig_t (Rps_CallFrame*);
+  RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
+                 nullptr,//parentframe
+		 );
+  
   std::string code = code_txt.toPlainText().toStdString();
+  auto srcpath = temporary_cplusplus_file_path();
+  auto pluginpath = temporary_plugin_file_path();
 
-  RPS_INFORMOUT("RpsQCreatePluginDialog::on_ok_trigger() code = " << code);
+  RPS_INFORMOUT("RpsQCreatePluginDialog srcpath="
+		<< srcpath << ", pluginpath= "
+		<< pluginpath << ", code:"
+		<< std::endl << code << std::endl);
 
   {
-#warning RpsQCreatePluginDialog should use a temporary file here, using mkstemps(3)
-    auto fpath = "/tmp/rps" + random_id + ".cc";
     std::ofstream out;
-    out.open(fpath.c_str(), std::ios::out);
+    out.open(srcpath.c_str(), std::ios::out);
+    out << code << std::endl;
     out.close();
   }
 
   QProcess proc;
-#warning RpsQCreatePluginDialog the build command should be synthetised here 
+  QStringList procargs;
+  procargs << QString(temporary_cplusplus_file_path().c_str())
+	   << QString(temporary_plugin_file_path().c_str());
+  proc.setProgram("./build-temporary-plugin.sh");
+  proc.setArguments(procargs);
   proc.waitForFinished();
 
   auto rc = proc.exitStatus();
   QString msg(proc.readAllStandardOutput());
+  QString err(proc.readAllStandardError());
 
   RPS_INFORMOUT("RpsQCreatePluginDialog::on_ok_trigger(): exit code = "
                 << rc << "; build msg = " << msg.toStdString());
 
   if (rc == 0) {
+    try {
+    void *dlh = dlopen(temporary_plugin_file_path().c_str(), RTLD_NOW | RTLD_GLOBAL);
+    if (!dlh)
+      throw RPS_RUNTIME_ERROR_OUT("dlopen of " << temporary_plugin_file_path()
+				  << " failed:" << dlerror());
+    void *funp = dlsym(dlh, temporary_function_name().c_str());
+    if (!funp)
+      throw RPS_RUNTIME_ERROR_OUT("dlsym of " << temporary_function_name()
+				  << " in " << temporary_plugin_file_path()
+				  << " failed:" << dlerror());
+    (*reinterpret_cast<pluginsig_t*>(funp)) (&_);
+      
     QMessageBox::information(this, "Success!", 
-                             "The plugin was successfully built.");
+                             QString("The plugin %1 was successfully built and executed.").arg(temporary_plugin_file_path().c_str()));
+    deleteLater();
+    }
+  catch (const std::exception& exc)
+    {
+      err += exc.what();
+      RPS_WARNOUT("RpsQCreateClassDialog exception " << exc.what());
+      QMessageBox::warning(this,
+			   QString("Plugin %1 run failure!").arg(temporary_plugin_file_path().c_str()),
+			   err);
+  }
   }
 
   else {
-    QMessageBox::information(this, "Failed to build plugin!", msg);
+    QMessageBox::warning(this, "Plugin build failure!", err);
   }
                 
-  // TODO: Abhishek will complete
+#warning TODO: Abhishek will fix the bug
+  // notably in build-temporary-plugin.sh related to failing omake
 
-  deleteLater();
-}
+} // end RpsQCreatePluginDialog::on_ok_trigger
 
 
 void
