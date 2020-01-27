@@ -1444,6 +1444,7 @@ Rps_Dumper::write_generated_constants_file(void)
       *pouts << "RPS_INSTALL_CONSTANT_OB(" << constobr->oid() << ")" << std::endl;
       constcnt ++;
     }
+  *pouts << std::endl << "#undef RPS_INSTALL_CONSTANT_OB" << std::endl << std::endl;
   *pouts << std::endl
          << "#undef  RPS_NB_CONSTANT_OB" << std::endl
          << "#define RPS_NB_CONSTANT_OB " << constcnt << std::endl << std::endl;
