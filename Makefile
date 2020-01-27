@@ -84,7 +84,7 @@ _qthead_qrps.inc.hh: $(RPS_QT_HEADERS)
 %.o: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -o $@ $<
 
-# see https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.htmlt 
+# see https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html 
 
 # FIXME: we dont want to change the mtime of refpersys.hh.gch when its
 # content did not change
