@@ -29,7 +29,7 @@ plugintempfile=$2
 
 printf "start %s at %s: C++ file %s, plugin file %s\n" $0 $(date +%c) $cpptempfile $plugintempfile > /dev/stderr
 ## FIXME: the following does not work yet
-eval $(omake print-temporary-plugin-settings)
+eval $(make print-temporary-plugin-settings)
 
 ## check that we have the necessary shell variables set in above eval
 if [ -z "$RPSPLUGIN_CXX" ]; then

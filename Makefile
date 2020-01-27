@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all clean
+.PHONY: all clean print-temporary-plugin-settings
 
 RPS_GIT_ID:= $(shell ./generate-gitid.sh)
 
@@ -100,4 +100,11 @@ clean:
 __timestamp.c:
 	./generate-timestamp.sh > $@-tmp
 	$(MV) --backup $@-tmp $@
+
+
+## for temporary plugins, see build-temporary-plugin.sh
+print-temporary-plugin-settings:
+	@printf "RPSPLUGIN_CXX='%s'\n" $(RPS_BUILD_CXX)
+	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(CXXFLAGS)"
+	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"
 ## eof Makefile
