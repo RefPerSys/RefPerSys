@@ -88,8 +88,11 @@ _qthead_qrps.inc.hh: $(RPS_QT_HEADERS)
 
 # FIXME: we dont want to change the mtime of refpersys.hh.gch when its
 # content did not change
-refpersys.hh.gch: refpersys.hh
-	$(COMPILE.cc) -c -o $@ $^
+refpersys.hh.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
+	$(COMPILE.cc) -c -o $@-tmp $<
+	@if cmp  refpersys.hh.gch  $@-tmp ; then \
+         echo unchanged refpersys.hh ; else \
+         mv --backup -v  $@-tmp  refpersys.hh.gch ; fi
 
 clean:
 	$(RM) *.o *.orig *~ refpersys *.gch
