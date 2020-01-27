@@ -53,8 +53,9 @@ RPS_INCLUDE_FLAGS = $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
 RPS_PKG_CONFIG = pkg-config
 RPS_PKG_NAMES = Qt5Core Qt5Gui Qt5Widgets Qt5Network jsoncpp
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
-RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) -- libs $(RPS_PKG_NAMES)) -lbacktrace -ldl
+RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
+LIBES= $(RPS_PKG_LIBS) -lunistring -lbacktrace -ldl
 RM= rm -f
 MV= mv
 CC = $(RPS_BUILD_CCACHE) $(RPS_BUILD_CC)
@@ -67,9 +68,9 @@ CXXFLAGS += $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
 all: refpersys
 
 refpersys: $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o
-	$(LINK.cc) -rdynamic \
+	$(LINK.cc) -rdynamic -pthread -L /usr/local/lib -L /usr/lib \
             $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o \
-           -o $@
+           $(LIBES) -o $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
@@ -83,7 +84,10 @@ _qthead_qrps.inc.hh: $(RPS_QT_HEADERS)
 %.o: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -o $@ $<
 
-# https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html
+# see https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.htmlt 
+
+# FIXME: we dont want to change the mtime of refpersys.hh.gch when its
+# content did not change
 refpersys.hh.gch: refpersys.hh
 	$(COMPILE.cc) -c -o $@ $^
 
