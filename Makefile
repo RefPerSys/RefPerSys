@@ -34,8 +34,8 @@ RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 
-RPS_QT_HEADERS:= $(sort $(wildcard *_qrps.cc))
-RPS_QT_SOURCES:= $(sort $(wildcard *_qrps.hh))
+RPS_QT_HEADERS:= $(sort $(wildcard *_qrps.hh))
+RPS_QT_SOURCES:= $(sort $(wildcard *_qrps.cc))
 RPS_QT_OBJECTS = $(patsubst %.cc, %.o, $(RPS_QT_SOURCES))
 RPS_QT_MOC = moc
 
@@ -52,8 +52,8 @@ RPS_INCLUDE_FLAGS = $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
 
 RPS_PKG_CONFIG = pkg-config
 RPS_PKG_NAMES = Qt5Core Qt5Gui Qt5Widgets Qt5Network jsoncpp
-RPS_PKG_CFLAGS = $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
-RPS_PKG_LIBS = $(shell $(RPS_PKG_CONFIG) -- libs $(RPS_PKG_NAMES))
+RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
+RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) -- libs $(RPS_PKG_NAMES)) -lbacktrace -ldl
 
 RM= rm -f
 MV= mv
@@ -67,7 +67,9 @@ CXXFLAGS += $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
 all: refpersys
 
 refpersys: $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o
-	$(LINK.cc) $< -o $@
+	$(LINK.cc) -rdynamic \
+            $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o \
+           -o $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
