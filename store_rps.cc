@@ -54,7 +54,7 @@ Json::Value rps_string_to_json(const std::string&str)
   Json::CharReaderBuilder jsonreaderbuilder;
   std::unique_ptr<Json::CharReader> pjsonreader(jsonreaderbuilder.newCharReader());
   Json::Value jv;
-  Json::String errstr;
+  JSONCPP_STRING errstr;
   RPS_ASSERT(pjsonreader);
   if (!pjsonreader->parse(str.c_str(), str.c_str() + str.size(), &jv, &errstr))
     throw std::runtime_error(std::string("JSON parsing error:") + errstr);
@@ -898,7 +898,7 @@ Rps_Dumper::json_value(Rps_Value val)
   if (!val || val.is_empty())
     return Json::Value(Json::nullValue);
   else if (val.is_int())
-    return Json::Value(val.as_int());
+    return Json::Value(Json::Int64(val.as_int()));
   else if (val.is_ptr() && is_dumpable_value(val))
     {
       return val.to_ptr()->dump_json(this);
