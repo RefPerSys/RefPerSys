@@ -1245,6 +1245,8 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
 		<< "           Rps_Value val; // "  << std::endl
                 << "           Rps_ObjectRef obattr; // " <<  std::endl
                 << std::endl << "  );" << std::endl
+                << "// body of " <<  (temporary_function_name()) << " ::::" << std::endl
+		<< " ;" << std::endl
                 << "} // end " <<  (temporary_function_name()) << std::endl << std::endl
                 << "// end of file /tmp/rps" << random_id << ".cc" << std::endl;
     code_txt.setText(QString(boilerplate.str().c_str()));
@@ -1287,6 +1289,20 @@ RpsQCreatePluginDialog::on_ok_trigger()
   RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
                  nullptr,//parentframe
 		 );
+  {
+    auto screengeom = RpsQApplication::the_app()->desktop()->screenGeometry();
+    int w = 700;
+    int h = 500;
+    if (w > (3*screengeom.width())/4)
+      w = 3*screengeom.width()/4;
+    else if (w < (screengeom.width())/2)
+      w = 16 + (screengeom.width())/2;
+    if (h >  (3*screengeom.height())/4)
+      h = 3*screengeom.height()/4;
+    else if (h < screengeom.height()/2)
+      h = 16 + screengeom.height()/2;
+    this->resize(w, h);
+  }
   
   std::string code = code_txt.toPlainText().toStdString();
   auto srcpath = temporary_cplusplus_file_path();
@@ -1321,29 +1337,29 @@ RpsQCreatePluginDialog::on_ok_trigger()
 
   if (rc == 0) {
     try {
-    void *dlh = dlopen(temporary_plugin_file_path().c_str(), RTLD_NOW | RTLD_GLOBAL);
-    if (!dlh)
-      throw RPS_RUNTIME_ERROR_OUT("dlopen of " << temporary_plugin_file_path()
-				  << " failed:" << dlerror());
-    void *funp = dlsym(dlh, temporary_function_name().c_str());
-    if (!funp)
-      throw RPS_RUNTIME_ERROR_OUT("dlsym of " << temporary_function_name()
-				  << " in " << temporary_plugin_file_path()
-				  << " failed:" << dlerror());
-    (*reinterpret_cast<pluginsig_t*>(funp)) (&_);
+      void *dlh = dlopen(temporary_plugin_file_path().c_str(), RTLD_NOW | RTLD_GLOBAL);
+      if (!dlh)
+	throw RPS_RUNTIME_ERROR_OUT("dlopen of " << temporary_plugin_file_path()
+				    << " failed:" << dlerror());
+      void *funp = dlsym(dlh, temporary_function_name().c_str());
+      if (!funp)
+	throw RPS_RUNTIME_ERROR_OUT("dlsym of " << temporary_function_name()
+				    << " in " << temporary_plugin_file_path()
+				    << " failed:" << dlerror());
+      (*reinterpret_cast<pluginsig_t*>(funp)) (&_);
       
-    QMessageBox::information(this, "Success!", 
-                             QString("The plugin %1 was successfully built and executed.").arg(temporary_plugin_file_path().c_str()));
-    deleteLater();
+      QMessageBox::information(this, "Success!", 
+			       QString("The plugin %1 was successfully built and executed.").arg(temporary_plugin_file_path().c_str()));
+      deleteLater();
     }
-  catch (const std::exception& exc)
-    {
-      err += exc.what();
-      RPS_WARNOUT("RpsQCreateClassDialog exception " << exc.what());
-      QMessageBox::warning(this,
-			   QString("Plugin %1 run failure!").arg(temporary_plugin_file_path().c_str()),
-			   err);
-  }
+    catch (const std::exception& exc)
+      {
+	err += exc.what();
+	RPS_WARNOUT("RpsQCreateClassDialog exception " << exc.what());
+	QMessageBox::warning(this,
+			     QString("Plugin %1 run failure!").arg(temporary_plugin_file_path().c_str()),
+			     err);
+      }
   }
 
   else {
