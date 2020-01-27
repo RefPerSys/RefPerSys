@@ -321,7 +321,7 @@ public:
   }
   std::string temporary_function_name()
   {
-    return std::string("rpstemp_") + random_id.to_string();
+    return std::string("rpstempf") + random_id.to_string();
   };
 };				// end of RpsQCreateContributorDialog
 

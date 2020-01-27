@@ -1241,10 +1241,11 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
                 << "void "  << (temporary_function_name()) << " (Rps_CallerFrame* caller) {"
                 << std::endl << "  RPS_LOCALFRAME("
       /// see https://gitlab.com/bstarynk/refpersys/-/wikis/call-frames-in-RefPerSys
-                << "nullptr, caller, Rps_Value val; " 
-                << "Rps_ObjectRef obattr;"
+		<< "/*no descr:*/nullptr, caller," << std::endl
+		<< "           Rps_Value val; // "  << std::endl
+                << "           Rps_ObjectRef obattr; // " <<  std::endl
                 << std::endl << "  );" << std::endl
-                << "} // end " << random_id << "_start" << std::endl << std::endl
+                << "} // end " <<  (temporary_function_name()) << std::endl << std::endl
                 << "// end of file /tmp/rps" << random_id << ".cc" << std::endl;
     code_txt.setText(QString(boilerplate.str().c_str()));
   }
