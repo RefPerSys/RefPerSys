@@ -64,12 +64,12 @@ CXXFLAGS += $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             $(RPS_BUILD_CODGENFLAGS) \
 	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) \
 	    $(RPS_PKG_CFLAGS) -DRPS_GITID=\"$(RPS_GIT_ID)\"
+LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 
 all: refpersys
 
 refpersys: $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o
-	$(LINK.cc) -rdynamic -pthread -L /usr/local/lib -L /usr/lib \
-            $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o \
+	$(LINK.cc) $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o \
            $(LIBES) -o $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
