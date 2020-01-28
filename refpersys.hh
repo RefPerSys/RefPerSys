@@ -2770,6 +2770,8 @@ extern "C" unsigned rps_hardcoded_number_of_constants(void);
 
 extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
 
+extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
+
 extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc
 
 // scan a code address, e.g. a C function pointer whose address is inside some dlopen-ed plugin

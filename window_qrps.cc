@@ -190,6 +190,15 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
 #warning TODO: closing or deletion of RpsQWindow should remove it in application app_windvec....
 } // end RpsQWindow::RpsQWindow
 
+void RpsQWindow::gc_mark(Rps_GarbageCollector&gc) const
+{
+  if (win_objref)
+    win_objref.gc_mark(gc);
+  if (win_command_textedit)
+    win_command_textedit->gc_mark(gc);
+  if (win_output_textedit)
+    win_output_textedit->gc_mark(gc);
+} // end RpsQWindow::gc_mark
 
 
 ////////////////////////////////////////////////////////////////

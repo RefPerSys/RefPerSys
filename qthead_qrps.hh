@@ -84,6 +84,7 @@ class RpsQApplication
   : public QApplication
 {
   friend void rps_run_application(int &argc, char **argv);
+  friend void rps_garbcoll_application(Rps_GarbageCollector&gc);
   friend bool rps_is_main_gui_thread(void);
   Q_OBJECT;
 public:
@@ -109,6 +110,8 @@ public:
     return dynamic_cast<RpsQApplication*>(RpsQApplication::instance());
   };
 
+  void gc_mark(Rps_GarbageCollector&gc) const;
+
 public slots:
   void do_dump_state(QString dirpath=".");
   void do_dump_current_state();
@@ -124,7 +127,7 @@ private:
   static QThread* app_mainqthread;
   static pthread_t app_mainselfthread;
   static std::thread::id app_mainthreadid;
-  std::mutex app_mutex;
+  mutable std::mutex app_mutex;
   std::vector <std::unique_ptr<RpsQWindow>> app_windvec;
   size_t app_wndcount;
 };				// end of class RpsQApplication
@@ -333,6 +336,18 @@ class RpsQCommandTextEdit : public QTextEdit
 public:
   RpsQCommandTextEdit(QWidget*parent);
   ~RpsQCommandTextEdit();
+private:
+  // Conventionally the object reference below is null or else a
+  // transient RefPerSys object carrying a payload of
+  // Rps_PayloadQt<RpsQCommandTextEdit>, pointing in C++ to this C++
+  // object....
+  Rps_ObjectRef cmdtxt_objref;
+public:
+  void gc_mark(Rps_GarbageCollector&gc) const
+  {
+    if (cmdtxt_objref)
+      cmdtxt_objref.gc_mark(gc);
+  };
 };				// end RpsQCommandTextEdit
 
 
@@ -343,6 +358,18 @@ class RpsQOutputTextEdit : public QTextEdit
 public:
   RpsQOutputTextEdit(QWidget*parent);
   ~RpsQOutputTextEdit();
+private:
+  // Conventionally the object reference below is null or else a
+  // transient RefPerSys object carrying a payload of
+  // Rps_PayloadQt<RpsQOutputTextEdit>, pointing in C++ to this C++
+  // object....
+  Rps_Value outptxt_objref;
+public:
+  void gc_mark(Rps_GarbageCollector&gc) const
+  {
+    if (outptxt_objref)
+      outptxt_objref.gc_mark(gc);
+  };
 };				// end RpsQOutputTextEdit
 
 
@@ -387,7 +414,10 @@ private:
   QMdiSubWindow* win_output_subwin; /// the output subwindow
   RpsQOutputTextEdit* win_output_textedit;/// the output text edit
 
-  /// the object reference
+  // Conventionally the object reference below is null or else a
+  // transient RefPerSys object carrying a payload of
+  // Rps_PayloadQt<RpsQOutputTextEdit>, pointing in C++ to this C++
+  // object....
   Rps_ObjectRef win_objref;
 
 public slots:
@@ -397,6 +427,7 @@ public:
   {
     return win_rank;
   };
+  void gc_mark(Rps_GarbageCollector&gc) const;
 };				// end of RpsQWindow
 
 #endif /*QTHEAD_QRPS_INCLUDED*/

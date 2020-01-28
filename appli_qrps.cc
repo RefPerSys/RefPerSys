@@ -251,6 +251,28 @@ RpsQApplication::RpsQApplication(int &argc, char*argv[])
   do_add_new_window();
 } // end of RpsQApplication::RpsQApplication
 
+
+void
+RpsQApplication::gc_mark(Rps_GarbageCollector&gc) const
+{
+  std::lock_guard guapp(app_mutex);
+  unsigned nbwin = app_windvec.size();
+  for (unsigned winix=0; winix<nbwin; winix++)
+    {
+      if (app_windvec[winix])
+        app_windvec[winix]->gc_mark(gc);
+    }
+} // end RpsQApplication::gc_mark
+
+void
+rps_garbcoll_application(Rps_GarbageCollector&gc)
+{
+  RPS_ASSERT(rps_is_main_gui_thread());
+  auto thisapp = RpsQApplication::the_app();
+  if (thisapp)
+    thisapp->gc_mark(gc);
+} // end rps_garbcoll_application
+
 void
 RpsQApplication::do_remove_window_by_index(int ix)
 {

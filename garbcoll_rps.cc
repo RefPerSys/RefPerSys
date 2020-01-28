@@ -121,6 +121,7 @@ Rps_GarbageCollector::mark_gcroots(void)
   {
     this->mark_root_objectref(obr);
   });
+  rps_garbcoll_application(*this);
   ///
   /// mark the hardcoded global roots
 #define RPS_INSTALL_ROOT_OB(Oid)    {			\
