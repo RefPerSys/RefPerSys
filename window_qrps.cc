@@ -1388,6 +1388,38 @@ RpsQCreatePluginDialog::on_cancel_trigger()
 }
 
 
+
+////////////////////////////////////////////////////////////////
+/// the dialog to create objects for closures
+RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
+  : QDialog(),   
+    crclo_dialog_vbx(),
+    crclo_button_hbx(),
+    crclo_ok_btn("Create Object for Closures", this),
+    crclo_cancel_btn("Cancel", this)
+{
+  #warning incomplete RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog
+  RPS_FATAL("incomplete RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog");
+} // end of RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog
+
+
+RpsQCreateClosureObjectDialog::~RpsQCreateClosureObjectDialog()
+{
+} // end RpsQCreateClosureObjectDialog::~RpsQCreateClosureObjectDialog
+
+void
+RpsQCreateClosureObjectDialog::on_ok_trigger()
+{
+  #warning incomplete RpsQCreateClosureObjectDialog::on_ok_trigger
+  RPS_FATAL("incomplete RpsQCreateClosureObjectDialog::on_ok_trigger");
+} // end RpsQCreateClosureObjectDialog::on_ok_trigger
+void
+RpsQCreateClosureObjectDialog::on_cancel_trigger()
+{
+  #warning incomplete RpsQCreateClosureObjectDialog::on_cancel_trigger
+  RPS_FATAL("incomplete RpsQCreateClosureObjectDialog::on_cancel_trigger");
+} // end RpsQCreateClosureObjectDialog::on_cancel_trigger
+
 ////////////////////////////////////////////////////////////////
 RpsQCommandTextEdit::RpsQCommandTextEdit(QWidget*parent) : QTextEdit(parent) {
   setDocumentTitle("command");

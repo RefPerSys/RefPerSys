@@ -326,7 +326,34 @@ public:
   {
     return std::string("rpstempf") + random_id.to_string();
   };
-};				// end of RpsQCreateContributorDialog
+};				// end of RpsQCreatePluginDialog
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// The dialog box for creating objects for closures; they are
+/// collected in `set_of_core_functions` that is in mutable set
+/// _6gxiw0snqrX01tZWW9
+//////////////////////////////////////////////////////////////////////////////
+class RpsQCreateClosureObjectDialog : public QDialog
+{
+  Q_OBJECT
+public:
+  RpsQCreateClosureObjectDialog(RpsQWindow* parent);
+  ~RpsQCreateClosureObjectDialog ();
+  static Rps_ObjectRef the_object_set_of_core_functions()
+  {
+    return RPS_ROOT_OB(_6gxiw0snqrX01tZWW9);
+  };
+private slots:
+  void on_ok_trigger();
+  void on_cancel_trigger();
+
+private:
+  QVBoxLayout crclo_dialog_vbx;
+  QHBoxLayout crclo_button_hbx;
+  QPushButton crclo_ok_btn;
+  QPushButton crclo_cancel_btn;
+};				// end of RpsQCreateClosureObjectDialog
 
 
 //////////////////////////////////////////////////////////// RpsQCommandTextEdit
