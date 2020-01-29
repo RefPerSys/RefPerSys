@@ -330,7 +330,7 @@ RpsQCreateClassDialog::on_cancel_trigger()
 
 ////////////////////////////////////////////////////////////////
 
-/// the dialog to create RefPerSys symbols
+/// the dialog to create RefPerSys symbolsb
 RpsQCreateSymbolDialog::RpsQCreateSymbolDialog(RpsQWindow* parent)
   : QDialog(parent),
     sydialog_vbox(),
@@ -1275,7 +1275,6 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
   setLayout(&dialog_vbx);
 
   // connect slots
-
   connect(&ok_btn, &QAbstractButton::clicked, this,
     &RpsQCreatePluginDialog::on_ok_trigger
   );
@@ -1393,13 +1392,40 @@ RpsQCreatePluginDialog::on_cancel_trigger()
 /// the dialog to create objects for closures
 RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   : QDialog(),   
-    crclo_dialog_vbx(),
-    crclo_button_hbx(),
+    crclo_dialog_vbox(),
+    crclo_button_hbox(),
     crclo_ok_btn("Create Object for Closures", this),
     crclo_cancel_btn("Cancel", this)
 {
-  #warning incomplete RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog
-  RPS_FATAL("incomplete RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog");
+  //  set widget names, useful for debugging, and later for style sheets.
+  setObjectName("RpsQCreateClosureObjectDialog");
+  crclo_dialog_vbox.setObjectName("RpsQCreateClosureObjectDialog_crclo_dialog_vbox");
+  crclo_button_hbox.setObjectName("RpsQCreateClosureObjectDialog_crclo_button_hbox");
+  crclo_ok_btn.setObjectName("RpsQCreateSymbolDialog_crclo_ok_btn");
+  crclo_cancel_btn.setObjectName("RpsQCreateSymbolDialog_crclo_cancel_btn");
+  RPS_INFORMOUT("RpsQCreateClosureObjectDialog @" << this);
+  // set widget fonts
+  {
+    auto arial = QFont("Arial", 12);
+    crclo_ok_btn.setFont(arial);
+    crclo_cancel_btn.setFont(arial);
+    auto courier = QFont("Courier", 12);
+  }
+  // layout widgets
+  crclo_dialog_vbox.addLayout(&crclo_button_hbox);
+  crclo_button_hbox.addWidget(&crclo_ok_btn);
+  crclo_button_hbox.addSpacing(3);
+  crclo_button_hbox.addWidget(&crclo_ok_btn);
+  crclo_button_hbox.addWidget(&crclo_cancel_btn);
+
+  
+  // connect slots
+  connect(&crclo_ok_btn, &QAbstractButton::clicked, this,
+    &RpsQCreateClosureObjectDialog::on_ok_trigger
+  );
+  connect(&crclo_cancel_btn, &QAbstractButton::clicked, this,
+    &RpsQCreateClosureObjectDialog::on_cancel_trigger
+  );
 } // end of RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog
 
 
@@ -1407,18 +1433,24 @@ RpsQCreateClosureObjectDialog::~RpsQCreateClosureObjectDialog()
 {
 } // end RpsQCreateClosureObjectDialog::~RpsQCreateClosureObjectDialog
 
+
 void
 RpsQCreateClosureObjectDialog::on_ok_trigger()
 {
-  #warning incomplete RpsQCreateClosureObjectDialog::on_ok_trigger
+#warning incomplete RpsQCreateClosureObjectDialog::on_ok_trigger
   RPS_FATAL("incomplete RpsQCreateClosureObjectDialog::on_ok_trigger");
 } // end RpsQCreateClosureObjectDialog::on_ok_trigger
+
+
 void
 RpsQCreateClosureObjectDialog::on_cancel_trigger()
 {
-  #warning incomplete RpsQCreateClosureObjectDialog::on_cancel_trigger
-  RPS_FATAL("incomplete RpsQCreateClosureObjectDialog::on_cancel_trigger");
+  deleteLater();
 } // end RpsQCreateClosureObjectDialog::on_cancel_trigger
+
+
+
+
 
 ////////////////////////////////////////////////////////////////
 RpsQCommandTextEdit::RpsQCommandTextEdit(QWidget*parent) : QTextEdit(parent) {

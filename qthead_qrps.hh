@@ -349,8 +349,8 @@ private slots:
   void on_cancel_trigger();
 
 private:
-  QVBoxLayout crclo_dialog_vbx;
-  QHBoxLayout crclo_button_hbx;
+  QVBoxLayout crclo_dialog_vbox;
+  QHBoxLayout crclo_button_hbox;
   QPushButton crclo_ok_btn;
   QPushButton crclo_cancel_btn;
 };				// end of RpsQCreateClosureObjectDialog
