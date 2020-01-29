@@ -62,6 +62,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_crsymb_action(nullptr),
     win_crnamedinstance_action(nullptr),
     win_crcontrib_action(nullptr),
+    win_crclosob_action(nullptr),
     win_centralmdi(nullptr),
     win_command_subwin(nullptr),
     win_command_textedit(nullptr),
@@ -97,6 +98,8 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_crcontrib_action->setStatusTip("create a new contributor");
     win_crplugin_action = new QAction("create &Plugin", this);
     win_crplugin_action->setStatusTip("Create a new C++ plugin");
+    win_crclosob_action = new QAction("create object for &Closure", this);
+    win_crclosob_action->setStatusTip("Create an object for closures");
     win_help_menu = mb->addMenu("Help");
   }
   /// add the actions to their menu
@@ -112,6 +115,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_create_menu->addAction(win_crnamedinstance_action);
     win_create_menu->addAction(win_crcontrib_action);
     win_create_menu->addAction(win_crplugin_action);
+    win_create_menu->addAction(win_crclosob_action);
   }
   // our central widget and related subwindows and subwidgets
   win_centralmdi =  new QMdiArea(this);
@@ -182,6 +186,12 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     auto dia = new RpsQCreatePluginDialog(this);
     dia->show();
   });
+  
+  connect(win_crclosob_action, &QAction::triggered, [=](void)
+  {
+    auto dia = new RpsQCreateClosureObjectDialog(this);
+    dia->show();
+  });
 
   connect(win_apclose_action, &QAction::triggered, [=](void)
   {
@@ -189,6 +199,8 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
   });
 #warning TODO: closing or deletion of RpsQWindow should remove it in application app_windvec....
 } // end RpsQWindow::RpsQWindow
+
+
 
 void RpsQWindow::gc_mark(Rps_GarbageCollector&gc) const
 {

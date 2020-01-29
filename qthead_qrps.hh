@@ -428,6 +428,7 @@ private:
   QAction* win_crnamedinstance_action;
   QAction* win_crcontrib_action;
   QAction* win_crplugin_action;
+  QAction* win_crclosob_action;
 
   // for help menu
 #warning RpsQWindow help menu missing
