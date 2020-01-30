@@ -1423,27 +1423,28 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
     crclo_cancel_btn.setFont(arial);
     auto courier = QFont("Courier", 12);
   }
-  // layout widgets
-  crclo_dialog_vbox.addLayout(&crclo_button_hbox);
-  crclo_button_hbox.addWidget(&crclo_ok_btn);
-  crclo_button_hbox.addSpacing(3);
-  crclo_button_hbox.addWidget(&crclo_cancel_btn);
-
-  
   {
     auto screengeom = RpsQApplication::the_app()->desktop()->screenGeometry();
     int w = 200;
     int h = 150;
     if (w > (3*screengeom.width())/4)
       w = 3*screengeom.width()/4;
-    else if (w < (screengeom.width())/2)
-      w = 16 + (screengeom.width())/2;
+    else if (w < (screengeom.width())/3)
+      w = 16 + (screengeom.width())/3;
     if (h >  (3*screengeom.height())/4)
       h = 3*screengeom.height()/4;
-    else if (h < screengeom.height()/2)
-      h = 16 + screengeom.height()/2;
+    else if (h < screengeom.height()/3)
+      h = 16 + screengeom.height()/3;
     this->resize(w, h);
   }
+  // layout widgets
+  setLayout(&crclo_dialog_vbox);
+  crclo_dialog_vbox.addLayout(&crclo_button_hbox);
+  crclo_button_hbox.addWidget(&crclo_ok_btn);
+  crclo_button_hbox.addSpacing(3);
+  crclo_button_hbox.addWidget(&crclo_cancel_btn);
+
+  
   // connect slots
   connect(&crclo_ok_btn, &QAbstractButton::clicked, this,
     &RpsQCreateClosureObjectDialog::on_ok_trigger
