@@ -186,7 +186,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     auto dia = new RpsQCreatePluginDialog(this);
     dia->show();
   });
-  
+
   connect(win_crclosob_action, &QAction::triggered, [=](void)
   {
     auto dia = new RpsQCreateClosureObjectDialog(this);

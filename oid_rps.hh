@@ -4,7 +4,7 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *      It is its internal C++ header file for object-identifiers (oid-s).
- *      
+ *
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -156,12 +156,14 @@ public:
     _id_hi(oth._id_hi), _id_lo(oth._id_lo) {};
   Rps_Id(const Rps_Id&oth)  :
     _id_hi(oth._id_hi), _id_lo(oth._id_lo) {};
-  Rps_Id& operator = (const Rps_Id &oth) {
+  Rps_Id& operator = (const Rps_Id &oth)
+  {
     _id_hi = oth._id_hi;
     _id_lo = oth._id_lo;
     return *this;
   };
-  Rps_Id& operator = (Rps_Id&&oth) {
+  Rps_Id& operator = (Rps_Id&&oth)
+  {
     std::swap(_id_hi, oth._id_hi);
     std::swap(_id_lo, oth._id_lo);
     return *this;
