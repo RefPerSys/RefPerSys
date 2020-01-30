@@ -20,6 +20,7 @@
 #error RPS_INSTALL_ROOT_OB(Oid) macro undefined
 #endif /*undefined RPS_INSTALL_ROOT_OB*/
 
+RPS_INSTALL_ROOT_OB(_0jdbikGJFq100dgX1n) //comment∈symbol
 RPS_INSTALL_ROOT_OB(_0D6zqQNe4eC02bjfGs) //email∈symbol
 RPS_INSTALL_ROOT_OB(_0J1C39JoZiv03qA2HA) //mutable_set∈class
 RPS_INSTALL_ROOT_OB(_0LbCts6NacB03SMXz4) //home_page∈symbol
@@ -54,7 +55,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 32
+#define RPS_NB_ROOT_OB 33
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
