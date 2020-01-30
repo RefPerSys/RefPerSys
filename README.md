@@ -159,13 +159,9 @@ generating source code is in some `rps_*.cc` C++ file.
 ## Building and dependencies.
 
 The [build automation](https://en.wikipedia.org/wiki/Build_automation)
-tool used here is [omake](https://github.com/ocaml-omake/omake)
-because [`omake`
-has](http://projects.camlcity.org/projects/dl/omake-0.10.3/doc/html/omake-quickstart.html)
-*automatic dependency analysis* and *content-based dependency
-analysis* (the later being an unusual feature - most build automation
-tools using modification time of files). You may need to edit the
-`OMakeroot` or `OMakefile` files.
+tool used here is [GNU make](https://www.gnu.org/software/make/) since
+commit `6d56f50660c7cc41b9` (it was
+[omake](https://github.com/ocaml-omake/omake) before).
 
 You should have compiled and installed Ian Taylor's
 [libbacktrace](https://github.com/ianlancetaylor/libbacktrace),
@@ -178,9 +174,13 @@ The [JsonCPP](https://github.com/open-source-parsers/jsoncpp/) and
 [mail](https://linux.die.net/man/1/mail) command in your `$PATH`.
 
 ### Build instructions
-You need a recent C++17 compiler such as `g++` (We use GCC 7 or 8 or 9) or `clang++` , `omake`, `libunistring-dev`
+
+You need a recent C++17 compiler such as `g++` (We use
+[GCC](http://gcc.gnu.org/) 8 or 9) or
+[`clang++`](http://clang.llvm.org/) , `libunistring-dev`. Look into,
+and perhaps improve, our `Makefile`. Build using `make -j 3` or more.
  
-You also should do a  `omake clean` after any `git pull`
+You also should do a  `make clean` after any `git pull`
 
 ## Garbage collection
 
