@@ -1405,6 +1405,9 @@ RpsQCreatePluginDialog::on_cancel_trigger()
 RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   : QDialog(),   
     crclo_dialog_vbox(),
+    crclo_comment_hbox(),
+    crclo_comment_label("comment:", this),
+    crclo_comment_linedit(this),
     crclo_button_hbox(),
     crclo_ok_btn("Create Object for Closures", this),
     crclo_cancel_btn(" Cancel ", this)
@@ -1412,6 +1415,9 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   //  set widget names, useful for debugging, and later for style sheets.
   setObjectName("RpsQCreateClosureObjectDialog");
   crclo_dialog_vbox.setObjectName("RpsQCreateClosureObjectDialog_crclo_dialog_vbox");
+  crclo_comment_hbox.setObjectName("RpsQCreateClosureObjectDialog_crclo_comment_hbox");
+  crclo_comment_label.setObjectName("RpsQCreateClosureObjectDialog_crclo_comment_label");
+  crclo_comment_linedit.setObjectName("RpsQCreateClosureObjectDialog_crclo_comment_linedit");
   crclo_button_hbox.setObjectName("RpsQCreateClosureObjectDialog_crclo_button_hbox");
   crclo_ok_btn.setObjectName("RpsQCreateSymbolDialog_crclo_ok_btn");
   crclo_cancel_btn.setObjectName("RpsQCreateSymbolDialog_crclo_cancel_btn");
@@ -1439,6 +1445,10 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   }
   // layout widgets
   setLayout(&crclo_dialog_vbox);
+  crclo_dialog_vbox.addLayout(&crclo_comment_hbox);
+  crclo_comment_hbox.addWidget(&crclo_comment_label);
+  crclo_comment_hbox.addSpacing(3);
+  crclo_comment_hbox.addWidget(&crclo_comment_linedit);
   crclo_dialog_vbox.addLayout(&crclo_button_hbox);
   crclo_button_hbox.addWidget(&crclo_ok_btn);
   crclo_button_hbox.addSpacing(3);

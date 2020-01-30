@@ -350,6 +350,9 @@ private slots:
 
 private:
   QVBoxLayout crclo_dialog_vbox;
+  QHBoxLayout crclo_comment_hbox;
+  QLabel crclo_comment_label;
+  QLineEdit crclo_comment_linedit;
   QHBoxLayout crclo_button_hbox;
   QPushButton crclo_ok_btn;
   QPushButton crclo_cancel_btn;
