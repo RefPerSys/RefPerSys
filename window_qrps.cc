@@ -1427,7 +1427,6 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   crclo_dialog_vbox.addLayout(&crclo_button_hbox);
   crclo_button_hbox.addWidget(&crclo_ok_btn);
   crclo_button_hbox.addSpacing(3);
-  crclo_button_hbox.addWidget(&crclo_ok_btn);
   crclo_button_hbox.addWidget(&crclo_cancel_btn);
 
   
