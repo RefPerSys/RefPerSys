@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all clean print-temporary-plugin-settings
+.PHONY: all clean print-temporary-plugin-settings indent
 
 RPS_GIT_ID:= $(shell ./generate-gitid.sh)
 
@@ -107,4 +107,10 @@ print-temporary-plugin-settings:
 	@printf "RPSPLUGIN_CXX='%s'\n" $(RPS_BUILD_CXX)
 	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(CXXFLAGS)"
 	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"
+
+## astyle indenting
+indent:
+	./indent-cxx-files.sh $(RPS_CORE_HEADERS) $(RPS_QT_HEADERS) \
+		$(RPS_CORE_SOURCES) $(RPS_QT_SOURCES)
 ## eof Makefile
+
