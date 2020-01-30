@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all clean print-temporary-plugin-settings indent
+.PHONY: all clean print-temporary-plugin-settings indent redump
 
 RPS_GIT_ID:= $(shell ./generate-gitid.sh)
 
@@ -112,5 +112,10 @@ print-temporary-plugin-settings:
 indent:
 	./indent-cxx-files.sh $(RPS_CORE_HEADERS) $(RPS_QT_HEADERS) \
 		$(RPS_CORE_SOURCES) $(RPS_QT_SOURCES)
+
+## redump target
+redump:
+	./refpersys --dump=. --batch
+
 ## eof Makefile
 
