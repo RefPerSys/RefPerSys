@@ -1408,6 +1408,9 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
     crclo_comment_hbox(),
     crclo_comment_label("comment:", this),
     crclo_comment_linedit(this),
+    crclo_srcod_hbox(),
+    crclo_srcod_label("C++ code:", this),
+    crclo_srcod_textedit("// C++ closure code\n", this),
     crclo_button_hbox(),
     crclo_ok_btn("Create Object for Closures", this),
     crclo_cancel_btn(" Cancel ", this)
@@ -1418,6 +1421,9 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   crclo_comment_hbox.setObjectName("RpsQCreateClosureObjectDialog_crclo_comment_hbox");
   crclo_comment_label.setObjectName("RpsQCreateClosureObjectDialog_crclo_comment_label");
   crclo_comment_linedit.setObjectName("RpsQCreateClosureObjectDialog_crclo_comment_linedit");
+  crclo_srcod_hbox.setObjectName("RpsQCreateClosureObjectDialog_crclo_srcod_hbox");
+  crclo_srcod_label.setObjectName("RpsQCreateClosureObjectDialog_crclo_srcod_label");
+  crclo_srcod_textedit.setObjectName("RpsQCreateClosureObjectDialog_crclo_srcod_textedit");
   crclo_button_hbox.setObjectName("RpsQCreateClosureObjectDialog_crclo_button_hbox");
   crclo_ok_btn.setObjectName("RpsQCreateSymbolDialog_crclo_ok_btn");
   crclo_cancel_btn.setObjectName("RpsQCreateSymbolDialog_crclo_cancel_btn");
@@ -1449,6 +1455,10 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   crclo_comment_hbox.addWidget(&crclo_comment_label);
   crclo_comment_hbox.addSpacing(3);
   crclo_comment_hbox.addWidget(&crclo_comment_linedit);
+  crclo_dialog_vbox.addLayout(&crclo_srcod_hbox);
+  crclo_srcod_hbox.addWidget(&crclo_srcod_label);
+  crclo_srcod_hbox.addSpacing(3);
+  crclo_srcod_hbox.addWidget(&crclo_srcod_textedit);
   crclo_dialog_vbox.addLayout(&crclo_button_hbox);
   crclo_button_hbox.addWidget(&crclo_ok_btn);
   crclo_button_hbox.addSpacing(3);
