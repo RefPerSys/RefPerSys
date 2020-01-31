@@ -1474,6 +1474,11 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   connect(&crclo_close_btn, &QAbstractButton::clicked, this,
     &RpsQCreateClosureObjectDialog::on_close_trigger
   );
+
+# warning see https://doc.qt.io/qt-5/qtextedit.html#createStandardContextMenu
+  // we might want to add a Copy All menu item in the contextual menu,
+  // or some button doing it...
+  
 } // end of RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog
 
 
