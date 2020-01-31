@@ -1412,8 +1412,8 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
     crclo_srcod_label("C++ code:", this),
     crclo_srcod_textedit("// C++ closure code\n", this),
     crclo_button_hbox(),
-    crclo_ok_btn("Create Object for Closures", this),
-    crclo_cancel_btn(" Cancel ", this)
+    crclo_ok_btn("Create Object\nfor Closures", this),
+    crclo_close_btn(" Close ", this)
 {
   //  set widget names, useful for debugging, and later for style sheets.
   setObjectName("RpsQCreateClosureObjectDialog");
@@ -1426,14 +1426,16 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   crclo_srcod_textedit.setObjectName("RpsQCreateClosureObjectDialog_crclo_srcod_textedit");
   crclo_button_hbox.setObjectName("RpsQCreateClosureObjectDialog_crclo_button_hbox");
   crclo_ok_btn.setObjectName("RpsQCreateSymbolDialog_crclo_ok_btn");
-  crclo_cancel_btn.setObjectName("RpsQCreateSymbolDialog_crclo_cancel_btn");
+  crclo_close_btn.setObjectName("RpsQCreateSymbolDialog_crclo_close_btn");
   RPS_INFORMOUT("RpsQCreateClosureObjectDialog @" << this);
   // set widget fonts
   {
     auto arial = QFont("Arial", 12);
     crclo_ok_btn.setFont(arial);
-    crclo_cancel_btn.setFont(arial);
+    crclo_close_btn.setFont(arial);
     auto courier = QFont("Courier", 12);
+    crclo_comment_linedit.setFont(courier);
+    crclo_srcod_textedit.setFont(courier);
   }
   {
     auto screengeom = RpsQApplication::the_app()->desktop()->screenGeometry();
@@ -1462,15 +1464,15 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   crclo_dialog_vbox.addLayout(&crclo_button_hbox);
   crclo_button_hbox.addWidget(&crclo_ok_btn);
   crclo_button_hbox.addSpacing(3);
-  crclo_button_hbox.addWidget(&crclo_cancel_btn);
+  crclo_button_hbox.addWidget(&crclo_close_btn);
 
   
   // connect slots
   connect(&crclo_ok_btn, &QAbstractButton::clicked, this,
     &RpsQCreateClosureObjectDialog::on_ok_trigger
   );
-  connect(&crclo_cancel_btn, &QAbstractButton::clicked, this,
-    &RpsQCreateClosureObjectDialog::on_cancel_trigger
+  connect(&crclo_close_btn, &QAbstractButton::clicked, this,
+    &RpsQCreateClosureObjectDialog::on_close_trigger
   );
 } // end of RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog
 
@@ -1489,10 +1491,10 @@ RpsQCreateClosureObjectDialog::on_ok_trigger()
 
 
 void
-RpsQCreateClosureObjectDialog::on_cancel_trigger()
+RpsQCreateClosureObjectDialog::on_close_trigger()
 {
   deleteLater();
-} // end RpsQCreateClosureObjectDialog::on_cancel_trigger
+} // end RpsQCreateClosureObjectDialog::on_close_trigger
 
 
 
