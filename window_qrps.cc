@@ -1413,6 +1413,7 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
     crclo_srcod_textedit("// C++ closure code\n", this),
     crclo_button_hbox(),
     crclo_creatob_btn("Create Object for Closure", this),
+    crclo_copycod_btn("Copy Code", this),
     crclo_close_btn(" Close ", this)
 {
   //  set widget names, useful for debugging, and later for style sheets.
@@ -1426,12 +1427,14 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   crclo_srcod_textedit.setObjectName("RpsQCreateClosureObjectDialog_crclo_srcod_textedit");
   crclo_button_hbox.setObjectName("RpsQCreateClosureObjectDialog_crclo_button_hbox");
   crclo_creatob_btn.setObjectName("RpsQCreateSymbolDialog_crclo_creatob_btn");
+  crclo_copycod_btn.setObjectName("RpsQCreateSymbolDialog_crclo_copycod_btn");
   crclo_close_btn.setObjectName("RpsQCreateSymbolDialog_crclo_close_btn");
   RPS_INFORMOUT("RpsQCreateClosureObjectDialog @" << this);
   // set widget fonts
   {
-    auto arial = QFont("Arial", 12);
+    auto arial = QFont("Arial", 11);
     crclo_creatob_btn.setFont(arial);
+    crclo_copycod_btn.setFont(arial);
     crclo_close_btn.setFont(arial);
     auto courier = QFont("Courier", 12);
     crclo_comment_linedit.setFont(courier);
@@ -1439,8 +1442,8 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   }
   {
     auto screengeom = RpsQApplication::the_app()->desktop()->screenGeometry();
-    int w = 200;
-    int h = 150;
+    int w = 440;
+    int h = 350;
     if (w > (3*screengeom.width())/4)
       w = 3*screengeom.width()/4;
     else if (w < (screengeom.width())/3)
@@ -1462,14 +1465,19 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   crclo_srcod_hbox.addSpacing(3);
   crclo_srcod_hbox.addWidget(&crclo_srcod_textedit);
   crclo_dialog_vbox.addLayout(&crclo_button_hbox);
-  crclo_button_hbox.addWidget(&crclo_creatob_btn);
   crclo_button_hbox.addSpacing(3);
+  crclo_button_hbox.addWidget(&crclo_creatob_btn);
+  crclo_button_hbox.addWidget(&crclo_copycod_btn);
   crclo_button_hbox.addWidget(&crclo_close_btn);
 
+  crclo_srcod_textedit.setReadOnly(true);
   
   // connect slots
   connect(&crclo_creatob_btn, &QAbstractButton::clicked, this,
     &RpsQCreateClosureObjectDialog::on_creatob_trigger
+  );
+  connect(&crclo_copycod_btn, &QAbstractButton::clicked, this,
+    &RpsQCreateClosureObjectDialog::on_copycod_trigger
   );
   connect(&crclo_close_btn, &QAbstractButton::clicked, this,
     &RpsQCreateClosureObjectDialog::on_close_trigger
@@ -1486,6 +1494,14 @@ RpsQCreateClosureObjectDialog::~RpsQCreateClosureObjectDialog()
 {
 } // end RpsQCreateClosureObjectDialog::~RpsQCreateClosureObjectDialog
 
+
+void
+RpsQCreateClosureObjectDialog::on_copycod_trigger()
+{
+  crclo_srcod_textedit.selectAll();
+  RPS_WARNOUT("unimplemented RpsQCreateClosureObjectDialog::on_copycod_trigger");
+#warning RpsQCreateClosureObjectDialog::on_copycod_trigger
+} // end RpsQCreateClosureObjectDialog::on_copycod_trigger
 
 void
 RpsQCreateClosureObjectDialog::on_creatob_trigger()
@@ -1542,6 +1558,7 @@ RpsQCreateClosureObjectDialog::on_creatob_trigger()
 	 << std::endl;
     std::string codstr = outs.str();
     crclo_srcod_textedit.setPlainText(QString::fromStdString(codstr));
+    crclo_srcod_textedit.setReadOnly(false);
   } catch (std::exception& exc) {
     RPS_WARNOUT("RpsQCreateClosureObjectDialog failed:" << (exc.what()));
   };

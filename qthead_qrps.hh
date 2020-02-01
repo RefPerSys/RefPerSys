@@ -354,6 +354,7 @@ public:
   }
 private slots:
   void on_creatob_trigger();
+  void on_copycod_trigger();
   void on_close_trigger();
 
 private:
@@ -366,6 +367,7 @@ private:
   QTextEdit crclo_srcod_textedit;
   QHBoxLayout crclo_button_hbox;
   QPushButton crclo_creatob_btn;
+  QPushButton crclo_copycod_btn;
   QPushButton crclo_close_btn;
 };				// end of RpsQCreateClosureObjectDialog
 
