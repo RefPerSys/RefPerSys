@@ -344,6 +344,14 @@ public:
   {
     return RPS_ROOT_OB(_6gxiw0snqrX01tZWW9);
   };
+  static Rps_ObjectRef the_core_function_class()
+  {
+    return RPS_ROOT_OB(_9Gz1oNPCnkB00I6VRS);
+  };
+  static Rps_ObjectRef the_comment_symbol()
+  {
+    return RPS_ROOT_OB(_0jdbikGJFq100dgX1n);
+  }
 private slots:
   void on_ok_trigger();
   void on_close_trigger();

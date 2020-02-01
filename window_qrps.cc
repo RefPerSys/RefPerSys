@@ -1412,7 +1412,7 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
     crclo_srcod_label("C++ code:", this),
     crclo_srcod_textedit("// C++ closure code\n", this),
     crclo_button_hbox(),
-    crclo_ok_btn("Create Object\nfor Closures", this),
+    crclo_ok_btn("Create Object for Closure", this),
     crclo_close_btn(" Close ", this)
 {
   //  set widget names, useful for debugging, and later for style sheets.
@@ -1490,8 +1490,63 @@ RpsQCreateClosureObjectDialog::~RpsQCreateClosureObjectDialog()
 void
 RpsQCreateClosureObjectDialog::on_ok_trigger()
 {
+  RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
+                 nullptr,//parentframe
+		 Rps_StringValue commstrv{nullptr};
+		 Rps_ObjectRef newobr;
+		 Rps_ObjectRef obsetr;
+		 );
+  std::string strcomment = crclo_comment_linedit.text().toStdString();
+  try {
+    _.newobr = Rps_ObjectRef::make_object(&_, the_core_function_class(), Rps_ObjectRef::root_space());
+    _.obsetr = the_object_set_of_core_functions();
+    std::lock_guard<std::recursive_mutex> gunewobr(*(_.newobr->objmtxptr()));
+    std::lock_guard<std::recursive_mutex> guobsetr(*(_.obsetr->objmtxptr()));
+    auto setpayl = _.obsetr->get_dynamic_payload<Rps_PayloadSetOb>();
+    RPS_ASSERT(setpayl != nullptr);
+    setpayl->add(_.newobr);
+    if (!strcomment.empty()) {
+      _.commstrv = Rps_StringValue(strcomment);
+      _.newobr->put_attr(the_comment_symbol(), _.commstrv);
+    }
+    std::ostringstream outs;
+    outs << "// C++ closure for " << _.newobr << std::endl;
+    if (!strcomment.empty())
+      outs << "//!" << strcomment << std::endl;
+    outs << "extern \"C\" rps_applyingfun_t " << RPS_APPLYINGFUN_PREFIX << _.newobr << ";" << std::endl;
+    outs << "Rps_TwoValues" <<std::endl
+	 << RPS_APPLYINGFUN_PREFIX << _.newobr << " (Rps_CallFrame*callerframe, ///" << std::endl
+	 << "                   const Rps_Value arg0, const Rps_Value arg1, ///" << std::endl
+	 << "                   const Rps_Value arg2, const Rps_Value arg3, ///" << std::endl
+	 << "                   const std::vector<Rps_Value>* restargs_ __attribute__((unused)))" << std::endl
+	 << "{" << std::endl
+	 << "  RPS_LOCALFRAME(rpskob" << _.newobr << "," << std::endl
+	 << "                 callerframe, //" <<std::endl
+	 << "                 //Rps_Value arg0v;" << std::endl
+	 << "                 //Rps_Value arg1v;" << std::endl
+	 << "                 //Rps_Value arg2v;" << std::endl
+	 << "                 //Rps_Value arg3v;" << std::endl
+	 << "                 //Rps_ObjectRef obr;" << std::endl
+	 << "                 Rps_Value resmainv;" << std::endl
+	 << "                 Rps_Value resxtrav;" << std::endl
+	 << "                 //....etc...." << std::endl
+	 << "                );" << std::endl
+	 << "  // _.arg0v = arg0;" << std::endl
+	 << "  // _.arg1v = arg1;" << std::endl
+	 << "  // _.arg2v = arg2;" << std::endl
+      	 << "  // _.arg3v = arg3;" << std::endl
+	 << "  ////==== body of " << _.newobr  << " ====" << std::endl
+	 << "  ;" << std::endl
+	 << "  RPS_LOCALRETURNTWO(_.resmainv, _.resextrav); // result of " << _.newobr << std::endl
+	 << "} // end of " <<  RPS_APPLYINGFUN_PREFIX << _.newobr << std::endl
+	 << std::endl;
+    std::string codstr = outs.str();
+    crclo_srcod_textedit.setPlainText(QString::fromStdString(codstr));
+  } catch (std::exception& exc) {
+    RPS_WARNOUT("RpsQCreateClosureObjectDialog failed:" << (exc.what()));
+  };
 #warning incomplete RpsQCreateClosureObjectDialog::on_ok_trigger
-  RPS_FATAL("incomplete RpsQCreateClosureObjectDialog::on_ok_trigger");
+  RPS_WARNOUT("incomplete RpsQCreateClosureObjectDialog::on_ok_trigger");
 } // end RpsQCreateClosureObjectDialog::on_ok_trigger
 
 
