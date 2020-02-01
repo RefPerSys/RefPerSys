@@ -1412,7 +1412,7 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
     crclo_srcod_label("C++ code:", this),
     crclo_srcod_textedit("// C++ closure code\n", this),
     crclo_button_hbox(),
-    crclo_ok_btn("Create Object for Closure", this),
+    crclo_creatob_btn("Create Object for Closure", this),
     crclo_close_btn(" Close ", this)
 {
   //  set widget names, useful for debugging, and later for style sheets.
@@ -1425,13 +1425,13 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   crclo_srcod_label.setObjectName("RpsQCreateClosureObjectDialog_crclo_srcod_label");
   crclo_srcod_textedit.setObjectName("RpsQCreateClosureObjectDialog_crclo_srcod_textedit");
   crclo_button_hbox.setObjectName("RpsQCreateClosureObjectDialog_crclo_button_hbox");
-  crclo_ok_btn.setObjectName("RpsQCreateSymbolDialog_crclo_ok_btn");
+  crclo_creatob_btn.setObjectName("RpsQCreateSymbolDialog_crclo_creatob_btn");
   crclo_close_btn.setObjectName("RpsQCreateSymbolDialog_crclo_close_btn");
   RPS_INFORMOUT("RpsQCreateClosureObjectDialog @" << this);
   // set widget fonts
   {
     auto arial = QFont("Arial", 12);
-    crclo_ok_btn.setFont(arial);
+    crclo_creatob_btn.setFont(arial);
     crclo_close_btn.setFont(arial);
     auto courier = QFont("Courier", 12);
     crclo_comment_linedit.setFont(courier);
@@ -1462,14 +1462,14 @@ RpsQCreateClosureObjectDialog::RpsQCreateClosureObjectDialog(RpsQWindow* parent)
   crclo_srcod_hbox.addSpacing(3);
   crclo_srcod_hbox.addWidget(&crclo_srcod_textedit);
   crclo_dialog_vbox.addLayout(&crclo_button_hbox);
-  crclo_button_hbox.addWidget(&crclo_ok_btn);
+  crclo_button_hbox.addWidget(&crclo_creatob_btn);
   crclo_button_hbox.addSpacing(3);
   crclo_button_hbox.addWidget(&crclo_close_btn);
 
   
   // connect slots
-  connect(&crclo_ok_btn, &QAbstractButton::clicked, this,
-    &RpsQCreateClosureObjectDialog::on_ok_trigger
+  connect(&crclo_creatob_btn, &QAbstractButton::clicked, this,
+    &RpsQCreateClosureObjectDialog::on_creatob_trigger
   );
   connect(&crclo_close_btn, &QAbstractButton::clicked, this,
     &RpsQCreateClosureObjectDialog::on_close_trigger
@@ -1488,7 +1488,7 @@ RpsQCreateClosureObjectDialog::~RpsQCreateClosureObjectDialog()
 
 
 void
-RpsQCreateClosureObjectDialog::on_ok_trigger()
+RpsQCreateClosureObjectDialog::on_creatob_trigger()
 {
   RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
                  nullptr,//parentframe

@@ -353,7 +353,7 @@ public:
     return RPS_ROOT_OB(_0jdbikGJFq100dgX1n);
   }
 private slots:
-  void on_ok_trigger();
+  void on_creatob_trigger();
   void on_close_trigger();
 
 private:
@@ -365,7 +365,7 @@ private:
   QLabel crclo_srcod_label;
   QTextEdit crclo_srcod_textedit;
   QHBoxLayout crclo_button_hbox;
-  QPushButton crclo_ok_btn;
+  QPushButton crclo_creatob_btn;
   QPushButton crclo_close_btn;
 };				// end of RpsQCreateClosureObjectDialog
 
