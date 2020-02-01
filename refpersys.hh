@@ -2223,7 +2223,7 @@ class Rps_CallFrame : public Rps_TypedZone
   Rps_Value cfram_state;
   Rps_ClosureValue cfram_clos; // the invoking closure, if any
   std::function<void(Rps_GarbageCollector*)> cfram_marker;
-  void* cfram_data[0];
+  void* cfram_data[RPS_FLEXIBLE_DIM]; // a flexible array member in disguise
 public:
   Rps_CallFrame(unsigned size, Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
     : Rps_TypedZone(Rps_Type::CallFrame),
@@ -2235,8 +2235,15 @@ public:
       cfram_marker(),
       cfram_data()
   {
+    // we want flexible array members, see
+    // https://en.wikipedia.org/wiki/Flexible_array_member but C++17
+    // don't have them ....
+    // see https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Pragmas.html
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
     if (size>0)
       memset((void*)&cfram_data, 0, size*sizeof(void*));
+#pragma GCC diagnostic pop
   };
   ~Rps_CallFrame()
   {
@@ -2244,8 +2251,11 @@ public:
     cfram_state = nullptr;
     cfram_prev = nullptr;
     cfram_clos = nullptr;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
     if (cfram_size > 0)
-      memset((void*)&cfram_data, 0, cfram_size*sizeof(void*));
+      __builtin_memset((void*)&cfram_data, 0, cfram_size*sizeof(void*));
+#pragma GCC diagnostic pop
   };
   void gc_mark_frame(Rps_GarbageCollector* gc);
   void set_closure(Rps_ClosureValue clos)
