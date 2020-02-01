@@ -95,7 +95,9 @@ refpersys.hh.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
          mv --backup -v  $@-tmp  refpersys.hh.gch ; fi
 
 clean:
-	$(RM) *.o *.orig *~ refpersys *.gch
+	$(RM) *.o *.orig *~ refpersys *.gch *~
+	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~
+	$(RM) *%
 
 __timestamp.c:
 	./generate-timestamp.sh > $@-tmp
