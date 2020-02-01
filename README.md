@@ -127,7 +127,7 @@ original copyright owner.
 Please ask, by email, the above RefPerSys team for C++ coding
 conventions before starting non-trivial contributions to the C++
 runtime of RefPerSys.  If you are contributing to its C++ runtime,
-please **run `make clean` or `omake clean` after any `git pull`**.
+please **run `make clean` after any `git pull`**.
 
 The GPLv3+ license of RefPerSys is unlikely to change before 2025 (and
 probably even after).
@@ -141,10 +141,24 @@ genuine C++ code than we do and will find our C++ code pityful. We
 just want our runtime to work, not to serve as an example of well
 written C++17 code.
 
-It may later also use generated C++ code in some `_*.cc` file, some
-generated C code in some `_*.c` and generated C or C++ headers in some
-`_*.h` files. By convention, files starting with an underscore are
-generated (but they may, or not, being git versioned).
+The prefered C++ compiler (in 2020Q1) for *RefPerSys* is
+[GCC](http://gcc.gnu.org/) version [8](https://gcc.gnu.org/gcc-8/) or
+[9](https://gcc.gnu.org/gcc-9).
+
+It could be worthwhile to sometimes compile *RefPerSys* with `clang++`
+(see http://clang.llvm.org/ for more). In practice `make clean` then
+`make RPS_BUILD_CXX=clang++`. The [Clang static
+analyzer](https://clang-analyzer.llvm.org/) could be useful, but
+expect a lot of warnings, since C++ dont have [flexible array
+members](https://en.wikipedia.org/wiki/Flexible_array_member) but we
+need something similar.
+
+*RefPerSys* may later also use generated C++ code in some `_*.cc`
+file, some generated C code in some `_*.c` and generated C or C++
+headers in some `_*.h` files. By convention, files starting with an
+underscore are generated (but they may, or not, being git
+versioned). Some generated C++ files which are `git add`-ed are under
+`generated/` subdirectory.
 
 We could need later some C++ generating program (maybe similar in
 spirit to Bismon's
@@ -153,7 +167,9 @@ would then be named `rps_*` for the executable, and fits in a single
 self-sufficient `rps_*.cc` C++ file. Perhaps we'll later have some
 `rps_makeconst` executable to generate some C++, and its source in
 some `rps_makeconst.cc`. So the convention is that any future C++
-generating source code is in some `rps_*.cc` C++ file.
+generating source code is in some `rps_*.cc` C++ file. In commit
+`65a8f84aeffc9ba4e468` or newer the dumping facility is scanning
+hand-written C++ source files to emit `generated/rps-constants.hh`
 
 
 ## Building and dependencies.
