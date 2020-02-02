@@ -1273,8 +1273,8 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
     boilerplate << "// file /tmp/rps" << random_id << ".cc" << std::endl
                 << "#include \"refpersys.hh\"" << std::endl << std::endl
                 << "extern \"C\" void "
-		<< (temporary_function_name()) << " (Rps_CallerFrame* caller);" << std::endl << std::endl
-                << "void "  << (temporary_function_name()) << " (Rps_CallerFrame* caller) {"
+		<< (temporary_function_name()) << " (Rps_CallFrame* caller);" << std::endl << std::endl
+                << "void "  << (temporary_function_name()) << " (Rps_CallFrame* caller) {"
                 << std::endl << "  RPS_LOCALFRAME("
       /// see https://gitlab.com/bstarynk/refpersys/-/wikis/call-frames-in-RefPerSys
 		<< "/*no descr:*/nullptr, caller," << std::endl
@@ -1320,10 +1320,12 @@ RpsQCreatePluginDialog::~RpsQCreatePluginDialog()
 void
 RpsQCreatePluginDialog::on_ok_trigger()
 {
-  typedef void pluginsig_t (Rps_CallFrame*);
+  typedef void pluginsig_t(Rps_CallFrame*);
   RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
                  nullptr,//parentframe
 		 );
+
+  // Set dialog box dimensions to 700x500
   {
     auto screengeom = RpsQApplication::the_app()->desktop()->screenGeometry();
     int w = 700;
@@ -1343,6 +1345,9 @@ RpsQCreatePluginDialog::on_ok_trigger()
   auto srcpath = temporary_cplusplus_file_path();
   auto pluginpath = temporary_plugin_file_path();
 
+  // for debugging
+  auto funcname = temporary_function_name();
+
   RPS_INFORMOUT("RpsQCreatePluginDialog srcpath="
 		<< srcpath << ", pluginpath= "
 		<< pluginpath << ", code:"
@@ -1358,9 +1363,20 @@ RpsQCreatePluginDialog::on_ok_trigger()
   QProcess proc;
   QStringList procargs;
   procargs << QString(temporary_cplusplus_file_path().c_str())
-	   << QString(temporary_plugin_file_path().c_str());
+	       << QString(temporary_plugin_file_path().c_str());
+
+  // The following 4 statements are only for debugging
+  RPS_INFORMOUT("TMP FUNC NAME = " << funcname << std::endl);
+  RPS_INFORMOUT("SRC PATH = " << srcpath << std::endl);
+  RPS_INFORMOUT("PLUGIN PATH = " << pluginpath << std::endl);
+  RPS_ASSERT(srcpath.substr(0, funcname.length()) 
+             == pluginpath.substr(0, funcname.length()));
+  
+
   proc.setProgram("./build-temporary-plugin.sh");
   proc.setArguments(procargs);
+
+  proc.start();
   proc.waitForFinished();
 
   auto rc = proc.exitStatus();
@@ -1403,7 +1419,6 @@ RpsQCreatePluginDialog::on_ok_trigger()
                 
 #warning TODO: Abhishek will fix the bug
   // notably in build-temporary-plugin.sh related to failing omake
-
 } // end RpsQCreatePluginDialog::on_ok_trigger
 
 
