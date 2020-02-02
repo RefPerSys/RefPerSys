@@ -1305,10 +1305,12 @@ RpsQCreatePluginDialog::~RpsQCreatePluginDialog()
 void
 RpsQCreatePluginDialog::on_ok_trigger()
 {
-  typedef void pluginsig_t (Rps_CallFrame*);
+  typedef void pluginsig_t(Rps_CallFrame*);
   RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
                  nullptr,//parentframe
 		 );
+
+  // Set dialog box dimensions to 700x500
   {
     auto screengeom = RpsQApplication::the_app()->desktop()->screenGeometry();
     int w = 700;
@@ -1325,6 +1327,8 @@ RpsQCreatePluginDialog::on_ok_trigger()
   }
   
   std::string code = code_txt.toPlainText().toStdString();
+  RPS_INFORMOUT("*** CODE = " << code << std::endl);
+
   auto srcpath = temporary_cplusplus_file_path();
   auto pluginpath = temporary_plugin_file_path();
 
@@ -1346,6 +1350,7 @@ RpsQCreatePluginDialog::on_ok_trigger()
 	   << QString(temporary_plugin_file_path().c_str());
   proc.setProgram("./build-temporary-plugin.sh");
   proc.setArguments(procargs);
+  proc.start();
   proc.waitForFinished();
 
   auto rc = proc.exitStatus();
@@ -1388,7 +1393,6 @@ RpsQCreatePluginDialog::on_ok_trigger()
                 
 #warning TODO: Abhishek will fix the bug
   // notably in build-temporary-plugin.sh related to failing omake
-
 } // end RpsQCreatePluginDialog::on_ok_trigger
 
 
