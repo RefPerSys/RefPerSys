@@ -1258,8 +1258,8 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
     boilerplate << "// file /tmp/rps" << random_id << ".cc" << std::endl
                 << "#include \"refpersys.hh\"" << std::endl << std::endl
                 << "extern \"C\" void "
-		<< (temporary_function_name()) << " (Rps_CallerFrame* caller);" << std::endl << std::endl
-                << "void "  << (temporary_function_name()) << " (Rps_CallerFrame* caller) {"
+		<< (temporary_function_name()) << " (Rps_CallFrame* caller);" << std::endl << std::endl
+                << "void "  << (temporary_function_name()) << " (Rps_CallFrame* caller) {"
                 << std::endl << "  RPS_LOCALFRAME("
       /// see https://gitlab.com/bstarynk/refpersys/-/wikis/call-frames-in-RefPerSys
 		<< "/*no descr:*/nullptr, caller," << std::endl
