@@ -1268,6 +1268,21 @@ RpsQCreatePluginDialog::RpsQCreatePluginDialog(RpsQWindow* parent)
     auto courier = QFont("Courier", 12);
     code_txt.setFont(courier);
 
+  // Set dialog box dimensions to 650x450
+  {
+    auto screengeom = RpsQApplication::the_app()->desktop()->screenGeometry();
+    int w = 650;
+    int h = 450;
+    if (w > (3*screengeom.width())/4)
+      w = 3*screengeom.width()/4;
+    else if (w < (screengeom.width())/2)
+      w = 16 + (screengeom.width())/2;
+    if (h >  (3*screengeom.height())/4)
+      h = 3*screengeom.height()/4;
+    else if (h < screengeom.height()/2)
+      h = 16 + screengeom.height()/2;
+    this->resize(w, h);
+  }
 
     std::ostringstream boilerplate;
     boilerplate << "// file /tmp/rps" << random_id << ".cc" << std::endl
@@ -1323,6 +1338,7 @@ RpsQCreatePluginDialog::on_ok_trigger()
   typedef void pluginsig_t(Rps_CallFrame*);
   RPS_LOCALFRAME(Rps_ObjectRef(nullptr),//descriptor
                  nullptr,//parentframe
+		 Rps_Value valv;
 		 );
 
   // Set dialog box dimensions to 700x500
@@ -1340,7 +1356,7 @@ RpsQCreatePluginDialog::on_ok_trigger()
       h = 16 + screengeom.height()/2;
     this->resize(w, h);
   }
-  
+  _.valv = nullptr;
   std::string code = code_txt.toPlainText().toStdString();
   auto srcpath = temporary_cplusplus_file_path();
   auto pluginpath = temporary_plugin_file_path();
