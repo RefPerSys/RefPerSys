@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 46,
+ "nbobjects" : 50,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -130,6 +130,20 @@
 }
 
 
+//+ob_1DUx3zfUzIb04lqNVt
+//∈class
+{
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "rps_window",
+ "class_super" : "_7b8jzCpOStA04e0jxs",
+ "class_symb" : "_2zoK8ilmqHH02mlmjx",
+ "mtime" : 1580672958.28,
+ "oid" : "_1DUx3zfUzIb04lqNVt",
+ "payload" : "class"
+}
+
+
 //+ob_1ULNUrWPB8e01sGIDF
 //∈symbol
 {
@@ -186,6 +200,18 @@
  "payload" : "symbol",
  "symb_name" : "function",
  "symb_val" : "_9BnrMLXUhfG00llx8X"
+}
+
+
+//+ob_2zoK8ilmqHH02mlmjx
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1580672958.28,
+ "oid" : "_2zoK8ilmqHH02mlmjx",
+ "payload" : "symbol",
+ "symb_name" : "rps_window",
+ "symb_val" : "_1DUx3zfUzIb04lqNVt"
 }
 
 
@@ -286,6 +312,18 @@
  "payload" : "symbol",
  "symb_name" : "mutable_set",
  "symb_val" : "_0J1C39JoZiv03qA2HA"
+}
+
+
+//+ob_3GIUWKXwNn803vE3LR
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1580672919.8099999,
+ "oid" : "_3GIUWKXwNn803vE3LR",
+ "payload" : "symbol",
+ "symb_name" : "qobject",
+ "symb_val" : "_7b8jzCpOStA04e0jxs"
 }
 
 
@@ -489,6 +527,20 @@
  "class_symb" : "_7ZRsf01mtit01xPUei",
  "mtime" : 1578114964.0,
  "oid" : "_6XLY6QfcDre02922jz",
+ "payload" : "class"
+}
+
+
+//+ob_7b8jzCpOStA04e0jxs
+//∈class
+{
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "qobject",
+ "class_super" : "_5yhJGgxLwLp00X0xEQ",
+ "class_symb" : "_3GIUWKXwNn803vE3LR",
+ "mtime" : 1580672919.8099999,
+ "oid" : "_7b8jzCpOStA04e0jxs",
  "payload" : "class"
 }
 
