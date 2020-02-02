@@ -132,6 +132,21 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
   win_output_subwin->setWidget(win_output_textedit);
   win_centralmdi->addSubWindow(win_output_subwin);
 
+  {
+    auto screengeom = RpsQApplication::the_app()->desktop()->screenGeometry();
+    int w = 780;
+    int h = 600;
+    if (w > (3*screengeom.width())/4)
+      w = 3*screengeom.width()/4;
+    else if (w < (screengeom.width())/2)
+      w = 16 + (screengeom.width())/2;
+    if (h >  (3*screengeom.height())/4)
+      h = 3*screengeom.height()/4;
+    else if (h < screengeom.height()/2)
+      h = 16 + screengeom.height()/2;
+    RPS_WARNOUT("mainwin w=" << w << " h=" << h);
+    this->resize(w, h);
+  }
   // connect the behavior
   connect(win_apdump_action, &QAction::triggered,
           RpsQApplication::the_app(),
