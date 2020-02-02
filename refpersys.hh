@@ -403,17 +403,19 @@ class Rps_PayloadSymbol;
 class Rps_Loader;
 class Rps_Dumper;
 class Rps_CallFrame;
+class Rps_Id;
 
 
 typedef uint32_t Rps_HashInt;
 
 
-
+////////////////////////////////////////////////////////////////
 class Rps_ObjectRef // reference to objects, per C++ rule of five.
 {
   Rps_ObjectZone*_optr;
 protected:
 public:
+  struct Rps_ObjIdStrTag {};
   Rps_ObjectZone* optr() const
   {
     return _optr;
@@ -439,6 +441,10 @@ public:
   }
   // get object from Json at load time
   Rps_ObjectRef(const Json::Value &, Rps_Loader*); //in store_rps.cc
+  
+  // build an object from its existing string oid, or else fail with C++ exception
+  Rps_ObjectRef(Rps_CallFrame*callerframe, const char*oidstr, Rps_ObjIdStrTag);
+  
   // rule of five
   Rps_ObjectRef(const Rps_ObjectZone*oz = nullptr)
     : _optr(const_cast<Rps_ObjectZone*>(oz))
@@ -539,6 +545,7 @@ public:
   // these functions throw an exception on failure
   // find an object with a given oid or name string
   static Rps_ObjectRef find_object(Rps_CallFrame*callerframe,  const std::string& str);
+  static Rps_ObjectRef find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid);
   // create a class of given super class and name
   static Rps_ObjectRef make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef superclassob, std::string name);
   // create a symbol of given name
@@ -573,6 +580,11 @@ static_assert(sizeof(Rps_ObjectRef) == sizeof(void*),
 static_assert(alignof(Rps_ObjectRef) == alignof(void*),
               "Rps_ObjectRef should have the alignment of a word");
 
+// we could code Rps_ObjectFromOidRef(&_,"_41OFI3r0S1t03qdB2E") instead of rpskob_41OFI3r0S1t03qdB2E
+class Rps_ObjectFromOidRef : public Rps_ObjectRef {
+  Rps_ObjectFromOidRef(Rps_CallFrame*callerframe, const char*oidstr) :
+    Rps_ObjectRef(callerframe, oidstr, Rps_ObjectRef::Rps_ObjIdStrTag{}) {};
+};				// end Rps_ObjectFromOidRef
 
 /// mostly for debugging
 inline std::ostream&
@@ -2253,6 +2265,7 @@ public:
     cfram_clos = nullptr;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
+    // technically this is an undefined behavior. Pragmatically it should work as we want.
     if (cfram_size > 0)
       __builtin_memset((void*)&cfram_data, 0, cfram_size*sizeof(void*));
 #pragma GCC diagnostic pop

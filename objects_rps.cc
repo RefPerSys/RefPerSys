@@ -45,6 +45,22 @@ std::map<Rps_Id,Rps_ObjectZone*> Rps_ObjectZone::ob_idbucketmap_[Rps_Id::maxbuck
 std::recursive_mutex Rps_ObjectZone::ob_idmtx_;
 
 
+
+// build an object from its existing string oid, or else fail with C++ exception
+Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*callerframe, const char*oidstr, Rps_ObjIdStrTag)
+{
+  if (!oidstr)
+    throw RPS_RUNTIME_ERROR_OUT("Rps_ObjectRef: null oidstr");
+  const char*end = nullptr;
+  bool ok=false;
+  Rps_Id oid(oidstr,&end,&ok);
+  if (!end || *end)
+    throw RPS_RUNTIME_ERROR_OUT("Rps_ObjectRef: invalid compile-time oidstr=" << oidstr);
+  *this = find_object_by_oid(callerframe, oid);
+  if (!this)
+    throw RPS_RUNTIME_ERROR_OUT("Rps_ObjectRef: failed to find " << oidstr);
+} // end Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*, constexpr const char*oidstr, Rps_ObjIdStrTag)
+
 void
 Rps_ObjectRef::output(std::ostream&outs) const
 {
@@ -1440,6 +1456,22 @@ Rps_ObjectRef::find_object(Rps_CallFrame*callerframe, const std::string& str)
   else throw std::runtime_error("bad string " + str + " to Rps_ObjectRef::find_object");
   return _.obfound;
 } // end Rps_ObjectRef::find_object
+
+
+Rps_ObjectRef
+Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid)
+{
+  RPS_LOCALFRAME(nullptr,
+                 callerframe,
+                 Rps_ObjectRef obfound;
+                );
+  if (!oid || !oid.valid())
+    throw std::runtime_error("Rps_ObjectRef::find_object_by_oid: invalid or empty oid");
+  _.obfound = Rps_ObjectRef(Rps_ObjectZone::find(oid));
+  if (!_.obfound)
+    throw std::runtime_error("Rps_ObjectRef::find_object: nonexistant id");
+  return _.obfound;
+} // end Rps_ObjectRef::find_object_by_oid
 
 
 
