@@ -1327,10 +1327,11 @@ RpsQCreatePluginDialog::on_ok_trigger()
   }
   
   std::string code = code_txt.toPlainText().toStdString();
-  RPS_INFORMOUT("*** CODE = " << code << std::endl);
-
   auto srcpath = temporary_cplusplus_file_path();
   auto pluginpath = temporary_plugin_file_path();
+
+  // for debugging
+  auto funcname = temporary_function_name();
 
   RPS_INFORMOUT("RpsQCreatePluginDialog srcpath="
 		<< srcpath << ", pluginpath= "
@@ -1347,9 +1348,19 @@ RpsQCreatePluginDialog::on_ok_trigger()
   QProcess proc;
   QStringList procargs;
   procargs << QString(temporary_cplusplus_file_path().c_str())
-	   << QString(temporary_plugin_file_path().c_str());
+	       << QString(temporary_plugin_file_path().c_str());
+
+  // The following 4 statements are only for debugging
+  RPS_INFORMOUT("TMP FUNC NAME = " << funcname << std::endl);
+  RPS_INFORMOUT("SRC PATH = " << srcpath << std::endl);
+  RPS_INFORMOUT("PLUGIN PATH = " << pluginpath << std::endl);
+  RPS_ASSERT(srcpath.substr(0, funcname.length()) 
+             == pluginpath.substr(0, funcname.length()));
+  
+
   proc.setProgram("./build-temporary-plugin.sh");
   proc.setArguments(procargs);
+
   proc.start();
   proc.waitForFinished();
 
