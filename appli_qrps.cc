@@ -160,7 +160,7 @@ RpsQApplication::do_add_new_window(void)
   std::lock_guard gu(app_mutex);
   int winrk = -1;
   RPS_ASSERT(app_windvec.size()>0);
-  for (int rk=1; rk<app_windvec.size(); rk++)
+  for (int rk=1; rk<(int) app_windvec.size(); rk++)
     {
       if (app_windvec[rk] == nullptr)
         {
@@ -216,7 +216,7 @@ RpsQApplication::do_add_new_window(void)
     h = 16 + screengeom.height()/4;
   window->resize (w, h);
   window->show();
-  app_windvec[winrk].reset(window);
+  app_windvec[winrk] = window;
   app_wndcount++;
 } // end of RpsQApplication::add_new_window
 
@@ -283,9 +283,9 @@ RpsQApplication::do_remove_window_by_index(int ix)
   if (ix >= wincount)
     throw RPS_RUNTIME_ERROR_OUT("do_remove_window: too large index " << ix
                                 << " is more than " << wincount);
-  RpsQWindow* win = app_windvec[ix].get();
+  RpsQWindow* win = app_windvec[ix].data();
   win->close();
-  app_windvec[ix].release();
+  app_windvec[ix].clear();
 } // end RpsQApplication::do_remove_window
 
 void
@@ -318,15 +318,16 @@ RpsQApplication::do_dump_current_then_exit(void)
 
 
 
-RpsQWindow* RpsQApplication::getWindowPtr(int ix)
+RpsQWindow*
+RpsQApplication::getWindowPtr(int ix)
 {
   std::lock_guard gu(app_mutex);
   if (ix < 0)
     ix += app_windvec.size();
   if (ix <= 0 || ix > (int)app_windvec.size())
     return nullptr;
-  return app_windvec.at(ix).get();
-}
+  return app_windvec.at(ix).data();
+} // end RpsQApplication::getWindowPtr
 
 
 

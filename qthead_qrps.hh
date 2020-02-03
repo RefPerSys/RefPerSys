@@ -72,6 +72,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
+#include <QPointer>
 
 class RpsQApplication;
 class RpsQWindow;
@@ -128,7 +129,7 @@ private:
   static pthread_t app_mainselfthread;
   static std::thread::id app_mainthreadid;
   mutable std::mutex app_mutex;
-  std::vector <std::unique_ptr<RpsQWindow>> app_windvec;
+  std::vector <QPointer<RpsQWindow>> app_windvec;
   size_t app_wndcount;
 };				// end of class RpsQApplication
 

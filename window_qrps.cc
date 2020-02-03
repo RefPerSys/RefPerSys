@@ -212,7 +212,6 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
   {
     RpsQApplication::the_app()->do_remove_window_by_index(window_rank());
   });
-#warning TODO: closing or deletion of RpsQWindow should remove it in application app_windvec....
 } // end RpsQWindow::RpsQWindow
 
 
@@ -1432,9 +1431,6 @@ RpsQCreatePluginDialog::on_ok_trigger()
   else {
     QMessageBox::warning(this, "Plugin build failure!", err);
   }
-                
-#warning TODO: Abhishek will fix the bug
-  // notably in build-temporary-plugin.sh related to failing omake
 } // end RpsQCreatePluginDialog::on_ok_trigger
 
 
@@ -1442,7 +1438,7 @@ void
 RpsQCreatePluginDialog::on_cancel_trigger()
 {
     deleteLater();
-}
+} // end RpsQCreatePluginDialog::on_cancel_trigger
 
 
 
