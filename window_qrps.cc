@@ -1620,7 +1620,10 @@ RpsQCreateClosureObjectDialog::on_close_trigger()
 
 
 ////////////////////////////////////////////////////////////////
-RpsQCommandTextEdit::RpsQCommandTextEdit(QWidget*parent) : QTextEdit(parent) {
+RpsQCommandTextEdit::RpsQCommandTextEdit(QWidget*parent)
+  : QTextEdit(parent),
+    cmdtxt_objref(),
+    cmdtxt_valmap() {
   setDocumentTitle("command");
 } // end RpsQCommandTextEdit::RpsQCommandTextEdit
 
@@ -1628,7 +1631,9 @@ RpsQCommandTextEdit::~RpsQCommandTextEdit() {
 } // end RpsQCommandTextEdit::~RpsQCommandTextEdit
 
 ////////////////////////////////////////////////////////////////
-RpsQOutputTextEdit::RpsQOutputTextEdit(QWidget*parent) : QTextEdit(parent) {
+RpsQOutputTextEdit::RpsQOutputTextEdit(QWidget*parent)
+  : QTextEdit(parent),
+    outptxt_objref() {
   setDocumentTitle("output");
 } // end RpsQOutputTextEdit::RpsQOutputTextEdit
 

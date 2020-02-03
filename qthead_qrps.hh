@@ -42,42 +42,43 @@
 
 
 #include <QApplication>
-#include <QMainWindow>
-#include <QPlainTextEdit>
-#include <QTimer>
-#include <QLineEdit>
-#include <QCompleter>
-#include <QStringListModel>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QDialog>
-#include <QPushButton>
 #include <QCheckBox>
 #include <QCommandLineParser>
+#include <QCompleter>
+#include <QDebug>
+#include <QDesktopWidget>
+#include <QDialog>
+#include <QFile>
+#include <QFont>
+#include <QLabel>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMainWindow>
+#include <QMdiArea>
+#include <QMdiSubWindow>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <QFile>
-#include <QLabel>
-#include <QDebug>
-#include <QFont>
-#include <QMdiArea>
-#include <QMdiSubWindow>
-#include <QScreen>
-#include <QDesktopWidget>
-#include <QThread>
-#include <QTextEdit>
-#include <QTextBrowser>
-#include <QUrl>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QPlainTextEdit>
 #include <QPointer>
+#include <QPushButton>
+#include <QScreen>
+#include <QStringListModel>
+#include <QTextBrowser>
+#include <QTextEdit>
+#include <QTextFragment>
+#include <QThread>
+#include <QTimer>
+#include <QUrl>
+#include <QVBoxLayout>
 
 class RpsQApplication;
 class RpsQWindow;
 class RpsQObjectLineEdit;// a line edit for a RefPerSys object
-
+class RpsQCommandTextEdit;
 
 //////////////////////////////////////////////////////////// RpsQApplication
 //// our application class
@@ -386,11 +387,16 @@ private:
   // Rps_PayloadQt<RpsQCommandTextEdit>, pointing in C++ to this C++
   // object....
   Rps_ObjectRef cmdtxt_objref;
+  /// each RefPerSys value could be displayed several times as a
+  /// vector of text fragments, so...
+  std::map<Rps_Value,std::set<std::vector<QPointer<QTextFragment>>>> cmdtxt_valmap;
 public:
   void gc_mark(Rps_GarbageCollector&gc) const
   {
     if (cmdtxt_objref)
       cmdtxt_objref.gc_mark(gc);
+    for (auto it : cmdtxt_valmap)
+      it.first.gc_mark(gc);
   };
 };				// end RpsQCommandTextEdit
 

@@ -190,7 +190,7 @@ public:
   {
     return std::string ("http://refpersys.org/");
   }
-};
+};				// end class RpsColophon
 
 
 /// backtrace support
