@@ -376,9 +376,9 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
   RPS_ASSERT (obzspace);
   obz->loader_set_space (this, obzspace);
   obz->loader_set_mtime (this, objjson["mtime"].asDouble());
-  if (objjson.isMember("components"))
+  if (objjson.isMember("comps"))
     {
-      auto compjson = objjson["components"];
+      auto compjson = objjson["comps"];
       int siz= 0;
       if (compjson.isArray())
         {
@@ -397,9 +397,9 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                     << " objid:" << objid
                     << " bad compjson:" << compjson);
     }
-  if (objjson.isMember("attributes"))
+  if (objjson.isMember("attrs"))
     {
-      auto attrjson = objjson["attributes"];
+      auto attrjson = objjson["attrs"];
       int siz= 0;
       if (attrjson.isArray())
         {
