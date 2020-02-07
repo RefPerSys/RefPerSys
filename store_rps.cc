@@ -383,6 +383,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
       if (compjson.isArray())
         {
           siz = compjson.size();
+          RPS_INFORMOUT("parse_json_buffer_second_pass obz=" << obz << " comps#" << siz);
           obz->loader_reserve_comps(this, (unsigned)siz);
           for (int ix=0; ix<(int)siz; ix++)
             {
@@ -403,6 +404,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
       if (attrjson.isArray())
         {
           siz = attrjson.size();
+          RPS_INFORMOUT("parse_json_buffer_second_pass obz=" << obz << " attrs#" << siz);
           for (int ix=0; ix<(int)siz; ix++)
             {
               auto entjson = attrjson[ix];
