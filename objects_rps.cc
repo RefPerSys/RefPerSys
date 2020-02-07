@@ -820,7 +820,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
                      << " has applying function");
   }
   /// attributes
-  RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob << "attrs#" << ob_attrs.size());
+  RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob << ", attrs#" << ob_attrs.size());
   if (!ob_attrs.empty())
     {
       Json::Value jattrs(Json::arrayValue);
@@ -836,7 +836,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
       json["attrs"] = jattrs;
     }
   ///
-  RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob << "comps#" << ob_comps.size());
+  RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob << ", comps#" << ob_comps.size());
   if (!ob_comps.empty())
     {
       Json::Value jcomps(Json::arrayValue);

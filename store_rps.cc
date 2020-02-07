@@ -91,7 +91,7 @@ class Rps_Loader
   bool is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid);
   Rps_ObjectRef fetch_one_constant_at(const char*oid,int lin);
   void parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
-                                      Rps_Id objid, const std::string& objbuf);
+                                      Rps_Id objid, const std::string& objbuf, unsigned count);
 public:
   Rps_Loader(const std::string&topdir) :
     ld_topdir(topdir) {};
@@ -336,12 +336,12 @@ Rps_Loader::fetch_one_constant_at(const char*oidstr, int lin)
 
 void
 Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
-    Rps_Id objid, const std::string& objbuf)
+    Rps_Id objid, const std::string& objbuf, unsigned count)
 {
-  /// RPS_INFORMOUT("parse_json_buffer_second_pass start spacid=" << spacid
-  ///               << " lineno=" <<lineno
-  ///               << " objid=" <<objid
-  ///               << " objbuf:\n" << objbuf);
+  RPS_INFORMOUT("parse_json_buffer_second_pass start spacid=" << spacid << " #" << count
+                << " lineno=" <<lineno
+                << " objid=" <<objid
+                << " objbuf:\n" << objbuf);
   Json::Value objjson;
   try
     {
@@ -390,6 +390,11 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
               obz->loader_add_comp(this, valcomp);
             }
         }
+      else
+        RPS_WARNOUT("parse_json_buffer_second_pass spacid=" << spacid
+                    << " lineno:" << lineno
+                    << " objid:" << objid
+                    << " bad compjson:" << compjson);
     }
   if (objjson.isMember("attributes"))
     {
@@ -414,6 +419,10 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                 }
             }
         }
+      else RPS_WARNOUT("parse_json_buffer_second_pass spacid=" << spacid
+                         << " lineno:" << lineno
+                         << " objid:" << objid
+                         << " bad attrjson:" << attrjson);
     }
   if (objjson.isMember("magicattr"))
     {
@@ -504,8 +513,11 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                        << std::endl);
         }
     }
+  RPS_INFORMOUT("parse_json_buffer_second_pass end objid=" << objid << " #" << count
+                << std::endl);
 } // end of Rps_Loader::parse_json_buffer_second_pass
 
+////////////////////////////////////////////////////////////////
 
 
 void
@@ -517,7 +529,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
   unsigned obcnt = 0;
   Rps_Id prevoid;
   unsigned prevlin=0;
-  //  RPS_INFORM("Rps_Loader::second_pass_space start spacepath=%s", spacepath.c_str());
+  RPS_INFORM("Rps_Loader::second_pass_space start spacepath=%s", spacepath.c_str());
   std::string objbuf;
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
@@ -531,7 +543,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
             {
               try
                 {
-                  parse_json_buffer_second_pass(spacid, prevlin, prevoid, objbuf);
+                  parse_json_buffer_second_pass(spacid, prevlin, prevoid, objbuf, obcnt);
                 }
               catch (const std::exception& exc)
                 {
@@ -562,7 +574,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
     {
       try
         {
-          parse_json_buffer_second_pass(spacid, prevlin, prevoid, objbuf);
+          parse_json_buffer_second_pass(spacid, prevlin, prevoid, objbuf, obcnt);
         }
       catch (const std::exception& exc)
         {
@@ -1572,8 +1584,8 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
       *pouts << std::endl << std::endl;
       *pouts << "//+ob" << curobr->oid().to_string() << std::endl;
       RPS_INFORMOUT("Rps_Dumper::write_space_file emits " << (curobr->oid().to_string())
-		    << " of hi=" <<  (curobr->oid().hi())
-		    << " #" << (++count));
+                    << " of hi=" <<  (curobr->oid().hi())
+                    << " #" << (++count));
       /// output a comment giving the class name for readability
       {
         Rps_ObjectRef obclass = curobr->get_class();
