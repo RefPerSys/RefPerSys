@@ -1152,6 +1152,16 @@ RpsQCreateContributorDialog::on_ok_trigger()
 	 << " with email: " << emailstr << std::endl;
     if (!webpagestr.empty())
       outs << " with home-page: " << webpagestr << std::endl;
+    outs << std::endl;
+    outs << "this on computer " << (rps_hostname());
+    {
+      char exebuf[128];
+      memset (exebuf, 0, sizeof(exebuf));
+      readlink("/proc/self/exe", exebuf, sizeof(exebuf)-1);
+      if (exebuf[0]) outs << " executable " << exebuf;
+    }
+      outs << " gitid " << rps_gitid
+	   << " built on " << rps_timestamp << "." << std::endl;
     std::string msg = outs.str();
     fprintf (mailpipe, "%s\n\n", msg.c_str());
     fprintf (mailpipe,
