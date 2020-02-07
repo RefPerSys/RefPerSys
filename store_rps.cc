@@ -1566,11 +1566,14 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     jsonwriter->write(jprologue, pouts.get());
     *pouts << std::endl;
   }
+  int count = 0;
   for (auto curobr: curspaset)
     {
       *pouts << std::endl << std::endl;
       *pouts << "//+ob" << curobr->oid().to_string() << std::endl;
-      RPS_NOPRINTOUT("Rps_Dumper::write_space_file emits " << curobr->oid().to_string());
+      RPS_INFORMOUT("Rps_Dumper::write_space_file emits " << (curobr->oid().to_string())
+		    << " of hi=" <<  (curobr->oid().hi())
+		    << " #" << (++count));
       /// output a comment giving the class name for readability
       {
         Rps_ObjectRef obclass = curobr->get_class();

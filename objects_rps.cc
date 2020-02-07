@@ -749,6 +749,7 @@ Rps_ObjectZone::dump_scan_contents(Rps_Dumper*du) const
     payl->dump_scan(du);
 } // end Rps_ObjectZone::dump_scan_contents
 
+
 void
 Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
 {
@@ -758,6 +759,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
   Rps_ObjectRef thisob(this);
   Rps_ObjectZone* obcla = ob_class.load();
   RPS_ASSERT(obcla != nullptr);
+  RPS_INFORMOUT("Rps_ObjectZone::dump_json_content start thisob=" << thisob);
   json["class"] = rps_dump_json_objectref(du,obcla);
   {
     // It makes no sense to persist a time with a precision above the
@@ -818,6 +820,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
                      << " has applying function");
   }
   /// attributes
+  RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob << "attrs#" << ob_attrs.size());
   if (!ob_attrs.empty())
     {
       Json::Value jattrs(Json::arrayValue);
@@ -832,6 +835,8 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
         };
       json["attrs"] = jattrs;
     }
+  ///
+  RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob << "comps#" << ob_comps.size());
   if (!ob_comps.empty())
     {
       Json::Value jcomps(Json::arrayValue);
@@ -847,8 +852,12 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
       json["payload"] = Json::Value(payl->payload_type_name());
       payl->dump_json_content(du,json);
     }
+  RPS_INFORMOUT("Rps_ObjectZone::dump_json_content end thisob=" << thisob << std::endl);
 } // end Rps_ObjectZone::dump_json_contents
 
+
+
+////////////////////////////////////////////////////////////////
 bool
 Rps_ObjectZone::equal(const Rps_ZoneValue&zv) const
 {
