@@ -392,6 +392,7 @@ private:
   /// vector of text fragments, or something else so...
   std::map<Rps_Value,std::set<std::vector<QPointer<QObject>>>> cmdtxt_valmap;
 public:
+  void create_cmdedit_object(Rps_CallFrame*);
   void gc_mark(Rps_GarbageCollector&gc) const
   {
     if (cmdtxt_objref)

@@ -240,11 +240,16 @@ RpsQWindow::create_winobj(Rps_CallFrame*callerframe)
                  Rps_ObjectRef obwin;
                 );
   RPS_ASSERT(!win_objref);
+  RPS_ASSERT(win_command_textedit);
+  RPS_ASSERT(win_output_textedit);
   _.obwin =  Rps_ObjectRef::make_object(&_, rpskob_1DUx3zfUzIb04lqNVt /*rps_window class*/);
   auto paylw = _.obwin->put_new_plain_payload<Rps_PayloadQt<RpsQWindow>>();
   paylw->set_qtptr(this);
   win_objref = _.obwin;
+  win_command_textedit->create_cmdedit_object(&_);
+  win_output_textedit->create_outpedit_object(&_);
 } // end RpsQWindow::create_winobj
+
 
 ////////////////////////////////////////////////////////////////
 //// the dialog to create RefPerSys classes
@@ -1658,6 +1663,24 @@ RpsQCommandTextEdit::RpsQCommandTextEdit(QWidget*parent)
 
 RpsQCommandTextEdit::~RpsQCommandTextEdit() {
 } // end RpsQCommandTextEdit::~RpsQCommandTextEdit
+
+void
+RpsQCommandTextEdit::create_cmdedit_object(Rps_CallFrame*callerframe)
+{
+  RPS_LOCALFRAME(nullptr /*no descr*/,
+                 callerframe,
+                 Rps_ObjectRef obcmed;
+                );
+  RPS_ASSERT(!cmdtxt_objref);
+#if 0
+  _.obcmed =
+    Rps_ObjectRef::make_object(&_,
+			       RPS_ROOT_OB(_1NWEOIzo3WU03mE42Q) /*rps_output_textedit class*/);
+  auto paylt = _.obtxed->put_new_plain_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  paylt->set_qtptr(this);
+  cmdtxt_objref = _.obcmed;
+#endif
+} // end RpsQOutputTextEdit::create_outpedit_object
 
 ////////////////////////////////////////////////////////////////
 RpsQOutputTextEdit::RpsQOutputTextEdit(QWidget*parent)
