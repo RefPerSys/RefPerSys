@@ -609,6 +609,7 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
+  PaylQt = -11, // for Rps_PayloadQt<>
   PaylSymbol = -10, // symbol payload
   PaylSpace = -9, // space payload
   PaylStrBuf = -8, // mutable string buffer
@@ -2737,7 +2738,7 @@ template <class QtClass> class Rps_PayloadQt : public Rps_Payload
 protected:
   QPointer<QtClass> _qtptr;
   Rps_PayloadQt(Rps_ObjectZone*owner)
-    :  Rps_Payload(owner), _qtptr(nullptr) {};
+    :  Rps_Payload(Rps_Type::PaylQt, owner), _qtptr(nullptr) {};
   virtual ~Rps_PayloadQt();
   virtual uint32_t wordsize(void) const
   {

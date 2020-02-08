@@ -169,7 +169,14 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     rps_garbage_collect();
   });
   connect(win_apnewin_action, &QAction::triggered,
-          RpsQApplication::the_app(), &RpsQApplication::do_add_new_window);
+          [=](void)
+  {
+    RPS_LOCALFRAME(nullptr /*no descr*/,
+                   nullptr /*no calling frame*/,
+                   Rps_Value val; // the value
+                  );
+    RpsQApplication::the_app()->do_add_new_window(&_);
+  });
   connect(win_crclass_action, &QAction::triggered,
           [=](void)
   {
@@ -216,7 +223,8 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
 
 
 
-void RpsQWindow::gc_mark(Rps_GarbageCollector&gc) const
+void
+RpsQWindow::gc_mark(Rps_GarbageCollector&gc) const
 {
   if (win_objref)
     win_objref.gc_mark(gc);
@@ -226,6 +234,22 @@ void RpsQWindow::gc_mark(Rps_GarbageCollector&gc) const
     win_output_textedit->gc_mark(gc);
 } // end RpsQWindow::gc_mark
 
+
+void
+RpsQWindow::create_winobj(Rps_CallFrame*callerframe)
+{
+  RPS_LOCALFRAME(nullptr /*no descr*/,
+                 callerframe,
+                 Rps_ObjectRef obwin;
+                );
+  RPS_ASSERT(!win_objref);
+#if 0
+  _.obwin =  Rps_ObjectRef::make_object(&_, rpskob_1DUx3zfUzIb04lqNVt /*rps_window class*/);
+  auto paylw = _.obwin.put_new_plain_payload<Rps_PayloadQt<RpsQWindow>>();
+  paylw->set_qtptr(this);
+  win_objref = _.obwin;
+#endif
+} // end RpsQWindow::create_winobj
 
 ////////////////////////////////////////////////////////////////
 //// the dialog to create RefPerSys classes

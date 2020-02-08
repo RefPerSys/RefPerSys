@@ -117,7 +117,7 @@ public:
 public slots:
   void do_dump_state(QString dirpath=".");
   void do_dump_current_state();
-  void do_add_new_window(void);
+  void do_add_new_window(Rps_CallFrame*callerframe);
   void do_dump_then_exit(QString dirpath=".");
   void do_dump_current_then_exit(void);
   void do_remove_window_by_index(int index);
@@ -479,6 +479,7 @@ public:
     return win_rank;
   };
   void gc_mark(Rps_GarbageCollector&gc) const;
+  void create_winobj(Rps_CallFrame*callerframe);
 };				// end of RpsQWindow
 
 #endif /*QTHEAD_QRPS_INCLUDED*/

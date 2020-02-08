@@ -155,8 +155,12 @@ RpsQApplication::read_current_json(std::string jsonpath)
 } // end RpsQApplication::read_current_json
 
 void
-RpsQApplication::do_add_new_window(void)
+RpsQApplication::do_add_new_window(Rps_CallFrame*callerframe)
 {
+  RPS_LOCALFRAME(nullptr,
+                 callerframe,
+                 Rps_ObjectRef obwin; // the attribute
+                );
   std::lock_guard gu(app_mutex);
   int winrk = -1;
   RPS_ASSERT(app_windvec.size()>0);
@@ -175,8 +179,8 @@ RpsQApplication::do_add_new_window(void)
     }
   auto window = new RpsQWindow(nullptr,winrk);
   window->setWindowTitle(QString("RefPerSys #%1").arg(winrk));
-  int w = 256;
-  int h = 128;
+  int w = 384;
+  int h = 200;
   Json::Value juser(Json::nullValue);
   Json::Value japp(Json::nullValue);
   try
@@ -215,6 +219,7 @@ RpsQApplication::do_add_new_window(void)
   if (h < screengeom.height()/4)
     h = 16 + screengeom.height()/4;
   window->resize (w, h);
+  window->create_winobj(&_);
   window->show();
   app_windvec[winrk] = window;
   app_wndcount++;
@@ -244,11 +249,15 @@ RpsQApplication::RpsQApplication(int &argc, char*argv[])
     app_windvec(),
     app_wndcount (0)
 {
+  RPS_LOCALFRAME(nullptr /*no descr*/,
+                 nullptr /*no calling frame*/,
+                 Rps_Value val; // the value
+                );
   setApplicationName("RefPerSys");
   setApplicationVersion(rps_lastgitcommit);
   app_windvec.reserve(16);
   app_windvec.push_back(nullptr); // we don't want a 0 index.
-  do_add_new_window();
+  do_add_new_window(&_);
 } // end of RpsQApplication::RpsQApplication
 
 
