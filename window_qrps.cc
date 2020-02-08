@@ -1672,15 +1672,13 @@ RpsQCommandTextEdit::create_cmdedit_object(Rps_CallFrame*callerframe)
                  Rps_ObjectRef obcmed;
                 );
   RPS_ASSERT(!cmdtxt_objref);
-#if 0
   _.obcmed =
     Rps_ObjectRef::make_object(&_,
-			       RPS_ROOT_OB(_1NWEOIzo3WU03mE42Q) /*rps_output_textedit class*/);
-  auto paylt = _.obtxed->put_new_plain_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+			       RPS_ROOT_OB(_54CP9eaTmxT00lzbEW) /*rps_command_textedit class*/);
+  auto paylt = _.obcmed->put_new_plain_payload<Rps_PayloadQt<RpsQCommandTextEdit>>();
   paylt->set_qtptr(this);
   cmdtxt_objref = _.obcmed;
-#endif
-} // end RpsQOutputTextEdit::create_outpedit_object
+} // end RpsQCommandTextEdit::create_cmdedit_object
 
 ////////////////////////////////////////////////////////////////
 RpsQOutputTextEdit::RpsQOutputTextEdit(QWidget*parent)
