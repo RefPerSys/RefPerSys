@@ -491,7 +491,17 @@ Rps_PayloadQt<QtClass>::payload_type_name(void) const
   static std::mutex mtx;
   std::string str;
   std::lock_guard<std::mutex> gu(mtx);
-#warning Rps_PayloadQt<QtClass>::payload_type_name should be more dynamic
+  auto ow = owner();
+  if (ow)
+    {
+      std::lock_guard<std::recursive_mutex> guow(*(ow->objmtxptr()));
+      QtClass* qob = nullptr;
+      if (ow->get_payload() == this && (qob=qtptr()) != nullptr)
+        {
+          str = std::string("Rps_PayloadQt:") + qob->metaObject()->className();
+          return str;
+        }
+    }
   const char* cn = QtClass::staticMetaObject.className();
   str = std::string("Rps_PayloadQt/") + cn;
   return str;
