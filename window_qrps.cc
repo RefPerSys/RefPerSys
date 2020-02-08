@@ -1678,13 +1678,13 @@ RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
                  Rps_ObjectRef obtxed;
                 );
   RPS_ASSERT(!outptxt_objref);
-#if 0
-  _.obtxed =  Rps_ObjectRef::make_object(&_, rpskob_1DUx3zfUzIb04lqNVt /*rps_window class*/);
+  _.obtxed =
+    Rps_ObjectRef::make_object(&_,
+			       RPS_ROOT_OB(_1NWEOIzo3WU03mE42Q) /*rps_output_textedit class*/);
   auto paylt = _.obtxed->put_new_plain_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   paylt->set_qtptr(this);
   outptxt_objref = _.obtxed;
-#endif 
-} // end RpsQWindow::create_outpedit_object
+} // end RpsQOutputTextEdit::create_outpedit_object
 
 ////////////////////////////////////////////////////////////////
 
