@@ -64,6 +64,7 @@
 #include <QNetworkRequest>
 #include <QPlainTextEdit>
 #include <QPointer>
+#include <QProcess>
 #include <QPushButton>
 #include <QScreen>
 #include <QStringListModel>
@@ -388,8 +389,8 @@ private:
   // object....
   Rps_ObjectRef cmdtxt_objref;
   /// each RefPerSys value could be displayed several times as a
-  /// vector of text fragments, so...
-  std::map<Rps_Value,std::set<std::vector<QPointer<QTextFragment>>>> cmdtxt_valmap;
+  /// vector of text fragments, or something else so...
+  std::map<Rps_Value,std::set<std::vector<QPointer<QObject>>>> cmdtxt_valmap;
 public:
   void gc_mark(Rps_GarbageCollector&gc) const
   {
@@ -398,7 +399,7 @@ public:
     for (auto it : cmdtxt_valmap)
       it.first.gc_mark(gc);
   };
-};				// end RpsQCommandTextEdit
+};				// end class RpsQCommandTextEdit
 
 
 //////////////////////////////////////////////////////////// RpsQOutputTextEdit
@@ -414,13 +415,20 @@ private:
   // Rps_PayloadQt<RpsQOutputTextEdit>, pointing in C++ to this C++
   // object....
   Rps_Value outptxt_objref;
+  /// each RefPerSys value could be displayed several times as a
+  /// vector of text fragments, or something else so...
+  std::map<Rps_Value,std::set<std::vector<QPointer<QObject>>>> outptxt_valmap;
 public:
+  // create a temporary RefPerSys object whose payload contains this output text edit
+  void create_outpedit_object(Rps_CallFrame*);
   void gc_mark(Rps_GarbageCollector&gc) const
   {
     if (outptxt_objref)
       outptxt_objref.gc_mark(gc);
+    for (auto it : outptxt_valmap)
+      it.first.gc_mark(gc);
   };
-};				// end RpsQOutputTextEdit
+};				// end class RpsQOutputTextEdit
 
 
 //////////////////////////////////////////////////////////// RpsQWindow
