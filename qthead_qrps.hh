@@ -482,4 +482,53 @@ public:
   void create_winobj(Rps_CallFrame*callerframe);
 };				// end of RpsQWindow
 
+
+//// Qt related payload
+template <class QtClass>
+const std::string
+Rps_PayloadQt<QtClass>::payload_type_name(void) const
+{
+  static std::mutex mtx;
+  std::string str;
+  std::lock_guard<std::mutex> gu(mtx);
+#warning Rps_PayloadQt<QtClass>::payload_type_name should be more dynamic
+  const char* cn = QtClass::staticMetaObject.className();
+  str = std::string("Rps_PayloadQt/") + cn;
+  return str;
+} // end Rps_PayloadQt::payload_type_name
+
+
+template <class QtClass>
+Rps_PayloadQt<QtClass>&
+Rps_PayloadQt<QtClass>::set_qtptr(QtClass* qptr)
+{
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> gu(*(owner()->objmtxptr()));
+  _qtptr = qptr;
+  return *this;
+} // end Rps_PayloadQt<QtClass>::set_qtptr
+
+template <class QtClass>
+QtClass*
+Rps_PayloadQt<QtClass>::qtptr(void) const
+{
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> gu(*(owner()->objmtxptr()));
+  return _qtptr;
+} // end Rps_PayloadQt<QtClass>::qtptr
+
+template <class QtClass>
+Rps_PayloadQt<QtClass>::~Rps_PayloadQt()
+{
+  if (owner())
+    {
+      std::lock_guard<std::recursive_mutex> gu(*(owner()->objmtxptr()));
+      if (_qtptr)
+        {
+          _qtptr->deleteLater();
+        }
+    }
+} // end Rps_PayloadQt<QtClass>::~Rps_PayloadQt
+
+extern template class Rps_PayloadQt<RpsQWindow>;
 #endif /*QTHEAD_QRPS_INCLUDED*/

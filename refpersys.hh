@@ -1854,7 +1854,7 @@ public:
   {
     RPS_ASSERT(ld != nullptr);
   };
-  virtual const char*payload_type_name(void) const =0;
+  virtual const std::string payload_type_name(void) const =0;
   virtual bool is_erasable(void) const
   {
     return true;
@@ -2363,7 +2363,7 @@ protected:
   Rps_PayloadClassInfo(Rps_ObjectRef obr) :
     Rps_PayloadClassInfo(obr?obr.optr():nullptr) {};
 public:
-  virtual const char*payload_type_name(void) const
+  virtual const std::string payload_type_name(void) const
   {
     return "class";
   };
@@ -2445,7 +2445,7 @@ protected:
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
 public:
-  virtual const char*payload_type_name(void) const
+  virtual const std::string payload_type_name(void) const
   {
     return "setob";
   };
@@ -2521,7 +2521,7 @@ protected:
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
 public:
-  virtual const char*payload_type_name(void) const
+  virtual const std::string payload_type_name(void) const
   {
     return "vectob";
   };
@@ -2598,7 +2598,7 @@ protected:
     return false;
   };
 public:
-  virtual const char*payload_type_name(void) const
+  virtual const std::string payload_type_name(void) const
   {
     return "space";
   };
@@ -2646,7 +2646,7 @@ protected:
     return symb_is_weak.load();
   };
 public:
-  virtual const char*payload_type_name(void) const
+  virtual const std::string payload_type_name(void) const
   {
     return "symbol";
   };
@@ -2744,7 +2744,10 @@ protected:
   {
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
   };
-  virtual void gc_mark(Rps_GarbageCollector&gc) const =0;
+  virtual void gc_mark(Rps_GarbageCollector&gc) const {
+    if (_qtptr)
+      _qtptr->gc_mark(gc);
+  };
   virtual void dump_scan(Rps_Dumper*) const {};
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const {};
   virtual bool is_erasable(void) const
@@ -2757,17 +2760,24 @@ public:
   inline QtClass* qtptr(void) const;
   QtClass& operator -> (void) const
   {
-    if (owner())
-      return qtptr();
+    if (owner()) {
+      if (_qtptr)
+      return *_qtptr;
+      else
+	throw  RPS_RUNTIME_ERROR_OUT("missing qtptr:" << payload_type_name());
+    }
     else throw RPS_RUNTIME_ERROR_OUT("unowned Qt payload:" << payload_type_name());
   };
   QtClass& operator * (void) const
   {
-    if (owner())
-      return *qtptr();
-    else return nullptr;
+    if (owner()) {
+      if (_qtptr)
+	return *_qtptr;
+      else
+	throw  RPS_RUNTIME_ERROR_OUT("missing qtptr:" << payload_type_name());
+    } throw RPS_RUNTIME_ERROR_OUT("unowned Qt payload:" << payload_type_name());
   }
-  virtual const char*payload_type_name(void) const;
+  virtual const std::string payload_type_name(void) const;
 };				// end of template Rps_PayloadQt
 
 ////////////////////////////////////////////////////////////////

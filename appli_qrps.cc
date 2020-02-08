@@ -513,4 +513,5 @@ rps_is_main_gui_thread(void)
 //////////////// moc generated file
 #include "_qthead_qrps.inc.hh"
 
+template class Rps_PayloadQt<RpsQWindow>;
 //////////////////////////////////////// end of file appli_qrps.cc
