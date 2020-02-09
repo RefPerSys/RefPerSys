@@ -1654,60 +1654,6 @@ RpsQCreateClosureObjectDialog::on_close_trigger()
 
 
 ////////////////////////////////////////////////////////////////
-RpsQCommandTextEdit::RpsQCommandTextEdit(QWidget*parent)
-  : QTextEdit(parent),
-    cmdtxt_objref(),
-    cmdtxt_valmap() {
-  setDocumentTitle("command");
-} // end RpsQCommandTextEdit::RpsQCommandTextEdit
-
-RpsQCommandTextEdit::~RpsQCommandTextEdit() {
-} // end RpsQCommandTextEdit::~RpsQCommandTextEdit
-
-void
-RpsQCommandTextEdit::create_cmdedit_object(Rps_CallFrame*callerframe)
-{
-  RPS_LOCALFRAME(nullptr /*no descr*/,
-                 callerframe,
-                 Rps_ObjectRef obcmed;
-                );
-  RPS_ASSERT(!cmdtxt_objref);
-  _.obcmed =
-    Rps_ObjectRef::make_object(&_,
-			       RPS_ROOT_OB(_54CP9eaTmxT00lzbEW) /*rps_command_textedit class*/);
-  auto paylt = _.obcmed->put_new_plain_payload<Rps_PayloadQt<RpsQCommandTextEdit>>();
-  paylt->set_qtptr(this);
-  cmdtxt_objref = _.obcmed;
-} // end RpsQCommandTextEdit::create_cmdedit_object
-
-////////////////////////////////////////////////////////////////
-RpsQOutputTextEdit::RpsQOutputTextEdit(QWidget*parent)
-  : QTextEdit(parent),
-    outptxt_objref() {
-  setDocumentTitle("output");
-} // end RpsQOutputTextEdit::RpsQOutputTextEdit
-
-RpsQOutputTextEdit::~RpsQOutputTextEdit() {
-} // end RpsQOutputTextEdit::~RpsQOutputTextEdit
-
-
-void
-RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
-{
-  RPS_LOCALFRAME(nullptr /*no descr*/,
-                 callerframe,
-                 Rps_ObjectRef obtxed;
-                );
-  RPS_ASSERT(!outptxt_objref);
-  _.obtxed =
-    Rps_ObjectRef::make_object(&_,
-			       RPS_ROOT_OB(_1NWEOIzo3WU03mE42Q) /*rps_output_textedit class*/);
-  auto paylt = _.obtxed->put_new_plain_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
-  paylt->set_qtptr(this);
-  outptxt_objref = _.obtxed;
-} // end RpsQOutputTextEdit::create_outpedit_object
-
-////////////////////////////////////////////////////////////////
 
 ///// the completer for RefPerSys objects
 RpsQObjectCompleter::RpsQObjectCompleter(QObject*parent)
