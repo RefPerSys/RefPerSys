@@ -2019,6 +2019,7 @@ public:
   /// gives the element index, or a negative number if not found
   inline int element_index(const Rps_ObjectRef obelem) const;
   inline bool contains(const Rps_ObjectRef obelem) const { return element_index(obelem) >= 0; };
+  unsigned cardinal() const { return cnt(); };
 #warning Rps_SetOb very incomplete
 };// end of Rps_SetOb
 
@@ -2080,6 +2081,10 @@ class Rps_TreeZone : public Rps_LazyHashedZoneValue
     memset (_treesons, 0, sizeof(Rps_Value)*len);
   };
   Rps_Value*raw_data_sons()
+  {
+    return _treesons;
+  };
+  const Rps_Value*raw_const_data_sons() const
   {
     return _treesons;
   };
@@ -2295,6 +2300,7 @@ protected:
   friend Rps_InstanceZone*
   Rps_QuasiZone::rps_allocate_with_wordgap<Rps_InstanceZone,unsigned,Rps_ObjectRef,Rps_InstanceTag>(unsigned,unsigned,Rps_ObjectRef,Rps_InstanceTag);
 public:
+  const Rps_Value* const_sons() const { return raw_const_data_sons(); };
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
   virtual void val_output(std::ostream& outs, unsigned depth) const;
@@ -2304,6 +2310,7 @@ public:
   /// get the set of attributes in a class
   static const Rps_SetOb* class_attrset(Rps_ObjectRef obclass);
   /// make a instance with given class and components and no attributes
+  static Rps_InstanceZone* load_from_json(Rps_Loader*ld, const Json::Value& jv);
   static Rps_InstanceZone* make_from_components(Rps_ObjectRef classob, const std::initializer_list<Rps_Value>& valil);
   static Rps_InstanceZone* make_from_components(Rps_ObjectRef classob, const std::vector<Rps_Value>& valvec);
   /// make an instance from both attributes and components

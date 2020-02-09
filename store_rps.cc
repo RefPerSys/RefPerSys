@@ -735,8 +735,7 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
                && (jcomp=jv["class"]).isString()
               )
         {
-#warning Rps_Value::Rps_Value unimplemented load of instances
-          RPS_FATALOUT ("unimplemented load of instances jv=" << jv);
+          *this = Rps_InstanceZone::load_from_json(ld, jv);
         }
       else if (str == "closure" && siz>=3
                && jv.isMember("fn")
@@ -770,6 +769,51 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
 #warning Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld) unimplemented
   RPS_WARN("unimplemented Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)");
 } // end of Rps_Value::Rps_Value(const Json::value &jv, Rps_Loader*ld)
+
+
+
+Rps_InstanceZone*
+Rps_InstanceZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
+{
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(jv.isObject());
+  auto jclass = jv["iclass"];
+  Rps_ObjectRef obclass(jclass,ld);
+  auto jattrs = jv["iattrs"];
+  auto nbattrs = jattrs.size();
+  auto jcomps = jv["icomps"];
+  auto nbcomps = jcomps.size();
+  std::vector<std::pair<Rps_ObjectRef,Rps_Value>> attrvec;
+  std::vector<Rps_Value> compvec;
+  attrvec.reserve(nbattrs);
+  compvec.reserve(nbcomps);
+  for (int aix = 0; aix<nbattrs; aix++)
+    {
+      Json::Value jcurent = jattrs[aix];
+      if (jcurent.isNull())
+        {
+          attrvec.push_back({nullptr,nullptr});
+        }
+      else
+        {
+          Json::Value jiat = jcurent["iat"];
+          Json::Value jiva = jcurent["iva"];
+          Rps_ObjectRef atob (jiat,ld);
+          Rps_Value atvalv (jiva,ld);
+          attrvec.push_back({atob,atvalv});
+        }
+    }
+  for (int cix=0; cix<nbcomps; cix++)
+    {
+      Json::Value jcurcomp = jcomps[cix];
+      Rps_Value compv (jcurcomp,ld);
+      compvec.push_back(compv);
+    }
+#warning Rps_InstanceZone::load_from_json incomplete, should allocate and fill
+  RPS_FATAL("Rps_InstanceZone::load_from_json incomplete");
+} // end of Rps_InstanceZone::load_from_json
+
+
 
 
 Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
@@ -1284,26 +1328,55 @@ Rps_InstanceZone::dump_json(Rps_Dumper*du) const
   RPS_ASSERT(du != nullptr);
   if (!rps_is_dumpable_objref(du,conn()) || is_transient())
     return Json::Value(Json::nullValue);
-  auto  hjclo = Json::Value(Json::objectValue);
-  hjclo["vtype"] = Json::Value("instance");
-  hjclo["class"] = rps_dump_json_objectref(du,conn());
-#warning Rps_InstanceZone::dump_json
-  RPS_WARN("Rps_InstanceZone::dump_json incomplete");
-#if 0
-  auto jvec = Json::Value(Json::arrayValue);
-  for (Rps_Value sonval: *this)
-    jvec.append(rps_dump_json_value(du,sonval));
-  hjclo["env"] = jvec;
-#endif
+  auto  hjins = Json::Value(Json::objectValue);
+  hjins["vtype"] = Json::Value("instance");
+  hjins["iclass"] = rps_dump_json_objectref(du,get_class());
+  auto atset = set_attributes();
+  const  Rps_Value* csons = const_sons();
+  unsigned nbsons = cnt();
+  int atlen = 0;
+  int nbattrs = 0;
+  if (atset)
+    {
+      atlen = atset->cardinal();
+      auto jvattrs = Json::Value(Json::arrayValue);
+      jvattrs.resize(atlen); // reservation
+      int attrix = 0;
+      for (Rps_ObjectRef obattr: *atset)
+        {
+          attrix++;
+          if (attrix > nbsons)
+            break;
+          if (!rps_is_dumpable_objref(du, obattr))
+            {
+              jvattrs.append(Json::Value(Json::nullValue));
+              continue;
+            }
+          auto jent = Json::Value(Json::objectValue);
+          jent["iat"] = rps_dump_json_objectref(du,obattr);
+          jent["iva"] = rps_dump_json_value(du,csons[attrix-1]);
+          jvattrs.append(jent);
+          nbattrs++;
+        }
+      jvattrs.resize(nbattrs); // reservation
+      hjins["iattrs"] = jvattrs;
+      auto jvcomps = Json::Value(Json::arrayValue);
+      jvcomps.resize(nbsons-nbattrs); // reservation
+      for (int compix = attrix; compix<nbsons; compix++)
+        {
+          jvcomps.append(rps_dump_json_value(du,csons[compix]));
+        }
+      hjins["icomps"] = jvcomps;
+    }
   if (!is_metatransient())
     {
       auto md = get_metadata();
       Rps_ObjectRef metaobr = md.first;
       int32_t metarank = md.second;
-      hjclo["metaobj"] = rps_dump_json_objectref(du,metaobr);
-      hjclo["metarank"] = Json::Value(metarank);
+      hjins["metaobj"] = rps_dump_json_objectref(du,metaobr);
+      hjins["metarank"] = Json::Value(metarank);
     }
-  return hjclo;
+  return hjins;
 } // end Rps_InstanceZone::dump_json
 
 
