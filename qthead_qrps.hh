@@ -69,6 +69,7 @@
 #include <QScreen>
 #include <QStringListModel>
 #include <QTextBrowser>
+#include <QTextDocument>
 #include <QTextEdit>
 #include <QTextFragment>
 #include <QThread>
@@ -80,6 +81,8 @@ class RpsQApplication;
 class RpsQWindow;
 class RpsQObjectLineEdit;// a line edit for a RefPerSys object
 class RpsQCommandTextEdit;
+class RpsQOutputTextEdit;
+class RpsQOutputTextDocument;
 
 //////////////////////////////////////////////////////////// RpsQApplication
 //// our application class
@@ -403,6 +406,19 @@ public:
 };				// end class RpsQCommandTextEdit
 
 
+//////////////////////////////////////////////////////////// RpsQOutputTextDocument
+class RpsQOutputTextDocument: public QTextDocument
+{
+  Q_OBJECT;
+public:
+  RpsQOutputTextDocument(RpsQWindow*parent);
+  ~RpsQOutputTextDocument();
+  RpsQWindow* out_window() const
+  {
+    return qobject_cast<RpsQWindow*>(parent());
+  };
+}; // end class RpsQOutputTextDocument
+
 //////////////////////////////////////////////////////////// RpsQOutputTextEdit
 class RpsQOutputTextEdit : public QTextEdit
 {
@@ -473,6 +489,7 @@ private:
 
   QMdiSubWindow* win_output_subwin; /// the output subwindow
   RpsQOutputTextEdit* win_output_textedit;/// the output text edit
+  RpsQOutputTextDocument* win_output_textdoc; // the common output document
 
   // Conventionally the object reference below is null or else a
   // transient RefPerSys object carrying a payload of

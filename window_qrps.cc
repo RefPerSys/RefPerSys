@@ -65,6 +65,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_command_textedit(nullptr),
     win_output_subwin(nullptr),
     win_output_textedit(nullptr),
+    win_output_textdoc(nullptr),
     win_objref(nullptr)
 #warning win_objref should be known to the garbage collector
 {
@@ -128,6 +129,8 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
   win_output_subwin->setWindowTitle("output");
   win_output_subwin->setWidget(win_output_textedit);
   win_centralmdi->addSubWindow(win_output_subwin);
+  win_output_textdoc = new RpsQOutputTextDocument(this);
+  win_output_textedit->setDocument(win_output_textdoc);
 
   {
     auto screengeom = RpsQApplication::the_app()->desktop()->screenGeometry();

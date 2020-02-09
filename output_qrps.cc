@@ -40,14 +40,16 @@ extern "C" const char rps_output_date[];
 const char rps_output_date[]= __DATE__;
 
 
-////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////// RpsQOutputTextEdit
 RpsQOutputTextEdit::RpsQOutputTextEdit(QWidget*parent)
   : QTextEdit(parent),
-    outptxt_objref() {
+    outptxt_objref()
+{
   setDocumentTitle("output");
 } // end RpsQOutputTextEdit::RpsQOutputTextEdit
 
-RpsQOutputTextEdit::~RpsQOutputTextEdit() {
+RpsQOutputTextEdit::~RpsQOutputTextEdit()
+{
 } // end RpsQOutputTextEdit::~RpsQOutputTextEdit
 
 
@@ -61,10 +63,23 @@ RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
   RPS_ASSERT(!outptxt_objref);
   _.obtxed =
     Rps_ObjectRef::make_object(&_,
-			       RPS_ROOT_OB(_1NWEOIzo3WU03mE42Q) /*rps_output_textedit class*/);
+                               RPS_ROOT_OB(_1NWEOIzo3WU03mE42Q) /*rps_output_textedit class*/);
   auto paylt = _.obtxed->put_new_plain_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   paylt->set_qtptr(this);
   outptxt_objref = _.obtxed;
 } // end RpsQOutputTextEdit::create_outpedit_object
+
+
+//////////////////////////////////////////////////////////////// RpsQOutputTextDocument
+RpsQOutputTextDocument::RpsQOutputTextDocument(RpsQWindow*parent)
+  : QTextDocument(parent)
+{
+#warning incomplete RpsQOutputTextDocument
+} // end RpsQOutputTextDocument::RpsQOutputTextDocument
+
+RpsQOutputTextDocument::~RpsQOutputTextDocument()
+{
+} // end RpsQOutputTextEdit::~RpsQOutputTextEdit
+
 
 /************************************************************* end of file output_qrps.cc ****/

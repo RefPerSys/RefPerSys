@@ -44,11 +44,13 @@ const char rps_command_date[]= __DATE__;
 RpsQCommandTextEdit::RpsQCommandTextEdit(QWidget*parent)
   : QTextEdit(parent),
     cmdtxt_objref(),
-    cmdtxt_valmap() {
+    cmdtxt_valmap()
+{
   setDocumentTitle("command");
 } // end RpsQCommandTextEdit::RpsQCommandTextEdit
 
-RpsQCommandTextEdit::~RpsQCommandTextEdit() {
+RpsQCommandTextEdit::~RpsQCommandTextEdit()
+{
 } // end RpsQCommandTextEdit::~RpsQCommandTextEdit
 
 void
@@ -61,7 +63,7 @@ RpsQCommandTextEdit::create_cmdedit_object(Rps_CallFrame*callerframe)
   RPS_ASSERT(!cmdtxt_objref);
   _.obcmed =
     Rps_ObjectRef::make_object(&_,
-			       RPS_ROOT_OB(_54CP9eaTmxT00lzbEW) /*rps_command_textedit class*/);
+                               RPS_ROOT_OB(_54CP9eaTmxT00lzbEW) /*rps_command_textedit class*/);
   auto paylt = _.obcmed->put_new_plain_payload<Rps_PayloadQt<RpsQCommandTextEdit>>();
   paylt->set_qtptr(this);
   cmdtxt_objref = _.obcmed;
