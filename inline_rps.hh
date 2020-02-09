@@ -332,6 +332,40 @@ Rps_Value::to_closure(const Rps_ClosureZone*defcloz) const
 } // end Rps_Value::to_closure
 
 
+
+int
+Rps_SetOb::element_index(const Rps_ObjectRef obelem) const
+{
+  if (stored_type() != Rps_Type::Set) return -1;
+  if (!obelem || obelem.is_empty()) return -1;
+  RPS_ASSERT(obelem->stored_type() == Rps_Type::Object);
+  unsigned card = cnt();
+  RPS_ASSERT(card <= maxsize);
+  auto setdata = (raw_const_data());
+  int lo = 0, hi = (int)card - 1;
+  while (lo + 4 < hi)
+    {
+      int md = (lo + hi) / 2;
+      auto curobr = setdata[md];
+      if (RPS_UNLIKELY(curobr == obelem))
+        return md;
+      RPS_ASSERT(!curobr.is_empty()
+                 && curobr->stored_type() == Rps_Type::Object);
+      if (curobr < obelem)
+        lo = md;
+      else
+        hi = md;
+    };
+  for (int md = lo; md < hi; md++)
+    {
+      auto curobr = setdata[md];
+      if (RPS_UNLIKELY(curobr == obelem))
+        return md;
+    }
+  return -1;
+} // end Rps_SetValue::element_index
+
+
 Rps_SetValue::Rps_SetValue (const std::set<Rps_ObjectRef>& obset)
   : Rps_Value (Rps_SetOb::make(obset), Rps_ValPtrTag{})
 {
@@ -362,6 +396,7 @@ Rps_SetValue::Rps_SetValue(const Rps_Value val)
 {
 } // end Rps_SetValue::Rps_SetValue dynamic
 
+////////////////
 const Rps_TupleOb*
 Rps_Value::as_tuple() const
 {
@@ -1521,14 +1556,14 @@ Rps_Payload::Rps_Payload(Rps_Type ptyp, Rps_ObjectRef obr)
 ////// class information payload - for PaylClassInfo
 Rps_PayloadClassInfo::Rps_PayloadClassInfo(Rps_ObjectZone*owner)
   : Rps_Payload(Rps_Type::PaylClassInfo, owner),
-    pclass_super(nullptr), pclass_methdict(), pclass_symbname(nullptr)
+    pclass_super(nullptr), pclass_methdict(), pclass_symbname(nullptr), pclass_attrset(nullptr)
 {
   RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
 }      // end Rps_PayloadClassInfo::Rps_PayloadClassInfo
 
 Rps_PayloadClassInfo::Rps_PayloadClassInfo(Rps_ObjectZone*owner, Rps_Loader*ld)
   : Rps_Payload(Rps_Type::PaylClassInfo, owner, ld),
-    pclass_super(nullptr), pclass_methdict(), pclass_symbname(nullptr)
+    pclass_super(nullptr), pclass_methdict(), pclass_symbname(nullptr), pclass_attrset(nullptr)
 {
   RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
 }      // end Rps_PayloadClassInfo::Rps_PayloadClassInfo ..loading

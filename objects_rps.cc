@@ -1043,6 +1043,9 @@ Rps_PayloadClassInfo::gc_mark(Rps_GarbageCollector&gc) const
       gc.mark_obj(it.first);
       gc.mark_value(it.second, 1);
     }
+  auto atset = attributes_set();
+  if (atset)
+    gc.mark_value(atset);
 } // end Rps_PayloadClassInfo::gc_mark
 
 void
@@ -1056,6 +1059,9 @@ Rps_PayloadClassInfo::dump_scan(Rps_Dumper*du) const
       rps_dump_scan_object(du, it.first);
       rps_dump_scan_value(du, it.second, 1);
     }
+  auto atset = attributes_set();
+  if (atset)
+    rps_dump_scan_value(du,atset,1);
 } // end Rps_PayloadClassInfo::dump_scan
 
 
@@ -1085,6 +1091,9 @@ Rps_PayloadClassInfo::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
       jvvectmeth.append(jvcurmeth);
     }
   jv["class_methodict"] = jvvectmeth;
+  auto atset = attributes_set();
+  if (atset)
+    jv["class_attrset"] = rps_dump_json_value(du,atset);
 } // end Rps_PayloadClassInfo::dump_json_content
 
 void

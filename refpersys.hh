@@ -1904,6 +1904,10 @@ class Rps_SeqObjRef : public Rps_LazyHashedZoneValue
   {
     return _seqob;
   };
+  const Rps_ObjectRef*raw_const_data() const
+  {
+    return _seqob;
+  };
 public:
   static unsigned constexpr maxsize
     = std::numeric_limits<unsigned>::max() / 2;
@@ -2007,6 +2011,9 @@ public:
   virtual Json::Value dump_json(Rps_Dumper*) const;
   virtual void val_output(std::ostream& outs, unsigned depth) const;
   virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
+  /// gives the element index, or a negative number if not found
+  inline int element_index(const Rps_ObjectRef obelem) const;
+  inline bool contains(const Rps_ObjectRef obelem) const { return element_index(obelem) >= 0; };
 #warning Rps_SetOb very incomplete
 };// end of Rps_SetOb
 
@@ -2437,11 +2444,15 @@ class Rps_PayloadClassInfo : public Rps_Payload
   std::map<Rps_ObjectRef,Rps_ClosureValue> pclass_methdict;
   // the optional name (a symbol)
   Rps_ObjectRef pclass_symbname;
+  // for immutable instances, the set of attributes
+  // see https://gitlab.com/bstarynk/refpersys/-/wikis/Immutable-instances-in-RefPerSys
+  mutable std::atomic<const Rps_SetOb*> pclass_attrset;
   virtual ~Rps_PayloadClassInfo()
   {
     pclass_super = nullptr;
     pclass_methdict.clear();
     pclass_symbname = nullptr;
+    pclass_attrset.store(nullptr);
   };
 protected:
   virtual void gc_mark(Rps_GarbageCollector&gc) const;
@@ -2451,6 +2462,7 @@ protected:
   Rps_PayloadClassInfo(Rps_ObjectRef obr) :
     Rps_PayloadClassInfo(obr?obr.optr():nullptr) {};
 public:
+  const Rps_SetOb* attributes_set() const { return pclass_attrset.load(); };
   virtual const std::string payload_type_name(void) const
   {
     return "class";
