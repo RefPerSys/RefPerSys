@@ -1104,6 +1104,14 @@ Rps_PayloadClassInfo::loader_put_symbname(Rps_ObjectRef obr, Rps_Loader*ld)
 } // end Rps_PayloadClassInfo::loader_put_symbname
 
 void
+Rps_PayloadClassInfo::loader_put_attrset(const Rps_SetOb*setob, Rps_Loader*ld)
+{
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(!setob || setob->stored_type() == Rps_Type::Set);
+  pclass_attrset.store(setob);
+} // end Rps_PayloadClassInfo::loader_put_attrset
+
+void
 Rps_PayloadClassInfo::put_symbname(Rps_ObjectRef obr)
 {
   if (!obr)

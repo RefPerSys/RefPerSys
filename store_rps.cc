@@ -1972,6 +1972,18 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
                      << " jvcurmeth: " <<jvcurmeth);
       paylclainf->put_own_method(obsel,valclo);
     }
+  if (jv.isMember("class_attrset"))
+    {
+      auto jvatset = jv["class_attrset"];
+      auto valaset = Rps_Value(jvatset, ld);
+      if (valaset.is_set())
+        paylclainf->loader_put_attrset(valaset.as_set(), ld);
+      else if (!valaset.is_empty())
+        RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+                     << " in space " << spacid << " lineno#" << lineno
+                     << " with bad class_attrset"                      << std::endl
+                     << " jvatset:" << jvatset);
+    }
 } // end of rpsldpy_class
 
 

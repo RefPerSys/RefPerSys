@@ -4,6 +4,7 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *      Implementation related to immutable values and quasivalues
+ *      See also morevalues_rps.cc file
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>

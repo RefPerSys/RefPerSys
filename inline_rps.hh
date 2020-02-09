@@ -932,6 +932,15 @@ Rps_ObjectZone::get_payload(void) const
   return ob_payload.load();
 } // end Rps_ObjectZone::get_payload(void)
 
+Rps_PayloadClassInfo*
+Rps_ObjectZone::get_classinfo_payload(void) const
+{
+  auto payl = ob_payload.load();
+  if (payl && RPS_UNLIKELY(payl->stored_type() == Rps_Type::PaylClassInfo))
+    return reinterpret_cast<Rps_PayloadClassInfo*>(payl);
+  return nullptr;
+} // end Rps_ObjectZone::get_classinfo_payload
+
 bool
 Rps_ObjectZone::has_erasable_payload(void) const
 {

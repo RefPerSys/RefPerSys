@@ -400,6 +400,7 @@ class Rps_ObjectZone; // memory for objects
 class Rps_GarbageCollector;
 class Rps_Payload;
 class Rps_PayloadSymbol;
+class Rps_PayloadClassInfo;
 class Rps_Loader;
 class Rps_Dumper;
 class Rps_CallFrame;
@@ -1684,6 +1685,7 @@ public:
   };
   std::string string_oid(void) const;
   inline Rps_Payload*get_payload(void) const;
+  inline Rps_PayloadClassInfo*get_classinfo_payload(void) const;
   template <class PaylClass> PaylClass* get_dynamic_payload(void) const
   {
     auto payl = get_payload();
@@ -2294,10 +2296,24 @@ public:
   virtual Json::Value dump_json(Rps_Dumper*) const;
   virtual void val_output(std::ostream& outs, unsigned depth) const;
   virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
-  /// make a instance with given connective and values
-  static Rps_InstanceZone* make(Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
-  static Rps_InstanceZone* make(Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);
+  /// get the set of attributes in a class
+  static const Rps_SetOb* class_attrset(Rps_ObjectRef obclass);
+  /// make a instance with given class and components and no attributes
+  static Rps_InstanceZone* make_from_components(Rps_ObjectRef classob, const std::initializer_list<Rps_Value>& valil);
+  static Rps_InstanceZone* make_from_components(Rps_ObjectRef classob, const std::vector<Rps_Value>& valvec);
+  /// make an instance from both attributes and components
+  static Rps_InstanceZone* make_from_attributes_components(Rps_ObjectRef classob,
+							   const std::initializer_list<Rps_Value>& valil,const std::initializer_list<std::pair<Rps_ObjectRef,Rps_Value>>&attril);
+  static Rps_InstanceZone* make_from_attributes_components(Rps_ObjectRef classob,
+							   const std::vector<Rps_Value>& valvec,
+							   const std::map<Rps_ObjectRef,Rps_Value>& attrmap);
+  /// make an instance from attributes
+  static Rps_InstanceZone* make_from_attributes(Rps_ObjectRef classob,
+						const std::initializer_list<std::pair<Rps_ObjectRef,Rps_Value>>&attril);
+  static Rps_InstanceZone* make_from_attributes(Rps_ObjectRef classob,
+						const std::map<Rps_ObjectRef,Rps_Value>& attrmap);
 };    // end class Rps_InstanceZone
+
 
 class Rps_InstanceValue : public Rps_Value
 {
@@ -2494,7 +2510,9 @@ public:
   };
   std::string class_name_str(void) const;
   void put_symbname(Rps_ObjectRef obr);
+  const Rps_SetOb*class_attrset(void) const { return  pclass_attrset.load(); }
   void loader_put_symbname(Rps_ObjectRef obr, Rps_Loader*ld);
+  void loader_put_attrset(const Rps_SetOb*setob, Rps_Loader*ld);			  
   Rps_ClosureValue get_own_method(Rps_ObjectRef obsel) const
   {
     if (!obsel)
