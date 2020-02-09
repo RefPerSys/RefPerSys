@@ -718,6 +718,7 @@ public:
   inline bool is_int() const;
   inline bool is_ptr() const;
   inline bool is_object() const;
+  inline bool is_instance() const;
   inline bool is_set() const;
   inline bool is_closure() const;
   inline bool is_string() const;
@@ -739,6 +740,7 @@ public:
   inline const Rps_SetOb* as_set() const;
   inline const Rps_TupleOb* as_tuple() const;
   inline  Rps_ObjectZone* as_object() const;
+  inline const Rps_InstanceZone* as_instance() const;
   inline const Rps_String* as_string() const;
   inline const Rps_ClosureZone* as_closure() const;
   inline const Rps_Double* as_boxed_double() const;
@@ -756,6 +758,7 @@ public:
   inline const Rps_ClosureZone* to_closure(const Rps_ClosureZone* defclos= nullptr) const;
   inline const Rps_ObjectZone* to_object(const Rps_ObjectZone*defob
                                          =nullptr) const;
+  inline const Rps_InstanceZone* to_instance(const Rps_InstanceZone*definst =nullptr) const;
   inline const Rps_String* to_string( const Rps_String*defstr
                                       = nullptr) const;
   inline const std::string to_cppstring(std::string defstr= "") const;

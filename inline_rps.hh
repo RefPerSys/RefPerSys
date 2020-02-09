@@ -232,6 +232,14 @@ Rps_Value::is_object() const
 } //end  Rps_Value::is_object()
 
 
+bool
+Rps_Value::is_instance() const
+{
+  return is_ptr()
+         && as_ptr()->stored_type() == Rps_Type::Instance;
+} //end  Rps_Value::is_instance()
+
+
 Rps_HashInt
 Rps_Value::valhash() const noexcept
 {
@@ -490,6 +498,14 @@ Rps_Value::as_object() const
   else throw std::domain_error("Rps_Value::as_object: value is not genuine object");
 } // end Rps_Value::as_object
 
+const Rps_InstanceZone*
+Rps_Value::as_instance() const
+{
+  if (is_instance())
+    return reinterpret_cast<const Rps_InstanceZone*>(const_cast<Rps_ZoneValue*>(_pval));
+  else throw std::domain_error("Rps_Value::as_instance: value is not genuine instance");
+} // end Rps_Value::as_instance
+
 const Rps_ObjectZone*
 Rps_Value::to_object(const Rps_ObjectZone*defob) const
 {
@@ -497,6 +513,14 @@ Rps_Value::to_object(const Rps_ObjectZone*defob) const
     return reinterpret_cast<Rps_ObjectZone*>(const_cast<Rps_ZoneValue*>(_pval));
   else return defob;
 } // end Rps_Value::to_object
+
+const Rps_InstanceZone*
+Rps_Value::to_instance(const Rps_InstanceZone*definst) const
+{
+  if (is_instance())
+    return reinterpret_cast<const Rps_InstanceZone*>(const_cast<Rps_ZoneValue*>(_pval));
+  else return definst;
+} // end Rps_Value::to_instance
 
 const Rps_Double*
 Rps_Value::as_boxed_double() const
