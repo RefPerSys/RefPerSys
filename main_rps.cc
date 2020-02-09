@@ -108,18 +108,21 @@ void rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::s
 } // end rps_emit_gplv3_copyright_notice
 
 
-void rps_print_types_info(void)
+////////////////
+void
+rps_print_types_info(void)
 {
-  printf("%-38s:   size  align   (in bytes)\n", "**TYPE**");
-#define EXPLAIN_TYPE(Ty) printf("%-38s: %5d %5d\n", #Ty,	\
+#define TYPEFMT_rps "%-58s:"
+  printf(TYPEFMT_rps "   size  align   (bytes)\n", "**TYPE**");
+#define EXPLAIN_TYPE(Ty) printf(TYPEFMT_rps " %5d %5d\n", #Ty,		\
 				(int)sizeof(Ty), (int)alignof(Ty))
 
-#define EXPLAIN_TYPE2(Ty1,Ty2) printf("%-38s: %5d %5d\n",		\
-				      #Ty1 "," #Ty2, 			\
-				      (int)sizeof(Ty1,Ty2),		\
+#define EXPLAIN_TYPE2(Ty1,Ty2) printf(TYPEFMT_rps " %5d %5d\n",	\
+				      #Ty1 "," #Ty2,		\
+				      (int)sizeof(Ty1,Ty2),	\
 				      (int)alignof(Ty1,Ty2))
 
-#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3) printf("%-38s: %5d %5d\n",		\
+#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3) printf(TYPEFMT_rps " %5d %5d\n",	\
 					  #Ty1 "," #Ty2 "," #Ty3,	\
 					  (int)sizeof(Ty1,Ty2,Ty3),	\
 					  (int)alignof(Ty1,Ty2,Ty3))
@@ -131,6 +134,7 @@ void rps_print_types_info(void)
   EXPLAIN_TYPE(std::mutex);
   EXPLAIN_TYPE(std::shared_mutex);
   EXPLAIN_TYPE(std::recursive_mutex);
+  EXPLAIN_TYPE(std::atomic<void*>);
   EXPLAIN_TYPE(std::lock_guard<std::shared_mutex>);
   EXPLAIN_TYPE(std::lock_guard<std::recursive_mutex>);
   EXPLAIN_TYPE(std::lock_guard<std::shared_mutex>);
@@ -141,6 +145,8 @@ void rps_print_types_info(void)
   EXPLAIN_TYPE(QString);
   ///
   EXPLAIN_TYPE(RpsQApplication);
+  EXPLAIN_TYPE(RpsQOutputTextEdit);
+  EXPLAIN_TYPE(RpsQOutputTextDocument);
   EXPLAIN_TYPE(RpsQWindow);
   EXPLAIN_TYPE(Rps_BackTrace);
   EXPLAIN_TYPE(Rps_ClosureValue);
@@ -168,6 +174,7 @@ void rps_print_types_info(void)
   EXPLAIN_TYPE(Rps_Value);
   EXPLAIN_TYPE(Rps_ZoneValue);
 #undef EXPLAIN_TYPE
+#undef TYPEFMT_rps
   putchar('\n');
   fflush(nullptr);
 } // end rps_print_types_info
@@ -681,25 +688,31 @@ rps_fatal_stop_at (const char *filnam, int lin)
 #define RPS_INSTALL_CONSTANT_OB(Oid) Rps_ObjectRef rpskob##Oid;
 #include "generated/rps-constants.hh"
 
-unsigned rps_hardcoded_number_of_roots(void)
+
+unsigned
+rps_hardcoded_number_of_roots(void)
 {
 #define RPS_INSTALL_ROOT_OB(Oid)
 #include "generated/rps-roots.hh"
   return RPS_NB_ROOT_OB;
 } // end rps_hardcoded_number_of_roots
 
-unsigned rps_hardcoded_number_of_symbols(void)
+
+unsigned
+rps_hardcoded_number_of_symbols(void)
 {
 #define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam)
 #include "generated/rps-names.hh"
   return RPS_NB_NAMED_ROOT_OB;
 } // end rps_hardcoded_number_of_symbols
 
-unsigned rps_hardcoded_number_of_constants(void)
+
+unsigned
+rps_hardcoded_number_of_constants(void)
 {
 #define RPS_INSTALL_CONSTANT_OB(Oid)
 #include "generated/rps-constants.hh"
   return RPS_NB_CONSTANT_OB;
 } // end of rps_hardcoded_number_of_constants
 
-/// end of file main_rps.cc
+/////////////////// end of file main_rps.cc

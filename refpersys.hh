@@ -2042,7 +2042,8 @@ class Rps_TreeZone : public Rps_LazyHashedZoneValue
   const unsigned _treelen;
   Rps_ObjectRef _treeconnob;
   Rps_Value _treesons[RPS_FLEXIBLE_DIM+1];
-  Rps_TreeZone(unsigned len, Rps_ObjectRef obr=nullptr) : Rps_LazyHashedZoneValue(treety), _treelen(len), _treeconnob(obr)
+  Rps_TreeZone(unsigned len, Rps_ObjectRef obr=nullptr)
+    : Rps_LazyHashedZoneValue(treety), _treelen(len), _treeconnob(obr)
   {
     memset (_treesons, 0, sizeof(Rps_Value)*len);
   };
