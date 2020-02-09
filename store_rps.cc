@@ -731,7 +731,7 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
           *this= Rps_TupleValue(vecobr);
           return;
         }
-      else if (str == "closure" && siz==3
+      else if (str == "closure" && siz>=3
                && jv.isMember("fn")
                && jv.isMember("env"))
         {
@@ -748,7 +748,14 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
                   auto curval = Rps_Value(jenv[ix], ld);
                   vecenv.push_back(curval);
                 };
-              *this = Rps_ClosureValue(funobr, vecenv);
+              Rps_ClosureValue thisclos(funobr, vecenv);
+              *this = thisclos;
+              if (jv.isMember("metaobj"))
+                {
+                  int32_t metark = jv["metarank"].asInt();
+                  auto  metaobr = Rps_ObjectRef(jv["metaobj"], ld);
+                  thisclos->put_persistent_metadata(metaobr, metark);
+                }
               return;
             }
         }
@@ -1215,6 +1222,8 @@ Rps_ClosureZone::dump_scan(Rps_Dumper*du, unsigned depth) const
       for (auto v: *this)
         du->scan_value(v, depth+1);
     }
+  if (!is_metatransient())
+    du->scan_object(metaobject());
 } // end Rps_ClosureZone::dump_scan
 
 
@@ -1232,6 +1241,14 @@ Rps_ClosureZone::dump_json(Rps_Dumper*du) const
   for (Rps_Value sonval: *this)
     jvec.append(rps_dump_json_value(du,sonval));
   hjclo["env"] = jvec;
+  if (!is_metatransient())
+    {
+      auto md = get_metadata();
+      Rps_ObjectRef metaobr = md.first;
+      int32_t metarank = md.second;
+      hjclo["metaobj"] = rps_dump_json_objectref(du,metaobr);
+      hjclo["metarank"] = Json::Value(metarank);
+    }
   return hjclo;
 } // end Rps_ClosureZone::dump_json
 

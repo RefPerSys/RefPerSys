@@ -1421,6 +1421,12 @@ protected:
   virtual Rps_HashInt compute_hash(void) const =0;
   inline Rps_LazyHashedZoneValue(Rps_Type typ);
   virtual ~Rps_LazyHashedZoneValue() {};
+  // we need to serialize some rare modifications (e.g. of metadata in
+  // trees). They are rare, so we use a mutex indexed by the last ten
+  // bits of hash code...  We are supposing that metadata is
+  // read-mostly and only occasionally written...
+  static constexpr unsigned lazy_nbmutexes = 1024;
+  static std::mutex lazy_mtxarr[lazy_nbmutexes];
 public:
   Rps_HashInt lazy_hash() const
   {
@@ -2058,12 +2064,6 @@ class Rps_TreeZone : public Rps_LazyHashedZoneValue
   {
     return _treesons;
   };
-  // we need to serialize modifications to metadata.  They are rare,
-  // so we use a mutex indexed by the last ten bits of hash code...
-  // We are supposing that metadata is read-mostly and only
-  // occasionally written...
-  static constexpr unsigned tree_nbmetamutexes = 1024;
-  static std::mutex treemetamtx[tree_nbmetamutexes];
 public:
   static unsigned constexpr maxsize
     = std::numeric_limits<unsigned>::max() / 2;
@@ -2079,10 +2079,11 @@ public:
   bool is_metatransient(void) const { return _treemetatransient.load(); };
   int32_t metarank(void) const { return _treemetarank.load(); };
   Rps_ObjectZone* metaobject(void) const { return _treemetaob.load(); };
-  std::pair<Rps_ObjectZone*,int32_t> const get_metadata(void);
+  std::pair<Rps_ObjectZone*,int32_t> const get_metadata(void) const;
   std::pair<Rps_ObjectZone*,int32_t> swap_metadata(Rps_ObjectRef obr, int32_t num=0, bool transient=false);
   void put_metadata(Rps_ObjectRef obr, int32_t num=0, bool transient=false);
   void put_transient_metadata(Rps_ObjectRef obr, int32_t num=0) { put_metadata(obr, num, true); };
+  void put_persistent_metadata(Rps_ObjectRef obr, int32_t num=0) { put_metadata(obr, num, false); };
   typedef const Rps_Value*iterator_t;
   iterator_t begin() const
   {
@@ -2214,6 +2215,7 @@ public:
     clear();
     return *this;
   };
+  inline  Rps_ClosureZone*operator -> (void) const;
   // application
   inline Rps_TwoValues apply0(Rps_CallFrame*callerframe) const;
   inline Rps_TwoValues apply1(Rps_CallFrame*callerframe, const Rps_Value arg0) const;

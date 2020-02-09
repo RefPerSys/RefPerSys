@@ -186,6 +186,7 @@ Rps_QuasiZone::clear_all_gcmarks(Rps_GarbageCollector&gc)
 } // end of Rps_QuasiZone::clear_all_gcmarks
 
 
+std::mutex Rps_LazyHashedZoneValue::lazy_mtxarr[Rps_LazyHashedZoneValue::lazy_nbmutexes];
 //////////////////////////////////////////////// sets
 
 Rps_SetOb::Rps_SetOb(const std::set<Rps_ObjectRef>& setob, Rps_SetTag)
@@ -406,6 +407,7 @@ Rps_TupleOb::val_output(std::ostream&out, unsigned int) const
 } // end Rps_TupleOb::val_output
 
 ////////////////////////////////////////////////// closures
+
 Rps_ClosureZone*
 Rps_ClosureZone::make(Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil)
 {

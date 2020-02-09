@@ -1176,10 +1176,10 @@ Rps_ObjectValue::Rps_ObjectValue(std::nullptr_t)
 //////////////// trees
 template<typename RpsTree, Rps_Type treety, unsigned k1, unsigned k2, unsigned k3, unsigned k4>
 std::pair<Rps_ObjectZone*,int32_t> const
-Rps_TreeZone<RpsTree,treety,k1,k2,k3,k4>::get_metadata(void)
+Rps_TreeZone<RpsTree,treety,k1,k2,k3,k4>::get_metadata(void) const
 {
   Rps_HashInt h = val_hash ();
-  std::lock_guard<std::mutex> gu(treemetamtx[h % tree_nbmetamutexes]);
+  std::lock_guard<std::mutex> gu(lazy_mtxarr[h % lazy_nbmutexes]);
   Rps_ObjectZone*mobz = metaobject();
   int32_t mr = metarank();
   return std::pair<Rps_ObjectZone*,int32_t> {mobz,mr};
@@ -1191,7 +1191,7 @@ void
 Rps_TreeZone<RpsTree,treety,k1,k2,k3,k4>::put_metadata(Rps_ObjectRef obr, int32_t num, bool transient)
 {
   Rps_HashInt h = val_hash ();
-  std::lock_guard<std::mutex> gu(treemetamtx[h % tree_nbmetamutexes]);
+  std::lock_guard<std::mutex> gu(lazy_mtxarr[h % lazy_nbmutexes]);
   Rps_ObjectZone* obz = nullptr;
   if (!obr.is_empty()) obz = *obr;
   _treemetaob.store(obz);
@@ -1205,7 +1205,7 @@ std::pair<Rps_ObjectZone*,int32_t>
 Rps_TreeZone<RpsTree,treety,k1,k2,k3,k4>::swap_metadata(Rps_ObjectRef obr, int32_t num, bool transient)
 {
   Rps_HashInt h = val_hash ();
-  std::lock_guard<std::mutex> gu(treemetamtx[h % tree_nbmetamutexes]);
+  std::lock_guard<std::mutex> gu(lazy_mtxarr[h % lazy_nbmutexes]);
   Rps_ObjectZone* obz = nullptr;
   if (!obr.is_empty()) obz = *obr;
   Rps_ObjectZone* oldobz=_treemetaob.exchange(obz);
@@ -1230,6 +1230,14 @@ Rps_ClosureValue::Rps_ClosureValue(const Rps_Value val)
   : Rps_Value (val.is_closure()?val.as_closure():nullptr, Rps_ValPtrTag{})
 {
 }; // end Rps_ClosureValue::Rps_ClosureValue dynamic
+
+Rps_ClosureZone*
+Rps_ClosureValue::operator -> (void) const
+{
+  if (is_empty() || !is_closure())
+    throw std::runtime_error("empty Rps_ClosureValue");
+  return const_cast<Rps_ClosureZone*>(to_closure());
+} // end Rps_ClosureValue::operator ->
 
 Rps_ObjectRef
 Rps_ClosureValue::connob(void) const
