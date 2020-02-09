@@ -1981,7 +1981,7 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
       else if (!valaset.is_empty())
         RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
                      << " in space " << spacid << " lineno#" << lineno
-                     << " with bad class_attrset"                      << std::endl
+                     << " with bad class_attrset" << std::endl
                      << " jvatset:" << jvatset);
     }
 } // end of rpsldpy_class
