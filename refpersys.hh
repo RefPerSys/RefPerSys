@@ -2040,10 +2040,10 @@ class Rps_TreeZone : public Rps_LazyHashedZoneValue
   friend RpsTree*
   Rps_QuasiZone::rps_allocate_with_wordgap<RpsTree,unsigned>(unsigned,unsigned);
   const unsigned _treelen;
-  std::atomic<bool> _treetransient;
-  std::atomic<bool> _treemetatransient;
-  std::atomic<int32_t> _treemetarank;
-  std::atomic<Rps_ObjectZone*> _treemetaob;
+  mutable std::atomic<bool> _treetransient;
+  mutable std::atomic<bool> _treemetatransient;
+  mutable std::atomic<int32_t> _treemetarank;
+  mutable std::atomic<Rps_ObjectZone*> _treemetaob;
   Rps_ObjectRef _treeconnob;
   Rps_Value _treesons[RPS_FLEXIBLE_DIM+1];
   Rps_TreeZone(unsigned len, Rps_ObjectRef obr=nullptr)
@@ -2069,6 +2069,10 @@ public:
   {
     return _treeconnob;
   }
+  bool is_transient(void) const { return _treetransient.load(); };
+  bool is_metatransient(void) const { return _treemetatransient.load(); };
+  int32_t metarank(void) const { return _treemetarank.load(); };
+  Rps_ObjectZone* metaobject(void) const { return _treemetaob.load(); };
   typedef const Rps_Value*iterator_t;
   iterator_t begin() const
   {

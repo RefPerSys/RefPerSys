@@ -1223,7 +1223,7 @@ Json::Value
 Rps_ClosureZone::dump_json(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  if (!rps_is_dumpable_objref(du,conn()))
+  if (!rps_is_dumpable_objref(du,conn()) || is_transient())
     return Json::Value(Json::nullValue);
   auto  hjclo = Json::Value(Json::objectValue);
   hjclo["vtype"] = Json::Value("closure");
