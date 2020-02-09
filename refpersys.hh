@@ -638,6 +638,8 @@ enum class Rps_Type : std::int16_t
   Tuple,
   Object,
   Closure,
+  Instance,
+  WeakQptr,
 };
 
 //////////////////////////////////////////////////////////////// values
@@ -650,11 +652,13 @@ class Rps_Double;
 class Rps_SetOb;
 class Rps_TupleOb;
 class Rps_ClosureZone;
+class Rps_InstanceZone;
 class Rps_GarbageCollector;
 class Rps_Loader; // in store_rps.cc
 class Rps_Dumper; // in store_rps.cc
 class Rps_ClosureValue;
 class Rps_SetValue;
+class Rps_InstanceValue;
 class Rps_TupleValue;
 struct Rps_TwoValues;
 
@@ -2038,11 +2042,14 @@ public:
 ////////////////////////////////////////////////////////////////
 
 /////////////////////////// tree zones, with connective and sons
-class Rps_ClosureZone;
+class Rps_ClosureZone; // closures to be applied
+class Rps_InstanceZone; // immutable instances
+
 template<typename RpsTree, Rps_Type treety, unsigned k1, unsigned k2, unsigned k3, unsigned k4>
 class Rps_TreeZone : public Rps_LazyHashedZoneValue
 {
   friend class Rps_ClosureZone;
+  friend class Rps_InstanceZone;
   friend RpsTree*
   Rps_QuasiZone::rps_allocate_with_wordgap<RpsTree,unsigned>(unsigned,unsigned);
   const unsigned _treelen;
@@ -2251,6 +2258,63 @@ public:
   Rps_TwoValues apply_ilist(Rps_CallFrame*callerframe, const std::initializer_list<Rps_Value>& argil) const;
 };    // end Rps_ClosureValue
 
+
+
+//////////////////////////////////////////////// instances
+
+unsigned constexpr rps_instance_k1 = 8161;
+unsigned constexpr rps_instance_k2 = 9151;
+unsigned constexpr rps_instance_k3 = 10151;
+unsigned constexpr rps_instance_k4 = 13171;
+struct Rps_InstanceTag {};
+class Rps_InstanceZone :
+  public Rps_TreeZone<Rps_InstanceZone, Rps_Type::Instance,
+  rps_instance_k1, rps_instance_k2, rps_instance_k3, rps_instance_k4>
+{
+public:
+  typedef  Rps_TreeZone<Rps_InstanceZone, Rps_Type::Instance,
+           rps_instance_k1, rps_instance_k2, rps_instance_k3, rps_instance_k4> parenttree_t;
+  friend parenttree_t;
+protected:
+  Rps_InstanceZone(unsigned len, Rps_ObjectRef connob, Rps_InstanceTag) :
+    parenttree_t(len, connob)
+  {
+  };
+  friend Rps_InstanceZone*
+  Rps_QuasiZone::rps_allocate_with_wordgap<Rps_InstanceZone,unsigned,Rps_ObjectRef,Rps_InstanceTag>(unsigned,unsigned,Rps_ObjectRef,Rps_InstanceTag);
+public:
+  virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
+  virtual Json::Value dump_json(Rps_Dumper*) const;
+  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
+  /// make a instance with given connective and values
+  static Rps_InstanceZone* make(Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
+  static Rps_InstanceZone* make(Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);
+};    // end class Rps_InstanceZone
+
+class Rps_InstanceValue : public Rps_Value
+{
+public:
+  inline Rps_InstanceValue() : Rps_Value() {};
+  inline Rps_InstanceValue(std::nullptr_t) : Rps_Value(nullptr) {};
+  // related to Rps_InstanceZone::make
+  inline Rps_InstanceValue(const Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
+  inline Rps_InstanceValue(const Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);
+  // "dynamic" casting
+  inline Rps_InstanceValue(Rps_Value val);
+// get the class (stored in connective)
+  inline Rps_ObjectRef get_class(void) const;
+// clear the instance
+  inline Rps_InstanceValue& operator = (std::nullptr_t)
+  {
+    clear();
+    return *this;
+  };
+  inline  Rps_InstanceZone*operator -> (void) const;
+}; // end class Rps_InstanceValue
+
+
+////////////////////////////////////////////////////////////////
 
 class Rps_CallFrame : public Rps_TypedZone
 {
