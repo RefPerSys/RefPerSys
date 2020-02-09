@@ -338,10 +338,10 @@ void
 Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
     Rps_Id objid, const std::string& objbuf, unsigned count)
 {
-  RPS_INFORMOUT("parse_json_buffer_second_pass start spacid=" << spacid << " #" << count
-                << " lineno=" <<lineno
-                << " objid=" <<objid
-                << " objbuf:\n" << objbuf);
+  RPS_NOPRINTOUT("parse_json_buffer_second_pass start spacid=" << spacid << " #" << count
+                 << " lineno=" <<lineno
+                 << " objid=" <<objid
+                 << " objbuf:\n" << objbuf);
   Json::Value objjson;
   try
     {
@@ -383,7 +383,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
       if (compjson.isArray())
         {
           siz = compjson.size();
-          RPS_INFORMOUT("parse_json_buffer_second_pass obz=" << obz << " comps#" << siz);
+          RPS_NOPRINTOUT("parse_json_buffer_second_pass obz=" << obz << " comps#" << siz);
           obz->loader_reserve_comps(this, (unsigned)siz);
           for (int ix=0; ix<(int)siz; ix++)
             {
@@ -404,7 +404,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
       if (attrjson.isArray())
         {
           siz = attrjson.size();
-          RPS_INFORMOUT("parse_json_buffer_second_pass obz=" << obz << " attrs#" << siz);
+          RPS_NOPRINTOUT("parse_json_buffer_second_pass obz=" << obz << " attrs#" << siz);
           for (int ix=0; ix<(int)siz; ix++)
             {
               auto entjson = attrjson[ix];
@@ -515,8 +515,8 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                        << std::endl);
         }
     }
-  RPS_INFORMOUT("parse_json_buffer_second_pass end objid=" << objid << " #" << count
-                << std::endl);
+  RPS_NOPRINTOUT("parse_json_buffer_second_pass end objid=" << objid << " #" << count
+                 << std::endl);
 } // end of Rps_Loader::parse_json_buffer_second_pass
 
 ////////////////////////////////////////////////////////////////
