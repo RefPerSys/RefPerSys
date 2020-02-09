@@ -731,6 +731,13 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
           *this= Rps_TupleValue(vecobr);
           return;
         }
+      else if (str == "instance" && siz>=2 && jv.isMember("class")
+               && (jcomp=jv["class"]).isString()
+              )
+        {
+#warning Rps_Value::Rps_Value unimplemented load of instances
+          RPS_FATALOUT ("unimplemented load of instances jv=" << jv);
+        }
       else if (str == "closure" && siz>=3
                && jv.isMember("fn")
                && jv.isMember("env"))
@@ -1251,6 +1258,53 @@ Rps_ClosureZone::dump_json(Rps_Dumper*du) const
     }
   return hjclo;
 } // end Rps_ClosureZone::dump_json
+
+////////////////
+
+
+void
+Rps_InstanceZone::dump_scan(Rps_Dumper*du, unsigned depth) const
+{
+  RPS_ASSERT(du != nullptr);
+  auto obrcon = conn();
+  du->scan_object(obrcon);
+  if (du->is_dumpable_objref(obrcon))
+    {
+      for (auto v: *this)
+        du->scan_value(v, depth+1);
+    }
+  if (!is_metatransient())
+    du->scan_object(metaobject());
+} // end Rps_InstanceZone::dump_scan
+
+
+Json::Value
+Rps_InstanceZone::dump_json(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du != nullptr);
+  if (!rps_is_dumpable_objref(du,conn()) || is_transient())
+    return Json::Value(Json::nullValue);
+  auto  hjclo = Json::Value(Json::objectValue);
+  hjclo["vtype"] = Json::Value("instance");
+  hjclo["class"] = rps_dump_json_objectref(du,conn());
+#warning Rps_InstanceZone::dump_json
+  RPS_WARN("Rps_InstanceZone::dump_json incomplete");
+#if 0
+  auto jvec = Json::Value(Json::arrayValue);
+  for (Rps_Value sonval: *this)
+    jvec.append(rps_dump_json_value(du,sonval));
+  hjclo["env"] = jvec;
+#endif
+  if (!is_metatransient())
+    {
+      auto md = get_metadata();
+      Rps_ObjectRef metaobr = md.first;
+      int32_t metarank = md.second;
+      hjclo["metaobj"] = rps_dump_json_objectref(du,metaobr);
+      hjclo["metarank"] = Json::Value(metarank);
+    }
+  return hjclo;
+} // end Rps_InstanceZone::dump_json
 
 
 ////////////////

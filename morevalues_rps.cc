@@ -51,6 +51,39 @@ Rps_InstanceZone::class_attrset(Rps_ObjectRef obclass)
   return paylcl->class_attrset();
 } // end Rps_InstanceZone::class_attrset
 
+void
+Rps_InstanceZone::val_output(std::ostream& outs, unsigned depth) const
+{
+#warning unimplemented Rps_InstanceZone::val_output
+  RPS_WARN("unimplemented Rps_InstanceZone::val_output");
+} // end Rps_InstanceZone::val_output
+
+
+Rps_ObjectRef
+Rps_InstanceZone::compute_class(Rps_CallFrame*callerframe) const
+{
+  auto k_immutable_instance =
+    RPS_ROOT_OB(_6ulDdOP2ZNr001cqVZ) /*=immutable_instance∈class*/;
+  RPS_LOCALFRAME(k_immutable_instance,
+                 callerframe,
+                 Rps_ObjectRef obclass;
+                );
+  RPS_ASSERT(stored_type() == Rps_Type::Instance);
+  _.obclass = get_class();
+  RPS_ASSERT(_.obclass->get_classinfo_payload());
+  return _.obclass;
+} // end Rps_InstanceZone::compute_class
+
+
+
+const Rps_SetOb*
+Rps_InstanceZone::set_attributes(void) const
+{
+  Rps_ObjectRef obclass = get_class();
+  auto setat = class_attrset(obclass);
+  return setat;
+} // end  Rps_InstanceZone::set_attributes
+
 
 
 /********************************************** end of file morevalues_rps.cc */

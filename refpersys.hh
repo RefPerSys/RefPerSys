@@ -2298,6 +2298,8 @@ public:
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
   virtual void val_output(std::ostream& outs, unsigned depth) const;
+  Rps_ObjectRef get_class(void) const { return conn(); };
+  const Rps_SetOb* set_attributes(void) const;
   virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
   /// get the set of attributes in a class
   static const Rps_SetOb* class_attrset(Rps_ObjectRef obclass);
