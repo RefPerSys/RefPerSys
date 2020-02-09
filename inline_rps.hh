@@ -1173,6 +1173,47 @@ Rps_ObjectValue::Rps_ObjectValue(std::nullptr_t)
   : Rps_Value (nullptr, Rps_ValPtrTag{}) {};
 
 
+//////////////// trees
+template<typename RpsTree, Rps_Type treety, unsigned k1, unsigned k2, unsigned k3, unsigned k4>
+std::pair<Rps_ObjectZone*,int32_t> const
+Rps_TreeZone<RpsTree,treety,k1,k2,k3,k4>::get_metadata(void)
+{
+  Rps_HashInt h = val_hash ();
+  std::lock_guard<std::mutex> gu(treemetamtx[h % tree_nbmetamutexes]);
+  Rps_ObjectZone*mobz = metaobject();
+  int32_t mr = metarank();
+  return std::pair<Rps_ObjectZone*,int32_t> {mobz,mr};
+} // end Rps_TreeZone::get_metadata
+
+
+template<typename RpsTree, Rps_Type treety, unsigned k1, unsigned k2, unsigned k3, unsigned k4>
+void
+Rps_TreeZone<RpsTree,treety,k1,k2,k3,k4>::put_metadata(Rps_ObjectRef obr, int32_t num, bool transient)
+{
+  Rps_HashInt h = val_hash ();
+  std::lock_guard<std::mutex> gu(treemetamtx[h % tree_nbmetamutexes]);
+  Rps_ObjectZone* obz = nullptr;
+  if (!obr.is_empty()) obz = *obr;
+  _treemetaob.store(obz);
+  _treemetarank.store(num);
+  _treemetatransient.store(transient);
+} // end Rps_TreeZone::put_metadata
+
+
+template<typename RpsTree, Rps_Type treety, unsigned k1, unsigned k2, unsigned k3, unsigned k4>
+std::pair<Rps_ObjectZone*,int32_t>
+Rps_TreeZone<RpsTree,treety,k1,k2,k3,k4>::swap_metadata(Rps_ObjectRef obr, int32_t num, bool transient)
+{
+  Rps_HashInt h = val_hash ();
+  std::lock_guard<std::mutex> gu(treemetamtx[h % tree_nbmetamutexes]);
+  Rps_ObjectZone* obz = nullptr;
+  if (!obr.is_empty()) obz = *obr;
+  Rps_ObjectZone* oldobz=_treemetaob.exchange(obz);
+  int32_t oldnum = _treemetarank.exchange(num);
+  _treemetatransient.store(transient);
+  return   std::pair<Rps_ObjectZone*,int32_t> {oldobz, oldnum};
+} // end Rps_TreeZone::swap_metadata
+
 //////////////// closures
 
 Rps_ClosureValue::Rps_ClosureValue (const Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil)
