@@ -817,6 +817,7 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
 Rps_InstanceZone*
 Rps_InstanceZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
 {
+  Rps_InstanceZone*res = nullptr;
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(jv.isObject());
   auto jclass = jv["iclass"];
@@ -825,24 +826,19 @@ Rps_InstanceZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
   auto nbattrs = jattrs.size();
   auto jcomps = jv["icomps"];
   auto nbcomps = jcomps.size();
-  std::vector<std::pair<Rps_ObjectRef,Rps_Value>> attrvec;
+  std::map<Rps_ObjectRef,Rps_Value> attrmap;
   std::vector<Rps_Value> compvec;
-  attrvec.reserve(nbattrs);
   compvec.reserve(nbcomps);
   for (int aix = 0; aix<nbattrs; aix++)
     {
       Json::Value jcurent = jattrs[aix];
-      if (jcurent.isNull())
-        {
-          attrvec.push_back({nullptr,nullptr});
-        }
-      else
+      if (jcurent.isObject())
         {
           Json::Value jiat = jcurent["iat"];
           Json::Value jiva = jcurent["iva"];
           Rps_ObjectRef atob (jiat,ld);
           Rps_Value atvalv (jiva,ld);
-          attrvec.push_back({atob,atvalv});
+          attrmap.insert({atob,atvalv});
         }
     }
   for (int cix=0; cix<nbcomps; cix++)
@@ -851,6 +847,20 @@ Rps_InstanceZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
       Rps_Value compv (jcurcomp,ld);
       compvec.push_back(compv);
     }
+  {
+    RPS_ASSERT(obclass);
+    std::lock_guard<std::recursive_mutex> guclass (*(obclass->objmtxptr()));
+    auto clpayl = obclass->get_classinfo_payload();
+    const Rps_SetOb*setat = nullptr;
+    if (clpayl
+        && (attrmap.empty() || (setat=clpayl->attributes_set())))
+      {
+        res = make_from_attributes_components(obclass, compvec, attrmap);
+      }
+    else
+      {
+      }
+  }
 #warning Rps_InstanceZone::load_from_json incomplete, should allocate and fill
   RPS_FATAL("Rps_InstanceZone::load_from_json incomplete");
 } // end of Rps_InstanceZone::load_from_json

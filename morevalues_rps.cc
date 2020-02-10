@@ -85,5 +85,15 @@ Rps_InstanceZone::set_attributes(void) const
 } // end  Rps_InstanceZone::set_attributes
 
 
+Rps_InstanceZone*
+Rps_InstanceZone::make_from_attributes_components(Rps_ObjectRef classob,
+    const std::vector<Rps_Value>& valvec,
+    const std::map<Rps_ObjectRef,Rps_Value>& attrmap)
+{
+  Rps_InstanceZone*res = nullptr;
+  RPS_FATALOUT("unimplemented Rps_InstanceZone::make_from_attributes_components classob=" << classob);
+#warning unimplemented Rps_InstanceZone::make_from_attributes_components
+} // end Rps_InstanceZone::make_from_attributes_components
+
 
 /********************************************** end of file morevalues_rps.cc */
