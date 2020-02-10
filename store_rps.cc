@@ -88,7 +88,12 @@ class Rps_Loader
   /// map of loaded objects
   std::map<Rps_Id,Rps_ObjectRef> ld_mapobjects;
   /// double ended queue of todo chunks in second pass
-  std::deque<std::function<void(Rps_Loader*)>> ld_todoque;
+  struct todo_st
+  {
+    double todo_addtime;
+    std::function<void(Rps_Loader*)> todo_fun;
+  };
+  std::deque<struct todo_st> ld_todoque;
   /// dictionnary of payload loaders - used as a cache to avoid most dlsym-s
   std::map<std::string,rpsldpysig_t*> ld_payloadercache;
   bool is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid);
@@ -114,6 +119,8 @@ public:
   };
   void load_all_state_files(void);
   void add_todo(const std::function<void(Rps_Loader*)>& todofun);
+  // run some todo functions, return the number of remaining ones
+  int run_some_todo_functions(void);
   void load_install_roots(void);
 };				// end class Rps_Loader
 
@@ -313,8 +320,30 @@ void
 Rps_Loader::add_todo(const std::function<void(Rps_Loader*)>& todofun)
 {
   std::lock_guard<std::recursive_mutex> gu(ld_mtx);
-  ld_todoque.push_back(todofun);
+  ld_todoque.push_back(todo_st{rps_elapsed_real_time(),todofun});
 } // end Rps_Loader::add_todo
+
+
+// return the number of remaining todo functions
+int
+Rps_Loader::run_some_todo_functions(void)
+{
+  int todocnt = 0;
+  bool emptyq = false;
+  {
+    std::function<void(Rps_Loader*)> todof;
+    {
+      std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+      emptyq = ld_todoque.empty();
+    }
+    if (emptyq)
+      return 0;
+  }
+  RPS_FATAL("unimplemented Rps_Loader::run_some_todo_functions");
+#warning unimplemented Rps_Loader::run_some_todo_functions
+} // end of Rps_Loader::run_some_todo_functions
+
+
 
 void
 rps_load_add_todo(Rps_Loader*ld,const std::function<void(Rps_Loader*)>& todofun)
@@ -630,32 +659,11 @@ Rps_Loader::load_all_state_files(void)
   /// synchronization, so might be done after reaching our milestone#2
   for (Rps_Id spacid: ld_spaceset)
     {
+      run_some_todo_functions();
       second_pass_space(spacid);
       spacecnt2++;
-      bool hastodo = true;
-      while (hastodo)
-        {
-          std::function<void(Rps_Loader*)> curtodo;
-          {
-            std::lock_guard<std::recursive_mutex> gu(ld_mtx);
-            if (ld_todoque.empty())
-              hastodo = false;
-            else
-              {
-                todocount++;
-                if (todocount > todomax)
-                  RPS_FATALOUT("too many " << todocount << " todo functions while loading");
-                curtodo = ld_todoque.front();
-                ld_todoque.pop_front();
-              }
-          }
-          if (curtodo)
-            {
-              std::lock_guard<std::recursive_mutex> gu(ld_mtx);
-              curtodo(this);
-            }
-        } /*end while Rps_Loader::load_all_state_files*/
     }
+  while (run_some_todo_functions()>0);
   RPS_INFORMOUT("loaded " << spacecnt1 << " space files in second pass with "
                 << ld_mapobjects.size() << " objects and " << todocount << " todos");
 } // end Rps_Loader::load_all_state_files
@@ -856,9 +864,11 @@ Rps_InstanceZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
         && (attrmap.empty() || (setat=clpayl->attributes_set())))
       {
         res = make_from_attributes_components(obclass, compvec, attrmap);
+        return res;
       }
     else
       {
+#warning should call rps_load_add_todo here to postpone Rps_InstanceZone::load_from_json
       }
   }
 #warning Rps_InstanceZone::load_from_json incomplete, should allocate and fill
