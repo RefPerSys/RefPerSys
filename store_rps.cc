@@ -92,8 +92,13 @@ class Rps_Loader
   {
     double todo_addtime;
     std::function<void(Rps_Loader*)> todo_fun;
+    todo_st() : todo_addtime(0.0), todo_fun() {};
+    todo_st(double d, std::function<void(Rps_Loader*)> f)
+      : todo_addtime(d), todo_fun(f) {};
   };
   std::deque<struct todo_st> ld_todoque;
+  unsigned ld_todocount;
+  static constexpr unsigned ld_maxtodo = 1<<20;
   /// dictionnary of payload loaders - used as a cache to avoid most dlsym-s
   std::map<std::string,rpsldpysig_t*> ld_payloadercache;
   bool is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid);
@@ -102,7 +107,16 @@ class Rps_Loader
                                       Rps_Id objid, const std::string& objbuf, unsigned count);
 public:
   Rps_Loader(const std::string&topdir) :
-    ld_topdir(topdir) {};
+    ld_topdir(topdir),
+    ld_mtx(),
+    ld_spaceset(),
+    ld_globrootsidset(),
+    ld_pluginsmap(),
+    ld_mapobjects(),
+    ld_todoque(),
+    ld_todocount(0),
+    ld_payloadercache()
+  {};
   void parse_manifest_file(void);
   void first_pass_space(Rps_Id spacid);
   void initialize_constant_objects(void);
@@ -328,19 +342,50 @@ Rps_Loader::add_todo(const std::function<void(Rps_Loader*)>& todofun)
 int
 Rps_Loader::run_some_todo_functions(void)
 {
-  int todocnt = 0;
-  bool emptyq = false;
+  double startim =  rps_elapsed_real_time();
+  constexpr int dosteps = 24;
+  constexpr double doelaps = 0.05;
+  int count=0;
+  /// run at least the front todo entry
   {
-    std::function<void(Rps_Loader*)> todof;
+    todo_st td;
     {
       std::lock_guard<std::recursive_mutex> gu(ld_mtx);
-      emptyq = ld_todoque.empty();
+      bool emptyq = ld_todoque.empty();
+      if (emptyq)
+        return 0;
+      td = ld_todoque.front();
+      ld_todoque.pop_front();
+      if (ld_todocount++ > ld_maxtodo)
+        RPS_FATALOUT("too many " << ld_todocount << " loader todo functions");
     }
-    if (emptyq)
-      return 0;
+    td.todo_fun(this);
+    count++;
   }
-  RPS_FATAL("unimplemented Rps_Loader::run_some_todo_functions");
-#warning unimplemented Rps_Loader::run_some_todo_functions
+  /// run more entries provided they have been added before start
+  while (count < dosteps && rps_elapsed_real_time() - startim < doelaps)
+    {
+      todo_st td;
+      {
+        std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+        bool emptyq = ld_todoque.empty();
+        if (emptyq)
+          return 0;
+        td = ld_todoque.front();
+        if (td.todo_addtime > startim)
+          return ld_todoque.size();
+        ld_todoque.pop_front();
+        if (ld_todocount++ > ld_maxtodo)
+          RPS_FATALOUT("too many " << ld_todocount << " loader todo functions");
+      }
+      td.todo_fun(this);
+      count++;
+    }
+  /// finally
+  {
+    std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+    return ld_todoque.size();
+  }
 } // end of Rps_Loader::run_some_todo_functions
 
 
