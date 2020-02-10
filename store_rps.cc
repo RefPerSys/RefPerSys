@@ -76,8 +76,9 @@ rps_json_to_string(const Json::Value&jv)
 class Rps_Loader
 {
   std::string ld_topdir;
-  /// dlsym and dlopen are not reentrant, so we need a mutex
-  std::mutex ld_mtx;
+  /// dlsym and dlopen are not reentrant, so we need a mutex; is is
+  /// recursive since we might lock it in a nested way
+  std::recursive_mutex ld_mtx;
   /// set of space ids
   std::set<Rps_Id> ld_spaceset;
   /// set of global roots id
@@ -310,7 +311,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
 void
 Rps_Loader::initialize_constant_objects(void)
 {
-  std::lock_guard<std::mutex> gu(ld_mtx);
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
 #define RPS_INSTALL_CONSTANT_OB(Oid) \
   rpskob##Oid = fetch_one_constant_at(#Oid, __LINE__);
 #include "generated/rps-constants.hh"
@@ -428,7 +429,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
     }
   if (objjson.isMember("magicattr"))
     {
-      std::lock_guard<std::mutex> gu(ld_mtx);
+      std::lock_guard<std::recursive_mutex> gu(ld_mtx);
       char getfunambuf[sizeof(RPS_GETTERFUN_PREFIX)+8+Rps_Id::nbchars];
       memset(getfunambuf, 0, sizeof(getfunambuf));
       char obidbuf[32];
@@ -446,7 +447,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
     }
   if (objjson.isMember("applying"))
     {
-      std::lock_guard<std::mutex> gu(ld_mtx);
+      std::lock_guard<std::recursive_mutex> gu(ld_mtx);
       char appfunambuf[sizeof(RPS_APPLYINGFUN_PREFIX)+8+Rps_Id::nbchars];
       memset(appfunambuf, 0, sizeof(appfunambuf));
       char obidbuf[32];
@@ -467,7 +468,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
       rpsldpysig_t*pldfun = nullptr;
       auto paylstr = objjson["payload"].asString();
       {
-        std::lock_guard<std::mutex> gu(ld_mtx);
+        std::lock_guard<std::recursive_mutex> gu(ld_mtx);
         auto ldit = ld_payloadercache.find(paylstr);
         if (RPS_UNLIKELY(ldit == ld_payloadercache.end()))
           {
@@ -606,9 +607,9 @@ Rps_Loader::load_all_state_files(void)
   RPS_INFORMOUT("loaded " << spacecnt1 << " space files in first pass");
   initialize_constant_objects();
   /// conceptually, the second pass might be done in parallel
-  /// (multi-threaded, with different threads workinng on different
+  /// (multi-threaded, with different threads working on different
   /// spaces), but this require more clever locking and
-  /// synchronization
+  /// synchronization, so might be done after reaching our milestone#2
   for (Rps_Id spacid: ld_spaceset)
     {
       second_pass_space(spacid);
@@ -1942,7 +1943,7 @@ Rps_Loader::parse_manifest_file(void)
                 manifpath.c_str ());
     size_t sizeplugins = pluginsjson.size();
     {
-      std::lock_guard<std::mutex> gu(ld_mtx);
+      std::lock_guard<std::recursive_mutex> gu(ld_mtx);
       for (int ix=0; ix<(int)sizeplugins; ix++)
         {
           std::string curpluginidstr = pluginsjson[ix].asString();
@@ -1967,14 +1968,14 @@ void Rps_Loader::load_install_roots(void)
 {
   for (Rps_Id curootid: ld_globrootsidset)
     {
-      std::lock_guard<std::mutex> gu(ld_mtx);
+      std::lock_guard<std::recursive_mutex> gu(ld_mtx);
       Rps_ObjectRef curootobr = find_object_by_oid(curootid);
       RPS_ASSERT(curootobr);
       rps_add_root_object (curootobr);
     };
   /// install the hard coded global roots
   {
-    std::lock_guard<std::mutex> gu(ld_mtx);
+    std::lock_guard<std::recursive_mutex> gu(ld_mtx);
 #define RPS_INSTALL_ROOT_OB(Oid)    {                           \
       const char *end##Oid = nullptr;				\
       bool ok##Oid = false;					\
@@ -1990,7 +1991,7 @@ void Rps_Loader::load_install_roots(void)
   ///
   /// install the hard coded symbols
   {
-    std::lock_guard<std::mutex> gu(ld_mtx);
+    std::lock_guard<std::recursive_mutex> gu(ld_mtx);
 #define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name)    {	\
       const char *end##Oid##Name = nullptr;		\
       bool ok##Oid##Name = false;			\
