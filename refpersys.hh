@@ -2953,7 +2953,8 @@ extern "C" bool rps_is_dumpable_value(Rps_Dumper*, const Rps_Value val);
 
 
 extern "C" void rps_load_from (const std::string& dirpath); // in store_rps.cc
-
+ 
+extern "C" void rps_load_add_todo(Rps_Loader*,const std::function<void(Rps_Loader*)>& todofun);
 
 extern "C" void rps_print_types_info (void);
 /// C++ code can refer to root objects

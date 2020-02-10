@@ -87,6 +87,8 @@ class Rps_Loader
   std::map<Rps_Id,void*> ld_pluginsmap;
   /// map of loaded objects
   std::map<Rps_Id,Rps_ObjectRef> ld_mapobjects;
+  /// double ended queue of todo chunks in second pass
+  std::deque<std::function<void(Rps_Loader*)>> ld_todoque;
   /// dictionnary of payload loaders - used as a cache to avoid most dlsym-s
   std::map<std::string,rpsldpysig_t*> ld_payloadercache;
   bool is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid);
@@ -111,6 +113,7 @@ public:
     return Rps_ObjectRef(nullptr);
   };
   void load_all_state_files(void);
+  void add_todo(const std::function<void(Rps_Loader*)>& todofun);
   void load_install_roots(void);
 };				// end class Rps_Loader
 
@@ -306,7 +309,20 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
                 << " objects while loading first pass of" << spacepath);
 } // end Rps_Loader::first_pass_space
 
+void
+Rps_Loader::add_todo(const std::function<void(Rps_Loader*)>& todofun)
+{
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+  ld_todoque.push_back(todofun);
+} // end Rps_Loader::add_todo
 
+void
+rps_load_add_todo(Rps_Loader*ld,const std::function<void(Rps_Loader*)>& todofun)
+{
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(todofun);
+  ld->add_todo(todofun);
+} // end rps_load_add_todo
 
 void
 Rps_Loader::initialize_constant_objects(void)
@@ -599,6 +615,8 @@ void
 Rps_Loader::load_all_state_files(void)
 {
   int spacecnt1 = 0, spacecnt2 = 0;
+  int todocount = 0;
+  constexpr int todomax = 1<<20;
   for (Rps_Id spacid: ld_spaceset)
     {
       first_pass_space(spacid);
@@ -614,9 +632,32 @@ Rps_Loader::load_all_state_files(void)
     {
       second_pass_space(spacid);
       spacecnt2++;
+      bool hastodo = true;
+      while (hastodo)
+        {
+          std::function<void(Rps_Loader*)> curtodo;
+          {
+            std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+            if (ld_todoque.empty())
+              hastodo = false;
+            else
+              {
+                todocount++;
+                if (todocount > todomax)
+                  RPS_FATALOUT("too many " << todocount << " todo functions while loading");
+                curtodo = ld_todoque.front();
+                ld_todoque.pop_front();
+              }
+          }
+          if (curtodo)
+            {
+              std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+              curtodo(this);
+            }
+        } /*end while Rps_Loader::load_all_state_files*/
     }
   RPS_INFORMOUT("loaded " << spacecnt1 << " space files in second pass with "
-                << ld_mapobjects.size() << " objects");
+                << ld_mapobjects.size() << " objects and " << todocount << " todos");
 } // end Rps_Loader::load_all_state_files
 
 
