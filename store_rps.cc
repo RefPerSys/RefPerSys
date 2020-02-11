@@ -708,7 +708,11 @@ Rps_Loader::load_all_state_files(void)
       second_pass_space(spacid);
       spacecnt2++;
     }
-  while (run_some_todo_functions()>0);
+  while (run_some_todo_functions()>0)
+    {
+      // we sleep a tiny bit, so elapsed time is growing...
+      usleep(20);
+    };
   RPS_INFORMOUT("loaded " << spacecnt1 << " space files in second pass with "
                 << ld_mapobjects.size() << " objects and " << todocount << " todos");
 } // end Rps_Loader::load_all_state_files
