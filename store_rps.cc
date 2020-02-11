@@ -878,6 +878,7 @@ Rps_InstanceZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(jv.isObject());
   auto jclass = jv["iclass"];
+  auto jsize = jv["isize"];
   Rps_ObjectRef obclass(jclass,ld);
   auto jattrs = jv["iattrs"];
   auto nbattrs = jattrs.size();
@@ -917,6 +918,8 @@ Rps_InstanceZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
       }
     else
       {
+        int siz = jsize.asInt();
+        res = make_incomplete_loaded(ld, obclass, siz);
 #warning should call rps_load_add_todo here to postpone Rps_InstanceZone::load_from_json
       }
   }
@@ -924,6 +927,15 @@ Rps_InstanceZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
   RPS_FATAL("Rps_InstanceZone::load_from_json incomplete");
 } // end of Rps_InstanceZone::load_from_json
 
+
+
+Rps_InstanceZone*
+Rps_InstanceZone::make_incomplete_loaded(Rps_Loader*ld, Rps_ObjectRef classob, unsigned siz)
+{
+#warning unimplemented Rps_InstanceZone::make_incomplete_loaded
+  RPS_FATALOUT("unimplemented Rps_InstanceZone::make_incomplete_loaded classob=" << classob
+               << " siz=" << siz);
+} // end Rps_InstanceZone::make_incomplete_loaded
 
 
 
@@ -1441,6 +1453,7 @@ Rps_InstanceZone::dump_json(Rps_Dumper*du) const
     return Json::Value(Json::nullValue);
   auto  hjins = Json::Value(Json::objectValue);
   hjins["vtype"] = Json::Value("instance");
+  hjins["isize"] = Json::Value(cnt());
   hjins["iclass"] = rps_dump_json_objectref(du,get_class());
   auto atset = set_attributes();
   const  Rps_Value* csons = const_sons();
