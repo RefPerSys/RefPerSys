@@ -81,5 +81,34 @@ RpsQOutputTextDocument::~RpsQOutputTextDocument()
 {
 } // end RpsQOutputTextEdit::~RpsQOutputTextEdit
 
+// C++ closure for _0TwK4TkhEGZ03oTa5m
+//!display value in Ob1Win at depth Depth1Val
+extern "C" rps_applyingfun_t rpsapply_0TwK4TkhEGZ03oTa5m;
+Rps_TwoValues
+rpsapply_0TwK4TkhEGZ03oTa5m (Rps_CallFrame*callerframe, ///
+                             const Rps_Value arg0obwin, const Rps_Value arg1depth, ///
+                             const Rps_Value arg2_ __attribute__((unused)), const Rps_Value arg3_ __attribute__((unused)), ///
+                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+{
+  RPS_LOCALFRAME(rpskob_0TwK4TkhEGZ03oTa5m,
+                 callerframe, //
+                 Rps_ObjectRef winob0;
+                 Rps_Value depth1v;
+                 //Rps_Value arg0v;
+                 //Rps_Value arg1v;
+                 //Rps_Value arg2v;
+                 //Rps_Value arg3v;
+                 //Rps_ObjectRef obr;
+                 Rps_Value resmainv;
+                 Rps_Value resxtrav;
+                 //....etc....
+                );
+  _.winob0 = arg0obwin.to_object();
+  _.depthv = arg1depth;
+  ////==== body of _0TwK4TkhEGZ03oTa5m ====
+  ;
+  RPS_LOCALRETURNTWO(_.resmainv, _.resextrav); // result of _0TwK4TkhEGZ03oTa5m
+} // end of rpsapply_0TwK4TkhEGZ03oTa5m
+
 
 /************************************************************* end of file output_qrps.cc ****/
