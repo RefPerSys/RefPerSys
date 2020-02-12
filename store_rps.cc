@@ -949,7 +949,7 @@ void
 Rps_InstanceZone::fill_loaded_instance_from_json(Rps_Loader*ld,Rps_ObjectRef obclass, const Json::Value& jv)
 {
   RPS_ASSERT(ld != nullptr);
-  RPS_ASSERT(cnt() == jv["isiz"].asInt());
+  RPS_ASSERT((int)cnt() == jv["isiz"].asInt());
   auto jattrs = jv["iattrs"];
   auto nbattrs = jattrs.size();
   auto jcomps = jv["icomps"];
