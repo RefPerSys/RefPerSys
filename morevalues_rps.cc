@@ -91,7 +91,28 @@ Rps_InstanceZone::make_from_attributes_components(Rps_ObjectRef classob,
     const std::map<Rps_ObjectRef,Rps_Value>& attrmap)
 {
   Rps_InstanceZone*res = nullptr;
-  RPS_FATALOUT("unimplemented Rps_InstanceZone::make_from_attributes_components classob=" << classob);
+  RPS_ASSERT(classob);
+  std::lock_guard<std::recursive_mutex> gucla(*(classob->objmtxptr()));
+  auto clpayl = classob->get_classinfo_payload();
+  if (!clpayl)
+    throw RPS_RUNTIME_ERROR_OUT("Rps_InstanceZone::make_from_attributes_components with bad class:"
+                                << classob);
+  auto attrset = clpayl->attributes_set();
+  if (!attrset)
+    throw RPS_RUNTIME_ERROR_OUT("Rps_InstanceZone::make_from_attributes_components with class without attributes set:"
+                                << classob);
+  auto nbattrs = attrset->cardinal();
+  auto nbcomps = valvec.size();
+  auto physiz = 2*nbattrs+nbcomps; // physical allocated size
+  if (RPS_UNLIKELY(physiz > maxsize)) // never happens in practice
+    RPS_FATALOUT("Rps_InstanceZone::make_from_attributes_components too big, physical size="
+                 << physiz << " for class " << classob);
+  res = rps_allocate_with_wordgap<Rps_InstanceZone,unsigned,Rps_ObjectRef,Rps_InstanceTag>
+        ((physiz*sizeof(Rps_Value))/sizeof(void*),
+         physiz, classob, Rps_InstanceTag{});
+  // should fill res here, and check if all attributes are known in the class
+  RPS_FATALOUT("unimplemented Rps_InstanceZone::make_from_attributes_components classob="
+               << classob);
 #warning unimplemented Rps_InstanceZone::make_from_attributes_components
 } // end Rps_InstanceZone::make_from_attributes_components
 

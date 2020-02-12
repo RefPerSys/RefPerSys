@@ -2475,8 +2475,9 @@ class Rps_PayloadClassInfo : public Rps_Payload
   std::map<Rps_ObjectRef,Rps_ClosureValue> pclass_methdict;
   // the optional name (a symbol)
   Rps_ObjectRef pclass_symbname;
-  // for immutable instances, the set of attributes
-  // see https://gitlab.com/bstarynk/refpersys/-/wikis/Immutable-instances-in-RefPerSys
+  // for immutable instances, the set of attributes; it should not be
+  // nil for them.  See
+  // https://gitlab.com/bstarynk/refpersys/-/wikis/Immutable-instances-in-RefPerSys
   mutable std::atomic<const Rps_SetOb*> pclass_attrset;
   virtual ~Rps_PayloadClassInfo()
   {
