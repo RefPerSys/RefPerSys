@@ -107,13 +107,35 @@ Rps_InstanceZone::make_from_attributes_components(Rps_ObjectRef classob,
   if (RPS_UNLIKELY(physiz > maxsize)) // never happens in practice
     RPS_FATALOUT("Rps_InstanceZone::make_from_attributes_components too big, physical size="
                  << physiz << " for class " << classob);
+  // every attribute in attrmap should be known to the class
+  for (auto it : attrmap)
+    {
+      Rps_ObjectRef curat = it.first;
+      RPS_ASSERT(curat);
+      RPS_ASSERT(it.second);
+      if (!attrset->contains(curat))
+        throw RPS_RUNTIME_ERROR_OUT("Rps_InstanceZone::make_from_attributes_components class " << classob
+                                    << " unexpected attribute " << curat);
+    };
   res = rps_allocate_with_wordgap<Rps_InstanceZone,unsigned,Rps_ObjectRef,Rps_InstanceTag>
         ((physiz*sizeof(Rps_Value))/sizeof(void*),
          physiz, classob, Rps_InstanceTag{});
-  // should fill res here, and check if all attributes are known in the class
-  RPS_FATALOUT("unimplemented Rps_InstanceZone::make_from_attributes_components classob="
-               << classob);
-#warning unimplemented Rps_InstanceZone::make_from_attributes_components
+  Rps_Value*sonarr = res->raw_data_sons();
+  for (auto it : attrmap)
+    {
+      Rps_ObjectRef curat = it.first;
+      Rps_Value curval = it.second;
+      int ix=attrset->element_index(curat);
+      RPS_ASSERT(ix>=0);
+      sonarr[2*ix] = curat;
+      sonarr[2*ix+1] = curval;
+    }
+  for (int cix=0; cix<(int)nbcomps; cix++)
+    {
+      Rps_Value curcomp = valvec[cix];
+      sonarr[2*nbattrs+cix] = curcomp;
+    }
+  return res;
 } // end Rps_InstanceZone::make_from_attributes_components
 
 
