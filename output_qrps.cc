@@ -82,32 +82,41 @@ RpsQOutputTextDocument::~RpsQOutputTextDocument()
 } // end RpsQOutputTextEdit::~RpsQOutputTextEdit
 
 // C++ closure for _0TwK4TkhEGZ03oTa5m
-//!display value in Ob1Win at depth Depth1Val
+//!display Val0 in Ob1Win at depth Val2Depth
 extern "C" rps_applyingfun_t rpsapply_0TwK4TkhEGZ03oTa5m;
 Rps_TwoValues
 rpsapply_0TwK4TkhEGZ03oTa5m (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0obwin, const Rps_Value arg1depth, ///
-                             const Rps_Value arg2_ __attribute__((unused)), const Rps_Value arg3_ __attribute__((unused)), ///
+                             const Rps_Value arg0val, const Rps_Value arg1obwin, ///
+                             const Rps_Value arg2depth, const Rps_Value arg3_ __attribute__((unused)), ///
                              const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
 {
   RPS_LOCALFRAME(rpskob_0TwK4TkhEGZ03oTa5m,
                  callerframe, //
-                 Rps_ObjectRef winob0;
-                 Rps_Value depth1v;
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+		 Rps_Value val0v;
+                 Rps_ObjectRef winob1;
+                 Rps_Value depth2v;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  _.winob0 = arg0obwin.to_object();
-  _.depthv = arg1depth;
+  _.val0v = arg0val;
+  _.winob1 = arg1obwin.to_object();
+  _.depth2v = arg2depth;
+  int depth = _.depth2v.to_int();
   ////==== body of _0TwK4TkhEGZ03oTa5m ====
-  ;
-  RPS_LOCALRETURNTWO(_.resmainv, _.resextrav); // result of _0TwK4TkhEGZ03oTa5m
+  if (!_.winob1)
+    throw RPS_RUNTIME_ERROR_OUT("display value " << _.val0v << " without window object");
+  std::lock_guard<std::recursive_mutex> gu(*(_.winob1->objmtxptr()));
+  auto winpayl = _.winob1->get_dynamic_payload<Rps_PayloadQt<QObject>>();
+  RpsQOutputTextEdit* qouted= nullptr;
+  if (!winpayl || !winpayl->qtptr()
+      || !(qouted=qobject_cast<RpsQOutputTextEdit*>(winpayl->qtptr())))
+    throw  RPS_RUNTIME_ERROR_OUT("display value " << _.val0v
+				 << " has bad window object " << _.winob1);
+  RPS_FATALOUT("unimplemented rpsapply_0TwK4TkhEGZ03oTa5m");
+  /// we should display val0 in winob1 at depth2, but how....
+#warning unimplemented rpsapply_0TwK4TkhEGZ03oTa5m
+  RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _0TwK4TkhEGZ03oTa5m
 } // end of rpsapply_0TwK4TkhEGZ03oTa5m
 
 
