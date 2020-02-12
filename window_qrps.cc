@@ -1632,7 +1632,7 @@ RpsQCreateClosureObjectDialog::on_creatob_trigger()
       	 << "  // _.arg3v = arg3;" << std::endl
 	 << "  ////==== body of " << _.newobr  << " ====" << std::endl
 	 << "  ;" << std::endl
-	 << "  RPS_LOCALRETURNTWO(_.resmainv, _.resextrav); // result of " << _.newobr << std::endl
+	 << "  RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of " << _.newobr << std::endl
 	 << "} // end of " <<  RPS_APPLYINGFUN_PREFIX << _.newobr << std::endl
 	 << std::endl;
     std::string codstr = outs.str();
