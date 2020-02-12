@@ -2311,6 +2311,8 @@ public:
   static const Rps_SetOb* class_attrset(Rps_ObjectRef obclass);
   /// make a instance with given class and components and no attributes
   static Rps_InstanceZone* load_from_json(Rps_Loader*ld, const Json::Value& jv);
+  /// later fill such an empty instance
+  void fill_loaded_instance_from_json(Rps_Loader*ld, Rps_ObjectRef obclass, const Json::Value& jv);
   // when loading, we could be able to allocate, but not to fill the
   // instance now; this happens when the class is not filled
   static Rps_InstanceZone* make_incomplete_loaded(Rps_Loader*ld, Rps_ObjectRef classob, unsigned siz);
