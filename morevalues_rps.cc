@@ -248,39 +248,67 @@ Rps_Json::compute_hash(void) const
 
 
 Rps_ObjectRef
-Rps_Json::compute_class(Rps_CallFrame*stkf) const
+Rps_Json::compute_class(Rps_CallFrame*stkf __attribute__((unused))) const
 {
-  RPS_FATAL("unimplemented Rps_Json::compute_class");
-#warning unimplemented Rps_Json::compute_class
+  return RPS_ROOT_OB(_3GHJQW0IIqS01QY8qD); ////json∈class
 } // end Rps_Json::compute_class
 
+
 Json::Value
-Rps_Json::dump_json(Rps_Dumper*) const
+Rps_Json::dump_json(Rps_Dumper*du) const
 {
-  RPS_FATAL("unimplemented Rps_Json::dump_json");
-#warning unimplemented Rps_Json::dump_json
+  RPS_ASSERT(du != nullptr);
+  Json::Value jv(Json::objectValue);
+  jv["type"] = "json";
+  jv["json"] = _jsonval;
+  return jv;
 } // end Rps_Json::dump_json
 
 void
 Rps_Json::val_output(std::ostream& outs, unsigned depth) const
 {
-  RPS_FATAL("unimplemented Rps_Json::val_output");
-#warning unimplemented Rps_Json::val_output
+  std::ostringstream tempouts;
+  tempouts << _jsonval << std::endl;
+  if (depth==0)
+    outs << tempouts.str();
+  else
+    {
+      auto srcstr = tempouts.str();
+      const char*pc = nullptr;
+      const char*eol = nullptr;
+      for (pc = srcstr.c_str(); (eol=strchr(pc,'\n')); pc=eol+1)
+        {
+          std::string lin(pc, eol-pc);
+          for (unsigned i=0; i<depth; i++) outs << ' ';
+          outs << lin;
+        }
+    }
 } // end Rps_Json::val_output
 
 bool
 Rps_Json::equal(const Rps_ZoneValue&zv) const
 {
-  RPS_FATAL("unimplemented Rps_Json::equal");
-#warning unimplemented Rps_Json::equal
+  if (zv.stored_type() == Rps_Type::Json)
+    {
+      auto othj = reinterpret_cast<const Rps_Json*>(&zv);
+      auto lh = lazy_hash();
+      auto othlh = othj->lazy_hash();
+      if (lh != 0 && othlh != 0 && lh != othlh) return false;
+      return _jsonval == othj->_jsonval;
+    }
+  else return false;
 } // end Rps_Json::equal
 
 
 bool
 Rps_Json::less(const Rps_ZoneValue&zv) const
 {
-  RPS_FATAL("unimplemented Rps_Json::less");
-#warning unimplemented Rps_Json::less
+  if (zv.stored_type() == Rps_Type::Json)
+    {
+      auto othj = reinterpret_cast<const Rps_Json*>(&zv);
+      return _jsonval < othj->_jsonval;
+    }
+  else return  Rps_Type::Json < zv.stored_type() ;
 } // end Rps_Json::less
 
 
