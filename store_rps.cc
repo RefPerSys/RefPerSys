@@ -836,6 +836,11 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
         {
           *this = Rps_InstanceZone::load_from_json(ld, jv);
         }
+      else if (str == "json" && siz>=2 && jv.isMember("json")
+              )
+        {
+          *this = Rps_JsonZone::load_from_json(ld, jv);
+        }
       else if (str == "closure" && siz>=3
                && jv.isMember("fn")
                && jv.isMember("env"))

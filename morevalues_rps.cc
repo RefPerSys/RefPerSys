@@ -236,7 +236,7 @@ rps_recursive_hash_json(const Json::Value&jv, std::uint64_t& h1,std::uint64_t& h
 } // end of rps_recursive_hash_json
 
 Rps_HashInt
-Rps_Json::compute_hash(void) const
+Rps_JsonZone::compute_hash(void) const
 {
   std::uint64_t h1=0, h2=0;
   rps_recursive_hash_json(_jsonval, h1, h2, 0);
@@ -244,28 +244,44 @@ Rps_Json::compute_hash(void) const
   if (RPS_UNLIKELY(h==0))
     h= (h1&0xffff) + (h2&0xfffff) + 17;
   return h;
-} // end Rps_Json::compute_hash
+} // end Rps_JsonZone::compute_hash
 
 
 Rps_ObjectRef
-Rps_Json::compute_class(Rps_CallFrame*stkf __attribute__((unused))) const
+Rps_JsonZone::compute_class(Rps_CallFrame*stkf __attribute__((unused))) const
 {
   return RPS_ROOT_OB(_3GHJQW0IIqS01QY8qD); ////json∈class
-} // end Rps_Json::compute_class
+} // end Rps_JsonZone::compute_class
 
 
 Json::Value
-Rps_Json::dump_json(Rps_Dumper*du) const
+Rps_JsonZone::dump_json(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   Json::Value jv(Json::objectValue);
-  jv["type"] = "json";
+  jv["vtype"] = "json";
   jv["json"] = _jsonval;
   return jv;
-} // end Rps_Json::dump_json
+} // end Rps_JsonZone::dump_json
+
+
+Rps_JsonZone*
+Rps_JsonZone::make(const Json::Value& jv)
+{
+  return Rps_QuasiZone::rps_allocate<Rps_JsonZone,const Json::Value&>(jv);
+} // end Rps_JsonZone::make
+
+Rps_JsonZone*
+Rps_JsonZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
+{
+  RPS_ASSERT(ld != nullptr);
+  if (!jv.isObject() || !jv.isMember("json"))
+    throw RPS_RUNTIME_ERROR_OUT("Rps_JsonZone::load_from_json bad jv=" << jv);
+  return make(jv["json"]);
+} // end Rps_JsonZone::load_from_json
 
 void
-Rps_Json::val_output(std::ostream& outs, unsigned depth) const
+Rps_JsonZone::val_output(std::ostream& outs, unsigned depth) const
 {
   std::ostringstream tempouts;
   tempouts << _jsonval << std::endl;
@@ -283,33 +299,33 @@ Rps_Json::val_output(std::ostream& outs, unsigned depth) const
           outs << lin;
         }
     }
-} // end Rps_Json::val_output
+} // end Rps_JsonZone::val_output
 
 bool
-Rps_Json::equal(const Rps_ZoneValue&zv) const
+Rps_JsonZone::equal(const Rps_ZoneValue&zv) const
 {
   if (zv.stored_type() == Rps_Type::Json)
     {
-      auto othj = reinterpret_cast<const Rps_Json*>(&zv);
+      auto othj = reinterpret_cast<const Rps_JsonZone*>(&zv);
       auto lh = lazy_hash();
       auto othlh = othj->lazy_hash();
       if (lh != 0 && othlh != 0 && lh != othlh) return false;
       return _jsonval == othj->_jsonval;
     }
   else return false;
-} // end Rps_Json::equal
+} // end Rps_JsonZone::equal
 
 
 bool
-Rps_Json::less(const Rps_ZoneValue&zv) const
+Rps_JsonZone::less(const Rps_ZoneValue&zv) const
 {
   if (zv.stored_type() == Rps_Type::Json)
     {
-      auto othj = reinterpret_cast<const Rps_Json*>(&zv);
+      auto othj = reinterpret_cast<const Rps_JsonZone*>(&zv);
       return _jsonval < othj->_jsonval;
     }
   else return  Rps_Type::Json < zv.stored_type() ;
-} // end Rps_Json::less
+} // end Rps_JsonZone::less
 
 
 /********************************************** end of file morevalues_rps.cc */
