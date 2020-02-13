@@ -33,6 +33,8 @@ RPS_INSTALL_ROOT_OB(_2i66FFjmS7n03HNNBx) //space∈class
 RPS_INSTALL_ROOT_OB(_2A2mrPpR3Qf03p6o5b) //int∈class
 RPS_INSTALL_ROOT_OB(_2SRhV7RJt3B01yArR6) //set_of_core_functions∈symbol
 RPS_INSTALL_ROOT_OB(_36I1BY2NetN03WjrOv) //symbol∈class
+RPS_INSTALL_ROOT_OB(_3eg155drDR100uqE6R) //qtptr∈class
+RPS_INSTALL_ROOT_OB(_3GHJQW0IIqS01QY8qD) //json∈class
 RPS_INSTALL_ROOT_OB(_3N8vZ2Cw62z024XxCg) //first_name∈symbol
 RPS_INSTALL_ROOT_OB(_3Q3hJsSgCDN03GTYW5) //symbol∈symbol
 RPS_INSTALL_ROOT_OB(_41OFI3r0S1t03qdB2E) //class∈class
@@ -60,7 +62,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 38
+#define RPS_NB_ROOT_OB 40
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh

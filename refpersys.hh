@@ -640,7 +640,8 @@ enum class Rps_Type : std::int16_t
   Object,
   Closure,
   Instance,
-  WeakQptr,
+  QtPtr,
+  Json,
 };
 
 //////////////////////////////////////////////////////////////// values
