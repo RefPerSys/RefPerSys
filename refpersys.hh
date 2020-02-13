@@ -2355,6 +2355,34 @@ public:
 }; // end class Rps_InstanceValue
 
 
+//////////////////////////////////////////////// Json values
+
+class Rps_Json : public Rps_LazyHashedZoneValue
+{
+  friend Rps_Json*
+  Rps_QuasiZone::rps_allocate<Rps_Json,const Json::Value&>(const Json::Value&);
+  const Json::Value _jsonval;
+protected:
+  inline Rps_Json(const Json::Value&jv);
+  virtual Rps_HashInt compute_hash(void) const;
+  virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
+  virtual void gc_mark(Rps_GarbageCollector&, unsigned) const { };
+  virtual void dump_scan(Rps_Dumper*, unsigned) const {};
+  virtual Json::Value dump_json(Rps_Dumper*) const;
+public:
+  const Json::Value& json() const { return _jsonval; };
+  const Json::Value const_json() const { return _jsonval; };
+  virtual uint32_t wordsize() const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual bool equal(const Rps_ZoneValue&zv) const;
+  virtual bool less(const Rps_ZoneValue&zv) const;
+};				// end class Rps_Json
+
+
+////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
 class Rps_CallFrame : public Rps_TypedZone

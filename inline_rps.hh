@@ -947,6 +947,12 @@ Rps_DoubleValue::Rps_DoubleValue(const Rps_Value val)
 } // end Rps_DoubleValue::Rps_DoubleValue
 
 
+//////////////////////////////////////////////////////////////// json
+
+Rps_Json::Rps_Json(const Json::Value& jv)
+  : Rps_LazyHashedZoneValue(Rps_Type::Json), _jsonval(jv)
+{
+} // end of Rps_Json::Rps_Json
 
 
 //////////////////////////////////////////////////////////// objects zones

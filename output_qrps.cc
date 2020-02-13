@@ -92,7 +92,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m (Rps_CallFrame*callerframe, ///
 {
   RPS_LOCALFRAME(rpskob_0TwK4TkhEGZ03oTa5m,
                  callerframe, //
-		 Rps_Value val0v;
+                 Rps_Value val0v;
                  Rps_ObjectRef winob1;
                  Rps_Value depth2v;
                  Rps_Value resmainv;
@@ -112,7 +112,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m (Rps_CallFrame*callerframe, ///
   if (!winpayl || !winpayl->qtptr()
       || !(qouted=qobject_cast<RpsQOutputTextEdit*>(winpayl->qtptr())))
     throw  RPS_RUNTIME_ERROR_OUT("display value " << _.val0v
-				 << " has bad window object " << _.winob1);
+                                 << " has bad window object " << _.winob1);
   RPS_FATALOUT("unimplemented rpsapply_0TwK4TkhEGZ03oTa5m");
   /// we should display val0 in winob1 at depth2, but how....
 #warning unimplemented rpsapply_0TwK4TkhEGZ03oTa5m

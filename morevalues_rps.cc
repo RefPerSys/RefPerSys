@@ -38,6 +38,7 @@ extern "C" const char rps_morevalues_date[];
 const char rps_morevalues_date[]= __DATE__;
 
 
+/////////////////////////////////////////////////////// instances
 
 const Rps_SetOb*
 Rps_InstanceZone::class_attrset(Rps_ObjectRef obclass)
@@ -137,6 +138,150 @@ Rps_InstanceZone::make_from_attributes_components(Rps_ObjectRef classob,
     }
   return res;
 } // end Rps_InstanceZone::make_from_attributes_components
+
+
+
+
+////////////////////////////////////////////////////// json
+
+static void
+rps_recursive_hash_json(const Json::Value&jv, std::uint64_t& h1,std::uint64_t& h2, unsigned depth)
+{
+  static constexpr unsigned maxrecurdepth=32;
+  if (depth>maxrecurdepth) return;
+  switch (jv.type())
+    {
+    case Json::nullValue:
+      h1++;
+      h2 -= depth;
+      return;
+    case Json::intValue:
+    {
+      auto i = jv.asInt64();
+      h1 += ((31*depth) ^ (i % 200579));
+      h2 ^= (i >> 48) - (i % 300593);
+    }
+    return;
+    case Json::uintValue:
+    {
+      auto u = jv.asUInt64();
+      h1 += ((17*depth) ^ (u % 200569));
+      h2 ^= (u >> 42) + (u % 300557);
+    }
+    return;
+    case Json::realValue:
+    {
+      double d = jv.asDouble();
+      auto hd = std::hash<double> {}(d);
+      h1 ^= 11 * (hd % 400597);
+      h2 += hd;
+    }
+    return;
+    case Json::stringValue:
+    {
+      const char* cs = jv.asCString();
+      int64_t hs[2] = {0,0};
+      int ln = rps_compute_cstr_two_64bits_hash(hs,cs);
+      h1 ^= hs[0] + (31*ln);
+      h2 -= hs[1] + (17*ln);
+    }
+    return;
+    case Json::booleanValue:
+    {
+      if (jv.asBool())
+        h1 += 23 + (h2 & 0xffff);
+      else
+        h2 += 13159 + (h1 & 0xffff);
+    }
+    return;
+    case Json::arrayValue:
+    {
+      auto sz = jv.size();
+      for (int ix=0; ix<(int)sz; ix++)
+        {
+          if (ix % 2)
+            rps_recursive_hash_json(jv[ix], h1, h2, depth+1);
+          else
+            rps_recursive_hash_json(jv[ix], h2, h1, depth+1);
+          h2 += ix;
+          if (ix % 2 == 0)
+            h1 ^= 13*ix;
+          else
+            h1 ^= ((h2+31*ix)&0xffff);
+        }
+    }
+    return;
+    case Json::objectValue:
+    {
+      auto mem = jv.getMemberNames();
+      std::sort(mem.begin(), mem.end());
+      int n = 0;
+      for (const std::string& key: mem)
+        {
+          auto jmem=jv[key];
+          int64_t hsk[2] = {0,0};
+          int lnk = rps_compute_cstr_two_64bits_hash(hsk,key.c_str(),key.size());
+          h1 ^= 11*hsk[0] + (317*lnk);
+          h2 -= 7*hsk[1] + (331*lnk);
+          if (n % 2)
+            rps_recursive_hash_json(jmem, h1, h2, depth+1);
+          else
+            rps_recursive_hash_json(jmem, h2, h1, depth+1);
+        }
+    }
+    return;
+    default:
+      RPS_FATALOUT("corrupted JSON type#" << jv.type() << " at depth " << depth);
+    }
+} // end of rps_recursive_hash_json
+
+Rps_HashInt
+Rps_Json::compute_hash(void) const
+{
+  std::uint64_t h1=0, h2=0;
+  rps_recursive_hash_json(_jsonval, h1, h2, 0);
+  Rps_HashInt h = (h1 * 13151) ^ (h2 * 13291);
+  if (RPS_UNLIKELY(h==0))
+    h= (h1&0xffff) + (h2&0xfffff) + 17;
+  return h;
+} // end Rps_Json::compute_hash
+
+
+Rps_ObjectRef
+Rps_Json::compute_class(Rps_CallFrame*stkf) const
+{
+  RPS_FATAL("unimplemented Rps_Json::compute_class");
+#warning unimplemented Rps_Json::compute_class
+} // end Rps_Json::compute_class
+
+Json::Value
+Rps_Json::dump_json(Rps_Dumper*) const
+{
+  RPS_FATAL("unimplemented Rps_Json::dump_json");
+#warning unimplemented Rps_Json::dump_json
+} // end Rps_Json::dump_json
+
+void
+Rps_Json::val_output(std::ostream& outs, unsigned depth) const
+{
+  RPS_FATAL("unimplemented Rps_Json::val_output");
+#warning unimplemented Rps_Json::val_output
+} // end Rps_Json::val_output
+
+bool
+Rps_Json::equal(const Rps_ZoneValue&zv) const
+{
+  RPS_FATAL("unimplemented Rps_Json::equal");
+#warning unimplemented Rps_Json::equal
+} // end Rps_Json::equal
+
+
+bool
+Rps_Json::less(const Rps_ZoneValue&zv) const
+{
+  RPS_FATAL("unimplemented Rps_Json::less");
+#warning unimplemented Rps_Json::less
+} // end Rps_Json::less
 
 
 /********************************************** end of file morevalues_rps.cc */
