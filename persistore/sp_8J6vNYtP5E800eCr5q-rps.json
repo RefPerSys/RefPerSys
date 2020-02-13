@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 57,
+ "nbobjects" : 58,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -142,7 +142,7 @@
  "mtime" : 1579283407.0,
  "oid" : "_1wihX3eWD9o00QnxUX",
  "payload" : "setob",
- "setob" : [ "_5EuQjoAiaR300kp2q0" ]
+ "setob" : [ "_5EuQjoAiaR300kp2q0", "_6szOLSv3Dll04kSQCE" ]
 }
 
 
@@ -555,6 +555,34 @@
  "oid" : "_6gxiw0snqrX01tZWW9",
  "payload" : "setob",
  "setob" : [ "_0TwK4TkhEGZ03oTa5m" ]
+}
+
+
+//+ob_6szOLSv3Dll04kSQCE
+//∈contributor_to_RefPerSys
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_0D6zqQNe4eC02bjfGs",
+   "va" : "abhishek@taranjali.org"
+  },
+  {
+   "at" : "_0XMNvzdABUM03Bj7WP",
+   "va" : "7e35096e32f3b70b8be4b9"
+  },
+  {
+   "at" : "_3N8vZ2Cw62z024XxCg",
+   "va" : "Abhishek"
+  },
+  {
+   "at" : "_6QAanFi9yLx00spBST",
+   "va" : "Chakravarti"
+  }
+ ],
+ "class" : "_5CYWxcChKN002rw1fI",
+ "mtime" : 1581568998.48,
+ "oid" : "_6szOLSv3Dll04kSQCE"
 }
 
 
