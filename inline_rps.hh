@@ -305,6 +305,12 @@ bool Rps_Value::is_double() const
          && as_ptr()->stored_type() == Rps_Type::Double;
 } //end  Rps_Value::is_double()
 
+bool Rps_Value::is_json() const
+{
+  return is_ptr()
+         && as_ptr()->stored_type() == Rps_Type::Json;
+} //end  Rps_Value::is_json()
+
 const Rps_SetOb*
 Rps_Value::as_set() const
 {
@@ -339,6 +345,14 @@ Rps_Value::to_closure(const Rps_ClosureZone*defcloz) const
   else return defcloz;
 } // end Rps_Value::to_closure
 
+
+const Rps_JsonZone*
+Rps_Value::as_json() const
+{
+  if (is_json())
+    return reinterpret_cast<const Rps_JsonZone*>(_pval);
+  else throw std::domain_error("Rps_Value::as_json: value is not genuine JSON");
+} // end Rps_Value::as_json
 
 
 int
@@ -545,6 +559,15 @@ Rps_Value::to_double(double def) const
     return as_double();
   else return def;
 } // end Rps_Value::to_double
+
+
+const Json::Value
+Rps_Value::to_json(const Json::Value defjv) const
+{
+  if (is_json())
+    return as_json()->json();
+  else return defjv;
+} // end Rps_Value::to_json
 
 
 bool

@@ -397,6 +397,7 @@ static_assert ((rps_allocation_unit & (rps_allocation_unit-1)) == 0,
 class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
+class Rps_JsonZone; // memory for Json values
 class Rps_GarbageCollector;
 class Rps_Payload;
 class Rps_PayloadSymbol;
@@ -727,6 +728,7 @@ public:
   inline bool is_tuple() const;
   inline bool is_null() const;
   inline bool is_empty() const;
+  inline bool is_json() const;
   operator bool () const
   {
     return !is_empty();
@@ -745,6 +747,7 @@ public:
   inline const Rps_String* as_string() const;
   inline const Rps_ClosureZone* as_closure() const;
   inline const Rps_Double* as_boxed_double() const;
+  inline const Rps_JsonZone* as_json() const;
   inline double as_double() const;
   inline const std::string as_cppstring() const;
   inline const char* as_cstring() const;
@@ -755,6 +758,7 @@ public:
   inline const Rps_SetOb* to_set(const Rps_SetOb*defset= nullptr) const;
   inline const Rps_Double* to_boxed_double(const Rps_Double*defdbl= nullptr) const;
   inline double to_double(double def=std::nan("")) const;
+  inline const Json::Value to_json(const Json::Value defjv=Json::Value::nullSingleton()) const;
   inline const Rps_TupleOb* to_tuple(const Rps_TupleOb* deftup= nullptr) const;
   inline const Rps_ClosureZone* to_closure(const Rps_ClosureZone* defclos= nullptr) const;
   inline const Rps_ObjectZone* to_object(const Rps_ObjectZone*defob

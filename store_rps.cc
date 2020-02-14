@@ -962,7 +962,7 @@ Rps_InstanceZone::fill_loaded_instance_from_json(Rps_Loader*ld,Rps_ObjectRef obc
   std::map<Rps_ObjectRef,Rps_Value> attrmap;
   std::vector<Rps_Value> compvec;
   compvec.reserve(nbcomps);
-  for (int aix = 0; aix<nbattrs; aix++)
+  for (int aix = 0; aix<(int)nbattrs; aix++)
     {
       Json::Value jcurent = jattrs[aix];
       if (jcurent.isObject())
@@ -974,7 +974,7 @@ Rps_InstanceZone::fill_loaded_instance_from_json(Rps_Loader*ld,Rps_ObjectRef obc
           attrmap.insert({atob,atvalv});
         }
     }
-  for (int cix=0; cix<nbcomps; cix++)
+  for (int cix=0; cix<(int)nbcomps; cix++)
     {
       Json::Value jcurcomp = jcomps[cix];
       Rps_Value compv (jcurcomp,ld);
@@ -1557,7 +1557,7 @@ Rps_InstanceZone::dump_json(Rps_Dumper*du) const
       for (Rps_ObjectRef obattr: *atset)
         {
           attrix++;
-          if (attrix > nbsons)
+          if (attrix > (int)nbsons)
             break;
           if (!rps_is_dumpable_objref(du, obattr))
             {
