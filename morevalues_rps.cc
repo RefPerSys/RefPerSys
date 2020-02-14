@@ -328,4 +328,16 @@ Rps_JsonZone::less(const Rps_ZoneValue&zv) const
 } // end Rps_JsonZone::less
 
 
+bool 
+Rps_QtPtrZone::less(const Rps_ZoneValue& zv) const
+{
+    if (zv.stored_type() == Rps_Type::QtPtr) {
+        auto cmp = reinterpret_cast<const Rps_QtPtrZone*>(&zv);
+        return _qptrval < cmp->_qptrval;
+    } else
+        return Rps_Type::Json < zv.stored_type();
+}
+
+
+
 /********************************************** end of file morevalues_rps.cc */
