@@ -2475,8 +2475,7 @@ public:
 
   virtual bool less(const Rps_ZoneValue& zv) const;
 
-  // load() and make() methods possibly not required as we are not persisting
-  // QtPtr values
+  static Rps_QtPtrZone* make(const QPointer<QObject>* qptrval);
 };
 
 
