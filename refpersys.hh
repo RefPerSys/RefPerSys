@@ -952,8 +952,17 @@ public:
 class Rps_QtPtrValue : public Rps_Value
 {
 public:
-    template<class T>
-    inline Rps_QtPtrValue(const T* pv)
+    inline Rps_QtPtrValue(const QPointer<QObject>* qptrval);
+    
+    inline Rps_QtPtrValue(Rps_Value val);
+
+    Rps_QtPtrValue(const QObject* qo)
+    {
+        Rps_QtPtrValue(QPointer<QObject>(const_cast<QObject*>(qo)));
+    }
+
+    Rps_QtPtrValue(std::nullptr_t)
+      : Rps_QtPtrValue(QPointer<QObject>(nullptr))
     { }
 };
 
