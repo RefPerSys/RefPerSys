@@ -335,8 +335,8 @@ Rps_QtPtrZone::less(const Rps_ZoneValue& zv) const
         auto cmp = reinterpret_cast<const Rps_QtPtrZone*>(&zv);
         return _qptrval < cmp->_qptrval;
     } else
-        return Rps_Type::Json < zv.stored_type();
-}
+        return Rps_Type::QtPtr < zv.stored_type();
+} // end Rps_QtPtrZone::less
 
 
 
