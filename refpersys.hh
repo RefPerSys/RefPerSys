@@ -398,6 +398,8 @@ class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
 class Rps_JsonZone; // memory for Json values
+class Rps_QtPtrZone;
+class Rps_QtPtrValue;
 class Rps_GarbageCollector;
 class Rps_Payload;
 class Rps_PayloadSymbol;
@@ -945,6 +947,16 @@ public:
   Rps_JsonValue(std::nullptr_t)
     : Rps_JsonValue(Json::Value(Json::nullValue)) {};
 }; // end class Rps_JsonValue
+
+
+class Rps_QtPtrValue : public Rps_Value
+{
+public:
+    template<class T>
+    inline Rps_QtPtrValue(const T* pv)
+    { }
+};
+
 
 struct Rps_SetTag
 {
@@ -2417,6 +2429,52 @@ public:
 
 
 ////////////////////////////////////////////////////////////////
+
+
+class Rps_QtPtrZone : public Rps_LazyHashedZoneValue
+{
+private:
+  friend Rps_QtPtrZone*
+  Rps_QuasiZone::rps_allocate<Rps_QtPtrZone, const QPointer<QObject>*>
+                 (const QPointer<QObject>*);
+
+  const QPointer<QObject>* _qptrval;
+
+protected:
+  inline Rps_QtPtrZone(const QPointer<QObject>* qptrval);
+
+  virtual Rps_HashInt compute_hash(void) const;
+
+  virtual Rps_ObjectRef compute_class(Rps_CallFrame* stkf) const;
+
+  virtual void gc_mark(Rps_GarbageCollector&, unsigned) const
+  { }
+
+  // dump_scan() and dump() methods possibly not required as we are not 
+  // persisting QtPtr type values
+
+public:
+  const QPointer<QObject>* get_value() const
+  {
+      return _qptrval;
+  }
+
+  virtual std::uint32_t wordsize() const
+  {
+      return (sizeof (*this) + sizeof (void*) - 1) / sizeof (void*);
+  }
+
+  virtual void val_output(std::ostream& ostr, unsigned depth) const;
+
+  virtual bool equal(const Rps_ZoneValue& zv) const;
+
+  virtual bool less(const Rps_ZoneValue& zv) const;
+
+  // load() and make() methods possibly not required as we are not persisting
+  // QtPtr values
+};
+
+
 ////////////////////////////////////////////////////////////////
 
 class Rps_CallFrame : public Rps_TypedZone
