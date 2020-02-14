@@ -1650,4 +1650,168 @@ Rps_ObjectRef::make_mutable_set_object(Rps_CallFrame*callerframe, Rps_ObjectRef 
 
 
 
+void
+Rps_ObjectRef::install_own_method(Rps_CallFrame*callerframe, Rps_ObjectRef obselarg, Rps_Value closvarg)
+{
+  /// FIXME: the frame descriptor is not very well choosen, but better than nothing....
+  RPS_LOCALFRAME(RPS_ROOT_OB(_6JbWqOsjX5T03M1eGM), //closure_for_method_selector∈symbol
+                 callerframe,
+                 Rps_ObjectRef obclass; // the class
+                 Rps_ObjectRef obsel; // the selector
+                 Rps_Value closv; // the closure
+                );
+  _.obclass = *this;
+  _.obsel = obselarg;
+  _.closv = closvarg;
+  if (_.obclass.is_empty())
+    {
+      RPS_WARNOUT("empty class for install_own_method of selector " << _.obsel);
+      throw RPS_RUNTIME_ERROR_OUT("empty class for install_own_method of selector " << _.obsel);
+    }
+  std::unique_lock<std::recursive_mutex> guclass (*(_.obclass->objmtxptr()));
+  if (_.obsel.is_empty())
+    {
+      RPS_WARNOUT("empty selector for install_own_method of class " << _.obclass);
+      throw RPS_RUNTIME_ERROR_OUT("empty selector for install_own_method of class " << _.obclass);
+    }
+  auto paylcl = _.obclass->get_classinfo_payload();
+  if (!paylcl)
+    {
+      RPS_WARNOUT("bad class for install_own_method of class " << _.obclass << " selector " << _.obsel);
+      throw RPS_RUNTIME_ERROR_OUT("bad class for install_own_method of class " << _.obclass << " selector " << _.obsel);
+    }
+  if (_.closv.is_empty() || !_.closv.is_closure())
+    {
+      RPS_WARNOUT("bad closure for install_own_method of class " << _.obclass << " selector " << _.obsel);
+      throw RPS_RUNTIME_ERROR_OUT("bad closure for install_own_method of class " << _.obclass << " selector " << _.obsel);
+    }
+  paylcl->put_own_method(_.obsel, _.closv);
+} // end Rps_ObjectRef::install_own_method
+
+
+void
+Rps_ObjectRef::install_own_2_methods(Rps_CallFrame*callerframe, Rps_ObjectRef obsel0arg, Rps_Value closv0arg, Rps_ObjectRef obsel1arg, Rps_Value closv1arg)
+{
+  /// FIXME: the frame descriptor is not very well choosen, but better than nothing....
+  RPS_LOCALFRAME(RPS_ROOT_OB(_6JbWqOsjX5T03M1eGM), //closure_for_method_selector∈symbol
+                 callerframe,
+                 Rps_ObjectRef obclass; // the class
+                 Rps_ObjectRef obsel0; // the selector #0
+                 Rps_Value closv0; // the closure #0
+                 Rps_ObjectRef obsel1; // the selector #1
+                 Rps_Value closv1; // the closure #1
+                );
+  _.obclass = *this;
+  _.obsel0 = obsel0arg;
+  _.closv0 = closv0arg;
+  _.obsel1 = obsel1arg;
+  _.closv1 = closv1arg;
+  if (_.obclass.is_empty())
+    {
+      RPS_WARNOUT("empty class for install_own_2_methods of selector#0 " << _.obsel0 << ", selector#1 " << _.obsel1);
+      throw RPS_RUNTIME_ERROR_OUT("empty class for install_own_2_methods of selector#0 " << _.obsel0 << ", selector#1 " << _.obsel1);
+    }
+  std::unique_lock<std::recursive_mutex> guclass (*(_.obclass->objmtxptr()));
+  if (_.obsel0.is_empty())
+    {
+      RPS_WARNOUT("empty selector#0 for install_own_2_methods of class " << _.obclass);
+      throw RPS_RUNTIME_ERROR_OUT("empty selector#0 for install_own_2_methods of class " << _.obclass);
+    }
+  if (_.obsel1.is_empty())
+    {
+      RPS_WARNOUT("empty selector#1 for install_own_2_methods of class " << _.obclass);
+      throw RPS_RUNTIME_ERROR_OUT("empty selector#1 for install_own_2_methods of class " << _.obclass);
+    }
+  auto paylcl = _.obclass->get_classinfo_payload();
+  if (!paylcl)
+    {
+      RPS_WARNOUT("bad class for install_own_2_methods of class " << _.obclass << " selector#0 " << _.obsel0 << ", selector#1 " << _.obsel1);
+      throw RPS_RUNTIME_ERROR_OUT("bad class for install_own_2_methods of class " << _.obclass << " selector#0 " << _.obsel0 << ", selector#1 " << _.obsel1);
+    }
+  if (_.closv0.is_empty() || !_.closv0.is_closure())
+    {
+      RPS_WARNOUT("bad closure#0 for install_2_methods of class " << _.obclass << " selector#0 " << _.obsel0);
+      throw RPS_RUNTIME_ERROR_OUT("bad closure#0 for install_2_methods of class " << _.obclass << " selector#0 " << _.obsel0);
+    }
+  if (_.closv1.is_empty() || !_.closv1.is_closure())
+    {
+      RPS_WARNOUT("bad closure#1 for install_2_methods of class " << _.obclass << " selector#1 " << _.obsel1);
+      throw RPS_RUNTIME_ERROR_OUT("bad closure#1 for install_2_methods of class " << _.obclass << " selector#1 " << _.obsel1);
+    }
+  paylcl->put_own_method(_.obsel0, _.closv0);
+  paylcl->put_own_method(_.obsel1, _.closv1);
+} // end Rps_ObjectRef::install_own_2_methods
+
+
+
+void
+Rps_ObjectRef::install_own_3_methods(Rps_CallFrame*callerframe, Rps_ObjectRef obsel0arg, Rps_Value clos0arg, Rps_ObjectRef obsel1arg, Rps_Value clos1arg, Rps_ObjectRef obsel2arg, Rps_Value clos2arg)
+{
+  /// FIXME: the frame descriptor is not very well choosen, but better than nothing....
+  RPS_LOCALFRAME(RPS_ROOT_OB(_6JbWqOsjX5T03M1eGM), //closure_for_method_selector∈symbol
+                 callerframe,
+                 Rps_ObjectRef obclass; // the class
+                 Rps_ObjectRef obsel0; // the selector #0
+                 Rps_Value closv0; // the closure #0
+                 Rps_ObjectRef obsel1; // the selector #1
+                 Rps_Value closv1; // the closure #1
+                 Rps_ObjectRef obsel2; // the selector #2
+                 Rps_Value closv2; // the closure #2
+                );
+  _.obclass = *this;
+  _.obsel0 = obsel0arg;
+  _.closv0 = clos0arg;
+  _.obsel1 = obsel1arg;
+  _.closv1 = clos1arg;
+  _.obsel2 = obsel2arg;
+  _.closv2 = clos2arg;
+  if (_.obclass.is_empty())
+    {
+      RPS_WARNOUT("empty class for install_own_3_methods of selector#0 " << _.obsel0);
+      throw RPS_RUNTIME_ERROR_OUT("empty class for install_own_3_methods of selector#0 " << _.obsel0);
+    }
+  std::unique_lock<std::recursive_mutex> guclass (*(_.obclass->objmtxptr()));
+  if (_.obsel0.is_empty())
+    {
+      RPS_WARNOUT("empty selector#0 for install_own_3_methods of class " << _.obclass);
+      throw RPS_RUNTIME_ERROR_OUT("empty selector#0 for install_own_3_methods of class " << _.obclass);
+    }
+  if (_.obsel1.is_empty())
+    {
+      RPS_WARNOUT("empty selector#1 for install_own_3_methods of class " << _.obclass);
+      throw RPS_RUNTIME_ERROR_OUT("empty selector#1 for install_own_3_methods of class " << _.obclass);
+    }
+  if (_.obsel2.is_empty())
+    {
+      RPS_WARNOUT("empty selector#2 for install_own_3_methods of class " << _.obclass);
+      throw RPS_RUNTIME_ERROR_OUT("empty selector#2 for install_own_3_methods of class " << _.obclass);
+    }
+  auto paylcl = _.obclass->get_classinfo_payload();
+  if (!paylcl)
+    {
+      RPS_WARNOUT("bad class for install_own_3_methods of class " << _.obclass << " selector#0 " << _.obsel0 << ", selector#1 " << _.obsel1 << ", selector#2 " << _.obsel2);
+      throw RPS_RUNTIME_ERROR_OUT("bad class for install_own_3_methods of class " << _.obclass << " selector#0 " << _.obsel0 << ", selector#1 " << _.obsel1 << ", selector#2 " << _.obsel2);
+    }
+  if (_.closv0.is_empty() || !_.closv0.is_closure())
+    {
+      RPS_WARNOUT("bad closure#0 for install_own_3_methods of class " << _.obclass << " selector#0 " << _.obsel0);
+      throw RPS_RUNTIME_ERROR_OUT("bad closure#0 for install_own_3_methods of class " << _.obclass << " selector#0 " << _.obsel0);
+    }
+  if (_.closv1.is_empty() || !_.closv1.is_closure())
+    {
+      RPS_WARNOUT("bad closure#1 for install_own_3_methods of class " << _.obclass << " selector#1 " << _.obsel1);
+      throw RPS_RUNTIME_ERROR_OUT("bad closure#1 for install_own_3_methods of class " << _.obclass << " selector#1 " << _.obsel1);
+    }
+  if (_.closv2.is_empty() || !_.closv2.is_closure())
+    {
+      RPS_WARNOUT("bad closure#2 for install_own_3_methods of class " << _.obclass << " selector#2 " << _.obsel1);
+      throw RPS_RUNTIME_ERROR_OUT("bad closure#1 for install_own_3_methods of class " << _.obclass << " selector#1 " << _.obsel1);
+    }
+  paylcl->put_own_method(_.obsel0, _.closv0);
+  paylcl->put_own_method(_.obsel1, _.closv1);
+  paylcl->put_own_method(_.obsel2, _.closv2);
+} // end Rps_ObjectRef::install_own_3_methods
+
+
+
 // end of file objects_rps.cc

@@ -405,6 +405,7 @@ class Rps_PayloadClassInfo;
 class Rps_Loader;
 class Rps_Dumper;
 class Rps_CallFrame;
+class Rps_Value;
 class Rps_Id;
 
 
@@ -572,6 +573,15 @@ public:
   static inline Rps_ObjectRef the_symbol_class(void);
   // the class of mutable sets, that is the `mutable_set` object
   static inline Rps_ObjectRef the_mutable_set_class(void);
+  // if this is a class-object, install a method of selector obsel and
+  // closure closv; otherwise raise an exception; and likewise for two
+  // or three selectors. The callerframe is not really useful today,
+  // but might be useful later...
+  // NB: we might call these from the temporary plugin window.
+  void install_own_method(Rps_CallFrame*callerframe, Rps_ObjectRef obsel, Rps_Value closv);
+  // likewise, but lock this class only once!
+  void install_own_2_methods(Rps_CallFrame*callerframe, Rps_ObjectRef obsel0, Rps_Value closv0, Rps_ObjectRef obsel1, Rps_Value closv1);
+  void install_own_3_methods(Rps_CallFrame*callerframe, Rps_ObjectRef obsel0, Rps_Value closv0, Rps_ObjectRef obsel1, Rps_Value closv1, Rps_ObjectRef obsel2, Rps_Value closv2);
 };				// end class Rps_ObjectRef
 
 
