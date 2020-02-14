@@ -758,6 +758,7 @@ public:
   inline const Rps_SetOb* to_set(const Rps_SetOb*defset= nullptr) const;
   inline const Rps_Double* to_boxed_double(const Rps_Double*defdbl= nullptr) const;
   inline double to_double(double def=std::nan("")) const;
+  inline const Rps_JsonZone* to_boxed_json(const Rps_JsonZone*defjson= nullptr) const;
   inline const Json::Value to_json(const Json::Value defjv=Json::Value::nullSingleton()) const;
   inline const Rps_TupleOb* to_tuple(const Rps_TupleOb* deftup= nullptr) const;
   inline const Rps_ClosureZone* to_closure(const Rps_ClosureZone* defclos= nullptr) const;
@@ -917,6 +918,23 @@ public:
   inline Rps_DoubleValue (double d=0.0);
   inline Rps_DoubleValue(const Rps_Value val);
 }; // end class Rps_DoubleValue
+
+class Rps_JsonValue : public Rps_Value
+{
+public:
+  inline Rps_JsonValue(const Json::Value&jv);
+  inline Rps_JsonValue(const Rps_Value val);
+  Rps_JsonValue(double d)
+    : Rps_JsonValue(Json::Value(d)) {};
+  Rps_JsonValue(std::intptr_t i)
+    : Rps_JsonValue(Json::Value((Json::Int64)i)) {};
+  Rps_JsonValue(bool b)
+    : Rps_JsonValue(Json::Value(b)) {};
+  Rps_JsonValue(const std::string& s)
+    : Rps_JsonValue(Json::Value(s)) {};
+  Rps_JsonValue(std::nullptr_t)
+    : Rps_JsonValue(Json::Value(Json::nullValue)) {};
+}; // end class Rps_JsonValue
 
 struct Rps_SetTag
 {

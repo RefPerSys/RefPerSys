@@ -970,6 +970,25 @@ Rps_DoubleValue::Rps_DoubleValue(const Rps_Value val)
 } // end Rps_DoubleValue::Rps_DoubleValue
 
 
+
+Rps_JsonValue::Rps_JsonValue(const Json::Value&jv)
+  : Rps_Value(Rps_JsonZone::make(jv))
+{
+} // end Rps_JsonValue::Rps_JsonValue
+
+Rps_JsonValue::Rps_JsonValue(const Rps_Value val)
+  : Rps_Value(val.is_json()?val.to_boxed_json():nullptr,  Rps_ValPtrTag{})
+{
+} // end Rps_JsonValue::Rps_JsonValue
+
+
+const Rps_JsonZone*
+Rps_Value::to_boxed_json(const Rps_JsonZone*defjs) const
+{
+  if (is_json()) return reinterpret_cast<const Rps_JsonZone*>(_pval);
+  else return defjs;
+} // end Rps_Value::to_boxed_json
+
 //////////////////////////////////////////////////////////////// json
 
 Rps_JsonZone::Rps_JsonZone(const Json::Value& jv)

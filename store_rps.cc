@@ -690,7 +690,6 @@ Rps_Loader::load_all_state_files(void)
 {
   int spacecnt1 = 0, spacecnt2 = 0;
   int todocount = 0;
-  constexpr int todomax = 1<<20;
   for (Rps_Id spacid: ld_spaceset)
     {
       first_pass_space(spacid);
@@ -892,7 +891,7 @@ Rps_InstanceZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
   std::map<Rps_ObjectRef,Rps_Value> attrmap;
   std::vector<Rps_Value> compvec;
   compvec.reserve(nbcomps);
-  for (int aix = 0; aix<nbattrs; aix++)
+  for (int aix = 0; aix<(int)nbattrs; aix++)
     {
       Json::Value jcurent = jattrs[aix];
       if (jcurent.isObject())
