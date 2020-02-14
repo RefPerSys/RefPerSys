@@ -998,6 +998,14 @@ Rps_JsonZone::Rps_JsonZone(const Json::Value& jv)
 
 
 //////////////////////////////////////////////////////////// objects zones
+
+
+Rps_QtPtrValue::Rps_QtPtrValue(const QPointer<QObject>* qptrval)
+  : Rps_Value(Rps_QtPtrZone::make(qptrval))
+{ }
+
+
+
 Rps_Payload*
 Rps_ObjectZone::get_payload(void) const
 {
