@@ -2450,8 +2450,13 @@ protected:
   virtual void gc_mark(Rps_GarbageCollector&, unsigned) const
   { }
 
-  // dump_scan() and dump() methods possibly not required as we are not 
-  // persisting QtPtr type values
+  virtual void dump_scan(Rps_Dumper*, unsigned) const 
+  { };
+
+  virtual Json::Value dump_json(Rps_Dumper*) const
+  {
+      return Json::Value::null;
+  }
 
 public:
   const QPointer<QObject>* get_value() const
