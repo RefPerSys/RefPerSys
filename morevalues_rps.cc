@@ -361,9 +361,19 @@ Rps_QtPtrZone::equal(const Rps_ZoneValue& zv) const
     return _qptrval == rhs->_qptrval;
   } else 
     return false;
+} // end Rps_QtPtrZone::equal
 
-} // end Rps_JsonZone::equal
 
+void
+Rps_QtPtrZone::val_output(std::ostream& outs, unsigned depth) const
+{
+  // TODO: unsure about this, but I think that depth parameter is not required
+  // in this case since _qptrval is a pointer
+  (void) depth;
+
+  std::ostringstream tempouts;
+  tempouts << _qptrval << std::endl;
+} // end Rps_QtPtrZone::val_output
 
 
 
