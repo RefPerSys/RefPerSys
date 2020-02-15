@@ -347,5 +347,24 @@ Rps_QtPtrZone::less(const Rps_ZoneValue& zv) const
 } // end Rps_QtPtrZone::less
 
 
+bool
+Rps_QtPtrZone::equal(const Rps_ZoneValue& zv) const
+{
+  if (zv.stored_type() == Rps_Type::QtPtr) {
+    auto rhs = reinterpret_cast<const Rps_QtPtrZone*>(&zv);
+    auto lhs_hash = lazy_hash();
+    auto rhs_hash = rhs->lazy_hash();
+
+    if (lhs_hash != 0 && rhs_hash != 0 && lhs_hash != rhs_hash)
+      return false;
+
+    return _qptrval == rhs->_qptrval;
+  } else 
+    return false;
+
+} // end Rps_JsonZone::equal
+
+
+
 
 /********************************************** end of file morevalues_rps.cc */
