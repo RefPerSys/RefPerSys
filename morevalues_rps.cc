@@ -376,6 +376,17 @@ Rps_QtPtrZone::val_output(std::ostream& outs, unsigned) const
 {
   // the depth is not useful
   outs << "QtPtr#" <<  _qptr_rank;
+  if (_qptr_val)
+    {
+      outs << ":";
+      auto nm = _qptr_val->objectName();
+      if (!nm.isEmpty())
+        outs << nm.toStdString();
+      else
+        {
+          outs << ":" << _qptr_val->metaObject()->className();
+        }
+    }
 } // end Rps_QtPtrZone::val_output
 
 
