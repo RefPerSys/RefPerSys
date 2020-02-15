@@ -328,6 +328,14 @@ Rps_JsonZone::less(const Rps_ZoneValue&zv) const
 } // end Rps_JsonZone::less
 
 
+Rps_ObjectRef
+Rps_QtPtrZone::compute_class(Rps_CallFrame* stkf) const
+{
+  (void) stkf;
+  return RPS_ROOT_OB(_3eg155drDR100uqE6R); // qtptr class
+}
+
+
 bool 
 Rps_QtPtrZone::less(const Rps_ZoneValue& zv) const
 {
