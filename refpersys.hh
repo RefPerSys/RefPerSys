@@ -2475,6 +2475,7 @@ public:
 
   virtual std::uint32_t wordsize() const
   {
+      // TODO: please explain this calculation
       return (sizeof (*this) + sizeof (void*) - 1) / sizeof (void*);
   }
 
