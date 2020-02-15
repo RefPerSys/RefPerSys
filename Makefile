@@ -91,7 +91,7 @@ _qthead_qrps.inc.hh: $(RPS_QT_HEADERS)
 # content did not change
 refpersys.hh.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 	$(COMPILE.cc) -c -o $@-tmp $<
-	@if cmp  refpersys.hh.gch  $@-tmp ; then \
+	if cmp  refpersys.hh.gch  $@-tmp ; then \
          echo unchanged refpersys.hh ; else \
          mv --backup -v  $@-tmp  refpersys.hh.gch ; fi
 
