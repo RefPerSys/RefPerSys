@@ -376,5 +376,15 @@ Rps_QtPtrZone::val_output(std::ostream& outs, unsigned depth) const
 } // end Rps_QtPtrZone::val_output
 
 
+#if 0
+#warning Rps_QtPtrZone::make() incomplete (ld error)
+Rps_QtPtrZone*
+Rps_QtPtrZone::make(const QPointer<QObject>* qptrval)
+{
+  return Rps_QuasiZone::rps_allocate<Rps_QtPtrZone, const QPointer<QObject>*>(qptrval);
+} // end Rps_QtPtrZone::make
+#endif
+
+
 
 /********************************************** end of file morevalues_rps.cc */
