@@ -948,23 +948,20 @@ public:
     : Rps_JsonValue(Json::Value(Json::nullValue)) {};
 }; // end class Rps_JsonValue
 
-
+////////////////
 class Rps_QtPtrValue : public Rps_Value
 {
 public:
-    inline Rps_QtPtrValue(const QPointer<QObject>* qptrval);
-    
-    inline Rps_QtPtrValue(Rps_Value val);
-
+    inline Rps_QtPtrValue(const QPointer<QObject> qptrval);
+  inline Rps_QtPtrValue(Rps_Value val);
     Rps_QtPtrValue(const QObject* qo)
     {
         Rps_QtPtrValue(QPointer<QObject>(const_cast<QObject*>(qo)));
-    }
-
+    };
     Rps_QtPtrValue(std::nullptr_t)
       : Rps_QtPtrValue(QPointer<QObject>(nullptr))
     { }
-};
+};				// end class Rps_QtPtrValue
 
 
 struct Rps_SetTag
@@ -1433,6 +1430,9 @@ public:
 protected:
   inline Rps_QuasiZone(Rps_Type typ);
   virtual ~Rps_QuasiZone();
+  //// the size, in 64 bits words, of the actual quasizone, needed by
+  //// the garbage collector.  It should be rounded up, not down (for
+  //// potential gaps required by ABI alignment).
   virtual uint32_t wordsize() const =0;
   virtual Rps_Type type() const
   {
@@ -1610,7 +1610,7 @@ public:
     return _dval;
   };
   virtual uint32_t wordsize() const
-  {
+  {// we need to round the 64 bits word size up, hence...
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
   };
   static inline const Rps_Double*make(double d=0.0);
@@ -2443,14 +2443,18 @@ public:
 class Rps_QtPtrZone : public Rps_LazyHashedZoneValue
 {
 private:
+  /// we count the number of Rps_QtPtrZone to give a unique rank to
+  /// each of them; that rank is used for hashing and compare.
+  static std::atomic<unsigned> qtptr_count;
   friend Rps_QtPtrZone*
-  Rps_QuasiZone::rps_allocate<Rps_QtPtrZone, const QPointer<QObject>*>
-                 (const QPointer<QObject>*);
+  Rps_QuasiZone::rps_allocate1<Rps_QtPtrZone, const QPointer<QObject>>
+                 (const QPointer<QObject>);
 
-  const QPointer<QObject>* _qptrval;
+  const QPointer<QObject> _qptr_val;
+  const unsigned _qptr_rank; // the unique rank
 
 protected:
-  inline Rps_QtPtrZone(const QPointer<QObject>* qptrval);
+  inline Rps_QtPtrZone(const QPointer<QObject> qptrval);
 
   virtual Rps_HashInt compute_hash(void) const;
 
@@ -2468,14 +2472,15 @@ protected:
   }
 
 public:
-  const QPointer<QObject>* get_value() const
+  const QPointer<QObject> qptr() const
   {
-      return _qptrval;
+      return _qptr_val;
   }
+  const unsigned rank() const { return _qptr_rank; }
 
   virtual std::uint32_t wordsize() const
   {
-      // TODO: please explain this calculation
+    // as usual, we round up the 64 bits word size ....
       return (sizeof (*this) + sizeof (void*) - 1) / sizeof (void*);
   }
 
@@ -2485,7 +2490,7 @@ public:
 
   virtual bool less(const Rps_ZoneValue& zv) const;
 
-  static Rps_QtPtrZone* make(const QPointer<QObject>* qptrval);
+  static Rps_QtPtrZone* make(const QPointer<QObject> qptrval);
 };
 
 

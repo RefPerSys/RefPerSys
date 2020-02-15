@@ -997,12 +997,22 @@ Rps_JsonZone::Rps_JsonZone(const Json::Value& jv)
 } // end of Rps_JsonZone::Rps_JsonZone
 
 
-//////////////////////////////////////////////////////////// objects zones
 
+//////////////////////////////////////////////////////////// qtptr zones
+Rps_QtPtrZone::Rps_QtPtrZone(QPointer<QObject>qp)
+  : Rps_LazyHashedZoneValue(Rps_Type::QtPtr),
+    _qptr_val(qp),
+    _qptr_rank(1+qtptr_count.fetch_add(1))
+{
+} // end Rps_QtPtrZone::Rps_QtPtrZone
 
-Rps_QtPtrValue::Rps_QtPtrValue(const QPointer<QObject>* qptrval)
+Rps_QtPtrValue::Rps_QtPtrValue(const QPointer<QObject> qptrval)
   : Rps_Value(Rps_QtPtrZone::make(qptrval))
-{ }
+{ } // end Rps_QtPtrValue::Rps_QtPtrValue
+
+
+
+//////////////////////////////////////////////////////////// objects zones
 
 
 

@@ -328,6 +328,20 @@ Rps_JsonZone::less(const Rps_ZoneValue&zv) const
 } // end Rps_JsonZone::less
 
 
+
+////////////////////////////////////////////////////////////////
+std::atomic<unsigned> Rps_QtPtrZone::qtptr_count;
+// see gitlab.com/bstarynk/refpersys/-/wikis/adding-new-value-types-in-RefPerSys
+Rps_HashInt
+Rps_QtPtrZone::compute_hash(void) const
+{
+  auto rk = _qptr_rank;
+  Rps_HashInt h = (31*(rk%173)) ^ (rk*2161);
+  if (RPS_UNLIKELY(h==0))
+    h = (rk&0xff) + 3;
+  return h;
+} // end Rps_QtPtrZone::compute_hash
+
 Rps_ObjectRef
 Rps_QtPtrZone::compute_class(Rps_CallFrame* stkf) const
 {
@@ -336,54 +350,41 @@ Rps_QtPtrZone::compute_class(Rps_CallFrame* stkf) const
 }
 
 
-bool 
+bool
 Rps_QtPtrZone::less(const Rps_ZoneValue& zv) const
 {
-    if (zv.stored_type() == Rps_Type::QtPtr) {
-        auto cmp = reinterpret_cast<const Rps_QtPtrZone*>(&zv);
-        return _qptrval < cmp->_qptrval;
-    } else
-        return Rps_Type::QtPtr < zv.stored_type();
+  if (zv.stored_type() == Rps_Type::QtPtr)
+    {
+      auto other = reinterpret_cast<const Rps_QtPtrZone*>(&zv);
+      return _qptr_rank < other->_qptr_rank;
+    }
+  else
+    return Rps_Type::QtPtr < zv.stored_type();
 } // end Rps_QtPtrZone::less
 
 
 bool
 Rps_QtPtrZone::equal(const Rps_ZoneValue& zv) const
 {
-  if (zv.stored_type() == Rps_Type::QtPtr) {
-    auto rhs = reinterpret_cast<const Rps_QtPtrZone*>(&zv);
-    auto lhs_hash = lazy_hash();
-    auto rhs_hash = rhs->lazy_hash();
-
-    if (lhs_hash != 0 && rhs_hash != 0 && lhs_hash != rhs_hash)
-      return false;
-
-    return _qptrval == rhs->_qptrval;
-  } else 
-    return false;
+  return this == &zv;
 } // end Rps_QtPtrZone::equal
 
 
-void
-Rps_QtPtrZone::val_output(std::ostream& outs, unsigned depth) const
-{
-  // TODO: unsure about this, but I think that depth parameter is not required
-  // in this case since _qptrval is a pointer
-  (void) depth;
 
-  std::ostringstream tempouts;
-  tempouts << _qptrval << std::endl;
+void
+Rps_QtPtrZone::val_output(std::ostream& outs, unsigned) const
+{
+  // the depth is not useful
+  outs << "QtPtr#" <<  _qptr_rank;
 } // end Rps_QtPtrZone::val_output
 
 
-#if 0
-#warning Rps_QtPtrZone::make() incomplete (ld error)
 Rps_QtPtrZone*
-Rps_QtPtrZone::make(const QPointer<QObject>* qptrval)
+Rps_QtPtrZone::make(const QPointer<QObject> qptr)
 {
-  return Rps_QuasiZone::rps_allocate<Rps_QtPtrZone, const QPointer<QObject>*>(qptrval);
+  return Rps_QuasiZone::rps_allocate1<Rps_QtPtrZone, const QPointer<QObject>>(qptr);
 } // end Rps_QtPtrZone::make
-#endif
+
 
 
 

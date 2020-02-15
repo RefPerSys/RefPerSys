@@ -1573,7 +1573,7 @@ Rps_InstanceZone::dump_json(Rps_Dumper*du) const
       hjins["iattrs"] = jvattrs;
       auto jvcomps = Json::Value(Json::arrayValue);
       jvcomps.resize(nbsons-nbattrs); // reservation
-      for (int compix = attrix; compix<nbsons; compix++)
+      for (int compix = attrix; compix<(int)nbsons; compix++)
         {
           jvcomps.append(rps_dump_json_value(du,csons[compix]));
         }
