@@ -1784,6 +1784,18 @@ public:
                       const Rps_ObjectRef obattr1, const Rps_Value valattr1, Rps_Value*poldval1,
                       const Rps_ObjectRef obattr2, const Rps_Value valattr2, Rps_Value*poldval2,
                       const Rps_ObjectRef obattr3, const Rps_Value valattr3, Rps_Value*poldval3);
+  // put attributes
+  void put_attributes(const std::map<Rps_ObjectRef, Rps_Value>& newattrmap);
+  void put_attributes(const std::initializer_list<std::pair<Rps_ObjectRef, Rps_Value>>& attril);
+  void put_attributes(const std::vector<std::pair<Rps_ObjectRef, Rps_Value>>&attrvec);
+  // append one, two, three, four, more components in the same object locking
+  void append_comp1(Rps_Value comp0);
+  void append_comp2(Rps_Value comp0, Rps_Value comp1);
+  void append_comp3(Rps_Value comp0, Rps_Value comp1, Rps_Value comp2);
+  void append_comp4(Rps_Value comp0, Rps_Value comp1, Rps_Value comp2, Rps_Value comp4);
+  void append_components(const std::initializer_list<Rps_Value>&compil);
+  void append_components(const std::vector<Rps_Value>&compvec);
+  // get atomic fields
   inline double get_mtime(void) const;
   inline rps_applyingfun_t*get_applyingfun(const Rps_ClosureValue&closv) const
   {
