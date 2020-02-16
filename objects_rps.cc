@@ -413,7 +413,7 @@ Rps_ObjectZone::put_attr4(const Rps_ObjectRef obattr0, const Rps_Value valattr0,
     rps_magicgetterfun_t*getfun0 = obattr0->ob_magicgetterfun.load();
     if (RPS_UNLIKELY(getfun0))
       throw RPS_RUNTIME_ERROR_OUT("cannot put magic attribute " << obattr0
-                                  << " from " << Rps_ObjectRef(this));
+                                  << " in " << Rps_ObjectRef(this));
   }
   if (obattr1.is_empty() || obattr1->stored_type() != Rps_Type::Object)
     return;
@@ -421,7 +421,7 @@ Rps_ObjectZone::put_attr4(const Rps_ObjectRef obattr0, const Rps_Value valattr0,
     rps_magicgetterfun_t*getfun1 = obattr1->ob_magicgetterfun.load();
     if (RPS_UNLIKELY(getfun1))
       throw RPS_RUNTIME_ERROR_OUT("cannot put magic attribute " << obattr1
-                                  << " from " << Rps_ObjectRef(this));
+                                  << " in " << Rps_ObjectRef(this));
   }
   if (obattr2.is_empty() || obattr2->stored_type() != Rps_Type::Object)
     return;
@@ -429,7 +429,7 @@ Rps_ObjectZone::put_attr4(const Rps_ObjectRef obattr0, const Rps_Value valattr0,
     rps_magicgetterfun_t*getfun2 = obattr2->ob_magicgetterfun.load();
     if (RPS_UNLIKELY(getfun2))
       throw RPS_RUNTIME_ERROR_OUT("cannot put magic attribute " << obattr2
-                                  << " from " << Rps_ObjectRef(this));
+                                  << " in " << Rps_ObjectRef(this));
   }
   if (obattr3.is_empty() || obattr3->stored_type() != Rps_Type::Object)
     return;
@@ -437,7 +437,7 @@ Rps_ObjectZone::put_attr4(const Rps_ObjectRef obattr0, const Rps_Value valattr0,
     rps_magicgetterfun_t*getfun3 = obattr3->ob_magicgetterfun.load();
     if (RPS_UNLIKELY(getfun3))
       throw RPS_RUNTIME_ERROR_OUT("cannot put magic attribute " << obattr3
-                                  << " from " << Rps_ObjectRef(this));
+                                  << " in " << Rps_ObjectRef(this));
   }
   std::lock_guard gu(ob_mtx);
   if (valattr0.is_empty())
