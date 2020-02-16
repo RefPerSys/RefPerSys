@@ -712,6 +712,132 @@ Rps_ObjectZone::exchange_attr4(const Rps_ObjectRef obattr0, const Rps_Value vala
 
 
 void
+Rps_ObjectZone::append_comp1(Rps_Value comp0)
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  if (RPS_UNLIKELY(comp0.is_empty()))
+    comp0.clear();
+  std::lock_guard gu(ob_mtx);
+  ob_comps.push_back(comp0);
+} // end Rps_ObjectZone::append_comp1
+
+
+
+void
+Rps_ObjectZone::append_comp2(Rps_Value comp0, Rps_Value comp1)
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  if (RPS_UNLIKELY(comp0.is_empty()))
+    comp0.clear();
+  if (RPS_UNLIKELY(comp1.is_empty()))
+    comp1.clear();
+  std::lock_guard gu(ob_mtx);
+  // we want to avoid too frequent resizes, so....
+  if (RPS_UNLIKELY(ob_comps.capacity() < ob_comps.size() + 2))
+    {
+      auto newsiz = rps_prime_above(9*ob_comps.size()/8 + 2);
+      ob_comps.reserve(newsiz);
+    };
+  ob_comps.push_back(comp0);
+  ob_comps.push_back(comp1);
+} // end Rps_ObjectZone::append_comp2
+
+
+
+void
+Rps_ObjectZone::append_comp3(Rps_Value comp0, Rps_Value comp1, Rps_Value comp2)
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  if (RPS_UNLIKELY(comp0.is_empty()))
+    comp0.clear();
+  if (RPS_UNLIKELY(comp1.is_empty()))
+    comp1.clear();
+  if (RPS_UNLIKELY(comp2.is_empty()))
+    comp2.clear();
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  // we want to avoid too frequent resizes, so....
+  if (RPS_UNLIKELY(ob_comps.capacity() < ob_comps.size() + 3))
+    {
+      auto newsiz = rps_prime_above(9*ob_comps.size()/8 + 3);
+      ob_comps.reserve(newsiz);
+    };
+  ob_comps.push_back(comp0);
+  ob_comps.push_back(comp1);
+  ob_comps.push_back(comp2);
+} // end Rps_ObjectZone::append_comp3
+
+void
+Rps_ObjectZone::append_comp4(Rps_Value comp0, Rps_Value comp1, Rps_Value comp2, Rps_Value comp3)
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  if (RPS_UNLIKELY(comp0.is_empty()))
+    comp0.clear();
+  if (RPS_UNLIKELY(comp1.is_empty()))
+    comp1.clear();
+  if (RPS_UNLIKELY(comp2.is_empty()))
+    comp2.clear();
+  if (RPS_UNLIKELY(comp3.is_empty()))
+    comp3.clear();
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  // we want to avoid too frequent resizes, so....
+  if (RPS_UNLIKELY(ob_comps.capacity() < ob_comps.size() + 4))
+    {
+      auto newsiz = rps_prime_above(9*ob_comps.size()/8 + 4);
+      ob_comps.reserve(newsiz);
+    };
+  ob_comps.push_back(comp0);
+  ob_comps.push_back(comp1);
+  ob_comps.push_back(comp2);
+  ob_comps.push_back(comp3);
+} // end Rps_ObjectZone::append_comp4
+
+
+void
+Rps_ObjectZone::append_components(const std::initializer_list<Rps_Value>&compil)
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  unsigned nbv = compil.size();
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  // we want to avoid too frequent resizes, so....
+  if (RPS_UNLIKELY(ob_comps.capacity() < ob_comps.size() + nbv))
+    {
+      auto newsiz = rps_prime_above(9*ob_comps.size()/8 + nbv);
+      ob_comps.reserve(newsiz);
+    };
+  for (Rps_Value v: compil)
+    {
+      if (RPS_UNLIKELY(v.is_empty()))
+        v.clear();
+      ob_comps.push_back(v);
+    }
+} // end Rps_ObjectZone::append_components
+
+
+void
+Rps_ObjectZone::append_components(const std::vector<Rps_Value>&compvec)
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  unsigned nbv = compvec.size();
+  // we want to avoid too frequent resizes, so....
+  if (RPS_UNLIKELY(ob_comps.capacity() < ob_comps.size() + nbv))
+    {
+      auto newsiz = rps_prime_above(9*ob_comps.size()/8 + nbv);
+      ob_comps.reserve(newsiz);
+    };
+  for (Rps_Value v: compvec)
+    {
+      if (RPS_UNLIKELY(v.is_empty()))
+        v.clear();
+      ob_comps.push_back(v);
+    }
+} // end Rps_ObjectZone::append_components
+
+
+
+////////////////////////////////////////////////////////////////
+void
 Rps_ObjectZone::dump_scan_contents(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
