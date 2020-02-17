@@ -1210,9 +1210,25 @@ Rps_Dumper::is_dumpable_value(const Rps_Value val)
   if (!val) return true;
   if (val.is_int() || val.is_string() || val.is_set() || val.is_tuple())
     return true;
+  if (val.is_closure())
+    {
+      auto closv = val.as_closure();
+      if (closv->is_transient()) return false;
+      else
+        return is_dumpable_objref(closv->conn());
+    }
+  else if (val.is_instance())
+    {
+      auto instv = val.as_instance();
+      if (instv->is_transient()) return false;
+      else
+        return is_dumpable_objref(instv->conn());
+    }
+  else if (val.is_qtptr())
+    return false;
   if (val.is_object())
     return is_dumpable_objref(val.to_object());
-  RPS_FATALOUT("Rps_Dumper::is_dumpable_value partly unimplemented");
+  RPS_FATALOUT("Rps_Dumper::is_dumpable_value partly unimplemented for " << val);
 #warning Rps_Dumper::is_dumpable_value partly unimplemented
 } // end Rps_Dumper::is_dumpable_value
 
