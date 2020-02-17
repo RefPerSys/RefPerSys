@@ -1415,7 +1415,7 @@ RpsQCreatePluginDialog::on_ok_trigger()
   QProcess proc;
   QStringList procargs;
   procargs << QString(temporary_cplusplus_file_path().c_str())
-	       << QString(temporary_plugin_file_path().c_str());
+	      << QString(temporary_plugin_file_path().c_str());
 
   // The following 4 statements are only for debugging
   RPS_INFORMOUT("RpsQCreatePluginDialog TMP FUNC NAME = " << funcname << std::endl);
@@ -1468,7 +1468,7 @@ RpsQCreatePluginDialog::on_ok_trigger()
   }
 
   else { // rc != 0
-    RPS_WARNOUT("RpsQCreatePluginDialog failed compilation of " << (temporary_cplusplus_file_path())
+    RPS_WARNOUT("RpsQCreatePluginDialog failed compilation of " << (temporary_cplusplus_file_path()) << " rc#" << rc
 		<< ":" << std::endl
 		<< msg.toStdString() << std::endl
 		<< "------------" << std::endl
