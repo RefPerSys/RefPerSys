@@ -311,7 +311,20 @@
 //∈class
 {
  "class" : "_41OFI3r0S1t03qdB2E",
- "class_methodict" : [],
+ "class_methodict" : 
+ [
+  {
+   "methclos" : 
+   {
+    "env" : [],
+    "fn" : "_8KJHUldX8GJ03G5OWp",
+    "metaobj" : null,
+    "metarank" : 0,
+    "vtype" : "closure"
+   },
+   "methosel" : "_1Win5yzaf1L02cBUlV"
+  }
+ ],
  "class_name" : "int",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_2SqiFRt6QTI01CPGf1",
