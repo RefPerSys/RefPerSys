@@ -596,6 +596,7 @@ static_assert(alignof(Rps_ObjectRef) == alignof(void*),
 
 // we could code Rps_ObjectFromOidRef(&_,"_41OFI3r0S1t03qdB2E") instead of rpskob_41OFI3r0S1t03qdB2E
 class Rps_ObjectFromOidRef : public Rps_ObjectRef {
+public:
   Rps_ObjectFromOidRef(Rps_CallFrame*callerframe, const char*oidstr) :
     Rps_ObjectRef(callerframe, oidstr, Rps_ObjectRef::Rps_ObjIdStrTag{}) {};
 };				// end Rps_ObjectFromOidRef
@@ -741,6 +742,7 @@ public:
   inline bool is_null() const;
   inline bool is_empty() const;
   inline bool is_json() const;
+  inline bool is_qtptr() const;
   operator bool () const
   {
     return !is_empty();
@@ -760,6 +762,8 @@ public:
   inline const Rps_ClosureZone* as_closure() const;
   inline const Rps_Double* as_boxed_double() const;
   inline const Rps_JsonZone* as_json() const;
+  inline const Rps_QtPtrZone* as_boxed_qtptr() const;
+  inline const QPointer<QObject> as_qtptr() const;
   inline double as_double() const;
   inline const std::string as_cppstring() const;
   inline const char* as_cstring() const;
@@ -779,6 +783,7 @@ public:
   inline const Rps_InstanceZone* to_instance(const Rps_InstanceZone*definst =nullptr) const;
   inline const Rps_String* to_string( const Rps_String*defstr
                                       = nullptr) const;
+  inline const QObject*to_qtptr(const QObject*defqt= nullptr) const;
   inline const std::string to_cppstring(std::string defstr= "") const;
   inline Rps_HashInt valhash() const noexcept;
   inline void output(std::ostream&out, unsigned depth=0) const;
