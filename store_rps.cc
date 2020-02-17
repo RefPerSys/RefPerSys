@@ -780,13 +780,13 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
       if (str.size() == Rps_Id::nbchars && str[0] == '_'
           && std::all_of(str.begin()+1, str.end(),
                          [](char c)
-			 {
-			   return strchr(Rps_Id::b62digits, c) != nullptr;
-			 }))
-	{
-	  *this = Rps_ObjectValue(Rps_ObjectRef(jv, ld));
-	  return;
-	}
+      {
+        return strchr(Rps_Id::b62digits, c) != nullptr;
+        }))
+      {
+        *this = Rps_ObjectValue(Rps_ObjectRef(jv, ld));
+        return;
+      }
       *this = Rps_StringValue(str);
       return;
     }
@@ -831,24 +831,24 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
         }
       else if (str == "instance" &&  jv.isMember("class")
                && (jcomp=jv["class"]).isString()
-	       )
+              )
         {
           *this = Rps_InstanceZone::load_from_json(ld, jv);
         }
       else if (str == "json" && jv.isMember("json")
-	       )
+              )
         {
           *this = Rps_JsonZone::load_from_json(ld, jv);
         }
-      else if (str == "closure" 
+      else if (str == "closure"
                && jv.isMember("fn")
                && jv.isMember("env"))
         {
           auto jfn = jv["fn"];
           auto jenv = jv["env"];
-	  RPS_INFORMOUT("closure jv=" << jv << std::endl << "jfn=" << jfn << std::endl << "jenv=" << jenv);
+          RPS_INFORMOUT("closure jv=" << jv << std::endl << "jfn=" << jfn << std::endl << "jenv=" << jenv);
           auto funobr = Rps_ObjectRef(jfn, ld);
-	  RPS_INFORMOUT("closure funobr=" << funobr);
+          RPS_INFORMOUT("closure funobr=" << funobr);
           if (jenv.isArray())
             {
               auto siz = jenv.size();
@@ -860,24 +860,28 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
                   vecenv.push_back(curval);
                 };
               Rps_ClosureValue thisclos(funobr, vecenv);;
-	      RPS_INFORMOUT("closure thisclos=" << thisclos);
+              RPS_INFORMOUT("closure thisclos=" << thisclos);
               *this = thisclos;
+              RPS_INFORMOUT("closure this is " << *this << std::endl << "jv=" << jv);
               if (jv.isMember("metaobj"))
                 {
                   int32_t metark = jv["metarank"].asInt();
                   auto  metaobr = Rps_ObjectRef(jv["metaobj"], ld);
                   thisclos->put_persistent_metadata(metaobr, metark);
                 };
-	      RPS_INFORMOUT("Rps_Value::Rps_Value closure is" << *this);
+              RPS_INFORMOUT("Rps_Value::Rps_Value closure is:" << *this
+                            << std::endl << "jv=" << jv);
               return;
             }
-	  else
-	    RPS_WARNOUT("Rps_Value::Rps_Value bad closure funobr=" << funobr);
+          else
+            RPS_WARNOUT("Rps_Value::Rps_Value bad closure funobr=" << funobr);
         }
+      else
+        RPS_WARNOUT("strange Rps_Value::Rps_Value str=" << str);
     }
 #warning Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld) unimplemented
   RPS_WARNOUT("unimplemented Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)" << std::endl
-	      << "jv=" << jv);
+              << "jv=" << jv);
 } // end of Rps_Value::Rps_Value(const Json::value &jv, Rps_Loader*ld)
 
 
@@ -1051,8 +1055,8 @@ Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
       return;
     }
   RPS_WARNOUT("partly unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)"
-	      << std::endl << " jv=" << jv
-	      << RPS_BACKTRACE_HERE(0,"strange ObjectRef::Rps_ObjectRef"));
+              << std::endl << " jv=" << jv
+              << RPS_BACKTRACE_HERE(2,"strange ObjectRef::Rps_ObjectRef"));
   throw  std::runtime_error("partly unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)");
 #warning partly unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
 } // end Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
@@ -1532,8 +1536,11 @@ Rps_ClosureZone::dump_json(Rps_Dumper*du) const
       auto md = get_metadata();
       Rps_ObjectRef metaobr = md.first;
       int32_t metarank = md.second;
-      hjclo["metaobj"] = rps_dump_json_objectref(du,metaobr);
-      hjclo["metarank"] = Json::Value(metarank);
+      if (metaobr)
+        {
+          hjclo["metaobj"] = rps_dump_json_objectref(du,metaobr);
+          hjclo["metarank"] = Json::Value(metarank);
+        }
     }
   return hjclo;
 } // end Rps_ClosureZone::dump_json
@@ -1609,8 +1616,11 @@ Rps_InstanceZone::dump_json(Rps_Dumper*du) const
       auto md = get_metadata();
       Rps_ObjectRef metaobr = md.first;
       int32_t metarank = md.second;
-      hjins["metaobj"] = rps_dump_json_objectref(du,metaobr);
-      hjins["metarank"] = Json::Value(metarank);
+      if (metaobr)
+        {
+          hjins["metaobj"] = rps_dump_json_objectref(du,metaobr);
+          hjins["metarank"] = Json::Value(metarank);
+        }
     }
   return hjins;
 } // end Rps_InstanceZone::dump_json
@@ -2331,8 +2341,8 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
         RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
                      << " in space " << spacid << " lineno#" << lineno
                      << " with bad methodict entry#" << methix
-		     << " for obsel=" << obsel
-		     << ", valclo=" << valclo
+                     << " for obsel=" << obsel
+                     << ", valclo=" << valclo
                      << std::endl
                      << " jvcurmeth: " <<jvcurmeth);
       paylclainf->put_own_method(obsel,valclo);
