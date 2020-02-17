@@ -1418,9 +1418,9 @@ RpsQCreatePluginDialog::on_ok_trigger()
 	       << QString(temporary_plugin_file_path().c_str());
 
   // The following 4 statements are only for debugging
-  RPS_INFORMOUT("TMP FUNC NAME = " << funcname << std::endl);
-  RPS_INFORMOUT("SRC PATH = " << srcpath << std::endl);
-  RPS_INFORMOUT("PLUGIN PATH = " << pluginpath << std::endl);
+  RPS_INFORMOUT("RpsQCreatePluginDialog TMP FUNC NAME = " << funcname << std::endl);
+  RPS_INFORMOUT("RpsQCreatePluginDialog SRC PATH = " << srcpath << std::endl);
+  RPS_INFORMOUT("RpsQCreatePluginDialog PLUGIN PATH = " << pluginpath << std::endl);
   RPS_ASSERT(srcpath.substr(0, funcname.length()) 
              == pluginpath.substr(0, funcname.length()));
   
@@ -1439,6 +1439,8 @@ RpsQCreatePluginDialog::on_ok_trigger()
                 << rc << "; build msg = " << msg.toStdString());
 
   if (rc == 0) {
+    if (access(temporary_plugin_file_path().c_str(), R_OK))
+      RPS_WARNOUT("RpsQCreatePluginDialog - no " << temporary_plugin_file_path() << ":" << strerror(errno));
     try {
       void *dlh = dlopen(temporary_plugin_file_path().c_str(), RTLD_NOW | RTLD_GLOBAL);
       if (!dlh)
@@ -1465,7 +1467,12 @@ RpsQCreatePluginDialog::on_ok_trigger()
       }
   }
 
-  else {
+  else { // rc != 0
+    RPS_WARNOUT("RpsQCreatePluginDialog failed compilation of " << (temporary_cplusplus_file_path())
+		<< ":" << std::endl
+		<< msg.toStdString() << std::endl
+		<< "------------" << std::endl
+		<< err.toStdString() << std::endl);
     QMessageBox::warning(this, "Plugin build failure!", err);
   }
 } // end RpsQCreatePluginDialog::on_ok_trigger

@@ -125,9 +125,9 @@ rpsapply_0TwK4TkhEGZ03oTa5m (Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_8KJHUldX8GJ03G5OWp;
 Rps_TwoValues
 rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
-                   const Rps_Value arg0, const Rps_Value arg1, ///
-                   const Rps_Value arg2, const Rps_Value arg3, ///
-                   const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+                             const Rps_Value arg0, const Rps_Value arg1, ///
+                             const Rps_Value arg2, const Rps_Value arg3, ///
+                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
 {
   RPS_LOCALFRAME(rpskob_8KJHUldX8GJ03G5OWp,
                  callerframe, //
