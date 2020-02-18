@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 70,
+ "nbobjects" : 71,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -146,6 +146,22 @@
  "payload" : "symbol",
  "symb_name" : "mutable_vector",
  "symb_val" : "_8YknAApDQiF04BDe3W"
+}
+
+
+//+ob_1568ZHTl0Pa00461I2
+//∈core_function
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_0jdbikGJFq100dgX1n",
+   "va" : "method set/display_value_qt"
+  }
+ ],
+ "class" : "_9Gz1oNPCnkB00I6VRS",
+ "mtime" : 1582035992.1099999,
+ "oid" : "_1568ZHTl0Pa00461I2"
 }
 
 
@@ -698,6 +714,7 @@
  "setob" : 
  [
   "_0TwK4TkhEGZ03oTa5m",
+  "_1568ZHTl0Pa00461I2",
   "_2KnFhlj8xW800kpgPt",
   "_33DFyPOJxbF015ZYoi",
   "_7oa7eIzzcxv03TmmZH",
@@ -763,7 +780,18 @@
 //∈class
 {
  "class" : "_41OFI3r0S1t03qdB2E",
- "class_methodict" : [],
+ "class_methodict" : 
+ [
+  {
+   "methclos" : 
+   {
+    "env" : [],
+    "fn" : "_1568ZHTl0Pa00461I2",
+    "vtype" : "closure"
+   },
+   "methosel" : "_1Win5yzaf1L02cBUlV"
+  }
+ ],
  "class_name" : "set",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_2PdqOugnnit019JFoX",
