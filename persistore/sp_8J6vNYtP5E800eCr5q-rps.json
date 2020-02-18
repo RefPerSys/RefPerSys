@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 68,
+ "nbobjects" : 69,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -679,7 +679,13 @@
  "mtime" : 1579760979.0,
  "oid" : "_6gxiw0snqrX01tZWW9",
  "payload" : "setob",
- "setob" : [ "_0TwK4TkhEGZ03oTa5m", "_2KnFhlj8xW800kpgPt", "_8KJHUldX8GJ03G5OWp" ]
+ "setob" : 
+ [
+  "_0TwK4TkhEGZ03oTa5m",
+  "_2KnFhlj8xW800kpgPt",
+  "_7oa7eIzzcxv03TmmZH",
+  "_8KJHUldX8GJ03G5OWp"
+ ]
 }
 
 
@@ -803,6 +809,22 @@
 }
 
 
+//+ob_7oa7eIzzcxv03TmmZH
+//∈core_function
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_0jdbikGJFq100dgX1n",
+   "va" : "method double/display_value_qt"
+  }
+ ],
+ "class" : "_9Gz1oNPCnkB00I6VRS",
+ "mtime" : 1582011211.01,
+ "oid" : "_7oa7eIzzcxv03TmmZH"
+}
+
+
 //+ob_7vUmzaAjb2f000BAFb
 //∈symbol
 {
@@ -883,7 +905,18 @@
 //∈class
 {
  "class" : "_41OFI3r0S1t03qdB2E",
- "class_methodict" : [],
+ "class_methodict" : 
+ [
+  {
+   "methclos" : 
+   {
+    "env" : [],
+    "fn" : "_7oa7eIzzcxv03TmmZH",
+    "vtype" : "closure"
+   },
+   "methosel" : "_1Win5yzaf1L02cBUlV"
+  }
+ ],
  "class_name" : "double",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_1WoBcvgat8T0044rDo",
