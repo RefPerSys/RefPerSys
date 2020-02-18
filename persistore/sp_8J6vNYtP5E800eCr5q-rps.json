@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 69,
+ "nbobjects" : 70,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -384,6 +384,22 @@
 }
 
 
+//+ob_33DFyPOJxbF015ZYoi
+//∈core_function
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_0jdbikGJFq100dgX1n",
+   "va" : "method tuple/display_value_qt"
+  }
+ ],
+ "class" : "_9Gz1oNPCnkB00I6VRS",
+ "mtime" : 1582035274.1199999,
+ "oid" : "_33DFyPOJxbF015ZYoi"
+}
+
+
 //+ob_36I1BY2NetN03WjrOv
 //∈class
 {
@@ -683,6 +699,7 @@
  [
   "_0TwK4TkhEGZ03oTa5m",
   "_2KnFhlj8xW800kpgPt",
+  "_33DFyPOJxbF015ZYoi",
   "_7oa7eIzzcxv03TmmZH",
   "_8KJHUldX8GJ03G5OWp"
  ]
@@ -760,7 +777,18 @@
 //∈class
 {
  "class" : "_41OFI3r0S1t03qdB2E",
- "class_methodict" : [],
+ "class_methodict" : 
+ [
+  {
+   "methclos" : 
+   {
+    "env" : [],
+    "fn" : "_7oa7eIzzcxv03TmmZH",
+    "vtype" : "closure"
+   },
+   "methosel" : "_1Win5yzaf1L02cBUlV"
+  }
+ ],
  "class_name" : "tuple",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_5KVs9kaMYiU040KwVj",
