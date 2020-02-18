@@ -81,6 +81,10 @@ RpsQOutputTextDocument::~RpsQOutputTextDocument()
 {
 } // end RpsQOutputTextEdit::~RpsQOutputTextEdit
 
+
+
+
+////////////////////////////////////////////////////////////////
 // C++ closure for _0TwK4TkhEGZ03oTa5m
 //!display Val0 in Ob1Win at depth Val2Depth
 extern "C" rps_applyingfun_t rpsapply_0TwK4TkhEGZ03oTa5m;
@@ -118,6 +122,9 @@ rpsapply_0TwK4TkhEGZ03oTa5m (Rps_CallFrame*callerframe, ///
 #warning unimplemented rpsapply_0TwK4TkhEGZ03oTa5m
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _0TwK4TkhEGZ03oTa5m
 } // end of rpsapply_0TwK4TkhEGZ03oTa5m
+
+
+
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for _8KJHUldX8GJ03G5OWp

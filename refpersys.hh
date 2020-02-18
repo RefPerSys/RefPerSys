@@ -2493,8 +2493,8 @@ public:
   {
       return _qptr_val;
   }
-  const unsigned rank() const { return _qptr_rank; }
-
+  unsigned rank() const { return _qptr_rank; };
+  ///
   virtual std::uint32_t wordsize() const
   {
     // as usual, we round up the 64 bits word size ....
