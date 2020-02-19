@@ -71,7 +71,8 @@ all: refpersys
 
 refpersys: $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o
 	$(LINK.cc) $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o \
-           $(LIBES) -o $@
+           $(LIBES) -o $@-tmp
+	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 

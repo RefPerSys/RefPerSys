@@ -217,10 +217,27 @@ rps_check_mtime_files(void)
                     << " seconds than current executable " << exebuf
                     << ", so consider rebuilding with omake");
     }
+  char makecmd [128];
+  memset (makecmd, 0, sizeof(makecmd));
+  if (snprintf(makecmd, sizeof(makecmd), "make -C %s -t -q refpersys", rps_topdirectory) < sizeof(makecmd)-1)
+    {
+      int bad = system(makecmd);
+      if (bad)
+        RPS_WARNOUT("rps_check_mtime_files: " << makecmd
+                    << " failed with status# " << bad);
+    }
+  else
+    RPS_FATAL("rps_check_mtime_files failed to construct makecmd in %s: %m",
+              rps_topdirectory);
 } // end rps_check_mtime_files
 
+
+
+
+
+////////////////////////////////////////////////////////////////
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   rps_start_monotonic_time = rps_monotonic_real_time();
   RPS_ASSERT(argc>0);
@@ -242,7 +259,6 @@ main(int argc, char** argv)
       fprintf(stderr, "%s failed to make backtrace state.\n", rps_progname);
       exit(EXIT_FAILURE);
     }
-
   pthread_setname_np(pthread_self(), "rps-main");
   RPS_INFORM("starting RefPerSys %s process %d on host %s\n"
              "... gitid %.16s built %s (main@%p)",
