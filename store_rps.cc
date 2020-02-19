@@ -327,7 +327,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
                                + spacepath);
     }
   RPS_INFORMOUT("read " << obcnt
-                << " objects while loading first pass of" << spacepath);
+                << " objects while loading first pass of " << spacepath);
 } // end Rps_Loader::first_pass_space
 
 void
@@ -622,7 +622,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
   unsigned obcnt = 0;
   Rps_Id prevoid;
   unsigned prevlin=0;
-  RPS_INFORM("Rps_Loader::second_pass_space start spacepath=%s", spacepath.c_str());
+  RPS_NOPRINTOUT("Rps_Loader::second_pass_space start spacepath" << spacepath.c_str());
   std::string objbuf;
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
@@ -695,7 +695,7 @@ Rps_Loader::load_all_state_files(void)
       first_pass_space(spacid);
       spacecnt1++;
     }
-  RPS_INFORMOUT("loaded " << spacecnt1 << " space files in first pass");
+  RPS_NOPRINTOUT("loaded " << spacecnt1 << " space files in first pass");
   initialize_constant_objects();
   /// conceptually, the second pass might be done in parallel
   /// (multi-threaded, with different threads working on different
@@ -713,7 +713,7 @@ Rps_Loader::load_all_state_files(void)
       usleep(20);
     };
   RPS_INFORMOUT("loaded " << spacecnt1 << " space files in second pass with "
-                << ld_mapobjects.size() << " objects and " << todocount << " todos");
+                << ld_mapobjects.size() << " objects and " << todocount << " todos" << std::endl);
 } // end Rps_Loader::load_all_state_files
 
 
@@ -846,9 +846,9 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
         {
           auto jfn = jv["fn"];
           auto jenv = jv["env"];
-          RPS_INFORMOUT("closure jv=" << jv << std::endl << "jfn=" << jfn << std::endl << "jenv=" << jenv);
+          RPS_NOPRINTOUT("closure jv=" << jv << std::endl << "jfn=" << jfn << std::endl << "jenv=" << jenv);
           auto funobr = Rps_ObjectRef(jfn, ld);
-          RPS_INFORMOUT("closure funobr=" << funobr);
+          RPS_NOPRINTOUT("closure funobr=" << funobr);
           if (jenv.isArray())
             {
               auto siz = jenv.size();
@@ -860,17 +860,17 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
                   vecenv.push_back(curval);
                 };
               Rps_ClosureValue thisclos(funobr, vecenv);;
-              RPS_INFORMOUT("closure thisclos=" << thisclos);
+              RPS_NOPRINTOUT("closure thisclos=" << thisclos);
               *this = thisclos;
-              RPS_INFORMOUT("closure this is " << *this << std::endl << "jv=" << jv);
+              RPS_NOPRINTOUT("closure this is " << *this << std::endl << "jv=" << jv);
               if (jv.isMember("metaobj"))
                 {
                   int32_t metark = jv["metarank"].asInt();
                   auto  metaobr = Rps_ObjectRef(jv["metaobj"], ld);
                   thisclos->put_persistent_metadata(metaobr, metark);
                 };
-              RPS_INFORMOUT("Rps_Value::Rps_Value closure is:" << *this
-                            << std::endl << "jv=" << jv);
+              RPS_NOPRINTOUT("Rps_Value::Rps_Value closure is:" << *this
+                             << std::endl << "jv=" << jv);
               return;
             }
           else
@@ -1311,10 +1311,11 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
           else break;
         };
     }
-  RPS_INFORMOUT("found " << nbconst
-                << " constant[s] prefixed by " << RPS_CONSTANTOBJ_PREFIX
-                << " in file " << fullpath
-                << " of " << lincnt << " lines.");
+  if (nbconst>0)
+    RPS_INFORMOUT("found " << nbconst
+                  << " constant[s] prefixed by " << RPS_CONSTANTOBJ_PREFIX
+                  << " in file " << fullpath
+                  << " of " << lincnt << " lines.");
 } // end Rps_Dumper::scan_cplusplus_source_file_for_constants
 
 
@@ -1679,7 +1680,7 @@ Rps_Dumper::scan_loop_pass(void)
       //              << " curobr=" << curobr->oid());
       scan_object_contents(curobr);
     };
-  RPS_INFORMOUT("scan_loop_pass end count#" << count);
+  RPS_NOPRINTOUT("scan_loop_pass end count#" << count);
 } // end Rps_Dumper::scan_loop_pass
 
 void
@@ -1975,9 +1976,9 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     {
       *pouts << std::endl << std::endl;
       *pouts << "//+ob" << curobr->oid().to_string() << std::endl;
-      RPS_INFORMOUT("Rps_Dumper::write_space_file emits " << (curobr->oid().to_string())
-                    << " of hi=" <<  (curobr->oid().hi())
-                    << " #" << (++count));
+      RPS_NOPRINTOUT("Rps_Dumper::write_space_file emits " << (curobr->oid().to_string())
+                     << " of hi=" <<  (curobr->oid().hi())
+                     << " #" << (++count));
       /// output a comment giving the class name for readability
       {
         Rps_ObjectRef obclass = curobr->get_class();
@@ -2003,8 +2004,8 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
                      << symb->symbol_name() << std::endl;
           }
         else
-          RPS_INFORMOUT("Rps_Dumper::write_space_file no obsymb for obr "
-                        <<curobr->oid().to_string());
+          RPS_WARNOUT("Rps_Dumper::write_space_file no obsymb for obr "
+                      <<curobr->oid().to_string());
 
       }
       Json::Value jobject(Json::objectValue);
