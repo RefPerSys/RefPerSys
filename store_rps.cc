@@ -1147,6 +1147,7 @@ public:
   Json::Value json_value(const Rps_Value val);
   Json::Value json_objectref(const Rps_ObjectRef obr);
   bool is_dumpable_objref(const Rps_ObjectRef obr);
+  bool is_dumpable_objattr(const Rps_ObjectRef obr);
   bool is_dumpable_value(const Rps_Value val);
   void scan_space_component(Rps_ObjectRef obrspace, Rps_ObjectRef obrcomp)
   {
@@ -1215,6 +1216,19 @@ Rps_Dumper::is_dumpable_objref(const Rps_ObjectRef obr)
     return false;
   return true;
 } // end Rps_Dumper::is_dumpable_objref
+
+
+bool
+Rps_Dumper::is_dumpable_objattr(const Rps_ObjectRef obr)
+{
+  if (!obr)
+    return false;
+  if (!is_dumpable_objref(obr))
+    return false;
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+#warning incomplete Rps_Dumper::is_dumpable_objattr
+  return true;
+} // end Rps_Dumper::is_dumpable_objattr
 
 
 bool
@@ -1396,6 +1410,12 @@ bool rps_is_dumpable_objref(Rps_Dumper*du, const Rps_ObjectRef obr)
   RPS_ASSERT(du != nullptr);
   return du->is_dumpable_objref(obr);
 } // end rps_is_dumpable_objref
+
+bool rps_is_dumpable_objattr(Rps_Dumper*du, const Rps_ObjectRef obr)
+{
+  RPS_ASSERT(du != nullptr);
+  return du->is_dumpable_objattr(obr);
+} // end rps_is_dumpable_objattr
 
 bool rps_is_dumpable_value(Rps_Dumper*du, const Rps_Value val)
 {
@@ -1683,12 +1703,15 @@ Rps_Dumper::scan_loop_pass(void)
   RPS_NOPRINTOUT("scan_loop_pass end count#" << count);
 } // end Rps_Dumper::scan_loop_pass
 
+
+
 void
 Rps_Dumper::scan_object_contents(Rps_ObjectRef obr)
 {
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
   obr->dump_scan_contents(this);
   Rps_ObjectRef spacobr(obr->get_space());
-  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  rps_dump_scan_object(this,spacobr);
 } // end Rps_Dumper::scan_object_contents
 
 

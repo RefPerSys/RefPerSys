@@ -851,9 +851,14 @@ Rps_ObjectZone::dump_scan_contents(Rps_Dumper*du) const
   rps_dump_scan_space_component(du, Rps_ObjectRef(obspace), Rps_ObjectRef(this));
   for (auto atit: ob_attrs)
     {
-      rps_dump_scan_object(du, atit.first);
-      if (atit.second.is_ptr())
-        rps_dump_scan_value(du, atit.second, 0);
+      Rps_ObjectRef obat = atit.first;
+      Rps_Value valat = atit.second;
+      if (!rps_is_dumpable_value(du, valat))
+        continue;
+      if (!rps_is_dumpable_objref(du, obat))
+        continue;
+      rps_dump_scan_object(du, obat);
+      rps_dump_scan_value(du, valat, 0);
     }
   for (auto compv: ob_comps)
     {
@@ -952,11 +957,17 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
       Json::Value jattrs(Json::arrayValue);
       for (auto atit: ob_attrs)
         {
-          if (!rps_is_dumpable_objref(du,atit.first))
+          Rps_ObjectRef atob = atit.first;
+          Rps_Value atval = atit.second;
+          if (!rps_is_dumpable_objref(du,atob))
+            continue;
+          if (!rps_is_dumpable_objattr(du,atob))
+            continue;
+          if (!rps_is_dumpable_value(du,atval))
             continue;
           Json::Value jcurat(Json::objectValue);
-          jcurat["at"] = rps_dump_json_objectref(du,atit.first);
-          jcurat["va"] = rps_dump_json_value(du,atit.second);
+          jcurat["at"] = rps_dump_json_objectref(du,atob);
+          jcurat["va"] = rps_dump_json_value(du,atval);
           jattrs.append(jcurat);
         };
       json["attrs"] = jattrs;

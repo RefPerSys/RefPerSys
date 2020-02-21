@@ -3111,7 +3111,14 @@ extern "C" void rps_dump_scan_space_component(Rps_Dumper*, Rps_ObjectRef obrspac
 extern "C" void rps_dump_scan_value(Rps_Dumper*, const Rps_Value val, unsigned depth);
 extern "C" Json::Value rps_dump_json_value(Rps_Dumper*, const Rps_Value val);
 extern "C" Json::Value rps_dump_json_objectref(Rps_Dumper*, const Rps_ObjectRef obr);
+
+// is an object dumpable?
 extern "C" bool rps_is_dumpable_objref(Rps_Dumper*, const Rps_ObjectRef obr);
+
+// is an object dumpable as attribute in another object?
+extern "C" bool rps_is_dumpable_objattr(Rps_Dumper*, const Rps_ObjectRef obr);
+
+// is a value dumpable?
 extern "C" bool rps_is_dumpable_value(Rps_Dumper*, const Rps_Value val);
 
 
