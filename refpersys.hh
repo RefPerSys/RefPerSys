@@ -131,6 +131,7 @@ extern "C" const char rps_lastgittag[];
 extern "C" const char rps_lastgitcommit[];
 extern "C" const char rps_md5sum[];
 extern "C" const char*const rps_files[];
+extern "C" const char rps_makefile[];
 extern "C" const char*const rps_subdirectories[];
 
 

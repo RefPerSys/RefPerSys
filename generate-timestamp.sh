@@ -30,5 +30,4 @@ cp -va /tmp/refpersys-$$.tar.gz $HOME/tmp/refpersys.tar.gz >& /dev/stderr
 
 (echo  'const char*const rps_subdirectories[]= {' ; tar tf /tmp/refpersys-$$.tar.gz | grep  '/$' | tr -s " \n"  | sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
 
-printf "const char rps_omakefile[]=\"%s\";\n"   $(realpath OMakefile)
-printf "const char rps_omakeroot[]=\"%s\";\n"   $(realpath OMakeroot)
+printf "const char rps_makefile[]=\"%s\";\n"   $(realpath Makefile)
