@@ -68,6 +68,7 @@
 #include <QPushButton>
 #include <QScreen>
 #include <QStringListModel>
+#include <QSettings>
 #include <QTextBrowser>
 #include <QTextDocument>
 #include <QTextEdit>
@@ -95,6 +96,7 @@ class RpsQApplication
   Q_OBJECT;
 public:
   RpsQApplication (int &argc, char*argv[]); // constructor
+  ~RpsQApplication();
   //// the json reading methods can fail by throwing some exception
   // read a json default file ~/refpersys-user.json:
   Json::Value read_user_json(void);
@@ -136,6 +138,7 @@ private:
   mutable std::mutex app_mutex;
   std::vector <QPointer<RpsQWindow>> app_windvec;
   size_t app_wndcount;
+  QSettings* app_settings;
 };				// end of class RpsQApplication
 
 

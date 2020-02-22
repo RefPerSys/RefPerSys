@@ -173,7 +173,7 @@ rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
   //// should compute somehow qcfmt; perhaps by using
   //// RPS_USERPREFERENCE_JSON at startup time...
   RPS_WARNOUT("rpsapply_8KJHUldX8GJ03G5OWp missing initialization of qcfmt "
-	      << RPS_BACKTRACE_HERE(2, "rpsapply_8KJHUldX8GJ03G5OWp: qcfmt"));
+              << RPS_BACKTRACE_HERE(2, "rpsapply_8KJHUldX8GJ03G5OWp: qcfmt"));
   char intbuf[32];
   memset (intbuf, 0, sizeof(intbuf));
   snprintf(intbuf, sizeof(intbuf), "%lld", (long long) curint);

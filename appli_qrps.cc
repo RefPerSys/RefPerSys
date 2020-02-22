@@ -247,19 +247,26 @@ RpsQApplication::RpsQApplication(int &argc, char*argv[])
   : QApplication(argc, argv),
     app_mutex(),
     app_windvec(),
-    app_wndcount (0)
+    app_wndcount (0),
+    app_settings(nullptr)
 {
   RPS_LOCALFRAME(nullptr /*no descr*/,
                  nullptr /*no calling frame*/,
                  Rps_Value val; // the value
                 );
   setApplicationName("RefPerSys");
+  setOrganizationDomain("refpersys.org");
+  setOrganizationName("RefPerSys community");
   setApplicationVersion(rps_lastgitcommit);
   app_windvec.reserve(16);
   app_windvec.push_back(nullptr); // we don't want a 0 index.
   do_add_new_window(&_);
 } // end of RpsQApplication::RpsQApplication
 
+RpsQApplication::~RpsQApplication()
+{
+  delete app_settings;
+} // end RpsQApplication::~RpsQApplication
 
 void
 RpsQApplication::gc_mark(Rps_GarbageCollector&gc) const
@@ -388,6 +395,9 @@ void rps_run_application(int &argc, char **argv)
     // type information
     const QCommandLineOption typeOption("type-info", "Show type information.");
     argparser.addOption(typeOption);
+    // settings information
+    const QCommandLineOption settingsOption("settings", "The Qt settings file.");
+    argparser.addOption(settingsOption);
     // batch flag
     const QCommandLineOption batchOption(QStringList() << "B" << "batch", "batch mode, without any windows");
     argparser.addOption(batchOption);
@@ -489,6 +499,12 @@ void rps_run_application(int &argc, char **argv)
         const QString dumpqs = argparser.value(dumpafterloadOption);
         dumpdirstr = dumpqs.toStdString();
         RPS_INFORMOUT("should dump into " << dumpdirstr);
+      }
+    ///// --settings
+    if (argparser.isSet(settingsOption))
+      {
+        const QString settingqs = argparser.value(settingsOption);
+#warning should set app_settings
       }
   }
   RPS_INFORMOUT("using " << rps_nbjobs << " jobs (or threads)");
