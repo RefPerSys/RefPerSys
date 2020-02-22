@@ -154,6 +154,7 @@ rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                  //....etc....
                 );
+  ////==== body of _8KJHUldX8GJ03G5OWp ====
   _.intv = arg0recv;
   _.obwin = arg1obwin.as_object();
   _.depthv = arg2depth;
@@ -161,14 +162,10 @@ rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
   RPS_ASSERT(_.depthv.is_int());
   int depth = (int) (_.depthv.to_int());
   std::lock_guard<std::recursive_mutex> guobwin (*(_.obwin->objmtxptr()));
-  auto qwinpayl = _.obwin->get_dynamic_payload<Rps_PayloadQt<QObject>>();
-  RPS_ASSERT(qwinpayl);
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
-  ////==== body of _8KJHUldX8GJ03G5OWp ====
-  ;
+  auto qoutwpayl =
+    _.obwin->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT(qoutwpayl);
+  ///
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _8KJHUldX8GJ03G5OWp
 } // end of rpsapply_8KJHUldX8GJ03G5OWp
 
