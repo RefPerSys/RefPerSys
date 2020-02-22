@@ -124,7 +124,8 @@ rpsapply_0TwK4TkhEGZ03oTa5m (Rps_CallFrame*callerframe, ///
 } // end of rpsapply_0TwK4TkhEGZ03oTa5m
 
 
-
+/// for the display_value_qt RefPerSys methods see
+/// https://gitlab.com/bstarynk/refpersys/-/wikis/output-subwindow-of-RefPerSys
 
 
 ////////////////////////////////////////////////////////////////
@@ -133,12 +134,17 @@ rpsapply_0TwK4TkhEGZ03oTa5m (Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_8KJHUldX8GJ03G5OWp;
 Rps_TwoValues
 rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0, const Rps_Value arg1, ///
-                             const Rps_Value arg2, const Rps_Value arg3, ///
+                             const Rps_Value arg0recv, ///
+                             const Rps_Value arg1obwin, ///
+                             const Rps_Value arg2depth,
+                             const Rps_Value arg3_ __attribute__((unused)), ///
                              const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
 {
   RPS_LOCALFRAME(rpskob_8KJHUldX8GJ03G5OWp,
                  callerframe, //
+                 Rps_Value intv;
+                 Rps_ObjectRef obwin;
+                 Rps_Value depthv;
                  //Rps_Value arg0v;
                  //Rps_Value arg1v;
                  //Rps_Value arg2v;
@@ -148,6 +154,15 @@ rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                  //....etc....
                 );
+  _.intv = arg0recv;
+  _.obwin = arg1obwin.as_object();
+  _.depthv = arg2depth;
+  RPS_ASSERT(_.obwin);
+  RPS_ASSERT(_.depthv.is_int());
+  int depth = (int) (_.depthv.to_int());
+  std::lock_guard<std::recursive_mutex> guobwin (*(_.obwin->objmtxptr()));
+  auto qwinpayl = _.obwin->get_dynamic_payload<Rps_PayloadQt<QObject>>();
+  RPS_ASSERT(qwinpayl);
   // _.arg0v = arg0;
   // _.arg1v = arg1;
   // _.arg2v = arg2;
