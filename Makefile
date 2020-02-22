@@ -68,7 +68,7 @@ CXXFLAGS += $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
 LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 
 all:
-	$(MV) --backup refpersys refpersys~
+	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
 	$(MAKE) $(MAKEFLAGS) refpersys
 
