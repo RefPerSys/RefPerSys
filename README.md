@@ -189,6 +189,18 @@ The [JsonCPP](https://github.com/open-source-parsers/jsoncpp/) and
 [Qt5](http://qt.io/) C++ libraries are needed, and also a
 [mail](https://linux.die.net/man/1/mail) command in your `$PATH`.
 
+To install the dependencies on a Debian system, you would run the following steps
+
+* `sudo apt install libunistring-dev`
+* `sudo apt install qt5-default`
+* `sudo apt install libjsoncpp-dev`
+* `sudo apt install ccache`
+* `git clone https://github.com/ianlancetaylor/libbacktrace.git`
+* `cd libbacktrace`
+* `./configure`
+* `make`
+* `make install`
+
 ### Build instructions
 
 You need a recent C++17 compiler such as `g++` (We use
