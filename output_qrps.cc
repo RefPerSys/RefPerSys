@@ -149,6 +149,8 @@ rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                  //....etc....
                 );
+  QTextCursor qcursout;
+  QTextCharFormat qcfmt;
   ////==== body of _8KJHUldX8GJ03G5OWp ====
   _.intv = arg0recv;
   _.obwin = arg1obwin.as_object();
@@ -156,10 +158,26 @@ rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
   RPS_ASSERT(_.obwin);
   RPS_ASSERT(_.depthv.is_int());
   int depth = (int) (_.depthv.to_int());
+  intptr_t curint = _.intv.to_int();
   std::lock_guard<std::recursive_mutex> guobwin (*(_.obwin->objmtxptr()));
   auto qoutwpayl =
     _.obwin->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   RPS_ASSERT(qoutwpayl);
+  RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
+  RPS_ASSERT(qoutxed);
+  /// FIXME: we have not decided yet (in commit 4b2038cfb35dafe) what
+  /// cursor should be really used. Temporarily pretend it is the
+  /// default one ...
+  qcursout = qoutxed->textCursor();
+#warning method int/display_value_qt: missing initialization of QTextCharFormat qcfmt for int-s
+  //// should compute somehow qcfmt; perhaps by using
+  //// RPS_USERPREFERENCE_JSON at startup time...
+  RPS_WARNOUT("rpsapply_8KJHUldX8GJ03G5OWp missing initialization of qcfmt "
+	      << RPS_BACKTRACE_HERE(2, "rpsapply_8KJHUldX8GJ03G5OWp: qcfmt"));
+  char intbuf[32];
+  memset (intbuf, 0, sizeof(intbuf));
+  snprintf(intbuf, sizeof(intbuf), "%lld", (long long) curint);
+  qcursout.insertText(QString(intbuf), qcfmt);
   ///
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _8KJHUldX8GJ03G5OWp
 } // end of rpsapply_8KJHUldX8GJ03G5OWp
