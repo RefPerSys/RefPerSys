@@ -145,11 +145,6 @@ rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
                  Rps_Value intv;
                  Rps_ObjectRef obwin;
                  Rps_Value depthv;
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
