@@ -220,10 +220,11 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
   RpsQOutputTextEdit* qoutput_widget = qoutput_window_payload->qtptr();
   RPS_ASSERT(qoutput_widget);
 
-  QTextCharFormat qformat;
+  QTextCharFormat qcfmt;
+#warning method string/display_value_qt: missing initialization of QTextCharFormat qcfmt for int-s
   auto qstr = QString(_.string_value.as_cstring());
   auto qcursor = qoutput_widget->textCursor();
-  qcursor.insertText(qstr, qformat);
+  qcursor.insertText(qstr, qcfmt);
 
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _2KnFhlj8xW800kpgPt
 } // end of rpsapply_2KnFhlj8xW800kpgPt
