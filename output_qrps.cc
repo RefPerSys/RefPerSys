@@ -190,10 +190,10 @@ rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_2KnFhlj8xW800kpgPt;
 Rps_TwoValues
 rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
-                            const Rps_Value arg0_receiver, 
-			    const Rps_Value arg1_object_window,
-                            const Rps_Value arg2_recursive_depth, 
-			    [[maybe_unused]] const Rps_Value arg3_,
+                            const Rps_Value arg0_receiver,
+                            const Rps_Value arg1_object_window,
+                            const Rps_Value arg2_recursive_depth,
+                            [[maybe_unused]] const Rps_Value arg3_,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_2KnFhlj8xW800kpgPt,
@@ -205,7 +205,7 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
                  Rps_Value resxtrav;
                 );
   ////==== body of _2KnFhlj8xW800kpgPt ====
-  
+
   _.string_value = arg0_receiver;
   RPS_ASSERT(_.string_value.is_string());
   _.object_window = arg1_object_window.as_object();

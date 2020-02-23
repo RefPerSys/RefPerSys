@@ -117,7 +117,8 @@ public:
   {
     return dynamic_cast<RpsQApplication*>(RpsQApplication::instance());
   };
-  static QSettings* qt_settings(void) {
+  static QSettings* qt_settings(void)
+  {
     auto ap = the_app();
     RPS_ASSERT (ap);
     return ap->app_settings;
