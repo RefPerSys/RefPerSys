@@ -41,6 +41,28 @@ const char rps_output_date[]= __DATE__;
 
 
 //////////////////////////////////////////////////////////////// RpsQOutputTextEdit
+
+QTextCharFormat RpsQOutputTextEdit::outptxt_int_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_double_qcfmt_;
+
+void
+RpsQOutputTextEdit::initialize()
+{
+  QSettings* qst = RpsQApplication::qt_settings();
+  RPS_ASSERT(qst);
+  /// how to display integer values
+  {
+    QColor int_bgcol = qst->value("out/int/bgcolor").value<QColor>();
+    outptxt_int_qcfmt_.setBackground(QBrush(int_bgcol));
+    QColor int_fgcol = qst->value("out/int/fgcolor").value<QColor>();
+    outptxt_int_qcfmt_.setForeground(QBrush(int_fgcol));
+    QFont int_font = qst->value("out/int/font").value<QFont>();
+    outptxt_int_qcfmt_.setFont(int_font);
+  }
+#warning RpsQOutputTextEdit::initialize should initialize outptxt_double_qcfmt_
+} // end RpsQOutputTextEdit::initialize
+
+
 RpsQOutputTextEdit::RpsQOutputTextEdit(QWidget*parent)
   : QTextEdit(parent),
     outptxt_objref()
@@ -157,6 +179,7 @@ rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
   _.depthv = arg2depth;
   RPS_ASSERT(_.obwin);
   RPS_ASSERT(_.depthv.is_int());
+  qcfmt = RpsQOutputTextEdit::int_text_format();
   int depth = (int) (_.depthv.to_int());
   intptr_t curint = _.intv.to_int();
   std::lock_guard<std::recursive_mutex> guobwin (*(_.obwin->objmtxptr()));

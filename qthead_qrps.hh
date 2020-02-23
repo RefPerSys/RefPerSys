@@ -443,7 +443,14 @@ private:
   /// each RefPerSys value could be displayed several times as a
   /// vector of text fragments, or something else so...
   std::map<Rps_Value,std::set<std::vector<QPointer<QObject>>>> outptxt_valmap;
+  static QTextCharFormat outptxt_int_qcfmt_;
+  static QTextCharFormat outptxt_double_qcfmt_;
 public:
+  static QTextCharFormat int_text_format()
+  {
+    return  outptxt_int_qcfmt_;
+  };
+  static void initialize(void);
   // create a temporary RefPerSys object whose payload contains this output text edit
   void create_outpedit_object(Rps_CallFrame*);
   void gc_mark(Rps_GarbageCollector&gc) const

@@ -537,7 +537,10 @@ void rps_run_application(int &argc, char **argv)
       rps_dump_into(dumpdirstr);
     }
   if (!batch)
-    (void) app.exec ();
+    {
+      RpsQOutputTextEdit::initialize();
+      (void) app.exec ();
+    };
 } // end of rps_run_application
 
 bool
