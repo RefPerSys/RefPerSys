@@ -3078,6 +3078,7 @@ public:
 
 #define RPS_MANIFEST_JSON "rps_manifest.json"
 #define RPS_USERPREFERENCE_JSON ".refpersys.json"
+#define RPS_QTSETTINGS_BASEPATH ".qt-refpersys.ini"
 
 //// global roots for garbage collection and persistence
 /// the called function cannot add, remove or query the global root set
