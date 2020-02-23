@@ -189,28 +189,42 @@ rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
 //!method string/display_value_qt
 extern "C" rps_applyingfun_t rpsapply_2KnFhlj8xW800kpgPt;
 Rps_TwoValues
-rpsapply_2KnFhlj8xW800kpgPt (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0, const Rps_Value arg1, ///
-                             const Rps_Value arg2, const Rps_Value arg3, ///
-                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
+                            const Rps_Value arg0_receiver, 
+			    const Rps_Value arg1_object_window,
+                            const Rps_Value arg2_recursive_depth, 
+			    [[maybe_unused]] const Rps_Value arg3_,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_2KnFhlj8xW800kpgPt,
                  callerframe, //
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+                 Rps_Value string_value;
+                 Rps_ObjectRef object_window;
+                 Rps_Value recursive_depth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
-                 //....etc....
                 );
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
   ////==== body of _2KnFhlj8xW800kpgPt ====
-  ;
+  
+  _.string_value = arg0_receiver;
+  RPS_ASSERT(_.string_value.is_string());
+  _.object_window = arg1_object_window.as_object();
+  RPS_ASSERT(_.object_window);
+  _.recursive_depth = arg2_recursive_depth;
+  RPS_ASSERT(_.recursive_depth.to_int());
+
+  std::lock_guard<std::recursive_mutex> object_window_guard(*(_.object_window->objmtxptr()));
+
+  auto qoutput_window_payload = _.object_window->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT(qoutput_window_payload);
+  RpsQOutputTextEdit* qoutput_widget = qoutput_window_payload->qtptr();
+  RPS_ASSERT(qoutput_widget);
+
+  QTextCharFormat qformat;
+  auto qstr = QString(_.string_value.as_cstring());
+  auto qcursor = qoutput_widget->textCursor();
+  qcursor.insertText(qstr, qformat);
+
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _2KnFhlj8xW800kpgPt
 } // end of rpsapply_2KnFhlj8xW800kpgPt
 
