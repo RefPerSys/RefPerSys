@@ -500,13 +500,35 @@ void rps_run_application(int &argc, char **argv)
         dumpdirstr = dumpqs.toStdString();
         RPS_INFORMOUT("should dump into " << dumpdirstr);
       }
-    ///// --settings
+    ///// --settings <ini-file>
     if (argparser.isSet(settingsOption))
       {
         const QString settingqs = argparser.value(settingsOption);
-#warning should set app_settings
+        auto settingstr = settingqs.toStdString();
+        if (access(settingstr.c_str(), R_OK))
+          RPS_FATAL("cannot access settings %s: %m", settingstr.c_str());
+        app.app_settings = new QSettings(settingqs, QSettings::IniFormat);
       }
   }
+  if (!app.app_settings)
+    {
+      std::string usersettings(rps_homedir());
+      std::string defaultsettings(rps_topdirectory);
+      usersettings += "/" RPS_QTSETTINGS_BASEPATH;
+      defaultsettings += "/" RPS_QTSETTINGS_BASEPATH;
+      if (!access(usersettings.c_str(), R_OK))
+        {
+          app.app_settings = new QSettings(QString(usersettings.c_str()), QSettings::IniFormat);
+          RPS_INFORMOUT("using user Qt settings from " << usersettings);
+        }
+      else if (!access(defaultsettings.c_str(), R_OK))
+        {
+          app.app_settings = new QSettings(QString(defaultsettings.c_str()), QSettings::IniFormat);
+          RPS_INFORMOUT("using default Qt settings from " << defaultsettings);
+        }
+      else
+        RPS_FATALOUT("No Qt settings found in " << usersettings << " or " << defaultsettings);
+    }
   RPS_INFORMOUT("using " << rps_nbjobs << " jobs (or threads)");
   rps_load_from (loadtopdir);
   if (!dumpdirstr.empty())
@@ -529,5 +551,6 @@ rps_is_main_gui_thread(void)
 //////////////// moc generated file
 #include "_qthead_qrps.inc.hh"
 
+/// we are explicitly instanciating this template....
 template class Rps_PayloadQt<RpsQWindow>;
 //////////////////////////////////////// end of file appli_qrps.cc
