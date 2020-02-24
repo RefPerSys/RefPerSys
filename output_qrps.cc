@@ -270,21 +270,28 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_7oa7eIzzcxv03TmmZH,
                  callerframe, //
                  Rps_Value doubleval;
-                 Rps_Value objwnd;
+                 Rps_ObjectRef objwnd;
                  Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                 );
 
   _.doubleval = arg0_recv;
-  RPS_ASSERT(_.doubleval.is_double());
-  _.objwnd = arg1_objwnd;
-  RPS_ASSERT(_.objwnd = arg1_objwnd);
+  RPS_ASSERT (_.doubleval.is_double());
+  _.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_.objwnd);
   _.recdepth = arg2_recdepth;
-  RPS_ASSERT(_.recdepth.to_int());
+  RPS_ASSERT (_.recdepth.to_int());
 
   ////==== body of _7oa7eIzzcxv03TmmZH ====
-  ;
+  
+  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+
+  auto qoutwndpay = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutwndpay);
+  auto qoutwndwx = qoutwndpay->qtptr();
+  RPS_ASSERT (qoutwndwx);
+
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _7oa7eIzzcxv03TmmZH
 } // end of rpsapply_7oa7eIzzcxv03TmmZH
 
