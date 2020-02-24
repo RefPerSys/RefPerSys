@@ -214,18 +214,14 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
   /// cursor should be really used. Temporarily pretend it is the
   /// default one ...
   qcursout = qoutxed->textCursor();
-#warning method int/display_value_qt: missing initialization of QTextCharFormat qcfmt for int-s
-  //// should compute somehow qcfmt; perhaps by using
-  //// RPS_USERPREFERENCE_JSON at startup time...
-  RPS_WARNOUT("rpsapply_8KJHUldX8GJ03G5OWp missing initialization of qcfmt "
-              << RPS_BACKTRACE_HERE(2, "rpsapply_8KJHUldX8GJ03G5OWp: qcfmt"));
   char intbuf[32];
   memset (intbuf, 0, sizeof(intbuf));
   snprintf(intbuf, sizeof(intbuf), "%lld", (long long) curint);
   qcursout.insertText(QString(intbuf), qcfmt);
-  ///
+  /// return reciever since success
+  _.resmainv = _.intv;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _8KJHUldX8GJ03G5OWp
-} // end of rpsapply_8KJHUldX8GJ03G5OWp
+} // end of rpsapply_8KJHUldX8GJ03G5OWp !method int/display_value_qt
 
 
 ////////////////////////////////////////////////////////////////
@@ -255,25 +251,22 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
   _.object_window = arg1_object_window.as_object();
   RPS_ASSERT(_.object_window);
   _.recursive_depth = arg2_recursive_depth;
-  RPS_ASSERT(_.recursive_depth.to_int());
-
+  RPS_ASSERT(_.recursive_depth.is_int());
   ////==== body of _2KnFhlj8xW800kpgPt ====
-
   std::lock_guard<std::recursive_mutex> object_window_guard(*(_.object_window->objmtxptr()));
-
   auto qoutput_window_payload = _.object_window->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   RPS_ASSERT(qoutput_window_payload);
   RpsQOutputTextEdit* qoutput_widget = qoutput_window_payload->qtptr();
   RPS_ASSERT(qoutput_widget);
-
   auto qcfmt = RpsQOutputTextEdit::string_text_format();
   auto qstr = QString(_.string_value.as_cstring());
 #warning FIXME: we want to display nicely the non-printable characters such as tabulation, but how?
   auto qcursor = qoutput_widget->textCursor();
   qcursor.insertText(qstr, qcfmt);
-
+  /// return reciever since success
+  _.resmainv = _.string_value;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _2KnFhlj8xW800kpgPt
-} // end of rpsapply_2KnFhlj8xW800kpgPt
+} // end of rpsapply_2KnFhlj8xW800kpgPt !method string/display_value_qt
 
 
 ////////////////////////////////////////////////////////////////
@@ -291,30 +284,35 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_7oa7eIzzcxv03TmmZH,
                  callerframe, //
                  Rps_Value doubleval;
-                 Rps_ObjectRef objwnd;
+                 Rps_ObjectRef object_window;
                  Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                 );
 
+  ////==== body of _7oa7eIzzcxv03TmmZH ====
   _.doubleval = arg0_recv;
   RPS_ASSERT (_.doubleval.is_double());
-  _.objwnd = arg1_objwnd.as_object();
-  RPS_ASSERT (_.objwnd);
+  _.object_window = arg1_objwnd.as_object();
+  RPS_ASSERT(_.object_window);
   _.recdepth = arg2_recdepth;
-  RPS_ASSERT (_.recdepth.to_int());
-
-  ////==== body of _7oa7eIzzcxv03TmmZH ====
-  
-  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
-
-  auto qoutwndpay = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
-  RPS_ASSERT (qoutwndpay);
-  auto qoutwndwx = qoutwndpay->qtptr();
-  RPS_ASSERT (qoutwndwx);
-
+  RPS_ASSERT(_.recdepth.is_int());
+  std::lock_guard<std::recursive_mutex> object_window_guard(*(_.object_window->objmtxptr()));
+  auto qoutput_window_payload = _.object_window->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT(qoutput_window_payload);
+  RpsQOutputTextEdit* qoutput_widget = qoutput_window_payload->qtptr();
+  RPS_ASSERT(qoutput_widget);
+  auto qcfmt = RpsQOutputTextEdit::double_text_format();
+  char dblbuf[48];
+  memset(dblbuf, 0, sizeof(dblbuf));
+  snprintf(dblbuf, sizeof(dblbuf), "%g", _.doubleval.to_double());
+  auto qstr = QString(dblbuf);
+  auto qcursor = qoutput_widget->textCursor();
+  qcursor.insertText(qstr, qcfmt);
+  /// return reciever since success
+  _.resmainv = _.doubleval;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _7oa7eIzzcxv03TmmZH
-} // end of rpsapply_7oa7eIzzcxv03TmmZH
+} // end of rpsapply_7oa7eIzzcxv03TmmZH !method double/display_value_qt
 
 
 
@@ -348,7 +346,7 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
   ////==== body of _33DFyPOJxbF015ZYoi ====
   ;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _33DFyPOJxbF015ZYoi
-} // end of rpsapply_33DFyPOJxbF015ZYoi
+} // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_qt
 
 
 // C++ closure for _1568ZHTl0Pa00461I2
@@ -380,7 +378,7 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
   ////==== body of _1568ZHTl0Pa00461I2 ====
   ;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _1568ZHTl0Pa00461I2
-} // end of rpsapply_1568ZHTl0Pa00461I2
+} // end of rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_qt
 
 
 // C++ closure for _18DO93843oX02UWzq6
@@ -412,7 +410,8 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
   ////==== body of _18DO93843oX02UWzq6 ====
   ;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _18DO93843oX02UWzq6
-} // end of rpsapply_18DO93843oX02UWzq6
+} // end of rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt
+
 
 
 // C++ closure for _52zVxP3mTue034OWsD
@@ -444,7 +443,7 @@ rpsapply_52zVxP3mTue034OWsD(Rps_CallFrame*callerframe, ///
   ////==== body of _52zVxP3mTue034OWsD ====
   ;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _52zVxP3mTue034OWsD
-} // end of rpsapply_52zVxP3mTue034OWsD
+} // end of rpsapply_52zVxP3mTue034OWsD !method qtptr/display_value_qt
 
 
 // C++ closure for _42cCN1FRQSS03bzbTz
@@ -476,7 +475,7 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
   ////==== body of _42cCN1FRQSS03bzbTz ====
   ;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _42cCN1FRQSS03bzbTz
-} // end of rpsapply_42cCN1FRQSS03bzbTz
+} // end of rpsapply_42cCN1FRQSS03bzbTz !method json/display_value_qt
 
 
 
