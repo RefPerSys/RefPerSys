@@ -229,7 +229,6 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                 );
-  ////==== body of _2KnFhlj8xW800kpgPt ====
 
   _.string_value = arg0_receiver;
   RPS_ASSERT(_.string_value.is_string());
@@ -237,6 +236,8 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
   RPS_ASSERT(_.object_window);
   _.recursive_depth = arg2_recursive_depth;
   RPS_ASSERT(_.recursive_depth.to_int());
+
+  ////==== body of _2KnFhlj8xW800kpgPt ====
 
   std::lock_guard<std::recursive_mutex> object_window_guard(*(_.object_window->objmtxptr()));
 
@@ -260,27 +261,28 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
 extern "C" rps_applyingfun_t rpsapply_7oa7eIzzcxv03TmmZH;
 Rps_TwoValues
 rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
-                            const Rps_Value arg0, 
-			    const Rps_Value arg1, ///
-                            const Rps_Value arg2, 
-			    const Rps_Value arg3, ///
+                            const Rps_Value arg0_recv, 
+			    const Rps_Value arg1_objwnd, ///
+                            const Rps_Value arg2_recdepth, 
+			    [[maybe_unused]] const Rps_Value arg3_, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_7oa7eIzzcxv03TmmZH,
                  callerframe, //
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+                 Rps_Value doubleval;
+                 Rps_Value objwnd;
+                 Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
-                 //....etc....
                 );
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
+
+  _.doubleval = arg0_recv;
+  RPS_ASSERT(_.doubleval.is_double());
+  _.objwnd = arg1_objwnd;
+  RPS_ASSERT(_.objwnd = arg1_objwnd);
+  _.recdepth = arg2_recdepth;
+  RPS_ASSERT(_.recdepth.to_int());
+
   ////==== body of _7oa7eIzzcxv03TmmZH ====
   ;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _7oa7eIzzcxv03TmmZH
