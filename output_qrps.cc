@@ -408,7 +408,13 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
   // _.arg2v = arg2;
   // _.arg3v = arg3;
   ////==== body of _18DO93843oX02UWzq6 ====
-  ;
+#warning rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt incomplete, see comment
+  /**
+   * TODO: the !method object/display_value_qt is the difficult case.
+   * We probably want it to invoke some !method
+   * object/display_object_occurrence... etc etc... Look into Bismon
+   * behavior and code for inspiration.
+   **/
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _18DO93843oX02UWzq6
 } // end of rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt
 
