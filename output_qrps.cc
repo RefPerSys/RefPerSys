@@ -44,6 +44,7 @@ const char rps_output_date[]= __DATE__;
 
 QTextCharFormat RpsQOutputTextEdit::outptxt_int_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_double_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_string_qcfmt_;
 
 void
 RpsQOutputTextEdit::initialize()
@@ -59,8 +60,27 @@ RpsQOutputTextEdit::initialize()
     QFont int_font = qst->value("out/int/font").value<QFont>();
     outptxt_int_qcfmt_.setFont(int_font);
   }
-#warning RpsQOutputTextEdit::initialize should initialize outptxt_double_qcfmt_
+  /// how to display double values
+  {
+    QColor double_bgcol = qst->value("out/double/bgcolor").value<QColor>();
+    outptxt_double_qcfmt_.setBackground(QBrush(double_bgcol));
+    QColor double_fgcol = qst->value("out/double/fgcolor").value<QColor>();
+    outptxt_double_qcfmt_.setForeground(QBrush(double_fgcol));
+    QFont double_font = qst->value("out/double/font").value<QFont>();
+    outptxt_double_qcfmt_.setFont(double_font);
+  }
+  /// how to display string values
+  {
+    QColor string_bgcol = qst->value("out/string/bgcolor").value<QColor>();
+    outptxt_string_qcfmt_.setBackground(QBrush(string_bgcol));
+    QColor string_fgcol = qst->value("out/string/fgcolor").value<QColor>();
+    outptxt_string_qcfmt_.setForeground(QBrush(string_fgcol));
+    QFont string_font = qst->value("out/string/font").value<QFont>();
+    outptxt_string_qcfmt_.setFont(string_font);
+  }
 } // end RpsQOutputTextEdit::initialize
+
+
 
 
 RpsQOutputTextEdit::RpsQOutputTextEdit(QWidget*parent)
@@ -112,10 +132,10 @@ RpsQOutputTextDocument::~RpsQOutputTextDocument()
 extern "C" rps_applyingfun_t rpsapply_0TwK4TkhEGZ03oTa5m;
 Rps_TwoValues
 rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
-                            const Rps_Value arg0val, 
-			    const Rps_Value arg1obwin, ///
-                            const Rps_Value arg2depth, 
-			    [[maybe_unused]] const Rps_Value arg3_,
+                            const Rps_Value arg0val,
+                            const Rps_Value arg1obwin, ///
+                            const Rps_Value arg2depth,
+                            [[maybe_unused]] const Rps_Value arg3_,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_0TwK4TkhEGZ03oTa5m,
@@ -248,6 +268,7 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
 
   auto qcfmt = RpsQOutputTextEdit::string_text_format();
   auto qstr = QString(_.string_value.as_cstring());
+#warning FIXME: we want to display nicely the non-printable characters such as tabulation, but how?
   auto qcursor = qoutput_widget->textCursor();
   qcursor.insertText(qstr, qcfmt);
 
@@ -261,10 +282,10 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
 extern "C" rps_applyingfun_t rpsapply_7oa7eIzzcxv03TmmZH;
 Rps_TwoValues
 rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
-                            const Rps_Value arg0_recv, 
-			    const Rps_Value arg1_objwnd, ///
-                            const Rps_Value arg2_recdepth, 
-			    [[maybe_unused]] const Rps_Value arg3_, ///
+                            const Rps_Value arg0_recv,
+                            const Rps_Value arg1_objwnd, ///
+                            const Rps_Value arg2_recdepth,
+                            [[maybe_unused]] const Rps_Value arg3_, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_7oa7eIzzcxv03TmmZH,
@@ -296,10 +317,10 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_33DFyPOJxbF015ZYoi;
 Rps_TwoValues
 rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
-                            const Rps_Value arg0, 
-			    const Rps_Value arg1, ///
-                            const Rps_Value arg2, 
-			    const Rps_Value arg3, ///
+                            const Rps_Value arg0,
+                            const Rps_Value arg1, ///
+                            const Rps_Value arg2,
+                            const Rps_Value arg3, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_33DFyPOJxbF015ZYoi,
@@ -328,10 +349,10 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
 extern "C" rps_applyingfun_t rpsapply_1568ZHTl0Pa00461I2;
 Rps_TwoValues
 rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
-                            const Rps_Value arg0, 
-			    const Rps_Value arg1, ///
-                            const Rps_Value arg2, 
-			    const Rps_Value arg3, ///
+                            const Rps_Value arg0,
+                            const Rps_Value arg1, ///
+                            const Rps_Value arg2,
+                            const Rps_Value arg3, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_1568ZHTl0Pa00461I2,
@@ -360,10 +381,10 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_18DO93843oX02UWzq6;
 Rps_TwoValues
 rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
-                            const Rps_Value arg0, 
-			    const Rps_Value arg1, ///
-                            const Rps_Value arg2, 
-			    const Rps_Value arg3, ///
+                            const Rps_Value arg0,
+                            const Rps_Value arg1, ///
+                            const Rps_Value arg2,
+                            const Rps_Value arg3, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_18DO93843oX02UWzq6,
@@ -392,10 +413,10 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_52zVxP3mTue034OWsD;
 Rps_TwoValues
 rpsapply_52zVxP3mTue034OWsD(Rps_CallFrame*callerframe, ///
-                            const Rps_Value arg0, 
-			    const Rps_Value arg1, ///
-                            const Rps_Value arg2, 
-			    const Rps_Value arg3, ///
+                            const Rps_Value arg0,
+                            const Rps_Value arg1, ///
+                            const Rps_Value arg2,
+                            const Rps_Value arg3, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_52zVxP3mTue034OWsD,
@@ -424,10 +445,10 @@ rpsapply_52zVxP3mTue034OWsD(Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_42cCN1FRQSS03bzbTz;
 Rps_TwoValues
 rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
-                            const Rps_Value arg0, 
-			    const Rps_Value arg1, ///
-                            const Rps_Value arg2, 
-			    const Rps_Value arg3, ///
+                            const Rps_Value arg0,
+                            const Rps_Value arg1, ///
+                            const Rps_Value arg2,
+                            const Rps_Value arg3, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_42cCN1FRQSS03bzbTz,

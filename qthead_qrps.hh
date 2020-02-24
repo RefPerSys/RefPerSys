@@ -462,9 +462,7 @@ public:
   /// Gets the text format for string values.
   static inline QTextCharFormat string_text_format()
   {
-    # warning: this is a bug that needs to be fixed
-    //return outptxt_string_qcfmt_; (not working)
-    return outptxt_double_qcfmt_; // (temporary fix for compilation)
+    return outptxt_string_qcfmt_;
   }
 
   static void initialize(void);
