@@ -111,10 +111,12 @@ RpsQOutputTextDocument::~RpsQOutputTextDocument()
 //!display Val0 in Ob1Win at depth Val2Depth
 extern "C" rps_applyingfun_t rpsapply_0TwK4TkhEGZ03oTa5m;
 Rps_TwoValues
-rpsapply_0TwK4TkhEGZ03oTa5m (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0val, const Rps_Value arg1obwin, ///
-                             const Rps_Value arg2depth, const Rps_Value arg3_ __attribute__((unused)), ///
-                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
+                            const Rps_Value arg0val, 
+			    const Rps_Value arg1obwin, ///
+                            const Rps_Value arg2depth, 
+			    [[maybe_unused]] const Rps_Value arg3_,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_0TwK4TkhEGZ03oTa5m,
                  callerframe, //
@@ -155,12 +157,12 @@ rpsapply_0TwK4TkhEGZ03oTa5m (Rps_CallFrame*callerframe, ///
 //!method int/display_value_qt
 extern "C" rps_applyingfun_t rpsapply_8KJHUldX8GJ03G5OWp;
 Rps_TwoValues
-rpsapply_8KJHUldX8GJ03G5OWp (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0recv, ///
-                             const Rps_Value arg1obwin, ///
-                             const Rps_Value arg2depth,
-                             const Rps_Value arg3_ __attribute__((unused)), ///
-                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
+                            const Rps_Value arg0recv, ///
+                            const Rps_Value arg1obwin, ///
+                            const Rps_Value arg2depth,
+                            [[maybe_unused]] const Rps_Value arg3_,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_8KJHUldX8GJ03G5OWp,
                  callerframe, //
@@ -257,10 +259,12 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
 //!method double/display_value_qt
 extern "C" rps_applyingfun_t rpsapply_7oa7eIzzcxv03TmmZH;
 Rps_TwoValues
-rpsapply_7oa7eIzzcxv03TmmZH (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0, const Rps_Value arg1, ///
-                             const Rps_Value arg2, const Rps_Value arg3, ///
-                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
+                            const Rps_Value arg0, 
+			    const Rps_Value arg1, ///
+                            const Rps_Value arg2, 
+			    const Rps_Value arg3, ///
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_7oa7eIzzcxv03TmmZH,
                  callerframe, //
@@ -289,10 +293,12 @@ rpsapply_7oa7eIzzcxv03TmmZH (Rps_CallFrame*callerframe, ///
 //!method tuple/display_value_qt
 extern "C" rps_applyingfun_t rpsapply_33DFyPOJxbF015ZYoi;
 Rps_TwoValues
-rpsapply_33DFyPOJxbF015ZYoi (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0, const Rps_Value arg1, ///
-                             const Rps_Value arg2, const Rps_Value arg3, ///
-                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
+                            const Rps_Value arg0, 
+			    const Rps_Value arg1, ///
+                            const Rps_Value arg2, 
+			    const Rps_Value arg3, ///
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_33DFyPOJxbF015ZYoi,
                  callerframe, //
@@ -319,10 +325,12 @@ rpsapply_33DFyPOJxbF015ZYoi (Rps_CallFrame*callerframe, ///
 //!method set/display_value_qt
 extern "C" rps_applyingfun_t rpsapply_1568ZHTl0Pa00461I2;
 Rps_TwoValues
-rpsapply_1568ZHTl0Pa00461I2 (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0, const Rps_Value arg1, ///
-                             const Rps_Value arg2, const Rps_Value arg3, ///
-                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
+                            const Rps_Value arg0, 
+			    const Rps_Value arg1, ///
+                            const Rps_Value arg2, 
+			    const Rps_Value arg3, ///
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_1568ZHTl0Pa00461I2,
                  callerframe, //
@@ -349,10 +357,12 @@ rpsapply_1568ZHTl0Pa00461I2 (Rps_CallFrame*callerframe, ///
 //!method object/display_value_qt
 extern "C" rps_applyingfun_t rpsapply_18DO93843oX02UWzq6;
 Rps_TwoValues
-rpsapply_18DO93843oX02UWzq6 (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0, const Rps_Value arg1, ///
-                             const Rps_Value arg2, const Rps_Value arg3, ///
-                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
+                            const Rps_Value arg0, 
+			    const Rps_Value arg1, ///
+                            const Rps_Value arg2, 
+			    const Rps_Value arg3, ///
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_18DO93843oX02UWzq6,
                  callerframe, //
@@ -379,10 +389,12 @@ rpsapply_18DO93843oX02UWzq6 (Rps_CallFrame*callerframe, ///
 //!method qtptr/display_value_qt
 extern "C" rps_applyingfun_t rpsapply_52zVxP3mTue034OWsD;
 Rps_TwoValues
-rpsapply_52zVxP3mTue034OWsD (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0, const Rps_Value arg1, ///
-                             const Rps_Value arg2, const Rps_Value arg3, ///
-                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+rpsapply_52zVxP3mTue034OWsD(Rps_CallFrame*callerframe, ///
+                            const Rps_Value arg0, 
+			    const Rps_Value arg1, ///
+                            const Rps_Value arg2, 
+			    const Rps_Value arg3, ///
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_52zVxP3mTue034OWsD,
                  callerframe, //
@@ -409,10 +421,12 @@ rpsapply_52zVxP3mTue034OWsD (Rps_CallFrame*callerframe, ///
 //!method json/display_value_qt
 extern "C" rps_applyingfun_t rpsapply_42cCN1FRQSS03bzbTz;
 Rps_TwoValues
-rpsapply_42cCN1FRQSS03bzbTz (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0, const Rps_Value arg1, ///
-                             const Rps_Value arg2, const Rps_Value arg3, ///
-                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
+                            const Rps_Value arg0, 
+			    const Rps_Value arg1, ///
+                            const Rps_Value arg2, 
+			    const Rps_Value arg3, ///
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_42cCN1FRQSS03bzbTz,
                  callerframe, //
