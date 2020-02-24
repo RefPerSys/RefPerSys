@@ -243,8 +243,7 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
   RpsQOutputTextEdit* qoutput_widget = qoutput_window_payload->qtptr();
   RPS_ASSERT(qoutput_widget);
 
-  QTextCharFormat qcfmt;
-#warning method string/display_value_qt: missing initialization of QTextCharFormat qcfmt for int-s
+  auto qcfmt = RpsQOutputTextEdit::string_text_format();
   auto qstr = QString(_.string_value.as_cstring());
   auto qcursor = qoutput_widget->textCursor();
   qcursor.insertText(qstr, qcfmt);

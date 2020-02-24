@@ -445,11 +445,26 @@ private:
   std::map<Rps_Value,std::set<std::vector<QPointer<QObject>>>> outptxt_valmap;
   static QTextCharFormat outptxt_int_qcfmt_;
   static QTextCharFormat outptxt_double_qcfmt_;
+  static QTextCharFormat outptxt_string_qcfmt_;
 public:
-  static QTextCharFormat int_text_format()
+  /// Gets the text format for integer values.
+  static inline QTextCharFormat int_text_format()
   {
-    return  outptxt_int_qcfmt_;
+    return outptxt_int_qcfmt_;
   };
+
+  /// Gets the text format for double values.
+  static inline QTextCharFormat double_text_format()
+  {
+    return outptxt_double_qcfmt_;
+  }
+
+  /// Gets the text format for string values.
+  static inline QTextCharFormat string_text_format()
+  {
+    return outptxt_string_qcfmt_;
+  }
+
   static void initialize(void);
   // create a temporary RefPerSys object whose payload contains this output text edit
   void create_outpedit_object(Rps_CallFrame*);
