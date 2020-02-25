@@ -45,12 +45,14 @@ const char rps_output_date[]= __DATE__;
 QTextCharFormat RpsQOutputTextEdit::outptxt_int_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_double_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_string_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_tuple_qcfmt_;
 
 void
 RpsQOutputTextEdit::initialize()
 {
   QSettings* qst = RpsQApplication::qt_settings();
   RPS_ASSERT(qst);
+
   /// how to display integer values
   {
     QColor int_bgcol = qst->value("out/int/bgcolor").value<QColor>();
@@ -60,6 +62,7 @@ RpsQOutputTextEdit::initialize()
     QFont int_font = qst->value("out/int/font").value<QFont>();
     outptxt_int_qcfmt_.setFont(int_font);
   }
+
   /// how to display double values
   {
     QColor double_bgcol = qst->value("out/double/bgcolor").value<QColor>();
@@ -69,6 +72,7 @@ RpsQOutputTextEdit::initialize()
     QFont double_font = qst->value("out/double/font").value<QFont>();
     outptxt_double_qcfmt_.setFont(double_font);
   }
+
   /// how to display string values
   {
     QColor string_bgcol = qst->value("out/string/bgcolor").value<QColor>();
@@ -77,6 +81,16 @@ RpsQOutputTextEdit::initialize()
     outptxt_string_qcfmt_.setForeground(QBrush(string_fgcol));
     QFont string_font = qst->value("out/string/font").value<QFont>();
     outptxt_string_qcfmt_.setFont(string_font);
+  }
+
+  /// how to display tuple values
+  {
+    QColor tuple_bgcol = qst->value("out/tuple/bgcolor").value<QColor>();
+    outptxt_tuple_qcfmt_.setBackground(QBrush(tuple_bgcol));
+    QColor tuple_fgcol = qst->value("out/tuple/fgcolor").value<QColor>();
+    outptxt_tuple_qcfmt_.setForeground(QBrush(tuple_fgcol));
+    QFont tuple_font = qst->value("out/tuple/font").value<QFont>();
+    outptxt_tuple_qcfmt_.setFont(tuple_font);
   }
 } // end RpsQOutputTextEdit::initialize
 
@@ -322,29 +336,43 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_33DFyPOJxbF015ZYoi;
 Rps_TwoValues
 rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
-                            const Rps_Value arg0,
-                            const Rps_Value arg1, ///
-                            const Rps_Value arg2,
-                            const Rps_Value arg3, ///
+                            const Rps_Value arg0_recv,
+                            const Rps_Value arg1_objwnd, ///
+                            const Rps_Value arg2_recdepth,
+                            [[maybe_unused]] const Rps_Value arg3, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_33DFyPOJxbF015ZYoi,
                  callerframe, //
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+                 Rps_Value tupleval;
+                 Rps_ObjectRef objwnd;
+                 Rps_Value recdepth;
+                 Rps_Value arg3v;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
-                 //....etc....
                 );
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
+
+  _.tupleval = arg0_recv;
+  RPS_ASSERT (_.tupleval.is_tuple());
+
+  _.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_.objwnd);
+
+  _.recdepth = arg2_recdepth;
+  RPS_ASSERT (_.recdepth.is_int()); 
+
   ////==== body of _33DFyPOJxbF015ZYoi ====
-  ;
+  
+  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+
+  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutwndload);
+
+  auto qoutwx = qoutwndload->qtptr();
+  RPS_ASSERT (qoutwx);
+
+  auto qcfmt = RpsQOutputTextEdit::tuple_text_format();
+
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _33DFyPOJxbF015ZYoi
 } // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_qt
 
