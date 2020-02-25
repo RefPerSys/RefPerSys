@@ -513,4 +513,37 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
 
 
 
+
+////////////////////////////////////////////////////////////////
+// C++ closure for _4x9jd2yAe8A02SqKAx
+//!method object/display_object_occurrence_qt
+extern "C" rps_applyingfun_t rpsapply_4x9jd2yAe8A02SqKAx;
+Rps_TwoValues
+rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
+                   const Rps_Value arg0, const Rps_Value arg1, ///
+                   const Rps_Value arg2, const Rps_Value arg3, ///
+                   const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+{
+  RPS_LOCALFRAME(rpskob_4x9jd2yAe8A02SqKAx,
+                 callerframe, //
+                 //Rps_Value arg0v;
+                 //Rps_Value arg1v;
+                 //Rps_Value arg2v;
+                 //Rps_Value arg3v;
+                 //Rps_ObjectRef obr;
+                 Rps_Value resmainv;
+                 Rps_Value resxtrav;
+                 //....etc....
+                );
+  // _.arg0v = arg0;
+  // _.arg1v = arg1;
+  // _.arg2v = arg2;
+  // _.arg3v = arg3;
+  ////==== body of _4x9jd2yAe8A02SqKAx ====
+  ;
+  RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _4x9jd2yAe8A02SqKAx
+} // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
+
+
+
 /************************************************************* end of file output_qrps.cc ****/
