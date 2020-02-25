@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 74,
+ "nbobjects" : 76,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -286,6 +286,18 @@
  "payload" : "symbol",
  "symb_name" : "double",
  "symb_val" : "_98sc8kSOXV003i86w5"
+}
+
+
+//+ob_1Zo12toMRTa03uqsXh
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1582608592.1500001,
+ "oid" : "_1Zo12toMRTa03uqsXh",
+ "payload" : "symbol",
+ "symb_name" : "display_object_occurrence_qt",
+ "symb_val" : "_4ojpzRzyRWz02DNWMe"
 }
 
 
@@ -621,6 +633,15 @@
  "mtime" : 1578191597.0,
  "oid" : "_4jISxMJ4PYU0050nUl",
  "payload" : "class"
+}
+
+
+//+ob_4ojpzRzyRWz02DNWMe
+//∈named_selector
+{
+ "class" : "_0cSUtWqTYdZ00mjeNR",
+ "mtime" : 1582608592.1500001,
+ "oid" : "_4ojpzRzyRWz02DNWMe"
 }
 
 
