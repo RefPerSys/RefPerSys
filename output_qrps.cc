@@ -115,7 +115,7 @@ RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
   RPS_LOCALFRAME(nullptr /*no descr*/,
                  callerframe,
                  Rps_ObjectRef obtxed;
-                );
+		 );
   RPS_ASSERT(!outptxt_objref);
   _.obtxed =
     Rps_ObjectRef::make_object(&_,
@@ -126,6 +126,50 @@ RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
 } // end RpsQOutputTextEdit::create_outpedit_object
 
 
+////////////////
+//// display a value, maybe even nil, into this output text edit, at given depth. May throw some exception
+void
+RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Value value, int depth)
+{
+} // end RpsQOutputTextEdit::display_output_value
+
+void rps_display_output_value(Rps_CallFrame*callerframe,
+			      Rps_ObjectRef argobwin, const Rps_Value argvalue, int depth)
+{
+  RPS_LOCALFRAME(rpskob_1Win5yzaf1L02cBUlV, //display_value_qt
+					    //selector
+                 callerframe, //
+                 Rps_ObjectRef winob;
+		 Rps_Value dispval;
+		 );
+  _.winob = argobwin;
+  _.dispval = argvalue;
+} // end rps_display_output_value
+
+////////////////
+//// display an object occurrence or nil, into this output text edit, at given depth. May throw some exception
+void
+RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, const Rps_ObjectRef argobr, int depth)
+{
+  RPS_LOCALFRAME(rpskob_4ojpzRzyRWz02DNWMe, //display_object_occurrence_qt
+					    //selector
+                 callerframe, //		 
+		 );
+} // end RpsQOutputTextEdit::display_output_object_occurrence
+
+void
+rps_display_output_object_occurrence(Rps_CallFrame*callerframe,
+				     Rps_ObjectRef argobwin, Rps_ObjectRef argobref, int depth) {
+  RPS_LOCALFRAME(rpskob_4ojpzRzyRWz02DNWMe, //display_object_occurrence_qt
+					    //selector
+                 callerframe, //
+                 Rps_ObjectRef winob;
+		 Rps_ObjectRef dispob;
+		 );
+  _.winob = argobwin;
+  _.dispob = argobref;
+} // end rps_display_output_object_occurrence
+
 //////////////////////////////////////////////////////////////// RpsQOutputTextDocument
 RpsQOutputTextDocument::RpsQOutputTextDocument(RpsQWindow*parent)
   : QTextDocument(parent)
@@ -135,7 +179,7 @@ RpsQOutputTextDocument::RpsQOutputTextDocument(RpsQWindow*parent)
 
 RpsQOutputTextDocument::~RpsQOutputTextDocument()
 {
-} // end RpsQOutputTextEdit::~RpsQOutputTextEdit
+} // end RpsQOutputTextDocument::~RpsQOutputTextDocument
 
 
 
@@ -160,7 +204,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-                );
+		 );
   _.val0v = arg0val;
   _.winob1 = arg1obwin.to_object();
   _.depth2v = arg2depth;
@@ -182,7 +226,8 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
 } // end of rpsapply_0TwK4TkhEGZ03oTa5m
 
 
-/// for the display_value_qt RefPerSys methods see
+/// for the display_value_qt and display_object_occurrence_qt
+/// RefPerSys methods see
 /// https://gitlab.com/bstarynk/refpersys/-/wikis/output-subwindow-of-RefPerSys
 
 
@@ -206,7 +251,7 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-                );
+		 );
   QTextCursor qcursout;
   QTextCharFormat qcfmt;
   ////==== body of _8KJHUldX8GJ03G5OWp ====
@@ -258,7 +303,7 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
                  Rps_Value recursive_depth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
-                );
+		 );
 
   _.string_value = arg0_receiver;
   RPS_ASSERT(_.string_value.is_string());
@@ -302,7 +347,7 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
                  Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
-                );
+		 );
 
   ////==== body of _7oa7eIzzcxv03TmmZH ====
   _.doubleval = arg0_recv;
@@ -350,7 +395,7 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
                  Rps_Value arg3v;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
-                );
+		 );
 
   _.tupleval = arg0_recv;
   RPS_ASSERT (_.tupleval.is_tuple());
@@ -398,7 +443,7 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-                );
+		 );
   // _.arg0v = arg0;
   // _.arg1v = arg1;
   // _.arg2v = arg2;
@@ -430,7 +475,7 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-                );
+		 );
   // _.arg0v = arg0;
   // _.arg1v = arg1;
   // _.arg2v = arg2;
@@ -469,7 +514,7 @@ rpsapply_52zVxP3mTue034OWsD(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-                );
+		 );
   // _.arg0v = arg0;
   // _.arg1v = arg1;
   // _.arg2v = arg2;
@@ -501,7 +546,7 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-                );
+		 );
   // _.arg0v = arg0;
   // _.arg1v = arg1;
   // _.arg2v = arg2;
@@ -520,9 +565,9 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_4x9jd2yAe8A02SqKAx;
 Rps_TwoValues
 rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
-                   const Rps_Value arg0, const Rps_Value arg1, ///
-                   const Rps_Value arg2, const Rps_Value arg3, ///
-                   const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+			     const Rps_Value arg0, const Rps_Value arg1, ///
+			     const Rps_Value arg2, const Rps_Value arg3, ///
+			     [[maybe_unused]] const std::vector<Rps_Value>* restargs_ )
 {
   RPS_LOCALFRAME(rpskob_4x9jd2yAe8A02SqKAx,
                  callerframe, //
@@ -534,7 +579,7 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-                );
+		 );
   // _.arg0v = arg0;
   // _.arg1v = arg1;
   // _.arg2v = arg2;
