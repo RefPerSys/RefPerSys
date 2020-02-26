@@ -92,6 +92,7 @@ RpsQOutputTextEdit::initialize()
     QFont tuple_font = qst->value("out/tuple/font").value<QFont>();
     outptxt_tuple_qcfmt_.setFont(tuple_font);
   }
+#warning more is needed in RpsQOutputTextEdit::initialize
 } // end RpsQOutputTextEdit::initialize
 
 
@@ -115,7 +116,7 @@ RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
   RPS_LOCALFRAME(nullptr /*no descr*/,
                  callerframe,
                  Rps_ObjectRef obtxed;
-		 );
+                );
   RPS_ASSERT(!outptxt_objref);
   _.obtxed =
     Rps_ObjectRef::make_object(&_,
@@ -129,45 +130,108 @@ RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
 ////////////////
 //// display a value, maybe even nil, into this output text edit, at given depth. May throw some exception
 void
-RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Value value, int depth)
-{
-} // end RpsQOutputTextEdit::display_output_value
-
-void rps_display_output_value(Rps_CallFrame*callerframe,
-			      Rps_ObjectRef argobwin, const Rps_Value argvalue, int depth)
+RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Value valuearg, int depth)
 {
   RPS_LOCALFRAME(rpskob_1Win5yzaf1L02cBUlV, //display_value_qt
-					    //selector
+                 //selector
                  callerframe, //
                  Rps_ObjectRef winob;
-		 Rps_Value dispval;
-		 );
+                 Rps_Value dispval;
+                );
+  _.winob = outptxt_objref.as_object();
+  _.dispval = valuearg;
+  RPS_ASSERT(_.winob);
+  std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
+  auto qoutwpayl =
+    _.winob->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT(qoutwpayl);
+  RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
+  RPS_ASSERT(qoutxed == this);
+#warning RpsQOutputTextEdit::display_output_value incomplete, see comment
+  // we should special-case when _.dispval is empty and have some
+  // outptxt_empty_qcfmt_ for that case. Otherwise send RefPerSys
+  // selector display_value_qt of oid _1Win5yzaf1L02cBUlV to winob,
+  // dispval, depth...
+  RPS_FATALOUT("RpsQOutputTextEdit::display_output_value incomplete winob="
+               << _.winob << std::endl
+               << " depth=" << depth << std::endl
+               << " dispval=" << _.dispval);
+} // end RpsQOutputTextEdit::display_output_value
+
+void
+rps_display_output_value(Rps_CallFrame*callerframe,
+                         Rps_ObjectRef argobwin, const Rps_Value argvalue, int depth)
+{
+  RPS_LOCALFRAME(rpskob_1Win5yzaf1L02cBUlV, //display_value_qt
+                 //selector
+                 callerframe, //
+                 Rps_ObjectRef winob;
+                 Rps_Value dispval;
+                );
   _.winob = argobwin;
   _.dispval = argvalue;
+  RPS_ASSERT(_.winob);
+  std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
+  auto qoutwpayl =
+    _.winob->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT(qoutwpayl);
+  RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
+  RPS_ASSERT(qoutxed);
+  qoutxed->display_output_value(&_, _.dispval, depth);
 } // end rps_display_output_value
 
 ////////////////
 //// display an object occurrence or nil, into this output text edit, at given depth. May throw some exception
 void
-RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, const Rps_ObjectRef argobr, int depth)
+RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, const Rps_ObjectRef argdispobr, int depth)
 {
   RPS_LOCALFRAME(rpskob_4ojpzRzyRWz02DNWMe, //display_object_occurrence_qt
-					    //selector
-                 callerframe, //		 
-		 );
+                 //selector
+                 callerframe, //
+                 Rps_ObjectRef winob;
+                 Rps_ObjectRef dispob;
+                );
+  _.winob = outptxt_objref.as_object();
+  _.dispob = argdispobr;
+  RPS_ASSERT(_.winob);
+  std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
+  auto qoutwpayl =
+    _.winob->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT(qoutwpayl);
+  RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
+  RPS_ASSERT(qoutxed == this);
+#warning RpsQOutputTextEdit::display_output_object_occurrence incomplete, see comment
+  // we should special-case when _.dispob is empty and use some
+  // outptxt_empty_qcfmt_ for that case. Otherwise send RefPerSys
+  // selector display_object_occurrence_qt of oid _4ojpzRzyRWz02DNWMe to winob,
+  // dispob, depth...
+  // of course more QTextCharFormat variables like outptxt_anonymousobject_qcfmt_ etc are needed
+  RPS_FATALOUT("RpsQOutputTextEdit::display_output_object_occurrence incomplete winob="
+               << _.winob << std::endl
+               << " depth=" << depth << std::endl
+               << " dispob=" << _.dispob);
 } // end RpsQOutputTextEdit::display_output_object_occurrence
 
 void
 rps_display_output_object_occurrence(Rps_CallFrame*callerframe,
-				     Rps_ObjectRef argobwin, Rps_ObjectRef argobref, int depth) {
+                                     Rps_ObjectRef argobwin, Rps_ObjectRef argobref, int depth)
+{
   RPS_LOCALFRAME(rpskob_4ojpzRzyRWz02DNWMe, //display_object_occurrence_qt
-					    //selector
+                 //selector
                  callerframe, //
                  Rps_ObjectRef winob;
-		 Rps_ObjectRef dispob;
-		 );
+                 Rps_ObjectRef dispob;
+                );
   _.winob = argobwin;
   _.dispob = argobref;
+  RPS_ASSERT(_.winob);
+  std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
+  auto qoutwpayl =
+    _.winob->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT(qoutwpayl);
+  RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
+  RPS_ASSERT(qoutxed);
+  qoutxed->display_output_object_occurrence(&_, _.dispob, depth);
 } // end rps_display_output_object_occurrence
 
 //////////////////////////////////////////////////////////////// RpsQOutputTextDocument
@@ -204,7 +268,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-		 );
+                );
   _.val0v = arg0val;
   _.winob1 = arg1obwin.to_object();
   _.depth2v = arg2depth;
@@ -219,9 +283,9 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       || !(qouted=qobject_cast<RpsQOutputTextEdit*>(winpayl->qtptr())))
     throw  RPS_RUNTIME_ERROR_OUT("display value " << _.val0v
                                  << " has bad window object " << _.winob1);
-  RPS_FATALOUT("unimplemented rpsapply_0TwK4TkhEGZ03oTa5m");
-  /// we should display val0 in winob1 at depth2, but how....
-#warning unimplemented rpsapply_0TwK4TkhEGZ03oTa5m
+  RPS_FATALOUT("unimplemented rpsapply_0TwK4TkhEGZ03oTa5m !display Val0 in Ob1Win at depth Val2Depth");
+  /// we should display val0 in winob1 at depth2, using rps_display_output_value
+#warning unimplemented rpsapply_0TwK4TkhEGZ03oTa5m !display Val0 in Ob1Win at depth Val2Depth
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _0TwK4TkhEGZ03oTa5m
 } // end of rpsapply_0TwK4TkhEGZ03oTa5m
 
@@ -251,7 +315,7 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-		 );
+                );
   QTextCursor qcursout;
   QTextCharFormat qcfmt;
   ////==== body of _8KJHUldX8GJ03G5OWp ====
@@ -303,7 +367,7 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
                  Rps_Value recursive_depth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
-		 );
+                );
 
   _.string_value = arg0_receiver;
   RPS_ASSERT(_.string_value.is_string());
@@ -347,7 +411,7 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
                  Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
-		 );
+                );
 
   ////==== body of _7oa7eIzzcxv03TmmZH ====
   _.doubleval = arg0_recv;
@@ -395,7 +459,7 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
                  Rps_Value arg3v;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
-		 );
+                );
 
   _.tupleval = arg0_recv;
   RPS_ASSERT (_.tupleval.is_tuple());
@@ -404,10 +468,10 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
   RPS_ASSERT (_.objwnd);
 
   _.recdepth = arg2_recdepth;
-  RPS_ASSERT (_.recdepth.is_int()); 
+  RPS_ASSERT (_.recdepth.is_int());
 
   ////==== body of _33DFyPOJxbF015ZYoi ====
-  
+
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
 
   auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
@@ -443,7 +507,7 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-		 );
+                );
   // _.arg0v = arg0;
   // _.arg1v = arg1;
   // _.arg2v = arg2;
@@ -475,7 +539,7 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-		 );
+                );
   // _.arg0v = arg0;
   // _.arg1v = arg1;
   // _.arg2v = arg2;
@@ -484,8 +548,7 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
 #warning rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt incomplete, see comment
   /**
    * TODO: the !method object/display_value_qt is the difficult case.
-   * We probably want it to invoke some !method
-   * object/display_object_occurrence... etc etc... Look into Bismon
+   * We probably want it to invoke rps_display_output_object_occurrence... Look into Bismon
    * behavior and code for inspiration.
    **/
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _18DO93843oX02UWzq6
@@ -514,7 +577,7 @@ rpsapply_52zVxP3mTue034OWsD(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-		 );
+                );
   // _.arg0v = arg0;
   // _.arg1v = arg1;
   // _.arg2v = arg2;
@@ -546,7 +609,7 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-		 );
+                );
   // _.arg0v = arg0;
   // _.arg1v = arg1;
   // _.arg2v = arg2;
@@ -565,9 +628,9 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_4x9jd2yAe8A02SqKAx;
 Rps_TwoValues
 rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
-			     const Rps_Value arg0, const Rps_Value arg1, ///
-			     const Rps_Value arg2, const Rps_Value arg3, ///
-			     [[maybe_unused]] const std::vector<Rps_Value>* restargs_ )
+                             const Rps_Value arg0, const Rps_Value arg1, ///
+                             const Rps_Value arg2, const Rps_Value arg3, ///
+                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_ )
 {
   RPS_LOCALFRAME(rpskob_4x9jd2yAe8A02SqKAx,
                  callerframe, //
@@ -579,7 +642,7 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
-		 );
+                );
   // _.arg0v = arg0;
   // _.arg1v = arg1;
   // _.arg2v = arg2;

@@ -491,9 +491,9 @@ public:
 
 // simple wrapping of display_output_value and display_output_object_occurrence
 extern "C" void rps_display_output_value(Rps_CallFrame*callerframe,
-					 Rps_ObjectRef obwin, const Rps_Value value, int depth);
+    Rps_ObjectRef obwin, const Rps_Value value, int depth);
 extern "C" void rps_display_output_object_occurrence(Rps_CallFrame*callerframe,
-					 Rps_ObjectRef obwin, Rps_ObjectRef obref, int depth);
+    Rps_ObjectRef obwin, Rps_ObjectRef obref, int depth);
 
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
