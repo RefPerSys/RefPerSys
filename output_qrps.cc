@@ -460,33 +460,37 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                 );
-
+  ////==== body of _33DFyPOJxbF015ZYoi !method tuple/display_value_qt ====
   _.tupleval = arg0_recv;
   RPS_ASSERT (_.tupleval.is_tuple());
-
   _.objwnd = arg1_objwnd.as_object();
   RPS_ASSERT (_.objwnd);
-
   _.recdepth = arg2_recdepth;
   RPS_ASSERT (_.recdepth.is_int());
-
-  ////==== body of _33DFyPOJxbF015ZYoi ====
-
+  auto depthi = _.recdepth.to_int();
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
-
-  // The following code segment has been commented out because it is unused.
-  // However, the code has been retained for review, after which it may be
-  // deleted if required.
-  //
-  //auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
-  //RPS_ASSERT (qoutwndload);
-  //auto qoutwx = qoutwndload->qtptr();
-  //RPS_ASSERT (qoutwx);
-  //auto qcfmt = RpsQOutputTextEdit::tuple_text_format();
-
-  rps_display_output_object_occurrence(callerframe, _.objwnd,
-                                       _.tupleval.as_object(), _.recdepth);
-
+  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutwndload);
+  auto qoutwx = qoutwndload->qtptr();
+  RPS_ASSERT (qoutwx);
+  auto qcfmt = RpsQOutputTextEdit::tuple_text_format();
+  auto qcursor = qoutwx->textCursor();
+  unsigned cnt = _.tupleval.as_tuple()->cnt();
+  qcursor.insertText("[", qcfmt);
+  for (unsigned ix=0; ix<cnt; ix++)
+    {
+      if (ix>0)
+        {
+          qcursor.insertText(",", qcfmt);
+          qcursor.insertText(" ");
+        }
+      rps_display_output_object_occurrence(callerframe, _.objwnd,
+                                           _.tupleval.as_tuple()->at((int)ix),
+                                           Rps_Value(depthi+1));
+    }
+  qcursor.insertText("]", qcfmt);
+  // success, so
+  _.resmainv = _.tupleval;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _33DFyPOJxbF015ZYoi
 } // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_qt
 
