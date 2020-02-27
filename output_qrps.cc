@@ -184,6 +184,17 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
   // outptxt_empty_qcfmt_ for that case. Otherwise send RefPerSys
   // selector display_value_qt of oid _1Win5yzaf1L02cBUlV to winob,
   // dispval, depth...
+  if (_.dispval.is_empty())
+    {
+      auto qcfmt = RpsQOutputTextEdit::empty_text_format();
+      // we display a white rectangle
+      auto qcursout = qoutxed->textCursor();
+      qcursout.insertText(QString("▭"), //U+25AD WHITE RECTANGLE
+                          qcfmt);
+    }
+  else
+    {
+    };				// end if _.dispval non-empty
   RPS_FATALOUT("RpsQOutputTextEdit::display_output_value incomplete winob="
                << _.winob << std::endl
                << " depth=" << depth << std::endl
@@ -212,6 +223,9 @@ rps_display_output_value(Rps_CallFrame*callerframe,
   qoutxed->display_output_value(&_, _.dispval, depth);
 } // end rps_display_output_value
 
+
+
+
 ////////////////
 //// display an object occurrence or nil, into this output text edit, at given depth. May throw some exception
 void
@@ -233,15 +247,29 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
   RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
   RPS_ASSERT(qoutxed == this);
 #warning RpsQOutputTextEdit::display_output_object_occurrence incomplete, see comment
-  // we should special-case when _.dispob is empty and use some
-  // outptxt_empty_qcfmt_ for that case. Otherwise send RefPerSys
-  // selector display_object_occurrence_qt of oid _4ojpzRzyRWz02DNWMe to winob,
-  // dispob, depth...
-  // of course more QTextCharFormat variables like outptxt_anonymousobject_qcfmt_ etc are needed
-  RPS_FATALOUT("RpsQOutputTextEdit::display_output_object_occurrence incomplete winob="
-               << _.winob << std::endl
-               << " depth=" << depth << std::endl
-               << " dispob=" << _.dispob);
+  if (_.dispob.is_empty())
+    {
+      auto qcfmt = RpsQOutputTextEdit::empty_text_format();
+      // we display a lozenge for empty objects
+      auto qcursout = qoutxed->textCursor();
+      qcursout.insertText(QString("◊"), //U+25CA LOZENGE
+                          qcfmt);
+    }
+  else   // when _.dispob is not empty....
+    {
+      // Otherwise send RefPerSys selector display_object_occurrence_qt
+      Rps_ObjectRef selob_display_object_occurrence_qt =
+        RPS_ROOT_OB(_4ojpzRzyRWz02DNWMe);
+      // of oid _4ojpzRzyRWz02DNWMe to winob, dispob, depth...
+      Rps_TwoValues respair =
+        Rps_ObjectValue(_.winob).send2(&_, selob_display_object_occurrence_qt,
+                                       _.dispob, Rps_Value((intptr_t)depth));
+      if (!respair)
+        throw RPS_RUNTIME_ERROR_OUT("display_output_object_occurrence failed winob="
+                                    << _.winob
+                                    << " dispob=" << _.dispob
+                                    << " depth#" << depth);
+    };				// end if _.dispob non-empty
 } // end RpsQOutputTextEdit::display_output_object_occurrence
 
 void
