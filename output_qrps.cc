@@ -474,13 +474,16 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
 
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
 
-  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
-  RPS_ASSERT (qoutwndload);
+  // The following code segment has been commented out because it is unused.
+  // However, the code has been retained for review, after which it may be
+  // deleted if required.
+  //
+  //auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  //RPS_ASSERT (qoutwndload);
+  //auto qoutwx = qoutwndload->qtptr();
+  //RPS_ASSERT (qoutwx);
+  //auto qcfmt = RpsQOutputTextEdit::tuple_text_format();
 
-  auto qoutwx = qoutwndload->qtptr();
-  RPS_ASSERT (qoutwx);
-
-  auto qcfmt = RpsQOutputTextEdit::tuple_text_format();
   rps_display_output_object_occurrence(callerframe, _.objwnd,
       _.tupleval.as_object(), _.recdepth);
 
@@ -501,21 +504,28 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
 {
   RPS_LOCALFRAME(rpskob_1568ZHTl0Pa00461I2,
                  callerframe, //
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+                 Rps_Value setval;
+                 Rps_ObjectRef objwnd;
+                 Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
-                 //....etc....
                 );
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
+
+  _.setval = arg0_recv;
+  RPS_ASSERT (_.setval.is_tuple());
+
+  _.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_.objwnd);
+
+  _.recdepth = arg2_recdepth;
+  RPS_ASSERT (_.recdepth.is_int());
+
   ////==== body of _1568ZHTl0Pa00461I2 ====
-  ;
+  
+  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+  rps_display_output_object_occurrence(callerframe, _.objwnd,
+      _.setval.as_object(), _.recdepth);
+  
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _1568ZHTl0Pa00461I2
 } // end of rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_qt
 
