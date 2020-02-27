@@ -880,6 +880,12 @@ struct Rps_TwoValues
     if (main_val) main_val.gc_mark(gc,depth);
     if (xtra_val) xtra_val.gc_mark(gc,depth);
   };
+  bool operator ! (void) const {
+    return !main_val && !xtra_val;
+  };
+  operator bool (void) const {
+    return main_val || xtra_val;
+  };
 };				// end Rps_TwoValues
 
 /// mostly for debugging
