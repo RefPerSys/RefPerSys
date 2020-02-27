@@ -46,6 +46,7 @@ QTextCharFormat RpsQOutputTextEdit::outptxt_int_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_double_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_string_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_tuple_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_set_qcfmt_;
 
 void
 RpsQOutputTextEdit::initialize()
@@ -91,6 +92,15 @@ RpsQOutputTextEdit::initialize()
     outptxt_tuple_qcfmt_.setForeground(QBrush(tuple_fgcol));
     QFont tuple_font = qst->value("out/tuple/font").value<QFont>();
     outptxt_tuple_qcfmt_.setFont(tuple_font);
+  }
+  /// how to display set values
+  {
+    QColor set_bgcol = qst->value("out/set/bgcolor").value<QColor>();
+    outptxt_set_qcfmt_.setBackground(QBrush(set_bgcol));
+    QColor set_fgcol = qst->value("out/set/fgcolor").value<QColor>();
+    outptxt_set_qcfmt_.setForeground(QBrush(set_fgcol));
+    QFont set_font = qst->value("out/set/font").value<QFont>();
+    outptxt_set_qcfmt_.setFont(set_font);
   }
 #warning more is needed in RpsQOutputTextEdit::initialize
 } // end RpsQOutputTextEdit::initialize
@@ -515,20 +525,37 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                 );
 
+  ////==== body of _1568ZHTl0Pa00461I2 !method set/display_value_qt ====
   _.setval = arg0_recv;
-  RPS_ASSERT (_.setval.is_tuple());
-
+  RPS_ASSERT (_.setval.is_set());
   _.objwnd = arg1_objwnd.as_object();
   RPS_ASSERT (_.objwnd);
-
   _.recdepth = arg2_recdepth;
   RPS_ASSERT (_.recdepth.is_int());
-
-  ////==== body of _1568ZHTl0Pa00461I2 ====
-
+  auto depthi = _.recdepth.to_int();
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
-  rps_display_output_object_occurrence(callerframe, _.objwnd,
-                                       _.setval.as_object(), _.recdepth);
+  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutwndload);
+  auto qoutwx = qoutwndload->qtptr();
+  RPS_ASSERT (qoutwx);
+  auto qcfmt = RpsQOutputTextEdit::set_text_format();
+  auto qcursor = qoutwx->textCursor();
+  unsigned cnt = _.setval.as_set()->cnt();
+  qcursor.insertText("{", qcfmt);
+  for (unsigned ix=0; ix<cnt; ix++)
+    {
+      if (ix>0)
+        {
+          qcursor.insertText(",", qcfmt);
+          qcursor.insertText(" ");
+        }
+      rps_display_output_object_occurrence(callerframe, _.objwnd,
+                                           _.setval.as_set()->at((int)ix),
+                                           Rps_Value(depthi+1));
+    }
+  qcursor.insertText("}", qcfmt);
+  // success, so
+  _.resmainv = _.setval;
 
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _1568ZHTl0Pa00461I2
 } // end of rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_qt

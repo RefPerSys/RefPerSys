@@ -447,6 +447,7 @@ private:
   static QTextCharFormat outptxt_double_qcfmt_;
   static QTextCharFormat outptxt_string_qcfmt_;
   static QTextCharFormat outptxt_tuple_qcfmt_;
+  static QTextCharFormat outptxt_set_qcfmt_;
 public:
   /// Gets the text format for integer values.
   static inline QTextCharFormat int_text_format()
@@ -470,6 +471,12 @@ public:
   static inline QTextCharFormat tuple_text_format()
   {
     return outptxt_tuple_qcfmt_;
+  }
+
+  /// Gets the text format for set values.
+  static inline QTextCharFormat set_text_format()
+  {
+    return outptxt_set_qcfmt_;
   }
 
   static void initialize(void);
