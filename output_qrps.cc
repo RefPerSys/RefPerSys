@@ -482,7 +482,7 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
 
   auto qcfmt = RpsQOutputTextEdit::tuple_text_format();
   rps_display_output_object_occurrence(callerframe, _.objwnd,
-      _.tupleval.compute_class(callerframe), _.recdepth);
+      _.tupleval.as_object(), _.recdepth);
 
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _33DFyPOJxbF015ZYoi
 } // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_qt
@@ -493,10 +493,10 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
 extern "C" rps_applyingfun_t rpsapply_1568ZHTl0Pa00461I2;
 Rps_TwoValues
 rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
-                            const Rps_Value arg0,
-                            const Rps_Value arg1, ///
-                            const Rps_Value arg2,
-                            const Rps_Value arg3, ///
+                            const Rps_Value arg0_recv,
+                            const Rps_Value arg1_objwnd, ///
+                            const Rps_Value arg2_recdepth,
+                            [[maybe_unused]] const Rps_Value arg3, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_1568ZHTl0Pa00461I2,
