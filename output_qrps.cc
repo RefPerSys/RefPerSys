@@ -481,6 +481,8 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
   RPS_ASSERT (qoutwx);
 
   auto qcfmt = RpsQOutputTextEdit::tuple_text_format();
+  rps_display_output_object_occurrence(callerframe, _.objwnd,
+      _.tupleval.compute_class(callerframe), _.recdepth);
 
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _33DFyPOJxbF015ZYoi
 } // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_qt
