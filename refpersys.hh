@@ -1992,6 +1992,13 @@ public:
   {
     return _seqlen;
   };
+  const Rps_ObjectRef at(int ix) const {
+    if (ix<0) ix+= cnt();
+    if (ix>=0 && ix <(int)cnt())
+      return _seqob[ix];
+    else
+      throw std::range_error("index out of range in objref sequence");
+  }
   typedef const Rps_ObjectRef*iterator_t;
   iterator_t begin() const
   {
