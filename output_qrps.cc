@@ -485,7 +485,7 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
   //auto qcfmt = RpsQOutputTextEdit::tuple_text_format();
 
   rps_display_output_object_occurrence(callerframe, _.objwnd,
-      _.tupleval.as_object(), _.recdepth);
+                                       _.tupleval.as_object(), _.recdepth);
 
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _33DFyPOJxbF015ZYoi
 } // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_qt
@@ -521,11 +521,11 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
   RPS_ASSERT (_.recdepth.is_int());
 
   ////==== body of _1568ZHTl0Pa00461I2 ====
-  
+
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   rps_display_output_object_occurrence(callerframe, _.objwnd,
-      _.setval.as_object(), _.recdepth);
-  
+                                       _.setval.as_object(), _.recdepth);
+
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _1568ZHTl0Pa00461I2
 } // end of rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_qt
 
