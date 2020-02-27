@@ -448,6 +448,8 @@ private:
   static QTextCharFormat outptxt_string_qcfmt_;
   static QTextCharFormat outptxt_tuple_qcfmt_;
   static QTextCharFormat outptxt_set_qcfmt_;
+  static QTextCharFormat outptxt_anonymousobject_qcfmt_;
+  static QTextCharFormat outptxt_empty_qcfmt_;
 public:
   /// Gets the text format for integer values.
   static inline QTextCharFormat int_text_format()
@@ -477,6 +479,16 @@ public:
   static inline QTextCharFormat set_text_format()
   {
     return outptxt_set_qcfmt_;
+  }
+  /// Gets the text format for anonymous object references
+  static inline QTextCharFormat anonymous_object_text_format()
+  {
+    return outptxt_anonymousobject_qcfmt_;
+  }
+  /// Gets the text format for empty values
+  static inline QTextCharFormat empty_text_format()
+  {
+    return outptxt_empty_qcfmt_;
   }
 
   static void initialize(void);

@@ -47,6 +47,10 @@ QTextCharFormat RpsQOutputTextEdit::outptxt_double_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_string_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_tuple_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_set_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_anonymousobject_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_empty_qcfmt_;
+
+
 
 void
 RpsQOutputTextEdit::initialize()
@@ -101,6 +105,24 @@ RpsQOutputTextEdit::initialize()
     outptxt_set_qcfmt_.setForeground(QBrush(set_fgcol));
     QFont set_font = qst->value("out/set/font").value<QFont>();
     outptxt_set_qcfmt_.setFont(set_font);
+  }
+  /// how to display anonymous object references
+  {
+    QColor anonymousobject_bgcol = qst->value("out/anonymousobject/bgcolor").value<QColor>();
+    outptxt_anonymousobject_qcfmt_.setBackground(QBrush(anonymousobject_bgcol));
+    QColor anonymousobject_fgcol = qst->value("out/anonymousobject/fgcolor").value<QColor>();
+    outptxt_anonymousobject_qcfmt_.setForeground(QBrush(anonymousobject_fgcol));
+    QFont anonymousobject_font = qst->value("out/anonymousobject/font").value<QFont>();
+    outptxt_anonymousobject_qcfmt_.setFont(anonymousobject_font);
+  }
+  /// how to display empty stuff
+  {
+    QColor empty_bgcol = qst->value("out/empty/bgcolor").value<QColor>();
+    outptxt_empty_qcfmt_.setBackground(QBrush(empty_bgcol));
+    QColor empty_fgcol = qst->value("out/empty/fgcolor").value<QColor>();
+    outptxt_empty_qcfmt_.setForeground(QBrush(empty_fgcol));
+    QFont empty_font = qst->value("out/empty/font").value<QFont>();
+    outptxt_empty_qcfmt_.setFont(empty_font);
   }
 #warning more is needed in RpsQOutputTextEdit::initialize
 } // end RpsQOutputTextEdit::initialize
