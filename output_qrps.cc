@@ -546,7 +546,7 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
         }
       rps_display_output_object_occurrence(callerframe, _.objwnd,
                                            _.tupleval.as_tuple()->at((int)ix),
-                                           Rps_Value(depthi+1));
+                                           depthi+1);
     }
   qcursor.insertText("]", qcfmt);
   // success, so
@@ -601,7 +601,7 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
         }
       rps_display_output_object_occurrence(callerframe, _.objwnd,
                                            _.setval.as_set()->at((int)ix),
-                                           Rps_Value(depthi+1));
+                                           depthi+1);
     }
   qcursor.insertText("}", qcfmt);
   // success, so
