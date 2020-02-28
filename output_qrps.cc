@@ -832,26 +832,35 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_4x9jd2yAe8A02SqKAx;
 Rps_TwoValues
 rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0, const Rps_Value arg1, ///
-                             const Rps_Value arg2, const Rps_Value arg3, ///
+                             const Rps_Value arg0obj, //
+                             const Rps_Value arg1obwin, ///
+                             const Rps_Value arg2depth, //
+                             [[maybe_unused]] const Rps_Value arg3_, ///
                              [[maybe_unused]] const std::vector<Rps_Value>* restargs_ )
 {
   RPS_LOCALFRAME(rpskob_4x9jd2yAe8A02SqKAx,
                  callerframe, //
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+                 Rps_ObjectRef recvob;
+                 Rps_ObjectRef objwnd;
+                 Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
-  ////==== body of _4x9jd2yAe8A02SqKAx ====
+  _.recvob = arg0obj.as_object();
+  RPS_ASSERT(_.recvob);
+  _.objwnd = arg1obwin.as_object();
+  RPS_ASSERT (_.objwnd);
+  _.recdepth = arg2depth;
+  RPS_ASSERT (_.recdepth.is_int());
+  auto depthi = _.recdepth.to_int();
+  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+  ////==== body of _4x9jd2yAe8A02SqKAx  !method object/display_object_occurrence_qt ====
+#warning incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
+  RPS_WARNOUT("incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt" << std::endl
+              << "... recvob=" << _.recvob
+              << " objwnd=" << _.objwnd
+              << " depthi=" << depthi);
   ;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _4x9jd2yAe8A02SqKAx
 } // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
