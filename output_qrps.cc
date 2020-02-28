@@ -857,10 +857,12 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   auto depthi = _.recdepth.to_int();
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
-  if (auto symbpayl = _.recvob->get_dynamic_payload<Rps_PayloadSymbol>()) {
-  }
-  else if (auto classpayl =  _.recvob->get_classinfo_payload()) {
-  }
+  if (auto symbpayl = _.recvob->get_dynamic_payload<Rps_PayloadSymbol>())
+    {
+    }
+  else if (auto classpayl =  _.recvob->get_classinfo_payload())
+    {
+    }
 #warning incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
   RPS_WARNOUT("incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt" << std::endl
               << "... recvob=" << _.recvob
