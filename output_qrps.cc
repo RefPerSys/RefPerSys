@@ -51,6 +51,7 @@ QTextCharFormat RpsQOutputTextEdit::outptxt_anonymousobject_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_empty_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_etc_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_qtptr_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_json_qcfmt_;
 
 
 
@@ -152,6 +153,15 @@ RpsQOutputTextEdit::initialize()
     outptxt_qtptr_qcfmt_.setForeground(QBrush(qtptr_fgcol));
     QFont qtptr_font = qst->value("out/qtptr/font").value<QFont>();
     outptxt_qtptr_qcfmt_.setFont(qtptr_font);
+  }
+  /// how to display json values
+  {
+    QColor json_bgcol = qst->value("out/json/bgcolor").value<QColor>();
+    outptxt_json_qcfmt_.setBackground(QBrush(json_bgcol));
+    QColor json_fgcol = qst->value("out/json/fgcolor").value<QColor>();
+    outptxt_json_qcfmt_.setForeground(QBrush(json_fgcol));
+    QFont json_font = qst->value("out/json/font").value<QFont>();
+    outptxt_json_qcfmt_.setFont(json_font);
   }
 #warning more is needed in RpsQOutputTextEdit::initialize
 } // end RpsQOutputTextEdit::initialize
@@ -761,29 +771,55 @@ rpsapply_52zVxP3mTue034OWsD(Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_42cCN1FRQSS03bzbTz;
 Rps_TwoValues
 rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
-                            const Rps_Value arg0,
-                            const Rps_Value arg1, ///
-                            const Rps_Value arg2,
-                            const Rps_Value arg3, ///
+                            const Rps_Value arg0_json,
+                            const Rps_Value arg1_objwnd, ///
+                            const Rps_Value arg2_recdepth,
+                            [[maybe_unused]] const Rps_Value arg3_, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_42cCN1FRQSS03bzbTz,
                  callerframe, //
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+                 Rps_Value jsrecv;
+                 Rps_ObjectRef objwnd;
+                 Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
-                 //....etc....
                 );
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
   ////==== body of _42cCN1FRQSS03bzbTz !method json/display_value_qt ====
   ;
+  _.jsrecv = arg0_json;
+  RPS_ASSERT (_.jsrecv.is_json());
+  _.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_.objwnd);
+  _.recdepth = arg2_recdepth;
+  RPS_ASSERT (_.recdepth.is_int());
+  auto depthi = _.recdepth.to_int();
+  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+  std::ostringstream outs;
+  outs << _.jsrecv << std::flush;
+  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutwndload);
+  auto qoutwx = qoutwndload->qtptr();
+  RPS_ASSERT (qoutwx);
+  auto qcfmt = RpsQOutputTextEdit::json_text_format();
+  auto qcursor = qoutwx->textCursor();
+  const char* pc = nullptr;
+  const char* eol = nullptr;
+  for (pc = outs.str().c_str(); pc && *pc; pc = (eol?(eol+1):nullptr))
+    {
+      eol = strchr(pc,  '\n');
+      if (eol)
+        {
+          QString qspa(depthi, QChar(' '));
+          qspa.append(std::string(pc, eol-pc-1).c_str());
+          qcursor.insertText(qspa, qcfmt);
+        }
+      else
+        {
+          qcursor.insertText(pc, qcfmt);
+        }
+    }
+  _.resmainv = _.jsrecv;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _42cCN1FRQSS03bzbTz
 } // end of rpsapply_42cCN1FRQSS03bzbTz !method json/display_value_qt
 
