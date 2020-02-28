@@ -440,6 +440,8 @@ private:
   // Rps_PayloadQt<RpsQOutputTextEdit>, pointing in C++ to this C++
   // object....
   Rps_Value outptxt_objref;
+  int outptxt_maxdepth;
+  static constexpr int default_maximal_depth= 6;
   /// each RefPerSys value could be displayed several times as a
   /// vector of text fragments, or something else so...
   std::map<Rps_Value,std::set<std::vector<QPointer<QObject>>>> outptxt_valmap;
@@ -450,6 +452,7 @@ private:
   static QTextCharFormat outptxt_set_qcfmt_;
   static QTextCharFormat outptxt_anonymousobject_qcfmt_;
   static QTextCharFormat outptxt_empty_qcfmt_;
+  static QTextCharFormat outptxt_etc_qcfmt_;
 public:
   /// Gets the text format for integer values.
   static inline QTextCharFormat int_text_format()
@@ -489,6 +492,11 @@ public:
   static inline QTextCharFormat empty_text_format()
   {
     return outptxt_empty_qcfmt_;
+  }
+  /// Gets the text format for ellipsis for too deep values
+  static inline QTextCharFormat etc_text_format()
+  {
+    return outptxt_etc_qcfmt_;
   }
 
   static void initialize(void);

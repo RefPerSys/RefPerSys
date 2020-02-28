@@ -1764,7 +1764,7 @@ public:
   }
   inline bool has_erasable_payload(void) const;
   inline Rps_ObjectRef get_class(void) const;
-  virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const
+  virtual Rps_ObjectRef compute_class([[maybe_unused]] Rps_CallFrame*stkf) const
   {
     return  get_class();
   };

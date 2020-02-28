@@ -49,6 +49,7 @@ QTextCharFormat RpsQOutputTextEdit::outptxt_tuple_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_set_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_anonymousobject_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_empty_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_etc_qcfmt_;
 
 
 
@@ -124,6 +125,24 @@ RpsQOutputTextEdit::initialize()
     QFont empty_font = qst->value("out/empty/font").value<QFont>();
     outptxt_empty_qcfmt_.setFont(empty_font);
   }
+  /// how to display empty stuff
+  {
+    QColor empty_bgcol = qst->value("out/empty/bgcolor").value<QColor>();
+    outptxt_empty_qcfmt_.setBackground(QBrush(empty_bgcol));
+    QColor empty_fgcol = qst->value("out/empty/fgcolor").value<QColor>();
+    outptxt_empty_qcfmt_.setForeground(QBrush(empty_fgcol));
+    QFont empty_font = qst->value("out/empty/font").value<QFont>();
+    outptxt_empty_qcfmt_.setFont(empty_font);
+  }
+  /// how to display ellipsis for too deep things
+  {
+    QColor etc_bgcol = qst->value("out/etc/bgcolor").value<QColor>();
+    outptxt_etc_qcfmt_.setBackground(QBrush(etc_bgcol));
+    QColor etc_fgcol = qst->value("out/etc/fgcolor").value<QColor>();
+    outptxt_etc_qcfmt_.setForeground(QBrush(etc_fgcol));
+    QFont etc_font = qst->value("out/etc/font").value<QFont>();
+    outptxt_etc_qcfmt_.setFont(etc_font);
+  }
 #warning more is needed in RpsQOutputTextEdit::initialize
 } // end RpsQOutputTextEdit::initialize
 
@@ -132,7 +151,8 @@ RpsQOutputTextEdit::initialize()
 
 RpsQOutputTextEdit::RpsQOutputTextEdit(QWidget*parent)
   : QTextEdit(parent),
-    outptxt_objref()
+    outptxt_objref(),
+    outptxt_maxdepth(default_maximal_depth)
 {
   setDocumentTitle("output");
 } // end RpsQOutputTextEdit::RpsQOutputTextEdit
@@ -179,7 +199,6 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
   RPS_ASSERT(qoutwpayl);
   RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
   RPS_ASSERT(qoutxed == this);
-#warning RpsQOutputTextEdit::display_output_value incomplete, see comment
   // we should special-case when _.dispval is empty and have some
   // outptxt_empty_qcfmt_ for that case.
   if (_.dispval.is_empty())
@@ -206,6 +225,8 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
                                     << " depth#" << depth);
     };				// end if _.dispval non-empty
 } // end RpsQOutputTextEdit::display_output_value
+
+
 
 void
 rps_display_output_value(Rps_CallFrame*callerframe,
@@ -625,10 +646,10 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_18DO93843oX02UWzq6;
 Rps_TwoValues
 rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
-                            const Rps_Value arg0,
-                            const Rps_Value arg1, ///
-                            const Rps_Value arg2,
-                            const Rps_Value arg3, ///
+                            const Rps_Value arg0_objrecv,
+                            const Rps_Value arg1_objwnd, ///
+                            const Rps_Value arg2_recdepth,
+                            [[maybe_unused]] const Rps_Value arg3_,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_18DO93843oX02UWzq6,
@@ -646,7 +667,7 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
   // _.arg1v = arg1;
   // _.arg2v = arg2;
   // _.arg3v = arg3;
-  ////==== body of _18DO93843oX02UWzq6 ====
+  ////==== body of _18DO93843oX02UWzq6 !method object/display_value_qt  ====
 #warning rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt incomplete, see comment
   /**
    * TODO: the !method object/display_value_qt is the difficult case.
