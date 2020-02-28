@@ -181,9 +181,7 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
   RPS_ASSERT(qoutxed == this);
 #warning RpsQOutputTextEdit::display_output_value incomplete, see comment
   // we should special-case when _.dispval is empty and have some
-  // outptxt_empty_qcfmt_ for that case. Otherwise send RefPerSys
-  // selector display_value_qt of oid _1Win5yzaf1L02cBUlV to winob,
-  // dispval, depth...
+  // outptxt_empty_qcfmt_ for that case.
   if (_.dispval.is_empty())
     {
       auto qcfmt = RpsQOutputTextEdit::empty_text_format();
@@ -192,13 +190,21 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
       qcursout.insertText(QString("▭"), //U+25AD WHITE RECTANGLE
                           qcfmt);
     }
-  else
+  else // non-empty _.dispval
     {
+      // Otherwise send RefPerSys selector display_value_qt of oid
+      // _1Win5yzaf1L02cBUlV to winob, dispval, depth...
+      Rps_ObjectRef selob_display_value_qt =
+        RPS_ROOT_OB(_1Win5yzaf1L02cBUlV);
+      Rps_TwoValues respair =
+        Rps_ObjectValue(_.winob).send2(&_, selob_display_value_qt,
+                                       _.dispval, Rps_Value((intptr_t)depth));
+      if (!respair)
+        throw RPS_RUNTIME_ERROR_OUT("display_output_value failed winob="
+                                    << _.winob
+                                    << " dispval=" << _.dispval
+                                    << " depth#" << depth);
     };				// end if _.dispval non-empty
-  RPS_FATALOUT("RpsQOutputTextEdit::display_output_value incomplete winob="
-               << _.winob << std::endl
-               << " depth=" << depth << std::endl
-               << " dispval=" << _.dispval);
 } // end RpsQOutputTextEdit::display_output_value
 
 void
