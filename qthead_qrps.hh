@@ -455,6 +455,9 @@ private:
   static QTextCharFormat outptxt_etc_qcfmt_;
   static QTextCharFormat outptxt_qtptr_qcfmt_;
   static QTextCharFormat outptxt_json_qcfmt_;
+  static QTextCharFormat outptxt_symbol_qcfmt_;
+  static QTextCharFormat outptxt_oid_qcfmt_;
+  static QTextCharFormat outptxt_class_qcfmt_;
 public:
   /// Gets the text format for integer values.
   static inline QTextCharFormat int_text_format()
@@ -509,6 +512,21 @@ public:
   static inline QTextCharFormat json_text_format()
   {
     return outptxt_json_qcfmt_;
+  }
+  /// Gets the text format for symbols
+  static inline QTextCharFormat symbol_text_format()
+  {
+    return outptxt_symbol_qcfmt_;
+  }
+  /// Gets the text format for oids
+  static inline QTextCharFormat oid_text_format()
+  {
+    return outptxt_oid_qcfmt_;
+  }
+  /// Gets the text format for classes
+  static inline QTextCharFormat class_text_format()
+  {
+    return outptxt_class_qcfmt_;
   }
 
   static void initialize(void);

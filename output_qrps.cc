@@ -52,6 +52,9 @@ QTextCharFormat RpsQOutputTextEdit::outptxt_empty_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_etc_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_qtptr_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_json_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_symbol_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_oid_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_class_qcfmt_;
 
 
 
@@ -162,6 +165,33 @@ RpsQOutputTextEdit::initialize()
     outptxt_json_qcfmt_.setForeground(QBrush(json_fgcol));
     QFont json_font = qst->value("out/json/font").value<QFont>();
     outptxt_json_qcfmt_.setFont(json_font);
+  }
+  /// how to display symbol values
+  {
+    QColor symbol_bgcol = qst->value("out/symbol/bgcolor").value<QColor>();
+    outptxt_symbol_qcfmt_.setBackground(QBrush(symbol_bgcol));
+    QColor symbol_fgcol = qst->value("out/symbol/fgcolor").value<QColor>();
+    outptxt_symbol_qcfmt_.setForeground(QBrush(symbol_fgcol));
+    QFont symbol_font = qst->value("out/symbol/font").value<QFont>();
+    outptxt_symbol_qcfmt_.setFont(symbol_font);
+  }
+  /// how to display oid values
+  {
+    QColor oid_bgcol = qst->value("out/oid/bgcolor").value<QColor>();
+    outptxt_oid_qcfmt_.setBackground(QBrush(oid_bgcol));
+    QColor oid_fgcol = qst->value("out/oid/fgcolor").value<QColor>();
+    outptxt_oid_qcfmt_.setForeground(QBrush(oid_fgcol));
+    QFont oid_font = qst->value("out/oid/font").value<QFont>();
+    outptxt_oid_qcfmt_.setFont(oid_font);
+  }
+  /// how to display classes
+  {
+    QColor class_bgcol = qst->value("out/class/bgcolor").value<QColor>();
+    outptxt_class_qcfmt_.setBackground(QBrush(class_bgcol));
+    QColor class_fgcol = qst->value("out/class/fgcolor").value<QColor>();
+    outptxt_class_qcfmt_.setForeground(QBrush(class_fgcol));
+    QFont class_font = qst->value("out/class/font").value<QFont>();
+    outptxt_class_qcfmt_.setFont(class_font);
   }
 #warning more is needed in RpsQOutputTextEdit::initialize
 } // end RpsQOutputTextEdit::initialize
@@ -717,7 +747,6 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
      hightlight all occurrences of the same object, have a menu or
      some way to "open" it, that is show its content, etc... This
      needs to be improved later! */
-
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _18DO93843oX02UWzq6
 } // end of rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt
 
@@ -863,11 +892,14 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   else if (auto classpayl =  _.recvob->get_classinfo_payload())
     {
     }
+  else {
+  }
 #warning incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
   RPS_WARNOUT("incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt" << std::endl
               << "... recvob=" << _.recvob
               << " objwnd=" << _.objwnd
               << " depthi=" << depthi);
+#warning should use symbol_text_format, oid_text_format, class_text_format ...
   ;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _4x9jd2yAe8A02SqKAx
 } // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
