@@ -847,6 +847,7 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                  //....etc....
                 );
+  ////==== body of _4x9jd2yAe8A02SqKAx  !method object/display_object_occurrence_qt ====
   _.recvob = arg0obj.as_object();
   RPS_ASSERT(_.recvob);
   _.objwnd = arg1obwin.as_object();
@@ -855,7 +856,11 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
-  ////==== body of _4x9jd2yAe8A02SqKAx  !method object/display_object_occurrence_qt ====
+  std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
+  if (auto symbpayl = _.recvob->get_dynamic_payload<Rps_PayloadSymbol>()) {
+  }
+  else if (auto classpayl =  _.recvob->get_classinfo_payload()) {
+  }
 #warning incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
   RPS_WARNOUT("incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt" << std::endl
               << "... recvob=" << _.recvob
