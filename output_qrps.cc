@@ -50,6 +50,7 @@ QTextCharFormat RpsQOutputTextEdit::outptxt_set_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_anonymousobject_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_empty_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_etc_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_qtptr_qcfmt_;
 
 
 
@@ -142,6 +143,15 @@ RpsQOutputTextEdit::initialize()
     outptxt_etc_qcfmt_.setForeground(QBrush(etc_fgcol));
     QFont etc_font = qst->value("out/etc/font").value<QFont>();
     outptxt_etc_qcfmt_.setFont(etc_font);
+  }
+  /// how to display qtptr values
+  {
+    QColor qtptr_bgcol = qst->value("out/qtptr/bgcolor").value<QColor>();
+    outptxt_qtptr_qcfmt_.setBackground(QBrush(qtptr_bgcol));
+    QColor qtptr_fgcol = qst->value("out/qtptr/fgcolor").value<QColor>();
+    outptxt_qtptr_qcfmt_.setForeground(QBrush(qtptr_fgcol));
+    QFont qtptr_font = qst->value("out/qtptr/font").value<QFont>();
+    outptxt_qtptr_qcfmt_.setFont(qtptr_font);
   }
 #warning more is needed in RpsQOutputTextEdit::initialize
 } // end RpsQOutputTextEdit::initialize
@@ -670,26 +680,34 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
 {
   RPS_LOCALFRAME(rpskob_18DO93843oX02UWzq6,
                  callerframe, //
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+                 Rps_ObjectRef obrecv;
+                 Rps_ObjectRef objwnd;
+                 Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
   ////==== body of _18DO93843oX02UWzq6 !method object/display_value_qt  ====
-#warning rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt incomplete, see comment
-  /**
-   * TODO: the !method object/display_value_qt is the difficult case.
-   * We probably want it to invoke rps_display_output_object_occurrence... Look into Bismon
-   * behavior and code for inspiration.
-   **/
+  _.obrecv = arg0_objrecv.as_object();
+  RPS_ASSERT (_.obrecv);
+  _.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_.objwnd);
+  _.recdepth = arg2_recdepth;
+  RPS_ASSERT (_.recdepth.is_int());
+  auto depthi = _.recdepth.to_int();
+  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+  std::lock_guard<std::recursive_mutex> obrecvdmtx(*(_.obrecv->objmtxptr()));
+  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutwndload);
+  auto qoutwx = qoutwndload->qtptr();
+  RPS_ASSERT (qoutwx);
+  qoutwx->display_output_object_occurrence(&_,_.objwnd,depthi);
+#warning rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt incomplete
+  /* TODO: we probably want a more complex behavior, e.g. be able to
+     hightlight all occurrences of the same object, have a menu or
+     some way to "open" it, that is show its content, etc... This
+     needs to be improved later! */
+
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _18DO93843oX02UWzq6
 } // end of rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt
 
@@ -700,29 +718,40 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_52zVxP3mTue034OWsD;
 Rps_TwoValues
 rpsapply_52zVxP3mTue034OWsD(Rps_CallFrame*callerframe, ///
-                            const Rps_Value arg0,
-                            const Rps_Value arg1, ///
-                            const Rps_Value arg2,
-                            const Rps_Value arg3, ///
+                            const Rps_Value arg0_qtptr,
+                            const Rps_Value arg1_objwnd, ///
+                            const Rps_Value arg2_recdepth, ///
+                            [[maybe_unused]] const Rps_Value arg3_, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_52zVxP3mTue034OWsD,
                  callerframe, //
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+                 Rps_Value qtrecv;
+                 Rps_ObjectRef objwnd;
+                 Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
-  ////==== body of _52zVxP3mTue034OWsD ====
-  ;
+  ////==== body of _52zVxP3mTue034OWsD !method qtptr/display_value_qt ====
+  _.qtrecv = arg0_qtptr;
+  RPS_ASSERT (_.qtrecv.is_qtptr());
+  _.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_.objwnd);
+  _.recdepth = arg2_recdepth;
+  RPS_ASSERT (_.recdepth.is_int());
+  auto depthi = _.recdepth.to_int();
+  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+  std::ostringstream outs;
+  outs << _.qtrecv << std::flush;
+  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutwndload);
+  auto qoutwx = qoutwndload->qtptr();
+  RPS_ASSERT (qoutwx);
+  auto qcfmt = RpsQOutputTextEdit::qtptr_text_format();
+  auto qcursor = qoutwx->textCursor();
+  qcursor.insertText(outs.str().c_str(), qcfmt);
+  _.resmainv = _.qtrecv;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _52zVxP3mTue034OWsD
 } // end of rpsapply_52zVxP3mTue034OWsD !method qtptr/display_value_qt
 
@@ -753,7 +782,7 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
   // _.arg1v = arg1;
   // _.arg2v = arg2;
   // _.arg3v = arg3;
-  ////==== body of _42cCN1FRQSS03bzbTz ====
+  ////==== body of _42cCN1FRQSS03bzbTz !method json/display_value_qt ====
   ;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _42cCN1FRQSS03bzbTz
 } // end of rpsapply_42cCN1FRQSS03bzbTz !method json/display_value_qt

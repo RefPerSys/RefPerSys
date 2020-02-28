@@ -453,6 +453,7 @@ private:
   static QTextCharFormat outptxt_anonymousobject_qcfmt_;
   static QTextCharFormat outptxt_empty_qcfmt_;
   static QTextCharFormat outptxt_etc_qcfmt_;
+  static QTextCharFormat outptxt_qtptr_qcfmt_;
 public:
   /// Gets the text format for integer values.
   static inline QTextCharFormat int_text_format()
@@ -497,6 +498,11 @@ public:
   static inline QTextCharFormat etc_text_format()
   {
     return outptxt_etc_qcfmt_;
+  }
+  /// Gets the text format for qtptr values
+  static inline QTextCharFormat qtptr_text_format()
+  {
+    return outptxt_qtptr_qcfmt_;
   }
 
   static void initialize(void);
