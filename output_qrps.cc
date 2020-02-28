@@ -252,7 +252,6 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
   RPS_ASSERT(qoutwpayl);
   RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
   RPS_ASSERT(qoutxed == this);
-#warning RpsQOutputTextEdit::display_output_object_occurrence incomplete, see comment
   if (_.dispob.is_empty())
     {
       auto qcfmt = RpsQOutputTextEdit::empty_text_format();
@@ -277,6 +276,7 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
                                     << " depth#" << depth);
     };				// end if _.dispob non-empty
 } // end RpsQOutputTextEdit::display_output_object_occurrence
+
 
 void
 rps_display_output_object_occurrence(Rps_CallFrame*callerframe,
@@ -349,11 +349,14 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       || !(qouted=qobject_cast<RpsQOutputTextEdit*>(winpayl->qtptr())))
     throw  RPS_RUNTIME_ERROR_OUT("display value " << _.val0v
                                  << " has bad window object " << _.winob1);
-  RPS_FATALOUT("unimplemented rpsapply_0TwK4TkhEGZ03oTa5m !display Val0 in Ob1Win at depth Val2Depth");
-  /// we should display val0 in winob1 at depth2, using rps_display_output_value
-#warning unimplemented rpsapply_0TwK4TkhEGZ03oTa5m !display Val0 in Ob1Win at depth Val2Depth
+  /// we should display val0 in winob1 at depth2, using member function display_output_value
+  qouted->display_output_value(&_, _.val0v, depth);
+  if (_.val0v)
+    _.resmainv = _.val0v;
+  else
+    _.resmainv = _.winob1;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _0TwK4TkhEGZ03oTa5m
-} // end of rpsapply_0TwK4TkhEGZ03oTa5m
+} // end of rpsapply_0TwK4TkhEGZ03oTa5m !display Val0 in Ob1Win at depth Val2Depth
 
 
 /// for the display_value_qt and display_object_occurrence_qt
