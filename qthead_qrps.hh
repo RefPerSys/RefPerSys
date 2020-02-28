@@ -514,6 +514,10 @@ public:
     for (auto it : outptxt_valmap)
       it.first.gc_mark(gc);
   };
+  int max_output_depth() const
+  {
+    return outptxt_maxdepth;
+  };
 };				// end class RpsQOutputTextEdit
 
 // simple wrapping of display_output_value and display_output_object_occurrence

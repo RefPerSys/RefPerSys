@@ -209,6 +209,14 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
       qcursout.insertText(QString("▭"), //U+25AD WHITE RECTANGLE
                           qcfmt);
     }
+  else if (depth >  max_output_depth())
+    {
+      auto qcfmt = RpsQOutputTextEdit::etc_text_format();
+      // we display an ellipsis
+      auto qcursout = qoutxed->textCursor();
+      qcursout.insertText(QString("…"), //U+2026 HORIZONTAL ELLIPSIS
+                          qcfmt);
+    }
   else // non-empty _.dispval
     {
       // Otherwise send RefPerSys selector display_value_qt of oid
@@ -279,6 +287,14 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
       // we display a lozenge for empty objects
       auto qcursout = qoutxed->textCursor();
       qcursout.insertText(QString("◊"), //U+25CA LOZENGE
+                          qcfmt);
+    }
+  else if (depth >  max_output_depth())
+    {
+      auto qcfmt = RpsQOutputTextEdit::etc_text_format();
+      // we display a five dot
+      auto qcursout = qoutxed->textCursor();
+      qcursout.insertText(QString("⁙"), //U+2059 FIVE DOT PUNCTUATION
                           qcfmt);
     }
   else   // when _.dispob is not empty....
