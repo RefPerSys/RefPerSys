@@ -766,7 +766,10 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
                  callerframe, //
                  Rps_InstanceValue instrecv;
                  Rps_ObjectRef objwnd;
+                 Rps_ObjectRef obconn;
+                 Rps_ObjectRef obattr;
                  Rps_Value recdepth;
+                 Rps_Value compv;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
@@ -785,6 +788,35 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _0rgijx7CCnq041IZEd
 } // end of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt
 
+
+// C++ closure for _6Wi00FwXYID00gl9Ma
+//!method closure/display_value_qt
+extern "C" rps_applyingfun_t rpsapply_6Wi00FwXYID00gl9Ma;
+Rps_TwoValues
+rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
+                             const Rps_Value arg0, const Rps_Value arg1, ///
+                             const Rps_Value arg2, const Rps_Value arg3, ///
+                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+{
+  RPS_LOCALFRAME(rpskob_6Wi00FwXYID00gl9Ma,
+                 callerframe, //
+                 //Rps_Value arg0v;
+                 //Rps_Value arg1v;
+                 //Rps_Value arg2v;
+                 //Rps_Value arg3v;
+                 //Rps_ObjectRef obr;
+                 Rps_Value resmainv;
+                 Rps_Value resxtrav;
+                 //....etc....
+                );
+  // _.arg0v = arg0;
+  // _.arg1v = arg1;
+  // _.arg2v = arg2;
+  // _.arg3v = arg3;
+  ////==== body of _6Wi00FwXYID00gl9Ma !method closure/display_value_qt ====
+  ;
+  RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _6Wi00FwXYID00gl9Ma
+} // end of rpsapply_6Wi00FwXYID00gl9Ma !method closure/display_value_qt
 
 
 
