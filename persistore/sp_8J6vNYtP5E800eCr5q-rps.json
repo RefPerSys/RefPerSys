@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 77,
+ "nbobjects" : 78,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -59,6 +59,22 @@
  "oid" : "_0jdbikGJFq100dgX1n",
  "payload" : "symbol",
  "symb_name" : "comment"
+}
+
+
+//+ob_0rgijx7CCnq041IZEd
+//∈core_function
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_0jdbikGJFq100dgX1n",
+   "va" : "method immutable_instance/display_value_qt"
+  }
+ ],
+ "class" : "_9Gz1oNPCnkB00I6VRS",
+ "mtime" : 1582953621.4000001,
+ "oid" : "_0rgijx7CCnq041IZEd"
 }
 
 
@@ -840,6 +856,7 @@
  "payload" : "setob",
  "setob" : 
  [
+  "_0rgijx7CCnq041IZEd",
   "_0TwK4TkhEGZ03oTa5m",
   "_1568ZHTl0Pa00461I2",
   "_18DO93843oX02UWzq6",
@@ -886,7 +903,18 @@
 //∈class
 {
  "class" : "_41OFI3r0S1t03qdB2E",
- "class_methodict" : [],
+ "class_methodict" : 
+ [
+  {
+   "methclos" : 
+   {
+    "env" : [],
+    "fn" : "_0rgijx7CCnq041IZEd",
+    "vtype" : "closure"
+   },
+   "methosel" : "_1Win5yzaf1L02cBUlV"
+  }
+ ],
  "class_name" : "immutable_instance",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_3HfCkVJzEdq042msZp",

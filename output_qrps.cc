@@ -751,6 +751,37 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
 } // end of rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt
 
 
+// C++ closure for _0rgijx7CCnq041IZEd
+//!method immutable_instance/display_value_qt
+extern "C" rps_applyingfun_t rpsapply_0rgijx7CCnq041IZEd;
+Rps_TwoValues
+rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
+                             const Rps_Value arg0, const Rps_Value arg1, ///
+                             const Rps_Value arg2, const Rps_Value arg3, ///
+                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+{
+  RPS_LOCALFRAME(rpskob_0rgijx7CCnq041IZEd,
+                 callerframe, //
+                 //Rps_Value arg0v;
+                 //Rps_Value arg1v;
+                 //Rps_Value arg2v;
+                 //Rps_Value arg3v;
+                 //Rps_ObjectRef obr;
+                 Rps_Value resmainv;
+                 Rps_Value resxtrav;
+                 //....etc....
+                );
+  // _.arg0v = arg0;
+  // _.arg1v = arg1;
+  // _.arg2v = arg2;
+  // _.arg3v = arg3;
+  ////==== body of _0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt====
+  ;
+  RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _0rgijx7CCnq041IZEd
+} // end of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt
+
+
+
 
 // C++ closure for _52zVxP3mTue034OWsD
 //!method qtptr/display_value_qt
@@ -892,8 +923,9 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   else if (auto classpayl =  _.recvob->get_classinfo_payload())
     {
     }
-  else {
-  }
+  else
+    {
+    }
 #warning incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
   RPS_WARNOUT("incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt" << std::endl
               << "... recvob=" << _.recvob
