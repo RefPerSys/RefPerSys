@@ -1658,6 +1658,25 @@ Rps_ClosureValue::apply9(Rps_CallFrame*callerframe, const Rps_Value arg0,
   return  res;
 } // end Rps_ClosureValue::apply9
 
+
+
+////////////////////////////////////////////////////// immutable instances
+
+Rps_InstanceValue::Rps_InstanceValue (const Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil)
+  : Rps_Value (Rps_InstanceZone::make_from_components(connob,valil), Rps_ValPtrTag{})
+{
+} // end of Rps_InstanceValue::Rps_InstanceValue of initializer_list
+
+Rps_InstanceValue::Rps_InstanceValue (const Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec)
+  : Rps_Value (Rps_InstanceZone::make_from_components(connob,valvec), Rps_ValPtrTag{})
+{
+} // end of Rps_InstanceValue::Rps_InstanceValue of vector
+
+Rps_InstanceValue::Rps_InstanceValue(const Rps_Value val)
+  : Rps_Value (val.is_instance()?val.as_instance():nullptr, Rps_ValPtrTag{})
+{
+}; // end Rps_InstanceValue::Rps_InstanceValue dynamic
+
 /************************** PAYLOADS *************************************/
 /*************************************************************************/
 

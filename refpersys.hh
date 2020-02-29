@@ -2426,7 +2426,7 @@ public:
   inline Rps_InstanceValue(const Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
   inline Rps_InstanceValue(const Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec);
   // "dynamic" casting
-  inline Rps_InstanceValue(Rps_Value val);
+  inline Rps_InstanceValue(const Rps_Value val);
 // get the class (stored in connective)
   inline Rps_ObjectRef get_class(void) const;
 // clear the instance
