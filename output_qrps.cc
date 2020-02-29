@@ -756,27 +756,32 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_0rgijx7CCnq041IZEd;
 Rps_TwoValues
 rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0, const Rps_Value arg1, ///
-                             const Rps_Value arg2, const Rps_Value arg3, ///
-                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+                             const Rps_Value arg0_inst, ///
+                             const Rps_Value arg1_objwnd, ///
+                             const Rps_Value arg2_recdepth, ///
+                             [[maybe_unused]] const Rps_Value arg3_, ///
+                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_0rgijx7CCnq041IZEd,
                  callerframe, //
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+                 Rps_InstanceValue instrecv;
+                 Rps_ObjectRef objwnd;
+                 Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
-  ////==== body of _0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt====
-  ;
+  ////==== body of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt====
+  _.instrecv = Rps_InstanceValue(arg0_inst.as_instance());
+  RPS_ASSERT (_.instrecv);
+  _.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_.objwnd);
+  _.recdepth = arg2_recdepth;
+  RPS_ASSERT (_.recdepth.is_int());
+  auto depthi = _.recdepth.to_int();
+  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+#warning rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt incomplete
+  RPS_WARNOUT("rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt incomplete instrecv=" << _.instrecv);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _0rgijx7CCnq041IZEd
 } // end of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt
 
