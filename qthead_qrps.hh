@@ -440,8 +440,14 @@ private:
   // Rps_PayloadQt<RpsQOutputTextEdit>, pointing in C++ to this C++
   // object....
   Rps_Value outptxt_objref;
+  /// Maximal recursion depth, after which just ellipsis are shown...
   int outptxt_maxdepth;
+  /// Threshold to add an indented return in output column_position....
+  int outptxt_columnthresh;
+  // Default maximal depth:
   static constexpr int default_maximal_depth= 6;
+  // Default column threshold:
+  static constexpr int default_column_threshold= 72;
   /// each RefPerSys value could be displayed several times as a
   /// vector of text fragments, or something else so...
   std::map<Rps_Value,std::set<std::vector<QPointer<QObject>>>> outptxt_valmap;
@@ -459,6 +465,7 @@ private:
   static QTextCharFormat outptxt_oid_qcfmt_;
   static QTextCharFormat outptxt_class_qcfmt_;
 public:
+  void output_space_or_indented_newline(QTextCharFormat qc, int depth);
   /// Gets the text format for integer values.
   static inline QTextCharFormat int_text_format()
   {

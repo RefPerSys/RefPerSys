@@ -202,7 +202,8 @@ RpsQOutputTextEdit::initialize()
 RpsQOutputTextEdit::RpsQOutputTextEdit(QWidget*parent)
   : QTextEdit(parent),
     outptxt_objref(),
-    outptxt_maxdepth(default_maximal_depth)
+    outptxt_maxdepth(default_maximal_depth),
+    outptxt_columnthresh(default_column_threshold)
 {
   setDocumentTitle("output");
 } // end RpsQOutputTextEdit::RpsQOutputTextEdit
@@ -228,6 +229,29 @@ RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
   outptxt_objref = _.obtxed;
 } // end RpsQOutputTextEdit::create_outpedit_object
 
+void
+RpsQOutputTextEdit::output_space_or_indented_newline(QTextCharFormat qc, int depth)
+{
+  if (depth<0)
+    depth=0;
+  else if (depth>outptxt_maxdepth)
+    depth=outptxt_maxdepth;
+  auto qcursor = textCursor();
+  if (qcursor.columnNumber() > outptxt_columnthresh)
+    {
+      qcursor.insertText("\n", qc);
+      static const char spaces16[] = "                ";
+      RPS_ASSERT(strlen(spaces16)==16);
+      while (depth>16)
+        {
+          qcursor.insertText(spaces16, qc);
+          depth -= 16;
+        }
+      qcursor.insertText(spaces16+16-depth, qc);
+    }
+  else
+    qcursor.insertText(" ", qc);
+} // end RpsQOutputTextEdit::output_space_or_indented_newline
 
 ////////////////
 //// display a value, maybe even nil, into this output text edit, at given depth. May throw some exception
