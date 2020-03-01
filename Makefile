@@ -103,7 +103,7 @@ clean:
 	$(RM) *.o *.orig *~ refpersys *.gch *~
 	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~
 	$(RM) persistore/*~ persistore/*%
-	$(RM) *%
+	$(RM) *% core
 
 __timestamp.c:
 	./generate-timestamp.sh > $@-tmp
