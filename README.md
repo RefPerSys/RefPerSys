@@ -118,9 +118,8 @@ copyrighted by the RefPerSys team, currently made of:
  *      Nimesh Neema <nimeshneema@gmail.com>
 
 Some files might be "borrowed" from other similar GPLv3+ licensed
-projects (notably [Bismon](from
-[Bismon](http://github.com/bstarynk/bismon)...) and could retain their
-original copyright owner.
+projects (notably from [Bismon](http://github.com/bstarynk/bismon)...)
+and could retain their original copyright owner.
 
 ## Contributing
 
@@ -189,12 +188,14 @@ The [JsonCPP](https://github.com/open-source-parsers/jsoncpp/) and
 [Qt5](http://qt.io/) C++ libraries are needed, and also a
 [mail](https://linux.die.net/man/1/mail) command in your `$PATH`.
 
-To install the dependencies on a Debian system, you would run the following steps
+To install the dependencies on a recent [Debian](https://debian.org/) 10 *buster* or
+[Ubuntu](https://ubuntu.com/) 19 system, you could run the following
+steps
 
 * `sudo apt install libunistring-dev`
-* `sudo apt install qt5-default`
+* `sudo apt install qt5-default libqt5x11extras5-dev libqt5xdg-dev`
 * `sudo apt install libjsoncpp-dev`
-* `sudo apt install ccache g++ make build-essentials remake`
+* `sudo apt install ccache g++ make build-essentials remake gdb automake`
 * `sudo apt install ttf-unifont ttf-mscorefonts-installer unifont msttcorefonts fonts-ubuntu fonts-tuffy fonts-spleen fonts-roboto fonts-recommended fonts-yanone-kaffeesatz fonts-play fonts-eurofurence fonts-ecolier-court fonts-dejavu fonts-croscore fonts-cegui fonts-inter fonts-inconsolata`
 * `git clone https://github.com/ianlancetaylor/libbacktrace.git`
 * `cd libbacktrace`
@@ -205,8 +206,8 @@ To install the dependencies on a Debian system, you would run the following step
 ### Build instructions
 
 You need a recent C++17 compiler such as `g++` (We use
-[GCC](http://gcc.gnu.org/) 8 or 9) or
-[`clang++`](http://clang.llvm.org/) , `libunistring-dev`. Look into,
+[GCC](http://gcc.gnu.org/) version [9](https://gcc.gnu.org/gcc-9/)) or
+[`clang++`](http://clang.llvm.org/) version, `libunistring-dev`. Look into,
 and perhaps improve, our `Makefile`. Build using `make -j 3` or more.
  
 You also should do a  `make clean` after any `git pull`
