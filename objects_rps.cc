@@ -1586,7 +1586,7 @@ Rps_PayloadSymbol::autocomplete_name(const char*prefix, const std::function<bool
 
 
 Rps_ObjectRef
-Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::string& str)
+Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::string& str, bool dontfail)
 {
   RPS_LOCALFRAME(nullptr,
                  callerframe,
@@ -1594,12 +1594,20 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
                  Rps_ObjectRef obfound;
                 );
   if (str.empty())
-    throw std::runtime_error("empty string to Rps_ObjectRef::find_object_by_string");
+    {
+      if (dontfail)
+        return Rps_ObjectRef(nullptr);
+      throw std::runtime_error("empty string to Rps_ObjectRef::find_object_by_string");
+    }
   if (isalpha(str[0]))
     {
       _.obsymb = Rps_PayloadSymbol::find_named_object(str);
       if (!_.obsymb)
-        throw std::runtime_error("Rps_ObjectRef::find_object_by_string: no symbol named " + str);
+        {
+          if (dontfail)
+            return Rps_ObjectRef(nullptr);
+          throw std::runtime_error("Rps_ObjectRef::find_object_by_string: no symbol named " + str);
+        }
       auto symbpayl = _.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
       RPS_ASSERT(symbpayl != nullptr);
       if (symbpayl->symbol_value().is_object())
@@ -1611,28 +1619,49 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
     {
       Rps_Id id(str);
       if (!id)
-        throw std::runtime_error("Rps_ObjectRef::find_object_by_string: bad id " + str);
+        {
+          if (dontfail)
+            return Rps_ObjectRef(nullptr);
+          throw std::runtime_error("Rps_ObjectRef::find_object_by_string: bad id " + str);
+        };
       _.obfound = Rps_ObjectRef(Rps_ObjectZone::find(id));
       if (!_.obfound)
-        throw std::runtime_error("Rps_ObjectRef::find_object_by_string: nonexistant id " + str);
+        {
+          if (dontfail)
+            return Rps_ObjectRef(nullptr);
+          throw std::runtime_error("Rps_ObjectRef::find_object_by_string: nonexistant id " + str);
+        }
     }
-  else throw std::runtime_error("bad string " + str + " to Rps_ObjectRef::find_object_by_string");
+  else
+    {
+      if (dontfail)
+        return Rps_ObjectRef(nullptr);
+      throw std::runtime_error("bad string " + str + " to Rps_ObjectRef::find_object_by_string");
+    }
   return _.obfound;
 } // end Rps_ObjectRef::find_object_by_string
 
 
 Rps_ObjectRef
-Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid)
+Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, bool dontfail)
 {
   RPS_LOCALFRAME(nullptr,
                  callerframe,
                  Rps_ObjectRef obfound;
                 );
   if (!oid || !oid.valid())
-    throw std::runtime_error("Rps_ObjectRef::find_object_by_oid: invalid or empty oid");
+    {
+      if (dontfail)
+        return Rps_ObjectRef(nullptr);
+      throw std::runtime_error("Rps_ObjectRef::find_object_by_oid: invalid or empty oid");
+    }
   _.obfound = Rps_ObjectRef(Rps_ObjectZone::find(oid));
   if (!_.obfound)
-    throw std::runtime_error("Rps_ObjectRef::find_object: nonexistant id");
+    {
+      if (dontfail)
+        return Rps_ObjectRef(nullptr);
+      throw std::runtime_error("Rps_ObjectRef::find_object: nonexistant id");
+    }
   return _.obfound;
 } // end Rps_ObjectRef::find_object_by_oid
 
