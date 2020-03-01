@@ -1752,6 +1752,9 @@ public:
   {
     return &ob_mtx;
   };
+  void touch_now(void) {
+    ob_mtime.store(rps_wallclock_real_time());
+  };
   std::string string_oid(void) const;
   inline Rps_Payload*get_payload(void) const;
   inline Rps_PayloadClassInfo*get_classinfo_payload(void) const;
@@ -3026,6 +3029,7 @@ public:
       };
     return nullptr;
   };
+  static const Rps_SetValue set_of_all_symbols(void);
   static bool forget_name(std::string name);
   static bool forget_object(Rps_ObjectRef obj);
   // given a C string which looks like a C identifier starting with a letter,

@@ -1584,6 +1584,20 @@ Rps_PayloadSymbol::autocomplete_name(const char*prefix, const std::function<bool
   return count;
 } // end Rps_PayloadSymbol::autocomplete_name
 
+const Rps_SetValue
+Rps_PayloadSymbol::set_of_all_symbols(void)
+{
+  std::vector<Rps_ObjectRef> vecob;
+  {
+    std::lock_guard<std::recursive_mutex> gusy(symb_tablemtx);
+    unsigned nbsymb = symb_table.size();
+    vecob.reserve(nbsymb);
+    for (auto it : symb_table)
+      if (it.second && it.second->owner())
+	vecob.push_back(it.second->owner());
+  }
+  return Rps_SetValue(vecob);
+} // end Rps_PayloadSymbol::set_of_all_symbols
 
 Rps_ObjectRef
 Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::string& str, bool dontfail)
