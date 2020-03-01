@@ -1070,5 +1070,34 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
 } // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
 
 
+// C++ closure for _5nSiRIxoYQp00MSnYA
+//!method object!display_object_content_qt
+extern "C" rps_applyingfun_t rpsapply_5nSiRIxoYQp00MSnYA;
+Rps_TwoValues
+rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
+                   const Rps_Value arg0, const Rps_Value arg1, ///
+                   const Rps_Value arg2, const Rps_Value arg3, ///
+                   const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+{
+  RPS_LOCALFRAME(rpskob_5nSiRIxoYQp00MSnYA,
+                 callerframe, //
+                 //Rps_Value arg0v;
+                 //Rps_Value arg1v;
+                 //Rps_Value arg2v;
+                 //Rps_Value arg3v;
+                 //Rps_ObjectRef obr;
+                 Rps_Value resmainv;
+                 Rps_Value resxtrav;
+                 //....etc....
+                );
+  // _.arg0v = arg0;
+  // _.arg1v = arg1;
+  // _.arg2v = arg2;
+  // _.arg3v = arg3;
+  ////==== body of _5nSiRIxoYQp00MSnYA !method object!display_object_content_qt ====
+  ;
+  RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _5nSiRIxoYQp00MSnYA
+} // end of rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt
+
 
 /************************************************************* end of file output_qrps.cc ****/
