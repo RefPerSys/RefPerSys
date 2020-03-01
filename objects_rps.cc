@@ -1594,7 +1594,7 @@ Rps_PayloadSymbol::set_of_all_symbols(void)
     vecob.reserve(nbsymb);
     for (auto it : symb_table)
       if (it.second && it.second->owner())
-	vecob.push_back(it.second->owner());
+        vecob.push_back(it.second->owner());
   }
   return Rps_SetValue(vecob);
 } // end Rps_PayloadSymbol::set_of_all_symbols

@@ -1436,7 +1436,9 @@ RpsQCreatePluginDialog::on_ok_trigger()
   QString err(proc.readAllStandardError());
 
   RPS_INFORMOUT("RpsQCreatePluginDialog::on_ok_trigger(): exit code = "
-                << rc << "; build msg = " << msg.toStdString());
+                << rc << "; build msg = " << msg.toStdString()
+		<< std::endl
+		<< "... err = " << err.toStdString());
 
   if (rc == 0) {
     if (access(temporary_plugin_file_path().c_str(), R_OK))
