@@ -133,15 +133,6 @@ RpsQOutputTextEdit::initialize()
     QFont empty_font = qst->value("out/empty/font").value<QFont>();
     outptxt_empty_qcfmt_.setFont(empty_font);
   }
-  /// how to display empty stuff
-  {
-    QColor empty_bgcol = qst->value("out/empty/bgcolor").value<QColor>();
-    outptxt_empty_qcfmt_.setBackground(QBrush(empty_bgcol));
-    QColor empty_fgcol = qst->value("out/empty/fgcolor").value<QColor>();
-    outptxt_empty_qcfmt_.setForeground(QBrush(empty_fgcol));
-    QFont empty_font = qst->value("out/empty/font").value<QFont>();
-    outptxt_empty_qcfmt_.setFont(empty_font);
-  }
   /// how to display ellipsis for too deep things
   {
     QColor etc_bgcol = qst->value("out/etc/bgcolor").value<QColor>();
@@ -795,7 +786,8 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
   RPS_ASSERT (qoutwndload);
   auto qoutwx = qoutwndload->qtptr();
   RPS_ASSERT (qoutwx);
-  qoutwx->display_output_object_occurrence(&_,_.objwnd,depthi);
+  qoutwx->display_output_object_occurrence(&_, _.obrecv, depthi);
+  _.resmainv = _.obrecv;
 #warning rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt incomplete
   /* TODO: we probably want a more complex behavior, e.g. be able to
      hightlight all occurrences of the same object, have a menu or
