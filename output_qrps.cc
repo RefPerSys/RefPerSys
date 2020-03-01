@@ -593,7 +593,7 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                 );
 
-  ////==== body of _7oa7eIzzcxv03TmmZH ====
+  ////==== body of _7oa7eIzzcxv03TmmZH !method double/display_value_qt ====
   _.doubleval = arg0_recv;
   RPS_ASSERT (_.doubleval.is_double());
   _.object_window = arg1_objwnd.as_object();
@@ -662,7 +662,7 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
       if (ix>0)
         {
           qcursor.insertText(",", qcfmt);
-          qcursor.insertText(" ");
+          qoutwx->output_space_or_indented_newline(qcfmt, depthi);
         }
       rps_display_output_object_occurrence(callerframe, _.objwnd,
                                            _.tupleval.as_tuple()->at((int)ix),
@@ -717,7 +717,7 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
       if (ix>0)
         {
           qcursor.insertText(",", qcfmt);
-          qcursor.insertText(" ");
+          qoutwx->output_space_or_indented_newline(qcfmt, depthi);
         }
       rps_display_output_object_occurrence(callerframe, _.objwnd,
                                            _.setval.as_set()->at((int)ix),
