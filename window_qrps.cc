@@ -349,7 +349,7 @@ void RpsQCreateClassDialog::on_ok_trigger()
               << ", strclassname=" << strclassname);
   try
     {
-      _.obsuperclass = Rps_ObjectRef::find_object(&_, strsuperclass);
+      _.obsuperclass = Rps_ObjectRef::find_object_by_string(&_, strsuperclass);
       RPS_INFORMOUT("RpsQCreateClassDialog::on_ok_trigger obsuperclass=" << _.obsuperclass);
       _.obnewclass = Rps_ObjectRef::make_named_class(&_, _.obsuperclass, strclassname);
       RPS_INFORMOUT("RpsQCreateClassDialog::on_ok_trigger obnewclass=" << _.obnewclass);
@@ -582,7 +582,7 @@ RpsQCreateNamedInstanceDialog::on_ok_trigger()
               << " strniclaname=" << strniclaname);
   try
     {
-      _.obclass = Rps_ObjectRef::find_object(&_, strniclaname);
+      _.obclass = Rps_ObjectRef::find_object_by_string(&_, strniclaname);
       RPS_INFORMOUT("RpsQCreateNamedInstanceDialog obclass=" << _.obclass);
       if (!_.obclass)
         throw RPS_RUNTIME_ERROR_OUT("create named instance: no class named " << strniclaname);

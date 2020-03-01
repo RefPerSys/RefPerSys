@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 79,
+ "nbobjects" : 83,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -255,6 +255,18 @@
  "mtime" : 1580672958.0,
  "oid" : "_1DUx3zfUzIb04lqNVt",
  "payload" : "class"
+}
+
+
+//+ob_1EBVGSfW2m200z18rx
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1583072994.2,
+ "oid" : "_1EBVGSfW2m200z18rx",
+ "payload" : "symbol",
+ "symb_name" : "name",
+ "symb_val" : "_4FBkYDlynyC02QtkfG"
 }
 
 
@@ -672,6 +684,20 @@
 }
 
 
+//+ob_4pSwobFHGf301Qgwzh
+//∈class
+{
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "named_attribute",
+ "class_super" : "_36I1BY2NetN03WjrOv",
+ "class_symb" : "_7Qfhd0QQzdy03O0jBz",
+ "mtime" : 1583072970.0,
+ "oid" : "_4pSwobFHGf301Qgwzh",
+ "payload" : "class"
+}
+
+
 //+ob_4x9jd2yAe8A02SqKAx
 //∈core_function
 {
@@ -685,6 +711,15 @@
  "class" : "_9Gz1oNPCnkB00I6VRS",
  "mtime" : 1582660207.0,
  "oid" : "_4x9jd2yAe8A02SqKAx"
+}
+
+
+//+ob_4FBkYDlynyC02QtkfG
+//∈named_attribute
+{
+ "class" : "_4pSwobFHGf301Qgwzh",
+ "mtime" : 1583072994.2,
+ "oid" : "_4FBkYDlynyC02QtkfG"
 }
 
 
@@ -1077,6 +1112,18 @@
  "payload" : "symbol",
  "symb_name" : "json",
  "symb_val" : "_3GHJQW0IIqS01QY8qD"
+}
+
+
+//+ob_7Qfhd0QQzdy03O0jBz
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1583072970.1700001,
+ "oid" : "_7Qfhd0QQzdy03O0jBz",
+ "payload" : "symbol",
+ "symb_name" : "named_attribute",
+ "symb_val" : "_4pSwobFHGf301Qgwzh"
 }
 
 

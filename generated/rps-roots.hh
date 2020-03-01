@@ -30,6 +30,7 @@ RPS_INSTALL_ROOT_OB(_0XMNvzdABUM03Bj7WP) //git_id∈symbol
 RPS_INSTALL_ROOT_OB(_1wihX3eWD9o00QnxUX) //∈mutable_set
 RPS_INSTALL_ROOT_OB(_1DBiKRl70P304DEMoR) //our_contributors∈symbol
 RPS_INSTALL_ROOT_OB(_1DUx3zfUzIb04lqNVt) //rps_window∈class
+RPS_INSTALL_ROOT_OB(_1EBVGSfW2m200z18rx) //name∈symbol
 RPS_INSTALL_ROOT_OB(_1NWEOIzo3WU03mE42Q) //rps_output_textedit∈class
 RPS_INSTALL_ROOT_OB(_1Win5yzaf1L02cBUlV) //∈named_selector
 RPS_INSTALL_ROOT_OB(_1Zo12toMRTa03uqsXh) //display_object_occurrence_qt∈symbol
@@ -44,6 +45,8 @@ RPS_INSTALL_ROOT_OB(_3Q3hJsSgCDN03GTYW5) //symbol∈symbol
 RPS_INSTALL_ROOT_OB(_41OFI3r0S1t03qdB2E) //class∈class
 RPS_INSTALL_ROOT_OB(_4jISxMJ4PYU0050nUl) //closure∈class
 RPS_INSTALL_ROOT_OB(_4ojpzRzyRWz02DNWMe) //∈named_selector
+RPS_INSTALL_ROOT_OB(_4pSwobFHGf301Qgwzh) //named_attribute∈class
+RPS_INSTALL_ROOT_OB(_4FBkYDlynyC02QtkfG) //∈named_attribute
 RPS_INSTALL_ROOT_OB(_54CP9eaTmxT00lzbEW) //rps_command_textedit∈class
 RPS_INSTALL_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
 RPS_INSTALL_ROOT_OB(_5yQcFbU0seU018B48Z) //message_sending∈symbol
@@ -67,7 +70,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 45
+#define RPS_NB_ROOT_OB 48
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh

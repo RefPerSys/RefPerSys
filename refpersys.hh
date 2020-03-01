@@ -550,7 +550,7 @@ public:
   ///////////
   // these functions throw an exception on failure
   // find an object with a given oid or name string
-  static Rps_ObjectRef find_object(Rps_CallFrame*callerframe,  const std::string& str);
+  static Rps_ObjectRef find_object_by_string(Rps_CallFrame*callerframe,  const std::string& str);
   static Rps_ObjectRef find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid);
   // create a class of given super class and name
   static Rps_ObjectRef make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef superclassob, std::string name);

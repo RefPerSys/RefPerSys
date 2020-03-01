@@ -1586,7 +1586,7 @@ Rps_PayloadSymbol::autocomplete_name(const char*prefix, const std::function<bool
 
 
 Rps_ObjectRef
-Rps_ObjectRef::find_object(Rps_CallFrame*callerframe, const std::string& str)
+Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::string& str)
 {
   RPS_LOCALFRAME(nullptr,
                  callerframe,
@@ -1594,12 +1594,12 @@ Rps_ObjectRef::find_object(Rps_CallFrame*callerframe, const std::string& str)
                  Rps_ObjectRef obfound;
                 );
   if (str.empty())
-    throw std::runtime_error("empty string to Rps_ObjectRef::find_object");
+    throw std::runtime_error("empty string to Rps_ObjectRef::find_object_by_string");
   if (isalpha(str[0]))
     {
       _.obsymb = Rps_PayloadSymbol::find_named_object(str);
       if (!_.obsymb)
-        throw std::runtime_error("Rps_ObjectRef::find_object: no symbol named " + str);
+        throw std::runtime_error("Rps_ObjectRef::find_object_by_string: no symbol named " + str);
       auto symbpayl = _.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
       RPS_ASSERT(symbpayl != nullptr);
       if (symbpayl->symbol_value().is_object())
@@ -1611,14 +1611,14 @@ Rps_ObjectRef::find_object(Rps_CallFrame*callerframe, const std::string& str)
     {
       Rps_Id id(str);
       if (!id)
-        throw std::runtime_error("Rps_ObjectRef::find_object: bad id " + str);
+        throw std::runtime_error("Rps_ObjectRef::find_object_by_string: bad id " + str);
       _.obfound = Rps_ObjectRef(Rps_ObjectZone::find(id));
       if (!_.obfound)
-        throw std::runtime_error("Rps_ObjectRef::find_object: nonexistant id " + str);
+        throw std::runtime_error("Rps_ObjectRef::find_object_by_string: nonexistant id " + str);
     }
-  else throw std::runtime_error("bad string " + str + " to Rps_ObjectRef::find_object");
+  else throw std::runtime_error("bad string " + str + " to Rps_ObjectRef::find_object_by_string");
   return _.obfound;
-} // end Rps_ObjectRef::find_object
+} // end Rps_ObjectRef::find_object_by_string
 
 
 Rps_ObjectRef
