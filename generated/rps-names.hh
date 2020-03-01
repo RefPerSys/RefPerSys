@@ -36,10 +36,11 @@ RPS_INSTALL_NAMED_ROOT_OB(_6fmq7pZkmNd03UyPuO,class)
 RPS_INSTALL_NAMED_ROOT_OB(_6JbWqOsjX5T03M1eGM,closure_for_method_selector)
 RPS_INSTALL_NAMED_ROOT_OB(_6QAanFi9yLx00spBST,last_name)
 RPS_INSTALL_NAMED_ROOT_OB(_7X9eGs8601M021nMue,object)
+RPS_INSTALL_NAMED_ROOT_OB(_8xCV6GDXYMa02mK5xy,display_object_content_qt)
 RPS_INSTALL_NAMED_ROOT_OB(_9uwZtDshW4401x6MsY,space)
 
 #undef RPS_NB_NAMED_ROOT_OB
-#define RPS_NB_NAMED_ROOT_OB 17
+#define RPS_NB_NAMED_ROOT_OB 18
 
 #undef RPS_INSTALL_NAMED_ROOT_OB
 /// end of RefPerSys roots file generated/rps-names.hh

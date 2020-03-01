@@ -20,6 +20,7 @@
 #error RPS_INSTALL_ROOT_OB(Oid) macro undefined
 #endif /*undefined RPS_INSTALL_ROOT_OB*/
 
+RPS_INSTALL_ROOT_OB(_02iWbXmFx8f04ldLRt) //∈named_selector
 RPS_INSTALL_ROOT_OB(_0cSUtWqTYdZ00mjeNR) //named_selector∈class
 RPS_INSTALL_ROOT_OB(_0deGTf5hQwu01xJkyi) //display_value_qt∈symbol
 RPS_INSTALL_ROOT_OB(_0jdbikGJFq100dgX1n) //comment∈symbol
@@ -62,6 +63,7 @@ RPS_INSTALL_ROOT_OB(_6QAanFi9yLx00spBST) //last_name∈symbol
 RPS_INSTALL_ROOT_OB(_6XLY6QfcDre02922jz) //value∈class
 RPS_INSTALL_ROOT_OB(_7b8jzCpOStA04e0jxs) //qobject∈class
 RPS_INSTALL_ROOT_OB(_7X9eGs8601M021nMue) //object∈symbol
+RPS_INSTALL_ROOT_OB(_8xCV6GDXYMa02mK5xy) //display_object_content_qt∈symbol
 RPS_INSTALL_ROOT_OB(_8J6vNYtP5E800eCr5q) //∈space
 RPS_INSTALL_ROOT_OB(_8YknAApDQiF04BDe3W) //mutable_vector∈class
 RPS_INSTALL_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
@@ -70,7 +72,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 48
+#define RPS_NB_ROOT_OB 50
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
