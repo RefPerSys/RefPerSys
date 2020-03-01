@@ -1070,32 +1070,62 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
 } // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
 
 
+
 // C++ closure for _5nSiRIxoYQp00MSnYA
 //!method object!display_object_content_qt
 extern "C" rps_applyingfun_t rpsapply_5nSiRIxoYQp00MSnYA;
 Rps_TwoValues
 rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
-                   const Rps_Value arg0, const Rps_Value arg1, ///
-                   const Rps_Value arg2, const Rps_Value arg3, ///
-                   const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+                             const Rps_Value arg0obj, //
+                             const Rps_Value arg1obwin, ///
+                             const Rps_Value arg2depth, //
+                             const Rps_Value arg3optqtposition, ///
+                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_ )
 {
+  /* In the usual case, this RefPerSys method is called with 3
+     arguments.  But in special cases, the 4th argument is a position
+     in the document of the text cursor .... */
   RPS_LOCALFRAME(rpskob_5nSiRIxoYQp00MSnYA,
                  callerframe, //
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+                 Rps_ObjectRef recvob;
+                 Rps_ObjectRef objwnd;
+                 Rps_Value recdepth;
+                 Rps_Value optqtposition;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
   ////==== body of _5nSiRIxoYQp00MSnYA !method object!display_object_content_qt ====
-  ;
+  _.recvob = arg0obj.as_object();
+  RPS_ASSERT(_.recvob);
+  _.objwnd = arg1obwin.as_object();
+  RPS_ASSERT (_.objwnd);
+  _.recdepth = arg2depth;
+  RPS_ASSERT (_.recdepth.is_int());
+  auto depthi = _.recdepth.to_int();
+  _.optqtposition = arg3optqtposition;
+  RPS_ASSERT (!_.optqtposition || _.optqtposition.is_int());
+  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+  std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
+  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutwndload);
+  auto qoutwx = qoutwndload->qtptr();
+  RPS_ASSERT (qoutwx);
+  auto qcursor = qoutwx->textCursor();
+  if (_.optqtposition.is_int())
+    {
+      int qtpos = _.optqtposition.to_int();
+      auto qothcursor = QTextCursor(qoutwx->document());
+      qothcursor.setPosition(qtpos,QTextCursor::MoveAnchor);
+      qcursor = qothcursor;
+    }
+#warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt incomplete
+  RPS_WARNOUT("incomplete rpsapply_5nSiRIxoYQp00MSnYA !method object/display_object_content_qt" << std::endl
+              << "... recvob=" << _.recvob
+              << " objwnd=" << _.objwnd
+              << " depthi=" << depthi
+              << " optqtposition=" << _.optqtposition);
+  _.resmainv = _.recvob;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _5nSiRIxoYQp00MSnYA
 } // end of rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt
 
