@@ -833,9 +833,17 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
   RPS_ASSERT (qoutwndload);
   auto qoutwx = qoutwndload->qtptr();
   RPS_ASSERT (qoutwx);
+  auto qcfmt = RpsQOutputTextEdit::instance_text_format();
+  auto qcursor = qoutwx->textCursor();
+  _.obconn = _.instrecv->conn();
+  RPS_ASSERT (_.obconn);
   /// we use the ☋ U+260B DESCENDING NODE sign, related to alchemical symbol for purify
+  qcursor.insertText("☋", //U+260B DESCENDING NODE sign
+                     qcfmt);
+  qoutwx->display_output_object_occurrence(&_, _.obconn, depthi+1);
 #warning rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt incomplete
   RPS_WARNOUT("rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt incomplete instrecv=" << _.instrecv);
+  _.resmainv = _.instrecv;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _0rgijx7CCnq041IZEd
 } // end of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt
 
@@ -878,8 +886,31 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
   RPS_ASSERT (qoutwndload);
   auto qoutwx = qoutwndload->qtptr();
   RPS_ASSERT (qoutwx);
+  auto qcfmt = RpsQOutputTextEdit::closure_text_format();
+  auto qcursor = qoutwx->textCursor();
+  _.obconn = _.closrecv->conn();
+  RPS_ASSERT (_.obconn);
   /// we use the ⛝ U+26DD SQUARED SALTIRE, also meaning "closed exit"
-  ;
+  qcursor.insertText("⛝", //U+260B DESCENDING NODE sign
+                     qcfmt);
+  qoutwx->display_output_object_occurrence(&_, _.obconn, depthi+1);
+  qoutwx->output_space_or_indented_newline(qcfmt, depthi+1);
+  qcursor.insertText("❨", //U+2768 MEDIUM LEFT PARENTHESIS ORNAMENT
+                     qcfmt);
+  for (unsigned ix=0; ix<width; ix++)
+    {
+      if (ix>0)
+        {
+          qcursor.insertText(",", qcfmt);
+          qoutwx->output_space_or_indented_newline(qcfmt, depthi+1);
+        };
+      _.compv = _.closrecv->at(ix);
+      qoutwx->display_output_value(&_, _.compv, depthi+1);
+      _.compv = nullptr;
+    }
+  qcursor.insertText("❩", //U+2769 MEDIUM RIGHT PARENTHESIS ORNAMENT
+                     qcfmt);
+  _.resmainv = _.closrecv;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _6Wi00FwXYID00gl9Ma
 } // end of rpsapply_6Wi00FwXYID00gl9Ma !method closure/display_value_qt
 
