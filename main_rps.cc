@@ -139,14 +139,23 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(std::lock_guard<std::recursive_mutex>);
   EXPLAIN_TYPE(std::lock_guard<std::shared_mutex>);
   EXPLAIN_TYPE(std::string);
+  EXPLAIN_TYPE(std::vector<std::string>);
+  EXPLAIN_TYPE(std::set<std::string>);
   EXPLAIN_TYPE2(std::map<Rps_ObjectRef, Rps_Value>);
   EXPLAIN_TYPE2(std::unordered_map<std::string, Rps_ObjectRef*>);
   EXPLAIN_TYPE3(std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher>);
+  EXPLAIN_TYPE(QColor);
+  EXPLAIN_TYPE(QProcess);
   EXPLAIN_TYPE(QString);
+  EXPLAIN_TYPE(QTextCharFormat);
+  EXPLAIN_TYPE(QTextCursor);
+  EXPLAIN_TYPE(QTextDocument);
+  EXPLAIN_TYPE(QTextEdit);
+  EXPLAIN_TYPE(QTextFragment);
   ///
   EXPLAIN_TYPE(RpsQApplication);
-  EXPLAIN_TYPE(RpsQOutputTextEdit);
   EXPLAIN_TYPE(RpsQOutputTextDocument);
+  EXPLAIN_TYPE(RpsQOutputTextEdit);
   EXPLAIN_TYPE(RpsQWindow);
   EXPLAIN_TYPE(Rps_BackTrace);
   EXPLAIN_TYPE(Rps_ClosureValue);
@@ -161,6 +170,7 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(Rps_ObjectZone);
   EXPLAIN_TYPE(Rps_Payload);
   EXPLAIN_TYPE(Rps_PayloadClassInfo);
+  EXPLAIN_TYPE(Rps_PayloadQt<QTextEdit>);
   EXPLAIN_TYPE(Rps_PayloadSetOb);
   EXPLAIN_TYPE(Rps_PayloadVectOb);
   EXPLAIN_TYPE(Rps_QuasiZone);
