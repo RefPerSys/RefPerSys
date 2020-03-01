@@ -194,7 +194,8 @@ To install the dependencies on a Debian system, you would run the following step
 * `sudo apt install libunistring-dev`
 * `sudo apt install qt5-default`
 * `sudo apt install libjsoncpp-dev`
-* `sudo apt install ccache`
+* `sudo apt install ccache g++ make build-essentials remake`
+* `sudo apt install ttf-unifont ttf-mscorefonts-installer unifont msttcorefonts fonts-ubuntu fonts-tuffy fonts-spleen fonts-roboto fonts-recommended fonts-yanone-kaffeesatz fonts-play fonts-eurofurence fonts-ecolier-court fonts-dejavu fonts-croscore fonts-cegui fonts-inter fonts-inconsolata`
 * `git clone https://github.com/ianlancetaylor/libbacktrace.git`
 * `cd libbacktrace`
 * `./configure`
