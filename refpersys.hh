@@ -2206,6 +2206,7 @@ public:
   {
     return (sizeof(*this) + _treelen * sizeof(_treesons[0])) / sizeof(void*);
   };
+  inline const Rps_Value at(int rk, bool dontfail=false) const;
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth) const
   {
     gc.mark_obj(_treeconnob);

@@ -1344,6 +1344,19 @@ Rps_TreeZone<RpsTree,treety,k1,k2,k3,k4>::get_metadata(void) const
 
 
 template<typename RpsTree, Rps_Type treety, unsigned k1, unsigned k2, unsigned k3, unsigned k4>
+const Rps_Value
+Rps_TreeZone<RpsTree,treety,k1,k2,k3,k4>::at(int rk, bool dontfail) const
+{
+  if (rk < 0)
+    rk += cnt();
+  if (rk >= 0 && rk < (int) cnt())
+    return _treesons[rk];
+  else if (dontfail) return nullptr;
+  else throw std::range_error("Rps_TreeZone::at out of range");
+} // end Rps_TreeZone::at
+
+
+template<typename RpsTree, Rps_Type treety, unsigned k1, unsigned k2, unsigned k3, unsigned k4>
 void
 Rps_TreeZone<RpsTree,treety,k1,k2,k3,k4>::put_metadata(Rps_ObjectRef obr, int32_t num, bool transient)
 {
@@ -1676,6 +1689,14 @@ Rps_InstanceValue::Rps_InstanceValue(const Rps_Value val)
   : Rps_Value (val.is_instance()?val.as_instance():nullptr, Rps_ValPtrTag{})
 {
 }; // end Rps_InstanceValue::Rps_InstanceValue dynamic
+
+Rps_InstanceZone*
+Rps_InstanceValue::operator -> (void) const
+{
+  if (is_empty() || !is_instance())
+    throw std::runtime_error("empty Rps_InstanceValue");
+  return const_cast<Rps_InstanceZone*>(to_instance());
+} // end Rps_InstanceValue::operator ->
 
 /************************** PAYLOADS *************************************/
 /*************************************************************************/
