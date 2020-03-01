@@ -28,12 +28,19 @@
 //+ob_0cSUtWqTYdZ00mjeNR
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "named_selector"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "named_selector",
  "class_super" : "_36I1BY2NetN03WjrOv",
  "class_symb" : "_28AK5czKyu701KF2lg",
- "mtime" : 1581703301.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_0cSUtWqTYdZ00mjeNR",
  "payload" : "class"
 }
@@ -104,12 +111,19 @@
 //+ob_0J1C39JoZiv03qA2HA
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "mutable_set"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "mutable_set",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_3Am8E82pFkw00D7jFU",
- "mtime" : 1579066951.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_0J1C39JoZiv03qA2HA",
  "payload" : "class"
 }
@@ -224,8 +238,15 @@
 //+ob_1wihX3eWD9o00QnxUX
 //∈mutable_set
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "our_contributors"
+  }
+ ],
  "class" : "_0J1C39JoZiv03qA2HA",
- "mtime" : 1579283407.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_1wihX3eWD9o00QnxUX",
  "payload" : "setob",
  "setob" : [ "_5EuQjoAiaR300kp2q0", "_6szOLSv3Dll04kSQCE" ]
@@ -247,21 +268,28 @@
 //+ob_1DUx3zfUzIb04lqNVt
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "rps_window"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "rps_window",
  "class_super" : "_7b8jzCpOStA04e0jxs",
  "class_symb" : "_2zoK8ilmqHH02mlmjx",
- "mtime" : 1580672958.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_1DUx3zfUzIb04lqNVt",
  "payload" : "class"
 }
 
 
 //+ob_1EBVGSfW2m200z18rx
-//∈symbol
+//∈named_attribute
 {
- "class" : "_36I1BY2NetN03WjrOv",
+ "class" : "_4pSwobFHGf301Qgwzh",
  "mtime" : 1583072994.2,
  "oid" : "_1EBVGSfW2m200z18rx",
  "payload" : "symbol",
@@ -273,12 +301,19 @@
 //+ob_1NWEOIzo3WU03mE42Q
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "rps_output_textedit"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "rps_output_textedit",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_9bqiNXE1FY402gkF5S",
- "mtime" : 1581179804.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_1NWEOIzo3WU03mE42Q",
  "payload" : "class"
 }
@@ -299,8 +334,15 @@
 //+ob_1Win5yzaf1L02cBUlV
 //∈named_selector
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "display_value_qt"
+  }
+ ],
  "class" : "_0cSUtWqTYdZ00mjeNR",
- "mtime" : 1581703336.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_1Win5yzaf1L02cBUlV"
 }
 
@@ -344,12 +386,19 @@
 //+ob_2i66FFjmS7n03HNNBx
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "space"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "space",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_9uwZtDshW4401x6MsY",
- "mtime" : 1575698824.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_2i66FFjmS7n03HNNBx",
  "payload" : "class"
 }
@@ -382,6 +431,13 @@
 //+ob_2A2mrPpR3Qf03p6o5b
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "int"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : 
  [
@@ -398,7 +454,7 @@
  "class_name" : "int",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_2SqiFRt6QTI01CPGf1",
- "mtime" : 1578190306.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_2A2mrPpR3Qf03p6o5b",
  "payload" : "class"
 }
@@ -475,12 +531,19 @@
 //+ob_36I1BY2NetN03WjrOv
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "symbol"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "symbol",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_3Q3hJsSgCDN03GTYW5",
- "mtime" : 1575698824.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_36I1BY2NetN03WjrOv",
  "payload" : "class"
 }
@@ -501,6 +564,13 @@
 //+ob_3eg155drDR100uqE6R
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "qtptr"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : 
  [
@@ -517,7 +587,7 @@
  "class_name" : "qtptr",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_1o1xs5088nl01n9NCv",
- "mtime" : 1581572069.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_3eg155drDR100uqE6R",
  "payload" : "class"
 }
@@ -550,6 +620,13 @@
 //+ob_3GHJQW0IIqS01QY8qD
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "json"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : 
  [
@@ -566,7 +643,7 @@
  "class_name" : "json",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_7vUmzaAjb2f000BAFb",
- "mtime" : 1581572079.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_3GHJQW0IIqS01QY8qD",
  "payload" : "class"
 }
@@ -622,13 +699,20 @@
 //+ob_41OFI3r0S1t03qdB2E
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "class"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "class",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_6fmq7pZkmNd03UyPuO",
  "magicattr" : true,
- "mtime" : 1575698824.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_41OFI3r0S1t03qdB2E",
  "payload" : "class"
 }
@@ -653,6 +737,13 @@
 //+ob_4jISxMJ4PYU0050nUl
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "closure"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : 
  [
@@ -669,7 +760,7 @@
  "class_name" : "closure",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_0y4kTjRxYdk01uWIhK",
- "mtime" : 1578191597.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_4jISxMJ4PYU0050nUl",
  "payload" : "class"
 }
@@ -678,8 +769,15 @@
 //+ob_4ojpzRzyRWz02DNWMe
 //∈named_selector
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "display_object_occurrence_qt"
+  }
+ ],
  "class" : "_0cSUtWqTYdZ00mjeNR",
- "mtime" : 1582608592.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_4ojpzRzyRWz02DNWMe"
 }
 
@@ -687,12 +785,19 @@
 //+ob_4pSwobFHGf301Qgwzh
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "named_attribute"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "named_attribute",
  "class_super" : "_36I1BY2NetN03WjrOv",
  "class_symb" : "_7Qfhd0QQzdy03O0jBz",
- "mtime" : 1583072970.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_4pSwobFHGf301Qgwzh",
  "payload" : "class"
 }
@@ -717,8 +822,15 @@
 //+ob_4FBkYDlynyC02QtkfG
 //∈named_attribute
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "name"
+  }
+ ],
  "class" : "_4pSwobFHGf301Qgwzh",
- "mtime" : 1583072994.2,
+ "mtime" : 1583088448.8099999,
  "oid" : "_4FBkYDlynyC02QtkfG"
 }
 
@@ -742,12 +854,19 @@
 //+ob_54CP9eaTmxT00lzbEW
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "rps_command_textedit"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "rps_command_textedit",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_1vzVEjDgm6R026xTSv",
- "mtime" : 1581180886.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_54CP9eaTmxT00lzbEW",
  "payload" : "class"
 }
@@ -756,6 +875,13 @@
 //+ob_5yhJGgxLwLp00X0xEQ
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "object"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : 
  [
@@ -781,7 +907,7 @@
  "class_name" : "object",
  "class_super" : "_6XLY6QfcDre02922jz",
  "class_symb" : "_7X9eGs8601M021nMue",
- "mtime" : 1578114964.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_5yhJGgxLwLp00X0xEQ",
  "payload" : "class"
 }
@@ -801,12 +927,19 @@
 //+ob_5CYWxcChKN002rw1fI
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "contributor_to_RefPerSys"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "contributor_to_RefPerSys",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_1ULNUrWPB8e01sGIDF",
- "mtime" : 1578374556.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_5CYWxcChKN002rw1fI",
  "payload" : "class"
 }
@@ -859,6 +992,13 @@
 //+ob_62LTwxwKpQ802SsmjE
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "string"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : 
  [
@@ -875,7 +1015,7 @@
  "class_name" : "string",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_3ppZRdS4dt002ZqydW",
- "mtime" : 1578190815.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_62LTwxwKpQ802SsmjE",
  "payload" : "class"
 }
@@ -896,8 +1036,15 @@
 //+ob_6gxiw0snqrX01tZWW9
 //∈mutable_set
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "set_of_core_functions"
+  }
+ ],
  "class" : "_0J1C39JoZiv03qA2HA",
- "mtime" : 1579760979.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_6gxiw0snqrX01tZWW9",
  "payload" : "setob",
  "setob" : 
@@ -949,6 +1096,13 @@
 //+ob_6ulDdOP2ZNr001cqVZ
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "immutable_instance"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : 
  [
@@ -965,7 +1119,7 @@
  "class_name" : "immutable_instance",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_3HfCkVJzEdq042msZp",
- "mtime" : 1581267170.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_6ulDdOP2ZNr001cqVZ",
  "payload" : "class"
 }
@@ -985,6 +1139,13 @@
 //+ob_6JYterg6iAu00cV9Ye
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "set"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : 
  [
@@ -1001,7 +1162,7 @@
  "class_name" : "set",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_2PdqOugnnit019JFoX",
- "mtime" : 1578191281.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_6JYterg6iAu00cV9Ye",
  "payload" : "class"
 }
@@ -1010,6 +1171,13 @@
 //+ob_6NVM7sMcITg01ug5TC
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "tuple"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : 
  [
@@ -1026,7 +1194,7 @@
  "class_name" : "tuple",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_5KVs9kaMYiU040KwVj",
- "mtime" : 1578191139.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_6NVM7sMcITg01ug5TC",
  "payload" : "class"
 }
@@ -1076,12 +1244,19 @@
 //+ob_7b8jzCpOStA04e0jxs
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "qobject"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "qobject",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_3GIUWKXwNn803vE3LR",
- "mtime" : 1580672919.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_7b8jzCpOStA04e0jxs",
  "payload" : "class"
 }
@@ -1180,12 +1355,19 @@
 //+ob_8YknAApDQiF04BDe3W
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "mutable_vector"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "mutable_vector",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_0ZGvUv1c0RR01Mr5VM",
- "mtime" : 1579159079.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_8YknAApDQiF04BDe3W",
  "payload" : "class"
 }
@@ -1194,6 +1376,13 @@
 //+ob_98sc8kSOXV003i86w5
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "double"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : 
  [
@@ -1210,7 +1399,7 @@
  "class_name" : "double",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_1WoBcvgat8T0044rDo",
- "mtime" : 1578190970.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_98sc8kSOXV003i86w5",
  "payload" : "class"
 }
@@ -1244,12 +1433,19 @@
 //+ob_9BnrMLXUhfG00llx8X
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "function"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "function",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_2ls58Vx5KVm00fEoTt",
- "mtime" : 1579760541.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_9BnrMLXUhfG00llx8X",
  "payload" : "class"
 }
@@ -1258,12 +1454,19 @@
 //+ob_9Gz1oNPCnkB00I6VRS
 //∈class
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "core_function"
+  }
+ ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
  "class_name" : "core_function",
  "class_super" : "_9BnrMLXUhfG00llx8X",
  "class_symb" : "_37BVwKYeEW800KchHe",
- "mtime" : 1579760565.0,
+ "mtime" : 1583088448.8099999,
  "oid" : "_9Gz1oNPCnkB00I6VRS",
  "payload" : "class"
 }

@@ -30,7 +30,7 @@ RPS_INSTALL_ROOT_OB(_0XMNvzdABUM03Bj7WP) //git_id∈symbol
 RPS_INSTALL_ROOT_OB(_1wihX3eWD9o00QnxUX) //∈mutable_set
 RPS_INSTALL_ROOT_OB(_1DBiKRl70P304DEMoR) //our_contributors∈symbol
 RPS_INSTALL_ROOT_OB(_1DUx3zfUzIb04lqNVt) //rps_window∈class
-RPS_INSTALL_ROOT_OB(_1EBVGSfW2m200z18rx) //name∈symbol
+RPS_INSTALL_ROOT_OB(_1EBVGSfW2m200z18rx) //name∈named_attribute
 RPS_INSTALL_ROOT_OB(_1NWEOIzo3WU03mE42Q) //rps_output_textedit∈class
 RPS_INSTALL_ROOT_OB(_1Win5yzaf1L02cBUlV) //∈named_selector
 RPS_INSTALL_ROOT_OB(_1Zo12toMRTa03uqsXh) //display_object_occurrence_qt∈symbol
