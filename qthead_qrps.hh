@@ -464,6 +464,9 @@ private:
   static QTextCharFormat outptxt_symbol_qcfmt_;
   static QTextCharFormat outptxt_oid_qcfmt_;
   static QTextCharFormat outptxt_class_qcfmt_;
+  static QTextCharFormat outptxt_closure_qcfmt_;
+  static QTextCharFormat outptxt_instance_qcfmt_;
+  static QTextCharFormat outptxt_metadata_qcfmt_;
 public:
   void output_space_or_indented_newline(QTextCharFormat qc, int depth);
   /// Gets the text format for integer values.
@@ -534,6 +537,21 @@ public:
   static inline QTextCharFormat class_text_format()
   {
     return outptxt_class_qcfmt_;
+  }
+  /// Gets the text format for closures
+  static inline QTextCharFormat closure_text_format()
+  {
+    return outptxt_closure_qcfmt_;
+  }
+  /// Gets the text format for immutable instances
+  static inline QTextCharFormat instance_text_format()
+  {
+    return outptxt_instance_qcfmt_;
+  }
+  /// Gets the text format for metadata in closures or instances
+  static inline QTextCharFormat metadata_text_format()
+  {
+    return outptxt_metadata_qcfmt_;
   }
 
   static void initialize(void);

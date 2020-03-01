@@ -55,6 +55,9 @@ QTextCharFormat RpsQOutputTextEdit::outptxt_json_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_symbol_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_oid_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_class_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_closure_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_instance_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_metadata_qcfmt_;
 
 
 
@@ -192,6 +195,33 @@ RpsQOutputTextEdit::initialize()
     outptxt_class_qcfmt_.setForeground(QBrush(class_fgcol));
     QFont class_font = qst->value("out/class/font").value<QFont>();
     outptxt_class_qcfmt_.setFont(class_font);
+  }
+  /// how to display closures
+  {
+    QColor closure_bgcol = qst->value("out/closure/bgcolor").value<QColor>();
+    outptxt_closure_qcfmt_.setBackground(QBrush(closure_bgcol));
+    QColor closure_fgcol = qst->value("out/closure/fgcolor").value<QColor>();
+    outptxt_closure_qcfmt_.setForeground(QBrush(closure_fgcol));
+    QFont closure_font = qst->value("out/closure/font").value<QFont>();
+    outptxt_closure_qcfmt_.setFont(closure_font);
+  }
+  /// how to display instances
+  {
+    QColor instance_bgcol = qst->value("out/instance/bgcolor").value<QColor>();
+    outptxt_instance_qcfmt_.setBackground(QBrush(instance_bgcol));
+    QColor instance_fgcol = qst->value("out/instance/fgcolor").value<QColor>();
+    outptxt_instance_qcfmt_.setForeground(QBrush(instance_fgcol));
+    QFont instance_font = qst->value("out/instance/font").value<QFont>();
+    outptxt_instance_qcfmt_.setFont(instance_font);
+  }
+  /// how to display metadatas
+  {
+    QColor metadata_bgcol = qst->value("out/metadata/bgcolor").value<QColor>();
+    outptxt_metadata_qcfmt_.setBackground(QBrush(metadata_bgcol));
+    QColor metadata_fgcol = qst->value("out/metadata/fgcolor").value<QColor>();
+    outptxt_metadata_qcfmt_.setForeground(QBrush(metadata_fgcol));
+    QFont metadata_font = qst->value("out/metadata/font").value<QFont>();
+    outptxt_metadata_qcfmt_.setFont(metadata_font);
   }
 #warning more is needed in RpsQOutputTextEdit::initialize
 } // end RpsQOutputTextEdit::initialize
@@ -807,6 +837,11 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutwndload);
+  auto qoutwx = qoutwndload->qtptr();
+  RPS_ASSERT (qoutwx);
+  /// we use the ☋ U+260B DESCENDING NODE sign, related to alchemical symbol for purify
 #warning rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt incomplete
   RPS_WARNOUT("rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt incomplete instrecv=" << _.instrecv);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _0rgijx7CCnq041IZEd
@@ -818,26 +853,40 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_6Wi00FwXYID00gl9Ma;
 Rps_TwoValues
 rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0, const Rps_Value arg1, ///
-                             const Rps_Value arg2, const Rps_Value arg3, ///
-                             const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
+                             const Rps_Value arg0_clos, ///
+                             const Rps_Value arg1_objwnd, ///
+                             const Rps_Value arg2_recdepth, ///
+                             [[maybe_unused]] const Rps_Value arg3_, ///
+                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_6Wi00FwXYID00gl9Ma,
                  callerframe, //
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+                 Rps_ClosureValue closrecv;
+                 Rps_ObjectRef objwnd;
+                 Rps_ObjectRef obconn;
+                 Rps_ObjectRef obmeta;
+                 Rps_Value recdepth;
+                 Rps_Value compv;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
   ////==== body of _6Wi00FwXYID00gl9Ma !method closure/display_value_qt ====
+  _.closrecv = Rps_ClosureValue(arg0_clos.as_closure());
+  RPS_ASSERT (_.closrecv);
+  _.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_.objwnd);
+  _.recdepth = arg2_recdepth;
+  RPS_ASSERT (_.recdepth.is_int());
+  auto depthi = _.recdepth.to_int();
+  _.obconn = _.closrecv->conn();
+  unsigned width = _.closrecv->cnt();
+  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutwndload);
+  auto qoutwx = qoutwndload->qtptr();
+  RPS_ASSERT (qoutwx);
+  /// we use the ⛝ U+26DD SQUARED SALTIRE, also meaning "closed exit"
   ;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _6Wi00FwXYID00gl9Ma
 } // end of rpsapply_6Wi00FwXYID00gl9Ma !method closure/display_value_qt
