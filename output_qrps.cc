@@ -58,6 +58,7 @@ QTextCharFormat RpsQOutputTextEdit::outptxt_class_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_closure_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_instance_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_metadata_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_objecttitle_qcfmt_;
 QTextFrameFormat RpsQOutputTextEdit::outptxt_objectcontent_qfrfmt_;
 
 
@@ -213,6 +214,15 @@ RpsQOutputTextEdit::initialize()
     outptxt_metadata_qcfmt_.setForeground(QBrush(metadata_fgcol));
     QFont metadata_font = qst->value("out/metadata/font").value<QFont>();
     outptxt_metadata_qcfmt_.setFont(metadata_font);
+  }
+  /// how to display objecttitle
+  {
+    QColor objecttitle_bgcol = qst->value("out/objecttitle/bgcolor").value<QColor>();
+    outptxt_objecttitle_qcfmt_.setBackground(QBrush(objecttitle_bgcol));
+    QColor objecttitle_fgcol = qst->value("out/objecttitle/fgcolor").value<QColor>();
+    outptxt_objecttitle_qcfmt_.setForeground(QBrush(objecttitle_fgcol));
+    QFont objecttitle_font = qst->value("out/objecttitle/font").value<QFont>();
+    outptxt_objecttitle_qcfmt_.setFont(objecttitle_font);
   }
   //// frame format for object contents
   {
@@ -1135,8 +1145,15 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
     }
   /// see https://doc.qt.io/qt-5/richtext-advanced-processing.html
   {
+    // the title block....
     qcursor.beginEditBlock();
     qcursor.insertFrame(qoutwx->objectcontent_frame_format());
+    auto qcfmt = RpsQOutputTextEdit::objecttitle_text_format();
+    qcursor.insertText("▣ ", //U+25A3 WHITE SQUARE CONTAINING BLACK SMALL SQUARE
+                       qcfmt);
+    qoutwx->display_output_object_occurrence(&_, _.recvob, depthi);
+    qcursor.insertText(" ▤", //U+25A4 SQUARE WITH HORIZONTAL FILL
+                       qcfmt);
     qcursor.endEditBlock();
   }
 #warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt incomplete
