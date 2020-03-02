@@ -58,7 +58,7 @@ QTextCharFormat RpsQOutputTextEdit::outptxt_class_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_closure_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_instance_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_metadata_qcfmt_;
-
+QTextFrameFormat RpsQOutputTextEdit::outptxt_objectcontent_qfrfmt_;
 
 
 void
@@ -213,6 +213,20 @@ RpsQOutputTextEdit::initialize()
     outptxt_metadata_qcfmt_.setForeground(QBrush(metadata_fgcol));
     QFont metadata_font = qst->value("out/metadata/font").value<QFont>();
     outptxt_metadata_qcfmt_.setFont(metadata_font);
+  }
+  //// frame format for object contents
+  {
+    QColor objectcontent_bgcol = qst->value("out/objectcontent/bgcolor").value<QColor>();
+    outptxt_objectcontent_qfrfmt_.setBackground(QBrush(objectcontent_bgcol));
+    QColor objectcontent_fgcol = qst->value("out/objectcontent/fgcolor").value<QColor>();
+    outptxt_objectcontent_qfrfmt_.setBackground(QBrush(objectcontent_fgcol));
+    qreal objectcontent_margin = qst->value("out/objectcontent/margin").toDouble();
+    outptxt_objectcontent_qfrfmt_.setMargin(objectcontent_margin);
+    qreal objectcontent_padding = qst->value("out/objectcontent/padding").toDouble();
+    outptxt_objectcontent_qfrfmt_.setPadding(objectcontent_padding);
+    qreal objectcontent_border = qst->value("out/objectcontent/border").toDouble();
+    outptxt_objectcontent_qfrfmt_.setBorder(objectcontent_border);
+    outptxt_objectcontent_qfrfmt_.setBorderStyle(QTextFrameFormat::BorderStyle_Dotted);
   }
 #warning more is needed in RpsQOutputTextEdit::initialize
 } // end RpsQOutputTextEdit::initialize
@@ -1119,6 +1133,12 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
       qothcursor.setPosition(qtpos,QTextCursor::MoveAnchor);
       qcursor = qothcursor;
     }
+  /// see https://doc.qt.io/qt-5/richtext-advanced-processing.html
+  {
+    qcursor.beginEditBlock();
+    qcursor.insertFrame(qoutwx->objectcontent_frame_format());
+    qcursor.endEditBlock();
+  }
 #warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt incomplete
   RPS_WARNOUT("incomplete rpsapply_5nSiRIxoYQp00MSnYA !method object/display_object_content_qt" << std::endl
               << "... recvob=" << _.recvob
