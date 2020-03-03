@@ -1127,6 +1127,8 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                  Rps_Value optqtposition;
                  Rps_ObjectRef spacob;
                  Rps_Value setattrs;
+		 Rps_ObjectRef attrob;
+		 Rps_Value attrval;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
@@ -1178,6 +1180,12 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
     {
       qcursor.insertText(QString("%1 attributes\n").arg(nbattrs),
                          RpsQOutputTextEdit::objectdecor_text_format());
+      for (unsigned aix=0; aix<nbattrs; aix++) {
+	_.attrob = _.setattrs.as_set()->at(aix);
+	//_.keyob = _.recvob->get_attr(&_, _.attrob);
+	qcursor.insertText("● ", //U+25CF BLACK CIRCLE
+			   RpsQOutputTextEdit::objectdecor_text_format());
+      }
     }
 #warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt incomplete
   RPS_WARNOUT("incomplete rpsapply_5nSiRIxoYQp00MSnYA !method object/display_object_content_qt" << std::endl
