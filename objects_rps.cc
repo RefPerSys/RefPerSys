@@ -239,6 +239,19 @@ Rps_ObjectZone::remove_attr(const Rps_ObjectRef obattr)
 
 
 Rps_Value
+Rps_ObjectZone::set_of_attributes([[maybe_unused]] Rps_CallFrame*stkf) const
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  unsigned nbat = ob_attrs.size();
+  std::vector<Rps_ObjectRef> vecat;
+  vecat.reserve(nbat);
+  for (auto it : ob_attrs)
+    vecat.push_back(it.first);
+  return Rps_SetValue(vecat);
+} // end of Rps_ObjectZone::set_of_attributes
+
+Rps_Value
 Rps_ObjectZone::get_attr1(Rps_CallFrame*stkf,const Rps_ObjectRef obattr0) const
 {
   RPS_ASSERT(stored_type() == Rps_Type::Object);
