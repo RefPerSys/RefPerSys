@@ -468,6 +468,7 @@ private:
   static QTextCharFormat outptxt_instance_qcfmt_;
   static QTextCharFormat outptxt_metadata_qcfmt_;
   static QTextCharFormat outptxt_objecttitle_qcfmt_;
+  static QTextCharFormat outptxt_objectdecor_qcfmt_;
   ///
   static QTextFrameFormat outptxt_objectcontent_qfrfmt_;
 public:
@@ -560,6 +561,11 @@ public:
   static inline QTextCharFormat objecttitle_text_format()
   {
     return outptxt_objecttitle_qcfmt_;
+  };
+  /// Gets the text format for object decor
+  static inline QTextCharFormat objectdecor_text_format()
+  {
+    return outptxt_objectdecor_qcfmt_;
   };
   static inline QTextFrameFormat objectcontent_frame_format()
   {

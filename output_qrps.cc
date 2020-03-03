@@ -59,6 +59,7 @@ QTextCharFormat RpsQOutputTextEdit::outptxt_closure_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_instance_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_metadata_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_objecttitle_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_objectdecor_qcfmt_;
 QTextFrameFormat RpsQOutputTextEdit::outptxt_objectcontent_qfrfmt_;
 
 
@@ -223,6 +224,15 @@ RpsQOutputTextEdit::initialize()
     outptxt_objecttitle_qcfmt_.setForeground(QBrush(objecttitle_fgcol));
     QFont objecttitle_font = qst->value("out/objecttitle/font").value<QFont>();
     outptxt_objecttitle_qcfmt_.setFont(objecttitle_font);
+  }
+  /// how to display object decor
+  {
+    QColor objectdecor_bgcol = qst->value("out/objectdecor/bgcolor").value<QColor>();
+    outptxt_objectdecor_qcfmt_.setBackground(QBrush(objectdecor_bgcol));
+    QColor objectdecor_fgcol = qst->value("out/objectdecor/fgcolor").value<QColor>();
+    outptxt_objectdecor_qcfmt_.setForeground(QBrush(objectdecor_fgcol));
+    QFont objectdecor_font = qst->value("out/objectdecor/font").value<QFont>();
+    outptxt_objectdecor_qcfmt_.setFont(objectdecor_font);
   }
   //// frame format for object contents
   {
@@ -1115,6 +1125,8 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef objwnd;
                  Rps_Value recdepth;
                  Rps_Value optqtposition;
+                 Rps_ObjectRef spacob;
+                 Rps_Value setattrs;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
@@ -1154,8 +1166,19 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
     qoutwx->display_output_object_occurrence(&_, _.recvob, depthi);
     qcursor.insertText(" ▤", //U+25A4 SQUARE WITH HORIZONTAL FILL
                        qcfmt);
+    qcursor.insertText("\n");
+    qcursor.insertText(_.recvob->string_oid().c_str(),
+                       RpsQOutputTextEdit::oid_text_format());
     qcursor.endEditBlock();
   }
+  double mtim = _.recvob->get_mtime();
+  _.setattrs = _.recvob->set_of_attributes(&_);
+  unsigned nbattrs = _.setattrs.as_set()->cardinal();
+  if (nbattrs > 0)
+    {
+      qcursor.insertText(QString("%1 attributes\n").arg(nbattrs),
+                         RpsQOutputTextEdit::objectdecor_text_format());
+    }
 #warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt incomplete
   RPS_WARNOUT("incomplete rpsapply_5nSiRIxoYQp00MSnYA !method object/display_object_content_qt" << std::endl
               << "... recvob=" << _.recvob
