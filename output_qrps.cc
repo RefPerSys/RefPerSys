@@ -1127,8 +1127,8 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                  Rps_Value optqtposition;
                  Rps_ObjectRef spacob;
                  Rps_Value setattrs;
-		 Rps_ObjectRef attrob;
-		 Rps_Value attrval;
+                 Rps_ObjectRef attrob;
+                 Rps_Value attrval;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
@@ -1173,20 +1173,58 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                        RpsQOutputTextEdit::oid_text_format());
     qcursor.endEditBlock();
   }
-  double mtim = _.recvob->get_mtime();
+  {
+    double mtim = _.recvob->get_mtime();
+    time_t mtimt = (time_t) mtim;
+    struct tm mtimtm = {};
+    char timbuf[64];
+    char timfrac[16];
+    char timzon[16];
+    memset (timbuf, 0, sizeof(timbuf));
+    memset (timzon, 0, sizeof(timzon));
+    memset (timfrac, 0, sizeof(timfrac));
+    memset (&mtimtm, 0, sizeof(mtimtm));
+    localtime_r (&mtimt, &mtimtm);
+    strftime(timbuf, sizeof(timbuf), "%Y,%b %d %H:%M:%S", &mtimtm);
+    strftime(timzon, sizeof(timzon), " %Z", &mtimtm);
+    RPS_ASSERT(strlen(timbuf) + strlen(timzon) + 8 < sizeof(timbuf));
+    double frtim = mtim - floor(mtim);
+    if (frtim > 0.99)
+      {
+        strcpy(timfrac, ".99+");
+      }
+    else if (frtim >= 0.0)
+      {
+        snprintf(timfrac, sizeof(timfrac), "%.2f", frtim);
+      }
+    else
+      strcpy(timfrac, ".??");
+    strcat(timbuf, timfrac);
+    strcat(timbuf, timzon);
+    RPS_ASSERT(timbuf[sizeof(timbuf)-1] == (char)0);
+    qcursor.insertText(QString("⌚ %1\n").arg(timbuf), //U+231A WATCH
+                       RpsQOutputTextEdit::objectdecor_text_format());
+  }
   _.setattrs = _.recvob->set_of_attributes(&_);
   unsigned nbattrs = _.setattrs.as_set()->cardinal();
   if (nbattrs > 0)
     {
       qcursor.insertText(QString("%1 attributes\n").arg(nbattrs),
                          RpsQOutputTextEdit::objectdecor_text_format());
-      for (unsigned aix=0; aix<nbattrs; aix++) {
-	_.attrob = _.setattrs.as_set()->at(aix);
-	//_.keyob = _.recvob->get_attr(&_, _.attrob);
-	qcursor.insertText("● ", //U+25CF BLACK CIRCLE
-			   RpsQOutputTextEdit::objectdecor_text_format());
-      }
+      for (unsigned aix=0; aix<nbattrs; aix++)
+        {
+          _.attrob = _.setattrs.as_set()->at(aix);
+          _.attrval = _.recvob->get_attr1(&_, _.attrob);
+          qcursor.insertText("● ", //U+25CF BLACK CIRCLE
+                             RpsQOutputTextEdit::objectdecor_text_format());
+          qoutwx->display_output_object_occurrence(&_, _.attrob, depthi+1);
+          qcursor.insertText(" ➠ ", //U+27A0 HEAVY DASHED TRIANGLE-HEADED RIGHTWARDS ARROW
+                             RpsQOutputTextEdit::objectdecor_text_format());
+          qoutwx->display_output_value(&_, _.attrval, depthi+1);
+          qcursor.insertText("\n");
+        }
     }
+  unsigned nbcomps = _.recvob->nb_components(&_);
 #warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt incomplete
   RPS_WARNOUT("incomplete rpsapply_5nSiRIxoYQp00MSnYA !method object/display_object_content_qt" << std::endl
               << "... recvob=" << _.recvob
