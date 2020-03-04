@@ -251,6 +251,15 @@ Rps_ObjectZone::set_of_attributes([[maybe_unused]] Rps_CallFrame*stkf) const
   return Rps_SetValue(vecat);
 } // end of Rps_ObjectZone::set_of_attributes
 
+
+unsigned
+Rps_ObjectZone::nb_attributes([[maybe_unused]] Rps_CallFrame*stkf) const
+{
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  unsigned nbat = ob_attrs.size();
+  return nbat;
+} // end Rps_ObjectZone::nb_attributes
+
 Rps_Value
 Rps_ObjectZone::get_attr1(Rps_CallFrame*stkf,const Rps_ObjectRef obattr0) const
 {
@@ -723,6 +732,29 @@ Rps_ObjectZone::exchange_attr4(const Rps_ObjectRef obattr0, const Rps_Value vala
   ob_mtime.store(rps_wallclock_real_time());
 } // end Rps_ObjectZone::exchange_attr4
 
+
+
+//////////////// components
+unsigned
+Rps_ObjectZone::nb_components([[maybe_unused]] Rps_CallFrame*stkf) const
+{
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  unsigned nbcomp = ob_comps.size();
+  return nbcomp;
+} // end Rps_ObjectZone::nb_components
+
+Rps_Value
+Rps_ObjectZone::component_at ([[maybe_unused]] Rps_CallFrame*stkf, int rk, bool dontfail) const
+{
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  unsigned nbcomp = ob_comps.size();
+  if (rk<0) rk += nbcomp;
+  if (rk>=0 && rk<nbcomp)
+    return ob_comps[rk];
+  if (dontfail)
+    return nullptr;
+  throw std::range_error("Rps_ObjectZone::component_at index out of range");
+} // end Rps_ObjectZone::component_at
 
 void
 Rps_ObjectZone::append_comp1(Rps_Value comp0)

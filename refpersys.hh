@@ -1773,7 +1773,9 @@ public:
   };
   inline Rps_ObjectRef get_space(void) const;
   void put_space(Rps_ObjectRef obspace);
+  //////////////// attributes
   Rps_Value set_of_attributes(Rps_CallFrame*stkf) const;
+  unsigned nb_attributes(Rps_CallFrame*stkf) const;
   Rps_Value get_attr1(Rps_CallFrame*stkf,const Rps_ObjectRef obattr0) const;
   Rps_TwoValues get_attr2(Rps_CallFrame*stkf,const Rps_ObjectRef obattr0, const Rps_ObjectRef obattr1) const;
   // if obaattr is a magic attribute, throw an exception
@@ -1804,6 +1806,7 @@ public:
   void put_attributes(const std::map<Rps_ObjectRef, Rps_Value>& newattrmap);
   void put_attributes(const std::initializer_list<std::pair<Rps_ObjectRef, Rps_Value>>& attril);
   void put_attributes(const std::vector<std::pair<Rps_ObjectRef, Rps_Value>>&attrvec);
+  /////////////////////////////////// components
   // append one, two, three, four, more components in the same object locking
   void append_comp1(Rps_Value comp0);
   void append_comp2(Rps_Value comp0, Rps_Value comp1);
@@ -1811,6 +1814,9 @@ public:
   void append_comp4(Rps_Value comp0, Rps_Value comp1, Rps_Value comp2, Rps_Value comp4);
   void append_components(const std::initializer_list<Rps_Value>&compil);
   void append_components(const std::vector<Rps_Value>&compvec);
+  unsigned nb_components(Rps_CallFrame*stkf) const;
+  Rps_Value component_at (Rps_CallFrame*stkf, int rk, bool dontfail=false) const;
+  Rps_Value instance_from_components(Rps_CallFrame*stkf, Rps_ObjectRef obinstclass) const;
   // get atomic fields
   inline double get_mtime(void) const;
   inline rps_applyingfun_t*get_applyingfun(const Rps_ClosureValue&closv) const
