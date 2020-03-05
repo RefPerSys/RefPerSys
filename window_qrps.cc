@@ -1751,6 +1751,10 @@ void RpsQDisplayObjectDialog::on_ok_trigger()
       RPS_INFORMOUT("RpsQObjectDisplayDialog::on_ok_trigger(): object = "
         << _.obdisp);
 
+#warning bug at this point
+      RpsQWindow* wnd = dynamic_cast<RpsQWindow*>(parentWidget());
+      wnd->win_output_textedit->display_output_object_occurrence(&_, _.obdisp, 1);
+
       std::ostringstream msg;
       msg << "found object " << strobdisp << " as " << _.obdisp;
       QMessageBox::information(parentWidget(), "Display Object", 

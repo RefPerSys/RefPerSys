@@ -634,6 +634,8 @@ class RpsQWindow : public QMainWindow
 public:
   RpsQWindow (QWidget *parent = nullptr, int rank=0);
 private:
+  friend class RpsQDisplayObjectDialog;
+
   int win_rank; // rank in application
   // see https://doc.qt.io/qt-5/qtwidgets-mainwindows-menus-example.html
   QMenu* win_app_menu;
