@@ -611,6 +611,7 @@ private:
   // see https://doc.qt.io/qt-5/qtwidgets-mainwindows-menus-example.html
   QMenu* win_app_menu;
   QMenu* win_create_menu;
+  QMenu* win_display_menu;
   QMenu* win_help_menu;
 
   // for app menu
@@ -628,6 +629,9 @@ private:
   QAction* win_crcontrib_action;
   QAction* win_crplugin_action;
   QAction* win_crclosob_action;
+
+  // for display menu
+  QAction* win_dispobj_action;
 
   // for help menu
 #warning RpsQWindow help menu missing

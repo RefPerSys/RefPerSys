@@ -49,6 +49,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     // be useless...
     win_app_menu(nullptr),
     win_create_menu(nullptr),
+    win_display_menu(nullptr),
     win_help_menu(nullptr),
     win_apdump_action(nullptr),
     win_apgc_action(nullptr),
@@ -98,6 +99,9 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_crplugin_action->setStatusTip("Create a new C++ plugin");
     win_crclosob_action = new QAction("create object for &Closure", this);
     win_crclosob_action->setStatusTip("Create an object for closures");
+    win_display_menu = mb->addMenu("Display");
+    win_dispobj_action = new QAction("display &Object", this);
+    win_dispobj_action->setStatusTip("Display an object");
     win_help_menu = mb->addMenu("Help");
   }
   /// add the actions to their menu
@@ -114,6 +118,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_create_menu->addAction(win_crcontrib_action);
     win_create_menu->addAction(win_crplugin_action);
     win_create_menu->addAction(win_crclosob_action);
+    win_display_menu->addAction(win_dispobj_action);
   }
   // our central widget and related subwindows and subwidgets
   win_centralmdi =  new QMdiArea(this);
