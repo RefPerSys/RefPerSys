@@ -1752,7 +1752,10 @@ void RpsQDisplayObjectDialog::on_ok_trigger()
         << _.obdisp);
 
 #warning bug at this point
-      RpsQWindow* wnd = dynamic_cast<RpsQWindow*>(parentWidget());
+      RPS_ASSERT(parentWidget() != nullptr);
+      RpsQWindow* wnd = qobject_cast<RpsQWindow*>(parentWidget());
+      RPS_ASSERT(wnd != nullptr);
+      RPS_ASSERT(wnd->win_output_textedit != nullptr);
       wnd->win_output_textedit->display_output_object_occurrence(&_, _.obdisp, 1);
 
       std::ostringstream msg;
