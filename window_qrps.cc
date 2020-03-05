@@ -1673,7 +1673,53 @@ RpsQCreateClosureObjectDialog::on_close_trigger()
 
 
 RpsQDisplayObjectDialog::RpsQDisplayObjectDialog(RpsQWindow* parent)
+  : QDialog(parent),
+    dialog_vbox(),
+    
+    object_hbox(),
+    object_label("Object:", this),
+    object_linedit("", "Object name or OID", this),
+    
+    button_hbox(),
+    ok_button("Display Object", this),
+    cancel_button("cancel", this)
 {
+  // set widget names for debugging and stylesheets
+  setObjectName("RpsQDisplayObjectDialog");
+  dialog_vbox.setObjectName("RpsQDisplayObjectDialog_dialog_vbox");
+  
+  object_hbox.setObjectName("RpsQDisplayObjectDialog_object_hbox");
+  object_label.setObjectName("RpsQDisplayObjectDialog_object_label");
+  object_linedit.setObjectName("RpsQDisplayObjectDialog_object_linedit");
+  
+  button_hbox.setObjectName("RpsQDisplayObjectDialog_button_hbox");
+  ok_button.setObjectName("RpsQDisplayObjectDialog_ok_button");
+  cancel_button.setObjectName("RpsQDisplayObjectDialog_cancel_button");
+
+  RPS_INFORMOUT("RpsQDisplayObjectDialog @" << this); 
+
+  // set fonts
+  object_label.setFont(QFont("Arial", 12));
+  object_linedit.setFont(QFont("Courier", 12));
+
+  // set layout
+  dialog_vbox.addLayout(&object_hbox);
+  object_hbox.addWidget(&object_label);
+  object_hbox.addSpacing(2);
+  object_hbox.addWidget(&object_linedit);
+
+  dialog_vbox.addLayout(&button_hbox);
+  button_hbox.addWidget(&ok_button);
+  button_hbox.addSpacing(3);
+  button_hbox.addWidget(&cancel_button);
+
+  setLayout(&dialog_vbox);
+
+  // connect slots to button signals
+  connect(&ok_button, &QAbstractButton::clicked, this, 
+    &RpsQDisplayObjectDialog::on_ok_trigger);
+  connect(&cancel_button, &QAbstractButton::clicked, this,
+    &RpsQDisplayObjectDialog::on_cancel_trigger);
 } // end RpsQDisplayObjectDialog::RpsQDisplayObjectDialog()
 
 
@@ -1689,6 +1735,7 @@ void RpsQDisplayObjectDialog::on_ok_trigger()
 
 void RpsQDisplayObjectDialog::on_cancel_trigger()
 {
+  deleteLater();
 } // end RpsQDisplayObjectDialog::on_cancel_trigger()
 
 
