@@ -1736,6 +1736,36 @@ RpsQDisplayObjectDialog::~RpsQDisplayObjectDialog()
 
 void RpsQDisplayObjectDialog::on_ok_trigger()
 {
+  RPS_LOCALFRAME(
+    Rps_ObjectRef(nullptr), 
+    nullptr, 
+    Rps_ObjectRef obsymb;
+    Rps_ObjectRef obdisp;
+  );
+
+  try
+    {
+      auto strobdisp = object_linedit.text().toStdString();
+      _.obdisp = Rps_ObjectRef::find_object_by_string(&_, strobdisp);
+
+      RPS_INFORMOUT("RpsQObjectDisplayDialog::on_ok_trigger(): object = "
+        << _.obdisp);
+
+      std::ostringstream msg;
+      msg << "found object " << _.obdisp << " named " << strobdisp;
+      QMessageBox::information(parentWidget(), "Display Object", 
+        msg.str().c_str());
+    }
+
+  catch (const std::exception& ex)
+    {
+      RPS_WARNOUT("RpsQDisplayObjectDialog::on_ok_trigger() exception: "
+        << ex.what());
+      QMessageBox::warning(parentWidget(), "Display Object Exception",
+        ex.what());
+    }
+
+  deleteLater();
 } // end RpsQDisplayObjectDialog::on_ok_trigger()
 
 
