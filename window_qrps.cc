@@ -1752,7 +1752,7 @@ void RpsQDisplayObjectDialog::on_ok_trigger()
         << _.obdisp);
 
       std::ostringstream msg;
-      msg << "found object " << _.obdisp << " named " << strobdisp;
+      msg << "found object " << strobdisp << " as " << _.obdisp;
       QMessageBox::information(parentWidget(), "Display Object", 
         msg.str().c_str());
     }
