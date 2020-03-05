@@ -1667,7 +1667,29 @@ RpsQCreateClosureObjectDialog::on_close_trigger()
 } // end RpsQCreateClosureObjectDialog::on_close_trigger
 
 
+////////////////////////////////////////////////////////////////
+// Implementation of RpsQDisplayObjectDialog
+///////////////////////////////////////////////////////////////
 
+
+RpsQDisplayObjectDialog::RpsQDisplayObjectDialog(RpsQWindow* parent)
+{
+} // end RpsQDisplayObjectDialog::RpsQDisplayObjectDialog()
+
+
+RpsQDisplayObjectDialog::~RpsQDisplayObjectDialog()
+{
+} // end Rps_QDisplayObjectDialog::~RpsQDisplayObjectDialog()
+
+
+void RpsQDisplayObjectDialog::on_ok_trigger()
+{
+} // end RpsQDisplayObjectDialog::on_ok_trigger()
+
+
+void RpsQDisplayObjectDialog::on_cancel_trigger()
+{
+} // end RpsQDisplayObjectDialog::on_cancel_trigger()
 
 
 ////////////////////////////////////////////////////////////////

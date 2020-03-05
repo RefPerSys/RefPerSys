@@ -386,6 +386,33 @@ private:
 };				// end of RpsQCreateClosureObjectDialog
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// The dialog box for displaying objects
+//////////////////////////////////////////////////////////////////////////////
+
+class RpsQDisplayObjectDialog : public QDialog
+{
+  Q_OBJECT
+public:
+  RpsQDisplayObjectDialog(RpsQWindow* parent);
+  ~RpsQDisplayObjectDialog();
+
+private slots:
+  void on_ok_trigger();
+  void on_cancel_trigger();
+
+
+private:
+  QVBoxLayout dialog_vbox;
+  QHBoxLayout object_hbox;
+  QLabel object_label;
+  RpsQObjectLineEdit object_linedit;
+  QHBoxLayout button_hbox;
+  QPushButton ok_button;
+  QPushButton cancel_button;
+};				// end RpsQCreateClassDialog
+
+
 //////////////////////////////////////////////////////////// RpsQCommandTextEdit
 class RpsQCommandTextEdit : public QTextEdit
 {
