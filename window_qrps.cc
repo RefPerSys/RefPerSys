@@ -220,6 +220,12 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     dia->show();
   });
 
+  connect(win_dispobj_action, &QAction::triggered, [=](void)
+  {
+    auto dia = new RpsQDisplayObjectDialog(this);
+    dia->show();
+  });
+
   connect(win_apclose_action, &QAction::triggered, [=](void)
   {
     RpsQApplication::the_app()->do_remove_window_by_index(window_rank());
