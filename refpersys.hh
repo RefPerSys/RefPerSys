@@ -838,6 +838,7 @@ public:
                           const std::vector<Rps_Value>& argvec) const;
   Rps_TwoValues send_ilist(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
                            const std::initializer_list<Rps_Value>& argil) const;
+  const void* unsafe_wptr() const { return _wptr; };
 private:
   union
   {
