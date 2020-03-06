@@ -145,6 +145,10 @@ Rps_ObjectZone::make(void)
   Rps_Id oid = fresh_random_oid(obz);
   *(const_cast<Rps_Id*>(&obz->ob_oid)) = oid;
   obz->ob_mtime.store(rps_wallclock_real_time());
+  // Every object should have a class, initially `object`; the
+  // ob_class can later be replaced, but we need something which is
+  // not null.... That atomic field could be later overwritten.
+  obz->ob_class.store(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)); //object∈class
   return obz;
 } // end Rps_ObjectZone::make
 
@@ -156,6 +160,11 @@ Rps_ObjectZone::make_loaded(Rps_Id oid, Rps_Loader* ld)
   RPS_ASSERT(oid.valid());
   RPS_ASSERT(ld != nullptr);
   Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(oid, false);
+  // Every object should have a class, initially `object`; the
+  // ob_class can later be replaced, but we need something which is
+  // not null.... The loader could later overwrite that.
+  obz->ob_class.store(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)); //object∈class
+  return obz;
   //RPS_INFORMOUT("make_loaded oid="<< oid << ", obz=" << (void*)obz);
   return obz;
 } // end Rps_ObjectZone::make_loaded
