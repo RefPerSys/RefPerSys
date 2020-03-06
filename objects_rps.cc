@@ -114,7 +114,18 @@ Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
     ob_applyingfun(nullptr)
 {
   if (!dontregister)
-    register_objzone(this);
+    {
+      register_objzone(this);
+      // In principle, the below initialization of ob_class should be
+      // useless, because it should be done elsewhere. In practice, we
+      // need it and prefer to initialize ob_class several times instead
+      // of none.
+      // Every object should have a class, initially `object`; the
+      // ob_class can later be replaced, but we need something which is
+      // not null.... That atomic field could be later overwritten.
+      ob_class.store(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)); //object∈class
+
+    }
 } // end Rps_ObjectZone::Rps_ObjectZone
 
 
