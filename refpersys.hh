@@ -337,6 +337,10 @@ do                                                                  \
 while (0)
 
 
+#define RPS_DEUBG_LOG(dbgopt, logmsg) \
+  RPS_DEBUG_LOG_AT(__FILE__, __LINE__, dbgopt, logmsg)
+
+
 //////////////// inform
 
 #define RPS_INFORM_AT_BIS(Fil,Lin,Fmt,...) do {			\
