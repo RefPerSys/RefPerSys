@@ -319,6 +319,10 @@ do                                                               \
 while (0)
 
 
+#define RPS_DEBUG_PRINTF(dbgopt, fmt, ...) \
+  RPS_DEBUG_PRINTF_AT(__FILE__, __LINE__, dbgopt, fmt, ##__VA_ARGS__)
+
+
 //////////////// inform
 
 #define RPS_INFORM_AT_BIS(Fil,Lin,Fmt,...) do {			\
