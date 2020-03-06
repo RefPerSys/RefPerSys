@@ -267,6 +267,35 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 #define RPS_WARNOUT(...) RPS_WARNOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
 
 
+///////////////////////////////////////////////////////////////////////////////
+// DEBUGGING MACROS
+// Adapted from MELT Monitor project
+// https://github.com/bstarynk/melt-monitor/blob/master/meltmoni.hh#L278
+///////////////////////////////////////////////////////////////////////////////
+
+
+#define RPS_DEBUG_OPTIONS(dbg_macro) \
+  dbg_macro(CMD)                     \
+  dbg_macro(DUMP)                    \
+  dbg_macro(LOAD)                    \
+  dbg_macro(PARSE)                   \
+  dbg_macro(PARSE_STRING)            \
+  dbg_macro(GARBAGE_COLLECTOR)       \
+  dbg_macro(MISC)                    \
+  dbg_macro(GENERATED_CODE)          \
+  dbg_macro(GUI)
+
+
+#define RPS_DEBUG_OPTION_DEFINE(opt_name) RPS_DEBUG_##opt_name,
+
+
+enum Rps_Debug 
+{
+  RPS_DEBUG__NONE,
+  RPS_DEBUG_OPTIONS(RPS_DEBUG_OPTION_DEFINE)
+  RPS_DEBUG__LAST
+};
+
 
 //////////////// inform
 
