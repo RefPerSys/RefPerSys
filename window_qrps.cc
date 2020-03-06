@@ -1734,7 +1734,8 @@ RpsQDisplayObjectDialog::~RpsQDisplayObjectDialog()
 } // end Rps_QDisplayObjectDialog::~RpsQDisplayObjectDialog()
 
 
-void RpsQDisplayObjectDialog::on_ok_trigger()
+void
+RpsQDisplayObjectDialog::on_ok_trigger()
 {
   RPS_LOCALFRAME(
     Rps_ObjectRef(nullptr), 
@@ -1748,10 +1749,9 @@ void RpsQDisplayObjectDialog::on_ok_trigger()
       auto strobdisp = object_linedit.text().toStdString();
       _.obdisp = Rps_ObjectRef::find_object_by_string(&_, strobdisp);
 
-      RPS_INFORMOUT("RpsQObjectDisplayDialog::on_ok_trigger(): object = "
+      RPS_INFORMOUT("RpsQObjectDisplayDialog::on_ok_trigger(): displaying object: "
         << _.obdisp);
 
-#warning bug at this point
       RPS_ASSERT(parentWidget() != nullptr);
       RpsQWindow* wnd = qobject_cast<RpsQWindow*>(parentWidget());
       RPS_ASSERT(wnd != nullptr);
