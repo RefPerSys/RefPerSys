@@ -274,19 +274,19 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#define RPS_DEBUG_OPTIONS(dbg_macro) \
-  dbg_macro(CMD)                     \
-  dbg_macro(DUMP)                    \
-  dbg_macro(LOAD)                    \
-  dbg_macro(PARSE)                   \
-  dbg_macro(PARSE_STRING)            \
-  dbg_macro(GARBAGE_COLLECTOR)       \
-  dbg_macro(MISC)                    \
-  dbg_macro(GENERATED_CODE)          \
-  dbg_macro(GUI)
+#define RPS_DEBUG_OPTIONS(dbgmacro) \
+  dbgmacro(CMD)                     \
+  dbgmacro(DUMP)                    \
+  dbgmacro(LOAD)                    \
+  dbgmacro(PARSE)                   \
+  dbgmacro(PARSE_STRING)            \
+  dbgmacro(GARBAGE_COLLECTOR)       \
+  dbgmacro(MISC)                    \
+  dbgmacro(GENERATED_CODE)          \
+  dbgmacro(GUI)
 
 
-#define RPS_DEBUG_OPTION_DEFINE(opt_name) RPS_DEBUG_##opt_name,
+#define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
 
 
 enum Rps_Debug 
@@ -295,6 +295,28 @@ enum Rps_Debug
   RPS_DEBUG_OPTIONS(RPS_DEBUG_OPTION_DEFINE)
   RPS_DEBUG__LAST
 };
+
+
+extern "C" unsigned rps_debug_flags;
+
+
+#define RPS_DEBUG_ENABLED(dbgopt) (rps_debug_flags & (1 << RPS_DEBUG_##dbgopt))
+
+
+void 
+rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt, 
+                    const char *fmt, ...) 
+__attribute__ ((format (printf, 4, 5)));
+
+
+#define RPS_DEBUG_PRINTF_AT(fname, fline, dbgopt, fmt, ...)      \
+do                                                               \
+  {                                                              \
+    if (RPS_DEUB_ENABLED(dbgopt))                                \
+      rps_debug_printf_at(fname, fline, RPS_DEBUG_##dbgopt, fmt, \
+                          ##__VA_ARGS__);                        \
+  }                                                              \
+while (0)
 
 
 //////////////// inform
