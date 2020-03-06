@@ -587,7 +587,7 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
         {
           if (_.val.is_object())
             RPS_FATALOUT("object @" << (void*)_.val.unsafe_wptr()
-                         << " of oid" << _.val.to_object()->oid()
+                         << " of oid " << _.val.to_object()->oid()
                          << " has no class");
           else
             RPS_FATALOUT("value @" << (void*)_.val.unsafe_wptr()

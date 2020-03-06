@@ -1062,6 +1062,15 @@ Rps_ObjectZone::less(const Rps_ZoneValue&zv) const
   }
 } // end of Rps_ObjectZone::less
 
+
+Rps_ObjectRef
+Rps_ObjectZone::compute_class(Rps_CallFrame*) const
+{
+  return get_class();
+} // end Rps_ObjectZone::compute_class
+
+
+
 std::string
 Rps_ObjectZone::string_oid(void) const
 {
