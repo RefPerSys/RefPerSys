@@ -583,9 +583,16 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
   while (loopcount++ <  (int)maximal_inheritance_depth)
     {
       _.obcurclass = _.val.compute_class(&_);
-      if (!_.obcurclass)
-        RPS_FATALOUT("value @" << (void*)_.val.unsafe_wptr()
-                     << " of type#" << (int)(_.val.to_ptr()?_.val.to_ptr()->stored_type():Rps_Type::None) << " has no class");
+      if (!_.obcurclass)   // should never happen
+        {
+          if (_.val.is_object())
+            RPS_FATALOUT("object @" << (void*)_.val.unsafe_wptr()
+                         << " of oid" << _.val.to_object()->oid()
+                         << " has no class");
+          else
+            RPS_FATALOUT("value @" << (void*)_.val.unsafe_wptr()
+                         << " of type#" << (int)(_.val.to_ptr()?_.val.to_ptr()->stored_type():Rps_Type::None) << " has no class");
+        }
       std::lock_guard<std::recursive_mutex> gucurclass(*(_.obcurclass->objmtxptr()));
       if (_.obcurclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz) // the topmost `value` class ends the loop
          )
