@@ -545,15 +545,20 @@ void rps_run_application(int &argc, char **argv)
   rps_load_from (loadtopdir);
   if (!dumpdirstr.empty())
     {
-      RPS_INFORMOUT("dumping after load to " << dumpdirstr);
+      RPS_INFORMOUT("RefPerSys dumping after load to " << dumpdirstr);
       rps_dump_into(dumpdirstr);
+      RPS_INFORMOUT("RefPerSys dumped after load to " << dumpdirstr << "========"
+                    << std::endl);
     }
   if (!rps_batch)
     {
+      RPS_INFORMOUT("running the GUI since no batch mode");
       app.initialize_app();
       RpsQOutputTextEdit::initialize();
       (void) app.exec ();
-    };
+    }
+  else
+    RPS_INFORMOUT("RefPerSys GUI was not run in batch mode");
 } // end of rps_run_application
 
 bool

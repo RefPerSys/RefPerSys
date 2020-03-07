@@ -136,6 +136,10 @@ public:
   // run some todo functions, return the number of remaining ones
   int run_some_todo_functions(void);
   void load_install_roots(void);
+  unsigned nb_loaded_objects(void) const
+  {
+    return ld_mapobjects.size();
+  };
 };				// end class Rps_Loader
 
 
@@ -2281,27 +2285,61 @@ void Rps_Loader::load_install_roots(void)
   }
 } // end Rps_Loader::load_install_roots
 
+
 void rps_load_from (const std::string& dirpath)
 {
-  Rps_Loader loader(dirpath);
-  try
-    {
-      loader.parse_manifest_file();
-      loader.load_all_state_files();
-      loader.load_install_roots();
-      rps_initialize_roots_after_loading(&loader);
-      rps_initialize_symbols_after_loading(&loader);
-    }
-  catch (const std::exception& exc)
-    {
-      RPS_FATALOUT("failed to load " << dirpath
-                   << "," << std::endl
-                   << "... got exception of type "
-                   << typeid(exc).name()
-                   << ":"
-                   << exc.what());
-    }
-#warning rps_load_from unimplemented
+  unsigned nbloaded = 0;
+  double startrealt = rps_elapsed_real_time();
+  double startcput = rps_process_cpu_time();
+  double endrealt = NAN;
+  double endcput = NAN;
+  {
+    Rps_Loader loader(dirpath);
+    try
+      {
+        loader.parse_manifest_file();
+        loader.load_all_state_files();
+        loader.load_install_roots();
+        rps_initialize_roots_after_loading(&loader);
+        rps_initialize_symbols_after_loading(&loader);
+        nbloaded = loader.nb_loaded_objects();
+      }
+    catch (const std::exception& exc)
+      {
+        RPS_FATALOUT("failed to load " << dirpath
+                     << "," << std::endl
+                     << "... got exception of type "
+                     << typeid(exc).name()
+                     << ":"
+                     << exc.what());
+      }
+  };
+  RPS_ASSERT(nbloaded > 0);
+  endrealt = rps_elapsed_real_time();
+  endcput = rps_process_cpu_time();
+  double realt = endrealt - startrealt;
+  double cput = endcput - startcput;
+  char realtbuf[32];
+  char cputbuf[32];
+  char realmicrobuf[32];
+  char cpumicrobuf[32];
+  memset(realtbuf, 0, sizeof(realtbuf));
+  memset(cputbuf, 0, sizeof(cputbuf));
+  memset(realmicrobuf, 0, sizeof(realmicrobuf));
+  memset(cpumicrobuf, 0, sizeof(cpumicrobuf));
+  snprintf(realtbuf, sizeof(realtbuf), "%.3f", realt);
+  snprintf(cputbuf, sizeof(cputbuf), "%.3f", cput);
+  snprintf(realmicrobuf, sizeof(realmicrobuf), "%.3f", (realt*1.0e6)/nbloaded);
+  snprintf(cpumicrobuf, sizeof(cpumicrobuf), "%.3f", (cput*1.0e6)/nbloaded);
+  RPS_INFORMOUT("rps_load_from completed from directory " << dirpath
+                << " with RefPerSys built " << rps_timestamp << std::endl
+                << " lastgittag " << rps_lastgittag << std::endl
+                << " md5sum " << rps_md5sum << std::endl
+                << " loaded " << nbloaded << " objects in " << realtbuf << " elapsed, " << cputbuf << " cpu seconds" << std::endl
+                << "so " << realmicrobuf << " elapsed µs/ob, " << cpumicrobuf << " cpu µs/ob"
+                << std::endl
+                << "============================================================================="
+                << std::endl << std::endl);
 } // end of rps_load_from
 
 
