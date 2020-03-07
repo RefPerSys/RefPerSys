@@ -258,10 +258,21 @@ RpsQApplication::RpsQApplication(int &argc, char*argv[])
   setOrganizationDomain("refpersys.org");
   setOrganizationName("RefPerSys community");
   setApplicationVersion(rps_lastgitcommit);
+} // end of RpsQApplication::RpsQApplication
+
+
+/// the initialize_app is running only when rps_batch is false
+void
+RpsQApplication::initialize_app(void)
+{
+  RPS_LOCALFRAME(nullptr /*no descr*/,
+                 nullptr /*no calling frame*/,
+                 Rps_Value val; // the value
+                );
   app_windvec.reserve(16);
   app_windvec.push_back(nullptr); // we don't want a 0 index.
   do_add_new_window(&_);
-} // end of RpsQApplication::RpsQApplication
+} // end RpsQApplication::initialize_app
 
 RpsQApplication::~RpsQApplication()
 {
@@ -347,9 +358,10 @@ RpsQApplication::getWindowPtr(int ix)
 
 
 
+
 void rps_run_application(int &argc, char **argv)
 {
-  bool batch = false;
+  rps_batch = false;
   std::string dumpdirstr;
   {
     char cwdbuf[128];
@@ -446,11 +458,11 @@ void rps_run_application(int &argc, char **argv)
     if (argparser.isSet(typeOption))
       {
         rps_print_types_info ();
-        batch = true;
+        rps_batch = true;
       }
     /// --batch or -B
     if (argparser.isSet(batchOption))
-      batch = true;
+      rps_batch = true;
     /// --random-oid <nbrand>
     if (argparser.isSet(randoidOption))
       {
@@ -536,8 +548,9 @@ void rps_run_application(int &argc, char **argv)
       RPS_INFORMOUT("dumping after load to " << dumpdirstr);
       rps_dump_into(dumpdirstr);
     }
-  if (!batch)
+  if (!rps_batch)
     {
+      app.initialize_app();
       RpsQOutputTextEdit::initialize();
       (void) app.exec ();
     };

@@ -97,6 +97,7 @@ class RpsQApplication
 public:
   RpsQApplication (int &argc, char*argv[]); // constructor
   ~RpsQApplication();
+  void initialize_app(void);
   //// the json reading methods can fail by throwing some exception
   // read a json default file ~/refpersys-user.json:
   Json::Value read_user_json(void);

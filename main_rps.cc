@@ -45,6 +45,8 @@ const char* rps_progname;
 
 void* rps_proghdl;
 
+bool rps_batch;
+
 thread_local Rps_Random Rps_Random::_rand_thr_;
 
 typedef std::function<void(void)> rps_todo_func_t;

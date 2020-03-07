@@ -113,6 +113,9 @@ Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
     ob_magicgetterfun(nullptr),
     ob_applyingfun(nullptr)
 {
+  RPS_INFORMOUT("Rps_ObjectZone oid=" << oid
+                << RPS_BACKTRACE_HERE(2, "Rps_ObjectZone")
+                << std::endl);
   if (!dontregister)
     {
       register_objzone(this);
@@ -152,8 +155,8 @@ Rps_ObjectZone::Rps_ObjectZone() :
 Rps_ObjectZone*
 Rps_ObjectZone::make(void)
 {
-  Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(Rps_Id(),true);
-  Rps_Id oid = fresh_random_oid(obz);
+  Rps_Id oid = fresh_random_oid(nullptr);
+  Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(oid,true);
   *(const_cast<Rps_Id*>(&obz->ob_oid)) = oid;
   obz->ob_mtime.store(rps_wallclock_real_time());
   // Every object should have a class, initially `object`; the

@@ -252,11 +252,15 @@ RpsQWindow::create_winobj(Rps_CallFrame*callerframe)
   RPS_LOCALFRAME(nullptr /*no descr*/,
                  callerframe,
                  Rps_ObjectRef obwin;
+                 Rps_ObjectRef obwinclass;
                 );
   RPS_ASSERT(!win_objref);
   RPS_ASSERT(win_command_textedit);
   RPS_ASSERT(win_output_textedit);
-  _.obwin =  Rps_ObjectRef::make_object(&_, rpskob_1DUx3zfUzIb04lqNVt /*rps_window class*/);
+  _.obwinclass = rpskob_1DUx3zfUzIb04lqNVt /*rps_window class*/;
+  RPS_ASSERT(_.obwinclass /*rps_window is a class*/);
+  RPS_ASSERT(_.obwinclass->get_classinfo_payload() != nullptr);
+  _.obwin =  Rps_ObjectRef::make_object(&_, _.obwinclass);
   auto paylw = _.obwin->put_new_plain_payload<Rps_PayloadQt<RpsQWindow>>();
   paylw->set_qtptr(this);
   win_objref = _.obwin;

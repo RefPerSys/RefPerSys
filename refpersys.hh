@@ -193,6 +193,7 @@ public:
   }
 };				// end class RpsColophon
 
+extern "C" bool rps_batch;
 
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_state;
