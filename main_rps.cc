@@ -195,6 +195,9 @@ rps_print_types_info(void)
 
 
 ////////////////////////////////////////////////////////////////
+// TIME ROUTINES
+////////////////////////////////////////////////////////////////
+
 int rps_nbjobs = RPS_NBJOBS_MIN + 1;
 
 static double rps_start_monotonic_time;
@@ -242,6 +245,35 @@ rps_check_mtime_files(void)
     RPS_FATAL("rps_check_mtime_files failed to construct makecmd in %s: %m",
               rps_topdirectory);
 } // end rps_check_mtime_files
+
+
+char *
+rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
+{
+    if (!bfr || !fmt || !len)
+        return nullptr;
+
+    struct tm tmstruct;
+    memset(&tmstruct, 0, sizeof (tmstruct));
+
+    time_t time = static_cast<time_t>(tm);
+    strftime(bfr, len, fmt, localtime_r(&time, &tmstruct));
+
+    char *dotdunder = strstr(bfr, ".__");
+    if (dotdunder) {
+        double intpart = 0.0;
+        double fraction = modf(tm, &intpart);
+
+        char minibfr[16];
+        memset(minibfr, 0, sizeof (minibfr));
+
+        snprintf(minibfr, sizeof (minibfr), "%.02f", fraction);
+        strncpy(dotdunder, strchr(minibfr, '.'), 3);
+    }
+
+    return bfr;
+}
+
 
 
 
@@ -742,5 +774,25 @@ rps_hardcoded_number_of_constants(void)
 #include "generated/rps-constants.hh"
   return RPS_NB_CONSTANT_OB;
 } // end of rps_hardcoded_number_of_constants
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Implementation of debugging routines
+///////////////////////////////////////////////////////////////////////////////
+
+
+static pthread_mutex_t rps_debug_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+
+void 
+rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt, 
+                    const char *fmt, ...) 
+{
+  char threadbfr[24];
+  memset(threadbfr, 0, sizeof (threadbfr));
+  pthread_getname_np(pthread_self(), threadbfr, sizeof (threadbfr) - 1);
+}
+
 
 /////////////////// end of file main_rps.cc
