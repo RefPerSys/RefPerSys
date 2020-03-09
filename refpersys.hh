@@ -81,6 +81,9 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/syslog.h>
+#include <signal.h>
 #include <errno.h>
 #include <time.h>
 #include <dlfcn.h>
@@ -275,6 +278,12 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 ///////////////////////////////////////////////////////////////////////////////
 
 
+static inline pid_t rps_thread_id(void)
+{
+  return syscall(SYS_gettid, 0L);
+}
+
+
 #define RPS_DEBUG_OPTIONS(dbgmacro) \
   dbgmacro(CMD)                     \
   dbgmacro(DUMP)                    \
@@ -300,6 +309,7 @@ enum Rps_Debug
 
 extern "C" unsigned rps_debug_flags;
 
+#define RPS_DEBUG_LOG LOG_DEBUG
 
 #define RPS_DEBUG_ENABLED(dbgopt) (rps_debug_flags & (1 << RPS_DEBUG_##dbgopt))
 

@@ -782,7 +782,31 @@ rps_hardcoded_number_of_constants(void)
 ///////////////////////////////////////////////////////////////////////////////
 
 
+static bool rps_syslog_enabled = true;
 static pthread_mutex_t rps_debug_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static std::string 
+rps_debug_level(Rps_Debug dbgopt)
+{
+#define DEBUG_LEVEL(dbgopt) case RPS_DEBUG_##dbgopt: return #dbgopt;
+
+  switch (dbgopt)
+    {
+      RPS_DEBUG_OPTIONS(DEBUG_LEVEL);
+
+      default:
+        {
+          char dbglevel[16];
+          memset(dbglevel, 0, sizeof (dbglevel));
+          snprintf(dbglevel, sizeof(dbglevel), "?DBG?%d", 
+                   static_cast<int>(dbgopt));
+
+          return std::string(dbglevel);
+        }
+    }
+
+#undef DEBUG_LEVEL
+}
 
 
 void 
@@ -792,6 +816,78 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
   char threadbfr[24];
   memset(threadbfr, 0, sizeof (threadbfr));
   pthread_getname_np(pthread_self(), threadbfr, sizeof (threadbfr) - 1);
+  fflush(nullptr);
+
+  char tmbfr[64];
+  memset(tmbfr, 0, sizeof (tmbfr));
+  rps_now_strftime_centiseconds_nolen(tmbfr, "%H:%M:%S.__ ");
+
+  char *msg = nullptr, *bigbfr = nullptr;
+  char bfr[160];
+  memset(bfr, 0, sizeof (bfr));
+
+  va_list arglst;
+  va_start(arglst, fmt);
+  int len = vsnprintf(bfr, sizeof (bfr), fmt, arglst);
+  va_end(arglst);
+
+  if (RPS_UNLIKELY (len >= static_cast<int>(sizeof (bfr)) - 1))
+    {
+      bigbfr = static_cast<char*>(malloc(len + 10));
+      if (bigbfr)
+        {
+          memset(bigbfr, 0, len + 10);
+          va_start(arglst, fmt);
+          (void) vsnprintf(bigbfr, len + 1, fmt, arglst);
+          va_end(arglst);
+          msg = bigbfr;
+        }
+    }
+  else
+    msg = bfr;
+
+  static long debug_count = 0;
+
+  {
+    pthread_mutex_lock(&rps_debug_mutex);
+    long ndbg = debug_count++;
+
+    char datebfr[48];
+    memset(datebfr, 0, sizeof (datebfr));
+
+    #define RPS_DEBUG_DATE_PERIOD 64
+    if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
+      {
+        rps_now_strftime_centiseconds_nolen(datebfr, "%Y-%b-%d@%H:%M:%s.__%Z");
+      }
+
+    if (rps_syslog_enabled)
+     {
+       syslog(RPS_DEBUG_LOG, "RPS DEBUG %7s <%s:%d> @%s:%d %s %s",
+              rps_debug_level(dbgopt).c_str(), threadbfr,
+              static_cast<int>(rps_thread_id()), fname, fline, tmbfr, msg);
+     }
+
+    else
+      {
+        fprintf(stderr, "RPS DEBUG %7s <%s:%d> @%s:%d %s %s\n",
+                rps_debug_level(dbgopt).c_str(), threadbfr,
+                static_cast<int>(rps_thread_id()), fname, fline, tmbfr, msg);
+        fflush(stderr);
+
+        if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
+          {
+            fprintf(stderr, "RPS DEBUG %04ld ~ %s *^*^*\n", ndbg, datebfr);
+          }
+
+        fflush(nullptr);
+      }
+
+    pthread_mutex_unlock(&rps_debug_mutex);
+  }
+
+  if (bigbfr)
+    free(bigbfr);
 }
 
 
