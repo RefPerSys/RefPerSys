@@ -424,11 +424,28 @@ while (0)
 
 
 
+///////////////////////////////////////////////////////////////////////////////
+// TIME ROUTINES
+///////////////////////////////////////////////////////////////////////////////
+
+
 static inline double rps_monotonic_real_time(void);
 static inline double rps_wallclock_real_time(void);
 double rps_elapsed_real_time(void);
 static inline double rps_process_cpu_time(void);
 static inline double rps_thread_cpu_time(void);
+
+char *rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt,
+                                double m);
+
+#define rps_now_strftime_centiseconds(bfr, len, fmt) \
+  rps_strftime_centiseconds((bfr), (len), (fmt), rps_monotonic_real_time())
+
+#define rps_now_strftime_centiseconds_nolen(bfr, fmt) \
+  rps_now_strftime_centiseconds((bfr), sizeof ((bfr)), (fmt))
+
+///////////////////////////////////////////////////////////////////////////////
+
 extern "C" const char* rps_hostname(void);
 extern "C" void*rps_proghdl; // dlopen handle of whole program
 
