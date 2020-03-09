@@ -313,7 +313,7 @@ __attribute__ ((format (printf, 4, 5)));
 #define RPS_DEBUG_PRINTF_AT(fname, fline, dbgopt, fmt, ...)      \
 do                                                               \
   {                                                              \
-    if (RPS_DEUB_ENABLED(dbgopt))                                \
+    if (RPS_DEBUG_ENABLED(dbgopt))                               \
       rps_debug_printf_at(fname, fline, RPS_DEBUG_##dbgopt, fmt, \
                           ##__VA_ARGS__);                        \
   }                                                              \
