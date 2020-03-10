@@ -74,6 +74,25 @@ Rps_Backtracer::bt_error_cb (void *data, const char *msg,
 void
 Rps_Backtracer::output(std::ostream&outs) const
 {
+  if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
+    RPS_FASTABORT("corrupted Rps_Backtracer");
+  switch (backtr_kind)
+    {
+    case Kind::None:
+      RPS_FASTABORT("unexpected None kind in Rps_Backtracer");
+    case Kind::SimpleOut:
+    case Kind::SimpleClosure:
+      backtrace_simple(rps_backtrace_common_state, backtr_skip,
+                       backtrace_simple_cb, backtrace_error_cb,
+                       (void*)this);
+      break;
+    case Kind::FullOut:
+    case Kind::FullClosure:
+      backtrace_full(rps_backtrace_common_state, backtr_skip,
+                     backtrace_full_cb, backtrace_error_cb,
+                     (void*)this);
+      break;
+    }; // end switch backtr_kind
 #warning incomplete Rps_Backtracer::output
   RPS_FASTABORT("unimplemented Rps_Backtracer::output");
 } // end Rps_Backtracer::output
@@ -105,18 +124,16 @@ Rps_Backtracer::Rps_Backtracer(struct SimpleOutTag,
 Rps_Backtracer::Rps_Backtracer(struct SimpleClosureTag,
                                const char*fromfil, const int fromlin,  int skip,
                                const char*name,
-                               const std::function<void(Rps_Backtracer&,  uintptr_t pc,
-                                   const char*pcfile, int pclineno,
-                                   const char*pcfun)>& fun)
+                               const std::function<void(Rps_Backtracer&,  uintptr_t pc)>& fun)
   : backtr_kind(Kind::SimpleClosure),
     backtr_magic(_backtr_magicnum_),
-    backtr_clos(fun),
+    backtr_simpleclos(fun),
     backtr_fromfile(fromfil),
     backtr_fromline(fromlin),
     backtr_skip(skip),
     backtr_name(name)
 {
-} // end Rps_Backtracer::Rps_Backtracer /SimpleClosureTag
+} // end Rps_Backtracer::Rps_Backtracer/SimpleClosureTag
 
 Rps_Backtracer::Rps_Backtracer(struct FullOutTag,
                                const char*fromfil, const int fromlin, int skip,
@@ -141,7 +158,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
                                    const char*pcfun)>& fun)
   : backtr_kind(Kind::FullClosure),
     backtr_magic(_backtr_magicnum_),
-    backtr_clos(fun),
+    backtr_fullclos(fun),
     backtr_fromfile(fromfil),
     backtr_fromline(fromlin),
     backtr_skip(skip),
@@ -149,9 +166,48 @@ Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
 {
 } // end Rps_Backtracer::Rps_Backtracer/FullClosureTag
 
+
+
+int
+Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
+{
+#warning unimplemented Rps_Backtracer::backtrace_simple_cb
+  RPS_FASTABORT("unimplemented Rps_Backtracer::backtrace_simple_cb");
+} // end Rps_Backtracer::backtrace_simple_cb
+
+
+int
+Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
+                                  const char *filename, int lineno,
+                                  const char *function)
+{
+#warning unimplemented Rps_Backtracer::backtrace_full_cb
+  RPS_FASTABORT("unimplemented Rps_Backtracer::backtrace_full_cb");
+} // end Rps_Backtracer::backtrace_full_cb
+
+void
+Rps_Backtracer::backtrace_error_cb(void* data, const char*msg, int errnum)
+{
+#warning unimplemented Rps_Backtracer::backtrace_error_cb
+  RPS_FASTABORT("unimplemented Rps_Backtracer::backtrace_error_cb");
+} // end Rps_Backtracer::backtrace_error_cb
+
+
+
 Rps_Backtracer::~Rps_Backtracer()
 {
+#warning unimplemented Rps_Backtracer::~Rps_Backtracer
+  RPS_FASTABORT("unimplemented Rps_Backtracer::~Rps_Backtracer");
 } // end Rps_Backtracer::~Rps_Backtracer
+
+
+
+
+
+
+
+
+
 
 #if 0 //////////////////////////// ************************** old
 void

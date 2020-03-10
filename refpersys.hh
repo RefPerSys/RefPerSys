@@ -1245,13 +1245,20 @@ private:
     std::ostringstream backtr_outstr;
     std::function<void(Rps_Backtracer&,  uintptr_t pc,
 					  const char*pcfile, int pclineno,
-					  const char*pcfun)> backtr_clos;
+					  const char*pcfun)> backtr_fullclos;
+    
+    std::function<void(Rps_Backtracer&,  uintptr_t pc)> backtr_simpleclos;
   };
   const std::string backtr_fromfile;
   const int backtr_fromline;
   int backtr_skip;
   const std::string backtr_name;
   void bt_error_method(const char*msg, int errnum);
+  static int backtrace_simple_cb(void*data, uintptr_t pc);
+  static int backtrace_full_cb(void *data, uintptr_t pc,
+			       const char *filename, int lineno,
+			       const char *function);
+  static void backtrace_error_cb(void* data, const char*msg, int errnum);
 public:
   /// function passed to backtrace_create_state as error handler
   static void bt_error_cb(void *data, const char *msg,  int errnum);
@@ -1265,9 +1272,7 @@ public:
   Rps_Backtracer(struct SimpleClosureTag,
 		 const char*fromfil, const int fromlin,  int skip,
 		 const char*name,
-		 const std::function<void(Rps_Backtracer&,  uintptr_t pc,
-					  const char*pcfile, int pclineno,
-					  const char*pcfun)>& fun);
+		 const std::function<void(Rps_Backtracer&,  uintptr_t pc)>& fun);
   Rps_Backtracer(struct FullOutTag,
 		 const char*fromfil, const int fromlin, int skip,
 		 const char*name,  std::ostream* out=nullptr);
