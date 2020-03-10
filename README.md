@@ -195,7 +195,7 @@ steps
 * `sudo apt install libunistring-dev`
 * `sudo apt install qt5-default libqt5x11extras5-dev libqt5xdg-dev`
 * `sudo apt install libjsoncpp-dev`
-* `sudo apt install ccache g++ make build-essentials remake gdb automake`
+* `sudo apt install ccache g++ make build-essential remake gdb automake`
 * `sudo apt install ttf-unifont ttf-mscorefonts-installer unifont msttcorefonts fonts-ubuntu fonts-tuffy fonts-spleen fonts-roboto fonts-recommended fonts-yanone-kaffeesatz fonts-play fonts-eurofurence fonts-ecolier-court fonts-dejavu fonts-croscore fonts-cegui fonts-inter fonts-inconsolata`
 * `git clone https://github.com/ianlancetaylor/libbacktrace.git`
 * `cd libbacktrace`
