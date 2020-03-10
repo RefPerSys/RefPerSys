@@ -72,7 +72,7 @@ Rps_Backtracer::bt_error_cb (void *data, const char *msg,
 } // end of Rps_Backtracer::bt_error_cb
 
 void
-Rps_Backtracer::output(std::ostream&outs) const
+Rps_Backtracer::output(std::ostream&outs)
 {
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
@@ -98,7 +98,7 @@ Rps_Backtracer::output(std::ostream&outs) const
 } // end Rps_Backtracer::output
 
 void
-Rps_Backtracer::print(FILE*outf) const
+Rps_Backtracer::print(FILE*outf)
 {
 #warning incomplete Rps_Backtracer::output
   RPS_FASTABORT("unimplemented Rps_Backtracer::print");
@@ -171,6 +171,12 @@ Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
 int
 Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
 {
+  // this is passed to backtrace_simple
+  if (!data)
+    RPS_FASTABORT("corruption - no data");
+  Rps_Backtracer* bt = reinterpret_cast<Rps_Backtracer*>(data);
+  if (bt->magicnum() != _backtr_magicnum_)
+    RPS_FASTABORT("corrupted backtracer");
 #warning unimplemented Rps_Backtracer::backtrace_simple_cb
   RPS_FASTABORT("unimplemented Rps_Backtracer::backtrace_simple_cb");
 } // end Rps_Backtracer::backtrace_simple_cb

@@ -1264,8 +1264,8 @@ public:
   static void bt_error_cb(void *data, const char *msg,  int errnum);
   std::uint32_t magicnum() const { return backtr_magic; };
   /// 
-  virtual void output(std::ostream&outs) const;
-  virtual void print(FILE*outf) const;
+  virtual void output(std::ostream&outs);
+  virtual void print(FILE*outf);
   Rps_Backtracer(struct SimpleOutTag,
 		 const char*fromfil, const int fromlin, int skip,
 		 const char*name, std::ostream* out=nullptr);
@@ -1291,7 +1291,7 @@ public:
 
 static inline
 std::ostream& operator << (std::ostream& out, const Rps_Backtracer& rpb) {
-  rpb.output(out);
+  const_cast<Rps_Backtracer*>(&rpb)->output(out);
   return out;
 }
 
