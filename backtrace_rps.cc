@@ -76,11 +76,11 @@ Rps_Backtracer::output(std::ostream&outs)
 {
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
-  backtr_todo = Todo::Do_Out;
+  backtr_todo = Todo::Do_Output;
   switch (backtr_kind)
     {
     case Kind::None:
-      RPS_FASTABORT("unexpected None kind in Rps_Backtracer");
+      RPS_FASTABORT("unexpected None kind in Rps_Backtracer::output");
     case Kind::SimpleOut:
     case Kind::SimpleClosure:
       backtrace_simple(rps_backtrace_common_state, backtr_skip,
@@ -105,6 +105,10 @@ Rps_Backtracer::print(FILE*outf)
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
   backtr_todo = Todo::Do_Print;
+  switch (backtr_kind)
+    {
+    case Kind::None:
+      RPS_FASTABORT("unexpected None kind in Rps_Backtracer::print");
     case Kind::SimpleOut:
     case Kind::SimpleClosure:
       backtrace_simple(rps_backtrace_common_state, backtr_skip,
