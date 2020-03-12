@@ -76,6 +76,7 @@ Rps_Backtracer::output(std::ostream&outs)
 {
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
+  backtr_todo = Todo::Do_Out;
   switch (backtr_kind)
     {
     case Kind::None:
@@ -85,23 +86,41 @@ Rps_Backtracer::output(std::ostream&outs)
       backtrace_simple(rps_backtrace_common_state, backtr_skip,
                        backtrace_simple_cb, backtrace_error_cb,
                        (void*)this);
-      break;
+      backtr_todo = Todo::Do_Nothing;
+      return;
     case Kind::FullOut:
     case Kind::FullClosure:
       backtrace_full(rps_backtrace_common_state, backtr_skip,
                      backtrace_full_cb, backtrace_error_cb,
                      (void*)this);
-      break;
+      backtr_todo = Todo::Do_Nothing;
+      return;
     }; // end switch backtr_kind
-#warning incomplete Rps_Backtracer::output
-  RPS_FASTABORT("unimplemented Rps_Backtracer::output");
+  RPS_FASTABORT("unexpected kind Rps_Backtracer::output");
 } // end Rps_Backtracer::output
 
 void
 Rps_Backtracer::print(FILE*outf)
 {
-#warning incomplete Rps_Backtracer::output
-  RPS_FASTABORT("unimplemented Rps_Backtracer::print");
+  if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
+    RPS_FASTABORT("corrupted Rps_Backtracer");
+  backtr_todo = Todo::Do_Print;
+    case Kind::SimpleOut:
+    case Kind::SimpleClosure:
+      backtrace_simple(rps_backtrace_common_state, backtr_skip,
+                       backtrace_simple_cb, backtrace_error_cb,
+                       (void*)this);
+      backtr_todo = Todo::Do_Nothing;
+      return;
+    case Kind::FullOut:
+    case Kind::FullClosure:
+      backtrace_full(rps_backtrace_common_state, backtr_skip,
+                     backtrace_full_cb, backtrace_error_cb,
+                     (void*)this);
+      backtr_todo = Todo::Do_Nothing;
+      return;
+    }; // end switch backtr_kind
+  RPS_FASTABORT("unexpected kind Rps_Backtracer::print");
 } // end Rps_Backtracer::print
 
 
@@ -126,6 +145,7 @@ Rps_Backtracer::Rps_Backtracer(struct SimpleClosureTag,
                                const char*name,
                                const std::function<void(Rps_Backtracer&,  uintptr_t pc)>& fun)
   : backtr_kind(Kind::SimpleClosure),
+    backtr_todo(Todo::Do_Nothing),
     backtr_magic(_backtr_magicnum_),
     backtr_simpleclos(fun),
     backtr_fromfile(fromfil),
@@ -139,6 +159,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullOutTag,
                                const char*fromfil, const int fromlin, int skip,
                                const char*name,  std::ostream* out)
   : backtr_kind(Kind::FullOut),
+    backtr_todo(Todo::Do_Nothing),
     backtr_magic(_backtr_magicnum_),
     backtr_out(out),
     backtr_fromfile(fromfil),
@@ -157,6 +178,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
                                    const char*pcfile, int pclineno,
                                    const char*pcfun)>& fun)
   : backtr_kind(Kind::FullClosure),
+    backtr_todo(Todo::Do_Nothing),
     backtr_magic(_backtr_magicnum_),
     backtr_fullclos(fun),
     backtr_fromfile(fromfil),

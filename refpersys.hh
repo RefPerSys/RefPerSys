@@ -1237,8 +1237,14 @@ public:
       FullOut,
       FullClosure,
       };
+  enum class Todo : std::uint16_t {
+    Do_Nothing = 0,
+      Do_Output,
+      Do_Print,
+      };
 private:
   enum Kind backtr_kind;
+  mutable enum Todo backtr_todo;
   std::uint32_t backtr_magic;
   union {
     std::ostream* backtr_out;
