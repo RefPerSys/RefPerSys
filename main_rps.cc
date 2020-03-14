@@ -654,9 +654,16 @@ Rps_BackTrace_Helper::Rps_BackTrace_Helper(const char*fil, int line, int skip, c
   _bth_backtrace.set_full_cb
   ([=](Rps_BackTrace*btp, uintptr_t pc, const char*filnam, int lineno, const char*funam)
   {
-    if (pc == 0 || pc == (uintptr_t)-1)
+    if (pc == 0 || pc == (uintptr_t)-1) {
+      RPS_WARNOUT("Rps_BackTrace_Helper initialization failed!");
       return -1;
-    if (!_bth_out) return -1;
+    }
+
+    if (!_bth_out) {
+      RPS_WARNOUT("Rps_BackTrace_Helper initialization failed! (_bth_out)");
+      return -1;
+    }
+
     Rps_BackTrace_Helper*bth = reinterpret_cast<Rps_BackTrace_Helper*>(const_cast<void*>(btp->data()));
     FILE* foutlin = open_memstream(&_bth_bufptr, &_bth_bufsiz);
     if (!foutlin) RPS_FATAL("failed to open_memstream");
