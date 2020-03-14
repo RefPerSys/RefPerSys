@@ -107,6 +107,8 @@ static inline
 std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph)
 {
   auto o = rph.swap_output(&out);
+  RPS_ASSERT (o != nullptr);
+
   out << std::endl;
   rph.do_out();
   rph.swap_output(o);
