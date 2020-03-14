@@ -125,5 +125,11 @@ indent:
 redump:
 	./refpersys --dump=. --batch
 
+
+check:
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all \
+		--track-origins=yes --log-file=valgrind.log   \
+		./refpersys
+
 ## eof Makefile
 
