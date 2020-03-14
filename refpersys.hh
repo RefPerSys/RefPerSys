@@ -1375,9 +1375,6 @@ public:
   std::ostream* swap_output(std::ostream*out) const
   {
     auto o = _bth_out.get();
-    RPS_ASSERT (o != nullptr);
-
-    RPS_ASSERT (out != nullptr);
     auto outp = std::unique_ptr<std::ostream> (out);
     std::swap(_bth_out, outp);
     return o;
