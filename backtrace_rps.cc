@@ -47,11 +47,14 @@ const char rps_backtrace_date[]= __DATE__;
   abort();							\
 } while(0)
 
-/// notice that OldRps_BackTrace should use assert, not RPS_ASSERT!
+std::recursive_mutex Rps_Backtracer:: _backtr_mtx_;
+
+/// notice that Rps_Backtracer should use assert, not RPS_ASSERT!
 void
 Rps_Backtracer::bt_error_method(const char*msg, int errnum)
 {
   assert (msg != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   fprintf(stderr, "BackTrace Error <%s:%d> %s (#%d)",
           __FILE__, __LINE__,
           msg?msg:"???",
@@ -65,6 +68,7 @@ void
 Rps_Backtracer::bt_error_cb (void *data, const char *msg,
                              int errnum)
 {
+  std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   assert (data != nullptr);
   Rps_Backtracer* btp = static_cast<Rps_Backtracer*>(data);
   assert (btp->magicnum() == _backtr_magicnum_);
@@ -74,6 +78,7 @@ Rps_Backtracer::bt_error_cb (void *data, const char *msg,
 void
 Rps_Backtracer::output(std::ostream&outs)
 {
+  std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
   backtr_todo = Todo::Do_Output;
@@ -99,9 +104,13 @@ Rps_Backtracer::output(std::ostream&outs)
   RPS_FASTABORT("unexpected kind Rps_Backtracer::output");
 } // end Rps_Backtracer::output
 
+
+
+
 void
 Rps_Backtracer::print(FILE*outf)
 {
+  std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
   backtr_todo = Todo::Do_Print;
@@ -127,6 +136,79 @@ Rps_Backtracer::print(FILE*outf)
   RPS_FASTABORT("unexpected kind Rps_Backtracer::print");
 } // end Rps_Backtracer::print
 
+
+std::string
+Rps_Backtracer::pc_to_string(uintptr_t pc)
+{
+  std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
+  if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
+    RPS_FASTABORT("pc_to_string: corrupted Rps_Backtracer");
+  if (RPS_UNLIKELY(pc < 0xffff))
+    {
+      char buf[32];
+      memset (buf, 0, sizeof(buf));
+      snprintf(buf, sizeof(buf), "?? %p", (void*)pc);
+      return std::string(buf);
+    }
+  else
+    {
+      const char* beforebuf = "*";
+      char linbuf[128];
+      memset(linbuf, 0, sizeof(linbuf));
+      const char*demangled = nullptr;
+      Dl_info dif = {};
+      memset ((void*)&dif, 0, sizeof(dif));
+      if (dladdr((void*)pc, &dif))
+        {
+          std::string filnamestr;
+          std::string funamestr;
+          int delta = pc - (uintptr_t) dif.dli_saddr;
+          if (dif.dli_fname && strstr(dif.dli_fname, ".so"))
+            filnamestr = std::string(basename(dif.dli_fname));
+          else if (dif.dli_fname && strstr(dif.dli_fname, rps_progname))
+            filnamestr = std::string(basename(rps_progname));
+          if (dif.dli_sname != nullptr)
+            {
+              if (dif.dli_sname[0] == '_')
+                {
+                  int status = -1;
+                  demangled  = abi::__cxa_demangle(dif.dli_sname, NULL, 0, &status);
+                  if (demangled && demangled[0])
+                    funamestr = std::string (demangled);
+                };
+              if (funamestr.empty())
+                funamestr = std::string(dif.dli_sname);
+            }
+          else funamestr = "??";
+          if (delta != 0)
+            {
+              if (funamestr.empty())
+                snprintf (linbuf, sizeof(linbuf), "%s %p: %s+%#x\n",
+                          beforebuf, (void*)pc, filnamestr.c_str(), delta);
+              else
+                snprintf (linbuf, sizeof(linbuf), "%s %p: %40s+%#x %s\n",
+                          beforebuf, (void*)pc, filnamestr.c_str(), delta,
+                          funamestr.c_str());
+            }
+          else
+            {
+              if (funamestr.empty())
+                snprintf (linbuf, sizeof(linbuf), "%s %p: %s+%#x\n",
+                          beforebuf, (void*)pc, filnamestr.c_str(), delta);
+              else
+                snprintf (linbuf, sizeof(linbuf), "%s %p: %40s+%#x %s\n",
+                          beforebuf, (void*)pc, filnamestr.c_str(),
+                          delta, funamestr.c_str());
+            }
+        }
+      else
+        snprintf (linbuf, sizeof(linbuf),  "%s %p.\n", beforebuf, (void*)pc);
+      if (demangled)
+        free((void*)demangled), demangled = nullptr;
+      linbuf[sizeof(linbuf)-1] = (char)0;
+      return std::string(linbuf);
+    }
+} // end Rps_Backtracer::pc_to_string
 
 
 Rps_Backtracer::Rps_Backtracer(struct SimpleOutTag,
@@ -198,13 +280,40 @@ int
 Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
 {
   // this is passed to backtrace_simple
+  std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (!data)
     RPS_FASTABORT("corruption - no data");
   Rps_Backtracer* bt = reinterpret_cast<Rps_Backtracer*>(data);
   if (bt->magicnum() != _backtr_magicnum_)
     RPS_FASTABORT("corrupted backtracer");
-#warning unimplemented Rps_Backtracer::backtrace_simple_cb
-  RPS_FASTABORT("unimplemented Rps_Backtracer::backtrace_simple_cb");
+  switch (bt-> backtr_todo)
+    {
+    case Todo::Do_Nothing:
+      RPS_FASTABORT("backtrace_simple_cb unexpected Todo::Do_Nothing");
+    case Todo::Do_Output:
+      switch (bt->backtr_kind)
+        {
+        case Kind::None:
+          RPS_FASTABORT("backtrace_simple_cb unexpected Kind::None");
+        case Kind::SimpleOut:
+        case Kind::SimpleClosure:
+        case Kind::FullOut:
+          RPS_FASTABORT("backtrace_simple_cb unexpected Kind::FullOut");
+        case Kind::FullClosure:
+          RPS_FASTABORT("backtrace_simple_cb unexpected Kind::FullClosure");
+        default:
+          RPS_FASTABORT("backtrace_simple_cb bad kind");
+
+        }
+      RPS_FASTABORT("unexpected Todo::Do_Nothing");
+    case Todo::Do_Print:
+      switch (bt->backtr_kind)
+        {
+        }
+      RPS_FASTABORT("unexpected Todo::Do_Nothing");
+    default:
+      RPS_FASTABORT("bad todo in Rps_Backtracer::backtrace_simple_cb");
+    }
 } // end Rps_Backtracer::backtrace_simple_cb
 
 
@@ -213,6 +322,7 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
                                   const char *filename, int lineno,
                                   const char *function)
 {
+  std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
 #warning unimplemented Rps_Backtracer::backtrace_full_cb
   RPS_FASTABORT("unimplemented Rps_Backtracer::backtrace_full_cb");
 } // end Rps_Backtracer::backtrace_full_cb
@@ -220,6 +330,7 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
 void
 Rps_Backtracer::backtrace_error_cb(void* data, const char*msg, int errnum)
 {
+  std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
 #warning unimplemented Rps_Backtracer::backtrace_error_cb
   RPS_FASTABORT("unimplemented Rps_Backtracer::backtrace_error_cb");
 } // end Rps_Backtracer::backtrace_error_cb
@@ -228,7 +339,9 @@ Rps_Backtracer::backtrace_error_cb(void* data, const char*msg, int errnum)
 
 Rps_Backtracer::~Rps_Backtracer()
 {
+  std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
 #warning unimplemented Rps_Backtracer::~Rps_Backtracer
+  /* we need to explicitly call some destructor function for the union member choosen according to backtr_kind. */
   RPS_FASTABORT("unimplemented Rps_Backtracer::~Rps_Backtracer");
 } // end Rps_Backtracer::~Rps_Backtracer
 

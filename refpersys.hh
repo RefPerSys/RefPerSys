@@ -1243,6 +1243,7 @@ public:
       Do_Print,
       };
 private:
+  static std::recursive_mutex _backtr_mtx_;
   enum Kind backtr_kind;
   mutable enum Todo backtr_todo;
   std::uint32_t backtr_magic;
@@ -1252,7 +1253,6 @@ private:
     std::function<void(Rps_Backtracer&,  uintptr_t pc,
 					  const char*pcfile, int pclineno,
 					  const char*pcfun)> backtr_fullclos;
-    
     std::function<void(Rps_Backtracer&,  uintptr_t pc)> backtr_simpleclos;
   };
   const std::string backtr_fromfile;
@@ -1289,6 +1289,7 @@ public:
 					  const char*pcfile, int pclineno,
 					  const char*pcfun
 					  )>& fun);
+  std::string pc_to_string(uintptr_t pc);
   virtual ~Rps_Backtracer();
 };				// end Rps_Backtracer
 
