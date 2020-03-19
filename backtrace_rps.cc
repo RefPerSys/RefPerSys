@@ -383,8 +383,8 @@ Rps_Backtracer::~Rps_Backtracer()
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (this->magicnum() != _backtr_magicnum_)
     RPS_FASTABORT("corrupted backtracer");
-#if 0
 #warning please carefully review Rps_Backtracer::~Rps_Backtracer
+#if 0
   switch (backtr_kind)
     {
     case Kind::None:
