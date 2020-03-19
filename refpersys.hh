@@ -1230,6 +1230,7 @@ public:
   struct FullOutTag {};
   struct FullClosureTag {};
   static constexpr std::uint32_t _backtr_magicnum_ = 3364921659; // 0xc890a13b
+#warning we should use std::variant instead, see https://en.cppreference.com/w/cpp/utility/variant
   enum class Kind : std::uint16_t {
     None = 0,
       SimpleOut,
@@ -1250,10 +1251,10 @@ private:
   union {
     std::ostream* backtr_out;
     std::ostringstream backtr_outstr;
+    std::function<void(Rps_Backtracer&,  uintptr_t pc)> backtr_simpleclos;
     std::function<void(Rps_Backtracer&,  uintptr_t pc,
 					  const char*pcfile, int pclineno,
 					  const char*pcfun)> backtr_fullclos;
-    std::function<void(Rps_Backtracer&,  uintptr_t pc)> backtr_simpleclos;
   };
   const std::string backtr_fromfile;
   const int backtr_fromline;
@@ -1290,6 +1291,8 @@ public:
 					  const char*pcfun
 					  )>& fun);
   std::string pc_to_string(uintptr_t pc);
+  std::string detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclineno,
+				   const char*pcfun);
   virtual ~Rps_Backtracer();
 };				// end Rps_Backtracer
 
