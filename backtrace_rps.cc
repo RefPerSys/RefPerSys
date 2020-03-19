@@ -211,6 +211,45 @@ Rps_Backtracer::pc_to_string(uintptr_t pc)
 } // end Rps_Backtracer::pc_to_string
 
 
+std::string
+Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclineno,
+				   const char*pcfun)
+{
+  std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
+  if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
+    RPS_FASTABORT("detailed_pc_to_string: corrupted Rps_Backtracer");
+  if (pcfile && pcfile[0] && pcfun && pcfun[0]) {
+    char linbuf[128];
+    memset(linbuf, 0, sizeof(linbuf));
+    int endpos= -1;
+    // probably the string fits into linbuf
+    if (RPS_LIKELY(snprintf(linbuf, sizeof(linbuf), "* %s:%d <%s> @%p%n",
+			    pcfile, pclineno, pcfun, (void*)pc, &endpos) >0
+		   && endpos > 0 && endpos<sizeof(linbuf)-1))
+      return std::string(linbuf);
+    else {
+      char numbuf[32];
+      memset(numbuf, 0, sizeof(numbuf));
+      std::string s;
+      s.reserve(strlen(pcfile)+strlen(pcfun)+32);
+      s += "* ";
+      s += pcfile;
+      s += ":";
+      s += std::to_string(pclineno);
+      s += " <";
+      s += pcfun;
+      s += ">";
+      snprintf(numbuf, sizeof(numbuf), " @%p", (void*)pc);
+      s += numbuf;
+      return s;
+    }
+  }
+  else
+    return pc_to_string(pc);
+} // end Rps_Backtracer::detailed_pc_to_string
+
+
+
 Rps_Backtracer::Rps_Backtracer(struct SimpleOutTag,
                                const char*fromfil, const int fromlin, int skip,
                                const char*name, std::ostream* out)
@@ -340,9 +379,31 @@ Rps_Backtracer::backtrace_error_cb(void* data, const char*msg, int errnum)
 Rps_Backtracer::~Rps_Backtracer()
 {
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
-#warning unimplemented Rps_Backtracer::~Rps_Backtracer
-  /* we need to explicitly call some destructor function for the union member choosen according to backtr_kind. */
-  RPS_FASTABORT("unimplemented Rps_Backtracer::~Rps_Backtracer");
+  if (this->magicnum() != _backtr_magicnum_)
+    RPS_FASTABORT("corrupted backtracer");
+#if 0
+#warning please carefully review Rps_Backtracer::~Rps_Backtracer
+  switch (backtr_kind) {
+        case Kind::None:
+          RPS_FASTABORT("backtrace_simple_cb unexpected Kind::None");
+        case Kind::SimpleOut:
+	  delete backtr_out;
+	  return;
+        case Kind::FullOut:
+	  (&backtr_outstr)->~std::ostringstream();
+	  return;
+        case Kind::SimpleClosure:
+	  backtr_simpleclos.~std::function<void(Rps_Backtracer&,  uintptr_t pc)> ();
+	  return;
+        case Kind::FullClosure:
+	  backtr_fullclos.~std::function<void(Rps_Backtracer&,  uintptr_t pc,
+					  const char*pcfile, int pclineno,
+					      const char*pcfun)> ();
+	  return;
+        default:
+          RPS_FASTABORT("backtrace_simple_cb bad kind");
+  }
+#endif
 } // end Rps_Backtracer::~Rps_Backtracer
 
 
