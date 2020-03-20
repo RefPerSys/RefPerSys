@@ -1230,7 +1230,6 @@ public:
   struct FullOutTag {};
   struct FullClosureTag {};
   static constexpr std::uint32_t _backtr_magicnum_ = 3364921659; // 0xc890a13b
-#warning we should use std::variant instead, see https://en.cppreference.com/w/cpp/utility/variant
   enum class Kind : std::uint16_t {
     None = 0,
       SimpleOut,
@@ -1245,9 +1244,18 @@ public:
       };
 private:
   static std::recursive_mutex _backtr_mtx_;
-  enum Kind backtr_kind;
-  mutable enum Todo backtr_todo;
+#warning we should use std::variant instead, see https://en.cppreference.com/w/cpp/utility/variant
+  std::variant<unsigned,
+	       std::ostream*,
+	       std::ostringstream,
+	       std::function<void(Rps_Backtracer&,  uintptr_t pc)>, 
+	       std::function<void(Rps_Backtracer&,  uintptr_t pc)>,std::function<void(Rps_Backtracer&,  uintptr_t pc,
+					  const char*pcfile, int pclineno,
+					  const char*pcfun)>
+	       >  backtr_variant;
   std::uint32_t backtr_magic;
+  mutable enum Todo backtr_todo;
+  enum Kind backtr_kind;
   union {
     std::ostream* backtr_out;
     std::ostringstream backtr_outstr;
