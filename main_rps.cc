@@ -128,6 +128,10 @@ rps_print_types_info(void)
 					  #Ty1 "," #Ty2 "," #Ty3,	\
 					  (int)sizeof(Ty1,Ty2,Ty3),	\
 					  (int)alignof(Ty1,Ty2,Ty3))
+#define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4) printf(TYPEFMT_rps " %5d %5d\n",	\
+					      #Ty1 "," #Ty2 "," #Ty3 "," #Ty4, \
+					      (int)sizeof(Ty1,Ty2,Ty3,Ty4), \
+					      (int)alignof(Ty1,Ty2,Ty3,Ty4))
   EXPLAIN_TYPE(int);
   EXPLAIN_TYPE(double);
   EXPLAIN_TYPE(char);
@@ -146,6 +150,7 @@ rps_print_types_info(void)
   EXPLAIN_TYPE2(std::map<Rps_ObjectRef, Rps_Value>);
   EXPLAIN_TYPE2(std::unordered_map<std::string, Rps_ObjectRef*>);
   EXPLAIN_TYPE3(std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher>);
+  EXPLAIN_TYPE4(std::variant<unsigned,std::function<Rps_Value(void*)>,std::function<int(void*,Rps_ObjectRef)>>);
   EXPLAIN_TYPE(QColor);
   EXPLAIN_TYPE(QProcess);
   EXPLAIN_TYPE(QString);
@@ -250,28 +255,29 @@ rps_check_mtime_files(void)
 char *
 rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
 {
-    if (!bfr || !fmt || !len)
-        return nullptr;
+  if (!bfr || !fmt || !len)
+    return nullptr;
 
-    struct tm tmstruct;
-    memset(&tmstruct, 0, sizeof (tmstruct));
+  struct tm tmstruct;
+  memset(&tmstruct, 0, sizeof (tmstruct));
 
-    time_t time = static_cast<time_t>(tm);
-    strftime(bfr, len, fmt, localtime_r(&time, &tmstruct));
+  time_t time = static_cast<time_t>(tm);
+  strftime(bfr, len, fmt, localtime_r(&time, &tmstruct));
 
-    char *dotdunder = strstr(bfr, ".__");
-    if (dotdunder) {
-        double intpart = 0.0;
-        double fraction = modf(tm, &intpart);
+  char *dotdunder = strstr(bfr, ".__");
+  if (dotdunder)
+    {
+      double intpart = 0.0;
+      double fraction = modf(tm, &intpart);
 
-        char minibfr[16];
-        memset(minibfr, 0, sizeof (minibfr));
+      char minibfr[16];
+      memset(minibfr, 0, sizeof (minibfr));
 
-        snprintf(minibfr, sizeof (minibfr), "%.02f", fraction);
-        strncpy(dotdunder, strchr(minibfr, '.'), 3);
+      snprintf(minibfr, sizeof (minibfr), "%.02f", fraction);
+      strncpy(dotdunder, strchr(minibfr, '.'), 3);
     }
 
-    return bfr;
+  return bfr;
 }
 
 
@@ -654,15 +660,17 @@ Rps_BackTrace_Helper::Rps_BackTrace_Helper(const char*fil, int line, int skip, c
   _bth_backtrace.set_full_cb
   ([=](Rps_BackTrace*btp, uintptr_t pc, const char*filnam, int lineno, const char*funam)
   {
-    if (pc == 0 || pc == (uintptr_t)-1) {
-      RPS_WARNOUT("Rps_BackTrace_Helper initialization failed!");
-      return -1;
-    }
+    if (pc == 0 || pc == (uintptr_t)-1)
+      {
+        RPS_WARNOUT("Rps_BackTrace_Helper initialization failed!");
+        return -1;
+      }
 
-    if (!_bth_out) {
-      RPS_WARNOUT("Rps_BackTrace_Helper initialization failed! (_bth_out)");
-      return -1;
-    }
+    if (!_bth_out)
+      {
+        RPS_WARNOUT("Rps_BackTrace_Helper initialization failed! (_bth_out)");
+        return -1;
+      }
 
     Rps_BackTrace_Helper*bth = reinterpret_cast<Rps_BackTrace_Helper*>(const_cast<void*>(btp->data()));
     FILE* foutlin = open_memstream(&_bth_bufptr, &_bth_bufsiz);
@@ -792,7 +800,7 @@ rps_hardcoded_number_of_constants(void)
 static bool rps_syslog_enabled = true;
 static pthread_mutex_t rps_debug_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static std::string 
+static std::string
 rps_debug_level(Rps_Debug dbgopt)
 {
 #define DEBUG_LEVEL(dbgopt) case RPS_DEBUG_##dbgopt: return #dbgopt;
@@ -801,24 +809,24 @@ rps_debug_level(Rps_Debug dbgopt)
     {
       RPS_DEBUG_OPTIONS(DEBUG_LEVEL);
 
-      default:
-        {
-          char dbglevel[16];
-          memset(dbglevel, 0, sizeof (dbglevel));
-          snprintf(dbglevel, sizeof(dbglevel), "?DBG?%d", 
-                   static_cast<int>(dbgopt));
+    default:
+    {
+      char dbglevel[16];
+      memset(dbglevel, 0, sizeof (dbglevel));
+      snprintf(dbglevel, sizeof(dbglevel), "?DBG?%d",
+               static_cast<int>(dbgopt));
 
-          return std::string(dbglevel);
-        }
+      return std::string(dbglevel);
+    }
     }
 
 #undef DEBUG_LEVEL
 }
 
 
-void 
-rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt, 
-                    const char *fmt, ...) 
+void
+rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
+                    const char *fmt, ...)
 {
   char threadbfr[24];
   memset(threadbfr, 0, sizeof (threadbfr));
@@ -862,18 +870,18 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
     char datebfr[48];
     memset(datebfr, 0, sizeof (datebfr));
 
-    #define RPS_DEBUG_DATE_PERIOD 64
+#define RPS_DEBUG_DATE_PERIOD 64
     if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
       {
         rps_now_strftime_centiseconds_nolen(datebfr, "%Y-%b-%d@%H:%M:%s.__%Z");
       }
 
     if (rps_syslog_enabled)
-     {
-       syslog(RPS_DEBUG_LOG, "RPS DEBUG %7s <%s:%d> @%s:%d %s %s",
-              rps_debug_level(dbgopt).c_str(), threadbfr,
-              static_cast<int>(rps_thread_id()), fname, fline, tmbfr, msg);
-     }
+      {
+        syslog(RPS_DEBUG_LOG, "RPS DEBUG %7s <%s:%d> @%s:%d %s %s",
+               rps_debug_level(dbgopt).c_str(), threadbfr,
+               static_cast<int>(rps_thread_id()), fname, fline, tmbfr, msg);
+      }
 
     else
       {
