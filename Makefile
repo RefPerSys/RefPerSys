@@ -131,5 +131,14 @@ check:
 		--track-origins=yes --log-file=valgrind.log   \
 		./refpersys
 
+# Target to facilitate git push to both origin and GitHub mirror
+gitpush:
+	git push origin
+ifeq ($(shell git remote | grep github), github)
+	git push github
+else
+	echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
+endif
+
 ## eof Makefile
 
