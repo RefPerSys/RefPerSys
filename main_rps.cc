@@ -150,7 +150,8 @@ rps_print_types_info(void)
   EXPLAIN_TYPE2(std::map<Rps_ObjectRef, Rps_Value>);
   EXPLAIN_TYPE2(std::unordered_map<std::string, Rps_ObjectRef*>);
   EXPLAIN_TYPE3(std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher>);
-  EXPLAIN_TYPE4(std::variant<unsigned,std::function<Rps_Value(void*)>,std::function<int(void*,Rps_ObjectRef)>>);
+  EXPLAIN_TYPE3(std::variant<unsigned, std::function<Rps_Value(void*)>,
+    std::function<int(void*,Rps_ObjectRef)>>);
   EXPLAIN_TYPE(QColor);
   EXPLAIN_TYPE(QProcess);
   EXPLAIN_TYPE(QString);
