@@ -191,6 +191,8 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(Rps_Type);
   EXPLAIN_TYPE(Rps_Value);
   EXPLAIN_TYPE(Rps_ZoneValue);
+#undef EXPLAIN_TYPE4
+#undef EXPLAIN_TYPE3
 #undef EXPLAIN_TYPE
 #undef TYPEFMT_rps
   putchar('\n');
