@@ -242,7 +242,7 @@ rps_check_mtime_files(void)
     }
   char makecmd [128];
   memset (makecmd, 0, sizeof(makecmd));
-  if (snprintf(makecmd, sizeof(makecmd), "make -C %s -t -q refpersys", rps_topdirectory) < sizeof(makecmd)-1)
+  if (snprintf(makecmd, sizeof(makecmd), "make -t -C %s -q objects", rps_topdirectory) < sizeof(makecmd)-1)
     {
       int bad = system(makecmd);
       if (bad)

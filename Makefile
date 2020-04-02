@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all clean print-temporary-plugin-settings indent redump
+.PHONY: all objects clean print-temporary-plugin-settings indent redump
 
 RPS_GIT_ID:= $(shell ./generate-gitid.sh)
 
@@ -78,6 +78,8 @@ refpersys: $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
+
+objects:  $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS)
 
 $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
