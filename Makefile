@@ -26,17 +26,19 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all clean print-temporary-plugin-settings indent redump
+.PHONY: all objects clean print-temporary-plugin-settings indent redump
 
 RPS_GIT_ID:= $(shell ./generate-gitid.sh)
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
+RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 
 RPS_QT_HEADERS:= $(sort $(wildcard *_qrps.hh))
 RPS_QT_SOURCES:= $(sort $(wildcard *_qrps.cc))
 RPS_QT_OBJECTS = $(patsubst %.cc, %.o, $(RPS_QT_SOURCES))
+RPS_SANITIZED_QT_OBJECTS =  $(patsubst %.cc, %.sanit.o, $(RPS_QT_SOURCES))
 RPS_QT_MOC = moc
 
 RPS_BUILD_CCACHE = ccache
@@ -46,7 +48,7 @@ RPS_BUILD_DIALECTFLAGS = -std=gnu++17
 RPS_BUILD_WARNFLAGS = -Wall -Wextra
 RPS_BUILD_OPTIMFLAGS = -O1 -g3
 RPS_BUILD_CODGENFLAGS = -fPIC
-
+RPS_BUILD_SANITFLAGS = -fsanitize=address
 RPS_INCLUDE_DIRS = /usr/local/include /usr/include 
 RPS_INCLUDE_FLAGS = $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
 RPS_BUILD_INCLUDE_FLAGS = -I . $(RPS_INCLUDE_FLAGS)
@@ -79,6 +81,15 @@ refpersys: $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
+sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_QT_OBJECTS) __timestamp.o
+	$(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
+           $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_QT_OBJECTS) __timestamp.o \
+           $(LIBES) -o $@-tmp
+	$(MV) --backup $@-tmp $@
+	$(MV) --backup __timestamp.c __timestamp.c~
+	$(RM) __timestamp.o
+objects:  $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS)
+
 $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
 $(RPS_QT_OBJECTS): _qthead_qrps.inc.hh $(RPS_QT_SOURCES)
@@ -89,6 +100,9 @@ _qthead_qrps.inc.hh: $(RPS_QT_HEADERS)
 %.o: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -o $@ $<
 
+%.sanit.o: %.cc refpersys.hh.sanit.gch
+	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
+
 # see https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html 
 
 # FIXME: we dont want to change the mtime of refpersys.hh.gch when its
@@ -98,6 +112,14 @@ refpersys.hh.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 	if cmp  refpersys.hh.gch  $@-tmp ; then \
          echo unchanged refpersys.hh ; else \
          mv --backup -v  $@-tmp  refpersys.hh.gch ; fi
+
+# FIXME: we dont want to change the mtime of refpersys.hh.gch when its
+# content did not change
+refpersys.hh.sanit.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
+	$(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@-tmp $<
+	if cmp  refpersys.hh.sanit.gch  $@-tmp ; then \
+         echo unchanged refpersys.hh ; else \
+         mv --backup -v  $@-tmp  refpersys.hh.sanit.gch ; fi
 
 clean:
 	$(RM) *.o *.orig *~ refpersys *.gch *~
@@ -124,6 +146,21 @@ indent:
 ## redump target
 redump:
 	./refpersys --dump=. --batch
+
+
+check:
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all \
+		--track-origins=yes --log-file=valgrind.log   \
+		./refpersys
+
+# Target to facilitate git push to both origin and GitHub mirror
+gitpush:
+	git push origin
+ifeq ($(shell git remote | grep github), github)
+	git push github
+else
+	echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
+endif
 
 ## eof Makefile
 
