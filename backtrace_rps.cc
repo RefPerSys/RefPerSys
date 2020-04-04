@@ -337,7 +337,9 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
         case Kind::None:
           RPS_FASTABORT("backtrace_simple_cb unexpected Kind::None");
         case Kind::SimpleOut:
+          RPS_FASTABORT("backtrace_simple_cb unimplemented Kind::SimpleOut");
         case Kind::SimpleClosure:
+          RPS_FASTABORT("backtrace_simple_cb unimplemented Kind::SimpleClosure");
         case Kind::FullOut:
           RPS_FASTABORT("backtrace_simple_cb unexpected Kind::FullOut");
         case Kind::FullClosure:
