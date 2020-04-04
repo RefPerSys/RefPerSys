@@ -47,6 +47,9 @@ const char rps_backtrace_date[]= __DATE__;
   abort();							\
 } while(0)
 
+#define RPS_BACKTRACE_CONTINUE 0
+#define RPS_BACKTRACE_STOP __LINE__
+
 std::recursive_mutex Rps_Backtracer:: _backtr_mtx_;
 
 /// notice that Rps_Backtracer should use assert, not RPS_ASSERT!
@@ -337,7 +340,9 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
         case Kind::None:
           RPS_FASTABORT("backtrace_simple_cb unexpected Kind::None");
         case Kind::SimpleOut:
-          RPS_FASTABORT("backtrace_simple_cb unimplemented Kind::SimpleOut");
+          RPS_ASSERT(bt->backtr_out != nullptr);
+          *(bt->backtr_out) << bt->pc_to_string(pc) << std::endl;
+          return RPS_BACKTRACE_CONTINUE;
         case Kind::SimpleClosure:
           RPS_FASTABORT("backtrace_simple_cb unimplemented Kind::SimpleClosure");
         case Kind::FullOut:
