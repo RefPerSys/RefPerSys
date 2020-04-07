@@ -102,18 +102,6 @@ std::ostream& operator << (std::ostream& out, const Rps_Id id)
   return out;
 } // end output of Rps_Id
 
-//////////////////////////////////////////////////////////// backtracing
-static inline
-std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph)
-{
-  auto o = rph.swap_output(&out);
-  out << std::endl;
-  rph.do_out();
-  rph.swap_output(o);
-  out << std::endl;
-  return out;
-} // end of << for Rps_Backtrace_Helper
-
 
 //////////////////////////////////////////////////////////// values
 Rps_Value::Rps_Value() : _wptr(nullptr) {};

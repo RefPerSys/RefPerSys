@@ -114,7 +114,7 @@ Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
     ob_applyingfun(nullptr)
 {
   RPS_INFORMOUT("Rps_ObjectZone oid=" << oid
-                << RPS_BACKTRACE_HERE(2, "Rps_ObjectZone")
+                << RPS_SIMPLE_BACKTRACE_HERE(2, "Rps_ObjectZone")
                 << std::endl);
   if (!dontregister)
     {
@@ -772,7 +772,7 @@ Rps_ObjectZone::component_at ([[maybe_unused]] Rps_CallFrame*stkf, int rk, bool 
   std::lock_guard<std::recursive_mutex> gu(ob_mtx);
   unsigned nbcomp = ob_comps.size();
   if (rk<0) rk += nbcomp;
-  if (rk>=0 && rk<nbcomp)
+  if (rk>=0 && rk<(int)nbcomp)
     return ob_comps[rk];
   if (dontfail)
     return nullptr;

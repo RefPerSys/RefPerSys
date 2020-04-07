@@ -199,7 +199,7 @@ public:
 extern "C" bool rps_batch;
 
 /// backtrace support
-extern "C" struct backtrace_state* rps_backtrace_state;
+extern "C" struct backtrace_state* rps_backtrace_common_state;
 
 /// the program name
 extern "C" const char* rps_progname;
@@ -1247,150 +1247,106 @@ public:
 ////////////////
 
 ////////////////
-class Rps_BackTrace;
-class Rps_BackTrace_Helper;
-extern "C" void rps_print_simple_backtrace_level
-(Rps_BackTrace* btp, FILE*outf, const char*beforemsg, uintptr_t pc);
-extern "C" void rps_print_full_backtrace_level
-(Rps_BackTrace* btp,
- FILE*outf, const char*beforemsg,
- uintptr_t pc, const char *filename, int lineno,
- const char *function);
-class Rps_BackTrace
-{
-  RPS_FRIEND_CLASS(BackTrace_Helper);
-  friend int main(int, char**);
-  friend void rps_print_simple_backtrace_level
-  (Rps_BackTrace* btp, FILE*outf, const char*beforemsg, uintptr_t pc);
-  friend void rps_print_full_backtrace_level
-  (Rps_BackTrace* btp,
-   FILE*outf, const char*beforemsg,
-   uintptr_t pc, const char *filename, int lineno,
-   const char *function);
+/// global data, returned by backtrace_create_state called once early
+/// in main
+extern "C" struct backtrace_state* rps_backtrace_common_state;
+class Rps_Backtracer {
 public:
-  static constexpr unsigned _bt_magicnum_ = 0x32079c15;
-  static constexpr unsigned _bt_maxdepth_ = 80;
-  Rps_BackTrace(const char*name, const void*data = nullptr);
-  virtual ~Rps_BackTrace();
-  virtual void bt_error_method(const char*msg, int errnum);
-  virtual int bt_simple_method(uintptr_t);
-  virtual int bt_full_method(uintptr_t pc,
-                             const char *filename, int lineno,
-                             const char *function);
+  struct SimpleOutTag {};
+  struct SimpleClosureTag {};
+  struct FullOutTag {};
+  struct FullClosureTag {};
+  static constexpr std::uint32_t _backtr_magicnum_ = 3364921659; // 0xc890a13b
+  enum class Kind : std::uint16_t {
+    None = 0,
+      SimpleOut,
+      SimpleClosure,
+      FullOut,
+      FullClosure,
+      };
+  enum class Todo : std::uint16_t {
+    Do_Nothing = 0,
+      Do_Output,
+      Do_Print,
+      };
 private:
-  const unsigned _bt_magic;
-  std::string _bt_name;
-  std::function<int(Rps_BackTrace*,uintptr_t)> _bt_simplecb;
-  std::function<int(Rps_BackTrace*,uintptr_t, const char* /*filnam*/,
-                    int /*lineno*/, const char* /*funam*/)> _bt_fullcb;
-  const void* _bt_data;
-  static void bt_error_cb(void*data, const char*msg, int errnum);
-  static int bt_simple_cb(void *data, uintptr_t pc);
-  static int bt_full_cb(void *data, uintptr_t pc,
-                        const char *filename, int lineno,
-                        const char *function);
+  static std::recursive_mutex _backtr_mtx_;
+#warning we should use std::variant instead, see https://en.cppreference.com/w/cpp/utility/variant
+  std::variant<unsigned,
+	       std::ostream*,
+	       std::ostringstream,
+	       std::function<void(Rps_Backtracer&,  uintptr_t pc)>, 
+	       std::function<void(Rps_Backtracer&,  uintptr_t pc)>,std::function<void(Rps_Backtracer&,  uintptr_t pc,
+					  const char*pcfile, int pclineno,
+					  const char*pcfun)>
+	       >  backtr_variant;
+  std::uint32_t backtr_magic;
+  mutable enum Todo backtr_todo;
+  enum Kind backtr_kind;
+  union {
+    std::ostream* backtr_out;
+    std::ostringstream backtr_outstr;
+    std::function<void(Rps_Backtracer&,  uintptr_t pc)> backtr_simpleclos;
+    std::function<void(Rps_Backtracer&,  uintptr_t pc,
+					  const char*pcfile, int pclineno,
+					  const char*pcfun)> backtr_fullclos;
+  };
+  const std::string backtr_fromfile;
+  const int backtr_fromline;
+  int backtr_skip;
+  const std::string backtr_name;
+  void bt_error_method(const char*msg, int errnum);
+  static int backtrace_simple_cb(void*data, uintptr_t pc);
+  static int backtrace_full_cb(void *data, uintptr_t pc,
+			       const char *filename, int lineno,
+			       const char *function);
+  static void backtrace_error_cb(void* data, const char*msg, int errnum);
 public:
-  const void* data(void) const
-  {
-    return _bt_data;
-  };
-  unsigned magicnum(void) const
-  {
-    return _bt_magic;
-  };
-  const std::string&name (void) const
-  {
-    return _bt_name;
-  };
-  Rps_BackTrace& set_simple_cb(const std::function<int(Rps_BackTrace*,uintptr_t)>& cb)
-  {
-    _bt_simplecb = cb;
-    return *this;
-  };
-  Rps_BackTrace& set_full_cb(const std::function<int(Rps_BackTrace*,uintptr_t, const char* /*filnam*/,
-                             int /*lineno*/, const char* /*funam*/)> &cb)
-  {
-    _bt_fullcb = cb;
-    return *this;
-  };
-  int do_simple_backtrace(int skip)
-  {
-    return backtrace_simple(rps_backtrace_state, skip,
-                            bt_simple_cb,
-                            bt_error_cb,
-                            this
-                           );
-  };
-  /// simple backtrace on stderr::
-  static void run_simple_backtrace(int skip, const char*name=nullptr);
-  Rps_BackTrace& simple_backtrace(int skip, int*res=nullptr)
-  {
-    int r = do_simple_backtrace(skip);
-    if (res) *res = r;
-    return *this;
-  };
-  ///
-  int do_full_backtrace(int skip)
-  {
-    return backtrace_full(rps_backtrace_state, skip,
-                          bt_full_cb,
-                          bt_error_cb,
-                          this
-                         );
-  }
-  Rps_BackTrace& full_backtrace(int skip, int *res=nullptr)
-  {
-    int r = do_full_backtrace(skip);
-    if (res) *res = r;
-    return *this;
-  }
-  //// full backtrace on stderr::
-  static void run_full_backtrace(int skip, const char*name=nullptr);
-  static void print_backtrace(int skip, FILE* fil)
-  {
-    RPS_ASSERT (fil != nullptr);
-    backtrace_print(rps_backtrace_state, skip, fil);
-  };
-};				// end class Rps_BackTrace
+  /// function passed to backtrace_create_state as error handler
+  static void bt_error_cb(void *data, const char *msg,  int errnum);
+  std::uint32_t magicnum() const { return backtr_magic; };
+  /// 
+  virtual void output(std::ostream&outs);
+  virtual void print(FILE*outf);
+  Rps_Backtracer(struct SimpleOutTag,
+		 const char*fromfil, const int fromlin, int skip,
+		 const char*name, std::ostream* out=nullptr);
+  Rps_Backtracer(struct SimpleClosureTag,
+		 const char*fromfil, const int fromlin,  int skip,
+		 const char*name,
+		 const std::function<void(Rps_Backtracer&,  uintptr_t pc)>& fun);
+  Rps_Backtracer(struct FullOutTag,
+		 const char*fromfil, const int fromlin, int skip,
+		 const char*name,  std::ostream* out=nullptr);
+  Rps_Backtracer(struct FullClosureTag,
+		 const char*fromfil, const int fromlin,  int skip,
+		 const char*name,
+		 const std::function<void(Rps_Backtracer&bt,  uintptr_t pc,
+					  const char*pcfile, int pclineno,
+					  const char*pcfun
+					  )>& fun);
+  std::string pc_to_string(uintptr_t pc);
+  std::string detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclineno,
+				   const char*pcfun);
+  virtual ~Rps_Backtracer();
+};				// end Rps_Backtracer
 
-class Rps_BackTrace_Helper
-{
-  static constexpr unsigned _bth_magicnum_ = 689179293 /*0x29140a9d*/;
-  unsigned _bth_magic; // always _bth_magicnum_
-  mutable unsigned _bth_count;
-  int _bth_lineno;
-  int _bth_skip;
-  mutable size_t _bth_bufsiz;
-  mutable char* _bth_bufptr;
-  std::string _bth_filename;
-  mutable std::unique_ptr<std::ostream> _bth_out;
-  Rps_BackTrace _bth_backtrace;
-public:
-  bool has_good_magic() const
-  {
-    return _bth_magic == _bth_magicnum_;
-  };
-  Rps_BackTrace_Helper(const char*fil, int line, int skip, const char*name);
-  void do_out(void) const;
-  std::ostream* swap_output(std::ostream*out) const
-  {
-    auto o = _bth_out.get();
-    auto outp = std::unique_ptr<std::ostream> (out);
-    std::swap(_bth_out, outp);
-    return o;
-  }
-  ~Rps_BackTrace_Helper()
-  {
-    free(_bth_bufptr), _bth_bufptr=nullptr;
-  };
-};				// end of Rps_Backtrace_Helper
+
+
 
 static inline
-std::ostream& operator << (std::ostream& out, const Rps_BackTrace_Helper& rph);
+std::ostream& operator << (std::ostream& out, const Rps_Backtracer& rpb) {
+  const_cast<Rps_Backtracer*>(&rpb)->output(out);
+  return out;
+}
 
 // can appear in RPS_WARNOUT etc...
-#define RPS_BACKTRACE_HERE(Skip,Name) \
-  Rps_BackTrace_Helper(__FILE__,__LINE__,(Skip),(Name))
+#define RPS_SIMPLE_BACKTRACE_HERE(Skip,Name) \
+  Rps_Backtracer(Rps_Backtracer::SimpleOutTag{},__FILE__,__LINE__,(Skip),(Name))
+#define RPS_SIMPLE_CLOSURE_BACKTRACE_HERE(Skip,Clos) \
+  Rps_Backtracer(Rps_Backtracer::SimpleClosureTag{},__FILE__,__LINE__,(Clos))
+#define RPS_SIMPLE_BACKTRACE_HERE(Skip,Name) \
+  Rps_Backtracer(Rps_Backtracer::SimpleOutTag{},__FILE__,__LINE__,(Skip),(Name))
 
 ////////////////////////////////////////////////////// garbage collector
 extern "C" void rps_garbage_collect(std::function<void(Rps_GarbageCollector*)>* fun=nullptr);
