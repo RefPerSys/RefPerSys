@@ -335,23 +335,36 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
       switch (bt->backtr_kind)
         {
         case Kind::None:
-          RPS_FASTABORT("backtrace_simple_cb unexpected Kind::None");
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unexpected Kind::None");
         case Kind::SimpleOut:
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unimplemented Kind::SimpleOut");
         case Kind::SimpleClosure:
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unimplemented Kind::SimpleClosure");
         case Kind::FullOut:
-          RPS_FASTABORT("backtrace_simple_cb unexpected Kind::FullOut");
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unexpected Kind::FullOut");
         case Kind::FullClosure:
-          RPS_FASTABORT("backtrace_simple_cb unexpected Kind::FullClosure");
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unexpected Kind::FullClosure");
         default:
-          RPS_FASTABORT("backtrace_simple_cb bad kind");
-
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output bad kind");
         }
-      RPS_FASTABORT("unexpected Todo::Do_Nothing");
+      break;
     case Todo::Do_Print:
       switch (bt->backtr_kind)
         {
+        case Kind::None:
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unexpected Kind::None");
+        case Kind::SimpleOut:
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unimplemented Kind::SimpleOut");
+        case Kind::SimpleClosure:
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unimplemented Kind::SimpleClosure");
+        case Kind::FullOut:
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unexpected Kind::FullOut");
+        case Kind::FullClosure:
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unexpected Kind::FullClosure");
+        default:
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print bad kind");
         }
-      RPS_FASTABORT("unexpected Todo::Do_Nothing");
+      break;
     default:
       RPS_FASTABORT("bad todo in Rps_Backtracer::backtrace_simple_cb");
     }
@@ -365,6 +378,20 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
 {
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
 #warning unimplemented Rps_Backtracer::backtrace_full_cb
+  if (!data)
+    RPS_FASTABORT("corruption - no data");
+  Rps_Backtracer* bt = reinterpret_cast<Rps_Backtracer*>(data);
+  if (bt->magicnum() != _backtr_magicnum_)
+    RPS_FASTABORT("corrupted backtracer");
+  switch (bt-> backtr_todo)
+    {
+    case Todo::Do_Nothing:
+      RPS_FASTABORT("backtrace_full_cb unimplemented Todo::Do_Nothing");
+    case Todo::Do_Output:
+      RPS_FASTABORT("backtrace_full_cb unimplemented Todo::Do_Output");
+    case Todo::Do_Print:
+      RPS_FASTABORT("backtrace_full_cb unimplemented Todo::Do_Print");
+    }
   RPS_FASTABORT("unimplemented Rps_Backtracer::backtrace_full_cb");
 } // end Rps_Backtracer::backtrace_full_cb
 
