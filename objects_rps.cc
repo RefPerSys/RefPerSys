@@ -114,6 +114,7 @@ Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
     ob_applyingfun(nullptr)
 {
   RPS_INFORMOUT("Rps_ObjectZone oid=" << oid
+                << std::endl
                 << RPS_SIMPLE_BACKTRACE_HERE(2, "Rps_ObjectZone")
                 << std::endl);
   if (!dontregister)

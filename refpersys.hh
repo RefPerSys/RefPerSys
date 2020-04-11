@@ -1260,6 +1260,7 @@ public:
   enum class Kind : std::uint16_t {
     None = 0,
       SimpleOut,
+    StringOut,
       SimpleClosure,
       FullOut,
       FullClosure,
@@ -1271,26 +1272,17 @@ public:
       };
 private:
   static std::recursive_mutex _backtr_mtx_;
-#warning we should use std::variant instead, see https://en.cppreference.com/w/cpp/utility/variant
-  std::variant<unsigned,
-	       std::ostream*,
-	       std::ostringstream,
-	       std::function<void(Rps_Backtracer&,  uintptr_t pc)>, 
-	       std::function<void(Rps_Backtracer&,  uintptr_t pc)>,std::function<void(Rps_Backtracer&,  uintptr_t pc,
-					  const char*pcfile, int pclineno,
-					  const char*pcfun)>
-	       >  backtr_variant;
+  // see https://en.cppreference.com/w/cpp/utility/variant
   std::uint32_t backtr_magic;
   mutable enum Todo backtr_todo;
-  enum Kind backtr_kind;
-  union {
-    std::ostream* backtr_out;
-    std::ostringstream backtr_outstr;
-    std::function<void(Rps_Backtracer&,  uintptr_t pc)> backtr_simpleclos;
-    std::function<void(Rps_Backtracer&,  uintptr_t pc,
-					  const char*pcfile, int pclineno,
-					  const char*pcfun)> backtr_fullclos;
-  };
+  std::variant<std::nullptr_t,            // for Kind::None
+	       std::ostream*,       // for Kind::SimpleOut
+	       std::ostringstream,  // for Kind::StringOut
+	       std::function<void(Rps_Backtracer&,  uintptr_t pc)>, // for Kind::SimpleClosure
+	       std::function<void(Rps_Backtracer&,  uintptr_t pc,
+				  const char*pcfile, int pclineno,
+				  const char*pcfun)>        // for Kind::FullClosure
+	       >  backtr_variant;
   const std::string backtr_fromfile;
   const int backtr_fromline;
   int backtr_skip;
@@ -1305,6 +1297,7 @@ public:
   /// function passed to backtrace_create_state as error handler
   static void bt_error_cb(void *data, const char *msg,  int errnum);
   std::uint32_t magicnum() const { return backtr_magic; };
+  Kind bkind() const { return (Kind)backtr_variant.index(); };
   /// 
   virtual void output(std::ostream&outs);
   virtual void print(FILE*outf);

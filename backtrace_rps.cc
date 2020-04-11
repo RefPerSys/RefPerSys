@@ -75,6 +75,8 @@ Rps_Backtracer::bt_error_cb (void *data, const char *msg,
   btp->bt_error_method(msg, errnum);
 } // end of Rps_Backtracer::bt_error_cb
 
+
+
 void
 Rps_Backtracer::output(std::ostream&outs)
 {
@@ -82,7 +84,7 @@ Rps_Backtracer::output(std::ostream&outs)
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
   backtr_todo = Todo::Do_Output;
-  switch (backtr_kind)
+  switch (bkind())
     {
     case Kind::None:
       RPS_FASTABORT("unexpected None kind in Rps_Backtracer::output");
@@ -100,7 +102,7 @@ Rps_Backtracer::output(std::ostream&outs)
                      (void*)this);
       backtr_todo = Todo::Do_Nothing;
       return;
-    }; // end switch backtr_kind
+    }; // end switch bkind()
   RPS_FASTABORT("unexpected kind Rps_Backtracer::output");
 } // end Rps_Backtracer::output
 
@@ -114,7 +116,7 @@ Rps_Backtracer::print(FILE*outf)
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
   backtr_todo = Todo::Do_Print;
-  switch (backtr_kind)
+  switch (bkind())
     {
     case Kind::None:
       RPS_FASTABORT("unexpected None kind in Rps_Backtracer::print");
@@ -132,7 +134,7 @@ Rps_Backtracer::print(FILE*outf)
                      (void*)this);
       backtr_todo = Todo::Do_Nothing;
       return;
-    }; // end switch backtr_kind
+    }; // end switch bkind()
   RPS_FASTABORT("unexpected kind Rps_Backtracer::print");
 } // end Rps_Backtracer::print
 
@@ -226,7 +228,7 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
       // probably the string fits into linbuf
       if (RPS_LIKELY(snprintf(linbuf, sizeof(linbuf), "* %s:%d <%s> @%p%n",
                               pcfile, pclineno, pcfun, (void*)pc, &endpos) >0
-                     && endpos > 0 && endpos<sizeof(linbuf)-1))
+                     && endpos > 0 && endpos<(int)sizeof(linbuf)-1))
         return std::string(linbuf);
       else
         {
@@ -255,47 +257,46 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
 Rps_Backtracer::Rps_Backtracer(struct SimpleOutTag,
                                const char*fromfil, const int fromlin, int skip,
                                const char*name, std::ostream* out)
-  : backtr_kind(Kind::SimpleOut),
-    backtr_magic(_backtr_magicnum_),
-    backtr_out(out),
-    backtr_fromfile(fromfil),
-    backtr_fromline(fromlin),
-    backtr_skip(skip),
-    backtr_name(name)
+  :
+  backtr_magic(_backtr_magicnum_),
+  backtr_todo(Todo::Do_Nothing),
+  backtr_variant(out?out:&std::clog),
+  backtr_fromfile(fromfil),
+  backtr_fromline(fromlin),
+  backtr_skip(skip),
+  backtr_name(name)
 {
-  if (!out)
-    backtr_out = &std::clog;
 } // end Rps_Backtracer::Rps_Backtracer/SimpleOutTag
+
+
 
 Rps_Backtracer::Rps_Backtracer(struct SimpleClosureTag,
                                const char*fromfil, const int fromlin,  int skip,
                                const char*name,
                                const std::function<void(Rps_Backtracer&,  uintptr_t pc)>& fun)
-  : backtr_kind(Kind::SimpleClosure),
-    backtr_todo(Todo::Do_Nothing),
-    backtr_magic(_backtr_magicnum_),
-    backtr_simpleclos(fun),
-    backtr_fromfile(fromfil),
-    backtr_fromline(fromlin),
-    backtr_skip(skip),
-    backtr_name(name)
+  :
+  backtr_todo(Todo::Do_Nothing),
+  backtr_magic(_backtr_magicnum_),
+  backtr_variant(fun),
+  backtr_fromfile(fromfil),
+  backtr_fromline(fromlin),
+  backtr_skip(skip),
+  backtr_name(name)
 {
 } // end Rps_Backtracer::Rps_Backtracer/SimpleClosureTag
 
 Rps_Backtracer::Rps_Backtracer(struct FullOutTag,
                                const char*fromfil, const int fromlin, int skip,
                                const char*name,  std::ostream* out)
-  : backtr_kind(Kind::FullOut),
-    backtr_todo(Todo::Do_Nothing),
-    backtr_magic(_backtr_magicnum_),
-    backtr_out(out),
-    backtr_fromfile(fromfil),
-    backtr_fromline(fromlin),
-    backtr_skip(skip),
-    backtr_name(name)
+  :
+  backtr_todo(Todo::Do_Nothing),
+  backtr_magic(_backtr_magicnum_),
+  backtr_variant(out),
+  backtr_fromfile(fromfil),
+  backtr_fromline(fromlin),
+  backtr_skip(skip),
+  backtr_name(name)
 {
-  if (!out)
-    backtr_out = &std::clog;
 } // end Rps_Backtracer::Rps_Backtracer/FullOutTag
 
 Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
@@ -304,10 +305,9 @@ Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
                                const std::function<void(Rps_Backtracer&bt,  uintptr_t pc,
                                    const char*pcfile, int pclineno,
                                    const char*pcfun)>& fun)
-  : backtr_kind(Kind::FullClosure),
-    backtr_todo(Todo::Do_Nothing),
+  : backtr_todo(Todo::Do_Nothing),
     backtr_magic(_backtr_magicnum_),
-    backtr_fullclos(fun),
+    backtr_variant(fun),
     backtr_fromfile(fromfil),
     backtr_fromline(fromlin),
     backtr_skip(skip),
@@ -320,7 +320,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
 int
 Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
 {
-  // this is passed to backtrace_simple
+  // this backtrace_simple_cb function is passed to backtrace_simple
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (!data)
     RPS_FASTABORT("corruption - no data");
@@ -332,7 +332,7 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
     case Todo::Do_Nothing:
       RPS_FASTABORT("backtrace_simple_cb unexpected Todo::Do_Nothing");
     case Todo::Do_Output:
-      switch (bt->backtr_kind)
+      switch (bt->bkind())
         {
         case Kind::None:
           RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unexpected Kind::None");
@@ -349,7 +349,7 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
         }
       break;
     case Todo::Do_Print:
-      switch (bt->backtr_kind)
+      switch (bt->bkind())
         {
         case Kind::None:
           RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unexpected Kind::None");
@@ -412,7 +412,7 @@ Rps_Backtracer::~Rps_Backtracer()
     RPS_FASTABORT("corrupted backtracer");
 #warning please carefully review Rps_Backtracer::~Rps_Backtracer
 #if 0
-  switch (backtr_kind)
+  switch (bkind())
     {
     case Kind::None:
       RPS_FASTABORT("backtrace_simple_cb unexpected Kind::None");

@@ -918,7 +918,7 @@ Rps_InstanceZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
           attrmap.insert({atob,atvalv});
         }
     }
-  for (int cix=0; cix<nbcomps; cix++)
+  for (int cix=0; cix<(int)nbcomps; cix++)
     {
       Json::Value jcurcomp = jcomps[cix];
       Rps_Value compv (jcurcomp,ld);
