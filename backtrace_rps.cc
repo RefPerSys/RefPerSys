@@ -384,11 +384,20 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
         case Kind::None:
           RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unexpected Kind::None");
         case Kind::SimpleOut:
-          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unimplemented Kind::SimpleOut");
+        case Kind::FullOut:
+        {
+          std::ostream* outs = bt->boutput();
+          if (outs)
+            {
+              *outs << bt->pc_to_string(pc) << std::endl;
+              return 0;
+            }
+          else
+            RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output without output");
+        }
+        break;
         case Kind::SimpleClosure:
           RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unimplemented Kind::SimpleClosure");
-        case Kind::FullOut:
-          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unexpected Kind::FullOut");
         case Kind::FullClosure:
           RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unexpected Kind::FullClosure");
         default:
