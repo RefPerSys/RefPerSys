@@ -1260,9 +1260,8 @@ public:
   enum class Kind : std::uint16_t {
     None = 0,
       SimpleOut,
-    StringOut,
+      StringOut,
       SimpleClosure,
-      FullOut,
       FullClosure,
       };
   enum class Todo : std::uint16_t {
@@ -1275,7 +1274,7 @@ private:
   // see https://en.cppreference.com/w/cpp/utility/variant
   std::uint32_t backtr_magic;
   mutable enum Todo backtr_todo;
-  std::variant<std::nullptr_t,            // for Kind::None
+  mutable std::variant<std::nullptr_t,            // for Kind::None
 	       std::ostream*,       // for Kind::SimpleOut
 	       std::ostringstream,  // for Kind::StringOut
 	       std::function<void(Rps_Backtracer&,  uintptr_t pc)>, // for Kind::SimpleClosure
