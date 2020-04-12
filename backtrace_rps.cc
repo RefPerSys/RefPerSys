@@ -316,6 +316,53 @@ Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
 } // end Rps_Backtracer::Rps_Backtracer/FullClosureTag
 
 
+const std::string
+Rps_Backtracer::bkindname(void) const
+{
+  auto k = bkind();
+  switch (k)
+    {
+    case Kind::None:
+      return "None";
+    case Kind::SimpleOut:
+      return "SimpleOut";
+    case Kind::StringOut:
+      return "StringOut";
+    case Kind::SimpleClosure:
+      return "SimpleClosure";
+    case Kind::FullOut:
+      return "FullOut";
+    case Kind::FullClosure:
+      return "FullClosure";
+    }
+  char buf[32];
+  memset(buf, 0, sizeof(buf));
+  snprintf(buf, sizeof(buf), "?kind#%d?", (int)k);
+  return buf;
+} // end Rps_Backtracer::bkindname
+
+
+std::ostream*
+Rps_Backtracer::boutput(void) const
+{
+  if (magicnum() != _backtr_magicnum_)
+    RPS_FASTABORT("corrupted backtracer");
+  auto k = bkind();
+  switch (k)
+    {
+    case Kind::None:
+      RPS_FASTABORT("Rps_Backtracer::boutput with Kind::None");
+    case Kind::SimpleOut:
+    case Kind::SimpleClosure:
+    case Kind::FullOut:
+    case Kind::FullClosure:
+      RPS_WARNOUT("unimplemented Rps_Backtracer::boutput for kind #" << (int)bkind()
+                  << ":" << bkindname());
+      return nullptr;
+    }
+} // end Rps_Backtracer::boutput
+
+
 
 int
 Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)

@@ -347,8 +347,8 @@ do                                                                  \
   }                                                                 \
 while (0)
 
-
-#define RPS_DEUBG_LOG(dbgopt, logmsg) \
+/// example of usage: RPSDEBUG_LOG(MISC, "x=" << x) related to RPS_DEBUG_MISC
+#define RPSDEBUG_LOG(dbgopt, logmsg) \
   RPS_DEBUG_LOG_AT(__FILE__, __LINE__, dbgopt, logmsg)
 
 
@@ -1298,6 +1298,8 @@ public:
   static void bt_error_cb(void *data, const char *msg,  int errnum);
   std::uint32_t magicnum() const { return backtr_magic; };
   Kind bkind() const { return (Kind)backtr_variant.index(); };
+  const std::string bkindname() const;
+  std::ostream* boutput() const;
   /// 
   virtual void output(std::ostream&outs);
   virtual void print(FILE*outf);
