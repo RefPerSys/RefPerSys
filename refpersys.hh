@@ -1285,6 +1285,7 @@ private:
   const std::string backtr_fromfile;
   const int backtr_fromline;
   int backtr_skip;
+  int backtr_depth;
   const std::string backtr_name;
   void bt_error_method(const char*msg, int errnum);
   static int backtrace_simple_cb(void*data, uintptr_t pc);

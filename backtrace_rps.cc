@@ -84,6 +84,7 @@ Rps_Backtracer::output(std::ostream&outs)
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
   backtr_todo = Todo::Do_Output;
+  backtr_depth = 0;
   switch (bkind())
     {
     case Kind::None:
@@ -116,6 +117,7 @@ Rps_Backtracer::print(FILE*outf)
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
   backtr_todo = Todo::Do_Print;
+  backtr_depth = 0;
   switch (bkind())
     {
     case Kind::None:
@@ -142,6 +144,10 @@ Rps_Backtracer::print(FILE*outf)
 std::string
 Rps_Backtracer::pc_to_string(uintptr_t pc)
 {
+  if (pc == 0)
+    return "◎"; //U+25CE BULLSEYE
+  else if (pc == (uintptr_t)-1)
+    return "";
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("pc_to_string: corrupted Rps_Backtracer");
@@ -149,12 +155,14 @@ Rps_Backtracer::pc_to_string(uintptr_t pc)
     {
       char buf[32];
       memset (buf, 0, sizeof(buf));
-      snprintf(buf, sizeof(buf), "?? %p", (void*)pc);
+      snprintf(buf, sizeof(buf), "[%03d] /?? %p", backtr_depth, (void*)pc);
       return std::string(buf);
     }
   else
     {
-      const char* beforebuf = "*";
+      char beforebuf[32];
+      memset (beforebuf, 0, sizeof(beforebuf));
+      snprintf (beforebuf, sizeof(beforebuf), "[%03d]", backtr_depth);
       char linbuf[128];
       memset(linbuf, 0, sizeof(linbuf));
       const char*demangled = nullptr;
@@ -185,26 +193,26 @@ Rps_Backtracer::pc_to_string(uintptr_t pc)
           if (delta != 0)
             {
               if (funamestr.empty())
-                snprintf (linbuf, sizeof(linbuf), "%s %p: %s+%#x\n",
+                snprintf (linbuf, sizeof(linbuf), "%s %p!: %s+%#x",
                           beforebuf, (void*)pc, filnamestr.c_str(), delta);
               else
-                snprintf (linbuf, sizeof(linbuf), "%s %p: %40s+%#x %s\n",
+                snprintf (linbuf, sizeof(linbuf), "%s %p!: %40s+%#x %s",
                           beforebuf, (void*)pc, filnamestr.c_str(), delta,
                           funamestr.c_str());
             }
           else
             {
               if (funamestr.empty())
-                snprintf (linbuf, sizeof(linbuf), "%s %p: %s+%#x\n",
+                snprintf (linbuf, sizeof(linbuf), "%s %p!: %s+%#x",
                           beforebuf, (void*)pc, filnamestr.c_str(), delta);
               else
-                snprintf (linbuf, sizeof(linbuf), "%s %p: %40s+%#x %s\n",
+                snprintf (linbuf, sizeof(linbuf), "%s %p!: %40s+%#x %s",
                           beforebuf, (void*)pc, filnamestr.c_str(),
                           delta, funamestr.c_str());
             }
         }
       else
-        snprintf (linbuf, sizeof(linbuf),  "%s %p.\n", beforebuf, (void*)pc);
+        snprintf (linbuf, sizeof(linbuf),  "%s %p.", beforebuf, (void*)pc);
       if (demangled)
         free((void*)demangled), demangled = nullptr;
       linbuf[sizeof(linbuf)-1] = (char)0;
@@ -217,6 +225,10 @@ std::string
 Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclineno,
                                       const char*pcfun)
 {
+  if (pc == 0)
+    return "○"; //U+25CB WHITE CIRCLE
+  else if (pc == (uintptr_t)-1)
+    return "";
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("detailed_pc_to_string: corrupted Rps_Backtracer");
@@ -238,7 +250,7 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
           s.reserve(strlen(pcfile)+strlen(pcfun)+32);
           s += "* ";
           s += pcfile;
-          s += ":";
+          s += "°:";
           s += std::to_string(pclineno);
           s += " <";
           s += pcfun;
@@ -264,6 +276,7 @@ Rps_Backtracer::Rps_Backtracer(struct SimpleOutTag,
   backtr_fromfile(fromfil),
   backtr_fromline(fromlin),
   backtr_skip(skip),
+  backtr_depth(0),
   backtr_name(name)
 {
 } // end Rps_Backtracer::Rps_Backtracer/SimpleOutTag
@@ -281,6 +294,7 @@ Rps_Backtracer::Rps_Backtracer(struct SimpleClosureTag,
   backtr_fromfile(fromfil),
   backtr_fromline(fromlin),
   backtr_skip(skip),
+  backtr_depth(0),
   backtr_name(name)
 {
 } // end Rps_Backtracer::Rps_Backtracer/SimpleClosureTag
@@ -295,6 +309,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullOutTag,
   backtr_fromfile(fromfil),
   backtr_fromline(fromlin),
   backtr_skip(skip),
+  backtr_depth(0),
   backtr_name(name)
 {
 } // end Rps_Backtracer::Rps_Backtracer/FullOutTag
@@ -311,6 +326,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
     backtr_fromfile(fromfil),
     backtr_fromline(fromlin),
     backtr_skip(skip),
+    backtr_depth(0),
     backtr_name(name)
 {
 } // end Rps_Backtracer::Rps_Backtracer/FullClosureTag
@@ -374,6 +390,7 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
   Rps_Backtracer* bt = reinterpret_cast<Rps_Backtracer*>(data);
   if (bt->magicnum() != _backtr_magicnum_)
     RPS_FASTABORT("corrupted backtracer");
+  bt->backtr_depth++;
   switch (bt-> backtr_todo)
     {
     case Todo::Do_Nothing:
@@ -439,6 +456,7 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
   Rps_Backtracer* bt = reinterpret_cast<Rps_Backtracer*>(data);
   if (bt->magicnum() != _backtr_magicnum_)
     RPS_FASTABORT("corrupted backtracer");
+  bt->backtr_depth++;
   switch (bt-> backtr_todo)
     {
     case Todo::Do_Nothing:
