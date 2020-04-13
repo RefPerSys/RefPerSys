@@ -462,9 +462,39 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
     case Todo::Do_Nothing:
       RPS_FASTABORT("backtrace_full_cb unimplemented Todo::Do_Nothing");
     case Todo::Do_Output:
-      RPS_FASTABORT("backtrace_full_cb unimplemented Todo::Do_Output");
+      switch (bt->bkind())
+        {
+        case Kind::None:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::None");
+        case Kind::SimpleOut:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unimplemented Kind::SimpleOut");
+        case Kind::SimpleClosure:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unimplemented Kind::SimpleClosure");
+        case Kind::StringOut:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::StringOut");
+        case Kind::FullClosure:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullClosure");
+        default:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print bad kind");
+        }
+      break;
     case Todo::Do_Print:
-      RPS_FASTABORT("backtrace_full_cb unimplemented Todo::Do_Print");
+      switch (bt->bkind())
+        {
+        case Kind::None:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::None");
+        case Kind::SimpleOut:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unimplemented Kind::SimpleOut");
+        case Kind::SimpleClosure:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unimplemented Kind::SimpleClosure");
+        case Kind::StringOut:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::StringOut");
+        case Kind::FullClosure:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullClosure");
+        default:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print bad kind");
+        }
+      break;
     }
   RPS_FASTABORT("unimplemented Rps_Backtracer::backtrace_full_cb");
 } // end Rps_Backtracer::backtrace_full_cb
