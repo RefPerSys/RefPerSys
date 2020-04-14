@@ -891,6 +891,7 @@ public:
   inline void output(std::ostream&out, unsigned depth=0) const;
   static constexpr unsigned max_output_depth = 5;
   Rps_Value get_attr(Rps_CallFrame*stkf, const Rps_ObjectRef obattr) const;
+  Rps_Value get_physical_attr(const Rps_ObjectRef obattr) const;
   inline void clear(void);
   inline Rps_Value& operator = (std::nullptr_t)
   {
@@ -1826,6 +1827,7 @@ public:
   //////////////// attributes
   Rps_Value set_of_attributes(Rps_CallFrame*stkf) const;
   unsigned nb_attributes(Rps_CallFrame*stkf) const;
+  Rps_Value get_physical_attr(const Rps_ObjectRef obattr0) const;
   Rps_Value get_attr1(Rps_CallFrame*stkf,const Rps_ObjectRef obattr0) const;
   Rps_TwoValues get_attr2(Rps_CallFrame*stkf,const Rps_ObjectRef obattr0, const Rps_ObjectRef obattr1) const;
   // if obaattr is a magic attribute, throw an exception

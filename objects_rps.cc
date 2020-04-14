@@ -67,7 +67,14 @@ Rps_ObjectRef::output(std::ostream&outs) const
   if (is_empty())
     outs << "__";
   else
-    outs << obptr()->oid().to_string();
+    {
+      Rps_Value valname = obptr()->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name
+      outs << obptr()->oid().to_string();
+      if (valname.is_string())
+        {
+          outs << "/" << valname.as_cstring();
+        }
+    };
 } // end Rps_ObjectRef::output
 
 void
@@ -305,6 +312,21 @@ Rps_ObjectZone::get_attr1(Rps_CallFrame*stkf,const Rps_ObjectRef obattr0) const
   }
   return val0;
 } // end Rps_ObjectZone::get_attr1
+
+
+Rps_Value
+Rps_ObjectZone::get_physical_attr(const Rps_ObjectRef obattr0) const
+{
+  RPS_ASSERT(stored_type() == Rps_Type::Object);
+  if (obattr0.is_empty() || obattr0->stored_type() != Rps_Type::Object)
+    return nullptr;
+  Rps_Value val0;
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  auto it0 = ob_attrs.find(obattr0);
+  if (it0 != ob_attrs.end())
+    val0 = it0->second;
+  return val0;
+} // end Rps_ObjectZone::get_physical_attr
 
 
 
