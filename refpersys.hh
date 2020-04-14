@@ -292,6 +292,7 @@ static inline pid_t rps_thread_id(void)
   dbgmacro(PARSE_STRING)            \
   dbgmacro(GARBAGE_COLLECTOR)       \
   dbgmacro(MISC)                    \
+  dbgmacro(MSGSEND)                 \
   dbgmacro(GENERATED_CODE)          \
   dbgmacro(GUI)
 

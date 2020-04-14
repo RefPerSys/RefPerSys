@@ -578,11 +578,13 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
                 );
   _.val = Rps_Value(*this);
   _.obselect = obselectorarg;
+  _.obcurclass = _.val.compute_class(&_);
   int loopcount = 0;
+  RPSDEBUG_LOG(MSGSEND, "closure_for_method_selector start this=" << _.val << " obselect=" << _.obselect);
   RPS_ASSERT(RPS_ROOT_OB(_6XLY6QfcDre02922jz)); // the `value` class exists, it has been loaded
   while (loopcount++ <  (int)maximal_inheritance_depth)
     {
-      _.obcurclass = _.val.compute_class(&_);
+      RPSDEBUG_LOG(MSGSEND, "closure_for_method_selector obcurclass=" << _.obcurclass << " obselect=" << _.obselect << " loopcount=" << loopcount);
       if (!_.obcurclass)   // should never happen
         {
           if (_.val.is_object())

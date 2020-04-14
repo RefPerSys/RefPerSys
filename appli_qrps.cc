@@ -388,7 +388,7 @@ void rps_run_application(int &argc, char **argv)
   std::string loadtopdir(rps_topdirectory);
   {
     QCommandLineParser argparser;
-    argparser.setApplicationDescription("a REFlexive PERsistent SYStem");
+    argparser.setApplicationDescription("a REFlexive PERsistent SYStem - see refpersys.org");
     argparser.addHelpOption();
     argparser.addVersionOption();
     // refpersys home
