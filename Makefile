@@ -73,6 +73,7 @@ all:
 	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
 	$(MAKE) $(MAKEFLAGS) refpersys
+	sync
 
 refpersys: $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o
 	$(LINK.cc) $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o \
