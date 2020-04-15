@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean print-temporary-plugin-settings indent redump
+.PHONY: all objects clean fullclean print-temporary-plugin-settings indent redump
 
 RPS_GIT_ID:= $(shell ./generate-gitid.sh)
 
@@ -126,6 +126,10 @@ clean:
 	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~
 	$(RM) persistore/*~ persistore/*%
 	$(RM) *% core
+
+fullclean:
+	$(RPS_BUILD_CCACHE) -C
+	$(MAKE) clean
 
 __timestamp.c:
 	./generate-timestamp.sh > $@-tmp
