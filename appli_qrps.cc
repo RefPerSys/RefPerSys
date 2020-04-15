@@ -385,6 +385,7 @@ void rps_run_application(int &argc, char **argv)
   RpsQApplication::app_mainqthread = QThread::currentThread();
   RpsQApplication::app_mainselfthread = pthread_self();
   RpsQApplication::app_mainthreadid = std::this_thread::get_id();
+  std::string displayedobjectstr;
   std::string loadtopdir(rps_topdirectory);
   {
     QCommandLineParser argparser;
@@ -410,6 +411,10 @@ void rps_run_application(int &argc, char **argv)
     // settings information
     const QCommandLineOption settingsOption("settings", "The Qt settings file.");
     argparser.addOption(settingsOption);
+    // display a given object
+    const QCommandLineOption displayOption(QStringList() << "display",
+                                           "object to display", "display a given object by oid or by name");
+    argparser.addOption(displayOption);
     // batch flag
     const QCommandLineOption batchOption(QStringList() << "B" << "batch", "batch mode, without any windows");
     argparser.addOption(batchOption);
@@ -511,6 +516,16 @@ void rps_run_application(int &argc, char **argv)
         const QString dumpqs = argparser.value(dumpafterloadOption);
         dumpdirstr = dumpqs.toStdString();
         RPS_INFORMOUT("should dump into " << dumpdirstr);
+      }
+    ///// --display <object-oid-or-name>
+    if (argparser.isSet(displayOption))
+      {
+        const QString dispqs = argparser.value(displayOption);
+        if (!displayedobjectstr.empty())
+          RPS_FATALOUT("--display option should be passed once, but got both " << displayedobjectstr
+                       << " and " << dispqs.toStdString());
+        displayedobjectstr = dispqs.toStdString();
+        RPS_INFORMOUT("should display " << displayedobjectstr);
       }
     ///// --settings <ini-file>
     if (argparser.isSet(settingsOption))
