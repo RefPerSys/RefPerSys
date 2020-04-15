@@ -357,6 +357,12 @@ RpsQApplication::getWindowPtr(int ix)
 } // end RpsQApplication::getWindowPtr
 
 
+void
+RpsQApplication::do_display_object(const QString& obqstr)
+{
+#warning unimplemented RpsQApplication::do_display_object
+  RPS_FATALOUT("RpsQApplication::do_display_object unimplemented obqstr=" << obqstr.toStdString());
+} // end RpsQApplication::do_display_object
 
 
 void rps_run_application(int &argc, char **argv)
@@ -385,7 +391,7 @@ void rps_run_application(int &argc, char **argv)
   RpsQApplication::app_mainqthread = QThread::currentThread();
   RpsQApplication::app_mainselfthread = pthread_self();
   RpsQApplication::app_mainthreadid = std::this_thread::get_id();
-  std::string displayedobjectstr;
+  QString displayedobjectqstr;
   std::string loadtopdir(rps_topdirectory);
   {
     QCommandLineParser argparser;
@@ -521,11 +527,11 @@ void rps_run_application(int &argc, char **argv)
     if (argparser.isSet(displayOption))
       {
         const QString dispqs = argparser.value(displayOption);
-        if (!displayedobjectstr.empty())
-          RPS_FATALOUT("--display option should be passed once, but got both " << displayedobjectstr
+        if (!displayedobjectqstr.isEmpty())
+          RPS_FATALOUT("--display option should be passed once, but got both " << displayedobjectqstr.toStdString()
                        << " and " << dispqs.toStdString());
-        displayedobjectstr = dispqs.toStdString();
-        RPS_INFORMOUT("should display " << displayedobjectstr);
+        displayedobjectqstr = dispqs;
+        RPS_INFORMOUT("should display " << displayedobjectqstr.toStdString());
       }
     ///// --settings <ini-file>
     if (argparser.isSet(settingsOption))
@@ -569,6 +575,8 @@ void rps_run_application(int &argc, char **argv)
     {
       RPS_INFORMOUT("running the GUI since no batch mode");
       app.initialize_app();
+      if (!displayedobjectqstr.isEmpty())
+        app.do_display_object(displayedobjectqstr);
       RpsQOutputTextEdit::initialize();
       (void) app.exec ();
     }
