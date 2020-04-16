@@ -356,6 +356,22 @@ RpsQApplication::getWindowPtr(int ix)
   return app_windvec.at(ix).data();
 } // end RpsQApplication::getWindowPtr
 
+RpsQWindow*
+RpsQApplication::first_window_ptr(int *prank)
+{
+  std::lock_guard gu(app_mutex);
+  if (prank)
+    *prank = 0;
+  int maxwinrk = (int)app_windvec.size();
+  for (int ix=1; ix<maxwinrk; ix++)
+    {
+      QPointer<RpsQWindow> curwinptr = app_windvec[ix];
+      if (!curwinptr) continue;
+      if (prank) *prank = ix;
+      return curwinptr;
+    }
+  return nullptr;
+} // end RpsQApplication::first_window_ptr
 
 void
 RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerframe)
@@ -363,6 +379,7 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
   RPS_LOCALFRAME(RPS_ROOT_OB(_8xCV6GDXYMa02mK5xy), ///display_object_content_qt∈symbol
                  callerframe,
                  Rps_ObjectRef dispob; // the object to display
+                 Rps_ObjectRef winob;  // the window where we display
                 );
   std::string obstr = obqstr.toStdString();
   RPS_INFORMOUT("RpsQApplication::do_display_object should display obstr='"
@@ -390,6 +407,10 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
       return;
     }
   RPS_INFORMOUT("RpsQApplication::do_display_object dispob=" << _.dispob);
+  // compute the winob
+
+  // send display_object_content_qt selector to dispob
+  // with winob and depth=0
 #warning unimplemented RpsQApplication::do_display_object
   RPS_FATALOUT("RpsQApplication::do_display_object unimplemented obstr=" << obstr);
 } // end RpsQApplication::do_display_object

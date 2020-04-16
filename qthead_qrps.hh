@@ -114,6 +114,7 @@ public:
       throw std::runtime_error("bad window index in RpsQApplication::getWindow");
     return *w;
   };
+  RpsQWindow* first_window_ptr(int *prank= nullptr);
   static RpsQApplication* the_app(void)
   {
     return dynamic_cast<RpsQApplication*>(RpsQApplication::instance());
