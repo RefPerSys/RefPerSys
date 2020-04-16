@@ -367,6 +367,29 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
   std::string obstr = obqstr.toStdString();
   RPS_INFORMOUT("RpsQApplication::do_display_object should display obstr='"
                 << obstr << "'");
+  if (obstr.empty())
+    {
+      RPS_WARNOUT("RpsQApplication::do_display_object with empty string");
+      return;
+    }
+  else if (obstr[0] == '_')
+    {
+      Rps_Id oid(obstr);
+      if (oid.empty())
+        RPS_WARNOUT("RpsQApplication::do_display_object with empty oid " << obstr);
+      else
+        _.dispob = Rps_ObjectRef::find_object_by_oid(&_, oid);
+    }
+  else if (isalpha(obstr[0]))
+    {
+      _.dispob = Rps_ObjectRef::find_object_by_string(&_, obstr, true);
+    }
+  else
+    {
+      RPS_WARNOUT("RpsQApplication::do_display_object with bad string '" << obstr << "'");
+      return;
+    }
+  RPS_INFORMOUT("RpsQApplication::do_display_object dispob=" << _.dispob);
 #warning unimplemented RpsQApplication::do_display_object
   RPS_FATALOUT("RpsQApplication::do_display_object unimplemented obstr=" << obstr);
 } // end RpsQApplication::do_display_object
