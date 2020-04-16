@@ -358,10 +358,17 @@ RpsQApplication::getWindowPtr(int ix)
 
 
 void
-RpsQApplication::do_display_object(const QString& obqstr)
+RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerframe)
 {
+  RPS_LOCALFRAME(RPS_ROOT_OB(_8xCV6GDXYMa02mK5xy), ///display_object_content_qt∈symbol
+                 callerframe,
+                 Rps_ObjectRef dispob; // the object to display
+                );
+  std::string obstr = obqstr.toStdString();
+  RPS_INFORMOUT("RpsQApplication::do_display_object should display obstr='"
+                << obstr << "'");
 #warning unimplemented RpsQApplication::do_display_object
-  RPS_FATALOUT("RpsQApplication::do_display_object unimplemented obqstr=" << obqstr.toStdString());
+  RPS_FATALOUT("RpsQApplication::do_display_object unimplemented obstr=" << obstr);
 } // end RpsQApplication::do_display_object
 
 

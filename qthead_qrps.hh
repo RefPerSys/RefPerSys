@@ -127,7 +127,7 @@ public:
   void gc_mark(Rps_GarbageCollector&gc) const;
 
 public slots:
-  void do_display_object(const QString& obqstr);
+  void do_display_object(const QString& obqstr,Rps_CallFrame*callerframe=nullptr);
   void do_dump_state(QString dirpath=".");
   void do_dump_current_state();
   void do_add_new_window(Rps_CallFrame*callerframe);
