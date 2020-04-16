@@ -490,7 +490,12 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
         case Kind::StringOut:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::StringOut");
         case Kind::FullClosure:
-          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullClosure");
+        {
+          auto fullclo = std::get<fullclos_t>(bt->backtr_variant);
+          RPS_ASSERT(fullclo);
+          fullclo(*bt, pc, filename, lineno,  function);
+          return 0;
+        }
         default:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print bad kind");
         }

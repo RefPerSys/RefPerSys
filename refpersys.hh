@@ -1271,18 +1271,20 @@ public:
       Do_Output,
       Do_Print,
       };
+  typedef  std::function<void(Rps_Backtracer&,  uintptr_t pc)> simpleclos_t;
+  typedef  std::function<void(Rps_Backtracer&,  uintptr_t pc,
+				  const char*pcfile, int pclineno,
+			      const char*pcfun)> fullclos_t;
 private:
   static std::recursive_mutex _backtr_mtx_;
   // see https://en.cppreference.com/w/cpp/utility/variant
   std::uint32_t backtr_magic;
   mutable enum Todo backtr_todo;
   mutable std::variant<std::nullptr_t,            // for Kind::None
-	       std::ostream*,       // for Kind::SimpleOut
-	       std::ostringstream,  // for Kind::StringOut
-	       std::function<void(Rps_Backtracer&,  uintptr_t pc)>, // for Kind::SimpleClosure
-	       std::function<void(Rps_Backtracer&,  uintptr_t pc,
-				  const char*pcfile, int pclineno,
-				  const char*pcfun)>        // for Kind::FullClosure
+		       std::ostream*,       // for Kind::SimpleOut
+		       std::ostringstream,  // for Kind::StringOut
+		       simpleclos_t, // for Kind::SimpleClosure
+		       fullclos_t // for Kind::FullClosure
 	       >  backtr_variant;
   const std::string backtr_fromfile;
   const int backtr_fromline;
