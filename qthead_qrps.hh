@@ -693,6 +693,10 @@ public:
   };
   void gc_mark(Rps_GarbageCollector&gc) const;
   void create_winobj(Rps_CallFrame*callerframe);
+  Rps_ObjectRef window_object() const
+  {
+    return win_objref;
+  };
 };				// end of RpsQWindow
 
 

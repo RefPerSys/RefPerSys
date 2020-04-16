@@ -373,6 +373,8 @@ RpsQApplication::first_window_ptr(int *prank)
   return nullptr;
 } // end RpsQApplication::first_window_ptr
 
+
+
 void
 RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerframe)
 {
@@ -380,8 +382,13 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
                  callerframe,
                  Rps_ObjectRef dispob; // the object to display
                  Rps_ObjectRef winob;  // the window where we display
+                 Rps_ObjectRef selob; // the selector
+                 Rps_Value dispv; //
+                 Rps_Value depthv; //
                 );
   std::string obstr = obqstr.toStdString();
+  _.selob = RPS_ROOT_OB(_8xCV6GDXYMa02mK5xy);
+  _.depthv = Rps_Value((intptr_t)0);
   RPS_INFORMOUT("RpsQApplication::do_display_object should display obstr='"
                 << obstr << "'");
   if (obstr.empty())
@@ -406,13 +413,32 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
       RPS_WARNOUT("RpsQApplication::do_display_object with bad string '" << obstr << "'");
       return;
     }
-  RPS_INFORMOUT("RpsQApplication::do_display_object dispob=" << _.dispob);
   // compute the winob
-
+  {
+    int winrk=0;
+    RpsQWindow* firstwinptr = first_window_ptr(&winrk);
+    if (firstwinptr)
+      {
+        _.winob = firstwinptr->window_object();
+      }
+    RPS_INFORMOUT("RpsQApplication::do_display_object dispob=" << _.dispob
+                  << " winrk=" << winrk
+                  << " winob=" << _.winob
+                  << " selob=" << _.selob
+                  << " depthv=" << _.depthv);
+  }
   // send display_object_content_qt selector to dispob
   // with winob and depth=0
-#warning unimplemented RpsQApplication::do_display_object
-  RPS_FATALOUT("RpsQApplication::do_display_object unimplemented obstr=" << obstr);
+  _.dispv = Rps_ObjectValue(_.dispob);
+  Rps_TwoValues twores =
+    _.dispv.send2(&_, _.selob,
+                  _.winob,
+                  _.depthv);
+  RPS_INFORMOUT("RpsQApplication::do_display_object result for dispv=" << _.dispv
+                << " is main="
+                << twores.main()
+                << ", xtra="
+                << twores.xtra());
 } // end RpsQApplication::do_display_object
 
 
