@@ -469,8 +469,10 @@ rps_debug_level(Rps_Debug dbgopt)
     }
 
 #undef DEBUG_LEVEL
-}
+} // end rps_debug_level
 
+
+////////////////////////////////////////////////////////////////
 
 void
 rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
@@ -551,7 +553,7 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
 
   if (bigbfr)
     free(bigbfr);
-}
+} // end rps_debug_printf_at
 
 
 /////////////////// end of file main_rps.cc

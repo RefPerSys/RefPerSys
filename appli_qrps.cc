@@ -82,6 +82,16 @@ QThread* RpsQApplication::app_mainqthread;
 pthread_t RpsQApplication::app_mainselfthread;
 std::thread::id RpsQApplication::app_mainthreadid;
 
+///////////////////////////////////////////////////////// debugging support
+static void
+rps_set_debug(const std::string &deblev)
+{
+#warning rps_set_debug unimplemented
+  RPS_FATALOUT("rps_set_debug not implemented, deblev='" << deblev << "'");
+} // end rps_set_debug
+
+
+////////////////////////////////////////////////////////////////
 Json::Value
 RpsQApplication::read_application_json(void)
 {
@@ -464,6 +474,12 @@ void rps_run_application(int &argc, char **argv)
                cwdbuf,
                rps_hostname(), (int)getpid());
   }
+  /// early debugging if given as the first argument
+  if (argc>2 && !strncmp("-d", argv[1], strlen("-d")))
+    rps_set_debug(std::string(argv[1]+strlen("-d")));
+  if (argc>2 && !strncmp("--debug=", argv[1], strlen("--debug=")))
+    rps_set_debug(std::string(argv[1]+strlen("--debug=")));
+  ///
   RpsQApplication app (argc, argv);
   RpsQApplication::app_mainqthread = QThread::currentThread();
   RpsQApplication::app_mainselfthread = pthread_self();
@@ -484,6 +500,11 @@ void rps_run_application(int &argc, char **argv)
     const QCommandLineOption loadOption(QStringList() << "L" << "load",
                                         "The load directory", "load-dir");
     argparser.addOption(loadOption);
+    // load directory
+    const QCommandLineOption debugOption(QStringList() << "d" << "debug",
+                                         "debugging messages, perhaps 'help' for debug-level to get their list",
+                                         "debug-level");
+    argparser.addOption(debugOption);
     // random oids
     const QCommandLineOption randoidOption("random-oid",
                                            "output some random oids", "nb-oids");
@@ -496,7 +517,8 @@ void rps_run_application(int &argc, char **argv)
     argparser.addOption(settingsOption);
     // display a given object
     const QCommandLineOption displayOption(QStringList() << "display",
-                                           "object to display", "display a given object by oid or by name");
+                                           "display a given object by oid or by name",
+                                           "displayed-object");
     argparser.addOption(displayOption);
     // batch flag
     const QCommandLineOption batchOption(QStringList() << "B" << "batch", "batch mode, without any windows");
@@ -592,6 +614,13 @@ void rps_run_application(int &argc, char **argv)
         else
           RPS_WARNOUT("invalid number of jobs (-j option) " << (nbjqs.toStdString()));
         rps_nbjobs = nbjobs;
+      }
+    ///// --debug <level>
+    if (argparser.isSet(debugOption))
+      {
+        const QString debugqs = argparser.value(debugOption);
+        auto debugstr = debugqs.toStdString();
+        rps_set_debug(debugstr);
       }
     ///// --dump <dump-dir>
     if (argparser.isSet(dumpafterloadOption))
