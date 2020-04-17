@@ -279,11 +279,13 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
       memset(minibfr, 0, sizeof (minibfr));
 
       snprintf(minibfr, sizeof (minibfr), "%.02f", fraction);
-      strncpy(dotdunder, strchr(minibfr, '.'), 3);
+      const char* dotminib = strchr(minibfr, '.');
+      if (dotminib)
+	strncpy(dotdunder, dotminib, 3);
     }
 
   return bfr;
-}
+} // end rps_strftime_centiseconds
 
 
 
