@@ -86,8 +86,39 @@ std::thread::id RpsQApplication::app_mainthreadid;
 static void
 rps_set_debug(const std::string &deblev)
 {
-#warning rps_set_debug unimplemented
-  RPS_FATALOUT("rps_set_debug not implemented, deblev='" << deblev << "'");
+  if (deblev == "help")
+    {
+      fprintf(stderr, "Comma separated debugging levels with -d<debug-level> or --debug=<debug-level>:\n");
+#define Rps_SHOW_DEBUG(Opt) fprintf(stderr, "\t%s\n", #Opt);
+      RPS_DEBUG_OPTIONS(Rps_SHOW_DEBUG);
+#undef Rps_SHOW_DEBUG
+      fflush(nullptr);
+    }
+  else
+    {
+      const char*comma=nullptr;
+      for (const char*pc = deblev.c_str(); pc && *pc; pc = comma?(comma+1):nullptr)
+        {
+          comma = strchr(pc, ',');
+          std::string curlev;
+          if (comma && comma>pc)
+            curlev = std::string(pc, comma-pc-1);
+          else
+            curlev = std::string(pc);
+#define Rps_SET_DEBUG(Opt) \
+      else if (curlev == #Opt) {			\
+	rps_debug_flags |= (1 << RPS_DEBUG_##Opt);	\
+      RPS_INFORMOUT("debugging flag "			\
+		    << #Opt << " is set.");		\
+      }
+          if (false) {}
+          RPS_DEBUG_OPTIONS(Rps_SET_DEBUG)
+          else
+            RPS_WARNOUT("unknown debug level " << curlev);
+#undef Rps_SET_DEBUG
+        }
+    };
+  RPSDEBUG_LOG(MISC, "rps_debug_flags=" << rps_debug_flags);
 } // end rps_set_debug
 
 

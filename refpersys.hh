@@ -284,18 +284,19 @@ static inline pid_t rps_thread_id(void)
 }
 
 
+/// keep the debug options in alphabetical order
 #define RPS_DEBUG_OPTIONS(dbgmacro) \
   dbgmacro(CMD)                     \
   dbgmacro(DUMP)                    \
-  dbgmacro(LOAD)                    \
-  dbgmacro(PARSE)                   \
-  dbgmacro(PARSE_STRING)            \
   dbgmacro(GARBAGE_COLLECTOR)       \
+  dbgmacro(GENERATED_CODE)          \
+  dbgmacro(GUI)                     \
+  dbgmacro(LOAD)                    \
   dbgmacro(MISC)                    \
   dbgmacro(MSGSEND)                 \
-  dbgmacro(GENERATED_CODE)          \
-  dbgmacro(GUI)
-
+  dbgmacro(PARSE)                   \
+  dbgmacro(PARSE_STRING)            \
+  /*end RPS_DEBUG_OPTIONS*/
 
 #define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
 
