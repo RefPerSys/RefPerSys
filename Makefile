@@ -104,6 +104,9 @@ _qthead_qrps.inc.hh: $(RPS_QT_HEADERS)
 %.sanit.o: %.cc refpersys.hh.sanit.gch
 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
 
+%.ii: %.cc refpersys.hh.gch
+	$(COMPILE.cc) -C -E $< | sed s:^#://#:g > $@
+
 # see https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html 
 
 # FIXME: we dont want to change the mtime of refpersys.hh.gch when its
@@ -126,6 +129,7 @@ clean:
 	$(RM) *.o *.orig *~ refpersys *.gch *~
 	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~
 	$(RM) persistore/*~ persistore/*%
+	$(RM) *.ii
 	$(RM) *% core
 
 fullclean:
