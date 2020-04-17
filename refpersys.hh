@@ -332,8 +332,11 @@ do                                                               \
 while (0)
 
 
+#define RPS_DEBUG_PRINTF_AT_BIS(fname, fline, dbgopt, fmt, ...)  \
+   RPS_DEBUG_PRINTF_AT(fname, fline, dbgopt, fmt, ##__VA_ARGS__)
+
 #define RPS_DEBUG_PRINTF(dbgopt, fmt, ...) \
-  RPS_DEBUG_PRINTF_AT(__FILE__, __LINE__, dbgopt, fmt, ##__VA_ARGS__)
+  RPS_DEBUG_PRINTF_AT_BIS(__FILE__, __LINE__, dbgopt, fmt, ##__VA_ARGS__)
 
 
 #define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)              \
@@ -349,9 +352,12 @@ do                                                                  \
   }                                                                 \
 while (0)
 
+#define RPS_DEBUG_LOG_AT_BIS(fname, fline, dbgopt, logmsg)  \
+   RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)
+
 /// example of usage: RPSDEBUG_LOG(MISC, "x=" << x) related to RPS_DEBUG_MISC
 #define RPSDEBUG_LOG(dbgopt, logmsg) \
-  RPS_DEBUG_LOG_AT(__FILE__, __LINE__, dbgopt, logmsg)
+  RPS_DEBUG_LOG_AT_BIS(__FILE__, __LINE__, dbgopt, logmsg)
 
 
 //////////////// inform
