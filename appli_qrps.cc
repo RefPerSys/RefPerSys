@@ -454,6 +454,7 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
       RPS_WARNOUT("RpsQApplication::do_display_object with bad string '" << obstr << "'");
       return;
     }
+  RPSDEBUG_LOG(GUI, "do_display_object dispob=" << _.dispob);
   // compute the winob
   {
     int winrk=0;

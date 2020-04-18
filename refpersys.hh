@@ -457,7 +457,7 @@ char *rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt,
                                 double m);
 
 #define rps_now_strftime_centiseconds(bfr, len, fmt) \
-  rps_strftime_centiseconds((bfr), (len), (fmt), rps_monotonic_real_time())
+  rps_strftime_centiseconds((bfr), (len), (fmt), rps_wallclock_real_time())
 
 #define rps_now_strftime_centiseconds_nolen(bfr, fmt) \
   rps_now_strftime_centiseconds((bfr), sizeof ((bfr)), (fmt))

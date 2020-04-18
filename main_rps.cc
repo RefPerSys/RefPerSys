@@ -281,7 +281,7 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
       snprintf(minibfr, sizeof (minibfr), "%.02f", fraction);
       const char* dotminib = strchr(minibfr, '.');
       if (dotminib)
-	strncpy(dotdunder, dotminib, 3);
+        strncpy(dotdunder, dotminib, 3);
     }
 
   return bfr;
