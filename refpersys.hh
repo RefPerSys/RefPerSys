@@ -304,6 +304,7 @@ static inline pid_t rps_thread_id(void)
 enum Rps_Debug 
 {
   RPS_DEBUG__NONE,
+  // expands to RPS_DEBUG_CMD, RPS_DEBUG_DUMP, RPS_DEBUG_GARBAGE_COLLECTOR...
   RPS_DEBUG_OPTIONS(RPS_DEBUG_OPTION_DEFINE)
   RPS_DEBUG__LAST
 };
@@ -311,7 +312,7 @@ enum Rps_Debug
 
 extern "C" unsigned rps_debug_flags;
 
-#define RPS_DEBUG_LOG LOG_DEBUG
+#define RPS_DEBUG_LOG LOG_DEBUG // syslog debug log level
 
 #define RPS_DEBUG_ENABLED(dbgopt) (rps_debug_flags & (1 << RPS_DEBUG_##dbgopt))
 
