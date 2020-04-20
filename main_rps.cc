@@ -290,8 +290,10 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
 
       snprintf(minibfr, sizeof (minibfr), "%.02f", fraction);
       const char* dotminib = strchr(minibfr, '.');
-      if (dotminib)
-        strncpy(dotdunder, dotminib, 3);
+      if (dotminib && dotminib<minibfr+sizeof(minibfr)-4)
+        {
+          strncpy(dotdunder, dotminib, 3);
+        }
     }
 
   return bfr;
@@ -316,7 +318,22 @@ main (int argc, char** argv)
               dlerror());
       exit(EXIT_FAILURE);
     };
-  std::setlocale(LC_ALL, "POSIX");
+  unsetenv("LANG");
+  unsetenv("LC_ADDRESS");
+  unsetenv("LC_ALL");
+  unsetenv("LC_IDENTIFICATION");
+  unsetenv("LC_MEASUREMENT");
+  unsetenv("LC_MONETARY");
+  unsetenv("LC_NAME");
+  unsetenv("LC_NUMERIC");
+  unsetenv("LC_NUMERIC");
+  unsetenv("LC_PAPER");
+  unsetenv("LC_TELEPHONE");
+  unsetenv("LC_TIME");
+  setenv("LANG", "C", (int)true);
+  setenv("LC_ALL", "C.UTF-8", (int)true);
+  std::setlocale(LC_ALL, "C.UTF-8");
+  QLocale::setDefault(QLocale::c());
   rps_backtrace_common_state =
     backtrace_create_state(rps_progname, (int)true,
                            Rps_Backtracer::bt_error_cb,
@@ -545,7 +562,7 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
 #define RPS_DEBUG_DATE_PERIOD 64
     if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
       {
-        rps_now_strftime_centiseconds_nolen(datebfr, "%Y-%b-%d@%H:%M:%s.__%Z");
+        rps_now_strftime_centiseconds_nolen(datebfr, "%Y-%b-%d@%H:%M:%s.__ %Z");
       }
 
     if (rps_syslog_enabled)
