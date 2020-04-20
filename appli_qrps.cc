@@ -102,7 +102,7 @@ rps_set_debug(const std::string &deblev)
           comma = strchr(pc, ',');
           std::string curlev;
           if (comma && comma>pc)
-            curlev = std::string(pc, comma-pc-1);
+            curlev = std::string(pc, comma-pc);
           else
             curlev = std::string(pc);
 #define Rps_SET_DEBUG(Opt) \

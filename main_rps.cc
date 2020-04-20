@@ -269,13 +269,15 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
 {
   if (!bfr || !fmt || !len)
     return nullptr;
-
+  //
+  memset (bfr, 0, len);
+  //
   struct tm tmstruct;
   memset(&tmstruct, 0, sizeof (tmstruct));
-
+  //
   time_t time = static_cast<time_t>(tm);
   strftime(bfr, len, fmt, localtime_r(&time, &tmstruct));
-
+  //
   char *dotdunder = strstr(bfr, ".__");
   if (dotdunder)
     {
@@ -284,6 +286,7 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
 
       char minibfr[16];
       memset(minibfr, 0, sizeof (minibfr));
+      assert(fraction >= 0.0 && fraction < 1.0);
 
       snprintf(minibfr, sizeof (minibfr), "%.02f", fraction);
       const char* dotminib = strchr(minibfr, '.');
