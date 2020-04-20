@@ -317,10 +317,20 @@ main (int argc, char** argv)
       exit(EXIT_FAILURE);
     }
   pthread_setname_np(pthread_self(), "rps-main");
+  // hack to handle debug flag as first program argument
+  if (argc>1 && !strncmp(argv[1], "--debug=", strlen("--debug=")))
+    rps_set_debug(std::string(argv[1]+strlen("--debug=")));
+  if (argc>1 && !strncmp(argv[1], "-d", strlen("-d")))
+    rps_set_debug(std::string(argv[1]+strlen("-d")));
+  ///
+  if (rps_syslog_enabled && rps_debug_flags != 0)
+    openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
+  ///
   RPS_INFORM("starting RefPerSys %s process %d on host %s\n"
              "... gitid %.16s built %s (main@%p)",
              argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
              (void*)main);
+  ////
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
   //// FIXME: should have some real code here
@@ -447,7 +457,7 @@ rps_hardcoded_number_of_constants(void)
 ///////////////////////////////////////////////////////////////////////////////
 
 
-static bool rps_syslog_enabled = true;
+bool rps_syslog_enabled = true;
 static pthread_mutex_t rps_debug_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static std::string

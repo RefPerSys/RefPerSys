@@ -83,7 +83,7 @@ pthread_t RpsQApplication::app_mainselfthread;
 std::thread::id RpsQApplication::app_mainthreadid;
 
 ///////////////////////////////////////////////////////// debugging support
-static void
+void
 rps_set_debug(const std::string &deblev)
 {
   if (deblev == "help")
@@ -653,6 +653,8 @@ void rps_run_application(int &argc, char **argv)
         const QString debugqs = argparser.value(debugOption);
         auto debugstr = debugqs.toStdString();
         rps_set_debug(debugstr);
+        if (rps_syslog_enabled && rps_debug_flags != 0)
+          openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
       }
     ///// --dump <dump-dir>
     if (argparser.isSet(dumpafterloadOption))

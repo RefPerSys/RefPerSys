@@ -284,6 +284,8 @@ static inline pid_t rps_thread_id(void)
 }
 
 
+extern "C" void rps_set_debug(const std::string &deblev);
+
 /// keep the debug options in alphabetical order
 #define RPS_DEBUG_OPTIONS(dbgmacro) \
   dbgmacro(CMD)                     \
@@ -309,6 +311,8 @@ enum Rps_Debug
   RPS_DEBUG__LAST
 };
 
+
+extern "C" bool rps_syslog_enabled;
 
 extern "C" unsigned rps_debug_flags;
 
