@@ -74,12 +74,14 @@ Rps_ObjectRef::output(std::ostream&outs) const
         {
           outs << "/" << valname.as_cstring();
         }
-      else if (auto symbpayl = obptr()-> get_dynamic_payload<Rps_PayloadSymbol>()) {
-	outs << "!sy°" << symbpayl->symbol_name();
-      }
-      else if (auto classpayl =  obptr()-> get_dynamic_payload<Rps_PayloadClassInfo>()) {
-	outs << "!cla°" << classpayl->class_name_str();
-      }
+      else if (auto symbpayl = obptr()-> get_dynamic_payload<Rps_PayloadSymbol>())
+        {
+          outs << "!sy°" << symbpayl->symbol_name();
+        }
+      else if (auto classpayl =  obptr()-> get_dynamic_payload<Rps_PayloadClassInfo>())
+        {
+          outs << "!cla°" << classpayl->class_name_str();
+        }
     };
 } // end Rps_ObjectRef::output
 
