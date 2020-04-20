@@ -702,6 +702,7 @@ void rps_run_application(int &argc, char **argv)
     }
   RPS_INFORMOUT("using " << rps_nbjobs << " jobs (or threads)");
   rps_load_from (loadtopdir);
+  RPSDEBUG_LOG(MISC, "rps_run_application after loading from " << loadtopdir);
   if (!dumpdirstr.empty())
     {
       RPS_INFORMOUT("RefPerSys dumping after load to " << dumpdirstr);
