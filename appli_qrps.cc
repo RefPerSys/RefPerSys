@@ -463,11 +463,12 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
       {
         _.winob = firstwinptr->window_object();
       }
-    RPS_INFORMOUT("RpsQApplication::do_display_object dispob=" << _.dispob
-                  << " winrk=" << winrk
-                  << " winob=" << _.winob
-                  << " selob=" << _.selob
-                  << " depthv=" << _.depthv);
+    RPSDEBUG_LOG(GUI,
+                 "RpsQApplication::do_display_object dispob=" << _.dispob
+                 << " winrk=" << winrk
+                 << " winob=" << _.winob
+                 << " selob=" << _.selob
+                 << " depthv=" << _.depthv);
   }
   // send display_object_content_qt selector to dispob
   // with winob and depth=0
@@ -476,11 +477,11 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
     _.dispv.send2(&_, _.selob,
                   _.winob,
                   _.depthv);
-  RPS_INFORMOUT("RpsQApplication::do_display_object result for dispv=" << _.dispv
-                << " is main="
-                << twores.main()
-                << ", xtra="
-                << twores.xtra());
+  RPSDEBUG_LOG(GUI, "RpsQApplication::do_display_object result for dispv=" << _.dispv
+               << " is main="
+               << twores.main()
+               << ", xtra="
+               << twores.xtra());
 } // end RpsQApplication::do_display_object
 
 
