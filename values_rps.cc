@@ -673,7 +673,11 @@ Rps_Value::send0(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg) const
                 );
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
+  RPSDEBUG_LOG(MSGSEND, "send0 selfv=" << _.selfv
+               << ", obsel=" << _.obsel);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  RPSDEBUG_LOG(MSGSEND, "send0 selfv=" << _.selfv
+               << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply0(&_);
   return Rps_TwoValues(nullptr,nullptr);
@@ -694,7 +698,12 @@ Rps_Value::send1(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
   _.arg0v = arg0;
+  RPSDEBUG_LOG(MSGSEND, "send1 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", arg0v=" << _.arg0v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  RPSDEBUG_LOG(MSGSEND, "send1 selfv=" << _.selfv
+               << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply1(&_, _.arg0v);
   return Rps_TwoValues(nullptr,nullptr);
@@ -719,7 +728,15 @@ Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.obsel = obselarg;
   _.arg0v = arg0;
   _.arg1v = arg1;
+  RPSDEBUG_LOG(MSGSEND, "send2 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", arg0v=" << _.arg0v
+               << ", arg1v=" << _.arg1v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  RPSDEBUG_LOG(MSGSEND, "send2 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", closv=" << _.closv);
+
   if (_.closv.is_closure())
     return _.closv.apply2(&_, _.arg0v, _.arg1v);
   return Rps_TwoValues(nullptr,nullptr);
@@ -745,7 +762,15 @@ Rps_Value::send3(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg0v = arg0;
   _.arg1v = arg1;
   _.arg2v = arg2;
+  RPSDEBUG_LOG(MSGSEND, "send3 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", arg0v=" << _.arg0v
+               << ", arg1v=" << _.arg1v
+               << ", arg2v=" << _.arg2v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  RPSDEBUG_LOG(MSGSEND, "send3 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply3(&_, _.arg0v, _.arg1v, _.arg2v);
   return Rps_TwoValues(nullptr,nullptr);
@@ -773,7 +798,16 @@ Rps_Value::send4(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg1v = arg1;
   _.arg2v = arg2;
   _.arg3v = arg3;
+  RPSDEBUG_LOG(MSGSEND, "send4 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", arg0v=" << _.arg0v
+               << ", arg1v=" << _.arg1v
+               << ", arg2v=" << _.arg2v
+               << ", arg3v=" << _.arg3v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  RPSDEBUG_LOG(MSGSEND, "send4 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply3(&_, _.arg0v, _.arg1v, _.arg2v);
   return Rps_TwoValues(nullptr,nullptr);
@@ -804,7 +838,17 @@ Rps_Value::send5(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg2v = arg2;
   _.arg3v = arg3;
   _.arg4v = arg4;
+  RPSDEBUG_LOG(MSGSEND, "send5 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", arg0v=" << _.arg0v
+               << ", arg1v=" << _.arg1v
+               << ", arg2v=" << _.arg2v
+               << ", arg3v=" << _.arg3v
+               << ", arg4v=" << _.arg4v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  RPSDEBUG_LOG(MSGSEND, "send5 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply5(&_, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v);
   return Rps_TwoValues(nullptr,nullptr);
@@ -838,7 +882,18 @@ Rps_Value::send6(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg3v = arg3;
   _.arg4v = arg4;
   _.arg5v = arg5;
+  RPSDEBUG_LOG(MSGSEND, "send6 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", arg0v=" << _.arg0v
+               << ", arg1v=" << _.arg1v
+               << ", arg2v=" << _.arg2v
+               << ", arg3v=" << _.arg3v
+               << ", arg4v=" << _.arg4v
+               << ", arg5v=" << _.arg5v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  RPSDEBUG_LOG(MSGSEND, "send6 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply6(&_, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v, _.arg5v);
   return Rps_TwoValues(nullptr,nullptr);
@@ -875,7 +930,19 @@ Rps_Value::send7(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg4v = arg4;
   _.arg5v = arg5;
   _.arg6v = arg6;
+  RPSDEBUG_LOG(MSGSEND, "send7 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", arg0v=" << _.arg0v
+               << ", arg1v=" << _.arg1v
+               << ", arg2v=" << _.arg2v
+               << ", arg3v=" << _.arg3v
+               << ", arg4v=" << _.arg4v
+               << ", arg5v=" << _.arg5v
+               << ", arg6v=" << _.arg6v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
+  RPSDEBUG_LOG(MSGSEND, "send7 selfv=" << _.selfv
+               << ", obsel=" << _.obsel
+               << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply7(&_, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v, _.arg5v, _.arg6v);
   return Rps_TwoValues(nullptr,nullptr);
