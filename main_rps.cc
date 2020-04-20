@@ -257,6 +257,13 @@ rps_check_mtime_files(void)
 } // end rps_check_mtime_files
 
 
+
+/// In a format string passed to strftime, replace .__ with the
+/// centisecond fractional part of the time. See of course
+/// http://man7.org/linux/man-pages/man3/strftime.3.html etc... Notice
+/// that debugging facilities use that function, e.g. it gets called
+/// from rps_debug_printf_at used by RPSDEBUG_LOG and RPS_DEBUG_PRINTF
+/// macros.
 char *
 rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
 {
