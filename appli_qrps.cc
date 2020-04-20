@@ -428,10 +428,10 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
                  Rps_Value depthv; //
                 );
   std::string obstr = obqstr.toStdString();
-  _.selob = RPS_ROOT_OB(_8xCV6GDXYMa02mK5xy);
+  _.selob = RPS_ROOT_OB(_4ojpzRzyRWz02DNWMe); // display_object_occurrence_qt selector
   _.depthv = Rps_Value((intptr_t)0);
   RPS_INFORMOUT("RpsQApplication::do_display_object should display obstr='"
-                << obstr << "'");
+                << obstr << "' with selob=" << _.selob);
   if (obstr.empty())
     {
       RPS_WARNOUT("RpsQApplication::do_display_object with empty string");
