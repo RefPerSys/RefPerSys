@@ -580,7 +580,9 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
   _.obselect = obselectorarg;
   _.obcurclass = _.val.compute_class(&_);
   int loopcount = 0;
-  RPSDEBUG_LOG(MSGSEND, "closure_for_method_selector start this=" << _.val << " obselect=" << _.obselect);
+  RPSDEBUG_LOG(MSGSEND, "closure_for_method_selector start val=" << _.val
+               << " obcurclass=" << _.obcurclass
+               << " obselect=" << _.obselect);
   RPS_ASSERT(RPS_ROOT_OB(_6XLY6QfcDre02922jz)); // the `value` class exists, it has been loaded
   while (loopcount++ <  (int)maximal_inheritance_depth)
     {
@@ -607,6 +609,7 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
           // the below check is faster than a C++ dynamic_cast:
           RPS_ASSERT(valclasspayl->stored_type() == Rps_Type::PaylClassInfo);
           _.closval = valclasspayl->get_own_method(_.obselect);
+          RPSDEBUG_LOG(MSGSEND, "closure_for_method_selector!value closval=" << _.closval);
           if (_.closval && _.closval.is_closure()) // should be always true! But we need to check
             return _.closval;
           else
@@ -621,6 +624,7 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
           // the below check is faster than a C++ dynamic_cast:
           RPS_ASSERT(valclasspayl->stored_type() == Rps_Type::PaylClassInfo);
           _.closval = valclasspayl->get_own_method(_.obselect);
+          RPSDEBUG_LOG(MSGSEND, "closure_for_method_selector!class closval=" << _.closval);
           if (_.closval && _.closval.is_closure()) // should be always true! But we need to check
             return _.closval;
           else
@@ -637,6 +641,7 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
           // the below check is faster than a C++ dynamic_cast:
           RPS_ASSERT(valclasspayl->stored_type() == Rps_Type::PaylClassInfo);
           _.closval = valclasspayl->get_own_method(_.obselect);
+          RPSDEBUG_LOG(MSGSEND, "closure_for_method_selector!sub-class closval=" << _.closval);
           if (_.closval && _.closval.is_closure()) // should be always true! But we need to check
             return _.closval;
           else
