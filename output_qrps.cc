@@ -1175,12 +1175,18 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
   if (auto symbpayl = _.recvob->get_dynamic_payload<Rps_PayloadSymbol>())
     {
+      RPSDEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx symbol recvob=" << _.recvob
+                   << " named " << symbpayl->symbol_name());
     }
   else if (auto classpayl =  _.recvob->get_classinfo_payload())
     {
+      RPSDEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx class recvob=" << _.recvob
+                   << " named " << classpayl->class_name_str());
     }
   else
     {
+      RPSDEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx other recvob=" << _.recvob
+                   << " of class " << _.recvob->compute_class(&_));
     }
 #warning incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
   RPS_WARNOUT("incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt" << std::endl
