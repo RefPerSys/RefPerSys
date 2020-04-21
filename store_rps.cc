@@ -483,7 +483,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
       if (compjson.isArray())
         {
           siz = compjson.size();
-          RPS_NOPRINTOUT("parse_json_buffer_second_pass obz=" << obz << " comps#" << siz);
+          RPS_DEBUG_LOG(LOAD, "parse_json_buffer_second_pass obz=" << obz << " comps#" << siz);
           obz->loader_reserve_comps(this, (unsigned)siz);
           for (int ix=0; ix<(int)siz; ix++)
             {
@@ -504,7 +504,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
       if (attrjson.isArray())
         {
           siz = attrjson.size();
-          RPS_NOPRINTOUT("parse_json_buffer_second_pass obz=" << obz << " attrs#" << siz);
+          RPS_DEBUG_LOG(LOAD, "parse_json_buffer_second_pass obz=" << obz << " attrs#" << siz);
           for (int ix=0; ix<(int)siz; ix++)
             {
               auto entjson = attrjson[ix];
@@ -528,6 +528,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
     }
   if (objjson.isMember("magicattr"))
     {
+      RPS_DEBUG_LOG(LOAD, "parse_json_buffer_second_pass magicattr objid=" << objid);
       std::lock_guard<std::recursive_mutex> gu(ld_mtx);
       char getfunambuf[sizeof(RPS_GETTERFUN_PREFIX)+8+Rps_Id::nbchars];
       memset(getfunambuf, 0, sizeof(getfunambuf));
@@ -546,6 +547,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
     }
   if (objjson.isMember("applying"))
     {
+      RPS_DEBUG_LOG(LOAD, "parse_json_buffer_second_pass applying objid=" << objid);
       std::lock_guard<std::recursive_mutex> gu(ld_mtx);
       char appfunambuf[sizeof(RPS_APPLYINGFUN_PREFIX)+8+Rps_Id::nbchars];
       memset(appfunambuf, 0, sizeof(appfunambuf));
