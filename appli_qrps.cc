@@ -466,6 +466,10 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
       {
         _.winob = firstwinptr->window_object();
       }
+    else
+      RPS_WARNOUT("RpsQApplication::do_display_object " << obstr << " without first window"
+                  << std::endl << RPS_SIMPLE_BACKTRACE_HERE(1, "do_display_object nowindow")
+                  << std::endl);
     RPS_DEBUG_LOG(GUI,
                   "RpsQApplication::do_display_object dispob=" << _.dispob
                   << " winrk=" << winrk
