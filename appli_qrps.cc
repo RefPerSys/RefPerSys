@@ -480,8 +480,12 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
   // send display_object_content_qt selector to dispob
   // with winob and depth=0
   _.dispv = Rps_ObjectValue(_.dispob);
-  if (_.dispob)
-    RPS_DEBUG_LOG(GUI, "RpsQApplication::do_display_object dispob=" << _.dispob << " of class=" << _.dispob->compute_class(&_));
+  if (_.dispv)
+    RPS_DEBUG_LOG(GUI, "RpsQApplication::do_display_object dispv=" << _.dispv
+                  << " dispob=" << _.dispob << " of class=" << _.dispob->compute_class(&_)
+                  << " selob=" << _.selob << " winob=" << _.winob);
+  else
+    RPS_WARNOUT("RpsQApplication::do_display_object no dispv");
   Rps_TwoValues twores =
     _.dispv.send2(&_, _.selob,
                   _.winob,
