@@ -1161,6 +1161,9 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                  //....etc....
                 );
   ////==== body of _4x9jd2yAe8A02SqKAx  !method object/display_object_occurrence_qt ====
+  RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx start arg0obj=" << arg0obj
+                << ", arg1obwin=" << arg1obwin
+                << ", arg2depth=" << arg2depth);
   _.recvob = arg0obj.as_object();
   RPS_ASSERT(_.recvob);
   _.objwnd = arg1obwin.as_object();
@@ -1168,9 +1171,6 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   _.recdepth = arg2depth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx start recvob=" << _.recvob
-                << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
   if (auto symbpayl = _.recvob->get_dynamic_payload<Rps_PayloadSymbol>())

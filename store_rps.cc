@@ -2051,7 +2051,6 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
       jsonwriter->write(jobject, pouts.get());
       *pouts << std::endl;
       *pouts << "//-ob" << curobr->oid().to_string() << std::endl;
-
     }
   *pouts << std::endl << std::endl;
   *pouts << "//// end of RefPerSys generated space file " << curelpath << std::endl;

@@ -294,6 +294,7 @@ extern "C" void rps_set_debug(const std::string &deblev);
   dbgmacro(GENERATED_CODE)          \
   dbgmacro(GUI)                     \
   dbgmacro(LOAD)                    \
+  dbgmacro(LOWREP)                  \
   dbgmacro(MISC)                    \
   dbgmacro(MSGSEND)                 \
   dbgmacro(PARSE)                   \

@@ -434,6 +434,7 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
   _.depthv = Rps_Value((intptr_t)0);
   RPS_INFORMOUT("RpsQApplication::do_display_object should display obstr='"
                 << obstr << "' with selob=" << _.selob);
+  RPS_DEBUG_LOG(GUI, "do_display_object dispob=" << _.dispob << ", selob=" << _.selob << ", depthv=" << _.depthv);
   if (obstr.empty())
     {
       RPS_WARNOUT("RpsQApplication::do_display_object with empty string");
