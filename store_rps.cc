@@ -429,14 +429,17 @@ Rps_Loader::fetch_one_constant_at(const char*oidstr, int lin)
     return it->second;
 } // end Rps_Loader::fetch_one_constant_at
 
+
+
+////////////////
 void
 Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
     Rps_Id objid, const std::string& objbuf, unsigned count)
 {
-  RPS_NOPRINTOUT("parse_json_buffer_second_pass start spacid=" << spacid << " #" << count
-                 << " lineno=" <<lineno
-                 << " objid=" <<objid
-                 << " objbuf:\n" << objbuf);
+  RPS_DEBUG_LOG(LOAD, "parse_json_buffer_second_pass start spacid=" << spacid << " #" << count
+                << " lineno=" <<lineno
+                << " objid=" <<objid
+                << " objbuf:\n" << objbuf);
   Json::Value objjson;
   try
     {
@@ -610,8 +613,8 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                        << std::endl);
         }
     }
-  RPS_NOPRINTOUT("parse_json_buffer_second_pass end objid=" << objid << " #" << count
-                 << std::endl);
+  RPS_DEBUG_LOG(LOAD, "parse_json_buffer_second_pass end objid=" << objid << " #" << count
+                << std::endl);
 } // end of Rps_Loader::parse_json_buffer_second_pass
 
 ////////////////////////////////////////////////////////////////
@@ -636,6 +639,10 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
       Rps_Id curobjid;
       if (is_object_starting_line(spacid,lincnt,linbuf,&curobjid))
         {
+          obcnt++;
+          RPS_DEBUG_LOG(LOAD, "secondpass lincnt="<< lincnt
+                        << " curobjid=" << curobjid
+                        << " obcnt=" << obcnt);
           if (objbuf.size() > 0 && prevoid && prevlin>0)
             {
               try
@@ -657,7 +664,6 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
             }
           objbuf.clear();
           objbuf = linbuf + '\n';
-          obcnt++;
           prevoid = curobjid;
           prevlin = lincnt;
         }
