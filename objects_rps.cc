@@ -195,7 +195,7 @@ Rps_ObjectZone::make_loaded(Rps_Id oid, Rps_Loader* ld)
   // not null.... The loader could later overwrite that.
   obz->ob_class.store(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)); //object∈class
   return obz;
-  //RPS_INFORMOUT("make_loaded oid="<< oid << ", obz=" << (void*)obz);
+  RPS_DEBUG_LOG(LOAD, "make_loaded oid="<< oid << ", obz=" << (void*)obz);
   return obz;
 } // end Rps_ObjectZone::make_loaded
 

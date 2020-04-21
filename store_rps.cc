@@ -251,6 +251,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
   int obcnt = 0;
   int expectedcnt = 0;
   unsigned lincnt = 0;
+  RPS_DEBUG_LOG(LOAD, "first_pass_space start spacepath=" << spacepath);
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
       lincnt++;
@@ -273,7 +274,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
       Rps_Id curobjid;
       if (is_object_starting_line(spacid, lincnt, linbuf, &curobjid))
         {
-          RPS_DEBUG_LOG(LOAD, "got ob spacid:" << spacid
+          RPS_DEBUG_LOG(LOAD, "firstpass got ob spacid:" << spacid
                         << " linbuf: " << linbuf
                         << " lincnt#" << lincnt
                         << " curobjid:" << curobjid
@@ -330,6 +331,7 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
       throw std::runtime_error(std::string("unexpected object count in ")
                                + spacepath);
     }
+  RPS_DEBUG_LOG(LOAD, "first_pass_space end spacepath=" << spacepath << " obcnt="<< obcnt << std::endl);
   RPS_INFORMOUT("read " << obcnt
                 << " objects while loading first pass of " << spacepath);
 } // end Rps_Loader::first_pass_space
