@@ -263,8 +263,8 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           snprintf(errbuf, sizeof(errbuf), "non UTF8 line#%d", lincnt);
           throw std::runtime_error(std::string(errbuf) + " in " + spacepath);
         }
-      //RPS_INFORM("lincnt#%d, lin.siz#%zd\n..linbuf:%s", lincnt,
-      //           linbuf.size(), linbuf.c_str());
+      RPS_DEBUG_PRINTF(LOAD, "lincnt#%d, lin.siz#%zd\n..linbuf:%s", lincnt,
+                       linbuf.size(), linbuf.c_str());
       if (RPS_UNLIKELY(obcnt == 0))
         {
           prologstr += linbuf;
@@ -273,11 +273,11 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
       Rps_Id curobjid;
       if (is_object_starting_line(spacid, lincnt, linbuf, &curobjid))
         {
-          // RPS_INFORMOUT("got ob spacid:" << spacid
-          //              << " linbuf: " << linbuf
-          //              << " lincnt#" << lincnt
-          //              << " curobjid:" << curobjid
-          //              << " count:" << (obcnt+1));
+          RPS_DEBUG_LOG(LOAD, "got ob spacid:" << spacid
+                        << " linbuf: " << linbuf
+                        << " lincnt#" << lincnt
+                        << " curobjid:" << curobjid
+                        << " count:" << (obcnt+1));
           if (RPS_UNLIKELY(obcnt == 0))
             {
               Json::Value prologjson;
@@ -2041,7 +2041,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
       jsonwriter->write(jobject, pouts.get());
       *pouts << std::endl;
       *pouts << "//-ob" << curobr->oid().to_string() << std::endl;
-      
+
     }
   *pouts << std::endl << std::endl;
   *pouts << "//// end of RefPerSys generated space file " << curelpath << std::endl;

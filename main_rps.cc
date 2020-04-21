@@ -224,7 +224,8 @@ rps_check_mtime_files(void)
     RPS_FATAL("stat /proc/self/exe: %m");
   char exebuf[128];
   memset (exebuf, 0, sizeof(exebuf));
-  readlink("/proc/self/exe", exebuf, sizeof(exebuf)-1);
+  if (readlink("/proc/self/exe", exebuf, sizeof(exebuf)-1)<0)
+    RPS_FATAL("readlink /proc/self/exe: %m");
   for (const char*const*curpath = rps_files; *curpath; curpath++)
     {
       std::string curpathstr(*curpath);
@@ -262,7 +263,7 @@ rps_check_mtime_files(void)
 /// centisecond fractional part of the time. See of course
 /// http://man7.org/linux/man-pages/man3/strftime.3.html etc... Notice
 /// that debugging facilities use that function, e.g. it gets called
-/// from rps_debug_printf_at used by RPSDEBUG_LOG and RPS_DEBUG_PRINTF
+/// from rps_debug_printf_at used by RPS_DEBUG_LOG and RPS_DEBUG_PRINTF
 /// macros.
 char *
 rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
@@ -567,7 +568,7 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
 
     if (rps_syslog_enabled)
       {
-        syslog(RPS_DEBUG_LOG, "RPS DEBUG %7s <%s:%d> @%s:%d %s %s",
+        syslog(RPS_DEBUG_LOG_LEVEL, "RPS DEBUG %7s <%s:%d> @%s:%d %s %s",
                rps_debug_level(dbgopt).c_str(), threadbfr,
                static_cast<int>(rps_thread_id()), fname, fline, tmbfr, msg);
       }

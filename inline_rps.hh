@@ -1462,7 +1462,7 @@ Rps_ClosureValue::apply2(Rps_CallFrame*callerframe, const Rps_Value arg0,
   rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
   if (!appfun)
     {
-      RPSDEBUG_LOG(MSGSEND, "apply2 " << *this << " no appfun");
+      RPS_DEBUG_LOG(MSGSEND, "apply2 " << *this << " no appfun");
       return nullptr;
     }
   callerframe->set_closure(*this);

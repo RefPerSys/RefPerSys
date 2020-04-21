@@ -105,20 +105,22 @@ rps_set_debug(const std::string &deblev)
             curlev = std::string(pc, comma-pc);
           else
             curlev = std::string(pc);
+
 #define Rps_SET_DEBUG(Opt) \
       else if (curlev == #Opt) {			\
 	rps_debug_flags |= (1 << RPS_DEBUG_##Opt);	\
       RPS_INFORMOUT("debugging flag "			\
 		    << #Opt << " is set.");		\
       }
-          if (false) {}
+          if (curlev == "NEVER")
+            RPS_WARNOUT("forbidden debug level " << curlev);
           RPS_DEBUG_OPTIONS(Rps_SET_DEBUG)
           else
             RPS_WARNOUT("unknown debug level " << curlev);
 #undef Rps_SET_DEBUG
         }
     };
-  RPSDEBUG_LOG(MISC, "rps_debug_flags=" << rps_debug_flags);
+  RPS_DEBUG_LOG(MISC, "rps_debug_flags=" << rps_debug_flags);
 } // end rps_set_debug
 
 
@@ -454,7 +456,7 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
       RPS_WARNOUT("RpsQApplication::do_display_object with bad string '" << obstr << "'");
       return;
     }
-  RPSDEBUG_LOG(GUI, "do_display_object dispob=" << _.dispob);
+  RPS_DEBUG_LOG(GUI, "do_display_object dispob=" << _.dispob);
   // compute the winob
   {
     int winrk=0;
@@ -463,27 +465,27 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
       {
         _.winob = firstwinptr->window_object();
       }
-    RPSDEBUG_LOG(GUI,
-                 "RpsQApplication::do_display_object dispob=" << _.dispob
-                 << " winrk=" << winrk
-                 << " winob=" << _.winob
-                 << " selob=" << _.selob
-                 << " depthv=" << _.depthv);
+    RPS_DEBUG_LOG(GUI,
+                  "RpsQApplication::do_display_object dispob=" << _.dispob
+                  << " winrk=" << winrk
+                  << " winob=" << _.winob
+                  << " selob=" << _.selob
+                  << " depthv=" << _.depthv);
   }
   // send display_object_content_qt selector to dispob
   // with winob and depth=0
   _.dispv = Rps_ObjectValue(_.dispob);
   if (_.dispob)
-    RPSDEBUG_LOG(GUI, "RpsQApplication::do_display_object dispob=" << _.dispob << " of class=" << _.dispob->compute_class(&_));
+    RPS_DEBUG_LOG(GUI, "RpsQApplication::do_display_object dispob=" << _.dispob << " of class=" << _.dispob->compute_class(&_));
   Rps_TwoValues twores =
     _.dispv.send2(&_, _.selob,
                   _.winob,
                   _.depthv);
-  RPSDEBUG_LOG(GUI, "RpsQApplication::do_display_object result for dispv=" << _.dispv
-               << " is main="
-               << twores.main()
-               << ", xtra="
-               << twores.xtra());
+  RPS_DEBUG_LOG(GUI, "RpsQApplication::do_display_object result for dispv=" << _.dispv
+                << " is main="
+                << twores.main()
+                << ", xtra="
+                << twores.xtra());
 } // end RpsQApplication::do_display_object
 
 
@@ -707,7 +709,7 @@ void rps_run_application(int &argc, char **argv)
     }
   RPS_INFORMOUT("using " << rps_nbjobs << " jobs (or threads)");
   rps_load_from (loadtopdir);
-  RPSDEBUG_LOG(MISC, "rps_run_application after loading from " << loadtopdir);
+  RPS_DEBUG_LOG(MISC, "rps_run_application after loading from " << loadtopdir);
   if (!dumpdirstr.empty())
     {
       RPS_INFORMOUT("RefPerSys dumping after load to " << dumpdirstr);

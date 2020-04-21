@@ -377,9 +377,9 @@ rps_display_output_value(Rps_CallFrame*callerframe,
                 );
   _.winob = argobwin;
   _.dispval = argvalue;
-  RPSDEBUG_LOG(GUI, "rps_display_output_value start winob=" << _.winob
-               << ", dispval=" << _.dispval
-               << ", depth=" << depth);
+  RPS_DEBUG_LOG(GUI, "rps_display_output_value start winob=" << _.winob
+                << ", dispval=" << _.dispval
+                << ", depth=" << depth);
   RPS_ASSERT(_.winob);
   std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
   auto qoutwpayl =
@@ -388,9 +388,9 @@ rps_display_output_value(Rps_CallFrame*callerframe,
   RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
   RPS_ASSERT(qoutxed);
   qoutxed->display_output_value(&_, _.dispval, depth);
-  RPSDEBUG_LOG(GUI, "rps_display_output_value end winob=" << _.winob
-               << ", dispval=" << _.dispval
-               << ", depth=" << depth);
+  RPS_DEBUG_LOG(GUI, "rps_display_output_value end winob=" << _.winob
+                << ", dispval=" << _.dispval
+                << ", depth=" << depth);
 } // end rps_display_output_value
 
 
@@ -410,9 +410,9 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
   _.winob = outptxt_objref.as_object();
   _.dispob = argdispobr;
   RPS_ASSERT(_.winob);
-  RPSDEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence start winob=" << _.winob
-               << ", dispob=" << _.dispob
-               << ", depth=" << depth);
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence start winob=" << _.winob
+                << ", dispob=" << _.dispob
+                << ", depth=" << depth);
   std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
   auto qoutwpayl =
     _.winob->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
@@ -451,9 +451,9 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
                                     << " depth#" << depth);
     };				// end if _.dispob non-empty
   RPS_ASSERT(_.winob);
-  RPSDEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence end winob=" << _.winob
-               << ", dispob=" << _.dispob
-               << ", depth=" << depth);
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence end winob=" << _.winob
+                << ", dispob=" << _.dispob
+                << ", depth=" << depth);
 } // end RpsQOutputTextEdit::display_output_object_occurrence
 
 
@@ -470,9 +470,9 @@ rps_display_output_object_occurrence(Rps_CallFrame*callerframe,
   _.winob = argobwin;
   _.dispob = argobref;
   RPS_ASSERT(_.winob);
-  RPSDEBUG_LOG(GUI, "rps_display_output_object_occurrence winob=" << _.winob
-               << ", dispob=" << _.dispob
-               << ", depth=" << depth);
+  RPS_DEBUG_LOG(GUI, "rps_display_output_object_occurrence winob=" << _.winob
+                << ", dispob=" << _.dispob
+                << ", depth=" << depth);
   std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
   auto qoutwpayl =
     _.winob->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
@@ -480,9 +480,9 @@ rps_display_output_object_occurrence(Rps_CallFrame*callerframe,
   RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
   RPS_ASSERT(qoutxed);
   qoutxed->display_output_object_occurrence(&_, _.dispob, depth);
-  RPSDEBUG_LOG(GUI, "rps_display_output_object_occurrence ending winob=" << _.winob
-               << ", dispob=" << _.dispob
-               << ", depth=" << depth);
+  RPS_DEBUG_LOG(GUI, "rps_display_output_object_occurrence ending winob=" << _.winob
+                << ", dispob=" << _.dispob
+                << ", depth=" << depth);
 } // end rps_display_output_object_occurrence
 
 //////////////////////////////////////////////////////////////// RpsQOutputTextDocument
@@ -524,9 +524,9 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
   _.winob1 = arg1obwin.to_object();
   _.depth2v = arg2depth;
   int depth = _.depth2v.to_int();
-  RPSDEBUG_LOG(GUI, "rpsapply_0TwK4TkhEGZ03oTa5m start val0v=" << _.val0v
-               << ", winob=" << _.winob1
-               << ", depth=" << depth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_0TwK4TkhEGZ03oTa5m start val0v=" << _.val0v
+                << ", winob=" << _.winob1
+                << ", depth=" << depth);
   ////==== body of _0TwK4TkhEGZ03oTa5m ====
   if (!_.winob1)
     throw RPS_RUNTIME_ERROR_OUT("display value " << _.val0v << " without window object");
@@ -543,10 +543,10 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
     _.resmainv = _.val0v;
   else
     _.resmainv = _.winob1;
-  RPSDEBUG_LOG(GUI, "rpsapply_0TwK4TkhEGZ03oTa5m end val0v=" << _.val0v
-               << ", winob=" << _.winob1
-               << ", depth=" << depth
-               << ", resmain=" << _.resmainv);
+  RPS_DEBUG_LOG(GUI, "rpsapply_0TwK4TkhEGZ03oTa5m end val0v=" << _.val0v
+                << ", winob=" << _.winob1
+                << ", depth=" << depth
+                << ", resmain=" << _.resmainv);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _0TwK4TkhEGZ03oTa5m
 } // end of rpsapply_0TwK4TkhEGZ03oTa5m !display Val0 in Ob1Win at depth Val2Depth
 
@@ -583,9 +583,9 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
   _.intv = arg0recv;
   _.obwin = arg1obwin.as_object();
   _.depthv = arg2depth;
-  RPSDEBUG_LOG(GUI, "rpsapply_8KJHUldX8GJ03G5OWp start intv=" << _.intv
-               << ", obwin=" << _.obwin
-               << ", depth=" << _.depthv);
+  RPS_DEBUG_LOG(GUI, "rpsapply_8KJHUldX8GJ03G5OWp start intv=" << _.intv
+                << ", obwin=" << _.obwin
+                << ", depth=" << _.depthv);
   RPS_ASSERT(_.obwin);
   RPS_ASSERT(_.depthv.is_int());
   qcfmt = RpsQOutputTextEdit::int_text_format();
@@ -607,10 +607,10 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
   qcursout.insertText(QString(intbuf), qcfmt);
   /// return reciever since success
   _.resmainv = _.intv;
-  RPSDEBUG_LOG(GUI, "rpsapply_8KJHUldX8GJ03G5OWp end intv=" << _.intv
-               << ", obwin=" << _.obwin
-               << ", depth=" << _.depthv
-               << ", resmain=" << _.resmainv);
+  RPS_DEBUG_LOG(GUI, "rpsapply_8KJHUldX8GJ03G5OWp end intv=" << _.intv
+                << ", obwin=" << _.obwin
+                << ", depth=" << _.depthv
+                << ", resmain=" << _.resmainv);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _8KJHUldX8GJ03G5OWp
 } // end of rpsapply_8KJHUldX8GJ03G5OWp !method int/display_value_qt
 
@@ -643,9 +643,9 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
   RPS_ASSERT(_.object_window);
   _.recursive_depth = arg2_recursive_depth;
   RPS_ASSERT(_.recursive_depth.is_int());
-  RPSDEBUG_LOG(GUI, "rpsapply_2KnFhlj8xW800kpgPt start string_value=" << _.string_value
-               << "object_window, =" << _.object_window
-               << ", recursive_depth=" <<  _.recursive_depth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_2KnFhlj8xW800kpgPt start string_value=" << _.string_value
+                << "object_window, =" << _.object_window
+                << ", recursive_depth=" <<  _.recursive_depth);
   ////==== body of _2KnFhlj8xW800kpgPt ====
   std::lock_guard<std::recursive_mutex> object_window_guard(*(_.object_window->objmtxptr()));
   auto qoutput_window_payload = _.object_window->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
@@ -659,9 +659,9 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
   qcursor.insertText(qstr, qcfmt);
   /// return reciever since success
   _.resmainv = _.string_value;
-  RPSDEBUG_LOG(GUI, "rpsapply_2KnFhlj8xW800kpgPt end string_value=" << _.string_value
-               << "object_window, =" << _.object_window
-               << ", recursive_depth=" <<  _.recursive_depth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_2KnFhlj8xW800kpgPt end string_value=" << _.string_value
+                << "object_window, =" << _.object_window
+                << ", recursive_depth=" <<  _.recursive_depth);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _2KnFhlj8xW800kpgPt
 } // end of rpsapply_2KnFhlj8xW800kpgPt !method string/display_value_qt
 
@@ -694,9 +694,9 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
   RPS_ASSERT(_.object_window);
   _.recdepth = arg2_recdepth;
   RPS_ASSERT(_.recdepth.is_int());
-  RPSDEBUG_LOG(GUI, "rpsapply_7oa7eIzzcxv03TmmZH start doubleval=" << _.doubleval
-               << "object_window, =" << _.object_window
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_7oa7eIzzcxv03TmmZH start doubleval=" << _.doubleval
+                << "object_window, =" << _.object_window
+                << ", recdepth=" <<  _.recdepth);
   std::lock_guard<std::recursive_mutex> object_window_guard(*(_.object_window->objmtxptr()));
   auto qoutput_window_payload = _.object_window->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   RPS_ASSERT(qoutput_window_payload);
@@ -710,9 +710,9 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
   auto qcursor = qoutput_widget->textCursor();
   qcursor.insertText(qstr, qcfmt);
   /// return reciever since success
-  RPSDEBUG_LOG(GUI, "rpsapply_7oa7eIzzcxv03TmmZH end doubleval=" << _.doubleval
-               << "object_window, =" << _.object_window
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_7oa7eIzzcxv03TmmZH end doubleval=" << _.doubleval
+                << "object_window, =" << _.object_window
+                << ", recdepth=" <<  _.recdepth);
   _.resmainv = _.doubleval;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _7oa7eIzzcxv03TmmZH
 } // end of rpsapply_7oa7eIzzcxv03TmmZH !method double/display_value_qt
@@ -748,9 +748,9 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
   _.recdepth = arg2_recdepth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPSDEBUG_LOG(GUI, "rpsapply_33DFyPOJxbF015ZYoi start tupleval=" << _.tupleval
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_33DFyPOJxbF015ZYoi start tupleval=" << _.tupleval
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   RPS_ASSERT (qoutwndload);
@@ -774,9 +774,9 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
   qcursor.insertText("]", qcfmt);
   // success, so
   _.resmainv = _.tupleval;
-  RPSDEBUG_LOG(GUI, "rpsapply_33DFyPOJxbF015ZYoi end tupleval=" << _.tupleval
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_33DFyPOJxbF015ZYoi end tupleval=" << _.tupleval
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _33DFyPOJxbF015ZYoi
 } // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_qt
 
@@ -809,9 +809,9 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
   _.recdepth = arg2_recdepth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPSDEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 start setval=" << _.setval
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 start setval=" << _.setval
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   RPS_ASSERT (qoutwndload);
@@ -835,9 +835,9 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
   qcursor.insertText("}", qcfmt);
   // success, so
   _.resmainv = _.setval;
-  RPSDEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 end setval=" << _.setval
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 end setval=" << _.setval
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _1568ZHTl0Pa00461I2
 } // end of rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_qt
 
@@ -870,9 +870,9 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
   _.recdepth = arg2_recdepth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPSDEBUG_LOG(GUI, "rpsapply_18DO93843oX02UWzq6 start obrecv=" << _.obrecv
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_18DO93843oX02UWzq6 start obrecv=" << _.obrecv
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   std::lock_guard<std::recursive_mutex> obrecvdmtx(*(_.obrecv->objmtxptr()));
   auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
@@ -886,9 +886,9 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
      hightlight all occurrences of the same object, have a menu or
      some way to "open" it, that is show its content, etc... This
      needs to be improved later! */
-  RPSDEBUG_LOG(GUI, "rpsapply_18DO93843oX02UWzq6 end obrecv=" << _.obrecv
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_18DO93843oX02UWzq6 end obrecv=" << _.obrecv
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _18DO93843oX02UWzq6
 } // end of rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt
 
@@ -924,9 +924,9 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
   _.recdepth = arg2_recdepth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPSDEBUG_LOG(GUI, "rpsapply_0rgijx7CCnq041IZEd start instrecv=" << _.instrecv
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_0rgijx7CCnq041IZEd start instrecv=" << _.instrecv
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   RPS_ASSERT (qoutwndload);
@@ -943,9 +943,9 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
 #warning rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt incomplete
   RPS_WARNOUT("rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt incomplete instrecv=" << _.instrecv);
   _.resmainv = _.instrecv;
-  RPSDEBUG_LOG(GUI, "rpsapply_0rgijx7CCnq041IZEd end instrecv=" << _.instrecv
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_0rgijx7CCnq041IZEd end instrecv=" << _.instrecv
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _0rgijx7CCnq041IZEd
 } // end of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt
 
@@ -981,9 +981,9 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
   _.recdepth = arg2_recdepth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPSDEBUG_LOG(GUI, "rpsapply_6Wi00FwXYID00gl9Ma start closrecv=" << _.closrecv
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_6Wi00FwXYID00gl9Ma start closrecv=" << _.closrecv
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   _.obconn = _.closrecv->conn();
   unsigned width = _.closrecv->cnt();
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
@@ -1016,9 +1016,9 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
   qcursor.insertText("❩", //U+2769 MEDIUM RIGHT PARENTHESIS ORNAMENT
                      qcfmt);
   _.resmainv = _.closrecv;
-  RPSDEBUG_LOG(GUI, "rpsapply_6Wi00FwXYID00gl9Ma end closrecv=" << _.closrecv
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_6Wi00FwXYID00gl9Ma end closrecv=" << _.closrecv
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _6Wi00FwXYID00gl9Ma
 } // end of rpsapply_6Wi00FwXYID00gl9Ma !method closure/display_value_qt
 
@@ -1052,9 +1052,9 @@ rpsapply_52zVxP3mTue034OWsD(Rps_CallFrame*callerframe, ///
   _.recdepth = arg2_recdepth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPSDEBUG_LOG(GUI, "rpsapply_52zVxP3mTue034OWsD start qtrecv=" << _.qtrecv
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_52zVxP3mTue034OWsD start qtrecv=" << _.qtrecv
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   std::ostringstream outs;
   outs << _.qtrecv << std::flush;
@@ -1066,9 +1066,9 @@ rpsapply_52zVxP3mTue034OWsD(Rps_CallFrame*callerframe, ///
   auto qcursor = qoutwx->textCursor();
   qcursor.insertText(outs.str().c_str(), qcfmt);
   _.resmainv = _.qtrecv;
-  RPSDEBUG_LOG(GUI, "rpsapply_52zVxP3mTue034OWsD end qtrecv=" << _.qtrecv
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_52zVxP3mTue034OWsD end qtrecv=" << _.qtrecv
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _52zVxP3mTue034OWsD
 } // end of rpsapply_52zVxP3mTue034OWsD !method qtptr/display_value_qt
 
@@ -1101,9 +1101,9 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
   _.recdepth = arg2_recdepth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPSDEBUG_LOG(GUI, "rpsapply_42cCN1FRQSS03bzbTz start jsrecv=" << _.jsrecv
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_42cCN1FRQSS03bzbTz start jsrecv=" << _.jsrecv
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   std::ostringstream outs;
   outs << _.jsrecv << std::flush;
@@ -1130,9 +1130,9 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
         }
     }
   _.resmainv = _.jsrecv;
-  RPSDEBUG_LOG(GUI, "rpsapply_42cCN1FRQSS03bzbTz end jsrecv=" << _.jsrecv
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_42cCN1FRQSS03bzbTz end jsrecv=" << _.jsrecv
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _42cCN1FRQSS03bzbTz
 } // end of rpsapply_42cCN1FRQSS03bzbTz !method json/display_value_qt
 
@@ -1168,25 +1168,25 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   _.recdepth = arg2depth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPSDEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx start recvob=" << _.recvob
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx start recvob=" << _.recvob
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
   if (auto symbpayl = _.recvob->get_dynamic_payload<Rps_PayloadSymbol>())
     {
-      RPSDEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx symbol recvob=" << _.recvob
-                   << " named " << symbpayl->symbol_name());
+      RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx symbol recvob=" << _.recvob
+                    << " named " << symbpayl->symbol_name());
     }
   else if (auto classpayl =  _.recvob->get_classinfo_payload())
     {
-      RPSDEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx class recvob=" << _.recvob
-                   << " named " << classpayl->class_name_str());
+      RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx class recvob=" << _.recvob
+                    << " named " << classpayl->class_name_str());
     }
   else
     {
-      RPSDEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx other recvob=" << _.recvob
-                   << " of class " << _.recvob->compute_class(&_));
+      RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx other recvob=" << _.recvob
+                    << " of class " << _.recvob->compute_class(&_));
     }
 #warning incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
   RPS_WARNOUT("incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt" << std::endl
@@ -1195,9 +1195,9 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
               << " depthi=" << depthi);
 #warning should use symbol_text_format, oid_text_format, class_text_format ...
   ;
-  RPSDEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx end recvob=" << _.recvob
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx end recvob=" << _.recvob
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _4x9jd2yAe8A02SqKAx
 } // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
 
@@ -1239,9 +1239,9 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   _.recdepth = arg2depth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPSDEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA start recvob=" << _.recvob
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA start recvob=" << _.recvob
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   _.optqtposition = arg3optqtposition;
   RPS_ASSERT (!_.optqtposition || _.optqtposition.is_int());
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
@@ -1333,9 +1333,9 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
               << " depthi=" << depthi
               << " optqtposition=" << _.optqtposition);
   _.resmainv = _.recvob;
-  RPSDEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA end recvob=" << _.recvob
-               << "objwnd =" << _.objwnd
-               << ", recdepth=" <<  _.recdepth);
+  RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA end recvob=" << _.recvob
+                << "objwnd =" << _.objwnd
+                << ", recdepth=" <<  _.recdepth);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _5nSiRIxoYQp00MSnYA
 } // end of rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt
 

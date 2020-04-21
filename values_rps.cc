@@ -580,13 +580,13 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
   _.obselect = obselectorarg;
   _.obcurclass = _.val.compute_class(&_);
   int loopcount = 0;
-  RPSDEBUG_LOG(MSGSEND, "closure_for_method_selector start val=" << _.val
-               << " obcurclass=" << _.obcurclass
-               << " obselect=" << _.obselect);
+  RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector start val=" << _.val
+                << " obcurclass=" << _.obcurclass
+                << " obselect=" << _.obselect);
   RPS_ASSERT(RPS_ROOT_OB(_6XLY6QfcDre02922jz)); // the `value` class exists, it has been loaded
   while (loopcount++ <  (int)maximal_inheritance_depth)
     {
-      RPSDEBUG_LOG(MSGSEND, "closure_for_method_selector obcurclass=" << _.obcurclass << " obselect=" << _.obselect << " loopcount=" << loopcount);
+      RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector obcurclass=" << _.obcurclass << " obselect=" << _.obselect << " loopcount=" << loopcount);
       if (!_.obcurclass)   // should never happen
         {
           if (_.val.is_object())
@@ -609,7 +609,7 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
           // the below check is faster than a C++ dynamic_cast:
           RPS_ASSERT(valclasspayl->stored_type() == Rps_Type::PaylClassInfo);
           _.closval = valclasspayl->get_own_method(_.obselect);
-          RPSDEBUG_LOG(MSGSEND, "closure_for_method_selector!value closval=" << _.closval);
+          RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector!value closval=" << _.closval);
           if (_.closval && _.closval.is_closure()) // should be always true! But we need to check
             return _.closval;
           else
@@ -624,7 +624,7 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
           // the below check is faster than a C++ dynamic_cast:
           RPS_ASSERT(valclasspayl->stored_type() == Rps_Type::PaylClassInfo);
           _.closval = valclasspayl->get_own_method(_.obselect);
-          RPSDEBUG_LOG(MSGSEND, "closure_for_method_selector!class closval=" << _.closval);
+          RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector!class closval=" << _.closval);
           if (_.closval && _.closval.is_closure()) // should be always true! But we need to check
             return _.closval;
           else
@@ -641,7 +641,7 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
           // the below check is faster than a C++ dynamic_cast:
           RPS_ASSERT(valclasspayl->stored_type() == Rps_Type::PaylClassInfo);
           _.closval = valclasspayl->get_own_method(_.obselect);
-          RPSDEBUG_LOG(MSGSEND, "closure_for_method_selector!sub-class closval=" << _.closval);
+          RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector!sub-class closval=" << _.closval);
           if (_.closval && _.closval.is_closure()) // should be always true! But we need to check
             return _.closval;
           else
@@ -678,11 +678,11 @@ Rps_Value::send0(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg) const
                 );
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
-  RPSDEBUG_LOG(MSGSEND, "send0 selfv=" << _.selfv
-               << ", obsel=" << _.obsel);
+  RPS_DEBUG_LOG(MSGSEND, "send0 selfv=" << _.selfv
+                << ", obsel=" << _.obsel);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPSDEBUG_LOG(MSGSEND, "send0 selfv=" << _.selfv
-               << ", closv=" << _.closv);
+  RPS_DEBUG_LOG(MSGSEND, "send0 selfv=" << _.selfv
+                << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply0(&_);
   return Rps_TwoValues(nullptr,nullptr);
@@ -703,12 +703,12 @@ Rps_Value::send1(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.selfv = Rps_Value(*this);
   _.obsel = obselarg;
   _.arg0v = arg0;
-  RPSDEBUG_LOG(MSGSEND, "send1 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", arg0v=" << _.arg0v);
+  RPS_DEBUG_LOG(MSGSEND, "send1 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", arg0v=" << _.arg0v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPSDEBUG_LOG(MSGSEND, "send1 selfv=" << _.selfv
-               << ", closv=" << _.closv);
+  RPS_DEBUG_LOG(MSGSEND, "send1 selfv=" << _.selfv
+                << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply1(&_, _.arg0v);
   return Rps_TwoValues(nullptr,nullptr);
@@ -733,22 +733,22 @@ Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.obsel = obselarg;
   _.arg0v = arg0;
   _.arg1v = arg1;
-  RPSDEBUG_LOG(MSGSEND, "send2 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", arg0v=" << _.arg0v
-               << ", arg1v=" << _.arg1v);
+  RPS_DEBUG_LOG(MSGSEND, "send2 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", arg0v=" << _.arg0v
+                << ", arg1v=" << _.arg1v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPSDEBUG_LOG(MSGSEND, "send2 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", closv=" << _.closv);
+  RPS_DEBUG_LOG(MSGSEND, "send2 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", closv=" << _.closv);
 
   if (_.closv.is_closure())
     {
-      RPSDEBUG_LOG(MSGSEND, "send2 applying selfv=" << _.selfv
-                   << ", obsel=" << _.obsel
-                   << ", closv=" << _.closv
-                   << ", arg0v=" << _.arg0v
-                   << ", arg1v=" << _.arg1v);
+      RPS_DEBUG_LOG(MSGSEND, "send2 applying selfv=" << _.selfv
+                    << ", obsel=" << _.obsel
+                    << ", closv=" << _.closv
+                    << ", arg0v=" << _.arg0v
+                    << ", arg1v=" << _.arg1v);
       return _.closv.apply2(&_, _.arg0v, _.arg1v);
     }
   return Rps_TwoValues(nullptr,nullptr);
@@ -774,15 +774,15 @@ Rps_Value::send3(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg0v = arg0;
   _.arg1v = arg1;
   _.arg2v = arg2;
-  RPSDEBUG_LOG(MSGSEND, "send3 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", arg0v=" << _.arg0v
-               << ", arg1v=" << _.arg1v
-               << ", arg2v=" << _.arg2v);
+  RPS_DEBUG_LOG(MSGSEND, "send3 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", arg0v=" << _.arg0v
+                << ", arg1v=" << _.arg1v
+                << ", arg2v=" << _.arg2v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPSDEBUG_LOG(MSGSEND, "send3 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", closv=" << _.closv);
+  RPS_DEBUG_LOG(MSGSEND, "send3 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply3(&_, _.arg0v, _.arg1v, _.arg2v);
   return Rps_TwoValues(nullptr,nullptr);
@@ -810,16 +810,16 @@ Rps_Value::send4(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg1v = arg1;
   _.arg2v = arg2;
   _.arg3v = arg3;
-  RPSDEBUG_LOG(MSGSEND, "send4 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", arg0v=" << _.arg0v
-               << ", arg1v=" << _.arg1v
-               << ", arg2v=" << _.arg2v
-               << ", arg3v=" << _.arg3v);
+  RPS_DEBUG_LOG(MSGSEND, "send4 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", arg0v=" << _.arg0v
+                << ", arg1v=" << _.arg1v
+                << ", arg2v=" << _.arg2v
+                << ", arg3v=" << _.arg3v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPSDEBUG_LOG(MSGSEND, "send4 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", closv=" << _.closv);
+  RPS_DEBUG_LOG(MSGSEND, "send4 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply3(&_, _.arg0v, _.arg1v, _.arg2v);
   return Rps_TwoValues(nullptr,nullptr);
@@ -850,17 +850,17 @@ Rps_Value::send5(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg2v = arg2;
   _.arg3v = arg3;
   _.arg4v = arg4;
-  RPSDEBUG_LOG(MSGSEND, "send5 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", arg0v=" << _.arg0v
-               << ", arg1v=" << _.arg1v
-               << ", arg2v=" << _.arg2v
-               << ", arg3v=" << _.arg3v
-               << ", arg4v=" << _.arg4v);
+  RPS_DEBUG_LOG(MSGSEND, "send5 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", arg0v=" << _.arg0v
+                << ", arg1v=" << _.arg1v
+                << ", arg2v=" << _.arg2v
+                << ", arg3v=" << _.arg3v
+                << ", arg4v=" << _.arg4v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPSDEBUG_LOG(MSGSEND, "send5 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", closv=" << _.closv);
+  RPS_DEBUG_LOG(MSGSEND, "send5 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply5(&_, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v);
   return Rps_TwoValues(nullptr,nullptr);
@@ -894,18 +894,18 @@ Rps_Value::send6(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg3v = arg3;
   _.arg4v = arg4;
   _.arg5v = arg5;
-  RPSDEBUG_LOG(MSGSEND, "send6 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", arg0v=" << _.arg0v
-               << ", arg1v=" << _.arg1v
-               << ", arg2v=" << _.arg2v
-               << ", arg3v=" << _.arg3v
-               << ", arg4v=" << _.arg4v
-               << ", arg5v=" << _.arg5v);
+  RPS_DEBUG_LOG(MSGSEND, "send6 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", arg0v=" << _.arg0v
+                << ", arg1v=" << _.arg1v
+                << ", arg2v=" << _.arg2v
+                << ", arg3v=" << _.arg3v
+                << ", arg4v=" << _.arg4v
+                << ", arg5v=" << _.arg5v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPSDEBUG_LOG(MSGSEND, "send6 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", closv=" << _.closv);
+  RPS_DEBUG_LOG(MSGSEND, "send6 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply6(&_, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v, _.arg5v);
   return Rps_TwoValues(nullptr,nullptr);
@@ -942,19 +942,19 @@ Rps_Value::send7(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   _.arg4v = arg4;
   _.arg5v = arg5;
   _.arg6v = arg6;
-  RPSDEBUG_LOG(MSGSEND, "send7 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", arg0v=" << _.arg0v
-               << ", arg1v=" << _.arg1v
-               << ", arg2v=" << _.arg2v
-               << ", arg3v=" << _.arg3v
-               << ", arg4v=" << _.arg4v
-               << ", arg5v=" << _.arg5v
-               << ", arg6v=" << _.arg6v);
+  RPS_DEBUG_LOG(MSGSEND, "send7 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", arg0v=" << _.arg0v
+                << ", arg1v=" << _.arg1v
+                << ", arg2v=" << _.arg2v
+                << ", arg3v=" << _.arg3v
+                << ", arg4v=" << _.arg4v
+                << ", arg5v=" << _.arg5v
+                << ", arg6v=" << _.arg6v);
   _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPSDEBUG_LOG(MSGSEND, "send7 selfv=" << _.selfv
-               << ", obsel=" << _.obsel
-               << ", closv=" << _.closv);
+  RPS_DEBUG_LOG(MSGSEND, "send7 selfv=" << _.selfv
+                << ", obsel=" << _.obsel
+                << ", closv=" << _.closv);
   if (_.closv.is_closure())
     return _.closv.apply7(&_, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v, _.arg5v, _.arg6v);
   return Rps_TwoValues(nullptr,nullptr);

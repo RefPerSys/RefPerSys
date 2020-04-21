@@ -316,7 +316,10 @@ extern "C" bool rps_syslog_enabled;
 
 extern "C" unsigned rps_debug_flags;
 
-#define RPS_DEBUG_LOG LOG_DEBUG // syslog debug log level
+#define RPS_DEBUG_LOG_LEVEL LOG_DEBUG // syslog debug log level
+
+// so we could code  RPS_DEBUG_PRINTF(NEVER, ....)
+#define RPS_DEBUG_NEVER RPS_DEBUG__NONE
 
 #define RPS_DEBUG_ENABLED(dbgopt) (rps_debug_flags & (1 << RPS_DEBUG_##dbgopt))
 
@@ -360,8 +363,8 @@ while (0)
 #define RPS_DEBUG_LOG_AT_BIS(fname, fline, dbgopt, logmsg)  \
    RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)
 
-/// example of usage: RPSDEBUG_LOG(MISC, "x=" << x) related to RPS_DEBUG_MISC
-#define RPSDEBUG_LOG(dbgopt, logmsg) \
+/// example of usage: RPS_DEBUG_LOG(MISC, "x=" << x) related to RPS_DEBUG_MISC
+#define RPS_DEBUG_LOG(dbgopt, logmsg) \
   RPS_DEBUG_LOG_AT_BIS(__FILE__, __LINE__, dbgopt, logmsg)
 
 
