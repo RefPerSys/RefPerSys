@@ -743,7 +743,14 @@ Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                << ", closv=" << _.closv);
 
   if (_.closv.is_closure())
-    return _.closv.apply2(&_, _.arg0v, _.arg1v);
+    {
+      RPSDEBUG_LOG(MSGSEND, "send2 applying selfv=" << _.selfv
+                   << ", obsel=" << _.obsel
+                   << ", closv=" << _.closv
+                   << ", arg0v=" << _.arg0v
+                   << ", arg1v=" << _.arg1v);
+      return _.closv.apply2(&_, _.arg0v, _.arg1v);
+    }
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send2
 

@@ -1461,7 +1461,10 @@ Rps_ClosureValue::apply2(Rps_CallFrame*callerframe, const Rps_Value arg0,
     return  Rps_TwoValues(nullptr);
   rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
   if (!appfun)
-    return nullptr;
+    {
+      RPSDEBUG_LOG(MSGSEND, "apply2 " << *this << " no appfun");
+      return nullptr;
+    }
   callerframe->set_closure(*this);
   Rps_TwoValues res= appfun(callerframe, arg0, arg1,
                             Rps_Value(nullptr), Rps_Value(nullptr),
