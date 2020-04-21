@@ -549,6 +549,9 @@ void rps_run_application(int &argc, char **argv)
     // type information
     const QCommandLineOption typeOption("type-info", "Show type information.");
     argparser.addOption(typeOption);
+    // use syslog
+    const QCommandLineOption syslogOption("syslog", "Use syslog(3).");
+    argparser.addOption(syslogOption);
     // settings information
     const QCommandLineOption settingsOption("settings", "The Qt settings file.");
     argparser.addOption(settingsOption);
@@ -594,6 +597,13 @@ void rps_run_application(int &argc, char **argv)
         strncpy(rps_bufpath_homedir, rhomrp, sizeof(rps_bufpath_homedir) -1);
         free (rhomrp), rhomrp = nullptr;
       };
+    if (argparser.isSet(syslogOption))
+      {
+        printf("RegPerSys uses syslog(3)\n");
+        rps_syslog_enabled = true;
+        openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
+        RPS_INFORM("using syslog");
+      }
     RPS_INFORM("using %s as the RefPerSys home directory", rps_homedir());
     //// --load <dir>
     if (argparser.isSet(loadOption))

@@ -47,6 +47,9 @@ void* rps_proghdl;
 
 bool rps_batch;
 
+
+bool rps_syslog_enabled = false;
+
 unsigned rps_debug_flags;
 
 thread_local Rps_Random Rps_Random::_rand_thr_;
@@ -484,8 +487,6 @@ rps_hardcoded_number_of_constants(void)
 // Implementation of debugging routines
 ///////////////////////////////////////////////////////////////////////////////
 
-
-bool rps_syslog_enabled = true;
 static pthread_mutex_t rps_debug_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static std::string
