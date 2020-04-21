@@ -1797,16 +1797,19 @@ protected:
   {
     RPS_ASSERT(ld != nullptr);
     RPS_ASSERT(mfun != nullptr);
-    // Rps_ObjectRef thisob(this);
-    // RPS_INFORMOUT("loader_put_magicattrgetter thisob=" << thisob << ", mfun=" << (void*)mfun);
+    RPS_DEBUG_LOG(LOAD,
+		  "loader_put_magicattrgetter thisob=" << Rps_ObjectRef(this)
+		  << ", mfun=" << (void*)mfun);
     ob_magicgetterfun.store(mfun);
   };
   void loader_put_applyingfunction(Rps_Loader*ld, rps_applyingfun_t*afun)
   {
     RPS_ASSERT(ld != nullptr);
     RPS_ASSERT(afun != nullptr);
-    // Rps_ObjectRef thisob(this);
-    // RPS_INFORMOUT("loader_put_magicattrgetter thisob=" << thisob << ", mfun=" << (void*)mfun);
+    Rps_ObjectRef thisob(this);
+    RPS_DEBUG_LOG(LOAD,
+		  "loader_put_applyingfunction thisob=" <<  Rps_ObjectRef(this)
+		  << ", afun=" << (void*)afun);
     ob_applyingfun.store(afun);
   };
   void loader_reserve_comps (Rps_Loader*ld, unsigned nbcomps)
