@@ -1171,6 +1171,11 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   _.recdepth = arg2depth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
+  RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx recvob=" << _.recvob
+                << " of class:" <<  _.recvob->compute_class(&_) << std::endl
+                << "... objwnd=" << _.objwnd
+                << " of class:" <<  _.objwnd->compute_class(&_) << std::endl
+                << "... depthi=" << depthi);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
   if (auto symbpayl = _.recvob->get_dynamic_payload<Rps_PayloadSymbol>())
