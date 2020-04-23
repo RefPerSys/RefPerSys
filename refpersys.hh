@@ -1361,7 +1361,7 @@ std::ostream& operator << (std::ostream& out, const Rps_Backtracer& rpb) {
 #define RPS_SIMPLE_CLOSURE_BACKTRACE_HERE(Skip,Clos) \
   Rps_Backtracer(Rps_Backtracer::SimpleClosureTag{},__FILE__,__LINE__,(Clos))
 #define RPS_FULL_BACKTRACE_HERE(Skip,Name) \
-  Rps_Backtracer(Rps_Backtracer::FullOutTag{},__FILE__,__LINE__,(Skip),(Name))
+  Rps_Backtracer(Rps_Backtracer::FullOutTag{},__FILE__,__LINE__,(Skip),(Name),&std::clog)
 
 ////////////////////////////////////////////////////// garbage collector
 extern "C" void rps_garbage_collect(std::function<void(Rps_GarbageCollector*)>* fun=nullptr);

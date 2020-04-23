@@ -494,8 +494,8 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
 
                 << ", selob=" << _.selob
                 << ", depthv=" << _.depthv << std::endl
-                << "*** do_display_object simplebacktrace ***" << std::endl
-                << RPS_SIMPLE_BACKTRACE_HERE(1, "do_display_object")
+                << "*** do_display_object fullbacktrace ***" << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "do_display_object")
                 << std::endl);
   Rps_TwoValues twores =
     _.dispv.send2(&_, _.selob,
