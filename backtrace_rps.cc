@@ -41,9 +41,10 @@ extern "C" const char rps_backtrace_date[];
 const char rps_backtrace_date[]= __DATE__;
 
 #define RPS_FASTABORT(Msg) do {					\
-  fprintf(stderr, "%s:%d <%s> RefPerSys FAST ABORT: %s (%m)\n",	\
-	__FILE__, __LINE__, __FUNCTION__, (Msg));		\
-  fflush(stderr);						\
+  std::clog << " RefPerSys FAST ABORT:" << __FILE__ << ':'	\
+	    << __LINE__  << std::endl				\
+	    << "..@" << __PRETTY_FUNCTION__			\
+	    << " §¤: " << Msg << std::endl << std::flush;	\
   abort();							\
 } while(0)
 
@@ -283,7 +284,7 @@ Rps_Backtracer::Rps_Backtracer(struct SimpleOutTag,
   backtr_name(name)
 {
   if (bkind() != Kind::SimpleOut)
-    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/SimpleOutTag");
+    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/SimpleOutTag kind=" << bkindname());
 } // end Rps_Backtracer::Rps_Backtracer/SimpleOutTag
 
 
@@ -303,7 +304,7 @@ Rps_Backtracer::Rps_Backtracer(struct SimpleClosureTag,
   backtr_name(name)
 {
   if (bkind() != Kind::SimpleClosure)
-    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/SimpleClosureTag");
+    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/SimpleClosureTag kind=" << bkindname());
 } // end Rps_Backtracer::Rps_Backtracer/SimpleClosureTag
 
 Rps_Backtracer::Rps_Backtracer(struct FullOutTag,
@@ -319,8 +320,9 @@ Rps_Backtracer::Rps_Backtracer(struct FullOutTag,
   backtr_depth(0),
   backtr_name(name)
 {
+  
   if (bkind() != Kind::StringOut)
-    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/FullOutTag");
+    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/FullOutTag kind=" << bkindname());
 } // end Rps_Backtracer::Rps_Backtracer/FullOutTag
 
 Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,

@@ -48,7 +48,7 @@ RPS_BUILD_CC = gcc
 RPS_BUILD_CXX = g++
 RPS_BUILD_DIALECTFLAGS = -std=gnu++17
 RPS_BUILD_WARNFLAGS = -Wall -Wextra
-override RPS_BUILD_OPTIMFLAGS ?= -O1 -g3
+override RPS_BUILD_OPTIMFLAGS ?= -Og -g3
 RPS_BUILD_DEBUGFLAGS = -O0 -fno-inline -g3
 RPS_BUILD_CODGENFLAGS = -fPIC
 RPS_BUILD_SANITFLAGS = -fsanitize=address
@@ -103,7 +103,7 @@ sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_QT_OBJECTS) 
 #-            $(LIBES) -o $@-tmp
 #-         $(MV) --backup $@-tmp $@
 #-         $(MV) --backup __timestamp.c __timestamp.c~
-#-         $(RM) __timestamp.o
+#-         $x(RM) __timestamp.o
 
 objects:  $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS)
 
