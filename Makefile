@@ -34,11 +34,13 @@ RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
+RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
 
 RPS_QT_HEADERS:= $(sort $(wildcard *_qrps.hh))
 RPS_QT_SOURCES:= $(sort $(wildcard *_qrps.cc))
 RPS_QT_OBJECTS = $(patsubst %.cc, %.o, $(RPS_QT_SOURCES))
 RPS_SANITIZED_QT_OBJECTS =  $(patsubst %.cc, %.sanit.o, $(RPS_QT_SOURCES))
+RPS_DEBUG_QT_OBJECTS =  $(patsubst %.cc, %.dbg.o, $(RPS_QT_SOURCES))
 RPS_QT_MOC = moc
 
 RPS_BUILD_CCACHE = ccache
@@ -46,7 +48,8 @@ RPS_BUILD_CC = gcc
 RPS_BUILD_CXX = g++
 RPS_BUILD_DIALECTFLAGS = -std=gnu++17
 RPS_BUILD_WARNFLAGS = -Wall -Wextra
-RPS_BUILD_OPTIMFLAGS = -Og -g3
+override RPS_BUILD_OPTIMFLAGS ?= -O1 -g3
+RPS_BUILD_DEBUGFLAGS = -O0 -fno-inline -g3
 RPS_BUILD_CODGENFLAGS = -fPIC
 RPS_BUILD_SANITFLAGS = -fsanitize=address
 RPS_INCLUDE_DIRS = /usr/local/include /usr/include 
@@ -63,7 +66,7 @@ RM= rm -f
 MV= mv
 CC = $(RPS_BUILD_CCACHE) $(RPS_BUILD_CC)
 CXX = $(RPS_BUILD_CCACHE) $(RPS_BUILD_CXX)
-CXXFLAGS += $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
+CXXFLAGS := $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             $(RPS_BUILD_CODGENFLAGS) \
 	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) \
 	    $(RPS_PKG_CFLAGS) -DRPS_GITID=\"$(RPS_GIT_ID)\"
@@ -90,6 +93,18 @@ sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_QT_OBJECTS) 
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
+
+
+## the below target don't work yet
+#- dbg-refpersys:  $(RPS_DEBUG_CORE_OBJECTS) $(RPS_DEBUG_QT_OBJECTS) __timestamp.o
+#-         env RPS_BUILD_OPTIMFLAGS='$(RPS_BUILD_DEBUGFLAGS)' $(MAKE) $(MAKEFLAGS) -e  $(RPS_DEBUG_CORE_OBJECTS) $(RPS_DEBUG_QT_OBJECTS) 
+#-         $(LINK.cc)  $(RPS_BUILD_DEBUGFLAGS) \
+#-            $(RPS_DEBUG_CORE_OBJECTS) $(RPS_DEBUG_QT_OBJECTS) __timestamp.o \
+#-            $(LIBES) -o $@-tmp
+#-         $(MV) --backup $@-tmp $@
+#-         $(MV) --backup __timestamp.c __timestamp.c~
+#-         $(RM) __timestamp.o
+
 objects:  $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS)
 
 $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
@@ -104,6 +119,9 @@ _qthead_qrps.inc.hh: $(RPS_QT_HEADERS)
 
 %.sanit.o: %.cc refpersys.hh.sanit.gch
 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
+
+%.dbg.o: %.cc refpersys.hh.sanit.gch
+	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
 
 %.ii: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -C -E $< | sed s:^#://#:g > $@
@@ -170,6 +188,7 @@ ifeq ($(shell git remote | grep github), github)
 	git push github
 else
 	echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
+	printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
 endif
 
 ## eof Makefile
