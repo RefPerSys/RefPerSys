@@ -472,7 +472,12 @@ rps_display_output_object_occurrence(Rps_CallFrame*callerframe,
   RPS_ASSERT(_.winob);
   RPS_DEBUG_LOG(GUI, "rps_display_output_object_occurrence winob=" << _.winob
                 << ", dispob=" << _.dispob
-                << ", depth=" << depth);
+                << ", depth=" << depth
+                << std::endl
+                << "==== rps_display_output_object_occurrence backtrace ===" << std::endl
+                <<  RPS_SIMPLE_BACKTRACE_HERE(1, "rps_display_output_object_occurrence")
+                << "**** end rps_display_output_object_occurrence simpleback ===="
+                << std::endl);
   std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
   auto qoutwpayl =
     _.winob->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();

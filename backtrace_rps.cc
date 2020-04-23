@@ -158,13 +158,15 @@ Rps_Backtracer::pc_to_string(uintptr_t pc)
       snprintf(buf, sizeof(buf), "[%03d] /?? %p", backtr_depth, (void*)pc);
       return std::string(buf);
     }
-  else
+  else // perhaps legitimate pc
     {
+      std::ostringstream outs;
       char beforebuf[32];
       memset (beforebuf, 0, sizeof(beforebuf));
       snprintf (beforebuf, sizeof(beforebuf), "[%03d]", backtr_depth);
-      char linbuf[128];
-      memset(linbuf, 0, sizeof(linbuf));
+      {
+        outs << beforebuf;
+      };
       const char*demangled = nullptr;
       Dl_info dif = {};
       memset ((void*)&dif, 0, sizeof(dif));
@@ -193,32 +195,46 @@ Rps_Backtracer::pc_to_string(uintptr_t pc)
           if (delta != 0)
             {
               if (funamestr.empty())
-                snprintf (linbuf, sizeof(linbuf), "%s %p!: %s+%#x",
-                          beforebuf, (void*)pc, filnamestr.c_str(), delta);
+                {
+                  outs <<  ' ' << (void*)pc
+                       << "!: " << filnamestr
+                       << "+" << std::showbase << std::hex << delta
+                       << std::flush;
+                }
               else
-                snprintf (linbuf, sizeof(linbuf), "%s %p!: %40s+%#x %s",
-                          beforebuf, (void*)pc, filnamestr.c_str(), delta,
-                          funamestr.c_str());
-            }
-          else
+                {
+                  outs << ' ' << (void*)pc
+                       << "!: " << filnamestr
+                       << "+" << std::showbase << std::hex << delta
+                       << ' ' << funamestr << std::flush;
+                }
+            } // end if delta != 0
+          else // delta is 0
             {
               if (funamestr.empty())
-                snprintf (linbuf, sizeof(linbuf), "%s %p!: %s+%#x",
-                          beforebuf, (void*)pc, filnamestr.c_str(), delta);
+                {
+                  outs <<  ' ' << (void*)pc
+                       << "!: " << filnamestr
+                       << std::flush;
+                }
               else
-                snprintf (linbuf, sizeof(linbuf), "%s %p!: %40s+%#x %s",
-                          beforebuf, (void*)pc, filnamestr.c_str(),
-                          delta, funamestr.c_str());
-            }
+                {
+                  outs << ' ' << (void*)pc
+                       << "!: " << filnamestr
+                       << ' ' << funamestr << std::flush;
+                }
+            } // end if delta is 0
         }
-      else
-        snprintf (linbuf, sizeof(linbuf),  "%s %p.", beforebuf, (void*)pc);
-      if (demangled)
-        free((void*)demangled), demangled = nullptr;
-      linbuf[sizeof(linbuf)-1] = (char)0;
-      return std::string(linbuf);
-    }
+      else // dladdr failed
+        {
+          outs << beforebuf << ' ' << (void*)pc << '?' << std::flush;
+        }
+      return outs.str();
+    } // endif perhaps legitimate pc
 } // end Rps_Backtracer::pc_to_string
+
+
+
 
 
 std::string
@@ -234,7 +250,7 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
     RPS_FASTABORT("detailed_pc_to_string: corrupted Rps_Backtracer");
   if (pcfile && pcfile[0] && pcfun && pcfun[0])
     {
-      char linbuf[128];
+      char linbuf[256];
       memset(linbuf, 0, sizeof(linbuf));
       int endpos= -1;
       // probably the string fits into linbuf

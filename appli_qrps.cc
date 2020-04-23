@@ -490,6 +490,13 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
                   << " of class=" << _.winob->compute_class(&_)<< std::endl);
   else
     RPS_WARNOUT("RpsQApplication::do_display_object no dispv");
+  RPS_DEBUG_LOG(GUI, "RpsQApplication::do_display_object dispv=" << _.dispv
+
+                << ", selob=" << _.selob
+                << ", depthv=" << _.depthv << std::endl
+                << "*** do_display_object simplebacktrace ***" << std::endl
+                << RPS_SIMPLE_BACKTRACE_HERE(1, "do_display_object")
+                << std::endl);
   Rps_TwoValues twores =
     _.dispv.send2(&_, _.selob,
                   _.winob,
