@@ -161,12 +161,12 @@ Rps_Backtracer::pc_to_string(uintptr_t pc)
   else // perhaps legitimate pc
     {
       std::ostringstream outs;
-      char beforebuf[32];
-      memset (beforebuf, 0, sizeof(beforebuf));
-      snprintf (beforebuf, sizeof(beforebuf), "[%03d]", backtr_depth);
       {
+        char beforebuf[32];
+        memset (beforebuf, 0, sizeof(beforebuf));
+        snprintf (beforebuf, sizeof(beforebuf), "[%03d]", backtr_depth);
         outs << beforebuf;
-      };
+      }
       const char*demangled = nullptr;
       Dl_info dif = {};
       memset ((void*)&dif, 0, sizeof(dif));
@@ -227,7 +227,7 @@ Rps_Backtracer::pc_to_string(uintptr_t pc)
         }
       else // dladdr failed
         {
-          outs << beforebuf << ' ' << (void*)pc << '?' << std::flush;
+          outs << " §:" << (void*)pc << '?' << std::flush;
         }
       return outs.str();
     } // endif perhaps legitimate pc
@@ -250,35 +250,21 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
     RPS_FASTABORT("detailed_pc_to_string: corrupted Rps_Backtracer");
   if (pcfile && pcfile[0] && pcfun && pcfun[0])
     {
-      char linbuf[256];
-      memset(linbuf, 0, sizeof(linbuf));
-      int endpos= -1;
-      // probably the string fits into linbuf
-      if (RPS_LIKELY(snprintf(linbuf, sizeof(linbuf), "* %s:%d <%s> @%p%n",
-                              pcfile, pclineno, pcfun, (void*)pc, &endpos) >0
-                     && endpos > 0 && endpos<(int)sizeof(linbuf)-1))
-        return std::string(linbuf);
-      else
-        {
-          char numbuf[32];
-          memset(numbuf, 0, sizeof(numbuf));
-          std::string s;
-          s.reserve(strlen(pcfile)+strlen(pcfun)+32);
-          s += "* ";
-          s += pcfile;
-          s += "°:";
-          s += std::to_string(pclineno);
-          s += " <";
-          s += pcfun;
-          s += ">";
-          snprintf(numbuf, sizeof(numbuf), " @%p", (void*)pc);
-          s += numbuf;
-          return s;
-        }
+      std::ostringstream outs;
+      {
+        char beforebuf[32];
+        memset (beforebuf, 0, sizeof(beforebuf));
+        snprintf (beforebuf, sizeof(beforebuf), "[%03d]", backtr_depth);
+        outs << beforebuf << ' ';
+      }
+      outs << pcfile << ':' << pclineno
+           << "°: " << pcfun << " @" << (void*)pc << std::flush;
+      return outs.str();
     }
-  else
+  else // some of pcfile or pcfun is missing
     return pc_to_string(pc);
 } // end Rps_Backtracer::detailed_pc_to_string
+
 
 
 
