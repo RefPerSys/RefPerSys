@@ -85,7 +85,8 @@ Rps_Backtracer::output(std::ostream&outs)
     RPS_FASTABORT("corrupted Rps_Backtracer");
   backtr_todo = Todo::Do_Output;
   backtr_depth = 0;
-  switch (bkind())
+  auto bk = bkind();
+  switch (bk)
     {
     case Kind::None:
       RPS_FASTABORT("unexpected None kind in Rps_Backtracer::output");
@@ -281,6 +282,8 @@ Rps_Backtracer::Rps_Backtracer(struct SimpleOutTag,
   backtr_depth(0),
   backtr_name(name)
 {
+  if (bkind() != Kind::SimpleOut)
+    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/SimpleOutTag");
 } // end Rps_Backtracer::Rps_Backtracer/SimpleOutTag
 
 
@@ -299,6 +302,8 @@ Rps_Backtracer::Rps_Backtracer(struct SimpleClosureTag,
   backtr_depth(0),
   backtr_name(name)
 {
+  if (bkind() != Kind::SimpleClosure)
+    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/SimpleClosureTag");
 } // end Rps_Backtracer::Rps_Backtracer/SimpleClosureTag
 
 Rps_Backtracer::Rps_Backtracer(struct FullOutTag,
@@ -314,6 +319,8 @@ Rps_Backtracer::Rps_Backtracer(struct FullOutTag,
   backtr_depth(0),
   backtr_name(name)
 {
+  if (bkind() != Kind::StringOut)
+    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/FullOutTag");
 } // end Rps_Backtracer::Rps_Backtracer/FullOutTag
 
 Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
@@ -331,6 +338,8 @@ Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
     backtr_depth(0),
     backtr_name(name)
 {
+  if (bkind() != Kind::FullClosure)
+    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/FullClosureTag");
 } // end Rps_Backtracer::Rps_Backtracer/FullClosureTag
 
 
