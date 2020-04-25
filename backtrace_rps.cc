@@ -50,7 +50,8 @@ const char rps_backtrace_date[]= __DATE__;
 
 std::recursive_mutex Rps_Backtracer:: _backtr_mtx_;
 
-/// notice that Rps_Backtracer should use assert, not RPS_ASSERT!
+/// Notice that Rps_Backtracer should use assert, not RPS_ASSERT since
+/// RPS_ASSERT is recursively using Rps_Backtracer!
 void
 Rps_Backtracer::bt_error_method(const char*msg, int errnum)
 {
@@ -87,6 +88,7 @@ Rps_Backtracer::output(std::ostream&outs)
   backtr_todo = Todo::Do_Output;
   backtr_depth = 0;
   auto bk = bkind();
+  RPS_DEBUG_LOG(MISC, "Rps_Backtracer::output start kind " << bkindname());
   switch (bk)
     {
     case Kind::None:
@@ -105,8 +107,10 @@ Rps_Backtracer::output(std::ostream&outs)
                      (void*)this);
       backtr_todo = Todo::Do_Nothing;
       return;
+    default:
+      RPS_FASTABORT("unexpected kind Rps_Backtracer::output kind=" << bkindname());
     }; // end switch bkind()
-  RPS_FASTABORT("unexpected kind Rps_Backtracer::output");
+  RPS_DEBUG_LOG(MISC, "Rps_Backtracer::output end kind " << bkindname() << std::endl);
 } // end Rps_Backtracer::output
 
 
@@ -120,6 +124,7 @@ Rps_Backtracer::print(FILE*outf)
     RPS_FASTABORT("corrupted Rps_Backtracer");
   backtr_todo = Todo::Do_Print;
   backtr_depth = 0;
+  RPS_DEBUG_LOG(MISC, "Rps_Backtracer::print start kind " << bkindname());
   switch (bkind())
     {
     case Kind::None:
@@ -138,8 +143,10 @@ Rps_Backtracer::print(FILE*outf)
                      (void*)this);
       backtr_todo = Todo::Do_Nothing;
       return;
-    }; // end switch bkind()
-  RPS_FASTABORT("unexpected kind Rps_Backtracer::print");
+    default:
+      RPS_FASTABORT("unexpected Rps_Backtracer::print kind=" << bkindname());
+    }; // end switch bkind();
+  RPS_DEBUG_LOG(MISC, "Rps_Backtracer::print end kind " << bkindname() << std::endl);
 } // end Rps_Backtracer::print
 
 
@@ -269,7 +276,7 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
 
 
 
-
+////////////////
 Rps_Backtracer::Rps_Backtracer(struct SimpleOutTag,
                                const char*fromfil, const int fromlin, int skip,
                                const char*name, std::ostream* out)
@@ -288,7 +295,7 @@ Rps_Backtracer::Rps_Backtracer(struct SimpleOutTag,
 } // end Rps_Backtracer::Rps_Backtracer/SimpleOutTag
 
 
-
+////////////////
 Rps_Backtracer::Rps_Backtracer(struct SimpleClosureTag,
                                const char*fromfil, const int fromlin,  int skip,
                                const char*name,
@@ -320,11 +327,13 @@ Rps_Backtracer::Rps_Backtracer(struct FullOutTag,
   backtr_depth(0),
   backtr_name(name)
 {
-  
+
   if (bkind() != Kind::StringOut)
     RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/FullOutTag kind=" << bkindname());
 } // end Rps_Backtracer::Rps_Backtracer/FullOutTag
 
+
+////////////////
 Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
                                const char*fromfil, const int fromlin,  int skip,
                                const char*name,
@@ -343,6 +352,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
   if (bkind() != Kind::FullClosure)
     RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/FullClosureTag");
 } // end Rps_Backtracer::Rps_Backtracer/FullClosureTag
+
 
 
 const std::string
