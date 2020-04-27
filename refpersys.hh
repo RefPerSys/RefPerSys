@@ -2448,6 +2448,11 @@ public:
                               const Rps_Value arg3, const Rps_Value arg4,
                               const Rps_Value arg5, const Rps_Value arg6,
                               const Rps_Value arg7, const Rps_Value arg8) const;
+  inline Rps_TwoValues apply10(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                              const Rps_Value arg1, const Rps_Value arg2,
+                              const Rps_Value arg3, const Rps_Value arg4,
+                              const Rps_Value arg5, const Rps_Value arg6,
+                              const Rps_Value arg7, const Rps_Value arg8, const Rps_Value arg9) const;
   Rps_TwoValues apply_vect(Rps_CallFrame*callerframe, const std::vector<Rps_Value>& argvec) const;
   Rps_TwoValues apply_ilist(Rps_CallFrame*callerframe, const std::initializer_list<Rps_Value>& argil) const;
 };    // end Rps_ClosureValue

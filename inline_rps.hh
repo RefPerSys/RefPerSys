@@ -1667,6 +1667,38 @@ Rps_ClosureValue::apply9(Rps_CallFrame*callerframe, const Rps_Value arg0,
   return  res;
 } // end Rps_ClosureValue::apply9
 
+Rps_TwoValues
+Rps_ClosureValue::apply10(Rps_CallFrame*callerframe, const Rps_Value arg0,
+                          const Rps_Value arg1, const Rps_Value arg2,
+                          const Rps_Value arg3, const Rps_Value arg4,
+                          const Rps_Value arg5, const Rps_Value arg6,
+                          const Rps_Value arg7, const Rps_Value arg8,
+                          const Rps_Value arg9) const
+{
+  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  if (is_empty() || !is_closure())
+    return nullptr;
+  Rps_ObjectRef obconn = connob();
+  if (!obconn)
+    return  Rps_TwoValues(nullptr);
+  rps_applyingfun_t*appfun = obconn->get_applyingfun(*this);
+  if (!appfun)
+    return  Rps_TwoValues(nullptr);
+  callerframe->set_closure(*this);
+  std::vector<Rps_Value> restvec(6);
+  restvec[0] = arg4;
+  restvec[1] = arg5;
+  restvec[2] = arg6;
+  restvec[3] = arg7;
+  restvec[4] = arg8;
+  restvec[5] = arg9;
+  Rps_TwoValues res= appfun(callerframe, arg0, arg1,
+                            arg2, arg3,
+                            &restvec);
+  callerframe->clear_closure();
+  return  res;
+} // end Rps_ClosureValue::apply10
+
 
 
 ////////////////////////////////////////////////////// immutable instances
