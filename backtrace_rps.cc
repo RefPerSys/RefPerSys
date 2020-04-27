@@ -274,6 +274,12 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
     RPS_FASTABORT("detailed_pc_to_string: corrupted Rps_Backtracer");
   if (pcfile && pcfile[0] && pcfun && pcfun[0])
     {
+      const char*basepcfile = pcfile;
+      {
+        const char*lastslash = strrchr(pcfile, '/');
+        if (lastslash && lastslash[1])
+          basepcfile = lastslash+1;
+      }
       std::ostringstream outs;
       {
         char beforebuf[32];
@@ -289,7 +295,7 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
           if (demangled && status==0)
             dempcfun = (char*) demangled;
         }
-      outs << pcfile << ':' << pclineno
+      outs << basepcfile << ':' << pclineno
            << "°: " << (dempcfun?dempcfun:pcfun) << " @" << (void*)pc << std::flush;
       if (dempcfun)
         free((void*)dempcfun);
@@ -305,8 +311,8 @@ Rps_Backtracer::Rps_Backtracer(struct FullOut_Tag,
                                const char*fromfil, const int fromlin, int skip,
                                const char*name, std::ostream* out)
   :
-  backtr_todo(Todo::Do_Nothing),
   backtr_magic(_backtr_magicnum_),
+  backtr_todo(Todo::Do_Nothing),
   backtr_variant(std::ostringstream{}),
   backtr_outs(out),
   backtr_fromfile(fromfil),
@@ -437,7 +443,6 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
                                   const char *function)
 {
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
-#warning unimplemented Rps_Backtracer::backtrace_full_cb
   if (!data)
     RPS_FASTABORT("corruption - no data");
   Rps_Backtracer* bt = reinterpret_cast<Rps_Backtracer*>(data);
