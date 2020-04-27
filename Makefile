@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean fullclean print-temporary-plugin-settings indent redump
+.PHONY: all objects clean fullclean print-temporary-plugin-settings indent redump test01 test02 test03
 
 RPS_GIT_ID:= $(shell ./generate-gitid.sh)
 
@@ -191,5 +191,17 @@ else
 	printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
 endif
 
+
+
+################################################################
+#### simple tests
+test01: ./refpersys
+	./refpersys -dGUI --display=object
+
+test02: ./refpersys
+	@echo missing test02 ; exit 1
+
+test03: ./refpersys
+	@echo missing test03 ; exit 1
 ## eof Makefile
 
