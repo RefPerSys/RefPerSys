@@ -697,6 +697,14 @@ public:
   {
     return win_objref;
   };
+  RpsQOutputTextDocument* output_doc() const
+  {
+    return win_output_textdoc;
+  };
+  RpsQOutputTextEdit* output_textedit() const
+  {
+    return win_output_textedit;
+  };
 };				// end of RpsQWindow
 
 

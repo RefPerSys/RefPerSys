@@ -1183,18 +1183,33 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                 << "... depthi=" << depthi);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
+  auto owinpayl =  _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQWindow>>();
+  RpsQOutputTextDocument* outdoc = owinpayl->qtptr()->output_doc();
+  RpsQOutputTextEdit* outedit = owinpayl->qtptr()->output_textedit();
+  RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx objwnd=" << _.objwnd << std::endl
+                << ".. owinpayl=" << owinpayl << '|' << owinpayl->payload_type_name() << std::endl
+               );
+  RPS_ASSERT(outdoc != nullptr);
+  RPS_ASSERT(outedit != nullptr);
+  QTextCursor qcurs(outdoc);
+#warning should use symbol_text_format, oid_text_format, class_text_format ...
   if (auto symbpayl = _.recvob->get_dynamic_payload<Rps_PayloadSymbol>())
     {
+      QTextCharFormat syf = outedit->symbol_text_format();
       RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx symbol recvob=" << _.recvob
                     << " named " << symbpayl->symbol_name());
+      qcurs.insertText(QString(symbpayl->symbol_name().c_str()), syf);
     }
   else if (auto classpayl =  _.recvob->get_classinfo_payload())
     {
+      QTextCharFormat cltxf = outedit->class_text_format();
       RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx class recvob=" << _.recvob
                     << " named " << classpayl->class_name_str());
+      qcurs.insertText(QString(classpayl->class_name_str().c_str()), cltxf);
     }
   else
     {
+      QTextCharFormat oidf = outedit->oid_text_format();
       RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx other recvob=" << _.recvob
                     << " of class " << _.recvob->compute_class(&_));
     }
@@ -1203,10 +1218,8 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
               << "... recvob=" << _.recvob
               << " objwnd=" << _.objwnd
               << " depthi=" << depthi);
-#warning should use symbol_text_format, oid_text_format, class_text_format ...
-  ;
   RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx end recvob=" << _.recvob
-                << "objwnd =" << _.objwnd
+                << ", objwnd=" << _.objwnd
                 << ", recdepth=" <<  _.recdepth);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _4x9jd2yAe8A02SqKAx
 } // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
