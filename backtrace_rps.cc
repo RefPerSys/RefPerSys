@@ -415,8 +415,18 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
         case Kind::None:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::None");
         case Kind::FullOut_Kind:
+	  {
+	    std::ostringstream& fullout = std::get<FullOut_t>(bt->backtr_variant);
+	    RPS_ASSERT(fullout);
+	  }
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullOut_Kind");
         case Kind::FullClos_Kind:
+	  {
+	    auto fullclo = std::get<FullClos_t>(bt->backtr_variant);
+	    RPS_ASSERT(fullclo);
+	    fullclo(*bt, pc, filename, lineno,  function);
+	    return 0;
+	  }
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullClos_Kind");
         default:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print bad kind");
@@ -428,18 +438,18 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
         case Kind::None:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::None");
         case Kind::FullOut_Kind:
-        {
-	  std::ostringstream& fullout = std::get<FullOut_t>(bt->backtr_variant);
-          RPS_ASSERT(fullout);
-        }
-        RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullOut_Kind");
+	  {
+	    std::ostringstream& fullout = std::get<FullOut_t>(bt->backtr_variant);
+	    RPS_ASSERT(fullout);
+	  }
+	  RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullOut_Kind");
         case Kind::FullClos_Kind:
-        {
-          auto fullclo = std::get<FullClos_t>(bt->backtr_variant);
-          RPS_ASSERT(fullclo);
-          fullclo(*bt, pc, filename, lineno,  function);
-          return 0;
-        }
+	  {
+	    auto fullclo = std::get<FullClos_t>(bt->backtr_variant);
+	    RPS_ASSERT(fullclo);
+	    fullclo(*bt, pc, filename, lineno,  function);
+	    return 0;
+	  }
         default:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print bad kind");
         }
