@@ -286,7 +286,7 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
         {
           int status = -1;
           const char*demangled =  abi::__cxa_demangle(pcfun, nullptr, 0, &status);
-          if (demangled)
+          if (demangled && status==0)
             dempcfun = (char*) demangled;
         }
       outs << pcfile << ':' << pclineno
@@ -557,7 +557,7 @@ oldrps_print_simple_backtrace_level(OldRps_BackTrace* btp, FILE*outf, const char
             {
               int status = -1;
               demangled  = abi::__cxa_demangle(dif.dli_sname, NULL, 0, &status);
-              if (demangled && demangled[0])
+              if (demangled && status==0)
                 funamestr = std::string (demangled);
             };
           if (funamestr.empty())
