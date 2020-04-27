@@ -1070,7 +1070,7 @@ Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
     }
   RPS_WARNOUT("partly unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)"
               << std::endl << " jv=" << jv
-              << RPS_SIMPLE_BACKTRACE_HERE(2,"strange ObjectRef::Rps_ObjectRef"));
+              << RPS_FULL_BACKTRACE_HERE(2,"strange ObjectRef::Rps_ObjectRef"));
   throw  std::runtime_error("partly unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)");
 #warning partly unimplemented Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
 } // end Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)

@@ -93,15 +93,8 @@ Rps_Backtracer::output(std::ostream&outs)
     {
     case Kind::None:
       RPS_FASTABORT("unexpected None kind in Rps_Backtracer::output");
-    case Kind::SimpleOut:
-    case Kind::SimpleClosure:
-      backtrace_simple(rps_backtrace_common_state, backtr_skip,
-                       backtrace_simple_cb, backtrace_error_cb,
-                       (void*)this);
-      backtr_todo = Todo::Do_Nothing;
-      return;
-    case Kind::StringOut:
-    case Kind::FullClosure:
+    case Kind::FullOut_Kind:
+    case Kind::FullClos_Kind:
       backtrace_full(rps_backtrace_common_state, backtr_skip,
                      backtrace_full_cb, backtrace_error_cb,
                      (void*)this);
@@ -129,15 +122,8 @@ Rps_Backtracer::print(FILE*outf)
     {
     case Kind::None:
       RPS_FASTABORT("unexpected None kind in Rps_Backtracer::print");
-    case Kind::SimpleOut:
-    case Kind::SimpleClosure:
-      backtrace_simple(rps_backtrace_common_state, backtr_skip,
-                       backtrace_simple_cb, backtrace_error_cb,
-                       (void*)this);
-      backtr_todo = Todo::Do_Nothing;
-      return;
-    case Kind::StringOut:
-    case Kind::FullClosure:
+    case Kind::FullOut_Kind:
+    case Kind::FullClos_Kind:
       backtrace_full(rps_backtrace_common_state, backtr_skip,
                      backtrace_full_cb, backtrace_error_cb,
                      (void*)this);
@@ -276,45 +262,7 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
 
 
 
-////////////////
-Rps_Backtracer::Rps_Backtracer(struct SimpleOutTag,
-                               const char*fromfil, const int fromlin, int skip,
-                               const char*name, std::ostream* out)
-  :
-  backtr_magic(_backtr_magicnum_),
-  backtr_todo(Todo::Do_Nothing),
-  backtr_variant(out?out:&std::clog),
-  backtr_fromfile(fromfil),
-  backtr_fromline(fromlin),
-  backtr_skip(skip),
-  backtr_depth(0),
-  backtr_name(name)
-{
-  if (bkind() != Kind::SimpleOut)
-    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/SimpleOutTag kind=" << bkindname());
-} // end Rps_Backtracer::Rps_Backtracer/SimpleOutTag
-
-
-////////////////
-Rps_Backtracer::Rps_Backtracer(struct SimpleClosureTag,
-                               const char*fromfil, const int fromlin,  int skip,
-                               const char*name,
-                               const std::function<void(Rps_Backtracer&,  uintptr_t pc)>& fun)
-  :
-  backtr_todo(Todo::Do_Nothing),
-  backtr_magic(_backtr_magicnum_),
-  backtr_variant(fun),
-  backtr_fromfile(fromfil),
-  backtr_fromline(fromlin),
-  backtr_skip(skip),
-  backtr_depth(0),
-  backtr_name(name)
-{
-  if (bkind() != Kind::SimpleClosure)
-    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/SimpleClosureTag kind=" << bkindname());
-} // end Rps_Backtracer::Rps_Backtracer/SimpleClosureTag
-
-Rps_Backtracer::Rps_Backtracer(struct FullOutTag,
+Rps_Backtracer::Rps_Backtracer(struct FullOut_Tag,
                                const char*fromfil, const int fromlin, int skip,
                                const char*name,  std::ostream* out)
   :
@@ -328,13 +276,13 @@ Rps_Backtracer::Rps_Backtracer(struct FullOutTag,
   backtr_name(name)
 {
 
-  if (bkind() != Kind::StringOut)
+  if (bkind() != Kind::FullOut_Kind)
     RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/FullOutTag kind=" << bkindname());
-} // end Rps_Backtracer::Rps_Backtracer/FullOutTag
+} // end Rps_Backtracer::Rps_Backtracer/FullOut_Tag
 
 
 ////////////////
-Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
+Rps_Backtracer::Rps_Backtracer(struct FullClos_Tag,
                                const char*fromfil, const int fromlin,  int skip,
                                const char*name,
                                const std::function<void(Rps_Backtracer&bt,  uintptr_t pc,
@@ -349,9 +297,9 @@ Rps_Backtracer::Rps_Backtracer(struct FullClosureTag,
     backtr_depth(0),
     backtr_name(name)
 {
-  if (bkind() != Kind::FullClosure)
-    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/FullClosureTag");
-} // end Rps_Backtracer::Rps_Backtracer/FullClosureTag
+  if (bkind() != Kind::FullClos_Kind)
+    RPS_FASTABORT("corrupted Rps_Backtracer::Rps_Backtracer/FullClos_Tag");
+} // end Rps_Backtracer::Rps_Backtracer/FullClos_Tag
 
 
 
@@ -363,14 +311,10 @@ Rps_Backtracer::bkindname(void) const
     {
     case Kind::None:
       return "None";
-    case Kind::SimpleOut:
-      return "SimpleOut";
-    case Kind::StringOut:
-      return "StringOut";
-    case Kind::SimpleClosure:
-      return "SimpleClosure";
-    case Kind::FullClosure:
-      return "FullClosure";
+    case Kind::FullOut_Kind:
+      return "FullOut";
+    case Kind::FullClos_Kind:
+      return "FullClos";
     }
   char buf[32];
   memset(buf, 0, sizeof(buf));
@@ -389,12 +333,8 @@ Rps_Backtracer::boutput(void) const
     {
     case Kind::None:
       RPS_FASTABORT("Rps_Backtracer::boutput with Kind::None");
-    case Kind::SimpleOut:
-      return std::get<std::ostream*>(backtr_variant);
-    case Kind::StringOut:
-      return &std::get<std::ostringstream>(backtr_variant);
-    case Kind::SimpleClosure:
-    case Kind::FullClosure:
+    case Kind::FullOut_Kind:
+    case Kind::FullClos_Kind:
       RPS_WARNOUT("unimplemented Rps_Backtracer::boutput for kind #" << (int)bkind()
                   << ":" << bkindname());
       return nullptr;
@@ -423,24 +363,10 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
         {
         case Kind::None:
           RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unexpected Kind::None");
-        case Kind::SimpleOut:
-        {
-          std::ostream* outs = bt->boutput();
-          if (outs)
-            {
-              *outs << bt->pc_to_string(pc) << std::endl;
-              return 0;
-            }
-          else
-            RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output without output");
-        }
-        case Kind::StringOut:
-          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unimplemented Kind::StringOut");
-          break;
-        case Kind::SimpleClosure:
-          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unimplemented Kind::SimpleClosure");
-        case Kind::FullClosure:
-          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unexpected Kind::FullClosure");
+        case Kind::FullOut_Kind:
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unexpected Kind::FullOut");
+        case Kind::FullClos_Kind:
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output unexpected Kind::FullClos");
         default:
           RPS_FASTABORT("backtrace_simple_cb Todo::Do_Output bad kind");
         }
@@ -450,14 +376,10 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
         {
         case Kind::None:
           RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unexpected Kind::None");
-        case Kind::SimpleOut:
-          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unimplemented Kind::SimpleOut");
-        case Kind::SimpleClosure:
-          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unimplemented Kind::SimpleClosure");
-        case Kind::StringOut:
-          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unexpected Kind::StringOut");
-        case Kind::FullClosure:
-          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unexpected Kind::FullClosure");
+        case Kind::FullOut_Kind:
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unexpected Kind::FullOut");
+        case Kind::FullClos_Kind:
+          RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print unexpected Kind::FullClos");
         default:
           RPS_FASTABORT("backtrace_simple_cb Todo::Do_Print bad kind");
         }
@@ -490,14 +412,10 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
         {
         case Kind::None:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::None");
-        case Kind::SimpleOut:
-          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unimplemented Kind::SimpleOut");
-        case Kind::SimpleClosure:
-          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unimplemented Kind::SimpleClosure");
-        case Kind::StringOut:
-          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::StringOut");
-        case Kind::FullClosure:
-          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullClosure");
+        case Kind::FullOut_Kind:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FillOut");
+        case Kind::FullClos_Kind:
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullClos_Kind");
         default:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print bad kind");
         }
@@ -507,13 +425,9 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
         {
         case Kind::None:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::None");
-        case Kind::SimpleOut:
-          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unimplemented Kind::SimpleOut");
-        case Kind::SimpleClosure:
-          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unimplemented Kind::SimpleClosure");
-        case Kind::StringOut:
+        case Kind::FullOut_Kind:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::StringOut");
-        case Kind::FullClosure:
+        case Kind::FullClos_Kind:
         {
           auto fullclo = std::get<fullclos_t>(bt->backtr_variant);
           RPS_ASSERT(fullclo);

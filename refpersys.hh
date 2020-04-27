@@ -1268,19 +1268,37 @@ public:
 /// global data, returned by backtrace_create_state called once early
 /// in main
 extern "C" struct backtrace_state* rps_backtrace_common_state;
+/// https://en.wikipedia.org/wiki/X_Macro
+#define RPS_BACKTRACE_XMACRO(Mac,...)		\
+    Mac(FullOut,__VA_ARGS__)			\
+    Mac(FullClos,__VA_ARGS__)
+
+
+
 class Rps_Backtracer {
 public:
-  struct SimpleOutTag {};
-  struct SimpleClosureTag {};
-  struct FullOutTag {};
-  struct FullClosureTag {};
+  ////// define tagging empty structs
+  /*** Below Xmacro expands to :
+   *    struct FullOut_Tag{}; 
+   *    struct FullClos_Tag{};
+   *    /// etc...
+   ***/
+#define Rps_BACKTRACER_TagXm(Mac,X) struct Mac##_Tag{};
+  RPS_BACKTRACE_XMACRO(Rps_BACKTRACER_TagXm)
+#undef Rps_BACKTRACER_TagXm
+  ////
   static constexpr std::uint32_t _backtr_magicnum_ = 3364921659; // 0xc890a13b
   enum class Kind : std::uint16_t {
     None = 0,
-      SimpleOut,
-      StringOut,
-      SimpleClosure,
-      FullClosure,
+  ////// define kind enumarations
+  /*** Below Xmacro expands to :
+   *    FullOut_Kind,
+   *    FullClos_Kind
+   *    /// etc...
+   ***/
+#define Rps_BACKTRACER_KindXm(Mac,X) Mac##_Kind,
+  RPS_BACKTRACE_XMACRO(Rps_BACKTRACER_KindXm)
+#undef Rps_BACKTRACER_KindXm
       };
   enum class Todo : std::uint16_t {
     Do_Nothing = 0,
@@ -1323,17 +1341,10 @@ public:
   /// 
   virtual void output(std::ostream&outs);
   virtual void print(FILE*outf);
-  Rps_Backtracer(struct SimpleOutTag,
-		 const char*fromfil, const int fromlin, int skip,
-		 const char*name, std::ostream* out=nullptr);
-  Rps_Backtracer(struct SimpleClosureTag,
-		 const char*fromfil, const int fromlin,  int skip,
-		 const char*name,
-		 const std::function<void(Rps_Backtracer&,  uintptr_t pc)>& fun);
-  Rps_Backtracer(struct FullOutTag,
+  Rps_Backtracer(struct FullOut_Tag,
 		 const char*fromfil, const int fromlin, int skip,
 		 const char*name,  std::ostream* out=nullptr);
-  Rps_Backtracer(struct FullClosureTag,
+  Rps_Backtracer(struct FullClos_Tag,
 		 const char*fromfil, const int fromlin,  int skip,
 		 const char*name,
 		 const std::function<void(Rps_Backtracer&bt,  uintptr_t pc,
@@ -1356,12 +1367,8 @@ std::ostream& operator << (std::ostream& out, const Rps_Backtracer& rpb) {
 }
 
 // can appear in RPS_WARNOUT etc...
-#define RPS_SIMPLE_BACKTRACE_HERE(Skip,Name) \
-  Rps_Backtracer(Rps_Backtracer::SimpleOutTag{},__FILE__,__LINE__,(Skip),(Name))
-#define RPS_SIMPLE_CLOSURE_BACKTRACE_HERE(Skip,Clos) \
-  Rps_Backtracer(Rps_Backtracer::SimpleClosureTag{},__FILE__,__LINE__,(Clos))
 #define RPS_FULL_BACKTRACE_HERE(Skip,Name) \
-  Rps_Backtracer(Rps_Backtracer::FullOutTag{},__FILE__,__LINE__,(Skip),(Name),&std::clog)
+  Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},__FILE__,__LINE__,(Skip),(Name),&std::clog)
 
 ////////////////////////////////////////////////////// garbage collector
 extern "C" void rps_garbage_collect(std::function<void(Rps_GarbageCollector*)>* fun=nullptr);

@@ -130,7 +130,7 @@ Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
 {
   RPS_NOPRINTOUT("Rps_ObjectZone oid=" << oid
                  << std::endl
-                 << RPS_SIMPLE_BACKTRACE_HERE(2, "Rps_ObjectZone")
+                 << RPS_FULL_BACKTRACE_HERE(2, "Rps_ObjectZone")
                  << std::endl);
   if (!dontregister)
     {

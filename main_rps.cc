@@ -428,7 +428,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
           rps_elapsed_real_time(), rps_process_cpu_time());
   fflush(stderr);
   {
-    auto backt= Rps_Backtracer(Rps_Backtracer::FullClosureTag{},
+    auto backt= Rps_Backtracer(Rps_Backtracer::FullClos_Tag{},
                                filnam, lin,
                                skipfatal, "FATAL ERROR",
                                [=] (Rps_Backtracer&selbt,  uintptr_t pc,

@@ -506,7 +506,7 @@ Rps_Value::as_object() const
   else
     {
       RPS_DEBUG_LOG(LOWREP, "Rps_Value::as_object bad this=" << *this
-                    << RPS_SIMPLE_BACKTRACE_HERE(1, "bad as_object"));
+                    << RPS_FULL_BACKTRACE_HERE(1, "bad as_object"));
       throw std::domain_error("Rps_Value::as_object: value is not genuine object");
     }
 } // end Rps_Value::as_object

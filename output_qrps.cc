@@ -475,7 +475,7 @@ rps_display_output_object_occurrence(Rps_CallFrame*callerframe,
                 << ", depth=" << depth
                 << std::endl
                 << "==== rps_display_output_object_occurrence backtrace ===" << std::endl
-                <<  RPS_SIMPLE_BACKTRACE_HERE(1, "rps_display_output_object_occurrence")
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_display_output_object_occurrence")
                 << "**** end rps_display_output_object_occurrence simpleback ===="
                 << std::endl);
   std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
