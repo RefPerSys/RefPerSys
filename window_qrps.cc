@@ -1199,8 +1199,10 @@ RpsQCreateContributorDialog::on_ok_trigger()
     {
       char exebuf[128];
       memset (exebuf, 0, sizeof(exebuf));
-      readlink("/proc/self/exe", exebuf, sizeof(exebuf)-1);
-      if (exebuf[0]) outs << " executable " << exebuf;
+      if (readlink("/proc/self/exe", exebuf, sizeof(exebuf)-1) < 0)
+	RPS_FATAL("RpsQCreateContributorDialog failed to readlink /proc/self/exe");
+      if (exebuf[0])
+	outs << " executable " << exebuf;
     }
       outs << " gitid " << rps_gitid
 	   << " built on " << rps_timestamp << "." << std::endl;

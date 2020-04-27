@@ -264,11 +264,12 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
 
 Rps_Backtracer::Rps_Backtracer(struct FullOut_Tag,
                                const char*fromfil, const int fromlin, int skip,
-                               const char*name,  std::ostream* out)
+                               const char*name, std::ostream* out)
   :
   backtr_todo(Todo::Do_Nothing),
   backtr_magic(_backtr_magicnum_),
-  backtr_variant(out),
+  backtr_variant(std::ostringstream{}),
+  backtr_outs(out),
   backtr_fromfile(fromfil),
   backtr_fromline(fromlin),
   backtr_skip(skip),
@@ -291,6 +292,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullClos_Tag,
   : backtr_todo(Todo::Do_Nothing),
     backtr_magic(_backtr_magicnum_),
     backtr_variant(fun),
+    backtr_outs(nullptr),
     backtr_fromfile(fromfil),
     backtr_fromline(fromlin),
     backtr_skip(skip),
@@ -426,10 +428,14 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
         case Kind::None:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::None");
         case Kind::FullOut_Kind:
-          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullOut_Kind");
+        {
+	  std::ostringstream& fullout = std::get<FullOut_t>(bt->backtr_variant);
+          RPS_ASSERT(fullout);
+        }
+        RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullOut_Kind");
         case Kind::FullClos_Kind:
         {
-          auto fullclo = std::get<fullclos_t>(bt->backtr_variant);
+          auto fullclo = std::get<FullClos_t>(bt->backtr_variant);
           RPS_ASSERT(fullclo);
           fullclo(*bt, pc, filename, lineno,  function);
           return 0;
