@@ -153,8 +153,11 @@ RpsQApplication::read_user_json(void)
   std::string pathapp = rps_homedir();
   pathapp += "/refpersys-user.json";
   if (access(pathapp.c_str(), R_OK))
-    throw RPS_RUNTIME_ERROR_OUT("failed to access user JSON file "
-                                << pathapp << ":" << strerror(errno));
+    {
+      RPS_WARNOUT("failed to access user JSON file "
+                  << pathapp << ":" << strerror(errno));
+      return Json::Value::nullSingleton();
+    }
   Json::Reader jread(Json::Features::all());
   std::ifstream ins(pathapp);
   if (!ins)
