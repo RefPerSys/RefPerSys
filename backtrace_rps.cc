@@ -94,6 +94,18 @@ Rps_Backtracer::output(std::ostream&outs)
     case Kind::None:
       RPS_FASTABORT("unexpected None kind in Rps_Backtracer::output");
     case Kind::FullOut_Kind:
+      backtr_outs = &outs;
+      backtrace_full(rps_backtrace_common_state, backtr_skip,
+                     backtrace_full_cb, backtrace_error_cb,
+                     (void*)this);
+      if (backtr_outs) {
+	std::ostringstream& fullout = std::get<FullOut_t>(this->backtr_variant);
+	RPS_ASSERT(fullout);
+	fullout << std::flush;
+	*backtr_outs << fullout.str() << std::flush;
+      }
+      backtr_todo = Todo::Do_Nothing;
+      return;
     case Kind::FullClos_Kind:
       backtrace_full(rps_backtrace_common_state, backtr_skip,
                      backtrace_full_cb, backtrace_error_cb,
@@ -112,6 +124,8 @@ Rps_Backtracer::output(std::ostream&outs)
 void
 Rps_Backtracer::print(FILE*outf)
 {
+  if (!outf)
+    return;
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
@@ -123,6 +137,18 @@ Rps_Backtracer::print(FILE*outf)
     case Kind::None:
       RPS_FASTABORT("unexpected None kind in Rps_Backtracer::print");
     case Kind::FullOut_Kind:
+      {
+	backtrace_full(rps_backtrace_common_state, backtr_skip,
+		       backtrace_full_cb, backtrace_error_cb,
+		       (void*)this);
+	std::ostringstream& fullout = std::get<FullOut_t>(this->backtr_variant);
+	RPS_ASSERT(fullout);
+	fullout << std::flush;
+	fputs(fullout.str().c_str(), outf);
+	fflush(outf);
+	backtr_todo = Todo::Do_Nothing;
+      }
+      return;
     case Kind::FullClos_Kind:
       backtrace_full(rps_backtrace_common_state, backtr_skip,
                      backtrace_full_cb, backtrace_error_cb,
@@ -418,8 +444,9 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
 	  {
 	    std::ostringstream& fullout = std::get<FullOut_t>(bt->backtr_variant);
 	    RPS_ASSERT(fullout);
+	    fullout << bt->detailed_pc_to_string(pc,filename,lineno,function) << std::endl;
+	    return 0;
 	  }
-          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullOut_Kind");
         case Kind::FullClos_Kind:
 	  {
 	    auto fullclo = std::get<FullClos_t>(bt->backtr_variant);
@@ -473,30 +500,6 @@ Rps_Backtracer::~Rps_Backtracer()
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (this->magicnum() != _backtr_magicnum_)
     RPS_FASTABORT("corrupted backtracer");
-#warning please carefully review Rps_Backtracer::~Rps_Backtracer
-#if 0
-  switch (bkind())
-    {
-    case Kind::None:
-      RPS_FASTABORT("backtrace_simple_cb unexpected Kind::None");
-    case Kind::SimpleOut:
-      delete backtr_out;
-      return;
-    case Kind::StringOut:
-      (&backtr_outstr)->~std::ostringstream();
-      return;
-    case Kind::SimpleClosure:
-      backtr_simpleclos.~std::function<void(Rps_Backtracer&,  uintptr_t pc)> ();
-      return;
-    case Kind::FullClosure:
-      backtr_fullclos.~std::function<void(Rps_Backtracer&,  uintptr_t pc,
-                                          const char*pcfile, int pclineno,
-                                          const char*pcfun)> ();
-      return;
-    default:
-      RPS_FASTABORT("backtrace_simple_cb bad kind");
-    }
-#endif
 } // end Rps_Backtracer::~Rps_Backtracer
 
 
