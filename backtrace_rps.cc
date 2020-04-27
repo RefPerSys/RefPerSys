@@ -413,7 +413,7 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
         case Kind::None:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::None");
         case Kind::FullOut_Kind:
-          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FillOut");
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullOut_Kind");
         case Kind::FullClos_Kind:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullClos_Kind");
         default:
@@ -426,7 +426,7 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
         case Kind::None:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::None");
         case Kind::FullOut_Kind:
-          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::StringOut");
+          RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullOut_Kind");
         case Kind::FullClos_Kind:
         {
           auto fullclo = std::get<fullclos_t>(bt->backtr_variant);
