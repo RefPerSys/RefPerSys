@@ -433,7 +433,7 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
                  Rps_Value depthv; //
                 );
   std::string obstr = obqstr.toStdString();
-  _.selob = RPS_ROOT_OB(_4ojpzRzyRWz02DNWMe); // display_object_occurrence_qt selector
+  _.selob = RPS_ROOT_OB(_02iWbXmFx8f04ldLRt); // display_object_content_qt selector
   _.depthv = Rps_Value((intptr_t)0);
   RPS_INFORMOUT("RpsQApplication::do_display_object should display obstr='"
                 << obstr << "' with selob=" << _.selob);
