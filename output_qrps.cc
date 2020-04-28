@@ -1264,7 +1264,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   _.recdepth = arg2depth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA start recvob=" << _.recvob
+  RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_qt recvob=" << _.recvob
                 << "objwnd =" << _.objwnd
                 << ", recdepth=" <<  _.recdepth);
   _.optqtposition = arg3optqtposition;
