@@ -1217,7 +1217,9 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   RPS_WARNOUT("incomplete rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt" << std::endl
               << "... recvob=" << _.recvob
               << " objwnd=" << _.objwnd
-              << " depthi=" << depthi);
+              << " depthi=" << depthi << std::endl
+              << RPS_FULL_BACKTRACE_HERE(2, "?£? rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt")
+              << std::endl);
   RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx end recvob=" << _.recvob
                 << ", objwnd=" << _.objwnd
                 << ", recdepth=" <<  _.recdepth);
