@@ -463,9 +463,9 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
           std::ostringstream& fullout = std::get<FullOut_t>(bt->backtr_variant);
           RPS_ASSERT(fullout);
           fullout << bt->detailed_pc_to_string(pc,filename,lineno,function) << std::endl;
-	  if (filename && function && !strcmp(function, "main")
-	      && strstr(filename, "main_rps"))
-	      return 1;
+          if (filename && function && !strcmp(function, "main")
+              && strstr(filename, "main_rps"))
+            return 1;
           return 0;
         }
         case Kind::FullClos_Kind:
@@ -473,9 +473,9 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
           auto fullclo = std::get<FullClos_t>(bt->backtr_variant);
           RPS_ASSERT(fullclo);
           fullclo(*bt, pc, filename, lineno,  function);
-	  if (filename && function && !strcmp(function, "main")
-	      && strstr(filename, "main_rps"))
-	      return 1;
+          if (filename && function && !strcmp(function, "main")
+              && strstr(filename, "main_rps"))
+            return 1;
           return 0;
         }
         RPS_FASTABORT("backtrace_full_cb Todo::Do_Print unexpected Kind::FullClos_Kind");
@@ -499,9 +499,9 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
           auto fullclo = std::get<FullClos_t>(bt->backtr_variant);
           RPS_ASSERT(fullclo);
           fullclo(*bt, pc, filename, lineno,  function);
-	  if (filename && function && !strcmp(function, "main")
-	      && strstr(filename, "main_rps"))
-	      return 1;
+          if (filename && function && !strcmp(function, "main")
+              && strstr(filename, "main_rps"))
+            return 1;
           return 0;
         }
         default:
