@@ -411,14 +411,19 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
   _.dispob = argdispobr;
   RPS_ASSERT(_.winob);
   RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence start winob=" << _.winob
-                << ", dispob=" << _.dispob
-                << ", depth=" << depth);
+		<< " of class:" << _.winob->compute_class(&_) << std::endl
+                << "... dispob=" << _.dispob 	<< " of class:" << _.dispob->compute_class(&_) << std::endl
+                << "... depth=" << depth << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "display_output_object_occurrence")
+                <<std::endl);
   std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
   auto qoutwpayl =
     _.winob->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   RPS_ASSERT(qoutwpayl);
   RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
   RPS_ASSERT(qoutxed == this);
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence dispob=" << _.dispob
+		<< " depth=" << depth);
   if (_.dispob.is_empty())
     {
       auto qcfmt = RpsQOutputTextEdit::empty_text_format();
@@ -441,6 +446,9 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
       Rps_ObjectRef selob_display_object_occurrence_qt =
         RPS_ROOT_OB(_4ojpzRzyRWz02DNWMe);
       // of oid _4ojpzRzyRWz02DNWMe to winob, dispob, depth...
+      RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence winob=" << _.winob
+		    << " dispob=" << _.dispob << " depth=" << depth << std::endl
+		    << ".. selob_display_object_occurrence_qt=" << selob_display_object_occurrence_qt);
       Rps_TwoValues respair =
         Rps_ObjectValue(_.winob).send2(&_, selob_display_object_occurrence_qt,
                                        _.dispob, Rps_Value((intptr_t)depth));
@@ -1311,6 +1319,8 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   }
   {
     double mtim = _.recvob->get_mtime();
+    RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
+		  << _.recvob << ", mtim=" << mtim);
     time_t mtimt = (time_t) mtim;
     struct tm mtimtm = {};
     char timbuf[64];
@@ -1342,6 +1352,8 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                        RpsQOutputTextEdit::objectdecor_text_format());
   }
   _.setattrs = _.recvob->set_of_attributes(&_);
+    RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
+		  << _.recvob << ", setattrs=" << _.setattrs);
   unsigned nbattrs = _.setattrs.as_set()->cardinal();
   if (nbattrs > 0)
     {
@@ -1366,7 +1378,8 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
               << "... recvob=" << _.recvob
               << " objwnd=" << _.objwnd
               << " depthi=" << depthi
-              << " optqtposition=" << _.optqtposition);
+              << " optqtposition=" << _.optqtposition
+	      << " nbcomps=" << nbcomps);
   _.resmainv = _.recvob;
   RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA end recvob=" << _.recvob
                 << "objwnd =" << _.objwnd
