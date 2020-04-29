@@ -1264,22 +1264,28 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   _.recdepth = arg2depth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_qt recvob=" << _.recvob
-                << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
   _.optqtposition = arg3optqtposition;
   RPS_ASSERT (!_.optqtposition || _.optqtposition.is_int());
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+  auto owinpayl =  _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQWindow>>();
+  RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_qt recvob=" << _.recvob
+                << ", objwnd =" << _.objwnd
+                << " of class:" <<  _.objwnd->compute_class(&_) << std::endl
+                << "... depthi=" <<  depthi
+                << ", owinpayl=" << owinpayl);
   std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
-  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
-  RPS_ASSERT (qoutwndload);
-  auto qoutwx = qoutwndload->qtptr();
-  RPS_ASSERT (qoutwx);
-  auto qcursor = qoutwx->textCursor();
+  RPS_ASSERT (owinpayl);
+  RpsQWindow* qwindow = owinpayl->qtptr();
+  RPS_ASSERT (qwindow);
+  RpsQOutputTextEdit* qoutxtedit = qwindow->output_textedit();
+  RpsQOutputTextDocument*qoutdoc = qwindow->output_doc();
+  RPS_ASSERT(qoutxtedit);
+  RPS_ASSERT(qoutdoc);
+  auto qcursor = qoutxtedit->textCursor();
   if (_.optqtposition.is_int())
     {
       int qtpos = _.optqtposition.to_int();
-      auto qothcursor = QTextCursor(qoutwx->document());
+      auto qothcursor = QTextCursor(qoutdoc);
       qothcursor.setPosition(qtpos,QTextCursor::MoveAnchor);
       qcursor = qothcursor;
     }
@@ -1287,11 +1293,11 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   {
     // the title block....
     qcursor.beginEditBlock();
-    qcursor.insertFrame(qoutwx->objectcontent_frame_format());
+    qcursor.insertFrame(qoutxtedit->objectcontent_frame_format());
     auto qcfmt = RpsQOutputTextEdit::objecttitle_text_format();
     qcursor.insertText("▣ ", //U+25A3 WHITE SQUARE CONTAINING BLACK SMALL SQUARE
                        qcfmt);
-    qoutwx->display_output_object_occurrence(&_, _.recvob, depthi);
+    qoutxtedit->display_output_object_occurrence(&_, _.recvob, depthi);
     qcursor.insertText(" ▤", //U+25A4 SQUARE WITH HORIZONTAL FILL
                        qcfmt);
     qcursor.insertText("\n");
@@ -1343,10 +1349,10 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
           _.attrval = _.recvob->get_attr1(&_, _.attrob);
           qcursor.insertText("● ", //U+25CF BLACK CIRCLE
                              RpsQOutputTextEdit::objectdecor_text_format());
-          qoutwx->display_output_object_occurrence(&_, _.attrob, depthi+1);
+          qoutxtedit->display_output_object_occurrence(&_, _.attrob, depthi+1);
           qcursor.insertText(" ➠ ", //U+27A0 HEAVY DASHED TRIANGLE-HEADED RIGHTWARDS ARROW
                              RpsQOutputTextEdit::objectdecor_text_format());
-          qoutwx->display_output_value(&_, _.attrval, depthi+1);
+          qoutxtedit->display_output_value(&_, _.attrval, depthi+1);
           qcursor.insertText("\n");
         }
     }
