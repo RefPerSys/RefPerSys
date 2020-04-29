@@ -1184,6 +1184,7 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
   auto owinpayl =  _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQWindow>>();
+  RPS_ASSERT(owinpayl);
   RpsQOutputTextDocument* outdoc = owinpayl->qtptr()->output_doc();
   RpsQOutputTextEdit* outedit = owinpayl->qtptr()->output_textedit();
   RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx objwnd=" << _.objwnd << std::endl
