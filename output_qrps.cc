@@ -1180,7 +1180,10 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                 << " of class:" <<  _.recvob->compute_class(&_) << std::endl
                 << "... objwnd=" << _.objwnd
                 << " of class:" <<  _.objwnd->compute_class(&_) << std::endl
-                << "... depthi=" << depthi);
+                << "... depthi=" << depthi <<std::endl
+                << "!method object/display_object_occurrence_qt" << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_4x9jd2yAe8A02SqKAx")
+                <<std::endl);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
   auto owinpayl =  _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQWindow>>();
