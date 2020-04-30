@@ -450,7 +450,9 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
         RPS_ROOT_OB(_4ojpzRzyRWz02DNWMe);
       // of oid _4ojpzRzyRWz02DNWMe to winob, dispob, depth...
       RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence winob=" << _.winob
-                    << " of class:" << _.winob->compute_class(&_) << std::endl
+                    << " of class:" << _.winob->compute_class(&_)
+		    << " and payload-type:" << _.winob->payload_type_name()
+		    << std::endl
                     << ".. dispob=" << _.dispob
                     << " of class:" << _.dispob->compute_class(&_) << std::endl
                     << ".. depth=" << depth << std::endl
