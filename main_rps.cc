@@ -428,16 +428,12 @@ rps_fatal_stop_at (const char *filnam, int lin)
           rps_elapsed_real_time(), rps_process_cpu_time());
   fflush(stderr);
   {
-    auto backt= Rps_Backtracer(Rps_Backtracer::FullClos_Tag{},
+    auto backt= Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},
                                filnam, lin,
-                               skipfatal, "FATAL ERROR",
-                               [=] (Rps_Backtracer&selbt,  uintptr_t pc,
-                                    const char*pcfile, int pclineno,
-                                    const char*pcfun)
-    {
-      return true;
-    });
-    backt.print(stderr);
+                               skipfatal, "RefPerSys FATAL ERROR",
+                               &std::clog);
+    backt.output(std::clog);
+    std::clog << "===== end fatal error at " << filnam << ":" << lin << " ======" << std::endl << std::flush;
   }
   fflush(nullptr);
   abort();
