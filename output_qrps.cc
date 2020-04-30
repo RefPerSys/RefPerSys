@@ -450,8 +450,12 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
         RPS_ROOT_OB(_4ojpzRzyRWz02DNWMe);
       // of oid _4ojpzRzyRWz02DNWMe to winob, dispob, depth...
       RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence winob=" << _.winob
-                    << " dispob=" << _.dispob << " depth=" << depth << std::endl
-                    << ".. selob_display_object_occurrence_qt=" << selob_display_object_occurrence_qt);
+                    << " of class:" << _.winob->compute_class(&_) << std::endl
+                    << ".. dispob=" << _.dispob
+                    << " of class:" << _.dispob->compute_class(&_) << std::endl
+                    << ".. depth=" << depth << std::endl
+                    << ".. selob_display_object_occurrence_qt=" << selob_display_object_occurrence_qt
+                    << " of class:" << selob_display_object_occurrence_qt->compute_class(&_) << std::endl);
       Rps_TwoValues respair =
         Rps_ObjectValue(_.winob).send2(&_, selob_display_object_occurrence_qt,
                                        _.dispob, Rps_Value((intptr_t)depth));
@@ -1190,12 +1194,15 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx recvob=" << _.recvob
                 << " of class:" <<  _.recvob->compute_class(&_) << std::endl
                 << "... objwnd=" << _.objwnd
-                << " of class:" <<  _.objwnd->compute_class(&_) << std::endl
+                << " of class:" <<  _.objwnd->compute_class(&_)
                 << "... depthi=" << depthi <<std::endl
                 << "!method object/display_object_occurrence_qt" << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_4x9jd2yAe8A02SqKAx")
                 <<std::endl);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
+  RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx objwnd=" << _.objwnd
+                << " with payload@" << _.objwnd->get_payload()
+                << " of type:" <<  _.objwnd->payload_type_name());
   std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
   auto owinpayl =  _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQWindow>>();
   RPS_ASSERT(owinpayl);

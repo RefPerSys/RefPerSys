@@ -1038,6 +1038,17 @@ Rps_ObjectZone::get_payload(void) const
   return ob_payload.load();
 } // end Rps_ObjectZone::get_payload(void)
 
+const std::string
+Rps_ObjectZone::payload_type_name(void) const
+{
+  Rps_Payload* payl = get_payload();
+  if (!payl)
+    return "*no-payload*";
+  if ((void*)payl == RPS_EMPTYSLOT)
+    return "*empty-payload*";
+  return payl-> payload_type_name();
+} // end Rps_ObjectZone::payload_type_name
+
 Rps_PayloadClassInfo*
 Rps_ObjectZone::get_classinfo_payload(void) const
 {
