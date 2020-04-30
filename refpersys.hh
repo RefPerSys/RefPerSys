@@ -1306,7 +1306,7 @@ public:
       Do_Print,
       };
   typedef std::ostringstream FullOut_t;
-  typedef std::function<void(Rps_Backtracer&,  uintptr_t pc,
+  typedef std::function<bool(Rps_Backtracer&,  uintptr_t pc,
 				  const char*pcfile, int pclineno,
 			      const char*pcfun)> FullClos_t;
 private:
@@ -1347,11 +1347,11 @@ public:
   Rps_Backtracer(struct FullClos_Tag,
 		 const char*fromfil, const int fromlin,  int skip,
 		 const char*name,
-		 const std::function<void(Rps_Backtracer&bt,  uintptr_t pc,
+		 const std::function<bool(Rps_Backtracer&bt,  uintptr_t pc,
 					  const char*pcfile, int pclineno,
 					  const char*pcfun
 					  )>& fun);
-  std::string pc_to_string(uintptr_t pc);
+  std::string pc_to_string(uintptr_t pc, bool*gotmain=nullptr);
   std::string detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclineno,
 				   const char*pcfun);
   virtual ~Rps_Backtracer();

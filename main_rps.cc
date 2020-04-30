@@ -435,6 +435,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
                                     const char*pcfile, int pclineno,
                                     const char*pcfun)
     {
+      return true;
     });
     backt.print(stderr);
   }
