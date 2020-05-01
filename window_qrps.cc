@@ -149,7 +149,8 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
       h = 3*screengeom.height()/4;
     else if (h < screengeom.height()/2)
       h = 16 + screengeom.height()/2;
-    RPS_WARNOUT("mainwin w=" << w << " h=" << h);
+    RPS_DEBUG_LOG(GUI, "RpsQWindow::RpsQWindow mainwin w="
+                  << w << " h=" << h << " rank=" << rank);
     this->resize(w, h);
   }
   // connect the behavior
@@ -264,6 +265,9 @@ RpsQWindow::create_winobj(Rps_CallFrame*callerframe)
   auto paylw = _.obwin->put_new_plain_payload<Rps_PayloadQt<RpsQWindow>>();
   paylw->set_qtptr(this);
   win_objref = _.obwin;
+  RPS_DEBUG_LOG(GUI, "RpsQWindow::create_winobj rank#" << win_rank
+                << " winobjref=" << _.obwin
+                << " of class:" << _.obwin->compute_class(&_));
   win_command_textedit->create_cmdedit_object(&_);
   win_output_textedit->create_outpedit_object(&_);
 } // end RpsQWindow::create_winobj
@@ -624,6 +628,8 @@ RpsQCreateNamedInstanceDialog::on_ok_trigger()
       rps_add_root_object(_.obsymb);
       _.obsymb->put_space(Rps_ObjectRef::root_space());
       _.obnewinst = Rps_ObjectRef::make_object(&_, _.obclass, Rps_ObjectRef::root_space());
+      RPS_DEBUG_LOG(GUI, "RpsQCreateNamedInstanceDialog obsymb=" << _.obsymb
+                    << " obnewinst=" << _.obnewinst);
       if (_.obclass == RPS_ROOT_OB(_0J1C39JoZiv03qA2HA)) // ̀ mutable_set` class
         _.obnewinst ->put_new_plain_payload<Rps_PayloadSetOb>();
       else if (_.obclass == RPS_ROOT_OB(_0J1C39JoZiv03qA2HA)) // ̀ mutable_vector` class
@@ -1128,6 +1134,7 @@ RpsQCreateContributorDialog::on_ok_trigger()
       Rps_ObjectRef::make_object(&_, //
 				 RPS_ROOT_OB(_5CYWxcChKN002rw1fI), //contributor_to_RefPerSys
 				 Rps_ObjectRef::root_space());
+    RPS_DEBUG_LOG(GUI, "RpsQCreateContributorDialog obcontrib=" << _.obcontrib);
 #warning in commit 8ff0d00e733f508ee605dfcb the calls to Rps_StringValue are buggy
     RPS_ASSERT(!firstnamestr.empty());
     _.firstnamev = Rps_StringValue(firstnamestr);
@@ -1620,6 +1627,7 @@ RpsQCreateClosureObjectDialog::on_creatob_trigger()
   std::string strcomment = crclo_comment_linedit.text().toStdString();
   try {
     _.newobr = Rps_ObjectRef::make_object(&_, the_core_function_class(), Rps_ObjectRef::root_space());
+    RPS_DEBUG_LOG(GUI, "RpsQCreateClosureObjectDialog newobr=" << _.newobr);
     _.obsetr = the_object_set_of_core_functions();
     std::lock_guard<std::recursive_mutex> gunewobr(*(_.newobr->objmtxptr()));
     std::lock_guard<std::recursive_mutex> guobsetr(*(_.obsetr->objmtxptr()));

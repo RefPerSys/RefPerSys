@@ -265,6 +265,8 @@ RpsQApplication::do_add_new_window(Rps_CallFrame*callerframe)
   if (h < screengeom.height()/4)
     h = 16 + screengeom.height()/4;
   window->resize (w, h);
+  RPS_DEBUG_LOG(GUI, "RpsQApplication::add_new_window winrk#" << winrk
+                << " w=" << w << " h=" << h);
   window->create_winobj(&_);
   window->show();
   app_windvec[winrk] = window;
@@ -496,6 +498,7 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
   RPS_DEBUG_LOG(GUI, "RpsQApplication::do_display_object dispv=" << _.dispv
 
                 << ", selob=" << _.selob
+                << ", winob=" << _.winob
                 << ", depthv=" << _.depthv << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "do_display_object fullhere")
                 << "*** do_display_object fullbacktrace ***" << std::endl

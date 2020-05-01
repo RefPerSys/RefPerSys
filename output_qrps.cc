@@ -281,6 +281,7 @@ RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
                                RPS_ROOT_OB(_1NWEOIzo3WU03mE42Q) /*rps_output_textedit class*/);
   auto paylt = _.obtxed->put_new_plain_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   paylt->set_qtptr(this);
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::create_outpedit_object obtxed=" << _.obtxed);
   outptxt_objref = _.obtxed;
 } // end RpsQOutputTextEdit::create_outpedit_object
 
@@ -451,8 +452,8 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
       // of oid _4ojpzRzyRWz02DNWMe to winob, dispob, depth...
       RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence winob=" << _.winob
                     << " of class:" << _.winob->compute_class(&_)
-		    << " and payload-type:" << _.winob->payload_type_name()
-		    << std::endl
+                    << " and payload-type:" << _.winob->payload_type_name()
+                    << std::endl
                     << ".. dispob=" << _.dispob
                     << " of class:" << _.dispob->compute_class(&_) << std::endl
                     << ".. depth=" << depth << std::endl
@@ -1185,7 +1186,8 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   ////==== body of _4x9jd2yAe8A02SqKAx  !method object/display_object_occurrence_qt ====
   RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx start arg0obj=" << arg0obj
                 << ", arg1obwin=" << arg1obwin
-                << ", arg2depth=" << arg2depth);
+                << ", arg2depth=" << arg2depth << std::endl
+                << RPS_FULL_BACKTRACE_HERE(2, "!method object/display_object_occurrence_qt"));
   _.recvob = arg0obj.as_object();
   RPS_ASSERT(_.recvob);
   _.objwnd = arg1obwin.as_object();
