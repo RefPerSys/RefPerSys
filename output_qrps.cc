@@ -461,7 +461,7 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
                     << " of class:" << selob_display_object_occurrence_qt->compute_class(&_) << std::endl);
       Rps_TwoValues respair =
         Rps_ObjectValue(_.dispob).send2(&_, selob_display_object_occurrence_qt,
-                                       _.winob, Rps_Value((intptr_t)depth));
+                                        _.winob, Rps_Value((intptr_t)depth));
       RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence after send to winob=" << _.winob
                     << " with dispob=" << _.dispob);
       if (!respair)
@@ -1210,16 +1210,20 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                 << " with payload@" << _.objwnd->get_payload()
                 << " of type:" <<  _.objwnd->payload_type_name());
   std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
-  auto owinpayl =  _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQWindow>>();
-  RPS_ASSERT(owinpayl);
-  RpsQOutputTextDocument* outdoc = owinpayl->qtptr()->output_doc();
-  RpsQOutputTextEdit* outedit = owinpayl->qtptr()->output_textedit();
+  auto qoutwpayl =  _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT(qoutwpayl);
   RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx objwnd=" << _.objwnd << std::endl
-                << ".. owinpayl=" << owinpayl << '|' << owinpayl->payload_type_name() << std::endl
+                << ".. qoutwpayl=" << qoutwpayl << '|' << qoutwpayl->payload_type_name() << std::endl
                );
-  RPS_ASSERT(outdoc != nullptr);
-  RPS_ASSERT(outedit != nullptr);
+  RpsQOutputTextEdit*outedit = qoutwpayl->qtptr();
+  RPS_ASSERT(outedit);
+  RpsQOutputTextDocument* outdoc = qobject_cast<RpsQOutputTextDocument*>(outedit->document());
+  RPS_ASSERT(outdoc);
   QTextCursor qcurs(outdoc);
+  RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx objwnd=" << _.objwnd
+                << " outedit=" << outedit
+                << " outdoc=" << outdoc
+                << " recvob=" << _.recvob);
 #warning should use symbol_text_format, oid_text_format, class_text_format ...
   if (auto symbpayl = _.recvob->get_dynamic_payload<Rps_PayloadSymbol>())
     {
