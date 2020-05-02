@@ -281,8 +281,25 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 static inline pid_t rps_thread_id(void)
 {
   return syscall(SYS_gettid, 0L);
-}
+} // end rps_thread_id
 
+
+
+// see https://en.wikipedia.org/wiki/ANSI_escape_code
+extern "C" bool rps_without_terminal_escape;
+// adapted from https://github.com/bstarynk
+#define RPS_TERMINAL_NORMAL_ESCAPE \
+  (rps_without_terminal_escape?"":"\033[0m")
+#define RPS_TERMINAL_BOLD_ESCAPE \
+  (rps_without_terminal_escape?"":"\033[1m")
+#define RPS_TERMINAL_FAINT_ESCAPE \
+  (rps_without_terminal_escape?"":"\033[2m")
+#define RPS_TERMINAL_ITALICS_ESCAPE \
+  (rps_without_terminal_escape?"":"\033[3m")
+#define RPS_TERMINAL_UNDERLINE_ESCAPE \
+  (rps_without_terminal_escape?"":"\033[4m")
+#define RPS_TERMINAL_BLINK_ESCAPE \
+  (rps_without_terminal_escape?"":"\033[5m")
 
 extern "C" void rps_set_debug(const std::string &deblev);
 
@@ -302,6 +319,8 @@ extern "C" void rps_set_debug(const std::string &deblev);
   /*end RPS_DEBUG_OPTIONS*/
 
 #define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
+
+
 
 
 enum Rps_Debug 
@@ -1314,6 +1333,7 @@ private:
   // see https://en.cppreference.com/w/cpp/utility/variant
   std::uint32_t backtr_magic;
   mutable enum Todo backtr_todo;
+  mutable bool backtr_ontty;
   mutable std::variant<std::nullptr_t            // for Kind::None
 #define Rps_BACKTRACER_VariantXm(Mac,X) , Mac##_t
   RPS_BACKTRACE_XMACRO(Rps_BACKTRACER_VariantXm)
@@ -1369,6 +1389,10 @@ std::ostream& operator << (std::ostream& out, const Rps_Backtracer& rpb) {
 // can appear in RPS_WARNOUT etc...
 #define RPS_FULL_BACKTRACE_HERE(Skip,Name) \
   Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},__FILE__,__LINE__,(Skip),(Name),&std::clog)
+
+// can appear in RPS_WARNOUT etc...
+#define RPS_DEBUG_BACKTRACE_HERE(Skip,Name) \
+  Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},__FILE__,__LINE__,(Skip),(Name),(std::ostream*)nullptr)
 
 ////////////////////////////////////////////////////// garbage collector
 extern "C" void rps_garbage_collect(std::function<void(Rps_GarbageCollector*)>* fun=nullptr);

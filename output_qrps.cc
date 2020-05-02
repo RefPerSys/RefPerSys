@@ -415,7 +415,7 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
                 << " of class:" << _.winob->compute_class(&_) << std::endl
                 << "... dispob=" << _.dispob 	<< " of class:" << _.dispob->compute_class(&_) << std::endl
                 << "... depth=" << depth << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "display_output_object_occurrence")
+                << RPS_DEBUG_BACKTRACE_HERE(1, "display_output_object_occurrence")
                 <<std::endl);
   std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
   auto qoutwpayl =
@@ -462,6 +462,8 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
       Rps_TwoValues respair =
         Rps_ObjectValue(_.winob).send2(&_, selob_display_object_occurrence_qt,
                                        _.dispob, Rps_Value((intptr_t)depth));
+      RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence after send to winob=" << _.winob
+                    << " with dispob=" << _.dispob);
       if (!respair)
         throw RPS_RUNTIME_ERROR_OUT("display_output_object_occurrence failed winob="
                                     << _.winob
@@ -493,7 +495,7 @@ rps_display_output_object_occurrence(Rps_CallFrame*callerframe,
                 << ", depth=" << depth
                 << std::endl
                 << "==== rps_display_output_object_occurrence backtrace ===" << std::endl
-                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_display_output_object_occurrence")
+                <<  RPS_DEBUG_BACKTRACE_HERE(1, "rps_display_output_object_occurrence")
                 << "**** end rps_display_output_object_occurrence simpleback ===="
                 << std::endl);
   std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
@@ -1187,7 +1189,7 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx start arg0obj=" << arg0obj
                 << ", arg1obwin=" << arg1obwin
                 << ", arg2depth=" << arg2depth << std::endl
-                << RPS_FULL_BACKTRACE_HERE(2, "!method object/display_object_occurrence_qt"));
+                << RPS_DEBUG_BACKTRACE_HERE(2, "!method object/display_object_occurrence_qt"));
   _.recvob = arg0obj.as_object();
   RPS_ASSERT(_.recvob);
   _.objwnd = arg1obwin.as_object();
@@ -1201,7 +1203,7 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                 << " of class:" <<  _.objwnd->compute_class(&_)
                 << "... depthi=" << depthi <<std::endl
                 << "!method object/display_object_occurrence_qt" << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_4x9jd2yAe8A02SqKAx")
+                << RPS_DEBUG_BACKTRACE_HERE(1, "rpsapply_4x9jd2yAe8A02SqKAx")
                 <<std::endl);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx objwnd=" << _.objwnd

@@ -45,8 +45,8 @@ const char* rps_progname;
 
 void* rps_proghdl;
 
-bool rps_batch;
-
+bool rps_batch = false;
+bool rps_without_terminal_escape = false;
 
 bool rps_syslog_enabled = false;
 
@@ -353,12 +353,17 @@ main (int argc, char** argv)
     rps_set_debug(std::string(argv[1]+strlen("--debug=")));
   if (argc>1 && !strncmp(argv[1], "-d", strlen("-d")))
     rps_set_debug(std::string(argv[1]+strlen("-d")));
+  for (int aix=1; aix<argc; aix++)
+    if (!strcmp(argv[aix], "--without-terminal"))
+      rps_without_terminal_escape = true;
   ///
   if (rps_syslog_enabled && rps_debug_flags != 0)
     openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
   ///
-  RPS_INFORM("starting RefPerSys %s process %d on host %s\n"
+  RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" " %s process %d on host %s\n"
              "... gitid %.16s built %s (main@%p)",
+	     RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
+	     RPS_TERMINAL_NORMAL_ESCAPE, 
              argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
              (void*)main);
   ////
@@ -422,8 +427,13 @@ rps_fatal_stop_at (const char *filnam, int lin)
   char errbuf[80];
   memset (errbuf, 0, sizeof(errbuf));
   snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
-  fprintf(stderr, "FATAL: RefPerSys gitid %s, built timestamp %s,\n"
+  bool ontty = isatty(STDERR_FILENO);
+  fprintf(stderr, "\n%s%sRPS FATAL:%s\n"
+          " RefPerSys gitid %s, built timestamp %s,\n"
           "\t on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
+          ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
+          ontty?RPS_TERMINAL_BLINK_ESCAPE:"",
+          ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
           rps_gitid, rps_timestamp, rps_hostname(), rps_md5sum,
           rps_elapsed_real_time(), rps_process_cpu_time());
   fflush(stderr);
@@ -438,6 +448,9 @@ rps_fatal_stop_at (const char *filnam, int lin)
   fflush(nullptr);
   abort();
 } // end rps_fatal_stop_at
+
+
+////////////////////////////////////////////////////////////////
 
 /// each root object is also a public variable, define them
 #define RPS_INSTALL_ROOT_OB(Oid) Rps_ObjectRef RPS_ROOT_OB(Oid);
@@ -494,7 +507,7 @@ rps_debug_level(Rps_Debug dbgopt)
   switch (dbgopt)
     {
       RPS_DEBUG_OPTIONS(DEBUG_LEVEL);
-
+    //
     default:
     {
       char dbglevel[16];
@@ -505,7 +518,7 @@ rps_debug_level(Rps_Debug dbgopt)
       return std::string(dbglevel);
     }
     }
-
+  //
 #undef DEBUG_LEVEL
 } // end rps_debug_level
 
@@ -520,20 +533,20 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
   memset(threadbfr, 0, sizeof (threadbfr));
   pthread_getname_np(pthread_self(), threadbfr, sizeof (threadbfr) - 1);
   fflush(nullptr);
-
+  //
   char tmbfr[64];
   memset(tmbfr, 0, sizeof (tmbfr));
   rps_now_strftime_centiseconds_nolen(tmbfr, "%H:%M:%S.__ ");
-
+  //
   char *msg = nullptr, *bigbfr = nullptr;
   char bfr[160];
   memset(bfr, 0, sizeof (bfr));
-
+  //
   va_list arglst;
   va_start(arglst, fmt);
   int len = vsnprintf(bfr, sizeof (bfr), fmt, arglst);
   va_end(arglst);
-
+  //
   if (RPS_UNLIKELY (len >= static_cast<int>(sizeof (bfr)) - 1))
     {
       bigbfr = static_cast<char*>(malloc(len + 10));
@@ -548,47 +561,58 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
     }
   else
     msg = bfr;
-
+  //
   static long debug_count = 0;
 
   {
     pthread_mutex_lock(&rps_debug_mutex);
     long ndbg = debug_count++;
-
+    //
     char datebfr[48];
     memset(datebfr, 0, sizeof (datebfr));
-
+    //
 #define RPS_DEBUG_DATE_PERIOD 64
     if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
       {
         rps_now_strftime_centiseconds_nolen(datebfr, "%Y-%b-%d@%H:%M:%s.__ %Z");
       }
-
+    //
     if (rps_syslog_enabled)
       {
-        syslog(RPS_DEBUG_LOG_LEVEL, "RPS DEBUG %7s <%s:%d> @%s:%d %s %s",
+        syslog(RPS_DEBUG_LOG_LEVEL, "RPS-DEBUG %7s <%s:%d> @%s:%d %s %s",
                rps_debug_level(dbgopt).c_str(), threadbfr,
                static_cast<int>(rps_thread_id()), fname, fline, tmbfr, msg);
       }
-
     else
       {
-        fprintf(stderr, "RPS DEBUG %7s <%s:%d> @%s:%d %s %s\n",
+        // no syslog
+        bool ontty = isatty(STDERR_FILENO);
+        if (strchr(msg, '\n'))
+          fputc('\n', stderr);
+        fprintf(stderr, "%sRPS DEBUG %7s%s <%s:%d> %s@%s:%d%s %s\n%s\n",
+                ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
+                ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
                 rps_debug_level(dbgopt).c_str(), threadbfr,
-                static_cast<int>(rps_thread_id()), fname, fline, tmbfr, msg);
+                static_cast<int>(rps_thread_id()),
+                ontty?RPS_TERMINAL_ITALICS_ESCAPE:"",
+                fname, fline,
+                ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
+                tmbfr, msg);
         fflush(stderr);
-
+        //
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
           {
-            fprintf(stderr, "RPS DEBUG %04ld ~ %s *^*^*\n", ndbg, datebfr);
+            fprintf(stderr, "%sRPS DEBUG %04ld ~ %s *^*^*%s\n",
+                    ontty?RPS_TERMINAL_BOLD_ESCAPE:"", ndbg, datebfr,
+                    ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
           }
-
+        //
         fflush(nullptr);
       }
-
+    //
     pthread_mutex_unlock(&rps_debug_mutex);
   }
-
+  //
   if (bigbfr)
     free(bigbfr);
 } // end rps_debug_printf_at

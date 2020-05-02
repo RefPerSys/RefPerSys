@@ -85,6 +85,10 @@ Rps_Backtracer::output(std::ostream&outs)
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
+  if (&outs == &std::cerr || &outs == &std::clog)
+    backtr_ontty = rps_without_terminal_escape ? false : isatty(STDERR_FILENO);
+  else if (&outs == &std::cout)
+    backtr_ontty = rps_without_terminal_escape ? false : isatty(STDOUT_FILENO);
   backtr_todo = Todo::Do_Output;
   backtr_depth = 0;
   auto bk = bkind();
@@ -131,6 +135,10 @@ Rps_Backtracer::print(FILE*outf)
   if (RPS_UNLIKELY(_backtr_magicnum_ != backtr_magic))
     RPS_FASTABORT("corrupted Rps_Backtracer");
   backtr_todo = Todo::Do_Print;
+  if (isatty(fileno(outf)))
+    backtr_ontty = !rps_without_terminal_escape;
+  else
+    backtr_ontty = false;
   backtr_depth = 0;
   RPS_DEBUG_LOG(MISC, "Rps_Backtracer::print start kind " << bkindname());
   switch (bkind())
@@ -179,7 +187,12 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
     {
       char buf[32];
       memset (buf, 0, sizeof(buf));
-      snprintf(buf, sizeof(buf), "[%03d] /?? %p", backtr_depth, (void*)pc);
+      snprintf(buf, sizeof(buf), "%s%s[%03d] /??%s %p",
+               backtr_ontty?RPS_TERMINAL_ITALICS_ESCAPE:"",
+               backtr_ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
+               backtr_depth,
+               backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
+               (void*)pc);
       return std::string(buf);
     }
   else // perhaps legitimate pc
@@ -189,7 +202,8 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
         char beforebuf[32];
         memset (beforebuf, 0, sizeof(beforebuf));
         snprintf (beforebuf, sizeof(beforebuf), "[%03d]", backtr_depth);
-        outs << beforebuf;
+        outs << (backtr_ontty?RPS_TERMINAL_ITALICS_ESCAPE:"")   <<  (backtr_ontty?RPS_TERMINAL_BOLD_ESCAPE:"")
+             << beforebuf << (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
       }
       const char*demangled = nullptr;
       Dl_info dif = {};
@@ -223,6 +237,7 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
                   outs <<  ' ' << (void*)pc
                        << "!: " << filnamestr
                        << "+" << std::showbase << std::hex << delta
+                       << (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
                        << std::flush;
                 }
               else
@@ -230,7 +245,9 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
                   outs << ' ' << (void*)pc
                        << "!: " << filnamestr
                        << "+" << std::showbase << std::hex << delta
-                       << ' ' << funamestr << std::flush;
+                       << ' ' << funamestr
+                       << (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
+                       << std::flush;
                 }
             } // end if delta != 0
           else // delta is 0
@@ -289,7 +306,7 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
         char beforebuf[32];
         memset (beforebuf, 0, sizeof(beforebuf));
         snprintf (beforebuf, sizeof(beforebuf), "[%03d]", backtr_depth);
-        outs << beforebuf << ' ';
+        outs << (backtr_ontty?RPS_TERMINAL_ITALICS_ESCAPE:"") << beforebuf << ' ';
       }
       char *dempcfun = nullptr;
       if (pcfun[0] == '_')
@@ -299,8 +316,17 @@ Rps_Backtracer::detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclin
           if (demangled && status==0)
             dempcfun = (char*) demangled;
         }
-      outs << basepcfile << ':' << pclineno
-           << "°: " << (dempcfun?dempcfun:pcfun) << " @" << (void*)pc << std::flush;
+      outs <<(backtr_ontty?RPS_TERMINAL_ITALICS_ESCAPE:"") << basepcfile << ':' << pclineno
+           << "°:"
+           << (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
+           << " "
+           << (backtr_ontty?RPS_TERMINAL_UNDERLINE_ESCAPE:"")
+           << (dempcfun?dempcfun:pcfun)
+           << (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
+           << " "
+           << (backtr_ontty?RPS_TERMINAL_FAINT_ESCAPE:"") << "@" << (void*)pc
+           << (backtr_ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")
+           << std::flush;
       if (dempcfun)
         free((void*)dempcfun);
       return outs.str();
@@ -317,6 +343,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullOut_Tag,
   :
   backtr_magic(_backtr_magicnum_),
   backtr_todo(Todo::Do_Nothing),
+  backtr_ontty(out?false:!rps_without_terminal_escape),
   backtr_variant(std::ostringstream{}),
   backtr_outs(out),
   backtr_fromfile(fromfil),
@@ -338,8 +365,9 @@ Rps_Backtracer::Rps_Backtracer(struct FullClos_Tag,
                                const std::function<bool(Rps_Backtracer&bt,  uintptr_t pc,
                                    const char*pcfile, int pclineno,
                                    const char*pcfun)>& fun)
-  : backtr_todo(Todo::Do_Nothing),
-    backtr_magic(_backtr_magicnum_),
+  : backtr_magic(_backtr_magicnum_),
+    backtr_todo(Todo::Do_Nothing),
+    backtr_ontty(false),
     backtr_variant(fun),
     backtr_outs(nullptr),
     backtr_fromfile(fromfil),

@@ -500,7 +500,7 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
                 << ", selob=" << _.selob
                 << ", winob=" << _.winob
                 << ", depthv=" << _.depthv << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "do_display_object fullhere")
+                << RPS_DEBUG_BACKTRACE_HERE(1, "do_display_object fullhere")
                 << "*** do_display_object fullbacktrace ***" << std::endl
                );
   Rps_TwoValues twores =
@@ -578,6 +578,9 @@ void rps_run_application(int &argc, char **argv)
     // use syslog
     const QCommandLineOption syslogOption("syslog", "Use syslog(3).");
     argparser.addOption(syslogOption);
+    // disable ANSI escape codes even if output is a terminal
+    const QCommandLineOption withoutTerminalOption("without-terminal", "Forcibly disable terminal escape code");
+    argparser.addOption(withoutTerminalOption);
     // settings information
     const QCommandLineOption settingsOption("settings", "The Qt settings file.");
     argparser.addOption(settingsOption);
@@ -597,6 +600,11 @@ void rps_run_application(int &argc, char **argv)
     argparser.addOption(dumpafterloadOption);
     //
     argparser.process(app);
+    if (argparser.isSet(withoutTerminalOption))
+      {
+        rps_without_terminal_escape = true;
+        RPS_INFORM("disabling ANSI escape codes as if without terminal");
+      };
     ///// --refpersys-home <dir>
     if (argparser.isSet(rpshomeOption))
       {

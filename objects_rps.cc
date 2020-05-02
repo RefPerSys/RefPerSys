@@ -57,8 +57,6 @@ Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*callerframe, const char*oidstr, Rps_O
   if (!end || *end)
     throw RPS_RUNTIME_ERROR_OUT("Rps_ObjectRef: invalid compile-time oidstr=" << oidstr);
   *this = find_object_by_oid(callerframe, oid);
-  if (!this)
-    throw RPS_RUNTIME_ERROR_OUT("Rps_ObjectRef: failed to find " << oidstr);
 } // end Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*, constexpr const char*oidstr, Rps_ObjIdStrTag)
 
 void
