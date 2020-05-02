@@ -460,8 +460,8 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
                     << ".. selob_display_object_occurrence_qt=" << selob_display_object_occurrence_qt
                     << " of class:" << selob_display_object_occurrence_qt->compute_class(&_) << std::endl);
       Rps_TwoValues respair =
-        Rps_ObjectValue(_.winob).send2(&_, selob_display_object_occurrence_qt,
-                                       _.dispob, Rps_Value((intptr_t)depth));
+        Rps_ObjectValue(_.dispob).send2(&_, selob_display_object_occurrence_qt,
+                                       _.winob, Rps_Value((intptr_t)depth));
       RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence after send to winob=" << _.winob
                     << " with dispob=" << _.dispob);
       if (!respair)
