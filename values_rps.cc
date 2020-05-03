@@ -762,7 +762,8 @@ Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   if (_.closv.is_closure())
     {
       RPS_DEBUG_LOG(MSGSEND, "send2 applying to selfv=" << _.selfv
-                    << ", obsel=" << _.obsel
+                    << " of class:" <<  _.selfv.compute_class(&_) << std::endl
+                    << "... obsel=" << _.obsel
                     << ", closv=" << _.closv
                     << ", arg0v=" << _.arg0v
                     << ", arg1v=" << _.arg1v);
