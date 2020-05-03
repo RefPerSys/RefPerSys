@@ -336,6 +336,8 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
   if (_.dispval.is_empty())
     {
       auto qcfmt = RpsQOutputTextEdit::empty_text_format();
+      RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_value empty dispval, winob="
+                    << _.winob);
       // we display a white rectangle
       auto qcursout = qoutxed->textCursor();
       qcursout.insertText(QString("▭"), //U+25AD WHITE RECTANGLE
@@ -343,6 +345,8 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
     }
   else if (depth >  max_output_depth())
     {
+      RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_value too deep depth="
+                    << depth << ", winob=" << _.winob);
       auto qcfmt = RpsQOutputTextEdit::etc_text_format();
       // we display an ellipsis
       auto qcursout = qoutxed->textCursor();
@@ -355,9 +359,17 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
       // _1Win5yzaf1L02cBUlV to dispval with winob, depth...
       Rps_ObjectRef selob_display_value_qt =
         RPS_ROOT_OB(_1Win5yzaf1L02cBUlV);
+      RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_value dispval="
+                    << _.dispval
+                    << " of class:" << _.dispval.compute_class(&_)
+                    << " before sending selector " << selob_display_value_qt
+                    << ", winob=" << _.winob << ", depth=" << depth);
       Rps_TwoValues respair =
-        Rps_ObjectValue(_.dispval).send2(&_, selob_display_value_qt,
-                                         _.winob, Rps_Value((intptr_t)depth));
+        _.dispval.send2(&_, selob_display_value_qt,
+                        _.winob, Rps_Value((intptr_t)depth));
+      RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_value after sending to dispval=" << _.dispval
+                    << ", respair .main=" << respair.main()
+                    << "+ .xtra=" << respair.xtra());
       if (!respair)
         throw RPS_RUNTIME_ERROR_OUT("display_output_value failed winob="
                                     << _.winob
