@@ -890,6 +890,10 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                  //....etc....
                 );
+  RPS_DEBUG_LOG(GUI, "rpsapply_18DO93843oX02UWzq6 start arg0_objrecv="
+                << arg0_objrecv << ", arg1_objwnd=" << arg1_objwnd
+                << ", arg2_recdepth=" << arg2_recdepth << std::endl
+                << RPS_DEBUG_BACKTRACE_HERE(1, "rpsapply_18DO93843oX02UWzq6") << std::endl);
   ////==== body of _18DO93843oX02UWzq6 !method object/display_value_qt  ====
   _.obrecv = arg0_objrecv.as_object();
   RPS_ASSERT (_.obrecv);
@@ -898,7 +902,7 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
   _.recdepth = arg2_recdepth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_18DO93843oX02UWzq6 start object/display_value_qt obrecv=" << _.obrecv
+  RPS_DEBUG_LOG(GUI, "rpsapply_18DO93843oX02UWzq6  object/display_value_qt obrecv=" << _.obrecv
                 << "objwnd =" << _.objwnd
                 << ", recdepth=" <<  _.recdepth);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));

@@ -1390,7 +1390,7 @@ std::ostream& operator << (std::ostream& out, const Rps_Backtracer& rpb) {
 #define RPS_FULL_BACKTRACE_HERE(Skip,Name) \
   Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},__FILE__,__LINE__,(Skip),(Name),&std::clog)
 
-// can appear in RPS_WARNOUT etc...
+// can appear in RPS_DEBUG_LOG etc...
 #define RPS_DEBUG_BACKTRACE_HERE(Skip,Name) \
   Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},__FILE__,__LINE__,(Skip),(Name),(std::ostream*)nullptr)
 
