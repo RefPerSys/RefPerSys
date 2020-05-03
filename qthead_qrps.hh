@@ -54,8 +54,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMainWindow>
-#include <QMdiArea>
-#include <QMdiSubWindow>
+#include <QSplitter>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -669,15 +668,15 @@ private:
 #warning RpsQWindow help menu missing
 
 
-  QMdiArea* win_centralmdi;/// the central widget
-
-  QMdiSubWindow* win_command_subwin; /// the command subwindow
+  QSplitter* win_central_splitter;
+  ///
+  QLabel* win_command_label;
   RpsQCommandTextEdit* win_command_textedit;/// the command text edit
-
-  QMdiSubWindow* win_output_subwin; /// the output subwindow
+  ///
+  QLabel* win_output_label;
   RpsQOutputTextEdit* win_output_textedit;/// the output text edit
   RpsQOutputTextDocument* win_output_textdoc; // the common output document
-
+  //////
   // Conventionally the object reference below is null or else a
   // transient RefPerSys object carrying a payload of
   // Rps_PayloadQt<RpsQOutputTextEdit>, pointing in C++ to this C++

@@ -61,10 +61,10 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_crnamedinstance_action(nullptr),
     win_crcontrib_action(nullptr),
     win_crclosob_action(nullptr),
-    win_centralmdi(nullptr),
-    win_command_subwin(nullptr),
+    win_central_splitter(nullptr),
+    win_command_label(nullptr),
     win_command_textedit(nullptr),
-    win_output_subwin(nullptr),
+    win_output_label(nullptr),
     win_output_textedit(nullptr),
     win_output_textdoc(nullptr),
     win_objref(nullptr)
@@ -120,20 +120,23 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_create_menu->addAction(win_crclosob_action);
     win_display_menu->addAction(win_dispobj_action);
   }
-  // our central widget and related subwindows and subwidgets
-  win_centralmdi =  new QMdiArea(this);
-  setCentralWidget(win_centralmdi);
-  win_centralmdi->tileSubWindows();
-  win_command_subwin = new QMdiSubWindow(this);
+  // our central widget and related subwidgets
+  win_central_splitter =  new QSplitter(this);
+  setCentralWidget(win_central_splitter);
+  win_central_splitter->setOrientation(Qt::Vertical);
+  win_central_splitter->setChildrenCollapsible(false);
+  win_command_label = new QLabel(" ⁜ command : ", this); //U+205C DOTTED CROSS
+  win_command_label->setMinimumHeight(15);
+  win_command_label->setMaximumHeight(30);
+  win_central_splitter->addWidget(win_command_label);
   win_command_textedit = new RpsQCommandTextEdit(this);
-  win_command_subwin->setWindowTitle("command");
-  win_command_subwin->setWidget(win_command_textedit);
-  win_centralmdi->addSubWindow(win_command_subwin);
-  win_output_subwin = new QMdiSubWindow(this);
+  win_central_splitter->addWidget(win_command_textedit);
+  win_output_label = new QLabel(" ⁜ output : ", this);
+  win_output_label->setMinimumHeight(15);
+  win_output_label->setMaximumHeight(30);
+  win_central_splitter->addWidget(win_output_label);
   win_output_textedit = new RpsQOutputTextEdit(this);
-  win_output_subwin->setWindowTitle("output");
-  win_output_subwin->setWidget(win_output_textedit);
-  win_centralmdi->addSubWindow(win_output_subwin);
+  win_central_splitter->addWidget(win_output_textedit);
   win_output_textdoc = new RpsQOutputTextDocument(this);
   win_output_textedit->setDocument(win_output_textdoc);
 
