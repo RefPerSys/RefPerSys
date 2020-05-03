@@ -462,8 +462,11 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
       Rps_TwoValues respair =
         Rps_ObjectValue(_.dispob).send2(&_, selob_display_object_occurrence_qt,
                                         _.winob, Rps_Value((intptr_t)depth));
-      RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence after send to winob=" << _.winob
-                    << " with dispob=" << _.dispob);
+      RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence after send to dispob=" << _.dispob
+                    << " of class:" << _.dispob->compute_class(&_) << std::endl
+                    << ", with winob=" << _.winob
+                    << " of class:" <<  _.winob->compute_class(&_) << std::endl
+                    << ", respair .main=" << respair.main() << "+ .xtra=" << respair.xtra());
       if (!respair)
         throw RPS_RUNTIME_ERROR_OUT("display_output_object_occurrence failed winob="
                                     << _.winob
