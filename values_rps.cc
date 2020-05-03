@@ -761,7 +761,7 @@ Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
 
   if (_.closv.is_closure())
     {
-      RPS_DEBUG_LOG(MSGSEND, "send2 applying selfv=" << _.selfv
+      RPS_DEBUG_LOG(MSGSEND, "send2 applying to selfv=" << _.selfv
                     << ", obsel=" << _.obsel
                     << ", closv=" << _.closv
                     << ", arg0v=" << _.arg0v
