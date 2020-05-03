@@ -323,6 +323,8 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
   _.winob = outptxt_objref.as_object();
   _.dispval = valuearg;
   RPS_ASSERT(_.winob);
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_value start dispval="
+                << _.dispval << ", winob=" << _.winob << ", depth=" << depth);
   std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
   auto qoutwpayl =
     _.winob->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
@@ -350,18 +352,20 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
   else // non-empty _.dispval
     {
       // Otherwise send RefPerSys selector display_value_qt of oid
-      // _1Win5yzaf1L02cBUlV to winob, dispval, depth...
+      // _1Win5yzaf1L02cBUlV to dispval with winob, depth...
       Rps_ObjectRef selob_display_value_qt =
         RPS_ROOT_OB(_1Win5yzaf1L02cBUlV);
       Rps_TwoValues respair =
-        Rps_ObjectValue(_.winob).send2(&_, selob_display_value_qt,
-                                       _.dispval, Rps_Value((intptr_t)depth));
+        Rps_ObjectValue(_.dispval).send2(&_, selob_display_value_qt,
+                                         _.winob, Rps_Value((intptr_t)depth));
       if (!respair)
         throw RPS_RUNTIME_ERROR_OUT("display_output_value failed winob="
                                     << _.winob
                                     << " dispval=" << _.dispval
                                     << " depth#" << depth);
     };				// end if _.dispval non-empty
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_value end dispval="
+                << _.dispval << ", winob=" << _.winob << ", depth=" << depth);
 } // end RpsQOutputTextEdit::display_output_value
 
 
@@ -1391,16 +1395,24 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
         {
           _.attrob = _.setattrs.as_set()->at(aix);
           _.attrval = _.recvob->get_attr1(&_, _.attrob);
+          RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
+                        << _.recvob << ", attribute aix=" << aix << ", attrob=" << _.attrob
+                        << ", attrval=" << _.attrval);
           qcursor.insertText("● ", //U+25CF BLACK CIRCLE
                              RpsQOutputTextEdit::objectdecor_text_format());
           qoutxtedit->display_output_object_occurrence(&_, _.attrob, depthi+1);
           qcursor.insertText(" ➠ ", //U+27A0 HEAVY DASHED TRIANGLE-HEADED RIGHTWARDS ARROW
                              RpsQOutputTextEdit::objectdecor_text_format());
+          RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
+                        << _.recvob << ", attrvalue aix=" << aix << ", attrob=" << _.attrob
+                        << ", attrval=" << _.attrval);
           qoutxtedit->display_output_value(&_, _.attrval, depthi+1);
           qcursor.insertText("\n");
         }
     }
   unsigned nbcomps = _.recvob->nb_components(&_);
+  RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
+                << _.recvob << ", nbcomps=" << nbcomps);
 #warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt incomplete
   RPS_WARNOUT("incomplete rpsapply_5nSiRIxoYQp00MSnYA !method object/display_object_content_qt" << std::endl
               << "... recvob=" << _.recvob
