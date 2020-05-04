@@ -293,6 +293,7 @@ RpsQOutputTextEdit::output_space_or_indented_newline(QTextCharFormat qc, int dep
   else if (depth>outptxt_maxdepth)
     depth=outptxt_maxdepth;
   auto qcursor = textCursor();
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::output_space_or_indented_newline qcursor➔" << qcursor.position());
   if (qcursor.columnNumber() > outptxt_columnthresh)
     {
       qcursor.insertText("\n", qc);
@@ -307,6 +308,7 @@ RpsQOutputTextEdit::output_space_or_indented_newline(QTextCharFormat qc, int dep
     }
   else
     qcursor.insertText(" ", qc);
+  setTextCursor(qcursor);
 } // end RpsQOutputTextEdit::output_space_or_indented_newline
 
 ////////////////
@@ -331,6 +333,8 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
   RPS_ASSERT(qoutwpayl);
   RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
   RPS_ASSERT(qoutxed == this);
+  auto qcursor = qoutxed->textCursor();
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_value winob=" << _.winob  << ", qcursor➔" << qcursor.position());
   // we should special-case when _.dispval is empty and have some
   // outptxt_empty_qcfmt_ for that case.
   if (_.dispval.is_empty())
@@ -339,9 +343,8 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
       RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_value empty dispval, winob="
                     << _.winob);
       // we display a white rectangle
-      auto qcursout = qoutxed->textCursor();
-      qcursout.insertText(QString("▭"), //U+25AD WHITE RECTANGLE
-                          qcfmt);
+      qcursor.insertText(QString("▭"), //U+25AD WHITE RECTANGLE
+                         qcfmt);
     }
   else if (depth >  max_output_depth())
     {
@@ -349,9 +352,8 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
                     << depth << ", winob=" << _.winob);
       auto qcfmt = RpsQOutputTextEdit::etc_text_format();
       // we display an ellipsis
-      auto qcursout = qoutxed->textCursor();
-      qcursout.insertText(QString("…"), //U+2026 HORIZONTAL ELLIPSIS
-                          qcfmt);
+      qcursor.insertText(QString("…"), //U+2026 HORIZONTAL ELLIPSIS
+                         qcfmt);
     }
   else // non-empty _.dispval
     {
@@ -363,7 +365,8 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
                     << _.dispval
                     << " of class:" << _.dispval.compute_class(&_)
                     << " before sending selector " << selob_display_value_qt
-                    << ", winob=" << _.winob << ", depth=" << depth);
+                    << ", winob=" << _.winob << ", depth=" << depth << ", qcursor➔" << qcursor.position());
+      qoutxed->setTextCursor(qcursor);
       Rps_TwoValues respair =
         _.dispval.send2(&_, selob_display_value_qt,
                         _.winob, Rps_Value((intptr_t)depth));
@@ -375,9 +378,10 @@ RpsQOutputTextEdit::display_output_value(Rps_CallFrame*callerframe, const Rps_Va
                                     << _.winob
                                     << " dispval=" << _.dispval
                                     << " depth#" << depth);
+      qcursor = qoutxed->textCursor();
     };				// end if _.dispval non-empty
   RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_value end dispval="
-                << _.dispval << ", winob=" << _.winob << ", depth=" << depth);
+                << _.dispval << ", winob=" << _.winob << ", depth=" << depth << ", qcursor➔" << qcursor.position());
 } // end RpsQOutputTextEdit::display_output_value
 
 
@@ -439,26 +443,25 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
   RPS_ASSERT(qoutwpayl);
   RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
   RPS_ASSERT(qoutxed == this);
+  auto qcursor=  qoutxed->textCursor();
   RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence dispob=" << _.dispob
                 << " of class:" << _.dispob->compute_class(&_) << std::endl
                 << ".. winob=" <<  _.winob
                 << " of class:" << _.winob->compute_class(&_) << std::endl
-                << ".. depth=" << depth);
+                << ".. depth=" << depth << ", qcursor➔" << qcursor.position());
   if (_.dispob.is_empty())
     {
       auto qcfmt = RpsQOutputTextEdit::empty_text_format();
       // we display a lozenge for empty objects
-      auto qcursout = qoutxed->textCursor();
-      qcursout.insertText(QString("◊"), //U+25CA LOZENGE
-                          qcfmt);
+      qcursor.insertText(QString("◊"), //U+25CA LOZENGE
+                         qcfmt);
     }
   else if (depth >  max_output_depth())
     {
       auto qcfmt = RpsQOutputTextEdit::etc_text_format();
       // we display a five dot
-      auto qcursout = qoutxed->textCursor();
-      qcursout.insertText(QString("⁙"), //U+2059 FIVE DOT PUNCTUATION
-                          qcfmt);
+      qcursor.insertText(QString("⁙"), //U+2059 FIVE DOT PUNCTUATION
+                         qcfmt);
     }
   else   // when _.dispob is not empty....
     {
@@ -468,13 +471,14 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
       // of oid _4ojpzRzyRWz02DNWMe to winob, dispob, depth...
       RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence winob=" << _.winob
                     << " of class:" << _.winob->compute_class(&_)
-                    << " and payload-type:" << _.winob->payload_type_name()
+                    << " and payload-type:" << _.winob->payload_type_name() << ", qcursor➔" << qcursor.position()
                     << std::endl
                     << ".. dispob=" << _.dispob
                     << " of class:" << _.dispob->compute_class(&_) << std::endl
                     << ".. depth=" << depth << std::endl
                     << ".. selob_display_object_occurrence_qt=" << selob_display_object_occurrence_qt
                     << " of class:" << selob_display_object_occurrence_qt->compute_class(&_) << std::endl);
+      qoutxed->setTextCursor(qcursor);
       Rps_TwoValues respair =
         Rps_ObjectValue(_.dispob).send2(&_, selob_display_object_occurrence_qt,
                                         _.winob, Rps_Value((intptr_t)depth));
@@ -483,6 +487,7 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
                     << ", with winob=" << _.winob
                     << " of class:" <<  _.winob->compute_class(&_) << std::endl
                     << ", respair .main=" << respair.main() << "+ .xtra=" << respair.xtra());
+      qcursor=  qoutxed->textCursor();
       if (!respair)
         throw RPS_RUNTIME_ERROR_OUT("display_output_object_occurrence failed winob="
                                     << _.winob
@@ -492,7 +497,7 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
   RPS_ASSERT(_.winob);
   RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence end winob=" << _.winob
                 << ", dispob=" << _.dispob
-                << ", depth=" << depth);
+                << ", depth=" << depth << ", qcursor➔" << qcursor.position());
 } // end RpsQOutputTextEdit::display_output_object_occurrence
 
 
@@ -621,7 +626,6 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  QTextCursor qcursout;
   QTextCharFormat qcfmt;
   ////==== body of _8KJHUldX8GJ03G5OWp ====
   _.intv = arg0recv;
@@ -641,20 +645,19 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
   RPS_ASSERT(qoutwpayl);
   RpsQOutputTextEdit* qoutxed = qoutwpayl->qtptr();
   RPS_ASSERT(qoutxed);
-  /// FIXME: we have not decided yet (in commit 4b2038cfb35dafe) what
-  /// cursor should be really used. Temporarily pretend it is the
-  /// default one ...
-  qcursout = qoutxed->textCursor();
+  QTextCursor qcursor = qoutxed->textCursor();
   char intbuf[32];
   memset (intbuf, 0, sizeof(intbuf));
   snprintf(intbuf, sizeof(intbuf), "%lld", (long long) curint);
-  qcursout.insertText(QString(intbuf), qcfmt);
+  qcursor.insertText(QString(intbuf), qcfmt);
+  qoutxed->setTextCursor(qcursor);
   /// return reciever since success
   _.resmainv = _.intv;
   RPS_DEBUG_LOG(GUI, "rpsapply_8KJHUldX8GJ03G5OWp end intv=" << _.intv
                 << ", obwin=" << _.obwin
                 << ", depth=" << _.depthv
-                << ", resmain=" << _.resmainv);
+                << ", resmain=" << _.resmainv
+                << ", qcursor➔" << qcursor.position());
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _8KJHUldX8GJ03G5OWp
 } // end of rpsapply_8KJHUldX8GJ03G5OWp !method int/display_value_qt
 
@@ -701,11 +704,13 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
 #warning FIXME: we want to display nicely the non-printable characters such as tabulation, but how?
   auto qcursor = qoutput_widget->textCursor();
   qcursor.insertText(qstr, qcfmt);
+  qoutput_widget->setTextCursor(qcursor);
   /// return reciever since success
   _.resmainv = _.string_value;
   RPS_DEBUG_LOG(GUI, "rpsapply_2KnFhlj8xW800kpgPt end string_value=" << _.string_value
                 << "object_window, =" << _.object_window
-                << ", recursive_depth=" <<  _.recursive_depth);
+                << ", recursive_depth=" <<  _.recursive_depth
+                << ", qcursor➔" << qcursor.position());
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _2KnFhlj8xW800kpgPt
 } // end of rpsapply_2KnFhlj8xW800kpgPt !method string/display_value_qt
 
@@ -753,10 +758,11 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
   auto qstr = QString(dblbuf);
   auto qcursor = qoutput_widget->textCursor();
   qcursor.insertText(qstr, qcfmt);
+  qoutput_widget->setTextCursor(qcursor);
   /// return reciever since success
   RPS_DEBUG_LOG(GUI, "rpsapply_7oa7eIzzcxv03TmmZH end doubleval=" << _.doubleval
                 << "object_window, =" << _.object_window
-                << ", recdepth=" <<  _.recdepth);
+                << ", recdepth=" <<  _.recdepth	<< ", qcursor➔" << qcursor.position());
   _.resmainv = _.doubleval;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _7oa7eIzzcxv03TmmZH
 } // end of rpsapply_7oa7eIzzcxv03TmmZH !method double/display_value_qt
@@ -809,18 +815,23 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
       if (ix>0)
         {
           qcursor.insertText(",", qcfmt);
+          qoutwx->setTextCursor(qcursor);
           qoutwx->output_space_or_indented_newline(qcfmt, depthi);
+          qcursor = qoutwx->textCursor();
         }
+      qoutwx->setTextCursor(qcursor);
       rps_display_output_object_occurrence(callerframe, _.objwnd,
                                            _.tupleval.as_tuple()->at((int)ix),
                                            depthi+1);
+      qcursor = qoutwx->textCursor();
     }
   qcursor.insertText("]", qcfmt);
+  qoutwx->setTextCursor(qcursor);
   // success, so
   _.resmainv = _.tupleval;
   RPS_DEBUG_LOG(GUI, "rpsapply_33DFyPOJxbF015ZYoi end tupleval=" << _.tupleval
                 << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+                << ", recdepth=" <<  _.recdepth	<< ", qcursor➔" << qcursor.position());
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _33DFyPOJxbF015ZYoi
 } // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_qt
 
@@ -853,7 +864,7 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
   _.recdepth = arg2_recdepth;
   RPS_ASSERT (_.recdepth.is_int());
   auto depthi = _.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 start setval=" << _.setval
+  RPS_DEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_qt start setval=" << _.setval
                 << "objwnd =" << _.objwnd
                 << ", recdepth=" <<  _.recdepth);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
@@ -863,6 +874,7 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
   RPS_ASSERT (qoutwx);
   auto qcfmt = RpsQOutputTextEdit::set_text_format();
   auto qcursor = qoutwx->textCursor();
+  RPS_DEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 objwnd=" << _.objwnd << ", qcursor➔" << qcursor.position());
   unsigned cnt = _.setval.as_set()->cnt();
   qcursor.insertText("{", qcfmt);
   for (unsigned ix=0; ix<cnt; ix++)
@@ -870,18 +882,23 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
       if (ix>0)
         {
           qcursor.insertText(",", qcfmt);
+          qoutwx->setTextCursor(qcursor);
           qoutwx->output_space_or_indented_newline(qcfmt, depthi);
+          qcursor = qoutwx->textCursor();
         }
+      qoutwx->setTextCursor(qcursor);
       rps_display_output_object_occurrence(callerframe, _.objwnd,
                                            _.setval.as_set()->at((int)ix),
                                            depthi+1);
+      qcursor = qoutwx->textCursor();
     }
   qcursor.insertText("}", qcfmt);
   // success, so
   _.resmainv = _.setval;
+  qoutwx->setTextCursor(qcursor);
   RPS_DEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 end setval=" << _.setval
                 << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+                << ", recdepth=" <<  _.recdepth << ", qcursor➔" << qcursor.position());
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _1568ZHTl0Pa00461I2
 } // end of rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_qt
 
@@ -925,10 +942,11 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
   std::lock_guard<std::recursive_mutex> obrecvdmtx(*(_.obrecv->objmtxptr()));
   auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   RPS_ASSERT (qoutwndload);
-  auto qoutwx = qoutwndload->qtptr();
-  RPS_ASSERT (qoutwx);
-  qoutwx->display_output_object_occurrence(&_, _.obrecv, depthi);
+  RpsQOutputTextEdit* qoutxed = qoutwndload->qtptr();
+  RPS_ASSERT (qoutxed);
+  qoutxed->display_output_object_occurrence(&_, _.obrecv, depthi);
   _.resmainv = _.obrecv;
+  auto qcursor = qoutxed->textCursor();
 #warning rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt incomplete
   /* TODO: we probably want a more complex behavior, e.g. be able to
      hightlight all occurrences of the same object, have a menu or
@@ -936,7 +954,7 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
      needs to be improved later! */
   RPS_DEBUG_LOG(GUI, "rpsapply_18DO93843oX02UWzq6 end obrecv=" << _.obrecv
                 << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+                << ", recdepth=" <<  _.recdepth << ", qcursor➔" << qcursor.position());
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _18DO93843oX02UWzq6
 } // end of rpsapply_18DO93843oX02UWzq6 !method object/display_value_qt
 
@@ -976,9 +994,9 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
                 << "objwnd =" << _.objwnd
                 << ", recdepth=" <<  _.recdepth);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
-  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
-  RPS_ASSERT (qoutwndload);
-  auto qoutwx = qoutwndload->qtptr();
+  auto qoutxed = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutxed);
+  auto qoutwx = qoutxed->qtptr();
   RPS_ASSERT (qoutwx);
   auto qcfmt = RpsQOutputTextEdit::instance_text_format();
   auto qcursor = qoutwx->textCursor();
@@ -987,15 +1005,19 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
   /// we use the ☋ U+260B DESCENDING NODE sign, related to alchemical symbol for purify
   qcursor.insertText("☋", //U+260B DESCENDING NODE sign
                      qcfmt);
+  qoutwx->setTextCursor(qcursor);
   qoutwx->display_output_object_occurrence(&_, _.obconn, depthi+1);
+  qcursor = qoutwx->textCursor();
 #warning rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt incomplete
   RPS_WARNOUT("rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt incomplete instrecv=" << _.instrecv);
   _.resmainv = _.instrecv;
   RPS_DEBUG_LOG(GUI, "rpsapply_0rgijx7CCnq041IZEd end instrecv=" << _.instrecv
                 << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+                << ", recdepth=" <<  _.recdepth << ", qcursor➔" << qcursor.position());
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _0rgijx7CCnq041IZEd
 } // end of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_qt
+
+
 
 
 // C++ closure for _6Wi00FwXYID00gl9Ma
@@ -1035,9 +1057,9 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
   _.obconn = _.closrecv->conn();
   unsigned width = _.closrecv->cnt();
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
-  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
-  RPS_ASSERT (qoutwndload);
-  auto qoutwx = qoutwndload->qtptr();
+  auto qoutxed = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutxed);
+  auto qoutwx = qoutxed->qtptr();
   RPS_ASSERT (qoutwx);
   auto qcfmt = RpsQOutputTextEdit::closure_text_format();
   auto qcursor = qoutwx->textCursor();
@@ -1046,8 +1068,10 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
   /// we use the ⛝ U+26DD SQUARED SALTIRE, also meaning "closed exit"
   qcursor.insertText("⛝", //U+260B DESCENDING NODE sign
                      qcfmt);
+  qoutwx->setTextCursor(qcursor);
   qoutwx->display_output_object_occurrence(&_, _.obconn, depthi+1);
   qoutwx->output_space_or_indented_newline(qcfmt, depthi+1);
+  qcursor = qoutwx->textCursor();
   qcursor.insertText("❨", //U+2768 MEDIUM LEFT PARENTHESIS ORNAMENT
                      qcfmt);
   for (unsigned ix=0; ix<width; ix++)
@@ -1055,18 +1079,23 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
       if (ix>0)
         {
           qcursor.insertText(",", qcfmt);
+          qoutwx->setTextCursor(qcursor);
           qoutwx->output_space_or_indented_newline(qcfmt, depthi+1);
+          qcursor = qoutwx->textCursor();
         };
       _.compv = _.closrecv->at(ix);
+      qoutwx->setTextCursor(qcursor);
       qoutwx->display_output_value(&_, _.compv, depthi+1);
+      qcursor = qoutwx->textCursor();
       _.compv = nullptr;
     }
   qcursor.insertText("❩", //U+2769 MEDIUM RIGHT PARENTHESIS ORNAMENT
                      qcfmt);
   _.resmainv = _.closrecv;
+  qoutwx->setTextCursor(qcursor);
   RPS_DEBUG_LOG(GUI, "rpsapply_6Wi00FwXYID00gl9Ma end closrecv=" << _.closrecv
                 << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+                << ", recdepth=" <<  _.recdepth << ", qcursor➔" << qcursor.position());
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _6Wi00FwXYID00gl9Ma
 } // end of rpsapply_6Wi00FwXYID00gl9Ma !method closure/display_value_qt
 
@@ -1106,17 +1135,18 @@ rpsapply_52zVxP3mTue034OWsD(Rps_CallFrame*callerframe, ///
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   std::ostringstream outs;
   outs << _.qtrecv << std::flush;
-  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
-  RPS_ASSERT (qoutwndload);
-  auto qoutwx = qoutwndload->qtptr();
+  auto qoutxed = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (qoutxed);
+  auto qoutwx = qoutxed->qtptr();
   RPS_ASSERT (qoutwx);
   auto qcfmt = RpsQOutputTextEdit::qtptr_text_format();
   auto qcursor = qoutwx->textCursor();
   qcursor.insertText(outs.str().c_str(), qcfmt);
   _.resmainv = _.qtrecv;
+  qoutwx->setTextCursor(qcursor);
   RPS_DEBUG_LOG(GUI, "rpsapply_52zVxP3mTue034OWsD end qtrecv=" << _.qtrecv
                 << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+                << ", recdepth=" <<  _.recdepth << ", qcursor➔" << qcursor.position());
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _52zVxP3mTue034OWsD
 } // end of rpsapply_52zVxP3mTue034OWsD !method qtptr/display_value_qt
 
@@ -1155,9 +1185,9 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
   std::ostringstream outs;
   outs << _.jsrecv << std::flush;
-  auto qoutwndload = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
-  RPS_ASSERT (qoutwndload);
-  auto qoutwx = qoutwndload->qtptr();
+  auto payoutxed = _.objwnd->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT (payoutxed);
+  auto qoutwx = payoutxed->qtptr();
   RPS_ASSERT (qoutwx);
   auto qcfmt = RpsQOutputTextEdit::json_text_format();
   auto qcursor = qoutwx->textCursor();
@@ -1178,9 +1208,10 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
         }
     }
   _.resmainv = _.jsrecv;
+  qoutwx->setTextCursor(qcursor);
   RPS_DEBUG_LOG(GUI, "rpsapply_42cCN1FRQSS03bzbTz end jsrecv=" << _.jsrecv
                 << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+                << ", recdepth=" <<  _.recdepth << ", qcursor➔" << qcursor.position());
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _42cCN1FRQSS03bzbTz
 } // end of rpsapply_42cCN1FRQSS03bzbTz !method json/display_value_qt
 
@@ -1242,25 +1273,25 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   RPS_ASSERT(outedit);
   RpsQOutputTextDocument* outdoc = qobject_cast<RpsQOutputTextDocument*>(outedit->document());
   RPS_ASSERT(outdoc);
-  QTextCursor qcurs(outdoc);
+  QTextCursor qcursor = outedit->textCursor();
   RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx objwnd=" << _.objwnd
                 << " outedit=" << outedit
                 << " outdoc=" << outdoc
-                << " recvob=" << _.recvob);
+                << " recvob=" << _.recvob << ", qcursor➔" << qcursor.position());
 #warning should use symbol_text_format, oid_text_format, class_text_format ...
   if (auto symbpayl = _.recvob->get_dynamic_payload<Rps_PayloadSymbol>())
     {
       QTextCharFormat syf = outedit->symbol_text_format();
       RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx symbol recvob=" << _.recvob
                     << " named " << symbpayl->symbol_name());
-      qcurs.insertText(QString(symbpayl->symbol_name().c_str()), syf);
+      qcursor.insertText(QString(symbpayl->symbol_name().c_str()), syf);
     }
   else if (auto classpayl =  _.recvob->get_classinfo_payload())
     {
       QTextCharFormat cltxf = outedit->class_text_format();
       RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx class recvob=" << _.recvob
                     << " named " << classpayl->class_name_str());
-      qcurs.insertText(QString(classpayl->class_name_str().c_str()), cltxf);
+      qcursor.insertText(QString(classpayl->class_name_str().c_str()), cltxf);
     }
   else
     {
@@ -1276,9 +1307,10 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
               << RPS_FULL_BACKTRACE_HERE(2, "?£? rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt")
               << std::endl);
   _.resmainv = _.recvob;
+  outedit->setTextCursor(qcursor);
   RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx end !method object/display_object_occurrence_qtrecvob=" << _.recvob
                 << ", objwnd=" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+                << ", recdepth=" <<  _.recdepth << ", qcursor➔" << qcursor.position());
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _4x9jd2yAe8A02SqKAx
 } // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
 
@@ -1344,6 +1376,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
       auto qothcursor = QTextCursor(qoutdoc);
       qothcursor.setPosition(qtpos,QTextCursor::MoveAnchor);
       qcursor = qothcursor;
+      qoutxtedit->setTextCursor(qcursor);
     }
   /// see https://doc.qt.io/qt-5/richtext-advanced-processing.html
   {
@@ -1353,18 +1386,23 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
     auto qcfmt = RpsQOutputTextEdit::objecttitle_text_format();
     qcursor.insertText("▣ ", //U+25A3 WHITE SQUARE CONTAINING BLACK SMALL SQUARE
                        qcfmt);
+    qoutxtedit->setTextCursor(qcursor);
     qoutxtedit->display_output_object_occurrence(&_, _.recvob, depthi);
+    qcursor = qoutxtedit->textCursor();
     qcursor.insertText(" ▤", //U+25A4 SQUARE WITH HORIZONTAL FILL
                        qcfmt);
     qcursor.insertText("\n");
     qcursor.insertText(_.recvob->string_oid().c_str(),
                        RpsQOutputTextEdit::oid_text_format());
     qcursor.endEditBlock();
+    qoutxtedit->setTextCursor(qcursor);
   }
+  qcursor = qoutxtedit->textCursor();
   {
     double mtim = _.recvob->get_mtime();
     RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
-                  << _.recvob << ", mtim=" << mtim);
+                  << _.recvob << ", mtim=" << mtim
+                  << ", objwnd =" << _.objwnd << ", qcursor➔" << qcursor.position());
     time_t mtimt = (time_t) mtim;
     struct tm mtimtm = {};
     char timbuf[64];
@@ -1394,6 +1432,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
     RPS_ASSERT(timbuf[sizeof(timbuf)-1] == (char)0);
     qcursor.insertText(QString("⌚ %1\n").arg(timbuf), //U+231A WATCH
                        RpsQOutputTextEdit::objectdecor_text_format());
+    qoutxtedit->setTextCursor(qcursor);
   }
   _.setattrs = _.recvob->set_of_attributes(&_);
   RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
@@ -1401,10 +1440,13 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   unsigned nbattrs = _.setattrs.as_set()->cardinal();
   if (nbattrs > 0)
     {
+      qcursor = qoutxtedit->textCursor();
       qcursor.insertText(QString("%1 attributes\n").arg(nbattrs),
                          RpsQOutputTextEdit::objectdecor_text_format());
+      qoutxtedit->setTextCursor(qcursor);
       for (unsigned aix=0; aix<nbattrs; aix++)
         {
+          qcursor = qoutxtedit->textCursor();
           _.attrob = _.setattrs.as_set()->at(aix);
           _.attrval = _.recvob->get_attr1(&_, _.attrob);
           RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
@@ -1412,19 +1454,24 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                         << ", attrval=" << _.attrval);
           qcursor.insertText("● ", //U+25CF BLACK CIRCLE
                              RpsQOutputTextEdit::objectdecor_text_format());
+          qoutxtedit->setTextCursor(qcursor);
           qoutxtedit->display_output_object_occurrence(&_, _.attrob, depthi+1);
+          qcursor = qoutxtedit->textCursor();
           qcursor.insertText(" ➠ ", //U+27A0 HEAVY DASHED TRIANGLE-HEADED RIGHTWARDS ARROW
                              RpsQOutputTextEdit::objectdecor_text_format());
           RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
                         << _.recvob << ", attrvalue aix=" << aix << ", attrob=" << _.attrob
                         << ", attrval=" << _.attrval);
+          qoutxtedit->setTextCursor(qcursor);
           qoutxtedit->display_output_value(&_, _.attrval, depthi+1);
+          qcursor = qoutxtedit->textCursor();
           qcursor.insertText("\n");
+          qoutxtedit->setTextCursor(qcursor);
         }
     }
   unsigned nbcomps = _.recvob->nb_components(&_);
   RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
-                << _.recvob << ", nbcomps=" << nbcomps);
+                << _.recvob << ", nbcomps=" << nbcomps << ", qcursor➔" << qcursor.position());
 #warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt incomplete
   RPS_WARNOUT("incomplete rpsapply_5nSiRIxoYQp00MSnYA !method object/display_object_content_qt" << std::endl
               << "... recvob=" << _.recvob
@@ -1433,9 +1480,10 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
               << " optqtposition=" << _.optqtposition
               << " nbcomps=" << nbcomps);
   _.resmainv = _.recvob;
+  qoutxtedit->setTextCursor(qcursor);
   RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA end recvob=" << _.recvob
                 << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+                << ", recdepth=" <<  _.recdepth << ", qcursor➔" << qcursor.position());
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _5nSiRIxoYQp00MSnYA
 } // end of rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt
 
