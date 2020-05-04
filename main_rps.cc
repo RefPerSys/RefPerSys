@@ -49,6 +49,8 @@ bool rps_batch = false;
 bool rps_without_terminal_escape = false;
 
 bool rps_syslog_enabled = false;
+bool rps_stdout_istty = false;
+bool rps_stderr_istty = false;
 
 unsigned rps_debug_flags;
 
@@ -56,6 +58,7 @@ thread_local Rps_Random Rps_Random::_rand_thr_;
 
 typedef std::function<void(void)> rps_todo_func_t;
 static std::vector<rps_todo_func_t> rps_main_todo_vect;
+
 
 const char*
 rps_hostname(void)
@@ -66,7 +69,11 @@ rps_hostname(void)
   return hnambuf;
 } // end rps_hostname
 
-void rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string linprefix, std::string linsuffix)
+
+
+
+void
+rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string linprefix, std::string linsuffix)
 {
   outs << linprefix
        << "GENERATED file " << path  << " / DO NOT EDIT!"
@@ -313,6 +320,8 @@ int
 main (int argc, char** argv)
 {
   rps_start_monotonic_time = rps_monotonic_real_time();
+  rps_stderr_istty = isatty(STDERR_FILENO);
+  rps_stdout_istty = isatty(STDOUT_FILENO);
   RPS_ASSERT(argc>0);
   rps_progname = argv[0];
   rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);

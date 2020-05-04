@@ -212,6 +212,10 @@ extern "C" int rps_nbjobs;
 #define RPS_NBJOBS_MIN 2
 #define RPS_NBJOBS_MAX 20
 
+
+extern "C" bool rps_stdout_istty;
+extern "C" bool rps_stderr_istty;
+
 /// is the current thread the main GUI Qt thread?
 extern "C" bool rps_is_main_gui_thread(void);
 
@@ -260,10 +264,10 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 #define RPS_WARN(Fmt,...) RPS_WARN_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
 #define RPS_WARNOUT_AT_BIS(Fil,Lin,...) do {	\
-    std::clog << "** RefPerSys WARN! "		\
+    std::cerr << "** RefPerSys WARN! "		\
 	      << (Fil) << ":" << Lin << ":: "	\
 	      << __VA_ARGS__ << std::endl;	\
-    std::clog << std::flush; } while(0)
+    std::cerr << std::flush; } while(0)
 
 #define RPS_WARNOUT_AT(Fil,Lin,...) RPS_WARNOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
 
@@ -391,21 +395,40 @@ while (0)
 //////////////// inform
 
 #define RPS_INFORM_AT_BIS(Fil,Lin,Fmt,...) do {			\
-    fprintf(stderr, "\n\n"		       			\
-	    "*** RefPerSys INFORM:%s:%d: <%s>\n " Fmt "\n\n",	\
-            Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);     	\
-    fflush(stderr); } while(0)
+    bool ontty = rps_stdout_istty;				\
+    fprintf(stdout, "\n\n"					\
+	    "%s*** RefPerSys INFORM:%s %s:%d: %s<%s>%s\n "	\
+	    Fmt "\n\n",						\
+	    ontty?RPS_TERMINAL_BOLD_ESCAPE:"",			\
+	    ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",		\
+            Fil, Lin,						\
+	    ontty?RPS_TERMINAL_ITALICS_ESCAPE:"",		\
+	    __PRETTY_FUNCTION__,				\
+	    ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",		\
+	    ##__VA_ARGS__);					\
+    fflush(stdout); } while(0)
 
 #define RPS_INFORM_AT(Fil,Lin,Fmt,...) RPS_INFORM_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
 
 // typical usage could be RPS_INFORM("something bad x=%d", x)
 #define RPS_INFORM(Fmt,...) RPS_INFORM_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
-#define RPS_INFORMOUT_AT_BIS(Fil,Lin,...) do {	\
-    std::clog << "** RefPerSys INFORM! "		\
-	      << (Fil) << ":" << Lin << ":: "	\
-	      << __VA_ARGS__ << std::endl;	\
-    std::clog << std::flush; fflush(nullptr); } while(0)
+#define RPS_INFORMOUT_AT_BIS(Fil,Lin,...) do {		\
+    bool ontty = rps_stdout_istty;			\
+    std::ostringstream outs_##Lin;			\
+    outs_##Lin						\
+      << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")		\
+      << "** RefPerSys INFORM!"				\
+      <<  (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"") << " "	\
+      << (ontty?RPS_TERMINAL_ITALICS_ESCAPE:"")		\
+      << (Fil) << ":" << Lin << ":: "			\
+      <<  __PRETTY_FUNCTION__ 				\
+      << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")		\
+      << ' ' << __VA_ARGS__  << std::flush;		\
+    fputs(outs_##Lin.str().c_str(), stdout);		\
+    fputc('\n', stdout);				\
+    fflush(stdout);					\
+  } while(0)
 
 #define RPS_INFORMOUT_AT(Fil,Lin,...) RPS_INFORMOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
 
@@ -427,21 +450,29 @@ while (0)
 
 //////////////// assert
 #ifndef NDEBUG
-#define RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond) do {      	\
-    if (RPS_UNLIKELY(!(Cond))) {			\
-  fprintf(stderr, "\n\n"				\
-	  "*** RefPerSys ASSERT failed:%s\n"		\
-	  "%s:%d: <%s>\n\n", #Cond,			\
-	  Fil,Lin,Func);				\
+///
+#define RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond) do {		\
+  if (RPS_UNLIKELY(!(Cond))) {					\
+  fprintf(stderr, "\n\n"					\
+	  "%s*** RefPerSys ASSERT failed: %s%s\n"		\
+	  "%s:%d: <%s>\n\n",					\
+	  (rps_stderr_istty?RPS_TERMINAL_BOLD_ESCAPE:""),	\
+          #Cond,						\
+	  (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),	\
+	  Fil,Lin,Func);					\
   rps_fatal_stop_at(Fil,Lin); }} while(0)
 
 #define RPS_ASSERT_AT(Fil,Lin,Func,Cond) RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond)
 #define RPS_ASSERT(Cond) RPS_ASSERT_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,(Cond))
+
 #define RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,...) do {	\
     if (RPS_UNLIKELY(!(Cond))) {				\
       fprintf(stderr, "\n\n"					\
-	      "*** RefPerSys ASSERTPRINTF failed:%s\n"		\
-	      "%s:%d: <%s>\n", #Cond,				\
+	      "%s*** RefPerSys ASSERTPRINTF failed:%s %s\n"	\
+	      "%s:%d: <%s>\n",					\
+	  (rps_stderr_istty?RPS_TERMINAL_BOLD_ESCAPE:""),	\
+		#Cond,						\
+	  (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),	\
 	      Fil, Lin, Func);					\
       fprintf(stderr, "!*!*! " Fmt "\n\n", ##__VA_ARGS__);	\
       rps_fatal_stop_at(Fil, Lin); }} while(0)

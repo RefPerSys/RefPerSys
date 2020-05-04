@@ -70,6 +70,18 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_objref(nullptr)
 #warning win_objref should be known to the garbage collector
 {
+  QSettings* qst = RpsQApplication::qt_settings();
+  RPS_ASSERT(qst);
+  QFont label_font = qst->value("window/label/font").value<QFont>();
+  int label_fontsize = label_font.pointSize();
+  int label_minheight = (label_fontsize)>2?((4*label_fontsize)/3+1):10;
+  int label_maxheight = (label_fontsize)>2?(2*label_fontsize):24;
+  if (label_maxheight <= label_minheight+2)
+    label_maxheight = (9*label_minheight)/8+1;
+  RPS_DEBUG_LOG(GUI, "RpsQWindow::RpsQWindow label_font: " << label_font.toString().toStdString()
+                << ", label_fontsize=" << label_fontsize
+                << ", label_minheight=" << label_minheight
+                << ", label_maxheight=" << label_maxheight);
   /// create the menus and their actions
   {
     auto mb = menuBar();
@@ -122,18 +134,21 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
   }
   // our central widget and related subwidgets
   win_central_splitter =  new QSplitter(this);
+
   setCentralWidget(win_central_splitter);
   win_central_splitter->setOrientation(Qt::Vertical);
   win_central_splitter->setChildrenCollapsible(false);
   win_command_label = new QLabel(" ⁜ command : ", this); //U+205C DOTTED CROSS
-  win_command_label->setMinimumHeight(15);
-  win_command_label->setMaximumHeight(30);
+  win_command_label->setFont(label_font);
+  win_command_label->setMinimumHeight(label_minheight);
+  win_command_label->setMaximumHeight(label_maxheight);
   win_central_splitter->addWidget(win_command_label);
   win_command_textedit = new RpsQCommandTextEdit(this);
   win_central_splitter->addWidget(win_command_textedit);
   win_output_label = new QLabel(" ⁜ output : ", this);
-  win_output_label->setMinimumHeight(15);
-  win_output_label->setMaximumHeight(30);
+  win_output_label->setFont(label_font);
+  win_output_label->setMinimumHeight(label_minheight);
+  win_output_label->setMaximumHeight(label_maxheight);
   win_central_splitter->addWidget(win_output_label);
   win_output_textedit = new RpsQOutputTextEdit(this);
   win_central_splitter->addWidget(win_output_textedit);
