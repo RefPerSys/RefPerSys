@@ -68,7 +68,8 @@ RpsQOutputTextEdit::initialize()
 {
   QSettings* qst = RpsQApplication::qt_settings();
   RPS_ASSERT(qst);
-
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::initialize settings path: "
+                << qst->fileName().toStdString());
   /// how to display integer values
   {
     QColor int_bgcol = qst->value("out/int/bgcolor").value<QColor>();

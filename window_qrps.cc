@@ -72,6 +72,8 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
 {
   QSettings* qst = RpsQApplication::qt_settings();
   RPS_ASSERT(qst);
+  RPS_DEBUG_LOG(GUI, "RpsQWindow::RpsQWindow settings path: "
+                << qst->fileName().toStdString());
   QFont label_font = qst->value("window/label/font").value<QFont>();
   int label_fontsize = label_font.pointSize();
   int label_minheight = (label_fontsize)>2?((4*label_fontsize)/3+1):10;
