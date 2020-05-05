@@ -1447,7 +1447,9 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
       }
     else
       strcpy(timfrac, ".??");
-    strcat(timbuf, timfrac);
+    const char*timdot = strchr(timfrac, '.');
+    RPS_ASSERT(timdot != nullptr);
+    strcat(timbuf, timdot);
     strcat(timbuf, timzon);
     RPS_ASSERT(timbuf[sizeof(timbuf)-1] == (char)0);
     qcursor.insertText(QString("⌚ %1\n").arg(timbuf), //U+231A WATCH
