@@ -78,6 +78,9 @@ RpsQOutputTextEdit::initialize()
     outptxt_int_qcfmt_.setForeground(QBrush(int_fgcol));
     QFont int_font = qst->value("out/int/font").value<QFont>();
     outptxt_int_qcfmt_.setFont(int_font);
+    RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::initialize outptxt_int_qcfmt_ font="
+                  << outptxt_int_qcfmt_.font().toString().toStdString()
+                  << ", background-color=" <<  outptxt_int_qcfmt_.background().color().name().toStdString());
   }
 
   /// how to display double values
@@ -108,6 +111,9 @@ RpsQOutputTextEdit::initialize()
     outptxt_tuple_qcfmt_.setForeground(QBrush(tuple_fgcol));
     QFont tuple_font = qst->value("out/tuple/font").value<QFont>();
     outptxt_tuple_qcfmt_.setFont(tuple_font);
+    RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::initialize outptxt_tuple_qcfmt_ font="
+                  << outptxt_tuple_qcfmt_.font().toString().toStdString()
+                  << ", background-color=" <<  outptxt_tuple_qcfmt_.background().color().name().toStdString());
   }
   /// how to display set values
   {
@@ -126,6 +132,10 @@ RpsQOutputTextEdit::initialize()
     outptxt_anonymousobject_qcfmt_.setForeground(QBrush(anonymousobject_fgcol));
     QFont anonymousobject_font = qst->value("out/anonymousobject/font").value<QFont>();
     outptxt_anonymousobject_qcfmt_.setFont(anonymousobject_font);
+    RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::initialize outptxt_anonymousobject_qcfmt_ font="
+                  << outptxt_anonymousobject_qcfmt_.font().toString().toStdString()
+                  << ", background-color="
+                  <<  outptxt_anonymousobject_qcfmt_.background().color().name().toStdString());
   }
   /// how to display empty stuff
   {
@@ -250,6 +260,7 @@ RpsQOutputTextEdit::initialize()
     outptxt_objectcontent_qfrfmt_.setBorderStyle(QTextFrameFormat::BorderStyle_Dotted);
   }
 #warning more is needed in RpsQOutputTextEdit::initialize
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::initialize end");
 } // end RpsQOutputTextEdit::initialize
 
 
