@@ -261,8 +261,8 @@ RpsQOutputTextEdit::initialize()
   }
 #warning more is needed in RpsQOutputTextEdit::initialize
   RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::initialize end"
-		<< RPS_DEBUG_BACKTRACE_HERE(1, "RpsQOutputTextEdit::initialize ended")
-		<< std::endl);
+                << RPS_DEBUG_BACKTRACE_HERE(1, "RpsQOutputTextEdit::initialize ended")
+                << std::endl);
 } // end RpsQOutputTextEdit::initialize
 
 
@@ -1400,6 +1400,11 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
     auto qcfmt = RpsQOutputTextEdit::objecttitle_text_format();
     qcursor.insertText("▣ ", //U+25A3 WHITE SQUARE CONTAINING BLACK SMALL SQUARE
                        qcfmt);
+    {
+      QTextBlockFormat title_block_format;
+      title_block_format.setAlignment(Qt::AlignHCenter);
+      qcursor.setBlockFormat(title_block_format);
+    }
     qoutxtedit->setTextCursor(qcursor);
     qoutxtedit->display_output_object_occurrence(&_, _.recvob, depthi);
     qcursor = qoutxtedit->textCursor();

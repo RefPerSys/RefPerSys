@@ -515,7 +515,8 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
 } // end RpsQApplication::do_display_object
 
 
-void rps_run_application(int &argc, char **argv)
+void
+rps_run_application(int &argc, char **argv)
 {
   rps_batch = false;
   std::string dumpdirstr;
@@ -765,13 +766,19 @@ void rps_run_application(int &argc, char **argv)
     {
       RPS_INFORMOUT("running the GUI since no batch mode");
       app.initialize_app();
-      if (!displayedobjectqstr.isEmpty())
-        app.do_display_object(displayedobjectqstr);
+      RPS_DEBUG_LOG(GUI, "rps_run_application before RpsQOutputTextEdit::initialize");
       RpsQOutputTextEdit::initialize();
+      if (!displayedobjectqstr.isEmpty())
+        {
+          RPS_DEBUG_LOG(GUI, "rps_run_application should display " << displayedobjectqstr.toStdString());
+          app.do_display_object(displayedobjectqstr);
+        }
+      RPS_DEBUG_LOG(GUI, "rps_run_application before app.exec");
       (void) app.exec ();
     }
   else
     RPS_INFORMOUT("RefPerSys GUI was not run in batch mode");
+  RPS_DEBUG_LOG(GUI, "rps_run_application ending");
 } // end of rps_run_application
 
 bool
