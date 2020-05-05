@@ -78,7 +78,10 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
                 << ((qst->contains(QString(label_setting_name)))?"has":"without")
                 << " "
                 << label_setting_name);
-  QFont label_font = qst->value(label_setting_name).value<QFont>();
+  QString label_fontname = qst->value(label_setting_name).value<QString>();
+  RPS_DEBUG_LOG(GUI, "RpsQWindow::RpsQWindow settings label_fontname='"
+		<< label_fontname.toStdString() << "'");
+  QFont label_font = QFont(label_fontname);
   int label_fontsize = label_font.pointSize();
   int label_minheight = (label_fontsize)>2?((4*label_fontsize)/3+1):10;
   int label_maxheight = (label_fontsize)>2?(2*label_fontsize):24;
