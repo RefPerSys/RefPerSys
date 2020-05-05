@@ -260,7 +260,9 @@ RpsQOutputTextEdit::initialize()
     outptxt_objectcontent_qfrfmt_.setBorderStyle(QTextFrameFormat::BorderStyle_Dotted);
   }
 #warning more is needed in RpsQOutputTextEdit::initialize
-  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::initialize end");
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::initialize end"
+		<< RPS_DEBUG_BACKTRACE_HERE(1, "RpsQOutputTextEdit::initialize ended")
+		<< std::endl);
 } // end RpsQOutputTextEdit::initialize
 
 
