@@ -230,7 +230,7 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 #define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {			\
     fprintf(stderr, "\n\n"		       			\
-	    "*** RefPerSys FATAL:%s:%d: <%s>\n " Fmt "\n\n",	\
+	    "*** RefPerSys FATAL:%s:%d: {%s}\n " Fmt "\n\n",	\
             Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);     	\
     rps_fatal_stop_at (Fil,Lin); } while(0)
 
@@ -254,7 +254,7 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 #define RPS_WARN_AT_BIS(Fil,Lin,Fmt,...) do {			\
     fprintf(stderr, "\n\n"		       			\
-	    "*** RefPerSys WARN:%s:%d: <%s>\n " Fmt "\n\n",	\
+	    "*** RefPerSys WARN:%s:%d: {%s}\n " Fmt "\n\n",						\
             Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);     	\
     fflush(stderr); } while(0)
 
@@ -469,7 +469,7 @@ while (0)
     if (RPS_UNLIKELY(!(Cond))) {				\
       fprintf(stderr, "\n\n"					\
 	      "%s*** RefPerSys ASSERTPRINTF failed:%s %s\n"	\
-	      "%s:%d: <%s>\n",					\
+	      "%s:%d: {%s}\n",					\
 	  (rps_stderr_istty?RPS_TERMINAL_BOLD_ESCAPE:""),	\
 		#Cond,						\
 	  (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),	\
