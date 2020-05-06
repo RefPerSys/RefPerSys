@@ -57,7 +57,7 @@ Rps_Backtracer::bt_error_method(const char*msg, int errnum)
 {
   assert (msg != nullptr);
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
-  fprintf(stderr, "BackTrace Error <%s:%d> %s (#%d)",
+  fprintf(stderr, "BackTrace Error [%s:%d] %s (#%d)",
           __FILE__, __LINE__,
           msg?msg:"???",
           errnum);
