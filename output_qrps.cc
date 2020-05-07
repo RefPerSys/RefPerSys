@@ -1368,6 +1368,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                  Rps_Value setattrs;
                  Rps_ObjectRef attrob;
                  Rps_Value attrval;
+                 Rps_Value curcomp;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
@@ -1425,6 +1426,9 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
     qcursor.insertText(" ▤", //U+25A4 SQUARE WITH HORIZONTAL FILL
                        qcfmt);
     qcursor.insertText("\n");
+
+    RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _.recvob
+                  << " after title qcursor➔" << qcursor.position());
     {
       qcursor.insertText("⁑", //U+2051 TWO ASTERISKS ALIGNED VERTICALLY
                          RpsQOutputTextEdit::objectdecor_text_format());
@@ -1435,6 +1439,8 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
     qcursor.endEditBlock();
     qoutxtedit->setTextCursor(qcursor);
   }
+  RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _.recvob
+                << " after oid qcursor➔" << qcursor.position());
   qcursor = qoutxtedit->textCursor();
   {
     double mtim = _.recvob->get_mtime();
@@ -1474,15 +1480,22 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                        RpsQOutputTextEdit::objectdecor_text_format());
     qoutxtedit->setTextCursor(qcursor);
   }
+  //// ------ attributes -----
   _.setattrs = _.recvob->set_of_attributes(&_);
   RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
-                << _.recvob << ", setattrs=" << _.setattrs);
+                << _.recvob << ", setattrs=" << _.setattrs << ", qcursor➔" << qcursor.position());
   unsigned nbattrs = _.setattrs.as_set()->cardinal();
   if (nbattrs > 0)
     {
       qcursor = qoutxtedit->textCursor();
-      qcursor.insertText(QString("%1 attributes\n").arg(nbattrs),
-                         RpsQOutputTextEdit::objectdecor_text_format());
+      if (nbattrs==1)
+        qcursor.insertText(QString("one attribute:").arg(nbattrs),
+                           RpsQOutputTextEdit::objectdecor_text_format());
+      else
+        qcursor.insertText(QString("%1 attributes:").arg(nbattrs),
+                           RpsQOutputTextEdit::objectdecor_text_format());
+      qoutxtedit->setTextCursor(qcursor);
+      qcursor.insertText("\n");
       qoutxtedit->setTextCursor(qcursor);
       for (unsigned aix=0; aix<nbattrs; aix++)
         {
@@ -1509,9 +1522,53 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
           qoutxtedit->setTextCursor(qcursor);
         }
     }
+  else   // no attributes
+    {
+      qcursor.insertText(QString("no attributes").arg(nbattrs),
+                         RpsQOutputTextEdit::objectdecor_text_format());
+      qcursor.insertText("\n");
+      qoutxtedit->setTextCursor(qcursor);
+    };
+  ////// ----- components -----
   unsigned nbcomps = _.recvob->nb_components(&_);
+  qoutxtedit->setTextCursor(qcursor);
   RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
                 << _.recvob << ", nbcomps=" << nbcomps << ", qcursor➔" << qcursor.position());
+  if (nbcomps == 0)
+    {
+      qcursor = qoutxtedit->textCursor();
+      qcursor.insertText("🗅", //U+1F5C5 EMPTY NOTE
+                         RpsQOutputTextEdit::objectdecor_text_format());
+      qcursor.insertText("\n");
+      qoutxtedit->setTextCursor(qcursor);
+      RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
+                    << _.recvob << ", *no components*, qcursor➔" << qcursor.position());
+    }
+  else
+    {
+      if (nbcomps==1)
+        qcursor.insertText(QString("one component:"), RpsQOutputTextEdit::objectdecor_text_format());
+      else
+        qcursor.insertText(QString("%1 components:").arg(nbcomps), RpsQOutputTextEdit::objectdecor_text_format());
+      qcursor.insertText("\n");
+      qoutxtedit->setTextCursor(qcursor);
+      for (unsigned cix=0; cix<nbcomps; cix++)
+        {
+          _.curcomp = _.recvob->component_at(&_, cix);
+          qcursor = qoutxtedit->textCursor();
+          RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
+                        << _.recvob << ", comp cix#" << cix
+                        << ", curcomp=" << _.curcomp << ", qcursor➔" << qcursor.position());
+          qcursor.insertText(QString("⌘%1 ").arg(cix), //U+2318 PLACE OF INTEREST SIGN
+                             RpsQOutputTextEdit::objectdecor_text_format());
+          qoutxtedit->setTextCursor(qcursor);
+          qoutxtedit->display_output_value(&_, _.curcomp, depthi+1);
+          qcursor = qoutxtedit->textCursor();
+          qcursor.insertText("\n");
+          qoutxtedit->setTextCursor(qcursor);
+          _.curcomp = Rps_Value(nullptr);
+        }
+    }
 #warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt incomplete
   RPS_WARNOUT("incomplete rpsapply_5nSiRIxoYQp00MSnYA !method object/display_object_content_qt" << std::endl
               << "... recvob=" << _.recvob
