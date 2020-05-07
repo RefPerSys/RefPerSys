@@ -716,7 +716,7 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
   _.recursive_depth = arg2_recursive_depth;
   RPS_ASSERT(_.recursive_depth.is_int());
   RPS_DEBUG_LOG(GUI, "rpsapply_2KnFhlj8xW800kpgPt start string_value=" << _.string_value
-                << "object_window, =" << _.object_window
+                << ", object_window, =" << _.object_window
                 << ", recursive_depth=" <<  _.recursive_depth);
   ////==== body of _2KnFhlj8xW800kpgPt ====
   std::lock_guard<std::recursive_mutex> object_window_guard(*(_.object_window->objmtxptr()));
@@ -1338,7 +1338,8 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   outedit->setTextCursor(qcursor);
   RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx end !method object/display_object_occurrence_qtrecvob=" << _.recvob
                 << ", objwnd=" << _.objwnd
-                << ", recdepth=" <<  _.recdepth << ", qcursor➔" << qcursor.position());
+                << ", recdepth=" <<  _.recdepth << ", qcursor➔" << qcursor.position()
+                << std::endl);
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _4x9jd2yAe8A02SqKAx
 } // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_qt
 
@@ -1420,6 +1421,8 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
       title_block_format.setAlignment(Qt::AlignHCenter);
       qcursor.setBlockFormat(title_block_format);
     }
+    RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _.recvob
+                  << " before title qcursor➔" << qcursor.position());
     qoutxtedit->setTextCursor(qcursor);
     qoutxtedit->display_output_object_occurrence(&_, _.recvob, depthi);
     qcursor = qoutxtedit->textCursor();
@@ -1479,6 +1482,9 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
     qcursor.insertText(QString("⌚ %1\n").arg(timbuf), //U+231A WATCH
                        RpsQOutputTextEdit::objectdecor_text_format());
     qoutxtedit->setTextCursor(qcursor);
+    RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob="
+                  << _.recvob << " timbuf='" << timbuf
+                  << "', qcursor➔" << qcursor.position());
   }
   //// ------ attributes -----
   _.setattrs = _.recvob->set_of_attributes(&_);
@@ -1489,7 +1495,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
     {
       qcursor = qoutxtedit->textCursor();
       if (nbattrs==1)
-        qcursor.insertText(QString("one attribute:").arg(nbattrs),
+        qcursor.insertText(QString("one attribute:"),
                            RpsQOutputTextEdit::objectdecor_text_format());
       else
         qcursor.insertText(QString("%1 attributes:").arg(nbattrs),
