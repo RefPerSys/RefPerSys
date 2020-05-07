@@ -483,6 +483,7 @@ private:
   static QTextCharFormat outptxt_int_qcfmt_;
   static QTextCharFormat outptxt_double_qcfmt_;
   static QTextCharFormat outptxt_string_qcfmt_;
+  static QTextCharFormat outptxt_stringdecor_qcfmt_;
   static QTextCharFormat outptxt_tuple_qcfmt_;
   static QTextCharFormat outptxt_set_qcfmt_;
   static QTextCharFormat outptxt_anonymousobject_qcfmt_;
@@ -518,6 +519,12 @@ public:
   static inline QTextCharFormat string_text_format()
   {
     return outptxt_string_qcfmt_;
+  }
+
+  /// Gets the text format for string decoration.
+  static inline QTextCharFormat stringdecor_text_format()
+  {
+    return outptxt_stringdecor_qcfmt_;
   }
 
   /// Gets the text format for tuple values.

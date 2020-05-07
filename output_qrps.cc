@@ -45,6 +45,7 @@ const char rps_output_date[]= __DATE__;
 QTextCharFormat RpsQOutputTextEdit::outptxt_int_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_double_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_string_qcfmt_;
+QTextCharFormat RpsQOutputTextEdit::outptxt_stringdecor_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_tuple_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_set_qcfmt_;
 QTextCharFormat RpsQOutputTextEdit::outptxt_anonymousobject_qcfmt_;
@@ -101,6 +102,16 @@ RpsQOutputTextEdit::initialize()
     outptxt_string_qcfmt_.setForeground(QBrush(string_fgcol));
     QFont string_font = qst->value("out/string/font").value<QFont>();
     outptxt_string_qcfmt_.setFont(string_font);
+  }
+
+  /// how to display string decoration
+  {
+    QColor stringdecor_bgcol = qst->value("out/stringdecor/bgcolor").value<QColor>();
+    outptxt_stringdecor_qcfmt_.setBackground(QBrush(stringdecor_bgcol));
+    QColor stringdecor_fgcol = qst->value("out/stringdecor/fgcolor").value<QColor>();
+    outptxt_stringdecor_qcfmt_.setForeground(QBrush(stringdecor_fgcol));
+    QFont stringdecor_font = qst->value("out/stringdecor/font").value<QFont>();
+    outptxt_stringdecor_qcfmt_.setFont(stringdecor_font);
   }
 
   /// how to display tuple values
@@ -714,15 +725,18 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
   RpsQOutputTextEdit* qoutput_widget = qoutput_window_payload->qtptr();
   RPS_ASSERT(qoutput_widget);
   auto qcfmt = RpsQOutputTextEdit::string_text_format();
+  auto qcdecorfmt = RpsQOutputTextEdit::stringdecor_text_format();
   auto qstr = QString(_.string_value.as_cstring());
 #warning FIXME: we want to display nicely the non-printable characters such as tabulation, but how?
   auto qcursor = qoutput_widget->textCursor();
+  qcursor.insertText("«",qcdecorfmt); //U+00AB LEFT-POINTING DOUBLE ANGLE QUOTATION MARK
   qcursor.insertText(qstr, qcfmt);
+  qcursor.insertText("»",qcdecorfmt); //U+00BB RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK
   qoutput_widget->setTextCursor(qcursor);
   /// return reciever since success
   _.resmainv = _.string_value;
   RPS_DEBUG_LOG(GUI, "rpsapply_2KnFhlj8xW800kpgPt end string_value=" << _.string_value
-                << "object_window, =" << _.object_window
+                << ", object_window, =" << _.object_window
                 << ", recursive_depth=" <<  _.recursive_depth
                 << ", qcursor➔" << qcursor.position());
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _2KnFhlj8xW800kpgPt
