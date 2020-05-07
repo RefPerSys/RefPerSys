@@ -421,7 +421,7 @@ while (0)
       << "** RefPerSys INFORM!"				\
       <<  (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"") << " "	\
       << (ontty?RPS_TERMINAL_ITALICS_ESCAPE:"")		\
-      << (Fil) << ":" << Lin << ":: "			\
+      << (Fil) << ":" << Lin << ": "			\
       <<  __PRETTY_FUNCTION__ 				\
       << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")		\
       << ' ' << __VA_ARGS__  << std::flush;		\
