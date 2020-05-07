@@ -1799,7 +1799,7 @@ RpsQDisplayObjectDialog::on_ok_trigger()
       RPS_ASSERT(wnd->win_output_textedit != nullptr);
 
       RPS_INFORMOUT("Calling wnd->win_output_textedit->display_output_object_occurrence");
-      wnd->win_output_textedit->display_output_object_occurrence(&_, _.obdisp, 1);
+      wnd->output_textedit()->display_output_object_occurrence(&_, _.obdisp, 1);
 
       std::ostringstream msg;
       msg << "found object " << strobdisp << " as " << _.obdisp;
