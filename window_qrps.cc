@@ -1790,15 +1790,15 @@ RpsQDisplayObjectDialog::on_ok_trigger()
       auto strobdisp = object_linedit.text().toStdString();
       _.obdisp = Rps_ObjectRef::find_object_by_string(&_, strobdisp);
 
-      RPS_INFORMOUT("RpsQObjectDisplayDialog::on_ok_trigger(): displaying object: "
-        << _.obdisp);
+      RPS_DEBUG_LOG(GUI, "RpsQObjectDisplayDialog ok displaying object: "
+		    << _.obdisp << " from strobdisp='" << strobdisp << "'");
 
       RPS_ASSERT(parentWidget() != nullptr);
       RpsQWindow* wnd = qobject_cast<RpsQWindow*>(parentWidget());
       RPS_ASSERT(wnd != nullptr);
       RPS_ASSERT(wnd->output_textedit() != nullptr);
 
-      RPS_INFORMOUT("Calling wnd->win_output_textedit->display_output_object_occurrence");
+      RPS_DEBUG_LOG(GUI, "RpsQObjectDisplayDialog before display_output_object_occurrence obdisp=" << _.obdisp);
       wnd->output_textedit()->display_output_object_occurrence(&_, _.obdisp, 2);
 
       std::ostringstream msg;
@@ -1816,6 +1816,8 @@ RpsQDisplayObjectDialog::on_ok_trigger()
     }
 
   deleteLater();
+  RPS_DEBUG_LOG(GUI, "RpsQObjectDisplayDialog ok done displaying object: "
+		<< _.obdisp);
 } // end RpsQDisplayObjectDialog::on_ok_trigger()
 
 
