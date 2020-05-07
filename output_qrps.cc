@@ -1425,8 +1425,12 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
     qcursor.insertText(" ▤", //U+25A4 SQUARE WITH HORIZONTAL FILL
                        qcfmt);
     qcursor.insertText("\n");
-    qcursor.insertText(_.recvob->string_oid().c_str(),
-                       RpsQOutputTextEdit::oid_text_format());
+    {
+      qcursor.insertText("⁑", //U+2051 TWO ASTERISKS ALIGNED VERTICALLY
+                         RpsQOutputTextEdit::objectdecor_text_format());
+      qcursor.insertText(_.recvob->string_oid().c_str(),
+                         RpsQOutputTextEdit::oid_text_format());
+    }
     qcursor.insertText("\n");
     qcursor.endEditBlock();
     qoutxtedit->setTextCursor(qcursor);
