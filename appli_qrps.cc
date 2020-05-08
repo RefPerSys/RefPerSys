@@ -224,9 +224,12 @@ RpsQApplication::do_add_new_window(Rps_CallFrame*callerframe)
       app_windvec.push_back(nullptr);
     }
   auto window = new RpsQWindow(nullptr,winrk);
-  window->setWindowTitle(QString("RefPerSys #%1").arg(winrk));
-  int w = 384;
-  int h = 200;
+  QString gitidqs (rps_gitid);
+  gitidqs.remove (10, strlen(rps_gitid)-15);
+  gitidqs.insert (10, "⋯"); // U+22EF MIDLINE HORIZONTAL ELLIPSIS
+  window->setWindowTitle(QString("RefPerSys #%1 - %2").arg(winrk).arg(gitidqs));
+  int w = 600;
+  int h = 480;
   Json::Value juser(Json::nullValue);
   Json::Value japp(Json::nullValue);
   try

@@ -76,6 +76,7 @@
 #include <QTimer>
 #include <QUrl>
 #include <QVBoxLayout>
+#include <QWidgetAction>
 
 class RpsQApplication;
 class RpsQWindow;
