@@ -501,7 +501,7 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
                 << ", winob=" << _.winob
                 << ", depthv=" << _.depthv << std::endl
                 << RPS_DEBUG_BACKTRACE_HERE(1, "do_display_object fullhere")
-                << "*** do_display_object fullbacktrace ***" << std::endl
+                << "**+++** do_display_object fullbacktrace **+++**" << std::endl
                );
   Rps_TwoValues twores =
     _.dispv.send2(&_, _.selob,
@@ -511,7 +511,9 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
                 << " is main="
                 << twores.main()
                 << ", xtra="
-                << twores.xtra());
+                << twores.xtra()
+                << std::endl
+                << "--------- ending do_display_object -------\n\n");
 } // end RpsQApplication::do_display_object
 
 
@@ -770,7 +772,8 @@ rps_run_application(int &argc, char **argv)
       RpsQOutputTextEdit::initialize();
       if (!displayedobjectqstr.isEmpty())
         {
-          RPS_DEBUG_LOG(GUI, "rps_run_application should display " << displayedobjectqstr.toStdString());
+          RPS_DEBUG_LOG(GUI, "rps_run_application should display: " << displayedobjectqstr.toStdString()
+                        << std::endl);
           app.do_display_object(displayedobjectqstr);
         }
       RPS_DEBUG_LOG(GUI, "rps_run_application before app.exec");
