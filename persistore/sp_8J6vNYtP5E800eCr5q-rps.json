@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 88,
+ "nbobjects" : 89,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -225,7 +225,6 @@
 //+ob_14M7WuJSWw702zB0M9
 //∈named_selector
 {
- "class" : "_0cSUtWqTYdZ00mjeNR",
  "attrs" : 
  [
   {
@@ -233,6 +232,7 @@
    "va" : "display_object_payload_qt"
   }
  ],
+ "class" : "_0cSUtWqTYdZ00mjeNR",
  "mtime" : 1588934938.0,
  "oid" : "_14M7WuJSWw702zB0M9"
 }
@@ -804,12 +804,23 @@
   }
  ],
  "class" : "_41OFI3r0S1t03qdB2E",
- "class_methodict" : [],
+ "class_methodict" : 
+ [
+  {
+   "methclos" : 
+   {
+    "env" : [],
+    "fn" : "_8lKdW7lgcHV00WUOiT",
+    "vtype" : "closure"
+   },
+   "methosel" : "_14M7WuJSWw702zB0M9"
+  }
+ ],
  "class_name" : "class",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_6fmq7pZkmNd03UyPuO",
  "magicattr" : true,
- "mtime" : 1583088448.8099999,
+ "mtime" : 1588960698.2,
  "oid" : "_41OFI3r0S1t03qdB2E",
  "payload" : "class"
 }
@@ -1204,6 +1215,7 @@
   "_5nSiRIxoYQp00MSnYA",
   "_6Wi00FwXYID00gl9Ma",
   "_7oa7eIzzcxv03TmmZH",
+  "_8lKdW7lgcHV00WUOiT",
   "_8KJHUldX8GJ03G5OWp"
  ]
 }
@@ -1485,6 +1497,23 @@
  "symb_val" : "_5yhJGgxLwLp00X0xEQ"
 }
 //-ob_7ZRsf01mtit01xPUei
+
+
+//+ob_8lKdW7lgcHV00WUOiT
+//∈core_function
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_0jdbikGJFq100dgX1n",
+   "va" : "method class/display_object_payload_qt"
+  }
+ ],
+ "class" : "_9Gz1oNPCnkB00I6VRS",
+ "mtime" : 1588960370.73,
+ "oid" : "_8lKdW7lgcHV00WUOiT"
+}
+//-ob_8lKdW7lgcHV00WUOiT
 
 
 //+ob_8xCV6GDXYMa02mK5xy
