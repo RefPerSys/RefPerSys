@@ -1691,7 +1691,9 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
   // _.arg2v = arg2;
   // _.arg3v = arg3;
   ////==== body of _8lKdW7lgcHV00WUOiT ====
-  RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT start!method class/display_object_payload_qt");
+  RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT start!method class/display_object_payload_qt @!@incomplete° arg0="
+		<< arg0 << ", arg1=" << arg1 << ", arg2=" << arg2);
+#warning rpsapply_8lKdW7lgcHV00WUOiT method class/display_object_payload_qt @!@incomplete
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _8lKdW7lgcHV00WUOiT
 } // end of rpsapply_8lKdW7lgcHV00WUOiT
 
