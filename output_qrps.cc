@@ -1610,7 +1610,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
             // _1Win5yzaf1L02cBUlV to dispval with winob, depth...
             Rps_ObjectRef selob_display_object_payload_qt =
               RPS_ROOT_OB(_14M7WuJSWw702zB0M9);
-            RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt recvob="
+            RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt °~ recvob="
                           << _.recvob
                           << " of class:" << Rps_Value(_.recvob).compute_class(&_)
                           << " before sending selector " << selob_display_object_payload_qt
