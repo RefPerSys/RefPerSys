@@ -1585,31 +1585,56 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   ////// ----- payload -----
   {
     auto payl = _.recvob->get_payload();
-    if (payl != nullptr) {
-      RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA  recvob=" << _.recvob
-		    << " with payload @" << payl << " of type: "
-		    << payl->payload_type_name());
-      qcursor.insertText(QString("⬟ %1:").arg(payl->payload_type_name().c_str()),
-			 RpsQOutputTextEdit::objectdecor_text_format());
-      qcursor.insertText("\n");
-      // Otherwise send RefPerSys selector display_object_payload_qt of oid
-      // _1Win5yzaf1L02cBUlV to dispval with winob, depth...
-      Rps_ObjectRef selob_display_object_payload_qt =
-        RPS_ROOT_OB(_14M7WuJSWw702zB0M9);
-      RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt recvob="
-                    << _.recvob
-                    << " of class:" << Rps_Value(_.recvob).compute_class(&_)
-                    << " before sending selector " << selob_display_object_payload_qt
-		    << ", depthi=" << depthi << ", qcursor➔" << qcursor.position());
+    if (payl != nullptr)
+      {
+        RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA  recvob=" << _.recvob
+                      << " with payload @" << payl << " of type: "
+                      << payl->payload_type_name());
+        qcursor.insertText(QString("⬟ %1:").arg(payl->payload_type_name().c_str()),
+                           RpsQOutputTextEdit::objectdecor_text_format());
+        qcursor.insertText("\n");
+        if (depthi < qoutxtedit->max_output_depth())
+          {
+            // Otherwise send RefPerSys selector display_object_payload_qt of oid
+            // _1Win5yzaf1L02cBUlV to dispval with winob, depth...
+            Rps_ObjectRef selob_display_object_payload_qt =
+              RPS_ROOT_OB(_14M7WuJSWw702zB0M9);
+            RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt recvob="
+                          << _.recvob
+                          << " of class:" << Rps_Value(_.recvob).compute_class(&_)
+                          << " before sending selector " << selob_display_object_payload_qt
+                          << ", objwnd=" << _.objwnd
+                          << ", depthi=" << depthi << ", qcursor➔" << qcursor.position());
+            qoutxtedit->setTextCursor(qcursor);
+            Rps_TwoValues respair =
+              Rps_ObjectValue(_.recvob).send2(&_, selob_display_object_payload_qt,
+                                              _.objwnd, Rps_Value((intptr_t)depthi+1));
+            qcursor = qoutxtedit->textCursor();
+            RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt recvob="
+                          << _.recvob
+                          << " of class:" << Rps_Value(_.recvob).compute_class(&_)
+                          << " after sending selector " << selob_display_object_payload_qt
+                          << ", objwnd=" << _.objwnd
+                          << ", got respair .main=" << respair.main()
+                          << "+ .xtra=" << respair.xtra()
+                          << ", depthi=" << depthi << ", qcursor➔" << qcursor.position());
+          }
+        else   /// too deep payload
+          {
+            // we display an ellipsis
+            qcursor.insertText(QString("…"), //U+2026 HORIZONTAL ELLIPSIS
+                               RpsQOutputTextEdit::etc_text_format());
+          }
 #warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt should send display_object_payload_qt
-    }
-    else {// no payl
-      RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA  recvob=" << _.recvob
-		    << " without payload");
-      qcursor.insertText(QString("- no payload -"),
-			 RpsQOutputTextEdit::objectdecor_text_format());
-      qcursor.insertText("\n");
-    }
+      }
+    else  // no payl
+      {
+        RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA  recvob=" << _.recvob
+                      << " without payload");
+        qcursor.insertText(QString("- no payload -"),
+                           RpsQOutputTextEdit::objectdecor_text_format());
+        qcursor.insertText("\n");
+      }
     qoutxtedit->setTextCursor(qcursor);
   }
 #warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt incomplete
