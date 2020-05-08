@@ -1362,6 +1362,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_5nSiRIxoYQp00MSnYA,
                  callerframe, //
                  Rps_ObjectRef recvob;
+                 Rps_ObjectRef classob;
                  Rps_ObjectRef objwnd;
                  Rps_Value recdepth;
                  Rps_Value optqtposition;
@@ -1394,6 +1395,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                 << std::endl << "+++ object!display_object_content_qt +++");
   std::lock_guard<std::recursive_mutex> objrecvmtx(*(_.recvob->objmtxptr()));
   RPS_ASSERT (owinpayl);
+  _.classob = _.recvob->compute_class(&_);
   RpsQWindow* qwindow = owinpayl->qtptr();
   RPS_ASSERT (qwindow);
   RpsQOutputTextEdit* qoutxtedit = qwindow->output_textedit();
@@ -1432,15 +1434,24 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                        qcfmt);
     qcursor.insertText("\n");
     RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _.recvob
-                  << " after title qcursor➔" << qcursor.position());
+                  << " before oid qcursor➔" << qcursor.position());
     {
       qcursor.insertText("⁑", //U+2051 TWO ASTERISKS ALIGNED VERTICALLY
                          RpsQOutputTextEdit::objectdecor_text_format());
       qcursor.insertText(_.recvob->string_oid().c_str(),
                          RpsQOutputTextEdit::oid_text_format());
     }
-    qcursor.insertText("\n");
+    qcursor.insertText(" ∈", //U+2208 ELEMENT OF
+                       qcfmt);
     qoutxtedit->setTextCursor(qcursor);
+    RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _.recvob
+                  << ", classob=" << _.classob
+                  << " before class qcursor➔" << qcursor.position());
+    qoutxtedit->display_output_object_occurrence(&_, _.classob, depthi+1);
+    qcursor = qoutxtedit->textCursor();
+    RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _.recvob
+                  << ", classob=" << _.classob
+                  << " after class qcursor➔" << qcursor.position());
   } // end title block
   /////
   RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _.recvob << " bodyblock");
