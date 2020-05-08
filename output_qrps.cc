@@ -1582,7 +1582,36 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
           _.curcomp = Rps_Value(nullptr);
         }
     }
-  qcursor.endEditBlock();
+  ////// ----- payload -----
+  {
+    auto payl = _.recvob->get_payload();
+    if (payl != nullptr) {
+      RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA  recvob=" << _.recvob
+		    << " with payload @" << payl << " of type: "
+		    << payl->payload_type_name());
+      qcursor.insertText(QString("⬟ %1:").arg(payl->payload_type_name().c_str()),
+			 RpsQOutputTextEdit::objectdecor_text_format());
+      qcursor.insertText("\n");
+      // Otherwise send RefPerSys selector display_object_payload_qt of oid
+      // _1Win5yzaf1L02cBUlV to dispval with winob, depth...
+      Rps_ObjectRef selob_display_object_payload_qt =
+        RPS_ROOT_OB(_14M7WuJSWw702zB0M9);
+      RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt recvob="
+                    << _.recvob
+                    << " of class:" << Rps_Value(_.recvob).compute_class(&_)
+                    << " before sending selector " << selob_display_object_payload_qt
+		    << ", depthi=" << depthi << ", qcursor➔" << qcursor.position());
+#warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt should send display_object_payload_qt
+    }
+    else {// no payl
+      RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA  recvob=" << _.recvob
+		    << " without payload");
+      qcursor.insertText(QString("- no payload -"),
+			 RpsQOutputTextEdit::objectdecor_text_format());
+      qcursor.insertText("\n");
+    }
+    qoutxtedit->setTextCursor(qcursor);
+  }
 #warning rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt incomplete
   RPS_WARNOUT("incomplete rpsapply_5nSiRIxoYQp00MSnYA !method object/display_object_content_qt" << std::endl
               << "... recvob=" << _.recvob
@@ -1592,6 +1621,8 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
               << " nbcomps=" << nbcomps);
   _.resmainv = _.recvob;
   qoutxtedit->setTextCursor(qcursor);
+  ////// ------ ending method object!display_object_content_qt ------
+  qcursor.endEditBlock();
   RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA end recvob=" << _.recvob
                 << "objwnd =" << _.objwnd
                 << ", recdepth=" <<  _.recdepth << ", qcursor➔" << qcursor.position()

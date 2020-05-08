@@ -28,6 +28,8 @@ RPS_INSTALL_ROOT_OB(_0D6zqQNe4eC02bjfGs) //email∈symbol
 RPS_INSTALL_ROOT_OB(_0J1C39JoZiv03qA2HA) //mutable_set∈class
 RPS_INSTALL_ROOT_OB(_0LbCts6NacB03SMXz4) //home_page∈symbol
 RPS_INSTALL_ROOT_OB(_0XMNvzdABUM03Bj7WP) //git_id∈symbol
+RPS_INSTALL_ROOT_OB(_0Z23UbC0G9b01WZZPN) //display_object_payload_qt∈symbol
+RPS_INSTALL_ROOT_OB(_14M7WuJSWw702zB0M9) //∈named_selector
 RPS_INSTALL_ROOT_OB(_1wihX3eWD9o00QnxUX) //∈mutable_set
 RPS_INSTALL_ROOT_OB(_1DBiKRl70P304DEMoR) //our_contributors∈symbol
 RPS_INSTALL_ROOT_OB(_1DUx3zfUzIb04lqNVt) //rps_window∈class
@@ -72,7 +74,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 50
+#define RPS_NB_ROOT_OB 52
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh

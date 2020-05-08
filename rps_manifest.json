@@ -62,6 +62,10 @@
    "obj" : "_0XMNvzdABUM03Bj7WP"
   },
   {
+   "nam" : "display_object_payload_qt",
+   "obj" : "_0Z23UbC0G9b01WZZPN"
+  },
+  {
    "nam" : "our_contributors",
    "obj" : "_1DBiKRl70P304DEMoR"
   },
@@ -124,6 +128,8 @@
   "_0J1C39JoZiv03qA2HA",
   "_0LbCts6NacB03SMXz4",
   "_0XMNvzdABUM03Bj7WP",
+  "_0Z23UbC0G9b01WZZPN",
+  "_14M7WuJSWw702zB0M9",
   "_1wihX3eWD9o00QnxUX",
   "_1DBiKRl70P304DEMoR",
   "_1DUx3zfUzIb04lqNVt",
@@ -167,7 +173,7 @@
   "_9BnrMLXUhfG00llx8X",
   "_9Gz1oNPCnkB00I6VRS"
  ],
- "origitid" : "da53317d36efeb209ca392147fb265697a544841+",
+ "origitid" : "9648732f0d79020b546d36c2476103130f0c6b32+",
  "plugins" : [],
  "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }
