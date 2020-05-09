@@ -44,8 +44,10 @@ RPS_INSTALL_ROOT_OB(_36I1BY2NetN03WjrOv) //symbol∈class
 RPS_INSTALL_ROOT_OB(_3eg155drDR100uqE6R) //qtptr∈class
 RPS_INSTALL_ROOT_OB(_3GHJQW0IIqS01QY8qD) //json∈class
 RPS_INSTALL_ROOT_OB(_3N8vZ2Cw62z024XxCg) //first_name∈symbol
+RPS_INSTALL_ROOT_OB(_3O1QUNKZ4bU02amQus) //∈rps_routine
 RPS_INSTALL_ROOT_OB(_3Q3hJsSgCDN03GTYW5) //symbol∈symbol
 RPS_INSTALL_ROOT_OB(_41OFI3r0S1t03qdB2E) //class∈class
+RPS_INSTALL_ROOT_OB(_4bkpL4a6xlO00VnyM8) //compute_set_of_own_method_selectors∈symbol
 RPS_INSTALL_ROOT_OB(_4jISxMJ4PYU0050nUl) //closure∈class
 RPS_INSTALL_ROOT_OB(_4ojpzRzyRWz02DNWMe) //∈named_selector
 RPS_INSTALL_ROOT_OB(_4pSwobFHGf301Qgwzh) //named_attribute∈class
@@ -64,6 +66,7 @@ RPS_INSTALL_ROOT_OB(_6NVM7sMcITg01ug5TC) //tuple∈class
 RPS_INSTALL_ROOT_OB(_6QAanFi9yLx00spBST) //last_name∈symbol
 RPS_INSTALL_ROOT_OB(_6XLY6QfcDre02922jz) //value∈class
 RPS_INSTALL_ROOT_OB(_7b8jzCpOStA04e0jxs) //qobject∈class
+RPS_INSTALL_ROOT_OB(_7OrPRWQEg2o043XvK2) //rps_routine∈class
 RPS_INSTALL_ROOT_OB(_7X9eGs8601M021nMue) //object∈symbol
 RPS_INSTALL_ROOT_OB(_8xCV6GDXYMa02mK5xy) //display_object_content_qt∈symbol
 RPS_INSTALL_ROOT_OB(_8J6vNYtP5E800eCr5q) //∈space
@@ -74,7 +77,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 52
+#define RPS_NB_ROOT_OB 55
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh

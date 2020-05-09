@@ -1274,6 +1274,8 @@ rps_nb_root_objects(void)
 
 
 
+
+////////////////////////////////////////////////////////////////
 /***************** class info payload **********/
 
 void
@@ -1339,6 +1341,7 @@ Rps_PayloadClassInfo::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
     jv["class_attrset"] = rps_dump_json_value(du,atset);
 } // end Rps_PayloadClassInfo::dump_json_content
 
+
 void
 Rps_PayloadClassInfo::loader_put_symbname(Rps_ObjectRef obr, Rps_Loader*ld)
 {
@@ -1383,6 +1386,49 @@ Rps_PayloadClassInfo::class_name_str(void) const
   }
   return obrown->oid().to_string();
 } // end Rps_PayloadClassInfo::class_name_str
+
+
+Rps_SetValue
+Rps_PayloadClassInfo::compute_set_of_own_method_selectors(Rps_CallFrame*callerframe) const
+{
+  Rps_ObjectRef ob_compute_set_of_own_method_selectors
+    = RPS_ROOT_OB(_4bkpL4a6xlO00VnyM8);
+  RPS_LOCALFRAME(ob_compute_set_of_own_method_selectors,
+                 callerframe,
+                 Rps_ObjectRef obcursel; //
+                 Rps_ClosureValue curclos; //
+                 Rps_SetValue setsel; //
+                );
+  std::set<Rps_ObjectRef> mutset;
+  std::mutex mutlock;
+  auto obrown = owner();
+  if (!obrown)
+    return Rps_SetValue();
+  std::lock_guard<std::recursive_mutex> guown(*(obrown->objmtxptr()));
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
+  {
+    std::lock_guard<std::mutex> gu(mutlock);
+    for (Rps_ObjectRef obr: mutset)
+      {
+        gc->mark_obj (obr);
+      }
+  });
+  for (auto& it : pclass_methdict)
+    {
+      _.obcursel = it.first;
+      _.curclos = it.second;
+      if (!_.obcursel)
+        continue;
+      if (!_.curclos)
+        continue;
+      mutset.insert(_.obcursel);
+    };
+  _.setsel = Rps_SetValue(mutset);
+  return _.setsel;
+} // end Rps_PayloadClassInfo::compute_set_of_own_method_selectors
+
+
+
 
 /***************** mutable set of objects payload **********/
 
@@ -1704,6 +1750,8 @@ Rps_PayloadSymbol::set_of_all_symbols(void)
   }
   return Rps_SetValue(vecob);
 } // end Rps_PayloadSymbol::set_of_all_symbols
+
+
 
 Rps_ObjectRef
 Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::string& str, bool dontfail)

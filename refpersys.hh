@@ -1171,6 +1171,7 @@ public:
   inline Rps_SetValue(const std::initializer_list<Rps_Value>&valil);
   // "dynamic" casting :
   inline Rps_SetValue(const Rps_Value);
+  inline Rps_SetValue();
 };    // end class Rps_SetValue
 
 
@@ -2228,6 +2229,7 @@ unsigned constexpr rps_set_k2 = 8963;
 unsigned constexpr rps_set_k3 = 19073;
 class Rps_SetOb: public Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3>
 {
+  static Rps_SetOb _setob_emptyset_;
 public:
   friend class Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3>;
   typedef Rps_SeqObjRef<Rps_SetOb, Rps_Type::Set, rps_set_k1, rps_set_k2, rps_set_k3> parentseq_t;
@@ -2252,6 +2254,7 @@ public:
   inline int element_index(const Rps_ObjectRef obelem) const;
   inline bool contains(const Rps_ObjectRef obelem) const { return element_index(obelem) >= 0; };
   unsigned cardinal() const { return cnt(); };
+  static const Rps_SetOb& the_empty_set(void) { return _setob_emptyset_; };
 #warning Rps_SetOb very incomplete
 };// end of Rps_SetOb
 
@@ -2852,9 +2855,12 @@ public:
   };
   std::string class_name_str(void) const;
   void put_symbname(Rps_ObjectRef obr);
-  const Rps_SetOb*class_attrset(void) const { return  pclass_attrset.load(); }
+  const Rps_SetOb*class_attrset(void) const
+  { return  pclass_attrset.load(); };
   void loader_put_symbname(Rps_ObjectRef obr, Rps_Loader*ld);
-  void loader_put_attrset(const Rps_SetOb*setob, Rps_Loader*ld);			  
+  void loader_put_attrset(const Rps_SetOb*setob, Rps_Loader*ld);
+  ///
+  Rps_SetValue compute_set_of_own_method_selectors(Rps_CallFrame*) const;
   Rps_ClosureValue get_own_method(Rps_ObjectRef obsel) const
   {
     if (!obsel)

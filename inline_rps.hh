@@ -381,6 +381,11 @@ Rps_SetOb::element_index(const Rps_ObjectRef obelem) const
   return -1;
 } // end Rps_SetValue::element_index
 
+Rps_SetValue::Rps_SetValue (void)
+  : Rps_Value (&Rps_SetOb::the_empty_set(), Rps_ValPtrTag{})
+{
+} // end of Rps_SetValue::Rps_SetValue empty
+
 
 Rps_SetValue::Rps_SetValue (const std::set<Rps_ObjectRef>& obset)
   : Rps_Value (Rps_SetOb::make(obset), Rps_ValPtrTag{})

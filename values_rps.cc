@@ -202,6 +202,7 @@ Rps_SetOb::Rps_SetOb(const std::set<Rps_ObjectRef>& setob, Rps_SetTag)
 } // end Rps_SetOb::Rps_SetOb
 
 
+Rps_SetOb Rps_SetOb::_setob_emptyset_(0,Rps_SetTag{});
 
 const Rps_SetOb*
 Rps_SetOb::make(const std::set<Rps_ObjectRef>& setob)

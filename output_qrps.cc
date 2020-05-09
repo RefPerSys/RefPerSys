@@ -1697,7 +1697,9 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
   RPS_ASSERT(_.depthv.is_int());
   auto depthi = _.depthv.to_int();
   RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT start !method class/display_object_payload_qt @!@incomplete° obclass="
-                << _.obclass << ", obwin=" << _.obwin << ", depthi=" << depthi
+                << _.obclass << ", obwin=" << _.obwin
+                << " of class:" << Rps_Value(_.obwin).compute_class(&_)
+                << ", depthi=" << depthi
                 << RPS_FULL_BACKTRACE_HERE(2,
                     "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_qt")		);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.obwin->objmtxptr()));
