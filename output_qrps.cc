@@ -1702,7 +1702,7 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
   RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT start !method class/display_object_payload_qt @!@incomplete° obclass="
                 << _.obclass << ", obwin=" << _.obwin
                 << " of class:" << Rps_Value(_.obwin).compute_class(&_)
-                << ", depthi=" << depthi
+                << ", depthi=" << depthi << std::endl
                 << RPS_FULL_BACKTRACE_HERE(2,
                     "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_qt")		);
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.obwin->objmtxptr()));
@@ -1735,6 +1735,7 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
       RPS_WARNOUT("rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_qt obclass=" << _.obclass << " without superclass");
     }
   qcursor.insertText("\n");
+  outedit->setTextCursor(qcursor);
   //// --- display method dictionnary ---
   {
     _.setselv = paylclinf->compute_set_of_own_method_selectors(&_);
@@ -1742,19 +1743,44 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
     const Rps_SetOb* setsel = _.setselv.as_set();
     RPS_ASSERT(setsel);
     unsigned cardsel = setsel->cardinal();
+    if (cardsel == 0)
+      qcursor.insertText("⬙ no method ", // U+2B19 DIAMOND WITH BOTTOM HALF BLACK
+                         RpsQOutputTextEdit::objectdecor_text_format());
+    else if (cardsel == 1)
+      qcursor.insertText("⬙ one method:", // U+2B19 DIAMOND WITH BOTTOM HALF BLACK
+                         RpsQOutputTextEdit::objectdecor_text_format());
+    else
+      qcursor.insertText(QString("⬙ %1 methods:") //  // U+2B19 DIAMOND WITH BOTTOM HALF BLACK
+                         .arg(cardsel),
+                         RpsQOutputTextEdit::objectdecor_text_format());
+    qcursor.insertText("\n");
+    outedit->setTextCursor(qcursor);
     for (unsigned ix=0; ix<cardsel; ix++)
       {
+        qcursor = outedit->textCursor();
         _.obcursel = setsel->at(ix);
         RPS_ASSERT(_.obcursel);
         _.curmethclos = paylclinf->get_own_method(_.obcursel);
         RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass
                       << ", ix#" << ix
                       << ", obcursel=" << _.obcursel
-                      << ", curmethclos=" << _.curmethclos);
-
+                      << ", curmethclos=" << _.curmethclos << ", qcursor➔" << qcursor.position());
+        qcursor.insertText("⬘", // U+2B18 DIAMOND WITH TOP HALF BLACK
+                           RpsQOutputTextEdit::objectdecor_text_format());
+        outedit->setTextCursor(qcursor);
+        outedit->display_output_object_occurrence(&_, _.obcursel, depthi+1);
+        qcursor = outedit->textCursor();
+        qcursor.insertText(" ⟾ ", // U+27FE LONG RIGHTWARDS DOUBLE ARROW FROM BAR
+                           RpsQOutputTextEdit::objectdecor_text_format());
+        outedit->setTextCursor(qcursor);
+        outedit->display_output_value(&_, _.curmethclos, depthi+1);
+        qcursor = outedit->textCursor();
+        qcursor.insertText("\n");
+        outedit->setTextCursor(qcursor);
       }
   }
-#warning rpsapply_8lKdW7lgcHV00WUOiT method class/display_object_payload_qt @!@incomplete
+  RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT method class/display_object_payload_qt end obclass="  << _.obclass);
+  _.resmainv = _.obclass;
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _8lKdW7lgcHV00WUOiT
 } // end of rpsapply_8lKdW7lgcHV00WUOiT
 
