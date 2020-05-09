@@ -1601,7 +1601,8 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
         RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA  recvob=" << _.recvob
                       << " with payload @" << payl << " of type: "
                       << payl->payload_type_name());
-        qcursor.insertText(QString("⬟ %1:").arg(payl->payload_type_name().c_str()),
+        qcursor.insertText(QString("⬟ %1:") // U+2B1F BLACK PENTAGON
+                           .arg(payl->payload_type_name().c_str()),
                            RpsQOutputTextEdit::objectdecor_text_format());
         qcursor.insertText("\n");
         if (depthi < qoutxtedit->max_output_depth())
@@ -1666,33 +1667,70 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _5nSiRIxoYQp00MSnYA
 } // end of rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_qt
 
+
+
+////////////////////////////////////////////////////////////////
 // C++ closure for _8lKdW7lgcHV00WUOiT
 //!method class/display_object_payload_qt
 extern "C" rps_applyingfun_t rpsapply_8lKdW7lgcHV00WUOiT;
 Rps_TwoValues
 rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0, const Rps_Value arg1, ///
-                             const Rps_Value arg2, const Rps_Value arg3, ///
+                             const Rps_Value arg0class, const Rps_Value arg1obwin, ///
+                             const Rps_Value arg2depth, const Rps_Value _arg3 __attribute__((unused)), ///
                              const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
 {
   RPS_LOCALFRAME(rpskob_8lKdW7lgcHV00WUOiT,
                  callerframe, //
-                 //Rps_Value arg0v;
-                 //Rps_Value arg1v;
-                 //Rps_Value arg2v;
-                 //Rps_Value arg3v;
-                 //Rps_ObjectRef obr;
+                 Rps_ObjectRef obclass; //
+                 Rps_ObjectRef obwin; //
+                 Rps_ObjectRef obsuper; //
+                 Rps_Value depthv;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
-                 //....etc....
                 );
-  // _.arg0v = arg0;
-  // _.arg1v = arg1;
-  // _.arg2v = arg2;
-  // _.arg3v = arg3;
   ////==== body of _8lKdW7lgcHV00WUOiT ====
-  RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT start!method class/display_object_payload_qt @!@incomplete° arg0="
-		<< arg0 << ", arg1=" << arg1 << ", arg2=" << arg2);
+  _.obclass = arg0class.as_object();
+  RPS_ASSERT(_.obclass);
+  _.obwin = arg1obwin.as_object();
+  RPS_ASSERT(_.obwin);
+  _.depthv = arg2depth;
+  RPS_ASSERT(_.depthv.is_int());
+  auto depthi = _.depthv.to_int();
+  RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT start !method class/display_object_payload_qt @!@incomplete° obclass="
+                << _.obclass << ", obwin=" << _.obwin << ", depthi=" << depthi
+                << RPS_FULL_BACKTRACE_HERE(2,
+                    "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_qt")		);
+  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.obwin->objmtxptr()));
+  std::lock_guard<std::recursive_mutex> objclassmtx(*(_.obclass->objmtxptr()));
+  auto qoutwpayl =  _.obwin->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
+  RPS_ASSERT(qoutwpayl);
+  RpsQOutputTextEdit*outedit = qoutwpayl->qtptr();
+  RPS_ASSERT(outedit);
+  QTextCursor qcursor = outedit->textCursor();
+  Rps_PayloadClassInfo* paylclinf = _.obclass->get_classinfo_payload();
+  RPS_ASSERT(paylclinf != nullptr);
+  /// --- display superclass ---
+  _.obsuper = paylclinf->superclass();
+  RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass << " has obsuper=" << _.obsuper);
+  if (_.obsuper)
+    {
+      qcursor.insertText("⬠ super: ", // U+2B20 WHITE PENTAGON
+                         RpsQOutputTextEdit::objectdecor_text_format());
+      outedit->setTextCursor(qcursor);
+      outedit->display_output_object_occurrence(&_, _.obclass, depthi+1);
+      qcursor = outedit->textCursor();
+    }
+  else
+    {
+      // It should never happen that a class has no superclass, but
+      // we do display something to facilitate debugging of the
+      // persistent heap.
+      qcursor.insertText("⬠ no-super!", // U+2B20 WHITE PENTAGON
+                         RpsQOutputTextEdit::objectdecor_text_format());
+      RPS_WARNOUT("rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_qt obclass=" << _.obclass << " without superclass");
+    }
+  qcursor.insertText("\n");
+  //// we should --- display method dictionnary ---
 #warning rpsapply_8lKdW7lgcHV00WUOiT method class/display_object_payload_qt @!@incomplete
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _8lKdW7lgcHV00WUOiT
 } // end of rpsapply_8lKdW7lgcHV00WUOiT
