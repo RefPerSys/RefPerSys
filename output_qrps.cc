@@ -461,7 +461,7 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
                 << "... dispob=" << _.dispob 	<< " of class:" << _.dispob->compute_class(&_) << std::endl
                 << "... depth=" << depth << std::endl
                 << RPS_DEBUG_BACKTRACE_HERE(1, "display_output_object_occurrence")
-                <<std::endl);
+                << std::endl);
   std::lock_guard<std::recursive_mutex> guobwin (*(_.winob->objmtxptr()));
   auto qoutwpayl =
     _.winob->get_dynamic_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
@@ -480,6 +480,7 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
       // we display a lozenge for empty objects
       qcursor.insertText(QString("◊"), //U+25CA LOZENGE
                          qcfmt);
+      qoutxed->setTextCursor(qcursor);
     }
   else if (depth >  max_output_depth())
     {
@@ -487,6 +488,7 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
       // we display a five dot
       qcursor.insertText(QString("⁙"), //U+2059 FIVE DOT PUNCTUATION
                          qcfmt);
+      qoutxed->setTextCursor(qcursor);
     }
   else   // when _.dispob is not empty....
     {
@@ -520,9 +522,11 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
                                     << " depth#" << depth);
     };				// end if _.dispob non-empty
   RPS_ASSERT(_.winob);
+  qoutxed->setTextCursor(qcursor);
   RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence end winob=" << _.winob
                 << ", dispob=" << _.dispob
-                << ", depth=" << depth << ", qcursor➔" << qcursor.position());
+                << ", depth=" << depth << ", qcursor➔" << qcursor.position()
+		<< std::endl);
 } // end RpsQOutputTextEdit::display_output_object_occurrence
 
 
