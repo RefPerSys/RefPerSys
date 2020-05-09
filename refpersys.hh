@@ -455,7 +455,7 @@ while (0)
   if (RPS_UNLIKELY(!(Cond))) {					\
   fprintf(stderr, "\n\n"					\
 	  "%s*** RefPerSys ASSERT failed: %s%s\n"		\
-	  "%s:%d: <%s>\n\n",					\
+	  "%s:%d: {%s}\n\n",					\
 	  (rps_stderr_istty?RPS_TERMINAL_BOLD_ESCAPE:""),	\
           #Cond,						\
 	  (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),	\
