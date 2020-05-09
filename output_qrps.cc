@@ -1684,9 +1684,12 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef obclass; //
                  Rps_ObjectRef obwin; //
                  Rps_ObjectRef obsuper; //
-                 Rps_Value depthv;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
+                 Rps_Value depthv; //
+                 Rps_Value resmainv; //
+                 Rps_Value resxtrav; //
+                 Rps_SetValue setselv; //
+                 Rps_ObjectRef obcursel; //
+                 Rps_ClosureValue curmethclos;
                 );
   ////==== body of _8lKdW7lgcHV00WUOiT ====
   _.obclass = arg0class.as_object();
@@ -1732,7 +1735,25 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
       RPS_WARNOUT("rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_qt obclass=" << _.obclass << " without superclass");
     }
   qcursor.insertText("\n");
-  //// we should --- display method dictionnary ---
+  //// --- display method dictionnary ---
+  {
+    _.setselv = paylclinf->compute_set_of_own_method_selectors(&_);
+    RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass << " has setselv=" << _.setselv);
+    const Rps_SetOb* setsel = _.setselv.as_set();
+    RPS_ASSERT(setsel);
+    unsigned cardsel = setsel->cardinal();
+    for (unsigned ix=0; ix<cardsel; ix++)
+      {
+        _.obcursel = setsel->at(ix);
+        RPS_ASSERT(_.obcursel);
+        _.curmethclos = paylclinf->get_own_method(_.obcursel);
+        RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass
+                      << ", ix#" << ix
+                      << ", obcursel=" << _.obcursel
+                      << ", curmethclos=" << _.curmethclos);
+
+      }
+  }
 #warning rpsapply_8lKdW7lgcHV00WUOiT method class/display_object_payload_qt @!@incomplete
   RPS_LOCALRETURNTWO(_.resmainv, _.resxtrav); // result of _8lKdW7lgcHV00WUOiT
 } // end of rpsapply_8lKdW7lgcHV00WUOiT
