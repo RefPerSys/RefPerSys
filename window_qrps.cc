@@ -294,7 +294,8 @@ RpsQWindow::create_winobj(Rps_CallFrame*callerframe)
   win_objref = _.obwin;
   RPS_DEBUG_LOG(GUI, "RpsQWindow::create_winobj rank#" << win_rank
                 << " winobjref=" << _.obwin
-                << " of class:" << _.obwin->compute_class(&_));
+                << " of class:" << _.obwin->compute_class(&_)
+                << " paylw@" << (void*)paylw);
   win_command_textedit->create_cmdedit_object(&_);
   win_output_textedit->create_outpedit_object(&_);
 } // end RpsQWindow::create_winobj

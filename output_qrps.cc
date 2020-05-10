@@ -307,7 +307,8 @@ RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
   auto paylt = _.obtxed->put_new_plain_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   paylt->set_qtptr(this);
   RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::create_outpedit_object obtxed=" << _.obtxed
-		<< ", paylt@" << paylt);
+                << ", paylt@" << paylt << std::endl
+                << RPS_DEBUG_BACKTRACE_HERE(1,"RpsQOutputTextEdit::create_outpedit_object"));
   outptxt_objref = _.obtxed;
 } // end RpsQOutputTextEdit::create_outpedit_object
 
@@ -330,12 +331,12 @@ RpsQOutputTextEdit::compute_outpedit_from_object(Rps_CallFrame* callerframe, con
   if (!payl)
     return nullptr;
   RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::compute_outpedit_from_object start obr=" << _.obr
-		<< " of class:" << _.obr->compute_class(&_)
-		<< ", payl@" << (void*)payl);
+                << " of class:" << _.obr->compute_class(&_)
+                << ", payl@" << (void*)payl);
   std::string payltypestr = payl->payload_type_name();
   RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::compute_outpedit_from_object obr=" << _.obr
-		<< " of class:" << _.obr->compute_class(&_)
-		<< ", payl@" << (void*)payl
+                << " of class:" << _.obr->compute_class(&_)
+                << ", payl@" << (void*)payl
                 << ", payltypestr=" << payltypestr);
   if (_.obclass == RPS_ROOT_OB(_1DUx3zfUzIb04lqNVt) && payltypestr=="PayloadQt:RpsQWindow")   // rps_window
     {
@@ -1787,10 +1788,10 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
   RPS_ASSERT(paylclinf != nullptr);
   {
     RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT before rps_compute_outpedit_from_object on obwin=" << _.obwin
-		  << " of class:" << _.obwin->compute_class(&_));
+                  << " of class:" << _.obwin->compute_class(&_));
     auto compoutedit= rps_compute_outpedit_from_object(&_, _.obwin);
     RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass
-		  << ", obwin=" << _.obwin << " after rps_compute_outpedit_from_object" << std::endl
+                  << ", obwin=" << _.obwin << " after rps_compute_outpedit_from_object" << std::endl
                   << "... outedit@" << (void*)outedit << ", compoutedit@" << compoutedit);
     RPS_ASSERT(compoutedit == outedit);
   }
