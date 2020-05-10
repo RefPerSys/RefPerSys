@@ -190,6 +190,7 @@ else
 	echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
 	printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
 endif
+	@printf "git-pushed commit %s of http://refpersys.org/ ...\n" $$(./generate-gitid.sh)
 
 
 
