@@ -657,7 +657,7 @@ RpsQCreateNamedInstanceDialog::on_ok_trigger()
       _.obsymb->put_space(Rps_ObjectRef::root_space());
       _.obnewinst = Rps_ObjectRef::make_object(&_, _.obclass, Rps_ObjectRef::root_space());
       RPS_DEBUG_LOG(GUI, "RpsQCreateNamedInstanceDialog obsymb=" << _.obsymb
-                    << " obnewinst=" << _.obnewinst);
+                    << " made obnewinst=" << _.obnewinst << " of class:" << _.obclass);
       if (_.obclass == RPS_ROOT_OB(_0J1C39JoZiv03qA2HA)) // ̀ mutable_set` class
         _.obnewinst ->put_new_plain_payload<Rps_PayloadSetOb>();
       else if (_.obclass == RPS_ROOT_OB(_0J1C39JoZiv03qA2HA)) // ̀ mutable_vector` class

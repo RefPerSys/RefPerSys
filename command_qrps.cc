@@ -66,7 +66,7 @@ RpsQCommandTextEdit::create_cmdedit_object(Rps_CallFrame*callerframe)
                                RPS_ROOT_OB(_54CP9eaTmxT00lzbEW) /*rps_command_textedit class*/);
   auto paylt = _.obcmed->put_new_plain_payload<Rps_PayloadQt<RpsQCommandTextEdit>>();
   paylt->set_qtptr(this);
-  RPS_DEBUG_LOG(GUI, "RpsQCommandTextEdit::create_cmdedit_object obcmed=" << _.obcmed);
+  RPS_DEBUG_LOG(GUI, "RpsQCommandTextEdit::create_cmdedit_object obcmed=" << _.obcmed << " with paylt@" << (void*)paylt);
   cmdtxt_objref = _.obcmed;
 } // end RpsQCommandTextEdit::create_cmdedit_object
 

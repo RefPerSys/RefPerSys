@@ -307,7 +307,7 @@ RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
   auto paylt = _.obtxed->put_new_plain_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   paylt->set_qtptr(this);
   RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::create_outpedit_object obtxed=" << _.obtxed
-                << ", paylt@" << paylt << std::endl
+                << ", paylt@" << (void*)paylt << " payltype:" << paylt->payload_type_name() << std::endl
                 << RPS_DEBUG_BACKTRACE_HERE(1,"RpsQOutputTextEdit::create_outpedit_object"));
   outptxt_objref = _.obtxed;
 } // end RpsQOutputTextEdit::create_outpedit_object
