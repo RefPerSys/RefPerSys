@@ -2790,7 +2790,7 @@ public:							\
 ////// class information payload - for PaylClassInfo, objects of class
 ////// `class` _41OFI3r0S1t03qdB2E
 
-extern "C" rpsldpysig_t rpsldpy_class;
+extern "C" rpsldpysig_t rpsldpy_classinfo;
 class Rps_PayloadClassInfo : public Rps_Payload
 {
   friend class Rps_ObjectRef;
@@ -2826,7 +2826,7 @@ public:
   const Rps_SetOb* attributes_set() const { return pclass_attrset.load(); };
   virtual const std::string payload_type_name(void) const
   {
-    return "class";
+    return "classinfo";
   };
   virtual uint32_t wordsize(void) const
   {

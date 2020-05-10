@@ -1313,7 +1313,7 @@ Rps_PayloadClassInfo::dump_scan(Rps_Dumper*du) const
 void
 Rps_PayloadClassInfo::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
-  /// see function rpsldpy_class in store_rps.cc
+  /// see function rpsldpy_classinfo in store_rps.cc
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   if (pclass_symbname)

@@ -2357,14 +2357,14 @@ void rps_load_from (const std::string& dirpath)
 
 /// loading of class information payload; see
 /// Rps_PayloadClassInfo::dump_json_content in objects_rps.cc
-void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+void rpsldpy_classinfo(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   if (!jv.isMember("class_super") || !jv.isMember("class_methodict"))
-    RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+    RPS_FATALOUT("rpsldpy_classinfo: object " << obz->oid()
                  << " in space " << spacid << " lineno#" << lineno
                  << " has incomplete payload"
                  << std::endl
@@ -2379,7 +2379,7 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
       Json::Value jclasssymb = jv["class_symb"];
       auto obsymb = Rps_ObjectRef(jclasssymb, ld);
       if (!obsymb)
-        RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+        RPS_FATALOUT("rpsldpy_classinfo: object " << obz->oid()
                      << " in space " << spacid << " lineno#" << lineno
                      << " has bad class_symb"
                      << std::endl
@@ -2389,7 +2389,7 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
   Json::Value jvmethodict = jv["class_methodict"];
   unsigned nbmeth = 0;
   if (!jvmethodict.isArray())
-    RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+    RPS_FATALOUT("rpsldpy_classinfo: object " << obz->oid()
                  << " in space " << spacid << " lineno#" << lineno
                  << " has bad class_methodict"
                  << std::endl
@@ -2403,7 +2403,7 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
           || !jvcurmeth.isMember("methosel")
           || !jvcurmeth.isMember("methclos")
          )
-        RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+        RPS_FATALOUT("rpsldpy_classinfo: object " << obz->oid()
                      << " in space " << spacid << " lineno#" << lineno
                      << " has bad methodict entry#" << methix
                      << std::endl
@@ -2411,7 +2411,7 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
       auto obsel = Rps_ObjectRef(jvcurmeth["methosel"], ld);
       auto valclo = Rps_Value(jvcurmeth["methclos"], ld);
       if (!obsel || !valclo.is_closure())
-        RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+        RPS_FATALOUT("rpsldpy_classinfo: object " << obz->oid()
                      << " in space " << spacid << " lineno#" << lineno
                      << " with bad methodict entry#" << methix
                      << " for obsel=" << obsel
@@ -2427,12 +2427,12 @@ void rpsldpy_class(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
       if (valaset.is_set())
         paylclainf->loader_put_attrset(valaset.as_set(), ld);
       else if (!valaset.is_empty())
-        RPS_FATALOUT("rpsldpy_class: object " << obz->oid()
+        RPS_FATALOUT("rpsldpy_classinfo: object " << obz->oid()
                      << " in space " << spacid << " lineno#" << lineno
                      << " with bad class_attrset" << std::endl
                      << " jvatset:" << jvatset);
     }
-} // end of rpsldpy_class
+} // end of rpsldpy_classinfo
 
 
 
