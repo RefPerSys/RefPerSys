@@ -1896,7 +1896,7 @@ public:
   };
   std::string string_oid(void) const;
   inline Rps_Payload*get_payload(void) const;
-  inline const std::string payload_type_name(void) const;
+  const std::string payload_type_name(void) const;
   inline Rps_PayloadClassInfo*get_classinfo_payload(void) const;
   template <class PaylClass> PaylClass* get_dynamic_payload(void) const
   {
