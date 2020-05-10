@@ -1779,6 +1779,12 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
   QTextCursor qcursor = outedit->textCursor();
   Rps_PayloadClassInfo* paylclinf = _.obclass->get_classinfo_payload();
   RPS_ASSERT(paylclinf != nullptr);
+  {
+    auto compoutedit= rps_compute_outpedit_from_object(&_, _.obwin);
+    RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass
+                  << ", outedit@" << (void*)outedit << ", compoutedit@" << compoutedit);
+    RPS_ASSERT(compoutedit == outedit);
+  }
   /// --- display superclass ---
   _.obsuper = paylclinf->superclass();
   RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass << " has obsuper=" << _.obsuper);
@@ -1804,7 +1810,6 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
   //// --- display method dictionnary ---
   {
     _.setselv = paylclinf->compute_set_of_own_method_selectors(&_);
-    RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass << " has setselv=" << _.setselv);
     const Rps_SetOb* setsel = _.setselv.as_set();
     RPS_ASSERT(setsel);
     unsigned cardsel = setsel->cardinal();
