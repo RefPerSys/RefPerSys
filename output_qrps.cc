@@ -315,15 +315,16 @@ RpsQOutputTextEdit*
 RpsQOutputTextEdit::compute_outpedit_from_object(Rps_CallFrame* callerframe, const Rps_ObjectRef obrarg)
 {
   RpsQOutputTextEdit* res = nullptr;
-  if (!obr)
+  if (!obrarg)
     return nullptr;
   RPS_LOCALFRAME(nullptr /*no descr*/,
                  callerframe,
-                 const Rps_ObjectRef obr;
+		 Rps_ObjectRef obr;
                 );
   _.obr = obrarg;
+  std::lock_guard<std::recursive_mutex> guobr (*(_.obr->objmtxptr()));
 #warning RpsQOutputTextEdit::compute_outpedit_from_object unimplemented
-  RPS_FATALOUT("RpsQOutputTextEdit::compute_outpedit_from_object unimplemented obr=" << obr);
+  RPS_FATALOUT("RpsQOutputTextEdit::compute_outpedit_from_object unimplemented obr=" << _.obr);
   return res;
 } // end RpsQOutputTextEdit::compute_outpedit_from_object
 
