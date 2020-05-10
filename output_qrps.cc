@@ -306,7 +306,8 @@ RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
                                RPS_ROOT_OB(_1NWEOIzo3WU03mE42Q) /*rps_output_textedit class*/);
   auto paylt = _.obtxed->put_new_plain_payload<Rps_PayloadQt<RpsQOutputTextEdit>>();
   paylt->set_qtptr(this);
-  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::create_outpedit_object obtxed=" << _.obtxed);
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::create_outpedit_object obtxed=" << _.obtxed
+		<< ", paylt@" << paylt);
   outptxt_objref = _.obtxed;
 } // end RpsQOutputTextEdit::create_outpedit_object
 
@@ -328,8 +329,13 @@ RpsQOutputTextEdit::compute_outpedit_from_object(Rps_CallFrame* callerframe, con
   auto payl = _.obclass->get_payload();
   if (!payl)
     return nullptr;
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::compute_outpedit_from_object start obr=" << _.obr
+		<< " of class:" << _.obr->compute_class(&_)
+		<< ", payl@" << (void*)payl);
   std::string payltypestr = payl->payload_type_name();
   RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::compute_outpedit_from_object obr=" << _.obr
+		<< " of class:" << _.obr->compute_class(&_)
+		<< ", payl@" << (void*)payl
                 << ", payltypestr=" << payltypestr);
   if (_.obclass == RPS_ROOT_OB(_1DUx3zfUzIb04lqNVt) && payltypestr=="PayloadQt:RpsQWindow")   // rps_window
     {
@@ -1782,6 +1788,7 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
   {
     auto compoutedit= rps_compute_outpedit_from_object(&_, _.obwin);
     RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass
+		  << ", obwin=" << _.obwin
                   << ", outedit@" << (void*)outedit << ", compoutedit@" << compoutedit);
     RPS_ASSERT(compoutedit == outedit);
   }
