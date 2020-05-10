@@ -1786,10 +1786,12 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
   Rps_PayloadClassInfo* paylclinf = _.obclass->get_classinfo_payload();
   RPS_ASSERT(paylclinf != nullptr);
   {
+    RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT before rps_compute_outpedit_from_object on obwin=" << _.obwin
+		  << " of class:" << _.obwin->compute_class(&_));
     auto compoutedit= rps_compute_outpedit_from_object(&_, _.obwin);
     RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass
-		  << ", obwin=" << _.obwin
-                  << ", outedit@" << (void*)outedit << ", compoutedit@" << compoutedit);
+		  << ", obwin=" << _.obwin << " after rps_compute_outpedit_from_object" << std::endl
+                  << "... outedit@" << (void*)outedit << ", compoutedit@" << compoutedit);
     RPS_ASSERT(compoutedit == outedit);
   }
   /// --- display superclass ---
