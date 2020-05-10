@@ -310,6 +310,29 @@ RpsQOutputTextEdit::create_outpedit_object(Rps_CallFrame*callerframe)
   outptxt_objref = _.obtxed;
 } // end RpsQOutputTextEdit::create_outpedit_object
 
+
+RpsQOutputTextEdit*
+RpsQOutputTextEdit::compute_outpedit_from_object(Rps_CallFrame* callerframe, const Rps_ObjectRef obrarg)
+{
+  RpsQOutputTextEdit* res = nullptr;
+  if (!obr)
+    return nullptr;
+  RPS_LOCALFRAME(nullptr /*no descr*/,
+                 callerframe,
+                 const Rps_ObjectRef obr;
+                );
+  _.obr = obrarg;
+#warning RpsQOutputTextEdit::compute_outpedit_from_object unimplemented
+  RPS_FATALOUT("RpsQOutputTextEdit::compute_outpedit_from_object unimplemented obr=" << obr);
+  return res;
+} // end RpsQOutputTextEdit::compute_outpedit_from_object
+
+RpsQOutputTextEdit*
+rps_compute_outpedit_from_object(Rps_CallFrame* callerframe, const Rps_ObjectRef obr)
+{
+  return  RpsQOutputTextEdit::compute_outpedit_from_object(callerframe, obr);
+} // end rps_compute_outpedit_from_object
+
 void
 RpsQOutputTextEdit::output_space_or_indented_newline(QTextCharFormat qc, int depth)
 {
@@ -526,7 +549,7 @@ RpsQOutputTextEdit::display_output_object_occurrence(Rps_CallFrame*callerframe, 
   RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::display_output_object_occurrence end winob=" << _.winob
                 << ", dispob=" << _.dispob
                 << ", depth=" << depth << ", qcursor➔" << qcursor.position()
-		<< std::endl);
+                << std::endl);
 } // end RpsQOutputTextEdit::display_output_object_occurrence
 
 
@@ -1605,7 +1628,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
         RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA  recvob=" << _.recvob
                       << " with payload @" << payl << " of type: "
                       << payl->payload_type_name()
-		      << ", objwnd=" << _.objwnd);
+                      << ", objwnd=" << _.objwnd);
         qcursor.insertText(QString("⬟ %1:") // U+2B1F BLACK PENTAGON
                            .arg(payl->payload_type_name().c_str()),
                            RpsQOutputTextEdit::objectdecor_text_format());
@@ -1711,8 +1734,8 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
                 << ", depthi=" << depthi << std::endl
                 << RPS_FULL_BACKTRACE_HERE(2,
                     "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_qt")
-		<< std::endl
-		);
+                << std::endl
+               );
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_.obwin->objmtxptr()));
   std::lock_guard<std::recursive_mutex> objclassmtx(*(_.obclass->objmtxptr()));
   auto qwinpayl =  _.obwin->get_dynamic_payload<Rps_PayloadQt<RpsQWindow>>();
@@ -1783,23 +1806,23 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
         RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass
                       << ", ix#" << ix
                       << ", after displaying obcursel=" << _.obcursel
-		      << ", qcursor➔" << qcursor.position());
+                      << ", qcursor➔" << qcursor.position());
         qcursor.insertText(" ⟾ ", // U+27FE LONG RIGHTWARDS DOUBLE ARROW FROM BAR
                            RpsQOutputTextEdit::objectdecor_text_format());
         outedit->setTextCursor(qcursor);
         RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass
                       << ", ix#" << ix
                       << ", for obcursel=" << _.obcursel
-		      << ", before display curmethclos=" << _.curmethclos
-		      << ", qcursor➔" << qcursor.position());
+                      << ", before display curmethclos=" << _.curmethclos
+                      << ", qcursor➔" << qcursor.position());
         outedit->display_output_value(&_, _.curmethclos, depthi+1);
         qcursor = outedit->textCursor();
         RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _.obclass
                       << ", ix#" << ix
                       << ", for obcursel=" << _.obcursel
-		      << ", after display curmethclos=" << _.curmethclos
-		      << ", qcursor➔" << qcursor.position()
-		      << std::endl);
+                      << ", after display curmethclos=" << _.curmethclos
+                      << ", qcursor➔" << qcursor.position()
+                      << std::endl);
         qcursor.insertText("\n");
         outedit->setTextCursor(qcursor);
       }

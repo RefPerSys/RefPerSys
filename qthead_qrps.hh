@@ -612,6 +612,8 @@ public:
   static void initialize(void);
   // create a temporary RefPerSys object whose payload contains this output text edit
   void create_outpedit_object(Rps_CallFrame*);
+  // get the output text edit from an object
+  static RpsQOutputTextEdit* compute_outpedit_from_object(Rps_CallFrame* callerframe, const Rps_ObjectRef obr);
   //// display a value, maybe even nil, into this output text edit, at given depth. May throw some exception
   void display_output_value(Rps_CallFrame*callerframe, const Rps_Value value, int depth);
   //// display an object occurrence or nil, into this output text edit, at given depth. May throw some exception
@@ -630,12 +632,13 @@ public:
   };
 };				// end class RpsQOutputTextEdit
 
-// simple wrapping of display_output_value and display_output_object_occurrence
+
+// simple wrapping of display_output_value and display_output_object_occurrence and compute_outpedit_from_object
 extern "C" void rps_display_output_value(Rps_CallFrame*callerframe,
     Rps_ObjectRef obwin, const Rps_Value value, int depth);
 extern "C" void rps_display_output_object_occurrence(Rps_CallFrame*callerframe,
     Rps_ObjectRef obwin, Rps_ObjectRef obref, int depth);
-
+extern "C" RpsQOutputTextEdit* rps_compute_outpedit_from_object(Rps_CallFrame* callerframe, const Rps_ObjectRef obr);
 //////////////////////////////////////////////////////////// RpsQWindow
 //// our top window class
 class RpsQWindow : public QMainWindow
