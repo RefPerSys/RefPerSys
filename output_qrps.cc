@@ -319,12 +319,43 @@ RpsQOutputTextEdit::compute_outpedit_from_object(Rps_CallFrame* callerframe, con
     return nullptr;
   RPS_LOCALFRAME(nullptr /*no descr*/,
                  callerframe,
-		 Rps_ObjectRef obr;
+                 Rps_ObjectRef obr;
+                 Rps_ObjectRef obclass;
                 );
   _.obr = obrarg;
   std::lock_guard<std::recursive_mutex> guobr (*(_.obr->objmtxptr()));
-#warning RpsQOutputTextEdit::compute_outpedit_from_object unimplemented
-  RPS_FATALOUT("RpsQOutputTextEdit::compute_outpedit_from_object unimplemented obr=" << _.obr);
+  _.obclass = _.obr->compute_class(&_);
+  auto payl = _.obclass->get_payload();
+  if (!payl)
+    return nullptr;
+  std::string payltypestr = payl->payload_type_name();
+  RPS_DEBUG_LOG(GUI, "RpsQOutputTextEdit::compute_outpedit_from_object obr=" << _.obr
+                << ", payltypestr=" << payltypestr);
+  if (_.obclass == RPS_ROOT_OB(_1DUx3zfUzIb04lqNVt) && payltypestr=="PayloadQt:RpsQWindow")   // rps_window
+    {
+      auto paylwin = reinterpret_cast<Rps_PayloadQt<RpsQWindow>*>(payl);
+      RpsQWindow* qwin = paylwin->qtptr();
+      if (qwin) return qwin->output_textedit();
+      else return nullptr;
+    }
+  else if (_.obclass == RPS_ROOT_OB(_1NWEOIzo3WU03mE42Q) && payltypestr=="PayloadQt:RpsQOutputTextEdit")   // rps_output_textedit
+    {
+      auto payloutext = reinterpret_cast<Rps_PayloadQt<RpsQOutputTextEdit>*>(payl);
+      return payloutext->qtptr();
+    }
+  {
+    auto paylwin = dynamic_cast<Rps_PayloadQt<RpsQWindow>*>(payl);
+    if (paylwin)
+      {
+        RpsQWindow* qwin = paylwin->qtptr();
+        if (qwin) return qwin->output_textedit();
+      }
+  }
+  {
+    auto payloutext = dynamic_cast<Rps_PayloadQt<RpsQOutputTextEdit>*>(payl);
+    if (payloutext)
+      return payloutext->qtptr();
+  }
   return res;
 } // end RpsQOutputTextEdit::compute_outpedit_from_object
 
