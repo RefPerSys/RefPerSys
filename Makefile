@@ -75,7 +75,7 @@ LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 all:
 	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
-	sync
+	sync &
 	$(MAKE) $(MAKEFLAGS) refpersys
 	sync
 
