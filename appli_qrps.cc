@@ -781,14 +781,17 @@ rps_run_application(int &argc, char **argv)
       // http://man7.org/linux/man-pages/man1/pmap.1.html
       if (rps_debug_flags)
         {
-          RPS_INFORMOUT("Address Space Layout Randomization is disabled! running pmap on our pid " << (long)getpid());
+          char pmapout[64];
+          memset (pmapout, 0, sizeof(pmapout));
+          snprintf(pmapout, sizeof(pmapout), "_refpersys°%.8sPmap_%.30s-p%ld.tmp", rps_gitid, rps_hostname(),  (long)getpid());
+          RPS_INFORMOUT("Address Space Layout Randomization is disabled! running pmap with output to " << pmapout);
           fflush(nullptr);
-          char pmapcmdbuf[64];
+          char pmapcmdbuf[80];
           memset (pmapcmdbuf, 0, sizeof(pmapcmdbuf));
-          snprintf(pmapcmdbuf, sizeof(pmapcmdbuf), "/usr/bin/pmap -p %ld", (long)getpid());
-          int ok = system(pmapcmdbuf);
-          if (!ok)
-            RPS_FATALOUT("command " << pmapcmdbuf << " failed -> status " << ok);
+          snprintf(pmapcmdbuf, sizeof(pmapcmdbuf), "/usr/bin/pmap -p %ld > %s", (long)getpid(), pmapout);
+          int badpmap = system(pmapcmdbuf);
+          if (badpmap)
+            RPS_FATALOUT("command " << pmapcmdbuf << " failed -> status " << badpmap);
         }
       else
         RPS_INFORMOUT("Address Space Layout Randomization is disabled for pid " << (long) getpid());
