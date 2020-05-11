@@ -46,6 +46,7 @@ const char* rps_progname;
 void* rps_proghdl;
 
 bool rps_batch = false;
+bool rps_disable_aslr = false;
 bool rps_without_terminal_escape = false;
 
 bool rps_syslog_enabled = false;
@@ -324,6 +325,21 @@ main (int argc, char** argv)
   rps_stdout_istty = isatty(STDOUT_FILENO);
   RPS_ASSERT(argc>0);
   rps_progname = argv[0];
+  /// disable ASLR programmatically if --no-aslr is passed ; this
+  /// should ease low-level debugging with GDB
+  /// https://en.wikipedia.org/wiki/Address_space_layout_randomization
+  /// see https://askubuntu.com/a/507954/64680
+  rps_disable_aslr = false;
+  {
+    for (int ix=1; ix<argc; ix++)
+      if (!strcmp(argv[ix], "--no-aslr"))
+        rps_disable_aslr = true;
+    if (rps_disable_aslr)
+      {
+        if (personality(ADDR_NO_RANDOMIZE) == -1)
+          RPS_FATAL("%s failed to disable ASLR: %m", rps_progname);
+      }
+  }
   rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
   if (!rps_proghdl)
     {

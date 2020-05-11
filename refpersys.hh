@@ -89,6 +89,7 @@
 #include <dlfcn.h>
 #include <dirent.h>
 #include <pthread.h>
+#include <sys/personality.h>
 
 
 
@@ -196,7 +197,11 @@ public:
   }
 };				// end class RpsColophon
 
+// when set, no GUI is running
 extern "C" bool rps_batch;
+
+/// https://en.wikipedia.org/wiki/Address_space_layout_randomization
+extern "C" bool rps_disable_aslr;
 
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_common_state;

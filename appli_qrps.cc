@@ -598,6 +598,9 @@ rps_run_application(int &argc, char **argv)
     // batch flag
     const QCommandLineOption batchOption(QStringList() << "B" << "batch", "batch mode, without any windows");
     argparser.addOption(batchOption);
+    // ASLR flag, actually handled very early in main!
+    const QCommandLineOption disableAslrOption("no-aslr", "disable Adress Space Layout Randomization");
+    argparser.addOption(disableAslrOption);
     // number of jobs, for multi threading
     const QCommandLineOption nbjobOption(QStringList() << "j" << "jobs", "number of threads", "nb-jobs");
     argparser.addOption(nbjobOption);
@@ -606,6 +609,10 @@ rps_run_application(int &argc, char **argv)
     argparser.addOption(dumpafterloadOption);
     //
     argparser.process(app);
+    if (argparser.isSet(disableAslrOption))
+      {
+        RPS_ASSERT(rps_disable_aslr);
+      }
     if (argparser.isSet(withoutTerminalOption))
       {
         rps_without_terminal_escape = true;
@@ -766,6 +773,25 @@ rps_run_application(int &argc, char **argv)
       rps_dump_into(dumpdirstr);
       RPS_INFORMOUT("RefPerSys dumped after load to " << dumpdirstr << "========"
                     << std::endl);
+    }
+  ///
+  if (rps_disable_aslr)
+    {
+      // if any debug flag is set, we show the address space by running
+      // http://man7.org/linux/man-pages/man1/pmap.1.html
+      if (rps_debug_flags)
+        {
+          RPS_INFORMOUT("Address Space Layout Randomization is disabled! running pmap on our pid " << (long)getpid());
+          fflush(nullptr);
+          char pmapcmdbuf[64];
+          memset (pmapcmdbuf, 0, sizeof(pmapcmdbuf));
+          snprintf(pmapcmdbuf, sizeof(pmapcmdbuf), "/usr/bin/pmap -p %ld", (long)getpid());
+          int ok = system(pmapcmdbuf);
+          if (!ok)
+            RPS_FATALOUT("command " << pmapcmdbuf << " failed -> status " << ok);
+        }
+      else
+        RPS_INFORMOUT("Address Space Layout Randomization is disabled for pid " << (long) getpid());
     }
   if (!rps_batch)
     {
