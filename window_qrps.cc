@@ -124,6 +124,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_dispobj_action = new QAction("display &Object", this);
     win_dispobj_action->setStatusTip("Display an object");
     win_help_menu = mb->addMenu("Help");
+    win_help_legend_action = new QAction("Show Object &Legend");
   }
   /// add the actions to their menu
   {
@@ -140,6 +141,7 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
     win_create_menu->addAction(win_crplugin_action);
     win_create_menu->addAction(win_crclosob_action);
     win_display_menu->addAction(win_dispobj_action);
+    win_help_menu->addAction(win_help_legend_action);
   }
   // our central widget and related subwidgets
   win_central_splitter =  new QSplitter(this);
@@ -257,6 +259,12 @@ RpsQWindow::RpsQWindow (QWidget *parent, int rank)
   connect(win_apclose_action, &QAction::triggered, [=](void)
   {
     RpsQApplication::the_app()->do_remove_window_by_index(window_rank());
+  });
+
+  connect(win_help_legend_action, &QAction::triggered, [=](void)
+  {
+    auto dialog = new RpsQHelpLegendDialog(this);
+    dialog->show();
   });
 } // end RpsQWindow::RpsQWindow
 
@@ -1826,6 +1834,75 @@ void RpsQDisplayObjectDialog::on_cancel_trigger()
 {
   deleteLater();
 } // end RpsQDisplayObjectDialog::on_cancel_trigger()
+
+
+////////////////////////////////////////////////////////////////
+// Implementation of RpsQDisplayObjectDialog
+///////////////////////////////////////////////////////////////
+
+
+RpsQHelpLegendDialog::RpsQHelpLegendDialog(RpsQWindow* parent)
+    : QDialog(parent),
+      dialog_vbox(),
+      legend_hbox(),
+      legend_label("", this),
+      button_hbox(),
+      ok_button("OK", this),
+      cancel_button("Cancel", this)
+{
+    // Set widget names
+    setObjectName("RpsQHelpLegendDialog");
+    dialog_vbox.setObjectName("RpsQHelpLegendDialog_dialog_vbox");
+    legend_hbox.setObjectName("RpsQHelpLegendDialog_legend_hbox");
+    legend_label.setObjectName("RpsQHelpLegendDialog_object_label");
+    button_hbox.setObjectName("RpsQHelpLegendDialog_button_hbox");
+    ok_button.setObjectName("RpsQHelpLegendDialog_ok_button");
+    cancel_button.setObjectName("RpsQHelpLegendDialog_cancel_button");
+
+    // Set font
+    legend_label.setFont(QFont("Courier", 10));
+
+    // Set layout
+    dialog_vbox.addLayout(&legend_hbox);
+    legend_hbox.addWidget(&legend_label);
+    legend_hbox.addSpacing(2);
+    dialog_vbox.addLayout(&button_hbox);
+    button_hbox.addWidget(&ok_button);
+    button_hbox.addSpacing(3);
+    button_hbox.addWidget(&cancel_button);
+    setLayout(&dialog_vbox);
+
+    // Set legend label
+    legend_label.setText("Legend<br><br>"
+        "☋ : Descending Node<br>"
+        "⛝ : Closed Exit<br>"
+        "⌚: Modification Time<br>"
+        "∈ : Member of"
+    );
+
+    // Connect slots to signals
+    connect(&ok_button, &QAbstractButton::clicked, this,  
+        &RpsQHelpLegendDialog::on_ok_trigger);
+    connect(&cancel_button, &QAbstractButton::clicked, this,
+        &RpsQHelpLegendDialog::on_cancel_trigger);
+}
+
+
+RpsQHelpLegendDialog::~RpsQHelpLegendDialog()
+{
+}
+
+
+void RpsQHelpLegendDialog::on_ok_trigger()
+{
+    this->deleteLater();
+}
+
+
+void RpsQHelpLegendDialog::on_cancel_trigger()
+{
+    this->deleteLater();
+}
 
 
 ////////////////////////////////////////////////////////////////

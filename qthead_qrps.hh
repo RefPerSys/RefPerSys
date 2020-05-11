@@ -416,6 +416,32 @@ private:
 };				// end RpsQCreateClassDialog
 
 
+///////////////////////////////////////////////////////////////////////////////
+/// The dialog box for showing the object legend
+//////////////////////////////////////////////////////////////////////////////
+
+class RpsQHelpLegendDialog : public QDialog
+{
+  Q_OBJECT
+public:
+  RpsQHelpLegendDialog(RpsQWindow* parent);
+  ~RpsQHelpLegendDialog();
+
+private slots:
+  void on_ok_trigger();
+  void on_cancel_trigger();
+
+
+private:
+  QVBoxLayout dialog_vbox;
+  QHBoxLayout legend_hbox;
+  QLabel legend_label;
+  QHBoxLayout button_hbox;
+  QPushButton ok_button;
+  QPushButton cancel_button;
+};
+
+
 //////////////////////////////////////////////////////////// RpsQCommandTextEdit
 class RpsQCommandTextEdit : public QTextEdit
 {
@@ -676,6 +702,7 @@ private:
   QAction* win_dispobj_action;
 
   // for help menu
+  QAction* win_help_legend_action;
 #warning RpsQWindow help menu missing
 
 
