@@ -77,16 +77,16 @@ all:
 	$(MAKE) $(MAKEFLAGS) refpersys
 	sync
 
-refpersys: $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o
-	$(LINK.cc) $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS) __timestamp.o \
+refpersys: $(RPS_CORE_OBJECTS) __timestamp.o
+	$(LINK.cc) $(RPS_CORE_OBJECTS) __timestamp.o \
            $(LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
-sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_QT_OBJECTS) __timestamp.o
+sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) __timestamp.o
 	$(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
-           $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_QT_OBJECTS) __timestamp.o \
+           $(RPS_SANITIZED_CORE_OBJECTS) __timestamp.o \
            $(LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
@@ -94,23 +94,19 @@ sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_QT_OBJECTS) 
 
 
 ## the below target don't work yet
-#- dbg-refpersys:  $(RPS_DEBUG_CORE_OBJECTS) $(RPS_DEBUG_QT_OBJECTS) __timestamp.o
-#-         env RPS_BUILD_OPTIMFLAGS='$(RPS_BUILD_DEBUGFLAGS)' $(MAKE) $(MAKEFLAGS) -e  $(RPS_DEBUG_CORE_OBJECTS) $(RPS_DEBUG_QT_OBJECTS) 
+#- dbg-refpersys:  $(RPS_DEBUG_CORE_OBJECTS) __timestamp.o
+#-         env RPS_BUILD_OPTIMFLAGS='$(RPS_BUILD_DEBUGFLAGS)' $(MAKE) $(MAKEFLAGS) -e  $(RPS_DEBUG_CORE_OBJECTS) 
 #-         $(LINK.cc)  $(RPS_BUILD_DEBUGFLAGS) \
-#-            $(RPS_DEBUG_CORE_OBJECTS) $(RPS_DEBUG_QT_OBJECTS) __timestamp.o \
+#-            $(RPS_DEBUG_CORE_OBJECTS)  __timestamp.o \
 #-            $(LIBES) -o $@-tmp
 #-         $(MV) --backup $@-tmp $@
 #-         $(MV) --backup __timestamp.c __timestamp.c~
 #-         $x(RM) __timestamp.o
 
-objects:  $(RPS_CORE_OBJECTS) $(RPS_QT_OBJECTS)
+objects:  $(RPS_CORE_OBJECTS) 
 
 $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
-$(RPS_QT_OBJECTS): _qthead_qrps.inc.hh $(RPS_QT_SOURCES)
-
-_qthead_qrps.inc.hh: $(RPS_QT_HEADERS)
-	$(RPS_QT_MOC) $(RPS_PKG_CFLAGS) -DRPS_GITID=\"$(RPS_GIT_ID)\" $< -o $@
 
 %.o: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -o $@ $<
@@ -166,8 +162,8 @@ print-temporary-plugin-settings:
 
 ## astyle indenting
 indent:
-	./indent-cxx-files.sh $(RPS_CORE_HEADERS) $(RPS_QT_HEADERS) \
-		$(RPS_CORE_SOURCES) $(RPS_QT_SOURCES)
+	./indent-cxx-files.sh $(RPS_CORE_HEADERS) \
+		$(RPS_CORE_SOURCES) 
 
 ## redump target
 redump:
