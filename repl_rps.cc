@@ -1,10 +1,10 @@
 /****************************************************************
- * file fltk_rps.cc
+ * file repl_rps.cc
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the FLTK graphical user interface related code. See http://fltk.org/
+ *      It has the read-eval-print-loop code using GNU readline
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -32,29 +32,18 @@
 #include "refpersys.hh"
 
 
-extern "C" const char rps_fltk_gitid[];
-const char rps_fltk_gitid[]= RPS_GITID;
+extern "C" const char rps_repl_gitid[];
+const char rps_repl_gitid[]= RPS_GITID;
 
-extern "C" const char rps_fltk_date[];
-const char rps_fltk_date[]= __DATE__;
+extern "C" const char rps_repl_date[];
+const char rps_repl_date[]= __DATE__;
 
 void
-rps_garbcoll_application(Rps_GarbageCollector&gc)
+rps_read_eval_print_loop(void)
 {
-  RPS_ASSERT(rps_is_main_gui_thread());
-  RPS_ASSERT(gc.is_valid_garbcoll());
-#warning incomplete rps_garbcoll_application
-  RPS_WARNOUT("incomplete rps_garbcoll_application " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_garbcoll_application"));
-} // end rps_garbcoll_application
+#warning incomplete rps_run_application
+  RPS_WARNOUT("incomplete rps_read_eval_print_loop " << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_read_eval_print_loop"));
+} // end of rps_read_eval_print_loop
 
-bool
-rps_is_main_gui_thread(void)
-{
-#warning unimplemented rps_is_main_gui_thread
-  RPS_FATAL("unimplemented rps_is_main_gui_thread");
-} // end rps_is_main_gui_thread
-
-
-
-//////////////////////////////////////// end of file fltk_rps.cc
+// end of file repl_rps.cc

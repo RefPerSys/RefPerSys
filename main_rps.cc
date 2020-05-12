@@ -389,6 +389,14 @@ main (int argc, char** argv)
 
 
 
+void
+rps_run_application(int &argc, char **argv)
+{
+#warning incomplete rps_run_application
+  RPS_WARNOUT("incomplete rps_run_application " << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
+} // end rps_run_application
+
 
 ////////////////////////////////////////////////////////////////
 std::atomic<unsigned> Rps_Random::_rand_threadcount;

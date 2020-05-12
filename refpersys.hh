@@ -3149,7 +3149,9 @@ extern "C" unsigned rps_hardcoded_number_of_constants(void);
 
 ////////////////
 
-extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
+extern "C" void rps_run_application (int& argc, char**argv); // in fltk_rps.cc
+
+extern "C" void rps_read_eval_print_loop(void); // GNU readline based
 
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
