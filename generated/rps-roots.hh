@@ -22,13 +22,13 @@
 
 RPS_INSTALL_ROOT_OB(_02iWbXmFx8f04ldLRt) //∈named_selector
 RPS_INSTALL_ROOT_OB(_0cSUtWqTYdZ00mjeNR) //named_selector∈class
-RPS_INSTALL_ROOT_OB(_0deGTf5hQwu01xJkyi) //display_value_qt∈symbol
+RPS_INSTALL_ROOT_OB(_0deGTf5hQwu01xJkyi) //display_value_fltk∈symbol
 RPS_INSTALL_ROOT_OB(_0jdbikGJFq100dgX1n) //comment∈symbol
 RPS_INSTALL_ROOT_OB(_0D6zqQNe4eC02bjfGs) //email∈symbol
 RPS_INSTALL_ROOT_OB(_0J1C39JoZiv03qA2HA) //mutable_set∈class
 RPS_INSTALL_ROOT_OB(_0LbCts6NacB03SMXz4) //home_page∈symbol
 RPS_INSTALL_ROOT_OB(_0XMNvzdABUM03Bj7WP) //git_id∈symbol
-RPS_INSTALL_ROOT_OB(_0Z23UbC0G9b01WZZPN) //display_object_payload_qt∈symbol
+RPS_INSTALL_ROOT_OB(_0Z23UbC0G9b01WZZPN) //display_object_payload_fltk∈symbol
 RPS_INSTALL_ROOT_OB(_14M7WuJSWw702zB0M9) //∈named_selector
 RPS_INSTALL_ROOT_OB(_1wihX3eWD9o00QnxUX) //∈mutable_set
 RPS_INSTALL_ROOT_OB(_1DBiKRl70P304DEMoR) //our_contributors∈symbol
@@ -36,7 +36,7 @@ RPS_INSTALL_ROOT_OB(_1DUx3zfUzIb04lqNVt) //rps_window∈class
 RPS_INSTALL_ROOT_OB(_1EBVGSfW2m200z18rx) //name∈named_attribute
 RPS_INSTALL_ROOT_OB(_1NWEOIzo3WU03mE42Q) //rps_output_textedit∈class
 RPS_INSTALL_ROOT_OB(_1Win5yzaf1L02cBUlV) //∈named_selector
-RPS_INSTALL_ROOT_OB(_1Zo12toMRTa03uqsXh) //display_object_occurrence_qt∈symbol
+RPS_INSTALL_ROOT_OB(_1Zo12toMRTa03uqsXh) //display_object_occurrence_fltk∈symbol
 RPS_INSTALL_ROOT_OB(_2i66FFjmS7n03HNNBx) //space∈class
 RPS_INSTALL_ROOT_OB(_2A2mrPpR3Qf03p6o5b) //int∈class
 RPS_INSTALL_ROOT_OB(_2SRhV7RJt3B01yArR6) //set_of_core_functions∈symbol
@@ -68,7 +68,7 @@ RPS_INSTALL_ROOT_OB(_6XLY6QfcDre02922jz) //value∈class
 RPS_INSTALL_ROOT_OB(_7b8jzCpOStA04e0jxs) //qobject∈class
 RPS_INSTALL_ROOT_OB(_7OrPRWQEg2o043XvK2) //rps_routine∈class
 RPS_INSTALL_ROOT_OB(_7X9eGs8601M021nMue) //object∈symbol
-RPS_INSTALL_ROOT_OB(_8xCV6GDXYMa02mK5xy) //display_object_content_qt∈symbol
+RPS_INSTALL_ROOT_OB(_8xCV6GDXYMa02mK5xy) //display_object_content_fltk∈symbol
 RPS_INSTALL_ROOT_OB(_8J6vNYtP5E800eCr5q) //∈space
 RPS_INSTALL_ROOT_OB(_8YknAApDQiF04BDe3W) //mutable_vector∈class
 RPS_INSTALL_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
