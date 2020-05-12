@@ -39,9 +39,11 @@ extern "C" const char rps_repl_date[];
 const char rps_repl_date[]= __DATE__;
 
 void
-rps_read_eval_print_loop(void)
+rps_read_eval_print_loop(int &argc, char **argv)
 {
-#warning incomplete rps_run_application
+  for (int ix=0; ix<argc; ix++)
+    RPS_DEBUG_LOG(REPL, "REPL arg [" << ix << "]: " << argv[ix]);
+#warning incomplete rps_read_eval_print_loop
   RPS_WARNOUT("incomplete rps_read_eval_print_loop " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_read_eval_print_loop"));
 } // end of rps_read_eval_print_loop

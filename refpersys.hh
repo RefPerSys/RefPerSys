@@ -202,6 +202,9 @@ extern "C" bool rps_batch;
 /// https://en.wikipedia.org/wiki/Address_space_layout_randomization
 extern "C" bool rps_disable_aslr;
 
+extern "C" bool rps_run_gui;
+extern "C" bool rps_run_repl;
+
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_common_state;
 
@@ -279,12 +282,6 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 #define RPS_WARNOUT(...) RPS_WARNOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
 
 
-///////////////////////////////////////////////////////////////////////////////
-// DEBUGGING MACROS
-// Adapted from MELT Monitor project
-// https://github.com/bstarynk/melt-monitor/blob/master/meltmoni.hh#L278
-///////////////////////////////////////////////////////////////////////////////
-
 
 static inline pid_t rps_thread_id(void)
 {
@@ -309,6 +306,12 @@ extern "C" bool rps_without_terminal_escape;
 #define RPS_TERMINAL_BLINK_ESCAPE \
   (rps_without_terminal_escape?"":"\033[5m")
 
+///////////////////////////////////////////////////////////////////////////////
+// DEBUGGING MACROS
+// Adapted from MELT Monitor project
+// https://github.com/bstarynk/melt-monitor/blob/master/meltmoni.hh#L278
+///////////////////////////////////////////////////////////////////////////////
+
 extern "C" void rps_set_debug(const std::string &deblev);
 
 /// keep the debug options in alphabetical order
@@ -324,6 +327,7 @@ extern "C" void rps_set_debug(const std::string &deblev);
   dbgmacro(MSGSEND)                 \
   dbgmacro(PARSE)                   \
   dbgmacro(PARSE_STRING)            \
+  dbgmacro(REPL)                    \
   /*end RPS_DEBUG_OPTIONS*/
 
 #define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
@@ -3151,7 +3155,6 @@ extern "C" unsigned rps_hardcoded_number_of_constants(void);
 
 extern "C" void rps_run_application (int& argc, char**argv); // in fltk_rps.cc
 
-extern "C" void rps_read_eval_print_loop(void); // GNU readline based
 
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
@@ -3183,6 +3186,11 @@ extern "C" void rps_load_from (const std::string& dirpath); // in store_rps.cc
 extern "C" void rps_load_add_todo(Rps_Loader*,const std::function<void(Rps_Loader*)>& todofun);
 
 extern "C" void rps_print_types_info (void);
+
+extern "C" void rps_read_eval_print_loop(int &argc, char**argv); // GNU readline based
+
+extern "C" void rps_run_fltk_gui(int &argc, char**argv);
+
 /// C++ code can refer to root objects
 #define RPS_ROOT_OB(Oid) rps_rootob##Oid
 

@@ -57,4 +57,12 @@ rps_is_main_gui_thread(void)
 
 
 
+void
+rps_run_fltk_gui(int &argc, char**argv)
+{
+  for (int ix=0; ix<argc; ix++)
+    RPS_DEBUG_LOG(REPL, "FLTK GUI arg [" << ix << "]: " << argv[ix]);
+  RPS_FATAL("unimplemented rps_run_fltk_gui");
+} // rps_run_fltk_gui
+
 //////////////////////////////////////// end of file fltk_rps.cc

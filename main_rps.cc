@@ -47,6 +47,8 @@ void* rps_proghdl;
 bool rps_batch = false;
 bool rps_disable_aslr = false;
 bool rps_without_terminal_escape = false;
+bool rps_run_repl = false;
+bool rps_run_gui = false;
 
 bool rps_syslog_enabled = false;
 bool rps_stdout_istty = false;
@@ -308,8 +310,10 @@ main (int argc, char** argv)
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_stderr_istty = isatty(STDERR_FILENO);
   rps_stdout_istty = isatty(STDOUT_FILENO);
-  RPS_ASSERT(argc>0);
   rps_progname = argv[0];
+  // For weird reasons, the program arguments are parsed more than
+  // once... We don't care that much in practice...
+  RPS_ASSERT(argc>0);
   /// disable ASLR programmatically if --no-aslr is passed ; this
   /// should ease low-level debugging with GDB
   /// https://en.wikipedia.org/wiki/Address_space_layout_randomization
@@ -317,14 +321,28 @@ main (int argc, char** argv)
   rps_disable_aslr = false;
   {
     for (int ix=1; ix<argc; ix++)
-      if (!strcmp(argv[ix], "--no-aslr"))
-        rps_disable_aslr = true;
+      {
+        if (!strcmp(argv[ix], "--no-aslr"))
+          rps_disable_aslr = true;
+        else if (!strcmp(argv[ix], "-B") || !strcmp(argv[ix], "--batch"))
+          rps_batch = true;
+        else if (!strcmp(argv[ix], "-G") || !strcmp(argv[ix], "--gui"))
+          rps_run_gui = true;
+        else if (!strcmp(argv[ix], "-R") || !strcmp(argv[ix], "--repl"))
+          rps_run_repl = true;
+        else if (!strcmp(argv[ix], "--without-terminal"))
+          rps_without_terminal_escape = true;
+      }
     if (rps_disable_aslr)
       {
         if (personality(ADDR_NO_RANDOMIZE) == -1)
           RPS_FATAL("%s failed to disable ASLR: %m", rps_progname);
       }
   }
+  if (rps_run_gui && rps_run_repl)
+    RPS_FATAL("%s cannot run both GUI and terminal REPL", rps_progname);
+  if (rps_run_repl && rps_without_terminal_escape)
+    RPS_FATAL("%s cannot run REPL without terminal escape", rps_progname);
   rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
   if (!rps_proghdl)
     {
@@ -362,9 +380,6 @@ main (int argc, char** argv)
     rps_set_debug(std::string(argv[1]+strlen("--debug=")));
   if (argc>1 && !strncmp(argv[1], "-d", strlen("-d")))
     rps_set_debug(std::string(argv[1]+strlen("-d")));
-  for (int aix=1; aix<argc; aix++)
-    if (!strcmp(argv[aix], "--without-terminal"))
-      rps_without_terminal_escape = true;
   ///
   if (rps_syslog_enabled && rps_debug_flags != 0)
     openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
@@ -392,6 +407,10 @@ main (int argc, char** argv)
 void
 rps_run_application(int &argc, char **argv)
 {
+  if (rps_run_repl)
+    rps_read_eval_print_loop (argc, argv);
+  else if (rps_run_gui)
+    rps_run_fltk_gui(argc, argv);
 #warning incomplete rps_run_application
   RPS_WARNOUT("incomplete rps_run_application " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
