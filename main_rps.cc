@@ -307,6 +307,7 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
 int
 main (int argc, char** argv)
 {
+  std::string dumpdir;
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_stderr_istty = isatty(STDERR_FILENO);
   rps_stdout_istty = isatty(STDOUT_FILENO);
@@ -332,6 +333,8 @@ main (int argc, char** argv)
           rps_run_repl = true;
         else if (!strcmp(argv[ix], "--without-terminal"))
           rps_without_terminal_escape = true;
+	else if (!strncmp(argv[ix], "--dump=", strlen("--dump=")))
+	  dumpdir = argv[ix]+strlen("--dump=");
       }
     if (rps_disable_aslr)
       {
@@ -395,6 +398,11 @@ main (int argc, char** argv)
   rps_check_mtime_files();
   //// FIXME: should have some real code here
   rps_run_application(argc, argv);
+  ////
+  if (!dumpdir.empty()) {
+    RPS_INFORM("RefPerSys should dump into %s\n", dumpdir.c_str());
+    rps_dump_into(dumpdir);
+  }
   RPS_INFORM("end of RefPerSys process %d on host %s\n"
              "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
              (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
@@ -407,6 +415,24 @@ main (int argc, char** argv)
 void
 rps_run_application(int &argc, char **argv)
 {
+  {
+    char cwdbuf[128];
+    memset (cwdbuf, 0, sizeof(cwdbuf));
+    getcwd(cwdbuf, sizeof(cwdbuf)-1);
+    RPS_INFORM("rps_run_application: start of %s\n"
+               ".. gitid %s\n"
+               ".. build timestamp %s\n"
+               ".. last git commit %s\n"
+               ".. md5sum %s\n"
+               ".. in %s\n"
+               ".. on host %s pid %d\n",
+               argv[0], rps_gitid,
+               rps_timestamp,
+               rps_lastgitcommit,
+               rps_md5sum,
+               cwdbuf,
+               rps_hostname(), (int)getpid());
+  }
   if (rps_run_repl)
     rps_read_eval_print_loop (argc, argv);
   else if (rps_run_gui)
