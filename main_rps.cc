@@ -31,7 +31,6 @@
  ******************************************************************************/
 
 #include "refpersys.hh"
-#include "qthead_qrps.hh"
 
 
 extern "C" const char rps_main_gitid[];
@@ -165,19 +164,6 @@ rps_print_types_info(void)
   EXPLAIN_TYPE3(std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher>);
   EXPLAIN_TYPE3(std::variant<unsigned, std::function<Rps_Value(void*)>,
                 std::function<int(void*,Rps_ObjectRef)>>);
-  EXPLAIN_TYPE(QColor);
-  EXPLAIN_TYPE(QProcess);
-  EXPLAIN_TYPE(QString);
-  EXPLAIN_TYPE(QTextCharFormat);
-  EXPLAIN_TYPE(QTextCursor);
-  EXPLAIN_TYPE(QTextDocument);
-  EXPLAIN_TYPE(QTextEdit);
-  EXPLAIN_TYPE(QTextFragment);
-  ///
-  EXPLAIN_TYPE(RpsQApplication);
-  EXPLAIN_TYPE(RpsQOutputTextDocument);
-  EXPLAIN_TYPE(RpsQOutputTextEdit);
-  EXPLAIN_TYPE(RpsQWindow);
   EXPLAIN_TYPE(Rps_Backtracer);
   EXPLAIN_TYPE(Rps_ClosureValue);
   EXPLAIN_TYPE(Rps_ClosureZone);
@@ -191,7 +177,6 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(Rps_ObjectZone);
   EXPLAIN_TYPE(Rps_Payload);
   EXPLAIN_TYPE(Rps_PayloadClassInfo);
-  EXPLAIN_TYPE(Rps_PayloadQt<QTextEdit>);
   EXPLAIN_TYPE(Rps_PayloadSetOb);
   EXPLAIN_TYPE(Rps_PayloadVectOb);
   EXPLAIN_TYPE(Rps_QuasiZone);
@@ -362,7 +347,6 @@ main (int argc, char** argv)
   setenv("LANG", "C", (int)true);
   setenv("LC_ALL", "C.UTF-8", (int)true);
   std::setlocale(LC_ALL, "C.UTF-8");
-  QLocale::setDefault(QLocale::c());
   rps_backtrace_common_state =
     backtrace_create_state(rps_progname, (int)true,
                            Rps_Backtracer::bt_error_cb,
@@ -473,6 +457,48 @@ rps_fatal_stop_at (const char *filnam, int lin)
   fflush(nullptr);
   abort();
 } // end rps_fatal_stop_at
+
+///////////////////////////////////////////////////////// debugging support
+void
+rps_set_debug(const std::string &deblev)
+{
+  if (deblev == "help")
+    {
+      fprintf(stderr, "Comma separated debugging levels with -d<debug-level> or --debug=<debug-level>:\n");
+#define Rps_SHOW_DEBUG(Opt) fprintf(stderr, "\t%s\n", #Opt);
+      RPS_DEBUG_OPTIONS(Rps_SHOW_DEBUG);
+#undef Rps_SHOW_DEBUG
+      fflush(nullptr);
+    }
+  else
+    {
+      const char*comma=nullptr;
+      for (const char*pc = deblev.c_str(); pc && *pc; pc = comma?(comma+1):nullptr)
+        {
+          comma = strchr(pc, ',');
+          std::string curlev;
+          if (comma && comma>pc)
+            curlev = std::string(pc, comma-pc);
+          else
+            curlev = std::string(pc);
+
+#define Rps_SET_DEBUG(Opt) \
+      else if (curlev == #Opt) {			\
+	rps_debug_flags |= (1 << RPS_DEBUG_##Opt);	\
+      RPS_INFORMOUT("debugging flag "			\
+		    << #Opt << " is set.");		\
+      }
+          if (curlev == "NEVER")
+            RPS_WARNOUT("forbidden debug level " << curlev);
+          RPS_DEBUG_OPTIONS(Rps_SET_DEBUG)
+          else
+            RPS_WARNOUT("unknown debug level " << curlev);
+#undef Rps_SET_DEBUG
+        }
+    };
+  RPS_DEBUG_LOG(MISC, "rps_debug_flags=" << rps_debug_flags);
+} // end rps_set_debug
+
 
 
 ////////////////////////////////////////////////////////////////

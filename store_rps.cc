@@ -33,10 +33,6 @@
 
 #include "refpersys.hh"
 
-#include <QString>
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
 
 
 extern "C" const char rps_store_gitid[];
@@ -1265,8 +1261,6 @@ Rps_Dumper::is_dumpable_value(const Rps_Value val)
       else
         return is_dumpable_objref(instv->conn());
     }
-  else if (val.is_qtptr())
-    return false;
   if (val.is_object())
     return is_dumpable_objref(val.to_object());
   RPS_FATALOUT("Rps_Dumper::is_dumpable_value partly unimplemented for " << val);
@@ -2113,8 +2107,8 @@ void rps_dump_into (const std::string dirpath)
     {
       if (realdirpath != cwdpath)
         {
-          QDir realqdir{QString(realdirpath.c_str())};
-          if (!realqdir.mkpath("persistore"))
+          if (!std::filesystem::create_directories(realdirpath
+              + "/persistore"))
             {
               RPS_WARNOUT("failed to make dump sub-directory " << realdirpath
                           << "/persistore:" << strerror(errno));
@@ -2123,7 +2117,8 @@ void rps_dump_into (const std::string dirpath)
           else
             RPS_INFORMOUT("made real dump sub-directory: " << realdirpath
                           << "/persistore");
-          if (!realqdir.mkpath("generated"))
+          if (!std::filesystem::create_directories(realdirpath
+              + "/generated"))
             {
               RPS_WARNOUT("failed to make dump sub-directory " << realdirpath
                           << "/generated:" << strerror(errno));

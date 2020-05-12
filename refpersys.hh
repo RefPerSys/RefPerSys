@@ -73,7 +73,9 @@
 #include <cstring>
 #include <cmath>
 #include <cstdio>
+#include <cstdarg>
 #include <clocale>
+#include <filesystem>
 
 #include <argp.h>
 #include <ctype.h>
@@ -97,9 +99,6 @@
 // https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h
 #include <cxxabi.h>
 
-#include <QObject>
-#include <QString>
-#include <QPointer>
 
 
 // JsonCPP https://github.com/open-source-parsers/jsoncpp
@@ -916,7 +915,6 @@ public:
   inline bool is_null() const;
   inline bool is_empty() const;
   inline bool is_json() const;
-  inline bool is_qtptr() const;
   operator bool () const
   {
     return !is_empty();
@@ -936,8 +934,6 @@ public:
   inline const Rps_ClosureZone* as_closure() const;
   inline const Rps_Double* as_boxed_double() const;
   inline const Rps_JsonZone* as_json() const;
-  inline const Rps_QtPtrZone* as_boxed_qtptr() const;
-  inline const QPointer<QObject> as_qtptr() const;
   inline double as_double() const;
   inline const std::string as_cppstring() const;
   inline const char* as_cstring() const;
@@ -957,7 +953,6 @@ public:
   inline const Rps_InstanceZone* to_instance(const Rps_InstanceZone*definst =nullptr) const;
   inline const Rps_String* to_string( const Rps_String*defstr
                                       = nullptr) const;
-  inline const QObject*to_qtptr(const QObject*defqt= nullptr) const;
   inline const std::string to_cppstring(std::string defstr= "") const;
   inline Rps_HashInt valhash() const noexcept;
   inline void output(std::ostream&out, unsigned depth=0) const;
@@ -1107,7 +1102,6 @@ public:
   inline Rps_StringValue(const std::string str);
   inline Rps_StringValue(const Rps_Value val);
   inline Rps_StringValue(const Rps_String* strv);
-  Rps_StringValue(const QString& qstr);
   inline Rps_StringValue(std::nullptr_t);
 }; // end class Rps_StringValue
 
@@ -1134,22 +1128,6 @@ public:
   Rps_JsonValue(std::nullptr_t)
     : Rps_JsonValue(Json::Value(Json::nullValue)) {};
 }; // end class Rps_JsonValue
-
-////////////////
-class Rps_QtPtrValue : public Rps_Value
-{
-public:
-    inline Rps_QtPtrValue(const QPointer<QObject> qptrval);
-  inline Rps_QtPtrValue(Rps_Value val);
-    Rps_QtPtrValue(const QObject* qo)
-    {
-        Rps_QtPtrValue(QPointer<QObject>(const_cast<QObject*>(qo)));
-    };
-    Rps_QtPtrValue(std::nullptr_t)
-      : Rps_QtPtrValue(QPointer<QObject>(nullptr))
-    { }
-};				// end class Rps_QtPtrValue
-
 
 struct Rps_SetTag
 {
@@ -1441,6 +1419,8 @@ class Rps_GarbageCollector
   friend class Rps_QuasiZone;
   std::mutex gc_mtx;
   std::atomic<bool> gc_running;
+  unsigned gc_magic;
+  static unsigned constexpr _gc_magicnum_ = 0xdae21691;  // 3672250001
   const std::function<void(Rps_GarbageCollector*)> gc_rootmarkers;
   std::deque<Rps_ObjectRef> gc_obscanque;
   uint64_t gc_nbscan;
@@ -1485,6 +1465,7 @@ public:
   inline void mark_root_value(Rps_Value val);
   inline void mark_root_objectref(Rps_ObjectRef obr);
   inline void mark_call_stack(Rps_CallFrame*topframe);
+  inline bool is_valid_garbcoll() const { return gc_magic == _gc_magicnum_; };
 };				// end class Rps_GarbageCollector
 
 ////////////////////////////////////////////////////// quasi zones
@@ -1700,7 +1681,6 @@ public:
   virtual void dump_scan(Rps_Dumper*, unsigned) const {};
   virtual Json::Value dump_json(Rps_Dumper*) const;
   static const Rps_String* make(const char*cstr, int len= -1);
-  static const Rps_String* make(const QString&qs);
   static inline const Rps_String* make(const std::string&s);
   const char*cstr() const
   {
@@ -2632,59 +2612,6 @@ public:
 ////////////////////////////////////////////////////////////////
 
 
-class Rps_QtPtrZone : public Rps_LazyHashedZoneValue
-{
-private:
-  /// we count the number of Rps_QtPtrZone to give a unique rank to
-  /// each of them; that rank is used for hashing and compare.
-  static std::atomic<unsigned> qtptr_count;
-  friend Rps_QtPtrZone*
-  Rps_QuasiZone::rps_allocate1<Rps_QtPtrZone, const QPointer<QObject>>
-                 (const QPointer<QObject>);
-
-  const QPointer<QObject> _qptr_val;
-  const unsigned _qptr_rank; // the unique rank
-
-protected:
-  inline Rps_QtPtrZone(const QPointer<QObject> qptrval);
-
-  virtual Rps_HashInt compute_hash(void) const;
-
-  virtual Rps_ObjectRef compute_class(Rps_CallFrame* stkf) const;
-
-  virtual void gc_mark(Rps_GarbageCollector&, unsigned) const
-  { }
-
-  virtual void dump_scan(Rps_Dumper*, unsigned) const 
-  { };
-
-  virtual Json::Value dump_json(Rps_Dumper*) const
-  {
-      return Json::Value::null;
-  }
-
-public:
-  const QPointer<QObject> qptr() const
-  {
-      return _qptr_val;
-  }
-  unsigned rank() const { return _qptr_rank; };
-  ///
-  virtual std::uint32_t wordsize() const
-  {
-    // as usual, we round up the 64 bits word size ....
-      return (sizeof (*this) + sizeof (void*) - 1) / sizeof (void*);
-  }
-
-  virtual void val_output(std::ostream& ostr, unsigned depth) const;
-
-  virtual bool equal(const Rps_ZoneValue& zv) const;
-
-  virtual bool less(const Rps_ZoneValue& zv) const;
-
-  static Rps_QtPtrZone* make(const QPointer<QObject> qptrval);
-};
-
 
 ////////////////////////////////////////////////////////////////
 
@@ -3200,63 +3127,10 @@ public:
 
 
 
-//////////////// template for payload holding Qt objects
-template <class QtClass> class Rps_PayloadQt : public Rps_Payload
-{
-  friend class Rps_ObjectRef;
-  friend class Rps_ObjectZone;
-  friend Rps_PayloadQt*
-  Rps_QuasiZone::rps_allocate1<Rps_PayloadQt,Rps_ObjectZone*>(Rps_ObjectZone*);
-protected:
-  QPointer<QtClass> _qtptr;
-  Rps_PayloadQt(Rps_ObjectZone*owner)
-    :  Rps_Payload(Rps_Type::PaylQt, owner), _qtptr(nullptr) {};
-  virtual ~Rps_PayloadQt();
-  virtual uint32_t wordsize(void) const
-  {
-    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
-  };
-  virtual void gc_mark(Rps_GarbageCollector&gc) const {
-    if (_qtptr)
-      _qtptr->gc_mark(gc);
-  };
-  virtual void dump_scan(Rps_Dumper*) const {};
-  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const {};
-  virtual bool is_erasable(void) const
-  {
-    return true;
-  };
-public:
-  inline Rps_PayloadQt& set_qtptr(QtClass* qptr);
-  inline Rps_PayloadQt& clear_qtptr(QtClass* qptr);
-  inline QtClass* qtptr(void) const;
-  QtClass& operator -> (void) const
-  {
-    if (owner()) {
-      if (_qtptr)
-      return *_qtptr;
-      else
-	throw  RPS_RUNTIME_ERROR_OUT("missing qtptr:" << payload_type_name());
-    }
-    else throw RPS_RUNTIME_ERROR_OUT("unowned Qt payload:" << payload_type_name());
-  };
-  QtClass& operator * (void) const
-  {
-    if (owner()) {
-      if (_qtptr)
-	return *_qtptr;
-      else
-	throw  RPS_RUNTIME_ERROR_OUT("missing qtptr:" << payload_type_name());
-    } throw RPS_RUNTIME_ERROR_OUT("unowned Qt payload:" << payload_type_name());
-  }
-  virtual const std::string payload_type_name(void) const;
-};				// end of template Rps_PayloadQt
-
 ////////////////////////////////////////////////////////////////
 
 #define RPS_MANIFEST_JSON "rps_manifest.json"
 #define RPS_USERPREFERENCE_JSON ".refpersys.json"
-#define RPS_QTSETTINGS_BASEPATH ".qt-refpersys.ini"
 
 //// global roots for garbage collection and persistence
 /// the called function cannot add, remove or query the global root set

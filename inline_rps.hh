@@ -299,11 +299,6 @@ bool Rps_Value::is_json() const
          && as_ptr()->stored_type() == Rps_Type::Json;
 } //end  Rps_Value::is_json()
 
-bool Rps_Value::is_qtptr() const
-{
-  return is_ptr()
-         && as_ptr()->stored_type() == Rps_Type::QtPtr;
-} //end  Rps_Value::is_qtptr()
 
 const Rps_SetOb*
 Rps_Value::as_set() const
@@ -548,13 +543,6 @@ Rps_Value::as_boxed_double() const
   else throw std::domain_error("Rps_Value::as_boxed_double: value is not genuine double");
 } // end Rps_Value::as_boxed_double
 
-const Rps_QtPtrZone*
-Rps_Value::as_boxed_qtptr() const
-{
-  if (is_qtptr())
-    return reinterpret_cast<const Rps_QtPtrZone*>(_pval);
-  else throw std::domain_error("Rps_Value::as_boxed_qtptr: value is not genuine QtPtr");
-} // end Rps_Value::as_boxed_qtptr
 
 double
 Rps_Value::as_double() const
@@ -563,14 +551,6 @@ Rps_Value::as_double() const
     return as_boxed_double()->dval();
   else throw std::domain_error("Rps_Value::as_double: value is not genuine double");
 } // end Rps_Value::as_boxed_double
-
-const QPointer<QObject>
-Rps_Value::as_qtptr() const
-{
-  if (is_qtptr())
-    return as_boxed_qtptr()->qptr();
-  else throw std::domain_error("Rps_Value::as_qtptr: value is not a QtPtr");
-} // end Rps_Value::as_qtptr
 
 
 double
@@ -1018,18 +998,6 @@ Rps_JsonZone::Rps_JsonZone(const Json::Value& jv)
 } // end of Rps_JsonZone::Rps_JsonZone
 
 
-
-//////////////////////////////////////////////////////////// qtptr zones
-Rps_QtPtrZone::Rps_QtPtrZone(QPointer<QObject>qp)
-  : Rps_LazyHashedZoneValue(Rps_Type::QtPtr),
-    _qptr_val(qp),
-    _qptr_rank(1+qtptr_count.fetch_add(1))
-{
-} // end Rps_QtPtrZone::Rps_QtPtrZone
-
-Rps_QtPtrValue::Rps_QtPtrValue(const QPointer<QObject> qptrval)
-  : Rps_Value(Rps_QtPtrZone::make(qptrval))
-{ } // end Rps_QtPtrValue::Rps_QtPtrValue
 
 
 

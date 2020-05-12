@@ -31,7 +31,6 @@
  ******************************************************************************/
 
 #include "refpersys.hh"
-#include "qthead_qrps.hh"
 
 
 extern "C" const char rps_backtrace_gitid[];

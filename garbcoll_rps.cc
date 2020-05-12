@@ -42,7 +42,7 @@ std::atomic<Rps_GarbageCollector*> Rps_GarbageCollector::gc_this;
 std::atomic<uint64_t> Rps_GarbageCollector::gc_count;
 
 Rps_GarbageCollector::Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers) :
-  gc_mtx(), gc_running(false), gc_rootmarkers(rootmarkers),
+  gc_mtx(), gc_magic(_gc_magicnum_), gc_running(false), gc_rootmarkers(rootmarkers),
   gc_obscanque(),
   gc_nbscan(0), gc_nbmark(0), gc_nbdelete(0), gc_nbroots(0),
   gc_startelapsedtime(rps_elapsed_real_time()),
@@ -56,10 +56,12 @@ Rps_GarbageCollector::Rps_GarbageCollector(const std::function<void(Rps_GarbageC
 
 Rps_GarbageCollector::~Rps_GarbageCollector()
 {
+  RPS_ASSERT(is_valid_garbcoll());
   RPS_ASSERT(gc_this.load() == this);
   RPS_ASSERT(gc_running.load() == false);
   RPS_ASSERT(gc_obscanque.empty());
   gc_this.store(nullptr);
+  gc_magic = 0;
 } // end Rps_GarbageCollector::~Rps_GarbageCollector
 
 void
