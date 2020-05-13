@@ -167,6 +167,7 @@ Rps_Loader::load_real_path(const std::string& path)
         throw std::runtime_error(std::string("realpath failed:") + candipath);
       std::string restr (rp);
       free (rp), rp = nullptr;
+      RPS_DEBUG_LOG(LOAD, "load_real_path path=" << path << " -> " << restr);
       return restr;
     }
   throw std::runtime_error(std::string("cannot file load real path for ") + path);
@@ -2214,6 +2215,7 @@ Rps_Loader::parse_manifest_file(void)
   if (manifstr.size() < 20)
     RPS_FATAL("Rps_Loader::parse_manifest_file nearly empty file %s",
               manifpath.c_str());
+  RPS_DEBUG_LOG(LOAD, "loader parse_manifest_file start manifstr=" << manifstr);
   Json::Value manifjson;
   try
     {
@@ -2238,6 +2240,7 @@ Rps_Loader::parse_manifest_file(void)
       RPS_FATAL("manifest map in %s should have spaceset: [...]",
                 manifpath.c_str ());
     size_t sizespset = spsetjson.size();
+    RPS_DEBUG_LOG(LOAD, "loader parse_manifest_file sizespset=" << sizespset);
     for (int ix=0; ix<(int)sizespset; ix++)
       {
         std::string curspidstr = spsetjson[ix].asString();
@@ -2253,6 +2256,7 @@ Rps_Loader::parse_manifest_file(void)
       RPS_FATAL("manifest map in %s should have globalroots: [...]",
                 manifpath.c_str ());
     size_t sizeglobroots = globrootsjson.size();
+    RPS_DEBUG_LOG(LOAD, "loader parse_manifest_file sizeglobroots=" << sizeglobroots);
     for (int ix=0; ix<(int)sizeglobroots; ix++)
       {
         std::string curgrootidstr = globrootsjson[ix].asString();
@@ -2268,6 +2272,7 @@ Rps_Loader::parse_manifest_file(void)
       RPS_FATAL("manifest map in %s should have plugins: [...]",
                 manifpath.c_str ());
     size_t sizeplugins = pluginsjson.size();
+    RPS_DEBUG_LOG(LOAD, "loader parse_manifest_file sizeplugins=" << sizeplugins);
     {
       std::lock_guard<std::recursive_mutex> gu(ld_mtx);
       for (int ix=0; ix<(int)sizeplugins; ix++)
@@ -2286,12 +2291,14 @@ Rps_Loader::parse_manifest_file(void)
     }
   }
   ////
+  RPS_DEBUG_LOG(LOAD, "loader parse_manifest_file end" << std::endl);
 } // end Rps_Loader::parse_manifest_file
 
 
 
 void Rps_Loader::load_install_roots(void)
 {
+  RPS_DEBUG_LOG(LOAD, "loader load_install_roots start");
   for (Rps_Id curootid: ld_globrootsidset)
     {
       std::lock_guard<std::recursive_mutex> gu(ld_mtx);
@@ -2317,6 +2324,7 @@ void Rps_Loader::load_install_roots(void)
   };
 #include "generated/rps-roots.hh"
   RPS_ASSERT(nbroots == RPS_NB_ROOT_OB);
+  RPS_DEBUG_LOG(LOAD, "loader load_install_roots nbroots=" << nbroots);
   ///
   /// install the hard coded symbols
   int nbsymb=0;
@@ -2344,6 +2352,7 @@ void Rps_Loader::load_install_roots(void)
   }
   // final check
   RPS_ASSERT(rps_nb_root_objects() == RPS_NB_ROOT_OB);
+  RPS_DEBUG_LOG(LOAD, "loader load_install_roots ending nbsymb=" << nbsymb << ", nbroots=" << nbroots << std::endl);
 } // end Rps_Loader::load_install_roots
 
 
@@ -2356,6 +2365,7 @@ void rps_load_from (const std::string& dirpath)
   double startcput = rps_process_cpu_time();
   double endrealt = NAN;
   double endcput = NAN;
+  RPS_DEBUG_LOG(LOAD, "rps_load_from start dirpath=" << dirpath);
   {
     Rps_Loader loader(dirpath);
     try
@@ -2363,9 +2373,11 @@ void rps_load_from (const std::string& dirpath)
         loader.parse_manifest_file();
         loader.load_all_state_files();
         loader.load_install_roots();
+        RPS_DEBUG_LOG(LOAD, "rps_load_from start dirpath=" << dirpath << " after load_install_roots");
         rps_initialize_roots_after_loading(&loader);
         rps_initialize_symbols_after_loading(&loader);
         nbloaded = loader.nb_loaded_objects();
+        RPS_DEBUG_LOG(LOAD, "rps_load_from start dirpath=" << dirpath << " nbloaded=" << nbloaded);
       }
     catch (const std::exception& exc)
       {
