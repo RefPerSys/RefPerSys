@@ -50,7 +50,7 @@ RPS_INCLUDE_DIRS = /usr/local/include /usr/include
 RPS_INCLUDE_FLAGS = $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
 RPS_BUILD_INCLUDE_FLAGS=  -I . $(RPS_INCLUDE_FLAGS)
 
-RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys$(RPS_SHORTGIT_ID)
+RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
 RPS_PKG_NAMES= jsoncpp
