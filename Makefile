@@ -26,9 +26,10 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean fullclean print-temporary-plugin-settings indent redump test01 test02 test03
+.PHONY: all objects clean fullclean redump altredump print-temporary-plugin-settings indent test01 test02 test03
 
 RPS_GIT_ID:= $(shell ./generate-gitid.sh)
+RPS_SHORTGIT_ID:= $(shell ./generate-gitid.sh -s)
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
@@ -48,6 +49,8 @@ RPS_BUILD_SANITFLAGS = -fsanitize=address
 RPS_INCLUDE_DIRS = /usr/local/include /usr/include 
 RPS_INCLUDE_FLAGS = $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
 RPS_BUILD_INCLUDE_FLAGS=  -I . $(RPS_INCLUDE_FLAGS)
+
+RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
 RPS_PKG_NAMES= jsoncpp
@@ -166,8 +169,12 @@ indent:
 		$(RPS_CORE_SOURCES) 
 
 ## redump target
-redump:
+redump: ./refpersys
 	./refpersys --dump=. --batch
+
+## alternate redump target
+altredump:  ./refpersys
+	./refpersys --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch
 
 
 check:
