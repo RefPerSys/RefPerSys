@@ -191,7 +191,7 @@ else
 	echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
 	printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
 endif
-	@printf "\ngit-pushed commit %s of http://refpersys.org/ branch %s ...\n\n" $$(./generate-gitid.sh -s) $$(git branch | fgrep '*')
+	@printf "\ngit-pushed commit %s of http://refpersys.org/ branch %s ...\n\n" "$$(./generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
 
 
 
