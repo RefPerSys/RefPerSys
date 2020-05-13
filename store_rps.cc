@@ -1685,13 +1685,14 @@ Rps_Dumper::scan_roots(void)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   int nbroots = 0;
+  RPS_DEBUG_LOG(DUMP, "dumper: scan_roots begin");
   rps_each_root_object([&](Rps_ObjectRef obr)
   {
     rps_dump_scan_object(this,obr);
     nbroots++;
   });
 
-  RPS_DEBUG_LOG(DUMP, "dumper: scan_root ends nbroots#" << nbroots);
+  RPS_DEBUG_LOG(DUMP, "dumper: scan_roots ends nbroots#" << nbroots);
 } // end Rps_Dumper::scan_roots
 
 Rps_ObjectRef
@@ -2299,22 +2300,26 @@ void Rps_Loader::load_install_roots(void)
       rps_add_root_object (curootobr);
     };
   /// install the hard coded global roots
+  int nbroots=0;
   {
     std::lock_guard<std::recursive_mutex> gu(ld_mtx);
-#define RPS_INSTALL_ROOT_OB(Oid)    {                           \
-      const char *end##Oid = nullptr;				\
-      bool ok##Oid = false;					\
-      auto id##Oid = Rps_Id(#Oid, &end##Oid, &ok##Oid);		\
-      RPS_ASSERT(end##Oid && *end##Oid == (char)0);		\
-      RPS_ASSERT(id##Oid && id##Oid.valid());			\
-      RPS_ROOT_OB(Oid) = find_object_by_oid(id##Oid);		\
-      if (!RPS_ROOT_OB(Oid))					\
-	RPS_WARN("failed to install root " #Oid);		\
-    };
+#define RPS_INSTALL_ROOT_OB(Oid)    {			\
+      const char *end##Oid = nullptr;			\
+      bool ok##Oid = false;				\
+      auto id##Oid = Rps_Id(#Oid, &end##Oid, &ok##Oid);	\
+      RPS_ASSERT(end##Oid && *end##Oid == (char)0);	\
+      RPS_ASSERT(id##Oid && id##Oid.valid());		\
+      RPS_ROOT_OB(Oid) = find_object_by_oid(id##Oid);	\
+      if (!RPS_ROOT_OB(Oid))				\
+	RPS_WARN("failed to install root " #Oid);	\
+      nbroots++;					\
+    }
+  };
 #include "generated/rps-roots.hh"
-  }
+  RPS_ASSERT(nbroots == RPS_NB_ROOT_OB);
   ///
   /// install the hard coded symbols
+  int nbsymb=0;
   {
     std::lock_guard<std::recursive_mutex> gu(ld_mtx);
 #define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name)    {	\
@@ -2332,10 +2337,16 @@ void Rps_Loader::load_install_roots(void)
       if (!RPS_SYMB_OB(Name))				\
 	RPS_WARN("failed to install symbol "		\
 		 #Oid " named " #Name);			\
+      nbsymb++;						\
     };
 #include "generated/rps-names.hh"
+    RPS_ASSERT(nbsymb == RPS_NB_NAMED_ROOT_OB);
   }
+  // final check
+  RPS_ASSERT(rps_nb_root_objects() == RPS_NB_ROOT_OB);
 } // end Rps_Loader::load_install_roots
+
+
 
 
 void rps_load_from (const std::string& dirpath)
