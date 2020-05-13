@@ -174,7 +174,7 @@ redump: ./refpersys
 
 ## alternate redump target
 altredump:  ./refpersys
-	./refpersys --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch
+	./refpersys --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
 
 
 check:
@@ -184,9 +184,9 @@ check:
 
 # Target to facilitate git push to both origin and GitHub mirror
 gitpush:
-	git push origin
+	@git push origin
 ifeq ($(shell git remote | grep github), github)
-	git push github
+	@git push github
 else
 	@echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
 	@printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
