@@ -67,7 +67,7 @@ rps_run_fltk_gui(int &argc, char**argv)
 
 
 
-/*********** 
+/***********
  * Temporarily kept constant objects
  *
  * For a few weeks in may or june 2020, we mention here as comments

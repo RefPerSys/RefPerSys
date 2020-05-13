@@ -1293,6 +1293,7 @@ void
 Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilename)
 {
   int nbconst = 0;
+  RPS_DEBUG_LOG(DUMP, "dumper scan_cplusplus_source_file_for_constants file " << relfilename);
   RPS_ASSERT(relfilename.size()>2 && isalpha(relfilename[0]));
   std::string fullpath = std::string(rps_topdirectory) + "/" + relfilename;
   std::ifstream ins(fullpath);
@@ -1323,6 +1324,9 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
                   scan_object(obr);
                   nbconst++;
                   std::lock_guard<std::recursive_mutex> gu(du_mtx);
+                  if (du_constantobset.find(obr) != du_constantobset.end())
+                    RPS_DEBUG_LOG(DUMP, "scan_cplusplus_source_file_for_constants const#" << nbconst
+                                  << " is " << obr);
                   du_constantobset.insert(obr);
                 }
               else
@@ -1338,15 +1342,19 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
                   << " constant[s] prefixed by " << RPS_CONSTANTOBJ_PREFIX
                   << " in file " << fullpath
                   << " of " << lincnt << " lines.");
+  else
+    RPS_DEBUG_LOG(DUMP, "scan_cplusplus_source_file_for_constants no constants in " << fullpath);
 } // end Rps_Dumper::scan_cplusplus_source_file_for_constants
 
 
 void
 Rps_Dumper::scan_code_addr(const void*ad)
 {
-  // if we wanted *to be more efficient, we should parse
-  // /proc/self/maps at start of dump. See
-  // http://man7.org/linux/man-pages/man5/proc.5.html
+  /**
+   * If we wanted to be more efficient, we should parse the
+   * pseudo-file /proc/self/maps at start of dump. See
+   * http://man7.org/linux/man-pages/man5/proc.5.html for more....
+   **/
   if (!ad)
     return;
   Dl_info di;
@@ -1676,10 +1684,14 @@ void
 Rps_Dumper::scan_roots(void)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
-  rps_each_root_object([=](Rps_ObjectRef obr)
+  int nbroots = 0;
+  rps_each_root_object([&](Rps_ObjectRef obr)
   {
     rps_dump_scan_object(this,obr);
+    nbroots++;
   });
+
+  RPS_DEBUG_LOG(DUMP, "dumper: scan_root ends nbroots#" << nbroots);
 } // end Rps_Dumper::scan_roots
 
 Rps_ObjectRef
@@ -1708,7 +1720,7 @@ Rps_Dumper::scan_loop_pass(void)
       //              << " curobr=" << curobr->oid());
       scan_object_contents(curobr);
     };
-  RPS_NOPRINTOUT("scan_loop_pass end count#" << count);
+  RPS_DEBUG_LOG(DUMP, "dumper: scan_loop_pass end count#" << count);
 } // end Rps_Dumper::scan_loop_pass
 
 
@@ -1746,6 +1758,7 @@ Rps_Dumper::scan_every_cplusplus_source_file_for_constants(void)
 void
 Rps_Dumper::write_all_space_files(void)
 {
+  RPS_DEBUG_LOG(DUMP, "dumper write_all_space_files start");
   std::set<Rps_ObjectRef> spaceset;
   {
     std::lock_guard<std::recursive_mutex> gu(du_mtx);
@@ -1765,6 +1778,7 @@ void
 Rps_Dumper::write_generated_roots_file(void)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_roots_file start");
   auto rootpathstr = std::string{"generated/rps-roots.hh"};
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
@@ -1822,6 +1836,7 @@ Rps_Dumper::write_generated_roots_file(void)
   *pouts << std::endl
          << "#undef RPS_INSTALL_ROOT_OB" << std::endl;
   *pouts << "/// end of RefPerSys roots file " << rootpathstr << std::endl;
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_roots_file end rootcnt=" << rootcnt << std::endl);
 } // end Rps_Dumper::write_generated_roots_file
 
 void
@@ -1829,6 +1844,7 @@ Rps_Dumper::write_generated_names_file(void)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   auto rootpathstr = std::string{"generated/rps-names.hh"};
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_names_file start");
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
   *pouts << std::endl
@@ -1853,7 +1869,9 @@ Rps_Dumper::write_generated_names_file(void)
   *pouts << std::endl
          << "#undef RPS_INSTALL_NAMED_ROOT_OB" << std::endl;
   *pouts << "/// end of RefPerSys roots file " << rootpathstr << std::endl;
-} // end Rps_Dumper::write_generated_roots_file
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_names_file end namecnt=" << namecnt << std::endl);
+
+} // end Rps_Dumper::write_generated_names_file
 
 
 
@@ -1862,6 +1880,7 @@ Rps_Dumper::write_generated_constants_file(void)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   auto rootpathstr = std::string{"generated/rps-constants.hh"};
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_constants_file start");
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
   unsigned constcnt = 0;
@@ -1885,6 +1904,7 @@ Rps_Dumper::write_generated_constants_file(void)
          << "#undef  RPS_NB_CONSTANT_OB" << std::endl
          << "#define RPS_NB_CONSTANT_OB " << constcnt << std::endl << std::endl;
   *pouts << "/// end of RefPerSys constants file " << rootpathstr << std::endl;
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_constants_file end constcnt=" << constcnt << std::endl);
 } // end Rps_Dumper::write_generated_constants_file
 
 
@@ -1905,44 +1925,57 @@ Rps_Dumper::write_manifest_file(void)
 {
   std::unique_ptr<Json::StreamWriter> jsonwriter(du_jsonwriterbuilder.newStreamWriter());
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file start");
   auto pouts = open_output_file(RPS_MANIFEST_JSON);
   rps_emit_gplv3_copyright_notice(*pouts, RPS_MANIFEST_JSON, "//!! ", "");
   Json::Value jmanifest(Json::objectValue);
   jmanifest["format"] = Json::Value (RPS_MANIFEST_FORMAT);
   {
+    int nbroots=0;
     Json::Value jglobalroots(Json::arrayValue);
-    rps_each_root_object([=,&jglobalroots](Rps_ObjectRef obr)
+    rps_each_root_object([=,&jglobalroots,&nbroots](Rps_ObjectRef obr)
     {
       jglobalroots.append(Json::Value(obr->oid().to_string()));
+      nbroots++;
     });
     jmanifest["globalroots"] = jglobalroots;
+    RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file wrote " << nbroots << " global roots.");
   }
   {
+    int nbspaces=0;
     Json::Value jspaceset(Json::arrayValue);
     for (auto it: du_spacemap)
       {
         RPS_ASSERT(it.first);
         jspaceset.append(Json::Value(it.first->oid().to_string()));
+        nbspaces++;
       }
     jmanifest["spaceset"] = jspaceset;
+    RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file wrote " << nbspaces << " spaces.");
   }
   {
+    int nbconst=0;
     Json::Value jconstset(Json::arrayValue);
     for (Rps_ObjectRef obr: du_constantobset)
       {
         RPS_ASSERT(obr);
         jconstset.append(Json::Value(obr->oid().to_string()));
+        nbconst++;
       }
     jmanifest["constset"] = jconstset;
+    RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file wrote " << nbconst << " constants.");
   }
   {
+    int nbplugins=0;
     Json::Value jplugins(Json::arrayValue);
     for (auto plugobr: du_pluginobset)
       {
         RPS_ASSERT(plugobr);
         jplugins.append(Json::Value(plugobr->oid().to_string()));
+        nbplugins++;
       }
     jmanifest["plugins"] = jplugins;
+    RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file wrote " << nbplugins << " plugins.");
   }
   {
     Json::Value jglobalnames(Json::arrayValue);
@@ -1957,13 +1990,16 @@ Rps_Dumper::write_manifest_file(void)
       jnaming["nam"] = Json::Value(cursym->symbol_name());
       jnaming["obj"] = Json::Value(obr->oid().to_string());
       jglobalnames.append(jnaming);
+      namecnt++;
     });
     jmanifest["globalnames"] = jglobalnames;
+    RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file wrote " << namecnt << " global names.");
   }
   /// this is not used for loading, but could be useful for other purposes.
   jmanifest["origitid"] = Json::Value (rps_gitid);
   jsonwriter->write(jmanifest, pouts.get());
   *pouts << std::endl <<  std::endl << "//// end of RefPerSys manifest file" << std::endl;
+  RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file ending ... " << rps_gitid << std::endl);
 } // end Rps_Dumper::write_manifest_file
 
 
@@ -2006,10 +2042,11 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
   for (auto curobr: curspaset)
     {
       *pouts << std::endl << std::endl;
+      ++count;
       *pouts << "//+ob" << curobr->oid().to_string() << std::endl;
       RPS_NOPRINTOUT("Rps_Dumper::write_space_file emits " << (curobr->oid().to_string())
                      << " of hi=" <<  (curobr->oid().hi())
-                     << " #" << (++count));
+                     << " #" << count);
       /// output a comment giving the class name for readability
       {
         Rps_ObjectRef obclass = curobr->get_class();
@@ -2046,9 +2083,13 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
       *pouts << std::endl;
       *pouts << "//-ob" << curobr->oid().to_string() << std::endl;
     }
+
   *pouts << std::endl << std::endl;
   *pouts << "//// end of RefPerSys generated space file " << curelpath << std::endl;
+  RPS_DEBUG_LOG(DUMP, "dumper write_space_file end " << curelpath << " with " << count << " objects." << std::endl);
 } // end Rps_Dumper::write_space_file
+
+
 
 void
 Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
@@ -2063,6 +2104,7 @@ void rps_dump_into (const std::string dirpath)
 {
   double startelapsed = rps_elapsed_real_time();
   double startcputime = rps_process_cpu_time();
+  RPS_DEBUG_LOG(DUMP, "rps_dump_into start dirpath=" << dirpath);
   {
     DIR* d = opendir(dirpath.c_str());
     if (d)
@@ -2096,6 +2138,7 @@ void rps_dump_into (const std::string dirpath)
       RPS_FATAL("getcwd failed: %m");
     cwdpath = std::string(cwdbuf);
   }
+  RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath << " cwdpath=" << cwdpath);
   /// ensure that realdirpath exists
   {
     RPS_ASSERT(strrchr(realdirpath.c_str(), '/') != nullptr);
@@ -2131,6 +2174,9 @@ void rps_dump_into (const std::string dirpath)
       dumper.scan_roots();
       dumper.scan_every_cplusplus_source_file_for_constants();
       dumper.scan_loop_pass();
+      RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath << " start writing "
+                    << (rps_elapsed_real_time() - startelapsed) << " elapsed, "
+                    << (rps_process_cpu_time() - startcputime) << " cpu seconds." << std::endl);
       dumper.write_all_space_files();
       dumper.write_all_generated_files();
       dumper.write_manifest_file();

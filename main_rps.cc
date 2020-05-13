@@ -333,8 +333,8 @@ main (int argc, char** argv)
           rps_run_repl = true;
         else if (!strcmp(argv[ix], "--without-terminal"))
           rps_without_terminal_escape = true;
-	else if (!strncmp(argv[ix], "--dump=", strlen("--dump=")))
-	  dumpdir = argv[ix]+strlen("--dump=");
+        else if (!strncmp(argv[ix], "--dump=", strlen("--dump=")))
+          dumpdir = argv[ix]+strlen("--dump=");
       }
     if (rps_disable_aslr)
       {
@@ -399,10 +399,11 @@ main (int argc, char** argv)
   //// FIXME: should have some real code here
   rps_run_application(argc, argv);
   ////
-  if (!dumpdir.empty()) {
-    RPS_INFORM("RefPerSys should dump into %s\n", dumpdir.c_str());
-    rps_dump_into(dumpdir);
-  }
+  if (!dumpdir.empty())
+    {
+      RPS_INFORM("RefPerSys should dump into %s\n", dumpdir.c_str());
+      rps_dump_into(dumpdir);
+    }
   RPS_INFORM("end of RefPerSys process %d on host %s\n"
              "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
              (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
