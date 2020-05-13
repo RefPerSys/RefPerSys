@@ -188,10 +188,11 @@ gitpush:
 ifeq ($(shell git remote | grep github), github)
 	git push github
 else
-	echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
-	printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
+	@echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
+	@printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
 endif
-	@printf "\ngit-pushed commit %s of http://refpersys.org/ branch %s ...\n\n" "$$(./generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
+	@printf "\n%s git-pushed commit %s of http://refpersys.org/ branch %s ...\n\n" \
+	        "$$(basile@starynkevitch.net)" "$$(./generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
 
 
 
