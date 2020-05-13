@@ -65,4 +65,26 @@ rps_run_fltk_gui(int &argc, char**argv)
   RPS_FATAL("unimplemented rps_run_fltk_gui");
 } // rps_run_fltk_gui
 
+
+
+/*********** 
+ * Temporarily kept constant objects
+ *
+ * For a few weeks in may or june 2020, we mention here as comments
+ * several constant objects.
+ *
+ *    rpskob_0rgijx7CCnq041IZEd, rpskob_0TwK4TkhEGZ03oTa5m,
+ *    rpskob_1568ZHTl0Pa00461I2, rpskob_18DO93843oX02UWzq6,
+ *    rpskob_1wihX3eWD9o00QnxUX, rpskob_1DUx3zfUzIb04lqNVt,
+ *    rpskob_1Win5yzaf1L02cBUlV, rpskob_2KnFhlj8xW800kpgPt,
+ *    rpskob_33DFyPOJxbF015ZYoi, rpskob_41OFI3r0S1t03qdB2E,
+ *    rpskob_42cCN1FRQSS03bzbTz, rpskob_4ojpzRzyRWz02DNWMe,
+ *    rpskob_4x9jd2yAe8A02SqKAx, rpskob_52zVxP3mTue034OWsD,
+ *    rpskob_5nSiRIxoYQp00MSnYA, rpskob_6Wi00FwXYID00gl9Ma,
+ *    rpskob_7oa7eIzzcxv03TmmZH, rpskob_8lKdW7lgcHV00WUOiT,
+ *    rpskob_8KJHUldX8GJ03G5OWp, rpskob_9uwZtDshW4401x6MsY, etc..
+ *
+ ************/
+
+
 //////////////////////////////////////// end of file fltk_rps.cc
