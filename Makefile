@@ -29,6 +29,7 @@
 .PHONY: all objects clean fullclean print-temporary-plugin-settings indent redump test01 test02 test03
 
 RPS_GIT_ID:= $(shell ./generate-gitid.sh)
+RPS_SHORTGIT_ID:= $(shell ./generate-gitid.sh -s)
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
@@ -43,7 +44,7 @@ RPS_SANITIZED_QT_OBJECTS =  $(patsubst %.cc, %.sanit.o, $(RPS_QT_SOURCES))
 RPS_DEBUG_QT_OBJECTS =  $(patsubst %.cc, %.dbg.o, $(RPS_QT_SOURCES))
 RPS_QT_MOC = moc
 
-RPS_ALTDUMPDIR_PREFIX?= /tmp/RefPerSys$(RPS_SHORTGIT_ID)
+RPS_ALTDUMPDIR_PREFIX?= /tmp/RefPerSys-$(RPS_SHORTGIT_ID)
 
 RPS_BUILD_CCACHE = ccache
 RPS_BUILD_CC = gcc
