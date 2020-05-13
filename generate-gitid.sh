@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # RefPerSys file generate-gitid.sh - see refpersys.org
 ###
 # it just emits a string with the full git commit id, appending + if
@@ -8,5 +8,10 @@ if git status|grep -q 'nothing to commit' ; then
 else
     endgitid='+'
 fi
-(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n';
-     echo $endgitid)  
+
+if [ "$1" = "-s" ]; then
+    printf "%.16s%s\n" $(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n') $endgitid     
+else
+    (git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n';
+     echo $endgitid)
+fi

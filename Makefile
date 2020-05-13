@@ -43,6 +43,8 @@ RPS_SANITIZED_QT_OBJECTS =  $(patsubst %.cc, %.sanit.o, $(RPS_QT_SOURCES))
 RPS_DEBUG_QT_OBJECTS =  $(patsubst %.cc, %.dbg.o, $(RPS_QT_SOURCES))
 RPS_QT_MOC = moc
 
+RPS_ALTDUMPDIR_PREFIX?= /tmp/RefPerSys$(RPS_SHORTGIT_ID)
+
 RPS_BUILD_CCACHE = ccache
 RPS_BUILD_CC = gcc
 RPS_BUILD_CXX = g++
@@ -176,6 +178,10 @@ redump:
 	./refpersys --dump=. --batch
 
 
+## alternate redump target
+altredump:  ./refpersys
+	./refpersys --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
+
 check:
 	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all \
 		--track-origins=yes --log-file=valgrind.log   \
@@ -183,14 +189,15 @@ check:
 
 # Target to facilitate git push to both origin and GitHub mirror
 gitpush:
-	git push origin
+	@git push origin
 ifeq ($(shell git remote | grep github), github)
-	git push github
+	@git push github
 else
-	echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
-	printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
+	@echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
+	@printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
 endif
-	@printf "git-pushed commit %s of http://refpersys.org/ ...\n" $$(./generate-gitid.sh)
+	@printf "\n%s git-pushed commit %s of http://refpersys.org/ branch %s ...\n\n" \
+	        "$$(git config --get user.email)" "$$(./generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
 
 
 
