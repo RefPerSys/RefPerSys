@@ -230,6 +230,9 @@ extern "C" bool rps_is_main_gui_thread(void);
 /// --refpersys-home <dir>
 extern "C" const char* rps_homedir(void);
 
+/// the refpersys load directory
+extern "C" const std::string& rps_get_loaddir(void);
+
 extern "C" void rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string linprefix, std::string linsuffix);
 
 //////////////// fatal error - aborting

@@ -39,6 +39,145 @@ const char rps_main_gitid[]= RPS_GITID;
 extern "C" const char rps_main_date[];
 const char rps_main_date[]= __DATE__;
 
+enum rps_progoption_en
+{
+  RPSPROGOPT__NONE=0,
+  RPSPROGOPT_LOADDIR='L',
+  RPSPROGOPT_DEBUG='d',
+  RPSPROGOPT_BATCH='B',
+  RPSPROGOPT_JOBS='j',
+  RPSPROGOPT_DUMP='D',
+
+  RPSPROGOPT_HOMEDIR=1000,
+  RPSPROGOPT_RANDOMOID,
+  RPSPROGOPT_TYPEINFO,
+  RPSPROGOPT_SYSLOG,
+  RPSPROGOPT_NOTERMINAL,
+  RPSPROGOPT_NOASLR,
+  RPSPROGOPT_GUI,
+  RPSPROGOPT_REPL,
+  RPSPROGOPT_VERSION,
+};
+
+static error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
+struct argp_option rps_progoptions[] =
+{
+  /* ======= the load directory ======= */
+  {/*name:*/ "load", ///
+    /*key:*/ RPSPROGOPT_LOADDIR, ///
+    /*arg:*/ "LOADDIR", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "loads persistent state from LOADDIR, defaults to the source directory", ///
+    /*group:*/0 ///
+  },
+  /* ======= the RefPerSys home directory ======= */
+  {/*name:*/ "refpersys-home", ///
+    /*key:*/ RPSPROGOPT_HOMEDIR, ///
+    /*arg:*/ "HOMEDIR", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "set the RefPerSys homedir, default to $REFPERSYS_HOME or $HOME", ///
+    /*group:*/0 ///
+  },
+  /* ======= debug flags ======= */
+  {/*name:*/ "debug", ///
+    /*key:*/ RPSPROGOPT_DEBUG, ///
+    /*arg:*/ "DEBUGFLAGS", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "To set RefPerSys comma separated debug flags, pass --debug=help to get their list.", ///
+    /*group:*/0 ///
+  },
+  /* ======= debug flags ======= */
+  {/*name:*/ "dump", ///
+    /*key:*/ RPSPROGOPT_DUMP, ///
+    /*arg:*/ "DUMPDIR", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Dump the persistent state to given DUMPDIR directory.", ///
+    /*group:*/0 ///
+  },
+  /* ======= random oids ======= */
+  {/*name:*/ "random-oid", ///
+    /*key:*/ RPSPROGOPT_RANDOMOID, ///
+    /*arg:*/ "NBOIDS", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Print NBOIDS random object identifiers",
+    /*group:*/0 ///
+  },
+  /* ======= type information ======= */
+  {/*name:*/ "type-info", ///
+    /*key:*/ RPSPROGOPT_TYPEINFO, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Show type information", //
+    /*group:*/0 ///
+  },
+  /* ======= syslog-ing ======= */
+  {/*name:*/ "syslog", ///
+    /*key:*/ RPSPROGOPT_SYSLOG, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "use system log with syslog(3)", //
+    /*group:*/0 ///
+  },
+  /* ======= without terminal ======= */
+  {/*name:*/ "no-terminal", ///
+    /*key:*/ RPSPROGOPT_NOTERMINAL, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Forcibly disable terminal ANSI escape codes, even if stdout is a tty.", //
+    /*group:*/0 ///
+  },
+  /* ======= without ASLR ======= */
+  {/*name:*/ "no-aslr", ///
+    /*key:*/ RPSPROGOPT_NOASLR, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Forcibly disable Adress Space Layout Randomization.", //
+    /*group:*/0 ///
+  },
+  /* ======= batch ======= */
+  {/*name:*/ "batch", ///
+    /*key:*/ RPSPROGOPT_BATCH, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Run in batch mode, that is without any user interface (either graphical or command-line REPL).", //
+    /*group:*/0 ///
+  },
+  /* ======= graphical user interface ======= */
+  {/*name:*/ "gui", ///
+    /*key:*/ RPSPROGOPT_GUI, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Run with a graphical user interface, default if $DISPLAY is given for X11, and if --repl or --batch not given.", //
+    /*group:*/0 ///
+  },
+  /* ======= version info ======= */
+  {/*name:*/ "version", ///
+    /*key:*/ RPSPROGOPT_VERSION, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Show version information.", //
+    /*group:*/0 ///
+  },
+  /* ======= command textual read eval print loop user interface ======= */
+  {/*name:*/ "repl", ///
+    /*key:*/ RPSPROGOPT_REPL, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Run with a textual read-eval-print-loop user interface using GNU readline.", //
+    /*group:*/0 ///
+  },
+  /* ======= terminating empty option ======= */
+  {/*name:*/(const char*)0, ///
+    /*key:*/0, ///
+    /*arg:*/(const char*)0, ///
+    /*flags:*/0, ///
+    /*doc:*/(const char*)0, ///
+    /*group:*/0 ///
+  }
+};
+
+
+
 struct backtrace_state* rps_backtrace_common_state;
 const char* rps_progname;
 
@@ -60,7 +199,38 @@ thread_local Rps_Random Rps_Random::_rand_thr_;
 
 typedef std::function<void(void)> rps_todo_func_t;
 static std::vector<rps_todo_func_t> rps_main_todo_vect;
+static std::string rps_my_load_dir;
+static void rps_parse_program_arguments(int &argc, char**argv);
 
+static char rps_bufpath_homedir[384];
+
+const char* rps_homedir(void)
+{
+  static std::mutex homedirmtx;
+  std::lock_guard<std::mutex> gu(homedirmtx);
+  if (RPS_UNLIKELY(rps_bufpath_homedir[0] == (char)0))
+    {
+      const char*rpshome = getenv("REFPERSYS_HOME");
+      const char*home = getenv("HOME");
+      const char*path = rpshome?rpshome:home;
+      if (!path)
+        RPS_FATAL("no RefPerSys home ($REFPERSYS_HOME or $HOME)");
+      char* rp = realpath(path, nullptr);
+      if (!rp)
+        RPS_FATAL("realpath failed on RefPerSys home %s - %m",
+                  path);
+      if (strlen(rp) >= sizeof(rps_bufpath_homedir) -1)
+        RPS_FATAL("too long realpath %s on RefPerSys home %s", rp, path);
+      strncpy(rps_bufpath_homedir, rp, sizeof(rps_bufpath_homedir) -1);
+    }
+  return rps_bufpath_homedir;
+} // end rps_homedir
+
+const std::string&
+rps_get_loaddir(void)
+{
+  return rps_my_load_dir;
+} // end rps_get_loaddir
 
 const char*
 rps_hostname(void)
@@ -394,9 +564,12 @@ main (int argc, char** argv)
              argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
              (void*)main);
   ////
+  rps_parse_program_arguments(argc, argv);
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
-  //// FIXME: should have some real code here
+  if (rps_my_load_dir.empty())
+    rps_my_load_dir = std::string(rps_topdirectory);
+  rps_load_from(rps_my_load_dir);
   rps_run_application(argc, argv);
   ////
   if (!dumpdir.empty())
@@ -411,7 +584,172 @@ main (int argc, char** argv)
   return 0;
 } // end of main
 
+// parse a single program option
+static error_t
+rps_parse1opt (int key, char *arg, struct argp_state *state)
+{
+  switch (key)
+    {
+    case RPSPROGOPT_DEBUG:
+    {
+      rps_set_debug(std::string(arg));
+    }
+    return 0;
+    case RPSPROGOPT_LOADDIR:
+    {
+      rps_my_load_dir = std::string(arg);
+    }
+    return 0;
+    case RPSPROGOPT_BATCH:
+    {
+      rps_batch = true;
+      RPS_INFORMOUT("enabling batch mode");
+    }
+    return 0;
+    case RPSPROGOPT_JOBS:
+    {
+      int nbjobs = atoi(arg);
+      if (nbjobs <= RPS_NBJOBS_MIN)
+        nbjobs = RPS_NBJOBS_MIN;
+      else if (nbjobs > RPS_NBJOBS_MAX)
+        nbjobs = RPS_NBJOBS_MAX;
+      rps_nbjobs = nbjobs;
+      RPS_INFORMOUT("set number of jobs or worker threads to " << rps_nbjobs);
+    }
+    return 0;
+    case RPSPROGOPT_DUMP:
+    {
+      RPS_INFORMOUT("will dump to " << arg);
+    }
+    return 0;
+    case RPSPROGOPT_HOMEDIR:
+    {
+      struct stat rhomstat;
+      memset (&rhomstat, 0, sizeof(rhomstat));
+      if (stat(arg, &rhomstat))
+        RPS_FATAL("failed to stat --refpersys-home %s: %m",
+                  arg);
+      if (!S_ISDIR(rhomstat.st_mode))
+        RPS_FATAL("given --refpersys-home %s is not a directory",
+                  arg);
+      if ((rhomstat.st_mode & (S_IRUSR|S_IXUSR)) !=  (S_IRUSR|S_IXUSR))
+        RPS_FATAL("given --refpersys-home %s is not user readable and executable",
+                  arg);
+      char*rhomrp = realpath(arg, nullptr);
+      if (!rhomrp)
+        RPS_FATAL("realpath failed on given --refpersys-home %s - %m",
+                  arg);
+      if (strlen(rhomrp) >= sizeof(rps_bufpath_homedir) -1)
+        RPS_FATAL("too long realpath %s on given --refpersys-home %s - %m",
+                  rhomrp, arg);
+      strncpy(rps_bufpath_homedir, rhomrp, sizeof(rps_bufpath_homedir) -1);
+      free (rhomrp), rhomrp = nullptr;
+      RPS_INFORMOUT("set RefPerSys home directory to " << rps_bufpath_homedir);
+    }
+    return 0;
+    case RPSPROGOPT_RANDOMOID:
+    {
+      int nbrand = atoi(arg);
+      if (nbrand <= 0) nbrand = 2;
+      else if (nbrand > 100) nbrand = 100;
+      RPS_INFORM("output of %d random objids generated on %.2f\n", nbrand,
+                 rps_wallclock_real_time());
+      printf("*    %-20s" "\t  %-19s" "   %-12s" "\t %-10s\n",
+             " objid", "hi", "lo", "hash");
+      printf("========================================================"
+             "===========================\n");
+      for (int ix = 0; ix<nbrand; ix++)
+        {
+          auto rid = Rps_Id::random();
+          printf("! %22s" "\t  %19lld" " %12lld" "\t %10u\n",
+                 rid.to_string().c_str(),
+                 (long long) rid.hi(),
+                 (long long) rid.lo(),
+                 (unsigned) rid.hash());
+        }
+      printf("--------------------------------------------------------"
+             "---------------------------\n");
+      fflush(nullptr);
+    }
+    return 0;
+    case RPSPROGOPT_TYPEINFO:
+    {
+      rps_print_types_info ();
+      rps_batch = true;
+    }
+    return 0;
+    case RPSPROGOPT_SYSLOG:
+    {
+      rps_syslog_enabled = true;
+      openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
+      RPS_INFORM("using syslog");
+    }
+    return 0;
+    case RPSPROGOPT_NOTERMINAL:
+    {
+      rps_without_terminal_escape = true;
+    }
+    return 0;
+    case RPSPROGOPT_NOASLR:
+    {
+      // was already handled
+      RPS_ASSERT(rps_disable_aslr);
+    }
+    return 0;
+    case RPSPROGOPT_GUI:
+    {
+      rps_run_gui = true;
+      RPS_INFORM("will run with a graphical user interface");
+    }
+    return 0;
+    case RPSPROGOPT_REPL:
+    {
+      rps_run_repl = true;
+      RPS_INFORM("will run with a textual Read-Eval-Print-Loop using GNU readline");
+    }
+    return 0;
+    case RPSPROGOPT_VERSION:
+    {
+      RPS_INFORMOUT("RefPerSys version information:\n"
+                    << " program name: " << rps_progname << std::endl
+                    << " build time: " << rps_timestamp << std::endl
+                    << " top directory: " << rps_topdirectory << std::endl
+                    << " git id: " << rps_gitid << std::endl
+                    << " last git tag: " << rps_lastgittag << std::endl
+                    << " last git commit: " << rps_lastgitcommit << std::endl
+                    << " md5sum of source files: " << rps_md5sum << std::endl
+                    << " made with: " << rps_makefile << std::endl
+                    << "***** see also http://refpersys.org/ *****" << std::endl);
+    }
+    return 0;
+    };				// end switch key
+  return ARGP_ERR_UNKNOWN;
+} // end rps_parse1opt
 
+
+void
+rps_parse_program_arguments(int &argc, char**argv)
+{
+  errno = 0;
+  struct argp_state argstate;
+  memset (&argstate, 0, sizeof(argstate));
+  static struct argp argparser;
+  argparser.options = rps_progoptions;
+  argparser.parser = rps_parse1opt;
+  argparser.args_doc = " ; # ";
+  argparser.doc =
+    "RefPerSys - an Artificial General Intelligence project, GPLv3+, open science, for Linux/x86-64\n"
+    "see http://refpersys.org/ for more. You should have received a copy of the GNU General Public License\n"
+    "along with this program.  If not, see https://www.gnu.org/licenses\n"
+    "**NO WARRANTY, not even for FITNESS FOR A PARTICULAR PURPOSE**\n"
+    "+++ use at your own risk +++\n"
+    "\n Accepted program options are:\n";
+  argparser.children = nullptr;
+  argparser.help_filter = nullptr;
+  argparser.argp_domain = nullptr;
+  if (argp_parse(&argparser, argc, argv, 0, nullptr, nullptr))
+    RPS_FATALOUT("failed to parse program arguments to " << argv[0]);
+} // end rps_parse_program_arguments
 
 void
 rps_run_application(int &argc, char **argv)
