@@ -719,6 +719,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " last git commit: " << rps_lastgitcommit << std::endl
                     << " md5sum of source files: " << rps_md5sum << std::endl
                     << " made with: " << rps_makefile << std::endl
+		    << " C++ compiler: " << rps_cxx_compiler_version << std::endl
                     << "***** see also http://refpersys.org/ *****" << std::endl);
     }
     return 0;

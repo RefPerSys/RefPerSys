@@ -153,7 +153,8 @@ fullclean:
 	$(MAKE) clean
 
 __timestamp.c:
-	./generate-timestamp.sh > $@-tmp
+	./generate-timestamp.sh $@  > $@-tmp
+	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp 
 	$(MV) --backup $@-tmp $@
 
 
