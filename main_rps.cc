@@ -725,8 +725,10 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " last git commit: " << rps_lastgitcommit << std::endl
                     << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
                     << " with " << nbsubdirs << " subdirectories." << std::endl
+                    << " GNU glibc " << gnu_get_libc_version() << std::endl
                     << " Graphical User Interface using " << rps_fltk_version() << std::endl
                     << " Read Eval Print Loop using " << rps_repl_version() << std::endl
+                    << " libCURL for web using " << rps_curl_version() << std::endl
                     << " made with: " << rps_makefile << std::endl
                     << " C++ compiler: " << rps_cxx_compiler_version << std::endl
                     << "***** see also http://refpersys.org/ *****" << std::endl);

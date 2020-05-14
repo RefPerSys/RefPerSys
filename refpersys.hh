@@ -93,6 +93,8 @@
 #include <pthread.h>
 #include <sys/personality.h>
 
+// http://man7.org/linux/man-pages/man3/gnu_get_libc_version.3.html
+#include <gnu/libc-version.h>
 
 
 // for programmatic C++ name demangling, see also
@@ -3160,6 +3162,7 @@ extern "C" unsigned rps_hardcoded_number_of_constants(void);
 extern "C" void rps_run_application (int& argc, char**argv); // in fltk_rps.cc
 extern "C" std::string rps_fltk_version(void); // in fltk_rps.cc
 extern "C" std::string rps_repl_version(void); // in repl_rps.cc
+extern "C" std::string rps_curl_version(void); // in curl_rps.cc
 
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 

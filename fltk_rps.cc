@@ -46,7 +46,12 @@ std::string
 rps_fltk_version(void)
 {
   std::string res("FLTK ");
-  res += "ABI:";
+  char fltkgitbuf[24];
+  memset (fltkgitbuf, 0, sizeof(fltkgitbuf));
+  strncpy(fltkgitbuf, rps_fltk_gitid, 3*sizeof(fltkgitbuf)/4);
+  res += "git ";
+  res += fltkgitbuf;
+  res += ", ABI:";
   res += std::to_string(Fl::abi_version());
   res += ", API:";
   res += std::to_string(Fl::api_version());
