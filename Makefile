@@ -53,13 +53,13 @@ RPS_BUILD_INCLUDE_FLAGS=  -I . $(RPS_INCLUDE_FLAGS)
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
-RPS_PKG_NAMES= jsoncpp
+RPS_PKG_NAMES= jsoncpp readline
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
 RPS_FLTK_CONFIG= fltk-config
 RPS_FLTK_CXXFLAGS:= $(shell $(RPS_FLTK_CONFIG) --cxxflags)
-RPS_FLTK_LIBS:= $(shell fltk-config --libs)
+RPS_FLTK_LIBS:= $(shell fltk-config --ldflags)
 LIBES= $(RPS_PKG_LIBS) $(RPS_FLTK_LIBS) -lunistring -lbacktrace -ldl
 RM= rm -f
 MV= mv

@@ -31,12 +31,27 @@
 
 #include "refpersys.hh"
 
+/// for FLTK - see https://www.fltk.org/
+
+#include "FL/Fl.H"
+
 
 extern "C" const char rps_fltk_gitid[];
 const char rps_fltk_gitid[]= RPS_GITID;
 
 extern "C" const char rps_fltk_date[];
 const char rps_fltk_date[]= __DATE__;
+
+std::string
+rps_fltk_version(void)
+{
+  std::string res("FLTK ");
+  res += "ABI:";
+  res += std::to_string(Fl::abi_version());
+  res += ", API:";
+  res += std::to_string(Fl::api_version());
+  return res;
+} // end rps_fltk_version
 
 void
 rps_garbcoll_application(Rps_GarbageCollector&gc)

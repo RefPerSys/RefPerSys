@@ -31,12 +31,30 @@
 
 #include "refpersys.hh"
 
+#include "readline/readline.h"
 
 extern "C" const char rps_repl_gitid[];
 const char rps_repl_gitid[]= RPS_GITID;
 
 extern "C" const char rps_repl_date[];
 const char rps_repl_date[]= __DATE__;
+
+std::string
+rps_repl_version(void)
+{
+
+  std::string res = "REPL";
+  {
+    char gitstart[32];
+    memset (gitstart, 0, sizeof(gitstart));
+    strncpy(gitstart, rps_repl_gitid, 2*sizeof(gitstart)/3+2);
+    res += " git ";
+    res += gitstart;
+  }
+  res += " ReadLine ";
+  res += rl_library_version;
+  return res;
+} // end rps_repl_version
 
 void
 rps_read_eval_print_loop(int &argc, char **argv)

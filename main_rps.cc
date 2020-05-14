@@ -710,6 +710,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     return 0;
     case RPSPROGOPT_VERSION:
     {
+      int nbfiles=0;
+      int nbsubdirs=0;
+      for (auto pfiles=rps_files; *pfiles; pfiles++)
+        nbfiles++;
+      for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
+        nbsubdirs++;
       RPS_INFORMOUT("RefPerSys version information:\n"
                     << " program name: " << rps_progname << std::endl
                     << " build time: " << rps_timestamp << std::endl
@@ -717,9 +723,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " git id: " << rps_gitid << std::endl
                     << " last git tag: " << rps_lastgittag << std::endl
                     << " last git commit: " << rps_lastgitcommit << std::endl
-                    << " md5sum of source files: " << rps_md5sum << std::endl
+                    << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
+                    << " with " << nbsubdirs << " subdirectories." << std::endl
+                    << " Graphical User Interface using " << rps_fltk_version() << std::endl
+                    << " Read Eval Print Loop using " << rps_repl_version() << std::endl
                     << " made with: " << rps_makefile << std::endl
-		    << " C++ compiler: " << rps_cxx_compiler_version << std::endl
+                    << " C++ compiler: " << rps_cxx_compiler_version << std::endl
                     << "***** see also http://refpersys.org/ *****" << std::endl);
     }
     return 0;
