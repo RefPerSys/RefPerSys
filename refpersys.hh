@@ -591,6 +591,7 @@ class Rps_PayloadWindow;
 class Rps_Loader;
 class Rps_Dumper;
 class Rps_CallFrame;
+class RpsGui_Window; // see fltkhead_rps.hh
 class Rps_Value;
 class Rps_Id;
 
@@ -735,6 +736,7 @@ public:
   // find an object with a given oid or name string
   static Rps_ObjectRef find_object_by_string(Rps_CallFrame*callerframe,  const std::string& str, bool dontfail=false);
   static Rps_ObjectRef find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, bool dontfail=false);
+  static Rps_ObjectRef really_find_object_by_oid(const Rps_Id& oid);
   // create a class of given super class and name
   static Rps_ObjectRef make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef superclassob, std::string name);
   // create a symbol of given name
@@ -762,7 +764,7 @@ public:
   // if this is a class-object, install a method of selector obsel and
   // closure closv; otherwise raise an exception; and likewise for two
   // or three selectors. The callerframe is not really useful today,
-  // but might be useful later...
+  // but might be useful later...<
   // NB: we might call these from the temporary plugin window.
   void install_own_method(Rps_CallFrame*callerframe, Rps_ObjectRef obsel, Rps_Value closv);
   // likewise, but lock this class only once!
@@ -1888,6 +1890,7 @@ public:
   {
     return &ob_mtx;
   };
+  void gui_window_reset_class(RpsGui_Window*win);
   void touch_now(void) {
     ob_mtime.store(rps_wallclock_real_time());
   };
@@ -3139,7 +3142,6 @@ public:
 
 ////////////////////////////////////////////////////////////////
 ///// window payload for PaylWindow
-class RpsGui_Window;
 class RpsGui_OutputWindow;// in fltkhead_rps.hh and fltkhi_rps.cc
 class RpsGui_CommandWindow;// in fltkhead_rps.hh and fltkhi_rps.cc
 class Rps_PayloadWindow : public Rps_Payload

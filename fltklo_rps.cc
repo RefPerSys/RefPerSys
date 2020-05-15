@@ -41,6 +41,44 @@ extern "C" const char rps_fltklo_date[];
 const char rps_fltklo_date[]= __DATE__;
 
 
+RpsGui_Window::RpsGui_Window(int w, int h, const std::string& lab)
+  : Fl_Double_Window(w,h), guiwin_ownoid(), guiwin_label(lab)
+{
+  label(guiwin_label.c_str());
+}; // end RpsGui_Window::RpsGui_Window
+
+RpsGui_Window::RpsGui_Window(int x, int y, int w, int h, const std::string& lab)
+  : Fl_Double_Window(x,y,w,h), guiwin_ownoid(), guiwin_label(lab)
+{
+  label(guiwin_label.c_str());
+};				// end RpsGui_Window::RpsGui_Window
+
+void
+RpsGui_Window::clear_owning_object(void)
+{
+  if (!guiwin_ownoid)
+    return;
+  Rps_ObjectRef obr = Rps_ObjectRef::really_find_object_by_oid(guiwin_ownoid);
+  if (!obr)
+    return;
+  guiwin_ownoid = Rps_Id(nullptr);
+  std::unique_lock<std::recursive_mutex> guobr (*(obr->objmtxptr()));
+  auto winpayl = obr->get_dynamic_payload<Rps_PayloadWindow>();
+  if (!winpayl)
+    return;
+  if (winpayl->owner() != obr)
+    return;
+  obr->clear_payload();
+  obr->gui_window_reset_class(this);
+}; // end RpsGui_Window::clear_owning_object
+
+
+RpsGui_Window::~RpsGui_Window()
+{
+  if (guiwin_ownoid)
+    clear_owning_object();
+};				// end RpsGui_Window::~RpsGui_Window
+
 int
 RpsGui_Window::handle(int evtype)
 {
@@ -62,5 +100,34 @@ RpsGui_Window::owning_object(Rps_CallFrame*callframe) const
 {
   return Rps_ObjectRef::find_object_by_oid(callframe, owning_oid());
 } // end RpsGui_Window::owning_object
+
+
+
+Rps_PayloadWindow::~Rps_PayloadWindow()
+{
+}; // end Rps_PayloadWindow::~Rps_PayloadWindow
+
+bool
+Rps_PayloadWindow::is_erasable() const
+{
+  return true;
+}; // end Rps_PayloadWindow::is_erasable()
+
+void
+Rps_PayloadWindow::gc_mark(Rps_GarbageCollector&gc) const
+{
+} // end Rps_PayloadWindow::gc_mark
+
+void
+Rps_PayloadWindow::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du != nullptr);
+} // end Rps_PayloadWindow::dump_scan
+
+void
+Rps_PayloadWindow::dump_json_content(Rps_Dumper*du, Json::Value&) const
+{
+  RPS_ASSERT(du != nullptr);
+} // end Rps_PayloadWindow::dump_json_content
 
 //////////////////////////////////////// end of file fltklo_rps.cc

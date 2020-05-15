@@ -116,6 +116,13 @@ Rps_ObjectZone::register_objzone(Rps_ObjectZone*obz)
   ob_idbucketmap_[oid.bucket_num()].insert({oid,obz});
 } // end Rps_ObjectZone::register_objzone
 
+void
+Rps_ObjectZone::gui_window_reset_class(RpsGui_Window*win)
+{
+  RPS_ASSERT(win != nullptr);
+  RPS_ASSERT(rps_is_main_gui_thread());
+  ob_class.store(Rps_ObjectRef::the_object_class());
+} // end Rps_ObjectZone::gui_window_reset_class
 
 Rps_Id
 Rps_ObjectZone::fresh_random_oid(Rps_ObjectZone*ob)
@@ -1849,6 +1856,11 @@ Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, bool do
 } // end Rps_ObjectRef::find_object_by_oid
 
 
+Rps_ObjectRef
+Rps_ObjectRef::really_find_object_by_oid(const Rps_Id& oid)
+{
+  return Rps_ObjectRef(Rps_ObjectZone::find(oid));
+} // end Rps_ObjectRef::really_find_object_by_oid
 
 Rps_ObjectRef
 Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef superclassarg, std::string name)

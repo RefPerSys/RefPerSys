@@ -55,12 +55,18 @@ public:
   virtual int handle(int);
 protected:
   Rps_Id guiwin_ownoid;
+  std::string guiwin_label;
+  RpsGui_Window(int w, int h, const std::string& lab);
+  RpsGui_Window(int x, int y, int w, int h, const std::string& lab);
 public:
+  virtual ~RpsGui_Window();
   Rps_Id owning_oid() const
   {
     return guiwin_ownoid;
   };
   Rps_ObjectRef owning_object(Rps_CallFrame*) const;
+  void set_owning_object(Rps_CallFrame*, Rps_ObjectRef obr);
+  void clear_owning_object(void);
 };
 
 class RpsGui_CommandWindow
