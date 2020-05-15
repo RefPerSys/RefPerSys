@@ -155,7 +155,7 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_VERSION, ///
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Show version information.", //
+    /*doc:*/ "Show version information, then exit.", //
     /*group:*/0 ///
   },
   /* ======= command textual read eval print loop user interface ======= */
@@ -556,6 +556,7 @@ main (int argc, char** argv)
   ///
   if (rps_syslog_enabled && rps_debug_flags != 0)
     openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
+  rps_parse_program_arguments(argc, argv);
   ///
   RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" " %s process %d on host %s\n"
              "... gitid %.16s built %s (main@%p)",
@@ -564,7 +565,6 @@ main (int argc, char** argv)
              argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
              (void*)main);
   ////
-  rps_parse_program_arguments(argc, argv);
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
   if (rps_my_load_dir.empty())
@@ -716,22 +716,23 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         nbfiles++;
       for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
         nbsubdirs++;
-      RPS_INFORMOUT("RefPerSys version information:\n"
-                    << " program name: " << rps_progname << std::endl
-                    << " build time: " << rps_timestamp << std::endl
-                    << " top directory: " << rps_topdirectory << std::endl
-                    << " git id: " << rps_gitid << std::endl
-                    << " last git tag: " << rps_lastgittag << std::endl
-                    << " last git commit: " << rps_lastgitcommit << std::endl
-                    << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
-                    << " with " << nbsubdirs << " subdirectories." << std::endl
-                    << " GNU glibc " << gnu_get_libc_version() << std::endl
-                    << " Graphical User Interface using " << rps_fltk_version() << std::endl
-                    << " Read Eval Print Loop using " << rps_repl_version() << std::endl
-                    << " libCURL for web using " << rps_curl_version() << std::endl
-                    << " made with: " << rps_makefile << std::endl
-                    << " C++ compiler: " << rps_cxx_compiler_version << std::endl
-                    << "***** see also http://refpersys.org/ *****" << std::endl);
+      std:: cout << "RefPerSys version information:\n"
+                 << " program name: " << rps_progname << std::endl
+                 << " build time: " << rps_timestamp << std::endl
+                 << " top directory: " << rps_topdirectory << std::endl
+                 << " git id: " << rps_gitid << std::endl
+                 << " last git tag: " << rps_lastgittag << std::endl
+                 << " last git commit: " << rps_lastgitcommit << std::endl
+                 << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
+                 << " with " << nbsubdirs << " subdirectories." << std::endl
+                 << " GNU glibc " << gnu_get_libc_version() << std::endl
+                 << " Graphical User Interface using " << rps_fltk_version() << std::endl
+                 << " Read Eval Print Loop using " << rps_repl_version() << std::endl
+                 << " libCURL for web using " << rps_curl_version() << std::endl
+                 << " made with: " << rps_makefile << std::endl
+                 << " C++ compiler: " << rps_cxx_compiler_version << std::endl
+                 << "***** see also http://refpersys.org/ *****" << std::endl;
+      exit(EXIT_SUCCESS);
     }
     return 0;
     };				// end switch key
