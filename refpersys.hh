@@ -581,8 +581,6 @@ class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
 class Rps_JsonZone; // memory for Json values
-class Rps_QtPtrZone;
-class Rps_QtPtrValue;
 class Rps_GarbageCollector;
 class Rps_Payload;
 class Rps_PayloadSymbol;
@@ -838,7 +836,6 @@ enum class Rps_Type : std::int16_t
   Object,
   Closure,
   Instance,
-  QtPtr,
   Json,
 };
 
