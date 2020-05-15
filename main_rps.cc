@@ -699,13 +699,13 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     case RPSPROGOPT_GUI:
     {
       rps_run_gui = true;
-      RPS_INFORM("will run with a graphical user interface");
+      RPS_DEBUG_LOG(GUI, "will run with a graphical user interface");
     }
     return 0;
     case RPSPROGOPT_REPL:
     {
       rps_run_repl = true;
-      RPS_INFORM("will run with a textual Read-Eval-Print-Loop using GNU readline");
+      RPS_DEBUG_LOG(REPL, "will run with a textual Read-Eval-Print-Loop using GNU readline");
     }
     return 0;
     case RPSPROGOPT_VERSION:
