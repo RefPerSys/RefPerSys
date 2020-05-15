@@ -37,12 +37,41 @@
 
 /// for FLTK - see https://www.fltk.org/
 
-#include "FL/Fl.H"
+#include <FL/Fl.H>
+#include <FL/Fl_Window.H>
+#include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Box.H>
 
-class RpsGui_Window
+enum RpsGui_WinTypes
 {
-};				// end class RpsGui_Window
+  /// every FLTK widget has a type. Please grep the FLTK header files for "RESERVED_TYPE".
+  RpsGuiType_CommandWindow = FL_DOUBLE_WINDOW+2,
+  RpsGuiType_OutputWindow,
+};
 
+class RpsGui_Window: public Fl_Double_Window
+{
+public:
+  virtual int handle(int);
+protected:
+  Rps_Id guiwin_ownoid;
+public:
+  Rps_Id owning_oid() const
+  {
+    return guiwin_ownoid;
+  };
+  Rps_ObjectRef owning_object(Rps_CallFrame*) const;
+};
+
+class RpsGui_CommandWindow
+  : public RpsGui_Window
+{
+};				// end class RpsGui_CommandWindow
+
+class RpsGui_OutputWindow
+  : public RpsGui_Window
+{
+}; // end class RpsGui_OutputWindow
 
 class RpsGui_OutputText
 {

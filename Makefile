@@ -199,7 +199,7 @@ check:
 		--track-origins=yes --log-file=valgrind.log   \
 		./refpersys
 
-# Target to facilitate git push to both origin and GitHub mirror
+# Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
 	@git push origin
 ifeq ($(shell git remote | grep github), github)
@@ -208,7 +208,7 @@ else
 	@echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
 	@printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
 endif
-	@printf "\n%s git-pushed commit %s of http://refpersys.org/ branch %s ...\n\n" \
+	@printf "\n%s git-pushed commit %s of RefPerSys, branch %s ...\n\n" \
 	        "$$(git config --get user.email)" "$$(./generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
 
 

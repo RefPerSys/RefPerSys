@@ -3139,7 +3139,9 @@ public:
 
 ////////////////////////////////////////////////////////////////
 ///// window payload for PaylWindow
-class RpsGui_Window;// in fltkhead_rps.hh and fltkhi_rps.cc
+class RpsGui_Window;
+class RpsGui_OutputWindow;// in fltkhead_rps.hh and fltkhi_rps.cc
+class RpsGui_CommandWindow;// in fltkhead_rps.hh and fltkhi_rps.cc
 class Rps_PayloadWindow : public Rps_Payload
 {
   friend class Rps_ObjectRef;

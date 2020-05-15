@@ -40,4 +40,27 @@ const char rps_fltklo_gitid[]= RPS_GITID;
 extern "C" const char rps_fltklo_date[];
 const char rps_fltklo_date[]= __DATE__;
 
+
+int
+RpsGui_Window::handle(int evtype)
+{
+  /* by default, FLTK understands the ESC key as
+     closing. See https://www.fltk.org/doc-1.4/FAQ.html */
+  if ((evtype == FL_KEYDOWN || evtype == FL_KEYUP))
+    {
+      if (Fl::event_key() == FL_Escape)
+        {
+          RPS_DEBUG_LOG(GUI, "GuiWindow ignore escape");
+          return 1;
+        }
+    }
+  return Fl_Double_Window::handle(evtype);
+} // end RpsGui_Window::handle
+
+Rps_ObjectRef
+RpsGui_Window::owning_object(Rps_CallFrame*callframe) const
+{
+  return Rps_ObjectRef::find_object_by_oid(callframe, owning_oid());
+} // end RpsGui_Window::owning_object
+
 //////////////////////////////////////// end of file fltklo_rps.cc
