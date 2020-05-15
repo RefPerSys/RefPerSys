@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 93,
+ "nbobjects" : 91,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -273,19 +273,6 @@
  "oid" : "_18DO93843oX02UWzq6"
 }
 //-ob_18DO93843oX02UWzq6
-
-
-//+ob_1o1xs5088nl01n9NCv
-//∈symbol
-{
- "class" : "_36I1BY2NetN03WjrOv",
- "mtime" : 1581572069.0,
- "oid" : "_1o1xs5088nl01n9NCv",
- "payload" : "symbol",
- "symb_name" : "qtptr",
- "symb_val" : "_3eg155drDR100uqE6R"
-}
-//-ob_1o1xs5088nl01n9NCv
 
 
 //+ob_1vzVEjDgm6R026xTSv
@@ -648,39 +635,6 @@
  "symb_val" : "_9Gz1oNPCnkB00I6VRS"
 }
 //-ob_37BVwKYeEW800KchHe
-
-
-//+ob_3eg155drDR100uqE6R
-//∈class
-{
- "attrs" : 
- [
-  {
-   "at" : "_1EBVGSfW2m200z18rx",
-   "va" : "qtptr"
-  }
- ],
- "class" : "_41OFI3r0S1t03qdB2E",
- "class_methodict" : 
- [
-  {
-   "methclos" : 
-   {
-    "env" : [],
-    "fn" : "_52zVxP3mTue034OWsD",
-    "vtype" : "closure"
-   },
-   "methosel" : "_1Win5yzaf1L02cBUlV"
-  }
- ],
- "class_name" : "qtptr",
- "class_super" : "_5yhJGgxLwLp00X0xEQ",
- "class_symb" : "_1o1xs5088nl01n9NCv",
- "mtime" : 1583088448.8099999,
- "oid" : "_3eg155drDR100uqE6R",
- "payload" : "classinfo"
-}
-//-ob_3eg155drDR100uqE6R
 
 
 //+ob_3ppZRdS4dt002ZqydW

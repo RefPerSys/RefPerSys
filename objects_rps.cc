@@ -1046,7 +1046,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
         Dl_info di = {};
         if (dladdr((void*)apfun, &di))
           {
-            RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+            RPS_DEBUG_LOG(DUMP, "Rps_ObjectZone::dump_json_content thisob=" << thisob
                           << " has applyingfun " << (void*)apfun
                           << " dli_fname=" << (di.dli_fname?:"???")
                           << " dli_sname=" << (di.dli_sname?:"???"));

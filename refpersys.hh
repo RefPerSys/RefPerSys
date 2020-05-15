@@ -807,7 +807,8 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
-  PaylQt = -11, // for Rps_PayloadQt<>
+  PaylOutputText = -12, // for output text payload, in transient instances of rps_output_textedit
+  PaylWindow = -11, // for window payload, in transient instances of rps_window
   PaylSymbol = -10, // symbol payload
   PaylSpace = -9, // space payload
   PaylStrBuf = -8, // mutable string buffer

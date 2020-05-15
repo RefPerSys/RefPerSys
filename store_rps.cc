@@ -652,7 +652,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
                 }
               catch (const std::exception& exc)
                 {
-                  RPS_FATALOUT("failed second pass in " << spacid
+                  RPS_FATALOUT("failed second pass in space " << spacid
                                << " prevoid:" << prevoid
                                << " line#" << prevlin
                                << std::endl
