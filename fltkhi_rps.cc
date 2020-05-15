@@ -411,42 +411,6 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
 
 
 
-// C++ closure for _52zVxP3mTue034OWsD
-//!method qtptr/display_value_fltk
-extern "C" rps_applyingfun_t rpsapply_52zVxP3mTue034OWsD;
-Rps_TwoValues
-rpsapply_52zVxP3mTue034OWsD(Rps_CallFrame*callerframe, ///
-                            const Rps_Value arg0_fltkptr,
-                            const Rps_Value arg1_objwnd, ///
-                            const Rps_Value arg2_recdepth, ///
-                            [[maybe_unused]] const Rps_Value arg3_, ///
-                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
-{
-  RPS_LOCALFRAME(rpskob_52zVxP3mTue034OWsD,
-                 callerframe, //
-                 Rps_Value qtrecv;
-                 Rps_ObjectRef objwnd;
-                 Rps_Value recdepth;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
-                 //....etc....
-                );
-  ////==== body of _52zVxP3mTue034OWsD !method qtptr/display_value_fltk ====
-  _.qtrecv = arg0_fltkptr;
-  //RPS_ASSERT (_.qtrecv.is_fltkptr());
-  _.objwnd = arg1_objwnd.as_object();
-  RPS_ASSERT (_.objwnd);
-  _.recdepth = arg2_recdepth;
-  RPS_ASSERT (_.recdepth.is_int());
-  auto depthi = _.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_52zVxP3mTue034OWsD start qtrecv=" << _.qtrecv
-                << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
-#warning unimplemented rpsapply_52zVxP3mTue034OWsD
-  RPS_FATAL("unimplemented rpsapply_52zVxP3mTue034OWsD");
-}  // end of rpsapply_52zVxP3mTue034OWsD !method qtptr/display_value_fltk
-
-
 // C++ closure for _42cCN1FRQSS03bzbTz
 //!method json/display_value_fltk
 extern "C" rps_applyingfun_t rpsapply_42cCN1FRQSS03bzbTz;
