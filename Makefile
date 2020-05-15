@@ -37,9 +37,9 @@ RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
 
-RPS_BUILD_CCACHE = ccache
-RPS_BUILD_CC = gcc
-RPS_BUILD_CXX = g++
+RPS_BUILD_CCACHE?= ccache
+RPS_BUILD_CC?= gcc
+RPS_BUILD_CXX?= g++
 RPS_BUILD_DIALECTFLAGS = -std=gnu++17
 RPS_BUILD_WARNFLAGS = -Wall -Wextra
 override RPS_BUILD_OPTIMFLAGS ?= -Og -g3
@@ -117,7 +117,7 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 %.sanit.o: %.cc refpersys.hh.sanit.gch
 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
 
-%.dbg.o: %.cc refpersys.hh.sanit.gch
+%.dbg.o: %.cc refpersys.hh.dbg.gch
 	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
 
 %.ii: %.cc refpersys.hh.gch
@@ -125,21 +125,37 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
 # see https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html 
 
-# FIXME: we dont want to change the mtime of refpersys.hh.gch when its
-# content did not change
 refpersys.hh.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
-	$(COMPILE.cc) -c -o $@-tmp $<
-	if cmp  refpersys.hh.gch  $@-tmp ; then \
-         echo unchanged refpersys.hh ; else \
-         mv --backup -v  $@-tmp  refpersys.hh.gch ; fi
-
-# FIXME: we dont want to change the mtime of refpersys.hh.gch when its
-# content did not change
+	$(COMPILE.cc) -c -o $@ $<
 refpersys.hh.sanit.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
-	$(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@-tmp $<
-	if cmp  refpersys.hh.sanit.gch  $@-tmp ; then \
-         echo unchanged refpersys.hh ; else \
-         mv --backup -v  $@-tmp  refpersys.hh.sanit.gch ; fi
+	$(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@ $<
+refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
+	$(COMPILE.cc)  $(RPS_BUILD_DEBUGFLAGS) -c -o $@ $<
+
+
+
+fltkhead_rps.hh.gch: fltkhead_rps.hh refpersys.hh.gch
+	$(COMPILE.cc) -c -o $@ $<
+fltkhead_rps.hh.sanit.gch: fltkhead_rps.hh refpersys.hh.sanit.gch
+	$(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@ $<
+fltkhead_rps.hh.dbg.gch: fltkhead_rps.hh refpersys.hh.sanit.gch
+	$(COMPILE.cc)  $(RPS_BUILD_DEBUGFLAGS) -c -o $@ $<
+
+
+fltkhi_rps.o: fltkhi_rps.cc fltkhead_rps.hh.gch
+	$(COMPILE.cc) -o $@ $<
+fltkhi_rps.sanit.o: fltkhi_rps.cc fltkhead_rps.sanit.hh.gch
+	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
+fltkhi_rps.dbg.o: fltkhi_rps.cc fltkhead_rps.dbg.hh.gch
+	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
+
+fltklo_rps.o: fltklo_rps.cc fltkhead_rps.hh.gch
+	$(COMPILE.cc) -o $@ $<
+fltklo_rps.sanit.o: fltklo_rps.cc fltkhead_rps.sanit.hh.gch
+	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
+fltklo_rps.dbg.o: fltklo_rps.cc fltkhead_rps.dbg.hh.gch
+	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
+
 
 clean:
 	$(RM) *.o *.orig *~ refpersys *.gch *~

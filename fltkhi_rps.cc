@@ -1,10 +1,11 @@
 /****************************************************************
- * file fltk_rps.cc
+ * file fltkhi_rps.cc
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the FLTK graphical user interface related code. See http://fltk.org/
+ *      It has the high-level FLTK graphical user interface related
+ *      code. See http://fltk.org/
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -29,18 +30,15 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-#include "refpersys.hh"
-
-/// for FLTK - see https://www.fltk.org/
-
-#include "FL/Fl.H"
+#include "fltkhead_rps.hh"
 
 
-extern "C" const char rps_fltk_gitid[];
-const char rps_fltk_gitid[]= RPS_GITID;
 
-extern "C" const char rps_fltk_date[];
-const char rps_fltk_date[]= __DATE__;
+extern "C" const char rps_fltkhi_gitid[];
+const char rps_fltkhi_gitid[]= RPS_GITID;
+
+extern "C" const char rps_fltkhi_date[];
+const char rps_fltkhi_date[]= __DATE__;
 
 std::string
 rps_fltk_version(void)
@@ -48,7 +46,7 @@ rps_fltk_version(void)
   std::string res("FLTK ");
   char fltkgitbuf[24];
   memset (fltkgitbuf, 0, sizeof(fltkgitbuf));
-  strncpy(fltkgitbuf, rps_fltk_gitid, 3*sizeof(fltkgitbuf)/4);
+  strncpy(fltkgitbuf, rps_fltkhi_gitid, 3*sizeof(fltkgitbuf)/4);
   res += "git ";
   res += fltkgitbuf;
   res += ", ABI:";
@@ -629,22 +627,6 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
 } // end of rpsapply_8lKdW7lgcHV00WUOiT
 
 
-/***********
- * Temporarily kept constant objects are no more needed, but for
- * historical reference...
- *
- *    rpsKob_0rgijx7CCnq041IZEd, rpsKob_0TwK4TkhEGZ03oTa5m,
- *    rpsKob_1568ZHTl0Pa00461I2, rpsKob_18DO93843oX02UWzq6,
- *    rpsKob_1wihX3eWD9o00QnxUX, rpsKob_1DUx3zfUzIb04lqNVt,
- *    rpsKob_1Win5yzaf1L02cBUlV, rpsKob_2KnFhlj8xW800kpgPt,
- *    rpsKob_33DFyPOJxbF015ZYoi, rpsKob_41OFI3r0S1t03qdB2E,
- *    rpsKob_42cCN1FRQSS03bzbTz, rpsKob_4ojpzRzyRWz02DNWMe,
- *    rpsKob_4x9jd2yAe8A02SqKAx, rpsKob_52zVxP3mTue034OWsD,
- *    rpsKob_5nSiRIxoYQp00MSnYA, rpsKob_6Wi00FwXYID00gl9Ma,
- *    rpsKob_7oa7eIzzcxv03TmmZH, rpsKob_8lKdW7lgcHV00WUOiT,
- *    rpsKob_8KJHUldX8GJ03G5OWp, rpsKob_9uwZtDshW4401x6MsY, etc..
- *
- ************/
 
 
-//////////////////////////////////////// end of file fltk_rps.cc
+//////////////////////////////////////// end of file fltkhi_rps.cc
