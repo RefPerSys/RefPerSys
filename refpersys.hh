@@ -585,6 +585,9 @@ class Rps_GarbageCollector;
 class Rps_Payload;
 class Rps_PayloadSymbol;
 class Rps_PayloadClassInfo;
+class Rps_PayloadInputCommand;
+class Rps_PayloadOutputText;
+class Rps_PayloadWindow;
 class Rps_Loader;
 class Rps_Dumper;
 class Rps_CallFrame;
@@ -805,6 +808,7 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
+  PaylInputCommand = -13, // for input command payload, in transient instances of rps_command_textedit
   PaylOutputText = -12, // for output text payload, in transient instances of rps_output_textedit
   PaylWindow = -11, // for window payload, in transient instances of rps_window
   PaylSymbol = -10, // symbol payload
@@ -3133,7 +3137,95 @@ public:
   static int autocomplete_name(const char*prefix, const std::function<bool(const Rps_ObjectZone*,const std::string&)>&stopfun);
 };				// end Rps_PayloadSymbol
 
+////////////////////////////////////////////////////////////////
+///// window payload for PaylWindow
+class RpsGui_Window;// in fltkhead_rps.hh and fltkhi_rps.cc
+class Rps_PayloadWindow : public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend Rps_PayloadWindow*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadWindow, Rps_ObjectZone*>(Rps_ObjectZone*);
+  RpsGui_Window* pwin_guiptr;
+protected:
+  Rps_PayloadWindow(Rps_ObjectZone*owner);
+  Rps_PayloadWindow(Rps_ObjectRef obr) :
+    Rps_PayloadWindow(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadWindow();
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  virtual bool is_erasable(void) const;
+public:
+  virtual const std::string payload_type_name(void) const
+  {
+    return "window";
+  };
+};				// end Rps_PayloadWindow
 
+////////////////////////////////////////////////////////////////
+///// outputtext payload for PaylOutputText
+class RpsGui_OutputText;// in fltkhead_rps.hh and fltkhi_rps.cc
+class Rps_PayloadOutputText : public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend Rps_PayloadOutputText*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadOutputText, Rps_ObjectZone*>(Rps_ObjectZone*);
+  RpsGui_OutputText* poutptex_guiptr;
+protected:
+  Rps_PayloadOutputText(Rps_ObjectZone*owner);
+  Rps_PayloadOutputText(Rps_ObjectRef obr) :
+    Rps_PayloadOutputText(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadOutputText();
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  virtual bool is_erasable(void) const;
+public:
+  virtual const std::string payload_type_name(void) const
+  {
+    return "output_text";
+  };
+};				// end Rps_PayloadOutputText
+
+////////////////////////////////////////////////////////////////
+///// inputcommand payload for PaylInputCommand
+class RpsGui_InputCommand;// in fltkhead_rps.hh and fltkhi_rps.cc
+class Rps_PayloadInputCommand : public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend Rps_PayloadInputCommand*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadInputCommand, Rps_ObjectZone*>(Rps_ObjectZone*);
+  RpsGui_InputCommand* pinpcmd_guiptr;
+protected:
+  Rps_PayloadInputCommand(Rps_ObjectZone*owner);
+  Rps_PayloadInputCommand(Rps_ObjectRef obr) :
+    Rps_PayloadInputCommand(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadInputCommand();
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  virtual bool is_erasable(void) const;
+public:
+  virtual const std::string payload_type_name(void) const
+  {
+    return "input_command";
+  };
+};				// end Rps_PayloadInputCommand
 
 ////////////////////////////////////////////////////////////////
 

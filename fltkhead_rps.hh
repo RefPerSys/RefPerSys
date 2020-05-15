@@ -39,6 +39,18 @@
 
 #include "FL/Fl.H"
 
+class RpsGui_Window
+{
+};				// end class RpsGui_Window
+
+
+class RpsGui_OutputText
+{
+};				// end class RpsGui_OutputText
+
+class RpsGui_InputCommand
+{
+};				// end class RpsGui_InputCommand
 
 #endif /*FLTKHEAD_RPS_INCLUDED*/
 // end of file fltkhead_rps.hh */
