@@ -716,22 +716,33 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         nbfiles++;
       for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
         nbsubdirs++;
-      std:: cout << "RefPerSys version information:\n"
-                 << " program name: " << rps_progname << std::endl
-                 << " build time: " << rps_timestamp << std::endl
-                 << " top directory: " << rps_topdirectory << std::endl
-                 << " git id: " << rps_gitid << std::endl
-                 << " last git tag: " << rps_lastgittag << std::endl
-                 << " last git commit: " << rps_lastgitcommit << std::endl
-                 << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
-                 << " with " << nbsubdirs << " subdirectories." << std::endl
-                 << " GNU glibc " << gnu_get_libc_version() << std::endl
-                 << " Graphical User Interface using " << rps_fltk_version() << std::endl
-                 << " Read Eval Print Loop using " << rps_repl_version() << std::endl
-                 << " libCURL for web using " << rps_curl_version() << std::endl
-                 << " made with: " << rps_makefile << std::endl
-                 << " C++ compiler: " << rps_cxx_compiler_version << std::endl
-                 << "***** see also http://refpersys.org/ *****" << std::endl;
+      std::cout << "RefPerSys, an Artificial Intelligence system - work in progress..." << std::endl;
+      std::cout << "version information:\n"
+                << " program name: " << rps_progname << std::endl
+                << " build time: " << rps_timestamp << std::endl
+                << " top directory: " << rps_topdirectory << std::endl
+                << " git id: " << rps_gitid << std::endl
+                << " last git tag: " << rps_lastgittag << std::endl
+                << " last git commit: " << rps_lastgitcommit << std::endl
+                << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
+                << " with " << nbsubdirs << " subdirectories." << std::endl
+                << " GNU glibc " << gnu_get_libc_version() << std::endl
+                << " Graphical User Interface using " << rps_fltk_version() << std::endl
+                << " Read Eval Print Loop using " << rps_repl_version() << std::endl
+                << " libCURL for web using " << rps_curl_version() << std::endl
+                << " made with: " << rps_makefile << std::endl
+                << " running on " << rps_hostname();
+      {
+        char cwdbuf[256];
+        memset (cwdbuf, 0, sizeof(cwdbuf));
+        if (getcwd(cwdbuf, sizeof(cwdbuf)))
+          std::cout << " in " << cwdbuf;
+      };
+      std::cout << std::endl << " C++ compiler: " << rps_cxx_compiler_version << std::endl
+                << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl
+                << "+++++ there is no WARRANTY, to the extent permitted by law ++++" << std::endl
+                << "***** see also http://refpersys.org/ *****"
+                << std::endl << std::endl;
       exit(EXIT_SUCCESS);
     }
     return 0;
