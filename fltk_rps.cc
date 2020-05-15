@@ -630,21 +630,19 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
 
 
 /***********
- * Temporarily kept constant objects
+ * Temporarily kept constant objects are no more needed, but for
+ * historical reference...
  *
- * For a few weeks in may or june 2020, we mention here as comments
- * several constant objects.
- *
- *    rpskob_0rgijx7CCnq041IZEd, rpskob_0TwK4TkhEGZ03oTa5m,
- *    rpskob_1568ZHTl0Pa00461I2, rpskob_18DO93843oX02UWzq6,
- *    rpskob_1wihX3eWD9o00QnxUX, rpskob_1DUx3zfUzIb04lqNVt,
- *    rpskob_1Win5yzaf1L02cBUlV, rpskob_2KnFhlj8xW800kpgPt,
- *    rpskob_33DFyPOJxbF015ZYoi, rpskob_41OFI3r0S1t03qdB2E,
- *    rpskob_42cCN1FRQSS03bzbTz, rpskob_4ojpzRzyRWz02DNWMe,
- *    rpskob_4x9jd2yAe8A02SqKAx, rpskob_52zVxP3mTue034OWsD,
- *    rpskob_5nSiRIxoYQp00MSnYA, rpskob_6Wi00FwXYID00gl9Ma,
- *    rpskob_7oa7eIzzcxv03TmmZH, rpskob_8lKdW7lgcHV00WUOiT,
- *    rpskob_8KJHUldX8GJ03G5OWp, rpskob_9uwZtDshW4401x6MsY, etc..
+ *    rpsKob_0rgijx7CCnq041IZEd, rpsKob_0TwK4TkhEGZ03oTa5m,
+ *    rpsKob_1568ZHTl0Pa00461I2, rpsKob_18DO93843oX02UWzq6,
+ *    rpsKob_1wihX3eWD9o00QnxUX, rpsKob_1DUx3zfUzIb04lqNVt,
+ *    rpsKob_1Win5yzaf1L02cBUlV, rpsKob_2KnFhlj8xW800kpgPt,
+ *    rpsKob_33DFyPOJxbF015ZYoi, rpsKob_41OFI3r0S1t03qdB2E,
+ *    rpsKob_42cCN1FRQSS03bzbTz, rpsKob_4ojpzRzyRWz02DNWMe,
+ *    rpsKob_4x9jd2yAe8A02SqKAx, rpsKob_52zVxP3mTue034OWsD,
+ *    rpsKob_5nSiRIxoYQp00MSnYA, rpsKob_6Wi00FwXYID00gl9Ma,
+ *    rpsKob_7oa7eIzzcxv03TmmZH, rpsKob_8lKdW7lgcHV00WUOiT,
+ *    rpsKob_8KJHUldX8GJ03G5OWp, rpsKob_9uwZtDshW4401x6MsY, etc..
  *
  ************/
 
