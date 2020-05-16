@@ -42,17 +42,21 @@ for UTF-8 encoded languages written from left to right. This excludes
 human languages like *Japanese* or *Hebrew* and switching to other
 display servers such as *Wayland*.
 
-The *Qt* toolkit has a very power object model requiring a specific
+The *Qt* toolkit has a very powerful object model requiring a specific
 meta-program generating C++ code, the [Qt
 `moc`](https://doc.qt.io/qt-5/moc.html). This is in tension with our
 own *RefPerSys* object model inspired by
 [ObjVLisp](http://stephane.ducasse.free.fr/Web/ArchivedLectures/Lectures-Reflective-0001/allPapers.pdf).
 
-The *Qt5* toolkit is also starting **several threads** behind our back,
-and this is **annoying** (and hostile) for any kind of [tracing garbage
-collection](https://en.wikipedia.org/wiki/Tracing_garbage_collection). In
-particular, we want to *generate* garbage collection supporting
-routines and consider (for later) a [copying generational garbage
+The *Qt5* toolkit is also starting **several threads** behind our
+back, and this is **annoying** (and hostile) for any kind of [tracing
+garbage
+collection](https://en.wikipedia.org/wiki/Tracing_garbage_collection),
+since precise garbage collection in multi-threaded approaches is a
+difficult topic (see the [GC handbook](http://gchandbook.org/) for
+details).. In particular, we want to *generate* garbage collection
+supporting routines and consider (for later) a [copying generational
+garbage
 collector](https://en.wikipedia.org/wiki/Garbage_collection_(computer_science))
 for immutable values. Past experience on [GCC
 MELT](http://starynkevitch.net/Basile/gcc-melt/) is then relevant.
@@ -92,3 +96,20 @@ loop](https://en.wikipedia.org/wiki/Event_loop) may be recursive
 garbage collector (where we hope to *eventually* introduce copying
 techniques à la [Cheney's
 algorithm](https://en.wikipedia.org/wiki/Cheney%27s_algorithm) ....).
+
+Practically speaking, we probably want to write our own event loop
+which uses
+[`Rps_CallFrame*`](https://gitlab.com/bstarynk/refpersys/-/wikis/call-frames-in-RefPerSys)
+and deals with a [FIFO
+queue](https://en.wikipedia.org/wiki/Queue_(abstract_data_type)) of a
+[tagged union](https://en.wikipedia.org/wiki/Tagged_union) of either
+[C++ closures](https://stackoverflow.com/q/12635184/841108) or
+[*RefPerSys*
+ones](https://gitlab.com/bstarynk/refpersys/-/wikis/RefPerSys-code-for-applicable-functions). Of
+course these closures are queued with a few arguments to be applied to
+them. This mechanism is a simple [TODO
+list](https://en.wikipedia.org/wiki/Time_management#Implementation_of_goals)
+and compatible with the [FLTK
+policy](https://www.fltk.org/doc-1.4/group__fl__del__widget.html) of
+never *immediately* deleting any FLTK object inside an FLTK
+[callback](https://en.wikipedia.org/wiki/Callback_(computer_programming)).
