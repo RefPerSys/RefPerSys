@@ -44,7 +44,6 @@ static std::atomic<bool> rps_running_fltk;
 
 static pthread_t rps_main_gui_pthread;
 
-extern "C" void rps_fltk_initialize(int &argc, char**argv);
 
 std::string
 rps_fltk_version(void)
@@ -91,7 +90,7 @@ rps_fltk_event_loop(Rps_CallFrame*cframe)
       count++;
       double delay = RPS_DEBUG_ENABLED(GUI)?30.0:3.0;
       RPS_DEBUG_LOG(GUI, "in rps_fltk_event_loop depth#" << depth << " count#" << count);
-      if (Fl::wait(delay) < 0)
+      if (Fl::wait(delay) <= 0)
         {
           RPS_WARNOUT("rps_fltk_event_loop broke " <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_event_loop"));
           break;
@@ -123,8 +122,11 @@ rps_is_main_gui_thread(void)
 void
 rps_fltk_initialize(int &argc, char**argv)
 {
-  RPS_FATALOUT("unimplemented rps_fltk_initialize, should create a window: argc="
-               << argc << " argv@" << argv);
+  RPS_ASSERT(rps_is_main_gui_thread());
+  auto cmdwin = new RpsGui_CommandWindow(480, 640, "RefPerSysFLTK");
+  RPS_DEBUG_LOG(GUI, "unimplemented rps_fltk_initialize,  create a window: argc="
+                << argc << " argv@" << argv << " cmdwin=" << cmdwin);
+  cmdwin->show();
 #warning rps_fltk_initialize unimplemented
 } // end rps_fltk_initialize
 

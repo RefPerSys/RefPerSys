@@ -40,18 +40,34 @@ const char rps_fltklo_gitid[]= RPS_GITID;
 extern "C" const char rps_fltklo_date[];
 const char rps_fltklo_date[]= __DATE__;
 
+std::set<std::unique_ptr<RpsGui_Window>> RpsGui_Window::_set_of_gui_windows_;
 
 RpsGui_Window::RpsGui_Window(int w, int h, const std::string& lab)
   : Fl_Double_Window(w,h), guiwin_ownoid(), guiwin_label(lab)
 {
+  RPS_ASSERT(rps_is_main_gui_thread());
   label(guiwin_label.c_str());
+  _set_of_gui_windows_.insert(std::unique_ptr<RpsGui_Window>(this));
 }; // end RpsGui_Window::RpsGui_Window
 
 RpsGui_Window::RpsGui_Window(int x, int y, int w, int h, const std::string& lab)
   : Fl_Double_Window(x,y,w,h), guiwin_ownoid(), guiwin_label(lab)
 {
+  RPS_ASSERT(rps_is_main_gui_thread());
   label(guiwin_label.c_str());
+  _set_of_gui_windows_.insert(std::unique_ptr<RpsGui_Window>(this));
 };				// end RpsGui_Window::RpsGui_Window
+
+
+RpsGui_Window::~RpsGui_Window()
+{
+  RPS_ASSERT(rps_is_main_gui_thread());
+  if (guiwin_ownoid)
+    clear_owning_object();
+  _set_of_gui_windows_.erase(std::unique_ptr<RpsGui_Window>(this));
+  if (_set_of_gui_windows_.empty())
+    rps_fltk_stop_event_loop();
+};				// end RpsGui_Window::~RpsGui_Window
 
 void
 RpsGui_Window::clear_owning_object(void)
@@ -72,13 +88,6 @@ RpsGui_Window::clear_owning_object(void)
   obr->gui_window_reset_class(this);
 }; // end RpsGui_Window::clear_owning_object
 
-
-RpsGui_Window::~RpsGui_Window()
-{
-  if (guiwin_ownoid)
-    clear_owning_object();
-};				// end RpsGui_Window::~RpsGui_Window
-
 int
 RpsGui_Window::handle(int evtype)
 {
@@ -88,20 +97,44 @@ RpsGui_Window::handle(int evtype)
     {
       if (Fl::event_key() == FL_Escape)
         {
-          RPS_DEBUG_LOG(GUI, "GuiWindow ignore escape");
+          RPS_DEBUG_LOG(GUI, "GuiWindow " << label_str() << " ignore escape");
           return 1;
         }
     }
+  else if (evtype == FL_HIDE)
+    {
+      RPS_DEBUG_LOG(GUI, "GuiWindow " << label_str() << " got hide");
+    }
+  else RPS_DEBUG_LOG(GUI, "GuiWindow " << label_str() << " evtype#" << evtype);
   return Fl_Double_Window::handle(evtype);
-} // end RpsGui_Window::handle
+}; // end RpsGui_Window::handle
 
 Rps_ObjectRef
 RpsGui_Window::owning_object(Rps_CallFrame*callframe) const
 {
   return Rps_ObjectRef::find_object_by_oid(callframe, owning_oid());
-} // end RpsGui_Window::owning_object
+}; // end RpsGui_Window::owning_object
+
+RpsGui_CommandWindow::RpsGui_CommandWindow(int w, int h, const std::string& lab)
+  : RpsGui_Window(w,h,lab)
+{
+  RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow w=" << w << ", h=" << h
+                << ", lab=" << lab << " this@" << (void*)this);
+};				// end RpsGui_CommandWindow::RpsGui_CommandWindow
+
+RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std::string& lab)
+  : RpsGui_Window(x,y,w,h,lab)
+{
+  RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow x=" << x << ", y=" << y
+                <<	" w=" << w << ", h=" << h
+                << ", lab=" << lab << " this@" << (void*)this);
+}; // end RpsGui_CommandWindow::RpsGui_CommandWindow
 
 
+RpsGui_CommandWindow::~RpsGui_CommandWindow()
+{
+  RPS_DEBUG_LOG(GUI, "destroying RpsGui_CommandWindow@" << (void*)this);
+}; // end RpsGui_CommandWindow::~RpsGui_CommandWindow
 
 Rps_PayloadWindow::~Rps_PayloadWindow()
 {

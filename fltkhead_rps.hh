@@ -46,6 +46,10 @@ extern "C" void rps_fltk_event_loop(Rps_CallFrame*cf);
 
 extern "C" void rps_fltk_stop_event_loop(void);
 
+extern "C" void rps_fltk_initialize(int &argc, char**argv);
+
+
+
 enum RpsGui_WinTypes
 {
   /// every FLTK widget has a type. Please grep the FLTK header files for "RESERVED_TYPE".
@@ -55,6 +59,7 @@ enum RpsGui_WinTypes
 
 class RpsGui_Window: public Fl_Double_Window
 {
+  static std::set<std::unique_ptr<RpsGui_Window>> _set_of_gui_windows_;
 public:
   virtual int handle(int);
 protected:
@@ -71,16 +76,26 @@ public:
   Rps_ObjectRef owning_object(Rps_CallFrame*) const;
   void set_owning_object(Rps_CallFrame*, Rps_ObjectRef obr);
   void clear_owning_object(void);
+  const std::string label_str(void) const
+  {
+    return guiwin_label;
+  };
 };
 
 class RpsGui_CommandWindow
   : public RpsGui_Window
 {
+  friend  void rps_fltk_initialize(int &,char**);
+public:
+  RpsGui_CommandWindow(int w, int h, const std::string& lab);
+  RpsGui_CommandWindow(int x, int y, int w, int h, const std::string& lab);
+  virtual ~RpsGui_CommandWindow();
 };				// end class RpsGui_CommandWindow
 
 class RpsGui_OutputWindow
   : public RpsGui_Window
 {
+  friend  void rps_fltk_initialize(int &,char**);
 }; // end class RpsGui_OutputWindow
 
 class RpsGui_OutputText
