@@ -113,3 +113,19 @@ and compatible with the [FLTK
 policy](https://www.fltk.org/doc-1.4/group__fl__del__widget.html) of
 never *immediately* deleting any FLTK object inside an FLTK
 [callback](https://en.wikipedia.org/wiki/Callback_(computer_programming)).
+
+Within [FLTK 1.4](http://fltk.org/) the only occurrences of the
+[select(2)](http://man7.org/linux/man-pages/man2/select.2.html) or
+[poll(2)](http://man7.org/linux/man-pages/man2/select.2.html)
+multiplexing syscalls are in its [file
+`src/Fl_x.cxx`](https://github.com/fltk/fltk/blob/master/src/Fl_x.cxx),
+functions `Fl_X11_Screen_Driver::poll_or_select` or
+`Fl_X11_Screen_Driver::poll_or_select_with_delay`. Read more about
+[FLTK event model](https://www.fltk.org/doc-1.4/events.html) and its
+[`Fl_Widget::handle`
+method](https://www.fltk.org/doc-1.4/classFl__Widget.html#a9cb17cc092697dfd05a3fab55856d218). See
+also [the `Fl::wait`
+function](https://www.fltk.org/doc-1.4/classFl.html#a108a84216f0b3fa1cb0c46ab7449a312)
+and [the `Fl::check`
+one](https://www.fltk.org/doc-1.4/classFl.html#a1dbb83f1d52001c152ccf8415e3ee6f0)
+which we want to call from our event loop.
