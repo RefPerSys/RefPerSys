@@ -252,7 +252,7 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 #define RPS_FATAL(Fmt,...) RPS_FATAL_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
 #define RPS_FATALOUT_AT_BIS(Fil,Lin,...) do {	\
-    std::clog << "** RefPerSys FATAL! "		\
+    std::cerr << "** RefPerSys FATAL! "		\
 	      << (Fil) << ":" << Lin << ":: "	\
 	      << __VA_ARGS__ << std::endl;	\
     rps_fatal_stop_at (Fil,Lin); } while(0)

@@ -482,6 +482,13 @@ main (int argc, char** argv)
   rps_stderr_istty = isatty(STDERR_FILENO);
   rps_stdout_istty = isatty(STDOUT_FILENO);
   rps_progname = argv[0];
+  rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
+  if (!rps_proghdl)
+    {
+      fprintf(stderr, "%s failed to dlopen whole program (%s)\n", rps_progname,
+              dlerror());
+      exit(EXIT_FAILURE);
+    };
   // For weird reasons, the program arguments are parsed more than
   // once... We don't care that much in practice...
   RPS_ASSERT(argc>0);
@@ -516,13 +523,6 @@ main (int argc, char** argv)
     RPS_FATAL("%s cannot run both GUI and terminal REPL", rps_progname);
   if (rps_run_repl && rps_without_terminal_escape)
     RPS_FATAL("%s cannot run REPL without terminal escape", rps_progname);
-  rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
-  if (!rps_proghdl)
-    {
-      fprintf(stderr, "%s failed to dlopen whole program (%s)\n", rps_progname,
-              dlerror());
-      exit(EXIT_FAILURE);
-    };
   unsetenv("LANG");
   unsetenv("LC_ADDRESS");
   unsetenv("LC_ALL");
@@ -564,6 +564,11 @@ main (int argc, char** argv)
              RPS_TERMINAL_NORMAL_ESCAPE,
              argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
              (void*)main);
+  if (!rps_run_gui && !rps_run_repl && getenv("DISPLAY"))
+    {
+      RPS_INFORM("forcing graphical user interface on DISPLAY=%s", getenv("DISPLAY"));
+      rps_run_gui = true;
+    }
   ////
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
