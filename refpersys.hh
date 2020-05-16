@@ -2695,6 +2695,8 @@ public:
   {
     cfram_marker = nullptr;
   };
+  bool is_good_call_frame() const { return stored_type() == Rps_Type::CallFrame; };
+  static bool is_good_call_frame(const Rps_CallFrame*cf) { return cf==nullptr||cf->is_good_call_frame(); };
 };				// end class Rps_CallFrame
 
 

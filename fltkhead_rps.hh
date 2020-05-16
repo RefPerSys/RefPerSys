@@ -42,6 +42,10 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Box.H>
 
+extern "C" void rps_fltk_event_loop(Rps_CallFrame*cf);
+
+extern "C" void rps_fltk_stop_event_loop(void);
+
 enum RpsGui_WinTypes
 {
   /// every FLTK widget has a type. Please grep the FLTK header files for "RESERVED_TYPE".

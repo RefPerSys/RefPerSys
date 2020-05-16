@@ -40,6 +40,12 @@ const char rps_fltkhi_gitid[]= RPS_GITID;
 extern "C" const char rps_fltkhi_date[];
 const char rps_fltkhi_date[]= __DATE__;
 
+static std::atomic<bool> rps_running_fltk;
+
+static pthread_t rps_main_gui_pthread;
+
+extern "C" void rps_fltk_initialize(int &argc, char**argv);
+
 std::string
 rps_fltk_version(void)
 {
@@ -57,6 +63,47 @@ rps_fltk_version(void)
 } // end rps_fltk_version
 
 void
+rps_fltk_stop_event_loop(void)
+{
+  // see  http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html
+  char curthname[24];
+  memset(curthname, 0, sizeof(curthname));
+  pthread_getname_np(pthread_self(), curthname, sizeof(curthname));
+  RPS_DEBUG_LOG(GUI, "rps_fltk_stop_event_loop in " << curthname
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_stop_event_loop"));
+  rps_running_fltk.store(false);
+} // end rps_fltk_stop_event_loop
+
+void
+rps_fltk_event_loop(Rps_CallFrame*cframe)
+{
+  static volatile unsigned depth;
+  RPS_ASSERT(Rps_CallFrame::is_good_call_frame(cframe));
+  RPS_ASSERT(rps_is_main_gui_thread());
+  depth++;
+  unsigned long count=0;
+  RPS_DEBUG_LOG(GUI, "start of rps_fltk_event_loop depth#" << depth
+                << " cframe@" << cframe << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_event_loop start"));
+  while (rps_running_fltk.load())
+    {
+      Fl::flush();
+      count++;
+      double delay = RPS_DEBUG_ENABLED(GUI)?30.0:3.0;
+      RPS_DEBUG_LOG(GUI, "in rps_fltk_event_loop depth#" << depth << " count#" << count);
+      if (Fl::wait(delay) < 0)
+        {
+          RPS_WARNOUT("rps_fltk_event_loop broke " <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_event_loop"));
+          break;
+        }
+#warning we need to code the "TODO list" mechanism mentioned in FLTK-GUI.md
+    };
+  RPS_DEBUG_LOG(GUI, "end of rps_fltk_event_loop depth#" << depth
+                << " cframe@" << cframe << std::endl);
+  depth--;
+} // end rps_fltk_event_loop
+
+void
 rps_garbcoll_application(Rps_GarbageCollector&gc)
 {
   RPS_ASSERT(rps_is_main_gui_thread());
@@ -69,20 +116,29 @@ rps_garbcoll_application(Rps_GarbageCollector&gc)
 bool
 rps_is_main_gui_thread(void)
 {
-#warning unimplemented rps_is_main_gui_thread
-  RPS_FATAL("unimplemented rps_is_main_gui_thread");
+  return pthread_self() == rps_main_gui_pthread;
 } // end rps_is_main_gui_thread
 
 
+void
+rps_fltk_initialize(int &argc, char**argv)
+{
+  RPS_FATALOUT("unimplemented rps_fltk_initialize, should create a window: argc="
+               << argc << " argv@" << argv);
+#warning rps_fltk_initialize unimplemented
+} // end rps_fltk_initialize
 
 void
 rps_run_fltk_gui(int &argc, char**argv)
 {
   RPS_DEBUG_LOG(GUI, "start rps_run_fltk_gui"  << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_fltk_gui"));
+  rps_main_gui_pthread = pthread_self();
   for (int ix=0; ix<argc; ix++)
     RPS_DEBUG_LOG(GUI, "FLTK GUI arg [" << ix << "]: " << argv[ix]);
-  RPS_FATAL("unimplemented rps_run_fltk_gui");
+  rps_running_fltk.store(true);
+  rps_fltk_initialize(argc, argv);
+  rps_fltk_event_loop(nullptr);
 } // rps_run_fltk_gui
 
 
