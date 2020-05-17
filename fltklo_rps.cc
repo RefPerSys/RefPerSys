@@ -179,8 +179,12 @@ RpsGui_CommandWindow::menu_dump_cb(Fl_Widget*widg, void*ptr)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::menu_dump_cb"));
   RPS_ASSERT(rps_is_main_gui_thread());
-  rps_dump_into (rps_gui_dump_dir_str);
-  RPS_INFORMOUT("RefPerSys dumped into " << rps_gui_dump_dir_str);
+  auto dumpdir = rps_gui_dump_dir_str.empty()?".":rps_gui_dump_dir_str;
+  rps_dump_into (dumpdir);
+  char cwdbuf[128];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
+  getcwd(cwdbuf, sizeof(cwdbuf));
+  RPS_INFORMOUT("RefPerSys dumped into " << dumpdir << " with current directory being " << cwdbuf);
 } // end RpsGui_CommandWindow::menu_dump_cb
 
 void
