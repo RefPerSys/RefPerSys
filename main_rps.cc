@@ -156,25 +156,25 @@ struct argp_option rps_progoptions[] =
   /* ======= graphical user interface geometry ======= */
   {/*name:*/ "gui-geometry", ///
     /*key:*/ RPSPROGOPT_GUI_GEOMETRY, ///
-    /*arg:*/ nullptr, ///
+    /*arg:*/ "GEOMETRY", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "With an FLTK graphical user interface, gives the geometry of first window", //
+    /*doc:*/ "With an FLTK graphical user interface, gives the GEOMETRY of first window <width>x<height>", //
     /*group:*/0 ///
   },
   /* ======= graphical user interface title ======= */
   {/*name:*/ "gui-title", ///
     /*key:*/ RPSPROGOPT_GUI_TITLE, ///
-    /*arg:*/ nullptr, ///
+    /*arg:*/ "TITLE", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "With an FLTK graphical user interface, gives the title of the first window", //
+    /*doc:*/ "With an FLTK graphical user interface, gives the TITLE of the first window", //
     /*group:*/0 ///
   },
   /* ======= graphical user interface scale ======= */
   {/*name:*/ "gui-scale", ///
     /*key:*/ RPSPROGOPT_GUI_SCALE, ///
-    /*arg:*/ nullptr, ///
+    /*arg:*/ "SCALE", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "With an FLTK graphical user interface, gives the windows scale", //
+    /*doc:*/ "With an FLTK graphical user interface, gives the windows SCALE, between 0.2 and 4.0, default 1.0", //
     /*group:*/0 ///
   },
   /* ======= version info ======= */

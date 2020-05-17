@@ -125,17 +125,47 @@ rps_fltk_initialize(int &argc, char**argv)
 {
   RPS_ASSERT(rps_is_main_gui_thread());
   std::string titlestr;
+  if (rps_gui_pref.gui_title.empty())
+    {
+      char titbuf[80];
+      memset (titbuf, 0, sizeof(titbuf));
+      snprintf(titbuf, sizeof(titbuf), "RefPerSys/%.16s p%ld@%.40s",
+               rps_gitid,(long)getpid(),rps_hostname());
+      titlestr = titbuf;
+    }
+  else
+    titlestr = rps_gui_pref.gui_title;
+  constexpr int default_gui_width = 640;
+  constexpr int default_gui_height = 480;
+  constexpr int min_gui_width = 64;
+  constexpr int min_gui_height = 48;
+  constexpr int max_gui_width = 4096;
+  constexpr int max_gui_height = 2048;
+  int w=default_gui_width, h=default_gui_width;
   {
-    char titbuf[80];
-    memset (titbuf, 0, sizeof(titbuf));
-    snprintf(titbuf, sizeof(titbuf), "RefPerSys/%.16s p%ld@%.40s",
-             rps_gitid,(long)getpid(),rps_hostname());
-    titlestr = titbuf;
+    if (!rps_gui_pref.gui_geometry.empty())
+      sscanf(rps_gui_pref.gui_geometry.c_str(), "%dx%d", &w, &h);
   }
-  auto cmdwin = new RpsGui_CommandWindow(480, 640, titlestr);
-  RPS_DEBUG_LOG(GUI, "unimplemented rps_fltk_initialize,  create a window: argc="
-                << argc << " argv@" << argv << " cmdwin=" << cmdwin);
+  if (w < min_gui_width) w= min_gui_width;
+  if (w > max_gui_height) w=max_gui_height;
+  if (h < min_gui_height) h=min_gui_height;
+  if (h > max_gui_height) h=max_gui_height;
+  double scale=1.0;
+  constexpr double gui_min_scale = 0.2;
+  constexpr double gui_max_scale = 4.0;
+  if (rps_gui_pref.gui_scale>gui_min_scale && rps_gui_pref.gui_scale<gui_max_scale)
+    scale = rps_gui_pref.gui_scale;
+  auto cmdwin = new RpsGui_CommandWindow(w, h, titlestr);
+  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize,  create a window: argc="
+                << argc << " argv@" << argv << " cmdwin=" << cmdwin
+                << " w=" << w << " h=" << h << " title:'" << titlestr << "'");
   cmdwin->show();
+  if (scale != 1.0)
+    {
+      int nscr = cmdwin->screen_num();
+      Fl::screen_scale(nscr, scale);
+      RPS_DEBUG_LOG(GUI, "nscr=" << nscr << " scale=" << scale);
+    }
 #warning rps_fltk_initialize unimplemented
 } // end rps_fltk_initialize
 
