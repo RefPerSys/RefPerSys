@@ -165,8 +165,8 @@ rps_fltk_initialize(int &argc, char**argv)
   if (scale != 1.0)
     {
       int nscr = cmdwin->screen_num();
-      //Fl::screen_scale(nscr, scale);
-      //RPS_DEBUG_LOG(GUI, "nscr=" << nscr << " scale=" << scale);
+      Fl::screen_scale(nscr, scale);
+      RPS_DEBUG_LOG(GUI, "nscr=" << nscr << " scale=" << scale);
     }
 #warning rps_fltk_initialize unimplemented
 } // end rps_fltk_initialize
