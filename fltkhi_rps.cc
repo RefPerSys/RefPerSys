@@ -44,6 +44,7 @@ static std::atomic<bool> rps_running_fltk;
 
 static pthread_t rps_main_gui_pthread;
 
+Rps_GuiPreferences rps_gui_pref;
 
 std::string
 rps_fltk_version(void)
@@ -123,7 +124,15 @@ void
 rps_fltk_initialize(int &argc, char**argv)
 {
   RPS_ASSERT(rps_is_main_gui_thread());
-  auto cmdwin = new RpsGui_CommandWindow(480, 640, "RefPerSysFLTK");
+  std::string titlestr;
+  {
+    char titbuf[80];
+    memset (titbuf, 0, sizeof(titbuf));
+    snprintf(titbuf, sizeof(titbuf), "RefPerSys/%.16s p%ld@%.40s",
+             rps_gitid,(long)getpid(),rps_hostname());
+    titlestr = titbuf;
+  }
+  auto cmdwin = new RpsGui_CommandWindow(480, 640, titlestr);
   RPS_DEBUG_LOG(GUI, "unimplemented rps_fltk_initialize,  create a window: argc="
                 << argc << " argv@" << argv << " cmdwin=" << cmdwin);
   cmdwin->show();

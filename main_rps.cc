@@ -55,6 +55,9 @@ enum rps_progoption_en
   RPSPROGOPT_NOTERMINAL,
   RPSPROGOPT_NOASLR,
   RPSPROGOPT_GUI,
+  RPSPROGOPT_GUI_GEOMETRY,
+  RPSPROGOPT_GUI_SCALE,
+  RPSPROGOPT_GUI_TITLE,
   RPSPROGOPT_REPL,
   RPSPROGOPT_VERSION,
 };
@@ -148,6 +151,30 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
     /*doc:*/ "Run with a graphical user interface, default if $DISPLAY is given for X11, and if --repl or --batch not given.", //
+    /*group:*/0 ///
+  },
+  /* ======= graphical user interface geometry ======= */
+  {/*name:*/ "gui-geometry", ///
+    /*key:*/ RPSPROGOPT_GUI_GEOMETRY, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "With an FLTK graphical user interface, gives the geometry of first window", //
+    /*group:*/0 ///
+  },
+  /* ======= graphical user interface title ======= */
+  {/*name:*/ "gui-title", ///
+    /*key:*/ RPSPROGOPT_GUI_TITLE, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "With an FLTK graphical user interface, gives the title of the first window", //
+    /*group:*/0 ///
+  },
+  /* ======= graphical user interface scale ======= */
+  {/*name:*/ "gui-scale", ///
+    /*key:*/ RPSPROGOPT_GUI_SCALE, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "With an FLTK graphical user interface, gives the windows scale", //
     /*group:*/0 ///
   },
   /* ======= version info ======= */
@@ -705,6 +732,30 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     {
       rps_run_gui = true;
       RPS_DEBUG_LOG(GUI, "will run with a graphical user interface");
+    }
+    return 0;
+    case RPSPROGOPT_GUI_SCALE:
+    {
+      rps_run_gui = true;
+      double sca = atof(arg);
+      rps_gui_pref.gui_scale = sca;
+      RPS_DEBUG_LOG(GUI, "GUI scale is " << sca);
+    }
+    return 0;
+    case RPSPROGOPT_GUI_TITLE:
+    {
+      rps_run_gui = true;
+      std::string tit(arg);
+      rps_gui_pref.gui_title = tit;
+      RPS_DEBUG_LOG(GUI, "GUI title is " << tit);
+    }
+    return 0;
+    case RPSPROGOPT_GUI_GEOMETRY:
+    {
+      rps_run_gui = true;
+      std::string geom(arg);
+      rps_gui_pref.gui_geometry = geom;
+      RPS_DEBUG_LOG(GUI, "GUI geometry is " << geom);
     }
     return 0;
     case RPSPROGOPT_REPL:

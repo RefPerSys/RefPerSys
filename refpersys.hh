@@ -3143,6 +3143,14 @@ public:
 };				// end Rps_PayloadSymbol
 
 ////////////////////////////////////////////////////////////////
+
+struct Rps_GuiPreferences {
+  std::string gui_geometry;
+  double gui_scale;
+  std::string gui_title;
+};
+extern "C" Rps_GuiPreferences rps_gui_pref;
+
 ///// window payload for PaylWindow
 class RpsGui_OutputWindow;// in fltkhead_rps.hh and fltkhi_rps.cc
 class RpsGui_CommandWindow;// in fltkhead_rps.hh and fltkhi_rps.cc
