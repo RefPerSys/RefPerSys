@@ -30,7 +30,7 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-#include "fltkhead_rps.hh"
+#include "headfltk_rps.hh"
 
 
 
@@ -126,7 +126,7 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std
   : RpsGui_Window(x,y,w,h,lab)
 {
   RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow x=" << x << ", y=" << y
-                <<	" w=" << w << ", h=" << h
+                << " w=" << w << ", h=" << h
                 << ", lab=" << lab << " this@" << (void*)this);
 }; // end RpsGui_CommandWindow::RpsGui_CommandWindow
 

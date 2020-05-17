@@ -30,7 +30,7 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-#include "fltkhead_rps.hh"
+#include "headfltk_rps.hh"
 
 
 

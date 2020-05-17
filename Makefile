@@ -134,26 +134,26 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 
 
 
-fltkhead_rps.hh.gch: fltkhead_rps.hh refpersys.hh.gch
+headfltk_rps.hh.gch: headfltk_rps.hh refpersys.hh.gch
 	$(COMPILE.cc) -c -o $@ $<
-fltkhead_rps.hh.sanit.gch: fltkhead_rps.hh refpersys.hh.sanit.gch
+headfltk_rps.hh.sanit.gch: headfltk_rps.hh refpersys.hh.sanit.gch
 	$(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@ $<
-fltkhead_rps.hh.dbg.gch: fltkhead_rps.hh refpersys.hh.sanit.gch
+headfltk_rps.hh.dbg.gch: headfltk_rps.hh refpersys.hh.sanit.gch
 	$(COMPILE.cc)  $(RPS_BUILD_DEBUGFLAGS) -c -o $@ $<
 
 
-fltkhi_rps.o: fltkhi_rps.cc fltkhead_rps.hh.gch
+fltkhi_rps.o: fltkhi_rps.cc headfltk_rps.hh.gch
 	$(COMPILE.cc) -o $@ $<
-fltkhi_rps.sanit.o: fltkhi_rps.cc fltkhead_rps.sanit.hh.gch
+fltkhi_rps.sanit.o: fltkhi_rps.cc headfltk_rps.sanit.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
-fltkhi_rps.dbg.o: fltkhi_rps.cc fltkhead_rps.dbg.hh.gch
+fltkhi_rps.dbg.o: fltkhi_rps.cc headfltk_rps.dbg.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
 
-fltklo_rps.o: fltklo_rps.cc fltkhead_rps.hh.gch
+fltklo_rps.o: fltklo_rps.cc headfltk_rps.hh.gch
 	$(COMPILE.cc) -o $@ $<
-fltklo_rps.sanit.o: fltklo_rps.cc fltkhead_rps.sanit.hh.gch
+fltklo_rps.sanit.o: fltklo_rps.cc headfltk_rps.sanit.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
-fltklo_rps.dbg.o: fltklo_rps.cc fltkhead_rps.dbg.hh.gch
+fltklo_rps.dbg.o: fltklo_rps.cc headfltk_rps.dbg.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
 
 
