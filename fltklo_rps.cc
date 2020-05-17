@@ -40,31 +40,38 @@ const char rps_fltklo_gitid[]= RPS_GITID;
 extern "C" const char rps_fltklo_date[];
 const char rps_fltklo_date[]= __DATE__;
 
-std::set<std::unique_ptr<RpsGui_Window>> RpsGui_Window::_set_of_gui_windows_;
+std::set<RpsGui_Window*> RpsGui_Window::_set_of_gui_windows_;
 
 RpsGui_Window::RpsGui_Window(int w, int h, const std::string& lab)
   : Fl_Double_Window(w,h), guiwin_ownoid(), guiwin_label(lab)
 {
+  RPS_DEBUG_LOG(GUI, "RpsGui_Window w=" << w << ", h=" << h << ", lab=" << lab
+                << " this@" << (void*)this);
   RPS_ASSERT(rps_is_main_gui_thread());
   label(guiwin_label.c_str());
-  _set_of_gui_windows_.insert(std::unique_ptr<RpsGui_Window>(this));
+  _set_of_gui_windows_.insert(this);
 }; // end RpsGui_Window::RpsGui_Window
 
 RpsGui_Window::RpsGui_Window(int x, int y, int w, int h, const std::string& lab)
   : Fl_Double_Window(x,y,w,h), guiwin_ownoid(), guiwin_label(lab)
 {
+  RPS_DEBUG_LOG(GUI, "RpsGui_Window x=" << x << " y=" << y << " w=" << w << ", h=" << h << ", lab=" << lab
+                << " this@" << (void*)this);
   RPS_ASSERT(rps_is_main_gui_thread());
   label(guiwin_label.c_str());
-  _set_of_gui_windows_.insert(std::unique_ptr<RpsGui_Window>(this));
+  _set_of_gui_windows_.insert(this);
 };				// end RpsGui_Window::RpsGui_Window
 
 
 RpsGui_Window::~RpsGui_Window()
 {
+  RPS_DEBUG_LOG(GUI, "~RpsGui_Window this@" << this
+                << " guiwin_label:" << guiwin_label
+                << " guiwin_ownoid:" << guiwin_ownoid);
   RPS_ASSERT(rps_is_main_gui_thread());
   if (guiwin_ownoid)
     clear_owning_object();
-  _set_of_gui_windows_.erase(std::unique_ptr<RpsGui_Window>(this));
+  _set_of_gui_windows_.erase(this);
   if (_set_of_gui_windows_.empty())
     rps_fltk_stop_event_loop();
 };				// end RpsGui_Window::~RpsGui_Window
@@ -91,6 +98,7 @@ RpsGui_Window::clear_owning_object(void)
 int
 RpsGui_Window::handle(int evtype)
 {
+  RPS_ASSERT(rps_is_main_gui_thread());
   /* by default, FLTK understands the ESC key as
      closing. See https://www.fltk.org/doc-1.4/FAQ.html */
   if ((evtype == FL_KEYDOWN || evtype == FL_KEYUP))
@@ -104,6 +112,8 @@ RpsGui_Window::handle(int evtype)
   else if (evtype == FL_HIDE)
     {
       RPS_DEBUG_LOG(GUI, "GuiWindow " << label_str() << " got hide");
+      if (top_window() == this)
+        Fl::delete_widget(this);
     }
   else RPS_DEBUG_LOG(GUI, "GuiWindow " << label_str() << " evtype#" << evtype);
   return Fl_Double_Window::handle(evtype);

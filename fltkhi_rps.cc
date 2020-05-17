@@ -91,9 +91,11 @@ rps_fltk_event_loop(Rps_CallFrame*cframe)
       count++;
       double delay = RPS_DEBUG_ENABLED(GUI)?30.0:3.0;
       RPS_DEBUG_LOG(GUI, "in rps_fltk_event_loop depth#" << depth << " count#" << count);
-      if (Fl::wait(delay) <= 0)
+      auto delw = Fl::wait(delay);
+      if (delw <= 0)
         {
-          RPS_WARNOUT("rps_fltk_event_loop broke " <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_event_loop"));
+          RPS_WARNOUT("rps_fltk_event_loop depth#" << depth << " broke delw=" << delw << std::endl
+                      << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_event_loop"));
           break;
         }
 #warning we need to code the "TODO list" mechanism mentioned in FLTK-GUI.md
