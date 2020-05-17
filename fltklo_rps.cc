@@ -43,7 +43,7 @@ const char rps_fltklo_date[]= __DATE__;
 std::set<RpsGui_Window*> RpsGui_Window::_set_of_gui_windows_;
 
 RpsGui_Window::RpsGui_Window(int w, int h, const std::string& lab)
-  : Fl_Double_Window(w,h), guiwin_ownoid(), guiwin_label(lab)
+  : Fl_Double_Window(w,h), guiwin_ownoid(), guiwin_label(lab), guiwin_menubar(nullptr)
 {
   RPS_DEBUG_LOG(GUI, "RpsGui_Window w=" << w << ", h=" << h << ", lab=" << lab
                 << " this@" << (void*)this);
@@ -52,8 +52,9 @@ RpsGui_Window::RpsGui_Window(int w, int h, const std::string& lab)
   _set_of_gui_windows_.insert(this);
 }; // end RpsGui_Window::RpsGui_Window
 
+
 RpsGui_Window::RpsGui_Window(int x, int y, int w, int h, const std::string& lab)
-  : Fl_Double_Window(x,y,w,h), guiwin_ownoid(), guiwin_label(lab)
+  : Fl_Double_Window(x,y,w,h), guiwin_ownoid(), guiwin_label(lab), guiwin_menubar(nullptr)
 {
   RPS_DEBUG_LOG(GUI, "RpsGui_Window x=" << x << " y=" << y << " w=" << w << ", h=" << h << ", lab=" << lab
                 << " this@" << (void*)this);
@@ -61,7 +62,6 @@ RpsGui_Window::RpsGui_Window(int x, int y, int w, int h, const std::string& lab)
   label(guiwin_label.c_str());
   _set_of_gui_windows_.insert(this);
 };				// end RpsGui_Window::RpsGui_Window
-
 
 RpsGui_Window::~RpsGui_Window()
 {
@@ -130,6 +130,7 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int w, int h, const std::string& lab)
 {
   RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow w=" << w << ", h=" << h
                 << ", lab=" << lab << " this@" << (void*)this);
+  this->initialize_menubar();
 };				// end RpsGui_CommandWindow::RpsGui_CommandWindow
 
 RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std::string& lab)
@@ -145,6 +146,59 @@ RpsGui_CommandWindow::~RpsGui_CommandWindow()
 {
   RPS_DEBUG_LOG(GUI, "destroying RpsGui_CommandWindow@" << (void*)this);
 }; // end RpsGui_CommandWindow::~RpsGui_CommandWindow
+
+
+void
+RpsGui_CommandWindow::initialize_menubar(void)
+{
+  int width= w();
+  int height= h();
+  constexpr int right_menu_gap = 16;
+  constexpr int menu_height = 20;
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this@" << this
+                << ", label:" << label_str() << ", w=" << width << ", h=" << height);
+  guiwin_menubar = new Fl_Menu_Bar(0,0,width-right_menu_gap,menu_height);
+  guiwin_menubar->add("&App/&Dump : F1",  FL_F+1, RpsGui_CommandWindow::menu_dump_cb);
+  guiwin_menubar->add("&App/e&Xit",  "^x", RpsGui_CommandWindow::menu_exit_cb);
+  guiwin_menubar->add("&App/&Quit",  "^q", RpsGui_CommandWindow::menu_quit_cb);
+} // end RpsGui_CommandWindow::initialize_menubar
+
+void
+RpsGui_CommandWindow::menu_dump_cb(Fl_Widget*widg, void*ptr)
+{
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_dump_cb widg@" << widg << " ptr@" << ptr
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::menu_dump_cb"));
+#warning incomplete RpsGui_CommandWindow::menu_dump_cb
+  RPS_WARNOUT("unimplemented RpsGui_CommandWindow::menu_dump_cb");
+} // end RpsGui_CommandWindow::menu_dump_cb
+
+void
+RpsGui_CommandWindow::menu_exit_cb(Fl_Widget*widg, void*ptr)
+{
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_exit_cb widg@" << widg << " ptr@" << ptr
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::menu_exit_cb"));
+#warning incomplete RpsGui_CommandWindow::menu_exit_cb
+  RPS_WARNOUT("unimplemented RpsGui_CommandWindow::menu_exit_cb");
+} // end RpsGui_CommandWindow::menu_exit_cb
+void
+RpsGui_CommandWindow::menu_quit_cb(Fl_Widget*widg, void*ptr)
+{
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_quit_cb widg@" << widg << " ptr@" << ptr
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::menu_quit_cb"));
+#warning incomplete RpsGui_CommandWindow::menu_quit_cb
+  RPS_WARNOUT("unimplemented RpsGui_CommandWindow::menu_quit_cb");
+} // end RpsGui_CommandWindow::menu_quit_cb
+
+void
+RpsGui_OutputWindow::initialize_menubar(void)
+{
+  RPS_WARNOUT("unimplemented RpsGui_OutputWindow::initialize_menubar" << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_OutputWindow::initialize_menubar"));
+#warning unimplemented RpsGui_OutputWindow::initialize_menubar
+} // end RpsGui_OutputWindow::initialize_menubar
 
 Rps_PayloadWindow::~Rps_PayloadWindow()
 {

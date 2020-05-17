@@ -92,7 +92,7 @@ rps_fltk_event_loop(Rps_CallFrame*cframe)
       double delay = RPS_DEBUG_ENABLED(GUI)?30.0:3.0;
       RPS_DEBUG_LOG(GUI, "in rps_fltk_event_loop depth#" << depth << " count#" << count);
       auto delw = Fl::wait(delay);
-      if (delw <= 0)
+      if (delw < 0)
         {
           RPS_WARNOUT("rps_fltk_event_loop depth#" << depth << " broke delw=" << delw << std::endl
                       << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_event_loop"));
@@ -161,6 +161,7 @@ rps_fltk_initialize(int &argc, char**argv)
   RPS_DEBUG_LOG(GUI, "rps_fltk_initialize,  create a window: argc="
                 << argc << " argv@" << argv << " cmdwin=" << cmdwin
                 << " w=" << w << " h=" << h << " title:'" << titlestr << "'");
+  cmdwin->end();
   cmdwin->show();
   if (scale != 1.0)
     {

@@ -41,6 +41,7 @@
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Box.H>
+#include <FL/Fl_Menu_Bar.H>
 
 extern "C" void rps_fltk_event_loop(Rps_CallFrame*cf);
 
@@ -63,8 +64,10 @@ class RpsGui_Window: public Fl_Double_Window
 public:
   virtual int handle(int);
 protected:
+  Fl_Menu_Bar *guiwin_menubar;
   Rps_Id guiwin_ownoid;
   std::string guiwin_label;
+  virtual void initialize_menubar(void) =0;
   RpsGui_Window(int w, int h, const std::string& lab);
   RpsGui_Window(int x, int y, int w, int h, const std::string& lab);
 public:
@@ -86,6 +89,10 @@ class RpsGui_CommandWindow
   : public RpsGui_Window
 {
   friend  void rps_fltk_initialize(int &,char**);
+  virtual void initialize_menubar(void);
+  static void menu_dump_cb(Fl_Widget*, void*);
+  static void menu_exit_cb(Fl_Widget*, void*);
+  static void menu_quit_cb(Fl_Widget*, void*);
 public:
   RpsGui_CommandWindow(int w, int h, const std::string& lab);
   RpsGui_CommandWindow(int x, int y, int w, int h, const std::string& lab);
@@ -96,6 +103,7 @@ class RpsGui_OutputWindow
   : public RpsGui_Window
 {
   friend  void rps_fltk_initialize(int &,char**);
+  virtual void initialize_menubar(void);
 }; // end class RpsGui_OutputWindow
 
 class RpsGui_OutputText
