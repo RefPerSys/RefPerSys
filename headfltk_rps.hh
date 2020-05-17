@@ -80,6 +80,11 @@ public:
   {
     return guiwin_label;
   };
+  
+  int screen_num() const
+  {
+      return Fl::screen_num(this->x(), this->y());
+  }
 };
 
 class RpsGui_CommandWindow
