@@ -59,7 +59,7 @@ enum RpsGui_WinTypes
 
 class RpsGui_Window: public Fl_Double_Window
 {
-  static std::set<std::unique_ptr<RpsGui_Window>> _set_of_gui_windows_;
+  static std::set<RpsGui_Window*> _set_of_gui_windows_;
 public:
   virtual int handle(int);
 protected:
