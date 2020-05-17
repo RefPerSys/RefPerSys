@@ -602,6 +602,10 @@ main (int argc, char** argv)
   if (rps_my_load_dir.empty())
     rps_my_load_dir = std::string(rps_topdirectory);
   rps_load_from(rps_my_load_dir);
+  if (!dumpdir.empty() && rps_run_gui)
+    {
+      rps_set_gui_dump_dir(dumpdir);
+    };
   rps_run_application(argc, argv);
   ////
   if (!dumpdir.empty())

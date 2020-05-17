@@ -40,6 +40,14 @@ const char rps_fltklo_gitid[]= RPS_GITID;
 extern "C" const char rps_fltklo_date[];
 const char rps_fltklo_date[]= __DATE__;
 
+std::string rps_gui_dump_dir_str;
+
+void rps_set_gui_dump_dir(const std::string&str)
+{
+  RPS_DEBUG_LOG(GUI, "rps_set_gui_dump_dir " << str);
+  rps_gui_dump_dir_str = str;
+} // end rps_set_gui_dump_dir
+
 std::set<RpsGui_Window*> RpsGui_Window::_set_of_gui_windows_;
 
 RpsGui_Window::RpsGui_Window(int w, int h, const std::string& lab)
@@ -158,7 +166,7 @@ RpsGui_CommandWindow::initialize_menubar(void)
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this@" << this
                 << ", label:" << label_str() << ", w=" << width << ", h=" << height);
   guiwin_menubar = new Fl_Menu_Bar(0,0,width-right_menu_gap,menu_height);
-  guiwin_menubar->add("&App/&Dump : F1",  FL_F+1, RpsGui_CommandWindow::menu_dump_cb);
+  guiwin_menubar->add("&App/Dump",  FL_F+1, RpsGui_CommandWindow::menu_dump_cb);
   guiwin_menubar->add("&App/e&Xit",  "^x", RpsGui_CommandWindow::menu_exit_cb);
   guiwin_menubar->add("&App/&Quit",  "^q", RpsGui_CommandWindow::menu_quit_cb);
 } // end RpsGui_CommandWindow::initialize_menubar
@@ -167,10 +175,12 @@ void
 RpsGui_CommandWindow::menu_dump_cb(Fl_Widget*widg, void*ptr)
 {
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_dump_cb widg@" << widg << " ptr@" << ptr
+                << " guidumpdir=" << rps_gui_dump_dir_str
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::menu_dump_cb"));
-#warning incomplete RpsGui_CommandWindow::menu_dump_cb
-  RPS_WARNOUT("unimplemented RpsGui_CommandWindow::menu_dump_cb");
+  RPS_ASSERT(rps_is_main_gui_thread());
+  rps_dump_into (rps_gui_dump_dir_str);
+  RPS_INFORMOUT("RefPerSys dumped into " << rps_gui_dump_dir_str);
 } // end RpsGui_CommandWindow::menu_dump_cb
 
 void

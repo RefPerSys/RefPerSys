@@ -3267,7 +3267,7 @@ extern "C" void rps_run_application (int& argc, char**argv); // in fltk_rps.cc
 extern "C" std::string rps_fltk_version(void); // in fltk_rps.cc
 extern "C" std::string rps_repl_version(void); // in repl_rps.cc
 extern "C" std::string rps_curl_version(void); // in curl_rps.cc
-
+extern "C" void rps_set_gui_dump_dir(const std::string&); // in fltklo_rps.cc 
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
 extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc
