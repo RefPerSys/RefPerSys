@@ -193,9 +193,18 @@ RpsGui_CommandWindow::menu_exit_cb(Fl_Widget*widg, void*ptr)
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_exit_cb widg@" << widg << " ptr@" << ptr
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::menu_exit_cb"));
-#warning incomplete RpsGui_CommandWindow::menu_exit_cb
-  RPS_WARNOUT("unimplemented RpsGui_CommandWindow::menu_exit_cb");
+  RPS_ASSERT(rps_is_main_gui_thread());
+  char cwdbuf[128];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
+  getcwd(cwdbuf, sizeof(cwdbuf));
+  auto dumpdir = rps_gui_dump_dir_str.empty()?".":rps_gui_dump_dir_str;
+  RPS_INFORMOUT("RefPerSys exiting, will dump into " << dumpdir << " with current directory being " << cwdbuf);
+  rps_dump_into (dumpdir);
+  RPS_INFORMOUT("RefPerSys dumped before exit into " << dumpdir << " with current directory being " << cwdbuf);
+  exit(EXIT_SUCCESS);
 } // end RpsGui_CommandWindow::menu_exit_cb
+
+
 void
 RpsGui_CommandWindow::menu_quit_cb(Fl_Widget*widg, void*ptr)
 {
