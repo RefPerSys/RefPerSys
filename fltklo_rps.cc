@@ -189,6 +189,8 @@ RpsGui_CommandWindow::initialize_pack(void)
   cmdwin_pack->color(fl_rgb_color(255,250,240)); // FloralWhite
   cmdwin_pack->show();
   end();
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack cmdwin_pack is "
+		<< (cmdwin_pack->visible_r() ? "visible" : "unvisible"));
 } // end RpsGui_CommandWindow::initialize_pack
 
 
