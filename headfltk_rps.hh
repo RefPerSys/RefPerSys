@@ -42,6 +42,7 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Menu_Bar.H>
+#include <FL/fl_ask.H>
 
 extern "C" void rps_fltk_event_loop(Rps_CallFrame*cf);
 

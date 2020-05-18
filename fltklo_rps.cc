@@ -211,8 +211,38 @@ RpsGui_CommandWindow::menu_quit_cb(Fl_Widget*widg, void*ptr)
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_quit_cb widg@" << widg << " ptr@" << ptr
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::menu_quit_cb"));
-#warning incomplete RpsGui_CommandWindow::menu_quit_cb
-  RPS_WARNOUT("unimplemented RpsGui_CommandWindow::menu_quit_cb");
+  char cwdbuf[128];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
+  getcwd(cwdbuf, sizeof(cwdbuf));
+  auto dumpdir = rps_gui_dump_dir_str.empty()?".":rps_gui_dump_dir_str;
+  int quitchoice =
+    fl_choice ("Quit without dumping into '%s'\nfrom '%s' ?",
+               "cancel",
+               "quit",
+               "dump",
+               dumpdir.c_str(), cwdbuf);
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_quit_cb quitchoice=" << quitchoice
+                << " dumpdir=" << dumpdir
+                << " cwdbuf=" << cwdbuf);
+  switch (quitchoice)
+    {
+    case 0: // cancel
+      return;
+    case 1: // quit
+      exit(EXIT_SUCCESS);
+    case 2: // dump
+    {
+      RPS_INFORMOUT("RefPerSys quitting, will dump into " << dumpdir
+                    << " with current directory being " << cwdbuf);
+      rps_dump_into (dumpdir);
+      RPS_INFORMOUT("RefPerSys dumped before quitting into " << dumpdir
+                    << " with current directory being " << cwdbuf);
+      exit(EXIT_SUCCESS);
+    }
+    break;
+    default:
+      RPS_FATALOUT("menu_quit_cb: unexpected choice #" << quitchoice);
+    };
 } // end RpsGui_CommandWindow::menu_quit_cb
 
 void
