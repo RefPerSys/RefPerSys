@@ -42,6 +42,7 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Pack.H>
 #include <FL/fl_ask.H>
 
 extern "C" void rps_fltk_event_loop(Rps_CallFrame*cf);
@@ -89,8 +90,12 @@ public:
 class RpsGui_CommandWindow
   : public RpsGui_Window
 {
+  static constexpr int right_menu_gap = 16;
+  static constexpr int menu_height = 20;
+  Fl_Pack* cmdwin_pack;
   friend  void rps_fltk_initialize(int &,char**);
   virtual void initialize_menubar(void);
+  virtual void initialize_pack(void);
   static void menu_dump_cb(Fl_Widget*, void*);
   static void menu_exit_cb(Fl_Widget*, void*);
   static void menu_quit_cb(Fl_Widget*, void*);

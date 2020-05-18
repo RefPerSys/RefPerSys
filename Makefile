@@ -44,7 +44,7 @@ RPS_BUILD_DIALECTFLAGS = -std=gnu++17
 RPS_BUILD_WARNFLAGS = -Wall -Wextra
 override RPS_BUILD_OPTIMFLAGS ?= -Og -g3
 RPS_BUILD_DEBUGFLAGS = -O0 -fno-inline -g3
-RPS_BUILD_CODGENFLAGS = -fPIC
+RPS_BUILD_CODGENFLAGS = 
 RPS_BUILD_SANITFLAGS = -fsanitize=address
 RPS_INCLUDE_DIRS = /usr/local/include /usr/include 
 RPS_INCLUDE_FLAGS = $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))

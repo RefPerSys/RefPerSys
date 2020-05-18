@@ -134,19 +134,23 @@ RpsGui_Window::owning_object(Rps_CallFrame*callframe) const
 }; // end RpsGui_Window::owning_object
 
 RpsGui_CommandWindow::RpsGui_CommandWindow(int w, int h, const std::string& lab)
-  : RpsGui_Window(w,h,lab)
+  : RpsGui_Window(w,h,lab),
+    cmdwin_pack(nullptr)
 {
   RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow w=" << w << ", h=" << h
                 << ", lab=" << lab << " this@" << (void*)this);
   this->initialize_menubar();
+  this->initialize_pack();
 };				// end RpsGui_CommandWindow::RpsGui_CommandWindow
 
 RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std::string& lab)
-  : RpsGui_Window(x,y,w,h,lab)
+  : RpsGui_Window(x,y,w,h,lab),
+    cmdwin_pack(nullptr)
 {
   RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow x=" << x << ", y=" << y
                 << " w=" << w << ", h=" << h
                 << ", lab=" << lab << " this@" << (void*)this);
+  this->initialize_pack();
 }; // end RpsGui_CommandWindow::RpsGui_CommandWindow
 
 
@@ -161,8 +165,6 @@ RpsGui_CommandWindow::initialize_menubar(void)
 {
   int width= w();
   int height= h();
-  constexpr int right_menu_gap = 16;
-  constexpr int menu_height = 20;
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this@" << this
                 << ", label:" << label_str() << ", w=" << width << ", h=" << height);
   guiwin_menubar = new Fl_Menu_Bar(0,0,width-right_menu_gap,menu_height);
@@ -170,6 +172,25 @@ RpsGui_CommandWindow::initialize_menubar(void)
   guiwin_menubar->add("&App/e&Xit",  "^x", RpsGui_CommandWindow::menu_exit_cb);
   guiwin_menubar->add("&App/&Quit",  "^q", RpsGui_CommandWindow::menu_quit_cb);
 } // end RpsGui_CommandWindow::initialize_menubar
+
+void
+RpsGui_CommandWindow::initialize_pack(void)
+{
+  int width= w();
+  int height= h();
+  int menubar_height = guiwin_menubar?(guiwin_menubar->h()):0;
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack this@" << this
+                << ", label:" << label_str() << ", w=" << width
+                << ", h=" << height
+                << ", menubar_height="<<  menubar_height);
+  begin();
+  cmdwin_pack = new Fl_Pack(0, menubar_height+1,
+                            width, height - menubar_height - 1, "command");
+  cmdwin_pack->color(fl_rgb_color(255,250,240)); // FloralWhite
+  cmdwin_pack->show();
+  end();
+} // end RpsGui_CommandWindow::initialize_pack
+
 
 void
 RpsGui_CommandWindow::menu_dump_cb(Fl_Widget*widg, void*ptr)
