@@ -51,7 +51,31 @@ extern "C" void rps_fltk_stop_event_loop(void);
 
 extern "C" void rps_fltk_initialize(int &argc, char**argv);
 
+/// mostly to ease debugging
+class RpsGui_ShowWidget
+{
+  const Fl_Widget* shown_widget;
+public:
+  RpsGui_ShowWidget(const Fl_Widget*widg = nullptr) : shown_widget(widg) {};
+  RpsGui_ShowWidget(const Fl_Widget &widg) : RpsGui_ShowWidget(&widg) {};
+  ~RpsGui_ShowWidget()
+  {
+    shown_widget=nullptr;
+  };
+  RpsGui_ShowWidget(const RpsGui_ShowWidget&) = delete;
+  void output (std::ostream* pout) const;
+  void output (std::ostream& out) const
+  {
+    output(&out);
+  };
+};				// end of RpsGui_ShowWidget
 
+inline std::ostream& operator << (std::ostream& out, const RpsGui_ShowWidget&shw)
+{
+  shw.output(out);
+  return out;
+} // end RpsGui_ShowWidget
+///
 
 enum RpsGui_WinTypes
 {

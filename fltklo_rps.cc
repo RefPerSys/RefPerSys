@@ -42,6 +42,174 @@ const char rps_fltklo_date[]= __DATE__;
 
 std::string rps_gui_dump_dir_str;
 
+////////////////////////////////////////////////////////////////
+///// to show widgets for debugging
+void
+RpsGui_ShowWidget::output(std::ostream*pout) const
+{
+  if (pout == nullptr)
+    return;
+  if (shown_widget == nullptr)
+    {
+      *pout << "?nullptr-widget?";
+      return;
+    }
+  else if ((void*)shown_widget == RPS_EMPTYSLOT)
+    {
+      *pout << "?empty-widget?";
+      return;
+    }
+  else
+    {
+      unsigned wtype = shown_widget->type();
+      switch (wtype)
+        {
+        case RpsGuiType_CommandWindow:
+          *pout << "rps-command-window";
+          break;
+        case RpsGuiType_OutputWindow:
+          *pout << "rps-output-window";
+          break;
+#ifdef FL_NORMAL_BUTTON
+        case FL_NORMAL_BUTTON:
+          *pout << "normal-button";
+          break;
+#endif
+          //
+#ifdef FL_TOGGLE_BUTTON
+        case FL_TOGGLE_BUTTON:
+          *pout << "toggle-button";
+          break;
+#endif
+          //
+#ifdef FL_RADIO_BUTTON
+        case FL_RADIO_BUTTON:
+          *pout << "radio-button";
+          break;
+#endif
+          //
+#ifdef FL_HIDDEN_BUTTON
+        case FL_HIDDEN_BUTTON:
+          *pout << "hidden-button";
+          break;
+#endif
+          //
+#ifdef FL_HOLD_BROWSER
+        case FL_HOLD_BROWSER:
+          *pout << "hold-browser";
+          break;
+#endif
+          //
+#ifdef FL_MULTI_BROWSER
+        case FL_MULTI_BROWSER:
+          *pout << "multi-browser";
+          break;
+#endif
+          //
+#ifdef FL_SELECT_BROWSER
+        case FL_SELECT_BROWSER:
+          *pout << "select-browser";
+          break;
+#endif
+          //
+#ifdef FL_NORMAL_COUNTER
+        case FL_NORMAL_COUNTER:
+          *pout << "normal-counter";
+          break;
+#endif
+          //
+#ifdef FL_SIMPLE_COUNTER
+        case FL_SIMPLE_COUNTER:
+          *pout << "simple-counter";
+          break;
+#endif
+          //
+#ifdef FL_WINDOW
+        case FL_WINDOW:
+          *pout << "window";
+          break;
+#endif
+          //
+#ifdef FL_FILL_DIAL
+        case FL_FILL_DIAL:
+          *pout << "fill-dial";
+          break;
+#endif
+          //
+#ifdef FL_LINE_DIAL
+        case FL_LINE_DIAL:
+          *pout << "line-dial";
+          break;
+#endif
+          //
+#ifdef FL_DOUBLE_DIAL
+        case FL_DOUBLE_DIAL:
+          *pout << "double-dial";
+          break;
+#endif
+          //
+#ifdef FL_FLOAT_INPUT
+        case FL_FLOAT_INPUT:
+          *pout << "float-input";
+          break;
+#endif
+          //
+#ifdef FL_INT_INPUT
+        case FL_INT_INPUT:
+          *pout << "int-input";
+          break;
+#endif
+          //
+#ifdef FL_MULTILINE_INPUT
+        case FL_MULTILINE_INPUT:
+          *pout << "multiline-input";
+          break;
+#endif
+          //
+#ifdef FL_SECRET_INPUT
+        case FL_MULTILINE_INPUT:
+          *pout << "secret-input";
+          break;
+#endif
+          //
+#ifdef FL_NORMAL_OUTPUT
+        case FL_NORMAL_OUTPUT:
+          *pout << "normal-output";
+          break;
+#endif
+          //
+#ifdef FL_TOGGLE_BUTTON
+        case FL_TOGGLE_BUTTON:
+          *pout << "toggle-button";
+          break;
+#endif
+          //
+#ifdef FL_RADIO_BUTTON
+        case FL_RADIO_BUTTON:
+          *pout << "radio-button";
+          break;
+#endif
+          //
+#ifdef FL_HIDDEN_BUTTON
+        case FL_HIDDEN_BUTTON:
+          *pout << "hidden-button";
+          break;
+#endif
+
+        /////// default case
+        default:
+          *pout << "fltk-type#" << wtype;
+        };
+      *pout << "@" << (void*)shown_widget;
+      const char* wlabel = shown_widget->label();
+      if (wlabel && wlabel[0])
+        *pout << "/" << wlabel;
+    }
+} // end RpsGui_ShowWidget::output
+
+
+
+////////////////////////////////////////////////////////////////
 void rps_set_gui_dump_dir(const std::string&str)
 {
   RPS_DEBUG_LOG(GUI, "rps_set_gui_dump_dir " << str);
@@ -171,6 +339,10 @@ RpsGui_CommandWindow::initialize_menubar(void)
   guiwin_menubar->add("&App/Dump",  FL_F+1, RpsGui_CommandWindow::menu_dump_cb);
   guiwin_menubar->add("&App/e&Xit",  "^x", RpsGui_CommandWindow::menu_exit_cb);
   guiwin_menubar->add("&App/&Quit",  "^q", RpsGui_CommandWindow::menu_quit_cb);
+  guiwin_menubar->show();
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this@" << this
+                << " guiwin_menubar@" << (void*)guiwin_menubar
+                << " of parent:" << RpsGui_ShowWidget(guiwin_menubar->parent()));
 } // end RpsGui_CommandWindow::initialize_menubar
 
 void
@@ -190,7 +362,9 @@ RpsGui_CommandWindow::initialize_pack(void)
   cmdwin_pack->show();
   end();
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack cmdwin_pack is "
-		<< (cmdwin_pack->visible_r() ? "visible" : "unvisible"));
+                << (cmdwin_pack->visible_r() ? "visible" : "unvisible")
+                << " parent:" << RpsGui_ShowWidget(cmdwin_pack->parent())
+                << " this@" << this);
 } // end RpsGui_CommandWindow::initialize_pack
 
 
