@@ -195,6 +195,18 @@ RpsGui_ShowWidget::output(std::ostream*pout) const
           *pout << "hidden-button";
           break;
 #endif
+          //
+#ifdef FL_SQUARE_CLOCK
+        case FL_SQUARE_CLOCK:
+          *pout << "square-clock";
+          break;
+#endif
+          //
+#ifdef FL_ROUND_CLOCK
+        case FL_ROUND_CLOCK:
+          *pout << "round-clock";
+          break;
+#endif
 
         /////// default case
         default:
@@ -340,8 +352,9 @@ RpsGui_CommandWindow::initialize_menubar(void)
   guiwin_menubar->add("&App/e&Xit",  "^x", RpsGui_CommandWindow::menu_exit_cb);
   guiwin_menubar->add("&App/&Quit",  "^q", RpsGui_CommandWindow::menu_quit_cb);
   guiwin_menubar->show();
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this@" << this
-                << " guiwin_menubar@" << (void*)guiwin_menubar
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:"
+                << RpsGui_ShowWidget(this)
+                << " guiwin_menubar:" << RpsGui_ShowWidget(guiwin_menubar)
                 << " of parent:" << RpsGui_ShowWidget(guiwin_menubar->parent()));
 } // end RpsGui_CommandWindow::initialize_menubar
 
@@ -351,7 +364,7 @@ RpsGui_CommandWindow::initialize_pack(void)
   int width= w();
   int height= h();
   int menubar_height = guiwin_menubar?(guiwin_menubar->h()):0;
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack this@" << this
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack this:" <<  RpsGui_ShowWidget(this)
                 << ", label:" << label_str() << ", w=" << width
                 << ", h=" << height
                 << ", menubar_height="<<  menubar_height);
@@ -363,8 +376,9 @@ RpsGui_CommandWindow::initialize_pack(void)
   end();
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack cmdwin_pack is "
                 << (cmdwin_pack->visible_r() ? "visible" : "unvisible")
-                << " parent:" << RpsGui_ShowWidget(cmdwin_pack->parent())
-                << " this@" << this);
+                << ":" << RpsGui_ShowWidget(cmdwin_pack) << "," << std::endl
+                << "... of parent:" << RpsGui_ShowWidget(cmdwin_pack->parent())
+                << " this:" << RpsGui_ShowWidget(this));
 } // end RpsGui_CommandWindow::initialize_pack
 
 
