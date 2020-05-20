@@ -456,6 +456,17 @@ RpsGui_CommandWindow::menu_quit_cb(Fl_Widget*widg, void*ptr)
     };
 } // end RpsGui_CommandWindow::menu_quit_cb
 
+
+
+//////////////////////////////////////////////////////////////// output windows
+
+RpsGui_OutputWindow::~RpsGui_OutputWindow()
+{
+#warning RpsGui_OutputWindow::~RpsGui_OutputWindow unimplemented
+  RPS_FATALOUT("unimplemented RpsGui_OutputWindow::~RpsGui_OutputWindow "
+               << RpsGui_ShowWidget(this));
+} // end RpsGui_OutputWindow::~RpsGui_OutputWindow
+
 void
 RpsGui_OutputWindow::initialize_menubar(void)
 {
@@ -464,6 +475,9 @@ RpsGui_OutputWindow::initialize_menubar(void)
 #warning unimplemented RpsGui_OutputWindow::initialize_menubar
 } // end RpsGui_OutputWindow::initialize_menubar
 
+
+
+///////////////////////////////////////////////////////////////
 Rps_PayloadWindow::~Rps_PayloadWindow()
 {
 }; // end Rps_PayloadWindow::~Rps_PayloadWindow

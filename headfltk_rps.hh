@@ -43,7 +43,18 @@
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Pack.H>
+#include <FL/Fl_Text_Buffer.H>
+#include <FL/Fl_Text_Editor.H>
 #include <FL/fl_ask.H>
+
+//////////////// forward declaration of classes
+class RpsGui_ShowWidget;
+class RpsGui_Window;
+class RpsGui_CommandWindow;
+class RpsGui_OutputWindow;
+class RpsGui_OutputTextBuffer;
+class RpsGui_InputCommand;
+////////////////
 
 extern "C" void rps_fltk_event_loop(Rps_CallFrame*cf);
 
@@ -51,7 +62,9 @@ extern "C" void rps_fltk_stop_event_loop(void);
 
 extern "C" void rps_fltk_initialize(int &argc, char**argv);
 
-/// mostly to ease debugging
+/*** Below class is mostly to ease debugging, e.g. as
+     RPS_DEBUG_LOG(GUI, "some widget=" << RpsGui_ShowWidget(widget));
+ ***/
 class RpsGui_ShowWidget
 {
   const Fl_Widget* shown_widget;
@@ -132,13 +145,23 @@ public:
 class RpsGui_OutputWindow
   : public RpsGui_Window
 {
+  RpsGui_OutputTextBuffer*outwin_buffer;
+  /// we probably want two instances of Fl_Text_Editor inside some box sharing the outwin_buffer above.
+  Fl_Text_Editor* outwin_uppereditor;
+  Fl_Text_Editor* outwin_lowereditor;
   friend  void rps_fltk_initialize(int &,char**);
   virtual void initialize_menubar(void);
+public:
+  virtual ~RpsGui_OutputWindow();
+  RpsGui_OutputWindow(int w, int h, const std::string& lab);
+  RpsGui_OutputWindow(int x, int y, int w, int h, const std::string& lab);
 }; // end class RpsGui_OutputWindow
 
-class RpsGui_OutputText
+
+
+class RpsGui_OutputTextBuffer : public Fl_Text_Buffer
 {
-};				// end class RpsGui_OutputText
+};				// end class RpsGui_OutputTextBuffer
 
 class RpsGui_InputCommand
 {
