@@ -211,11 +211,16 @@ RpsGui_ShowWidget::output(std::ostream*pout) const
         /////// default case
         default:
           *pout << "fltk-type#" << wtype;
-        };
-      *pout << "@" << (void*)shown_widget;
+        };			// end switch wtype
+      {
+        char adbuf[32];
+        memset(adbuf, 0, sizeof(adbuf));
+        snprintf(adbuf, sizeof(adbuf), "@%#p", (void*)shown_widget);
+        *pout << adbuf;
+      }
       const char* wlabel = shown_widget->label();
       if (wlabel && wlabel[0])
-        *pout << "/" << wlabel;
+        *pout << "/" << wlabel << "\\";
     }
 } // end RpsGui_ShowWidget::output
 
@@ -233,8 +238,8 @@ std::set<RpsGui_Window*> RpsGui_Window::_set_of_gui_windows_;
 RpsGui_Window::RpsGui_Window(int w, int h, const std::string& lab)
   : Fl_Double_Window(w,h), guiwin_ownoid(), guiwin_label(lab), guiwin_menubar(nullptr)
 {
-  RPS_DEBUG_LOG(GUI, "RpsGui_Window w=" << w << ", h=" << h << ", lab=" << lab
-                << " this@" << (void*)this);
+  RPS_DEBUG_LOG(GUI, "RpsGui_Window w=" << w << ", h=" << h << ", lab='" << lab
+                << "', this:" << RpsGui_ShowWidget(this));
   RPS_ASSERT(rps_is_main_gui_thread());
   label(guiwin_label.c_str());
   _set_of_gui_windows_.insert(this);
@@ -244,8 +249,8 @@ RpsGui_Window::RpsGui_Window(int w, int h, const std::string& lab)
 RpsGui_Window::RpsGui_Window(int x, int y, int w, int h, const std::string& lab)
   : Fl_Double_Window(x,y,w,h), guiwin_ownoid(), guiwin_label(lab), guiwin_menubar(nullptr)
 {
-  RPS_DEBUG_LOG(GUI, "RpsGui_Window x=" << x << " y=" << y << " w=" << w << ", h=" << h << ", lab=" << lab
-                << " this@" << (void*)this);
+  RPS_DEBUG_LOG(GUI, "RpsGui_Window x=" << x << " y=" << y << " w=" << w << ", h=" << h << ", lab='" << lab
+                << "', this:" << RpsGui_ShowWidget(this));
   RPS_ASSERT(rps_is_main_gui_thread());
   label(guiwin_label.c_str());
   _set_of_gui_windows_.insert(this);
@@ -253,9 +258,9 @@ RpsGui_Window::RpsGui_Window(int x, int y, int w, int h, const std::string& lab)
 
 RpsGui_Window::~RpsGui_Window()
 {
-  RPS_DEBUG_LOG(GUI, "~RpsGui_Window this@" << this
-                << " guiwin_label:" << guiwin_label
-                << " guiwin_ownoid:" << guiwin_ownoid);
+  RPS_DEBUG_LOG(GUI, "~RpsGui_Window this:" << RpsGui_ShowWidget(this)
+                << ", guiwin_label:" << guiwin_label
+                << ", guiwin_ownoid:" << guiwin_ownoid);
   RPS_ASSERT(rps_is_main_gui_thread());
   if (guiwin_ownoid)
     clear_owning_object();
@@ -293,17 +298,17 @@ RpsGui_Window::handle(int evtype)
     {
       if (Fl::event_key() == FL_Escape)
         {
-          RPS_DEBUG_LOG(GUI, "GuiWindow " << label_str() << " ignore escape");
+          RPS_DEBUG_LOG(GUI, "GuiWindow " << RpsGui_ShowWidget(this) << " ignore escape");
           return 1;
         }
     }
   else if (evtype == FL_HIDE)
     {
-      RPS_DEBUG_LOG(GUI, "GuiWindow " << label_str() << " got hide");
+      RPS_DEBUG_LOG(GUI, "GuiWindow " << RpsGui_ShowWidget(this) << " got hide");
       if (top_window() == this)
         Fl::delete_widget(this);
     }
-  else RPS_DEBUG_LOG(GUI, "GuiWindow " << label_str() << " evtype#" << evtype);
+  else RPS_DEBUG_LOG(GUI, "GuiWindow " << RpsGui_ShowWidget(this) << " evtype#" << evtype);
   return Fl_Double_Window::handle(evtype);
 }; // end RpsGui_Window::handle
 
@@ -318,9 +323,11 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int w, int h, const std::string& lab)
     cmdwin_pack(nullptr)
 {
   RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow w=" << w << ", h=" << h
-                << ", lab=" << lab << " this@" << (void*)this);
+                << ", lab=" << lab << " this:" << RpsGui_ShowWidget(this));
+  this->begin();
   this->initialize_menubar();
   this->initialize_pack();
+  this->end();
 };				// end RpsGui_CommandWindow::RpsGui_CommandWindow
 
 RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std::string& lab)
@@ -329,14 +336,14 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std
 {
   RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow x=" << x << ", y=" << y
                 << " w=" << w << ", h=" << h
-                << ", lab=" << lab << " this@" << (void*)this);
+                << ", lab='" << lab << "', this:" << RpsGui_ShowWidget(this));
   this->initialize_pack();
 }; // end RpsGui_CommandWindow::RpsGui_CommandWindow
 
 
 RpsGui_CommandWindow::~RpsGui_CommandWindow()
 {
-  RPS_DEBUG_LOG(GUI, "destroying RpsGui_CommandWindow@" << (void*)this);
+  RPS_DEBUG_LOG(GUI, "destroying RpsGui_CommandWindow this=" << RpsGui_ShowWidget(this));
 }; // end RpsGui_CommandWindow::~RpsGui_CommandWindow
 
 
@@ -345,8 +352,8 @@ RpsGui_CommandWindow::initialize_menubar(void)
 {
   int width= w();
   int height= h();
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this@" << this
-                << ", label:" << label_str() << ", w=" << width << ", h=" << height);
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:" << RpsGui_ShowWidget(this)
+                << ",  w=" << width << ", h=" << height);
   guiwin_menubar = new Fl_Menu_Bar(0,0,width-right_menu_gap,menu_height);
   guiwin_menubar->add("&App/Dump",  FL_F+1, RpsGui_CommandWindow::menu_dump_cb);
   guiwin_menubar->add("&App/e&Xit",  "^x", RpsGui_CommandWindow::menu_exit_cb);
@@ -385,7 +392,7 @@ RpsGui_CommandWindow::initialize_pack(void)
 void
 RpsGui_CommandWindow::menu_dump_cb(Fl_Widget*widg, void*ptr)
 {
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_dump_cb widg@" << widg << " ptr@" << ptr
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_dump_cb widg:" << RpsGui_ShowWidget(widg) << ", ptr@" << ptr
                 << " guidumpdir=" << rps_gui_dump_dir_str
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::menu_dump_cb"));
@@ -395,13 +402,14 @@ RpsGui_CommandWindow::menu_dump_cb(Fl_Widget*widg, void*ptr)
   char cwdbuf[128];
   memset (cwdbuf, 0, sizeof(cwdbuf));
   getcwd(cwdbuf, sizeof(cwdbuf));
-  RPS_INFORMOUT("RefPerSys dumped into " << dumpdir << " with current directory being " << cwdbuf);
+  RPS_INFORMOUT("RefPerSys dumped into " << dumpdir << " with current directory being "
+                << cwdbuf << ", widg:" << RpsGui_ShowWidget(widg));
 } // end RpsGui_CommandWindow::menu_dump_cb
 
 void
 RpsGui_CommandWindow::menu_exit_cb(Fl_Widget*widg, void*ptr)
 {
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_exit_cb widg@" << widg << " ptr@" << ptr
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_exit_cb widg:" << RpsGui_ShowWidget(widg) << " ptr@" << ptr
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::menu_exit_cb"));
   RPS_ASSERT(rps_is_main_gui_thread());
@@ -419,7 +427,7 @@ RpsGui_CommandWindow::menu_exit_cb(Fl_Widget*widg, void*ptr)
 void
 RpsGui_CommandWindow::menu_quit_cb(Fl_Widget*widg, void*ptr)
 {
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_quit_cb widg@" << widg << " ptr@" << ptr
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_quit_cb widg:" << RpsGui_ShowWidget(widg) << ", ptr@" << ptr
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::menu_quit_cb"));
   char cwdbuf[128];
@@ -434,7 +442,8 @@ RpsGui_CommandWindow::menu_quit_cb(Fl_Widget*widg, void*ptr)
                dumpdir.c_str(), cwdbuf);
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::menu_quit_cb quitchoice=" << quitchoice
                 << " dumpdir=" << dumpdir
-                << " cwdbuf=" << cwdbuf);
+                << " cwdbuf=" << cwdbuf << std::endl
+                << ".. widg:" << RpsGui_ShowWidget(widg));
   switch (quitchoice)
     {
     case 0: // cancel
@@ -470,7 +479,7 @@ RpsGui_OutputWindow::~RpsGui_OutputWindow()
 void
 RpsGui_OutputWindow::initialize_menubar(void)
 {
-  RPS_WARNOUT("unimplemented RpsGui_OutputWindow::initialize_menubar" << std::endl
+  RPS_WARNOUT("unimplemented RpsGui_OutputWindow::initialize_menubar, this:" << RpsGui_ShowWidget(this) << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_OutputWindow::initialize_menubar"));
 #warning unimplemented RpsGui_OutputWindow::initialize_menubar
 } // end RpsGui_OutputWindow::initialize_menubar
@@ -480,6 +489,7 @@ RpsGui_OutputWindow::initialize_menubar(void)
 ///////////////////////////////////////////////////////////////
 Rps_PayloadWindow::~Rps_PayloadWindow()
 {
+  RPS_DEBUG_LOG(GUI, "~Rps_PayloadWindow this@" << this << " owner=" << owner());
 }; // end Rps_PayloadWindow::~Rps_PayloadWindow
 
 bool
