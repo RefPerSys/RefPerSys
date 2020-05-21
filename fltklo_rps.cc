@@ -381,7 +381,6 @@ RpsGui_CommandWindow::initialize_pack(void)
   begin();
   cmdwin_pack = new Fl_Pack(0, menubar_height+1,
                             width, height - menubar_height - 1, "command");
-  int menubar_height = guiwin_menubar?(guiwin_menubar->h()):0;
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack this:" <<  RpsGui_ShowWidget(this) << std::endl
 		<< "... cmdwin_pack:" << RpsGui_ShowWidget(cmdwin_pack));
   cmdwin_pack->color(fl_rgb_color(255,250,240)); // FloralWhite
