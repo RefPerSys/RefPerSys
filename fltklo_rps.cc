@@ -323,11 +323,12 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int w, int h, const std::string& lab)
     cmdwin_pack(nullptr)
 {
   RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow w=" << w << ", h=" << h
-                << ", lab=" << lab << " this:" << RpsGui_ShowWidget(this));
+                << ", lab=" << lab << std::endl << "... this:" << RpsGui_ShowWidget(this));
   this->begin();
   this->initialize_menubar();
   this->initialize_pack();
   this->end();
+  RPS_DEBUG_LOG(GUI, "created RpsGui_CommandWindow this:" << RpsGui_ShowWidget(this) << std::endl);
 };				// end RpsGui_CommandWindow::RpsGui_CommandWindow
 
 RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std::string& lab)
@@ -337,13 +338,17 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std
   RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow x=" << x << ", y=" << y
                 << " w=" << w << ", h=" << h
                 << ", lab='" << lab << "', this:" << RpsGui_ShowWidget(this));
+  this->begin();
+  this->initialize_menubar();
   this->initialize_pack();
+  this->end();
+  RPS_DEBUG_LOG(GUI, "created RpsGui_CommandWindow this:" << RpsGui_ShowWidget(this) << std::endl);
 }; // end RpsGui_CommandWindow::RpsGui_CommandWindow
 
 
 RpsGui_CommandWindow::~RpsGui_CommandWindow()
 {
-  RPS_DEBUG_LOG(GUI, "destroying RpsGui_CommandWindow this=" << RpsGui_ShowWidget(this));
+  RPS_DEBUG_LOG(GUI, "destroying RpsGui_CommandWindow this=" << RpsGui_ShowWidget(this) << std::endl);
 }; // end RpsGui_CommandWindow::~RpsGui_CommandWindow
 
 

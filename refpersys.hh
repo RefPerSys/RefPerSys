@@ -361,7 +361,7 @@ extern "C" unsigned rps_debug_flags;
 
 #define RPS_DEBUG_ENABLED(dbgopt) (rps_debug_flags & (1 << RPS_DEBUG_##dbgopt))
 
-
+/// debug print to stderr....
 void 
 rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt, 
                     const char *fmt, ...) 
