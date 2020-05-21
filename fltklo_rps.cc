@@ -365,9 +365,9 @@ RpsGui_CommandWindow::initialize_menubar(void)
   guiwin_menubar->add("&App/&Quit",  "^q", RpsGui_CommandWindow::menu_quit_cb);
   guiwin_menubar->show();
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:"
-                << RpsGui_ShowWidget(this)
-                << " guiwin_menubar:" << RpsGui_ShowWidget(guiwin_menubar)
-                << " of parent:" << RpsGui_ShowWidget(guiwin_menubar->parent()));
+                << RpsGui_ShowWidget(this) << std::endl
+                << "... guiwin_menubar:" << RpsGui_ShowWidget(guiwin_menubar) << std::endl
+                << "... of parent:" << RpsGui_ShowWidget(guiwin_menubar->parent()));
 } // end RpsGui_CommandWindow::initialize_menubar
 
 void
@@ -376,21 +376,22 @@ RpsGui_CommandWindow::initialize_pack(void)
   int width= w();
   int height= h();
   int menubar_height = guiwin_menubar?(guiwin_menubar->h()):0;
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack this:" <<  RpsGui_ShowWidget(this)
-                << ", label:" << label_str() << ", w=" << width
-                << ", h=" << height
-                << ", menubar_height="<<  menubar_height);
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack this:" <<  RpsGui_ShowWidget(this) << std::endl
+                << "...  w=" << width   << ", h=" << height  << ", menubar_height="<<  menubar_height);
   begin();
   cmdwin_pack = new Fl_Pack(0, menubar_height+1,
                             width, height - menubar_height - 1, "command");
+  int menubar_height = guiwin_menubar?(guiwin_menubar->h()):0;
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack this:" <<  RpsGui_ShowWidget(this) << std::endl
+		<< "... cmdwin_pack:" << RpsGui_ShowWidget(cmdwin_pack));
   cmdwin_pack->color(fl_rgb_color(255,250,240)); // FloralWhite
   cmdwin_pack->show();
   end();
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack cmdwin_pack is "
                 << (cmdwin_pack->visible_r() ? "visible" : "unvisible")
-                << ":" << RpsGui_ShowWidget(cmdwin_pack) << "," << std::endl
-                << "... of parent:" << RpsGui_ShowWidget(cmdwin_pack->parent())
-                << " this:" << RpsGui_ShowWidget(this));
+                << ":" << RpsGui_ShowWidget(cmdwin_pack) <<  std::endl
+                << "... of parent:" << RpsGui_ShowWidget(cmdwin_pack->parent()) <<  std::endl
+                << "... this:" << RpsGui_ShowWidget(this));
 } // end RpsGui_CommandWindow::initialize_pack
 
 
@@ -410,6 +411,8 @@ RpsGui_CommandWindow::menu_dump_cb(Fl_Widget*widg, void*ptr)
   RPS_INFORMOUT("RefPerSys dumped into " << dumpdir << " with current directory being "
                 << cwdbuf << ", widg:" << RpsGui_ShowWidget(widg));
 } // end RpsGui_CommandWindow::menu_dump_cb
+
+
 
 void
 RpsGui_CommandWindow::menu_exit_cb(Fl_Widget*widg, void*ptr)
