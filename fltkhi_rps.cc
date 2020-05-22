@@ -164,7 +164,7 @@ rps_fltk_initialize(int &argc, char**argv)
                 << " title:'" << titlestr << "'");
   cmdwin->end();
   cmdwin->show();
-  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize cmdwin=" << RpsGui_ShowWidget(cmdwin));
+  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize cmdwin=" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin));
   if (scale != 1.0)
     {
       int nscr = cmdwin->screen_num();

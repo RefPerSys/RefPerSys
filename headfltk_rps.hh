@@ -64,12 +64,12 @@ extern "C" void rps_fltk_initialize(int &argc, char**argv);
 
 template<class FltkWidgetClass>
 static inline bool
-rps_fltk_get_window_geometry(FltkWidgetClass*widg, int &x, int &y, int &w, int &h, float*scaleptr=nullptr)
+rps_fltk_get_window_geometry(const FltkWidgetClass*widg, int &x, int &y, int &w, int &h, float*scaleptr=nullptr)
 {
   if (!widg)
     return false;
   int xoff= -1, yoff= -1;
-  Fl_Window* window = widg->top_window_offset(&xoff, &yoff);
+  Fl_Window* window = widg->top_window_offset(xoff, yoff);
   if (!window || xoff<0 || yoff<0)
     return false;
   int widg_w= widg->w();
@@ -97,13 +97,13 @@ rps_fltk_get_window_geometry(FltkWidgetClass*widg, int &x, int &y, int &w, int &
 
 template<class FltkWidgetClass>
 static inline std::string
-rps_fltk_geometry_string(FltkWidgetClass*widg)
+rps_fltk_geometry_string(const FltkWidgetClass*widg)
 {
   if (widg == nullptr)
     return "";
   int x= -1, y= -1, w= 0, h=0;
   float scale=1.0;
-  if (rps_fltk_get_window_geometry<FltkWidgetClass>(widg, &x, &y, &w, &h, &scale))
+  if (rps_fltk_get_window_geometry<FltkWidgetClass>(widg, x, y, w, h, &scale))
     {
       char geombuf[80];
       memset (geombuf, 0, sizeof(geombuf));
@@ -164,7 +164,7 @@ public:
   {
     if (!pout) return;
     RpsGui_ShowWidget::output(pout);
-    *pout << rps_fltk_geometry_string<FltkWidgetClass>(dynamic_cast<FltkWidgetClass*>(widget()));
+    *pout << rps_fltk_geometry_string<FltkWidgetClass>(dynamic_cast<const FltkWidgetClass*>(widget()));
   };
 };				// end  RpsGui_ShowFullWidget
 
