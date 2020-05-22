@@ -64,7 +64,7 @@ extern "C" void rps_fltk_initialize(int &argc, char**argv);
 
 template<class FltkWidgetClass>
 static inline bool
-rps_fltk_get_window_geometry(FltkWidgetClass*widg, int &x, int &y, int &w, int &h)
+rps_fltk_get_window_geometry(FltkWidgetClass*widg, int &x, int &y, int &w, int &h, float*scaleptr=nullptr)
 {
   if (!widg)
     return false;
@@ -80,16 +80,41 @@ rps_fltk_get_window_geometry(FltkWidgetClass*widg, int &x, int &y, int &w, int &
   float scr_scale = Fl::screen_scale(wind_screen);
   if (scr_scale <= 0.0 || std::isnan(scr_scale))
     return false;
-  if (scr_scale != 1.0) {
-    widg_w = (int)(widg_w*scr_scale);
-    widg_h = (int)(widg_h*scr_scale);
-  }
+  if (scr_scale != 1.0)
+    {
+      widg_w = (int)(widg_w*scr_scale);
+      widg_h = (int)(widg_h*scr_scale);
+    }
+  if (scaleptr)
+    *scaleptr = scr_scale;
   x= xoff;
   y= yoff;
   w= widg_w;
   h= widg_h;
   return true;
 } // end rps_fltk_get_window_geometry<FltkWidgetClass>
+
+
+template<class FltkWidgetClass>
+static inline std::string
+rps_fltk_geometry_string(FltkWidgetClass*widg)
+{
+  if (widg == nullptr)
+    return "";
+  int x= -1, y= -1, w= 0, h=0;
+  float scale=1.0;
+  if (rps_fltk_get_window_geometry<FltkWidgetClass>(widg, &x, &y, &w, &h, &scale))
+    {
+      char geombuf[80];
+      memset (geombuf, 0, sizeof(geombuf));
+      if (scale != 1.0)
+        snprintf (geombuf, sizeof(geombuf), "[x=%d,y=%d,w=%d,h=%d,scale=%.3f]", x, y, w, h, scale);
+      else
+        snprintf (geombuf, sizeof(geombuf), "[x=%d,y=%d,w=%d,h=%d]", x, y, w, h);
+      return std::string(geombuf);
+    };
+  return "[??]";
+} // end rps_fltk_geometry_string
 
 
 /*** Below class is mostly to ease debugging, e.g. as
@@ -101,23 +126,45 @@ class RpsGui_ShowWidget
 public:
   RpsGui_ShowWidget(const Fl_Widget*widg = nullptr) : shown_widget(widg) {};
   RpsGui_ShowWidget(const Fl_Widget &widg) : RpsGui_ShowWidget(&widg) {};
-  ~RpsGui_ShowWidget()
+  virtual ~RpsGui_ShowWidget()
   {
     shown_widget=nullptr;
   };
   RpsGui_ShowWidget(const RpsGui_ShowWidget&) = delete;
-  void output (std::ostream* pout) const;
+  virtual void output (std::ostream* pout) const;
   void output (std::ostream& out) const
   {
     output(&out);
   };
 };				// end of RpsGui_ShowWidget
 
-inline std::ostream& operator << (std::ostream& out, const RpsGui_ShowWidget&shw)
+inline std::ostream&
+operator << (std::ostream& out, const RpsGui_ShowWidget&shw)
 {
   shw.output(out);
   return out;
-} // end RpsGui_ShowWidget
+} // end output operator <<  RpsGui_ShowWidget
+
+
+class RpsGui_ShowFullWidget : public RpsGui_ShowWidget
+{
+public:
+  RpsGui_ShowFullWidget(const Fl_Widget*widg = nullptr)
+    : RpsGui_ShowWidget(widg) {};
+  RpsGui_ShowFullWidget(const Fl_Widget &widg)
+    : RpsGui_ShowWidget(widg) {};
+  virtual ~RpsGui_ShowFullWidget() {};
+  RpsGui_ShowFullWidget(const RpsGui_ShowFullWidget&) = delete;
+  virtual void output (std::ostream* pout) const;
+};				// end  RpsGui_ShowFullWidget
+
+inline std::ostream&
+operator << (std::ostream& out, const RpsGui_ShowFullWidget&shw)
+{
+  shw.output(&out);
+  return out;
+} // end output operator << on RpsGui_ShowFullWidget
+
 ///
 
 enum RpsGui_WinTypes
