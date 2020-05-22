@@ -136,6 +136,10 @@ public:
   {
     output(&out);
   };
+  const Fl_Widget* widget() const
+  {
+    return shown_widget;
+  };
 };				// end of RpsGui_ShowWidget
 
 inline std::ostream&
@@ -146,20 +150,27 @@ operator << (std::ostream& out, const RpsGui_ShowWidget&shw)
 } // end output operator <<  RpsGui_ShowWidget
 
 
+template <class FltkWidgetClass>
 class RpsGui_ShowFullWidget : public RpsGui_ShowWidget
 {
 public:
-  RpsGui_ShowFullWidget(const Fl_Widget*widg = nullptr)
+  RpsGui_ShowFullWidget(const FltkWidgetClass*widg = nullptr)
     : RpsGui_ShowWidget(widg) {};
-  RpsGui_ShowFullWidget(const Fl_Widget &widg)
+  RpsGui_ShowFullWidget(const FltkWidgetClass* &widg)
     : RpsGui_ShowWidget(widg) {};
   virtual ~RpsGui_ShowFullWidget() {};
   RpsGui_ShowFullWidget(const RpsGui_ShowFullWidget&) = delete;
-  virtual void output (std::ostream* pout) const;
+  virtual void output (std::ostream* pout) const
+  {
+    if (!pout) return;
+    RpsGui_ShowWidget::output(pout);
+    *pout << rps_fltk_geometry_string<FltkWidgetClass>(dynamic_cast<FltkWidgetClass*>(widget()));
+  };
 };				// end  RpsGui_ShowFullWidget
 
-inline std::ostream&
-operator << (std::ostream& out, const RpsGui_ShowFullWidget&shw)
+template <class FltkWidgetClass>
+static inline
+std::ostream&operator << (std::ostream& out, const RpsGui_ShowFullWidget<FltkWidgetClass>&shw)
 {
   shw.output(&out);
   return out;
