@@ -62,6 +62,36 @@ extern "C" void rps_fltk_stop_event_loop(void);
 
 extern "C" void rps_fltk_initialize(int &argc, char**argv);
 
+template<class FltkWidgetClass>
+static inline bool
+rps_fltk_get_window_geometry(FltkWidgetClass*widg, int &x, int &y, int &w, int &h)
+{
+  if (!widg)
+    return false;
+  int xoff= -1, yoff= -1;
+  Fl_Window* window = widg->top_window_offset(&xoff, &yoff);
+  if (!window || xoff<0 || yoff<0)
+    return false;
+  int widg_w= widg->w();
+  int widg_h= widg->h();
+  int wind_screen= window->screen_num();
+  if (wind_screen < 0)
+    return false;
+  float scr_scale = Fl::screen_scale(wind_screen);
+  if (scr_scale <= 0.0 || std::isnan(scr_scale))
+    return false;
+  if (scr_scale != 1.0) {
+    widg_w = (int)(widg_w*scr_scale);
+    widg_h = (int)(widg_h*scr_scale);
+  }
+  x= xoff;
+  y= yoff;
+  w= widg_w;
+  h= widg_h;
+  return true;
+} // end rps_fltk_get_window_geometry<FltkWidgetClass>
+
+
 /*** Below class is mostly to ease debugging, e.g. as
      RPS_DEBUG_LOG(GUI, "some widget=" << RpsGui_ShowWidget(widget));
  ***/
