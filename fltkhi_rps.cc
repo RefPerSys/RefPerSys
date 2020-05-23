@@ -129,7 +129,7 @@ rps_fltk_initialize(int &argc, char**argv)
   std::string titlestr;
   if (rps_gui_pref.gui_title.empty())
     {
-      char titbuf[80];
+      char titbuf[96];
       memset (titbuf, 0, sizeof(titbuf));
       snprintf(titbuf, sizeof(titbuf), "RefPerSys/%.16s p%ld@%.40s",
                rps_gitid,(long)getpid(),rps_hostname());
