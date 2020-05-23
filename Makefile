@@ -37,7 +37,7 @@ RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
 
--include $(wildcard $$HOME/refpersys.mk)
+-include $(wildcard $$HOME/build-refpersys.mk)
 
 RPS_BUILD_CCACHE?= ccache
 RPS_BUILD_CC?= gcc
