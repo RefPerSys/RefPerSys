@@ -54,6 +54,7 @@ class RpsGui_CommandWindow;
 class RpsGui_OutputWindow;
 class RpsGui_OutputTextBuffer;
 class RpsGui_InputCommand;
+class RpsGui_MenuBar;
 ////////////////
 
 extern "C" void rps_fltk_event_loop(Rps_CallFrame*cf);
@@ -176,13 +177,17 @@ std::ostream&operator << (std::ostream& out, const RpsGui_ShowFullWidget<FltkWid
   return out;
 } // end output operator << on RpsGui_ShowFullWidget
 
-///
+
+
+
+////////////////////////////////////////////////////////////////
 
 enum RpsGui_WinTypes
 {
   /// every FLTK widget has a type. Please grep the FLTK header files for "RESERVED_TYPE".
   RpsGuiType_CommandWindow = FL_DOUBLE_WINDOW+2,
   RpsGuiType_OutputWindow,
+  RpsGuiType_MenuBar,
 };
 
 class RpsGui_Window: public Fl_Double_Window
@@ -190,8 +195,9 @@ class RpsGui_Window: public Fl_Double_Window
   static std::set<RpsGui_Window*> _set_of_gui_windows_;
 public:
   virtual int handle(int);
+  virtual uchar type() const =0;
 protected:
-  Fl_Menu_Bar *guiwin_menubar;
+  RpsGui_MenuBar *guiwin_menubar;
   Rps_Id guiwin_ownoid;
   std::string guiwin_label;
   virtual void initialize_menubar(void) =0;
@@ -210,7 +216,19 @@ public:
   {
     return guiwin_label;
   };
-};
+};				// end class RpsGui_Window
+
+class RpsGui_MenuBar : public Fl_Menu_Bar
+{
+public:
+  virtual uchar type(void) const
+  {
+    return RpsGuiType_MenuBar;
+  };
+  RpsGui_MenuBar(int X, int Y, int W, int H, const char*lab=nullptr)
+    : Fl_Menu_Bar(X,Y,W,H,lab) {};
+  virtual ~RpsGui_MenuBar() {};
+};				// end class RpsGui_MenuBar
 
 class RpsGui_CommandWindow
   : public RpsGui_Window
@@ -228,6 +246,10 @@ public:
   RpsGui_CommandWindow(int w, int h, const std::string& lab);
   RpsGui_CommandWindow(int x, int y, int w, int h, const std::string& lab);
   virtual ~RpsGui_CommandWindow();
+  virtual uchar type(void) const
+  {
+    return RpsGuiType_CommandWindow;
+  };
 };				// end class RpsGui_CommandWindow
 
 class RpsGui_OutputWindow
@@ -241,6 +263,10 @@ class RpsGui_OutputWindow
   virtual void initialize_menubar(void);
 public:
   virtual ~RpsGui_OutputWindow();
+  virtual uchar type(void) const
+  {
+    return RpsGuiType_OutputWindow;
+  };
   RpsGui_OutputWindow(int w, int h, const std::string& lab);
   RpsGui_OutputWindow(int x, int y, int w, int h, const std::string& lab);
 }; // end class RpsGui_OutputWindow

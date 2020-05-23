@@ -70,6 +70,12 @@ RpsGui_ShowWidget::output(std::ostream*pout) const
         case RpsGuiType_OutputWindow:
           *pout << "rps-output-window";
           break;
+        case RpsGuiType_MenuBar:
+          *pout << "rps-menubar";
+          break;
+
+          ////////////////////////////////
+
 #ifdef FL_NORMAL_BUTTON
         case FL_NORMAL_BUTTON:
           *pout << "normal-button";
@@ -359,7 +365,7 @@ RpsGui_CommandWindow::initialize_menubar(void)
   int height= h();
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:" << RpsGui_ShowWidget(this)
                 << ",  w=" << width << ", h=" << height);
-  guiwin_menubar = new Fl_Menu_Bar(0,0,width-right_menu_gap,menu_height);
+  guiwin_menubar = new RpsGui_MenuBar(0,0,width-right_menu_gap,menu_height);
   guiwin_menubar->add("&App/Dump",  FL_F+1, RpsGui_CommandWindow::menu_dump_cb);
   guiwin_menubar->add("&App/e&Xit",  "^x", RpsGui_CommandWindow::menu_exit_cb);
   guiwin_menubar->add("&App/&Quit",  "^q", RpsGui_CommandWindow::menu_quit_cb);
