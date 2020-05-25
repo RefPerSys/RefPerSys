@@ -328,6 +328,7 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int w, int h, const std::string& lab)
   : RpsGui_Window(w,h,lab),
     cmdwin_pack(nullptr)
 {
+  Fl_Widget::type((uchar)RpsGuiType_CommandWindow);
   RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow w=" << w << ", h=" << h
                 << ", lab=" << lab << std::endl << "... this:" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(this));
   this->begin();
@@ -337,10 +338,12 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int w, int h, const std::string& lab)
   RPS_DEBUG_LOG(GUI, "created RpsGui_CommandWindow this:" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(this) << std::endl);
 };				// end RpsGui_CommandWindow::RpsGui_CommandWindow
 
+
 RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std::string& lab)
   : RpsGui_Window(x,y,w,h,lab),
     cmdwin_pack(nullptr)
 {
+  Fl_Widget::type((uchar)RpsGuiType_CommandWindow);
   RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow x=" << x << ", y=" << y
                 << " w=" << w << ", h=" << h
                 << ", lab='" << lab << "', this:" << RpsGui_ShowWidget(this));
@@ -382,7 +385,8 @@ RpsGui_CommandWindow::initialize_pack(void)
   int width= w();
   int height= h();
   int menubar_height = guiwin_menubar?(guiwin_menubar->h()):0;
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack this:" <<  RpsGui_ShowWidget(this) << std::endl
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack start this:" <<  RpsGui_ShowFullWidget(this) << std::endl
+                << "... guiwin_menubar:" << RpsGui_ShowFullWidget(guiwin_menubar) << std::endl
                 << "...  w=" << width   << ", h=" << height  << ", menubar_height="<<  menubar_height);
   begin();
   cmdwin_pack = new Fl_Pack(0, menubar_height+1,
@@ -482,6 +486,36 @@ RpsGui_CommandWindow::menu_quit_cb(Fl_Widget*widg, void*ptr)
 
 
 //////////////////////////////////////////////////////////////// output windows
+
+
+RpsGui_OutputWindow::RpsGui_OutputWindow(int w, int h, const std::string& lab)
+  : RpsGui_Window(w,h,lab),
+    outwin_buffer(nullptr),
+    outwin_uppereditor(nullptr),
+    outwin_lowereditor(nullptr)
+{
+  Fl_Widget::type((uchar)RpsGuiType_OutputWindow);
+  RPS_DEBUG_LOG(GUI, "RpsGui_OutputWindow::RpsGui_OutputWindow this:"
+                << RpsGui_ShowFullWidget(this)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_OutputWindow-shortconstr"));
+} // end RpsGui_OutputWindow::RpsGui_OutputWindow
+
+
+
+RpsGui_OutputWindow::RpsGui_OutputWindow(int x, int y, int w, int h, const std::string& lab)
+  : RpsGui_Window(x,y,w,h,lab),
+    outwin_buffer(nullptr),
+    outwin_uppereditor(nullptr),
+    outwin_lowereditor(nullptr)
+{
+  Fl_Widget::type((uchar)RpsGuiType_OutputWindow);
+  RPS_DEBUG_LOG(GUI, "RpsGui_OutputWindow::RpsGui_OutputWindow this:"
+                << RpsGui_ShowFullWidget(this)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_OutputWindow-fullconstr"));
+} // end RpsGui_OutputWindow::RpsGui_OutputWindow
+
 
 RpsGui_OutputWindow::~RpsGui_OutputWindow()
 {

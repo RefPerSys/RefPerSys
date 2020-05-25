@@ -161,10 +161,11 @@ rps_fltk_initialize(int &argc, char**argv)
     {
       int nbscreens = Fl::screen_count();
       RPS_DEBUG_LOG(GUI, "rps_fltk_initialize nbscreens=" << nbscreens
-		    << ", scale=" << scale);
+                    << ", scale=" << scale);
       for (int scrix=0; scrix<nbscreens; scrix++)
-	Fl::screen_scale(scrix, scale);
+        Fl::screen_scale(scrix, scale);
     }
+  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize w=" << w << ", h=" << h);
   auto cmdwin = new RpsGui_CommandWindow(w, h, titlestr);
   RPS_DEBUG_LOG(GUI, "rps_fltk_initialize,  create a window: argc="
                 << argc << " argv@" << argv << " cmdwin=" << cmdwin
@@ -172,15 +173,12 @@ rps_fltk_initialize(int &argc, char**argv)
                 << " title:'" << titlestr << "'");
   cmdwin->end();
   cmdwin->show();
-  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize cmdwin=" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin));
-  if (scale != 1.0)
-    {
-      int nscr = cmdwin->screen_num();
-      Fl::screen_scale(nscr, scale);
-      RPS_DEBUG_LOG(GUI, "nscr=" << nscr << " scale=" << scale);
-    }
-#warning rps_fltk_initialize unimplemented
+  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize ending cmdwin=" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize~end")
+                << std::endl << std::endl);
 } // end rps_fltk_initialize
+
 
 void
 rps_run_fltk_gui(int &argc, char**argv)
