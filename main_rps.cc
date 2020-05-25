@@ -856,6 +856,8 @@ rps_run_application(int &argc, char **argv)
                cwdbuf,
                rps_hostname(), (int)getpid());
   }
+  if (rps_batch)
+    return;
   if (rps_run_repl)
     rps_read_eval_print_loop (argc, argv);
   else if (rps_run_gui)
