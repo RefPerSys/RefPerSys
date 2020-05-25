@@ -39,6 +39,8 @@ const char rps_main_gitid[]= RPS_GITID;
 extern "C" const char rps_main_date[];
 const char rps_main_date[]= __DATE__;
 
+
+
 enum rps_progoption_en
 {
   RPSPROGOPT__NONE=0,
@@ -59,6 +61,7 @@ enum rps_progoption_en
   RPSPROGOPT_GUI_SCALE,
   RPSPROGOPT_GUI_TITLE,
   RPSPROGOPT_REPL,
+  RPSPROGOPT_RUN_AFTER_LOAD,
   RPSPROGOPT_VERSION,
 };
 
@@ -185,6 +188,14 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Show version information, then exit.", //
     /*group:*/0 ///
   },
+  /* ======= run a command with system(3) after load ======= */
+  {/*name:*/ "run-after-load", ///
+    /*key:*/ RPSPROGOPT_RUN_AFTER_LOAD, ///
+    /*arg:*/ "COMMAND", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Run using system(3) the given COMMAND after load; environment variable REFPERSYS_PID has been set", //
+    /*group:*/0 ///
+  },
   /* ======= command textual read eval print loop user interface ======= */
   {/*name:*/ "repl", ///
     /*key:*/ RPSPROGOPT_REPL, ///
@@ -208,7 +219,8 @@ struct argp_option rps_progoptions[] =
 struct backtrace_state* rps_backtrace_common_state;
 const char* rps_progname;
 
-void* rps_proghdl;
+char* rps_run_command_after_load = nullptr;
+void* rps_proghdl = nullptr;
 
 bool rps_batch = false;
 bool rps_disable_aslr = false;
@@ -519,6 +531,14 @@ main (int argc, char** argv)
   // For weird reasons, the program arguments are parsed more than
   // once... We don't care that much in practice...
   RPS_ASSERT(argc>0);
+  // we forcibly set the REFPERSYS_PID environment variable
+  {
+    static char envpid[32];
+    if (snprintf(envpid, sizeof(envpid), "REFPERSYS_PID=%d", (int)getpid()) < 1)
+      RPS_FATAL("failed to snprintf buffer for REFPERSYS_PID: %m");
+    if (putenv(envpid))
+      RPS_FATAL("failed to putenv %s %m", envpid);
+  }
   /// disable ASLR programmatically if --no-aslr is passed ; this
   /// should ease low-level debugging with GDB
   /// https://en.wikipedia.org/wiki/Address_space_layout_randomization
@@ -544,6 +564,8 @@ main (int argc, char** argv)
       {
         if (personality(ADDR_NO_RANDOMIZE) == -1)
           RPS_FATAL("%s failed to disable ASLR: %m", rps_progname);
+	else
+	  RPS_INFORM("%s disabled ASLR (git %s).", rps_progname, rps_gitid);
       }
   }
   if (rps_run_gui && rps_run_repl)
@@ -768,6 +790,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       RPS_DEBUG_LOG(REPL, "will run with a textual Read-Eval-Print-Loop using GNU readline");
     }
     return 0;
+    case RPSPROGOPT_RUN_AFTER_LOAD:
+    {
+      rps_run_command_after_load = arg;
+    }
+    return 0;
     case RPSPROGOPT_VERSION:
     {
       int nbfiles=0;
@@ -856,6 +883,18 @@ rps_run_application(int &argc, char **argv)
                cwdbuf,
                rps_hostname(), (int)getpid());
   }
+  //// running the given command after load
+  if (rps_run_command_after_load)
+    {
+      RPS_INFORM("before running command '%s' after load with REFPERSYS_PID=%ld",
+                 rps_run_command_after_load, (long)getpid());
+      fflush(nullptr);
+      int nok = system(rps_run_command_after_load);
+      if (nok)
+        RPS_FATAL("failed to run command '%s' after load (status #%d)", nok);
+      else
+        RPS_INFORM("after successfully running command '%s' after load", rps_run_command_after_load);
+    }
   if (rps_batch)
     return;
   if (rps_run_repl)
