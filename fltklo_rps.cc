@@ -386,9 +386,10 @@ RpsGui_CommandWindow::initialize_pack(void)
                 << "...  w=" << width   << ", h=" << height  << ", menubar_height="<<  menubar_height);
   begin();
   cmdwin_pack = new Fl_Pack(0, menubar_height+1,
-                            width, height - menubar_height - 1, "command");
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack this:" <<  RpsGui_ShowWidget(this) << std::endl
-                << "... cmdwin_pack:" << RpsGui_ShowWidget(cmdwin_pack));
+                            width, height - menubar_height - 1, "¤ command ¤");
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack this:"
+                <<  RpsGui_ShowFullWidget(this) << std::endl
+                << "... cmdwin_pack:" << RpsGui_ShowFullWidget(cmdwin_pack));
   cmdwin_pack->color(fl_rgb_color(255,250,240)); // FloralWhite
   cmdwin_pack->show();
   end();
