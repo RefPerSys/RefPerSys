@@ -405,6 +405,7 @@ RpsGui_CommandWindow::initialize_menubar(void)
   int height= h();
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:" << RpsGui_ShowWidget(this)
                 << ",  w=" << width << ", h=" << height);
+  begin();
   guiwin_menubar = new RpsGui_MenuBar(0,0,width-right_menu_gap,menu_height);
   guiwin_menubar->add("&App/Dump",  FL_F+1, RpsGui_CommandWindow::menu_dump_cb);
   guiwin_menubar->add("&App/e&Xit",  "^x", RpsGui_CommandWindow::menu_exit_cb);
@@ -414,6 +415,7 @@ RpsGui_CommandWindow::initialize_menubar(void)
                 << RpsGui_ShowWidget(this) << std::endl
                 << "... guiwin_menubar:" << RpsGui_ShowWidget(guiwin_menubar) << std::endl
                 << "... of parent:" << RpsGui_ShowWidget(guiwin_menubar->parent()));
+  end();
 } // end RpsGui_CommandWindow::initialize_menubar
 
 void
