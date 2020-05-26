@@ -564,8 +564,8 @@ main (int argc, char** argv)
       {
         if (personality(ADDR_NO_RANDOMIZE) == -1)
           RPS_FATAL("%s failed to disable ASLR: %m", rps_progname);
-	else
-	  RPS_INFORM("%s disabled ASLR (git %s).", rps_progname, rps_gitid);
+        else
+          RPS_INFORM("%s disabled ASLR (git %s).", rps_progname, rps_gitid);
       }
   }
   if (rps_run_gui && rps_run_repl)

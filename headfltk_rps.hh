@@ -188,6 +188,7 @@ enum RpsGui_WinTypes
   RpsGuiType_CommandWindow = FL_DOUBLE_WINDOW+2,
   RpsGuiType_OutputWindow,
   RpsGuiType_MenuBar,
+  RpsGuiType_Pack,
 };
 
 class RpsGui_Window: public Fl_Double_Window
@@ -225,10 +226,20 @@ public:
   {
     return RpsGuiType_MenuBar;
   };
-  RpsGui_MenuBar(int X, int Y, int W, int H, const char*lab=nullptr)
-    : Fl_Menu_Bar(X,Y,W,H,lab) {};
-  virtual ~RpsGui_MenuBar() {};
+  RpsGui_MenuBar(int X, int Y, int W, int H, const char*lab=nullptr);
+  virtual ~RpsGui_MenuBar();
 };				// end class RpsGui_MenuBar
+
+class RpsGui_Pack : public Fl_Pack
+{
+public:
+  virtual uchar type(void) const
+  {
+    return RpsGuiType_Pack;
+  };
+  RpsGui_Pack(int X, int Y, int W, int H, const char*lab=nullptr);
+  virtual ~RpsGui_Pack();
+};				// end class RpsGui_Pack
 
 class RpsGui_CommandWindow
   : public RpsGui_Window

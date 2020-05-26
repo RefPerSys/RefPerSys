@@ -157,6 +157,8 @@ rps_fltk_initialize(int &argc, char**argv)
   constexpr double gui_max_scale = 4.0;
   if (rps_gui_pref.gui_scale>gui_min_scale && rps_gui_pref.gui_scale<gui_max_scale)
     scale = rps_gui_pref.gui_scale;
+  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize w=" << w << ", h=" << h
+                << ", scale=" << scale);
   if (scale != 1.0)
     {
       int nbscreens = Fl::screen_count();
@@ -165,7 +167,6 @@ rps_fltk_initialize(int &argc, char**argv)
       for (int scrix=0; scrix<nbscreens; scrix++)
         Fl::screen_scale(scrix, scale);
     }
-  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize w=" << w << ", h=" << h);
   auto cmdwin = new RpsGui_CommandWindow(w, h, titlestr);
   RPS_DEBUG_LOG(GUI, "rps_fltk_initialize,  create a window: argc="
                 << argc << " argv@" << argv << " cmdwin=" << cmdwin
