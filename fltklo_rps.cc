@@ -237,6 +237,7 @@ RpsGui_ShowWidget::output(std::ostream*pout) const
 RpsGui_MenuBar::RpsGui_MenuBar(int X, int Y, int W, int H, const char*lab)
   : Fl_Menu_Bar(X,Y,W,H,lab)
 {
+  Fl_Widget::type((uchar)RpsGuiType_MenuBar);
   RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar new this=" << RpsGui_ShowFullWidget(this)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_MenuBar-new"));
@@ -255,6 +256,7 @@ RpsGui_MenuBar::~RpsGui_MenuBar()
 RpsGui_Pack::RpsGui_Pack(int X, int Y, int W, int H, const char*lab)
   : Fl_Pack(X,Y,W,H,lab)
 {
+  Fl_Widget::type((uchar)RpsGuiType_Pack);
   RPS_DEBUG_LOG(GUI, "RpsGui_Pack new this=" << RpsGui_ShowFullWidget(this)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_Pack-new"));
