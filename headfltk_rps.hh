@@ -104,14 +104,19 @@ rps_fltk_geometry_string(const FltkWidgetClass*widg)
     return "";
   int x= -1, y= -1, w= 0, h=0;
   float scale=1.0;
+  const char* visiblestr =
+    (widg->visible_r())
+    ?"•"://U+2022 BULLET
+    (widg->visible_r())?"▫"// U+25AB WHITE SMALL SQUARE
+    : "◌"; //U+25CC DOTTED CIRCLE
   if (rps_fltk_get_window_geometry<FltkWidgetClass>(widg, x, y, w, h, &scale))
     {
       char geombuf[80];
       memset (geombuf, 0, sizeof(geombuf));
       if (scale != 1.0)
-        snprintf (geombuf, sizeof(geombuf), "[x=%d,y=%d,w=%d,h=%d,scale=%.3f]", x, y, w, h, scale);
+        snprintf (geombuf, sizeof(geombuf), "[x=%d,y=%d,w=%d,h=%d,scale=%.3f%s]", x, y, w, h, scale, visiblestr);
       else
-        snprintf (geombuf, sizeof(geombuf), "[x=%d,y=%d,w=%d,h=%d]", x, y, w, h);
+        snprintf (geombuf, sizeof(geombuf), "[x=%d,y=%d,w=%d,h=%d%s]", x, y, w, h, visiblestr);
       return std::string(geombuf);
     };
   return "[??]";

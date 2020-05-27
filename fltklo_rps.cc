@@ -370,6 +370,8 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int w, int h, const std::string& lab)
   Fl_Widget::type((uchar)RpsGuiType_CommandWindow);
   RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow w=" << w << ", h=" << h
                 << ", lab=" << lab << std::endl << "... this:" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(this));
+  this->color(fl_rgb_color(240,248,255)); //azure
+  this->box(FL_FLAT_BOX);
   this->begin();
   this->initialize_menubar();
   this->initialize_pack();
@@ -415,6 +417,8 @@ RpsGui_CommandWindow::initialize_menubar(void)
   guiwin_menubar->add("&App/Dump",  FL_F+1, RpsGui_CommandWindow::menu_dump_cb);
   guiwin_menubar->add("&App/e&Xit",  "^x", RpsGui_CommandWindow::menu_exit_cb);
   guiwin_menubar->add("&App/&Quit",  "^q", RpsGui_CommandWindow::menu_quit_cb);
+  guiwin_menubar->color(fl_rgb_color(255,228,225)); // MistyRose
+  guiwin_menubar->box(FL_BORDER_BOX);
   guiwin_menubar->show();
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:"
                 << RpsGui_ShowWidget(this) << std::endl
@@ -439,11 +443,12 @@ RpsGui_CommandWindow::initialize_pack(void)
                 <<  RpsGui_ShowFullWidget(this) << std::endl
                 << "... cmdwin_pack:" << RpsGui_ShowFullWidget(cmdwin_pack));
   cmdwin_pack->color(fl_rgb_color(255,250,240)); // FloralWhite
+  cmdwin_pack->box(FL_ROUNDED_BOX);
   cmdwin_pack->show();
   end();
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack cmdwin_pack is "
                 << (cmdwin_pack->visible_r() ? "visible" : "unvisible")
-                << ":" << RpsGui_ShowWidget(cmdwin_pack) <<  std::endl
+                << ":" << RpsGui_ShowFullWidget(cmdwin_pack) <<  std::endl
                 << "... of parent:" << RpsGui_ShowWidget(cmdwin_pack->parent()) <<  std::endl
                 << "... this:" << RpsGui_ShowWidget(this));
 } // end RpsGui_CommandWindow::initialize_pack
