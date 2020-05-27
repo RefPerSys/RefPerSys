@@ -197,6 +197,7 @@ class RpsGui_Window: public Fl_Double_Window
 public:
   virtual int handle(int);
   virtual uchar type() const =0;
+  static constexpr int guiwin_border = 5;
 protected:
   RpsGui_MenuBar *guiwin_menubar;
   Rps_Id guiwin_ownoid;

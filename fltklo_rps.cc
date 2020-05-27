@@ -408,14 +408,14 @@ RpsGui_CommandWindow::initialize_menubar(void)
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:" << RpsGui_ShowWidget(this)
                 << ",  w=" << width << ", h=" << height);
   begin();
-  guiwin_menubar = new RpsGui_MenuBar(0,0,width-right_menu_gap,menu_height);
+  guiwin_menubar = new RpsGui_MenuBar(guiwin_border,menu_height,width-right_menu_gap-guiwin_border,menu_height-guiwin_border);
   guiwin_menubar->add("&App/Dump",  FL_F+1, RpsGui_CommandWindow::menu_dump_cb);
   guiwin_menubar->add("&App/e&Xit",  "^x", RpsGui_CommandWindow::menu_exit_cb);
   guiwin_menubar->add("&App/&Quit",  "^q", RpsGui_CommandWindow::menu_quit_cb);
   guiwin_menubar->show();
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:"
                 << RpsGui_ShowWidget(this) << std::endl
-                << "... guiwin_menubar:" << RpsGui_ShowWidget(guiwin_menubar) << std::endl
+                << "... guiwin_menubar:" << RpsGui_ShowFullWidget(guiwin_menubar) << std::endl
                 << "... of parent:" << RpsGui_ShowWidget(guiwin_menubar->parent()));
   end();
 } // end RpsGui_CommandWindow::initialize_menubar
@@ -430,8 +430,8 @@ RpsGui_CommandWindow::initialize_pack(void)
                 << "... guiwin_menubar:" << RpsGui_ShowFullWidget(guiwin_menubar) << std::endl
                 << "...  w=" << width   << ", h=" << height  << ", menubar_height="<<  menubar_height);
   begin();
-  cmdwin_pack = new Fl_Pack(0, menubar_height+1,
-                            width, height - menubar_height - 1, "¤ command ¤");
+  cmdwin_pack = new RpsGui_Pack(guiwin_border, menubar_height+guiwin_border,
+                            width-2*guiwin_border, height - 3*guiwin_border - menubar_height - 1, "¤ command ¤");
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack this:"
                 <<  RpsGui_ShowFullWidget(this) << std::endl
                 << "... cmdwin_pack:" << RpsGui_ShowFullWidget(cmdwin_pack));
