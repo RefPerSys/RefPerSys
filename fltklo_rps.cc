@@ -419,12 +419,13 @@ RpsGui_CommandWindow::initialize_menubar(void)
   guiwin_menubar->add("&App/&Quit",  "^q", RpsGui_CommandWindow::menu_quit_cb);
   guiwin_menubar->color(fl_rgb_color(255,228,225)); // MistyRose
   guiwin_menubar->box(FL_BORDER_BOX);
-  guiwin_menubar->show();
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:"
-                << RpsGui_ShowWidget(this) << std::endl
-                << "... guiwin_menubar:" << RpsGui_ShowFullWidget(guiwin_menubar) << std::endl
-                << "... of parent:" << RpsGui_ShowWidget(guiwin_menubar->parent()));
   end();
+  guiwin_menubar->show();
+  this->show();
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:"
+                << RpsGui_ShowFullWidget(this) << std::endl
+                << "... guiwin_menubar:" << RpsGui_ShowFullWidget(guiwin_menubar) << std::endl
+                << "... of parent:" << RpsGui_ShowFullWidget(guiwin_menubar->parent()));
 } // end RpsGui_CommandWindow::initialize_menubar
 
 void
@@ -446,11 +447,11 @@ RpsGui_CommandWindow::initialize_pack(void)
   cmdwin_pack->box(FL_ROUNDED_BOX);
   cmdwin_pack->show();
   end();
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack cmdwin_pack is "
-                << (cmdwin_pack->visible_r() ? "visible" : "unvisible")
-                << ":" << RpsGui_ShowFullWidget(cmdwin_pack) <<  std::endl
-                << "... of parent:" << RpsGui_ShowWidget(cmdwin_pack->parent()) <<  std::endl
-                << "... this:" << RpsGui_ShowWidget(this));
+  this->show();
+  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack cmdwin_pack:"
+		<< RpsGui_ShowFullWidget(cmdwin_pack) <<  std::endl
+                << "... of parent:" << RpsGui_ShowFullWidget(cmdwin_pack->parent()) <<  std::endl
+                << "... this:" << RpsGui_ShowFullWidget(this));
 } // end RpsGui_CommandWindow::initialize_pack
 
 
