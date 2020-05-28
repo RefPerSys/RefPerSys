@@ -126,6 +126,10 @@ void
 rps_fltk_initialize(int &argc, char**argv)
 {
   RPS_ASSERT(rps_is_main_gui_thread());
+  RPS_DEBUG_LOG(GUI, "start rps_fltk_initialize" << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize"));
+  // see https://www.fltk.org/doc-1.4/classFl.html#a1576b8c9ca3e900daaa5c36ca0e7ae48
+#warning rps_fltk_initialize should call Fl::arg
   std::string titlestr;
   if (rps_gui_pref.gui_title.empty())
     {
