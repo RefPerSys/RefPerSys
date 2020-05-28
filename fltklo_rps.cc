@@ -449,7 +449,7 @@ RpsGui_CommandWindow::initialize_pack(void)
   end();
   this->show();
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack cmdwin_pack:"
-		<< RpsGui_ShowFullWidget(cmdwin_pack) <<  std::endl
+                << RpsGui_ShowFullWidget(cmdwin_pack) <<  std::endl
                 << "... of parent:" << RpsGui_ShowFullWidget(cmdwin_pack->parent()) <<  std::endl
                 << "... this:" << RpsGui_ShowFullWidget(this));
 } // end RpsGui_CommandWindow::initialize_pack
