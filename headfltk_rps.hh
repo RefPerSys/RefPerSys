@@ -225,6 +225,7 @@ public:
   };
 };				// end class RpsGui_Window
 
+////////////////
 class RpsGui_MenuBar : public Fl_Menu_Bar
 {
 public:
@@ -247,6 +248,8 @@ public:
   virtual ~RpsGui_Pack();
 };				// end class RpsGui_Pack
 
+
+////////////////
 class RpsGui_CommandWindow
   : public RpsGui_Window
 {
