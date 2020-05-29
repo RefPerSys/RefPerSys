@@ -350,6 +350,40 @@ enum Rps_Debug
 };
 
 
+////////////////////////////////////////////////////////////////
+///// parsing program options
+enum rps_progoption_en
+{
+  RPSPROGOPT__NONE=0,
+  RPSPROGOPT_LOADDIR='L',
+  RPSPROGOPT_DEBUG='d',
+  RPSPROGOPT_BATCH='B',
+  RPSPROGOPT_JOBS='j',
+  RPSPROGOPT_DUMP='D',
+
+  RPSPROGOPT_HOMEDIR=1000,
+  RPSPROGOPT_RANDOMOID,
+  RPSPROGOPT_TYPEINFO,
+  RPSPROGOPT_SYSLOG,
+  RPSPROGOPT_NOTERMINAL,
+  RPSPROGOPT_NOASLR,
+  RPSPROGOPT_GUI,
+  RPSPROGOPT_GUI_GEOMETRY,
+  RPSPROGOPT_GUI_SCALE,
+  RPSPROGOPT_GUI_TITLE,
+  RPSPROGOPT_REPL,
+  RPSPROGOPT_RUN_AFTER_LOAD,
+  RPSPROGOPT_VERSION,
+};
+
+
+
+extern "C" error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
+extern "C" struct argp_option rps_progoptions[];
+
+
+
+////////////////////////////////////////////////////////////////
 extern "C" bool rps_syslog_enabled;
 
 extern "C" unsigned rps_debug_flags;

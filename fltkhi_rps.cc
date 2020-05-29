@@ -138,7 +138,8 @@ rps_is_main_gui_thread(void)
 int rps_fltk_arg_handler(int argc, char**argv, int &i)
 {
   const char* curarg = nullptr;
-  if (i>0 && i<argc) curarg=argv[i];
+  if (i>0 && i<argc)
+    curarg=argv[i];
   RPS_DEBUG_LOG(GUI, "rps_fltk_arg_handler i#" << i
                 << " argc=" << argc
                 << (curarg?"curarg:":"*no current argument*")

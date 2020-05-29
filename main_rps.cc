@@ -41,31 +41,7 @@ const char rps_main_date[]= __DATE__;
 
 
 
-enum rps_progoption_en
-{
-  RPSPROGOPT__NONE=0,
-  RPSPROGOPT_LOADDIR='L',
-  RPSPROGOPT_DEBUG='d',
-  RPSPROGOPT_BATCH='B',
-  RPSPROGOPT_JOBS='j',
-  RPSPROGOPT_DUMP='D',
-
-  RPSPROGOPT_HOMEDIR=1000,
-  RPSPROGOPT_RANDOMOID,
-  RPSPROGOPT_TYPEINFO,
-  RPSPROGOPT_SYSLOG,
-  RPSPROGOPT_NOTERMINAL,
-  RPSPROGOPT_NOASLR,
-  RPSPROGOPT_GUI,
-  RPSPROGOPT_GUI_GEOMETRY,
-  RPSPROGOPT_GUI_SCALE,
-  RPSPROGOPT_GUI_TITLE,
-  RPSPROGOPT_REPL,
-  RPSPROGOPT_RUN_AFTER_LOAD,
-  RPSPROGOPT_VERSION,
-};
-
-static error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
+error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 struct argp_option rps_progoptions[] =
 {
   /* ======= the load directory ======= */
@@ -643,7 +619,7 @@ main (int argc, char** argv)
 } // end of main
 
 // parse a single program option
-static error_t
+error_t
 rps_parse1opt (int key, char *arg, struct argp_state *state)
 {
   switch (key)
