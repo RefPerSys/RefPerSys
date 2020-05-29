@@ -146,7 +146,7 @@ int rps_fltk_arg_handler(int argc, char**argv, int &i)
                 << (curarg?:" !")
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_arg_handler("));
-#warning rps_fltk_arg_handler is incomplete
+#warning rps_fltk_arg_handler is incomplete, should call rps_parse1opt with an RPS_EMPTYSLOT as state...
   return 0;
 } // end rps_fltk_arg_handler
 

@@ -618,15 +618,20 @@ main (int argc, char** argv)
   return 0;
 } // end of main
 
-// parse a single program option
+
+
+// Parse a single program option, skipping side effects (for FLTK
+// argument parsing) when state is empty.
 error_t
 rps_parse1opt (int key, char *arg, struct argp_state *state)
 {
+  bool side_effect = state && (void*)state != RPS_EMPTYSLOT;
   switch (key)
     {
     case RPSPROGOPT_DEBUG:
     {
-      rps_set_debug(std::string(arg));
+      if (side_effect)
+        rps_set_debug(std::string(arg));
     }
     return 0;
     case RPSPROGOPT_LOADDIR:
@@ -637,7 +642,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     case RPSPROGOPT_BATCH:
     {
       rps_batch = true;
-      RPS_INFORMOUT("enabling batch mode");
+      if (side_effect)
+        RPS_INFORMOUT("enabling batch mode");
     }
     return 0;
     case RPSPROGOPT_JOBS:
@@ -648,12 +654,14 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       else if (nbjobs > RPS_NBJOBS_MAX)
         nbjobs = RPS_NBJOBS_MAX;
       rps_nbjobs = nbjobs;
-      RPS_INFORMOUT("set number of jobs or worker threads to " << rps_nbjobs);
+      if (side_effect)
+        RPS_INFORMOUT("set number of jobs or worker threads to " << rps_nbjobs);
     }
     return 0;
     case RPSPROGOPT_DUMP:
     {
-      RPS_INFORMOUT("will dump to " << arg);
+      if (side_effect)
+        RPS_INFORMOUT("will dump to " << arg);
     }
     return 0;
     case RPSPROGOPT_HOMEDIR:
@@ -669,16 +677,19 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       if ((rhomstat.st_mode & (S_IRUSR|S_IXUSR)) !=  (S_IRUSR|S_IXUSR))
         RPS_FATAL("given --refpersys-home %s is not user readable and executable",
                   arg);
-      char*rhomrp = realpath(arg, nullptr);
-      if (!rhomrp)
-        RPS_FATAL("realpath failed on given --refpersys-home %s - %m",
-                  arg);
-      if (strlen(rhomrp) >= sizeof(rps_bufpath_homedir) -1)
-        RPS_FATAL("too long realpath %s on given --refpersys-home %s - %m",
-                  rhomrp, arg);
-      strncpy(rps_bufpath_homedir, rhomrp, sizeof(rps_bufpath_homedir) -1);
-      free (rhomrp), rhomrp = nullptr;
-      RPS_INFORMOUT("set RefPerSys home directory to " << rps_bufpath_homedir);
+      if (side_effect)
+        {
+          char*rhomrp = realpath(arg, nullptr);
+          if (!rhomrp)
+            RPS_FATAL("realpath failed on given --refpersys-home %s - %m",
+                      arg);
+          if (strlen(rhomrp) >= sizeof(rps_bufpath_homedir) -1)
+            RPS_FATAL("too long realpath %s on given --refpersys-home %s - %m",
+                      rhomrp, arg);
+          strncpy(rps_bufpath_homedir, rhomrp, sizeof(rps_bufpath_homedir) -1);
+          free (rhomrp), rhomrp = nullptr;
+          RPS_INFORMOUT("set RefPerSys home directory to " << rps_bufpath_homedir);
+        };
     }
     return 0;
     case RPSPROGOPT_RANDOMOID:
@@ -686,37 +697,44 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       int nbrand = atoi(arg);
       if (nbrand <= 0) nbrand = 2;
       else if (nbrand > 100) nbrand = 100;
-      RPS_INFORM("output of %d random objids generated on %.2f\n", nbrand,
-                 rps_wallclock_real_time());
-      printf("*    %-20s" "\t  %-19s" "   %-12s" "\t %-10s\n",
-             " objid", "hi", "lo", "hash");
-      printf("========================================================"
-             "===========================\n");
-      for (int ix = 0; ix<nbrand; ix++)
+      if (side_effect)
         {
-          auto rid = Rps_Id::random();
-          printf("! %22s" "\t  %19lld" " %12lld" "\t %10u\n",
-                 rid.to_string().c_str(),
-                 (long long) rid.hi(),
-                 (long long) rid.lo(),
-                 (unsigned) rid.hash());
+          RPS_INFORM("output of %d random objids generated on %.2f\n", nbrand,
+                     rps_wallclock_real_time());
+          printf("*    %-20s" "\t  %-19s" "   %-12s" "\t %-10s\n",
+                 " objid", "hi", "lo", "hash");
+          printf("========================================================"
+                 "===========================\n");
+          for (int ix = 0; ix<nbrand; ix++)
+            {
+              auto rid = Rps_Id::random();
+              printf("! %22s" "\t  %19lld" " %12lld" "\t %10u\n",
+                     rid.to_string().c_str(),
+                     (long long) rid.hi(),
+                     (long long) rid.lo(),
+                     (unsigned) rid.hash());
+            }
+          printf("--------------------------------------------------------"
+                 "---------------------------\n");
+          fflush(nullptr);
         }
-      printf("--------------------------------------------------------"
-             "---------------------------\n");
-      fflush(nullptr);
     }
     return 0;
     case RPSPROGOPT_TYPEINFO:
     {
-      rps_print_types_info ();
+      if (side_effect)
+        rps_print_types_info ();
       rps_batch = true;
     }
     return 0;
     case RPSPROGOPT_SYSLOG:
     {
-      rps_syslog_enabled = true;
-      openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
-      RPS_INFORM("using syslog");
+      if (side_effect)
+        {
+          rps_syslog_enabled = true;
+          openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
+          RPS_INFORM("using syslog");
+        }
     }
     return 0;
     case RPSPROGOPT_NOTERMINAL:
@@ -733,7 +751,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     case RPSPROGOPT_GUI:
     {
       rps_run_gui = true;
-      RPS_DEBUG_LOG(GUI, "will run with a graphical user interface");
+      if (side_effect)
+        RPS_DEBUG_LOG(GUI, "will run with a graphical user interface");
     }
     return 0;
     case RPSPROGOPT_GUI_SCALE:
@@ -741,29 +760,37 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_run_gui = true;
       double sca = atof(arg);
       rps_gui_pref.gui_scale = sca;
-      RPS_DEBUG_LOG(GUI, "GUI scale is " << sca);
+      if (side_effect)
+        RPS_DEBUG_LOG(GUI, "GUI scale is " << sca);
     }
     return 0;
     case RPSPROGOPT_GUI_TITLE:
     {
       rps_run_gui = true;
-      std::string tit(arg);
-      rps_gui_pref.gui_title = tit;
-      RPS_DEBUG_LOG(GUI, "GUI title is " << tit);
+      if (side_effect)
+        {
+          std::string tit(arg);
+          rps_gui_pref.gui_title = tit;
+          RPS_DEBUG_LOG(GUI, "GUI title is " << tit);
+        }
     }
     return 0;
     case RPSPROGOPT_GUI_GEOMETRY:
     {
       rps_run_gui = true;
-      std::string geom(arg);
-      rps_gui_pref.gui_geometry = geom;
-      RPS_DEBUG_LOG(GUI, "GUI geometry is " << geom);
+      if (side_effect)
+        {
+          std::string geom(arg);
+          rps_gui_pref.gui_geometry = geom;
+          RPS_DEBUG_LOG(GUI, "GUI geometry is " << geom);
+        }
     }
     return 0;
     case RPSPROGOPT_REPL:
     {
       rps_run_repl = true;
-      RPS_DEBUG_LOG(REPL, "will run with a textual Read-Eval-Print-Loop using GNU readline");
+      if (side_effect)
+        RPS_DEBUG_LOG(REPL, "will run with a textual Read-Eval-Print-Loop using GNU readline");
     }
     return 0;
     case RPSPROGOPT_RUN_AFTER_LOAD:
@@ -773,40 +800,43 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     return 0;
     case RPSPROGOPT_VERSION:
     {
-      int nbfiles=0;
-      int nbsubdirs=0;
-      for (auto pfiles=rps_files; *pfiles; pfiles++)
-        nbfiles++;
-      for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
-        nbsubdirs++;
-      std::cout << "RefPerSys, an Artificial Intelligence system - work in progress..." << std::endl;
-      std::cout << "version information:\n"
-                << " program name: " << rps_progname << std::endl
-                << " build time: " << rps_timestamp << std::endl
-                << " top directory: " << rps_topdirectory << std::endl
-                << " git id: " << rps_gitid << std::endl
-                << " last git tag: " << rps_lastgittag << std::endl
-                << " last git commit: " << rps_lastgitcommit << std::endl
-                << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
-                << " with " << nbsubdirs << " subdirectories." << std::endl
-                << " GNU glibc " << gnu_get_libc_version() << std::endl
-                << " Graphical User Interface using " << rps_fltk_version() << std::endl
-                << " Read Eval Print Loop using " << rps_repl_version() << std::endl
-                << " libCURL for web using " << rps_curl_version() << std::endl
-                << " made with: " << rps_makefile << std::endl
-                << " running on " << rps_hostname();
-      {
-        char cwdbuf[256];
-        memset (cwdbuf, 0, sizeof(cwdbuf));
-        if (getcwd(cwdbuf, sizeof(cwdbuf)))
-          std::cout << " in " << cwdbuf;
-      };
-      std::cout << std::endl << " C++ compiler: " << rps_cxx_compiler_version << std::endl
-                << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl
-                << "+++++ there is no WARRANTY, to the extent permitted by law ++++" << std::endl
-                << "***** see also http://refpersys.org/ *****"
-                << std::endl << std::endl;
-      exit(EXIT_SUCCESS);
+      if (side_effect)
+        {
+          int nbfiles=0;
+          int nbsubdirs=0;
+          for (auto pfiles=rps_files; *pfiles; pfiles++)
+            nbfiles++;
+          for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
+            nbsubdirs++;
+          std::cout << "RefPerSys, an Artificial Intelligence system - work in progress..." << std::endl;
+          std::cout << "version information:\n"
+                    << " program name: " << rps_progname << std::endl
+                    << " build time: " << rps_timestamp << std::endl
+                    << " top directory: " << rps_topdirectory << std::endl
+                    << " git id: " << rps_gitid << std::endl
+                    << " last git tag: " << rps_lastgittag << std::endl
+                    << " last git commit: " << rps_lastgitcommit << std::endl
+                    << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
+                    << " with " << nbsubdirs << " subdirectories." << std::endl
+                    << " GNU glibc " << gnu_get_libc_version() << std::endl
+                    << " Graphical User Interface using " << rps_fltk_version() << std::endl
+                    << " Read Eval Print Loop using " << rps_repl_version() << std::endl
+                    << " libCURL for web using " << rps_curl_version() << std::endl
+                    << " made with: " << rps_makefile << std::endl
+                    << " running on " << rps_hostname();
+          {
+            char cwdbuf[256];
+            memset (cwdbuf, 0, sizeof(cwdbuf));
+            if (getcwd(cwdbuf, sizeof(cwdbuf)))
+              std::cout << " in " << cwdbuf;
+          };
+          std::cout << std::endl << " C++ compiler: " << rps_cxx_compiler_version << std::endl
+                    << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl
+                    << "+++++ there is no WARRANTY, to the extent permitted by law ++++" << std::endl
+                    << "***** see also http://refpersys.org/ *****"
+                    << std::endl << std::endl;
+          exit(EXIT_SUCCESS);
+        }
     }
     return 0;
     };				// end switch key

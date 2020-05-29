@@ -377,7 +377,8 @@ enum rps_progoption_en
 };
 
 
-
+/// if state is RPS_EMPTYSLOT no serious side-effect happens, since
+/// FLTK is parsing options a second time.
 extern "C" error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 extern "C" struct argp_option rps_progoptions[];
 
