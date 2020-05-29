@@ -897,7 +897,8 @@ rps_run_application(int &argc, char **argv)
       fflush(nullptr);
       int nok = system(rps_run_command_after_load);
       if (nok)
-        RPS_FATAL("failed to run command '%s' after load (status #%d)", nok);
+        RPS_FATAL("failed to run command '%s' after load (status #%d)",
+		  rps_run_command_after_load, nok);
       else
         RPS_INFORM("after successfully running command '%s' after load", rps_run_command_after_load);
     }
