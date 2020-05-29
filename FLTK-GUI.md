@@ -114,6 +114,14 @@ policy](https://www.fltk.org/doc-1.4/group__fl__del__widget.html) of
 never *immediately* deleting any FLTK object inside an FLTK
 [callback](https://en.wikipedia.org/wiki/Callback_(computer_programming)).
 
+We probably want to have some *delayed* todo. Perhaps a routine declared as
+
+```
+extern "C" void
+rps_fltk_add_delayed_todo(Rps_LocalFrame*curframe, double delay,
+                          const std::function<void(Rps_LocalFrame*)>& todo);
+```
+
 Within [FLTK 1.4](http://fltk.org/) the only occurrences of the
 [select(2)](http://man7.org/linux/man-pages/man2/select.2.html) or
 [poll(2)](http://man7.org/linux/man-pages/man2/select.2.html)
