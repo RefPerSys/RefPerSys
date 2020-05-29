@@ -135,20 +135,60 @@ rps_is_main_gui_thread(void)
  * for the switch plus associated parameters. i should be incremented
  * by the same amount.
  **/
-int rps_fltk_arg_handler(int argc, char**argv, int &i)
+int
+rps_fltk_arg_handler(int argc, char**argv, int &i)
 {
   const char* curarg = nullptr;
   if (i>0 && i<argc)
     curarg=argv[i];
   RPS_DEBUG_LOG(GUI, "rps_fltk_arg_handler i#" << i
-                << " argc=" << argc
+                << " argc=" << argc << ", "
                 << (curarg?"curarg:":"*no current argument*")
                 << (curarg?:" !")
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_arg_handler("));
-#warning rps_fltk_arg_handler is incomplete, should call rps_parse1opt with an RPS_EMPTYSLOT as state...
+  if (curarg)
+    for (struct argp_option *aopt = rps_progoptions; aopt->name != nullptr; aopt++)
+      {
+        const char*restarg = nullptr;
+        bool goteq = false;
+        int deltarg = 0;
+        int aoptnlen = (aopt->name)?strlen(aopt->name):0;
+        if (curarg[0]=='-' && curarg[1]=='-' && strncmp(curarg+2, aopt->name, aoptnlen))
+          {
+            if (curarg[2+aoptnlen]=='=')
+              {
+                restarg = curarg+aoptnlen+3;
+                goteq = true;
+                deltarg = 1;
+              }
+          }
+        else if (curarg[0]=='-' && isalpha(curarg[1]) && aopt->key==curarg[1])
+          {
+            restarg = curarg+2;
+            if (*restarg && aopt->arg) deltarg=2;
+            else if (!*restarg && !aopt->arg) deltarg=1;
+          }
+        if (!restarg)
+          continue;
+        error_t erropt = ARGP_ERR_UNKNOWN;
+        struct argp_state *emptystate = reinterpret_cast<struct argp_state*>((void*)RPS_EMPTYSLOT);
+        if (aopt->arg)
+          {
+            erropt = rps_parse1opt(aopt->key, (char*)restarg, emptystate);
+          }
+        else
+          {
+            erropt = rps_parse1opt(aopt->key, nullptr, emptystate);
+          };
+        if (erropt)
+          RPS_WARNOUT("rps_fltk_arg_handler fail to parse " << curarg << " at index#" << i);
+        i += deltarg;
+        return i;
+      };
   return 0;
 } // end rps_fltk_arg_handler
+
 
 void
 rps_fltk_initialize(int &argc, char**argv)
