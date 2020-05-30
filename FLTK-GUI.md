@@ -114,12 +114,16 @@ policy](https://www.fltk.org/doc-1.4/group__fl__del__widget.html) of
 never *immediately* deleting any FLTK object inside an FLTK
 [callback](https://en.wikipedia.org/wiki/Callback_(computer_programming)).
 
-We probably want to have some *delayed* todo. Perhaps a routine declared as
+We probably want to have some *delayed* todo. Perhaps a few routines declared as
 
 ```
 extern "C" void
 rps_fltk_add_delayed_todo(Rps_LocalFrame*curframe, double delay,
-                          const std::function<void(Rps_LocalFrame*)>& todo);
+                          const std::function<void(Rps_LocalFrame*,void*,void*)>& todo, void*arg1, void*arg2);
+extern "C" void
+rps_fltk_add_delayed_closure(Rps_LocalFrame*curframe, double delay, 
+                             Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v);
+						  
 ```
 
 Within [FLTK 1.4](http://fltk.org/) the only occurrences of the
