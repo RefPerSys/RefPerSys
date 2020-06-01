@@ -129,6 +129,89 @@ rps_fltk_geometry_string(const FltkWidgetClass*widg)
 } // end rps_fltk_geometry_string
 
 
+//////////
+// NOTE ON ABOVE:
+// Why do we need templates for rps_fltk_geometry_string() and
+// rps_fltk_get_window_geometry()? Could we not do something like below, using
+// only the Fl_Widget base class?
+// Aslo, aren't floating point comparisons unsafe?
+
+class RpsGui_Geometry {
+  public:
+    RpsGui_Geometry()
+      : gm_x(0)
+      , gm_y(0)
+      , gm_height(0)
+      , gm_width(0)
+      , gm_scale(0.0f)
+    { }
+
+    RpsGui_Geometry(int x, int y, int width, int height, float scale)
+      : gm_x(x)
+      , gm_y(y)
+      , gm_width(width)
+      , gm_height(height)
+      , gm_scale(scale)
+    { }
+
+    ~RpsGui_Geometry() { }
+
+    inline int x() const { return gm_x; }
+    inline void x(int val) { gm_x = val; }
+    inline int y() const { return gm_y; }
+    inline void y(int val) { gm_y = val; }
+    inline int width() const { return gm_width; }
+    inline void width(int val) { gm_width = val; }
+    inline int height() const { return gm_height; }
+    inline void height(int val) { gm_height = val; }
+    inline float scale() const { return gm_scale; }
+    inline void scale(float val) { gm_scale = val; }
+
+    std::string str() const
+    {
+        std::stringstream ss;
+        ss << "[x = " << x() << ", y = " << y() << ", w = " << width() 
+            << ", h = " << height();
+
+        if (scale() != 1.0)
+            ss << ", scale = " << scale();
+
+        return ss.str();
+    }
+
+  private:
+    int gm_x;
+    int gm_y;
+    int gm_height;
+    int gm_width;
+    float gm_scale;
+};
+
+    
+static void
+rpsgui_get_window_geometry(const Fl_Widget* wx, RpsGui_Geometry& gm)
+{
+  RPS_ASSERT (wx);
+
+  int xoff = -1, yoff = -1;
+  auto wnd = wx->top_window_offset(xoff, yoff);
+  RPS_ASSERT (wnd && xoff >= 0 && yoff >= 0);
+  
+  gm.x(xoff);
+  gm.y(yoff);
+
+  auto scrnum = wnd->screen_num();
+  RPS_ASSERT (scrnum >= 0);
+
+  gm.scale(Fl::screen_scale(scrnum));
+  RPS_ASSERT (!(gm.scale() <= 0.0f || std::isnan(gm.scale())));
+
+  gm.width(wx->w() * gm.scale());
+  gm.height(wx->h() * gm.scale());
+}
+
+////// END NOTE
+
 /*** Below class is mostly to ease debugging, e.g. as
      RPS_DEBUG_LOG(GUI, "some widget=" << RpsGui_ShowWidget(widget));
  ***/
