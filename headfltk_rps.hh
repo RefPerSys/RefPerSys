@@ -38,6 +38,11 @@
 /// for FLTK - see https://www.fltk.org/
 
 #include <FL/Fl.H>
+
+// see https://www.fltk.org/doc-1.4/osissues.html#osissues_unix and
+// https://stackoverflow.com/questions/61931734/fltk-1-4-widget-position-w-r-t-x11-root-window
+#include <FL/platform.H>
+
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Box.H>
@@ -46,6 +51,7 @@
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Text_Editor.H>
 #include <FL/fl_ask.H>
+
 
 //////////////// forward declaration of classes
 class RpsGui_ShowWidget;
