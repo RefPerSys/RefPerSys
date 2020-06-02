@@ -283,6 +283,23 @@ enum RpsGui_WinTypes
   RpsGuiType_OutputWindow,
   RpsGuiType_MenuBar,
   RpsGuiType_Pack,
+
+  //////////// SUGGESTION
+  // Don't we need to maintain a consistent naming scheme, as in the following?
+  // Perhaps a consistent naming scheme would be even more important in case of
+  // generated code.
+  //
+  // I can see why we need enumerators for the Command and Output windows, but I
+  // am not sure whether the menu bar and pack widgets should be considered as
+  // part of the WinTypes enumeration, since they are not windows per se, but
+  // rather are widgets embedded within a double window.
+
+  RpsGui_WinTypes_CommandWindow = FL_DOUBLE_WINDOW + 2,
+  RpsGui_WinTypes_OutputWindow,
+  RpsGui_WinTypes_MenuBar,
+  RpsGui_WinTypes_Pack,
+
+  /////////////////// END SUGGESTION
 };
 
 class RpsGui_Window: public Fl_Double_Window
