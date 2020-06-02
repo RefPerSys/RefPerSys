@@ -136,6 +136,8 @@ rps_fltk_geometry_string(const FltkWidgetClass*widg)
 // only the Fl_Widget base class?
 // Aslo, aren't floating point comparisons unsafe?
 
+#pragma message "the RpsGui_Geometry class should follow the rule of five"
+// see https://cpppatterns.com/patterns/rule-of-five.html
 class RpsGui_Geometry {
   public:
     RpsGui_Geometry()
