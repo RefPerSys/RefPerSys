@@ -78,7 +78,14 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
   Rps_ObjectRef evloopfr_ob1;
   /// after here, no GC-ed value anymore
   double evloopfr_delay;
+  Rps_FltkEventLoop_CallFrame*evloopfr_oldframe;
   int evloopfr_lineno;
+  bool evloopfr_withclosure;
+  /// the event loop frames in the GUI main thread are kept
+  static std::atomic<Rps_FltkEventLoop_CallFrame*> evloopfr_curframe;
+  /// the event loop frames elsewhere are collected in a locked set
+  static std::recursive_mutex evloopfr_mtx;
+  static std::set<Rps_FltkEventLoop_CallFrame*> evloopfr_set;
 public:
   Rps_Value evloopfr_dummyval[0];
   Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
@@ -90,7 +97,12 @@ public:
   ~Rps_FltkEventLoop_CallFrame();
 };				// end Rps_FltkEventLoop_CallFrame
 
+std::atomic<Rps_FltkEventLoop_CallFrame*> Rps_FltkEventLoop_CallFrame::evloopfr_curframe;
+std::recursive_mutex Rps_FltkEventLoop_CallFrame::evloopfr_mtx;
+std::set<Rps_FltkEventLoop_CallFrame*> Rps_FltkEventLoop_CallFrame::evloopfr_set;
 static constexpr unsigned rps_evloop_nbvals = offsetof(Rps_FltkEventLoop_CallFrame, evloopfr_dummyval);
+
+
 
 Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
     Rps_ObjectRef descr,  double delay,
@@ -102,9 +114,22 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
     evloopfr_ob1(nullptr),
     evloopfr_dummyval(),
     evloopfr_delay(delay),
-    evloopfr_lineno(lineno)
+    evloopfr_oldframe(nullptr),
+    evloopfr_lineno(lineno),
+    evloopfr_withclosure(false)
 {
+  if (rps_is_main_gui_thread())
+    {
+      evloopfr_oldframe= std::atomic_exchange(&evloopfr_curframe,this);
+    }
+  else
+    {
+      std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
+      evloopfr_set.insert(this);
+    }
 };				// end Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame with todo
+
+
 
 Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
     Rps_ObjectRef descr, double delay,
@@ -116,12 +141,32 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
     evloopfr_ob1(nullptr),
     evloopfr_dummyval(),
     evloopfr_delay(delay),
-    evloopfr_lineno(lineno)
+    evloopfr_oldframe(nullptr),
+    evloopfr_lineno(lineno),
+    evloopfr_withclosure(true)
 {
+  if (rps_is_main_gui_thread())
+    {
+      evloopfr_oldframe= std::atomic_exchange(&evloopfr_curframe,this);
+    }
+  else
+    {
+      std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
+      evloopfr_set.insert(this);
+    }
 };				// end Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame with closure
 
 Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
 {
+  if (rps_is_main_gui_thread())
+    {
+      evloopfr_curframe.store(evloopfr_oldframe);
+    }
+  else
+    {
+      std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
+      evloopfr_set.erase(this);
+    }
 #warning unimplemented Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame
   RPS_FATALOUT("unimplemented Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame");
 }; // end Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame
@@ -131,6 +176,8 @@ void
 rps_fltk_add_delayed_todo(Rps_CallFrame*callframe, double delay,
                           const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2)
 {
+  RPS_ASSERT(Rps_CallFrame::is_good_call_frame(callframe));
+  // not sure: RPS_ASSERT(rps_is_main_gui_thread());
   static const Rps_ObjectRef obdescr(nullptr);
   Rps_FltkEventLoop_CallFrame _(callframe, __LINE__, obdescr, delay, todo, arg1, arg2);
 #warning unimplemented rps_fltk_add_delayed_todo
@@ -142,6 +189,8 @@ void
 rps_fltk_add_delayed_closure(Rps_CallFrame*callframe, double delay,
                              Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v)
 {
+  RPS_ASSERT(Rps_CallFrame::is_good_call_frame(callframe));
+// not sure: RPS_ASSERT(rps_is_main_gui_thread());
   static const Rps_ObjectRef obdescr(nullptr);
   Rps_FltkEventLoop_CallFrame _(callframe, __LINE__, obdescr, delay, closv, arg1v, arg2v);
 #warning unimplemented rps_fltk_add_delayed_closure
