@@ -37,7 +37,6 @@ RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
 
--include $(wildcard $$HOME/build-refpersys.mk)
 
 RPS_BUILD_CCACHE?= ccache
 RPS_BUILD_CC?= gcc
@@ -75,6 +74,7 @@ CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
 
 LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 
+-include $(wildcard $$HOME/build-refpersys.mk)
 all:
 	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
