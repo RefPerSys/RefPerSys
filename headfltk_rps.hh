@@ -69,6 +69,15 @@ extern "C" void rps_fltk_stop_event_loop(void);
 
 extern "C" void rps_fltk_initialize(int &argc, char**argv);
 
+extern "C" void
+rps_fltk_add_delayed_todo(Rps_CallFrame*curframe, double delay,
+                          const std::function<void(Rps_CallFrame*,void*,void*)>& todo,
+                          void*arg1, void*arg2);
+extern "C" void
+rps_fltk_add_delayed_closure(Rps_CallFrame*curframe, double delay,
+                             Rps_ClosureValue closv,
+                             Rps_Value arg1v, Rps_Value arg2v);
+
 template<class FltkWidgetClass>
 static inline bool
 rps_fltk_get_window_geometry(const FltkWidgetClass*widg, int &x, int &y, int &w, int &h, float*scaleptr=nullptr)
@@ -138,58 +147,89 @@ rps_fltk_geometry_string(const FltkWidgetClass*widg)
 
 #pragma message "the RpsGui_Geometry class should follow the rule of five"
 // see https://cpppatterns.com/patterns/rule-of-five.html
-class RpsGui_Geometry {
-  public:
-    RpsGui_Geometry()
-      : gm_x(0)
-      , gm_y(0)
-      , gm_height(0)
-      , gm_width(0)
-      , gm_scale(0.0f)
-    { }
+class RpsGui_Geometry
+{
+public:
+  RpsGui_Geometry()
+    : gm_x(0)
+    , gm_y(0)
+    , gm_height(0)
+    , gm_width(0)
+    , gm_scale(0.0f)
+  { }
 
-    RpsGui_Geometry(int x, int y, int width, int height, float scale)
-      : gm_x(x)
-      , gm_y(y)
-      , gm_width(width)
-      , gm_height(height)
-      , gm_scale(scale)
-    { }
+  RpsGui_Geometry(int x, int y, int width, int height, float scale)
+    : gm_x(x)
+    , gm_y(y)
+    , gm_width(width)
+    , gm_height(height)
+    , gm_scale(scale)
+  { }
 
-    ~RpsGui_Geometry() { }
+  ~RpsGui_Geometry() { }
 
-    inline int x() const { return gm_x; }
-    inline void x(int val) { gm_x = val; }
-    inline int y() const { return gm_y; }
-    inline void y(int val) { gm_y = val; }
-    inline int width() const { return gm_width; }
-    inline void width(int val) { gm_width = val; }
-    inline int height() const { return gm_height; }
-    inline void height(int val) { gm_height = val; }
-    inline float scale() const { return gm_scale; }
-    inline void scale(float val) { gm_scale = val; }
+  inline int x() const
+  {
+    return gm_x;
+  }
+  inline void x(int val)
+  {
+    gm_x = val;
+  }
+  inline int y() const
+  {
+    return gm_y;
+  }
+  inline void y(int val)
+  {
+    gm_y = val;
+  }
+  inline int width() const
+  {
+    return gm_width;
+  }
+  inline void width(int val)
+  {
+    gm_width = val;
+  }
+  inline int height() const
+  {
+    return gm_height;
+  }
+  inline void height(int val)
+  {
+    gm_height = val;
+  }
+  inline float scale() const
+  {
+    return gm_scale;
+  }
+  inline void scale(float val)
+  {
+    gm_scale = val;
+  }
 
-    std::string str() const
-    {
-        std::stringstream ss;
-        ss << "[x = " << x() << ", y = " << y() << ", w = " << width() 
-            << ", h = " << height();
+  std::string str() const
+  {
+    std::stringstream ss;
+    ss << "[x = " << x() << ", y = " << y() << ", w = " << width()
+       << ", h = " << height();
 
-        if (scale() != 1.0)
-            ss << ", scale = " << scale();
+    if (scale() != 1.0)
+      ss << ", scale = " << scale();
 
-        return ss.str();
-    }
+    return ss.str();
+  }
 
-  private:
-    int gm_x;
-    int gm_y;
-    int gm_height;
-    int gm_width;
-    float gm_scale;
+private:
+  int gm_x;
+  int gm_y;
+  int gm_height;
+  int gm_width;
+  float gm_scale;
 };
 
-    
+
 static void
 rpsgui_get_window_geometry(const Fl_Widget* wx, RpsGui_Geometry& gm)
 {
@@ -198,7 +238,7 @@ rpsgui_get_window_geometry(const Fl_Widget* wx, RpsGui_Geometry& gm)
   int xoff = -1, yoff = -1;
   auto wnd = wx->top_window_offset(xoff, yoff);
   RPS_ASSERT (wnd && xoff >= 0 && yoff >= 0);
-  
+
   gm.x(xoff);
   gm.y(yoff);
 

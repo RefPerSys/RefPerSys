@@ -64,6 +64,26 @@ rps_fltk_version(void)
   return res;
 } // end rps_fltk_version
 
+
+
+
+////////////////////////////////////////////////////////////////
+void
+rps_fltk_add_delayed_todo(Rps_CallFrame*curframe, double delay,
+                          const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2)
+{
+#warning unimplemented rps_fltk_add_delayed_todo
+  RPS_FATALOUT("unimplemented rps_fltk_add_delayed_todo");
+} // end rps_fltk_add_delayed_todo
+
+void
+rps_fltk_add_delayed_closure(Rps_CallFrame*curframe, double delay,
+                             Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v)
+{
+#warning unimplemented rps_fltk_add_delayed_closure
+  RPS_FATALOUT("unimplemented rps_fltk_add_delayed_closure");
+} // end rps_fltk_add_delayed_closure
+
 void
 rps_fltk_stop_event_loop(void)
 {

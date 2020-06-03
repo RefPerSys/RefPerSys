@@ -118,13 +118,16 @@ We probably want to have some *delayed* todo. Perhaps a few routines declared as
 
 ```
 extern "C" void
-rps_fltk_add_delayed_todo(Rps_LocalFrame*curframe, double delay,
-                          const std::function<void(Rps_LocalFrame*,void*,void*)>& todo, void*arg1, void*arg2);
+rps_fltk_add_delayed_todo(Rps_CallFrame*curframe, double delay,
+                          const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2);
 extern "C" void
-rps_fltk_add_delayed_closure(Rps_LocalFrame*curframe, double delay, 
+rps_fltk_add_delayed_closure(Rps_CallFrame*curframe, double delay, 
                              Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v);
 						  
 ```
+
+See also of course the wikipage on [call frames in RefPerSys](https://gitlab.com/bstarynk/refpersys/-/wikis/call-frames-in-RefPerSys).
+
 
 Within [FLTK 1.4](http://fltk.org/) the only occurrences of the
 [select(2)](http://man7.org/linux/man-pages/man2/select.2.html) or
