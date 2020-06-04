@@ -82,6 +82,9 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
   int evloopfr_lineno;
   short evloopfr_depth;
   bool evloopfr_withclosure;
+  void* evloopfr_ptr1;
+  void* evloopfr_ptr2;
+  std::function<void(Rps_CallFrame*,void*,void*)> evloopfr_todo;
   /// the event loop frames in the GUI main thread are kept
   static std::atomic<Rps_FltkEventLoop_CallFrame*> evloopfr_curframe;
   /// the event loop frames elsewhere are collected in a locked set
@@ -122,8 +125,17 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
     evloopfr_oldframe(nullptr),
     evloopfr_lineno(lineno),
     evloopfr_depth(-1),
-    evloopfr_withclosure(false)
+    evloopfr_withclosure(false),
+    evloopfr_ptr1(nullptr),
+    evloopfr_ptr2(nullptr),
+    evloopfr_todo(todo)
 {
+  evloopfr_ptr1 = arg1;
+  evloopfr_ptr2 = arg2;
+  RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame todo line#" << lineno << " delay=" << delay
+                << " arg1=" << arg1
+                << " arg2=" << arg2
+                << " in " << (rps_is_main_gui_thread()?"main thread":"other thread"));
   if (rps_is_main_gui_thread())
     {
       evloopfr_oldframe= std::atomic_exchange(&evloopfr_curframe,this);
@@ -150,8 +162,16 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
     evloopfr_oldframe(nullptr),
     evloopfr_lineno(lineno),
     evloopfr_depth(-1),
-    evloopfr_withclosure(true)
+    evloopfr_withclosure(true),
+    evloopfr_ptr1(nullptr),
+    evloopfr_ptr2(nullptr),
+    evloopfr_todo()
 {
+  RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame closure line#" << lineno << " delay=" << delay
+                << " closv=" << closv
+                << " arg1v=" << arg1v
+                << " arg2v=" << arg2v
+                << " in " << (rps_is_main_gui_thread()?"main thread":"other thread"));
   if (rps_is_main_gui_thread())
     {
       evloopfr_oldframe= std::atomic_exchange(&evloopfr_curframe,this);
@@ -176,16 +196,23 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
     evloopfr_oldframe(nullptr),
     evloopfr_lineno(lineno),
     evloopfr_depth(depth),
-    evloopfr_withclosure(false)
+    evloopfr_withclosure(false),
+    evloopfr_ptr1(nullptr),
+    evloopfr_ptr2(nullptr),
+    evloopfr_todo()
 {
   RPS_ASSERT(rps_is_main_gui_thread());
   RPS_ASSERT(evloopfr_depth >= 0);
-#warning incomplete Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame with Rps_EventLoop_tag
-  RPS_FATAL("incomplete Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame at %s:%d", __FILE__, lineno);
+  evloopfr_oldframe= std::atomic_exchange(&evloopfr_curframe,this);
+  RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame eventloop line#" << lineno
+                << " depth#" << evloopfr_depth
+                << " callframe@" << (void*)callframe
+                << " this@" << (void*)this);
 } // end of Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame
 
 Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
 {
+  RPS_DEBUG_LOG(GUI, "~Rps_FltkEventLoop_CallFrame this@" << (void*)this);
   if (rps_is_main_gui_thread())
     {
       evloopfr_curframe.store(evloopfr_oldframe);
