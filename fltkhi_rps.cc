@@ -80,13 +80,16 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
   double evloopfr_delay;
   Rps_FltkEventLoop_CallFrame*evloopfr_oldframe;
   int evloopfr_lineno;
+  short evloopfr_depth;
   bool evloopfr_withclosure;
   /// the event loop frames in the GUI main thread are kept
   static std::atomic<Rps_FltkEventLoop_CallFrame*> evloopfr_curframe;
   /// the event loop frames elsewhere are collected in a locked set
   static std::recursive_mutex evloopfr_mtx;
   static std::set<Rps_FltkEventLoop_CallFrame*> evloopfr_set;
+#warning the TODO machinery of event loop (see rps_fltk_event_loop) need more fields here.
 public:
+  struct Rps_EventLoop_tag {};
   Rps_Value evloopfr_dummyval[0];
   Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
                               Rps_ObjectRef descr, double delay,
@@ -94,6 +97,8 @@ public:
   Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
                               Rps_ObjectRef descr, double delay,
                               Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v);
+  Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
+                              Rps_ObjectRef descr, int depth, Rps_EventLoop_tag);
   ~Rps_FltkEventLoop_CallFrame();
 };				// end Rps_FltkEventLoop_CallFrame
 
@@ -116,6 +121,7 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
     evloopfr_delay(delay),
     evloopfr_oldframe(nullptr),
     evloopfr_lineno(lineno),
+    evloopfr_depth(-1),
     evloopfr_withclosure(false)
 {
   if (rps_is_main_gui_thread())
@@ -143,6 +149,7 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
     evloopfr_delay(delay),
     evloopfr_oldframe(nullptr),
     evloopfr_lineno(lineno),
+    evloopfr_depth(-1),
     evloopfr_withclosure(true)
 {
   if (rps_is_main_gui_thread())
@@ -156,6 +163,27 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
     }
 };				// end Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame with closure
 
+
+Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
+    Rps_ObjectRef descr, int depth, Rps_EventLoop_tag)
+  : Rps_CallFrame(rps_evloop_nbvals, descr, callframe),
+    evloopfr_arg1(nullptr),
+    evloopfr_arg2(nullptr),
+    evloopfr_clos(nullptr),
+    evloopfr_ob1(nullptr),
+    evloopfr_dummyval(),
+    evloopfr_delay(-1.0),
+    evloopfr_oldframe(nullptr),
+    evloopfr_lineno(lineno),
+    evloopfr_depth(depth),
+    evloopfr_withclosure(false)
+{
+  RPS_ASSERT(rps_is_main_gui_thread());
+  RPS_ASSERT(evloopfr_depth >= 0);
+#warning incomplete Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame with Rps_EventLoop_tag
+  RPS_FATAL("incomplete Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame at %s:%d", __FILE__, lineno);
+} // end of Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame
+
 Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
 {
   if (rps_is_main_gui_thread())
@@ -167,8 +195,6 @@ Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
       std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
       evloopfr_set.erase(this);
     }
-#warning unimplemented Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame
-  RPS_FATALOUT("unimplemented Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame");
 }; // end Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame
 
 
@@ -210,15 +236,18 @@ rps_fltk_stop_event_loop(void)
 } // end rps_fltk_stop_event_loop
 
 void
-rps_fltk_event_loop(Rps_CallFrame*cframe)
+rps_fltk_event_loop(Rps_CallFrame*callframe)
 {
   static volatile unsigned depth;
-  RPS_ASSERT(Rps_CallFrame::is_good_call_frame(cframe));
+  RPS_ASSERT(Rps_CallFrame::is_good_call_frame(callframe));
   RPS_ASSERT(rps_is_main_gui_thread());
+  static const Rps_ObjectRef obdescr(nullptr);
   depth++;
+  Rps_FltkEventLoop_CallFrame _(callframe, __LINE__, obdescr, depth, Rps_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
+#warning rps_fltk_event_loop should use Rps_FltkEventLoop_CallFrame
   unsigned long count=0;
   RPS_DEBUG_LOG(GUI, "start of rps_fltk_event_loop depth#" << depth
-                << " cframe@" << cframe << std::endl
+                << " callframe@" << callframe << std::endl
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_event_loop start"));
   while (rps_running_fltk.load())
     {
@@ -234,9 +263,12 @@ rps_fltk_event_loop(Rps_CallFrame*cframe)
           break;
         }
 #warning we need to code the "TODO list" mechanism mentioned in FLTK-GUI.md
+      /* FIXME: the TODO machinery should use the linked list of
+      Rps_FltkEventLoop_CallFrame, and we need to improve that
+      class to maintain that todo list. */
     };
   RPS_DEBUG_LOG(GUI, "end of rps_fltk_event_loop depth#" << depth
-                << " cframe@" << cframe << std::endl);
+                << " callframe@" << callframe << std::endl);
   depth--;
 } // end rps_fltk_event_loop
 
