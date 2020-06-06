@@ -1099,7 +1099,7 @@ rps_debug_level(Rps_Debug dbgopt)
 
 
 ////////////////////////////////////////////////////////////////
-
+// if fline is negative, print a newline before....
 void
 rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
                     const char *fmt, ...)
@@ -1162,7 +1162,7 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
       {
         // no syslog
         bool ontty = isatty(STDERR_FILENO);
-        if (strchr(msg, '\n'))
+        if (fline<0 || strchr(msg, '\n'))
           fputc('\n', stderr);
         fprintf(stderr, "%sRPS DEBUG %7s%s <%s:%d> %s@%s:%d%s %s\n%s\n",
                 ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
@@ -1170,7 +1170,7 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
                 rps_debug_level(dbgopt).c_str(), threadbfr,
                 static_cast<int>(rps_thread_id()),
                 ontty?RPS_TERMINAL_ITALICS_ESCAPE:"",
-                fname, fline,
+                fname, (fline>0)?fline:(-fline),
                 ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
                 tmbfr, msg);
         fflush(stderr);
