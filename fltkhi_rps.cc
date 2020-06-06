@@ -71,6 +71,13 @@ rps_fltk_version(void)
 
 class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
 {
+  friend void rps_fltk_add_delayed_todo(Rps_CallFrame*callframe, double delay,
+                                        const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2);
+  friend void rps_fltk_add_delayed_closure(Rps_CallFrame*callframe, double delay,
+      Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v);
+  friend void rps_fltk_stop_event_loop(void);
+  friend void rps_fltk_event_loop(Rps_CallFrame*callframe);
+  friend class Rps_GarbageCollector;
   /// garbage collected slots
   Rps_Value evloopfr_arg1;
   Rps_Value evloopfr_arg2;
@@ -90,6 +97,8 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
   /// the event loop frames elsewhere are collected in a locked set
   static std::recursive_mutex evloopfr_mtx;
   static std::set<Rps_FltkEventLoop_CallFrame*> evloopfr_set;
+  void fltk_add_delayed_todo(void);
+  void fltk_add_delayed_closure(void);
 #warning the TODO machinery of event loop (see rps_fltk_event_loop) need more fields here.
 public:
   struct Rps_EventLoop_tag {};
@@ -226,6 +235,20 @@ Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
 
 
 void
+Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo(void)
+{
+  RPS_FATALOUT("unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo this@" << this);
+#warning unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo
+} // end Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo
+
+void
+Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure(void)
+{
+  RPS_FATALOUT("unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure this@" << this);
+#warning unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure
+} // end Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure
+
+void
 rps_fltk_add_delayed_todo(Rps_CallFrame*callframe, double delay,
                           const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2)
 {
@@ -233,8 +256,7 @@ rps_fltk_add_delayed_todo(Rps_CallFrame*callframe, double delay,
   // not sure: RPS_ASSERT(rps_is_main_gui_thread());
   static const Rps_ObjectRef obdescr(nullptr);
   Rps_FltkEventLoop_CallFrame _(callframe, __LINE__, obdescr, delay, todo, arg1, arg2);
-#warning unimplemented rps_fltk_add_delayed_todo
-  RPS_FATALOUT("unimplemented rps_fltk_add_delayed_todo");
+  _.fltk_add_delayed_todo();
 } // end rps_fltk_add_delayed_todo
 
 
@@ -246,8 +268,7 @@ rps_fltk_add_delayed_closure(Rps_CallFrame*callframe, double delay,
 // not sure: RPS_ASSERT(rps_is_main_gui_thread());
   static const Rps_ObjectRef obdescr(nullptr);
   Rps_FltkEventLoop_CallFrame _(callframe, __LINE__, obdescr, delay, closv, arg1v, arg2v);
-#warning unimplemented rps_fltk_add_delayed_closure
-  RPS_FATALOUT("unimplemented rps_fltk_add_delayed_closure");
+  _.fltk_add_delayed_closure();
 } // end rps_fltk_add_delayed_closure
 
 void
