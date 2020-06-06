@@ -99,6 +99,7 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
   static std::set<Rps_FltkEventLoop_CallFrame*> evloopfr_set;
   void fltk_add_delayed_todo(void);
   void fltk_add_delayed_closure(void);
+  void fltk_event_wait(unsigned long count, double delay);
 #warning the TODO machinery of event loop (see rps_fltk_event_loop) need more fields here.
 public:
   struct Rps_EventLoop_tag {};
@@ -233,6 +234,32 @@ Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
     }
 }; // end Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame
 
+void
+Rps_FltkEventLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
+{
+  RPS_ASSERT(rps_is_main_gui_thread());
+  Fl::flush();
+  RPS_DEBUG_LOG(GUI, "in Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count
+                << ", delay=" << delay);
+  if (count % 16 == 0)
+    RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count
+                  << ", delay=" << delay << std::endl
+                  <<  RPS_FULL_BACKTRACE_HERE(1, "fltk_event_wait"));
+  auto delw = Fl::wait(delay);
+  if (delw < 0)
+    {
+      RPS_WARNOUT("Rps_FltkEventLoop_CallFrame::fltk_event_wait: depth#" << evloopfr_depth << " broke delw=" << delw << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "fltk_event_wait"));
+      return;
+    }
+  else
+    RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count
+                  << " after wait delw=" << delw);
+#warning we need to code the "TODO list" mechanism mentioned in FLTK-GUI.md
+  /* FIXME: the TODO machinery should use the linked list of
+     Rps_FltkEventLoop_CallFrame, and we need to improve that
+     class to maintain that todo list. */
+}; // end Rps_FltkEventLoop_CallFrame::fltk_event_wait
 
 void
 Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo(void)
@@ -299,26 +326,16 @@ rps_fltk_event_loop(Rps_CallFrame*callframe)
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_event_loop start"));
   while (rps_running_fltk.load())
     {
-      Fl::flush();
       count++;
       double delay = RPS_DEBUG_ENABLED(GUI)?30.0:3.0;
-      RPS_DEBUG_LOG(GUI, "in rps_fltk_event_loop depth#" << depth << " count#" << count);
-      auto delw = Fl::wait(delay);
-      if (delw < 0)
-        {
-          RPS_WARNOUT("rps_fltk_event_loop depth#" << depth << " broke delw=" << delw << std::endl
-                      << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_event_loop"));
-          break;
-        }
-#warning we need to code the "TODO list" mechanism mentioned in FLTK-GUI.md
-      /* FIXME: the TODO machinery should use the linked list of
-      Rps_FltkEventLoop_CallFrame, and we need to improve that
-      class to maintain that todo list. */
+      _.fltk_event_wait(count, delay);
     };
   RPS_DEBUG_LOG(GUI, "end of rps_fltk_event_loop depth#" << depth
                 << " callframe@" << callframe << std::endl);
   depth--;
 } // end rps_fltk_event_loop
+
+
 
 void
 rps_garbcoll_application(Rps_GarbageCollector&gc)
