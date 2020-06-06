@@ -396,7 +396,7 @@ extern "C" unsigned rps_debug_flags;
 
 #define RPS_DEBUG_ENABLED(dbgopt) (rps_debug_flags & (1 << RPS_DEBUG_##dbgopt))
 
-/// debug print to stderr....
+/// debug print to stderr....; if fline is negative, print a newline before....
 void 
 rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt, 
                     const char *fmt, ...) 
@@ -419,6 +419,9 @@ while (0)
 #define RPS_DEBUG_PRINTF(dbgopt, fmt, ...) \
   RPS_DEBUG_PRINTF_AT_BIS(__FILE__, __LINE__, dbgopt, fmt, ##__VA_ARGS__)
 
+#define RPS_DEBUG_NLPRINTF(dbgopt, fmt, ...) \
+  RPS_DEBUG_PRINTF_AT_BIS(__FILE__, -__LINE__, dbgopt, fmt, ##__VA_ARGS__)
+
 
 #define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)              \
 do                                                                  \
@@ -439,6 +442,8 @@ while (0)
 /// example of usage: RPS_DEBUG_LOG(MISC, "x=" << x) related to RPS_DEBUG_MISC
 #define RPS_DEBUG_LOG(dbgopt, logmsg) \
   RPS_DEBUG_LOG_AT_BIS(__FILE__, __LINE__, dbgopt, logmsg)
+#define RPS_DEBUG_NLLOG(dbgopt, logmsg) \
+  RPS_DEBUG_LOG_AT_BIS(__FILE__, -__LINE__, dbgopt, logmsg)
 
 
 //////////////// inform
