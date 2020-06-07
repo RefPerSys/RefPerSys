@@ -2737,6 +2737,9 @@ public:
   };
   bool is_good_call_frame() const { return stored_type() == Rps_Type::CallFrame; };
   static bool is_good_call_frame(const Rps_CallFrame*cf) { return cf==nullptr||cf->is_good_call_frame(); };
+  Rps_ObjectRef call_frame_descriptor() const { return cfram_descr; };
+  Rps_Value call_frame_state() const { return cfram_state; };
+  Rps_ClosureValue call_frame_closure() const { return cfram_clos; };
 };				// end class Rps_CallFrame
 
 
