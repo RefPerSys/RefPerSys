@@ -123,7 +123,6 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
     Todo(Todo_Function tf): todo_function(tf) {};
     ~Todo();
   };
-#warning the Todo class should be managed and used...
   friend void rps_fltk_add_delayed_todo(Rps_CallFrame*callframe, double delay,
                                         const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2);
   friend void rps_fltk_add_delayed_closure(Rps_CallFrame*callframe, double delay,
@@ -133,34 +132,32 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
   friend class Rps_GarbageCollector;
   /// garbage collected slots
   /// after here, no GC-ed value anymore
+  ////////////////
+  // Our TODO machinery: the key of below ordered map is an absolute
+  // time, as given by rps_monotonic_real_time the value in entries of
+  // below map is a Todo. We need to ensure that entries are unique
+  // (by adding a tiny random delay when needed). We need a mutex to
+  // ensure other threads than the GUI one could add TODO things. We
+  // need garbage collection support of these TODO.
   std::map<double,Todo> evloopfr_todos;
   mutable std::recursive_mutex evloopfr_mtx;
   Rps_FltkEventLoop_CallFrame*evloopfr_oldframe;
   int evloopfr_lineno;
   short evloopfr_depth;
-  bool evloopfr_withclosure;
-  void* evloopfr_ptr1;
-  void* evloopfr_ptr2;
-  std::function<void(Rps_CallFrame*,void*,void*)> evloopfr_todo;
   /// the event loop frames in the GUI main thread are kept
   static std::atomic<Rps_FltkEventLoop_CallFrame*> evloopfr_curframe;
   /// the event loop frames elsewhere are collected in a locked set
   static std::recursive_mutex evloopfr_setmtx;
   static std::set<Rps_FltkEventLoop_CallFrame*> evloopfr_set;
-  void fltk_add_delayed_todo(void);
-  void fltk_add_delayed_closure(void);
+  void fltk_add_delayed_todo(const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1=nullptr, void*arg2=nullptr);
+  void fltk_add_delayed_closure(Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v, Rps_Value arg3v);
   void fltk_event_wait(unsigned long count, double delay);
   void run_scheduled_fltk_todos();
 #warning the TODO machinery of event loop (see rps_fltk_event_loop) need more fields here.
 public:
   struct Rps_EventLoop_tag {};
   Rps_Value evloopfr_dummyval[0];
-  Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
-                              Rps_ObjectRef descr, double delay,
-                              const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2);
-  Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
-                              Rps_ObjectRef descr, double delay,
-                              Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v);
+  void gc_mark_todos(Rps_GarbageCollector*);
   Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
                               Rps_ObjectRef descr, int depth, Rps_EventLoop_tag);
   ~Rps_FltkEventLoop_CallFrame();
@@ -176,65 +173,6 @@ Rps_FltkEventLoop_CallFrame::Todo::~Todo()
 #warning missing a lot of code, notably Rps_FltkEventLoop_CallFrame::Todo::~Todo
   RPS_FATALOUT("unimplemented Rps_FltkEventLoop_CallFrame::Todo::~Todo this@" << (void*)this);
 };
-
-Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
-    Rps_ObjectRef descr,  double delay,
-    const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2)
-  : Rps_CallFrame(rps_evloop_nbvals, descr, callframe),
-    evloopfr_dummyval(),
-    evloopfr_oldframe(nullptr),
-    evloopfr_lineno(lineno),
-    evloopfr_depth(-1),
-    evloopfr_withclosure(false),
-    evloopfr_ptr1(nullptr),
-    evloopfr_ptr2(nullptr),
-    evloopfr_todo(todo)
-{
-  evloopfr_ptr1 = arg1;
-  evloopfr_ptr2 = arg2;
-  RPS_ASSERT(delay >= 0.0);
-  RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame todo line#" << lineno << " delay=" << delay
-                << " arg1=" << arg1
-                << " arg2=" << arg2
-                << " in " << (rps_is_main_gui_thread()?"main thread":"other thread"));
-  if (rps_is_main_gui_thread())
-    {
-      evloopfr_oldframe= std::atomic_exchange(&evloopfr_curframe,this);
-    }
-  else
-    {
-      std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
-      evloopfr_set.insert(this);
-    }
-};				// end Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame with todo
-
-
-
-Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
-    Rps_ObjectRef descr, double delay,
-    Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v)
-  : Rps_CallFrame(rps_evloop_nbvals, descr, callframe),
-    evloopfr_dummyval(),
-    evloopfr_oldframe(nullptr),
-    evloopfr_lineno(lineno),
-    evloopfr_depth(-1)
-{
-  RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame closure line#" << lineno << " delay=" << delay
-                << " closv=" << closv
-                << " arg1v=" << arg1v
-                << " arg2v=" << arg2v
-                << " in " << (rps_is_main_gui_thread()?"main thread":"other thread"));
-  RPS_ASSERT(delay >= 0.0);
-  if (rps_is_main_gui_thread())
-    {
-      evloopfr_oldframe= std::atomic_exchange(&evloopfr_curframe,this);
-    }
-  else
-    {
-      std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
-      evloopfr_set.insert(this);
-    }
-};				// end Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame with closure
 
 
 Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
@@ -268,6 +206,13 @@ Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
     }
 }; // end Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame
 
+void
+Rps_FltkEventLoop_CallFrame::gc_mark_todos(Rps_GarbageCollector*gc)
+{
+  RPS_ASSERT(gc != nullptr && gc->is_valid_garbcoll());
+#warning unimplemented Rps_FltkEventLoop_CallFrame::gc_mark_todos should mark inside evloopfr_todos with evloop_mtx locked
+  RPS_FATALOUT("unimplemented  Rps_FltkEventLoop_CallFrame::gc_mark_todos gc=" << (void*)gc);
+}; // end Rps_FltkEventLoop_CallFrame::gc_mark_todos
 
 
 void
@@ -309,16 +254,18 @@ Rps_FltkEventLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
 }; // end Rps_FltkEventLoop_CallFrame::fltk_event_wait
 
 void
-Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo(void)
+Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo(const std::function<void(Rps_CallFrame*, void*, void*)>&fun, void*arg1, void*arg2)
 {
-  RPS_FATALOUT("unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo this@" << this);
+  RPS_ASSERT(fun);
+  RPS_FATALOUT("unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo this@" << this << " arg1@" << arg1 << " arg2=" << arg2);
 #warning unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo
 } // end Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo
 
 void
-Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure(void)
+Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure(Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v, Rps_Value arg3v)
 {
-  RPS_FATALOUT("unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure this@" << this);
+  RPS_FATALOUT("unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure this@" << this
+               << " closv=" << closv << " arg1v="<< arg1v << " arg2v=" << arg2v << " arg3v=" << arg3v);
 #warning unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure
 } // end Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure
 
@@ -327,22 +274,30 @@ rps_fltk_add_delayed_todo(Rps_CallFrame*callframe, double delay,
                           const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2)
 {
   RPS_ASSERT(Rps_CallFrame::is_good_call_frame(callframe));
-  // not sure: RPS_ASSERT(rps_is_main_gui_thread());
-  static const Rps_ObjectRef obdescr(nullptr);
-  Rps_FltkEventLoop_CallFrame _(callframe, __LINE__, obdescr, delay, todo, arg1, arg2);
-  _.fltk_add_delayed_todo();
+#warning unimplemented rps_fltk_add_delayed_todo
+  RPS_FATALOUT("unimplemented rps_fltk_add_delayed_todo callframe@" << callframe << " delay=" << delay
+               << " arg1@" << arg1 << " arg2@" << arg2);
+  /** TODO: we should find the call frame below the given callframe
+      which is an Rps_FltkEventLoop_CallFrame then invoke
+      fltk_add_delayed_todo on it. We also need to handle the more
+      complex case when rps_fltk_add_delayed_todo is called from a non
+      GUI thread. */
 } // end rps_fltk_add_delayed_todo
 
 
 void
 rps_fltk_add_delayed_closure(Rps_CallFrame*callframe, double delay,
-                             Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v)
+                             Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v, Rps_Value arg3v)
 {
   RPS_ASSERT(Rps_CallFrame::is_good_call_frame(callframe));
-// not sure: RPS_ASSERT(rps_is_main_gui_thread());
-  static const Rps_ObjectRef obdescr(nullptr);
-  Rps_FltkEventLoop_CallFrame _(callframe, __LINE__, obdescr, delay, closv, arg1v, arg2v);
-  _.fltk_add_delayed_closure();
+  RPS_ASSERT(closv && closv.is_closure());
+  RPS_FATALOUT("unimplemented rps_fltk_add_delayed_closure callframe@" << callframe << " delay=" << delay
+               << " closv=" << closv << ", arg1v=" << arg1v << ", arg2v=" << arg2v << ", arg3v=" << arg3v);
+  /** TODO: we should find the call frame below the given callframe
+      which is an Rps_FltkEventLoop_CallFrame then invoke
+      fltk_add_delayed_closure on it. We also need to handle the more
+      complex case when rps_fltk_add_delayed_todo is called from a non
+      GUI thread. */
 } // end rps_fltk_add_delayed_closure
 
 void
