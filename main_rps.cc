@@ -40,6 +40,8 @@ extern "C" const char rps_main_date[];
 const char rps_main_date[]= __DATE__;
 
 
+extern "C" std::vector<Rps_Plugin> rps_plugins_vector;
+std::vector<Rps_Plugin> rps_plugins_vector;
 
 error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 struct argp_option rps_progoptions[] =
@@ -169,7 +171,15 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_RUN_AFTER_LOAD, ///
     /*arg:*/ "COMMAND", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Run using system(3) the given COMMAND after load; environment variable REFPERSYS_PID has been set", //
+    /*doc:*/ "Run using system(3) the given COMMAND after load and plugins; environment variable REFPERSYS_PID has been set", //
+    /*group:*/0 ///
+  },
+  /* ======= load a plugin after load ======= */
+  {/*name:*/ "plugin-after-load", ///
+    /*key:*/ RPSPROGOPT_PLUGIN_AFTER_LOAD, ///
+    /*arg:*/ "PLUGIN", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "dlopen(3) after load the given PLUGIN (some *.so ELF shared object) and run its " RPS_PLUGIN_INIT_NAME "() function", //
     /*group:*/0 ///
   },
   /* ======= command textual read eval print loop user interface ======= */
@@ -795,7 +805,19 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     return 0;
     case RPSPROGOPT_RUN_AFTER_LOAD:
     {
+      if (rps_run_command_after_load)
+        RPS_FATALOUT("only one --run-after-load command can be given, not both " << rps_run_command_after_load
+                     << " and " << arg);
       rps_run_command_after_load = arg;
+    }
+    return 0;
+    case RPSPROGOPT_PLUGIN_AFTER_LOAD:
+    {
+      void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
+      if (!dlh)
+        RPS_FATALOUT("failed to dlopen plugin " << arg << " : " << dlerror());
+      Rps_Plugin curplugin(arg, dlh);
+      rps_plugins_vector.push_back(curplugin);
     }
     return 0;
     case RPSPROGOPT_VERSION:
@@ -889,6 +911,18 @@ rps_run_application(int &argc, char **argv)
                cwdbuf,
                rps_hostname(), (int)getpid());
   }
+  //// running the given plugins after load
+  if (!rps_plugins_vector.empty())
+    {
+      for (auto& curplugin : rps_plugins_vector)
+        {
+          void* dopluginad = dlsym(curplugin.plugin_dlh, RPS_PLUGIN_INIT_NAME);
+          if (!dopluginad)
+            RPS_FATALOUT("cannot find symbol " RPS_PLUGIN_INIT_NAME " in plugin " << curplugin.plugin_name << ":" << dlerror());
+          rps_plugin_init_sig_t* pluginit = reinterpret_cast<rps_plugin_init_sig_t*>(dopluginad);
+          (*pluginit)(&curplugin);
+        }
+    };
   //// running the given command after load
   if (rps_run_command_after_load)
     {

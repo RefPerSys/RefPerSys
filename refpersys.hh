@@ -312,6 +312,22 @@ extern "C" bool rps_without_terminal_escape;
 #define RPS_TERMINAL_BLINK_ESCAPE \
   (rps_without_terminal_escape?"":"\033[5m")
 
+
+
+/////////////////////////////////////////////////////// PLUGINS AFTER LOAD
+
+struct Rps_Plugin {
+  std::string plugin_name;
+  void* plugin_dlh;
+  Rps_Plugin (const char*name, void*dlh) : plugin_name(name), plugin_dlh(plugin_dlh) {};
+};
+#define RPS_PLUGIN_INIT_NAME "rps_do_plugin"
+typedef void rps_plugin_init_sig_t(const Rps_Plugin*curplugin);
+
+////////////////////////////////////////////////////////////////
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // DEBUGGING MACROS
 // Adapted from MELT Monitor project
@@ -373,6 +389,7 @@ enum rps_progoption_en
   RPSPROGOPT_GUI_TITLE,
   RPSPROGOPT_REPL,
   RPSPROGOPT_RUN_AFTER_LOAD,
+  RPSPROGOPT_PLUGIN_AFTER_LOAD,
   RPSPROGOPT_VERSION,
 };
 
