@@ -390,9 +390,10 @@ rps_fltk_event_loop(Rps_CallFrame*callframe)
   static volatile unsigned depth;
   RPS_ASSERT(Rps_CallFrame::is_good_call_frame(callframe));
   RPS_ASSERT(rps_is_main_gui_thread());
-  static const Rps_ObjectRef obdescr(nullptr);
   depth++;
-  Rps_FltkEventLoop_CallFrame _(callframe, __LINE__, obdescr, depth, Rps_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
+  Rps_FltkEventLoop_CallFrame _(callframe, __LINE__,
+				RPS_ROOT_OB(_39OsVkAJDdV00ohD5r) /*fltk_event_loop*/,
+				depth, Rps_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
 #warning rps_fltk_event_loop should use Rps_FltkEventLoop_CallFrame
   unsigned long count=0;
   RPS_DEBUG_LOG(GUI, "start of rps_fltk_event_loop depth#" << depth
