@@ -47,7 +47,7 @@ rps_repl_version(void)
   {
     char gitstart[32];
     memset (gitstart, 0, sizeof(gitstart));
-    strncpy(gitstart, rps_repl_gitid, 2*sizeof(gitstart)/3+2);
+    strncpy(gitstart, rps_repl_gitid, (2*sizeof(gitstart))/3+2);
     res += " git ";
     res += gitstart;
   }
