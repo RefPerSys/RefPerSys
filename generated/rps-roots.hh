@@ -41,6 +41,7 @@ RPS_INSTALL_ROOT_OB(_2i66FFjmS7n03HNNBx) //space∈class
 RPS_INSTALL_ROOT_OB(_2A2mrPpR3Qf03p6o5b) //int∈class
 RPS_INSTALL_ROOT_OB(_2SRhV7RJt3B01yArR6) //set_of_core_functions∈symbol
 RPS_INSTALL_ROOT_OB(_36I1BY2NetN03WjrOv) //symbol∈class
+RPS_INSTALL_ROOT_OB(_39OsVkAJDdV00ohD5r) //∈object
 RPS_INSTALL_ROOT_OB(_3GHJQW0IIqS01QY8qD) //json∈class
 RPS_INSTALL_ROOT_OB(_3N8vZ2Cw62z024XxCg) //first_name∈symbol
 RPS_INSTALL_ROOT_OB(_3O1QUNKZ4bU02amQus) //∈rps_routine
@@ -50,6 +51,7 @@ RPS_INSTALL_ROOT_OB(_4bkpL4a6xlO00VnyM8) //compute_set_of_own_method_selectors�
 RPS_INSTALL_ROOT_OB(_4jISxMJ4PYU0050nUl) //closure∈class
 RPS_INSTALL_ROOT_OB(_4ojpzRzyRWz02DNWMe) //∈named_selector
 RPS_INSTALL_ROOT_OB(_4pSwobFHGf301Qgwzh) //named_attribute∈class
+RPS_INSTALL_ROOT_OB(_4CZZ2JlnkQT02YJ6sM) //fltk_event_loop∈symbol
 RPS_INSTALL_ROOT_OB(_4FBkYDlynyC02QtkfG) //∈named_attribute
 RPS_INSTALL_ROOT_OB(_54CP9eaTmxT00lzbEW) //rps_command_textedit∈class
 RPS_INSTALL_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
@@ -76,7 +78,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 54
+#define RPS_NB_ROOT_OB 56
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
