@@ -323,7 +323,7 @@ struct Rps_Plugin {
 };
 #define RPS_PLUGIN_INIT_NAME "rps_do_plugin"
 typedef void rps_plugin_init_sig_t(const Rps_Plugin*curplugin);
-
+extern "C" rps_plugin_init_sig_t rps_do_plugin;
 ////////////////////////////////////////////////////////////////
 
 
