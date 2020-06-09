@@ -80,6 +80,18 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
       : todo_is_function(isfun), todo_lineno(lineno),
         todo_timeout(rps_monotonic_real_time()+delay) {};
     ~Todo_Base() {};
+    bool is_todo_function(void) const
+    {
+      return todo_is_function;
+    };
+    bool lineno(void) const
+    {
+      return todo_lineno;
+    };
+    double timeout(void) const
+    {
+      return todo_timeout;
+    };
   };
   static constexpr bool TODO_is_Function = true;
   static constexpr bool TODO_is_Closure = false;
@@ -109,6 +121,22 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
                  const Rps_Value arg1v=nullptr, const Rps_Value arg2v=nullptr, const Rps_Value arg3v=nullptr)
       : Todo_Base(TODO_is_Closure, lineno, delay),
         todo_closv(closv), todo_arg1v(arg1v), todo_arg2v(arg2v), todo_arg3v(arg3v) {};
+    const Rps_ClosureValue& get_todo_clos() const
+    {
+      return todo_closv;
+    };
+    const Rps_Value& get_todo_arg1() const
+    {
+      return todo_arg1v;
+    };
+    const Rps_Value& get_todo_arg2() const
+    {
+      return todo_arg2v;
+    };
+    const Rps_Value& get_todo_arg3() const
+    {
+      return todo_arg3v;
+    };
   };
   class Todo
   {
@@ -116,13 +144,44 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
     {
       Todo_Closure todo_closure;
       Todo_Function todo_function;
-      Todo_Base todo;
+      Todo_Base todo_base;
     };
   public:
+    /// see https://cpppatterns.com/patterns/rule-of-five.html, which we do follow for Todo
     Todo(Todo_Closure tc) : todo_closure(tc) {};
     Todo(Todo_Function tf): todo_function(tf) {};
     ~Todo();
-  };
+    bool is_todo_function() const
+    {
+      return todo_base.is_todo_function();
+    };
+    bool is_todo_closure() const
+    {
+      return !(todo_base.is_todo_function());
+    };
+    Todo(Todo&& todosrc)
+    {
+      if (todosrc.is_todo_function()) new(&todo_function) Todo(todosrc.todo_function);
+      else new(&todo_closure) Todo(todosrc.todo_closure);
+    };
+    Todo(const Todo&todosrc)
+    {
+      if (todosrc.is_todo_function()) new(&todo_function) Todo(todosrc.todo_function);
+      else new(&todo_closure) Todo(todosrc.todo_closure);
+    };
+    const Todo_Closure& as_todo_closure() const
+    {
+      if (!is_todo_closure())
+        throw std::range_error("Todo::as_todo_closure without a closure");
+      return todo_closure;
+    };
+    const Todo_Function& as_todo_function() const
+    {
+      if (!is_todo_function())
+        throw std::range_error("Todo::as_todo_function without a function");
+      return todo_function;
+    };
+  }; // end internal class Todo
   friend void rps_fltk_add_delayed_todo(Rps_CallFrame*callframe, double delay,
                                         const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2);
   friend void rps_fltk_add_delayed_closure(Rps_CallFrame*callframe, double delay,
@@ -210,8 +269,21 @@ void
 Rps_FltkEventLoop_CallFrame::gc_mark_todos(Rps_GarbageCollector*gc)
 {
   RPS_ASSERT(gc != nullptr && gc->is_valid_garbcoll());
-#warning unimplemented Rps_FltkEventLoop_CallFrame::gc_mark_todos should mark inside evloopfr_todos with evloop_mtx locked
-  RPS_FATALOUT("unimplemented  Rps_FltkEventLoop_CallFrame::gc_mark_todos gc=" << (void*)gc);
+  std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
+  for (auto todoit: evloopfr_todos)
+    {
+      Todo& curtodo = todoit.second;
+      if (curtodo.is_todo_function())
+        continue;
+      else   // curtodo is a todo closure
+        {
+          auto& curtodoclos = curtodo.as_todo_closure();
+          curtodoclos.get_todo_clos().gc_mark(*gc);
+          curtodoclos.get_todo_arg1().gc_mark(*gc);
+          curtodoclos.get_todo_arg2().gc_mark(*gc);
+          curtodoclos.get_todo_arg3().gc_mark(*gc);
+        }
+    }
 }; // end Rps_FltkEventLoop_CallFrame::gc_mark_todos
 
 
