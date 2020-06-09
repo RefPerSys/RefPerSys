@@ -319,7 +319,8 @@ extern "C" bool rps_without_terminal_escape;
 struct Rps_Plugin {
   std::string plugin_name;
   void* plugin_dlh;
-  Rps_Plugin (const char*name, void*dlh) : plugin_name(name), plugin_dlh(plugin_dlh) {};
+  Rps_Plugin (const char*name, void*dlh)
+    : plugin_name(name), plugin_dlh(dlh) {};
 };
 #define RPS_PLUGIN_INIT_NAME "rps_do_plugin"
 typedef void rps_plugin_init_sig_t(const Rps_Plugin*curplugin);
