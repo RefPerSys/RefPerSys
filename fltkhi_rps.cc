@@ -384,6 +384,8 @@ rps_fltk_stop_event_loop(void)
   rps_running_fltk.store(false);
 } // end rps_fltk_stop_event_loop
 
+#define RPS_FLTK_EVENT_LOOP_DESCR RPS_ROOT_OB(_39OsVkAJDdV00ohD5r)
+
 void
 rps_fltk_event_loop(Rps_CallFrame*callframe)
 {
@@ -392,7 +394,7 @@ rps_fltk_event_loop(Rps_CallFrame*callframe)
   RPS_ASSERT(rps_is_main_gui_thread());
   depth++;
   Rps_FltkEventLoop_CallFrame _(callframe, __LINE__,
-				RPS_ROOT_OB(_39OsVkAJDdV00ohD5r) /*fltk_event_loop*/,
+				RPS_FLTK_EVENT_LOOP_DESCR /*fltk_event_loop*/,
 				depth, Rps_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
 #warning rps_fltk_event_loop should use Rps_FltkEventLoop_CallFrame
   unsigned long count=0;
