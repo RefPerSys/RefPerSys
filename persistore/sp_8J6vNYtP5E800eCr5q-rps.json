@@ -636,7 +636,7 @@
 }
 //-ob_37BVwKYeEW800KchHe
 
-//!!!!!!!!!!!!!!!!!!!!!
+
 //+ob_39OsVkAJDdV00ohD5r
 //∈object
 {
@@ -929,19 +929,17 @@
 //-ob_4x9jd2yAe8A02SqKAx
 
 
-////@@@@@@@@@
 //+ob_4CZZ2JlnkQT02YJ6sM
-//fltk_event_loop∈symbol
+//∈symbol
 {
  "class" : "_36I1BY2NetN03WjrOv",
  "mtime" : 1591781001.0,
  "oid" : "_4CZZ2JlnkQT02YJ6sM",
  "payload" : "symbol",
-    "symb_name" : "fltk_event_loop",
+ "symb_name" : "fltk_event_loop",
  "symb_val" : "_39OsVkAJDdV00ohD5r"
 }
 //-ob_4CZZ2JlnkQT02YJ6sM
-
 
 
 //+ob_4FBkYDlynyC02QtkfG
