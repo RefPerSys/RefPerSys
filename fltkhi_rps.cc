@@ -88,6 +88,10 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
     {
       return todo_lineno;
     };
+    const char*filename(void) const
+    {
+      return basename(__FILE__);
+    };
     double timeout(void) const
     {
       return todo_timeout;
@@ -105,10 +109,14 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
     Todo_Function(int lineno, double delay, const todo_func_t& todo, void*arg1, void*arg2)
       : Todo_Base(TODO_is_Function, lineno, delay), todo_func(todo), todo_arg1(arg1), todo_arg2(arg2) {};
     ~Todo_Function() {};
-    void apply_todo(Rps_CallFrame*callframe, void*p1=nullptr, void*p2=nullptr)
+    void apply_todo_fun(Rps_CallFrame*callframe, void*p1=nullptr, void*p2=nullptr)
     {
       todo_func(callframe,p1,p2);
     };
+    void apply_todo_function(Rps_CallFrame*callframe)
+    {
+      todo_func(callframe, todo_arg1, todo_arg2);
+    }
   };				// end internal class Todo_Function
   class Todo_Closure : public Todo_Base
   {
@@ -137,6 +145,9 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
     {
       return todo_arg3v;
     };
+    void apply_todo_clos(Rps_FltkEventLoop_CallFrame*callfram)
+    {
+    }
   };
   class Todo
   {
@@ -180,6 +191,18 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
       if (!is_todo_function())
         throw std::range_error("Todo::as_todo_function without a function");
       return todo_function;
+    };
+    bool lineno(void) const
+    {
+      return todo_base.lineno();
+    };
+    const char*filename(void) const
+    {
+      return todo_base.filename();
+    };
+    double timeout(void) const
+    {
+      return todo_base.timeout();
     };
   }; // end internal class Todo
   friend void rps_fltk_add_delayed_todo(Rps_CallFrame*callframe, double delay,
@@ -291,10 +314,46 @@ void
 Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
 {
   RPS_ASSERT(rps_is_main_gui_thread());
-  RPS_DEBUG_LOG(GUI, "in Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth);
-  {
-    std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
-  }
+  RPS_DEBUG_LOG(GUI, "start Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth);
+
+  std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
+  std::vector<Rps_FltkEventLoop_CallFrame::Todo> todovect;
+  for (auto todoit: evloopfr_todos)
+    {
+      double timeout = todoit.first;
+      if (timeout >= rps_monotonic_real_time())
+        break;
+      Todo& curtodo = todoit.second;
+      todovect.push_back(curtodo);
+    };
+  RPS_DEBUG_LOG(GUI,
+                "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos depth#"
+                << evloopfr_depth << " should do " << todovect.size() << " todos");
+  for (auto curtodo : todovect)
+    {
+      auto curit = evloopfr_todos.find(curtodo.timeout());
+      RPS_ASSERT(curit != evloopfr_todos.end());
+      evloopfr_todos.erase(curit);
+      if (curtodo.is_todo_function())
+        {
+          Todo_Function& curtodofun = const_cast<Todo_Function&>(curtodo.as_todo_function());
+          int todolineno = curtodo.lineno();
+          const char*todofilename = curtodo.filename();
+          RPS_DEBUG_LOG(GUI,
+                        "run_scheduled_fltk_todos depth#"
+                        << evloopfr_depth
+                        << " before applying function from "
+                        << todofilename << ":" << todolineno);
+          curtodofun.apply_todo_function(this);
+        }
+      else   // curtodo is closure
+        {
+          auto& curtodoclos = curtodo.as_todo_closure();
+          int todolineno = curtodo.lineno();
+          const char*todofilename = curtodo.filename();
+        }
+    }
+  RPS_DEBUG_LOG(GUI, "end Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth << std::endl);
 }; // end Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos
 
 
@@ -384,6 +443,9 @@ rps_fltk_stop_event_loop(void)
   rps_running_fltk.store(false);
 } // end rps_fltk_stop_event_loop
 
+
+/// the object whose name is "fltk_event_loop" is a RefPerSys frame
+/// descriptor for FTK event loops GC call frames.
 #define RPS_FLTK_EVENT_LOOP_DESCR RPS_ROOT_OB(_39OsVkAJDdV00ohD5r)
 
 void
@@ -394,8 +456,8 @@ rps_fltk_event_loop(Rps_CallFrame*callframe)
   RPS_ASSERT(rps_is_main_gui_thread());
   depth++;
   Rps_FltkEventLoop_CallFrame _(callframe, __LINE__,
-				RPS_FLTK_EVENT_LOOP_DESCR /*fltk_event_loop*/,
-				depth, Rps_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
+                                RPS_FLTK_EVENT_LOOP_DESCR /*fltk_event_loop*/,
+                                depth, Rps_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
 #warning rps_fltk_event_loop should use Rps_FltkEventLoop_CallFrame
   unsigned long count=0;
   RPS_DEBUG_LOG(GUI, "start of rps_fltk_event_loop depth#" << depth

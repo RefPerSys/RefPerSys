@@ -2304,8 +2304,8 @@ void Rps_Loader::load_install_roots(void)
       std::lock_guard<std::recursive_mutex> gu(ld_mtx);
       Rps_ObjectRef curootobr = find_object_by_oid(curootid);
       if (!curootobr)
-	RPS_FATALOUT("load_install_roots: curootid:" << curootid
-		     << " not found");
+        RPS_FATALOUT("load_install_roots: curootid:" << curootid
+                     << " not found");
       RPS_ASSERT(curootobr);
       rps_add_root_object (curootobr);
     };
