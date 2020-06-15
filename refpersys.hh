@@ -460,8 +460,26 @@ while (0)
 /// example of usage: RPS_DEBUG_LOG(MISC, "x=" << x) related to RPS_DEBUG_MISC
 #define RPS_DEBUG_LOG(dbgopt, logmsg) \
   RPS_DEBUG_LOG_AT_BIS(__FILE__, __LINE__, dbgopt, logmsg)
-#define RPS_DEBUG_NLLOG(dbgopt, logmsg) \
-  RPS_DEBUG_LOG_AT_BIS(__FILE__, -__LINE__, dbgopt, logmsg)
+
+#define RPS_DEBUGNL_LOG_AT(fname, fline, dbgopt, logmsg)        \
+  do { /*in RPS_DEBUGNL_LOG_AT*/                                \
+    if (RPS_DEBUG_ENABLED(dbgopt))                              \
+      {                                                         \
+        std::ostringstream _logstream_##fline;                  \
+        _logstream_##fline << logmsg << std::flush;             \
+        rps_debug_printf_at(fname, -fline, RPS_DEBUG_##dbgopt,  \
+                            "%s",                               \
+                            _logstream_##fline.str().c_str());  \
+      }                                                         \
+  }                                                             \
+while (0)
+
+#define RPS_DEBUGNL_LOG_AT_BIS(fname, fline, dbgopt, logmsg)  \
+   RPS_DEBUGNL_LOG_AT(fname, fline, dbgopt, logmsg)
+
+/// example of usage: RPS_DEBUG_LOG(MISC, "x=" << x) related to RPS_DEBUG_MISC
+#define RPS_DEBUGNL_LOG(dbgopt, logmsg) \
+  RPS_DEBUGNL_LOG_AT_BIS(__FILE__, __LINE__, dbgopt, logmsg)
 
 
 //////////////// inform

@@ -362,7 +362,7 @@ Rps_FltkEventLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
 {
   RPS_ASSERT(rps_is_main_gui_thread());
   Fl::flush();
-  RPS_DEBUG_LOG(GUI, "in Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count
+  RPS_DEBUGNL_LOG(GUI, "in Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count
                 << ", delay=" << delay);
   if (count % 16 == 0)
     RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count
@@ -378,10 +378,8 @@ Rps_FltkEventLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
   else
     RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count
                   << " after wait delw=" << delw);
-#warning we need to code the "TODO list" mechanism mentioned in FLTK-GUI.md
-  /* FIXME: the TODO machinery should use the linked list of
-     Rps_FltkEventLoop_CallFrame, and we need to improve that
-     class to maintain that todo list. */
+  run_scheduled_fltk_todos();
+  RPS_DEBUG_LOG(GUI, "end Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << std::endl);
 }; // end Rps_FltkEventLoop_CallFrame::fltk_event_wait
 
 void
