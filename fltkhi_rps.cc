@@ -363,7 +363,7 @@ Rps_FltkEventLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
   RPS_ASSERT(rps_is_main_gui_thread());
   Fl::flush();
   RPS_DEBUGNL_LOG(GUI, "in Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count
-                << ", delay=" << delay);
+                  << ", delay=" << delay);
   if (count % 16 == 0)
     RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count
                   << ", delay=" << delay << std::endl

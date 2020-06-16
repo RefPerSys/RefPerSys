@@ -355,21 +355,27 @@ RpsGui_Window::handle(int evtype)
   return Fl_Double_Window::handle(evtype);
 }; // end RpsGui_Window::handle
 
+
 Rps_ObjectRef
 RpsGui_Window::owning_object(Rps_CallFrame*callframe) const
 {
   return Rps_ObjectRef::find_object_by_oid(callframe, owning_oid());
 }; // end RpsGui_Window::owning_object
 
+
+
 RpsGui_CommandWindow::RpsGui_CommandWindow(int w, int h, const std::string& lab)
   : RpsGui_Window(w,h,lab),
     cmdwin_pack(nullptr)
 {
   Fl_Widget::type((uchar)RpsGuiType_CommandWindow);
-  RPS_DEBUG_LOG(GUI, "creating RpsGui_CommandWindow w=" << w << ", h=" << h
-                << ", lab=" << lab << std::endl << "... this:" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(this));
+  RPS_DEBUGNL_LOG(GUI, "creating RpsGui_CommandWindow w=" << w << ", h=" << h
+                  << ", lab=" << lab << std::endl << "... this:" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(this)
+                  << std::endl <<  RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::RpsGui_CommandWindow"));
   this->color(fl_rgb_color(240,248,255)); //azure
   this->box(FL_FLAT_BOX);
+#warning consider using rps_fltk_add_delayed_todo in RpsGui_CommandWindow::RpsGui_CommandWindow
+  /* FIXME: we may want to postpone the initialization of menubar and pack */
   this->begin();
   this->initialize_menubar();
   this->initialize_pack();
@@ -406,8 +412,9 @@ RpsGui_CommandWindow::initialize_menubar(void)
 {
   int width= w();
   int height= h();
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:" << RpsGui_ShowWidget(this)
-                << ",  w=" << width << ", h=" << height);
+  RPS_DEBUGNL_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:" << RpsGui_ShowWidget(this)
+                  << ",  w=" << width << ", h=" << height
+                  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::initialize_menubar"));
   begin();
   // Notice that coordinates of FLTKwidgets are relative to their
   // containing window, not to parent widget.
@@ -424,7 +431,8 @@ RpsGui_CommandWindow::initialize_menubar(void)
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:"
                 << RpsGui_ShowFullWidget(this) << std::endl
                 << "... guiwin_menubar:" << RpsGui_ShowFullWidget(guiwin_menubar) << std::endl
-                << "... of parent:" << RpsGui_ShowFullWidget(guiwin_menubar->parent()));
+                << "... of parent:" << RpsGui_ShowFullWidget(guiwin_menubar->parent())
+                << std::endl);
 } // end RpsGui_CommandWindow::initialize_menubar
 
 void
@@ -433,9 +441,10 @@ RpsGui_CommandWindow::initialize_pack(void)
   int width= w();
   int height= h();
   int menubar_height = guiwin_menubar?(guiwin_menubar->h()):0;
-  RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_pack start this:" <<  RpsGui_ShowFullWidget(this) << std::endl
-                << "... guiwin_menubar:" << RpsGui_ShowFullWidget(guiwin_menubar) << std::endl
-                << "...  w=" << width   << ", h=" << height  << ", menubar_height="<<  menubar_height);
+  RPS_DEBUGNL_LOG(GUI, "RpsGui_CommandWindow::initialize_pack start this:" <<  RpsGui_ShowFullWidget(this) << std::endl
+                  << "... guiwin_menubar:" << RpsGui_ShowFullWidget(guiwin_menubar) << std::endl
+                  << "...  w=" << width   << ", h=" << height  << ", menubar_height="<<  menubar_height
+                  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::initialize_pack"));
   begin();
   cmdwin_pack = new RpsGui_Pack(guiwin_border, menubar_height+guiwin_border,
                                 width-2*guiwin_border, height - 3*guiwin_border - menubar_height - 1, "¤ command ¤");
