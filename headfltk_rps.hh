@@ -67,7 +67,7 @@ extern "C" void rps_fltk_event_loop(Rps_CallFrame*cf);
 
 extern "C" void rps_fltk_stop_event_loop(void);
 
-extern "C" void rps_fltk_initialize(int &argc, char**argv);
+extern "C" void rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*curframe);
 
 extern "C" void
 rps_fltk_add_delayed_todo(Rps_CallFrame*curframe, double delay,
@@ -404,7 +404,7 @@ class RpsGui_CommandWindow
   static constexpr int right_menu_gap = 16;
   static constexpr int menu_height = 20;
   Fl_Pack* cmdwin_pack;
-  friend  void rps_fltk_initialize(int &,char**);
+  friend  void rps_fltk_initialize(int &,char**, Rps_CallFrame*);
   virtual void initialize_menubar(void);
   virtual void initialize_pack(void);
   static void menu_dump_cb(Fl_Widget*, void*);
@@ -427,7 +427,7 @@ class RpsGui_OutputWindow
   /// we probably want two instances of Fl_Text_Editor inside some box sharing the outwin_buffer above.
   Fl_Text_Editor* outwin_uppereditor;
   Fl_Text_Editor* outwin_lowereditor;
-  friend  void rps_fltk_initialize(int &,char**);
+  friend  void rps_fltk_initialize(int &,char**, Rps_CallFrame*);
   virtual void initialize_menubar(void);
 public:
   virtual ~RpsGui_OutputWindow();
