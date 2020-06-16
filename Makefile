@@ -188,8 +188,15 @@ indent:
 		$(RPS_CORE_SOURCES) 
 
 ## redump target
-redump: ./refpersys
+redump: refpersys
 	./refpersys --dump=. --batch
+	@if git diff -U1|grep '^[+-] ' | grep -v origitid ; then \
+	  printf "make redump changed in %s\n" $$(pwd) ; \
+          git diff ; \
+        else \
+	  git checkout rps_manifest.json ; \
+            printf "make redump reached fixpoint in %s\n" $$(pwd) ; \
+        fi
 
 ## alternate redump target
 altredump:  ./refpersys
