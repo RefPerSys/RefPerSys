@@ -42,8 +42,8 @@ const char rps_fltkhi_date[]= __DATE__;
 
 static std::atomic<bool> rps_running_fltk;
 
-static thread_local pthread_t rps_main_gui_pthread = pthread_self();
-
+extern "C" pthread_t rps_main_gui_pthread;
+pthread_t rps_main_gui_pthread;
 Rps_GuiPreferences rps_gui_pref;
 
 extern "C" int rps_fltk_arg_handler(int argc, char**argv, int &i);
@@ -562,8 +562,8 @@ rps_fltk_arg_handler(int argc, char**argv, int &i)
 void
 rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
 {
-  RPS_ASSERT(rps_is_main_gui_thread());
   RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  rps_main_gui_pthread = pthread_self();
   RPS_DEBUG_LOG(GUI, "start rps_fltk_initialize callerframe@" << (void*)callerframe << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize"));
   // see https://www.fltk.org/doc-1.4/classFl.html#a1576b8c9ca3e900daaa5c36ca0e7ae48
@@ -635,16 +635,13 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
 void
 rps_run_fltk_gui(int &argc, char**argv)
 {
+  rps_main_gui_pthread = pthread_self();
   Rps_FltkEventLoop_CallFrame _(nullptr, __LINE__,
                                 RPS_FLTK_EVENT_LOOP_DESCR, 0,
                                 Rps_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
   RPS_DEBUG_LOG(GUI, "start rps_run_fltk_gui _@" << ((void*)&_)  << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_fltk_gui"));
-  rps_main_gui_pthread = pthread_self();
-  RPS_DEBUG_LOG(GUI, "INIT: pthread_self() = " << pthread_self());
-  RPS_DEBUG_LOG(GUI, "INIT: rps_main_gui_pthread = " << rps_main_gui_pthread);
-
-
+  //
   for (int ix=0; ix<argc; ix++)
     RPS_DEBUG_LOG(GUI, "FLTK GUI arg [" << ix << "]: " << argv[ix]);
   rps_running_fltk.store(true);
