@@ -138,9 +138,9 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 
 headfltk_rps.hh.gch: headfltk_rps.hh refpersys.hh.gch
 	$(COMPILE.cc) -c -o $@ $<
-headfltk_rps.hh.sanit.gch: headfltk_rps.hh refpersys.hh.sanit.gch
+headfltk_rps.sanit.hh.gch: headfltk_rps.hh refpersys.hh.sanit.gch
 	$(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@ $<
-headfltk_rps.hh.dbg.gch: headfltk_rps.hh refpersys.hh.sanit.gch
+headfltk_rps.dbg.hh.gch: headfltk_rps.hh refpersys.hh.sanit.gch
 	$(COMPILE.cc)  $(RPS_BUILD_DEBUGFLAGS) -c -o $@ $<
 
 
