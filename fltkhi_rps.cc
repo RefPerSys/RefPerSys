@@ -238,7 +238,7 @@ class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
 #warning the TODO machinery of event loop (see rps_fltk_event_loop) need more fields here.
 public:
   struct Rps_EventLoop_tag {};
-  Rps_Value evloopfr_dummyval[0];
+  Rps_Value evloopfr_dummyval[1];
   void gc_mark_todos(Rps_GarbageCollector*);
   Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
                               Rps_ObjectRef descr, int depth, Rps_EventLoop_tag);
@@ -637,7 +637,7 @@ rps_run_fltk_gui(int &argc, char**argv)
 {
   rps_main_gui_pthread = pthread_self();
   Rps_FltkEventLoop_CallFrame _(nullptr, __LINE__,
-                                RPS_FLTK_EVENT_LOOP_DESCR, 0,
+                                RPS_FLTK_EVENT_LOOP_DESCR, 1,
                                 Rps_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
   RPS_DEBUG_LOG(GUI, "start rps_run_fltk_gui _@" << ((void*)&_)  << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_fltk_gui"));
@@ -646,9 +646,11 @@ rps_run_fltk_gui(int &argc, char**argv)
     RPS_DEBUG_LOG(GUI, "FLTK GUI arg [" << ix << "]: " << argv[ix]);
   rps_running_fltk.store(true);
   rps_fltk_initialize(argc, argv, &_);
+  RPS_DEBUG_LOG(GUI, "rps_run_fltk_gui before event loop _@" << ((void*)&_)  << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_fltk_gui pre-event"));
   rps_fltk_event_loop(&_);
   RPS_DEBUG_LOG(GUI, "end rps_run_fltk_gui _@" << ((void*)&_)  << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_fltk_gui") << std::endl);
+                << RPS_FULL_BACKTRACE_HERE(1, "end rps_run_fltk_gui") << std::endl);
 } // rps_run_fltk_gui
 
 
