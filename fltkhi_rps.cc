@@ -559,6 +559,8 @@ rps_fltk_arg_handler(int argc, char**argv, int &i)
 } // end rps_fltk_arg_handler
 
 
+
+////////////////////////////////////////////////////////////////
 void
 rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
 {
@@ -627,13 +629,28 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
                 << argc << " argv@" << argv << " cmdwin=" << cmdwin
                 << " w=" << w << " h=" << h
                 << " title:'" << titlestr << "'");
-#warning we should use rps_fltk_add_delayed_todo here to postpone initialization of cmdwin
-  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize should use rps_fltk_add_delayed_todo from" << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize should call rps_fltk_add_delayed_todo"));
-  cmdwin->initialize_menubar();
-  cmdwin->initialize_pack();
-  cmdwin->end();
-  cmdwin->show();
+  /// delay initialization of menubar
+  rps_fltk_add_delayed_todo(nullptr, 0.1, [=](Rps_CallFrame*cf,void*,void*)
+  {
+    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo initialize_menubar cmdwin=" << cmdwin << std::endl
+                  <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_menubar"));
+    cmdwin->begin();
+    cmdwin->initialize_menubar();
+    cmdwin->end();
+    cmdwin->show();
+    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end initialize_menubar cmdwin=" << cmdwin);
+  }, nullptr, nullptr);
+  /// delay initialization of pack
+  rps_fltk_add_delayed_todo(nullptr, 0.2, [=](Rps_CallFrame*cf,void*,void*)
+  {
+    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo initialize_pack cmdwin=" << cmdwin << std::endl
+                  <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_pack"));
+    cmdwin->begin();
+    cmdwin->initialize_pack();
+    cmdwin->end();
+    cmdwin->show();
+    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end initialize_pack cmdwin=" << cmdwin);
+  }, nullptr, nullptr);
   RPS_DEBUG_LOG(GUI, "rps_fltk_initialize ending cmdwin=" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize~end")
