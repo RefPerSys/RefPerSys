@@ -243,6 +243,7 @@ public:
   Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
                               Rps_ObjectRef descr, int depth, Rps_EventLoop_tag);
   ~Rps_FltkEventLoop_CallFrame();
+  static Rps_FltkEventLoop_CallFrame* find_calling_event_call_frame(const Rps_CallFrame*cf);
 };				// end Rps_FltkEventLoop_CallFrame
 
 std::atomic<Rps_FltkEventLoop_CallFrame*> Rps_FltkEventLoop_CallFrame::evloopfr_curframe;
@@ -386,6 +387,7 @@ void
 Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo(const std::function<void(Rps_CallFrame*, void*, void*)>&fun, void*arg1, void*arg2)
 {
   RPS_ASSERT(fun);
+
   RPS_FATALOUT("unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo this@" << this << " arg1@" << arg1 << " arg2=" << arg2);
 #warning unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo
 } // end Rps_FltkEventLoop_CallFrame::fltk_add_delayed_todo
@@ -398,19 +400,48 @@ Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure(Rps_ClosureValue closv, Rp
 #warning unimplemented Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure
 } // end Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure
 
+
+
 void
 rps_fltk_add_delayed_todo(Rps_CallFrame*callframe, double delay,
                           const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2)
 {
+  RPS_ASSERT(callframe != nullptr);
   RPS_ASSERT(Rps_CallFrame::is_good_call_frame(callframe));
-#warning unimplemented rps_fltk_add_delayed_todo
-  RPS_FATALOUT("unimplemented rps_fltk_add_delayed_todo callframe@" << callframe << " delay=" << delay
-               << " arg1@" << arg1 << " arg2@" << arg2);
+  RPS_ASSERT(delay >= 0);
   /** TODO: we should find the call frame below the given callframe
     which is an Rps_FltkEventLoop_CallFrame then invoke
     fltk_add_delayed_todo on it. We also need to handle the more
     complex case when rps_fltk_add_delayed_todo is called from a non
     GUI thread. */
+  auto newtodo = Rps_FltkEventLoop_CallFrame::Todo(Rps_FltkEventLoop_CallFrame::Todo_Function(__LINE__, delay, todo, arg1, arg2));
+  if (rps_is_main_gui_thread())
+    {
+      Rps_FltkEventLoop_CallFrame*eventcallframe = Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame(callframe);
+      if (!eventcallframe)
+        RPS_FATALOUT("no event call frame in rps_fltk_add_delayed_todo for callframe@" << callframe);
+      std::lock_guard<std::recursive_mutex> gu(eventcallframe->evloopfr_mtx);
+      Fl::flush();
+      double todotime = rps_monotonic_real_time() + delay;
+      int loopcnt = 0;
+      for (;;)
+        {
+          RPS_ASSERT(loopcnt < 32); // it is very unlikely that we loop more than 32 times
+          if (eventcallframe->evloopfr_todos.find(todotime) == eventcallframe->evloopfr_todos.end())
+            {
+              eventcallframe->evloopfr_todos.insert({todotime, newtodo});
+              break;
+            }
+          else
+            todotime = rps_monotonic_real_time() + delay + Rps_Random::random_quickly_16bits()*1.0e-6;
+        }
+    }
+  else
+    {
+#warning unimplemented rps_fltk_add_delayed_todo for non GUI thread
+      RPS_FATALOUT("unimplemented rps_fltk_add_delayed_todo nonGUI callframe@" << callframe << " delay=" << delay
+                   << " arg1@" << arg1 << " arg2@" << arg2);
+    }
 } // end rps_fltk_add_delayed_todo
 
 
@@ -472,6 +503,20 @@ rps_fltk_event_loop(Rps_CallFrame*callframe)
   depth--;
 } // end rps_fltk_event_loop
 
+
+Rps_FltkEventLoop_CallFrame*
+Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame(const Rps_CallFrame*callframe)
+{
+  Rps_FltkEventLoop_CallFrame*evcallframe = nullptr;
+  for (const Rps_CallFrame*curcallframe = callframe;
+       curcallframe != nullptr && Rps_CallFrame::is_good_call_frame(curcallframe);
+       curcallframe = curcallframe->previous_call_frame())
+    {
+      if (curcallframe->call_frame_descriptor() == RPS_FLTK_EVENT_LOOP_DESCR)
+        return (Rps_FltkEventLoop_CallFrame*)(curcallframe);
+    }
+  return nullptr;
+} // end Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame
 
 
 void
