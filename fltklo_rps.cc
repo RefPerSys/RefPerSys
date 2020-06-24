@@ -374,13 +374,10 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int w, int h, const std::string& lab)
                   << std::endl <<  RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow::RpsGui_CommandWindow"));
   this->color(fl_rgb_color(240,248,255)); //azure
   this->box(FL_FLAT_BOX);
-#warning consider using rps_fltk_add_delayed_todo in RpsGui_CommandWindow::RpsGui_CommandWindow
-  /* FIXME: we may want to postpone the initialization of menubar and pack */
-  this->begin();
-  this->initialize_menubar();
-  this->initialize_pack();
-  this->end();
-  RPS_DEBUG_LOG(GUI, "created RpsGui_CommandWindow this:" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(this) << std::endl);
+  /* The initialization of menubar and pack is postponed later, in rps_fltk_initialize */
+  RPS_DEBUG_LOG(GUI, "created RpsGui_CommandWindow this:" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(this)
+                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "ending RpsGui_CommandWindow::RpsGui_CommandWindow")
+                << std::endl);
 };				// end RpsGui_CommandWindow::RpsGui_CommandWindow
 
 

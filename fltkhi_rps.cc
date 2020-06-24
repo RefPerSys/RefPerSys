@@ -599,10 +599,14 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
     if (!rps_gui_pref.gui_geometry.empty())
       sscanf(rps_gui_pref.gui_geometry.c_str(), "%dx%d", &w, &h);
   }
-  if (w < min_gui_width) w= min_gui_width;
-  if (w > max_gui_height) w=max_gui_height;
-  if (h < min_gui_height) h=min_gui_height;
-  if (h > max_gui_height) h=max_gui_height;
+  if (w < min_gui_width)
+    w= min_gui_width;
+  if (w > max_gui_height)
+    w=max_gui_height;
+  if (h < min_gui_height)
+    h=min_gui_height;
+  if (h > max_gui_height)
+    h=max_gui_height;
   double scale=1.0;
   constexpr double gui_min_scale = 0.2;
   constexpr double gui_max_scale = 4.0;
@@ -623,6 +627,11 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
                 << argc << " argv@" << argv << " cmdwin=" << cmdwin
                 << " w=" << w << " h=" << h
                 << " title:'" << titlestr << "'");
+#warning we should use rps_fltk_add_delayed_todo here to postpone initialization of cmdwin
+  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize should use rps_fltk_add_delayed_todo from" << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize should call rps_fltk_add_delayed_todo"));
+  cmdwin->initialize_menubar();
+  cmdwin->initialize_pack();
   cmdwin->end();
   cmdwin->show();
   RPS_DEBUG_LOG(GUI, "rps_fltk_initialize ending cmdwin=" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin)
