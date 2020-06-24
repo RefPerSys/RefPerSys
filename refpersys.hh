@@ -1355,6 +1355,18 @@ class Rps_Random
     _rand_remainbits -= 8;
     return res;
   };
+  uint8_t generate_quickly_16bits()
+  {
+    if (RPS_UNLIKELY(_rand_remainbits < 8))
+      {
+        _rand_advance = generate_32u();
+        _rand_remainbits = 32;
+      }
+    uint8_t res = _rand_advance & 0xffff;
+    _rand_advance = _rand_advance>>16;
+    _rand_remainbits -= 16;
+    return res;
+  };
 public:
   static void start_deterministic(long seed); // to be called from main
   static uint32_t random_32u(void)
@@ -1376,6 +1388,10 @@ public:
   static uint8_t random_quickly_8bits()
   {
     return _rand_thr_.generate_quickly_8bits();
+  };
+  static uint8_t random_quickly_16bits()
+  {
+    return _rand_thr_.generate_quickly_16bits();
   };
 };				// end class Rps_Random
 
