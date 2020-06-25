@@ -78,6 +78,21 @@ rps_fltk_add_delayed_closure(Rps_CallFrame*curframe, double delay,
                              Rps_ClosureValue closv,
                              Rps_Value arg1v, Rps_Value arg2v);
 
+
+/// for readability purposes, we need these functions below - knowing
+/// the todo source location and label - and call them thru macros
+/// transmitting __FILE__ and __FILE__ with a constexpr label, see
+/// RPS_WARNOUT macro for inspiration
+extern "C" void
+rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename, int lineno, const char*label, double delay,
+                                     const std::function<void(Rps_CallFrame*,void*,void*)>& todo,
+                                     void*arg1, void*arg2);
+extern "C" void
+rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filename, int lineno, const char*label, double delay,
+                                        Rps_ClosureValue closv,
+                                        Rps_Value arg1v, Rps_Value arg2v);
+#warning missing macros related to delayed labeled todos (function & closure)
+
 template<class FltkWidgetClass>
 static inline bool
 rps_fltk_get_window_geometry(const FltkWidgetClass*widg, int &x, int &y, int &w, int &h, float*scaleptr=nullptr)
