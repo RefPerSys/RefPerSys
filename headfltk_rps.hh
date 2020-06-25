@@ -87,11 +87,32 @@ extern "C" void
 rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename, int lineno, const char*label, double delay,
                                      const std::function<void(Rps_CallFrame*,void*,void*)>& todo,
                                      void*arg1, void*arg2);
+#define RPS_FLTK_ADD_DELAYED_LABELED_TODO_AT(CurFrame,Label,Delay,Todo,A1,A2) do { \
+    rps_fltk_add_delayed_labeled_todo_at((CurFrame), __FILE__,__LINE__,	\
+					 (Label),(Delay),(Todo),(A1),(A2)); \
+} while(0)
+#define RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(CurFrame,Label,Delay,Todo) \
+  RPS_FLTK_ADD_DELAYED_LABELED_TODO_AT((CurFrame),(Label),(Delay),(Todo),nullptr,nullptr)
+#define RPS_FLTK_ADD_DELAYED_LABELED_TODO_1(CurFrame,Label,Delay,Todo,A1) \
+  RPS_FLTK_ADD_DELAYED_LABELED_TODO_AT((CurFrame),(Label),(Delay),(Todo),(A1),nullptr)
+#define RPS_FLTK_ADD_DELAYED_LABELED_TODO_2(CurFrame,Label,Delay,Todo,A1,A2) \
+  RPS_FLTK_ADD_DELAYED_LABELED_TODO_AT((CurFrame),(Label),(Delay),(Todo),(A1),(A2))
+
 extern "C" void
 rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filename, int lineno, const char*label, double delay,
                                         Rps_ClosureValue closv,
                                         Rps_Value arg1v, Rps_Value arg2v);
-#warning missing macros related to delayed labeled todos (function & closure)
+#define RPS_FLTK_ADD_DELAYED_LABELED_CLOSURE_AT(CurFrame,Label,Delay,Clos,A1,A2) do { \
+    rps_fltk_add_delayed_labeled_todo_at((CurFrame), __FILE__,__LINE__,	\
+					 (Label),(Delay),(Clos),(A1),(A2)); \
+} while(0)
+#define RPS_FLTK_ADD_DELAYED_LABELED_CLOSURE_0(CurFrame,Label,Delay,Clos) \
+  RPS_FLTK_ADD_DELAYED_LABELED_CLOSURE_AT((CurFrame),(Label),(Delay),(Clos),nullptr,nullptr)
+#define RPS_FLTK_ADD_DELAYED_LABELED_CLOSURE_1(CurFrame,Label,Delay,Clos,A1) \
+  RPS_FLTK_ADD_DELAYED_LABELED_CLOSURE_AT((CurFrame),(Label),(Delay),(Clos),(A1),nullptr)
+#define RPS_FLTK_ADD_DELAYED_LABELED_CLOSURE_2(CurFrame,Label,Delay,Clos,A1,A2) \
+  RPS_FLTK_ADD_DELAYED_LABELED_CLOSURE_AT((CurFrame),(Label),(Delay),(Clos),(A1),(A2))
+
 
 template<class FltkWidgetClass>
 static inline bool
