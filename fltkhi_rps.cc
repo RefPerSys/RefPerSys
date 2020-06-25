@@ -68,183 +68,195 @@ rps_fltk_version(void)
 
 
 ////////////////////////////////////////////////////////////////
+class Rps_FltkEventLoop_CallFrame;
+struct Rps_Todo_Base
+{
+  static constexpr bool TODO_is_Function = true;
+  static constexpr bool TODO_is_Closure = false;
+  const bool todo_is_function;
+  const int todo_lineno;
+  const double todo_timeout;
+  const char* todo_label;
+  typedef std::function<void(Rps_CallFrame*,void*,void*)> todo_func_t;
+  Rps_Todo_Base(bool isfun, int lineno, double delay, const char*label=nullptr)
+    : todo_is_function(isfun), todo_lineno(lineno),
+      todo_timeout(rps_monotonic_real_time()+delay),
+      todo_label (label) {};
+  ~Rps_Todo_Base() {};
+  bool is_todo_function(void) const
+  {
+    return todo_is_function;
+  };
+  bool lineno(void) const
+  {
+    return todo_lineno;
+  };
+  const char*label(void) const
+  {
+    return todo_label;
+  };
+  const char*filename(void) const
+  {
+    return basename(__FILE__);
+  };
+  double timeout(void) const
+  {
+    return todo_timeout;
+  };
+};				// end struct Rps_Todo_Base
+
+class Rps_Todo_Function  : public Rps_Todo_Base
+{
+  friend class FltkEventLoop_CallFrame;
+  const todo_func_t todo_func;
+  void* todo_arg1;
+  void* todo_arg2;
+public:
+  Rps_Todo_Function(int lineno, double delay, const todo_func_t& todo, void*arg1, void*arg2)
+    : Rps_Todo_Base(TODO_is_Function, lineno, delay), todo_func(todo), todo_arg1(arg1), todo_arg2(arg2) {};
+  Rps_Todo_Function(int lineno, const char*label, double delay, const todo_func_t& todo, void*arg1, void*arg2)
+    : Rps_Todo_Base(TODO_is_Function, lineno, delay, label), todo_func(todo), todo_arg1(arg1), todo_arg2(arg2) {};
+  ~Rps_Todo_Function() {};
+  void apply_todo_fun(Rps_CallFrame*callframe, void*p1=nullptr, void*p2=nullptr)
+  {
+    todo_func(callframe,p1,p2);
+  };
+  void apply_todo_function(Rps_CallFrame*callframe)
+  {
+    todo_func(callframe, todo_arg1, todo_arg2);
+  }
+};				// end class Rps_Todo_Function
+
+class Rps_Todo_Closure   : public Rps_Todo_Base
+{
+  friend class FltkEventLoop_CallFrame;
+  const Rps_ClosureValue todo_closv;
+  const Rps_Value todo_arg1v;
+  const Rps_Value todo_arg2v;
+  const Rps_Value todo_arg3v;
+public:
+  Rps_Todo_Closure(int lineno, double delay, const Rps_ClosureValue closv,
+                   const Rps_Value arg1v=nullptr, const Rps_Value arg2v=nullptr, const Rps_Value arg3v=nullptr)
+    : Rps_Todo_Base(TODO_is_Closure, lineno, delay),
+      todo_closv(closv), todo_arg1v(arg1v), todo_arg2v(arg2v), todo_arg3v(arg3v) {};
+  Rps_Todo_Closure(int lineno, const char*label, double delay, const Rps_ClosureValue closv,
+                   const Rps_Value arg1v=nullptr, const Rps_Value arg2v=nullptr, const Rps_Value arg3v=nullptr)
+    : Rps_Todo_Base(TODO_is_Closure, lineno, delay, label),
+      todo_closv(closv), todo_arg1v(arg1v), todo_arg2v(arg2v), todo_arg3v(arg3v) {};
+  const Rps_ClosureValue& get_todo_clos() const
+  {
+    return todo_closv;
+  };
+  const Rps_Value& get_todo_arg1() const
+  {
+    return todo_arg1v;
+  };
+  const Rps_Value& get_todo_arg2() const
+  {
+    return todo_arg2v;
+  };
+  const Rps_Value& get_todo_arg3() const
+  {
+    return todo_arg3v;
+  };
+  void apply_todo_clos(Rps_FltkEventLoop_CallFrame*callfram)
+  {
+  }
+}; // end class Rps_Todo_Closure
+
+
+class Rps_Todo
+{
+  union
+  {
+    Rps_Todo_Closure todo_closure;
+    Rps_Todo_Function todo_function;
+    Rps_Todo_Base todo_base;
+  };
+public:
+  /// see https://cpppatterns.com/patterns/rule-of-five.html, which we do follow for Rps_Todo
+  Rps_Todo(Rps_Todo_Closure tc) : todo_closure(tc) {};
+  Rps_Todo(Rps_Todo_Function tf): todo_function(tf) {};
+  ~Rps_Todo();
+  bool is_todo_function() const
+  {
+    return todo_base.is_todo_function();
+  };
+  bool is_todo_closure() const
+  {
+    return !(todo_base.is_todo_function());
+  };
+  Rps_Todo(Rps_Todo&& todosrc)
+  {
+    if (todosrc.is_todo_function()) new(&todo_function) Rps_Todo(todosrc.todo_function);
+    else new(&todo_closure) Rps_Todo(todosrc.todo_closure);
+  };
+  Rps_Todo(const Rps_Todo&todosrc)
+  {
+    if (todosrc.is_todo_function()) new(&todo_function) Rps_Todo(todosrc.todo_function);
+    else new(&todo_closure) Rps_Todo(todosrc.todo_closure);
+  };
+  const Rps_Todo_Closure& as_todo_closure() const
+  {
+    if (!is_todo_closure())
+      throw std::range_error("Rps_Todo::as_todo_closure without a closure");
+    return todo_closure;
+  };
+  const Rps_Todo_Function& as_todo_function() const
+  {
+    if (!is_todo_function())
+      throw std::range_error("Rps_Todo::as_todo_function without a function");
+    return todo_function;
+  };
+  bool lineno(void) const
+  {
+    return todo_base.lineno();
+  };
+  const char*label(void) const
+  {
+    return todo_base.label();
+  };
+  const char*filename(void) const
+  {
+    return todo_base.filename();
+  };
+  double timeout(void) const
+  {
+    return todo_base.timeout();
+  };
+}; // end class Rps_Todo
 
 class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
 {
-  struct Todo_Base
-  {
-    const bool todo_is_function;
-    const int todo_lineno;
-    const double todo_timeout;
-    const char* todo_label;
-    Todo_Base(bool isfun, int lineno, double delay, const char*label=nullptr)
-      : todo_is_function(isfun), todo_lineno(lineno),
-        todo_timeout(rps_monotonic_real_time()+delay),
-        todo_label (label) {};
-    ~Todo_Base() {};
-    bool is_todo_function(void) const
-    {
-      return todo_is_function;
-    };
-    bool lineno(void) const
-    {
-      return todo_lineno;
-    };
-    const char*label(void) const
-    {
-      return todo_label;
-    };
-    const char*filename(void) const
-    {
-      return basename(__FILE__);
-    };
-    double timeout(void) const
-    {
-      return todo_timeout;
-    };
-  };
-  static constexpr bool TODO_is_Function = true;
-  static constexpr bool TODO_is_Closure = false;
-  typedef std::function<void(Rps_CallFrame*,void*,void*)> todo_func_t;
-  class Todo_Function : public Todo_Base
-  {
-    const todo_func_t todo_func;
-    void* todo_arg1;
-    void* todo_arg2;
-  public:
-    Todo_Function(int lineno, double delay, const todo_func_t& todo, void*arg1, void*arg2)
-      : Todo_Base(TODO_is_Function, lineno, delay), todo_func(todo), todo_arg1(arg1), todo_arg2(arg2) {};
-    Todo_Function(int lineno, const char*label, double delay, const todo_func_t& todo, void*arg1, void*arg2)
-      : Todo_Base(TODO_is_Function, lineno, delay, label), todo_func(todo), todo_arg1(arg1), todo_arg2(arg2) {};
-    ~Todo_Function() {};
-    void apply_todo_fun(Rps_CallFrame*callframe, void*p1=nullptr, void*p2=nullptr)
-    {
-      todo_func(callframe,p1,p2);
-    };
-    void apply_todo_function(Rps_CallFrame*callframe)
-    {
-      todo_func(callframe, todo_arg1, todo_arg2);
-    }
-  };				// end internal class Todo_Function
-  class Todo_Closure : public Todo_Base
-  {
-    const Rps_ClosureValue todo_closv;
-    const Rps_Value todo_arg1v;
-    const Rps_Value todo_arg2v;
-    const Rps_Value todo_arg3v;
-  public:
-    Todo_Closure(int lineno, double delay, const Rps_ClosureValue closv,
-                 const Rps_Value arg1v=nullptr, const Rps_Value arg2v=nullptr, const Rps_Value arg3v=nullptr)
-      : Todo_Base(TODO_is_Closure, lineno, delay),
-        todo_closv(closv), todo_arg1v(arg1v), todo_arg2v(arg2v), todo_arg3v(arg3v) {};
-    Todo_Closure(int lineno, const char*label, double delay, const Rps_ClosureValue closv,
-                 const Rps_Value arg1v=nullptr, const Rps_Value arg2v=nullptr, const Rps_Value arg3v=nullptr)
-      : Todo_Base(TODO_is_Closure, lineno, delay, label),
-        todo_closv(closv), todo_arg1v(arg1v), todo_arg2v(arg2v), todo_arg3v(arg3v) {};
-    const Rps_ClosureValue& get_todo_clos() const
-    {
-      return todo_closv;
-    };
-    const Rps_Value& get_todo_arg1() const
-    {
-      return todo_arg1v;
-    };
-    const Rps_Value& get_todo_arg2() const
-    {
-      return todo_arg2v;
-    };
-    const Rps_Value& get_todo_arg3() const
-    {
-      return todo_arg3v;
-    };
-    void apply_todo_clos(Rps_FltkEventLoop_CallFrame*callfram)
-    {
-    }
-  };
-  class Todo
-  {
-    union
-    {
-      Todo_Closure todo_closure;
-      Todo_Function todo_function;
-      Todo_Base todo_base;
-    };
-  public:
-/// see https://cpppatterns.com/patterns/rule-of-five.html, which we do follow for Todo
-    Todo(Todo_Closure tc) : todo_closure(tc) {};
-    Todo(Todo_Function tf): todo_function(tf) {};
-    ~Todo();
-    bool is_todo_function() const
-    {
-      return todo_base.is_todo_function();
-    };
-    bool is_todo_closure() const
-    {
-      return !(todo_base.is_todo_function());
-    };
-    Todo(Todo&& todosrc)
-    {
-      if (todosrc.is_todo_function()) new(&todo_function) Todo(todosrc.todo_function);
-      else new(&todo_closure) Todo(todosrc.todo_closure);
-    };
-    Todo(const Todo&todosrc)
-    {
-      if (todosrc.is_todo_function()) new(&todo_function) Todo(todosrc.todo_function);
-      else new(&todo_closure) Todo(todosrc.todo_closure);
-    };
-    const Todo_Closure& as_todo_closure() const
-    {
-      if (!is_todo_closure())
-        throw std::range_error("Todo::as_todo_closure without a closure");
-      return todo_closure;
-    };
-    const Todo_Function& as_todo_function() const
-    {
-      if (!is_todo_function())
-        throw std::range_error("Todo::as_todo_function without a function");
-      return todo_function;
-    };
-    bool lineno(void) const
-    {
-      return todo_base.lineno();
-    };
-    const char*label(void) const
-    {
-      return todo_base.label();
-    };
-    const char*filename(void) const
-    {
-      return todo_base.filename();
-    };
-    double timeout(void) const
-    {
-      return todo_base.timeout();
-    };
-  }; // end internal class Todo
-  friend void rps_fltk_add_delayed_todo(Rps_CallFrame*callframe, double delay,
-                                        const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2);
-  friend void rps_fltk_add_delayed_closure(Rps_CallFrame*callframe, double delay,
-      Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v);
+  friend class Rps_Todo;
+  friend void
+  rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename, int lineno, const char*label, double delay,
+                                       const std::function<void(Rps_CallFrame*,void*,void*)>& todo,
+                                       void*arg1, void*arg2);
+  friend void
+  rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filename, int lineno, const char*label, double delay,
+                                          Rps_ClosureValue closv,
+                                          Rps_Value arg1v, Rps_Value arg2v);
   friend void rps_fltk_stop_event_loop(void);
   friend void rps_fltk_event_loop(Rps_CallFrame*callframe);
   friend class Rps_GarbageCollector;
-/// garbage collected slots
-/// after here, no GC-ed value anymore
-////////////////
-// Our TODO machinery: the key of below ordered map is an absolute
-// time, as given by rps_monotonic_real_time the value in entries of
-// below map is a Todo. We need to ensure that entries are unique
-// (by adding a tiny random delay when needed). We need a mutex to
-// ensure other threads than the GUI one could add TODO things. We
-// need garbage collection support of these TODO.
-  std::map<double,Todo> evloopfr_todos;
+  /// garbage collected slots
+  /// after here, no GC-ed value anymore
+  ////////////////
+  // Our TODO machinery: the key of below ordered map is an absolute
+  // time, as given by rps_monotonic_real_time the value in entries of
+  // below map is a Todo. We need to ensure that entries are unique
+  // (by adding a tiny random delay when needed). We need a mutex to
+  // ensure other threads than the GUI one could add TODO things. We
+  // need garbage collection support of these TODO.
+  std::map<double,Rps_Todo> evloopfr_todos;
   mutable std::recursive_mutex evloopfr_mtx;
   Rps_FltkEventLoop_CallFrame*evloopfr_oldframe;
   int evloopfr_lineno;
   short evloopfr_depth;
-/// the event loop frames in the GUI main thread are kept
+  /// the event loop frames in the GUI main thread are kept
   static std::atomic<Rps_FltkEventLoop_CallFrame*> evloopfr_curframe;
-/// the event loop frames elsewhere are collected in a locked set
+  /// the event loop frames elsewhere are collected in a locked set
   static std::recursive_mutex evloopfr_setmtx;
   static std::set<Rps_FltkEventLoop_CallFrame*> evloopfr_set;
   void fltk_add_delayed_todo(const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1=nullptr, void*arg2=nullptr);
@@ -268,12 +280,12 @@ std::set<Rps_FltkEventLoop_CallFrame*> Rps_FltkEventLoop_CallFrame::evloopfr_set
 static constexpr unsigned rps_evloop_nbvals = offsetof(Rps_FltkEventLoop_CallFrame, evloopfr_dummyval);
 
 
-Rps_FltkEventLoop_CallFrame::Todo::~Todo()
+Rps_Todo::~Rps_Todo()
 {
   RPS_ASSERT(rps_is_main_gui_thread());
-  RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::Todo::~Todo this@" << this
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkEventLoop_CallFrame::Todo::~Todo"));
-};				// end Rps_FltkEventLoop_CallFrame::Todo::~Todo
+  RPS_DEBUG_LOG(GUI, "Rps_Todo::~Rps_Todo this@" << this
+                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_Todo::~Rps_Todo"));
+};				// end Rps_Todo::~Rps_Todo
 
 
 Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
@@ -314,7 +326,7 @@ Rps_FltkEventLoop_CallFrame::gc_mark_todos(Rps_GarbageCollector*gc)
   std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
   for (auto todoit: evloopfr_todos)
     {
-      Todo& curtodo = todoit.second;
+      Rps_Todo& curtodo = todoit.second;
       if (curtodo.is_todo_function())
         continue;
       else   // curtodo is a todo closure
@@ -336,13 +348,13 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
   RPS_DEBUG_LOG(GUI, "start Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth);
 
   std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
-  std::vector<Rps_FltkEventLoop_CallFrame::Todo> todovect;
+  std::vector<Rps_Todo> todovect;
   for (auto todoit: evloopfr_todos)
     {
       double timeout = todoit.first;
       if (timeout >= rps_monotonic_real_time())
         break;
-      Todo& curtodo = todoit.second;
+      Rps_Todo& curtodo = todoit.second;
       todovect.push_back(curtodo);
     };
   RPS_DEBUG_LOG(GUI,
@@ -355,7 +367,7 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
       evloopfr_todos.erase(curit);
       if (curtodo.is_todo_function())
         {
-          Todo_Function& curtodofun = const_cast<Todo_Function&>(curtodo.as_todo_function());
+          Rps_Todo_Function& curtodofun = const_cast<Rps_Todo_Function&>(curtodo.as_todo_function());
           int todolineno = curtodo.lineno();
           const char*todofilename = curtodo.filename();
           RPS_DEBUG_LOG(GUI,
@@ -421,23 +433,25 @@ Rps_FltkEventLoop_CallFrame::fltk_add_delayed_closure(Rps_ClosureValue closv, Rp
 
 
 void
-rps_fltk_add_delayed_todo(Rps_CallFrame*callframe, double delay,
-                          const std::function<void(Rps_CallFrame*,void*,void*)>& todo, void*arg1, void*arg2)
+rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename, int lineno, const char*label, double delay,
+                                     const std::function<void(Rps_CallFrame*,void*,void*)>& todo,
+                                     void*arg1, void*arg2)
 {
-  RPS_ASSERT(callframe != nullptr);
-  RPS_ASSERT(Rps_CallFrame::is_good_call_frame(callframe));
+  /// missing macros in headfltk_rps.hh to invoke this rps_fltk_add_delayed_labeled_todo_at
+  RPS_ASSERT(curframe != nullptr);
+  RPS_ASSERT(Rps_CallFrame::is_good_call_frame(curframe));
   RPS_ASSERT(delay >= 0);
   /** TODO: we should find the call frame below the given callframe
     which is an Rps_FltkEventLoop_CallFrame then invoke
     fltk_add_delayed_todo on it. We also need to handle the more
     complex case when rps_fltk_add_delayed_todo is called from a non
     GUI thread. */
-  auto newtodo = Rps_FltkEventLoop_CallFrame::Todo(Rps_FltkEventLoop_CallFrame::Todo_Function(__LINE__, delay, todo, arg1, arg2));
+  auto newtodo = Rps_Todo(Rps_Todo_Function(__LINE__, delay, todo, arg1, arg2));
   if (rps_is_main_gui_thread())
     {
-      Rps_FltkEventLoop_CallFrame*eventcallframe = Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame(callframe);
+      Rps_FltkEventLoop_CallFrame*eventcallframe = Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame(curframe);
       if (!eventcallframe)
-        RPS_FATALOUT("no event call frame in rps_fltk_add_delayed_todo for callframe@" << callframe);
+        RPS_FATALOUT("no event call frame in rps_fltk_add_delayed_todo for callframe@" << curframe);
       std::lock_guard<std::recursive_mutex> gu(eventcallframe->evloopfr_mtx);
       Fl::flush();
       double todotime = rps_monotonic_real_time() + delay;
@@ -457,17 +471,9 @@ rps_fltk_add_delayed_todo(Rps_CallFrame*callframe, double delay,
   else
     {
 #warning unimplemented rps_fltk_add_delayed_todo for non GUI thread
-      RPS_FATALOUT("unimplemented rps_fltk_add_delayed_todo nonGUI callframe@" << callframe << " delay=" << delay
+      RPS_FATALOUT("unimplemented rps_fltk_add_delayed_labeled_todo_at nonGUI curframe@" << curframe << " delay=" << delay
                    << " arg1@" << arg1 << " arg2@" << arg2);
     }
-} // end rps_fltk_add_delayed_todo
-
-void
-rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename, int lineno, const char*label, double delay,
-                                     const std::function<void(Rps_CallFrame*,void*,void*)>& todo,
-                                     void*arg1, void*arg2)
-{
-  /// missing macros in headfltk_rps.hh to invoke this rps_fltk_add_delayed_labeled_todo_at
 #warning unimplemented rps_fltk_add_delayed_labeled_todo_at
   RPS_ASSERT(todo);
   RPS_FATALOUT("unimplemented rps_fltk_add_delayed_labeled_todo_at curframe=" << curframe
@@ -476,26 +482,18 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
 } // end rps_fltk_add_delayed_labeled_todo_at
 
 
-void
-rps_fltk_add_delayed_closure(Rps_CallFrame*callframe, double delay,
-                             Rps_ClosureValue closv, Rps_Value arg1v, Rps_Value arg2v, Rps_Value arg3v)
-{
-  RPS_ASSERT(Rps_CallFrame::is_good_call_frame(callframe));
-  RPS_ASSERT(closv && closv.is_closure());
-  RPS_FATALOUT("unimplemented rps_fltk_add_delayed_closure callframe@" << callframe << " delay=" << delay
-               << " closv=" << closv << ", arg1v=" << arg1v << ", arg2v=" << arg2v << ", arg3v=" << arg3v);
-  /** TODO: we should find the call frame below the given callframe
-    which is an Rps_FltkEventLoop_CallFrame then invoke
-    fltk_add_delayed_closure on it. We also need to handle the more
-    complex case when rps_fltk_add_delayed_todo is called from a non
-    GUI thread. */
-} // end rps_fltk_add_delayed_closure
 
 void
 rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filename, int lineno, const char*label, double delay,
                                         Rps_ClosureValue closv,
                                         Rps_Value arg1v, Rps_Value arg2v)
 {
+  RPS_ASSERT(Rps_CallFrame::is_good_call_frame(curframe));
+  /** TODO: we should find the call frame below the given callframe
+    which is an Rps_FltkEventLoop_CallFrame then invoke
+    fltk_add_delayed_closure on it. We also need to handle the more
+    complex case when rps_fltk_add_delayed_todo is called from a non
+    GUI thread. */
 #warning unimplemented rps_fltk_add_delayed_labeled_closure_at
   RPS_FATALOUT("unimplemented rps_fltk_add_delayed_labeled_closure_at curframe=" << curframe
                << " filename=" << filename << ", lineno=" << lineno << " label=" << label
@@ -717,7 +715,7 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
                 << " w=" << w << " h=" << h
                 << " title:'" << titlestr << "'");
   /// delay initialization of menubar
-  rps_fltk_add_delayed_todo(callerframe, 0.1, [=](Rps_CallFrame*cf,void*,void*)
+  RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(callerframe, "rps_fltk_initialize-initialize_menubar", 0.1, [=](Rps_CallFrame*cf,void*,void*)
   {
     RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo initialize_menubar cmdwin=" << cmdwin << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_menubar"));
@@ -726,9 +724,9 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
     cmdwin->end();
     cmdwin->show();
     RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end initialize_menubar cmdwin=" << cmdwin);
-  }, nullptr, nullptr);
+  });
   /// delay initialization of pack
-  rps_fltk_add_delayed_todo(callerframe, 0.2, [=](Rps_CallFrame*cf,void*,void*)
+  RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(callerframe,  "rps_fltk_initialize-initialize_pack", 0.2, [=](Rps_CallFrame*cf,void*,void*)
   {
     RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo initialize_pack cmdwin=" << cmdwin << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_pack"));
@@ -737,7 +735,7 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
     cmdwin->end();
     cmdwin->show();
     RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end initialize_pack cmdwin=" << cmdwin);
-  }, nullptr, nullptr);
+  });
   cmdwin->show();
   RPS_DEBUG_LOG(GUI, "rps_fltk_initialize ending cmdwin=" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin)
                 << std::endl

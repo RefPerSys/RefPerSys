@@ -69,15 +69,6 @@ extern "C" void rps_fltk_stop_event_loop(void);
 
 extern "C" void rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*curframe);
 
-extern "C" void
-rps_fltk_add_delayed_todo(Rps_CallFrame*curframe, double delay,
-                          const std::function<void(Rps_CallFrame*,void*,void*)>& todo,
-                          void*arg1, void*arg2);
-extern "C" void
-rps_fltk_add_delayed_closure(Rps_CallFrame*curframe, double delay,
-                             Rps_ClosureValue closv,
-                             Rps_Value arg1v, Rps_Value arg2v);
-
 
 /// for readability purposes, we need these functions below - knowing
 /// the todo source location and label - and call them thru macros
