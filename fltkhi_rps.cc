@@ -445,6 +445,10 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
       fltk_add_delayed_todo on it. We also need to handle the more
       complex case when rps_fltk_add_delayed_todo is called from a non
       GUI thread. */
+  RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at filename=" << filename
+                << " lineno=" << lineno << " label=" << label
+                << " arg1=" << arg1
+                << " arg2=" << arg2);
   auto newtodo = Rps_Todo(Rps_Todo_Function(filename, lineno, label, delay, todo, arg1, arg2));
   if (rps_is_main_gui_thread())
     {
