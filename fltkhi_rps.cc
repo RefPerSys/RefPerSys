@@ -290,8 +290,6 @@ static constexpr unsigned rps_evloop_nbvals = offsetof(Rps_FltkEventLoop_CallFra
 Rps_Todo::~Rps_Todo()
 {
   RPS_ASSERT(rps_is_main_gui_thread());
-  RPS_DEBUG_LOG(GUI, "Rps_Todo::~Rps_Todo this@" << this
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_Todo::~Rps_Todo"));
 };				// end Rps_Todo::~Rps_Todo
 
 
@@ -365,7 +363,7 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
       todovect.push_back(curtodo);
     };
   RPS_DEBUG_LOG(GUI,
-                "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos depth#"
+                "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos this@" << this << " depth#"
                 << evloopfr_depth << " should do " << todovect.size() << " todos");
   for (auto curtodo : todovect)
     {
@@ -376,8 +374,8 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
       const char*todofilename = curtodo.filename();
       const char*todolabel = curtodo.label();
       RPS_DEBUG_LOG(GUI,
-		    "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos todolineno=" << todolineno
-		    << " todofilename=" << todofilename << " todolabel=" << todolabel);
+                    "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos todolineno=" << todolineno
+                    << " todofilename=" << todofilename << " todolabel=" << todolabel);
       if (curtodo.is_todo_function())
         {
           Rps_Todo_Function& curtodofun = const_cast<Rps_Todo_Function&>(curtodo.as_todo_function());
@@ -451,7 +449,8 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at filename=" << filename
                 << " lineno=" << lineno << " label=" << label
                 << " arg1=" << arg1
-                << " arg2=" << arg2);
+                << " arg2=" << arg2
+                << " curframe@" << curframe);
   auto newtodo = Rps_Todo(Rps_Todo_Function(filename, lineno, label, delay, todo, arg1, arg2));
   if (rps_is_main_gui_thread())
     {
