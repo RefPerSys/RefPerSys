@@ -375,6 +375,9 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
       int todolineno = curtodo.lineno();
       const char*todofilename = curtodo.filename();
       const char*todolabel = curtodo.label();
+      RPS_DEBUG_LOG(GUI,
+		    "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos todolineno=" << todolineno
+		    << " todofilename=" << todofilename << " todolabel=" << todolabel);
       if (curtodo.is_todo_function())
         {
           Rps_Todo_Function& curtodofun = const_cast<Rps_Todo_Function&>(curtodo.as_todo_function());
@@ -465,10 +468,15 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
           if (eventcallframe->evloopfr_todos.find(todotime) == eventcallframe->evloopfr_todos.end())
             {
               eventcallframe->evloopfr_todos.insert({todotime, newtodo});
+              RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at inserted in eventcallframe=" << eventcallframe
+                            << " todotime=" << todotime
+                            << " filename=" << filename
+                            << " lineno=" << lineno << " label=" << label);
               break;
             }
           else
             todotime = rps_monotonic_real_time() + delay + Rps_Random::random_quickly_16bits()*1.0e-6;
+          loopcnt++;
         }
     }
   else
@@ -517,11 +525,19 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
           RPS_ASSERT(loopcnt < 32); // it is very unlikely that we loop more than 32 times
           if (eventcallframe->evloopfr_todos.find(todotime) == eventcallframe->evloopfr_todos.end())
             {
+              RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at_at inserted in eventcallframe=" << eventcallframe
+                            << " todotime=" << todotime
+                            << " filename=" << filename
+                            << " lineno=" << lineno << " label=" << label
+                            << " delay=" << delay
+                            << " closv=" << closv
+                            << " arg1v=" << arg1v << " arg2v=" << arg2v);
               eventcallframe->evloopfr_todos.insert({todotime, newtodo});
               break;
             }
           else
             todotime = rps_monotonic_real_time() + delay + Rps_Random::random_quickly_16bits()*1.0e-6;
+          loopcnt++;
         }
     }
   else
