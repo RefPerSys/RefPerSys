@@ -166,8 +166,10 @@ public:
   {
     return todo_arg3v;
   };
-  void apply_todo_clos(Rps_FltkEventLoop_CallFrame*callfram)
+  void apply_todo_clos(Rps_FltkEventLoop_CallFrame*callfram) const
   {
+    todo_closv.apply3(reinterpret_cast<Rps_CallFrame*>(callfram),
+                      todo_arg1v, todo_arg2v, todo_arg3v);
   }
 }; // end class Rps_Todo_Closure
 
@@ -370,23 +372,32 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
       auto curit = evloopfr_todos.find(curtodo.timeout());
       RPS_ASSERT(curit != evloopfr_todos.end());
       evloopfr_todos.erase(curit);
+      int todolineno = curtodo.lineno();
+      const char*todofilename = curtodo.filename();
+      const char*todolabel = curtodo.label();
       if (curtodo.is_todo_function())
         {
           Rps_Todo_Function& curtodofun = const_cast<Rps_Todo_Function&>(curtodo.as_todo_function());
-          int todolineno = curtodo.lineno();
-          const char*todofilename = curtodo.filename();
           RPS_DEBUG_LOG(GUI,
-                        "run_scheduled_fltk_todos depth#"
+                        "run_scheduled_fltk_todos function depth#"
                         << evloopfr_depth
                         << " before applying function from "
-                        << todofilename << ":" << todolineno);
+                        << todofilename << ":" << todolineno << (todolabel?"labeled:":"") << (todolabel?todolabel:"")) ;
           curtodofun.apply_todo_function(this);
         }
       else   // curtodo is closure
         {
           auto& curtodoclos = curtodo.as_todo_closure();
-          int todolineno = curtodo.lineno();
-          const char*todofilename = curtodo.filename();
+          RPS_DEBUG_LOG(GUI,
+                        "run_scheduled_fltk_todos closure depth#"
+                        << evloopfr_depth
+                        << " before applying closure from "
+                        << todofilename << ":" << todolineno << (todolabel?"labeled:":"") << (todolabel?todolabel:"")
+                        << " closure=" << curtodoclos.get_todo_clos()
+                        << " arg1=" << curtodoclos.get_todo_arg1()
+                        << " arg2=" << curtodoclos.get_todo_arg2()
+                        << " arg3=" << curtodoclos.get_todo_arg3());
+          curtodoclos.apply_todo_clos(this);
         }
     }
   RPS_DEBUG_LOG(GUI, "end Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth << std::endl);
@@ -430,10 +441,10 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
   RPS_ASSERT(Rps_CallFrame::is_good_call_frame(curframe));
   RPS_ASSERT(delay >= 0);
   /** TODO: we should find the call frame below the given callframe
-    which is an Rps_FltkEventLoop_CallFrame then invoke
-    fltk_add_delayed_todo on it. We also need to handle the more
-    complex case when rps_fltk_add_delayed_todo is called from a non
-    GUI thread. */
+      which is an Rps_FltkEventLoop_CallFrame then invoke
+      fltk_add_delayed_todo on it. We also need to handle the more
+      complex case when rps_fltk_add_delayed_todo is called from a non
+      GUI thread. */
   auto newtodo = Rps_Todo(Rps_Todo_Function(filename, lineno, label, delay, todo, arg1, arg2));
   if (rps_is_main_gui_thread())
     {
@@ -459,14 +470,11 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
   else
     {
 #warning unimplemented rps_fltk_add_delayed_todo for non GUI thread
-      RPS_FATALOUT("unimplemented rps_fltk_add_delayed_labeled_todo_at nonGUI curframe@" << curframe << " delay=" << delay
-                   << " arg1@" << arg1 << " arg2@" << arg2);
+      RPS_FATALOUT("unimplemented rps_fltk_add_delayed_labeled_todo_at nonGUI curframe=" << curframe
+                   << " filename=" << filename << ", lineno=" << lineno
+                   << " label=" << label << " delay=" << delay << " arg1=" << arg1 << " arg2=" << arg2);
     }
-#warning unimplemented rps_fltk_add_delayed_labeled_todo_at
   RPS_ASSERT(todo);
-  RPS_FATALOUT("unimplemented rps_fltk_add_delayed_labeled_todo_at curframe=" << curframe
-               << " filename=" << filename << ", lineno=" << lineno
-               << " label=" << label << " delay=" << delay << " arg1=" << arg1 << " arg2=" << arg2);
 } // end rps_fltk_add_delayed_labeled_todo_at
 
 
