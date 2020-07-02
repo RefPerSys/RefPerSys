@@ -72,21 +72,25 @@ rps_fltk_version(void)
 class Rps_FltkEventLoop_CallFrame;
 struct Rps_Todo_Base
 {
+  static std::atomic<unsigned> _todo_serial_counter_;
   static constexpr bool TODO_is_Function = true;
   static constexpr bool TODO_is_Closure = false;
   const bool todo_is_function;
   const int todo_lineno;
+  const unsigned todo_serial;
   const double todo_timeout;
   const char* todo_filename;
   const char* todo_label;
   typedef std::function<void(Rps_CallFrame*,void*,void*)> todo_func_t;
   Rps_Todo_Base(bool isfun, int lineno, double delay, const char*label=nullptr)
     : todo_is_function(isfun), todo_lineno(lineno),
+      todo_serial(1+_todo_serial_counter_.fetch_add(1)),
       todo_timeout(rps_monotonic_real_time()+delay),
       todo_filename(nullptr),
       todo_label (label) {};
   Rps_Todo_Base(bool isfun, const char*filename, int lineno, double delay, const char*label=nullptr)
     : todo_is_function(isfun), todo_lineno(lineno),
+      todo_serial(1+_todo_serial_counter_.fetch_add(1)),
       todo_timeout(rps_monotonic_real_time()+delay),
       todo_filename(filename),
       todo_label (label) {};
@@ -98,6 +102,10 @@ struct Rps_Todo_Base
   bool lineno(void) const
   {
     return todo_lineno;
+  };
+  unsigned serial(void) const
+  {
+    return todo_serial;
   };
   const char*label(void) const
   {
@@ -135,6 +143,14 @@ public:
   {
     todo_func(callframe, todo_arg1, todo_arg2);
   }
+  const void*arg1() const
+  {
+    return todo_arg1;
+  };
+  const void*arg2() const
+  {
+    return todo_arg2;
+  };
 };				// end class Rps_Todo_Function
 
 
@@ -182,6 +198,7 @@ class Rps_Todo
     Rps_Todo_Closure todo_closure;
     Rps_Todo_Function todo_function;
     Rps_Todo_Base todo_base;
+    intptr_t todo_zone[1+std::max(sizeof(todo_closure),sizeof(todo_function))/sizeof(intptr_t)];
   };
 public:
   /// see https://cpppatterns.com/patterns/rule-of-five.html, which we do follow for Rps_Todo
@@ -199,12 +216,12 @@ public:
   Rps_Todo(Rps_Todo&& todosrc)
   {
     if (todosrc.is_todo_function()) new(&todo_function) Rps_Todo(todosrc.todo_function);
-    else new(&todo_closure) Rps_Todo(todosrc.todo_closure);
+    else new(&todo_zone) Rps_Todo(todosrc.todo_closure);
   };
   Rps_Todo(const Rps_Todo&todosrc)
   {
     if (todosrc.is_todo_function()) new(&todo_function) Rps_Todo(todosrc.todo_function);
-    else new(&todo_closure) Rps_Todo(todosrc.todo_closure);
+    else new(&todo_zone) Rps_Todo(todosrc.todo_closure);
   };
   const Rps_Todo_Closure& as_todo_closure() const
   {
@@ -230,12 +247,62 @@ public:
   {
     return todo_base.filename();
   };
+  unsigned serial(void) const
+  {
+    return todo_base.serial();
+  };
   double timeout(void) const
   {
     return todo_base.timeout();
   };
+  void output(std::ostream&out) const;
 }; // end class Rps_Todo
 
+inline std::ostream& operator << (std::ostream&out, const Rps_Todo& todo)
+{
+  todo.output(out);
+  return out;
+}
+
+std::atomic<unsigned>  Rps_Todo_Base::_todo_serial_counter_;
+
+void
+Rps_Todo::output(std::ostream&out) const
+{
+  if (is_todo_function())
+    {
+      out << "TodoFunc#" << serial() << "@" << basename(filename()) << ":" << lineno() << '!' << timeout();
+      if (label())
+        out << '[' << label() << ']';
+      auto todofun = as_todo_function();
+      if (todofun.arg1() || todofun.arg2())
+        {
+          out << '{';
+          if (todofun.arg1())
+            out << "arg1=" << todofun.arg1() << (todofun.arg2()?",":"");
+          if (todofun.arg2())
+            out << "arg2=" << todofun.arg2();
+          out << '}';
+        };
+    }
+  else  // closure
+    {
+      out << "TodoClos#" << serial() << "@" << basename(filename()) << ":" << lineno() << '!' << timeout();
+      if (label())
+        out << '[' << label() << ']';
+      auto todoclos = as_todo_closure();
+      out << "(clos=" << todoclos.get_todo_clos();
+      if (todoclos.get_todo_arg1())
+        out << ", arg1="<< todoclos.get_todo_arg1();
+      if (todoclos.get_todo_arg2())
+        out << ", arg2="<< todoclos.get_todo_arg2();
+      if (todoclos.get_todo_arg3())
+        out << ", arg3="<< todoclos.get_todo_arg3();
+      out << ")";
+    }
+} // end Rps_Todo::output
+
+////////////////////////////////////////////////////////////////
 class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
 {
   friend class Rps_Todo;
