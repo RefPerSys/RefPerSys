@@ -164,7 +164,7 @@ clean:
 	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~
 	$(RM) persistore/*~ persistore/*%
 	$(RM) *.ii
-	$(RM) *% core
+	$(RM) *% core vgcore*
 
 fullclean:
 	$(RPS_BUILD_CCACHE) -C
