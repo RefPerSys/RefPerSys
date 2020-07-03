@@ -428,6 +428,8 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
       if (timeout >= rps_monotonic_real_time())
         break;
       Rps_Todo& curtodo = todoit.second;
+      RPS_DEBUG_LOG(GUI,
+                    "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos curtodo=" << curtodo);
       todovect.push_back(curtodo);
     };
   RPS_DEBUG_LOG(GUI,
@@ -520,6 +522,7 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
                 << " arg2=" << arg2
                 << " curframe@" << curframe);
   auto newtodo = Rps_Todo(Rps_Todo_Function(filename, lineno, label, delay, todo, arg1, arg2));
+  RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at newtodo=" << newtodo);
   if (rps_is_main_gui_thread())
     {
       Rps_FltkEventLoop_CallFrame*eventcallframe = Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame(curframe);
@@ -573,6 +576,7 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
                 << " label=" << label << " delay=" << delay
                 << " closv=" << closv << " arg1v=" << arg1v << " arg2v=" << arg2v);
   auto newtodo = Rps_Todo(Rps_Todo_Closure(lineno, filename, delay, label, closv, arg1v, arg2v));
+  RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at newtodo=" << newtodo);
   if (rps_is_main_gui_thread())
     {
       Rps_FltkEventLoop_CallFrame*eventcallframe = Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame(curframe);
