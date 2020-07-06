@@ -137,7 +137,7 @@ public:
   ~Rps_Todo_Function() {};
   void apply_todo_fun(Rps_CallFrame*callframe, void*p1=nullptr, void*p2=nullptr)
   {
-    todo_func(callframe,p1,p2);
+    todo_func(callframe, p1 ? p1 : todo_arg1, p2 ? p2 : todo_arg2);
   };
   void apply_todo_function(Rps_CallFrame*callframe)
   {
