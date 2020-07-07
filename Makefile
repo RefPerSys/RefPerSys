@@ -144,18 +144,25 @@ headfltk_rps.dbg.hh.gch: headfltk_rps.hh refpersys.hh.sanit.gch
 	$(COMPILE.cc)  $(RPS_BUILD_DEBUGFLAGS) -c -o $@ $<
 
 
-fltkhi_rps.o: fltkhi_rps.cc headfltk_rps.hh.gch
+fltkevloop_rps.o: fltkevloop_rps.cc headfltk_rps.hh.gch
 	$(COMPILE.cc) -o $@ $<
-fltkhi_rps.sanit.o: fltkhi_rps.cc headfltk_rps.sanit.hh.gch
+fltkevloop_rps.sanit.o: fltkevloop_rps.cc headfltk_rps.sanit.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
-fltkhi_rps.dbg.o: fltkhi_rps.cc headfltk_rps.dbg.hh.gch
+fltkevloop_rps.dbg.o: fltkevloop_rps.cc headfltk_rps.dbg.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
 
-fltklo_rps.o: fltklo_rps.cc headfltk_rps.hh.gch
+fltkwindow_rps.o: fltkwindow_rps.cc headfltk_rps.hh.gch
 	$(COMPILE.cc) -o $@ $<
-fltklo_rps.sanit.o: fltklo_rps.cc headfltk_rps.sanit.hh.gch
+fltkwindow_rps.sanit.o: fltkwindow_rps.cc headfltk_rps.sanit.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
-fltklo_rps.dbg.o: fltklo_rps.cc headfltk_rps.dbg.hh.gch
+fltkwindow_rps.dbg.o: fltkwindow_rps.cc headfltk_rps.dbg.hh.gch
+	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
+
+fltkdisplay_rps.o: fltkdisplay_rps.cc headfltk_rps.hh.gch
+	$(COMPILE.cc) -o $@ $<
+fltkdisplay_rps.sanit.o: fltkdisplay_rps.cc headfltk_rps.sanit.hh.gch
+	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
+fltkdisplay_rps.dbg.o: fltkdisplay_rps.cc headfltk_rps.dbg.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
 
 

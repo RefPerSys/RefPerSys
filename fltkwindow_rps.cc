@@ -1,5 +1,5 @@
 /****************************************************************
- * file fltklo_rps.cc
+ * file fltkwindow_rps.cc
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
@@ -622,4 +622,4 @@ Rps_PayloadWindow::dump_json_content(Rps_Dumper*du, Json::Value&) const
   RPS_ASSERT(du != nullptr);
 } // end Rps_PayloadWindow::dump_json_content
 
-//////////////////////////////////////// end of file fltklo_rps.cc
+//////////////////////////////////////// end of file fltkwindow_rps.cc
