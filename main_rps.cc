@@ -949,6 +949,36 @@ rps_run_application(int &argc, char **argv)
 } // end rps_run_application
 
 
+
+////////////////////////////////////////////////////////////////
+///// status routines
+const Rps_Status
+Rps_Status::get(void)
+{
+  static std::mutex mtx;
+  static long pgsiz;
+  std::lock_guard<std::mutex> gu(mtx);
+  if (!pgsiz)
+    pgsiz=getpagesize();
+  Rps_Status res;
+  // see https://man7.org/linux/man-pages/man5/proc.5.html
+  FILE *f = fopen("/proc/self/statm", "r");
+  if (!f)
+    RPS_FATAL("Rps_Status::get to open /proc/self/statm -%m");
+  long prog_sz=0, rss_sz=0, shared_sz=0, text_sz=0, lib_sz=0, data_sz=0, dt_sz=0;
+  int nbs = fscanf(f, "%ld %ld %ld %ld %ld %ld %ld",
+                   &prog_sz, &rss_sz, &shared_sz, &text_sz, &lib_sz, &data_sz, &dt_sz);
+  if (nbs<7)
+    RPS_FATAL("Rps_Status::get fscanf failure nbs=%d expected seven", nbs);
+  res.prog_sizemb_stat = prog_sz*pgsiz;
+  res.rss_sizemb_stat = rss_sz*pgsiz;
+  res.shared_sizemb_stat = shared_sz*pgsiz;
+  res.cputime_stat = rps_process_cpu_time();
+  res.elapsedtime_stat = rps_elapsed_real_time();
+  return res;
+} // end Rps_Status::get
+
+
 ////////////////////////////////////////////////////////////////
 std::atomic<unsigned> Rps_Random::_rand_threadcount;
 bool Rps_Random::_rand_is_deterministic_;

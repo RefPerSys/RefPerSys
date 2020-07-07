@@ -327,7 +327,24 @@ typedef void rps_plugin_init_sig_t(const Rps_Plugin*curplugin);
 extern "C" rps_plugin_init_sig_t rps_do_plugin;
 ////////////////////////////////////////////////////////////////
 
+struct Rps_Status {
+  // sizes in megabytes
+  long prog_sizemb_stat;
+  long rss_sizemb_stat;
+  long shared_sizemb_stat;
+  // time in seconds;
+  float cputime_stat;
+  float elapsedtime_stat;
+  Rps_Status() : prog_sizemb_stat(0), rss_sizemb_stat(0),
+		 shared_sizemb_stat(0), cputime_stat(0.0), elapsedtime_stat(0.0) {};
+  static const Rps_Status get(void);
+  void output(std::ostream&out) const;
+};				// end struct Rps_Status
 
+inline std::ostream& operator << (std::ostream&out, const Rps_Status& rst) {
+  rst.output(out);
+  return out;
+};				// end operator << for Rps_Status
 
 ///////////////////////////////////////////////////////////////////////////////
 // DEBUGGING MACROS
