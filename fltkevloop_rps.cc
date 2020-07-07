@@ -656,9 +656,11 @@ rps_fltk_event_loop(Rps_CallFrame*callframe)
     {
       count++;
       double delay = RPS_DEBUG_ENABLED(GUI)?30.0:3.0;
+      RPS_DEBUG_LOG(GUI, "rps_fltk_event_loop loop count#" << count << " depth=" << depth);
       _.fltk_event_wait(count, delay);
     };
   RPS_DEBUG_LOG(GUI, "end of rps_fltk_event_loop depth#" << depth
+                << " count=" << count
                 << " callframe@" << callframe << std::endl);
   depth--;
 } // end rps_fltk_event_loop
@@ -689,11 +691,14 @@ rps_garbcoll_application(Rps_GarbageCollector&gc)
               << RPS_FULL_BACKTRACE_HERE(1, "rps_garbcoll_application"));
 } // end rps_garbcoll_application
 
+
+
 bool
 rps_is_main_gui_thread(void)
 {
-  RPS_DEBUG_LOG(GUI, "pthread_self() = " << pthread_self());
-  RPS_DEBUG_LOG(GUI, "rps_main_gui_pthread = " << rps_main_gui_pthread);
+  /// the RPS_DEBUG_LOG(GUI, ...) below log was useless, so we disable it
+  RPS_NOPRINTOUT("rps_is_main_gui_thread pthread_self()=" << pthread_self()
+                 << ", rps_main_gui_pthread=" << rps_main_gui_pthread);
   return pthread_self() == rps_main_gui_pthread;
 } // end rps_is_main_gui_thread
 
@@ -835,7 +840,9 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
                 << " w=" << w << " h=" << h
                 << " title:'" << titlestr << "'");
   /// delay initialization of menubar
-  RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(callerframe, "rps_fltk_initialize-initialize_menubar", 0.1, [=](Rps_CallFrame*cf,void*,void*)
+  RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(callerframe,
+                                      "TODO@ rps_fltk_initialize-initialize_menubar",
+                                      0.1, [=](Rps_CallFrame*cf,void*,void*)
   {
     RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo initialize_menubar cmdwin=" << cmdwin << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_menubar"));
@@ -846,7 +853,8 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
     RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end initialize_menubar cmdwin=" << cmdwin);
   });
   /// delay initialization of pack
-  RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(callerframe,  "rps_fltk_initialize-initialize_pack", 0.2, [=](Rps_CallFrame*cf,void*,void*)
+  RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(callerframe,
+                                      "TODO@ rps_fltk_initialize-initialize_pack", 0.2, [=](Rps_CallFrame*cf,void*,void*)
   {
     RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo initialize_pack cmdwin=" << cmdwin << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_pack"));
