@@ -970,14 +970,31 @@ Rps_Status::get(void)
                    &prog_sz, &rss_sz, &shared_sz, &text_sz, &lib_sz, &data_sz, &dt_sz);
   if (nbs<7)
     RPS_FATAL("Rps_Status::get fscanf failure nbs=%d expected seven", nbs);
-  res.prog_sizemb_stat = prog_sz*pgsiz;
-  res.rss_sizemb_stat = rss_sz*pgsiz;
-  res.shared_sizemb_stat = shared_sz*pgsiz;
+  res.prog_sizemb_stat = (prog_sz*pgsiz) >>20;
+  res.rss_sizemb_stat = (rss_sz*pgsiz) >>20;
+  res.shared_sizemb_stat = (shared_sz*pgsiz) >>20;
   res.cputime_stat = rps_process_cpu_time();
   res.elapsedtime_stat = rps_elapsed_real_time();
   return res;
 } // end Rps_Status::get
 
+void
+Rps_Status::output(std::ostream&out) const
+{
+  out << " status{prog:" << prog_sizemb_stat << "Mb, rss:" <<
+      rss_sizemb_stat << "Mb, shared:" << shared_sizemb_stat << "Mb, ";
+  char buf[24];
+  // the snprintf below won't fail in practice
+  memset(buf, 0, sizeof(buf));
+  if (snprintf(buf, sizeof(buf), "%.3f", cputime_stat)<0)
+    RPS_FATAL("Rps_Status::output snprintf cputime failure %m");
+  out << "cpu:" << buf << "s, ";
+  memset(buf, 0, sizeof(buf));
+  snprintf(buf, sizeof(buf), "%.3f", elapsedtime_stat);
+  if (snprintf(buf, sizeof(buf), "%.3f", cputime_stat)<0)
+    RPS_FATAL("Rps_Status::output snprintf elapsedtime failure %m");
+  out << "elapsed:" << buf << "s}" << std::flush;
+};				// end Rps_Status::output
 
 ////////////////////////////////////////////////////////////////
 std::atomic<unsigned> Rps_Random::_rand_threadcount;
