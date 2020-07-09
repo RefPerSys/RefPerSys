@@ -435,17 +435,20 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
   RPS_DEBUG_LOG(GUI,
                 "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos this@" << this << " depth#"
                 << evloopfr_depth << " should do " << todovect.size() << " todos");
+  int loopcnt=0;
   for (auto curtodo : todovect)
     {
+      loopcnt++;
       auto curit = evloopfr_todos.find(curtodo.timeout());
       RPS_ASSERT(curit != evloopfr_todos.end());
       evloopfr_todos.erase(curit);
       int todolineno = curtodo.lineno();
       const char*todofilename = curtodo.filename();
       const char*todolabel = curtodo.label();
-      RPS_DEBUG_LOG(GUI,
-                    "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos todolineno=" << todolineno
-                    << " todofilename=" << todofilename << " todolabel=" << todolabel);
+      RPS_DEBUGNL_LOG(GUI,
+                      "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos todolineno=" << todolineno
+                      << " todofilename=" << todofilename << " todolabel=" << todolabel
+                      << " curtodo=" << curtodo << " loopcnt#" << loopcnt);
       if (curtodo.is_todo_function())
         {
           Rps_Todo_Function& curtodofun = const_cast<Rps_Todo_Function&>(curtodo.as_todo_function());
