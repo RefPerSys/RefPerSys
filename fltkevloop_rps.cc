@@ -544,7 +544,8 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
               RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at inserted in eventcallframe=" << eventcallframe
                             << " todotime=" << todotime
                             << " filename=" << filename
-                            << " lineno=" << lineno << " label=" << label);
+                            << " lineno=" << lineno << " label=" << label
+                            << " todo=" << newtodo);
               break;
             }
           else
@@ -560,6 +561,8 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
                    << " label=" << label << " delay=" << delay << " arg1=" << arg1 << " arg2=" << arg2);
     }
   RPS_ASSERT(todo);
+  RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at ending filename=" << filename << ", lineno=" << lineno
+                << " newtodo=" << newtodo << std::endl);
 } // end rps_fltk_add_delayed_labeled_todo_at
 
 
@@ -621,6 +624,8 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
                    << " filename=" << filename << ", lineno=" << lineno << " label=" << label
                    << " delay=" << delay << " closv=" << closv << " arg1v=" << arg1v << " arg2v=" << arg2v);
     }
+  RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at ending filename=" << filename << ", lineno=" << lineno
+                << " todo=" << newtodo << std::endl);
 } // end rps_fltk_add_delayed_labeled_closure_at
 
 void
