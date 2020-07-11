@@ -2779,7 +2779,7 @@ public:
 #pragma GCC diagnostic ignored "-Warray-bounds"
     // technically this is an undefined behavior. Pragmatically it should work as we want.
     if (cfram_size > 0)
-      __builtin_memset((void*)&cfram_data, 0, cfram_size*sizeof(void*));
+      memset((void*)&cfram_data, 0, cfram_size*sizeof(void*));
 #pragma GCC diagnostic pop
   };
   void gc_mark_frame(Rps_GarbageCollector* gc);
