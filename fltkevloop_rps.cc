@@ -379,13 +379,13 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
   RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame eventloop line#" << lineno
                 << " depth#" << evloopfr_depth
                 << " callframe@" << (void*)callframe
-		<< " serial#" << evloopfr_serial
+                << " evlserial#" << evloopfr_serial
                 << " this@" << (void*)this);
 } // end of Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame
 
 Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
 {
-  RPS_DEBUG_LOG(GUI, "~Rps_FltkEventLoop_CallFrame this@" << (void*)this << " serial#" << evloopfr_serial);
+  RPS_DEBUG_LOG(GUI, "~Rps_FltkEventLoop_CallFrame this@" << (void*)this << " evlserial#" << evloopfr_serial);
   if (rps_is_main_gui_thread())
     {
       evloopfr_curframe.store(evloopfr_oldframe);
@@ -424,7 +424,7 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
 {
   RPS_ASSERT(rps_is_main_gui_thread());
   RPS_DEBUG_LOG(GUI, "start Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth
-                << " this@" << this << " serial#" << evloopfr_serial <<std::endl
+                << " this@" << this << " evlserial#" << evloopfr_serial <<std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos*start"));
 
   std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
@@ -441,7 +441,7 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
       todocnt++;
       RPS_DEBUG_LOG(GUI,
                     "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos curtodo=" << curtodo
-		    << " todocnt=" << todocnt);
+                    << " todocnt=" << todocnt);
       todovect.push_back(curtodo);
     };
   RPS_DEBUG_LOG(GUI,
@@ -466,7 +466,7 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
           Rps_Todo_Function& curtodofun = const_cast<Rps_Todo_Function&>(curtodo.as_todo_function());
           RPS_DEBUG_LOG(GUI,
                         "run_scheduled_fltk_todos function depth#"
-                        << evloopfr_depth << " serial#" << evloopfr_serial
+                        << evloopfr_depth << " evlserial#" << evloopfr_serial
                         << " before applying function from "
                         << todofilename << ":" << todolineno << (todolabel?"labeled:":"") << (todolabel?todolabel:"")) ;
           curtodofun.apply_todo_function(this);
@@ -476,7 +476,7 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
           auto& curtodoclos = curtodo.as_todo_closure();
           RPS_DEBUG_LOG(GUI,
                         "run_scheduled_fltk_todos closure depth#"
-                        << evloopfr_depth << " serial#" << evloopfr_serial
+                        << evloopfr_depth << " evlserial#" << evloopfr_serial
                         << " before applying closure from "
                         << todofilename << ":" << todolineno << (todolabel?"labeled:":"") << (todolabel?todolabel:"")
                         << " closure=" << curtodoclos.get_todo_clos()
@@ -487,7 +487,7 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
         }
     }
   RPS_DEBUG_LOG(GUI, "end Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth
-		<<   " serial#" << evloopfr_serial<< std::endl);
+                <<   " evlserial#" << evloopfr_serial<< std::endl);
 }; // end Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos
 
 
@@ -555,7 +555,7 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
             {
               eventcallframe->evloopfr_todos.insert({todotime, newtodo});
               RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at inserted in eventcallframe@" << eventcallframe
-			    << " serial#" << eventcallframe->evloopfr_serial
+                            << " evlserial#" << eventcallframe->evloopfr_serial
                             << " todotime=" << todotime
                             << " filename=" << filename
                             << " lineno=" << lineno << " label=" << label
@@ -618,7 +618,7 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
           if (eventcallframe->evloopfr_todos.find(todotime) == eventcallframe->evloopfr_todos.end())
             {
               RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at_at inserted in eventcallframe=" << eventcallframe
-			    << " serial#" << eventcallframe->evloopfr_serial
+                            << " evlserial#" << eventcallframe->evloopfr_serial
                             << " todotime=" << todotime
                             << " filename=" << filename
                             << " lineno=" << lineno << " label=" << label
@@ -674,7 +674,7 @@ rps_fltk_event_loop(Rps_CallFrame*callframe)
                                 depth, Rps_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
 #warning rps_fltk_event_loop should use Rps_FltkEventLoop_CallFrame
   unsigned long count=0;
-  RPS_DEBUGNL_LOG(GUI, "start of rps_fltk_event_loop depth#" << depth << " serial#" << _.evloopfr_serial
+  RPS_DEBUGNL_LOG(GUI, "start of rps_fltk_event_loop depth#" << depth << " evlserial#" << _.evloopfr_serial
                   << " callframe@" << callframe << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_event_loop start"));
   while (rps_running_fltk.load())
