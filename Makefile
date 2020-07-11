@@ -168,7 +168,7 @@ fltkdisplay_rps.dbg.o: fltkdisplay_rps.cc headfltk_rps.dbg.hh.gch
 
 
 clean:
-	$(RM) *.o *.orig *~ refpersys *.gch *~
+	$(RM) *.o *.orig *~ refpersys sanitized-refpersys *.gch *~
 	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~
 	$(RM) persistore/*~ persistore/*%
 	$(RM) *.ii
