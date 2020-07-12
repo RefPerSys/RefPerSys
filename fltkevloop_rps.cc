@@ -380,12 +380,13 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
                 << " depth#" << evloopfr_depth
                 << " callframe@" << (void*)callframe
                 << " evlserial#" << evloopfr_serial
-                << " this@" << (void*)this);
+                << " this@" << (void*)this<< std::endl << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEventLoop_CallFrame-constru") << std::endl);
 } // end of Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame
 
 Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
 {
-  RPS_DEBUG_LOG(GUI, "~Rps_FltkEventLoop_CallFrame this@" << (void*)this << " evlserial#" << evloopfr_serial);
+  RPS_DEBUG_LOG(GUI, "~Rps_FltkEventLoop_CallFrame this@" << (void*)this << " evlserial#" << evloopfr_serial << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEventLoop_CallFrame-destruc") << std::endl);
   if (rps_is_main_gui_thread())
     {
       evloopfr_curframe.store(evloopfr_oldframe);
@@ -430,7 +431,8 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
   std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
   std::vector<Rps_Todo> todovect;
   RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth
-                << "evloopfr_todos size=" << evloopfr_todos.size());
+                << " evlserial#" << evloopfr_serial
+                << " evloopfr_todos size=" << evloopfr_todos.size());
   int todocnt=0;
   for (auto todoit: evloopfr_todos)
     {
@@ -441,12 +443,13 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
       todocnt++;
       RPS_DEBUG_LOG(GUI,
                     "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos curtodo=" << curtodo
+                    << " evlserial#" << evloopfr_serial
                     << " todocnt=" << todocnt);
       todovect.push_back(curtodo);
     };
   RPS_DEBUG_LOG(GUI,
-                "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos this@" << this << " depth#"
-                << evloopfr_depth << " should do " << todovect.size() << " todos");
+                "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos this@" << this
+                << " depth#" << evloopfr_depth <<  " evlserial#" << evloopfr_serial << " should do " << todovect.size() << " todos");
   int loopcnt=0;
   for (auto curtodo : todovect)
     {
@@ -460,7 +463,7 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
       RPS_DEBUGNL_LOG(GUI,
                       "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos todolineno=" << todolineno
                       << " todofilename=" << todofilename << " todolabel=" << todolabel
-                      << " curtodo=" << curtodo << " loopcnt#" << loopcnt);
+                      << " curtodo=" << curtodo << " loopcnt#" << loopcnt <<  " evlserial#" << evloopfr_serial);
       if (curtodo.is_todo_function())
         {
           Rps_Todo_Function& curtodofun = const_cast<Rps_Todo_Function&>(curtodo.as_todo_function());
@@ -497,23 +500,23 @@ Rps_FltkEventLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
   RPS_ASSERT(rps_is_main_gui_thread());
   Fl::flush();
   RPS_DEBUGNL_LOG(GUI, "in Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count
-                  << ", delay=" << delay);
+                  << ", delay=" << delay <<  " evlserial#" << evloopfr_serial);
   if (count % 16 == 0)
-    RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count
+    RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
                   << ", delay=" << delay << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "fltk_event_wait"));
   auto delw = Fl::wait(delay);
   if (delw < 0)
     {
-      RPS_WARNOUT("Rps_FltkEventLoop_CallFrame::fltk_event_wait: depth#" << evloopfr_depth << " broke delw=" << delw << std::endl
+      RPS_WARNOUT("Rps_FltkEventLoop_CallFrame::fltk_event_wait: depth#" << evloopfr_depth <<  " evlserial#" << evloopfr_serial << " broke delw=" << delw << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "fltk_event_wait"));
       return;
     }
   else
-    RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count
+    RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
                   << " after wait delw=" << delw);
   run_scheduled_fltk_todos();
-  RPS_DEBUG_LOG(GUI, "end Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << std::endl);
+  RPS_DEBUG_LOG(GUI, "end Rps_FltkEventLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth  <<  " evlserial#" << evloopfr_serial<< std::endl);
 }; // end Rps_FltkEventLoop_CallFrame::fltk_event_wait
 
 
