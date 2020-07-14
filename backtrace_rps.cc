@@ -48,6 +48,10 @@ const char rps_backtrace_date[]= __DATE__;
   abort();							\
 } while(0)
 
+/// actually, in file main_rps.cc we have something like  asm volatile ("end_of_main: nop");
+extern "C" void end_of_main(void);
+extern "C" int main(int, char**);
+
 std::recursive_mutex Rps_Backtracer:: _backtr_mtx_;
 
 /// Notice that Rps_Backtracer should use assert, not RPS_ASSERT since
@@ -454,6 +458,8 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
           RPS_ASSERT(fullout);
           bool gotmain = false;
           fullout << bt->pc_to_string(pc, &gotmain) << std::endl;
+          if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
+            return RPS_CONTINUE_BACKTRACE;
           if (gotmain)
             return RPS_STOP_BACKTRACE;
           else
@@ -479,6 +485,8 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
           bool gotmain = false;
           std::string str = bt->pc_to_string(pc, &gotmain);
           fullout << str;
+          if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
+            return RPS_CONTINUE_BACKTRACE;
           if (gotmain)
             return RPS_STOP_BACKTRACE;
           else
@@ -492,6 +500,8 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
                             /*pcfile:*/(const char*)nullptr,
                             /*pclineno:*/(int)0,
                             /*pcfun:*/(const char*)nullptr);
+          if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
+            return RPS_CONTINUE_BACKTRACE;
           if (ok)
             return RPS_CONTINUE_BACKTRACE;
           else
@@ -533,6 +543,8 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
           std::ostringstream& fullout = std::get<FullOut_t>(bt->backtr_variant);
           RPS_ASSERT(fullout);
           fullout << bt->detailed_pc_to_string(pc,filename,lineno,function) << std::endl;
+          if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
+            return RPS_CONTINUE_BACKTRACE;
           if (filename && function && !strcmp(function, "main")
               && strstr(filename, "main_rps"))
             return RPS_STOP_BACKTRACE;
@@ -544,6 +556,8 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
           auto fullclo = std::get<FullClos_t>(bt->backtr_variant);
           RPS_ASSERT(fullclo);
           bool ok = fullclo(*bt, pc, filename, lineno,  function);
+          if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
+            return RPS_CONTINUE_BACKTRACE;
           if (ok && filename && function && !strcmp(function, "main")
               && strstr(filename, "main_rps"))
             return RPS_STOP_BACKTRACE;
@@ -570,6 +584,8 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
           auto fullclo = std::get<FullClos_t>(bt->backtr_variant);
           RPS_ASSERT(fullclo);
           fullclo(*bt, pc, filename, lineno,  function);
+          if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
+            return RPS_CONTINUE_BACKTRACE;
           if (filename && function && !strcmp(function, "main")
               && strstr(filename, "main_rps"))
             return RPS_STOP_BACKTRACE;

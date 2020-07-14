@@ -40,6 +40,8 @@ const char rps_main_gitid[]= RPS_GITID;
 extern "C" const char rps_main_date[];
 const char rps_main_date[]= __DATE__;
 
+/// actually, in function main we have something like  asm volatile ("end_of_main: nop");
+extern "C" void end_of_main(void);
 
 extern "C" std::vector<Rps_Plugin> rps_plugins_vector;
 std::vector<Rps_Plugin> rps_plugins_vector;
@@ -626,6 +628,10 @@ main (int argc, char** argv)
              "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
              (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
              rps_elapsed_real_time(), rps_process_cpu_time());
+  asm volatile (".globl end_of_main; .type end_of_main, @function");
+  asm volatile ("end_of_main: nop; nop; nop; nop");
+  asm volatile (".size end_of_main, . - end_of_main");
+  asm volatile ("nop; nop");
   return 0;
 } // end of main
 
