@@ -376,17 +376,19 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
   RPS_ASSERT(rps_is_main_gui_thread());
   RPS_ASSERT(evloopfr_depth >= 0);
   evloopfr_oldframe= std::atomic_exchange(&evloopfr_curframe,this);
-  RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame eventloop line#" << lineno
-                << " depth#" << evloopfr_depth
-                << " callframe@" << (void*)callframe
-                << " evlserial#" << evloopfr_serial
-                << " this@" << (void*)this<< std::endl << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEventLoop_CallFrame-constru") << std::endl);
+  RPS_DEBUGNL_LOG(GUI, "+°Rps_FltkEventLoop_CallFrame eventloop line#" << lineno
+                  << " depth#" << evloopfr_depth
+                  << " callframe@" << (void*)callframe
+                  << " evlserial#" << evloopfr_serial
+                  << " this@" << (void*)this<< std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEventLoop_CallFrame-constru"));
 } // end of Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame
 
 Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
 {
-  RPS_DEBUG_LOG(GUI, "~Rps_FltkEventLoop_CallFrame this@" << (void*)this << " evlserial#" << evloopfr_serial << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEventLoop_CallFrame-destruc") << std::endl);
+  auto serial = evloopfr_serial;
+  RPS_DEBUG_LOG(GUI, "-°Rps_FltkEventLoop_CallFrame this@" << (void*)this << " evlserial#" << evloopfr_serial << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEventLoop_CallFrame-destruc"));
   if (rps_is_main_gui_thread())
     {
       evloopfr_curframe.store(evloopfr_oldframe);
@@ -396,6 +398,7 @@ Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
       std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
       evloopfr_set.erase(this);
     }
+  RPS_DEBUG_LOG(GUI, "-°Rps_FltkEventLoop_CallFrame this@" << (void*)this << " evlserial#" << serial << std::endl);
 }; // end Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame
 
 void
