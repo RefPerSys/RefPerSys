@@ -381,14 +381,14 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
                   << " callframe@" << (void*)callframe
                   << " evlserial#" << evloopfr_serial
                   << " this@" << (void*)this<< std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEventLoop_CallFrame-constru"));
+                  << RPS_FULL_BACKTRACE_HERE(0, "Rps_FltkEventLoop_CallFrame°-constru"));
 } // end of Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame
 
 Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
 {
   auto serial = evloopfr_serial;
   RPS_DEBUG_LOG(GUI, "-°Rps_FltkEventLoop_CallFrame this@" << (void*)this << " evlserial#" << evloopfr_serial << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEventLoop_CallFrame-destruc"));
+                << RPS_FULL_BACKTRACE_HERE(0, "Rps_FltkEventLoop_CallFrame°-destruc"));
   if (rps_is_main_gui_thread())
     {
       evloopfr_curframe.store(evloopfr_oldframe);
