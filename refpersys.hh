@@ -1472,6 +1472,7 @@ private:
   std::uint32_t backtr_magic;
   mutable enum Todo backtr_todo;
   mutable bool backtr_ontty;
+  const bool backtr_mainthread;
   mutable std::variant<std::nullptr_t            // for Kind::None
 #define Rps_BACKTRACER_VariantXm(Mac,X) , Mac##_t
   RPS_BACKTRACE_XMACRO(Rps_BACKTRACER_VariantXm)
@@ -1496,6 +1497,7 @@ public:
   Kind bkind() const { return (Kind)backtr_variant.index(); };
   const std::string bkindname() const;
   std::ostream* boutput() const;
+  bool bmainthread() const { return backtr_mainthread; };
   /// 
   virtual void output(std::ostream&outs);
   virtual void print(FILE*outf);

@@ -351,6 +351,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullOut_Tag,
   backtr_magic(_backtr_magicnum_),
   backtr_todo(Todo::Do_Nothing),
   backtr_ontty(out?false:!rps_without_terminal_escape),
+  backtr_mainthread(rps_is_main_gui_thread()),
   backtr_variant(std::ostringstream{}),
   backtr_outs(out),
   backtr_fromfile(fromfil),
@@ -375,6 +376,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullClos_Tag,
   : backtr_magic(_backtr_magicnum_),
     backtr_todo(Todo::Do_Nothing),
     backtr_ontty(false),
+    backtr_mainthread(rps_is_main_gui_thread()),
     backtr_variant(fun),
     backtr_outs(nullptr),
     backtr_fromfile(fromfil),
@@ -460,7 +462,7 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
           fullout << bt->pc_to_string(pc, &gotmain) << std::endl;
           if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
             return RPS_CONTINUE_BACKTRACE;
-          if (gotmain)
+          if (gotmain && bmainthread())
             return RPS_STOP_BACKTRACE;
           else
             return RPS_CONTINUE_BACKTRACE;
@@ -487,7 +489,7 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
           fullout << str;
           if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
             return RPS_CONTINUE_BACKTRACE;
-          if (gotmain)
+          if (gotmain && bmainthread())
             return RPS_STOP_BACKTRACE;
           else
             return RPS_CONTINUE_BACKTRACE;
