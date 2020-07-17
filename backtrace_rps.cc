@@ -462,7 +462,7 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
           fullout << bt->pc_to_string(pc, &gotmain) << std::endl;
           if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
             return RPS_CONTINUE_BACKTRACE;
-          if (gotmain && bmainthread())
+          if (gotmain && bt->bmainthread())
             return RPS_STOP_BACKTRACE;
           else
             return RPS_CONTINUE_BACKTRACE;
@@ -489,7 +489,7 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
           fullout << str;
           if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
             return RPS_CONTINUE_BACKTRACE;
-          if (gotmain && bmainthread())
+          if (gotmain && bt->bmainthread())
             return RPS_STOP_BACKTRACE;
           else
             return RPS_CONTINUE_BACKTRACE;
