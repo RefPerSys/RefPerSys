@@ -624,14 +624,14 @@ main (int argc, char** argv)
       RPS_INFORM("RefPerSys should dump into %s\n", dumpdir.c_str());
       rps_dump_into(dumpdir);
     }
-  RPS_INFORM("end of RefPerSys process %d on host %s\n"
-             "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
-             (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
-             rps_elapsed_real_time(), rps_process_cpu_time());
   asm volatile (".globl end_of_main; .type end_of_main, @function");
   asm volatile ("end_of_main: nop; nop; nop; nop");
   asm volatile (".size end_of_main, . - end_of_main");
   asm volatile ("nop; nop");
+  RPS_INFORM("end of RefPerSys process %d on host %s\n"
+             "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
+             (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
+             rps_elapsed_real_time(), rps_process_cpu_time());
   return 0;
 } // end of main
 

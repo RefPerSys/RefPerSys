@@ -436,6 +436,8 @@ Rps_Backtracer::boutput(void) const
 
 
 
+/// this static method is the backtrace_simple_callback passed to
+/// backtrace_simple.  See comment inside backtrace.h header.
 int
 Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
 {
@@ -527,6 +529,9 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
 } // end Rps_Backtracer::backtrace_simple_cb
 
 
+
+/// This static method is the backtrace_full_callback passed to
+/// backtrace_full.  See comment inside backtrace.h header.
 int
 Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
                                   const char *filename, int lineno,
