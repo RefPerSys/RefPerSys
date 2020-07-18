@@ -1473,6 +1473,7 @@ private:
   mutable enum Todo backtr_todo;
   mutable bool backtr_ontty;
   const bool backtr_mainthread;
+  mutable bool backtr_gotlast;
   mutable std::variant<std::nullptr_t            // for Kind::None
 #define Rps_BACKTRACER_VariantXm(Mac,X) , Mac##_t
   RPS_BACKTRACE_XMACRO(Rps_BACKTRACER_VariantXm)

@@ -352,6 +352,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullOut_Tag,
   backtr_todo(Todo::Do_Nothing),
   backtr_ontty(out?false:!rps_without_terminal_escape),
   backtr_mainthread(rps_is_main_gui_thread()),
+  backtr_gotlast(false),
   backtr_variant(std::ostringstream{}),
   backtr_outs(out),
   backtr_fromfile(fromfil),
@@ -377,6 +378,7 @@ Rps_Backtracer::Rps_Backtracer(struct FullClos_Tag,
     backtr_todo(Todo::Do_Nothing),
     backtr_ontty(false),
     backtr_mainthread(rps_is_main_gui_thread()),
+    backtr_gotlast(false),
     backtr_variant(fun),
     backtr_outs(nullptr),
     backtr_fromfile(fromfil),
@@ -445,6 +447,10 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
   if (bt->magicnum() != _backtr_magicnum_)
     RPS_FASTABORT("corrupted backtracer");
   bt->backtr_depth++;
+  if (!pc)
+    return RPS_STOP_BACKTRACE;
+  if (bt->backtr_gotlast)
+    return RPS_STOP_BACKTRACE;
   switch (bt-> backtr_todo)
     {
     case Todo::Do_Nothing:
@@ -463,9 +469,10 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
           if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
             return RPS_CONTINUE_BACKTRACE;
           if (gotmain && bt->bmainthread())
-            return RPS_STOP_BACKTRACE;
-          else
-            return RPS_CONTINUE_BACKTRACE;
+            {
+              bt->backtr_gotlast = true;
+            };
+          return RPS_CONTINUE_BACKTRACE;
         }
         case Kind::FullClos_Kind:
         {
@@ -488,11 +495,10 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
           std::string str = bt->pc_to_string(pc, &gotmain);
           fullout << str;
           if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
-            return RPS_CONTINUE_BACKTRACE;
+            bt->backtr_gotlast = true;
           if (gotmain && bt->bmainthread())
-            return RPS_STOP_BACKTRACE;
-          else
-            return RPS_CONTINUE_BACKTRACE;
+            bt->backtr_gotlast = true;
+          return RPS_CONTINUE_BACKTRACE;
         }
         case Kind::FullClos_Kind:
         {
@@ -503,7 +509,9 @@ Rps_Backtracer::backtrace_simple_cb(void*data, uintptr_t pc)
                             /*pclineno:*/(int)0,
                             /*pcfun:*/(const char*)nullptr);
           if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
-            return RPS_CONTINUE_BACKTRACE;
+            {
+              bt->backtr_gotlast = true;
+            };
           if (ok)
             return RPS_CONTINUE_BACKTRACE;
           else
@@ -530,6 +538,10 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
   Rps_Backtracer* bt = reinterpret_cast<Rps_Backtracer*>(data);
   if (bt->magicnum() != _backtr_magicnum_)
     RPS_FASTABORT("corrupted backtracer");
+  if (!pc)
+    return RPS_STOP_BACKTRACE;
+  if (bt->backtr_gotlast)
+    return RPS_STOP_BACKTRACE;
   bt->backtr_depth++;
   switch (bt-> backtr_todo)
     {
@@ -546,12 +558,11 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
           RPS_ASSERT(fullout);
           fullout << bt->detailed_pc_to_string(pc,filename,lineno,function) << std::endl;
           if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
-            return RPS_CONTINUE_BACKTRACE;
+            bt->backtr_gotlast = true;
           if (filename && function && !strcmp(function, "main")
               && strstr(filename, "main_rps"))
-            return RPS_STOP_BACKTRACE;
-          else
-            return RPS_CONTINUE_BACKTRACE;
+            bt->backtr_gotlast = true;
+          return RPS_CONTINUE_BACKTRACE;
         }
         case Kind::FullClos_Kind:
         {
@@ -559,12 +570,11 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
           RPS_ASSERT(fullclo);
           bool ok = fullclo(*bt, pc, filename, lineno,  function);
           if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
-            return RPS_CONTINUE_BACKTRACE;
+            bt->backtr_gotlast = true;
           if (ok && filename && function && !strcmp(function, "main")
               && strstr(filename, "main_rps"))
-            return RPS_STOP_BACKTRACE;
-          else
-            return RPS_CONTINUE_BACKTRACE;
+            bt->backtr_gotlast = true;
+          return RPS_CONTINUE_BACKTRACE;
         }
         default:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print bad kind");
@@ -587,12 +597,11 @@ Rps_Backtracer::backtrace_full_cb(void *data, uintptr_t pc,
           RPS_ASSERT(fullclo);
           fullclo(*bt, pc, filename, lineno,  function);
           if (pc >= (uintptr_t)main && pc <= (uintptr_t)end_of_main)
-            return RPS_CONTINUE_BACKTRACE;
+            bt->backtr_gotlast = true;
           if (filename && function && !strcmp(function, "main")
               && strstr(filename, "main_rps"))
-            return RPS_STOP_BACKTRACE;
-          else
-            return RPS_CONTINUE_BACKTRACE;
+            bt->backtr_gotlast = true;
+          return RPS_CONTINUE_BACKTRACE;
         }
         default:
           RPS_FASTABORT("backtrace_full_cb Todo::Do_Print bad kind");
