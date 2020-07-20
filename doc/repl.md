@@ -27,6 +27,18 @@ TODO
 
 ## EBNF Grammar
 
+command := help | version | license | syslog | garbage-collect | oid-random
+	| state-load | state-dump | object-inspect | class-create
+	| symbol-create | named-instance-create | contributor-create
+	| plugin-create ;
+
+help := "(", "help", [opt-help-cmd-name], ")" ;
+
+opt-help-cmd-name := "help" | "version" | "license" | "syslog" 
+	| "garbage-collect" | "oid-random" | "state-load" | "state-dump"
+	| "object-inspect" | "class-create" | "symbol-create"
+	| "named-instance-create" | "contributor-create" | "plugin-create" ;
+
 TODO
 
 ## Implementation
