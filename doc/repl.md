@@ -32,9 +32,9 @@ command := help | version | license | syslog | garbage-collect | oid-random
 	| symbol-create | named-instance-create | contributor-create
 	| plugin-create ;
 
-help := "(", "help", [opt-help-cmd-name], ")" ;
+help := "(", "help", [opt-help-cmd], ")" ;
 
-opt-help-cmd-name := "help" | "version" | "license" | "syslog" 
+opt-help-cmd := "help" | "version" | "license" | "syslog" 
 	| "garbage-collect" | "oid-random" | "state-load" | "state-dump"
 	| "object-inspect" | "class-create" | "symbol-create"
 	| "named-instance-create" | "contributor-create" | "plugin-create" ;
@@ -42,6 +42,11 @@ opt-help-cmd-name := "help" | "version" | "license" | "syslog"
 version := "(", "version", ")" ;
 
 license := "(", "license", ")" ;
+
+syslog := "(", "syslog", [opt-syslog-priority], ")" ;
+
+opt-syslog-priority := "emerg" | "alert" | "crit" | "err" | "warning"
+	| "notice" | "info" | "debug" ;
 
 ## Implementation
 
