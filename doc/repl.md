@@ -39,8 +39,9 @@ opt-help-cmd-name := "help" | "version" | "license" | "syslog"
 	| "object-inspect" | "class-create" | "symbol-create"
 	| "named-instance-create" | "contributor-create" | "plugin-create" ;
 
-version := "(", "version", ") ;
+version := "(", "version", ")" ;
 
+license := "(", "license", ")" ;
 
 ## Implementation
 
