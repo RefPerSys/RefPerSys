@@ -54,7 +54,7 @@ oid-random := "(", "oid-random", ")" ;
 
 state-load := "(", "state-load", [opt-state-dir], ")" ;
 
-state-save := "(", "state-save", [opt-state-dir], ")" ;
+state-dump := "(", "state-dump", [opt-state-dir], ")" ;
 
 opt-state-dir := ? valid Linux file path ? ;
 
