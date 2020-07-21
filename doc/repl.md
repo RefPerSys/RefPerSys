@@ -50,6 +50,8 @@ opt-syslog-priority := "emerg" | "alert" | "crit" | "err" | "warning"
 
 garbage-collect := "(", "garbage-collect", ")" ;
 
+oid-random := "(", "oid-random", ")" ;
+
 
 ## Implementation
 
