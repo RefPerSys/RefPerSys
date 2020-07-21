@@ -48,6 +48,9 @@ syslog := "(", "syslog", [opt-syslog-priority], ")" ;
 opt-syslog-priority := "emerg" | "alert" | "crit" | "err" | "warning"
 	| "notice" | "info" | "debug" ;
 
+garbage-collect := "(", "garbage-collect", ")" ;
+
+
 ## Implementation
 
 TODO
