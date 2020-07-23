@@ -825,7 +825,7 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
     {
       char titbuf[96];
       memset (titbuf, 0, sizeof(titbuf));
-      snprintf(titbuf, sizeof(titbuf), "RefPerSys/%.16s p%ld@%.40s",
+      snprintf(titbuf, sizeof(titbuf), "RefPerSys/%.12s p%ld@%.40s",
                rps_gitid,(long)getpid(),rps_hostname());
       titlestr = titbuf;
     }

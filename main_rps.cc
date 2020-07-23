@@ -897,6 +897,8 @@ rps_parse_program_arguments(int &argc, char**argv)
     RPS_FATALOUT("failed to parse program arguments to " << argv[0]);
 } // end rps_parse_program_arguments
 
+
+
 void
 rps_run_application(int &argc, char **argv)
 {
