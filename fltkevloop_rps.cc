@@ -438,6 +438,7 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
   std::vector<Rps_Todo> todovect;
   RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth
                 << " evlserial#" << evloopfr_serial
+		<< " evloopfr_todos@" << (void*)&evloopfr_todos
                 << " evloopfr_todos size=" << evloopfr_todos.size());
   int todocnt=0;
   for (auto todoit: evloopfr_todos)
@@ -566,6 +567,7 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
               RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at inserted in eventcallframe@" << eventcallframe
                             << " evlserial#" << eventcallframe->evloopfr_serial
                             << " todotime=" << todotime
+			    << " evloopfr_todos@" << (void*)(&eventcallframe->evloopfr_todos)
                             << " filename=" << filename
                             << " lineno=" << lineno << " label=" << label
                             << " newtodo=" << newtodo);
@@ -630,6 +632,7 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
                             << " evlserial#" << eventcallframe->evloopfr_serial
                             << " todotime=" << todotime
                             << " filename=" << filename
+			    << " evloopfr_todos@" << (void*)(&eventcallframe->evloopfr_todos)
                             << " lineno=" << lineno << " label=" << label
                             << " delay=" << delay
                             << " closv=" << closv
