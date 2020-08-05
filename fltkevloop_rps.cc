@@ -43,6 +43,9 @@ const char rps_fltkevloop_date[]= __DATE__;
 
 static std::atomic<bool> rps_running_fltk;
 
+static int rps_evloop_delay_factor = 1;
+
+
 extern "C" pthread_t rps_main_gui_pthread;
 pthread_t rps_main_gui_pthread;
 Rps_GuiPreferences rps_gui_pref;
@@ -686,8 +689,8 @@ rps_fltk_event_loop(Rps_CallFrame*callframe)
   while (rps_running_fltk.load())
     {
       count++;
-      double delay = RPS_DEBUG_ENABLED(GUI)?30.0:3.0;
-      RPS_DEBUG_LOG(GUI, "rps_fltk_event_loop loop count#" << count << " depth=" << depth);
+      double delay = rps_evloop_delay_factor*(RPS_DEBUG_ENABLED(GUI)?30.0:3.0);
+      RPS_DEBUG_LOG(GUI, "rps_fltk_event_loop loop count#" << count << " depth=" << depth << " delay=" << delay);
       _.fltk_event_wait(count, delay);
     };
   RPS_DEBUG_LOG(GUI, "end of rps_fltk_event_loop depth#" << depth
@@ -912,6 +915,16 @@ rps_run_fltk_gui(int &argc, char**argv)
                                 Rps_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
   RPS_DEBUG_LOG(GUI, "start rps_run_fltk_gui _@" << ((void*)&_)  << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_fltk_gui"));
+  // for debugging purposes of the event loop we handle the
+  // REFPERSYS_FLTKEVLOOP_DELAY_FACTOR environment variable...
+  if (const char*delfact = getenv("REFPERSYS_FLTKEVLOOP_DELAY_FACTOR")) {
+    rps_evloop_delay_factor = atoi(delfact);
+    if (rps_evloop_delay_factor <= 0)
+      rps_evloop_delay_factor = 1;
+    RPS_DEBUG_LOG(GUI, "rps_run_fltk_gui got REFPERSYS_FLTKEVLOOP_DELAY_FACTOR="
+		  << delfact
+		  << " so rps_evloop_delay_factor=" << rps_evloop_delay_factor);
+  }
   //
   for (int ix=0; ix<argc; ix++)
     RPS_DEBUG_LOG(GUI, "FLTK GUI arg [" << ix << "]: " << argv[ix]);
