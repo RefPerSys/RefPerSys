@@ -64,6 +64,9 @@ class-create := "(", oid, ")";
 
 symbol-create := "(", oid, [opt-symbol-name], ")";
 
+contributor-create := "(", contributor-name, contributor-email,
+	[opt-contributor-url], ")";
+
 oid := "_", { letter | digit };
 
 letter := "A" | "B" | "C" | "D" | "E" | "F" | "G"
