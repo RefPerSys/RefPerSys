@@ -60,6 +60,9 @@ opt-state-dir := ? valid Linux file path ? ;
 
 object-inspect := "(", "object-inspect", oid, [opt-object-prop], ")" ;
 
+class-create := "(", oid, ")";
+
+
 oid := "_", { letter | digit };
 
 letter := "A" | "B" | "C" | "D" | "E" | "F" | "G"
