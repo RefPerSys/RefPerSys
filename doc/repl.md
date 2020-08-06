@@ -62,6 +62,7 @@ object-inspect := "(", "object-inspect", oid, [opt-object-prop], ")" ;
 
 class-create := "(", oid, ")";
 
+symbol-create := "(", oid, [opt-symbol-name], ")";
 
 oid := "_", { letter | digit };
 
