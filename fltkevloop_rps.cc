@@ -924,7 +924,7 @@ rps_run_fltk_gui(int &argc, char**argv)
     rps_evloop_delay_factor = atoi(delfact);
     if (rps_evloop_delay_factor <= 0)
       rps_evloop_delay_factor = 1;
-    RPS_DEBUG_LOG(GUI, "rps_run_fltk_gui got REFPERSYS_FLTKEVLOOP_DELAY_FACTOR="
+    RPS_INFORMOUT("rps_run_fltk_gui got REFPERSYS_FLTKEVLOOP_DELAY_FACTOR="
 		  << delfact
 		  << " so rps_evloop_delay_factor=" << rps_evloop_delay_factor);
   }
