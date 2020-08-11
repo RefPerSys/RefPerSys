@@ -38,7 +38,55 @@ inspired by the Guile REPL.
   * `(contributor-create)` - creates a new contributor
   * `(plugin-create)` - creates a new plugin
 
+## Example Usage
+
+Corresponding to the commands listed above, here are examples of how such
+commands would be used in the REPL.
+
+### (help [cmd])
+TODO
+
+### (version)
+TODO
+
+### (license)
+TODO
+
+### (syslog [priority])
+TODO
+
+### (garbage-collect)
+TODO
+
+### (oid-random)
+TODO
+
+### (state-load [dir])
+TODO
+
+### (state-dump [dir])
+TODO
+
+### (object=inspect oid [prop])
+TODO
+
+### (class-create)
+TODO
+
+### (symbol-create)
+TODO
+
+### (named-instance-create)
+TODO
+
+### (contributor-create)
+TODO
+
+### (plugin-create)
+TODO
+
 ## EBNF Grammar
+TODO
 
 command := help | version | license | syslog | garbage-collect | oid-random
 	| state-load | state-dump | object-inspect | class-create
