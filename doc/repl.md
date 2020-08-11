@@ -44,7 +44,13 @@ Corresponding to the commands listed above, here are examples of how such
 commands would be used in the REPL.
 
 ### (help [cmd])
-TODO
+  
+  * `(help)` - displays general help message
+  * `(help version)` - displays help message for the `(version)` command
+  * `(help license)` - displays help message for the `(license)` command
+  * `(help help)` - displays help message for the `(help)` command
+  * `(help object-inspect)` - displays help message for the `(object-inspect)`
+    command
 
 ### (version)
 TODO
