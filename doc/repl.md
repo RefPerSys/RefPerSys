@@ -2,7 +2,20 @@
 
 ## Background
 
-TODO
+The initial idea for the creation of a user interface for RefPerSys involved the
+development of a GUI built with the Qt 5 framework. However, experience showed
+that integration with the Qt 5 framework was very challenging, and would require
+much more in-depth focus on the internals of Qt than is desirable.
+
+As a consequence, we started looking for other options on developing the
+RefPerSys. A GUI is now being developed using the Fast Light Toolkit (FLTK),
+while in tandem we are also considering the development of a command line read
+eval print loop (REPL).
+
+The RefPerSys REPL aims to be a "mirror" of the GUI on the command line. Of
+course, instead of traditional GUI actions and conventions, we will be need to
+type out commands on the REPL. The syntax of these commands is LISP-like and
+inspired by the Guile REPL.
 
 ## List of Commands
 
