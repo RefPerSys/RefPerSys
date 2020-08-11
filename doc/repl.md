@@ -53,7 +53,35 @@ commands would be used in the REPL.
     command
 
 ### (version)
-TODO
+
+  * `(vesrsion)` - displays version message, with an output similar to that
+    provided by invoking `./repfersys --version`.
+
+    > RefPerSys, an Artificial Intelligence system - work in progress...
+    > version information:
+    > program name: ./refpersys
+    > build time: Wednesday 15 July 2020 09:51:35 AM IST
+    > top directory: /home/abhishek/work/bstarynk/refpersys
+    > git id: ba10b056a074c420d894db21b540e392b9b41fb2+
+    > last git tag: heads/fltk-branch
+    > last git commit: ba10b056a074 adding end_of_main symbol for backtracking
+    > purposes
+    > md5sum of 62 source files: d38507e6abe83ac635e1d62074d39514
+    > with 7 subdirectories.
+    > GNU glibc 2.30
+    > Graphical User Interface using FLTK git ba10b056a074c420d894db21, ABI:10400,
+    > API:10400
+    > Read Eval Print Loop using REPL git ba10b056a074c420d894db2 ReadLine 8.0
+    > libCURL for web using CURL git ba10b056a074c420d894db21b540e392b9b41fb2;
+    > libcurl/7.68.0 OpenSSL/1.1.1g zlib/1.2.11 brotli/1.0.7 libidn2/2.3.0
+    > libpsl/0.21.0 (+libidn2/2.3.0) libssh2/1.8.0 nghttp2/1.40.0 librtmp/2.3
+    > made with: /home/abhishek/work/bstarynk/refpersys/Makefile
+    > running on refpersys in /home/abhishek/work/bstarynk/refpersys
+    > C++ compiler: g++ (Debian 9.3.0-12) 9.3.0
+    > free software license: GPLv3+, see https://gnu.org/licenses/gpl.html
+    > +++++ there is no WARRANTY, to the extent permitted by law ++++
+    > ***** see also http://refpersys.org/ *****
+
 
 ### (license)
 TODO
