@@ -305,7 +305,16 @@ Rps_Todo::output(std::ostream&out) const
     }
 } // end Rps_Todo::output
 
+Rps_Todo::~Rps_Todo()
+{
+  RPS_ASSERT(rps_is_main_gui_thread());
+};				// end Rps_Todo::~Rps_Todo
+
 ////////////////////////////////////////////////////////////////
+
+#warning Rps_FltkEventLoop_CallFrame should be redesigned
+
+#if 0
 class Rps_FltkEventLoop_CallFrame : public Rps_CallFrame
 {
   friend class Rps_Todo;
@@ -361,11 +370,6 @@ std::set<Rps_FltkEventLoop_CallFrame*> Rps_FltkEventLoop_CallFrame::evloopfr_set
 static constexpr unsigned rps_evloop_nbvals = offsetof(Rps_FltkEventLoop_CallFrame, evloopfr_dummyval);
 std::atomic<long> Rps_FltkEventLoop_CallFrame::evloopfr_counter_;
 
-Rps_Todo::~Rps_Todo()
-{
-  RPS_ASSERT(rps_is_main_gui_thread());
-};				// end Rps_Todo::~Rps_Todo
-
 
 Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
     Rps_ObjectRef descr, int depth, Rps_EventLoop_tag)
@@ -386,6 +390,7 @@ Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame(Rps_CallFrame*callframe
                   << " this@" << (void*)this<< std::endl
                   << RPS_FULL_BACKTRACE_HERE(0, "Rps_FltkEventLoop_CallFrame°-constru"));
 } // end of Rps_FltkEventLoop_CallFrame::Rps_FltkEventLoop_CallFrame
+
 
 Rps_FltkEventLoop_CallFrame::~Rps_FltkEventLoop_CallFrame()
 {
@@ -438,7 +443,7 @@ Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos(void)
   std::vector<Rps_Todo> todovect;
   RPS_DEBUG_LOG(GUI, "Rps_FltkEventLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth
                 << " evlserial#" << evloopfr_serial
-		<< " evloopfr_todos@" << (void*)&evloopfr_todos
+                << " evloopfr_todos@" << (void*)&evloopfr_todos
                 << " evloopfr_todos size=" << evloopfr_todos.size());
   int todocnt=0;
   for (auto todoit: evloopfr_todos)
@@ -528,6 +533,27 @@ Rps_FltkEventLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
 
 
 
+Rps_FltkEventLoop_CallFrame*
+Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame(const Rps_CallFrame*callframe)
+{
+  Rps_FltkEventLoop_CallFrame*evcallframe = nullptr;
+  for (const Rps_CallFrame*curcallframe = callframe;
+       curcallframe != nullptr && Rps_CallFrame::is_good_call_frame(curcallframe);
+       curcallframe = curcallframe->previous_call_frame())
+    {
+      if (curcallframe->call_frame_descriptor() == RPS_FLTK_EVENT_LOOP_DESCR)
+        return (Rps_FltkEventLoop_CallFrame*)(curcallframe);
+    }
+  return nullptr;
+} // end Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame
+
+
+#endif /*old code*/
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 void
 rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename, int lineno, const char*label, double delay,
                                      const std::function<void(Rps_CallFrame*,void*,void*)>& todo,
@@ -549,6 +575,10 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
                 << " curframe@" << curframe);
   auto newtodo = Rps_Todo(Rps_Todo_Function(filename, lineno, label, delay, todo, arg1, arg2));
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at newtodo=" << newtodo);
+  RPS_FATALOUT("incomplete rps_fltk_add_delayed_labeled_todo_at filename=" << filename
+               << " lineno=" << lineno
+               << " label=" << label);
+#if 0 && oldcode
   if (rps_is_main_gui_thread())
     {
       Rps_FltkEventLoop_CallFrame*eventcallframe = Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame(curframe);
@@ -567,7 +597,7 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
               RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at inserted in eventcallframe@" << eventcallframe
                             << " evlserial#" << eventcallframe->evloopfr_serial
                             << " todotime=" << todotime
-			    << " evloopfr_todos@" << (void*)(&eventcallframe->evloopfr_todos)
+                            << " evloopfr_todos@" << (void*)(&eventcallframe->evloopfr_todos)
                             << " filename=" << filename
                             << " lineno=" << lineno << " label=" << label
                             << " newtodo=" << newtodo);
@@ -585,6 +615,7 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
                    << " filename=" << filename << ", lineno=" << lineno
                    << " label=" << label << " delay=" << delay << " arg1=" << arg1 << " arg2=" << arg2);
     }
+#endif /*0 && oldcode*/
   RPS_ASSERT(todo);
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at ending filename=" << filename << ", lineno=" << lineno
                 << " newtodo=" << newtodo << std::endl
@@ -609,6 +640,11 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
                 << " closv=" << closv << " arg1v=" << arg1v << " arg2v=" << arg2v);
   auto newtodo = Rps_Todo(Rps_Todo_Closure(lineno, filename, delay, label, closv, arg1v, arg2v));
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at newtodo=" << newtodo);
+  RPS_FATALOUT("incomplete rps_fltk_add_delayed_labeled_closure_at filename="
+               << filename << " lineno=" << lineno
+               << " label=" << label);
+#warning incomplete rps_fltk_add_delayed_labeled_closure_at
+#if 0 && oldcode
   if (rps_is_main_gui_thread())
     {
       Rps_FltkEventLoop_CallFrame*eventcallframe = Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame(curframe);
@@ -632,7 +668,7 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
                             << " evlserial#" << eventcallframe->evloopfr_serial
                             << " todotime=" << todotime
                             << " filename=" << filename
-			    << " evloopfr_todos@" << (void*)(&eventcallframe->evloopfr_todos)
+                            << " evloopfr_todos@" << (void*)(&eventcallframe->evloopfr_todos)
                             << " lineno=" << lineno << " label=" << label
                             << " delay=" << delay
                             << " closv=" << closv
@@ -652,6 +688,7 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
                    << " filename=" << filename << ", lineno=" << lineno << " label=" << label
                    << " delay=" << delay << " closv=" << closv << " arg1v=" << arg1v << " arg2v=" << arg2v);
     }
+#endif /*0 && oldcode*/
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at ending filename=" << filename << ", lineno=" << lineno
                 << " todo=" << newtodo << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "*end-rps_fltk_add_delayed_labeled_closure_at*") <<std::endl);
@@ -681,11 +718,14 @@ rps_fltk_event_loop(Rps_CallFrame*callframe)
   RPS_ASSERT(Rps_CallFrame::is_good_call_frame(callframe));
   RPS_ASSERT(rps_is_main_gui_thread());
   depth++;
+  RPS_FATALOUT("incomplete rps_fltk_event_loop callframe=" << callframe << " depth=" << depth);
+  unsigned long count=0;
+#warning incomplete rps_fltk_event_loop
+#if 0 && oldcode
   Rps_FltkEventLoop_CallFrame _(callframe, __LINE__,
                                 RPS_FLTK_EVENT_LOOP_DESCR /*fltk_event_loop*/,
                                 depth, Rps_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
 #warning rps_fltk_event_loop should use Rps_FltkEventLoop_CallFrame
-  unsigned long count=0;
   RPS_DEBUGNL_LOG(GUI, "start of rps_fltk_event_loop depth#" << depth << " evlserial#" << _.evloopfr_serial
                   << " callframe@" << callframe << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_event_loop start"));
@@ -696,27 +736,12 @@ rps_fltk_event_loop(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(GUI, "rps_fltk_event_loop loop count#" << count << " depth=" << depth << " delay=" << delay);
       _.fltk_event_wait(count, delay);
     };
+#endif 0 && oldcode
   RPS_DEBUG_LOG(GUI, "end of rps_fltk_event_loop depth#" << depth
                 << " count=" << count
                 << " callframe@" << callframe << std::endl << std::endl);
   depth--;
 } // end rps_fltk_event_loop
-
-
-Rps_FltkEventLoop_CallFrame*
-Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame(const Rps_CallFrame*callframe)
-{
-  Rps_FltkEventLoop_CallFrame*evcallframe = nullptr;
-  for (const Rps_CallFrame*curcallframe = callframe;
-       curcallframe != nullptr && Rps_CallFrame::is_good_call_frame(curcallframe);
-       curcallframe = curcallframe->previous_call_frame())
-    {
-      if (curcallframe->call_frame_descriptor() == RPS_FLTK_EVENT_LOOP_DESCR)
-        return (Rps_FltkEventLoop_CallFrame*)(curcallframe);
-    }
-  return nullptr;
-} // end Rps_FltkEventLoop_CallFrame::find_calling_event_call_frame
-
 
 void
 rps_garbcoll_application(Rps_GarbageCollector&gc)
@@ -913,6 +938,8 @@ void
 rps_run_fltk_gui(int &argc, char**argv)
 {
   rps_main_gui_pthread = pthread_self();
+  RPS_FATALOUT("incomplete rps_run_fltk_gui argc=" << argc << " argv=" << argv);
+#if 0 && oldcode
   Rps_FltkEventLoop_CallFrame _(nullptr, __LINE__,
                                 RPS_FLTK_EVENT_LOOP_DESCR, 1,
                                 Rps_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
@@ -920,14 +947,15 @@ rps_run_fltk_gui(int &argc, char**argv)
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_fltk_gui"));
   // for debugging purposes of the event loop we handle the
   // REFPERSYS_FLTKEVLOOP_DELAY_FACTOR environment variable...
-  if (const char*delfact = getenv("REFPERSYS_FLTKEVLOOP_DELAY_FACTOR")) {
-    rps_evloop_delay_factor = atoi(delfact);
-    if (rps_evloop_delay_factor <= 0)
-      rps_evloop_delay_factor = 1;
-    RPS_INFORMOUT("rps_run_fltk_gui got REFPERSYS_FLTKEVLOOP_DELAY_FACTOR="
-		  << delfact
-		  << " so rps_evloop_delay_factor=" << rps_evloop_delay_factor);
-  }
+  if (const char*delfact = getenv("REFPERSYS_FLTKEVLOOP_DELAY_FACTOR"))
+    {
+      rps_evloop_delay_factor = atoi(delfact);
+      if (rps_evloop_delay_factor <= 0)
+        rps_evloop_delay_factor = 1;
+      RPS_INFORMOUT("rps_run_fltk_gui got REFPERSYS_FLTKEVLOOP_DELAY_FACTOR="
+                    << delfact
+                    << " so rps_evloop_delay_factor=" << rps_evloop_delay_factor);
+    }
   //
   for (int ix=0; ix<argc; ix++)
     RPS_DEBUG_LOG(GUI, "FLTK GUI arg [" << ix << "]: " << argv[ix]);
@@ -938,6 +966,7 @@ rps_run_fltk_gui(int &argc, char**argv)
   rps_fltk_event_loop(&_);
   RPS_DEBUG_LOG(GUI, "end rps_run_fltk_gui _@" << ((void*)&_)  << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "end rps_run_fltk_gui") << std::endl);
+#endif /*oldcode*/
 } // rps_run_fltk_gui
 
 

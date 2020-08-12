@@ -78,11 +78,15 @@ Rps_CallFrame::gc_mark_frame(Rps_GarbageCollector* gc)
   if (cfram_marker)
     cfram_marker(gc);
   unsigned siz=cfram_size;
-  for (unsigned ix=0; ix<siz; ix++)
+  if (cfram_xtradata)
     {
-      Rps_Value curval(cfram_data[ix], this);
-      if (!curval.is_empty() && curval.is_ptr())
-        curval.as_ptr()->gc_mark(*gc,0);
+      void**frdata = reinterpret_cast<void**>(cfram_xtradata);
+      for (unsigned ix=0; ix<siz; ix++)
+        {
+          Rps_Value curval(frdata[ix], this);
+          if (!curval.is_empty() && curval.is_ptr())
+            curval.as_ptr()->gc_mark(*gc,0);
+        };
     }
 } // end Rps_CallFrame::gc_mark_frame
 

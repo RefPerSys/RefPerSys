@@ -683,14 +683,14 @@ class Rps_PayloadOutputText;
 class Rps_PayloadWindow;
 class Rps_Loader;
 class Rps_Dumper;
-class Rps_CallFrame;
+class Rps_ProtoCallFrame;
 class RpsGui_Window; // see fltkhead_rps.hh
 class Rps_Value;
 class Rps_Id;
 
 
 typedef uint32_t Rps_HashInt;
-
+typedef Rps_ProtoCallFrame Rps_CallFrame;
 
 ////////////////////////////////////////////////////////////////
 class Rps_ObjectRef // reference to objects, per C++ rule of five.
@@ -1599,7 +1599,7 @@ public:
 class Rps_TypedZone
 {
   friend class Rps_GarbageCollector;
-  friend class Rps_CallFrame;
+  friend class Rps_ProtoCallFrame;
 protected:
   const Rps_Type qz_type;
   volatile mutable std::atomic_uint16_t qz_gcinfo;
@@ -2739,52 +2739,56 @@ public:
 ////////////////////////////////////////////////////////////////
 
 
+class Rps_ProtoCallFrame;
+typedef Rps_ProtoCallFrame Rps_CallFrame;
 
 ////////////////////////////////////////////////////////////////
-
-class Rps_CallFrame : public Rps_TypedZone
+//// the common superclass of our call frames
+class Rps_ProtoCallFrame : public Rps_TypedZone
 {
+protected:
   const unsigned cfram_size;
   Rps_ObjectRef cfram_descr;
   Rps_CallFrame* cfram_prev;
   Rps_Value cfram_state;
+  intptr_t cfram_rankstate;
   Rps_ClosureValue cfram_clos; // the invoking closure, if any
+  intptr_t* cfram_xtradata;
   std::function<void(Rps_GarbageCollector*)> cfram_marker;
-  void* cfram_data[RPS_FLEXIBLE_DIM]; // a flexible array member in disguise
 public:
-  Rps_CallFrame(unsigned size, Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
+  static constexpr unsigned _cfram_max_size_ = 1024;
+  Rps_ProtoCallFrame(unsigned size, void*xdata, Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
     : Rps_TypedZone(Rps_Type::CallFrame),
       cfram_size(size),
       cfram_descr(obdescr),
       cfram_prev(prev),
       cfram_state(nullptr),
+      cfram_rankstate(0),
       cfram_clos(nullptr),
-      cfram_marker(),
-      cfram_data()
-  {
-    // we want flexible array members, see
-    // https://en.wikipedia.org/wiki/Flexible_array_member but C++17
-    // don't have them ....
-    // see https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Pragmas.html
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
-    if (size>0)
-      memset((void*)&cfram_data, 0, size*sizeof(void*));
-#pragma GCC diagnostic pop
-  };
-  ~Rps_CallFrame()
-  {
+      cfram_xtradata((intptr_t*) xdata),
+      cfram_marker() {
+    // ensure that if some size is given, the xdata is a suitably
+    // aligned pointer...
+    assert (size == 0
+	    || (xdata != nullptr
+		&& (((intptr_t)xdata & (alignof(intptr_t)-1)) == 0)));
+    assert (size < _cfram_max_size_);
+  }; // end Rps_ProtoCallFrame constructor
+  ~Rps_ProtoCallFrame() {
+    if (cfram_size > 0) {
+      assert (cfram_xtradata != nullptr);
+      memset (cfram_xtradata, 0, cfram_size*sizeof(intptr_t));
+      cfram_xtradata = nullptr;
+    }
+    else
+      assert (cfram_xtradata == nullptr);
     cfram_descr = nullptr;
-    cfram_state = nullptr;
     cfram_prev = nullptr;
+    cfram_state = nullptr;
+    cfram_rankstate = 0;
     cfram_clos = nullptr;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
-    // technically this is an undefined behavior. Pragmatically it should work as we want.
-    if (cfram_size > 0)
-      memset((void*)&cfram_data, 0, cfram_size*sizeof(void*));
-#pragma GCC diagnostic pop
-  };
+  }; // end Rps_ProtoCallFrame destructor
+  
   void gc_mark_frame(Rps_GarbageCollector* gc);
   void set_closure(Rps_ClosureValue clos)
   {
@@ -2807,29 +2811,67 @@ public:
   {
     cfram_marker = nullptr;
   };
-  bool is_good_call_frame() const { return stored_type() == Rps_Type::CallFrame; };
+  bool is_good_call_frame() const {
+    assert (cfram_size <  _cfram_max_size_);
+    return stored_type() == Rps_Type::CallFrame;
+  };
   static bool is_good_call_frame(const Rps_CallFrame*cf) { return cf==nullptr||cf->is_good_call_frame(); };
   Rps_ObjectRef call_frame_descriptor() const { return cfram_descr; };
   Rps_Value call_frame_state() const { return cfram_state; };
   Rps_ClosureValue call_frame_closure() const { return cfram_clos; };
-};				// end class Rps_CallFrame
+};				// end class Rps_ProtoCallFrame
+
+
+template <unsigned WordSize> class Rps_SizedCallFrame;
+template <typename FrameFields> class Rps_FieldedCallFrame;
+
+template <unsigned WordSize> class Rps_SizedCallFrame
+  : public Rps_ProtoCallFrame {
+  void* cfram_word_data[WordSize];
+public:
+  typedef Rps_SizedCallFrame<WordSize> This_frame;
+   Rps_SizedCallFrame<WordSize> (Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
+    :  Rps_ProtoCallFrame(WordSize, cfram_word_data, obdescr, prev) {
+  };
+  ~Rps_SizedCallFrame<WordSize>() {
+  };
+};				// end of Rps_SizedCallFrame template
+
+
+template <typename FrameFields> class  Rps_FieldedCallFrame :
+public Rps_ProtoCallFrame {
+  FrameFields cfram_fields;
+public:
+  typedef  Rps_FieldedCallFrame<FrameFields> This_frame;
+  FrameFields& fields()  { return cfram_fields; };
+  FrameFields* fieldsptr() { return &cfram_fields; };
+  const FrameFields& constfields() const { return cfram_fields; };
+  Rps_FieldedCallFrame<FrameFields>  (Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
+    :  Rps_ProtoCallFrame(sizeof(FrameFields)/sizeof(void*), &cfram_fields, obdescr, prev) {
+  };
+  ~Rps_FieldedCallFrame<FrameFields> () {
+  };
+};				// end of Rps_FieldedCallFrame template
 
 
 
 #define RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,...)	\
-  class Rps_FrameAt##Lin : public Rps_CallFrame {	\
-  struct FrameData##Lin {__VA_ARGS__; };		\
+  struct RpsFrameData##Lin {__VA_ARGS__; };		\
+  typedef						\
+  Rps_FieldedCallFrame<RpsFrameData##Lin>		\
+   Rps_FldCallFrame##Lin;				\
+  class Rps_FrameAt##Lin :				\
+    public Rps_FldCallFrame##Lin {			\
 public:							\
  Rps_FrameAt##Lin(Rps_ObjectRef obd##Lin,		\
 		  Rps_CallFrame* prev##Lin) :		\
-       Rps_CallFrame( (sizeof(FrameData##Lin)		\
-			     + sizeof(void*) - 1)      	\
-			    / sizeof(void*),		\
-			    obd##Lin, prev##Lin)	\
+ Rps_FldCallFrame##Lin(obd##Lin, prev##Lin)		\
     { };						\
-  __VA_ARGS__;						\
   };							\
-  Rps_FrameAt##Lin _((Descr),(Prev))
+  Rps_FrameAt##Lin _((Descr),(Prev));                   \
+  auto& _f = *_.fieldsptr();                            \
+  /*end RPS_LOCALFRAME_ATBIS*/
+
 
 #define RPS_LOCALFRAME_AT(Lin,Descr,Prev,...) \
   RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,__VA_ARGS__)

@@ -61,12 +61,12 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  _.val0v = arg0val;
-  _.winob1 = arg1obwin.to_object();
-  _.depth2v = arg2depth;
-  int depth = _.depth2v.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_0TwK4TkhEGZ03oTa5m start val0v=" << _.val0v
-                << ", winob=" << _.winob1
+  _f.val0v = arg0val;
+  _f.winob1 = arg1obwin.to_object();
+  _f.depth2v = arg2depth;
+  int depth = _f.depth2v.to_int();
+  RPS_DEBUG_LOG(GUI, "rpsapply_0TwK4TkhEGZ03oTa5m start val0v=" << _f.val0v
+                << ", winob=" << _f.winob1
                 << ", depth=" << depth);
   ////==== body of _0TwK4TkhEGZ03oTa5m ====
 #warning unimplemented rpsapply_0TwK4TkhEGZ03oTa5m
@@ -96,12 +96,12 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
                  //....etc....
                 );
   ////==== body of _8KJHUldX8GJ03G5OWp ====
-  _.intv = arg0recv;
-  _.obwin = arg1obwin.as_object();
-  _.depthv = arg2depth;
-  RPS_DEBUG_LOG(GUI, "rpsapply_8KJHUldX8GJ03G5OWp start intv=" << _.intv
-                << ", obwin=" << _.obwin
-                << ", depth=" << _.depthv);
+  _f.intv = arg0recv;
+  _f.obwin = arg1obwin.as_object();
+  _f.depthv = arg2depth;
+  RPS_DEBUG_LOG(GUI, "rpsapply_8KJHUldX8GJ03G5OWp start intv=" << _f.intv
+                << ", obwin=" << _f.obwin
+                << ", depth=" << _f.depthv);
 #warning unimplemented rpsapply_8KJHUldX8GJ03G5OWp
   RPS_FATAL("unimplemented rpsapply_8KJHUldX8GJ03G5OWp");
 } // end of  rpsapply_8KJHUldX8GJ03G5OWp !method int/display_value_fltk
@@ -129,15 +129,15 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
                  Rps_Value resxtrav;
                 );
 
-  _.string_value = arg0_receiver;
-  RPS_ASSERT(_.string_value.is_string());
-  _.object_window = arg1_object_window.as_object();
-  RPS_ASSERT(_.object_window);
-  _.recursive_depth = arg2_recursive_depth;
-  RPS_ASSERT(_.recursive_depth.is_int());
-  RPS_DEBUG_LOG(GUI, "rpsapply_2KnFhlj8xW800kpgPt start string_value=" << _.string_value
-                << ", object_window, =" << _.object_window
-                << ", recursive_depth=" <<  _.recursive_depth);
+  _f.string_value = arg0_receiver;
+  RPS_ASSERT(_f.string_value.is_string());
+  _f.object_window = arg1_object_window.as_object();
+  RPS_ASSERT(_f.object_window);
+  _f.recursive_depth = arg2_recursive_depth;
+  RPS_ASSERT(_f.recursive_depth.is_int());
+  RPS_DEBUG_LOG(GUI, "rpsapply_2KnFhlj8xW800kpgPt start string_value=" << _f.string_value
+                << ", object_window, =" << _f.object_window
+                << ", recursive_depth=" <<  _f.recursive_depth);
   ////==== body of _2KnFhlj8xW800kpgPt ====
 #warning unimplemented rpsapply_2KnFhlj8xW800kpgPt
   RPS_FATAL("unimplemented rpsapply_2KnFhlj8xW800kpgPt");
@@ -165,15 +165,15 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
                 );
 
   ////==== body of _7oa7eIzzcxv03TmmZH !method double/display_value_fltk ====
-  _.doubleval = arg0_recv;
-  RPS_ASSERT (_.doubleval.is_double());
-  _.object_window = arg1_objwnd.as_object();
-  RPS_ASSERT(_.object_window);
-  _.recdepth = arg2_recdepth;
-  RPS_ASSERT(_.recdepth.is_int());
-  RPS_DEBUG_LOG(GUI, "rpsapply_7oa7eIzzcxv03TmmZH start doubleval=" << _.doubleval
-                << "object_window, =" << _.object_window
-                << ", recdepth=" <<  _.recdepth);
+  _f.doubleval = arg0_recv;
+  RPS_ASSERT (_f.doubleval.is_double());
+  _f.object_window = arg1_objwnd.as_object();
+  RPS_ASSERT(_f.object_window);
+  _f.recdepth = arg2_recdepth;
+  RPS_ASSERT(_f.recdepth.is_int());
+  RPS_DEBUG_LOG(GUI, "rpsapply_7oa7eIzzcxv03TmmZH start doubleval=" << _f.doubleval
+                << "object_window, =" << _f.object_window
+                << ", recdepth=" <<  _f.recdepth);
 #warning unimplemented rpsapply_7oa7eIzzcxv03TmmZH
   RPS_FATAL("unimplemented rpsapply_7oa7eIzzcxv03TmmZH");
 }
@@ -203,16 +203,16 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
                  Rps_Value resxtrav;
                 );
   ////==== body of _33DFyPOJxbF015ZYoi !method tuple/display_value_fltk ====
-  _.tupleval = arg0_recv;
-  RPS_ASSERT (_.tupleval.is_tuple());
-  _.objwnd = arg1_objwnd.as_object();
-  RPS_ASSERT (_.objwnd);
-  _.recdepth = arg2_recdepth;
-  RPS_ASSERT (_.recdepth.is_int());
-  auto depthi = _.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_33DFyPOJxbF015ZYoi start tupleval=" << _.tupleval
-                << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+  _f.tupleval = arg0_recv;
+  RPS_ASSERT (_f.tupleval.is_tuple());
+  _f.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_f.objwnd);
+  _f.recdepth = arg2_recdepth;
+  RPS_ASSERT (_f.recdepth.is_int());
+  auto depthi = _f.recdepth.to_int();
+  RPS_DEBUG_LOG(GUI, "rpsapply_33DFyPOJxbF015ZYoi start tupleval=" << _f.tupleval
+                << "objwnd =" << _f.objwnd
+                << ", recdepth=" <<  _f.recdepth);
 #warning unimplemented rpsapply_33DFyPOJxbF015ZYoi
   RPS_FATAL("unimplemented rpsapply_33DFyPOJxbF015ZYoi");
 } // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_fltk
@@ -239,16 +239,16 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
                 );
 
   ////==== body of _1568ZHTl0Pa00461I2 !method set/display_value_fltk ====
-  _.setval = arg0_recv;
-  RPS_ASSERT (_.setval.is_set());
-  _.objwnd = arg1_objwnd.as_object();
-  RPS_ASSERT (_.objwnd);
-  _.recdepth = arg2_recdepth;
-  RPS_ASSERT (_.recdepth.is_int());
-  auto depthi = _.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_fltk start setval=" << _.setval
-                << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+  _f.setval = arg0_recv;
+  RPS_ASSERT (_f.setval.is_set());
+  _f.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_f.objwnd);
+  _f.recdepth = arg2_recdepth;
+  RPS_ASSERT (_f.recdepth.is_int());
+  auto depthi = _f.recdepth.to_int();
+  RPS_DEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_fltk start setval=" << _f.setval
+                << "objwnd =" << _f.objwnd
+                << ", recdepth=" <<  _f.recdepth);
 #warning unimplemented rpsapply_1568ZHTl0Pa00461I2
   RPS_FATAL("unimplemented rpsapply_1568ZHTl0Pa00461I2");
 } // end of rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_fltk
@@ -308,16 +308,16 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
                  //....etc....
                 );
   ////==== body of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_fltk====
-  _.instrecv = Rps_InstanceValue(arg0_inst.as_instance());
-  RPS_ASSERT (_.instrecv);
-  _.objwnd = arg1_objwnd.as_object();
-  RPS_ASSERT (_.objwnd);
-  _.recdepth = arg2_recdepth;
-  RPS_ASSERT (_.recdepth.is_int());
-  auto depthi = _.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_0rgijx7CCnq041IZEd start instrecv=" << _.instrecv
-                << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+  _f.instrecv = Rps_InstanceValue(arg0_inst.as_instance());
+  RPS_ASSERT (_f.instrecv);
+  _f.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_f.objwnd);
+  _f.recdepth = arg2_recdepth;
+  RPS_ASSERT (_f.recdepth.is_int());
+  auto depthi = _f.recdepth.to_int();
+  RPS_DEBUG_LOG(GUI, "rpsapply_0rgijx7CCnq041IZEd start instrecv=" << _f.instrecv
+                << "objwnd =" << _f.objwnd
+                << ", recdepth=" <<  _f.recdepth);
 #warning unimplemented rpsapply_0rgijx7CCnq041IZEd
   RPS_FATAL("unimplemented rpsapply_0rgijx7CCnq041IZEd");
 } // end of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_fltk
@@ -349,18 +349,18 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
                  //....etc....
                 );
   ////==== body of _6Wi00FwXYID00gl9Ma !method closure/display_value_fltk ====
-  _.closrecv = Rps_ClosureValue(arg0_clos.as_closure());
-  RPS_ASSERT (_.closrecv);
-  _.objwnd = arg1_objwnd.as_object();
-  RPS_ASSERT (_.objwnd);
-  _.recdepth = arg2_recdepth;
-  RPS_ASSERT (_.recdepth.is_int());
-  auto depthi = _.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_6Wi00FwXYID00gl9Ma start closrecv=" << _.closrecv
-                << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
-  _.obconn = _.closrecv->conn();
-  unsigned width = _.closrecv->cnt();
+  _f.closrecv = Rps_ClosureValue(arg0_clos.as_closure());
+  RPS_ASSERT (_f.closrecv);
+  _f.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_f.objwnd);
+  _f.recdepth = arg2_recdepth;
+  RPS_ASSERT (_f.recdepth.is_int());
+  auto depthi = _f.recdepth.to_int();
+  RPS_DEBUG_LOG(GUI, "rpsapply_6Wi00FwXYID00gl9Ma start closrecv=" << _f.closrecv
+                << "objwnd =" << _f.objwnd
+                << ", recdepth=" <<  _f.recdepth);
+  _f.obconn = _f.closrecv->conn();
+  unsigned width = _f.closrecv->cnt();
 #warning unimplemented rpsapply_6Wi00FwXYID00gl9Ma
   RPS_FATAL("unimplemented rpsapply_6Wi00FwXYID00gl9Ma");
 } // end of rpsapply_6Wi00FwXYID00gl9Ma !method closure/display_value_fltk
@@ -388,16 +388,16 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
                 );
   ////==== body of _42cCN1FRQSS03bzbTz !method json/display_value_fltk ====
   ;
-  _.jsrecv = arg0_json;
-  RPS_ASSERT (_.jsrecv.is_json());
-  _.objwnd = arg1_objwnd.as_object();
-  RPS_ASSERT (_.objwnd);
-  _.recdepth = arg2_recdepth;
-  RPS_ASSERT (_.recdepth.is_int());
-  auto depthi = _.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_42cCN1FRQSS03bzbTz start jsrecv=" << _.jsrecv
-                << "objwnd =" << _.objwnd
-                << ", recdepth=" <<  _.recdepth);
+  _f.jsrecv = arg0_json;
+  RPS_ASSERT (_f.jsrecv.is_json());
+  _f.objwnd = arg1_objwnd.as_object();
+  RPS_ASSERT (_f.objwnd);
+  _f.recdepth = arg2_recdepth;
+  RPS_ASSERT (_f.recdepth.is_int());
+  auto depthi = _f.recdepth.to_int();
+  RPS_DEBUG_LOG(GUI, "rpsapply_42cCN1FRQSS03bzbTz start jsrecv=" << _f.jsrecv
+                << "objwnd =" << _f.objwnd
+                << ", recdepth=" <<  _f.recdepth);
 #warning unimplemented rpsapply_42cCN1FRQSS03bzbTz
   RPS_FATAL("unimplemented rpsapply_42cCN1FRQSS03bzbTz");
 } // end of rpsapply_42cCN1FRQSS03bzbTz !method json/display_value_fltk
@@ -431,17 +431,17 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                 << ", arg1obwin=" << arg1obwin
                 << ", arg2depth=" << arg2depth << std::endl
                 << RPS_DEBUG_BACKTRACE_HERE(2, "!method object/display_object_occurrence_fltk"));
-  _.recvob = arg0obj.as_object();
-  RPS_ASSERT(_.recvob);
-  _.objwnd = arg1obwin.as_object();
-  RPS_ASSERT (_.objwnd);
-  _.recdepth = arg2depth;
-  RPS_ASSERT (_.recdepth.is_int());
-  auto depthi = _.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx recvob=" << _.recvob
-                << " of class:" <<  _.recvob->compute_class(&_) << std::endl
-                << "... objwnd=" << _.objwnd
-                << " of class:" <<  _.objwnd->compute_class(&_)
+  _f.recvob = arg0obj.as_object();
+  RPS_ASSERT(_f.recvob);
+  _f.objwnd = arg1obwin.as_object();
+  RPS_ASSERT (_f.objwnd);
+  _f.recdepth = arg2depth;
+  RPS_ASSERT (_f.recdepth.is_int());
+  auto depthi = _f.recdepth.to_int();
+  RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx recvob=" << _f.recvob
+                << " of class:" <<  _f.recvob->compute_class(&_) << std::endl
+                << "... objwnd=" << _f.objwnd
+                << " of class:" <<  _f.objwnd->compute_class(&_)
                 << "... depthi=" << depthi <<std::endl
                 << "!method object/display_object_occurrence_fltk" << std::endl
                 << RPS_DEBUG_BACKTRACE_HERE(1, "rpsapply_4x9jd2yAe8A02SqKAx")
@@ -483,19 +483,19 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                  //....etc....
                 );
   ////==== body of _5nSiRIxoYQp00MSnYA !method object!display_object_content_fltk ====
-  _.recvob = arg0obj.as_object();
-  RPS_ASSERT(_.recvob);
-  _.objwnd = arg1obwin.as_object();
-  RPS_ASSERT (_.objwnd);
-  _.recdepth = arg2depth;
-  RPS_ASSERT (_.recdepth.is_int());
-  auto depthi = _.recdepth.to_int();
-  _.optqtposition = arg3optqtposition;
-  RPS_ASSERT (!_.optqtposition || _.optqtposition.is_int());
-  std::lock_guard<std::recursive_mutex> objwndmtx(*(_.objwnd->objmtxptr()));
-  RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_fltk recvob=" << _.recvob
-                << ", objwnd =" << _.objwnd
-                << " of class:" <<  _.objwnd->compute_class(&_) << std::endl
+  _f.recvob = arg0obj.as_object();
+  RPS_ASSERT(_f.recvob);
+  _f.objwnd = arg1obwin.as_object();
+  RPS_ASSERT (_f.objwnd);
+  _f.recdepth = arg2depth;
+  RPS_ASSERT (_f.recdepth.is_int());
+  auto depthi = _f.recdepth.to_int();
+  _f.optqtposition = arg3optqtposition;
+  RPS_ASSERT (!_f.optqtposition || _f.optqtposition.is_int());
+  std::lock_guard<std::recursive_mutex> objwndmtx(*(_f.objwnd->objmtxptr()));
+  RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_fltk recvob=" << _f.recvob
+                << ", objwnd =" << _f.objwnd
+                << " of class:" <<  _f.objwnd->compute_class(&_) << std::endl
                 << "... depthi=" <<  depthi
                 << std::endl << "+++ object!display_object_content_fltk +++");
 #warning unimplemented rpsapply_5nSiRIxoYQp00MSnYA
@@ -527,16 +527,16 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
                  Rps_ClosureValue curmethclos;
                 );
   ////==== body of _8lKdW7lgcHV00WUOiT ====
-  _.obclass = arg0class.as_object();
-  RPS_ASSERT(_.obclass);
-  _.obwin = arg1obwin.as_object();
-  RPS_ASSERT(_.obwin);
-  _.depthv = arg2depth;
-  RPS_ASSERT(_.depthv.is_int());
-  auto depthi = _.depthv.to_int();
+  _f.obclass = arg0class.as_object();
+  RPS_ASSERT(_f.obclass);
+  _f.obwin = arg1obwin.as_object();
+  RPS_ASSERT(_f.obwin);
+  _f.depthv = arg2depth;
+  RPS_ASSERT(_f.depthv.is_int());
+  auto depthi = _f.depthv.to_int();
   RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT start !method class/display_object_payload_fltk @!@° obclass="
-                << _.obclass << ", obwin=" << _.obwin
-                << " of class:" << Rps_Value(_.obwin).compute_class(&_)
+                << _f.obclass << ", obwin=" << _f.obwin
+                << " of class:" << Rps_Value(_f.obwin).compute_class(&_)
                 << ", depthi=" << depthi << std::endl
                 << RPS_FULL_BACKTRACE_HERE(2,
                     "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_fltk")

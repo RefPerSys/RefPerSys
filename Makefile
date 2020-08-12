@@ -38,7 +38,8 @@ RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
 
 
-RPS_BUILD_CCACHE?= ccache
+#RPS_BUILD_CCACHE?= ccache
+RPS_BUILD_CCACHE= 
 RPS_BUILD_CC?= gcc
 RPS_BUILD_CXX?= g++
 RPS_BUILD_DIALECTFLAGS = -std=gnu++17

@@ -71,9 +71,9 @@ Rps_InstanceZone::compute_class(Rps_CallFrame*callerframe) const
                  Rps_ObjectRef obclass;
                 );
   RPS_ASSERT(stored_type() == Rps_Type::Instance);
-  _.obclass = get_class();
-  RPS_ASSERT(_.obclass->get_classinfo_payload());
-  return _.obclass;
+  _f.obclass = get_class();
+  RPS_ASSERT(_f.obclass->get_classinfo_payload());
+  return _f.obclass;
 } // end Rps_InstanceZone::compute_class
 
 
