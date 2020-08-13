@@ -336,7 +336,7 @@ class Rps_FltkEvLoop_CallFrame :
   friend void rps_fltk_event_loop(Rps_CallFrame*callframe);
   friend class Rps_GarbageCollector;
 protected:
-  /// after here, no GC-ed value anymore
+  /// after here, no instance GC-ed value anymore
   ////////////////
   // Our TODO machinery: the key of below ordered map is an absolute
   // time, as given by rps_monotonic_real_time the value in entries of
@@ -364,6 +364,7 @@ public:
   ~Rps_FltkEvLoop_CallFrame();
   Rps_FltkEvLoop_CallFrame*
   find_calling_event_call_frame(const Rps_CallFrame*callframe);
+  void gc_mark_todos(Rps_GarbageCollector*);
 };				// end class Rps_FltkEvLoop_CallFrame
 
 /// static data of Rps_FltkEvLoop_CallFrame
@@ -437,6 +438,26 @@ Rps_FltkEvLoop_CallFrame::find_calling_event_call_frame(const Rps_CallFrame*call
   return nullptr;
 } // end Rps_FltkEvLoop_CallFrame::find_calling_event_call_frame
 
+void
+Rps_FltkEvLoop_CallFrame::gc_mark_todos(Rps_GarbageCollector*gc)
+{
+  RPS_ASSERT(gc != nullptr && gc->is_valid_garbcoll());
+  std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
+  for (auto todoit: evloopfr_todos)
+    {
+      Rps_Todo& curtodo = todoit.second;
+      if (curtodo.is_todo_function())
+        continue;
+      else   // curtodo is a todo closure
+        {
+          auto& curtodoclos = curtodo.as_todo_closure();
+          curtodoclos.get_todo_clos().gc_mark(*gc);
+          curtodoclos.get_todo_arg1().gc_mark(*gc);
+          curtodoclos.get_todo_arg2().gc_mark(*gc);
+          curtodoclos.get_todo_arg3().gc_mark(*gc);
+        }
+    }
+} // end Rps_FltkEvLoop_CallFrame::gc_mark_todos
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
