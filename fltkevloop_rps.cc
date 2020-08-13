@@ -362,6 +362,8 @@ public:
   Rps_FltkEvLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
                            Rps_ObjectRef descr, int depth, Rps_EventLoop_tag);
   ~Rps_FltkEvLoop_CallFrame();
+  Rps_FltkEvLoop_CallFrame*
+  find_calling_event_call_frame(const Rps_CallFrame*callframe);
 };				// end class Rps_FltkEvLoop_CallFrame
 
 /// static data of Rps_FltkEvLoop_CallFrame
@@ -413,6 +415,28 @@ Rps_FltkEvLoop_CallFrame::~Rps_FltkEvLoop_CallFrame()
     }
   RPS_DEBUG_LOG(GUI, "-°~Rps_FltkEvLoop_CallFrame-destr this@" << (void*)this << " evlserial#" << serial << std::endl);
 } // end Rps_FltkEvLoop_CallFrame::~Rps_FltkEvLoop_CallFrame
+
+
+
+
+/// the object whose name is "fltk_event_loop" is a RefPerSys frame
+/// descriptor for FTK event loops GC call frames.
+#define RPS_FLTK_EVENT_LOOP_DESCR RPS_ROOT_OB(_39OsVkAJDdV00ohD5r)
+
+Rps_FltkEvLoop_CallFrame*
+Rps_FltkEvLoop_CallFrame::find_calling_event_call_frame(const Rps_CallFrame*callframe)
+{
+  Rps_FltkEvLoop_CallFrame*evcallframe = nullptr;
+  for (const Rps_CallFrame*curcallframe = callframe;
+       curcallframe != nullptr && Rps_CallFrame::is_good_call_frame(curcallframe);
+       curcallframe = curcallframe->previous_call_frame())
+    {
+      if (curcallframe->call_frame_descriptor() == RPS_FLTK_EVENT_LOOP_DESCR)
+        return (Rps_FltkEvLoop_CallFrame*)(curcallframe);
+    }
+  return nullptr;
+} // end Rps_FltkEvLoop_CallFrame::find_calling_event_call_frame
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
