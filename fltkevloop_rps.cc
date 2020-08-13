@@ -72,7 +72,7 @@ rps_fltk_version(void)
 
 
 ////////////////////////////////////////////////////////////////
-class Rps_FltkEventLoop_CallFrame;
+class Rps_FltkEvLoop_CallFrame;
 struct Rps_Todo_Base
 {
   static std::atomic<unsigned> _todo_serial_counter_;
@@ -186,7 +186,7 @@ public:
   {
     return todo_arg3v;
   };
-  void apply_todo_clos(Rps_FltkEventLoop_CallFrame*callfram) const
+  void apply_todo_clos(Rps_FltkEvLoop_CallFrame*callfram) const
   {
     todo_closv.apply3(reinterpret_cast<Rps_CallFrame*>(callfram),
                       todo_arg1v, todo_arg2v, todo_arg3v);
@@ -365,6 +365,7 @@ public:
   Rps_FltkEvLoop_CallFrame*
   find_calling_event_call_frame(const Rps_CallFrame*callframe);
   void gc_mark_todos(Rps_GarbageCollector*);
+  void run_scheduled_fltk_todos(void);
 };				// end class Rps_FltkEvLoop_CallFrame
 
 /// static data of Rps_FltkEvLoop_CallFrame
@@ -458,6 +459,82 @@ Rps_FltkEvLoop_CallFrame::gc_mark_todos(Rps_GarbageCollector*gc)
         }
     }
 } // end Rps_FltkEvLoop_CallFrame::gc_mark_todos
+
+
+
+void
+Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos(void)
+{
+  RPS_ASSERT(rps_is_main_gui_thread());
+  RPS_DEBUG_LOG(GUI, "start Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth
+                << " this@" << this << " evlserial#" << evloopfr_serial <<std::endl
+                << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos*start"));
+
+  std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
+  std::vector<Rps_Todo> todovect;
+  RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth
+                << " evlserial#" << evloopfr_serial
+                << " evloopfr_todos@" << (void*)&evloopfr_todos
+                << " evloopfr_todos size=" << evloopfr_todos.size());
+  int todocnt=0;
+  for (auto todoit: evloopfr_todos)
+    {
+      double timeout = todoit.first;
+      if (timeout >= rps_monotonic_real_time())
+        break;
+      Rps_Todo& curtodo = todoit.second;
+      todocnt++;
+      RPS_DEBUG_LOG(GUI,
+                    "Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos curtodo=" << curtodo
+                    << " evlserial#" << evloopfr_serial
+                    << " todocnt=" << todocnt);
+      todovect.push_back(curtodo);
+    };
+  RPS_DEBUG_LOG(GUI,
+                "Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos this@" << this
+                << " depth#" << evloopfr_depth <<  " evlserial#" << evloopfr_serial << " should do " << todovect.size() << " todos");
+  int loopcnt=0;
+  for (auto curtodo : todovect)
+    {
+      loopcnt++;
+      auto curit = evloopfr_todos.find(curtodo.timeout());
+      RPS_ASSERT(curit != evloopfr_todos.end());
+      evloopfr_todos.erase(curit);
+      int todolineno = curtodo.lineno();
+      const char*todofilename = curtodo.filename();
+      const char*todolabel = curtodo.label();
+      RPS_DEBUGNL_LOG(GUI,
+                      "Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos todolineno=" << todolineno
+                      << " todofilename=" << todofilename << " todolabel=" << todolabel
+                      << " curtodo=" << curtodo << " loopcnt#" << loopcnt <<  " evlserial#" << evloopfr_serial);
+      if (curtodo.is_todo_function())
+        {
+          Rps_Todo_Function& curtodofun = const_cast<Rps_Todo_Function&>(curtodo.as_todo_function());
+          RPS_DEBUG_LOG(GUI,
+                        "run_scheduled_fltk_todos function depth#"
+                        << evloopfr_depth << " evlserial#" << evloopfr_serial
+                        << " before applying function from "
+                        << todofilename << ":" << todolineno << (todolabel?"labeled:":"") << (todolabel?todolabel:"")) ;
+          curtodofun.apply_todo_function(this);
+        }
+      else   // curtodo is closure
+        {
+          auto& curtodoclos = curtodo.as_todo_closure();
+          RPS_DEBUG_LOG(GUI,
+                        "run_scheduled_fltk_todos closure depth#"
+                        << evloopfr_depth << " evlserial#" << evloopfr_serial
+                        << " before applying closure from "
+                        << todofilename << ":" << todolineno << (todolabel?"labeled:":"") << (todolabel?todolabel:"")
+                        << " closure=" << curtodoclos.get_todo_clos()
+                        << " arg1=" << curtodoclos.get_todo_arg1()
+                        << " arg2=" << curtodoclos.get_todo_arg2()
+                        << " arg3=" << curtodoclos.get_todo_arg3());
+          curtodoclos.apply_todo_clos(this);
+        }
+    }
+  RPS_DEBUG_LOG(GUI, "end Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth
+                <<   " evlserial#" << evloopfr_serial<< std::endl);
+}; // end Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
