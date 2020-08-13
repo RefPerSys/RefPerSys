@@ -218,13 +218,17 @@ public:
   };
   Rps_Todo(Rps_Todo&& todosrc)
   {
-    if (todosrc.is_todo_function()) new(&todo_function) Rps_Todo(todosrc.todo_function);
-    else new(&todo_zone) Rps_Todo(todosrc.todo_closure);
+    if (todosrc.is_todo_function())
+      new(&todo_zone) Rps_Todo(todosrc.todo_function);
+    else
+      new(&todo_zone) Rps_Todo(todosrc.todo_closure);
   };
   Rps_Todo(const Rps_Todo&todosrc)
   {
-    if (todosrc.is_todo_function()) new(&todo_function) Rps_Todo(todosrc.todo_function);
-    else new(&todo_zone) Rps_Todo(todosrc.todo_closure);
+    if (todosrc.is_todo_function())
+      new(&todo_zone) Rps_Todo(todosrc.todo_function);
+    else
+      new(&todo_zone) Rps_Todo(todosrc.todo_closure);
   };
   const Rps_Todo_Closure& as_todo_closure() const
   {
