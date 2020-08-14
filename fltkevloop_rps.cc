@@ -366,7 +366,7 @@ public:
   Rps_FltkEvLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
                            Rps_ObjectRef descr, int depth, Rps_EventLoop_tag);
   ~Rps_FltkEvLoop_CallFrame();
-  Rps_FltkEvLoop_CallFrame*
+  static Rps_FltkEvLoop_CallFrame*
   find_calling_event_call_frame(const Rps_CallFrame*callframe);
   void gc_mark_todos(Rps_GarbageCollector*);
   void run_scheduled_fltk_todos(void);
@@ -568,10 +568,10 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
   RPS_FATALOUT("incomplete rps_fltk_add_delayed_labeled_todo_at filename=" << filename
                << " lineno=" << lineno
                << " label=" << label);
-#if 0 && oldcode
   if (rps_is_main_gui_thread())
     {
-      RpsOld_FltkEventLoop_CallFrame*eventcallframe = RpsOld_FltkEventLoop_CallFrame::find_calling_event_call_frame(curframe);
+      Rps_FltkEvLoop_CallFrame*eventcallframe =
+        Rps_FltkEvLoop_CallFrame::find_calling_event_call_frame(curframe);
       if (!eventcallframe)
         RPS_FATALOUT("no event call frame in rps_fltk_add_delayed_todo for callframe@" << curframe);
       std::lock_guard<std::recursive_mutex> gu(eventcallframe->evloopfr_mtx);
@@ -580,7 +580,10 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
       int loopcnt = 0;
       for (;;)
         {
-          RPS_ASSERT(loopcnt < 32); // it is very unlikely that we loop more than 32 times
+          RPS_ASSERT(loopcnt < 32); // it is very unlikely that we
+          // loop more than 32 times, we
+          // would probably loop once or
+          // twice...
           if (eventcallframe->evloopfr_todos.find(todotime) == eventcallframe->evloopfr_todos.end())
             {
               eventcallframe->evloopfr_todos.insert({todotime, newtodo});
@@ -605,7 +608,6 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
                    << " filename=" << filename << ", lineno=" << lineno
                    << " label=" << label << " delay=" << delay << " arg1=" << arg1 << " arg2=" << arg2);
     }
-#endif /*0 && oldcode*/
   RPS_ASSERT(todo);
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at ending filename=" << filename << ", lineno=" << lineno
                 << " newtodo=" << newtodo << std::endl
