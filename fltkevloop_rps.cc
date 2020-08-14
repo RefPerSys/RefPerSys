@@ -623,7 +623,7 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
 {
   RPS_ASSERT(Rps_CallFrame::is_good_call_frame(curframe));
   /** TODO: we should find the call frame below the given callframe
-      which is an RpsOld_FltkEventLoop_CallFrame then insert the todo in
+      which is an Rps_FltkEvLoop_CallFrame then insert the todo in
       it. We also need to handle the more complex case when
       rps_fltk_add_delayed_todo is called from a non GUI thread. */
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at curframe@" << curframe
@@ -632,14 +632,10 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
                 << " closv=" << closv << " arg1v=" << arg1v << " arg2v=" << arg2v);
   auto newtodo = Rps_Todo(Rps_Todo_Closure(lineno, filename, delay, label, closv, arg1v, arg2v));
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at newtodo=" << newtodo);
-  RPS_FATALOUT("incomplete rps_fltk_add_delayed_labeled_closure_at filename="
-               << filename << " lineno=" << lineno
-               << " label=" << label);
-#warning incomplete rps_fltk_add_delayed_labeled_closure_at
-#if 0 && oldcode
   if (rps_is_main_gui_thread())
     {
-      RpsOld_FltkEventLoop_CallFrame*eventcallframe = RpsOld_FltkEventLoop_CallFrame::find_calling_event_call_frame(curframe);
+      Rps_FltkEvLoop_CallFrame*eventcallframe
+        = Rps_FltkEvLoop_CallFrame::find_calling_event_call_frame(curframe);
       if (!eventcallframe)
         RPS_FATALOUT("no event call frame in rps_fltk_add_delayed_labeled_closure_at for callframe@" << curframe << " filename=" << filename
                      << " lineno=" << lineno
@@ -653,7 +649,9 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
       int loopcnt = 0;
       for (;;)
         {
-          RPS_ASSERT(loopcnt < 32); // it is very unlikely that we loop more than 32 times
+          RPS_ASSERT(loopcnt < 32); // it is very unlikely that we
+          // loop more than 32 times, but
+          // probably once or twice
           if (eventcallframe->evloopfr_todos.find(todotime) == eventcallframe->evloopfr_todos.end())
             {
               RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at_at inserted in eventcallframe=" << eventcallframe
@@ -680,11 +678,12 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
                    << " filename=" << filename << ", lineno=" << lineno << " label=" << label
                    << " delay=" << delay << " closv=" << closv << " arg1v=" << arg1v << " arg2v=" << arg2v);
     }
-#endif /*0 && oldcode*/
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at ending filename=" << filename << ", lineno=" << lineno
                 << " todo=" << newtodo << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "*end-rps_fltk_add_delayed_labeled_closure_at*") <<std::endl);
 } // end rps_fltk_add_delayed_labeled_closure_at
+
+
 
 void
 rps_fltk_stop_event_loop(void)
