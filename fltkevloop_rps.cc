@@ -596,9 +596,6 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
                 << " curframe@" << curframe);
   auto newtodo = Rps_Todo(Rps_Todo_Function(filename, lineno, label, delay, todo, arg1, arg2));
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at newtodo=" << newtodo);
-  RPS_FATALOUT("incomplete rps_fltk_add_delayed_labeled_todo_at filename=" << filename
-               << " lineno=" << lineno
-               << " label=" << label);
   if (rps_is_main_gui_thread())
     {
       Rps_FltkEvLoop_CallFrame*eventcallframe =
