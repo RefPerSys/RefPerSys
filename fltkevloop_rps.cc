@@ -585,7 +585,7 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
   RPS_ASSERT(Rps_CallFrame::is_good_call_frame(curframe));
   RPS_ASSERT(delay >= 0);
   /** TODO: we should find the call frame below the given callframe
-      which is an RpsOld_FltkEventLoop_CallFrame then invoke
+      which is an Rps_FltkEvLoop_CallFrame then invoke
       fltk_add_delayed_todo on it. We also need to handle the more
       complex case when rps_fltk_add_delayed_todo is called from a non
       GUI thread. */
@@ -611,10 +611,9 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
       int loopcnt = 0;
       for (;;)
         {
-          RPS_ASSERT(loopcnt < 32); // it is very unlikely that we
-          // loop more than 32 times, we
-          // would probably loop once or
-          // twice...
+	  // it is very unlikely that we loop more than 32 times, we
+          // would probably loop once or twice...
+          RPS_ASSERT(loopcnt < 32);
           if (eventcallframe->evloopfr_todos.find(todotime) == eventcallframe->evloopfr_todos.end())
             {
               eventcallframe->evloopfr_todos.insert({todotime, newtodo});
@@ -680,9 +679,9 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
       int loopcnt = 0;
       for (;;)
         {
-          RPS_ASSERT(loopcnt < 32); // it is very unlikely that we
-          // loop more than 32 times, but
+	  // it is very unlikely that we loop more than 32 times, but
           // probably once or twice
+          RPS_ASSERT(loopcnt < 32);
           if (eventcallframe->evloopfr_todos.find(todotime) == eventcallframe->evloopfr_todos.end())
             {
               RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at_at inserted in eventcallframe=" << eventcallframe
@@ -955,11 +954,9 @@ void
 rps_run_fltk_gui(int &argc, char**argv)
 {
   rps_main_gui_pthread = pthread_self();
-  RPS_FATALOUT("incomplete rps_run_fltk_gui argc=" << argc << " argv=" << argv);
-#if 0 && oldcode
-  RpsOld_FltkEventLoop_CallFrame _(nullptr, __LINE__,
+  Rps_FltkEvLoop_CallFrame _(nullptr, __LINE__,
                                    RPS_FLTK_EVENT_LOOP_DESCR, 1,
-                                   RpsOld_FltkEventLoop_CallFrame::Rps_EventLoop_tag{});
+                                   Rps_FltkEvLoop_CallFrame::Rps_EventLoop_tag{});
   RPS_DEBUG_LOG(GUI, "start rps_run_fltk_gui _@" << ((void*)&_)  << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_fltk_gui"));
   // for debugging purposes of the event loop we handle the
@@ -983,7 +980,6 @@ rps_run_fltk_gui(int &argc, char**argv)
   rps_fltk_event_loop(&_);
   RPS_DEBUG_LOG(GUI, "end rps_run_fltk_gui _@" << ((void*)&_)  << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "end rps_run_fltk_gui") << std::endl);
-#endif /*oldcode*/
 } // rps_run_fltk_gui
 
 
