@@ -1,6 +1,9 @@
 #!/bin/bash
+export LANG=en_EN
+export LC_ALL=en_EN.UTF-8
+export LC_TIME=en_EN.UTF-8
 printf "// generated file %s -- DONT EDIT\n" $1
-date +"const char rps_timestamp[]=\"%c\";%nconst unsigned long rps_timelong=%sL;%n"
+date +"const char rps_timestamp[]=\"%c %Z\";%nconst unsigned long rps_timelong=%sL;%n"
 printf "const char rps_topdirectory[]=\"%s\";\n" $(realpath $(pwd))
 
 if git status|grep -q 'nothing to commit' ; then
