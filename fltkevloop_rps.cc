@@ -561,22 +561,25 @@ Rps_FltkEvLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
                   << RPS_FULL_BACKTRACE_HERE(1, "fltk_event_wait"));
       return;
     }
-  else {
-    RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
-                  << " after wait delw=" << delw);
-    run_scheduled_fltk_todos();
-    /// handle, if available, another FLTK event
-    if (delw >= 0.0) {
-      auto del2w = Fl::wait(0.5);
+  else
+    {
       RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
-		    << " after wait del2w=" << del2w);
-      if (del2w > 0.0) {
-	run_scheduled_fltk_todos();
-	RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
-		      << " after second run_scheduled_fltk_todos for del2w=" << del2w);
-      }
+                    << " after wait delw=" << delw);
+      run_scheduled_fltk_todos();
+      /// handle, if available, another FLTK event
+      if (delw >= 0.0)
+        {
+          auto del2w = Fl::wait(0.5);
+          RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
+                        << " after wait del2w=" << del2w);
+          if (del2w > 0.0)
+            {
+              run_scheduled_fltk_todos();
+              RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
+                            << " after second run_scheduled_fltk_todos for del2w=" << del2w);
+            }
+        }
     }
-  }
   RPS_DEBUG_LOG(GUI, "end Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth  <<  " evlserial#" << evloopfr_serial<< std::endl);
 }; // end Rps_FltkEvLoop_CallFrame::fltk_event_wait
 
@@ -620,7 +623,7 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
       int loopcnt = 0;
       for (;;)
         {
-	  // it is very unlikely that we loop more than 32 times, we
+          // it is very unlikely that we loop more than 32 times, we
           // would probably loop once or twice...
           RPS_ASSERT(loopcnt < 32);
           if (eventcallframe->evloopfr_todos.find(todotime) == eventcallframe->evloopfr_todos.end())
@@ -628,8 +631,9 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
               eventcallframe->evloopfr_todos.insert({todotime, newtodo});
               RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at inserted in eventcallframe@" << eventcallframe
                             << " evlserial#" << eventcallframe->evloopfr_serial
-                            << " todotime=" << todotime
-                            << " evloopfr_todos@" << (void*)(&eventcallframe->evloopfr_todos)
+                            << " todotime=" << todotime << std::endl
+                            << "... evloopfr_todos@" << (void*)(&eventcallframe->evloopfr_todos)
+                            << " size:" << eventcallframe->evloopfr_todos.size()
                             << " filename=" << filename
                             << " lineno=" << lineno << " label=" << label
                             << " newtodo=" << newtodo);
@@ -684,11 +688,14 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
                      << " arg1v=" << arg1v << " arg2v=" << arg2v);
       std::lock_guard<std::recursive_mutex> gu(eventcallframe->evloopfr_mtx);
       Fl::flush();
+      RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at inserted in eventcallframe=" << eventcallframe
+                    << " evloopfr_todos@" << (&eventcallframe->evloopfr_todos)
+                    << " size:" << eventcallframe->evloopfr_todos.size());
       double todotime = rps_monotonic_real_time() + delay;
       int loopcnt = 0;
       for (;;)
         {
-	  // it is very unlikely that we loop more than 32 times, but
+          // it is very unlikely that we loop more than 32 times, but
           // probably once or twice
           RPS_ASSERT(loopcnt < 32);
           if (eventcallframe->evloopfr_todos.find(todotime) == eventcallframe->evloopfr_todos.end())
@@ -964,8 +971,8 @@ rps_run_fltk_gui(int &argc, char**argv)
 {
   rps_main_gui_pthread = pthread_self();
   Rps_FltkEvLoop_CallFrame _(nullptr, __LINE__,
-                                   RPS_FLTK_EVENT_LOOP_DESCR, 1,
-                                   Rps_FltkEvLoop_CallFrame::Rps_EventLoop_tag{});
+                             RPS_FLTK_EVENT_LOOP_DESCR, 1,
+                             Rps_FltkEvLoop_CallFrame::Rps_EventLoop_tag{});
   RPS_DEBUG_LOG(GUI, "start rps_run_fltk_gui _@" << ((void*)&_)  << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_fltk_gui"));
   // for debugging purposes of the event loop we handle the
