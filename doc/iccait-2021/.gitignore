@@ -1,0 +1,9 @@
+*.aux
+*.bbl
+*.bcf
+*.log
+*.blg
+*.pdf
+
+generated-iccait2021-gitid.tex
+spiral-stairs.eps
