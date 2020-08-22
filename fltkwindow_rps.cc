@@ -387,18 +387,42 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std
     cmdwin_pack(nullptr)
 {
   Fl_Widget::type((uchar)RpsGuiType_CommandWindow);
+  Rps_FltkEvLoop_CallFrame* curfltkframe = Rps_FltkEvLoop_CallFrame::current_call_frame();
   RPS_DEBUG_LOG(GUI, "°creating RpsGui_CommandWindow x=" << x << ", y=" << y
                 << " w=" << w << ", h=" << h
                 << ", lab='" << lab
                 << "', this:" << RpsGui_ShowFullWidget(this)
+                << ", curfltkframe=" << (void*)curfltkframe
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow constr"));
-  this->begin();
-#warning we could consider using RPS_FLTK_ADD_DELAYED_LABELED_TODO_0 to postpone the initialization of the menubar and of the pack
-  this->initialize_menubar();
-  RPS_DEBUG_LOG(GUI, "°RpsGui_CommandWindow before initialize_pack");
-  this->initialize_pack();
-  this->end();
+  RPS_ASSERT(curfltkframe != nullptr);
+  /// we hope for some visible blinking effect; once it works, we
+  /// could code simpler...
+  RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(curfltkframe,"RpsGui_CommandWindow-initmenubar-TODO",
+                                      0.25,
+                                      [=](Rps_CallFrame*cf,void*,void*)
+  {
+    RPS_DEBUG_LOG(GUI, "°RpsGui_CommandWindow TODO initmenubar curfltkframe=" << curfltkframe
+                  << ", cf=" << cf
+                  << " this:" << RpsGui_ShowFullWidget(this));
+    this->begin();
+    this->initialize_menubar();
+    this->end();
+  }
+                                     );
+  RPS_DEBUG_LOG(GUI, "°RpsGui_CommandWindow using delayed todo for menubar and pack initialization this:"<< RpsGui_ShowFullWidget(this));
+  RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(curfltkframe,"RpsGui_CommandWindow-initpack-TODO",
+                                      0.40,
+                                      [=](Rps_CallFrame*cf,void*,void*)
+  {
+    RPS_DEBUG_LOG(GUI, "°RpsGui_CommandWindow TODO initpack curfltkframe=" << curfltkframe
+                  << ", cf=" << cf
+                  << " this:" << RpsGui_ShowFullWidget(this));
+    this->begin();
+    this->initialize_pack();
+    this->end();
+  }
+                                     );
   RPS_DEBUG_LOG(GUI, "created RpsGui_CommandWindow this:" << RpsGui_ShowWidget(this) << std::endl);
 }; // end RpsGui_CommandWindow::RpsGui_CommandWindow
 
