@@ -212,7 +212,8 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
   auto depthi = _f.recdepth.to_int();
   RPS_DEBUG_LOG(GUI, "rpsapply_33DFyPOJxbF015ZYoi start tupleval=" << _f.tupleval
                 << "objwnd =" << _f.objwnd
-                << ", recdepth=" <<  _f.recdepth);
+                << ", recdepth=" <<  _f.recdepth
+                << ", depthi=" << depthi);
 #warning unimplemented rpsapply_33DFyPOJxbF015ZYoi
   RPS_FATAL("unimplemented rpsapply_33DFyPOJxbF015ZYoi");
 } // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_fltk
@@ -248,7 +249,8 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
   auto depthi = _f.recdepth.to_int();
   RPS_DEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_fltk start setval=" << _f.setval
                 << "objwnd =" << _f.objwnd
-                << ", recdepth=" <<  _f.recdepth);
+                << ", recdepth=" <<  _f.recdepth
+                << ", depthi=" << depthi);
 #warning unimplemented rpsapply_1568ZHTl0Pa00461I2
   RPS_FATAL("unimplemented rpsapply_1568ZHTl0Pa00461I2");
 } // end of rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_fltk
@@ -274,6 +276,7 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                  //....etc....
                 );
+  _f.obrecv = arg0_objrecv.as_object();
   RPS_DEBUG_LOG(GUI, "rpsapply_18DO93843oX02UWzq6 start arg0_objrecv="
                 << arg0_objrecv << ", arg1_objwnd=" << arg1_objwnd
                 << ", arg2_recdepth=" << arg2_recdepth << std::endl
@@ -317,7 +320,8 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
   auto depthi = _f.recdepth.to_int();
   RPS_DEBUG_LOG(GUI, "rpsapply_0rgijx7CCnq041IZEd start instrecv=" << _f.instrecv
                 << "objwnd =" << _f.objwnd
-                << ", recdepth=" <<  _f.recdepth);
+                << ", recdepth=" <<  _f.recdepth
+                << ", depthi=" << depthi);
 #warning unimplemented rpsapply_0rgijx7CCnq041IZEd
   RPS_FATAL("unimplemented rpsapply_0rgijx7CCnq041IZEd");
 } // end of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_fltk
@@ -358,11 +362,12 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
   auto depthi = _f.recdepth.to_int();
   RPS_DEBUG_LOG(GUI, "rpsapply_6Wi00FwXYID00gl9Ma start closrecv=" << _f.closrecv
                 << "objwnd =" << _f.objwnd
-                << ", recdepth=" <<  _f.recdepth);
+                << ", recdepth=" <<  _f.recdepth
+                << ", depthi=" << depthi);
   _f.obconn = _f.closrecv->conn();
   unsigned width = _f.closrecv->cnt();
 #warning unimplemented rpsapply_6Wi00FwXYID00gl9Ma
-  RPS_FATAL("unimplemented rpsapply_6Wi00FwXYID00gl9Ma");
+  RPS_FATALOUT("unimplemented rpsapply_6Wi00FwXYID00gl9Ma width=" << width);
 } // end of rpsapply_6Wi00FwXYID00gl9Ma !method closure/display_value_fltk
 
 
@@ -397,7 +402,8 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
   auto depthi = _f.recdepth.to_int();
   RPS_DEBUG_LOG(GUI, "rpsapply_42cCN1FRQSS03bzbTz start jsrecv=" << _f.jsrecv
                 << "objwnd =" << _f.objwnd
-                << ", recdepth=" <<  _f.recdepth);
+                << ", recdepth=" <<  _f.recdepth
+                << ", depthi=" << depthi);
 #warning unimplemented rpsapply_42cCN1FRQSS03bzbTz
   RPS_FATAL("unimplemented rpsapply_42cCN1FRQSS03bzbTz");
 } // end of rpsapply_42cCN1FRQSS03bzbTz !method json/display_value_fltk

@@ -2465,7 +2465,6 @@ void rpsldpy_classinfo(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
   nbmeth = jvmethodict.size();
   for (int methix=0; methix<(int)nbmeth; methix++)
     {
-      size_t curlen=0;
       Json::Value jvcurmeth = jvmethodict[methix];
       if (!jvcurmeth.isObject()
           || !jvcurmeth.isMember("methosel")
@@ -2564,6 +2563,8 @@ void rpsldpy_space(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
+  RPS_ASSERT(spacid);
+  RPS_ASSERT(lineno>0);
   auto paylspace = obz->put_new_plain_payload<Rps_PayloadSpace>();
   RPS_ASSERT(paylspace != nullptr);
 } // end of rpsldpy_setob

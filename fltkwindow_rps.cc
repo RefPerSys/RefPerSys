@@ -282,7 +282,7 @@ void rps_set_gui_dump_dir(const std::string&str)
 std::set<RpsGui_Window*> RpsGui_Window::_set_of_gui_windows_;
 
 RpsGui_Window::RpsGui_Window(int w, int h, const std::string& lab)
-  : Fl_Double_Window(w,h), guiwin_ownoid(), guiwin_label(lab), guiwin_menubar(nullptr)
+  : Fl_Double_Window(w,h), guiwin_menubar(nullptr), guiwin_ownoid(),  guiwin_label(lab)
 {
   RPS_ASSERT(rps_is_main_gui_thread());
   label(guiwin_label.c_str());
@@ -291,7 +291,7 @@ RpsGui_Window::RpsGui_Window(int w, int h, const std::string& lab)
 
 
 RpsGui_Window::RpsGui_Window(int x, int y, int w, int h, const std::string& lab)
-  : Fl_Double_Window(x,y,w,h), guiwin_ownoid(), guiwin_menubar(nullptr), guiwin_label(lab)
+  : Fl_Double_Window(x,y,w,h), guiwin_menubar(nullptr), guiwin_ownoid(), guiwin_label(lab)
 {
   RPS_DEBUG_LOG(GUI, "RpsGui_Window x=" << x << " y=" << y << " w=" << w << ", h=" << h << ", lab='" << lab
                 << "', this:" << RpsGui_ShowFullWidget<RpsGui_Window>(this));
@@ -637,6 +637,7 @@ Rps_PayloadWindow::is_erasable() const
 void
 Rps_PayloadWindow::gc_mark(Rps_GarbageCollector&gc) const
 {
+  RPS_ASSERT(gc.is_valid_garbcoll());
 } // end Rps_PayloadWindow::gc_mark
 
 void

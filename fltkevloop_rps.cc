@@ -56,7 +56,7 @@ std::string
 rps_fltk_version(void)
 {
   std::string res("FLTK ");
-  char fltkgitbuf[48];
+  char fltkgitbuf[64];
   memset (fltkgitbuf, 0, sizeof(fltkgitbuf));
   strncpy(fltkgitbuf, rps_fltkevloop_gitid, 3*sizeof(fltkgitbuf)/4);
   res += "git ";
@@ -178,7 +178,6 @@ Rps_FltkEvLoop_CallFrame::~Rps_FltkEvLoop_CallFrame()
 Rps_FltkEvLoop_CallFrame*
 Rps_FltkEvLoop_CallFrame::find_calling_event_call_frame(const Rps_CallFrame*callframe)
 {
-  Rps_FltkEvLoop_CallFrame*evcallframe = nullptr;
   for (const Rps_CallFrame*curcallframe = callframe;
        curcallframe != nullptr && Rps_CallFrame::is_good_call_frame(curcallframe);
        curcallframe = curcallframe->previous_call_frame())
@@ -570,7 +569,6 @@ rps_fltk_arg_handler(int argc, char**argv, int &i)
     for (struct argp_option *aopt = rps_progoptions; aopt->name != nullptr; aopt++)
       {
         const char*restarg = nullptr;
-        bool goteq = false;
         int deltarg = 0;
         int aoptnlen = (aopt->name)?strlen(aopt->name):0;
         if (curarg[0]=='-' && curarg[1]=='-' && strncmp(curarg+2, aopt->name, aoptnlen))
@@ -578,7 +576,6 @@ rps_fltk_arg_handler(int argc, char**argv, int &i)
             if (curarg[2+aoptnlen]=='=')
               {
                 restarg = curarg+aoptnlen+3;
-                goteq = true;
                 deltarg = 1;
               }
           }
@@ -646,15 +643,15 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
   constexpr int min_gui_height = 48;
   constexpr int max_gui_width = 4096;
   constexpr int max_gui_height = 2048;
-  int w=default_gui_width, h=default_gui_width;
+  int w=default_gui_width, h=default_gui_height;
   {
     if (!rps_gui_pref.gui_geometry.empty())
       sscanf(rps_gui_pref.gui_geometry.c_str(), "%dx%d", &w, &h);
   }
   if (w < min_gui_width)
     w= min_gui_width;
-  if (w > max_gui_height)
-    w=max_gui_height;
+  if (w > max_gui_width)
+    w=max_gui_width;
   if (h < min_gui_height)
     h=min_gui_height;
   if (h > max_gui_height)
@@ -684,7 +681,9 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
                                       "TODO@ rps_fltk_initialize-initialize_menubar",
                                       0.1, [=](Rps_CallFrame*cf,void*,void*)
   {
-    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo initialize_menubar cmdwin=" << cmdwin << std::endl
+    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo initialize_menubar cmdwin=" << cmdwin
+                  << " cf=" << cf
+                  << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_menubar"));
     cmdwin->begin();
     cmdwin->initialize_menubar();
@@ -694,9 +693,12 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
   });
   /// delay initialization of pack
   RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(callerframe,
-                                      "TODO@ rps_fltk_initialize-initialize_pack", 0.2, [=](Rps_CallFrame*cf,void*,void*)
+                                      "TODO@ rps_fltk_initialize-initialize_pack", 0.2, //
+                                      [=](Rps_CallFrame*cf,void*,void*)
   {
-    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo initialize_pack cmdwin=" << cmdwin << std::endl
+    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo initialize_pack cmdwin=" << cmdwin
+                  << " cf=" << cf
+                  << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_pack"));
     cmdwin->begin();
     cmdwin->initialize_pack();

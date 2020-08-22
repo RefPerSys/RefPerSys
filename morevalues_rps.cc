@@ -57,7 +57,8 @@ void
 Rps_InstanceZone::val_output(std::ostream& outs, unsigned depth) const
 {
 #warning unimplemented Rps_InstanceZone::val_output
-  RPS_WARN("unimplemented Rps_InstanceZone::val_output");
+  RPS_WARNOUT("unimplemented Rps_InstanceZone::val_output"
+              << " for outs@" << &outs << " depth=" << depth);
 } // end Rps_InstanceZone::val_output
 
 

@@ -441,6 +441,12 @@ rps_fltk_geometry_string(const FltkWidgetClass*widg)
 // see https://cpppatterns.com/patterns/rule-of-five.html
 class RpsGui_Geometry
 {
+private:
+  int gm_x;
+  int gm_y;
+  int gm_height;
+  int gm_width;
+  float gm_scale;
 public:
   RpsGui_Geometry()
     : gm_x(0)
@@ -453,8 +459,8 @@ public:
   RpsGui_Geometry(int x, int y, int width, int height, float scale)
     : gm_x(x)
     , gm_y(y)
-    , gm_width(width)
     , gm_height(height)
+    , gm_width(width)
     , gm_scale(scale)
   { }
 
@@ -513,16 +519,10 @@ public:
     return ss.str();
   }
 
-private:
-  int gm_x;
-  int gm_y;
-  int gm_height;
-  int gm_width;
-  float gm_scale;
 };
 
 
-static void
+inline void
 rpsgui_get_window_geometry(const Fl_Widget* wx, RpsGui_Geometry& gm)
 {
   RPS_ASSERT (wx);
@@ -639,14 +639,14 @@ enum RpsGui_WinTypes
 class RpsGui_Window: public Fl_Double_Window
 {
   static std::set<RpsGui_Window*> _set_of_gui_windows_;
-public:
-  virtual int handle(int);
-  virtual uchar type() const =0;
-  static constexpr int guiwin_border = 5;
 protected:
   RpsGui_MenuBar *guiwin_menubar;
   Rps_Id guiwin_ownoid;
   std::string guiwin_label;
+public:
+  virtual int handle(int);
+  virtual uchar type() const =0;
+  static constexpr int guiwin_border = 5;
   virtual void initialize_menubar(void) =0;
   RpsGui_Window(int w, int h, const std::string& lab);
   RpsGui_Window(int x, int y, int w, int h, const std::string& lab);
