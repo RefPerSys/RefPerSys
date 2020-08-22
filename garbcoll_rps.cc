@@ -43,7 +43,8 @@ std::atomic<Rps_GarbageCollector*> Rps_GarbageCollector::gc_this_;
 std::atomic<uint64_t> Rps_GarbageCollector::gc_count_;
 
 Rps_GarbageCollector::Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers) :
-  gc_mtx(), gc_magic(_gc_magicnum_), gc_running(false), gc_rootmarkers(rootmarkers),
+  gc_mtx(), gc_running(false), gc_magic(_gc_magicnum_),
+  gc_rootmarkers(rootmarkers),
   gc_obscanque(),
   gc_nbscan(0), gc_nbmark(0), gc_nbdelete(0), gc_nbroots(0),
   gc_startelapsedtime(rps_elapsed_real_time()),
@@ -136,13 +137,15 @@ Rps_GarbageCollector::mark_gcroots(void)
      { this->mark_root_objectref(RPS_ROOT_OB(Oid)); };	\
   };
 #include "generated/rps-roots.hh"
+
   ///
   /// mark the hardcoded global symbols
-#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam)  {	\
-   if (RPS_SYMB_OB(Nam))			\
+#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam)  {		\
+   if (RPS_SYMB_OB(Nam))				\
      { this->mark_root_objectref(RPS_SYMB_OB(Nam)); };	\
 };
 #include "generated/rps-names.hh"
+
   ///
   /// mark the constants
 #define RPS_INSTALL_CONSTANT_OB(Oid) {		\

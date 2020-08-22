@@ -391,8 +391,8 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std
                 << " w=" << w << ", h=" << h
                 << ", lab='" << lab
                 << "', this:" << RpsGui_ShowFullWidget(this)
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow constr"));
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow constr"));
   this->begin();
 #warning we could consider using RPS_FLTK_ADD_DELAYED_LABELED_TODO_0 to postpone the initialization of the menubar and of the pack
   this->initialize_menubar();
@@ -406,7 +406,7 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std
 RpsGui_CommandWindow::~RpsGui_CommandWindow()
 {
   RPS_DEBUG_LOG(GUI, "°destroying RpsGui_CommandWindow this=" << RpsGui_ShowWidget(this) << std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow destr"));
+                << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_CommandWindow destr"));
 }; // end RpsGui_CommandWindow::~RpsGui_CommandWindow
 
 

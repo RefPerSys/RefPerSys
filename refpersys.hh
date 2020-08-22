@@ -2241,7 +2241,7 @@ class Rps_SeqObjRef : public Rps_LazyHashedZoneValue
   Rps_ObjectRef _seqob[RPS_FLEXIBLE_DIM+1];
   Rps_SeqObjRef(unsigned len) : Rps_LazyHashedZoneValue(seqty), _seqlen(len)
   {
-    memset (_seqob, 0, sizeof(Rps_ObjectRef)*len);
+    memset ((void*)_seqob, 0, sizeof(Rps_ObjectRef)*len);
   };
   Rps_ObjectRef*raw_data()
   {
@@ -2425,7 +2425,7 @@ class Rps_TreeZone : public Rps_LazyHashedZoneValue
       _treemetarank(0), _treemetaob(nullptr),
       _treeconnob(obr)
   {
-    memset (_treesons, 0, sizeof(Rps_Value)*len);
+    memset ((void*)_treesons, 0, sizeof(Rps_Value)*len);
   };
   Rps_Value*raw_data_sons()
   {
@@ -2777,7 +2777,7 @@ public:
   ~Rps_ProtoCallFrame() {
     if (cfram_size > 0) {
       assert (cfram_xtradata != nullptr);
-      memset (cfram_xtradata, 0, cfram_size*sizeof(intptr_t));
+      memset ((void*)cfram_xtradata, 0, cfram_size*sizeof(intptr_t));
       cfram_xtradata = nullptr;
     }
     else
