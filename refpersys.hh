@@ -1540,13 +1540,13 @@ extern "C" void rps_garbage_collect(std::function<void(Rps_GarbageCollector*)>* 
 class Rps_GarbageCollector
 {
   friend void rps_garbage_collect(std::function<void(Rps_GarbageCollector*)>* fun);
-  static std::atomic<Rps_GarbageCollector*> gc_this;
-  static std::atomic<uint64_t> gc_count;
+  static unsigned constexpr _gc_magicnum_ = 0xdae21691;  // 3672250001
+  static std::atomic<Rps_GarbageCollector*> gc_this_;
+  static std::atomic<uint64_t> gc_count_;
   friend class Rps_QuasiZone;
   std::mutex gc_mtx;
   std::atomic<bool> gc_running;
   unsigned gc_magic;
-  static unsigned constexpr _gc_magicnum_ = 0xdae21691;  // 3672250001
   const std::function<void(Rps_GarbageCollector*)> gc_rootmarkers;
   std::deque<Rps_ObjectRef> gc_obscanque;
   uint64_t gc_nbscan;
@@ -2069,7 +2069,7 @@ public:
   Rps_Value instance_from_components(Rps_CallFrame*stkf, Rps_ObjectRef obinstclass) const;
   // get atomic fields
   inline double get_mtime(void) const;
-  inline rps_applyingfun_t*get_applyingfun(const Rps_ClosureValue&closv) const
+  inline rps_applyingfun_t*get_applyingfun(const Rps_ClosureValue&) const
   {
     return ob_applyingfun.load();
   };

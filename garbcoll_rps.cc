@@ -39,8 +39,8 @@ const char rps_garbcoll_gitid[]= RPS_GITID;
 extern "C" const char rps_garbcoll_date[];
 const char rps_garbcoll_date[]= __DATE__;
 
-std::atomic<Rps_GarbageCollector*> Rps_GarbageCollector::gc_this;
-std::atomic<uint64_t> Rps_GarbageCollector::gc_count;
+std::atomic<Rps_GarbageCollector*> Rps_GarbageCollector::gc_this_;
+std::atomic<uint64_t> Rps_GarbageCollector::gc_count_;
 
 Rps_GarbageCollector::Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers) :
   gc_mtx(), gc_magic(_gc_magicnum_), gc_running(false), gc_rootmarkers(rootmarkers),
@@ -49,19 +49,19 @@ Rps_GarbageCollector::Rps_GarbageCollector(const std::function<void(Rps_GarbageC
   gc_startelapsedtime(rps_elapsed_real_time()),
   gc_startprocesstime(rps_process_cpu_time())
 {
-  RPS_ASSERT(gc_this.load() == nullptr);
-  gc_this.store(this);
-  gc_count.fetch_add(1);
+  RPS_ASSERT(gc_this_.load() == nullptr);
+  gc_this_.store(this);
+  gc_count_.fetch_add(1);
 } // end Rps_GarbageCollector::Rps_GarbageCollector
 
 
 Rps_GarbageCollector::~Rps_GarbageCollector()
 {
   RPS_ASSERT(is_valid_garbcoll());
-  RPS_ASSERT(gc_this.load() == this);
+  RPS_ASSERT(gc_this_.load() == this);
   RPS_ASSERT(gc_running.load() == false);
   RPS_ASSERT(gc_obscanque.empty());
-  gc_this.store(nullptr);
+  gc_this_.store(nullptr);
   gc_magic = 0;
 } // end Rps_GarbageCollector::~Rps_GarbageCollector
 
@@ -93,13 +93,13 @@ Rps_CallFrame::gc_mark_frame(Rps_GarbageCollector* gc)
 void
 rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
 {
-  RPS_ASSERT(Rps_GarbageCollector::gc_this.load() == nullptr);
+  RPS_ASSERT(Rps_GarbageCollector::gc_this_.load() == nullptr);
   Rps_GarbageCollector the_gc([=](Rps_GarbageCollector*gc)
   {
     if (pfun)
       (*pfun)(gc);
   });
-  auto gcnt = Rps_GarbageCollector::gc_count.load();
+  auto gcnt = Rps_GarbageCollector::gc_count_.load();
   RPS_INFORM("rps_garbage_collect before run; count#%ld",
              gcnt);
   the_gc.run_gc();

@@ -225,7 +225,7 @@ RpsGui_ShowWidget::output(std::ostream*pout) const
       {
         char adbuf[32];
         memset(adbuf, 0, sizeof(adbuf));
-        snprintf(adbuf, sizeof(adbuf), "@%#p", (void*)shown_widget);
+        snprintf(adbuf, sizeof(adbuf), "@%p", (void*)shown_widget);
         *pout << adbuf;
       }
       const char* wlabel = shown_widget->label();
