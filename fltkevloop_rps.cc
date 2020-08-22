@@ -371,6 +371,11 @@ public:
   void gc_mark_todos(Rps_GarbageCollector*);
   void fltk_event_wait(unsigned long count, double delay);
   void run_scheduled_fltk_todos(void);
+  /// return the current call frame, if inside the main thread and with an active Rps_FltkEvLoop_CallFrame
+  static volatile Rps_FltkEvLoop_CallFrame*current_call_frame(void)
+  {
+    return evloopfr_curframe_.load();
+  };
 };				// end class Rps_FltkEvLoop_CallFrame
 
 /// static data of Rps_FltkEvLoop_CallFrame
@@ -581,6 +586,7 @@ Rps_FltkEvLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
         }
     }
   RPS_DEBUG_LOG(GUI, "end Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth  <<  " evlserial#" << evloopfr_serial<< std::endl);
+  return;
 }; // end Rps_FltkEvLoop_CallFrame::fltk_event_wait
 
 
