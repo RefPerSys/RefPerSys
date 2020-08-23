@@ -103,6 +103,12 @@ Rps_CallFrame::output(std::ostream&out, int depth) const
     out << "#" << cfram_rankstate;
   if (cfram_clos)
     out << "" << cfram_clos;
+  Rps_CallFrameOutputSig_t*outputter = cfram_outputter.load();
+  if (outputter)
+    {
+      out << ":";
+      (*outputter)(out);
+    }
   out << "}]" << std::endl;
   if (depth<_cfram_output_depth_.load() && cfram_prev)
     cfram_prev->output(out, depth+1);

@@ -2741,7 +2741,7 @@ public:
 
 class Rps_ProtoCallFrame;
 typedef Rps_ProtoCallFrame Rps_CallFrame;
-
+typedef void Rps_CallFrameOutputSig_t(std::ostream&);
 ////////////////////////////////////////////////////////////////
 //// the common superclass of our call frames
 class Rps_ProtoCallFrame : public Rps_TypedZone
@@ -2754,6 +2754,7 @@ protected:
   intptr_t cfram_rankstate;
   Rps_ClosureValue cfram_clos; // the invoking closure, if any
   intptr_t* cfram_xtradata;
+  std::atomic<Rps_CallFrameOutputSig_t*> cfram_outputter;
   std::function<void(Rps_GarbageCollector*)> cfram_marker;
 public:
   static constexpr unsigned _cfram_max_size_ = 1024;
@@ -2767,6 +2768,7 @@ public:
       cfram_rankstate(0),
       cfram_clos(nullptr),
       cfram_xtradata((intptr_t*) xdata),
+      cfram_outputter(nullptr),
       cfram_marker() {
     // ensure that if some size is given, the xdata is a suitably
     // aligned pointer...
@@ -2789,7 +2791,10 @@ public:
     cfram_rankstate = 0;
     cfram_clos = nullptr;
   }; // end Rps_ProtoCallFrame destructor
-  
+  void set_outputter(nullptr_t) {  cfram_outputter.store(nullptr); };
+  void clear_outputter(void) { cfram_outputter.store(nullptr); };
+  void set_outputter(Rps_CallFrameOutputSig_t*outputter=nullptr)
+  { cfram_outputter.store(outputter);};
   void gc_mark_frame(Rps_GarbageCollector* gc);
   void set_closure(Rps_ClosureValue clos)
   {
