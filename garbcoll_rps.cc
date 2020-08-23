@@ -107,7 +107,7 @@ Rps_CallFrame::output(std::ostream&out, int depth) const
   if (outputter)
     {
       out << ":";
-      (*outputter)(out);
+      (*outputter)(out,this);
     }
   out << "}]" << std::endl;
   if (depth<_cfram_output_depth_.load() && cfram_prev)

@@ -329,6 +329,9 @@ class Rps_FltkEvLoop_CallFrame :
   friend void rps_fltk_stop_event_loop(void);
   friend void rps_fltk_event_loop(Rps_CallFrame*callframe);
   friend class Rps_GarbageCollector;
+  static void outputter(std::ostream&, const Rps_ProtoCallFrame*);
+  /// for debugging
+  static std::atomic<long> evloopfr_counter_;
 protected:
   /// after here, no instance GC-ed value anymore
   ////////////////
@@ -337,14 +340,13 @@ protected:
   // below map is a Todo. We need to ensure that entries are unique
   // (by adding a tiny random delay when needed). We need a mutex to
   // ensure other threads than the GUI one could add TODO things. We
-  // need garbage collection support of these TODO.
+  // need garbage collection support of these TODO-s.
   std::map<double,Rps_Todo> evloopfr_todos;
   mutable std::recursive_mutex evloopfr_mtx;
   Rps_FltkEvLoop_CallFrame*evloopfr_oldframe;
   int evloopfr_lineno;
   short evloopfr_depth;
-  /// for debugging
-  static std::atomic<long> evloopfr_counter_;
+  const char* evloopfr_file;
   long evloopfr_serial;
   /// the event loop frames in the GUI main thread are kept
   static std::atomic<Rps_FltkEvLoop_CallFrame*> evloopfr_curframe_;
@@ -353,8 +355,11 @@ protected:
   static std::set<Rps_FltkEvLoop_CallFrame*> evloopfr_set_;
 public:
   struct Rps_EventLoop_tag {};
+  struct Rps_LoggedEventLoop_tag {};
   Rps_FltkEvLoop_CallFrame(Rps_CallFrame*callframe, int lineno,
                            Rps_ObjectRef descr, int depth, Rps_EventLoop_tag);
+  Rps_FltkEvLoop_CallFrame(Rps_CallFrame*callframe, const char*filename, int lineno,
+                           Rps_ObjectRef descr, int depth, Rps_LoggedEventLoop_tag);
   ~Rps_FltkEvLoop_CallFrame();
   static Rps_FltkEvLoop_CallFrame*
   find_calling_event_call_frame(const Rps_CallFrame*callframe);

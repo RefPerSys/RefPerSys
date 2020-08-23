@@ -2741,7 +2741,7 @@ public:
 
 class Rps_ProtoCallFrame;
 typedef Rps_ProtoCallFrame Rps_CallFrame;
-typedef void Rps_CallFrameOutputSig_t(std::ostream&);
+typedef void Rps_CallFrameOutputSig_t(std::ostream&, const Rps_ProtoCallFrame*);
 ////////////////////////////////////////////////////////////////
 //// the common superclass of our call frames
 class Rps_ProtoCallFrame : public Rps_TypedZone

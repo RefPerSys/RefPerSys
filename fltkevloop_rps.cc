@@ -138,18 +138,45 @@ Rps_FltkEvLoop_CallFrame::Rps_FltkEvLoop_CallFrame(Rps_CallFrame*callframe, int 
      evloopfr_oldframe(nullptr),
      evloopfr_lineno(lineno),
      evloopfr_depth(depth),
+     evloopfr_file(nullptr),
      evloopfr_serial(1+evloopfr_counter_.fetch_add(1))
 {
   RPS_ASSERT(rps_is_main_gui_thread());
   RPS_ASSERT(evloopfr_depth >= 0);
   evloopfr_oldframe= std::atomic_exchange(&evloopfr_curframe_,this);
+  set_outputter(outputter);
   RPS_DEBUGNL_LOG(GUI, "+°Rps_FltkEvLoop_CallFrame-constr line#" << lineno
                   << " depth#" << evloopfr_depth
                   << " callframe@" << (void*)callframe
                   << " evlserial#" << evloopfr_serial
                   << " this@" << (void*)this<< std::endl
                   << RPS_FULL_BACKTRACE_HERE(0, "Rps_FltkEvLoop_CallFrame°-constru"));
-} // end Rps_FltkEvLoop_CallFrame::Rps_FltkEvLoop_CallFrame
+} // end Rps_FltkEvLoop_CallFrame::Rps_FltkEvLoop_CallFrame ...  Rps_EventLoop_tag
+
+
+Rps_FltkEvLoop_CallFrame::Rps_FltkEvLoop_CallFrame(Rps_CallFrame*callframe, const char*filename, int lineno,
+    Rps_ObjectRef descr, int depth, Rps_LoggedEventLoop_tag)
+
+  :  Rps_FieldedCallFrame<Rps_FltkEvloop_Fields> (descr, callframe),
+     evloopfr_todos(),
+     evloopfr_mtx(),
+     evloopfr_oldframe(nullptr),
+     evloopfr_lineno(lineno),
+     evloopfr_depth(depth),
+     evloopfr_file(filename),
+     evloopfr_serial(1+evloopfr_counter_.fetch_add(1))
+{
+  RPS_ASSERT(rps_is_main_gui_thread());
+  RPS_ASSERT(evloopfr_depth >= 0);
+  evloopfr_oldframe= std::atomic_exchange(&evloopfr_curframe_,this);
+  set_outputter(outputter);
+  RPS_DEBUGNL_LOG(GUI, "+°Rps_FltkEvLoop_CallFrame-constr line#" << lineno
+                  << " depth#" << evloopfr_depth
+                  << " callframe@" << (void*)callframe
+                  << " evlserial#" << evloopfr_serial
+                  << " this@" << (void*)this<< std::endl
+                  << RPS_FULL_BACKTRACE_HERE(0, "Rps_FltkEvLoop_CallFrame°-constru"));
+} // end Rps_FltkEvLoop_CallFrame::Rps_FltkEvLoop_CallFrame ... Rps_LoggedEventLoop_tag
 
 Rps_FltkEvLoop_CallFrame::~Rps_FltkEvLoop_CallFrame()
 {
@@ -168,6 +195,23 @@ Rps_FltkEvLoop_CallFrame::~Rps_FltkEvLoop_CallFrame()
   RPS_DEBUG_LOG(GUI, "-°~Rps_FltkEvLoop_CallFrame-destr this@" << (void*)this << " evlserial#" << serial << std::endl);
 } // end Rps_FltkEvLoop_CallFrame::~Rps_FltkEvLoop_CallFrame
 
+
+void
+Rps_FltkEvLoop_CallFrame::outputter(std::ostream&out,const Rps_ProtoCallFrame*cf)
+{
+  if (!cf)
+    {
+      out << "?*nullevcallframe*?";
+      return;
+    };
+  const Rps_FltkEvLoop_CallFrame*curevframe = reinterpret_cast<const Rps_FltkEvLoop_CallFrame*>(cf);
+  if (curevframe->evloopfr_file)
+    out << curevframe->evloopfr_file << ":" << curevframe->evloopfr_lineno
+        << "#" << curevframe->evloopfr_serial << "/" << curevframe->evloopfr_depth;
+  else
+    out <<  "?:" << curevframe->evloopfr_lineno << "#" << curevframe->evloopfr_serial
+        << "/" << curevframe->evloopfr_depth;
+} // end Rps_FltkEvLoop_CallFrame::outputter
 
 
 
@@ -503,9 +547,10 @@ rps_fltk_event_loop(Rps_CallFrame*callframe)
   RPS_ASSERT(rps_is_main_gui_thread());
   depth++;
   unsigned long count=0;
-  Rps_FltkEvLoop_CallFrame _(callframe, __LINE__,
+  Rps_FltkEvLoop_CallFrame _(callframe, __FILE__, __LINE__,
                              RPS_FLTK_EVENT_LOOP_DESCR /*fltk_event_loop*/,
-                             depth, Rps_FltkEvLoop_CallFrame::Rps_EventLoop_tag{});
+                             depth,
+                             Rps_FltkEvLoop_CallFrame::Rps_LoggedEventLoop_tag{});
   RPS_DEBUGNL_LOG(GUI, "start of rps_fltk_event_loop depth#" << depth << " evlserial#" << _.evloopfr_serial
                   << " callframe@" << callframe << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_event_loop start"));
@@ -720,9 +765,9 @@ void
 rps_run_fltk_gui(int &argc, char**argv)
 {
   rps_main_gui_pthread = pthread_self();
-  Rps_FltkEvLoop_CallFrame _(nullptr, __LINE__,
+  Rps_FltkEvLoop_CallFrame _(nullptr, __FILE__, __LINE__,
                              RPS_FLTK_EVENT_LOOP_DESCR, 1,
-                             Rps_FltkEvLoop_CallFrame::Rps_EventLoop_tag{});
+                             Rps_FltkEvLoop_CallFrame::Rps_LoggedEventLoop_tag{});
   RPS_DEBUG_LOG(GUI, "start rps_run_fltk_gui _@" << ((void*)&_)  << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_fltk_gui"));
   // for debugging purposes of the event loop we handle the
