@@ -207,10 +207,10 @@ Rps_FltkEvLoop_CallFrame::outputter(std::ostream&out,const Rps_ProtoCallFrame*cf
   const Rps_FltkEvLoop_CallFrame*curevframe = reinterpret_cast<const Rps_FltkEvLoop_CallFrame*>(cf);
   if (curevframe->evloopfr_file)
     out << curevframe->evloopfr_file << ":" << curevframe->evloopfr_lineno
-        << "#" << curevframe->evloopfr_serial << "/" << curevframe->evloopfr_depth;
+        << "#" << curevframe->evloopfr_serial << "/d:" << curevframe->evloopfr_depth;
   else
     out <<  "?:" << curevframe->evloopfr_lineno << "#" << curevframe->evloopfr_serial
-        << "/" << curevframe->evloopfr_depth;
+        << "/d:" << curevframe->evloopfr_depth;
 } // end Rps_FltkEvLoop_CallFrame::outputter
 
 
@@ -259,11 +259,11 @@ void
 Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos(void)
 {
   RPS_ASSERT(rps_is_main_gui_thread());
-  RPS_DEBUG_LOG(GUI, "start Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth
-                << " this@" << this << " evlserial#" << evloopfr_serial <<std::endl
-                << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos*start")
-                << "... run_scheduled_fltk_todos this=" << Rps_ShowCallFrame(this)
-                << std::endl);
+  RPS_DEBUGNL_LOG(GUI, "**start Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth
+                  << " this@" << this << " evlserial#" << evloopfr_serial <<std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos*start")
+                  << "... run_scheduled_fltk_todos this=" << std::endl << Rps_ShowCallFrame(this)
+                  << std::endl);
 
   std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
   std::vector<Rps_Todo> todovect;
@@ -286,8 +286,9 @@ Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos(void)
       todovect.push_back(curtodo);
     };
   RPS_DEBUG_LOG(GUI,
-                "Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos this@" << this
-                << " depth#" << evloopfr_depth <<  " evlserial#" << evloopfr_serial << " should do " << todovect.size() << " todos");
+                "Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos this:" << std::endl << this
+                << "...depth#" << evloopfr_depth
+                <<  " evlserial#" << evloopfr_serial << " should do " << todovect.size() << " todos" << std::endl);
   int loopcnt=0;
   for (auto curtodo : todovect)
     {
@@ -399,7 +400,9 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
                 << " lineno=" << lineno << " label=" << label
                 << " arg1=" << arg1
                 << " arg2=" << arg2
-                << " curframe@" << curframe);
+                << " curframe@" << curframe
+                << ":" << std::endl
+                << Rps_ShowCallFrame(curframe));
   auto newtodo = Rps_Todo(Rps_Todo_Function(filename, lineno, label, delay, todo, arg1, arg2));
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_todo_at newtodo=" << newtodo);
   if (rps_is_main_gui_thread())
@@ -427,7 +430,9 @@ rps_fltk_add_delayed_labeled_todo_at(Rps_CallFrame*curframe, const char*filename
                             << " size:" << eventcallframe->evloopfr_todos.size()
                             << " filename=" << filename
                             << " lineno=" << lineno << " label=" << label
-                            << " newtodo=" << newtodo);
+                            << " newtodo=" << newtodo
+                            << " eventcallframe:" << std::endl
+                            << Rps_ShowCallFrame(eventcallframe) << std::endl);
               break;
             }
           else
@@ -460,10 +465,11 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
       which is an Rps_FltkEvLoop_CallFrame then insert the todo in
       it. We also need to handle the more complex case when
       rps_fltk_add_delayed_todo is called from a non GUI thread. */
-  RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at curframe@" << curframe
-                << " filename=" << filename << " lineno=" << lineno
-                << " label=" << label << " delay=" << delay
-                << " closv=" << closv << " arg1v=" << arg1v << " arg2v=" << arg2v);
+  RPS_DEBUGNL_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at curframe@" << curframe
+                  << " filename=" << filename << " lineno=" << lineno
+                  << " label=" << label << " delay=" << delay
+                  << " closv=" << closv << " arg1v=" << arg1v << " arg2v=" << arg2v
+                  << " curframe:" << std::endl << Rps_ShowCallFrame(curframe) << std::endl);
   auto newtodo = Rps_Todo(Rps_Todo_Closure(lineno, filename, delay, label, closv, arg1v, arg2v));
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at newtodo=" << newtodo);
   if (rps_is_main_gui_thread())
@@ -479,9 +485,11 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
                      << " arg1v=" << arg1v << " arg2v=" << arg2v);
       std::lock_guard<std::recursive_mutex> gu(eventcallframe->evloopfr_mtx);
       Fl::flush();
-      RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at inserted in eventcallframe=" << eventcallframe
-                    << " evloopfr_todos@" << (&eventcallframe->evloopfr_todos)
-                    << " size:" << eventcallframe->evloopfr_todos.size());
+      RPS_DEBUGNL_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at inserted in eventcallframe=" << eventcallframe
+                      << " evloopfr_todos@" << (&eventcallframe->evloopfr_todos)
+                      << " size:" << eventcallframe->evloopfr_todos.size()
+                      << " eventcallframe:" << std::endl
+                      << Rps_ShowCallFrame(eventcallframe) << std::endl);
       double todotime = rps_monotonic_real_time() + delay;
       int loopcnt = 0;
       for (;;)
@@ -517,7 +525,8 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
     }
   RPS_DEBUG_LOG(GUI, "rps_fltk_add_delayed_labeled_closure_at ending filename=" << filename << ", lineno=" << lineno
                 << " todo=" << newtodo << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "*end-rps_fltk_add_delayed_labeled_closure_at*") <<std::endl);
+                << RPS_FULL_BACKTRACE_HERE(1, "*end-rps_fltk_add_delayed_labeled_closure_at*") <<std::endl
+               );
 } // end rps_fltk_add_delayed_labeled_closure_at
 
 
