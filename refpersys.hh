@@ -2757,6 +2757,7 @@ protected:
   std::function<void(Rps_GarbageCollector*)> cfram_marker;
 public:
   static constexpr unsigned _cfram_max_size_ = 1024;
+  static std::atomic<int> _cfram_output_depth_;
   Rps_ProtoCallFrame(unsigned size, void*xdata, Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
     : Rps_TypedZone(Rps_Type::CallFrame),
       cfram_size(size),
@@ -2819,8 +2820,18 @@ public:
   Rps_ObjectRef call_frame_descriptor() const { return cfram_descr; };
   Rps_Value call_frame_state() const { return cfram_state; };
   Rps_ClosureValue call_frame_closure() const { return cfram_clos; };
+  void output(std::ostream&out, int depth=0) const;
 };				// end class Rps_ProtoCallFrame
 
+inline std::ostream&
+operator << (std::ostream&out, Rps_ProtoCallFrame*fr)
+{
+  if (fr)
+    fr->output(out);
+  else
+    out << "[*nullrpsframe*]" << std::flush;
+  return out;
+} // end operator << (std::ostream&out, Rps_ProtoCallFrame*fr)
 
 template <unsigned WordSize> class Rps_SizedCallFrame;
 template <typename FrameFields> class Rps_FieldedCallFrame;

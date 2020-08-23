@@ -5,7 +5,7 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for the garbage collector.
+ *      It has the code for the garbage collector and some code related to call frames.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -89,7 +89,24 @@ Rps_CallFrame::gc_mark_frame(Rps_GarbageCollector* gc)
             curval.as_ptr()->gc_mark(*gc,0);
         };
     }
-} // end Rps_CallFrame::gc_mark_frame
+} // end Rps_CallFrame::gc_mark_frame i.e.  Rps_ProtoCallFrame::gc_mark_frame
+
+
+std::atomic<int> Rps_ProtoCallFrame::_cfram_output_depth_(16);
+
+void // this is Rps_ProtoCallFrame::output
+Rps_CallFrame::output(std::ostream&out, int depth) const
+{
+  out << "𝚫" /*U+1D6AB MATHEMATICAL BOLD CAPITAL DELTA*/ << depth
+      << "[{" << cfram_descr << "/" << cfram_state;
+  if (cfram_rankstate)
+    out << "#" << cfram_rankstate;
+  if (cfram_clos)
+    out << "" << cfram_clos;
+  out << "}]" << std::endl;
+  if (depth<_cfram_output_depth_.load() && cfram_prev)
+    cfram_prev->output(out, depth+1);
+} // end of Rps_CallFrame::output i.e. Rps_ProtoCallFrame::output
 
 void
 rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
