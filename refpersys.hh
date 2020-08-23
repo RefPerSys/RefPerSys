@@ -2823,6 +2823,19 @@ public:
   void output(std::ostream&out, int depth=0) const;
 };				// end class Rps_ProtoCallFrame
 
+class Rps_ShowCallFrame {
+  Rps_ProtoCallFrame* _callframe;
+public:
+  Rps_ShowCallFrame(Rps_ProtoCallFrame*cf = nullptr) : _callframe(cf) {};
+  ~Rps_ShowCallFrame() { _callframe=nullptr; };
+  void output(std::ostream&out) const {
+    if (_callframe)
+      _callframe->output(out);
+    else
+      out << "[*nullrpsframe*]" << std::flush;
+  }
+};				// end class Rps_ShowCallFrame
+
 inline std::ostream&
 operator << (std::ostream&out, Rps_ProtoCallFrame*fr)
 {
@@ -2831,7 +2844,14 @@ operator << (std::ostream&out, Rps_ProtoCallFrame*fr)
   else
     out << "[*nullrpsframe*]" << std::flush;
   return out;
-} // end operator << (std::ostream&out, Rps_ProtoCallFrame*fr)
+} // end operator << (std::ostream, Rps_ProtoCallFrame*)
+
+inline std::ostream&
+operator << (std::ostream&out, Rps_ShowCallFrame scf)
+{
+  scf.output(out);
+  return out;
+};				// end  operator << (std::ostream&, Rps_ShowCallFrame)
 
 template <unsigned WordSize> class Rps_SizedCallFrame;
 template <typename FrameFields> class Rps_FieldedCallFrame;

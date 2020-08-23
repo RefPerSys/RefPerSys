@@ -217,7 +217,9 @@ Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos(void)
   RPS_ASSERT(rps_is_main_gui_thread());
   RPS_DEBUG_LOG(GUI, "start Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth
                 << " this@" << this << " evlserial#" << evloopfr_serial <<std::endl
-                << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos*start"));
+                << RPS_FULL_BACKTRACE_HERE(1,"Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos*start")
+                << "... run_scheduled_fltk_todos this=" << Rps_ShowCallFrame(this)
+                << std::endl);
 
   std::lock_guard<std::recursive_mutex> gu(evloopfr_mtx);
   std::vector<Rps_Todo> todovect;
