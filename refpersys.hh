@@ -1413,6 +1413,27 @@ public:
 };				// end class Rps_Random
 
 
+class Rps_Do_Output
+{
+  std::function<void(std::ostream&)> _outfun;
+public:
+  Rps_Do_Output(std::function<void(std::ostream&)> f) : _outfun(f) {};
+  ~Rps_Do_Output() = default;
+  Rps_Do_Output(const Rps_Do_Output&) = delete;
+  Rps_Do_Output(Rps_Do_Output&&) = delete;
+  void out(std::ostream&out) const
+  {
+    _outfun(out);
+  };
+};
+
+inline
+std::ostream& operator << (std::ostream&out, const Rps_Do_Output&d)
+{
+  d.out(out);
+  return out;
+};
+
 
 ////////////////////////////////////////////////////////////////
 //// The objid support is in a separate file.
