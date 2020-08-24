@@ -366,6 +366,9 @@ public:
   void gc_mark_todos(Rps_GarbageCollector*);
   void fltk_event_wait(unsigned long count, double delay);
   void run_scheduled_fltk_todos(void);
+  // fetch the event loop call frame below the current one, if any or
+  // else null.
+  const Rps_FltkEvLoop_CallFrame*get_lower_evloop_callframe(void) const;
   /// return the current call frame, if inside the main thread and with an active Rps_FltkEvLoop_CallFrame
   static Rps_FltkEvLoop_CallFrame*current_call_frame(void)
   {
