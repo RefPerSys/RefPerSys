@@ -211,6 +211,13 @@ Rps_FltkEvLoop_CallFrame::outputter(std::ostream&out,const Rps_ProtoCallFrame*cf
   else
     out <<  "?:" << curevframe->evloopfr_lineno << "#" << curevframe->evloopfr_serial
         << "/d:" << curevframe->evloopfr_depth;
+  int nbtodos=0;
+  {
+    std::lock_guard<std::recursive_mutex> g(curevframe->evloopfr_mtx);
+    nbtodos = (int) curevframe->evloopfr_todos.size();
+  };
+  if (nbtodos>0)
+    out << "!" << nbtodos << "todos";
 } // end Rps_FltkEvLoop_CallFrame::outputter
 
 
