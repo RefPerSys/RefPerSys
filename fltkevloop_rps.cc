@@ -292,24 +292,42 @@ Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos(void)
                     << " todocnt=" << todocnt);
       todovect.push_back(curtodo);
     };
+  int nbtd = (int) todovect.size();
   RPS_DEBUG_LOG(GUI,
                 "Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos this:" << std::endl << this
                 << "...depth#" << evloopfr_depth
-                <<  " evlserial#" << evloopfr_serial << " should do " << todovect.size() << " todos" << std::endl);
+                <<  " evlserial#" << evloopfr_serial << " should do " << todovect.size() << " todos" << std::endl
+                << Rps_Do_Output([&](std::ostream&out)
+  {
+    for (int ix=0; ix<nbtd; ix++)
+      out << "[" << ix << "]:" << todovect[ix] << std::endl;
+  }));
   int loopcnt=0;
-  for (auto curtodo : todovect)
+  for (auto tdix=0; tdix<nbtd; tdix++)
     {
+      auto curtodo = todovect[tdix];
       loopcnt++;
-      auto curit = evloopfr_todos.find(curtodo.timeout());
-      RPS_ASSERT(curit != evloopfr_todos.end());
-      evloopfr_todos.erase(curit);
+      RPS_DEBUG_LOG(GUI,
+                    "Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos curtodo=" << curtodo
+                    << " tdix=" << tdix
+                    << " loopcnt=" << loopcnt);
+      auto it = evloopfr_todos.find(curtodo.timeout());
+      bool iserased = false;
+      if (it != evloopfr_todos.end())
+        {
+          evloopfr_todos.erase(it);
+          iserased = true;
+        }
+      else
+        continue;
       int todolineno = curtodo.lineno();
       const char*todofilename = curtodo.filename();
       const char*todolabel = curtodo.label();
       RPS_DEBUGNL_LOG(GUI,
                       "Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos todolineno=" << todolineno
                       << " todofilename=" << todofilename << " todolabel=" << todolabel
-                      << " curtodo=" << curtodo << " loopcnt#" << loopcnt <<  " evlserial#" << evloopfr_serial);
+                      << " curtodo=" << curtodo << " loopcnt#" << loopcnt <<  " evlserial#" << evloopfr_serial
+                      << (iserased?"erased":"NOT-ERASED"));
       if (curtodo.is_todo_function())
         {
           Rps_Todo_Function& curtodofun = const_cast<Rps_Todo_Function&>(curtodo.as_todo_function());
@@ -339,7 +357,7 @@ Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos(void)
                 <<   " evlserial#" << evloopfr_serial<< std::endl);
 }; // end Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos
 
-const Rps_FltkEvLoop_CallFrame*
+Rps_FltkEvLoop_CallFrame*
 Rps_FltkEvLoop_CallFrame::get_lower_evloop_callframe(void) const
 {
   int cnt = 0;
@@ -354,7 +372,7 @@ Rps_FltkEvLoop_CallFrame::get_lower_evloop_callframe(void) const
                         << std::endl << this << std::endl
                         << "... returns lower cf@" << ((void*)cf)
                         << std::endl << cf << std::endl);
-          return reinterpret_cast<const Rps_FltkEvLoop_CallFrame*>(cf);
+          return reinterpret_cast<Rps_FltkEvLoop_CallFrame*>(cf);
         }
     };
   RPS_DEBUG_LOG(GUI, "get_lower_evloop_callframe this@"
@@ -389,7 +407,13 @@ Rps_FltkEvLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
     {
       RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
                     << " after wait delw=" << delw);
-      run_scheduled_fltk_todos();
+      for (Rps_FltkEvLoop_CallFrame* evfr = this;
+           evfr != nullptr;
+           evfr=evfr->get_lower_evloop_callframe())
+        {
+          RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait evfr=" << evfr);
+          evfr->run_scheduled_fltk_todos();
+        }
       /// handle, if available, another FLTK event
       if (delw >= 0.0)
         {
@@ -398,7 +422,13 @@ Rps_FltkEvLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
                         << " after wait del2w=" << del2w);
           if (del2w > 0.0)
             {
-              run_scheduled_fltk_todos();
+              for (Rps_FltkEvLoop_CallFrame* evfr = this;
+                   evfr != nullptr;
+                   evfr=evfr->get_lower_evloop_callframe())
+                {
+                  RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait evfr=" << evfr);
+                  evfr->run_scheduled_fltk_todos();
+                }
               RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
                             << " after second run_scheduled_fltk_todos for del2w=" << del2w);
             }
