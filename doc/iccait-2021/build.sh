@@ -1,8 +1,9 @@
 #!/bin/bash -x
-
+# for https://panel.waset.org/conference/2021/05/paris/ICCAIT
+# 
 
 echo $0 Starting in $(pwd)
-rm -rfv iccait2021-refpersys.{aux,bcf,blg,log,pdf} generated-iccait2021-gitid.tex
+rm -rfv iccait2021-refpersys*.{aux,bcf,blg,log,pdf} generated-iccait2021-gitid.tex
 
 printf "\n\n generating iccait2021-gitid\n"
 
@@ -32,6 +33,8 @@ for dotfile in dot*.dot ; do
     dot -v -Tpdf -o $dotbase.pdf  $dotfile
     dot -v -Tsvg -o $dotbase.svg  $dotfile
 done
+
+## the call for papers require two versions, a blind one and a visible one
 
 
 printf "\n\n ===============================================\n"
