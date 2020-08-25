@@ -1372,7 +1372,7 @@ class Rps_Random
     _rand_remainbits -= 8;
     return res;
   };
-  uint8_t generate_quickly_16bits()
+  uint16_t generate_quickly_16bits()
   {
     if (RPS_UNLIKELY(_rand_remainbits < 8))
       {
@@ -1406,7 +1406,7 @@ public:
   {
     return _rand_thr_.generate_quickly_8bits();
   };
-  static uint8_t random_quickly_16bits()
+  static uint16_t random_quickly_16bits()
   {
     return _rand_thr_.generate_quickly_16bits();
   };
