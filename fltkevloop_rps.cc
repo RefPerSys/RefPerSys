@@ -369,9 +369,9 @@ Rps_FltkEvLoop_CallFrame::get_lower_evloop_callframe(void) const
         {
           RPS_DEBUG_LOG(GUI, "get_lower_evloop_callframe this@"
                         << ((void*)this)
-                        << std::endl << this << std::endl
+                        << std::endl << Rps_ShowCallFrame(this) << std::endl
                         << "... returns lower cf@" << ((void*)cf)
-                        << std::endl << cf << std::endl);
+                        << std::endl << Rps_ShowCallFrame(cf) << std::endl);
           return reinterpret_cast<Rps_FltkEvLoop_CallFrame*>(cf);
         }
     };

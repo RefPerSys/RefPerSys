@@ -65,26 +65,32 @@ class RpsGui_MenuBar;
 ////////////////
 
 class Rps_FltkEvLoop_CallFrame;
+// we need to keep a kind, because one a todo has been done, its
+// kind becomes noop....
+enum Rps_TodoKind_t
+{
+  TODOK_noop,
+  TODOK_function,
+  TODOK_closure,
+};
 struct Rps_Todo_Base
 {
   static std::atomic<unsigned> _todo_serial_counter_;
-  static constexpr bool TODO_is_Function = true;
-  static constexpr bool TODO_is_Closure = false;
-  const bool todo_is_function;
+  Rps_TodoKind_t todo_kind;
   const int todo_lineno;
   const unsigned todo_serial;
   const double todo_timeout;
   const char* todo_filename;
   const char* todo_label;
   typedef std::function<void(Rps_CallFrame*,void*,void*)> todo_func_t;
-  Rps_Todo_Base(bool isfun, int lineno, double delay, const char*label=nullptr)
-    : todo_is_function(isfun), todo_lineno(lineno),
+  Rps_Todo_Base(Rps_TodoKind_t kind, int lineno, double delay, const char*label=nullptr)
+    : todo_kind(kind), todo_lineno(lineno),
       todo_serial(1+_todo_serial_counter_.fetch_add(1)),
       todo_timeout(rps_monotonic_real_time()+delay),
       todo_filename(nullptr),
       todo_label (label) {};
-  Rps_Todo_Base(bool isfun, const char*filename, int lineno, double delay, const char*label=nullptr)
-    : todo_is_function(isfun), todo_lineno(lineno),
+  Rps_Todo_Base(Rps_TodoKind_t kind, const char*filename, int lineno, double delay, const char*label=nullptr)
+    : todo_kind(kind), todo_lineno(lineno),
       todo_serial(1+_todo_serial_counter_.fetch_add(1)),
       todo_timeout(rps_monotonic_real_time()+delay),
       todo_filename(filename),
@@ -92,7 +98,15 @@ struct Rps_Todo_Base
   ~Rps_Todo_Base() {};
   bool is_todo_function(void) const
   {
-    return todo_is_function;
+    return todo_kind == TODOK_function;
+  };
+  bool is_todo_closure(void) const
+  {
+    return todo_kind == TODOK_closure;
+  };
+  bool is_todo_noop(void) const
+  {
+    return todo_kind == TODOK_noop;
   };
   bool lineno(void) const
   {
@@ -124,11 +138,11 @@ class Rps_Todo_Function  : public Rps_Todo_Base
   void* todo_arg2;
 public:
   Rps_Todo_Function(int lineno, double delay, const todo_func_t& todo, void*arg1, void*arg2)
-    : Rps_Todo_Base(TODO_is_Function, lineno, delay), todo_func(todo), todo_arg1(arg1), todo_arg2(arg2) {};
+    : Rps_Todo_Base(TODOK_function, lineno, delay), todo_func(todo), todo_arg1(arg1), todo_arg2(arg2) {};
   Rps_Todo_Function(int lineno, const char*label, double delay, const todo_func_t& todo, void*arg1, void*arg2)
-    : Rps_Todo_Base(TODO_is_Function, lineno, delay, label), todo_func(todo), todo_arg1(arg1), todo_arg2(arg2) {};
+    : Rps_Todo_Base(TODOK_function, lineno, delay, label), todo_func(todo), todo_arg1(arg1), todo_arg2(arg2) {};
   Rps_Todo_Function(const char*filename, int lineno, const char*label, double delay, const todo_func_t& todo, void*arg1, void*arg2)
-    : Rps_Todo_Base(TODO_is_Function, filename,  lineno, delay, label), todo_func(todo), todo_arg1(arg1), todo_arg2(arg2) {};
+    : Rps_Todo_Base(TODOK_function, filename,  lineno, delay, label), todo_func(todo), todo_arg1(arg1), todo_arg2(arg2) {};
   ~Rps_Todo_Function() {};
   void apply_todo_fun(Rps_CallFrame*callframe, void*p1=nullptr, void*p2=nullptr)
   {
@@ -160,7 +174,7 @@ class Rps_Todo_Closure   : public Rps_Todo_Base
 public:
   Rps_Todo_Closure(int lineno, const char*filename, double delay, const char*label, const Rps_ClosureValue closv,
                    const Rps_Value arg1v=nullptr, const Rps_Value arg2v=nullptr, const Rps_Value arg3v=nullptr)
-    : Rps_Todo_Base(TODO_is_Closure, filename, lineno, delay, label),
+    : Rps_Todo_Base(TODOK_closure, filename, lineno, delay, label),
       todo_closv(closv), todo_arg1v(arg1v), todo_arg2v(arg2v), todo_arg3v(arg3v) {};
   const Rps_ClosureValue& get_todo_clos() const
   {
@@ -200,13 +214,21 @@ public:
   Rps_Todo(Rps_Todo_Closure tc) : todo_closure(tc) {};
   Rps_Todo(Rps_Todo_Function tf): todo_function(tf) {};
   ~Rps_Todo();
+  Rps_TodoKind_t kind() const
+  {
+    return todo_base.todo_kind;
+  };
   bool is_todo_function() const
   {
     return todo_base.is_todo_function();
   };
   bool is_todo_closure() const
   {
-    return !(todo_base.is_todo_function());
+    return todo_base.is_todo_closure();
+  };
+  bool is_todo_noop() const
+  {
+    return todo_base.is_todo_noop();
   };
   Rps_Todo(Rps_Todo&& todosrc)
   {
