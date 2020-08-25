@@ -78,7 +78,9 @@ std::atomic<unsigned>  Rps_Todo_Base::_todo_serial_counter_;
 void
 Rps_Todo::output(std::ostream&out) const
 {
-  if (is_todo_function())
+  switch (kind())
+    {
+    case TODOK_function:
     {
       out << "TodoFunc#" << serial() << "@" << basename(filename()) << ":" << lineno() << '!' << timeout();
       if (label())
@@ -94,7 +96,8 @@ Rps_Todo::output(std::ostream&out) const
           out << '}';
         };
     }
-  else  // closure
+    break;
+    case TODOK_closure:
     {
       out << "TodoClos#" << serial() << "@" << basename(filename()) << ":" << lineno() << '!' << timeout();
       if (label())
@@ -108,7 +111,17 @@ Rps_Todo::output(std::ostream&out) const
       if (todoclos.get_todo_arg3())
         out << ", arg3="<< todoclos.get_todo_arg3();
       out << ")";
-    }
+    };
+    break;
+    case TODOK_noop:
+    {
+      out << "TodoClos#" << serial() << "@" << basename(filename())
+          << ":" << lineno() << '!' << timeout() << "**NOOP**";
+      if (label())
+        out << '[' << label() << ']';
+    };
+    break;
+    };
 } // end Rps_Todo::output
 
 Rps_Todo::~Rps_Todo()
