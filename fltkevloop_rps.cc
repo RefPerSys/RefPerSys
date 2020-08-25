@@ -406,10 +406,12 @@ Rps_FltkEvLoop_CallFrame::get_lower_evloop_callframe(void) const
     };
   RPS_DEBUG_LOG(GUI, "get_lower_evloop_callframe this@"
                 << ((void*)this)
-                << std::endl << this
+                << std::endl << Rps_ShowCallFrame(this)
                 << std::endl << " has no lower");
   return nullptr;
 } // end Rps_FltkEvLoop_CallFrame::get_lower_evloop_callframe
+
+
 
 void
 Rps_FltkEvLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
@@ -420,7 +422,7 @@ Rps_FltkEvLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
                   << ", delay=" << delay <<  ", evlserial#"
                   << evloopfr_serial << " this@" << ((void*)this)
                   << std::endl
-                  << this << std::endl);
+                  << Rps_ShowCallFrame(this) << std::endl);
   if (count % 16 == 0)
     RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
                   << ", delay=" << delay << std::endl
@@ -428,19 +430,21 @@ Rps_FltkEvLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
   auto delw = Fl::wait(delay);
   if (delw < 0.0)
     {
-      RPS_WARNOUT("Rps_FltkEvLoop_CallFrame::fltk_event_wait: depth#" << evloopfr_depth <<  " evlserial#" << evloopfr_serial << " broke delw=" << delw << std::endl
+      RPS_WARNOUT("Rps_FltkEvLoop_CallFrame::fltk_event_wait: depth#" << evloopfr_depth
+		  <<  " evlserial#" << evloopfr_serial << " broke delw=" << delw << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "fltk_event_wait"));
       return;
     }
   else
     {
-      RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
-                    << " after wait delw=" << delw);
+      RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth
+		    << ", count#" << count <<  " evlserial#" << evloopfr_serial
+                    << " after wait delw=" << delw << " this@" << (void*)this);
       for (Rps_FltkEvLoop_CallFrame* evfr = this;
            evfr != nullptr;
            evfr=evfr->get_lower_evloop_callframe())
         {
-          RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait evfr=" << evfr);
+          RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait evfr=" << evfr << " this@" << (void*)this);
           evfr->run_scheduled_fltk_todos();
         }
       /// handle, if available, another FLTK event
@@ -448,7 +452,7 @@ Rps_FltkEvLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
         {
           auto del2w = Fl::wait(0.5);
           RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
-                        << " after wait del2w=" << del2w);
+                        << " after wait del2w=" << del2w << " this@" << (void*)this);
           if (del2w > 0.0)
             {
               for (Rps_FltkEvLoop_CallFrame* evfr = this;
@@ -459,11 +463,13 @@ Rps_FltkEvLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
                   evfr->run_scheduled_fltk_todos();
                 }
               RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth << ", count#" << count <<  " evlserial#" << evloopfr_serial
-                            << " after second run_scheduled_fltk_todos for del2w=" << del2w);
+                            << " after second run_scheduled_fltk_todos for del2w=" << del2w << " this@" << (void*)this);
             }
         }
     }
-  RPS_DEBUG_LOG(GUI, "end Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth  <<  " evlserial#" << evloopfr_serial<< std::endl);
+  RPS_DEBUG_LOG(GUI, "end Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth
+		<<  " evlserial#" << evloopfr_serial << " this@" << ((void*)this) << std::endl
+		<<  Rps_ShowCallFrame(this) << std::endl);
   return;
 }; // end Rps_FltkEvLoop_CallFrame::fltk_event_wait
 

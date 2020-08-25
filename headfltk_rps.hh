@@ -333,6 +333,26 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
   RPS_FLTK_ADD_DELAYED_LABELED_CLOSURE_AT((CurFrame),(Label),(Delay),(Clos),(A1),(A2))
 
 
+// the ordered collection of todos inside a  Rps_FltkEvLoop_CallFrame
+class Rps_Todo_Collection {
+  // An internal vector of unique pointers to Todo-s. We refer to each
+  // todo there by its index. That vector does not shrink, and may
+  // contain null slots.
+  std::vector<std::unique_ptr<Rps_Todo>> _todocoll_vect;
+  // An ordered multimap from timeout to a todos index in above vector
+  std::multimap<double,int> _todo_timemap;
+  // a first-in first-out chronological queue of todos indexes in above vector
+  std::deque<int> _todo_fifoqueue;
+public:
+  Rps_Todo_Collection()
+    : _todocoll_vect(), _todo_timemap(), _todo_fifoqueue() {};
+  ~Rps_Todo_Collection() {};
+  Rps_Todo_Collection(const Rps_Todo_Collection&) = delete;
+  Rps_Todo_Collection(Rps_Todo_Collection&&) = delete;
+};	       // end class Rps_Todo_Collection
+
+
+
 // the value fields in an Rps_FltkEvLoop_CallFrame are:
 struct Rps_FltkEvloop_Fields
 {
@@ -366,7 +386,7 @@ protected:
   // (by adding a tiny random delay when needed). We need a mutex to
   // ensure other threads than the GUI one could add TODO things. We
   // need garbage collection support of these TODO-s.
-#warning should have a class Rps_TodoCollection for our todos, with more than a map
+#warning should have a class Rps_Todo_Collection for our todos, with more than a map
   /* FIXME: this should be redesigned. The collection of todos should
      be a proper class Rps_TodoCollection, with a map from timeout to
      todos but also a FIFO queue of them... Probably as
