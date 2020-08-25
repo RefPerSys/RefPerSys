@@ -120,7 +120,7 @@
 % The documentation is contained in the cite.sty file itself.
 
 
-
+\usepackage{hyperref}
 
 
 
@@ -549,7 +549,44 @@ This large graph should be orthogonally persistent
 \cite{Dearle:2010:orthopersist} (such as in \textsc{Bismon}
 \cite{Starynkevitch:2019:bismon-draft}) on disk, and be loaded from
 files at startup time on mornings of worked days, and later dumped to
-disk, as a set of \emph{state files} in JSON format.
+disk, as a set of \emph{state files} in JSON format, before
+normal termination when leaving office at evening. Having these files
+in a textual format facilitates their management with existing
+distributed version control systems such as
+\href{http://git-scm.com}{\texttt{git}} or software development forges
+like \href{http://gitlab.com/}{\texttt{gitlab}} and ensures some data
+portability.
+
+Current desktop computers are powerful enough to keep a large memory heap in
+%%
+%RAM\footnote{Notice that the C++ source of software (such as the
+%\textsc{Gcc} compiler, the \textsc{Qt} GUI toolkit, or the
+%\textsc{PostGreSQL} database) made of millions of lines of code fits
+RAM\footnote{Notice that the millions of SLOC for mature software (such as the
+\textsc{Gcc} compiler, the \textsc{Qt} GUI toolkit, or the
+\textsc{PostGreSQL} database), fits entirely in the 64 GB RAM of a powerful desktop. 
+But compiling such a code base takes hours of computer time.}, and this entire heap
+%%
+%can be persisted on disk, in a manner similar to relational database management systems
+%\cite{levene:2012:relational-databases} such as
+%\href{http://sqlite.org/}{\textsc{Sqlite}} or \textit{NoSQL} databases
+%\cite{RAJ-2018-NoSQL} do. 
+can be persisted on disk, similar to how database management systems
+%\cite{levene:2012:relational-databases} such as
+%\href{http://sqlite.org/}{\textsc{Sqlite}} or \textit{NoSQL}\cite{RAJ-2018-NoSQL} work. 
+such as \href{http://sqlite.org/}{\textsc{Sqlite}} or \href{https://en.wikipedia.org/wiki/NoSQL}{\textit{NoSQL}} work. 
+
+Current processors are multi-core, so running a good enough multi-threaded program on them
+\cite{butenhof:1997:programming} should be beneficial for
+performance. Backtracing libraries such as I. Taylor's
+\href{https://github.com/ianlancetaylor/libbacktrace}{\texttt{libbacktrace}}
+facilitate introspection of the current thread's call stack, if the
+\emph{C++} code has been compiled, using \texttt{g++ -O2 -g}, with
+\textsc{Dwarf} debugging information. JIT-compiling libraries (such as
+\href{https://gcc.gnu.org/onlinedocs/jit/}{\texttt{libgccjit}}) can
+produce plugins without the need of a textual representation of some
+\href{https://en.wikipedia.org/wiki/Abstract_syntax_tree}{AST} of the
+code.
 
 \hfill mds
  
