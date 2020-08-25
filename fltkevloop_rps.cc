@@ -146,6 +146,18 @@ Rps_Todo::~Rps_Todo()
 };				// end Rps_Todo::~Rps_Todo
 
 ////////////////////////////////////////////////////////////////
+Rps_Todo*
+Rps_Todo_Collection::adding_todo(int ix, const Rps_Todo& todo)
+{
+  RPS_ASSERT(ix>=0 && ix < _todocoll_vect.size());
+  RPS_ASSERT(todo.kind() != TODOK_noop);
+  Rps_Todo* tp = new Rps_Todo(todo);
+  _todocoll_vect[ix].reset(tp);
+  _todocoll_timemap.insert({todo.timeout(),ix});
+  _todocoll_fifoqueue.push_back(ix);
+  return tp;
+} // end /*Rps_Todo_Collection::adding_todo*/
+
 int
 Rps_Todo_Collection::add_todo(const Rps_Todo&todo)
 {
@@ -153,10 +165,11 @@ Rps_Todo_Collection::add_todo(const Rps_Todo&todo)
   int ix= -1;
   constexpr int threshold = 15;
   int sz = (int)_todocoll_vect.size();
-  if (sz < threshold || 4*_todocoll_timemap.size() >= 3*sz)
+  if (sz < threshold || 4*_todocoll_timemap.size() >= 3L*sz)
 forced_push:
     {
-      _todocoll_vect.push_back(std::make_unique<Rps_Todo>(todo));
+      _todocoll_vect.push_back(nullptr);
+      (void)adding_todo(sz,todo);
       RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::add_todo this@" << ((void*)this)
                     << " todo=" << todo << " -> " << sz);
       return sz;
@@ -168,7 +181,7 @@ forced_push:
         {
           if (!_todocoll_vect[ix])
             {
-              _todocoll_vect[ix] = std::make_unique<Rps_Todo>(todo);
+              (void)adding_todo(ix,todo);
               RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::add_todo this@" << ((void*)this)
                             << " todo=" << todo << " -> " << ix);
               return ix;
@@ -178,13 +191,13 @@ forced_push:
         {
           if (!_todocoll_vect[ix])
             {
-              _todocoll_vect[ix] = std::make_unique<Rps_Todo>(todo);
+              (void)adding_todo(ix,todo);
               RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::add_todo this@" << ((void*)this)
                             << " todo=" << todo << " -> " << ix);
               return ix;
             }
         }
-      // this goto should not happen, but just in case...
+      // this goto should probably not be reached, but just in case...
       goto forced_push;
     }
 } /// end Rps_Todo_Collection::add_todo

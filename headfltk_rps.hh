@@ -345,7 +345,13 @@ class Rps_Todo_Collection
   std::multimap<double,int> _todocoll_timemap;
   // a first-in first-out chronological queue of todos indexes in above vector
   std::deque<int> _todocoll_fifoqueue;
+  // internal routine to add a todo
+  Rps_Todo* adding_todo(int ix /*index in _todocoll_vect*/, const Rps_Todo& todo);
 public:
+  Rps_FltkEvLoop_CallFrame* owning_call_frame(void) const
+  {
+    return _todocoll_owning_callframe;
+  };
   Rps_Todo_Collection(Rps_FltkEvLoop_CallFrame*owncf=nullptr)
     : _todocoll_owning_callframe(owncf), _todocoll_vect(), _todocoll_timemap(), _todocoll_fifoqueue() {};
   ~Rps_Todo_Collection() {};
