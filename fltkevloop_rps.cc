@@ -202,6 +202,14 @@ forced_push:
     }
 } /// end Rps_Todo_Collection::add_todo
 
+void
+Rps_Todo_Collection::run_pending_todos(Rps_FltkEvLoop_CallFrame*cf)
+{
+#warning TODO: Rps_Todo_Collection::run_pending_todos should be implemented and called from Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos
+  RPS_FATALOUT("unimplemented Rps_Todo_Collection::run_pending_todos cf="
+               << Rps_ShowCallFrame(cf));
+} // end Rps_Todo_Collection::run_pending_todos
+
 ////////////////////////////////////////////////////////////////
 
 /// static data of Rps_FltkEvLoop_CallFrame
@@ -351,6 +359,7 @@ Rps_FltkEvLoop_CallFrame::gc_mark_todos(Rps_GarbageCollector*gc)
 void
 Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos(void)
 {
+#warning Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos should be recoded to use Rps_Todo_Collection
   RPS_ASSERT(rps_is_main_gui_thread());
   RPS_DEBUGNL_LOG(GUI, "**start Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos depth#" << evloopfr_depth
                   << " this@" << this << " evlserial#" << evloopfr_serial <<std::endl

@@ -359,6 +359,8 @@ public:
   Rps_Todo_Collection(Rps_Todo_Collection&&) = delete;
   // add a todo and return its index
   int add_todo(const Rps_Todo&);
+  // run pending todos and remove them
+  void run_pending_todos(Rps_FltkEvLoop_CallFrame*cf);
 };	       // end class Rps_Todo_Collection
 
 
