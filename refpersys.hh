@@ -2850,9 +2850,9 @@ public:
 };				// end class Rps_ProtoCallFrame
 
 class Rps_ShowCallFrame {
-  Rps_ProtoCallFrame* _callframe;
+  const Rps_ProtoCallFrame* _callframe;
 public:
-  Rps_ShowCallFrame(Rps_ProtoCallFrame*cf = nullptr) : _callframe(cf) {};
+  Rps_ShowCallFrame(const Rps_ProtoCallFrame*cf = nullptr) : _callframe(cf) {};
   ~Rps_ShowCallFrame() { _callframe=nullptr; };
   void output(std::ostream&out) const {
     if (_callframe)
