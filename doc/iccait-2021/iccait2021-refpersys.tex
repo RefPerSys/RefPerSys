@@ -530,12 +530,26 @@ Multi-agent Systems, Semantic Technologies.
 % 
 % Here we have the typical use of a "T" for an initial drop letter
 % and "HIS" in caps to complete the first word.
-\IEEEPARstart{T}{his} demo file is intended to serve as a ``starter file''
-for IEEE journal papers produced under \LaTeX\ using
-IEEEtran.cls version 1.7 and later.
+%\IEEEPARstart{T}{his} demo file is intended to serve as a ``starter file''
+%for IEEE journal papers produced under \LaTeX\ using
+%IEEEtran.cls version 1.7 and later.
 % You must have at least 2 lines in the paragraph with the drop letter
 % (should never be an issue)
-I wish you the best of success.
+%I wish you the best of success.
+
+A symbolic AI software system running on \textsc{Linux} nowadays needs to
+manage a large amount of information and knowledge organized as some
+complex graph (also known as an \emph{ontology}
+\cite{DeNicola:2009:OntologyBuilding}, a \emph{semantic network}
+\cite{VanDeRiet:1992:Ling-instr-know}, or a \emph{frame}
+\cite{Bobrow-Winograd:1977:KRL, Lenat:1983:theory}) inside the
+computer memory. 
+
+This large graph should be orthogonally persistent
+\cite{Dearle:2010:orthopersist} (such as in \textsc{Bismon}
+\cite{Starynkevitch:2019:bismon-draft}) on disk, and be loaded from
+files at startup time on mornings of worked days, and later dumped to
+disk, as a set of \emph{state files} in JSON format.
 
 \hfill mds
  
