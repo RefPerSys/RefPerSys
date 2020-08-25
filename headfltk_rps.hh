@@ -366,6 +366,11 @@ protected:
   // (by adding a tiny random delay when needed). We need a mutex to
   // ensure other threads than the GUI one could add TODO things. We
   // need garbage collection support of these TODO-s.
+#warning should have a class Rps_TodoCollection for our todos, with more than a map
+  /* FIXME: this should be redesigned. The collection of todos should
+     be a proper class Rps_TodoCollection, with a map from timeout to
+     todos but also a FIFO queue of them... Probably as
+     shared_ptr... */
   std::map<double,Rps_Todo> evloopfr_todos;
   mutable std::recursive_mutex evloopfr_mtx;
   Rps_FltkEvLoop_CallFrame*evloopfr_oldframe;
