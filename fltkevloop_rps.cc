@@ -146,6 +146,50 @@ Rps_Todo::~Rps_Todo()
 };				// end Rps_Todo::~Rps_Todo
 
 ////////////////////////////////////////////////////////////////
+int
+Rps_Todo_Collection::add_todo(const Rps_Todo&todo)
+{
+  RPS_ASSERT(!todo.is_todo_noop());
+  int ix= -1;
+  constexpr int threshold = 15;
+  int sz = (int)_todocoll_vect.size();
+  if (sz < threshold || 4*_todocoll_timemap.size() >= 3*sz)
+forced_push:
+    {
+      _todocoll_vect.push_back(std::make_unique<Rps_Todo>(todo));
+      RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::add_todo this@" << ((void*)this)
+                    << " todo=" << todo << " -> " << sz);
+      return sz;
+    }
+  else
+    {
+      int rd = Rps_Random:: random_quickly_16bits() % sz;
+      for (int ix=rd; ix<sz; ix++)
+        {
+          if (!_todocoll_vect[ix])
+            {
+              _todocoll_vect[ix] = std::make_unique<Rps_Todo>(todo);
+              RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::add_todo this@" << ((void*)this)
+                            << " todo=" << todo << " -> " << ix);
+              return ix;
+            }
+        }
+      for (int ix=rd-1; ix>=0; ix--)
+        {
+          if (!_todocoll_vect[ix])
+            {
+              _todocoll_vect[ix] = std::make_unique<Rps_Todo>(todo);
+              RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::add_todo this@" << ((void*)this)
+                            << " todo=" << todo << " -> " << ix);
+              return ix;
+            }
+        }
+      // this goto should not happen, but just in case...
+      goto forced_push;
+    }
+} /// end Rps_Todo_Collection::add_todo
+
+////////////////////////////////////////////////////////////////
 
 /// static data of Rps_FltkEvLoop_CallFrame
 std::atomic<long> Rps_FltkEvLoop_CallFrame::evloopfr_counter_;
@@ -431,14 +475,14 @@ Rps_FltkEvLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
   if (delw < 0.0)
     {
       RPS_WARNOUT("Rps_FltkEvLoop_CallFrame::fltk_event_wait: depth#" << evloopfr_depth
-		  <<  " evlserial#" << evloopfr_serial << " broke delw=" << delw << std::endl
+                  <<  " evlserial#" << evloopfr_serial << " broke delw=" << delw << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "fltk_event_wait"));
       return;
     }
   else
     {
       RPS_DEBUG_LOG(GUI, "Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth
-		    << ", count#" << count <<  " evlserial#" << evloopfr_serial
+                    << ", count#" << count <<  " evlserial#" << evloopfr_serial
                     << " after wait delw=" << delw << " this@" << (void*)this);
       for (Rps_FltkEvLoop_CallFrame* evfr = this;
            evfr != nullptr;
@@ -468,8 +512,8 @@ Rps_FltkEvLoop_CallFrame::fltk_event_wait(unsigned long count, double delay)
         }
     }
   RPS_DEBUG_LOG(GUI, "end Rps_FltkEvLoop_CallFrame::fltk_event_wait depth#" << evloopfr_depth
-		<<  " evlserial#" << evloopfr_serial << " this@" << ((void*)this) << std::endl
-		<<  Rps_ShowCallFrame(this) << std::endl);
+                <<  " evlserial#" << evloopfr_serial << " this@" << ((void*)this) << std::endl
+                <<  Rps_ShowCallFrame(this) << std::endl);
   return;
 }; // end Rps_FltkEvLoop_CallFrame::fltk_event_wait
 

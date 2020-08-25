@@ -334,21 +334,25 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
 
 
 // the ordered collection of todos inside a  Rps_FltkEvLoop_CallFrame
-class Rps_Todo_Collection {
+class Rps_Todo_Collection
+{
+  Rps_FltkEvLoop_CallFrame* _todocoll_owning_callframe;
   // An internal vector of unique pointers to Todo-s. We refer to each
   // todo there by its index. That vector does not shrink, and may
   // contain null slots.
   std::vector<std::unique_ptr<Rps_Todo>> _todocoll_vect;
   // An ordered multimap from timeout to a todos index in above vector
-  std::multimap<double,int> _todo_timemap;
+  std::multimap<double,int> _todocoll_timemap;
   // a first-in first-out chronological queue of todos indexes in above vector
-  std::deque<int> _todo_fifoqueue;
+  std::deque<int> _todocoll_fifoqueue;
 public:
-  Rps_Todo_Collection()
-    : _todocoll_vect(), _todo_timemap(), _todo_fifoqueue() {};
+  Rps_Todo_Collection(Rps_FltkEvLoop_CallFrame*owncf=nullptr)
+    : _todocoll_owning_callframe(owncf), _todocoll_vect(), _todocoll_timemap(), _todocoll_fifoqueue() {};
   ~Rps_Todo_Collection() {};
   Rps_Todo_Collection(const Rps_Todo_Collection&) = delete;
   Rps_Todo_Collection(Rps_Todo_Collection&&) = delete;
+  // add a todo and return its index
+  int add_todo(const Rps_Todo&);
 };	       // end class Rps_Todo_Collection
 
 
