@@ -76,7 +76,7 @@ enum Rps_TodoKind_t
 struct Rps_Todo_Base
 {
   static std::atomic<unsigned> _todo_serial_counter_;
-  Rps_TodoKind_t todo_kind;
+  mutable Rps_TodoKind_t todo_kind;
   const int todo_lineno;
   const unsigned todo_serial;
   const double todo_timeout;
@@ -151,6 +151,7 @@ public:
   void apply_todo_function(Rps_CallFrame*callframe)
   {
     todo_func(callframe, todo_arg1, todo_arg2);
+    todo_kind = TODOK_noop;
   }
   const void*arg1() const
   {
@@ -196,6 +197,7 @@ public:
   {
     todo_closv.apply3(reinterpret_cast<Rps_CallFrame*>(callfram),
                       todo_arg1v, todo_arg2v, todo_arg3v);
+    todo_kind = TODOK_noop;
   }
 }; // end class Rps_Todo_Closure
 
@@ -277,6 +279,7 @@ public:
     return todo_base.timeout();
   };
   void output(std::ostream&out) const;
+  void apply_todo(Rps_FltkEvLoop_CallFrame*cf);
 }; // end class Rps_Todo
 
 inline std::ostream& operator << (std::ostream&out, const Rps_Todo& todo)

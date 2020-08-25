@@ -124,6 +124,22 @@ Rps_Todo::output(std::ostream&out) const
     };
 } // end Rps_Todo::output
 
+void
+Rps_Todo::apply_todo(Rps_FltkEvLoop_CallFrame*cf)
+{
+  switch(kind())
+    {
+    case TODOK_closure:
+      todo_closure.apply_todo_clos(cf);
+      break;
+    case TODOK_function:
+      todo_function.apply_todo_function(cf);
+      break;
+    case TODOK_noop:
+      break;
+    }
+} // end Rps_Todo::apply_todo
+
 Rps_Todo::~Rps_Todo()
 {
   RPS_ASSERT(rps_is_main_gui_thread());
@@ -370,10 +386,10 @@ Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos(void)
                 <<   " evlserial#" << evloopfr_serial<< std::endl);
 }; // end Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos
 
+
 Rps_FltkEvLoop_CallFrame*
 Rps_FltkEvLoop_CallFrame::get_lower_evloop_callframe(void) const
 {
-  int cnt = 0;
   for (Rps_ProtoCallFrame*cf = previous_call_frame();
        cf != nullptr;
        cf = cf->previous_call_frame())
