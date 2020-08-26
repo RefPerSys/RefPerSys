@@ -360,8 +360,9 @@ public:
   Rps_Todo_Collection(Rps_Todo_Collection&&) = delete;
   // add a todo and return its index
   int add_todo(const Rps_Todo&);
-  // run pending todos and remove them
-  void run_pending_todos(Rps_FltkEvLoop_CallFrame*cf);
+  // run pending todos in given call frame and remove them; if provided,
+  // curtim is the current monotonic time.
+  void run_pending_todos(Rps_FltkEvLoop_CallFrame*cf, double curtim=0.0);
   // remove the already done or too old todos, that is NoOps
   void cleanup_done_or_old_todos(void);
 };	       // end class Rps_Todo_Collection

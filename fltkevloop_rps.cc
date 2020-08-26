@@ -256,13 +256,31 @@ Rps_Todo_Collection::cleanup_done_or_old_todos(void)
   }
 } // end Rps_Todo_Collection::cleanup_old_or_done_todos
 
-
+// run all the pending todos, those with a timeout before the current time
 void
-Rps_Todo_Collection::run_pending_todos(Rps_FltkEvLoop_CallFrame*cf)
+Rps_Todo_Collection::run_pending_todos(Rps_FltkEvLoop_CallFrame*cf, double curtim)
 {
-#warning TODO: Rps_Todo_Collection::run_pending_todos should be implemented and called from Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos
-  RPS_FATALOUT("unimplemented Rps_Todo_Collection::run_pending_todos cf="
-               << Rps_ShowCallFrame(cf));
+  if (curtim<0.0)
+    curtim = rps_monotonic_real_time();
+  RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::run_pending_todos curtim=" << curtim << " cf@" << ((void*)cf)
+                << ":" << std::endl << Rps_ShowCallFrame(cf));
+  RPS_ASSERT (cf != nullptr);
+  for (auto it : _todocoll_timemap)
+    {
+      int curix = it.second;
+      RPS_ASSERT(curix>=0 && curix< _todocoll_vect.size());
+      Rps_Todo* curtodoptr = _todocoll_vect[curix].get();
+      if (!curtodoptr)
+        continue;
+      if (curtodoptr->is_todo_noop())
+        continue;
+      if  (curtodoptr->timeout() > curtim)
+        return;
+      RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::run_pending_todos applying todo " << *curtodoptr << " in  cf@" << ((void*)cf));
+      curtodoptr->apply_todo(cf);
+      RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::run_pending_todos applied todo " << *curtodoptr << " in  cf@" << ((void*)cf));
+    }
+#warning TODO: Rps_Todo_Collection::run_pending_todos should be called from Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos
 } // end Rps_Todo_Collection::run_pending_todos
 
 ////////////////////////////////////////////////////////////////
