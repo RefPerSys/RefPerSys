@@ -339,13 +339,17 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
 // as its evloopfr_todo_coll field... See below.
 class Rps_Todo_Collection
 {
+public:
+  typedef  std::multimap<double,int> double_to_index_map_t;
+  typedef double_to_index_map_t::iterator double_to_index_iterator_t;
+private:
   Rps_FltkEvLoop_CallFrame* _todocoll_owning_callframe;
   // An internal vector of unique pointers to Todo-s. We refer to each
   // todo there by its index. That vector does not shrink, and may
   // contain null slots.
   std::vector<std::unique_ptr<Rps_Todo>> _todocoll_vect;
   // An ordered multimap from timeout to a todos index in above vector
-  std::multimap<double,int> _todocoll_timemap;
+  double_to_index_map_t _todocoll_timemap;
   // a first-in first-out chronological queue of todos indexes in above vector
   std::deque<int> _todocoll_fifoqueue;
   // internal routine to add a todo

@@ -238,21 +238,22 @@ Rps_Todo_Collection::cleanup_done_or_old_todos(void)
       }
   }
   // clean old entries of _todocoll_timemap
+  // see https://stackoverflow.com/a/263958/841108
   {
-    auto nextit = _todocoll_timemap.end();
-    for (auto it = _todocoll_timemap.begin();
-         it != _todocoll_timemap.end();
-         it = nextit)
+    double_to_index_iterator_t it = _todocoll_timemap.begin();
+    while (it != _todocoll_timemap.end())
       {
         int curix = it->second;
-        nextit = ++it;
         RPS_ASSERT(curix>=0 && curix<sz);
         Rps_Todo* curtodoptr = _todocoll_vect[curix].get();
         if (!curtodoptr)
-          continue;
+          {
+            ++it;
+            continue;
+          }
         if (curtodoptr->timeout() > curtim)
           break;
-        nextit = _todocoll_timemap.erase(it);
+        it = _todocoll_timemap.erase(it);
       }
   }
 } // end Rps_Todo_Collection::cleanup_old_or_done_todos
