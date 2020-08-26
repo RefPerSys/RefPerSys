@@ -261,7 +261,7 @@ Rps_Todo_Collection::cleanup_done_or_old_todos(void)
 void
 Rps_Todo_Collection::run_pending_todos(Rps_FltkEvLoop_CallFrame*cf, double curtim)
 {
-  if (curtim<0.0)
+  if (curtim<=0.0)
     curtim = rps_monotonic_real_time();
   RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::run_pending_todos curtim=" << curtim << " cf@" << ((void*)cf)
                 << ":" << std::endl << Rps_ShowCallFrame(cf));
@@ -273,14 +273,18 @@ Rps_Todo_Collection::run_pending_todos(Rps_FltkEvLoop_CallFrame*cf, double curti
       Rps_Todo* curtodoptr = _todocoll_vect[curix].get();
       if (!curtodoptr)
         continue;
+      RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::run_pending_todos curix=" << curix
+                    << " curtodoptr:" << *curtodoptr);
       if (curtodoptr->is_todo_noop())
         continue;
       if  (curtodoptr->timeout() > curtim)
         return;
-      RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::run_pending_todos applying todo " << *curtodoptr << " in  cf@" << ((void*)cf));
+      RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::run_pending_todos applying todo " << *curtodoptr << " in  cf@" << ((void*)cf) << " curtim=" << curtim);
       curtodoptr->apply_todo(cf);
       RPS_DEBUG_LOG(GUI, "Rps_Todo_Collection::run_pending_todos applied todo " << *curtodoptr << " in  cf@" << ((void*)cf));
     }
+  RPS_DEBUG_LOG(GUI, "end° Rps_Todo_Collection::run_pending_todos curtim=" << curtim << " cf@" << ((void*)cf)
+                << ":" << std::endl << Rps_ShowCallFrame(cf));
 #warning TODO: Rps_Todo_Collection::run_pending_todos should be called from Rps_FltkEvLoop_CallFrame::run_scheduled_fltk_todos
 } // end Rps_Todo_Collection::run_pending_todos
 

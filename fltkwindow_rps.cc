@@ -608,13 +608,14 @@ RpsGui_OutputWindow::RpsGui_OutputWindow(int x, int y, int w, int h, const std::
 RpsGui_OutputWindow::~RpsGui_OutputWindow()
 {
 #warning RpsGui_OutputWindow::~RpsGui_OutputWindow unimplemented
-  RPS_FATALOUT("unimplemented RpsGui_OutputWindow::~RpsGui_OutputWindow "
-               << RpsGui_ShowWidget(this));
+  RPS_WARNOUT("unimplemented RpsGui_OutputWindow::~RpsGui_OutputWindow "
+              << RpsGui_ShowWidget(this));
 } // end RpsGui_OutputWindow::~RpsGui_OutputWindow
 
 void
 RpsGui_OutputWindow::initialize_menubar(void)
 {
+  RPS_DEBUG_LOG(GUI, "RpsGui_OutputWindow::initialize_menubar is unimplemented");
   RPS_WARNOUT("unimplemented RpsGui_OutputWindow::initialize_menubar, this:" << RpsGui_ShowWidget(this) << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_OutputWindow::initialize_menubar"));
 #warning unimplemented RpsGui_OutputWindow::initialize_menubar
