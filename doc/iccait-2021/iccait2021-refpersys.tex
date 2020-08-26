@@ -623,11 +623,67 @@ code (perhaps even hand-written, or generated) is replaced by
 level formalizations.
 
 
+\subsection{Initial Architecture of \RefPerSys}
+\label{subsec:initarch}
+
+The initial architecture\footnote{The GPLv3+ code of \textsc{Bismon},
+mostly in C, is available on
+\href{https://github.com/bstarynk/bismon/}{\texttt{github.com/bstarynk/bismon/}}. But
+     {\RefPerSys} is coded in C++, only for \textsc{Linux/x86-64}, on
+     \href{https://gitlab.com/bstarynk/refpersys}{\texttt{gitlab.com/bstarynk/refpersys}}
+     and share almost no code with \textsc{Bismon}.}, prototyped in
+C++17, of {\RefPerSys} is close to \textsc{Bismon}'s one. But it
+should evolve very differently. Our persistent and garbage-collected
+\cite{jones:2016:gchandbook} heap is made of \emph{values}. Most
+values are immutable and rather light. Some values are mutable
+\emph{objects}, which are quite heavy, since synchronized between
+threads so carrying their read-write lock. Values are represented in
+64 bits machine words: either a tagged integer, or containing a
+pointer to some aligned memory zone. Most values are persistent---so
+dumped then later reloaded through state files---but some are transient,
+since it makes no sense to keep them on disk. Transient values, often
+transient objects, include reification of GUI windows or Web widgets,
+HTTP connections, ongoing processes, in particular compilation
+commands of newly generated plugins, etc.. Values are both ordered
+and hashable, so fit nicely inside standard C++ containers like
+\texttt{std::set} or \texttt{std::unordered\_map}. Every mutable
+object has a globally unique, fixed, and random \emph{objid}, which
+fits in 16 bytes and is textually represented---in state files---with a
+string such as \texttt{\_7VnQtHZ63pA02rCekc}.
+
+Immutable values include \textsc{Utf-8} strings, boxed \textsc{Ieee}
+64 bits floats without \texttt{NaN} to stay ordered, tuples of
+references to objects, ordered sets of objects, closures -whose code
+is represented by some object, and with arbitrary values as closed
+values-, and immutable instances.
+
+Mutable objects carry their constant \emph{objid}, their lock, their
+class -which could change at runtime and is an object-, attributes,
+components, and some optional smart \texttt{std::unique\_ptr} pointer
+to the payload of that object. An attribute associates a key -itself
+some object reference- to a value, so attributes are collected in some
+mutable C++ \texttt{std::map}. The components are organized as a
+\texttt{std::vector} of values. The payload belongs to its owning
+object and carry extra data, such as mutable hashed sets, class
+information -sequence of superclasses and method dispatch table-,
+string buffers, opened file or socket handles, GUI or widgets etc..
+
+%%%
+%The initial {\RefPerSys} should contain some ad-hoc integrated
+%development environment above the \textsc{Fltk} toolkit, used just to
+%fill the persistent heap and generate some of its C++ code.
+%%%
+{\RefPerSys} will initially have an ad-hoc IDE---built with the \textsc{Fltk}
+toolkit---to just fill the persistent heap and generate some of its C++
+code. This IDE will support the syntax highlighting, autocompletion and
+navigating of objects through their \emph{objids}.
+
+
 % needed in second column of first page if using \IEEEpubid
 %\IEEEpubidadjcol
 
-\subsubsection{Subsubsection Heading Here}
-Subsubsection text here.
+%\subsubsection{Subsubsection Heading Here}
+%Subsubsection text here.
 
 
 % An example of a floating figure using the graphicx package.
