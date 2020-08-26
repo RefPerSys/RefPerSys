@@ -64,7 +64,8 @@ class RpsGui_InputCommand;
 class RpsGui_MenuBar;
 ////////////////
 
-class Rps_FltkEvLoop_CallFrame;
+class Rps_FltkEvLoop_CallFrame; // forward declaration, see below
+
 // we need to keep a kind, because one a todo has been done, its
 // kind becomes noop....
 enum Rps_TodoKind_t
@@ -334,7 +335,8 @@ rps_fltk_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filena
   RPS_FLTK_ADD_DELAYED_LABELED_CLOSURE_AT((CurFrame),(Label),(Delay),(Clos),(A1),(A2))
 
 
-// the ordered collection of todos inside a  Rps_FltkEvLoop_CallFrame
+// the ordered collection of todos inside a Rps_FltkEvLoop_CallFrame
+// as its evloopfr_todo_coll field... See below.
 class Rps_Todo_Collection
 {
   Rps_FltkEvLoop_CallFrame* _todocoll_owning_callframe;
@@ -365,6 +367,12 @@ public:
   void run_pending_todos(Rps_FltkEvLoop_CallFrame*cf, double curtim=0.0);
   // remove the already done or too old todos, that is NoOps
   void cleanup_done_or_old_todos(void);
+  // garbage collect the collection
+  void gc_mark_collected_todos(Rps_GarbageCollector*);
+  int size() const
+  {
+    return (int) (_todocoll_timemap.size());
+  };
 };	       // end class Rps_Todo_Collection
 
 
@@ -396,18 +404,15 @@ class Rps_FltkEvLoop_CallFrame :
 protected:
   /// after here, no instance GC-ed value anymore
   ////////////////
-  // Our TODO machinery: the key of below ordered map is an absolute
-  // time, as given by rps_monotonic_real_time the value in entries of
-  // below map is a Todo. We need to ensure that entries are unique
-  // (by adding a tiny random delay when needed). We need a mutex to
-  // ensure other threads than the GUI one could add TODO things. We
+  // Our TODO machinery: We need a mutex to ensure other threads than
+  // the GUI one could add TODO things to our collections of TODOs. We
   // need garbage collection support of these TODO-s.
 #warning should have a class Rps_Todo_Collection for our todos, with more than a map
   /* FIXME: this should be redesigned. The collection of todos should
      be a proper class Rps_TodoCollection, with a map from timeout to
      todos but also a FIFO queue of them... Probably as
      shared_ptr... */
-  std::map<double,Rps_Todo> evloopfr_todos;
+  Rps_Todo_Collection evloopfr_todo_coll;
   mutable std::recursive_mutex evloopfr_mtx;
   Rps_FltkEvLoop_CallFrame*evloopfr_oldframe;
   int evloopfr_lineno;
