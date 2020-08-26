@@ -149,7 +149,7 @@ Rps_Todo::~Rps_Todo()
 Rps_Todo*
 Rps_Todo_Collection::adding_todo(int ix, const Rps_Todo& todo)
 {
-  RPS_ASSERT(ix>=0 && ix < _todocoll_vect.size());
+  RPS_ASSERT(ix>=0 && ix < (int)_todocoll_vect.size());
   RPS_ASSERT(todo.kind() != TODOK_noop);
   Rps_Todo* tp = new Rps_Todo(todo);
   _todocoll_vect[ix].reset(tp);
@@ -201,6 +201,61 @@ forced_push:
       goto forced_push;
     }
 } /// end Rps_Todo_Collection::add_todo
+
+void
+Rps_Todo_Collection::cleanup_done_or_old_todos(void)
+{
+  double curtim = rps_monotonic_real_time();
+  int sz = (int)_todocoll_vect.size();
+  /// cleanup the _todocoll_vect, removing noop-s there
+  for (int ix=0; ix<sz; ix++)
+    {
+      Rps_Todo* curtodoptr = _todocoll_vect[ix].get();
+      if (!curtodoptr)
+        continue;
+      double curtimout = curtodoptr->timeout();
+      if (curtimout>curtim)
+        continue;
+      if (!curtodoptr->is_todo_noop())
+        continue;
+    }
+  // clean up first old entries in _todocoll_fifoqueue
+  {
+    auto nextit =  _todocoll_fifoqueue.end();
+    for (auto it = _todocoll_fifoqueue.begin();
+         it != _todocoll_fifoqueue.end();
+         it = nextit)
+      {
+        int curix = *it;
+        RPS_ASSERT(curix >= 0 && curix < sz);
+        Rps_Todo* curtodoptr = _todocoll_vect[curix].get();
+        if (!curtodoptr)
+          nextit = _todocoll_fifoqueue.erase(it);
+        else if (curtodoptr->timeout() > curtim) break;
+        else
+          nextit = ++it;
+      }
+  }
+  // clean old entries of _todocoll_timemap
+  {
+    auto nextit = _todocoll_timemap.end();
+    for (auto it = _todocoll_timemap.begin();
+         it != _todocoll_timemap.end();
+         it = nextit)
+      {
+        int curix = it->second;
+        nextit = ++it;
+        RPS_ASSERT(curix>=0 && curix<sz);
+        Rps_Todo* curtodoptr = _todocoll_vect[curix].get();
+        if (!curtodoptr)
+          continue;
+        if (curtodoptr->timeout() > curtim)
+          break;
+        nextit = _todocoll_timemap.erase(it);
+      }
+  }
+} // end Rps_Todo_Collection::cleanup_old_or_done_todos
+
 
 void
 Rps_Todo_Collection::run_pending_todos(Rps_FltkEvLoop_CallFrame*cf)

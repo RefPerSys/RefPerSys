@@ -77,11 +77,12 @@ struct Rps_Todo_Base
 {
   static std::atomic<unsigned> _todo_serial_counter_;
   mutable Rps_TodoKind_t todo_kind;
-  const int todo_lineno;
-  const unsigned todo_serial;
-  const double todo_timeout;
-  const char* todo_filename;
-  const char* todo_label;
+  const int todo_lineno; // C++ line number
+  const unsigned todo_serial; // unique serial
+  const double todo_timeout; // timeout threshold for
+  // rps_monotonic_real_time()
+  const char* todo_filename; // C++ file name
+  const char* todo_label; // human readable label
   typedef std::function<void(Rps_CallFrame*,void*,void*)> todo_func_t;
   Rps_Todo_Base(Rps_TodoKind_t kind, int lineno, double delay, const char*label=nullptr)
     : todo_kind(kind), todo_lineno(lineno),
@@ -361,6 +362,8 @@ public:
   int add_todo(const Rps_Todo&);
   // run pending todos and remove them
   void run_pending_todos(Rps_FltkEvLoop_CallFrame*cf);
+  // remove the already done or too old todos, that is NoOps
+  void cleanup_done_or_old_todos(void);
 };	       // end class Rps_Todo_Collection
 
 
