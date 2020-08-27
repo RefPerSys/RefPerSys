@@ -799,7 +799,8 @@ class RpsGui_OutputWindow
   : public RpsGui_Window
 {
   RpsGui_OutputTextBuffer*outwin_buffer;
-  /// we probably want two instances of Fl_Text_Editor inside some box sharing the outwin_buffer above.
+  /// we probably want two instances of Fl_Text_Editor inside some box
+  /// sharing the outwin_buffer above.
   Fl_Text_Editor* outwin_uppereditor;
   Fl_Text_Editor* outwin_lowereditor;
   friend  void rps_fltk_initialize(int &,char**, Rps_CallFrame*);

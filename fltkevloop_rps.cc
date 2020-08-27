@@ -889,10 +889,12 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
         Fl::screen_scale(scrix, scale);
     }
   auto cmdwin = new RpsGui_CommandWindow(w, h, titlestr);
-  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize,  create a window: argc="
+  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize,  create a command window: argc="
                 << argc << " argv@" << argv << " cmdwin=" << cmdwin
                 << " w=" << w << " h=" << h
-                << " title:'" << titlestr << "'");
+                << " title:'" << titlestr << "'" << std::endl
+                << "... cmdwin@" << (void*)cmdwin
+                << " " << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin));
   /// delay initialization of menubar
   RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(callerframe,
                                       "TODO@ rps_fltk_initialize-initialize_menubar",
