@@ -453,8 +453,8 @@ RpsGui_CommandWindow::initialize_menubar(void)
   guiwin_menubar->add("&App/&Quit",  "^q", RpsGui_CommandWindow::menu_quit_cb);
   guiwin_menubar->color(fl_rgb_color(255,228,225)); // MistyRose
   guiwin_menubar->box(FL_BORDER_BOX);
-  end();
   guiwin_menubar->show();
+  end(); // putting this before the guiwin_menubar->show() show does not change anything...
   this->show();
   RPS_DEBUG_LOG(GUI, "RpsGui_CommandWindow::initialize_menubar this:"
                 << RpsGui_ShowFullWidget(this) << std::endl
