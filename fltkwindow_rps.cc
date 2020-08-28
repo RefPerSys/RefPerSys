@@ -398,7 +398,8 @@ RpsGui_CommandWindow::RpsGui_CommandWindow(int x, int y, int w, int h, const std
   RPS_ASSERT(curfltkframe != nullptr);
   /// we hope for some visible blinking effect; once it works, we
   /// could code simpler...
-  RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(curfltkframe,"RpsGui_CommandWindow-initmenubar-TODO",
+  RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(curfltkframe,
+                                      "Todo:RpsGui_CommandWindow-initmenubar-TODO",
                                       0.25,
                                       [=](Rps_CallFrame*cf,void*,void*)
   {

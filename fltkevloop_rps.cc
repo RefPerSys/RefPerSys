@@ -895,12 +895,13 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
                 << " title:'" << titlestr << "'" << std::endl
                 << "... cmdwin@" << (void*)cmdwin
                 << " " << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin));
-  /// delay initialization of menubar
+  ///
+  /// delayed initialization of menubar
   RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(callerframe,
-                                      "TODO@ rps_fltk_initialize-initialize_menubar",
+                                      "TODO@ rps_fltk_initialize-cmdwin!initialize_menubar",
                                       0.1, [=](Rps_CallFrame*cf,void*,void*)
   {
-    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo initialize_menubar cmdwin=" << cmdwin
+    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo cmdwin-initialize_menubar cmdwin=" << cmdwin
                   << " cf=" << cf
                   << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_menubar"));
@@ -908,14 +909,16 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
     cmdwin->initialize_menubar();
     cmdwin->end();
     cmdwin->show();
-    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end initialize_menubar cmdwin=" << cmdwin);
+    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end cmdwin-initialize_menubar cmdwin="
+                  << cmdwin);
   });
-  /// delay initialization of pack
+  ///
+  /// delayed initialization of pack
   RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(callerframe,
-                                      "TODO@ rps_fltk_initialize-initialize_pack", 0.2, //
+                                      "TODO@ rps_fltk_initialize-cmdwin!initialize_pack", 0.2, //
                                       [=](Rps_CallFrame*cf,void*,void*)
   {
-    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo initialize_pack cmdwin=" << cmdwin
+    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo cmdwin-initialize_pack cmdwin=" << cmdwin
                   << " cf=" << cf
                   << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_pack"));
@@ -923,7 +926,7 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
     cmdwin->initialize_pack();
     cmdwin->end();
     cmdwin->show();
-    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end initialize_pack cmdwin=" << cmdwin);
+    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end cmdwin-initialize_pack cmdwin=" << cmdwin);
   });
   cmdwin->show();
   RPS_DEBUG_LOG(GUI, "rps_fltk_initialize ending cmdwin=" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin)
