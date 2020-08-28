@@ -56,9 +56,7 @@
 
 //////////////// forward declaration of classes
 class RpsGui_ShowWidget;
-class RpsGui_Window;
-class RpsGui_CommandWindow;
-class RpsGui_OutputWindow;
+class RpsGui_SimpleWindow;
 class RpsGui_OutputTextBuffer;
 class RpsGui_InputCommand;
 class RpsGui_MenuBar;
@@ -696,32 +694,15 @@ std::ostream&operator << (std::ostream& out, const RpsGui_ShowFullWidget<FltkWid
 enum RpsGui_WinTypes
 {
   /// every FLTK widget has a type. Please grep the FLTK header files for "RESERVED_TYPE".
-  RpsGuiType_CommandWindow = FL_DOUBLE_WINDOW+2,
-  RpsGuiType_OutputWindow,
-  RpsGuiType_MenuBar,
-  RpsGuiType_Pack,
-
-  //////////// SUGGESTION
-  // Don't we need to maintain a consistent naming scheme, as in the following?
-  // Perhaps a consistent naming scheme would be even more important in case of
-  // generated code.
-  //
-  // I can see why we need enumerators for the Command and Output windows, but I
-  // am not sure whether the menu bar and pack widgets should be considered as
-  // part of the WinTypes enumeration, since they are not windows per se, but
-  // rather are widgets embedded within a double window.
-
-  RpsGui_WinTypes_CommandWindow = FL_DOUBLE_WINDOW + 2,
-  RpsGui_WinTypes_OutputWindow,
-  RpsGui_WinTypes_MenuBar,
-  RpsGui_WinTypes_Pack,
-
-  /////////////////// END SUGGESTION
+  RpsGuiTy__StartUnusedIndex = FL_DOUBLE_WINDOW+2,
+  RpsGuiTy_SimpleWindow,
+  RpsGuiTy_MenuBar,
+  RpsGuiTy_Pack,
 };
 
-class RpsGui_Window: public Fl_Double_Window
+class RpsGui_SimpleWindow://  of fltktype RpsGuiTy_SimpleWindow
+  public Fl_Double_Window
 {
-  static std::set<RpsGui_Window*> _set_of_gui_windows_;
 protected:
   RpsGui_MenuBar *guiwin_menubar;
   Rps_Id guiwin_ownoid;
@@ -731,10 +712,10 @@ public:
   virtual uchar type() const =0;
   static constexpr int guiwin_border = 5;
   virtual void initialize_menubar(void) =0;
-  RpsGui_Window(int w, int h, const std::string& lab);
-  RpsGui_Window(int x, int y, int w, int h, const std::string& lab);
+  RpsGui_SimpleWindow(int w, int h, const std::string& lab);
+  RpsGui_SimpleWindow(int x, int y, int w, int h, const std::string& lab);
 public:
-  virtual ~RpsGui_Window();
+  virtual ~RpsGui_SimpleWindow();
   Rps_Id owning_oid() const
   {
     return guiwin_ownoid;
@@ -746,7 +727,7 @@ public:
   {
     return guiwin_label;
   };
-};				// end class RpsGui_Window
+};				// end class RpsGui_SimpleWindow
 
 ////////////////
 class RpsGui_MenuBar : public Fl_Menu_Bar
@@ -754,7 +735,7 @@ class RpsGui_MenuBar : public Fl_Menu_Bar
 public:
   virtual uchar type(void) const
   {
-    return RpsGuiType_MenuBar;
+    return RpsGuiTy_MenuBar;
   };
   RpsGui_MenuBar(int X, int Y, int W, int H, const char*lab=nullptr);
   virtual ~RpsGui_MenuBar();
@@ -765,56 +746,12 @@ class RpsGui_Pack : public Fl_Pack
 public:
   virtual uchar type(void) const
   {
-    return RpsGuiType_Pack;
+    return RpsGuiTy_Pack;
   };
   RpsGui_Pack(int X, int Y, int W, int H, const char*lab=nullptr);
   virtual ~RpsGui_Pack();
 };				// end class RpsGui_Pack
 
-
-////////////////
-class RpsGui_CommandWindow
-  : public RpsGui_Window
-{
-  static constexpr int right_menu_gap = 16;
-  static constexpr int menu_height = 20;
-  Fl_Pack* cmdwin_pack;
-  friend  void rps_fltk_initialize(int &,char**, Rps_CallFrame*);
-  virtual void initialize_menubar(void);
-  virtual void initialize_pack(void);
-  static void menu_dump_cb(Fl_Widget*, void*);
-  static void menu_exit_cb(Fl_Widget*, void*);
-  static void menu_quit_cb(Fl_Widget*, void*);
-public:
-  RpsGui_CommandWindow(int w, int h, const std::string& lab);
-  RpsGui_CommandWindow(int x, int y, int w, int h, const std::string& lab);
-  virtual ~RpsGui_CommandWindow();
-  virtual uchar type(void) const
-  {
-    return RpsGuiType_CommandWindow;
-  };
-};				// end class RpsGui_CommandWindow
-
-class RpsGui_OutputWindow
-  : public RpsGui_Window
-{
-  // the single common output buffer
-  RpsGui_OutputTextBuffer*outwin_buffer;
-  /// we probably want two instances of Fl_Text_Editor inside some box
-  /// sharing the outwin_buffer above.
-  Fl_Text_Editor* outwin_uppereditor;
-  Fl_Text_Editor* outwin_lowereditor;
-  friend  void rps_fltk_initialize(int &,char**, Rps_CallFrame*);
-  virtual void initialize_menubar(void);
-public:
-  virtual ~RpsGui_OutputWindow();
-  virtual uchar type(void) const
-  {
-    return RpsGuiType_OutputWindow;
-  };
-  RpsGui_OutputWindow(int w, int h, const std::string& lab);
-  RpsGui_OutputWindow(int x, int y, int w, int h, const std::string& lab);
-}; // end class RpsGui_OutputWindow
 
 
 

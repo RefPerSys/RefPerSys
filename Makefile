@@ -153,11 +153,11 @@ fltkevloop_rps.sanit.o: fltkevloop_rps.cc headfltk_rps.sanit.hh.gch
 fltkevloop_rps.dbg.o: fltkevloop_rps.cc headfltk_rps.dbg.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
 
-fltkwindow_rps.o: fltkwindow_rps.cc headfltk_rps.hh.gch
+fltksimpwin_rps.o: fltksimpwin_rps.cc headfltk_rps.hh.gch
 	$(COMPILE.cc) -o $@ $<
-fltkwindow_rps.sanit.o: fltkwindow_rps.cc headfltk_rps.sanit.hh.gch
+fltksimpwin_rps.sanit.o: fltksimpwin_rps.cc headfltk_rps.sanit.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
-fltkwindow_rps.dbg.o: fltkwindow_rps.cc headfltk_rps.dbg.hh.gch
+fltksimpwin_rps.dbg.o: fltksimpwin_rps.cc headfltk_rps.dbg.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
 
 fltkdisplay_rps.o: fltkdisplay_rps.cc headfltk_rps.hh.gch
