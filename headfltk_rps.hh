@@ -798,6 +798,7 @@ public:
 class RpsGui_OutputWindow
   : public RpsGui_Window
 {
+  // the single common output buffer
   RpsGui_OutputTextBuffer*outwin_buffer;
   /// we probably want two instances of Fl_Text_Editor inside some box
   /// sharing the outwin_buffer above.
