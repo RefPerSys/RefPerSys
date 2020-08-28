@@ -18,7 +18,7 @@ printf "\\\\newcommand{\\\\rpsgitcommit}[0]{%s}\n" "$gittag" > generated-iccait2
 
 printf "\n\n ================ SVG processing by inkscape of "; echo *.svg "files."
 for svgfile in *.svg ; do
-    svgbase=$(basename $svgfile .svg)
+    svgbase=$(basename $svgfile.svg)
     inkscape --without-gui --export-pdf=$svgbase.pdf $svgfile
     inkscape --without-gui --export-eps=$svgbase.eps $svgfile
 done
