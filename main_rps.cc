@@ -615,9 +615,7 @@ main (int argc, char** argv)
   rps_load_from(rps_my_load_dir);
   if (!dumpdir.empty() && rps_run_gui)
     {
-      // rps_set_gui_dump_dir(dumpdir);
-      RPS_WARNOUT("needing rps_set_gui_dump_dir dumpdir=" << dumpdir);
-#warning needing rps_set_gui_dump_dir in main
+      rps_set_gui_dump_dir(dumpdir);
     };
   rps_run_application(argc, argv);
   ////

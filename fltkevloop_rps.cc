@@ -166,7 +166,7 @@ Rps_Todo_Collection::add_todo(const Rps_Todo&todo)
   RPS_ASSERT(!todo.is_todo_noop());
   constexpr int threshold = 15;
   int sz = (int)_todocoll_vect.size();
-  if (sz < threshold || 4L*_todocoll_timemap.size() >= 3L*sz)
+  if (sz < threshold || 4L*_todocoll_timemap.size() >= 3L*(unsigned)sz)
 forced_push:
     {
       _todocoll_vect.push_back(nullptr);

@@ -57,6 +57,8 @@
 //////////////// forward declaration of classes
 class RpsGui_ShowWidget;
 class RpsGui_SimpleWindow;
+class RpsGui_CommandTextEditor;
+class RpsGui_OutputTextEditor;
 class RpsGui_OutputTextBuffer;
 class RpsGui_InputCommand;
 class RpsGui_MenuBar;
@@ -705,28 +707,26 @@ class RpsGui_SimpleWindow://  of fltktype RpsGuiTy_SimpleWindow
 {
 protected:
   RpsGui_MenuBar *guiwin_menubar;
-  Rps_Id guiwin_ownoid;
   std::string guiwin_label;
+  static constexpr int right_menu_gap=5;
+  static constexpr int menu_height=9;
 public:
   virtual int handle(int);
   virtual uchar type() const =0;
   static constexpr int guiwin_border = 5;
-  virtual void initialize_menubar(void) =0;
+  void initialize_menubar(void);
   RpsGui_SimpleWindow(int w, int h, const std::string& lab);
   RpsGui_SimpleWindow(int x, int y, int w, int h, const std::string& lab);
 public:
   virtual ~RpsGui_SimpleWindow();
-  Rps_Id owning_oid() const
-  {
-    return guiwin_ownoid;
-  };
-  Rps_ObjectRef owning_object(Rps_CallFrame*) const;
-  void set_owning_object(Rps_CallFrame*, Rps_ObjectRef obr);
-  void clear_owning_object(void);
   const std::string label_str(void) const
   {
     return guiwin_label;
   };
+private:
+  static void menu_dump_cb(Fl_Widget*widg, void*ptr);
+  static void menu_exit_cb(Fl_Widget*widg, void*ptr);
+  static void menu_quit_cb(Fl_Widget*widg, void*ptr);
 };				// end class RpsGui_SimpleWindow
 
 ////////////////
