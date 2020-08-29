@@ -273,6 +273,7 @@ RpsGui_SimpleWindow::RpsGui_SimpleWindow(int w, int h, const std::string& lab)
     copy_label(lab.c_str());
   RPS_DEBUG_LOG(GUI, "RpsGui_SimpleWindow this:" <<  RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this));
   initialize_menubar();
+  RPS_DEBUG_LOG(GUI, "RpsGui_SimpleWindow-endcons this:" <<  RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this));
 } // end RpsGui_SimpleWindow::RpsGui_SimpleWindow w,h,lab
 
 RpsGui_SimpleWindow::RpsGui_SimpleWindow(int x, int y, int w, int h, const std::string& lab)
@@ -285,6 +286,7 @@ RpsGui_SimpleWindow::RpsGui_SimpleWindow(int x, int y, int w, int h, const std::
     copy_label(lab.c_str());
   RPS_DEBUG_LOG(GUI, "RpsGui_SimpleWindow this:" <<  RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this));
   initialize_menubar();
+  RPS_DEBUG_LOG(GUI, "RpsGui_SimpleWindow-endcons this:" <<  RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this));
 } // end RpsGui_SimpleWindow::RpsGui_SimpleWindow x,y,w,h,lab
 
 RpsGui_SimpleWindow::~RpsGui_SimpleWindow()
