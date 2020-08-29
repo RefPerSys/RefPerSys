@@ -268,6 +268,9 @@ RpsGui_SimpleWindow::RpsGui_SimpleWindow(int w, int h, const std::string& lab)
     guiwin_menubar(nullptr),
     guiwin_label(lab)
 {
+  type(RpsGuiTy_SimpleWindow);
+  if (!lab.empty())
+    copy_label(lab.c_str());
   RPS_DEBUG_LOG(GUI, "RpsGui_SimpleWindow this:" <<  RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this));
   initialize_menubar();
 } // end RpsGui_SimpleWindow::RpsGui_SimpleWindow w,h,lab
@@ -277,6 +280,9 @@ RpsGui_SimpleWindow::RpsGui_SimpleWindow(int x, int y, int w, int h, const std::
     guiwin_menubar(nullptr),
     guiwin_label(lab)
 {
+  type(RpsGuiTy_SimpleWindow);
+  if (!lab.empty())
+    copy_label(lab.c_str());
   RPS_DEBUG_LOG(GUI, "RpsGui_SimpleWindow this:" <<  RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this));
   initialize_menubar();
 } // end RpsGui_SimpleWindow::RpsGui_SimpleWindow x,y,w,h,lab
@@ -285,11 +291,6 @@ RpsGui_SimpleWindow::~RpsGui_SimpleWindow()
 {
 } // end RpsGui_SimpleWindow::~RpsGui_SimpleWindow
 
-
-uchar
-RpsGui_SimpleWindow::type() const {
-  return RpsGuiTy_SimpleWindow;
-}
 
 int
 RpsGui_SimpleWindow::handle(int evtype)

@@ -492,12 +492,13 @@ rps_fltk_geometry_string(const FltkWidgetClass*widg)
 {
   if (widg == nullptr)
     return "";
+  Fl_Widget* parwid = widg->parent();
   int x= -1, y= -1, w= 0, h=0;
   float scale=1.0;
   const char* visiblestr =
     (widg->visible_r())
     ?"•"://U+2022 BULLET
-    (widg->visible_r())?"▫"// U+25AB WHITE SMALL SQUARE
+    (parwid && parwid->visible_r())?"▫"// U+25AB WHITE SMALL SQUARE
     : "◌"; //U+25CC DOTTED CIRCLE
   if (rps_fltk_get_window_geometry<FltkWidgetClass>(widg, x, y, w, h, &scale))
     {
@@ -697,7 +698,7 @@ enum RpsGui_WinTypes
 {
   /// every FLTK widget has a type. Please grep the FLTK header files for "RESERVED_TYPE".
   RpsGuiTy__StartUnusedIndex = FL_DOUBLE_WINDOW+2,
-  RpsGuiTy_SimpleWindow,
+  RpsGuiTy_SimpleWindow, //is probably 244
   RpsGuiTy_MenuBar,
   RpsGuiTy_Pack,
 };
@@ -712,7 +713,6 @@ protected:
   static constexpr int menu_height=9;
 public:
   virtual int handle(int);
-  virtual uchar type() const;
   static constexpr int guiwin_border = 5;
   void initialize_menubar(void);
   RpsGui_SimpleWindow(int w, int h, const std::string& lab);
