@@ -889,54 +889,57 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
         Fl::screen_scale(scrix, scale);
     }
   ///----------------------------- old code
-#if 0 && oldcode
-  auto cmdwin = new RpsGui_CommandWindow(w, h, titlestr);
-  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize,  create a command window: argc="
-                << argc << " argv@" << argv << " cmdwin=" << cmdwin
-                << " w=" << w << " h=" << h
-                << " title:'" << titlestr << "'" << std::endl
-                << "... cmdwin@" << (void*)cmdwin
-                << " " << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin));
-  ///
-  /// delayed initialization of menubar, which itself delays the
-  /// initialization of the pack
-  RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(callerframe,
-                                      "TODO@ rps_fltk_initialize-cmdwin!initialize_menubar",
-                                      0.1, [=](Rps_CallFrame*cf,void*,void*)
-  {
-    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo cmdwin-initialize_menubar cmdwin=" << cmdwin
-                  << " cf=" << cf
-                  << std::endl
-                  <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_menubar"));
-    cmdwin->begin();
-    cmdwin->initialize_menubar();
-    cmdwin->end();
-    cmdwin->show();
-    /// delayed^2 initialization of pack
-    RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(cf,
-                                        "TODO@ rps_fltk_initialize-cmdwin!initialize_pack", 0.2, //
-                                        [=](Rps_CallFrame*cf2,void*,void*)
-    {
-      RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo cmdwin-initialize_pack cmdwin=" << cmdwin
-                    << " cf2=" << cf2
-                    << std::endl
-                    <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_pack"));
-      cmdwin->begin();
-      cmdwin->initialize_pack();
-      cmdwin->end();
-      cmdwin->show();
-      RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end cmdwin-initialize_pack cmdwin=" << cmdwin);
-    });
-    RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end cmdwin-initialize_menubar cmdwin="
-                  << cmdwin);
-  });
-  ///
-  cmdwin->show();
-  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize ending cmdwin=" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin)
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize~end")
-                << std::endl << std::endl);
-#endif /*0 && oldcode*/
+//- #if 0 && oldcode
+//-   auto cmdwin = new RpsGui_CommandWindow(w, h, titlestr);
+//-   RPS_DEBUG_LOG(GUI, "rps_fltk_initialize,  create a command window: argc="
+//-                 << argc << " argv@" << argv << " cmdwin=" << cmdwin
+//-                 << " w=" << w << " h=" << h
+//-                 << " title:'" << titlestr << "'" << std::endl
+//-                 << "... cmdwin@" << (void*)cmdwin
+//-                 << " " << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin));
+//-   ///
+//-   /// delayed initialization of menubar, which itself delays the
+//-   /// initialization of the pack
+//-   RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(callerframe,
+//-                                       "TODO@ rps_fltk_initialize-cmdwin!initialize_menubar",
+//-                                       0.1, [=](Rps_CallFrame*cf,void*,void*)
+//-   {
+//-     RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo cmdwin-initialize_menubar cmdwin=" << cmdwin
+//-                   << " cf=" << cf
+//-                   << std::endl
+//-                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_menubar"));
+//-     cmdwin->begin();
+//-     cmdwin->initialize_menubar();
+//-     cmdwin->end();
+//-     cmdwin->show();
+//-     /// delayed^2 initialization of pack
+//-     RPS_FLTK_ADD_DELAYED_LABELED_TODO_0(cf,
+//-                                         "TODO@ rps_fltk_initialize-cmdwin!initialize_pack", 0.2, //
+//-                                         [=](Rps_CallFrame*cf2,void*,void*)
+//-     {
+//-       RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo cmdwin-initialize_pack cmdwin=" << cmdwin
+//-                     << " cf2=" << cf2
+//-                     << std::endl
+//-                     <<  RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize  todo initialize_pack"));
+//-       cmdwin->begin();
+//-       cmdwin->initialize_pack();
+//-       cmdwin->end();
+//-       cmdwin->show();
+//-       RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end cmdwin-initialize_pack cmdwin=" << cmdwin);
+//-     });
+//-     RPS_DEBUG_LOG(GUI, "rps_fltk_initialize todo end cmdwin-initialize_menubar cmdwin="
+//-                   << cmdwin);
+//-   });
+//-   ///
+//-   cmdwin->show();
+//-   RPS_DEBUG_LOG(GUI, "rps_fltk_initialize ending cmdwin=" << RpsGui_ShowFullWidget<RpsGui_CommandWindow>(cmdwin)
+//-                 << std::endl
+//-                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize~end")
+//-                 << std::endl << std::endl);
+//- #endif /*0 && oldcode*/
+  rps_the_simple_window = new RpsGui_SimpleWindow(w, h, titlestr);
+  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize rps_the_simple_window=" << RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(rps_the_simple_window));
+  rps_the_simple_window->show();
 #warning rps_fltk_initialize incomplete for simple window
   RPS_WARNOUT(" @@@@rps_fltk_initialize incomplete "
               << std::endl

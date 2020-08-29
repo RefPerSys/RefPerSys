@@ -712,7 +712,7 @@ protected:
   static constexpr int menu_height=9;
 public:
   virtual int handle(int);
-  virtual uchar type() const =0;
+  virtual uchar type() const;
   static constexpr int guiwin_border = 5;
   void initialize_menubar(void);
   RpsGui_SimpleWindow(int w, int h, const std::string& lab);
@@ -728,6 +728,8 @@ private:
   static void menu_exit_cb(Fl_Widget*widg, void*ptr);
   static void menu_quit_cb(Fl_Widget*widg, void*ptr);
 };				// end class RpsGui_SimpleWindow
+
+extern "C" RpsGui_SimpleWindow* rps_the_simple_window;
 
 ////////////////
 class RpsGui_MenuBar : public Fl_Menu_Bar
