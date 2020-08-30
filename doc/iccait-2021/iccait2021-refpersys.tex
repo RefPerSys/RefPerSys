@@ -1463,6 +1463,134 @@ techniques.
  our C or C++ code is written with the hope of being easily able to
  regenerate it.
 
+
+\subsection{The persistent heap}
+\label{subsec:persistheap}
+
+When {\RefPerSys} is running in some multi-threaded \textsc{Linux}
+\href{https://en.wikipedia.org/wiki/Process\_(computing)}{process},
+the {\RefPerSys} persistent heap is (like Bismon's one
+\cite{Starynkevitch:2019:bismon-draft}) semantically like the memory
+heap of most
+\href{https://en.wikipedia.org/wiki/Dynamic\_programming\_language}{dynamic
+  programming languages} (such as
+\href{https://python.org/}{\textsc{Python}},
+\href{https://www.gnu.org/software/guile/}{\textsc{Guile}},
+\href{https://golang.org/}{\textsc{Go}},
+\href{http://sbcl.org/}{\textsc{Sbcl}}, etc \ldots). The
+%%\textcolor{red}{\textbf{\relsize{+1}{still incomplete}}}
+figure \ref{fig:persistent-heap} should give an intuition about that
+heap, when it is inside the
+\href{https://en.wikipedia.org/wiki/Virtual_address_space}{virtual
+  address space} of some \texttt{refpersys} process. We strongly want
+to avoid any
+\href{https://en.wikipedia.org/wiki/Global\_interpreter\_lock}{GIL},
+but multi-threaded precise efficient garbage collector implementations
+are quite difficult to code. However, notice that the persistence
+(dump as textual \texttt{git}-versioned disk files) of a heap uses
+algorithms similar to those of copying garbage collectors
+\cite{wilson:1992:uniprocessorgc, jones:2016:gchandbook}.
+
+That figure \ref{fig:persistent-heap} shows a few global and transient
+roots (both being processed by the garbage collector), and several
+threads each having its call stack (made of call frames) with local
+variables in it. In that figure, if $\mu$ and $\mu'$ are two memory
+zones or locations (like for an object such as \texttt{ob1}, or for an
+immutable value \texttt{iv2}), there is an arrow $\mu \rightarrow
+\mu'$ if some field $\phi$ of $\mu$ refers to $\mu'$, that is (in C
+like notation) if \fbox{$\mu$\texttt{\textbf{->}}$\phi = \mu'$}. Different
+arrow colors could mean different fields $\phi, \phi' \ldots$ etc
+\ldots The heap is actually a large directed graph and may contain
+cycles (e.g. $ ob1 \rightarrow iv1 \rightarrow ob3 \rightarrow ob2
+\rightarrow ob3 $). Most values are immutable values (some of them
+being composite, such as \texttt{iv1}). Some immutable values are
+scalar (e.g. strings). Notice that \texttt{iv4} is a dead value,
+unreachable from others; it should be later garbage collected.  Only
+objects have a content which may change. Since {\RefPerSys} is
+multi-threaded, the access inside every object should be thread-safe
+and usually is protected by a
+\href{https://en.wikipedia.org/wiki/Lock\_(computer\_science)}{\textit{mutex}}
+(or \textit{read write lock}) which is part of that object\footnote{Or
+by atomic pointers, probably the {\RefPerSys} class of an object is,
+inside it, given by some C++ field with an
+\href{https://en.cppreference.com/w/cpp/atomic/atomic}{\texttt{std::atomic}}
+pointer type, for efficiency reasons.}.
+
+
+Conceptually, {\RefPerSys}
+\href{https://en.wikipedia.org/wiki/Tracing_garbage_collection}{tracing
+  precise garbage collector} should traverse the graph of references
+to {\RefPerSys} values, starting from global or transient roots and
+local variables inside call frames of working threads. Each
+{\RefPerSys} \textbf{value} \index{value} (immutable or object) is
+represented by a machine word (aligned, 64 bits) which usually
+contains a pointer, but sometimes some
+\href{https://en.wikipedia.org/wiki/Tagged\_pointer}{tagged integer}.
+Immutable values are often ``small'' (typically, less than a few dozens of words of memory, sometimes a lot more) but
+objects are necessarily heavier since they contain some kind of
+lock. \href{https://en.wikipedia.org/wiki/Closure\_(computer_programming)}{closures}
+are immutable values, containing an object representing and giving
+their function code (as a C function pointer inside that object), and
+additional closed values. In practice our garbage collector processes
+not only values (either immutable values or objects), but also
+\textbf{quasi-values} \index{quasi-value}: these are a single memory
+zone which is allocated using the garbage collector allocation
+protocol, traversed by the GC when something points to it, appears
+inside other values (in particular, as payload \index{payload} of objects), but by
+convention should not be passed as a genuine value. So the figure
+\ref{fig:persistent-heap} is a simplification.
+
+Some values (or objects) are dead; in the figure
+\ref{fig:persistent-heap}, the immutable value \texttt{iv4} is not
+reachable from roots or local variables on the call stack of working
+threads. So it is dead and should eventually be reclaimed by the
+garbage collector.
+
+\textbf{Values} -either immutable values or changeable objects- in
+       {\RefPerSys} can be either \textbf{persistent} (dumped in
+       textual state files\footnote{In the current implementation,
+       {\RefPerSys} state files should appear under
+       \texttt{persistore/} subdirectory, and the manifest file is
+       \texttt{rps\_manifest.json} at the top directory.}, then
+       reloaded at restart of \texttt{refpersys} process) or
+       \textbf{transient} (that is, not dumped and not appearing in
+       state files).
+
+The \textbf{persistence} machinery - the dump - is conceptually simple
+and could run in several threads: start from global roots and traverse
+the memory graph but ignore transient objects and transient roots and
+memoize previously seen persistent objects. Of course, objects should
+not be persisted twice, and are referred by the \textbf{object id} or
+\textbf{objid} in the state files produced by the dump. That
+\textit{objid} \index{objid@\textit{objid}} is alphanumeric, randomly generated and so hopefully
+globally unique -like {\relsize{-1}{\texttt{\_2om48kc3k5R02d3ktW}}}
+for example- in our current implementation; exactly like
+\href{https://en.wikipedia.org/wiki/Universally_unique_identifier}{\textsc{Uuid}s}
+should be. Notice the conceptual similarity between {\RefPerSys} dump
+algorithm and its tracing garbage collector: both are traversing the
+graph of references inside the heap.
+
+The global roots are objects. Use the C++ functions
+\texttt{rps\_each\_root\_object} to iterate on them,
+\texttt{rps\_add\_root\_object} to add one,
+\texttt{rps\_remove\_root\_object} to remove one,
+\texttt{rps\_is\_root\_object} to test if an object is a global root,
+\texttt{rps\_set\_root\_objects} to get the set of all of them,
+and\texttt{rps\_nb\_root\_objects} to get their number. Of course,
+some global roots can be transient objects, but all of them are roots
+for the garbage collector.
+
+The initial loading machinery (recreating a suitable heap - and
+rebuilding a graph of references inspired by figure
+\ref{fig:persistent-heap}, without any transient stuff) from its
+previous dumped state) is first creating empty all objects, then later
+filling each of them. However, for efficiency, we may want to load the
+heap in parallel, using several loader threads. This could be easy if,
+after having created all objects as empty, and loaded plugins
+(i.e. \texttt{dlopen}-ing many \texttt{*.so} files), {\RefPerSys}
+processes each state file in a potentially different loading thread.
+
+
 \section{Conclusion}
 We have discussed how we are trying to develop {\RefPerSys} organically,
 using metaprogramming techniques to eventually build a fully bootstrapped
