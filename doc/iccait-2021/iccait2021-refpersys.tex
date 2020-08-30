@@ -166,6 +166,7 @@
 
 \usepackage{svg}
 
+\usepackage{relsize}
 
 
 % *** MATH PACKAGES ***
@@ -392,6 +393,9 @@
 \pagestyle{empty}
 
 \newcommand{\RefPerSys}{{\textit{\textsc{RefPerSys}}}}
+
+% defines the \rpsgitcommit command:
+\input{generated-iccait2021-gitid}
 
 \begin{document}
 %
@@ -1311,10 +1315,6 @@ Biography text here.
 
 
 
-% that's all folks
-\end{document}
-
-
 
 %%% for a draft that should be acceptable
 \begin{flushright}
@@ -1322,6 +1322,10 @@ Biography text here.
     Our draft \texttt{git} ID is \texttt{\textit{\rpsgitcommit}}
   \end{relsize}
 \end{flushright}
+
+% that's all folks
+\end{document}
+
 
 %%% For emacs:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
