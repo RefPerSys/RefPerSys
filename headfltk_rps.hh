@@ -709,11 +709,11 @@ class RpsGui_SimpleWindow://  of fltktype RpsGuiTy_SimpleWindow
 protected:
   RpsGui_MenuBar *guiwin_menubar;
   std::string guiwin_label;
-  static constexpr int right_menu_gap=3;
-  static constexpr int menu_height=14;
+  static constexpr int right_menu_gap=12;
+  static constexpr int menu_height=24;
 public:
   virtual int handle(int);
-  static constexpr int guiwin_border = 2;
+  static constexpr int guiwin_border = 7;
   void initialize_menubar(void);
   RpsGui_SimpleWindow(int w, int h, const std::string& lab);
   RpsGui_SimpleWindow(int x, int y, int w, int h, const std::string& lab);
