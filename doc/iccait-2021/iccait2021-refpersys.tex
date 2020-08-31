@@ -297,7 +297,64 @@ should evolve very differently. Our persistent and garbage-collected
 \cite{jones:2016:gchandbook} heap is made of \emph{values}. Most
 values are immutable and rather light. Some values are mutable
 \emph{objects}, which are quite heavy, since synchronized between
-threads so carrying their read-write lock. Values are represented in
+threads so carrying their read-write lock.
+
+
+\subsubsection{Values in  \RefPerSys}
+
+Values in {\RefPerSys} are most often immutable values, or mutable
+objects. All of them are ordered -so comparable-, and hashable. Each
+value has a type (for objects, their type is their class). The
+\texttt{null} pointer is special and understood as lack of value (so
+is less than any other value). Values are garbage collected
+\cite{jones:2017:gchandbook}. A clever GC would handle differently
+immutable values (they could be allocated quickly with some copying
+generational approach) and mutable objects\footnote{Objects cannot be
+moved by the GC, if represented as C++ objects, since several threads
+could use them and since they need to contain mutexes}.
+
+Immutable values are:
+
+\begin{itemize}
+\item \textbf{scalar values} (inspired by Lisp) such as strings,
+  tagged integers, boxed floating point numbers (not a NaN, to remain
+  ordered), constant (small) arrays of numbers.
+\item \textbf{composite values} (memoizing their hash code), i.e.:
+  \begin{itemize}
+  \item constant \textbf{tuples} or sequences of object references (ordered
+    lexicographically).
+  \item constant finite \textbf{sets} of object references, represented as
+    ordered arrays, so with logarithmic membership test.
+  \item \textbf{closures}: a closure has some code represented by an
+    connective object (containing a C++ function pointer used for
+    applying that closure) with a constant finite sequence of closed
+    values.
+  \item \textbf{immutable instances} share with closure some C++
+    representation (and GC code). The [connective] object is then
+    instance's class, and the values can be understood as constant and
+    immutable fields.
+  \end{itemize}
+\end{itemize}
+
+Only {\RefPerSys} objects are mutable, and in a multi-threading
+approach are quite heavy, since every object needs to be protected by
+its mutex (mutual exclusion lock). An object contains:
+
+
+\begin{itemize}
+\item its mutex, a \texttt{std::recursive\_mutex} in C++ parlance.
+\item a C++ pointer to some function, used for applying closure
+  \item attribute entries: an abstract finite sorted mapping
+    (initially, some \texttt{std::map} in C++ parlance) from objects
+    to values. Each attribute is an object, and all of them are
+    different. The value of an object is arbitrary but non-nil and can
+    be changed.
+\end{itemize}
+
+\medskip
+
+
+Values are represented in memory as
 64 bits machine words: either a tagged integer, or containing a
 pointer to some aligned memory zone. Most values are persistent---so
 dumped then later reloaded through state files---but some are transient,
@@ -672,7 +729,7 @@ Most Linux distributions contain lots of useful libraries or software
 components for {\RefPerSys} long-term goals, notably machine learning
 open source libraries like
 \href{https://www.tensorflow.org/}{\textsc{TensorFlow}}
-\cite{charniak:2019:deep-learning} or
+\cite{charniak:2019:deep-learning, shalev:2014:understanding} or
 \href{https://gudhi.inria.fr/}{\textsc{Gudhi}}
 \cite{chazal:2016:high}. We might at some point also need messaging
 libraries like \href{https://zeromq.org/}{\textsc{0mq}}, graphical
@@ -680,8 +737,8 @@ user interfaces libraries à la \href{http://qt.io/}{\textsc{Qt}} or
 more probably web servicing libraries like
 \href{https://github.com/davidmoreno/onion/}{\texttt{libonion}} or
 \href{https://www.webtoolkit.eu/wt}{\textsc{Wt}}. To decrease efforts,
-we don't want to rewrite such libraries inside {\RefPerSys} (considered
-as a very high level,
+we don't want to rewrite such libraries inside {\RefPerSys}
+(considered as a very high level,
 \href{https://en.wikipedia.org/wiki/Declarative\_programming}{declarative},
 \href{https://en.wikipedia.org/wiki/Domain-specific\_language}{domain-specific
   language}). Hence, we will need in {\RefPerSys} to generate some
@@ -1086,8 +1143,17 @@ after having created all objects as empty, and loaded plugins
 (i.e. \texttt{dlopen}-ing many \texttt{*.so} files), {\RefPerSys}
 processes each state file in a potentially different loading thread.
 
+\section{Future technical roadmap}
+\label{sec:future-roadmap}
+
+The remaining roadmap has two facets: a short term technical roadmap
+(not implemented yet in August 2020, but designed since half
+implemented in prior work), and a more speculative self-applying
+roadmap on the {\RefPerSys} system (independently of future potential
+applications).
+
 \subsection{Short term technical roadmap}
-\label{subsec:short-roadmap}
+\label{shbsec:short-roadmap}
 
 The below short term work is parallel to some of the development
 already done in \textsc{Bismon}
@@ -1101,7 +1167,68 @@ garbage collection and incompatible interaction with GTK which makes
 it crash very often, e.g. once a few minutes!}  sharing some ideas
 with \RefPerSys (but not a single line of code). It should be done in
 the few months following August 2020 and present no conceptual
-difficulty.
+difficulty, since reproducing prior work (but avoiding conceptual
+design bugs).
+
+So our short term todo-list includes a few simple features (possibly
+worked upon in parallel):
+
+\begin{itemize}
+  \item defining some ``read-eval-print-loop'' syntax and thinnk of
+    its GUI implementation.
+    
+  \item hand-coding some GUI interface above FLTK (inspired by the
+    existing GTK interface of \textsc{Bismon}) to enable us to
+    conveniently create {\RefPerSys} objects and update them, run a
+    small set of commands\footnote{In particular, dumping the
+    persistent heap and generating C++ code.}, and providing
+    autocompletion and minor syntax highlighting.
+
+  \item hand-coding the initial C++ generator, with code chunks as was done in  \textsc{Melt} \cite{Starynkevitch-DSL2011}.
+
+  \item creating and filling objects and values representing the existing C++ classes related to {\RefPerSys} objects and values.
+
+    \item generating that C++ code, and once it is working, removing
+      the old hand-written code as explained above. Using a good
+      version control system such as \texttt{git} is practically
+      important, for software engineering reasons and best practices.
+
+      \item representing more abstractly the current organization and
+        type system of {\RefPerSys} values (and objects) (see \S
+        \ref{subsec:persistheap} above), and regenerating most of
+        existing C++ declarations (e.g. in current
+        \texttt{refpersys.hh} header), and simultaneously emit C++ for
+        support routines for garbage collection and for
+        persistence. Once that is achieved, the majority of current
+        hand-written C++ code would have been replaced by generated
+        C++ code.
+
+      \item generating {\RefPerSys} closure code and method dictionnaries, including our \textsc{ObjVLisp} inspired model.
+
+        \item generate variants (perhaps thru preprocessor flags) of
+          code which profile and measure the execution time of many
+          short processing. Notice that on Linux time measuring
+          functions\footnote{Refer to the
+          \href{https://man7.org/linux/man-pages/man7/time.7.html}{\texttt{time(7)}}
+          man page.} like \texttt{clock\_gettime} have very little
+          overhead and runs quickly (fraction of a microsecond) and
+          are able to measure reliably a few microseconds of CPU time.
+\end{itemize}
+
+The reader should notice that the above present have no conceptual
+difficulties. They are similar to existing work, such as
+\textsc{Bigloo}\footnote{See
+\href{https://www-sop.inria.fr/mimosa/fp/Bigloo/}{\texttt{www-sop.inria.fr/mimosa/fp/Bigloo}}
+for more.}  \cite{Serrano:1995:bigloo, Bres:2004:bigloo} or
+\textsc{Chicken/Scheme}\footnote{See
+\href{http://call-cc.org/}{\texttt{call-cc.org}}.}.
+
+\subsection{Long term reflexive roadmap}
+\label{shbsec:long-roadmap}
+
+Once the infrastructure exists to generate most of the C++ code
+(notably C++ classes describing the data, C++ code for garbage
+collection and for persistence, some more speculative work remains.
 
 {\large @@ TO BE WRITTEN}
 
@@ -1218,8 +1345,8 @@ proof reading earlier versions of this draft.
 %\bibliographystyle{IEEEtran}
 %\bibliography{IEEEabrv,iccait2021-refpersys-biblio}
 
-\bibliographystyle{plain}
-\bibliography{plain,iccait2021-refpersys-biblio}
+%\bibliographystyle{plain}
+%\bibliography{plain,iccait2021-refpersys-biblio}
 
 \medskip
 %\printbibliography
