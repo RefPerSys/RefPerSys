@@ -991,16 +991,11 @@ not only values (either immutable values or objects), but also
 zone which is allocated using the garbage collector allocation
 protocol, traversed by the GC when something points to it, appears
 inside other values (in particular, as payload \index{payload} of objects), but by
-convention should not be passed as a genuine value. So the figure
-\ref{fig:persistent-heap} is a simplification.
-
-Some values (or objects) are dead; in the figure
-\ref{fig:persistent-heap}, the immutable value \texttt{iv4} is not
-reachable from roots or local variables on the call stack of working
-threads. So it is dead and should eventually be reclaimed by the
+convention should not be passed as a genuine value.
+Some values (or objects) may be dead and should eventually be reclaimed by the
 garbage collector.
 
-\textbf{Values} -either immutable values or changeable objects- in
+\textbf{Values}, either immutable values or changeable objects, in
        {\RefPerSys} can be either \textbf{persistent} (dumped in
        textual state files\footnote{In the current implementation,
        {\RefPerSys} state files should appear under
