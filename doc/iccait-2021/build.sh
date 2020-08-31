@@ -43,13 +43,13 @@ fi
 
 
 printf "\n\n ===============================================\n"
-printf "LaTeXing and BibTeXing files...\n"
+printf "LaTeXing and BibTeXing (biber) files...\n"
 
 pdflatex --shell-escape --halt-on-error iccait2021-refpersys
-bibtex iccait2021-refpersys
+biber iccait2021-refpersys
 pdflatex --shell-escape --halt-on-error iccait2021-refpersys
-bibtex iccait2021-refpersys
+biber iccait2021-refpersys
 pdflatex --shell-escape --halt-on-error iccait2021-refpersys
-bibtex iccait2021-refpersys
+biber iccait2021-refpersys
 pdflatex --shell-escape --halt-on-error iccait2021-refpersys
 
