@@ -1,3 +1,4 @@
+
 %% file doc/iccait-2021/iccait2021-refpersys.tex
 %% on https://gitlab.com/bstarynk/refpersys
 %% a submission to https://panel.waset.org/conference/2021/05/paris/ICCAIT
@@ -94,8 +95,9 @@ A collection of flexible objects can reify and represent executable
 code, practially emitted as generated C++ files, using a bootstrapping
 and metaprogramming approach. So the emitted code of the system is
 generated from a semantic network processed by the system
-itself. RefPerSys objects are frames, with a flexible set of
-attributes, themselves objects.
+itself. RefPerSys objects are frames, having a class, with a flexible
+set of attributes, components, and some optional payload carrying
+extra data.
 
 Introspection becomes possible by inspecting the call stack, made of
 reified garbage collected call frames.
@@ -332,7 +334,9 @@ Immutable values are:
   \item \textbf{immutable instances} share with closure some C++
     representation (and GC code). The [connective] object is then
     instance's class, and the values can be understood as constant and
-    immutable fields.
+    immutable fields. They are mimicking objects (see below) but stay
+    immutable, so fields -i.e. values after the connective- are
+    interpreted as attributes or as components.
   \end{itemize}
 \end{itemize}
 
@@ -342,15 +346,28 @@ its mutex (mutual exclusion lock). An object contains:
 
 
 \begin{itemize}
-\item its mutex, a \texttt{std::recursive\_mutex} in C++ parlance.
+\item its \textbf{mutex}, a \texttt{std::recursive\_mutex} in C++ parlance.
+\item the object's \textbf{class}, which is itself an object.
 \item a C++ pointer to some function, used for applying closure
   \item attribute entries: an abstract finite sorted mapping
     (initially, some \texttt{std::map} in C++ parlance) from objects
     to values. Each attribute is an object, and all of them are
     different. The value of an object is arbitrary but non-nil and can
     be changed.
+  \item object components: a sequence (e.g. \texttt{std::vector}) of
+      values, some of them could be null.
+    \item an optional payload, see below. Payload are arbitrary data
+      carrying something more. For classes, they would carry the
+      method dictionnary and the superclass.
 \end{itemize}
 
+The object model is basically the ObjVLisp's one
+\cite{cointe:1987:metaclasses}. Every non-nil value has a class, and
+can be sent a message. The selector of a message is an object. The
+arguments of message sending are a sequence of arbitrary values. The
+reciever of a message is an non-nil value.
+
+Each class contains as its payload a class information payload, with: the superclass, the dictionnary mapping selector to method implementations (closures), 
 \medskip
 
 
@@ -1389,7 +1406,11 @@ Lives in India
 %%% for a draft that should be acceptable
 \begin{flushright}
   \begin{relsize}{-1}
-    Our draft \texttt{git} ID is \texttt{\textit{\rpsgitcommit}}. Photos and biographies will be added later. Thi draft has been \LaTeX-ed on \textit{\rpstimestamp}.
+    Our draft \texttt{git} ID is
+    \texttt{\textit{\rpsgitcommit}}. Photos and biographies will be
+    added later. Thi draft has been \LaTeX-ed on
+    \textit{\rpstimestamp}. See our {\LaTeX} source code on
+    \href{https://gitlab.com/bstarynk/refpersys/-/tree/fltk-branch/doc/iccait-2021}{gitlab.com/bstarynk/refpersys/-/tree/fltk-branch/doc/iccait-2021}
   \end{relsize}
 \end{flushright}
 
