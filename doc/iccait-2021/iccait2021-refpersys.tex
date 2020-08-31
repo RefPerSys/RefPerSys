@@ -796,9 +796,7 @@ generating C or C++ code is given by
   chunks} \cite{Starynkevitch-DSL2011, Starynkevitch-GCCMELTweb,
   Starynkevitch:2009:grow, Starynkevitch:2007:Multistage}, where a
 piece of C (or C++) code with holes (or metavariables)
-\texttt{\$hellochunk} and \texttt{\$msg} is given through the
-``macro-string''
-\verb!#{/*$hellochunk#_here*/ printf("hello %s\n", $msg);}#! ... \\
+is passed through a ``macro-string''.
 Later, such a macro-string or code chunk can be expanded by filling
 the holes, that is expanding the metavariables (e.g.\texttt{\$msg})
 appropriately. Such an expansion might be recursive, since some hole
