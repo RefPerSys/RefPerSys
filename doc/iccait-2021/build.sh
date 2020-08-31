@@ -1,5 +1,7 @@
 #!/bin/bash -x
-# for https://panel.waset.org/conference/2021/05/paris/ICCAIT
+# script doc/iccait-2021/build.sh in http://refpersys.org/
+# see https://gitlab.com/bstarynk/refpersys/
+# for submission to https://panel.waset.org/conference/2021/05/paris/ICCAIT
 # 
 
 echo $0 Starting in $(pwd)
