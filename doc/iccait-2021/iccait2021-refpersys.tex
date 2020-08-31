@@ -3,8 +3,10 @@
 %% a submission to https://panel.waset.org/conference/2021/05/paris/ICCAIT
 %% use the ./build.sh script to generate the PDF
 %% see in subdirectory latex-fullpaper-template/ the original LaTeX templates.
+%% see the README.md file, giving typographical hints.
 %
-\documentclass[journal]{journal}
+%\documentclass[journal]{journal}
+\documentclass{IEEEtran}
 %% most of the LaTeX comments from  latex-fullpaper-template/journal.tex have been removed.
 %% please refer to that LaTeX file.
 % See LaTeX guidelines on https://mirrors.chevalier.io/CTAN/macros/latex/contrib/IEEEtran/IEEEtran_HOWTO.pdf
@@ -24,6 +26,8 @@
 
 % defines the \rpsgitcommit command:
 \input{generated-iccait2021-gitid}
+% defines the \rpstimestamp command:
+\input{generated-iccait2021-timestamp}
 
 \begin{document}
 %
@@ -1038,6 +1042,43 @@ after having created all objects as empty, and loaded plugins
 (i.e. \texttt{dlopen}-ing many \texttt{*.so} files), {\RefPerSys}
 processes each state file in a potentially different loading thread.
 
+\section{Future potential applications}
+The {\RefPerSys} project needs real-life applications, which could
+take advantage of its flexible object model, persistence, reflexivity
+and metaprogramming abilities. Future use-cases that are considered
+(within the next five years, if users are found) could include:
+
+\begin{itemize}
+\item representing wisely the documention of \RefPerSys, and
+  generating some parts of it (in PDF or HTML format), probably
+  starting a few \LaTeX-related Linux processes and generating some
+  \texttt{*.tex} or \texttt{*.html} files.
+  
+  \item assistance and software tool to help building, managing and
+    technically coordinating a cooperating research consortium, such
+    as European H2020 or future HorizonEurope\footnote{See
+      \href{https://ec.europa.eu/info/horizon-europe-next-research-and-innovation-framework-programme_en}{\texttt{ec.europa.eu/info/horizon-europe-next-research-and-innovation-framework-programme\_en}}}
+    projects. Since the typical research consortium is made of many
+    partner organizations, involves dozens of persons with various
+    interests and skills.
+
+\item during the current Covid health crisis (and ignoring important
+  legal obstacles or ethical concerns related to privacy issues - both
+  should be handled by humans), managing data and information about
+  Covid handling in a city: the set of tested persons, their medical
+  results (represented as {\RefPerSys} objects, the set of testing
+  centers, the databases holding test results, etc...
+
+\item in a complex industrial corporation (e.g. some automobile
+  maker), facilitate the connection between existing software
+  subsystems (following the ``digital twins'' dream), include finite
+  elements simulation code, factory planning, etc.  {\RefPerSys} could
+  then help to build a semi-coherent and semi-automatic model of what
+  is actually going on in such factories. Industrial parts, simulation software, databases could be represented as {\RefPerSys} objects
+
+\item etc...
+  
+\end{itemize}
 
 \section{Conclusion}
 We have discussed how we are trying to develop {\RefPerSys} organically,
@@ -1161,7 +1202,7 @@ Lives in India
 %%% for a draft that should be acceptable
 \begin{flushright}
   \begin{relsize}{-1}
-    Our draft \texttt{git} ID is \texttt{\textit{\rpsgitcommit}}. Photos and biographies will be added later.
+    Our draft \texttt{git} ID is \texttt{\textit{\rpsgitcommit}}. Photos and biographies will be added later. Thi draft has been \LaTeX-ed on \textit{\rpstimestamp}.
   \end{relsize}
 \end{flushright}
 

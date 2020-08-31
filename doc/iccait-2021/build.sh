@@ -7,7 +7,7 @@
 echo $0 Starting in $(pwd)
 rm -rfv iccait2021-refpersys*.{aux,bcf,blg,log,pdf} generated-iccait2021-gitid.tex
 
-printf "\n\n generating iccait2021-gitid\n"
+printf "\n\n generating generated-iccait2021-gitid.tex\n"
 
 rawgittag="$(git log --format=oneline -1 --abbrev=16 --abbrev-commit -q|cut -d' ' -f1)"
 
@@ -25,6 +25,8 @@ for svgfile in *.svg ; do
     inkscape --without-gui --export-eps=$svgbase.eps $svgfile
 done
 
+printf "\n\n generating generated-iccait2021-timestamp\n"
+date +"\\newcommand{\\rpstimestamp}[0]{%c}%n" > generated-iccait2021-timestamp.tex
 
 ## see http://graphviz.org/
 printf "\n\n ================ dot processing by graphviz of "; echo  dot*.dot "files."
