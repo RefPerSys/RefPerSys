@@ -13,3 +13,10 @@ Requirements (as packages from Debian)
 * the `dot` command from [Graphviz](https://graphviz.org/)
 
 * the `pdflatex` and `bibtex` programs from `texlive` Debian packages.
+
+
+On Debian, install the `texlive-publishers` packages. You then should
+have both
+`/usr/share/texlive/texmf-dist/tex/latex/IEEEtran/IEEEtran.cls` and
+`/usr/share/texlive/texmf-dist/bibtex/bst/IEEEtran/IEEEtran.bst` and
+related files.
