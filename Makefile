@@ -228,7 +228,7 @@ else
 endif
 	@printf "\n%s git-pushed commit %s of RefPerSys, branch %s ...\n\n" \
 	        "$$(git config --get user.email)" "$$(./generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
-
+	@git log -1 --format=oneline --abbrev=12 --abbrev-commit -q | head -1
 
 
 ################################################################
