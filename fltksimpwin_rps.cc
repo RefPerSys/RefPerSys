@@ -239,9 +239,10 @@ RpsGui_MenuBar::RpsGui_MenuBar(int X, int Y, int W, int H, const char*lab)
   : Fl_Menu_Bar(X,Y,W,H,lab)
 {
   Fl_Widget::type((uchar)RpsGuiTy_MenuBar);
-  RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar new this=" << RpsGui_ShowFullWidget(this)
+  color(fl_rgb_color(255,228,225)); // MistyRose
+  RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar-constr this=" << RpsGui_ShowFullWidget(this)
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_MenuBar-new"));
+                << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_MenuBar-constr"));
 };				// end RpsGui_MenuBar::RpsGui_MenuBar
 
 
@@ -271,6 +272,7 @@ RpsGui_SimpleWindow::RpsGui_SimpleWindow(int w, int h, const std::string& lab)
   type(RpsGuiTy_SimpleWindow);
   if (!lab.empty())
     copy_label(lab.c_str());
+  this->color(fl_rgb_color(255,235,205)); //BlanchedAlmond
   RPS_DEBUG_LOG(GUI, "RpsGui_SimpleWindow this:" <<  RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this));
   initialize_menubar();
   RPS_DEBUG_LOG(GUI, "RpsGui_SimpleWindow-endcons this:" <<  RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this));
@@ -284,6 +286,7 @@ RpsGui_SimpleWindow::RpsGui_SimpleWindow(int x, int y, int w, int h, const std::
   type(RpsGuiTy_SimpleWindow);
   if (!lab.empty())
     copy_label(lab.c_str());
+  this->color(fl_rgb_color(255,235,205)); //BlanchedAlmond
   RPS_DEBUG_LOG(GUI, "RpsGui_SimpleWindow this:" <<  RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this));
   initialize_menubar();
   RPS_DEBUG_LOG(GUI, "RpsGui_SimpleWindow-endcons this:" <<  RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this));
@@ -335,7 +338,6 @@ RpsGui_SimpleWindow::initialize_menubar(void)
   guiwin_menubar->add("&App/Dump",  FL_F+1, RpsGui_SimpleWindow::menu_dump_cb);
   guiwin_menubar->add("&App/e&Xit",  "^x", RpsGui_SimpleWindow::menu_exit_cb);
   guiwin_menubar->add("&App/&Quit",  "^q", RpsGui_SimpleWindow::menu_quit_cb);
-  guiwin_menubar->color(fl_rgb_color(255,228,225)); // MistyRose
   guiwin_menubar->box(FL_BORDER_BOX);
   guiwin_menubar->show();
   end(); // putting this before the guiwin_menubar->show() show does not change anything...
