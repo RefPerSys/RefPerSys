@@ -939,6 +939,8 @@ rps_fltk_initialize(int &argc, char**argv, Rps_CallFrame*callerframe)
 //- #endif /*0 && oldcode*/
   rps_the_simple_window = new RpsGui_SimpleWindow(w, h, titlestr);
   RPS_DEBUG_LOG(GUI, "rps_fltk_initialize rps_the_simple_window=" << RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(rps_the_simple_window));
+  rps_the_simple_window->initialize_menubar();
+  RPS_DEBUG_LOG(GUI, "rps_fltk_initialize got menubar rps_the_simple_window=" << RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(rps_the_simple_window));
   rps_the_simple_window->show();
 #warning rps_fltk_initialize incomplete for simple window
   RPS_WARNOUT(" @@@@rps_fltk_initialize incomplete "
