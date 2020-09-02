@@ -741,6 +741,7 @@ public:
   };
   RpsGui_MenuBar(int X, int Y, int W, int H, const char*lab=nullptr);
   virtual ~RpsGui_MenuBar();
+  virtual int handle(int ev);
 };				// end class RpsGui_MenuBar
 
 class RpsGui_Pack : public Fl_Pack

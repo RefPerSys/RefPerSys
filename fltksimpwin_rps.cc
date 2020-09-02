@@ -245,7 +245,21 @@ RpsGui_MenuBar::RpsGui_MenuBar(int X, int Y, int W, int H, const char*lab)
                 << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_MenuBar-constr"));
 };				// end RpsGui_MenuBar::RpsGui_MenuBar
 
-
+int
+RpsGui_MenuBar::handle(int evtype)
+{
+  if (evtype == FL_ENTER)
+    {
+      RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar handle ENTER this=" << RpsGui_ShowFullWidget(this));
+      return 1;
+    }
+  else if (evtype == FL_LEAVE)
+    {
+      RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar handle LEAVE this=" << RpsGui_ShowFullWidget(this));
+      return 1;
+    }
+  else return 0;
+} // end RpsGui_MenuBar::handle
 
 ////////////////
 RpsGui_MenuBar::~RpsGui_MenuBar()
@@ -294,6 +308,8 @@ RpsGui_SimpleWindow::RpsGui_SimpleWindow(int x, int y, int w, int h, const std::
 
 RpsGui_SimpleWindow::~RpsGui_SimpleWindow()
 {
+  RPS_DEBUG_LOG(GUI, "~RpsGui_SimpleWindow-destr this:"
+                <<RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this));
 } // end RpsGui_SimpleWindow::~RpsGui_SimpleWindow
 
 
