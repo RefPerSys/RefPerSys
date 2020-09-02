@@ -251,11 +251,15 @@ RpsGui_MenuBar::handle(int evtype)
   if (evtype == FL_ENTER)
     {
       RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar handle ENTER this=" << RpsGui_ShowFullWidget(this));
+      box(FL_BORDER_BOX);
+      show();
       return 1;
     }
   else if (evtype == FL_LEAVE)
     {
       RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar handle LEAVE this=" << RpsGui_ShowFullWidget(this));
+      box(FL_NO_BOX);
+      show();
       return 1;
     }
   else return 0;
