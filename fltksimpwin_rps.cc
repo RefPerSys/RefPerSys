@@ -248,21 +248,40 @@ RpsGui_MenuBar::RpsGui_MenuBar(int X, int Y, int W, int H, const char*lab)
 int
 RpsGui_MenuBar::handle(int evtype)
 {
-  if (evtype == FL_ENTER)
+  RPS_ASSERT(rps_is_main_gui_thread());
+  switch (evtype)
     {
-      RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar handle ENTER this=" << RpsGui_ShowFullWidget(this));
+    case FL_ENTER:
+    {
+      RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar handle ENTER this=" << RpsGui_ShowFullWidget(this)
+                    << " x=" << Fl::event_x() << " y=" << Fl::event_y());
       box(FL_BORDER_BOX);
       show();
-      return 1;
+      return Fl_Menu_Bar::handle(evtype);
     }
-  else if (evtype == FL_LEAVE)
+    case FL_LEAVE:
     {
-      RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar handle LEAVE this=" << RpsGui_ShowFullWidget(this));
+      RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar handle LEAVE this=" << RpsGui_ShowFullWidget(this)
+                    << " x=" << Fl::event_x() << " y=" << Fl::event_y());
       box(FL_NO_BOX);
       show();
-      return 1;
+      return Fl_Menu_Bar::handle(evtype);
     }
-  else return 0;
+    case FL_PUSH:
+    {
+      int bu = Fl::event_buttons();
+      RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar handle PUSH this=" << RpsGui_ShowFullWidget(this)
+                    << " x=" << Fl::event_x() << " y=" << Fl::event_y()
+                    << ((bu&FL_BUTTON1)?" but1":"")
+                    << ((bu&FL_BUTTON2)?" but2":"")
+                    << ((bu&FL_BUTTON3)?" but3":""));
+      return Fl_Menu_Bar::handle(evtype);
+    }
+    default:
+      RPS_DEBUG_LOG(GUI, "RpsGui++_MenuBar " << RpsGui_ShowFullWidget(this)
+                    << " evtype#" << evtype << ":" << fl_eventnames[evtype]);
+      return Fl_Menu_Bar::handle(evtype);
+    }
 } // end RpsGui_MenuBar::handle
 
 ////////////////
@@ -323,22 +342,33 @@ RpsGui_SimpleWindow::handle(int evtype)
   RPS_ASSERT(rps_is_main_gui_thread());
   /* by default, FLTK understands the ESC key as
      closing. See https://www.fltk.org/doc-1.4/FAQ.html */
-  if ((evtype == FL_KEYDOWN || evtype == FL_KEYUP))
+  switch (evtype)
+    {
+    case FL_KEYDOWN:
+    case FL_KEYUP:
     {
       if (Fl::event_key() == FL_Escape)
         {
           RPS_DEBUG_LOG(GUI, "SimpleGuiWindow " << RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this) << " ignore escape");
           return 1;
         }
+      else return Fl_Double_Window::handle(evtype);
     }
-  else if (evtype == FL_HIDE)
+    case FL_HIDE:
     {
       RPS_DEBUG_LOG(GUI, "SimpleGuiWindow " << RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this) << " got hide");
       if (top_window() == this)
-        Fl::delete_widget(this);
+        {
+          Fl::delete_widget(this);
+          return 1;
+        }
+      else
+        return Fl_Double_Window::handle(evtype);
     }
-  else RPS_DEBUG_LOG(GUI, "SimpleGuiWindow " << RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this) << " evtype#" << evtype);
-  return Fl_Double_Window::handle(evtype);
+    default:
+      RPS_DEBUG_LOG(GUI, "SimpleGuiWindow " << RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this) << " evtype#" << evtype << ":" << fl_eventnames[evtype]);
+      return Fl_Double_Window::handle(evtype);
+    }
 }; // end RpsSimpleGui_Window::handle
 
 

@@ -51,6 +51,7 @@
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Text_Editor.H>
+#include <FL/names.h>
 #include <FL/fl_ask.H>
 
 
