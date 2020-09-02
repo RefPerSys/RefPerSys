@@ -704,6 +704,13 @@ enum RpsGui_WinTypes
   RpsGuiTy_Pack,
 };
 
+// the Fl_Widget::handle(int evtype) virtual methods are returning:
+enum RpsFltk_EventHandling
+{
+  RpsFltk_UnhandledEvent = 0,
+  RpsFltk_UsedEvent = 1
+};
+
 class RpsGui_SimpleWindow://  of fltktype RpsGuiTy_SimpleWindow
   public Fl_Double_Window
 {
@@ -714,6 +721,10 @@ protected:
   static constexpr int menu_height=24;
 public:
   virtual int handle(int);
+  int parent_handle(int evtype)
+  {
+    return  Fl_Double_Window::handle(evtype);
+  };
   static constexpr int guiwin_border = 7;
   void initialize_menubar(void);
   RpsGui_SimpleWindow(int w, int h, const std::string& lab);
@@ -743,6 +754,10 @@ public:
   RpsGui_MenuBar(int X, int Y, int W, int H, const char*lab=nullptr);
   virtual ~RpsGui_MenuBar();
   virtual int handle(int ev);
+  int parent_handle(int evtype)
+  {
+    return  Fl_Menu_Bar::handle(evtype);
+  };
 };				// end class RpsGui_MenuBar
 
 class RpsGui_Pack : public Fl_Pack

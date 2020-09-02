@@ -251,13 +251,15 @@ RpsGui_MenuBar::handle(int evtype)
   RPS_ASSERT(rps_is_main_gui_thread());
   switch (evtype)
     {
+    case FL_NO_EVENT:
+      return parent_handle(evtype);
     case FL_ENTER:
     {
       RPS_DEBUG_LOG(GUI, "RpsGui_MenuBar handle ENTER this=" << RpsGui_ShowFullWidget(this)
                     << " x=" << Fl::event_x() << " y=" << Fl::event_y());
       box(FL_BORDER_BOX);
       show();
-      return Fl_Menu_Bar::handle(evtype);
+      return parent_handle(evtype);
     }
     case FL_LEAVE:
     {
@@ -265,7 +267,7 @@ RpsGui_MenuBar::handle(int evtype)
                     << " x=" << Fl::event_x() << " y=" << Fl::event_y());
       box(FL_NO_BOX);
       show();
-      return Fl_Menu_Bar::handle(evtype);
+      return parent_handle(evtype);
     }
     case FL_PUSH:
     {
@@ -275,12 +277,12 @@ RpsGui_MenuBar::handle(int evtype)
                     << ((bu&FL_BUTTON1)?" but1":"")
                     << ((bu&FL_BUTTON2)?" but2":"")
                     << ((bu&FL_BUTTON3)?" but3":""));
-      return Fl_Menu_Bar::handle(evtype);
+      return parent_handle(evtype);
     }
     default:
       RPS_DEBUG_LOG(GUI, "RpsGui++_MenuBar " << RpsGui_ShowFullWidget(this)
                     << " evtype#" << evtype << ":" << fl_eventnames[evtype]);
-      return Fl_Menu_Bar::handle(evtype);
+      return parent_handle(evtype);
     }
 } // end RpsGui_MenuBar::handle
 
@@ -344,30 +346,34 @@ RpsGui_SimpleWindow::handle(int evtype)
      closing. See https://www.fltk.org/doc-1.4/FAQ.html */
   switch (evtype)
     {
+    case FL_NO_EVENT:
+      return parent_handle(evtype);
     case FL_KEYDOWN:
     case FL_KEYUP:
     {
       if (Fl::event_key() == FL_Escape)
         {
           RPS_DEBUG_LOG(GUI, "SimpleGuiWindow " << RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this) << " ignore escape");
-          return 1;
+          return RpsFltk_UsedEvent;
         }
-      else return Fl_Double_Window::handle(evtype);
+      else return parent_handle(evtype);
     }
     case FL_HIDE:
     {
-      RPS_DEBUG_LOG(GUI, "SimpleGuiWindow " << RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this) << " got hide");
+      RPS_DEBUG_LOG(GUI, "SimpleGuiWindow " << RpsGui_ShowFullWidget(this) << " got hide");
       if (top_window() == this)
         {
           Fl::delete_widget(this);
-          return 1;
+          return RpsFltk_UsedEvent;
         }
       else
-        return Fl_Double_Window::handle(evtype);
+        return parent_handle(evtype);
     }
     default:
-      RPS_DEBUG_LOG(GUI, "SimpleGuiWindow " << RpsGui_ShowFullWidget<RpsGui_SimpleWindow>(this) << " evtype#" << evtype << ":" << fl_eventnames[evtype]);
-      return Fl_Double_Window::handle(evtype);
+      RPS_DEBUG_LOG(GUI, "SimpleGuiWindow " << RpsGui_ShowFullWidget(this)
+                    << " evtype#" << evtype << ":" << fl_eventnames[evtype]
+                    << " x=" << Fl::event_x() << " y=" << Fl::event_y());
+      return parent_handle(evtype);
     }
 }; // end RpsSimpleGui_Window::handle
 
