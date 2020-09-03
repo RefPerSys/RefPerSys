@@ -1,11 +1,11 @@
 /****************************************************************
- * file fltkdisplay_rps.cc
+ * file foxdisplay_rps.cc
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the FLTK value and object displaying code. See http://fltk.org/
+ *      It has the FOX value and object displaying code. See http://fox.org/
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -30,15 +30,15 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-#include "headfltk_rps.hh"
+#include "headfox_rps.hh"
 
 
 
-extern "C" const char rps_fltkdisplay_gitid[];
-const char rps_fltkdisplay_gitid[]= RPS_GITID;
+extern "C" const char rps_foxdisplay_gitid[];
+const char rps_foxdisplay_gitid[]= RPS_GITID;
 
-extern "C" const char rps_fltkdisplay_date[];
-const char rps_fltkdisplay_date[]= __DATE__;
+extern "C" const char rps_foxdisplay_date[];
+const char rps_foxdisplay_date[]= __DATE__;
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for _0TwK4TkhEGZ03oTa5m
@@ -76,7 +76,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for _8KJHUldX8GJ03G5OWp
-//!method int/display_value_fltk
+//!method int/display_value_fox
 extern "C" rps_applyingfun_t rpsapply_8KJHUldX8GJ03G5OWp;
 Rps_TwoValues
 rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
@@ -104,13 +104,13 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
                 << ", depth=" << _f.depthv);
 #warning unimplemented rpsapply_8KJHUldX8GJ03G5OWp
   RPS_FATAL("unimplemented rpsapply_8KJHUldX8GJ03G5OWp");
-} // end of  rpsapply_8KJHUldX8GJ03G5OWp !method int/display_value_fltk
+} // end of  rpsapply_8KJHUldX8GJ03G5OWp !method int/display_value_fox
 
 
 ////////////////////////////////////////////////////////////////
 
 // C++ closure for _2KnFhlj8xW800kpgPt
-//!method string/display_value_fltk
+//!method string/display_value_fox
 extern "C" rps_applyingfun_t rpsapply_2KnFhlj8xW800kpgPt;
 Rps_TwoValues
 rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
@@ -141,11 +141,11 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
   ////==== body of _2KnFhlj8xW800kpgPt ====
 #warning unimplemented rpsapply_2KnFhlj8xW800kpgPt
   RPS_FATAL("unimplemented rpsapply_2KnFhlj8xW800kpgPt");
-} // end of  rpsapply_2KnFhlj8xW800kpgPt !method string/display_value_fltk
+} // end of  rpsapply_2KnFhlj8xW800kpgPt !method string/display_value_fox
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for _7oa7eIzzcxv03TmmZH
-//!method double/display_value_fltk
+//!method double/display_value_fox
 extern "C" rps_applyingfun_t rpsapply_7oa7eIzzcxv03TmmZH;
 Rps_TwoValues
 rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
@@ -164,7 +164,7 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                 );
 
-  ////==== body of _7oa7eIzzcxv03TmmZH !method double/display_value_fltk ====
+  ////==== body of _7oa7eIzzcxv03TmmZH !method double/display_value_fox ====
   _f.doubleval = arg0_recv;
   RPS_ASSERT (_f.doubleval.is_double());
   _f.object_window = arg1_objwnd.as_object();
@@ -177,13 +177,13 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
 #warning unimplemented rpsapply_7oa7eIzzcxv03TmmZH
   RPS_FATAL("unimplemented rpsapply_7oa7eIzzcxv03TmmZH");
 }
-// end of rpsapply_7oa7eIzzcxv03TmmZH !method double/display_value_fltk
+// end of rpsapply_7oa7eIzzcxv03TmmZH !method double/display_value_fox
 
 
 
 
 // C++ closure for _33DFyPOJxbF015ZYoi
-//!method tuple/display_value_fltk
+//!method tuple/display_value_fox
 extern "C" rps_applyingfun_t rpsapply_33DFyPOJxbF015ZYoi;
 Rps_TwoValues
 rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
@@ -202,7 +202,7 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                 );
-  ////==== body of _33DFyPOJxbF015ZYoi !method tuple/display_value_fltk ====
+  ////==== body of _33DFyPOJxbF015ZYoi !method tuple/display_value_fox ====
   _f.tupleval = arg0_recv;
   RPS_ASSERT (_f.tupleval.is_tuple());
   _f.objwnd = arg1_objwnd.as_object();
@@ -216,11 +216,11 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
                 << ", depthi=" << depthi);
 #warning unimplemented rpsapply_33DFyPOJxbF015ZYoi
   RPS_FATAL("unimplemented rpsapply_33DFyPOJxbF015ZYoi");
-} // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_fltk
+} // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_fox
 
 
 // C++ closure for _1568ZHTl0Pa00461I2
-//!method set/display_value_fltk
+//!method set/display_value_fox
 extern "C" rps_applyingfun_t rpsapply_1568ZHTl0Pa00461I2;
 Rps_TwoValues
 rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
@@ -239,7 +239,7 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                 );
 
-  ////==== body of _1568ZHTl0Pa00461I2 !method set/display_value_fltk ====
+  ////==== body of _1568ZHTl0Pa00461I2 !method set/display_value_fox ====
   _f.setval = arg0_recv;
   RPS_ASSERT (_f.setval.is_set());
   _f.objwnd = arg1_objwnd.as_object();
@@ -247,17 +247,17 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
   _f.recdepth = arg2_recdepth;
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_fltk start setval=" << _f.setval
+  RPS_DEBUG_LOG(GUI, "rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_fox start setval=" << _f.setval
                 << "objwnd =" << _f.objwnd
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
 #warning unimplemented rpsapply_1568ZHTl0Pa00461I2
   RPS_FATAL("unimplemented rpsapply_1568ZHTl0Pa00461I2");
-} // end of rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_fltk
+} // end of rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_fox
 
 
 // C++ closure for _18DO93843oX02UWzq6
-//!method object/display_value_fltk
+//!method object/display_value_fox
 extern "C" rps_applyingfun_t rpsapply_18DO93843oX02UWzq6;
 Rps_TwoValues
 rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
@@ -284,11 +284,11 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
 #warning unimplemented rpsapply_18DO93843oX02UWzq6
   RPS_FATAL("unimplemented rpsapply_18DO93843oX02UWzq6");
 
-} // end of rpsapply_18DO93843oX02UWzq6 !method object/display_value_fltk
+} // end of rpsapply_18DO93843oX02UWzq6 !method object/display_value_fox
 
 
 // C++ closure for _0rgijx7CCnq041IZEd
-//!method immutable_instance/display_value_fltk
+//!method immutable_instance/display_value_fox
 extern "C" rps_applyingfun_t rpsapply_0rgijx7CCnq041IZEd;
 Rps_TwoValues
 rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
@@ -310,7 +310,7 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  ////==== body of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_fltk====
+  ////==== body of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_fox====
   _f.instrecv = Rps_InstanceValue(arg0_inst.as_instance());
   RPS_ASSERT (_f.instrecv);
   _f.objwnd = arg1_objwnd.as_object();
@@ -324,13 +324,13 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
                 << ", depthi=" << depthi);
 #warning unimplemented rpsapply_0rgijx7CCnq041IZEd
   RPS_FATAL("unimplemented rpsapply_0rgijx7CCnq041IZEd");
-} // end of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_fltk
+} // end of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_fox
 
 
 
 
 // C++ closure for _6Wi00FwXYID00gl9Ma
-//!method closure/display_value_fltk
+//!method closure/display_value_fox
 extern "C" rps_applyingfun_t rpsapply_6Wi00FwXYID00gl9Ma;
 Rps_TwoValues
 rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
@@ -352,7 +352,7 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  ////==== body of _6Wi00FwXYID00gl9Ma !method closure/display_value_fltk ====
+  ////==== body of _6Wi00FwXYID00gl9Ma !method closure/display_value_fox ====
   _f.closrecv = Rps_ClosureValue(arg0_clos.as_closure());
   RPS_ASSERT (_f.closrecv);
   _f.objwnd = arg1_objwnd.as_object();
@@ -368,12 +368,12 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
   unsigned width = _f.closrecv->cnt();
 #warning unimplemented rpsapply_6Wi00FwXYID00gl9Ma
   RPS_FATALOUT("unimplemented rpsapply_6Wi00FwXYID00gl9Ma width=" << width);
-} // end of rpsapply_6Wi00FwXYID00gl9Ma !method closure/display_value_fltk
+} // end of rpsapply_6Wi00FwXYID00gl9Ma !method closure/display_value_fox
 
 
 
 // C++ closure for _42cCN1FRQSS03bzbTz
-//!method json/display_value_fltk
+//!method json/display_value_fox
 extern "C" rps_applyingfun_t rpsapply_42cCN1FRQSS03bzbTz;
 Rps_TwoValues
 rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
@@ -391,7 +391,7 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                 );
-  ////==== body of _42cCN1FRQSS03bzbTz !method json/display_value_fltk ====
+  ////==== body of _42cCN1FRQSS03bzbTz !method json/display_value_fox ====
   ;
   _f.jsrecv = arg0_json;
   RPS_ASSERT (_f.jsrecv.is_json());
@@ -406,14 +406,14 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
                 << ", depthi=" << depthi);
 #warning unimplemented rpsapply_42cCN1FRQSS03bzbTz
   RPS_FATAL("unimplemented rpsapply_42cCN1FRQSS03bzbTz");
-} // end of rpsapply_42cCN1FRQSS03bzbTz !method json/display_value_fltk
+} // end of rpsapply_42cCN1FRQSS03bzbTz !method json/display_value_fox
 
 
 
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for _4x9jd2yAe8A02SqKAx
-//!method object/display_object_occurrence_fltk
+//!method object/display_object_occurrence_fox
 extern "C" rps_applyingfun_t rpsapply_4x9jd2yAe8A02SqKAx;
 Rps_TwoValues
 rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
@@ -432,11 +432,11 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  ////==== body of _4x9jd2yAe8A02SqKAx  !method object/display_object_occurrence_fltk ====
+  ////==== body of _4x9jd2yAe8A02SqKAx  !method object/display_object_occurrence_fox ====
   RPS_DEBUG_LOG(GUI, "rpsapply_4x9jd2yAe8A02SqKAx start arg0obj=" << arg0obj
                 << ", arg1obwin=" << arg1obwin
                 << ", arg2depth=" << arg2depth << std::endl
-                << RPS_DEBUG_BACKTRACE_HERE(2, "!method object/display_object_occurrence_fltk"));
+                << RPS_DEBUG_BACKTRACE_HERE(2, "!method object/display_object_occurrence_fox"));
   _f.recvob = arg0obj.as_object();
   RPS_ASSERT(_f.recvob);
   _f.objwnd = arg1obwin.as_object();
@@ -449,17 +449,17 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                 << "... objwnd=" << _f.objwnd
                 << " of class:" <<  _f.objwnd->compute_class(&_)
                 << "... depthi=" << depthi <<std::endl
-                << "!method object/display_object_occurrence_fltk" << std::endl
+                << "!method object/display_object_occurrence_fox" << std::endl
                 << RPS_DEBUG_BACKTRACE_HERE(1, "rpsapply_4x9jd2yAe8A02SqKAx")
                 <<std::endl);
 #warning unimplemented rpsapply_4x9jd2yAe8A02SqKAx
   RPS_FATAL("unimplemented rpsapply_4x9jd2yAe8A02SqKAx");
-} // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_fltk
+} // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_fox
 
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for _5nSiRIxoYQp00MSnYA
-//!method object!display_object_content_fltk
+//!method object!display_object_content_fox
 extern "C" rps_applyingfun_t rpsapply_5nSiRIxoYQp00MSnYA;
 Rps_TwoValues
 rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
@@ -488,7 +488,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                  Rps_Value resxtrav;
                  //....etc....
                 );
-  ////==== body of _5nSiRIxoYQp00MSnYA !method object!display_object_content_fltk ====
+  ////==== body of _5nSiRIxoYQp00MSnYA !method object!display_object_content_fox ====
   _f.recvob = arg0obj.as_object();
   RPS_ASSERT(_f.recvob);
   _f.objwnd = arg1obwin.as_object();
@@ -499,20 +499,20 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   _f.optqtposition = arg3optqtposition;
   RPS_ASSERT (!_f.optqtposition || _f.optqtposition.is_int());
   std::lock_guard<std::recursive_mutex> objwndmtx(*(_f.objwnd->objmtxptr()));
-  RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_fltk recvob=" << _f.recvob
+  RPS_DEBUG_LOG(GUI, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_fox recvob=" << _f.recvob
                 << ", objwnd =" << _f.objwnd
                 << " of class:" <<  _f.objwnd->compute_class(&_) << std::endl
                 << "... depthi=" <<  depthi
-                << std::endl << "+++ object!display_object_content_fltk +++");
+                << std::endl << "+++ object!display_object_content_fox +++");
 #warning unimplemented rpsapply_5nSiRIxoYQp00MSnYA
   RPS_FATAL("unimplemented rpsapply_5nSiRIxoYQp00MSnYA");
-} // end of rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_fltk
+} // end of rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_fox
 
 
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for _8lKdW7lgcHV00WUOiT
-//!method class/display_object_payload_fltk
+//!method class/display_object_payload_fox
 extern "C" rps_applyingfun_t rpsapply_8lKdW7lgcHV00WUOiT;
 Rps_TwoValues
 rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
@@ -540,12 +540,12 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
   _f.depthv = arg2depth;
   RPS_ASSERT(_f.depthv.is_int());
   auto depthi = _f.depthv.to_int();
-  RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT start !method class/display_object_payload_fltk @!@° obclass="
+  RPS_DEBUG_LOG(GUI, "rpsapply_8lKdW7lgcHV00WUOiT start !method class/display_object_payload_fox @!@° obclass="
                 << _f.obclass << ", obwin=" << _f.obwin
                 << " of class:" << Rps_Value(_f.obwin).compute_class(&_)
                 << ", depthi=" << depthi << std::endl
                 << RPS_FULL_BACKTRACE_HERE(2,
-                    "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_fltk")
+                    "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_fox")
                 << std::endl
                );
 #warning unimplemented rpsapply_8lKdW7lgcHV00WUOiT
@@ -553,4 +553,4 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
 } // end of rpsapply_8lKdW7lgcHV00WUOiT
 
 
-///////////////////////////////////////////////////////// end of file fltkdisplay_rps.cc
+///////////////////////////////////////////////////////// end of file foxdisplay_rps.cc

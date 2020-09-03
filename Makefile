@@ -9,7 +9,7 @@
 ##      Abhishek Chakravarti <abhishek@taranjali.org>
 ##      Nimesh Neema <nimeshneema@gmail.com>
 ##
-##      © Copyright 2020 The Reflective Persistent System Team
+##      © Copyright 2019 - 2020 The Reflective Persistent System Team
 ##      team@refpersys.org
 ##
 ## License:
@@ -55,14 +55,11 @@ RPS_BUILD_INCLUDE_FLAGS=  -I . $(RPS_INCLUDE_FLAGS)
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
-RPS_PKG_NAMES= jsoncpp readline libcurl
+RPS_PKG_NAMES= jsoncpp readline libcurl fox17
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
-RPS_FLTK_CONFIG= fltk-config
-RPS_FLTK_CXXFLAGS:= $(shell $(RPS_FLTK_CONFIG) --cxxflags)
-RPS_FLTK_LIBS:= $(shell fltk-config --ldflags)
-LIBES= $(RPS_PKG_LIBS) $(RPS_FLTK_LIBS) -lunistring -lbacktrace -ldl
+LIBES= $(RPS_PKG_LIBS) -lunistring -lbacktrace -ldl
 RM= rm -f
 MV= mv
 CC= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CC)
@@ -71,7 +68,7 @@ LINK.cc= $(RPS_BUILD_CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             $(RPS_BUILD_CODGENFLAGS) \
 	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) \
-	    $(RPS_PKG_CFLAGS) $(RPS_FLTK_CXXFLAGS) \
+	    $(RPS_PKG_CFLAGS) \
             -DRPS_GITID=\"$(RPS_GIT_ID)\"
 
 LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
@@ -138,34 +135,28 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 
 
 
-headfltk_rps.hh.gch: headfltk_rps.hh refpersys.hh.gch
+headfox_rps.hh.gch: headfox_rps.hh refpersys.hh.gch
 	$(COMPILE.cc) -c -o $@ $<
-headfltk_rps.sanit.hh.gch: headfltk_rps.hh refpersys.hh.sanit.gch
+headfox_rps.sanit.hh.gch: headfox_rps.hh refpersys.hh.sanit.gch
 	$(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@ $<
-headfltk_rps.dbg.hh.gch: headfltk_rps.hh refpersys.hh.sanit.gch
+headfox_rps.dbg.hh.gch: headfox_rps.hh refpersys.hh.sanit.gch
 	$(COMPILE.cc)  $(RPS_BUILD_DEBUGFLAGS) -c -o $@ $<
 
 
-fltkevloop_rps.o: fltkevloop_rps.cc headfltk_rps.hh.gch
+foxevloop_rps.o: foxevloop_rps.cc headfox_rps.hh.gch
 	$(COMPILE.cc) -o $@ $<
-fltkevloop_rps.sanit.o: fltkevloop_rps.cc headfltk_rps.sanit.hh.gch
+foxevloop_rps.sanit.o: foxevloop_rps.cc headfox_rps.sanit.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
-fltkevloop_rps.dbg.o: fltkevloop_rps.cc headfltk_rps.dbg.hh.gch
+foxevloop_rps.dbg.o: foxevloop_rps.cc headfox_rps.dbg.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
 
-fltksimpwin_rps.o: fltksimpwin_rps.cc headfltk_rps.hh.gch
+foxsimpwin_rps.o: foxsimpwin_rps.cc headfox_rps.hh.gch
 	$(COMPILE.cc) -o $@ $<
-fltksimpwin_rps.sanit.o: fltksimpwin_rps.cc headfltk_rps.sanit.hh.gch
+foxsimpwin_rps.sanit.o: foxsimpwin_rps.cc headfox_rps.sanit.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
-fltksimpwin_rps.dbg.o: fltksimpwin_rps.cc headfltk_rps.dbg.hh.gch
+foxsimpwin_rps.dbg.o: foxsimpwin_rps.cc headfox_rps.dbg.hh.gch
 	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
 
-fltkdisplay_rps.o: fltkdisplay_rps.cc headfltk_rps.hh.gch
-	$(COMPILE.cc) -o $@ $<
-fltkdisplay_rps.sanit.o: fltkdisplay_rps.cc headfltk_rps.sanit.hh.gch
-	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
-fltkdisplay_rps.dbg.o: fltkdisplay_rps.cc headfltk_rps.dbg.hh.gch
-	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
 
 
 clean:

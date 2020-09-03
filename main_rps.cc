@@ -848,7 +848,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
                     << " with " << nbsubdirs << " subdirectories." << std::endl
                     << " GNU glibc " << gnu_get_libc_version() << std::endl
-                    << " Graphical User Interface using " << rps_fltk_version() << std::endl
+                    << " Graphical User Interface using " << rps_fox_version() << std::endl
                     << " Read Eval Print Loop using " << rps_repl_version() << std::endl
                     << " libCURL for web using " << rps_curl_version() << std::endl
                     << " made with: " << rps_makefile << std::endl
@@ -950,7 +950,7 @@ rps_run_application(int &argc, char **argv)
   if (rps_run_repl)
     rps_read_eval_print_loop (argc, argv);
   else if (rps_run_gui)
-    rps_run_fltk_gui(argc, argv);
+    rps_run_fox_gui(argc, argv);
 #warning incomplete rps_run_application
   RPS_WARNOUT("incomplete rps_run_application " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));

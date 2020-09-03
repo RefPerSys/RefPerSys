@@ -3388,8 +3388,8 @@ extern "C" unsigned rps_hardcoded_number_of_constants(void);
 
 ////////////////
 
-extern "C" void rps_run_application (int& argc, char**argv); // in fltk_rps.cc
-extern "C" std::string rps_fltk_version(void); // in fltk_rps.cc
+extern "C" void rps_run_application (int& argc, char**argv); // in foxevloop_rps.cc
+extern "C" std::string rps_fox_version(void); // in foxevloop_rps.cc
 extern "C" std::string rps_repl_version(void); // in repl_rps.cc
 extern "C" std::string rps_curl_version(void); // in curl_rps.cc
 extern "C" void rps_set_gui_dump_dir(const std::string&); // in fltklo_rps.cc 
@@ -3426,7 +3426,7 @@ extern "C" void rps_print_types_info (void);
 
 extern "C" void rps_read_eval_print_loop(int &argc, char**argv); // GNU readline based
 
-extern "C" void rps_run_fltk_gui(int &argc, char**argv);
+extern "C" void rps_run_fox_gui(int &argc, char**argv);
 
 /// C++ code can refer to root objects
 #define RPS_ROOT_OB(Oid) rps_rootob##Oid
