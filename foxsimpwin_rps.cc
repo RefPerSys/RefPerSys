@@ -50,4 +50,39 @@ rps_set_gui_dump_dir(const std::string&str)
   rps_gui_dump_dir_str = str;
 } // end rps_set_gui_dump_dir
 
+
+FXDEFMAP(RpsGui_FoxSimpleWindow) RpsGui_FoxMapSimpleWindow[]=
+{
+  FXMAPFUNC(SEL_COMMAND,RpsGui_FoxSimpleWindow::ID_ABOUT,
+            RpsGui_FoxSimpleWindow::onCmdAbout),
+  FXMAPFUNC(SEL_COMMAND,RpsGui_FoxSimpleWindow::ID_HELP,
+            RpsGui_FoxSimpleWindow::onCmdHelp),
+};
+// Object implementation
+FXIMPLEMENT(RpsGui_FoxSimpleWindow,FXMainWindow,RpsGui_FoxMapSimpleWindow,ARRAYNUMBER(RpsGui_FoxMapSimpleWindow));
+
+
+// Show help window, create it on-the-fly
+long
+RpsGui_FoxSimpleWindow::onCmdHelp(FXObject*,FXSelector,void*)
+{
+  RPS_WARNOUT("unimplemented RpsGui_FoxSimpleWindow::onCmdHelp"
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_FoxSimpleWindow::onCmdHelp"));
+#warning unimplemented RpsGui_FoxSimpleWindow::onCmdHelp
+  return 1;
+} // end RpsGui_FoxSimpleWindow::onCmdHelp
+
+// Show help window, create it on-the-fly
+long
+RpsGui_FoxSimpleWindow::onCmdAbout(FXObject*,FXSelector,void*)
+{
+  RPS_WARNOUT("unimplemented RpsGui_FoxSimpleWindow::onCmdAbout"
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_FoxSimpleWindow::onCmdAbout"));
+#warning unimplemented RpsGui_FoxSimpleWindow::onCmdAbout
+  return 1;
+} // end RpsGui_FoxSimpleWindow::onCmdAbout
+
+
 /// end of file foxsimpwin_rps.cc
