@@ -380,3 +380,8 @@ also provide some web interface, probably using the
 [cpp-httplib](https://github.com/yhirose/cpp-httplib) header-only HTTP 
 service library. 
 
+
+File `headfox_rps.hh` contains the common FOX-related header.
+File `foxdisplay_rps.cc` should contain RefPerSys method functions for displaying values.
+File `foxevloop_rps.cc` has the event loop (GC-friendly) and global GUI functions.
+File `foxsimpwin_rps.cc` has the simple window and related widgets.
