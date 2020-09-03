@@ -373,8 +373,10 @@ We should list other libraries interesting for us here, just in case (to avoid f
 
 Thanks to Niklas Rosencrantz (Sweden) for past minor contributions.
 
+## the `foxweb-branch`
 
-## See also
+This git branch will use the [FOX toolkit](https://fox-toolkit.org) and should later
+also provide some web interface, probably using the
+[cpp-httplib](https://github.com/yhirose/cpp-httplib) header-only HTTP 
+service library. 
 
-
-https://gitlab.com/abhishekchakravarti/scheme-interpreter-exercise/
