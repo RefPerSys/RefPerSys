@@ -525,6 +525,31 @@ rps_run_fox_gui(int &argc, char**argv)
   })
       << std::endl
       << RPS_FULL_BACKTRACE_HERE(1, "rps_run_fox_gui"));
+  // Make sure  we're linked against the right library version
+  if(fxversion[0]!=FOX_MAJOR
+      || fxversion[1]!=FOX_MINOR || fxversion[2]!=FOX_LEVEL)
+    RPS_FATAL("FOX Library mismatch; expected version: %d.%d.%d, but found version: %d.%d.%d.\n",
+              FOX_MAJOR,FOX_MINOR,FOX_LEVEL,
+              fxversion[0],fxversion[1],fxversion[2]);
+  RpsGui_FoxApplication app;
 } // end rps_run_fox_gui
+
+FXDEFMAP(RpsGui_FoxApplication) RpsGui_FoxMapApplication[]=
+{
+  //  FXMAPFUNC(SEL_COMMAND,RpsGui_FoxApplication::ID_ABOUT,
+  //          RpsGui_FoxApplication::onCmdAbout),
+  //  FXMAPFUNC(SEL_COMMAND,RpsGui_FoxApplication::ID_HELP,
+  //          RpsGui_FoxApplication::onCmdHelp),
+};
+// Object implementation
+FXIMPLEMENT(RpsGui_FoxApplication,FXApp,RpsGui_FoxMapApplication,ARRAYNUMBER(RpsGui_FoxMapApplication));
+
+RpsGui_FoxApplication::~RpsGui_FoxApplication()
+{
+  RPS_DEBUG_LOG(GUI, "destroying RpsGui_FoxApplication this@" << (void*)this
+                << std::endl
+                << "... from:" << std::endl
+                << RPS_FULL_BACKTRACE_HERE(0, "RpsGui_FoxApplication::~RpsGui_FoxApplication"));
+} // end RpsGui_FoxApplication::~RpsGui_FoxApplication
 
 //// end of file foxevloop_rps.cc

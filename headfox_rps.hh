@@ -447,5 +447,16 @@ public:
     ID__LAST
   };
 };				// end Rps_FoxSimpWin
+
+
+class RpsGui_FoxApplication : public FXApp
+{
+  FXDECLARE(RpsGui_FoxApplication);
+  friend void rps_run_fox_gui(int&argc, char**argv);
+public:
+  RpsGui_FoxApplication() : FXApp("refpersys-fox") {};
+  virtual ~RpsGui_FoxApplication();
+};				// end RpsGui_FoxApplication
+
 #endif /*HEADFOX_RPS_INCLUDED*/
 /// end of file headfox_rps.hh
