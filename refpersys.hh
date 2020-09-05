@@ -3369,7 +3369,10 @@ extern "C" Rps_GuiPreferences rps_gui_pref;
 ////////////////////////////////////////////////////////////////
 
 #define RPS_MANIFEST_JSON "rps_manifest.json"
-#define RPS_USERPREFERENCE_JSON ".refpersys.json"
+
+// the user manifest is optional, in the rps_homedir()
+// so using $REFPERSYS_HOME or $HOME
+#define RPS_USER_MANIFEST_JSON ".refpersys.json" 
 
 //// global roots for garbage collection and persistence
 /// the called function cannot add, remove or query the global root set

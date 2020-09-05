@@ -106,6 +106,7 @@ public:
   Rps_Loader(const std::string&topdir);
   ~Rps_Loader();
   void parse_manifest_file(void);
+  void parse_user_manifest(const std::string&path);
   void first_pass_space(Rps_Id spacid);
   void initialize_constant_objects(void);
   void second_pass_space(Rps_Id spacid);
@@ -277,8 +278,6 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           snprintf(errbuf, sizeof(errbuf), "non UTF8 line#%d", lincnt);
           throw std::runtime_error(std::string(errbuf) + " in " + spacepath);
         }
-      RPS_DEBUG_PRINTF(LOAD, "lincnt#%d, lin.siz#%zd\n..linbuf:%s", lincnt,
-                       linbuf.size(), linbuf.c_str());
       if (RPS_UNLIKELY(obcnt == 0))
         {
           prologstr += linbuf;
@@ -2340,6 +2339,76 @@ Rps_Loader::parse_manifest_file(void)
   RPS_DEBUG_LOG(LOAD, "loader parse_manifest_file end" << std::endl);
 } // end Rps_Loader::parse_manifest_file
 
+void
+Rps_Loader::parse_user_manifest(const std::string&umpath)
+{
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::parse_user_manifest start umpath="
+                << umpath);
+  Json::Value manifjson;
+  try
+    {
+      std::string manifstr = string_of_loaded_file(umpath);
+      manifjson = rps_string_to_json(manifstr);
+      if (manifjson.type () != Json::objectValue)
+        RPS_FATAL("Rps_Loader::parse_user_manifest %s wants a Json object in %s",
+                  umpath.c_str(), manifstr.c_str());
+      if (manifjson["format"].asString() != RPS_MANIFEST_FORMAT)
+        RPS_FATAL("user manifest map in %s should have format: '%s' but got:\n"
+                  "%s",
+                  umpath.c_str(), RPS_MANIFEST_FORMAT,
+                  manifjson["format"].toStyledString().c_str());
+      /// parse userroots
+      {
+        auto userrootsjson = manifjson["user_roots"];
+        if (userrootsjson.type() !=  Json::arrayValue)
+          RPS_FATAL("user manifest map in %s should have user_roots: [...]",
+                    umpath.c_str ());
+        size_t sizeuserroots = userrootsjson.size();
+        RPS_DEBUG_LOG(LOAD, "loader parse_user_manifest sizeuserroots=" << sizeuserroots);
+        for (int ix=0; ix<(int)sizeuserroots; ix++)
+          {
+            std::string curgrootidstr = userrootsjson[ix].asString();
+            Rps_Id curgrootid (curgrootidstr);
+            RPS_ASSERT(curgrootid);
+            ld_globrootsidset.insert(curgrootid);
+          }
+      }
+      /// parse user plugins
+      {
+        auto pluginsjson = manifjson["user_plugins"];
+        if (pluginsjson.type() !=  Json::arrayValue)
+          RPS_FATAL("user manifest map in %s should have user_plugins: [...]",
+                    umpath.c_str ());
+        size_t sizeplugins = pluginsjson.size();
+        RPS_DEBUG_LOG(LOAD, "loader parse_user_manifest sizeplugins=" << sizeplugins);
+        {
+          std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+          for (int ix=0; ix<(int)sizeplugins; ix++)
+            {
+              std::string curpluginidstr = pluginsjson[ix].asString();
+              Rps_Id curpluginid (curpluginidstr);
+              RPS_ASSERT(curpluginid && curpluginid.valid());
+              std::string pluginpath =
+                load_real_path(std::string(rps_homedir())
+                               +std::string{"/refpersys_plugins/rps"} + curpluginid.to_string() + "-mod.so");
+              RPS_INFORMOUT("should load user plugin #" << ix << " from " << pluginpath);
+              void* dlh = dlopen(pluginpath.c_str(), RTLD_NOW | RTLD_GLOBAL);
+              if (!dlh)
+                RPS_FATAL("failed to load user plugin #%d file %s: %s",
+                          ix, pluginpath.c_str(), dlerror());
+              ld_pluginsmap.insert({curpluginid, dlh});
+            }
+        }
+      }
+    }
+  catch  (const std::exception& exc)
+    {
+      RPS_FATALOUT("Rps_Loader::parse_user_manifest failed to parse "
+                   << umpath << ": " << exc.what());
+    };
+
+  RPS_INFORMOUT("parsed user manifest file " << umpath);
+} // end Rps_Loader::parse_user_manifest
 
 
 void Rps_Loader::load_install_roots(void)
@@ -2422,6 +2491,13 @@ void rps_load_from (const std::string& dirpath)
     try
       {
         loader.parse_manifest_file();
+        {
+          std::string usermanifest{rps_homedir()};
+          usermanifest += "/";
+          usermanifest += RPS_USER_MANIFEST_JSON;
+          if (!access(usermanifest.c_str(), R_OK))
+            loader.parse_user_manifest(usermanifest);
+        }
         loader.load_all_state_files();
         loader.load_install_roots();
         RPS_DEBUG_LOG(LOAD, "rps_load_from start dirpath=" << dirpath << " after load_install_roots");
