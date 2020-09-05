@@ -534,6 +534,10 @@ rps_run_fox_gui(int &argc, char**argv)
   RpsGui_FoxApplication app;
 } // end rps_run_fox_gui
 
+
+/***************** FOX application code ********************/
+RpsGui_FoxApplication* RpsGui_FoxApplication::fxapp_inst;
+
 FXDEFMAP(RpsGui_FoxApplication) RpsGui_FoxMapApplication[]=
 {
   //  FXMAPFUNC(SEL_COMMAND,RpsGui_FoxApplication::ID_ABOUT,
@@ -544,12 +548,24 @@ FXDEFMAP(RpsGui_FoxApplication) RpsGui_FoxMapApplication[]=
 // Object implementation
 FXIMPLEMENT(RpsGui_FoxApplication,FXApp,RpsGui_FoxMapApplication,ARRAYNUMBER(RpsGui_FoxMapApplication));
 
+
+RpsGui_FoxApplication::RpsGui_FoxApplication()
+  : FXApp("refpersys-fox")
+{
+  fxapp_inst = this;
+  RPS_DEBUG_LOG(GUI, "creating RpsGui_FoxApplication this@" << (void*)this
+                << std::endl
+                << "... from:" << std::endl
+                << RPS_FULL_BACKTRACE_HERE(0, "RpsGui_FoxApplication::RpsGui_FoxApplication"));
+} // end RpsGui_FoxApplication::RpsGui_FoxApplication
+
 RpsGui_FoxApplication::~RpsGui_FoxApplication()
 {
   RPS_DEBUG_LOG(GUI, "destroying RpsGui_FoxApplication this@" << (void*)this
                 << std::endl
                 << "... from:" << std::endl
                 << RPS_FULL_BACKTRACE_HERE(0, "RpsGui_FoxApplication::~RpsGui_FoxApplication"));
+  fxapp_inst = nullptr;
 } // end RpsGui_FoxApplication::~RpsGui_FoxApplication
 
 //// end of file foxevloop_rps.cc

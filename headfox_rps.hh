@@ -453,9 +453,14 @@ class RpsGui_FoxApplication : public FXApp
 {
   FXDECLARE(RpsGui_FoxApplication);
   friend void rps_run_fox_gui(int&argc, char**argv);
+  static RpsGui_FoxApplication* fxapp_inst;
 public:
-  RpsGui_FoxApplication() : FXApp("refpersys-fox") {};
+  RpsGui_FoxApplication();
   virtual ~RpsGui_FoxApplication();
+  static RpsGui_FoxApplication*the_app()
+  {
+    return fxapp_inst;
+  };
 };				// end RpsGui_FoxApplication
 
 #endif /*HEADFOX_RPS_INCLUDED*/
