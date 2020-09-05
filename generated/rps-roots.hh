@@ -51,7 +51,7 @@ RPS_INSTALL_ROOT_OB(_4bkpL4a6xlO00VnyM8) //compute_set_of_own_method_selectors�
 RPS_INSTALL_ROOT_OB(_4jISxMJ4PYU0050nUl) //closure∈class
 RPS_INSTALL_ROOT_OB(_4ojpzRzyRWz02DNWMe) //∈named_selector
 RPS_INSTALL_ROOT_OB(_4pSwobFHGf301Qgwzh) //named_attribute∈class
-RPS_INSTALL_ROOT_OB(_4CZZ2JlnkQT02YJ6sM) //fltk_event_loop∈symbol
+RPS_INSTALL_ROOT_OB(_4CZZ2JlnkQT02YJ6sM) //fox_event_loop∈symbol
 RPS_INSTALL_ROOT_OB(_4FBkYDlynyC02QtkfG) //∈named_attribute
 RPS_INSTALL_ROOT_OB(_54CP9eaTmxT00lzbEW) //rps_command_textedit∈class
 RPS_INSTALL_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
