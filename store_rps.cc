@@ -103,17 +103,8 @@ class Rps_Loader
   void parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                                       Rps_Id objid, const std::string& objbuf, unsigned count);
 public:
-  Rps_Loader(const std::string&topdir) :
-    ld_topdir(topdir),
-    ld_mtx(),
-    ld_spaceset(),
-    ld_globrootsidset(),
-    ld_pluginsmap(),
-    ld_mapobjects(),
-    ld_todoque(),
-    ld_todocount(0),
-    ld_payloadercache()
-  {};
+  Rps_Loader(const std::string&topdir);
+  ~Rps_Loader();
   void parse_manifest_file(void);
   void first_pass_space(Rps_Id spacid);
   void initialize_constant_objects(void);
@@ -139,6 +130,30 @@ public:
   };
 };				// end class Rps_Loader
 
+Rps_Loader::Rps_Loader(const std::string&topdir) :
+  ld_topdir(topdir),
+  ld_mtx(),
+  ld_spaceset(),
+  ld_globrootsidset(),
+  ld_pluginsmap(),
+  ld_mapobjects(),
+  ld_todoque(),
+  ld_todocount(0),
+  ld_payloadercache()
+{
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader constr topdir=" << topdir
+                << " this@" << (void*)this
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Loader constr"));
+} // end Rps_Loader::Rps_Loader
+
+Rps_Loader::~Rps_Loader()
+{
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader destr topdir=" << ld_topdir
+                << " this@" << (void*)this
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Loader constr"));
+} // end Rps_Loader::~Rps_Loader
 
 std::string
 Rps_Loader::load_real_path(const std::string& path)
@@ -625,13 +640,14 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
 void
 Rps_Loader::second_pass_space(Rps_Id spacid)
 {
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::second_pass_space start spacid:" << spacid
+                << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::second_pass_space"));
   auto spacepath = load_real_path(space_file_path(spacid));
   std::ifstream ins(spacepath);
   unsigned lincnt = 0;
   unsigned obcnt = 0;
   Rps_Id prevoid;
   unsigned prevlin=0;
-  RPS_NOPRINTOUT("Rps_Loader::second_pass_space start spacepath" << spacepath.c_str());
   std::string objbuf;
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
@@ -694,12 +710,15 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
         };
       prevoid = Rps_Id(nullptr);
     };
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::second_pass_space end spacid:" << spacid);
 } // end of Rps_Loader::second_pass_space
 
 
 void
 Rps_Loader::load_all_state_files(void)
 {
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files start this@" << (void*)this
+                << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::load_all_state_files"));
   int spacecnt1 = 0, spacecnt2 = 0;
   int todocount = 0;
   for (Rps_Id spacid: ld_spaceset)
@@ -724,14 +743,21 @@ Rps_Loader::load_all_state_files(void)
       // we sleep a tiny bit, so elapsed time is growing...
       usleep(20);
     };
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files end this@" << (void*)this);
   RPS_INFORMOUT("loaded " << spacecnt1 << " space files in second pass with "
                 << ld_mapobjects.size() << " objects and " << todocount << " todos" << std::endl);
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files end this@" << (void*)this
+                << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::load_all_state_files"));
 } // end Rps_Loader::load_all_state_files
 
 
 std::string
 Rps_Loader::string_of_loaded_file(const std::string&relpath)
 {
+
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::string_of_loaded_file start this@" << (void*)this
+                << " relpath=" << relpath
+                << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::string_of_loaded_file"));
   constexpr size_t maxfilen = 1024*1024; // a megabyte
   std::string fullpath = load_real_path(relpath);
   std::string res;
@@ -754,6 +780,7 @@ Rps_Loader::string_of_loaded_file(const std::string&relpath)
       if (RPS_UNLIKELY(res.size() > maxfilen))
         RPS_FATAL("too big file %zd of path %s", res.size(), fullpath.c_str());
     }
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::string_of_loaded_file end this@" << (void*)this);
   return res;
 } // end Rps_Loader::string_of_loaded_file
 
@@ -1147,13 +1174,8 @@ public:
   {
     return du_topdir;
   };
-  Rps_Dumper(const std::string&topdir) :
-    du_topdir(topdir), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
-    du_tempsuffix(make_temporary_suffix()), du_openedpathset()
-  {
-    du_jsonwriterbuilder["commentStyle"] = "None";
-    du_jsonwriterbuilder["indentation"] = " ";
-  };
+  Rps_Dumper(const std::string&topdir);
+  ~Rps_Dumper();
   void scan_object(const Rps_ObjectRef obr);
   void scan_value(const Rps_Value val, unsigned depth);
   Json::Value json_value(const Rps_Value val);
@@ -1176,6 +1198,25 @@ public:
   };
 };				// end class Rps_Dumper
 
+Rps_Dumper::Rps_Dumper(const std::string&topdir) :
+  du_topdir(topdir), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
+  du_tempsuffix(make_temporary_suffix()), du_openedpathset()
+{
+  du_jsonwriterbuilder["commentStyle"] = "None";
+  du_jsonwriterbuilder["indentation"] = " ";
+  RPS_DEBUG_LOG(DUMP, "Rps_Dumper constr topdir=" << topdir
+                << " this@" << (void*)this
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper constr"));
+}
+
+Rps_Dumper::~Rps_Dumper()
+{
+  RPS_DEBUG_LOG(DUMP, "Rps_Dumper destr topdir=" << du_topdir
+                << " this@" << (void*)this
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper destr"));
+} // end Rps_Dumper::~Rps_Dumper
 
 void
 Rps_Dumper::scan_object(const Rps_ObjectRef obr)
@@ -1295,7 +1336,9 @@ void
 Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilename)
 {
   int nbconst = 0;
-  RPS_DEBUG_LOG(DUMP, "dumper scan_cplusplus_source_file_for_constants file " << relfilename);
+  RPS_DEBUG_LOG(DUMP, "start dumper scan_cplusplus_source_file_for_constants file " << relfilename
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper::scan_cplusplus_source_file_for_constants"));
   RPS_ASSERT(relfilename.size()>2 && isalpha(relfilename[0]));
   std::string fullpath = std::string(rps_topdirectory) + "/" + relfilename;
   std::ifstream ins(fullpath);
