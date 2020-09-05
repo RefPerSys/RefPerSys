@@ -84,5 +84,16 @@ RpsGui_FoxSimpleWindow::onCmdAbout(FXObject*,FXSelector,void*)
   return 1;
 } // end RpsGui_FoxSimpleWindow::onCmdAbout
 
+RpsGui_FoxSimpleWindow::RpsGui_FoxSimpleWindow(RpsGui_FoxApplication*app)
+  : FXMainWindow(app, "refpersys-simple")
+{
+  RPS_DEBUG_LOG(GUI, "start constr RpsGui_FoxSimpleWindow this@" << (void*)this
+                << " app:" << app
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_FoxSimpleWindow constr"));
+} // end RpsGui_FoxSimpleWindow::RpsGui_FoxSimpleWindow
+
+
+
 
 /// end of file foxsimpwin_rps.cc

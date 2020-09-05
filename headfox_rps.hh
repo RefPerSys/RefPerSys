@@ -369,8 +369,6 @@ class Rps_FoxEvLoop_CallFrame :
   rps_fox_add_delayed_labeled_closure_at(Rps_CallFrame*curframe,const char*filename, int lineno, const char*label, double delay,
                                          Rps_ClosureValue closv,
                                          Rps_Value arg1v, Rps_Value arg2v);
-  friend void rps_fox_stop_event_loop(void);
-  friend void rps_fox_event_loop(Rps_CallFrame*callframe);
   friend class Rps_GarbageCollector;
   static void outputter(std::ostream&, const Rps_ProtoCallFrame*);
   /// for debugging
@@ -446,20 +444,27 @@ public:
     ID_HELP,
     ID__LAST
   };
-};				// end Rps_FoxSimpWin
+};				// end class RpsGui_FoxSimpleWindow
 
 
 class RpsGui_FoxApplication : public FXApp
 {
   FXDECLARE(RpsGui_FoxApplication);
   friend void rps_run_fox_gui(int&argc, char**argv);
-  static RpsGui_FoxApplication* fxapp_inst;
+  static RpsGui_FoxApplication* fxapp_inst_;
+  RpsGui_FoxSimpleWindow* fxapp_simpwin;
 public:
   RpsGui_FoxApplication();
+  virtual void create(); // create windows
   virtual ~RpsGui_FoxApplication();
   static RpsGui_FoxApplication*the_app()
   {
-    return fxapp_inst;
+    return fxapp_inst_;
+  };
+  void run_app(Rps_FoxEvLoop_CallFrame*cf);
+  RpsGui_FoxSimpleWindow* simple_window() const
+  {
+    return fxapp_simpwin;
   };
 };				// end RpsGui_FoxApplication
 

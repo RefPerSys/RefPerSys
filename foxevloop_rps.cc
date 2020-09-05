@@ -48,6 +48,11 @@ pthread_t rps_main_gui_pthread;
 Rps_GuiPreferences rps_gui_pref;
 
 
+
+/// the object whose name is "fox_event_loop" is a RefPerSys frame
+/// descriptor for FOX event loops GC call frames.
+#define RPS_FOX_EVENT_LOOP_DESCR RPS_ROOT_OB(_39OsVkAJDdV00ohD5r)
+
 bool
 rps_is_main_gui_thread(void)
 {
@@ -511,8 +516,8 @@ void
 rps_run_fox_gui(int &argc, char**argv)
 {
   rps_main_gui_pthread = pthread_self();
-  RPS_WARNOUT("incomplete rps_run_fox_gui argc=" << argc
-              << " argv=" << Rps_Do_Output([=](std::ostream&out)
+  RPS_DEBUG_LOG(GUI, "rps_run_fox_gui start  argc=" << argc
+                << " argv=" << Rps_Do_Output([=](std::ostream&out)
   {
     for (int ix=0; ix<argc; ix++)
       {
@@ -532,11 +537,23 @@ rps_run_fox_gui(int &argc, char**argv)
               FOX_MAJOR,FOX_MINOR,FOX_LEVEL,
               fxversion[0],fxversion[1],fxversion[2]);
   RpsGui_FoxApplication app;
+  app.init(argc, argv);
+  app.create();
+  RPS_DEBUG_LOG(GUI, "rps_run_fox_gui before creating evloopcallframe app@" << (void*)&app);
+  Rps_FoxEvLoop_CallFrame _(nullptr, __FILE__, __LINE__,
+                            RPS_FOX_EVENT_LOOP_DESCR /*fox_event_loop*/,
+                            0 /*depth*/,
+                            Rps_FoxEvLoop_CallFrame::Rps_LoggedEventLoop_tag{});
+  RPS_DEBUG_LOG(GUI, "rps_run_fox_gui app@" << (void*)&app << " callframe:"
+                << Rps_ShowCallFrame(&_));
+  app.run_app(&_);
+  RPS_DEBUG_LOG(GUI, "rps_run_fox_gui app@" << (void*)&app << " after run_app");
+  RPS_WARNOUT("incomplete rps_run_fox_gui ending");
 } // end rps_run_fox_gui
 
 
 /***************** FOX application code ********************/
-RpsGui_FoxApplication* RpsGui_FoxApplication::fxapp_inst;
+RpsGui_FoxApplication* RpsGui_FoxApplication::fxapp_inst_;
 
 FXDEFMAP(RpsGui_FoxApplication) RpsGui_FoxMapApplication[]=
 {
@@ -550,9 +567,10 @@ FXIMPLEMENT(RpsGui_FoxApplication,FXApp,RpsGui_FoxMapApplication,ARRAYNUMBER(Rps
 
 
 RpsGui_FoxApplication::RpsGui_FoxApplication()
-  : FXApp("refpersys-fox")
+  : FXApp("refpersys-fox"),
+    fxapp_simpwin(nullptr)
 {
-  fxapp_inst = this;
+  fxapp_inst_ = this;
   RPS_DEBUG_LOG(GUI, "creating RpsGui_FoxApplication this@" << (void*)this
                 << std::endl
                 << "... from:" << std::endl
@@ -565,7 +583,32 @@ RpsGui_FoxApplication::~RpsGui_FoxApplication()
                 << std::endl
                 << "... from:" << std::endl
                 << RPS_FULL_BACKTRACE_HERE(0, "RpsGui_FoxApplication::~RpsGui_FoxApplication"));
-  fxapp_inst = nullptr;
+  fxapp_inst_ = nullptr;
+  fxapp_simpwin = nullptr;
 } // end RpsGui_FoxApplication::~RpsGui_FoxApplication
+
+
+
+void
+RpsGui_FoxApplication::create(void) /// create the application windows
+{
+  RPS_DEBUG_LOG(GUI, "start RpsGui_FoxApplication::create this@" << (void*)this);
+  FXApp::create();
+  fxapp_simpwin = new  RpsGui_FoxSimpleWindow(this);
+  RPS_DEBUG_LOG(GUI, "end RpsGui_FoxApplication::create this@" << (void*)this
+                << " fxapp_simpwin=" << fxapp_simpwin);
+} // end of RpsGui_FoxApplication::create
+
+void
+RpsGui_FoxApplication::run_app(Rps_FoxEvLoop_CallFrame*callframe)
+{
+  RPS_ASSERT(rps_is_main_gui_thread());
+  RPS_ASSERT(callframe != nullptr && Rps_CallFrame::is_good_call_frame(callframe));
+  RPS_DEBUG_LOG(GUI, "Rps_CallFrame::run_app callframe=" << Rps_ShowCallFrame(callframe) << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1,"RpsGui_FoxApplication::run_app"));
+  RPS_FATALOUT("unimplemented RpsGui_FoxApplication::run_app callframe@" << (void*)callframe);
+#warning unimplemented RpsGui_FoxApplication::run_app
+} // end RpsGui_FoxApplication::run_app
+
 
 //// end of file foxevloop_rps.cc
