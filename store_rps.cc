@@ -2150,7 +2150,9 @@ void rps_dump_into (const std::string dirpath)
 {
   double startelapsed = rps_elapsed_real_time();
   double startcputime = rps_process_cpu_time();
-  RPS_DEBUG_LOG(DUMP, "rps_dump_into start dirpath=" << dirpath);
+  RPS_DEBUG_LOG(DUMP, "rps_dump_into start dirpath=" << dirpath
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_dump_into"));
   {
     DIR* d = opendir(dirpath.c_str());
     if (d)
@@ -2412,7 +2414,9 @@ void rps_load_from (const std::string& dirpath)
   double startcput = rps_process_cpu_time();
   double endrealt = NAN;
   double endcput = NAN;
-  RPS_DEBUG_LOG(LOAD, "rps_load_from start dirpath=" << dirpath);
+  RPS_DEBUG_LOG(LOAD, "rps_load_from start dirpath=" << dirpath
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_load_from"));
   {
     Rps_Loader loader(dirpath);
     try
