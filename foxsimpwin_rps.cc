@@ -85,7 +85,15 @@ RpsGui_FoxSimpleWindow::onCmdAbout(FXObject*,FXSelector,void*)
 } // end RpsGui_FoxSimpleWindow::onCmdAbout
 
 RpsGui_FoxSimpleWindow::RpsGui_FoxSimpleWindow(RpsGui_FoxApplication*app)
-  : FXMainWindow(app, "refpersys-simple")
+  : FXMainWindow(app, "refpersys-simple",
+                 (FXIcon*)nullptr,
+                 (FXIcon*)nullptr,
+                 DECOR_ALL,
+                 /*x:*/0,
+                 /*y:*/0,
+                 /*w:*/450,
+                 /*h:*/333
+                )
 {
   RPS_DEBUG_LOG(GUI, "start constr RpsGui_FoxSimpleWindow this@" << (void*)this
                 << " app:" << app

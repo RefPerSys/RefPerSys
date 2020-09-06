@@ -568,9 +568,14 @@ FXIMPLEMENT(RpsGui_FoxApplication,FXApp,RpsGui_FoxMapApplication,ARRAYNUMBER(Rps
 
 RpsGui_FoxApplication::RpsGui_FoxApplication()
   : FXApp("refpersys-fox"),
-    fxapp_simpwin(nullptr)
+    fxapp_simpwin(nullptr),
+    fxapp_waitdelay(300*1000*1000)  // 300 milliseconds
 {
   fxapp_inst_ = this;
+  if (RPS_DEBUG_ENABLED(GUI))
+    {
+      fxapp_waitdelay = 1500*1000*1000;
+    }
   RPS_DEBUG_LOG(GUI, "creating RpsGui_FoxApplication this@" << (void*)this
                 << std::endl
                 << "... from:" << std::endl
@@ -592,9 +597,14 @@ RpsGui_FoxApplication::~RpsGui_FoxApplication()
 void
 RpsGui_FoxApplication::create(void) /// create the application windows
 {
-  RPS_DEBUG_LOG(GUI, "start RpsGui_FoxApplication::create this@" << (void*)this);
+  RPS_DEBUG_LOG(GUI, "start RpsGui_FoxApplication::create this@" << (void*)this << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1,"RpsGui_FoxApplication::create"));
   FXApp::create();
   fxapp_simpwin = new  RpsGui_FoxSimpleWindow(this);
+  RPS_DEBUG_LOG(GUI, "end RpsGui_FoxApplication::create this@" << (void*)this
+                << " new fxapp_simpwin=" << fxapp_simpwin);
+  fxapp_simpwin->create();
+  fxapp_simpwin->show(PLACEMENT_SCREEN);
   RPS_DEBUG_LOG(GUI, "end RpsGui_FoxApplication::create this@" << (void*)this
                 << " fxapp_simpwin=" << fxapp_simpwin);
 } // end of RpsGui_FoxApplication::create
@@ -602,12 +612,26 @@ RpsGui_FoxApplication::create(void) /// create the application windows
 void
 RpsGui_FoxApplication::run_app(Rps_FoxEvLoop_CallFrame*callframe)
 {
+  unsigned long count=0;
+  constexpr FXTime one_second = 1000000000; // billion nanoseconds
   RPS_ASSERT(rps_is_main_gui_thread());
   RPS_ASSERT(callframe != nullptr && Rps_CallFrame::is_good_call_frame(callframe));
-  RPS_DEBUG_LOG(GUI, "Rps_CallFrame::run_app callframe=" << Rps_ShowCallFrame(callframe) << std::endl
+  Rps_FoxEvLoop_CallFrame* evframe = Rps_FoxEvLoop_CallFrame::find_calling_event_call_frame(callframe);
+  rps_running_fox.store(true);
+  RPS_DEBUG_LOG(GUI, "Rps_CallFrame::run_app callframe="
+                << Rps_ShowCallFrame(callframe) << std::endl
+                << "... evframe="
+                << Rps_ShowCallFrame(evframe) << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"RpsGui_FoxApplication::run_app"));
-  RPS_FATALOUT("unimplemented RpsGui_FoxApplication::run_app callframe@" << (void*)callframe);
-#warning unimplemented RpsGui_FoxApplication::run_app
+  RPS_ASSERT(evframe != nullptr);
+  while (rps_running_fox.load())
+    {
+      count++;
+      runOneEvent(fxapp_waitdelay);
+      RPS_DEBUG_LOG(GUI, "Rps_CallFrame::run_app count#" << count);
+    };
+  RPS_DEBUG_LOG(GUI, "Rps_CallFrame::run_app ending callframe="
+                << Rps_ShowCallFrame(callframe) << std::endl);
 } // end RpsGui_FoxApplication::run_app
 
 

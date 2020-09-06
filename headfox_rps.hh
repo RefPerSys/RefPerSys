@@ -407,7 +407,6 @@ public:
   static Rps_FoxEvLoop_CallFrame*
   find_calling_event_call_frame(const Rps_CallFrame*callframe);
   void gc_mark_todos(Rps_GarbageCollector*);
-  void fox_event_wait(unsigned long count, double delay);
   void run_scheduled_fox_todos(void);
   // fetch the event loop call frame below the current one, if any or
   // else null.
@@ -453,6 +452,7 @@ class RpsGui_FoxApplication : public FXApp
   friend void rps_run_fox_gui(int&argc, char**argv);
   static RpsGui_FoxApplication* fxapp_inst_;
   RpsGui_FoxSimpleWindow* fxapp_simpwin;
+  FXTime fxapp_waitdelay; // delay to wait the event loop, in nanoseconds
 public:
   RpsGui_FoxApplication();
   virtual void create(); // create windows
