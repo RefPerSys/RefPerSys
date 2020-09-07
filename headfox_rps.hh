@@ -436,6 +436,13 @@ private:
 public:
   static constexpr unsigned guiwin_default_width_ = 550;
   static constexpr unsigned guiwin_default_height_ = 444;
+  static const char*make_title(void) {
+    static char buf[80];
+    memset(buf, 0, sizeof(buf));
+    snprintf(buf, sizeof(buf), "RefPerSys/%.14s p%d@%s",
+	     rps_gitid, (int)getpid(), rps_hostname());
+    return buf;
+  }
   static int parse_width_from_geometry(const char*str);
   static int parse_height_from_geometry(const char*str);
   long onCmdAbout(FXObject*,FXSelector,void*);

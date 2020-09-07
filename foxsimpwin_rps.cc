@@ -100,7 +100,7 @@ RpsGui_FoxSimpleWindow::onCmdClose(FXObject*,FXSelector,void*)
 
 
 RpsGui_FoxSimpleWindow::RpsGui_FoxSimpleWindow(RpsGui_FoxApplication*app)
-  : FXMainWindow(app, "refpersys-simple",
+  : FXMainWindow(app, make_title(),
                  (FXIcon*)nullptr,
                  (FXIcon*)nullptr,
                  DECOR_ALL,
@@ -114,6 +114,9 @@ RpsGui_FoxSimpleWindow::RpsGui_FoxSimpleWindow(RpsGui_FoxApplication*app)
                 << " app:" << app
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_FoxSimpleWindow constr"));
+  guiwin_menubar = new FXMenuBar(this, LAYOUT_SIDE_TOP|LAYOUT_FILL_X);
+  auto appmenu = new FXMenuPane(this);
+  new FXMenuTitle(appmenu, "&App", NULL, appmenu);
 } // end RpsGui_FoxSimpleWindow::RpsGui_FoxSimpleWindow
 
 
