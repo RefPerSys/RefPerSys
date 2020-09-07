@@ -48,7 +48,7 @@ override RPS_BUILD_OPTIMFLAGS ?= -Og -g3
 RPS_BUILD_DEBUGFLAGS = -O0 -fno-inline -g3
 RPS_BUILD_CODGENFLAGS = 
 RPS_BUILD_SANITFLAGS = -fsanitize=address
-RPS_INCLUDE_DIRS = /usr/local/include /usr/include 
+RPS_INCLUDE_DIRS = /usr/local/include /usr/include /usr/include/jsoncpp
 RPS_INCLUDE_FLAGS = $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
 RPS_BUILD_INCLUDE_FLAGS=  -I . $(RPS_INCLUDE_FLAGS)
 
