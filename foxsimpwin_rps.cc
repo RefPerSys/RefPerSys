@@ -57,6 +57,8 @@ FXDEFMAP(RpsGui_FoxSimpleWindow) RpsGui_FoxMapSimpleWindow[]=
             RpsGui_FoxSimpleWindow::onCmdAbout),
   FXMAPFUNC(SEL_COMMAND,RpsGui_FoxSimpleWindow::ID_HELP,
             RpsGui_FoxSimpleWindow::onCmdHelp),
+  FXMAPFUNC(SEL_CLOSE,FXTopWindow::ID_CLOSE,
+            RpsGui_FoxSimpleWindow::onCmdClose),
 };
 // Object implementation
 FXIMPLEMENT(RpsGui_FoxSimpleWindow,FXMainWindow,RpsGui_FoxMapSimpleWindow,ARRAYNUMBER(RpsGui_FoxMapSimpleWindow));
@@ -84,6 +86,19 @@ RpsGui_FoxSimpleWindow::onCmdAbout(FXObject*,FXSelector,void*)
   return 1;
 } // end RpsGui_FoxSimpleWindow::onCmdAbout
 
+
+// Show help window, create it on-the-fly
+long
+RpsGui_FoxSimpleWindow::onCmdClose(FXObject*,FXSelector,void*)
+{
+  RPS_WARNOUT("unimplemented RpsGui_FoxSimpleWindow::onCmdClose"
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "RpsGui_FoxSimpleWindow::onCmdClose"));
+#warning unimplemented RpsGui_FoxSimpleWindow::onCmdClose
+  return 1;
+} // end RpsGui_FoxSimpleWindow::onCmdAbout
+
+
 RpsGui_FoxSimpleWindow::RpsGui_FoxSimpleWindow(RpsGui_FoxApplication*app)
   : FXMainWindow(app, "refpersys-simple",
                  (FXIcon*)nullptr,
@@ -91,8 +106,8 @@ RpsGui_FoxSimpleWindow::RpsGui_FoxSimpleWindow(RpsGui_FoxApplication*app)
                  DECOR_ALL,
                  /*x:*/0,
                  /*y:*/0,
-                 /*w:*/450,
-                 /*h:*/333
+                 /*w:*/parse_width_from_geometry(rps_gui_pref.gui_geometry.c_str()),
+                 /*h:*/parse_height_from_geometry(rps_gui_pref.gui_geometry.c_str())
                 )
 {
   RPS_DEBUG_LOG(GUI, "start constr RpsGui_FoxSimpleWindow this@" << (void*)this
@@ -102,6 +117,24 @@ RpsGui_FoxSimpleWindow::RpsGui_FoxSimpleWindow(RpsGui_FoxApplication*app)
 } // end RpsGui_FoxSimpleWindow::RpsGui_FoxSimpleWindow
 
 
+int
+RpsGui_FoxSimpleWindow::parse_width_from_geometry(const char*str)
+{
+  RPS_ASSERT(str != nullptr);
+  int w= -1, h= -1;
+  if (sscanf(str, "%dx%d", &w, &h) >=2)
+    return w;
+  return  guiwin_default_width_;
+} // end RpsGui_FoxSimpleWindow::parse_width_from_geometry
 
+int
+RpsGui_FoxSimpleWindow::parse_height_from_geometry(const char*str)
+{
+  RPS_ASSERT(str != nullptr);
+  int w= -1, h= -1;
+  if (sscanf(str, "%dx%d", &w, &h) >=2)
+    return h;
+  return guiwin_default_height_;
+} // end RpsGui_FoxSimpleWindow::parse_height_from_geometry
 
 /// end of file foxsimpwin_rps.cc

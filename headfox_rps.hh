@@ -434,8 +434,13 @@ private:
   RpsGui_FoxSimpleWindow(const RpsGui_FoxSimpleWindow&);
   RpsGui_FoxSimpleWindow& operator= (const RpsGui_FoxSimpleWindow&);
 public:
+  static constexpr unsigned guiwin_default_width_ = 550;
+  static constexpr unsigned guiwin_default_height_ = 444;
+  static int parse_width_from_geometry(const char*str);
+  static int parse_height_from_geometry(const char*str);
   long onCmdAbout(FXObject*,FXSelector,void*);
   long onCmdHelp(FXObject*,FXSelector,void*);
+  long onCmdClose(FXObject*,FXSelector,void*);
   RpsGui_FoxSimpleWindow(RpsGui_FoxApplication*app);
   enum
   {

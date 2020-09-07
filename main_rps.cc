@@ -32,6 +32,7 @@
  ******************************************************************************/
 
 #include "refpersys.hh"
+#include "fxdefs.h"
 
 
 extern "C" const char rps_main_gitid[];
@@ -142,7 +143,7 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_GUI_GEOMETRY, ///
     /*arg:*/ "GEOMETRY", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "With an FLTK graphical user interface, gives the GEOMETRY of first window <width>x<height>", //
+    /*doc:*/ "With an FOX graphical user interface, gives the GEOMETRY of first window <width>x<height>", //
     /*group:*/0 ///
   },
   /* ======= graphical user interface title ======= */
@@ -150,15 +151,15 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_GUI_TITLE, ///
     /*arg:*/ "TITLE", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "With an FLTK graphical user interface, gives the TITLE of the first window", //
+    /*doc:*/ "With an FOX graphical user interface, gives the TITLE of the first window", //
     /*group:*/0 ///
   },
-  /* ======= graphical user interface scale ======= */
-  {/*name:*/ "gui-scale", ///
-    /*key:*/ RPSPROGOPT_GUI_SCALE, ///
-    /*arg:*/ "SCALE", ///
+  /* ======= FOX graphical user interface tracing ======= */
+  {/*name:*/ "fox-trace", ///
+    /*key:*/ RPSPROGOPT_GUI_FOX_TRACE, ///
+    /*arg:*/ "LEVEL", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "With an FLTK graphical user interface, gives the windows SCALE, between 0.2 and 4.0, default 1.0", //
+    /*doc:*/ "With an FOX graphical user interface, set the trace level to LEVEL", //
     /*group:*/0 ///
   },
   /* ======= version info ======= */
@@ -232,7 +233,8 @@ static void rps_parse_program_arguments(int &argc, char**argv);
 
 static char rps_bufpath_homedir[384];
 
-const char* rps_homedir(void)
+const char*
+rps_homedir(void)
 {
   static std::mutex homedirmtx;
   std::lock_guard<std::mutex> gu(homedirmtx);
@@ -772,15 +774,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         RPS_DEBUG_LOG(GUI, "will run with a graphical user interface");
     }
     return 0;
-    case RPSPROGOPT_GUI_SCALE:
-    {
-      rps_run_gui = true;
-      double sca = atof(arg);
-      rps_gui_pref.gui_scale = sca;
-      if (side_effect)
-        RPS_DEBUG_LOG(GUI, "GUI scale is " << sca);
-    }
-    return 0;
     case RPSPROGOPT_GUI_TITLE:
     {
       rps_run_gui = true;
@@ -800,6 +793,17 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
           std::string geom(arg);
           rps_gui_pref.gui_geometry = geom;
           RPS_DEBUG_LOG(GUI, "GUI geometry is " << geom);
+        }
+    }
+    return 0;
+    case RPSPROGOPT_GUI_FOX_TRACE:
+    {
+      rps_run_gui = true;
+      int lev = atoi(arg);
+      if (side_effect)
+        {
+          FX::fxTraceLevel = lev;
+          RPS_INFORMOUT("FOX GUI trace level set to " << FX::fxTraceLevel);
         }
     }
     return 0;

@@ -613,7 +613,6 @@ void
 RpsGui_FoxApplication::run_app(Rps_FoxEvLoop_CallFrame*callframe)
 {
   unsigned long count=0;
-  constexpr FXTime one_second = 1000000000; // billion nanoseconds
   RPS_ASSERT(rps_is_main_gui_thread());
   RPS_ASSERT(callframe != nullptr && Rps_CallFrame::is_good_call_frame(callframe));
   Rps_FoxEvLoop_CallFrame* evframe = Rps_FoxEvLoop_CallFrame::find_calling_event_call_frame(callframe);
