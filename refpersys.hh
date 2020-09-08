@@ -217,7 +217,7 @@ extern "C" const char* rps_progname;
 
 /// the initial copyright year of RefPerSys
 #define RPS_INITIAL_COPYRIGHT_YEAR 2019
-// the number of jobs, that of threads, to run in parallel
+// the number of jobs, that is of threads, to run in parallel
 extern "C" int rps_nbjobs;
 #define RPS_NBJOBS_MIN 2
 #define RPS_NBJOBS_MAX 20
