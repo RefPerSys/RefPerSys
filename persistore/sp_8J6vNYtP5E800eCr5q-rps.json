@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 92,
+ "nbobjects" : 97,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -273,6 +273,16 @@
  "oid" : "_18DO93843oX02UWzq6"
 }
 //-ob_18DO93843oX02UWzq6
+
+
+//+ob_1aGtWm38Vw701jDhZn
+//∈agenda
+{
+ "class" : "_3s7ztCCoJsj04puTdQ",
+ "mtime" : 1599584744.8299999,
+ "oid" : "_1aGtWm38Vw701jDhZn"
+}
+//-ob_1aGtWm38Vw701jDhZn
 
 
 //+ob_1vzVEjDgm6R026xTSv
@@ -665,6 +675,28 @@
  "symb_val" : "_62LTwxwKpQ802SsmjE"
 }
 //-ob_3ppZRdS4dt002ZqydW
+
+
+//+ob_3s7ztCCoJsj04puTdQ
+//∈class
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "agenda"
+  }
+ ],
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "agenda",
+ "class_super" : "_41OFI3r0S1t03qdB2E",
+ "class_symb" : "_69f4MoBCZ5s04zfqiJ",
+ "mtime" : 1599584744.8299999,
+ "oid" : "_3s7ztCCoJsj04puTdQ",
+ "payload" : "classinfo"
+}
+//-ob_3s7ztCCoJsj04puTdQ
 
 
 //+ob_3Am8E82pFkw00D7jFU
@@ -1163,6 +1195,19 @@
 //-ob_62LTwxwKpQ802SsmjE
 
 
+//+ob_69f4MoBCZ5s04zfqiJ
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1599584744.8299999,
+ "oid" : "_69f4MoBCZ5s04zfqiJ",
+ "payload" : "symbol",
+ "symb_name" : "agenda",
+ "symb_val" : "_3s7ztCCoJsj04puTdQ"
+}
+//-ob_69f4MoBCZ5s04zfqiJ
+
+
 //+ob_6fmq7pZkmNd03UyPuO
 //∈symbol
 {
@@ -1502,6 +1547,28 @@
 //-ob_7ZRsf01mtit01xPUei
 
 
+//+ob_8fYqEw8vTED03wsznt
+//∈class
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "tasket"
+  }
+ ],
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "tasklet",
+ "class_super" : "_41OFI3r0S1t03qdB2E",
+ "class_symb" : "_9V4nwGbGLFP00cz0VL",
+ "mtime" : 1599584744.8299999,
+ "oid" : "_8fYqEw8vTED03wsznt",
+ "payload" : "classinfo"
+}
+//-ob_8fYqEw8vTED03wsznt
+
+
 //+ob_8lKdW7lgcHV00WUOiT
 //∈core_function
 {
@@ -1686,6 +1753,19 @@
  "payload" : "classinfo"
 }
 //-ob_9Gz1oNPCnkB00I6VRS
+
+
+//+ob_9V4nwGbGLFP00cz0VL
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1599584744.8299999,
+ "oid" : "_9V4nwGbGLFP00cz0VL",
+ "payload" : "symbol",
+ "symb_name" : "tasklet",
+ "symb_val" : "_8fYqEw8vTED03wsznt"
+}
+//-ob_9V4nwGbGLFP00cz0VL
 
 
 //+ob_9Wbq0oR52x400xe85F

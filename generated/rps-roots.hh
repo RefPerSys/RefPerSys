@@ -30,6 +30,7 @@ RPS_INSTALL_ROOT_OB(_0LbCts6NacB03SMXz4) //home_page∈symbol
 RPS_INSTALL_ROOT_OB(_0XMNvzdABUM03Bj7WP) //git_id∈symbol
 RPS_INSTALL_ROOT_OB(_0Z23UbC0G9b01WZZPN) //display_object_payload_fltk∈symbol
 RPS_INSTALL_ROOT_OB(_14M7WuJSWw702zB0M9) //∈named_selector
+RPS_INSTALL_ROOT_OB(_1aGtWm38Vw701jDhZn) //∈agenda
 RPS_INSTALL_ROOT_OB(_1wihX3eWD9o00QnxUX) //∈mutable_set
 RPS_INSTALL_ROOT_OB(_1DBiKRl70P304DEMoR) //our_contributors∈symbol
 RPS_INSTALL_ROOT_OB(_1DUx3zfUzIb04lqNVt) //rps_window∈class
@@ -42,6 +43,7 @@ RPS_INSTALL_ROOT_OB(_2A2mrPpR3Qf03p6o5b) //int∈class
 RPS_INSTALL_ROOT_OB(_2SRhV7RJt3B01yArR6) //set_of_core_functions∈symbol
 RPS_INSTALL_ROOT_OB(_36I1BY2NetN03WjrOv) //symbol∈class
 RPS_INSTALL_ROOT_OB(_39OsVkAJDdV00ohD5r) //∈object
+RPS_INSTALL_ROOT_OB(_3s7ztCCoJsj04puTdQ) //agenda∈class
 RPS_INSTALL_ROOT_OB(_3GHJQW0IIqS01QY8qD) //json∈class
 RPS_INSTALL_ROOT_OB(_3N8vZ2Cw62z024XxCg) //first_name∈symbol
 RPS_INSTALL_ROOT_OB(_3O1QUNKZ4bU02amQus) //∈rps_routine
@@ -69,6 +71,7 @@ RPS_INSTALL_ROOT_OB(_6XLY6QfcDre02922jz) //value∈class
 RPS_INSTALL_ROOT_OB(_7b8jzCpOStA04e0jxs) //qobject∈class
 RPS_INSTALL_ROOT_OB(_7OrPRWQEg2o043XvK2) //rps_routine∈class
 RPS_INSTALL_ROOT_OB(_7X9eGs8601M021nMue) //object∈symbol
+RPS_INSTALL_ROOT_OB(_8fYqEw8vTED03wsznt) //tasklet∈class
 RPS_INSTALL_ROOT_OB(_8xCV6GDXYMa02mK5xy) //display_object_content_fltk∈symbol
 RPS_INSTALL_ROOT_OB(_8J6vNYtP5E800eCr5q) //∈space
 RPS_INSTALL_ROOT_OB(_8YknAApDQiF04BDe3W) //mutable_vector∈class
@@ -78,7 +81,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 56
+#define RPS_NB_ROOT_OB 59
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
