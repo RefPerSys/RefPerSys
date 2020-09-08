@@ -203,7 +203,8 @@ endif
 ################################################################
 #### simple tests
 test01: ./refpersys
-	./refpersys -dGUI --display=object
+#was    ./refpersys -dGUI --display=object
+	@echo missing test01 ; exit 1
 
 test02: ./refpersys
 	@echo missing test02 ; exit 1
