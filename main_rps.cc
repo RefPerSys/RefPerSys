@@ -161,6 +161,14 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Run with a textual read-eval-print-loop user interface using GNU readline.", //
     /*group:*/0 ///
   },
+  /* ======= number of jobs or threads ======= */
+  {/*name:*/ "jobs", ///
+    /*key:*/ RPSPROGOPT_JOBS, ///
+    /*arg:*/ "NBJOBS", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Run <NBJOBS> threads - default is 3, minimum 2, maximum 20", //
+    /*group:*/0 ///
+  },
   /* ======= terminating empty option ======= */
   {/*name:*/(const char*)0, ///
     /*key:*/0, ///
