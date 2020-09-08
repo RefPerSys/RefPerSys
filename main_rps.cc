@@ -910,6 +910,8 @@ rps_run_application(int &argc, char **argv)
     return;
   if (rps_run_repl)
     rps_read_eval_print_loop (argc, argv);
+  else
+    rps_run_web_service();
 #warning incomplete rps_run_application
   RPS_WARNOUT("incomplete rps_run_application " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));

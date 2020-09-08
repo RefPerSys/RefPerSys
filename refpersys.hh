@@ -3444,6 +3444,7 @@ extern "C" void rps_run_application(int &argc, char **argv);
 
 
 extern "C" void rps_web_initialize_service(const char*);
+extern "C" void rps_run_web_service(void);
 
 #include "inline_rps.hh"
 
