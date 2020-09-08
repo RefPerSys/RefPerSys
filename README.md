@@ -373,15 +373,6 @@ We should list other libraries interesting for us here, just in case (to avoid f
 
 Thanks to Niklas Rosencrantz (Sweden) for past minor contributions.
 
-## the `foxweb-branch`
+## HTTP service
 
-This git branch will use the [FOX toolkit](https://fox-toolkit.org) and should later
-also provide some web interface, probably using the
-[cpp-httplib](https://github.com/yhirose/cpp-httplib) header-only HTTP 
-service library. 
-
-
-File `headfox_rps.hh` contains the common FOX-related header.
-File `foxdisplay_rps.cc` should contain RefPerSys method functions for displaying values.
-File `foxevloop_rps.cc` has the event loop (GC-friendly) and global GUI functions.
-File `foxsimpwin_rps.cc` has the simple window and related widgets.
+We are adding HTTP service in *RefPerSys*. So [libonion](https://github.com/davidmoreno/onion) is required.

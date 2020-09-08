@@ -29,7 +29,7 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-#include "refpersys.hh"
+#include "headweb_rps.hh"
 
 
 
@@ -46,7 +46,7 @@ extern "C" rps_applyingfun_t rpsapply_0TwK4TkhEGZ03oTa5m;
 Rps_TwoValues
 rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                             const Rps_Value arg0val,
-                            const Rps_Value arg1obwin, ///
+                            const Rps_Value arg1obweb, ///
                             const Rps_Value arg2depth,
                             [[maybe_unused]] const Rps_Value arg3_,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
@@ -61,7 +61,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                  //....etc....
                 );
   _f.val0v = arg0val;
-  _f.winob1 = arg1obwin.to_object();
+  _f.winob1 = arg1obweb.to_object();
   _f.depth2v = arg2depth;
   int depth = _f.depth2v.to_int();
   RPS_DEBUG_LOG(WEB, "rpsapply_0TwK4TkhEGZ03oTa5m start val0v=" << _f.val0v
@@ -80,7 +80,7 @@ extern "C" rps_applyingfun_t rpsapply_8KJHUldX8GJ03G5OWp;
 Rps_TwoValues
 rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
                             const Rps_Value arg0recv, ///
-                            const Rps_Value arg1obwin, ///
+                            const Rps_Value arg1obweb, ///
                             const Rps_Value arg2depth,
                             [[maybe_unused]] const Rps_Value arg3_,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
@@ -88,7 +88,7 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_8KJHUldX8GJ03G5OWp,
                  callerframe, //
                  Rps_Value intv;
-                 Rps_ObjectRef obwin;
+                 Rps_ObjectRef obweb;
                  Rps_Value depthv;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
@@ -96,10 +96,10 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
                 );
   ////==== body of _8KJHUldX8GJ03G5OWp ====
   _f.intv = arg0recv;
-  _f.obwin = arg1obwin.as_object();
+  _f.obweb = arg1obweb.as_object();
   _f.depthv = arg2depth;
   RPS_DEBUG_LOG(WEB, "rpsapply_8KJHUldX8GJ03G5OWp start intv=" << _f.intv
-                << ", obwin=" << _f.obwin
+                << ", obweb=" << _f.obweb
                 << ", depth=" << _f.depthv);
 #warning unimplemented rpsapply_8KJHUldX8GJ03G5OWp
   RPS_FATAL("unimplemented rpsapply_8KJHUldX8GJ03G5OWp");
@@ -417,7 +417,7 @@ extern "C" rps_applyingfun_t rpsapply_4x9jd2yAe8A02SqKAx;
 Rps_TwoValues
 rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                              const Rps_Value arg0obj, //
-                             const Rps_Value arg1obwin, ///
+                             const Rps_Value arg1obweb, ///
                              const Rps_Value arg2depth, //
                              [[maybe_unused]] const Rps_Value arg3_, ///
                              [[maybe_unused]] const std::vector<Rps_Value>* restargs_ )
@@ -433,12 +433,12 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                 );
   ////==== body of _4x9jd2yAe8A02SqKAx  !method object/display_object_occurrence_web ====
   RPS_DEBUG_LOG(WEB, "rpsapply_4x9jd2yAe8A02SqKAx start arg0obj=" << arg0obj
-                << ", arg1obwin=" << arg1obwin
+                << ", arg1obweb=" << arg1obweb
                 << ", arg2depth=" << arg2depth << std::endl
                 << RPS_DEBUG_BACKTRACE_HERE(2, "!method object/display_object_occurrence_web"));
   _f.recvob = arg0obj.as_object();
   RPS_ASSERT(_f.recvob);
-  _f.objwnd = arg1obwin.as_object();
+  _f.objwnd = arg1obweb.as_object();
   RPS_ASSERT (_f.objwnd);
   _f.recdepth = arg2depth;
   RPS_ASSERT (_f.recdepth.is_int());
@@ -463,7 +463,7 @@ extern "C" rps_applyingfun_t rpsapply_5nSiRIxoYQp00MSnYA;
 Rps_TwoValues
 rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                              const Rps_Value arg0obj, //
-                             const Rps_Value arg1obwin, ///
+                             const Rps_Value arg1obweb, ///
                              const Rps_Value arg2depth, //
                              const Rps_Value arg3optqtposition, ///
                              [[maybe_unused]] const std::vector<Rps_Value>* restargs_ )
@@ -490,7 +490,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   ////==== body of _5nSiRIxoYQp00MSnYA !method object!display_object_content_web ====
   _f.recvob = arg0obj.as_object();
   RPS_ASSERT(_f.recvob);
-  _f.objwnd = arg1obwin.as_object();
+  _f.objwnd = arg1obweb.as_object();
   RPS_ASSERT (_f.objwnd);
   _f.recdepth = arg2depth;
   RPS_ASSERT (_f.recdepth.is_int());
@@ -515,14 +515,14 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
 extern "C" rps_applyingfun_t rpsapply_8lKdW7lgcHV00WUOiT;
 Rps_TwoValues
 rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
-                             const Rps_Value arg0class, const Rps_Value arg1obwin, ///
+                             const Rps_Value arg0class, const Rps_Value arg1obweb, ///
                              const Rps_Value arg2depth, const Rps_Value _arg3 __attribute__((unused)), ///
                              const std::vector<Rps_Value>* restargs_ __attribute__((unused)))
 {
   RPS_LOCALFRAME(rpskob_8lKdW7lgcHV00WUOiT,
                  callerframe, //
                  Rps_ObjectRef obclass; //
-                 Rps_ObjectRef obwin; //
+                 Rps_ObjectRef obweb; //
                  Rps_ObjectRef obsuper; //
                  Rps_Value depthv; //
                  Rps_Value resmainv; //
@@ -534,14 +534,14 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
   ////==== body of _8lKdW7lgcHV00WUOiT ====
   _f.obclass = arg0class.as_object();
   RPS_ASSERT(_f.obclass);
-  _f.obwin = arg1obwin.as_object();
-  RPS_ASSERT(_f.obwin);
+  _f.obweb = arg1obweb.as_object();
+  RPS_ASSERT(_f.obweb);
   _f.depthv = arg2depth;
   RPS_ASSERT(_f.depthv.is_int());
   auto depthi = _f.depthv.to_int();
   RPS_DEBUG_LOG(WEB, "rpsapply_8lKdW7lgcHV00WUOiT start !method class/display_object_payload_web @!@° obclass="
-                << _f.obclass << ", obwin=" << _f.obwin
-                << " of class:" << Rps_Value(_f.obwin).compute_class(&_)
+                << _f.obclass << ", obweb=" << _f.obweb
+                << " of class:" << Rps_Value(_f.obweb).compute_class(&_)
                 << ", depthi=" << depthi << std::endl
                 << RPS_FULL_BACKTRACE_HERE(2,
                     "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_web")

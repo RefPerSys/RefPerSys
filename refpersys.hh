@@ -3352,14 +3352,6 @@ public:
   static int autocomplete_name(const char*prefix, const std::function<bool(const Rps_ObjectZone*,const std::string&)>&stopfun);
 };				// end Rps_PayloadSymbol
 
-////////////////////////////////////////////////////////////////
-
-struct Rps_GuiPreferences {
-  std::string gui_geometry;
-  double gui_scale;
-  std::string gui_title;
-};
-extern "C" Rps_GuiPreferences rps_gui_pref;
 
 
 ////////////////////////////////////////////////////////////////

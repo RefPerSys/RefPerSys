@@ -32,7 +32,7 @@
  ******************************************************************************/
 
 #include "refpersys.hh"
-
+#include "onion/version.h"
 
 extern "C" const char rps_main_gitid[];
 const char rps_main_gitid[]= RPS_GITID;
@@ -811,7 +811,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " with " << nbsubdirs << " subdirectories." << std::endl
                     << " GNU glibc " << gnu_get_libc_version() << std::endl
                     << " Read Eval Print Loop using " << rps_repl_version() << std::endl
-                    << " libCURL for web using " << rps_curl_version() << std::endl
+                    << " libCURL for web client using " << rps_curl_version() << std::endl
+		    << " Libonion web server library version " << onion_version() << std::endl
                     << " made with: " << rps_makefile << std::endl
                     << " running on " << rps_hostname();
           {

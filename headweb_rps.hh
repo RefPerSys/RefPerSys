@@ -1,19 +1,17 @@
 /****************************************************************
- * file httpweb_rps.cc
+ * file headwebp_rps.hh
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
- *      This file is part of the Reflective Persistent System. See refpersys.org
- *
- *      It has the web interface code, using cpp-httplib
- *      from https://github.com/yhirose/cpp-httplib/
+ *      This file is part of the Reflective Persistent System.
+ *      It is the public C++ header file of the web interface
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2020 The Reflective Persistent System Team
+ *      © Copyright 2020 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -31,11 +29,19 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-#include "headweb_rps.hh"
 
-void
-rps_web_initialize_service(const char*servarg)
-{
-} // end rps_web_initialize_service
 
-///////// end of file web_rps.cc
+#ifndef HEADWEB_RPS_INCLUDED
+#define HEADWEB_RPS_INCLUDED
+
+#include "refpersys.hh"
+// for libonion Web service library, from https://www.coralbits.com/libonion/
+#include "onion/onion.hpp"
+#include "onion/http.hpp"
+#include "onion/request.hpp"
+#include "onion/response.hpp"
+
+
+
+#endif /* HEADWEB_RPS_INCLUDED */
+/******* end of file headweb_rps.hh *******/
