@@ -779,6 +779,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 	if (side_effect)
 	  rps_web_initialize_service(arg);
       }
+      return 0;
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:
     {
       void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
