@@ -394,6 +394,7 @@ enum rps_progoption_en
   RPSPROGOPT_BATCH='B',
   RPSPROGOPT_JOBS='j',
   RPSPROGOPT_DUMP='D',
+  RPSPROGOPT_WEB='W',
 
   RPSPROGOPT_HOMEDIR=1000,
   RPSPROGOPT_RANDOMOID,
@@ -3441,6 +3442,8 @@ extern "C" void rps_run_fox_gui(int &argc, char**argv);
 #define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam) extern "C" Rps_ObjectRef RPS_SYMB_OB(Nam);
 #include "generated/rps-names.hh"
 
+
+extern "C" void rps_web_initialize_service(const char*);
 
 #include "inline_rps.hh"
 

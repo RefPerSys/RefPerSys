@@ -46,6 +46,9 @@ extern "C" void end_of_main(void);
 extern "C" std::vector<Rps_Plugin> rps_plugins_vector;
 std::vector<Rps_Plugin> rps_plugins_vector;
 
+#define RPS_DEFAULT_WEB_SERVICE "localhost:9090"
+static const char*rps_web_service = RPS_DEFAULT_WEB_SERVICE;
+
 error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 struct argp_option rps_progoptions[] =
 {
@@ -143,6 +146,15 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ "COMMAND", ///
     /*flags:*/ 0, ///
     /*doc:*/ "Run using system(3) the given COMMAND after load and plugins; environment variable REFPERSYS_PID has been set", //
+    /*group:*/0 ///
+  },
+  /* ======= web interface  ======= */
+  {/*name:*/ "web", ///
+    /*key:*/ RPSPROGOPT_WEB, ///
+    /*arg:*/ "HOST:PORT", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "start web service as given on HOST:PORT, default is " //
+    RPS_DEFAULT_WEB_SERVICE, //
     /*group:*/0 ///
   },
   /* ======= load a plugin after load ======= */
@@ -762,6 +774,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_run_command_after_load = arg;
     }
     return 0;
+    case RPSPROGOPT_WEB:
+      {
+	if (side_effect)
+	  rps_web_initialize_service(arg);
+      }
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:
     {
       void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);

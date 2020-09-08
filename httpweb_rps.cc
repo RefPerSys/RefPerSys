@@ -1,9 +1,9 @@
 /****************************************************************
- * file main_rps.cc
+ * file httpweb_rps.cc
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
- *      This file is part of the Reflective Persistent System.
+ *      This file is part of the Reflective Persistent System. See refpersys.org
  *
  *      It has the web interface code, using cpp-httplib
  *      from https://github.com/yhirose/cpp-httplib/
@@ -33,8 +33,16 @@
 
 #include "refpersys.hh"
 
+// compile time configuration of httplib.h
 #define CPPHTTPLIB_THREAD_POOL_COUNT (1+rps_nbjobs/2)
+#define CPPHTTPLIB_ZLIB_SUPPORT 1
+#define CPPHTTPLIB_OPENSSL_SUPPORT 1
 
 #include "httplib.h"
+
+void
+rps_web_initialize_service(const char*servarg)
+{
+} // end rps_web_initialize_service
 
 ///////// end of file web_rps.cc
