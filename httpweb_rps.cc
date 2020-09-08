@@ -38,4 +38,12 @@ rps_web_initialize_service(const char*servarg)
 {
 } // end rps_web_initialize_service
 
+
+void
+rps_run_web_service()
+{
+  RPS_FATAL("unimplemented rps_run_web_service");
+#warning rps_run_web_service unimplemented
+} // end rps_run_web_service
+
 ///////// end of file web_rps.cc
