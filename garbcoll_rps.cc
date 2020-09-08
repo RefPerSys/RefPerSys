@@ -1,10 +1,11 @@
 /****************************************************************
  * file garbcoll_rps.cc
+ * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for the garbage collector.
+ *      It has the code for the garbage collector and some code related to call frames.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -38,28 +39,31 @@ const char rps_garbcoll_gitid[]= RPS_GITID;
 extern "C" const char rps_garbcoll_date[];
 const char rps_garbcoll_date[]= __DATE__;
 
-std::atomic<Rps_GarbageCollector*> Rps_GarbageCollector::gc_this;
-std::atomic<uint64_t> Rps_GarbageCollector::gc_count;
+std::atomic<Rps_GarbageCollector*> Rps_GarbageCollector::gc_this_;
+std::atomic<uint64_t> Rps_GarbageCollector::gc_count_;
 
 Rps_GarbageCollector::Rps_GarbageCollector(const std::function<void(Rps_GarbageCollector*)> &rootmarkers) :
-  gc_mtx(), gc_running(false), gc_rootmarkers(rootmarkers),
+  gc_mtx(), gc_running(false), gc_magic(_gc_magicnum_),
+  gc_rootmarkers(rootmarkers),
   gc_obscanque(),
   gc_nbscan(0), gc_nbmark(0), gc_nbdelete(0), gc_nbroots(0),
   gc_startelapsedtime(rps_elapsed_real_time()),
   gc_startprocesstime(rps_process_cpu_time())
 {
-  RPS_ASSERT(gc_this.load() == nullptr);
-  gc_this.store(this);
-  gc_count.fetch_add(1);
+  RPS_ASSERT(gc_this_.load() == nullptr);
+  gc_this_.store(this);
+  gc_count_.fetch_add(1);
 } // end Rps_GarbageCollector::Rps_GarbageCollector
 
 
 Rps_GarbageCollector::~Rps_GarbageCollector()
 {
-  RPS_ASSERT(gc_this.load() == this);
+  RPS_ASSERT(is_valid_garbcoll());
+  RPS_ASSERT(gc_this_.load() == this);
   RPS_ASSERT(gc_running.load() == false);
   RPS_ASSERT(gc_obscanque.empty());
-  gc_this.store(nullptr);
+  gc_this_.store(nullptr);
+  gc_magic = 0;
 } // end Rps_GarbageCollector::~Rps_GarbageCollector
 
 void
@@ -75,24 +79,51 @@ Rps_CallFrame::gc_mark_frame(Rps_GarbageCollector* gc)
   if (cfram_marker)
     cfram_marker(gc);
   unsigned siz=cfram_size;
-  for (unsigned ix=0; ix<siz; ix++)
+  if (cfram_xtradata)
     {
-      Rps_Value curval(cfram_data[ix], this);
-      if (!curval.is_empty() && curval.is_ptr())
-        curval.as_ptr()->gc_mark(*gc,0);
+      void**frdata = reinterpret_cast<void**>(cfram_xtradata);
+      for (unsigned ix=0; ix<siz; ix++)
+        {
+          Rps_Value curval(frdata[ix], this);
+          if (!curval.is_empty() && curval.is_ptr())
+            curval.as_ptr()->gc_mark(*gc,0);
+        };
     }
-} // end Rps_CallFrame::gc_mark_frame
+} // end Rps_CallFrame::gc_mark_frame i.e.  Rps_ProtoCallFrame::gc_mark_frame
+
+
+std::atomic<int> Rps_ProtoCallFrame::_cfram_output_depth_(16);
+
+void // this is Rps_ProtoCallFrame::output
+Rps_CallFrame::output(std::ostream&out, int depth) const
+{
+  out << "𝚫" /*U+1D6AB MATHEMATICAL BOLD CAPITAL DELTA*/ << depth
+      << "[{" << cfram_descr << "/" << cfram_state;
+  if (cfram_rankstate)
+    out << "#" << cfram_rankstate;
+  if (cfram_clos)
+    out << "" << cfram_clos;
+  Rps_CallFrameOutputSig_t*outputter = cfram_outputter.load();
+  if (outputter)
+    {
+      out << ":";
+      (*outputter)(out,this);
+    }
+  out << "}]" << std::endl;
+  if (depth<_cfram_output_depth_.load() && cfram_prev)
+    cfram_prev->output(out, depth+1);
+} // end of Rps_CallFrame::output i.e. Rps_ProtoCallFrame::output
 
 void
 rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
 {
-  RPS_ASSERT(Rps_GarbageCollector::gc_this.load() == nullptr);
+  RPS_ASSERT(Rps_GarbageCollector::gc_this_.load() == nullptr);
   Rps_GarbageCollector the_gc([=](Rps_GarbageCollector*gc)
   {
     if (pfun)
       (*pfun)(gc);
   });
-  auto gcnt = Rps_GarbageCollector::gc_count.load();
+  auto gcnt = Rps_GarbageCollector::gc_count_.load();
   RPS_INFORM("rps_garbage_collect before run; count#%ld",
              gcnt);
   the_gc.run_gc();
@@ -129,13 +160,15 @@ Rps_GarbageCollector::mark_gcroots(void)
      { this->mark_root_objectref(RPS_ROOT_OB(Oid)); };	\
   };
 #include "generated/rps-roots.hh"
+
   ///
   /// mark the hardcoded global symbols
-#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam)  {	\
-   if (RPS_SYMB_OB(Nam))			\
+#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam)  {		\
+   if (RPS_SYMB_OB(Nam))				\
      { this->mark_root_objectref(RPS_SYMB_OB(Nam)); };	\
 };
 #include "generated/rps-names.hh"
+
   ///
   /// mark the constants
 #define RPS_INSTALL_CONSTANT_OB(Oid) {		\
@@ -199,6 +232,16 @@ Rps_GarbageCollector::mark_value(Rps_Value val, unsigned depth)
   if (val.is_empty() || val.is_int()) return;
   val.gc_mark(*this,depth);
 } // end of Rps_GarbageCollector::mark_value
+
+void
+rps_garbcoll_application(Rps_GarbageCollector&gc)
+{
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(gc.is_valid_garbcoll());
+#warning incomplete rps_garbcoll_application
+  RPS_WARNOUT("incomplete rps_garbcoll_application " << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_garbcoll_application"));
+} // end rps_garbcoll_application
 
 //////////////////////////////////////////////////////////// end of file garbcoll_rps.cc
 

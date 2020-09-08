@@ -1,4 +1,7 @@
 #!/bin/bash
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+export LC_TIME=en_US.UTF-8
 printf "// generated file %s -- DONT EDIT\n" $1
 date +"const char rps_timestamp[]=\"%c\";%nconst unsigned long rps_timelong=%sL;%n"
 printf "const char rps_topdirectory[]=\"%s\";\n" $(realpath $(pwd))

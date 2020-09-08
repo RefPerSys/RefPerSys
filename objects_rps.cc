@@ -1,5 +1,6 @@
 /****************************************************************
  * file objects_rps.cc
+ * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
@@ -115,7 +116,6 @@ Rps_ObjectZone::register_objzone(Rps_ObjectZone*obz)
   ob_idmap_.insert({oid,obz});
   ob_idbucketmap_[oid.bucket_num()].insert({oid,obz});
 } // end Rps_ObjectZone::register_objzone
-
 
 Rps_Id
 Rps_ObjectZone::fresh_random_oid(Rps_ObjectZone*ob)
@@ -1046,7 +1046,7 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
         Dl_info di = {};
         if (dladdr((void*)apfun, &di))
           {
-            RPS_INFORMOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+            RPS_DEBUG_LOG(DUMP, "Rps_ObjectZone::dump_json_content thisob=" << thisob
                           << " has applyingfun " << (void*)apfun
                           << " dli_fname=" << (di.dli_fname?:"???")
                           << " dli_sname=" << (di.dli_sname?:"???"));
@@ -1430,16 +1430,16 @@ Rps_PayloadClassInfo::compute_set_of_own_method_selectors(Rps_CallFrame*callerfr
   });
   for (auto& it : pclass_methdict)
     {
-      _.obcursel = it.first;
-      _.curclos = it.second;
-      if (!_.obcursel)
+      _f.obcursel = it.first;
+      _f.curclos = it.second;
+      if (!_f.obcursel)
         continue;
-      if (!_.curclos)
+      if (!_f.curclos)
         continue;
-      mutset.insert(_.obcursel);
+      mutset.insert(_f.obcursel);
     };
-  _.setsel = Rps_SetValue(mutset);
-  return _.setsel;
+  _f.setsel = Rps_SetValue(mutset);
+  return _f.setsel;
 } // end Rps_PayloadClassInfo::compute_set_of_own_method_selectors
 
 
@@ -1784,19 +1784,19 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
     }
   if (isalpha(str[0]))
     {
-      _.obsymb = Rps_PayloadSymbol::find_named_object(str);
-      if (!_.obsymb)
+      _f.obsymb = Rps_PayloadSymbol::find_named_object(str);
+      if (!_f.obsymb)
         {
           if (dontfail)
             return Rps_ObjectRef(nullptr);
           throw std::runtime_error("Rps_ObjectRef::find_object_by_string: no symbol named " + str);
         }
-      auto symbpayl = _.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
+      auto symbpayl = _f.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
       RPS_ASSERT(symbpayl != nullptr);
       if (symbpayl->symbol_value().is_object())
-        _.obfound = symbpayl->symbol_value().as_object();
-      if (!_.obfound)
-        _.obfound = _.obsymb;
+        _f.obfound = symbpayl->symbol_value().as_object();
+      if (!_f.obfound)
+        _f.obfound = _f.obsymb;
     }
   else if (str[0] == '_')
     {
@@ -1807,8 +1807,8 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
             return Rps_ObjectRef(nullptr);
           throw std::runtime_error("Rps_ObjectRef::find_object_by_string: bad id " + str);
         };
-      _.obfound = Rps_ObjectRef(Rps_ObjectZone::find(id));
-      if (!_.obfound)
+      _f.obfound = Rps_ObjectRef(Rps_ObjectZone::find(id));
+      if (!_f.obfound)
         {
           if (dontfail)
             return Rps_ObjectRef(nullptr);
@@ -1821,7 +1821,7 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
         return Rps_ObjectRef(nullptr);
       throw std::runtime_error("bad string " + str + " to Rps_ObjectRef::find_object_by_string");
     }
-  return _.obfound;
+  return _f.obfound;
 } // end Rps_ObjectRef::find_object_by_string
 
 
@@ -1838,17 +1838,22 @@ Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, bool do
         return Rps_ObjectRef(nullptr);
       throw std::runtime_error("Rps_ObjectRef::find_object_by_oid: invalid or empty oid");
     }
-  _.obfound = Rps_ObjectRef(Rps_ObjectZone::find(oid));
-  if (!_.obfound)
+  _f.obfound = Rps_ObjectRef(Rps_ObjectZone::find(oid));
+  if (!_f.obfound)
     {
       if (dontfail)
         return Rps_ObjectRef(nullptr);
       throw std::runtime_error("Rps_ObjectRef::find_object: nonexistant id");
     }
-  return _.obfound;
+  return _f.obfound;
 } // end Rps_ObjectRef::find_object_by_oid
 
 
+Rps_ObjectRef
+Rps_ObjectRef::really_find_object_by_oid(const Rps_Id& oid)
+{
+  return Rps_ObjectRef(Rps_ObjectZone::find(oid));
+} // end Rps_ObjectRef::really_find_object_by_oid
 
 Rps_ObjectRef
 Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef superclassarg, std::string name)
@@ -1859,54 +1864,54 @@ Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef supercl
                  Rps_ObjectRef obsymbol; // the symbol
                  Rps_ObjectRef obclass; //
                 );
-  _.obsuperclass = superclassarg;
+  _f.obsuperclass = superclassarg;
   RPS_INFORMOUT("Rps_ObjectRef::make_named_class obsuperclass="
-                << _.obsuperclass << ", name=" << name << " start");
-  if (RPS_UNLIKELY(!_.obsuperclass))
+                << _f.obsuperclass << ", name=" << name << " start");
+  if (RPS_UNLIKELY(!_f.obsuperclass))
     {
       RPS_WARNOUT("make_named_class without superclass for name " << name);
       throw std::runtime_error(std::string("make_named_class without superclass"));
     }
   // the superclassob should be instance of `class` class
-  if (RPS_UNLIKELY(_.obsuperclass->get_class() != RPS_ROOT_OB(_41OFI3r0S1t03qdB2E)))
+  if (RPS_UNLIKELY(_f.obsuperclass->get_class() != RPS_ROOT_OB(_41OFI3r0S1t03qdB2E)))
     {
-      RPS_WARNOUT("make_named_class with invalid superclass " << _.obsuperclass
+      RPS_WARNOUT("make_named_class with invalid superclass " << _f.obsuperclass
                   << " for name " << name);
 
       throw std::runtime_error(std::string("make_named_class with invalid superclass"));
     };
   if (!Rps_PayloadSymbol::valid_name(name))
     {
-      RPS_WARNOUT("make_named_class with superclass " << _.obsuperclass
+      RPS_WARNOUT("make_named_class with superclass " << _f.obsuperclass
                   << " with invalid name " << name);
       throw std::runtime_error(std::string("make_named_class with invalid name"));
     }
   RPS_INFORMOUT("Rps_ObjectRef::make_named_class valid name=" << name);
-  _.obsymbol = Rps_PayloadSymbol::find_named_object(name);
-  if (!_.obsymbol)
-    _.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, name);
-  RPS_INFORMOUT("Rps_ObjectRef::make_named_class name=" << name <<", obsymbol=" << _.obsymbol);
-  std::unique_lock<std::recursive_mutex> gusymb (*(_.obsymbol->objmtxptr()));
+  _f.obsymbol = Rps_PayloadSymbol::find_named_object(name);
+  if (!_f.obsymbol)
+    _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, name);
+  RPS_INFORMOUT("Rps_ObjectRef::make_named_class name=" << name <<", obsymbol=" << _f.obsymbol);
+  std::unique_lock<std::recursive_mutex> gusymb (*(_f.obsymbol->objmtxptr()));
   // obsymbol should be of class `symbol`
-  RPS_ASSERT(_.obsymbol->get_class() == RPS_ROOT_OB(_36I1BY2NetN03WjrOv));
-  RPS_INFORMOUT("Rps_ObjectRef::make_named_class good obsymbol=" << _.obsymbol);
-  auto paylsymbol = _.obsymbol-> get_dynamic_payload<Rps_PayloadSymbol>();
+  RPS_ASSERT(_f.obsymbol->get_class() == RPS_ROOT_OB(_36I1BY2NetN03WjrOv));
+  RPS_INFORMOUT("Rps_ObjectRef::make_named_class good obsymbol=" << _f.obsymbol);
+  auto paylsymbol = _f.obsymbol-> get_dynamic_payload<Rps_PayloadSymbol>();
   RPS_ASSERT (paylsymbol);
-  _.obclass = Rps_ObjectZone::make();
+  _f.obclass = Rps_ObjectZone::make();
   RPS_INFORMOUT("Rps_ObjectRef::make_named_class name=" << name << ", paylsymbol=" << paylsymbol
-                << ", obclass=" << _.obclass);
+                << ", obclass=" << _f.obclass);
   /// the class is class `class`
-  _.obclass->ob_class.store(RPS_ROOT_OB(_41OFI3r0S1t03qdB2E));
-  auto paylclainf = _.obclass->put_new_plain_payload<Rps_PayloadClassInfo>();
-  paylclainf->put_superclass(_.obsuperclass);
-  paylclainf->put_symbname(_.obsymbol);
-  paylsymbol->symbol_put_value(_.obclass);
-  _.obclass->put_space(RPS_ROOT_OB(_8J6vNYtP5E800eCr5q)); // the initial space
-  _.obsymbol->put_space(RPS_ROOT_OB(_8J6vNYtP5E800eCr5q)); // the initial space
-  rps_add_root_object (_.obclass);
+  _f.obclass->ob_class.store(RPS_ROOT_OB(_41OFI3r0S1t03qdB2E));
+  auto paylclainf = _f.obclass->put_new_plain_payload<Rps_PayloadClassInfo>();
+  paylclainf->put_superclass(_f.obsuperclass);
+  paylclainf->put_symbname(_f.obsymbol);
+  paylsymbol->symbol_put_value(_f.obclass);
+  _f.obclass->put_space(RPS_ROOT_OB(_8J6vNYtP5E800eCr5q)); // the initial space
+  _f.obsymbol->put_space(RPS_ROOT_OB(_8J6vNYtP5E800eCr5q)); // the initial space
+  rps_add_root_object (_f.obclass);
   RPS_INFORMOUT("Rps_ObjectRef::make_named_class name="<< name
-                << " gives obclass=" << _.obclass);
-  return _.obclass;
+                << " gives obclass=" << _f.obclass);
+  return _f.obclass;
 } // end Rps_ObjectRef::make_named_class
 
 
@@ -1930,12 +1935,12 @@ Rps_ObjectRef::make_new_symbol(Rps_CallFrame*callerframe, std::string name, bool
       RPS_WARNOUT("make_new_symbol with existing name " << name);
       throw std::runtime_error(std::string("make_new_symbol with existing name"));
     }
-  _.obsymbol = Rps_ObjectZone::make();
-  _.obsymbol->ob_class.store(RPS_ROOT_OB(_36I1BY2NetN03WjrOv)); // the `symbol` class
-  Rps_PayloadSymbol::register_name(name, _.obsymbol, isweak);
+  _f.obsymbol = Rps_ObjectZone::make();
+  _f.obsymbol->ob_class.store(RPS_ROOT_OB(_36I1BY2NetN03WjrOv)); // the `symbol` class
+  Rps_PayloadSymbol::register_name(name, _f.obsymbol, isweak);
   RPS_NOPRINTOUT("Rps_ObjectRef::make_new_symbol name=" << name
-                 << " gives obsymbol=" << _.obsymbol);
-  return _.obsymbol;
+                 << " gives obsymbol=" << _f.obsymbol);
+  return _f.obsymbol;
 } // end of Rps_ObjectRef::make_new_symbol
 
 Rps_ObjectRef
@@ -1947,29 +1952,29 @@ Rps_ObjectRef::make_object(Rps_CallFrame*callerframe, Rps_ObjectRef classobarg, 
                  Rps_ObjectRef spaceob; // the space
                  Rps_ObjectRef resultob; // resulting object
                 );
-  _.classob = classobarg;
-  _.spaceob = spaceobarg;
-  if (_.spaceob
-      && RPS_UNLIKELY(!_.spaceob->is_instance_of(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx))))   //space∈class
+  _f.classob = classobarg;
+  _f.spaceob = spaceobarg;
+  if (_f.spaceob
+      && RPS_UNLIKELY(!_f.spaceob->is_instance_of(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx))))   //space∈class
     {
-      RPS_WARNOUT("invalid spaceob " << _.spaceob
+      RPS_WARNOUT("invalid spaceob " << _f.spaceob
                   << "for make_object");
-      throw RPS_RUNTIME_ERROR_OUT("invalid spaceob " << _.spaceob
+      throw RPS_RUNTIME_ERROR_OUT("invalid spaceob " << _f.spaceob
                                   << "for make_object");
-      if (!_.classob
-          || !_.classob->is_subclass_of(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)))   // object∈class
+      if (!_f.classob
+          || !_f.classob->is_subclass_of(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)))   // object∈class
         {
-          RPS_WARNOUT("invalid class " << _.classob
+          RPS_WARNOUT("invalid class " << _f.classob
                       << "for make_object");
-          throw RPS_RUNTIME_ERROR_OUT("invalid class " << _.classob
+          throw RPS_RUNTIME_ERROR_OUT("invalid class " << _f.classob
                                       << "for make_object");
         }
     };
-  _.resultob = Rps_ObjectZone::make();
-  _.resultob->ob_class.store(_.classob);
-  _.resultob->put_space(_.spaceob);
+  _f.resultob = Rps_ObjectZone::make();
+  _f.resultob->ob_class.store(_f.classob);
+  _f.resultob->put_space(_f.spaceob);
   /// FIXME: perhaps we should send some `initialize_object` message?
-  return _.resultob;
+  return _f.resultob;
 } // end Rps_ObjectRef::make_object
 
 // create a mutable set oject:
@@ -1981,20 +1986,20 @@ Rps_ObjectRef::make_mutable_set_object(Rps_CallFrame*callerframe, Rps_ObjectRef 
                  Rps_ObjectRef spaceob; // the space
                  Rps_ObjectRef resultob; // resulting object
                 );
-  _.spaceob = spaceobarg;
-  if (_.spaceob
-      && RPS_UNLIKELY(!_.spaceob->is_instance_of(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx))))   //space∈class
+  _f.spaceob = spaceobarg;
+  if (_f.spaceob
+      && RPS_UNLIKELY(!_f.spaceob->is_instance_of(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx))))   //space∈class
     {
-      RPS_WARNOUT("invalid spaceob " << _.spaceob
+      RPS_WARNOUT("invalid spaceob " << _f.spaceob
                   << "for make_mutable_set_object");
-      throw RPS_RUNTIME_ERROR_OUT("invalid spaceob " << _.spaceob
+      throw RPS_RUNTIME_ERROR_OUT("invalid spaceob " << _f.spaceob
                                   << "for make_mutable_set_object");
     };
-  _.resultob = Rps_ObjectZone::make();
-  _.resultob->ob_class.store(RPS_ROOT_OB(_0J1C39JoZiv03qA2HA)); //mutable_set∈class
-  _.resultob->put_new_plain_payload<Rps_PayloadSetOb>();
-  _.resultob->put_space(_.spaceob);
-  return _.resultob;
+  _f.resultob = Rps_ObjectZone::make();
+  _f.resultob->ob_class.store(RPS_ROOT_OB(_0J1C39JoZiv03qA2HA)); //mutable_set∈class
+  _f.resultob->put_new_plain_payload<Rps_PayloadSetOb>();
+  _f.resultob->put_space(_f.spaceob);
+  return _f.resultob;
 } // end Rps_ObjectRef::make_mutable_set_object
 
 
@@ -2009,32 +2014,32 @@ Rps_ObjectRef::install_own_method(Rps_CallFrame*callerframe, Rps_ObjectRef obsel
                  Rps_ObjectRef obsel; // the selector
                  Rps_Value closv; // the closure
                 );
-  _.obclass = *this;
-  _.obsel = obselarg;
-  _.closv = closvarg;
-  if (_.obclass.is_empty())
+  _f.obclass = *this;
+  _f.obsel = obselarg;
+  _f.closv = closvarg;
+  if (_f.obclass.is_empty())
     {
-      RPS_WARNOUT("empty class for install_own_method of selector " << _.obsel);
-      throw RPS_RUNTIME_ERROR_OUT("empty class for install_own_method of selector " << _.obsel);
+      RPS_WARNOUT("empty class for install_own_method of selector " << _f.obsel);
+      throw RPS_RUNTIME_ERROR_OUT("empty class for install_own_method of selector " << _f.obsel);
     }
-  std::unique_lock<std::recursive_mutex> guclass (*(_.obclass->objmtxptr()));
-  if (_.obsel.is_empty())
+  std::unique_lock<std::recursive_mutex> guclass (*(_f.obclass->objmtxptr()));
+  if (_f.obsel.is_empty())
     {
-      RPS_WARNOUT("empty selector for install_own_method of class " << _.obclass);
-      throw RPS_RUNTIME_ERROR_OUT("empty selector for install_own_method of class " << _.obclass);
+      RPS_WARNOUT("empty selector for install_own_method of class " << _f.obclass);
+      throw RPS_RUNTIME_ERROR_OUT("empty selector for install_own_method of class " << _f.obclass);
     }
-  auto paylcl = _.obclass->get_classinfo_payload();
+  auto paylcl = _f.obclass->get_classinfo_payload();
   if (!paylcl)
     {
-      RPS_WARNOUT("bad class for install_own_method of class " << _.obclass << " selector " << _.obsel);
-      throw RPS_RUNTIME_ERROR_OUT("bad class for install_own_method of class " << _.obclass << " selector " << _.obsel);
+      RPS_WARNOUT("bad class for install_own_method of class " << _f.obclass << " selector " << _f.obsel);
+      throw RPS_RUNTIME_ERROR_OUT("bad class for install_own_method of class " << _f.obclass << " selector " << _f.obsel);
     }
-  if (_.closv.is_empty() || !_.closv.is_closure())
+  if (_f.closv.is_empty() || !_f.closv.is_closure())
     {
-      RPS_WARNOUT("bad closure for install_own_method of class " << _.obclass << " selector " << _.obsel);
-      throw RPS_RUNTIME_ERROR_OUT("bad closure for install_own_method of class " << _.obclass << " selector " << _.obsel);
+      RPS_WARNOUT("bad closure for install_own_method of class " << _f.obclass << " selector " << _f.obsel);
+      throw RPS_RUNTIME_ERROR_OUT("bad closure for install_own_method of class " << _f.obclass << " selector " << _f.obsel);
     }
-  paylcl->put_own_method(_.obsel, _.closv);
+  paylcl->put_own_method(_f.obsel, _f.closv);
 } // end Rps_ObjectRef::install_own_method
 
 
@@ -2050,45 +2055,45 @@ Rps_ObjectRef::install_own_2_methods(Rps_CallFrame*callerframe, Rps_ObjectRef ob
                  Rps_ObjectRef obsel1; // the selector #1
                  Rps_Value closv1; // the closure #1
                 );
-  _.obclass = *this;
-  _.obsel0 = obsel0arg;
-  _.closv0 = closv0arg;
-  _.obsel1 = obsel1arg;
-  _.closv1 = closv1arg;
-  if (_.obclass.is_empty())
+  _f.obclass = *this;
+  _f.obsel0 = obsel0arg;
+  _f.closv0 = closv0arg;
+  _f.obsel1 = obsel1arg;
+  _f.closv1 = closv1arg;
+  if (_f.obclass.is_empty())
     {
-      RPS_WARNOUT("empty class for install_own_2_methods of selector#0 " << _.obsel0 << ", selector#1 " << _.obsel1);
-      throw RPS_RUNTIME_ERROR_OUT("empty class for install_own_2_methods of selector#0 " << _.obsel0 << ", selector#1 " << _.obsel1);
+      RPS_WARNOUT("empty class for install_own_2_methods of selector#0 " << _f.obsel0 << ", selector#1 " << _f.obsel1);
+      throw RPS_RUNTIME_ERROR_OUT("empty class for install_own_2_methods of selector#0 " << _f.obsel0 << ", selector#1 " << _f.obsel1);
     }
-  std::unique_lock<std::recursive_mutex> guclass (*(_.obclass->objmtxptr()));
-  if (_.obsel0.is_empty())
+  std::unique_lock<std::recursive_mutex> guclass (*(_f.obclass->objmtxptr()));
+  if (_f.obsel0.is_empty())
     {
-      RPS_WARNOUT("empty selector#0 for install_own_2_methods of class " << _.obclass);
-      throw RPS_RUNTIME_ERROR_OUT("empty selector#0 for install_own_2_methods of class " << _.obclass);
+      RPS_WARNOUT("empty selector#0 for install_own_2_methods of class " << _f.obclass);
+      throw RPS_RUNTIME_ERROR_OUT("empty selector#0 for install_own_2_methods of class " << _f.obclass);
     }
-  if (_.obsel1.is_empty())
+  if (_f.obsel1.is_empty())
     {
-      RPS_WARNOUT("empty selector#1 for install_own_2_methods of class " << _.obclass);
-      throw RPS_RUNTIME_ERROR_OUT("empty selector#1 for install_own_2_methods of class " << _.obclass);
+      RPS_WARNOUT("empty selector#1 for install_own_2_methods of class " << _f.obclass);
+      throw RPS_RUNTIME_ERROR_OUT("empty selector#1 for install_own_2_methods of class " << _f.obclass);
     }
-  auto paylcl = _.obclass->get_classinfo_payload();
+  auto paylcl = _f.obclass->get_classinfo_payload();
   if (!paylcl)
     {
-      RPS_WARNOUT("bad class for install_own_2_methods of class " << _.obclass << " selector#0 " << _.obsel0 << ", selector#1 " << _.obsel1);
-      throw RPS_RUNTIME_ERROR_OUT("bad class for install_own_2_methods of class " << _.obclass << " selector#0 " << _.obsel0 << ", selector#1 " << _.obsel1);
+      RPS_WARNOUT("bad class for install_own_2_methods of class " << _f.obclass << " selector#0 " << _f.obsel0 << ", selector#1 " << _f.obsel1);
+      throw RPS_RUNTIME_ERROR_OUT("bad class for install_own_2_methods of class " << _f.obclass << " selector#0 " << _f.obsel0 << ", selector#1 " << _f.obsel1);
     }
-  if (_.closv0.is_empty() || !_.closv0.is_closure())
+  if (_f.closv0.is_empty() || !_f.closv0.is_closure())
     {
-      RPS_WARNOUT("bad closure#0 for install_2_methods of class " << _.obclass << " selector#0 " << _.obsel0);
-      throw RPS_RUNTIME_ERROR_OUT("bad closure#0 for install_2_methods of class " << _.obclass << " selector#0 " << _.obsel0);
+      RPS_WARNOUT("bad closure#0 for install_2_methods of class " << _f.obclass << " selector#0 " << _f.obsel0);
+      throw RPS_RUNTIME_ERROR_OUT("bad closure#0 for install_2_methods of class " << _f.obclass << " selector#0 " << _f.obsel0);
     }
-  if (_.closv1.is_empty() || !_.closv1.is_closure())
+  if (_f.closv1.is_empty() || !_f.closv1.is_closure())
     {
-      RPS_WARNOUT("bad closure#1 for install_2_methods of class " << _.obclass << " selector#1 " << _.obsel1);
-      throw RPS_RUNTIME_ERROR_OUT("bad closure#1 for install_2_methods of class " << _.obclass << " selector#1 " << _.obsel1);
+      RPS_WARNOUT("bad closure#1 for install_2_methods of class " << _f.obclass << " selector#1 " << _f.obsel1);
+      throw RPS_RUNTIME_ERROR_OUT("bad closure#1 for install_2_methods of class " << _f.obclass << " selector#1 " << _f.obsel1);
     }
-  paylcl->put_own_method(_.obsel0, _.closv0);
-  paylcl->put_own_method(_.obsel1, _.closv1);
+  paylcl->put_own_method(_f.obsel0, _f.closv0);
+  paylcl->put_own_method(_f.obsel1, _f.closv1);
 } // end Rps_ObjectRef::install_own_2_methods
 
 
@@ -2107,58 +2112,58 @@ Rps_ObjectRef::install_own_3_methods(Rps_CallFrame*callerframe, Rps_ObjectRef ob
                  Rps_ObjectRef obsel2; // the selector #2
                  Rps_Value closv2; // the closure #2
                 );
-  _.obclass = *this;
-  _.obsel0 = obsel0arg;
-  _.closv0 = clos0arg;
-  _.obsel1 = obsel1arg;
-  _.closv1 = clos1arg;
-  _.obsel2 = obsel2arg;
-  _.closv2 = clos2arg;
-  if (_.obclass.is_empty())
+  _f.obclass = *this;
+  _f.obsel0 = obsel0arg;
+  _f.closv0 = clos0arg;
+  _f.obsel1 = obsel1arg;
+  _f.closv1 = clos1arg;
+  _f.obsel2 = obsel2arg;
+  _f.closv2 = clos2arg;
+  if (_f.obclass.is_empty())
     {
-      RPS_WARNOUT("empty class for install_own_3_methods of selector#0 " << _.obsel0);
-      throw RPS_RUNTIME_ERROR_OUT("empty class for install_own_3_methods of selector#0 " << _.obsel0);
+      RPS_WARNOUT("empty class for install_own_3_methods of selector#0 " << _f.obsel0);
+      throw RPS_RUNTIME_ERROR_OUT("empty class for install_own_3_methods of selector#0 " << _f.obsel0);
     }
-  std::unique_lock<std::recursive_mutex> guclass (*(_.obclass->objmtxptr()));
-  if (_.obsel0.is_empty())
+  std::unique_lock<std::recursive_mutex> guclass (*(_f.obclass->objmtxptr()));
+  if (_f.obsel0.is_empty())
     {
-      RPS_WARNOUT("empty selector#0 for install_own_3_methods of class " << _.obclass);
-      throw RPS_RUNTIME_ERROR_OUT("empty selector#0 for install_own_3_methods of class " << _.obclass);
+      RPS_WARNOUT("empty selector#0 for install_own_3_methods of class " << _f.obclass);
+      throw RPS_RUNTIME_ERROR_OUT("empty selector#0 for install_own_3_methods of class " << _f.obclass);
     }
-  if (_.obsel1.is_empty())
+  if (_f.obsel1.is_empty())
     {
-      RPS_WARNOUT("empty selector#1 for install_own_3_methods of class " << _.obclass);
-      throw RPS_RUNTIME_ERROR_OUT("empty selector#1 for install_own_3_methods of class " << _.obclass);
+      RPS_WARNOUT("empty selector#1 for install_own_3_methods of class " << _f.obclass);
+      throw RPS_RUNTIME_ERROR_OUT("empty selector#1 for install_own_3_methods of class " << _f.obclass);
     }
-  if (_.obsel2.is_empty())
+  if (_f.obsel2.is_empty())
     {
-      RPS_WARNOUT("empty selector#2 for install_own_3_methods of class " << _.obclass);
-      throw RPS_RUNTIME_ERROR_OUT("empty selector#2 for install_own_3_methods of class " << _.obclass);
+      RPS_WARNOUT("empty selector#2 for install_own_3_methods of class " << _f.obclass);
+      throw RPS_RUNTIME_ERROR_OUT("empty selector#2 for install_own_3_methods of class " << _f.obclass);
     }
-  auto paylcl = _.obclass->get_classinfo_payload();
+  auto paylcl = _f.obclass->get_classinfo_payload();
   if (!paylcl)
     {
-      RPS_WARNOUT("bad class for install_own_3_methods of class " << _.obclass << " selector#0 " << _.obsel0 << ", selector#1 " << _.obsel1 << ", selector#2 " << _.obsel2);
-      throw RPS_RUNTIME_ERROR_OUT("bad class for install_own_3_methods of class " << _.obclass << " selector#0 " << _.obsel0 << ", selector#1 " << _.obsel1 << ", selector#2 " << _.obsel2);
+      RPS_WARNOUT("bad class for install_own_3_methods of class " << _f.obclass << " selector#0 " << _f.obsel0 << ", selector#1 " << _f.obsel1 << ", selector#2 " << _f.obsel2);
+      throw RPS_RUNTIME_ERROR_OUT("bad class for install_own_3_methods of class " << _f.obclass << " selector#0 " << _f.obsel0 << ", selector#1 " << _f.obsel1 << ", selector#2 " << _f.obsel2);
     }
-  if (_.closv0.is_empty() || !_.closv0.is_closure())
+  if (_f.closv0.is_empty() || !_f.closv0.is_closure())
     {
-      RPS_WARNOUT("bad closure#0 for install_own_3_methods of class " << _.obclass << " selector#0 " << _.obsel0);
-      throw RPS_RUNTIME_ERROR_OUT("bad closure#0 for install_own_3_methods of class " << _.obclass << " selector#0 " << _.obsel0);
+      RPS_WARNOUT("bad closure#0 for install_own_3_methods of class " << _f.obclass << " selector#0 " << _f.obsel0);
+      throw RPS_RUNTIME_ERROR_OUT("bad closure#0 for install_own_3_methods of class " << _f.obclass << " selector#0 " << _f.obsel0);
     }
-  if (_.closv1.is_empty() || !_.closv1.is_closure())
+  if (_f.closv1.is_empty() || !_f.closv1.is_closure())
     {
-      RPS_WARNOUT("bad closure#1 for install_own_3_methods of class " << _.obclass << " selector#1 " << _.obsel1);
-      throw RPS_RUNTIME_ERROR_OUT("bad closure#1 for install_own_3_methods of class " << _.obclass << " selector#1 " << _.obsel1);
+      RPS_WARNOUT("bad closure#1 for install_own_3_methods of class " << _f.obclass << " selector#1 " << _f.obsel1);
+      throw RPS_RUNTIME_ERROR_OUT("bad closure#1 for install_own_3_methods of class " << _f.obclass << " selector#1 " << _f.obsel1);
     }
-  if (_.closv2.is_empty() || !_.closv2.is_closure())
+  if (_f.closv2.is_empty() || !_f.closv2.is_closure())
     {
-      RPS_WARNOUT("bad closure#2 for install_own_3_methods of class " << _.obclass << " selector#2 " << _.obsel1);
-      throw RPS_RUNTIME_ERROR_OUT("bad closure#1 for install_own_3_methods of class " << _.obclass << " selector#1 " << _.obsel1);
+      RPS_WARNOUT("bad closure#2 for install_own_3_methods of class " << _f.obclass << " selector#2 " << _f.obsel1);
+      throw RPS_RUNTIME_ERROR_OUT("bad closure#1 for install_own_3_methods of class " << _f.obclass << " selector#1 " << _f.obsel1);
     }
-  paylcl->put_own_method(_.obsel0, _.closv0);
-  paylcl->put_own_method(_.obsel1, _.closv1);
-  paylcl->put_own_method(_.obsel2, _.closv2);
+  paylcl->put_own_method(_f.obsel0, _f.closv0);
+  paylcl->put_own_method(_f.obsel1, _f.closv1);
+  paylcl->put_own_method(_f.obsel2, _f.closv2);
 } // end Rps_ObjectRef::install_own_3_methods
 
 

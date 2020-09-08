@@ -1,0 +1,16 @@
+*.aux
+*.bbl
+*.bcf
+*.log
+*.blg
+*.pdf
+*.xml
+
+generated-iccait2021-gitid.tex
+spiral-stairs.eps
+svg-inkscape/
+
+generated-iccait2021*.tex
+
+# spurious file
+*.svg.eps

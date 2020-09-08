@@ -73,7 +73,9 @@
 #include <cstring>
 #include <cmath>
 #include <cstdio>
+#include <cstdarg>
 #include <clocale>
+#include <filesystem>
 
 #include <argp.h>
 #include <ctype.h>
@@ -91,15 +93,14 @@
 #include <pthread.h>
 #include <sys/personality.h>
 
+// http://man7.org/linux/man-pages/man3/gnu_get_libc_version.3.html
+#include <gnu/libc-version.h>
 
 
 // for programmatic C++ name demangling, see also
 // https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/cxxabi.h
 #include <cxxabi.h>
 
-#include <QObject>
-#include <QString>
-#include <QPointer>
 
 
 // JsonCPP https://github.com/open-source-parsers/jsoncpp
@@ -137,6 +138,7 @@ extern "C" const char rps_md5sum[];
 extern "C" const char*const rps_files[];
 extern "C" const char rps_makefile[];
 extern "C" const char*const rps_subdirectories[];
+extern "C" const char rps_cxx_compiler_version[];
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -197,11 +199,14 @@ public:
   }
 };				// end class RpsColophon
 
-// when set, no GUI is running
+// when set, no GUI or web service is running
 extern "C" bool rps_batch;
 
 /// https://en.wikipedia.org/wiki/Address_space_layout_randomization
 extern "C" bool rps_disable_aslr;
+
+extern "C" bool rps_run_web;
+extern "C" bool rps_run_repl;
 
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_common_state;
@@ -221,12 +226,15 @@ extern "C" int rps_nbjobs;
 extern "C" bool rps_stdout_istty;
 extern "C" bool rps_stderr_istty;
 
-/// is the current thread the main GUI Qt thread?
-extern "C" bool rps_is_main_gui_thread(void);
+/// is the current thread the main thread?
+extern "C" bool rps_is_main_thread(void);
 
 /// the refpersys homedir, e.g. $REFPERSYS_HOME or $HOME or given with
 /// --refpersys-home <dir>
 extern "C" const char* rps_homedir(void);
+
+/// the refpersys load directory
+extern "C" const std::string& rps_get_loaddir(void);
 
 extern "C" void rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string linprefix, std::string linsuffix);
 
@@ -244,7 +252,7 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 #define RPS_FATAL(Fmt,...) RPS_FATAL_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
 #define RPS_FATALOUT_AT_BIS(Fil,Lin,...) do {	\
-    std::clog << "** RefPerSys FATAL! "		\
+    std::cerr << "** RefPerSys FATAL! "		\
 	      << (Fil) << ":" << Lin << ":: "	\
 	      << __VA_ARGS__ << std::endl;	\
     rps_fatal_stop_at (Fil,Lin); } while(0)
@@ -280,12 +288,6 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 #define RPS_WARNOUT(...) RPS_WARNOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
 
 
-///////////////////////////////////////////////////////////////////////////////
-// DEBUGGING MACROS
-// Adapted from MELT Monitor project
-// https://github.com/bstarynk/melt-monitor/blob/master/meltmoni.hh#L278
-///////////////////////////////////////////////////////////////////////////////
-
 
 static inline pid_t rps_thread_id(void)
 {
@@ -310,6 +312,46 @@ extern "C" bool rps_without_terminal_escape;
 #define RPS_TERMINAL_BLINK_ESCAPE \
   (rps_without_terminal_escape?"":"\033[5m")
 
+
+
+/////////////////////////////////////////////////////// PLUGINS AFTER LOAD
+
+struct Rps_Plugin {
+  std::string plugin_name;
+  void* plugin_dlh;
+  Rps_Plugin (const char*name, void*dlh)
+    : plugin_name(name), plugin_dlh(dlh) {};
+};
+#define RPS_PLUGIN_INIT_NAME "rps_do_plugin"
+typedef void rps_plugin_init_sig_t(const Rps_Plugin*curplugin);
+extern "C" rps_plugin_init_sig_t rps_do_plugin;
+////////////////////////////////////////////////////////////////
+
+struct Rps_Status {
+  // sizes in megabytes
+  long prog_sizemb_stat;
+  long rss_sizemb_stat;
+  long shared_sizemb_stat;
+  // time in seconds;
+  float cputime_stat;
+  float elapsedtime_stat;
+  Rps_Status() : prog_sizemb_stat(0), rss_sizemb_stat(0),
+		 shared_sizemb_stat(0), cputime_stat(0.0), elapsedtime_stat(0.0) {};
+  static const Rps_Status get(void);
+  void output(std::ostream&out) const;
+};				// end struct Rps_Status
+
+inline std::ostream& operator << (std::ostream&out, const Rps_Status& rst) {
+  rst.output(out);
+  return out;
+};				// end operator << for Rps_Status
+
+///////////////////////////////////////////////////////////////////////////////
+// DEBUGGING MACROS
+// Adapted from MELT Monitor project
+// https://github.com/bstarynk/melt-monitor/blob/master/meltmoni.hh#L278
+///////////////////////////////////////////////////////////////////////////////
+
 extern "C" void rps_set_debug(const std::string &deblev);
 
 /// keep the debug options in alphabetical order
@@ -318,13 +360,14 @@ extern "C" void rps_set_debug(const std::string &deblev);
   dbgmacro(DUMP)                    \
   dbgmacro(GARBAGE_COLLECTOR)       \
   dbgmacro(GENERATED_CODE)          \
-  dbgmacro(GUI)                     \
+  dbgmacro(WEB)                     \
   dbgmacro(LOAD)                    \
   dbgmacro(LOWREP)                  \
   dbgmacro(MISC)                    \
   dbgmacro(MSGSEND)                 \
   dbgmacro(PARSE)                   \
   dbgmacro(PARSE_STRING)            \
+  dbgmacro(REPL)                    \
   /*end RPS_DEBUG_OPTIONS*/
 
 #define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
@@ -341,6 +384,38 @@ enum Rps_Debug
 };
 
 
+////////////////////////////////////////////////////////////////
+///// parsing program options
+enum rps_progoption_en
+{
+  RPSPROGOPT__NONE=0,
+  RPSPROGOPT_LOADDIR='L',
+  RPSPROGOPT_DEBUG='d',
+  RPSPROGOPT_BATCH='B',
+  RPSPROGOPT_JOBS='j',
+  RPSPROGOPT_DUMP='D',
+
+  RPSPROGOPT_HOMEDIR=1000,
+  RPSPROGOPT_RANDOMOID,
+  RPSPROGOPT_TYPEINFO,
+  RPSPROGOPT_SYSLOG,
+  RPSPROGOPT_NOTERMINAL,
+  RPSPROGOPT_NOASLR,
+  RPSPROGOPT_REPL,
+  RPSPROGOPT_RUN_AFTER_LOAD,
+  RPSPROGOPT_PLUGIN_AFTER_LOAD,
+  RPSPROGOPT_VERSION,
+};
+
+
+/// if state is RPS_EMPTYSLOT no serious side-effect happens, since
+/// FLTK is parsing options a second time.
+extern "C" error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
+extern "C" struct argp_option rps_progoptions[];
+
+
+
+////////////////////////////////////////////////////////////////
 extern "C" bool rps_syslog_enabled;
 
 extern "C" unsigned rps_debug_flags;
@@ -352,7 +427,7 @@ extern "C" unsigned rps_debug_flags;
 
 #define RPS_DEBUG_ENABLED(dbgopt) (rps_debug_flags & (1 << RPS_DEBUG_##dbgopt))
 
-
+/// debug print to stderr....; if fline is negative, print a newline before....
 void 
 rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt, 
                     const char *fmt, ...) 
@@ -375,6 +450,9 @@ while (0)
 #define RPS_DEBUG_PRINTF(dbgopt, fmt, ...) \
   RPS_DEBUG_PRINTF_AT_BIS(__FILE__, __LINE__, dbgopt, fmt, ##__VA_ARGS__)
 
+#define RPS_DEBUG_NLPRINTF(dbgopt, fmt, ...) \
+  RPS_DEBUG_PRINTF_AT_BIS(__FILE__, -__LINE__, dbgopt, fmt, ##__VA_ARGS__)
+
 
 #define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)              \
 do                                                                  \
@@ -395,6 +473,26 @@ while (0)
 /// example of usage: RPS_DEBUG_LOG(MISC, "x=" << x) related to RPS_DEBUG_MISC
 #define RPS_DEBUG_LOG(dbgopt, logmsg) \
   RPS_DEBUG_LOG_AT_BIS(__FILE__, __LINE__, dbgopt, logmsg)
+
+#define RPS_DEBUGNL_LOG_AT(fname, fline, dbgopt, logmsg)        \
+  do { /*in RPS_DEBUGNL_LOG_AT*/                                \
+    if (RPS_DEBUG_ENABLED(dbgopt))                              \
+      {                                                         \
+        std::ostringstream _logstream_##fline;                  \
+        _logstream_##fline << logmsg << std::flush;             \
+        rps_debug_printf_at(fname, -fline, RPS_DEBUG_##dbgopt,  \
+                            "%s",                               \
+                            _logstream_##fline.str().c_str());  \
+      }                                                         \
+  }                                                             \
+while (0)
+
+#define RPS_DEBUGNL_LOG_AT_BIS(fname, fline, dbgopt, logmsg)  \
+   RPS_DEBUGNL_LOG_AT(fname, fline, dbgopt, logmsg)
+
+/// example of usage: RPS_DEBUG_LOG(MISC, "x=" << x) related to RPS_DEBUG_MISC
+#define RPS_DEBUGNL_LOG(dbgopt, logmsg) \
+  RPS_DEBUGNL_LOG_AT_BIS(__FILE__, __LINE__, dbgopt, logmsg)
 
 
 //////////////// inform
@@ -572,21 +670,22 @@ class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
 class Rps_JsonZone; // memory for Json values
-class Rps_QtPtrZone;
-class Rps_QtPtrValue;
 class Rps_GarbageCollector;
 class Rps_Payload;
 class Rps_PayloadSymbol;
 class Rps_PayloadClassInfo;
+class Rps_PayloadInputCommand;
+class Rps_PayloadOutputText;
 class Rps_Loader;
 class Rps_Dumper;
-class Rps_CallFrame;
+class Rps_ProtoCallFrame;
+class RpsGui_Window; // see fltkhead_rps.hh
 class Rps_Value;
 class Rps_Id;
 
 
 typedef uint32_t Rps_HashInt;
-
+typedef Rps_ProtoCallFrame Rps_CallFrame;
 
 ////////////////////////////////////////////////////////////////
 class Rps_ObjectRef // reference to objects, per C++ rule of five.
@@ -725,6 +824,7 @@ public:
   // find an object with a given oid or name string
   static Rps_ObjectRef find_object_by_string(Rps_CallFrame*callerframe,  const std::string& str, bool dontfail=false);
   static Rps_ObjectRef find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, bool dontfail=false);
+  static Rps_ObjectRef really_find_object_by_oid(const Rps_Id& oid);
   // create a class of given super class and name
   static Rps_ObjectRef make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef superclassob, std::string name);
   // create a symbol of given name
@@ -752,7 +852,7 @@ public:
   // if this is a class-object, install a method of selector obsel and
   // closure closv; otherwise raise an exception; and likewise for two
   // or three selectors. The callerframe is not really useful today,
-  // but might be useful later...
+  // but might be useful later...<
   // NB: we might call these from the temporary plugin window.
   void install_own_method(Rps_CallFrame*callerframe, Rps_ObjectRef obsel, Rps_Value closv);
   // likewise, but lock this class only once!
@@ -798,7 +898,9 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
-  PaylQt = -11, // for Rps_PayloadQt<>
+  PaylInputCommand = -13, // for input command payload, in transient instances of rps_command_textedit
+  PaylOutputText = -12, // for output text payload, in transient instances of rps_output_textedit
+  PaylWindow = -11, // for window payload, in transient instances of rps_window
   PaylSymbol = -10, // symbol payload
   PaylSpace = -9, // space payload
   PaylStrBuf = -8, // mutable string buffer
@@ -828,7 +930,6 @@ enum class Rps_Type : std::int16_t
   Object,
   Closure,
   Instance,
-  QtPtr,
   Json,
 };
 
@@ -916,7 +1017,6 @@ public:
   inline bool is_null() const;
   inline bool is_empty() const;
   inline bool is_json() const;
-  inline bool is_qtptr() const;
   operator bool () const
   {
     return !is_empty();
@@ -936,8 +1036,6 @@ public:
   inline const Rps_ClosureZone* as_closure() const;
   inline const Rps_Double* as_boxed_double() const;
   inline const Rps_JsonZone* as_json() const;
-  inline const Rps_QtPtrZone* as_boxed_qtptr() const;
-  inline const QPointer<QObject> as_qtptr() const;
   inline double as_double() const;
   inline const std::string as_cppstring() const;
   inline const char* as_cstring() const;
@@ -957,7 +1055,6 @@ public:
   inline const Rps_InstanceZone* to_instance(const Rps_InstanceZone*definst =nullptr) const;
   inline const Rps_String* to_string( const Rps_String*defstr
                                       = nullptr) const;
-  inline const QObject*to_qtptr(const QObject*defqt= nullptr) const;
   inline const std::string to_cppstring(std::string defstr= "") const;
   inline Rps_HashInt valhash() const noexcept;
   inline void output(std::ostream&out, unsigned depth=0) const;
@@ -1107,7 +1204,6 @@ public:
   inline Rps_StringValue(const std::string str);
   inline Rps_StringValue(const Rps_Value val);
   inline Rps_StringValue(const Rps_String* strv);
-  Rps_StringValue(const QString& qstr);
   inline Rps_StringValue(std::nullptr_t);
 }; // end class Rps_StringValue
 
@@ -1134,22 +1230,6 @@ public:
   Rps_JsonValue(std::nullptr_t)
     : Rps_JsonValue(Json::Value(Json::nullValue)) {};
 }; // end class Rps_JsonValue
-
-////////////////
-class Rps_QtPtrValue : public Rps_Value
-{
-public:
-    inline Rps_QtPtrValue(const QPointer<QObject> qptrval);
-  inline Rps_QtPtrValue(Rps_Value val);
-    Rps_QtPtrValue(const QObject* qo)
-    {
-        Rps_QtPtrValue(QPointer<QObject>(const_cast<QObject*>(qo)));
-    };
-    Rps_QtPtrValue(std::nullptr_t)
-      : Rps_QtPtrValue(QPointer<QObject>(nullptr))
-    { }
-};				// end class Rps_QtPtrValue
-
 
 struct Rps_SetTag
 {
@@ -1287,6 +1367,18 @@ class Rps_Random
     _rand_remainbits -= 8;
     return res;
   };
+  uint16_t generate_quickly_16bits()
+  {
+    if (RPS_UNLIKELY(_rand_remainbits < 8))
+      {
+        _rand_advance = generate_32u();
+        _rand_remainbits = 32;
+      }
+    uint8_t res = _rand_advance & 0xffff;
+    _rand_advance = _rand_advance>>16;
+    _rand_remainbits -= 16;
+    return res;
+  };
 public:
   static void start_deterministic(long seed); // to be called from main
   static uint32_t random_32u(void)
@@ -1309,8 +1401,33 @@ public:
   {
     return _rand_thr_.generate_quickly_8bits();
   };
+  static uint16_t random_quickly_16bits()
+  {
+    return _rand_thr_.generate_quickly_16bits();
+  };
 };				// end class Rps_Random
 
+
+class Rps_Do_Output
+{
+  std::function<void(std::ostream&)> _outfun;
+public:
+  Rps_Do_Output(std::function<void(std::ostream&)> f) : _outfun(f) {};
+  ~Rps_Do_Output() = default;
+  Rps_Do_Output(const Rps_Do_Output&) = delete;
+  Rps_Do_Output(Rps_Do_Output&&) = delete;
+  void out(std::ostream&out) const
+  {
+    _outfun(out);
+  };
+};
+
+inline
+std::ostream& operator << (std::ostream&out, const Rps_Do_Output&d)
+{
+  d.out(out);
+  return out;
+};
 
 
 ////////////////////////////////////////////////////////////////
@@ -1371,6 +1488,8 @@ private:
   std::uint32_t backtr_magic;
   mutable enum Todo backtr_todo;
   mutable bool backtr_ontty;
+  const bool backtr_mainthread;
+  mutable bool backtr_gotlast;
   mutable std::variant<std::nullptr_t            // for Kind::None
 #define Rps_BACKTRACER_VariantXm(Mac,X) , Mac##_t
   RPS_BACKTRACE_XMACRO(Rps_BACKTRACER_VariantXm)
@@ -1395,6 +1514,7 @@ public:
   Kind bkind() const { return (Kind)backtr_variant.index(); };
   const std::string bkindname() const;
   std::ostream* boutput() const;
+  bool bmainthread() const { return backtr_mainthread; };
   /// 
   virtual void output(std::ostream&outs);
   virtual void print(FILE*outf);
@@ -1425,7 +1545,7 @@ std::ostream& operator << (std::ostream& out, const Rps_Backtracer& rpb) {
 
 // can appear in RPS_WARNOUT etc...
 #define RPS_FULL_BACKTRACE_HERE(Skip,Name) \
-  Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},__FILE__,__LINE__,(Skip),(Name),&std::clog)
+  Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},__FILE__,__LINE__,(Skip),(Name),&std::cerr)
 
 // can appear in RPS_DEBUG_LOG etc...
 #define RPS_DEBUG_BACKTRACE_HERE(Skip,Name) \
@@ -1436,11 +1556,13 @@ extern "C" void rps_garbage_collect(std::function<void(Rps_GarbageCollector*)>* 
 class Rps_GarbageCollector
 {
   friend void rps_garbage_collect(std::function<void(Rps_GarbageCollector*)>* fun);
-  static std::atomic<Rps_GarbageCollector*> gc_this;
-  static std::atomic<uint64_t> gc_count;
+  static unsigned constexpr _gc_magicnum_ = 0xdae21691;  // 3672250001
+  static std::atomic<Rps_GarbageCollector*> gc_this_;
+  static std::atomic<uint64_t> gc_count_;
   friend class Rps_QuasiZone;
   std::mutex gc_mtx;
   std::atomic<bool> gc_running;
+  unsigned gc_magic;
   const std::function<void(Rps_GarbageCollector*)> gc_rootmarkers;
   std::deque<Rps_ObjectRef> gc_obscanque;
   uint64_t gc_nbscan;
@@ -1485,6 +1607,7 @@ public:
   inline void mark_root_value(Rps_Value val);
   inline void mark_root_objectref(Rps_ObjectRef obr);
   inline void mark_call_stack(Rps_CallFrame*topframe);
+  inline bool is_valid_garbcoll() const { return gc_magic == _gc_magicnum_; };
 };				// end class Rps_GarbageCollector
 
 ////////////////////////////////////////////////////// quasi zones
@@ -1492,7 +1615,7 @@ public:
 class Rps_TypedZone
 {
   friend class Rps_GarbageCollector;
-  friend class Rps_CallFrame;
+  friend class Rps_ProtoCallFrame;
 protected:
   const Rps_Type qz_type;
   volatile mutable std::atomic_uint16_t qz_gcinfo;
@@ -1700,7 +1823,6 @@ public:
   virtual void dump_scan(Rps_Dumper*, unsigned) const {};
   virtual Json::Value dump_json(Rps_Dumper*) const;
   static const Rps_String* make(const char*cstr, int len= -1);
-  static const Rps_String* make(const QString&qs);
   static inline const Rps_String* make(const std::string&s);
   const char*cstr() const
   {
@@ -1896,6 +2018,7 @@ public:
   {
     return &ob_mtx;
   };
+  void gui_window_reset_class(RpsGui_Window*win);
   void touch_now(void) {
     ob_mtime.store(rps_wallclock_real_time());
   };
@@ -1962,7 +2085,7 @@ public:
   Rps_Value instance_from_components(Rps_CallFrame*stkf, Rps_ObjectRef obinstclass) const;
   // get atomic fields
   inline double get_mtime(void) const;
-  inline rps_applyingfun_t*get_applyingfun(const Rps_ClosureValue&closv) const
+  inline rps_applyingfun_t*get_applyingfun(const Rps_ClosureValue&) const
   {
     return ob_applyingfun.load();
   };
@@ -2134,7 +2257,7 @@ class Rps_SeqObjRef : public Rps_LazyHashedZoneValue
   Rps_ObjectRef _seqob[RPS_FLEXIBLE_DIM+1];
   Rps_SeqObjRef(unsigned len) : Rps_LazyHashedZoneValue(seqty), _seqlen(len)
   {
-    memset (_seqob, 0, sizeof(Rps_ObjectRef)*len);
+    memset ((void*)_seqob, 0, sizeof(Rps_ObjectRef)*len);
   };
   Rps_ObjectRef*raw_data()
   {
@@ -2318,7 +2441,7 @@ class Rps_TreeZone : public Rps_LazyHashedZoneValue
       _treemetarank(0), _treemetaob(nullptr),
       _treeconnob(obr)
   {
-    memset (_treesons, 0, sizeof(Rps_Value)*len);
+    memset ((void*)_treesons, 0, sizeof(Rps_Value)*len);
   };
   Rps_Value*raw_data_sons()
   {
@@ -2632,105 +2755,62 @@ public:
 ////////////////////////////////////////////////////////////////
 
 
-class Rps_QtPtrZone : public Rps_LazyHashedZoneValue
-{
-private:
-  /// we count the number of Rps_QtPtrZone to give a unique rank to
-  /// each of them; that rank is used for hashing and compare.
-  static std::atomic<unsigned> qtptr_count;
-  friend Rps_QtPtrZone*
-  Rps_QuasiZone::rps_allocate1<Rps_QtPtrZone, const QPointer<QObject>>
-                 (const QPointer<QObject>);
-
-  const QPointer<QObject> _qptr_val;
-  const unsigned _qptr_rank; // the unique rank
-
-protected:
-  inline Rps_QtPtrZone(const QPointer<QObject> qptrval);
-
-  virtual Rps_HashInt compute_hash(void) const;
-
-  virtual Rps_ObjectRef compute_class(Rps_CallFrame* stkf) const;
-
-  virtual void gc_mark(Rps_GarbageCollector&, unsigned) const
-  { }
-
-  virtual void dump_scan(Rps_Dumper*, unsigned) const 
-  { };
-
-  virtual Json::Value dump_json(Rps_Dumper*) const
-  {
-      return Json::Value::null;
-  }
-
-public:
-  const QPointer<QObject> qptr() const
-  {
-      return _qptr_val;
-  }
-  unsigned rank() const { return _qptr_rank; };
-  ///
-  virtual std::uint32_t wordsize() const
-  {
-    // as usual, we round up the 64 bits word size ....
-      return (sizeof (*this) + sizeof (void*) - 1) / sizeof (void*);
-  }
-
-  virtual void val_output(std::ostream& ostr, unsigned depth) const;
-
-  virtual bool equal(const Rps_ZoneValue& zv) const;
-
-  virtual bool less(const Rps_ZoneValue& zv) const;
-
-  static Rps_QtPtrZone* make(const QPointer<QObject> qptrval);
-};
-
-
+class Rps_ProtoCallFrame;
+typedef Rps_ProtoCallFrame Rps_CallFrame;
+typedef void Rps_CallFrameOutputSig_t(std::ostream&, const Rps_ProtoCallFrame*);
 ////////////////////////////////////////////////////////////////
-
-class Rps_CallFrame : public Rps_TypedZone
+//// the common superclass of our call frames
+class Rps_ProtoCallFrame : public Rps_TypedZone
 {
+protected:
   const unsigned cfram_size;
   Rps_ObjectRef cfram_descr;
   Rps_CallFrame* cfram_prev;
   Rps_Value cfram_state;
+  intptr_t cfram_rankstate;
   Rps_ClosureValue cfram_clos; // the invoking closure, if any
+  intptr_t* cfram_xtradata;
+  std::atomic<Rps_CallFrameOutputSig_t*> cfram_outputter;
   std::function<void(Rps_GarbageCollector*)> cfram_marker;
-  void* cfram_data[RPS_FLEXIBLE_DIM]; // a flexible array member in disguise
 public:
-  Rps_CallFrame(unsigned size, Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
+  static constexpr unsigned _cfram_max_size_ = 1024;
+  static std::atomic<int> _cfram_output_depth_;
+  Rps_ProtoCallFrame(unsigned size, void*xdata, Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
     : Rps_TypedZone(Rps_Type::CallFrame),
       cfram_size(size),
       cfram_descr(obdescr),
       cfram_prev(prev),
       cfram_state(nullptr),
+      cfram_rankstate(0),
       cfram_clos(nullptr),
-      cfram_marker(),
-      cfram_data()
-  {
-    // we want flexible array members, see
-    // https://en.wikipedia.org/wiki/Flexible_array_member but C++17
-    // don't have them ....
-    // see https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Pragmas.html
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
-    if (size>0)
-      memset((void*)&cfram_data, 0, size*sizeof(void*));
-#pragma GCC diagnostic pop
-  };
-  ~Rps_CallFrame()
-  {
+      cfram_xtradata((intptr_t*) xdata),
+      cfram_outputter(nullptr),
+      cfram_marker() {
+    // ensure that if some size is given, the xdata is a suitably
+    // aligned pointer...
+    assert (size == 0
+	    || (xdata != nullptr
+		&& (((intptr_t)xdata & (alignof(intptr_t)-1)) == 0)));
+    assert (size < _cfram_max_size_);
+  }; // end Rps_ProtoCallFrame constructor
+  ~Rps_ProtoCallFrame() {
+    if (cfram_size > 0) {
+      assert (cfram_xtradata != nullptr);
+      memset ((void*)cfram_xtradata, 0, cfram_size*sizeof(intptr_t));
+      cfram_xtradata = nullptr;
+    }
+    else
+      assert (cfram_xtradata == nullptr);
     cfram_descr = nullptr;
-    cfram_state = nullptr;
     cfram_prev = nullptr;
+    cfram_state = nullptr;
+    cfram_rankstate = 0;
     cfram_clos = nullptr;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
-    // technically this is an undefined behavior. Pragmatically it should work as we want.
-    if (cfram_size > 0)
-      __builtin_memset((void*)&cfram_data, 0, cfram_size*sizeof(void*));
-#pragma GCC diagnostic pop
-  };
+  }; // end Rps_ProtoCallFrame destructor
+  void set_outputter(nullptr_t) {  cfram_outputter.store(nullptr); };
+  void clear_outputter(void) { cfram_outputter.store(nullptr); };
+  void set_outputter(Rps_CallFrameOutputSig_t*outputter=nullptr)
+  { cfram_outputter.store(outputter);};
   void gc_mark_frame(Rps_GarbageCollector* gc);
   void set_closure(Rps_ClosureValue clos)
   {
@@ -2753,24 +2833,97 @@ public:
   {
     cfram_marker = nullptr;
   };
-};				// end class Rps_CallFrame
+  bool is_good_call_frame() const {
+    assert (cfram_size <  _cfram_max_size_);
+    return stored_type() == Rps_Type::CallFrame;
+  };
+  static bool is_good_call_frame(const Rps_CallFrame*cf) { return cf==nullptr||cf->is_good_call_frame(); };
+  Rps_ObjectRef call_frame_descriptor() const { return cfram_descr; };
+  Rps_Value call_frame_state() const { return cfram_state; };
+  Rps_ClosureValue call_frame_closure() const { return cfram_clos; };
+  void output(std::ostream&out, int depth=0) const;
+};				// end class Rps_ProtoCallFrame
+
+class Rps_ShowCallFrame {
+  const Rps_ProtoCallFrame* _callframe;
+public:
+  Rps_ShowCallFrame(const Rps_ProtoCallFrame*cf = nullptr) : _callframe(cf) {};
+  ~Rps_ShowCallFrame() { _callframe=nullptr; };
+  void output(std::ostream&out) const {
+    if (_callframe)
+      _callframe->output(out);
+    else
+      out << "[*nullrpsframe*]" << std::flush;
+  }
+};				// end class Rps_ShowCallFrame
+
+inline std::ostream&
+operator << (std::ostream&out, Rps_ProtoCallFrame*fr)
+{
+  if (fr)
+    fr->output(out);
+  else
+    out << "[*nullrpsframe*]" << std::flush;
+  return out;
+} // end operator << (std::ostream, Rps_ProtoCallFrame*)
+
+inline std::ostream&
+operator << (std::ostream&out, Rps_ShowCallFrame scf)
+{
+  scf.output(out);
+  return out;
+};				// end  operator << (std::ostream&, Rps_ShowCallFrame)
+
+template <unsigned WordSize> class Rps_SizedCallFrame;
+template <typename FrameFields> class Rps_FieldedCallFrame;
+
+template <unsigned WordSize> class Rps_SizedCallFrame
+  : public Rps_ProtoCallFrame {
+  void* cfram_word_data[WordSize];
+public:
+  typedef Rps_SizedCallFrame<WordSize> This_frame;
+   Rps_SizedCallFrame<WordSize> (Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
+    :  Rps_ProtoCallFrame(WordSize, cfram_word_data, obdescr, prev) {
+  };
+  ~Rps_SizedCallFrame<WordSize>() {
+  };
+};				// end of Rps_SizedCallFrame template
+
+
+template <typename FrameFields> class  Rps_FieldedCallFrame :
+public Rps_ProtoCallFrame {
+  FrameFields cfram_fields;
+public:
+  typedef  Rps_FieldedCallFrame<FrameFields> This_frame;
+  FrameFields& fields()  { return cfram_fields; };
+  FrameFields* fieldsptr() { return &cfram_fields; };
+  const FrameFields& constfields() const { return cfram_fields; };
+  Rps_FieldedCallFrame<FrameFields>  (Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
+    :  Rps_ProtoCallFrame(sizeof(FrameFields)/sizeof(void*), &cfram_fields, obdescr, prev) {
+  };
+  ~Rps_FieldedCallFrame<FrameFields> () {
+  };
+};				// end of Rps_FieldedCallFrame template
 
 
 
 #define RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,...)	\
-  class Rps_FrameAt##Lin : public Rps_CallFrame {	\
-  struct FrameData##Lin {__VA_ARGS__; };		\
+  struct RpsFrameData##Lin {__VA_ARGS__; };		\
+  typedef						\
+  Rps_FieldedCallFrame<RpsFrameData##Lin>		\
+   Rps_FldCallFrame##Lin;				\
+  class Rps_FrameAt##Lin :				\
+    public Rps_FldCallFrame##Lin {			\
 public:							\
  Rps_FrameAt##Lin(Rps_ObjectRef obd##Lin,		\
 		  Rps_CallFrame* prev##Lin) :		\
-       Rps_CallFrame( (sizeof(FrameData##Lin)		\
-			     + sizeof(void*) - 1)      	\
-			    / sizeof(void*),		\
-			    obd##Lin, prev##Lin)	\
+ Rps_FldCallFrame##Lin(obd##Lin, prev##Lin)		\
     { };						\
-  __VA_ARGS__;						\
   };							\
-  Rps_FrameAt##Lin _((Descr),(Prev))
+  Rps_FrameAt##Lin _((Descr),(Prev));                   \
+  auto& _f = *_.fieldsptr();                            \
+  /*end RPS_LOCALFRAME_ATBIS*/
+
 
 #define RPS_LOCALFRAME_AT(Lin,Descr,Prev,...) \
   RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,__VA_ARGS__)
@@ -3198,65 +3351,23 @@ public:
   static int autocomplete_name(const char*prefix, const std::function<bool(const Rps_ObjectZone*,const std::string&)>&stopfun);
 };				// end Rps_PayloadSymbol
 
+////////////////////////////////////////////////////////////////
 
+struct Rps_GuiPreferences {
+  std::string gui_geometry;
+  double gui_scale;
+  std::string gui_title;
+};
+extern "C" Rps_GuiPreferences rps_gui_pref;
 
-//////////////// template for payload holding Qt objects
-template <class QtClass> class Rps_PayloadQt : public Rps_Payload
-{
-  friend class Rps_ObjectRef;
-  friend class Rps_ObjectZone;
-  friend Rps_PayloadQt*
-  Rps_QuasiZone::rps_allocate1<Rps_PayloadQt,Rps_ObjectZone*>(Rps_ObjectZone*);
-protected:
-  QPointer<QtClass> _qtptr;
-  Rps_PayloadQt(Rps_ObjectZone*owner)
-    :  Rps_Payload(Rps_Type::PaylQt, owner), _qtptr(nullptr) {};
-  virtual ~Rps_PayloadQt();
-  virtual uint32_t wordsize(void) const
-  {
-    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
-  };
-  virtual void gc_mark(Rps_GarbageCollector&gc) const {
-    if (_qtptr)
-      _qtptr->gc_mark(gc);
-  };
-  virtual void dump_scan(Rps_Dumper*) const {};
-  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const {};
-  virtual bool is_erasable(void) const
-  {
-    return true;
-  };
-public:
-  inline Rps_PayloadQt& set_qtptr(QtClass* qptr);
-  inline Rps_PayloadQt& clear_qtptr(QtClass* qptr);
-  inline QtClass* qtptr(void) const;
-  QtClass& operator -> (void) const
-  {
-    if (owner()) {
-      if (_qtptr)
-      return *_qtptr;
-      else
-	throw  RPS_RUNTIME_ERROR_OUT("missing qtptr:" << payload_type_name());
-    }
-    else throw RPS_RUNTIME_ERROR_OUT("unowned Qt payload:" << payload_type_name());
-  };
-  QtClass& operator * (void) const
-  {
-    if (owner()) {
-      if (_qtptr)
-	return *_qtptr;
-      else
-	throw  RPS_RUNTIME_ERROR_OUT("missing qtptr:" << payload_type_name());
-    } throw RPS_RUNTIME_ERROR_OUT("unowned Qt payload:" << payload_type_name());
-  }
-  virtual const std::string payload_type_name(void) const;
-};				// end of template Rps_PayloadQt
 
 ////////////////////////////////////////////////////////////////
 
 #define RPS_MANIFEST_JSON "rps_manifest.json"
-#define RPS_USERPREFERENCE_JSON ".refpersys.json"
-#define RPS_QTSETTINGS_BASEPATH ".qt-refpersys.ini"
+
+// the user manifest is optional, in the rps_homedir()
+// so using $REFPERSYS_HOME or $HOME
+#define RPS_USER_MANIFEST_JSON ".refpersys.json" 
 
 //// global roots for garbage collection and persistence
 /// the called function cannot add, remove or query the global root set
@@ -3275,8 +3386,11 @@ extern "C" unsigned rps_hardcoded_number_of_constants(void);
 
 ////////////////
 
-extern "C" void rps_run_application (int& argc, char**argv); // in appli_qrps.cc
-
+extern "C" void rps_run_application (int& argc, char**argv); // in foxevloop_rps.cc
+extern "C" std::string rps_fox_version(void); // in foxevloop_rps.cc
+extern "C" std::string rps_repl_version(void); // in repl_rps.cc
+extern "C" std::string rps_curl_version(void); // in curl_rps.cc
+extern "C" void rps_set_gui_dump_dir(const std::string&); // in fltklo_rps.cc 
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
 extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc
@@ -3307,6 +3421,11 @@ extern "C" void rps_load_from (const std::string& dirpath); // in store_rps.cc
 extern "C" void rps_load_add_todo(Rps_Loader*,const std::function<void(Rps_Loader*)>& todofun);
 
 extern "C" void rps_print_types_info (void);
+
+extern "C" void rps_read_eval_print_loop(int &argc, char**argv); // GNU readline based
+
+extern "C" void rps_run_fox_gui(int &argc, char**argv);
+
 /// C++ code can refer to root objects
 #define RPS_ROOT_OB(Oid) rps_rootob##Oid
 

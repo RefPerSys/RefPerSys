@@ -1,5 +1,6 @@
 /****************************************************************
  * file values_rps.cc
+ * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
@@ -577,86 +578,86 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
                  Rps_ObjectRef obcurclass; // the current class
                  Rps_ClosureValue closval; // the resulting closure
                 );
-  _.val = Rps_Value(*this);
-  _.obselect = obselectorarg;
-  _.obcurclass = _.val.compute_class(&_);
+  _f.val = Rps_Value(*this);
+  _f.obselect = obselectorarg;
+  _f.obcurclass = _f.val.compute_class(&_);
   int loopcount = 0;
-  RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector start val=" << _.val
-                << " obcurclass=" << _.obcurclass
-                << " obselect=" << _.obselect);
+  RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector start val=" << _f.val
+                << " obcurclass=" << _f.obcurclass
+                << " obselect=" << _f.obselect);
   RPS_ASSERT(RPS_ROOT_OB(_6XLY6QfcDre02922jz)); // the `value` class exists, it has been loaded
   while (loopcount++ <  (int)maximal_inheritance_depth)
     {
-      RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector obcurclass=" << _.obcurclass << " obselect=" << _.obselect << " loopcount=" << loopcount);
-      if (!_.obcurclass)   // should never happen
+      RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector obcurclass=" << _f.obcurclass << " obselect=" << _f.obselect << " loopcount=" << loopcount);
+      if (!_f.obcurclass)   // should never happen
         {
-          if (_.val.is_object())
-            RPS_FATALOUT("object @" << (void*)_.val.unsafe_wptr()
-                         << " of oid " << _.val.to_object()->oid()
+          if (_f.val.is_object())
+            RPS_FATALOUT("object @" << (void*)_f.val.unsafe_wptr()
+                         << " of oid " << _f.val.to_object()->oid()
                          << " has no class");
           else
-            RPS_FATALOUT("value @" << (void*)_.val.unsafe_wptr()
-                         << " of type#" << (int)(_.val.to_ptr()?_.val.to_ptr()->stored_type():Rps_Type::None) << " has no class");
+            RPS_FATALOUT("value @" << (void*)_f.val.unsafe_wptr()
+                         << " of type#" << (int)(_f.val.to_ptr()?_f.val.to_ptr()->stored_type():Rps_Type::None) << " has no class");
         }
-      std::lock_guard<std::recursive_mutex> gucurclass(*(_.obcurclass->objmtxptr()));
-      if (_.obcurclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz) // the topmost `value` class ends the loop
+      std::lock_guard<std::recursive_mutex> gucurclass(*(_f.obcurclass->objmtxptr()));
+      if (_f.obcurclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz) // the topmost `value` class ends the loop
          )
         {
           /// if the `value` class is not a genuine RefPerSys class, it
           /// means that RefPerSys persistent heap is broken beyond
           /// repair.  So the asserts below are always satisfied.
-          auto valclasspayl = reinterpret_cast<Rps_PayloadClassInfo*>(_.obcurclass->get_payload());
+          auto valclasspayl = reinterpret_cast<Rps_PayloadClassInfo*>(_f.obcurclass->get_payload());
           RPS_ASSERT(valclasspayl != nullptr);
           // the below check is faster than a C++ dynamic_cast:
           RPS_ASSERT(valclasspayl->stored_type() == Rps_Type::PaylClassInfo);
-          _.closval = valclasspayl->get_own_method(_.obselect);
-          RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector!value closval=" << _.closval);
-          if (_.closval && _.closval.is_closure()) // should be always true! But we need to check
-            return _.closval;
+          _f.closval = valclasspayl->get_own_method(_f.obselect);
+          RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector!value closval=" << _f.closval);
+          if (_f.closval && _f.closval.is_closure()) // should be always true! But we need to check
+            return _f.closval;
           else
             return Rps_ClosureValue(nullptr);
         }
       /// usual common case:
-      if (_.obcurclass->get_class() == RPS_ROOT_OB(_41OFI3r0S1t03qdB2E) // the `class` class
+      if (_f.obcurclass->get_class() == RPS_ROOT_OB(_41OFI3r0S1t03qdB2E) // the `class` class
          )
         {
-          auto valclasspayl = reinterpret_cast<Rps_PayloadClassInfo*>(_.obcurclass->get_payload());
+          auto valclasspayl = reinterpret_cast<Rps_PayloadClassInfo*>(_f.obcurclass->get_payload());
           RPS_ASSERT(valclasspayl != nullptr);
           // the below check is faster than a C++ dynamic_cast:
           RPS_ASSERT(valclasspayl->stored_type() == Rps_Type::PaylClassInfo);
-          _.closval = valclasspayl->get_own_method(_.obselect);
-          RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector!class closval=" << _.closval);
-          if (_.closval && _.closval.is_closure()) // should be always true! But we need to check
-            return _.closval;
+          _f.closval = valclasspayl->get_own_method(_f.obselect);
+          RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector!class closval=" << _f.closval);
+          if (_f.closval && _f.closval.is_closure()) // should be always true! But we need to check
+            return _f.closval;
           else
             {
-              _.obcurclass = valclasspayl->superclass();
+              _f.obcurclass = valclasspayl->superclass();
               continue;
             }
         }
       /// special case for dynamic_cast, which is unlikely to happen
-      else if (auto valclasspayl = _.obcurclass->get_dynamic_payload<Rps_PayloadClassInfo>())
+      else if (auto valclasspayl = _f.obcurclass->get_dynamic_payload<Rps_PayloadClassInfo>())
         {
-          // could happen latter when _.obcurclass is a subclass of `class` but unlikely
+          // could happen latter when _f.obcurclass is a subclass of `class` but unlikely
           RPS_ASSERT(valclasspayl != nullptr);
           // the below check is faster than a C++ dynamic_cast:
           RPS_ASSERT(valclasspayl->stored_type() == Rps_Type::PaylClassInfo);
-          _.closval = valclasspayl->get_own_method(_.obselect);
-          RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector!sub-class closval=" << _.closval);
-          if (_.closval && _.closval.is_closure()) // should be always true! But we need to check
-            return _.closval;
+          _f.closval = valclasspayl->get_own_method(_f.obselect);
+          RPS_DEBUG_LOG(MSGSEND, "closure_for_method_selector!sub-class closval=" << _f.closval);
+          if (_f.closval && _f.closval.is_closure()) // should be always true! But we need to check
+            return _f.closval;
           else
             {
-              _.obcurclass = valclasspayl->superclass();
+              _f.obcurclass = valclasspayl->superclass();
               continue;
             }
         }
     };
   /// we should never reach this point.... if we do, the persistent heap was corrupted...
-  _.obcurclass = _.val.compute_class(&_);
+  _f.obcurclass = _f.val.compute_class(&_);
   RPS_FATALOUT("failed to compute closure_for_method_selector for value " <<
-               _.val << " of class " << _.obcurclass
-               << " for selector " << _.obselect);
+               _f.val << " of class " << _f.obcurclass
+               << " for selector " << _f.obselect);
 } // end of Rps_Value::closure_for_method_selector
 
 
@@ -677,22 +678,22 @@ Rps_Value::send0(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg) const
                  Rps_ClosureValue closv; // the closure
                  Rps_ObjectRef obsel; // the selector
                 );
-  _.selfv = Rps_Value(*this);
-  _.obsel = obselarg;
-  RPS_DEBUG_LOG(MSGSEND, "send0 selfv=" << _.selfv
-                << " of class:" <<  _.selfv.compute_class(&_)
-                << ", obsel=" << _.obsel);
-  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPS_DEBUG_LOG(MSGSEND, "send0 selfv=" << _.selfv
-                << ", closv=" << _.closv);
-  if (_.closv.is_closure())
-    return _.closv.apply1(&_, _.selfv);
+  _f.selfv = Rps_Value(*this);
+  _f.obsel = obselarg;
+  RPS_DEBUG_LOG(MSGSEND, "send0 selfv=" << _f.selfv
+                << " of class:" <<  _f.selfv.compute_class(&_)
+                << ", obsel=" << _f.obsel);
+  _f.closv = _f.selfv.closure_for_method_selector(&_,_f.obsel);
+  RPS_DEBUG_LOG(MSGSEND, "send0 selfv=" << _f.selfv
+                << ", closv=" << _f.closv);
+  if (_f.closv.is_closure())
+    return _f.closv.apply1(&_, _f.selfv);
   else
-    RPS_DEBUG_LOG(MSGSEND, "send0 applying selfv=" << _.selfv
-                  << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _.obsel
-                  << " of class:" <<  _.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _.closv);
+    RPS_DEBUG_LOG(MSGSEND, "send0 applying selfv=" << _f.selfv
+                  << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                  << "... with obsel=" << _f.obsel
+                  << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
+                  << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send0
 
@@ -710,24 +711,24 @@ Rps_Value::send1(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  Rps_ObjectRef obsel; // the selector
                  Rps_Value arg0v; // the argument#0
                 );
-  _.selfv = Rps_Value(*this);
-  _.obsel = obselarg;
-  _.arg0v = arg0;
-  RPS_DEBUG_LOG(MSGSEND, "send1 selfv=" << _.selfv
-                << " of class:" <<  _.selfv.compute_class(&_)
-                << ", obsel=" << _.obsel
-                << ", arg0v=" << _.arg0v);
-  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPS_DEBUG_LOG(MSGSEND, "send1 selfv=" << _.selfv
-                << ", closv=" << _.closv);
-  if (_.closv.is_closure())
-    return _.closv.apply2(&_, _.selfv, _.arg0v);
+  _f.selfv = Rps_Value(*this);
+  _f.obsel = obselarg;
+  _f.arg0v = arg0;
+  RPS_DEBUG_LOG(MSGSEND, "send1 selfv=" << _f.selfv
+                << " of class:" <<  _f.selfv.compute_class(&_)
+                << ", obsel=" << _f.obsel
+                << ", arg0v=" << _f.arg0v);
+  _f.closv = _f.selfv.closure_for_method_selector(&_,_f.obsel);
+  RPS_DEBUG_LOG(MSGSEND, "send1 selfv=" << _f.selfv
+                << ", closv=" << _f.closv);
+  if (_f.closv.is_closure())
+    return _f.closv.apply2(&_, _f.selfv, _f.arg0v);
   else
-    RPS_DEBUG_LOG(MSGSEND, "send1 applying selfv=" << _.selfv
-                  << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _.obsel
-                  << " of class:" <<  _.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _.closv);
+    RPS_DEBUG_LOG(MSGSEND, "send1 applying selfv=" << _f.selfv
+                  << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                  << "... with obsel=" << _f.obsel
+                  << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
+                  << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send1
 
@@ -746,36 +747,36 @@ Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  Rps_Value arg0v; // the argument#0
                  Rps_Value arg1v; // the argument#1
                 );
-  _.selfv = Rps_Value(*this);
-  _.obsel = obselarg;
-  _.arg0v = arg0;
-  _.arg1v = arg1;
-  RPS_DEBUG_LOG(MSGSEND, "send2 selfv=" << _.selfv
-                << " of class:" <<  _.selfv.compute_class(&_)
-                << ", obsel=" << _.obsel
-                << ", arg0v=" << _.arg0v
-                << ", arg1v=" << _.arg1v);
-  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPS_DEBUG_LOG(MSGSEND, "send2 selfv=" << _.selfv
-                << ", obsel=" << _.obsel
-                << ", closv=" << _.closv);
+  _f.selfv = Rps_Value(*this);
+  _f.obsel = obselarg;
+  _f.arg0v = arg0;
+  _f.arg1v = arg1;
+  RPS_DEBUG_LOG(MSGSEND, "send2 selfv=" << _f.selfv
+                << " of class:" <<  _f.selfv.compute_class(&_)
+                << ", obsel=" << _f.obsel
+                << ", arg0v=" << _f.arg0v
+                << ", arg1v=" << _f.arg1v);
+  _f.closv = _f.selfv.closure_for_method_selector(&_,_f.obsel);
+  RPS_DEBUG_LOG(MSGSEND, "send2 selfv=" << _f.selfv
+                << ", obsel=" << _f.obsel
+                << ", closv=" << _f.closv);
 
-  if (_.closv.is_closure())
+  if (_f.closv.is_closure())
     {
-      RPS_DEBUG_LOG(MSGSEND, "send2 applying to selfv=" << _.selfv
-                    << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                    << "... obsel=" << _.obsel
-                    << ", closv=" << _.closv
-                    << ", arg0v=" << _.arg0v
-                    << ", arg1v=" << _.arg1v);
-      return _.closv.apply3(&_, _.selfv, _.arg0v, _.arg1v);
+      RPS_DEBUG_LOG(MSGSEND, "send2 applying to selfv=" << _f.selfv
+                    << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                    << "... obsel=" << _f.obsel
+                    << ", closv=" << _f.closv
+                    << ", arg0v=" << _f.arg0v
+                    << ", arg1v=" << _f.arg1v);
+      return _f.closv.apply3(&_, _f.selfv, _f.arg0v, _f.arg1v);
     }
   else
-    RPS_DEBUG_LOG(MSGSEND, "send2 applying selfv=" << _.selfv
-                  << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _.obsel
-                  << " of class:" <<  _.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _.closv);
+    RPS_DEBUG_LOG(MSGSEND, "send2 applying selfv=" << _f.selfv
+                  << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                  << "... with obsel=" << _f.obsel
+                  << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
+                  << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send2
 
@@ -794,29 +795,29 @@ Rps_Value::send3(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  Rps_Value arg1v; // the argument#1
                  Rps_Value arg2v; // the argument#2
                 );
-  _.selfv = Rps_Value(*this);
-  _.obsel = obselarg;
-  _.arg0v = arg0;
-  _.arg1v = arg1;
-  _.arg2v = arg2;
-  RPS_DEBUG_LOG(MSGSEND, "send3 selfv=" << _.selfv
-                << " of class:" <<  _.selfv.compute_class(&_)
-                << ", obsel=" << _.obsel
-                << ", arg0v=" << _.arg0v
-                << ", arg1v=" << _.arg1v
-                << ", arg2v=" << _.arg2v);
-  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPS_DEBUG_LOG(MSGSEND, "send3 selfv=" << _.selfv
-                << ", obsel=" << _.obsel
-                << ", closv=" << _.closv);
-  if (_.closv.is_closure())
-    return _.closv.apply4(&_, _.selfv, _.arg0v, _.arg1v, _.arg2v);
+  _f.selfv = Rps_Value(*this);
+  _f.obsel = obselarg;
+  _f.arg0v = arg0;
+  _f.arg1v = arg1;
+  _f.arg2v = arg2;
+  RPS_DEBUG_LOG(MSGSEND, "send3 selfv=" << _f.selfv
+                << " of class:" <<  _f.selfv.compute_class(&_)
+                << ", obsel=" << _f.obsel
+                << ", arg0v=" << _f.arg0v
+                << ", arg1v=" << _f.arg1v
+                << ", arg2v=" << _f.arg2v);
+  _f.closv = _f.selfv.closure_for_method_selector(&_,_f.obsel);
+  RPS_DEBUG_LOG(MSGSEND, "send3 selfv=" << _f.selfv
+                << ", obsel=" << _f.obsel
+                << ", closv=" << _f.closv);
+  if (_f.closv.is_closure())
+    return _f.closv.apply4(&_, _f.selfv, _f.arg0v, _f.arg1v, _f.arg2v);
   else
-    RPS_DEBUG_LOG(MSGSEND, "send3 applying selfv=" << _.selfv
-                  << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _.obsel
-                  << " of class:" <<  _.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _.closv);
+    RPS_DEBUG_LOG(MSGSEND, "send3 applying selfv=" << _f.selfv
+                  << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                  << "... with obsel=" << _f.obsel
+                  << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
+                  << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send3
 
@@ -838,31 +839,31 @@ Rps_Value::send4(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  Rps_Value arg2v; // the argument#2
                  Rps_Value arg3v; // the argument#3
                 );
-  _.selfv = Rps_Value(*this);
-  _.obsel = obselarg;
-  _.arg0v = arg0;
-  _.arg1v = arg1;
-  _.arg2v = arg2;
-  _.arg3v = arg3;
-  RPS_DEBUG_LOG(MSGSEND, "send4 selfv=" << _.selfv
-                << " of class:" <<  _.selfv.compute_class(&_)
-                << ", obsel=" << _.obsel
-                << ", arg0v=" << _.arg0v
-                << ", arg1v=" << _.arg1v
-                << ", arg2v=" << _.arg2v
-                << ", arg3v=" << _.arg3v);
-  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPS_DEBUG_LOG(MSGSEND, "send4 selfv=" << _.selfv
-                << ", obsel=" << _.obsel
-                << ", closv=" << _.closv);
-  if (_.closv.is_closure())
-    return _.closv.apply5(&_, _.selfv, _.arg0v, _.arg1v, _.arg2v, _.arg3v);
+  _f.selfv = Rps_Value(*this);
+  _f.obsel = obselarg;
+  _f.arg0v = arg0;
+  _f.arg1v = arg1;
+  _f.arg2v = arg2;
+  _f.arg3v = arg3;
+  RPS_DEBUG_LOG(MSGSEND, "send4 selfv=" << _f.selfv
+                << " of class:" <<  _f.selfv.compute_class(&_)
+                << ", obsel=" << _f.obsel
+                << ", arg0v=" << _f.arg0v
+                << ", arg1v=" << _f.arg1v
+                << ", arg2v=" << _f.arg2v
+                << ", arg3v=" << _f.arg3v);
+  _f.closv = _f.selfv.closure_for_method_selector(&_,_f.obsel);
+  RPS_DEBUG_LOG(MSGSEND, "send4 selfv=" << _f.selfv
+                << ", obsel=" << _f.obsel
+                << ", closv=" << _f.closv);
+  if (_f.closv.is_closure())
+    return _f.closv.apply5(&_, _f.selfv, _f.arg0v, _f.arg1v, _f.arg2v, _f.arg3v);
   else
-    RPS_DEBUG_LOG(MSGSEND, "send4 applying selfv=" << _.selfv
-                  << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _.obsel
-                  << " of class:" <<  _.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _.closv);
+    RPS_DEBUG_LOG(MSGSEND, "send4 applying selfv=" << _f.selfv
+                  << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                  << "... with obsel=" << _f.obsel
+                  << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
+                  << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send4
 
@@ -886,33 +887,33 @@ Rps_Value::send5(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  Rps_Value arg3v; // the argument#3
                  Rps_Value arg4v; // the argument#4
                 );
-  _.selfv = Rps_Value(*this);
-  _.obsel = obselarg;
-  _.arg0v = arg0;
-  _.arg1v = arg1;
-  _.arg2v = arg2;
-  _.arg3v = arg3;
-  _.arg4v = arg4;
-  RPS_DEBUG_LOG(MSGSEND, "send5 selfv=" << _.selfv
-                << " of class:" <<  _.selfv.compute_class(&_)
-                << ", obsel=" << _.obsel
-                << ", arg0v=" << _.arg0v
-                << ", arg1v=" << _.arg1v
-                << ", arg2v=" << _.arg2v
-                << ", arg3v=" << _.arg3v
-                << ", arg4v=" << _.arg4v);
-  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPS_DEBUG_LOG(MSGSEND, "send5 selfv=" << _.selfv
-                << ", obsel=" << _.obsel
-                << ", closv=" << _.closv);
-  if (_.closv.is_closure())
-    return _.closv.apply6(&_, _.selfv, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v);
+  _f.selfv = Rps_Value(*this);
+  _f.obsel = obselarg;
+  _f.arg0v = arg0;
+  _f.arg1v = arg1;
+  _f.arg2v = arg2;
+  _f.arg3v = arg3;
+  _f.arg4v = arg4;
+  RPS_DEBUG_LOG(MSGSEND, "send5 selfv=" << _f.selfv
+                << " of class:" <<  _f.selfv.compute_class(&_)
+                << ", obsel=" << _f.obsel
+                << ", arg0v=" << _f.arg0v
+                << ", arg1v=" << _f.arg1v
+                << ", arg2v=" << _f.arg2v
+                << ", arg3v=" << _f.arg3v
+                << ", arg4v=" << _f.arg4v);
+  _f.closv = _f.selfv.closure_for_method_selector(&_,_f.obsel);
+  RPS_DEBUG_LOG(MSGSEND, "send5 selfv=" << _f.selfv
+                << ", obsel=" << _f.obsel
+                << ", closv=" << _f.closv);
+  if (_f.closv.is_closure())
+    return _f.closv.apply6(&_, _f.selfv, _f.arg0v, _f.arg1v, _f.arg2v, _f.arg3v, _f.arg4v);
   else
-    RPS_DEBUG_LOG(MSGSEND, "send5 applying selfv=" << _.selfv
-                  << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _.obsel
-                  << " of class:" <<  _.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _.closv);
+    RPS_DEBUG_LOG(MSGSEND, "send5 applying selfv=" << _f.selfv
+                  << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                  << "... with obsel=" << _f.obsel
+                  << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
+                  << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send5
 
@@ -936,35 +937,35 @@ Rps_Value::send6(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  Rps_Value arg4v; // the argument#4
                  Rps_Value arg5v; // the argument#5
                 );
-  _.selfv = Rps_Value(*this);
-  _.obsel = obselarg;
-  _.arg0v = arg0;
-  _.arg1v = arg1;
-  _.arg2v = arg2;
-  _.arg3v = arg3;
-  _.arg4v = arg4;
-  _.arg5v = arg5;
-  RPS_DEBUG_LOG(MSGSEND, "send6 selfv=" << _.selfv
-                << " of class:" <<  _.selfv.compute_class(&_)
-                << ", obsel=" << _.obsel
-                << ", arg0v=" << _.arg0v
-                << ", arg1v=" << _.arg1v
-                << ", arg2v=" << _.arg2v
-                << ", arg3v=" << _.arg3v
-                << ", arg4v=" << _.arg4v
-                << ", arg5v=" << _.arg5v);
-  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPS_DEBUG_LOG(MSGSEND, "send6 selfv=" << _.selfv
-                << ", obsel=" << _.obsel
-                << ", closv=" << _.closv);
-  if (_.closv.is_closure())
-    return _.closv.apply7(&_, _.selfv, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v, _.arg5v);
+  _f.selfv = Rps_Value(*this);
+  _f.obsel = obselarg;
+  _f.arg0v = arg0;
+  _f.arg1v = arg1;
+  _f.arg2v = arg2;
+  _f.arg3v = arg3;
+  _f.arg4v = arg4;
+  _f.arg5v = arg5;
+  RPS_DEBUG_LOG(MSGSEND, "send6 selfv=" << _f.selfv
+                << " of class:" <<  _f.selfv.compute_class(&_)
+                << ", obsel=" << _f.obsel
+                << ", arg0v=" << _f.arg0v
+                << ", arg1v=" << _f.arg1v
+                << ", arg2v=" << _f.arg2v
+                << ", arg3v=" << _f.arg3v
+                << ", arg4v=" << _f.arg4v
+                << ", arg5v=" << _f.arg5v);
+  _f.closv = _f.selfv.closure_for_method_selector(&_,_f.obsel);
+  RPS_DEBUG_LOG(MSGSEND, "send6 selfv=" << _f.selfv
+                << ", obsel=" << _f.obsel
+                << ", closv=" << _f.closv);
+  if (_f.closv.is_closure())
+    return _f.closv.apply7(&_, _f.selfv, _f.arg0v, _f.arg1v, _f.arg2v, _f.arg3v, _f.arg4v, _f.arg5v);
   else
-    RPS_DEBUG_LOG(MSGSEND, "send6 applying selfv=" << _.selfv
-                  << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _.obsel
-                  << " of class:" <<  _.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _.closv);
+    RPS_DEBUG_LOG(MSGSEND, "send6 applying selfv=" << _f.selfv
+                  << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                  << "... with obsel=" << _f.obsel
+                  << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
+                  << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send6
 
@@ -990,37 +991,37 @@ Rps_Value::send7(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  Rps_Value arg5v; // the argument#5
                  Rps_Value arg6v; // the argument#6
                 );
-  _.selfv = Rps_Value(*this);
-  _.obsel = obselarg;
-  _.arg0v = arg0;
-  _.arg1v = arg1;
-  _.arg2v = arg2;
-  _.arg3v = arg3;
-  _.arg4v = arg4;
-  _.arg5v = arg5;
-  _.arg6v = arg6;
-  RPS_DEBUG_LOG(MSGSEND, "send7 selfv=" << _.selfv
-                << " of class:" <<  _.selfv.compute_class(&_)
-                << ", obsel=" << _.obsel
-                << ", arg0v=" << _.arg0v
-                << ", arg1v=" << _.arg1v
-                << ", arg2v=" << _.arg2v
-                << ", arg3v=" << _.arg3v
-                << ", arg4v=" << _.arg4v
-                << ", arg5v=" << _.arg5v
-                << ", arg6v=" << _.arg6v);
-  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  RPS_DEBUG_LOG(MSGSEND, "send7 selfv=" << _.selfv
-                << ", obsel=" << _.obsel
-                << ", closv=" << _.closv);
-  if (_.closv.is_closure())
-    return _.closv.apply8(&_, _.selfv, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v, _.arg5v, _.arg6v);
+  _f.selfv = Rps_Value(*this);
+  _f.obsel = obselarg;
+  _f.arg0v = arg0;
+  _f.arg1v = arg1;
+  _f.arg2v = arg2;
+  _f.arg3v = arg3;
+  _f.arg4v = arg4;
+  _f.arg5v = arg5;
+  _f.arg6v = arg6;
+  RPS_DEBUG_LOG(MSGSEND, "send7 selfv=" << _f.selfv
+                << " of class:" <<  _f.selfv.compute_class(&_)
+                << ", obsel=" << _f.obsel
+                << ", arg0v=" << _f.arg0v
+                << ", arg1v=" << _f.arg1v
+                << ", arg2v=" << _f.arg2v
+                << ", arg3v=" << _f.arg3v
+                << ", arg4v=" << _f.arg4v
+                << ", arg5v=" << _f.arg5v
+                << ", arg6v=" << _f.arg6v);
+  _f.closv = _f.selfv.closure_for_method_selector(&_,_f.obsel);
+  RPS_DEBUG_LOG(MSGSEND, "send7 selfv=" << _f.selfv
+                << ", obsel=" << _f.obsel
+                << ", closv=" << _f.closv);
+  if (_f.closv.is_closure())
+    return _f.closv.apply8(&_, _f.selfv, _f.arg0v, _f.arg1v, _f.arg2v, _f.arg3v, _f.arg4v, _f.arg5v, _f.arg6v);
   else
-    RPS_DEBUG_LOG(MSGSEND, "send7 applying selfv=" << _.selfv
-                  << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _.obsel
-                  << " of class:" <<  _.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _.closv);
+    RPS_DEBUG_LOG(MSGSEND, "send7 applying selfv=" << _f.selfv
+                  << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                  << "... with obsel=" << _f.obsel
+                  << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
+                  << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send7
 
@@ -1047,36 +1048,36 @@ Rps_Value::send8(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  Rps_Value arg6v; // the argument#6
                  Rps_Value arg7v; // the argument#7
                 );
-  _.selfv = Rps_Value(*this);
-  _.obsel = obselarg;
-  _.arg0v = arg0;
-  _.arg1v = arg1;
-  _.arg2v = arg2;
-  _.arg3v = arg3;
-  _.arg4v = arg4;
-  _.arg5v = arg5;
-  _.arg6v = arg6;
-  _.arg7v = arg7;
-  RPS_DEBUG_LOG(MSGSEND, "send8 selfv=" << _.selfv
-                << " of class:" <<  _.selfv.compute_class(&_)
-                << ", obsel=" << _.obsel
-                << ", arg0v=" << _.arg0v
-                << ", arg1v=" << _.arg1v
-                << ", arg2v=" << _.arg2v
-                << ", arg3v=" << _.arg3v
-                << ", arg4v=" << _.arg4v
-                << ", arg5v=" << _.arg5v
-                << ", arg6v=" << _.arg6v
-                << ", arg7v=" << _.arg7v);
-  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  if (_.closv.is_closure())
-    return _.closv.apply9(&_, _.selfv, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v, _.arg5v, _.arg6v, _.arg7v);
+  _f.selfv = Rps_Value(*this);
+  _f.obsel = obselarg;
+  _f.arg0v = arg0;
+  _f.arg1v = arg1;
+  _f.arg2v = arg2;
+  _f.arg3v = arg3;
+  _f.arg4v = arg4;
+  _f.arg5v = arg5;
+  _f.arg6v = arg6;
+  _f.arg7v = arg7;
+  RPS_DEBUG_LOG(MSGSEND, "send8 selfv=" << _f.selfv
+                << " of class:" <<  _f.selfv.compute_class(&_)
+                << ", obsel=" << _f.obsel
+                << ", arg0v=" << _f.arg0v
+                << ", arg1v=" << _f.arg1v
+                << ", arg2v=" << _f.arg2v
+                << ", arg3v=" << _f.arg3v
+                << ", arg4v=" << _f.arg4v
+                << ", arg5v=" << _f.arg5v
+                << ", arg6v=" << _f.arg6v
+                << ", arg7v=" << _f.arg7v);
+  _f.closv = _f.selfv.closure_for_method_selector(&_,_f.obsel);
+  if (_f.closv.is_closure())
+    return _f.closv.apply9(&_, _f.selfv, _f.arg0v, _f.arg1v, _f.arg2v, _f.arg3v, _f.arg4v, _f.arg5v, _f.arg6v, _f.arg7v);
   else
-    RPS_DEBUG_LOG(MSGSEND, "send8 applying selfv=" << _.selfv
-                  << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _.obsel
-                  << " of class:" <<  _.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _.closv);
+    RPS_DEBUG_LOG(MSGSEND, "send8 applying selfv=" << _f.selfv
+                  << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                  << "... with obsel=" << _f.obsel
+                  << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
+                  << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send8
 
@@ -1105,38 +1106,38 @@ Rps_Value::send9(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  Rps_Value arg7v; // the argument#7
                  Rps_Value arg8v; // the argument#8
                 );
-  _.selfv = Rps_Value(*this);
-  _.obsel = obselarg;
-  _.arg0v = arg0;
-  _.arg1v = arg1;
-  _.arg2v = arg2;
-  _.arg3v = arg3;
-  _.arg4v = arg4;
-  _.arg5v = arg5;
-  _.arg6v = arg6;
-  _.arg7v = arg7;
-  _.arg8v = arg8;
-  RPS_DEBUG_LOG(MSGSEND, "send9 selfv=" << _.selfv
-                << " of class:" <<  _.selfv.compute_class(&_)
-                << ", obsel=" << _.obsel
-                << ", arg0v=" << _.arg0v
-                << ", arg1v=" << _.arg1v
-                << ", arg2v=" << _.arg2v
-                << ", arg3v=" << _.arg3v
-                << ", arg4v=" << _.arg4v
-                << ", arg5v=" << _.arg5v
-                << ", arg6v=" << _.arg6v
-                << ", arg7v=" << _.arg7v
-                << ", arg8v=" << _.arg8v);
-  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  if (_.closv.is_closure())
-    return _.closv.apply10(&_, _.selfv, _.arg0v, _.arg1v, _.arg2v, _.arg3v, _.arg4v, _.arg5v, _.arg6v, _.arg7v, _.arg8v);
+  _f.selfv = Rps_Value(*this);
+  _f.obsel = obselarg;
+  _f.arg0v = arg0;
+  _f.arg1v = arg1;
+  _f.arg2v = arg2;
+  _f.arg3v = arg3;
+  _f.arg4v = arg4;
+  _f.arg5v = arg5;
+  _f.arg6v = arg6;
+  _f.arg7v = arg7;
+  _f.arg8v = arg8;
+  RPS_DEBUG_LOG(MSGSEND, "send9 selfv=" << _f.selfv
+                << " of class:" <<  _f.selfv.compute_class(&_)
+                << ", obsel=" << _f.obsel
+                << ", arg0v=" << _f.arg0v
+                << ", arg1v=" << _f.arg1v
+                << ", arg2v=" << _f.arg2v
+                << ", arg3v=" << _f.arg3v
+                << ", arg4v=" << _f.arg4v
+                << ", arg5v=" << _f.arg5v
+                << ", arg6v=" << _f.arg6v
+                << ", arg7v=" << _f.arg7v
+                << ", arg8v=" << _f.arg8v);
+  _f.closv = _f.selfv.closure_for_method_selector(&_,_f.obsel);
+  if (_f.closv.is_closure())
+    return _f.closv.apply10(&_, _f.selfv, _f.arg0v, _f.arg1v, _f.arg2v, _f.arg3v, _f.arg4v, _f.arg5v, _f.arg6v, _f.arg7v, _f.arg8v);
   else
-    RPS_DEBUG_LOG(MSGSEND, "send9 applying selfv=" << _.selfv
-                  << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _.obsel
-                  << " of class:" <<  _.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _.closv);
+    RPS_DEBUG_LOG(MSGSEND, "send9 applying selfv=" << _f.selfv
+                  << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                  << "... with obsel=" << _f.obsel
+                  << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
+                  << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send9
 
@@ -1158,24 +1159,24 @@ Rps_Value::send_vect(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   {
     for (auto v: argvect) gc->mark_value(v);
   });
-  _.selfv = Rps_Value(*this);
-  _.obsel = obselarg;
-  RPS_DEBUG_LOG(MSGSEND, "send_vect selfv=" << _.selfv
-                << " of class:" <<  _.selfv.compute_class(&_)
-                << ", obsel=" << _.obsel
+  _f.selfv = Rps_Value(*this);
+  _f.obsel = obselarg;
+  RPS_DEBUG_LOG(MSGSEND, "send_vect selfv=" << _f.selfv
+                << " of class:" <<  _f.selfv.compute_class(&_)
+                << ", obsel=" << _f.obsel
                 << " argvecarg.size=" << argvecarg.size());
-  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  if (_.closv.is_closure())
+  _f.closv = _f.selfv.closure_for_method_selector(&_,_f.obsel);
+  if (_f.closv.is_closure())
     {
-      argvect.insert(argvect.begin(), _.selfv);
-      return _.closv.apply_vect(&_, argvect);
+      argvect.insert(argvect.begin(), _f.selfv);
+      return _f.closv.apply_vect(&_, argvect);
     }
   else
-    RPS_DEBUG_LOG(MSGSEND, "send_vect applying selfv=" << _.selfv
-                  << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _.obsel
-                  << " of class:" <<  _.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _.closv);
+    RPS_DEBUG_LOG(MSGSEND, "send_vect applying selfv=" << _f.selfv
+                  << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                  << "... with obsel=" << _f.obsel
+                  << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
+                  << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send_vect
 
@@ -1197,24 +1198,24 @@ Rps_Value::send_ilist(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   {
     for (auto v: argvec) gc->mark_value(v);
   });
-  _.selfv = Rps_Value(*this);
-  _.obsel = obselarg;
-  RPS_DEBUG_LOG(MSGSEND, "send_ilist selfv=" << _.selfv
-                << " of class:" <<  _.selfv.compute_class(&_)
-                << ", obsel=" << _.obsel
+  _f.selfv = Rps_Value(*this);
+  _f.obsel = obselarg;
+  RPS_DEBUG_LOG(MSGSEND, "send_ilist selfv=" << _f.selfv
+                << " of class:" <<  _f.selfv.compute_class(&_)
+                << ", obsel=" << _f.obsel
                 << " argilarg.size=" << argilarg.size());
-  _.closv = _.selfv.closure_for_method_selector(&_,_.obsel);
-  if (_.closv.is_closure())
+  _f.closv = _f.selfv.closure_for_method_selector(&_,_f.obsel);
+  if (_f.closv.is_closure())
     {
-      argvec.insert(argvec.begin(), _.selfv);
-      return _.closv.apply_vect(&_, argvec);
+      argvec.insert(argvec.begin(), _f.selfv);
+      return _f.closv.apply_vect(&_, argvec);
     }
   else
-    RPS_DEBUG_LOG(MSGSEND, "send_ilist applying selfv=" << _.selfv
-                  << " of class:" <<  _.selfv.compute_class(&_) << std::endl
-                  << "... with obsel=" << _.obsel
-                  << " of class:" <<  _.obsel->compute_class(&_) << std::endl
-                  << ".... non closure closv=" << _.closv);
+    RPS_DEBUG_LOG(MSGSEND, "send_ilist applying selfv=" << _f.selfv
+                  << " of class:" <<  _f.selfv.compute_class(&_) << std::endl
+                  << "... with obsel=" << _f.obsel
+                  << " of class:" <<  _f.obsel->compute_class(&_) << std::endl
+                  << ".... non closure closv=" << _f.closv);
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send_ilist
 

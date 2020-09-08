@@ -1,5 +1,6 @@
 /****************************************************************
  * file store_rps.cc
+ * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
@@ -33,10 +34,6 @@
 
 #include "refpersys.hh"
 
-#include <QString>
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
 
 
 extern "C" const char rps_store_gitid[];
@@ -106,18 +103,10 @@ class Rps_Loader
   void parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                                       Rps_Id objid, const std::string& objbuf, unsigned count);
 public:
-  Rps_Loader(const std::string&topdir) :
-    ld_topdir(topdir),
-    ld_mtx(),
-    ld_spaceset(),
-    ld_globrootsidset(),
-    ld_pluginsmap(),
-    ld_mapobjects(),
-    ld_todoque(),
-    ld_todocount(0),
-    ld_payloadercache()
-  {};
+  Rps_Loader(const std::string&topdir);
+  ~Rps_Loader();
   void parse_manifest_file(void);
+  void parse_user_manifest(const std::string&path);
   void first_pass_space(Rps_Id spacid);
   void initialize_constant_objects(void);
   void second_pass_space(Rps_Id spacid);
@@ -142,6 +131,30 @@ public:
   };
 };				// end class Rps_Loader
 
+Rps_Loader::Rps_Loader(const std::string&topdir) :
+  ld_topdir(topdir),
+  ld_mtx(),
+  ld_spaceset(),
+  ld_globrootsidset(),
+  ld_pluginsmap(),
+  ld_mapobjects(),
+  ld_todoque(),
+  ld_todocount(0),
+  ld_payloadercache()
+{
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader constr topdir=" << topdir
+                << " this@" << (void*)this
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Loader constr"));
+} // end Rps_Loader::Rps_Loader
+
+Rps_Loader::~Rps_Loader()
+{
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader destr topdir=" << ld_topdir
+                << " this@" << (void*)this
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Loader constr"));
+} // end Rps_Loader::~Rps_Loader
 
 std::string
 Rps_Loader::load_real_path(const std::string& path)
@@ -171,6 +184,7 @@ Rps_Loader::load_real_path(const std::string& path)
         throw std::runtime_error(std::string("realpath failed:") + candipath);
       std::string restr (rp);
       free (rp), rp = nullptr;
+      RPS_DEBUG_LOG(LOAD, "load_real_path path=" << path << " -> " << restr);
       return restr;
     }
   throw std::runtime_error(std::string("cannot file load real path for ") + path);
@@ -264,8 +278,6 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
           snprintf(errbuf, sizeof(errbuf), "non UTF8 line#%d", lincnt);
           throw std::runtime_error(std::string(errbuf) + " in " + spacepath);
         }
-      RPS_DEBUG_PRINTF(LOAD, "lincnt#%d, lin.siz#%zd\n..linbuf:%s", lincnt,
-                       linbuf.size(), linbuf.c_str());
       if (RPS_UNLIKELY(obcnt == 0))
         {
           prologstr += linbuf;
@@ -627,13 +639,14 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
 void
 Rps_Loader::second_pass_space(Rps_Id spacid)
 {
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::second_pass_space start spacid:" << spacid
+                << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::second_pass_space"));
   auto spacepath = load_real_path(space_file_path(spacid));
   std::ifstream ins(spacepath);
   unsigned lincnt = 0;
   unsigned obcnt = 0;
   Rps_Id prevoid;
   unsigned prevlin=0;
-  RPS_NOPRINTOUT("Rps_Loader::second_pass_space start spacepath" << spacepath.c_str());
   std::string objbuf;
   for (std::string linbuf; std::getline(ins, linbuf); )
     {
@@ -655,7 +668,7 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
                 }
               catch (const std::exception& exc)
                 {
-                  RPS_FATALOUT("failed second pass in " << spacid
+                  RPS_FATALOUT("failed second pass in space " << spacid
                                << " prevoid:" << prevoid
                                << " line#" << prevlin
                                << std::endl
@@ -696,12 +709,15 @@ Rps_Loader::second_pass_space(Rps_Id spacid)
         };
       prevoid = Rps_Id(nullptr);
     };
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::second_pass_space end spacid:" << spacid);
 } // end of Rps_Loader::second_pass_space
 
 
 void
 Rps_Loader::load_all_state_files(void)
 {
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files start this@" << (void*)this
+                << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::load_all_state_files"));
   int spacecnt1 = 0, spacecnt2 = 0;
   int todocount = 0;
   for (Rps_Id spacid: ld_spaceset)
@@ -726,14 +742,21 @@ Rps_Loader::load_all_state_files(void)
       // we sleep a tiny bit, so elapsed time is growing...
       usleep(20);
     };
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files end this@" << (void*)this);
   RPS_INFORMOUT("loaded " << spacecnt1 << " space files in second pass with "
                 << ld_mapobjects.size() << " objects and " << todocount << " todos" << std::endl);
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files end this@" << (void*)this
+                << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::load_all_state_files"));
 } // end Rps_Loader::load_all_state_files
 
 
 std::string
 Rps_Loader::string_of_loaded_file(const std::string&relpath)
 {
+
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::string_of_loaded_file start this@" << (void*)this
+                << " relpath=" << relpath
+                << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::string_of_loaded_file"));
   constexpr size_t maxfilen = 1024*1024; // a megabyte
   std::string fullpath = load_real_path(relpath);
   std::string res;
@@ -756,6 +779,7 @@ Rps_Loader::string_of_loaded_file(const std::string&relpath)
       if (RPS_UNLIKELY(res.size() > maxfilen))
         RPS_FATAL("too big file %zd of path %s", res.size(), fullpath.c_str());
     }
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::string_of_loaded_file end this@" << (void*)this);
   return res;
 } // end Rps_Loader::string_of_loaded_file
 
@@ -1149,13 +1173,8 @@ public:
   {
     return du_topdir;
   };
-  Rps_Dumper(const std::string&topdir) :
-    du_topdir(topdir), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
-    du_tempsuffix(make_temporary_suffix()), du_openedpathset()
-  {
-    du_jsonwriterbuilder["commentStyle"] = "None";
-    du_jsonwriterbuilder["indentation"] = " ";
-  };
+  Rps_Dumper(const std::string&topdir);
+  ~Rps_Dumper();
   void scan_object(const Rps_ObjectRef obr);
   void scan_value(const Rps_Value val, unsigned depth);
   Json::Value json_value(const Rps_Value val);
@@ -1178,6 +1197,25 @@ public:
   };
 };				// end class Rps_Dumper
 
+Rps_Dumper::Rps_Dumper(const std::string&topdir) :
+  du_topdir(topdir), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
+  du_tempsuffix(make_temporary_suffix()), du_openedpathset()
+{
+  du_jsonwriterbuilder["commentStyle"] = "None";
+  du_jsonwriterbuilder["indentation"] = " ";
+  RPS_DEBUG_LOG(DUMP, "Rps_Dumper constr topdir=" << topdir
+                << " this@" << (void*)this
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper constr"));
+}
+
+Rps_Dumper::~Rps_Dumper()
+{
+  RPS_DEBUG_LOG(DUMP, "Rps_Dumper destr topdir=" << du_topdir
+                << " this@" << (void*)this
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper destr"));
+} // end Rps_Dumper::~Rps_Dumper
 
 void
 Rps_Dumper::scan_object(const Rps_ObjectRef obr)
@@ -1265,8 +1303,6 @@ Rps_Dumper::is_dumpable_value(const Rps_Value val)
       else
         return is_dumpable_objref(instv->conn());
     }
-  else if (val.is_qtptr())
-    return false;
   if (val.is_object())
     return is_dumpable_objref(val.to_object());
   RPS_FATALOUT("Rps_Dumper::is_dumpable_value partly unimplemented for " << val);
@@ -1299,6 +1335,9 @@ void
 Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilename)
 {
   int nbconst = 0;
+  RPS_DEBUG_LOG(DUMP, "start dumper scan_cplusplus_source_file_for_constants file " << relfilename
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper::scan_cplusplus_source_file_for_constants"));
   RPS_ASSERT(relfilename.size()>2 && isalpha(relfilename[0]));
   std::string fullpath = std::string(rps_topdirectory) + "/" + relfilename;
   std::ifstream ins(fullpath);
@@ -1329,6 +1368,9 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
                   scan_object(obr);
                   nbconst++;
                   std::lock_guard<std::recursive_mutex> gu(du_mtx);
+                  if (du_constantobset.find(obr) != du_constantobset.end())
+                    RPS_DEBUG_LOG(DUMP, "scan_cplusplus_source_file_for_constants const#" << nbconst
+                                  << " is " << obr);
                   du_constantobset.insert(obr);
                 }
               else
@@ -1344,15 +1386,19 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
                   << " constant[s] prefixed by " << RPS_CONSTANTOBJ_PREFIX
                   << " in file " << fullpath
                   << " of " << lincnt << " lines.");
+  else
+    RPS_DEBUG_LOG(DUMP, "scan_cplusplus_source_file_for_constants no constants in " << fullpath);
 } // end Rps_Dumper::scan_cplusplus_source_file_for_constants
 
 
 void
 Rps_Dumper::scan_code_addr(const void*ad)
 {
-  // if we wanted *to be more efficient, we should parse
-  // /proc/self/maps at start of dump. See
-  // http://man7.org/linux/man-pages/man5/proc.5.html
+  /**
+   * If we wanted to be more efficient, we should parse the
+   * pseudo-file /proc/self/maps at start of dump. See
+   * http://man7.org/linux/man-pages/man5/proc.5.html for more....
+   **/
   if (!ad)
     return;
   Dl_info di;
@@ -1682,10 +1728,15 @@ void
 Rps_Dumper::scan_roots(void)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
-  rps_each_root_object([=](Rps_ObjectRef obr)
+  int nbroots = 0;
+  RPS_DEBUG_LOG(DUMP, "dumper: scan_roots begin");
+  rps_each_root_object([&](Rps_ObjectRef obr)
   {
     rps_dump_scan_object(this,obr);
+    nbroots++;
   });
+
+  RPS_DEBUG_LOG(DUMP, "dumper: scan_roots ends nbroots#" << nbroots);
 } // end Rps_Dumper::scan_roots
 
 Rps_ObjectRef
@@ -1714,7 +1765,7 @@ Rps_Dumper::scan_loop_pass(void)
       //              << " curobr=" << curobr->oid());
       scan_object_contents(curobr);
     };
-  RPS_NOPRINTOUT("scan_loop_pass end count#" << count);
+  RPS_DEBUG_LOG(DUMP, "dumper: scan_loop_pass end count#" << count);
 } // end Rps_Dumper::scan_loop_pass
 
 
@@ -1752,6 +1803,7 @@ Rps_Dumper::scan_every_cplusplus_source_file_for_constants(void)
 void
 Rps_Dumper::write_all_space_files(void)
 {
+  RPS_DEBUG_LOG(DUMP, "dumper write_all_space_files start");
   std::set<Rps_ObjectRef> spaceset;
   {
     std::lock_guard<std::recursive_mutex> gu(du_mtx);
@@ -1771,6 +1823,7 @@ void
 Rps_Dumper::write_generated_roots_file(void)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_roots_file start");
   auto rootpathstr = std::string{"generated/rps-roots.hh"};
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
@@ -1828,6 +1881,7 @@ Rps_Dumper::write_generated_roots_file(void)
   *pouts << std::endl
          << "#undef RPS_INSTALL_ROOT_OB" << std::endl;
   *pouts << "/// end of RefPerSys roots file " << rootpathstr << std::endl;
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_roots_file end rootcnt=" << rootcnt << std::endl);
 } // end Rps_Dumper::write_generated_roots_file
 
 void
@@ -1835,6 +1889,7 @@ Rps_Dumper::write_generated_names_file(void)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   auto rootpathstr = std::string{"generated/rps-names.hh"};
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_names_file start");
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
   *pouts << std::endl
@@ -1859,7 +1914,9 @@ Rps_Dumper::write_generated_names_file(void)
   *pouts << std::endl
          << "#undef RPS_INSTALL_NAMED_ROOT_OB" << std::endl;
   *pouts << "/// end of RefPerSys roots file " << rootpathstr << std::endl;
-} // end Rps_Dumper::write_generated_roots_file
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_names_file end namecnt=" << namecnt << std::endl);
+
+} // end Rps_Dumper::write_generated_names_file
 
 
 
@@ -1868,6 +1925,7 @@ Rps_Dumper::write_generated_constants_file(void)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   auto rootpathstr = std::string{"generated/rps-constants.hh"};
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_constants_file start");
   auto pouts = open_output_file(rootpathstr);
   rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
   unsigned constcnt = 0;
@@ -1891,6 +1949,7 @@ Rps_Dumper::write_generated_constants_file(void)
          << "#undef  RPS_NB_CONSTANT_OB" << std::endl
          << "#define RPS_NB_CONSTANT_OB " << constcnt << std::endl << std::endl;
   *pouts << "/// end of RefPerSys constants file " << rootpathstr << std::endl;
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_constants_file end constcnt=" << constcnt << std::endl);
 } // end Rps_Dumper::write_generated_constants_file
 
 
@@ -1911,44 +1970,57 @@ Rps_Dumper::write_manifest_file(void)
 {
   std::unique_ptr<Json::StreamWriter> jsonwriter(du_jsonwriterbuilder.newStreamWriter());
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file start");
   auto pouts = open_output_file(RPS_MANIFEST_JSON);
   rps_emit_gplv3_copyright_notice(*pouts, RPS_MANIFEST_JSON, "//!! ", "");
   Json::Value jmanifest(Json::objectValue);
   jmanifest["format"] = Json::Value (RPS_MANIFEST_FORMAT);
   {
+    int nbroots=0;
     Json::Value jglobalroots(Json::arrayValue);
-    rps_each_root_object([=,&jglobalroots](Rps_ObjectRef obr)
+    rps_each_root_object([=,&jglobalroots,&nbroots](Rps_ObjectRef obr)
     {
       jglobalroots.append(Json::Value(obr->oid().to_string()));
+      nbroots++;
     });
     jmanifest["globalroots"] = jglobalroots;
+    RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file wrote " << nbroots << " global roots.");
   }
   {
+    int nbspaces=0;
     Json::Value jspaceset(Json::arrayValue);
     for (auto it: du_spacemap)
       {
         RPS_ASSERT(it.first);
         jspaceset.append(Json::Value(it.first->oid().to_string()));
+        nbspaces++;
       }
     jmanifest["spaceset"] = jspaceset;
+    RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file wrote " << nbspaces << " spaces.");
   }
   {
+    int nbconst=0;
     Json::Value jconstset(Json::arrayValue);
     for (Rps_ObjectRef obr: du_constantobset)
       {
         RPS_ASSERT(obr);
         jconstset.append(Json::Value(obr->oid().to_string()));
+        nbconst++;
       }
     jmanifest["constset"] = jconstset;
+    RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file wrote " << nbconst << " constants.");
   }
   {
+    int nbplugins=0;
     Json::Value jplugins(Json::arrayValue);
     for (auto plugobr: du_pluginobset)
       {
         RPS_ASSERT(plugobr);
         jplugins.append(Json::Value(plugobr->oid().to_string()));
+        nbplugins++;
       }
     jmanifest["plugins"] = jplugins;
+    RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file wrote " << nbplugins << " plugins.");
   }
   {
     Json::Value jglobalnames(Json::arrayValue);
@@ -1963,13 +2035,16 @@ Rps_Dumper::write_manifest_file(void)
       jnaming["nam"] = Json::Value(cursym->symbol_name());
       jnaming["obj"] = Json::Value(obr->oid().to_string());
       jglobalnames.append(jnaming);
+      namecnt++;
     });
     jmanifest["globalnames"] = jglobalnames;
+    RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file wrote " << namecnt << " global names.");
   }
   /// this is not used for loading, but could be useful for other purposes.
   jmanifest["origitid"] = Json::Value (rps_gitid);
   jsonwriter->write(jmanifest, pouts.get());
   *pouts << std::endl <<  std::endl << "//// end of RefPerSys manifest file" << std::endl;
+  RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file ending ... " << rps_gitid << std::endl);
 } // end Rps_Dumper::write_manifest_file
 
 
@@ -2012,10 +2087,11 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
   for (auto curobr: curspaset)
     {
       *pouts << std::endl << std::endl;
+      ++count;
       *pouts << "//+ob" << curobr->oid().to_string() << std::endl;
       RPS_NOPRINTOUT("Rps_Dumper::write_space_file emits " << (curobr->oid().to_string())
                      << " of hi=" <<  (curobr->oid().hi())
-                     << " #" << (++count));
+                     << " #" << count);
       /// output a comment giving the class name for readability
       {
         Rps_ObjectRef obclass = curobr->get_class();
@@ -2052,9 +2128,13 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
       *pouts << std::endl;
       *pouts << "//-ob" << curobr->oid().to_string() << std::endl;
     }
+
   *pouts << std::endl << std::endl;
   *pouts << "//// end of RefPerSys generated space file " << curelpath << std::endl;
+  RPS_DEBUG_LOG(DUMP, "dumper write_space_file end " << curelpath << " with " << count << " objects." << std::endl);
 } // end Rps_Dumper::write_space_file
+
+
 
 void
 Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
@@ -2069,6 +2149,9 @@ void rps_dump_into (const std::string dirpath)
 {
   double startelapsed = rps_elapsed_real_time();
   double startcputime = rps_process_cpu_time();
+  RPS_DEBUG_LOG(DUMP, "rps_dump_into start dirpath=" << dirpath
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_dump_into"));
   {
     DIR* d = opendir(dirpath.c_str());
     if (d)
@@ -2102,6 +2185,7 @@ void rps_dump_into (const std::string dirpath)
       RPS_FATAL("getcwd failed: %m");
     cwdpath = std::string(cwdbuf);
   }
+  RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath << " cwdpath=" << cwdpath);
   /// ensure that realdirpath exists
   {
     RPS_ASSERT(strrchr(realdirpath.c_str(), '/') != nullptr);
@@ -2113,8 +2197,8 @@ void rps_dump_into (const std::string dirpath)
     {
       if (realdirpath != cwdpath)
         {
-          QDir realqdir{QString(realdirpath.c_str())};
-          if (!realqdir.mkpath("persistore"))
+          if (!std::filesystem::create_directories(realdirpath
+              + "/persistore"))
             {
               RPS_WARNOUT("failed to make dump sub-directory " << realdirpath
                           << "/persistore:" << strerror(errno));
@@ -2123,7 +2207,8 @@ void rps_dump_into (const std::string dirpath)
           else
             RPS_INFORMOUT("made real dump sub-directory: " << realdirpath
                           << "/persistore");
-          if (!realqdir.mkpath("generated"))
+          if (!std::filesystem::create_directories(realdirpath
+              + "/generated"))
             {
               RPS_WARNOUT("failed to make dump sub-directory " << realdirpath
                           << "/generated:" << strerror(errno));
@@ -2136,6 +2221,9 @@ void rps_dump_into (const std::string dirpath)
       dumper.scan_roots();
       dumper.scan_every_cplusplus_source_file_for_constants();
       dumper.scan_loop_pass();
+      RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath << " start writing "
+                    << (rps_elapsed_real_time() - startelapsed) << " elapsed, "
+                    << (rps_process_cpu_time() - startcputime) << " cpu seconds." << std::endl);
       dumper.write_all_space_files();
       dumper.write_all_generated_files();
       dumper.write_manifest_file();
@@ -2172,6 +2260,7 @@ Rps_Loader::parse_manifest_file(void)
   if (manifstr.size() < 20)
     RPS_FATAL("Rps_Loader::parse_manifest_file nearly empty file %s",
               manifpath.c_str());
+  RPS_DEBUG_LOG(LOAD, "loader parse_manifest_file start manifstr=" << manifstr);
   Json::Value manifjson;
   try
     {
@@ -2196,6 +2285,7 @@ Rps_Loader::parse_manifest_file(void)
       RPS_FATAL("manifest map in %s should have spaceset: [...]",
                 manifpath.c_str ());
     size_t sizespset = spsetjson.size();
+    RPS_DEBUG_LOG(LOAD, "loader parse_manifest_file sizespset=" << sizespset);
     for (int ix=0; ix<(int)sizespset; ix++)
       {
         std::string curspidstr = spsetjson[ix].asString();
@@ -2211,6 +2301,7 @@ Rps_Loader::parse_manifest_file(void)
       RPS_FATAL("manifest map in %s should have globalroots: [...]",
                 manifpath.c_str ());
     size_t sizeglobroots = globrootsjson.size();
+    RPS_DEBUG_LOG(LOAD, "loader parse_manifest_file sizeglobroots=" << sizeglobroots);
     for (int ix=0; ix<(int)sizeglobroots; ix++)
       {
         std::string curgrootidstr = globrootsjson[ix].asString();
@@ -2226,6 +2317,7 @@ Rps_Loader::parse_manifest_file(void)
       RPS_FATAL("manifest map in %s should have plugins: [...]",
                 manifpath.c_str ());
     size_t sizeplugins = pluginsjson.size();
+    RPS_DEBUG_LOG(LOAD, "loader parse_manifest_file sizeplugins=" << sizeplugins);
     {
       std::lock_guard<std::recursive_mutex> gu(ld_mtx);
       for (int ix=0; ix<(int)sizeplugins; ix++)
@@ -2244,36 +2336,116 @@ Rps_Loader::parse_manifest_file(void)
     }
   }
   ////
+  RPS_DEBUG_LOG(LOAD, "loader parse_manifest_file end" << std::endl);
 } // end Rps_Loader::parse_manifest_file
 
+void
+Rps_Loader::parse_user_manifest(const std::string&umpath)
+{
+  RPS_DEBUG_LOG(LOAD, "Rps_Loader::parse_user_manifest start umpath="
+                << umpath);
+  Json::Value manifjson;
+  try
+    {
+      std::string manifstr = string_of_loaded_file(umpath);
+      manifjson = rps_string_to_json(manifstr);
+      if (manifjson.type () != Json::objectValue)
+        RPS_FATAL("Rps_Loader::parse_user_manifest %s wants a Json object in %s",
+                  umpath.c_str(), manifstr.c_str());
+      if (manifjson["format"].asString() != RPS_MANIFEST_FORMAT)
+        RPS_FATAL("user manifest map in %s should have format: '%s' but got:\n"
+                  "%s",
+                  umpath.c_str(), RPS_MANIFEST_FORMAT,
+                  manifjson["format"].toStyledString().c_str());
+      /// parse userroots
+      {
+        auto userrootsjson = manifjson["user_roots"];
+        if (userrootsjson.type() !=  Json::arrayValue)
+          RPS_FATAL("user manifest map in %s should have user_roots: [...]",
+                    umpath.c_str ());
+        size_t sizeuserroots = userrootsjson.size();
+        RPS_DEBUG_LOG(LOAD, "loader parse_user_manifest sizeuserroots=" << sizeuserroots);
+        for (int ix=0; ix<(int)sizeuserroots; ix++)
+          {
+            std::string curgrootidstr = userrootsjson[ix].asString();
+            Rps_Id curgrootid (curgrootidstr);
+            RPS_ASSERT(curgrootid);
+            ld_globrootsidset.insert(curgrootid);
+          }
+      }
+      /// parse user plugins
+      {
+        auto pluginsjson = manifjson["user_plugins"];
+        if (pluginsjson.type() !=  Json::arrayValue)
+          RPS_FATAL("user manifest map in %s should have user_plugins: [...]",
+                    umpath.c_str ());
+        size_t sizeplugins = pluginsjson.size();
+        RPS_DEBUG_LOG(LOAD, "loader parse_user_manifest sizeplugins=" << sizeplugins);
+        {
+          std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+          for (int ix=0; ix<(int)sizeplugins; ix++)
+            {
+              std::string curpluginidstr = pluginsjson[ix].asString();
+              Rps_Id curpluginid (curpluginidstr);
+              RPS_ASSERT(curpluginid && curpluginid.valid());
+              std::string pluginpath =
+                load_real_path(std::string(rps_homedir())
+                               +std::string{"/refpersys_plugins/rps"} + curpluginid.to_string() + "-mod.so");
+              RPS_INFORMOUT("should load user plugin #" << ix << " from " << pluginpath);
+              void* dlh = dlopen(pluginpath.c_str(), RTLD_NOW | RTLD_GLOBAL);
+              if (!dlh)
+                RPS_FATAL("failed to load user plugin #%d file %s: %s",
+                          ix, pluginpath.c_str(), dlerror());
+              ld_pluginsmap.insert({curpluginid, dlh});
+            }
+        }
+      }
+    }
+  catch  (const std::exception& exc)
+    {
+      RPS_FATALOUT("Rps_Loader::parse_user_manifest failed to parse "
+                   << umpath << ": " << exc.what());
+    };
+
+  RPS_INFORMOUT("parsed user manifest file " << umpath);
+} // end Rps_Loader::parse_user_manifest
 
 
 void Rps_Loader::load_install_roots(void)
 {
+  RPS_DEBUG_LOG(LOAD, "loader load_install_roots start");
   for (Rps_Id curootid: ld_globrootsidset)
     {
       std::lock_guard<std::recursive_mutex> gu(ld_mtx);
       Rps_ObjectRef curootobr = find_object_by_oid(curootid);
+      if (!curootobr)
+        RPS_FATALOUT("load_install_roots: curootid:" << curootid
+                     << " not found");
       RPS_ASSERT(curootobr);
       rps_add_root_object (curootobr);
     };
   /// install the hard coded global roots
+  int nbroots=0;
   {
     std::lock_guard<std::recursive_mutex> gu(ld_mtx);
-#define RPS_INSTALL_ROOT_OB(Oid)    {                           \
-      const char *end##Oid = nullptr;				\
-      bool ok##Oid = false;					\
-      auto id##Oid = Rps_Id(#Oid, &end##Oid, &ok##Oid);		\
-      RPS_ASSERT(end##Oid && *end##Oid == (char)0);		\
-      RPS_ASSERT(id##Oid && id##Oid.valid());			\
-      RPS_ROOT_OB(Oid) = find_object_by_oid(id##Oid);		\
-      if (!RPS_ROOT_OB(Oid))					\
-	RPS_WARN("failed to install root " #Oid);		\
-    };
+#define RPS_INSTALL_ROOT_OB(Oid)    {			\
+      const char *end##Oid = nullptr;			\
+      bool ok##Oid = false;				\
+      auto id##Oid = Rps_Id(#Oid, &end##Oid, &ok##Oid);	\
+      RPS_ASSERT(end##Oid && *end##Oid == (char)0);	\
+      RPS_ASSERT(id##Oid && id##Oid.valid());		\
+      RPS_ROOT_OB(Oid) = find_object_by_oid(id##Oid);	\
+      if (!RPS_ROOT_OB(Oid))				\
+	RPS_WARN("failed to install root " #Oid);	\
+      nbroots++;					\
+    }
+  };
 #include "generated/rps-roots.hh"
-  }
+  RPS_ASSERT(nbroots == RPS_NB_ROOT_OB);
+  RPS_DEBUG_LOG(LOAD, "loader load_install_roots nbroots=" << nbroots);
   ///
   /// install the hard coded symbols
+  int nbsymb=0;
   {
     std::lock_guard<std::recursive_mutex> gu(ld_mtx);
 #define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name)    {	\
@@ -2291,10 +2463,17 @@ void Rps_Loader::load_install_roots(void)
       if (!RPS_SYMB_OB(Name))				\
 	RPS_WARN("failed to install symbol "		\
 		 #Oid " named " #Name);			\
+      nbsymb++;						\
     };
 #include "generated/rps-names.hh"
+    RPS_ASSERT(nbsymb == RPS_NB_NAMED_ROOT_OB);
   }
+  // final check
+  RPS_ASSERT(rps_nb_root_objects() == RPS_NB_ROOT_OB);
+  RPS_DEBUG_LOG(LOAD, "loader load_install_roots ending nbsymb=" << nbsymb << ", nbroots=" << nbroots << std::endl);
 } // end Rps_Loader::load_install_roots
+
+
 
 
 void rps_load_from (const std::string& dirpath)
@@ -2304,16 +2483,28 @@ void rps_load_from (const std::string& dirpath)
   double startcput = rps_process_cpu_time();
   double endrealt = NAN;
   double endcput = NAN;
+  RPS_DEBUG_LOG(LOAD, "rps_load_from start dirpath=" << dirpath
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_load_from"));
   {
     Rps_Loader loader(dirpath);
     try
       {
         loader.parse_manifest_file();
+        {
+          std::string usermanifest{rps_homedir()};
+          usermanifest += "/";
+          usermanifest += RPS_USER_MANIFEST_JSON;
+          if (!access(usermanifest.c_str(), R_OK))
+            loader.parse_user_manifest(usermanifest);
+        }
         loader.load_all_state_files();
         loader.load_install_roots();
+        RPS_DEBUG_LOG(LOAD, "rps_load_from start dirpath=" << dirpath << " after load_install_roots");
         rps_initialize_roots_after_loading(&loader);
         rps_initialize_symbols_after_loading(&loader);
         nbloaded = loader.nb_loaded_objects();
+        RPS_DEBUG_LOG(LOAD, "rps_load_from start dirpath=" << dirpath << " nbloaded=" << nbloaded);
       }
     catch (const std::exception& exc)
       {
@@ -2397,7 +2588,6 @@ void rpsldpy_classinfo(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
   nbmeth = jvmethodict.size();
   for (int methix=0; methix<(int)nbmeth; methix++)
     {
-      size_t curlen=0;
       Json::Value jvcurmeth = jvmethodict[methix];
       if (!jvcurmeth.isObject()
           || !jvcurmeth.isMember("methosel")
@@ -2496,6 +2686,8 @@ void rpsldpy_space(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
+  RPS_ASSERT(spacid);
+  RPS_ASSERT(lineno>0);
   auto paylspace = obz->put_new_plain_payload<Rps_PayloadSpace>();
   RPS_ASSERT(paylspace != nullptr);
 } // end of rpsldpy_setob

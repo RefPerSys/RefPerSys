@@ -1,5 +1,6 @@
 /****************************************************************
  * file morevalues_rps.cc
+ * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
@@ -56,7 +57,8 @@ void
 Rps_InstanceZone::val_output(std::ostream& outs, unsigned depth) const
 {
 #warning unimplemented Rps_InstanceZone::val_output
-  RPS_WARN("unimplemented Rps_InstanceZone::val_output");
+  RPS_WARNOUT("unimplemented Rps_InstanceZone::val_output"
+              << " for outs@" << &outs << " depth=" << depth);
 } // end Rps_InstanceZone::val_output
 
 
@@ -70,9 +72,9 @@ Rps_InstanceZone::compute_class(Rps_CallFrame*callerframe) const
                  Rps_ObjectRef obclass;
                 );
   RPS_ASSERT(stored_type() == Rps_Type::Instance);
-  _.obclass = get_class();
-  RPS_ASSERT(_.obclass->get_classinfo_payload());
-  return _.obclass;
+  _f.obclass = get_class();
+  RPS_ASSERT(_f.obclass->get_classinfo_payload());
+  return _f.obclass;
 } // end Rps_InstanceZone::compute_class
 
 
@@ -326,75 +328,6 @@ Rps_JsonZone::less(const Rps_ZoneValue&zv) const
     }
   else return  Rps_Type::Json < zv.stored_type() ;
 } // end Rps_JsonZone::less
-
-
-
-////////////////////////////////////////////////////////////////
-std::atomic<unsigned> Rps_QtPtrZone::qtptr_count;
-// see gitlab.com/bstarynk/refpersys/-/wikis/adding-new-value-types-in-RefPerSys
-Rps_HashInt
-Rps_QtPtrZone::compute_hash(void) const
-{
-  auto rk = _qptr_rank;
-  Rps_HashInt h = (31*(rk%173)) ^ (rk*2161);
-  if (RPS_UNLIKELY(h==0))
-    h = (rk&0xff) + 3;
-  return h;
-} // end Rps_QtPtrZone::compute_hash
-
-Rps_ObjectRef
-Rps_QtPtrZone::compute_class(Rps_CallFrame* stkf) const
-{
-  (void) stkf;
-  return RPS_ROOT_OB(_3eg155drDR100uqE6R); // qtptr class
-}
-
-
-bool
-Rps_QtPtrZone::less(const Rps_ZoneValue& zv) const
-{
-  if (zv.stored_type() == Rps_Type::QtPtr)
-    {
-      auto other = reinterpret_cast<const Rps_QtPtrZone*>(&zv);
-      return _qptr_rank < other->_qptr_rank;
-    }
-  else
-    return Rps_Type::QtPtr < zv.stored_type();
-} // end Rps_QtPtrZone::less
-
-
-bool
-Rps_QtPtrZone::equal(const Rps_ZoneValue& zv) const
-{
-  return this == &zv;
-} // end Rps_QtPtrZone::equal
-
-
-
-void
-Rps_QtPtrZone::val_output(std::ostream& outs, unsigned) const
-{
-  // the depth is not useful
-  outs << "QtPtr#" <<  _qptr_rank;
-  if (_qptr_val)
-    {
-      outs << ":";
-      auto nm = _qptr_val->objectName();
-      if (!nm.isEmpty())
-        outs << nm.toStdString();
-      else
-        {
-          outs << ":" << _qptr_val->metaObject()->className();
-        }
-    }
-} // end Rps_QtPtrZone::val_output
-
-
-Rps_QtPtrZone*
-Rps_QtPtrZone::make(const QPointer<QObject> qptr)
-{
-  return Rps_QuasiZone::rps_allocate1<Rps_QtPtrZone, const QPointer<QObject>>(qptr);
-} // end Rps_QtPtrZone::make
 
 
 

@@ -22,16 +22,11 @@
   "_0TwK4TkhEGZ03oTa5m",
   "_1568ZHTl0Pa00461I2",
   "_18DO93843oX02UWzq6",
-  "_1wihX3eWD9o00QnxUX",
-  "_1DUx3zfUzIb04lqNVt",
-  "_1Win5yzaf1L02cBUlV",
   "_2KnFhlj8xW800kpgPt",
   "_33DFyPOJxbF015ZYoi",
   "_41OFI3r0S1t03qdB2E",
   "_42cCN1FRQSS03bzbTz",
-  "_4ojpzRzyRWz02DNWMe",
   "_4x9jd2yAe8A02SqKAx",
-  "_52zVxP3mTue034OWsD",
   "_5nSiRIxoYQp00MSnYA",
   "_6Wi00FwXYID00gl9Ma",
   "_7oa7eIzzcxv03TmmZH",
@@ -43,7 +38,7 @@
  "globalnames" : 
  [
   {
-   "nam" : "display_value_qt",
+   "nam" : "display_value_fltk",
    "obj" : "_0deGTf5hQwu01xJkyi"
   },
   {
@@ -63,7 +58,7 @@
    "obj" : "_0XMNvzdABUM03Bj7WP"
   },
   {
-   "nam" : "display_object_payload_qt",
+   "nam" : "display_object_payload_fltk",
    "obj" : "_0Z23UbC0G9b01WZZPN"
   },
   {
@@ -75,7 +70,7 @@
    "obj" : "_1EBVGSfW2m200z18rx"
   },
   {
-   "nam" : "display_object_occurrence_qt",
+   "nam" : "display_object_occurrence_fltk",
    "obj" : "_1Zo12toMRTa03uqsXh"
   },
   {
@@ -93,6 +88,10 @@
   {
    "nam" : "compute_set_of_own_method_selectors",
    "obj" : "_4bkpL4a6xlO00VnyM8"
+  },
+  {
+   "nam" : "fox_event_loop",
+   "obj" : "_4CZZ2JlnkQT02YJ6sM"
   },
   {
    "nam" : "message_sending",
@@ -115,7 +114,7 @@
    "obj" : "_7X9eGs8601M021nMue"
   },
   {
-   "nam" : "display_object_content_qt",
+   "nam" : "display_object_content_fltk",
    "obj" : "_8xCV6GDXYMa02mK5xy"
   },
   {
@@ -146,7 +145,7 @@
   "_2A2mrPpR3Qf03p6o5b",
   "_2SRhV7RJt3B01yArR6",
   "_36I1BY2NetN03WjrOv",
-  "_3eg155drDR100uqE6R",
+  "_39OsVkAJDdV00ohD5r",
   "_3GHJQW0IIqS01QY8qD",
   "_3N8vZ2Cw62z024XxCg",
   "_3O1QUNKZ4bU02amQus",
@@ -156,6 +155,7 @@
   "_4jISxMJ4PYU0050nUl",
   "_4ojpzRzyRWz02DNWMe",
   "_4pSwobFHGf301Qgwzh",
+  "_4CZZ2JlnkQT02YJ6sM",
   "_4FBkYDlynyC02QtkfG",
   "_54CP9eaTmxT00lzbEW",
   "_5yhJGgxLwLp00X0xEQ",
@@ -181,7 +181,7 @@
   "_9BnrMLXUhfG00llx8X",
   "_9Gz1oNPCnkB00I6VRS"
  ],
- "origitid" : "4ff40187213a2e6859d381133c00fd3dfcce7a8b+",
+ "origitid" : "f923c14bb7e9d3cc36c23dc270f01e1f2ae621a5+",
  "plugins" : [],
  "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }

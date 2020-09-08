@@ -1,5 +1,6 @@
 /****************************************************************
  * file magicattrs_rps.cc
+ * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
@@ -51,10 +52,10 @@ rpsget_41OFI3r0S1t03qdB2E(const Rps_Value valarg, const Rps_ObjectRef obattrarg,
                  Rps_ObjectRef obattr; // the attribute
                 );
   RPS_ASSERT(RPS_ROOT_OB(_41OFI3r0S1t03qdB2E) == rpskob_41OFI3r0S1t03qdB2E);
-  _.obattr = obattrarg;
-  _.val = valarg;
-  RPS_ASSERT (_.obattr == RPS_ROOT_OB(_41OFI3r0S1t03qdB2E));
-  return Rps_Value(_.val.compute_class(&_));
+  _f.obattr = obattrarg;
+  _f.val = valarg;
+  RPS_ASSERT (_f.obattr == RPS_ROOT_OB(_41OFI3r0S1t03qdB2E));
+  return Rps_Value(_f.val.compute_class(&_));
 } // end of rpsget_41OFI3r0S1t03qdB2E  - magic getter `class`
 
 /// the `space` magic attribute _9uwZtDshW4401x6MsY
@@ -71,12 +72,12 @@ rpsget_9uwZtDshW4401x6MsY(const Rps_Value valarg, const Rps_ObjectRef obattrarg,
                  Rps_Value val; // the value
                  Rps_ObjectRef obattr; // the attribute
                 );
-  _.obattr = obattrarg;
-  _.val = valarg;
+  _f.obattr = obattrarg;
+  _f.val = valarg;
   RPS_ASSERT(RPS_ROOT_OB(_9uwZtDshW4401x6MsY) == rpskob_9uwZtDshW4401x6MsY);
-  RPS_ASSERT (_.obattr == RPS_ROOT_OB(_9uwZtDshW4401x6MsY));
-  if (!_.val.is_empty() && _.val.is_object())
-    return Rps_Value(_.val.as_object()->get_space());
+  RPS_ASSERT (_f.obattr == RPS_ROOT_OB(_9uwZtDshW4401x6MsY));
+  if (!_f.val.is_empty() && _f.val.is_object())
+    return Rps_Value(_f.val.as_object()->get_space());
   return nullptr;
 } // end of rpsget_9uwZtDshW4401x6MsY - magic getter `space`
 
