@@ -38,7 +38,7 @@
  "globalnames" : 
  [
   {
-   "nam" : "display_value_fltk",
+   "nam" : "display_value_web",
    "obj" : "_0deGTf5hQwu01xJkyi"
   },
   {
@@ -58,7 +58,7 @@
    "obj" : "_0XMNvzdABUM03Bj7WP"
   },
   {
-   "nam" : "display_object_payload_fltk",
+   "nam" : "display_object_payload_web",
    "obj" : "_0Z23UbC0G9b01WZZPN"
   },
   {
@@ -74,7 +74,7 @@
    "obj" : "_1EBVGSfW2m200z18rx"
   },
   {
-   "nam" : "display_object_occurrence_fltk",
+   "nam" : "display_object_occurrence_web",
    "obj" : "_1Zo12toMRTa03uqsXh"
   },
   {
@@ -118,7 +118,7 @@
    "obj" : "_7X9eGs8601M021nMue"
   },
   {
-   "nam" : "display_object_content_fltk",
+   "nam" : "display_object_content_web",
    "obj" : "_8xCV6GDXYMa02mK5xy"
   },
   {
