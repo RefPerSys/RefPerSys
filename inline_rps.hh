@@ -1818,8 +1818,22 @@ Rps_GarbageCollector::mark_root_objectref(Rps_ObjectRef obr)
 }      // end Rps_GarbageCollector::mark_root_objectref
 
 
+////// agenda payload - for PaylAgenda
+Rps_PayloadAgenda::Rps_PayloadAgenda(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylAgenda, owner)
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadAgenda::Rps_PayloadAgenda
+
+Rps_PayloadAgenda::Rps_PayloadAgenda(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylAgenda, owner, ld)
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadAgenda::Rps_PayloadAgenda ..loading
+
 Rps_ObjectRef
-Rps_Agenda::the_agenda() {
+Rps_Agenda::the_agenda()
+{
   return RPS_ROOT_OB(_1aGtWm38Vw701jDhZn);
 }      // end Rps_Agenda::the_agenda
 

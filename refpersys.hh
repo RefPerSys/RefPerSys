@@ -899,6 +899,7 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
+  PaylAgenda = -14, // the the unique agenda
   PaylInputCommand = -13, // for input command payload, in transient instances of rps_command_textedit
   PaylOutputText = -12, // for output text payload, in transient instances of rps_output_textedit
   PaylWindow = -11, // for window payload, in transient instances of rps_window
@@ -3422,13 +3423,50 @@ extern "C" void rps_run_application(int &argc, char **argv);
 
 
 //////////////////////////////////////////////////////////////////
-/// initial agenda machinery
+/// initial agenda machinery; 
 
-class Rps_Agenda {
+extern "C" rpsldpysig_t rpsldpy_agenda;
+class Rps_Agenda { /// all member functions are static...
   friend class Rps_GarbageCollector;
+  friend class Rps_PayloadAgenda;
+  friend rpsldpysig_t rpsldpy_agenda;
 public:
-  inline Rps_ObjectRef the_agenda();
+  enum agenda_prio_en {
+    AgPrio_Idle= -1,
+    AgPrio__None= 0,
+    AgPrio_Low,
+    AgPrio_Normal,
+    AgPrio_High,
+    AgPrio__Last
+  };
+  static inline Rps_ObjectRef the_agenda();
+  static void gc_mark(Rps_GarbageCollector&);
+private:
+  static std::recursive_mutex agenda_mtx_;
+  static std::deque<Rps_ObjectRef> agenda_fifo_[AgPrio__Last];
 };				// end class Rps_Agenda
+
+/// the payload with agenda, only for the_agenda predefined object 
+class Rps_PayloadAgenda : public Rps_Payload
+{
+  friend class Rps_Agenda;
+protected:
+  inline Rps_PayloadAgenda(Rps_ObjectZone*owner);
+  inline Rps_PayloadAgenda(Rps_ObjectZone*owner, Rps_Loader*ld);
+  Rps_PayloadAgenda(Rps_ObjectRef obr) :
+    Rps_PayloadAgenda(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadAgenda();
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  virtual bool is_erasable(void) const;
+public:
+  virtual const std::string payload_type_name(void) const { return "agenda"; };
+};  // end of Rps_PayloadAgenda
 
 //////////////////////////////////////////////////////////////////
 /// C++ code can refer to root objects

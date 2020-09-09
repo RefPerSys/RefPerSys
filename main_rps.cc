@@ -775,11 +775,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     }
     return 0;
     case RPSPROGOPT_WEB:
-      {
-	if (side_effect)
-	  rps_web_initialize_service(arg);
-      }
-      return 0;
+    {
+      if (side_effect)
+        rps_web_initialize_service(arg);
+    }
+    return 0;
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:
     {
       void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
@@ -812,7 +812,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " GNU glibc " << gnu_get_libc_version() << std::endl
                     << " Read Eval Print Loop using " << rps_repl_version() << std::endl
                     << " libCURL for web client using " << rps_curl_version() << std::endl
-		    << " Libonion web server library version " << onion_version() << std::endl
+                    << " Libonion web server library version " << onion_version() << std::endl
                     << " made with: " << rps_makefile << std::endl
                     << " running on " << rps_hostname();
           {

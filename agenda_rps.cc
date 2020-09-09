@@ -5,7 +5,7 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the agenda mechanism.
+ *      It implements the agenda mechanism.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -31,5 +31,70 @@
  ******************************************************************************/
 
 #include "refpersys.hh"
+
+
+std::recursive_mutex Rps_Agenda::agenda_mtx_;
+std::deque<Rps_ObjectRef> Rps_Agenda::agenda_fifo_[Rps_Agenda::AgPrio__Last];
+
+void
+Rps_Agenda::gc_mark(Rps_GarbageCollector&gc)
+{
+  std::lock_guard<std::recursive_mutex> gu(agenda_mtx_);
+  for (int ix=AgPrio_Low; ix<AgPrio__Last; ix++)
+    {
+      auto& curfifo = agenda_fifo_[ix];
+      for (auto it: curfifo)
+        {
+          Rps_ObjectRef ob = *it;
+          if (ob)
+            ob->gc_mark(gc);
+        }
+    }
+} // end Rps_Agenda::gc_mark
+
+
+//// loading of agenda related payload
+void
+rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+{
+  RPS_ASSERT(obz != nullptr);
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(obz->get_payload() == nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+} // end of rpsldpy_agenda
+
+Rps_PayloadAgenda::~Rps_PayloadAgenda()
+{
+  RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
+} // end Rps_PayloadAgenda::~Rps_PayloadAgenda
+
+void
+Rps_PayloadAgenda::gc_mark(Rps_GarbageCollector&gc) const
+{
+  RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
+  Rps_Agenda::gc_mark(gc);
+} // end Rps_PayloadAgenda::gc_mark
+
+void
+Rps_PayloadAgenda::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
+  RPS_ASSERT (du != nullptr);
+} // end Rps_PayloadAgenda::dump_scan
+
+void
+Rps_PayloadAgenda::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
+  RPS_ASSERT (du != nullptr);
+} // end Rps_PayloadAgenda::dump_json_content
+
+
+bool
+Rps_PayloadAgenda::is_erasable() const
+{
+  RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
+  return false;
+} // end Rps_PayloadAgenda::is_erasable
 
 //// end of file agenda_rps.cc
