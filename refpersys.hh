@@ -3419,6 +3419,18 @@ extern "C" void rps_read_eval_print_loop(int &argc, char**argv); // GNU readline
 
 extern "C" void rps_run_application(int &argc, char **argv);
 
+
+
+//////////////////////////////////////////////////////////////////
+/// initial agenda machinery
+
+class Rps_Agenda {
+  friend class Rps_GarbageCollector;
+public:
+  inline Rps_ObjectRef the_agenda();
+};				// end class Rps_Agenda
+
+//////////////////////////////////////////////////////////////////
 /// C++ code can refer to root objects
 #define RPS_ROOT_OB(Oid) rps_rootob##Oid
 

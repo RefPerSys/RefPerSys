@@ -28,8 +28,8 @@
 
 .PHONY: all objects clean fullclean redump altredump print-temporary-plugin-settings indent test01 test02 test03
 
-RPS_GIT_ID:= $(shell ./generate-gitid.sh)
-RPS_SHORTGIT_ID:= $(shell ./generate-gitid.sh -s)
+RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
+RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
@@ -149,7 +149,7 @@ fullclean:
 	$(MAKE) clean
 
 __timestamp.c:
-	./generate-timestamp.sh $@  > $@-tmp
+	./do-generate-timestamp.sh $@  > $@-tmp
 	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp 
 	$(MV) --backup $@-tmp $@
 

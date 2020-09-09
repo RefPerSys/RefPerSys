@@ -1817,5 +1817,11 @@ Rps_GarbageCollector::mark_root_objectref(Rps_ObjectRef obr)
     }
 }      // end Rps_GarbageCollector::mark_root_objectref
 
+
+Rps_ObjectRef
+Rps_Agenda::the_agenda() {
+  return RPS_ROOT_OB(_1aGtWm38Vw701jDhZn);
+}      // end Rps_Agenda::the_agenda
+
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh
