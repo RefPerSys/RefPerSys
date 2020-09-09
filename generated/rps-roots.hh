@@ -32,6 +32,7 @@ RPS_INSTALL_ROOT_OB(_0Z23UbC0G9b01WZZPN) //display_object_payload_fltk∈symbol
 RPS_INSTALL_ROOT_OB(_14M7WuJSWw702zB0M9) //∈named_selector
 RPS_INSTALL_ROOT_OB(_1aGtWm38Vw701jDhZn) //∈agenda
 RPS_INSTALL_ROOT_OB(_1wihX3eWD9o00QnxUX) //∈mutable_set
+RPS_INSTALL_ROOT_OB(_1DB4iFr76MR03urHQp) //the_agenda∈symbol
 RPS_INSTALL_ROOT_OB(_1DBiKRl70P304DEMoR) //our_contributors∈symbol
 RPS_INSTALL_ROOT_OB(_1DUx3zfUzIb04lqNVt) //rps_window∈class
 RPS_INSTALL_ROOT_OB(_1EBVGSfW2m200z18rx) //name∈named_attribute
@@ -81,7 +82,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 59
+#define RPS_NB_ROOT_OB 60
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh

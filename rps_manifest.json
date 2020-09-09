@@ -62,6 +62,10 @@
    "obj" : "_0Z23UbC0G9b01WZZPN"
   },
   {
+   "nam" : "the_agenda",
+   "obj" : "_1DB4iFr76MR03urHQp"
+  },
+  {
    "nam" : "our_contributors",
    "obj" : "_1DBiKRl70P304DEMoR"
   },
@@ -136,6 +140,7 @@
   "_14M7WuJSWw702zB0M9",
   "_1aGtWm38Vw701jDhZn",
   "_1wihX3eWD9o00QnxUX",
+  "_1DB4iFr76MR03urHQp",
   "_1DBiKRl70P304DEMoR",
   "_1DUx3zfUzIb04lqNVt",
   "_1EBVGSfW2m200z18rx",
@@ -184,7 +189,7 @@
   "_9BnrMLXUhfG00llx8X",
   "_9Gz1oNPCnkB00I6VRS"
  ],
- "origitid" : "8089d4751f6dbb7dae9bf17a2a04c3d56564b8b8+",
+ "origitid" : "efb2cd6a084450649dfc769e5e29bd58e35ceeae+",
  "plugins" : [],
  "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }

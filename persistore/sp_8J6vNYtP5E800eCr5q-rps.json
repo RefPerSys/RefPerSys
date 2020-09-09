@@ -278,8 +278,15 @@
 //+ob_1aGtWm38Vw701jDhZn
 //∈agenda
 {
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "the_agenda"
+  }
+ ],
  "class" : "_3s7ztCCoJsj04puTdQ",
- "mtime" : 1599584744.8299999,
+ "mtime" : 1599618139.8299999,
  "oid" : "_1aGtWm38Vw701jDhZn"
 }
 //-ob_1aGtWm38Vw701jDhZn
