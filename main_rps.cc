@@ -555,6 +555,7 @@ main (int argc, char** argv)
           RPS_INFORM("%s disabled ASLR (git %s).", rps_progname, rps_gitid);
       }
   }
+  Rps_Agenda::initialize();
   if (rps_run_gui && rps_run_repl)
     RPS_FATAL("%s cannot run both GUI and terminal REPL", rps_progname);
   if (rps_run_repl && rps_without_terminal_escape)

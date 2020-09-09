@@ -3439,8 +3439,13 @@ public:
     AgPrio_High,
     AgPrio__Last
   };
+  static const char* agenda_priority_names[AgPrio__Last];
   static inline Rps_ObjectRef the_agenda();
   static void gc_mark(Rps_GarbageCollector&);
+  static void initialize(void);
+protected:
+  static void dump_scan_agenda(Rps_Dumper*du);
+  static void dump_json_agenda(Rps_Dumper*du, Json::Value&jv);
 private:
   static std::recursive_mutex agenda_mtx_;
   static std::deque<Rps_ObjectRef> agenda_fifo_[AgPrio__Last];

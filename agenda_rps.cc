@@ -36,6 +36,18 @@
 std::recursive_mutex Rps_Agenda::agenda_mtx_;
 std::deque<Rps_ObjectRef> Rps_Agenda::agenda_fifo_[Rps_Agenda::AgPrio__Last];
 
+const char*
+Rps_Agenda::agenda_priority_names[Rps_Agenda::AgPrio__Last];
+
+
+void
+Rps_Agenda::initialize(void)
+{
+  agenda_priority_names[AgPrio_Low]= "low_priority";
+  agenda_priority_names[AgPrio_Normal]= "normal_priority";
+  agenda_priority_names[AgPrio_High]= "high_priority";
+} // end Rps_Agenda::initialize
+
 void
 Rps_Agenda::gc_mark(Rps_GarbageCollector&gc)
 {
@@ -52,6 +64,50 @@ Rps_Agenda::gc_mark(Rps_GarbageCollector&gc)
     }
 } // end Rps_Agenda::gc_mark
 
+void
+Rps_Agenda::dump_scan_agenda(Rps_Dumper*du)
+{
+  RPS_ASSERT (du != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(agenda_mtx_);
+  for (int ix=AgPrio_Low; ix<AgPrio__Last; ix++)
+    {
+      auto& curfifo = agenda_fifo_[ix];
+      for (auto it: curfifo)
+        {
+          Rps_ObjectRef ob = *it;
+          if (ob)
+            rps_dump_scan_object(du, ob);
+        };
+    }
+} // end Rps_Agenda::dump_scan_agenda
+
+void
+Rps_Agenda::dump_json_agenda(Rps_Dumper*du, Json::Value&jv)
+{
+  RPS_ASSERT (du != nullptr);
+  std::lock_guard<std::recursive_mutex> gu(agenda_mtx_);
+  for (int ix=AgPrio_Low; ix<AgPrio__Last; ix++)
+    {
+      auto& curfifo = agenda_fifo_[ix];
+      const char*prioname = agenda_priority_names[ix];
+      RPS_ASSERT(prioname != nullptr);
+      if (!curfifo.empty())
+        {
+          Json::Value jseq(Json::arrayValue);
+          for (auto it: curfifo)
+            {
+              Rps_ObjectRef ob = *it;
+              if (ob && rps_is_dumpable_objref(du, ob))
+                {
+                  Json::Value job = rps_dump_json_objectref(du, ob);
+                  jseq.append(job);
+                }
+            };
+          jv[prioname] = jseq;
+        }
+    }
+} // end Rps_Agenda::dump_json_agenda
+
 
 //// loading of agenda related payload
 void
@@ -61,6 +117,20 @@ rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
+  for (int  ix= Rps_Agenda::AgPrio_Low; ix< Rps_Agenda::AgPrio__Last; ix++)
+    {
+      const char*prioname =  Rps_Agenda::agenda_priority_names[ix];
+      RPS_ASSERT(prioname != nullptr);
+      auto jseq = jv [prioname];
+      if (jseq.type() == Json::arrayValue)
+        {
+          /// TODO: missing code here...
+        }
+    }
+  RPS_FATALOUT("unimplemented rpsldpy_agenda obz=" << obz
+               << " spacid=" << spacid
+               << " lineno=" << lineno);
+#warning unimplemented rpsldpy_agenda
 } // end of rpsldpy_agenda
 
 Rps_PayloadAgenda::~Rps_PayloadAgenda()
@@ -80,6 +150,7 @@ Rps_PayloadAgenda::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
   RPS_ASSERT (du != nullptr);
+  Rps_Agenda::dump_scan_agenda(du);
 } // end Rps_PayloadAgenda::dump_scan
 
 void
@@ -87,6 +158,7 @@ Rps_PayloadAgenda::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
   RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
   RPS_ASSERT (du != nullptr);
+  Rps_Agenda::dump_json_agenda(du,jv);
 } // end Rps_PayloadAgenda::dump_json_content
 
 
