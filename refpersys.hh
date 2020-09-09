@@ -3385,7 +3385,7 @@ extern "C" std::string rps_curl_version(void); // in curl_rps.cc
 extern "C" void rps_set_gui_dump_dir(const std::string&); // in fltklo_rps.cc 
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
-extern "C" void rps_dump_into (const std::string dirpath = "."); // in store_rps.cc
+extern "C" void rps_dump_into (const std::string dirpath = ".", Rps_CallFrame* callframe = nullptr); // in store_rps.cc
 
 // scan a code address, e.g. a C function pointer whose address is inside some dlopen-ed plugin
 extern "C" void rps_dump_scan_code_addr(Rps_Dumper*, const void*);
@@ -3441,6 +3441,7 @@ public:
   };
   static const char* agenda_priority_names[AgPrio__Last];
   static inline Rps_ObjectRef the_agenda();
+  static inline Rps_ObjectRef tasklet_class();
   static void gc_mark(Rps_GarbageCollector&);
   static void initialize(void);
 protected:

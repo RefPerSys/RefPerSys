@@ -1107,7 +1107,7 @@ Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
 class Rps_Dumper
 {
   friend class Rps_PayloadSpace;
-  friend void rps_dump_into (const std::string dirpath);
+  friend void rps_dump_into (const std::string dirpath, Rps_CallFrame*);
   friend void rps_dump_scan_code_addr(Rps_Dumper*, const void*);
   friend void rps_dump_scan_object(Rps_Dumper*, Rps_ObjectRef obr);
   friend void rps_dump_scan_space_component(Rps_Dumper*, Rps_ObjectRef obrspace, Rps_ObjectRef obrcomp);
@@ -1120,6 +1120,7 @@ class Rps_Dumper
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
   std::string du_tempsuffix;
+  Rps_CallFrame* du_callframe;
   struct du_space_st
   {
     Rps_Id sp_id;
@@ -1173,8 +1174,12 @@ public:
   {
     return du_topdir;
   };
-  Rps_Dumper(const std::string&topdir);
+  Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe);
   ~Rps_Dumper();
+  Rps_CallFrame* dumper_call_frame(void) const
+  {
+    return du_callframe;
+  };
   void scan_object(const Rps_ObjectRef obr);
   void scan_value(const Rps_Value val, unsigned depth);
   Json::Value json_value(const Rps_Value val);
@@ -1197,9 +1202,9 @@ public:
   };
 };				// end class Rps_Dumper
 
-Rps_Dumper::Rps_Dumper(const std::string&topdir) :
+Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
   du_topdir(topdir), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
-  du_tempsuffix(make_temporary_suffix()), du_openedpathset()
+  du_tempsuffix(make_temporary_suffix()), du_callframe(callframe), du_openedpathset()
 {
   du_jsonwriterbuilder["commentStyle"] = "None";
   du_jsonwriterbuilder["indentation"] = " ";
@@ -1207,7 +1212,8 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir) :
                 << " this@" << (void*)this
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper constr"));
-}
+  RPS_ASSERT(rps_is_main_thread());
+} // end Rps_Dumper::Rps_Dumper
 
 Rps_Dumper::~Rps_Dumper()
 {
@@ -1215,6 +1221,8 @@ Rps_Dumper::~Rps_Dumper()
                 << " this@" << (void*)this
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_Dumper destr"));
+  RPS_ASSERT(rps_is_main_thread());
+  du_callframe = nullptr;
 } // end Rps_Dumper::~Rps_Dumper
 
 void
@@ -2145,8 +2153,10 @@ Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
 
 
 ////////////////////////////////////////////////////////////////
-void rps_dump_into (const std::string dirpath)
+void rps_dump_into (const std::string dirpath, Rps_CallFrame* callframe)
 {
+  RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/callframe,
+                           Rps_ObjectRef obdumper);
   double startelapsed = rps_elapsed_real_time();
   double startcputime = rps_process_cpu_time();
   RPS_DEBUG_LOG(DUMP, "rps_dump_into start dirpath=" << dirpath
@@ -2190,7 +2200,7 @@ void rps_dump_into (const std::string dirpath)
   {
     RPS_ASSERT(strrchr(realdirpath.c_str(), '/') != nullptr);
   }
-  Rps_Dumper dumper(realdirpath);
+  Rps_Dumper dumper(realdirpath, &_);
   RPS_INFORMOUT("start dumping into " << dumper.get_top_dir()
                 << " with temporary suffix " << dumper.get_temporary_suffix());
   try

@@ -1837,5 +1837,11 @@ Rps_Agenda::the_agenda()
   return RPS_ROOT_OB(_1aGtWm38Vw701jDhZn);
 }      // end Rps_Agenda::the_agenda
 
+Rps_ObjectRef
+Rps_Agenda::tasklet_class()
+{
+  return RPS_ROOT_OB(_8fYqEw8vTED03wsznt);
+}      // end Rps_Agenda::tasklet_class
+
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh
