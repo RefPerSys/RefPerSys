@@ -86,6 +86,7 @@ Rps_Agenda::dump_json_agenda(Rps_Dumper*du, Json::Value&jv)
 {
   RPS_ASSERT (du != nullptr);
   std::lock_guard<std::recursive_mutex> gu(agenda_mtx_);
+  jv["payload"] = "agenda";
   for (int ix=AgPrio_Low; ix<AgPrio__Last; ix++)
     {
       auto& curfifo = agenda_fifo_[ix];
@@ -127,9 +128,10 @@ rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
           /// TODO: missing code here...
         }
     }
-  RPS_FATALOUT("unimplemented rpsldpy_agenda obz=" << obz
-               << " spacid=" << spacid
-               << " lineno=" << lineno);
+  RPS_WARNOUT("unimplemented rpsldpy_agenda obz=" << obz
+              << " spacid=" << spacid
+              << " lineno=" << lineno
+              << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_agenda"));
 #warning unimplemented rpsldpy_agenda
 } // end of rpsldpy_agenda
 
