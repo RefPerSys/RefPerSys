@@ -1834,7 +1834,7 @@ Rps_PayloadAgenda::Rps_PayloadAgenda(Rps_ObjectZone*owner, Rps_Loader*ld)
 Rps_ObjectRef
 Rps_Agenda::the_agenda()
 {
-  return RPS_ROOT_OB(_1aGtWm38Vw701jDhZn);
+  return RPS_ROOT_OB(_1aGtWm38Vw701jDhZn); /// the_agenda∈agenda
 }      // end Rps_Agenda::the_agenda
 
 Rps_ObjectRef

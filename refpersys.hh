@@ -3456,12 +3456,14 @@ private:
 class Rps_PayloadAgenda : public Rps_Payload
 {
   friend class Rps_Agenda;
-protected:
+  friend rpsldpysig_t rpsldpy_agenda;
+public:
   inline Rps_PayloadAgenda(Rps_ObjectZone*owner);
   inline Rps_PayloadAgenda(Rps_ObjectZone*owner, Rps_Loader*ld);
   Rps_PayloadAgenda(Rps_ObjectRef obr) :
     Rps_PayloadAgenda(obr?obr.optr():nullptr) {};
   virtual ~Rps_PayloadAgenda();
+protected:
   virtual uint32_t wordsize(void) const
   {
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
