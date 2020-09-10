@@ -169,11 +169,11 @@ indent:
 redump: refpersys
 	./refpersys --dump=. --batch
 	@if git diff -U1|grep '^[+-] ' | grep -v origitid ; then \
-	  printf "make redump changed in %s\n" $$(pwd) ; \
+	  printf "make redump changed in %s git %s\n" $$(pwd)  $RPS_SHORTGIT_ID; \
           git diff ; \
         else \
 	  git checkout rps_manifest.json ; \
-            printf "make redump reached fixpoint in %s\n" $$(pwd) ; \
+            printf "make redump reached fixpoint in %s git %s\n" $$(pwd) $RPS_SHORTGIT_ID ; \
         fi
 
 ## alternate redump target
