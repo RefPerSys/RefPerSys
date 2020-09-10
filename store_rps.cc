@@ -1107,6 +1107,10 @@ Rps_ObjectRef::Rps_ObjectRef(const Json::Value &jv, Rps_Loader*ld)
 class Rps_Dumper
 {
   friend class Rps_PayloadSpace;
+  friend double rps_dump_start_elapsed_time(Rps_Dumper*);
+  friend double rps_dump_start_process_time(Rps_Dumper*);
+  friend double rps_dump_start_wallclock_time(Rps_Dumper*);
+  friend double rps_dump_start_monotonic_time(Rps_Dumper*);
   friend void rps_dump_into (const std::string dirpath, Rps_CallFrame*);
   friend void rps_dump_scan_code_addr(Rps_Dumper*, const void*);
   friend void rps_dump_scan_object(Rps_Dumper*, Rps_ObjectRef obr);
@@ -1120,6 +1124,10 @@ class Rps_Dumper
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
   std::string du_tempsuffix;
+  double du_startelapsedtime;
+  double du_startprocesstime;
+  double du_startwallclockrealtime;
+  double du_startmonotonictime;
   Rps_CallFrame* du_callframe;
   struct du_space_st
   {
@@ -1204,7 +1212,12 @@ public:
 
 Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
   du_topdir(topdir), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
-  du_tempsuffix(make_temporary_suffix()), du_callframe(callframe), du_openedpathset()
+  du_tempsuffix(make_temporary_suffix()),
+  du_startelapsedtime(rps_elapsed_real_time()),
+  du_startprocesstime(rps_process_cpu_time()),
+  du_startwallclockrealtime(rps_wallclock_real_time()),
+  du_startmonotonictime(rps_monotonic_real_time()),
+  du_callframe(callframe), du_openedpathset()
 {
   du_jsonwriterbuilder["commentStyle"] = "None";
   du_jsonwriterbuilder["indentation"] = " ";
@@ -1224,6 +1237,39 @@ Rps_Dumper::~Rps_Dumper()
   RPS_ASSERT(rps_is_main_thread());
   du_callframe = nullptr;
 } // end Rps_Dumper::~Rps_Dumper
+
+double
+rps_dump_start_elapsed_time(Rps_Dumper*du)
+{
+  if (!du)
+    return NAN;
+  return du->du_startelapsedtime;
+} // end rps_dump_start_elapsed_time
+
+
+double
+rps_dump_start_process_time(Rps_Dumper*du)
+{
+  if (!du)
+    return NAN;
+  return du->du_startprocesstime;
+} // end  rps_dump_start_process_time
+
+double
+rps_dump_start_wallclock_time(Rps_Dumper*du)
+{
+  if (!du)
+    return NAN;
+  return du->du_startwallclockrealtime;
+} // end rps_dump_start_wallclock_time
+
+double
+rps_dump_start_monotonic_time(Rps_Dumper*du)
+{
+  if (!du)
+    return NAN;
+  return du->du_startmonotonictime;
+} // end  rps_dump_start_monotonic_time
 
 void
 Rps_Dumper::scan_object(const Rps_ObjectRef obr)

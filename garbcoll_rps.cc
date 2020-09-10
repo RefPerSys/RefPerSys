@@ -48,7 +48,8 @@ Rps_GarbageCollector::Rps_GarbageCollector(const std::function<void(Rps_GarbageC
   gc_obscanque(),
   gc_nbscan(0), gc_nbmark(0), gc_nbdelete(0), gc_nbroots(0),
   gc_startelapsedtime(rps_elapsed_real_time()),
-  gc_startprocesstime(rps_process_cpu_time())
+  gc_startprocesstime(rps_process_cpu_time()),
+  gc_startrealtime(rps_wallclock_real_time())
 {
   RPS_ASSERT(gc_this_.load() == nullptr);
   gc_this_.store(this);

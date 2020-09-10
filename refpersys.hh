@@ -1572,6 +1572,7 @@ class Rps_GarbageCollector
   uint64_t gc_nbmark;
   uint64_t gc_nbdelete;
   uint64_t gc_nbroots;
+  double gc_startrealtime;
   double gc_startelapsedtime;
   double gc_startprocesstime;
 private:
@@ -1588,6 +1589,9 @@ public:
   {
     return rps_process_cpu_time() - gc_startprocesstime;
   };
+  double start_real_time(void) const {
+    return gc_startrealtime;
+  }
   uint64_t nb_roots() const
   {
     return gc_nbroots;
@@ -2226,7 +2230,8 @@ public:
   {
     RPS_ASSERT(ld != nullptr);
   };
-  virtual const std::string payload_type_name(void) const =0;
+  virtual const std::string payload_type_name(void) const =0; 
+  /// a payload is erasable if it can be removed, e.g. replaced by another one.
   virtual bool is_erasable(void) const
   {
     return true;
@@ -3387,6 +3392,10 @@ extern "C" void rps_set_gui_dump_dir(const std::string&); // in fltklo_rps.cc
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
 extern "C" void rps_dump_into (const std::string dirpath = ".", Rps_CallFrame* callframe = nullptr); // in store_rps.cc
+extern "C" double rps_dump_start_elapsed_time(Rps_Dumper*);
+extern "C" double rps_dump_start_process_time(Rps_Dumper*);
+extern "C" double rps_dump_start_wallclock_time(Rps_Dumper*);
+extern "C" double rps_dump_start_monotonic_time(Rps_Dumper*);
 
 // scan a code address, e.g. a C function pointer whose address is inside some dlopen-ed plugin
 extern "C" void rps_dump_scan_code_addr(Rps_Dumper*, const void*);
@@ -3485,6 +3494,11 @@ class Rps_PayloadTasklet : public Rps_Payload
   friend class Rps_Agenda;
   friend rpsldpysig_t rpsldpy_agenda;
   friend rpsldpysig_t rpsldpy_tasklet;
+  /// a tasklet has a closure to apply to run it
+  /// and a obsolescence time
+  Rps_ClosureValue tasklet_todoclos; // the closure to apply to
+  double tasklet_obsoltime; // obsolescence time
+  bool tasklet_transient;
 public:
   inline Rps_PayloadTasklet(Rps_ObjectZone*owner);
   inline Rps_PayloadTasklet(Rps_ObjectZone*owner, Rps_Loader*ld);

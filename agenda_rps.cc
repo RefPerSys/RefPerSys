@@ -204,11 +204,17 @@ rpsldpy_tasklet(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id
   RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   auto payltasklet = obz->put_new_plain_payload<Rps_PayloadTasklet>();
-  RPS_WARNOUT("unimplemented rpsldpy_tasklet obz=" << obz
-              << " spacid=" << spacid
-              << " lineno=" << lineno
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_tasklet"));
-#warning unimplemented rpsldpy_tasklet
+  if (jv.isMember("tasklet_todo"))
+    {
+      auto jtodo = jv["tasklet_todo"];
+      auto jdelay = jv["tasklet_obsolete_delay"];
+      payltasklet->tasklet_todoclos = Rps_ClosureValue(Rps_Value(jtodo,ld).as_closure());
+      payltasklet->tasklet_obsoltime = rps_wallclock_real_time() + jdelay.asDouble();
+    }
+  RPS_DEBUG_LOG(LOAD, "rpsldpy_tasklet obz=" << obz
+                << " spacid=" << spacid
+                << " lineno=" << lineno
+                << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_tasklet"));
 } // end of rpsldpy_tasklet
 
 Rps_PayloadTasklet::~Rps_PayloadTasklet()
@@ -221,18 +227,22 @@ Rps_PayloadTasklet::~Rps_PayloadTasklet()
 void
 Rps_PayloadTasklet::gc_mark(Rps_GarbageCollector&gc) const
 {
-  RPS_WARNOUT("unimplemented Rps_PayloadTasklet::gc_mark this="
-              << (void*)this
-              << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadTasklet::gc_mark"));
+  if (tasklet_todoclos)
+    {
+      if (tasklet_obsoltime < gc.start_real_time())
+        gc.mark_value(tasklet_todoclos);
+    }
 } // end Rps_PayloadTasklet::gc_mark
 
 void
 Rps_PayloadTasklet::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT (du != nullptr);
-  RPS_WARNOUT("unimplemented Rps_PayloadTasklet::dump_scan this="
-              << (void*)this
-              << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadTasklet::dump_scan"));
+  if (!tasklet_transient && tasklet_todoclos)
+    {
+      if (tasklet_obsoltime < rps_dump_start_wallclock_time(du))
+        rps_dump_scan_value(du, tasklet_obsoltime,0);
+    }
 } // end Rps_PayloadTasklet::dump_scan
 
 
@@ -240,18 +250,27 @@ void
 Rps_PayloadTasklet::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
   RPS_ASSERT (du != nullptr);
-  RPS_WARNOUT("unimplemented Rps_PayloadTasklet::dump_json_content this="
-              << (void*)this
-              << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadTasklet::dump_json_content"));
+  jv["payload"] = "tasklet";
+  if (!tasklet_transient && tasklet_todoclos)
+    {
+      if (tasklet_obsoltime < rps_dump_start_wallclock_time(du))
+        {
+          jv["tasklet_todo"] = rps_dump_json_value(du, tasklet_todoclos);
+          jv["tasklet_obsolete_delay"] =  rps_dump_start_wallclock_time(du) - tasklet_obsoltime;
+        }
+    }
+  RPS_DEBUG_LOG(DUMP,"Rps_PayloadTasklet::dump_json_content this="
+                << (void*)this << std::endl
+                << jv << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadTasklet::dump_json_content"));
 } // end Rps_PayloadTasklet::dump_json_content
 
 bool
 Rps_PayloadTasklet::is_erasable() const
 {
-  RPS_WARNOUT("unimplemented Rps_PayloadTasklet::is_erasable this="
-              << (void*)this
-              << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadTasklet::is_erasable"));
-  return false;
+  // a tasklet might be mutated to something else, even if I cannot
+  // imagine why that could be useful.
+  return true;
 } // end Rps_PayloadTasklet::is_erasable
 
 
