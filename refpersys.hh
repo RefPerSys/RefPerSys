@@ -3444,6 +3444,7 @@ public:
   static inline Rps_ObjectRef tasklet_class();
   static void gc_mark(Rps_GarbageCollector&);
   static void initialize(void);
+  static void add_tasklet(agenda_prio_en prio, Rps_ObjectRef obtasklet);
 protected:
   static void dump_scan_agenda(Rps_Dumper*du);
   static void dump_json_agenda(Rps_Dumper*du, Json::Value&jv);

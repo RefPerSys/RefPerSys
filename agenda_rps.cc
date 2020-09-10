@@ -109,6 +109,14 @@ Rps_Agenda::dump_json_agenda(Rps_Dumper*du, Json::Value&jv)
     }
 } // end Rps_Agenda::dump_json_agenda
 
+void
+Rps_Agenda::add_tasklet(agenda_prio_en prio, Rps_ObjectRef obtasklet)
+{
+  RPS_ASSERT(obtasklet);
+  RPS_ASSERT(prio >= AgPrio_Low && prio < AgPrio__Last);
+  std::lock_guard<std::recursive_mutex> gu(agenda_mtx_);
+  agenda_fifo_[prio].push_back(obtasklet);
+} // end Rps_Agenda::add_tasklet
 
 //// loading of agenda related payload
 void
@@ -126,13 +134,22 @@ rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
       auto jseq = jv [prioname];
       if (jseq.type() == Json::arrayValue)
         {
-          /// TODO: missing code here...
+          unsigned seqsiz = jseq.size();
+          for (unsigned ix=0; ix<seqsiz; ix++)
+            {
+              Json::Value jvcurelem = jseq[ix];
+              auto obelem = Rps_ObjectRef(jvcurelem, ld);
+              if (obelem)
+                {
+                  Rps_Agenda::add_tasklet((Rps_Agenda::agenda_prio_en)ix, obelem);
+                }
+            }
         }
     }
-  RPS_WARNOUT("unimplemented rpsldpy_agenda obz=" << obz
-              << " spacid=" << spacid
-              << " lineno=" << lineno
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_agenda"));
+  RPS_DEBUG_LOG(LOAD, "unimplemented rpsldpy_agenda obz=" << obz
+                << " spacid=" << spacid
+                << " lineno=" << lineno
+                << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_agenda"));
 #warning unimplemented rpsldpy_agenda
 } // end of rpsldpy_agenda
 
