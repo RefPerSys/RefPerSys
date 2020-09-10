@@ -40,7 +40,7 @@ std::deque<Rps_ObjectRef> Rps_Agenda::agenda_fifo_[Rps_Agenda::AgPrio__Last];
 
 std::atomic<unsigned long>  Rps_Agenda::agenda_add_counter_;
 std::atomic<bool> Rps_Agenda::agenda_is_running_;
-
+std::atomic<std::thread*> Rps_Agenda::agenda_thread_array_[RPS_NBJOBS_MAX+2];
 const char*
 Rps_Agenda::agenda_priority_names[Rps_Agenda::AgPrio__Last];
 
@@ -149,7 +149,6 @@ Rps_Agenda::fetch_tasklet_to_run(void)
   return nullptr;
 } // end Rps_Agenda::fetch_tasklet_to_run
 
-
 /// the below function is the body of worker threads running the agenda
 void
 Rps_Agenda::run_agenda_worker(int ix)
@@ -174,6 +173,28 @@ Rps_Agenda::run_agenda_worker(int ix)
   {Rps_Value((intptr_t)ix)});
   _.set_state_value(_f.descrval);
   long count = 0;
+  // wait for this thread to be in agenda_thread_array_
+  {
+    /// we sleep a different amount of time to help ensure other threads do
+    /// start...
+    std::this_thread::sleep_for(30ms + ix * 10ms);
+    int cnt=0;
+    constexpr int maxloop = 100;
+    for (cnt=0; cnt<=maxloop; cnt++)
+      {
+        std::thread*curthr = agenda_thread_array_[ix].load();
+        if (!curthr)
+          {
+            std::this_thread::sleep_for(1ms);
+            continue;
+          }
+        if (curthr->get_id() == std::this_thread::get_id())
+          break;
+        std::this_thread::sleep_for(2ms);
+      }
+    if (cnt>=maxloop) // won't happen in practice
+      RPS_FATALOUT("run_agenda_worker: failed to be in agenda_thread_array_[" << ix << "]");
+  }
   while (agenda_is_running_.load())
     {
       try
@@ -204,8 +225,64 @@ Rps_Agenda::run_agenda_worker(int ix)
                       << " for tasklet " << _f.obtasklet
                       << " doing " << _f.clostodo);
         }
-    }
+    };
+  Rps_Agenda::agenda_changed_condvar_.notify_all();
 } // end Rps_Agenda::run_agenda_worker
+
+
+
+/// start and run the agenda mechanism. This does not return till the
+/// agenda has stopped.
+void
+rps_run_agenda_mechanism(int nbjobs)
+{
+  using namespace std::chrono_literals;
+  if (nbjobs < RPS_NBJOBS_MIN)
+    RPS_FATALOUT("rps_run_agenda_mechanism: too little number of jobs "
+                 << nbjobs << " should be at least " << RPS_NBJOBS_MIN);
+  if (nbjobs>RPS_NBJOBS_MAX)
+    RPS_FATALOUT("rps_run_agenda_mechanism: too much number of jobs "
+                 << nbjobs << " should be at most " << RPS_NBJOBS_MAX);
+  if (nbjobs>rps_nbjobs)
+    {
+      RPS_WARNOUT("rps_run_agenda_mechanism: number of jobs "
+                  << nbjobs << " reduced to " << rps_nbjobs);
+      nbjobs = rps_nbjobs;
+    };
+  Rps_Agenda::agenda_is_running_.store(true);
+  /// start all worker threads
+  for (int ix=1; ix<nbjobs; ix++)
+    {
+      std::lock_guard<std::recursive_mutex> gu(Rps_Agenda::agenda_mtx_);
+      auto curthr = new std::thread(Rps_Agenda::run_agenda_worker, ix);
+      Rps_Agenda::agenda_thread_array_[ix].store(curthr);
+    }
+  while (true)
+    {
+      Rps_Agenda::agenda_changed_condvar_.wait_for(Rps_Agenda::agenda_mtx_,
+          30ms + 1ms * Rps_Random::random_quickly_4bits());
+      if (Rps_Agenda::agenda_is_running_.load())
+        continue;
+      for (int ix=1; ix<nbjobs; ix++)
+        {
+          auto thrp = Rps_Agenda:: agenda_thread_array_[ix].load();
+          if (!thrp)
+            continue;
+          thrp->join();
+          delete thrp;
+          Rps_Agenda::agenda_thread_array_[ix].store(nullptr);
+        }
+    }
+} // end of rps_run_agenda_mechanism
+
+void
+rps_stop_agenda_mechanism(void)
+{
+  Rps_Agenda::agenda_is_running_.store(false);
+  Rps_Agenda::agenda_changed_condvar_.notify_all();
+} // end of rps_stop_agenda_mechanism
+
+
 
 //// loading of agenda related payload
 void

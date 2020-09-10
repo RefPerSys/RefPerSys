@@ -3443,6 +3443,13 @@ extern "C" void rps_run_application(int &argc, char **argv);
 //////////////////////////////////////////////////////////////////
 /// initial agenda machinery; 
 
+/// start and run the agenda mechanism, that is start NBJOBS worker threads
+/// each running Rps_Agenda::run_agenda_worker; this does not return
+/// till the agenda is stopped
+extern "C" void rps_run_agenda_mechanism(int nbjobs);
+/// stop the agenda mechanism
+extern "C" void rps_stop_agenda_mechanism(void);
+
 /****
  * The agenda is a unique and central data-structure (and RefPerSys
  * object `the_agenda` with a `Rps_PayloadAgenda` payload) managing
@@ -3455,6 +3462,8 @@ class Rps_Agenda { /// all member functions are static...
   friend class Rps_GarbageCollector;
   friend class Rps_PayloadAgenda;
   friend rpsldpysig_t rpsldpy_agenda;
+  friend void rps_run_agenda_mechanism(int nbjobs);
+  friend void rps_stop_agenda_mechanism(void);
 public:
   enum agenda_prio_en {
     AgPrio_Idle= -1,
@@ -3480,8 +3489,11 @@ private:
   static std::condition_variable_any agenda_changed_condvar_;
   static std::atomic<unsigned long> agenda_add_counter_;
   static std::deque<Rps_ObjectRef> agenda_fifo_[AgPrio__Last];
-  static std::atomic<bool> agenda_is_running_; 
+  static std::atomic<bool> agenda_is_running_;
+  static std::atomic<std::thread*> agenda_thread_array_[RPS_NBJOBS_MAX+2];
 };				// end class Rps_Agenda
+
+
 
 /// the payload with agenda, only for the_agenda predefined object 
 class Rps_PayloadAgenda : public Rps_Payload
