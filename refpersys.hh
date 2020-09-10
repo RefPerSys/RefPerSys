@@ -2825,6 +2825,14 @@ public:
     RPS_ASSERT(!clos.is_empty() && clos.is_closure());
     cfram_clos = clos;
   };
+  void set_state_value(Rps_Value val) {
+    cfram_state = val;
+  };
+  Rps_Value state_value() const { return cfram_state; };
+  void set_state_rank(int rk) {
+    cfram_rankstate = rk;
+  };
+  int state_rank() { return cfram_rankstate; }; 
   void clear_closure(void)
   {
     cfram_clos = nullptr;
@@ -3463,13 +3471,16 @@ public:
   static void initialize(void);
   static void add_tasklet(agenda_prio_en prio, Rps_ObjectRef obtasklet);
   static Rps_ObjectRef fetch_tasklet_to_run(void);
+  static void run_agenda_worker(int ix);
 protected:
   static void dump_scan_agenda(Rps_Dumper*du);
   static void dump_json_agenda(Rps_Dumper*du, Json::Value&jv);
 private:
   static std::recursive_mutex agenda_mtx_;
+  static std::condition_variable_any agenda_changed_condvar_;
   static std::atomic<unsigned long> agenda_add_counter_;
   static std::deque<Rps_ObjectRef> agenda_fifo_[AgPrio__Last];
+  static std::atomic<bool> agenda_is_running_; 
 };				// end class Rps_Agenda
 
 /// the payload with agenda, only for the_agenda predefined object 
@@ -3525,6 +3536,7 @@ protected:
   virtual bool is_erasable(void) const;
 public:
   virtual const std::string payload_type_name(void) const { return "tasklet"; };
+  Rps_ClosureValue todo_closure(void) const { return tasklet_todoclos; };
 };  // end of Rps_PayloadTasklet
 
 

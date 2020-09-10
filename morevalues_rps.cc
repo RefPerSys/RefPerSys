@@ -40,6 +40,22 @@ const char rps_morevalues_date[]= __DATE__;
 
 
 /////////////////////////////////////////////////////// instances
+Rps_InstanceZone*
+Rps_InstanceZone::make_from_components(Rps_ObjectRef classob, const std::initializer_list<Rps_Value>& valil)
+{
+  if (!classob)
+    return nullptr;
+  auto nbsons = valil.size();
+  Rps_InstanceZone* inst
+    = Rps_QuasiZone::rps_allocate_with_wordgap<Rps_InstanceZone,unsigned,Rps_ObjectRef,Rps_InstanceTag>((nbsons*sizeof(Rps_Value)/sizeof(void*)),
+        (unsigned)nbsons, classob,  Rps_InstanceTag{});
+  int ix=0;
+  Rps_Value*sonarr = inst->raw_data_sons();
+  for (auto val: valil)
+    sonarr[ix++] = val;
+  return inst;
+} // end Rps_InstanceZone::make_from_components
+
 
 const Rps_SetOb*
 Rps_InstanceZone::class_attrset(Rps_ObjectRef obclass)

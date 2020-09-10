@@ -34,10 +34,12 @@
 
 
 std::recursive_mutex Rps_Agenda::agenda_mtx_;
+std::condition_variable_any Rps_Agenda::agenda_changed_condvar_;
 
 std::deque<Rps_ObjectRef> Rps_Agenda::agenda_fifo_[Rps_Agenda::AgPrio__Last];
 
 std::atomic<unsigned long>  Rps_Agenda::agenda_add_counter_;
+std::atomic<bool> Rps_Agenda::agenda_is_running_;
 
 const char*
 Rps_Agenda::agenda_priority_names[Rps_Agenda::AgPrio__Last];
@@ -125,6 +127,7 @@ Rps_Agenda::add_tasklet(agenda_prio_en prio, Rps_ObjectRef obtasklet)
   std::lock_guard<std::recursive_mutex> gu(agenda_mtx_);
   agenda_fifo_[prio].push_back(obtasklet);
   agenda_add_counter_.fetch_add(1);
+  Rps_Agenda::agenda_changed_condvar_.notify_all();
 } // end Rps_Agenda::add_tasklet
 
 
@@ -145,6 +148,64 @@ Rps_Agenda::fetch_tasklet_to_run(void)
     }
   return nullptr;
 } // end Rps_Agenda::fetch_tasklet_to_run
+
+
+/// the below function is the body of worker threads running the agenda
+void
+Rps_Agenda::run_agenda_worker(int ix)
+{
+  using namespace std::chrono_literals;
+  if (ix<=0 || ix>rps_nbjobs)
+    RPS_FATALOUT("run_agenda_worker invalid index#" << ix
+                 << " for " << rps_nbjobs << " jobs");
+  char pthname[16];
+  memset (pthname, 0, sizeof(pthname));
+  snprintf(pthname, sizeof(pthname), "rps-agw#%d", ix);
+  pthread_setname_np(pthread_self(), pthname);
+  RPS_LOCALFRAME(RPS_ROOT_OB(_1aGtWm38Vw701jDhZn), //the_agenda,
+                 nullptr, // no caller frame
+                 Rps_ObjectRef obtasklet;
+                 Rps_InstanceValue descrval;
+                 Rps_ClosureValue clostodo;
+                );
+  /// the descriptive value of our call frame
+  _f.descrval =
+    Rps_InstanceValue(RPS_ROOT_OB(_3s7ztCCoJsj04puTdQ),//agenda
+  {Rps_Value((intptr_t)ix)});
+  _.set_state_value(_f.descrval);
+  long count = 0;
+  while (agenda_is_running_.load())
+    {
+      try
+        {
+          count++;
+          _f.obtasklet = Rps_Agenda::fetch_tasklet_to_run();
+          Rps_PayloadTasklet*taskpayl = nullptr;
+          if (_f.obtasklet)
+            {
+              taskpayl = _f.obtasklet->get_dynamic_payload<Rps_PayloadTasklet>();
+              if (taskpayl && taskpayl->owner() == _f.obtasklet)
+                _f.clostodo = taskpayl->todo_closure();
+              if (_f.clostodo)
+                {
+                  _f.clostodo.apply1(&_, _f.obtasklet);
+                }
+            }
+          else   // no tasklet, we wait for changes in agenda
+            {
+              Rps_Agenda::agenda_changed_condvar_.wait_for(agenda_mtx_, 500ms+ix*10ms);
+            }
+        }
+      catch (std::exception& exc)
+        {
+          RPS_WARNOUT("run_agenda_worker " << pthname
+                      << " got exception " << exc.what()
+                      << " count#" << count
+                      << " for tasklet " << _f.obtasklet
+                      << " doing " << _f.clostodo);
+        }
+    }
+} // end Rps_Agenda::run_agenda_worker
 
 //// loading of agenda related payload
 void
