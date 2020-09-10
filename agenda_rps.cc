@@ -146,11 +146,11 @@ rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
             }
         }
     }
-  RPS_DEBUG_LOG(LOAD, "unimplemented rpsldpy_agenda obz=" << obz
+  RPS_DEBUG_LOG(LOAD, "incomplete rpsldpy_agenda obz=" << obz
                 << " spacid=" << spacid
                 << " lineno=" << lineno
                 << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_agenda"));
-#warning unimplemented rpsldpy_agenda
+#warning incomplete rpsldpy_agenda
 } // end of rpsldpy_agenda
 
 Rps_PayloadAgenda::~Rps_PayloadAgenda()
@@ -188,5 +188,71 @@ Rps_PayloadAgenda::is_erasable() const
   RPS_ASSERT (owner() == Rps_Agenda::the_agenda());
   return false;
 } // end Rps_PayloadAgenda::is_erasable
+
+
+
+
+////////////////////////////////////////////////////////////////
+////////////// TASKLETS
+
+//// loading of tasklet related payload
+void
+rpsldpy_tasklet(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+{
+  RPS_ASSERT(obz != nullptr);
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(obz->get_payload() == nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  auto payltasklet = obz->put_new_plain_payload<Rps_PayloadTasklet>();
+  RPS_WARNOUT("unimplemented rpsldpy_tasklet obz=" << obz
+              << " spacid=" << spacid
+              << " lineno=" << lineno
+              << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_tasklet"));
+#warning unimplemented rpsldpy_tasklet
+} // end of rpsldpy_tasklet
+
+Rps_PayloadTasklet::~Rps_PayloadTasklet()
+{
+  RPS_WARNOUT("unimplemented Rps_PayloadTasklet::~Rps_PayloadTasklet this="
+              << (void*)this
+              << RPS_FULL_BACKTRACE_HERE(1, "~Rps_PayloadTasklet"));
+} // end Rps_PayloadTasklet::~Rps_PayloadTasklet
+
+void
+Rps_PayloadTasklet::gc_mark(Rps_GarbageCollector&gc) const
+{
+  RPS_WARNOUT("unimplemented Rps_PayloadTasklet::gc_mark this="
+              << (void*)this
+              << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadTasklet::gc_mark"));
+} // end Rps_PayloadTasklet::gc_mark
+
+void
+Rps_PayloadTasklet::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT (du != nullptr);
+  RPS_WARNOUT("unimplemented Rps_PayloadTasklet::dump_scan this="
+              << (void*)this
+              << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadTasklet::dump_scan"));
+} // end Rps_PayloadTasklet::dump_scan
+
+
+void
+Rps_PayloadTasklet::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  RPS_ASSERT (du != nullptr);
+  RPS_WARNOUT("unimplemented Rps_PayloadTasklet::dump_json_content this="
+              << (void*)this
+              << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadTasklet::dump_json_content"));
+} // end Rps_PayloadTasklet::dump_json_content
+
+bool
+Rps_PayloadTasklet::is_erasable() const
+{
+  RPS_WARNOUT("unimplemented Rps_PayloadTasklet::is_erasable this="
+              << (void*)this
+              << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadTasklet::is_erasable"));
+  return false;
+} // end Rps_PayloadTasklet::is_erasable
+
 
 //// end of file agenda_rps.cc

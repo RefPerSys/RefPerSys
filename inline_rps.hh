@@ -1843,5 +1843,16 @@ Rps_Agenda::tasklet_class()
   return RPS_ROOT_OB(_8fYqEw8vTED03wsznt);
 }      // end Rps_Agenda::tasklet_class
 
+
+/////////////////////////////////////////////////////////////////
+//////////////// Tasklets
+
+
+Rps_PayloadTasklet::Rps_PayloadTasklet(Rps_ObjectZone*obz)
+  : Rps_Payload(Rps_Type::PaylTasklet, obz)
+{
+} // end Rps_PayloadTasklet::Rps_PayloadTasklet(Rps_ObjectZone*)
+
+
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh

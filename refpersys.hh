@@ -899,6 +899,7 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
+  PaylTasklet = -15, // for small tasklets inside agenda
   PaylAgenda = -14, // the the unique agenda
   PaylInputCommand = -13, // for input command payload, in transient instances of rps_command_textedit
   PaylOutputText = -12, // for output text payload, in transient instances of rps_output_textedit
@@ -3476,6 +3477,33 @@ protected:
 public:
   virtual const std::string payload_type_name(void) const { return "agenda"; };
 };  // end of Rps_PayloadAgenda
+
+
+/// the payload with tasklets, inside the_agenda
+class Rps_PayloadTasklet : public Rps_Payload
+{ 
+  friend class Rps_Agenda;
+  friend rpsldpysig_t rpsldpy_agenda;
+  friend rpsldpysig_t rpsldpy_tasklet;
+public:
+  inline Rps_PayloadTasklet(Rps_ObjectZone*owner);
+  inline Rps_PayloadTasklet(Rps_ObjectZone*owner, Rps_Loader*ld);
+  Rps_PayloadTasklet(Rps_ObjectRef obr) :
+    Rps_PayloadTasklet(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadTasklet();
+protected:
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  virtual bool is_erasable(void) const;
+public:
+  virtual const std::string payload_type_name(void) const { return "tasklet"; };
+};  // end of Rps_PayloadTasklet
+
 
 //////////////////////////////////////////////////////////////////
 /// C++ code can refer to root objects
