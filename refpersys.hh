@@ -3435,6 +3435,13 @@ extern "C" void rps_run_application(int &argc, char **argv);
 //////////////////////////////////////////////////////////////////
 /// initial agenda machinery; 
 
+/****
+ * The agenda is a unique and central data-structure (and RefPerSys
+ * object `the_agenda` with a `Rps_PayloadAgenda` payload) managing
+ * todo things. Each item to be done in the agenda is a tasklet (some
+ * object of class `tasklet`, each with its `Rps_PayloadTasklet`
+ * payload).
+ ****/
 extern "C" rpsldpysig_t rpsldpy_agenda;
 class Rps_Agenda { /// all member functions are static...
   friend class Rps_GarbageCollector;
@@ -3455,11 +3462,13 @@ public:
   static void gc_mark(Rps_GarbageCollector&);
   static void initialize(void);
   static void add_tasklet(agenda_prio_en prio, Rps_ObjectRef obtasklet);
+  static Rps_ObjectRef fetch_tasklet_to_run(void);
 protected:
   static void dump_scan_agenda(Rps_Dumper*du);
   static void dump_json_agenda(Rps_Dumper*du, Json::Value&jv);
 private:
   static std::recursive_mutex agenda_mtx_;
+  static std::atomic<unsigned long> agenda_add_counter_;
   static std::deque<Rps_ObjectRef> agenda_fifo_[AgPrio__Last];
 };				// end class Rps_Agenda
 

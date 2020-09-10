@@ -34,7 +34,10 @@
 
 
 std::recursive_mutex Rps_Agenda::agenda_mtx_;
+
 std::deque<Rps_ObjectRef> Rps_Agenda::agenda_fifo_[Rps_Agenda::AgPrio__Last];
+
+std::atomic<unsigned long>  Rps_Agenda::agenda_add_counter_;
 
 const char*
 Rps_Agenda::agenda_priority_names[Rps_Agenda::AgPrio__Last];
@@ -112,11 +115,36 @@ Rps_Agenda::dump_json_agenda(Rps_Dumper*du, Json::Value&jv)
 void
 Rps_Agenda::add_tasklet(agenda_prio_en prio, Rps_ObjectRef obtasklet)
 {
-  RPS_ASSERT(obtasklet);
-  RPS_ASSERT(prio >= AgPrio_Low && prio < AgPrio__Last);
+  if (obtasklet.is_empty())
+    return;
+  auto obztask = obtasklet.to_object();
+  if (!obztask)
+    return;
+  if ((int)prio < (int)AgPrio_Low || (int)prio >= AgPrio__Last)
+    return;
   std::lock_guard<std::recursive_mutex> gu(agenda_mtx_);
   agenda_fifo_[prio].push_back(obtasklet);
+  agenda_add_counter_.fetch_add(1);
 } // end Rps_Agenda::add_tasklet
+
+
+///// fetch a runnable tasklet from the agenda and remove it from there...
+Rps_ObjectRef
+Rps_Agenda::fetch_tasklet_to_run(void)
+{
+  Rps_ObjectRef res;
+  std::lock_guard<std::recursive_mutex> gu(agenda_mtx_);
+  for (int prio = (int)AgPrio_High; prio >= (int)AgPrio_Low; prio--)
+    {
+      auto& curfifo = agenda_fifo_[agenda_prio_en(prio)];
+      if (curfifo.empty())
+        continue;
+      res = curfifo.front();
+      curfifo.pop_front();
+      return res;
+    }
+  return nullptr;
+} // end Rps_Agenda::fetch_tasklet_to_run
 
 //// loading of agenda related payload
 void
