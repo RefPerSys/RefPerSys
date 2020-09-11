@@ -316,14 +316,38 @@ Rps_Agenda::do_garbage_collect(int ix, Rps_CallFrame*callframe)
   /// At this point, we do know that every worker thread is in garbage
   /// collection state, so is NOT running, don't change the call
   /// stack, so is NOT ALLOCATING.... The GC is then permitted to scan
-  /// the call stacks in agenda_work_gc_callframe_
-  RPS_FATALOUT("incomplete Rps_Agenda::do_garbage_collect ix=" << ix
-               << " callframe=" << Rps_ShowCallFrame(callframe));
-#warning incomplete Rps_Agenda::do_garbage_collect, should create some Rps_GarbageCollector....
-  /****
-   * TODO: create an instance of Rps_GarbageCollector and then scan
-   * every call frames in every working thread.
-   ****/
+  /// the call stacks in agenda_work_gc_callframe_ ... The first
+  /// worker thread is doing the actual GC work.
+  if (ix==1)
+    {
+      std::unique_lock<std::recursive_mutex> ulock(agenda_mtx_);
+      std::function<void(Rps_GarbageCollector*)> gcfun([&](Rps_GarbageCollector*gc)
+      {
+        for (int thrix=1; thrix<rps_nbjobs; thrix++)
+          {
+            auto pcallfr = agenda_work_gc_callframe_[thrix].load();
+            if (!pcallfr)
+              continue;
+            gc->mark_call_stack(pcallfr);
+            agenda_work_gc_callframe_[thrix].store(nullptr);
+          }
+      });
+      rps_garbage_collect(&gcfun);
+    };
+  std::this_thread::sleep_for(1ms/8);
+  // Every thread which is in GC state switches to EndGC state.
+  for (int wix=1; wix<rps_nbjobs; wix++)
+    {
+      std::thread*curthr = agenda_thread_array_[wix].load();
+      if (!curthr)
+        continue;
+      if (agenda_work_thread_state_[wix].load() == Rps_Agenda::WthrAg_GC)
+        agenda_work_thread_state_[wix].store(Rps_Agenda::WthrAg_EndGC);
+    };
+  std::this_thread::sleep_for(1ms/8);
+  Rps_Agenda::agenda_changed_condvar_.notify_all();
+  // at the next iteration of Rps_Agenda::run_agenda_worker, the
+  // thread will resume usual work if agenda is non-empty....
 } // end of Rps_Agenda::do_garbage_collect
 
 /// start and run the agenda mechanism. This does not return till the
