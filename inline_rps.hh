@@ -704,6 +704,7 @@ inline void*
 Rps_QuasiZone::operator new (std::size_t siz, std::nullptr_t)
 {
   RPS_ASSERT(siz % sizeof(void*) == 0);
+  qz_alloc_cumulw.fetch_add(siz / sizeof(void*));
   return ::operator new (siz);
 } // end plain Rps_QuasiZone::operator new
 
@@ -712,7 +713,9 @@ inline void*
 Rps_QuasiZone::operator new (std::size_t siz, unsigned wordgap)
 {
   RPS_ASSERT(siz % sizeof(void*) == 0);
-  return ::operator new (siz + wordgap * sizeof(void*));
+  auto realsize = siz + wordgap * sizeof(void*);
+  qz_alloc_cumulw.fetch_add(realsize / sizeof(void*));
+  return ::operator new (realsize);
 } // end wordgapped Rps_QuasiZone::operator new
 
 

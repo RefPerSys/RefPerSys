@@ -114,6 +114,7 @@ fail:
 std::recursive_mutex Rps_QuasiZone::qz_mtx;
 std::vector<Rps_QuasiZone*> Rps_QuasiZone::qz_zonvec(100);
 uint32_t Rps_QuasiZone::qz_cnt;
+std::atomic<uint64_t> Rps_QuasiZone::qz_alloc_cumulw;
 
 void
 Rps_QuasiZone::initialize(void)

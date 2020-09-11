@@ -1643,12 +1643,18 @@ class Rps_QuasiZone : public Rps_TypedZone
   static std::recursive_mutex qz_mtx;
   static std::vector<Rps_QuasiZone*> qz_zonvec;
   static uint32_t qz_cnt;
+  // the cumulated amount of allocated words
+  static std::atomic<uint64_t> qz_alloc_cumulw;
   uint32_t qz_rank;		// the rank in qz_zonvec;
 protected:
   inline void* operator new (std::size_t siz, std::nullptr_t);
   inline void* operator new (std::size_t siz, unsigned wordgap);
   static constexpr uint16_t qz_gcmark_bit = 1;
 public:
+  /// gives the number of machine words (8 bytes) allocated since
+  /// start of process...
+  static uint64_t cumulative_allocated_wordcount()
+  { return qz_alloc_cumulw.load(); };
   static void initialize(void);
   static inline Rps_QuasiZone*nth_zone(uint32_t rk);
   static inline Rps_QuasiZone*raw_nth_zone(uint32_t rk, Rps_GarbageCollector&);

@@ -2596,6 +2596,7 @@ void rps_load_from (const std::string& dirpath)
                 << " loaded " << nbloaded << " objects in " << realtbuf << " elapsed, " << cputbuf << " cpu seconds" << std::endl
                 << "so " << realmicrobuf << " elapsed µs/ob, " << cpumicrobuf << " cpu µs/ob"
                 << std::endl
+                << Rps_QuasiZone::cumulative_allocated_wordcount() << " memory words."<< std::endl
                 << "============================================================================="
                 << std::endl << std::endl);
 } // end of rps_load_from
