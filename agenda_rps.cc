@@ -47,7 +47,7 @@ std::atomic<Rps_Agenda::workthread_state_en>
 Rps_Agenda::agenda_work_thread_state_[RPS_NBJOBS_MAX+2];
 std::atomic<bool> Rps_Agenda::agenda_needs_garbcoll_;
 std::atomic<uint64_t> Rps_Agenda::agenda_cumulw_gc_;
-
+std::atomic<Rps_CallFrame*> Rps_Agenda::agenda_work_gc_callframe_[RPS_NBJOBS_MAX+2];
 
 void
 Rps_Agenda::initialize(void)
@@ -177,6 +177,7 @@ Rps_Agenda::run_agenda_worker(int ix)
   {Rps_Value((intptr_t)ix)});
   _.set_state_value(_f.descrval);
   long count = 0;
+  agenda_work_thread_state_[ix].store(WthrAg_Idle);
   // wait for this thread to be in agenda_thread_array_
   {
     /// we sleep a different amount of time to help ensure other threads do
@@ -209,48 +210,120 @@ Rps_Agenda::run_agenda_worker(int ix)
         }
       if (Rps_Agenda::agenda_needs_garbcoll_.load())
         Rps_Agenda::do_garbage_collect(ix, &_);
-#warning run_agenda_worker should sometimes stop for garbage collection
-      try
-        {
-          count++;
-          _f.obtasklet = Rps_Agenda::fetch_tasklet_to_run();
-          Rps_PayloadTasklet*taskpayl = nullptr;
-          if (_f.obtasklet)
-            {
-              taskpayl = _f.obtasklet->get_dynamic_payload<Rps_PayloadTasklet>();
-              if (taskpayl && taskpayl->owner() == _f.obtasklet)
-                _f.clostodo = taskpayl->todo_closure();
-              if (_f.clostodo)
-                {
-                  Rps_Agenda::agenda_work_thread_state_[ix].store(WthrAg_Run);
-                  _f.clostodo.apply1(&_, _f.obtasklet);
-                }
-            }
-          else   // no tasklet, we wait for changes in agenda
-            {
-              Rps_Agenda::agenda_work_thread_state_[ix].store(WthrAg_Idle);
-              Rps_Agenda::agenda_changed_condvar_.wait_for(agenda_mtx_, 500ms+ix*10ms);
-            }
-        }
-      catch (std::exception& exc)
-        {
-          RPS_WARNOUT("run_agenda_worker " << pthname
-                      << " got exception " << exc.what()
-                      << " count#" << count
-                      << " for tasklet " << _f.obtasklet
-                      << " doing " << _f.clostodo);
-          Rps_Agenda::agenda_work_thread_state_[ix].store(WthrAg_Idle);
-        }
-    };
+      else
+        try
+          {
+            count++;
+            switch (agenda_work_thread_state_[ix].load())
+              {
+              case WthrAg_Idle:
+              case WthrAg_Run:
+              {
+                _f.obtasklet = Rps_Agenda::fetch_tasklet_to_run();
+                Rps_PayloadTasklet*taskpayl = nullptr;
+                if (_f.obtasklet)
+                  {
+                    taskpayl = _f.obtasklet->get_dynamic_payload<Rps_PayloadTasklet>();
+                    if (taskpayl && taskpayl->owner() == _f.obtasklet)
+                      _f.clostodo = taskpayl->todo_closure();
+                    if (_f.clostodo)
+                      {
+                        Rps_Agenda::agenda_work_thread_state_[ix].store(WthrAg_Run);
+                        _f.clostodo.apply1(&_, _f.obtasklet);
+                      }
+                  }
+                else   // no tasklet, we wait for changes in agenda
+                  {
+                    Rps_Agenda::agenda_work_thread_state_[ix].store(WthrAg_Idle);
+                    Rps_Agenda::agenda_changed_condvar_.wait_for(agenda_mtx_, 500ms+ix*10ms);
+                  }
+              }
+              break;
+              case WthrAg_GC:
+              {
+                std::this_thread::sleep_for(1ms);
+                Rps_Agenda::agenda_changed_condvar_.notify_all();
+              }
+              break;
+              case WthrAg_EndGC:
+              {
+                agenda_work_thread_state_[ix].store(WthrAg_Idle);
+                Rps_Agenda::agenda_changed_condvar_.notify_all();
+                // so on the next loop, the worker thread will try to fetch and run a tasklet
+              }
+              break;
+              default:
+                break;
+              };			// end switch agenda_work_thread_state_[ix].load()
+          } /// ending try...
+        catch (std::exception& exc)
+          {
+            RPS_WARNOUT("run_agenda_worker " << pthname
+                        << " got exception " << exc.what()
+                        << " count#" << count
+                        << " for tasklet " << _f.obtasklet
+                        << " doing " << _f.clostodo);
+            Rps_Agenda::agenda_work_thread_state_[ix].store(WthrAg_Idle);
+          }
+    };				// end while (agenda_is_running_.load())
   Rps_Agenda::agenda_changed_condvar_.notify_all();
+  Rps_Agenda::agenda_work_thread_state_[ix].store(WthrAg__None);
 } // end Rps_Agenda::run_agenda_worker
 
+
+//// Do garbage collection from agenda worker threads. The actual GC
+//// is running when ix == 1, so in the first worker thread. Other
+//// worker threads are idle and waiting....
 void
 Rps_Agenda::do_garbage_collect(int ix, Rps_CallFrame*callframe)
 {
-  RPS_FATALOUT("unimplemented Rps_Agenda::do_garbage_collect ix=" << ix
+  RPS_ASSERT(ix>=0 && ix<=RPS_NBJOBS_MAX);
+  RPS_ASSERT(agenda_work_gc_callframe_[ix].load() == nullptr);
+  agenda_work_thread_state_[ix].store(Rps_Agenda::WthrAg_GC);
+  agenda_work_gc_callframe_[ix].store(callframe);
+  using namespace std::chrono_literals;
+  std::this_thread::sleep_for(1ms/8);
+  Rps_Agenda::agenda_changed_condvar_.notify_all();
+  std::this_thread::sleep_for(1ms/16);
+  /// at this point, we should wait for every other worker thread to be in WthrAg_GC state....
+  bool every_worker_is_gc = false;
+  {
+    constexpr int maxwaitloop = 32;
+    int loopcnt=0;
+    while (!every_worker_is_gc)
+      {
+        std::unique_lock<std::recursive_mutex> ulock(agenda_mtx_);
+        agenda_changed_condvar_.wait_for(ulock, 50ms+ix*10ms, [=,&every_worker_is_gc]
+        {
+          for (int wix=1; wix<rps_nbjobs; wix++)
+            {
+              std::thread*curthr = agenda_thread_array_[wix].load();
+              if (!curthr)
+                continue;
+              if (agenda_work_thread_state_[wix].load() != Rps_Agenda::WthrAg_GC)
+                return false;
+            };
+          every_worker_is_gc = true;
+          return true;
+        });
+        if (loopcnt++ > maxwaitloop) /// should never happen!
+          RPS_FATALOUT("Rps_Agenda::do_garbage_collect ix=" << ix
+                       << " callframe=" << Rps_ShowCallFrame(callframe)
+                       << " timed out waiting for other worker threads to GC");
+      }
+  }
+  RPS_ASSERT(every_worker_is_gc);
+  /// At this point, we do know that every worker thread is in garbage
+  /// collection state, so is NOT running, don't change the call
+  /// stack, so is NOT ALLOCATING.... The GC is then permitted to scan
+  /// the call stacks in agenda_work_gc_callframe_
+  RPS_FATALOUT("incomplete Rps_Agenda::do_garbage_collect ix=" << ix
                << " callframe=" << Rps_ShowCallFrame(callframe));
-#warning unimplemented Rps_Agenda::do_garbage_collect
+#warning incomplete Rps_Agenda::do_garbage_collect, should create some Rps_GarbageCollector....
+  /****
+   * TODO: create an instance of Rps_GarbageCollector and then scan
+   * every call frames in every working thread.
+   ****/
 } // end of Rps_Agenda::do_garbage_collect
 
 /// start and run the agenda mechanism. This does not return till the

@@ -3483,6 +3483,8 @@ public:
     WthrAg__None,
     WthrAg_Idle, //  the worker thread is idle
     WthrAg_GC,	 // the worker thread is garbage collecting
+    WthrAg_EndGC, // the worker thread has ended garbage collection,
+		  // and will be running again on the next loop
     WthrAg_Run,	 // the worker thread is running and allocating
     WthrAg__Last
   };
@@ -3511,6 +3513,8 @@ private:
   static constexpr uint64_t agenda_gc_threshold = 1<<20;
   static std::atomic<std::thread*> agenda_thread_array_[RPS_NBJOBS_MAX+2];
   static std::atomic<workthread_state_en> agenda_work_thread_state_[RPS_NBJOBS_MAX+2];
+  /// the call frames below makes sense only during garbage collection....
+  static std::atomic<Rps_CallFrame*> agenda_work_gc_callframe_[RPS_NBJOBS_MAX+2];
 };				// end class Rps_Agenda
 
 
