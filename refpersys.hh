@@ -3494,6 +3494,7 @@ public:
   static void add_tasklet(agenda_prio_en prio, Rps_ObjectRef obtasklet);
   static Rps_ObjectRef fetch_tasklet_to_run(void);
   static void run_agenda_worker(int ix);
+  static void do_garbage_collect(int ix, Rps_CallFrame*callframe);
 protected:
   static void dump_scan_agenda(Rps_Dumper*du);
   static void dump_json_agenda(Rps_Dumper*du, Json::Value&jv);
@@ -3502,7 +3503,12 @@ private:
   static std::condition_variable_any agenda_changed_condvar_;
   static std::atomic<unsigned long> agenda_add_counter_;
   static std::deque<Rps_ObjectRef> agenda_fifo_[AgPrio__Last];
-  static std::atomic<bool> agenda_is_running_;
+  static std::atomic<bool> agenda_is_running_; // true when agenda is running
+  static std::atomic<bool> agenda_needs_garbcoll_; // true when GC is needed
+  /// the cumulated amount of allocated words at previous GC is:
+  static std::atomic<uint64_t> agenda_cumulw_gc_;
+  // once a megaword has been allocated, we want to garbage collect, hence:
+  static constexpr uint64_t agenda_gc_threshold = 1<<20;
   static std::atomic<std::thread*> agenda_thread_array_[RPS_NBJOBS_MAX+2];
   static std::atomic<workthread_state_en> agenda_work_thread_state_[RPS_NBJOBS_MAX+2];
 };				// end class Rps_Agenda

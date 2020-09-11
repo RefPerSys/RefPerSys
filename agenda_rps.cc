@@ -45,6 +45,9 @@ const char*
 Rps_Agenda::agenda_priority_names[Rps_Agenda::AgPrio__Last];
 std::atomic<Rps_Agenda::workthread_state_en>
 Rps_Agenda::agenda_work_thread_state_[RPS_NBJOBS_MAX+2];
+std::atomic<bool> Rps_Agenda::agenda_needs_garbcoll_;
+std::atomic<uint64_t> Rps_Agenda::agenda_cumulw_gc_;
+
 
 void
 Rps_Agenda::initialize(void)
@@ -198,6 +201,14 @@ Rps_Agenda::run_agenda_worker(int ix)
   }
   while (agenda_is_running_.load())
     {
+      if (Rps_Agenda::agenda_cumulw_gc_.load() + Rps_Agenda::agenda_gc_threshold
+          > Rps_QuasiZone::cumulative_allocated_wordcount())
+        {
+          Rps_Agenda::agenda_needs_garbcoll_.store(true);
+          std::this_thread::sleep_for(1ms/2);
+        }
+      if (Rps_Agenda::agenda_needs_garbcoll_.load())
+        Rps_Agenda::do_garbage_collect(ix, &_);
 #warning run_agenda_worker should sometimes stop for garbage collection
       try
         {
@@ -234,7 +245,13 @@ Rps_Agenda::run_agenda_worker(int ix)
   Rps_Agenda::agenda_changed_condvar_.notify_all();
 } // end Rps_Agenda::run_agenda_worker
 
-
+void
+Rps_Agenda::do_garbage_collect(int ix, Rps_CallFrame*callframe)
+{
+  RPS_FATALOUT("unimplemented Rps_Agenda::do_garbage_collect ix=" << ix
+               << " callframe=" << Rps_ShowCallFrame(callframe));
+#warning unimplemented Rps_Agenda::do_garbage_collect
+} // end of Rps_Agenda::do_garbage_collect
 
 /// start and run the agenda mechanism. This does not return till the
 /// agenda has stopped.
