@@ -3479,6 +3479,13 @@ public:
     AgPrio_High,
     AgPrio__Last
   };
+  enum workthread_state_en {
+    WthrAg__None,
+    WthrAg_Idle, //  the worker thread is idle
+    WthrAg_GC,	 // the worker thread is garbage collecting
+    WthrAg_Run,	 // the worker thread is running and allocating
+    WthrAg__Last
+  };
   static const char* agenda_priority_names[AgPrio__Last];
   static inline Rps_ObjectRef the_agenda();
   static inline Rps_ObjectRef tasklet_class();
@@ -3497,6 +3504,7 @@ private:
   static std::deque<Rps_ObjectRef> agenda_fifo_[AgPrio__Last];
   static std::atomic<bool> agenda_is_running_;
   static std::atomic<std::thread*> agenda_thread_array_[RPS_NBJOBS_MAX+2];
+  static std::atomic<workthread_state_en> agenda_work_thread_state_[RPS_NBJOBS_MAX+2];
 };				// end class Rps_Agenda
 
 

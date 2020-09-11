@@ -43,7 +43,8 @@ std::atomic<bool> Rps_Agenda::agenda_is_running_;
 std::atomic<std::thread*> Rps_Agenda::agenda_thread_array_[RPS_NBJOBS_MAX+2];
 const char*
 Rps_Agenda::agenda_priority_names[Rps_Agenda::AgPrio__Last];
-
+std::atomic<Rps_Agenda::workthread_state_en>
+Rps_Agenda::agenda_work_thread_state_[RPS_NBJOBS_MAX+2];
 
 void
 Rps_Agenda::initialize(void)
@@ -197,6 +198,7 @@ Rps_Agenda::run_agenda_worker(int ix)
   }
   while (agenda_is_running_.load())
     {
+#warning run_agenda_worker should sometimes stop for garbage collection
       try
         {
           count++;
@@ -209,11 +211,13 @@ Rps_Agenda::run_agenda_worker(int ix)
                 _f.clostodo = taskpayl->todo_closure();
               if (_f.clostodo)
                 {
+                  Rps_Agenda::agenda_work_thread_state_[ix].store(WthrAg_Run);
                   _f.clostodo.apply1(&_, _f.obtasklet);
                 }
             }
           else   // no tasklet, we wait for changes in agenda
             {
+              Rps_Agenda::agenda_work_thread_state_[ix].store(WthrAg_Idle);
               Rps_Agenda::agenda_changed_condvar_.wait_for(agenda_mtx_, 500ms+ix*10ms);
             }
         }
@@ -224,6 +228,7 @@ Rps_Agenda::run_agenda_worker(int ix)
                       << " count#" << count
                       << " for tasklet " << _f.obtasklet
                       << " doing " << _f.clostodo);
+          Rps_Agenda::agenda_work_thread_state_[ix].store(WthrAg_Idle);
         }
     };
   Rps_Agenda::agenda_changed_condvar_.notify_all();
