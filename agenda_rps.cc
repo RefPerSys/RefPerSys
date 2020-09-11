@@ -159,7 +159,7 @@ Rps_Agenda::run_agenda_worker(int ix)
                  << " for " << rps_nbjobs << " jobs");
   char pthname[16];
   memset (pthname, 0, sizeof(pthname));
-  snprintf(pthname, sizeof(pthname), "rps-agw#%d", ix);
+  snprintf(pthname, sizeof(pthname), "rps-agw#%hd", (short) ix);
   pthread_setname_np(pthread_self(), pthname);
   RPS_LOCALFRAME(RPS_ROOT_OB(_1aGtWm38Vw701jDhZn), //the_agenda,
                  nullptr, // no caller frame
