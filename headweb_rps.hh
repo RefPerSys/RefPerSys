@@ -38,6 +38,7 @@
 // for libonion Web service library, from https://www.coralbits.com/libonion/
 #include "onion/onion.hpp"
 #include "onion/http.hpp"
+#include "onion/url.hpp"
 #include "onion/request.hpp"
 #include "onion/response.hpp"
 
