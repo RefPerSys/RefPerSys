@@ -80,6 +80,10 @@ rps_run_web_service()
    *  handler should deliver static contents... We might consider
    *  having some templates, in the libonion sense...
    **/
+  /// TODO: some Onion::Url should be declared here... see README.md
+  ///
+  /// TODO: Conventionally, URLs containing either .. or README.md
+  /// should not be served.
 } // end rps_run_web_service
 
 void
@@ -122,4 +126,6 @@ Rps_PayloadWebex::~Rps_PayloadWebex()
 #warning Rps_PayloadWebex::~Rps_PayloadWebex unimplemented
   RPS_FATALOUT("Rps_PayloadWebex::~Rps_PayloadWebex unimplemented owner=" << owner());
 } // end  Rps_PayloadWebex::~Rps_PayloadWebex
+
+
 ///////// end of file httpweb_rps.cc

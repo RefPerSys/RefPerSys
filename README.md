@@ -375,4 +375,23 @@ Thanks to Niklas Rosencrantz (Sweden) for past minor contributions.
 
 ## HTTP service
 
-We are adding HTTP service in *RefPerSys*. So [libonion](https://github.com/davidmoreno/onion) is required.
+We are adding HTTP service in *RefPerSys*. So
+[libonion](https://github.com/davidmoreno/onion) is required.  For
+many months, we just hope to use `http://localhost:9090/` in a recent
+(e.g. Firefox 80) web browser.
+
+We really need to be able to show a demo of RefPerSys on a laptop
+*without* Internet connection. So all required resources should be
+copied here, under `webroot/`. Be careful about copyright and
+licensing issues.
+
+### Web conventions.
+
+The `webroot/` subdirectory holds resources useful for HTTP
+requests. In particular the following subdirectories:
+
+* `webroot/css/` for -hand-written- style sheets.
+
+* `webroot/img/` for additional images. Prefer SVG or PNG formats.
+
+* `webroot/js/` for JavaScript code.
