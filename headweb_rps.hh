@@ -41,6 +41,7 @@
 #include "onion/request.hpp"
 #include "onion/response.hpp"
 
+extern "C" Onion::Onion rps_onion_server;
 
 
 #endif /* HEADWEB_RPS_INCLUDED */

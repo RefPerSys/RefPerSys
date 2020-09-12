@@ -5,15 +5,15 @@
  * Description:
  *      This file is part of the Reflective Persistent System. See refpersys.org
  *
- *      It has the web interface code, using cpp-httplib
- *      from https://github.com/yhirose/cpp-httplib/
+ *      It has the web interface code, using libonion
+ *      from https://github.com/davidmoreno/onion
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2020 The Reflective Persistent System Team
+ *      © Copyright 2020 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -33,9 +33,33 @@
 
 #include "headweb_rps.hh"
 
+/// our onion web server
+Onion::Onion rps_onion_server;
+
+static char* rps_onion_serverhost;
+/// Called from main with an argument like "localhost:9090". Should
+/// initialize the data structures to serve web requests.
 void
 rps_web_initialize_service(const char*servarg)
 {
+  RPS_ASSERT(servarg != nullptr);
+  RPS_DEBUG_LOG(WEB, "rps_web_initialize_service start servarg=" << servarg
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_web_initialize_service"));
+  int portnum = -1;
+  static char serverbuf[80];
+  memset(serverbuf, 0, sizeof(serverbuf));
+  if (sscanf(servarg, "%72[a-zA-Z0-9.-]:%d",
+             serverbuf, &portnum)>=2 && portnum>0)
+    {
+      if (serverbuf[0])
+        rps_onion_server.setHostname(std::string{serverbuf});
+      rps_onion_server.setPort(portnum);
+      RPS_INFORMOUT("rps_web_initialize_service initialized Onion webserver on "
+                    << serverbuf << ":" << portnum);
+    }
+  else
+    RPS_FATALOUT("rps_web_initialize_service: bad server " << servarg);
 } // end rps_web_initialize_service
 
 
@@ -43,7 +67,13 @@ void
 rps_run_web_service()
 {
   RPS_FATAL("unimplemented rps_run_web_service");
-#warning rps_run_web_service unimplemented
+  /** we should add some URL, see examples in
+      https://github.com/davidmoreno/onion/tree/master/tests/08-cpp/
+      and
+      https://github.com/davidmoreno/onion/tree/master/examples/cpp
+      ...
+  ***/
+#warning rps_run_web_service unimplemented, should add URLs
 } // end rps_run_web_service
 
 ///////// end of file web_rps.cc
