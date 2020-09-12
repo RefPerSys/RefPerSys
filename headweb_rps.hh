@@ -43,6 +43,30 @@
 
 extern "C" Onion::Onion rps_onion_server;
 
+class Rps_PayloadWebex : // the payload for a web exchange
+  public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend class Rps_Agenda;
+  friend Rps_PayloadWebex*
+  Rps_QuasiZone::rps_allocate3<Rps_PayloadWebex,Rps_ObjectZone*,Onion::Request&,Onion::Response&>(Rps_ObjectZone*,Onion::Request&,Onion::Response&);
+protected:
+  virtual uint32_t wordsize() const
+  {
+    return (sizeof(*this)+sizeof(void*)-1) / sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+public:
+  virtual const std::string payload_type_name(void) const
+  {
+    return "webex";
+  };
+  Rps_PayloadWebex(Rps_ObjectZone*,Onion::Request&,Onion::Response&);
+  virtual ~Rps_PayloadWebex();
+};				// end class Rps_PayloadWebex
 
 #endif /* HEADWEB_RPS_INCLUDED */
 /******* end of file headweb_rps.hh *******/

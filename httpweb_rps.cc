@@ -73,7 +73,53 @@ rps_run_web_service()
       https://github.com/davidmoreno/onion/tree/master/examples/cpp
       ...
   ***/
-#warning rps_run_web_service unimplemented, should add URLs
+#warning rps_run_web_service unimplemented, should add URLs and handlers
+  /***
+   *  The handler of some URLs would create a temporary object whose
+   *  payload would be some Rps_PayloadWebex....  For other URL the
+   *  handler should deliver static contents... We might consider
+   *  having some templates, in the libonion sense...
+   **/
 } // end rps_run_web_service
 
-///////// end of file web_rps.cc
+void
+Rps_PayloadWebex::gc_mark(Rps_GarbageCollector&gc) const
+{
+#warning Rps_PayloadWebex::gc_mark unimplemented
+  RPS_FATALOUT("Rps_PayloadWebex::gc_mark unimplemented owner=" << owner());
+} // end Rps_PayloadWebex::gc_mark
+
+void
+Rps_PayloadWebex::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du != nullptr);
+#warning Rps_PayloadWebex::dump_scan unimplemented
+  RPS_FATALOUT("Rps_PayloadWebex::dump_scan unimplemented owner=" << owner());
+} // end Rps_PayloadWebex::dump_scan
+
+
+void
+Rps_PayloadWebex::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  /// see function rpsldpy_vectob in store_rps.cc
+  RPS_ASSERT(du != nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+#warning Rps_PayloadWebex::dump_json_content unimplemented, should never be called
+  RPS_FATALOUT("Rps_PayloadWebex::dump_scan unimplemented owner=" << owner());
+} // end Rps_PayloadWebex::dump_json_content
+
+Rps_PayloadWebex::Rps_PayloadWebex(Rps_ObjectZone*ownerobz,Onion::Request&req,Onion::Response&resp)
+  : Rps_Payload(Rps_Type::PaylWebex, ownerobz)
+{
+  RPS_ASSERT(ownerobz && ownerobz->stored_type() == Rps_Type::Object);
+#warning Rps_PayloadWebex::Rps_PayloadWebex unimplemented
+  RPS_FATALOUT("Rps_PayloadWebex::Rps_PayloadWebex unimplemented owner=" << owner());
+} // end Rps_PayloadWebex::Rps_PayloadWebex
+
+
+Rps_PayloadWebex::~Rps_PayloadWebex()
+{
+#warning Rps_PayloadWebex::~Rps_PayloadWebex unimplemented
+  RPS_FATALOUT("Rps_PayloadWebex::~Rps_PayloadWebex unimplemented owner=" << owner());
+} // end  Rps_PayloadWebex::~Rps_PayloadWebex
+///////// end of file httpweb_rps.cc

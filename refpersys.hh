@@ -899,6 +899,8 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
+  PaylWebex = -16, // for reification as temporary objects of HTTP
+		   // requests+replies, i.e. Web exchanges.
   PaylTasklet = -15, // for small tasklets inside agenda
   PaylAgenda = -14, // the the unique agenda
   PaylInputCommand = -13, // for input command payload, in transient instances of rps_command_textedit
