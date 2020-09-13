@@ -82,15 +82,16 @@ rps_run_web_service()
   /// TODO: some Onion::Url should be declared here... see README.md
   Onion::Url rooturl(&rps_onion_server);
   rooturl.add("/img/refpersys_logo.svg",
-	      [&](Onion::Request &req, Onion::Response &res){
-		std::ifstream infil("webroot/img/refpersys_logo.svg");
-		int nblin=0;
-		for (std::string line; std::getline(infil, line); nblin++)
-		  res << line;
-		RPS_DEBUG_LOG(WEB, "rps_run_web_service: sent "
-			      << nblin << " lines for /img/refpersys_logo.svg");
-		return OCS_PROCESSED;
-	      });
+              [&](Onion::Request &req, Onion::Response &res)
+  {
+    std::ifstream infil("webroot/img/refpersys_logo.svg");
+    int nblin=0;
+    for (std::string line; std::getline(infil, line); nblin++)
+      res << line;
+    RPS_DEBUG_LOG(WEB, "rps_run_web_service: sent "
+                  << nblin << " lines for /img/refpersys_logo.svg");
+    return OCS_PROCESSED;
+  });
   ///
   /// TODO: Conventionally, URLs containing either .. or README.md
   /// should not be served.
