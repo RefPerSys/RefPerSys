@@ -37,6 +37,11 @@
 Onion::Onion rps_onion_server;
 
 static const char* rps_onion_serverarg;
+
+extern "C" onion_connection_status
+rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres);
+
+
 /// Called from main with an argument like "localhost:9090". Should
 /// initialize the data structures to serve web requests.
 void
@@ -81,7 +86,9 @@ rps_run_web_service()
    *  having some templates, in the libonion sense...
    **/
   /// TODO: some Onion::Url should be declared here... see README.md
+  /// FIXME: use rps_serve_onion_web here
   Onion::Url rooturl(&rps_onion_server);
+#warning we should use rps_serve_onion_web in rps_run_web_service
   rooturl.add("/img/refpersys_logo.svg",
               [&](Onion::Request &req, Onion::Response &res)
   {
@@ -139,5 +146,33 @@ Rps_PayloadWebex::~Rps_PayloadWebex()
   RPS_FATALOUT("Rps_PayloadWebex::~Rps_PayloadWebex unimplemented owner=" << owner());
 } // end  Rps_PayloadWebex::~Rps_PayloadWebex
 
+onion_connection_status
+rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion::Response*presp)
+{
+  RPS_ASSERT(purl != nullptr);
+  RPS_ASSERT(prequ != nullptr);
+  RPS_ASSERT(presp != nullptr);
+  char thnambuf[16];
+  memset (thnambuf, 0, sizeof(thnambuf));
+  if (pthread_getname_np(pthread_self(), thnambuf, sizeof(thnambuf)))
+    thnambuf[0] = '?';
+  else
+    thnambuf[sizeof(thnambuf)-1] = (char)0;
+  /**** TODO:
+   * We first need to ensure that the URL does not contain neither ".." nor "README.md" as a substring.
+   * Then we try to access a file starting from webroot. If it is present, we serve it.
+   * If the URL ends with .thtml, it is supposed to be an Onion template file.
+   * We probably need to separate POST and GET methods of HTTP requests.
+   * We probably don't need to handle any other request except HEAD.
+   * Caveat, this function might run in several threads started by the libonion itself!
+   ****/
+  RPS_FATALOUT("unimplemented rps_serve_onion_web val: " << val << std::endl
+               << "... purl@" << (void*)purl
+               << " prequ@" << (void*)prequ
+               << " presp@" << (void*)presp
+               << " thread: " << thnambuf
+              );
+#warning rps_serve_onion_web unimplemented
+} // end rps_serve_onion_web
 
 ///////// end of file httpweb_rps.cc
