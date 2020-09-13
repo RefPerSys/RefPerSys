@@ -36,7 +36,7 @@
 /// our onion web server
 Onion::Onion rps_onion_server;
 
-static char* rps_onion_serverhost;
+static const char* rps_onion_serverarg;
 /// Called from main with an argument like "localhost:9090". Should
 /// initialize the data structures to serve web requests.
 void
@@ -60,6 +60,7 @@ rps_web_initialize_service(const char*servarg)
     }
   else
     RPS_FATALOUT("rps_web_initialize_service: bad server " << servarg);
+  rps_onion_serverarg = servarg;
 } // end rps_web_initialize_service
 
 

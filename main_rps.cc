@@ -165,12 +165,13 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "dlopen(3) after load the given PLUGIN (some *.so ELF shared object) and run its " RPS_PLUGIN_INIT_NAME "() function", //
     /*group:*/0 ///
   },
-  /* ======= command textual read eval print loop user interface ======= */
+  /* ======= command textual read eval print loop user interface, perhaps obsolete ======= */
   {/*name:*/ "repl", ///
     /*key:*/ RPSPROGOPT_REPL, ///
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Run with a textual read-eval-print-loop user interface using GNU readline.", //
+    /*doc:*/ "Run with a textual read-eval-print-loop user interface using GNU readline.\n"
+    " (this option might become obsolete)", //
     /*group:*/0 ///
   },
   /* ======= number of jobs or threads ======= */
@@ -203,7 +204,6 @@ bool rps_batch = false;
 bool rps_disable_aslr = false;
 bool rps_without_terminal_escape = false;
 bool rps_run_repl = false;
-bool rps_run_gui = false;
 
 bool rps_syslog_enabled = false;
 bool rps_stdout_istty = false;
@@ -538,8 +538,6 @@ main (int argc, char** argv)
           rps_disable_aslr = true;
         else if (!strcmp(argv[ix], "-B") || !strcmp(argv[ix], "--batch"))
           rps_batch = true;
-        else if (!strcmp(argv[ix], "-G") || !strcmp(argv[ix], "--gui"))
-          rps_run_gui = true;
         else if (!strcmp(argv[ix], "-R") || !strcmp(argv[ix], "--repl"))
           rps_run_repl = true;
         else if (!strcmp(argv[ix], "--without-terminal"))
@@ -556,8 +554,6 @@ main (int argc, char** argv)
       }
   }
   Rps_Agenda::initialize();
-  if (rps_run_gui && rps_run_repl)
-    RPS_FATAL("%s cannot run both GUI and terminal REPL", rps_progname);
   if (rps_run_repl && rps_without_terminal_escape)
     RPS_FATAL("%s cannot run REPL without terminal escape", rps_progname);
   unsetenv("LANG");
@@ -601,11 +597,6 @@ main (int argc, char** argv)
              RPS_TERMINAL_NORMAL_ESCAPE,
              argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
              (void*)main);
-  if (!rps_run_gui && !rps_run_repl && getenv("DISPLAY"))
-    {
-      RPS_INFORM("forcing graphical user interface on DISPLAY=%s", getenv("DISPLAY"));
-      rps_run_gui = true;
-    }
   ////
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
