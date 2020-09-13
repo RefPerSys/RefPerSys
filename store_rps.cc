@@ -343,8 +343,8 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
       throw std::runtime_error(std::string("unexpected object count in ")
                                + spacepath);
     }
-  RPS_DEBUG_LOG(LOAD, "first_pass_space end spacepath=" << spacepath << " obcnt="<< obcnt << std::endl);
-  RPS_INFORMOUT("read " << obcnt
+  RPS_DEBUG_LOG(LOAD, "first_pass_space end spacepath=" << spacepath << " obcnt="<< obcnt << std::endl
+                << "... read " << obcnt
                 << " objects while loading first pass of " << spacepath);
 } // end Rps_Loader::first_pass_space
 
@@ -2589,13 +2589,13 @@ void rps_load_from (const std::string& dirpath)
   snprintf(cputbuf, sizeof(cputbuf), "%.3f", cput);
   snprintf(realmicrobuf, sizeof(realmicrobuf), "%.3f", (realt*1.0e6)/nbloaded);
   snprintf(cpumicrobuf, sizeof(cpumicrobuf), "%.3f", (cput*1.0e6)/nbloaded);
-  RPS_INFORMOUT("rps_load_from completed from directory " << dirpath
+  RPS_INFORMOUT("rps_load_from completed" << std::endl
+                << "... from directory " << dirpath
                 << " with RefPerSys built " << rps_timestamp << std::endl
-                << " lastgittag " << rps_lastgittag << std::endl
+                << " lastgitcommit " << rps_lastgitcommit << std::endl
                 << " md5sum " << rps_md5sum << std::endl
                 << " loaded " << nbloaded << " objects in " << realtbuf << " elapsed, " << cputbuf << " cpu seconds" << std::endl
-                << "so " << realmicrobuf << " elapsed µs/ob, " << cpumicrobuf << " cpu µs/ob"
-                << std::endl
+                << " so " << realmicrobuf << " elapsed µs/ob, " << cpumicrobuf << " cpu µs/ob, in "
                 << Rps_QuasiZone::cumulative_allocated_wordcount() << " memory words."<< std::endl
                 << "============================================================================="
                 << std::endl << std::endl);
