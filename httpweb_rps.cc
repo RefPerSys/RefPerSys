@@ -158,13 +158,46 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
     thnambuf[0] = '?';
   else
     thnambuf[sizeof(thnambuf)-1] = (char)0;
+  static std::atomic<uint64_t> reqcount;
+  uint64_t reqnum = reqcount.fetch_add(1);
+  const std::string reqpath =prequ->path();
+  const onion_request_flags reqflags=prequ->flags();
+  const unsigned reqmethnum = reqflags&OR_METHODS;
+  const char* reqmethname = onion_request_methods[reqmethnum];
+  RPS_DEBUG_LOG(WEB, "rps_serve_onion_web thread=" << thnambuf
+                << " reqpath=" << reqpath
+                << " reqmethname=" << reqmethname
+                << " val=" << val << std::endl);
+  /**
+   * We first need to ensure that the URL does not contain neither
+   * ".." nor "README.md" as a substring.  Then (for GET or HEAD) we
+   * try to access a file starting from webroot. If it is present, we
+   * serve it.
+   **/
+  if (reqmethnum == OR_GET || reqmethnum == OR_HEAD)
+    {
+      if (reqpath.find("..")!=std::string::npos
+          || reqpath.find("README.md")!=std::string::npos)
+        {
+          std::string filpath = std::string{rps_topdirectory} + "/" + reqpath;
+          if (!access(filpath.c_str(), F_OK))
+            {
+#warning perhaps rps_serve_onion_web should somehow use onion_handler_export_local_new
+              RPS_WARNOUT("rps_serve_onion_web should serve filpath=" << filpath
+                          << " for reqpath=" << reqpath << std::endl
+                          << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-file")
+                         );
+            }
+        };
+    }
   /**** TODO:
-   * We first need to ensure that the URL does not contain neither ".." nor "README.md" as a substring.
-   * Then we try to access a file starting from webroot. If it is present, we serve it.
-   * If the URL ends with .thtml, it is supposed to be an Onion template file.
-   * We probably need to separate POST and GET methods of HTTP requests.
-   * We probably don't need to handle any other request except HEAD.
-   * Caveat, this function might run in several threads started by the libonion itself!
+   *
+   * If the URL ends with .thtml, it is supposed to be an
+   * Onion template file.  We probably need to separate POST and GET
+   * methods of HTTP requests.  We probably don't need to handle any
+   * other request except HEAD.  Caveat, this rps_serve_onion_web
+   * function might run in several threads started by the libonion
+   * itself!
    ****/
   RPS_FATALOUT("unimplemented rps_serve_onion_web val: " << val << std::endl
                << "... purl@" << (void*)purl
