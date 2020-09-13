@@ -162,7 +162,9 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_PLUGIN_AFTER_LOAD, ///
     /*arg:*/ "PLUGIN", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "dlopen(3) after load the given PLUGIN (some *.so ELF shared object) and run its " RPS_PLUGIN_INIT_NAME "() function", //
+    /*doc:*/ "dlopen(3) after load the given PLUGIN "
+    "(some *.so ELF shared object)"
+    " and run its " RPS_PLUGIN_INIT_NAME "(const Rps_Plugin*) function", //
     /*group:*/0 ///
   },
   /* ======= command textual read eval print loop user interface, perhaps obsolete ======= */
