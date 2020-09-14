@@ -82,6 +82,18 @@ rps_thread_cpu_time(void)
 } // end rps_thread_cpu_time
 
 
+/// name of current pthread
+static inline std::string
+rps_current_pthread_name(void)
+{
+  char pthnam[24];
+  memset (pthnam, 0, sizeof(pthnam));
+  if (pthread_getname_np(pthread_self(), pthnam, sizeof(pthnam)))
+    snprintf(pthnam, sizeof(pthnam)-1, "*pthr#%ld*",
+             (long)pthread_self());
+  return std::string{pthnam};
+} // end rps_current_pthread_name
+
 //////////////////////////////////////////////////////////// objids
 std::string
 Rps_Id::to_string() const

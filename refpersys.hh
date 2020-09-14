@@ -662,6 +662,8 @@ extern "C" int64_t rps_prime_greaterequal_ranked (int64_t n, int*prank);
 // rank if non-null pointer
 extern "C" int64_t rps_prime_lessequal_ranked (int64_t n, int*prank);
 
+// give the name of the current pthread
+static inline std::string rps_current_pthread_name(void);
 
 static constexpr unsigned rps_allocation_unit = 2*sizeof(void*);
 static_assert ((rps_allocation_unit & (rps_allocation_unit-1)) == 0,
