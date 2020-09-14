@@ -72,6 +72,11 @@ rps_web_initialize_service(const char*servarg)
 void
 rps_run_web_service()
 {
+  RPS_DEBUG_LOG(WEB, "start of rps_run_web_service from "
+                << rps_current_pthread_name()
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service")
+                << std::endl);
   /** we should add some URL, see examples in
       https://github.com/davidmoreno/onion/tree/master/tests/08-cpp/
       and
