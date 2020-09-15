@@ -3597,6 +3597,8 @@ public:
 #include "generated/rps-names.hh"
 
 
+// the default HTTP host and portnumber
+#define RPS_DEFAULT_WEB_HOST_PORT "localhost:9090"
 extern "C" void rps_web_initialize_service(const char*);
 extern "C" void rps_run_web_service(void);
 

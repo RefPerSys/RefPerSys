@@ -51,6 +51,8 @@ rps_web_initialize_service(const char*servarg)
   RPS_DEBUG_LOG(WEB, "rps_web_initialize_service start servarg=" << servarg
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_web_initialize_service"));
+  if (!strcmp(servarg, "."))
+    servarg = RPS_DEFAULT_WEB_HOST_PORT;
   int portnum = -1;
   static char serverbuf[80];
   memset(serverbuf, 0, sizeof(serverbuf));
