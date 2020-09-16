@@ -902,9 +902,17 @@ rps_run_application(int &argc, char **argv)
         RPS_INFORM("after successfully running command '%s' after load", rps_run_command_after_load);
     }
   if (rps_batch)
-    return;
+    {
+      RPS_DEBUG_LOG(WEB,
+                    "rps_run_application in batch mode");
+      return;
+    }
   if (rps_run_repl)
-    rps_read_eval_print_loop (argc, argv);
+    {
+      RPS_DEBUG_LOG(WEB,
+                    "rps_run_application in REPL");
+      rps_read_eval_print_loop (argc, argv);
+    }
   else
     {
       RPS_DEBUG_LOG(WEB,

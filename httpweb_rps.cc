@@ -96,20 +96,24 @@ rps_run_web_service()
   /// FIXME: use rps_serve_onion_web here
   Onion::Url rooturl(&rps_onion_server);
 #warning we should use rps_serve_onion_web in rps_run_web_service
-  rooturl.add("/img/refpersys_logo.svg",
+  rooturl.add("",
               [&](Onion::Request &req, Onion::Response &res)
   {
-    std::ifstream infil("webroot/img/refpersys_logo.svg");
-    int nblin=0;
-    for (std::string line; std::getline(infil, line); nblin++)
-      res << line;
-    RPS_DEBUG_LOG(WEB, "rps_run_web_service: sent "
-                  << nblin << " lines for /img/refpersys_logo.svg");
-    return OCS_PROCESSED;
+    RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service req@" << (void*)&req
+                  << " res@" << (void*)&res
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "𝜦-rps_run_web_service"));
+    auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res);
+    RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service onstat#" << (int) onstat);
+    return onstat;
   });
+  RPS_DEBUG_LOG(WEB, "rps_run_web_service added 𝜦, listening to onion server @" << &rps_onion_server);
+  rps_onion_server.listen();
   ///
   /// TODO: Conventionally, URLs containing either .. or README.md
   /// should not be served.
+  RPS_DEBUG_LOG(WEB, "end rps_run_web_service" << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service-end"));
 } // end rps_run_web_service
 
 void
@@ -172,8 +176,9 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_web thread=" << thnambuf
-                << " reqpath=" << reqpath
-                << " reqmethname=" << reqmethname
+                << " reqpath='" << reqpath
+                << "' reqmethname=" << reqmethname
+                << " reqnum#" << reqnum
                 << " val=" << val << std::endl);
   /**
    * We first need to ensure that the URL does not contain neither
@@ -187,14 +192,19 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
           || reqpath.find("README.md")!=std::string::npos)
         {
           std::string filpath = std::string{rps_topdirectory} + "/" + reqpath;
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_web filpath=" << filpath	<< " reqnum#" << reqnum);
           if (!access(filpath.c_str(), F_OK))
             {
 #warning perhaps rps_serve_onion_web should somehow use onion_handler_export_local_new
               RPS_WARNOUT("rps_serve_onion_web should serve filpath=" << filpath
-                          << " for reqpath=" << reqpath << std::endl
+                          << " for reqpath=" << reqpath << ", reqnum#" << reqnum << std::endl
                           << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-file")
                          );
             }
+          else
+            RPS_DEBUG_LOG(WEB, "rps_serve_onion_web notfound filpath=" << filpath
+                          << " reqnum#" << reqnum);
+
         };
     }
   /**** TODO:
@@ -211,6 +221,7 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
                << " prequ@" << (void*)prequ
                << " presp@" << (void*)presp
                << " thread: " << thnambuf
+               << " reqnum#" << reqnum << ' ' << reqmethname <<  " reqpath: '" << reqpath << "'"
               );
 #warning rps_serve_onion_web unimplemented
 } // end rps_serve_onion_web
