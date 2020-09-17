@@ -188,8 +188,31 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
    **/
   if (reqmethnum == OR_GET || reqmethnum == OR_HEAD)
     {
+      /// requests with ".." or "README.md" are rejected...
       if (reqpath.find("..")!=std::string::npos
           || reqpath.find("README.md")!=std::string::npos)
+        {
+          presp->setCode(HTTP_FORBIDDEN);
+          std::ostringstream reqout;
+          reqout
+              << "<!DOCTYPE HTML>\n"
+              "<html><head>\n"
+              "<title>RefPerSys forbids "
+              << Rps_Html_String(reqpath)
+              << "</title></head>\n"
+              << "<body><h1>access to <tt>"
+              << Rps_Html_String(reqpath)
+              << "/<tt> forbidden</h1>\n"
+              << "<p><tt>" << reqmethname << "</tt> request #" << reqnum
+              << " for <tt>" << Rps_Html_String(reqpath)
+              << "</tt>"
+              ;
+#warning missing code to complete HTTP forbidden response in rps_serve_onion_web
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_web should send:" << std::endl
+                        << reqout.str());
+
+        }
+      else
         {
           std::string filpath = std::string{rps_topdirectory} + "/" + reqpath;
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_web filpath=" << filpath	<< " reqnum#" << reqnum);
