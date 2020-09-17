@@ -321,8 +321,7 @@ rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen)
               else if (uc<65535)
                 snprintf(ubuf, sizeof(ubuf), "\\u%04x", (unsigned)uc);
               else
-                snprintf(ubuf, sizeof(ubuf), "\\U%04x", (unsigned)uc);
-
+                snprintf(ubuf, sizeof(ubuf), "\\U%08x", (unsigned)uc);
               out <<ubuf;
             }
           break;

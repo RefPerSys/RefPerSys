@@ -3454,6 +3454,31 @@ extern "C" void rps_output_utf8_html(std::ostream&out, const char*str, int bytle
 /// output a C string in C or JSON encoding
 extern "C" void rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen= -1);
 
+
+class Rps_Html_String : public std::string {
+public:
+  Rps_Html_String(const char*str, int len= -1) :
+    std::string(str, (len>=0)?len:strlen(str)) {};
+  Rps_Html_String(const std::string&str) : std::string(str) {};
+  ~Rps_Html_String() = default;
+  void output(std::ostream&out) const
+  { rps_output_utf8_html(out, c_str(), (int)size()); };
+};
+inline std::ostream&operator << (std::ostream&out, const Rps_Html_String&hstr) { hstr.output(out); return out;
+};  // end << Rps_Html_String
+
+class Rps_Cjson_String : public std::string {
+public:
+  Rps_Cjson_String(const char*str, int len= -1) :
+    std::string(str, (len>=0)?len:strlen(str)) {};
+  Rps_Cjson_String(const std::string&str) : std::string(str) {};
+  ~Rps_Cjson_String() = default;
+  void output(std::ostream&out) const
+  { rps_output_utf8_cjson(out, c_str(), (int)size()); };
+};
+inline std::ostream&operator << (std::ostream&out, const Rps_Cjson_String&hstr) { hstr.output(out); return out;
+};  // end << Rps_Cjson_String
+
 //////////////////////////////////////////////////////////////////
 /// initial agenda machinery; 
 
