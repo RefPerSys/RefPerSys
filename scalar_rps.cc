@@ -145,4 +145,190 @@ Rps_Double::compute_class(Rps_CallFrame*) const
   return RPS_ROOT_OB(_98sc8kSOXV003i86w5); // the `double` class
 } // end Rps_String::compute_class
 
+////////////////////////////////////////////////////////////////
+///// UTF8 encoded string output
+void
+rps_output_utf8_html(std::ostream&out, const char*str, int bytlen)
+{
+  if (!str)
+    return;
+  if (bytlen<0)
+    bytlen = strlen(str);
+  const char*end = str + bytlen;
+  const uint8_t *next;
+  const uint8_t* uend =(const uint8_t*)end;
+  for (const uint8_t* pc = (const uint8_t*)str;
+       pc < uend && *pc;
+       pc = next)
+    {
+      ucs4_t uc=0;
+      next = u8_next(&uc, pc);
+      switch (uc)
+        {
+        case '&':
+          out << "&amp;" ;
+          break;
+        case '\'':
+          out << "&apos;";
+          break;
+        case '"':
+          out << "&quot;";
+          break;
+        case '<':
+          out << "&lt;";
+          break;
+        case '>':
+          out << "&gt;";
+          break;
+        case '\r':
+          out << '\r';
+          break;
+        case '\n':
+          out << '\n';
+          break;
+        case '\t':
+          out << '\t';
+          break;
+        case '\v':
+          out << '\v';
+          break;
+        case '\f':
+          out << '\f';
+          break;
+        case ' ':
+          out << ' ';
+          break;
+        /// optimizing frequent cases
+        case '.':
+        case ',':
+        case':':
+        case ';':
+        case '?':
+        case'_':
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        case '(':
+        case ')':
+        case '[':
+        case ']':
+        case'{':
+        case '}':
+        case '!':
+        case '=':
+        case '0' ... '9':
+        case 'a' ... 'z':
+        case 'A' ... 'Z':
+          out<<(char)uc;
+          break;
+        default:
+          if (uc>' ' && uc<127) out<< (char)uc;
+          else
+            {
+              char ubuf[16];
+              memset(ubuf, 0, sizeof(ubuf));
+              snprintf(ubuf, sizeof(ubuf), "&#%u;", (unsigned)uc);
+              out <<ubuf;
+            }
+          break;
+        }
+    }
+} // end rps_output_utf8_html
+
+
+void
+rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen)
+{
+  if (!str)
+    return;
+  if (bytlen<0)
+    bytlen = strlen(str);
+  const char*end = str + bytlen;
+  const uint8_t *next;
+  const uint8_t* uend =(const uint8_t*)end;
+  for (const uint8_t* pc = (const uint8_t*)str;
+       pc < uend && *pc;
+       pc = next)
+    {
+      ucs4_t uc=0;
+      next = u8_next(&uc, pc);
+      switch (uc)
+        {
+        case '\'':
+          out << "\\'";
+          break;
+        case '\\':
+          out << "\\\\";
+          break;
+        case '"':
+          out << "\\\"";
+          break;
+        case '\r':
+          out << "\\r";
+          break;
+        case '\n':
+          out << "\\n";
+          break;
+        case '\t':
+          out << "\\t";
+          break;
+        case '\v':
+          out << "\\v";
+          break;
+        case '\f':
+          out << "\\f";
+          break;
+        case ' ':
+          out << ' ';
+          break;
+        /// frequent cases
+        case '.':
+        case '&':
+        case ',':
+        case':':
+        case ';':
+        case '!':
+        case '?':
+        case'_':
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        case '(':
+        case ')':
+        case '[':
+        case ']':
+        case'{':
+        case '}':
+        case '=':
+        case '<':
+        case '>':
+        case '0' ... '9':
+        case 'a' ... 'z':
+        case 'A' ... 'Z':
+          out<<(char)uc;
+          break;
+        default:
+          if (uc>' ' && uc<127)
+            out<< (char)uc;
+          else
+            {
+              char ubuf[16];
+              memset(ubuf, 0, sizeof(ubuf));
+              if (uc<255)
+                snprintf(ubuf, sizeof(ubuf), "\\x%02x", (unsigned)uc);
+              else if (uc<65535)
+                snprintf(ubuf, sizeof(ubuf), "\\u%04x", (unsigned)uc);
+              else
+                snprintf(ubuf, sizeof(ubuf), "\\U%04x", (unsigned)uc);
+
+              out <<ubuf;
+            }
+          break;
+        }
+    }
+} // end rps_output_utf8_cjson
+
+
 //////////////////////////////////////////////// end of file scalar_rps.cc

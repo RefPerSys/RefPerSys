@@ -3448,7 +3448,11 @@ extern "C" void rps_read_eval_print_loop(int &argc, char**argv); // GNU readline
 
 extern "C" void rps_run_application(int &argc, char **argv);
 
-
+///// UTF8 encoded string output (in file scalar_rps.cc)
+/// output a C string in HTML encoding
+extern "C" void rps_output_utf8_html(std::ostream&out, const char*str, int bytlen= -1);
+/// output a C string in C or JSON encoding
+extern "C" void rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen= -1);
 
 //////////////////////////////////////////////////////////////////
 /// initial agenda machinery; 
