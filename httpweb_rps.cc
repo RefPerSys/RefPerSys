@@ -170,7 +170,7 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
   else
     thnambuf[sizeof(thnambuf)-1] = (char)0;
   static std::atomic<uint64_t> reqcount;
-  uint64_t reqnum = reqcount.fetch_add(1);
+  uint64_t reqnum = 1+reqcount.fetch_add(1);
   const std::string reqpath =prequ->path();
   const onion_request_flags reqflags=prequ->flags();
   const unsigned reqmethnum = reqflags&OR_METHODS;
@@ -214,19 +214,26 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
         }
       else
         {
-          std::string filpath = std::string{rps_topdirectory} + "/" + reqpath;
+          std::string filpath = std::string{rps_topdirectory} + "/webroot/" + reqpath;
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_web filpath=" << filpath	<< " reqnum#" << reqnum);
           if (!access(filpath.c_str(), F_OK))
             {
-#warning perhaps rps_serve_onion_web should somehow use onion_handler_export_local_new
-              RPS_WARNOUT("rps_serve_onion_web should serve filpath=" << filpath
-                          << " for reqpath=" << reqpath << ", reqnum#" << reqnum << std::endl
-                          << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-file")
-                         );
+
+#warning perhaps rps_serve_onion_web should somehow use onion_shortcut_response_file
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_web should serve filpath=" << filpath << " reqnum#" << reqnum << std::endl
+                            << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-servefile"));
+              auto csp = onion_shortcut_response_file(filpath.c_str(),
+                                                      prequ->c_handler(),
+                                                      presp->c_handler());
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_web serves filpath=" << filpath
+                            << " for " << reqmethname << " '" << reqpath << "', reqnum#" << reqnum << " -> " << (int) csp << std::endl
+                            << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-file")
+                           );
+              return csp;
             }
           else
             RPS_DEBUG_LOG(WEB, "rps_serve_onion_web notfound filpath=" << filpath
-                          << " reqnum#" << reqnum);
+                          << " reqnum#" << reqnum << " " << strerror(errno));
 
         };
     }
