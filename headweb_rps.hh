@@ -42,6 +42,7 @@
 #include "onion/request.hpp"
 #include "onion/response.hpp"
 #include "onion/shortcuts.h"
+#include "onion/mime.h"
 
 extern "C" Onion::Onion rps_onion_server;
 

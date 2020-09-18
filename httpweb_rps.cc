@@ -219,17 +219,14 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
           if (!access(filpath.c_str(), F_OK))
             {
 
-#warning perhaps rps_serve_onion_web should somehow use onion_shortcut_response_file
-              RPS_DEBUG_LOG(WEB, "rps_serve_onion_web should serve filpath=" << filpath << " reqnum#" << reqnum << std::endl
+              const char*mime = onion_mime_get(filpath.c_str());
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_web should serve filpath=" << filpath << " reqnum#" << reqnum << " of mime=" << mime << std::endl
                             << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-servefile"));
-              auto csp = onion_shortcut_response_file(filpath.c_str(),
-                                                      prequ->c_handler(),
-                                                      presp->c_handler());
+#warning perhaps rps_serve_onion_web cannot use onion_shortcut_response_file
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_web serves filpath=" << filpath
-                            << " for " << reqmethname << " '" << reqpath << "', reqnum#" << reqnum << " -> " << (int) csp << std::endl
+                            << " for " << reqmethname << " '" << reqpath << "', reqnum#" << reqnum << std::endl
                             << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-file")
                            );
-              return csp;
             }
           else
             RPS_DEBUG_LOG(WEB, "rps_serve_onion_web notfound filpath=" << filpath
