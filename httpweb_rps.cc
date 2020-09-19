@@ -38,10 +38,6 @@ Onion::Onion rps_onion_server;
 
 static const char* rps_onion_serverarg;
 
-extern "C" onion_connection_status
-rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres);
-
-
 /// Called from main with an argument like "localhost:9090". Should
 /// initialize the data structures to serve web requests.
 void
@@ -138,23 +134,60 @@ Rps_PayloadWebex::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   /// see function rpsldpy_vectob in store_rps.cc
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-#warning Rps_PayloadWebex::dump_json_content unimplemented, should never be called
-  RPS_FATALOUT("Rps_PayloadWebex::dump_scan unimplemented owner=" << owner());
+  RPS_FATALOUT("Rps_PayloadWebex::dump_scan should not be called owner=" << owner());
 } // end Rps_PayloadWebex::dump_json_content
 
-Rps_PayloadWebex::Rps_PayloadWebex(Rps_ObjectZone*ownerobz,Onion::Request&req,Onion::Response&resp)
-  : Rps_Payload(Rps_Type::PaylWebex, ownerobz)
+Rps_PayloadWebex::Rps_PayloadWebex(Rps_ObjectZone*ownerobz,uint64_t reqnum,Onion::Request&req,Onion::Response&resp)
+  : Rps_Payload(Rps_Type::PaylWebex, ownerobz),
+    webex_reqnum(reqnum),
+    webex_startim(rps_monotonic_real_time()),
+    webex_requ(&req),
+    webex_resp(&resp),
+    webex_state(nullptr),
+    webex_numstate(0)
 {
   RPS_ASSERT(ownerobz && ownerobz->stored_type() == Rps_Type::Object);
-#warning Rps_PayloadWebex::Rps_PayloadWebex unimplemented
-  RPS_FATALOUT("Rps_PayloadWebex::Rps_PayloadWebex unimplemented owner=" << owner());
+  if (RPS_DEBUG_ENABLED(WEB))
+    {
+      char thrname[24];
+      memset(thrname, 0, sizeof(thrname));
+      pthread_getname_np(pthread_self(),thrname,sizeof(thrname));
+      const std::string reqpath = webex_requ->path();
+      const onion_request_flags reqflags= webex_requ->flags();
+      const unsigned reqmethnum = reqflags&OR_METHODS;
+      const char* reqmethname = onion_request_methods[reqmethnum];
+      RPS_DEBUG_LOG(WEB, "creating payloadwebex@" << ((void*)this) << " reqnum#" << webex_reqnum
+                    << " starting " << webex_startim
+                    << " for " << reqmethname << " of " << reqpath << " thread " << thrname
+                    << " owner " << owner()
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex-cr"));
+    }
 } // end Rps_PayloadWebex::Rps_PayloadWebex
 
 
 Rps_PayloadWebex::~Rps_PayloadWebex()
 {
-#warning Rps_PayloadWebex::~Rps_PayloadWebex unimplemented
-  RPS_FATALOUT("Rps_PayloadWebex::~Rps_PayloadWebex unimplemented owner=" << owner());
+  if (RPS_DEBUG_ENABLED(WEB))
+    {
+      char thrname[24];
+      memset(thrname, 0, sizeof(thrname));
+      pthread_getname_np(pthread_self(),thrname,sizeof(thrname));
+      const std::string reqpath = webex_requ->path();
+      const onion_request_flags reqflags= webex_requ->flags();
+      const unsigned reqmethnum = reqflags&OR_METHODS;
+      const char* reqmethname = onion_request_methods[reqmethnum];
+      RPS_DEBUG_LOG(WEB, "destroying payloadwebex@" << ((void*)this) << " reqnum#" << webex_reqnum
+                    << " starting " << webex_startim
+                    << " for " << reqmethname << " of " << reqpath << " thread " << thrname
+                    << " owner " << owner()
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex-destr"));
+    }
+  webex_requ = nullptr;
+  webex_resp = nullptr;
+  webex_state = nullptr;
+  webex_numstate = 0;
 } // end  Rps_PayloadWebex::~Rps_PayloadWebex
 
 onion_connection_status

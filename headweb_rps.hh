@@ -46,12 +46,21 @@
 
 extern "C" Onion::Onion rps_onion_server;
 
+extern "C" onion_connection_status
+rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres);
+
+
+/// a web exchange object is created for most dynamic HTTP requests
+/// it obviously is a transient object which is not persisted to disk.
 class Rps_PayloadWebex : // the payload for a web exchange
   public Rps_Payload
 {
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
   friend class Rps_Agenda;
+  friend void rps_run_web_service(void);
+  friend onion_connection_status
+  rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion::Response*presp);
   friend Rps_PayloadWebex*
   Rps_QuasiZone::rps_allocate3<Rps_PayloadWebex,Rps_ObjectZone*,Onion::Request&,Onion::Response&>(Rps_ObjectZone*,Onion::Request&,Onion::Response&);
 protected:
@@ -67,8 +76,15 @@ public:
   {
     return "webex";
   };
-  Rps_PayloadWebex(Rps_ObjectZone*,Onion::Request&,Onion::Response&);
+  Rps_PayloadWebex(Rps_ObjectZone*,uint64_t,Onion::Request&,Onion::Response&);
   virtual ~Rps_PayloadWebex();
+private:
+  uint64_t webex_reqnum;	// unique request number
+  double webex_startim;		// start monotonic time
+  Onion::Request* webex_requ;	// pointer to request
+  Onion::Response* webex_resp;	// pointer to response
+  Rps_Value webex_state; 	// some mutable state
+  uint64_t webex_numstate;	// some numerical state
 };				// end class Rps_PayloadWebex
 
 #endif /* HEADWEB_RPS_INCLUDED */
