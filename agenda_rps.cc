@@ -412,6 +412,7 @@ rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
   RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   auto paylagenda = obz->put_new_plain_payload<Rps_PayloadAgenda>();
+  RPS_ASSERT(paylagenda);
   for (int  ix= Rps_Agenda::AgPrio_Low; ix< Rps_Agenda::AgPrio__Last; ix++)
     {
       const char*prioname =  Rps_Agenda::agenda_priority_names[ix];
