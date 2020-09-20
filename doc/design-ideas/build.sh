@@ -4,14 +4,23 @@ rm -vf  refpersys-design.{aux,bcf,blg,log,run.xml,toc} dot*.{eps,pdf,svg}
 
 ################
 ## see http://inkscape.org/
+## we need Inkscape 1.0
+INKSCAPE_VERSION=$(inkscape --version | head -1)
+if inkscape --version | fgrep 'Inkscape 1.0' ; then
+    printf "Using %s\n" $INKSCAPE_VERSION
+else
+    printf "Bad inkscape version %s; %s needs 1.0 from http://inkscape.org/\n" $INKSCAPE_VERSION $0 > /dev/stderr
+    exit 1
+fi
+
 printf "\n\n ================ SVG processing by inkscape of "; echo *.svg "files."
 
 for svgfile in ../CC-BY-SA-icon.svg \
 		   spiral-model-softdevel.svg spiral-stairs.svg \
 	       heap-refpersys.svg ; do
     svgbase=$(basename $svgfile .svg)
-    inkscape --without-gui --export-pdf=$svgbase.pdf $svgfile
-    inkscape --without-gui --export-eps=$svgbase.eps $svgfile
+    inkscape --batch --export-filename=$svgbase.pdf --export-type=pdf $svgfile
+    inkscape --batch --export-filename=$svgbase.eps --export-type=eps $svgfile
 done
 
 ################
