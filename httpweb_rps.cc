@@ -118,8 +118,14 @@ rps_run_web_service()
 
     resp << "<!DOCTYPE html>\n"
          << "<html><head><title>RefPerSys error</title></head>\n"
-         << "<body><p>" <<  RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error")
-         << "</p>\n";
+         << "<body><p><b>Backtrace:</b><br/><tt>";
+    {
+      std::ostringstream outs;
+      outs  <<  RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error");
+      std::string outstr = outs.str();
+      resp << Rps_Html_Nl2br_String(outstr);
+    }
+    resp << "</tt></p>\n";
 
     resp << "<p>For <tt>"
          << reqmethname << "</tt> of <tt>"
