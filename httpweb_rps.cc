@@ -130,8 +130,9 @@ rps_run_web_service()
      return OCS_PROCESSED;
    };
 
-#if 0
   auto errh = Onion::Handler::make<Onion::HandlerFunction>(errhandlerfun);
+  RPS_ASSERT(errh);
+#if 0
   rps_onion_server.setInternalErrorHandler(errh);
 #endif
 
