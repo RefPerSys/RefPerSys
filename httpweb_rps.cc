@@ -227,6 +227,10 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
         {
           presp->setCode(HTTP_FORBIDDEN);
           std::ostringstream reqout;
+          time_t now = time(nullptr);
+          char nowbuf[48];
+          memset(nowbuf, 0, sizeof(nowbuf));
+          ctime_r(&now, nowbuf);
           reqout
               << "<!DOCTYPE HTML>\n"
               "<html><head>\n"
@@ -236,14 +240,22 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
               << "<body><h1>access to <tt>"
               << Rps_Html_String(reqpath)
               << "/<tt> forbidden</h1>\n"
-              << "<p><tt>" << reqmethname << "</tt> request #" << reqnum
+              << "<p>For <tt>" << reqmethname << "</tt> request #" << reqnum
               << " for <tt>" << Rps_Html_String(reqpath)
-              << "</tt>"
+              << "</tt></p>"
               ;
-#warning missing code to complete HTTP forbidden response in rps_serve_onion_web
+          reqout << "<p>From <a href='http://refpersys.org/'>RefPerSys</a> git <tt>"
+                 << Rps_Html_String(rps_lastgitcommit) << "</tt>"
+                 << " running on <tt>" << rps_hostname() << "</tt> pid "
+                 << (int)getpid()
+                 << " at " << Rps_Html_String(nowbuf) << ".</p>"
+                 << "</body>\n</html>" << std::endl;
+          std::string outstr = reqout.str();
+          presp->setLength(outstr.size());
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_web should send:" << std::endl
                         << reqout.str());
-
+          presp->write(outstr.c_str(), outstr.size());
+          return OCS_PROCESSED;
         }
       else
         {
