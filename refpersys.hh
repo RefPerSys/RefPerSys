@@ -3449,23 +3449,36 @@ extern "C" void rps_read_eval_print_loop(int &argc, char**argv); // GNU readline
 extern "C" void rps_run_application(int &argc, char **argv);
 
 ///// UTF8 encoded string output (in file scalar_rps.cc)
-/// output a C string in HTML encoding
-extern "C" void rps_output_utf8_html(std::ostream&out, const char*str, int bytlen= -1);
+/// output a C string in HTML encoding; if nl2br is true, every newline is output as <br/>
+extern "C" void rps_output_utf8_html(std::ostream&out, const char*str, int bytlen= -1, bool nl2br= false);
 /// output a C string in C or JSON encoding
 extern "C" void rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen= -1);
 
 
+/// output in HTML encoding
 class Rps_Html_String : public std::string {
 public:
   Rps_Html_String(const char*str, int len= -1) :
     std::string(str, (len>=0)?len:strlen(str)) {};
   Rps_Html_String(const std::string&str) : std::string(str) {};
   ~Rps_Html_String() = default;
-  void output(std::ostream&out) const
+  virtual void output(std::ostream&out) const
   { rps_output_utf8_html(out, c_str(), (int)size()); };
-};
+}; // end class  Rps_Html_String
 inline std::ostream&operator << (std::ostream&out, const Rps_Html_String&hstr) { hstr.output(out); return out;
 };  // end << Rps_Html_String
+
+/// output in HTML encoding, with newlines changed to <br/>
+class Rps_Html_Nl2br_String : public Rps_Html_String {
+public:
+  Rps_Html_Nl2br_String(const char*str, int len= -1) :
+    Rps_Html_String(str,len) {};
+  Rps_Html_Nl2br_String(const std::string&str) :
+    Rps_Html_String(str) {};
+  ~Rps_Html_Nl2br_String() = default;
+  virtual void output(std::ostream&out) const
+  { rps_output_utf8_html(out, c_str(), (int)size(), true); };
+}; // end class Rps_Html_Nl2br_String
 
 class Rps_Cjson_String : public std::string {
 public:

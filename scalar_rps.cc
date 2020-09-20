@@ -148,7 +148,7 @@ Rps_Double::compute_class(Rps_CallFrame*) const
 ////////////////////////////////////////////////////////////////
 ///// UTF8 encoded string output
 void
-rps_output_utf8_html(std::ostream&out, const char*str, int bytlen)
+rps_output_utf8_html(std::ostream&out, const char*str, int bytlen, bool nl2br)
 {
   if (!str)
     return;
@@ -184,7 +184,10 @@ rps_output_utf8_html(std::ostream&out, const char*str, int bytlen)
           out << '\r';
           break;
         case '\n':
-          out << '\n';
+          if (nl2br)
+            out << "<br/>";
+          else
+            out << '\n';
           break;
         case '\t':
           out << '\t';
