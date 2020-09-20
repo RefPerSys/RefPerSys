@@ -94,47 +94,46 @@ rps_run_web_service()
   Onion::Url rooturl(&rps_onion_server);
 
   auto errhandlerfun =
-    [&](Onion::Request& req, Onion::Response&resp)->onion_connection_status {
-      const std::string reqpath = req.path();
-      const onion_request_flags reqflags = req.flags();
-      const unsigned reqmethnum = reqflags & OR_METHODS;
-      const char* reqmethname = onion_request_methods[reqmethnum];
-          
-     RPS_DEBUG_LOG(WEB, "Onion-internal-error from " 
-       << rps_current_pthread_name()
-       << " for " 
-       << reqmethname 
-       << " of " 
-       << reqpath
-       << std::endl
-       << RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error")
-     );
+    [&](Onion::Request& req, Onion::Response&resp)->onion_connection_status
+  {
+    const std::string reqpath = req.path();
+    const onion_request_flags reqflags = req.flags();
+    const unsigned reqmethnum = reqflags & OR_METHODS;
+    const char* reqmethname = onion_request_methods[reqmethnum];
 
-     RPS_WARNOUT("ONION internal error for web request "
-       << reqmethname 
-       << " of " 
-       << reqpath);
-          
-     resp << "<!DOCTYPE html>\n"
-          << "<html><head><title>RefPerSys error</title></head>\n"
-          << "<body><p>" <<  RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error")
-          << "</p>\n";
+    RPS_DEBUG_LOG(WEB, "Onion-internal-error from "
+                  << rps_current_pthread_name()
+                  << " for "
+                  << reqmethname
+                  << " of "
+                  << reqpath
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error")
+                 );
 
-     resp << "<p>For <tt>" 
-          << reqmethname << "</tt> of <tt>" 
-          << reqpath 
-          << "</tt></p>\n"
-          << "</body></html>" 
-          << std::endl;
-          
-     return OCS_PROCESSED;
-   };
+    RPS_WARNOUT("ONION internal error for web request "
+                << reqmethname
+                << " of "
+                << reqpath);
+
+    resp << "<!DOCTYPE html>\n"
+         << "<html><head><title>RefPerSys error</title></head>\n"
+         << "<body><p>" <<  RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error")
+         << "</p>\n";
+
+    resp << "<p>For <tt>"
+         << reqmethname << "</tt> of <tt>"
+         << reqpath
+         << "</tt></p>\n"
+         << "</body></html>"
+         << std::endl;
+
+    return OCS_PROCESSED;
+  };
 
   auto errh = Onion::Handler::make<Onion::HandlerFunction>(errhandlerfun);
   RPS_ASSERT(errh);
-#if 0
-  rps_onion_server.setInternalErrorHandler(errh);
-#endif
+  rps_onion_server.setInternalErrorHandler(errh.get());
 
 #warning we should use rps_serve_onion_web in rps_run_web_service
   rooturl.add("",
