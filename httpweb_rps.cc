@@ -59,7 +59,8 @@ rps_web_initialize_service(const char*servarg)
         rps_onion_server.setHostname(std::string{serverbuf});
       rps_onion_server.setPort(portnum);
       RPS_INFORMOUT("rps_web_initialize_service initialized Onion webserver on "
-                    << serverbuf << ":" << portnum);
+                    << serverbuf << ":" << portnum
+                    << " using libonion " << onion_version());
     }
   else
     RPS_FATALOUT("rps_web_initialize_service: bad server " << servarg);
@@ -91,6 +92,49 @@ rps_run_web_service()
   /// TODO: some Onion::Url should be declared here... see README.md
   /// FIXME: use rps_serve_onion_web here
   Onion::Url rooturl(&rps_onion_server);
+
+  auto errhandlerfun =
+    [&](Onion::Request& req, Onion::Response&resp)->onion_connection_status {
+      const std::string reqpath = req.path();
+      const onion_request_flags reqflags = req.flags();
+      const unsigned reqmethnum = reqflags & OR_METHODS;
+      const char* reqmethname = onion_request_methods[reqmethnum];
+          
+     RPS_DEBUG_LOG(WEB, "Onion-internal-error from " 
+       << rps_current_pthread_name()
+       << " for " 
+       << reqmethname 
+       << " of " 
+       << reqpath
+       << std::endl
+       << RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error")
+     );
+
+     RPS_WARNOUT("ONION internal error for web request "
+       << reqmethname 
+       << " of " 
+       << reqpath);
+          
+     resp << "<!DOCTYPE html>\n"
+          << "<html><head><title>RefPerSys error</title></head>\n"
+          << "<body><p>" <<  RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error")
+          << "</p>\n";
+
+     resp << "<p>For <tt>" 
+          << reqmethname << "</tt> of <tt>" 
+          << reqpath 
+          << "</tt></p>\n"
+          << "</body></html>" 
+          << std::endl;
+          
+     return OCS_PROCESSED;
+   };
+
+#if 0
+  auto errh = Onion::Handler::make<Onion::HandlerFunction>(errhandlerfun);
+  rps_onion_server.setInternalErrorHandler(errh);
+#endif
+
 #warning we should use rps_serve_onion_web in rps_run_web_service
   rooturl.add("",
               [&](Onion::Request &req, Onion::Response &res)
