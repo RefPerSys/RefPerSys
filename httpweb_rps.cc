@@ -159,16 +159,16 @@ rps_run_web_service()
 void
 Rps_PayloadWebex::gc_mark(Rps_GarbageCollector&gc) const
 {
-#warning Rps_PayloadWebex::gc_mark unimplemented
-  RPS_FATALOUT("Rps_PayloadWebex::gc_mark unimplemented owner=" << owner());
+  if (webex_state)
+    webex_state.gc_mark(gc);
 } // end Rps_PayloadWebex::gc_mark
 
 void
 Rps_PayloadWebex::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-#warning Rps_PayloadWebex::dump_scan unimplemented
-  RPS_FATALOUT("Rps_PayloadWebex::dump_scan unimplemented owner=" << owner());
+  // we don't persist the webex_state, so...
+  return;
 } // end Rps_PayloadWebex::dump_scan
 
 
@@ -178,7 +178,8 @@ Rps_PayloadWebex::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   /// see function rpsldpy_vectob in store_rps.cc
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  RPS_FATALOUT("Rps_PayloadWebex::dump_scan should not be called owner=" << owner());
+  // we don't persist the webex_state, so...
+  return;
 } // end Rps_PayloadWebex::dump_json_content
 
 Rps_PayloadWebex::Rps_PayloadWebex(Rps_ObjectZone*ownerobz,uint64_t reqnum,Onion::Request&req,Onion::Response&resp)
