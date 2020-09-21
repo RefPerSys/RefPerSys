@@ -186,8 +186,7 @@ rps_output_utf8_html(std::ostream&out, const char*str, int bytlen, bool nl2br)
         case '\n':
           if (nl2br)
             out << "<br/>";
-          else
-            out << '\n';
+          out << '\n';
           break;
         case '\t':
           out << '\t';
