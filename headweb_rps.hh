@@ -50,6 +50,9 @@ extern "C" Onion::Onion rps_onion_server;
 extern "C" onion_connection_status
 rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres);
 
+extern "C" onion_connection_status
+rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath);
+
 
 /// a web exchange object is created for most dynamic HTTP requests
 /// it obviously is a transient object which is not persisted to disk.

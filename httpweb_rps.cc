@@ -92,7 +92,7 @@ rps_run_web_service()
   /// TODO: some Onion::Url should be declared here... see README.md
   /// FIXME: use rps_serve_onion_web here
   Onion::Url rooturl(&rps_onion_server);
-
+  /// set the error handler
   auto errhandlerfun =
     [&](Onion::Request& req, Onion::Response&resp)->onion_connection_status
   {
@@ -100,7 +100,6 @@ rps_run_web_service()
     const onion_request_flags reqflags = req.flags();
     const unsigned reqmethnum = reqflags & OR_METHODS;
     const char* reqmethname = onion_request_methods[reqmethnum];
-
     RPS_DEBUG_LOG(WEB, "Onion-internal-error from "
                   << rps_current_pthread_name()
                   << " for "
@@ -142,7 +141,7 @@ rps_run_web_service()
   rps_onion_server.setInternalErrorHandler(errh.get());
 
 #warning we should use rps_serve_onion_web in rps_run_web_service
-  rooturl.add("",
+  rooturl.add("^",
               [&](Onion::Request &req, Onion::Response &res)
   {
     RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service req@" << (void*)&req
@@ -241,6 +240,9 @@ Rps_PayloadWebex::~Rps_PayloadWebex()
   webex_numstate = 0;
 } // end  Rps_PayloadWebex::~Rps_PayloadWebex
 
+////////////////////////////////////////////////////////////////
+
+
 onion_connection_status
 rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion::Response*presp)
 {
@@ -314,15 +316,9 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_web filpath=" << filpath	<< " reqnum#" << reqnum);
           if (!access(filpath.c_str(), F_OK))
             {
-
-              const char*mime = onion_mime_get(filpath.c_str());
-              RPS_DEBUG_LOG(WEB, "rps_serve_onion_web should serve filpath=" << filpath << " reqnum#" << reqnum << " of mime=" << mime << std::endl
-                            << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-servefile"));
-#warning perhaps rps_serve_onion_web cannot use onion_shortcut_response_file
-              RPS_DEBUG_LOG(WEB, "rps_serve_onion_web serves filpath=" << filpath
-                            << " for " << reqmethname << " '" << reqpath << "', reqnum#" << reqnum << std::endl
-                            << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-file")
-                           );
+              RPS_FATALOUT("rps_serve_onion_web should serve filpath=" << filpath << " reqnum#" << reqnum << std::endl
+                           << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-servefile"));
+#warning rps_serve_onion_web should create a call frame and call rps_serve_onion_file
             }
           else
             RPS_DEBUG_LOG(WEB, "rps_serve_onion_web notfound filpath=" << filpath
@@ -349,4 +345,21 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
 #warning rps_serve_onion_web unimplemented
 } // end rps_serve_onion_web
 
+
+onion_connection_status
+rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath)
+{
+  RPS_ASSERT(callframe);
+  RPS_ASSERT(purl != nullptr);
+  RPS_ASSERT(preq != nullptr);
+  const char*mime = onion_mime_get(filepath.c_str());
+  /****
+   * TODO: most files, e.g. webroot/img/refpersys_logo.svg, should be
+   * served as such. But we also need template files, with a file
+   * suffix of .thtml, where some substitution occurs by sending
+   * RefPerSys messages, etc...
+   ***/
+  RPS_FATALOUT("unimplemented rps_serve_onion_file val=" << val << " reqnum#" << reqnum << " filepath=" << filepath << " mime=" << mime);
+#warning unimplemented rps_serve_onion_file
+} // end rps_serve_onion_file
 ///////// end of file httpweb_rps.cc
