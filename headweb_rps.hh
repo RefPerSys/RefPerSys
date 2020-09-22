@@ -56,7 +56,8 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
 
 /// a web exchange object is created for most dynamic HTTP requests
 /// it obviously is a transient object which is not persisted to disk.
-class Rps_PayloadWebex : // the payload for a web exchange
+class Rps_PayloadWebex : // the payload for a web exchange; see
+// RefPerSys class web_exchange
   public Rps_Payload
 {
   friend class Rps_ObjectRef;
