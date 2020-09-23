@@ -319,13 +319,10 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
             {
               RPS_LOCALFRAME(/*descr:*/ web_exchange_ob,
                                         /*prev:*/nullptr,
-                                        /*locals:*/
-                                        Rps_ObjectRef obreqweb);
-              _f.obreqweb = Rps_ObjectRef::make_object(&_, web_exchange_ob);
-              RPS_DEBUG_LOG(WEB, "rps_serve_onion_web obreqweb=" << _f.obreqweb
-                            << " reqnum#" << reqnum<< " should call rps_serve_onion_file" << std::endl
+                                        /*locals:*/);
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_web reqnum#" << reqnum<< " should call rps_serve_onion_file" << std::endl
                             << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-servefile"));
-#warning rps_serve_onion_web should create a call frame and call rps_serve_onion_file
+              return rps_serve_onion_file(&_, val, purl, prequ, presp, reqnum, filpath);
             }
           else
             RPS_DEBUG_LOG(WEB, "rps_serve_onion_web notfound filpath=" << filpath
@@ -377,7 +374,9 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                 << " reqpath='" << reqpath << "'"
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
-  RPS_FATALOUT("unimplemented rps_serve_onion_file val=" << val << " reqnum#" << reqnum << " filepath=" << filepath << " mime=" << mime);
+  RPS_FATALOUT("unimplemented rps_serve_onion_file val=" << val << " reqnum#" << reqnum
+               << " " << reqmethname << " reqpath='" << reqpath << "'"
+               << " filepath=" << filepath << " mime=" << mime);
 #warning unimplemented rps_serve_onion_file
 } // end rps_serve_onion_file
 ///////// end of file httpweb_rps.cc
