@@ -361,6 +361,16 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
   const char*mime = onion_mime_get(filepath.c_str());
+  
+  RPS_DEBUG_LOG(WEB, "rps_serve_onion_file mime =" << mime);
+
+#if 0
+  if (mime == "image/svg+xml") {
+      // read file stored in reqpath
+      // reqout << contents
+  }
+#endif
+
   /****
    * TODO: most files, e.g. webroot/img/refpersys_logo.svg, should be
    * served as such. But we also need template files, with a file
