@@ -361,8 +361,10 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
   const char*mime = onion_mime_get(filepath.c_str());
+  std::ostringstream reqout;
   
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_file mime =" << mime);
+  reqout << "Content-Type:" << mime << std::endl << std::endl;
 
 #if 0
   if (mime == "image/svg+xml") {
