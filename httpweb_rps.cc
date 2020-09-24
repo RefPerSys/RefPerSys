@@ -362,16 +362,6 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
   const char* reqmethname = onion_request_methods[reqmethnum];
   const char*mime = onion_mime_get(filepath.c_str());
   std::ostringstream reqout;
-  
-  RPS_DEBUG_LOG(WEB, "rps_serve_onion_file mime =" << mime);
-  reqout << "Content-Type:" << mime << std::endl << std::endl;
-
-#if 0
-  if (mime == "image/svg+xml") {
-      // read file stored in reqpath
-      // reqout << contents
-  }
-#endif
 
   /****
    * TODO: most files, e.g. webroot/img/refpersys_logo.svg, should be
@@ -379,16 +369,57 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
    * suffix of .thtml, where some substitution occurs by sending
    * RefPerSys messages, etc...
    ***/
-  RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
+  RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val << " mime=" << mime
                 << " filepath=" << filepath
                 << " reqnum#" << reqnum
                 << " reqmethnum=" << reqmethname
                 << " reqpath='" << reqpath << "'"
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
-  RPS_FATALOUT("unimplemented rps_serve_onion_file val=" << val << " reqnum#" << reqnum
-               << " " << reqmethname << " reqpath='" << reqpath << "'"
-               << " filepath=" << filepath << " mime=" << mime);
-#warning unimplemented rps_serve_onion_file
+  if (mime && (reqmethnum==OR_GET || reqmethnum==OR_HEAD))
+    {
+      pres->setHeader("Content-Type:", mime);
+      int fd = open(filepath.c_str(), O_RDONLY);
+      if (fd<0)
+        RPS_FATALOUT("rps_serve_onion_file filepath=" << filepath
+                     << " reqnum#" << reqnum
+                     << " reqmethnum=" << reqmethname
+                     << " reqpath='" << reqpath << "'"
+                     << " open failed: " << strerror(errno));
+      struct stat filstat;
+      memset(&filstat, 0, sizeof(filstat));
+      if (fstat(fd, &filstat))
+        RPS_FATALOUT("rps_serve_onion_file filepath=" << filepath
+                     << " reqnum#" << reqnum
+                     << " reqmethname=" << reqmethname
+                     << " reqpath='" << reqpath << "'"
+                     " fstat failed: " << strerror(errno));
+      {
+        char lenbuf[24];
+        memset(lenbuf, 0, sizeof(lenbuf));
+        snprintf(lenbuf, sizeof(lenbuf), "%ld", (long)filstat.st_size);
+        pres->setHeader("Content-length:", lenbuf);
+      }
+      for(;;)
+        {
+          char buf[1024];
+          memset(buf, 0, sizeof(buf));
+          int nbytes = read(fd, buf, sizeof(buf));
+          if (nbytes <= 0)
+            break;
+          pres->write(buf, nbytes);
+        };
+      close(fd), fd= -1;
+      RPS_DEBUG_LOG(WEB, "done rps_serve_onion_file val=" << val << " reqnum#" << reqnum
+                    << " " << reqmethname << " reqpath='" << reqpath << "'"
+                    << " filepath=" << filepath << " mime=" << mime);
+    }
+  else
+    {
+      RPS_FATALOUT("unimplemented rps_serve_onion_file filepath=" << filepath
+                   << " reqnum#" << reqnum
+                   << " reqmethname=" << reqmethname
+                   << " reqpath='" << reqpath << "'");
+    }
 } // end rps_serve_onion_file
 ///////// end of file httpweb_rps.cc
