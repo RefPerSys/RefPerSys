@@ -2816,10 +2816,8 @@ public:
     if (cfram_size > 0) {
       assert (cfram_xtradata != nullptr);
       memset ((void*)cfram_xtradata, 0, cfram_size*sizeof(intptr_t));
-      cfram_xtradata = nullptr;
     }
-    else
-      assert (cfram_xtradata == nullptr);
+    cfram_xtradata = nullptr;
     cfram_descr = nullptr;
     cfram_prev = nullptr;
     cfram_state = nullptr;
