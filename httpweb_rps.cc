@@ -412,7 +412,13 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
       close(fd), fd= -1;
       RPS_DEBUG_LOG(WEB, "done rps_serve_onion_file val=" << val << " reqnum#" << reqnum
                     << " " << reqmethname << " reqpath='" << reqpath << "'"
-                    << " filepath=" << filepath << " mime=" << mime);
+                    << " filepath=" << filepath << " mime=" << mime
+                    << std::endl << "callframe:"
+                    << Rps_ShowCallFrame(callframe));
+      callframe->set_state_value(nullptr);
+      callframe->set_state_rank(- __LINE__);
+      callframe->clear_closure();
+      return OCS_PROCESSED;
     }
   else
     {
@@ -422,4 +428,6 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                    << " reqpath='" << reqpath << "'");
     }
 } // end rps_serve_onion_file
+
+
 ///////// end of file httpweb_rps.cc
