@@ -89,7 +89,6 @@ rps_run_web_service()
    *  handler should deliver static contents... We might consider
    *  having some templates, in the libonion sense...
    **/
-  /// TODO: some Onion::Url should be declared here... see README.md
   /// FIXME: use rps_serve_onion_web here
   Onion::Url rooturl(&rps_onion_server);
   /// set the error handler
