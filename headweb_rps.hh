@@ -1,5 +1,5 @@
 /****************************************************************
- * file headwebp_rps.hh
+ * file headweb_rps.hh
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
@@ -54,6 +54,7 @@ extern "C" onion_connection_status
 rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath);
 
 
+////////////////////////////////////////////////////////////////
 /// a web exchange object is created for most dynamic HTTP requests
 /// it obviously is a transient object which is not persisted to disk.
 class Rps_PayloadWebex : // the payload for a web exchange; see
@@ -91,6 +92,45 @@ private:
   Rps_Value webex_state; 	// some mutable state
   uint64_t webex_numstate;	// some numerical state
 };				// end class Rps_PayloadWebex
+
+
+
+////////////////////////////////////////////////////////////////
+
+extern "C" rpsldpysig_t rpsldpy_web_handler;
+/// a web handler object describes the handling of web requests
+class Rps_PayloadWebHandler : // the payload for a web handler; see
+// RefPerSys class web_handler
+  public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend class Rps_Agenda;
+  friend rpsldpysig_t rpsldpy_web_handler;
+  friend Rps_PayloadWebHandler*
+  Rps_QuasiZone::rps_allocate2<Rps_PayloadWebHandler,Rps_ObjectZone*,const std::string&>(Rps_ObjectZone*,const std::string&);
+protected:
+  virtual uint32_t wordsize() const
+  {
+    return (sizeof(*this)+sizeof(void*)-1) / sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+public:
+  static constexpr int webh_max_path_elem_size_ = 256;
+  virtual const std::string payload_type_name(void) const
+  {
+    return "web_handler";
+  };
+  Rps_PayloadWebHandler(Rps_ObjectZone*obz,const std::string&pathelem);
+  virtual ~Rps_PayloadWebHandler();
+private:
+  std::string webh_pathelem;
+  Rps_ClosureValue webh_gethandler;
+  Rps_ClosureValue webh_posthandler;
+};				// end class Rps_PayloadWebHandler
+
 
 #endif /* HEADWEB_RPS_INCLUDED */
 /******* end of file headweb_rps.hh *******/
