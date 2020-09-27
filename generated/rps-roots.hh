@@ -20,7 +20,7 @@
 #error RPS_INSTALL_ROOT_OB(Oid) macro undefined
 #endif /*undefined RPS_INSTALL_ROOT_OB*/
 
-RPS_INSTALL_ROOT_OB(_02iWbXmFx8f04ldLRt) //∈named_selector
+RPS_INSTALL_ROOT_OB(_02iWbXmFx8f04ldLRt) //"display_object_content_web"∈named_selector
 RPS_INSTALL_ROOT_OB(_0cSUtWqTYdZ00mjeNR) //named_selector∈class
 RPS_INSTALL_ROOT_OB(_0deGTf5hQwu01xJkyi) //display_value_web∈symbol
 RPS_INSTALL_ROOT_OB(_0jdbikGJFq100dgX1n) //comment∈symbol
@@ -29,21 +29,21 @@ RPS_INSTALL_ROOT_OB(_0J1C39JoZiv03qA2HA) //mutable_set∈class
 RPS_INSTALL_ROOT_OB(_0LbCts6NacB03SMXz4) //home_page∈symbol
 RPS_INSTALL_ROOT_OB(_0XMNvzdABUM03Bj7WP) //git_id∈symbol
 RPS_INSTALL_ROOT_OB(_0Z23UbC0G9b01WZZPN) //display_object_payload_web∈symbol
-RPS_INSTALL_ROOT_OB(_14M7WuJSWw702zB0M9) //∈named_selector
-RPS_INSTALL_ROOT_OB(_1aGtWm38Vw701jDhZn) //∈agenda
-RPS_INSTALL_ROOT_OB(_1wihX3eWD9o00QnxUX) //∈mutable_set
+RPS_INSTALL_ROOT_OB(_14M7WuJSWw702zB0M9) //"display_object_payload_web"∈named_selector
+RPS_INSTALL_ROOT_OB(_1aGtWm38Vw701jDhZn) //"the_agenda"∈agenda
+RPS_INSTALL_ROOT_OB(_1wihX3eWD9o00QnxUX) //"our_contributors"∈mutable_set
 RPS_INSTALL_ROOT_OB(_1DBiKRl70P304DEMoR) //our_contributors∈symbol
 RPS_INSTALL_ROOT_OB(_1DUx3zfUzIb04lqNVt) //rps_window∈class
 RPS_INSTALL_ROOT_OB(_1EBVGSfW2m200z18rx) //name∈named_attribute
 RPS_INSTALL_ROOT_OB(_1NWEOIzo3WU03mE42Q) //rps_output_textedit∈class
 RPS_INSTALL_ROOT_OB(_1R1LKwGhoTr02e90bn) //web_handler∈class
-RPS_INSTALL_ROOT_OB(_1Win5yzaf1L02cBUlV) //∈named_selector
+RPS_INSTALL_ROOT_OB(_1Win5yzaf1L02cBUlV) //"display_value_web"∈named_selector
 RPS_INSTALL_ROOT_OB(_1Zo12toMRTa03uqsXh) //display_object_occurrence_web∈symbol
 RPS_INSTALL_ROOT_OB(_2i66FFjmS7n03HNNBx) //space∈class
 RPS_INSTALL_ROOT_OB(_2A2mrPpR3Qf03p6o5b) //int∈class
 RPS_INSTALL_ROOT_OB(_2SRhV7RJt3B01yArR6) //set_of_core_functions∈symbol
 RPS_INSTALL_ROOT_OB(_36I1BY2NetN03WjrOv) //symbol∈class
-RPS_INSTALL_ROOT_OB(_39OsVkAJDdV00ohD5r) //∈object
+RPS_INSTALL_ROOT_OB(_39OsVkAJDdV00ohD5r) //"fox_event_loop"∈object
 RPS_INSTALL_ROOT_OB(_3s7ztCCoJsj04puTdQ) //agenda∈class
 RPS_INSTALL_ROOT_OB(_3GHJQW0IIqS01QY8qD) //json∈class
 RPS_INSTALL_ROOT_OB(_3N8vZ2Cw62z024XxCg) //first_name∈symbol
@@ -52,17 +52,17 @@ RPS_INSTALL_ROOT_OB(_3Q3hJsSgCDN03GTYW5) //symbol∈symbol
 RPS_INSTALL_ROOT_OB(_41OFI3r0S1t03qdB2E) //class∈class
 RPS_INSTALL_ROOT_OB(_4bkpL4a6xlO00VnyM8) //compute_set_of_own_method_selectors∈symbol
 RPS_INSTALL_ROOT_OB(_4jISxMJ4PYU0050nUl) //closure∈class
-RPS_INSTALL_ROOT_OB(_4ojpzRzyRWz02DNWMe) //∈named_selector
+RPS_INSTALL_ROOT_OB(_4ojpzRzyRWz02DNWMe) //"display_object_occurrence_web"∈named_selector
 RPS_INSTALL_ROOT_OB(_4pSwobFHGf301Qgwzh) //named_attribute∈class
 RPS_INSTALL_ROOT_OB(_4CZZ2JlnkQT02YJ6sM) //fox_event_loop∈symbol
-RPS_INSTALL_ROOT_OB(_4FBkYDlynyC02QtkfG) //∈named_attribute
+RPS_INSTALL_ROOT_OB(_4FBkYDlynyC02QtkfG) //"name"∈named_attribute
 RPS_INSTALL_ROOT_OB(_54CP9eaTmxT00lzbEW) //rps_command_textedit∈class
 RPS_INSTALL_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
 RPS_INSTALL_ROOT_OB(_5yQcFbU0seU018B48Z) //message_sending∈symbol
 RPS_INSTALL_ROOT_OB(_5CYWxcChKN002rw1fI) //contributor_to_RefPerSys∈class
 RPS_INSTALL_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
 RPS_INSTALL_ROOT_OB(_6fmq7pZkmNd03UyPuO) //class∈symbol
-RPS_INSTALL_ROOT_OB(_6gxiw0snqrX01tZWW9) //∈mutable_set
+RPS_INSTALL_ROOT_OB(_6gxiw0snqrX01tZWW9) //"set_of_core_functions"∈mutable_set
 RPS_INSTALL_ROOT_OB(_6ulDdOP2ZNr001cqVZ) //immutable_instance∈class
 RPS_INSTALL_ROOT_OB(_6JbWqOsjX5T03M1eGM) //closure_for_method_selector∈symbol
 RPS_INSTALL_ROOT_OB(_6JYterg6iAu00cV9Ye) //set∈class
