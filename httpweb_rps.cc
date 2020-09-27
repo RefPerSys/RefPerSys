@@ -193,7 +193,8 @@ Rps_PayloadWebex::Rps_PayloadWebex(Rps_ObjectZone*ownerobz,uint64_t reqnum,Onion
     webex_requ(&req),
     webex_resp(&resp),
     webex_state(nullptr),
-    webex_numstate(0)
+    webex_numstate(0),
+    webex_indent(0) 
 {
   RPS_ASSERT(ownerobz && ownerobz->stored_type() == Rps_Type::Object);
   if (RPS_DEBUG_ENABLED(WEB))

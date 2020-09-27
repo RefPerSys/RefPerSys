@@ -91,6 +91,9 @@ private:
   Onion::Response* webex_resp;	// pointer to response
   Rps_Value webex_state; 	// some mutable state
   uint64_t webex_numstate;	// some numerical state
+  int webex_indent;		// indentation in response, since we
+				// might want to emit indented HTML,
+				// etc...
 };				// end class Rps_PayloadWebex
 
 
