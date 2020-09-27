@@ -853,6 +853,10 @@ public:
   static inline Rps_ObjectRef the_symbol_class(void);
   // the class of mutable sets, that is the `mutable_set` object
   static inline Rps_ObjectRef the_mutable_set_class(void);
+  // the class of named selectors, that is the `named_selector` object
+  static inline Rps_ObjectRef the_named_selector_class(void);
+  // the `name` object
+  static inline Rps_ObjectRef the_name_object(void);
   // if this is a class-object, install a method of selector obsel and
   // closure closv; otherwise raise an exception; and likewise for two
   // or three selectors. The callerframe is not really useful today,

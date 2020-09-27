@@ -1233,6 +1233,18 @@ Rps_ObjectRef::the_mutable_set_class()
   return RPS_ROOT_OB(_0J1C39JoZiv03qA2HA);//mutable_set∈class
 } // end Rps_ObjectRef::the_mutable_set_class
 
+Rps_ObjectRef
+Rps_ObjectRef::the_named_selector_class(void)
+{
+  return RPS_ROOT_OB(_0cSUtWqTYdZ00mjeNR); //named_selector∈class
+}
+
+Rps_ObjectRef
+Rps_ObjectRef::the_name_object(void)
+{
+  return  RPS_ROOT_OB(_1EBVGSfW2m200z18rx); //name
+}
+
 void
 Rps_ObjectRef::gc_mark(Rps_GarbageCollector&gc) const
 {
