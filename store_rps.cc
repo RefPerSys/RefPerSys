@@ -1923,7 +1923,10 @@ Rps_Dumper::write_generated_roots_file(void)
     else
       {
         auto claclapayl = obclass->get_dynamic_payload<Rps_PayloadClassInfo>();
+        Rps_Value nameval = obr->get_physical_attr(Rps_ObjectRef::the_name_object());
         RPS_ASSERT(claclapayl);
+        if (nameval.is_string())
+          (*pouts) << Rps_Cjson_String(nameval.to_cppstring());
         (*pouts) << "∈" << claclapayl->class_name_str();
       };
     (*pouts) << std::endl;
