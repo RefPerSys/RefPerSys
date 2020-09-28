@@ -77,3 +77,7 @@ core
 
 # Qt5 moc generated file
 _*.inc.hh
+
+# Tags
+tags
+
