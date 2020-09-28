@@ -194,7 +194,7 @@ Rps_PayloadWebex::Rps_PayloadWebex(Rps_ObjectZone*ownerobz,uint64_t reqnum,Onion
     webex_resp(&resp),
     webex_state(nullptr),
     webex_numstate(0),
-    webex_indent(0) 
+    webex_indent(0)
 {
   RPS_ASSERT(ownerobz && ownerobz->stored_type() == Rps_Type::Object);
   if (RPS_DEBUG_ENABLED(WEB))
@@ -255,50 +255,83 @@ void
 Rps_PayloadWebHandler::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-  RPS_FATALOUT("unimplemented Rps_PayloadWebHandler::dump_scan owner=" << owner() << " pathelem='" << webh_pathelem);
-#warning unimplemented Rps_PayloadWebHandler::dump_scan
+  if (webh_gethandler)
+    rps_dump_scan_value(du, webh_gethandler, 0);
+  if (webh_posthandler)
+    rps_dump_scan_value(du, webh_posthandler, 0);
+  for (auto it: webh_dicthandler)
+    rps_dump_scan_value(du, it.second, 0);
+  RPS_DEBUG_LOG(DUMP, "done Rps_PayloadWebHandler::dump_scan owner=" << owner() << " pathelem='" << webh_pathelem);
 } // end Rps_PayloadWebHandler::dump_scan
 
 
 void
 Rps_PayloadWebHandler::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
-  /// see function rpsldpy_vectob in store_rps.cc
+  /// see function rpsldpy_web_handler below
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  RPS_FATALOUT("unimplemented Rps_PayloadWebHandler::dump_json_content owner=" << owner() << " pathelem='" << webh_pathelem);
-#warning unimplemented Rps_PayloadWebHandler::dump_json_content
+  jv["payload"] = "web_handler";
+  jv["webh_pathelem"] = webh_pathelem;
+  if (webh_gethandler && rps_is_dumpable_value(du, webh_gethandler))
+    jv["webh_gethandler"] = rps_dump_json_value(du, webh_gethandler);
+  if (webh_posthandler && rps_is_dumpable_value(du, webh_posthandler))
+    jv["webh_posthandler"] = rps_dump_json_value(du, webh_posthandler);
+  Json::Value jseq(Json::arrayValue);
+  for (auto it: webh_dicthandler)
+    {
+      if (rps_is_dumpable_value(du, it.second))
+        {
+          Json::Value jent(Json::objectValue);
+          jent["webstr"] = it.first;
+          jent["webhdl"] = rps_dump_json_value(du, it.second);
+          jseq.append(jent);
+        }
+    }
+  jv["webh_dicthandler"] = jseq;
 } // end Rps_PayloadWebHandler::dump_json_content
 
-Rps_PayloadWebHandler::Rps_PayloadWebHandler(Rps_ObjectZone*ownerobz,const std::string&pathelem)
+
+/// loading of web_handler payload; see above
+/// Rps_PayloadWebHandler::dump_json_content
+void rpsldpy_web_handler(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+{
+  RPS_ASSERT(obz != nullptr);
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(obz->get_payload() == nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  RPS_DEBUG_LOG(LOAD,"start rpsldpy_web_handler obz=" << obz
+                << " jv=" << jv
+                << " spacid=" << spacid
+                << " lineno=" << lineno);
+  auto paylwebh = obz->put_new_plain_payload<Rps_PayloadWebHandler>();
+  Json::Value jpathelem = jv["webh_pathelem"];
+  if (!jpathelem.isString())
+    RPS_FATALOUT("rpsldpy_web_handler: object " << obz->oid()
+                 << " in space " << spacid << " lineno#" << lineno
+                 << " has bad webh_pathelem in " << jv);
+  std::string pathelemstr = jpathelem.asString();
+#warning unimplemented rpsldpy_web_handler
+} // end rpsldpy_web_handler
+
+////////////////
+
+Rps_PayloadWebHandler::Rps_PayloadWebHandler(Rps_ObjectZone*ownerobz)
   : Rps_Payload(Rps_Type::PaylWebHandler, ownerobz),
-    webh_pathelem(pathelem),
+    webh_pathelem(),
     webh_gethandler(nullptr),
-    webh_posthandler(nullptr)
+    webh_posthandler(nullptr),
+    webh_dicthandler()
 {
   RPS_ASSERT(ownerobz && ownerobz->stored_type() == Rps_Type::Object);
   char thrname[24];
   memset(thrname, 0, sizeof(thrname));
   pthread_getname_np(pthread_self(),thrname,sizeof(thrname));
   RPS_DEBUG_LOG(WEB, "creating payloadwebhandler@" << ((void*)this)
-                << " for pathelem='" << pathelem << "' thread " << thrname
-                << " owner " << owner()
+                << "' thread " << thrname
+                << " for owner " << owner()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebHandler-cr"));
-  RPS_ASSERT(pathelem.size() < webh_max_path_elem_size_);
-  int pathlen = (int)pathelem.size();
-  for (int ix=0; ix<pathlen; ix++)
-    {
-      const char c = pathelem[ix];
-      if (isalnum(c) || c == '_'
-          || (c=='.' && ix>0 && pathelem[ix-1] != '.')
-          || (c=='-' && ix>0 && pathelem[ix-1] != '-'))
-        continue;
-      else
-        RPS_FATALOUT("Rps_PayloadWebHandler owner " << owner()
-                     << " ix#" << ix << " thread " << thrname
-                     << " bad pathelem '" << pathelem << "'");
-    };
 } // end Rps_PayloadWebHandler::Rps_PayloadWebHandler
 
 
@@ -319,21 +352,127 @@ Rps_PayloadWebHandler::~Rps_PayloadWebHandler()
   webh_posthandler = nullptr;
 } // end  Rps_PayloadWebHandler::~Rps_PayloadWebHandler
 
-/// loading of web_handler payload; see
-/// Rps_PayloadWebHandler::dump_json_content
-void rpsldpy_web_handler(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+bool
+Rps_PayloadWebHandler::valid_path_element(const std::string&pathelem)
 {
-  RPS_ASSERT(obz != nullptr);
-  RPS_ASSERT(ld != nullptr);
-  RPS_ASSERT(obz->get_payload() == nullptr);
-  RPS_ASSERT(jv.type() == Json::objectValue);
-  RPS_FATALOUT("unimplemented rpsldpy_web_handler obz=" << obz
-               << " jv=" << jv
-               << " spacid=" << spacid
-               << " lineno=" << lineno);
-#warning unimplemented rpsldpy_web_handler
-} // end rpsldpy_web_handler
+  if (pathelem.find(".."))
+    return false;
+  if (pathelem.find("README.md"))
+    return false;
+  RPS_ASSERT(pathelem.size() < webh_max_path_elem_size_);
+  int pathlen = (int)pathelem.size();
+  for (int ix=0; ix<pathlen; ix++)
+    {
+      const char c = pathelem[ix];
+      if (isalnum(c) || c == '_'
+          || (c=='.' && ix>0 && pathelem[ix-1] != '.')
+          || (c=='-' && ix>0 && pathelem[ix-1] != '-'))
+        continue;
+      else
+        return false;
+    };
+  return true;
+} // end Rps_PayloadWebHandler::valid_path_element
 
+void
+Rps_PayloadWebHandler::put_path_element(const std::string&pathelem)
+{
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> guwebh (*(owner()->objmtxptr()));
+  char thrname[24];
+  memset(thrname, 0, sizeof(thrname));
+  pthread_getname_np(pthread_self(),thrname,sizeof(thrname));
+  if (!valid_path_element(pathelem))
+    {
+      RPS_WARNOUT("Rps_PayloadWebHandler::put_path_element for owner: "
+                  << owner()
+                  << " invalid path element " << Rps_Cjson_String(pathelem)
+                  << " in thread " << thrname
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebHandler::put_path_element"));
+      return;
+    }
+  RPS_DEBUG_LOG(WEB, "Rps_PayloadWebHandler::put_path_element owner=" << owner()
+                << " pathelem=" << Rps_Cjson_String(pathelem)
+                << " thread=" << thrname);
+  webh_pathelem = pathelem;
+} // end Rps_PayloadWebHandler::put_path_element
+
+void
+Rps_PayloadWebHandler::put_get_handler(Rps_Value val)
+{
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> guwebh (*(owner()->objmtxptr()));
+  char thrname[24];
+  memset(thrname, 0, sizeof(thrname));
+  pthread_getname_np(pthread_self(),thrname,sizeof(thrname));
+  if (!val || val.is_closure())
+    webh_gethandler = Rps_ClosureValue(val);
+  else
+    {
+      RPS_WARNOUT("invalid get handler " << val << " for Rps_PayloadWebHandler owned by " << owner()
+                  << " in thread " << thrname
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebHandler::put_get_handler"));
+      return;
+    };
+  RPS_DEBUG_LOG(WEB, "Rps_PayloadWebHandler::put_get_handler owner=" << owner()
+                << " val=" << val << " thread:" << thrname);
+} // end Rps_PayloadWebHandler::put_get_handler
+
+void
+Rps_PayloadWebHandler::put_post_handler(Rps_Value val)
+{
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> guwebh (*(owner()->objmtxptr()));
+  char thrname[24];
+  memset(thrname, 0, sizeof(thrname));
+  pthread_getname_np(pthread_self(),thrname,sizeof(thrname));
+  if (!val || val.is_closure())
+    webh_posthandler = Rps_ClosureValue(val);
+  else
+    {
+      RPS_WARNOUT("invalid post handler " << val << " for Rps_PayloadWebHandler owned by " << owner()
+                  << " in thread " << thrname
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebHandler::put_post_handler"));
+      return;
+    };
+  RPS_DEBUG_LOG(WEB, "Rps_PayloadWebHandler::put_post_handler owner=" << owner()
+                << " val=" << val << " thread:" << thrname);
+} // end Rps_PayloadWebHandler::put_post_handler
+
+void
+Rps_PayloadWebHandler::add_dict_handler(const std::string& path, Rps_Value val)
+{
+  RPS_ASSERT(owner());
+  std::lock_guard<std::recursive_mutex> guwebh (*(owner()->objmtxptr()));
+  char thrname[24];
+  memset(thrname, 0, sizeof(thrname));
+  pthread_getname_np(pthread_self(),thrname,sizeof(thrname));
+  if (!valid_path_element(path))
+    {
+      RPS_WARNOUT("invalid path " << Rps_Cjson_String(path) << " for Rps_PayloadWebHandler::add_dict_handler owned by " << owner()
+                  << " val=" << val
+                  << " in thread " << thrname
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebHandler::add_dict_handler"));
+      return;
+    }
+  if (val.is_empty() && (!val.is_closure() || !val.is_object()))
+    {
+      RPS_WARNOUT("for path " << Rps_Cjson_String(path) << " for Rps_PayloadWebHandler::add_dict_handler owned by " << owner()
+                  << " invalid val=" << val
+                  << " in thread " << thrname
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebHandler::add_dict_handler"));
+      return;
+    }
+  webh_dicthandler.insert({path,val});
+  RPS_DEBUG_LOG(WEB, "Rps_PayloadWebHandler::add_dict_handler owner=" << owner()
+                << " path=" <<  Rps_Cjson_String(path)
+                << " val=" << val << " thread:" << thrname);
+} // end Rps_PayloadWebHandler::add_dict_handler
 
 ////////////////////////////////////////////////////////////////
 

@@ -92,8 +92,8 @@ private:
   Rps_Value webex_state; 	// some mutable state
   uint64_t webex_numstate;	// some numerical state
   int webex_indent;		// indentation in response, since we
-				// might want to emit indented HTML,
-				// etc...
+  // might want to emit indented HTML,
+  // etc...
 };				// end class Rps_PayloadWebex
 
 
@@ -126,12 +126,18 @@ public:
   {
     return "web_handler";
   };
-  Rps_PayloadWebHandler(Rps_ObjectZone*obz,const std::string&pathelem);
+  static bool valid_path_element(const std::string&pathelem);
+  Rps_PayloadWebHandler(Rps_ObjectZone*obz);
   virtual ~Rps_PayloadWebHandler();
+  void put_path_element(const std::string&pathelem);
+  void put_get_handler(Rps_Value val);
+  void put_post_handler(Rps_Value val);
+  void add_dict_handler(const std::string& path, Rps_Value val);
 private:
   std::string webh_pathelem;
   Rps_ClosureValue webh_gethandler;
   Rps_ClosureValue webh_posthandler;
+  std::map<std::string,Rps_Value> webh_dicthandler;
 };				// end class Rps_PayloadWebHandler
 
 
