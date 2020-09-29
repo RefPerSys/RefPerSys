@@ -305,13 +305,43 @@ void rpsldpy_web_handler(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& j
                 << " spacid=" << spacid
                 << " lineno=" << lineno);
   auto paylwebh = obz->put_new_plain_payload<Rps_PayloadWebHandler>();
-  Json::Value jpathelem = jv["webh_pathelem"];
-  if (!jpathelem.isString())
-    RPS_FATALOUT("rpsldpy_web_handler: object " << obz->oid()
-                 << " in space " << spacid << " lineno#" << lineno
-                 << " has bad webh_pathelem in " << jv);
-  std::string pathelemstr = jpathelem.asString();
-#warning unimplemented rpsldpy_web_handler
+  RPS_ASSERT(paylwebh);
+  {
+    Json::Value jpathelem = jv["webh_pathelem"];
+    if (!jpathelem.isString())
+      RPS_FATALOUT("rpsldpy_web_handler: object " << obz->oid()
+                   << " in space " << spacid << " lineno#" << lineno
+                   << " has bad webh_pathelem in " << jv);
+    std::string pathelemstr = jpathelem.asString();
+    paylwebh->webh_pathelem = pathelemstr;
+  }
+  if (Json::Value jgethandler = jv["webh_gethandler"]; jgethandler.type() > Json::nullValue)
+    paylwebh->webh_gethandler = Rps_Value(jgethandler,ld);
+  if (Json::Value jposthandler = jv["webh_posthandler"]; jposthandler.type() > Json::nullValue)
+    paylwebh->webh_posthandler = Rps_Value(jposthandler,ld);
+  RPS_DEBUG_LOG(WEB, "rpsldpy_web_handler obz=" << obz
+                << " webh_pathelem=" << paylwebh->webh_pathelem
+                << " webh_gethandler=" << paylwebh->webh_gethandler
+                << " webh_posthandler=" << paylwebh->webh_posthandler);
+  if (Json::Value jdicthandler = jv["webh_dicthandler"]; jdicthandler.isObject())
+    {
+      for (Json::Value& jent : jdicthandler)
+        {
+          if (jent.isObject())
+            {
+              if (!jent.isMember("webstr") || !jent.isMember("webhdl"))
+                continue;
+              const Json::Value& jwebstr = jent["webstr"];
+              if (!jwebstr.isString())
+                continue;
+              std::string webstr = jwebstr.asString();
+              const Json::Value& jwebhdl = jent["webhdl"];
+              auto vhdl = Rps_Value(jwebhdl,ld);
+              RPS_DEBUG_LOG(WEB, "rpsldpy_web_handler obz=" << obz << " webstr=" << webstr << " vhdl=" << vhdl);
+              paylwebh->webh_dicthandler.insert({webstr, vhdl});
+            }
+        }
+    }
 } // end rpsldpy_web_handler
 
 ////////////////
@@ -648,7 +678,7 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
             break;
           pres->write(buf, nbytes);
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
-			<< " reqnum#" << reqnum
+                        << " reqnum#" << reqnum
                         << " wrote " << Rps_Cjson_String(std::string(buf,nbytes)));
         };
       close(fd), fd= -1;
