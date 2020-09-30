@@ -23,8 +23,8 @@
 		},
 
 
-		//∈class
 		{
+			"meta_comment": "∈class",
 			"attrs" : 
 			[
 				{
@@ -43,8 +43,8 @@
 		},
 
 
-		//∈symbol
 		{
+			"meta_comment": "∈symbol",
 			"class" : "_36I1BY2NetN03WjrOv",
 			"mtime" : 1581703336,
 			"oid" : "_0deGTf5hQwu01xJkyi",
@@ -54,8 +54,8 @@
 		},
 
 
-		//∈symbol
 		{
+			"meta_comment": "∈symbol",
 			"class" : "_36I1BY2NetN03WjrOv",
 			"mtime" : 1580409386,
 			"oid" : "_0jdbikGJFq100dgX1n",
@@ -64,8 +64,8 @@
 		},
 
 
-		//∈core_function
 		{
+			"meta_comment": "∈core_function",
 			"applying" : true,
 			"attrs" : 
 			[
@@ -80,8 +80,8 @@
 		},
 
 
-		//∈symbol
 		{
+			"meta_comment": "∈symbol",
 			"class" : "_36I1BY2NetN03WjrOv",
 			"mtime" : 1578191597,
 			"oid" : "_0y4kTjRxYdk01uWIhK",
@@ -91,8 +91,8 @@
 		},
 
 
-		//∈symbol
 		{
+			"meta_comment": "∈symbol",
 			"class" : "_36I1BY2NetN03WjrOv",
 			"mtime" : 1578374942,
 			"oid" : "_0D6zqQNe4eC02bjfGs",
@@ -101,8 +101,8 @@
 		},
 
 
-		//∈class
 		{
+			"meta_comment": "∈class",
 			"attrs" : 
 			[
 				{
@@ -121,8 +121,8 @@
 		},
 
 
-		//∈symbol
 		{
+			"meta_comment": "∈symbol",
 			"class" : "_36I1BY2NetN03WjrOv",
 			"mtime" : 1578374931,
 			"oid" : "_0LbCts6NacB03SMXz4",
@@ -131,8 +131,8 @@
 		},
 
 
-		//∈core_function
 		{
+			"meta_comment": "∈core_function",
 			"applying" : true,
 			"attrs" : 
 			[
@@ -147,8 +147,8 @@
 		},
 
 
-		//∈symbol
 		{
+			"meta_comment": "∈symbol",
 			"class" : "_36I1BY2NetN03WjrOv",
 			"mtime" : 1579415089,
 			"oid" : "_0XMNvzdABUM03Bj7WP",
@@ -157,8 +157,8 @@
 		},
 
 
-		//∈symbol
 		{
+			"meta_comment": "∈symbol",
 			"class" : "_36I1BY2NetN03WjrOv",
 			"mtime" : 1588934937.99,
 			"oid" : "_0Z23UbC0G9b01WZZPN",
@@ -168,8 +168,8 @@
 		},
 
 
-		//∈symbol
 		{
+			"meta_comment": "∈symbol",
 			"class" : "_36I1BY2NetN03WjrOv",
 			"mtime" : 1579159079,
 			"oid" : "_0ZGvUv1c0RR01Mr5VM",
@@ -179,8 +179,8 @@
 		},
 
 
-		//∈named_selector
 		{
+			"meta_comment": "∈named_selector",
 			"attrs" : 
 			[
 				{
