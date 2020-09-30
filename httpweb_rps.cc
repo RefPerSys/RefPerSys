@@ -305,13 +305,43 @@ void rpsldpy_web_handler(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& j
                 << " spacid=" << spacid
                 << " lineno=" << lineno);
   auto paylwebh = obz->put_new_plain_payload<Rps_PayloadWebHandler>();
-  Json::Value jpathelem = jv["webh_pathelem"];
-  if (!jpathelem.isString())
-    RPS_FATALOUT("rpsldpy_web_handler: object " << obz->oid()
-                 << " in space " << spacid << " lineno#" << lineno
-                 << " has bad webh_pathelem in " << jv);
-  std::string pathelemstr = jpathelem.asString();
-#warning unimplemented rpsldpy_web_handler
+  RPS_ASSERT(paylwebh);
+  {
+    Json::Value jpathelem = jv["webh_pathelem"];
+    if (!jpathelem.isString())
+      RPS_FATALOUT("rpsldpy_web_handler: object " << obz->oid()
+                   << " in space " << spacid << " lineno#" << lineno
+                   << " has bad webh_pathelem in " << jv);
+    std::string pathelemstr = jpathelem.asString();
+    paylwebh->webh_pathelem = pathelemstr;
+  }
+  if (Json::Value jgethandler = jv["webh_gethandler"]; jgethandler.type() > Json::nullValue)
+    paylwebh->webh_gethandler = Rps_Value(jgethandler,ld);
+  if (Json::Value jposthandler = jv["webh_posthandler"]; jposthandler.type() > Json::nullValue)
+    paylwebh->webh_posthandler = Rps_Value(jposthandler,ld);
+  RPS_DEBUG_LOG(WEB, "rpsldpy_web_handler obz=" << obz
+                << " webh_pathelem=" << paylwebh->webh_pathelem
+                << " webh_gethandler=" << paylwebh->webh_gethandler
+                << " webh_posthandler=" << paylwebh->webh_posthandler);
+  if (Json::Value jdicthandler = jv["webh_dicthandler"]; jdicthandler.isObject())
+    {
+      for (Json::Value& jent : jdicthandler)
+        {
+          if (jent.isObject())
+            {
+              if (!jent.isMember("webstr") || !jent.isMember("webhdl"))
+                continue;
+              const Json::Value& jwebstr = jent["webstr"];
+              if (!jwebstr.isString())
+                continue;
+              std::string webstr = jwebstr.asString();
+              const Json::Value& jwebhdl = jent["webhdl"];
+              auto vhdl = Rps_Value(jwebhdl,ld);
+              RPS_DEBUG_LOG(WEB, "rpsldpy_web_handler obz=" << obz << " webstr=" << webstr << " vhdl=" << vhdl);
+              paylwebh->webh_dicthandler.insert({webstr, vhdl});
+            }
+        }
+    }
 } // end rpsldpy_web_handler
 
 ////////////////
@@ -607,7 +637,7 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val << " mime=" << mime
                 << " filepath=" << filepath
                 << " reqnum#" << reqnum
-                << " reqmethnum=" << reqmethname
+                << " reqmethname=" << reqmethname
                 << " reqpath='" << reqpath << "'"
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
@@ -615,6 +645,10 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
     {
       pres->setHeader("Content-Type:", mime);
       int fd = open(filepath.c_str(), O_RDONLY);
+      RPS_DEBUG_LOG(WEB, "rps_serve_onion_file fd#" << fd
+                    << " for reqnum#" << reqnum
+                    << reqmethname
+                    << " reqpath=" << Rps_Cjson_String(reqpath));
       if (fd<0)
         RPS_FATALOUT("rps_serve_onion_file filepath=" << filepath
                      << " reqnum#" << reqnum
@@ -637,12 +671,15 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
       }
       for(;;)
         {
-          char buf[1024];
+          char buf[1028];
           memset(buf, 0, sizeof(buf));
-          int nbytes = read(fd, buf, sizeof(buf));
+          int nbytes = read(fd, buf, sizeof(buf)-4);
           if (nbytes <= 0)
             break;
           pres->write(buf, nbytes);
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
+                        << " reqnum#" << reqnum
+                        << " wrote " << Rps_Cjson_String(std::string(buf,nbytes)));
         };
       close(fd), fd= -1;
       RPS_DEBUG_LOG(WEB, "done rps_serve_onion_file val=" << val << " reqnum#" << reqnum
