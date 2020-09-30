@@ -699,7 +699,7 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                             << " linlen=" << linlen << " linecnt=" << linecnt
                             << " reqnum#" << reqnum
                             << " wrote " << Rps_Cjson_String(std::string(linbuf,linlen)));
-            else
+            else if (linecnt < 4*line_threshold)
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
                             << " fd#" << fileno(fil) << " curoff:" << curoff
                             << " linlen=" << linlen<< " linecnt=" << linecnt
