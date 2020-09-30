@@ -675,11 +675,15 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
         snprintf(lenbuf, sizeof(lenbuf), "%ld", (long)filstat.st_size);
         pres->setHeader("Content-length:", lenbuf);
       }
+      constexpr int line_threshold = 48;
+      constexpr long offset_threshold = 2048;
+      constexpr int width_threshold = 80;
       {
         char*linbuf=nullptr;
         ssize_t linlen=0;
         size_t linsiz=0;
         long curoff=0;
+        int linecnt = 0;
         for(;;)
           {
             curoff = ftell(fil);
@@ -687,19 +691,29 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
             if (linlen <= 0)
               break;
             curoff += linlen;
+            linecnt++;
             pres->write(linbuf, linlen);
-            RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
-                          << " fd#" << fileno(fil) << " curoff:" << curoff
-                          << " linlen=" << linlen
-                          << " reqnum#" << reqnum
-                          << " wrote " << Rps_Cjson_String(std::string(linbuf,linlen)));
+            if (linecnt < line_threshold && curoff < offset_threshold)
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
+                            << " fd#" << fileno(fil) << " curoff:" << curoff
+                            << " linlen=" << linlen << " linecnt=" << linecnt
+                            << " reqnum#" << reqnum
+                            << " wrote " << Rps_Cjson_String(std::string(linbuf,linlen)));
+            else
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
+                            << " fd#" << fileno(fil) << " curoff:" << curoff
+                            << " linlen=" << linlen<< " linecnt=" << linecnt
+                            << " reqnum#" << reqnum);
           };
-        free(linbuf), linbuf=nullptr;
         RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
                       << " fd#" << fileno(fil)
                       << " ending off=" << ftell(fil)
+                      << " linecnt=" << linecnt
+                      << ((linlen<width_threshold)?"lastline=":"lastline:")
+                      << ((linlen<width_threshold)?Rps_Cjson_String(std::string(linbuf)):Rps_Cjson_String(std::string(linbuf,width_threshold)))
                       << " for reqnum#" << reqnum
                       << " filepath=" << Rps_Cjson_String(filepath));
+        free(linbuf), linbuf=nullptr;
         fclose(fil);
       }
       RPS_DEBUG_LOG(WEB, "done rps_serve_onion_file val=" << val << " reqnum#" << reqnum
