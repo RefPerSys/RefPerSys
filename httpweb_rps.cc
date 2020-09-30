@@ -527,15 +527,15 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_web thread=" << thnambuf
-                << " reqpath='" << reqpath
+                << " reqpath='" << Rps_Cjson_String(reqpath)
                 << "' reqmethname=" << reqmethname
                 << " reqnum#" << reqnum
                 << " val=" << val << std::endl);
   /**
    * We first need to ensure that the URL does not contain neither
    * ".." nor "README.md" as a substring.  Then (for GET or HEAD) we
-   * try to access a file starting from webroot. If it is present, we
-   * serve it.
+   * try to access a file starting from webroot. If the request path
+   * is empty, we use "index.html".  If it is present, we serve it.
    **/
   if (reqmethnum == OR_GET || reqmethnum == OR_HEAD)
     {
@@ -578,8 +578,14 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
       else
         {
           auto web_exchange_ob = RPS_ROOT_OB(_8zNtuRpzXUP013WG9S);
-          std::string filpath = std::string{rps_topdirectory} + "/webroot/" + reqpath;
-          RPS_DEBUG_LOG(WEB, "rps_serve_onion_web filpath=" << filpath	<< " reqnum#" << reqnum);
+          std::string filpath =
+            std::string{rps_topdirectory}
+            + "/webroot/" + (reqpath.empty()?"index.html":reqpath);
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_web filpath='"
+                        << Rps_Cjson_String(filpath)
+                        << "' reqnum#" << reqnum
+                        << " for reqpath='" << Rps_Cjson_String(reqpath)
+                        << "'");
           if (!access(filpath.c_str(), F_OK))
             {
               RPS_LOCALFRAME(/*descr:*/ web_exchange_ob,
@@ -626,6 +632,13 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
   const char*mime = onion_mime_get(filepath.c_str());
+  RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val << " mime=" << mime
+                << " filepath=" << filepath
+                << " reqnum#" << reqnum
+                << " reqmethname=" << reqmethname
+                << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
   std::ostringstream reqout;
 
   /****
@@ -634,34 +647,27 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
    * suffix of .thtml, where some substitution occurs by sending
    * RefPerSys messages, etc...
    ***/
-  RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val << " mime=" << mime
-                << " filepath=" << filepath
-                << " reqnum#" << reqnum
-                << " reqmethname=" << reqmethname
-                << " reqpath='" << reqpath << "'"
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
   if (mime && (reqmethnum==OR_GET || reqmethnum==OR_HEAD))
     {
       pres->setHeader("Content-Type:", mime);
-      int fd = open(filepath.c_str(), O_RDONLY);
-      RPS_DEBUG_LOG(WEB, "rps_serve_onion_file fd#" << fd
-                    << " for reqnum#" << reqnum
-                    << reqmethname
-                    << " reqpath=" << Rps_Cjson_String(reqpath));
-      if (fd<0)
+      FILE *fil = fopen(filepath.c_str(), "r");
+      if (!fil)
         RPS_FATALOUT("rps_serve_onion_file filepath=" << filepath
                      << " reqnum#" << reqnum
                      << " reqmethnum=" << reqmethname
-                     << " reqpath='" << reqpath << "'"
-                     << " open failed: " << strerror(errno));
+                     << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
+                     << " fopen failed: " << strerror(errno));
+      RPS_DEBUG_LOG(WEB, "rps_serve_onion_file fd#" << (fil?fileno(fil):-1)
+                    << " for reqnum#" << reqnum
+                    << ' ' << reqmethname
+                    << " reqpath=" << Rps_Cjson_String(reqpath));
       struct stat filstat;
       memset(&filstat, 0, sizeof(filstat));
-      if (fstat(fd, &filstat))
-        RPS_FATALOUT("rps_serve_onion_file filepath=" << filepath
+      if (fstat(fileno(fil), &filstat))
+        RPS_FATALOUT("rps_serve_onion_file filepath=" << Rps_Cjson_String(filepath)
                      << " reqnum#" << reqnum
                      << " reqmethname=" << reqmethname
-                     << " reqpath='" << reqpath << "'"
+                     << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
                      " fstat failed: " << strerror(errno));
       {
         char lenbuf[24];
@@ -669,22 +675,37 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
         snprintf(lenbuf, sizeof(lenbuf), "%ld", (long)filstat.st_size);
         pres->setHeader("Content-length:", lenbuf);
       }
-      for(;;)
-        {
-          char buf[1028];
-          memset(buf, 0, sizeof(buf));
-          int nbytes = read(fd, buf, sizeof(buf)-4);
-          if (nbytes <= 0)
-            break;
-          pres->write(buf, nbytes);
-          RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
-                        << " reqnum#" << reqnum
-                        << " wrote " << Rps_Cjson_String(std::string(buf,nbytes)));
-        };
-      close(fd), fd= -1;
+      {
+        char*linbuf=nullptr;
+        ssize_t linlen=0;
+        size_t linsiz=0;
+        long curoff=0;
+        for(;;)
+          {
+            curoff = ftell(fil);
+            linlen = getline(&linbuf, &linsiz, fil);
+            if (linlen <= 0)
+              break;
+            curoff += linlen;
+            pres->write(linbuf, linlen);
+            RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
+                          << " fd#" << fileno(fil) << " curoff:" << curoff
+                          << " linlen=" << linlen
+                          << " reqnum#" << reqnum
+                          << " wrote " << Rps_Cjson_String(std::string(linbuf,linlen)));
+          };
+        free(linbuf), linbuf=nullptr;
+        RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
+                      << " fd#" << fileno(fil)
+                      << " ending off=" << ftell(fil)
+                      << " for reqnum#" << reqnum
+                      << " filepath=" << Rps_Cjson_String(filepath));
+        fclose(fil);
+      }
       RPS_DEBUG_LOG(WEB, "done rps_serve_onion_file val=" << val << " reqnum#" << reqnum
-                    << " " << reqmethname << " reqpath='" << reqpath << "'"
-                    << " filepath=" << filepath << " mime=" << mime
+                    << " " << reqmethname << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
+                    << " filepath=" << Rps_Cjson_String(filepath)
+                    << " mime=" << mime
                     << std::endl << "callframe:"
                     << Rps_ShowCallFrame(callframe));
       callframe->set_state_value(nullptr);
