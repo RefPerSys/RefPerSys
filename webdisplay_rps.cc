@@ -72,9 +72,44 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
   RPS_ASSERT(pwebex != nullptr);
   /// we now can emit HTML code into pwebex, using its webex_resp...
 #warning unimplemented rpsapply_0TwK4TkhEGZ03oTa5m
-  RPS_FATAL("unimplemented rpsapply_0TwK4TkhEGZ03oTa5m");
+  RPS_FATALOUT("unimplemented rpsapply_0TwK4TkhEGZ03oTa5m val0v=" << _f.val0v
+               << ", webob=" << _f.webob1
+               << ", depth=" << depth
+               << ", webex:: reqnum#" << pwebex->web_request_num()
+               << " method:" << pwebex->web_request_methname()
+               << " path:" << pwebex->web_request_path());
 } // end of rpsapply_0TwK4TkhEGZ03oTa5m !display Val0 in Ob1Win at depth Val2Depth
 
+void
+rps_web_display_html_for_value(Rps_CallFrame*callerframe,
+                               const Rps_Value arg0val, //
+                               const Rps_Value arg1obweb, ///
+                               int depth)
+{
+  RPS_LOCALFRAME(RPS_ROOT_OB(_0deGTf5hQwu01xJkyi), // the display_value_web symbol
+                 callerframe, //
+                 Rps_Value val0v; //
+                 Rps_ObjectRef webob1; //
+                 Rps_Value depth2v; //
+                );
+  _f.val0v = arg0val;
+  _f.webob1 = arg1obweb.to_object();
+  _f.depth2v = Rps_Value(depth, Rps_Value::Rps_IntTag{});
+  Rps_PayloadWebex*pwebex = Rps_PayloadWebex::webex_of_object(&_, _f.webob1);
+  RPS_ASSERT(pwebex != nullptr);
+  if (!_f.val0v)
+    {
+      *(pwebex->web_response()) << "<span class='nullval_cl'>_</span>";
+      return;
+    }
+  else if (_f.val0v.is_empty())
+    {
+      *(pwebex->web_response()) << "<span class='emptyval_cl'>?_?</span>";
+      return;
+    }
+  // _0TwK4TkhEGZ03oTa5m is for the rpsapply_0TwK4TkhEGZ03oTa5m above
+  Rps_ClosureValue(rpskob_0TwK4TkhEGZ03oTa5m, {}).apply3(&_,_f.val0v,_f.webob1, _f.depth2v);
+} // end rps_web_display_html_for_value
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for _8KJHUldX8GJ03G5OWp

@@ -97,9 +97,70 @@ private:
   int webex_indent;		// indentation in response, since we
   // might want to emit indented HTML,
   // etc...
+  ///
+  // we may need to have some internal buffer for the response....
+#warning perhaps some std::ostringstream webex_buffer; is needed
+public:
+  Onion::Request*  web_request() const
+  {
+    return webex_requ;
+  };
+  Onion::Response* web_response() const
+  {
+    return webex_resp;
+  };
+  Rps_Value state_value() const
+  {
+    return webex_state;
+  };
+  uint64_t numstate() const
+  {
+    return webex_numstate;
+  };
+  int web_indent() const
+  {
+    return webex_indent;
+  };
+  int web_increase_indent(int n=1)
+  {
+    webex_indent += n;
+  };
+  int web_decrease_indent(int n=1)
+  {
+    webex_indent -= n;
+  };
+  uint64_t web_request_num() const
+  {
+    return  webex_reqnum;
+  };
+  double web_request_start_time() const
+  {
+    return webex_startim;
+  };
+  unsigned web_request_methnum() const
+  {
+    if (!webex_requ) return 0;
+    return (webex_requ->flags()) & OR_METHODS;
+  };
+  const char*web_request_methname() const
+  {
+    unsigned methnum = web_request_methnum();
+    return onion_request_methods[methnum];
+  };
+  const std::string web_request_path() const
+  {
+    if (!webex_requ)
+      return "";
+    return webex_requ->path();
+  };
 };				// end class Rps_PayloadWebex
 
 
+extern "C" void
+rps_web_display_html_for_value(Rps_CallFrame*callerframe,
+                               const Rps_Value arg0val, //
+                               const Rps_Value arg1obweb, ///
+                               int depth);
 
 ////////////////////////////////////////////////////////////////
 
