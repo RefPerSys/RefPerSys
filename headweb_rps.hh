@@ -84,6 +84,9 @@ public:
   };
   Rps_PayloadWebex(Rps_ObjectZone*,uint64_t,Onion::Request&,Onion::Response&);
   virtual ~Rps_PayloadWebex();
+  /// if ob is of class web_exchange, gives its payload. Otherwise
+  /// return null:
+  static Rps_PayloadWebex*webex_of_object(Rps_CallFrame*callerframe, Rps_ObjectRef ob);
 private:
   uint64_t webex_reqnum;	// unique request number
   double webex_startim;		// start monotonic time

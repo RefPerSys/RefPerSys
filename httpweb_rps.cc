@@ -240,6 +240,24 @@ Rps_PayloadWebex::~Rps_PayloadWebex()
   webex_numstate = 0;
 } // end  Rps_PayloadWebex::~Rps_PayloadWebex
 
+////////////////
+/// given some object ob, returns its payloadwebex if its class is a
+/// web_exchange
+Rps_PayloadWebex*
+Rps_PayloadWebex::webex_of_object(Rps_CallFrame*callerframe, Rps_ObjectRef ob)
+{
+  RPS_ASSERT(callerframe != nullptr && callerframe->is_good_call_frame());
+  if (!ob)
+    return nullptr;
+  std::lock_guard<std::recursive_mutex> gu(*ob->objmtxptr());
+  if (Rps_ObjectValue obval{ob};
+      obval.is_instance_of(callerframe,
+                           RPS_ROOT_OB(_8zNtuRpzXUP013WG9S) // webexchange
+                          ))
+    return nullptr;
+  Rps_PayloadWebex* pwebex = ob->get_dynamic_payload<Rps_PayloadWebex>();
+  return pwebex;
+} // end of Rps_PayloadWebex::webex_of_object
 ////////////////////////////////////////////////////////////////
 
 void
