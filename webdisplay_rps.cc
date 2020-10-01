@@ -54,20 +54,23 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_0TwK4TkhEGZ03oTa5m,
                  callerframe, //
                  Rps_Value val0v;
-                 Rps_ObjectRef winob1;
+                 Rps_ObjectRef webob1;
                  Rps_Value depth2v;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  //....etc....
                 );
   _f.val0v = arg0val;
-  _f.winob1 = arg1obweb.to_object();
+  _f.webob1 = arg1obweb.to_object();
   _f.depth2v = arg2depth;
   int depth = _f.depth2v.to_int();
   RPS_DEBUG_LOG(WEB, "rpsapply_0TwK4TkhEGZ03oTa5m start val0v=" << _f.val0v
-                << ", winob=" << _f.winob1
+                << ", webob=" << _f.webob1
                 << ", depth=" << depth);
   ////==== body of _0TwK4TkhEGZ03oTa5m ====
+  Rps_PayloadWebex*pwebex = Rps_PayloadWebex::webex_of_object(&_, _f.webob1);
+  RPS_ASSERT(pwebex != nullptr);
+  /// we now can emit HTML code into pwebex, using its webex_resp...
 #warning unimplemented rpsapply_0TwK4TkhEGZ03oTa5m
   RPS_FATAL("unimplemented rpsapply_0TwK4TkhEGZ03oTa5m");
 } // end of rpsapply_0TwK4TkhEGZ03oTa5m !display Val0 in Ob1Win at depth Val2Depth
