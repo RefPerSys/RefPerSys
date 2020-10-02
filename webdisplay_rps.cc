@@ -58,12 +58,14 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                  Rps_Value depth2v;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
+                 Rps_ObjectRef compob;
                  //....etc....
                 );
   _f.val0v = arg0val;
   _f.webob1 = arg1obweb.to_object();
   _f.depth2v = arg2depth;
   int depth = _f.depth2v.to_int();
+  constexpr int max_depth = 5; // FIXME, should be improved
   RPS_DEBUG_LOG(WEB, "rpsapply_0TwK4TkhEGZ03oTa5m start val0v=" << _f.val0v
                 << ", webob=" << _f.webob1
                 << ", depth=" << depth);
@@ -89,9 +91,11 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
     case Rps_Type::String:
     {
       const std::string str = _f.val0v.as_cppstring();
-      *onresp << "<span class='stringval_rpscl'>"
+      *onresp << "<q class='decor_rpscl'>"
+              << "<span class='stringval_rpscl'>"
               << Rps_Html_String(str)
-              << "</span>";
+              << "</span>"
+              << "</q>";
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Double:
@@ -102,10 +106,33 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
               << "</span>";
       return Rps_TwoValues{ _f.webob1};
     }
+    case Rps_Type::Set:
+    {
+      constexpr unsigned period_nl = 5;
+      *onresp << "<span class='decorval_rpscl'>{</span>";
+      unsigned nbelem = _f.val0v.as_set()->cardinal();
+      if (depth <  max_depth)
+        {
+          for (unsigned ix=0; ix < nbelem; ix++)
+            {
+              _f.compob = _f.val0v.as_set()->at(ix);
+              if (ix>0 && ix%period_nl == 0)
+                *onresp << "<br class='decor_rpscl'/>";
+              else if (ix>0)
+                *onresp << ' ';
+            }
+        }
+      else
+        {
+          *onresp << "<span class='decorval_rpscl'>…</span>";
+          //U+2026 HORIZONTAL ELLIPSIS
+        }
+      *onresp << "<span class='decorval_rpscl'>}</span>";
+      return Rps_TwoValues{ _f.webob1};
+    }
       //// TODO: for composite values we need to use the depth. If a
       //// threshold has been reached, we don't display contents.
 #warning rpsapply_0TwK4TkhEGZ03oTa5m is missing code for display of composite values
-    case Rps_Type::Set:
     case Rps_Type::Tuple:
     case Rps_Type::Object:
     case Rps_Type::Closure:
