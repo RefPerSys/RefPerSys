@@ -70,14 +70,56 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
   ////==== body of _0TwK4TkhEGZ03oTa5m ====
   Rps_PayloadWebex*pwebex = Rps_PayloadWebex::webex_of_object(&_, _f.webob1);
   RPS_ASSERT(pwebex != nullptr);
+  Onion::Response*onresp = pwebex->web_response();
+  /////////
   /// we now can emit HTML code into pwebex, using its webex_resp...
-#warning unimplemented rpsapply_0TwK4TkhEGZ03oTa5m
-  RPS_FATALOUT("unimplemented rpsapply_0TwK4TkhEGZ03oTa5m val0v=" << _f.val0v
-               << ", webob=" << _f.webob1
-               << ", depth=" << depth
-               << ", webex:: reqnum#" << pwebex->web_request_num()
-               << " method:" << pwebex->web_request_methname()
-               << " path:" << pwebex->web_request_path());
+  switch (_f.val0v.type())
+    {
+    case Rps_Type::Int:
+    {
+      intptr_t i = _f.val0v.as_int();
+      *onresp << "<span class='intval_rpscl'>" << i << "</span>";
+      return Rps_TwoValues{ _f.webob1};
+    }
+    case Rps_Type::None:
+    {
+      *onresp << "<span class='nullval_rpscl'>_</span>";
+      return Rps_TwoValues{ _f.webob1};
+    }
+    case Rps_Type::String:
+    {
+      const std::string str = _f.val0v.as_cppstring();
+      *onresp << "<span class='stringval_rpscl'>"
+              << Rps_Html_String(str)
+              << "</span>";
+      return Rps_TwoValues{ _f.webob1};
+    }
+    case Rps_Type::Double:
+    {
+      double x = _f.val0v.as_double();
+      *onresp << "<span class='doubleval_rpscl'>"
+              << x
+              << "</span>";
+      return Rps_TwoValues{ _f.webob1};
+    }
+      //// TODO: for composite values we need to use the depth. If a
+      //// threshold has been reached, we don't display contents.
+#warning rpsapply_0TwK4TkhEGZ03oTa5m is missing code for display of composite values
+    case Rps_Type::Set:
+    case Rps_Type::Tuple:
+    case Rps_Type::Object:
+    case Rps_Type::Closure:
+    case Rps_Type::Instance:
+    case Rps_Type::Json:
+    default:
+      RPS_FATALOUT("rpsapply_0TwK4TkhEGZ03oTa5m val0v=" << _f.val0v
+                   << " has unexpected type"
+                   << ", webob=" << _f.webob1
+                   << ", depth=" << depth
+                   << ", webex:: reqnum#" << pwebex->web_request_num()
+                   << " method:" << pwebex->web_request_methname()
+                   << " path:" << pwebex->web_request_path());
+    };				// end switch _f.val0v.type()
 } // end of rpsapply_0TwK4TkhEGZ03oTa5m !display Val0 in Ob1Win at depth Val2Depth
 
 void
@@ -99,12 +141,12 @@ rps_web_display_html_for_value(Rps_CallFrame*callerframe,
   RPS_ASSERT(pwebex != nullptr);
   if (!_f.val0v)
     {
-      *(pwebex->web_response()) << "<span class='nullval_cl'>_</span>";
+      *(pwebex->web_response()) << "<span class='nullval_rpscl'>_</span>";
       return;
     }
   else if (_f.val0v.is_empty())
     {
-      *(pwebex->web_response()) << "<span class='emptyval_cl'>?_?</span>";
+      *(pwebex->web_response()) << "<span class='emptyval_rpscl'>?_?</span>";
       return;
     }
   // _0TwK4TkhEGZ03oTa5m is for the rpsapply_0TwK4TkhEGZ03oTa5m above
