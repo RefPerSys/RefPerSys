@@ -160,10 +160,17 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       *onresp << "<span class='decorval_rpscl'>]</span>";
       return Rps_TwoValues{ _f.webob1};
     }
+    case Rps_Type::Object:
+    {
+      rps_web_display_html_for_objref(&_,
+                                      _f.val0v.as_object(),
+                                      _f.webob1,
+                                      depth+1);
+      return Rps_TwoValues{ _f.webob1};
+    }
       //// TODO: for composite values we need to use the depth. If a
       //// threshold has been reached, we don't display contents.
 #warning rpsapply_0TwK4TkhEGZ03oTa5m is missing code for display of composite values
-    case Rps_Type::Object:
     case Rps_Type::Closure:
     case Rps_Type::Instance:
     case Rps_Type::Json:
