@@ -59,6 +59,8 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
                  Rps_ObjectRef compob;
+                 Rps_ObjectRef connob;
+                 Rps_Value sonv;
                  //....etc....
                 );
   _f.val0v = arg0val;
@@ -93,7 +95,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       const std::string str = _f.val0v.as_cppstring();
       *onresp << "<q class='decor_rpscl'>"
               << "<span class='stringval_rpscl'>"
-              << Rps_Html_String(str)
+              << Rps_Html_Nl2br_String(str)
               << "</span>"
               << "</q>";
       return Rps_TwoValues{ _f.webob1};
@@ -117,12 +119,13 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
             {
               _f.compob = _f.val0v.as_set()->at(ix);
               if (ix>0 && ix%period_nl == 0)
-                *onresp << "<br class='decor_rpscl'/>";
+                *onresp << "<br class='decor_rpscl'/>" << std::endl;
               else if (ix>0)
                 *onresp << ' ';
               rps_web_display_html_for_objref(&_, _f.compob,
                                               _f.webob1,
                                               depth+1);
+              _f.compob = nullptr;
             }
         }
       else
@@ -144,12 +147,13 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
             {
               _f.compob = _f.val0v.as_tuple()->at(ix);
               if (ix>0 && ix%period_nl == 0)
-                *onresp << "<br class='decor_rpscl'/>";
+                *onresp << "<br class='decor_rpscl'/>" << std::endl;
               else if (ix>0)
                 *onresp << ' ';
               rps_web_display_html_for_objref(&_, _f.compob,
                                               _f.webob1,
                                               depth+1);
+              _f.compob = nullptr;
             }
         }
       else
@@ -168,10 +172,51 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                                       depth+1);
       return Rps_TwoValues{ _f.webob1};
     }
+    case Rps_Type::Closure:
+    {
+      constexpr unsigned period_nl = 5;
+      *onresp << "<span class='closureval_rpscl'>";
+      *onresp << "<span class='decorval_rpscl'>𝛌</span>"; //U+1D6CC MATHEMATICAL BOLD SMALL LAMDA
+      _f.connob = _f.val0v.as_closure()->conn();
+      unsigned arity = _f.val0v.as_closure()->cnt();
+      RPS_ASSERT(_f.connob);
+      if (depth <  max_depth)
+        {
+          rps_web_display_html_for_objref(&_,
+                                          _f.connob,
+                                          _f.webob1,
+                                          1+(depth+max_depth)/2);
+          *onresp << "<span class='decorval_rpscl'>⁅</span>";
+          //U+U+2045 LEFT SQUARE BRACKET WITH QUILL2045 LEFT SQUARE BRACKET WITH QUILL
+          for (unsigned ix=0; ix<arity; ix++)
+            {
+              if (ix>0 && ix%period_nl == 0)
+                *onresp << "<br class='decor_rpscl'/>" << std::endl;
+              else if (ix>0)
+                *onresp << ' ';
+              _f.sonv = _f.val0v.as_closure()->at(ix);
+              rps_web_display_html_for_value(&_,
+                                             _f.sonv,
+                                             _f.webob1,
+                                             depth+1);
+              _f.sonv = nullptr;
+            }
+          *onresp << "<span class='decorval_rpscl'>⁆</span>";
+          //U+2046 RIGHT SQUARE BRACKET WITH QUILL
+        }
+      else   // too deep
+        {
+          rps_web_display_html_for_objref(&_,
+                                          _f.connob,
+                                          _f.webob1,
+                                          max_depth);
+          *onresp << "<sup class='arity_rpscl'>" << arity << "</sup>";
+        }
+      *onresp << "</span>" << std::endl;
+    }
       //// TODO: for composite values we need to use the depth. If a
       //// threshold has been reached, we don't display contents.
 #warning rpsapply_0TwK4TkhEGZ03oTa5m is missing code for display of composite values
-    case Rps_Type::Closure:
     case Rps_Type::Instance:
     case Rps_Type::Json:
     default:
