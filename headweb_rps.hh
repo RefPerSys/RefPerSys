@@ -159,8 +159,15 @@ public:
 extern "C" void
 rps_web_display_html_for_value(Rps_CallFrame*callerframe,
                                const Rps_Value arg0val, //
-                               const Rps_Value arg1obweb, ///
+                               Rps_ObjectRef arg1obweb, ///
                                int depth);
+
+
+extern "C" void
+rps_web_display_html_for_objref(Rps_CallFrame*callerframe,
+                                Rps_ObjectRef arg0ob, //
+                                Rps_ObjectRef arg1obweb, ///
+                                int depth);
 
 ////////////////////////////////////////////////////////////////
 

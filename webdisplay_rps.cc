@@ -120,6 +120,9 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                 *onresp << "<br class='decor_rpscl'/>";
               else if (ix>0)
                 *onresp << ' ';
+              rps_web_display_html_for_objref(&_, _f.compob,
+                                              _f.webob1,
+                                              depth+1);
             }
         }
       else
@@ -130,10 +133,36 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       *onresp << "<span class='decorval_rpscl'>}</span>";
       return Rps_TwoValues{ _f.webob1};
     }
+    case Rps_Type::Tuple:
+    {
+      constexpr unsigned period_nl = 5;
+      *onresp << "<span class='decorval_rpscl'>[</span>";
+      unsigned nbcomp = _f.val0v.as_tuple()->cnt();
+      if (depth <  max_depth)
+        {
+          for (unsigned ix=0; ix < nbcomp; ix++)
+            {
+              _f.compob = _f.val0v.as_tuple()->at(ix);
+              if (ix>0 && ix%period_nl == 0)
+                *onresp << "<br class='decor_rpscl'/>";
+              else if (ix>0)
+                *onresp << ' ';
+              rps_web_display_html_for_objref(&_, _f.compob,
+                                              _f.webob1,
+                                              depth+1);
+            }
+        }
+      else
+        {
+          *onresp << "<span class='decorval_rpscl'>…</span>";
+          //U+2026 HORIZONTAL ELLIPSIS
+        }
+      *onresp << "<span class='decorval_rpscl'>]</span>";
+      return Rps_TwoValues{ _f.webob1};
+    }
       //// TODO: for composite values we need to use the depth. If a
       //// threshold has been reached, we don't display contents.
 #warning rpsapply_0TwK4TkhEGZ03oTa5m is missing code for display of composite values
-    case Rps_Type::Tuple:
     case Rps_Type::Object:
     case Rps_Type::Closure:
     case Rps_Type::Instance:
@@ -179,6 +208,28 @@ rps_web_display_html_for_value(Rps_CallFrame*callerframe,
   // _0TwK4TkhEGZ03oTa5m is for the rpsapply_0TwK4TkhEGZ03oTa5m above
   Rps_ClosureValue(rpskob_0TwK4TkhEGZ03oTa5m, {}).apply3(&_,_f.val0v,_f.webob1, _f.depth2v);
 } // end rps_web_display_html_for_value
+
+
+void
+rps_web_display_html_for_objref(Rps_CallFrame*callerframe,
+                                Rps_ObjectRef arg0ob, //
+                                Rps_ObjectRef arg1obweb, ///
+                                int depth)
+{
+  RPS_LOCALFRAME(nullptr,
+                 callerframe, //
+                 Rps_ObjectRef obdisp0; //
+                 Rps_ObjectRef webob1; //
+                 Rps_Value depth2v; //
+                );
+  _f.obdisp0 = arg0ob;
+  _f.webob1 = arg1obweb;
+  Rps_PayloadWebex*pwebex = Rps_PayloadWebex::webex_of_object(&_, _f.webob1);
+  RPS_ASSERT(pwebex != nullptr);
+#warning rps_web_display_html_for_objref unimplemented
+  RPS_FATALOUT("rps_web_display_html_for_objref unimplemented:"
+               << " obdisp0=" << _f.obdisp0 << " webob1=" << _f.webob1);
+} // end rps_web_display_html_for_objref
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for _8KJHUldX8GJ03G5OWp
