@@ -251,10 +251,24 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       *onresp << "</span>" << std::endl;
       return Rps_TwoValues{ _f.webob1};
     }
-      //// TODO: for composite values we need to use the depth. If a
-      //// threshold has been reached, we don't display contents.
-#warning rpsapply_0TwK4TkhEGZ03oTa5m is missing code for display of composite values
     case Rps_Type::Json:
+    {
+      if (depth <  max_depth)
+        {
+          std::ostringstream outstr;
+          outstr <<  _f.val0v.as_json() << std::flush;
+          std::string jstr = outstr.str();
+          *onresp << "<span class='json_rpscl'>JSON:" << Rps_Html_Nl2br_String(jstr)
+                  << "</span>" << std::endl;
+        }
+      else   // too deep
+        {
+          *onresp << "<span class='json_rpscl'>JSON_" << _f.val0v.as_json()->json().size() << "</span>";
+        }
+      return Rps_TwoValues{ _f.webob1};
+    }
+    //// TODO: for composite values we need to use the depth. If a
+    //// threshold has been reached, we don't display contents.
     default:
       RPS_FATALOUT("rpsapply_0TwK4TkhEGZ03oTa5m val0v=" << _f.val0v
                    << " has unexpected type"
