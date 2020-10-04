@@ -1792,6 +1792,22 @@ function format ( d ) {
             '<td>Symbol Value:</td>' +
             '<td>' + d.symb_value + '</td>' +
        '</tr>' +
+        '<tr>' +
+            '<td>Applying Function?:</td>' +
+            '<td>' + d.applying + '</td>' +
+       '</tr>' +
+        '<tr>' +
+            '<td>Class Name:</td>' +
+            '<td>' + d.class_name + '</td>' +
+       '</tr>' +
+        '<tr>' +
+            '<td>Class Symbol:</td>' +
+            '<td>' + d.class_symb + '</td>' +
+       '</tr>' +
+        '<tr>' +
+            '<td>Super Class:</td>' +
+            '<td>' + d.class_super + '</td>' +
+       '</tr>' +
     '</table>';
 }
 
