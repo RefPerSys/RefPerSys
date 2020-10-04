@@ -1782,8 +1782,16 @@ function format ( d ) {
     return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
         '<tr>'+
             '<td>Payload:</td>'+
-            '<td>'+d.payload+'</td>'+
+            '<td>' + d.payload + '</td>' +
         '</tr>' + 
+        '<tr>' +
+            '<td>Symbol Name:</td>' +
+            '<td>' + d.symb_name + '</td>' +
+       '</tr>' +
+        '<tr>' +
+            '<td>Symbol Value:</td>' +
+            '<td>' + d.symb_value + '</td>' +
+       '</tr>' +
     '</table>';
 }
 
