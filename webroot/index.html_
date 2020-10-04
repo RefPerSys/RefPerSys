@@ -18,7 +18,7 @@
   crossorigin="anonymous"> 
 -->
 <link href="css/bootstrap.min.css" rel="stylesheet">
-<link href="css/jquery.datatables.min.css" rel="stylesheet">
+<link href="css/jquery.datatables.bootstrap4.min.css" rel="stylesheet">
 
     <!-- Favicons -->
 <link rel="apple-touch-icon" href="/docs/4.5/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
@@ -92,7 +92,7 @@
   </div>
 
   <div class="row">
-    <table id="example" class="display" style="width:100%">
+    <table id="example" class="table table-striped table-bordered" style="width:100%">
         <thead>
             <tr>
                 <th>Name</th>
@@ -585,7 +585,13 @@
 -->
 <script src="js/bootstrap.bundle.min.js"></script>
 <script src="js/jquery.datatables.min.js"></script>
-  
+<script src="js/jquery.datatables.bootstrap4.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#example').DataTable();
+} );
+</script>
 </body>
 
 </html>
