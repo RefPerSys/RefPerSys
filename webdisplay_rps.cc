@@ -215,10 +215,45 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       *onresp << "</span>" << std::endl;
       return Rps_TwoValues{ _f.webob1};
     }
+    case Rps_Type::Instance:
+    {
+      constexpr unsigned period_nl = 5;
+      *onresp << "<span class='instanceval_rpscl'>";
+      _f.connob = _f.val0v.as_instance()->conn();
+      unsigned nbsons =  _f.val0v.as_instance()->cnt();
+      *onresp << "⊠"; // U+22A0 SQUARED TIMES
+      rps_web_display_html_for_objref(&_,
+                                      _f.connob,
+                                      _f.webob1,
+                                      (depth+3<max_depth)?(depth+3):max_depth);
+      if (depth <  max_depth)
+        {
+          *onresp << " ⟨";	// U+27E8 MATHEMATICAL LEFT ANGLE BRACKET
+          for (unsigned ix=0; ix<nbsons; ix++)
+            {
+              if (ix>0 && ix%period_nl == 0)
+                *onresp << "<br class='decor_rpscl'/>" << std::endl;
+              else if (ix>0)
+                *onresp << ' ';
+              _f.sonv = _f.val0v.as_instance()->at(ix);
+              rps_web_display_html_for_value(&_,
+                                             _f.sonv,
+                                             _f.webob1,
+                                             depth+1);
+              _f.sonv = nullptr;
+            }
+          *onresp << "⟩"; //U+27E9 MATHEMATICAL RIGHT ANGLE BRACKET
+        }
+      else   // too deep
+        {
+          *onresp << "┄<sup class='arity_rpscl'>" << nbsons << "</sup>";
+        }
+      *onresp << "</span>" << std::endl;
+      return Rps_TwoValues{ _f.webob1};
+    }
       //// TODO: for composite values we need to use the depth. If a
       //// threshold has been reached, we don't display contents.
 #warning rpsapply_0TwK4TkhEGZ03oTa5m is missing code for display of composite values
-    case Rps_Type::Instance:
     case Rps_Type::Json:
     default:
       RPS_FATALOUT("rpsapply_0TwK4TkhEGZ03oTa5m val0v=" << _f.val0v
