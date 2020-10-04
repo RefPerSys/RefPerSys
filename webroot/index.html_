@@ -18,6 +18,7 @@
   crossorigin="anonymous"> 
 -->
 <link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/jquery.datatables.min.css" rel="stylesheet">
 
     <!-- Favicons -->
 <link rel="apple-touch-icon" href="/docs/4.5/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
@@ -100,6 +101,7 @@
 <script src="/docs/4.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf" crossorigin="anonymous"></script>
 -->
 <script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/jquery.datatables.min.js"></script>
   
 </body>
 
