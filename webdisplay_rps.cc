@@ -213,6 +213,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
           *onresp << "<sup class='arity_rpscl'>" << arity << "</sup>";
         }
       *onresp << "</span>" << std::endl;
+      return Rps_TwoValues{ _f.webob1};
     }
       //// TODO: for composite values we need to use the depth. If a
       //// threshold has been reached, we don't display contents.
