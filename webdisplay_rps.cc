@@ -280,10 +280,12 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
     };				// end switch _f.val0v.type()
 } // end of rpsapply_0TwK4TkhEGZ03oTa5m !display Val0 in Ob1Win at depth Val2Depth
 
+
+
 void
 rps_web_display_html_for_value(Rps_CallFrame*callerframe,
                                const Rps_Value arg0val, //
-                               const Rps_Value arg1obweb, ///
+                               const Rps_ObjectRef arg1obweb, ///
                                int depth)
 {
   RPS_LOCALFRAME(RPS_ROOT_OB(_0deGTf5hQwu01xJkyi), // the display_value_web symbol
@@ -323,14 +325,27 @@ rps_web_display_html_for_objref(Rps_CallFrame*callerframe,
                  Rps_ObjectRef obdisp0; //
                  Rps_ObjectRef webob1; //
                  Rps_Value depth2v; //
+                 Rps_Value namev;
                 );
   _f.obdisp0 = arg0ob;
   _f.webob1 = arg1obweb;
   Rps_PayloadWebex*pwebex = Rps_PayloadWebex::webex_of_object(&_, _f.webob1);
   RPS_ASSERT(pwebex != nullptr);
-#warning rps_web_display_html_for_objref unimplemented
-  RPS_FATALOUT("rps_web_display_html_for_objref unimplemented:"
-               << " obdisp0=" << _f.obdisp0 << " webob1=" << _f.webob1);
+  RPS_ASSERT(_f.obdisp0);
+  std::lock_guard<std::recursive_mutex> guobdisp(*(_f.obdisp0->objmtxptr()));
+  _f.namev = _f.obdisp0->get_attr1(&_,
+                                   RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name∈named_attribute
+  if (_f.namev.is_string())
+    {
+      *(pwebex->web_response()) << "<span class='namedob_rpscl' rps_obid='" << _f.obdisp0->oid() << "'>"
+                                << Rps_Html_Nl2br_String(_f.namev.to_string()->cppstring())
+                                << "</span>";
+    }
+  else   // no name
+    {
+      *(pwebex->web_response()) << "<span class='anonob_rpscl' rps_obid='" << _f.obdisp0->oid() << "'>"
+                                << _f.obdisp0->oid() << "</span>";
+    };
 } // end rps_web_display_html_for_objref
 
 ////////////////////////////////////////////////////////////////
