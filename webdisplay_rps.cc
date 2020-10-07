@@ -111,8 +111,12 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
     case Rps_Type::Set:
     {
       constexpr unsigned period_nl = 5;
-      *onresp << "<span class='decorval_rpscl'>{</span>";
       unsigned nbelem = _f.val0v.as_set()->cardinal();
+      if (nbelem < period_nl)
+	*onresp << "<span class='smallsetval_rpscl'>";
+      else
+	*onresp << "<div class='bigsetval_rpscl'>" << std::endl;
+      *onresp << "<span class='decorval_rpscl'>{</span>";
       if (depth <  max_depth)
         {
           for (unsigned ix=0; ix < nbelem; ix++)
@@ -134,13 +138,21 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
           //U+2026 HORIZONTAL ELLIPSIS
         }
       *onresp << "<span class='decorval_rpscl'>}</span>";
+      if (nbelem < period_nl)
+	*onresp << "</span>"; // for smallsetval_rpscl
+      else
+	*onresp << "</div>" << std::endl; // for bigsetval_rpscl
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Tuple:
     {
       constexpr unsigned period_nl = 5;
-      *onresp << "<span class='decorval_rpscl'>[</span>";
       unsigned nbcomp = _f.val0v.as_tuple()->cnt();
+      if (nbcomp < period_nl)
+	*onresp << "<span class='smalltupleval_rpscl'>";
+      else
+	*onresp << "<div class='bigtupleval_rpscl'>" << std::endl;
+      *onresp << "<span class='decorval_rpscl'>[</span>";
       if (depth <  max_depth)
         {
           for (unsigned ix=0; ix < nbcomp; ix++)
@@ -162,6 +174,10 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
           //U+2026 HORIZONTAL ELLIPSIS
         }
       *onresp << "<span class='decorval_rpscl'>]</span>";
+      if (nbelem < period_nl)
+	*onresp << "</span>"; // for smalltupleval_rpscl
+      else
+	*onresp << "</div>" << std::endl; // for bigtupleval_rpscl
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Object:
@@ -175,10 +191,11 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
     case Rps_Type::Closure:
     {
       constexpr unsigned period_nl = 5;
-      *onresp << "<span class='closureval_rpscl'>";
-      *onresp << "<span class='decorval_rpscl'>𝛌</span>"; //U+1D6CC MATHEMATICAL BOLD SMALL LAMDA
       _f.connob = _f.val0v.as_closure()->conn();
       unsigned arity = _f.val0v.as_closure()->cnt();
+#warning FIXME: perhaps we need an HTML div of class bigclosureval_rpscl in rpsapply_0TwK4TkhEGZ03oTa5m
+      *onresp << "<span class='closureval_rpscl'>";
+      *onresp << "<span class='decorval_rpscl'>𝛌</span>"; //U+1D6CC MATHEMATICAL BOLD SMALL LAMDA
       RPS_ASSERT(_f.connob);
       if (depth <  max_depth)
         {
@@ -212,15 +229,17 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                                           max_depth);
           *onresp << "<sup class='arity_rpscl'>" << arity << "</sup>";
         }
-      *onresp << "</span>" << std::endl;
+      *onresp << "</span>" << std::endl; // for closureval_rpscl
+#warning FIXME: perhaps we need an HTML </div> for bigclosureval_rpscl in rpsapply_0TwK4TkhEGZ03oTa5m
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Instance:
     {
       constexpr unsigned period_nl = 5;
-      *onresp << "<span class='instanceval_rpscl'>";
       _f.connob = _f.val0v.as_instance()->conn();
       unsigned nbsons =  _f.val0v.as_instance()->cnt();
+#warning FIXME: perhaps we need an HTML div of class biginstanceval_rpscl in rpsapply_0TwK4TkhEGZ03oTa5m
+      *onresp << "<span class='instanceval_rpscl'>";
       *onresp << "⊠"; // U+22A0 SQUARED TIMES
       rps_web_display_html_for_objref(&_,
                                       _f.connob,
@@ -249,6 +268,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
           *onresp << "┄<sup class='arity_rpscl'>" << nbsons << "</sup>";
         }
       *onresp << "</span>" << std::endl;
+#warning FIXME: perhaps we need an HTML </div> for biginstanceval_rpscl in rpsapply_0TwK4TkhEGZ03oTa5m
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Json:

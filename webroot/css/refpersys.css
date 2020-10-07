@@ -80,7 +80,10 @@ span.instanceval_rpscl {
     background-color: lightyellow;
 }
 
-
+/* TODO: This is very incomplete, see e.g. occurrences of
+   bigtupleval_rpscl and #warning-s in C++ function
+   rpsapply_0TwK4TkhEGZ03oTa5m file webdisplay_rps.cc commit
+   eb8b84ec7d3754861f7f3 */
 
 
 /* end of file webroot/css/refpersys.css */
