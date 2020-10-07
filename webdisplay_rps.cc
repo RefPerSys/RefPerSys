@@ -174,7 +174,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
           //U+2026 HORIZONTAL ELLIPSIS
         }
       *onresp << "<span class='decorval_rpscl'>]</span>";
-      if (nbelem < period_nl)
+      if (nbcomp < period_nl)
 	*onresp << "</span>"; // for smalltupleval_rpscl
       else
 	*onresp << "</div>" << std::endl; // for bigtupleval_rpscl
