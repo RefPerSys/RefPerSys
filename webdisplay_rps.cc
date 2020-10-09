@@ -113,9 +113,9 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       constexpr unsigned period_nl = 5;
       unsigned nbelem = _f.val0v.as_set()->cardinal();
       if (nbelem < period_nl)
-	*onresp << "<span class='smallsetval_rpscl'>";
+        *onresp << "<span class='smallsetval_rpscl'>";
       else
-	*onresp << "<div class='bigsetval_rpscl'>" << std::endl;
+        *onresp << "<div class='bigsetval_rpscl'>" << std::endl;
       *onresp << "<span class='decorval_rpscl'>{</span>";
       if (depth <  max_depth)
         {
@@ -139,9 +139,9 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
         }
       *onresp << "<span class='decorval_rpscl'>}</span>";
       if (nbelem < period_nl)
-	*onresp << "</span>"; // for smallsetval_rpscl
+        *onresp << "</span>"; // for smallsetval_rpscl
       else
-	*onresp << "</div>" << std::endl; // for bigsetval_rpscl
+        *onresp << "</div>" << std::endl; // for bigsetval_rpscl
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Tuple:
@@ -149,9 +149,9 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       constexpr unsigned period_nl = 5;
       unsigned nbcomp = _f.val0v.as_tuple()->cnt();
       if (nbcomp < period_nl)
-	*onresp << "<span class='smalltupleval_rpscl'>";
+        *onresp << "<span class='smalltupleval_rpscl'>";
       else
-	*onresp << "<div class='bigtupleval_rpscl'>" << std::endl;
+        *onresp << "<div class='bigtupleval_rpscl'>" << std::endl;
       *onresp << "<span class='decorval_rpscl'>[</span>";
       if (depth <  max_depth)
         {
@@ -175,9 +175,9 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
         }
       *onresp << "<span class='decorval_rpscl'>]</span>";
       if (nbcomp < period_nl)
-	*onresp << "</span>"; // for smalltupleval_rpscl
+        *onresp << "</span>"; // for smalltupleval_rpscl
       else
-	*onresp << "</div>" << std::endl; // for bigtupleval_rpscl
+        *onresp << "</div>" << std::endl; // for bigtupleval_rpscl
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Object:
