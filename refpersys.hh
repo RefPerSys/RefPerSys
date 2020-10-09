@@ -268,7 +268,7 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 #define RPS_WARN_AT_BIS(Fil,Lin,Fmt,...) do {			\
     fprintf(stderr, "\n\n"		       			\
-	    "*** RefPerSys WARN:%s:%d: {%s}\n " Fmt "\n\n",						\
+	    "*** RefPerSys WARN:%s:%d: {%s}\n " Fmt "\n\n",	\
             Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);     	\
     fflush(stderr); } while(0)
 
@@ -678,8 +678,7 @@ class Rps_GarbageCollector;
 class Rps_Payload;
 class Rps_PayloadSymbol;
 class Rps_PayloadClassInfo;
-class Rps_PayloadInputCommand;
-class Rps_PayloadOutputText;
+class Rps_PayloadStrBuf;
 class Rps_Loader;
 class Rps_Dumper;
 class Rps_ProtoCallFrame;
@@ -906,15 +905,12 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
-  PaylWebHandler = -17, // for reification of Web handlers,
+  PaylWebHandler = -14, // for reification of Web handlers,
 			// i.e. Rps_PayloadWebHandler-s
-  PaylWebex = -16, // for reification as temporary objects of HTTP
+  PaylWebex = -13, // for reification as temporary objects of HTTP
 		   // requests+replies, i.e. Web exchanges.
-  PaylTasklet = -15, // for small tasklets inside agenda
-  PaylAgenda = -14, // the the unique agenda
-  PaylInputCommand = -13, // for input command payload, in transient instances of rps_command_textedit
-  PaylOutputText = -12, // for output text payload, in transient instances of rps_output_textedit
-  PaylWindow = -11, // for window payload, in transient instances of rps_window
+  PaylTasklet = -12, // for small tasklets inside agenda
+  PaylAgenda = -11, // the the unique agenda
   PaylSymbol = -10, // symbol payload
   PaylSpace = -9, // space payload
   PaylStrBuf = -8, // mutable string buffer
@@ -3220,6 +3216,62 @@ public:
     return Rps_TupleValue(pvectob);
   };
 };				// end Rps_PayloadVectOb
+
+
+////////////////////////////////////////////////////////////////
+////// mutable string buffer payload 
+extern "C" rpsldpysig_t rpsldpy_string_buffer;
+class Rps_PayloadStrBuf : public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend rpsldpysig_t rpsldpy_string_buffer;
+  friend Rps_PayloadStrBuf*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadStrBuf,Rps_ObjectZone*>(Rps_ObjectZone*);
+  Rps_PayloadStrBuf(Rps_ObjectZone*owner);
+  Rps_PayloadStrBuf(Rps_ObjectRef obr) :
+    Rps_PayloadStrBuf(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadStrBuf();
+  mutable std::ostringstream strbuf_out;
+  int strbuf_indent;
+  bool strbuf_transient;
+protected:
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+public:
+  virtual const std::string payload_type_name(void) const
+  {
+    return "string_buffer";
+  };
+  std::ostringstream* output_string_stream(void) { return &strbuf_out; };
+  const std::ostream& output_stream(void) const { return strbuf_out; };
+   std::ostream& writable_output_stream(void)  { return strbuf_out; };
+  int indentation(void) const { return strbuf_indent; };
+  void set_indentation(int ind=0) {  strbuf_indent = ind; };
+  void more_indentation(int delta) { strbuf_indent += delta; };
+  void less_indentation(int delta) { strbuf_indent -= delta; };
+  bool is_transient(void) const { return strbuf_transient; };
+  void set_transient(bool fl=true) { strbuf_transient=fl; };
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  inline Rps_PayloadStrBuf(Rps_ObjectZone*obz, Rps_Loader*ld);
+  unsigned buffer_offset(void) const {
+    return (unsigned) strbuf_out.tellp();
+  }
+  unsigned buffer_length(void) const
+  {
+    return strbuf_out.str().size();
+  };
+  std::string buffer_cppstring(void) const {
+    return strbuf_out.str();
+  };
+  Rps_StringValue buffer_stringval(void);
+  void clear_buffer(void);
+};				// end Rps_PayloadStrBuffer
+
 
 
 
