@@ -1881,5 +1881,13 @@ Rps_PayloadTasklet::Rps_PayloadTasklet(Rps_ObjectZone*obz)
 } // end Rps_PayloadTasklet::Rps_PayloadTasklet(Rps_ObjectZone*)
 
 
+/////////////////////////////////////////////////////////////////
+//////////////// String Buffers
+
+Rps_ObjectRef
+Rps_PayloadStrBuf::the_string_buffer_class(void)
+{
+  return RPS_ROOT_OB(_7Y3AyF9gNx700bQJXc);
+}      // end Rps_PayloadStrBuf::the_string_buffer_class
 #endif /*INLINE_RPS_INCLUDED*/
 ////////////////////////////////////////////////// end of internal header file inline_rps.hh

@@ -3258,6 +3258,7 @@ public:
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
   };
   inline Rps_PayloadStrBuf(Rps_ObjectZone*obz, Rps_Loader*ld);
+  static inline Rps_ObjectRef the_string_buffer_class(void);
   unsigned buffer_offset(void) const {
     return (unsigned) strbuf_out.tellp();
   }
