@@ -64,26 +64,56 @@ br.decor_rpscl {
     background-color: paleturquoise;
 }
 
-/* display of closure values */
+/* "horizontal" display of small set values */
+span.smallsetval_rpscl {
+    background-color: papayawhip;
+}
+/* "vertical" display of big set values */
+div.bigsetval_rpscl {
+    background-color: bisque;
+}
+
+/* "horizontal" display of small tuple values */
+span.smalltupleval_rpscl {
+    background-color: lightskyblue;
+}
+/* "vertical" display of big tuple values */
+div.bigtupleval_rpscl {
+    background-color: paleturquoise;
+}
+
+/* "horizontal" display of small closure values */
 span.closureval_rpscl {
     background-color: lavenderblush;
 }
 
+/* "vertical" display of big closure values */
+div.bigclosureleval_rpscl {
+    background-color: lightpink;
+}
 /* display of arity */
 sup.aritycl_rpscl {
     background-color: ivory;
     font-size: 80%;
 }
 
-/* display of instance values */
+/*  "horizontal" display of small instance values */
 span.instanceval_rpscl {
     background-color: lightyellow;
 }
 
-/* TODO: This is very incomplete, see e.g. occurrences of
-   bigtupleval_rpscl and #warning-s in C++ function
-   rpsapply_0TwK4TkhEGZ03oTa5m file webdisplay_rps.cc commit
-   eb8b84ec7d3754861f7f3 */
+/* "vertical" display of big closure values */
+div.biginstanceleval_rpscl {
+    background-color: bisque;
+}
+
+
+
+/******
+ * TODO: This remains incomplete, see #warning-s in C++ function
+ *  rpsapply_0TwK4TkhEGZ03oTa5m file webdisplay_rps.cc commit
+ *  eb8b84ec7d3754861f7f3 
+ ******/
 
 
 /* end of file webroot/css/refpersys.css */
