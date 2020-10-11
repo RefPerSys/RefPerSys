@@ -250,7 +250,7 @@ rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen)
   const uint8_t *next;
   const uint8_t* uend =(const uint8_t*)end;
   for (const uint8_t* pc = (const uint8_t*)str;
-       pc < uend && *pc;
+       pc != nullptr && pc < uend && *pc;
        pc = next)
     {
       ucs4_t uc=0;
