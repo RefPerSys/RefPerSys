@@ -98,8 +98,9 @@ private:
   // might want to emit indented HTML,
   // etc...
   ///
-  // we may need to have some internal buffer for the response....
-#warning perhaps some std::ostringstream webex_buffer; is needed
+  // FIXME: we may need to have some internal buffer output stream for the
+  // response.... but I am not sure... 
+#warning perhaps some std::ostringstream* webex_stream field is needed
 public:
   Onion::Request*  web_request() const
   {
@@ -107,6 +108,11 @@ public:
   };
   Onion::Response* web_response() const
   {
+    return webex_resp;
+  };
+  std::ostream* web_ostream_ptr() const
+  {
+    /// TODO: maybe we need some internal string output stream....
     return webex_resp;
   };
   Rps_Value state_value() const
@@ -124,10 +130,12 @@ public:
   int web_increase_indent(int n=1)
   {
     webex_indent += n;
+    return webex_indent;
   };
   int web_decrease_indent(int n=1)
   {
     webex_indent -= n;
+    return webex_indent;
   };
   uint64_t web_request_num() const
   {
