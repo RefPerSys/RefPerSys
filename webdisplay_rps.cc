@@ -193,8 +193,10 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       constexpr unsigned period_nl = 5;
       _f.connob = _f.val0v.as_closure()->conn();
       unsigned arity = _f.val0v.as_closure()->cnt();
-#warning FIXME: perhaps we need an HTML div of class bigclosureval_rpscl in rpsapply_0TwK4TkhEGZ03oTa5m
-      *onresp << "<span class='closureval_rpscl'>";
+      if (arity > period_nl)
+        *onresp << "<div class='bigclosureval_rpscl'>" << std::endl;
+      else
+        *onresp << "<span class='closureval_rpscl'>";
       *onresp << "<span class='decorval_rpscl'>𝛌</span>"; //U+1D6CC MATHEMATICAL BOLD SMALL LAMDA
       RPS_ASSERT(_f.connob);
       if (depth <  max_depth)
@@ -229,8 +231,10 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                                           max_depth);
           *onresp << "<sup class='arity_rpscl'>" << arity << "</sup>";
         }
-      *onresp << "</span>" << std::endl; // for closureval_rpscl
-#warning FIXME: perhaps we need an HTML </div> for bigclosureval_rpscl in rpsapply_0TwK4TkhEGZ03oTa5m
+      if (arity > period_nl)
+        *onresp << "</div>" << std::endl; // for bigclosureval_rpscl
+      else
+        *onresp << "</span>" << std::endl; // for closureval_rpscl
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Instance:
@@ -238,8 +242,10 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       constexpr unsigned period_nl = 5;
       _f.connob = _f.val0v.as_instance()->conn();
       unsigned nbsons =  _f.val0v.as_instance()->cnt();
-#warning FIXME: perhaps we need an HTML div of class biginstanceval_rpscl in rpsapply_0TwK4TkhEGZ03oTa5m
-      *onresp << "<span class='instanceval_rpscl'>";
+      if (nbsons > period_nl)
+        *onresp << "<div class='biginstanceval_rpscl'>" << std::endl;
+      else
+        *onresp << "<span class='instanceval_rpscl'>";
       *onresp << "⊠"; // U+22A0 SQUARED TIMES
       rps_web_display_html_for_objref(&_,
                                       _f.connob,
@@ -267,8 +273,10 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
         {
           *onresp << "┄<sup class='arity_rpscl'>" << nbsons << "</sup>";
         }
-      *onresp << "</span>" << std::endl;
-#warning FIXME: perhaps we need an HTML </div> for biginstanceval_rpscl in rpsapply_0TwK4TkhEGZ03oTa5m
+      if (nbsons > period_nl)
+        *onresp << "</div>" <<   std::endl;// for biginstanceval_rpscl
+      else
+        *onresp << "</span>" << std::endl; // for instanceval_rpscl
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Json:
