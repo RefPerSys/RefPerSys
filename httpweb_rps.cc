@@ -667,12 +667,29 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
    ***/
   if (mime && (reqmethnum==OR_GET || reqmethnum==OR_HEAD))
     {
-      pres->setHeader("Content-Type:", mime);
+      // for textual content, ensure encoding is UTF-8
+      if (strstr(mime, "html") || strstr(mime, "svg"))
+        {
+          if (!strstr(mime, "UTF-8"))
+            {
+              char fullmimebuf[64];
+              memset (fullmimebuf, 0, sizeof(fullmimebuf));
+              snprintf(fullmimebuf, sizeof(fullmimebuf), "%s; charset=UTF-8",
+                       mime);
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_file filepath=" << filepath
+                            << " reqnum#" << reqnum
+                            << " reqmethname=" << reqmethname
+                            << " fullmimebuf='" << fullmimebuf<< "'");
+              pres->setHeader("Content-Type:", fullmimebuf);
+            }
+        }
+      else
+        pres->setHeader("Content-Type:", mime);
       FILE *fil = fopen(filepath.c_str(), "r");
       if (!fil)
         RPS_FATALOUT("rps_serve_onion_file filepath=" << filepath
                      << " reqnum#" << reqnum
-                     << " reqmethnum=" << reqmethname
+                     << " reqmethname=" << reqmethname
                      << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
                      << " fopen failed: " << strerror(errno));
       RPS_DEBUG_LOG(WEB, "rps_serve_onion_file fd#" << (fil?fileno(fil):-1)
