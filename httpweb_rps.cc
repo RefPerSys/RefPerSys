@@ -668,7 +668,8 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
   if (mime && (reqmethnum==OR_GET || reqmethnum==OR_HEAD))
     {
       // for textual content, ensure encoding is UTF-8
-      if (strstr(mime, "html") || strstr(mime, "svg"))
+      if (strstr(mime, "html") || strstr(mime, "svg") || strstr(mime, "css")
+          || strstr(mime, "text/"))
         {
           if (!strstr(mime, "UTF-8"))
             {
@@ -684,7 +685,13 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
             }
         }
       else
-        pres->setHeader("Content-Type:", mime);
+        {
+          pres->setHeader("Content-Type:", mime);
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_file filepath=" << filepath
+                        << " reqnum#" << reqnum
+                        << " reqmethname=" << reqmethname
+                        << " plain mime="<< mime);
+        }
       FILE *fil = fopen(filepath.c_str(), "r");
       if (!fil)
         RPS_FATALOUT("rps_serve_onion_file filepath=" << filepath
