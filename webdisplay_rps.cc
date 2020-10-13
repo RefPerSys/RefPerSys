@@ -397,10 +397,13 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
   _f.depthv = arg2depth;
   RPS_DEBUG_LOG(WEB, "rpsapply_8KJHUldX8GJ03G5OWp start intv=" << _f.intv
                 << ", obweb=" << _f.obweb
-                << ", depth=" << _f.depthv);
+                << ", depthv=" << _f.depthv);
+  int depth =  _f.depthv.to_int();
   std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
-#warning unimplemented rpsapply_8KJHUldX8GJ03G5OWp
-  RPS_FATAL("unimplemented rpsapply_8KJHUldX8GJ03G5OWp");
+  RPS_ASSERT(pout);
+  intptr_t i = _f.intv.as_int();
+  *pout << "<span class='intval_rpscl'>" << i << "</span>";
+  return Rps_TwoValues{ _f.obweb};
 } // end of  rpsapply_8KJHUldX8GJ03G5OWp !method int/display_value_web
 
 
@@ -419,26 +422,33 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
 {
   RPS_LOCALFRAME(rpskob_2KnFhlj8xW800kpgPt,
                  callerframe, //
-                 Rps_Value string_value;
-                 Rps_ObjectRef object_window;
-                 Rps_Value recursive_depth;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
+                 Rps_Value stringv;
+                 Rps_ObjectRef obweb;
+                 Rps_Value depthv;
                 );
 
-  _f.string_value = arg0_receiver;
-  RPS_ASSERT(_f.string_value.is_string());
-  _f.object_window = arg1_object_window.as_object();
-  RPS_ASSERT(_f.object_window);
-  _f.recursive_depth = arg2_recursive_depth;
-  RPS_ASSERT(_f.recursive_depth.is_int());
-  RPS_DEBUG_LOG(WEB, "rpsapply_2KnFhlj8xW800kpgPt start string_value=" << _f.string_value
-                << ", object_window, =" << _f.object_window
-                << ", recursive_depth=" <<  _f.recursive_depth);
+  _f.stringv = arg0_receiver;
+  RPS_ASSERT(_f.stringv.is_string());
+  _f.obweb = arg1_object_window.as_object();
+  RPS_ASSERT(_f.obweb);
+  _f.depthv = arg2_recursive_depth;
+  RPS_ASSERT(_f.depthv.is_int());
   ////==== body of _2KnFhlj8xW800kpgPt ====
-#warning unimplemented rpsapply_2KnFhlj8xW800kpgPt
-  RPS_FATAL("unimplemented rpsapply_2KnFhlj8xW800kpgPt");
+  RPS_DEBUG_LOG(WEB, "rpsapply_2KnFhlj8xW800kpgPt °string/display_value_web start stringv=" << _f.stringv
+                << ", obweb=" << _f.obweb
+                << ", depthv=" <<  _f.depthv);
+  int depth =  _f.depthv.to_int();
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  RPS_ASSERT(pout);
+  const std::string str = _f.stringv.as_cppstring();
+  *pout << "<q class='decor_rpscl'>"
+        << "<span class='stringval_rpscl'>"
+        << Rps_Html_Nl2br_String(str)
+        << "</span>"
+        << "</q>";
+  return Rps_TwoValues{ _f.obweb};
 } // end of  rpsapply_2KnFhlj8xW800kpgPt !method string/display_value_web
+
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for _7oa7eIzzcxv03TmmZH
