@@ -54,6 +54,11 @@ extern "C" onion_connection_status
 rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath);
 
 
+/// given an object which is either a web_exchange or string_buffer, returns its ostream. If check is true, raise an exception when none.
+extern "C" std::ostream* rps_web_output(Rps_CallFrame*, Rps_ObjectRef ob, bool check=false);
+constexpr bool RPS_CHECK_OUTPUT = true;
+constexpr bool RPS_DONT_CHECK_OUTPUT = false;
+
 ////////////////////////////////////////////////////////////////
 /// a web exchange object is created for most dynamic HTTP requests
 /// it obviously is a transient object which is not persisted to disk.

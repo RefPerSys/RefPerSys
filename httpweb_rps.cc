@@ -252,7 +252,7 @@ Rps_PayloadWebex::webex_of_object(Rps_CallFrame*callerframe, Rps_ObjectRef ob)
   std::lock_guard<std::recursive_mutex> gu(*ob->objmtxptr());
   if (Rps_ObjectValue obval{ob};
       obval.is_instance_of(callerframe,
-                           RPS_ROOT_OB(_8zNtuRpzXUP013WG9S) // webexchange
+                           RPS_ROOT_OB(_8zNtuRpzXUP013WG9S) // web_exchange
                           ))
     return nullptr;
   Rps_PayloadWebex* pwebex = ob->get_dynamic_payload<Rps_PayloadWebex>();
@@ -778,5 +778,102 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
     }
 } // end rps_serve_onion_file
 
+
+std::ostream*
+rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
+{
+  RPS_LOCALFRAME(/*descr:*/ nullptr,
+                            /*prev:*/callframe,
+                            /*locals:*/
+                            Rps_ObjectRef ob;
+                            Rps_ObjectRef obclass);
+  _f.ob = obarg;
+  if (!_f.ob)
+    {
+      RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_) <<" empty ob");
+      if (check)
+        throw std::runtime_error("rps_web_output empty ob");
+      return nullptr;
+    };
+  std::lock_guard<std::recursive_mutex> gu(*_f.ob->objmtxptr());
+  _f.obclass = _f.ob->compute_class(&_);
+  auto web_exchange_ob = RPS_ROOT_OB(_8zNtuRpzXUP013WG9S);
+  if (_f.obclass == web_exchange_ob || Rps_Value(_f.obclass).is_subclass_of(&_, web_exchange_ob))
+    {
+      Rps_PayloadWebex*paylwebex = Rps_PayloadWebex::webex_of_object(&_, _f.ob);
+      if (!paylwebex)
+        {
+          if (check)
+            {
+              std::ostringstream errout;
+              errout << "rps_web_output: " << _f.ob->oid() << " without Rps_PayloadWebex" << std::flush;
+              RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_)
+                            << " " << errout.str());
+              throw std::runtime_error(errout.str());
+            };
+          RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_) << " ob:" << _f.ob << " without Rps_PayloadWebex");
+          return nullptr;
+        }
+      Onion::Response* resp = paylwebex->web_response();
+      if (!resp)
+        {
+          if (check)
+            {
+              std::ostringstream errout;
+              errout << "rps_web_output: " << _f.ob->oid() << " has Rps_PayloadWebex without response" << std::flush;
+              RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_)
+                            << " " << errout.str());
+              throw std::runtime_error(errout.str());
+            };
+          RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_) << " ob:" << _f.ob << " with bad Rps_PayloadWebex (no web response)");
+          return nullptr;
+        }
+      return resp;
+    } // end if ob is a web_exchange
+  auto string_buffer_ob = RPS_ROOT_OB(_7Y3AyF9gNx700bQJXc);
+  if (_f.obclass == string_buffer_ob || Rps_Value(_f.obclass).is_subclass_of(&_, string_buffer_ob))
+    {
+      Rps_PayloadStrBuf* paylsbuf
+        = _f.ob->get_dynamic_payload<Rps_PayloadStrBuf>();
+      if (!paylsbuf)
+        {
+          if (check)
+            {
+              std::ostringstream errout;
+              errout << "rps_web_output: " << _f.ob->oid() << " without Rps_PayloadStrBuf" << std::flush;
+              RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_)
+                            << " " << errout.str());
+              throw std::runtime_error(errout.str());
+            };
+          RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_) << " ob:" << _f.ob << " without Rps_PayloadStrBuf");
+          return nullptr;
+        };
+      std::ostringstream* pouts = paylsbuf->output_string_stream();
+      if (!pouts)
+        {
+          if (check)
+            {
+              std::ostringstream errout;
+              errout << "rps_web_output: " << _f.ob->oid() << " with bad Rps_PayloadStrBuf" << std::flush;
+              RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_)
+                            << " " << errout.str());
+              throw std::runtime_error(errout.str());
+            };
+          RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_) << " ob:" << _f.ob << " with bad Rps_PayloadStrBuf");
+          return nullptr;
+        }
+      return pouts;
+    } // end if ob is a string_buffer
+  if (check)
+    {
+      std::ostringstream errout;
+      errout << "rps_web_output: " << _f.ob->oid() << " has bad class " <<_f.obclass << std::flush;
+      RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_)
+                    << " " << errout.str());
+      throw std::runtime_error(errout.str());
+    };
+  RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_) << " ob:" << _f.ob << " with bad class " <<_f.obclass);
+  return nullptr;
+} // end rps_web_output
 
 ///////// end of file httpweb_rps.cc
