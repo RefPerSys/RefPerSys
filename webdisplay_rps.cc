@@ -464,25 +464,28 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
 {
   RPS_LOCALFRAME(rpskob_7oa7eIzzcxv03TmmZH,
                  callerframe, //
-                 Rps_Value doubleval;
-                 Rps_ObjectRef object_window;
-                 Rps_Value recdepth;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
+                 Rps_Value doublev;
+                 Rps_ObjectRef obweb;
+                 Rps_Value depthv;
                 );
 
   ////==== body of _7oa7eIzzcxv03TmmZH !method double/display_value_web ====
-  _f.doubleval = arg0_recv;
-  RPS_ASSERT (_f.doubleval.is_double());
-  _f.object_window = arg1_objwnd.as_object();
-  RPS_ASSERT(_f.object_window);
-  _f.recdepth = arg2_recdepth;
-  RPS_ASSERT(_f.recdepth.is_int());
-  RPS_DEBUG_LOG(WEB, "rpsapply_7oa7eIzzcxv03TmmZH start doubleval=" << _f.doubleval
-                << "object_window, =" << _f.object_window
-                << ", recdepth=" <<  _f.recdepth);
-#warning unimplemented rpsapply_7oa7eIzzcxv03TmmZH
-  RPS_FATAL("unimplemented rpsapply_7oa7eIzzcxv03TmmZH");
+  _f.doublev = arg0_recv;
+  RPS_ASSERT (_f.doublev.is_double());
+  _f.obweb = arg1_objwnd.as_object();
+  RPS_ASSERT(_f.obweb);
+  _f.depthv = arg2_recdepth;
+  RPS_ASSERT(_f.depthv.is_int());
+  RPS_DEBUG_LOG(WEB, "rpsapply_7oa7eIzzcxv03TmmZH start doublev=" << _f.doublev
+                << "obweb=" << _f.obweb
+                << ", depthv=" <<  _f.depthv);
+  int depth =  _f.depthv.to_int();
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  double x = _f.doublev.as_double();
+  *pout << "<span class='doubleval_rpscl'>"
+        << x
+        << "</span>";
+  return Rps_TwoValues{ _f.obweb};
 }
 // end of rpsapply_7oa7eIzzcxv03TmmZH !method double/display_value_web
 
