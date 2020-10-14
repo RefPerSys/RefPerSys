@@ -72,9 +72,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                 << ", webob=" << _f.webob1
                 << ", depth=" << depth);
   ////==== body of _0TwK4TkhEGZ03oTa5m ====
-  Rps_PayloadWebex*pwebex = Rps_PayloadWebex::webex_of_object(&_, _f.webob1);
-  RPS_ASSERT(pwebex != nullptr);
-  Onion::Response*onresp = pwebex->web_response();
+  std::ostream* pout = rps_web_output(&_, _f.webob1, RPS_CHECK_OUTPUT);
   /////////
   /// we now can emit HTML code into pwebex, using its webex_resp...
   switch (_f.val0v.type())
@@ -82,30 +80,30 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
     case Rps_Type::Int:
     {
       intptr_t i = _f.val0v.as_int();
-      *onresp << "<span class='intval_rpscl'>" << i << "</span>";
+      *pout << "<span class='intval_rpscl'>" << i << "</span>";
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::None:
     {
-      *onresp << "<span class='nullval_rpscl'>_</span>";
+      *pout << "<span class='nullval_rpscl'>_</span>";
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::String:
     {
       const std::string str = _f.val0v.as_cppstring();
-      *onresp << "<q class='decor_rpscl'>"
-              << "<span class='stringval_rpscl'>"
-              << Rps_Html_Nl2br_String(str)
-              << "</span>"
-              << "</q>";
+      *pout << "<q class='decor_rpscl'>"
+            << "<span class='stringval_rpscl'>"
+            << Rps_Html_Nl2br_String(str)
+            << "</span>"
+            << "</q>";
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Double:
     {
       double x = _f.val0v.as_double();
-      *onresp << "<span class='doubleval_rpscl'>"
-              << x
-              << "</span>";
+      *pout << "<span class='doubleval_rpscl'>"
+            << x
+            << "</span>";
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Set:
@@ -113,19 +111,19 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       constexpr unsigned period_nl = 5;
       unsigned nbelem = _f.val0v.as_set()->cardinal();
       if (nbelem < period_nl)
-        *onresp << "<span class='smallsetval_rpscl'>";
+        *pout << "<span class='smallsetval_rpscl'>";
       else
-        *onresp << "<div class='bigsetval_rpscl'>" << std::endl;
-      *onresp << "<span class='decorval_rpscl'>{</span>";
+        *pout << "<div class='bigsetval_rpscl'>" << std::endl;
+      *pout << "<span class='decorval_rpscl'>{</span>";
       if (depth <  max_depth)
         {
           for (unsigned ix=0; ix < nbelem; ix++)
             {
               _f.compob = _f.val0v.as_set()->at(ix);
               if (ix>0 && ix%period_nl == 0)
-                *onresp << "<br class='decor_rpscl'/>" << std::endl;
+                *pout << "<br class='decor_rpscl'/>" << std::endl;
               else if (ix>0)
-                *onresp << ' ';
+                *pout << ' ';
               rps_web_display_html_for_objref(&_, _f.compob,
                                               _f.webob1,
                                               depth+1);
@@ -134,14 +132,14 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
         }
       else
         {
-          *onresp << "<span class='decorval_rpscl'>…</span>";
+          *pout << "<span class='decorval_rpscl'>…</span>";
           //U+2026 HORIZONTAL ELLIPSIS
         }
-      *onresp << "<span class='decorval_rpscl'>}</span>";
+      *pout << "<span class='decorval_rpscl'>}</span>";
       if (nbelem < period_nl)
-        *onresp << "</span>"; // for smallsetval_rpscl
+        *pout << "</span>"; // for smallsetval_rpscl
       else
-        *onresp << "</div>" << std::endl; // for bigsetval_rpscl
+        *pout << "</div>" << std::endl; // for bigsetval_rpscl
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Tuple:
@@ -149,19 +147,19 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       constexpr unsigned period_nl = 5;
       unsigned nbcomp = _f.val0v.as_tuple()->cnt();
       if (nbcomp < period_nl)
-        *onresp << "<span class='smalltupleval_rpscl'>";
+        *pout << "<span class='smalltupleval_rpscl'>";
       else
-        *onresp << "<div class='bigtupleval_rpscl'>" << std::endl;
-      *onresp << "<span class='decorval_rpscl'>[</span>";
+        *pout << "<div class='bigtupleval_rpscl'>" << std::endl;
+      *pout << "<span class='decorval_rpscl'>[</span>";
       if (depth <  max_depth)
         {
           for (unsigned ix=0; ix < nbcomp; ix++)
             {
               _f.compob = _f.val0v.as_tuple()->at(ix);
               if (ix>0 && ix%period_nl == 0)
-                *onresp << "<br class='decor_rpscl'/>" << std::endl;
+                *pout << "<br class='decor_rpscl'/>" << std::endl;
               else if (ix>0)
-                *onresp << ' ';
+                *pout << ' ';
               rps_web_display_html_for_objref(&_, _f.compob,
                                               _f.webob1,
                                               depth+1);
@@ -170,14 +168,14 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
         }
       else
         {
-          *onresp << "<span class='decorval_rpscl'>…</span>";
+          *pout << "<span class='decorval_rpscl'>…</span>";
           //U+2026 HORIZONTAL ELLIPSIS
         }
-      *onresp << "<span class='decorval_rpscl'>]</span>";
+      *pout << "<span class='decorval_rpscl'>]</span>";
       if (nbcomp < period_nl)
-        *onresp << "</span>"; // for smalltupleval_rpscl
+        *pout << "</span>"; // for smalltupleval_rpscl
       else
-        *onresp << "</div>" << std::endl; // for bigtupleval_rpscl
+        *pout << "</div>" << std::endl; // for bigtupleval_rpscl
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Object:
@@ -194,10 +192,10 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       _f.connob = _f.val0v.as_closure()->conn();
       unsigned arity = _f.val0v.as_closure()->cnt();
       if (arity > period_nl)
-        *onresp << "<div class='bigclosureval_rpscl'>" << std::endl;
+        *pout << "<div class='bigclosureval_rpscl'>" << std::endl;
       else
-        *onresp << "<span class='closureval_rpscl'>";
-      *onresp << "<span class='decorval_rpscl'>𝛌</span>"; //U+1D6CC MATHEMATICAL BOLD SMALL LAMDA
+        *pout << "<span class='closureval_rpscl'>";
+      *pout << "<span class='decorval_rpscl'>𝛌</span>"; //U+1D6CC MATHEMATICAL BOLD SMALL LAMDA
       RPS_ASSERT(_f.connob);
       if (depth <  max_depth)
         {
@@ -205,14 +203,14 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                                           _f.connob,
                                           _f.webob1,
                                           1+(depth+max_depth)/2);
-          *onresp << "<span class='decorval_rpscl'>⁅</span>";
+          *pout << "<span class='decorval_rpscl'>⁅</span>";
           //U+U+2045 LEFT SQUARE BRACKET WITH QUILL2045 LEFT SQUARE BRACKET WITH QUILL
           for (unsigned ix=0; ix<arity; ix++)
             {
               if (ix>0 && ix%period_nl == 0)
-                *onresp << "<br class='decor_rpscl'/>" << std::endl;
+                *pout << "<br class='decor_rpscl'/>" << std::endl;
               else if (ix>0)
-                *onresp << ' ';
+                *pout << ' ';
               _f.sonv = _f.val0v.as_closure()->at(ix);
               rps_web_display_html_for_value(&_,
                                              _f.sonv,
@@ -220,7 +218,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                                              depth+1);
               _f.sonv = nullptr;
             }
-          *onresp << "<span class='decorval_rpscl'>⁆</span>";
+          *pout << "<span class='decorval_rpscl'>⁆</span>";
           //U+2046 RIGHT SQUARE BRACKET WITH QUILL
         }
       else   // too deep
@@ -229,12 +227,12 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                                           _f.connob,
                                           _f.webob1,
                                           max_depth);
-          *onresp << "<sup class='arity_rpscl'>" << arity << "</sup>";
+          *pout << "<sup class='arity_rpscl'>" << arity << "</sup>";
         }
       if (arity > period_nl)
-        *onresp << "</div>" << std::endl; // for bigclosureval_rpscl
+        *pout << "</div>" << std::endl; // for bigclosureval_rpscl
       else
-        *onresp << "</span>" << std::endl; // for closureval_rpscl
+        *pout << "</span>" << std::endl; // for closureval_rpscl
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Instance:
@@ -243,23 +241,23 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
       _f.connob = _f.val0v.as_instance()->conn();
       unsigned nbsons =  _f.val0v.as_instance()->cnt();
       if (nbsons > period_nl)
-        *onresp << "<div class='biginstanceval_rpscl'>" << std::endl;
+        *pout << "<div class='biginstanceval_rpscl'>" << std::endl;
       else
-        *onresp << "<span class='instanceval_rpscl'>";
-      *onresp << "⊠"; // U+22A0 SQUARED TIMES
+        *pout << "<span class='instanceval_rpscl'>";
+      *pout << "⊠"; // U+22A0 SQUARED TIMES
       rps_web_display_html_for_objref(&_,
                                       _f.connob,
                                       _f.webob1,
                                       (depth+3<max_depth)?(depth+3):max_depth);
       if (depth <  max_depth)
         {
-          *onresp << " ⟨";	// U+27E8 MATHEMATICAL LEFT ANGLE BRACKET
+          *pout << " ⟨";	// U+27E8 MATHEMATICAL LEFT ANGLE BRACKET
           for (unsigned ix=0; ix<nbsons; ix++)
             {
               if (ix>0 && ix%period_nl == 0)
-                *onresp << "<br class='decor_rpscl'/>" << std::endl;
+                *pout << "<br class='decor_rpscl'/>" << std::endl;
               else if (ix>0)
-                *onresp << ' ';
+                *pout << ' ';
               _f.sonv = _f.val0v.as_instance()->at(ix);
               rps_web_display_html_for_value(&_,
                                              _f.sonv,
@@ -267,16 +265,16 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                                              depth+1);
               _f.sonv = nullptr;
             }
-          *onresp << "⟩"; //U+27E9 MATHEMATICAL RIGHT ANGLE BRACKET
+          *pout << "⟩"; //U+27E9 MATHEMATICAL RIGHT ANGLE BRACKET
         }
       else   // too deep
         {
-          *onresp << "┄<sup class='arity_rpscl'>" << nbsons << "</sup>";
+          *pout << "┄<sup class='arity_rpscl'>" << nbsons << "</sup>";
         }
       if (nbsons > period_nl)
-        *onresp << "</div>" <<   std::endl;// for biginstanceval_rpscl
+        *pout << "</div>" <<   std::endl;// for biginstanceval_rpscl
       else
-        *onresp << "</span>" << std::endl; // for instanceval_rpscl
+        *pout << "</span>" << std::endl; // for instanceval_rpscl
       return Rps_TwoValues{ _f.webob1};
     }
     case Rps_Type::Json:
@@ -286,12 +284,12 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
           std::ostringstream outstr;
           outstr <<  _f.val0v.as_json() << std::flush;
           std::string jstr = outstr.str();
-          *onresp << "<span class='json_rpscl'>JSON:" << Rps_Html_Nl2br_String(jstr)
-                  << "</span>" << std::endl;
+          *pout << "<span class='json_rpscl'>JSON:" << Rps_Html_Nl2br_String(jstr)
+                << "</span>" << std::endl;
         }
       else   // too deep
         {
-          *onresp << "<span class='json_rpscl'>JSON_" << _f.val0v.as_json()->json().size() << "</span>";
+          *pout << "<span class='json_rpscl'>JSON_" << _f.val0v.as_json()->json().size() << "</span>";
         }
       return Rps_TwoValues{ _f.webob1};
     }
@@ -302,9 +300,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                    << " has unexpected type"
                    << ", webob=" << _f.webob1
                    << ", depth=" << depth
-                   << ", webex:: reqnum#" << pwebex->web_request_num()
-                   << " method:" << pwebex->web_request_methname()
-                   << " path:" << pwebex->web_request_path());
+                  );
     };				// end switch _f.val0v.type()
 } // end of rpsapply_0TwK4TkhEGZ03oTa5m !display Val0 in Ob1Win at depth Val2Depth
 
@@ -325,16 +321,15 @@ rps_web_display_html_for_value(Rps_CallFrame*callerframe,
   _f.val0v = arg0val;
   _f.webob1 = arg1obweb.to_object();
   _f.depth2v = Rps_Value(depth, Rps_Value::Rps_IntTag{});
-  Rps_PayloadWebex*pwebex = Rps_PayloadWebex::webex_of_object(&_, _f.webob1);
-  RPS_ASSERT(pwebex != nullptr);
+  std::ostream* pout = rps_web_output(&_, _f.webob1, RPS_CHECK_OUTPUT);
   if (!_f.val0v)
     {
-      *(pwebex->web_response()) << "<span class='nullval_rpscl'>_</span>";
+      *pout << "<span class='nullval_rpscl'>_</span>";
       return;
     }
   else if (_f.val0v.is_empty())
     {
-      *(pwebex->web_response()) << "<span class='emptyval_rpscl'>?_?</span>";
+      *pout << "<span class='emptyval_rpscl'>?_?</span>";
       return;
     }
   // _0TwK4TkhEGZ03oTa5m is for the rpsapply_0TwK4TkhEGZ03oTa5m above
@@ -357,22 +352,21 @@ rps_web_display_html_for_objref(Rps_CallFrame*callerframe,
                 );
   _f.obdisp0 = arg0ob;
   _f.webob1 = arg1obweb;
-  Rps_PayloadWebex*pwebex = Rps_PayloadWebex::webex_of_object(&_, _f.webob1);
-  RPS_ASSERT(pwebex != nullptr);
   RPS_ASSERT(_f.obdisp0);
+  std::ostream* pout = rps_web_output(&_, _f.webob1, RPS_CHECK_OUTPUT);
   std::lock_guard<std::recursive_mutex> guobdisp(*(_f.obdisp0->objmtxptr()));
   _f.namev = _f.obdisp0->get_attr1(&_,
                                    RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name∈named_attribute
   if (_f.namev.is_string())
     {
-      *(pwebex->web_response()) << "<span class='namedob_rpscl' rps_obid='" << _f.obdisp0->oid() << "'>"
-                                << Rps_Html_Nl2br_String(_f.namev.to_string()->cppstring())
-                                << "</span>";
+      *pout << "<span class='namedob_rpscl' rps_obid='" << _f.obdisp0->oid() << "'>"
+            << Rps_Html_Nl2br_String(_f.namev.to_string()->cppstring())
+            << "</span>";
     }
   else   // no name
     {
-      *(pwebex->web_response()) << "<span class='anonob_rpscl' rps_obid='" << _f.obdisp0->oid() << "'>"
-                                << _f.obdisp0->oid() << "</span>";
+      *pout << "<span class='anonob_rpscl' rps_obid='" << _f.obdisp0->oid() << "'>"
+            << _f.obdisp0->oid() << "</span>";
     };
 } // end rps_web_display_html_for_objref
 
@@ -403,9 +397,13 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
   _f.depthv = arg2depth;
   RPS_DEBUG_LOG(WEB, "rpsapply_8KJHUldX8GJ03G5OWp start intv=" << _f.intv
                 << ", obweb=" << _f.obweb
-                << ", depth=" << _f.depthv);
-#warning unimplemented rpsapply_8KJHUldX8GJ03G5OWp
-  RPS_FATAL("unimplemented rpsapply_8KJHUldX8GJ03G5OWp");
+                << ", depthv=" << _f.depthv);
+  int depth =  _f.depthv.to_int();
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  RPS_ASSERT(pout);
+  intptr_t i = _f.intv.as_int();
+  *pout << "<span class='intval_rpscl'>" << i << "</span>";
+  return Rps_TwoValues{ _f.obweb};
 } // end of  rpsapply_8KJHUldX8GJ03G5OWp !method int/display_value_web
 
 
@@ -424,26 +422,33 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
 {
   RPS_LOCALFRAME(rpskob_2KnFhlj8xW800kpgPt,
                  callerframe, //
-                 Rps_Value string_value;
-                 Rps_ObjectRef object_window;
-                 Rps_Value recursive_depth;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
+                 Rps_Value stringv;
+                 Rps_ObjectRef obweb;
+                 Rps_Value depthv;
                 );
 
-  _f.string_value = arg0_receiver;
-  RPS_ASSERT(_f.string_value.is_string());
-  _f.object_window = arg1_object_window.as_object();
-  RPS_ASSERT(_f.object_window);
-  _f.recursive_depth = arg2_recursive_depth;
-  RPS_ASSERT(_f.recursive_depth.is_int());
-  RPS_DEBUG_LOG(WEB, "rpsapply_2KnFhlj8xW800kpgPt start string_value=" << _f.string_value
-                << ", object_window, =" << _f.object_window
-                << ", recursive_depth=" <<  _f.recursive_depth);
+  _f.stringv = arg0_receiver;
+  RPS_ASSERT(_f.stringv.is_string());
+  _f.obweb = arg1_object_window.as_object();
+  RPS_ASSERT(_f.obweb);
+  _f.depthv = arg2_recursive_depth;
+  RPS_ASSERT(_f.depthv.is_int());
   ////==== body of _2KnFhlj8xW800kpgPt ====
-#warning unimplemented rpsapply_2KnFhlj8xW800kpgPt
-  RPS_FATAL("unimplemented rpsapply_2KnFhlj8xW800kpgPt");
+  RPS_DEBUG_LOG(WEB, "rpsapply_2KnFhlj8xW800kpgPt °string/display_value_web start stringv=" << _f.stringv
+                << ", obweb=" << _f.obweb
+                << ", depthv=" <<  _f.depthv);
+  int depth =  _f.depthv.to_int();
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  RPS_ASSERT(pout);
+  const std::string str = _f.stringv.as_cppstring();
+  *pout << "<q class='decor_rpscl'>"
+        << "<span class='stringval_rpscl'>"
+        << Rps_Html_Nl2br_String(str)
+        << "</span>"
+        << "</q>";
+  return Rps_TwoValues{ _f.obweb};
 } // end of  rpsapply_2KnFhlj8xW800kpgPt !method string/display_value_web
+
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for _7oa7eIzzcxv03TmmZH
@@ -459,25 +464,29 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
 {
   RPS_LOCALFRAME(rpskob_7oa7eIzzcxv03TmmZH,
                  callerframe, //
-                 Rps_Value doubleval;
-                 Rps_ObjectRef object_window;
-                 Rps_Value recdepth;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
+                 Rps_Value doublev;
+                 Rps_ObjectRef obweb;
+                 Rps_Value depthv;
                 );
 
   ////==== body of _7oa7eIzzcxv03TmmZH !method double/display_value_web ====
-  _f.doubleval = arg0_recv;
-  RPS_ASSERT (_f.doubleval.is_double());
-  _f.object_window = arg1_objwnd.as_object();
-  RPS_ASSERT(_f.object_window);
-  _f.recdepth = arg2_recdepth;
-  RPS_ASSERT(_f.recdepth.is_int());
-  RPS_DEBUG_LOG(WEB, "rpsapply_7oa7eIzzcxv03TmmZH start doubleval=" << _f.doubleval
-                << "object_window, =" << _f.object_window
-                << ", recdepth=" <<  _f.recdepth);
-#warning unimplemented rpsapply_7oa7eIzzcxv03TmmZH
-  RPS_FATAL("unimplemented rpsapply_7oa7eIzzcxv03TmmZH");
+  _f.doublev = arg0_recv;
+  RPS_ASSERT (_f.doublev.is_double());
+  _f.obweb = arg1_objwnd.as_object();
+  RPS_ASSERT(_f.obweb);
+  _f.depthv = arg2_recdepth;
+  RPS_ASSERT(_f.depthv.is_int());
+  RPS_DEBUG_LOG(WEB, "rpsapply_7oa7eIzzcxv03TmmZH start doublev=" << _f.doublev
+                << "obweb=" << _f.obweb
+                << ", depthv=" <<  _f.depthv);
+  int depth =  _f.depthv.to_int();
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  RPS_ASSERT(pout);
+  double x = _f.doublev.as_double();
+  *pout << "<span class='doubleval_rpscl'>"
+        << x
+        << "</span>";
+  return Rps_TwoValues{ _f.obweb};
 }
 // end of rpsapply_7oa7eIzzcxv03TmmZH !method double/display_value_web
 
@@ -490,34 +499,66 @@ extern "C" rps_applyingfun_t rpsapply_33DFyPOJxbF015ZYoi;
 Rps_TwoValues
 rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
                             const Rps_Value arg0_recv,
-                            const Rps_Value arg1_objwnd, ///
+                            const Rps_Value arg1_objweb, ///
                             const Rps_Value arg2_recdepth,
                             [[maybe_unused]] const Rps_Value arg3, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
 {
   RPS_LOCALFRAME(rpskob_33DFyPOJxbF015ZYoi,
                  callerframe, //
-                 Rps_Value tupleval;
-                 Rps_ObjectRef objwnd;
+                 Rps_Value tuplev;
+                 Rps_ObjectRef obweb;
+                 Rps_ObjectRef compob;
                  Rps_Value recdepth;
-                 Rps_Value arg3v;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
                 );
   ////==== body of _33DFyPOJxbF015ZYoi !method tuple/display_value_web ====
-  _f.tupleval = arg0_recv;
-  RPS_ASSERT (_f.tupleval.is_tuple());
-  _f.objwnd = arg1_objwnd.as_object();
-  RPS_ASSERT (_f.objwnd);
+  constexpr int max_depth = 5; // FIXME, should be improved
+  _f.tuplev = arg0_recv;
+  RPS_ASSERT (_f.tuplev.is_tuple());
+  _f.obweb = arg1_objweb.as_object();
+  RPS_ASSERT (_f.obweb);
   _f.recdepth = arg2_recdepth;
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
-  RPS_DEBUG_LOG(WEB, "rpsapply_33DFyPOJxbF015ZYoi start tupleval=" << _f.tupleval
-                << "objwnd =" << _f.objwnd
+  RPS_DEBUG_LOG(WEB, "rpsapply_33DFyPOJxbF015ZYoi start tuplev=" << _f.tuplev
+                << "obweb =" << _f.obweb
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
-#warning unimplemented rpsapply_33DFyPOJxbF015ZYoi
-  RPS_FATAL("unimplemented rpsapply_33DFyPOJxbF015ZYoi");
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  RPS_ASSERT(pout);
+  constexpr unsigned period_nl = 5;
+  unsigned nbcomp = _f.tuplev.as_tuple()->cnt();
+  if (nbcomp < period_nl)
+    *pout << "<span class='smalltupleval_rpscl'>";
+  else
+    *pout << "<div class='bigtupleval_rpscl'>" << std::endl;
+  *pout << "<span class='decorval_rpscl'>[</span>";
+  if (depthi <  max_depth)
+    {
+      for (unsigned ix=0; ix < nbcomp; ix++)
+        {
+          _f.compob = _f.tuplev.as_tuple()->at(ix);
+          if (ix>0 && ix%period_nl == 0)
+            *pout << "<br class='decor_rpscl'/>" << std::endl;
+          else if (ix>0)
+            *pout << ' ';
+          rps_web_display_html_for_objref(&_, _f.compob,
+                                          _f.obweb,
+                                          depthi+1);
+          _f.compob = nullptr;
+        }
+    }
+  else
+    {
+      *pout << "<span class='decorval_rpscl'>…</span>";
+      //U+2026 HORIZONTAL ELLIPSIS
+    }
+  *pout << "<span class='decorval_rpscl'>]</span>";
+  if (nbcomp < period_nl)
+    *pout << "</span>"; // for smalltupleval_rpscl
+  else
+    *pout << "</div>" << std::endl; // for bigtupleval_rpscl
+  return Rps_TwoValues{ _f.obweb};
 } // end of rpsapply_33DFyPOJxbF015ZYoi !method tuple/display_value_web
 
 
@@ -527,7 +568,7 @@ extern "C" rps_applyingfun_t rpsapply_1568ZHTl0Pa00461I2;
 Rps_TwoValues
 rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
                             const Rps_Value arg0_recv,
-                            const Rps_Value arg1_objwnd, ///
+                            const Rps_Value arg1_obweb, ///
                             const Rps_Value arg2_recdepth,
                             [[maybe_unused]] const Rps_Value arg3, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
@@ -535,7 +576,7 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_1568ZHTl0Pa00461I2,
                  callerframe, //
                  Rps_Value setval;
-                 Rps_ObjectRef objwnd;
+                 Rps_ObjectRef obweb;
                  Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
@@ -544,13 +585,13 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
   ////==== body of _1568ZHTl0Pa00461I2 !method set/display_value_web ====
   _f.setval = arg0_recv;
   RPS_ASSERT (_f.setval.is_set());
-  _f.objwnd = arg1_objwnd.as_object();
-  RPS_ASSERT (_f.objwnd);
+  _f.obweb = arg1_obweb.as_object();
+  RPS_ASSERT (_f.obweb);
   _f.recdepth = arg2_recdepth;
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
   RPS_DEBUG_LOG(WEB, "rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_web start setval=" << _f.setval
-                << "objwnd =" << _f.objwnd
+                << "obweb =" << _f.obweb
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
 #warning unimplemented rpsapply_1568ZHTl0Pa00461I2
@@ -564,7 +605,7 @@ extern "C" rps_applyingfun_t rpsapply_18DO93843oX02UWzq6;
 Rps_TwoValues
 rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
                             const Rps_Value arg0_objrecv,
-                            const Rps_Value arg1_objwnd, ///
+                            const Rps_Value arg1_obweb, ///
                             const Rps_Value arg2_recdepth,
                             [[maybe_unused]] const Rps_Value arg3_,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
@@ -572,7 +613,7 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_18DO93843oX02UWzq6,
                  callerframe, //
                  Rps_ObjectRef obrecv;
-                 Rps_ObjectRef objwnd;
+                 Rps_ObjectRef obweb;
                  Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
@@ -580,7 +621,7 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
                 );
   _f.obrecv = arg0_objrecv.as_object();
   RPS_DEBUG_LOG(WEB, "rpsapply_18DO93843oX02UWzq6 start arg0_objrecv="
-                << arg0_objrecv << ", arg1_objwnd=" << arg1_objwnd
+                << arg0_objrecv << ", arg1_obweb=" << arg1_obweb
                 << ", arg2_recdepth=" << arg2_recdepth << std::endl
                 << RPS_DEBUG_BACKTRACE_HERE(1, "rpsapply_18DO93843oX02UWzq6") << std::endl);
 #warning unimplemented rpsapply_18DO93843oX02UWzq6
@@ -595,7 +636,7 @@ extern "C" rps_applyingfun_t rpsapply_0rgijx7CCnq041IZEd;
 Rps_TwoValues
 rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
                              const Rps_Value arg0_inst, ///
-                             const Rps_Value arg1_objwnd, ///
+                             const Rps_Value arg1_obweb, ///
                              const Rps_Value arg2_recdepth, ///
                              [[maybe_unused]] const Rps_Value arg3_, ///
                              [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
@@ -603,7 +644,7 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_0rgijx7CCnq041IZEd,
                  callerframe, //
                  Rps_InstanceValue instrecv;
-                 Rps_ObjectRef objwnd;
+                 Rps_ObjectRef obweb;
                  Rps_ObjectRef obconn;
                  Rps_ObjectRef obattr;
                  Rps_Value recdepth;
@@ -615,13 +656,13 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
   ////==== body of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_web====
   _f.instrecv = Rps_InstanceValue(arg0_inst.as_instance());
   RPS_ASSERT (_f.instrecv);
-  _f.objwnd = arg1_objwnd.as_object();
-  RPS_ASSERT (_f.objwnd);
+  _f.obweb = arg1_obweb.as_object();
+  RPS_ASSERT (_f.obweb);
   _f.recdepth = arg2_recdepth;
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
   RPS_DEBUG_LOG(WEB, "rpsapply_0rgijx7CCnq041IZEd start instrecv=" << _f.instrecv
-                << "objwnd =" << _f.objwnd
+                << "obweb =" << _f.obweb
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
 #warning unimplemented rpsapply_0rgijx7CCnq041IZEd
@@ -637,7 +678,7 @@ extern "C" rps_applyingfun_t rpsapply_6Wi00FwXYID00gl9Ma;
 Rps_TwoValues
 rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
                              const Rps_Value arg0_clos, ///
-                             const Rps_Value arg1_objwnd, ///
+                             const Rps_Value arg1_obweb, ///
                              const Rps_Value arg2_recdepth, ///
                              [[maybe_unused]] const Rps_Value arg3_, ///
                              [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
@@ -645,7 +686,7 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_6Wi00FwXYID00gl9Ma,
                  callerframe, //
                  Rps_ClosureValue closrecv;
-                 Rps_ObjectRef objwnd;
+                 Rps_ObjectRef obweb;
                  Rps_ObjectRef obconn;
                  Rps_ObjectRef obmeta;
                  Rps_Value recdepth;
@@ -657,13 +698,13 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
   ////==== body of _6Wi00FwXYID00gl9Ma !method closure/display_value_web ====
   _f.closrecv = Rps_ClosureValue(arg0_clos.as_closure());
   RPS_ASSERT (_f.closrecv);
-  _f.objwnd = arg1_objwnd.as_object();
-  RPS_ASSERT (_f.objwnd);
+  _f.obweb = arg1_obweb.as_object();
+  RPS_ASSERT (_f.obweb);
   _f.recdepth = arg2_recdepth;
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
   RPS_DEBUG_LOG(WEB, "rpsapply_6Wi00FwXYID00gl9Ma start closrecv=" << _f.closrecv
-                << "objwnd =" << _f.objwnd
+                << "obweb =" << _f.obweb
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
   _f.obconn = _f.closrecv->conn();
@@ -680,7 +721,7 @@ extern "C" rps_applyingfun_t rpsapply_42cCN1FRQSS03bzbTz;
 Rps_TwoValues
 rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
                             const Rps_Value arg0_json,
-                            const Rps_Value arg1_objwnd, ///
+                            const Rps_Value arg1_obweb, ///
                             const Rps_Value arg2_recdepth,
                             [[maybe_unused]] const Rps_Value arg3_, ///
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
@@ -688,7 +729,7 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_42cCN1FRQSS03bzbTz,
                  callerframe, //
                  Rps_Value jsrecv;
-                 Rps_ObjectRef objwnd;
+                 Rps_ObjectRef obweb;
                  Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
@@ -697,13 +738,13 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
   ;
   _f.jsrecv = arg0_json;
   RPS_ASSERT (_f.jsrecv.is_json());
-  _f.objwnd = arg1_objwnd.as_object();
-  RPS_ASSERT (_f.objwnd);
+  _f.obweb = arg1_obweb.as_object();
+  RPS_ASSERT (_f.obweb);
   _f.recdepth = arg2_recdepth;
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
   RPS_DEBUG_LOG(WEB, "rpsapply_42cCN1FRQSS03bzbTz start jsrecv=" << _f.jsrecv
-                << "objwnd =" << _f.objwnd
+                << "obweb =" << _f.obweb
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
 #warning unimplemented rpsapply_42cCN1FRQSS03bzbTz
@@ -728,7 +769,7 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_4x9jd2yAe8A02SqKAx,
                  callerframe, //
                  Rps_ObjectRef recvob;
-                 Rps_ObjectRef objwnd;
+                 Rps_ObjectRef obweb;
                  Rps_Value recdepth;
                  Rps_Value resmainv;
                  Rps_Value resxtrav;
@@ -741,15 +782,15 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                 << RPS_DEBUG_BACKTRACE_HERE(2, "!method object/display_object_occurrence_web"));
   _f.recvob = arg0obj.as_object();
   RPS_ASSERT(_f.recvob);
-  _f.objwnd = arg1obweb.as_object();
-  RPS_ASSERT (_f.objwnd);
+  _f.obweb = arg1obweb.as_object();
+  RPS_ASSERT (_f.obweb);
   _f.recdepth = arg2depth;
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
   RPS_DEBUG_LOG(WEB, "rpsapply_4x9jd2yAe8A02SqKAx recvob=" << _f.recvob
                 << " of class:" <<  _f.recvob->compute_class(&_) << std::endl
-                << "... objwnd=" << _f.objwnd
-                << " of class:" <<  _f.objwnd->compute_class(&_)
+                << "... obweb=" << _f.obweb
+                << " of class:" <<  _f.obweb->compute_class(&_)
                 << "... depthi=" << depthi <<std::endl
                 << "!method object/display_object_occurrence_web" << std::endl
                 << RPS_DEBUG_BACKTRACE_HERE(1, "rpsapply_4x9jd2yAe8A02SqKAx")
@@ -778,7 +819,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                  callerframe, //
                  Rps_ObjectRef recvob;
                  Rps_ObjectRef classob;
-                 Rps_ObjectRef objwnd;
+                 Rps_ObjectRef obweb;
                  Rps_Value recdepth;
                  Rps_Value optqtposition;
                  Rps_ObjectRef spacob;
@@ -793,17 +834,17 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   ////==== body of _5nSiRIxoYQp00MSnYA !method object!display_object_content_web ====
   _f.recvob = arg0obj.as_object();
   RPS_ASSERT(_f.recvob);
-  _f.objwnd = arg1obweb.as_object();
-  RPS_ASSERT (_f.objwnd);
+  _f.obweb = arg1obweb.as_object();
+  RPS_ASSERT (_f.obweb);
   _f.recdepth = arg2depth;
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
   _f.optqtposition = arg3optqtposition;
   RPS_ASSERT (!_f.optqtposition || _f.optqtposition.is_int());
-  std::lock_guard<std::recursive_mutex> objwndmtx(*(_f.objwnd->objmtxptr()));
+  std::lock_guard<std::recursive_mutex> obwebmtx(*(_f.obweb->objmtxptr()));
   RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_web recvob=" << _f.recvob
-                << ", objwnd =" << _f.objwnd
-                << " of class:" <<  _f.objwnd->compute_class(&_) << std::endl
+                << ", obweb =" << _f.obweb
+                << " of class:" <<  _f.obweb->compute_class(&_) << std::endl
                 << "... depthi=" <<  depthi
                 << std::endl << "+++ object!display_object_content_web +++");
 #warning unimplemented rpsapply_5nSiRIxoYQp00MSnYA
