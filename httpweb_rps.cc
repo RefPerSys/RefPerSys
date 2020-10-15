@@ -686,6 +686,10 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
         }
       else
         {
+	  RPS_DEBUG_LOG(WEB, "rps_serve_onion_file filepath=" << filepath
+			<< " reqnum#" << reqnum
+			<< " reqmethname=" << reqmethname
+			<< " mime=" << mime);
           pres->setHeader("Content-Type:", mime);
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_file filepath=" << filepath
                         << " reqnum#" << reqnum
