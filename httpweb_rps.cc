@@ -598,7 +598,7 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
           auto web_exchange_ob = RPS_ROOT_OB(_8zNtuRpzXUP013WG9S);
           std::string filpath =
             std::string{rps_topdirectory}
-            + "/webroot/" + (reqpath.empty()?"index.html_":reqpath);
+            + "/webroot/" + (reqpath.empty()?"index2.html":reqpath);
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_web filpath='"
                         << Rps_Cjson_String(filpath)
                         << "' reqnum#" << reqnum
