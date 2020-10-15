@@ -578,8 +578,7 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
                  Rps_Value setval;
                  Rps_ObjectRef obweb;
                  Rps_Value recdepth;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
+                 Rps_ObjectRef compob;
                 );
 
   ////==== body of _1568ZHTl0Pa00461I2 !method set/display_value_web ====
@@ -594,8 +593,42 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
                 << "obweb =" << _f.obweb
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
-#warning unimplemented rpsapply_1568ZHTl0Pa00461I2
-  RPS_FATAL("unimplemented rpsapply_1568ZHTl0Pa00461I2");
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  constexpr int max_depth = 5; // FIXME, should be improved
+  RPS_ASSERT(pout);
+  constexpr unsigned period_nl = 5;
+  unsigned nbelem = _f.setval.as_set()->cardinal();
+  if (nbelem < period_nl)
+    *pout << "<span class='smallsetval_rpscl'>";
+  else
+    *pout << "<div class='bigsetval_rpscl'>" << std::endl;
+  *pout << "<span class='decorval_rpscl'>{</span>";
+  if (depthi <  max_depth)
+    {
+      for (unsigned ix=0; ix < nbelem; ix++)
+        {
+          _f.compob = _f.setval.as_set()->at(ix);
+          if (ix>0 && ix%period_nl == 0)
+            *pout << "<br class='decor_rpscl'/>" << std::endl;
+          else if (ix>0)
+            *pout << ' ';
+          rps_web_display_html_for_objref(&_, _f.compob,
+                                          _f.obweb,
+                                          depthi+1);
+          _f.compob = nullptr;
+        }
+    }
+  else
+    {
+      *pout << "<span class='decorval_rpscl'>…</span>";
+      //U+2026 HORIZONTAL ELLIPSIS
+    }
+  *pout << "<span class='decorval_rpscl'>}</span>";
+  if (nbelem < period_nl)
+    *pout << "</span>"; // for smallsetval_rpscl
+  else
+    *pout << "</div>" << std::endl; // for bigsetval_rpscl
+  return Rps_TwoValues{ _f.obweb};
 } // end of rpsapply_1568ZHTl0Pa00461I2 !method set/display_value_web
 
 
