@@ -648,18 +648,24 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef obrecv;
                  Rps_ObjectRef obweb;
                  Rps_Value recdepth;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
                  //....etc....
-                );
+		 );
   _f.obrecv = arg0_objrecv.as_object();
+  _f.obweb = arg1_obweb.as_object();
+  _f.recdepth = arg2_recdepth;
   RPS_DEBUG_LOG(WEB, "rpsapply_18DO93843oX02UWzq6 start arg0_objrecv="
                 << arg0_objrecv << ", arg1_obweb=" << arg1_obweb
                 << ", arg2_recdepth=" << arg2_recdepth << std::endl
                 << RPS_DEBUG_BACKTRACE_HERE(1, "rpsapply_18DO93843oX02UWzq6") << std::endl);
-#warning unimplemented rpsapply_18DO93843oX02UWzq6
-  RPS_FATAL("unimplemented rpsapply_18DO93843oX02UWzq6");
-
+  RPS_ASSERT(_f.recdepth.is_int());
+  auto depthi = _f.recdepth.to_int();
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  RPS_ASSERT(pout);
+  rps_web_display_html_for_objref(&_,
+				  _f.obrecv,
+				  _f.obweb,
+				  depthi);
+  return Rps_TwoValues{ _f.obweb};
 } // end of rpsapply_18DO93843oX02UWzq6 !method object/display_value_web
 
 
