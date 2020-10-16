@@ -649,7 +649,7 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef obweb;
                  Rps_Value recdepth;
                  //....etc....
-		 );
+                );
   _f.obrecv = arg0_objrecv.as_object();
   _f.obweb = arg1_obweb.as_object();
   _f.recdepth = arg2_recdepth;
@@ -662,9 +662,9 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
   std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
   RPS_ASSERT(pout);
   rps_web_display_html_for_objref(&_,
-				  _f.obrecv,
-				  _f.obweb,
-				  depthi);
+                                  _f.obrecv,
+                                  _f.obweb,
+                                  depthi);
   return Rps_TwoValues{ _f.obweb};
 } // end of rpsapply_18DO93843oX02UWzq6 !method object/display_value_web
 
@@ -730,8 +730,6 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef obmeta;
                  Rps_Value recdepth;
                  Rps_Value compv;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
                  //....etc....
                 );
   ////==== body of _6Wi00FwXYID00gl9Ma !method closure/display_value_web ====
@@ -742,14 +740,59 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
   _f.recdepth = arg2_recdepth;
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
+  constexpr unsigned period_nl = 5; // FIXME, should be improved
+  constexpr int max_depth = 5; // FIXME, should be improved
   RPS_DEBUG_LOG(WEB, "rpsapply_6Wi00FwXYID00gl9Ma start closrecv=" << _f.closrecv
                 << "obweb =" << _f.obweb
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  RPS_ASSERT(pout);
   _f.obconn = _f.closrecv->conn();
-  unsigned width = _f.closrecv->cnt();
-#warning unimplemented rpsapply_6Wi00FwXYID00gl9Ma
-  RPS_FATALOUT("unimplemented rpsapply_6Wi00FwXYID00gl9Ma width=" << width);
+  unsigned arity = _f.closrecv->cnt();
+  if (arity > period_nl)
+    *pout << "<div class='bigclosureval_rpscl'>" << std::endl;
+  else
+    *pout << "<span class='closureval_rpscl'>";
+  *pout << "<span class='decorval_rpscl'>𝛌</span>"; //U+1D6CC MATHEMATICAL BOLD SMALL LAMDA
+  RPS_ASSERT(_f.obconn);
+  if (depthi <  max_depth)
+    {
+      rps_web_display_html_for_objref(&_,
+                                      _f.obconn,
+                                      _f.obweb,
+                                      1+(depthi+max_depth)/2);
+      *pout << "<span class='decorval_rpscl'>⁅</span>";
+      //U+U+2045 LEFT SQUARE BRACKET WITH QUILL2045 LEFT SQUARE BRACKET WITH QUILL
+      for (unsigned ix=0; ix<arity; ix++)
+        {
+          if (ix>0 && ix%period_nl == 0)
+            *pout << "<br class='decor_rpscl'/>" << std::endl;
+          else if (ix>0)
+            *pout << ' ';
+          _f.compv = _f.closrecv->at(ix);
+          rps_web_display_html_for_value(&_,
+                                         _f.compv,
+                                         _f.obweb,
+                                         depthi+1);
+          _f.compv = nullptr;
+        }
+      *pout << "<span class='decorval_rpscl'>⁆</span>";
+      //U+2046 RIGHT SQUARE BRACKET WITH QUILL
+    }
+  else   // too deep
+    {
+      rps_web_display_html_for_objref(&_,
+                                      _f.obconn,
+                                      _f.obweb,
+                                      max_depth);
+      *pout << "<sup class='arity_rpscl'>" << arity << "</sup>";
+    }
+  if (arity > period_nl)
+    *pout << "</div>" << std::endl; // for bigclosureval_rpscl
+  else
+    *pout << "</span>" << std::endl; // for closureval_rpscl
+  return Rps_TwoValues{ _f.obweb};
 } // end of rpsapply_6Wi00FwXYID00gl9Ma !method closure/display_value_web
 
 
