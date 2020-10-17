@@ -684,12 +684,10 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
                  callerframe, //
                  Rps_InstanceValue instrecv;
                  Rps_ObjectRef obweb;
-                 Rps_ObjectRef obconn;
+                 Rps_ObjectRef connob;
                  Rps_ObjectRef obattr;
                  Rps_Value recdepth;
-                 Rps_Value compv;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
+                 Rps_Value sonv;
                  //....etc....
                 );
   ////==== body of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_web====
@@ -700,12 +698,52 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
   _f.recdepth = arg2_recdepth;
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
+  constexpr int max_depth = 5; // FIXME, should be improved
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  RPS_ASSERT(pout);
   RPS_DEBUG_LOG(WEB, "rpsapply_0rgijx7CCnq041IZEd start instrecv=" << _f.instrecv
                 << "obweb =" << _f.obweb
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
-#warning unimplemented rpsapply_0rgijx7CCnq041IZEd
-  RPS_FATAL("unimplemented rpsapply_0rgijx7CCnq041IZEd");
+  constexpr unsigned period_nl = 5;
+  _f.connob = _f.instrecv->conn();
+  unsigned nbsons =  _f.instrecv->cnt();
+  if (nbsons > period_nl)
+    *pout << "<div class='biginstanceval_rpscl'>" << std::endl;
+  else
+    *pout << "<span class='instanceval_rpscl'>";
+  *pout << "⊠"; // U+22A0 SQUARED TIMES
+  rps_web_display_html_for_objref(&_,
+                                  _f.connob,
+                                  _f.obweb,
+                                  (depthi+3<max_depth)?(depthi+3):max_depth);
+  if (depthi <  max_depth)
+    {
+      *pout << " ⟨";	// U+27E8 MATHEMATICAL LEFT ANGLE BRACKET
+      for (unsigned ix=0; ix<nbsons; ix++)
+        {
+          if (ix>0 && ix%period_nl == 0)
+            *pout << "<br class='decor_rpscl'/>" << std::endl;
+          else if (ix>0)
+            *pout << ' ';
+          _f.sonv = _f.instrecv->at(ix);
+          rps_web_display_html_for_value(&_,
+                                         _f.sonv,
+                                         _f.obweb,
+                                         depthi+1);
+          _f.sonv = nullptr;
+        }
+      *pout << "⟩"; //U+27E9 MATHEMATICAL RIGHT ANGLE BRACKET
+    }
+  else   // too deep
+    {
+      *pout << "┄<sup class='arity_rpscl'>" << nbsons << "</sup>";
+    }
+  if (nbsons > period_nl)
+    *pout << "</div>" <<   std::endl;// for biginstanceval_rpscl
+  else
+    *pout << "</span>" << std::endl; // for instanceval_rpscl
+  return Rps_TwoValues{ _f.obweb};
 } // end of rpsapply_0rgijx7CCnq041IZEd !method immutable_instance/display_value_web
 
 
