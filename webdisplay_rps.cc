@@ -982,6 +982,11 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                 << " of class:" <<  _f.obweb->compute_class(&_) << std::endl
                 << "... depthi=" <<  depthi
                 << std::endl << "+++ object!display_object_content_web +++");
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  RPS_ASSERT(pout);
+  /*** TODO: we probably should output some <div> with all attributes,
+   * all components, and a payload specific display...
+   ***/
 #warning unimplemented rpsapply_5nSiRIxoYQp00MSnYA
   RPS_FATAL("unimplemented rpsapply_5nSiRIxoYQp00MSnYA");
 } // end of rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_web
