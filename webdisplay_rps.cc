@@ -944,7 +944,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                              const Rps_Value arg0obj, //
                              const Rps_Value arg1obweb, ///
                              const Rps_Value arg2depth, //
-                             const Rps_Value arg3optqtposition, ///
+                             const Rps_Value arg3optdocposv, ///
                              [[maybe_unused]] const std::vector<Rps_Value>* restargs_ )
 {
   /* In the usual case, this RefPerSys method is called with 3
@@ -956,9 +956,9 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef classob;
                  Rps_ObjectRef obweb;
                  Rps_Value recdepth;
-                 Rps_Value optqtposition;
+                 Rps_Value optdocposv;
                  Rps_ObjectRef spacob;
-                 Rps_Value setattrs;
+                 Rps_SetValue setattrs;
                  Rps_ObjectRef attrob;
                  Rps_Value attrval;
                  Rps_Value curcomp;
@@ -974,8 +974,8 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   _f.recdepth = arg2depth;
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
-  _f.optqtposition = arg3optqtposition;
-  RPS_ASSERT (!_f.optqtposition || _f.optqtposition.is_int());
+  _f.optdocposv = arg3optdocposv;
+  RPS_ASSERT (!_f.optdocposv || _f.optdocposv.is_int());
   std::lock_guard<std::recursive_mutex> obwebmtx(*(_f.obweb->objmtxptr()));
   RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_web recvob=" << _f.recvob
                 << ", obweb =" << _f.obweb
@@ -984,11 +984,51 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                 << std::endl << "+++ object!display_object_content_web +++");
   std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
   RPS_ASSERT(pout);
+  _f.setattrs = _f.obweb->set_of_attributes(&_);
+  _f.classob = _f.obweb->compute_class(&_);
+  _f.spacob = _f.obweb->get_space();
+  RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA object!display_object_content_web recvob=" << _f.recvob
+                << " setattrs=" << _f.setattrs
+                << ", classob=" << _f.classob
+                << ", spacob=" << _f.spacob);
   /*** TODO: we probably should output some <div> with all attributes,
-   * all components, and a payload specific display...
+   * all components, and a payload specific display using selector
+   * display_object_content_web ...
    ***/
-#warning unimplemented rpsapply_5nSiRIxoYQp00MSnYA
-  RPS_FATAL("unimplemented rpsapply_5nSiRIxoYQp00MSnYA");
+  *pout << "<div class='objcontent_rpscl' id='rpsobc_"
+        <<_f.recvob->oid()
+        << "'>"
+        << std::endl;
+  /// display the object title
+  *pout << "<span class='objtitle_rpsl' id='rpsobtit_"
+        <<_f.recvob->oid()
+        << "'>";
+  rps_web_display_html_for_objref(&_, _f.recvob, _f.obweb, 0);
+  *pout << "</span>" << std::endl;
+  /// should display the class and space
+  *pout << "<span class='objclass_rpscl' id='rpsobcla_"
+        <<_f.recvob->oid()
+        << "'> ∈&npsp;";//U+2208 ELEMENT OF
+  rps_web_display_html_for_objref(&_, _f.classob, _f.obweb, 0);
+  *pout << "</span>" << std::endl;
+  *pout << "<span class='objspace_rpscl' id='rpsobspa_"
+        <<_f.recvob->oid()
+        << "'> ＊&nbsp;"; //U+FF0A FULLWIDTH ASTERISK
+  rps_web_display_html_for_objref(&_, _f.spacob, _f.obweb, 0);
+  *pout << "</span>" << std::endl;
+  *pout << "<br class='objbreak_rpscl' id='rpsobbrtit_"
+        <<_f.recvob->oid()
+        << "'/>" << std::endl;
+  *pout  << "<span class='objspace_rpscl' id='rpsobspa_"
+         <<_f.recvob->oid()
+         << "'/>" << std::endl;
+  /// should output the attributes, and the components, then
+  /// display the payload....
+#warning partly unimplemented rpsapply_5nSiRIxoYQp00MSnYA
+  RPS_FATALOUT("partly unimplemented rpsapply_5nSiRIxoYQp00MSnYA"
+               << " recvob=" << _f.recvob
+               << " obweb=" << _f.obweb);
+  *pout << "</div>" << std::endl;
 } // end of rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_web
 
 
