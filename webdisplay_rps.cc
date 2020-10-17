@@ -905,8 +905,6 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef recvob;
                  Rps_ObjectRef obweb;
                  Rps_Value recdepth;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
                  //....etc....
                 );
   ////==== body of _4x9jd2yAe8A02SqKAx  !method object/display_object_occurrence_web ====
@@ -929,8 +927,11 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
                 << "!method object/display_object_occurrence_web" << std::endl
                 << RPS_DEBUG_BACKTRACE_HERE(1, "rpsapply_4x9jd2yAe8A02SqKAx")
                 <<std::endl);
-#warning unimplemented rpsapply_4x9jd2yAe8A02SqKAx
-  RPS_FATAL("unimplemented rpsapply_4x9jd2yAe8A02SqKAx");
+  rps_web_display_html_for_objref(&_,
+                                  _f.recvob,
+                                  _f.obweb,
+                                  depthi+1);
+  return Rps_TwoValues{ _f.obweb};
 } // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_web
 
 
