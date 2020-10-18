@@ -1022,8 +1022,32 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   *pout  << "<span class='objspace_rpscl' id='rpsobspa_"
          <<_f.recvob->oid()
          << "'/>" << std::endl;
-  /// should output the attributes, and the components, then
-  /// display the payload....
+  //// output attributes:
+  {
+    unsigned nbattr = _f.setattrs.as_set()->cardinal();
+    RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _f.recvob
+                  << " has " << nbattr << " attributes");
+    if (nbattr > 0)
+      {
+        *pout  << "<ul class='objattr_rpscl' id='rpsobattrs_"
+               <<_f.recvob->oid()
+               << "'/>" << std::endl;
+        for (unsigned atix = 0; atix < nbattr; atix++)
+          {
+            _f.attrob = _f.setattrs.as_set()->at(atix);
+            _f.attrval = _f.recvob->get_attr1(&_,  _f.attrob);
+            *pout << "<li class='objatentry_rpscl'>";
+            rps_web_display_html_for_objref(&_, _f.attrob, _f.obweb, 0);
+            *pout << " ↦ "; // U+21A6 RIGHTWARDS ARROW FROM BAR
+            rps_web_display_html_for_value(&_, _f.attrval, _f.obweb, 1);
+            *pout << "</li>" << std::endl;
+            _f.attrob = nullptr;
+            _f.attrval = nullptr;
+          }
+        *pout  << "</ul>" << std::endl;
+      }
+  }
+  /// should output the components, then display the payload....
 #warning partly unimplemented rpsapply_5nSiRIxoYQp00MSnYA
   RPS_FATALOUT("partly unimplemented rpsapply_5nSiRIxoYQp00MSnYA"
                << " recvob=" << _f.recvob
