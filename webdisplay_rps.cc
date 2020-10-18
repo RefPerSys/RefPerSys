@@ -1047,7 +1047,30 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
         *pout  << "</ul>" << std::endl;
       }
   }
-  /// should output the components, then display the payload....
+  //// output components:
+  {
+    unsigned nbcomp = _f.recvob->nb_components(&_);
+    RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _f.recvob
+                  << " has " << nbcomp << " components");
+    if (nbcomp > 0)
+      {
+        *pout  << "<ol class='objcomp_rpscl' start='0' id='rpsobcomp_"
+               <<_f.recvob->oid()
+               << "'/>" << std::endl;
+        for (unsigned compix = 0; compix < nbcomp; compix++)
+          {
+            _f.curcomp =  _f.recvob->component_at(&_, compix);
+            RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _f.recvob
+                          << " comp#" << compix << "= " << _f.curcomp);
+            *pout << "<li class='objcomp_rpscl'>";
+            rps_web_display_html_for_value(&_, _f.curcomp, _f.obweb, 1);
+            *pout << "</li>" << std::endl;
+            _f.curcomp = nullptr;
+          }
+        *pout  << "</ol>" << std::endl;
+      }
+  }
+  /// should display the payload....
 #warning partly unimplemented rpsapply_5nSiRIxoYQp00MSnYA
   RPS_FATALOUT("partly unimplemented rpsapply_5nSiRIxoYQp00MSnYA"
                << " recvob=" << _f.recvob
