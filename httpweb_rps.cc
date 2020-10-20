@@ -38,6 +38,25 @@ Onion::Onion rps_onion_server;
 
 static const char* rps_onion_serverarg;
 
+
+static void rps_onion_header_watcher(onion*onion, const void*clientdata,
+                                     onion_response* resp,
+                                     const char*key, const char*val);
+
+void
+rps_onion_header_watcher(onion*onion, void*clientdata,
+                         onion_response* resp,
+                         const char*key, const char*val)
+{
+  RPS_ASSERT(((Onion::Onion*)clientdata)->c_handler() == onion);
+  RPS_ASSERT(resp != nullptr);
+  RPS_DEBUG_LOG(WEB,
+                "rps_onion_header_watcher key='" << key
+                << "' val='" << val
+                << "'" << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_onion_header_watcher"));
+} // end rps_onion_header_watcher
+
 /// Called from main with an argument like "localhost:9090". Should
 /// initialize the data structures to serve web requests.
 void
@@ -64,6 +83,14 @@ rps_web_initialize_service(const char*servarg)
     }
   else
     RPS_FATALOUT("rps_web_initialize_service: bad server " << servarg);
+
+  //// see https://framalistes.org/sympa/arc/refpersys-forum/2020-10/msg00034.html
+  if (RPS_DEBUG_ENABLED(WEB))
+    {
+      onion_set_header_watcher(rps_onion_server.c_handler(),
+                               rps_onion_header_watcher,
+                               &rps_onion_server);
+    }
   rps_onion_serverarg = servarg;
 } // end rps_web_initialize_service
 
@@ -159,6 +186,20 @@ rps_run_web_service()
   RPS_DEBUG_LOG(WEB, "end rps_run_web_service" << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service-end"));
 } // end rps_run_web_service
+
+void
+rps_onion_header_watcher(onion*onion, const void*clientdata,
+                         onion_response* resp,
+                         const char*key, const char*val)
+{
+  RPS_ASSERT(((Onion::Onion*)clientdata)->c_handler() == onion);
+  RPS_ASSERT(resp != nullptr);
+  RPS_DEBUG_LOG(WEB,
+                "rps_onion_header_watcher key='" << key
+                << "' val='" << val
+                << "'" << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_onion_header_watcher"));
+} // end rps_onion_header_watcher
 
 void
 Rps_PayloadWebex::gc_mark(Rps_GarbageCollector&gc) const
