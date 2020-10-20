@@ -198,8 +198,8 @@ rps_onion_header_watcher(onion*onion, const void*clientdata,
                 "rps_onion_header_watcher key='" << key
                 << "' val='" << val
                 << "'"
- 		<< " resp@" << (void*)resp
-		<< std::endl
+                << " resp@" << (void*)resp
+                << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_onion_header_watcher"));
 } // end rps_onion_header_watcher
 
@@ -645,6 +645,8 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_web filpath='"
                         << Rps_Cjson_String(filpath)
                         << "' reqnum#" << reqnum
+                        << " presp@" << (void*)presp
+                        << " oniresp@" << (presp->c_handler())
                         << " for reqpath='" << Rps_Cjson_String(reqpath)
                         << "'");
           if (!access(filpath.c_str(), F_OK))
@@ -698,6 +700,8 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                 << " reqnum#" << reqnum
                 << " reqmethname=" << reqmethname
                 << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
+                << " pres@" << (void*)pres
+                << " oniresp@" << (pres->c_handler())
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
   std::ostringstream reqout;
