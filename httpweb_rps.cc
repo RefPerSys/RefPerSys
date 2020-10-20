@@ -885,6 +885,9 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value val, Onion::U
   const onion_request_flags reqflags=preq->flags();
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
+  RPS_LOCALFRAME(/*descr:*/ nullptr,
+		 /*prev:*/callframe,
+		 /*locals:*/);
   RPS_FATALOUT("unimplemented rps_serve_onion_expanded_stream val=" << val << " reqnum#" << reqnum << " filepath=" << filepath);
 #warning unimplemented rps_serve_onion_expanded_stream
 } // end rps_serve_onion_expanded_stream
