@@ -197,7 +197,9 @@ rps_onion_header_watcher(onion*onion, const void*clientdata,
   RPS_DEBUG_LOG(WEB,
                 "rps_onion_header_watcher key='" << key
                 << "' val='" << val
-                << "'" << std::endl
+                << "'"
+ 		<< " resp@" << (void*)resp
+		<< std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_onion_header_watcher"));
 } // end rps_onion_header_watcher
 
