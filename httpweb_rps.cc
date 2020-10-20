@@ -782,68 +782,19 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
       onion_connection_status osta = OCS_NOT_PROCESSED;
       if (expandrps)
         {
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_file expanded stream for reqnum#" << reqnum
+                        << ' ' << reqmethname
+                        << " reqpath=" << Rps_Cjson_String(reqpath));
           osta = rps_serve_onion_expanded_stream(callframe, val, purl, preq, pres, reqnum, filepath, fil);
         }
       else
         {
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_file raw stream for reqnum#" << reqnum
+                        << ' ' << reqmethname
+                        << " reqpath=" << Rps_Cjson_String(reqpath));
           osta = rps_serve_onion_raw_stream(callframe, val, purl, preq, pres, reqnum, filepath, fil);
         };
       fclose (fil);
-      struct stat filstat;
-      memset(&filstat, 0, sizeof(filstat));
-      if (fstat(fileno(fil), &filstat))
-        RPS_FATALOUT("rps_serve_onion_file filepath=" << Rps_Cjson_String(filepath)
-                     << " reqnum#" << reqnum
-                     << " reqmethname=" << reqmethname
-                     << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
-                     " fstat failed: " << strerror(errno));
-      {
-        char lenbuf[24];
-        memset(lenbuf, 0, sizeof(lenbuf));
-        snprintf(lenbuf, sizeof(lenbuf), "%ld", (long)filstat.st_size);
-        pres->setHeader("Content-length:", lenbuf);
-      }
-      constexpr int line_threshold = 48;
-      constexpr long offset_threshold = 2048;
-      constexpr int width_threshold = 80;
-      {
-        char*linbuf=nullptr;
-        ssize_t linlen=0;
-        size_t linsiz=0;
-        long curoff=0;
-        int linecnt = 0;
-        for(;;)
-          {
-            curoff = ftell(fil);
-            linlen = getline(&linbuf, &linsiz, fil);
-            if (linlen <= 0)
-              break;
-            curoff += linlen;
-            linecnt++;
-            pres->write(linbuf, linlen);
-            if (linecnt < line_threshold && curoff < offset_threshold)
-              RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
-                            << " fd#" << fileno(fil) << " curoff:" << curoff
-                            << " linlen=" << linlen << " linecnt=" << linecnt
-                            << " reqnum#" << reqnum
-                            << " wrote " << Rps_Cjson_String(std::string(linbuf,linlen)));
-            else if (linecnt < 2*line_threshold)
-              RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
-                            << " fd#" << fileno(fil) << " curoff:" << curoff
-                            << " linlen=" << linlen<< " linecnt=" << linecnt
-                            << " reqnum#" << reqnum);
-          };
-        RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
-                      << " fd#" << fileno(fil)
-                      << " ending off=" << ftell(fil)
-                      << " linecnt=" << linecnt << ' '
-                      << ((linlen<width_threshold)?"lastline=":"lastline:")
-                      << ((linlen<width_threshold)?Rps_Cjson_String(std::string(linbuf)):Rps_Cjson_String(std::string(linbuf,width_threshold)))
-                      << " for reqnum#" << reqnum
-                      << " filepath=" << Rps_Cjson_String(filepath));
-        free(linbuf), linbuf=nullptr;
-        fclose(fil);
-      }
       RPS_DEBUG_LOG(WEB, "done rps_serve_onion_file val=" << val << " reqnum#" << reqnum
                     << " " << reqmethname << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
                     << " filepath=" << Rps_Cjson_String(filepath)
@@ -867,14 +818,73 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
 onion_connection_status
 rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath, FILE*fil)
 {
-  RPS_FATALOUT("unimplemented rps_serve_onion_raw_stream val=" << val << " reqnum#" << reqnum << " filepath=" << filepath);
-#warning unimplemented rps_serve_onion_raw_stream
+  const std::string reqpath =preq->path();
+  const onion_request_flags reqflags=preq->flags();
+  const unsigned reqmethnum = reqflags&OR_METHODS;
+  const char* reqmethname = onion_request_methods[reqmethnum];
+  struct stat filstat;
+  memset(&filstat, 0, sizeof(filstat));
+  if (fstat(fileno(fil), &filstat))
+    RPS_FATALOUT("rps_serve_onion_raw_stream filepath=" << Rps_Cjson_String(filepath)
+                 << " reqnum#" << reqnum
+                 << " reqmethname=" << reqmethname
+                 << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
+                 " fstat failed: " << strerror(errno));
+  {
+    char lenbuf[24];
+    memset(lenbuf, 0, sizeof(lenbuf));
+    snprintf(lenbuf, sizeof(lenbuf), "%ld", (long)filstat.st_size);
+    pres->setHeader("Content-length:", lenbuf);
+  }
+  constexpr int line_threshold = 48;
+  constexpr long offset_threshold = 2048;
+  constexpr int width_threshold = 80;
+  char*linbuf=nullptr;
+  ssize_t linlen=0;
+  size_t linsiz=0;
+  long curoff=0;
+  int linecnt = 0;
+  for(;;)
+    {
+      curoff = ftell(fil);
+      linlen = getline(&linbuf, &linsiz, fil);
+      if (linlen <= 0)
+        break;
+      curoff += linlen;
+      linecnt++;
+      pres->write(linbuf, linlen);
+      if (linecnt < line_threshold && curoff < offset_threshold)
+        RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream val=" << val
+                      << " fd#" << fileno(fil) << " curoff:" << curoff
+                      << " linlen=" << linlen << " linecnt=" << linecnt
+                      << " reqnum#" << reqnum
+                      << " wrote " << Rps_Cjson_String(std::string(linbuf,linlen)));
+      else if (linecnt < 2*line_threshold)
+        RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream val=" << val
+                      << " fd#" << fileno(fil) << " curoff:" << curoff
+                      << " linlen=" << linlen<< " linecnt=" << linecnt
+                      << " reqnum#" << reqnum);
+    };
+  RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream ending val=" << val
+                << " fd#" << fileno(fil)
+                << " ending off=" << ftell(fil)
+                << " linecnt=" << linecnt << ' '
+                << ((linlen<width_threshold)?"lastline=":"lastline:")
+                << ((linlen<width_threshold)?Rps_Cjson_String(std::string(linbuf)):Rps_Cjson_String(std::string(linbuf,width_threshold)))
+                << " for reqnum#" << reqnum
+                << " filepath=" << Rps_Cjson_String(filepath));
+  free(linbuf), linbuf=nullptr;
+  return OCS_PROCESSED;
 } // end rps_serve_onion_raw_stream
 
 
 onion_connection_status
 rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath, FILE*fil)
 {
+  const std::string reqpath =preq->path();
+  const onion_request_flags reqflags=preq->flags();
+  const unsigned reqmethnum = reqflags&OR_METHODS;
+  const char* reqmethname = onion_request_methods[reqmethnum];
   RPS_FATALOUT("unimplemented rps_serve_onion_expanded_stream val=" << val << " reqnum#" << reqnum << " filepath=" << filepath);
 #warning unimplemented rps_serve_onion_expanded_stream
 } // end rps_serve_onion_expanded_stream
