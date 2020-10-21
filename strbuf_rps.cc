@@ -58,6 +58,32 @@ Rps_PayloadStrBuf::dump_scan(Rps_Dumper*du) const
 } // end Rps_PayloadStrBuf::dump_scan
 
 
+Rps_ObjectRef
+Rps_PayloadStrBuf::make_string_buffer_object(Rps_CallFrame*callframe, Rps_ObjectRef obclassarg, Rps_ObjectRef obspacearg)
+{
+  RPS_LOCALFRAME(/*descr:*/ RPS_ROOT_OB(_1rfASGBBbFz02VUsMw), //"rps_serve_onion_expanded_stream"∈rps_routine
+                            /*prev:*/callframe,
+                            Rps_ObjectRef obsbuf;
+                            Rps_ObjectRef obclass;
+                            Rps_ObjectRef obspace;
+                );
+  _f.obclass = obclassarg;
+  _f.obspace = obspacearg;
+  if (!_f.obclass)
+    _f.obclass = Rps_PayloadStrBuf::the_string_buffer_class();
+  if (_f.obclass != Rps_PayloadStrBuf::the_string_buffer_class()
+      && !_f.obclass->is_subclass_of(Rps_PayloadStrBuf::the_string_buffer_class()))
+    {
+      std::ostringstream outmsg;
+      outmsg << "make_string_buffer_object:" << _f.obclass->oid() << " not a subclass of string_buffer" << std::endl;
+      throw std::runtime_error(outmsg.str());
+    }
+  _f.obsbuf = Rps_ObjectRef::make_object(&_, _f.obclass, _f.obspace);
+  auto paylsbuf = _f.obsbuf->put_new_plain_payload<Rps_PayloadStrBuf>();
+  return _f.obsbuf;
+} // end of Rps_PayloadStrBuf::make_string_buffer_object
+
+
 void
 Rps_PayloadStrBuf::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
@@ -70,7 +96,6 @@ Rps_PayloadStrBuf::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 } // end Rps_PayloadStrBuf::dump_json_content
 
 //// loading of Rps_PayloadStrBuf; see above Rps_PayloadStrBuf::dump_json_content
-
 void
 rpsldpy_string_buffer(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
@@ -90,5 +115,6 @@ rpsldpy_string_buffer(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, 
                << " spacid=" << spacid
                << " lineno=" << lineno);
 } // end of rpsldpy_string_buffer
+
 
 //// end of file strbuf_rps.cc

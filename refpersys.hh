@@ -3240,6 +3240,9 @@ protected:
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
 public:
+  // Create a string buffer object, and throws an exception if obclass
+  // is wrong:
+  static Rps_ObjectRef make_string_buffer_object(Rps_CallFrame*callframe, Rps_ObjectRef obclass=nullptr, Rps_ObjectRef obspace=nullptr);
   virtual const std::string payload_type_name(void) const
   {
     return "string_buffer";
@@ -3271,7 +3274,7 @@ public:
   };
   Rps_StringValue buffer_stringval(void);
   void clear_buffer(void);
-};				// end Rps_PayloadStrBuffer
+};				// end of class Rps_PayloadStrBuf
 
 
 
