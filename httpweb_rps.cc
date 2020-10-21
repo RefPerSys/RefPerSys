@@ -39,6 +39,7 @@ Onion::Onion rps_onion_server;
 static const char* rps_onion_serverarg;
 
 
+#if 0 && ONION_HEADER_WATCHER
 static void rps_onion_header_watcher(onion*onion, const void*clientdata,
                                      onion_response* resp,
                                      const char*key, const char*val);
@@ -56,6 +57,10 @@ rps_onion_header_watcher(onion*onion, void*clientdata,
                 << "'" << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_onion_header_watcher"));
 } // end rps_onion_header_watcher
+
+#endif /* no ONION_HEADER_WATCHER */
+
+
 
 /// Called from main with an argument like "localhost:9090". Should
 /// initialize the data structures to serve web requests.
@@ -84,6 +89,7 @@ rps_web_initialize_service(const char*servarg)
   else
     RPS_FATALOUT("rps_web_initialize_service: bad server " << servarg);
 
+#if 0 && ONION_HEADER_WATCHER
   //// see https://framalistes.org/sympa/arc/refpersys-forum/2020-10/msg00034.html
   if (RPS_DEBUG_ENABLED(WEB))
     {
@@ -91,6 +97,8 @@ rps_web_initialize_service(const char*servarg)
                                rps_onion_header_watcher,
                                &rps_onion_server);
     }
+#endif /* no ONION_HEADER_WATCHER */
+
   rps_onion_serverarg = servarg;
 } // end rps_web_initialize_service
 
