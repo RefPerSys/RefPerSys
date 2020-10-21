@@ -90,8 +90,28 @@ Rps_PayloadStrBuf::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   /// see function rpsldpy_string_buffer
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  RPS_FATALOUT("incomplete Rps_PayloadStrBuf::dump_json_content owner=" << owner());
-#warning incomplete Rps_PayloadStrBuf::dump_json_content
+  if (strbuf_transient)
+    return;
+  const std::string&str = strbuf_out.str();
+  auto eol = str.find('\n');
+  if (eol >= 0)
+    {
+      auto begit = str.begin();
+      Json::Value jarr(Json::arrayValue);
+      while (eol > 0)
+        {
+          auto eolit = begit+eol;
+          std::string linstr = str.substr(begit-str.begin(),eolit-str.begin());
+          jarr.append(Json::Value(linstr));
+          begit = eolit;
+          eol = str.find(begit+1-str.begin(), '\n');
+        }
+      jv["strbuf_lines"] = jarr;
+    }
+  else
+    {
+      jv["strbuf_string"] = Json::Value(str);
+    }
   return;
 } // end Rps_PayloadStrBuf::dump_json_content
 
