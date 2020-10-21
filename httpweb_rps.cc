@@ -879,16 +879,21 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*pu
 
 
 onion_connection_status
-rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath, FILE*fil)
+rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath, FILE*fil)
 {
   const std::string reqpath =preq->path();
   const onion_request_flags reqflags=preq->flags();
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
   RPS_LOCALFRAME(/*descr:*/ RPS_ROOT_OB(_1rfASGBBbFz02VUsMw), //"rps_serve_onion_expanded_stream"∈rps_routine
-		 /*prev:*/callframe,
-		 /*locals:*/);
-  RPS_FATALOUT("unimplemented rps_serve_onion_expanded_stream val=" << val << " reqnum#" << reqnum << " filepath=" << filepath);
+                            /*prev:*/callframe,
+                            /*locals:*/
+                            Rps_Value valv;
+                            Rps_ObjectRef obstrbuf;
+                );
+  _f.valv = valarg;
+  RPS_FATALOUT("unimplemented rps_serve_onion_expanded_stream val="
+               << _f.valv << " reqnum#" << reqnum << " filepath=" << filepath);
 #warning unimplemented rps_serve_onion_expanded_stream
 } // end rps_serve_onion_expanded_stream
 
