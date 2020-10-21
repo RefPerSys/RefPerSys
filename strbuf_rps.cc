@@ -111,7 +111,8 @@ Rps_PayloadStrBuf::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   else
     {
       jv["strbuf_string"] = Json::Value(str);
-    }
+    };
+  jv["strbuf_indent"] = Json::Value(strbuf_indent);
   return;
 } // end Rps_PayloadStrBuf::dump_json_content
 
@@ -129,11 +130,30 @@ rpsldpy_string_buffer(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, 
                 << " lineno=" << lineno);
   auto paylsbuf = obz->put_new_plain_payload<Rps_PayloadStrBuf>();
   RPS_ASSERT(paylsbuf);
-#warning rpsldpy_string_buffer incomplete
-  RPS_FATALOUT("incomplete rpsldpy_string_buffer obz=" << obz
-               << " jv=" << jv
-               << " spacid=" << spacid
-               << " lineno=" << lineno);
+  if (jv.isMember("strbuf_lines"))
+    {
+      auto jarr = jv["strbuf_lines"];
+      if (jarr.isArray())
+        {
+          int arrlen = jarr.size();
+          for (int ix=0; ix<arrlen; ix++)
+            {
+              auto& jcomp = jarr[ix];
+              if (jcomp.isString())
+                paylsbuf->strbuf_out << jcomp.asString();
+            }
+        }
+    }
+  else if (jv.isMember("strbuf_string"))
+    {
+      std::string str = jv["strbuf_string"].asString();
+      paylsbuf->strbuf_out << str;
+    }
+  else
+    RPS_WARNOUT("rpsldpy_string_buffer: incorrect jv=" << jv
+                << "in spacid=" << spacid
+                << " lineno=" << lineno);
+  paylsbuf->strbuf_indent = jv["strbuf_indent"].asInt();
 } // end of rpsldpy_string_buffer
 
 
