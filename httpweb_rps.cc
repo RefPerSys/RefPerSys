@@ -892,6 +892,14 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg, Onion
                             Rps_ObjectRef obstrbuf;
                 );
   _f.valv = valarg;
+  _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
+  /****
+   * TODO: We should read the fil line by line and make some expansion
+   * in each of them, and append the raw lines and the expanded lines
+   * into obstrbuf.  How that happens has to be defined, but see the
+   * https://framalistes.org/sympa/arc/refpersys-forum/2020-10/msg00037.html
+   * and following...
+   ***/
   RPS_FATALOUT("unimplemented rps_serve_onion_expanded_stream val="
                << _f.valv << " reqnum#" << reqnum << " filepath=" << filepath);
 #warning unimplemented rps_serve_onion_expanded_stream
