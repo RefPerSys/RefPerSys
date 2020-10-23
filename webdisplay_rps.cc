@@ -955,6 +955,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef recvob;
                  Rps_ObjectRef classob;
                  Rps_ObjectRef obweb;
+                 Rps_ObjectRef obsel_display_object_payload_web;
                  Rps_Value recdepth;
                  Rps_Value optdocposv;
                  Rps_ObjectRef spacob;
@@ -962,8 +963,6 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef attrob;
                  Rps_Value attrval;
                  Rps_Value curcomp;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
                  //....etc....
                 );
   ////==== body of _5nSiRIxoYQp00MSnYA !method object!display_object_content_web ====
@@ -975,6 +974,11 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
   _f.optdocposv = arg3optdocposv;
+  // The below is a temporary and ugly workaround, since
+  // _0Z23UbC0G9b01WZZPN is not a root object in commit
+  // 0edbb672f5c63034
+  _f.obsel_display_object_payload_web =
+    Rps_PayloadSymbol::find_named_object(std::string("display_object_payload_web"));
   RPS_ASSERT (!_f.optdocposv || _f.optdocposv.is_int());
   std::lock_guard<std::recursive_mutex> obwebmtx(*(_f.obweb->objmtxptr()));
   RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_web recvob=" << _f.recvob
@@ -1070,12 +1074,24 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
         *pout  << "</ol>" << std::endl;
       }
   }
-  /// should display the payload....
-#warning partly unimplemented rpsapply_5nSiRIxoYQp00MSnYA
-  RPS_FATALOUT("partly unimplemented rpsapply_5nSiRIxoYQp00MSnYA"
-               << " recvob=" << _f.recvob
-               << " obweb=" << _f.obweb);
+  auto payl = _f.obweb->get_payload();
+  if (payl)
+    {
+      /// should display the payload....
+      RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _f.recvob
+                    << " obweb=" << _f.obweb
+                    << " before displaying payload");
+      (void) Rps_ObjectValue(_f.obweb).send2(&_,
+                                             _f.obweb,
+                                             _f.obsel_display_object_payload_web,
+                                             Rps_Value((intptr_t)1));
+    };
   *pout << "</div>" << std::endl;
+  RPS_DEBUG_LOG(WEB, "end rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _f.recvob
+                << " obweb=" << _f.obweb
+                << "  !method object!display_object_content_web"
+                << std::endl);
+  return Rps_TwoValues{_f.obweb};
 } // end of rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_web
 
 
