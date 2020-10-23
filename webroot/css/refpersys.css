@@ -39,6 +39,10 @@ span.nullval_rpscl {
     background-color: cyan;
 }
 
+span.emptyval_rpscl {
+    background-color: lavender;
+}
+
 /* display of string values, see C++ function rpsapply_0TwK4TkhEGZ03oTa5m */
 q.decor_rpscl {
     color: darkolivegreen;
@@ -51,7 +55,11 @@ span.stringval_rpscl {
 /* decoration of composite values */
 span.decorval_rpscl {
     font: Arial Bold;
-    color: DimGrey;
+    text-color: DarkSlateGrey;
+}
+
+br.decor_rpscl {
+    background-color: paleturquoise;
 }
 
 /* display of boxed double values */
@@ -60,9 +68,7 @@ span.doubleval_rpscl {
     background-color: darkgoldenrod;
 }
 
-br.decor_rpscl {
-    background-color: paleturquoise;
-}
+
 
 /* "horizontal" display of small set values */
 span.smallsetval_rpscl {
@@ -73,6 +79,8 @@ div.bigsetval_rpscl {
     background-color: bisque;
 }
 
+
+
 /* "horizontal" display of small tuple values */
 span.smalltupleval_rpscl {
     background-color: lightskyblue;
@@ -82,15 +90,19 @@ div.bigtupleval_rpscl {
     background-color: paleturquoise;
 }
 
+
+
+/* "vertical" display of big closure values */
+div.bigclosureval_rpscl {
+    background-color: aliceblue;
+}
+
 /* "horizontal" display of small closure values */
 span.closureval_rpscl {
     background-color: lavenderblush;
 }
 
-/* "vertical" display of big closure values */
-div.bigclosureleval_rpscl {
-    background-color: lightpink;
-}
+
 /* display of arity */
 sup.aritycl_rpscl {
     background-color: ivory;
@@ -102,12 +114,53 @@ span.instanceval_rpscl {
     background-color: lightyellow;
 }
 
-/* "vertical" display of big closure values */
+/* "vertical" display of big instance values */
 div.biginstanceleval_rpscl {
     background-color: bisque;
 }
 
 
+/* display of JSON values */
+span.json_rpscl {
+    background-color: lemonchiffon;
+}
+
+/* display of object content */
+div.objcontent_rpscl {
+    background-color: oldlace;
+    border: 1px solid navy;
+    margin: 3px;
+}
+
+/* display of object class: */
+span.objclass_rpscl {
+    background-color: burlywood;
+    font-size: 90%;
+}
+
+/* display of object space: */
+span.objspace_rpscl {
+    text-color: darkmagenta;
+    font-size: 85%;
+}
+
+/* display of object attribute */
+ul.objattr_rpscl {
+    background-color: floralwhite;
+    border: 1px dashed indigo;
+}
+
+/* entry of object attribute: */
+li.obatentry_rpscl {
+    margin: 1px;
+    background-color: whitesmoke;
+}
+
+/* display of object component */
+li.objcomp_rpscl {
+    margin: 1px;
+    background-color: snow;
+}
 
 /******
  * TODO: This remains incomplete, see #warning-s in C++ function
