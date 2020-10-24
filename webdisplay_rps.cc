@@ -1115,6 +1115,7 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
                  Rps_Value resmainv; //
                  Rps_Value resxtrav; //
                  Rps_SetValue setselv; //
+                 Rps_SetValue setattrv; //
                  Rps_ObjectRef obcursel; //
                  Rps_ClosureValue curmethclos;
                 );
@@ -1134,8 +1135,30 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
                     "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_web")
                 << std::endl
                );
-#warning unimplemented rpsapply_8lKdW7lgcHV00WUOiT
-  RPS_FATAL("unimplemented rpsapply_8lKdW7lgcHV00WUOiT");
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  RPS_ASSERT(pout);
+  auto paylcla = _f.obclass->get_classinfo_payload();
+  RPS_ASSERT(paylcla);
+  _f.obsuper = paylcla->superclass();
+  _f.setattrv = Rps_SetValue(paylcla->attributes_set());
+  _f.setselv = paylcla->compute_set_of_own_method_selectors(&_);
+  RPS_DEBUG_LOG(WEB, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _f.obclass
+                << " setattrv=" << _f.setattrv
+                << " setselv=" << _f.setselv);
+  *pout << "<div class='classinfo_rpscl' rps_obid='" <<  _f.obweb->oid()
+        << "'>" << std::endl;
+  *pout << "<span class='decorval_rpscl'>super:</span>&nbsp;";
+  rps_web_display_html_for_objref(&_, _f.obsuper,
+                                  _f.obweb,
+                                  depthi+1);
+  *pout << "<br class='decor_rpscl'/>" << std::endl;
+  *pout << "</div>" << std::endl; // end classinfo_rpscl
+#warning incomplete rpsapply_8lKdW7lgcHV00WUOiT
+  RPS_WARNOUT("incomplete rpsapply_8lKdW7lgcHV00WUOiT obclass="
+              << _f.obclass << ", obweb=" << _f.obweb << std::endl
+              << RPS_FULL_BACKTRACE_HERE(2,
+                                         "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_web")
+              << std::endl);
 } // end of rpsapply_8lKdW7lgcHV00WUOiT
 
 

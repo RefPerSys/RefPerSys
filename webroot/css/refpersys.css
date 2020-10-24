@@ -162,6 +162,13 @@ li.objcomp_rpscl {
     background-color: snow;
 }
 
+/* display of class information */
+div.classinfo_rpscl  {
+    margin: 1px;
+    border: 1px dashed maroon;
+    background-color: linen;
+}
+
 /******
  * TODO: This remains incomplete, see #warning-s in C++ function
  *  rpsapply_0TwK4TkhEGZ03oTa5m file webdisplay_rps.cc commit
