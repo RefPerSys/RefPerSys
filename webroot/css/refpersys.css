@@ -192,6 +192,36 @@ li.classattr_rpscl {
     background-color: aliceblue;
 }
 
+/* display of class methods */
+div.classmethsel_rpscl {
+    margin: 1px;
+    border: 1px dashed lightcoral;
+    background-color: linen;
+}
+
+span.classmethnb_rpscl {
+    background-color: powderblue;
+    font-size: 90%;
+}
+
+dl.classmethods_rpscl {
+    margin: 1px;
+    border: 1px dashed midnightblue;
+}
+
+dt.methodselob_rpscl {
+    background-color: aqua;
+    margin: 1px;
+    
+}
+
+dd.methodselclo_rpscl {
+    font-size: 90%;
+    background-color: cornsilk;
+    border: 0.5px dashed olive;
+}
+
+
 /******
  * TODO: This remains incomplete, see #warning-s in C++ function
  *  rpsapply_0TwK4TkhEGZ03oTa5m file webdisplay_rps.cc commit
