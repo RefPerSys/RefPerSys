@@ -169,6 +169,29 @@ div.classinfo_rpscl  {
     background-color: linen;
 }
 
+/* display of class attributes */
+div.classattr_rpscl {
+    margin: 1px;
+    border: 1px dashed lightcoral;
+    background-color: linen;
+}
+
+span.classattrcardinal_rpscl {
+    background-color: lightcyan;
+    font-size: 90%;
+}
+
+ul.classattrelem_rpscl {
+    margin: 1px;
+    border: 0.5px dashed teal;
+    background-color: mintcream;
+}
+
+li.classattr_rpscl {
+    margin: 1px;
+    background-color: aliceblue;
+}
+
 /******
  * TODO: This remains incomplete, see #warning-s in C++ function
  *  rpsapply_0TwK4TkhEGZ03oTa5m file webdisplay_rps.cc commit

@@ -1111,6 +1111,7 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef obclass; //
                  Rps_ObjectRef obweb; //
                  Rps_ObjectRef obsuper; //
+                 Rps_ObjectRef obelem; //
                  Rps_Value depthv; //
                  Rps_Value resmainv; //
                  Rps_Value resxtrav; //
@@ -1127,6 +1128,7 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
   _f.depthv = arg2depth;
   RPS_ASSERT(_f.depthv.is_int());
   auto depthi = _f.depthv.to_int();
+  constexpr int max_depth = 5; // FIXME, should be improved
   RPS_DEBUG_LOG(WEB, "rpsapply_8lKdW7lgcHV00WUOiT start !method class/display_object_payload_web @!@° obclass="
                 << _f.obclass << ", obweb=" << _f.obweb
                 << " of class:" << Rps_Value(_f.obweb).compute_class(&_)
@@ -1152,6 +1154,32 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
                                   _f.obweb,
                                   depthi+1);
   *pout << "<br class='decor_rpscl'/>" << std::endl;
+  /// display set of attributes
+  if (depthi<max_depth)
+    {
+      unsigned cardat = _f.setattrv.as_set()->cardinal();
+      if (cardat>0)
+        {
+          *pout << "<div class='classattr_rpscl' rps_obid='" <<  _f.obweb->oid()
+                << "'>" << std::endl;
+          *pout << "<span class='classattrcardinal_rpscl' rps_obid='" <<  _f.obweb->oid()
+                << "'>" << cardat << " attributes"
+                << "</span>" << std::endl;
+	  *pout << "<ul class='classattrelem_rpscl' rps_obid='" <<  _f.obweb->oid()
+                << "'>" << std::endl;
+          for (unsigned atix=0; atix<cardat; atix++)
+            {
+              _f.obelem = _f.setattrv.as_set()->at(atix);
+              RPS_ASSERT(_f.obelem);
+	      *pout << "<li class='classattr_rpscl' rps_obid='" <<  _f.obweb->oid()
+                << "'>";
+	      *pout << "</li>" << std::endl;
+              _f.obelem = nullptr;
+            }
+	  *pout << "</ul>" << std::endl; // end classattrelem_rpscl
+          *pout << "</div>" << std::endl; // end classattr_rpscl
+        }
+    }
   *pout << "</div>" << std::endl; // end classinfo_rpscl
 #warning incomplete rpsapply_8lKdW7lgcHV00WUOiT
   RPS_WARNOUT("incomplete rpsapply_8lKdW7lgcHV00WUOiT obclass="
@@ -1159,6 +1187,7 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
               << RPS_FULL_BACKTRACE_HERE(2,
                                          "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_web")
               << std::endl);
+  return Rps_TwoValues{_f.obweb};
 } // end of rpsapply_8lKdW7lgcHV00WUOiT
 
 
