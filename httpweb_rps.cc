@@ -823,8 +823,12 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
     }
 } // end rps_serve_onion_file
 
+
+
 onion_connection_status
-rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath, FILE*fil)
+rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
+                           Onion::Url*purl, Onion::Request*preq, Onion::Response*pres,
+                           uint64_t reqnum, const std::string& filepath, FILE*fil)
 {
   const std::string reqpath =preq->path();
   const onion_request_flags reqflags=preq->flags();
@@ -887,7 +891,9 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*pu
 
 
 onion_connection_status
-rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath, FILE*fil)
+rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
+                                Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum,
+                                const std::string& filepath, FILE*fil)
 {
   const std::string reqpath =preq->path();
   const onion_request_flags reqflags=preq->flags();
@@ -901,6 +907,15 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg, Onion
                 );
   _f.valv = valarg;
   _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
+  constexpr int line_threshold = 64;
+  constexpr long offset_threshold = 2048;
+  constexpr int width_threshold = 80;
+  char*linbuf=nullptr;
+  ssize_t linlen=0;
+  size_t linsiz=0;
+  long curoff=0;
+  int linecnt = 0;
+  int nbpi=0;
   /****
    * TODO: We should read the fil line by line and make some expansion
    * in each of them, and append the raw lines and the expanded lines
@@ -908,6 +923,85 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg, Onion
    * https://framalistes.org/sympa/arc/refpersys-forum/2020-10/msg00037.html
    * and following...
    ***/
+  char rps_suffix[64];
+  memset (rps_suffix, 0, sizeof(rps_suffix));
+  for(;;)
+    {
+      curoff = ftell(fil);
+      linlen = getline(&linbuf, &linsiz, fil);
+      if (linlen <= 0)
+        break;
+      curoff += linlen;
+      linecnt++;
+      if (linecnt < line_threshold)
+        {
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream val=" << _f.valv
+                        << " fd#" << fileno(fil) << " curoff:" << curoff
+                        << " linlen=" << linlen << " linecnt=" << linecnt
+                        << " reqnum#" << reqnum
+                        << " wrote " << Rps_Cjson_String(std::string(linbuf,linlen)));
+          const char* pi = strstr(linbuf, "<?refpersys");
+          if (pi)
+            {
+              if (nbpi > 0)
+                RPS_FATALOUT("rps_serve_onion_expanded_stream val=" << _f.valv
+                             << " fd#" << fileno(fil) << " curoff:" << curoff
+                             << " linlen=" << linlen << " linecnt=" << linecnt
+                             << " reqnum#" << reqnum
+                             << " filepath=" << filepath
+                             << " duplicate processing instruction:" << std::endl
+                             << linbuf);
+              nbpi++;
+              char rps_action[(Rps_Id::nbchars|3)+1];
+              memset (rps_action, 0, sizeof(rps_action));
+              memset (rps_suffix, 0, sizeof(rps_suffix));
+              int pos_json = -1;
+              if (sscanf(pi, "<?refpersys suffix= '%*[a-zA-Z0-9_]' action= '%*[a-zA-Z0-9_]' rps_json= %n",
+                         sizeof(rps_suffix)-1, rps_suffix,
+                         sizeof(rps_action)-1, rps_action,
+                         &pos_json) >= 3 && pos_json>0)
+                {
+                  RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
+                                << " pi=" << pi
+                                << " reqnum#" << reqnum
+                                << " rps_suffix=" << rps_suffix
+                                << " rps_action=" << rps_action
+                                << " pos_json=" << pos_json);
+                  const char*jsonp = pi+pos_json;
+                  const char*endjson = strstr(jsonp, "?>");
+#if 0 && BAD_CODE
+                  if (endjson)
+                    {
+                      Json::Value js;
+                      Json::CharReader jread;
+                      std::string errjs;
+                      if (jread.parse(jsonp, endjson, &js, &errjs))
+                        {
+                          RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream val=" << val
+                                        << " fd#" << fileno(fil)
+                                        << " linecnt=" << linecnt
+                                        << " reqnum#" << reqnum
+                                        << " js=" << js
+                                        << " errjs=" << errjs);
+                          RPS_FATALOUT("partly unimplemented rps_serve_onion_expanded_stream"
+                                       << " linecnt=" << linecnt
+                                       << " reqnum#" << reqnum
+                                       << " js=" << js
+                                       << " errjs=" << errjs);
+                        }
+                    }
+#endif BAD_CODE		  
+#warning partly unimplemented rps_serve_onion_expanded_stream for processing instruction
+                }
+            }
+        }
+      else if (linecnt < 2*line_threshold)
+        RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream val=" << _f.valv
+                      << " fd#" << fileno(fil) << " curoff:" << curoff
+                      << " linlen=" << linlen<< " linecnt=" << linecnt
+                      << " reqnum#" << reqnum);
+      pres->write(linbuf, linlen);
+    };
   RPS_FATALOUT("unimplemented rps_serve_onion_expanded_stream val="
                << _f.valv << " reqnum#" << reqnum << " filepath=" << filepath);
 #warning unimplemented rps_serve_onion_expanded_stream
