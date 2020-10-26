@@ -952,13 +952,13 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                              << " duplicate processing instruction:" << std::endl
                              << linbuf);
               nbpi++;
-              char rps_action[(Rps_Id::nbchars|3)+1];
+              char rps_action[(Rps_Id::nbchars|3)+5];
               memset (rps_action, 0, sizeof(rps_action));
               memset (rps_suffix, 0, sizeof(rps_suffix));
               int pos_json = -1;
-              if (sscanf(pi, "<?refpersys suffix= '%*[a-zA-Z0-9_]' action= '%*[a-zA-Z0-9_]' rps_json= %n",
-                         sizeof(rps_suffix)-1, rps_suffix,
-                         sizeof(rps_action)-1, rps_action,
+              if (sscanf(pi, "<?refpersys suffix= '%.60[a-zA-Z0-9_]' action= '%.16[a-zA-Z0-9_]' rps_json= %n",
+                         rps_suffix,
+                         rps_action,
                          &pos_json) >= 3 && pos_json>0)
                 {
                   RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
@@ -969,28 +969,23 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                                 << " pos_json=" << pos_json);
                   const char*jsonp = pi+pos_json;
                   const char*endjson = strstr(jsonp, "?>");
-#if 0 && BAD_CODE
-                  if (endjson)
+                  if (endjson && endjson>jsonp+3)
                     {
-                      Json::Value js;
-                      Json::CharReader jread;
-                      std::string errjs;
-                      if (jread.parse(jsonp, endjson, &js, &errjs))
-                        {
-                          RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream val=" << val
-                                        << " fd#" << fileno(fil)
-                                        << " linecnt=" << linecnt
-                                        << " reqnum#" << reqnum
-                                        << " js=" << js
-                                        << " errjs=" << errjs);
-                          RPS_FATALOUT("partly unimplemented rps_serve_onion_expanded_stream"
-                                       << " linecnt=" << linecnt
-                                       << " reqnum#" << reqnum
-                                       << " js=" << js
-                                       << " errjs=" << errjs);
-                        }
+                      std::string inpjs {jsonp,endjson-jsonp-1};
+                      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
+                                    << " pi=" << pi << " inpjs=" << inpjs << ";");
+                      Json::Value js = rps_string_to_json(inpjs);
+                      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream val=" << _f.valv
+                                    << " fd#" << fileno(fil)
+                                    << " linecnt=" << linecnt
+                                    << " reqnum#" << reqnum
+                                    << " js=" << js);
+                      RPS_FATALOUT("partly unimplemented rps_serve_onion_expanded_stream"
+                                   << " linecnt=" << linecnt
+                                   << " reqnum#" << reqnum
+                                   << " for " << reqmethname << " of " << Rps_Cjson_String(reqpath)
+                                   << " js=" << js);
                     }
-#endif BAD_CODE		  
 #warning partly unimplemented rps_serve_onion_expanded_stream for processing instruction
                 }
             }
