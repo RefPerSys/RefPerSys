@@ -884,7 +884,9 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
                 << ((linlen<width_threshold)?"lastline=":"lastline:")
                 << ((linlen<width_threshold)?Rps_Cjson_String(std::string(linbuf)):Rps_Cjson_String(std::string(linbuf,width_threshold)))
                 << " for reqnum#" << reqnum
-                << " filepath=" << Rps_Cjson_String(filepath));
+                << " filepath=" << Rps_Cjson_String(filepath)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_raw_stream"));
   free(linbuf), linbuf=nullptr;
   return OCS_PROCESSED;
 } // end rps_serve_onion_raw_stream
@@ -966,25 +968,32 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                          rps_action,
                          &pos_json) >= 3 && pos_json>0)
                 {
+                  const char*jsonp = pi+pos_json;
+                  const char*endjson = jsonp?strstr(jsonp, "?>"):nullptr;
                   RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
                                 << " pi=" << pi
                                 << " reqnum#" << reqnum
                                 << " rps_suffix=" << rps_suffix
                                 << " rps_action=" << rps_action
-                                << " pos_json=" << pos_json);
-                  const char*jsonp = pi+pos_json;
-                  const char*endjson = strstr(jsonp, "?>");
+                                << " pos_json=" << pos_json
+                                << " jsonp" <<  (jsonp?":":" ")
+                                << (jsonp?jsonp:"*null*")
+                                << " endjson" <<  (endjson?":":" ")
+                                << (endjson?endjson:"*null*"));
                   if (endjson && endjson>jsonp+3)
                     {
                       std::string inpjs {jsonp,endjson-jsonp-1};
                       RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
-                                    << " pi=" << pi << " inpjs=" << inpjs << ";");
+                                    << " reqnum#" << reqnum
+                                    << " pi=" << pi << " inpjs=" << Rps_Cjson_String(inpjs));
                       Json::Value js = rps_string_to_json(inpjs);
                       RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream val=" << _f.valv
                                     << " fd#" << fileno(fil)
                                     << " linecnt=" << linecnt
                                     << " reqnum#" << reqnum
-                                    << " js=" << js);
+                                    << " js=" << js
+                                    << std::endl
+                                    << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
                       RPS_FATALOUT("partly unimplemented rps_serve_onion_expanded_stream"
                                    << " linecnt=" << linecnt
                                    << " reqnum#" << reqnum
@@ -1003,7 +1012,9 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
       pres->write(linbuf, linlen);
     };
   RPS_FATALOUT("unimplemented rps_serve_onion_expanded_stream val="
-               << _f.valv << " reqnum#" << reqnum << " filepath=" << filepath);
+               << _f.valv << " reqnum#" << reqnum << " filepath=" << filepath
+               << std::endl
+               << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
 #warning unimplemented rps_serve_onion_expanded_stream
 } // end rps_serve_onion_expanded_stream
 
