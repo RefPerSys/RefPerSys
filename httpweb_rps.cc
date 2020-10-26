@@ -722,6 +722,10 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
   const char*mime = nullptr;
   std::string realfilepath = filepath;
   bool expandrps = false;
+  RPS_DEBUG_LOG(WEB, "rps_serve_onion_file start reqnum#" << reqnum
+                << " " << reqmethname << " '" << Rps_Cjson_String(reqpath)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
   if (filepath.size() > sizeof(".rps")
       && !strcmp(filepath.c_str() - strlen(".rps"), ".rps"))
     {
@@ -729,7 +733,9 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
       realfilepath.erase(realfilepath.end()-strlen(".rps"), realfilepath.end());
       RPS_DEBUG_LOG(WEB, "rps_serve_onion_file expandrps filepath=" << filepath << " reqnum#" << reqnum
                     << " reqmethname=" << reqmethname
-                    << " reqpath='" << Rps_Cjson_String(reqpath) << "'");
+                    << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
+                    << " realfilepath='" << Rps_Cjson_String(realfilepath) << "'" << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
     }
   mime = onion_mime_get(realfilepath.c_str());
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val << " mime=" << mime
@@ -739,6 +745,7 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                 << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
                 << " pres@" << (void*)pres
                 << " oniresp@" << (pres->c_handler())
+                << (expandrps?"EXPAND-RPS":"RAW")
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
 
