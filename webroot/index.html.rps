@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!-- 
+   file webroot/index.html.rps 
+   SPDX-License-Identifier: GPL-3.0-or-later
+
+      This file is part of the Reflective Persistent System. See
+      refpersys.org
+
+      It holds the root HTML content when e.g. http://localhost:9090/
+      is accessed, and ./refpersys -W. is running.
+--!>
+<?refpersys suffix='rpshtml' action='' rps_json='{}' ?>
+<!--
+ Author(s):
+      Basile Starynkevitch <basile@starynkevitch.net>
+      Abhishek Chakravarti <abhishek@taranjali.org>
+      Nimesh Neema <nimeshneema@gmail.com>
+
+      © Copyright 2020 The Reflective Persistent System Team
+      team@refpersys.org & http://refpersys.org/
+
+ License:
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="the RefPerSys system"/>
+    <meta name="author" content="team@refpersys.org"/>
+    <link rel="icon" href="./favicon.ico">
+    <link rel="canonical" href="http://refpersys.org"/>
+
+    <title>RefPerSys</title>
+
+
+    <!-- RefPerSys CSS -->
+    <link href="./css/refpersys.css" rel="stylesheet">
+
+    <script src="./js/jquery.js"></script>
+
+    <!-- RefPerSys handwritten JavaScript: -->
+    <script src="./js/refpersys.js"></script>
+  </head>
+
+  <body>
+
+    <h1><a href='http://refpersys.org/'>RefPerSys</a>
+      running on
+    </h1>
+    
+  </body>
+  <!-- end of file webroot/index.html.rps in refpersys.org -->
+</html>
+
