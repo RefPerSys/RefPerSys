@@ -907,6 +907,11 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                 );
   _f.valv = valarg;
   _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
+  RPS_DEBUG_LOG(WEB, "start rps_serve_onion_expanded_stream reqnum:" << reqnum
+                << " " << reqmethname << " " << Rps_Cjson_String(reqpath)
+                << " valv=" << _f.valv << " obstrbuf=" << _f.obstrbuf
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_expanded_stream"));
   constexpr int line_threshold = 64;
   constexpr long offset_threshold = 2048;
   constexpr int width_threshold = 80;
