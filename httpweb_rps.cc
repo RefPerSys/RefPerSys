@@ -910,10 +910,11 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
   RPS_LOCALFRAME(/*descr:*/ RPS_ROOT_OB(_1rfASGBBbFz02VUsMw), //"rps_serve_onion_expanded_stream"∈rps_routine
-                            /*prev:*/callframe,
-                            /*locals:*/
-                            Rps_Value valv;
-                            Rps_ObjectRef obstrbuf;
+		 /*prev:*/callframe,
+		 /*locals:*/
+		 Rps_Value valv;
+		 Rps_ObjectRef obstrbuf;
+		 Rps_ObjectRef obaction;
                 );
   _f.valv = valarg;
   _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
@@ -991,17 +992,36 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                   if (endjson && endjson>jsonp+3)
                     {
                       std::string inpjs {jsonp,endjson-jsonp-1};
+                      Json::Value js = rps_string_to_json(inpjs);
+		      const char*endact = nullptr;
+		      bool okact = false;
+		      Rps_Id actid (rps_action, &endact, &okact);
+		      if (!okact)
+			RPS_FATALOUT("rps_serve_onion_expanded_stream"
+				     << " linecnt=" << linecnt
+				     << " reqnum#" << reqnum
+				     << " for " << reqmethname << " of " << Rps_Cjson_String(reqpath)
+				     << " bad rps_action:" << rps_action);
+		      _f.obaction = Rps_ObjectRef::find_object_by_oid (&_, actid);
                       RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
                                     << " reqnum#" << reqnum
-                                    << " pi=" << pi << " inpjs=" << Rps_Cjson_String(inpjs));
-                      Json::Value js = rps_string_to_json(inpjs);
-                      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream val=" << _f.valv
+                                    << " pi=" << pi << " inpjs=" << Rps_Cjson_String(inpjs)
+				    << " actid=" << actid
+				    << " obaction=" << _f.obaction
+				    << " val=" << _f.valv
                                     << " fd#" << fileno(fil)
                                     << " linecnt=" << linecnt
                                     << " reqnum#" << reqnum
                                     << " js=" << js
                                     << std::endl
                                     << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
+#warning rps_serve_onion_expanded_stream should use obaction with js
+		      /***
+		       * TODO: we probably need to specify how to make
+		       * a RefPerSys closure of connective obaction
+		       * and closed value js, then apply that closure
+		       * to a webexchange object....
+		       ***/
                       RPS_FATALOUT("partly unimplemented rps_serve_onion_expanded_stream"
                                    << " linecnt=" << linecnt
                                    << " reqnum#" << reqnum
