@@ -728,7 +728,7 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                 << "'" << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
   if (filepath.size() > sizeof(".rps")
-      && !strcmp(filepath.c_str() - strlen(".rps"), ".rps"))
+      && !strcmp(filepath.c_str() + filepath.size() - strlen(".rps"), ".rps"))
     {
       expandrps = true;
       realfilepath.erase(realfilepath.end()-strlen(".rps"), realfilepath.end());
