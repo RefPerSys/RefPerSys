@@ -910,11 +910,11 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
   RPS_LOCALFRAME(/*descr:*/ RPS_ROOT_OB(_1rfASGBBbFz02VUsMw), //"rps_serve_onion_expanded_stream"∈rps_routine
-		 /*prev:*/callframe,
-		 /*locals:*/
-		 Rps_Value valv;
-		 Rps_ObjectRef obstrbuf;
-		 Rps_ObjectRef obaction;
+                            /*prev:*/callframe,
+                            /*locals:*/
+                            Rps_Value valv;
+                            Rps_ObjectRef obstrbuf;
+                            Rps_ObjectRef obaction;
                 );
   _f.valv = valarg;
   _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
@@ -959,6 +959,9 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
           const char* pi = strstr(linbuf, "<?refpersys");
           if (pi)
             {
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream linecnt=" << linecnt
+                            << " reqnum#" << reqnum
+                            << " found pi=" <<  Rps_Cjson_String(std::string(linbuf,linlen)));
               if (nbpi > 0)
                 RPS_FATALOUT("rps_serve_onion_expanded_stream val=" << _f.valv
                              << " fd#" << fileno(fil) << " curoff:" << curoff
@@ -975,7 +978,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
               if (sscanf(pi, "<?refpersys suffix= '%.60[a-zA-Z0-9_]' action= '%.16[a-zA-Z0-9_]' rps_json= %n",
                          rps_suffix,
                          rps_action,
-                         &pos_json) >= 3 && pos_json>0)
+                         &pos_json) >= 2 && pos_json>0)
                 {
                   const char*jsonp = pi+pos_json;
                   const char*endjson = jsonp?strstr(jsonp, "?>"):nullptr;
@@ -993,22 +996,22 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                     {
                       std::string inpjs {jsonp,endjson-jsonp-1};
                       Json::Value js = rps_string_to_json(inpjs);
-		      const char*endact = nullptr;
-		      bool okact = false;
-		      Rps_Id actid (rps_action, &endact, &okact);
-		      if (!okact)
-			RPS_FATALOUT("rps_serve_onion_expanded_stream"
-				     << " linecnt=" << linecnt
-				     << " reqnum#" << reqnum
-				     << " for " << reqmethname << " of " << Rps_Cjson_String(reqpath)
-				     << " bad rps_action:" << rps_action);
-		      _f.obaction = Rps_ObjectRef::find_object_by_oid (&_, actid);
+                      const char*endact = nullptr;
+                      bool okact = false;
+                      Rps_Id actid (rps_action, &endact, &okact);
+                      if (!okact)
+                        RPS_FATALOUT("rps_serve_onion_expanded_stream"
+                                     << " linecnt=" << linecnt
+                                     << " reqnum#" << reqnum
+                                     << " for " << reqmethname << " of " << Rps_Cjson_String(reqpath)
+                                     << " bad rps_action:" << rps_action);
+                      _f.obaction = Rps_ObjectRef::find_object_by_oid (&_, actid);
                       RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
                                     << " reqnum#" << reqnum
                                     << " pi=" << pi << " inpjs=" << Rps_Cjson_String(inpjs)
-				    << " actid=" << actid
-				    << " obaction=" << _f.obaction
-				    << " val=" << _f.valv
+                                    << " actid=" << actid
+                                    << " obaction=" << _f.obaction
+                                    << " val=" << _f.valv
                                     << " fd#" << fileno(fil)
                                     << " linecnt=" << linecnt
                                     << " reqnum#" << reqnum
@@ -1016,12 +1019,12 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                                     << std::endl
                                     << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
 #warning rps_serve_onion_expanded_stream should use obaction with js
-		      /***
-		       * TODO: we probably need to specify how to make
-		       * a RefPerSys closure of connective obaction
-		       * and closed value js, then apply that closure
-		       * to a webexchange object....
-		       ***/
+                      /***
+                       * TODO: we probably need to specify how to make
+                       * a RefPerSys closure of connective obaction
+                       * and closed value js, then apply that closure
+                       * to a webexchange object....
+                       ***/
                       RPS_FATALOUT("partly unimplemented rps_serve_onion_expanded_stream"
                                    << " linecnt=" << linecnt
                                    << " reqnum#" << reqnum
@@ -1038,7 +1041,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                       << " linlen=" << linlen<< " linecnt=" << linecnt
                       << " reqnum#" << reqnum);
       pres->write(linbuf, linlen);
-    };
+    };				// end for each line
   RPS_FATALOUT("unimplemented rps_serve_onion_expanded_stream val="
                << _f.valv << " reqnum#" << reqnum << " filepath=" << filepath
                << std::endl
