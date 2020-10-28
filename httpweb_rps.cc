@@ -1042,11 +1042,14 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                       << " reqnum#" << reqnum);
       pres->write(linbuf, linlen);
     };				// end for each line
-  RPS_FATALOUT("unimplemented rps_serve_onion_expanded_stream val="
-               << _f.valv << " reqnum#" << reqnum << " filepath=" << filepath
-               << std::endl
-               << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
-#warning unimplemented rps_serve_onion_expanded_stream
+  RPS_WARNOUT("partly unimplemented rps_serve_onion_expanded_stream val="
+              << _f.valv << " reqnum#" << reqnum << " filepath=" << filepath
+              << " " << reqmethname << " of '"
+              << Rps_Cjson_String(reqpath)
+              << "'" << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
+  return OCS_PROCESSED;
+#warning partly unimplemented rps_serve_onion_expanded_stream
 } // end rps_serve_onion_expanded_stream
 
 
