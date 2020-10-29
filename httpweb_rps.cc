@@ -38,6 +38,30 @@ Onion::Onion rps_onion_server;
 
 static const char* rps_onion_serverarg;
 
+
+#if 0 && ONION_HEADER_WATCHER
+static void rps_onion_header_watcher(onion*onion, const void*clientdata,
+                                     onion_response* resp,
+                                     const char*key, const char*val);
+
+void
+rps_onion_header_watcher(onion*onion, void*clientdata,
+                         onion_response* resp,
+                         const char*key, const char*val)
+{
+  RPS_ASSERT(((Onion::Onion*)clientdata)->c_handler() == onion);
+  RPS_ASSERT(resp != nullptr);
+  RPS_DEBUG_LOG(WEB,
+                "rps_onion_header_watcher key='" << key
+                << "' val='" << val
+                << "'" << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_onion_header_watcher"));
+} // end rps_onion_header_watcher
+
+#endif /* no ONION_HEADER_WATCHER */
+
+
+
 /// Called from main with an argument like "localhost:9090". Should
 /// initialize the data structures to serve web requests.
 void
@@ -64,6 +88,17 @@ rps_web_initialize_service(const char*servarg)
     }
   else
     RPS_FATALOUT("rps_web_initialize_service: bad server " << servarg);
+
+#if 0 && ONION_HEADER_WATCHER
+  //// see https://framalistes.org/sympa/arc/refpersys-forum/2020-10/msg00034.html
+  if (RPS_DEBUG_ENABLED(WEB))
+    {
+      onion_set_header_watcher(rps_onion_server.c_handler(),
+                               rps_onion_header_watcher,
+                               &rps_onion_server);
+    }
+#endif /* no ONION_HEADER_WATCHER */
+
   rps_onion_serverarg = servarg;
 } // end rps_web_initialize_service
 
@@ -159,6 +194,22 @@ rps_run_web_service()
   RPS_DEBUG_LOG(WEB, "end rps_run_web_service" << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service-end"));
 } // end rps_run_web_service
+
+void
+rps_onion_header_watcher(onion*onion, const void*clientdata,
+                         onion_response* resp,
+                         const char*key, const char*val)
+{
+  RPS_ASSERT(((Onion::Onion*)clientdata)->c_handler() == onion);
+  RPS_ASSERT(resp != nullptr);
+  RPS_DEBUG_LOG(WEB,
+                "rps_onion_header_watcher key='" << key
+                << "' val='" << val
+                << "'"
+                << " resp@" << (void*)resp
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_onion_header_watcher"));
+} // end rps_onion_header_watcher
 
 void
 Rps_PayloadWebex::gc_mark(Rps_GarbageCollector&gc) const
@@ -553,7 +604,7 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
    * We first need to ensure that the URL does not contain neither
    * ".." nor "README.md" as a substring.  Then (for GET or HEAD) we
    * try to access a file starting from webroot. If the request path
-   * is empty, we use "index.html".  If it is present, we serve it.
+   * is empty, we use "index.html" if that file exists.  If it is present, we serve it.
    **/
   if (reqmethnum == OR_GET || reqmethnum == OR_HEAD)
     {
@@ -596,12 +647,34 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
       else
         {
           auto web_exchange_ob = RPS_ROOT_OB(_8zNtuRpzXUP013WG9S);
-          std::string filpath =
-            std::string{rps_topdirectory}
-            + "/webroot/" + (reqpath.empty()?"index2.html":reqpath);
+          std::string filpath =  std::string{rps_topdirectory}  + "/webroot/";
+          if (reqpath.empty())
+            {
+              std::string rpsfilpath = filpath + "index.html.rps";
+              std::string indfilpath = filpath + "index.html";
+              if (!access(rpsfilpath.c_str(), R_OK))
+                filpath = rpsfilpath;
+              else if (!access(indfilpath.c_str(), R_OK))
+                filpath = indfilpath;
+              else
+                RPS_FATALOUT("rps_serve_onion_web dont find file for empty path"
+                             << "' reqnum#" << reqnum
+                             << " presp@" << (void*)presp
+                             << " oniresp@" << (presp->c_handler())
+                             << " for reqpath='" << Rps_Cjson_String(reqpath)
+                             << "'");
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_web found filpath='"
+                            << Rps_Cjson_String(filpath)
+                            << "' for empty " << reqmethname << " reqnum#" << reqnum);
+            }
+          else
+            filpath += reqpath;
+
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_web filpath='"
                         << Rps_Cjson_String(filpath)
                         << "' reqnum#" << reqnum
+                        << " presp@" << (void*)presp
+                        << " oniresp@" << (presp->c_handler())
                         << " for reqpath='" << Rps_Cjson_String(reqpath)
                         << "'");
           if (!access(filpath.c_str(), F_OK))
@@ -619,15 +692,6 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
 
         };
     }
-  /**** TODO:
-   *
-   * If the URL ends with .thtml, it is supposed to be an
-   * Onion template file.  We probably need to separate POST and GET
-   * methods of HTTP requests.  We probably don't need to handle any
-   * other request except HEAD.  Caveat, this rps_serve_onion_web
-   * function might run in several threads started by the libonion
-   * itself!
-   ****/
   RPS_FATALOUT("unimplemented rps_serve_onion_web val: " << val << std::endl
                << "... purl@" << (void*)purl
                << " prequ@" << (void*)prequ
@@ -637,6 +701,13 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
               );
 #warning rps_serve_onion_web unimplemented
 } // end rps_serve_onion_web
+
+
+extern "C" onion_connection_status
+rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath, FILE*fil);
+
+extern "C" onion_connection_status
+rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath, FILE*fil);
 
 
 onion_connection_status
@@ -649,20 +720,33 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
   const onion_request_flags reqflags=preq->flags();
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
-  const char*mime = onion_mime_get(filepath.c_str());
+  const char*mime = nullptr;
+  std::string realfilepath = filepath;
+  bool expandrps = false;
+  if (filepath.size() > sizeof(".rps")
+      && !strcmp(filepath.c_str() - strlen(".rps"), ".rps"))
+    {
+      expandrps = true;
+      realfilepath.erase(realfilepath.end()-strlen(".rps"), realfilepath.end());
+      RPS_DEBUG_LOG(WEB, "rps_serve_onion_file expandrps filepath=" << filepath << " reqnum#" << reqnum
+                    << " reqmethname=" << reqmethname
+                    << " reqpath='" << Rps_Cjson_String(reqpath) << "'");
+    }
+  mime = onion_mime_get(realfilepath.c_str());
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val << " mime=" << mime
-                << " filepath=" << filepath
+                << " filepath=" << filepath << " realfilepath=" << realfilepath
                 << " reqnum#" << reqnum
                 << " reqmethname=" << reqmethname
                 << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
+                << " pres@" << (void*)pres
+                << " oniresp@" << (pres->c_handler())
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
-  std::ostringstream reqout;
 
   /****
    * TODO: most files, e.g. webroot/img/refpersys_logo.svg, should be
    * served as such. But we also need template files, with a file
-   * suffix of .thtml, where some substitution occurs by sending
+   * suffix of .rps, where some substitution occurs by sending
    * RefPerSys messages, etc...
    ***/
   if (mime && (reqmethnum==OR_GET || reqmethnum==OR_HEAD))
@@ -707,61 +791,23 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                     << " for reqnum#" << reqnum
                     << ' ' << reqmethname
                     << " reqpath=" << Rps_Cjson_String(reqpath));
-      struct stat filstat;
-      memset(&filstat, 0, sizeof(filstat));
-      if (fstat(fileno(fil), &filstat))
-        RPS_FATALOUT("rps_serve_onion_file filepath=" << Rps_Cjson_String(filepath)
-                     << " reqnum#" << reqnum
-                     << " reqmethname=" << reqmethname
-                     << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
-                     " fstat failed: " << strerror(errno));
-      {
-        char lenbuf[24];
-        memset(lenbuf, 0, sizeof(lenbuf));
-        snprintf(lenbuf, sizeof(lenbuf), "%ld", (long)filstat.st_size);
-        pres->setHeader("Content-length:", lenbuf);
-      }
-      constexpr int line_threshold = 48;
-      constexpr long offset_threshold = 2048;
-      constexpr int width_threshold = 80;
-      {
-        char*linbuf=nullptr;
-        ssize_t linlen=0;
-        size_t linsiz=0;
-        long curoff=0;
-        int linecnt = 0;
-        for(;;)
-          {
-            curoff = ftell(fil);
-            linlen = getline(&linbuf, &linsiz, fil);
-            if (linlen <= 0)
-              break;
-            curoff += linlen;
-            linecnt++;
-            pres->write(linbuf, linlen);
-            if (linecnt < line_threshold && curoff < offset_threshold)
-              RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
-                            << " fd#" << fileno(fil) << " curoff:" << curoff
-                            << " linlen=" << linlen << " linecnt=" << linecnt
-                            << " reqnum#" << reqnum
-                            << " wrote " << Rps_Cjson_String(std::string(linbuf,linlen)));
-            else if (linecnt < 2*line_threshold)
-              RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
-                            << " fd#" << fileno(fil) << " curoff:" << curoff
-                            << " linlen=" << linlen<< " linecnt=" << linecnt
-                            << " reqnum#" << reqnum);
-          };
-        RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val
-                      << " fd#" << fileno(fil)
-                      << " ending off=" << ftell(fil)
-                      << " linecnt=" << linecnt << ' '
-                      << ((linlen<width_threshold)?"lastline=":"lastline:")
-                      << ((linlen<width_threshold)?Rps_Cjson_String(std::string(linbuf)):Rps_Cjson_String(std::string(linbuf,width_threshold)))
-                      << " for reqnum#" << reqnum
-                      << " filepath=" << Rps_Cjson_String(filepath));
-        free(linbuf), linbuf=nullptr;
-        fclose(fil);
-      }
+
+      onion_connection_status osta = OCS_NOT_PROCESSED;
+      if (expandrps)
+        {
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_file expanded stream for reqnum#" << reqnum
+                        << ' ' << reqmethname
+                        << " reqpath=" << Rps_Cjson_String(reqpath));
+          osta = rps_serve_onion_expanded_stream(callframe, val, purl, preq, pres, reqnum, filepath, fil);
+        }
+      else
+        {
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_file raw stream for reqnum#" << reqnum
+                        << ' ' << reqmethname
+                        << " reqpath=" << Rps_Cjson_String(reqpath));
+          osta = rps_serve_onion_raw_stream(callframe, val, purl, preq, pres, reqnum, filepath, fil);
+        };
+      fclose (fil);
       RPS_DEBUG_LOG(WEB, "done rps_serve_onion_file val=" << val << " reqnum#" << reqnum
                     << " " << reqmethname << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
                     << " filepath=" << Rps_Cjson_String(filepath)
@@ -781,6 +827,96 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                    << " reqpath='" << reqpath << "'");
     }
 } // end rps_serve_onion_file
+
+onion_connection_status
+rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath, FILE*fil)
+{
+  const std::string reqpath =preq->path();
+  const onion_request_flags reqflags=preq->flags();
+  const unsigned reqmethnum = reqflags&OR_METHODS;
+  const char* reqmethname = onion_request_methods[reqmethnum];
+  struct stat filstat;
+  memset(&filstat, 0, sizeof(filstat));
+  if (fstat(fileno(fil), &filstat))
+    RPS_FATALOUT("rps_serve_onion_raw_stream filepath=" << Rps_Cjson_String(filepath)
+                 << " reqnum#" << reqnum
+                 << " reqmethname=" << reqmethname
+                 << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
+                 " fstat failed: " << strerror(errno));
+  {
+    char lenbuf[24];
+    memset(lenbuf, 0, sizeof(lenbuf));
+    snprintf(lenbuf, sizeof(lenbuf), "%ld", (long)filstat.st_size);
+    pres->setHeader("Content-length:", lenbuf);
+  }
+  constexpr int line_threshold = 48;
+  constexpr long offset_threshold = 2048;
+  constexpr int width_threshold = 80;
+  char*linbuf=nullptr;
+  ssize_t linlen=0;
+  size_t linsiz=0;
+  long curoff=0;
+  int linecnt = 0;
+  for(;;)
+    {
+      curoff = ftell(fil);
+      linlen = getline(&linbuf, &linsiz, fil);
+      if (linlen <= 0)
+        break;
+      curoff += linlen;
+      linecnt++;
+      pres->write(linbuf, linlen);
+      if (linecnt < line_threshold && curoff < offset_threshold)
+        RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream val=" << val
+                      << " fd#" << fileno(fil) << " curoff:" << curoff
+                      << " linlen=" << linlen << " linecnt=" << linecnt
+                      << " reqnum#" << reqnum
+                      << " wrote " << Rps_Cjson_String(std::string(linbuf,linlen)));
+      else if (linecnt < 2*line_threshold)
+        RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream val=" << val
+                      << " fd#" << fileno(fil) << " curoff:" << curoff
+                      << " linlen=" << linlen<< " linecnt=" << linecnt
+                      << " reqnum#" << reqnum);
+    };
+  RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream ending val=" << val
+                << " fd#" << fileno(fil)
+                << " ending off=" << ftell(fil)
+                << " linecnt=" << linecnt << ' '
+                << ((linlen<width_threshold)?"lastline=":"lastline:")
+                << ((linlen<width_threshold)?Rps_Cjson_String(std::string(linbuf)):Rps_Cjson_String(std::string(linbuf,width_threshold)))
+                << " for reqnum#" << reqnum
+                << " filepath=" << Rps_Cjson_String(filepath));
+  free(linbuf), linbuf=nullptr;
+  return OCS_PROCESSED;
+} // end rps_serve_onion_raw_stream
+
+
+onion_connection_status
+rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath, FILE*fil)
+{
+  const std::string reqpath =preq->path();
+  const onion_request_flags reqflags=preq->flags();
+  const unsigned reqmethnum = reqflags&OR_METHODS;
+  const char* reqmethname = onion_request_methods[reqmethnum];
+  RPS_LOCALFRAME(/*descr:*/ RPS_ROOT_OB(_1rfASGBBbFz02VUsMw), //"rps_serve_onion_expanded_stream"∈rps_routine
+                            /*prev:*/callframe,
+                            /*locals:*/
+                            Rps_Value valv;
+                            Rps_ObjectRef obstrbuf;
+                );
+  _f.valv = valarg;
+  _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
+  /****
+   * TODO: We should read the fil line by line and make some expansion
+   * in each of them, and append the raw lines and the expanded lines
+   * into obstrbuf.  How that happens has to be defined, but see the
+   * https://framalistes.org/sympa/arc/refpersys-forum/2020-10/msg00037.html
+   * and following...
+   ***/
+  RPS_FATALOUT("unimplemented rps_serve_onion_expanded_stream val="
+               << _f.valv << " reqnum#" << reqnum << " filepath=" << filepath);
+#warning unimplemented rps_serve_onion_expanded_stream
+} // end rps_serve_onion_expanded_stream
 
 
 std::ostream*
