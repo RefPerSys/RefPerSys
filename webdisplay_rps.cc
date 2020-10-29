@@ -955,6 +955,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef recvob;
                  Rps_ObjectRef classob;
                  Rps_ObjectRef obweb;
+                 Rps_ObjectRef obsel_display_object_payload_web;
                  Rps_Value recdepth;
                  Rps_Value optdocposv;
                  Rps_ObjectRef spacob;
@@ -962,8 +963,6 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef attrob;
                  Rps_Value attrval;
                  Rps_Value curcomp;
-                 Rps_Value resmainv;
-                 Rps_Value resxtrav;
                  //....etc....
                 );
   ////==== body of _5nSiRIxoYQp00MSnYA !method object!display_object_content_web ====
@@ -975,6 +974,11 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
   _f.optdocposv = arg3optdocposv;
+  // The below is a temporary and ugly workaround, since
+  // _0Z23UbC0G9b01WZZPN is not a root object in commit
+  // 0edbb672f5c63034
+  _f.obsel_display_object_payload_web =
+    Rps_PayloadSymbol::find_named_object(std::string("display_object_payload_web"));
   RPS_ASSERT (!_f.optdocposv || _f.optdocposv.is_int());
   std::lock_guard<std::recursive_mutex> obwebmtx(*(_f.obweb->objmtxptr()));
   RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_web recvob=" << _f.recvob
@@ -1070,12 +1074,24 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
         *pout  << "</ol>" << std::endl;
       }
   }
-  /// should display the payload....
-#warning partly unimplemented rpsapply_5nSiRIxoYQp00MSnYA
-  RPS_FATALOUT("partly unimplemented rpsapply_5nSiRIxoYQp00MSnYA"
-               << " recvob=" << _f.recvob
-               << " obweb=" << _f.obweb);
+  auto payl = _f.obweb->get_payload();
+  if (payl)
+    {
+      /// should display the payload....
+      RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _f.recvob
+                    << " obweb=" << _f.obweb
+                    << " before displaying payload");
+      (void) Rps_ObjectValue(_f.obweb).send2(&_,
+                                             _f.obweb,
+                                             _f.obsel_display_object_payload_web,
+                                             Rps_Value((intptr_t)1));
+    };
   *pout << "</div>" << std::endl;
+  RPS_DEBUG_LOG(WEB, "end rpsapply_5nSiRIxoYQp00MSnYA recvob=" << _f.recvob
+                << " obweb=" << _f.obweb
+                << "  !method object!display_object_content_web"
+                << std::endl);
+  return Rps_TwoValues{_f.obweb};
 } // end of rpsapply_5nSiRIxoYQp00MSnYA !method object!display_object_content_web
 
 
@@ -1095,10 +1111,12 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef obclass; //
                  Rps_ObjectRef obweb; //
                  Rps_ObjectRef obsuper; //
+                 Rps_ObjectRef obelem; //
                  Rps_Value depthv; //
                  Rps_Value resmainv; //
                  Rps_Value resxtrav; //
                  Rps_SetValue setselv; //
+                 Rps_SetValue setattrv; //
                  Rps_ObjectRef obcursel; //
                  Rps_ClosureValue curmethclos;
                 );
@@ -1110,6 +1128,7 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
   _f.depthv = arg2depth;
   RPS_ASSERT(_f.depthv.is_int());
   auto depthi = _f.depthv.to_int();
+  constexpr int max_depth = 5; // FIXME, should be improved
   RPS_DEBUG_LOG(WEB, "rpsapply_8lKdW7lgcHV00WUOiT start !method class/display_object_payload_web @!@° obclass="
                 << _f.obclass << ", obweb=" << _f.obweb
                 << " of class:" << Rps_Value(_f.obweb).compute_class(&_)
@@ -1118,8 +1137,96 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
                     "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_web")
                 << std::endl
                );
-#warning unimplemented rpsapply_8lKdW7lgcHV00WUOiT
-  RPS_FATAL("unimplemented rpsapply_8lKdW7lgcHV00WUOiT");
+  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  RPS_ASSERT(pout);
+  auto paylcla = _f.obclass->get_classinfo_payload();
+  RPS_ASSERT(paylcla);
+  _f.obsuper = paylcla->superclass();
+  _f.setattrv = Rps_SetValue(paylcla->attributes_set());
+  _f.setselv = paylcla->compute_set_of_own_method_selectors(&_);
+  RPS_DEBUG_LOG(WEB, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _f.obclass
+                << " setattrv=" << _f.setattrv
+                << " setselv=" << _f.setselv);
+  *pout << "<div class='classinfo_rpscl' rps_obid='" <<  _f.obweb->oid()
+        << "'>" << std::endl;
+  *pout << "<span class='decorval_rpscl'>super:</span>&nbsp;";
+  rps_web_display_html_for_objref(&_, _f.obsuper,
+                                  _f.obweb,
+                                  depthi+1);
+  *pout << "<br class='decor_rpscl'/>" << std::endl;
+  if (depthi<max_depth)
+    {
+      /// display set of attributes
+      unsigned cardat = _f.setattrv.as_set()->cardinal();
+      RPS_DEBUG_LOG(WEB, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _f.obclass << " cardat="<< cardat);
+      if (cardat>0)
+        {
+          *pout << "<div class='classattr_rpscl' rps_obid='" <<  _f.obweb->oid()
+                << "'>" << std::endl;
+          *pout << "<span class='classattrcardinal_rpscl' rps_obid='" <<  _f.obweb->oid()
+                << "'>" << cardat << " attributes"
+                << "</span>" << std::endl;
+          *pout << "<ul class='classattrelem_rpscl' rps_obid='" <<  _f.obweb->oid()
+                << "'>" << std::endl;
+          for (unsigned atix=0; atix<cardat; atix++)
+            {
+              _f.obelem = _f.setattrv.as_set()->at(atix);
+              RPS_DEBUG_LOG(WEB, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _f.obclass
+                            << " attribute atix#" << atix
+                            << " obelem=" << _f.obelem);
+              RPS_ASSERT(_f.obelem);
+              *pout << "<li class='classattr_rpscl' rps_obid='" <<  _f.obweb->oid()
+                    << "'>" << std::endl;
+              rps_web_display_html_for_objref(&_, _f.obelem, _f.obweb, depthi+1);
+              *pout << "</li>" << std::endl;
+              _f.obelem = nullptr;
+            }
+          *pout << "</ul>" << std::endl; // end classattrelem_rpscl
+          *pout << "</div>" << std::endl; // end classattr_rpscl
+        };
+      /// display method selectors
+      unsigned nbsel =  _f.setselv.as_set()->cardinal();
+      RPS_DEBUG_LOG(WEB, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _f.obclass << " nbsel="<< nbsel);
+      if (nbsel>0)
+        {
+          *pout << "<div class='classmethsel_rpscl' rps_obid='" <<  _f.obweb->oid()
+                << "'>" << std::endl;
+          *pout << "<span class='classmethnb_rpscl' rps_obid='" <<  _f.obweb->oid()
+                << "'>" << nbsel << " method selectors"
+                << "</span>" << std::endl;
+          *pout << "<dl class='classmethods_rpscl'  rps_obid='" <<  _f.obweb->oid()
+                << "'>" << std::endl;
+          for (unsigned selix=0; selix < nbsel; selix++)
+            {
+              _f.obcursel =  _f.setselv.as_set()->at(selix);
+              _f.curmethclos = paylcla->get_own_method(_f.obcursel);
+              RPS_DEBUG_LOG(WEB, "rpsapply_8lKdW7lgcHV00WUOiT obclass=" << _f.obclass
+                            << " selix#" << selix << " obcursel=" << _f.obcursel
+                            << " curmethclos=" << _f.curmethclos);
+              *pout << "<dt class='methodselob_rpscl'  rps_obid='" <<  _f.obweb->oid()
+                    << "'>" << std::endl;
+              rps_web_display_html_for_objref(&_, _f.obcursel, _f.obweb, depthi+2);
+              *pout << "</dt>" << std::endl;
+              *pout << "<dd class='methodselclo_rpscl'> rps_obid='" <<  _f.obweb->oid()
+                    << "'>" << std::endl;
+              rps_web_display_html_for_value(&_,
+                                             _f.curmethclos,
+                                             _f.obweb,
+                                             depthi+1);
+              *pout << "</dd>" << std::endl;
+              _f.obcursel = nullptr;
+              _f.curmethclos = nullptr;
+            }
+          *pout << "</dl>" << std::endl;  // end classmethods_rpscl
+          *pout << "</div>" << std::endl; // end classmethsel_rpscl
+        };
+    }
+  *pout << "</div>" << std::endl; // end classinfo_rpscl
+  RPS_DEBUG_LOG(WEB, "end rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_web obclass="
+                << _f.obclass << ", obweb=" << _f.obweb
+                << " depthi=" << depthi
+               );
+  return Rps_TwoValues{_f.obweb};
 } // end of rpsapply_8lKdW7lgcHV00WUOiT
 
 
