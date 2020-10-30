@@ -975,10 +975,15 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
               memset (rps_action, 0, sizeof(rps_action));
               memset (rps_suffix, 0, sizeof(rps_suffix));
               int pos_json = -1;
-              if (sscanf(pi, "<?refpersys suffix= '%.60[a-zA-Z0-9_]' action= '%.16[a-zA-Z0-9_]' rps_json= %n",
-                         rps_suffix,
-                         rps_action,
-                         &pos_json) >= 2 && pos_json>0)
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
+                            << " pi=" << pi
+                            << " reqnum#" << reqnum
+                            << " before sscanf");
+              int nbscanpi = sscanf(pi, "<?refpersys suffix='%.60[a-zA-Z0-9_]' action='%.16[a-zA-Z0-9_]' rps_json=%n",
+                                    rps_suffix,
+                                    rps_action,
+                                    &pos_json);
+              if (nbscanpi >= 2 && pos_json>0)
                 {
                   const char*jsonp = pi+pos_json;
                   const char*endjson = jsonp?strstr(jsonp, "?>"):nullptr;
@@ -1032,6 +1037,19 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                                    << " js=" << js);
                     }
 #warning partly unimplemented rps_serve_onion_expanded_stream for processing instruction
+                }
+              else
+                {
+                  RPS_WARNOUT("rps_serve_onion_expanded_stream"
+                              << " linecnt=" << linecnt
+                              << " reqnum#" << reqnum
+                              << " for " << reqmethname << " of " << Rps_Cjson_String(reqpath)
+                              << "linbuf '" << Rps_Cjson_String(std::string(linbuf))
+                              << "' nbscanpi=" << nbscanpi
+                              << " failed sscanf pi='"
+                              << Rps_Cjson_String(std::string(pi))
+                              << "'" << std::endl
+                              << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
                 }
             }
         }
@@ -1164,8 +1182,8 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
 {
   RPS_LOCALFRAME(rpskob_2sl5Gjb7swO04EcMqf,
                  callerframe, //
-		 Rps_ObjectRef oba;
-		 );
+                 Rps_ObjectRef oba;
+                );
   RPS_FATALOUT("unimplemented rpsapply_2sl5Gjb7swO04EcMqf rpshtml webaction∈core_function" << std::endl);
 #warning unimplemented rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction∈core_function"
 } // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
