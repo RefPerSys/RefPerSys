@@ -1150,4 +1150,24 @@ rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
   return nullptr;
 } // end rps_web_output
 
+////////////////////////////////////////////////////////////////
+// C++ closure for "rpshtml webaction"∈core_function
+
+extern "C" rps_applyingfun_t rpsapply_2sl5Gjb7swO04EcMqf;
+Rps_TwoValues
+rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
+                            [[maybe_unused]] const Rps_Value arg0,
+                            [[maybe_unused]] const Rps_Value arg1, ///
+                            [[maybe_unused]]const Rps_Value arg2,
+                            [[maybe_unused]] const Rps_Value arg3_,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
+{
+  RPS_LOCALFRAME(rpskob_2sl5Gjb7swO04EcMqf,
+                 callerframe, //
+		 Rps_ObjectRef oba;
+		 );
+  RPS_FATALOUT("unimplemented rpsapply_2sl5Gjb7swO04EcMqf rpshtml webaction∈core_function" << std::endl);
+#warning unimplemented rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction∈core_function"
+} // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
+
 ///////// end of file httpweb_rps.cc
