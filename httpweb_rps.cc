@@ -1002,7 +1002,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
               if (nbscanpi >= 2 && pos_json>0)
                 {
                   const char*jsonp = pi+pos_json;
-                  const char*endjson = jsonp?strstr(jsonp, "?>"):nullptr;
+                  const char*endjson = jsonp?strstr(jsonp, "'?>"):nullptr;
                   RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
                                 << " pi=" << pi
                                 << " reqnum#" << reqnum
@@ -1015,8 +1015,13 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                                 << (endjson?endjson:"*null*"));
                   if (endjson && endjson>jsonp+3)
                     {
-                      std::string inpjs {jsonp,(unsigned)(endjson-jsonp-1)};
+                      std::string inpjs {jsonp+1,(unsigned)(endjson-jsonp-1)};
                       Json::Value js = rps_string_to_json(inpjs);
+		      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream linecnt=" << linecnt
+				    << " pi=" << pi
+				    << " reqnum#" << reqnum
+				    << " inpjs='" << Rps_Cjson_String(inpjs)
+				    << "' js=" << js);
                       const char*endact = nullptr;
                       bool okact = false;
                       Rps_Id actid (rps_action, &endact, &okact);
