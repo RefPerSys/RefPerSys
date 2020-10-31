@@ -978,6 +978,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                              << linbuf);
               nbpi++;
               char rps_action[(Rps_Id::nbchars|3)+5];
+	      static_assert(sizeof(rps_action)>20);
               memset (rps_action, 0, sizeof(rps_action));
               memset (rps_suffix, 0, sizeof(rps_suffix));
               int pos_json = -1;
@@ -985,7 +986,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                             << " pi=" << pi
                             << " reqnum#" << reqnum
                             << " before sscanf");
-              int nbscanpi = sscanf(pi, "<?refpersys suffix='%60[a-zA-Z0-9_]' action='%16[a-zA-Z0-9_]' rps_json=%n",
+              int nbscanpi = sscanf(pi, "<?refpersys suffix='%60[a-zA-Z0-9_]' action='%20[a-zA-Z0-9_]' rps_json=%n",
                                     rps_suffix,
                                     rps_action,
                                     &pos_json);
