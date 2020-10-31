@@ -94,7 +94,7 @@ Rps_PayloadStrBuf::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
     return;
   const std::string&str = strbuf_out.str();
   auto eol = str.find('\n');
-  if (eol >= 0)
+  if (eol > 0)
     {
       auto begit = str.begin();
       Json::Value jarr(Json::arrayValue);

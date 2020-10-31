@@ -820,7 +820,7 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
       callframe->set_state_value(nullptr);
       callframe->set_state_rank(- __LINE__);
       callframe->clear_closure();
-      return OCS_PROCESSED;
+      return osta;
     }
   else
     {
@@ -850,6 +850,12 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
                  << " reqmethname=" << reqmethname
                  << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
                  " fstat failed: " << strerror(errno));
+  RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream filepath=" << Rps_Cjson_String(filepath)
+                 << " reqnum#" << reqnum
+                 << " reqmethname=" << reqmethname
+                 << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
+		<< std::endl
+		<< "... start " << Rps_ShowCallFrame(callframe));
   {
     char lenbuf[24];
     memset(lenbuf, 0, sizeof(lenbuf));
@@ -979,10 +985,19 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                             << " pi=" << pi
                             << " reqnum#" << reqnum
                             << " before sscanf");
-              int nbscanpi = sscanf(pi, "<?refpersys suffix='%.60[a-zA-Z0-9_]' action='%.16[a-zA-Z0-9_]' rps_json=%n",
+              int nbscanpi = sscanf(pi, "<?refpersys suffix='%60[a-zA-Z0-9_]' action='%16[a-zA-Z0-9_]' rps_json=%n",
                                     rps_suffix,
                                     rps_action,
                                     &pos_json);
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
+                            << " pi=" << pi
+                            << " reqnum#" << reqnum
+                            << " sscanf nbscanpi=" << nbscanpi
+			    << " pos_json=" << pos_json
+			    << " rps_suffix=|" << rps_suffix
+			    << "| rps_action=|" << rps_action << "|" 
+			    << std::endl
+			    << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_expanded_stream+scanf"));
               if (nbscanpi >= 2 && pos_json>0)
                 {
                   const char*jsonp = pi+pos_json;
@@ -999,7 +1014,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                                 << (endjson?endjson:"*null*"));
                   if (endjson && endjson>jsonp+3)
                     {
-                      std::string inpjs {jsonp,endjson-jsonp-1};
+                      std::string inpjs {jsonp,(unsigned)(endjson-jsonp-1)};
                       Json::Value js = rps_string_to_json(inpjs);
                       const char*endact = nullptr;
                       bool okact = false;
