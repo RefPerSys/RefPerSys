@@ -399,6 +399,7 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
                 << ", obweb=" << _f.obweb
                 << ", depthv=" << _f.depthv);
   int depth =  _f.depthv.to_int();
+  RPS_ASSERT(depth>=0);
   std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
   RPS_ASSERT(pout);
   intptr_t i = _f.intv.as_int();
@@ -438,6 +439,7 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
                 << ", obweb=" << _f.obweb
                 << ", depthv=" <<  _f.depthv);
   int depth =  _f.depthv.to_int();
+  RPS_ASSERT(depth>=0);
   std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
   RPS_ASSERT(pout);
   const std::string str = _f.stringv.as_cppstring();
@@ -480,6 +482,7 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
                 << "obweb=" << _f.obweb
                 << ", depthv=" <<  _f.depthv);
   int depth =  _f.depthv.to_int();
+  RPS_ASSERT(depth>=0);
   std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
   RPS_ASSERT(pout);
   double x = _f.doublev.as_double();
