@@ -237,17 +237,19 @@ Rps_PayloadWebex::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   return;
 } // end Rps_PayloadWebex::dump_json_content
 
-Rps_PayloadWebex::Rps_PayloadWebex(Rps_ObjectZone*ownerobz,uint64_t reqnum,Onion::Request&req,Onion::Response&resp)
+Rps_PayloadWebex::Rps_PayloadWebex(Rps_ObjectZone*ownerobz,uint64_t reqnum,Onion::Request*preq,Onion::Response*presp)
   : Rps_Payload(Rps_Type::PaylWebex, ownerobz),
     webex_reqnum(reqnum),
     webex_startim(rps_monotonic_real_time()),
-    webex_requ(&req),
-    webex_resp(&resp),
+    webex_requ(preq),
+    webex_resp(presp),
     webex_state(nullptr),
     webex_numstate(0),
     webex_indent(0)
 {
   RPS_ASSERT(ownerobz && ownerobz->stored_type() == Rps_Type::Object);
+  RPS_ASSERT(preq != nullptr);
+  RPS_ASSERT(presp != nullptr);
   if (RPS_DEBUG_ENABLED(WEB))
     {
       char thrname[24];
@@ -308,10 +310,10 @@ Rps_PayloadWebex::make_obwebex(Rps_CallFrame*callerframe, Onion::Request*req, On
                             /*locals:*/
                             Rps_ObjectRef obwebex);
   _f.obwebex = Rps_ObjectRef::make_object(&_, web_exchange_ob);
-  auto paylwebex =  _f.obwebex->put_new_arg3_payload<Rps_PayloadWebex>(reqnum,*req,*resp);
-  paylwebex->webex_startim = rps_monotonic_real_time();
+  auto paylwebex =  _f.obwebex->put_new_arg3_payload<Rps_PayloadWebex>(reqnum,req,resp);  
   RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::make_obwebex end reqnum#" << reqnum
                 << " obwebex=" << _f.obwebex << " startim:" <<  paylwebex->webex_startim);
+  RPS_ASSERT(paylwebex != nullptr);
   return _f.obwebex;
 } // end PayloadWebex::make_obwebex
 

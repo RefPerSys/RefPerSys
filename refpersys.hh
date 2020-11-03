@@ -2156,7 +2156,7 @@ public:
   PaylClass* put_new_arg3_payload(Arg1Class arg1, Arg2Class arg2, Arg3Class arg3)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate4<PaylClass,Arg1Class,Arg2Class>(this,arg1,arg2,arg3);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate4<PaylClass,Arg1Class,Arg2Class,Arg3Class>(this,arg1,arg2,arg3);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
@@ -2166,7 +2166,7 @@ public:
   PaylClass* put_new_arg4_payload(Arg1Class arg1, Arg2Class arg2, Arg3Class arg3, Arg4Class arg4)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate5<PaylClass,Arg1Class,Arg2Class>(this,arg1,arg2,arg4);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate5<PaylClass,Arg1Class,Arg2Class,Arg3Class,Arg4Class>(this,arg1,arg2,arg3,arg4);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
@@ -2858,7 +2858,7 @@ public:
     cfram_rankstate = 0;
     cfram_clos = nullptr;
   }; // end Rps_ProtoCallFrame destructor
-  void set_outputter(nullptr_t) {  cfram_outputter.store(nullptr); };
+  void set_outputter(std::nullptr_t) {  cfram_outputter.store(nullptr); };
   void clear_outputter(void) { cfram_outputter.store(nullptr); };
   void set_outputter(Rps_CallFrameOutputSig_t*outputter=nullptr)
   { cfram_outputter.store(outputter);};

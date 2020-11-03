@@ -87,7 +87,7 @@ public:
   {
     return "webex";
   };
-  Rps_PayloadWebex(Rps_ObjectZone*,uint64_t,Onion::Request&,Onion::Response&);
+  Rps_PayloadWebex(Rps_ObjectZone*,uint64_t,Onion::Request*,Onion::Response*);
   virtual ~Rps_PayloadWebex();
   /// if ob is of class web_exchange, gives its payload. Otherwise
   /// return null:
