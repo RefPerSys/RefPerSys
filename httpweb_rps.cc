@@ -291,6 +291,30 @@ Rps_PayloadWebex::~Rps_PayloadWebex()
   webex_numstate = 0;
 } // end  Rps_PayloadWebex::~Rps_PayloadWebex
 
+
+
+Rps_ObjectRef
+Rps_PayloadWebex::make_obwebex(Rps_CallFrame*callerframe, Onion::Request*req, Onion::Response*resp,
+                               uint64_t reqnum)
+{
+  RPS_ASSERT(callerframe != nullptr && callerframe->is_good_call_frame());
+  RPS_ASSERT(req != nullptr);
+  RPS_ASSERT(resp != nullptr);
+  auto web_exchange_ob = RPS_ROOT_OB(_8zNtuRpzXUP013WG9S);
+  RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::make_obwebex start reqnum#" << reqnum
+               );
+  RPS_LOCALFRAME(/*descr:*/ web_exchange_ob,
+                            /*prev:*/callerframe,
+                            /*locals:*/
+                            Rps_ObjectRef obwebex);
+  _f.obwebex = Rps_ObjectRef::make_object(&_, web_exchange_ob);
+  auto paylwebex =  _f.obwebex->put_new_arg3_payload<Rps_PayloadWebex>(reqnum,*req,*resp);
+  paylwebex->webex_startim = rps_monotonic_real_time();
+  RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::make_obwebex end reqnum#" << reqnum
+                << " obwebex=" << _f.obwebex << " startim:" <<  paylwebex->webex_startim);
+  return _f.obwebex;
+} // end PayloadWebex::make_obwebex
+
 ////////////////
 /// given some object ob, returns its payloadwebex if its class is a
 /// web_exchange
@@ -851,11 +875,11 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
                  << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
                  " fstat failed: " << strerror(errno));
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream filepath=" << Rps_Cjson_String(filepath)
-                 << " reqnum#" << reqnum
-                 << " reqmethname=" << reqmethname
-                 << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
-		<< std::endl
-		<< "... start " << Rps_ShowCallFrame(callframe));
+                << " reqnum#" << reqnum
+                << " reqmethname=" << reqmethname
+                << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
+                << std::endl
+                << "... start " << Rps_ShowCallFrame(callframe));
   {
     char lenbuf[24];
     memset(lenbuf, 0, sizeof(lenbuf));
@@ -921,9 +945,11 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                             Rps_Value valv;
                             Rps_ObjectRef obstrbuf;
                             Rps_ObjectRef obaction;
+                            Rps_ObjectRef obwebex;
                 );
   _f.valv = valarg;
   _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
+  _f.obwebex = Rps_PayloadWebex::make_obwebex(&_, preq, pres, reqnum);
   RPS_DEBUG_LOG(WEB, "start rps_serve_onion_expanded_stream reqnum:" << reqnum
                 << " " << reqmethname << " " << Rps_Cjson_String(reqpath)
                 << " valv=" << _f.valv << " obstrbuf=" << _f.obstrbuf
@@ -978,7 +1004,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                              << linbuf);
               nbpi++;
               char rps_action[(Rps_Id::nbchars|3)+5];
-	      static_assert(sizeof(rps_action)>20);
+              static_assert(sizeof(rps_action)>20);
               memset (rps_action, 0, sizeof(rps_action));
               memset (rps_suffix, 0, sizeof(rps_suffix));
               int pos_json = -1;
@@ -994,11 +1020,11 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                             << " pi=" << pi
                             << " reqnum#" << reqnum
                             << " sscanf nbscanpi=" << nbscanpi
-			    << " pos_json=" << pos_json
-			    << " rps_suffix=|" << rps_suffix
-			    << "| rps_action=|" << rps_action << "|" 
-			    << std::endl
-			    << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_expanded_stream+scanf"));
+                            << " pos_json=" << pos_json
+                            << " rps_suffix=|" << rps_suffix
+                            << "| rps_action=|" << rps_action << "|"
+                            << std::endl
+                            << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_expanded_stream+scanf"));
               if (nbscanpi >= 2 && pos_json>0)
                 {
                   const char*jsonp = pi+pos_json;
@@ -1017,11 +1043,11 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                     {
                       std::string inpjs {jsonp+1,(unsigned)(endjson-jsonp-1)};
                       Json::Value js = rps_string_to_json(inpjs);
-		      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream linecnt=" << linecnt
-				    << " pi=" << pi
-				    << " reqnum#" << reqnum
-				    << " inpjs='" << Rps_Cjson_String(inpjs)
-				    << "' js=" << js);
+                      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream linecnt=" << linecnt
+                                    << " pi=" << pi
+                                    << " reqnum#" << reqnum
+                                    << " inpjs='" << Rps_Cjson_String(inpjs)
+                                    << "' js=" << js);
                       const char*endact = nullptr;
                       bool okact = false;
                       Rps_Id actid (rps_action, &endact, &okact);

@@ -166,6 +166,9 @@ public:
       return "";
     return webex_requ->path();
   };
+  /* make an object of class web_exchange */
+  static Rps_ObjectRef make_obwebex(Rps_CallFrame*callerframe, Onion::Request*req, Onion::Response*resp,
+                                    uint64_t reqnum);
 };				// end class Rps_PayloadWebex
 
 
