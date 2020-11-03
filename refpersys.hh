@@ -1696,6 +1696,18 @@ public:
   {
     return new(nullptr) ZoneClass(arg1, arg2, arg3);
   };
+  template <typename ZoneClass, typename Arg1Class, typename Arg2Class, typename Arg3Class, typename Arg4Class>
+  static ZoneClass*
+  rps_allocate4(Arg1Class arg1, Arg2Class arg2, Arg3Class arg3, Arg4Class arg4)
+  {
+    return new(nullptr) ZoneClass(arg1, arg2, arg3, arg4);
+  };
+  template <typename ZoneClass, typename Arg1Class, typename Arg2Class, typename Arg3Class, typename Arg4Class, typename Arg5Class>
+  static ZoneClass*
+  rps_allocate5(Arg1Class arg1, Arg2Class arg2, Arg3Class arg3, Arg4Class arg4, Arg5Class arg5)
+  {
+    return new(nullptr) ZoneClass(arg1, arg2, arg3, arg4, arg5);
+  };
   template <typename ZoneClass, class ...Args> static ZoneClass*
   rps_allocate_with_wordgap(unsigned wordgap, Args... args)
   {
@@ -2135,6 +2147,26 @@ public:
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
     PaylClass*newpayl = Rps_QuasiZone::rps_allocate3<PaylClass,Arg1Class,Arg2Class>(this,arg1,arg2);
+    Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
+    if (oldpayl)
+      delete oldpayl;
+    return newpayl;
+  };
+  template<class PaylClass, typename Arg1Class, typename Arg2Class, typename Arg3Class>
+  PaylClass* put_new_arg3_payload(Arg1Class arg1, Arg2Class arg2, Arg3Class arg3)
+  {
+    std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate4<PaylClass,Arg1Class,Arg2Class>(this,arg1,arg2,arg3);
+    Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
+    if (oldpayl)
+      delete oldpayl;
+    return newpayl;
+  };
+  template<class PaylClass, typename Arg1Class, typename Arg2Class, typename Arg3Class, typename Arg4Class>
+  PaylClass* put_new_arg4_payload(Arg1Class arg1, Arg2Class arg2, Arg3Class arg3, Arg4Class arg4)
+  {
+    std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+    PaylClass*newpayl = Rps_QuasiZone::rps_allocate5<PaylClass,Arg1Class,Arg2Class>(this,arg1,arg2,arg4);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
