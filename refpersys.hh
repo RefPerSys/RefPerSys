@@ -2131,77 +2131,84 @@ public:
     if (oldpayl)
       delete oldpayl;
     return newpayl;
-  };
+  };				// end put_new_plain_payload
   template<class PaylClass, typename Arg1Class>
   PaylClass* put_new_arg1_payload(Arg1Class arg1)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate2<PaylClass,Arg1Class>(this,arg1);
+    PaylClass*newpayl =
+      Rps_QuasiZone::rps_allocate2<PaylClass,Arg1Class>(this,arg1);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
     return newpayl;
-  };
+  };				// end put_new_arg1_payload
   template<class PaylClass, typename Arg1Class, typename Arg2Class>
   PaylClass* put_new_arg2_payload(Arg1Class arg1, Arg2Class arg2)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate3<PaylClass,Arg1Class,Arg2Class>(this,arg1,arg2);
+    PaylClass*newpayl =
+      Rps_QuasiZone::rps_allocate3<PaylClass,Arg1Class,Arg2Class>(this,arg1,arg2);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
     return newpayl;
-  };
+  };				// end put_new_arg2_payload
   template<class PaylClass, typename Arg1Class, typename Arg2Class, typename Arg3Class>
   PaylClass* put_new_arg3_payload(Arg1Class arg1, Arg2Class arg2, Arg3Class arg3)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate4<PaylClass,Arg1Class,Arg2Class,Arg3Class>(this,arg1,arg2,arg3);
+    PaylClass*newpayl =
+      Rps_QuasiZone::rps_allocate4<PaylClass,Arg1Class,Arg2Class,Arg3Class>(this,arg1,arg2,arg3);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
     return newpayl;
-  };
+  };				// end put_new_arg3_payload
   template<class PaylClass, typename Arg1Class, typename Arg2Class, typename Arg3Class, typename Arg4Class>
   PaylClass* put_new_arg4_payload(Arg1Class arg1, Arg2Class arg2, Arg3Class arg3, Arg4Class arg4)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate5<PaylClass,Arg1Class,Arg2Class,Arg3Class,Arg4Class>(this,arg1,arg2,arg3,arg4);
+    PaylClass*newpayl =
+      Rps_QuasiZone::rps_allocate5<PaylClass,Arg1Class,Arg2Class,Arg3Class,Arg4Class>(this,arg1,arg2,arg3,arg4);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
     return newpayl;
-  };
+  };				// end put_new_arg4_payload
   template<class PaylClass>
   PaylClass* put_new_plain_payload_with_wordgap(unsigned wordgap)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass>(wordgap,this);
+    PaylClass*newpayl =
+      Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass>(wordgap,this);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
     return newpayl;
-  };
+  };				// end put_new_plain_payload_with_wordgap
   template<class PaylClass, typename Arg1Class>
   PaylClass* put_new_arg1_payload_with_wordgap(unsigned wordgap, Arg1Class arg1)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass,Arg1Class>(wordgap,this,arg1);
+    PaylClass*newpayl =
+      Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass,Arg1Class>(wordgap,this,arg1);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
     return newpayl;
-  };
+  };				// end put_new_arg1_payload_with_wordgap
   template<class PaylClass, typename Arg1Class, typename Arg2Class>
   PaylClass* put_new_arg2_payload_with_wordgap(unsigned wordgap, Arg1Class arg1, Arg2Class arg2)
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
-    PaylClass*newpayl = Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass,Arg1Class,Arg2Class>(wordgap,this,arg1,arg2);
+    PaylClass*newpayl =
+      Rps_QuasiZone::rps_allocate_with_wordgap<PaylClass,Arg1Class,Arg2Class>(wordgap,this,arg1,arg2);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
     return newpayl;
-  };
+  };				// end put_new_arg2_payload_with_wordgap
   virtual uint32_t wordsize() const
   {
     return sizeof(Rps_ObjectZone)/sizeof(void*);

@@ -310,7 +310,8 @@ Rps_PayloadWebex::make_obwebex(Rps_CallFrame*callerframe, Onion::Request*req, On
                             /*locals:*/
                             Rps_ObjectRef obwebex);
   _f.obwebex = Rps_ObjectRef::make_object(&_, web_exchange_ob);
-  auto paylwebex =  _f.obwebex->put_new_arg3_payload<Rps_PayloadWebex>(reqnum,req,resp);  
+  auto paylwebex =
+    _f.obwebex->put_new_arg3_payload<Rps_PayloadWebex>(reqnum,req,resp);
   RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::make_obwebex end reqnum#" << reqnum
                 << " obwebex=" << _f.obwebex << " startim:" <<  paylwebex->webex_startim);
   RPS_ASSERT(paylwebex != nullptr);
