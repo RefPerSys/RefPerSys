@@ -771,7 +771,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     case RPSPROGOPT_WEB:
     {
       if (side_effect)
-        rps_web_initialize_service(arg);
+        RPS_FATALOUT("NOT DOING rps_web_initialize_service " << arg);
     }
     return 0;
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:
@@ -915,8 +915,8 @@ rps_run_application(int &argc, char **argv)
     }
   else
     {
-      RPS_DEBUG_LOG(WEB,
-                    "rps_run_application is calling rps_run_web_service"
+      RPS_FATALOUT(
+                    "rps_run_application NOT calling rps_run_web_service"
                     << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
       rps_run_web_service();
