@@ -44,7 +44,7 @@ extern "C" std::istream*rps_repl_input = nullptr;
 
 /// Interpret from either a given input stream,
 /// or using readline if inp is null.
-extern "C" void rps_repl_interpret(std::istream*inp);
+extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp);
 
 
 std::string
@@ -65,10 +65,13 @@ rps_repl_version(void)
 } // end rps_repl_version
 
 void
-rps_repl_interpret(std::istream*inp)
+rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp)
 {
   std::istream*previous_input=nullptr;
   RPS_ASSERT(rps_is_main_thread());
+   RPS_LOCALFRAME(/*descr:*/nullptr,
+		  /*callerframe:*/callframe,
+                  );
   previous_input = rps_repl_input;
   rps_repl_input = inp;
   rps_repl_input = previous_input;

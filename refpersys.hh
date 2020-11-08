@@ -3506,6 +3506,10 @@ extern "C" unsigned rps_hardcoded_number_of_constants(void);
 ////////////////
 
 extern "C" std::string rps_repl_version(void); // in repl_rps.cc
+/// Interpret from either a given input stream,
+/// or using readline if inp is null. In repl_rps.cc
+extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp);
+
 extern "C" std::string rps_curl_version(void); // in curl_rps.cc
 extern "C" void rps_set_gui_dump_dir(const std::string&); // in fltklo_rps.cc 
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
