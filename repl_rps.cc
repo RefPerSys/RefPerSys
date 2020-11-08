@@ -50,7 +50,7 @@ extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, co
  ***/
 extern "C" Rps_TwoValues rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int &lineno, int& colno);
 
-/// the lexer for the 
+/// the lexer for the
 
 std::string
 rps_repl_version(void)
@@ -77,8 +77,8 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   RPS_ASSERT(input_name != nullptr);
   // descriptor is: _6x4XcZ1fxp403uBUoz) //"rps_repl_interpret"∈core_function
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_6x4XcZ1fxp403uBUoz),
-		  /*callerframe:*/callframe,
-                  );
+                           /*callerframe:*/callframe,
+                );
   previous_input = rps_repl_input;
   rps_repl_input = inp;
   rps_repl_input = previous_input;
@@ -87,19 +87,56 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
 Rps_TwoValues
 rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int &lineno, int& colno)
 {
-  
+
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(input_name != nullptr);
   RPS_ASSERT(linebuf != nullptr);
+  int linelen = strlen(linebuf);
   RPS_ASSERT(callframe != nullptr);
-  RPS_ASSERT(colno >= 0 && colno < strlen(linebuf));
+  RPS_ASSERT(colno >= 0 && colno <= linelen);
+  while (colno < linelen && isspace(linebuf[colno]))
+    colno++;
+  /// lex numbers?
+  if (((linebuf[colno] == '+' || linebuf[colno] == '-') && isdigit(linebuf[colno+1]))
+      || isdigit(linebuf[colno]))
+    {
+      char*endint=nullptr;
+      char*endfloat=nullptr;
+      const char*startnum = linebuf+colno;
+      long long l = strtoll(startnum, &endint, 0);
+      double d = strtod(startnum, &endfloat);
+      RPS_ASSERT(endint != nullptr && endfloat != nullptr);
+      if (endfloat > endint)
+        {
+          colno += endfloat - startnum;
+          return Rps_TwoValues{RPS_ROOT_OB(_98sc8kSOXV003i86w5), //double∈class
+                               Rps_DoubleValue(d)};
+        }
+      else
+        {
+          colno += endint - startnum;
+          return Rps_TwoValues{RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b), //int∈class
+                               Rps_Value(l, Rps_Value::Rps_IntTag{})};
+        }
+    }
+  /// lex infinities (double) - but not NAN
+  else if (!strncmp(linebuf+colno, "+INF", 4)
+           || !strncmp(linebuf+colno, "-INF", 4))
+    {
+      bool pos = linebuf[colno] == '+';
+      colno += 4;
+      return Rps_TwoValues{RPS_ROOT_OB(_98sc8kSOXV003i86w5), //double∈class
+                           Rps_DoubleValue(pos
+                                           ?std::numeric_limits<double>::infinity()
+                                           : -std::numeric_limits<double>::infinity())};
+    }
   RPS_FATALOUT("unimplemented rps_repl_lexer inp@" << (void*)inp
-	       << " input_name=" << input_name
-	       << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
-	       << " lineno=" << lineno
-	       << " colno=" << colno
-	       << " curpos=" << linebuf+colno
-	       << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer"));
+               << " input_name=" << input_name
+               << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
+               << " lineno=" << lineno
+               << " colno=" << colno
+               << " curpos=" << linebuf+colno
+               << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer"));
 #warning unimplemented rps_repl_lexer
 } // end of rps_repl_lexer
 
