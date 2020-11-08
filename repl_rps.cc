@@ -5,7 +5,7 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the read-eval-print-loop code using GNU readline
+ *      It has the Read-Eval-Print-Loop code using GNU readline
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -44,8 +44,13 @@ extern "C" std::istream*rps_repl_input = nullptr;
 
 /// Interpret from either a given input stream,
 /// or using readline if inp is null.
-extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp);
+extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name);
 
+/*** The lexer. We return a pair of values.
+ ***/
+extern "C" Rps_TwoValues rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int &lineno, int& colno);
+
+/// the lexer for the 
 
 std::string
 rps_repl_version(void)
@@ -65,17 +70,39 @@ rps_repl_version(void)
 } // end rps_repl_version
 
 void
-rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp)
+rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name)
 {
   std::istream*previous_input=nullptr;
   RPS_ASSERT(rps_is_main_thread());
-   RPS_LOCALFRAME(/*descr:*/nullptr,
+  RPS_ASSERT(input_name != nullptr);
+  // descriptor is: _6x4XcZ1fxp403uBUoz) //"rps_repl_interpret"∈core_function
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_6x4XcZ1fxp403uBUoz),
 		  /*callerframe:*/callframe,
                   );
   previous_input = rps_repl_input;
   rps_repl_input = inp;
   rps_repl_input = previous_input;
 } // end rps_repl_interpret
+
+Rps_TwoValues
+rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int &lineno, int& colno)
+{
+  
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(input_name != nullptr);
+  RPS_ASSERT(linebuf != nullptr);
+  RPS_ASSERT(callframe != nullptr);
+  RPS_ASSERT(colno >= 0 && colno < strlen(linebuf));
+  RPS_FATALOUT("unimplemented rps_repl_lexer inp@" << (void*)inp
+	       << " input_name=" << input_name
+	       << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
+	       << " lineno=" << lineno
+	       << " colno=" << colno
+	       << " curpos=" << linebuf+colno
+	       << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer"));
+#warning unimplemented rps_repl_lexer
+} // end of rps_repl_lexer
+
 
 
 void
