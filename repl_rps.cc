@@ -40,6 +40,13 @@ const char rps_repl_gitid[]= RPS_GITID;
 extern "C" const char rps_repl_date[];
 const char rps_repl_date[]= __DATE__;
 
+extern "C" std::istream*rps_repl_input = nullptr;
+
+/// Interpret from either a given input stream,
+/// or using readline if inp is null.
+extern "C" void rps_repl_interpret(std::istream*inp);
+
+
 std::string
 rps_repl_version(void)
 {
@@ -56,6 +63,17 @@ rps_repl_version(void)
   res += rl_library_version;
   return res;
 } // end rps_repl_version
+
+void
+rps_repl_interpret(std::istream*inp)
+{
+  std::istream*previous_input=nullptr;
+  RPS_ASSERT(rps_is_main_thread());
+  previous_input = rps_repl_input;
+  rps_repl_input = inp;
+  rps_repl_input = previous_input;
+} // end rps_repl_interpret
+
 
 void
 rps_read_eval_print_loop(int &argc, char **argv)

@@ -310,11 +310,19 @@ Rps_PayloadWebex::make_obwebex(Rps_CallFrame*callerframe, Onion::Request*req, On
                             /*locals:*/
                             Rps_ObjectRef obwebex);
   _f.obwebex = Rps_ObjectRef::make_object(&_, web_exchange_ob);
+
+#if 0 && BAD_CODE
   auto paylwebex =
     _f.obwebex->put_new_arg3_payload<Rps_PayloadWebex>(reqnum,req,resp);
   RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::make_obwebex end reqnum#" << reqnum
                 << " obwebex=" << _f.obwebex << " startim:" <<  paylwebex->webex_startim);
   RPS_ASSERT(paylwebex != nullptr);
+#endif
+
+  RPS_WARNOUT("Rps_PayloadWebex::make_obwebex incomplete  reqnum#" << reqnum
+              << Rps_ShowCallFrame(&_)
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex::make_obwebex"));
   return _f.obwebex;
 } // end PayloadWebex::make_obwebex
 

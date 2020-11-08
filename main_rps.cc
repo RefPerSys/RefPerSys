@@ -916,9 +916,9 @@ rps_run_application(int &argc, char **argv)
   else
     {
       RPS_FATALOUT(
-                    "rps_run_application NOT calling rps_run_web_service"
-                    << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
+        "rps_run_application NOT calling rps_run_web_service"
+        << std::endl
+        << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
       rps_run_web_service();
     }
 #warning incomplete rps_run_application

@@ -52,6 +52,7 @@
 #include <unordered_set>
 #include <new>
 #include <random>
+#include <istream>
 #include <iostream>
 #include <fstream>
 #include <sstream>
