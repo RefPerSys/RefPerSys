@@ -906,11 +906,12 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
-  PaylWebHandler = -14, // for reification of Web handlers,
+  PaylWebHandler = -15, // for reification of Web handlers,
 			// i.e. Rps_PayloadWebHandler-s
-  PaylWebex = -13, // for reification as temporary objects of HTTP
+  PaylWebex = -14, // for reification as temporary objects of HTTP
 		   // requests+replies, i.e. Web exchanges.
-  PaylTasklet = -12, // for small tasklets inside agenda
+  PaylTasklet = -13, // for small tasklets inside agenda
+  PaylStringDict = -12, // the dictionnaries associating strings to values
   PaylAgenda = -11, // the the unique agenda
   PaylSymbol = -10, // symbol payload
   PaylSpace = -9, // space payload
@@ -3317,6 +3318,50 @@ public:
 };				// end of class Rps_PayloadStrBuf
 
 
+
+////////////////////////////////////////////////////////////////
+////// mutable dictionnary payload  - associate strings to values
+extern "C" rpsldpysig_t rpsldpy_string_dictionnary;
+class Rps_PayloadStringDict : public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend rpsldpysig_t rpsldpy_string_dictionnary;
+  friend Rps_PayloadStringDict*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadStringDict,Rps_ObjectZone*>(Rps_ObjectZone*);
+  Rps_PayloadStringDict(Rps_ObjectZone*owner);
+  Rps_PayloadStringDict(Rps_ObjectRef obr) :
+    Rps_PayloadStringDict(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadStringDict();
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+protected:
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+public:
+  // Create a string dictionnary object, and throws an exception if obclass
+  // is wrong:
+  static Rps_ObjectRef make_string_dictionnary_object(Rps_CallFrame*callframe, Rps_ObjectRef obclass=nullptr, Rps_ObjectRef obspace=nullptr);
+  virtual const std::string payload_type_name(void) const
+  {
+    return "string_dictionnary";
+  };
+  Rps_Value find(const std::string&str) const;
+  void add(const std::string&str, Rps_Value val);
+  void remove(const std::string&str);
+  void set_transient(bool transient=false);
+  /// in following iterations, when stopfun returns true, the iteration stops
+  void iterate_with_callframe(Rps_CallFrame*callframe, const std::function <bool(Rps_CallFrame*,const std::string&,const Rps_Value)>& stopfun);
+  void iterate_with_data(void*data, const std::function <bool(void*,const std::string&,const Rps_Value)>& stopfun);
+  /// iterate by applying a closure to the owner, a fresh string value and associated value till the closure returns nil
+  void iterate_apply(Rps_CallFrame*callframe, Rps_Value closv);
+private:
+  std::map<std::string, Rps_Value> dict_map;
+  bool dict_is_transient;
+}; // end class Rps_PayloadStringDict
 
 
 ////////////////////////////////////////////////////////////////
