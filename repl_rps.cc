@@ -93,9 +93,14 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
   RPS_ASSERT(linebuf != nullptr);
   int linelen = strlen(linebuf);
   RPS_ASSERT(callframe != nullptr);
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/callframe,
+                           Rps_ObjectRef oblex;
+                );
   RPS_ASSERT(colno >= 0 && colno <= linelen);
   while (colno < linelen && isspace(linebuf[colno]))
     colno++;
+  ////////////////
   /// lex numbers?
   if (((linebuf[colno] == '+' || linebuf[colno] == '-') && isdigit(linebuf[colno+1]))
       || isdigit(linebuf[colno]))
@@ -129,6 +134,27 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                            Rps_DoubleValue(pos
                                            ?std::numeric_limits<double>::infinity()
                                            : -std::numeric_limits<double>::infinity())};
+    }
+  //////////////// lex named objects or objids
+  else if (isalpha(linebuf[colno]) || linebuf[colno]=='_')
+    {
+      int startname = colno;
+      while (isalnum(linebuf[colno]) || linebuf[colno]=='_')
+        colno++;
+      std::string namestr(linebuf+startname, colno-startname);
+      _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr, true);
+      if (_f.oblex)
+        return Rps_TwoValues(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ), //object∈class
+                             _f.oblex);
+      /// some new symbol
+      if (isalpha(namestr[0]))
+        return Rps_TwoValues(RPS_ROOT_OB(_36I1BY2NetN03WjrOv), //symbol∈class
+                             Rps_StringValue(namestr));
+      /// otherwise, fail to lex, so
+      colno = startname;
+      RPS_WARNOUT("rps_repl_lexer " << input_name << " line " << lineno << ", column " << colno
+                  << " : bad name " << linebuf+colno);
+      return Rps_TwoValues(nullptr, nullptr);
     }
   RPS_FATALOUT("unimplemented rps_repl_lexer inp@" << (void*)inp
                << " input_name=" << input_name
