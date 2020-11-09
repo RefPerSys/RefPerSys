@@ -203,9 +203,21 @@ Rps_PayloadStringDict::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   /// see function rpsldpy_string_dictionnary below
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  RPS_FATALOUT("unimplemented Rps_PayloadStringDict::dump_json_content jv=" << jv
-               << " owner=" << owner());
-#warning unimplemented  Rps_PayloadStringDict::dump_json_content
+  if (dict_is_transient)
+    return;
+  Json::Value jarr(Json::arrayValue);
+  for (auto it : dict_map)
+    {
+      if (!rps_is_dumpable_value(du,it.second))
+        continue;
+      Json::Value jcur = rps_dump_json_value(du, it.second);
+      Json::Value jent(Json::objectValue);
+      jent["str"] = it.first;
+      jent["val"] = jcur;
+      jarr.append(jent);
+    }
+  jv["payload"] = "string_dictionnary";
+  jv["dictionnary"] = jarr;
 } // end Rps_PayloadStringDict::dump_json_content
 
 
@@ -217,11 +229,35 @@ rpsldpy_string_dictionnary(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value&
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  RPS_FATALOUT("unimplemented rpsldpy_string_dictionnary obz=" << obz
-               << " jv=" << jv
-               << " spacid=" << spacid
-               << " lineno=" << lineno);
-#warning unimplemented rpsldpy_string_dictionnary
+  if (!jv.isMember("dictionnary"))
+    {
+      RPS_FATALOUT("rpsldpy_string_dictionnary: object " << obz->oid()
+                   << " in space " << spacid << " lineno#" << lineno
+                   << " has incomplete payload"
+                   << std::endl
+                   << " jv " << (jv));
+    }
+  auto payldict = obz->put_new_plain_payload<Rps_PayloadStringDict>();
+  Json::Value jarr = jv["dictionnary"];
+  if (!jarr.isArray())
+    RPS_FATALOUT("rpsldpy_string_dictionnary: object " << obz->oid()
+                 << " in space " << spacid << " lineno#" << lineno
+                 << " has bad dictionnary "
+                 << std::endl
+                 << jarr);
+  unsigned nbent = jarr.size();
+  for (int entix=0; entix<(int)nbent; entix++)
+    {
+      Json::Value jcurent = jarr[entix];
+      if (!jcurent.isObject()
+          || !jcurent.isMember("str")
+          || !jcurent.isMember("val"))
+        continue;
+      std::string curstr = jcurent["str"].asString();
+      if (curstr.empty())
+        continue;
+      payldict->add(curstr, Rps_Value(jcurent["val"],ld));
+    }
 } // end rpsldpy_string_dictionnary
 
 void
