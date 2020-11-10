@@ -46,11 +46,13 @@ extern "C" std::istream*rps_repl_input = nullptr;
 /// or using readline if inp is null.
 extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name);
 
-/*** The lexer. We return a pair of values.
+/*** The lexer. We return a pair of values. The first describing the
+     second.  For example, a lexed integer is given as
+     (int,<tagged-integer-value>).
  ***/
 extern "C" Rps_TwoValues rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int &lineno, int& colno);
 
-/// the lexer for the
+extern "C" std::string rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, int& colno);
 
 std::string
 rps_repl_version(void)
@@ -93,6 +95,9 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
   RPS_ASSERT(linebuf != nullptr);
   int linelen = strlen(linebuf);
   RPS_ASSERT(callframe != nullptr);
+  /// literal string prefix, à la C++
+  char litprefix[16];
+  memset (litprefix, 0, sizeof(litprefix));
   RPS_LOCALFRAME(/*descr:*/nullptr,
                            /*callerframe:*/callframe,
                            Rps_ObjectRef oblex;
@@ -156,6 +161,14 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                   << " : bad name " << linebuf+colno);
       return Rps_TwoValues(nullptr, nullptr);
     }
+  //// literal strings are like in C++
+  else if (linebuf[colno] == '"')   /// plain literal string, on a single line
+    {
+      std::string litstr =
+        rps_lex_literal_string(input_name, linebuf, lineno, colno);
+      return Rps_TwoValues(RPS_ROOT_OB(_62LTwxwKpQ802SsmjE), //string∈class
+                           litstr);
+    }
   RPS_FATALOUT("unimplemented rps_repl_lexer inp@" << (void*)inp
                << " input_name=" << input_name
                << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
@@ -166,7 +179,135 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
 #warning unimplemented rps_repl_lexer
 } // end of rps_repl_lexer
 
-
+std::string
+rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, int& colno)
+{
+  std::string rstr;
+  int curcol = colno;
+  RPS_ASSERT(linebuf[colno] == '"');
+  curcol++;
+  char curch = 0;
+  while ((curch=linebuf[curcol]) != (char)0)
+    {
+      if (curch == '"')
+        {
+          colno = curcol+1;
+          return rstr;
+        }
+      else if (curch == '\\')
+        {
+          char nextch = linebuf[curcol+1];
+          char shortbuf[16];
+          memset(shortbuf, 0, sizeof(shortbuf));
+          switch (nextch)
+            {
+            case '\'':
+            case '\"':
+            case '\\':
+              rstr.push_back (nextch);
+              curcol += 2;
+              continue;
+            case 'a':
+              rstr.push_back ('\a');
+              curcol += 2;
+              continue;
+            case 'b':
+              rstr.push_back ('\b');
+              curcol += 2;
+              continue;
+            case 'f':
+              rstr.push_back ('\f');
+              curcol += 2;
+              continue;
+            case 'e':			// ESCAPE
+              rstr.push_back ('\033');
+              curcol += 2;
+              continue;
+            case 'n':
+              rstr.push_back ('\n');
+              curcol += 2;
+              continue;
+            case 'r':
+              rstr.push_back ('\r');
+              curcol += 2;
+              continue;
+            case 't':
+              rstr.push_back ('\t');
+              curcol += 2;
+              continue;
+            case 'v':
+              rstr.push_back ('\v');
+              curcol += 2;
+              continue;
+            case 'x':
+            {
+              int p = -1;
+              int c = 0;
+              if (sscanf (linebuf + curcol + 2, "%02x%n", &c, &p) > 0 && p > 0)
+                {
+                  rstr.push_back ((char)c);
+                  curcol += p + 2;
+                  continue;
+                }
+              else
+                goto lexical_error_backslash;
+            }
+            case 'u': // four hexdigit escape Unicode
+            {
+              int p = -1;
+              int c = 0;
+              if (sscanf (linebuf + curcol + 2, "%04x%n", &c, &p) > 0 && p > 0)
+                {
+                  int l =
+                    u8_uctomb ((uint8_t *) shortbuf, (ucs4_t) c, sizeof(shortbuf));
+                  if (l > 0)
+                    {
+                      rstr.append(shortbuf);
+                      curcol += p + l;
+                      continue;
+                    }
+                  else
+                    goto lexical_error_backslash;
+                }
+            }
+            case 'U': // eight hexdigit escape Unicode
+            {
+              int p = -1;
+              int c = 0;
+              if (sscanf (linebuf + curcol + 2, "%08x%n", &c, &p) > 0 && p > 0)
+                {
+                  int l =
+                    u8_uctomb ((uint8_t *) shortbuf, (ucs4_t) c, sizeof(shortbuf));
+                  if (l > 0)
+                    {
+                      rstr.append(shortbuf);
+                      curcol += p + l;
+                      continue;
+                    }
+                  else
+                    goto lexical_error_backslash;
+                }
+            }
+            default:
+              goto lexical_error_backslash;
+            } // end switch nextch
+        } // end if curch is '\\'
+      else if (curch >= ' ' && curch < 0x7f)
+        {
+          rstr.push_back (curch);
+          curcol++;
+          continue;
+        }
+#warning rps_lex_literal_string should accept UTF-8 encoding...
+      /// see https://utf8everywhere.org/
+      else
+        goto lexical_error_backslash;
+    } // end while
+lexical_error_backslash:
+  RPS_WARNOUT("rps_lex_literal_string " << input_name << " line " << lineno << ", column " << colno
+              << " : bad backslash escape " << linebuf+colno);
+  throw std::runtime_error("lexical bad backslash escape");
+} // end rps_lex_literal_string
 
 void
 rps_read_eval_print_loop(int &argc, char **argv)
