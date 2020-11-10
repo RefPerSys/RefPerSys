@@ -298,8 +298,13 @@ rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, in
           curcol++;
           continue;
         }
-#warning rps_lex_literal_string should accept UTF-8 encoding...
-      /// see https://utf8everywhere.org/
+      /// accepts any correctly encoded UTF-8
+      else if (int l = u8_mblen ((uint8_t *)(linebuf + curcol), strlen(linebuf)-curcol); l>0)
+        {
+          rstr.append(linebuf + curcol, l);
+          curcol += l;
+          continue;
+        }
       else
         goto lexical_error_backslash;
     } // end while
