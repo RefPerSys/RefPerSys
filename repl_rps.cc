@@ -305,8 +305,13 @@ rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, in
           curcol += l;
           continue;
         }
+      /// improbable lexical error....
       else
-        goto lexical_error_backslash;
+        {
+          RPS_WARNOUT("rps_lex_literal_string " << input_name << " line " << lineno << ", column " << colno
+                      << ": lexical error at " << linebuf+colno);
+          throw std::runtime_error("lexical error");
+        }
     } // end while
 lexical_error_backslash:
   RPS_WARNOUT("rps_lex_literal_string " << input_name << " line " << lineno << ", column " << colno
