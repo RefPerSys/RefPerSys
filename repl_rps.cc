@@ -54,6 +54,8 @@ extern "C" Rps_TwoValues rps_repl_lexer(Rps_CallFrame*callframe, std::istream*in
 
 extern "C" std::string rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, int& colno);
 
+extern "C" std::string rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int lineno, int& colno);
+
 std::string
 rps_repl_version(void)
 {
@@ -166,6 +168,16 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
     {
       std::string litstr =
         rps_lex_literal_string(input_name, linebuf, lineno, colno);
+      return Rps_TwoValues(RPS_ROOT_OB(_62LTwxwKpQ802SsmjE), //string∈class
+                           litstr);
+    }
+  //// raw literal strings may span across several lines, like in C++
+  //// see https://en.cppreference.com/w/cpp/language/string_literal
+  else if (linebuf[colno] == 'R' && linebuf[colno+1] == '"'
+           && isalpha(linebuf[colno+2]))
+    {
+      std::string litstr =
+        rps_lex_raw_literal_string(&_, inp, input_name, linebuf, lineno, colno);
       return Rps_TwoValues(RPS_ROOT_OB(_62LTwxwKpQ802SsmjE), //string∈class
                            litstr);
     }
@@ -318,6 +330,29 @@ lexical_error_backslash:
               << " : bad backslash escape " << linebuf+colno);
   throw std::runtime_error("lexical bad backslash escape");
 } // end rps_lex_literal_string
+
+
+
+
+std::string
+rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int lineno, int& colno)
+{
+  /***
+   * TODO: We don't even know if callframe is needed here, but if we
+   * implement something similar to Common Lisp read macros, we
+   * probably could need it.
+   ***/
+  RPS_FATALOUT("unimplemented rps_lex_raw_literal_string inp@" << (void*)inp
+               << " input_name=" << input_name
+               << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
+               << " lineno=" << lineno
+               << " colno=" << colno
+               << " curpos=" << linebuf+colno
+               << " callframe=" << Rps_ShowCallFrame(callframe)
+               << std::endl
+               << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer"));
+#warning unimplemented rps_lex_raw_literal_string
+} // end rps_lex_raw_literal_string
 
 void
 rps_read_eval_print_loop(int &argc, char **argv)
