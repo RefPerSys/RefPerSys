@@ -715,10 +715,12 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
             {
               RPS_LOCALFRAME(/*descr:*/ web_exchange_ob,
                                         /*prev:*/nullptr,
-                                        /*locals:*/);
+                                        /*locals:*/Rps_Value valv;
+                            );
+              _f.valv = val;
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_web reqnum#" << reqnum<< " should call rps_serve_onion_file" << std::endl
                             << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-servefile"));
-              return rps_serve_onion_file(&_, val, purl, prequ, presp, reqnum, filpath);
+              return rps_serve_onion_file(&_, _f.valv, purl, prequ, presp, reqnum, filpath);
             }
           else
             RPS_DEBUG_LOG(WEB, "rps_serve_onion_web notfound filpath=" << filpath
@@ -946,6 +948,8 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                                 Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum,
                                 const std::string& filepath, FILE*fil)
 {
+  RPS_ASSERT (purl != nullptr);
+  RPS_ASSERT (preq != nullptr);
   const std::string reqpath =preq->path();
   const onion_request_flags reqflags=preq->flags();
   const unsigned reqmethnum = reqflags&OR_METHODS;

@@ -335,6 +335,8 @@ rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, in
                   else
                     goto lexical_error_backslash;
                 }
+              else
+                goto lexical_error_backslash;
             }
             case 'U': // eight hexdigit escape Unicode
             {
@@ -400,7 +402,7 @@ rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char
   memset (delim, 0, sizeof(delim));
   RPS_ASSERT(callframe);
   RPS_ASSERT(plinebuf && *plinebuf);
-  RPS_ASSERT(colno >= 0 && colno<strlen(*plinebuf));
+  RPS_ASSERT(colno >= 0 && colno<(int)strlen(*plinebuf));
   RPS_ASSERT(input_name);
   int pos= -1;
   if (sscanf((*plinebuf)+colno, "R\"%15[A-Za-z](%n", delim, &pos) < 1
