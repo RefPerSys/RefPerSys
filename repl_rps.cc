@@ -33,6 +33,7 @@
 #include "refpersys.hh"
 
 #include "readline/readline.h"
+#include "readline/history.h"
 
 extern "C" const char rps_repl_gitid[];
 const char rps_repl_gitid[]= RPS_GITID;
@@ -49,12 +50,18 @@ extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, co
 /*** The lexer. We return a pair of values. The first describing the
      second.  For example, a lexed integer is given as
      (int,<tagged-integer-value>).
- ***/
+***/
 extern "C" Rps_TwoValues rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int &lineno, int& colno);
 
 extern "C" std::string rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, int& colno);
 
-extern "C" std::string rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int lineno, int& colno);
+extern "C" std::string rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno);
+
+// return true iff th next line has been gotten
+extern "C" bool
+rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int*plineno, std::string prompt="");
+
+static Rps_CallFrame*rps_readline_callframe;
 
 std::string
 rps_repl_version(void)
@@ -87,6 +94,53 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   rps_repl_input = inp;
   rps_repl_input = previous_input;
 } // end rps_repl_interpret
+
+bool
+rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int*plineno, std::string prompt)
+{
+  RPS_ASSERT(callframe);
+  RPS_ASSERT(input_name);
+  RPS_ASSERT(plinebuf);
+  RPS_ASSERT(plineno);
+  if (inp)   // we use it
+    {
+      if (inp->eof())
+        {
+          free (plinebuf), *plinebuf = nullptr;
+          return false;
+        }
+      std::string linestr;
+      std::getline(*inp, linestr);
+      if (linestr.empty() || linestr[linestr.size()-1] != '\n')
+        linestr.push_back('\n');
+      free (plinebuf), *plinebuf = strdup(linestr.c_str());
+      (*plineno)++;
+      return true;
+    }
+  else
+    {
+      RPS_ASSERT(rps_is_main_thread());
+      if (prompt.empty())
+        prompt = std::string(input_name) + ":";
+      if (!rps_without_terminal_escape)
+        {
+          prompt.insert(0,  RPS_TERMINAL_BOLD_ESCAPE);
+          prompt.append(RPS_TERMINAL_NORMAL_ESCAPE);
+        }
+      rps_readline_callframe = callframe;
+      free (plinebuf), *plinebuf = readline(prompt.c_str());
+      rps_readline_callframe = nullptr;
+      if (*plinebuf)
+        {
+          (*plineno)++;
+          if (*plinebuf[0])
+            add_history(*plinebuf);
+          return true;
+        };
+    }
+  free (plinebuf), *plinebuf = nullptr;
+  return false;
+} // end of rps_repl_get_next_line
 
 Rps_TwoValues
 rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int &lineno, int& colno)
@@ -177,7 +231,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
            && isalpha(linebuf[colno+2]))
     {
       std::string litstr =
-        rps_lex_raw_literal_string(&_, inp, input_name, linebuf, lineno, colno);
+        rps_lex_raw_literal_string(&_, inp, input_name, &linebuf, lineno, colno);
       return Rps_TwoValues(RPS_ROOT_OB(_62LTwxwKpQ802SsmjE), //string∈class
                            litstr);
     }
@@ -335,23 +389,57 @@ lexical_error_backslash:
 
 
 std::string
-rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int lineno, int& colno)
+rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno)
 {
-  /***
-   * TODO: We don't even know if callframe is needed here, but if we
-   * implement something similar to Common Lisp read macros, we
-   * probably could need it.
-   ***/
-  RPS_FATALOUT("unimplemented rps_lex_raw_literal_string inp@" << (void*)inp
-               << " input_name=" << input_name
-               << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
-               << " lineno=" << lineno
-               << " colno=" << colno
-               << " curpos=" << linebuf+colno
-               << " callframe=" << Rps_ShowCallFrame(callframe)
-               << std::endl
-               << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer"));
-#warning unimplemented rps_lex_raw_literal_string
+  /// For C++, raw literal strings are multi-line, and explained in
+  /// en.cppreference.com/w/cpp/language/string_literal ... For
+  /// example R"delim(raw characters \)delim" In RefPerSys, we
+  /// restrict the <delim> to contain only letters, up to 15 of
+  /// them...
+  char delim[16];
+  memset (delim, 0, sizeof(delim));
+  RPS_ASSERT(callframe);
+  RPS_ASSERT(plinebuf && *plinebuf);
+  RPS_ASSERT(colno >= 0 && colno<strlen(*plinebuf));
+  RPS_ASSERT(input_name);
+  int pos= -1;
+  if (sscanf((*plinebuf)+colno, "R\"%15[A-Za-z](%n", delim, &pos) < 1
+      || !isalpha(delim[0])
+      || pos<=1)
+    /// should never happen
+    RPS_FATALOUT("corrupted rps_lex_raw_literal_string inp@" << (void*)inp
+                 << " input_name=" << input_name
+                 << " line_buf="  << (plinebuf?"'":"*") << (plinebuf?Rps_Cjson_String(*plinebuf):"*missing*") << (plinebuf?"'":"*")
+                 << " lineno=" << lineno
+                 << " colno=" << colno
+                 << " curpos="  << (plinebuf?"'":"*") << (plinebuf?((*plinebuf)+colno):"*none*") << (plinebuf?"'":"*")
+                 << " callframe=" << Rps_ShowCallFrame(callframe)
+                 << std::endl
+                 << RPS_FULL_BACKTRACE_HERE(1, "rps_lex_raw_literal_string"));
+  char endstr[32];
+  memset(endstr, 0, sizeof(endstr));
+  snprintf(endstr, sizeof(endstr), ")%s\"", delim);
+  std::string str;
+  int curcolno = colno + pos;
+  const char* pc = (*plinebuf) + curcolno;
+  while (pc != nullptr)
+    {
+      const char*endp = strstr(pc, endstr);
+      if (endp)
+        {
+          str.append(pc, endp-pc);
+          colno = endp + strlen(endstr) - *plinebuf;
+          return str;
+        };
+      str.append(pc);
+      bool gotline = rps_repl_get_next_line(callframe, inp, input_name, plinebuf, &lineno, std::string{endstr});
+      if (!gotline)
+        return str;
+      lineno++;
+      colno = 0;
+      curcolno = 0;
+      pc = (*plinebuf);
+    };
 } // end rps_lex_raw_literal_string
 
 void
