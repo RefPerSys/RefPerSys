@@ -253,15 +253,24 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                || (colno+4 < linelen  && linebuf[colno+3] == '{'
                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2]))
                || (colno+5 < linelen  && linebuf[colno+4] == '{'
-                   && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2]) && isalpha(linebuf[colno+3]))
+                   && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2])
+                   && isalpha(linebuf[colno+3]))
                ||  (colno+6 < linelen  && linebuf[colno+5] == '{'
-                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2]) && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4]))
+                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2])
+                    && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4]))
                ||  (colno+7 < linelen  && linebuf[colno+6] == '{'
-                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2]) && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4]) &&  isalpha(linebuf[colno+5]))
+                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2])
+                    && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4])
+                    &&  isalpha(linebuf[colno+5]))
                ||  (colno+8 < linelen  && linebuf[colno+7] == '{'
-                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2]) && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4]) &&  isalpha(linebuf[colno+5]) &&  isalpha(linebuf[colno+6]))
+                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2])
+                    && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4])
+                    &&  isalpha(linebuf[colno+5]) &&  isalpha(linebuf[colno+6]))
                ||  (colno+9 < linelen  && linebuf[colno+8] == '{'
-                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2]) && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4]) &&  isalpha(linebuf[colno+5]) &&  isalpha(linebuf[colno+6]) &&  isalpha(linebuf[colno+7]))
+                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2])
+                    && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4])
+                    &&  isalpha(linebuf[colno+5]) &&  isalpha(linebuf[colno+6])
+                    &&  isalpha(linebuf[colno+7]))
               ))
     {
       RPS_FATALOUT("rps_repl_lexer should call rps_lex_code_chunk inp@" << (void*)inp
@@ -488,6 +497,23 @@ rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char
 Rps_Value
 rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno)
 {
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/callframe,
+                           Rps_ObjectRef oblex;
+                );
+  char endstr[16];
+  char start[8];
+  memset(endstr, 0, sizeof(endstr));
+  memset(start, 0, sizeof(start));
+  int pos= -1;
+  RPS_ASSERT(plinebuf);
+  const char*linbuf= *plinebuf;
+  if (linbuf[colno] == '#' && linbuf[colno+1] == '{')
+    strcpy(endstr, "}#");
+  else if (sscanf(linbuf+colno, "#%6[a-zA-Z]{%n", start, &pos)>0 && pos>0)
+    snprintf(endstr, sizeof(endstr), "}%s#", start);
+  colno += strlen(endstr);
+#warning very incomplete rps_lex_code_chunk, should be documented elsewhere...
   RPS_FATALOUT("unimplemented rps_lex_code_chunk inp@" << (void*)inp
                << " input_name=" << input_name
                << " line_buf="  << (plinebuf?"'":"*") << (plinebuf?Rps_Cjson_String(*plinebuf):"*missing*") << (plinebuf?"'":"*")
