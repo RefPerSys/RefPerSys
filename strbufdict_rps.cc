@@ -329,8 +329,33 @@ Rps_PayloadStringDict::iterate_apply(Rps_CallFrame*callerframe, Rps_Value closar
 } // end Rps_PayloadStringDict::iterate_apply
 
 Rps_ObjectRef
-Rps_PayloadStringDict::the_string_dictionary_class(void) {
+Rps_PayloadStringDict::the_string_dictionary_class(void)
+{
   return RPS_ROOT_OB(_3FztYBKABxZ02DUPRm);
 } // end Rps_PayloadStringDict::the_string_dictionary_class
+
+Rps_ObjectRef
+Rps_PayloadStringDict::make_string_dictionary_object(Rps_CallFrame*callframe, Rps_ObjectRef obclassarg, Rps_ObjectRef obspacearg)
+{
+  RPS_ASSERT(!callframe || callframe->is_good_call_frame());
+  RPS_LOCALFRAME(the_string_dictionary_class(),
+                 callframe,
+                 Rps_ObjectRef obstrdict;
+                 Rps_ObjectRef obclass;
+                 Rps_ObjectRef obspace;
+                );
+  _f.obclass = obclassarg;
+  _f.obspace = obspacearg;
+  if (!_f.obclass)
+    _f.obclass = the_string_dictionary_class();
+  if (_f.obclass != the_string_dictionary_class()
+      && !Rps_Value(_f.obclass).is_subclass_of(&_,
+          the_string_dictionary_class()))
+    throw std::runtime_error("invalid class for make_string_dictionary_object");
+  _f.obstrdict = Rps_ObjectRef::make_object(&_, _f.obclass, _f.obspace);
+  auto payldict = _f.obstrdict->put_new_plain_payload<Rps_PayloadStringDict>();
+  RPS_ASSERT(payldict);
+  return _f.obstrdict;
+} // end of Rps_PayloadStringDict::make_string_dictionary_object
 
 //// end of file strbufdict_rps.cc
