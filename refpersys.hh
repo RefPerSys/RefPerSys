@@ -3342,13 +3342,14 @@ protected:
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
 public:
-  // Create a string dictionnary object, and throws an exception if obclass
+  // Create a string dictionary object, and throws an exception if obclass
   // is wrong:
-  static Rps_ObjectRef make_string_dictionnary_object(Rps_CallFrame*callframe, Rps_ObjectRef obclass=nullptr, Rps_ObjectRef obspace=nullptr);
+  static Rps_ObjectRef make_string_dictionary_object(Rps_CallFrame*callframe, Rps_ObjectRef obclass=nullptr, Rps_ObjectRef obspace=nullptr);
   virtual const std::string payload_type_name(void) const
   {
-    return "string_dictionnary";
+    return "string_dictionary";
   };
+  static Rps_ObjectRef the_string_dictionary_class(void);
   Rps_Value find(const std::string&str) const;
   void add(const std::string&str, Rps_Value val);
   void remove(const std::string&str);

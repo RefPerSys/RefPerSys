@@ -328,5 +328,9 @@ Rps_PayloadStringDict::iterate_apply(Rps_CallFrame*callerframe, Rps_Value closar
     }
 } // end Rps_PayloadStringDict::iterate_apply
 
+Rps_ObjectRef
+Rps_PayloadStringDict::the_string_dictionary_class(void) {
+  return RPS_ROOT_OB(_3FztYBKABxZ02DUPRm);
+} // end Rps_PayloadStringDict::the_string_dictionary_class
 
 //// end of file strbufdict_rps.cc
