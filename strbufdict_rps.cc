@@ -276,6 +276,12 @@ Rps_PayloadStringDict::remove(const std::string&str)
 } // end Rps_PayloadStringDict::remove
 
 void
+Rps_PayloadStringDict::set_transient(bool transient)
+{
+  dict_is_transient = transient;
+} // end PayloadStringDict::set_transient
+
+void
 Rps_PayloadStringDict::iterate_with_callframe(Rps_CallFrame*callerframe, const std::function <bool(Rps_CallFrame*,const std::string&,const Rps_Value)>& stopfun)
 {
   RPS_ASSERT(callerframe == nullptr || callerframe->is_good_call_frame());
