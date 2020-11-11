@@ -57,6 +57,8 @@ extern "C" std::string rps_lex_literal_string(const char*input_name, const char*
 
 extern "C" std::string rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno);
 
+extern "C" Rps_Value rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno);
+
 // return true iff th next line has been gotten
 extern "C" bool
 rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int*plineno, std::string prompt="");
@@ -235,6 +237,44 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       return Rps_TwoValues(RPS_ROOT_OB(_62LTwxwKpQ802SsmjE), //string∈class
                            litstr);
     }
+  //// a code chunk or macro string is mixing strings and
+  //// objects.... Inspired by GCC MELT see
+  //// starynkevitch.net/Basile/gcc-melt/MELT-Starynkevitch-DSL2011.pdf
+  /* Improvement over GCC MELT: a macro string can start with "#{"
+     ending with "}#" or "#a{" ending with "}a#" or "#ab{" ending with
+     "}ab#" or "#abc{" ending with "}abc#" or "#abcd{" ending with
+     "}abcd#" or "#abcde{" ending with "}abcde#" or "#abcdef{" ending
+     with "}abcdef#" with the letters being arbitrary latin letters,
+     upper or lowercase. but no more than 7 letters. */
+  else if (linebuf[colno] == '#'
+           && ((colno+2 < linelen  && linebuf[colno+1] == '{')
+               || (colno+3 < linelen  && linebuf[colno+2] == '{'
+                   && isalpha(linebuf[colno+1]))
+               || (colno+4 < linelen  && linebuf[colno+3] == '{'
+                   && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2]))
+               || (colno+5 < linelen  && linebuf[colno+4] == '{'
+                   && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2]) && isalpha(linebuf[colno+3]))
+               ||  (colno+6 < linelen  && linebuf[colno+5] == '{'
+                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2]) && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4]))
+               ||  (colno+7 < linelen  && linebuf[colno+6] == '{'
+                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2]) && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4]) &&  isalpha(linebuf[colno+5]))
+               ||  (colno+8 < linelen  && linebuf[colno+7] == '{'
+                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2]) && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4]) &&  isalpha(linebuf[colno+5]) &&  isalpha(linebuf[colno+6]))
+               ||  (colno+9 < linelen  && linebuf[colno+8] == '{'
+                    && isalpha(linebuf[colno+1]) && isalpha(linebuf[colno+2]) && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4]) &&  isalpha(linebuf[colno+5]) &&  isalpha(linebuf[colno+6]) &&  isalpha(linebuf[colno+7]))
+              ))
+    {
+      RPS_FATALOUT("rps_repl_lexer should call rps_lex_code_chunk inp@" << (void*)inp
+                   << " input_name=" << input_name
+                   << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
+                   << " lineno=" << lineno
+                   << " colno=" << colno
+                   << " curpos=" << linebuf+colno
+                   << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer"));
+#warning rps_repl_lexer should call rps_lex_code_chunk
+    }
+
+
   RPS_FATALOUT("unimplemented rps_repl_lexer inp@" << (void*)inp
                << " input_name=" << input_name
                << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
@@ -443,6 +483,21 @@ rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char
       pc = (*plinebuf);
     };
 } // end rps_lex_raw_literal_string
+
+
+Rps_Value
+rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno)
+{
+  RPS_FATALOUT("unimplemented rps_lex_code_chunk inp@" << (void*)inp
+               << " input_name=" << input_name
+               << " line_buf="  << (plinebuf?"'":"*") << (plinebuf?Rps_Cjson_String(*plinebuf):"*missing*") << (plinebuf?"'":"*")
+               << " lineno=" << lineno
+               << " colno=" << colno
+               << " curpos="  << (plinebuf?"'":"*") << (plinebuf?((*plinebuf)+colno):"*none*") << (plinebuf?"'":"*")
+               << " callframe=" << Rps_ShowCallFrame(callframe)
+               << std::endl
+               << RPS_FULL_BACKTRACE_HERE(1, "rps_lex_code_chunk"));
+} // end rps_lex_code_chunk
 
 void
 rps_read_eval_print_loop(int &argc, char **argv)
