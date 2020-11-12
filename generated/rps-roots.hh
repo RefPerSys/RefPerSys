@@ -47,6 +47,7 @@ RPS_INSTALL_ROOT_OB(_2A2mrPpR3Qf03p6o5b) //int∈class
 RPS_INSTALL_ROOT_OB(_2SRhV7RJt3B01yArR6) //set_of_core_functions∈symbol
 RPS_INSTALL_ROOT_OB(_36I1BY2NetN03WjrOv) //symbol∈class
 RPS_INSTALL_ROOT_OB(_39OsVkAJDdV00ohD5r) //"fox_event_loop"∈object
+RPS_INSTALL_ROOT_OB(_3rXxMck40kz03RxRLM) //code_chunk∈class
 RPS_INSTALL_ROOT_OB(_3s7ztCCoJsj04puTdQ) //agenda∈class
 RPS_INSTALL_ROOT_OB(_3FztYBKABxZ02DUPRm) //string_dictionary∈class
 RPS_INSTALL_ROOT_OB(_3GHJQW0IIqS01QY8qD) //json∈class
@@ -91,7 +92,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 69
+#define RPS_NB_ROOT_OB 70
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
