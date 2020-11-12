@@ -497,9 +497,9 @@ rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char
 Rps_Value
 rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno)
 {
-  RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/callframe,
-                           Rps_ObjectRef oblex;
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
+		 /*callerframe:*/callframe,
+		 Rps_ObjectRef obchk;
                 );
   char endstr[16];
   char start[8];
@@ -516,6 +516,15 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
       snprintf(endstr, sizeof(endstr), "}%s#", start);
     }
   colno += strlen(endstr);
+  _f.obchk =
+    Rps_ObjectRef::make_object(&_,
+			       RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
+			       nullptr);
+  /// TODO: we should put the attributes 'input' and 'line' inside that _f.obchk , then fill it...
+  // So we first need to create these attributes...
+  auto paylvec = _f.obchk->put_new_plain_payload<Rps_PayloadVectOb>();
+  RPS_ASSERT(paylvec);
+  // TODO: we should add vector components to _f.obchk
 #warning very incomplete rps_lex_code_chunk, should be documented elsewhere...
   RPS_FATALOUT("unimplemented rps_lex_code_chunk inp@" << (void*)inp
                << " input_name=" << input_name
