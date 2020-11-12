@@ -57,7 +57,7 @@ extern "C" std::string rps_lex_literal_string(const char*input_name, const char*
 
 extern "C" std::string rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno);
 
-extern "C" Rps_Value rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno);
+extern "C" Rps_Value rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int& lineno, int& colno);
 
 // return true iff th next line has been gotten
 extern "C" bool
@@ -495,11 +495,12 @@ rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char
 
 
 Rps_Value
-rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno)
+rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int &lineno, int& colno)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
 		 /*callerframe:*/callframe,
 		 Rps_ObjectRef obchk;
+		 Rps_Value inputnamestrv;
                 );
   char endstr[16];
   char start[8];
@@ -507,6 +508,7 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   memset(start, 0, sizeof(start));
   int pos= -1;
   RPS_ASSERT(plinebuf);
+  RPS_ASSERT(input_name);
   const char*linbuf= *plinebuf;
   if (linbuf[colno] == '#' && linbuf[colno+1] == '{')
     strcpy(endstr, "}#");
@@ -520,11 +522,16 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
     Rps_ObjectRef::make_object(&_,
 			       RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
 			       nullptr);
-  /// TODO: we should put the attributes 'input' and 'line' inside that _f.obchk , then fill it...
+  _f.inputnamestrv = Rps_StringValue(input_name);
+  _f.obchk->put_attr2(RPS_ROOT_OB(_1B7ITSHTZWp00ektj1), //input∈symbol
+		      _f.inputnamestrv,
+		      RPS_ROOT_OB(_5FMX3lrhiw601iqPy5), //line∈symbol
+		      Rps_Value((intptr_t)lineno, Rps_Value::Rps_IntTag{})
+		      );
   // So we first need to create these attributes...
   auto paylvec = _f.obchk->put_new_plain_payload<Rps_PayloadVectOb>();
   RPS_ASSERT(paylvec);
-  // TODO: we should add vector components to _f.obchk
+  // TODO: we should add vector components to _f.obchk, reading several lines...
 #warning very incomplete rps_lex_code_chunk, should be documented elsewhere...
   RPS_FATALOUT("unimplemented rps_lex_code_chunk inp@" << (void*)inp
                << " input_name=" << input_name
