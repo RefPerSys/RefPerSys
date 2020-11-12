@@ -831,7 +831,7 @@ public:
   static Rps_ObjectRef really_find_object_by_oid(const Rps_Id& oid);
   // create a class of given super class and name
   static Rps_ObjectRef make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef superclassob, std::string name);
-  // create a symbol of given name
+  // create a symbol of given name (static methods of Rps_ObjectRef)
   static Rps_ObjectRef make_new_symbol(Rps_CallFrame*callerframe, std::string name, bool isweak);
   static Rps_ObjectRef make_new_strong_symbol(Rps_CallFrame*callerframe, std::string name)
   {
