@@ -511,7 +511,10 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   if (linbuf[colno] == '#' && linbuf[colno+1] == '{')
     strcpy(endstr, "}#");
   else if (sscanf(linbuf+colno, "#%6[a-zA-Z]{%n", start, &pos)>0 && pos>0)
-    snprintf(endstr, sizeof(endstr), "}%s#", start);
+    {
+      RPS_ASSERT(strlen(endstr) < sizeof(endstr)-2);
+      snprintf(endstr, sizeof(endstr), "}%s#", start);
+    }
   colno += strlen(endstr);
 #warning very incomplete rps_lex_code_chunk, should be documented elsewhere...
   RPS_FATALOUT("unimplemented rps_lex_code_chunk inp@" << (void*)inp
