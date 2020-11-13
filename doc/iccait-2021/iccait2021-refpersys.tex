@@ -358,7 +358,7 @@ its mutex (mutual exclusion lock). An object contains:
       values, some of them could be null.
     \item an optional payload, see below. Payload are arbitrary data
       carrying something more. For classes, they would carry the
-      method dictionnary and the superclass.
+      method dictionary and the superclass.
 \end{itemize}
 
 The object model is basically the ObjVLisp's one
@@ -367,7 +367,7 @@ can be sent a message. The selector of a message is an object. The
 arguments of message sending are a sequence of arbitrary values. The
 reciever of a message is an non-nil value.
 
-Each class contains as its payload a class information payload, with: the superclass, the dictionnary mapping selector to method implementations (closures), 
+Each class contains as its payload a class information payload, with: the superclass, the dictionary mapping selector to method implementations (closures), 
 \medskip
 
 
@@ -1220,7 +1220,7 @@ worked upon in parallel):
         hand-written C++ code would have been replaced by generated
         C++ code.
 
-      \item generating {\RefPerSys} closure code and method dictionnaries, including our \textsc{ObjVLisp} inspired model.
+      \item generating {\RefPerSys} closure code and method dictionaries, including our \textsc{ObjVLisp} inspired model.
 
         \item generate variants (perhaps thru preprocessor flags) of
           code which profile and measure the execution time of many
