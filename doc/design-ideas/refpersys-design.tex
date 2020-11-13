@@ -34,7 +34,7 @@
 \addbibresource{../bib-refpersys.bib}
 \usepackage[a4paper, margin=4cm]{geometry}
 \setstretch{1.2}
-\date{October 2019 - February 2020}
+\date{October 2019 - November 2020}
 \newcommand*{\ac}[1]{\mbox{#1}}
 \tolerance=600
 
@@ -2446,34 +2446,57 @@ The \textsc{Json} representation of payloads vary. The figure
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The GUI of \RefPerSys}
-\label{sec:gui}
+%-   \section{The GUI of \RefPerSys}
+%-   \label{sec:gui}
+%-
+%-   The GUI of \RefPerSys is built using the Qt5 toolkit. An important consideration
+%-   in the selection of this toolkit was its C++ API, in addition to it being a stable
+%-   and mature toolkit.
+%-
+%-   \textcolor{red}{@@TODO: add more details of windows}
+%-
+%-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-   \subsection{Menu Items}
+%-   \label{subsec:gui-menu}
+%-
+%-   \begin{itemize}
+%-     \item The \textbf{App} Menu
+%-       \begin{itemize}
+%-         \item \textbf{Dump}: dump the persistent heap
+%-         \item \textbf{Garbage Collect}: invokes the gargage collector
+%-         \item \textbf{New Window}: create a new window
+%-         \item \textbf{Close}: close the current window without dumping
+%-         \item \textbf{Quit}: quit the application without dumping
+%-         \item \textbf{Exit}: exit the application after dumping
+%-       \end{itemize}
+%-     \item The \textbf{Help} Menu
+%-       \begin{itemize}
+%-         \item \textbf{About}: display program information
+%-       \end{itemize}
+%-   \end{itemize}
 
-The GUI of \RefPerSys is built using the Qt5 toolkit. An important consideration
-in the selection of this toolkit was its C++ API, in addition to it being a stable
-and mature toolkit.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Metaprogramming in \RefPerSys}
 
-\textcolor{red}{@@TODO: add more details of windows}
+Metaprogramming, that is generation of ``program'' text files (e.g. of
+C++ code, JavaScript code) is an important insight of
+\RefPerSys. Generation of such C++ files is inspired by
+\cite{Starynkevitch-DSL2011} and the code chunks there.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Menu Items}
-\label{subsec:gui-menu}
+A code chunk is a {\RefPerSys} object, of class \texttt{code\_chunk}
+(of \textit{oid \texttt{\_3rXxMck40kz03RxRLM}}, which is conceptually
+a mix of strings and holes or metavariables expanded into further code
+(by a machinery to be defined later, and hopefully to be generated
+with some code chunks).
 
-\begin{itemize}
-  \item The \textbf{App} Menu
-    \begin{itemize}
-      \item \textbf{Dump}: dump the persistent heap
-      \item \textbf{Garbage Collect}: invokes the gargage collector
-      \item \textbf{New Window}: create a new window
-      \item \textbf{Close}: close the current window without dumping
-      \item \textbf{Quit}: quit the application without dumping
-      \item \textbf{Exit}: exit the application after dumping
-    \end{itemize}
-  \item The \textbf{Help} Menu
-    \begin{itemize}
-      \item \textbf{About}: display program information
-    \end{itemize}
-\end{itemize}
+{\textcolor{red}{@@TODO: \textbf{complete, explain} and improve !}} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The primordial Read-Eval-Print-Loop of \RefPerSys}
+
+In commits around \texttt{b986354245ee38db24} (November 2020), a
+\textit{GNU readline}-based read-eval-print-loop of \RefPerSys is
+developed, in the -still handwritten- C++ file  \texttt{repl\_rps.cc}.
 
 \clearpage
 \printnoidxglossaries
