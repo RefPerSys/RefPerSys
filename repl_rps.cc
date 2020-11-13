@@ -493,14 +493,29 @@ rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char
     };
 } // end rps_lex_raw_literal_string
 
+constexpr const unsigned rps_chunkdata_magicnum = 0x2fa19e6d; // 799121005
+struct Rps_ChunkData_st
+{
+  unsigned chunkdata_magic;
+  int chunkdata_lineno;
+  int chunkdata_colno;
+  char chunkdata_endstr[24];
+  std::istream* chunkdata_inp;
+  std::string chunkdata_input_name;
+  const char**chunkdata_plinebuf;
+};				// end Rps_ChunkData_st
+
+Rps_Value
+rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_ChunkData_st*chkdata);
 
 Rps_Value
 rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int &lineno, int& colno)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
-		 /*callerframe:*/callframe,
-		 Rps_ObjectRef obchk;
-		 Rps_Value inputnamestrv;
+                           /*callerframe:*/callframe,
+                           Rps_ObjectRef obchk;
+                           Rps_Value inputnamestrv;
+                           Rps_Value chunkelemv;
                 );
   char endstr[16];
   char start[8];
@@ -520,18 +535,36 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   colno += strlen(endstr);
   _f.obchk =
     Rps_ObjectRef::make_object(&_,
-			       RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
-			       nullptr);
+                               RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
+                               nullptr);
   _f.inputnamestrv = Rps_StringValue(input_name);
   _f.obchk->put_attr2(RPS_ROOT_OB(_1B7ITSHTZWp00ektj1), //input∈symbol
-		      _f.inputnamestrv,
-		      RPS_ROOT_OB(_5FMX3lrhiw601iqPy5), //line∈symbol
-		      Rps_Value((intptr_t)lineno, Rps_Value::Rps_IntTag{})
-		      );
+                      _f.inputnamestrv,
+                      RPS_ROOT_OB(_5FMX3lrhiw601iqPy5), //line∈symbol
+                      Rps_Value((intptr_t)lineno, Rps_Value::Rps_IntTag{})
+                     );
   // So we first need to create these attributes...
   auto paylvec = _f.obchk->put_new_plain_payload<Rps_PayloadVectOb>();
   RPS_ASSERT(paylvec);
+  Rps_ChunkData_st chkdata;
+  memset (&chkdata, 0, sizeof(chkdata));
+  chkdata.chunkdata_magic = rps_chunkdata_magicnum;
+  chkdata.chunkdata_lineno = lineno;
+  chkdata.chunkdata_colno = colno;
+  strcpy(chkdata.chunkdata_endstr, endstr);
+  chkdata.chunkdata_inp = inp;
+  chkdata.chunkdata_input_name = std::string{input_name};
+  chkdata.chunkdata_plinebuf = plinebuf;
   // TODO: we should add vector components to _f.obchk, reading several lines...
+  do
+    {
+      _f.chunkelemv = rps_lex_chunk_element(&_, _f.obchk, &chkdata);
+      if (_f.chunkelemv)
+        {
+#warning should append _f.chunkelemv into _f.obchk
+        }
+    }
+  while (_f.chunkelemv);
 #warning very incomplete rps_lex_code_chunk, should be documented elsewhere...
   RPS_FATALOUT("unimplemented rps_lex_code_chunk inp@" << (void*)inp
                << " input_name=" << input_name
@@ -543,6 +576,16 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                << std::endl
                << RPS_FULL_BACKTRACE_HERE(1, "rps_lex_code_chunk"));
 } // end rps_lex_code_chunk
+
+Rps_Value
+rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_ChunkData_st*chkdata)
+{
+  RPS_FATALOUT("unimplemented rps_lex_chunk_element callframe=" << Rps_ShowCallFrame(callframe)
+               << " obchkarg=" << obchkarg
+               << " chkdata=" << chkdata);
+#warning unimplemented rps_lex_chunk_element
+  return nullptr;
+} // end rps_lex_chunk_element
 
 void
 rps_read_eval_print_loop(int &argc, char **argv)
