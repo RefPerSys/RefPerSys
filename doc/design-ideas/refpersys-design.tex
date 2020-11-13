@@ -2495,8 +2495,38 @@ with some code chunks).
 \section{The primordial Read-Eval-Print-Loop of \RefPerSys}
 
 In commits around \texttt{b986354245ee38db24} (November 2020), a
-\textit{GNU readline}-based read-eval-print-loop of \RefPerSys is
+\textit{GNU readline}-based \textbf{R}ead-\textbf{E}val-\textbf{P}rint-\textbf{L}oop of \RefPerSys~ is
 developed, in the -still handwritten- C++ file  \texttt{repl\_rps.cc}.
+
+That initial REPL language should be capable of calling most of the public C++
+functions (in our C++ file \texttt{refpersys.hh}) creating objects and
+values and modifying them.
+
+Auto-completion (in particular of existing names, and of
+\textit{exiting} oids) is practically essential. This is why
+\textit{GNU readline} is needed.
+
+Given the lack of popularity of Lisp syntax in 2020, the syntax of the
+REPL language should be closer to JavaScript or to Python, even if the
+semantics of \RefPerSys~ is heavily Lisp-inspired.
+
+The lexer C++ routine \texttt{rps\_repl\_lexer} in our C++ file
+\texttt{repl\_rps.cc} is returning (for each lexical token) a
+\textit{pair} of values. For example, an integer like \texttt{-23} or
+\texttt{0xffff} is lexed as a pair \texttt{int, -23} or \texttt{int,
+  65535} respectively, where \texttt{int} is a primordial \RefPerSys~
+object (actually a \RefPerSys~ class, of \textit{oid
+  \texttt{\_2A2mrPpR3Qf03p6o5b}}). An existing object $\omega$ (given
+by its name, or by its oid) is lexed as a pair
+\texttt{object,}$\omega$. So \texttt{int} would be lexed as the pair
+\texttt{object,int}.  A new (unknown) name $\sigma$ would be lexed as
+\texttt{symbol,}$\mathrm{string}~ \sigma$, e.g. some unknown
+\texttt{foo} would be lexed as \texttt{symbol, "foo"}. Delimiters
+$\delta$ are kept in the global \texttt{repl\_delim} string
+dictionnary (of \textit{oid \texttt{\_627ngdqrVfF020ugC5}})
+-associating strings like \texttt{"("} to objects $\omega_{\delta}$ of
+class \texttt{repl\_delimiter}- and lexed as a pair
+\texttt{repl\_delimiter}, $\omega_{\delta}$.
 
 \clearpage
 \printnoidxglossaries
