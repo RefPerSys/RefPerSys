@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean fullclean redump altredump print-temporary-plugin-settings indent test01 test02 test03
+.PHONY: all objects clean fullclean redump altredump print-temporary-plugin-settings indent test01 test02 test03 test-load
 
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
@@ -211,5 +211,8 @@ test02: ./refpersys
 
 test03: ./refpersys
 	@echo missing test03 ; exit 1
+
+test-load: ./refpersys
+	./refpersys --batch
 ## eof Makefile
 
