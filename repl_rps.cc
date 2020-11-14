@@ -273,14 +273,8 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                     &&  isalpha(linebuf[colno+7]))
               ))
     {
-      RPS_FATALOUT("rps_repl_lexer should call rps_lex_code_chunk inp@" << (void*)inp
-                   << " input_name=" << input_name
-                   << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
-                   << " lineno=" << lineno
-                   << " colno=" << colno
-                   << " curpos=" << linebuf+colno
-                   << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer"));
-#warning rps_repl_lexer should call rps_lex_code_chunk
+      return Rps_TwoValues{RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
+                           rps_lex_code_chunk(callframe, inp, input_name, &linebuf, lineno, colno)};
     }
 
 
