@@ -42,10 +42,11 @@ extern "C" const char rps_repl_date[];
 const char rps_repl_date[]= __DATE__;
 
 extern "C" std::istream*rps_repl_input = nullptr;
+extern "C" bool rps_repl_stopped;
 
 /// Interpret from either a given input stream,
 /// or using readline if inp is null.
-extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name);
+extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
 
 /*** The lexer. We return a pair of values. The first describing the
      second.  For example, a lexed integer is given as
@@ -65,6 +66,8 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
 
 static Rps_CallFrame*rps_readline_callframe;
 
+bool rps_repl_stopped;
+
 std::string
 rps_repl_version(void)
 {
@@ -83,7 +86,7 @@ rps_repl_version(void)
 } // end rps_repl_version
 
 void
-rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name)
+rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno)
 {
   std::istream*previous_input=nullptr;
   RPS_ASSERT(rps_is_main_thread());
@@ -94,6 +97,11 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                 );
   previous_input = rps_repl_input;
   rps_repl_input = inp;
+  RPS_WARNOUT("unimplemented rps_repl_interpret frame=" << Rps_ShowCallFrame(&_)
+              << " inp=" << inp << " input_name=" << input_name
+              << " lineno=" << lineno << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret"));
+#warning rps_repl_interpret unimplemented
   rps_repl_input = previous_input;
 } // end rps_repl_interpret
 
@@ -595,11 +603,25 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
 void
 rps_read_eval_print_loop(int &argc, char **argv)
 {
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/nullptr,
+                );
   for (int ix=0; ix<argc; ix++)
     RPS_DEBUG_LOG(REPL, "REPL arg [" << ix << "]: " << argv[ix]);
-#warning incomplete rps_read_eval_print_loop
-  RPS_WARNOUT("incomplete rps_read_eval_print_loop " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_read_eval_print_loop"));
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop start frame=" << Rps_ShowCallFrame(&_));
+  char *linebuf = nullptr;
+  int lineno=0;
+  int count=0;
+  while (!rps_repl_stopped)
+    {
+      count++;
+      char prompt[16];
+      memset(prompt, 0, sizeof(prompt));
+      snprintf(prompt, sizeof(prompt), "Rps_REPL#%d", count);
+      RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop lineno=" << lineno << " prompt=" << prompt);
+      rps_repl_interpret(&_, nullptr, prompt, lineno);
+    };
 } // end of rps_read_eval_print_loop
 
 // end of file repl_rps.cc
