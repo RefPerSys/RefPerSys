@@ -1038,6 +1038,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
   memset (errbuf, 0, sizeof(errbuf));
   snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
   bool ontty = isatty(STDERR_FILENO);
+  if (rps_debug_file)
+    fprintf(rps_debug_file, "\n*** RPS FATAL %s:%d ***\n", filnam, lin);
   fprintf(stderr, "\n%s%sRPS FATAL:%s\n"
           " RefPerSys gitid %s, built timestamp %s,\n"
           "\t on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
@@ -1058,6 +1060,15 @@ rps_fatal_stop_at (const char *filnam, int lin)
   fflush(nullptr);
   abort();
 } // end rps_fatal_stop_at
+
+void rps_debug_warn_at(const char*file, int line)
+{
+  if (rps_debug_file)
+    {
+      fprintf(rps_debug_file, "\n*** REFPERSYS WARNING at %s:%d ***\n", file, line);
+      fflush(rps_debug_file);
+    }
+} // end rps_debug_warn_at
 
 ///////////////////////////////////////////////////////// debugging support
 void
@@ -1276,7 +1287,7 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
         fprintf(rps_debug_file, "RPS DEBUG %s <%s:%d>",
                 rps_debug_level(dbgopt).c_str(), threadbfr,
                 static_cast<int>(rps_thread_id()));
-	fprintf(rps_debug_file, " %s:%d %s %s\n",
+        fprintf(rps_debug_file, " %s:%d %s %s\n",
                 fname, (fline>0)?fline:(-fline),
                 tmbfr, msg);
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
