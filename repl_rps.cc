@@ -95,13 +95,16 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_6x4XcZ1fxp403uBUoz),
                            /*callerframe:*/callframe,
                 );
+  RPS_DEBUG_LOG(REPL, "rps_repl_interpret start input_name=" << input_name
+		<< ", lineno=" << lineno
+		<< " callframe: " << Rps_ShowCallFrame(&_));
   previous_input = rps_repl_input;
   rps_repl_input = inp;
-  RPS_WARNOUT("unimplemented rps_repl_interpret frame=" << Rps_ShowCallFrame(&_)
+  RPS_FATALOUT("unimplemented rps_repl_interpret frame=" << Rps_ShowCallFrame(&_)
               << " inp=" << inp << " input_name=" << input_name
               << " lineno=" << lineno << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret"));
-#warning rps_repl_interpret unimplemented
+#warning rps_repl_interpret unimplemented, should call rps_repl_get_next_line then parse using rps_repl_lexer
   rps_repl_input = previous_input;
 } // end rps_repl_interpret
 
@@ -626,9 +629,10 @@ rps_read_eval_print_loop(int &argc, char **argv)
       memset(prompt, 0, sizeof(prompt));
       snprintf(prompt, sizeof(prompt), "Rps_REPL#%d", count);
       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop lineno=" << lineno << " prompt=" << prompt);
-      if (count % 16 == 0)
+      if (count % 4 == 0)
         usleep(128*1024);
       rps_repl_interpret(&_, nullptr, prompt, lineno);
+      RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop done prompt=" << prompt << std::endl);
     };
 } // end of rps_read_eval_print_loop
 
