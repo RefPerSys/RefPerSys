@@ -96,14 +96,14 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                            /*callerframe:*/callframe,
                 );
   RPS_DEBUG_LOG(REPL, "rps_repl_interpret start input_name=" << input_name
-		<< ", lineno=" << lineno
-		<< " callframe: " << Rps_ShowCallFrame(&_));
+                << ", lineno=" << lineno
+                << " callframe: " << Rps_ShowCallFrame(&_));
   previous_input = rps_repl_input;
   rps_repl_input = inp;
   RPS_FATALOUT("unimplemented rps_repl_interpret frame=" << Rps_ShowCallFrame(&_)
-              << " inp=" << inp << " input_name=" << input_name
-              << " lineno=" << lineno << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret"));
+               << " inp=" << inp << " input_name=" << input_name
+               << " lineno=" << lineno << std::endl
+               << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret"));
 #warning rps_repl_interpret unimplemented, should call rps_repl_get_next_line then parse using rps_repl_lexer
   rps_repl_input = previous_input;
 } // end rps_repl_interpret
@@ -602,6 +602,55 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
 {
   RPS_ASSERT(chkdata != nullptr && chkdata->chunkdata_magic ==  rps_chunkdata_magicnum);
   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
+  RPS_ASSERT(chkdata->chunkdata_plinebuf != nullptr);
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/callframe,
+                           Rps_ObjectRef obchunk;
+                           Rps_Value chkelemv;
+                           Rps_ObjectRef namedobv;
+                );
+  _f.obchunk = obchkarg;
+  RPS_ASSERT(_f.obchunk);
+  auto paylvect = _f.obchunk->get_dynamic_payload<Rps_PayloadVectOb>();
+  RPS_ASSERT(paylvect != nullptr);
+  const char*linestart = *chkdata->chunkdata_plinebuf;
+  int linelen = strlen(linestart);
+  RPS_ASSERT(chkdata->chunkdata_colno >= 0 && chkdata->chunkdata_colno<linelen);
+  /// For C name-like things, we return the object naming them or else a string
+  if (isalpha(linestart[chkdata->chunkdata_colno]))
+    {
+      int startnamcol = chkdata->chunkdata_colno;
+      int endnamcol = startnamcol;
+      while (endnamcol<linelen && (isalnum(linestart[endnamcol]) || linestart[endnamcol]=='_'))
+        endnamcol++;
+      int namlen = endnamcol-startnamcol;
+      std::string namstr = std::string(linestart+startnamcol, namlen);
+      _f.namedobv = Rps_ObjectRef::find_object_by_string(&_, namstr);
+      chkdata->chunkdata_colno = endnamcol;
+      if (_f.namedobv)
+        return _f.namedobv;
+      else
+        {
+          _f.chkelemv = Rps_StringValue(namstr);
+          return _f.chkelemv;
+        }
+    }
+  /// For sequence of spaces, we return an instance of class space and value the number of space characters
+  else if (isspace(linestart[chkdata->chunkdata_colno]))
+    {
+      int startspacecol =  chkdata->chunkdata_colno;
+      int endspacecol = startspacecol;
+      while (endspacecol<linelen && isspace(linestart[endspacecol]))
+        endspacecol++;
+      _f.chkelemv = Rps_InstanceValue(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx), //space∈class
+                                      std::initializer_list<Rps_Value>
+      {
+        Rps_Value((intptr_t)(endspacecol-startspacecol),
+        Rps_Value::Rps_IntTag{})
+      });
+      return _f.chkelemv;
+    }
+#warning we need to document and implement other chunk element conventions in rps_lex_chunk_element
   RPS_FATALOUT("unimplemented rps_lex_chunk_element callframe=" << Rps_ShowCallFrame(callframe)
                << " obchkarg=" << obchkarg
                << " chkdata=" << chkdata);
