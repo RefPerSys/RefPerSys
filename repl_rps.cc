@@ -138,6 +138,12 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
           prompt.append(RPS_TERMINAL_NORMAL_ESCAPE);
         }
       rps_readline_callframe = callframe;
+      RPS_DEBUG_LOG(REPL, "rps_repl_get_next_line before readline prompt=" << prompt
+                    << " backtrace:" << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_get_next_line/readline")
+                    << std::endl
+                    << "... callframe=" << Rps_ShowCallFrame(callframe)
+                    << std::endl);
       free (plinebuf), *plinebuf = readline(prompt.c_str());
       rps_readline_callframe = nullptr;
       if (*plinebuf)
@@ -620,6 +626,8 @@ rps_read_eval_print_loop(int &argc, char **argv)
       memset(prompt, 0, sizeof(prompt));
       snprintf(prompt, sizeof(prompt), "Rps_REPL#%d", count);
       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop lineno=" << lineno << " prompt=" << prompt);
+      if (count % 16 == 0)
+        usleep(128*1024);
       rps_repl_interpret(&_, nullptr, prompt, lineno);
     };
 } // end of rps_read_eval_print_loop
