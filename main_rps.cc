@@ -623,6 +623,8 @@ main (int argc, char** argv)
   asm volatile ("end_of_main: nop; nop; nop; nop");
   asm volatile (".size end_of_main, . - end_of_main");
   asm volatile ("nop; nop");
+  if (rps_debug_file)
+    fflush(rps_debug_file);
   RPS_INFORM("end of RefPerSys process %d on host %s\n"
              "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
              (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
