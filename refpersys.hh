@@ -407,6 +407,7 @@ enum rps_progoption_en
   RPSPROGOPT_REPL,
   RPSPROGOPT_RUN_AFTER_LOAD,
   RPSPROGOPT_PLUGIN_AFTER_LOAD,
+  RPSPROGOPT_DEBUG_PATH,
   RPSPROGOPT_VERSION,
 };
 
@@ -423,6 +424,8 @@ extern "C" bool rps_syslog_enabled;
 
 extern "C" unsigned rps_debug_flags;
 
+void rps_set_debug_output_path(const char*filepath);
+
 #define RPS_DEBUG_LOG_LEVEL LOG_DEBUG // syslog debug log level
 
 // so we could code  RPS_DEBUG_PRINTF(NEVER, ....)
@@ -430,7 +433,9 @@ extern "C" unsigned rps_debug_flags;
 
 #define RPS_DEBUG_ENABLED(dbgopt) (rps_debug_flags & (1 << RPS_DEBUG_##dbgopt))
 
-/// debug print to stderr....; if fline is negative, print a newline before....
+/// debug print to stderr or to the file given to
+/// rps_set_debug_output_path ....; if fline is negative, print a
+/// newline before....
 void 
 rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt, 
                     const char *fmt, ...) 

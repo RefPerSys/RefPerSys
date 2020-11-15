@@ -76,7 +76,15 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "To set RefPerSys comma separated debug flags, pass --debug=help to get their list.", ///
     /*group:*/0 ///
   },
-  /* ======= debug flags ======= */
+  /* ======= debug file path ======= */
+  {/*name:*/ "debug-path", ///
+    /*key:*/ RPSPROGOPT_DEBUG_PATH, ///
+    /*arg:*/ "DEBUGFILEPATH", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Output debug messages into given DEBUGFILEPATH instead of stderr.", ///
+    /*group:*/0 ///
+  },
+  /* ======= dump into given directory ======= */
   {/*name:*/ "dump", ///
     /*key:*/ RPSPROGOPT_DUMP, ///
     /*arg:*/ "DUMPDIR", ///
@@ -638,6 +646,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         rps_set_debug(std::string(arg));
     }
     return 0;
+    case RPSPROGOPT_DEBUG_PATH:
+    {
+      if (side_effect)
+        rps_set_debug_output_path(arg);
+    }
+    return 0;
     case RPSPROGOPT_LOADDIR:
     {
       rps_my_load_dir = std::string(arg);
@@ -1157,6 +1171,45 @@ rps_debug_level(Rps_Debug dbgopt)
 } // end rps_debug_level
 
 
+static FILE* rps_debug_file;
+
+static void rps_close_debug_file(void)
+{
+  if (rps_debug_file)
+    {
+      fprintf(rps_debug_file, "*** end of RefPerSys debug file ****\n");
+      fflush(rps_debug_file);
+      fclose(rps_debug_file);
+      rps_debug_file=nullptr;
+    }
+} // end rps_close_debug_file
+
+void
+rps_set_debug_output_path(const char*filepath)
+{
+  if (rps_debug_file)
+    RPS_FATAL("cannot set debug file twice, second time to %s", filepath);
+  if (!access(filepath, R_OK))
+    {
+      char backupath[128];
+      memset(backupath, 0, sizeof(backupath));
+      snprintf(backupath, sizeof(backupath), "%s~", filepath);
+      rename(filepath, backupath);
+    };
+  FILE* fdbg=fopen(filepath, "w");
+  if (!fdbg)
+    RPS_FATAL("cannot open debug file %s - %m", filepath);
+  fprintf(fdbg, "**** RefPerSys debug file ****\n"
+          "See http://refpersys.org/ - built %s\n"
+          "On host %s pid %d gitid %s topdir %s\n"
+          "####################################\n",
+          rps_timestamp,
+          rps_hostname(), (int)getpid(), rps_gitid, rps_topdirectory);
+  fflush(fdbg);
+  rps_debug_file = fdbg;
+  atexit(rps_close_debug_file);
+} // end rps_set_debug_output_path
+
 ////////////////////////////////////////////////////////////////
 // if fline is negative, print a newline before....
 void
@@ -1217,9 +1270,22 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
                rps_debug_level(dbgopt).c_str(), threadbfr,
                static_cast<int>(rps_thread_id()), fname, fline, tmbfr, msg);
       }
-    else
+    else if (rps_debug_file)
       {
-        // no syslog
+        fprintf(rps_debug_file, "RPS DEBUG %s <%s:%d> %s@%s:%d%s %s\n%s\n",
+                rps_debug_level(dbgopt).c_str(), threadbfr,
+                static_cast<int>(rps_thread_id()),
+                fname, (fline>0)?fline:(-fline),
+                tmbfr, msg);
+        if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
+          {
+            fprintf(stderr, "RPS DEBUG %04ld ~  *^*^*%s\n",
+                    ndbg, datebfr);
+          }
+        fflush(rps_debug_file);
+      }
+    else // no syslog, no debug file
+      {
         bool ontty = isatty(STDERR_FILENO);
         if (fline<0 || strchr(msg, '\n'))
           fputc('\n', stderr);
