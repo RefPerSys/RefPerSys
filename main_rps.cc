@@ -220,6 +220,8 @@ bool rps_stderr_istty = false;
 
 unsigned rps_debug_flags;
 
+static FILE* rps_debug_file;
+
 thread_local Rps_Random Rps_Random::_rand_thr_;
 
 typedef std::function<void(void)> rps_todo_func_t;
@@ -1172,9 +1174,6 @@ rps_debug_level(Rps_Debug dbgopt)
 #undef DEBUG_LEVEL
 } // end rps_debug_level
 
-
-static FILE* rps_debug_file;
-
 static void rps_close_debug_file(void)
 {
   if (rps_debug_file)
@@ -1274,9 +1273,10 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
       }
     else if (rps_debug_file)
       {
-        fprintf(rps_debug_file, "RPS DEBUG %s <%s:%d> %s@%s:%d%s %s\n%s\n",
+        fprintf(rps_debug_file, "RPS DEBUG %s <%s:%d>",
                 rps_debug_level(dbgopt).c_str(), threadbfr,
-                static_cast<int>(rps_thread_id()),
+                static_cast<int>(rps_thread_id()));
+	fprintf(rps_debug_file, " %s:%d %s %s\n",
                 fname, (fline>0)?fline:(-fline),
                 tmbfr, msg);
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
