@@ -648,6 +648,7 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
         Rps_Value((intptr_t)(endspacecol-startspacecol),
         Rps_Value::Rps_IntTag{})
       });
+      chkdata->chunkdata_colno += endspacecol-startspacecol+1;
       return _f.chkelemv;
     }
   /// code chunk meta-variable or meta-notation....
@@ -670,14 +671,29 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                           << " line " <<  chkdata->chunkdata_lineno << ", column " << chkdata->chunkdata_colno);
               throw std::runtime_error("lexical error - metaname in code chunk");
             }
-          _f.chkelemv = Rps_InstanceValue(RPS_ROOT_OB(_1oPsaaqITVi03OYZb9) //meta_variable∈symbol
-                                          std::initializer_list<Rps_Value> {_f.namedobv;});
+	  chkdata->chunkdata_colno += endnameix-startnameix+1;
+          _f.chkelemv = Rps_InstanceValue(RPS_ROOT_OB(_1oPsaaqITVi03OYZb9), //meta_variable∈symbol
+                                          std::initializer_list<Rps_Value> {_f.namedobv});
           return _f.chkelemv;
         }
+      /// two dollars are parsed as one
       else if (metastr[1] == '$')
         {
-          // two dollars should be parsed as a single one
+          // two dollars should be parsed as a single one, and we make that a string with following letters...
+          int startnameix=1, endnameix=2;
+          while (isalnum(metastr[endnameix])||metastr[endnameix]=='_')
+            endnameix++;
+          std::string dollname(metastr+1, endnameix-startnameix);
+	  chkdata->chunkdata_colno +=  endnameix-startnameix+1;
+          _f.chkelemv = Rps_StringValue(dollname);
+          return _f.chkelemv;
         }
+      /// a dollar followed by a dot is ignored....
+      else if (metastr[1] == '.') {
+	chkdata->chunkdata_colno += 2;
+	return nullptr;
+      }
+      /// probably other dollar things should be parsed as delimiters....
     }
 #warning we need to document and implement other chunk element conventions in rps_lex_chunk_element, in particular delimiters...
   RPS_FATALOUT("unimplemented rps_lex_chunk_element callframe=" << Rps_ShowCallFrame(callframe)
