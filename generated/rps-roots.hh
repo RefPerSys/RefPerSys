@@ -31,6 +31,7 @@ RPS_INSTALL_ROOT_OB(_0XMNvzdABUM03Bj7WP) //git_id∈symbol
 RPS_INSTALL_ROOT_OB(_0Z23UbC0G9b01WZZPN) //display_object_payload_web∈symbol
 RPS_INSTALL_ROOT_OB(_14M7WuJSWw702zB0M9) //"display_object_payload_web"∈named_selector
 RPS_INSTALL_ROOT_OB(_1aGtWm38Vw701jDhZn) //"the_agenda"∈agenda
+RPS_INSTALL_ROOT_OB(_1oPsaaqITVi03OYZb9) //meta_variable∈symbol
 RPS_INSTALL_ROOT_OB(_1rfASGBBbFz02VUsMw) //"rps_serve_onion_expanded_stream"∈rps_routine
 RPS_INSTALL_ROOT_OB(_1wihX3eWD9o00QnxUX) //"our_contributors"∈mutable_set
 RPS_INSTALL_ROOT_OB(_1B7ITSHTZWp00ektj1) //input∈symbol
@@ -94,7 +95,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 72
+#define RPS_NB_ROOT_OB 73
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
