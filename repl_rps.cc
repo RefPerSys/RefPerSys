@@ -670,10 +670,16 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                           << " line " <<  chkdata->chunkdata_lineno << ", column " << chkdata->chunkdata_colno);
               throw std::runtime_error("lexical error - metaname in code chunk");
             }
-#warning rps_lex_chunk_element needs to return a RefPerSys instance of connective meta_variable and son _f.namedobv
+          _f.chkelemv = Rps_InstanceValue(RPS_ROOT_OB(_1oPsaaqITVi03OYZb9) //meta_variable∈symbol
+                                          std::initializer_list<Rps_Value> {_f.namedobv;});
+          return _f.chkelemv;
+        }
+      else if (metastr[1] == '$')
+        {
+          // two dollars should be parsed as a single one
         }
     }
-#warning we need to document and implement other chunk element conventions in rps_lex_chunk_element
+#warning we need to document and implement other chunk element conventions in rps_lex_chunk_element, in particular delimiters...
   RPS_FATALOUT("unimplemented rps_lex_chunk_element callframe=" << Rps_ShowCallFrame(callframe)
                << " obchkarg=" << obchkarg
                << " chkdata=" << chkdata);
