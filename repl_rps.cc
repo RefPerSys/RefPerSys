@@ -650,6 +650,29 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
       });
       return _f.chkelemv;
     }
+  /// code chunk meta-variable or meta-notation....
+  else if (linestart[chkdata->chunkdata_colno] == '$'
+           && chkdata->chunkdata_colno < linelen)
+    {
+      // a dollar followed by a name is a meta-variable; that name should be known
+      const char*metastr = linestart+chkdata->chunkdata_colno;
+      if (isalpha(metastr[1]))
+        {
+          int startnameix=1, endnameix=1;
+          while (isalnum(metastr[endnameix])||metastr[endnameix]=='_')
+            endnameix++;
+          std::string metaname(metastr+1, endnameix-startnameix);
+          _f.namedobv = Rps_ObjectRef::find_object_by_string(&_, metaname);
+          if (!_f.namedobv)
+            {
+              RPS_WARNOUT("rps_lex_chunk_element: bad metavariable name " << metaname
+                          << " input " <<  chkdata->chunkdata_input_name
+                          << " line " <<  chkdata->chunkdata_lineno << ", column " << chkdata->chunkdata_colno);
+              throw std::runtime_error("lexical error - metaname in code chunk");
+            }
+#warning rps_lex_chunk_element needs to return a RefPerSys instance of connective meta_variable and son _f.namedobv
+        }
+    }
 #warning we need to document and implement other chunk element conventions in rps_lex_chunk_element
   RPS_FATALOUT("unimplemented rps_lex_chunk_element callframe=" << Rps_ShowCallFrame(callframe)
                << " obchkarg=" << obchkarg
@@ -657,6 +680,8 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
 #warning unimplemented rps_lex_chunk_element
   return nullptr;
 } // end rps_lex_chunk_element
+
+
 
 void
 rps_read_eval_print_loop(int &argc, char **argv)
