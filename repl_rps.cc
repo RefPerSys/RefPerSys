@@ -94,12 +94,45 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   // descriptor is: _6x4XcZ1fxp403uBUoz) //"rps_repl_interpret"∈core_function
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_6x4XcZ1fxp403uBUoz),
                            /*callerframe:*/callframe,
+                           Rps_Value lexkindv;
+                           Rps_Value lexdatav;
                 );
+  // a double ended queue to keep the lexical tokens
+  std::deque<Rps_Value> token_deq;
+  const char* linebuf=nullptr;
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
+  {
+    for (auto tokenv : token_deq)
+      gc->mark_value(tokenv);
+  });
   RPS_DEBUG_LOG(REPL, "rps_repl_interpret start input_name=" << input_name
                 << ", lineno=" << lineno
                 << " callframe: " << Rps_ShowCallFrame(&_));
   previous_input = rps_repl_input;
   rps_repl_input = inp;
+  bool endcommand = false;
+  std::string prompt = std::string(input_name) + " RPS>";
+  bool gotline = rps_repl_get_next_line(&_, inp, input_name, &linebuf, &lineno, prompt);
+  if (gotline)
+    {
+      int colno = 0;
+      while (!endcommand)
+        {
+          int startline = lineno;
+          int startcol = colno;
+          Rps_TwoValues lexpair = rps_repl_lexer(&_, inp, input_name, linebuf, lineno, colno);
+          if (!lexpair.main())
+            break;
+          _f.lexkindv = lexpair.main();
+          _f.lexdatav = lexpair.xtra();
+          RPS_DEBUG_LOG(REPL, "rps_repl_interpret " << input_name << "L" << startline << "C" << startcol
+                        << " lexkind=" << _f.lexkindv
+                        << " lexdatav=" << _f.lexdatav);
+#warning we need some condition on the lexing to stop it; perhaps stopping commands by double-semi-colon à la Ocaml
+        };
+    }
+  else
+    RPS_WARNOUT("rps_repl_interpret no line in " << input_name << "L" << lineno);
   RPS_FATALOUT("unimplemented rps_repl_interpret frame=" << Rps_ShowCallFrame(&_)
                << " inp=" << inp << " input_name=" << input_name
                << " lineno=" << lineno << std::endl
@@ -147,7 +180,7 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
                     << std::endl
                     << "... callframe=" << Rps_ShowCallFrame(callframe)
                     << std::endl);
-      free (plinebuf), *plinebuf = readline(prompt.c_str());
+      free ((void*)*plinebuf), *plinebuf = readline(prompt.c_str());
       rps_readline_callframe = nullptr;
       if (*plinebuf)
         {
@@ -671,7 +704,7 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                           << " line " <<  chkdata->chunkdata_lineno << ", column " << chkdata->chunkdata_colno);
               throw std::runtime_error("lexical error - metaname in code chunk");
             }
-	  chkdata->chunkdata_colno += endnameix-startnameix+1;
+          chkdata->chunkdata_colno += endnameix-startnameix+1;
           _f.chkelemv = Rps_InstanceValue(RPS_ROOT_OB(_1oPsaaqITVi03OYZb9), //meta_variable∈symbol
                                           std::initializer_list<Rps_Value> {_f.namedobv});
           return _f.chkelemv;
@@ -684,15 +717,16 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
           while (isalnum(metastr[endnameix])||metastr[endnameix]=='_')
             endnameix++;
           std::string dollname(metastr+1, endnameix-startnameix);
-	  chkdata->chunkdata_colno +=  endnameix-startnameix+1;
+          chkdata->chunkdata_colno +=  endnameix-startnameix+1;
           _f.chkelemv = Rps_StringValue(dollname);
           return _f.chkelemv;
         }
       /// a dollar followed by a dot is ignored....
-      else if (metastr[1] == '.') {
-	chkdata->chunkdata_colno += 2;
-	return nullptr;
-      }
+      else if (metastr[1] == '.')
+        {
+          chkdata->chunkdata_colno += 2;
+          return nullptr;
+        }
       /// probably other dollar things should be parsed as delimiters....
     }
 #warning we need to document and implement other chunk element conventions in rps_lex_chunk_element, in particular delimiters...
