@@ -19,3 +19,21 @@ be typed.
 6. Create objects representing code plugins
 7. Run plugin objects
 
+
+## Syntax considerations
+
+As suggested in the e-mail exchange, we would be considering all REPL commands
+to be starting with a verb, followed by a subject, and then parameters. The verb
+ and subject are mandatorily required, whereas the parameters are optional.
+
+Since we may have commands running across several line, and since we are **not**
+considering whitespace (including newline characters) to be significant, we need
+a way to indicate the termination of a command. In our initial discussion it was
+suggested that we use two consecutive semicolons; however, some discussion is
+required on how the REPL distinguishes `;;` in infinite for loops in code chunks
+and command termination.
+
+The general syntax for REPL commands would thus be:
+```
+<verb> <subject> <flags>
+```
