@@ -36,4 +36,14 @@ and command termination.
 The general syntax for REPL commands would thus be:
 ```
 <verb> <subject> <flags>
+
 ```
+
+
+## Extensible syntax
+
+The *`<verb>`* above would be an object, often a RefPerSys symbol,
+having as some specific attribute `repl_command` whose associated
+value is a RefPerSys closure parsing the rest of the command.
+
+## Concrete examples
