@@ -47,3 +47,11 @@ having as some specific attribute `repl_command` whose associated
 value is a RefPerSys closure parsing the rest of the command.
 
 ## Concrete examples
+
+1. Creating a persistent object of class "symbol" with name "comment" can be
+   achieved in two ways, namely by using either the object ID or name of the
+   class "symbol".
+
+  * `create-object name=comment class=symbol`
+  * `create-object name=comment class=_36I1BY2NetN03WjrOv`
+
