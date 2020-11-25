@@ -81,3 +81,7 @@ _*.inc.hh
 # Tags
 tags
 
+## GNU bison generated
+synrepl_rps.cc
+synrepl_rps.hh
+synrepl_rps.output

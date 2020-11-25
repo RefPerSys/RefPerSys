@@ -39,6 +39,9 @@
 %define parse.assert
 %locations
 
+%define parse.error verbose
+%define parse.lac full
+
 %code requires // *.hh
 {
 /// header part generated from synrepl_rps.yy
@@ -58,7 +61,7 @@
 }
 
 
-%%
+%define api.token.prefix {RPSY_}
 /*** prologue part of synrepl_rps.yy ***/
 %token <int> RPSY_INT;
 %token RPSY_EOF 0;
@@ -66,6 +69,8 @@
 %type <int> rpsy_int_literal;
 
 %%
+%start rpsy_int_literal;
+
 /*** grammar part of synrepl_rps.yy ***/
 rpsy_int_literal: RPSY_INT
                   { /*useless rpsy_int_literal*/ $$ = $1; }
