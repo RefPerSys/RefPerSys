@@ -55,3 +55,69 @@ value is a RefPerSys closure parsing the rest of the command.
   * `create-object name=comment class=symbol`
   * `create-object name=comment class=_36I1BY2NetN03WjrOv`
 
+
+## List of RefPerSys functions acception a call frame
+
+  * Rps_ObjectRef::Rps_ObjectRef(
+	Rps_CallFrame*callerframe, 
+	const char*oidstr, 
+	Rps_ObjIdStrTag);
+
+  * static Rps_ObjectRef Rps_ObjectRef::find_object_by_string(
+	Rps_CallFrame*callerframe,  
+	const std::string& str, 
+	bool dontfail=false);
+
+  * static Rps_ObjectRef Rps_ObjectRef::find_object_by_oid(
+	Rps_CallFrame*callerframe, 
+	Rps_Id oid, 
+	bool dontfail=false);
+
+  * static Rps_ObjectRef Rps_ObjectRef::make_named_class(
+	Rps_CallFrame*callerframe, 
+	Rps_ObjectRef superclassob, 
+	std::string name);
+
+  * static Rps_ObjectRef Rps_ObjectRef::make_new_symbol(
+	Rps_CallFrame*callerframe, 
+	std::string name, 
+	bool isweak);
+
+  * static Rps_ObjectRef Rps_ObjectRef::make_new_strong_symbol(
+	Rps_CallFrame*callerframe, 
+	std::string name);
+
+  * static Rps_ObjectRef Rps_ObjectRef::make_new_weak_symbol(
+	Rps_CallFrame*callerframe, 
+	std::string name);
+
+  * static Rps_ObjectRef Rps_ObjectRef::make_object(
+	Rps_CallFrame*callerframe, 
+	Rps_ObjectRef classob, 
+	Rps_ObjectRef spaceob=nullptr);
+
+  * static Rps_ObjectRef Rps_ObjectRef::make_mutable_set_object(
+	Rps_CallFrame*callerframe, 
+	Rps_ObjectRef spaceob=nullptr);
+
+  * void Rps_ObjectRef::install_own_method(
+	Rps_CallFrame*callerframe, 
+	Rps_ObjectRef obsel, 
+	Rps_Value closv);
+
+  * void Rps_ObjectRef::install_own_2_methods(
+	Rps_CallFrame*callerframe, 
+	Rps_ObjectRef obsel0, 
+	Rps_Value closv0, 
+	Rps_ObjectRef obsel1, 
+	Rps_Value closv1);
+
+  * void Rps_ObjectRef::install_own_3_methods(
+	Rps_CallFrame*callerframe, 
+	Rps_ObjectRef obsel0, 
+	Rps_Value closv0, 
+	Rps_ObjectRef obsel1, 
+	Rps_Value closv1, 
+	Rps_ObjectRef obsel2, 
+	Rps_Value closv2);
+
