@@ -121,3 +121,126 @@ value is a RefPerSys closure parsing the rest of the command.
 	Rps_ObjectRef obsel2, 
 	Rps_Value closv2);
 
+
+  * Rps_ObjectFromOidRef::Rps_ObjectFromOidRef(
+	Rps_CallFrame*callerframe, 
+	const char*oidstr);
+
+  * inline Rps_Value::Rps_Value(
+	const void*ptr, 
+	Rps_CallFrame*cframe);
+
+  * Rps_ClosureValue Rps_Value::closure_for_method_selector(
+	Rps_CallFrame*cframe, 
+	Rps_ObjectRef obselector) const;
+
+  * Rps_ObjectRef Rps_Value::compute_class(
+	Rps_CallFrame*) const;
+
+  * Rps_Value Rps_Value::get_attr(
+	Rps_CallFrame*stkf, 
+	const Rps_ObjectRef obattr) const;
+
+  * inline bool Rps_Value::is_instance_of(
+	Rps_CallFrame*callerframe, 
+	Rps_ObjectRef obclass) const;
+
+  * inline bool Rps_Value::is_subclass_of(
+	Rps_CallFrame*callerframe, 
+	Rps_ObjectRef obsuperclass) const;
+
+  * Rps_TwoValues Rps_Value::send0(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel) const;
+
+  * Rps_TwoValues Rps_Value::send1(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        Rps_Value arg0) const;
+
+  * Rps_TwoValues Rps_Value::send2(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        Rps_Value arg0, 
+	const Rps_Value arg1) const;
+
+  * Rps_TwoValues Rps_Value::send3(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1, 
+	const Rps_Value arg2) const;
+
+  * Rps_TwoValues Rps_Value::send4(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1,
+        const Rps_Value arg2, 
+	const Rps_Value arg3) const;
+
+  * Rps_TwoValues Rps_Value::send5(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1,
+        const Rps_Value arg2, 
+	const Rps_Value arg3,
+        const Rps_Value arg4) const;
+
+  * Rps_TwoValues Rps_Value::send6(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1,
+        const Rps_Value arg2, 
+	const Rps_Value arg3,
+        const Rps_Value arg4, 
+	const Rps_Value arg5) const;
+
+  * Rps_TwoValues Rps_Value::send7(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1,
+        const Rps_Value arg2, 
+	const Rps_Value arg3,
+        const Rps_Value arg4, 
+	const Rps_Value arg5,
+        const Rps_Value arg6) const;
+
+  * Rps_TwoValues Rps_Value::send8(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1,
+        const Rps_Value arg2, 
+	const Rps_Value arg3,
+        const Rps_Value arg4, 
+	const Rps_Value arg5,
+        const Rps_Value arg6, 
+	const Rps_Value arg7) const;
+
+  * Rps_TwoValues Rps_Value::send9(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1,
+        const Rps_Value arg2, 
+	const Rps_Value arg3,
+        const Rps_Value arg4, 
+	const Rps_Value arg5,
+        const Rps_Value arg6, 
+	const Rps_Value arg7,
+        const Rps_Value arg8) const;
+
+  * Rps_TwoValues Rps_Value::send_vect(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const std::vector<Rps_Value>& argvec) const;
+
+  * Rps_TwoValues Rps_Value::send_ilist(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const std::initializer_list<Rps_Value>& argil) const;
+
