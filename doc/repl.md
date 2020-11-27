@@ -52,8 +52,22 @@ value is a RefPerSys closure parsing the rest of the command.
    achieved in two ways, namely by using either the object ID or name of the
    class "symbol".
 
-  * `create-object name=comment class=symbol`
-  * `create-object name=comment class=_36I1BY2NetN03WjrOv`
+  * `create_object name=comment class=symbol`
+  * `create_object name=comment class=_36I1BY2NetN03WjrOv`
+
+### Examples required
+
+  * Adding an attribute inside an object
+  * Remove an attribute inside an object
+  * Add a component to an object
+  * Remove a component from an object
+  * Send a message to an object
+  * Apply a closure to an object
+  * Create an object with a payload
+  * Create a new class
+  * Create a code chunk object
+
+  
 
 
 ## List of RefPerSys functions acception a call frame
