@@ -258,3 +258,150 @@ value is a RefPerSys closure parsing the rest of the command.
 	const Rps_ObjectRef obsel,
         const std::initializer_list<Rps_Value>& argil) const;
 
+  * inline void Rps_GarbageCollector::mark_call_stack(
+	Rps_CallFrame*topframe);
+
+  * virtual Rps_ObjectRef Rps_ZoneValue::compute_class(
+	Rps_CallFrame*stkf) const =0;
+
+  * virtual Rps_ObjectRef Rps_String::compute_class(
+	Rps_CallFrame*stkf) const;
+
+  * virtual Rps_ObjectRef Rps_Double::compute_class(
+	Rps_CallFrame*stkf) const;
+
+  * virtual Rps_ObjectRef Rps_ObjectZone::compute_class(
+	Rps_CallFrame*stkf) const;
+  
+  * unsigned Rps_ObjectZone::nb_attributes(
+	Rps_CallFrame*stkf) const;
+
+  * Rps_Value Rps_ObjectZone::get_attr1(
+	Rps_CallFrame*stkf,
+	const Rps_ObjectRef obattr0) const;
+
+  * Rps_TwoValues Rps_ObjectZone::get_attr2(
+	Rps_CallFrame*stkf,
+	const Rps_ObjectRef obattr0, 
+	const Rps_ObjectRef obattr1) const;
+
+  * unsigned Rps_ObjectZone::nb_components(
+	Rps_CallFrame*stkf) const;
+
+  * Rps_Value Rps_ObjectZone::component_at(
+	Rps_CallFrame*stkf, 
+	int rk, 
+	bool dontfail=false) const;
+
+  * Rps_Value Rps_ObjectZone::instance_from_components(
+	Rps_CallFrame*stkf, 
+	Rps_ObjectRef obinstclass) const;
+  
+  * virtual Rps_ObjectRef Rps_SetOb::compute_class(
+	Rps_CallFrame*stkf) const;
+
+  * virtual Rps_ObjectRef Rps_TupleOb::compute_class(
+	Rps_CallFrame*stkf) const;
+
+  * virtual Rps_ObjectRef Rps_ClosureZone::compute_class(
+	Rps_CallFrame*stkf) const;
+  
+  * inline Rps_TwoValues Rps_ClosureZone::apply0(
+	Rps_CallFrame*callerframe) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply1(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply2(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply3(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply4(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply5(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3, 
+	const Rps_Value arg4) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply6(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3, 
+	const Rps_Value arg4,
+        const Rps_Value arg5) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply7(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3, 
+	const Rps_Value arg4,
+        const Rps_Value arg5, 
+	const Rps_Value arg6) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply8(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3, 
+	const Rps_Value arg4,
+        const Rps_Value arg5, 
+	const Rps_Value arg6,
+        const Rps_Value arg7) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply9(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3, 
+	const Rps_Value arg4,
+        const Rps_Value arg5, 
+	const Rps_Value arg6,
+        const Rps_Value arg7, 
+	const Rps_Value arg8) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply10(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3, 
+	const Rps_Value arg4,
+        const Rps_Value arg5, 
+	const Rps_Value arg6,
+        const Rps_Value arg7, 
+	const Rps_Value arg8, 
+	const Rps_Value arg9) const;
+
+  * Rps_TwoValues Rps_ClosureZone::apply_vect(
+	Rps_CallFrame*callerframe, 
+	const std::vector<Rps_Value>& argvec) const;
+
+  * Rps_TwoValues Rps_ClosureZone::apply_ilist(
+	Rps_CallFrame*callerframe, 
+	const std::initializer_list<Rps_Value>& argil) const;
+
+
+
+
