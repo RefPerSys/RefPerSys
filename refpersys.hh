@@ -373,6 +373,7 @@ extern "C" void rps_set_debug(const std::string &deblev);
   dbgmacro(PARSE)                   \
   dbgmacro(PARSE_STRING)            \
   dbgmacro(REPL)                    \
+  dbgmacro(COMPL_REPL)              \
   /*end RPS_DEBUG_OPTIONS*/
 
 #define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
