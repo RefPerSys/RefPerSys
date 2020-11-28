@@ -64,6 +64,14 @@ extern "C" Rps_Value rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*in
 extern "C" bool
 rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int*plineno, std::string prompt="");
 
+/// for GNU readline autocompletion.  See example in
+/// https://thoughtbot.com/blog/tab-completion-in-gnu-readline and
+/// documentation in
+/// https://tiswww.case.edu/php/chet/readline/readline.html#SEC45
+
+extern "C" char **rpsrepl_name_or_oid_completion(const char *, int, int);
+extern "C" char *rpsrepl_name_or_oid_generator(const char *, int);
+
 static Rps_CallFrame*rps_readline_callframe;
 
 bool rps_repl_stopped;
@@ -739,6 +747,27 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
 
 
 
+char **
+rpsrepl_name_or_oid_completion(const char *text, int start, int end)
+{
+  RPS_DEBUG_LOG(COMPL_REPL, "text='" << text << "' start=" << start
+                << ", end=" << end);
+  /// temporarily return NULL
+  return nullptr;
+#if 0 /*future code:*/
+  rl_attempted_completion_over = 1;
+  return rl_completion_matches(text, rpsrepl_name_or_oid_generator);
+#endif
+} // end rpsrepl_name_or_oid_completion
+
+char *
+rpsrepl_name_or_oid_generator(const char *text, int state)
+{
+  /// the initial state is 0....
+  RPS_DEBUG_LOG(COMPL_REPL, "text='" << text << "' state#" << state);
+  return nullptr;
+} // end rpsrepl_name_or_oid_generator
+
 void
 rps_read_eval_print_loop(int &argc, char **argv)
 {
@@ -752,6 +781,7 @@ rps_read_eval_print_loop(int &argc, char **argv)
   char *linebuf = nullptr;
   int lineno=0;
   int count=0;
+  rl_attempted_completion_function = rpsrepl_name_or_oid_completion;
   while (!rps_repl_stopped)
     {
       count++;
