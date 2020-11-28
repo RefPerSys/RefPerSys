@@ -69,10 +69,12 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
 /// documentation in
 /// https://tiswww.case.edu/php/chet/readline/readline.html#SEC45
 
+extern "C"  std::vector<std::string> rps_completion_vect;
 extern "C" char **rpsrepl_name_or_oid_completion(const char *, int, int);
 extern "C" char *rpsrepl_name_or_oid_generator(const char *, int);
 
 static Rps_CallFrame*rps_readline_callframe;
+std::vector<std::string> rps_completion_vect;
 
 bool rps_repl_stopped;
 
@@ -754,29 +756,52 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
    *  with UTF-8. */
   RPS_DEBUG_LOG(COMPL_REPL, "text='" << text << "' start=" << start
                 << ", end=" << end);
-  std::vector<std::string> complvect;
-  if (end>start+3 && text[start] == '_' && isdigit(text[start+1])
-      && isalnum(text[start+2]))
+  rps_completion_vect.clear();
+  int nbmatch = 0;
+  // for objid, we require four characters including the leading
+  // underscore to autocomplete...
+  if (end>start+4 && text[start] == '_' && isdigit(text[start+1])
+      && isalnum(text[start+2]) && isalnum(text[start+4]))
     {
       std::string prefix(text+start, end-start);
       RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete prefix='" << prefix << "'");
       // use oid autocompletion, with
       // Rps_ObjectZone::autocomplete_oid...
-      int nbm = Rps_ObjectZone::autocomplete_oid
-	(prefix.c_str(),
-	 [&] (const Rps_ObjectZone* obz) {
-	   RPS_ASSERT(obz != nullptr);
-	   Rps_Id oid = obz->oid();
-	   complvect.push_back(oid.to_string());
-	   return false;
-	 });
+      nbmatch = Rps_ObjectZone::autocomplete_oid
+                (prefix.c_str(),
+                 [&] (const Rps_ObjectZone* obz)
+      {
+        RPS_ASSERT(obz != nullptr);
+        Rps_Id oid = obz->oid();
+        rps_completion_vect.push_back(oid.to_string());
+        return false;
+      });
+      RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete prefix='" << prefix << "' -> nbmatch=" << nbmatch);
     }
-  else if (end>start+1 && isalpha(text[start]))
+  // for names, we require two characters to autocomplete
+  else if (end>start+2 && isalpha(text[start]) && (isalnum(text[start+1]) || text[start+1]=='_'))
     {
       // use symbol name autocompletion, with
       // Rps_PayloadSymbol::autocomplete_name...
       std::string prefix(text+start, end-start);
       RPS_DEBUG_LOG(COMPL_REPL, "name autocomplete prefix='" << prefix << "'");
+      nbmatch =  Rps_PayloadSymbol::autocomplete_name
+                 (prefix.c_str(),
+                  [&] (const Rps_ObjectZone*obz, const std::string&name)
+      {
+        RPS_ASSERT(obz != nullptr);
+        rps_completion_vect.push_back(name);
+        return false;
+      });
+      RPS_DEBUG_LOG(COMPL_REPL, "name autocomplete prefix='" << prefix << "' -> nbmatch=" << nbmatch);
+    }
+  if (RPS_DEBUG_ENABLED(COMPL_REPL))
+    {
+      int ix=0;
+      for (auto str: rps_completion_vect)
+        {
+          RPS_DEBUG_LOG(COMPL_REPL, "[" << ix << "]='" << str << "'");
+        }
     }
   /// temporarily return NULL
   return nullptr;
