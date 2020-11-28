@@ -750,8 +750,34 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
 char **
 rpsrepl_name_or_oid_completion(const char *text, int start, int end)
 {
+  /* Notice that the start and end are byte indexes, and that matters
+   *  with UTF-8. */
   RPS_DEBUG_LOG(COMPL_REPL, "text='" << text << "' start=" << start
                 << ", end=" << end);
+  std::vector<std::string> complvect;
+  if (end>start+3 && text[start] == '_' && isdigit(text[start+1])
+      && isalnum(text[start+2]))
+    {
+      std::string prefix(text+start, end-start);
+      RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete prefix='" << prefix << "'");
+      // use oid autocompletion, with
+      // Rps_ObjectZone::autocomplete_oid...
+      int nbm = Rps_ObjectZone::autocomplete_oid
+	(prefix.c_str(),
+	 [&] (const Rps_ObjectZone* obz) {
+	   RPS_ASSERT(obz != nullptr);
+	   Rps_Id oid = obz->oid();
+	   complvect.push_back(oid.to_string());
+	   return false;
+	 });
+    }
+  else if (end>start+1 && isalpha(text[start]))
+    {
+      // use symbol name autocompletion, with
+      // Rps_PayloadSymbol::autocomplete_name...
+      std::string prefix(text+start, end-start);
+      RPS_DEBUG_LOG(COMPL_REPL, "name autocomplete prefix='" << prefix << "'");
+    }
   /// temporarily return NULL
   return nullptr;
 #if 0 /*future code:*/
