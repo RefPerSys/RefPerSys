@@ -33,6 +33,7 @@
 
 #include "refpersys.hh"
 #include "onion/version.h"
+#include "readline/readline.h"
 
 extern "C" const char rps_main_gitid[];
 const char rps_main_gitid[]= RPS_GITID;
@@ -513,6 +514,7 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
 int
 main (int argc, char** argv)
 {
+  rl_readline_name = argv[0]; // required by GNU readline
   std::string dumpdir;
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_stderr_istty = isatty(STDERR_FILENO);

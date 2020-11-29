@@ -773,6 +773,7 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
       {
         RPS_ASSERT(obz != nullptr);
         Rps_Id oid = obz->oid();
+        RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete oid=" << oid);
         rps_completion_vect.push_back(oid.to_string());
         return false;
       });
@@ -790,6 +791,7 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
                   [&] (const Rps_ObjectZone*obz, const std::string&name)
       {
         RPS_ASSERT(obz != nullptr);
+        RPS_DEBUG_LOG(COMPL_REPL, "symbol autocomplete name=" << name);
         rps_completion_vect.push_back(name);
         return false;
       });
@@ -804,19 +806,32 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
           ix++;
         }
     }
-  /// temporarily return NULL
-  return nullptr;
-#if 0 /*future code:*/
-  rl_attempted_completion_over = 1;
-  return rl_completion_matches(text, rpsrepl_name_or_oid_generator);
-#endif
+  if (nbmatch==0)
+    return nullptr;
+  else
+    {
+      rl_attempted_completion_over = 1;
+      return rl_completion_matches(text, rpsrepl_name_or_oid_generator);
+    }
 } // end rpsrepl_name_or_oid_completion
 
 char *
 rpsrepl_name_or_oid_generator(const char *text, int state)
 {
   /// the initial state is 0....
-  RPS_DEBUG_LOG(COMPL_REPL, "text='" << text << "' state#" << state);
+  RPS_DEBUG_LOG(COMPL_REPL, "text='" << text << "' state#" << state << " rps_completion_vect.size="
+                << rps_completion_vect.size() << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rpsrepl_name_or_oid_generator"));
+  if (rps_completion_vect.size() == 1)
+    {
+      if (state==0)
+        return strdup(rps_completion_vect[0].c_str());
+      else
+        return nullptr;
+    }
+  RPS_WARNOUT("rpsrepl_name_or_oid_generator incomplete text=='" << text << "' state#" << state
+              << " with " <<rps_completion_vect.size() << " completions");
+#warning rpsrepl_name_or_oid_generator incomplete...
   return nullptr;
 } // end rpsrepl_name_or_oid_generator
 
