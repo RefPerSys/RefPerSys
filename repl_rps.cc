@@ -801,6 +801,7 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
       for (auto str: rps_completion_vect)
         {
           RPS_DEBUG_LOG(COMPL_REPL, "[" << ix << "]='" << str << "'");
+	  ix++;
         }
     }
   /// temporarily return NULL
