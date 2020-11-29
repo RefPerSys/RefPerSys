@@ -1148,18 +1148,21 @@ int
 Rps_ObjectZone::autocomplete_oid(const char*prefix,
                                  const std::function<bool(const Rps_ObjectZone*)>&stopfun)
 {
-  RPS_DEBUG_LOG(COMPL_REPL, "autocomplete_oid start prefix="
-		<< (prefix?:"*none*"));
+  RPS_DEBUG_LOG(COMPL_REPL, "autocomplete_oid start prefix"
+		<< (prefix?"='":" ")
+		<< (prefix?:"*none*")
+		<< (prefix?"'":"."));
   if (!prefix || prefix[0] != '_'
       || !isdigit(prefix[1]) || !isalnum(prefix[2]) || !isalnum(prefix[3]))
     return 0;
+  int prefixlen = (int) strlen(prefix);
   char bufid[24];
   memset(bufid, 0, sizeof(bufid));
   int lastix=0;
   {
     int ix=0;
     bufid[0] = '_';
-    for (ix=1; ix<(int)Rps_Id::nbchars; ix++)
+    for (ix=1; ix<prefixlen && prefix[ix] != (char)0; ix++)
       {
         if (!strchr(Rps_Id::b62digits, prefix[ix]))
           break;
@@ -1172,6 +1175,7 @@ Rps_ObjectZone::autocomplete_oid(const char*prefix,
       };
   }
   Rps_Id idpref(bufid);
+  RPS_DEBUG_LOG(COMPL_REPL, "autocomplete_oid bufid='" << bufid << "' idpref=" << idpref);
   constexpr char lastdigit = Rps_Id::b62digits[sizeof(Rps_Id::b62digits)-1];
   for (int ix=lastix; ix<(int)Rps_Id::nbchars; ix++)
     {
@@ -1179,7 +1183,8 @@ Rps_ObjectZone::autocomplete_oid(const char*prefix,
     }
   Rps_Id idlast(bufid);
   RPS_DEBUG_LOG(COMPL_REPL, "autocomplete_oid bufid='" << bufid
-		<< "', idpref=" << idpref << ", idlast=" << idlast);
+		<< "', prefixlen=" << prefixlen
+		<< ", idpref=" << idpref << ", idlast=" << idlast);
   int count = 0;
   std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
   auto& curobuck = ob_idbucketmap_[idpref.bucket_num()];
