@@ -87,22 +87,28 @@ Rps_Id::Rps_Id (const char*cbuf, const char**pend, bool *pok) : Rps_Id ()
       if (!pcs) goto fail;
       hi = hi*62 + (pcs-b62digits);
     }
-  if (hi < min_hi || hi >= max_hi) goto fail;
+  if ((hi > 0 && hi < min_hi) || hi >= max_hi)
+    goto fail;
   for (auto pcb = lasthi; *pcb && pcb < lastlo; pcb++)
     {
       auto pcs = strchr(b62digits, *pcb);
       if (!pcs) goto fail;
       lo = lo*62 + (pcs-b62digits);
     }
-  if (lo < min_lo || lo >= max_lo) goto fail;
+  if ((lo > 0 && lo < min_lo) || lo >= max_lo)
+    goto fail;
   _id_hi = hi;
   _id_lo = lo;
-  if (pend) *pend = lastlo;
-  if (pok) *pok = true;
+  if (pend)
+    *pend = lastlo;
+  if (pok)
+    *pok = true;
   return;
 fail:
-  if (pend) *pend = cbuf;
-  if (pok) *pok = false;
+  if (pend)
+    *pend = cbuf;
+  if (pok)
+    *pok = false;
   return;
 } // end Rps_Id::Rps_Id (const char*, char**, bool*)
 

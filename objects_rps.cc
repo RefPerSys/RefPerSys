@@ -1149,9 +1149,9 @@ Rps_ObjectZone::autocomplete_oid(const char*prefix,
                                  const std::function<bool(const Rps_ObjectZone*)>&stopfun)
 {
   RPS_DEBUG_LOG(COMPL_REPL, "autocomplete_oid start prefix"
-		<< (prefix?"='":" ")
-		<< (prefix?:"*none*")
-		<< (prefix?"'":"."));
+                << (prefix?"='":" ")
+                << (prefix?:"*none*")
+                << (prefix?"'":"."));
   if (!prefix || prefix[0] != '_'
       || !isdigit(prefix[1]) || !isalnum(prefix[2]) || !isalnum(prefix[3]))
     return 0;
@@ -1183,8 +1183,8 @@ Rps_ObjectZone::autocomplete_oid(const char*prefix,
     }
   Rps_Id idlast(bufid);
   RPS_DEBUG_LOG(COMPL_REPL, "autocomplete_oid bufid='" << bufid
-		<< "', prefixlen=" << prefixlen
-		<< ", idpref=" << idpref << ", idlast=" << idlast);
+                << "', prefixlen=" << prefixlen
+                << ", idpref=" << idpref << ", idlast=" << idlast);
   int count = 0;
   std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
   auto& curobuck = ob_idbucketmap_[idpref.bucket_num()];
