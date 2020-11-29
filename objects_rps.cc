@@ -1176,7 +1176,8 @@ Rps_ObjectZone::autocomplete_oid(const char*prefix,
   }
   Rps_Id idpref(bufid);
   RPS_DEBUG_LOG(COMPL_REPL, "autocomplete_oid bufid='" << bufid << "' idpref=" << idpref);
-  constexpr char lastdigit = Rps_Id::b62digits[sizeof(Rps_Id::b62digits)-1];
+  constexpr char lastdigit = Rps_Id::b62digits[sizeof(Rps_Id::b62digits)-2];
+  RPS_DEBUG_LOG(COMPL_REPL, "autocomplete_oid lastdigit=" << (lastdigit?:'?') << " of code " << (int)lastdigit);
   for (int ix=lastix; ix<(int)Rps_Id::nbchars; ix++)
     {
       bufid[ix] = lastdigit;
