@@ -1041,8 +1041,10 @@ rps_fatal_stop_at (const char *filnam, int lin)
   if (rps_debug_file)
     fprintf(rps_debug_file, "\n*** RPS FATAL %s:%d ***\n", filnam, lin);
   fprintf(stderr, "\n%s%sRPS FATAL:%s\n"
-          " RefPerSys gitid %s, built timestamp %s,\n"
-          "\t on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
+          " RefPerSys gitid %s,\n"
+	  "\t built timestamp %s,\n"
+          "\t on host %s, md5sum %s,\n"
+	  "\t elapsed %.3f, process %.3f sec\n",
           ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
           ontty?RPS_TERMINAL_BLINK_ESCAPE:"",
           ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
@@ -1055,7 +1057,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
                                skipfatal, "RefPerSys FATAL ERROR",
                                &std::clog);
     backt.output(std::clog);
-    std::clog << "===== end fatal error at " << filnam << ":" << lin << " ======" << std::endl << std::flush;
+    std::clog << "===== end fatal error at " << filnam << ":" << lin
+	      << " ======" << std::endl << std::flush;
   }
   fflush(nullptr);
   abort();
