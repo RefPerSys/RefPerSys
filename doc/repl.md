@@ -39,6 +39,11 @@ The general syntax for REPL commands would thus be:
 
 ```
 
+A lot of REPL commands would involve expressions. While the Lisp
+syntax is easy to parse, an infix Python-like or JavaScript like
+syntax seems more user-friendly. To compute the sum of 2 and 3, we
+prefer typing `2+3` instead of e.g. `(+ 2 3)`.
+
 
 ## Extensible syntax
 
@@ -48,15 +53,23 @@ value is a RefPerSys closure parsing the rest of the command.
 
 ## Concrete examples
 
-1. Creating a persistent object of class "symbol" with name "comment" can be
+1. Creating then displaying persistent object of class "symbol" with name "comment" can be
    achieved in two ways, namely by using either the object ID or name of the
    class "symbol".
 
-  * `create-object name=comment class=symbol`
-  * `create-object name=comment class=_36I1BY2NetN03WjrOv`
+  * `display make_object [ *name=comment *class=symbol ]`
+  * `display make_object [ *name=comment *class=_36I1BY2NetN03WjrOv ]`
 
+The rationale for using a prefix `*` for attributes is simplicity of
+parsing using simple [recursive descent
+parsing](https://en.wikipedia.org/wiki/Recursive_descent_parser)
+techniques.
 
-## List of RefPerSys functions acception a call frame
+2. Putting in an object an attribute with a  code chunk value
+
+### to be completed
+
+## List of RefPerSys functions accepting a call frame
 
   * Rps_ObjectRef::Rps_ObjectRef(
 	Rps_CallFrame*callerframe, 
