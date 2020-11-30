@@ -952,6 +952,7 @@ enum class Rps_Type : std::int16_t
   Closure,
   Instance,
   Json,
+  LexToken,
 };
 
 //////////////////////////////////////////////////////////////// values
@@ -963,6 +964,7 @@ class Rps_String;
 class Rps_Double;
 class Rps_SetOb;
 class Rps_TupleOb;
+class Rps_LexToken;
 class Rps_ClosureZone;
 class Rps_InstanceZone;
 class Rps_GarbageCollector;
@@ -1949,6 +1951,36 @@ public:
     return _dval < othdbl->dval();
   };
 }; // end class Rps_Double
+
+
+//////////////// boxed lexical token
+class Rps_LexToken  : public Rps_LazyHashedZoneValue
+{
+  friend Rps_LexToken*
+  Rps_QuasiZone::rps_allocate5<Rps_LexToken,Rps_ObjectRef,Rps_Value,Rps_String*,int,int>(Rps_ObjectRef lxkind,Rps_Value lxval,Rps_String*lxpath,int lxline,int lxcod);
+  Rps_ObjectRef lex_kind;
+  Rps_Value lex_val;
+  Rps_String* lex_file;
+  int lex_lineno;
+  int lex_colno;
+protected:
+  Rps_LexToken(Rps_ObjectRef kind, Rps_Value val, Rps_String*string, int line, int col);
+protected:
+  virtual ~Rps_LexToken();
+  virtual Rps_HashInt compute_hash(void) const;
+  virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
+  virtual void gc_mark(Rps_GarbageCollector&, unsigned) const;
+  virtual void dump_scan(Rps_Dumper*, unsigned) const;
+  virtual Json::Value dump_json(Rps_Dumper*) const;
+public:
+  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual uint32_t wordsize() const
+  {// we need to round the 64 bits word size up, hence...
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual bool equal(const Rps_ZoneValue&zv) const;
+  virtual bool less(const Rps_ZoneValue&zv) const;
+}; // end class Rps_LexToken
 
 
 
