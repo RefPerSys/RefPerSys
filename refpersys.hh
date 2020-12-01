@@ -1838,6 +1838,7 @@ static inline Rps_HashInt rps_hash_cstr(const char*cstr, int len= -1);
 
 class Rps_String : public Rps_LazyHashedZoneValue
 {
+  friend class Rps_LexToken;
   friend Rps_String*
   Rps_QuasiZone::rps_allocate_with_wordgap<Rps_String,const char*,int>(unsigned,const char*,int);
   const uint32_t _bytsiz;
@@ -1953,11 +1954,11 @@ public:
 }; // end class Rps_Double
 
 
-//////////////// boxed lexical token
+//////////////// boxed lexical token - always transient
 class Rps_LexToken  : public Rps_LazyHashedZoneValue
 {
   friend Rps_LexToken*
-  Rps_QuasiZone::rps_allocate5<Rps_LexToken,Rps_ObjectRef,Rps_Value,Rps_String*,int,int>(Rps_ObjectRef lxkind,Rps_Value lxval,Rps_String*lxpath,int lxline,int lxcod);
+  Rps_QuasiZone::rps_allocate5<Rps_LexToken,Rps_ObjectRef,Rps_Value,Rps_String*,int,int>(Rps_ObjectRef lxkind,Rps_Value lxval,Rps_String*lxpath,int lxline,int lxcol);
   Rps_ObjectRef lex_kind;
   Rps_Value lex_val;
   Rps_String* lex_file;

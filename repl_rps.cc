@@ -747,6 +747,134 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
   return nullptr;
 } // end rps_lex_chunk_element
 
+////////////////////////////////////////////////////////////////
+//// the Rps_LexToken values are transient, but do need some GC support
+
+Rps_LexToken::Rps_LexToken(Rps_ObjectRef kindob, Rps_Value val, Rps_String*filestringp, int line, int col)
+  : Rps_LazyHashedZoneValue(Rps_Type::LexToken),
+    lex_kind(kindob),
+    lex_val(val),
+    lex_file(filestringp),
+    lex_lineno(line),
+    lex_colno(col)
+{
+  RPS_ASSERT (!kindob || kindob->stored_type() == Rps_Type::Object);
+  RPS_ASSERT (!filestringp || filestringp->stored_type() == Rps_Type::String);
+} // end Rps_LexToken::Rps_LexToken
+
+Rps_LexToken::~Rps_LexToken()
+{
+  lex_kind = nullptr;
+  lex_val = nullptr;
+} // end Rps_LexToken::~Rps_LexToken
+
+Rps_HashInt
+Rps_LexToken::compute_hash(void) const
+{
+  auto hkind = lex_kind?(lex_kind->val_hash()):0;
+  auto hval = lex_val?(lex_val.valhash()):0;
+  auto hfil = lex_file?(lex_file->val_hash()):0;
+  // all the constants below are primes
+  uint64_t h1 = (hkind * 45887) ^ (hval * 75937);
+  uint64_t h2 = (hfil * 85817) + (lex_lineno * 85931 - lex_colno * 8573);
+  Rps_HashInt h = (Rps_HashInt)(h1 + h2);
+  if (!h)
+    h = (h1&0xffff) + (h2&0xfffff) + 17;
+  RPS_ASSERT(h != 0);
+  return h;
+} // end Rps_LexToken
+
+Rps_ObjectRef
+Rps_LexToken::compute_class(Rps_CallFrame*callframe) const
+{
+  // we need to create some lexical_token class object...
+  RPS_FATALOUT("unimplemented Rps_LexToken::compute_class - callframe=" << Rps_ShowCallFrame(callframe));
+#warning unimplemented Rps_LexToken::compute_class
+} // end Rps_LexToken::compute_class
+
+void
+Rps_LexToken::gc_mark(Rps_GarbageCollector&gc, unsigned depth) const
+{
+  if (is_gcmarked(gc))
+    return;
+  if (RPS_UNLIKELY(depth > Rps_Value::max_gc_mark_depth))
+    throw std::runtime_error("too deep Rps_LexToken::gc_mark");
+  if (lex_kind)
+    lex_kind->gc_mark(gc,depth+1);
+  if (lex_val)
+    lex_val.gc_mark(gc,depth+1);
+  if (lex_file)
+    lex_file->gc_mark(gc,depth+1);
+} // end Rps_LexToken::gc_mark
+
+void
+Rps_LexToken::dump_scan(Rps_Dumper*du, unsigned int) const
+{
+  RPS_ASSERT(du != nullptr);
+} // end Rps_LexToken::dump_scan
+
+Json::Value
+Rps_LexToken::dump_json(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du != nullptr);
+  return Json::Value (Json::nullValue);
+} // end Rps_LexToken::dump_json
+
+
+void
+Rps_LexToken::val_output(std::ostream&out, unsigned int depth) const
+{
+  out << "LexToken{" << lex_kind;
+  lex_val.output(out, depth+1);
+  if (depth > Rps_Value::max_output_depth)
+    {
+      out << "...}";
+      return;
+    };
+  out << "," << lex_val;
+  if (lex_file)
+    {
+      out << "@" << lex_file->cppstring() << ":" << lex_lineno << ":" << lex_colno;
+    };
+  out << "}";
+} // end Rps_LexToken::val_output
+
+
+bool
+Rps_LexToken::equal(Rps_ZoneValue const&zv) const
+{
+  if (zv.stored_type() == Rps_Type::LexToken)
+    {
+      auto othlt = reinterpret_cast<const Rps_LexToken*>(&zv);
+      auto lh = lazy_hash();
+      auto othlh = othlt->lazy_hash();
+      if (lh != 0 && othlh != 0 && lh != othlh)
+        return false;
+      if (lex_file && othlt->lex_file)
+        {
+          if (lex_lineno != othlt->lex_lineno)
+            return false;
+          if (lex_colno != othlt->lex_colno)
+            return false;
+        };
+      if (lex_kind != othlt->lex_kind)
+        return false;
+      if (!lex_file && !othlt->lex_file)
+        return lex_val == (othlt->lex_val);
+      return lex_val == othlt->lex_val && lex_file == othlt->lex_file;
+    }
+  return false;
+} // end Rps_LexToken::equal
+
+bool
+Rps_LexToken::less(Rps_ZoneValue const&zv) const
+{
+  RPS_FATALOUT("unimplemented Rps_LexToken::less this=" << this << " zv=" << zv);
+#warning unimplemented Rps_LexToken::less
+} // end Rps_LexToken::less
+
+////////////////////////////////////////////////////////////////
+
 
 
 char **
