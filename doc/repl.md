@@ -46,6 +46,13 @@ The *`<verb>`* above would be an object, often a RefPerSys symbol,
 having as some specific attribute `repl_command` whose associated
 value is a RefPerSys closure parsing the rest of the command.
 
+EDIT:
+
+Although we had initially considered using verbs and subjects in the REPL, on
+discussion it was decided that a better approach would be to consider a syntax
+similar to Python functions. With such a syntax, every command would be a
+function, which in turn would be associated with a RefPerSys closure.
+
 ## Concrete examples
 
 1. Creating a persistent object of class "symbol" with name "comment" can be
@@ -55,10 +62,22 @@ value is a RefPerSys closure parsing the rest of the command.
   * `create_object name=comment class=symbol`
   * `create_object name=comment class=_36I1BY2NetN03WjrOv`
 
+EDIT:
+
+With the new syntax in consideration, we would have instead:
+  * `create_object(name=comment, class=symbol)`
+  * `create_object(name=comment, class=_36I1BY2NetN03Wjr0v)`
+
+As before, we can refer to objects either by their object ID or by their name.
+
 ### Examples required
 
-  * Adding an attribute inside an object
+  * Adding an attribute inside an object:
+    - `object_add(attribute=[sample_key_object, sample_key_value])
+
   * Remove an attribute inside an object
+    - `object_remove(attribute=sample_key_object])
+
   * Add a component to an object
   * Remove a component from an object
   * Send a message to an object
