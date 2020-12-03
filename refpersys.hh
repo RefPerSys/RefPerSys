@@ -1981,6 +1981,22 @@ public:
   };
   virtual bool equal(const Rps_ZoneValue&zv) const;
   virtual bool less(const Rps_ZoneValue&zv) const;
+  /// The signature of a function to retrieve the next line....  on
+  /// purpose close to existing rps_repl_get_next_line in our C++ file
+  /// repl_rps.cc...
+  typedef
+  std::function<bool(Rps_CallFrame*callframe,
+		     std::istream*inp,
+		     const char*input_name,
+		     const char**plinebuf, int*plineno)
+		> lexical_line_getter_fun;
+  // Tokenize a lexical token; an optional double-ended queue of
+  // already lexed token enable limited backtracking when needed....
+  static Rps_LexToken* tokenize(Rps_CallFrame*callframe, std::istream*inp,
+				const char*input_name,
+				const char**plinebuf, int&lineno, int& colno,
+				lexical_line_getter_fun linegetter = nullptr,
+				std::deque<Rps_LexToken*>* pque = nullptr);
 }; // end class Rps_LexToken
 
 

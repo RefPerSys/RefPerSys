@@ -869,10 +869,62 @@ Rps_LexToken::equal(Rps_ZoneValue const&zv) const
 bool
 Rps_LexToken::less(Rps_ZoneValue const&zv) const
 {
-  RPS_FATALOUT("unimplemented Rps_LexToken::less this=" << this << " zv=" << zv);
-#warning unimplemented Rps_LexToken::less
+  if (zv.stored_type() == Rps_Type::LexToken)
+    {
+      if (equal(zv))
+        return false;
+      auto othlt = reinterpret_cast<const Rps_LexToken*>(&zv);
+      if (!lex_file && othlt->lex_file)
+        return true;
+      if (!othlt->lex_file)
+        return false;
+      if (*lex_file < *othlt->lex_file)
+        return true;
+      else if (*lex_file > *othlt->lex_file)
+        return false;
+      if (lex_lineno < othlt->lex_lineno)
+        return true;
+      else if (lex_lineno > othlt->lex_lineno)
+        return false;
+      if  (lex_colno < othlt->lex_colno)
+        return true;
+      else if (lex_colno > othlt->lex_colno)
+        return false;
+      if (lex_kind < othlt->lex_kind)
+        return true;
+      else if (lex_kind > othlt->lex_kind)
+        return false;
+      if (lex_val < othlt->lex_val)
+        return true;
+      else if (lex_val > othlt->lex_val)
+        return false;
+      RPS_FATALOUT("Rps_LexToken::less corruption: this=" << *this
+                   << ", other=" << *othlt);
+    }
+  else
+    return  Rps_Type::LexToken < zv.stored_type();
 } // end Rps_LexToken::less
 
+// Tokenize a lexical token; an optional double-ended queue of
+// already lexed token enable limited backtracking when needed....
+Rps_LexToken*
+Rps_LexToken::tokenize(Rps_CallFrame*callframe, std::istream*inp,
+                       const char*input_name,
+                       const char**plinebuf, int&lineno, int& colno,
+                       lexical_line_getter_fun linegetter,
+                       std::deque<Rps_LexToken*>* pque)
+{
+  std::string inputstr(input_name?:"");
+  const char*curinp = (plinebuf && colno>=0 && colno<strlen(*plinebuf))
+                      ?((*plinebuf)+colno)
+                      :nullptr;
+  RPS_FATALOUT("unimplemented Rps_LexToken::tokenize inputstr="
+               << inputstr << " line:" << lineno
+               << ", column:" << colno
+               << (curinp?"current input:":"no input")
+               << (curinp?curinp:" ..."));
+#warning unimplemented Rps_LexToken::tokenize, should wrap rps_repl_lexer
+} // end Rps_LexToken::tokenize
 ////////////////////////////////////////////////////////////////
 
 
