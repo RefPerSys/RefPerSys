@@ -342,7 +342,8 @@ Rps_JsonZone::less(const Rps_ZoneValue&zv) const
       auto othj = reinterpret_cast<const Rps_JsonZone*>(&zv);
       return _jsonval < othj->_jsonval;
     }
-  else return  Rps_Type::Json < zv.stored_type() ;
+  else
+    return  Rps_Type::Json < zv.stored_type();
 } // end Rps_JsonZone::less
 
 
