@@ -72,11 +72,29 @@ As before, we can refer to objects either by their object ID or by their name.
 
 ### Examples required
 
-  * Adding an attribute inside an object:
-    - `object_add(attribute=[sample_key_object, sample_key_value])
+  * Creating a new object named `sample_object` of class `symbol` with a
+    comment:
+    - object_new(name=sample_object, class=symbol, comment="Sample object");
 
-  * Remove an attribute inside an object
-    - `object_remove(attribute=sample_key_object])
+  * Creating the same object as above, except that we now refer to the class by
+    its object ID:
+    - object_new(name=sample_object, class=_36I1BY2NetN03Wjr0v, comment="Sample
+      object");
+  
+  * Querying the newly created `sample_object` for its object ID:
+    - sample_object.oid();
+
+  * Adding a key-value attribute pair of objects to the newly created
+    `sample_object`:
+    - sample_object.add(attribute=[sample_key_object, sample_key_value]);
+
+  * Adding a list of key-value attribute pairs of objects to the newly created
+    `sample_object`:
+    - sample_object.add(attribute={[sample_key_object1, sample_key_value1],
+	sample_key_object2, sample_key_value2]});
+
+  * Removing attribute with key sample_key_object from `sample_object`:
+    - sample_object.remove(attribute=sample_key_object);
 
   * Add a component to an object
   * Remove a component from an object
