@@ -1974,6 +1974,7 @@ protected:
   virtual void dump_scan(Rps_Dumper*, unsigned) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
 public:
+  static Rps_ObjectRef the_lexical_token_class(void);
   virtual void val_output(std::ostream& outs, unsigned depth) const;
   virtual uint32_t wordsize() const
   {// we need to round the 64 bits word size up, hence...

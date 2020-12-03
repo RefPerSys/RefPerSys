@@ -785,11 +785,17 @@ Rps_LexToken::compute_hash(void) const
 } // end Rps_LexToken
 
 Rps_ObjectRef
+Rps_LexToken::the_lexical_token_class(void)
+{
+  return RPS_ROOT_OB(_0S6DQvp3Gop015zXhL);
+} // end Rps_LexToken::the_lexical_token_class
+
+Rps_ObjectRef
 Rps_LexToken::compute_class(Rps_CallFrame*callframe) const
 {
   // we need to create some lexical_token class object...
-  RPS_FATALOUT("unimplemented Rps_LexToken::compute_class - callframe=" << Rps_ShowCallFrame(callframe));
-#warning unimplemented Rps_LexToken::compute_class
+  RPS_ASSERT(callframe == nullptr || callframe->is_good_call_frame());
+  return the_lexical_token_class();
 } // end Rps_LexToken::compute_class
 
 void
