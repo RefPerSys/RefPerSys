@@ -409,6 +409,7 @@ enum rps_progoption_en
   RPSPROGOPT_NOTERMINAL,
   RPSPROGOPT_NOASLR,
   RPSPROGOPT_REPL,
+  RPSPROGOPT_TEST_REPL_LEXER,
   RPSPROGOPT_RUN_AFTER_LOAD,
   RPSPROGOPT_PLUGIN_AFTER_LOAD,
   RPSPROGOPT_DEBUG_PATH,
@@ -3654,6 +3655,7 @@ extern "C" void rps_print_types_info (void);
 
 extern "C" void rps_read_eval_print_loop(int &argc, char**argv); // GNU readline based
 
+extern "C" void rps_repl_lexer_test(void);
 
 
 extern "C" void rps_run_application(int &argc, char **argv);

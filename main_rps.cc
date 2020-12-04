@@ -184,6 +184,15 @@ struct argp_option rps_progoptions[] =
     " (this option might become obsolete)", //
     /*group:*/0 ///
   },
+  /* ======= command textual read eval print loop lexer testing ======= */
+  {/*name:*/ "test-repl-lexer", ///
+    /*key:*/ RPSPROGOPT_TEST_REPL_LEXER, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Test the read-eval-print-loop lexer.\n"
+    " (this option might become obsolete)", //
+    /*group:*/0 ///
+  },
   /* ======= number of jobs or threads ======= */
   {/*name:*/ "jobs", ///
     /*key:*/ RPSPROGOPT_JOBS, ///
@@ -214,7 +223,7 @@ bool rps_batch = false;
 bool rps_disable_aslr = false;
 bool rps_without_terminal_escape = false;
 bool rps_run_repl = false;
-
+bool rps_test_repl_lexer = false;
 bool rps_syslog_enabled = false;
 bool rps_stdout_istty = false;
 bool rps_stderr_istty = false;
@@ -779,6 +788,13 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         RPS_DEBUG_LOG(REPL, "will run with a textual Read-Eval-Print-Loop using GNU readline");
     }
     return 0;
+    case RPSPROGOPT_TEST_REPL_LEXER:
+    {
+      rps_test_repl_lexer = true;
+      if (side_effect)
+        RPS_DEBUG_LOG(REPL, "will run with a textual Read-Eval-Print-Loop lexer GNU readline");
+    }
+    return 0;
     case RPSPROGOPT_RUN_AFTER_LOAD:
     {
       if (rps_run_command_after_load)
@@ -931,6 +947,12 @@ rps_run_application(int &argc, char **argv)
       RPS_DEBUG_LOG(WEB,
                     "rps_run_application in REPL");
       rps_read_eval_print_loop (argc, argv);
+    }
+  else if (rps_test_repl_lexer)
+    {
+      RPS_INFORM("Before running the REPL lexer test....");
+      rps_repl_lexer_test();
+      RPS_INFORM("After running the REPL lexer test....");
     }
   else
     {
