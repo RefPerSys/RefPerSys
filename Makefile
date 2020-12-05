@@ -188,6 +188,7 @@ check:
 
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
+	@echo RefPerSys git pushing.... ; grep -2 url .git/config
 	@git push origin
 ifeq ($(shell git remote | grep github), github)
 	@git push github
