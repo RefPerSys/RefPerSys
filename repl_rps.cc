@@ -210,7 +210,7 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
       rps_readline_callframe = nullptr;
       if (*plinebuf)
         {
-          (*plineno)++;
+          // no need to increment the lineno, it was incremented by caller
           if (*plinebuf[0])
             add_history(*plinebuf);
           return true;
@@ -237,8 +237,15 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
   RPS_LOCALFRAME(/*descr:*/nullptr,
                            /*callerframe:*/callframe,
                            Rps_ObjectRef oblex;
+                           Rps_Value chunkv;
                 );
   RPS_ASSERT(colno >= 0 && colno <= linelen);
+  RPS_DEBUG_LOG(REPL, "rps_repl_lexer start inp="<< inp
+                << "input_name=" << (input_name?:"?nil?")
+                << (linebuf?", linebuf=":", linebuf ")
+                << (linebuf?linebuf:"*nil*")
+                << ", lineno=" << lineno << ", colno=" << colno
+                << ", linelen=" << linelen);
   while (colno < linelen && isspace(linebuf[colno]))
     colno++;
   ////////////////
@@ -255,12 +262,14 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       if (endfloat > endint)
         {
           colno += endfloat - startnum;
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer float " << d << " colno=" << colno);
           return Rps_TwoValues{RPS_ROOT_OB(_98sc8kSOXV003i86w5), //double∈class
                                Rps_DoubleValue(d)};
         }
       else
         {
           colno += endint - startnum;
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer int " << l << " colno=" << colno);
           return Rps_TwoValues{RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b), //int∈class
                                Rps_Value(l, Rps_Value::Rps_IntTag{})};
         }
@@ -271,10 +280,12 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
     {
       bool pos = linebuf[colno] == '+';
       colno += 4;
+      double infd = (pos
+                     ?std::numeric_limits<double>::infinity()
+                     : -std::numeric_limits<double>::infinity());
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer infinity " << infd << " colno=" << colno);
       return Rps_TwoValues{RPS_ROOT_OB(_98sc8kSOXV003i86w5), //double∈class
-                           Rps_DoubleValue(pos
-                                           ?std::numeric_limits<double>::infinity()
-                                           : -std::numeric_limits<double>::infinity())};
+                           Rps_DoubleValue(infd)};
     }
   //////////////// lex named objects or objids
   else if (isalpha(linebuf[colno]) || linebuf[colno]=='_')
@@ -285,12 +296,18 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       std::string namestr(linebuf+startname, colno-startname);
       _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr, true);
       if (_f.oblex)
-        return Rps_TwoValues(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ), //object∈class
-                             _f.oblex);
+        {
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer object " << _f.oblex << " colno=" << colno);
+          return Rps_TwoValues(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ), //object∈class
+                               _f.oblex);
+        }
       /// some new symbol
       if (isalpha(namestr[0]))
-        return Rps_TwoValues(RPS_ROOT_OB(_36I1BY2NetN03WjrOv), //symbol∈class
-                             Rps_StringValue(namestr));
+        {
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer new name " << namestr << " colno=" << colno);
+          return Rps_TwoValues(RPS_ROOT_OB(_36I1BY2NetN03WjrOv), //symbol∈class
+                               Rps_StringValue(namestr));
+        }
       /// otherwise, fail to lex, so
       colno = startname;
       RPS_WARNOUT("rps_repl_lexer " << input_name << " line " << lineno << ", column " << colno
@@ -302,6 +319,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
     {
       std::string litstr =
         rps_lex_literal_string(input_name, linebuf, lineno, colno);
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer colno=" << colno << " literal string:" << Json::Value(litstr));
       return Rps_TwoValues(RPS_ROOT_OB(_62LTwxwKpQ802SsmjE), //string∈class
                            litstr);
     }
@@ -312,6 +330,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
     {
       std::string litstr =
         rps_lex_raw_literal_string(&_, inp, input_name, &linebuf, lineno, colno);
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer colno=" << colno << " multiline literal string:" << Json::Value(litstr));
       return Rps_TwoValues(RPS_ROOT_OB(_62LTwxwKpQ802SsmjE), //string∈class
                            litstr);
     }
@@ -351,8 +370,13 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                     &&  isalpha(linebuf[colno+7]))
               ))
     {
+      _f.chunkv = rps_lex_code_chunk(&_, inp, input_name, &linebuf, lineno, colno);
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer code chunk " << _f.chunkv
+                    << " ending lineno#" << lineno
+                    << ", colno#" << colno
+                    << ", input_name=" << input_name);
       return Rps_TwoValues{RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
-                           rps_lex_code_chunk(callframe, inp, input_name, &linebuf, lineno, colno)};
+                           _f.chunkv};
     }
 
 
@@ -365,6 +389,10 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer"));
 #warning unimplemented rps_repl_lexer
 } // end of rps_repl_lexer
+
+
+
+
 
 std::string
 rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, int& colno)
@@ -1141,7 +1169,7 @@ rps_repl_lexer_test(void)
         usleep(1000);
       if (linebuf==nullptr || colno>=strlen(linebuf))
         {
-          char prompt[16];
+          char prompt[32];
           memset(prompt, 0, sizeof(prompt));
           snprintf(prompt, sizeof(prompt), "Rps_LEXTEST#%d:", count);
           lineno++;
