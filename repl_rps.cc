@@ -162,14 +162,18 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
     {
       if (inp->eof())
         {
-          free (plinebuf), *plinebuf = nullptr;
+	  if (*plinebuf)
+	    free ((void*)*plinebuf), *plinebuf = nullptr;
           return false;
         }
       std::string linestr;
       std::getline(*inp, linestr);
       if (linestr.empty() || linestr[linestr.size()-1] != '\n')
         linestr.push_back('\n');
-      free (plinebuf), *plinebuf = strdup(linestr.c_str());
+      if (*plinebuf) {
+	free ((void*)*plinebuf), *plinebuf=nullptr;
+	*plinebuf = strdup(linestr.c_str());
+      }
       (*plineno)++;
       return true;
     }
@@ -203,6 +207,8 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
   free (plinebuf), *plinebuf = nullptr;
   return false;
 } // end of rps_repl_get_next_line
+
+
 
 Rps_TwoValues
 rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int &lineno, int& colno)
