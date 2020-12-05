@@ -162,19 +162,26 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
     {
       if (inp->eof())
         {
-	  if (*plinebuf)
-	    free ((void*)*plinebuf), *plinebuf = nullptr;
+          if (*plinebuf)
+            free ((void*)*plinebuf), *plinebuf = nullptr;
           return false;
         }
       std::string linestr;
       std::getline(*inp, linestr);
       if (linestr.empty() || linestr[linestr.size()-1] != '\n')
         linestr.push_back('\n');
-      if (*plinebuf) {
-	free ((void*)*plinebuf), *plinebuf=nullptr;
-	*plinebuf = strdup(linestr.c_str());
-      }
+      if (*plinebuf)
+        {
+          free ((void*)*plinebuf), *plinebuf=nullptr;
+          *plinebuf = strdup(linestr.c_str());
+	  RPS_ASSERT(*plinebuf); // strdup is unlikely to fail
+        }
       (*plineno)++;
+      RPS_DEBUG_LOG(REPL, "rps_repl_get_next_line  new *plinebuf='"
+		    << (*plinebuf) << "' of length "
+		    << strlen(*plinebuf)
+		    << ", *plineno=" << *plineno
+		    << ", linestr='" << linestr << "'");
       return true;
     }
   else
@@ -1089,7 +1096,7 @@ rps_repl_lexer_test(void)
           bool gotline = rps_repl_get_next_line(&_, &std::cin, prompt, &linebuf, &lineno, prompt);
           if (!gotline)
             break;
-          if (colno < strlen(linebuf))
+          if (linebuf && colno < strlen(linebuf))
             {
               _f.curlextokenv =
                 Rps_LexToken::tokenize
