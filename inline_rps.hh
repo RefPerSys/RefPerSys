@@ -294,6 +294,12 @@ bool Rps_Value::is_tuple() const
          && as_ptr()->stored_type() == Rps_Type::Tuple;
 } //end  Rps_Value::is_tuple()
 
+bool Rps_Value::is_lextoken() const
+{
+  return is_ptr()
+         && as_ptr()->stored_type() == Rps_Type::LexToken;
+} //end  Rps_Value::is_lextoken()
+
 bool Rps_Value::is_string() const
 {
   return is_ptr()
@@ -442,6 +448,22 @@ Rps_Value::to_tuple(const Rps_TupleOb*deftup) const
   else return deftup;
 } // end Rps_Value::to_tuple
 
+
+const Rps_LexTokenZone*
+Rps_Value::as_lextoken() const
+{
+  if (is_lextoken())
+    return reinterpret_cast<const Rps_LexTokenZone*>(_pval);
+  else throw std::domain_error("Rps_Value::as_lextoken: value is not genuine lexical token");
+} // end Rps_Value::as_lextoken
+
+const Rps_LexTokenZone*
+Rps_Value::to_lextoken() const
+{
+  if (is_tuple())
+    return reinterpret_cast<const Rps_LexTokenZone*>(const_cast<Rps_ZoneValue*>(_pval));
+  else return nullptr;
+} // end Rps_Value::to_lextoken
 
 
 Rps_TupleValue::Rps_TupleValue (const std::vector<Rps_ObjectRef>& obvec)

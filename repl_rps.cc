@@ -159,10 +159,10 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
   RPS_ASSERT(plinebuf);
   RPS_ASSERT(plineno);
   RPS_DEBUG_LOG(REPL, "rps_repl_get_next_line start inp=" << inp
-		<< " input_name=" << input_name
-		<< " *plineno=" << (*plineno)
-		<< " *plinebuf=" << (*plinebuf)
-		<< " prompt=" << prompt);
+                << " input_name=" << input_name
+                << " *plineno=" << (*plineno)
+                << " *plinebuf=" << (*plinebuf)
+                << " prompt=" << prompt);
   if (inp && inp != &std::cin)   // we use it
     {
       if (inp->eof())
@@ -179,14 +179,14 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
         {
           free ((void*)*plinebuf), *plinebuf=nullptr;
           *plinebuf = strdup(linestr.c_str());
-	  RPS_ASSERT(*plinebuf); // strdup is unlikely to fail
+          RPS_ASSERT(*plinebuf); // strdup is unlikely to fail
         }
       (*plineno)++;
       RPS_DEBUG_LOG(REPL, "rps_repl_get_next_line  new *plinebuf='"
-		    << (*plinebuf) << "' of length "
-		    << strlen(*plinebuf)
-		    << ", *plineno=" << *plineno
-		    << ", linestr='" << linestr << "'");
+                    << (*plinebuf) << "' of length "
+                    << strlen(*plinebuf)
+                    << ", *plineno=" << *plineno
+                    << ", linestr='" << linestr << "'");
       return true;
     }
   else // inp is null or std::cin
@@ -766,9 +766,9 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
 } // end rps_lex_chunk_element
 
 ////////////////////////////////////////////////////////////////
-//// the Rps_LexToken values are transient, but do need some GC support
+//// the Rps_LexTokenZone values are transient, but do need some GC support
 
-Rps_LexToken::Rps_LexToken(Rps_ObjectRef kindob, Rps_Value val, Rps_String*filestringp, int line, int col)
+Rps_LexTokenZone::Rps_LexTokenZone(Rps_ObjectRef kindob, Rps_Value val, Rps_String*filestringp, int line, int col)
   : Rps_LazyHashedZoneValue(Rps_Type::LexToken),
     lex_kind(kindob),
     lex_val(val),
@@ -778,16 +778,16 @@ Rps_LexToken::Rps_LexToken(Rps_ObjectRef kindob, Rps_Value val, Rps_String*files
 {
   RPS_ASSERT (!kindob || kindob->stored_type() == Rps_Type::Object);
   RPS_ASSERT (!filestringp || filestringp->stored_type() == Rps_Type::String);
-} // end Rps_LexToken::Rps_LexToken
+} // end Rps_LexTokenZone::Rps_LexTokenZone
 
-Rps_LexToken::~Rps_LexToken()
+Rps_LexTokenZone::~Rps_LexTokenZone()
 {
   lex_kind = nullptr;
   lex_val = nullptr;
-} // end Rps_LexToken::~Rps_LexToken
+} // end Rps_LexTokenZone::~Rps_LexTokenZone
 
 Rps_HashInt
-Rps_LexToken::compute_hash(void) const
+Rps_LexTokenZone::compute_hash(void) const
 {
   auto hkind = lex_kind?(lex_kind->val_hash()):0;
   auto hval = lex_val?(lex_val.valhash()):0;
@@ -800,53 +800,53 @@ Rps_LexToken::compute_hash(void) const
     h = (h1&0xffff) + (h2&0xfffff) + 17;
   RPS_ASSERT(h != 0);
   return h;
-} // end Rps_LexToken
+} // end Rps_LexTokenZone
 
 Rps_ObjectRef
-Rps_LexToken::the_lexical_token_class(void)
+Rps_LexTokenZone::the_lexical_token_class(void)
 {
   return RPS_ROOT_OB(_0S6DQvp3Gop015zXhL);
-} // end Rps_LexToken::the_lexical_token_class
+} // end Rps_LexTokenZone::the_lexical_token_class
 
 Rps_ObjectRef
-Rps_LexToken::compute_class(Rps_CallFrame*callframe) const
+Rps_LexTokenZone::compute_class(Rps_CallFrame*callframe) const
 {
   // we need to create some lexical_token class object...
   RPS_ASSERT(callframe == nullptr || callframe->is_good_call_frame());
   return the_lexical_token_class();
-} // end Rps_LexToken::compute_class
+} // end Rps_LexTokenZone::compute_class
 
 void
-Rps_LexToken::gc_mark(Rps_GarbageCollector&gc, unsigned depth) const
+Rps_LexTokenZone::gc_mark(Rps_GarbageCollector&gc, unsigned depth) const
 {
   if (is_gcmarked(gc))
     return;
   if (RPS_UNLIKELY(depth > Rps_Value::max_gc_mark_depth))
-    throw std::runtime_error("too deep Rps_LexToken::gc_mark");
+    throw std::runtime_error("too deep Rps_LexTokenZone::gc_mark");
   if (lex_kind)
     lex_kind->gc_mark(gc,depth+1);
   if (lex_val)
     lex_val.gc_mark(gc,depth+1);
   if (lex_file)
     lex_file->gc_mark(gc,depth+1);
-} // end Rps_LexToken::gc_mark
+} // end Rps_LexTokenZone::gc_mark
 
 void
-Rps_LexToken::dump_scan(Rps_Dumper*du, unsigned int) const
+Rps_LexTokenZone::dump_scan(Rps_Dumper*du, unsigned int) const
 {
   RPS_ASSERT(du != nullptr);
-} // end Rps_LexToken::dump_scan
+} // end Rps_LexTokenZone::dump_scan
 
 Json::Value
-Rps_LexToken::dump_json(Rps_Dumper*du) const
+Rps_LexTokenZone::dump_json(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
   return Json::Value (Json::nullValue);
-} // end Rps_LexToken::dump_json
+} // end Rps_LexTokenZone::dump_json
 
 
 void
-Rps_LexToken::val_output(std::ostream&out, unsigned int depth) const
+Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
 {
   out << "LexToken{" << lex_kind;
   lex_val.output(out, depth+1);
@@ -861,15 +861,15 @@ Rps_LexToken::val_output(std::ostream&out, unsigned int depth) const
       out << "@" << lex_file->cppstring() << ":" << lex_lineno << ":" << lex_colno;
     };
   out << "}";
-} // end Rps_LexToken::val_output
+} // end Rps_LexTokenZone::val_output
 
 
 bool
-Rps_LexToken::equal(Rps_ZoneValue const&zv) const
+Rps_LexTokenZone::equal(Rps_ZoneValue const&zv) const
 {
   if (zv.stored_type() == Rps_Type::LexToken)
     {
-      auto othlt = reinterpret_cast<const Rps_LexToken*>(&zv);
+      auto othlt = reinterpret_cast<const Rps_LexTokenZone*>(&zv);
       auto lh = lazy_hash();
       auto othlh = othlt->lazy_hash();
       if (lh != 0 && othlh != 0 && lh != othlh)
@@ -888,16 +888,16 @@ Rps_LexToken::equal(Rps_ZoneValue const&zv) const
       return lex_val == othlt->lex_val && lex_file == othlt->lex_file;
     }
   return false;
-} // end Rps_LexToken::equal
+} // end Rps_LexTokenZone::equal
 
 bool
-Rps_LexToken::less(Rps_ZoneValue const&zv) const
+Rps_LexTokenZone::less(Rps_ZoneValue const&zv) const
 {
   if (zv.stored_type() == Rps_Type::LexToken)
     {
       if (equal(zv))
         return false;
-      auto othlt = reinterpret_cast<const Rps_LexToken*>(&zv);
+      auto othlt = reinterpret_cast<const Rps_LexTokenZone*>(&zv);
       if (!lex_file && othlt->lex_file)
         return true;
       if (!othlt->lex_file)
@@ -922,33 +922,81 @@ Rps_LexToken::less(Rps_ZoneValue const&zv) const
         return true;
       else if (lex_val > othlt->lex_val)
         return false;
-      RPS_FATALOUT("Rps_LexToken::less corruption: this=" << *this
+      RPS_FATALOUT("Rps_LexTokenZone::less corruption: this=" << *this
                    << ", other=" << *othlt);
     }
   else
     return  Rps_Type::LexToken < zv.stored_type();
-} // end Rps_LexToken::less
+} // end Rps_LexTokenZone::less
 
 // Tokenize a lexical token; an optional double-ended queue of
 // already lexed token enable limited backtracking when needed....
-Rps_LexToken*
-Rps_LexToken::tokenize(Rps_CallFrame*callframe, std::istream*inp,
-                       const char*input_name,
-                       const char**plinebuf, int&lineno, int& colno,
-                       lexical_line_getter_fun linegetter,
-                       std::deque<Rps_LexToken*>* pque)
+const Rps_LexTokenZone*
+Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
+                           const char*input_name,
+                           const char**plinebuf, int&lineno, int& colno,
+                           lexical_line_getter_fun linegetter,
+                           std::deque<Rps_LexTokenZone*>* pque)
 {
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0TvVIbOU16z028VWvv),
+                           /*callerframe:*/callframe,
+                           Rps_Value lexkindv;
+                           Rps_Value lexdatav;
+                           Rps_Value lextokv;
+                );
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
+  {
+    if (pque)
+      {
+        for (Rps_LexTokenZone* lxtokv: *pque)
+          gc->mark_value(lxtokv);
+      }
+  });
   std::string inputstr(input_name?:"");
   const char*curinp = (plinebuf && colno>=0 && colno<strlen(*plinebuf))
                       ?((*plinebuf)+colno)
                       :nullptr;
-  RPS_FATALOUT("unimplemented Rps_LexToken::tokenize inputstr="
+  int pquelen = pque?pque->size():-1;
+  RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize start inputstr="
+                << inputstr << (curinp?"curinp=":"curinp ")
+                << (curinp?curinp:" *NUL*")
+                << ", lineno=" << lineno
+                << ", colno=" << colno
+                << (pque?", pque len: ":",no pque ")
+                << pquelen);
+  if (pquelen>0)
+    {
+      _f.lextokv = pque->front();
+      pque->pop_front();
+      RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize dequeued " << _f.lextokv);
+      return _f.lextokv.to_lextoken();
+    }
+  else
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize inputstr="
+                    << inputstr << ", lineno=" << lineno
+                    << ", colno=" << colno
+                    << (curinp?"curinp=":"curinp ")
+                    << (curinp?curinp:" *NUL*")
+                    << " before calling rps_repl_lexer" << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_LexTokenZone::tokenize"));
+      Rps_TwoValues twolex =
+        rps_repl_lexer(&_, inp, input_name, *plinebuf, lineno, colno);
+      _f.lexkindv = twolex.main_val;
+      _f.lextokv = twolex.xtra_val;
+      RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize from rps_repl_lexer got lexkind=" << _f.lexkindv
+                    << ", lextok=" << _f.lextokv
+                    << ", lineno=" << lineno
+                    << ", colno=" << colno);
+#warning Rps_LexTokenZone::tokenize should make a lexical token here ...
+    }
+  RPS_FATALOUT("unimplemented Rps_LexTokenZone::tokenize inputstr="
                << inputstr << " line:" << lineno
                << ", column:" << colno
                << (curinp?", current input:":", no input")
                << (curinp?curinp:" ..."));
-#warning unimplemented Rps_LexToken::tokenize, should wrap rps_repl_lexer
-} // end Rps_LexToken::tokenize
+#warning incomplete Rps_LexTokenZone::tokenize, should wrap rps_repl_lexer
+} // end Rps_LexTokenZone::tokenize
 ////////////////////////////////////////////////////////////////
 
 
@@ -1104,7 +1152,7 @@ rps_repl_lexer_test(void)
           if (linebuf && colno < strlen(linebuf))
             {
               _f.curlextokenv =
-                Rps_LexToken::tokenize
+                Rps_LexTokenZone::tokenize
                 (&_, &std::cin,
                  prompt,
                  &linebuf,

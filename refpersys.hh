@@ -685,6 +685,7 @@ class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
 class Rps_JsonZone; // memory for Json values
+class Rps_LexTokenZone; /// memory for reified lexical tokens, mostly in repl_rps.cc
 class Rps_GarbageCollector;
 class Rps_Payload;
 class Rps_PayloadSymbol;
@@ -965,7 +966,7 @@ class Rps_String;
 class Rps_Double;
 class Rps_SetOb;
 class Rps_TupleOb;
-class Rps_LexToken;
+class Rps_LexTokenZone;
 class Rps_ClosureZone;
 class Rps_InstanceZone;
 class Rps_GarbageCollector;
@@ -975,6 +976,7 @@ class Rps_ClosureValue;
 class Rps_SetValue;
 class Rps_InstanceValue;
 class Rps_TupleValue;
+class Rps_LexTokenValue; // mostly in repl_rps.cc
 struct Rps_TwoValues;
 
 //////////////// our value, a single word
@@ -1041,6 +1043,7 @@ public:
   inline bool is_null() const;
   inline bool is_empty() const;
   inline bool is_json() const;
+  inline bool is_lextoken() const;
   operator bool () const
   {
     return !is_empty();
@@ -1060,6 +1063,7 @@ public:
   inline const Rps_ClosureZone* as_closure() const;
   inline const Rps_Double* as_boxed_double() const;
   inline const Rps_JsonZone* as_json() const;
+  inline const Rps_LexTokenZone* as_lextoken() const;
   inline double as_double() const;
   inline const std::string as_cppstring() const;
   inline const char* as_cstring() const;
@@ -1079,6 +1083,7 @@ public:
   inline const Rps_InstanceZone* to_instance(const Rps_InstanceZone*definst =nullptr) const;
   inline const Rps_String* to_string( const Rps_String*defstr
                                       = nullptr) const;
+  inline const Rps_LexTokenZone* to_lextoken(void) const;
   inline const std::string to_cppstring(std::string defstr= "") const;
   inline Rps_HashInt valhash() const noexcept;
   inline void output(std::ostream&out, unsigned depth=0) const;
@@ -1301,6 +1306,17 @@ public:
   // "dynamic" casting :
   inline Rps_TupleValue(Rps_Value val);
 };    // end class Rps_TupleValue
+
+////////////////
+class Rps_LexTokenValue : public Rps_Value
+{
+public:
+  /// related to Rps_TupleOb::make :
+  inline Rps_LexTokenValue (const Rps_LexTokenZone& lxtok);
+  inline Rps_LexTokenValue (const Rps_LexTokenZone* plxtok);
+  // "dynamic" casting :
+  inline Rps_LexTokenValue(Rps_Value val);
+};    // end class Rps_LexTokenValue
 ////////////////////////////////////////////////////////////////
 
 
@@ -1839,7 +1855,8 @@ static inline Rps_HashInt rps_hash_cstr(const char*cstr, int len= -1);
 
 class Rps_String : public Rps_LazyHashedZoneValue
 {
-  friend class Rps_LexToken;
+  friend class Rps_LexTokenZone;
+  friend class Rps_LexTokenValue;
   friend Rps_String*
   Rps_QuasiZone::rps_allocate_with_wordgap<Rps_String,const char*,int>(unsigned,const char*,int);
   const uint32_t _bytsiz;
@@ -1956,19 +1973,20 @@ public:
 
 
 //////////////// boxed lexical token - always transient
-class Rps_LexToken  : public Rps_LazyHashedZoneValue
+class Rps_LexTokenZone  : public Rps_LazyHashedZoneValue
 {
-  friend Rps_LexToken*
-  Rps_QuasiZone::rps_allocate5<Rps_LexToken,Rps_ObjectRef,Rps_Value,Rps_String*,int,int>(Rps_ObjectRef lxkind,Rps_Value lxval,Rps_String*lxpath,int lxline,int lxcol);
+  friend Rps_LexTokenZone*
+  Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,Rps_String*,int,int>(Rps_ObjectRef lxkind,Rps_Value lxval,Rps_String*lxpath,int lxline,int lxcol);
+  friend class Rps_GarbageCollector;
   Rps_ObjectRef lex_kind;
   Rps_Value lex_val;
   Rps_String* lex_file;
   int lex_lineno;
   int lex_colno;
 protected:
-  Rps_LexToken(Rps_ObjectRef kind, Rps_Value val, Rps_String*string, int line, int col);
+  Rps_LexTokenZone(Rps_ObjectRef kind, Rps_Value val, Rps_String*string, int line, int col);
 protected:
-  virtual ~Rps_LexToken();
+  virtual ~Rps_LexTokenZone();
   virtual Rps_HashInt compute_hash(void) const;
   virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
   virtual void gc_mark(Rps_GarbageCollector&, unsigned) const;
@@ -1994,12 +2012,13 @@ public:
 		> lexical_line_getter_fun;
   // Tokenize a lexical token; an optional double-ended queue of
   // already lexed token enable limited backtracking when needed....
-  static Rps_LexToken* tokenize(Rps_CallFrame*callframe, std::istream*inp,
-				const char*input_name,
-				const char**plinebuf, int&lineno, int& colno,
-				lexical_line_getter_fun linegetter = nullptr,
-				std::deque<Rps_LexToken*>* pque = nullptr);
-}; // end class Rps_LexToken
+  static const Rps_LexTokenZone* tokenize
+  (Rps_CallFrame*callframe, std::istream*inp,
+   const char*input_name,
+   const char**plinebuf, int&lineno, int& colno,
+   lexical_line_getter_fun linegetter = nullptr,
+   std::deque<Rps_LexTokenZone*>* pque = nullptr);
+}; // end class Rps_LexTokenZone
 
 
 
