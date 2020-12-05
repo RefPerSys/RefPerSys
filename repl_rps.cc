@@ -945,7 +945,7 @@ Rps_LexToken::tokenize(Rps_CallFrame*callframe, std::istream*inp,
   RPS_FATALOUT("unimplemented Rps_LexToken::tokenize inputstr="
                << inputstr << " line:" << lineno
                << ", column:" << colno
-               << (curinp?"current input:":"no input")
+               << (curinp?", current input:":", no input")
                << (curinp?curinp:" ..."));
 #warning unimplemented Rps_LexToken::tokenize, should wrap rps_repl_lexer
 } // end Rps_LexToken::tokenize
