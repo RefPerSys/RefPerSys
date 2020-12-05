@@ -158,7 +158,12 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
   RPS_ASSERT(input_name);
   RPS_ASSERT(plinebuf);
   RPS_ASSERT(plineno);
-  if (inp)   // we use it
+  RPS_DEBUG_LOG(REPL, "rps_repl_get_next_line start inp=" << inp
+		<< " input_name=" << input_name
+		<< " *plineno=" << (*plineno)
+		<< " *plinebuf=" << (*plinebuf)
+		<< " prompt=" << prompt);
+  if (inp && inp != &std::cin)   // we use it
     {
       if (inp->eof())
         {
@@ -184,7 +189,7 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
 		    << ", linestr='" << linestr << "'");
       return true;
     }
-  else
+  else // inp is null or std::cin
     {
       RPS_ASSERT(rps_is_main_thread());
       if (prompt.empty())
@@ -1090,7 +1095,7 @@ rps_repl_lexer_test(void)
         {
           char prompt[16];
           memset(prompt, 0, sizeof(prompt));
-          snprintf(prompt, sizeof(prompt), "Rps_LEXTEST#%d", count);
+          snprintf(prompt, sizeof(prompt), "Rps_LEXTEST#%d:", count);
           lineno++;
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test lineno=" << lineno << " prompt=" << prompt);
           bool gotline = rps_repl_get_next_line(&_, &std::cin, prompt, &linebuf, &lineno, prompt);
