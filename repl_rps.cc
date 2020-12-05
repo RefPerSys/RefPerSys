@@ -238,6 +238,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                            /*callerframe:*/callframe,
                            Rps_ObjectRef oblex;
                            Rps_Value chunkv;
+                           Rps_Value semval;
                 );
   RPS_ASSERT(colno >= 0 && colno <= linelen);
   RPS_DEBUG_LOG(REPL, "rps_repl_lexer start inp="<< inp
@@ -262,16 +263,18 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       if (endfloat > endint)
         {
           colno += endfloat - startnum;
-          RPS_DEBUG_LOG(REPL, "rps_repl_lexer float " << d << " colno=" << colno);
+          _f.semval = Rps_DoubleValue(d);
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer float " << d << " colno=" << colno << " semval=" << _f.semval);
           return Rps_TwoValues{RPS_ROOT_OB(_98sc8kSOXV003i86w5), //double∈class
-                               Rps_DoubleValue(d)};
+                               _f.semval};
         }
       else
         {
           colno += endint - startnum;
-          RPS_DEBUG_LOG(REPL, "rps_repl_lexer int " << l << " colno=" << colno);
+          _f.semval = Rps_Value(l, Rps_Value::Rps_IntTag{});
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer int " << l << " colno=" << colno << " semval=" << _f.semval);
           return Rps_TwoValues{RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b), //int∈class
-                               Rps_Value(l, Rps_Value::Rps_IntTag{})};
+                               _f.semval};
         }
     }
   /// lex infinities (double) - but not NAN
@@ -283,9 +286,10 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       double infd = (pos
                      ?std::numeric_limits<double>::infinity()
                      : -std::numeric_limits<double>::infinity());
-      RPS_DEBUG_LOG(REPL, "rps_repl_lexer infinity " << infd << " colno=" << colno);
+      _f.semval = Rps_DoubleValue(infd);
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer infinity " << infd << " colno=" << colno << " semval=" << _f.semval);
       return Rps_TwoValues{RPS_ROOT_OB(_98sc8kSOXV003i86w5), //double∈class
-                           Rps_DoubleValue(infd)};
+                           _f.semval};
     }
   //////////////// lex named objects or objids
   else if (isalpha(linebuf[colno]) || linebuf[colno]=='_')
@@ -304,9 +308,10 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       /// some new symbol
       if (isalpha(namestr[0]))
         {
-          RPS_DEBUG_LOG(REPL, "rps_repl_lexer new name " << namestr << " colno=" << colno);
+          _f.semval = Rps_StringValue(namestr);
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer new name " << namestr << " colno=" << colno << " semval=" << _f.semval);
           return Rps_TwoValues(RPS_ROOT_OB(_36I1BY2NetN03WjrOv), //symbol∈class
-                               Rps_StringValue(namestr));
+                               _f.semval);
         }
       /// otherwise, fail to lex, so
       colno = startname;
