@@ -881,17 +881,17 @@ Rps_LexTokenZone::dump_json(Rps_Dumper*du) const
 void
 Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
 {
-  out << "LexToken{" << lex_kind;
-  lex_val.output(out, depth+1);
+  out << "LexToken{kind=" << lex_kind;
   if (depth > Rps_Value::max_output_depth)
     {
       out << "...}";
       return;
     };
-  out << "," << lex_val;
+  out << ", val=";
+  lex_val.output(out, depth+1);
   if (lex_file)
     {
-      out << "@" << lex_file->cppstring() << ":" << lex_lineno << ":" << lex_colno;
+      out << ", @" << lex_file->cppstring() << ":" << lex_lineno << ":" << lex_colno;
     };
   out << "}";
 } // end Rps_LexTokenZone::val_output
@@ -1034,7 +1034,7 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
 	  Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
 	  (_f.lexkindob,
 	   _f.lextokv,
-	   Rps_StringValue(curinp).as_string(),
+	   Rps_StringValue(input_name).as_string(),
 	   startline,
 	   startcol);
 	_f.resv = Rps_LexTokenValue(lextok);
@@ -1197,12 +1197,16 @@ rps_repl_lexer_test(void)
           memset(prompt, 0, sizeof(prompt));
           snprintf(prompt, sizeof(prompt), "Rps_LEXTEST#%d:", count);
           lineno++;
-          RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test lineno=" << lineno << " prompt=" << prompt);
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test lineno=" << lineno << " prompt=" << prompt
+			<< ", count=" << count);
           bool gotline = rps_repl_get_next_line(&_, &std::cin, prompt, &linebuf, &lineno, prompt);
           if (!gotline)
             break;
           if (linebuf && colno < (int)strlen(linebuf))
             {
+	      RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test lineno=" << lineno
+			    << ", colno=" << colno
+			    << ", linebuf:" << linebuf);
               _f.curlextokenv =
                 Rps_LexTokenZone::tokenize
                 (&_, &std::cin,
@@ -1222,18 +1226,24 @@ rps_repl_lexer_test(void)
                                          lex_plinebuf,
                                          lex_plineno,
                                          prompt);
-                RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test ok=" << ok
+                RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test⊕ ok=" << ok
                               << " lineno="<< lineno
-                              << " colno="<< colno);
+                              << " colno="<< colno
+			      << " lex_callframe=" << Rps_ShowCallFrame(lex_callframe)
+			      << std::endl);
                 return ok;
               }
                 );
-              RPS_INFORMOUT("rps_repl_lexer_test curlextokenv=" << _f.curlextokenv);
+              RPS_INFORMOUT("rps_repl_lexer_test curlextokenv=" << _f.curlextokenv << std::endl
+			    <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test") << std::endl);
               if (_f.curlextokenv)
                 nbtok++;
             }
         }
     }
+  RPS_DEBUG_LOG(REPL, "ending rps_repl_lexer_test lineno=" << lineno << ", colno=" << colno
+		<< ", count=" << count
+		<< ", nbtok=" << nbtok);  
   double endrealtime = rps_wallclock_real_time();
   double endcputime = rps_thread_cpu_time();
   RPS_INFORMOUT("rps_repl_lexer_test got " << nbtok << " lexical tokens in "
