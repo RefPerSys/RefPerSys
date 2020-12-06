@@ -413,6 +413,9 @@ rps_print_types_info(void)
 #undef TYPEFMT_rps
   putchar('\n');
   fflush(nullptr);
+  std::cout << "the tagged integer one hundred is "
+            << Rps_Value::make_tagged_int(100)
+            << std::endl;
 } // end rps_print_types_info
 
 

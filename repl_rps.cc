@@ -271,7 +271,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       else
         {
           colno += endint - startnum;
-          _f.semval = Rps_Value(l, Rps_Value::Rps_IntTag{});
+          _f.semval = Rps_Value::make_tagged_int(l);
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer int " << l << " colno=" << colno << " semval=" << _f.semval);
           return Rps_TwoValues{RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b), //int∈class
                                _f.semval};

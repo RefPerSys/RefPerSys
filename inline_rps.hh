@@ -146,6 +146,12 @@ Rps_Value::Rps_Value(Rps_EmptyTag) : _wptr (RPS_EMPTYSLOT) {};
 Rps_Value::Rps_Value(intptr_t i, Rps_IntTag) :
   _ival(((i >> 1) << 1) | 1) {};
 
+Rps_Value
+Rps_Value::make_tagged_int(intptr_t i)
+{
+  return Rps_Value(i, Rps_IntTag{});
+} // end Rps_Value::make_tagged_int
+
 Rps_Value::Rps_Value(const Rps_ZoneValue*ptr, Rps_ValPtrTag) :
   _pval(ptr)
 {

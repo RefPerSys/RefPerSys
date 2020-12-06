@@ -1069,6 +1069,7 @@ public:
   inline const char* as_cstring() const;
   Rps_ObjectRef compute_class(Rps_CallFrame*) const;
   // convert or give default
+  static inline Rps_Value make_tagged_int(intptr_t);
   inline intptr_t to_int(intptr_t def=0) const;
   inline const Rps_ZoneValue* to_ptr(const Rps_ZoneValue*zp = nullptr) const;
   inline const Rps_SetOb* to_set(const Rps_SetOb*defset= nullptr) const;
