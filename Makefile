@@ -199,6 +199,7 @@ endif
 	@printf "\n%s git-pushed commit %s of RefPerSys, branch %s ...\n" \
 	        "$$(git config --get user.email)" "$$(./do-generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
 	@git log -1 --format=oneline --abbrev=12 --abbrev-commit -q | head -1
+	if [ -x $$HOME/bin/push-refpersys ]; then $$HOME/bin/push-refpersys $(shell /bin/pwd) $(RPS_SHORTGIT_ID); fi
 
 
 ################################################################
