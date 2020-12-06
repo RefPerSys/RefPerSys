@@ -774,8 +774,9 @@ bool Rps_Value::is_null() const
 std::intptr_t
 Rps_Value::as_int() const
 {
-  if (!is_int()) throw std::invalid_argument("value is not an int");
-  return _ival>>1;
+  if (!is_int())
+    throw std::invalid_argument("value is not an int");
+  return (_ival>>1)<<1;
 }
 
 // test if this value is an instance of given obclass
@@ -814,7 +815,8 @@ Rps_Value::to_int(intptr_t def) const
 {
   if (is_int())
     {
-      return _ival>>1;
+      RPS_ASSERT(_ival & 1);
+      return (_ival>>1)<<1;
     }
   else return def;
 } // end Rps_Value::to_int

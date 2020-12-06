@@ -106,7 +106,7 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_TYPEINFO, ///
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Show type information", //
+    /*doc:*/ "Show type information (and test tagged integers)", //
     /*group:*/0 ///
   },
   /* ======= syslog-ing ======= */
@@ -413,9 +413,12 @@ rps_print_types_info(void)
 #undef TYPEFMT_rps
   putchar('\n');
   fflush(nullptr);
-  std::cout << "the tagged integer one hundred is "
+  std::cout << "@@°°@@ The tagged integer one hundred is "
             << Rps_Value::make_tagged_int(100)
-            << std::endl;
+            << std::endl
+            << "... and the tagged integer minus one billion is "
+            <<  Rps_Value::make_tagged_int(-1000000000)
+            << " !!! " << std::endl;
 } // end rps_print_types_info
 
 
