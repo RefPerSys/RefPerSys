@@ -144,7 +144,7 @@ Rps_Value::Rps_Value(std::nullptr_t) : _wptr(nullptr) {};
 Rps_Value::Rps_Value(Rps_EmptyTag) : _wptr (RPS_EMPTYSLOT) {};
 
 Rps_Value::Rps_Value(intptr_t i, Rps_IntTag) :
-  _ival(((i >> 1) << 1) | 1) {};
+  _ival((i<< 1) | 1) {};
 
 Rps_Value
 Rps_Value::make_tagged_int(intptr_t i)
@@ -776,7 +776,7 @@ Rps_Value::as_int() const
 {
   if (!is_int())
     throw std::invalid_argument("value is not an int");
-  return (_ival>>1)<<1;
+  return (_ival>>1);
 }
 
 // test if this value is an instance of given obclass
