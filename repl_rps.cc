@@ -976,6 +976,7 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
                            Rps_Value lexkindv;
                            Rps_Value lexdatav;
                            Rps_Value lextokv;
+                           Rps_Value kindnamv;
                 );
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
@@ -1017,10 +1018,20 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
         rps_repl_lexer(&_, inp, input_name, *plinebuf, lineno, colno);
       _f.lexkindv = twolex.main_val;
       _f.lextokv = twolex.xtra_val;
+      _f.kindnamv = nullptr;
+      if (_f.lexkindv.is_object())
+        _f.kindnamv = _f.lexkindv.as_object()
+                      ->get_attr1(&_,RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); // /name∈named_attribute
       RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize from rps_repl_lexer got lexkind=" << _f.lexkindv
+                    << "/" << _f.lexkindv
                     << ", lextok=" << _f.lextokv
                     << ", lineno=" << lineno
                     << ", colno=" << colno);
+      RPS_FATALOUT("incomplete Rps_LexTokenZone::tokenize, should make a lextoken from lexkind=" << _f.lexkindv
+                   << "/" << _f.lexkindv
+                   << ", lextok=" << _f.lextokv
+                   << ", lineno=" << lineno
+                   << ", colno=" << colno);
 #warning Rps_LexTokenZone::tokenize should make a lexical token here ...
     }
   RPS_FATALOUT("unimplemented Rps_LexTokenZone::tokenize inputstr="
