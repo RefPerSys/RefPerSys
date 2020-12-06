@@ -471,6 +471,11 @@ Rps_Value::to_lextoken() const
   else return nullptr;
 } // end Rps_Value::to_lextoken
 
+Rps_LexTokenValue::Rps_LexTokenValue (const Rps_LexTokenZone*lxz)
+  : Rps_Value (lxz, Rps_ValPtrTag{})
+{
+} // end of Rps_LexTokenValue::Rps_LexTokenValue
+
 
 Rps_TupleValue::Rps_TupleValue (const std::vector<Rps_ObjectRef>& obvec)
   : Rps_Value (Rps_TupleOb::make(obvec), Rps_ValPtrTag{})

@@ -1311,6 +1311,7 @@ public:
 ////////////////
 class Rps_LexTokenValue : public Rps_Value
 {
+  friend class Rps_LexTokenZone;
 public:
   /// related to Rps_TupleOb::make :
   inline Rps_LexTokenValue (const Rps_LexTokenZone& lxtok);
@@ -1677,6 +1678,7 @@ public:
 class Rps_QuasiZone : public Rps_TypedZone
 {
   friend class Rps_GarbageCollector;
+  friend class Rps_LexTokenZone;
   // we keep each quasi-zone in the qz_zonvec
   static std::recursive_mutex qz_mtx;
   static std::vector<Rps_QuasiZone*> qz_zonvec;
@@ -1979,13 +1981,19 @@ class Rps_LexTokenZone  : public Rps_LazyHashedZoneValue
   friend Rps_LexTokenZone*
   Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,Rps_String*,int,int>(Rps_ObjectRef lxkind,Rps_Value lxval,Rps_String*lxpath,int lxline,int lxcol);
   friend class Rps_GarbageCollector;
+  friend class Rps_LexTokenValue;
+  friend class Rps_QuasiZone;
   Rps_ObjectRef lex_kind;
   Rps_Value lex_val;
-  Rps_String* lex_file;
+  const Rps_String* lex_file;
   int lex_lineno;
   int lex_colno;
+public:
+  inline void* operator new (std::size_t siz, std::nullptr_t) {
+    return Rps_QuasiZone::operator new(siz,nullptr);
+  }
 protected:
-  Rps_LexTokenZone(Rps_ObjectRef kind, Rps_Value val, Rps_String*string, int line, int col);
+  Rps_LexTokenZone(Rps_ObjectRef kind, Rps_Value val, const Rps_String*string, int line, int col);
 protected:
   virtual ~Rps_LexTokenZone();
   virtual Rps_HashInt compute_hash(void) const;
