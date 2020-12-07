@@ -294,14 +294,15 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
   //////////////// lex named objects or objids
   else if (isalpha(linebuf[colno]) || linebuf[colno]=='_')
     {
-      int startname = colno;
+      int startnamecol = colno;
       while (isalnum(linebuf[colno]) || linebuf[colno]=='_')
         colno++;
-      std::string namestr(linebuf+startname, colno-startname);
+      std::string namestr(linebuf+startnamecol, colno-startnamecol);
       _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr, true);
       if (_f.oblex)
         {
-          RPS_DEBUG_LOG(REPL, "rps_repl_lexer object " << _f.oblex << " colno=" << colno);
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer object " << _f.oblex << " colno=" << colno
+			<< " named " << namestr);
           return Rps_TwoValues(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ), //object∈class
                                _f.oblex);
         }
@@ -314,10 +315,15 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                                _f.semval);
         }
       /// otherwise, fail to lex, so
-      colno = startname;
+      {
+	int oldcol = colno;
+	colno = startnamecol;
+	RPS_DEBUG_LOG(REPL, "rps_repl_lexer bad namestr " << namestr << " line " << lineno << ", column " << colno
+		      << " oldcol " << oldcol);
       RPS_WARNOUT("rps_repl_lexer " << input_name << " line " << lineno << ", column " << colno
                   << " : bad name " << linebuf+colno);
       return Rps_TwoValues(nullptr, nullptr);
+      }
     }
   //// literal strings are like in C++
   else if (linebuf[colno] == '"')   /// plain literal string, on a single line
@@ -1240,6 +1246,10 @@ rps_repl_lexer_test(void)
                 nbtok++;
             }
         }
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test endloop nbtok=" << nbtok << ", count=" << count
+		    << ", lineno=" << lineno << ", colno=" << colno
+		    << "," << std::endl
+		    << "... last curlextokenv=" << _f.curlextokenv << std::endl);
     }
   RPS_DEBUG_LOG(REPL, "ending rps_repl_lexer_test lineno=" << lineno << ", colno=" << colno
 		<< ", count=" << count
