@@ -1250,6 +1250,8 @@ rps_repl_lexer_test(void)
 		    << ", lineno=" << lineno << ", colno=" << colno
 		    << "," << std::endl
 		    << "... last curlextokenv=" << _f.curlextokenv << std::endl);
+      if (count % 4 == 0)
+	usleep (65536);
     }
   RPS_DEBUG_LOG(REPL, "ending rps_repl_lexer_test lineno=" << lineno << ", colno=" << colno
 		<< ", count=" << count
