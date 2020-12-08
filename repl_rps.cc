@@ -1270,18 +1270,20 @@ rps_repl_lexer_test(void)
           usleep (200000);
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test endloop count=" << count
                         << " curlextokenv=" << _f.curlextokenv
-                        << std::end
+                        << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test endloop")
-                        << std::end);
+                        << std::endl);
         }
-      RPS_DEBUG_LOG(REPL, "ending rps_repl_lexer_test lineno=" << lineno << ", colno=" << colno
-                    << ", count=" << count
-                    << ", nbtok=" << nbtok);
-      double endrealtime = rps_wallclock_real_time();
-      double endcputime = rps_thread_cpu_time();
-      RPS_INFORMOUT("rps_repl_lexer_test got " << nbtok << " lexical tokens in "
-                    << (endrealtime-startrealtime) << " real, "
-                    << (endcputime-startcputime) << " cpu seconds.");
-    } // end rps_repl_lexer_test
+    } // end while (!rps_repl_stopped
+  //
+  RPS_DEBUG_LOG(REPL, "ending rps_repl_lexer_test lineno=" << lineno << ", colno=" << colno
+		<< ", count=" << count
+		<< ", nbtok=" << nbtok);
+  double endrealtime = rps_wallclock_real_time();
+  double endcputime = rps_thread_cpu_time();
+  RPS_INFORMOUT("rps_repl_lexer_test got " << nbtok << " lexical tokens in "
+		<< (endrealtime-startrealtime) << " real, "
+		<< (endcputime-startcputime) << " cpu seconds.");
+} // end rps_repl_lexer_test
 
   // end of file repl_rps.cc
