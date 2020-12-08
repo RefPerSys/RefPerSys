@@ -103,18 +103,18 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   RPS_ASSERT(input_name != nullptr);
   // descriptor is: _6x4XcZ1fxp403uBUoz) //"rps_repl_interpret"∈core_function
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_6x4XcZ1fxp403uBUoz),
-                           /*callerframe:*/callframe,
-                           Rps_ObjectRef lexkindob;
-                           Rps_Value lexdatav;
-                );
+		 /*callerframe:*/callframe,
+		 Rps_ObjectRef lexkindob;
+		 Rps_Value lexdatav;
+		 );
   // a double ended queue to keep the lexical tokens
   std::deque<Rps_Value> token_deq;
   const char* linebuf=nullptr;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
-  {
-    for (auto tokenv : token_deq)
-      gc->mark_value(tokenv);
-  });
+			     {
+			       for (auto tokenv : token_deq)
+				 gc->mark_value(tokenv);
+			     });
   RPS_DEBUG_LOG(REPL, "rps_repl_interpret start input_name=" << input_name
                 << ", lineno=" << lineno
                 << " callframe: " << Rps_ShowCallFrame(&_));
@@ -235,11 +235,11 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
   char litprefix[16];
   memset (litprefix, 0, sizeof(litprefix));
   RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/callframe,
-                           Rps_ObjectRef oblex;
-                           Rps_Value chunkv;
-                           Rps_Value semval;
-                );
+		 /*callerframe:*/callframe,
+		 Rps_ObjectRef oblex;
+		 Rps_Value chunkv;
+		 Rps_Value semval;
+		 );
   RPS_ASSERT(colno >= 0 && colno <= linelen);
   RPS_DEBUG_LOG(REPL, "rps_repl_lexer start inp="<< inp
                 << "input_name=" << (input_name?:"?nil?")
@@ -266,7 +266,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
           _f.semval = Rps_DoubleValue(d);
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer float " << d << " colno=" << colno << " semval=" << _f.semval);
           return Rps_TwoValues{RPS_ROOT_OB(_98sc8kSOXV003i86w5), //double∈class
-                               _f.semval};
+	      _f.semval};
         }
       else
         {
@@ -274,7 +274,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
           _f.semval = Rps_Value::make_tagged_int(l);
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer int " << l << " colno=" << colno << " semval=" << _f.semval);
           return Rps_TwoValues{RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b), //int∈class
-                               _f.semval};
+	      _f.semval};
         }
     }
   /// lex infinities (double) - but not NAN
@@ -289,7 +289,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       _f.semval = Rps_DoubleValue(infd);
       RPS_DEBUG_LOG(REPL, "rps_repl_lexer infinity " << infd << " colno=" << colno << " semval=" << _f.semval);
       return Rps_TwoValues{RPS_ROOT_OB(_98sc8kSOXV003i86w5), //double∈class
-                           _f.semval};
+	  _f.semval};
     }
   //////////////// lex named objects or objids
   else if (isalpha(linebuf[colno]) || linebuf[colno]=='_')
@@ -302,7 +302,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       if (_f.oblex)
         {
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer object " << _f.oblex << " colno=" << colno
-			<< " named " << namestr);
+                        << " named " << namestr);
           return Rps_TwoValues(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ), //object∈class
                                _f.oblex);
         }
@@ -316,13 +316,13 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
         }
       /// otherwise, fail to lex, so
       {
-	int oldcol = colno;
-	colno = startnamecol;
-	RPS_DEBUG_LOG(REPL, "rps_repl_lexer bad namestr " << namestr << " line " << lineno << ", column " << colno
-		      << " oldcol " << oldcol);
-      RPS_WARNOUT("rps_repl_lexer " << input_name << " line " << lineno << ", column " << colno
-                  << " : bad name " << linebuf+colno);
-      return Rps_TwoValues(nullptr, nullptr);
+        int oldcol = colno;
+        colno = startnamecol;
+        RPS_DEBUG_LOG(REPL, "rps_repl_lexer bad namestr " << namestr << " line " << lineno << ", column " << colno
+                      << " oldcol " << oldcol);
+        RPS_WARNOUT("rps_repl_lexer " << input_name << " line " << lineno << ", column " << colno
+                    << " : bad name " << linebuf+colno);
+        return Rps_TwoValues(nullptr, nullptr);
       }
     }
   //// literal strings are like in C++
@@ -379,7 +379,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                     && isalpha(linebuf[colno+3]) &&  isalpha(linebuf[colno+4])
                     &&  isalpha(linebuf[colno+5]) &&  isalpha(linebuf[colno+6])
                     &&  isalpha(linebuf[colno+7]))
-              ))
+	       ))
     {
       _f.chunkv = rps_lex_code_chunk(&_, inp, input_name, &linebuf, lineno, colno);
       RPS_DEBUG_LOG(REPL, "rps_repl_lexer code chunk " << _f.chunkv
@@ -387,7 +387,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                     << ", colno#" << colno
                     << ", input_name=" << input_name);
       return Rps_TwoValues{RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
-                           _f.chunkv};
+	  _f.chunkv};
     }
 
 
@@ -466,56 +466,56 @@ rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, in
               curcol += 2;
               continue;
             case 'x':
-            {
-              int p = -1;
-              int c = 0;
-              if (sscanf (linebuf + curcol + 2, "%02x%n", &c, &p) > 0 && p > 0)
-                {
-                  rstr.push_back ((char)c);
-                  curcol += p + 2;
-                  continue;
-                }
-              else
-                goto lexical_error_backslash;
-            }
+	      {
+		int p = -1;
+		int c = 0;
+		if (sscanf (linebuf + curcol + 2, "%02x%n", &c, &p) > 0 && p > 0)
+		  {
+		    rstr.push_back ((char)c);
+		    curcol += p + 2;
+		    continue;
+		  }
+		else
+		  goto lexical_error_backslash;
+	      }
             case 'u': // four hexdigit escape Unicode
-            {
-              int p = -1;
-              int c = 0;
-              if (sscanf (linebuf + curcol + 2, "%04x%n", &c, &p) > 0 && p > 0)
-                {
-                  int l =
-                    u8_uctomb ((uint8_t *) shortbuf, (ucs4_t) c, sizeof(shortbuf));
-                  if (l > 0)
-                    {
-                      rstr.append(shortbuf);
-                      curcol += p + l;
-                      continue;
-                    }
-                  else
-                    goto lexical_error_backslash;
-                }
-              else
-                goto lexical_error_backslash;
-            }
+	      {
+		int p = -1;
+		int c = 0;
+		if (sscanf (linebuf + curcol + 2, "%04x%n", &c, &p) > 0 && p > 0)
+		  {
+		    int l =
+		      u8_uctomb ((uint8_t *) shortbuf, (ucs4_t) c, sizeof(shortbuf));
+		    if (l > 0)
+		      {
+			rstr.append(shortbuf);
+			curcol += p + l;
+			continue;
+		      }
+		    else
+		      goto lexical_error_backslash;
+		  }
+		else
+		  goto lexical_error_backslash;
+	      }
             case 'U': // eight hexdigit escape Unicode
-            {
-              int p = -1;
-              int c = 0;
-              if (sscanf (linebuf + curcol + 2, "%08x%n", &c, &p) > 0 && p > 0)
-                {
-                  int l =
-                    u8_uctomb ((uint8_t *) shortbuf, (ucs4_t) c, sizeof(shortbuf));
-                  if (l > 0)
-                    {
-                      rstr.append(shortbuf);
-                      curcol += p + l;
-                      continue;
-                    }
-                  else
-                    goto lexical_error_backslash;
-                }
-            }
+	      {
+		int p = -1;
+		int c = 0;
+		if (sscanf (linebuf + curcol + 2, "%08x%n", &c, &p) > 0 && p > 0)
+		  {
+		    int l =
+		      u8_uctomb ((uint8_t *) shortbuf, (ucs4_t) c, sizeof(shortbuf));
+		    if (l > 0)
+		      {
+			rstr.append(shortbuf);
+			curcol += p + l;
+			continue;
+		      }
+		    else
+		      goto lexical_error_backslash;
+		  }
+	      }
             default:
               goto lexical_error_backslash;
             } // end switch nextch
@@ -541,7 +541,7 @@ rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, in
           throw std::runtime_error("lexical error");
         }
     } // end while
-lexical_error_backslash:
+ lexical_error_backslash:
   RPS_WARNOUT("rps_lex_literal_string " << input_name << " line " << lineno << ", column " << colno
               << " : bad backslash escape " << linebuf+colno);
   throw std::runtime_error("lexical bad backslash escape");
@@ -623,11 +623,11 @@ Rps_Value
 rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int &lineno, int& colno)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
-                           /*callerframe:*/callframe,
-                           Rps_ObjectRef obchk;
-                           Rps_Value inputnamestrv;
-                           Rps_Value chunkelemv;
-                );
+		 /*callerframe:*/callframe,
+		 Rps_ObjectRef obchk;
+		 Rps_Value inputnamestrv;
+		 Rps_Value chunkelemv;
+		 );
   char endstr[16];
   char start[8];
   memset(endstr, 0, sizeof(endstr));
@@ -657,7 +657,7 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                       _f.inputnamestrv,
                       RPS_ROOT_OB(_5FMX3lrhiw601iqPy5), //line∈symbol
                       Rps_Value((intptr_t)lineno, Rps_Value::Rps_IntTag{})
-                     );
+		      );
   // So we first need to create these attributes...
   auto paylvec = _f.obchk->put_new_plain_payload<Rps_PayloadVectOb>();
   RPS_ASSERT(paylvec);
@@ -704,11 +704,11 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
   RPS_ASSERT(chkdata->chunkdata_plinebuf != nullptr);
   RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/callframe,
-                           Rps_ObjectRef obchunk;
-                           Rps_Value chkelemv;
-                           Rps_ObjectRef namedobv;
-                );
+		 /*callerframe:*/callframe,
+		 Rps_ObjectRef obchunk;
+		 Rps_Value chkelemv;
+		 Rps_ObjectRef namedobv;
+		 );
   _f.obchunk = obchkarg;
   RPS_ASSERT(_f.obchunk);
   auto paylvect = _f.obchunk->get_dynamic_payload<Rps_PayloadVectOb>();
@@ -744,10 +744,10 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
         endspacecol++;
       _f.chkelemv = Rps_InstanceValue(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx), //space∈class
                                       std::initializer_list<Rps_Value>
-      {
-        Rps_Value((intptr_t)(endspacecol-startspacecol),
-        Rps_Value::Rps_IntTag{})
-      });
+				      {
+					Rps_Value((intptr_t)(endspacecol-startspacecol),
+						  Rps_Value::Rps_IntTag{})
+					  });
       chkdata->chunkdata_colno += endspacecol-startspacecol+1;
       return _f.chkelemv;
     }
@@ -986,13 +986,13 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
 		 Rps_Value resv;
 		 );
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
-  {
-    if (pque)
-      {
-        for (Rps_LexTokenZone* lxtokv: *pque)
-          gc->mark_value(lxtokv);
-      };
-  });
+			     {
+			       if (pque)
+				 {
+				   for (Rps_LexTokenZone* lxtokv: *pque)
+				     gc->mark_value(lxtokv);
+				 };
+			     });
   std::string inputstr(input_name?:"");
   const char*curinp = (plinebuf && colno>=0 && colno<(int)strlen(*plinebuf))
     ?((*plinebuf)+colno)
@@ -1028,24 +1028,24 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
       _f.lexkindob = twolex.main_val.as_object();
       _f.lextokv = twolex.xtra_val;
       _f.kindnamv = nullptr;
-        _f.kindnamv = _f.lexkindob
-	  ->get_attr1(&_,RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); // /name∈named_attribute
+      _f.kindnamv = _f.lexkindob
+	->get_attr1(&_,RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); // /name∈named_attribute
       RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize from rps_repl_lexer got lexkindob=" << _f.lexkindob
                     << "/" << _f.kindnamv
                     << ", lextok=" << _f.lextokv
                     << ", lineno=" << lineno
                     << ", colno=" << colno);
       {
-	Rps_LexTokenZone* lextok =
-	  Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-	  (_f.lexkindob,
-	   _f.lextokv,
-	   Rps_StringValue(input_name).as_string(),
-	   startline,
-	   startcol);
-	_f.resv = Rps_LexTokenValue(lextok);
-	RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize gives " << _f.resv);
-	return lextok;
+        Rps_LexTokenZone* lextok =
+          Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+          (_f.lexkindob,
+           _f.lextokv,
+           Rps_StringValue(input_name).as_string(),
+           startline,
+           startcol);
+        _f.resv = Rps_LexTokenValue(lextok);
+        RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize gives " << _f.resv);
+        return lextok;
       }
     }
   RPS_FATALOUT("unimplemented Rps_LexTokenZone::tokenize inputstr="
@@ -1078,15 +1078,15 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
       // use oid autocompletion, with
       // Rps_ObjectZone::autocomplete_oid...
       nbmatch = Rps_ObjectZone::autocomplete_oid
-                (prefix.c_str(),
-                 [&] (const Rps_ObjectZone* obz)
-      {
-        RPS_ASSERT(obz != nullptr);
-        Rps_Id oid = obz->oid();
-        RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete oid=" << oid);
-        rps_completion_vect.push_back(oid.to_string());
-        return false;
-      });
+	(prefix.c_str(),
+	 [&] (const Rps_ObjectZone* obz)
+	 {
+	   RPS_ASSERT(obz != nullptr);
+	   Rps_Id oid = obz->oid();
+	   RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete oid=" << oid);
+	   rps_completion_vect.push_back(oid.to_string());
+	   return false;
+	 });
       RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete prefix='" << prefix << "' -> nbmatch=" << nbmatch);
     }
   // for names, we require two characters to autocomplete
@@ -1097,14 +1097,14 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
       std::string prefix(text+start, end-start);
       RPS_DEBUG_LOG(COMPL_REPL, "name autocomplete prefix='" << prefix << "'");
       nbmatch =  Rps_PayloadSymbol::autocomplete_name
-                 (prefix.c_str(),
-                  [&] (const Rps_ObjectZone*obz, const std::string&name)
-      {
-        RPS_ASSERT(obz != nullptr);
-        RPS_DEBUG_LOG(COMPL_REPL, "symbol autocomplete name=" << name);
-        rps_completion_vect.push_back(name);
-        return false;
-      });
+	(prefix.c_str(),
+	 [&] (const Rps_ObjectZone*obz, const std::string&name)
+	 {
+	   RPS_ASSERT(obz != nullptr);
+	   RPS_DEBUG_LOG(COMPL_REPL, "symbol autocomplete name=" << name);
+	   rps_completion_vect.push_back(name);
+	   return false;
+	 });
       RPS_DEBUG_LOG(COMPL_REPL, "name autocomplete prefix='" << prefix << "' -> nbmatch=" << nbmatch);
     }
   if (RPS_DEBUG_ENABLED(COMPL_REPL))
@@ -1149,8 +1149,8 @@ void
 rps_read_eval_print_loop(int &argc, char **argv)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/nullptr,
-                );
+		 /*callerframe:*/nullptr,
+		 );
   for (int ix=0; ix<argc; ix++)
     RPS_DEBUG_LOG(REPL, "REPL arg [" << ix << "]: " << argv[ix]);
   RPS_ASSERT(rps_is_main_thread());
@@ -1178,9 +1178,9 @@ void
 rps_repl_lexer_test(void)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
-                           /*callerframe:*/nullptr,
-                           Rps_Value curlextokenv;
-                );
+		 /*callerframe:*/nullptr,
+		 Rps_Value curlextokenv;
+		 );
   RPS_ASSERT(rps_is_main_thread());
   double startrealtime = rps_wallclock_real_time();
   double startcputime = rps_thread_cpu_time();
@@ -1191,12 +1191,16 @@ rps_repl_lexer_test(void)
   int colno=0;
   int count=0;
   int nbtok=0;
+  int oldcolno= 0;
+  int oldlineno= 0;
   rl_attempted_completion_function = rpsrepl_name_or_oid_completion;
   while (!rps_repl_stopped)
     {
       count++;
       if (count % 4 == 0)
-        usleep(1000);
+        usleep(32768); // to slow down on infinite loop
+      oldcolno = colno;
+      oldlineno = lineno;
       if (linebuf==nullptr || colno>=(int)strlen(linebuf))
         {
           char prompt[32];
@@ -1204,15 +1208,15 @@ rps_repl_lexer_test(void)
           snprintf(prompt, sizeof(prompt), "Rps_LEXTEST#%d:", count);
           lineno++;
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test lineno=" << lineno << " prompt=" << prompt
-			<< ", count=" << count);
+                        << ", count=" << count);
           bool gotline = rps_repl_get_next_line(&_, &std::cin, prompt, &linebuf, &lineno, prompt);
           if (!gotline)
             break;
           if (linebuf && colno < (int)strlen(linebuf))
             {
-	      RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test lineno=" << lineno
-			    << ", colno=" << colno
-			    << ", linebuf:" << linebuf);
+              RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test lineno=" << lineno
+                            << ", colno=" << colno
+                            << ", linebuf:" << linebuf);
               _f.curlextokenv =
                 Rps_LexTokenZone::tokenize
                 (&_, &std::cin,
@@ -1224,43 +1228,60 @@ rps_repl_lexer_test(void)
                             std::istream*lex_inp,
                             const char*lex_input_name,
                             const char**lex_plinebuf, int*lex_plineno)
-              {
-                bool ok =
-                  rps_repl_get_next_line(lex_callframe,
-                                         lex_inp,
-                                         lex_input_name,
-                                         lex_plinebuf,
-                                         lex_plineno,
-                                         prompt);
-                RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test⊕ ok=" << ok
-                              << " lineno="<< lineno
-                              << " colno="<< colno
-			      << " lex_callframe=" << Rps_ShowCallFrame(lex_callframe)
-			      << std::endl);
-                return ok;
-              }
-                );
+		 {
+		   bool ok =
+		     rps_repl_get_next_line(lex_callframe,
+					    lex_inp,
+					    lex_input_name,
+					    lex_plinebuf,
+					    lex_plineno,
+					    prompt);
+		   RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test⊕ ok=" << ok
+				 << " lineno="<< lineno
+				 << " colno="<< colno
+				 << " oldlineno=" << oldlineno
+				 << " oldcolno=" << oldcolno
+				 << " lex_callframe=" << Rps_ShowCallFrame(lex_callframe)
+				 << std::endl);
+		   usleep(1000);
+		   return ok;
+		 }
+		 );
               RPS_INFORMOUT("rps_repl_lexer_test curlextokenv=" << _f.curlextokenv << std::endl
-			    <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test") << std::endl);
+                            << " old.line#" << oldlineno
+                            << ", col#" << oldcolno
+                            << " now line#" << lineno
+                            << ", col#" << colno
+                            <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test") << std::endl);
               if (_f.curlextokenv)
-                nbtok++;
+                {
+                  usleep (1000);
+                  nbtok++;
+                  RPS_ASSERT (colno != oldcolno || lineno != oldlineno);
+                }
             }
         }
       RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test endloop nbtok=" << nbtok << ", count=" << count
-		    << ", lineno=" << lineno << ", colno=" << colno
-		    << "," << std::endl
-		    << "... last curlextokenv=" << _f.curlextokenv << std::endl);
+                    << ", lineno=" << lineno << ", colno=" << colno
+                    << "," << std::endl
+                    << "... last curlextokenv=" << _f.curlextokenv << std::endl);
       if (count % 4 == 0)
-	usleep (65536);
-    }
-  RPS_DEBUG_LOG(REPL, "ending rps_repl_lexer_test lineno=" << lineno << ", colno=" << colno
-		<< ", count=" << count
-		<< ", nbtok=" << nbtok);  
-  double endrealtime = rps_wallclock_real_time();
-  double endcputime = rps_thread_cpu_time();
-  RPS_INFORMOUT("rps_repl_lexer_test got " << nbtok << " lexical tokens in "
-                << (endrealtime-startrealtime) << " real, "
-                << (endcputime-startcputime) << " cpu seconds.");
-} // end rps_repl_lexer_test
+        {
+          usleep (200000);
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test endloop count=" << count
+                        << " curlextokenv=" << _f.curlextokenv
+                        << std::end
+                        << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test endloop")
+                        << std::end);
+        }
+      RPS_DEBUG_LOG(REPL, "ending rps_repl_lexer_test lineno=" << lineno << ", colno=" << colno
+                    << ", count=" << count
+                    << ", nbtok=" << nbtok);
+      double endrealtime = rps_wallclock_real_time();
+      double endcputime = rps_thread_cpu_time();
+      RPS_INFORMOUT("rps_repl_lexer_test got " << nbtok << " lexical tokens in "
+                    << (endrealtime-startrealtime) << " real, "
+                    << (endcputime-startcputime) << " cpu seconds.");
+    } // end rps_repl_lexer_test
 
-// end of file repl_rps.cc
+  // end of file repl_rps.cc
