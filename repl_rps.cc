@@ -1196,11 +1196,21 @@ rps_repl_lexer_test(void)
   rl_attempted_completion_function = rpsrepl_name_or_oid_completion;
   while (!rps_repl_stopped)
     {
-      count++;
       if (count % 4 == 0)
-        usleep(32768); // to slow down on infinite loop
+        {
+          usleep(32768); // to slow down on infinite loop
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test startloop " << std::endl
+                        <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test startloop"));
+        };
+      count++;
       oldcolno = colno;
       oldlineno = lineno;
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test looping count#" << count
+                    << " oldcolno=" << oldcolno
+                    << " oldlineno=" << oldlineno
+                    << (linebuf?" linebuf='":"linbuf!")
+                    << (linebuf?linebuf:"*nul*")
+                    << (linebuf?"'":"!"));
       if (linebuf==nullptr || colno>=(int)strlen(linebuf))
         {
           char prompt[32];
