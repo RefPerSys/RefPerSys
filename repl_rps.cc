@@ -345,6 +345,12 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       return Rps_TwoValues(RPS_ROOT_OB(_62LTwxwKpQ802SsmjE), //string∈class
                            litstr);
     }
+  else if (linebuf[colno] == (char)0)   /// end of line
+    {
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer eol lineno=" << lineno << " colno=" << colno
+                    << " inputname=" << input_name << std::endl);
+      return Rps_TwoValues{nullptr,nullptr};
+    }
   //// a code chunk or macro string is mixing strings and
   //// objects.... Inspired by GCC MELT see
   //// starynkevitch.net/Basile/gcc-melt/MELT-Starynkevitch-DSL2011.pdf
@@ -411,7 +417,8 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
                << " lineno=" << lineno
                << " colno=" << colno
-               << " curpos=" << linebuf+colno
+               << " curpos:" << linebuf+colno
+               << std::endl
                << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer"));
 #warning unimplemented rps_repl_lexer
 } // end of rps_repl_lexer
