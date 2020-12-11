@@ -705,7 +705,7 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   chkdata.chunkdata_colno = colno;
   strcpy(chkdata.chunkdata_endstr, endstr);
   chkdata.chunkdata_inp = inp;
-  chkdata.chunkdata_input_name = std::string{input_name};
+  chkdata.chunkdata_input_name.assign(input_name);
   chkdata.chunkdata_plinebuf = plinebuf;
   // TODO: we should add vector components to _f.obchk, reading several lines...
   do
