@@ -202,11 +202,26 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
       rps_readline_callframe = callframe;
       RPS_DEBUG_LOG(REPL, "rps_repl_get_next_line before readline prompt=" << prompt
                     << " backtrace:" << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_get_next_line/readline")
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_get_next_line/before readline")
                     << std::endl
                     << "... callframe=" << Rps_ShowCallFrame(callframe)
                     << std::endl);
-      free ((void*)*plinebuf), *plinebuf = readline(prompt.c_str());
+      free ((void*)*plinebuf), *plinebuf = nullptr;
+      {
+        char *rl = readline(prompt.c_str());
+        RPS_DEBUG_LOG(REPL, "rps_repl_get_next_line " << (rl?"did readline '":"failed readline!")
+                      << (rl?rl:"!")
+                      << (rl?"'":"!-!")
+                      << std::endl
+                      << RPS_FULL_BACKTRACE_HERE(1,
+                          (rl
+                           ?"rps_repl_get_next_line/after readline"
+                           :"rps_repl_get_next_line/failed readline"))
+                      << std::endl
+                      << "... callframe=" << Rps_ShowCallFrame(callframe)
+                      << std::endl);
+        *plinebuf = rl;
+      }
       rps_readline_callframe = nullptr;
       if (*plinebuf)
         {
