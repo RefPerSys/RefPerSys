@@ -186,12 +186,30 @@ Rps_Value::type() const
     return _pval->type();
 } // end Rps_Value::type()
 
+
 const Rps_ZoneValue*
 Rps_Value::as_ptr() const
 {
-  if (is_ptr()) return _pval;
-  else throw std::runtime_error("Rps_Value::as_ptr: value is not genuine pointer");
-}
+  if (is_ptr())
+    return _pval;
+  else if (is_int())
+    {
+      char buf[48];
+      memset(buf, 0, sizeof(buf));
+      snprintf(buf, sizeof(buf), "Rps_Value::as_ptr: given tagged int %ld",
+               (long) as_int());
+      throw std::runtime_error(buf);
+    }
+  else
+    {
+      char buf[64];
+      memset(buf, 0, sizeof(buf));
+      snprintf(buf, sizeof(buf), "Rps_Value::as_ptr: value@%p is not genuine pointer",
+               (void*)this);
+      throw std::runtime_error(buf);
+    }
+} // end Rps_Value::as_ptr()
+
 
 const Rps_ZoneValue*
 Rps_Value::to_ptr(const Rps_ZoneValue*defzp) const
