@@ -688,7 +688,7 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
                                nullptr);
   RPS_DEBUG_LOG(REPL, "starting rps_lex_chunk " << input_name << "L" << startlineno << "C" << startcolno
-                << " obchk=" << _f.obchk);
+                << " new obchk=" << _f.obchk);
   _f.inputnamestrv = Rps_StringValue(input_name);
   _f.obchk->put_attr2(RPS_ROOT_OB(_1B7ITSHTZWp00ektj1), //input∈symbol
                       _f.inputnamestrv,
@@ -721,9 +721,18 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
       if (_f.chunkelemv)
         {
           RPS_DEBUG_LOG(REPL, "rps_lex_code_chunk pushing " << _f.chunkelemv
-                        << " into " << _f.obchk);
+                        << " into " << _f.obchk << " @"
+                        << chkdata.chunkdata_input_name
+                        << " L"<< chkdata.chunkdata_lineno
+                        << ",C" << chkdata.chunkdata_colno);
           paylvec->push_back(_f.chunkelemv.as_object());
         }
+      else
+        RPS_DEBUG_LOG(REPL, "rps_lex_code_chunk no chunk into "
+                      << _f.obchk << " @"
+                      << chkdata.chunkdata_input_name
+                      << " L"<< chkdata.chunkdata_lineno
+                      << ",C" << chkdata.chunkdata_colno);
     }
   while (_f.chunkelemv);
   RPS_DEBUG_LOG(REPL, "ending rps_lex_chunk " << input_name << "L" << startlineno << "C" << startcolno
@@ -759,6 +768,16 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
   const char*linestart = *chkdata->chunkdata_plinebuf;
   int linelen = strlen(linestart);
   RPS_ASSERT(chkdata->chunkdata_colno >= 0 && chkdata->chunkdata_colno<linelen);
+  RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element start obchunk=" << _f.obchunk
+                << ", linestart='" << linestart << "', linelen=" << linelen
+                << " @L" << chkdata->chunkdata_lineno << ",C"
+                <<  chkdata->chunkdata_colno
+                <<  " current:"
+                << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_UNDERLINE_ESCAPE:"`")
+                << linestart+chkdata->chunkdata_colno
+                << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_NORMAL_ESCAPE:"'")
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_lex_chunk_element-start"));
   /// For C name-like things, we return the object naming them or else a string
   if (isalpha(linestart[chkdata->chunkdata_colno]))
     {
@@ -771,18 +790,31 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
       _f.namedobv = Rps_ObjectRef::find_object_by_string(&_, namstr);
       chkdata->chunkdata_colno = endnamcol;
       if (_f.namedobv)
-        return _f.namedobv;
+        {
+          RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element name obchunk=" << _f.obchunk
+                        << " -> namedobv=" << _f.namedobv
+                        << " @L" << chkdata->chunkdata_lineno << ",C"
+                        <<  chkdata->chunkdata_colno);
+          return _f.namedobv;
+        }
       else
         {
           _f.chkelemv = Rps_StringValue(namstr);
+          RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element string obchunk=" << _f.obchunk
+                        << " -> chkelemv=" << _f.chkelemv
+                        << " @L" << chkdata->chunkdata_lineno << ",C"
+                        <<  chkdata->chunkdata_colno);
           return _f.chkelemv;
         }
     }
   /// For sequence of spaces, we return an instance of class space and value the number of space characters
   else if (isspace(linestart[chkdata->chunkdata_colno]))
     {
-      int startspacecol =  chkdata->chunkdata_colno;
+      int startspacecol = chkdata->chunkdata_colno;
       int endspacecol = startspacecol;
+      RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element start space obchunk=" << _f.obchunk
+                    << " @L" << chkdata->chunkdata_lineno << ",C"
+                    <<  chkdata->chunkdata_colno);
       while (endspacecol<linelen && isspace(linestart[endspacecol]))
         endspacecol++;
       _f.chkelemv = Rps_InstanceValue(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx), //space∈class
@@ -792,6 +824,10 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
         Rps_Value::Rps_IntTag{})
       });
       chkdata->chunkdata_colno += endspacecol-startspacecol+1;
+      RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element space obchunk=" << _f.obchunk
+                    << " -> chkelemv=" << _f.chkelemv
+                    << " @L" << chkdata->chunkdata_lineno << ",C"
+                    <<  chkdata->chunkdata_colno);
       return _f.chkelemv;
     }
   /// code chunk meta-variable or meta-notation....
@@ -800,6 +836,10 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
     {
       // a dollar followed by a name is a meta-variable; that name should be known
       const char*metastr = linestart+chkdata->chunkdata_colno;
+      RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element start meta obchunk=" << _f.obchunk
+                    << " @L" << chkdata->chunkdata_lineno << ",C"
+                    <<  chkdata->chunkdata_colno
+                    << " metastr:" << metastr);
       if (isalpha(metastr[1]))
         {
           int startnameix=1, endnameix=1;
@@ -839,13 +879,32 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
         }
       /// probably other dollar things should be parsed as delimiters....
     }
+  else
+    {
+      const char*curstr = linestart+chkdata->chunkdata_colno;
+      RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element INCOMPLETE  callframe=" << Rps_ShowCallFrame(callframe)
+                    << std::endl << "... obchunk=" << _f.obchunk
+                    << " @L" << chkdata->chunkdata_lineno << ",C"
+                    <<  chkdata->chunkdata_colno
+                    << " curstr:"
+                    << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_UNDERLINE_ESCAPE:"`")
+                    << curstr
+                    << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_NORMAL_ESCAPE:"'")
+                    << std::endl
+                    <<  RPS_FULL_BACKTRACE_HERE(1, "rps_lex_chunk_element-incomplete")
+                   );
+    }
 #warning we need to document and implement other chunk element conventions in rps_lex_chunk_element, in particular delimiters...
   RPS_FATALOUT("unimplemented rps_lex_chunk_element callframe=" << Rps_ShowCallFrame(callframe)
                << " obchkarg=" << obchkarg
-               << " chkdata=" << chkdata);
+               << " chkdata=" << chkdata
+               << " @L" << chkdata->chunkdata_lineno << ",C"
+               <<  chkdata->chunkdata_colno);
 #warning unimplemented rps_lex_chunk_element
   return nullptr;
 } // end rps_lex_chunk_element
+
+
 
 ////////////////////////////////////////////////////////////////
 //// the Rps_LexTokenZone values are transient, but do need some GC support
@@ -1076,7 +1135,7 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
       RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize just  before rps_repl_lexer inputstr="
                     << inputstr << ", lineno=" << lineno
                     << ", colno=" << colno
-                    << (curinp?"curinp='":"curinp ")
+                    << (curinp?", curinp='":", curinp ")
                     << (curinp?curinp:" *NUL*")
                     << (curinp?"' ":""));
       Rps_TwoValues twolex =
@@ -1337,14 +1396,15 @@ rps_repl_lexer_test(void)
           else
             rps_repl_stopped = true;
         }
+      int linbuflen = (int)strlen(linebuf);
       RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test endloop nbtok=" << nbtok << ", count=" << count
                     << ", lineno=" << lineno << ", colno=" << colno
                     << ", oldlineno=" << oldlineno
                     << ", oldcolno=" << oldcolno
                     << "," << std::endl
-                    << ((linebuf&&colno<strlen(linebuf))?"... curptr'":"... ?no ")
-                    << ((linebuf&&colno<strlen(linebuf))?(linebuf+colno):"*curptr*")
-                    << ((linebuf&&colno<strlen(linebuf))?"'":"**")
+                    << ((linebuf&&colno<linbuflen)?"... curptr'":"... ?no ")
+                    << ((linebuf&&colno<linbuflen)?(linebuf+colno):"*curptr*")
+                    << ((linebuf&&colno<linbuflen)?"'":"**")
                     << "... last curlextokenv=" << _f.curlextokenv << std::endl);
       if (count % 4 == 0)
         {
