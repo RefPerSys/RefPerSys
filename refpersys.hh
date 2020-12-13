@@ -3357,6 +3357,7 @@ class Rps_PayloadVectVal : public Rps_Payload
 {
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
+  friend  rpsldpysig_t rpsldpy_vectval;
   friend Rps_PayloadVectVal*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadVectVal,Rps_ObjectZone*>(Rps_ObjectZone*);
   std::vector<Rps_Value> pvectval;

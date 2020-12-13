@@ -2713,6 +2713,33 @@ void rpsldpy_vectob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
     }
 } // end of rpsldpy_vectob
 
+
+/// loading of vector of values payload
+void rpsldpy_vectval(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+{
+  RPS_ASSERT(obz != nullptr);
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  Json::Value jvectval = jv["vectval"];
+  unsigned nbcomp = 0;
+  if (!jvectval.isArray())
+    RPS_FATALOUT("rpsldpy_vectval: object " << obz->oid()
+                 << " in space " << spacid << " lineno#" << lineno
+                 << " has bad vectval"
+                 << std::endl
+                 << " jvectval " <<(jvectval));
+  auto paylvectval = obz->put_new_plain_payload<Rps_PayloadVectVal>();
+  RPS_ASSERT(paylvectval != nullptr);
+  nbcomp = jvectval.size();
+  paylvectval->reserve(nbcomp);
+  for (int compix=0; compix<(int)nbcomp; compix++)
+    {
+      Json::Value jvcurcomp =  jvectval[compix];
+      auto compv = Rps_Value(jvcurcomp, ld);
+      paylvectval->push_back(compv);
+    }
+} // end of rpsldpy_vectob
+
 /// loading of set of objects payload
 void rpsldpy_setob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {

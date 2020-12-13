@@ -1523,6 +1523,41 @@ Rps_PayloadVectOb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   jv["vectob"] = jarr;
 } // end Rps_PayloadVectOb::dump_json_content
 
+/***************** mutable vector of values payload **********/
+
+void
+Rps_PayloadVectVal::gc_mark(Rps_GarbageCollector&gc) const
+{
+  for (auto compv: pvectval)
+    if (compv)
+      gc.mark_value(compv);
+} // end Rps_PayloadVectVal::gc_mark
+
+void
+Rps_PayloadVectVal::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du != nullptr);
+  for (auto compv: pvectval)
+    if (compv)
+      rps_dump_scan_value(du, compv, 0);
+} // end Rps_PayloadVectVal::dump_scan
+
+
+void
+Rps_PayloadVectVal::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  /// see function rpsldpy_vectob in store_rps.cc
+  RPS_ASSERT(du != nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  Json::Value jarr(Json::arrayValue);
+  for (auto compv: pvectval)
+    if (rps_is_dumpable_value(du, compv))
+      jarr.append(rps_dump_json_value(du,compv));
+    else
+      jarr.append(Json::Value(Json::nullValue));
+  jv["vectval"] = jarr;
+} // end Rps_PayloadVectVal::dump_json_content
+
 
 /***************** space payload **********/
 

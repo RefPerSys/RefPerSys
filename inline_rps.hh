@@ -1861,6 +1861,23 @@ Rps_PayloadVectOb::Rps_PayloadVectOb(Rps_ObjectZone*owner, Rps_Loader*ld)
 
 
 
+////// mutable vector of value payload - for PaylVectVact
+Rps_PayloadVectVal::Rps_PayloadVectVal(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylVectVal, owner), pvectval()
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadVectVal::Rps_PayloadVectVal
+
+Rps_PayloadVectVal::Rps_PayloadVectVal(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylVectVal, owner, ld),
+    pvectval()
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadVectVal::Rps_PayloadVectOb ..loading
+
+
+
+
 
 
 ////////////////////////////////////////////////////////////////
