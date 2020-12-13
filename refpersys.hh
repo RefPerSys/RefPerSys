@@ -3347,6 +3347,74 @@ public:
 };				// end Rps_PayloadVectOb
 
 
+
+
+////////////////////////////////////////////////////////////////
+////// mutable vector of values payload - for PaylVectVal and objects
+////// of class `mutable_value_vector
+extern "C" rpsldpysig_t rpsldpy_vectval;
+class Rps_PayloadVectVal : public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend Rps_PayloadVectVal*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadVectVal,Rps_ObjectZone*>(Rps_ObjectZone*);
+  std::vector<Rps_Value> pvectval;
+  inline Rps_PayloadVectVal(Rps_ObjectZone*owner);
+  Rps_PayloadVectVal(Rps_ObjectRef obr) :
+    Rps_PayloadVectVal(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadVectVal()
+  {
+    pvectval.clear();
+  };
+protected:
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+public:
+  virtual const std::string payload_type_name(void) const
+  {
+    return "vectval";
+  };
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  inline Rps_PayloadVectVal(Rps_ObjectZone*obz, Rps_Loader*ld);
+  unsigned size(void) const
+  {
+    return (unsigned) pvectval.size();
+  };
+  Rps_Value at(int ix) const
+  {
+    if (ix<0)
+      ix += size();
+    if (ix>=0 && ix<(int)size())
+      return pvectval[ix];
+    throw std::out_of_range("Rps_PayloadVectVal bad index");
+  };
+  void reserve(unsigned rsiz)
+  {
+    pvectval.reserve(rsiz);
+  };
+  void reserve_more(unsigned gap)
+  {
+    pvectval.reserve(size()+gap);
+  };
+  void push_back(const Rps_Value val)
+  {
+    if (val)
+      pvectval.push_back(val);
+  };
+  void push_back (const Rps_ObjectRef obrcomp)
+  {
+    if (obrcomp)
+      pvectval.push_back(Rps_ObjectValue(obrcomp));
+  };
+#warning missing method to make a node from some Rps_PayloadVectVal
+};				// end Rps_PayloadVectVal
+
+
 ////////////////////////////////////////////////////////////////
 ////// mutable string buffer payload 
 extern "C" rpsldpysig_t rpsldpy_string_buffer;
