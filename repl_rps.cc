@@ -696,8 +696,7 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                       Rps_Value((intptr_t)lineno, Rps_Value::Rps_IntTag{})
                      );
   // So we first need to create these attributes...
-#warning should use Rps_PayloadVectVal in rps_lex_chunk
-  auto paylvec = _f.obchk->put_new_plain_payload<Rps_PayloadVectOb>();
+  auto paylvec = _f.obchk->put_new_plain_payload<Rps_PayloadVectVal>();
   RPS_ASSERT(paylvec);
   Rps_ChunkData_st chkdata;
   memset (&chkdata, 0, sizeof(chkdata));
@@ -726,8 +725,7 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                         << chkdata.chunkdata_input_name
                         << " L"<< chkdata.chunkdata_lineno
                         << ",C" << chkdata.chunkdata_colno);
-          paylvec->push_back(_f.chunkelemv.as_object());
-#warning design bug in rps_lex_code_chunk; need paylvec->push_back(_f.chunkelemv);
+          paylvec->push_back(_f.chunkelemv);
           // see https://framalistes.org/sympa/arc/refpersys-forum/2020-12/msg00036.html
         }
       else
