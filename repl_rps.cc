@@ -726,6 +726,8 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                         << " L"<< chkdata.chunkdata_lineno
                         << ",C" << chkdata.chunkdata_colno);
           paylvec->push_back(_f.chunkelemv.as_object());
+#warning design bug in rps_lex_code_chunk; need paylvec->push_back(_f.chunkelemv);
+	  // see https://framalistes.org/sympa/arc/refpersys-forum/2020-12/msg00036.html
         }
       else
         RPS_DEBUG_LOG(REPL, "rps_lex_code_chunk no chunk into "
