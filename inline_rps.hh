@@ -194,7 +194,7 @@ Rps_Value::as_ptr() const
     return _pval;
   else if (is_int())
     {
-      char buf[48];
+      char buf[80];
       memset(buf, 0, sizeof(buf));
       snprintf(buf, sizeof(buf), "Rps_Value::as_ptr: given tagged int %ld",
                (long) as_int());
