@@ -3280,7 +3280,7 @@ public:
 
 ////////////////////////////////////////////////////////////////
 ////// mutable vector of objects payload - for PaylVectOb and objects
-////// of class `mutable_vector _8YknAApDQiF04BDe3W
+////// of class `mutable_object_vector _8YknAApDQiF04BDe3W
 extern "C" rpsldpysig_t rpsldpy_vectob;
 class Rps_PayloadVectOb : public Rps_Payload
 {

@@ -90,7 +90,7 @@ RPS_INSTALL_ROOT_OB(_8fYqEw8vTED03wsznt) //tasklet∈class
 RPS_INSTALL_ROOT_OB(_8xCV6GDXYMa02mK5xy) //display_object_content_web∈symbol
 RPS_INSTALL_ROOT_OB(_8zNtuRpzXUP013WG9S) //web_exchange∈class
 RPS_INSTALL_ROOT_OB(_8J6vNYtP5E800eCr5q) //∈space
-RPS_INSTALL_ROOT_OB(_8YknAApDQiF04BDe3W) //mutable_vector∈class
+RPS_INSTALL_ROOT_OB(_8YknAApDQiF04BDe3W) //mutable_object_vector∈class
 RPS_INSTALL_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
 RPS_INSTALL_ROOT_OB(_9uwZtDshW4401x6MsY) //space∈symbol
 RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class

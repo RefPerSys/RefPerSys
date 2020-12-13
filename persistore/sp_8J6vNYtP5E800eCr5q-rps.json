@@ -268,7 +268,7 @@
  "mtime" : 1579159079,
  "oid" : "_0ZGvUv1c0RR01Mr5VM",
  "payload" : "symbol",
- "symb_name" : "mutable_vector",
+ "symb_name" : "mutable_object_vector",
  "symb_val" : "_8YknAApDQiF04BDe3W"
 }
 //-ob_0ZGvUv1c0RR01Mr5VM
@@ -2132,15 +2132,15 @@
  [
   {
    "at" : "_1EBVGSfW2m200z18rx",
-   "va" : "mutable_vector"
+   "va" : "mutable_object_vector"
   }
  ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
- "class_name" : "mutable_vector",
+ "class_name" : "mutable_object_vector",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_0ZGvUv1c0RR01Mr5VM",
- "mtime" : 1583088448.8099999,
+ "mtime" : 1607850049.2,
  "oid" : "_8YknAApDQiF04BDe3W",
  "payload" : "classinfo"
 }
