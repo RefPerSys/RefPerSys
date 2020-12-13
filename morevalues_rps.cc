@@ -75,12 +75,23 @@ Rps_InstanceZone::val_output(std::ostream& outs, unsigned depth) const
   constexpr int max_depth = 5; // FIXME, should be improved
   outs << "inst."<< compute_class(nullptr);
   outs << "*";
+  if (is_transient())
+    outs << "¡";  //U+00A1 INVERTED EXCLAMATION MARK
   conn()->val_output(outs,0);
   if (depth==0)
     {
       if (metarank() !=0 || metaobject())
-        outs << "#" << metarank() << ":";
-      metaobject()->val_output(outs, 0);
+        {
+          if (is_metatransient())
+            outs << "‼"; //U+203C DOUBLE EXCLAMATION MARK
+          else
+            outs << "#";
+          outs << metarank() << ":";
+          if (metaobject())
+            metaobject()->val_output(outs, 0);
+          else
+            outs << "_";
+        }
     }
   outs << "{";
   if (depth>max_depth)
