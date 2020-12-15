@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean fullclean redump altredump print-temporary-plugin-settings indent test01 test02 test03 test-load
+.PHONY: all objects clean fullclean redump altredump print-temporary-plugin-settings indent test01 test02 test03 test-load analyze gitpush gitpush2
 
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
@@ -146,6 +146,7 @@ clean:
 	$(RM) persistore/*~ persistore/*%
 	$(RM) *.ii
 	$(RM) *% core vgcore*
+	$(RM) -rf bld
 
 fullclean:
 	$(RPS_BUILD_CCACHE) -C
@@ -207,6 +208,12 @@ endif
 gitpush2:
 	git push $(RPS_GIT_ORIGIN) master
 	git push $(RPS_GIT_MIRROR) master
+
+
+analyze:
+	make clean
+	mkdir -p bld
+	scan-build -v -V -o bld make -j4
 
 
 ################################################################
