@@ -19,6 +19,9 @@ sanitized-refpersys
 vgcore.*
 valgrind.log
 
+# scan-build output
+bld/
+
 # Prerequisites (for make)
 *.mkd
 
