@@ -1181,7 +1181,9 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
   /* Notice that the start and end are byte indexes, and that matters
    *  with UTF-8. */
   RPS_DEBUG_LOG(COMPL_REPL, "text='" << text << "' start=" << start
-                << ", end=" << end);
+                << ", end=" << end
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rpsrepl_name_or_oid_completion"));
   rps_completion_vect.clear();
   int nbmatch = 0;
   // for objid, we require four characters including the leading
