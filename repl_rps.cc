@@ -788,6 +788,10 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
         endnamcol++;
       int namlen = endnamcol-startnamcol;
       std::string namstr = std::string(linestart+startnamcol, namlen);
+      RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element obchunk=" << _f.obchunk
+		    << " namstr='" << namstr << "' starting L"
+		    << chkdata->chunkdata_lineno << ",C" << startnamcol
+		    << " endnamcol=" << endnamcol);
       _f.namedobv = Rps_ObjectRef::find_object_by_string(&_, namstr);
       chkdata->chunkdata_colno = endnamcol;
       if (_f.namedobv)
