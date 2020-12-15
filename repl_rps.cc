@@ -904,7 +904,8 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                << " obchkarg=" << obchkarg
                << " chkdata=" << chkdata
                << " @L" << chkdata->chunkdata_lineno << ",C"
-               <<  chkdata->chunkdata_colno);
+               <<  chkdata->chunkdata_colno
+	       << " linestart='" << linestart << "'");
 #warning unimplemented rps_lex_chunk_element
   return nullptr;
 } // end rps_lex_chunk_element
