@@ -764,7 +764,7 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                 );
   _f.obchunk = obchkarg;
   RPS_ASSERT(_f.obchunk);
-  auto paylvect = _f.obchunk->get_dynamic_payload<Rps_PayloadVectOb>();
+  auto paylvect = _f.obchunk->get_dynamic_payload<Rps_PayloadVectVal>();
   RPS_ASSERT(paylvect != nullptr);
   const char*linestart = *chkdata->chunkdata_plinebuf;
   int linelen = strlen(linestart);
