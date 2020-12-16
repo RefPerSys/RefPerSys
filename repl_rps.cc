@@ -41,8 +41,9 @@ const char rps_repl_gitid[]= RPS_GITID;
 extern "C" const char rps_repl_date[];
 const char rps_repl_date[]= __DATE__;
 
-extern "C" std::istream*rps_repl_input = nullptr;
+extern "C" std::istream*rps_repl_input;
 extern "C" bool rps_repl_stopped;
+std::istream*rps_repl_input;
 
 /// Interpret from either a given input stream,
 /// or using readline if inp is null.
@@ -602,6 +603,8 @@ rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char
   RPS_ASSERT(colno >= 0 && colno<(int)strlen(*plinebuf));
   RPS_ASSERT(input_name);
   int pos= -1;
+  int startlineno= lineno;
+  int startcolno= colno;
   if (sscanf((*plinebuf)+colno, "R\"%15[A-Za-z](%n", delim, &pos) < 1
       || !isalpha(delim[0])
       || pos<=1)
@@ -639,7 +642,17 @@ rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char
       curcolno = 0;
       pc = (*plinebuf);
     };
+  RPS_DEBUG_LOG(REPL, "rps_lex_raw_literal_string end  input_name=" << input_name
+		<< " start L"<< startlineno
+		<< ",C" << startcolno
+		<< " end L" << lineno
+		<< ",C" << colno
+		<< " str='" << str << "'"
+                 << std::endl
+                 << RPS_FULL_BACKTRACE_HERE(1, "rps_lex_raw_literal_string end"));
+  return str;
 } // end rps_lex_raw_literal_string
+
 
 constexpr const unsigned rps_chunkdata_magicnum = 0x2fa19e6d; // 799121005
 struct Rps_ChunkData_st
@@ -789,9 +802,9 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
       int namlen = endnamcol-startnamcol;
       std::string namstr = std::string(linestart+startnamcol, namlen);
       RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element obchunk=" << _f.obchunk
-		    << " namstr='" << namstr << "' starting L"
-		    << chkdata->chunkdata_lineno << ",C" << startnamcol
-		    << " endnamcol=" << endnamcol);
+                    << " namstr='" << namstr << "' starting L"
+                    << chkdata->chunkdata_lineno << ",C" << startnamcol
+                    << " endnamcol=" << endnamcol);
       _f.namedobv = Rps_ObjectRef::find_object_by_string(&_, namstr);
       chkdata->chunkdata_colno = endnamcol;
       if (_f.namedobv)
@@ -905,7 +918,7 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                << " chkdata=" << chkdata
                << " @L" << chkdata->chunkdata_lineno << ",C"
                <<  chkdata->chunkdata_colno
-	       << " linestart='" << linestart << "'");
+               << " linestart='" << linestart << "'");
 #warning unimplemented rps_lex_chunk_element
   return nullptr;
 } // end rps_lex_chunk_element
@@ -1187,29 +1200,30 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
    *  with UTF-8. */
   RPS_DEBUG_LOG(COMPL_REPL, "text='" << text << "' start=" << start
                 << ", end=" << end
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rpsrepl_name_or_oid_completion"));
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rpsrepl_name_or_oid_completion"));
   rps_completion_vect.clear();
+  std::string prefix;
   int nbmatch = 0;
   // for objid, we require four characters including the leading
   // underscore to autocomplete...
   if (end>start+4 && text[start] == '_' && isdigit(text[start+1])
       && isalnum(text[start+2]) && isalnum(text[start+4]))
     {
-      std::string prefix(text+start, end-start);
+      prefix.assign(text+start, end-start);
       RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete prefix='" << prefix << "'");
       // use oid autocompletion, with
       // Rps_ObjectZone::autocomplete_oid...
       nbmatch = Rps_ObjectZone::autocomplete_oid
-                (prefix.c_str(),
-                 [&] (const Rps_ObjectZone* obz)
-      {
-        RPS_ASSERT(obz != nullptr);
-        Rps_Id oid = obz->oid();
-        RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete oid=" << oid);
-        rps_completion_vect.push_back(oid.to_string());
-        return false;
-      });
+	(prefix.c_str(),
+	 [&] (const Rps_ObjectZone* obz)
+	 {
+	   RPS_ASSERT(obz != nullptr);
+	   Rps_Id oid = obz->oid();
+	   RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete oid=" << oid);
+	   rps_completion_vect.push_back(oid.to_string());
+	   return false;
+	 });
       RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete prefix='" << prefix << "' -> nbmatch=" << nbmatch);
     }
   // for names, we require two characters to autocomplete
@@ -1217,44 +1231,67 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
     {
       // use symbol name autocompletion, with
       // Rps_PayloadSymbol::autocomplete_name...
-      std::string prefix(text+start, end-start);
+      prefix.assign(text+start, end-start);
       RPS_DEBUG_LOG(COMPL_REPL, "name autocomplete prefix='" << prefix << "'");
       nbmatch =  Rps_PayloadSymbol::autocomplete_name
-                 (prefix.c_str(),
-                  [&] (const Rps_ObjectZone*obz, const std::string&name)
-      {
-        RPS_ASSERT(obz != nullptr);
-        RPS_DEBUG_LOG(COMPL_REPL, "symbol autocomplete name=" << name);
-        rps_completion_vect.push_back(name);
-        return false;
-      });
+	(prefix.c_str(),
+	 [&] (const Rps_ObjectZone*obz, const std::string&name)
+	 {
+	   RPS_ASSERT(obz != nullptr);
+	   RPS_DEBUG_LOG(COMPL_REPL, "symbol autocomplete name=" << name);
+	   rps_completion_vect.push_back(name);
+	   return false;
+	 });
       RPS_DEBUG_LOG(COMPL_REPL, "name autocomplete prefix='" << prefix << "' -> nbmatch=" << nbmatch);
     }
-  if (RPS_DEBUG_ENABLED(COMPL_REPL))
-    {
-      int ix=0;
-      for (auto str: rps_completion_vect)
-        {
-          RPS_DEBUG_LOG(COMPL_REPL, "[" << ix << "]='" << str << "'");
-          ix++;
-        }
-    }
+  else
+    RPS_DEBUG_LOG(COMPL_REPL, "no autocomplete prefix='" << prefix << "'"
+		  << " text='" << text << "' start=" << start << " end=" << end);
+  //
+  RPS_DEBUG_LOG(COMPL_REPL, "autocomplete rps_completion_vect nbmatch=" << nbmatch << "rps_completion_vect: siz#" << rps_completion_vect.size()
+                << Rps_Do_Output([&](std::ostream& out)
+				 {
+				   int ix=0;
+				   for (auto str: rps_completion_vect)
+				     {
+				       if (ix % 4 == 0)
+					 out << std::endl << "...";
+				       out << " [" << ix << "]::'" << str<< "'";
+				       ix++;
+				     }
+				 })
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rpsrepl_name_or_oid_completion-autocomplete"));
   if (nbmatch==0)
     return nullptr;
   else
     {
       rl_attempted_completion_over = 1;
+      RPS_DEBUG_LOG(COMPL_REPL, "nbmatch=" << nbmatch);
       return rl_completion_matches(text, rpsrepl_name_or_oid_generator);
     }
 } // end rpsrepl_name_or_oid_completion
+
+
 
 char *
 rpsrepl_name_or_oid_generator(const char *text, int state)
 {
   /// the initial state is 0....
   RPS_DEBUG_LOG(COMPL_REPL, "text='" << text << "' state#" << state << " rps_completion_vect.size="
-                << rps_completion_vect.size() << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsrepl_name_or_oid_generator"));
+                << rps_completion_vect.size()
+                << Rps_Do_Output([&](std::ostream& outs)
+  {
+    int cix=0;
+    for (auto curcomp: rps_completion_vect)
+      {
+        if (cix % 4 == 0) outs << std::endl;
+        outs << "completion[" << cix << "]==" << curcomp;
+        cix++;
+      }
+  })
+      << std::endl
+      << RPS_FULL_BACKTRACE_HERE(1, "rpsrepl_name_or_oid_generator"));
   if (rps_completion_vect.size() == 1)
     {
       if (state==0)
