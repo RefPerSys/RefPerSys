@@ -28,6 +28,10 @@
 
 .PHONY: all objects clean fullclean redump altredump print-temporary-plugin-settings indent test01 test02 test03 test-load analyze gitpush gitpush2
 
+
+## tell GNU make to export all variables by default
+export
+
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 
@@ -72,7 +76,8 @@ CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             $(RPS_BUILD_CODGENFLAGS) \
 	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) \
 	    $(RPS_PKG_CFLAGS) \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\"
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\"
 
 LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 
@@ -152,9 +157,10 @@ fullclean:
 	$(RPS_BUILD_CCACHE) -C
 	$(MAKE) clean
 
-__timestamp.c:
+__timestamp.c: | Makefile do-generate-timestamp.sh
 	./do-generate-timestamp.sh $@  > $@-tmp
-	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp 
+	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
+	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp
 	$(MV) --backup $@-tmp $@
 
 

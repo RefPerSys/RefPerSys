@@ -134,6 +134,7 @@ extern "C" const char rps_timestamp[];
 extern "C" unsigned long rps_timelong;
 extern "C" const char rps_topdirectory[];
 extern "C" const char rps_gitid[];
+extern "C" const char rps_shortgitid[];
 extern "C" const char rps_lastgittag[];
 extern "C" const char rps_lastgitcommit[];
 extern "C" const char rps_md5sum[];
