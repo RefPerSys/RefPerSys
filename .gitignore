@@ -8,6 +8,9 @@ refpersys
 sanitized-refpersys
 *.ii
 
+## temporary files
+*tmp
+
 # Backup
 *~
 *~%
