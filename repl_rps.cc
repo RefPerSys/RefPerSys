@@ -727,6 +727,7 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                     << chkdata.chunkdata_input_name
                     << " L"<< chkdata.chunkdata_lineno
                     << ",C" << chkdata.chunkdata_colno
+		    << " endstr='" << chkdata.chunkdata_endstr << "'"
                     << ((*chkdata.chunkdata_plinebuf)?" linbuf:":" no linbuf")
                     << ((*chkdata.chunkdata_plinebuf)?:" **"));
       RPS_ASSERT(chkdata.chunkdata_magic == rps_chunkdata_magicnum);
@@ -786,7 +787,8 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                 << ", linestart='" << linestart << "', linelen=" << linelen
                 << " @L" << chkdata->chunkdata_lineno << ",C"
                 <<  chkdata->chunkdata_colno
-                <<  " current:"
+		<< " endstr='" << chkdata->chunkdata_endstr
+                <<  "' current:"
                 << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_UNDERLINE_ESCAPE:"`")
                 << linestart+chkdata->chunkdata_colno
                 << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_NORMAL_ESCAPE:"'")
@@ -857,7 +859,8 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
       RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element start meta obchunk=" << _f.obchunk
                     << " @L" << chkdata->chunkdata_lineno << ",C"
                     <<  chkdata->chunkdata_colno
-                    << " metastr:" << metastr);
+		    << " endstr='" << chkdata->chunkdata_endstr
+                    << "' metastr:" << metastr);
       if (isalpha(metastr[1]))
         {
           int startnameix=1, endnameix=1;
