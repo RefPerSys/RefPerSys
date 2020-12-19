@@ -31,6 +31,7 @@ RPS_INSTALL_ROOT_OB(_0S6DQvp3Gop015zXhL) //lexical_token∈class
 RPS_INSTALL_ROOT_OB(_0TvVIbOU16z028VWvv) //"Rps_LexToken::tokenize"∈core_function
 RPS_INSTALL_ROOT_OB(_0XMNvzdABUM03Bj7WP) //git_id∈symbol
 RPS_INSTALL_ROOT_OB(_0Z23UbC0G9b01WZZPN) //display_object_payload_web∈symbol
+RPS_INSTALL_ROOT_OB(_10YXWeY7lYc01RpQTA) //the_system_class∈class
 RPS_INSTALL_ROOT_OB(_14M7WuJSWw702zB0M9) //"display_object_payload_web"∈named_selector
 RPS_INSTALL_ROOT_OB(_1aGtWm38Vw701jDhZn) //"the_agenda"∈agenda
 RPS_INSTALL_ROOT_OB(_1oPsaaqITVi03OYZb9) //meta_variable∈symbol
@@ -40,6 +41,7 @@ RPS_INSTALL_ROOT_OB(_1B7ITSHTZWp00ektj1) //input∈symbol
 RPS_INSTALL_ROOT_OB(_1DBiKRl70P304DEMoR) //our_contributors∈symbol
 RPS_INSTALL_ROOT_OB(_1DUx3zfUzIb04lqNVt) //rps_window∈class
 RPS_INSTALL_ROOT_OB(_1EBVGSfW2m200z18rx) //name∈named_attribute
+RPS_INSTALL_ROOT_OB(_1Io89yIORqn02SXx4p) //RefPerSys_system∈the_system_class
 RPS_INSTALL_ROOT_OB(_1NWEOIzo3WU03mE42Q) //rps_output_textedit∈class
 RPS_INSTALL_ROOT_OB(_1R1LKwGhoTr02e90bn) //web_handler∈class
 RPS_INSTALL_ROOT_OB(_1Win5yzaf1L02cBUlV) //"display_value_web"∈named_selector
@@ -70,6 +72,7 @@ RPS_INSTALL_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
 RPS_INSTALL_ROOT_OB(_5yQcFbU0seU018B48Z) //message_sending∈symbol
 RPS_INSTALL_ROOT_OB(_5CYWxcChKN002rw1fI) //contributor_to_RefPerSys∈class
 RPS_INSTALL_ROOT_OB(_5FMX3lrhiw601iqPy5) //line∈symbol
+RPS_INSTALL_ROOT_OB(_5VC4IuJ0dyr01b8lA0) //generate_code∈named_selector
 RPS_INSTALL_ROOT_OB(_627ngdqrVfF020ugC5) //"repl_delim"∈string_dictionary
 RPS_INSTALL_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
 RPS_INSTALL_ROOT_OB(_6fmq7pZkmNd03UyPuO) //class∈symbol
@@ -98,7 +101,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 76
+#define RPS_NB_ROOT_OB 79
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
