@@ -107,6 +107,8 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                            /*callerframe:*/callframe,
                            Rps_ObjectRef lexkindob;
                            Rps_Value lexdatav;
+                           Rps_ObjectRef cmdkindob;
+                           Rps_Value cmddatav;
                 );
   // a double ended queue to keep the lexical tokens
   std::deque<Rps_Value> token_deq;
@@ -134,11 +136,28 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
           Rps_TwoValues lexpair = rps_repl_lexer(&_, inp, input_name, linebuf, lineno, colno);
           if (!lexpair.main())
             break;
+	  _f.cmdkindob = nullptr;
+	  _f.cmddatav = nullptr;
           _f.lexkindob = lexpair.main().to_object();
           _f.lexdatav = lexpair.xtra();
           RPS_DEBUG_LOG(REPL, "rps_repl_interpret " << input_name << "L" << startline << "C" << startcol
                         << " lexkind=" << _f.lexkindob
                         << " lexdatav=" << _f.lexdatav);
+          try
+            {
+	      _f.cmdkindob = _f.lexkindob;
+	      _f.cmddatav = _f.lexdatav;
+              RPS_WARNOUT("rps_repl_interpret unimplemented " << input_name << "L" << startline << "C" << startcol
+                          << " lexkind=" << _f.lexkindob
+                          << " lexdatav=" << _f.lexdatav
+                          << " curframe:"
+                          <<  Rps_ShowCallFrame(&_));
+            } // ending try...
+          catch (std::exception& exc)
+            {
+              RPS_WARNOUT("rps_repl_interpret failed to interpret " << input_name << "L" << startline << "C" << startcol
+                          << " got exception " << exc.what());
+            }
 #warning we need some condition on the lexing to stop it; perhaps stopping commands by double-semi-colon à la Ocaml
         };
     }
