@@ -1220,7 +1220,8 @@ char **
 rpsrepl_name_or_oid_completion(const char *text, int start, int end)
 {
   /* Notice that the start and end are byte indexes, and that matters
-   *  with UTF-8. */
+   *  with UTF-8.  But they are indexes in the current line, while text
+   *  is what should be completed... */
   RPS_DEBUG_LOG(COMPL_REPL, "text='" << text << "' start=" << start
                 << ", end=" << end
                 << std::endl
@@ -1230,10 +1231,10 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
   int nbmatch = 0;
   // for objid, we require four characters including the leading
   // underscore to autocomplete...
-  if (end>start+4 && text[start] == '_' && isdigit(text[start+1])
-      && isalnum(text[start+2]) && isalnum(text[start+4]))
+  if (end>start+4 && text[0] == '_' && isdigit(text[1])
+      && isalnum(text[2]) && isalnum(text[3]))
     {
-      prefix.assign(text+start, end-start);
+      prefix.assign(text, end-start);
       RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete prefix='" << prefix << "'");
       // use oid autocompletion, with
       // Rps_ObjectZone::autocomplete_oid...
@@ -1243,25 +1244,32 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
       {
         RPS_ASSERT(obz != nullptr);
         Rps_Id oid = obz->oid();
-        RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete oid=" << oid);
+        RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete oid=" << oid
+                      << " for prefix='" << prefix << "'"
+                      << std::endl
+                      << RPS_FULL_BACKTRACE_HERE(1, "autocomploid/rpsrepl_name_or_oid_completion"));
         rps_completion_vect.push_back(oid.to_string());
         return false;
       });
       RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete prefix='" << prefix << "' -> nbmatch=" << nbmatch);
     }
   // for names, we require two characters to autocomplete
-  else if (end>start+2 && isalpha(text[start]) && (isalnum(text[start+1]) || text[start+1]=='_'))
+  else if (end>start+2 && isalpha(text[0]) && (isalnum(text[1]) || text[1]=='_'))
     {
       // use symbol name autocompletion, with
       // Rps_PayloadSymbol::autocomplete_name...
-      prefix.assign(text+start, end-start);
+      prefix.assign(text, end-start);
       RPS_DEBUG_LOG(COMPL_REPL, "name autocomplete prefix='" << prefix << "'");
       nbmatch =  Rps_PayloadSymbol::autocomplete_name
                  (prefix.c_str(),
                   [&] (const Rps_ObjectZone*obz, const std::string&name)
       {
         RPS_ASSERT(obz != nullptr);
-        RPS_DEBUG_LOG(COMPL_REPL, "symbol autocomplete name=" << name);
+        RPS_DEBUG_LOG(COMPL_REPL, "symbol autocomplete name='" << name
+                      << "', obz:" << Rps_ObjectRef(obz)
+                      << " for prefix='" << prefix << "'"
+                      << std::endl
+                      << RPS_FULL_BACKTRACE_HERE(1, "autocomplname/rpsrepl_name_or_oid_completion"));
         rps_completion_vect.push_back(name);
         return false;
       });
@@ -1290,7 +1298,9 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
   else
     {
       rl_attempted_completion_over = 1;
-      RPS_DEBUG_LOG(COMPL_REPL, "nbmatch=" << nbmatch);
+      RPS_DEBUG_LOG(COMPL_REPL, "rpsrepl_name_or_oid_completion nbmatch=" << nbmatch
+                    << " text='" << text << "' start=" << start
+                    << " end='" << end);
       return rl_completion_matches(text, rpsrepl_name_or_oid_generator);
     }
 } // end rpsrepl_name_or_oid_completion
