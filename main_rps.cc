@@ -334,7 +334,7 @@ rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string
   outs << linprefix << "_"
        << linsuffix << std::endl;
   outs << linprefix << "You should have received a copy of the GNU "
-    "General Public License"
+       "General Public License"
        << linsuffix << std::endl;
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
