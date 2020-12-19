@@ -38,6 +38,10 @@ RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 RPS_GIT_ORIGIN := $(shell git remote -v | grep "RefPerSys/RefPerSys.git" | head -1 | awk '{print $$1}')
 RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -1 | awk '{print $$1}')
 
+ifeq ($(RPS_GIT_ORIGIN), )
+	$(shell git remote add origin https://github.com/RefPerSys/RefPerSys.git)
+endif
+
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
