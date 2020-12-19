@@ -643,13 +643,13 @@ rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char
       pc = (*plinebuf);
     };
   RPS_DEBUG_LOG(REPL, "rps_lex_raw_literal_string end  input_name=" << input_name
-		<< " start L"<< startlineno
-		<< ",C" << startcolno
-		<< " end L" << lineno
-		<< ",C" << colno
-		<< " str='" << str << "'"
-                 << std::endl
-                 << RPS_FULL_BACKTRACE_HERE(1, "rps_lex_raw_literal_string end"));
+                << " start L"<< startlineno
+                << ",C" << startcolno
+                << " end L" << lineno
+                << ",C" << colno
+                << " str='" << str << "'"
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_lex_raw_literal_string end"));
   return str;
 } // end rps_lex_raw_literal_string
 
@@ -727,7 +727,7 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                     << chkdata.chunkdata_input_name
                     << " L"<< chkdata.chunkdata_lineno
                     << ",C" << chkdata.chunkdata_colno
-		    << " endstr='" << chkdata.chunkdata_endstr << "'"
+                    << " endstr='" << chkdata.chunkdata_endstr << "'"
                     << ((*chkdata.chunkdata_plinebuf)?" linbuf:":" no linbuf")
                     << ((*chkdata.chunkdata_plinebuf)?:" **"));
       RPS_ASSERT(chkdata.chunkdata_magic == rps_chunkdata_magicnum);
@@ -787,7 +787,7 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                 << ", linestart='" << linestart << "', linelen=" << linelen
                 << " @L" << chkdata->chunkdata_lineno << ",C"
                 <<  chkdata->chunkdata_colno
-		<< " endstr='" << chkdata->chunkdata_endstr
+                << " endstr='" << chkdata->chunkdata_endstr
                 <<  "' current:"
                 << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_UNDERLINE_ESCAPE:"`")
                 << linestart+chkdata->chunkdata_colno
@@ -795,7 +795,8 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                 << std::endl
                 <<  RPS_FULL_BACKTRACE_HERE(1, "rps_lex_chunk_element-start"));
   /// For C name-like things, we return the object naming them or else a string
-  if (isalpha(linestart[chkdata->chunkdata_colno]))
+  const char*curstr = linestart+chkdata->chunkdata_colno;
+  if (isalpha(*curstr))
     {
       int startnamcol = chkdata->chunkdata_colno;
       int endnamcol = startnamcol;
@@ -809,6 +810,7 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                     << " endnamcol=" << endnamcol);
       _f.namedobv = Rps_ObjectRef::find_object_by_string(&_, namstr);
       chkdata->chunkdata_colno = endnamcol;
+      curstr = nullptr;
       if (_f.namedobv)
         {
           RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element name obchunk=" << _f.obchunk
@@ -828,7 +830,7 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
         }
     }
   /// For sequence of spaces, we return an instance of class space and value the number of space characters
-  else if (isspace(linestart[chkdata->chunkdata_colno]))
+  else if (isspace(*curstr))
     {
       int startspacecol = chkdata->chunkdata_colno;
       int endspacecol = startspacecol;
@@ -848,18 +850,19 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                     << " -> chkelemv=" << _f.chkelemv
                     << " @L" << chkdata->chunkdata_lineno << ",C"
                     <<  chkdata->chunkdata_colno);
+      curstr = nullptr;
       return _f.chkelemv;
     }
   /// code chunk meta-variable or meta-notation....
-  else if (linestart[chkdata->chunkdata_colno] == '$'
+  else if (*curstr == '$'
            && chkdata->chunkdata_colno < linelen)
     {
       // a dollar followed by a name is a meta-variable; that name should be known
-      const char*metastr = linestart+chkdata->chunkdata_colno;
+      const char*metastr = curstr;
       RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element start meta obchunk=" << _f.obchunk
                     << " @L" << chkdata->chunkdata_lineno << ",C"
                     <<  chkdata->chunkdata_colno
-		    << " endstr='" << chkdata->chunkdata_endstr
+                    << " endstr='" << chkdata->chunkdata_endstr
                     << "' metastr:" << metastr);
       if (isalpha(metastr[1]))
         {
@@ -900,9 +903,25 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
         }
       /// probably other dollar things should be parsed as delimiters....
     }
+  else if (*curstr=='}' && !strncmp(curstr, chkdata->chunkdata_endstr, strlen(chkdata->chunkdata_endstr)))
+    {
+      RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element ending  callframe=" << Rps_ShowCallFrame(callframe)
+                    << std::endl << "... obchunk=" << _f.obchunk
+                    << " @L" << chkdata->chunkdata_lineno << ",C"
+                    <<  chkdata->chunkdata_colno
+                    << " curstr:"
+                    << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_UNDERLINE_ESCAPE:"`")
+                    << curstr
+                    << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_NORMAL_ESCAPE:"'")
+                    << " endstr='" << chkdata->chunkdata_endstr << "'"
+                    << std::endl
+                    <<  RPS_FULL_BACKTRACE_HERE(1, "rps_lex_chunk_element-ending")
+                   );
+      chkdata->chunkdata_colno += strlen(chkdata->chunkdata_endstr);
+      return nullptr;
+    }
   else
     {
-      const char*curstr = linestart+chkdata->chunkdata_colno;
       RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element INCOMPLETE  callframe=" << Rps_ShowCallFrame(callframe)
                     << std::endl << "... obchunk=" << _f.obchunk
                     << " @L" << chkdata->chunkdata_lineno << ",C"
@@ -911,6 +930,7 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                     << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_UNDERLINE_ESCAPE:"`")
                     << curstr
                     << ((rps_stdout_istty && !rps_batch)?RPS_TERMINAL_NORMAL_ESCAPE:"'")
+                    << " endstr='" << chkdata->chunkdata_endstr << "'"
                     << std::endl
                     <<  RPS_FULL_BACKTRACE_HERE(1, "rps_lex_chunk_element-incomplete")
                    );
@@ -1218,15 +1238,15 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
       // use oid autocompletion, with
       // Rps_ObjectZone::autocomplete_oid...
       nbmatch = Rps_ObjectZone::autocomplete_oid
-	(prefix.c_str(),
-	 [&] (const Rps_ObjectZone* obz)
-	 {
-	   RPS_ASSERT(obz != nullptr);
-	   Rps_Id oid = obz->oid();
-	   RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete oid=" << oid);
-	   rps_completion_vect.push_back(oid.to_string());
-	   return false;
-	 });
+                (prefix.c_str(),
+                 [&] (const Rps_ObjectZone* obz)
+      {
+        RPS_ASSERT(obz != nullptr);
+        Rps_Id oid = obz->oid();
+        RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete oid=" << oid);
+        rps_completion_vect.push_back(oid.to_string());
+        return false;
+      });
       RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete prefix='" << prefix << "' -> nbmatch=" << nbmatch);
     }
   // for names, we require two characters to autocomplete
@@ -1237,34 +1257,34 @@ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
       prefix.assign(text+start, end-start);
       RPS_DEBUG_LOG(COMPL_REPL, "name autocomplete prefix='" << prefix << "'");
       nbmatch =  Rps_PayloadSymbol::autocomplete_name
-	(prefix.c_str(),
-	 [&] (const Rps_ObjectZone*obz, const std::string&name)
-	 {
-	   RPS_ASSERT(obz != nullptr);
-	   RPS_DEBUG_LOG(COMPL_REPL, "symbol autocomplete name=" << name);
-	   rps_completion_vect.push_back(name);
-	   return false;
-	 });
+                 (prefix.c_str(),
+                  [&] (const Rps_ObjectZone*obz, const std::string&name)
+      {
+        RPS_ASSERT(obz != nullptr);
+        RPS_DEBUG_LOG(COMPL_REPL, "symbol autocomplete name=" << name);
+        rps_completion_vect.push_back(name);
+        return false;
+      });
       RPS_DEBUG_LOG(COMPL_REPL, "name autocomplete prefix='" << prefix << "' -> nbmatch=" << nbmatch);
     }
   else
     RPS_DEBUG_LOG(COMPL_REPL, "no autocomplete prefix='" << prefix << "'"
-		  << " text='" << text << "' start=" << start << " end=" << end);
+                  << " text='" << text << "' start=" << start << " end=" << end);
   //
   RPS_DEBUG_LOG(COMPL_REPL, "autocomplete rps_completion_vect nbmatch=" << nbmatch << "rps_completion_vect: siz#" << rps_completion_vect.size()
                 << Rps_Do_Output([&](std::ostream& out)
-				 {
-				   int ix=0;
-				   for (auto str: rps_completion_vect)
-				     {
-				       if (ix % 4 == 0)
-					 out << std::endl << "...";
-				       out << " [" << ix << "]::'" << str<< "'";
-				       ix++;
-				     }
-				 })
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rpsrepl_name_or_oid_completion-autocomplete"));
+  {
+    int ix=0;
+    for (auto str: rps_completion_vect)
+      {
+        if (ix % 4 == 0)
+          out << std::endl << "...";
+        out << " [" << ix << "]::'" << str<< "'";
+        ix++;
+      }
+  })
+      << std::endl
+      << RPS_FULL_BACKTRACE_HERE(1, "rpsrepl_name_or_oid_completion-autocomplete"));
   if (nbmatch==0)
     return nullptr;
   else
