@@ -150,8 +150,11 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
               RPS_WARNOUT("rps_repl_interpret unimplemented " << input_name << "L" << startline << "C" << startcol
                           << " lexkind=" << _f.lexkindob
                           << " lexdatav=" << _f.lexdatav
+			  << std::endl
                           << " curframe:"
-                          <<  Rps_ShowCallFrame(&_));
+                          <<  Rps_ShowCallFrame(&_)
+			  << std::endl
+			  << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret-unimpl"));
             } // ending try...
           catch (std::exception& exc)
             {
@@ -276,10 +279,11 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                            Rps_Value semval;
                 );
   RPS_ASSERT(colno >= 0 && colno <= linelen);
-  RPS_DEBUG_LOG(REPL, "rps_repl_lexer start inp="<< inp
-                << "input_name=" << (input_name?:"?nil?")
-                << (linebuf?", linebuf=":", linebuf ")
+  RPS_DEBUG_LOG(REPL, "rps_repl_lexer start inp@"<< inp
+                << ", input_name=" << (input_name?:"?nil?")
+                << (linebuf?", linebuf='":", linebuf ")
                 << (linebuf?linebuf:"*nil*")
+                << (linebuf?"'":"")
                 << ", lineno=" << lineno << ", colno=" << colno
                 << ", linelen=" << linelen);
   while (colno < linelen && isspace(linebuf[colno]))
