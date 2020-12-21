@@ -1384,7 +1384,9 @@ rps_read_eval_print_loop(int &argc, char **argv)
       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop lineno=" << lineno << " prompt=" << prompt);
       if (count % 4 == 0)
         usleep(128*1024);
-      rps_repl_interpret(&_, nullptr, prompt, lineno);
+      rps_repl_interpret(&_, /*input:*/ nullptr,
+			 /*input_name:*/prompt,
+			 lineno);
       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop done prompt=" << prompt << std::endl);
     };
 } // end of rps_read_eval_print_loop
@@ -1409,6 +1411,7 @@ rps_repl_lexer_test(void)
   int nbtok=0;
   int oldcolno= 0;
   int oldlineno= 0;
+  int linlen = 0;
   rl_attempted_completion_function = rpsrepl_name_or_oid_completion;
   while (!rps_repl_stopped)
     {
@@ -1426,6 +1429,7 @@ rps_repl_lexer_test(void)
       count++;
       oldcolno = colno;
       oldlineno = lineno;
+       linlen= linebuf?(int)strlen(linebuf):0;
       RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test looping count#" << count
                     << " oldcolno=" << oldcolno
                     << " oldlineno=" << oldlineno
@@ -1433,10 +1437,10 @@ rps_repl_lexer_test(void)
                     << (linebuf?linebuf:"*nul*")
                     << (linebuf?"'":"!")
                     << std::endl
-                    << ((linebuf&&colno<strlen(linebuf))?"... curptr'":"... ?no ")
-                    << ((linebuf&&colno<strlen(linebuf))?(linebuf+colno):"*curptr*")
-                    << ((linebuf&&colno<strlen(linebuf))?"'":"**"));
-      if (linebuf==nullptr || colno>=(int)strlen(linebuf))
+		    << ((linebuf&&colno<linlen)?"... curptr'":"... ?no ")
+		    << ((linebuf&&colno<linlen?(linebuf+colno):"*curptr*"))
+                    << ((linebuf&&colno<linlen)?"'":"**"));
+      if (linebuf==nullptr || colno>=linlen)
         {
           snprintf(prompt, sizeof(prompt), "Rps_LEXTEST#%d:", count);
           lineno++;
@@ -1445,8 +1449,9 @@ rps_repl_lexer_test(void)
           bool gotline = rps_repl_get_next_line(&_, &std::cin, prompt, &linebuf, &lineno, prompt);
           if (!gotline)
             break;
+	  linlen = linebuf?(int)strlen(linebuf):0;
         }
-      if (linebuf && colno < (int)strlen(linebuf))
+      if (linebuf && colno < linlen)
         {
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test lineno=" << lineno
                         << ", colno=" << colno
@@ -1497,21 +1502,23 @@ rps_repl_lexer_test(void)
           else
             rps_repl_stopped = true;
         }
-      int linbuflen = (int)strlen(linebuf);
+      linlen = (int)strlen(linebuf);
       RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test endloop nbtok=" << nbtok << ", count=" << count
                     << ", lineno=" << lineno << ", colno=" << colno
                     << ", oldlineno=" << oldlineno
                     << ", oldcolno=" << oldcolno
-                    << "," << std::endl
-                    << ((linebuf&&colno<linbuflen)?"... curptr'":"... ?no ")
-                    << ((linebuf&&colno<linbuflen)?(linebuf+colno):"*curptr*")
-                    << ((linebuf&&colno<linbuflen)?"'":"**")
+                    << ", linlen=" << linlen << std::endl
+                    << ((linebuf&&colno<linlen)?"... curptr'":"... ?no ")
+                    << ((linebuf&&colno<linlen)?(linebuf+colno):"*curptr*")
+                    << ((linebuf&&colno<linlen)?"'":"**")
                     << "... last curlextokenv=" << _f.curlextokenv << std::endl);
       if (count % 4 == 0)
         {
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test endloop #!# count=" << count
                         << " nbtok=" << nbtok
                         << " curlextokenv=" << _f.curlextokenv
+			<< " linebuf='" << (linebuf?linebuf:"")
+			<< "' linlen=" << linlen
                         << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test endloop")
                         << std::endl);
