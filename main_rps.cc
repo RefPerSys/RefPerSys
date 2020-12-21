@@ -462,7 +462,7 @@ rps_check_mtime_files(void)
                     << " is younger by "
                     << (curstat.st_mtime - (time_t) rps_timelong)
                     << " seconds than current executable " << exebuf
-                    << ", so consider rebuilding with omake");
+                    << ", so consider rebuilding with make");
     }
   char makecmd [128];
   memset (makecmd, 0, sizeof(makecmd));
