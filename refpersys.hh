@@ -2441,6 +2441,49 @@ public:
   {
     return const_cast<const Rps_ObjectRef*>(_seqob) + _seqlen;
   };
+  /// repeatedly iterate on the sequence object, till given function
+  /// FUN returns true...
+  template <typename Datatype_t>
+  void
+  iterate_data(const std::function<bool(const Rps_ObjectRef,
+					Datatype_t data)>& fun,
+	       Datatype_t data) {
+    for (auto it: *this) {
+      Rps_ObjectRef curob = it;
+      if (fun(curob, data))
+	return;
+    }
+  } // end iterate_data
+  /// repeatedly iterate on the sequence object in reverse order, till
+  /// given function FUN returns true...
+  template <typename Datatype_t>
+  void
+  reverse_iterate_data(const std::function<bool(const Rps_ObjectRef,
+						Datatype_t data)>& fun,
+		       Datatype_t data) {
+    const unsigned len = cnt();
+    for (int ix = (int)len-1; ix>=0; ix--) {
+      Rps_ObjectRef curob = _seqob[ix];
+      if (fun(curob, data))
+	return;
+    }
+  } // end reverse_iterate_data
+  //////////
+  //// iteratively apply a given closure CLOSV in ascending order to
+  //// objects OB, until application returns {nil,nil}
+  inline void iterate_apply0(Rps_CallFrame*stkf, const Rps_Value closv);
+  //// iteratively apply a given closure in descending order to
+  //// objects OB, until application returns {nil,nil}
+  inline void reverse_iterate_apply0(Rps_CallFrame*stkf, const Rps_Value closv);
+  //// iteratively apply a given closure CLOSV in ascending order to
+  //// objects OB, and value ARG0, until application of
+  //// CLOSV(OB,ARG0) returns {nil,nil}
+  inline void iterate_apply1(Rps_CallFrame*stkf, const Rps_Value closv, const Rps_Value arg0v);
+  //// iteratively apply a given closure CLOSV in descending order to
+  //// objects OB, and value ARG0, until application of CLOSV(OB,ARG0)
+  //// returns {nil,nil}
+  inline void reverse_iterate_apply1(Rps_CallFrame*stkf, const Rps_Value closv, const Rps_Value arg0v);
+  ///////
   virtual uint32_t wordsize() const
   {
     return (sizeof(*this) + _seqlen * sizeof(_seqob[0])) / sizeof(void*);

@@ -387,6 +387,118 @@ Rps_Value::as_json() const
 } // end Rps_Value::as_json
 
 
+//////////////////////////////////////////////// routines common to
+//////////////////////////////////////////////// sequence of objects
+template<typename RpsSeq, Rps_Type seqty, unsigned k1, unsigned k2, unsigned k3>
+void
+Rps_SeqObjRef<RpsSeq,seqty,k1,k2,k3>::iterate_apply0(Rps_CallFrame*callerf, const Rps_Value closvarg)
+{
+  RPS_LOCALFRAME(compute_class(callerf),
+                 callerf,
+		 Rps_ObjectRef curob;
+		 Rps_Value closv;
+		 Rps_Value mainv;
+		 Rps_Value xtrav;
+		 );
+  if (!closvarg.is_closure())
+    return;
+  _f.closv = closvarg;
+  for (auto it: *this) {
+    _f.mainv = nullptr;
+    _f.xtrav = nullptr;
+    _f.curob = it;
+    Rps_TwoValues two = _f.closv->as_closure().apply1(&_, _f.curob);
+    _f.mainv = two.main();
+    _f.xtrav = two.xtra();
+    if (!_f.mainv && !_f.xtrav)
+      break;
+  }
+} // end Rps_SeqObjRef::iterate_apply0
+
+template<typename RpsSeq, Rps_Type seqty, unsigned k1, unsigned k2, unsigned k3>
+void
+Rps_SeqObjRef<RpsSeq,seqty,k1,k2,k3>::reverse_iterate_apply0(Rps_CallFrame*callerf, const Rps_Value closvarg)
+{
+  RPS_LOCALFRAME(compute_class(callerf),
+                 callerf,
+		 Rps_ObjectRef curob;
+		 Rps_Value closv;
+		 Rps_Value mainv;
+		 Rps_Value xtrav;
+		 );
+  if (!closvarg.is_closure())
+    return;
+  _f.closv = closvarg;
+  const unsigned len = cnt();
+  for (int ix = (int)len-1; ix>=0; ix--) {
+    _f.mainv = nullptr;
+    _f.xtrav = nullptr;
+    _f.curob = _seqob[ix];
+    Rps_TwoValues two = _f.closv->as_closure().apply1(&_, _f.curob);
+    _f.mainv = two.main();
+    _f.xtrav = two.xtra();
+    if (!_f.mainv && !_f.xtrav)
+      break;
+  }
+} // end Rps_SeqObjRef::reverse_iterate_apply0
+
+template<typename RpsSeq, Rps_Type seqty, unsigned k1, unsigned k2, unsigned k3>
+void
+Rps_SeqObjRef<RpsSeq,seqty,k1,k2,k3>::iterate_apply1(Rps_CallFrame*callerf, const Rps_Value closvarg, const Rps_Value arg0arg)
+{
+  RPS_LOCALFRAME(compute_class(callerf),
+                 callerf,
+		 Rps_ObjectRef curob;
+		 Rps_Value closv;
+		 Rps_Value mainv;
+		 Rps_Value xtrav;
+		 Rps_Value arg0v;
+		 );
+  if (!closvarg.is_closure())
+    return;
+  _f.closv = closvarg;
+  _f.arg0 = arg0arg;
+  for (auto it: *this) {
+    _f.mainv = nullptr;
+    _f.xtrav = nullptr;
+    _f.curob = it;
+    Rps_TwoValues two = _f.closv->as_closure().apply2(&_, _f.curob, _f.arg0);
+    _f.mainv = two.main();
+    _f.xtrav = two.xtra();
+    if (!_f.mainv && !_f.xtrav)
+      break;
+  }
+} // end Rps_SeqObjRef::iterate_apply1
+
+template<typename RpsSeq, Rps_Type seqty, unsigned k1, unsigned k2, unsigned k3>
+void
+Rps_SeqObjRef<RpsSeq,seqty,k1,k2,k3>::reverse_iterate_apply1(Rps_CallFrame*callerf, const Rps_Value closvarg, const Rps_Value arg0arg)
+{
+  RPS_LOCALFRAME(compute_class(callerf),
+                 callerf,
+		 Rps_ObjectRef curob;
+		 Rps_Value closv;
+		 Rps_Value arg0v;
+		 Rps_Value mainv;
+		 Rps_Value xtrav;
+		 );
+  if (!closvarg.is_closure())
+    return;
+  _f.closv = closvarg;
+_f.arg0v = arg0arg;
+  const unsigned len = cnt();
+  for (int ix = (int)len-1; ix>=0; ix--) {
+    _f.mainv = nullptr;
+    _f.xtrav = nullptr;
+    _f.curob = _seqob[ix];
+    Rps_TwoValues two = _f.closv->as_closure().apply2(&_, _f.curob, _f.arg0v);
+    _f.mainv = two.main();
+    _f.xtrav = two.xtra();
+    if (!_f.mainv && !_f.xtrav)
+      break;
+  }
+} // end Rps_SeqObjRef::reverse_iterate_apply1
+
 int
 Rps_SetOb::element_index(const Rps_ObjectRef obelem) const
 {
