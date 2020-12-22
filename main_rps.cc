@@ -1332,7 +1332,9 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
                 tmbfr, msg);
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
           {
-            fprintf(stderr, "RPS DEBUG %04ld ~  *^*^*%s\n",
+            fprintf(stderr, "RPS DEBUG %04ld ~  *^*^* %s\n",
+                    ndbg, datebfr);
+            fprintf(rps_debug_file, "RPS DEBUG %04ld ~  *^*^* %s\n",
                     ndbg, datebfr);
           }
         fflush(rps_debug_file);
