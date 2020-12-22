@@ -24,8 +24,9 @@
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
-/// manually added by <basile@starynkevitch.net> in git commit 5dfbee91aa961be9e
+
 //+ob_006mAbXTG4G00QR5HS
+//∈symbol
 {
  "attrs" : 
  [
@@ -33,12 +34,12 @@
    "at" : "_1EBVGSfW2m200z18rx",
    "va" : "display"
   }
-     ], 
- "payload" : "symbol",
- "symb_name" : "display",
+ ],
  "class" : "_36I1BY2NetN03WjrOv",
  "mtime" : 1608625755.5,
-    "oid" : "_006mAbXTG4G00QR5HS"
+ "oid" : "_006mAbXTG4G00QR5HS",
+ "payload" : "symbol",
+ "symb_name" : "display"
 }
 //-ob_006mAbXTG4G00QR5HS
 
