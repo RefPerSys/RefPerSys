@@ -150,11 +150,11 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
               RPS_WARNOUT("rps_repl_interpret unimplemented " << input_name << "L" << startline << "C" << startcol
                           << " lexkind=" << _f.lexkindob
                           << " lexdatav=" << _f.lexdatav
-			  << std::endl
+                          << std::endl
                           << " curframe:"
                           <<  Rps_ShowCallFrame(&_)
-			  << std::endl
-			  << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret-unimpl"));
+                          << std::endl
+                          << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret-unimpl"));
             } // ending try...
           catch (std::exception& exc)
             {
@@ -1385,8 +1385,8 @@ rps_read_eval_print_loop(int &argc, char **argv)
       if (count % 4 == 0)
         usleep(128*1024);
       rps_repl_interpret(&_, /*input:*/ nullptr,
-			 /*input_name:*/prompt,
-			 lineno);
+                         /*input_name:*/prompt,
+                         lineno);
       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop done prompt=" << prompt << std::endl);
     };
 } // end of rps_read_eval_print_loop
@@ -1429,7 +1429,7 @@ rps_repl_lexer_test(void)
       count++;
       oldcolno = colno;
       oldlineno = lineno;
-       linlen= linebuf?(int)strlen(linebuf):0;
+      linlen= linebuf?(int)strlen(linebuf):0;
       RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test looping count#" << count
                     << " oldcolno=" << oldcolno
                     << " oldlineno=" << oldlineno
@@ -1437,8 +1437,8 @@ rps_repl_lexer_test(void)
                     << (linebuf?linebuf:"*nul*")
                     << (linebuf?"'":"!")
                     << std::endl
-		    << ((linebuf&&colno<linlen)?"... curptr'":"... ?no ")
-		    << ((linebuf&&colno<linlen?(linebuf+colno):"*curptr*"))
+                    << ((linebuf&&colno<linlen)?"... curptr'":"... ?no ")
+                    << ((linebuf&&colno<linlen?(linebuf+colno):"*curptr*"))
                     << ((linebuf&&colno<linlen)?"'":"**"));
       if (linebuf==nullptr || colno>=linlen)
         {
@@ -1449,7 +1449,7 @@ rps_repl_lexer_test(void)
           bool gotline = rps_repl_get_next_line(&_, &std::cin, prompt, &linebuf, &lineno, prompt);
           if (!gotline)
             break;
-	  linlen = linebuf?(int)strlen(linebuf):0;
+          linlen = linebuf?(int)strlen(linebuf):0;
         }
       if (linebuf && colno < linlen)
         {
@@ -1517,8 +1517,8 @@ rps_repl_lexer_test(void)
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test endloop #!# count=" << count
                         << " nbtok=" << nbtok
                         << " curlextokenv=" << _f.curlextokenv
-			<< " linebuf='" << (linebuf?linebuf:"")
-			<< "' linlen=" << linlen
+                        << " linebuf='" << (linebuf?linebuf:"")
+                        << "' linlen=" << linlen
                         << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test endloop")
                         << std::endl);
