@@ -134,6 +134,7 @@ extern "C" const char rps_timestamp[];
 extern "C" unsigned long rps_timelong;
 extern "C" const char rps_topdirectory[];
 extern "C" const char rps_gitid[];
+extern "C" const char rps_shortgitid[];
 extern "C" const char rps_lastgittag[];
 extern "C" const char rps_lastgitcommit[];
 extern "C" const char rps_md5sum[];
@@ -373,6 +374,7 @@ extern "C" void rps_set_debug(const std::string &deblev);
   dbgmacro(PARSE)                   \
   dbgmacro(PARSE_STRING)            \
   dbgmacro(REPL)                    \
+  dbgmacro(COMPL_REPL)              \
   /*end RPS_DEBUG_OPTIONS*/
 
 #define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
@@ -408,6 +410,7 @@ enum rps_progoption_en
   RPSPROGOPT_NOTERMINAL,
   RPSPROGOPT_NOASLR,
   RPSPROGOPT_REPL,
+  RPSPROGOPT_TEST_REPL_LEXER,
   RPSPROGOPT_RUN_AFTER_LOAD,
   RPSPROGOPT_PLUGIN_AFTER_LOAD,
   RPSPROGOPT_DEBUG_PATH,
@@ -683,6 +686,7 @@ class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
 class Rps_JsonZone; // memory for Json values
+class Rps_LexTokenZone; /// memory for reified lexical tokens, mostly in repl_rps.cc
 class Rps_GarbageCollector;
 class Rps_Payload;
 class Rps_PayloadSymbol;
@@ -951,6 +955,7 @@ enum class Rps_Type : std::int16_t
   Closure,
   Instance,
   Json,
+  LexToken,
 };
 
 //////////////////////////////////////////////////////////////// values
@@ -962,6 +967,7 @@ class Rps_String;
 class Rps_Double;
 class Rps_SetOb;
 class Rps_TupleOb;
+class Rps_LexTokenZone;
 class Rps_ClosureZone;
 class Rps_InstanceZone;
 class Rps_GarbageCollector;
@@ -971,6 +977,7 @@ class Rps_ClosureValue;
 class Rps_SetValue;
 class Rps_InstanceValue;
 class Rps_TupleValue;
+class Rps_LexTokenValue; // mostly in repl_rps.cc
 struct Rps_TwoValues;
 
 //////////////// our value, a single word
@@ -1037,6 +1044,7 @@ public:
   inline bool is_null() const;
   inline bool is_empty() const;
   inline bool is_json() const;
+  inline bool is_lextoken() const;
   operator bool () const
   {
     return !is_empty();
@@ -1056,11 +1064,13 @@ public:
   inline const Rps_ClosureZone* as_closure() const;
   inline const Rps_Double* as_boxed_double() const;
   inline const Rps_JsonZone* as_json() const;
+  inline const Rps_LexTokenZone* as_lextoken() const;
   inline double as_double() const;
   inline const std::string as_cppstring() const;
   inline const char* as_cstring() const;
   Rps_ObjectRef compute_class(Rps_CallFrame*) const;
   // convert or give default
+  static inline Rps_Value make_tagged_int(intptr_t);
   inline intptr_t to_int(intptr_t def=0) const;
   inline const Rps_ZoneValue* to_ptr(const Rps_ZoneValue*zp = nullptr) const;
   inline const Rps_SetOb* to_set(const Rps_SetOb*defset= nullptr) const;
@@ -1075,6 +1085,7 @@ public:
   inline const Rps_InstanceZone* to_instance(const Rps_InstanceZone*definst =nullptr) const;
   inline const Rps_String* to_string( const Rps_String*defstr
                                       = nullptr) const;
+  inline const Rps_LexTokenZone* to_lextoken(void) const;
   inline const std::string to_cppstring(std::string defstr= "") const;
   inline Rps_HashInt valhash() const noexcept;
   inline void output(std::ostream&out, unsigned depth=0) const;
@@ -1297,6 +1308,18 @@ public:
   // "dynamic" casting :
   inline Rps_TupleValue(Rps_Value val);
 };    // end class Rps_TupleValue
+
+////////////////
+class Rps_LexTokenValue : public Rps_Value
+{
+  friend class Rps_LexTokenZone;
+public:
+  /// related to Rps_TupleOb::make :
+  inline Rps_LexTokenValue (const Rps_LexTokenZone& lxtok);
+  inline Rps_LexTokenValue (const Rps_LexTokenZone* plxtok);
+  // "dynamic" casting :
+  inline Rps_LexTokenValue(Rps_Value val);
+};    // end class Rps_LexTokenValue
 ////////////////////////////////////////////////////////////////
 
 
@@ -1656,6 +1679,7 @@ public:
 class Rps_QuasiZone : public Rps_TypedZone
 {
   friend class Rps_GarbageCollector;
+  friend class Rps_LexTokenZone;
   // we keep each quasi-zone in the qz_zonvec
   static std::recursive_mutex qz_mtx;
   static std::vector<Rps_QuasiZone*> qz_zonvec;
@@ -1835,6 +1859,8 @@ static inline Rps_HashInt rps_hash_cstr(const char*cstr, int len= -1);
 
 class Rps_String : public Rps_LazyHashedZoneValue
 {
+  friend class Rps_LexTokenZone;
+  friend class Rps_LexTokenValue;
   friend Rps_String*
   Rps_QuasiZone::rps_allocate_with_wordgap<Rps_String,const char*,int>(unsigned,const char*,int);
   const uint32_t _bytsiz;
@@ -1948,6 +1974,61 @@ public:
     return _dval < othdbl->dval();
   };
 }; // end class Rps_Double
+
+
+//////////////// boxed lexical token - always transient
+class Rps_LexTokenZone  : public Rps_LazyHashedZoneValue
+{
+  friend Rps_LexTokenZone*
+  Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,Rps_String*,int,int>(Rps_ObjectRef lxkind,Rps_Value lxval,Rps_String*lxpath,int lxline,int lxcol);
+  friend class Rps_GarbageCollector;
+  friend class Rps_LexTokenValue;
+  friend class Rps_QuasiZone;
+  Rps_ObjectRef lex_kind;
+  Rps_Value lex_val;
+  const Rps_String* lex_file;
+  int lex_lineno;
+  int lex_colno;
+public:
+  inline void* operator new (std::size_t siz, std::nullptr_t) {
+    return Rps_QuasiZone::operator new(siz,nullptr);
+  }
+protected:
+  Rps_LexTokenZone(Rps_ObjectRef kind, Rps_Value val, const Rps_String*string, int line, int col);
+protected:
+  virtual ~Rps_LexTokenZone();
+  virtual Rps_HashInt compute_hash(void) const;
+  virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
+  virtual void gc_mark(Rps_GarbageCollector&, unsigned) const;
+  virtual void dump_scan(Rps_Dumper*, unsigned) const;
+  virtual Json::Value dump_json(Rps_Dumper*) const;
+public:
+  static Rps_ObjectRef the_lexical_token_class(void);
+  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual uint32_t wordsize() const
+  {// we need to round the 64 bits word size up, hence...
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual bool equal(const Rps_ZoneValue&zv) const;
+  virtual bool less(const Rps_ZoneValue&zv) const;
+  /// The signature of a function to retrieve the next line....  on
+  /// purpose close to existing rps_repl_get_next_line in our C++ file
+  /// repl_rps.cc...
+  typedef
+  std::function<bool(Rps_CallFrame*callframe,
+		     std::istream*inp,
+		     const char*input_name,
+		     const char**plinebuf, int*plineno)
+		> lexical_line_getter_fun;
+  // Tokenize a lexical token; an optional double-ended queue of
+  // already lexed token enable limited backtracking when needed....
+  static const Rps_LexTokenZone* tokenize
+  (Rps_CallFrame*callframe, std::istream*inp,
+   const char*input_name,
+   const char**plinebuf, int&lineno, int& colno,
+   lexical_line_getter_fun linegetter = nullptr,
+   std::deque<Rps_LexTokenZone*>* pque = nullptr);
+}; // end class Rps_LexTokenZone
 
 
 
@@ -3200,7 +3281,7 @@ public:
 
 ////////////////////////////////////////////////////////////////
 ////// mutable vector of objects payload - for PaylVectOb and objects
-////// of class `mutable_vector _8YknAApDQiF04BDe3W
+////// of class `mutable_object_vector _8YknAApDQiF04BDe3W
 extern "C" rpsldpysig_t rpsldpy_vectob;
 class Rps_PayloadVectOb : public Rps_Payload
 {
@@ -3265,6 +3346,75 @@ public:
     return Rps_TupleValue(pvectob);
   };
 };				// end Rps_PayloadVectOb
+
+
+
+
+////////////////////////////////////////////////////////////////
+////// mutable vector of values payload - for PaylVectVal and objects
+////// of class `mutable_value_vector
+extern "C" rpsldpysig_t rpsldpy_vectval;
+class Rps_PayloadVectVal : public Rps_Payload
+{
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend  rpsldpysig_t rpsldpy_vectval;
+  friend Rps_PayloadVectVal*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadVectVal,Rps_ObjectZone*>(Rps_ObjectZone*);
+  std::vector<Rps_Value> pvectval;
+  inline Rps_PayloadVectVal(Rps_ObjectZone*owner);
+  Rps_PayloadVectVal(Rps_ObjectRef obr) :
+    Rps_PayloadVectVal(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadVectVal()
+  {
+    pvectval.clear();
+  };
+protected:
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+public:
+  virtual const std::string payload_type_name(void) const
+  {
+    return "vectval";
+  };
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  inline Rps_PayloadVectVal(Rps_ObjectZone*obz, Rps_Loader*ld);
+  unsigned size(void) const
+  {
+    return (unsigned) pvectval.size();
+  };
+  Rps_Value at(int ix) const
+  {
+    if (ix<0)
+      ix += size();
+    if (ix>=0 && ix<(int)size())
+      return pvectval[ix];
+    throw std::out_of_range("Rps_PayloadVectVal bad index");
+  };
+  void reserve(unsigned rsiz)
+  {
+    pvectval.reserve(rsiz);
+  };
+  void reserve_more(unsigned gap)
+  {
+    pvectval.reserve(size()+gap);
+  };
+  void push_back(const Rps_Value val)
+  {
+    if (val)
+      pvectval.push_back(val);
+  };
+  void push_back (const Rps_ObjectRef obrcomp)
+  {
+    if (obrcomp)
+      pvectval.push_back(Rps_ObjectValue(obrcomp));
+  };
+#warning missing method to make a node from some Rps_PayloadVectVal
+};				// end Rps_PayloadVectVal
 
 
 ////////////////////////////////////////////////////////////////
@@ -3603,6 +3753,7 @@ extern "C" void rps_print_types_info (void);
 
 extern "C" void rps_read_eval_print_loop(int &argc, char**argv); // GNU readline based
 
+extern "C" void rps_repl_lexer_test(void);
 
 
 extern "C" void rps_run_application(int &argc, char **argv);

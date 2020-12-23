@@ -33,6 +33,7 @@
 
 #include "refpersys.hh"
 #include "onion/version.h"
+#include "readline/readline.h"
 
 extern "C" const char rps_main_gitid[];
 const char rps_main_gitid[]= RPS_GITID;
@@ -105,7 +106,7 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_TYPEINFO, ///
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Show type information", //
+    /*doc:*/ "Show type information (and test tagged integers)", //
     /*group:*/0 ///
   },
   /* ======= syslog-ing ======= */
@@ -183,6 +184,15 @@ struct argp_option rps_progoptions[] =
     " (this option might become obsolete)", //
     /*group:*/0 ///
   },
+  /* ======= command textual read eval print loop lexer testing ======= */
+  {/*name:*/ "test-repl-lexer", ///
+    /*key:*/ RPSPROGOPT_TEST_REPL_LEXER, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Test the read-eval-print-loop lexer.\n"
+    " (this option might become obsolete)", //
+    /*group:*/0 ///
+  },
   /* ======= number of jobs or threads ======= */
   {/*name:*/ "jobs", ///
     /*key:*/ RPSPROGOPT_JOBS, ///
@@ -213,7 +223,7 @@ bool rps_batch = false;
 bool rps_disable_aslr = false;
 bool rps_without_terminal_escape = false;
 bool rps_run_repl = false;
-
+bool rps_test_repl_lexer = false;
 bool rps_syslog_enabled = false;
 bool rps_stdout_istty = false;
 bool rps_stderr_istty = false;
@@ -298,7 +308,7 @@ rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string
          << " The Reflective Persistent System Team."
          << linsuffix << std::endl;
     outs << linprefix
-         << " see http://refpersys.org/ and contact team@refpersys.org for more."
+         << " see refpersys.org and contact team@refpersys.org for more."
          << linsuffix << std::endl;
   }
   outs << linprefix << "_"
@@ -323,7 +333,8 @@ rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string
        << linsuffix << std::endl;
   outs << linprefix << "_"
        << linsuffix << std::endl;
-  outs << linprefix << "You should have received a copy of the GNU General Public License"
+  outs << linprefix << "You should have received a copy of the GNU "
+       "General Public License"
        << linsuffix << std::endl;
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
@@ -403,6 +414,12 @@ rps_print_types_info(void)
 #undef TYPEFMT_rps
   putchar('\n');
   fflush(nullptr);
+  std::cout << "@@°°@@ The tagged integer one hundred is "
+            << Rps_Value::make_tagged_int(100)
+            << std::endl
+            << "... and the tagged integer minus one billion is "
+            <<  Rps_Value::make_tagged_int(-1000000000)
+            << " !!! " << std::endl;
 } // end rps_print_types_info
 
 
@@ -445,7 +462,7 @@ rps_check_mtime_files(void)
                     << " is younger by "
                     << (curstat.st_mtime - (time_t) rps_timelong)
                     << " seconds than current executable " << exebuf
-                    << ", so consider rebuilding with omake");
+                    << ", so consider rebuilding with make");
     }
   char makecmd [128];
   memset (makecmd, 0, sizeof(makecmd));
@@ -513,6 +530,7 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
 int
 main (int argc, char** argv)
 {
+  rl_readline_name = argv[0]; // required by GNU readline
   std::string dumpdir;
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_stderr_istty = isatty(STDERR_FILENO);
@@ -777,6 +795,13 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         RPS_DEBUG_LOG(REPL, "will run with a textual Read-Eval-Print-Loop using GNU readline");
     }
     return 0;
+    case RPSPROGOPT_TEST_REPL_LEXER:
+    {
+      rps_test_repl_lexer = true;
+      if (side_effect)
+        RPS_DEBUG_LOG(REPL, "will run with a textual Read-Eval-Print-Loop lexer GNU readline");
+    }
+    return 0;
     case RPSPROGOPT_RUN_AFTER_LOAD:
     {
       if (rps_run_command_after_load)
@@ -816,6 +841,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " build time: " << rps_timestamp << std::endl
                     << " top directory: " << rps_topdirectory << std::endl
                     << " git id: " << rps_gitid << std::endl
+                    << " short git id: " << rps_shortgitid << std::endl
                     << " last git tag: " << rps_lastgittag << std::endl
                     << " last git commit: " << rps_lastgitcommit << std::endl
                     << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
@@ -835,7 +861,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
           std::cout << std::endl << " C++ compiler: " << rps_cxx_compiler_version << std::endl
                     << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl
                     << "+++++ there is no WARRANTY, to the extent permitted by law ++++" << std::endl
-                    << "***** see also http://refpersys.org/ *****"
+                    << "***** see also refpersys.org *****"
                     << std::endl << std::endl;
           exit(EXIT_SUCCESS);
         }
@@ -857,11 +883,14 @@ rps_parse_program_arguments(int &argc, char**argv)
   argparser.parser = rps_parse1opt;
   argparser.args_doc = " ; # ";
   argparser.doc =
-    "RefPerSys - an Artificial General Intelligence project, GPLv3+, open science, for Linux/x86-64\n"
-    "see http://refpersys.org/ for more. You should have received a copy of the GNU General Public License\n"
-    "along with this program.  If not, see https://www.gnu.org/licenses\n"
-    "**NO WARRANTY, not even for FITNESS FOR A PARTICULAR PURPOSE**\n"
-    "+++ use at your own risk +++\n"
+    "RefPerSys - an Artificial General Intelligence project,\n"
+    " open science, for Linux/x86-64; see refpersys.org for more.\n"
+    " (REFlexive PERsystem SYStem is GPLv3+ licensed free software)\n"
+    " You should have received a copy of the GNU General Public License\n"
+    " along with this program.  If not, see www.gnu.org/licenses\n"
+    " *** NO WARRANTY, not even for FITNESS FOR A PARTICULAR PURPOSE ***\n"
+    " +++!!! use at your own risk !!!+++\n"
+    " (shortgitid " RPS_SHORTGITID " built at " __DATE__ ")\n"
     "\n Accepted program options are:\n";
   argparser.children = nullptr;
   argparser.help_filter = nullptr;
@@ -929,6 +958,14 @@ rps_run_application(int &argc, char **argv)
       RPS_DEBUG_LOG(WEB,
                     "rps_run_application in REPL");
       rps_read_eval_print_loop (argc, argv);
+    }
+  else if (rps_test_repl_lexer)
+    {
+      RPS_INFORMOUT("Before running the REPL lexer test...."
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before repl"));
+      rps_repl_lexer_test();
+      RPS_INFORMOUT("After running the REPL lexer test...."
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after repl"));
     }
   else
     {
@@ -1041,8 +1078,10 @@ rps_fatal_stop_at (const char *filnam, int lin)
   if (rps_debug_file)
     fprintf(rps_debug_file, "\n*** RPS FATAL %s:%d ***\n", filnam, lin);
   fprintf(stderr, "\n%s%sRPS FATAL:%s\n"
-          " RefPerSys gitid %s, built timestamp %s,\n"
-          "\t on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
+          " RefPerSys gitid %s,\n"
+          "\t built timestamp %s,\n"
+          "\t on host %s, md5sum %s,\n"
+          "\t elapsed %.3f, process %.3f sec\n",
           ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
           ontty?RPS_TERMINAL_BLINK_ESCAPE:"",
           ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
@@ -1055,7 +1094,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
                                skipfatal, "RefPerSys FATAL ERROR",
                                &std::clog);
     backt.output(std::clog);
-    std::clog << "===== end fatal error at " << filnam << ":" << lin << " ======" << std::endl << std::flush;
+    std::clog << "===== end fatal error at " << filnam << ":" << lin
+              << " ======" << std::endl << std::flush;
   }
   fflush(nullptr);
   abort();
@@ -1212,7 +1252,7 @@ rps_set_debug_output_path(const char*filepath)
   if (!fdbg)
     RPS_FATAL("cannot open debug file %s - %m", filepath);
   fprintf(fdbg, "**** RefPerSys debug file ****\n"
-          "See http://refpersys.org/ - built %s\n"
+          "See refpersys.org - built %s\n"
           "On host %s pid %d gitid %s topdir %s\n"
           "####################################\n",
           rps_timestamp,

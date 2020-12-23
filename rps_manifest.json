@@ -1,7 +1,7 @@
 //!! GENERATED file rps_manifest.json / DO NOT EDIT!
 //!! This file is part of the Reflective Persistent System.
 //!!  © Copyright 2019 - 2020 The Reflective Persistent System Team.
-//!!  see http://refpersys.org/ and contact team@refpersys.org for more.
+//!!  see refpersys.org and contact team@refpersys.org for more.
 //!! _
 //!! This program is free software: you can redistribute it and/or modify
 //!! it under the terms of the GNU General Public License as published by
@@ -79,6 +79,10 @@
    "obj" : "_1EBVGSfW2m200z18rx"
   },
   {
+   "nam" : "RefPerSys_system",
+   "obj" : "_1Io89yIORqn02SXx4p"
+  },
+  {
    "nam" : "display_object_occurrence_web",
    "obj" : "_1Zo12toMRTa03uqsXh"
   },
@@ -109,6 +113,10 @@
   {
    "nam" : "line",
    "obj" : "_5FMX3lrhiw601iqPy5"
+  },
+  {
+   "nam" : "generate_code",
+   "obj" : "_5VC4IuJ0dyr01b8lA0"
   },
   {
    "nam" : "class",
@@ -144,8 +152,11 @@
   "_0D6zqQNe4eC02bjfGs",
   "_0J1C39JoZiv03qA2HA",
   "_0LbCts6NacB03SMXz4",
+  "_0S6DQvp3Gop015zXhL",
+  "_0TvVIbOU16z028VWvv",
   "_0XMNvzdABUM03Bj7WP",
   "_0Z23UbC0G9b01WZZPN",
+  "_10YXWeY7lYc01RpQTA",
   "_14M7WuJSWw702zB0M9",
   "_1aGtWm38Vw701jDhZn",
   "_1oPsaaqITVi03OYZb9",
@@ -155,6 +166,7 @@
   "_1DBiKRl70P304DEMoR",
   "_1DUx3zfUzIb04lqNVt",
   "_1EBVGSfW2m200z18rx",
+  "_1Io89yIORqn02SXx4p",
   "_1NWEOIzo3WU03mE42Q",
   "_1R1LKwGhoTr02e90bn",
   "_1Win5yzaf1L02cBUlV",
@@ -185,6 +197,7 @@
   "_5yQcFbU0seU018B48Z",
   "_5CYWxcChKN002rw1fI",
   "_5FMX3lrhiw601iqPy5",
+  "_5VC4IuJ0dyr01b8lA0",
   "_627ngdqrVfF020ugC5",
   "_62LTwxwKpQ802SsmjE",
   "_6fmq7pZkmNd03UyPuO",
@@ -204,6 +217,7 @@
   "_8fYqEw8vTED03wsznt",
   "_8xCV6GDXYMa02mK5xy",
   "_8zNtuRpzXUP013WG9S",
+  "_8Iz9vBfs4sl041FiuR",
   "_8J6vNYtP5E800eCr5q",
   "_8YknAApDQiF04BDe3W",
   "_98sc8kSOXV003i86w5",
@@ -211,7 +225,7 @@
   "_9BnrMLXUhfG00llx8X",
   "_9Gz1oNPCnkB00I6VRS"
  ],
- "origitid" : "5c8b2da84825b32eef824b18d7b2155c63764112+",
+ "origitid" : "9cd45b7221e45b3e09308fa60fdfda35f3fbf149+",
  "plugins" : [],
  "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }

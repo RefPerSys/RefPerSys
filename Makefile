@@ -26,10 +26,17 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean fullclean redump altredump print-temporary-plugin-settings indent test01 test02 test03 test-load
+.PHONY: all objects clean fullclean redump altredump print-temporary-plugin-settings indent test01 test02 test03 test-load analyze gitpush gitpush2
+
+
+## tell GNU make to export all variables by default
+export
 
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
+
+RPS_GIT_ORIGIN := $(shell git remote -v | grep "RefPerSys/RefPerSys.git" | head -1 | awk '{print $$1}')
+RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -1 | awk '{print $$1}')
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
@@ -69,7 +76,8 @@ CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             $(RPS_BUILD_CODGENFLAGS) \
 	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) \
 	    $(RPS_PKG_CFLAGS) \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\"
+            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\"
 
 LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 
@@ -143,14 +151,16 @@ clean:
 	$(RM) persistore/*~ persistore/*%
 	$(RM) *.ii
 	$(RM) *% core vgcore*
+	$(RM) -rf bld
 
 fullclean:
 	$(RPS_BUILD_CCACHE) -C
 	$(MAKE) clean
 
-__timestamp.c:
+__timestamp.c: | Makefile do-generate-timestamp.sh
 	./do-generate-timestamp.sh $@  > $@-tmp
-	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp 
+	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
+	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp
 	$(MV) --backup $@-tmp $@
 
 
@@ -188,6 +198,7 @@ check:
 
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
+	@echo RefPerSys git pushing.... ; grep -2 url .git/config
 	@git push origin
 ifeq ($(shell git remote | grep github), github)
 	@git push github
@@ -198,6 +209,27 @@ endif
 	@printf "\n%s git-pushed commit %s of RefPerSys, branch %s ...\n" \
 	        "$$(git config --get user.email)" "$$(./do-generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
 	@git log -1 --format=oneline --abbrev=12 --abbrev-commit -q | head -1
+	if [ -x $$HOME/bin/push-refpersys ]; then $$HOME/bin/push-refpersys $(shell /bin/pwd) $(RPS_SHORTGIT_ID); fi
+
+gitpush2:
+ifeq ($(RPS_GIT_ORIGIN), )
+	git remote add origin https://github.com/RefPerSys/RefPerSys.git
+	echo "Added GitHub repository as remote, run make gitpush2 again..."
+else
+	git push $(RPS_GIT_ORIGIN) master
+endif
+ifeq ($(RPS_GIT_MIRROR), )
+	git remote add mirror https://gitlab.com/bstarynk/refpersys.git
+	echo "Added GitLab repository as remote, run make gitpush2 again..."
+else
+	git push $(RPS_GIT_MIRROR) master
+endif
+
+
+analyze:
+	make clean
+	mkdir -p bld
+	scan-build -v -V -o bld make -j4
 
 
 ################################################################

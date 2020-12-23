@@ -2014,11 +2014,56 @@ Rps_Dumper::write_generated_constants_file(void)
 void
 Rps_Dumper::write_all_generated_files(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
   write_generated_roots_file();
   write_generated_names_file();
   write_generated_constants_file();
-  RPS_WARNOUT("Rps_Dumper::write_all_generated_files incomplete");
-#warning Rps_Dumper::write_all_generated_files incomplete
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           du_callframe,
+                           Rps_Value dumpdirnamev;
+                           Rps_Value tempsuffixv;
+                           Rps_ObjectRef refpersysob;
+                           Rps_ObjectRef gencodselob;
+                           Rps_Value mainv;
+                           Rps_Value refpersysv;
+                           Rps_Value xtrav;
+                );
+  _f.dumpdirnamev = Rps_StringValue(du_topdir);
+  _f.tempsuffixv = Rps_StringValue(du_tempsuffix);
+  _f.refpersysob = RPS_ROOT_OB(_1Io89yIORqn02SXx4p); //RefPerSys_system∈the_system_class
+  _f.gencodselob = RPS_ROOT_OB(_5VC4IuJ0dyr01b8lA0); //generate_code∈named_selector
+  try
+    {
+      _f.refpersysv = Rps_ObjectValue(_f.refpersysob);
+      RPS_DEBUG_LOG(DUMP, "Rps_Dumper::write_all_generated_files before sending "<< _f.gencodselob << " to "
+                    << _f.refpersysv << " with " << _f.dumpdirnamev << " & " << _f.tempsuffixv
+                    << std::endl
+                    << Rps_ShowCallFrame(&_));
+      Rps_TwoValues two = _f.refpersysv.send2(&_, _f.gencodselob, _f.dumpdirnamev, _f.tempsuffixv);
+      _f.mainv = two.main();
+      _f.xtrav  = two.xtra();
+      RPS_DEBUG_LOG(DUMP, "Rps_Dumper::write_all_generated_files after sending "<< _f.gencodselob << " to "
+                    << _f.refpersysv << " with " << _f.dumpdirnamev << " & " << _f.tempsuffixv
+                    << std::endl << " --> mainv=" << _f.mainv << " & xtrav=" << _f.xtrav
+                    << std::endl
+                    << Rps_ShowCallFrame(&_));
+      if (!_f.mainv && !_f.xtrav)
+        {
+          RPS_WARNOUT("Rps_Dumper::write_all_generated_files failed to send " << _f.gencodselob << " to "
+                      << _f.refpersysob << " with " << _f.dumpdirnamev << " & " << _f.tempsuffixv
+                      << std::endl << Rps_ShowCallFrame(&_)
+                      << std::endl
+                      << RPS_FULL_BACKTRACE_HERE(1,"Rps_Dumper::write_all_generated_files"));
+        }
+    }
+  catch (std::exception&exc)
+    {
+      RPS_WARNOUT("Rps_Dumper::write_all_generated_files failed to generate_code on RefPerSys_system dumpdirnamev=" << _f.dumpdirnamev
+                  << " tempsuffixv=" << _f.tempsuffixv
+                  << " got exception " << exc.what()
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1,"Rps_Dumper::write_all_generated_files"));
+    }
 } // end Rps_Dumper::write_all_generated_files
 
 
@@ -2710,6 +2755,33 @@ void rpsldpy_vectob(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rp
       Json::Value jvcurelem = jvectob[elemix];
       auto obelem = Rps_ObjectRef(jvcurelem, ld);
       paylvectob->push_back(obelem);
+    }
+} // end of rpsldpy_vectob
+
+
+/// loading of vector of values payload
+void rpsldpy_vectval(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+{
+  RPS_ASSERT(obz != nullptr);
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  Json::Value jvectval = jv["vectval"];
+  unsigned nbcomp = 0;
+  if (!jvectval.isArray())
+    RPS_FATALOUT("rpsldpy_vectval: object " << obz->oid()
+                 << " in space " << spacid << " lineno#" << lineno
+                 << " has bad vectval"
+                 << std::endl
+                 << " jvectval " <<(jvectval));
+  auto paylvectval = obz->put_new_plain_payload<Rps_PayloadVectVal>();
+  RPS_ASSERT(paylvectval != nullptr);
+  nbcomp = jvectval.size();
+  paylvectval->reserve(nbcomp);
+  for (int compix=0; compix<(int)nbcomp; compix++)
+    {
+      Json::Value jvcurcomp =  jvectval[compix];
+      auto compv = Rps_Value(jvcurcomp, ld);
+      paylvectval->push_back(compv);
     }
 } // end of rpsldpy_vectob
 

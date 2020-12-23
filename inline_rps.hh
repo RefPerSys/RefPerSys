@@ -144,7 +144,13 @@ Rps_Value::Rps_Value(std::nullptr_t) : _wptr(nullptr) {};
 Rps_Value::Rps_Value(Rps_EmptyTag) : _wptr (RPS_EMPTYSLOT) {};
 
 Rps_Value::Rps_Value(intptr_t i, Rps_IntTag) :
-  _ival(((i >> 1) << 1) | 1) {};
+  _ival((i<< 1) | 1) {};
+
+Rps_Value
+Rps_Value::make_tagged_int(intptr_t i)
+{
+  return Rps_Value(i, Rps_IntTag{});
+} // end Rps_Value::make_tagged_int
 
 Rps_Value::Rps_Value(const Rps_ZoneValue*ptr, Rps_ValPtrTag) :
   _pval(ptr)
@@ -180,12 +186,30 @@ Rps_Value::type() const
     return _pval->type();
 } // end Rps_Value::type()
 
+
 const Rps_ZoneValue*
 Rps_Value::as_ptr() const
 {
-  if (is_ptr()) return _pval;
-  else throw std::runtime_error("Rps_Value::as_ptr: value is not genuine pointer");
-}
+  if (is_ptr())
+    return _pval;
+  else if (is_int())
+    {
+      char buf[80];
+      memset(buf, 0, sizeof(buf));
+      snprintf(buf, sizeof(buf), "Rps_Value::as_ptr: given tagged int %ld",
+               (long) as_int());
+      throw std::runtime_error(buf);
+    }
+  else
+    {
+      char buf[64];
+      memset(buf, 0, sizeof(buf));
+      snprintf(buf, sizeof(buf), "Rps_Value::as_ptr: value@%p is not genuine pointer",
+               (void*)this);
+      throw std::runtime_error(buf);
+    }
+} // end Rps_Value::as_ptr()
+
 
 const Rps_ZoneValue*
 Rps_Value::to_ptr(const Rps_ZoneValue*defzp) const
@@ -293,6 +317,12 @@ bool Rps_Value::is_tuple() const
   return is_ptr()
          && as_ptr()->stored_type() == Rps_Type::Tuple;
 } //end  Rps_Value::is_tuple()
+
+bool Rps_Value::is_lextoken() const
+{
+  return is_ptr()
+         && as_ptr()->stored_type() == Rps_Type::LexToken;
+} //end  Rps_Value::is_lextoken()
 
 bool Rps_Value::is_string() const
 {
@@ -442,6 +472,27 @@ Rps_Value::to_tuple(const Rps_TupleOb*deftup) const
   else return deftup;
 } // end Rps_Value::to_tuple
 
+
+const Rps_LexTokenZone*
+Rps_Value::as_lextoken() const
+{
+  if (is_lextoken())
+    return reinterpret_cast<const Rps_LexTokenZone*>(_pval);
+  else throw std::domain_error("Rps_Value::as_lextoken: value is not genuine lexical token");
+} // end Rps_Value::as_lextoken
+
+const Rps_LexTokenZone*
+Rps_Value::to_lextoken() const
+{
+  if (is_tuple())
+    return reinterpret_cast<const Rps_LexTokenZone*>(const_cast<Rps_ZoneValue*>(_pval));
+  else return nullptr;
+} // end Rps_Value::to_lextoken
+
+Rps_LexTokenValue::Rps_LexTokenValue (const Rps_LexTokenZone*lxz)
+  : Rps_Value (lxz, Rps_ValPtrTag{})
+{
+} // end of Rps_LexTokenValue::Rps_LexTokenValue
 
 
 Rps_TupleValue::Rps_TupleValue (const std::vector<Rps_ObjectRef>& obvec)
@@ -746,8 +797,9 @@ bool Rps_Value::is_null() const
 std::intptr_t
 Rps_Value::as_int() const
 {
-  if (!is_int()) throw std::invalid_argument("value is not an int");
-  return _ival>>1;
+  if (!is_int())
+    throw std::invalid_argument("value is not an int");
+  return (_ival>>1);
 }
 
 // test if this value is an instance of given obclass
@@ -786,7 +838,8 @@ Rps_Value::to_int(intptr_t def) const
 {
   if (is_int())
     {
-      return _ival>>1;
+      RPS_ASSERT(_ival & 1);
+      return (_ival>>1)<<1;
     }
   else return def;
 } // end Rps_Value::to_int
@@ -1804,6 +1857,23 @@ Rps_PayloadVectOb::Rps_PayloadVectOb(Rps_ObjectZone*owner, Rps_Loader*ld)
 {
   RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
 }      // end Rps_PayloadVectOb::Rps_PayloadVectOb ..loading
+
+
+
+
+////// mutable vector of value payload - for PaylVectVact
+Rps_PayloadVectVal::Rps_PayloadVectVal(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylVectVal, owner), pvectval()
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadVectVal::Rps_PayloadVectVal
+
+Rps_PayloadVectVal::Rps_PayloadVectVal(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylVectVal, owner, ld),
+    pvectval()
+{
+  RPS_ASSERT(owner && owner->stored_type() == Rps_Type::Object);
+}      // end Rps_PayloadVectVal::Rps_PayloadVectOb ..loading
 
 
 

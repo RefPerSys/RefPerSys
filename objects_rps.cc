@@ -1148,16 +1148,21 @@ int
 Rps_ObjectZone::autocomplete_oid(const char*prefix,
                                  const std::function<bool(const Rps_ObjectZone*)>&stopfun)
 {
+  RPS_DEBUG_LOG(COMPL_REPL, "autocomplete_oid start prefix"
+                << (prefix?"='":" ")
+                << (prefix?:"*none*")
+                << (prefix?"'":"."));
   if (!prefix || prefix[0] != '_'
       || !isdigit(prefix[1]) || !isalnum(prefix[2]) || !isalnum(prefix[3]))
     return 0;
+  int prefixlen = (int) strlen(prefix);
   char bufid[24];
   memset(bufid, 0, sizeof(bufid));
   int lastix=0;
   {
     int ix=0;
     bufid[0] = '_';
-    for (ix=1; ix<(int)Rps_Id::nbchars; ix++)
+    for (ix=1; ix<prefixlen && prefix[ix] != (char)0; ix++)
       {
         if (!strchr(Rps_Id::b62digits, prefix[ix]))
           break;
@@ -1170,12 +1175,17 @@ Rps_ObjectZone::autocomplete_oid(const char*prefix,
       };
   }
   Rps_Id idpref(bufid);
-  constexpr char lastdigit = Rps_Id::b62digits[sizeof(Rps_Id::b62digits)-1];
+  RPS_DEBUG_LOG(COMPL_REPL, "autocomplete_oid bufid='" << bufid << "' idpref=" << idpref);
+  constexpr char lastdigit = Rps_Id::b62digits[sizeof(Rps_Id::b62digits)-2];
+  RPS_DEBUG_LOG(COMPL_REPL, "autocomplete_oid lastdigit=" << (lastdigit?:'?') << " of code " << (int)lastdigit);
   for (int ix=lastix; ix<(int)Rps_Id::nbchars; ix++)
     {
       bufid[ix] = lastdigit;
     }
   Rps_Id idlast(bufid);
+  RPS_DEBUG_LOG(COMPL_REPL, "autocomplete_oid bufid='" << bufid
+                << "', prefixlen=" << prefixlen
+                << ", idpref=" << idpref << ", idlast=" << idlast);
   int count = 0;
   std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
   auto& curobuck = ob_idbucketmap_[idpref.bucket_num()];
@@ -1512,6 +1522,41 @@ Rps_PayloadVectOb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
       jarr.append(Json::Value(Json::nullValue));
   jv["vectob"] = jarr;
 } // end Rps_PayloadVectOb::dump_json_content
+
+/***************** mutable vector of values payload **********/
+
+void
+Rps_PayloadVectVal::gc_mark(Rps_GarbageCollector&gc) const
+{
+  for (auto compv: pvectval)
+    if (compv)
+      gc.mark_value(compv);
+} // end Rps_PayloadVectVal::gc_mark
+
+void
+Rps_PayloadVectVal::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du != nullptr);
+  for (auto compv: pvectval)
+    if (compv)
+      rps_dump_scan_value(du, compv, 0);
+} // end Rps_PayloadVectVal::dump_scan
+
+
+void
+Rps_PayloadVectVal::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  /// see function rpsldpy_vectob in store_rps.cc
+  RPS_ASSERT(du != nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  Json::Value jarr(Json::arrayValue);
+  for (auto compv: pvectval)
+    if (rps_is_dumpable_value(du, compv))
+      jarr.append(rps_dump_json_value(du,compv));
+    else
+      jarr.append(Json::Value(Json::nullValue));
+  jv["vectval"] = jarr;
+} // end Rps_PayloadVectVal::dump_json_content
 
 
 /***************** space payload **********/
