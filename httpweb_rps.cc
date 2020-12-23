@@ -84,7 +84,9 @@ rps_web_initialize_service(const char*servarg)
       rps_onion_server.setPort(portnum);
       RPS_INFORMOUT("rps_web_initialize_service initialized Onion webserver on "
                     << serverbuf << ":" << portnum
-                    << " using libonion " << onion_version());
+                    << " using libonion " << onion_version()
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_web_initialize_service"));
     }
   else
     RPS_FATALOUT("rps_web_initialize_service: bad server " << servarg);
