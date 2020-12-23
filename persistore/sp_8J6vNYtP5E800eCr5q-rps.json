@@ -1,7 +1,7 @@
 //// GENERATED file persistore/sp_8J6vNYtP5E800eCr5q-rps.json / DO NOT EDIT!
 //// This file is part of the Reflective Persistent System.
 ////  © Copyright 2019 - 2020 The Reflective Persistent System Team.
-////  see http://refpersys.org/ and contact team@refpersys.org for more.
+////  see refpersys.org and contact team@refpersys.org for more.
 //// _
 //// This program is free software: you can redistribute it and/or modify
 //// it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 123,
+ "nbobjects" : 132,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -179,6 +179,45 @@
 //-ob_0LbCts6NacB03SMXz4
 
 
+//+ob_0S6DQvp3Gop015zXhL
+//∈class
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "lexical_token"
+  }
+ ],
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "lexical_token",
+ "class_super" : "_41OFI3r0S1t03qdB2E",
+ "class_symb" : "_8OVpTFkd9cl03b3h71",
+ "mtime" : 1607015128.45,
+ "oid" : "_0S6DQvp3Gop015zXhL",
+ "payload" : "classinfo"
+}
+//-ob_0S6DQvp3Gop015zXhL
+
+
+//+ob_0TvVIbOU16z028VWvv
+//∈core_function
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "Rps_LexToken::tokenize"
+  }
+ ],
+ "class" : "_9Gz1oNPCnkB00I6VRS",
+ "mtime" : 1607183415.21,
+ "oid" : "_0TvVIbOU16z028VWvv"
+}
+//-ob_0TvVIbOU16z028VWvv
+
+
 //+ob_0TwK4TkhEGZ03oTa5m
 //∈core_function
 {
@@ -229,10 +268,32 @@
  "mtime" : 1579159079,
  "oid" : "_0ZGvUv1c0RR01Mr5VM",
  "payload" : "symbol",
- "symb_name" : "mutable_vector",
+ "symb_name" : "mutable_object_vector",
  "symb_val" : "_8YknAApDQiF04BDe3W"
 }
 //-ob_0ZGvUv1c0RR01Mr5VM
+
+
+//+ob_10YXWeY7lYc01RpQTA
+//∈class
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "the_system_class"
+  }
+ ],
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "the_system_class",
+ "class_super" : "_5yhJGgxLwLp00X0xEQ",
+ "class_symb" : "_65QLbRro79q03PSiNo",
+ "mtime" : 1608398683.28,
+ "oid" : "_10YXWeY7lYc01RpQTA",
+ "payload" : "classinfo"
+}
+//-ob_10YXWeY7lYc01RpQTA
 
 
 //+ob_14M7WuJSWw702zB0M9
@@ -439,6 +500,25 @@
  "symb_val" : "_4FBkYDlynyC02QtkfG"
 }
 //-ob_1EBVGSfW2m200z18rx
+
+
+//+ob_1Io89yIORqn02SXx4p
+//∈the_system_class
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "RefPerSys_system"
+  }
+ ],
+ "class" : "_10YXWeY7lYc01RpQTA",
+ "mtime" : 1608398683.28,
+ "oid" : "_1Io89yIORqn02SXx4p",
+ "payload" : "symbol",
+ "symb_name" : "RefPerSys_system"
+}
+//-ob_1Io89yIORqn02SXx4p
 
 
 //+ob_1NWEOIzo3WU03mE42Q
@@ -1409,6 +1489,25 @@
 //-ob_5KVs9kaMYiU040KwVj
 
 
+//+ob_5VC4IuJ0dyr01b8lA0
+//∈named_selector
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "generate_code"
+  }
+ ],
+ "class" : "_0cSUtWqTYdZ00mjeNR",
+ "mtime" : 1608398683.28,
+ "oid" : "_5VC4IuJ0dyr01b8lA0",
+ "payload" : "symbol",
+ "symb_name" : "generate_code"
+}
+//-ob_5VC4IuJ0dyr01b8lA0
+
+
 //+ob_627ngdqrVfF020ugC5
 //∈string_dictionary
 {
@@ -1487,6 +1586,19 @@
 //-ob_62LTwxwKpQ802SsmjE
 
 
+//+ob_65QLbRro79q03PSiNo
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1608398683.28,
+ "oid" : "_65QLbRro79q03PSiNo",
+ "payload" : "symbol",
+ "symb_name" : "the_system_class",
+ "symb_val" : "_10YXWeY7lYc01RpQTA"
+}
+//-ob_65QLbRro79q03PSiNo
+
+
 //+ob_68wsAiJhJj1025DIs1
 //∈repl_delimiter
 {
@@ -1515,6 +1627,19 @@
  "symb_val" : "_3s7ztCCoJsj04puTdQ"
 }
 //-ob_69f4MoBCZ5s04zfqiJ
+
+
+//+ob_6eZvgmNsLPF02YHATN
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1607874132.8299999,
+ "oid" : "_6eZvgmNsLPF02YHATN",
+ "payload" : "symbol",
+ "symb_name" : "mutable_value_vector",
+ "symb_val" : "_8Iz9vBfs4sl041FiuR"
+}
+//-ob_6eZvgmNsLPF02YHATN
 
 
 //+ob_6fmq7pZkmNd03UyPuO
@@ -2044,6 +2169,28 @@
 //-ob_8zNtuRpzXUP013WG9S
 
 
+//+ob_8Iz9vBfs4sl041FiuR
+//∈class
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "mutable_value_vector"
+  }
+ ],
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "mutable_value_vector",
+ "class_super" : "_5yhJGgxLwLp00X0xEQ",
+ "class_symb" : "_6eZvgmNsLPF02YHATN",
+ "mtime" : 1607874132.8299999,
+ "oid" : "_8Iz9vBfs4sl041FiuR",
+ "payload" : "classinfo"
+}
+//-ob_8Iz9vBfs4sl041FiuR
+
+
 //+ob_8J6vNYtP5E800eCr5q
 //∈space
 {
@@ -2073,6 +2220,19 @@
 //-ob_8KJHUldX8GJ03G5OWp
 
 
+//+ob_8OVpTFkd9cl03b3h71
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1607015128.45,
+ "oid" : "_8OVpTFkd9cl03b3h71",
+ "payload" : "symbol",
+ "symb_name" : "lexical_token",
+ "symb_val" : "_0S6DQvp3Gop015zXhL"
+}
+//-ob_8OVpTFkd9cl03b3h71
+
+
 //+ob_8YknAApDQiF04BDe3W
 //∈class
 {
@@ -2080,15 +2240,15 @@
  [
   {
    "at" : "_1EBVGSfW2m200z18rx",
-   "va" : "mutable_vector"
+   "va" : "mutable_object_vector"
   }
  ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
- "class_name" : "mutable_vector",
+ "class_name" : "mutable_object_vector",
  "class_super" : "_5yhJGgxLwLp00X0xEQ",
  "class_symb" : "_0ZGvUv1c0RR01Mr5VM",
- "mtime" : 1583088448.8099999,
+ "mtime" : 1607850049.2,
  "oid" : "_8YknAApDQiF04BDe3W",
  "payload" : "classinfo"
 }
