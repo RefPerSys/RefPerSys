@@ -41,11 +41,19 @@ const char rps_main_gitid[]= RPS_GITID;
 extern "C" const char rps_main_date[];
 const char rps_main_date[]= __DATE__;
 
-/// actually, in function main we have something like  asm volatile ("end_of_main: nop");
-extern "C" void end_of_main(void);
+/// actually, in function main we have something like  asm volatile ("rps_end_of_main: nop");
+extern "C" void rps_end_of_main(void);
+
+extern "C" void rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe);
 
 extern "C" std::vector<Rps_Plugin> rps_plugins_vector;
 std::vector<Rps_Plugin> rps_plugins_vector;
+
+
+extern "C" std::string rps_cpluspluseditor_str;
+std::string rps_cpluspluseditor_str;
+extern "C" std::string rps_cplusplusflags_str;
+std::string rps_cplusplusflags_str;
 
 #define RPS_DEFAULT_WEB_SERVICE "localhost:9090"
 static const char*rps_web_service = RPS_DEFAULT_WEB_SERVICE;
@@ -165,7 +173,25 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "start web service as given on HOST:PORT, where -W. means --web=" RPS_DEFAULT_WEB_HOST_PORT, //
     /*group:*/0 ///
   },
-  /* ======= load a plugin after load ======= */
+  /* ======= edit the C++ code of  a temporary plugin after load ======= */
+  {/*name:*/ "cplusplus-editor-after-load", ///
+    /*key:*/ RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD, ///
+    /*arg:*/ "EDITOR", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "prefill some C++ temporary file for plugin code,\n"
+    " edit it with given EDITOR, then compile it"
+    " and run its " RPS_PLUGIN_INIT_NAME "(const Rps_Plugin*) function", //
+    /*group:*/0 ///
+  },
+  /* ======= extra compilation flags for C++ code above after load ======= */
+  {/*name:*/ "cplusplus-flags-after-load", ///
+    /*key:*/ RPSPROGOPT_CPLUSPLUSFLAGS_AFTER_LOAD, ///
+    /*arg:*/ "FLAGS", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "set to FLAGS the extra compilation flags for the C++ code of the temporary plugin.", //
+    /*group:*/0 ///
+  },
+  /* ======= dlopen a given plugin file after load ======= */
   {/*name:*/ "plugin-after-load", ///
     /*key:*/ RPSPROGOPT_PLUGIN_AFTER_LOAD, ///
     /*arg:*/ "PLUGIN", ///
@@ -639,10 +665,10 @@ main (int argc, char** argv)
       RPS_INFORM("RefPerSys should dump into %s\n", dumpdir.c_str());
       rps_dump_into(dumpdir);
     }
-  asm volatile (".globl end_of_main; .type end_of_main, @function");
-  asm volatile ("end_of_main: nop; nop; nop; nop");
-  asm volatile (".size end_of_main, . - end_of_main");
-  asm volatile ("nop; nop");
+  asm volatile (".globl rps_end_of_main; .type rps_end_of_main, @function");
+  asm volatile ("rps_end_of_main: nop; nop; nop; nop; nop; nop");
+  asm volatile (".size rps_end_of_main, . - rps_end_of_main");
+  asm volatile ("nop; nop; nop;");
   if (rps_debug_file)
     fflush(rps_debug_file);
   RPS_INFORM("end of RefPerSys process %d on host %s\n"
@@ -825,6 +851,26 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_plugins_vector.push_back(curplugin);
     }
     return 0;
+    case RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD:
+    {
+      if (side_effect) {
+	if (!rps_cpluspluseditor_str.empty())
+	  RPS_FATALOUT("program option --cplusplus-editor-after-load given twice with "
+		       << rps_cpluspluseditor_str << " and " << arg);
+	rps_cpluspluseditor_str.assign(arg);
+      }
+    }
+    return 0;
+    case RPSPROGOPT_CPLUSPLUSFLAGS_AFTER_LOAD:
+    {
+      if (side_effect) {
+	if (!rps_cplusplusflags_str.empty())
+	  RPS_FATALOUT("program option --cplusplus-flags-after-load given twice with "
+		       << rps_cplusplusflags_str << " and " << arg);
+	rps_cplusplusflags_str.assign(arg);
+      }
+    }
+    return 0;
     case RPSPROGOPT_VERSION:
     {
       if (side_effect)
@@ -904,6 +950,10 @@ rps_parse_program_arguments(int &argc, char**argv)
 void
 rps_run_application(int &argc, char **argv)
 {
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+		 /*callerframe:*/nullptr,
+		 Rps_ObjectRef tempob;
+		 );
   {
     char cwdbuf[128];
     memset (cwdbuf, 0, sizeof(cwdbuf));
@@ -947,6 +997,15 @@ rps_run_application(int &argc, char **argv)
       else
         RPS_INFORM("after successfully running command '%s' after load", rps_run_command_after_load);
     }
+  //// if told, run an editor for C++ code
+  if (!rps_cpluspluseditor_str.empty() || !rps_cplusplusflags_str.empty()) {
+    RPS_INFORMOUT("rps_run_application should edit user C++ code with editor='"
+		  << rps_cpluspluseditor_str << "' and compile flags '" << rps_cplusplusflags_str << "'"
+		  << std::endl
+		  << " with call frame " << Rps_ShowCallFrame(&_));
+    rps_edit_run_cplusplus_code (&_);
+  }
+  /////
   if (rps_batch)
     {
       RPS_DEBUG_LOG(WEB,
@@ -969,10 +1028,9 @@ rps_run_application(int &argc, char **argv)
     }
   else
     {
-      RPS_FATALOUT(
-        "rps_run_application NOT calling rps_run_web_service"
-        << std::endl
-        << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
+      RPS_FATALOUT("rps_run_application NOT calling rps_run_web_service"
+		    << std::endl
+		    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
       rps_run_web_service();
     }
 #warning incomplete rps_run_application
@@ -980,7 +1038,29 @@ rps_run_application(int &argc, char **argv)
               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
 } // end rps_run_application
 
-
+void
+rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
+{
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+		 /*callerframe:*/callerframe,
+		 Rps_ObjectRef tempob;
+		 );
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_ASSERT(rps_is_main_thread());
+  if (rps_cpluspluseditor_str.empty()) {
+    const char*editorenv = getenv("EDITOR");
+    if (!editorenv && !access("/usr/bin/editor", X_OK))
+      editorenv = "/usr/bin/editor";
+    if (access(editorenv, X_OK))
+      RPS_FATALOUT("rps_edit_run_cplusplus_code without any editor " << editorenv << ":"
+		   << strerror(errno)
+		   << " - from "
+		   << Rps_ShowCallFrame(&_)
+		   << std::endl
+		   << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *no-editor*"));
+    rps_cpluspluseditor_str.assign(editorenv);  
+  }
+} // end rps_edit_run_cplusplus_code
 
 ////////////////////////////////////////////////////////////////
 ///// status routines
