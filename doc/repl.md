@@ -39,11 +39,6 @@ The general syntax for REPL commands would thus be:
 
 ```
 
-A lot of REPL commands would involve expressions. While the Lisp
-syntax is easy to parse, an infix Python-like or JavaScript like
-syntax seems more user-friendly. To compute the sum of 2 and 3, we
-prefer typing `2+3` instead of e.g. `(+ 2 3)`.
-
 
 ## Extensible syntax
 
@@ -51,25 +46,68 @@ The *`<verb>`* above would be an object, often a RefPerSys symbol,
 having as some specific attribute `repl_command` whose associated
 value is a RefPerSys closure parsing the rest of the command.
 
+EDIT:
+
+Although we had initially considered using verbs and subjects in the REPL, on
+discussion it was decided that a better approach would be to consider a syntax
+similar to Python functions. With such a syntax, every command would be a
+function, which in turn would be associated with a RefPerSys closure.
+
 ## Concrete examples
 
-1. Creating then displaying persistent object of class "symbol" with name "comment" can be
+1. Creating a persistent object of class "symbol" with name "comment" can be
    achieved in two ways, namely by using either the object ID or name of the
    class "symbol".
 
-  * `display make_object [ *name=comment *class=symbol ]`
-  * `display make_object [ *name=comment *class=_36I1BY2NetN03WjrOv ]`
+  * `create_object name=comment class=symbol`
+  * `create_object name=comment class=_36I1BY2NetN03WjrOv`
 
-The rationale for using a prefix `*` for attributes is simplicity of
-parsing using simple [recursive descent
-parsing](https://en.wikipedia.org/wiki/Recursive_descent_parser)
-techniques.
+EDIT:
 
-2. Putting in an object an attribute with a  code chunk value
+With the new syntax in consideration, we would have instead:
+  * `create_object(name=comment, class=symbol)`
+  * `create_object(name=comment, class=_36I1BY2NetN03Wjr0v)`
 
-### to be completed
+As before, we can refer to objects either by their object ID or by their name.
 
-## List of RefPerSys functions accepting a call frame
+### Examples required
+
+  * Creating a new object named `sample_object` of class `symbol` with a
+    comment:
+    - object_new(name=sample_object, class=symbol, comment="Sample object");
+
+  * Creating the same object as above, except that we now refer to the class by
+    its object ID:
+    - object_new(name=sample_object, class=_36I1BY2NetN03Wjr0v, comment="Sample
+      object");
+  
+  * Querying the newly created `sample_object` for its object ID:
+    - sample_object.oid();
+
+  * Adding a key-value attribute pair of objects to the newly created
+    `sample_object`:
+    - sample_object.add(attribute=[sample_key_object, sample_key_value]);
+
+  * Adding a list of key-value attribute pairs of objects to the newly created
+    `sample_object`:
+    - sample_object.add(attribute={[sample_key_object1, sample_key_value1],
+	sample_key_object2, sample_key_value2]});
+
+  * Removing attribute with key sample_key_object from `sample_object`:
+    - sample_object.remove(attribute=sample_key_object);
+
+  * Add a component to an object
+  * Remove a component from an object
+  * Send a message to an object
+  * Apply a closure to an object
+  * Create an object with a payload
+  * Create a new class
+  * Create a code chunk object
+
+  
+
+
+## List of RefPerSys functions acception a call frame
 
   * Rps_ObjectRef::Rps_ObjectRef(
 	Rps_CallFrame*callerframe, 
@@ -133,4 +171,274 @@ techniques.
 	Rps_Value closv1, 
 	Rps_ObjectRef obsel2, 
 	Rps_Value closv2);
+
+
+  * Rps_ObjectFromOidRef::Rps_ObjectFromOidRef(
+	Rps_CallFrame*callerframe, 
+	const char*oidstr);
+
+  * inline Rps_Value::Rps_Value(
+	const void*ptr, 
+	Rps_CallFrame*cframe);
+
+  * Rps_ClosureValue Rps_Value::closure_for_method_selector(
+	Rps_CallFrame*cframe, 
+	Rps_ObjectRef obselector) const;
+
+  * Rps_ObjectRef Rps_Value::compute_class(
+	Rps_CallFrame*) const;
+
+  * Rps_Value Rps_Value::get_attr(
+	Rps_CallFrame*stkf, 
+	const Rps_ObjectRef obattr) const;
+
+  * inline bool Rps_Value::is_instance_of(
+	Rps_CallFrame*callerframe, 
+	Rps_ObjectRef obclass) const;
+
+  * inline bool Rps_Value::is_subclass_of(
+	Rps_CallFrame*callerframe, 
+	Rps_ObjectRef obsuperclass) const;
+
+  * Rps_TwoValues Rps_Value::send0(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel) const;
+
+  * Rps_TwoValues Rps_Value::send1(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        Rps_Value arg0) const;
+
+  * Rps_TwoValues Rps_Value::send2(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        Rps_Value arg0, 
+	const Rps_Value arg1) const;
+
+  * Rps_TwoValues Rps_Value::send3(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1, 
+	const Rps_Value arg2) const;
+
+  * Rps_TwoValues Rps_Value::send4(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1,
+        const Rps_Value arg2, 
+	const Rps_Value arg3) const;
+
+  * Rps_TwoValues Rps_Value::send5(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1,
+        const Rps_Value arg2, 
+	const Rps_Value arg3,
+        const Rps_Value arg4) const;
+
+  * Rps_TwoValues Rps_Value::send6(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1,
+        const Rps_Value arg2, 
+	const Rps_Value arg3,
+        const Rps_Value arg4, 
+	const Rps_Value arg5) const;
+
+  * Rps_TwoValues Rps_Value::send7(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1,
+        const Rps_Value arg2, 
+	const Rps_Value arg3,
+        const Rps_Value arg4, 
+	const Rps_Value arg5,
+        const Rps_Value arg6) const;
+
+  * Rps_TwoValues Rps_Value::send8(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1,
+        const Rps_Value arg2, 
+	const Rps_Value arg3,
+        const Rps_Value arg4, 
+	const Rps_Value arg5,
+        const Rps_Value arg6, 
+	const Rps_Value arg7) const;
+
+  * Rps_TwoValues Rps_Value::send9(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const Rps_Value arg0, 
+	const Rps_Value arg1,
+        const Rps_Value arg2, 
+	const Rps_Value arg3,
+        const Rps_Value arg4, 
+	const Rps_Value arg5,
+        const Rps_Value arg6, 
+	const Rps_Value arg7,
+        const Rps_Value arg8) const;
+
+  * Rps_TwoValues Rps_Value::send_vect(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const std::vector<Rps_Value>& argvec) const;
+
+  * Rps_TwoValues Rps_Value::send_ilist(
+	Rps_CallFrame*cframe, 
+	const Rps_ObjectRef obsel,
+        const std::initializer_list<Rps_Value>& argil) const;
+
+  * inline void Rps_GarbageCollector::mark_call_stack(
+	Rps_CallFrame*topframe);
+
+  * virtual Rps_ObjectRef Rps_ZoneValue::compute_class(
+	Rps_CallFrame*stkf) const =0;
+
+  * virtual Rps_ObjectRef Rps_String::compute_class(
+	Rps_CallFrame*stkf) const;
+
+  * virtual Rps_ObjectRef Rps_Double::compute_class(
+	Rps_CallFrame*stkf) const;
+
+  * virtual Rps_ObjectRef Rps_ObjectZone::compute_class(
+	Rps_CallFrame*stkf) const;
+  
+  * unsigned Rps_ObjectZone::nb_attributes(
+	Rps_CallFrame*stkf) const;
+
+  * Rps_Value Rps_ObjectZone::get_attr1(
+	Rps_CallFrame*stkf,
+	const Rps_ObjectRef obattr0) const;
+
+  * Rps_TwoValues Rps_ObjectZone::get_attr2(
+	Rps_CallFrame*stkf,
+	const Rps_ObjectRef obattr0, 
+	const Rps_ObjectRef obattr1) const;
+
+  * unsigned Rps_ObjectZone::nb_components(
+	Rps_CallFrame*stkf) const;
+
+  * Rps_Value Rps_ObjectZone::component_at(
+	Rps_CallFrame*stkf, 
+	int rk, 
+	bool dontfail=false) const;
+
+  * Rps_Value Rps_ObjectZone::instance_from_components(
+	Rps_CallFrame*stkf, 
+	Rps_ObjectRef obinstclass) const;
+  
+  * virtual Rps_ObjectRef Rps_SetOb::compute_class(
+	Rps_CallFrame*stkf) const;
+
+  * virtual Rps_ObjectRef Rps_TupleOb::compute_class(
+	Rps_CallFrame*stkf) const;
+
+  * virtual Rps_ObjectRef Rps_ClosureZone::compute_class(
+	Rps_CallFrame*stkf) const;
+  
+  * inline Rps_TwoValues Rps_ClosureZone::apply0(
+	Rps_CallFrame*callerframe) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply1(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply2(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply3(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply4(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply5(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3, 
+	const Rps_Value arg4) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply6(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3, 
+	const Rps_Value arg4,
+        const Rps_Value arg5) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply7(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3, 
+	const Rps_Value arg4,
+        const Rps_Value arg5, 
+	const Rps_Value arg6) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply8(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3, 
+	const Rps_Value arg4,
+        const Rps_Value arg5, 
+	const Rps_Value arg6,
+        const Rps_Value arg7) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply9(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3, 
+	const Rps_Value arg4,
+        const Rps_Value arg5, 
+	const Rps_Value arg6,
+        const Rps_Value arg7, 
+	const Rps_Value arg8) const;
+
+  * inline Rps_TwoValues Rps_ClosureZone::apply10(
+	Rps_CallFrame*callerframe, 
+	const Rps_Value arg0,
+        const Rps_Value arg1, 
+	const Rps_Value arg2,
+        const Rps_Value arg3, 
+	const Rps_Value arg4,
+        const Rps_Value arg5, 
+	const Rps_Value arg6,
+        const Rps_Value arg7, 
+	const Rps_Value arg8, 
+	const Rps_Value arg9) const;
+
+  * Rps_TwoValues Rps_ClosureZone::apply_vect(
+	Rps_CallFrame*callerframe, 
+	const std::vector<Rps_Value>& argvec) const;
+
+  * Rps_TwoValues Rps_ClosureZone::apply_ilist(
+	Rps_CallFrame*callerframe, 
+	const std::initializer_list<Rps_Value>& argil) const;
+
+
+
 
