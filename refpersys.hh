@@ -3999,6 +3999,7 @@ public:
 extern "C" void rps_web_initialize_service(const char*);
 extern "C" void rps_run_web_service(void);
 
+extern "C" Rps_CallFrame*rps_edit_cplusplus_callframe;
 #include "inline_rps.hh"
 
 

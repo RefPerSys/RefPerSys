@@ -1038,6 +1038,9 @@ rps_run_application(int &argc, char **argv)
               << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
 } // end rps_run_application
 
+
+
+Rps_CallFrame*rps_edit_cplusplus_callframe;
 void
 rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
 {
@@ -1045,8 +1048,49 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
 		 /*callerframe:*/callerframe,
 		 Rps_ObjectRef tempob;
 		 );
+  std::ostringstream cmdout;
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(rps_is_main_thread());
+  rps_edit_cplusplus_callframe = &_;
+  char tempfilename [80];
+  memset (tempfilename, 0, sizeof(tempfilename));
+  _f.tempob = 
+    Rps_ObjectRef::make_object(&_,
+			       RPS_ROOT_OB(_3HIxVgAGg5303g7AZs), //temporary_cplusplus_code∈class
+			       nullptr);
+  strcpy(tempfilename, "rpscpp_");
+  strcat(tempfilename, _f.tempob->oid().to_string().c_str());
+  RPS_ASSERT(strlen(tempfilename) < sizeof(tempfilename)-16);
+  strcat(tempfilename, "-XXXXXX");
+  int tempfd = mkstemp(tempfilename);
+  RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code tempob=" << _f.tempob
+		<< " tempfilename=" << tempfilename << " tempfd=" << tempfd
+		<< " from " << std::endl
+		<< Rps_ShowCallFrame(&_));
+  RPS_ASSERT(tempfd > 0);
+  FILE* tfil = fdopen(tempfd, "w");
+  if (!tfil)
+    RPS_FATALOUT("rps_edit_run_cplusplus_code failed fdopen " << tempfd << " for tempfilename " << tempfilename
+		 << " - " << strerror(errno));
+  //// fill the temporary file
+  {
+    fprintf (tfil, "//// temporary file %s for RefPerSys - see refpersys.org\n", tempfilename);
+    fprintf (tfil, "//// passed to commit %s\n", rps_lastgitcommit);
+    fprintf (tfil, "//// rps_md5sum %s\n", rps_md5sum);
+    fprintf (tfil, "//// rps_timestamp %s\n", rps_timestamp);
+    fprintf (tfil, "//// GPLv3+ licensed - see /www.gnu.org/licenses/quick-guide-gplv3.en.html\n");
+    fprintf (tfil, "\n\n#" "include \"refpersys.hh\"\n\n");
+    fprintf (tfil, "\n" "void rps_do_plugin(const Rps_Plugin*plugin)\n{\n");
+    fprintf (tfil,
+	     "  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::find_object_by_string(rps_edit_cplusplus_callframe,\n"
+	     "                                                                std::string{\"%s\"}),\n"
+	     "                 /*callerframe:*/rps_edit_cplusplus_callframe,\n"
+	     "                 /***** your locals here ******/\n"
+	     "                 );\n",
+	     _f.tempob->oid().to_string().c_str());
+    fprintf (tfil, "#warning incomplete %s\n", tempfilename);
+    fflush (tfil);
+  }
   if (rps_cpluspluseditor_str.empty()) {
     const char*editorenv = getenv("EDITOR");
     if (!editorenv && !access("/usr/bin/editor", X_OK))
@@ -1058,8 +1102,17 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
 		   << Rps_ShowCallFrame(&_)
 		   << std::endl
 		   << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *no-editor*"));
-    rps_cpluspluseditor_str.assign(editorenv);  
+    rps_cpluspluseditor_str.assign(editorenv);
   }
+  cmdout << rps_cpluspluseditor_str << " " << tempfilename;
+  RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before running " << cmdout.str());
+  int cmdbad = system(cmdout.str().c_str());
+  if (cmdbad != 0)
+    RPS_FATALOUT("rps_edit_run_cplusplus_code failed to run " << cmdout.str()
+		 << " which exited " << cmdbad);
+  close (tempfd);
+  rps_edit_cplusplus_callframe = nullptr;
+#warning rps_edit_cplusplus_code is very incomplete
 } // end rps_edit_run_cplusplus_code
 
 ////////////////////////////////////////////////////////////////
