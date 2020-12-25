@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean fullclean redump altredump print-temporary-plugin-settings indent test01 test02 test03 test-load analyze gitpush gitpush2
+.PHONY: all objects clean plugin fullclean redump altredump print-temporary-plugin-settings indent test01 test02 test03 test-load analyze gitpush gitpush2
 
 
 ## tell GNU make to export all variables by default
@@ -152,6 +152,13 @@ clean:
 	$(RM) *.ii
 	$(RM) *% core vgcore*
 	$(RM) -rf bld
+
+## usual invocation: make plugin RPS_PLUGIN_SOURCE=/tmp/foo.cc RPS_PLUGIN_SHARED_OBJECT=/tmp/foo.so
+## see also our ./build-temporary-plugin.sh script
+plugin:
+	if [ -n "$RPS_PLUGIN_SOURCE" ]; then echo missing RPS_PLUGIN_SOURCE > /dev/stderr ; exit 1; fi
+	if [ -n "$RPS_PLUGIN_SHARED_OBJECT" ]; then echo missing RPS_PLUGIN_SHARED_OBJECT  > /dev/stderr ; exit 1; fi
+	$(COMPILE.cc) -fPIC -shared  $RPS_BUILD_OPTIMFLAGS $RPS_PLUGIN_SOURCE -o $RPS_PLUGIN_SHARED_OBJECT
 
 fullclean:
 	$(RPS_BUILD_CCACHE) -C

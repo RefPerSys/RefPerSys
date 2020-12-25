@@ -21,7 +21,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-### invocation from RpsQCreatePluginDialog file window_qrps.cc as
+### invocation as
 ##     ./build-temporary-plugin.sh <C++-temporary-source> <temporary-plugin>
 
 cpptempfile=$1
