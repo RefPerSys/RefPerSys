@@ -959,7 +959,7 @@ rps_run_application(int &argc, char **argv)
   {
     char cwdbuf[128];
     memset (cwdbuf, 0, sizeof(cwdbuf));
-    if (getcwd(cwdbuf, sizeof(cwdbuf)-1))
+    if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
       RPS_FATALOUT("rps_run_application failed to getcwd " << strerror(errno)
                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
     RPS_INFORM("rps_run_application: start of %s\n"
