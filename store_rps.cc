@@ -2283,7 +2283,7 @@ void rps_dump_into (const std::string dirpath, Rps_CallFrame* callframe)
   {
     // not very good, but in practice good enough before bootstrapping
     // see https://softwareengineering.stackexchange.com/q/289427/40065
-    char cwdbuf[256];
+    char cwdbuf[128];
     memset(cwdbuf, 0, sizeof(cwdbuf));
     if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
       RPS_FATAL("getcwd failed: %m");
