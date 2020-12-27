@@ -1096,6 +1096,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
     fprintf (tfil, "//// temporary file %s for RefPerSys\n", tempcppfilename);
     fprintf (tfil, "//// see refpersys.org website\n");
     fprintf (tfil, "//// passed to commit %s\n", rps_lastgitcommit);
+    fprintf (tfil, "//// rps_shortgitid %s\n", rps_shortgitid);
     fprintf (tfil, "//// rps_md5sum %s\n", rps_md5sum);
     fprintf (tfil, "//// rps_timestamp %s\n", rps_timestamp);
     fprintf (tfil, "//// GPLv3+ licensed - see /www.gnu.org/licenses/quick-guide-gplv3.en.html\n");
@@ -1108,6 +1109,8 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
              "                 /***** your locals here ******/\n"
              "                 );\n",
              _f.tempob->oid().to_string().c_str());
+    fprintf (tfil, "  RPS_DEBUGOUT(CMD, \"start plugin from \" << std::endl\n");
+    fprintf (tfil, "                RPS_FULL_BACKTRACE_HERE(1, \"temporary C++ plugin\"));\n");
     fprintf (tfil, "#warning incomplete %s\n", tempcppfilename);
     fprintf (tfil, "} // end rps_do_plugin in %s\n", tempcppfilename);
     fprintf (tfil, "\n\n\n // ********* eof %s *********\n", tempcppfilename);
