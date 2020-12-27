@@ -1091,7 +1091,6 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                 );
   double cpustartim = rps_process_cpu_time();
   double realstartim = rps_wallclock_real_time();
-  std::ostringstream cmdout;
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(rps_is_main_thread());
   rps_edit_cplusplus_callframe = &_;
@@ -1145,7 +1144,9 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
              "                 /***** your locals here ******/\n"
              "                 );\n",
              _f.tempob->oid().to_string().c_str());
-    fprintf (tfil, "  RPS_DEBUGOUT(CMD, \"start plugin from \" << std::endl\n");
+    fprintf (tfil, "  RPS_ASSERT(plugin != nullptr);\n");
+    fprintf (tfil, "  RPS_DEBUG_LOG(CMD, \"start plugin \"\n"
+	     "                      << plugin->plugin_name << \" from \" << std::endl\n");
     fprintf (tfil, "                RPS_FULL_BACKTRACE_HERE(1, \"temporary C++ plugin\"));\n");
     fprintf (tfil, "#warning incomplete %s\n", tempcppfilename);
     fprintf (tfil, "} // end rps_do_plugin in %s\n", tempcppfilename);
@@ -1176,6 +1177,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
   bool cppcompilegood = false;
   while (!cppcompilegood)
     {
+      std::ostringstream cmdout;
       cmdout << rps_cpluspluseditor_str << " " << tempcppfilename;
       RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before running " << cmdout.str());
       int cmdbad = system(cmdout.str().c_str());
@@ -1425,17 +1427,19 @@ rps_set_debug_flag(const std::string &curlev)
   if (curlev == "NEVER") {
     RPS_WARNOUT("forbidden debug level " << curlev);
   }
-  else if (curlev == "help")
+  else if (curlev == "help") {
     goodflag = true;
+  }
   ///
   /* second X macro trick for processing several comma-separated debug flags, in all cases as else if branch  */
   ///
-#define Rps_SET_DEBUG(Opt)					\
-  else if (curlev == #Opt					\
-	   && !(rps_debug_flags&(1 << RPS_DEBUG_##Opt))) {	\
-    rps_debug_flags |= (1 << RPS_DEBUG_##Opt);			\
-    goodflag = true;						\
-    RPS_INFORMOUT("setting debugging flag " << #Opt);	 }
+#define Rps_SET_DEBUG(Opt)						\
+  else if (curlev == #Opt) {						\
+    bool alreadygiven = rps_debug_flags & (1 << RPS_DEBUG_##Opt);	\
+    rps_debug_flags |= (1 << RPS_DEBUG_##Opt);				\
+    goodflag = true;							\
+    if (!alreadygiven)							\
+      RPS_INFORMOUT("setting debugging flag " << #Opt);	 }
   ///
   RPS_DEBUG_OPTIONS(Rps_SET_DEBUG);
 #undef Rps_SET_DEBUG
