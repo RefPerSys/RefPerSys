@@ -1116,7 +1116,8 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
   snprintf (tempfilprefix, sizeof(tempfilprefix), "/var/tmp/rpscpp_%s-r%u-p%u",
             _f.tempob->oid().to_string().c_str(), (unsigned) Rps_Random::random_32u(),
             (unsigned) getpid());
-  RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code tempfilprefix=" << tempfilprefix);
+  RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code tempfilprefix=" << tempfilprefix
+		<< " tempob=" << _f.tempob);
   RPS_ASSERT(strlen(tempfilprefix) < sizeof(tempfilprefix)-6);
   char tempcppfilename [96];
   memset (tempcppfilename, 0, sizeof(tempcppfilename));
