@@ -1417,15 +1417,49 @@ void rps_debug_warn_at(const char*file, int line)
 } // end rps_debug_warn_at
 
 ///////////////////////////////////////////////////////// debugging support
+/// X macro tricks used twice below... see en.wikipedia.org/wiki/X_Macro
+bool
+rps_set_debug_flag(const std::string &curlev)
+{
+  bool goodflag = false;
+  if (curlev == "NEVER") {
+    RPS_WARNOUT("forbidden debug level " << curlev);
+  }
+  else if (curlev == "help")
+    goodflag = true;
+  ///
+  /* second X macro trick for processing several comma-separated debug flags, in all cases as else if branch  */
+  ///
+#define Rps_SET_DEBUG(Opt)					\
+  else if (curlev == #Opt					\
+	   && !(rps_debug_flags&(1 << RPS_DEBUG_##Opt))) {	\
+    rps_debug_flags |= (1 << RPS_DEBUG_##Opt);			\
+    goodflag = true;						\
+    RPS_INFORMOUT("setting debugging flag " << #Opt);	 }
+  ///
+  RPS_DEBUG_OPTIONS(Rps_SET_DEBUG);
+#undef Rps_SET_DEBUG
+  ////
+  if (!goodflag)
+    RPS_WARNOUT("unknown debug level " << curlev);
+  return goodflag;
+} // end rps_set_debug_flag
+
 void
 rps_set_debug(const std::string &deblev)
 {
-  if (deblev == "help")
-    {
+  static bool didhelp;
+  if (deblev == "help" && !didhelp)
+    { /* first X macro for help debug flag.... */
+      didhelp = true;
+      fprintf(stderr, "%s debugging options for git %s built at %s ...\n",
+	      rps_progname, rps_shortgitid, rps_timestamp);
       fprintf(stderr, "Comma separated debugging levels with -d<debug-level> or --debug=<debug-level>:\n");
+
 #define Rps_SHOW_DEBUG(Opt) fprintf(stderr, "\t%s\n", #Opt);
       RPS_DEBUG_OPTIONS(Rps_SHOW_DEBUG);
 #undef Rps_SHOW_DEBUG
+
       fflush(nullptr);
     }
   else
@@ -1439,23 +1473,13 @@ rps_set_debug(const std::string &deblev)
             curlev = std::string(pc, comma-pc);
           else
             curlev = std::string(pc);
+	  if (!rps_set_debug_flag(curlev))
+	    RPS_FATALOUT("unexpected debug level " << curlev
+			 << "; use --debug=help to get all known debug levels");
+	};			// end for const char*pc ...
 
-#define Rps_SET_DEBUG(Opt)						\
-          else if (curlev == #Opt					\
-                   && !(rps_debug_flags&(1 << RPS_DEBUG_##Opt))) {	\
-        rps_debug_flags |= (1 << RPS_DEBUG_##Opt);			\
-      RPS_INFORMOUT("debugging flag "					\
-                    << #Opt << " is set.");				\
-      }
-
-          if (curlev == "NEVER")
-            RPS_WARNOUT("forbidden debug level " << curlev);
-          RPS_DEBUG_OPTIONS(Rps_SET_DEBUG)
-          else
-            RPS_WARNOUT("unknown debug level " << curlev);
-#undef Rps_SET_DEBUG
-        }
-    };
+    } // else case, for deblev which is not help
+  
   RPS_DEBUG_LOG(MISC, "rps_debug_flags=" << rps_debug_flags);
 } // end rps_set_debug
 
