@@ -46,6 +46,8 @@ extern "C" void rps_end_of_main(void);
 
 extern "C" void rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe);
 
+extern "C" void rps_small_quick_tests_after_load (void);
+
 extern "C" std::vector<Rps_Plugin> rps_plugins_vector;
 std::vector<Rps_Plugin> rps_plugins_vector;
 
@@ -1035,6 +1037,8 @@ rps_run_application(int &argc, char **argv)
       rps_set_debug(rps_debugflags_after_load);
       RPS_INFORM("rps_run_application did set debug after load to %s", rps_debugflags_after_load);
     }
+  ////
+  rps_small_quick_tests_after_load();
   //// running the given command after load
   if (rps_run_command_after_load)
     {
@@ -1584,6 +1588,38 @@ rps_hardcoded_number_of_constants(void)
   return RPS_NB_CONSTANT_OB;
 } // end of rps_hardcoded_number_of_constants
 
+
+
+void
+rps_small_quick_tests_after_load(void)
+{
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/nullptr,
+                           Rps_ObjectRef obtempcpp;
+                           Rps_ObjectRef obdispweb;
+                           Rps_ObjectRef obnew;
+                           Rps_ObjectRef obfoundnew;
+                );
+  RPS_DEBUG_LOG(CMD, "start rps_small_quick_tests_after_load in "
+                << Rps_ShowCallFrame(&_)
+                << std::endl
+                << RPS_FULL_BACKTRACE(1, "rps_small_quick_tests_after_load"));
+  _f.obtempcpp = Rps_ObjectRef::find_object_by_string(&_, "temporary_cplusplus_code");
+  RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obtempcpp=" << _f.obtempcpp);
+  RPS_ASSERT(_f.obtempcpp);
+  Rps_Id oid = Rps_Id ("_18DO93843oX02UWzq6");
+  RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load oid=" << oid);
+  _f.obdispweb = Rps_ObjectRef::find_object_by_oid(&_, oid);
+  RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obdispweb=" << _f.obdispweb);
+  RPS_ASSERT(_f.obdispweb);
+  _f.obnew = Rps_ObjectRef::make_object(&_, Rps_ObjectRef::the_object_class());
+  RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obnew=" << obnew);
+  RPS_ASSERT(_f.obnew);
+  _f.obfoundnew = Rps_ObjectRef::find_object_by_oid(&_, _f.obnew->oid());
+  RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obfoundnew=" << obfoundnew);
+  RPS_ASSERT(_f.obnew == _f.obfoundnew);
+  RPS_DEBUG_LOG(CMD, "end rps_small_quick_tests_after_load");
+} // end rps_small_quick_tests_after_load
 
 
 ///////////////////////////////////////////////////////////////////////////////
