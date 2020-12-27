@@ -1037,13 +1037,26 @@ rps_run_application(int &argc, char **argv)
   //// running the given plugins after load - should happen after edition of C++ code
   if (!rps_plugins_vector.empty())
     {
-      for (auto& curplugin : rps_plugins_vector)
+      int pluginix = 0;
+      try
         {
-          void* dopluginad = dlsym(curplugin.plugin_dlh, RPS_PLUGIN_INIT_NAME);
-          if (!dopluginad)
-            RPS_FATALOUT("cannot find symbol " RPS_PLUGIN_INIT_NAME " in plugin " << curplugin.plugin_name << ":" << dlerror());
-          rps_plugin_init_sig_t* pluginit = reinterpret_cast<rps_plugin_init_sig_t*>(dopluginad);
-          (*pluginit)(&curplugin);
+          for (auto& curplugin : rps_plugins_vector)
+            {
+
+              void* dopluginad = dlsym(curplugin.plugin_dlh, RPS_PLUGIN_INIT_NAME);
+              if (!dopluginad)
+                RPS_FATALOUT("cannot find symbol " RPS_PLUGIN_INIT_NAME " in plugin " << curplugin.plugin_name << ":" << dlerror());
+              rps_plugin_init_sig_t* pluginit = reinterpret_cast<rps_plugin_init_sig_t*>(dopluginad);
+              (*pluginit)(&curplugin);
+              pluginix ++;
+            };
+        }
+      catch (std::exception& exc)
+        {
+          RPS_WARNOUT("rps_run_application failed to run plugin #" << pluginix
+                      << rps_plugins_vector[pluginix].plugin_name
+                      << " got exception " << exc.what()
+                     );
         }
     };
   /////
