@@ -86,6 +86,14 @@ struct argp_option rps_progoptions[] =
     " Also from $REFPERSYS_DEBUG environment variable, if provided", ///
     /*group:*/0 ///
   },
+  /* ======= debug after load flags ======= */
+  {/*name:*/ "debug-after-load", ///
+    /*key:*/ RPSPROGOPT_DEBUG_AFTER_LOAD, ///
+    /*arg:*/ "DEBUGFLAGS", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "To set RefPerSys comma separated debug flags after the sucessful load.", ///
+    /*group:*/0 ///
+  },
   /* ======= debug file path ======= */
   {/*name:*/ "debug-path", ///
     /*key:*/ RPSPROGOPT_DEBUG_PATH, ///
@@ -246,6 +254,10 @@ struct backtrace_state* rps_backtrace_common_state;
 const char* rps_progname;
 
 char* rps_run_command_after_load = nullptr;
+char* rps_debugflags_after_load = nullptr;
+
+std::vector<std::function<void(Rps_CallFrame*)>> rps_do_after_load_vect;
+
 void* rps_proghdl = nullptr;
 
 bool rps_batch = false;
@@ -718,7 +730,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       if (side_effect)
         rps_set_debug_output_path(arg);
     }
-    return 0;
     case RPSPROGOPT_LOADDIR:
     {
       rps_my_load_dir = std::string(arg);
@@ -845,6 +856,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_test_repl_lexer = true;
       if (side_effect)
         RPS_DEBUG_LOG(REPL, "will run with a textual Read-Eval-Print-Loop lexer GNU readline");
+    }
+    return 0;
+    case RPSPROGOPT_DEBUG_AFTER_LOAD:
+    {
+      if (side_effect)
+        rps_debugflags_after_load = arg;
     }
     return 0;
     case RPSPROGOPT_RUN_AFTER_LOAD:
@@ -1012,6 +1029,12 @@ rps_run_application(int &argc, char **argv)
                cwdbuf,
                rps_hostname(), (int)getpid());
   }
+  /// if told, enable extra debugging after load
+  if (rps_debugflags_after_load)
+    {
+      rps_set_debug(rps_debugflags_after_load);
+      RPS_INFORM("rps_run_application did set debug after load to %s", rps_debugflags_after_load);
+    }
   //// running the given command after load
   if (rps_run_command_after_load)
     {
@@ -1117,7 +1140,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
             _f.tempob->oid().to_string().c_str(), (unsigned) Rps_Random::random_32u(),
             (unsigned) getpid());
   RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code tempfilprefix=" << tempfilprefix
-		<< " tempob=" << _f.tempob);
+                << " tempob=" << _f.tempob);
   RPS_ASSERT(strlen(tempfilprefix) < sizeof(tempfilprefix)-6);
   char tempcppfilename [96];
   memset (tempcppfilename, 0, sizeof(tempcppfilename));
