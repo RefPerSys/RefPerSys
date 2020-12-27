@@ -111,6 +111,8 @@ Rps_ObjectZone::register_objzone(Rps_ObjectZone*obz)
   RPS_ASSERT(obz != nullptr);
   std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
   auto oid = obz->oid();
+  RPS_DEBUG_LOG(LOWREP, "register_objzone obz=" << obz << " oid=" << oid
+		<< RPS_FULL_BACKTRACE_HERE(1, "register_objzone"));
   if (ob_idmap_.find(oid) != ob_idmap_.end())
     RPS_FATALOUT("Rps_ObjectZone::register_objzone duplicate oid " << oid);
   ob_idmap_.insert({oid,obz});
@@ -171,6 +173,7 @@ Rps_ObjectZone::~Rps_ObjectZone()
   ob_class.store(nullptr);
   ob_mtime.store(0.0);
   std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
+  RPS_DEBUG_LOG(LOWREP,"~Rps_ObjectZone curid=" << curid << " this=" << this);
   ob_idmap_.erase(curid);
   ob_idbucketmap_[curid.bucket_num()].erase(curid);
 } // end Rps_ObjectZone::~Rps_ObjectZone()
@@ -192,6 +195,9 @@ Rps_ObjectZone::make(void)
   // ob_class can later be replaced, but we need something which is
   // not null.... That atomic field could be later overwritten.
   obz->ob_class.store(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)); //object∈class
+  RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone::make oid=" << oid << " obz=" << obz
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::make"));
   return obz;
 } // end Rps_ObjectZone::make
 
@@ -2030,6 +2036,7 @@ Rps_ObjectRef::make_object(Rps_CallFrame*callerframe, Rps_ObjectRef classobarg, 
     };
   _f.resultob = Rps_ObjectZone::make();
   _f.resultob->ob_class.store(_f.classob);
+  RPS_DEBUG_LOG(LOWREP, "make_object classob=" << _f.classob << " -> resultob=" << _f.resultob);
   _f.resultob->put_space(_f.spaceob);
   /// FIXME: perhaps we should send some `initialize_object` message?
   return _f.resultob;

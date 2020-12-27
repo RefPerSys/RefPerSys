@@ -1616,7 +1616,7 @@ rps_small_quick_tests_after_load(void)
   RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obnew=" << _f.obnew);
   RPS_ASSERT(_f.obnew);
   _f.obfoundnew = Rps_ObjectRef::find_object_by_oid(&_, _f.obnew->oid());
-  RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obfoundnew=" << _f.obfoundnew);
+  RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obfoundnew=" << _f.obfoundnew << " obnew=" << _f.obnew);
   RPS_ASSERT(_f.obnew == _f.obfoundnew);
   RPS_DEBUG_LOG(CMD, "end rps_small_quick_tests_after_load");
 } // end rps_small_quick_tests_after_load
