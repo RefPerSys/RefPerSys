@@ -1821,6 +1821,10 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
                  Rps_ObjectRef obsymb;
                  Rps_ObjectRef obfound;
                 );
+  RPS_DEBUG_LOG(LOWREP, "find_object_by_string for str='" << str << "' from "
+                << Rps_ShowCallFrame(&_)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "find_object_by_string"));
   if (str.empty())
     {
       if (dontfail)
@@ -1830,6 +1834,7 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
   if (isalpha(str[0]))
     {
       _f.obsymb = Rps_PayloadSymbol::find_named_object(str);
+      RPS_DEBUG_LOG(LOWREP, "find_object_by_string for str='" << str << "'  obsymb=" << _f.obsymb);
       if (!_f.obsymb)
         {
           if (dontfail)
@@ -1846,6 +1851,7 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
   else if (str[0] == '_')
     {
       Rps_Id id(str);
+      RPS_DEBUG_LOG(LOWREP, "find_object_by_string for id=" << id);
       if (!id)
         {
           if (dontfail)
@@ -1853,6 +1859,7 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
           throw std::runtime_error("Rps_ObjectRef::find_object_by_string: bad id " + str);
         };
       _f.obfound = Rps_ObjectRef(Rps_ObjectZone::find(id));
+      RPS_DEBUG_LOG(LOWREP, "find_object_by_string for str='" << str << "'  obfound=" << _f.obfound);
       if (!_f.obfound)
         {
           if (dontfail)
@@ -1877,6 +1884,10 @@ Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, bool do
                  callerframe,
                  Rps_ObjectRef obfound;
                 );
+  RPS_DEBUG_LOG(LOWREP, "find_object_by_oid oid=" << oid << " from "
+                << Rps_ShowCallFrame(&_)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "find_object_by_oid"));
   if (!oid || !oid.valid())
     {
       if (dontfail)
@@ -1884,6 +1895,8 @@ Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, bool do
       throw std::runtime_error("Rps_ObjectRef::find_object_by_oid: invalid or empty oid");
     }
   _f.obfound = Rps_ObjectRef(Rps_ObjectZone::find(oid));
+  RPS_DEBUG_LOG(LOWREP, "find_object_by_oid oid=" << oid << " obfound="
+                << _f.obfound);
   if (!_f.obfound)
     {
       if (dontfail)
