@@ -1440,12 +1440,14 @@ rps_set_debug(const std::string &deblev)
           else
             curlev = std::string(pc);
 
-#define Rps_SET_DEBUG(Opt) \
-      else if (curlev == #Opt) {			\
-	rps_debug_flags |= (1 << RPS_DEBUG_##Opt);	\
-      RPS_INFORMOUT("debugging flag "			\
-		    << #Opt << " is set.");		\
+#define Rps_SET_DEBUG(Opt)						\
+          else if (curlev == #Opt					\
+                   && !(rps_debug_flags&(1 << RPS_DEBUG_##Opt))) {	\
+        rps_debug_flags |= (1 << RPS_DEBUG_##Opt);			\
+      RPS_INFORMOUT("debugging flag "					\
+                    << #Opt << " is set.");				\
       }
+
           if (curlev == "NEVER")
             RPS_WARNOUT("forbidden debug level " << curlev);
           RPS_DEBUG_OPTIONS(Rps_SET_DEBUG)
