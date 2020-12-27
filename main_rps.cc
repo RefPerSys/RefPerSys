@@ -1147,7 +1147,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
     fprintf (tfil, "  RPS_ASSERT(plugin != nullptr);\n");
     fprintf (tfil, "  RPS_DEBUG_LOG(CMD, \"start plugin \"\n"
 	     "                      << plugin->plugin_name << \" from \" << std::endl\n");
-    fprintf (tfil, "                RPS_FULL_BACKTRACE_HERE(1, \"temporary C++ plugin\"));\n");
+    fprintf (tfil, "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary C++ plugin\"));\n");
     fprintf (tfil, "#warning incomplete %s\n", tempcppfilename);
     fprintf (tfil, "} // end rps_do_plugin in %s\n", tempcppfilename);
     fprintf (tfil, "\n\n\n // ********* eof %s *********\n", tempcppfilename);
