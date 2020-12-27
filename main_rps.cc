@@ -82,7 +82,8 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_DEBUG, ///
     /*arg:*/ "DEBUGFLAGS", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "To set RefPerSys comma separated debug flags, pass --debug=help to get their list.", ///
+    /*doc:*/ "To set RefPerSys comma separated debug flags, pass --debug=help to get their list.\n"
+    " Also from $REFPERSYS_DEBUG environment variable, if provided", ///
     /*group:*/0 ///
   },
   /* ======= debug file path ======= */
@@ -572,6 +573,22 @@ main (int argc, char** argv)
       exit(EXIT_FAILURE);
     };
   rps_main_thread_handle = pthread_self();
+  /// handle early a debug flag request
+  if (argc > 1
+      && !strncmp(argv[1], "--debug=", strlen("--debug=")))
+    {
+      rps_set_debug(argv[1]+strlen("--debug="));
+    }
+  else if (argc > 1 && argv[1][0]=='-' && argv[1][1]==RPSPROGOPT_DEBUG)
+    {
+      rps_set_debug(argv[1]+2);
+    };
+  // also use REFPERSYS_DEBUG
+  {
+    const char*debugenv = getenv("REFPERSYS_DEBUG");
+    if (debugenv)
+      rps_set_debug(debugenv);
+  }
   // For weird reasons, the program arguments are parsed more than
   // once... We don't care that much in practice...
   RPS_ASSERT(argc>0);
@@ -855,6 +872,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     return 0;
     case RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD:
     {
+      RPS_DEBUG_LOG(CMD, "option --cplusplus-editor "
+                    << (arg?" with '":" without ")
+                    << (arg?arg:" argument")
+                    << (arg?"'":" !!!")
+                    << (side_effect?" side-effecting"
+                        :" without side effect"));
       if (side_effect)
         {
           if (!arg || !arg[0])
@@ -1133,6 +1156,9 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
   if (rps_cpluspluseditor_str.empty())
     {
       const char*editorenv = getenv("EDITOR");
+      RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code "
+                    << (editorenv?"EDITOR=":"no $EDITOR")
+                    << (editorenv?editorenv:" in environment"));
       if (!editorenv  && !access("/usr/bin/editor", X_OK))
         editorenv = "/usr/bin/editor";
       RPS_DEBUG_LOG(CMD, "using " << editorenv << " to edit C++ code from "
