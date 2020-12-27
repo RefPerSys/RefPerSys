@@ -1012,18 +1012,6 @@ rps_run_application(int &argc, char **argv)
                cwdbuf,
                rps_hostname(), (int)getpid());
   }
-  //// running the given plugins after load
-  if (!rps_plugins_vector.empty())
-    {
-      for (auto& curplugin : rps_plugins_vector)
-        {
-          void* dopluginad = dlsym(curplugin.plugin_dlh, RPS_PLUGIN_INIT_NAME);
-          if (!dopluginad)
-            RPS_FATALOUT("cannot find symbol " RPS_PLUGIN_INIT_NAME " in plugin " << curplugin.plugin_name << ":" << dlerror());
-          rps_plugin_init_sig_t* pluginit = reinterpret_cast<rps_plugin_init_sig_t*>(dopluginad);
-          (*pluginit)(&curplugin);
-        }
-    };
   //// running the given command after load
   if (rps_run_command_after_load)
     {
@@ -1046,6 +1034,18 @@ rps_run_application(int &argc, char **argv)
                     << " with call frame " << Rps_ShowCallFrame(&_));
       rps_edit_run_cplusplus_code (&_);
     }
+  //// running the given plugins after load - should happen after edition of C++ code
+  if (!rps_plugins_vector.empty())
+    {
+      for (auto& curplugin : rps_plugins_vector)
+        {
+          void* dopluginad = dlsym(curplugin.plugin_dlh, RPS_PLUGIN_INIT_NAME);
+          if (!dopluginad)
+            RPS_FATALOUT("cannot find symbol " RPS_PLUGIN_INIT_NAME " in plugin " << curplugin.plugin_name << ":" << dlerror());
+          rps_plugin_init_sig_t* pluginit = reinterpret_cast<rps_plugin_init_sig_t*>(dopluginad);
+          (*pluginit)(&curplugin);
+        }
+    };
   /////
   if (rps_batch)
     {
@@ -1146,7 +1146,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
              _f.tempob->oid().to_string().c_str());
     fprintf (tfil, "  RPS_ASSERT(plugin != nullptr);\n");
     fprintf (tfil, "  RPS_DEBUG_LOG(CMD, \"start plugin \"\n"
-	     "                      << plugin->plugin_name << \" from \" << std::endl\n");
+             "                      << plugin->plugin_name << \" from \" << std::endl\n");
     fprintf (tfil, "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary C++ plugin\"));\n");
     fprintf (tfil, "#warning incomplete %s\n", tempcppfilename);
     fprintf (tfil, "} // end rps_do_plugin in %s\n", tempcppfilename);
@@ -1272,6 +1272,20 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                      << std::endl
                      << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *buildfail*"));
     };				// end while !cppcompilegood
+
+  RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code after compilation to " << tempsofilename);
+  errno = 0;
+  {
+    if (access(tempsofilename, R_OK))
+      RPS_FATALOUT("rps_edit_run_cplusplus_code cannot access " << tempsofilename << " : " << strerror(errno));
+    void* tempdlh = dlopen (tempsofilename, RTLD_NOW|RTLD_GLOBAL);
+    if (!tempdlh)
+      RPS_FATALOUT("rps_edit_run_cplusplus_code failed to dlopen temporary C++ plugin "
+                   << tempsofilename << " : " << dlerror());
+    RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code did dlopen " << tempsofilename);
+    Rps_Plugin templugin(tempsofilename, tempdlh);
+    rps_plugins_vector.push_back(templugin);
+  }
   ////////////////
   double cpuendtim = rps_process_cpu_time();
   double realendtim = rps_wallclock_real_time();
@@ -1424,12 +1438,14 @@ bool
 rps_set_debug_flag(const std::string &curlev)
 {
   bool goodflag = false;
-  if (curlev == "NEVER") {
-    RPS_WARNOUT("forbidden debug level " << curlev);
-  }
-  else if (curlev == "help") {
-    goodflag = true;
-  }
+  if (curlev == "NEVER")
+    {
+      RPS_WARNOUT("forbidden debug level " << curlev);
+    }
+  else if (curlev == "help")
+    {
+      goodflag = true;
+    }
   ///
   /* second X macro trick for processing several comma-separated debug flags, in all cases as else if branch  */
   ///
@@ -1454,10 +1470,11 @@ rps_set_debug(const std::string &deblev)
 {
   static bool didhelp;
   if (deblev == "help" && !didhelp)
-    { /* first X macro for help debug flag.... */
+    {
+      /* first X macro for help debug flag.... */
       didhelp = true;
       fprintf(stderr, "%s debugging options for git %s built at %s ...\n",
-	      rps_progname, rps_shortgitid, rps_timestamp);
+              rps_progname, rps_shortgitid, rps_timestamp);
       fprintf(stderr, "Comma separated debugging levels with -d<debug-level> or --debug=<debug-level>:\n");
 
 #define Rps_SHOW_DEBUG(Opt) fprintf(stderr, "\t%s\n", #Opt);
@@ -1477,13 +1494,13 @@ rps_set_debug(const std::string &deblev)
             curlev = std::string(pc, comma-pc);
           else
             curlev = std::string(pc);
-	  if (!rps_set_debug_flag(curlev))
-	    RPS_FATALOUT("unexpected debug level " << curlev
-			 << "; use --debug=help to get all known debug levels");
-	};			// end for const char*pc ...
+          if (!rps_set_debug_flag(curlev))
+            RPS_FATALOUT("unexpected debug level " << curlev
+                         << "; use --debug=help to get all known debug levels");
+        };			// end for const char*pc ...
 
     } // else case, for deblev which is not help
-  
+
   RPS_DEBUG_LOG(MISC, "rps_debug_flags=" << rps_debug_flags);
 } // end rps_set_debug
 
