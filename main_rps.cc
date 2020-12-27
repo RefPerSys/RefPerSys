@@ -180,7 +180,9 @@ struct argp_option rps_progoptions[] =
     /*flags:*/ 0, ///
     /*doc:*/ "prefill some C++ temporary file for plugin code,\n"
     " edit it with given EDITOR, then compile it"
-    " and run its " RPS_PLUGIN_INIT_NAME "(const Rps_Plugin*) function", //
+    " and run its " RPS_PLUGIN_INIT_NAME "(const Rps_Plugin*) function.\n"
+    " (if none is given, use $EDITOR from environment)\n"
+    , //
     /*group:*/0 ///
   },
   /* ======= extra compilation flags for C++ code above after load ======= */
@@ -855,11 +857,22 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     {
       if (side_effect)
         {
+          if (!arg || !arg[0])
+            {
+              char* editor = getenv("EDITOR");
+              if (editor && editor[0])
+                {
+                  arg = editor;
+                  RPS_INFORMOUT("using $EDITOR variable " << editor << " as C++ editor");
+                }
+            };
+          if (!arg || !arg[0])
+            RPS_FATALOUT("program option --cplusplus-editor-after-load without explicit editor, and no $EDITOR environment variable");
           if (!rps_cpluspluseditor_str.empty())
             RPS_FATALOUT("program option --cplusplus-editor-after-load given twice with "
                          << rps_cpluspluseditor_str << " and " << arg);
           rps_cpluspluseditor_str.assign(arg);
-        }
+        };
     }
     return 0;
     case RPSPROGOPT_CPLUSPLUSFLAGS_AFTER_LOAD:
@@ -1050,9 +1063,9 @@ void
 rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr,
-		 /*callerframe:*/callerframe,
-		 Rps_ObjectRef tempob;
-		 );
+                           /*callerframe:*/callerframe,
+                           Rps_ObjectRef tempob;
+                );
   double cpustartim = rps_process_cpu_time();
   double realstartim = rps_wallclock_real_time();
   std::ostringstream cmdout;
@@ -1066,8 +1079,8 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                                RPS_ROOT_OB(_3HIxVgAGg5303g7AZs), //temporary_cplusplus_code∈class
                                nullptr);
   snprintf (tempfilprefix, sizeof(tempfilprefix), "/var/tmp/rpscpp_%s-r%u-p%u",
-	    _f.tempob->oid().to_string().c_str(), (unsigned) Rps_Random::random_32u(),
-	    (unsigned) getpid());
+            _f.tempob->oid().to_string().c_str(), (unsigned) Rps_Random::random_32u(),
+            (unsigned) getpid());
   RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code tempfilprefix=" << tempfilprefix);
   RPS_ASSERT(strlen(tempfilprefix) < sizeof(tempfilprefix)-6);
   char tempcppfilename [96];
@@ -1117,12 +1130,14 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
     fflush (tfil);
     tfilsiz = ftell(tfil);
   }
-  fclose(tfil);
   if (rps_cpluspluseditor_str.empty())
     {
       const char*editorenv = getenv("EDITOR");
-      if (!editorenv && !access("/usr/bin/editor", X_OK))
+      if (!editorenv  && !access("/usr/bin/editor", X_OK))
         editorenv = "/usr/bin/editor";
+      RPS_DEBUG_LOG(CMD, "using " << editorenv << " to edit C++ code from "
+                    << Rps_ShowCallFrame(&_));
+      errno = 0;
       if (access(editorenv, X_OK))
         RPS_FATALOUT("rps_edit_run_cplusplus_code without any editor " << editorenv << ":"
                      << strerror(errno)
@@ -1133,99 +1148,102 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
       rps_cpluspluseditor_str.assign(editorenv);
     }
   bool cppcompilegood = false;
-  while (!cppcompilegood) {
-    cmdout << rps_cpluspluseditor_str << " " << tempcppfilename;
-    RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before running " << cmdout.str());
-    int cmdbad = system(cmdout.str().c_str());
-    if (cmdbad != 0)
-      RPS_FATALOUT("rps_edit_run_cplusplus_code failed to run " << cmdout.str()
-		   << " which exited " << cmdbad);
-    struct stat tempstat;
-    memset (&tempstat, 0, sizeof(tempstat));
-    if (fstat(fileno(tfil), &tempstat))
-      RPS_FATALOUT("rps_edit_run_cplusplus_code failed to stat fd#" << fileno(tfil)
-		   << " for " << tempcppfilename << ":" << strerror(errno)
-		   << std::endl
-		   << " - from "
-		   << Rps_ShowCallFrame(&_)
-		   << std::endl
-		   << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *fstatfailure*"));
-    RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code tempcppfilename=" << tempcppfilename
-		  << " with " << tempstat.st_size << " bytes");
-    if ((long)tempstat.st_size == (long)tfilsiz)
-      RPS_WARNOUT("rps_edit_run_cplusplus_code unchanged size " << tfilsiz << " of temporary C++ file " << tempcppfilename
-		  << std::endl
-		  << " - from "
-		  << Rps_ShowCallFrame(&_)
-		  << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *unchangedsize*"));
-    RPS_INFORMOUT("rps_edit_run_cplusplus_code should compile C++ code in " << tempcppfilename
-		  << std::endl
-		  << " - from "
-		  << Rps_ShowCallFrame(&_));
-    std::string cwdpath;
-    bool needchdir = false;
+  while (!cppcompilegood)
     {
-      // not very good, but in practice good enough before bootstrapping
-      // see https://softwareengineering.stackexchange.com/q/289427/40065
-      char cwdbuf[128];
-      memset(cwdbuf, 0, sizeof(cwdbuf));
-      if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
-	RPS_FATAL("rps_edit_run_cplusplus_code getcwd failed: %m");
-      cwdpath = std::string(cwdbuf);
-    }
-    needchdir = cwdpath != std::string{};
-    //// our compilation command is...
-    std::string buildplugincmd{rps_topdirectory};
-    buildplugincmd += "/build-temporary-plugin.sh ";
-    buildplugincmd += tempcppfilename;
-    buildplugincmd += " ";
-    buildplugincmd += tempsofilename;
-    RPS_WARNOUT("rps_edit_run_cplusplus_code incomplete for C++ code in "<< tempcppfilename
-		<< " should compile into " << tempsofilename
-		<< " using either make plugin or build-temporary-plugin.sh"
-		<< std::endl
-		<< " - from "
-		<< Rps_ShowCallFrame(&_)
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *incomplete*"));
-    errno= 0;
-    if (needchdir)
+      cmdout << rps_cpluspluseditor_str << " " << tempcppfilename;
+      RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before running " << cmdout.str());
+      int cmdbad = system(cmdout.str().c_str());
+      if (cmdbad != 0)
+        RPS_FATALOUT("rps_edit_run_cplusplus_code failed to run " << cmdout.str()
+                     << " which exited " << cmdbad);
+      struct stat tempstat;
+      memset (&tempstat, 0, sizeof(tempstat));
+      if (fstat(fileno(tfil), &tempstat))
+        RPS_FATALOUT("rps_edit_run_cplusplus_code failed to stat fd#" << fileno(tfil)
+                     << " for " << tempcppfilename << ":" << strerror(errno)
+                     << std::endl
+                     << " - from "
+                     << Rps_ShowCallFrame(&_)
+                     << std::endl
+                     << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *fstatfailure*"));
+      RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code tempcppfilename=" << tempcppfilename
+                    << " with " << tempstat.st_size << " bytes");
+      if ((long)tempstat.st_size == (long)tfilsiz)
+        RPS_WARNOUT("rps_edit_run_cplusplus_code unchanged size " << tfilsiz << " of temporary C++ file " << tempcppfilename
+                    << std::endl
+                    << " - from "
+                    << Rps_ShowCallFrame(&_)
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1,
+                                               "rps_edit_run_cplusplus_code *unchangedsize*"));
+      fclose(tfil);
+      RPS_INFORMOUT("rps_edit_run_cplusplus_code should compile C++ code in " << tempcppfilename
+                    << std::endl
+                    << " - from "
+                    << Rps_ShowCallFrame(&_));
+      std::string cwdpath;
+      bool needchdir = false;
       {
-	RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before chdir to " << rps_topdirectory
-		      << " from " << cwdpath << " for C++ file " << tempcppfilename);
-	if (chdir(rps_topdirectory))
-	  RPS_FATALOUT("rps_edit_run_cplusplus_code failed to chdir to " << rps_topdirectory
-		       << ":" << strerror(errno));
+        // not very good, but in practice good enough before bootstrapping
+        // see https://softwareengineering.stackexchange.com/q/289427/40065
+        char cwdbuf[128];
+        memset(cwdbuf, 0, sizeof(cwdbuf));
+        if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+          RPS_FATAL("rps_edit_run_cplusplus_code getcwd failed: %m");
+        cwdpath = std::string(cwdbuf);
       }
-    RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code buildplugincmd: " << buildplugincmd);
-    errno = 0;
-    int buildres = system(buildplugincmd.c_str());
-    if (buildres != 0)
-      RPS_WARNOUT("rps_edit_run_cplusplus_code build command " << buildplugincmd
-		  << " failed -> " << buildres
-		  << " - from "
-		  << Rps_ShowCallFrame(&_)
-		  << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code build failure"));
-    else
-      cppcompilegood = true;
-    if (needchdir)
-      {
-	RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before chdir to " << cwdpath << " for C++ file " << tempcppfilename);
-	if (chdir(cwdpath.c_str()))
-	  RPS_FATALOUT("rps_edit_run_cplusplus_code failed to chdir to " << cwdpath
-		       << ":" << strerror(errno));
-      }
-    errno = 0;
-    if (cppcompilegood && access(tempsofilename, R_OK))
-      RPS_FATALOUT("rps_edit_run_cplusplus_code failed to build " << tempsofilename
-		   << ":" << strerror(errno)
-		   << " - from "
-		   << Rps_ShowCallFrame(&_)
-		   << std::endl
-		   << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *buildfail*"));
-  };				// end while !cppcompilegood
+      needchdir = cwdpath != std::string{};
+      //// our compilation command is...
+      std::string buildplugincmd{rps_topdirectory};
+      buildplugincmd += "/build-temporary-plugin.sh ";
+      buildplugincmd += tempcppfilename;
+      buildplugincmd += " ";
+      buildplugincmd += tempsofilename;
+      RPS_WARNOUT("rps_edit_run_cplusplus_code incomplete for C++ code in "<< tempcppfilename
+                  << " should compile into " << tempsofilename
+                  << " using either make plugin or build-temporary-plugin.sh"
+                  << std::endl
+                  << " - from "
+                  << Rps_ShowCallFrame(&_)
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *incomplete*"));
+      errno= 0;
+      if (needchdir)
+        {
+          RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before chdir to " << rps_topdirectory
+                        << " from " << cwdpath << " for C++ file " << tempcppfilename);
+          if (chdir(rps_topdirectory))
+            RPS_FATALOUT("rps_edit_run_cplusplus_code failed to chdir to " << rps_topdirectory
+                         << ":" << strerror(errno));
+        }
+      RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code buildplugincmd: " << buildplugincmd);
+      errno = 0;
+      int buildres = system(buildplugincmd.c_str());
+      if (buildres != 0)
+        RPS_WARNOUT("rps_edit_run_cplusplus_code build command " << buildplugincmd
+                    << " failed -> " << buildres
+                    << " - from "
+                    << Rps_ShowCallFrame(&_)
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code build failure"));
+      else
+        cppcompilegood = true;
+      if (needchdir)
+        {
+          RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before chdir to " << cwdpath << " for C++ file " << tempcppfilename);
+          if (chdir(cwdpath.c_str()))
+            RPS_FATALOUT("rps_edit_run_cplusplus_code failed to chdir to " << cwdpath
+                         << ":" << strerror(errno));
+        }
+      errno = 0;
+      if (cppcompilegood && access(tempsofilename, R_OK))
+        RPS_FATALOUT("rps_edit_run_cplusplus_code failed to build " << tempsofilename
+                     << ":" << strerror(errno)
+                     << " - from "
+                     << Rps_ShowCallFrame(&_)
+                     << std::endl
+                     << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *buildfail*"));
+    };				// end while !cppcompilegood
   ////////////////
   double cpuendtim = rps_process_cpu_time();
   double realendtim = rps_wallclock_real_time();
