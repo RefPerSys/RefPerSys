@@ -52,6 +52,8 @@ Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*callerframe, const char*oidstr, Rps_O
 {
   if (!oidstr)
     throw RPS_RUNTIME_ERROR_OUT("Rps_ObjectRef: null oidstr");
+  RPS_DEBUG_LOG(LOWREP, "Rps_ObjectRef oidstr=" << oidstr
+		<< " from " << Rps_ShowCallFrame(callerframe));
   const char*end = nullptr;
   bool ok=false;
   Rps_Id oid(oidstr,&end,&ok);
@@ -112,7 +114,7 @@ Rps_ObjectZone::register_objzone(Rps_ObjectZone*obz)
   std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
   auto oid = obz->oid();
   RPS_DEBUG_LOG(LOWREP, "register_objzone obz=" << obz << " oid=" << oid
-		<< RPS_FULL_BACKTRACE_HERE(1, "register_objzone"));
+                << RPS_FULL_BACKTRACE_HERE(1, "register_objzone"));
   if (ob_idmap_.find(oid) != ob_idmap_.end())
     RPS_FATALOUT("Rps_ObjectZone::register_objzone duplicate oid " << oid);
   ob_idmap_.insert({oid,obz});
@@ -196,8 +198,8 @@ Rps_ObjectZone::make(void)
   // not null.... That atomic field could be later overwritten.
   obz->ob_class.store(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)); //object∈class
   RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone::make oid=" << oid << " obz=" << obz
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::make"));
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::make"));
   return obz;
 } // end Rps_ObjectZone::make
 
@@ -1828,7 +1830,7 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
                  Rps_ObjectRef obfound;
                 );
   RPS_DEBUG_LOG(LOWREP, "find_object_by_string for str='" << str
-		<< "' from " << std::endl
+                << "' from " << std::endl
                 << Rps_ShowCallFrame(&_)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "find_object_by_string"));
@@ -1842,7 +1844,7 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
     {
       _f.obsymb = Rps_PayloadSymbol::find_named_object(str);
       RPS_DEBUG_LOG(LOWREP, "find_object_by_string for str='"
-	<< str << "'  obsymb=" << _f.obsymb);
+                    << str << "'  obsymb=" << _f.obsymb);
       if (!_f.obsymb)
         {
           if (dontfail)
@@ -1868,7 +1870,7 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
         };
       _f.obfound = Rps_ObjectRef(Rps_ObjectZone::find(id));
       RPS_DEBUG_LOG(LOWREP, "find_object_by_string for str='"
-		    << str << "'  obfound=" << _f.obfound);
+                    << str << "'  obfound=" << _f.obfound);
       if (!_f.obfound)
         {
           if (dontfail)
