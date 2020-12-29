@@ -630,12 +630,13 @@ Rps_Backtracer::~Rps_Backtracer()
   std::lock_guard<std::recursive_mutex> gu(_backtr_mtx_);
   if (this->magicnum() != _backtr_magicnum_)
     RPS_FASTABORT("corrupted backtracer");
-  if (backtr_outs) {
-    *backtr_outs << "--------------------------------";
-    if (!backtr_fromfile.empty())
-      *backtr_outs << "/ " << backtr_fromfile << ":" << backtr_fromline;
-    *backtr_outs << std::endl;
-  }
+  if (backtr_outs)
+    {
+      *backtr_outs << "--------------------------------";
+      if (!backtr_fromfile.empty())
+        *backtr_outs << "/ " << backtr_fromfile << ":" << backtr_fromline;
+      *backtr_outs << std::endl;
+    }
 } // end Rps_Backtracer::~Rps_Backtracer
 
 

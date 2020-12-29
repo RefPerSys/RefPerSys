@@ -53,7 +53,7 @@ Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*callerframe, const char*oidstr, Rps_O
   if (!oidstr)
     throw RPS_RUNTIME_ERROR_OUT("Rps_ObjectRef: null oidstr");
   RPS_DEBUG_LOG(LOWREP, "Rps_ObjectRef oidstr=" << oidstr
-		<< " from " << Rps_ShowCallFrame(callerframe));
+                << " from " << Rps_ShowCallFrame(callerframe));
   const char*end = nullptr;
   bool ok=false;
   Rps_Id oid(oidstr,&end,&ok);

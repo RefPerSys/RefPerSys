@@ -680,11 +680,13 @@ main (int argc, char** argv)
   rps_parse_program_arguments(argc, argv);
   ///
   RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" " %s process %d on host %s\n"
-             "... gitid %.16s built %s (main@%p)",
+             "... gitid %.16s built %s (main@%p) %s mode (%d jobs)",
              RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
              RPS_TERMINAL_NORMAL_ESCAPE,
              argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
-             (void*)main);
+             (void*)main,
+             (rps_batch?"batch":"interactive"),
+             rps_nbjobs);
   ////
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
@@ -740,8 +742,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     case RPSPROGOPT_BATCH:
     {
       rps_batch = true;
-      if (side_effect)
-        RPS_INFORMOUT("enabling batch mode");
     }
     return 0;
     case RPSPROGOPT_JOBS:
@@ -752,8 +752,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       else if (nbjobs > RPS_NBJOBS_MAX)
         nbjobs = RPS_NBJOBS_MAX;
       rps_nbjobs = nbjobs;
-      if (side_effect)
-        RPS_INFORMOUT("set number of jobs or worker threads to " << rps_nbjobs);
     }
     return 0;
     case RPSPROGOPT_DUMP:
