@@ -138,7 +138,7 @@ struct argp_option rps_progoptions[] =
   },
   /* ======= without terminal ======= */
   {/*name:*/ "no-terminal", ///
-    /*key:*/ RPSPROGOPT_NOTERMINAL, ///
+    /*key:*/ RPSPROGOPT_NO_TERMINAL, ///
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
     /*doc:*/ "Forcibly disable terminal ANSI escape codes, even if stdout is a tty.", //
@@ -146,10 +146,18 @@ struct argp_option rps_progoptions[] =
   },
   /* ======= without ASLR ======= */
   {/*name:*/ "no-aslr", ///
-    /*key:*/ RPSPROGOPT_NOASLR, ///
+    /*key:*/ RPSPROGOPT_NO_ASLR, ///
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
     /*doc:*/ "Forcibly disable Adress Space Layout Randomization.", //
+    /*group:*/0 ///
+  },
+  /* ======= without quick tests ======= */
+  {/*name:*/ "no-quick-tests", ///
+    /*key:*/ RPSPROGOPT_NO_QUICK_TESTS, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Disable quick tests after load by rps_small_quick_tests_after_load.", //
     /*group:*/0 ///
   },
   /* ======= batch ======= */
@@ -265,6 +273,7 @@ void* rps_proghdl = nullptr;
 bool rps_batch = false;
 bool rps_disable_aslr = false;
 bool rps_without_terminal_escape = false;
+bool rps_without_quick_tests = false;
 bool rps_run_repl = false;
 bool rps_test_repl_lexer = false;
 bool rps_syslog_enabled = false;
@@ -834,15 +843,20 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         }
     }
     return 0;
-    case RPSPROGOPT_NOTERMINAL:
+    case RPSPROGOPT_NO_TERMINAL:
     {
       rps_without_terminal_escape = true;
     }
     return 0;
-    case RPSPROGOPT_NOASLR:
+    case RPSPROGOPT_NO_ASLR:
     {
       // was already handled
       RPS_ASSERT(rps_disable_aslr);
+    }
+    return 0;
+    case RPSPROGOPT_NO_QUICK_TESTS:
+    {
+      rps_without_quick_tests = true;
     }
     return 0;
     case RPSPROGOPT_REPL:
@@ -1037,7 +1051,17 @@ rps_run_application(int &argc, char **argv)
       RPS_INFORM("rps_run_application did set debug after load to %s", rps_debugflags_after_load);
     }
   ////
-  rps_small_quick_tests_after_load();
+  if (rps_without_quick_tests)
+    {
+      RPS_INFORM("rps_run_application dont run quick tests after load");
+    }
+  else
+    {
+      RPS_DEBUG_LOG(LOWREP, "rps_run_application before running rps_small_quick_tests_after_load from "
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application/quick-tests"));
+      rps_small_quick_tests_after_load();
+      RPS_DEBUG_LOG(LOWREP, "rps_run_application after running rps_small_quick_tests_after_load");
+    }
   //// running the given command after load
   if (rps_run_command_after_load)
     {
