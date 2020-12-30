@@ -734,6 +734,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       if (side_effect)
         rps_set_debug_output_path(arg);
     }
+    return 0;
     case RPSPROGOPT_LOADDIR:
     {
       rps_my_load_dir = std::string(arg);
