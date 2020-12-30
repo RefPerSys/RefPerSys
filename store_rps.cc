@@ -482,7 +482,10 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                  << " objid:" << objid
                  << " unexpected");
   auto obz = Rps_ObjectZone::find(objid);
-  RPS_ASSERT (obz);
+  if (!obz)
+    RPS_FATALOUT("parse_json_buffer_second_pass spacid=" << spacid
+                 << " lineno:" << lineno
+                 << " unknown objid:" << objid);
   auto obzspace = Rps_ObjectZone::find(spacid);
   obz->loader_set_class (this, Rps_ObjectRef(objjson["class"], this));
   RPS_ASSERT (obzspace);

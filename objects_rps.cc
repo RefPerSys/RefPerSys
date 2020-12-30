@@ -137,7 +137,7 @@ Rps_ObjectZone::fresh_random_oid(Rps_ObjectZone*ob)
 }
 
 
-Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
+Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, registermode_en regmod)
   : Rps_ZoneValue(Rps_Type::Object),
     ob_oid(oid), ob_mtx(), ob_class(nullptr),
     ob_space(nullptr), ob_mtime(0.0),
@@ -145,23 +145,24 @@ Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, bool dontregister)
     ob_magicgetterfun(nullptr),
     ob_applyingfun(nullptr)
 {
-  RPS_NOPRINTOUT("Rps_ObjectZone oid=" << oid
-                 << std::endl
-                 << RPS_FULL_BACKTRACE_HERE(2, "Rps_ObjectZone")
-                 << std::endl);
-  if (!dontregister)
+  RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone oid=" << oid << ' '
+		<< (regmod==OBZ_DONT_REGISTER?"non-":"") << "registering"
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(2, "Rps_ObjectZone")
+		<< std::endl);
+  if (regmod == OBZ_REGISTER)
     {
       register_objzone(this);
-      // In principle, the below initialization of ob_class should be
-      // useless, because it should be done elsewhere. In practice, we
-      // need it and prefer to initialize ob_class several times instead
-      // of none.
-      // Every object should have a class, initially `object`; the
-      // ob_class can later be replaced, but we need something which is
-      // not null.... That atomic field could be later overwritten.
-      ob_class.store(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)); //object∈class
-
     }
+  // In principle, the below initialization of ob_class should be
+  // useless, because it should be done elsewhere. In practice, we
+  // need it and prefer to initialize ob_class several times instead
+  // of none.
+  ///////
+  // Every object should have a class, initially `object`; the
+  // ob_class can later be replaced, but we need something which is
+  // not null.... That atomic field could be later overwritten.
+  ob_class.store(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)); //object∈class
 } // end Rps_ObjectZone::Rps_ObjectZone
 
 
@@ -181,8 +182,11 @@ Rps_ObjectZone::~Rps_ObjectZone()
 } // end Rps_ObjectZone::~Rps_ObjectZone()
 
 Rps_ObjectZone::Rps_ObjectZone() :
-  Rps_ObjectZone::Rps_ObjectZone(fresh_random_oid(this), false)
+  Rps_ObjectZone::Rps_ObjectZone(fresh_random_oid(this),
+				 Rps_ObjectZone::OBZ_DONT_REGISTER)
 {
+  RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone this=" << this
+		<< " oid=" << oid());
 } // end Rps_ObjectZone::Rps_ObjectZone
 
 
@@ -190,7 +194,8 @@ Rps_ObjectZone*
 Rps_ObjectZone::make(void)
 {
   Rps_Id oid = fresh_random_oid(nullptr);
-  Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(oid,true);
+  RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone::make start oid=" << oid);
+  Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,registermode_en>(oid,OBZ_REGISTER);
   *(const_cast<Rps_Id*>(&obz->ob_oid)) = oid;
   obz->ob_mtime.store(rps_wallclock_real_time());
   // Every object should have a class, initially `object`; the
@@ -208,15 +213,14 @@ Rps_ObjectZone*
 Rps_ObjectZone::make_loaded(Rps_Id oid, Rps_Loader* ld)
 {
 #warning Rps_ObjectZone::make_loaded might be incomplete
+  RPS_DEBUG_LOG(LOAD, "make_loaded oid="<< oid);
   RPS_ASSERT(oid.valid());
   RPS_ASSERT(ld != nullptr);
-  Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(oid, false);
+  Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,registermode_en>(oid, OBZ_REGISTER);
   // Every object should have a class, initially `object`; the
   // ob_class can later be replaced, but we need something which is
   // not null.... The loader could later overwrite that.
   obz->ob_class.store(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)); //object∈class
-  return obz;
-  RPS_DEBUG_LOG(LOAD, "make_loaded oid="<< oid << ", obz=" << (void*)obz);
   return obz;
 } // end Rps_ObjectZone::make_loaded
 

@@ -2057,13 +2057,20 @@ typedef Rps_TwoValues rps_applyingfun_t (Rps_CallFrame*callerframe,
 class Rps_Payload;
 class Rps_ObjectZone : public Rps_ZoneValue
 {
+  ///
+public:
+  enum registermode_en {
+    OBZ_DONT_REGISTER,
+    OBZ_REGISTER
+  };
   friend class Rps_Loader;
   friend class Rps_Dumper;
   friend class Rps_Payload;
   friend class Rps_ObjectRef;
   friend class Rps_Value;
   friend Rps_ObjectZone*
-  Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,bool>(Rps_Id,bool);
+  Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,registermode_en>(Rps_Id,registermode_en);
+private:
   /// fields
   const Rps_Id ob_oid;
   mutable std::recursive_mutex ob_mtx;
@@ -2076,7 +2083,7 @@ class Rps_ObjectZone : public Rps_ZoneValue
   std::atomic<rps_magicgetterfun_t*> ob_magicgetterfun;
   std::atomic<rps_applyingfun_t*> ob_applyingfun;
   /// constructors
-  Rps_ObjectZone(Rps_Id oid, bool dontregister=false);
+  Rps_ObjectZone(Rps_Id oid, registermode_en regmod);
   Rps_ObjectZone(void);
   ~Rps_ObjectZone();
   static std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher> ob_idmap_;
