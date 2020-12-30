@@ -114,6 +114,7 @@ Rps_ObjectZone::register_objzone(Rps_ObjectZone*obz)
   std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
   auto oid = obz->oid();
   RPS_DEBUG_LOG(LOWREP, "register_objzone obz=" << obz << " oid=" << oid
+		<< std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "register_objzone"));
   if (ob_idmap_.find(oid) != ob_idmap_.end())
     RPS_FATALOUT("Rps_ObjectZone::register_objzone duplicate oid " << oid);
@@ -122,7 +123,7 @@ Rps_ObjectZone::register_objzone(Rps_ObjectZone*obz)
 } // end Rps_ObjectZone::register_objzone
 
 Rps_Id
-Rps_ObjectZone::fresh_random_oid(Rps_ObjectZone*ob)
+Rps_ObjectZone::fresh_random_oid(Rps_ObjectZone*obz)
 {
   Rps_Id oid;
   std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
@@ -131,7 +132,10 @@ Rps_ObjectZone::fresh_random_oid(Rps_ObjectZone*ob)
       oid = Rps_Id::random();
       if (RPS_UNLIKELY(ob_idmap_.find(oid) != ob_idmap_.end()))
         continue;
-      ob_idmap_.insert({oid,ob});
+      if (obz)
+	ob_idmap_.insert({oid,obz});
+      RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone::fresh_random_oid obz=" << obz
+		    << " -> oid=" << oid);
       return oid;
     }
 }
@@ -194,10 +198,15 @@ Rps_ObjectZone*
 Rps_ObjectZone::make(void)
 {
   Rps_Id oid = fresh_random_oid(nullptr);
-  RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone::make start oid=" << oid);
+  RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone::make start oid=" << oid
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::make start"));
   Rps_ObjectZone*obz= Rps_QuasiZone::rps_allocate<Rps_ObjectZone,Rps_Id,registermode_en>(oid,OBZ_REGISTER);
   *(const_cast<Rps_Id*>(&obz->ob_oid)) = oid;
-  obz->ob_mtime.store(rps_wallclock_real_time());
+  double rtime = rps_wallclock_real_time();
+  obz->ob_mtime.store(rtime);
+  RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone::make oid=" << oid
+		<< " obz=" << obz << " mtime=" << rtime);
   // Every object should have a class, initially `object`; the
   // ob_class can later be replaced, but we need something which is
   // not null.... That atomic field could be later overwritten.
