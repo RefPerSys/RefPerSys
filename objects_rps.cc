@@ -146,10 +146,10 @@ Rps_ObjectZone::Rps_ObjectZone(Rps_Id oid, registermode_en regmod)
     ob_applyingfun(nullptr)
 {
   RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone oid=" << oid << ' '
-		<< (regmod==OBZ_DONT_REGISTER?"non-":"") << "registering"
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(2, "Rps_ObjectZone")
-		<< std::endl);
+                << (regmod==OBZ_DONT_REGISTER?"non-":"") << "registering"
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(2, "Rps_ObjectZone")
+                << std::endl);
   if (regmod == OBZ_REGISTER)
     {
       register_objzone(this);
@@ -183,10 +183,10 @@ Rps_ObjectZone::~Rps_ObjectZone()
 
 Rps_ObjectZone::Rps_ObjectZone() :
   Rps_ObjectZone::Rps_ObjectZone(fresh_random_oid(this),
-				 Rps_ObjectZone::OBZ_DONT_REGISTER)
+                                 Rps_ObjectZone::OBZ_DONT_REGISTER)
 {
   RPS_DEBUG_LOG(LOWREP, "Rps_ObjectZone this=" << this
-		<< " oid=" << oid());
+                << " oid=" << oid());
 } // end Rps_ObjectZone::Rps_ObjectZone
 
 
