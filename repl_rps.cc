@@ -277,6 +277,8 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                            Rps_ObjectRef oblex;
                            Rps_Value chunkv;
                            Rps_Value semval;
+                           Rps_ObjectRef obdictdelim;
+                           Rps_Value delimv;
                 );
   RPS_ASSERT(colno >= 0 && colno <= linelen);
   RPS_DEBUG_LOG(REPL, "rps_repl_lexer start inp@"<< inp
@@ -441,13 +443,45 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
 
   else if (ispunct(linebuf[colno]))
     {
-      RPS_FATALOUT("unimplemented delimiter rps_repl_lexer inp@" << (void*)inp
-                   << " input_name=" << input_name
-                   << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
-                   << " lineno=" << lineno
-                   << " colno=" << colno
-                   << " curpos=" << linebuf+colno
-                   << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer"));
+      constexpr int max_delim_len = 5;
+      _f.obdictdelim = RPS_ROOT_OB(_627ngdqrVfF020ugC5); //"repl_delim"∈string_dictionary
+      auto paylstrdict = _f.obdictdelim->get_dynamic_payload<Rps_PayloadStringDict>();
+      RPS_ASSERT (paylstrdict != nullptr);
+      std::string delimstr;
+      int startcolno = colno;
+      int endcolno = colno;
+      while (ispunct(linebuf[endcolno]) && endcolno < linelen && endcolno < startcolno + max_delim_len)
+        endcolno++;
+      while (!delimstr.empty() && endcolno>startcolno)
+        {
+          delimstr = std::string(linebuf+startcolno, endcolno-startcolno);
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer candidate delim " << delimstr << " L" << lineno << "C" << startcolno);
+          _f.delimv = paylstrdict->find(delimstr);
+          if (_f.delimv)
+            {
+              RPS_DEBUG_LOG(REPL, "rps_repl_lexer candidate found delim " << delimstr << " L" << lineno << "C" << startcolno
+                            << " as " << _f.delimv);
+              colno = endcolno;
+              return Rps_TwoValues(RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK), //repl_delimiter∈class
+                                   _f.delimv);
+              break;
+            }
+          else
+            endcolno--;
+        }
+      if (endcolno <= startcolno)
+        {
+          RPS_WARNOUT("unknown delimiter rps_repl_lexer inp@" << (void*)inp
+                      << " input_name=" << input_name
+                      << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
+                      << " lineno=" << lineno
+                      << " colno=" << colno
+                      << " curpos=" << linebuf+colno << std::endl
+                      << " delim " << delimstr
+                      << std::endl
+                      << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer/unknown delim"));
+          return Rps_TwoValues(nullptr, nullptr);
+        }
 #warning unimplemented rps_repl_lexer for delimiter
     }
 
@@ -1491,7 +1525,7 @@ rps_repl_lexer_test(void)
                         << ", col#" << oldcolno
                         << " now line#" << lineno
                         << ", col#" << colno
-                        << " count#" << count
+                        << " count#" << count << std::endl
                         <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test") << std::endl);
           if (_f.curlextokenv)
             {

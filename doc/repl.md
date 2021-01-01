@@ -9,6 +9,10 @@ second is the semantic value of the lexed token.
 It is not possible to enter a fresh objid. Only *existing* objids can
 be typed.
 
+Lexing of delimiters is done thru the `_627ngdqrVfF020ugC5` object (a
+`string_dictionnary` named `repl_delim` and mapping delimiters to
+values describing them).
+
 ## Features considered
 
 1. Dump persistent heap
@@ -43,7 +47,7 @@ The general syntax for REPL commands would thus be:
 ## Extensible syntax
 
 The *`<verb>`* above would be an object, often a RefPerSys symbol,
-having as some specific attribute `repl_command` whose associated
+having as some specific attribute `repl_command_parser` whose associated
 value is a RefPerSys closure parsing the rest of the command.
 
 EDIT:
