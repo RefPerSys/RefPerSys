@@ -1287,7 +1287,7 @@ Rps_Dumper::scan_object(const Rps_ObjectRef obr)
   if (!obr->get_space()) // transient
     return;
   du_mapobjects.insert({obr->oid(), obr});
-  if (obr->get_mtime() > rps_start_wallclock_real_time())
+  if (obr->get_mtime() > rps_get_start_wallclock_real_time())
     {
       du_newobcount++;
     }
