@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2020 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2021 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -228,7 +228,7 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
     /*doc:*/ "Run with a textual read-eval-print-loop user interface using GNU readline.\n"
-    " (this option might become obsolete)", //
+   " (this option might become obsolete, once a web interface exists)", //
     /*group:*/0 ///
   },
   /* ======= command textual read eval print loop lexer testing ======= */
