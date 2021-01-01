@@ -716,7 +716,7 @@ main (int argc, char** argv)
       memset (cwdbuf, 0, sizeof(cwdbuf));
       if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
         strcpy(cwdbuf, "./");
-      RPS_INFORM("RefPerSys (pid %d on %d shortgit %s) will dump into %s\n"
+      RPS_INFORM("RefPerSys (pid %d on %s shortgit %s) will dump into %s\n"
                  "... from current directory %s\n",
                  (int)getpid(), rps_hostname(), rps_shortgitid,
                  rps_dumpdir_str.c_str(), cwdbuf);
@@ -1145,9 +1145,10 @@ rps_run_application(int &argc, char **argv)
     }
   else
     {
-      RPS_FATALOUT("rps_run_application NOT calling rps_run_web_service"
-                   << std::endl
-                   << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
+      RPS_WARNOUT("rps_run_application incomplete, trying to rps_run_web_service"
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application/web"));
+#warning rps_run_web_service from rps_run_web_service might not work
       rps_run_web_service();
     }
 #warning incomplete rps_run_application
