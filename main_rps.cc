@@ -56,6 +56,8 @@ extern "C" std::string rps_cpluspluseditor_str;
 std::string rps_cpluspluseditor_str;
 extern "C" std::string rps_cplusplusflags_str;
 std::string rps_cplusplusflags_str;
+extern "C" std::string rps_dumpdir_str;
+std::string rps_dumpdir_str;
 
 #define RPS_DEFAULT_WEB_SERVICE "localhost:9090"
 static const char*rps_web_service = RPS_DEFAULT_WEB_SERVICE;
@@ -589,7 +591,6 @@ int
 main (int argc, char** argv)
 {
   rl_readline_name = argv[0]; // required by GNU readline
-  std::string dumpdir;
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
   rps_stderr_istty = isatty(STDERR_FILENO);
@@ -646,8 +647,6 @@ main (int argc, char** argv)
           rps_run_repl = true;
         else if (!strcmp(argv[ix], "--without-terminal"))
           rps_without_terminal_escape = true;
-        else if (!strncmp(argv[ix], "--dump=", strlen("--dump=")))
-          dumpdir = argv[ix]+strlen("--dump=");
       }
     if (rps_disable_aslr)
       {
@@ -711,10 +710,17 @@ main (int argc, char** argv)
   rps_load_from(rps_my_load_dir);
   rps_run_application(argc, argv);
   ////
-  if (!dumpdir.empty())
+  if (!rps_dumpdir_str.empty())
     {
-      RPS_INFORM("RefPerSys should dump into %s\n", dumpdir.c_str());
-      rps_dump_into(dumpdir);
+      char cwdbuf[128];
+      memset (cwdbuf, 0, sizeof(cwdbuf));
+      if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+        strcpy(cwdbuf, "./");
+      RPS_INFORM("RefPerSys (pid %d on %d shortgit %s) will dump into %s\n"
+                 "... from current directory %s\n",
+                 (int)getpid(), rps_hostname(), rps_shortgitid,
+                 rps_dumpdir_str.c_str(), cwdbuf);
+      rps_dump_into(rps_dumpdir_str);
     }
   asm volatile (".globl rps_end_of_main; .type rps_end_of_main, @function");
   asm volatile ("rps_end_of_main: nop; nop; nop; nop; nop; nop");
@@ -774,7 +780,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     case RPSPROGOPT_DUMP:
     {
       if (side_effect)
-        RPS_INFORMOUT("will dump to " << arg);
+        rps_dumpdir_str = std::string(arg);
     }
     return 0;
     case RPSPROGOPT_HOMEDIR:
