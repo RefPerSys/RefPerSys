@@ -38,6 +38,7 @@ RPS_INSTALL_NAMED_ROOT_OB(_3N8vZ2Cw62z024XxCg,first_name)
 RPS_INSTALL_NAMED_ROOT_OB(_3Q3hJsSgCDN03GTYW5,symbol)
 RPS_INSTALL_NAMED_ROOT_OB(_4bkpL4a6xlO00VnyM8,compute_set_of_own_method_selectors)
 RPS_INSTALL_NAMED_ROOT_OB(_4CZZ2JlnkQT02YJ6sM,fox_event_loop)
+RPS_INSTALL_NAMED_ROOT_OB(_4I8GwXXfO3P01cdzyd,repl_command_parser)
 RPS_INSTALL_NAMED_ROOT_OB(_5yQcFbU0seU018B48Z,message_sending)
 RPS_INSTALL_NAMED_ROOT_OB(_5FMX3lrhiw601iqPy5,line)
 RPS_INSTALL_NAMED_ROOT_OB(_5VC4IuJ0dyr01b8lA0,generate_code)
@@ -49,7 +50,7 @@ RPS_INSTALL_NAMED_ROOT_OB(_8xCV6GDXYMa02mK5xy,display_object_content_web)
 RPS_INSTALL_NAMED_ROOT_OB(_9uwZtDshW4401x6MsY,space)
 
 #undef RPS_NB_NAMED_ROOT_OB
-#define RPS_NB_NAMED_ROOT_OB 27
+#define RPS_NB_NAMED_ROOT_OB 28
 
 #undef RPS_INSTALL_NAMED_ROOT_OB
 /// end of RefPerSys roots file generated/rps-names.hh

@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 135,
+ "nbobjects" : 136,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -1318,6 +1318,25 @@
 }
 //-ob_4FBkYDlynyC02QtkfG
 
+
+/// handwritten by Basile
+//+ob_4I8GwXXfO3P01cdzyd
+//∈symbol
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "repl_command_parser"
+  }
+ ],
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1609519254.2,
+ "oid" : "_4I8GwXXfO3P01cdzyd",
+ "payload" : "symbol",
+ "symb_name" : "repl_command_parser"
+}
+//-ob_4I8GwXXfO3P01cdzyd
 
 //+ob_4YM7mv0GrSp03OkF8T
 //∈repl_delimiter
