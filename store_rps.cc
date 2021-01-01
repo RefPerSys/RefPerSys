@@ -1127,6 +1127,7 @@ class Rps_Dumper
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
   std::string du_tempsuffix;
+  long du_newobcount;		// counter for new dumped objects
   double du_startelapsedtime;
   double du_startprocesstime;
   double du_startwallclockrealtime;
@@ -1216,6 +1217,7 @@ public:
 Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
   du_topdir(topdir), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
   du_tempsuffix(make_temporary_suffix()),
+  du_newobcount(0),
   du_startelapsedtime(rps_elapsed_real_time()),
   du_startprocesstime(rps_process_cpu_time()),
   du_startwallclockrealtime(rps_wallclock_real_time()),
@@ -1285,6 +1287,10 @@ Rps_Dumper::scan_object(const Rps_ObjectRef obr)
   if (!obr->get_space()) // transient
     return;
   du_mapobjects.insert({obr->oid(), obr});
+  if (obr->get_mtime() > rps_start_wallclock_real_time())
+    {
+      du_newobcount++;
+    }
   du_scanque.push_back(obr);
   //  RPS_INFORMOUT("Rps_Dumper::scan_object adding oid " << obr->oid());
 } // end Rps_Dumper::scan_object
@@ -2339,7 +2345,9 @@ void rps_dump_into (const std::string dirpath, Rps_CallFrame* callframe)
       double endcputime = rps_process_cpu_time();
       RPS_INFORMOUT("dump into " << dumper.get_top_dir()
                     << " completed in " << (endelapsed-startelapsed) << " wallclock, "
-                    << (endcputime-startcputime) << " cpu seconds");
+                    << (endcputime-startcputime) << " cpu seconds"
+                    << " with " << dumper.du_newobcount
+                    << " new objects dumped");
     }
   catch (const std::exception& exc)
     {
