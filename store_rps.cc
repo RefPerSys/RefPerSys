@@ -1290,6 +1290,9 @@ Rps_Dumper::scan_object(const Rps_ObjectRef obr)
   if (obr->get_mtime() > rps_get_start_wallclock_real_time())
     {
       du_newobcount++;
+      RPS_DEBUG_LOG(DUMP, "new object #" << du_newobcount << ": " << obr
+                    << " with mtime " << obr->get_mtime()
+                    << " and start wallclock " <<  rps_get_start_wallclock_real_time());
     }
   du_scanque.push_back(obr);
   //  RPS_INFORMOUT("Rps_Dumper::scan_object adding oid " << obr->oid());
