@@ -269,6 +269,17 @@ Rps_PayloadStringDict::add(const std::string&str, Rps_Value val)
     dict_map.erase(str);
 } // end Rps_PayloadStringDict::add
 
+Rps_Value
+Rps_PayloadStringDict::find(const std::string&str) const
+{
+  if (!str.empty()) {
+    auto it = dict_map.find(str);
+    if (it != dict_map.end())
+      return it->second;
+  }
+  return nullptr;
+} // end Rps_PayloadStringDict::find
+
 void
 Rps_PayloadStringDict::remove(const std::string&str)
 {
