@@ -228,7 +228,7 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
     /*doc:*/ "Run with a textual read-eval-print-loop user interface using GNU readline.\n"
-   " (this option might become obsolete, once a web interface exists)", //
+    " (this option might become obsolete, once a web interface exists)", //
     /*group:*/0 ///
   },
   /* ======= command textual read eval print loop lexer testing ======= */
@@ -484,9 +484,15 @@ rps_print_types_info(void)
 int rps_nbjobs = RPS_NBJOBS_MIN + 1;
 
 static double rps_start_monotonic_time;
+static double rps_start_wallclock_real_time;
 double rps_elapsed_real_time(void)
 {
   return rps_monotonic_real_time() - rps_start_monotonic_time;
+}
+
+double rps_get_start_wallclock_real_time()
+{
+  return rps_start_wallclock_real_time;
 }
 
 static void
@@ -585,6 +591,7 @@ main (int argc, char** argv)
   rl_readline_name = argv[0]; // required by GNU readline
   std::string dumpdir;
   rps_start_monotonic_time = rps_monotonic_real_time();
+  rps_start_wallclock_real_time = rps_wallclock_real_time();
   rps_stderr_istty = isatty(STDERR_FILENO);
   rps_stdout_istty = isatty(STDOUT_FILENO);
   rps_progname = argv[0];
@@ -1243,7 +1250,9 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
     {
       std::ostringstream cmdout;
       cmdout << rps_cpluspluseditor_str << " " << tempcppfilename;
-      RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before running " << cmdout.str());
+      RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before running " << cmdout.str()
+                    << "tfilfd#" << fileno(tfil)
+                    << " see /proc/" << getpid() << "/fd/" << fileno(tfil));
       int cmdbad = system(cmdout.str().c_str());
       if (cmdbad != 0)
         RPS_FATALOUT("rps_edit_run_cplusplus_code failed to run " << cmdout.str()

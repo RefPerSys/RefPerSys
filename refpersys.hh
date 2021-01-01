@@ -630,6 +630,7 @@ while (0)
 static inline double rps_monotonic_real_time(void);
 static inline double rps_wallclock_real_time(void);
 double rps_elapsed_real_time(void);
+double rps_get_start_wallclock_real_time(void);
 static inline double rps_process_cpu_time(void);
 static inline double rps_thread_cpu_time(void);
 
