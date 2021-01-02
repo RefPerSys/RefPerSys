@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean plugin fullclean redump altredump print-temporary-plugin-settings indent test01 test02 test03 test-load analyze gitpush gitpush2
+.PHONY: all objects clean plugin fullclean redump altredump print-plugin-settings indent test01 test02 test03 test-load analyze gitpush gitpush2
 
 
 ## tell GNU make to export all variables by default
@@ -154,7 +154,7 @@ clean:
 	$(RM) -rf bld
 
 ## usual invocation: make plugin RPS_PLUGIN_SOURCE=/tmp/foo.cc RPS_PLUGIN_SHARED_OBJECT=/tmp/foo.so
-## see also our ./build-temporary-plugin.sh script
+## see also our ./build-plugin.sh script
 plugin:
 	if [ -n "$RPS_PLUGIN_SOURCE" ]; then echo missing RPS_PLUGIN_SOURCE > /dev/stderr ; exit 1; fi
 	if [ -n "$RPS_PLUGIN_SHARED_OBJECT" ]; then echo missing RPS_PLUGIN_SHARED_OBJECT  > /dev/stderr ; exit 1; fi
@@ -171,8 +171,8 @@ __timestamp.c: | Makefile do-generate-timestamp.sh
 	$(MV) --backup $@-tmp $@
 
 
-## for temporary plugins, see build-temporary-plugin.sh
-print-temporary-plugin-settings:
+## for plugins, see build-plugin.sh
+print-plugin-settings:
 	@printf "RPSPLUGIN_CXX='%s'\n" $(RPS_BUILD_CXX)
 	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(CXXFLAGS)"
 	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"

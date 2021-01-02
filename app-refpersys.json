@@ -1,7 +1,0 @@
-// file app-refpersys.json
-// JSON for http://refpersys.org/ application preference
-{
-    "window-height": 480,
-    "window-width": 640
-}
-// end of file app-refpersys.json
