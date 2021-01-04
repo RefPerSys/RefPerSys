@@ -3769,8 +3769,13 @@ extern "C" std::string rps_repl_version(void); // in repl_rps.cc
 /// or using readline if inp is null. In repl_rps.cc
 extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
 
+/// Create a new REPL command, and output to stdout some draft C++
+/// code to parse it.... To be called from the main thread.
+/// Implemented in our C++ file repl_rps.cc
+extern "C" void rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname);
+
+
 extern "C" std::string rps_curl_version(void); // in curl_rps.cc
-extern "C" void rps_set_gui_dump_dir(const std::string&); // in fltklo_rps.cc 
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
 extern "C" void rps_dump_into (const std::string dirpath = ".", Rps_CallFrame* callframe = nullptr); // in store_rps.cc
