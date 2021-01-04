@@ -53,7 +53,7 @@ RPS_INSTALL_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
 RPS_INSTALL_ROOT_OB(_2A2mrPpR3Qf03p6o5b) //int∈class
 RPS_INSTALL_ROOT_OB(_2SRhV7RJt3B01yArR6) //set_of_core_functions∈symbol
 RPS_INSTALL_ROOT_OB(_36I1BY2NetN03WjrOv) //symbol∈class
-RPS_INSTALL_ROOT_OB(_39OsVkAJDdV00ohD5r) //"fox_event_loop"∈object
+RPS_INSTALL_ROOT_OB(_39OsVkAJDdV00ohD5r) //"repl_command"∈object
 RPS_INSTALL_ROOT_OB(_3rXxMck40kz03RxRLM) //code_chunk∈class
 RPS_INSTALL_ROOT_OB(_3s7ztCCoJsj04puTdQ) //agenda∈class
 RPS_INSTALL_ROOT_OB(_3FztYBKABxZ02DUPRm) //string_dictionary∈class
@@ -67,7 +67,7 @@ RPS_INSTALL_ROOT_OB(_4bkpL4a6xlO00VnyM8) //compute_set_of_own_method_selectors�
 RPS_INSTALL_ROOT_OB(_4jISxMJ4PYU0050nUl) //closure∈class
 RPS_INSTALL_ROOT_OB(_4ojpzRzyRWz02DNWMe) //"display_object_occurrence_web"∈named_selector
 RPS_INSTALL_ROOT_OB(_4pSwobFHGf301Qgwzh) //named_attribute∈class
-RPS_INSTALL_ROOT_OB(_4CZZ2JlnkQT02YJ6sM) //fox_event_loop∈symbol
+RPS_INSTALL_ROOT_OB(_4CZZ2JlnkQT02YJ6sM) //repl_command∈symbol
 RPS_INSTALL_ROOT_OB(_4FBkYDlynyC02QtkfG) //"name"∈named_attribute
 RPS_INSTALL_ROOT_OB(_4I8GwXXfO3P01cdzyd) //repl_command_parser∈symbol
 RPS_INSTALL_ROOT_OB(_54CP9eaTmxT00lzbEW) //rps_command_textedit∈class

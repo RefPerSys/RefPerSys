@@ -597,7 +597,7 @@
 			[
 				{
 					"at" : "_1EBVGSfW2m200z18rx",
-					"va" : "fox_event_loop"
+					"va" : "repl_command"
 				}
 			],
 			"class" : "_5yhJGgxLwLp00X0xEQ",
@@ -874,10 +874,10 @@
 		{
 			"meta_comment": "∈symbol",
 			"class" : "_36I1BY2NetN03WjrOv",
-			"mtime" : 1599336150,
+			"mtime" : 1609759618,
 			"oid" : "_4CZZ2JlnkQT02YJ6sM",
 			"payload" : "symbol",
-			"symb_name" : "fox_event_loop",
+			"symb_name" : "repl_command",
 			"symb_val" : "_39OsVkAJDdV00ohD5r"
 		},
 
