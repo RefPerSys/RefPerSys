@@ -166,7 +166,8 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
     }
   else
     RPS_WARNOUT("rps_repl_interpret no line in " << input_name << "L" << lineno);
-  RPS_FATALOUT("unimplemented rps_repl_interpret frame=" << Rps_ShowCallFrame(&_)
+  RPS_FATALOUT("unimplemented rps_repl_interpret frame=" << std::endl
+               << Rps_ShowCallFrame(&_)
                << " inp=" << inp << " input_name=" << input_name
                << " lineno=" << lineno << std::endl
                << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret"));
@@ -809,7 +810,17 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   while (_f.chunkelemv);
   RPS_DEBUG_LOG(REPL, "ending rps_lex_chunk " << input_name << "L" << startlineno << "C" << startcolno
                 << "-L" << chkdata.chunkdata_lineno << "C" << chkdata.chunkdata_colno
-                << " obchk=" << _f.obchk);
+                << " obchk=" << _f.obchk
+                << std::endl
+                << Rps_Do_Output([=](std::ostream&outs)
+  {
+    unsigned nbchk = paylvec->size();
+    for (unsigned ix=0; ix<nbchk; ix++)
+      {
+        outs << " [" << ix << "]="
+             << paylvec->at(ix) << std::endl;
+      }
+  }));
   lineno = chkdata.chunkdata_lineno;
   colno = chkdata.chunkdata_colno;
   *plinebuf = *chkdata.chunkdata_plinebuf;
