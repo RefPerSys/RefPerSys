@@ -95,6 +95,7 @@ RPS_INSTALL_ROOT_OB(_8coaw0RX8kD03J64aj) //"root_web_handler"∈web_handler
 RPS_INSTALL_ROOT_OB(_8fYqEw8vTED03wsznt) //tasklet∈class
 RPS_INSTALL_ROOT_OB(_8xCV6GDXYMa02mK5xy) //display_object_content_web∈symbol
 RPS_INSTALL_ROOT_OB(_8zNtuRpzXUP013WG9S) //web_exchange∈class
+RPS_INSTALL_ROOT_OB(_8CncrUdoSL303T5lOK) //repl_command∈class
 RPS_INSTALL_ROOT_OB(_8Iz9vBfs4sl041FiuR) //mutable_value_vector∈class
 RPS_INSTALL_ROOT_OB(_8J6vNYtP5E800eCr5q) //∈space
 RPS_INSTALL_ROOT_OB(_8YknAApDQiF04BDe3W) //mutable_object_vector∈class
@@ -104,7 +105,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 82
+#define RPS_NB_ROOT_OB 83
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
