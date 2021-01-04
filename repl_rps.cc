@@ -97,6 +97,31 @@ rps_repl_version(void)
 } // end rps_repl_version
 
 void
+rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
+{
+#warning wrong descriptor of call frame in rps_repl_create_command
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_6x4XcZ1fxp403uBUoz), 
+		 /*callerframe:*/callframe,
+		 );
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(callframe && callframe->is_good_call_frame(callframe));
+  RPS_ASSERT(commandname != nullptr);
+  bool goodname = isalpha(commandname[0]);
+  for (const char*pc = commandname; *pc && goodname; pc++)
+    goodname = isalnum(*pc)
+      || (pc>commandname && *pc == '_' && pc[-1] != '_');
+  if (!goodname) {
+    RPS_WARNOUT("rps_repl_create_command invalid command name " << commandname << std::endl
+		<< ".. called from " <<  Rps_ShowCallFrame(&_));
+    std::string msg = "invalid REPL command name ";
+    msg += commandname;
+    throw std::runtime_error(msg);
+  };
+#warning rps_repl_create_command incomplete
+  RPS_FATALOUT("rps_repl_create_command incomplete for command " << commandname);
+} // end rps_repl_create_command
+
+void
 rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno)
 {
   std::istream*previous_input=nullptr;
