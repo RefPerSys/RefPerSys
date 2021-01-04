@@ -103,6 +103,8 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
                            /*callerframe:*/callframe,
                            Rps_ObjectRef obsymb;
                            Rps_ObjectRef obcommand;
+                           Rps_ObjectRef obfun;
+                           Rps_Value closv;
                 );
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame(callframe));
@@ -134,13 +136,42 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
   RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
                 << " -> obcommand=" << _f.obcommand);
   /* We need to create some object ObFun, of class 9Gz1oNPCnkB00I6VRS
-     == core_function∈clas and make a closure from it; that closure
+     == core_function∈class and make a closure from it; that closure
      would be the repl_command_parser == _4I8GwXXfO3P01cdzyd of
      ObFun. We also need to output on stdout some C++ skeletron code
      for it. */
+  _f.obfun
+    = Rps_ObjectRef::make_object(&_,
+                                 RPS_ROOT_OB(_9Gz1oNPCnkB00I6VRS), //core_function∈class
+                                 Rps_ObjectRef::root_space());
+  RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
+                << " -> obfun=" << _f.obfun);
+  _f.closv = Rps_ClosureValue(_f.obfun, {_f.obcommand,_f.obsymb});
+  RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
+                << " -> closv=" << _f.closv);
+  _f.obcommand->put_attr(RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd), ///  repl_command_parser∈symbol
+                         _f.closv);
+  std::cout << std::endl << std::endl
+            << "/* C++ function " << _f.obfun << " for REPL command " << commandname << "*/" << std::endl;
+  std::cout << "extern \"C\" rps_applyingfun_t rpsapply" << _f.obfun->oid() << ";" << std::endl;
+  std::cout << "Rps_TwoValues" << std::endl << "rpsapply"
+            << _f.obfun->oid() << "(Rps_CallFrame*callerframe," << std::endl
+            << "                           const Rps_Value arg0," << std::endl
+            << "                           const Rps_Value arg1," << std::endl
+            << "                           [[maybe_unused]] const Rps_Value arg2," << std::endl
+            << "                           [[maybe_unused]] const Rps_Value arg3," << std::endl
+            << "                           [[maybe_unused]] const std::vector<Rps_Value*> restargs)" << std::endl
+            << "{" << std::endl
+            << "} //end of rpsapply" << _f.obfun->oid() << " for REPL command " << commandname
+            << std::endl << std::endl;
+  /* see also rps_repl_interpret which would apply that closure */
 #warning rps_repl_create_command incomplete
-  RPS_FATALOUT("rps_repl_create_command incomplete for command " << commandname);
+  RPS_WARNOUT("rps_repl_create_command incomplete for command "
+	      << commandname << " obfun " << _f.obfun);
 } // end rps_repl_create_command
+
+
+
 
 void
 rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno)
@@ -193,6 +224,7 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
             {
               _f.cmdkindob = _f.lexkindob;
               _f.cmddatav = _f.lexdatav;
+#warning we probably need some application, compatible with C++ code generated in rps_repl_create_command above...
               RPS_WARNOUT("rps_repl_interpret unimplemented " << input_name << "L" << startline << "C" << startcol
                           << " lexkind=" << _f.lexkindob
                           << " lexdatav=" << _f.lexdatav
