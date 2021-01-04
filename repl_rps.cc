@@ -99,24 +99,45 @@ rps_repl_version(void)
 void
 rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
 {
-#warning wrong descriptor of call frame in rps_repl_create_command
-  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_6x4XcZ1fxp403uBUoz), 
-		 /*callerframe:*/callframe,
-		 );
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //repl_command∈symbol
+                           /*callerframe:*/callframe,
+                           Rps_ObjectRef obsymb;
+                           Rps_ObjectRef obcommand;
+                );
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame(callframe));
   RPS_ASSERT(commandname != nullptr);
   bool goodname = isalpha(commandname[0]);
   for (const char*pc = commandname; *pc && goodname; pc++)
     goodname = isalnum(*pc)
-      || (pc>commandname && *pc == '_' && pc[-1] != '_');
-  if (!goodname) {
-    RPS_WARNOUT("rps_repl_create_command invalid command name " << commandname << std::endl
-		<< ".. called from " <<  Rps_ShowCallFrame(&_));
-    std::string msg = "invalid REPL command name ";
-    msg += commandname;
-    throw std::runtime_error(msg);
-  };
+               || (pc>commandname && *pc == '_' && pc[-1] != '_');
+  if (!goodname)
+    {
+      RPS_WARNOUT("rps_repl_create_command invalid command name " << commandname << std::endl
+                  << ".. called from " <<  Rps_ShowCallFrame(&_));
+      std::string msg = "invalid REPL command name ";
+      msg += commandname;
+      throw std::runtime_error(msg);
+    };
+  _f.obsymb = Rps_ObjectRef::make_new_strong_symbol(&_, std::string(commandname));
+  RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
+                << " -> obsymb=" << _f.obsymb);
+  RPS_ASSERT(_f.obsymb);
+  Rps_PayloadSymbol* paylsymb =
+    _f.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
+  RPS_ASSERT(paylsymb);
+  _f.obcommand
+    = Rps_ObjectRef::make_object(&_,
+                                 RPS_ROOT_OB(_8CncrUdoSL303T5lOK), //repl_command∈class
+                                 Rps_ObjectRef::root_space());
+  paylsymb->symbol_put_value(_f.obcommand);
+  RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
+                << " -> obcommand=" << _f.obcommand);
+  /* We need to create some object ObFun, of class 9Gz1oNPCnkB00I6VRS
+     == core_function∈clas and make a closure from it; that closure
+     would be the repl_command_parser == _4I8GwXXfO3P01cdzyd of
+     ObFun. We also need to output on stdout some C++ skeletron code
+     for it. */
 #warning rps_repl_create_command incomplete
   RPS_FATALOUT("rps_repl_create_command incomplete for command " << commandname);
 } // end rps_repl_create_command
