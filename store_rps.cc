@@ -2444,71 +2444,77 @@ Rps_Loader::parse_manifest_file(void)
           Rps_Id curpluginid (curpluginidstr);
           RPS_ASSERT(curpluginid && curpluginid.valid());
           std::string pluginsopath = load_real_path(std::string{"plugins/rps"} + curpluginid.to_string() + "-mod.so");
-	  std::string pluginsrcpath = load_real_path(std::string{"generated/rps"} + curpluginid.to_string() + "-mod.cc");
+          std::string pluginsrcpath = load_real_path(std::string{"generated/rps"} + curpluginid.to_string() + "-mod.cc");
           RPS_INFORMOUT("should load plugin #" << ix << " from " << pluginsopath << " source " << pluginsrcpath);
-	  struct stat pluginsrcstat;
-	  memset (&pluginsrcstat, 0, sizeof(pluginsrcstat));
-	  if (!stat(pluginsrcpath.c_str(), &pluginsrcstat)) {
-	    bool needbuild = false;
-	    struct stat pluginsostat;
-	    memset (&pluginsostat, 0, sizeof(pluginsostat));	    
-	    if (stat(pluginsopath.c_str(), &pluginsostat)) {
-	      RPS_INFORMOUT("should build missing plugin #" << ix
-			    << " in " << pluginsopath
-			    << " (" << strerror(errno) << ")"
-			    << " from source " << pluginsrcpath);
-	      needbuild = true;
-	    }
-	    else {
-	      if (pluginsostat.st_mtim.tv_sec < pluginsrcstat.st_mtim.tv_sec)
-		needbuild = true;
-	      else if (pluginsostat.st_mtim.tv_sec == pluginsrcstat.st_mtim.tv_sec
-		       && pluginsostat.st_mtim.tv_nsec <=  pluginsrcstat.st_mtim.tv_nsec)
-		needbuild = true;
-	      if (needbuild)
-		RPS_INFORMOUT("should rebuild plugin #" << ix << " into " << pluginsopath << " from source " << pluginsrcpath);
-	    }
-	    if (needbuild) {
-	      std::string buildcmdstr;
-	      buildcmdstr += rps_topdirectory;
-	      buildcmdstr += "/build-plugin.sh";
-	      buildcmdstr += " ";
-	      buildcmdstr += pluginsrcpath;
-	      buildcmdstr += " ";
-	      buildcmdstr += pluginsopath;
-	      RPS_INFORMOUT("before building plugin #" << ix << " using " << buildcmdstr);
-	      fflush(nullptr);
-	      int notok = system(buildcmdstr.c_str());
-	      char exitbuf[16];
-	      memset (exitbuf, 0, sizeof(exitbuf));
-	      if (notok)
-		RPS_FATALOUT("failed to build plugin #" << ix << " using " << buildcmdstr
-			     << " - "
-			     << (WIFEXITED(notok)?"exited"
-				 :WIFSIGNALED(notok)?"signalled"
-				 :WIFSTOPPED(notok)?"stopped"
-				 :"!bizarre!")
-			     << " "
-			     << (WIFEXITED(notok)?(snprintf(exitbuf, sizeof(exitbuf), "%d", WEXITSTATUS(notok)), exitbuf)
-				 :WIFSIGNALED(notok)?strsignal(WTERMSIG(notok))
-				 :"???"));
-	      else {
-		if (!access(pluginsopath.c_str(), R_OK))
-		  RPS_INFORMOUT("did build successfully plugin #" << ix << " " << pluginsopath);
-		else
-		  RPS_FATALOUT("missing built plugin #" << ix << " " << pluginsopath << " : " << strerror(errno));
-	      }
-	      fflush(nullptr);
-	    }
-	  }
+          struct stat pluginsrcstat;
+          memset (&pluginsrcstat, 0, sizeof(pluginsrcstat));
+          if (!stat(pluginsrcpath.c_str(), &pluginsrcstat))
+            {
+              bool needbuild = false;
+              struct stat pluginsostat;
+              memset (&pluginsostat, 0, sizeof(pluginsostat));
+              if (stat(pluginsopath.c_str(), &pluginsostat))
+                {
+                  RPS_INFORMOUT("should build missing plugin #" << ix
+                                << " in " << pluginsopath
+                                << " (" << strerror(errno) << ")"
+                                << " from source " << pluginsrcpath);
+                  needbuild = true;
+                }
+              else
+                {
+                  if (pluginsostat.st_mtim.tv_sec < pluginsrcstat.st_mtim.tv_sec)
+                    needbuild = true;
+                  else if (pluginsostat.st_mtim.tv_sec == pluginsrcstat.st_mtim.tv_sec
+                           && pluginsostat.st_mtim.tv_nsec <=  pluginsrcstat.st_mtim.tv_nsec)
+                    needbuild = true;
+                  if (needbuild)
+                    RPS_INFORMOUT("should rebuild plugin #" << ix << " into " << pluginsopath << " from source " << pluginsrcpath);
+                }
+              if (needbuild)
+                {
+                  std::string buildcmdstr;
+                  buildcmdstr += rps_topdirectory;
+                  buildcmdstr += "/build-plugin.sh";
+                  buildcmdstr += " ";
+                  buildcmdstr += pluginsrcpath;
+                  buildcmdstr += " ";
+                  buildcmdstr += pluginsopath;
+                  RPS_INFORMOUT("before building plugin #" << ix << " using " << buildcmdstr);
+                  fflush(nullptr);
+                  int notok = system(buildcmdstr.c_str());
+                  char exitbuf[16];
+                  memset (exitbuf, 0, sizeof(exitbuf));
+                  if (notok)
+                    RPS_FATALOUT("failed to build plugin #" << ix << " using " << buildcmdstr
+                                 << " - "
+                                 << (WIFEXITED(notok)?"exited"
+                                     :WIFSIGNALED(notok)?"signalled"
+                                     :WIFSTOPPED(notok)?"stopped"
+                                     :"!bizarre!")
+                                 << " "
+                                 << (WIFEXITED(notok)?(snprintf(exitbuf, sizeof(exitbuf), "%d", WEXITSTATUS(notok)), exitbuf)
+                                     :WIFSIGNALED(notok)?strsignal(WTERMSIG(notok))
+                                     :"???"));
+                  else
+                    {
+                      if (!access(pluginsopath.c_str(), R_OK))
+                        RPS_INFORMOUT("did build successfully plugin #" << ix << " " << pluginsopath);
+                      else
+                        RPS_FATALOUT("missing built plugin #" << ix << " " << pluginsopath << " : " << strerror(errno));
+                    }
+                  fflush(nullptr);
+                }
+            }
           void* dlh = dlopen(pluginsopath.c_str(), RTLD_NOW | RTLD_GLOBAL);
           if (!dlh)
             RPS_FATAL("failed to load plugin #%d file %s: %s",
                       ix, pluginsopath.c_str(), dlerror());
-	  else {
-	    ld_pluginsmap.insert({curpluginid, dlh});
-	    RPS_INFORMOUT("dlopen(3)-ed plugin #" << ix << " file " << pluginsopath);
-	  }
+          else
+            {
+              ld_pluginsmap.insert({curpluginid, dlh});
+              RPS_INFORMOUT("dlopen(3)-ed plugin #" << ix << " file " << pluginsopath);
+            }
         }
     }
   }
