@@ -1494,7 +1494,8 @@ rps_read_eval_print_loop(int &argc, char **argv)
     RPS_DEBUG_LOG(REPL, "REPL arg [" << ix << "]: " << argv[ix]);
   RPS_ASSERT(rps_is_main_thread());
   RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop start frame=" << Rps_ShowCallFrame(&_));
-  char *linebuf = nullptr;
+  
+  //char *linebuf = nullptr; // linebuf is unused
   int lineno=0;
   int count=0;
   rl_attempted_completion_function = rpsrepl_name_or_oid_completion;
