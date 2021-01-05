@@ -2339,7 +2339,9 @@ void rps_dump_into (const std::string dirpath, Rps_CallFrame* callframe)
       dumper.scan_loop_pass();
       RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath << " start writing "
                     << (rps_elapsed_real_time() - startelapsed) << " elapsed, "
-                    << (rps_process_cpu_time() - startcputime) << " cpu seconds." << std::endl);
+                    << (rps_process_cpu_time() - startcputime)
+		    << " cpu seconds." << std::endl
+		    << Rps_ShowCallFrame(&_));
       dumper.write_all_space_files();
       dumper.write_all_generated_files();
       dumper.write_manifest_file();
