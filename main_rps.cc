@@ -1034,8 +1034,8 @@ void
 rps_run_application(int &argc, char **argv)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/nullptr,
-                           Rps_ObjectRef tempob;
+		 /*callerframe:*/nullptr,
+		 Rps_ObjectRef tempob;
                 );
   {
     char cwdbuf[128];
@@ -1071,7 +1071,10 @@ rps_run_application(int &argc, char **argv)
   else
     {
       RPS_DEBUG_LOG(LOWREP, "rps_run_application before running rps_small_quick_tests_after_load from "
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application/quick-tests"));
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application/quick-tests")
+		    << std::endl
+		    << " with call frame:" << std::endl
+		    << Rps_ShowCallFrame(&_));
       rps_small_quick_tests_after_load();
       RPS_DEBUG_LOG(LOWREP, "rps_run_application after running rps_small_quick_tests_after_load");
     }
