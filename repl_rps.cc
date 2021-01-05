@@ -1264,7 +1264,7 @@ const Rps_LexTokenZone*
 Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
                            const char*input_name,
                            const char**plinebuf, int&lineno, int& colno,
-                           lexical_line_getter_fun linegetter,
+                           [[maybe_unused]] lexical_line_getter_fun linegetter,
                            std::deque<Rps_LexTokenZone*>* pque)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0TvVIbOU16z028VWvv),
