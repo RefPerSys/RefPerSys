@@ -341,7 +341,7 @@ void
 rps_web_display_html_for_objref(Rps_CallFrame*callerframe,
                                 Rps_ObjectRef arg0ob, //
                                 Rps_ObjectRef arg1obweb, ///
-                                int depth)
+                                [[maybe_unused]] int depth)
 {
   RPS_LOCALFRAME(nullptr,
                  callerframe, //
