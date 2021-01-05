@@ -47,7 +47,7 @@ Rps_PayloadStrBuf::~Rps_PayloadStrBuf()
 } // end Rps_PayloadStrBuf::~Rps_PayloadStrBuf
 
 void
-Rps_PayloadStrBuf::gc_mark(Rps_GarbageCollector&gc) const
+Rps_PayloadStrBuf::gc_mark([[maybe_unused]] Rps_GarbageCollector& gc) const
 {
 } // end Rps_PayloadStrBuf::gc_mark
 
@@ -80,7 +80,7 @@ Rps_PayloadStrBuf::make_string_buffer_object(Rps_CallFrame*callframe, Rps_Object
       throw std::runtime_error(outmsg.str());
     }
   _f.obsbuf = Rps_ObjectRef::make_object(&_, _f.obclass, _f.obspace);
-  auto paylsbuf = _f.obsbuf->put_new_plain_payload<Rps_PayloadStrBuf>();
+  [[maybe_unused]] auto paylsbuf = _f.obsbuf->put_new_plain_payload<Rps_PayloadStrBuf>();
   return _f.obsbuf;
 } // end of Rps_PayloadStrBuf::make_string_buffer_object
 
