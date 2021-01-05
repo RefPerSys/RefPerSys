@@ -802,6 +802,7 @@ struct Rps_ChunkData_st
   const char**chunkdata_plinebuf;
 };				// end Rps_ChunkData_st
 
+
 Rps_Value
 rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_ChunkData_st*chkdata);
 
@@ -847,8 +848,8 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   // So we first need to create these attributes...
   auto paylvec = _f.obchk->put_new_plain_payload<Rps_PayloadVectVal>();
   RPS_ASSERT(paylvec);
-  Rps_ChunkData_st chkdata;
-  memset (&chkdata, 0, sizeof(chkdata));
+  struct Rps_ChunkData_st chkdata = {};
+  //memset (&chkdata, 0, sizeof(chkdata));
   chkdata.chunkdata_magic = rps_chunkdata_magicnum;
   chkdata.chunkdata_lineno = lineno;
   chkdata.chunkdata_colno = colno;
