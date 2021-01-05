@@ -3119,37 +3119,37 @@ public:
 
 
 
-#define RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,...)	\
-  struct RpsFrameData##Lin {__VA_ARGS__; };		\
-  typedef						\
-  Rps_FieldedCallFrame<RpsFrameData##Lin>		\
-   Rps_FldCallFrame##Lin;				\
-  class Rps_FrameAt##Lin :				\
-    public Rps_FldCallFrame##Lin {			\
-public:							\
- Rps_FrameAt##Lin(Rps_ObjectRef obd##Lin,		\
-		  Rps_CallFrame* prev##Lin) :		\
- Rps_FldCallFrame##Lin(obd##Lin, prev##Lin)		\
-    { };						\
-  };							\
-  Rps_FrameAt##Lin _((Descr),(Prev));                   \
-  auto& _f = *_.fieldsptr();                            \
+#define RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,...)    \
+  struct RpsFrameData##Lin {__VA_ARGS__; };		    \
+  typedef                                           \
+  Rps_FieldedCallFrame<RpsFrameData##Lin>           \
+   Rps_FldCallFrame##Lin;                           \
+  class Rps_FrameAt##Lin :                          \
+    public Rps_FldCallFrame##Lin {                  \
+public:                                             \
+ Rps_FrameAt##Lin(Rps_ObjectRef obd##Lin,           \
+		  Rps_CallFrame* prev##Lin) :               \
+ Rps_FldCallFrame##Lin(obd##Lin, prev##Lin)         \
+    { };                                            \
+  };                                                \
+  Rps_FrameAt##Lin _((Descr),(Prev));               \
+  [[maybe_unused]] auto& _f = *_.fieldsptr();       \
   /*end RPS_LOCALFRAME_ATBIS*/
 
 
-#define RPS_LOCALFRAME_AT(Lin,Descr,Prev,...) \
+#define RPS_LOCALFRAME_AT(Lin,Descr,Prev,...)       \
   RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,__VA_ARGS__)
-#define RPS_LOCALFRAME(Descr,Prev,...) \
+#define RPS_LOCALFRAME(Descr,Prev,...)              \
   RPS_LOCALFRAME_AT(__LINE__,Descr,Prev,__VA_ARGS__)
 
-#define RPS_LOCALRETURN(Val) do {			\
-  RPS_ASSERT(_.previous_call_frame() != nullptr);	\
-  _.previous_call_frame()->clear_closure();		\
+#define RPS_LOCALRETURN(Val) do {                   \
+  RPS_ASSERT(_.previous_call_frame() != nullptr);   \
+  _.previous_call_frame()->clear_closure();         \
   return (Val); } while(0)
 
-#define RPS_LOCALRETURNTWO(MainVal,XtraVal) do {       	\
-  RPS_ASSERT(_.previous_call_frame() != nullptr);	\
-  _.previous_call_frame()->clear_closure();		\
+#define RPS_LOCALRETURNTWO(MainVal,XtraVal) do {    \
+  RPS_ASSERT(_.previous_call_frame() != nullptr);   \
+  _.previous_call_frame()->clear_closure();         \
   return Rps_TwoValues((MainVal),(XtraVal)); } while(0)
 
 
