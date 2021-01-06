@@ -96,6 +96,12 @@ rps_repl_version(void)
   return res;
 } // end rps_repl_version
 
+
+
+
+
+/// Create a new REPL command, and output to stdout some draft C++
+/// code to parse it.... To be called from the main thread.
 void
 rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
 {
