@@ -117,7 +117,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
   /* We need to create some object ObFun, of class 9Gz1oNPCnkB00I6VRS
      == core_function∈class and make a closure from it; that closure
      would be the repl_command_parser == _4I8GwXXfO3P01cdzyd of
-     ObFun. We also need to output on stdout some C++ skeletron code
+     ObFun. We also need to output on stdout some C++ skeleton code
      for it. */
   _f.obfun
     = Rps_ObjectRef::make_object(&_,
