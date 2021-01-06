@@ -60,6 +60,13 @@ discussion it was decided that a better approach would be to consider a syntax
 similar to Python functions. With such a syntax, every command would be a
 function, which in turn would be associated with a RefPerSys closure.
 
+
+## Expressions
+
+**INCOMPLETE**
+
+We need expressions evaluated to values, and other expressions evaluated to objects.
+
 ## Concrete examples
 
 0. Help for possible commands
