@@ -141,6 +141,18 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
             << "                           [[maybe_unused]] const Rps_Value arg3," << std::endl
             << "                           [[maybe_unused]] const std::vector<Rps_Value*> restargs)" << std::endl
             << "{" << std::endl
+	    << "   static Rps_Id descoid;\n"
+	    << "   if (!descoid) descoid=Rps_Id(\"" <<  _f.obfun->oid() << "\");" << std::endl
+	    << "   RPS_" "LOCALFRAME(/*descr:*/Rps_ObjectrRef::really_find_object_by_oid(descoid)," << std::endl
+	    << "   );" << std::endl
+	    << "   RPS_" "DEBUG(CMD, \"REPL command " << commandname << " start arg0=\" << arg0" << std::endl
+	    << "                \" arg1=\" << arg1 << std::endl" << std::endl
+	    << "                \" from \" << std::endl" << std::endl
+	    << "                Rps_ShowCallFrame(&_));" << std::endl
+	    << "#warning incomplete rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << std:endl
+	    << "  RP_" "WARNOUT(\"incomplete rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << "\" from \" << std::endl" << std::endl
+	    << "                << RPS_FULL_BACKTRACE_HERE(1, \"rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << "\"));" << std::endl;
+	    << "  return {nullptr,nullptr};" << std::endl;
             << "} //end of rpsapply" << _f.obfun->oid() << " for REPL command " << commandname
             << std::endl << std::endl;
   /* see also rps_repl_interpret which would apply that closure */
