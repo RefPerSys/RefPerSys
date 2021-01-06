@@ -3762,7 +3762,7 @@ extern "C" unsigned rps_hardcoded_number_of_roots(void);
 extern "C" unsigned rps_hardcoded_number_of_symbols(void);
 extern "C" unsigned rps_hardcoded_number_of_constants(void);
 
-////////////////
+//////////////// initial Read-Eval-Print-Loop using GNU readline
 
 extern "C" std::string rps_repl_version(void); // in repl_rps.cc
 /// Interpret from either a given input stream,
@@ -3774,6 +3774,40 @@ extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, co
 /// Implemented in our C++ file repl_rps.cc
 extern "C" void rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname);
 
+extern "C" std::istream*rps_repl_input;
+extern "C" bool rps_repl_stopped;
+
+/*** The lexer. We return a pair of values. The first describing the
+     second.  For example, a lexed integer is given as
+     (int,<tagged-integer-value>).
+***/
+extern "C" Rps_TwoValues rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int &lineno, int& colno);
+
+extern "C" std::string rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, int& colno);
+
+extern "C" std::string rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno);
+
+extern "C" Rps_Value rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int& lineno, int& colno);
+
+// return true iff th next line has been gotten
+extern "C" bool
+rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int*plineno, std::string prompt="");
+
+/// Interpret from either a given input stream,
+/// or using readline if inp is null.
+extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
+
+/// for GNU readline autocompletion.  See example in
+/// https://thoughtbot.com/blog/tab-completion-in-gnu-readline and
+/// documentation in
+/// https://tiswww.case.edu/php/chet/readline/readline.html#SEC45
+
+extern "C"  std::vector<std::string> rps_completion_vect;
+extern "C" char **rpsrepl_name_or_oid_completion(const char *, int, int);
+extern "C" char *rpsrepl_name_or_oid_generator(const char *, int);
+
+
+////////////////////////////////////////////////////////////////
 
 extern "C" std::string rps_curl_version(void); // in curl_rps.cc
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);

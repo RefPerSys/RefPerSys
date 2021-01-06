@@ -41,38 +41,11 @@ const char rps_repl_gitid[]= RPS_GITID;
 extern "C" const char rps_repl_date[];
 const char rps_repl_date[]= __DATE__;
 
-extern "C" std::istream*rps_repl_input;
-extern "C" bool rps_repl_stopped;
 std::istream*rps_repl_input;
 
 /// Interpret from either a given input stream,
 /// or using readline if inp is null.
 extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
-
-/*** The lexer. We return a pair of values. The first describing the
-     second.  For example, a lexed integer is given as
-     (int,<tagged-integer-value>).
-***/
-extern "C" Rps_TwoValues rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int &lineno, int& colno);
-
-extern "C" std::string rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, int& colno);
-
-extern "C" std::string rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno);
-
-extern "C" Rps_Value rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int& lineno, int& colno);
-
-// return true iff th next line has been gotten
-extern "C" bool
-rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int*plineno, std::string prompt="");
-
-/// for GNU readline autocompletion.  See example in
-/// https://thoughtbot.com/blog/tab-completion-in-gnu-readline and
-/// documentation in
-/// https://tiswww.case.edu/php/chet/readline/readline.html#SEC45
-
-extern "C"  std::vector<std::string> rps_completion_vect;
-extern "C" char **rpsrepl_name_or_oid_completion(const char *, int, int);
-extern "C" char *rpsrepl_name_or_oid_generator(const char *, int);
 
 static Rps_CallFrame*rps_readline_callframe;
 std::vector<std::string> rps_completion_vect;
