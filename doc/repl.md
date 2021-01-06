@@ -30,7 +30,7 @@ As suggested in the e-mail exchange, we would be considering all REPL commands
 to be starting with a verb, followed by a subject, and then parameters. The verb
  and subject are mandatorily required, whereas the parameters are optional.
 
-Since we may have commands running across several line, and since we are **not**
+Since we may have commands running across several lines, and since we are **not**
 considering whitespace (including newline characters) to be significant, we need
 a way to indicate the termination of a command. In our initial discussion it was
 suggested that we use two consecutive semicolons; however, some discussion is
@@ -43,6 +43,9 @@ The general syntax for REPL commands would thus be:
 
 ```
 
+The REPL syntax should be designed to be easy to parse. It probably
+should be some [LL(1)](https://en.wikipedia.org/wiki/LL_parser)
+syntax.
 
 ## Extensible syntax
 
@@ -59,7 +62,49 @@ function, which in turn would be associated with a RefPerSys closure.
 
 ## Concrete examples
 
-1. Creating a persistent object of class "symbol" with name "comment" can be
+0. Help for possible commands
+
+  * `help` should list the possible commands
+
+1. Dump the persistent heap:
+
+  * `dump !` will dump to override the loaded heap
+  * `dump .` will dump to the current working directory
+  * `dump "/tmp/dump"` will dump to the newly made directory `/tmp/dump`
+
+2. Show a given object or value
+
+  * `show` *expression*
+
+3. Put an attribute inside some existing object
+
+  * `put` *object-expression* `:` *attribute-expression* `=` *value-expression*
+
+4. Remove an attribute from some existing object
+
+  * `remove` *object-expression* `:` *attribute-expression*
+
+5. Append a component into some existing object
+
+  * `append` *object-expression* `:` *value-expression*
+
+6. Add a new persistent root object
+
+  * `add_root` *object-expression*
+
+7. Remove an existing persistent root object
+
+  * `remove_root` *object-expression*
+
+8. Make a new strong symbol
+
+  * `make_symbol` *name*
+
+9. Generate C++ code described by some existing object
+
+  * `generate_code` *code-object*
+  
+1. **Probably wrong** Creating a persistent object of class "symbol" with name "comment" can be
    achieved in two ways, namely by using either the object ID or name of the
    class "symbol".
 
