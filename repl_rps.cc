@@ -126,6 +126,8 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
   RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
                 << " -> obfun=" << _f.obfun);
   _f.closv = Rps_ClosureValue(_f.obfun, {_f.obcommand,_f.obsymb});
+  _f.obfun->put_attr(RPS_ROOT_OB(_8CncrUdoSL303T5lOK), //repl_command∈class
+		     _f.obcommand);
   RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
                 << " -> closv=" << _f.closv);
   _f.obcommand->put_attr(RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd), ///  repl_command_parser∈symbol
@@ -158,7 +160,8 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
   /* see also rps_repl_interpret which would apply that closure */
 #warning rps_repl_create_command incomplete
   RPS_WARNOUT("rps_repl_create_command incomplete for command "
-	      << commandname << " obfun " << _f.obfun);
+	      << commandname << " obfun=" << _f.obfun
+	      << " obcommand=" << _f.obcommand);
 } // end rps_repl_create_command
 
 
