@@ -162,7 +162,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
 	    << "   RPS_" "LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid)," << std::endl
 	    << "                   callerframe," << std::endl
 	    << "   );" << std::endl
-	    << "   RPS_" "DEBUG(CMD, \"REPL command " << commandname << " start arg0=\" << arg0" << std::endl
+	    << "   RPS_" "DEBUG_LOG(CMD, \"REPL command " << commandname << " start arg0=\" << arg0" << std::endl
 	    << "                \" arg1=\" << arg1 << std::endl" << std::endl
 	    << "                \" from \" << std::endl" << std::endl
 	    << "                Rps_ShowCallFrame(&_));" << std::endl
