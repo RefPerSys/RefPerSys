@@ -85,6 +85,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
 		 Rps_ObjectRef obfun;
 		 Rps_ObjectRef obreplcmdclass;
 		 Rps_Value closv;
+		 Rps_Value strnamev;
                 );
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame(callframe));
@@ -102,6 +103,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
       msg += commandname;
       throw std::runtime_error(msg);
     };
+  _f.strnamev = Rps_StringValue(commandname);
   _f.obsymb = Rps_ObjectRef::make_new_strong_symbol(&_, std::string(commandname));
   RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
                 << " -> obsymb=" << _f.obsymb);
@@ -141,6 +143,9 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
                 << " -> closv=" << _f.closv);
   _f.obcommand->put_attr(RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd), ///  repl_command_parser∈symbol
                          _f.closv);
+  _f.strnamev = Rps_StringValue(commandname);
+  _f.obcommand->put_attr(Rps_ObjectRef::the_name_object(), 
+			 _f.strnamev);
   std::cout << std::endl << std::endl
             << "/* C++ function " << _f.obfun << " for REPL command " << commandname << "*/" << std::endl;
   std::cout << "extern \"C\" rps_applyingfun_t rpsapply" << _f.obfun->oid() << ";" << std::endl;
