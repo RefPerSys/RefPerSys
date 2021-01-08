@@ -167,7 +167,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
 	    << "                \" from \" << std::endl" << std::endl
 	    << "                Rps_ShowCallFrame(&_));" << std::endl
 	    << "#warning incomplete rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << std::endl
-	    << "  RPS_" "WARNOUT(\"incomplete rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << "\" from \" << std::endl" << std::endl
+	    << "  RPS_" "WARNOUT(\"incomplete rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << " from \" << std::endl" << std::endl
 	    << "                << RPS_FULL_BACKTRACE_HERE(1, \"rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << "\"));" << std::endl
 	    << "  return {nullptr,nullptr};" << std::endl
             << "} //end of rpsapply" << _f.obfun->oid() << " for REPL command " << commandname
