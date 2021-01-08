@@ -79,15 +79,17 @@ void
 rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //repl_command∈symbol
-                           /*callerframe:*/callframe,
-                           Rps_ObjectRef obsymb;
-                           Rps_ObjectRef obcommand;
-                           Rps_ObjectRef obfun;
-                           Rps_Value closv;
+		 /*callerframe:*/callframe,
+		 Rps_ObjectRef obsymb;
+		 Rps_ObjectRef obcommand;
+		 Rps_ObjectRef obfun;
+		 Rps_ObjectRef obreplcmdclass;
+		 Rps_Value closv;
                 );
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame(callframe));
   RPS_ASSERT(commandname != nullptr);
+  _f.obreplcmdclass = RPS_ROOT_OB(_8CncrUdoSL303T5lOK); //repl_command∈class
   bool goodname = isalpha(commandname[0]);
   for (const char*pc = commandname; *pc && goodname; pc++)
     goodname = isalnum(*pc)
@@ -107,6 +109,13 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
   Rps_PayloadSymbol* paylsymb =
     _f.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
   RPS_ASSERT(paylsymb);
+  /// the command name should be a fresh symbol...
+  if (paylsymb->symbol_value()) {
+    RPS_WARNOUT("rps_repl_create_command command name " << commandname << " alreadt known as symbol " << _f.obsymb
+		<< std::endl
+		<< ".. called from " <<  Rps_ShowCallFrame(&_));
+    return;
+  }
   _f.obcommand
     = Rps_ObjectRef::make_object(&_,
                                  RPS_ROOT_OB(_8CncrUdoSL303T5lOK), //repl_command∈class
@@ -157,6 +166,9 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
 	    << "  return {nullptr,nullptr};" << std::endl
             << "} //end of rpsapply" << _f.obfun->oid() << " for REPL command " << commandname
             << std::endl << std::endl;
+  _f.obreplcmdclass->append_comp1(Rps_ObjectValue(_f.obcommand));
+  RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
+		<< " added " << _f.obcommand << " to repl_command class " << _f.obreplcmdclass);
   /* see also rps_repl_interpret which would apply that closure */
 #warning rps_repl_create_command incomplete
   RPS_WARNOUT("rps_repl_create_command incomplete for command "
