@@ -874,7 +874,7 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
 
 onion_connection_status
 rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
-                           Onion::Url*purl, Onion::Request*preq, Onion::Response*pres,
+                           [[maybe_unused]] Onion::Url*purl, Onion::Request*preq, Onion::Response*pres,
                            uint64_t reqnum, const std::string& filepath, FILE*fil)
 {
   const std::string reqpath =preq->path();
@@ -974,7 +974,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_expanded_stream"));
   [[maybe_unused]] constexpr int line_threshold = 64;
   [[maybe_unused]] constexpr long offset_threshold = 2048;
-  constexpr int width_threshold = 80;
+  [[maybe_unused]] constexpr int width_threshold = 80;
   char*linbuf=nullptr;
   ssize_t linlen=0;
   size_t linsiz=0;
