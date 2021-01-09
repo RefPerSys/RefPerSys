@@ -432,7 +432,8 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       std::string namestr(linebuf+startnamecol, colno-startnamecol);
       RPS_DEBUG_LOG(REPL, "rps_repl_lexer namestr=" << namestr << " @L" << lineno << "C" << startnamecol
 		    << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer/name"));
-      _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr, true);
+      _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr,
+						      Rps_ObjectRef::Fail_When_Missing);
       if (_f.oblex)
         {
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer object " << _f.oblex << " colno=" << colno
@@ -971,7 +972,8 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                     << " namstr='" << namstr << "' starting L"
                     << chkdata->chunkdata_lineno << ",C" << startnamcol
                     << " endnamcol=" << endnamcol);
-      _f.namedobv = Rps_ObjectRef::find_object_by_string(&_, namstr);
+      _f.namedobv = Rps_ObjectRef::find_object_by_string(&_, namstr,
+							 Rps_ObjectRef::Null_When_Missing);
       chkdata->chunkdata_colno = endnamcol;
       curstr = nullptr;
       if (_f.namedobv)
@@ -1033,7 +1035,8 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
           while (isalnum(metastr[endnameix])||metastr[endnameix]=='_')
             endnameix++;
           std::string metaname(metastr+1, endnameix-startnameix);
-          _f.namedobv = Rps_ObjectRef::find_object_by_string(&_, metaname);
+          _f.namedobv = Rps_ObjectRef::find_object_by_string(&_, metaname,
+							     Rps_ObjectRef::Null_When_Missing);
           if (!_f.namedobv)
             {
               RPS_WARNOUT("rps_lex_chunk_element: bad metavariable name " << metaname

@@ -458,7 +458,7 @@ RpsQApplication::do_display_object(const QString& obqstr, Rps_CallFrame*callerfr
     }
   else if (isalpha(obstr[0]))
     {
-      _.dispob = Rps_ObjectRef::find_object_by_string(&_, obstr, true);
+      _.dispob = Rps_ObjectRef::find_object_by_string(&_, obstr,  Rps_ObjectRef:: Fail_When_Missing);
     }
   else
     {

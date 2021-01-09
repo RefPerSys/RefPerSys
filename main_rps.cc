@@ -1220,7 +1220,8 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
     fprintf (tfil, "\n" "void rps_do_plugin(const Rps_Plugin*plugin)\n{\n");
     fprintf (tfil,
              "  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::find_object_by_string(rps_edit_cplusplus_callframe,\n"
-             "                                                                std::string{\"%s\"}),\n"
+             "                                                                std::string{\"%s\"},\n"
+	     "                                                               Rps_ObjectRef::Fail_When_Missing),\n"
              "                 /*callerframe:*/rps_edit_cplusplus_callframe,\n"
              "                 /***** your locals here ******/\n"
              "                 );\n",
@@ -1646,7 +1647,8 @@ rps_small_quick_tests_after_load(void)
                 << Rps_ShowCallFrame(&_)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_small_quick_tests_after_load"));
-  _f.obtempcpp = Rps_ObjectRef::find_object_by_string(&_, "temporary_cplusplus_code");
+  _f.obtempcpp = Rps_ObjectRef::find_object_by_string(&_, "temporary_cplusplus_code",
+						      Rps_ObjectRef::Fail_When_Missing);
   RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obtempcpp=" << _f.obtempcpp);
   RPS_ASSERT(_f.obtempcpp);
   Rps_Id oid = Rps_Id ("_18DO93843oX02UWzq6");

@@ -843,6 +843,8 @@ public:
   ///////////
   // these functions throw an exception on failure (unless dontfail is true, then gives nil)
   // find an object with a given oid or name string
+  static constexpr bool Fail_When_Missing = true;
+  static constexpr bool Null_When_Missing = false;
   static Rps_ObjectRef find_object_by_string(Rps_CallFrame*callerframe,  const std::string& str, bool dontfail=false);
   static Rps_ObjectRef find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, bool dontfail=false);
   static Rps_ObjectRef really_find_object_by_oid(const Rps_Id& oid);
