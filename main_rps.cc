@@ -60,7 +60,7 @@ extern "C" std::string rps_dumpdir_str;
 std::string rps_dumpdir_str;
 
 #define RPS_DEFAULT_WEB_SERVICE "localhost:9090"
-static const char*rps_web_service = RPS_DEFAULT_WEB_SERVICE;
+[[maybe_unused]] static const char*rps_web_service = RPS_DEFAULT_WEB_SERVICE;
 
 error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 struct argp_option rps_progoptions[] =
