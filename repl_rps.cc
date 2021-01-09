@@ -430,6 +430,8 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       while (isalnum(linebuf[colno]) || linebuf[colno]=='_')
         colno++;
       std::string namestr(linebuf+startnamecol, colno-startnamecol);
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer namestr=" << namestr << " @L" << lineno << "C" << startnamecol
+		    << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer/name"));
       _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr, true);
       if (_f.oblex)
         {
@@ -438,6 +440,8 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
           return Rps_TwoValues(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ), //object∈class
                                _f.oblex);
         }
+      else
+	RPS_DEBUG_LOG(REPL, "rps_repl_lexer new namestr=" << namestr);
       /// some new symbol
       if (isalpha(namestr[0]))
         {
