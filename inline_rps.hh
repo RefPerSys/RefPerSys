@@ -11,7 +11,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2020 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2021 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -114,6 +114,7 @@ std::ostream& operator << (std::ostream& out, const Rps_Id id)
   out << cbuf;
   return out;
 } // end output of Rps_Id
+
 
 
 //////////////////////////////////////////////////////////// values
@@ -1481,6 +1482,7 @@ Rps_ObjectRef::operator > (const Rps_ObjectRef& oth) const
   return oth < *this;
 }
 
+
 Rps_ObjectValue::Rps_ObjectValue(const Rps_ObjectRef obr)
   : Rps_Value (obr.to_object(), Rps_ValPtrTag{}) {};
 
@@ -1993,6 +1995,23 @@ Rps_PayloadVectVal::Rps_PayloadVectVal(Rps_ObjectZone*owner, Rps_Loader*ld)
 
 
 
+Rps_ObjectRef
+Rps_PayloadSymbol::find_named_object(const std::string&str)
+{
+  std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
+  auto it = symb_table.find(str);
+  if (it != symb_table.end())
+    {
+      auto symb = it->second;
+      if (symb)
+        {
+          RPS_DEBUG_LOG(LOWREP, "find_named_object str='" << str << "' symb=" << symb << " owner=" << symb->owner());
+          return symb->owner();
+        }
+    };
+  RPS_DEBUG_LOG(LOWREP, "find_named_object str='" << str << "' not found");
+  return nullptr;
+} // end Rps_PayloadSymbol::find_named_object
 
 
 

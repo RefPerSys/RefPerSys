@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2020 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2021 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -79,13 +79,13 @@ void
 rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_4CZZ2JlnkQT02YJ6sM), //repl_command∈symbol
-		 /*callerframe:*/callframe,
-		 Rps_ObjectRef obsymb;
-		 Rps_ObjectRef obcommand;
-		 Rps_ObjectRef obfun;
-		 Rps_ObjectRef obreplcmdclass;
-		 Rps_Value closv;
-		 Rps_Value strnamev;
+                           /*callerframe:*/callframe,
+                           Rps_ObjectRef obsymb;
+                           Rps_ObjectRef obcommand;
+                           Rps_ObjectRef obfun;
+                           Rps_ObjectRef obreplcmdclass;
+                           Rps_Value closv;
+                           Rps_Value strnamev;
                 );
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame(callframe));
@@ -112,12 +112,13 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
     _f.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
   RPS_ASSERT(paylsymb);
   /// the command name should be a fresh symbol...
-  if (paylsymb->symbol_value()) {
-    RPS_WARNOUT("rps_repl_create_command command name " << commandname << " alreadt known as symbol " << _f.obsymb
-		<< std::endl
-		<< ".. called from " <<  Rps_ShowCallFrame(&_));
-    return;
-  }
+  if (paylsymb->symbol_value())
+    {
+      RPS_WARNOUT("rps_repl_create_command command name " << commandname << " alreadt known as symbol " << _f.obsymb
+                  << std::endl
+                  << ".. called from " <<  Rps_ShowCallFrame(&_));
+      return;
+    }
   _f.obcommand
     = Rps_ObjectRef::make_object(&_,
                                  RPS_ROOT_OB(_8CncrUdoSL303T5lOK), //repl_command∈class
@@ -138,14 +139,14 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
                 << " -> obfun=" << _f.obfun);
   _f.closv = Rps_ClosureValue(_f.obfun, {_f.obcommand,_f.obsymb});
   _f.obfun->put_attr(RPS_ROOT_OB(_8CncrUdoSL303T5lOK), //repl_command∈class
-		     _f.obcommand);
+                     _f.obcommand);
   RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
                 << " -> closv=" << _f.closv);
   _f.obcommand->put_attr(RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd), ///  repl_command_parser∈symbol
                          _f.closv);
   _f.strnamev = Rps_StringValue(commandname);
-  _f.obcommand->put_attr(Rps_ObjectRef::the_name_object(), 
-			 _f.strnamev);
+  _f.obcommand->put_attr(Rps_ObjectRef::the_name_object(),
+                         _f.strnamev);
   std::cout << std::endl << std::endl
             << "/* C++ function " << _f.obfun << " for REPL command " << commandname << "*/" << std::endl;
   std::cout << "extern \"C\" rps_applyingfun_t rpsapply" << _f.obfun->oid() << ";" << std::endl;
@@ -157,29 +158,29 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
             << "                           [[maybe_unused]] const Rps_Value arg3," << std::endl
             << "                           [[maybe_unused]] const std::vector<Rps_Value*> restargs)" << std::endl
             << "{" << std::endl
-	    << "   static Rps_Id descoid;\n"
-	    << "   if (!descoid) descoid=Rps_Id(\"" <<  _f.obfun->oid() << "\");" << std::endl
-	    << "   RPS_" "LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid)," << std::endl
-	    << "                   callerframe," << std::endl
-	    << "   );" << std::endl
-	    << "   RPS_" "DEBUG_LOG(CMD, \"REPL command " << commandname << " start arg0=\" << arg0" << std::endl
-	    << "                << \" arg1=\" << arg1 << std::endl" << std::endl
-	    << "                << \" from \" << std::endl" << std::endl
-	    << "                << Rps_ShowCallFrame(&_));" << std::endl
-	    << "#warning incomplete rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << std::endl
-	    << "  RPS_" "WARNOUT(\"incomplete rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << " from \" << std::endl" << std::endl
-	    << "                << RPS_FULL_BACKTRACE_HERE(1, \"rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << "\"));" << std::endl
-	    << "  return {nullptr,nullptr};" << std::endl
+            << "   static Rps_Id descoid;\n"
+            << "   if (!descoid) descoid=Rps_Id(\"" <<  _f.obfun->oid() << "\");" << std::endl
+            << "   RPS_" "LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid)," << std::endl
+            << "                   callerframe," << std::endl
+            << "   );" << std::endl
+            << "   RPS_" "DEBUG_LOG(CMD, \"REPL command " << commandname << " start arg0=\" << arg0" << std::endl
+            << "                << \" arg1=\" << arg1 << std::endl" << std::endl
+            << "                << \" from \" << std::endl" << std::endl
+            << "                << Rps_ShowCallFrame(&_));" << std::endl
+            << "#warning incomplete rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << std::endl
+            << "  RPS_" "WARNOUT(\"incomplete rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << " from \" << std::endl" << std::endl
+            << "                << RPS_FULL_BACKTRACE_HERE(1, \"rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << "\"));" << std::endl
+            << "  return {nullptr,nullptr};" << std::endl
             << "} //end of rpsapply" << _f.obfun->oid() << " for REPL command " << commandname
             << std::endl << std::endl;
   _f.obreplcmdclass->append_comp1(Rps_ObjectValue(_f.obcommand));
   RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
-		<< " added " << _f.obcommand << " to repl_command class " << _f.obreplcmdclass);
+                << " added " << _f.obcommand << " to repl_command class " << _f.obreplcmdclass);
   /* see also rps_repl_interpret which would apply that closure */
 #warning rps_repl_create_command incomplete
   RPS_WARNOUT("rps_repl_create_command incomplete for command "
-	      << commandname << " obfun=" << _f.obfun
-	      << " obcommand=" << _f.obcommand);
+              << commandname << " obfun=" << _f.obfun
+              << " obcommand=" << _f.obcommand);
 } // end rps_repl_create_command
 
 
@@ -264,6 +265,7 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
 #warning rps_repl_interpret unimplemented, should call rps_repl_get_next_line then parse using rps_repl_lexer
   rps_repl_input = previous_input;
 } // end rps_repl_interpret
+
 
 bool
 rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int*plineno, std::string prompt)
@@ -431,9 +433,9 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
         colno++;
       std::string namestr(linebuf+startnamecol, colno-startnamecol);
       RPS_DEBUG_LOG(REPL, "rps_repl_lexer namestr=" << namestr << " @L" << lineno << "C" << startnamecol
-		    << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer/name"));
+                    << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer/name"));
       _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr,
-						      Rps_ObjectRef::Fail_When_Missing);
+                 Rps_ObjectRef::Fail_When_Missing);
       if (_f.oblex)
         {
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer object " << _f.oblex << " colno=" << colno
@@ -442,7 +444,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                                _f.oblex);
         }
       else
-	RPS_DEBUG_LOG(REPL, "rps_repl_lexer new namestr=" << namestr);
+        RPS_DEBUG_LOG(REPL, "rps_repl_lexer new namestr=" << namestr);
       /// some new symbol
       if (isalpha(namestr[0]))
         {
@@ -973,7 +975,7 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                     << chkdata->chunkdata_lineno << ",C" << startnamcol
                     << " endnamcol=" << endnamcol);
       _f.namedobv = Rps_ObjectRef::find_object_by_string(&_, namstr,
-							 Rps_ObjectRef::Null_When_Missing);
+                    Rps_ObjectRef::Null_When_Missing);
       chkdata->chunkdata_colno = endnamcol;
       curstr = nullptr;
       if (_f.namedobv)
@@ -1036,7 +1038,7 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
             endnameix++;
           std::string metaname(metastr+1, endnameix-startnameix);
           _f.namedobv = Rps_ObjectRef::find_object_by_string(&_, metaname,
-							     Rps_ObjectRef::Null_When_Missing);
+                        Rps_ObjectRef::Null_When_Missing);
           if (!_f.namedobv)
             {
               RPS_WARNOUT("rps_lex_chunk_element: bad metavariable name " << metaname
@@ -1514,7 +1516,7 @@ rps_read_eval_print_loop(int &argc, char **argv)
     RPS_DEBUG_LOG(REPL, "REPL arg [" << ix << "]: " << argv[ix]);
   RPS_ASSERT(rps_is_main_thread());
   RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop start frame=" << Rps_ShowCallFrame(&_));
-  
+
   [[maybe_unused]] char *linebuf = nullptr; // linebuf is unused
   int lineno=0;
   int count=0;

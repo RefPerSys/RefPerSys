@@ -3697,18 +3697,7 @@ public:
   {
     return valid_name(str.c_str());
   };
-  static Rps_ObjectRef find_named_object(const std::string&str)
-  {
-    std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
-    auto it = symb_table.find(str);
-    if (it != symb_table.end())
-      {
-        auto symb = it->second;
-        if (symb)
-          return symb->owner();
-      };
-    return nullptr;
-  };
+  static inline Rps_ObjectRef find_named_object(const std::string&str);
   static bool register_name(std::string name, Rps_ObjectRef obj, bool weak);
   static bool register_strong_name(std::string name, Rps_ObjectRef obj)
   {

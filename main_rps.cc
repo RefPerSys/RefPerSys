@@ -1034,8 +1034,8 @@ void
 rps_run_application(int &argc, char **argv)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr,
-		 /*callerframe:*/nullptr,
-		 Rps_ObjectRef tempob;
+                           /*callerframe:*/nullptr,
+                           Rps_ObjectRef tempob;
                 );
   {
     char cwdbuf[128];
@@ -1072,9 +1072,9 @@ rps_run_application(int &argc, char **argv)
     {
       RPS_DEBUG_LOG(LOWREP, "rps_run_application before running rps_small_quick_tests_after_load from "
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application/quick-tests")
-		    << std::endl
-		    << " with call frame:" << std::endl
-		    << Rps_ShowCallFrame(&_));
+                    << std::endl
+                    << " with call frame:" << std::endl
+                    << Rps_ShowCallFrame(&_));
       rps_small_quick_tests_after_load();
       RPS_DEBUG_LOG(LOWREP, "rps_run_application after running rps_small_quick_tests_after_load");
     }
@@ -1221,7 +1221,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
     fprintf (tfil,
              "  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::find_object_by_string(rps_edit_cplusplus_callframe,\n"
              "                                                                std::string{\"%s\"},\n"
-	     "                                                               Rps_ObjectRef::Fail_When_Missing),\n"
+             "                                                               Rps_ObjectRef::Fail_When_Missing),\n"
              "                 /*callerframe:*/rps_edit_cplusplus_callframe,\n"
              "                 /***** your locals here ******/\n"
              "                 );\n",
@@ -1648,7 +1648,7 @@ rps_small_quick_tests_after_load(void)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_small_quick_tests_after_load"));
   _f.obtempcpp = Rps_ObjectRef::find_object_by_string(&_, "temporary_cplusplus_code",
-						      Rps_ObjectRef::Fail_When_Missing);
+                 Rps_ObjectRef::Fail_When_Missing);
   RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obtempcpp=" << _f.obtempcpp);
   RPS_ASSERT(_f.obtempcpp);
   Rps_Id oid = Rps_Id ("_18DO93843oX02UWzq6");
