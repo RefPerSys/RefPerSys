@@ -1634,6 +1634,7 @@
 //+ob_61pgHb5KRq600RLnKD
 //∈core_function
 {
+ "applying" : true,
  "attrs" : 
  [
   {
@@ -1641,10 +1642,8 @@
    "va" : "_2Fy0WfTEAbr03HTthe"
   }
  ],
-    "class" : "_9Gz1oNPCnkB00I6VRS",
-    /// manually added by Basile
-    "mtime" : 1610378440,
-    "applying": true,
+ "class" : "_9Gz1oNPCnkB00I6VRS",
+ "mtime" : 1610378440,
  "oid" : "_61pgHb5KRq600RLnKD"
 }
 //-ob_61pgHb5KRq600RLnKD
