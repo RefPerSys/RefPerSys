@@ -809,6 +809,10 @@
    "va" : "dump"
   },
   {
+   "at" : "_3Q3hJsSgCDN03GTYW5",
+   "va" : "_4mCb1CYGiyi01krhKd"
+  },
+  {
    "at" : "_4I8GwXXfO3P01cdzyd",
    "va" : 
    {
@@ -816,12 +820,7 @@
     "fn" : "_61pgHb5KRq600RLnKD",
     "vtype" : "closure"
    }
-  },
-     /// added by Basile: symbol: dump
-     {
-	 "at" : "_3Q3hJsSgCDN03GTYW5",
-	 "va" : "_4mCb1CYGiyi01krhKd"
-     }
+  }
  ],
  "class" : "_8CncrUdoSL303T5lOK",
  "mtime" : 1610365769,
@@ -1263,9 +1262,8 @@
 //-ob_4jISxMJ4PYU0050nUl
 
 
-/////@@@@ manually added by <basile@starynkevitch.net> in 2021
 //+ob_4mCb1CYGiyi01krhKd
-//""dump""∈symbol
+//∈symbol
 {
  "attrs" : 
  [
@@ -1282,7 +1280,6 @@
  "symb_val" : "_2Fy0WfTEAbr03HTthe"
 }
 //-ob_4mCb1CYGiyi01krhKd
-
 
 
 //+ob_4ojpzRzyRWz02DNWMe
