@@ -598,9 +598,15 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       int endcolno = colno;
       while (ispunct(linebuf[endcolno]) && endcolno < linelen && endcolno < startcolno + max_delim_len)
         endcolno++;
+      delimstr = std::string(linebuf+startcolno, endcolno-startcolno);
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer maybe delimiter " << delimstr
+		    << " input_name=" << input_name
+		    << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
+		    << " lineno=" << lineno
+		    << " colno=" << colno
+		    << " endcolno=" << endcolno);
       while (!delimstr.empty() && endcolno>startcolno)
         {
-          delimstr = std::string(linebuf+startcolno, endcolno-startcolno);
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer candidate delim " << delimstr << " L" << lineno << "C" << startcolno);
           _f.delimv = paylstrdict->find(delimstr);
           if (_f.delimv)
@@ -623,7 +629,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                       << " lineno=" << lineno
                       << " colno=" << colno
                       << " curpos=" << linebuf+colno << std::endl
-                      << " delim " << delimstr
+                      << " delimiter: " << delimstr
                       << std::endl
                       << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer/unknown delim"));
           return Rps_TwoValues(nullptr, nullptr);
