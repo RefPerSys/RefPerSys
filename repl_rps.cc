@@ -71,7 +71,27 @@ rps_repl_version(void)
 
 
 
+extern "C" rps_applyingfun_t rpsapply_repl_not_implemented;
 
+Rps_TwoValues
+rpsapply_repl_not_implemented(Rps_CallFrame*callerframe,
+                              const Rps_Value arg0,
+                              const Rps_Value arg1,
+                              const Rps_Value arg2,
+                              const Rps_Value arg3,
+                              [[maybe_unused]] const std::vector<Rps_Value>* restargs)
+{
+  RPS_WARNOUT("rpsapply_repl_not_implemented arg0:" << arg0
+              << " arg1:" << arg1
+              << " arg2:" << arg2
+              << " arg3:" << arg3
+              << std::endl
+              << " from caller frame:"
+              << Rps_ShowCallFrame(callerframe)
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_repl_not_implemented"));
+  return {nullptr,nullptr};
+} // end rpsapply_repl_not_implemented
 
 /// Create a new REPL command, and output to stdout some draft C++
 /// code to parse it.... To be called from the main thread.
@@ -141,6 +161,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
   _f.closv = Rps_ClosureValue(_f.obfun, {_f.obcommand,_f.obsymb});
   _f.obfun->put_attr(RPS_ROOT_OB(_8CncrUdoSL303T5lOK), //repl_command∈class
                      _f.obcommand);
+  _f.obfun->put_applying_function(rpsapply_repl_not_implemented);
   RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
                 << " -> closv=" << _f.closv);
   _f.obcommand->put_attr(RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd), ///  repl_command_parser∈symbol
@@ -600,11 +621,11 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
         endcolno++;
       delimstr = std::string(linebuf+startcolno, endcolno-startcolno);
       RPS_DEBUG_LOG(REPL, "rps_repl_lexer maybe delimiter " << delimstr
-		    << " input_name=" << input_name
-		    << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
-		    << " lineno=" << lineno
-		    << " colno=" << colno
-		    << " endcolno=" << endcolno);
+                    << " input_name=" << input_name
+                    << " line_buf='" << Rps_Cjson_String(linebuf) << "'"
+                    << " lineno=" << lineno
+                    << " colno=" << colno
+                    << " endcolno=" << endcolno);
       while (!delimstr.empty() && endcolno>startcolno)
         {
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer candidate delim " << delimstr << " L" << lineno << "C" << startcolno);
