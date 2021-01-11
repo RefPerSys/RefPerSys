@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 140,
+ "nbobjects" : 141,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -1684,9 +1684,13 @@
   {
    "str" : "}",
    "val" : "_68wsAiJhJj1025DIs1"
+  },
+  {
+   "str" : ".",
+   "val" : "_78wsBiJhJj1025DIs1"
   }
  ],
- "mtime" : 1605103617.02,
+ "mtime" : 1610376912,
  "oid" : "_627ngdqrVfF020ugC5",
  "payload" : "string_dictionnary"
 }
@@ -1754,6 +1758,24 @@
  "oid" : "_68wsAiJhJj1025DIs1"
 }
 //-ob_68wsAiJhJj1025DIs1
+
+
+/// Basile adding the dot delimiter
+  //+ob_78wsBiJhJj1025DIs1
+  //∈repl_delimiter
+  {
+   "attrs" : 
+   [
+    {
+     "at" : "_2wdmxJecnFZ02VGGFK",
+     "va" : "."
+    }
+   ],
+   "class" : "_2wdmxJecnFZ02VGGFK",
+   "mtime" : 1610377037,
+   "oid" : "_78wsBiJhJj1025DIs1"
+  }
+  //-ob_78wsBiJhJj1025DIs1
 
 
 //+ob_69f4MoBCZ5s04zfqiJ
