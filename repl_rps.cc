@@ -115,7 +115,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
   if (paylsymb->symbol_value())
     {
       RPS_WARNOUT("rps_repl_create_command command name "
-		  << commandname << " already known as symbol " << _f.obsymb
+                  << commandname << " already known as symbol " << _f.obsymb
                   << std::endl
                   << ".. called from " <<  Rps_ShowCallFrame(&_));
       return;
@@ -150,7 +150,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
                          _f.strnamev);
   // the symbol should be reachable at dump time and known to the command
   _f.obcommand->put_attr(Rps_ObjectRef::the_symbol_class(),
-			 _f.obsymb);
+                         _f.obsymb);
   std::cout << std::endl << std::endl
             << "/* C++ function " << _f.obfun << " for REPL command " << commandname << "*/" << std::endl;
   std::cout << "extern \"C\" rps_applyingfun_t rpsapply" << _f.obfun->oid() << ";" << std::endl;
@@ -241,6 +241,14 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
             {
               _f.cmdkindob = _f.lexkindob;
               _f.cmddatav = _f.lexdatav;
+              if (_f.cmdkindob == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)
+                  && _f.cmddatav.is_object())
+                {
+                  RPS_DEBUG_LOG(REPL, "rps_repl_interpret " << input_name << "L" << startline << "C" << startcol
+                                << " command is object " << _f.lexdatav
+                                << std::endl
+                                << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/command"));
+                }
 #warning we probably need some application, compatible with C++ code generated in rps_repl_create_command above...
               RPS_WARNOUT("rps_repl_interpret unimplemented " << input_name << "L" << startline << "C" << startcol
                           << " lexkind=" << _f.lexkindob
