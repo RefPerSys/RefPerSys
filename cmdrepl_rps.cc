@@ -57,9 +57,11 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   if (!descoid) descoid=Rps_Id("_61pgHb5KRq600RLnKD");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
                            callerframe,
+                           Rps_ObjectRef replcmdob;
                            Rps_ObjectRef lexkindob;
                            Rps_Value lexval;
                            Rps_Value closv;
+                           Rps_ObjectRef lexob;
                 );
   _f.closv = _.call_frame_closure();
   RPS_DEBUG_LOG(CMD, "REPL command dump start arg0=" << arg0
@@ -67,7 +69,31 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 << " callingclos=" << _f.closv
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
-
+  _f.replcmdob = arg0.to_object();
+  _f.lexkindob = arg1.to_object();
+  _f.lexval = arg2;
+  if (_f.lexval.is_object())
+    _f.lexob = _f.lexval.to_object();
+  if (_f.lexob && _f.lexob->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
+    {
+      // dump to current directory
+      rps_dump_into(".", &_);
+      RPS_DEBUG_LOG(CMD, "REPL command dumped into current directory");
+      return {_f.lexob, nullptr};
+    }
+  else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE)) //string∈class #
+    {
+      std::string dirstr = _f.lexval.as_cppstring();
+#warning rpsapply_61pgHb5KRq600RLnKD should use wordexp(3) on the string
+      // see https://man7.org/linux/man-pages/man3/wordexp.3.html
+      RPS_FATALOUT("REPL command dump unimplemented into " << dirstr);
+    }
+  /*** For the "dump ." command:
+   * arg0 is _2Fy0WfTEAbr03HTthe, the "dump"/∈repl_command
+   * arg1 is _2wdmxJecnFZ02VGGFK, the repl_delimiter∈class
+   * arg2 is _78wsBiJhJj1025DIs1, the dot "."∈repl_delimiter
+   * arg4 is a column number
+   ***/
 #warning incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump
   RPS_WARNOUT("incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD for REPL command dump") << std::endl
