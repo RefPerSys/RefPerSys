@@ -194,6 +194,19 @@ Rps_ObjectZone::Rps_ObjectZone() :
 } // end Rps_ObjectZone::Rps_ObjectZone
 
 
+void
+Rps_ObjectZone::put_applying_function(rps_applyingfun_t*afun)
+{
+  auto oldappfun = ob_applyingfun.exchange(afun);
+  if (oldappfun)
+    {
+      RPS_WARNOUT("Rps_ObjectZone::put_applying_function for oid=" << oid()
+                  << " did overwrite applying function to " << afun
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "put_applying_function"));
+    };
+} // end Rps_ObjectZone::put_applying_function
+
 Rps_ObjectZone*
 Rps_ObjectZone::make(void)
 {

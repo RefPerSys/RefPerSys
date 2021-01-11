@@ -2155,6 +2155,7 @@ public:
   {
     return &ob_mtx;
   };
+  void put_applying_function(rps_applyingfun_t*afun);
   void gui_window_reset_class(RpsGui_Window*win);
   void touch_now(void) {
     ob_mtime.store(rps_wallclock_real_time());
