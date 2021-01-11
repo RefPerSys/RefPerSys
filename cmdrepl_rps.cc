@@ -50,7 +50,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                             const Rps_Value arg1,
                             [[maybe_unused]] const Rps_Value arg2,
                             [[maybe_unused]] const Rps_Value arg3,
-                            [[maybe_unused]] const std::vector<Rps_Value*> restargs)
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
   static Rps_Id descoid;
   if (!descoid) descoid=Rps_Id("_61pgHb5KRq600RLnKD");
