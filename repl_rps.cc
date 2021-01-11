@@ -228,6 +228,8 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                            Rps_Value cmdparserv;
                            Rps_Value parsmainv;
                            Rps_Value parsxtrav;
+                           Rps_Value nextlexkindob;
+                           Rps_Value nextlexdatav;
                 );
   // a double ended queue to keep the lexical tokens
   std::deque<Rps_Value> token_deq;
@@ -244,7 +246,7 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   rps_repl_input = inp;
   bool endcommand = false;
   std::string prompt = std::string(input_name) + " RPS>";
-  bool gotline = rps_repl_get_next_line(&_, inp, input_name, &linebuf, &lineno, prompt);
+  bool gotline = rps_repl_get_next_line(&_, rps_repl_input, input_name, &linebuf, &lineno, prompt);
   if (gotline)
     {
       int colno = 0;
@@ -252,7 +254,7 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
         {
           int startline = lineno;
           int startcol = colno;
-          Rps_TwoValues lexpair = rps_repl_lexer(&_, inp, input_name, linebuf, lineno, colno);
+          Rps_TwoValues lexpair = rps_repl_lexer(&_, rps_repl_input,   input_name, linebuf, lineno, colno);
           if (!lexpair.main())
             break;
           _f.cmdkindob = nullptr;
@@ -286,7 +288,15 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                   if (_f.cmdparserv.is_closure())
                     {
                       {
-                        Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply1 (&_, _f.cmdreplob);
+                        RPS_DEBUG_LOG(REPL, "rps_repl_interpret for command " << _f.cmdreplob << " before applying " << _f.cmdparserv
+                                      <<  " @"
+                                      << input_name << "L" << startline << "C" << startcol);
+                        int nextcol = colno;
+                        Rps_TwoValues nextlexpair =  rps_repl_lexer(&_, rps_repl_input,   input_name, linebuf, lineno, colno);
+                        _f.nextlexkindob = nextlexpair.main().to_object();
+                        _f.nextlexdatav =  nextlexpair.xtra();
+                        Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply4 (&_, _f.cmdreplob, _f.nextlexkindob, _f.nextlexdatav,
+                                                 Rps_Value::make_tagged_int(nextcol));
                         _f.parsmainv = parspair.main();
                         _f.parsxtrav = parspair.xtra();
                       }
