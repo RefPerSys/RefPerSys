@@ -1571,9 +1571,9 @@ rps_read_eval_print_loop(int &argc, char **argv)
   rl_attempted_completion_function = rpsrepl_name_or_oid_completion;
   while (!rps_repl_stopped)
     {
-      count++;
-      char prompt[16];
+      char prompt[32];
       memset(prompt, 0, sizeof(prompt));
+      count++;
       snprintf(prompt, sizeof(prompt), "Rps_REPL#%d", count);
       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop lineno=" << lineno << " prompt=" << prompt);
       if (count % 4 == 0)
