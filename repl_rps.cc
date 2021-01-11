@@ -181,7 +181,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
             << "                           const Rps_Value arg1," << std::endl
             << "                           [[maybe_unused]] const Rps_Value arg2," << std::endl
             << "                           [[maybe_unused]] const Rps_Value arg3," << std::endl
-            << "                           [[maybe_unused]] const std::vector<Rps_Value*> restargs)" << std::endl
+            << "                           [[maybe_unused]] const std::vector<Rps_Value>* restargs)" << std::endl
             << "{" << std::endl
             << "   static Rps_Id descoid;\n"
             << "   if (!descoid) descoid=Rps_Id(\"" <<  _f.obfun->oid() << "\");" << std::endl
