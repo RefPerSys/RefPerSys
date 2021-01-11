@@ -42,7 +42,7 @@ const char rps_repl_gitid[]= RPS_GITID;
 extern "C" const char rps_cmdrepl_date[];
 const char rps_cmdrepl_date[]= __DATE__;
 
-/* C++ function _61pgHb5KRq600RLnKD for REPL command dump*/
+/* C++ closure _61pgHb5KRq600RLnKD for REPL command dump parsing*/
 extern "C" rps_applyingfun_t rpsapply_61pgHb5KRq600RLnKD;
 Rps_TwoValues
 rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
