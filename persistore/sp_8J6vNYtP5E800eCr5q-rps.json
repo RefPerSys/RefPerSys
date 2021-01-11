@@ -1670,6 +1670,10 @@
    "val" : "_7CG9m1NXpMo01edTUl"
   },
   {
+   "str" : ".",
+   "val" : "_78wsBiJhJj1025DIs1"
+  },
+  {
    "str" : "[",
    "val" : "_6nbwRjrl7CQ01zpj2C"
   },
@@ -1684,10 +1688,6 @@
   {
    "str" : "}",
    "val" : "_68wsAiJhJj1025DIs1"
-  },
-  {
-   "str" : ".",
-   "val" : "_78wsBiJhJj1025DIs1"
   }
  ],
  "mtime" : 1610376912,
@@ -1758,24 +1758,6 @@
  "oid" : "_68wsAiJhJj1025DIs1"
 }
 //-ob_68wsAiJhJj1025DIs1
-
-
-/// Basile adding the dot delimiter
-  //+ob_78wsBiJhJj1025DIs1
-  //∈repl_delimiter
-  {
-   "attrs" : 
-   [
-    {
-     "at" : "_2wdmxJecnFZ02VGGFK",
-     "va" : "."
-    }
-   ],
-   "class" : "_2wdmxJecnFZ02VGGFK",
-   "mtime" : 1610377037,
-   "oid" : "_78wsBiJhJj1025DIs1"
-  }
-  //-ob_78wsBiJhJj1025DIs1
 
 
 //+ob_69f4MoBCZ5s04zfqiJ
@@ -2085,6 +2067,23 @@
  "payload" : "classinfo"
 }
 //-ob_6XLY6QfcDre02922jz
+
+
+//+ob_78wsBiJhJj1025DIs1
+//∈repl_delimiter
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_2wdmxJecnFZ02VGGFK",
+   "va" : "."
+  }
+ ],
+ "class" : "_2wdmxJecnFZ02VGGFK",
+ "mtime" : 1610377037,
+ "oid" : "_78wsBiJhJj1025DIs1"
+}
+//-ob_78wsBiJhJj1025DIs1
 
 
 //+ob_7b8jzCpOStA04e0jxs
