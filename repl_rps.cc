@@ -114,7 +114,8 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
   /// the command name should be a fresh symbol...
   if (paylsymb->symbol_value())
     {
-      RPS_WARNOUT("rps_repl_create_command command name " << commandname << " alreadt known as symbol " << _f.obsymb
+      RPS_WARNOUT("rps_repl_create_command command name "
+		  << commandname << " already known as symbol " << _f.obsymb
                   << std::endl
                   << ".. called from " <<  Rps_ShowCallFrame(&_));
       return;
