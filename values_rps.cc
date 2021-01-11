@@ -516,7 +516,7 @@ Rps_ClosureZone::val_output(std::ostream&out, unsigned int depth) const
         {
           if (cnt>0) out <<", ";
           val.output(out, depth+1);
-	  cnt++;
+          cnt++;
         }
       out << ")";
     }

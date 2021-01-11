@@ -203,6 +203,10 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                            Rps_Value lexdatav;
                            Rps_ObjectRef cmdkindob;
                            Rps_Value cmddatav;
+                           Rps_ObjectRef cmdreplob;
+                           Rps_Value cmdparserv;
+                           Rps_Value parsmainv;
+                           Rps_Value parsxtrav;
                 );
   // a double ended queue to keep the lexical tokens
   std::deque<Rps_Value> token_deq;
@@ -248,6 +252,38 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                 << " command is object " << _f.lexdatav
                                 << std::endl
                                 << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/command"));
+                  _f.cmdreplob =  _f.cmddatav.to_object();
+                  RPS_ASSERT(_f.cmdreplob);
+                  _f.cmdparserv = _f.cmdreplob->get_attr1(&_,
+                                                          RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd) //repl_command_parser∈symbol
+                                                         );
+                  RPS_DEBUG_LOG(REPL, "rps_repl_interpret cmdreplob=" << _f.cmdreplob
+                                << " cmdparserv=" << _f.cmdparserv << " @"
+                                << input_name << "L" << startline << "C" << startcol
+                                << std::endl
+                                << " curframe:" << Rps_ShowCallFrame(&_));
+                  if (_f.cmdparserv.is_closure())
+                    {
+                      {
+                        Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply1 (&_, _f.cmdreplob);
+                        _f.parsmainv = parspair.main();
+                        _f.parsxtrav = parspair.xtra();
+                      }
+                      RPS_DEBUG_LOG(REPL, "rps_repl_interpret cmdreplob=" << _f.cmdreplob
+                                    << " parsmainv=" << _f.parsmainv
+                                    << " parsxtrav=" << _f.parsxtrav
+                                    << std::endl
+                                    << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/parsed-command"));
+                      if (_f.parsmainv)
+                        {
+                          return;
+                        }
+                      else
+                        RPS_WARNOUT("rps_repl_interpret failed to parse command " << _f.cmdreplob
+                                    <<  " @"
+                                    << input_name << "L" << startline << "C" << startcol);
+
+                    }
                 }
 #warning we probably need some application, compatible with C++ code generated in rps_repl_create_command above...
               RPS_WARNOUT("rps_repl_interpret unimplemented " << input_name << "L" << startline << "C" << startcol
