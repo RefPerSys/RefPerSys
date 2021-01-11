@@ -3640,12 +3640,7 @@ protected:
   Rps_PayloadSymbol(Rps_ObjectZone*owner);
   Rps_PayloadSymbol(Rps_ObjectRef obr) :
     Rps_PayloadSymbol(obr?obr.optr():nullptr) {};
-  virtual ~Rps_PayloadSymbol()
-  {
-    std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
-    if (!symb_name.empty())
-      symb_table.erase(symb_name);
-  };
+  virtual ~Rps_PayloadSymbol();
   virtual uint32_t wordsize(void) const
   {
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
