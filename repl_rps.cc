@@ -147,6 +147,9 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
   _f.strnamev = Rps_StringValue(commandname);
   _f.obcommand->put_attr(Rps_ObjectRef::the_name_object(),
                          _f.strnamev);
+  // the symbol should be reachable at dump time and known to the command
+  _f.obcommand->put_attr(Rps_ObjectRef::the_symbol_class(),
+			 _f.obsymb);
   std::cout << std::endl << std::endl
             << "/* C++ function " << _f.obfun << " for REPL command " << commandname << "*/" << std::endl;
   std::cout << "extern \"C\" rps_applyingfun_t rpsapply" << _f.obfun->oid() << ";" << std::endl;
