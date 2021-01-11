@@ -816,10 +816,15 @@
     "fn" : "_61pgHb5KRq600RLnKD",
     "vtype" : "closure"
    }
-  }
+  },
+     /// added by Basile: symbol: dump
+     {
+	 "at" : "_3Q3hJsSgCDN03GTYW5",
+	 "va" : "_4mCb1CYGiyi01krhKd"
+     }
  ],
  "class" : "_8CncrUdoSL303T5lOK",
- "mtime" : 1610129357.78,
+ "mtime" : 1610365769,
  "oid" : "_2Fy0WfTEAbr03HTthe"
 }
 //-ob_2Fy0WfTEAbr03HTthe
@@ -1260,7 +1265,7 @@
 
 /////@@@@ manually added by <basile@starynkevitch.net> in 2021
 //+ob_4mCb1CYGiyi01krhKd
-//∈symbol
+//""dump""∈symbol
 {
  "attrs" : 
  [
