@@ -1645,12 +1645,13 @@ Rps_PayloadSymbol::Rps_PayloadSymbol(Rps_ObjectZone*obz)
 } // end Rps_PayloadSymbol::Rps_PayloadSymbol
 
 
-Rps_PayloadSymbol::~Rps_PayloadSymbol() {
+Rps_PayloadSymbol::~Rps_PayloadSymbol()
+{
   std::lock_guard<std::recursive_mutex> gu(symb_tablemtx);
   RPS_DEBUG_LOG(LOWREP, "~Rps_PayloadSymbol symb_name='"
-		<< symb_name << "' owner=" << owner()
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "~Rps_PayloadSymbol"));
+                << symb_name << "' owner=" << owner()
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "~Rps_PayloadSymbol"));
   if (!symb_name.empty())
     symb_table.erase(symb_name);
 } // end Rps_PayloadSymbol::~Rps_PayloadSymbol()
