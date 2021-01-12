@@ -255,8 +255,10 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
           int startline = lineno;
           int startcol = colno;
           Rps_TwoValues lexpair = rps_repl_lexer(&_, rps_repl_input,   input_name, linebuf, lineno, colno);
-          if (!lexpair.main())
+          if (!lexpair.main()) {
+	    endcommand = true;
             break;
+	  }
           _f.cmdkindob = nullptr;
           _f.cmddatav = nullptr;
           _f.lexkindob = lexpair.main().to_object();
