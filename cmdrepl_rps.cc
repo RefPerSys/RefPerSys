@@ -105,24 +105,24 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
 extern "C" rps_applyingfun_t rpsapply_7WsQyJK6lty02uz5KT;
 Rps_TwoValues
 rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
-                           const Rps_Value arg0,
-                           const Rps_Value arg1,
-                           [[maybe_unused]] const Rps_Value arg2,
-                           [[maybe_unused]] const Rps_Value arg3,
-                           [[maybe_unused]] const std::vector<Rps_Value>* restargs)
+                            const Rps_Value arg0,
+                            const Rps_Value arg1,
+                            [[maybe_unused]] const Rps_Value arg2,
+                            [[maybe_unused]] const Rps_Value arg3,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
-   static Rps_Id descoid;
-   if (!descoid) descoid=Rps_Id("_7WsQyJK6lty02uz5KT");
-   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-                   callerframe,
-   );
-   RPS_DEBUG_LOG(CMD, "REPL command show start arg0=" << arg0
+  static Rps_Id descoid;
+  if (!descoid) descoid=Rps_Id("_7WsQyJK6lty02uz5KT");
+  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
+                           callerframe,
+                );
+  RPS_DEBUG_LOG(CMD, "REPL command show start arg0=" << arg0
                 << " arg1=" << arg1 << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show
   RPS_WARNOUT("incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show from " << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
+              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
   return {nullptr,nullptr};
 } //end of rpsapply_7WsQyJK6lty02uz5KT for REPL command show
 
@@ -130,48 +130,48 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
 extern "C" rps_applyingfun_t rpsapply_2TZNwgyOdVd001uasl;
 Rps_TwoValues
 rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe,
-                           const Rps_Value arg0,
-                           const Rps_Value arg1,
-                           [[maybe_unused]] const Rps_Value arg2,
-                           [[maybe_unused]] const Rps_Value arg3,
-                           [[maybe_unused]] const std::vector<Rps_Value>* restargs)
+                            const Rps_Value arg0,
+                            const Rps_Value arg1,
+                            [[maybe_unused]] const Rps_Value arg2,
+                            [[maybe_unused]] const Rps_Value arg3,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
-   static Rps_Id descoid;
-   if (!descoid) descoid=Rps_Id("_2TZNwgyOdVd001uasl");
-   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-                   callerframe,
-   );
-   RPS_DEBUG_LOG(CMD, "REPL command help start arg0=" << arg0
+  static Rps_Id descoid;
+  if (!descoid) descoid=Rps_Id("_2TZNwgyOdVd001uasl");
+  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
+                           callerframe,
+                );
+  RPS_DEBUG_LOG(CMD, "REPL command help start arg0=" << arg0
                 << " arg1=" << arg1 << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_2TZNwgyOdVd001uasl for REPL command help
   RPS_WARNOUT("incomplete rpsapply_2TZNwgyOdVd001uasl for REPL command help from " << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_2TZNwgyOdVd001uasl for REPL command help"));
+              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_2TZNwgyOdVd001uasl for REPL command help"));
   return {nullptr,nullptr};
 } //end of rpsapply_2TZNwgyOdVd001uasl for REPL command help
 /* C++ function _28DGtmXCyOX02AuPLd for REPL command put*/
 extern "C" rps_applyingfun_t rpsapply_28DGtmXCyOX02AuPLd;
 Rps_TwoValues
 rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe,
-                           const Rps_Value arg0,
-                           const Rps_Value arg1,
-                           [[maybe_unused]] const Rps_Value arg2,
-                           [[maybe_unused]] const Rps_Value arg3,
-                           [[maybe_unused]] const std::vector<Rps_Value>* restargs)
+                            const Rps_Value arg0,
+                            const Rps_Value arg1,
+                            [[maybe_unused]] const Rps_Value arg2,
+                            [[maybe_unused]] const Rps_Value arg3,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
-   static Rps_Id descoid;
-   if (!descoid) descoid=Rps_Id("_28DGtmXCyOX02AuPLd");
-   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-                   callerframe,
-   );
-   RPS_DEBUG_LOG(CMD, "REPL command put start arg0=" << arg0
+  static Rps_Id descoid;
+  if (!descoid) descoid=Rps_Id("_28DGtmXCyOX02AuPLd");
+  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
+                           callerframe,
+                );
+  RPS_DEBUG_LOG(CMD, "REPL command put start arg0=" << arg0
                 << " arg1=" << arg1 << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_28DGtmXCyOX02AuPLd for REPL command put
   RPS_WARNOUT("incomplete rpsapply_28DGtmXCyOX02AuPLd for REPL command put from " << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_28DGtmXCyOX02AuPLd for REPL command put"));
+              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_28DGtmXCyOX02AuPLd for REPL command put"));
   return {nullptr,nullptr};
 } //end of rpsapply_28DGtmXCyOX02AuPLd for REPL command put
 
@@ -179,24 +179,24 @@ rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe,
 extern "C" rps_applyingfun_t rpsapply_09ehnxiXQKo006cZer;
 Rps_TwoValues
 rpsapply_09ehnxiXQKo006cZer(Rps_CallFrame*callerframe,
-                           const Rps_Value arg0,
-                           const Rps_Value arg1,
-                           [[maybe_unused]] const Rps_Value arg2,
-                           [[maybe_unused]] const Rps_Value arg3,
-                           [[maybe_unused]] const std::vector<Rps_Value>* restargs)
+                            const Rps_Value arg0,
+                            const Rps_Value arg1,
+                            [[maybe_unused]] const Rps_Value arg2,
+                            [[maybe_unused]] const Rps_Value arg3,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
-   static Rps_Id descoid;
-   if (!descoid) descoid=Rps_Id("_09ehnxiXQKo006cZer");
-   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-                   callerframe,
-   );
-   RPS_DEBUG_LOG(CMD, "REPL command remove start arg0=" << arg0
+  static Rps_Id descoid;
+  if (!descoid) descoid=Rps_Id("_09ehnxiXQKo006cZer");
+  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
+                           callerframe,
+                );
+  RPS_DEBUG_LOG(CMD, "REPL command remove start arg0=" << arg0
                 << " arg1=" << arg1 << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_09ehnxiXQKo006cZer for REPL command remove
   RPS_WARNOUT("incomplete rpsapply_09ehnxiXQKo006cZer for REPL command remove from " << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_09ehnxiXQKo006cZer for REPL command remove"));
+              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_09ehnxiXQKo006cZer for REPL command remove"));
   return {nullptr,nullptr};
 } //end of rpsapply_09ehnxiXQKo006cZer for REPL command remove
 
@@ -204,24 +204,24 @@ rpsapply_09ehnxiXQKo006cZer(Rps_CallFrame*callerframe,
 extern "C" rps_applyingfun_t rpsapply_9LCCu7TQI0Z0166mw3;
 Rps_TwoValues
 rpsapply_9LCCu7TQI0Z0166mw3(Rps_CallFrame*callerframe,
-                           const Rps_Value arg0,
-                           const Rps_Value arg1,
-                           [[maybe_unused]] const Rps_Value arg2,
-                           [[maybe_unused]] const Rps_Value arg3,
-                           [[maybe_unused]] const std::vector<Rps_Value>* restargs)
+                            const Rps_Value arg0,
+                            const Rps_Value arg1,
+                            [[maybe_unused]] const Rps_Value arg2,
+                            [[maybe_unused]] const Rps_Value arg3,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
-   static Rps_Id descoid;
-   if (!descoid) descoid=Rps_Id("_9LCCu7TQI0Z0166mw3");
-   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-                   callerframe,
-   );
-   RPS_DEBUG_LOG(CMD, "REPL command append start arg0=" << arg0
+  static Rps_Id descoid;
+  if (!descoid) descoid=Rps_Id("_9LCCu7TQI0Z0166mw3");
+  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
+                           callerframe,
+                );
+  RPS_DEBUG_LOG(CMD, "REPL command append start arg0=" << arg0
                 << " arg1=" << arg1 << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append
   RPS_WARNOUT("incomplete rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append from " << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append"));
+              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append"));
   return {nullptr,nullptr};
 } //end of rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append
 
@@ -229,24 +229,24 @@ rpsapply_9LCCu7TQI0Z0166mw3(Rps_CallFrame*callerframe,
 extern "C" rps_applyingfun_t rpsapply_982LHCTfHdC02o4a6Q;
 Rps_TwoValues
 rpsapply_982LHCTfHdC02o4a6Q(Rps_CallFrame*callerframe,
-                           const Rps_Value arg0,
-                           const Rps_Value arg1,
-                           [[maybe_unused]] const Rps_Value arg2,
-                           [[maybe_unused]] const Rps_Value arg3,
-                           [[maybe_unused]] const std::vector<Rps_Value>* restargs)
+                            const Rps_Value arg0,
+                            const Rps_Value arg1,
+                            [[maybe_unused]] const Rps_Value arg2,
+                            [[maybe_unused]] const Rps_Value arg3,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
-   static Rps_Id descoid;
-   if (!descoid) descoid=Rps_Id("_982LHCTfHdC02o4a6Q");
-   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-                   callerframe,
-   );
-   RPS_DEBUG_LOG(CMD, "REPL command add_root start arg0=" << arg0
+  static Rps_Id descoid;
+  if (!descoid) descoid=Rps_Id("_982LHCTfHdC02o4a6Q");
+  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
+                           callerframe,
+                );
+  RPS_DEBUG_LOG(CMD, "REPL command add_root start arg0=" << arg0
                 << " arg1=" << arg1 << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_982LHCTfHdC02o4a6Q for REPL command add_root
   RPS_WARNOUT("incomplete rpsapply_982LHCTfHdC02o4a6Q for REPL command add_root from " << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_982LHCTfHdC02o4a6Q for REPL command add_root"));
+              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_982LHCTfHdC02o4a6Q for REPL command add_root"));
   return {nullptr,nullptr};
 } //end of rpsapply_982LHCTfHdC02o4a6Q for REPL command add_root
 
@@ -254,24 +254,24 @@ rpsapply_982LHCTfHdC02o4a6Q(Rps_CallFrame*callerframe,
 extern "C" rps_applyingfun_t rpsapply_2G5DNSyfWoP002Vv6X;
 Rps_TwoValues
 rpsapply_2G5DNSyfWoP002Vv6X(Rps_CallFrame*callerframe,
-                           const Rps_Value arg0,
-                           const Rps_Value arg1,
-                           [[maybe_unused]] const Rps_Value arg2,
-                           [[maybe_unused]] const Rps_Value arg3,
-                           [[maybe_unused]] const std::vector<Rps_Value>* restargs)
+                            const Rps_Value arg0,
+                            const Rps_Value arg1,
+                            [[maybe_unused]] const Rps_Value arg2,
+                            [[maybe_unused]] const Rps_Value arg3,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
-   static Rps_Id descoid;
-   if (!descoid) descoid=Rps_Id("_2G5DNSyfWoP002Vv6X");
-   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-                   callerframe,
-   );
-   RPS_DEBUG_LOG(CMD, "REPL command remove_root start arg0=" << arg0
+  static Rps_Id descoid;
+  if (!descoid) descoid=Rps_Id("_2G5DNSyfWoP002Vv6X");
+  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
+                           callerframe,
+                );
+  RPS_DEBUG_LOG(CMD, "REPL command remove_root start arg0=" << arg0
                 << " arg1=" << arg1 << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root
   RPS_WARNOUT("incomplete rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root from " << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root"));
+              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root"));
   return {nullptr,nullptr};
 } //end of rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root
 
@@ -279,24 +279,24 @@ rpsapply_2G5DNSyfWoP002Vv6X(Rps_CallFrame*callerframe,
 extern "C" rps_applyingfun_t rpsapply_55RPnvwSLXz028jyDk;
 Rps_TwoValues
 rpsapply_55RPnvwSLXz028jyDk(Rps_CallFrame*callerframe,
-                           const Rps_Value arg0,
-                           const Rps_Value arg1,
-                           [[maybe_unused]] const Rps_Value arg2,
-                           [[maybe_unused]] const Rps_Value arg3,
-                           [[maybe_unused]] const std::vector<Rps_Value>* restargs)
+                            const Rps_Value arg0,
+                            const Rps_Value arg1,
+                            [[maybe_unused]] const Rps_Value arg2,
+                            [[maybe_unused]] const Rps_Value arg3,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
-   static Rps_Id descoid;
-   if (!descoid) descoid=Rps_Id("_55RPnvwSLXz028jyDk");
-   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-                   callerframe,
-   );
-   RPS_DEBUG_LOG(CMD, "REPL command make_symbol start arg0=" << arg0
+  static Rps_Id descoid;
+  if (!descoid) descoid=Rps_Id("_55RPnvwSLXz028jyDk");
+  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
+                           callerframe,
+                );
+  RPS_DEBUG_LOG(CMD, "REPL command make_symbol start arg0=" << arg0
                 << " arg1=" << arg1 << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_55RPnvwSLXz028jyDk for REPL command make_symbol
   RPS_WARNOUT("incomplete rpsapply_55RPnvwSLXz028jyDk for REPL command make_symbol from " << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_55RPnvwSLXz028jyDk for REPL command make_symbol"));
+              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_55RPnvwSLXz028jyDk for REPL command make_symbol"));
   return {nullptr,nullptr};
 } //end of rpsapply_55RPnvwSLXz028jyDk for REPL command make_symbol
 
