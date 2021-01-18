@@ -84,9 +84,20 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE)) //string∈class #
     {
       std::string dirstr = _f.lexval.as_cppstring();
+      DIR* dirh = opendir(dirstr.c_str());
+      if (dirh)
+        {
+          closedir(dirh);
+          rps_dump_into(dirstr.c_str(), &_);
+        }
+      else if (!mkdir(dirstr.c_str(), 0750))
+        {
+          rps_dump_into(dirstr.c_str(), &_);
+        }
+      else
 #warning rpsapply_61pgHb5KRq600RLnKD should use wordexp(3) on the string
-      // see https://man7.org/linux/man-pages/man3/wordexp.3.html
-      RPS_FATALOUT("REPL command dump unimplemented into " << dirstr);
+        // see https://man7.org/linux/man-pages/man3/wordexp.3.html
+        RPS_WARNOUT("REPL command dump unimplemented into " << dirstr);
     }
   /*** For the "dump ." command:
    * arg0 is _2Fy0WfTEAbr03HTthe, the "dump"/∈repl_command
