@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 158,
+ "nbobjects" : 159,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -801,6 +801,26 @@
 }
 //-ob_2wdmxJecnFZ02VGGFK
 
+
+/// Basile adds the show symbol
+//+ob_2wi3wsd8tVF01MBeeF
+//∈symbol
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "show"
+  }
+ ],
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1610991444,
+ "oid" : "_2wi3wsd8tVF01MBee",
+ "payload" : "symbol",
+    "symb_name" : "show",
+    "symb_val": "_8mxvQgbphkP01A57lq"
+}
+//-ob_2wi3wsd8tVF01MBee
 
 //+ob_2wTNRCsTOUK01tgbkH
 //∈symbol
