@@ -50,6 +50,9 @@ extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, co
 static Rps_CallFrame*rps_readline_callframe;
 std::vector<std::string> rps_completion_vect;
 
+/// a C++ closure for getting the next REPL lexical token....
+static std::function<Rps_TwoValues(Rps_CallFrame*)> rps_repl_cmd_lexer_fun;
+
 bool rps_repl_stopped;
 
 std::string
@@ -255,10 +258,11 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
           int startline = lineno;
           int startcol = colno;
           Rps_TwoValues lexpair = rps_repl_lexer(&_, rps_repl_input,   input_name, linebuf, lineno, colno);
-          if (!lexpair.main()) {
-	    endcommand = true;
-            break;
-	  }
+          if (!lexpair.main())
+            {
+              endcommand = true;
+              break;
+            }
           _f.cmdkindob = nullptr;
           _f.cmddatav = nullptr;
           _f.lexkindob = lexpair.main().to_object();
@@ -297,8 +301,13 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                         Rps_TwoValues nextlexpair =  rps_repl_lexer(&_, rps_repl_input,   input_name, linebuf, lineno, colno);
                         _f.nextlexkindob = nextlexpair.main().to_object();
                         _f.nextlexdatav =  nextlexpair.xtra();
+                        rps_repl_cmd_lexer_fun = [&](Rps_CallFrame*lexcallframe)
+                        {
+                          return rps_repl_lexer(&_, rps_repl_input,   input_name, linebuf, lineno, colno);
+                        };
                         Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply4 (&_, _f.cmdreplob, _f.nextlexkindob, _f.nextlexdatav,
                                                  Rps_Value::make_tagged_int(nextcol));
+                        rps_repl_cmd_lexer_fun = nullptr;
                         _f.parsmainv = parspair.main();
                         _f.parsxtrav = parspair.xtra();
                       }
@@ -347,6 +356,14 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   rps_repl_input = previous_input;
 } // end rps_repl_interpret
 
+Rps_TwoValues
+rps_repl_cmd_lexing(Rps_CallFrame*callframe)
+{
+  if (rps_repl_cmd_lexer_fun)
+    return rps_repl_cmd_lexer_fun(callframe);
+  else
+    return Rps_TwoValues{nullptr,nullptr};
+} // end of rps_repl_cmd_lexing
 
 bool
 rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int*plineno, std::string prompt)
