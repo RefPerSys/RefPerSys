@@ -802,7 +802,6 @@
 //-ob_2wdmxJecnFZ02VGGFK
 
 
-/// Basile adds the show symbol
 //+ob_2wi3wsd8tVF01MBeeF
 //∈symbol
 {
@@ -817,10 +816,11 @@
  "mtime" : 1610991444,
  "oid" : "_2wi3wsd8tVF01MBeeF",
  "payload" : "symbol",
-    "symb_name" : "show",
-    "symb_val": "_8mxvQgbphkP01A57lq"
+ "symb_name" : "show",
+ "symb_val" : "_8mxvQgbphkP01A57lq"
 }
 //-ob_2wi3wsd8tVF01MBeeF
+
 
 //+ob_2wTNRCsTOUK01tgbkH
 //∈symbol
@@ -879,8 +879,6 @@
  "payload" : "classinfo"
 }
 //-ob_2A2mrPpR3Qf03p6o5b
-
-
 
 
 //+ob_2Fy0WfTEAbr03HTthe
@@ -2623,6 +2621,10 @@
   {
    "at" : "_1EBVGSfW2m200z18rx",
    "va" : "show"
+  },
+  {
+   "at" : "_3Q3hJsSgCDN03GTYW5",
+   "va" : "_2wi3wsd8tVF01MBeeF"
   },
   {
    "at" : "_4I8GwXXfO3P01cdzyd",
