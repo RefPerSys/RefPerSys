@@ -58,6 +58,11 @@
 ///      © Copyright 2020 The Reflective Persistent System Team
 ///     team@refpersys.org & http://refpersys.org/
 ///
+
+namespace yy {
+   parser::symbol_type yylex(void);
+};
+
 }
 
 
@@ -78,3 +83,19 @@ rpsy_int_literal: RPSY_INT
 
 %%
 /*** action part of synrepl_rps.yy ***/
+yy::parser::symbol_type
+yy::yylex(void)
+{
+#warning unimplemented yy::parser:yylex
+  RPS_FATALOUT("unimplemented yy::yylex");
+} // end of yy::yylex
+
+void
+yy::parser::error(yy::location const&loc, const std::string&msg)
+{
+#warning unimplemented yy::parser::error
+RPS_FATALOUT("unimplemented yy::parser::error at loc=" << loc
+             << " msg=" << msg);
+} // end yy::parser::error
+
+//// end of file synrepl_rps.yy

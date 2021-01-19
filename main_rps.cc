@@ -975,10 +975,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " last git commit: " << rps_lastgitcommit << std::endl
                     << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
                     << " with " << nbsubdirs << " subdirectories." << std::endl
-                    << " GNU glibc " << gnu_get_libc_version() << std::endl
-                    << " Read Eval Print Loop using " << rps_repl_version() << std::endl
-                    << " libCURL for web client using " << rps_curl_version() << std::endl
-                    << " Libonion web server library version " << onion_version() << std::endl
+                    << " GNU glibc: " << gnu_get_libc_version() << std::endl
+		    << " parser generator: " << rps_gnubison_version << std::endl
+                    << " Read Eval Print Loop: " << rps_repl_version() << std::endl
+                    << " libCURL for web client: " << rps_curl_version() << std::endl
+                    << " Libonion web server library version: " << onion_version() << std::endl
                     << " made with: " << rps_makefile << std::endl
                     << " running on " << rps_hostname();
           {

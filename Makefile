@@ -40,15 +40,25 @@ RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
+## for GNU bison
+RPS_BISON_SOURCES:= $(sort $(wildcard *_rps.yy))
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
+RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
+RPS_BISON_CPLUSPLUS = $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES))
 RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
+RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
+RPS_DEBUG_BISON_OBJECTS = $(patsubst %.yy, %.dbg.o, $(RPS_BISON_SOURCES))
 
 
 #RPS_BUILD_CCACHE?= ccache
-RPS_BUILD_CCACHE= 
+RPS_BUILD_CCACHE=
+# the GCC compiler, see gcc.gnu.org
 RPS_BUILD_CC?= gcc
 RPS_BUILD_CXX?= g++
+# the GNU bison parser generator, see www.gnu.org/software/bison/
+RPS_BUILD_BISON?= bison
+RPS_BUILD_BISON_FLAGS?= --language=C++ --verbose
 RPS_BUILD_DIALECTFLAGS = -std=gnu++17
 RPS_BUILD_WARNFLAGS = -Wall -Wextra
 override RPS_BUILD_OPTIMFLAGS ?= -Og -g3
@@ -89,8 +99,10 @@ all:
 	$(MAKE) -$(MAKEFLAGS) refpersys
 	sync
 
-refpersys: $(RPS_CORE_OBJECTS) __timestamp.o
-	$(LINK.cc) $(RPS_CORE_OBJECTS) __timestamp.o \
+.SECONDARY:  __timestamp.c $(RPS_BISON_CPLUSPLUS)
+
+refpersys: $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
+	$(LINK.cc) $(RPS_CORE_OBJECTS)  __timestamp.o \
            $(LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
@@ -98,7 +110,7 @@ refpersys: $(RPS_CORE_OBJECTS) __timestamp.o
 
 sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) __timestamp.o
 	$(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
-           $(RPS_SANITIZED_CORE_OBJECTS) __timestamp.o \
+           $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o \
            $(LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
@@ -109,13 +121,13 @@ sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) __timestamp.o
 #- dbg-refpersys:  $(RPS_DEBUG_CORE_OBJECTS) __timestamp.o
 #-         env RPS_BUILD_OPTIMFLAGS='$(RPS_BUILD_DEBUGFLAGS)' $(MAKE) $(MAKEFLAGS) -e  $(RPS_DEBUG_CORE_OBJECTS) 
 #-         $(LINK.cc)  $(RPS_BUILD_DEBUGFLAGS) \
-#-            $(RPS_DEBUG_CORE_OBJECTS)  __timestamp.o \
+#-            $(RPS_DEBUG_CORE_OBJECTS)   $(RPS_DEBUG_BISON_OBJECTS) __timestamp.o \
 #-            $(LIBES) -o $@-tmp
 #-         $(MV) --backup $@-tmp $@
 #-         $(MV) --backup __timestamp.c __timestamp.c~
 #-         $x(RM) __timestamp.o
 
-objects:  $(RPS_CORE_OBJECTS) 
+objects:  $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS)
 
 $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
@@ -131,6 +143,9 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
 %.ii: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -C -E $< | sed s:^#://#:g > $@
+
+%.cc: %.yy
+	$(RPS_BUILD_BISON) $(RPS_BUILD_BISON_FLAGS) --output=$@ $<
 
 # see https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html 
 
@@ -152,6 +167,7 @@ clean:
 	$(RM) *.ii
 	$(RM) *% core vgcore*
 	$(RM) -rf bld
+	$(RM) $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES))
 
 ## usual invocation: make plugin RPS_PLUGIN_SOURCE=/tmp/foo.cc RPS_PLUGIN_SHARED_OBJECT=/tmp/foo.so
 ## see also our ./build-plugin.sh script
@@ -167,6 +183,7 @@ fullclean:
 __timestamp.c: | Makefile do-generate-timestamp.sh
 	./do-generate-timestamp.sh $@  > $@-tmp
 	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
+	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
 	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp
 	$(MV) --backup $@-tmp $@
 

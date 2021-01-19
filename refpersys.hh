@@ -142,6 +142,7 @@ extern "C" const char*const rps_files[];
 extern "C" const char rps_makefile[];
 extern "C" const char*const rps_subdirectories[];
 extern "C" const char rps_cxx_compiler_version[];
+extern "C" const char rps_gnubison_version[];
 
 
 ///////////////////////////////////////////////////////////////////////////////

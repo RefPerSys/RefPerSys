@@ -161,6 +161,9 @@ rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe,
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_2TZNwgyOdVd001uasl for REPL command help"));
   return {nullptr,nullptr};
 } //end of rpsapply_2TZNwgyOdVd001uasl for REPL command help
+
+
+
 /* C++ function _28DGtmXCyOX02AuPLd for REPL command put*/
 extern "C" rps_applyingfun_t rpsapply_28DGtmXCyOX02AuPLd;
 Rps_TwoValues
@@ -186,6 +189,8 @@ rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe,
   return {nullptr,nullptr};
 } //end of rpsapply_28DGtmXCyOX02AuPLd for REPL command put
 
+
+
 /* C++ function _09ehnxiXQKo006cZer for REPL command remove*/
 extern "C" rps_applyingfun_t rpsapply_09ehnxiXQKo006cZer;
 Rps_TwoValues
@@ -210,6 +215,8 @@ rpsapply_09ehnxiXQKo006cZer(Rps_CallFrame*callerframe,
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_09ehnxiXQKo006cZer for REPL command remove"));
   return {nullptr,nullptr};
 } //end of rpsapply_09ehnxiXQKo006cZer for REPL command remove
+
+
 
 /* C++ function _9LCCu7TQI0Z0166mw3 for REPL command append*/
 extern "C" rps_applyingfun_t rpsapply_9LCCu7TQI0Z0166mw3;
