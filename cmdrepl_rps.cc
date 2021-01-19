@@ -128,7 +128,9 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                            callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command show start arg0=" << arg0
-                << " arg1=" << arg1 << std::endl
+                << "∈" << arg0.compute_class(&_)
+                << ";  arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) <<std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show
@@ -153,7 +155,9 @@ rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe,
                            callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command help start arg0=" << arg0
-                << " arg1=" << arg1 << std::endl
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_2TZNwgyOdVd001uasl for REPL command help
@@ -180,7 +184,9 @@ rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe,
                            callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command put start arg0=" << arg0
-                << " arg1=" << arg1 << std::endl
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_28DGtmXCyOX02AuPLd for REPL command put
@@ -207,7 +213,9 @@ rpsapply_09ehnxiXQKo006cZer(Rps_CallFrame*callerframe,
                            callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command remove start arg0=" << arg0
-                << " arg1=" << arg1 << std::endl
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_09ehnxiXQKo006cZer for REPL command remove
@@ -234,7 +242,10 @@ rpsapply_9LCCu7TQI0Z0166mw3(Rps_CallFrame*callerframe,
                            callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command append start arg0=" << arg0
-                << " arg1=" << arg1 << std::endl
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_)
+                << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append
@@ -242,6 +253,8 @@ rpsapply_9LCCu7TQI0Z0166mw3(Rps_CallFrame*callerframe,
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append"));
   return {nullptr,nullptr};
 } //end of rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append
+
+
 
 /* C++ function _982LHCTfHdC02o4a6Q for REPL command add_root*/
 extern "C" rps_applyingfun_t rpsapply_982LHCTfHdC02o4a6Q;
@@ -259,7 +272,9 @@ rpsapply_982LHCTfHdC02o4a6Q(Rps_CallFrame*callerframe,
                            callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command add_root start arg0=" << arg0
-                << " arg1=" << arg1 << std::endl
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_982LHCTfHdC02o4a6Q for REPL command add_root
@@ -267,6 +282,7 @@ rpsapply_982LHCTfHdC02o4a6Q(Rps_CallFrame*callerframe,
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_982LHCTfHdC02o4a6Q for REPL command add_root"));
   return {nullptr,nullptr};
 } //end of rpsapply_982LHCTfHdC02o4a6Q for REPL command add_root
+
 
 /* C++ function _2G5DNSyfWoP002Vv6X for REPL command remove_root*/
 extern "C" rps_applyingfun_t rpsapply_2G5DNSyfWoP002Vv6X;
@@ -284,7 +300,10 @@ rpsapply_2G5DNSyfWoP002Vv6X(Rps_CallFrame*callerframe,
                            callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command remove_root start arg0=" << arg0
-                << " arg1=" << arg1 << std::endl
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_)
+                << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root
@@ -309,7 +328,10 @@ rpsapply_55RPnvwSLXz028jyDk(Rps_CallFrame*callerframe,
                            callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command make_symbol start arg0=" << arg0
-                << " arg1=" << arg1 << std::endl
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_)
+                << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_55RPnvwSLXz028jyDk for REPL command make_symbol
