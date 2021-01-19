@@ -175,8 +175,8 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
   // the symbol should be reachable at dump time and known to the command
   _f.obcommand->put_attr(Rps_ObjectRef::the_symbol_class(),
                          _f.obsymb);
-  std::cout << std::endl << std::endl
-            << "/* C++ function " << _f.obfun << " for REPL command " << commandname << "*/" << std::endl;
+  std::cout << std::endl << std::endl << std::endl
+            << "/*# C++ function " << _f.obfun << " for REPL command " << commandname << "*/" << std::endl;
   std::cout << "extern \"C\" rps_applyingfun_t rpsapply" << _f.obfun->oid() << ";" << std::endl;
   std::cout << "Rps_TwoValues" << std::endl << "rpsapply"
             << _f.obfun->oid() << "(Rps_CallFrame*callerframe," << std::endl
@@ -191,8 +191,9 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
             << "   RPS_" "LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid)," << std::endl
             << "                   callerframe," << std::endl
             << "   );" << std::endl
-            << "   RPS_" "DEBUG_LOG(CMD, \"REPL command " << commandname << " start arg0=\" << arg0" << std::endl
-            << "                << \" arg1=\" << arg1 << std::endl" << std::endl
+            << "   RPS_" "DEBUG_LOG(CMD, \"REPL command " << commandname << " start arg0=\" << arg0 << \"∈\" << arg0.compute_class(&_)"
+            << std::endl
+            << "                << \" arg1=\" << arg1 <<  << \"∈\" << arg1.compute_class(&_) << std::endl" << std::endl
             << "                << \" from \" << std::endl" << std::endl
             << "                << Rps_ShowCallFrame(&_));" << std::endl
             << "#warning incomplete rpsapply" << _f.obfun->oid() << " for REPL command " << commandname << std::endl
