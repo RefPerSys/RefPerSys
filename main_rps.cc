@@ -976,7 +976,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
                     << " with " << nbsubdirs << " subdirectories." << std::endl
                     << " GNU glibc: " << gnu_get_libc_version() << std::endl
-		    << " parser generator: " << rps_gnubison_version << std::endl
+                    << " parser generator: " << rps_gnubison_version << std::endl
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
                     << " Libonion web server library version: " << onion_version() << std::endl
