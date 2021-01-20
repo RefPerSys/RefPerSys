@@ -131,6 +131,8 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                 << "∈" << arg0.compute_class(&_)
                 << ";  arg1=" << arg1
                 << "∈" << arg1.compute_class(&_) <<std::endl
+                << ";  arg2=" << arg2
+                << "∈" << arg2.compute_class(&_)
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show
