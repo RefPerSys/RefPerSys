@@ -83,7 +83,10 @@ We need expressions evaluated to values, and other expressions evaluated to obje
 
   * `show` *expression*
   * `show _0jdbikGJFq100dgX1n` will show the details of object with OID `_0jdbikGJFq100dgX1n`.
-  * `show "comment"` will show the details of the object with the symbol name "comment".
+  * `show comment` will show the details of the object with the symbol name "comment".
+  * `show "foo"` is showing the string value `"foo"`.
+  * `show 123` is showing the tagged integer 123.
+  * `show 1+2` could evaluate that sum and display 3.
   * `?X.class == _41OFI3r0S1t03qdB2E => show ?X` will list all objects belonging to the class `_41OFI3r0S1t03qdB2E`.
     We are keeping this form for a future date (perhaps 2022).
 
