@@ -82,9 +82,10 @@ We need expressions evaluated to values, and other expressions evaluated to obje
 2. Show a given object or value
 
   * `show` *expression*
-  * `show _0jdbikGJFq100dgX1n` will show the details of object with OID _0jdbikGJFq100dgX1n
-  * `show "comment"` will show the details of the object with the symbol name "comment"
-  * `?X.class == _41OFI3r0S1t03qdB2E => show ?X` will list all objects belonging to the class _41OFI3r0S1t03qdB2E
+  * `show _0jdbikGJFq100dgX1n` will show the details of object with OID `_0jdbikGJFq100dgX1n`.
+  * `show "comment"` will show the details of the object with the symbol name "comment".
+  * `?X.class == _41OFI3r0S1t03qdB2E => show ?X` will list all objects belonging to the class `_41OFI3r0S1t03qdB2E`.
+    We are keeping this form for a future date (perhaps 2022).
 
 3. Put an attribute inside some existing object
 
