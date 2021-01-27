@@ -342,3 +342,20 @@ rpsapply_55RPnvwSLXz028jyDk(Rps_CallFrame*callerframe,
   return {nullptr,nullptr};
 } //end of rpsapply_55RPnvwSLXz028jyDk for REPL command make_symbol
 
+
+
+Rps_Value
+rps_repl_parse_value_expression(Rps_CallFrame*callframe)
+{
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           callframe,
+                           Rps_ObjectRef lexkind;
+                           Rps_Value lexval;
+                );
+  {
+    Rps_TwoValues twov = rps_repl_cmd_lexing(&_,0);
+    _f.lexkind = twov.main().as_object();
+    _f.lexval = twov.xtra();
+  }
+
+} // end rps_repl_parse_value_expression

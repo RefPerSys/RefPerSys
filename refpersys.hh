@@ -3785,8 +3785,12 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
 /// or using readline if inp is null.
 extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
 
-/// callable from REPL command functions
-extern "C" Rps_TwoValues rps_repl_cmd_lexing(Rps_CallFrame*callframe);
+///+++++++++++++++++ callable from REPL command functions
+extern "C" Rps_TwoValues rps_repl_cmd_lexing(Rps_CallFrame*callframe, unsigned lookahead=0);
+extern "C" Rps_Value rps_repl_parse_value_expression(Rps_CallFrame*callframe);
+extern "C" Rps_Value rps_repl_parse_object_expression(Rps_CallFrame*callframe);
+///-----------------
+
 
 /// for GNU readline autocompletion.  See example in
 /// https://thoughtbot.com/blog/tab-completion-in-gnu-readline and

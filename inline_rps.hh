@@ -611,6 +611,11 @@ Rps_LexTokenValue::Rps_LexTokenValue (const Rps_LexTokenZone*lxz)
 {
 } // end of Rps_LexTokenValue::Rps_LexTokenValue
 
+Rps_LexTokenValue::Rps_LexTokenValue(const Rps_Value val)
+  : Rps_Value (val.is_lextoken()?val.as_lextoken():nullptr, Rps_ValPtrTag{})
+{
+} // end Rps_LexTokenValue::Rps_LexTokenValue dynamic
+
 
 Rps_TupleValue::Rps_TupleValue (const std::vector<Rps_ObjectRef>& obvec)
   : Rps_Value (Rps_TupleOb::make(obvec), Rps_ValPtrTag{})
@@ -633,7 +638,7 @@ Rps_TupleValue::Rps_TupleValue(const std::initializer_list<Rps_Value>&valil)
 } // end of Rps_TupleValue::Rps_TupleValue of initializer_list of values
 
 Rps_TupleValue::Rps_TupleValue(const Rps_Value val)
-  : Rps_Value (val.is_set()?val.as_set():nullptr, Rps_ValPtrTag{})
+  : Rps_Value (val.is_tuple()?val.as_tuple():nullptr, Rps_ValPtrTag{})
 {
 } // end Rps_TupleValue::Rps_TupleValue dynamic
 
