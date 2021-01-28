@@ -349,13 +349,51 @@ rps_repl_parse_value_expression(Rps_CallFrame*callframe)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr,
                            callframe,
+                           Rps_Value expval;
                            Rps_ObjectRef lexkind;
                            Rps_Value lexval;
+                           Rps_LexTokenValue lextokv;
                 );
   {
     Rps_TwoValues twov = rps_repl_cmd_lexing(&_,0);
     _f.lexkind = twov.main().as_object();
     _f.lexval = twov.xtra();
+    RPS_DEBUG_LOG(REPL, "rps_repl_parse_value_expression lexkind=" << _f.lexkind
+                  << " lexval=" << _f.lexval << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_parse_value_expression"));
   }
-
+#warning rps_repl_parse_value_expression is incomplete
+  RPS_WARNOUT("incomplete rps_repl_parse_value_expression from " << std::endl
+              <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_parse_value_expression") << std::endl
+              << Rps_ShowCallFrame(&_));
+  return _f.expval;
 } // end rps_repl_parse_value_expression
+
+
+Rps_Value
+rps_repl_parse_object_expression(Rps_CallFrame*callframe)
+{
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           callframe,
+                           Rps_Value obexpval;
+                           Rps_ObjectRef lexkind;
+                           Rps_Value lexval;
+                           Rps_LexTokenValue lextokv;
+                );
+  {
+    Rps_TwoValues twov = rps_repl_cmd_lexing(&_,0);
+    _f.lexkind = twov.main().as_object();
+    _f.lexval = twov.xtra();
+    RPS_DEBUG_LOG(REPL, "rps_repl_parse_object_expression lexkind=" << _f.lexkind
+                  << " lexval=" << _f.lexval << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_parse_object_expression"));
+  }
+#warning rps_repl_parse_object_expression is incomplete
+  RPS_WARNOUT("incomplete rps_repl_parse_object_expression from " << std::endl
+              <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_parse_object_expression") << std::endl
+              << Rps_ShowCallFrame(&_));
+  return _f.obexpval;
+} // end rps_repl_parse_object_expression
+
+
+//// end of file cmdrepl_rps.cc
