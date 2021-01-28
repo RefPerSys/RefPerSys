@@ -306,7 +306,12 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                         rps_repl_cmd_lexer_fun = [&](Rps_CallFrame*lexcallframe, unsigned lookahead)
                         {
                           if (lookahead < token_deq.size())
-                            return token_deq[lookahead];
+                            {
+                              RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token lookahead=" << lookahead
+                                            << " cmdreplob=" << _f.cmdreplob
+                                            << " :: " << token_deq[lookahead]);
+                              return token_deq[lookahead];
+                            }
                           while (lookahead < token_deq.size())
                             {
                               {
@@ -332,11 +337,15 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                                            prompt);
                                 });
                                 if (_f.lextokenv)
-                                  token_deq.push_back(_f.lextokenv);
+                                  {
+                                    token_deq.push_back(_f.lextokenv);
+                                  }
                                 else
                                   return Rps_Value(nullptr);
                               };
                               RPS_ASSERT(lookahead >= token_deq.size());
+                              RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token lookahead=" << lookahead
+                                            << " cmdreplob=" << _f.cmdreplob << " :: " << token_deq[lookahead]);
                               return token_deq[lookahead];
                             };
                           Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply4 (&_, _f.cmdreplob, _f.nextlexkindob, _f.nextlexdatav,
@@ -391,6 +400,8 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   rps_repl_input = previous_input;
 } // end rps_repl_interpret
 
+
+
 Rps_TwoValues
 rps_repl_cmd_lexing(Rps_CallFrame*callframe, unsigned lookahead)
 {
@@ -399,6 +410,8 @@ rps_repl_cmd_lexing(Rps_CallFrame*callframe, unsigned lookahead)
   else
     return Rps_TwoValues{nullptr,nullptr};
 } // end of rps_repl_cmd_lexing
+
+
 
 bool
 rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int*plineno, std::string prompt)
