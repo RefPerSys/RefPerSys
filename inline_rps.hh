@@ -617,6 +617,11 @@ Rps_LexTokenValue::Rps_LexTokenValue(const Rps_Value val)
 } // end Rps_LexTokenValue::Rps_LexTokenValue dynamic
 
 
+Rps_LexTokenValue::Rps_LexTokenValue (void)
+  : Rps_Value (nullptr, Rps_ValPtrTag{})
+{
+} // end of empty Rps_LexTokenValue::Rps_LexTokenValue
+
 Rps_TupleValue::Rps_TupleValue (const std::vector<Rps_ObjectRef>& obvec)
   : Rps_Value (Rps_TupleOb::make(obvec), Rps_ValPtrTag{})
 {
