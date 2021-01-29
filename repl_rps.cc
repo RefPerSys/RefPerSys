@@ -303,6 +303,9 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                         Rps_TwoValues nextlexpair =  rps_repl_lexer(&_, rps_repl_input,   input_name, linebuf, lineno, colno);
                         _f.nextlexkindob = nextlexpair.main().to_object();
                         _f.nextlexdatav =  nextlexpair.xtra();
+                        RPS_DEBUG_LOG(REPL, "rps_repl_interpret nextlexkind=" << _f.nextlexkindob
+                                      << " nextlexdatav=" << _f.nextlexdatav
+                                      << " L"<< lineno << "C" << colno);
                         rps_repl_cmd_lexer_fun = [&](Rps_CallFrame*lexcallframe, unsigned lookahead)
                         {
                           if (lookahead < token_deq.size())
@@ -369,7 +372,14 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                       << input_name << "L" << startline << "C" << startcol);
 
                       }
-                    }
+                    } // end if _f.cmdparserv.is_closure()
+		  else if (_f.cmdparserv)
+		    RPS_WARNOUT("rps_repl_interpret non closure command parser"
+				<< std::endl << "cmdreplob=" << _f.cmdreplob
+                                << " cmdparserv=" << _f.cmdparserv << " @"
+                                << input_name << "L" << startline << "C" << startcol
+                                << std::endl
+                                << " curframe:" << Rps_ShowCallFrame(&_));
                 }
 #warning we probably need some application, compatible with C++ code generated in rps_repl_create_command above...
               RPS_WARNOUT("rps_repl_interpret unimplemented " << input_name << "L" << startline << "C" << startcol
