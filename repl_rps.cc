@@ -543,8 +543,8 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                 << (linebuf?"'":"")
                 << ", lineno=" << lineno << ", colno=" << colno
                 << ", linelen=" << linelen
-		<< std::endl
-		<<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer/start"));
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer/start"));
   while (colno < linelen && isspace(linebuf[colno]))
     colno++;
   ////////////////
@@ -562,7 +562,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
         {
           colno += endfloat - startnum;
           _f.semval = Rps_DoubleValue(d);
-          RPS_DEBUG_LOG(REPL, "rps_repl_lexer float " << d << " colno=" << colno << " semval=" << _f.semval);
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer => float " << d << " colno=" << colno << " semval=" << _f.semval);
           return Rps_TwoValues{RPS_ROOT_OB(_98sc8kSOXV003i86w5), //double∈class
                                _f.semval};
         }
@@ -570,7 +570,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
         {
           colno += endint - startnum;
           _f.semval = Rps_Value::make_tagged_int(l);
-          RPS_DEBUG_LOG(REPL, "rps_repl_lexer int " << l << " colno=" << colno << " semval=" << _f.semval);
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer => int " << l << " colno=" << colno << " semval=" << _f.semval);
           return Rps_TwoValues{RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b), //int∈class
                                _f.semval};
         }
@@ -585,7 +585,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                      ?std::numeric_limits<double>::infinity()
                      : -std::numeric_limits<double>::infinity());
       _f.semval = Rps_DoubleValue(infd);
-      RPS_DEBUG_LOG(REPL, "rps_repl_lexer infinity " << infd << " colno=" << colno << " semval=" << _f.semval);
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer => infinity " << infd << " colno=" << colno << " semval=" << _f.semval);
       return Rps_TwoValues{RPS_ROOT_OB(_98sc8kSOXV003i86w5), //double∈class
                            _f.semval};
     }
@@ -596,24 +596,24 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       while (isalnum(linebuf[colno]) || linebuf[colno]=='_')
         colno++;
       std::string namestr(linebuf+startnamecol, colno-startnamecol);
-      RPS_DEBUG_LOG(REPL, "rps_repl_lexer namestr=" << namestr << " @L" << lineno << "C" << startnamecol
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer: namestr=" << namestr << " @L" << lineno << "C" << startnamecol
                     << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer/name"));
       _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr,
                  Rps_ObjectRef::Fail_When_Missing);
       if (_f.oblex)
         {
-          RPS_DEBUG_LOG(REPL, "rps_repl_lexer object " << _f.oblex << " colno=" << colno
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer => object " << _f.oblex << " colno=" << colno
                         << " named " << namestr);
           return Rps_TwoValues(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ), //object∈class
                                _f.oblex);
         }
       else
-        RPS_DEBUG_LOG(REPL, "rps_repl_lexer new namestr=" << namestr);
+        RPS_DEBUG_LOG(REPL, "rps_repl_lexer: new namestr=" << namestr);
       /// some new symbol
       if (isalpha(namestr[0]))
         {
           _f.semval = Rps_StringValue(namestr);
-          RPS_DEBUG_LOG(REPL, "rps_repl_lexer new name " << namestr << " colno=" << colno << " semval=" << _f.semval);
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer => new name " << namestr << " colno=" << colno << " semval=" << _f.semval);
           return Rps_TwoValues(RPS_ROOT_OB(_36I1BY2NetN03WjrOv), //symbol∈class
                                _f.semval);
         }
@@ -621,7 +621,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       {
         int oldcol = colno;
         colno = startnamecol;
-        RPS_DEBUG_LOG(REPL, "rps_repl_lexer bad namestr " << namestr << " line " << lineno << ", column " << colno
+        RPS_DEBUG_LOG(REPL, "rps_repl_lexer: bad namestr " << namestr << " line " << lineno << ", column " << colno
                       << " oldcol " << oldcol);
         RPS_WARNOUT("rps_repl_lexer " << input_name << " line " << lineno << ", column " << colno
                     << " : bad name " << linebuf+colno);
@@ -633,7 +633,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
     {
       std::string litstr =
         rps_lex_literal_string(input_name, linebuf, lineno, colno);
-      RPS_DEBUG_LOG(REPL, "rps_repl_lexer colno=" << colno << " literal string:" << Json::Value(litstr));
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer => colno=" << colno << " literal string:" << Json::Value(litstr));
       return Rps_TwoValues(RPS_ROOT_OB(_62LTwxwKpQ802SsmjE), //string∈class
                            litstr);
     }
@@ -644,13 +644,13 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
     {
       std::string litstr =
         rps_lex_raw_literal_string(&_, inp, input_name, &linebuf, lineno, colno);
-      RPS_DEBUG_LOG(REPL, "rps_repl_lexer colno=" << colno << " multiline literal string:" << Json::Value(litstr));
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer => colno=" << colno << " multiline literal string:" << Json::Value(litstr));
       return Rps_TwoValues(RPS_ROOT_OB(_62LTwxwKpQ802SsmjE), //string∈class
                            litstr);
     }
   else if (linebuf[colno] == (char)0)   /// end of line
     {
-      RPS_DEBUG_LOG(REPL, "rps_repl_lexer eol lineno=" << lineno << " colno=" << colno
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer => eol lineno=" << lineno << " colno=" << colno
                     << " inputname=" << input_name << std::endl);
       return Rps_TwoValues{nullptr,nullptr};
     }
@@ -695,7 +695,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                     << ", input_name=" << input_name
                     << " linebuf:" << linebuf);
       _f.chunkv = rps_lex_code_chunk(&_, inp, input_name, &linebuf, lineno, colno);
-      RPS_DEBUG_LOG(REPL, "rps_repl_lexer code chunk " << _f.chunkv
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer => code chunk " << _f.chunkv
                     << " ending lineno#" << lineno
                     << ", colno#" << colno
                     << ", input_name=" << input_name);
@@ -727,7 +727,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
           _f.delimv = paylstrdict->find(delimstr);
           if (_f.delimv)
             {
-              RPS_DEBUG_LOG(REPL, "rps_repl_lexer candidate found delim " << delimstr << " L" << lineno << "C" << startcolno
+              RPS_DEBUG_LOG(REPL, "rps_repl_lexer => delim " << delimstr << " L" << lineno << "C" << startcolno
                             << " as " << _f.delimv);
               colno = endcolno;
               return Rps_TwoValues(RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK), //repl_delimiter∈class
@@ -761,7 +761,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                << " curpos:" << linebuf+colno
                << std::endl
                << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer"));
-#warning unimplemented rps_repl_lexer
+#warning incompletely unimplemented rps_repl_lexer
 } // end of rps_repl_lexer
 
 
