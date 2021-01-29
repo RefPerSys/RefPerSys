@@ -296,7 +296,7 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                   if (_f.cmdparserv.is_closure())
                     {
                       {
-                        RPS_DEBUG_LOG(REPL, "rps_repl_interpret for command " << _f.cmdreplob << " before applying " << _f.cmdparserv
+                        RPS_DEBUG_LOG(REPL, "rps_repl_interpret for command " << _f.cmdreplob << " will apply " << _f.cmdparserv
                                       <<  " @"
                                       << input_name << "L" << startline << "C" << startcol);
                         int nextcol = colno;
@@ -305,6 +305,7 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                         _f.nextlexdatav =  nextlexpair.xtra();
                         RPS_DEBUG_LOG(REPL, "rps_repl_interpret nextlexkind=" << _f.nextlexkindob
                                       << " nextlexdatav=" << _f.nextlexdatav
+                                      << " cmdparserv=" << _f.cmdparserv
                                       << " L"<< lineno << "C" << colno);
                         rps_repl_cmd_lexer_fun = [&](Rps_CallFrame*lexcallframe, unsigned lookahead)
                         {
@@ -318,6 +319,12 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                           while (lookahead < token_deq.size())
                             {
                               {
+                                RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token lookahead=" << lookahead
+                                              << " need lexing since token_deq.size=" << token_deq.size()
+                                              <<  " @"
+                                              << input_name << "L" << startline << "C" << startcol
+                                              << std::endl
+                                              << " curframe:" << Rps_ShowCallFrame(&_));
                                 Rps_TwoValues lexpair = rps_repl_lexer(&_, rps_repl_input,   input_name, linebuf, lineno, colno);
                                 _f.lexkindob = lexpair.main().to_object();
                                 _f.lexdatav = lexpair.xtra();
@@ -339,6 +346,7 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                                            tokenplineno,
                                                            prompt);
                                 });
+                                RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token lextokenv=" << _f.lextokenv);
                                 if (_f.lextokenv)
                                   {
                                     token_deq.push_back(_f.lextokenv);
@@ -351,6 +359,16 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                             << " cmdreplob=" << _f.cmdreplob << " :: " << token_deq[lookahead]);
                               return token_deq[lookahead];
                             };
+                          RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token before applying " << _f.cmdparserv
+                                        << " to cmdreplob=" << _f.cmdreplob
+                                        << " nextlexkindob=" << _f.nextlexkindob
+                                        << " nextlexdatav=" << _f.nextlexdatav
+                                        << " nextcol=" << nextcol
+                                        << std::endl
+                                        <<  " @"
+                                        << input_name << "L" << startline << "C" << startcol
+                                        << std::endl
+                                        << " curframe:" << Rps_ShowCallFrame(&_));
                           Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply4 (&_, _f.cmdreplob, _f.nextlexkindob, _f.nextlexdatav,
                                                    Rps_Value::make_tagged_int(nextcol));
                           rps_repl_cmd_lexer_fun = nullptr;
