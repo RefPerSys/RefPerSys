@@ -53,6 +53,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_DEBUG_LOG(REPL, "REPL command dump CALLED from " << Rps_ShowCallFrame(callerframe));
   static Rps_Id descoid;
   if (!descoid) descoid=Rps_Id("_61pgHb5KRq600RLnKD");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
