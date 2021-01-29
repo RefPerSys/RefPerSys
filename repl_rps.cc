@@ -542,7 +542,9 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
                 << (linebuf?linebuf:"*nil*")
                 << (linebuf?"'":"")
                 << ", lineno=" << lineno << ", colno=" << colno
-                << ", linelen=" << linelen);
+                << ", linelen=" << linelen
+		<< std::endl
+		<<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer/start"));
   while (colno < linelen && isspace(linebuf[colno]))
     colno++;
   ////////////////
