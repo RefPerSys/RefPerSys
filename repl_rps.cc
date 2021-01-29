@@ -356,6 +356,12 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                           rps_repl_cmd_lexer_fun = nullptr;
                           _f.parsmainv = parspair.main();
                           _f.parsxtrav = parspair.xtra();
+                          RPS_DEBUG_LOG(REPL, "rps_repl_interpret for command " << _f.cmdreplob << " after applying " << _f.cmdparserv
+                                        << " -> parsmainv=" << _f.parsmainv
+                                        << ", parsxtrav=" << _f.parsxtrav
+                                        << std::endl
+                                        <<  " @"
+                                        << input_name << "L" << startline << "C" << startcol);
                         };
                         RPS_DEBUG_LOG(REPL, "rps_repl_interpret cmdreplob=" << _f.cmdreplob
                                       << " parsmainv=" << _f.parsmainv
@@ -373,9 +379,9 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
 
                       }
                     } // end if _f.cmdparserv.is_closure()
-		  else if (_f.cmdparserv)
-		    RPS_WARNOUT("rps_repl_interpret non closure command parser"
-				<< std::endl << "cmdreplob=" << _f.cmdreplob
+                  else if (_f.cmdparserv)
+                    RPS_WARNOUT("rps_repl_interpret non closure command parser"
+                                << std::endl << "cmdreplob=" << _f.cmdreplob
                                 << " cmdparserv=" << _f.cmdparserv << " @"
                                 << input_name << "L" << startline << "C" << startcol
                                 << std::endl
