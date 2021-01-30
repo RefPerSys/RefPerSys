@@ -295,8 +295,8 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                 << " curframe:" << Rps_ShowCallFrame(&_));
                   if (_f.cmdparserv.is_closure())
                     {
-                        int nextcol = -1;
-		      /// lex the next token
+                      int nextcol = -1;
+                      /// lex the next token
                       {
                         RPS_DEBUG_LOG(REPL, "rps_repl_interpret for command " << _f.cmdreplob << " will apply " << _f.cmdparserv
                                       <<  " @"
@@ -309,96 +309,96 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                       << " nextlexdatav=" << _f.nextlexdatav
                                       << " cmdparserv=" << _f.cmdparserv
                                       << " L"<< lineno << "C" << colno);
-		      }
-		      rps_repl_cmd_lexer_fun =
-			[&](Rps_CallFrame*lexcallframe, unsigned lookahead)
-			{
-			  if (lookahead < token_deq.size())
-			    {
-			      RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token lookahead=" << lookahead
-					    << " cmdreplob=" << _f.cmdreplob
-					    << " :: " << token_deq[lookahead]);
-			      return token_deq[lookahead];
-			    }
-			  while (lookahead < token_deq.size())
-			    {
-			      {
-				RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token lookahead=" << lookahead
-					      << " need lexing since token_deq.size=" << token_deq.size()
-					      <<  " @"
-					      << input_name << "L" << startline << "C" << startcol
-					      << std::endl
-					      << " curframe:" << Rps_ShowCallFrame(&_));
-				Rps_TwoValues lexpair = rps_repl_lexer(&_, rps_repl_input,   input_name, linebuf, lineno, colno);
-				_f.lexkindob = lexpair.main().to_object();
-				_f.lexdatav = lexpair.xtra();
-				if (!_f.lexkindob)
-				  return Rps_Value{nullptr};
-				_f.lextokenv
-				  = Rps_LexTokenZone::tokenize(&_,  rps_repl_input,   input_name, &linebuf, lineno, colno,
-							       [&](Rps_CallFrame*tokencallframe,
-								   std::istream*tokeninp,
-								   const char*tokeninputname,
-								   const char**tokenplinebuf,
-								   int*tokenplineno)
-							       {
-								 return
-								   rps_repl_get_next_line(tokencallframe,
-											  tokeninp,
-											  tokeninputname,
-											  tokenplinebuf,
-											  tokenplineno,
-											  prompt);
-							       });
-				RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token lextokenv=" << _f.lextokenv);
-				if (_f.lextokenv)
-				  {
-				    token_deq.push_back(_f.lextokenv);
-				  }
-				else
-				  return Rps_Value(nullptr);
-			      };
-			      RPS_ASSERT(lookahead >= token_deq.size());
-			      RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token lookahead=" << lookahead
-					    << " cmdreplob=" << _f.cmdreplob << " :: " << token_deq[lookahead]);
-			      return token_deq[lookahead];
-			    };
-			  RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token before applying " << _f.cmdparserv
-					<< " to cmdreplob=" << _f.cmdreplob
-					<< " nextlexkindob=" << _f.nextlexkindob
-					<< " nextlexdatav=" << _f.nextlexdatav
-					<< " nextcol=" << nextcol
-					<< std::endl
-					<<  " @"
-					<< input_name << "L" << startline << "C" << startcol
-					<< std::endl
-					<< " curframe:" << Rps_ShowCallFrame(&_));
-			  Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply4 (&_, _f.cmdreplob, _f.nextlexkindob, _f.nextlexdatav,
-													Rps_Value::make_tagged_int(nextcol));
-			  rps_repl_cmd_lexer_fun = nullptr;
-			  _f.parsmainv = parspair.main();
-			  _f.parsxtrav = parspair.xtra();
-			  RPS_DEBUG_LOG(REPL, "rps_repl_interpret for command " << _f.cmdreplob << " after applying " << _f.cmdparserv
-					<< " -> parsmainv=" << _f.parsmainv
-					<< ", parsxtrav=" << _f.parsxtrav
-					<< std::endl
-					<<  " @"
-					<< input_name << "L" << startline << "C" << startcol);
-			}; // end C++ closure for  rps_repl_cmd_lexer_fun
-		      RPS_DEBUG_LOG(REPL, "rps_repl_interpret cmdreplob=" << _f.cmdreplob
-				    << " parsmainv=" << _f.parsmainv
-				    << " parsxtrav=" << _f.parsxtrav
-				    << std::endl
-				    << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/parsed-command"));
-		      if (_f.parsmainv)
-			{
-			  return;
-			}
-		      else
-			RPS_WARNOUT("rps_repl_interpret failed to parse command "
-				    << _f.cmdreplob << " cmdparserv=" << _f.cmdparserv
-				    <<  " @"
-				    << input_name << "L" << startline << "C" << startcol);
+                      }
+                      rps_repl_cmd_lexer_fun =
+                        [&](Rps_CallFrame*lexcallframe, unsigned lookahead)
+                      {
+                        if (lookahead < token_deq.size())
+                          {
+                            RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token lookahead=" << lookahead
+                                          << " cmdreplob=" << _f.cmdreplob
+                                          << " :: " << token_deq[lookahead]);
+                            return token_deq[lookahead];
+                          }
+                        while (lookahead < token_deq.size())
+                          {
+                            {
+                              RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token lookahead=" << lookahead
+                                            << " need lexing since token_deq.size=" << token_deq.size()
+                                            <<  " @"
+                                            << input_name << "L" << startline << "C" << startcol
+                                            << std::endl
+                                            << " curframe:" << Rps_ShowCallFrame(&_));
+                              Rps_TwoValues lexpair = rps_repl_lexer(&_, rps_repl_input,   input_name, linebuf, lineno, colno);
+                              _f.lexkindob = lexpair.main().to_object();
+                              _f.lexdatav = lexpair.xtra();
+                              if (!_f.lexkindob)
+                                return Rps_Value{nullptr};
+                              _f.lextokenv
+                                = Rps_LexTokenZone::tokenize(&_,  rps_repl_input,   input_name, &linebuf, lineno, colno,
+                                                             [&](Rps_CallFrame*tokencallframe,
+                                                                 std::istream*tokeninp,
+                                                                 const char*tokeninputname,
+                                                                 const char**tokenplinebuf,
+                                                                 int*tokenplineno)
+                              {
+                                return
+                                  rps_repl_get_next_line(tokencallframe,
+                                                         tokeninp,
+                                                         tokeninputname,
+                                                         tokenplinebuf,
+                                                         tokenplineno,
+                                                         prompt);
+                              });
+                              RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token lextokenv=" << _f.lextokenv);
+                              if (_f.lextokenv)
+                                {
+                                  token_deq.push_back(_f.lextokenv);
+                                }
+                              else
+                                return Rps_Value(nullptr);
+                            };
+                            RPS_ASSERT(lookahead >= token_deq.size());
+                            RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token lookahead=" << lookahead
+                                          << " cmdreplob=" << _f.cmdreplob << " :: " << token_deq[lookahead]);
+                            return token_deq[lookahead];
+                          };
+                        RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token before applying " << _f.cmdparserv
+                                      << " to cmdreplob=" << _f.cmdreplob
+                                      << " nextlexkindob=" << _f.nextlexkindob
+                                      << " nextlexdatav=" << _f.nextlexdatav
+                                      << " nextcol=" << nextcol
+                                      << std::endl
+                                      <<  " @"
+                                      << input_name << "L" << startline << "C" << startcol
+                                      << std::endl
+                                      << " curframe:" << Rps_ShowCallFrame(&_));
+                        Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply4 (&_, _f.cmdreplob, _f.nextlexkindob, _f.nextlexdatav,
+                                                 Rps_Value::make_tagged_int(nextcol));
+                        rps_repl_cmd_lexer_fun = nullptr;
+                        _f.parsmainv = parspair.main();
+                        _f.parsxtrav = parspair.xtra();
+                        RPS_DEBUG_LOG(REPL, "rps_repl_interpret for command " << _f.cmdreplob << " after applying " << _f.cmdparserv
+                                      << " -> parsmainv=" << _f.parsmainv
+                                      << ", parsxtrav=" << _f.parsxtrav
+                                      << std::endl
+                                      <<  " @"
+                                      << input_name << "L" << startline << "C" << startcol);
+                      }; // end C++ closure for  rps_repl_cmd_lexer_fun
+                      RPS_DEBUG_LOG(REPL, "rps_repl_interpret cmdreplob=" << _f.cmdreplob
+                                    << " parsmainv=" << _f.parsmainv
+                                    << " parsxtrav=" << _f.parsxtrav
+                                    << std::endl
+                                    << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/parsed-command"));
+                      if (_f.parsmainv)
+                        {
+                          return;
+                        }
+                      else
+                        RPS_WARNOUT("rps_repl_interpret failed to parse command "
+                                    << _f.cmdreplob << " cmdparserv=" << _f.cmdparserv
+                                    <<  " @"
+                                    << input_name << "L" << startline << "C" << startcol);
 
                     } // end if _f.cmdparserv.is_closure()
                   else if (_f.cmdparserv)
