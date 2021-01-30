@@ -1741,7 +1741,11 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
 {
   char threadbfr[24];
   memset(threadbfr, 0, sizeof (threadbfr));
-  pthread_getname_np(pthread_self(), threadbfr, sizeof (threadbfr) - 1);
+  bool ismainth = rps_is_main_thread();
+  if (!ismainth)
+    pthread_getname_np(pthread_self(), threadbfr, sizeof (threadbfr) - 1);
+  else
+    strcpy(threadbfr, "main-thread");
   fflush(nullptr);
   //
   char tmbfr[64];
@@ -1780,6 +1784,10 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
     //
     char datebfr[48];
     memset(datebfr, 0, sizeof (datebfr));
+    char debugcstr[16];
+    memset (debugcstr, 0, sizeof(debugcstr));
+    if (!rps_debug_level(dbgopt).empty())
+      strncpy(debugcstr, rps_debug_level(dbgopt).c_str(), sizeof(debugcstr));
     //
 #define RPS_DEBUG_DATE_PERIOD 64
     if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
@@ -1789,15 +1797,23 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
     //
     if (rps_syslog_enabled)
       {
-        syslog(RPS_DEBUG_LOG_LEVEL, "RPS-DEBUG %7s <%s:%d> @%s:%d %s %s",
-               rps_debug_level(dbgopt).c_str(), threadbfr,
-               static_cast<int>(rps_thread_id()), fname, fline, tmbfr, msg);
+        if (ismainth)
+          syslog(RPS_DEBUG_LOG_LEVEL, "RPS-DEBUG %7s <main-thr> @%s:%d %s %s",
+                 debugcstr,fname, fline, tmbfr, msg);
+        else
+          syslog(RPS_DEBUG_LOG_LEVEL, "RPS-DEBUG %7s <%s:%d> @%s:%d %s %s",
+                 debugcstr, threadbfr,
+                 static_cast<int>(rps_thread_id()), fname, fline, tmbfr, msg);
       }
     else if (rps_debug_file)
       {
-        fprintf(rps_debug_file, "RPS DEBUG %s <%s:%d>",
-                rps_debug_level(dbgopt).c_str(), threadbfr,
-                static_cast<int>(rps_thread_id()));
+        if (ismainth)
+          fprintf(rps_debug_file, "RPS DEBUG %7s <main-thr>",
+                  debugcstr);
+        else
+          fprintf(rps_debug_file, "RPS DEBUG %7s <%s:%d>",
+                  debugcstr, threadbfr,
+                  static_cast<int>(rps_thread_id()));
         fprintf(rps_debug_file, " %s:%d %s %s\n",
                 fname, (fline>0)?fline:(-fline),
                 tmbfr, msg);
@@ -1815,12 +1831,18 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
         bool ontty = isatty(STDERR_FILENO);
         if (fline<0 || strchr(msg, '\n'))
           fputc('\n', stderr);
-        fprintf(stderr, "%sRPS DEBUG %7s%s <%s:%d> %s@%s:%d%s %s\n%s\n",
-                ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
-                ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
-                rps_debug_level(dbgopt).c_str(), threadbfr,
-                static_cast<int>(rps_thread_id()),
-                ontty?RPS_TERMINAL_ITALICS_ESCAPE:"",
+        if (ismainth)
+          fprintf(stderr, "%sRPS DEBUG %7s%s <main-thr>",
+                  ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
+                  debugcstr,
+                  ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
+                  ontty?RPS_TERMINAL_ITALICS_ESCAPE:"");
+        else
+          fprintf(stderr, "%sRPS DEBUG %7s%s",
+                  ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
+                  debugcstr,
+                  ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+        fprintf(stderr, "%s@%s:%d%s %s\n%s\n",
                 fname, (fline>0)?fline:(-fline),
                 ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
                 tmbfr, msg);
