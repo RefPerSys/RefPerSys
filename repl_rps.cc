@@ -428,7 +428,10 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
         };
     }
   else
-    RPS_WARNOUT("rps_repl_interpret no line in " << input_name << "L" << lineno);
+    RPS_WARNOUT("rps_repl_interpret no line in " << input_name
+                << "L" << lineno
+                << " called from "
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/noline"));
   RPS_FATALOUT("unimplemented rps_repl_interpret frame=" << std::endl
                << Rps_ShowCallFrame(&_)
                << " inp=" << inp << " input_name=" << input_name
