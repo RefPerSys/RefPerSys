@@ -828,6 +828,7 @@ public:
       zob = nullptr;
     _optr = zob;
   };
+  //////// in Rps_ObjectRef....
   inline bool operator == (const Rps_ObjectRef& oth) const;
   inline bool operator != (const Rps_ObjectRef& oth) const;
   inline bool operator <= (const Rps_ObjectRef& oth) const;
