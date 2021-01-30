@@ -102,9 +102,35 @@ Rps_ObjectZone::payload_type_name(void) const
 } // end Rps_ObjectZone::payload_type_name
 
 void
-Rps_ObjectZone::val_output(std::ostream&out, unsigned int) const
+Rps_ObjectZone::val_output(std::ostream&out, unsigned int depth) const
 {
   out << oid().to_string();
+  if (depth<2)
+    {
+      std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
+      out << "⟦"; // U+27E6 MATHEMATICAL LEFT WHITE SQUARE BRACKET
+      auto namit = ob_attrs.find(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name∈named_attribute);
+      if (namit != ob_attrs.end())
+        {
+          Rps_Value namv = namit->second;
+          if (namv.is_string())
+            {
+              out << "⏵"; // U+23F5 BLACK MEDIUM RIGHT-POINTING TRIANGLE
+              out << namv.as_cstring();
+            }
+        }
+      auto obcl = ob_class.load();
+      if (obcl)
+        {
+          auto obclpayl = obcl->get_dynamic_payload<Rps_PayloadClassInfo>();
+          if (obclpayl)
+            {
+              out << "∈"; //U+2208 ELEMENT OF
+              out << obclpayl->class_name_str();
+            }
+        };
+      out << "⟧"; // U+27E7 MATHEMATICAL RIGHT WHITE SQUARE BRACKET
+    }
 } // end Rps_ObjectZone::val_output
 
 void
