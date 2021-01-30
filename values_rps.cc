@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2020 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2021 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -503,7 +503,8 @@ Rps_ClosureValue::apply_ilist(Rps_CallFrame*callerframe, const std::initializer_
 void
 Rps_ClosureZone::val_output(std::ostream&out, unsigned int depth) const
 {
-  out << "%" << conn();
+  out << "%";
+  conn().output(out);
   if (depth > Rps_Value::max_output_depth)
     {
       out << "(...)";
