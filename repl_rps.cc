@@ -161,9 +161,12 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
                                  Rps_ObjectRef::root_space());
   RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
                 << " -> obfun=" << _f.obfun);
+  _f.strnamev = Rps_StringValue(std::string{commandname} + "°replcfun");
   _f.closv = Rps_ClosureValue(_f.obfun, {_f.obcommand,_f.obsymb});
   _f.obfun->put_attr(RPS_ROOT_OB(_8CncrUdoSL303T5lOK), //repl_command∈class
                      _f.obcommand);
+  _f.obfun->put_attr(Rps_ObjectRef::the_name_object(),
+		      _f.strnamev);
   _f.obfun->put_applying_function(rpsapply_repl_not_implemented);
   RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
                 << " -> closv=" << _f.closv);
