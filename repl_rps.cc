@@ -384,6 +384,11 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                       << std::endl
                                       <<  " @"
                                       << input_name << "L" << startline << "C" << startcol);
+                        _f.lextokenv = nullptr;
+                        RPS_WARNOUT(" C++ closure for  rps_repl_cmd_lexer_fun should return something "
+                                    << RPS_FULL_BACKTRACE_HERE(1, "C++ closure/ps_repl_cmd_lexer_fun"));
+                        return _f.lextokenv;
+#warning C++ closure for  rps_repl_cmd_lexer_fun should return some Rps_LexTokenValue
                       }; // end C++ closure for  rps_repl_cmd_lexer_fun
                       RPS_DEBUG_LOG(REPL, "rps_repl_interpret cmdreplob=" << _f.cmdreplob
                                     << " parsmainv=" << _f.parsmainv
