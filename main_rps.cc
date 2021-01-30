@@ -1742,11 +1742,20 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
   char threadbfr[24];
   memset(threadbfr, 0, sizeof (threadbfr));
   bool ismainth = rps_is_main_thread();
-  if (!ismainth)
-    pthread_getname_np(pthread_self(), threadbfr, sizeof (threadbfr) - 1);
+  if (ismainth)
+    strcpy(threadbfr, "▬!$"); //U+25AC BLACK RECTANGLE
   else
-    strcpy(threadbfr, "main-thread");
-  fflush(nullptr);
+    {
+      char thrbuf[16];
+      memset (thrbuf, 0, sizeof(thrbuf));
+      pthread_getname_np(pthread_self(), thrbuf, sizeof(thrbuf)-1);
+      snprintf(threadbfr, sizeof(threadbfr),
+               // U+2045 LEFT SQUARE BRACKET WITH QUILL
+               "⁅%s:%d⁆"
+               // U+2046 RIGHT SQUARE BRACKET WITH QUILL
+               , thrbuf,  static_cast<int>(rps_thread_id()));
+    }
+  RPS_ASSERT(threadbfr[0] != (char)0);
   //
   char tmbfr[64];
   memset(tmbfr, 0, sizeof (tmbfr));
@@ -1797,23 +1806,13 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
     //
     if (rps_syslog_enabled)
       {
-        if (ismainth)
-          syslog(RPS_DEBUG_LOG_LEVEL, "RPS-DEBUG %7s <main-thr> @%s:%d %s %s",
-                 debugcstr,fname, fline, tmbfr, msg);
-        else
-          syslog(RPS_DEBUG_LOG_LEVEL, "RPS-DEBUG %7s <%s:%d> @%s:%d %s %s",
-                 debugcstr, threadbfr,
-                 static_cast<int>(rps_thread_id()), fname, fline, tmbfr, msg);
+        syslog(RPS_DEBUG_LOG_LEVEL, "RPS-DEBUG %7s %s @%s:%d %s %s",
+               debugcstr, threadbfr, fname, fline, tmbfr, msg);
       }
     else if (rps_debug_file)
       {
-        if (ismainth)
-          fprintf(rps_debug_file, "RPS DEBUG %7s <main-thr>",
-                  debugcstr);
-        else
-          fprintf(rps_debug_file, "RPS DEBUG %7s <%s:%d>",
-                  debugcstr, threadbfr,
-                  static_cast<int>(rps_thread_id()));
+        fprintf(rps_debug_file, "RPS DEBUG %7s %s",
+                debugcstr, threadbfr);
         fprintf(rps_debug_file, " %s:%d %s %s\n",
                 fname, (fline>0)?fline:(-fline),
                 tmbfr, msg);
@@ -1831,18 +1830,13 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
         bool ontty = isatty(STDERR_FILENO);
         if (fline<0 || strchr(msg, '\n'))
           fputc('\n', stderr);
-        if (ismainth)
-          fprintf(stderr, "%sRPS DEBUG %7s%s <main-thr>",
-                  ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
-                  debugcstr,
-                  ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
-                  ontty?RPS_TERMINAL_ITALICS_ESCAPE:"");
-        else
-          fprintf(stderr, "%sRPS DEBUG %7s%s",
-                  ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
-                  debugcstr,
-                  ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
+        fprintf(stderr, "%sRPS DEBUG %7s%s %s",
+                ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
+                debugcstr,
+                ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
+                threadbfr);
         fprintf(stderr, "%s@%s:%d%s %s\n%s\n",
+                ontty?RPS_TERMINAL_ITALICS_ESCAPE:"",
                 fname, (fline>0)?fline:(-fline),
                 ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
                 tmbfr, msg);
@@ -1851,7 +1845,8 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
           {
             fprintf(stderr, "%sRPS DEBUG %04ld ~ %s *^*^*%s\n",
-                    ontty?RPS_TERMINAL_BOLD_ESCAPE:"", ndbg, datebfr,
+                    ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
+                    ndbg, datebfr,
                     ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
           }
         //
