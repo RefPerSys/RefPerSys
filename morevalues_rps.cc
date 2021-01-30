@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2020 The Reflective Persistent System Team
+ *      © Copyright 2020 - 2021 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -77,7 +77,7 @@ Rps_InstanceZone::val_output(std::ostream& outs, unsigned depth) const
   outs << "*";
   if (is_transient())
     outs << "¡";  //U+00A1 INVERTED EXCLAMATION MARK
-  conn()->val_output(outs,0);
+  conn().output(outs);
   if (depth==0)
     {
       if (metarank() !=0 || metaobject())
