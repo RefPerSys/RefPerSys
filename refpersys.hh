@@ -2042,7 +2042,9 @@ public:
 }; // end class Rps_LexTokenZone
 
 
-
+/// a C++ closure for getting the REPL lexical token.... with lookahead=0, next token, with lookahead=1 the second-next token
+extern "C" std::function<Rps_LexTokenValue(Rps_CallFrame*,unsigned)> rps_repl_cmd_lexer_fun;
+extern "C" bool rps_repl_stopped;
 
 //////////////////////////////////////////////////////////// object zones
 
