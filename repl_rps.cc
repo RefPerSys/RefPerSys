@@ -419,6 +419,8 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
 						      prompt);
                       }; // end C++ closure for  rps_repl_cmd_lexer_fun
                       RPS_DEBUG_LOG(REPL, "rps_repl_interpret cmdreplob=" << _f.cmdreplob
+				    << " cmdparserv=" << _f.cmdparserv << " @"
+				    << input_name << "L" << startline << "C" << startcol
                                     << " parsmainv=" << _f.parsmainv
                                     << " parsxtrav=" << _f.parsxtrav
                                     << std::endl
