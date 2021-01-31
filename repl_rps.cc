@@ -50,8 +50,14 @@ extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, co
 static Rps_CallFrame*rps_readline_callframe;
 std::vector<std::string> rps_completion_vect;
 
-/// a C++ closure for getting the REPL lexical token.... with lookahead=0, next token, with lookahead=1 the second-next token
+/// a C++ closure for getting the REPL lexical token.... with
+/// lookahead=0, next token, with lookahead=1 the second-next token
 std::function<Rps_LexTokenValue(Rps_CallFrame*,unsigned)> rps_repl_cmd_lexer_fun;
+
+/// these REPL lexical tokens are looked ahead, so we need a function
+/// to consume them... Returning true when the leftmost token is
+/// forgotten
+std::function<bool(Rps_CallFrame*)> rps_repl_consume_cmd_token_fun;
 
 bool rps_repl_stopped;
 
@@ -315,6 +321,7 @@ rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
                 << " curframe:" << Rps_ShowCallFrame(&_));
   Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply1 (&_, _f.cmdreplob);
   rps_repl_cmd_lexer_fun = nullptr;
+  rps_repl_consume_cmd_token_fun = nullptr;
   _f.parsmainv = parspair.main();
   _f.parsxtrav = parspair.xtra();
   RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer for command " << _f.cmdreplob << " after applying " << _f.cmdparserv
@@ -326,6 +333,8 @@ rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
                 << input_name << "L" << startline << "C" << startcol);
   return _f.lextokenv;
 } // end rps_repl_cmd_tokenizer
+
+
 
 void
 rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno)
@@ -408,16 +417,31 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                       rps_repl_cmd_lexer_fun =
                         [&](Rps_CallFrame*lexcallframe, unsigned lookahead)
                       {
-                        RPS_DEBUG_LOG(REPL, "rps_repl_interpret calling rps_repl_cmd_tokenizer from curframe:"
+                        RPS_DEBUG_LOG(REPL, "rps_repl_interpret/rps_repl_cmd_lexer_fun calling rps_repl_cmd_tokenizer from curframe:"
                                       << Rps_ShowCallFrame(&_)
                                       << std::endl << "... cmdreplob=" << _f.cmdreplob
                                       << std::endl << "... cmdparserv=" << _f.cmdparserv
                                       << std::endl << "... lexcallframe:" <<  Rps_ShowCallFrame(lexcallframe)
-                                      << std::endl << "... lookahead=" << lookahead);
+                                      << std::endl << "... lookahead=" << lookahead
+                                      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/rps_repl_cmd_lexer_fun"));
                         return rps_repl_cmd_tokenizer(lexcallframe, _f.cmdreplob, _f.cmdparserv,
                                                       lookahead, token_deq, input_name, linebuf, lineno, colno,
                                                       prompt);
-                      }; // end C++ closure for  rps_repl_cmd_lexer_fun
+                      }; // end C++ closure for  rps_repl_interpret/rps_repl_cmd_lexer_fun
+                      rps_repl_consume_cmd_token_fun =
+                        [&](Rps_CallFrame*tokcallframe)
+                      {
+                        RPS_DEBUG_LOG(REPL,"rps_repl_interpret/rps_repl_consume_cmd_token_fun start from curframe:"
+                                      << Rps_ShowCallFrame(&_)
+                                      << " token_deq.size=" << token_deq.size()
+                                      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/rps_repl_consume_cmd_token_fun"));
+                        if (token_deq.empty())
+                          return false;
+                        else
+                          token_deq.pop_front();
+                        return true;
+                      }; // end C++ closure for rps_repl_interpret/rps_repl_consume_cmd_token_fun
+                      //////
                       RPS_DEBUG_LOG(REPL, "rps_repl_interpret cmdreplob=" << _f.cmdreplob
                                     << " cmdparserv=" << _f.cmdparserv << " @"
                                     << input_name << "L" << startline << "C" << startcol
