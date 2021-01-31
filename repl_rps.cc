@@ -236,8 +236,6 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                            Rps_Value cmdparserv;
                            Rps_Value parsmainv;
                            Rps_Value parsxtrav;
-                           Rps_Value nextlexkindob;
-                           Rps_Value nextlexdatav;
                 );
   // a double ended queue to keep the lexical tokens
   std::deque<Rps_Value> token_deq;
@@ -298,21 +296,6 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                 << " curframe:" << Rps_ShowCallFrame(&_));
                   if (_f.cmdparserv.is_closure())
                     {
-                      int nextcol = -1;
-                      /// lex the next token
-                      {
-                        RPS_DEBUG_LOG(REPL, "rps_repl_interpret for command " << _f.cmdreplob << " will apply " << _f.cmdparserv
-                                      <<  " @"
-                                      << input_name << "L" << startline << "C" << startcol);
-                        nextcol = colno;
-                        Rps_TwoValues nextlexpair =  rps_repl_lexer(&_, rps_repl_input,   input_name, linebuf, lineno, colno);
-                        _f.nextlexkindob = nextlexpair.main().to_object();
-                        _f.nextlexdatav =  nextlexpair.xtra();
-                        RPS_DEBUG_LOG(REPL, "rps_repl_interpret nextlexkind=" << _f.nextlexkindob
-                                      << " nextlexdatav=" << _f.nextlexdatav
-                                      << " cmdparserv=" << _f.cmdparserv
-                                      << " L"<< lineno << "C" << colno);
-                      }
                       rps_repl_cmd_lexer_fun =
                         [&](Rps_CallFrame*lexcallframe, unsigned lookahead)
                       {
@@ -368,30 +351,23 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                           };
                         RPS_DEBUG_LOG(REPL, "rps_repl_interpret/token before applying " << _f.cmdparserv
                                       << " to cmdreplob=" << _f.cmdreplob
-                                      << " nextlexkindob=" << _f.nextlexkindob
-                                      << " nextlexdatav=" << _f.nextlexdatav
-                                      << " nextcol=" << nextcol
                                       << std::endl
                                       <<  " @"
                                       << input_name << "L" << startline << "C" << startcol
                                       << std::endl
                                       << " curframe:" << Rps_ShowCallFrame(&_));
-                        Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply4 (&_, _f.cmdreplob, _f.nextlexkindob, _f.nextlexdatav,
-                                                 Rps_Value::make_tagged_int(nextcol));
+                        Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply1 (&_, _f.cmdreplob);
                         rps_repl_cmd_lexer_fun = nullptr;
                         _f.parsmainv = parspair.main();
                         _f.parsxtrav = parspair.xtra();
                         RPS_DEBUG_LOG(REPL, "rps_repl_interpret for command " << _f.cmdreplob << " after applying " << _f.cmdparserv
                                       << " -> parsmainv=" << _f.parsmainv
                                       << ", parsxtrav=" << _f.parsxtrav
+				      << " lextokenv=" << _f.lextokenv
                                       << std::endl
                                       <<  " @"
                                       << input_name << "L" << startline << "C" << startcol);
-                        _f.lextokenv = nullptr;
-                        RPS_WARNOUT(" C++ closure for  rps_repl_cmd_lexer_fun should return something "
-                                    << RPS_FULL_BACKTRACE_HERE(1, "C++ closure/ps_repl_cmd_lexer_fun"));
                         return _f.lextokenv;
-#warning C++ closure for  rps_repl_cmd_lexer_fun should return some Rps_LexTokenValue
                       }; // end C++ closure for  rps_repl_cmd_lexer_fun
                       RPS_DEBUG_LOG(REPL, "rps_repl_interpret cmdreplob=" << _f.cmdreplob
                                     << " parsmainv=" << _f.parsmainv
