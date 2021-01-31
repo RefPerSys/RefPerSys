@@ -47,9 +47,9 @@ extern "C" rps_applyingfun_t rpsapply_61pgHb5KRq600RLnKD;
 Rps_TwoValues
 rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                             const Rps_Value arg0,
-                            const Rps_Value arg1,
-                            const Rps_Value arg2,
-                            const Rps_Value arg3,
+                            [[maybe_unused]] const Rps_Value arg1,
+                            [[maybe_unused]] const Rps_Value arg2,
+                            [[maybe_unused]] const Rps_Value arg3,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
@@ -66,7 +66,10 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 );
   _f.closv = _.call_frame_closure();
   RPS_DEBUG_LOG(CMD, "REPL command dump start arg0=" << arg0
-                << " arg1=" << arg1 << " arg2=" << arg2 << " arg3=" << arg3 << std::endl
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) <<std::endl
+		<< " arg2=" << arg2 << " arg3=" << arg3 << std::endl
                 << " callingclos=" << _f.closv
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
@@ -113,6 +116,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   return {nullptr,nullptr};
 } //end of rpsapply_61pgHb5KRq600RLnKD for REPL command dump
 
+
 /* C++ function _7WsQyJK6lty02uz5KT for REPL command show*/
 extern "C" rps_applyingfun_t rpsapply_7WsQyJK6lty02uz5KT;
 Rps_TwoValues
@@ -141,6 +145,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
   return {nullptr,nullptr};
 } //end of rpsapply_7WsQyJK6lty02uz5KT for REPL command show
+
 
 /* C++ function _2TZNwgyOdVd001uasl for REPL command help*/
 extern "C" rps_applyingfun_t rpsapply_2TZNwgyOdVd001uasl;
@@ -320,7 +325,7 @@ extern "C" rps_applyingfun_t rpsapply_55RPnvwSLXz028jyDk;
 Rps_TwoValues
 rpsapply_55RPnvwSLXz028jyDk(Rps_CallFrame*callerframe,
                             const Rps_Value arg0,
-                            const Rps_Value arg1,
+                            [[maybe_unused]] const Rps_Value arg1,
                             [[maybe_unused]] const Rps_Value arg2,
                             [[maybe_unused]] const Rps_Value arg3,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs)
