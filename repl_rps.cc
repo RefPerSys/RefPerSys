@@ -235,15 +235,15 @@ rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
 {
   static long tokencount;
   RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/lexcallframe,
-                           Rps_ObjectRef lexkindob;
-                           Rps_ObjectRef cmdreplob;
-                           Rps_Value cmdparserv;
-                           Rps_Value lexdatav;
-                           Rps_Value lextokenv;
-                           Rps_Value parsmainv;
-                           Rps_Value parsxtrav;
-                );
+		 /*callerframe:*/lexcallframe,
+		 Rps_ObjectRef lexkindob;
+		 Rps_ObjectRef cmdreplob;
+		 Rps_Value cmdparserv;
+		 Rps_Value lexdatav;
+		 Rps_Value lextokenv;
+		 Rps_Value parsmainv;
+		 Rps_Value parsxtrav;
+		 );
   _f.cmdreplob = cmdreplobarg;
   _f.cmdparserv = cmdparserarg;
   int startline = lineno;
@@ -258,17 +258,12 @@ rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
                 << "...curframe:" << Rps_ShowCallFrame(&_)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_cmd_tokenizer"));
-  if (lookahead < token_deq.size())
+  while (lookahead > token_deq.size())
     {
-      RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer lookahead=" << lookahead
-                    << " cmdreplob=" << _f.cmdreplob
-		    /// ◑ U+25D1 CIRCLE WITH RIGHT HALF BLACK
-                    << " :->◑ " << token_deq[lookahead]
-		    << " #" << ++tokencount);
-       return token_deq[lookahead];
-    }
-  while (lookahead < token_deq.size())
-    {
+      RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer§ input_name=" << input_name
+		    << " linebuf=" << linebuf << std::endl
+		    << "... L" << lineno << "C" << colno
+		    << "...lookahead=" << lookahead  << " token_deq.size=" << token_deq.size());
       {
         RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer lookahead=" << lookahead
                       << " need lexing since token_deq.size=" << token_deq.size()
@@ -293,15 +288,15 @@ rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
                                            const char*tokeninputname,
                                            const char**tokenplinebuf,
                                            int*tokenplineno)
-        {
-          return
-            rps_repl_get_next_line(tokencallframe,
-                                   tokeninp,
-                                   tokeninputname,
-                                   tokenplinebuf,
-                                   tokenplineno,
-                                   prompt);
-        });
+				       {
+					 return
+					   rps_repl_get_next_line(tokencallframe,
+								  tokeninp,
+								  tokeninputname,
+								  tokenplinebuf,
+								  tokenplineno,
+								  prompt);
+				       });
         RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer lextokenv=" << _f.lextokenv);
         if (_f.lextokenv)
           {
@@ -314,7 +309,7 @@ rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
       RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer lookahead=" << lookahead
                     << " cmdreplob=" << _f.cmdreplob
 		    << " :->◑ " << token_deq[lookahead]
-		     << " #" << ++tokencount);
+		    << " #" << ++tokencount);
       return token_deq[lookahead];
     };
   RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer before applying " << _f.cmdparserv
