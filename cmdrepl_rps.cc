@@ -73,8 +73,9 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 << " callingclos=" << _f.closv
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_)
-                << std::endl << "**calldepth=" << _.call_frame_depth());
-  RPS_ASSERT(_.call_frame_depth() < 20);
+                << std::endl << "**calldepth=" << _.call_frame_depth()
+		<< std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD/REPL cmd dump"));
+  RPS_ASSERT(_.call_frame_depth() < 10);
   _f.lexval = rps_repl_cmd_lexer_fun(&_, 0);
   RPS_DEBUG_LOG(CMD, "REPL command dump lexval=" << _f.lexval);
   if (_f.lexval.is_object())
@@ -82,6 +83,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   std::string dumpdir;
   if (_f.lexob && _f.lexob->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
     {
+      RPS_DEBUG_LOG(CMD, "REPL command dumping into current directory");
       // dump to current directory
       rps_dump_into(".", &_);
       dumpdir=".";
@@ -91,6 +93,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE)) //string∈class #
     {
       std::string dirstr = _f.lexval.as_cppstring();
+      RPS_DEBUG_LOG(CMD, "REPL command dumping into " << dirstr);
       DIR* dirh = opendir(dirstr.c_str());
       if (dirh)
         {
