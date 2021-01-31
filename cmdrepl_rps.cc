@@ -73,16 +73,18 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 << " callingclos=" << _f.closv
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_)
-		<< std::endl << "**calldepth=" << _.call_frame_depth());
+                << std::endl << "**calldepth=" << _.call_frame_depth());
   RPS_ASSERT(_.call_frame_depth() < 20);
   _f.lexval = rps_repl_cmd_lexer_fun(&_, 0);
   RPS_DEBUG_LOG(CMD, "REPL command dump lexval=" << _f.lexval);
   if (_f.lexval.is_object())
     _f.lexob = _f.lexval.to_object();
+  std::string dumpdir;
   if (_f.lexob && _f.lexob->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
     {
       // dump to current directory
       rps_dump_into(".", &_);
+      dumpdir=".";
       RPS_DEBUG_LOG(CMD, "REPL command dumped into current directory");
       return {_f.lexob, nullptr};
     }
@@ -94,28 +96,34 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
         {
           closedir(dirh);
           rps_dump_into(dirstr.c_str(), &_);
+          dumpdir = dirstr;
         }
       else if (!mkdir(dirstr.c_str(), 0750))
         {
           rps_dump_into(dirstr.c_str(), &_);
+          dumpdir = dirstr;
         }
       else
 #warning rpsapply_61pgHb5KRq600RLnKD should use wordexp(3) on the string
         // see https://man7.org/linux/man-pages/man3/wordexp.3.html
         RPS_WARNOUT("REPL command dump unimplemented into " << dirstr);
     }
-  /*** For the "dump ." command:
-   * arg0 is _2Fy0WfTEAbr03HTthe, the "dump"/∈repl_command
-   * arg1 is _2wdmxJecnFZ02VGGFK, the repl_delimiter∈class
-   * arg2 is _78wsBiJhJj1025DIs1, the dot "."∈repl_delimiter
-   * arg4 is a column number
-   ***/
+  RPS_DEBUG_LOG(CMD, "REPL command dump consuming....");
+  RPS_ASSERT(rps_repl_consume_cmd_token_fun);
+  bool eaten = rps_repl_consume_cmd_token_fun(&_);
+  RPS_DEBUG_LOG(CMD, "REPL command dump eaten= " << (eaten?"true":"false") << " dumpdir=" << dumpdir);
+  if (eaten)
+    return {Rps_StringValue(dumpdir),nullptr};
+  else
+    RPS_WARNOUT("unconsumed REPL token for command dump - dumpdir=" << dumpdir);
 #warning incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump
   RPS_WARNOUT("incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD for REPL command dump") << std::endl
               << " arg0=" << arg0 << " arg1=" << arg1);
   return {nullptr,nullptr};
 } //end of rpsapply_61pgHb5KRq600RLnKD for REPL command dump
+
+
 
 
 /* C++ function _7WsQyJK6lty02uz5KT for REPL command show*/
