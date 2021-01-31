@@ -69,13 +69,12 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 << "∈" << arg0.compute_class(&_)
                 << " arg1=" << arg1
                 << "∈" << arg1.compute_class(&_) <<std::endl
-		<< " arg2=" << arg2 << " arg3=" << arg3 << std::endl
+                << " arg2=" << arg2 << " arg3=" << arg3 << std::endl
                 << " callingclos=" << _f.closv
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
-  _f.replcmdob = arg0.to_object();
-  _f.lexkindob = arg1.to_object();
-  _f.lexval = arg2;
+  _f.lexval = rps_repl_cmd_lexer_fun(&_, 0);
+  RPS_DEBUG_LOG(CMD, "REPL command dump lexval=" << _f.lexval);
   if (_f.lexval.is_object())
     _f.lexob = _f.lexval.to_object();
   if (_f.lexob && _f.lexob->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
