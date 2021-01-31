@@ -57,13 +57,13 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   static Rps_Id descoid;
   if (!descoid) descoid=Rps_Id("_61pgHb5KRq600RLnKD");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-                           callerframe,
-                           Rps_ObjectRef replcmdob;
-                           Rps_ObjectRef lexkindob;
-                           Rps_Value lexval;
-                           Rps_Value closv;
-                           Rps_ObjectRef lexob;
-                );
+		 callerframe,
+		 Rps_ObjectRef replcmdob;
+		 Rps_ObjectRef lexkindob;
+		 Rps_Value lexval;
+		 Rps_Value closv;
+		 Rps_ObjectRef lexob;
+		 );
   _f.closv = _.call_frame_closure();
   RPS_DEBUG_LOG(CMD, "REPL command dump start arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
@@ -81,9 +81,13 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   if (_f.lexval.is_object())
     _f.lexob = _f.lexval.to_object();
   std::string dumpdir;
+  bool eaten=false;
   if (_f.lexob && _f.lexob->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
     {
-      RPS_DEBUG_LOG(CMD, "REPL command dumping into current directory");
+      RPS_DEBUG_LOG(CMD, "REPL command dump dot consuming....");
+      RPS_ASSERT(rps_repl_consume_cmd_token_fun);
+      bool eaten = rps_repl_consume_cmd_token_fun(&_);
+      RPS_DEBUG_LOG(CMD, "REPL command dump dot eaten= " << (eaten?"true":"false"));
       // dump to current directory
       rps_dump_into(".", &_);
       dumpdir=".";
@@ -94,6 +98,9 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
     {
       std::string dirstr = _f.lexval.as_cppstring();
       RPS_DEBUG_LOG(CMD, "REPL command dumping into " << dirstr);
+      RPS_ASSERT(rps_repl_consume_cmd_token_fun);
+      eaten = rps_repl_consume_cmd_token_fun(&_);
+      RPS_DEBUG_LOG(CMD, "REPL command dump into " << dirstr << " eaten= " << (eaten?"true":"false"));
       DIR* dirh = opendir(dirstr.c_str());
       if (dirh)
         {
@@ -111,9 +118,6 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
         // see https://man7.org/linux/man-pages/man3/wordexp.3.html
         RPS_WARNOUT("REPL command dump unimplemented into " << dirstr);
     }
-  RPS_DEBUG_LOG(CMD, "REPL command dump consuming....");
-  RPS_ASSERT(rps_repl_consume_cmd_token_fun);
-  bool eaten = rps_repl_consume_cmd_token_fun(&_);
   RPS_DEBUG_LOG(CMD, "REPL command dump eaten= " << (eaten?"true":"false") << " dumpdir=" << dumpdir);
   if (eaten)
     return {Rps_StringValue(dumpdir),nullptr};
