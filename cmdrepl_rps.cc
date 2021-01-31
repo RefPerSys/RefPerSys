@@ -72,7 +72,9 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 << " arg2=" << arg2 << " arg3=" << arg3 << std::endl
                 << " callingclos=" << _f.closv
                 << " from " << std::endl
-                << Rps_ShowCallFrame(&_));
+                << Rps_ShowCallFrame(&_)
+		<< std::endl << "**calldepth=" << _.call_frame_depth());
+  RPS_ASSERT(_.call_frame_depth() < 20);
   _f.lexval = rps_repl_cmd_lexer_fun(&_, 0);
   RPS_DEBUG_LOG(CMD, "REPL command dump lexval=" << _f.lexval);
   if (_f.lexval.is_object())
