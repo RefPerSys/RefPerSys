@@ -3063,6 +3063,11 @@ public:
   Rps_Value call_frame_state() const { return cfram_state; };
   Rps_ClosureValue call_frame_closure() const { return cfram_clos; };
   void output(std::ostream&out, int depth=0) const;
+  unsigned call_frame_depth(void) const {
+    unsigned d=0;
+    for (Rps_CallFrame const*curf = this; curf && is_good_call_frame(curf); curf=curf->cfram_prev) d++;
+    return d;
+  };
 };				// end class Rps_ProtoCallFrame
 
 class Rps_ShowCallFrame {
