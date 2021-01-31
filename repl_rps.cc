@@ -261,8 +261,9 @@ rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
     {
       RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer lookahead=" << lookahead
                     << " cmdreplob=" << _f.cmdreplob
-                    << " :: " << token_deq[lookahead]);
-      return token_deq[lookahead];
+		    /// ◑ U+25D1 CIRCLE WITH RIGHT HALF BLACK
+                    << " :->◑ " << token_deq[lookahead]);
+       return token_deq[lookahead];
     }
   while (lookahead < token_deq.size())
     {
@@ -309,7 +310,7 @@ rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
       };
       RPS_ASSERT(lookahead >= token_deq.size());
       RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer lookahead=" << lookahead
-                    << " cmdreplob=" << _f.cmdreplob << " :: " << token_deq[lookahead]);
+                    << " cmdreplob=" << _f.cmdreplob << " :->◑ " << token_deq[lookahead]);
       return token_deq[lookahead];
     };
   RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer before applying " << _f.cmdparserv
@@ -327,7 +328,7 @@ rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
   RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer for command " << _f.cmdreplob << " after applying " << _f.cmdparserv
                 << " -> parsmainv=" << _f.parsmainv
                 << ", parsxtrav=" << _f.parsxtrav
-                << " lextokenv=" << _f.lextokenv
+                << " :->◑ " << _f.lextokenv
                 << std::endl
                 <<  " @"
                 << input_name << "L" << startline << "C" << startcol);
