@@ -421,10 +421,12 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                       RPS_DEBUG_LOG(REPL, "rps_repl_interpret cmdreplob=" << _f.cmdreplob
 				    << " cmdparserv=" << _f.cmdparserv << " @"
 				    << input_name << "L" << startline << "C" << startcol
-                                    << " parsmainv=" << _f.parsmainv
-                                    << " parsxtrav=" << _f.parsxtrav
-                                    << std::endl
                                     << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/parsed-command"));
+		      _f.parsmainv = rps_repl_cmd_lexer_fun(&_,0);
+                      RPS_DEBUG_LOG(REPL, "rps_repl_interpret cmdreplob=" << _f.cmdreplob
+				    << " cmdparserv=" << _f.cmdparserv << " @"
+				    << input_name << "L" << startline << "C" << startcol
+				    << " --> parsmainv=" << _f.parsmainv);
                       if (_f.parsmainv)
                         {
                           return;
@@ -481,6 +483,12 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
 Rps_TwoValues
 rps_repl_cmd_lexing(Rps_CallFrame*callframe, unsigned lookahead)
 {
+  RPS_DEBUG_LOG(REPL, "rps_repl_cmd_lexing callframe:"<< std::endl
+		<< Rps_ShowCallFrame(callframe)
+		<< std::endl << "lookahead=" << lookahead
+		<< " rps_repl_cmd_lexer_fun " << (rps_repl_cmd_lexer_fun?"set":"clear")
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_repl_cmd_lexing"));
   if (rps_repl_cmd_lexer_fun)
     return rps_repl_cmd_lexer_fun(callframe,lookahead);
   else
