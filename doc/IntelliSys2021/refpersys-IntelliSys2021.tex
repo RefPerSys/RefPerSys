@@ -1,34 +1,67 @@
 % file IntelliSys2021RefPerSys/refpersys-IntelliSys2021.tex
 %%% https://saiconference.com/IntelliSys2021/CallforPapers#Guidelines
 
+%!  Papers must be in English and not more than 20 pages in length.
+%!  Paper content must be original and relevant to one of the many conference topics.
+%!  Authors are required to ensure accuracy of quotations, citations, diagrams, maps, and tables.
+%!  Figures and tables need to be placed where they are to appear in the text and must be clear and easy to view.
+%!  Papers must follow format according to the downloadable template
+%!
+%!  Review Process
+%!
+%!  The review process will be double-blind.  Therefore, please anonymize
+%!  your submission. This means that all submissions must contain no
+%!  information identifying the author(s) or their organization(s): Do not
+%!  put the author(s) names or affiliation(s) at the start of the paper,
+%!  anonymize citations to and mentions of your own prior work that are
+%!  directly related to your present work, and do not include funding or
+%!  other acknowledgments.
+
 \documentclass{svproc}
 % to typeset URLs, URIs, and DOIs
 \usepackage{url}
 \usepackage{relsize}
 \def\UrlFont{\rmfamily}
 
+\bibliographystyle{spbasic}
+
 \begin{document}
 
 \input{generated-intellisys-commands}
 
+\newcommand{\RefPerSys}[0]{{\textit{\textsc{RefPerSys}}}}
+
 \mainmatter              % start of a contribution
 %
-\title{Design of a Reflexive Persistent System for Symbolic Artificial Intelligence}
-\titlerunning{RefPerSys}
-\author{First Author \and Second author}
-\authorrunning{RefPerSys authors}
+\title{Design and Roadmap for a Reflexive Persistent System for
+  Symbolic Artificial Intelligence} \titlerunning{\RefPerSys}
+\author{First Author \and Second author} \authorrunning{RefPerSys
+  authors}
 
-\institute{RefPerSys organization}
+\institute{RefPerSys informal team}
 
 \maketitle
 
 \begin{abstract}
-  The \textit{RefPerSys} software is a reflexive persistent software for Linux
+  The \RefPerSys{} software is a reflexive persistent software project, under development, for Linux.
 \end{abstract}
+
+\textbf{tracks}: expert systems; agents and multi-agent systems.
 
 \section{introduction}
 
-A Reflexive Persistent
+A \textsc{\textbf{Ref}}lexive \textsc{\textbf{Per}}sistent software
+\textsc{\textbf{Sys}}tem can be extended to combine some ``expert
+system'' inference engine, with some rules and meta-rules, reified as
+mutable objects in a persistent memory heap. We describe in this paper
+some ongoing work, and major design ideas, about a free software
+symbolic artificial intelligence prototype system targetted for Linux
+workstations. A major source of inspiration for \RefPerSys{} are the
+\textsc{Malice} then \textsc{Caia} software systems
+described in
+\cite{Pitrat:1996:FGCS, Pitrat:2009:AST,  Pitrat:2009:ArtifBeings}
+
+\bibliography{bib-refpersys}
 
 %%% for a draft that should be acceptable
 \begin{flushright}
