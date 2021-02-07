@@ -1503,7 +1503,7 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
     out<<"°object";
   else if (lex_kind == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK)) //repl_delimiter∈class
     out<<"°delim";
-  else if (lex_kind == nullptr)
+  else if (!lex_kind)
     out<<"°°nul°°";
   else
     out<<"kind:" << lex_kind;
