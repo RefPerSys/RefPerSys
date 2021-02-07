@@ -1141,11 +1141,12 @@ rps_run_application(int &argc, char **argv)
     }
   else if (rps_test_repl_lexer)
     {
-      RPS_INFORMOUT("Before running the REPL lexer test...."
+      RPS_INFORMOUT("Before running the REPL lexer test...." << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before repl"));
       rps_repl_lexer_test();
-      RPS_INFORMOUT("After running the REPL lexer test...."
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after repl"));
+      RPS_INFORMOUT("After running the REPL lexer test...." << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after repl")
+		    << std::endl);
     }
   else
     {
