@@ -4,9 +4,13 @@
 \documentclass{svproc}
 % to typeset URLs, URIs, and DOIs
 \usepackage{url}
+\usepackage{relsize}
 \def\UrlFont{\rmfamily}
 
 \begin{document}
+
+\input{generated-intellisys-commands}
+
 \mainmatter              % start of a contribution
 %
 \title{Design of a Reflexive Persistent System for Symbolic Artificial Intelligence}
@@ -26,4 +30,19 @@
 
 A Reflexive Persistent
 
+%%% for a draft that should be acceptable
+\begin{flushright}
+  \begin{relsize}{-1}
+    Our draft \texttt{git} ID is \texttt{\textit{\rpsgitcommit}}. \\
+    It was generated on \texttt{\rpsdate}.
+  \end{relsize}
+\end{flushright}
+
 \end{document}
+
+%%% For emacs:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Local Variables: ;;
+%% compile-command: "./make-paper.sh" ;;
+%% End: ;;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

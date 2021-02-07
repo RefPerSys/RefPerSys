@@ -1,0 +1,9 @@
+# file .gitignore in it@github.com:RefPerSys/RefPerSys.git
+# subdirectory doc/IntelliSys2021
+# see refpersys.org for more 
+generated-intellisys-commands.tex
+refpersys-IntelliSys2021.aux
+refpersys-IntelliSys2021.bbl
+refpersys-IntelliSys2021.blg
+refpersys-IntelliSys2021.log
+refpersys-IntelliSys2021.pdf
