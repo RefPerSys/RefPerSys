@@ -1146,7 +1146,7 @@ rps_run_application(int &argc, char **argv)
       rps_repl_lexer_test();
       RPS_INFORMOUT("After running the REPL lexer test...." << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after repl")
-		    << std::endl);
+                    << std::endl);
     }
   else
     {
