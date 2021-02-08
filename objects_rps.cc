@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2020 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2021 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -87,6 +87,39 @@ Rps_ObjectRef::output(std::ostream&outs) const
 } // end Rps_ObjectRef::output
 
 
+const std::string
+Rps_ObjectRef::as_string(void) const
+{
+  if (_optr == nullptr)
+    return std::string{"__"};
+  else if (_optr == RPS_EMPTYSLOT)
+    return std::string{"_⁂_"}; //U+2042 ASTERISM
+  std::lock_guard<std::recursive_mutex> gu(*_optr->objmtxptr());
+  if (const Rps_PayloadSymbol*symbpayl = _optr->get_dynamic_payload<Rps_PayloadSymbol>())
+    {
+      const std::string& syna = symbpayl->symbol_name();
+      if (!syna.empty())
+        return std::string{"¤" /*U+00A4 CURRENCY SIGN*/} + syna;
+    }
+  else if (const Rps_PayloadClassInfo*classpayl =  _optr->get_dynamic_payload<Rps_PayloadClassInfo>())
+    {
+      const std::string clana = classpayl->class_name_str();
+      if (!clana.empty())
+        return std::string{"∋" /*U+220B CONTAINS AS MEMBER*/} + clana;
+    }
+  else if (const Rps_Value namval
+           = _optr->get_physical_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG)) /*"name"∈named_attribute*/)
+    {
+      if (namval.is_string())
+        {
+          std::string str {"⁑" /*U+2051 TWO ASTERISKS ALIGNED VERTICALLY*/};
+          str.append  (namval.as_cppstring());
+          return str;
+        }
+    }
+  const Rps_Id curoid = _optr->oid();
+  return curoid.to_string();
+} // end Rps_ObjectRef::as_string
 
 
 
