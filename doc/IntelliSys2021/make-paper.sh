@@ -36,14 +36,17 @@ done
 
 
 ## see http://graphviz.org/
-printf "\n\n ================ dot processing by graphviz of "; echo  dot*.dot "files."
-ls -ls dot*.dot
-for dotfile in dot*.dot ; do
-    dotbase=$(basename $dotfile .dot)
-    dot -v -Teps -o $dotbase.eps  $dotfile
-    dot -v -Tpdf -o $dotbase.pdf  $dotfile
-    dot -v -Tsvg -o $dotbase.svg  $dotfile
-done
+if ls -ls dot*.dot ; then
+    printf "\n\n ================ dot processing by graphviz of "; echo  dot*.dot "files."
+    for dotfile in dot*.dot ; do
+	dotbase=$(basename $dotfile .dot)
+	dot -v -Teps -o $dotbase.eps  $dotfile
+	dot -v -Tpdf -o $dotbase.pdf  $dotfile
+	dot -v -Tsvg -o $dotbase.svg  $dotfile
+    done
+else
+    printf "\n\n ================ No dot processing by graphviz."
+fi
 
 
 printf "\n\n ===============================================\n"

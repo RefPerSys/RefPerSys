@@ -43,7 +43,9 @@
 \maketitle
 
 \begin{abstract}
-  The \RefPerSys{} software is a reflexive persistent software project, under development, for Linux.
+  The \RefPerSys{} software is a reflexive persistent software
+  project, with an open source (GPLv3+) license, under development,
+  for Linux workstation.
 \end{abstract}
 
 \textbf{tracks}: expert systems; agents and multi-agent systems.
@@ -54,12 +56,147 @@ A \textsc{\textbf{Ref}}lexive \textsc{\textbf{Per}}sistent software
 \textsc{\textbf{Sys}}tem can be extended to combine some ``expert
 system'' inference engine, with some rules and meta-rules, reified as
 mutable objects in a persistent memory heap. We describe in this paper
-some ongoing work, and major design ideas, about a free software
-symbolic artificial intelligence prototype system targetted for Linux
-workstations. A major source of inspiration for \RefPerSys{} are the
-\textsc{Malice} then \textsc{Caia} software systems
-described in
-\cite{Pitrat:1996:FGCS, Pitrat:2009:AST,  Pitrat:2009:ArtifBeings}
+some ongoing work, and major design ideas, about \RefPerSys, a free
+software symbolic artificial intelligence prototype system targetted
+for Linux workstations. A major source of inspiration for that system
+are the \textsc{Malice} then \textsc{Caia} software systems described
+in \cite{Pitrat:1996:FGCS}, \cite{Pitrat:2009:AST},
+\cite{Pitrat:2009:ArtifBeings}. We are aware that open source systems
+\cite{Weber:2004:SuccessOpenSource} are essential to the success of
+any risky software project, like \RefPerSys.
+
+\subsection{user features needed by artificial intelligence software systems}
+
+\subsubsection{Data persistence:}
+
+A symbolic artificial intelligence system could run for a long time,
+perhaps hours or even days, interacting with its users, as some Linux
+process. But its user would interact with that system, then be taken
+by other professional activities (writing or reviewing scientific
+papers, finding funding, interacting with students, or managers, or
+clients, organizing seminars, ... teaching, etc...).
+
+Since the data of such a system could be ported to other computers,
+after some hardware upgrade, or partially shared with other users
+(e.g. students or colleagues), it is important that the data format
+used by such a system is well documented and self-describable. Since
+computers are varied in endianness and word-size, it is preferable to
+use some documented textual format, and be open to existing libraries
+or frameworks, including database servers like \textsc{PostGreSQL},
+\textsc{MongoDB} etc.... \cite{Date:2005:Database-in-Depth}
+
+Given the popularity of distributed versioning systems like
+\texttt{git} - generally used to manage human-written source code in
+some textual format - and availability of remote services above them,
+it make senses to use some ``textual form'', inspired by programming
+languages or de facto formats like \textsc{Xml} or \textsc{Json}. The
+persistent data can then be viewed as some domain specific language
+\cite{Fowler:2010:domain} \cite{Starynkevitch-DSL2011} and also as
+some ``source code'', as soon as some software modules -and
+eventually, machine code in plugins or shared libraries
+\cite{drepper:2011:write-shared-lib} - can be generated from that same
+data.
+
+The approach for keeping data should be guided by principles of
+\textbf{orthogonal persistence} \cite{dearle:2009:orthogonal}. And
+garbage collection algorithms \cite{jones:2016:gchandbook} are
+relevant for keeping or discarding such data. Obvious some data, such
+as data describing the current state of the user interface, should not
+be kept in files; we call such data the \textbf{transient data} of
+\RefPerSys.
+
+Using textual data format (visible in ordinary editors like
+\textsc{Gnu Emacs}) has the advantage of easing the debugging of such
+systems: for the human developers working on \RefPerSys, looking into
+generated textual files (in C++ or some other programming language),
+for generated code; in textual formats inspired by \textit{Json} for
+data. For similar software engineering reasons, many compilers,
+including GCC, are still generating assembler code and not directly
+binary object files.
+
+\subsubsection{terminology related to data:} Following \cite{abadi:2012:theory-objects},
+\cite{hindley:2008:lambda}, \cite{queinnec:2003:lisp}, we call
+``\textbf{objects}'' the data (and their abstract data types) which is
+mutable and changing during runtime, and ``\textbf{immutable values}''
+the data which never changes during runtime (but could be detected as
+useless and later removed or destroyed by the garbage collector). When
+we speak of \textbf{\RefPerSys{} values}, we mean either mutable
+objects or immutables values (including boxed strings, tagged
+integers, closures, set of objects, etc...).
+
+\subsubsection{Concurrency:}
+Since current computers, including cheap laptops, have multi-core
+processors in 2021, it is important to process data in parallel, using
+several cores, in particular to gain performance. Most Linux computers
+today can run multi-threaded applications, thanks to their operating
+system \cite{Arpaci-Dusseau:2018:OSBook}. Some hardware can even be
+programmed in specialized programming languages like \textsc{OpenCL}
+\cite{kaeli:2015:heterogeneous-opencl}. The $\pi$-calculus
+\cite{sangiorgi:2003:pi-calculus} and directed algebraic topology
+\cite{fajstrup:2016:directed} are then relevant as a theoretical
+framework to reason about parallelism. If access to cloud computing
+resources is available, running several \RefPerSys{} processes on
+different nodes of some datacenter could be considered. In practice,
+multi-threaded programming \cite{butenhof:1997:programming} is
+important.
+
+\subsubsection{Meta-programming and dynamic code generation:}
+During execution, \RefPerSys{} should optimize its behavior (both to
+the particular instance of the problem it is handling, and perhaps to
+the actual hardware it is running on) by using partial evaluation
+techniques \cite{futamura:1999:partial-evaluation}. Any human expert
+software developer, when challenged with solving some real-life
+problem, will benchmark various different source code and choose the
+``best'' one. In some cases, hardware differences (size of CPU cache,
+disk speed, number of cores, network speed, reliability of network
+connections - Wifi or Ethernet) may justify a partial rewrite of
+performance critical routines.
+
+\subsubsection{Ergonomical user-interface:} As soon as we want to make
+a software system which is usable by non-expert users, some graphical
+user interface is practically needed, since in 2021 most computer
+users have one or a few color screens, some computer mouse, and some
+keyboard\footnote{The particular keyboard layout - e.g. AZERTY layout
+in France, QWERTY layout in the USA is managed by existing operating
+system layers. The screen size varies also greatly, and requires some
+runtime adaptation of the sotware to its user.}. However, most
+keyboards have ``function keys'', and each individual user should
+assign some of them to common queries. Each human user of \RefPerSys{}
+obviously have his/her own preferences about colors, fonts, keyboard
+and mouse usage, and these user preferences should be given then
+managed by the system. Auto-completion facilities are useful for
+readability reasons, and this is why software developers are choosing
+names for the public interface of their software library very
+carefully. The choice between a Web interface and desktop graphical
+interface (e.g. using the \textsc{Qt}, \textsc{Fltk}, or \textsc{Gtk}
+widget toolkits, or building above the \textsc{Gnu} \texttt{emacs}
+editor) has a practical importance, for hand-written code. But once
+\RefPerSys{} is capable of generating C++ code, it should in principle
+be able to change the user interface more easily. For example, the
+\textsc{Qt} GUI toolkit, and the \textsc{Wt} web toolkit\footnote{See
+respectively {\texttt{qt.io}} and {\texttt{www.webtoolkit.eu/wt}} ...}
+have very similar APIs.
+
+\subsubsection{Rule-based knowledge systems:} A knowledge based system, or an ``expert system''
+like \RefPerSys{} should contain many rules for its inference
+engine. Each rule $\rho$ of the form $C_1, C_2, ... C_n \Rightarrow
+\alpha_1, \alpha_2 ... \alpha_p$ and is interpreted as: \textbf{when}
+every condition $C_i$ is true \textbf{then} do the associated actions
+$\alpha_j$ in the order given.  Their conditions $C_i$ should be
+\textit{unordered} and contain variables, so $\rho$ should behave like
+the rule $\rho'$ written as $C_n, C_{n-1}, ... C_1 \Rightarrow
+\alpha_1, \alpha_2 ... \alpha_p$.  The set of rules should in
+principle be non-ordered, and in practice their order should not
+matter much.  Notice that similar rules are used to document and
+formalize -for humans- some programming language semantics, see
+\cite{pierce:2002:types} and \cite{pierce:2005:advanced}.
+
+Of course, at the machine level, the conditions of some given rule are
+represented in some data structure somehow ordered in the computer
+memory, but that order should not be relevant for inference: the
+overall behavior of the system should not change much when rules are
+reloaded in memory in a different order than in some previous
+execution of the \RefPerSys{} system.
 
 \bibliography{bib-refpersys}
 
