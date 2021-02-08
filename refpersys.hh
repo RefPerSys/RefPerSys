@@ -716,6 +716,11 @@ class Rps_ObjectRef // reference to objects, per C++ rule of five.
 protected:
 public:
   struct Rps_ObjIdStrTag {};
+  const std::string as_string(void) const;
+  operator const std::string  () const
+  {
+    return as_string();
+  };
   Rps_ObjectZone* optr() const
   {
     return _optr;
