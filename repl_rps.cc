@@ -431,6 +431,8 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                 << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/command"));
                   if (_f.cmdparserv.is_closure())
                     {
+                      RPS_DEBUG_LOG(REPL,
+                                    "rps_repl_interpret/rps_repl_cmd_lexer_fun closure cmdparserv=" << _f.cmdparserv);
                       rps_repl_cmd_lexer_fun =
                         [&](Rps_CallFrame*lexcallframe, unsigned lookahead)
                       {
@@ -471,20 +473,14 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                     << " tokendeq=[[" << token_deq << "]]"
                                     << std::endl
                                     << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/parsed-command"));
-                      //-  _f.parsmainv = rps_repl_cmd_lexer_fun(&_,0);
-                      //-  RPS_DEBUG_LOG(REPL, "rps_repl_interpret cmdreplob=" << _f.cmdreplob
-                      //-                << " cmdparserv=" << _f.cmdparserv << " @"
-                      //-                << input_name << "L" << startline << "C" << startcol
-                      //-                << " --> parsmainv=" << _f.parsmainv);
-                      //-  if (_f.parsmainv)
-                      //-    {
-                      //-      return;
-                      //-    }
-                      //-  else
-                      //-    RPS_WARNOUT("rps_repl_interpret failed to parse command "
-                      //-                << _f.cmdreplob << " cmdparserv=" << _f.cmdparserv
-                      //-                <<  " @"
-                      //-                << input_name << "L" << startline << "C" << startcol);
+#warning should apply cmdparserv in rps_repl_interpret/parsed-command
+                      RPS_WARNOUT("rps_repl_interpret command parser"
+                                  << std::endl << "cmdreplob=" << _f.cmdreplob
+                                  << " should apply cmdparserv=" << _f.cmdparserv << " @"
+                                  << input_name << "L" << startline << "C" << startcol
+                                  << std::endl
+                                  << " tokendeq=[[" << token_deq << "]]"
+                                  << " curframe:" << Rps_ShowCallFrame(&_));
                     } // end if _f.cmdparserv.is_closure()
                   else if (_f.cmdparserv)
                     RPS_WARNOUT("rps_repl_interpret non closure command parser"
