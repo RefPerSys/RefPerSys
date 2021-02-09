@@ -439,8 +439,9 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                         [&](Rps_CallFrame*lexcallframe, unsigned lookahead)
                       {
                         RPS_DEBUG_LOG(REPL, "rps_repl_interpret/rps_repl_cmd_lexer_fun calling rps_repl_cmd_tokenizer from curframe:"
+				      << std::endl
                                       << Rps_ShowCallFrame(&_)
-                                      << std::endl << "... cmdreplob=" << _f.cmdreplob
+                                      << "... cmdreplob=" << _f.cmdreplob
                                       << std::endl << "... cmdparserv=" << _f.cmdparserv
                                       << std::endl << "... lexcallframe:" <<  Rps_ShowCallFrame(lexcallframe)
                                       << std::endl << "... lookahead=" << lookahead
@@ -1663,11 +1664,17 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
                     << (curinp?"' ":""));
       Rps_TwoValues twolex =
         rps_repl_lexer(&_, inp, input_name, *plinebuf, lineno, colno);
-      _f.lexkindob = twolex.main_val.as_object();
+      RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize "
+		    << " lineno=" << lineno
+                    << ", colno=" << colno
+		    << " twolex! main:" << twolex.main_val
+		    << ", xtra:" << twolex.xtra_val);
+      _f.lexkindob = twolex.main_val.to_object();
       _f.lextokv = twolex.xtra_val;
       _f.kindnamv = nullptr;
-      _f.kindnamv = _f.lexkindob
-                    ->get_attr1(&_,RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); // /name∈named_attribute
+      if (_f.lexkindob)
+	_f.kindnamv = _f.lexkindob
+	  ->get_attr1(&_,RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); // /name∈named_attribute
       RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize from rps_repl_lexer got lexkindob=" << _f.lexkindob
                     << "/" << _f.kindnamv
                     << ", lextok=" << _f.lextokv
