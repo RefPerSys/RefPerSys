@@ -473,14 +473,22 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                     << " tokendeq=[[" << token_deq << "]]"
                                     << std::endl
                                     << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/parsed-command"));
-#warning should apply cmdparserv in rps_repl_interpret/parsed-command
-                      RPS_WARNOUT("rps_repl_interpret command parser"
-                                  << std::endl << "cmdreplob=" << _f.cmdreplob
-                                  << " should apply cmdparserv=" << _f.cmdparserv << " @"
-                                  << input_name << "L" << startline << "C" << startcol
-                                  << std::endl
-                                  << " tokendeq=[[" << token_deq << "]]"
-                                  << " curframe:" << Rps_ShowCallFrame(&_));
+                      RPS_DEBUG_LOG(REPL, "rps_repl_interpret command parser"
+                                    << std::endl << "cmdreplob=" << _f.cmdreplob
+                                    << " should apply cmdparserv=" << _f.cmdparserv << " @"
+                                    << input_name << "L" << startline << "C" << startcol
+                                    << std::endl
+                                    << " tokendeq=[[" << token_deq << "]]"
+                                    << " curframe:" << Rps_ShowCallFrame(&_));
+                      {
+                        Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply1 (&_, _f.cmdreplob);
+                        _f.parsmainv = parspair.main();
+                        _f.parsxtrav = parspair.xtra();
+                      }
+                      RPS_DEBUG_LOG(REPL, "rps_repl_interpret command application of " << _f.cmdparserv << " to " << _f.cmdreplob
+                                    << " in curframe:" << Rps_ShowCallFrame(&_)
+                                    << std::endl
+                                    << " =°=> parsmainv=" << _f.parsmainv << ", parsxtrav=" << _f.parsxtrav);
                     } // end if _f.cmdparserv.is_closure()
                   else if (_f.cmdparserv)
                     RPS_WARNOUT("rps_repl_interpret non closure command parser"
