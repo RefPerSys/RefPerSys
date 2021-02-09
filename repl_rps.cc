@@ -497,7 +497,7 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                 }
 #warning we probably need some application, compatible with C++ code generated in rps_repl_create_command above...
               RPS_WARNOUT("rps_repl_interpret unimplemented " << input_name << "L" << startline << "C" << startcol
-                          << " lexkind=" << _f.lexkindob
+                          << " lexkind=" << _f.lexkindob.as_string()
                           << " lexdatav=" << _f.lexdatav
                           << " tokendeq=[[" << token_deq << "]]"
                           << std::endl
