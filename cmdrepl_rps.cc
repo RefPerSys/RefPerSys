@@ -55,6 +55,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "REPL command dump CALLED from " << Rps_ShowCallFrame(callerframe));
   static Rps_Id descoid;
+  static long callcnt;
   if (!descoid) descoid=Rps_Id("_61pgHb5KRq600RLnKD");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
                            callerframe,
@@ -65,7 +66,8 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                            Rps_ObjectRef lexob;
                 );
   _f.closv = _.call_frame_closure();
-  RPS_DEBUG_LOG(CMD, "REPL command dump start arg0=" << arg0
+  callcnt++;
+  RPS_DEBUG_LOG(CMD, "REPL command dump start callcnt#" << callcnt << " arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
                 << " arg1=" << arg1
                 << "∈" << arg1.compute_class(&_) <<std::endl
@@ -79,30 +81,27 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   RPS_DEBUG_LOG(CMD, "REPL command dump framedepth=" << _.call_frame_depth() <<" curframe:"
                 << std::endl << Rps_ShowCallFrame(&_));
   _f.lexval = rps_repl_cmd_lexer_fun(&_, 1);
-  RPS_DEBUG_LOG(CMD, "REPL command dump lexval=" << _f.lexval<< " framedepth=" << _.call_frame_depth());
+  RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexval=" << _f.lexval<< " framedepth=" << _.call_frame_depth());
   if (_f.lexval.is_object())
     _f.lexob = _f.lexval.to_object();
   std::string dumpdir;
   bool eaten=false;
+  RPS_ASSERT(rps_repl_consume_cmd_token_fun);
+  eaten = rps_repl_consume_cmd_token_fun(&_);
+  RPS_DEBUG_LOG(CMD, "REPL command dump dot callcnt#" << callcnt << " eaten= " << (eaten?"true":"false"));
   if (_f.lexob && _f.lexob->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
     {
-      RPS_DEBUG_LOG(CMD, "REPL command dump dot consuming....");
-      RPS_ASSERT(rps_repl_consume_cmd_token_fun);
-      bool eaten = rps_repl_consume_cmd_token_fun(&_);
-      RPS_DEBUG_LOG(CMD, "REPL command dump dot eaten= " << (eaten?"true":"false"));
+      RPS_DEBUG_LOG(CMD, "REPL command dump dot consuming.... callcnt#" << callcnt);
       // dump to current directory
       rps_dump_into(".", &_);
       dumpdir=".";
-      RPS_DEBUG_LOG(CMD, "REPL command dumped into current directory");
+      RPS_DEBUG_LOG(CMD, "REPL command dumped  callcnt#" << callcnt << " into current directory callcnt#" << callcnt);
       return {_f.lexob, nullptr};
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE)) //string∈class #
     {
       std::string dirstr = _f.lexval.as_cppstring();
-      RPS_DEBUG_LOG(CMD, "REPL command dumping into " << dirstr);
-      RPS_ASSERT(rps_repl_consume_cmd_token_fun);
-      eaten = rps_repl_consume_cmd_token_fun(&_);
-      RPS_DEBUG_LOG(CMD, "REPL command dump into " << dirstr << " eaten= " << (eaten?"true":"false"));
+      RPS_DEBUG_LOG(CMD, "REPL command dumping into '" << Rps_Cjson_String (dirstr) << "' callcnt#" << callcnt);
       DIR* dirh = opendir(dirstr.c_str());
       if (dirh)
         {
@@ -118,17 +117,17 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
       else
 #warning rpsapply_61pgHb5KRq600RLnKD should use wordexp(3) on the string
         // see https://man7.org/linux/man-pages/man3/wordexp.3.html
-        RPS_WARNOUT("REPL command dump unimplemented into " << dirstr);
+        RPS_WARNOUT("REPL command dump unimplemented into '" << dirstr << "' callcnt#" << callcnt);
     }
-  RPS_DEBUG_LOG(CMD, "REPL command dump eaten= " << (eaten?"true":"false") << " dumpdir=" << dumpdir);
+  RPS_DEBUG_LOG(CMD, "REPL command dump eaten= " << (eaten?"true":"false") << " dumpdir=" << dumpdir << " callcnt#" << callcnt);
   if (eaten)
     return {Rps_StringValue(dumpdir),nullptr};
   else
-    RPS_WARNOUT("unconsumed REPL token for command dump - dumpdir=" << dumpdir);
+    RPS_WARNOUT("unconsumed REPL token for command dump - dumpdir=" << dumpdir << " callcnt#" << callcnt);
 #warning incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump
   RPS_WARNOUT("incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD for REPL command dump") << std::endl
-              << " arg0=" << arg0 << " arg1=" << arg1);
+              << " arg0=" << arg0 << " arg1=" << arg1 << " callcnt#" << callcnt);
   return {nullptr,nullptr};
 } //end of rpsapply_61pgHb5KRq600RLnKD for REPL command dump
 
