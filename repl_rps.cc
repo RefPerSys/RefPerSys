@@ -248,7 +248,9 @@ rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
   _f.cmdparserv = cmdparserarg;
   int startline = lineno;
   int startcol = colno;
-  RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer start input_name=" << input_name
+  int eol = linebuf?strlen(linebuf):(-1);
+  const char*curp = (linebuf && lineno < eol)?(linebuf+lineno):nullptr;
+  RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer°start input_name=" << input_name
                 << " linebuf=" << linebuf << std::endl
                 << "... L" << lineno << "C" << colno
                 << " prompt=" << prompt
@@ -256,8 +258,8 @@ rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
                 << " cmdparserv=" << _f.cmdparserv
                 << " lookahead=" << lookahead << std::endl
                 << "...curframe:" << Rps_ShowCallFrame(&_)
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_cmd_tokenizer"));
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_cmd_tokenizer")
+                << "...@curp='" << Rps_Cjson_String(curp) << "'"  << " calldepth=" << _.call_frame_depth() << std::endl);
   while (lookahead > token_deq.size())
     {
       RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer§ input_name=" << input_name
