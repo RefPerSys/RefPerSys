@@ -447,9 +447,11 @@ rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                                       << std::endl << "... lookahead=" << lookahead
                                       << std::endl << "... tokendeq=[[" << token_deq << "]]"
                                       << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_interpret/rps_repl_cmd_lexer_fun"));
-                        return rps_repl_cmd_tokenizer(lexcallframe, _f.cmdreplob, _f.cmdparserv,
+                        Rps_Value tokval = rps_repl_cmd_tokenizer(lexcallframe, _f.cmdreplob, _f.cmdparserv,
                                                       lookahead, token_deq, input_name, linebuf, lineno, colno,
                                                       prompt);
+			RPS_DEBUG_LOG(REPL, "rps_repl_interpret/rps_repl_cmd_lexer_fun =-> tokval=" << tokval);
+			return tokval;
                       }; // end C++ closure for  rps_repl_interpret/rps_repl_cmd_lexer_fun
                       RPS_DEBUG_LOG(REPL, "rps_repl_interpret/rps_repl_cmd_lexer_fun did set rps_repl_cmd_lexer_fun for cmdparserv="
                                     << _f.cmdparserv
@@ -1642,7 +1644,7 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
     {
       RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize inputstr="
                     << inputstr << ", lineno=" << lineno
-                    << ", colno=" << colno
+                    << ", colno=" << colno << ", "
                     << (curinp?"curinp='":"curinp ")
                     << (curinp?curinp:" *NUL*")
                     << (curinp?"' ":"")
