@@ -76,8 +76,10 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 << "**calldepth=" << _.call_frame_depth()
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD/REPL cmd dump"));
   RPS_ASSERT(_.call_frame_depth() < 7);
-  _f.lexval = rps_repl_cmd_lexer_fun(&_, 0);
-  RPS_DEBUG_LOG(CMD, "REPL command dump lexval=" << _f.lexval);
+  RPS_DEBUG_LOG(CMD, "REPL command dump framedepth=" << _.call_frame_depth() <<" curframe:"
+                << std::endl << Rps_ShowCallFrame(&_));
+  _f.lexval = rps_repl_cmd_lexer_fun(&_, 1);
+  RPS_DEBUG_LOG(CMD, "REPL command dump lexval=" << _f.lexval<< " framedepth=" << _.call_frame_depth());
   if (_f.lexval.is_object())
     _f.lexob = _f.lexval.to_object();
   std::string dumpdir;
