@@ -48,9 +48,9 @@
   for Linux workstation.
 \end{abstract}
 
-\textbf{tracks}: expert systems; agents and multi-agent systems.
+\textbf{Tracks}: expert systems; agents and multi-agent systems.
 
-\section{introduction}
+\section{Introduction}
 
 A \textsc{\textbf{Ref}}lexive \textsc{\textbf{Per}}sistent software
 \textsc{\textbf{Sys}}tem can be extended to combine some ``expert
@@ -65,7 +65,7 @@ in \cite{Pitrat:1996:FGCS}, \cite{Pitrat:2009:AST},
 \cite{Weber:2004:SuccessOpenSource} are essential to the success of
 any risky software project, like \RefPerSys.
 
-\subsection{user features needed by artificial intelligence software systems}
+\subsection{User features needed by artificial intelligence software systems}
 
 \subsubsection{Data persistence:}
 
@@ -74,7 +74,7 @@ perhaps hours or even days, interacting with its users, as some Linux
 process. But its user would interact with that system, then be taken
 by other professional activities (writing or reviewing scientific
 papers, finding funding, interacting with students, or managers, or
-clients, organizing seminars, ... teaching, etc...).
+clients, organizing seminars, teaching, etc\ldots).
 
 Since the data of such a system could be ported to other computers,
 after some hardware upgrade, or partially shared with other users
@@ -83,18 +83,18 @@ used by such a system is well documented and self-describable. Since
 computers are varied in endianness and word-size, it is preferable to
 use some documented textual format, and be open to existing libraries
 or frameworks, including database servers like \textsc{PostGreSQL},
-\textsc{MongoDB} etc.... \cite{Date:2005:Database-in-Depth}
+\textsc{MongoDB} etc\ldots\cite{Date:2005:Database-in-Depth}
 
 Given the popularity of distributed versioning systems like
-\texttt{git} - generally used to manage human-written source code in
-some textual format - and availability of remote services above them,
+\texttt{git}---generally used to manage human-written source code in
+some textual format---and availability of remote services above them,
 it make senses to use some ``textual form'', inspired by programming
 languages or de facto formats like \textsc{Xml} or \textsc{Json}. The
 persistent data can then be viewed as some domain specific language
 \cite{Fowler:2010:domain} \cite{Starynkevitch-DSL2011} and also as
-some ``source code'', as soon as some software modules -and
+some ``source code'', as soon as some software modules---and
 eventually, machine code in plugins or shared libraries
-\cite{drepper:2011:write-shared-lib} - can be generated from that same
+\cite{drepper:2011:write-shared-lib}---can be generated from that same
 data.
 
 The approach for keeping data should be guided by principles of
@@ -114,7 +114,7 @@ data. For similar software engineering reasons, many compilers,
 including GCC, are still generating assembler code and not directly
 binary object files.
 
-\subsubsection{terminology related to data:} Following \cite{abadi:2012:theory-objects},
+\subsubsection{terminology related to data:} Following\cite{abadi:2012:theory-objects},
 \cite{hindley:2008:lambda}, \cite{queinnec:2003:lisp}, we call
 ``\textbf{objects}'' the data (and their abstract data types) which is
 mutable and changing during runtime, and ``\textbf{immutable values}''
