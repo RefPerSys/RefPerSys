@@ -285,15 +285,15 @@ rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
           return Rps_Value{nullptr};
         _f.lextokenv
           = Rps_LexTokenZone::tokenize(&_,
-				       rps_repl_input,   input_name, &linebuf, lineno, colno,
+                                       rps_repl_input,   input_name, &linebuf, lineno, colno,
                                        [&](Rps_CallFrame*tokencallframe,
                                            std::istream*tokeninp,
                                            const char*tokeninputname,
                                            const char**tokenplinebuf,
                                            int*tokenplineno)
         {
-	  RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer getnextline tokeninputname="
-			<< tokeninputname << " tokenplineno=" << *tokenplineno);
+          RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer getnextline tokeninputname="
+                        << tokeninputname << " tokenplineno=" << *tokenplineno);
           return
             rps_repl_get_next_line(tokencallframe,
                                    tokeninp,

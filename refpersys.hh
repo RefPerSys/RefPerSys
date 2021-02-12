@@ -1992,6 +1992,54 @@ public:
 }; // end class Rps_Double
 
 
+
+////////////////////////////////////////////////////////////////
+class Rps_TokenSource		// this is *not* a value .....
+{
+  std::string toksrc_name;
+  int toksrc_line, toksrc_col;
+protected:
+  std::string toksrc_linebuf;
+  Rps_TokenSource(std::string name);
+  void set_name(std::string name) { toksrc_name = name; };
+public:
+  virtual ~Rps_TokenSource();
+  virtual bool get_line(void) =0;
+  Rps_TokenSource(const Rps_TokenSource&) = delete;
+  Rps_TokenSource() = delete;
+  const std::string& name(void) const { return toksrc_name; };
+  int line(void) const { return toksrc_line; };
+  int col(void) const { return toksrc_col; };
+};				// end Rps_TokenSource
+
+class Rps_CinTokenSource : public Rps_TokenSource
+{
+public:
+  Rps_CinTokenSource();
+  virtual ~Rps_CinTokenSource();
+  virtual bool get_line(void);
+};	       // end Rps_CinTokenSource
+
+
+class Rps_StreamTokenSource : public Rps_TokenSource
+{
+  std::ifstream toksrc_input_stream;
+public:
+  Rps_StreamTokenSource(std::string path);
+  virtual ~Rps_StreamTokenSource();
+  virtual bool get_line(void);
+};	       // end Rps_StreamTokenSource
+
+
+class Rps_ReadlineTokenSource : public Rps_TokenSource
+{
+  std::string readline_prompt;
+public:
+  Rps_ReadlineTokenSource(std::string path);
+  virtual ~Rps_ReadlineTokenSource();
+  virtual bool get_line(void);
+};	       // end Rps_ReadlineTokenSource
+
 //////////////// boxed lexical token - always transient
 class Rps_LexTokenZone  : public Rps_LazyHashedZoneValue
 {
