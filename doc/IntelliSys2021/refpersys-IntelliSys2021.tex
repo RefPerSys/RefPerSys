@@ -114,8 +114,9 @@ data. For similar software engineering reasons, many compilers,
 including GCC, are still generating assembler code and not directly
 binary object files.
 
-\subsubsection{terminology related to data:} Following\cite{abadi:2012:theory-objects},
-\cite{hindley:2008:lambda}, \cite{queinnec:2003:lisp}, we call
+\subsubsection{Terminology related to data:} Following
+\cite{abadi:2012:theory-objects},\linebreak\cite{hindley:2008:lambda}, 
+\cite{queinnec:2003:lisp}, we call
 ``\textbf{objects}'' the data (and their abstract data types) which is
 mutable and changing during runtime, and ``\textbf{immutable values}''
 the data which never changes during runtime (but could be detected as
@@ -129,10 +130,10 @@ Since current computers, including cheap laptops, have multi-core
 processors in 2021, it is important to process data in parallel, using
 several cores, in particular to gain performance. Most Linux computers
 today can run multi-threaded applications, thanks to their operating
-system \cite{Arpaci-Dusseau:2018:OSBook}. Some hardware can even be
-programmed in specialized programming languages like \textsc{OpenCL}
-\cite{kaeli:2015:heterogeneous-opencl}. The $\pi$-calculus
-\cite{sangiorgi:2003:pi-calculus} and directed algebraic topology
+system\linebreak \cite{Arpaci-Dusseau:2018:OSBook}. Some hardware can even be
+programmed in specialized programming languages like \textsc{OpenCL}\linebreak
+\cite{kaeli:2015:heterogeneous-opencl}. The $\pi$-calculus\linebreak
+\cite{sangiorgi:2003:pi-calculus} and directed algebraic topology\linebreak
 \cite{fajstrup:2016:directed} are then relevant as a theoretical
 framework to reason about parallelism. If access to cloud computing
 resources is available, running several \RefPerSys{} processes on
