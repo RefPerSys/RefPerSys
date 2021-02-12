@@ -81,17 +81,21 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   RPS_DEBUG_LOG(CMD, "REPL command dump framedepth=" << _.call_frame_depth() <<" curframe:"
                 << std::endl << Rps_ShowCallFrame(&_));
   _f.lexval = rps_repl_cmd_lexer_fun(&_, 1);
-  RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexval=" << _f.lexval<< " framedepth=" << _.call_frame_depth());
+  RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexval=" << _f.lexval
+		<< " framedepth=" << _.call_frame_depth());
   if (_f.lexval.is_object())
     _f.lexob = _f.lexval.to_object();
   std::string dumpdir;
   bool eaten=false;
+  RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexob=" << _f.lexob
+		<< " framedepth=" << _.call_frame_depth());
   RPS_ASSERT(rps_repl_consume_cmd_token_fun);
   eaten = rps_repl_consume_cmd_token_fun(&_);
   RPS_DEBUG_LOG(CMD, "REPL command dump dot callcnt#" << callcnt << " eaten= " << (eaten?"true":"false"));
   if (_f.lexob && _f.lexob->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
     {
-      RPS_DEBUG_LOG(CMD, "REPL command dump dot consuming.... callcnt#" << callcnt);
+      RPS_DEBUG_LOG(CMD, "REPL command dump dot callcnt#" << callcnt
+		    << " framedepth=" << _.call_frame_depth());
       // dump to current directory
       rps_dump_into(".", &_);
       dumpdir=".";
@@ -101,16 +105,19 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE)) //string∈class #
     {
       std::string dirstr = _f.lexval.as_cppstring();
-      RPS_DEBUG_LOG(CMD, "REPL command dumping into '" << Rps_Cjson_String (dirstr) << "' callcnt#" << callcnt);
+      RPS_DEBUG_LOG(CMD, "REPL command dumping into '" << Rps_Cjson_String (dirstr) << "' callcnt#" << callcnt
+		    << " framedepth=" << _.call_frame_depth());
       DIR* dirh = opendir(dirstr.c_str());
       if (dirh)
         {
           closedir(dirh);
+	  RPS_DEBUG_LOG(CMD, "REPL command dumping into existing dir '" << Rps_Cjson_String (dirstr) << "' callcnt#" << callcnt);
           rps_dump_into(dirstr.c_str(), &_);
           dumpdir = dirstr;
         }
       else if (!mkdir(dirstr.c_str(), 0750))
         {
+	  RPS_DEBUG_LOG(CMD, "REPL command dumping into fresh dir '" << Rps_Cjson_String (dirstr) << "' callcnt#" << callcnt);
           rps_dump_into(dirstr.c_str(), &_);
           dumpdir = dirstr;
         }
