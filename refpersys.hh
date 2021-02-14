@@ -1334,7 +1334,7 @@ public:
   // "dynamic" casting :
   inline Rps_LexTokenValue(Rps_Value val);
   inline Rps_LexTokenValue(); // needed to create empty null token
-  Rps_LexTokenValue(nullptr_t):Rps_LexTokenValue() {};
+  Rps_LexTokenValue(std::nullptr_t):Rps_LexTokenValue() {};
 };    // end class Rps_LexTokenValue
 ////////////////////////////////////////////////////////////////
 

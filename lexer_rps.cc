@@ -194,10 +194,12 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           _f.lextokv = Rps_Value::make_tagged_int(l);
           _f.lexkindob = RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); //int∈class
         }
+      (void) name_val(&_, &namev);
+      const Rps_String* str = namev.to_string();
       Rps_LexTokenZone* lextok =
         Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
         (_f.lexkindob, _f.lextokv,
-         name_val(&_, &namev),
+	 str,
          curlin, curcol);
       _f.res = Rps_LexTokenValue(lextok);
       RPS_DEBUG_LOG(REPL, "get_token number :-◑> " << _f.res);
