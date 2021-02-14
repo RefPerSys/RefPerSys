@@ -75,9 +75,9 @@ Rps_TokenSource::name_val(Rps_CallFrame*callframe, Rps_Value*namerefptr)
       && (*namerefptr).to_cppstring() == toksrc_name)
     return *namerefptr;
   RPS_LOCALFRAME(/*descr:*/nullptr,
-		 callframe,
-		 Rps_Value strval;
-		 );
+                           callframe,
+                           Rps_Value strval;
+                );
   RPS_ASSERT(namerefptr);
   _f.strval = Rps_StringValue(toksrc_name);
   *namerefptr = _f.strval;
@@ -158,10 +158,12 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 {
   RPS_ASSERT(callframe==nullptr || callframe->is_good_call_frame());
   RPS_LOCALFRAME(/*descr:*/nullptr,
-		 /*callerframe:*/callframe,
-		 Rps_Value semval;
-		 Rps_Value res;
+                           /*callerframe:*/callframe,
+                           Rps_Value res;
+                           Rps_ObjectRef lexkindob;
+                           Rps_Value lextokv;
                 );
+  static Rps_Value namev;
   const char* curp = curcptr();
   size_t linelen = toksrc_linebuf.size();
   while (curp && isspace(*curp) && toksrc_col<linelen)
@@ -172,6 +174,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   if (isdigit(*curp) ||
       ((curp[0] == '+' || curp[0] == '-') && isdigit(curp[1])))
     {
+      int curlin = toksrc_line;
+      int curcol = toksrc_col;
       char*endint=nullptr;
       char*endfloat=nullptr;
       const char*startnum = curp;
@@ -181,14 +185,22 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       if (endfloat > endint)
         {
           toksrc_col += endfloat - startnum;
-          _f.semval = Rps_DoubleValue(d);
+          _f.lextokv = Rps_DoubleValue(d);
+          _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
         }
       else
         {
           toksrc_col += endint - startnum;
-          _f.semval = Rps_Value::make_tagged_int(l);
+          _f.lextokv = Rps_Value::make_tagged_int(l);
+          _f.lexkindob = RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); //int∈class
         }
-#warning missing code, similar to repl_rps.cc line 688 to 700
+      Rps_LexTokenZone* lextok =
+        Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (_f.lexkindob, _f.lextokv,
+         name_val(&_, &namev),
+         curlin, curcol);
+      _f.res = Rps_LexTokenValue(lextok);
+      RPS_DEBUG_LOG(REPL, "get_token number :-◑> " << _f.res);
     }
 
 #warning Rps_TokenSource::get_token unimplemented
