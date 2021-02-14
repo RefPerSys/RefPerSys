@@ -1327,8 +1327,8 @@ public:
 class Rps_LexTokenValue : public Rps_Value
 {
   friend class Rps_LexTokenZone;
+  friend class Rps_TokenSource;
 public:
-  /// related to Rps_TupleOb::make :
   inline Rps_LexTokenValue (const Rps_LexTokenZone& lxtok);
   inline Rps_LexTokenValue (const Rps_LexTokenZone* plxtok);
   // "dynamic" casting :
@@ -1996,6 +1996,8 @@ public:
 ////////////////////////////////////////////////////////////////
 class Rps_TokenSource		// this is *not* a value .....
 {
+  friend class Rps_LexTokenValue;
+  friend class Rps_LexTokenZone;
   std::string toksrc_name;
   int toksrc_line, toksrc_col;
 protected:
@@ -2003,6 +2005,14 @@ protected:
   Rps_TokenSource(std::string name);
   void set_name(std::string name) { toksrc_name = name; };
 public:
+  const char*curcptr(void) const {
+    if (toksrc_linebuf.empty())
+      return nullptr;
+    auto linesiz = toksrc_linebuf.size();
+    if (toksrc_col>=0 && toksrc_col<linesiz)
+      return toksrc_linebuf.c_str()+toksrc_col;
+    return nullptr;
+  };				// end Rps_TokenSource::curcptr
   virtual ~Rps_TokenSource();
   virtual bool get_line(void) =0;
   Rps_TokenSource(const Rps_TokenSource&) = delete;
@@ -2010,6 +2020,7 @@ public:
   const std::string& name(void) const { return toksrc_name; };
   int line(void) const { return toksrc_line; };
   int col(void) const { return toksrc_col; };
+  Rps_LexTokenValue get_token(void);
 };				// end Rps_TokenSource
 
 class Rps_CinTokenSource : public Rps_TokenSource

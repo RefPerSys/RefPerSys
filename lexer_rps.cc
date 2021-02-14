@@ -115,3 +115,14 @@ Rps_CinTokenSource::get_line(void)
   if (!std::cin && toksrc_linebuf.empty()) return false;
   return true;
 } // end Rps_CinTokenSource::get_line
+
+Rps_LexTokenValue
+Rps_TokenSource::get_token(void)
+{
+#warning Rps_TokenSource::get_token unimplemented
+  RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
+	       << ":L" << toksrc_line << ",C" << toksrc_col);
+  // we should refactor properly the rps_repl_lexer & Rps_LexTokenZone constructor here
+} // end Rps_TokenSource::get_token
+
+//// end of file lexer_rps.cc
