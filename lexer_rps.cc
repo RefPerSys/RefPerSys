@@ -130,6 +130,19 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     curp++, toksrc_col++;
   if (toksrc_col>=linelen)
     return nullptr;
+  /// lex numbers?
+  if (isdigit(*curp) ||
+      ((curp[0] == '+' || curp[0] == '-') && isdigit(curp[1])))
+    {
+      char*endint=nullptr;
+      char*endfloat=nullptr;
+      const char*startnum = curp;
+      long long l = strtoll(startnum, &endint, 0);
+      double d = strtod(startnum, &endfloat);
+      RPS_ASSERT(endint != nullptr && endfloat != nullptr);
+#warning missing code, similar to repl_rps.cc line 688 to 700
+    }
+
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
                << ":L" << toksrc_line << ",C" << toksrc_col);
