@@ -2020,7 +2020,7 @@ public:
   const std::string& name(void) const { return toksrc_name; };
   int line(void) const { return toksrc_line; };
   int col(void) const { return toksrc_col; };
-  Rps_LexTokenValue get_token(void);
+  Rps_LexTokenValue get_token(Rps_CallFrame*callframe);
 };				// end Rps_TokenSource
 
 class Rps_CinTokenSource : public Rps_TokenSource

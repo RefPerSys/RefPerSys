@@ -117,11 +117,22 @@ Rps_CinTokenSource::get_line(void)
 } // end Rps_CinTokenSource::get_line
 
 Rps_LexTokenValue
-Rps_TokenSource::get_token(void)
+Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 {
+  RPS_ASSERT(callframe==nullptr || callframe->is_good_call_frame());
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/callframe,
+                           Rps_Value res;
+                );
+  const char* curp = curcptr();
+  size_t linelen = toksrc_linebuf.size();
+  while (curp && isspace(*curp) && toksrc_col<linelen)
+    curp++, toksrc_col++;
+  if (toksrc_col>=linelen)
+    return nullptr;
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
-	       << ":L" << toksrc_line << ",C" << toksrc_col);
+               << ":L" << toksrc_line << ",C" << toksrc_col);
   // we should refactor properly the rps_repl_lexer & Rps_LexTokenZone constructor here
 } // end Rps_TokenSource::get_token
 
