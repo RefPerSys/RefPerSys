@@ -2001,15 +2001,19 @@ class Rps_TokenSource		// this is *not* a value .....
   std::string toksrc_name;
   int toksrc_line, toksrc_col;
 protected:
+  /// could be called by subclasses
+  void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth);
   std::string toksrc_linebuf;
+  Rps_StringValue* toksrc_ptrnameval;
   Rps_TokenSource(std::string name);
   void set_name(std::string name) { toksrc_name = name; };
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
 public:
   const char*curcptr(void) const {
     if (toksrc_linebuf.empty())
       return nullptr;
     auto linesiz = toksrc_linebuf.size();
-    if (toksrc_col>=0 && toksrc_col<linesiz)
+    if (toksrc_col>=0 && (int)toksrc_col<(int)linesiz)
       return toksrc_linebuf.c_str()+toksrc_col;
     return nullptr;
   };				// end Rps_TokenSource::curcptr
@@ -2018,6 +2022,8 @@ public:
   Rps_TokenSource(const Rps_TokenSource&) = delete;
   Rps_TokenSource() = delete;
   const std::string& name(void) const { return toksrc_name; };
+  // return the name as a string value, hopefully memoized in namerefptr
+  Rps_Value name_val(Rps_CallFrame*callframe, Rps_Value* namerefptr);
   int line(void) const { return toksrc_line; };
   int col(void) const { return toksrc_col; };
   Rps_LexTokenValue get_token(Rps_CallFrame*callframe);
@@ -2059,6 +2065,7 @@ class Rps_LexTokenZone  : public Rps_LazyHashedZoneValue
   friend class Rps_GarbageCollector;
   friend class Rps_LexTokenValue;
   friend class Rps_QuasiZone;
+  friend class Rps_TokenSource;
   Rps_ObjectRef lex_kind;
   Rps_Value lex_val;
   const Rps_String* lex_file;

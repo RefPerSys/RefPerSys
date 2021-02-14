@@ -44,9 +44,46 @@ extern "C" const char rps_lexer_date[];
 const char rps_lexer_date[]= __DATE__;
 
 Rps_TokenSource::Rps_TokenSource(std::string name)
-  : toksrc_name(name), toksrc_line(0), toksrc_col(0), toksrc_linebuf{}
+  : toksrc_name(name), toksrc_line(0), toksrc_col(0), toksrc_linebuf{},
+    toksrc_ptrnameval(nullptr)
 {
 } // end Rps_TokenSource::Rps_TokenSource
+
+void
+Rps_TokenSource::gc_mark(Rps_GarbageCollector&gc, unsigned depth)
+{
+  RPS_ASSERT(gc.is_valid_garbcoll());
+  really_gc_mark(gc,depth);
+} // end Rps_TokenSource::gc_mark
+
+void
+Rps_TokenSource::really_gc_mark(Rps_GarbageCollector&gc, unsigned depth)
+{
+  RPS_ASSERT(gc.is_valid_garbcoll());
+} // end Rps_TokenSource::really_gc_mark
+
+
+/// the current token source name is needed as a string value for
+/// constructing Rps_LexTokenValue-s. We want to avoid creating that
+/// source name, as a RefPerSys string, at every lexical token. So we
+/// try to memoize it in *namerefptr;
+Rps_Value
+Rps_TokenSource::name_val(Rps_CallFrame*callframe, Rps_Value*namerefptr)
+{
+  RPS_ASSERT(callframe==nullptr || callframe->is_good_call_frame());
+  if (namerefptr && *namerefptr && (*namerefptr).is_string()
+      && (*namerefptr).to_cppstring() == toksrc_name)
+    return *namerefptr;
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+		 callframe,
+		 Rps_Value strval;
+		 );
+  RPS_ASSERT(namerefptr);
+  _f.strval = Rps_StringValue(toksrc_name);
+  *namerefptr = _f.strval;
+  return _f.strval;
+} // end Rps_TokenSource::name_val
+
 
 Rps_TokenSource::~Rps_TokenSource()
 {
@@ -121,8 +158,9 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 {
   RPS_ASSERT(callframe==nullptr || callframe->is_good_call_frame());
   RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/callframe,
-                           Rps_Value res;
+		 /*callerframe:*/callframe,
+		 Rps_Value semval;
+		 Rps_Value res;
                 );
   const char* curp = curcptr();
   size_t linelen = toksrc_linebuf.size();
@@ -140,6 +178,16 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       long long l = strtoll(startnum, &endint, 0);
       double d = strtod(startnum, &endfloat);
       RPS_ASSERT(endint != nullptr && endfloat != nullptr);
+      if (endfloat > endint)
+        {
+          toksrc_col += endfloat - startnum;
+          _f.semval = Rps_DoubleValue(d);
+        }
+      else
+        {
+          toksrc_col += endint - startnum;
+          _f.semval = Rps_Value::make_tagged_int(l);
+        }
 #warning missing code, similar to repl_rps.cc line 688 to 700
     }
 
