@@ -162,11 +162,12 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                            Rps_Value res;
                            Rps_ObjectRef lexkindob;
                            Rps_Value lextokv;
+                           Rps_ObjectRef oblex;
                 );
   static Rps_Value namev;
   const char* curp = curcptr();
   size_t linelen = toksrc_linebuf.size();
-  while (curp && isspace(*curp) && toksrc_col<linelen)
+  while (curp && isspace(*curp) && toksrc_col<(int)linelen)
     curp++, toksrc_col++;
   if (toksrc_col>=(int)linelen)
     return nullptr;
@@ -207,8 +208,9 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     } //- end lexing numbers
   ///
   /// lex infinities (double) - but not NAN
-  else if (!strncmp(curp, "+INF", 4)
-           || !strncmp(curp, "-INF", 4))
+  else if ((!strncmp(curp, "+INF", 4)
+            || !strncmp(curp, "-INF", 4))
+           && !isalnum(curp[4]))
     {
       int curlin = toksrc_line;
       int curcol = toksrc_col;
@@ -231,7 +233,45 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       return _f.res;
     } //- end lexing infinities
 
-  /// adapt code from repl_rps.cc lines 727
+  /// lex names or objectids
+  else if (isalpha(*curp) || *curp == '_')
+    {
+      const char*startname = curp;
+      int curlin = toksrc_line;
+      int curcol = toksrc_col;
+      while ((isalpha(*curp) || *curp == '_') && toksrc_col<linelen)
+        curp++, toksrc_col++;
+      std::string namestr(startname, toksrc_col-curcol);
+      RPS_DEBUG_LOG(REPL, "get_token oid|name " << namestr);
+      _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr,
+                 Rps_ObjectRef::Null_When_Missing);
+      (void) name_val(&_, &namev);
+      const Rps_String* str = namev.to_string();
+      if (_f.oblex)
+        {
+          _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
+          Rps_LexTokenZone* lextok =
+            Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+            (_f.lexkindob, _f.lextokv,
+             str,
+             curlin, curcol);
+          _f.res = Rps_LexTokenValue(lextok);
+          RPS_DEBUG_LOG(REPL, "get_token object :-◑> " << _f.res);
+          return _f.res;
+        }
+      else   // new name
+        {
+          _f.lexkindob = RPS_ROOT_OB(_36I1BY2NetN03WjrOv); //symbol∈class
+          Rps_LexTokenZone* lextok =
+            Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+            (_f.lexkindob, _f.lextokv,
+             str,
+             curlin, curcol);
+          _f.res = Rps_LexTokenValue(lextok);
+          RPS_DEBUG_LOG(REPL, "get_token symbol :-◑> " << _f.res);
+          return _f.res;
+        }
+    }
 
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
