@@ -168,7 +168,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   size_t linelen = toksrc_linebuf.size();
   while (curp && isspace(*curp) && toksrc_col<linelen)
     curp++, toksrc_col++;
-  if (toksrc_col>=linelen)
+  if (toksrc_col>=(int)linelen)
     return nullptr;
   /// lex numbers?
   if (isdigit(*curp) ||
@@ -199,11 +199,39 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       Rps_LexTokenZone* lextok =
         Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
         (_f.lexkindob, _f.lextokv,
-	 str,
+         str,
          curlin, curcol);
       _f.res = Rps_LexTokenValue(lextok);
       RPS_DEBUG_LOG(REPL, "get_token number :-◑> " << _f.res);
-    }
+      return _f.res;
+    } //- end lexing numbers
+  ///
+  /// lex infinities (double) - but not NAN
+  else if (!strncmp(curp, "+INF", 4)
+           || !strncmp(curp, "-INF", 4))
+    {
+      int curlin = toksrc_line;
+      int curcol = toksrc_col;
+      bool pos = *curp == '+';
+      double infd = (pos
+                     ?std::numeric_limits<double>::infinity()
+                     : -std::numeric_limits<double>::infinity());
+      toksrc_col += 4;
+      _f.lextokv = Rps_DoubleValue(infd);
+      _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
+      (void) name_val(&_, &namev);
+      const Rps_String* str = namev.to_string();
+      Rps_LexTokenZone* lextok =
+        Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (_f.lexkindob, _f.lextokv,
+         str,
+         curlin, curcol);
+      _f.res = Rps_LexTokenValue(lextok);
+      RPS_DEBUG_LOG(REPL, "get_token infinity :-◑> " << _f.res);
+      return _f.res;
+    } //- end lexing infinities
+
+  /// adapt code from repl_rps.cc lines 727
 
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
