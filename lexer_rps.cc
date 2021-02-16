@@ -239,9 +239,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       const char*startname = curp;
       int curlin = toksrc_line;
       int curcol = toksrc_col;
+      int startcol = curcol;
       while ((isalpha(*curp) || *curp == '_') && toksrc_col<linelen)
         curp++, toksrc_col++;
-      std::string namestr(startname, toksrc_col-curcol);
+      std::string namestr(startname, toksrc_col-startcol);
       RPS_DEBUG_LOG(REPL, "get_token oid|name " << namestr);
       _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr,
                  Rps_ObjectRef::Null_When_Missing);
@@ -259,7 +260,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           RPS_DEBUG_LOG(REPL, "get_token object :-◑> " << _f.res);
           return _f.res;
         }
-      else   // new name
+      else if (isalpha(namestr[0]))  // new symbol
         {
           _f.lexkindob = RPS_ROOT_OB(_36I1BY2NetN03WjrOv); //symbol∈class
           Rps_LexTokenZone* lextok =
@@ -270,6 +271,13 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           _f.res = Rps_LexTokenValue(lextok);
           RPS_DEBUG_LOG(REPL, "get_token symbol :-◑> " << _f.res);
           return _f.res;
+        }
+      else   // bad name
+        {
+          toksrc_col = startcol;
+          RPS_DEBUG_LOG(REPL, "get_token bad name " << namev << " at L" << toksrc_line << ",C" << toksrc_col
+                        << " of " << toksrc_name);
+          return nullptr;
         }
     }
 

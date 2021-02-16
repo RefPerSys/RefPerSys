@@ -2026,6 +2026,7 @@ public:
   Rps_Value name_val(Rps_CallFrame*callframe, Rps_Value* namerefptr);
   int line(void) const { return toksrc_line; };
   int col(void) const { return toksrc_col; };
+  /// on lexical error, get_token returns null and does not change the position
   Rps_LexTokenValue get_token(Rps_CallFrame*callframe);
 };				// end Rps_TokenSource
 
