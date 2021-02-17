@@ -280,6 +280,13 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           return nullptr;
         }
     }
+  //// literal strings are like in C++
+  else if (*curp == '"')   /// plain literal string, on a single line
+    {
+      std::string litstr =
+        rps_lex_literal_string(toksrc_name.c_str(), toksrc_linebuf.c_str(), toksrc_line, toksrc_col);
+#warning Rps_TokenSource::get_token should lex a literal string on single line
+    }
 
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
