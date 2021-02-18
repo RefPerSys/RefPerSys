@@ -1877,6 +1877,7 @@ class Rps_String : public Rps_LazyHashedZoneValue
 {
   friend class Rps_LexTokenZone;
   friend class Rps_LexTokenValue;
+  friend class Rps_TokenSource;
   friend Rps_String*
   Rps_QuasiZone::rps_allocate_with_wordgap<Rps_String,const char*,int>(unsigned,const char*,int);
   const uint32_t _bytsiz;
@@ -2025,8 +2026,8 @@ public:
   Rps_TokenSource(const Rps_TokenSource&) = delete;
   Rps_TokenSource() = delete;
   const std::string& name(void) const { return toksrc_name; };
-  // return the name as a string value, hopefully memoized in namerefptr
-  Rps_Value name_val(Rps_CallFrame*callframe, Rps_Value* namerefptr);
+  // return the name as a string value, hopefully memoized 
+  Rps_Value name_val(Rps_CallFrame*callframe);
   int line(void) const { return toksrc_line; };
   int col(void) const { return toksrc_col; };
   /// on lexical error, get_token returns null and does not change the position

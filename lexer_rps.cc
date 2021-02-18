@@ -43,6 +43,9 @@ const char rps_lexer_gitid[]= RPS_GITID;
 extern "C" const char rps_lexer_date[];
 const char rps_lexer_date[]= __DATE__;
 
+extern "C" Rps_StringValue rps_lexer_token_name_str_val;
+Rps_StringValue rps_lexer_token_name_str_val(nullptr);
+
 Rps_TokenSource::Rps_TokenSource(std::string name)
   : toksrc_name(name), toksrc_line(0), toksrc_col(0), toksrc_linebuf{},
     toksrc_ptrnameval(nullptr)
@@ -61,30 +64,25 @@ Rps_TokenSource::really_gc_mark(Rps_GarbageCollector&gc, unsigned depth)
 {
   RPS_ASSERT(gc.is_valid_garbcoll());
   RPS_ASSERT(depth < max_gc_depth);
-  if (toksrc_ptrnameval)
-    toksrc_ptrnameval->gc_mark(gc, depth);
+  if (rps_lexer_token_name_str_val)
+    rps_lexer_token_name_str_val.gc_mark(gc,depth);
 } // end Rps_TokenSource::really_gc_mark
 
 
 /// the current token source name is needed as a string value for
 /// constructing Rps_LexTokenValue-s. We want to avoid creating that
 /// source name, as a RefPerSys string, at every lexical token. So we
-/// try to memoize it in *namerefptr;
+/// try to memoize it in rps_lexer_token_name_str_val;
 Rps_Value
-Rps_TokenSource::name_val(Rps_CallFrame*callframe, Rps_Value*namerefptr)
+Rps_TokenSource::name_val(Rps_CallFrame*callframe)
 {
   RPS_ASSERT(callframe==nullptr || callframe->is_good_call_frame());
-  if (namerefptr && *namerefptr && (*namerefptr).is_string()
-      && (*namerefptr).to_cppstring() == toksrc_name)
-    return *namerefptr;
-  RPS_LOCALFRAME(/*descr:*/nullptr,
-                           callframe,
-                           Rps_Value strval;
-                );
-  RPS_ASSERT(namerefptr);
-  _f.strval = Rps_StringValue(toksrc_name);
-  *namerefptr = _f.strval;
-  return _f.strval;
+  RPS_ASSERT(rps_is_main_thread());
+  if (rps_lexer_token_name_str_val && rps_lexer_token_name_str_val.is_string()
+      && rps_lexer_token_name_str_val.to_cppstring() == toksrc_name)
+    return rps_lexer_token_name_str_val;
+  rps_lexer_token_name_str_val = Rps_String::make(toksrc_name);
+  return rps_lexer_token_name_str_val;
 } // end Rps_TokenSource::name_val
 
 
@@ -92,13 +90,24 @@ const Rps_LexTokenZone*
 Rps_TokenSource::make_token(Rps_CallFrame*callframe,
                             Rps_ObjectRef lexkindarg, Rps_Value lexvalarg, Rps_String*sourcev)
 {
-  RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/callframe,
-                           Rps_ObjectRef lexkindob;
-                           Rps_Value lexval;
+  RPS_LOCALFRAME(RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef lexkindob;
+                 Rps_Value lexval;
+                 Rps_LexTokenZone*tokenp;
+                 Rps_Value namestrv;
+                 const Rps_String* nstrv;
                 );
+  RPS_ASSERT(rps_is_main_thread());
   _f.lexkindob = lexkindarg;
   _f.lexval = lexvalarg;
+  _f.namestrv = name_val(&_);
+  _f.nstrv = _f.namestrv.as_string();
+  _f.tokenp =
+    Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+    ( _f.lexkindob, _f.lexval, _f.nstrv,
+      toksrc_line, toksrc_col);
+  return _f.tokenp;
 } // end Rps_TokenSource::make_token
 
 Rps_TokenSource::~Rps_TokenSource()
@@ -179,8 +188,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                            Rps_ObjectRef lexkindob;
                            Rps_Value lextokv;
                            Rps_ObjectRef oblex;
+                           Rps_Value namev;
                 );
-  static Rps_Value namev;
   const char* curp = curcptr();
   size_t linelen = toksrc_linebuf.size();
   while (curp && isspace(*curp) && toksrc_col<(int)linelen)
@@ -211,8 +220,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           _f.lextokv = Rps_Value::make_tagged_int(l);
           _f.lexkindob = RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); //int∈class
         }
-      (void) name_val(&_, &namev);
-      const Rps_String* str = namev.to_string();
+      _f.namev = name_val(&_);
+      const Rps_String* str = _f.namev.to_string();
       Rps_LexTokenZone* lextok =
         Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
         (_f.lexkindob, _f.lextokv,
@@ -237,8 +246,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       toksrc_col += 4;
       _f.lextokv = Rps_DoubleValue(infd);
       _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
-      (void) name_val(&_, &namev);
-      const Rps_String* str = namev.to_string();
+      _f.namev= name_val(&_);
+      const Rps_String* str = _f.namev.to_string();
       Rps_LexTokenZone* lextok =
         Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
         (_f.lexkindob, _f.lextokv,
@@ -262,8 +271,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "get_token oid|name " << namestr);
       _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr,
                  Rps_ObjectRef::Null_When_Missing);
-      (void) name_val(&_, &namev);
-      const Rps_String* str = namev.to_string();
+      _f.namev = name_val(&_);
+      const Rps_String* str = _f.namev.to_string();
       if (_f.oblex)
         {
           _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
@@ -291,7 +300,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       else   // bad name
         {
           toksrc_col = startcol;
-          RPS_DEBUG_LOG(REPL, "get_token bad name " << namev << " at L" << toksrc_line << ",C" << toksrc_col
+          RPS_DEBUG_LOG(REPL, "get_token bad name " << _f.namev << " at L" << toksrc_line << ",C" << toksrc_col
                         << " of " << toksrc_name);
           return nullptr;
         }
