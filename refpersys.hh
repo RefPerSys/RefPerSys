@@ -2009,6 +2009,7 @@ protected:
   void set_name(std::string name) { toksrc_name = name; };
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
 public:
+  static constexpr unsigned max_gc_depth = 128;
   const char*curcptr(void) const {
     if (toksrc_linebuf.empty())
       return nullptr;
@@ -2017,6 +2018,8 @@ public:
       return toksrc_linebuf.c_str()+toksrc_col;
     return nullptr;
   };				// end Rps_TokenSource::curcptr
+  const Rps_LexTokenZone* make_token(Rps_CallFrame*callframe,
+			       Rps_ObjectRef lexkind, Rps_Value lexval, Rps_String*sourcev);
   virtual ~Rps_TokenSource();
   virtual bool get_line(void) =0;
   Rps_TokenSource(const Rps_TokenSource&) = delete;

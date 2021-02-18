@@ -60,6 +60,9 @@ void
 Rps_TokenSource::really_gc_mark(Rps_GarbageCollector&gc, unsigned depth)
 {
   RPS_ASSERT(gc.is_valid_garbcoll());
+  RPS_ASSERT(depth < max_gc_depth);
+  if (toksrc_ptrnameval)
+    toksrc_ptrnameval->gc_mark(gc, depth);
 } // end Rps_TokenSource::really_gc_mark
 
 
@@ -84,6 +87,19 @@ Rps_TokenSource::name_val(Rps_CallFrame*callframe, Rps_Value*namerefptr)
   return _f.strval;
 } // end Rps_TokenSource::name_val
 
+
+const Rps_LexTokenZone*
+Rps_TokenSource::make_token(Rps_CallFrame*callframe,
+                            Rps_ObjectRef lexkindarg, Rps_Value lexvalarg, Rps_String*sourcev)
+{
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/callframe,
+                           Rps_ObjectRef lexkindob;
+                           Rps_Value lexval;
+                );
+  _f.lexkindob = lexkindarg;
+  _f.lexval = lexvalarg;
+} // end Rps_TokenSource::make_token
 
 Rps_TokenSource::~Rps_TokenSource()
 {
@@ -157,7 +173,7 @@ Rps_LexTokenValue
 Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 {
   RPS_ASSERT(callframe==nullptr || callframe->is_good_call_frame());
-  RPS_LOCALFRAME(/*descr:*/nullptr,
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                            /*callerframe:*/callframe,
                            Rps_Value res;
                            Rps_ObjectRef lexkindob;
@@ -283,8 +299,20 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   //// literal strings are like in C++
   else if (*curp == '"')   /// plain literal string, on a single line
     {
+      int linestart = toksrc_line;
+      int colstart = toksrc_col;
       std::string litstr =
         rps_lex_literal_string(toksrc_name.c_str(), toksrc_linebuf.c_str(), toksrc_line, toksrc_col);
+      _f.lexkindob = RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); //string∈class
+      _f.lextokv = Rps_String::make(litstr);
+#if 0
+      Rps_LexTokenZone* lextok =
+        Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (_f.lexkindob, _f.lextokv,
+         ,
+         linestart, colstart);
+      _f.res = Rps_LexTokenValue(lextok);
+#endif
 #warning Rps_TokenSource::get_token should lex a literal string on single line
     }
 
