@@ -361,6 +361,33 @@ std::string
 Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
 {
 #warning some code from rps_lex_raw_literal_string file repl_rps.cc lines 1050-1115 should go here
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_ASSERT(rps_is_main_thread());
+  const char* curp = curcptr();
+  size_t linelen = toksrc_linebuf.size();
+  /// For C++, raw literal strings are multi-line, and explained in
+  /// en.cppreference.com/w/cpp/language/string_literal ... For
+  /// example R"delim(raw characters \)delim" In RefPerSys, we
+  /// restrict the <delim> to contain only letters, up to 15 of
+  /// them...
+  char delim[16];
+  memset (delim, 0, sizeof(delim));
+  int pos= -1;
+  int startlineno= toksrc_line;
+  int startcolno= toksrc_col;
+  if (sscanf(curp,  "R\"%15[A-Za-z](%n", delim, &pos) < 1
+      || !isalpha(delim[0])
+      || pos<=1)
+    /// should never happen
+    RPS_FATALOUT("corrupted Rps_TokenSource::lex_raw_literal_string '"
+                 << Rps_Cjson_String(curp) << "'"
+                 << std::endl
+                 << Rps_ShowCallFrame(callframe));
+  RPS_ASSERT(strlen(delim)>0 && strlen(delim)<15);
+  char endstr[24];
+  memset(endstr, 0, sizeof(endstr));
+  snprintf(endstr, sizeof(endstr), ")%s\"", delim);
+#warning Rps_TokenSource::lex_raw_literal_string is incomplete
   RPS_FATALOUT("unimplemented Rps_TokenSource::lex_raw_literal_string "
                << Rps_ShowCallFrame(callframe));
 } // end Rps_TokenSource::lex_raw_literal_string
