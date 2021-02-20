@@ -2009,6 +2009,7 @@ protected:
   Rps_TokenSource(std::string name);
   void set_name(std::string name) { toksrc_name = name; };
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
+  std::string lex_raw_literal_string(Rps_CallFrame*callframe);
 public:
   static constexpr unsigned max_gc_depth = 128;
   const char*curcptr(void) const {

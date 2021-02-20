@@ -267,7 +267,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       int curlin = toksrc_line;
       int curcol = toksrc_col;
       int startcol = curcol;
-      while ((isalpha(*curp) || *curp == '_') && toksrc_col<linelen)
+      while ((isalpha(*curp) || *curp == '_') && toksrc_col<(int)linelen)
         curp++, toksrc_col++;
       std::string namestr(startname, toksrc_col-startcol);
       RPS_DEBUG_LOG(REPL, "get_token oid|name " << namestr);
@@ -326,12 +326,43 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       _f.res = Rps_LexTokenValue(lextok);
       RPS_DEBUG_LOG(REPL, "get_token single-line string :-◑> " << _f.res);
       return _f.res;
-    }
+    } // end single-line literal string token
+
+  //// raw literal strings may span across several lines, like in C++
+  //// see https://en.cppreference.com/w/cpp/language/string_literal
+  else if (*curp == 'R'
+           && curp[0] == 'R' && curp[1] == '"' && isalpha(curp[2]))
+    {
+      int linestart = toksrc_line;
+      int colstart = toksrc_col;
+      std::string litstr = lex_raw_literal_string(&_);
+      _f.namev= name_val(&_);
+      const Rps_String* str = _f.namev.to_string();
+      _f.lexkindob = RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); //string∈class
+      _f.lextokv = Rps_String::make(litstr);
+      Rps_LexTokenZone* lextok =
+        Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (_f.lexkindob, _f.lextokv,
+         str,
+         linestart, colstart);
+      _f.res = Rps_LexTokenValue(lextok);
+      RPS_DEBUG_LOG(REPL, "get_token multi-line literal string :-◑> " << _f.res);
+      return _f.res;
+    } // end possibly multi-line raw literal strings
 
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
                << ":L" << toksrc_line << ",C" << toksrc_col);
   // we should refactor properly the rps_repl_lexer & Rps_LexTokenZone constructor here
 } // end Rps_TokenSource::get_token
+
+
+std::string
+Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
+{
+#warning some code from rps_lex_raw_literal_string file repl_rps.cc lines 1050-1115 should go here
+  RPS_FATALOUT("unimplemented Rps_TokenSource::lex_raw_literal_string "
+               << Rps_ShowCallFrame(callframe));
+} // end Rps_TokenSource::lex_raw_literal_string
 
 //// end of file lexer_rps.cc
