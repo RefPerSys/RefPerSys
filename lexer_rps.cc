@@ -360,6 +360,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 std::string
 Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
 {
+  std::string result;
 #warning some code from rps_lex_raw_literal_string file repl_rps.cc lines 1050-1115 should go here
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_ASSERT(rps_is_main_thread());
@@ -383,13 +384,38 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
                  << Rps_Cjson_String(curp) << "'"
                  << std::endl
                  << Rps_ShowCallFrame(callframe));
+  toksrc_col += pos;
   RPS_ASSERT(strlen(delim)>0 && strlen(delim)<15);
   char endstr[24];
   memset(endstr, 0, sizeof(endstr));
   snprintf(endstr, sizeof(endstr), ")%s\"", delim);
-#warning Rps_TokenSource::lex_raw_literal_string is incomplete
-  RPS_FATALOUT("unimplemented Rps_TokenSource::lex_raw_literal_string "
-               << Rps_ShowCallFrame(callframe));
+  RPS_DEBUG_LOG(REPL, "lex_raw_literal_string start L" << startlineno
+                << ",C" << startcolno
+                << "@" << toksrc_name
+                << " endstr " << endstr);
+  const char*endp = nullptr;
+  while ((curp = curcptr()) != nullptr
+         && (endp=strstr(curp, endstr)) == nullptr)
+    {
+      std::string reststr{curp};
+      if (!get_line())
+        {
+          RPS_WARNOUT("Rps_TokenSource::lex_raw_literal_string without end of string "
+                      << endstr
+                      << " starting L" << startlineno
+                      << ",C" << startcolno
+                      << "@" << toksrc_name
+                      << std::endl
+                      << Rps_ShowCallFrame(callframe));
+          throw std::runtime_error(std::string{"lex_raw_literal_string failed to find "}
+                                   + endstr);
+        }
+      result += reststr;
+    };				// end while curp....
+  if (endp)
+    toksrc_col += endp - curp;
+  RPS_DEBUG_LOG(REPL, "lex_raw_literal_string gives " << Rps_Cjson_String(result));
+  return result;
 } // end Rps_TokenSource::lex_raw_literal_string
 
 //// end of file lexer_rps.cc
