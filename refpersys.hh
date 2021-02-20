@@ -2023,7 +2023,7 @@ public:
   const Rps_LexTokenZone* make_token(Rps_CallFrame*callframe,
 			       Rps_ObjectRef lexkind, Rps_Value lexval, Rps_String*sourcev);
   virtual ~Rps_TokenSource();
-  virtual bool get_line(void) =0;
+  virtual bool get_line(void) =0; // gives true when another line has been read
   Rps_TokenSource(const Rps_TokenSource&) = delete;
   Rps_TokenSource() = delete;
   const std::string& name(void) const { return toksrc_name; };
