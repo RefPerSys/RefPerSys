@@ -178,6 +178,8 @@ Rps_CinTokenSource::get_line(void)
   return true;
 } // end Rps_CinTokenSource::get_line
 
+
+
 Rps_LexTokenValue
 Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 {
@@ -305,24 +307,25 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           return nullptr;
         }
     }
-  //// literal strings are like in C++
+  //// literal single line strings are like in C++
   else if (*curp == '"')   /// plain literal string, on a single line
     {
       int linestart = toksrc_line;
       int colstart = toksrc_col;
       std::string litstr =
         rps_lex_literal_string(toksrc_name.c_str(), toksrc_linebuf.c_str(), toksrc_line, toksrc_col);
+      _f.namev= name_val(&_);
+      const Rps_String* str = _f.namev.to_string();
       _f.lexkindob = RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); //string∈class
       _f.lextokv = Rps_String::make(litstr);
-#if 0
       Rps_LexTokenZone* lextok =
         Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
         (_f.lexkindob, _f.lextokv,
-         ,
+         str,
          linestart, colstart);
       _f.res = Rps_LexTokenValue(lextok);
-#endif
-#warning Rps_TokenSource::get_token should lex a literal string on single line
+      RPS_DEBUG_LOG(REPL, "get_token single-line string :-◑> " << _f.res);
+      return _f.res;
     }
 
 #warning Rps_TokenSource::get_token unimplemented
