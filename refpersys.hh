@@ -1995,6 +1995,7 @@ public:
 
 
 ////////////////////////////////////////////////////////////////
+struct Rps_ChunkData_st;
 class Rps_TokenSource		// this is *not* a value .....
 {
   friend class Rps_LexTokenValue;
@@ -2011,6 +2012,7 @@ protected:
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
   std::string lex_raw_literal_string(Rps_CallFrame*callframe);
   Rps_Value lex_code_chunk(Rps_CallFrame*callframe);
+  Rps_Value lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata);
 public:
   static constexpr unsigned max_gc_depth = 128;
   const char*curcptr(void) const {
@@ -2066,15 +2068,13 @@ public:
 
 
 constexpr const unsigned rps_chunkdata_magicnum = 0x2fa19e6d; // 799121005
-struct Rps_ChunkData_st
+struct Rps_ChunkData_st /// not a value neither
 {
-  unsigned chunkdata_magic;
+  unsigned chunkdata_magic;	// always rps_chunkdata_magicnum
   int chunkdata_lineno;
   int chunkdata_colno;
+  std::string chunkdata_name;
   char chunkdata_endstr[24];
-  std::istream* chunkdata_inp;
-  std::string chunkdata_input_name;
-  const char**chunkdata_plinebuf;
 };				// end Rps_ChunkData_st
 
 //////////////// boxed lexical token - always transient
