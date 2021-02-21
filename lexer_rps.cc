@@ -350,6 +350,61 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       return _f.res;
     } // end possibly multi-line raw literal strings
 
+  //// a code chunk or macro string is mixing strings and
+  //// objects.... Inspired by GCC MELT see
+  //// starynkevitch.net/Basile/gcc-melt/MELT-Starynkevitch-DSL2011.pdf
+  /* Improvement over GCC MELT: a macro string can start with "#{"
+     ending with "}#" or "#a{" ending with "}a#" or "#ab{" ending with
+     "}ab#" or "#abc{" ending with "}abc#" or "#abcd{" ending with
+     "}abcd#" or "#abcde{" ending with "}abcde#" or "#abcdef{" ending
+     with "}abcdef#" with the letters being arbitrary latin letters,
+     upper or lowercase. but no more than 7 letters. */
+  else if (curp[0] == '#'
+	   && (
+	       curp[1] == '{'
+	       || (isalpha(curp[1])
+		   && (curp[2] == '{')
+		   || (isalpha(curp[2])
+		       && (curp[3] == '{'
+			   || (isalpha(curp[3])
+			       && (curp[4] == '{'
+				   || (isalpha(curp[4])
+				       && (curp[5] == '{')
+				       || (isalpha(curp[6])
+					   && (curp[6] == '{'
+					       || (isalpha(curp[7])
+						   && (curp[7] == '{'
+						       || (isalpha(curp[7])
+							   && (curp[8] == '{'
+							       || (isalpha(curp[8])
+								   && curp[9] == '{')
+							       )
+							   )
+						       )
+						   )
+					       )
+					   )
+				       )
+				   )
+			       )
+			   )
+		       )
+		   )
+	       )
+	   ) {
+      int linestart = toksrc_line;
+      int colstart = toksrc_col;
+#warning  Rps_TokenSource::get_token should lex code chunks
+  RPS_FATALOUT("unimplemented Rps_TokenSource::get_token code chunk @ " << name()
+               << ":L" << toksrc_line << ",C" << toksrc_col);
+      
+  }
+						   
+					       
+				       
+		       
+	       
+	   
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
                << ":L" << toksrc_line << ",C" << toksrc_col);
