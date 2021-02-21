@@ -495,6 +495,9 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
                            /*callerframe:*/callframe,
                            Rps_Value res;
                 );
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_ASSERT(rps_is_main_thread());
+  struct Rps_ChunkData_st chkdata = {};
 #warning unimplemented Rps_TokenSource::lex_code_chunk, see rps_lex_code_chunk in repl_rps.cc:1133-1232
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
                << ":L" << toksrc_line << ",C" << toksrc_col
@@ -502,4 +505,16 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
                << Rps_ShowCallFrame(&_));
 } // end of Rps_TokenSource::lex_code_chunk
 
+Rps_Value
+Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata)
+{
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
+                           /*callerframe:*/callframe,
+                           Rps_Value res;
+                );
+  RPS_FATALOUT("unimplemented Rps_TokenSource::lex_chunk_element");
+#warning unimplemented Rps_TokenSource::lex_chunk_element, see rps_lex_chunk_element in repl_rps.cc:1229-1415
+} // end Rps_TokenSource::lex_chunk_element
 //// end of file lexer_rps.cc
