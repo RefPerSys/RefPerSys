@@ -376,6 +376,7 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
   int pos= -1;
   int startlineno= toksrc_line;
   int startcolno= toksrc_col;
+  std::string locname = toksrc_name;
   if (sscanf(curp,  "R\"%15[A-Za-z](%n", delim, &pos) < 1
       || !isalpha(delim[0])
       || pos<=1)
@@ -414,7 +415,10 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
     };				// end while curp....
   if (endp)
     toksrc_col += endp - curp;
-  RPS_DEBUG_LOG(REPL, "lex_raw_literal_string gives " << Rps_Cjson_String(result));
+  RPS_DEBUG_LOG(REPL, "lex_raw_literal_string gives '"
+                << Rps_Cjson_String(result)
+                << "' at " << locname << "@L" << startlineno
+                << ",C" << startcolno);
   return result;
 } // end Rps_TokenSource::lex_raw_literal_string
 
