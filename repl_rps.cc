@@ -1127,6 +1127,8 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
                            Rps_Value inputnamestrv;
                            Rps_Value chunkelemv;
                 );
+#warning rps_lex_code_chunk is obsolete -see Rps_TokenSource::lex_code_chunk
+#if 0 && oldcode
   char endstr[16];
   char start[8];
   memset(endstr, 0, sizeof(endstr));
@@ -1166,14 +1168,14 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   chkdata.chunkdata_lineno = lineno;
   chkdata.chunkdata_colno = colno;
   strcpy(chkdata.chunkdata_endstr, endstr);
-  chkdata.chunkdata_inp = inp;
-  chkdata.chunkdata_input_name.assign(input_name);
-  chkdata.chunkdata_plinebuf = plinebuf;
+  //chkdata.chunkdata_inp = inp;
+  chkdata.chunkdata_name.assign(input_name);
+  //chkdata.chunkdata_plinebuf = plinebuf;
   // TODO: we should add vector components to _f.obchk, reading several lines...
   do
     {
       RPS_DEBUG_LOG(REPL, "in rps_lex_chunk chunking "
-                    << chkdata.chunkdata_input_name
+                    << chkdata.chunkdata_name
                     << " L"<< chkdata.chunkdata_lineno
                     << ",C" << chkdata.chunkdata_colno
                     << " endstr='" << chkdata.chunkdata_endstr << "'"
@@ -1216,6 +1218,7 @@ rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_n
   colno = chkdata.chunkdata_colno;
   *plinebuf = *chkdata.chunkdata_plinebuf;
   chkdata.chunkdata_magic =0;
+#endif /*0 && oldcode*/
   return _f.obchk;
 } // end rps_lex_code_chunk
 
@@ -1228,18 +1231,21 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
 {
   RPS_ASSERT(chkdata != nullptr && chkdata->chunkdata_magic ==  rps_chunkdata_magicnum);
   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
-  RPS_ASSERT(chkdata->chunkdata_plinebuf != nullptr);
   RPS_LOCALFRAME(/*descr:*/nullptr,
                            /*callerframe:*/callframe,
                            Rps_ObjectRef obchunk;
                            Rps_Value chkelemv;
                            Rps_ObjectRef namedobv;
                 );
+#warning rps_lex_chunk_element is obsolete code
+#if 0 && oldcode
+  RPS_ASSERT(chkdata->chunkdata_plinebuf != nullptr);
   _f.obchunk = obchkarg;
   RPS_ASSERT(_f.obchunk);
   auto paylvect = _f.obchunk->get_dynamic_payload<Rps_PayloadVectVal>();
   RPS_ASSERT(paylvect != nullptr);
-  const char*linestart = *chkdata->chunkdata_plinebuf;
+  const char*linestart = nullptr; //*chkdata->chunkdata_plinebuf;
+#warning obsolete code in rps_lex_chunk_element which has no more sense
   int linelen = strlen(linestart);
   RPS_ASSERT(chkdata->chunkdata_colno >= 0 && chkdata->chunkdata_colno<linelen);
   RPS_DEBUG_LOG(REPL, "rps_lex_chunk_element start obchunk=" << _f.obchunk
@@ -1396,13 +1402,14 @@ rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_Chun
                     <<  RPS_FULL_BACKTRACE_HERE(1, "rps_lex_chunk_element-incomplete")
                    );
     }
-#warning we need to document and implement other chunk element conventions in rps_lex_chunk_element, in particular delimiters...
   RPS_FATALOUT("unimplemented rps_lex_chunk_element callframe=" << Rps_ShowCallFrame(callframe)
                << " obchkarg=" << obchkarg
                << " chkdata=" << chkdata
                << " @L" << chkdata->chunkdata_lineno << ",C"
                <<  chkdata->chunkdata_colno
                << " linestart='" << linestart << "'");
+#endif /*0 && obsolete*/
+#warning we need to document and implement other chunk element conventions in rps_lex_chunk_element, in particular delimiters...
 #warning unimplemented rps_lex_chunk_element
   return nullptr;
 } // end rps_lex_chunk_element
