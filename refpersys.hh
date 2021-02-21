@@ -2064,6 +2064,19 @@ public:
   virtual bool get_line(void);
 };	       // end Rps_ReadlineTokenSource
 
+
+constexpr const unsigned rps_chunkdata_magicnum = 0x2fa19e6d; // 799121005
+struct Rps_ChunkData_st
+{
+  unsigned chunkdata_magic;
+  int chunkdata_lineno;
+  int chunkdata_colno;
+  char chunkdata_endstr[24];
+  std::istream* chunkdata_inp;
+  std::string chunkdata_input_name;
+  const char**chunkdata_plinebuf;
+};				// end Rps_ChunkData_st
+
 //////////////// boxed lexical token - always transient
 class Rps_LexTokenZone  : public Rps_LazyHashedZoneValue
 {

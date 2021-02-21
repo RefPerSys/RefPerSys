@@ -1114,18 +1114,6 @@ rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char
 } // end rps_lex_raw_literal_string
 
 
-constexpr const unsigned rps_chunkdata_magicnum = 0x2fa19e6d; // 799121005
-struct Rps_ChunkData_st
-{
-  unsigned chunkdata_magic;
-  int chunkdata_lineno;
-  int chunkdata_colno;
-  char chunkdata_endstr[24];
-  std::istream* chunkdata_inp;
-  std::string chunkdata_input_name;
-  const char**chunkdata_plinebuf;
-};				// end Rps_ChunkData_st
-
 
 Rps_Value
 rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_ChunkData_st*chkdata);
