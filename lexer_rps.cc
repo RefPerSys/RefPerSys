@@ -360,51 +360,61 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
      with "}abcdef#" with the letters being arbitrary latin letters,
      upper or lowercase. but no more than 7 letters. */
   else if (curp[0] == '#'
-	   && (
-	       curp[1] == '{'
-	       || (isalpha(curp[1])
-		   && (curp[2] == '{')
-		   || (isalpha(curp[2])
-		       && (curp[3] == '{'
-			   || (isalpha(curp[3])
-			       && (curp[4] == '{'
-				   || (isalpha(curp[4])
-				       && (curp[5] == '{')
-				       || (isalpha(curp[6])
-					   && (curp[6] == '{'
-					       || (isalpha(curp[7])
-						   && (curp[7] == '{'
-						       || (isalpha(curp[7])
-							   && (curp[8] == '{'
-							       || (isalpha(curp[8])
-								   && curp[9] == '{')
-							       )
-							   )
-						       )
-						   )
-					       )
-					   )
-				       )
-				   )
-			       )
-			   )
-		       )
-		   )
-	       )
-	   ) {
+           && (
+             curp[1] == '{'
+             || (isalpha(curp[1])
+                 && (curp[2] == '{')
+                 || (isalpha(curp[2])
+                     && (curp[3] == '{'
+                         || (isalpha(curp[3])
+                             && (curp[4] == '{'
+                                 || (isalpha(curp[4])
+                                     && (curp[5] == '{')
+                                     || (isalpha(curp[6])
+                                         && (curp[6] == '{'
+                                             || (isalpha(curp[7])
+                                                 && (curp[7] == '{'
+                                                     || (isalpha(curp[7])
+                                                         && (curp[8] == '{'
+                                                             || (isalpha(curp[8])
+                                                                 && curp[9] == '{')
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+           )
+          )
+    {
       int linestart = toksrc_line;
       int colstart = toksrc_col;
+      RPS_DEBUG_LOG(REPL, "get_token code_chunk starting at " << toksrc_name
+                    << ":L" << linestart << ",C" << colstart << " " << curp);
+      _f.namev= name_val(&_);
+      const Rps_String* str = _f.namev.to_string();
+      _f.lextokv = lex_code_chunk(&_);
+      _f.lexkindob = RPS_ROOT_OB(_3rXxMck40kz03RxRLM); //code_chunk∈class
+      Rps_LexTokenZone* lextok =
+        Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (_f.lexkindob, _f.lextokv,
+         str,
+         linestart, colstart);
+      _f.res = Rps_LexTokenValue(lextok);
+      RPS_DEBUG_LOG(REPL, "get_token code_chunk :-◑> " << _f.res);
+      return _f.res;
 #warning  Rps_TokenSource::get_token should lex code chunks
-  RPS_FATALOUT("unimplemented Rps_TokenSource::get_token code chunk @ " << name()
-               << ":L" << toksrc_line << ",C" << toksrc_col);
-      
-  }
-						   
-					       
-				       
-		       
-	       
-	   
+      RPS_FATALOUT("unimplemented Rps_TokenSource::get_token code chunk @ " << name()
+                   << ":L" << toksrc_line << ",C" << toksrc_col);
+
+    }
+
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
                << ":L" << toksrc_line << ",C" << toksrc_col);
@@ -476,5 +486,20 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
                 << ",C" << startcolno);
   return result;
 } // end Rps_TokenSource::lex_raw_literal_string
+
+
+Rps_Value
+Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
+{
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
+                           /*callerframe:*/callframe,
+                           Rps_Value res;
+                );
+#warning unimplemented Rps_TokenSource::lex_code_chunk, see rps_lex_code_chunk in repl_rps.cc:1133-1232
+  RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
+               << ":L" << toksrc_line << ",C" << toksrc_col
+               << std::endl
+               << Rps_ShowCallFrame(&_));
+} // end of Rps_TokenSource::lex_code_chunk
 
 //// end of file lexer_rps.cc
