@@ -561,12 +561,37 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
 {
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(chkdata && chkdata->chunkdata_magic == rps_chunkdata_magicnum);
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
-                           /*callerframe:*/callframe,
-                           Rps_Value res;
-                           Rps_ObjectRef obchunk;
-                );
+		 /*callerframe:*/callframe,
+		 Rps_Value res;
+		 Rps_ObjectRef obchunk;
+		 Rps_ObjectRef namedob;
+		 );
   _f.obchunk = obchkarg;
+  RPS_ASSERT(chkdata->chunkdata_colno>=0
+	     && chkdata->chunkdata_colno<(int)toksrc_linebuf.size());
+  const char*pc = toksrc_linebuf.c_str() + chkdata->chunkdata_colno;
+  if (isalpha(*pc)) {
+    /// For C name-like things, we return the object naming them or else a string
+    int startnamecol =  chkdata->chunkdata_colno;
+    const char*startname = pc;
+    const char*endname = pc;
+    const char*eol =  toksrc_linebuf.c_str() +  toksrc_linebuf.size();
+    while ((isalnum(*endname) || *endname=='_') && endname<eol)
+      endname++;
+    std::string curname(startname, endname - startname);
+    _f.namedob = Rps_ObjectRef::find_object_by_string(&_, curname,
+						      Rps_ObjectRef::Null_When_Missing);
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element curname=" << curname
+		  << " in " << name()
+		  << ":L" << toksrc_line << ",C" << startnamecol
+		  << " namedob=" << _f.namedob);
+    if (_f.namedob)
+      return Rps_ObjectValue(_f.namedob);
+    _f.res = Rps_StringValue(curname);
+    return _f.res;
+  }
   RPS_FATALOUT("unimplemented Rps_TokenSource::lex_chunk_element obchunk=" << _f.obchunk << " @ " << name()
                << ":L" << toksrc_line << ",C" << toksrc_col);
 #warning unimplemented Rps_TokenSource::lex_chunk_element, see rps_lex_chunk_element in repl_rps.cc:1229-1415
