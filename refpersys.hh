@@ -2074,7 +2074,7 @@ struct Rps_ChunkData_st /// not a value neither
   int chunkdata_lineno;
   int chunkdata_colno;
   std::string chunkdata_name;
-  char chunkdata_endstr[24];
+  char chunkdata_endstr[16];
 };				// end Rps_ChunkData_st
 
 //////////////// boxed lexical token - always transient

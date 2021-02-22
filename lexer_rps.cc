@@ -493,17 +493,68 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
                            /*callerframe:*/callframe,
+                           Rps_ObjectRef obchunk;
+                           Rps_Value namev;
                            Rps_Value res;
+                           Rps_Value chunkelemv;
                 );
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_ASSERT(rps_is_main_thread());
   struct Rps_ChunkData_st chkdata = {};
-#warning unimplemented Rps_TokenSource::lex_code_chunk, see rps_lex_code_chunk in repl_rps.cc:1133-1232
-  RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
-               << ":L" << toksrc_line << ",C" << toksrc_col
-               << std::endl
-               << Rps_ShowCallFrame(&_));
+  chkdata.chunkdata_magic = rps_chunkdata_magicnum;
+  chkdata.chunkdata_lineno = toksrc_line;
+  chkdata.chunkdata_colno = toksrc_col;
+  chkdata.chunkdata_name = toksrc_name;
+  const char* curp = curcptr();
+  _f.namev= name_val(&_);
+  RPS_ASSERT(curp != nullptr && *curp != (char)0);
+  char startchunk[16];
+  memset(startchunk, 0, sizeof(startchunk));
+  int pos= -1;
+  if (sscanf(curp,  "#%6[a-zA-Z]{%n", startchunk, &pos)>0 && pos>0 && isalpha(startchunk[0]))
+    {
+      snprintf(chkdata.chunkdata_endstr, sizeof(chkdata.chunkdata_endstr), "}%s#", startchunk);
+    }
+  else // should never happen
+    RPS_FATALOUT("corrupted Rps_TokenSource::lex_code_chunk @ " << name()
+                 << ":L" << toksrc_line << ",C" << toksrc_col
+                 << " " << curp
+                 << std::endl);
+  _f.obchunk =
+    Rps_ObjectRef::make_object(&_,
+                               RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
+                               nullptr);
+  _f.obchunk->put_attr2(RPS_ROOT_OB(_1B7ITSHTZWp00ektj1), //input∈symbol
+                        _f.namev,
+                        RPS_ROOT_OB(_5FMX3lrhiw601iqPy5), //line∈symbol
+                        Rps_Value((intptr_t)chkdata.chunkdata_lineno, Rps_Value::Rps_IntTag{})
+                       );
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk @ " << name()
+                << ":L" << toksrc_line << ",C" << toksrc_col
+                << " start obchunk:" << _f.obchunk);
+  auto paylvec = _f.obchunk->put_new_plain_payload<Rps_PayloadVectVal>();
+  RPS_ASSERT(paylvec);
+  do
+    {
+      _f.chunkelemv = lex_chunk_element(&_, _f.obchunk, &chkdata);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk @ " << name()
+                    << ":L" << toksrc_line << ",C" << toksrc_col
+                    << std::endl
+                    << " obchunk=" << _f.obchunk
+                    << ", chunkelemv=" << _f.chunkelemv);
+      if (_f.chunkelemv)
+        paylvec->push_back(_f.chunkelemv);
+      // possibly related: https://framalistes.org/sympa/arc/refpersys-forum/2020-12/msg00036.html
+    }
+  while (_f.chunkelemv);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk @ " << name()
+                << ":L" << toksrc_line << ",C" << toksrc_col
+                << std::endl
+                << " :-◑> obchunk=" << _f.obchunk);
+  return _f.obchunk;
 } // end of Rps_TokenSource::lex_code_chunk
+
+
 
 Rps_Value
 Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata)
@@ -513,8 +564,11 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
                            /*callerframe:*/callframe,
                            Rps_Value res;
+                           Rps_ObjectRef obchunk;
                 );
-  RPS_FATALOUT("unimplemented Rps_TokenSource::lex_chunk_element");
+  _f.obchunk = obchkarg;
+  RPS_FATALOUT("unimplemented Rps_TokenSource::lex_chunk_element obchunk=" << _f.obchunk << " @ " << name()
+               << ":L" << toksrc_line << ",C" << toksrc_col);
 #warning unimplemented Rps_TokenSource::lex_chunk_element, see rps_lex_chunk_element in repl_rps.cc:1229-1415
 } // end Rps_TokenSource::lex_chunk_element
 //// end of file lexer_rps.cc
