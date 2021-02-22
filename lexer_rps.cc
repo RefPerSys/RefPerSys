@@ -531,8 +531,12 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
                 << " start obchunk:" << _f.obchunk);
   auto paylvec = _f.obchunk->put_new_plain_payload<Rps_PayloadVectVal>();
   RPS_ASSERT(paylvec);
+  int oldline = -1;
+  int oldcol = -1;
   do
     {
+      oldline = toksrc_line;
+      oldcol = toksrc_col;
       _f.chunkelemv = lex_chunk_element(&_, _f.obchunk, &chkdata);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk @ " << name()
                     << ":L" << toksrc_line << ",C" << toksrc_col
@@ -541,9 +545,12 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
                     << ", chunkelemv=" << _f.chunkelemv);
       if (_f.chunkelemv)
         paylvec->push_back(_f.chunkelemv);
-      // possibly related: https://framalistes.org/sympa/arc/refpersys-forum/2020-12/msg00036.html
+      /// for $. chunkelemv is null, but position changed...
+      ///
+      /// possibly related:
+      /// https://framalistes.org/sympa/arc/refpersys-forum/2020-12/msg00036.html
     }
-  while (_f.chunkelemv);
+  while (_f.chunkelemv || toksrc_col>oldcol || toksrc_line>oldline);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk @ " << name()
                 << ":L" << toksrc_line << ",C" << toksrc_col
                 << std::endl
@@ -569,6 +576,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
   RPS_ASSERT(chkdata->chunkdata_colno>=0
              && chkdata->chunkdata_colno<(int)toksrc_linebuf.size());
   const char*pc = toksrc_linebuf.c_str() + chkdata->chunkdata_colno;
+  const char*eol =  toksrc_linebuf.c_str() +  toksrc_linebuf.size();
   // name-like chunk element
   if (isalpha(*pc))
     {
@@ -614,7 +622,6 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element start space obchunk=" << _f.obchunk
                     << " @L" << chkdata->chunkdata_lineno << ",C"
                     <<  chkdata->chunkdata_colno);
-      const char*eol =  toksrc_linebuf.c_str() +  toksrc_linebuf.size();
       while (pc<eol && isspace(*pc))
         endspacecol++, pc++;
       _f.res = Rps_InstanceValue(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx), //space∈class
@@ -625,11 +632,54 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
       });
       chkdata->chunkdata_colno += endspacecol-startspacecol+1;
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element space obchunk=" << _f.obchunk
-                    << " -> res=" << _f.res
+                    << " -> number res=" << _f.res
                     << " @L" << chkdata->chunkdata_lineno << ",C"
                     <<  chkdata->chunkdata_colno);
       return _f.res;
     }
+  /// code chunk meta-variable or meta-notation....
+  else if (*pc == '$' && pc < eol)
+    {
+      int startcol = chkdata->chunkdata_colno;
+      // a dollar followed by a name is a meta-variable; that name should be known
+      if (isalpha(pc[1]))
+        {
+          const char*startname = pc+1;
+          const char*endname = startname;
+          while (endname < eol && (isalnum(*endname) || *endname == '_'))
+            endname++;;
+          std::string metaname(startname, endname-startname);
+          _f.namedob = Rps_ObjectRef::find_object_by_string(&_, metaname,
+                       Rps_ObjectRef::Null_When_Missing);
+          if (!_f.namedob)
+            {
+              RPS_WARNOUT("lex_chunk_element: unknown metavariable name " << metaname
+                          << " in " << name()
+                          << ":L" << toksrc_line << ",C" << startcol);
+              throw std::runtime_error(std::string{"lexical error - bad metaname "} + metaname + " in code chunk");
+            }
+          chkdata->chunkdata_colno += (endname-startname) + 1;
+          _f.res = Rps_InstanceValue(RPS_ROOT_OB(_1oPsaaqITVi03OYZb9), //meta_variable∈symbol
+                                     std::initializer_list<Rps_Value> {_f.namedob});
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element space obchunk=" << _f.obchunk
+                        << " -> metavariable res=" << _f.res
+                        << " @L" << chkdata->chunkdata_lineno << ",C"
+                        <<  chkdata->chunkdata_colno);
+          return _f.res;
+        }
+      /// two dollars are parsed as one
+      else if (pc[1]=='$')
+        {
+          chkdata->chunkdata_colno += 2;
+          _f.res = Rps_StringValue("$");
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element dollar obchunk=" << _f.obchunk
+                        << " -> dollar-string res=" << _f.res
+                        << " @L" << chkdata->chunkdata_lineno << ",C"
+                        <<  chkdata->chunkdata_colno);
+          return _f.res;
+        }
+    }
+#warning Rps_TokenSource::lex_chunk_element should parse delimiters...
   RPS_FATALOUT("unimplemented Rps_TokenSource::lex_chunk_element obchunk=" << _f.obchunk << " @ " << name()
                << ":L" << toksrc_line << ",C" << toksrc_col);
 #warning unimplemented Rps_TokenSource::lex_chunk_element, see rps_lex_chunk_element in repl_rps.cc:1229-1415
