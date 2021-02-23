@@ -410,7 +410,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "get_token code_chunk :-◑> " << _f.res);
       return _f.res;
 
-    }
+    } // end code chunk
 
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
