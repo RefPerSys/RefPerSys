@@ -614,7 +614,8 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
                          Rps_Value::Rps_IntTag{});
       return _f.res;
     }
-  /// For sequence of spaces, we return an instance of class space and value the number of space characters
+  /// For sequence of spaces, we return an instance of class space and
+  /// value the number of space characters
   else if (isspace(*pc))
     {
       int startspacecol = chkdata->chunkdata_colno;
@@ -678,6 +679,41 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
                         <<  chkdata->chunkdata_colno);
           return _f.res;
         }
+    }
+  //// end of chunk is }letters# or }#
+  else if (*pc == '}' && !strcmp(pc, chkdata->chunkdata_endstr))
+    {
+      chkdata->chunkdata_colno += strlen(chkdata->chunkdata_endstr);
+      _f.res = nullptr;
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element end-of-chunk obchunk=" << _f.obchunk
+                    << " @L" << chkdata->chunkdata_lineno << ",C"
+                    <<  chkdata->chunkdata_colno);
+      return nullptr;
+    }
+  //// any other sequence of UTF-8 excluding right brace } or dollar sign $
+  else
+    {
+      RPS_ASSERT(eol != nullptr && eol >= pc);
+      size_t restsiz = eol - pc;
+      const uint8_t* curu8p = (const uint8_t*)pc;
+      const uint8_t* eolu8p = (const uint8_t*)eol;
+      while (curu8p < eolu8p)
+        {
+          if (*(const char*)curu8p == '}' || *(const char*)curu8p == '$')
+            break;
+          int u8len = u8_mblen(curu8p, eolu8p - curu8p);
+          if (u8len <= 0)
+            break;
+          curu8p += u8len;
+        };
+      std::string str{pc, curu8p-(const uint8_t*)pc};
+      _f.res = Rps_StringValue(str);
+      chkdata->chunkdata_colno += str.size();
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element strseq obchunk=" << _f.obchunk
+                    << " -> plain-string res=" << _f.res
+                    << " @L" << chkdata->chunkdata_lineno << ",C"
+                    <<  chkdata->chunkdata_colno);
+      return _f.res;
     }
 #warning Rps_TokenSource::lex_chunk_element should parse delimiters...
   RPS_FATALOUT("unimplemented Rps_TokenSource::lex_chunk_element obchunk=" << _f.obchunk << " @ " << name()
