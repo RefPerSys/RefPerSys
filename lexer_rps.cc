@@ -32,8 +32,13 @@
 
 #include "refpersys.hh"
 
+/// GNU readline www.gnu.org/software/readline/
 #include "readline/readline.h"
 #include "readline/history.h"
+
+/// libunistring www.gnu.org/software/libunistring/
+#include "unictype.h"
+#include "uniconv.h"
 
 #include <wordexp.h>
 
@@ -191,9 +196,21 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                            Rps_Value lextokv;
                            Rps_ObjectRef oblex;
                            Rps_Value namev;
+                           Rps_Value delimv;
+                           Rps_ObjectRef obdictdelim;
                 );
   const char* curp = curcptr();
+  ucs4_t curuc=0;
   size_t linelen = toksrc_linebuf.size();
+  // check that we have a proper UTF-8 character
+  int ulen=u8_strmbtouc(&curuc, (const uint8_t*)curp); // length in bytes
+  if (ulen<=0)
+    {
+      std::ostringstream errout;
+      errout << "bad UTF-8 encoding in " << toksrc_name << ":L" << toksrc_line << ",C" << toksrc_col << std::flush;
+      RPS_WARNOUT("Rps_TokenSource::get_token: " << errout.str());
+      throw std::runtime_error(errout.str());
+    }
   while (curp && isspace(*curp) && toksrc_col<(int)linelen)
     curp++, toksrc_col++;
   if (toksrc_col>=(int)linelen)
@@ -369,15 +386,16 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                          || (isalpha(curp[3])
                              && (curp[4] == '{'
                                  || (isalpha(curp[4])
-                                     && (curp[5] == '{')
-                                     || (isalpha(curp[6])
-                                         && (curp[6] == '{'
-                                             || (isalpha(curp[7])
-                                                 && (curp[7] == '{'
-                                                     || (isalpha(curp[7])
-                                                         && (curp[8] == '{'
-                                                             || (isalpha(curp[8])
-                                                                 && curp[9] == '{')
+                                     && (curp[5] == '{'
+                                         || (isalpha(curp[6])
+                                             && (curp[6] == '{'
+                                                 || (isalpha(curp[7])
+                                                     && (curp[7] == '{'
+                                                         || (isalpha(curp[7])
+                                                             && (curp[8] == '{'
+                                                                 || (isalpha(curp[8])
+                                                                     && curp[9] == '{')
+                                                                )
                                                             )
                                                         )
                                                     )
@@ -409,9 +427,62 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       _f.res = Rps_LexTokenValue(lextok);
       RPS_DEBUG_LOG(REPL, "get_token code_chunk :-◑> " << _f.res);
       return _f.res;
+    } // end lexing code chunk
 
-    } // end code chunk
-
+  //// sequence of at most four ASCII or UTF-8 punctuation
+  else if (ispunct(*curp) || uc_is_punct(curuc))
+    {
+      _f.obdictdelim = RPS_ROOT_OB(_627ngdqrVfF020ugC5); //"repl_delim"∈string_dictionary
+      auto paylstrdict = _f.obdictdelim->get_dynamic_payload<Rps_PayloadStringDict>();
+      RPS_ASSERT (paylstrdict != nullptr);
+      char delimbuf[32];
+      memset(delimbuf, 0, sizeof(delimbuf));
+      unsigned short delimoff[8];
+      memset (delimoff, 0, sizeof(delimoff));
+      int nbpunct = 0;
+      do
+        {
+          curp = curcptr();
+          int ulen=u8_strmbtouc(&curuc, (const uint8_t*)curp); // length in bytes
+          if (ulen>0 && strlen(delimbuf)+ulen<sizeof(delimbuf)-1
+              && uc_is_punct(curuc))
+            {
+              delimoff[nbpunct] = strlen(delimbuf);
+              strcat(delimbuf, curp+delimoff[nbpunct]);
+              nbpunct++;
+            }
+        }
+      while (nbpunct < 4 && strlen(delimbuf) < sizeof(delimbuf)-8);
+      int startcol = toksrc_col;
+      do
+        {
+          _f.delimv = paylstrdict->find(delimbuf);
+          if (_f.delimv)
+            {
+              _f.lexkindob = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
+              _f.lextokv = _f.delimv;
+              toksrc_col += strlen(delimbuf);
+              const Rps_String* strv = _f.namev.to_string();
+              Rps_LexTokenZone* lextok =
+                Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+                (_f.lexkindob, _f.lextokv,
+                 strv,
+                 toksrc_line, startcol);
+              _f.res = Rps_LexTokenValue(lextok);
+              RPS_DEBUG_LOG(REPL, "get_token delimiter :-◑> " << _f.res);
+              return _f.res;
+              nbpunct--;
+              if (nbpunct>0)
+                delimbuf[delimoff[nbpunct]] = (char)0;
+              else
+                delimbuf[0] = (char)0;
+            }
+        }
+      while (delimbuf[0]);
+      RPS_WARNOUT("Rps_TokenSource::get_token unexpected delimiter " <<  curcptr()
+                  << " at " << toksrc_name << ":L" << toksrc_line << ",C" << startcol);
+      throw std::runtime_error("unexpected delimiter");
+    }
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
                << ":L" << toksrc_line << ",C" << toksrc_col);
