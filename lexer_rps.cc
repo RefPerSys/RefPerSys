@@ -221,7 +221,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   ucs4_t curuc=0;
   size_t linelen = toksrc_linebuf.size();
   // check that we have a proper UTF-8 character
-  int ulen=u8_strmbtouc(&curuc, (const uint8_t*)curp); // length in bytes
+  int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
   if (ulen<=0)
     {
       std::ostringstream errout;
@@ -462,7 +462,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       do
         {
           curp = curcptr();
-          int ulen=u8_strmbtouc(&curuc, (const uint8_t*)curp); // length in bytes
+          int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
           if (ulen>0 && strlen(delimbuf)+ulen<sizeof(delimbuf)-1
               && uc_is_punct(curuc))
             {
