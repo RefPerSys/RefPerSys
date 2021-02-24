@@ -184,6 +184,24 @@ Rps_CinTokenSource::get_line(void)
 } // end Rps_CinTokenSource::get_line
 
 
+Rps_ReadlineTokenSource::Rps_ReadlineTokenSource(std::string path)
+  : Rps_TokenSource(path)
+{
+} // end Rps_ReadlineTokenSource::Rps_ReadlineTokenSource
+
+Rps_ReadlineTokenSource::~Rps_ReadlineTokenSource()
+{
+};	// end Rps_ReadlineTokenSource::~Rps_ReadlineTokenSource
+
+bool
+Rps_ReadlineTokenSource::get_line(void)
+{
+  char *rl = readline(readline_prompt.c_str());
+  if (!rl) return false;
+  toksrc_linebuf.assign(rl);
+  free (rl), rl = nullptr;
+  return true;
+} // end Rps_ReadlineTokenSource::get_line
 
 Rps_LexTokenValue
 Rps_TokenSource::get_token(Rps_CallFrame*callframe)
@@ -380,21 +398,22 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
            && (
              curp[1] == '{'
              || (isalpha(curp[1])
-                 && (curp[2] == '{')
-                 || (isalpha(curp[2])
-                     && (curp[3] == '{'
-                         || (isalpha(curp[3])
-                             && (curp[4] == '{'
-                                 || (isalpha(curp[4])
-                                     && (curp[5] == '{'
-                                         || (isalpha(curp[6])
-                                             && (curp[6] == '{'
-                                                 || (isalpha(curp[7])
-                                                     && (curp[7] == '{'
-                                                         || (isalpha(curp[7])
-                                                             && (curp[8] == '{'
-                                                                 || (isalpha(curp[8])
-                                                                     && curp[9] == '{')
+                 && (curp[2] == '{'
+                     || (isalpha(curp[2])
+                         && (curp[3] == '{'
+                             || (isalpha(curp[3])
+                                 && (curp[4] == '{'
+                                     || (isalpha(curp[4])
+                                         && (curp[5] == '{'
+                                             || (isalpha(curp[6])
+                                                 && (curp[6] == '{'
+                                                     || (isalpha(curp[7])
+                                                         && (curp[7] == '{'
+                                                             || (isalpha(curp[7])
+                                                                 && (curp[8] == '{'
+                                                                     || (isalpha(curp[8])
+                                                                         && curp[9] == '{')
+                                                                    )
                                                                 )
                                                             )
                                                         )
@@ -791,4 +810,55 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
                << ":L" << toksrc_line << ",C" << toksrc_col);
 #warning unimplemented Rps_TokenSource::lex_chunk_element, see rps_lex_chunk_element in repl_rps.cc:1229-1415
 } // end Rps_TokenSource::lex_chunk_element
+
+
+
+void
+rps_repl_lexer_test(void)
+{
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
+                           /*callerframe:*/nullptr,
+                           Rps_Value curlextokenv;
+                );
+  RPS_ASSERT(rps_is_main_thread());
+  double startrealtime = rps_wallclock_real_time();
+  double startcputime = rps_thread_cpu_time();
+  RPS_DEBUG_LOG(REPL, "start rps_repl_lexer_test gitid " << rps_gitid
+                << " callframe:" << Rps_ShowCallFrame(&_));
+  rl_attempted_completion_function = rpsrepl_name_or_oid_completion;
+  Rps_ReadlineTokenSource rltoksrc("-*-");
+  int tokcnt=0;
+  int lincnt = 0;
+  while (!rps_repl_stopped)
+    {
+      char prompt[32];
+      memset(prompt, 0, sizeof(prompt));
+      if (lincnt % 4 == 0)
+        {
+          usleep(32768); // to slow down on infinite loop
+          RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test startloop lincnt=" << lincnt
+                        << " lineno=" << rltoksrc.line()
+                        << " colno=" << rltoksrc.col()
+                        << std::endl
+                        <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test startloop"));
+        };
+      snprintf(prompt, sizeof(prompt), "Rps_LEXTEST#%d:", lincnt);
+      rltoksrc.set_prompt(prompt);
+      do
+        {
+          _f.curlextokenv = rltoksrc.get_token(&_);
+          if (_f.curlextokenv)
+            {
+              tokcnt++;
+              RPS_INFORMOUT("token#" << tokcnt << ":" << _f.curlextokenv);
+            }
+        }
+      while (_f.curlextokenv);
+      if (!rltoksrc.get_line())
+        break;
+      lincnt++;
+    }
+  RPS_DEBUG_LOG(REPL, "end rps_repl_lexer_test lincnt=" << lincnt
+                << " tokcnt=" << tokcnt << std::endl);
+} // end rps_repl_lexer_test
 //// end of file lexer_rps.cc

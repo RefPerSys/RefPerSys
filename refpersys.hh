@@ -2064,6 +2064,7 @@ public:
   Rps_ReadlineTokenSource(std::string path);
   virtual ~Rps_ReadlineTokenSource();
   virtual bool get_line(void);
+  void set_prompt(const std::string& prompt) { readline_prompt= prompt; };
 };	       // end Rps_ReadlineTokenSource
 
 
