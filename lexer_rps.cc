@@ -222,7 +222,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   size_t linelen = toksrc_linebuf.size();
   // check that we have a proper UTF-8 character
   int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
-  if (ulen<=0)
+  if (ulen<0)
     {
       std::ostringstream errout;
       errout << "bad UTF-8 encoding in " << toksrc_name << ":L" << toksrc_line << ",C" << toksrc_col << std::flush;
@@ -308,8 +308,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "get_token oid|name " << namestr);
       _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr,
                  Rps_ObjectRef::Null_When_Missing);
-      _f.namev = name_val(&_);
+      _f.namev = name_val(&_); 
       const Rps_String* str = _f.namev.to_string();
+      RPS_DEBUG_LOG(REPL, "get_token namestr='" << Rps_Cjson_String(namestr) << "' oblex=" << _f.oblex
+		    << " namev=" << _f.namev << ", str=" << str);
       if (_f.oblex)
         {
           _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
