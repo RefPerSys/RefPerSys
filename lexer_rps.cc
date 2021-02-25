@@ -311,16 +311,17 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       _f.namev = name_val(&_); 
       const Rps_String* str = _f.namev.to_string();
       RPS_DEBUG_LOG(REPL, "get_token namestr='" << Rps_Cjson_String(namestr) << "' oblex=" << _f.oblex
-		    << " namev=" << _f.namev << ", str=" << str);
+		    << " namev=" << _f.namev << ", str=" << Rps_Value(str));
       if (_f.oblex)
         {
           _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
-          Rps_LexTokenZone* lextok =
+	  _f.lextokv = _f.oblex;
+          Rps_LexTokenZone* lextokz =
             Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
             (_f.lexkindob, _f.lextokv,
              str,
              curlin, curcol);
-          _f.res = Rps_LexTokenValue(lextok);
+          _f.res = Rps_LexTokenValue(lextokz);
           RPS_DEBUG_LOG(REPL, "get_token object :-◑> " << _f.res);
           return _f.res;
         }
