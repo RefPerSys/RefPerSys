@@ -196,6 +196,9 @@ Rps_ReadlineTokenSource::~Rps_ReadlineTokenSource()
 bool
 Rps_ReadlineTokenSource::get_line(void)
 {
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::get_line from" << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_ReadlineTokenSource::get_line"));
   char *rl = readline(readline_prompt.c_str());
   if (!rl) return false;
   toksrc_linebuf.assign(rl);
