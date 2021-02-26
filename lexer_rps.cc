@@ -198,7 +198,7 @@ Rps_ReadlineTokenSource::get_line(void)
 {
   RPS_ASSERT(rps_is_main_thread());
   RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::get_line from" << std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_ReadlineTokenSource::get_line"));
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_ReadlineTokenSource::get_line"));
   char *rl = readline(readline_prompt.c_str());
   if (!rl) return false;
   toksrc_linebuf.assign(rl);
@@ -311,14 +311,14 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "get_token oid|name " << namestr);
       _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr,
                  Rps_ObjectRef::Null_When_Missing);
-      _f.namev = name_val(&_); 
+      _f.namev = name_val(&_);
       const Rps_String* str = _f.namev.to_string();
       RPS_DEBUG_LOG(REPL, "get_token namestr='" << Rps_Cjson_String(namestr) << "' oblex=" << _f.oblex
-		    << " namev=" << _f.namev << ", str=" << Rps_Value(str));
+                    << " namev=" << _f.namev << ", str=" << Rps_Value(str));
       if (_f.oblex)
         {
           _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
-	  _f.lextokv = _f.oblex;
+          _f.lextokv = _f.oblex;
           Rps_LexTokenZone* lextokz =
             Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
             (_f.lexkindob, _f.lextokv,
@@ -863,6 +863,9 @@ rps_repl_lexer_test(void)
       if (!rltoksrc.get_line())
         break;
       lincnt++;
+      RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test got fresh line#" << lincnt
+                    << " '"
+                    << Rps_Cjson_String(rltoksrc.current_line()) << "'");
     }
   RPS_DEBUG_LOG(REPL, "end rps_repl_lexer_test lincnt=" << lincnt
                 << " tokcnt=" << tokcnt << std::endl);

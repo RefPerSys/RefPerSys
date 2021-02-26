@@ -2023,6 +2023,7 @@ public:
       return toksrc_linebuf.c_str()+toksrc_col;
     return nullptr;
   };				// end Rps_TokenSource::curcptr
+  const std::string current_line(void) const { return toksrc_linebuf; };
   const Rps_LexTokenZone* make_token(Rps_CallFrame*callframe,
 			       Rps_ObjectRef lexkind, Rps_Value lexval, Rps_String*sourcev);
   virtual ~Rps_TokenSource();
