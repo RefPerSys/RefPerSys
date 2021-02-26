@@ -453,8 +453,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     {
       int linestart = toksrc_line;
       int colstart = toksrc_col;
-      RPS_DEBUG_LOG(REPL, "get_token code_chunk starting at " << toksrc_name
-                    << ":L" << linestart << ",C" << colstart << " " << curp);
+      RPS_DEBUG_LOG(REPL, "get_token code_chunk starting at " << position_str() << curp);
       _f.namev= name_val(&_);
       const Rps_String* str = _f.namev.to_string();
       _f.lextokv = lex_code_chunk(&_);
@@ -649,7 +648,8 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
   RPS_ASSERT(paylvec);
   int oldline = -1;
   int oldcol = -1;
-  toksrc_col += strlen(startchunk);
+  toksrc_col += strlen(chkdata.chunkdata_endstr);
+  chkdata.chunkdata_colno += strlen(chkdata.chunkdata_endstr);
   do
     {
       oldline = toksrc_line;
@@ -716,13 +716,17 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
         endname++;
       std::string curname(startname, endname - startname);
       _f.namedob = Rps_ObjectRef::find_object_or_null_by_string(&_, curname);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element curname=" << curname
-                    << " in " << position_str(startnamecol)
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element curname='" << curname
+                    << "' in " << position_str(startnamecol)
                     << " namedob=" << _f.namedob);
       chkdata->chunkdata_colno += endname - startname;
       if (_f.namedob)
-        return Rps_ObjectValue(_f.namedob);
-      _f.res = Rps_StringValue(curname);
+        _f.res = Rps_ObjectValue(_f.namedob);
+      else
+        _f.res = Rps_StringValue(curname);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element curname='" << curname
+                    << "' res=" << _f.res << " at " << position_str(startnamecol));
+
       return _f.res;
     }
   // integer (base 10) chunk element
@@ -732,11 +736,10 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
       long long ll = strtoll(pc, &endnum, 10);
       int startcol =  chkdata->chunkdata_colno ;
       chkdata->chunkdata_colno += endnum - pc;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element number=" << ll
-                    << " in " << name()
-                    << ":L" << toksrc_line << ",C" << startcol);
       _f.res = Rps_Value((intptr_t)ll,
                          Rps_Value::Rps_IntTag{});
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element number=" << ll
+                    << " res=" << _f.res << " at " << position_str(startcol));
       return _f.res;
     }
   /// For sequence of spaces, we return an instance of class space and
@@ -815,23 +818,29 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
       toksrc_col += strlen(chkdata->chunkdata_endstr);
       return nullptr;
     }
-  //// any other sequence of UTF-8 excluding right brace } or dollar sign $
+  //// any other sequence of UTF-8 excluding right brace } or dollar sign $; we stop lexing when letter, digit, space
   else
     {
       RPS_ASSERT(eol != nullptr && eol >= pc);
       size_t restsiz = eol - pc;
+      const char *startpc = pc;
       const uint8_t* curu8p = (const uint8_t*)pc;
       const uint8_t* eolu8p = (const uint8_t*)eol;
       while (curu8p < eolu8p)
         {
           if (*(const char*)curu8p == '}' || *(const char*)curu8p == '$')
             break;
+	  if (isspace(*pc))
+	    break;
+	  if (isalnum(*pc))
+	    break;
           int u8len = u8_mblen(curu8p, eolu8p - curu8p);
           if (u8len <= 0)
             break;
           curu8p += u8len;
+	  pc += u8len;
         };
-      std::string str{pc, curu8p-(const uint8_t*)pc};
+      std::string str{startpc, curu8p-(const uint8_t*)startpc};
       _f.res = Rps_StringValue(str);
       chkdata->chunkdata_colno += str.size();
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element strseq obchunk=" << _f.obchunk
