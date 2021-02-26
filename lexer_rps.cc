@@ -322,9 +322,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
         curp++, toksrc_col++;
       std::string namestr(startname, toksrc_col-startcol);
       _f.namev = name_val(&_);
-      RPS_DEBUG_LOG(REPL, "get_token oid|name " << namestr
-                    << " namev=" << _f.namev);
+      RPS_DEBUG_LOG(REPL, "get_token oid|name '" << namestr << "' namev=" << _f.namev << " at "
+		    << position_str(startcol) << " ... " << position_str());
       _f.oblex = Rps_ObjectRef::find_object_or_null_by_string(&_, namestr);
+      RPS_DEBUG_LOG(REPL, "get_token oid|name '" << namestr << "' oblex=" << _f.oblex);
       const Rps_String* str = _f.namev.to_string();
       RPS_DEBUG_LOG(REPL, "get_token namestr='" << Rps_Cjson_String(namestr) << "' oblex=" << _f.oblex
                     << " namev=" << _f.namev << ", str=" << Rps_Value(str));
@@ -344,6 +345,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       else if (isalpha(namestr[0]))  // new symbol
         {
           _f.lexkindob = RPS_ROOT_OB(_36I1BY2NetN03WjrOv); //symbol∈class
+	  _f.lextokv = Rps_StringValue(namestr);
           Rps_LexTokenZone* lextok =
             Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
             (_f.lexkindob, _f.lextokv,
