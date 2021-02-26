@@ -2031,6 +2031,7 @@ public:
   Rps_TokenSource(const Rps_TokenSource&) = delete;
   Rps_TokenSource() = delete;
   const std::string& name(void) const { return toksrc_name; };
+  const std::string position_str(int col= -1) const;
   // return the name as a string value, hopefully memoized 
   Rps_Value name_val(Rps_CallFrame*callframe);
   int line(void) const { return toksrc_line; };

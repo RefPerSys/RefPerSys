@@ -115,6 +115,15 @@ Rps_TokenSource::make_token(Rps_CallFrame*callframe,
   return _f.tokenp;
 } // end Rps_TokenSource::make_token
 
+const std::string
+Rps_TokenSource::position_str(int col) const
+{
+  if (col<0) col = toksrc_col;
+  std::ostringstream outs;
+  outs << toksrc_name << ":L" << toksrc_line << ",C:"  << col << std::flush;
+  return outs.str();
+} // end Rps_TokenSource::position_str
+
 Rps_TokenSource::~Rps_TokenSource()
 {
   toksrc_name.clear();
@@ -843,8 +852,8 @@ rps_repl_lexer_test(void)
         {
           usleep(32768); // to slow down on infinite loop
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test startloop lincnt=" << lincnt
-                        << " lineno=" << rltoksrc.line()
-                        << " colno=" << rltoksrc.col()
+                        << " "
+                        << rltoksrc.position_str()
                         << std::endl
                         <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test startloop"));
         };
@@ -856,8 +865,12 @@ rps_repl_lexer_test(void)
           if (_f.curlextokenv)
             {
               tokcnt++;
-              RPS_INFORMOUT("token#" << tokcnt << ":" << _f.curlextokenv);
+              RPS_INFORMOUT("token#" << tokcnt << ":" << _f.curlextokenv
+                            << " from " << rltoksrc.position_str());
             }
+          else
+            RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test no token "
+                          << rltoksrc.position_str());
         }
       while (_f.curlextokenv);
       if (!rltoksrc.get_line())
@@ -865,9 +878,14 @@ rps_repl_lexer_test(void)
       lincnt++;
       RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test got fresh line#" << lincnt
                     << " '"
-                    << Rps_Cjson_String(rltoksrc.current_line()) << "'");
+                    << Rps_Cjson_String(rltoksrc.current_line()) << "' "
+                    << rltoksrc.position_str());
     }
   RPS_DEBUG_LOG(REPL, "end rps_repl_lexer_test lincnt=" << lincnt
-                << " tokcnt=" << tokcnt << std::endl);
+                << " tokcnt=" << tokcnt
+                << " at " << rltoksrc.position_str()
+                << std::endl);
 } // end rps_repl_lexer_test
+
+
 //// end of file lexer_rps.cc
