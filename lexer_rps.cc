@@ -170,6 +170,7 @@ Rps_StreamTokenSource::get_line(void)
 {
   std::getline( toksrc_input_stream, toksrc_linebuf);
   if (!toksrc_input_stream && toksrc_linebuf.empty()) return false;
+  new_input_line();
   return true;
 } // end Rps_StreamTokenSource::get_line
 
@@ -189,6 +190,7 @@ Rps_CinTokenSource::get_line(void)
 {
   std::getline(std::cin, toksrc_linebuf);
   if (!std::cin && toksrc_linebuf.empty()) return false;
+  new_input_line();
   return true;
 } // end Rps_CinTokenSource::get_line
 
@@ -212,8 +214,10 @@ Rps_ReadlineTokenSource::get_line(void)
   if (!rl) return false;
   toksrc_linebuf.assign(rl);
   free (rl), rl = nullptr;
+  new_input_line();
   return true;
 } // end Rps_ReadlineTokenSource::get_line
+
 
 Rps_LexTokenValue
 Rps_TokenSource::get_token(Rps_CallFrame*callframe)

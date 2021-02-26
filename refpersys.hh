@@ -2013,6 +2013,10 @@ protected:
   std::string lex_raw_literal_string(Rps_CallFrame*callframe);
   Rps_Value lex_code_chunk(Rps_CallFrame*callframe);
   Rps_Value lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata);
+  void new_input_line(void) {
+    toksrc_line++;
+    toksrc_col=0;
+  };
 public:
   static constexpr unsigned max_gc_depth = 128;
   const char*curcptr(void) const {
