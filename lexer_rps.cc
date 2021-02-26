@@ -619,13 +619,17 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
   char startchunk[16];
   memset(startchunk, 0, sizeof(startchunk));
   int pos= -1;
-  if (sscanf(curp,  "#%6[a-zA-Z]{%n", startchunk, &pos)>0 && pos>0 && isalpha(startchunk[0]))
+  if (!strncmp(curp, "#{", 2)) {
+    pos = 2;
+    startchunk[0] = (char)0;
+    strcpy(chkdata.chunkdata_endstr, "}#");
+  }
+  else if (sscanf(curp,  "#%.6[a-zA-Z]{%n", startchunk, &pos)>0 && pos>0 && isalpha(startchunk[0]))
     {
       snprintf(chkdata.chunkdata_endstr, sizeof(chkdata.chunkdata_endstr), "}%s#", startchunk);
     }
   else // should never happen
-    RPS_FATALOUT("corrupted Rps_TokenSource::lex_code_chunk @ " << name()
-                 << ":L" << toksrc_line << ",C" << toksrc_col
+    RPS_FATALOUT("corrupted Rps_TokenSource::lex_code_chunk @ " << position_str() 
                  << " " << curp
                  << std::endl);
   _f.obchunk =
@@ -637,9 +641,9 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
                         RPS_ROOT_OB(_5FMX3lrhiw601iqPy5), //line∈symbol
                         Rps_Value((intptr_t)chkdata.chunkdata_lineno, Rps_Value::Rps_IntTag{})
                        );
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk @ " << name()
-                << ":L" << toksrc_line << ",C" << toksrc_col
-                << " start obchunk:" << _f.obchunk);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk @ " << position_str()
+                << " start obchunk:" << _f.obchunk
+		<< " endstr:'" << chkdata.chunkdata_endstr << "'");
   auto paylvec = _f.obchunk->put_new_plain_payload<Rps_PayloadVectVal>();
   RPS_ASSERT(paylvec);
   int oldline = -1;
@@ -684,10 +688,19 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
                            Rps_ObjectRef namedob;
                 );
   _f.obchunk = obchkarg;
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element chunkdata_colno=" << chkdata->chunkdata_colno
+		<< " curpos:" << position_str()
+		<< " linebuf:'" << toksrc_linebuf << "' of size:" << toksrc_linebuf.size());
   RPS_ASSERT(chkdata->chunkdata_colno>=0
-             && chkdata->chunkdata_colno<(int)toksrc_linebuf.size());
+             && chkdata->chunkdata_colno <= (int)toksrc_linebuf.size());
   const char*pc = toksrc_linebuf.c_str() + chkdata->chunkdata_colno;
   const char*eol =  toksrc_linebuf.c_str() +  toksrc_linebuf.size();
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element pc='" << Rps_Cjson_String(pc) << "'");
+  if (!pc || pc[0] == (char)0 || pc == eol) {
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element end-of-line");
+    toksrc_col = toksrc_linebuf.size();
+    return nullptr;
+  }
   // name-like chunk element
   if (isalpha(*pc))
     {
@@ -701,8 +714,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
       std::string curname(startname, endname - startname);
       _f.namedob = Rps_ObjectRef::find_object_or_null_by_string(&_, curname);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element curname=" << curname
-                    << " in " << name()
-                    << ":L" << toksrc_line << ",C" << startnamecol
+                    << " in " << position_str(startnamecol)
                     << " namedob=" << _f.namedob);
       chkdata->chunkdata_colno += endname - startname;
       if (_f.namedob)
@@ -797,6 +809,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element end-of-chunk obchunk=" << _f.obchunk
                     << " @L" << chkdata->chunkdata_lineno << ",C"
                     <<  chkdata->chunkdata_colno);
+      toksrc_col += strlen(chkdata->chunkdata_endstr);
       return nullptr;
     }
   //// any other sequence of UTF-8 excluding right brace } or dollar sign $
