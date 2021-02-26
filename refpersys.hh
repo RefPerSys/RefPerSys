@@ -850,10 +850,20 @@ public:
   ///////////
   // these functions throw an exception on failure (unless dontfail is true, then gives nil)
   // find an object with a given oid or name string
-  static constexpr bool Fail_When_Missing = true;
-  static constexpr bool Null_When_Missing = false;
-  static Rps_ObjectRef find_object_by_string(Rps_CallFrame*callerframe,  const std::string& str, bool dontfail=false);
-  static Rps_ObjectRef find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, bool dontfail=false);
+  enum Find_Behavior_en {
+			 Rps_Null_When_Missing,
+			 Rps_Fail_If_Not_Found
+  };
+  static Rps_ObjectRef find_object_by_string(Rps_CallFrame*callerframe,  const std::string& str, Find_Behavior_en fb);
+  static inline Rps_ObjectRef find_object_or_null_by_string(Rps_CallFrame*callerframe,  const std::string& str) {
+    return find_object_by_string(callerframe, str, Rps_Null_When_Missing);
+  };
+  static inline Rps_ObjectRef find_object_or_fail_by_string(Rps_CallFrame*callerframe,  const std::string& str) {
+    return find_object_by_string(callerframe, str, Rps_Fail_If_Not_Found);
+  };
+  static Rps_ObjectRef find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, Find_Behavior_en fb);
+  static inline Rps_ObjectRef find_object_or_null_by_oid(Rps_CallFrame*callerframe, Rps_Id oid);
+  static inline Rps_ObjectRef find_object_or_fail_by_oid(Rps_CallFrame*callerframe, Rps_Id oid);
   static Rps_ObjectRef really_find_object_by_oid(const Rps_Id& oid);
   // create a class of given super class and name
   static Rps_ObjectRef make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef superclassob, std::string name);

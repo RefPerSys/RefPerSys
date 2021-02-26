@@ -1458,6 +1458,18 @@ Rps_ObjectRef::operator == (const Rps_ObjectRef& oth) const
   return _optr == oth._optr;
 }
 
+Rps_ObjectRef
+Rps_ObjectRef::find_object_or_null_by_oid(Rps_CallFrame*callerframe, Rps_Id oid)
+{
+  return find_object_by_oid(callerframe, oid, Rps_Null_When_Missing);
+}
+
+Rps_ObjectRef
+Rps_ObjectRef::find_object_or_fail_by_oid(Rps_CallFrame*callerframe, Rps_Id oid)
+{
+  return find_object_by_oid(callerframe, oid, Rps_Fail_If_Not_Found);
+}
+
 bool
 Rps_ObjectRef::operator != (const Rps_ObjectRef& oth) const
 {

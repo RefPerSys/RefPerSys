@@ -732,8 +732,7 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
       std::string namestr(linebuf+startnamecol, colno-startnamecol);
       RPS_DEBUG_LOG(REPL, "rps_repl_lexer: namestr=" << namestr << " @L" << lineno << "C" << startnamecol
                     << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer/name"));
-      _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr,
-                 Rps_ObjectRef::Fail_When_Missing);
+      _f.oblex = Rps_ObjectRef::find_object_or_fail_by_string(&_, namestr);
       if (_f.oblex)
         {
           RPS_DEBUG_LOG(REPL, "rps_repl_lexer  callcnt#" << callcnt <<" => object " << _f.oblex << " colno=" << colno

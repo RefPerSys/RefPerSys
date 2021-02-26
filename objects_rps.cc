@@ -59,7 +59,7 @@ Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*callerframe, const char*oidstr, Rps_O
   Rps_Id oid(oidstr,&end,&ok);
   if (!end || *end)
     throw RPS_RUNTIME_ERROR_OUT("Rps_ObjectRef: invalid compile-time oidstr=" << oidstr);
-  *this = find_object_by_oid(callerframe, oid);
+  *this = find_object_or_fail_by_oid(callerframe, oid);
 } // end Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*, constexpr const char*oidstr, Rps_ObjIdStrTag)
 
 void
@@ -1921,7 +1921,7 @@ Rps_PayloadSymbol::set_of_all_symbols(void)
 
 
 Rps_ObjectRef
-Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::string& str, bool dontfail)
+Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::string& str, Rps_ObjectRef::Find_Behavior_en behav)
 {
   RPS_LOCALFRAME(nullptr,
                  callerframe,
@@ -1935,7 +1935,7 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
                 << RPS_FULL_BACKTRACE_HERE(1, "find_object_by_string"));
   if (str.empty())
     {
-      if (dontfail)
+      if (behav == Rps_Null_When_Missing)
         return Rps_ObjectRef(nullptr);
       throw std::runtime_error("empty string to Rps_ObjectRef::find_object_by_string");
     }
@@ -1946,7 +1946,7 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
                     << str << "'  obsymb=" << _f.obsymb);
       if (!_f.obsymb)
         {
-          if (dontfail)
+          if (behav == Rps_Null_When_Missing)
             return Rps_ObjectRef(nullptr);
           throw std::runtime_error("Rps_ObjectRef::find_object_by_string: no symbol named " + str);
         }
@@ -1963,7 +1963,7 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
       RPS_DEBUG_LOG(LOWREP, "find_object_by_string for id=" << id);
       if (!id)
         {
-          if (dontfail)
+          if (behav == Rps_Null_When_Missing)
             return Rps_ObjectRef(nullptr);
           throw std::runtime_error("Rps_ObjectRef::find_object_by_string: bad id " + str);
         };
@@ -1972,23 +1972,24 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
                     << str << "'  obfound=" << _f.obfound);
       if (!_f.obfound)
         {
-          if (dontfail)
+          if (behav == Rps_Null_When_Missing)
             return Rps_ObjectRef(nullptr);
           throw std::runtime_error("Rps_ObjectRef::find_object_by_string: nonexistant id " + str);
         }
     }
   else
     {
-      if (dontfail)
+      if (behav == Rps_Null_When_Missing)
         return Rps_ObjectRef(nullptr);
       throw std::runtime_error("bad string " + str + " to Rps_ObjectRef::find_object_by_string");
     }
+  RPS_ASSERT(_f.obfound || behav == Rps_Null_When_Missing);
   return _f.obfound;
 } // end Rps_ObjectRef::find_object_by_string
 
 
 Rps_ObjectRef
-Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, bool dontfail)
+Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, Rps_ObjectRef::Find_Behavior_en behav)
 {
   RPS_LOCALFRAME(nullptr,
                  callerframe,
@@ -2000,7 +2001,7 @@ Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, bool do
                 << RPS_FULL_BACKTRACE_HERE(1, "find_object_by_oid"));
   if (!oid || !oid.valid())
     {
-      if (dontfail)
+      if (behav == Rps_Null_When_Missing)
         return Rps_ObjectRef(nullptr);
       throw std::runtime_error("Rps_ObjectRef::find_object_by_oid: invalid or empty oid");
     }
@@ -2011,10 +2012,11 @@ Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, bool do
                 << RPS_FULL_BACKTRACE_HERE(1, "find_object_by_oid"));
   if (!_f.obfound)
     {
-      if (dontfail)
+      if (behav == Rps_Null_When_Missing)
         return Rps_ObjectRef(nullptr);
       throw std::runtime_error(std::string{"Rps_ObjectRef::find_object: unknown id:"} + oid.to_string());
     }
+  RPS_ASSERT(_f.obfound || behav == Rps_Null_When_Missing);
   return _f.obfound;
 } // end Rps_ObjectRef::find_object_by_oid
 

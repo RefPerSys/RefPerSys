@@ -321,10 +321,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       while ((isalpha(*curp) || *curp == '_') && toksrc_col<(int)linelen)
         curp++, toksrc_col++;
       std::string namestr(startname, toksrc_col-startcol);
-      RPS_DEBUG_LOG(REPL, "get_token oid|name " << namestr);
-      _f.oblex = Rps_ObjectRef::find_object_by_string(&_, namestr,
-                 Rps_ObjectRef::Null_When_Missing);
       _f.namev = name_val(&_);
+      RPS_DEBUG_LOG(REPL, "get_token oid|name " << namestr
+                    << " namev=" << _f.namev);
+      _f.oblex = Rps_ObjectRef::find_object_or_null_by_string(&_, namestr);
       const Rps_String* str = _f.namev.to_string();
       RPS_DEBUG_LOG(REPL, "get_token namestr='" << Rps_Cjson_String(namestr) << "' oblex=" << _f.oblex
                     << " namev=" << _f.namev << ", str=" << Rps_Value(str));
@@ -697,8 +697,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
       while ((isalnum(*endname) || *endname=='_') && endname<eol)
         endname++;
       std::string curname(startname, endname - startname);
-      _f.namedob = Rps_ObjectRef::find_object_by_string(&_, curname,
-                   Rps_ObjectRef::Null_When_Missing);
+      _f.namedob = Rps_ObjectRef::find_object_or_null_by_string(&_, curname);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element curname=" << curname
                     << " in " << name()
                     << ":L" << toksrc_line << ",C" << startnamecol
@@ -759,8 +758,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
           while (endname < eol && (isalnum(*endname) || *endname == '_'))
             endname++;;
           std::string metaname(startname, endname-startname);
-          _f.namedob = Rps_ObjectRef::find_object_by_string(&_, metaname,
-                       Rps_ObjectRef::Null_When_Missing);
+          _f.namedob = Rps_ObjectRef::find_object_or_null_by_string(&_, metaname);
           if (!_f.namedob)
             {
               RPS_WARNOUT("lex_chunk_element: unknown metavariable name " << metaname

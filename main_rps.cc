@@ -1649,19 +1649,18 @@ rps_small_quick_tests_after_load(void)
                 << Rps_ShowCallFrame(&_)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_small_quick_tests_after_load"));
-  _f.obtempcpp = Rps_ObjectRef::find_object_by_string(&_, "temporary_cplusplus_code",
-                 Rps_ObjectRef::Fail_When_Missing);
+  _f.obtempcpp = Rps_ObjectRef::find_object_or_fail_by_string(&_, "temporary_cplusplus_code");
   RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obtempcpp=" << _f.obtempcpp);
   RPS_ASSERT(_f.obtempcpp);
   Rps_Id oid = Rps_Id ("_18DO93843oX02UWzq6");
   RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load oid=" << oid);
-  _f.obdispweb = Rps_ObjectRef::find_object_by_oid(&_, oid);
+  _f.obdispweb = Rps_ObjectRef::find_object_or_fail_by_oid(&_, oid);
   RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obdispweb=" << _f.obdispweb);
   RPS_ASSERT(_f.obdispweb);
   _f.obnew = Rps_ObjectRef::make_object(&_, Rps_ObjectRef::the_object_class());
   RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obnew=" << _f.obnew);
   RPS_ASSERT(_f.obnew);
-  _f.obfoundnew = Rps_ObjectRef::find_object_by_oid(&_, _f.obnew->oid());
+  _f.obfoundnew = Rps_ObjectRef::find_object_or_fail_by_oid(&_, _f.obnew->oid());
   RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obfoundnew=" << _f.obfoundnew << " obnew=" << _f.obnew);
   RPS_ASSERT(_f.obnew == _f.obfoundnew);
   RPS_DEBUG_LOG(CMD, "end rps_small_quick_tests_after_load");

@@ -1074,7 +1074,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                                      << " reqnum#" << reqnum
                                      << " for " << reqmethname << " of " << Rps_Cjson_String(reqpath)
                                      << " bad rps_action:" << rps_action);
-                      _f.obaction = Rps_ObjectRef::find_object_by_oid (&_, actid);
+                      _f.obaction = Rps_ObjectRef::find_object_or_null_by_oid (&_, actid);
                       RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
                                     << " reqnum#" << reqnum
                                     << " pi=" << pi << " inpjs=" << Rps_Cjson_String(inpjs)
