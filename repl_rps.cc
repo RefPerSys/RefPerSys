@@ -1498,6 +1498,7 @@ Rps_LexTokenZone::dump_json(Rps_Dumper*du) const
 void
 Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
 {
+  bool showchunk = false;
   out << "LexToken{";
   if (lex_kind == RPS_ROOT_OB(_36I1BY2NetN03WjrOv)) // symbol∈class
     out<<"°symbol";
@@ -1507,8 +1508,12 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
     out<<"°string";
   else if (lex_kind == RPS_ROOT_OB(_98sc8kSOXV003i86w5)) // double∈class
     out<<"°double";
-  else if (lex_kind == RPS_ROOT_OB(_3rXxMck40kz03RxRLM)) // code_chunk∈class
-    out<<"°code_chunk";
+  else if (lex_kind == RPS_ROOT_OB(_3rXxMck40kz03RxRLM))   // code_chunk∈class
+    {
+      out<<"°code_chunk";
+      if (depth==0)
+        showchunk = true;
+    }
   else if (lex_kind == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // object∈class
     out<<"°object";
   else if (lex_kind == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK)) //repl_delimiter∈class
@@ -1524,6 +1529,31 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
     };
   out << ", val=";
   lex_val.output(out, depth+1);
+  if (lex_val.is_object() && showchunk && depth<=1)
+    {
+      Rps_ObjectRef obr = lex_val.as_object();
+      if (obr)
+        {
+          auto paylvect = obr->get_dynamic_payload<Rps_PayloadVectVal>();
+          if (paylvect)
+            {
+              unsigned vsiz = paylvect->size();
+              out << "⟪";
+              for (unsigned ix=0; ix<vsiz; ix++)
+                {
+                  if (ix>0 && ix % 4==0)
+                    {
+                      out << ",";
+                      out << std::endl;
+                      for (unsigned k=depth; k>0; k--) out << " ";
+                    }
+                  else if (ix>0) out << ", ";
+                  out << "["<< ix << "]:" << paylvect->at(ix);
+                }
+              out << "⟫";
+            }
+        }
+    }
   if (lex_file)
     {
       out << ", @" << lex_file->cppstring() << ":" << lex_lineno << ":" << lex_colno;
