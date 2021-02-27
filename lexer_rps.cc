@@ -690,14 +690,15 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
                            Rps_ObjectRef namedob;
                 );
   _f.obchunk = obchkarg;
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element chunkdata_colno=" << chkdata->chunkdata_colno
+  RPS_DEBUG_LOG(LOW_REPL, "Rps_TokenSource::lex_chunk_element chunkdata_colno=" << chkdata->chunkdata_colno
                 << " curpos:" << position_str()
                 << " linebuf:'" << toksrc_linebuf << "' of size:" << toksrc_linebuf.size());
   RPS_ASSERT(chkdata->chunkdata_colno>=0
              && chkdata->chunkdata_colno <= (int)toksrc_linebuf.size());
   const char*pc = toksrc_linebuf.c_str() + chkdata->chunkdata_colno;
   const char*eol =  toksrc_linebuf.c_str() +  toksrc_linebuf.size();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element pc='" << Rps_Cjson_String(pc) << "'");
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element pc='" << Rps_Cjson_String(pc) << "'"
+                << " @" << position_str(chkdata->chunkdata_colno));
   if (!pc || pc[0] == (char)0 || pc == eol)
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element end-of-line");
@@ -759,11 +760,11 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
         Rps_Value((intptr_t)(endspacecol-startspacecol),
         Rps_Value::Rps_IntTag{})
       });
-      chkdata->chunkdata_colno += endspacecol-startspacecol+1;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element space obchunk=" << _f.obchunk
+      chkdata->chunkdata_colno += endspacecol-startspacecol;
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element obchunk=" << _f.obchunk
                     << " -> number res=" << _f.res
-                    << " @L" << chkdata->chunkdata_lineno << ",C"
-                    <<  chkdata->chunkdata_colno);
+                    << " @" << position_str(startspacecol)
+                    << " now chunking @ " << position_str(chkdata->chunkdata_colno));
       return _f.res;
     }
   /// code chunk meta-variable or meta-notation....
@@ -782,8 +783,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
           if (!_f.namedob)
             {
               RPS_WARNOUT("lex_chunk_element: unknown metavariable name " << metaname
-                          << " in " << name()
-                          << ":L" << toksrc_line << ",C" << startcol);
+                          << " in " << position_str(startcol));
               throw std::runtime_error(std::string{"lexical error - bad metaname "} + metaname + " in code chunk");
             }
           chkdata->chunkdata_colno += (endname-startname) + 1;
@@ -830,15 +830,15 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
         {
           if (*(const char*)curu8p == '}' || *(const char*)curu8p == '$')
             break;
-	  if (isspace(*pc))
-	    break;
-	  if (isalnum(*pc))
-	    break;
+          if (isspace(*pc))
+            break;
+          if (isalnum(*pc))
+            break;
           int u8len = u8_mblen(curu8p, eolu8p - curu8p);
           if (u8len <= 0)
             break;
           curu8p += u8len;
-	  pc += u8len;
+          pc += u8len;
         };
       std::string str{startpc, curu8p-(const uint8_t*)startpc};
       _f.res = Rps_StringValue(str);
