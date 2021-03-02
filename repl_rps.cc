@@ -1623,6 +1623,7 @@ rps_read_eval_print_loop(int &argc, char **argv)
       count++;
       snprintf(prompt, sizeof(prompt), "Rps_REPL#%d", count);
       rltoksrc.set_prompt(prompt);
+      RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop command count#" << count);
       if (count % 4 == 0)
         usleep(128*1024);
       _f.lextokv = rltoksrc.get_token(&_);
