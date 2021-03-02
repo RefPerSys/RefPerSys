@@ -81,7 +81,7 @@ RPS_INSTALL_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
 RPS_INSTALL_ROOT_OB(_6fmq7pZkmNd03UyPuO) //class∈symbol
 RPS_INSTALL_ROOT_OB(_6gxiw0snqrX01tZWW9) //"set_of_core_functions"∈mutable_set
 RPS_INSTALL_ROOT_OB(_6ulDdOP2ZNr001cqVZ) //immutable_instance∈class
-RPS_INSTALL_ROOT_OB(_6x4XcZ1fxp403uBUoz) //"rps_repl_interpret"∈core_function
+RPS_INSTALL_ROOT_OB(_6x4XcZ1fxp403uBUoz) //"rps_repl_interpret_token_source"∈core_function
 RPS_INSTALL_ROOT_OB(_6JbWqOsjX5T03M1eGM) //closure_for_method_selector∈symbol
 RPS_INSTALL_ROOT_OB(_6JYterg6iAu00cV9Ye) //set∈class
 RPS_INSTALL_ROOT_OB(_6NVM7sMcITg01ug5TC) //tuple∈class
