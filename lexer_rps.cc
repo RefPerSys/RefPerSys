@@ -615,7 +615,7 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
   const char* curp = curcptr();
   _f.namev= name_val(&_);
   RPS_ASSERT(curp != nullptr && *curp != (char)0);
-  char startchunk[16];
+  char startchunk[12];
   memset(startchunk, 0, sizeof(startchunk));
   int pos= -1;
   if (!strncmp(curp, "#{", 2))
@@ -624,7 +624,7 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
       startchunk[0] = (char)0;
       strcpy(chkdata.chunkdata_endstr, "}#");
     }
-  else if (sscanf(curp,  "#%.6[a-zA-Z]{%n", startchunk, &pos)>0 && pos>0 && isalpha(startchunk[0]))
+  else if (sscanf(curp,  "#%6[a-zA-Z]{%n", startchunk, &pos)>0 && pos>0 && isalpha(startchunk[0]))
     {
       snprintf(chkdata.chunkdata_endstr, sizeof(chkdata.chunkdata_endstr), "}%s#", startchunk);
     }
