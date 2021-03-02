@@ -1621,11 +1621,16 @@ rps_read_eval_print_loop(int &argc, char **argv)
       char prompt[32];
       memset(prompt, 0, sizeof(prompt));
       count++;
-      snprintf(prompt, sizeof(prompt), "Rps_REPL#%d", count);
+      snprintf(prompt, sizeof(prompt), "Rps_REPL#%d: ", count);
       rltoksrc.set_prompt(prompt);
       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop command count#" << count);
       if (count % 4 == 0)
         usleep(128*1024);
+      if (!rltoksrc.get_line())
+	break;
+      RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop count#" << count
+		    << " current_line='"
+		    << Rps_Cjson_String(rltoksrc.current_line()) << "'");
       _f.lextokv = rltoksrc.get_token(&_);
       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop got lextokv=" << _f.lextokv);
       RPS_FATALOUT("unimplemented rps_read_eval_print_loop lextokv=" << _f.lextokv);
