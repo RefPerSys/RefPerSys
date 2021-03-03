@@ -270,7 +270,24 @@ rps_repl_interpret_token_source(Rps_CallFrame*callframe, Rps_TokenSource& toksou
           try
             {
 	      _f.lextokenv = toksource.get_token(&_);
-	      RPS_DEBUG_LOG(REPL, "rps_repl_interpret_token_source commandpos:" << commandpos << " lextokenv=" << _f.lextokenv);
+	      RPS_DEBUG_LOG(REPL, "rps_repl_interpret_token_source commandpos:" << commandpos << " lextokenv=" << _f.lextokenv
+			    << " currentpos:" << toksource.position_str());
+	      if (!_f.lextokenv) {
+		endcommand = true;
+		break;
+	      }
+	      RPS_ASSERT(_f.lextokenv.is_lextoken());
+	      const Rps_LexTokenZone* lextokz = _f.lextokenv.as_lextoken();
+	      RPS_ASSERT(lextokz);
+	      if (lextokz->lxkind()
+		  != RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) {//object∈class
+		RPS_WARNOUT("rps_repl_interpret_token_source command at "
+			    << commandpos
+			    << " should start with an object but got "
+			    << _f.lextokenv);
+		continue;
+	      }
+	      ///
 #warning unimplemented rps_repl_interpret_token_source
 	      RPS_FATALOUT("rps_repl_interpret_token_source unimplemented commandpos " << commandpos << " lextokenv=" << _f.lextokenv);
             } // ending try...
@@ -1632,7 +1649,8 @@ rps_read_eval_print_loop(int &argc, char **argv)
 		    << " current_line='"
 		    << Rps_Cjson_String(rltoksrc.current_line()) << "'");
       _f.lextokv = rltoksrc.get_token(&_);
-      RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop got lextokv=" << _f.lextokv);
+      RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop got lextokv=" << _f.lextokv << " pos=" << rltoksrc.position_str());
+#warning rps_read_eval_print_loop should process the command like rps_repl_cmd_tokenizer did below
       RPS_FATALOUT("unimplemented rps_read_eval_print_loop lextokv=" << _f.lextokv);
       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop done prompt=" << prompt << std::endl);
     };
