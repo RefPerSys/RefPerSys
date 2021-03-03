@@ -58,10 +58,10 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   static Rps_Id descoid;
   if (!descoid) descoid=Rps_Id("_61pgHb5KRq600RLnKD");
   RPS_DEBUG_LOG(REPL, "REPL command dump callcnt#" << callcnt
-		<< " descoid=" << descoid
-		<< " CALLED from "
-		<< Rps_ShowCallFrame(callerframe) << std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD"));
+                << " descoid=" << descoid
+                << " CALLED from "
+                << Rps_ShowCallFrame(callerframe) << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD"));
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
                            callerframe,
                            Rps_ObjectRef replcmdob;
