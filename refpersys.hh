@@ -2123,6 +2123,11 @@ protected:
   virtual void dump_scan(Rps_Dumper*, unsigned) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
 public:
+  Rps_ObjectRef lxkind() const { return lex_kind; };
+  Rps_Value lxval() const { return lex_val; };
+  const Rps_String* lxfile() const { return lex_file; };
+  int lxline() const { return lex_lineno; };
+  int lxcol() const { return lex_colno; };
   static Rps_ObjectRef the_lexical_token_class(void);
   virtual void val_output(std::ostream& outs, unsigned depth) const;
   virtual uint32_t wordsize() const
