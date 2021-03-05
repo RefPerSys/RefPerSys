@@ -1625,6 +1625,7 @@ rps_read_eval_print_loop(int &argc, char **argv)
                            /*callerframe:*/nullptr,
                            Rps_Value lextokv;
                            Rps_Value lexval;
+                           Rps_ObjectRef cmdob;
                 );
   for (int ix=0; ix<argc; ix++)
     RPS_DEBUG_LOG(REPL, "REPL arg [" << ix << "]: " << argv[ix]);
@@ -1666,6 +1667,10 @@ rps_read_eval_print_loop(int &argc, char **argv)
           continue;
         }
       _f.lexval = lextokz->lxval();
+      RPS_ASSERT(_f.lexval.is_object());
+      _f.cmdob = _f.lexval.as_object();
+      RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop cmdob=" << _f.cmdob
+                    << " at " << commandpos);
 #warning rps_read_eval_print_loop should process the command like rps_repl_cmd_tokenizer did below
       RPS_FATALOUT("unimplemented rps_read_eval_print_loop lextokv=" << _f.lextokv << " lexval=" << _f.lexval);
       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop done prompt=" << prompt << std::endl);
