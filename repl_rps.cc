@@ -1626,6 +1626,7 @@ rps_read_eval_print_loop(int &argc, char **argv)
                            Rps_Value lextokv;
                            Rps_Value lexval;
                            Rps_ObjectRef cmdob;
+                           Rps_Value cmdparserv;
                 );
   for (int ix=0; ix<argc; ix++)
     RPS_DEBUG_LOG(REPL, "REPL arg [" << ix << "]: " << argv[ix]);
@@ -1671,6 +1672,13 @@ rps_read_eval_print_loop(int &argc, char **argv)
       _f.cmdob = _f.lexval.as_object();
       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop cmdob=" << _f.cmdob
                     << " at " << commandpos);
+      if (_f.lexval.is_instance_of(&_,RPS_ROOT_OB(_8CncrUdoSL303T5lOK)))   //repl_command∈class
+        {
+          _f.cmdparserv = _f.cmdob
+                           ->get_attr1(&_,RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd)); //repl_command_parser∈symbol
+          RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop cmdob=" << _f.cmdob << " is repl_command of repl_command_parser: " << _f.cmdparserv);
+#warning rps_read_eval_print_loop TODO: cmdparserv is probably a closure, we should check that and we need to apply it!
+        }
 #warning rps_read_eval_print_loop should process the command like rps_repl_cmd_tokenizer did below
       RPS_FATALOUT("unimplemented rps_read_eval_print_loop lextokv=" << _f.lextokv << " lexval=" << _f.lexval);
       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop done prompt=" << prompt << std::endl);
