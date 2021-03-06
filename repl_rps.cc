@@ -877,7 +877,10 @@ Rps_Value
 rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_ChunkData_st*chkdata);
 
 Rps_Value
-rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int &lineno, int& colno)
+rps_lex_code_chunk(Rps_CallFrame *callframe, [[maybe_unused]] std::istream *inp, 
+        [[maybe_unused]] const char *input_name, 
+        [[maybe_unused]] const char **plinebuf, [[maybe_unused]] int &lineno, 
+        [[maybe_unused]] int& colno)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
                            /*callerframe:*/callframe,
