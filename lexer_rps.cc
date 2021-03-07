@@ -109,9 +109,10 @@ Rps_TokenSource::make_token(Rps_CallFrame*callframe,
   _f.namestrv = name_val(&_);
   _f.nstrv = _f.namestrv.as_string();
   _f.tokenp =
-    Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-    ( _f.lexkindob, _f.lexval, _f.nstrv,
-      toksrc_line, toksrc_col);
+    Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,
+    Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+    (this, _f.lexkindob, _f.lexval, _f.nstrv,
+     toksrc_line, toksrc_col);
   return _f.tokenp;
 } // end Rps_TokenSource::make_token
 
@@ -276,8 +277,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       _f.namev = name_val(&_);
       const Rps_String* str = _f.namev.to_string();
       Rps_LexTokenZone* lextok =
-        Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-        (_f.lexkindob, _f.lextokv,
+        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (this,_f.lexkindob, _f.lextokv,
          str,
          curlin, curcol);
       _f.res = Rps_LexTokenValue(lextok);
@@ -302,8 +303,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       _f.namev= name_val(&_);
       const Rps_String* str = _f.namev.to_string();
       Rps_LexTokenZone* lextok =
-        Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-        (_f.lexkindob, _f.lextokv,
+        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (this,_f.lexkindob, _f.lextokv,
          str,
          curlin, curcol);
       _f.res = Rps_LexTokenValue(lextok);
@@ -334,8 +335,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
           _f.lextokv = _f.oblex;
           Rps_LexTokenZone* lextokz =
-            Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-            (_f.lexkindob, _f.lextokv,
+            Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+            (this, _f.lexkindob, _f.lextokv,
              str,
              curlin, curcol);
           _f.res = Rps_LexTokenValue(lextokz);
@@ -347,8 +348,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           _f.lexkindob = RPS_ROOT_OB(_36I1BY2NetN03WjrOv); //symbol∈class
           _f.lextokv = Rps_StringValue(namestr);
           Rps_LexTokenZone* lextok =
-            Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-            (_f.lexkindob, _f.lextokv,
+            Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+            (this, _f.lexkindob, _f.lextokv,
              str,
              curlin, curcol);
           _f.res = Rps_LexTokenValue(lextok);
@@ -375,8 +376,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       _f.lexkindob = RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); //string∈class
       _f.lextokv = Rps_String::make(litstr);
       Rps_LexTokenZone* lextok =
-        Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-        (_f.lexkindob, _f.lextokv,
+        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (this,_f.lexkindob, _f.lextokv,
          str,
          linestart, colstart);
       _f.res = Rps_LexTokenValue(lextok);
@@ -397,8 +398,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       _f.lexkindob = RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); //string∈class
       _f.lextokv = Rps_String::make(litstr);
       Rps_LexTokenZone* lextok =
-        Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-        (_f.lexkindob, _f.lextokv,
+        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (this,_f.lexkindob, _f.lextokv,
          str,
          linestart, colstart);
       _f.res = Rps_LexTokenValue(lextok);
@@ -459,8 +460,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       _f.lextokv = lex_code_chunk(&_);
       _f.lexkindob = RPS_ROOT_OB(_3rXxMck40kz03RxRLM); //code_chunk∈class
       Rps_LexTokenZone* lextok =
-        Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-        (_f.lexkindob, _f.lextokv,
+        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (this,_f.lexkindob, _f.lextokv,
          str,
          linestart, colstart);
       _f.res = Rps_LexTokenValue(lextok);
@@ -503,8 +504,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
               toksrc_col += strlen(delimbuf);
               const Rps_String* strv = _f.namev.to_string();
               Rps_LexTokenZone* lextok =
-                Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-                (_f.lexkindob, _f.lextokv,
+                Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+                (this,_f.lexkindob, _f.lextokv,
                  strv,
                  toksrc_line, startcol);
               _f.res = Rps_LexTokenValue(lextok);
@@ -865,7 +866,7 @@ rps_repl_lexer_test(void)
                            Rps_Value curlextokenv;
                 );
   RPS_ASSERT(rps_is_main_thread());
-  
+
   double startrealtime = rps_wallclock_real_time();
   double startcputime = rps_thread_cpu_time();
 

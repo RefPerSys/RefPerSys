@@ -1769,6 +1769,12 @@ public:
   {
     return new(nullptr) ZoneClass(arg1, arg2, arg3, arg4, arg5);
   };
+  template <typename ZoneClass, typename Arg1Class, typename Arg2Class, typename Arg3Class, typename Arg4Class, typename Arg5Class, typename Arg6Class>
+  static ZoneClass*
+  rps_allocate6(Arg1Class arg1, Arg2Class arg2, Arg3Class arg3, Arg4Class arg4, Arg5Class arg5, Arg6Class arg6)
+  {
+    return new(nullptr) ZoneClass(arg1, arg2, arg3, arg4, arg5, arg6);
+  };
   template <typename ZoneClass, class ...Args> static ZoneClass*
   rps_allocate_with_wordgap(unsigned wordgap, Args... args)
   {
@@ -2107,6 +2113,7 @@ class Rps_LexTokenZone  : public Rps_LazyHashedZoneValue
   Rps_ObjectRef lex_kind;
   Rps_Value lex_val;
   const Rps_String* lex_file;
+  const Rps_TokenSource* lex_src;
   int lex_lineno;
   int lex_colno;
 public:
@@ -2114,7 +2121,7 @@ public:
     return Rps_QuasiZone::operator new(siz,nullptr);
   }
 protected:
-  Rps_LexTokenZone(Rps_ObjectRef kind, Rps_Value val, const Rps_String*string, int line, int col);
+  Rps_LexTokenZone(Rps_TokenSource*psrc, Rps_ObjectRef kind, Rps_Value val, const Rps_String*string, int line, int col);
 protected:
   virtual ~Rps_LexTokenZone();
   virtual Rps_HashInt compute_hash(void) const;

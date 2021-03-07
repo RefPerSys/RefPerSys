@@ -258,7 +258,7 @@ rps_repl_interpret_token_source(Rps_CallFrame*callframe, Rps_TokenSource& toksou
                 << startpos
                 << " callframe: " << Rps_ShowCallFrame(&_));
   bool endcommand = false;
-  
+
   [[maybe_unused]] int cmdcount = 0;
 
   {
@@ -880,10 +880,10 @@ Rps_Value
 rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_ChunkData_st*chkdata);
 
 Rps_Value
-rps_lex_code_chunk(Rps_CallFrame *callframe, [[maybe_unused]] std::istream *inp, 
-        [[maybe_unused]] const char *input_name, 
-        [[maybe_unused]] const char **plinebuf, [[maybe_unused]] int &lineno, 
-        [[maybe_unused]] int& colno)
+rps_lex_code_chunk(Rps_CallFrame *callframe, [[maybe_unused]] std::istream *inp,
+                   [[maybe_unused]] const char *input_name,
+                   [[maybe_unused]] const char **plinebuf, [[maybe_unused]] int &lineno,
+                   [[maybe_unused]] int& colno)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
                            /*callerframe:*/callframe,
@@ -991,8 +991,8 @@ rps_lex_code_chunk(Rps_CallFrame *callframe, [[maybe_unused]] std::istream *inp,
 /// Inside a code chunk represented by object obchkarg, parse some
 /// chunk element...
 Rps_Value
-rps_lex_chunk_element(Rps_CallFrame *callframe, 
-  [[maybe_unused]] Rps_ObjectRef obchkarg, Rps_ChunkData_st *chkdata)
+rps_lex_chunk_element(Rps_CallFrame *callframe,
+                      [[maybe_unused]] Rps_ObjectRef obchkarg, Rps_ChunkData_st *chkdata)
 {
   RPS_ASSERT(chkdata != nullptr && chkdata->chunkdata_magic ==  rps_chunkdata_magicnum);
   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
@@ -1184,11 +1184,12 @@ rps_lex_chunk_element(Rps_CallFrame *callframe,
 ////////////////////////////////////////////////////////////////
 //// the Rps_LexTokenZone values are transient, but do need some GC support
 
-Rps_LexTokenZone::Rps_LexTokenZone(Rps_ObjectRef kindob, Rps_Value val, const Rps_String*filestringp, int line, int col)
+Rps_LexTokenZone::Rps_LexTokenZone(Rps_TokenSource* tsrc, Rps_ObjectRef kindob, Rps_Value val, const Rps_String*filestringp, int line, int col)
   : Rps_LazyHashedZoneValue(Rps_Type::LexToken),
     lex_kind(kindob),
     lex_val(val),
     lex_file(filestringp),
+    lex_src(tsrc),
     lex_lineno(line),
     lex_colno(col)
 {
@@ -1200,6 +1201,7 @@ Rps_LexTokenZone::~Rps_LexTokenZone()
 {
   lex_kind = nullptr;
   lex_val = nullptr;
+  lex_src = nullptr;
 } // end Rps_LexTokenZone::~Rps_LexTokenZone
 
 Rps_HashInt
@@ -1393,6 +1395,7 @@ Rps_LexTokenZone::less(Rps_ZoneValue const&zv) const
     return  Rps_Type::LexToken < zv.stored_type();
 } // end Rps_LexTokenZone::less
 
+#if 0 && oldcode
 // Tokenize a lexical token; an optional double-ended queue of
 // already lexed token enable limited backtracking when needed....
 const Rps_LexTokenZone*
@@ -1481,8 +1484,9 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
                     << ", colno=" << colno);
       {
         Rps_LexTokenZone* lextok =
-          Rps_QuasiZone::rps_allocate5<Rps_LexTokenZone,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-          (_f.lexkindob,
+          Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+          (this,
+           _f.lexkindob,
            _f.lextokv,
            Rps_StringValue(input_name).as_string(),
            startline,
@@ -1499,6 +1503,7 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
                << (curinp?curinp:" ..."));
 #warning incomplete Rps_LexTokenZone::tokenize, should wrap rps_repl_lexer
 } // end Rps_LexTokenZone::tokenize
+#endif /*0 && oldcode*/
 ////////////////////////////////////////////////////////////////
 
 
@@ -1634,6 +1639,8 @@ rps_read_eval_print_loop(int &argc, char **argv)
                            Rps_Value lexval;
                            Rps_ObjectRef cmdob;
                            Rps_Value cmdparserv;
+                           Rps_Value parsmainv;
+                           Rps_Value parsextrav;
                 );
   for (int ix=0; ix<argc; ix++)
     RPS_DEBUG_LOG(REPL, "REPL arg [" << ix << "]: " << argv[ix]);
@@ -1682,17 +1689,29 @@ rps_read_eval_print_loop(int &argc, char **argv)
       if (_f.lexval.is_instance_of(&_,RPS_ROOT_OB(_8CncrUdoSL303T5lOK)))   //repl_command∈class
         {
           _f.cmdparserv = _f.cmdob
-                           ->get_attr1(&_,RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd)); //repl_command_parser∈symbol
-          RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop cmdob=" << _f.cmdob << " is repl_command of repl_command_parser: " << _f.cmdparserv);
-	  if (_f.cmdparserv.is_closure()) {
-	    RPS_FATALOUT("unimplemented rps_read_eval_print_loop for cmdob=" << _f.cmdob << " with cmdparserv=" << _f.cmdparserv);
-#warning rps_read_eval_print_loop should apply the cmdparserv...
-	  }
-	  else {
-	    RPS_WARNOUT("rps_read_eval_print_loop: REPL command " << _f.cmdob << " has a bad command parser " << _f.cmdparserv
-			<< " after " << _f.lexval);
-	    continue;
-	  }
+                          ->get_attr1(&_,RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd)); //repl_command_parser∈symbol
+          RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop cmdob=" << _f.cmdob
+                        << " is repl_command of repl_command_parser: " << _f.cmdparserv
+                        << " lextokv=" << _f.lextokv);
+          if (_f.cmdparserv.is_closure())
+            {
+              Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply2 (&_, _f.cmdob, _f.lextokv);
+              _f.parsmainv = parspair.main();
+              _f.parsextrav = parspair.xtra();
+              RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop applied " << _f.cmdparserv << " to "
+                            << _f.cmdob
+                            << " and got parsmainv:" << _f.parsmainv << ", parsextrav=" << _f.parsextrav
+                            << " now position is " <<  rltoksrc.position_str());
+              if (!_f.parsmainv && !_f.parsextrav)
+                RPS_WARNOUT("rps_read_eval_print_loop: REPL command " << _f.cmdob << " at " << commandpos << " failed using "
+                            << _f.cmdparserv << std::endl);
+            }
+          else
+            {
+              RPS_WARNOUT("rps_read_eval_print_loop: REPL command " << _f.cmdob << " has a bad command parser " << _f.cmdparserv
+                          << " after " << _f.lexval);
+              continue;
+            }
 #warning rps_read_eval_print_loop TODO: cmdparserv is probably a closure, we should check that and we need to apply it!
         }
 #warning rps_read_eval_print_loop should process the command like rps_repl_cmd_tokenizer did below
