@@ -237,7 +237,8 @@ operator << (std::ostream&out, const std::deque<Rps_Value>& dq)
 void
 rps_repl_interpret_token_source(Rps_CallFrame*callframe, Rps_TokenSource& toksource)
 {
-  std::istream*previous_input=nullptr;
+  [[maybe_unused]] std::istream *previous_input = nullptr;
+
   RPS_ASSERT(rps_is_main_thread());
   // descriptor is: _6x4XcZ1fxp403uBUoz) //"rps_repl_interpret_token_source"∈core_function
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_6x4XcZ1fxp403uBUoz),
@@ -257,7 +258,9 @@ rps_repl_interpret_token_source(Rps_CallFrame*callframe, Rps_TokenSource& toksou
                 << startpos
                 << " callframe: " << Rps_ShowCallFrame(&_));
   bool endcommand = false;
-  int cmdcount = 0;
+  
+  [[maybe_unused]] int cmdcount = 0;
+
   {
     while (!endcommand)
       {
@@ -988,7 +991,8 @@ rps_lex_code_chunk(Rps_CallFrame *callframe, [[maybe_unused]] std::istream *inp,
 /// Inside a code chunk represented by object obchkarg, parse some
 /// chunk element...
 Rps_Value
-rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_ChunkData_st*chkdata)
+rps_lex_chunk_element(Rps_CallFrame *callframe, 
+  [[maybe_unused]] Rps_ObjectRef obchkarg, Rps_ChunkData_st *chkdata)
 {
   RPS_ASSERT(chkdata != nullptr && chkdata->chunkdata_magic ==  rps_chunkdata_magicnum);
   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
