@@ -865,8 +865,10 @@ rps_repl_lexer_test(void)
                            Rps_Value curlextokenv;
                 );
   RPS_ASSERT(rps_is_main_thread());
+  
   double startrealtime = rps_wallclock_real_time();
   double startcputime = rps_thread_cpu_time();
+
   RPS_DEBUG_LOG(REPL, "start rps_repl_lexer_test gitid " << rps_gitid
                 << " callframe:" << Rps_ShowCallFrame(&_));
   rl_attempted_completion_function = rpsrepl_name_or_oid_completion;
@@ -914,6 +916,10 @@ rps_repl_lexer_test(void)
                 << " tokcnt=" << tokcnt
                 << " at " << rltoksrc.position_str()
                 << std::endl);
+
+  double realtime = rps_wallclock_real_time() - startrealtime;
+  double cputime = rps_thread_cpu_time() - startcputime;
+  RPS_DEBUG_LOG(REPL, "real time = " << realtime << "; cpu time = " << cputime);
 } // end rps_repl_lexer_test
 
 
