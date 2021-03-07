@@ -1684,6 +1684,15 @@ rps_read_eval_print_loop(int &argc, char **argv)
           _f.cmdparserv = _f.cmdob
                            ->get_attr1(&_,RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd)); //repl_command_parser∈symbol
           RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop cmdob=" << _f.cmdob << " is repl_command of repl_command_parser: " << _f.cmdparserv);
+	  if (_f.cmdparserv.is_closure()) {
+	    RPS_FATALOUT("unimplemented rps_read_eval_print_loop for cmdob=" << _f.cmdob << " with cmdparserv=" << _f.cmdparserv);
+#warning rps_read_eval_print_loop should apply the cmdparserv...
+	  }
+	  else {
+	    RPS_WARNOUT("rps_read_eval_print_loop: REPL command " << _f.cmdob << " has a bad command parser " << _f.cmdparserv
+			<< " after " << _f.lexval);
+	    continue;
+	  }
 #warning rps_read_eval_print_loop TODO: cmdparserv is probably a closure, we should check that and we need to apply it!
         }
 #warning rps_read_eval_print_loop should process the command like rps_repl_cmd_tokenizer did below
