@@ -56,10 +56,11 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   static long callcnt;
   callcnt++;
   static Rps_Id descoid;
-  if (!descoid) descoid=Rps_Id("_61pgHb5KRq600RLnKD");
+  if (!descoid) // this happens only once!
+    descoid=Rps_Id("_61pgHb5KRq600RLnKD");
   RPS_DEBUG_LOG(REPL, "REPL command dump callcnt#" << callcnt
                 << " descoid=" << descoid
-                << " CALLED from "
+                << " CALLED from:" << std::endl
                 << Rps_ShowCallFrame(callerframe) << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD"));
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
@@ -68,6 +69,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                            Rps_ObjectRef lexkindob;
                            Rps_Value lexval;
                            Rps_Value closv;
+                           Rps_Value lextokv;
                            Rps_ObjectRef lexob;
                 );
   _f.closv = _.call_frame_closure();
@@ -81,10 +83,15 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 << Rps_ShowCallFrame(&_)
                 << "**calldepth=" << _.call_frame_depth()
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD/REPL cmd dump"));
+  _f.replcmdob = arg0.to_object();
+  _f.lextokv = arg1;
   RPS_ASSERT(_.call_frame_depth() < 7);
   RPS_DEBUG_LOG(CMD, "REPL command dump framedepth=" << _.call_frame_depth() <<" curframe:"
                 << std::endl << Rps_ShowCallFrame(&_));
-  _f.lexval = rps_repl_cmd_lexer_fun(&_, 1);
+  const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
+  RPS_ASSERT(ltokz != nullptr);
+#warning we probably should use ltokz to get the next lexical token in REPL command dump rpsapply_61pgHb5KRq600RLnKD
+  _f.lexval = rps_repl_cmd_lexer_fun(&_, 1); /*:this is probably obsolete*/
   RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexval=" << _f.lexval
                 << " framedepth=" << _.call_frame_depth());
   if (_f.lexval.is_object())
