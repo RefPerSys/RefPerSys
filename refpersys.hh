@@ -2143,6 +2143,7 @@ public:
   };
   virtual bool equal(const Rps_ZoneValue&zv) const;
   virtual bool less(const Rps_ZoneValue&zv) const;
+#warning probably obsolete Rps_LexTokenZone::{lexical_line_getter_fun,tokenize} functions
   /// The signature of a function to retrieve the next line....  on
   /// purpose close to existing rps_repl_get_next_line in our C++ file
   /// repl_rps.cc...
