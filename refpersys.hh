@@ -645,6 +645,71 @@ char *rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt,
 #define rps_now_strftime_centiseconds_nolen(bfr, fmt) \
   rps_now_strftime_centiseconds((bfr), sizeof ((bfr)), (fmt))
 
+
+struct rps_timer {
+    double monotonic_start;
+    double monotonic_stop;
+    double wallclock_start;
+    double wallclock_stop;
+};
+
+
+inline void
+rps_timer_start(struct rps_timer *hnd)
+{
+    RPS_ASSERT(hnd);
+}
+
+
+inline void
+rps_timer_stop(struct rps_timer *hnd)
+{
+    RPS_ASSERT(hnd);
+}
+
+
+inline double
+rps_timer_monotonic_started(const rps_timer *hnd)
+{
+    RPS_ASSERT(hnd);
+}
+
+
+inline double
+rps_timer_monotonic_stopped(const rps_timer *hnd)
+{
+    RPS_ASSERT(hnd);
+}
+
+
+inline double
+rps_timer_monotonic_elapsed(const rps_timer *hnd)
+{
+    RPS_ASSERT(hnd);
+}
+
+
+inline double
+rps_time_wallclock_started(const rps_timer *hnd)
+{
+    RPS_ASSERT(hnd);
+}
+
+
+inline double
+rps_time_wallclock_stopped(const rps_timer *hnd)
+{
+    RPS_ASSERT(hnd);
+}
+
+
+inline double
+rps_time_wallclock_elapsed(const rps_timer *hnd)
+{
+    RPS_ASSERT(hnd);
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 
 extern "C" const char* rps_hostname(void);
