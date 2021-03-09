@@ -651,6 +651,8 @@ struct rps_timer {
     double monotonic_stop;
     double wallclock_start;
     double wallclock_stop;
+    double cpu_start;
+    double cpu_stop;
 };
 
 
@@ -661,9 +663,11 @@ rps_timer_start(struct rps_timer *hnd)
 
     hnd->monotonic_start = rps_monotonic_real_time();
     hnd->wallclock_start = rps_wallclock_real_time();
+    hnd->cpu_start = rps_thread_cpu_time();
 
     hnd->monotonic_stop = 0.0;
     hnd->wallclock_stop = 0.0;
+    hnd->cpu_stop = 0.0;
 }
 
 
@@ -674,6 +678,7 @@ rps_timer_stop(struct rps_timer *hnd)
 
     hnd->monotonic_stop = rps_monotonic_real_time();
     hnd->wallclock_stop = rps_wallclock_real_time();
+    hnd->cpu_stop = rps_thread_cpu_time();
 }
 
 
@@ -728,6 +733,33 @@ rps_timer_wallclock_elapsed(const rps_timer *hnd)
     RPS_ASSERT (hnd);
 
     return hnd->wallclock_stop - hnd->wallclock_start;
+}
+
+    
+inline double
+rps_timer_cpu_start(const rps_timer *hnd)
+{
+    RPS_ASSERT (hnd);
+
+    return hnd->cpu_start;
+}
+
+
+inline double
+rps_timer_cpu_stop(const rps_timer *hnd)
+{
+    RPS_ASSERT (hnd);
+
+    return hnd->cpu_stop;
+}
+
+
+inline double
+rps_timer_cpu_elapsed(const rps_timer *hnd)
+{
+    RPS_ASSERT (hnd);
+
+    return hnd->cpu_stop - hnd->cpu_start;
 }
 
 

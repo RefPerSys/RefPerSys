@@ -867,9 +867,6 @@ rps_repl_lexer_test(void)
                 );
   RPS_ASSERT(rps_is_main_thread());
 
-  //double startrealtime = rps_wallclock_real_time();
-  double startcputime = rps_thread_cpu_time();
-
   struct rps_timer _timer, *timer = &_timer;
   rps_timer_start(timer);
 
@@ -922,10 +919,8 @@ rps_repl_lexer_test(void)
                 << std::endl);
 
   rps_timer_stop(timer);
-  //double realtime = rps_wallclock_real_time() - startrealtime;
-  double cputime = rps_thread_cpu_time() - startcputime;
   RPS_DEBUG_LOG(REPL, "real time = " << rps_timer_wallclock_elapsed(timer) 
-      << "; cpu time = " << cputime);
+      << "; cpu time = " << rps_timer_cpu_elapsed(timer));
 } // end rps_repl_lexer_test
 
 
