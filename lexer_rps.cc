@@ -867,8 +867,7 @@ rps_repl_lexer_test(void)
                 );
   RPS_ASSERT(rps_is_main_thread());
 
-  struct rps_timer _timer, *timer = &_timer;
-  rps_timer_start(timer);
+  RPS_TIMER_START();
 
   RPS_DEBUG_LOG(REPL, "start rps_repl_lexer_test gitid " << rps_gitid
                 << " callframe:" << Rps_ShowCallFrame(&_));
@@ -918,9 +917,7 @@ rps_repl_lexer_test(void)
                 << " at " << rltoksrc.position_str()
                 << std::endl);
 
-  rps_timer_stop(timer);
-  RPS_DEBUG_LOG(REPL, "real time = " << rps_timer_wallclock_elapsed(timer) 
-      << "; cpu time = " << rps_timer_cpu_elapsed(timer));
+  RPS_TIMER_STOP(REPL);
 } // end rps_repl_lexer_test
 
 

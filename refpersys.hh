@@ -763,6 +763,18 @@ rps_timer_cpu_elapsed(const rps_timer *hnd)
 }
 
 
+#define RPS_TIMER_START()       \
+    struct rps_timer __timer;   \
+    rps_timer_start(&__timer)
+
+
+#define RPS_TIMER_STOP(context)                                     \
+    rps_timer_stop(&__timer);                                       \
+    RPS_DEBUG_LOG(REPL, "real time = "                              \
+        << rps_timer_wallclock_elapsed(&__timer) << "; cpu time = " \
+        << rps_timer_cpu_elapsed(&__timer));
+
+
 ///////////////////////////////////////////////////////////////////////////////
 
 extern "C" const char* rps_hostname(void);
