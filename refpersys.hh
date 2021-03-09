@@ -657,56 +657,77 @@ struct rps_timer {
 inline void
 rps_timer_start(struct rps_timer *hnd)
 {
-    RPS_ASSERT(hnd);
+    RPS_ASSERT (hnd);
+
+    hnd->monotonic_start = rps_monotonic_real_time();
+    hnd->wallclock_start = rps_wallclock_real_time();
+
+    hnd->monotonic_stop = 0.0;
+    hnd->wallclock_stop = 0.0;
 }
 
 
 inline void
 rps_timer_stop(struct rps_timer *hnd)
 {
-    RPS_ASSERT(hnd);
+    RPS_ASSERT (hnd);
+
+    hnd->monotonic_stop = rps_monotonic_real_time();
+    hnd->wallclock_stop = rps_wallclock_real_time();
 }
 
 
 inline double
-rps_timer_monotonic_started(const rps_timer *hnd)
+rps_timer_monotonic_start(const rps_timer *hnd)
 {
-    RPS_ASSERT(hnd);
+    RPS_ASSERT (hnd);
+
+    return hnd->monotonic_start;
 }
 
 
 inline double
-rps_timer_monotonic_stopped(const rps_timer *hnd)
+rps_timer_monotonic_stop(const rps_timer *hnd)
 {
-    RPS_ASSERT(hnd);
+    RPS_ASSERT (hnd);
+
+    return hnd->monotonic_stop;
 }
 
 
 inline double
 rps_timer_monotonic_elapsed(const rps_timer *hnd)
 {
-    RPS_ASSERT(hnd);
+    RPS_ASSERT (hnd);
+
+    return hnd->monotonic_stop - hnd->monotonic_start;
 }
 
 
 inline double
-rps_time_wallclock_started(const rps_timer *hnd)
+rps_time_wallclock_start(const rps_timer *hnd)
 {
-    RPS_ASSERT(hnd);
+    RPS_ASSERT (hnd);
+
+    return hnd->wallclock_start;
 }
 
 
 inline double
-rps_time_wallclock_stopped(const rps_timer *hnd)
+rps_time_wallclock_stop(const rps_timer *hnd)
 {
-    RPS_ASSERT(hnd);
+    RPS_ASSERT (hnd);
+
+    return hnd->wallclock_stop;
 }
 
 
 inline double
 rps_time_wallclock_elapsed(const rps_timer *hnd)
 {
-    RPS_ASSERT(hnd);
+    RPS_ASSERT (hnd);
+
+    return hnd->wallclock_stop - hnd->wallclock_start;
 }
 
 
