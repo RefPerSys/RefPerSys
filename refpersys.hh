@@ -705,7 +705,7 @@ rps_timer_monotonic_elapsed(const rps_timer *hnd)
 
 
 inline double
-rps_time_wallclock_start(const rps_timer *hnd)
+rps_timer_wallclock_start(const rps_timer *hnd)
 {
     RPS_ASSERT (hnd);
 
@@ -714,7 +714,7 @@ rps_time_wallclock_start(const rps_timer *hnd)
 
 
 inline double
-rps_time_wallclock_stop(const rps_timer *hnd)
+rps_timer_wallclock_stop(const rps_timer *hnd)
 {
     RPS_ASSERT (hnd);
 
@@ -723,7 +723,7 @@ rps_time_wallclock_stop(const rps_timer *hnd)
 
 
 inline double
-rps_time_wallclock_elapsed(const rps_timer *hnd)
+rps_timer_wallclock_elapsed(const rps_timer *hnd)
 {
     RPS_ASSERT (hnd);
 
