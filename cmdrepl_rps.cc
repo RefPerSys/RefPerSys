@@ -86,7 +86,9 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   _f.replcmdob = arg0.to_object();
   _f.lextokv = arg1;
   RPS_ASSERT(_.call_frame_depth() < 7);
-  RPS_DEBUG_LOG(CMD, "REPL command dump framedepth=" << _.call_frame_depth() <<" curframe:"
+  RPS_DEBUG_LOG(CMD, "REPL command dump framedepth=" << _.call_frame_depth()
+                << " lextokv=" << _f.lextokv
+                <<" curframe:"
                 << std::endl << Rps_ShowCallFrame(&_));
   const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
   RPS_ASSERT(ltokz != nullptr);
