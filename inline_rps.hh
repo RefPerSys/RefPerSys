@@ -601,7 +601,7 @@ Rps_Value::as_lextoken() const
 const Rps_LexTokenZone*
 Rps_Value::to_lextoken() const
 {
-  if (is_tuple())
+  if (is_lextoken())
     return reinterpret_cast<const Rps_LexTokenZone*>(const_cast<Rps_ZoneValue*>(_pval));
   else return nullptr;
 } // end Rps_Value::to_lextoken
