@@ -2263,6 +2263,7 @@ public:
   Rps_ObjectRef lxkind() const { return lex_kind; };
   Rps_Value lxval() const { return lex_val; };
   const Rps_String* lxfile() const { return lex_file; };
+  Rps_TokenSource*lxsrc() const { return const_cast<Rps_TokenSource*>(lex_src);};
   int lxline() const { return lex_lineno; };
   int lxcol() const { return lex_colno; };
   static Rps_ObjectRef the_lexical_token_class(void);
