@@ -70,6 +70,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                            Rps_Value lexval;
                            Rps_Value closv;
                            Rps_Value lextokv;
+                           Rps_Value nextokv;
                            Rps_ObjectRef lexob;
                 );
   _f.closv = _.call_frame_closure();
@@ -89,13 +90,19 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   RPS_DEBUG_LOG(CMD, "REPL command dump framedepth=" << _.call_frame_depth()
                 << " lextokv=" << _f.lextokv
                 <<" curframe:"
-                << std::endl << Rps_ShowCallFrame(&_));
+                << std::endl << Rps_ShowCallFrame(&_)
+                << RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD"));
   const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
   RPS_ASSERT(ltokz != nullptr);
-#warning we probably should use ltokz to get the next lexical token in REPL command dump rpsapply_61pgHb5KRq600RLnKD
-  _f.lexval = rps_repl_cmd_lexer_fun(&_, 1); /*:this is probably obsolete*/
-  RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexval=" << _f.lexval
-                << " framedepth=" << _.call_frame_depth());
+  {
+    Rps_TokenSource*tksrc = ltokz->lxsrc();
+    RPS_ASSERT(tksrc);
+    _f.nextokv = tksrc->get_token(&_);
+    RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexval=" << _f.lexval << " nextokv=" << _f.nextokv
+                  << " framedepth=" << _.call_frame_depth());
+    RPS_FATALOUT("REPL command dump incomplete  callcnt#" << callcnt << " lexval=" << _f.lexval << " nextokv=" << _f.nextokv);
+#warning incomplete code REPL command dump with nextokv
+  }
   if (_f.lexval.is_object())
     _f.lexob = _f.lexval.to_object();
   std::string dumpdir;
