@@ -72,6 +72,8 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                            Rps_Value lextokv;
                            Rps_Value nextokv;
                            Rps_ObjectRef lexob;
+                           Rps_ObjectRef nextlexob;
+                           Rps_Value nextlexval;
                 );
   _f.closv = _.call_frame_closure();
   RPS_DEBUG_LOG(CMD, "REPL command dump start callcnt#" << callcnt << " arg0=" << arg0
@@ -100,17 +102,22 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
     _f.nextokv = tksrc->get_token(&_);
     RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexval=" << _f.lexval << " nextokv=" << _f.nextokv
                   << " framedepth=" << _.call_frame_depth());
-    RPS_FATALOUT("REPL command dump incomplete  callcnt#" << callcnt << " lexval=" << _f.lexval << " nextokv=" << _f.nextokv);
-#warning incomplete code REPL command dump with nextokv
+    const Rps_LexTokenZone* nextokz = _f.nextokv.to_lextoken();
+    RPS_ASSERT(nextokz);
+    _f.nextlexob = nextokz->lxkind();
+    _f.nextlexval = nextokz->lxval();
+    RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexval=" << _f.lexval << " nextokv=" << _f.nextokv
+		  << " nextlexob=" << _f.nextlexob << " nextlexval=" << _f.nextlexval);
   }
-  if (_f.lexval.is_object())
-    _f.lexob = _f.lexval.to_object();
   std::string dumpdir;
   bool eaten=false;
   RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexob=" << _f.lexob
-                << " framedepth=" << _.call_frame_depth());
-  RPS_ASSERT(rps_repl_consume_cmd_token_fun);
-  eaten = rps_repl_consume_cmd_token_fun(&_);
+		<< " nextlexob=" << _f.nextlexob << " nextlexval=" << _f.nextlexval
+                << " framedepth=" << _.call_frame_depth() << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD /nextlex"));
+#warning REPL command dump rpsapply_61pgHb5KRq600RLnKD incomplete, should test nextlexob & nextlexval
+  RPS_FATALOUT("REPL command dump rpsapply_61pgHb5KRq600RLnKD incomplete, should test nextlexob=" << _f.nextlexob
+	       << " and nextlexval=" << _f.nextlexval);
   RPS_DEBUG_LOG(CMD, "REPL command dump dot callcnt#" << callcnt << " eaten= " << (eaten?"true":"false"));
   if (_f.lexob && _f.lexob->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
     {
