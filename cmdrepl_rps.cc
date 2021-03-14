@@ -117,8 +117,11 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
 		<< RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD /nextlex"));
 #warning REPL command dump rpsapply_61pgHb5KRq600RLnKD incomplete, should test nextlexob & nextlexval
 
+  // Attempt to check if there are no more tokens following
   RPS_ASSERT (_f.nextlexval);
-  RPS_ASSERT (_f.nextlexob);
+  const Rps_LexTokenZone* lastokzone = _f.nextlexval.to_lextoken();
+  if (lastokzone != nullptr)
+        RPS_FATALOUT("invalid REPL syntax for dump command");
 
 
   RPS_FATALOUT("REPL command dump rpsapply_61pgHb5KRq600RLnKD incomplete, should test nextlexob=" << _f.nextlexob
