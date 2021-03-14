@@ -116,9 +116,16 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 << " framedepth=" << _.call_frame_depth() << std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD /nextlex"));
 #warning REPL command dump rpsapply_61pgHb5KRq600RLnKD incomplete, should test nextlexob & nextlexval
+
+  RPS_ASSERT (_f.nextlexval);
+  RPS_ASSERT (_f.nextlexob);
+
+
   RPS_FATALOUT("REPL command dump rpsapply_61pgHb5KRq600RLnKD incomplete, should test nextlexob=" << _f.nextlexob
 	       << " and nextlexval=" << _f.nextlexval);
+
   RPS_DEBUG_LOG(CMD, "REPL command dump dot callcnt#" << callcnt << " eaten= " << (eaten?"true":"false"));
+
   if (_f.lexob && _f.lexob->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
     {
       RPS_DEBUG_LOG(CMD, "REPL command dump dot callcnt#" << callcnt
