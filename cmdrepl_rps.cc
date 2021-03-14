@@ -107,29 +107,26 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
     _f.nextlexob = nextokz->lxkind();
     _f.nextlexval = nextokz->lxval();
     RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexval=" << _f.lexval << " nextokv=" << _f.nextokv
-		  << " nextlexob=" << _f.nextlexob << " nextlexval=" << _f.nextlexval);
+                  << " nextlexob=" << _f.nextlexob << " nextlexval=" << _f.nextlexval);
   }
   std::string dumpdir;
-  bool eaten=false;
+  bool dumped=false;
   RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexob=" << _f.lexob
-		<< " nextlexob=" << _f.nextlexob << " nextlexval=" << _f.nextlexval
+                << " nextlexob=" << _f.nextlexob << " nextlexval=" << _f.nextlexval
                 << " framedepth=" << _.call_frame_depth() << std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD /nextlex"));
-#warning REPL command dump rpsapply_61pgHb5KRq600RLnKD incomplete, should test nextlexob & nextlexval
+                << RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD /nextlex"));
 
   // Attempt to check if there are no more tokens following
   RPS_ASSERT (_f.nextlexval);
   const Rps_LexTokenZone* lastokzone = _f.nextlexval.to_lextoken();
   if (lastokzone != nullptr)
-        RPS_FATALOUT("invalid REPL syntax for dump command");
-
-
-  RPS_FATALOUT("REPL command dump rpsapply_61pgHb5KRq600RLnKD incomplete, should test nextlexob=" << _f.nextlexob
-	       << " and nextlexval=" << _f.nextlexval);
-
-  RPS_DEBUG_LOG(CMD, "REPL command dump dot callcnt#" << callcnt << " eaten= " << (eaten?"true":"false"));
-
-  if (_f.lexob && _f.lexob->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
+    RPS_FATALOUT("invalid REPL syntax for dump command");
+  RPS_DEBUG_LOG(CMD, "REPL command dump dot callcnt#" << callcnt
+                << " lexob=" << _f.lexob
+                << " nextlexob=" << _f.nextlexob
+                << " nextlexval=" << _f.nextlexval);
+  ///
+  if (_f.nextlexob && _f.nextlexob->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
     {
       RPS_DEBUG_LOG(CMD, "REPL command dump dot callcnt#" << callcnt
                     << " framedepth=" << _.call_frame_depth());
@@ -137,7 +134,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
       rps_dump_into(".", &_);
       dumpdir=".";
       RPS_DEBUG_LOG(CMD, "REPL command dumped  callcnt#" << callcnt << " into current directory callcnt#" << callcnt);
-      return {_f.lexob, nullptr};
+      return {_f.nextlexob, nullptr};
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE)) //string∈class #
     {
@@ -163,15 +160,17 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
         // see https://man7.org/linux/man-pages/man3/wordexp.3.html
         RPS_WARNOUT("REPL command dump unimplemented into '" << dirstr << "' callcnt#" << callcnt);
     }
-  RPS_DEBUG_LOG(CMD, "REPL command dump eaten= " << (eaten?"true":"false") << " dumpdir=" << dumpdir << " callcnt#" << callcnt);
-  if (eaten)
+  RPS_DEBUG_LOG(CMD, "REPL command dump dumped= " << (dumped?"true":"false") << " dumpdir=" << dumpdir << " callcnt#" << callcnt<< " nextlexob:" << _f.nextlexval);
+  if (dumped)
     return {Rps_StringValue(dumpdir),nullptr};
   else
-    RPS_WARNOUT("unconsumed REPL token for command dump - dumpdir=" << dumpdir << " callcnt#" << callcnt);
+    RPS_WARNOUT("non-dumped REPL token for command dump - dumpdir=" << dumpdir << " callcnt#" << callcnt<< " nextlexob:" << _f.nextlexval);
 #warning incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump
   RPS_WARNOUT("incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD for REPL command dump") << std::endl
-              << " arg0=" << arg0 << " arg1=" << arg1 << " callcnt#" << callcnt);
+              << " arg0=" << arg0 << " arg1=" << arg1 << " callcnt#" << callcnt<< " nextlexob:" << _f.nextlexval);
+  RPS_FATALOUT("REPL command dump rpsapply_61pgHb5KRq600RLnKD incomplete, should test nextlexob=" << _f.nextlexob
+               << " and nextlexval=" << _f.nextlexval);
   return {nullptr,nullptr};
 } //end of rpsapply_61pgHb5KRq600RLnKD for REPL command dump
 
