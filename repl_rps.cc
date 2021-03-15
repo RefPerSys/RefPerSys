@@ -234,6 +234,9 @@ operator << (std::ostream&out, const std::deque<Rps_Value>& dq)
   return out;
 } // end operator << (std::ostream&out, const std::deque<Rps_Value>& dq)
 
+
+
+#if 0 && oldcode
 void
 rps_repl_interpret_token_source(Rps_CallFrame*callframe, Rps_TokenSource& toksource)
 {
@@ -873,7 +876,7 @@ rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_lex_raw_literal_string end"));
   return str;
 } // end rps_lex_raw_literal_string
-
+#endif /*0 && oldcode*/
 
 
 Rps_Value

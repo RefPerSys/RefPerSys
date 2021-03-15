@@ -2158,6 +2158,7 @@ protected:
   Rps_TokenSource(std::string name);
   void set_name(std::string name) { toksrc_name = name; };
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
+  std::string lex_quoted_literal_string(Rps_CallFrame*callframe);
   std::string lex_raw_literal_string(Rps_CallFrame*callframe);
   Rps_Value lex_code_chunk(Rps_CallFrame*callframe);
   Rps_Value lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata);
@@ -2186,6 +2187,9 @@ public:
   const std::string position_str(int col= -1) const;
   // return the name as a string value, hopefully memoized 
   Rps_Value name_val(Rps_CallFrame*callframe);
+  //// parsing routines; the token dequeue pointer is for lookahead...
+  Rps_Value parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq);
+  Rps_ObjectRef parse_object_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq);
   int line(void) const { return toksrc_line; };
   int col(void) const { return toksrc_col; };
   /// on lexical error, get_token returns null and does not change the position
@@ -4039,8 +4043,6 @@ extern "C" bool rps_repl_stopped;
 ***/
 extern "C" Rps_TwoValues rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int &lineno, int& colno);
 
-extern "C" std::string rps_lex_literal_string(const char*input_name, const char*linebuf, int lineno, int& colno);
-
 extern "C" std::string rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno);
 
 extern "C" Rps_Value rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int& lineno, int& colno);
@@ -4052,12 +4054,6 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
 /// Interpret from either a given input stream,
 /// or using readline if inp is null.
 extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
-
-///+++++++++++++++++ callable from REPL command functions
-extern "C" Rps_TwoValues rps_repl_cmd_lexing(Rps_CallFrame*callframe, unsigned lookahead=0);
-extern "C" Rps_Value rps_repl_parse_value_expression(Rps_CallFrame*callframe);
-extern "C" Rps_Value rps_repl_parse_object_expression(Rps_CallFrame*callframe);
-///-----------------
 
 
 /// for GNU readline autocompletion.  See example in

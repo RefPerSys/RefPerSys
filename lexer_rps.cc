@@ -369,8 +369,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     {
       int linestart = toksrc_line;
       int colstart = toksrc_col;
-      std::string litstr =
-        rps_lex_literal_string(toksrc_name.c_str(), toksrc_linebuf.c_str(), toksrc_line, toksrc_col);
+      std::string litstr = lex_quoted_literal_string(&_);
       _f.namev= name_val(&_);
       const Rps_String* str = _f.namev.to_string();
       _f.lexkindob = RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); //string∈class
@@ -529,6 +528,153 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   // we should refactor properly the rps_repl_lexer & Rps_LexTokenZone constructor here
 } // end Rps_TokenSource::get_token
 
+
+std::string
+Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
+{
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  std::string rstr;
+  const char* curp = curcptr();
+  ucs4_t curuc=0;
+  size_t linelen = toksrc_linebuf.size();
+  const char*eol = curp + (linelen-toksrc_col);
+  rstr.reserve(4+2*(eol-curp)/3);
+  RPS_ASSERT(*curp == '"');
+  toksrc_col++, curp++;
+  char curch = 0;
+  while ((curch=(*curp)) != (char)0)
+    {
+      if (curch == '"')
+        {
+          toksrc_col++;
+          return rstr;
+        }
+      else if (curch == '\\')
+        {
+          char nextch = curp[1];
+          char shortbuf[16];
+          memset(shortbuf, 0, sizeof(shortbuf));
+          switch (nextch)
+            {
+            case '\'':
+            case '\"':
+            case '\\':
+              rstr.push_back (nextch);
+              toksrc_col += 2;
+              continue;
+            case 'a':
+              rstr.push_back ('\a');
+              toksrc_col += 2;
+              continue;
+            case 'b':
+              rstr.push_back ('\b');
+              toksrc_col += 2;
+              continue;
+            case 'f':
+              rstr.push_back ('\f');
+              toksrc_col += 2;
+              continue;
+            case 'e':			// ESCAPE
+              rstr.push_back ('\033');
+              toksrc_col += 2;
+              continue;
+            case 'n':
+              rstr.push_back ('\n');
+              toksrc_col += 2;
+              continue;
+            case 'r':
+              rstr.push_back ('\r');
+              toksrc_col += 2;
+              continue;
+            case 't':
+              rstr.push_back ('\t');
+              toksrc_col += 2;
+              continue;
+            case 'v':
+              rstr.push_back ('\v');
+              toksrc_col += 2;
+              continue;
+            case 'x':
+            {
+              int p = -1;
+              int c = 0;
+              if (sscanf (curp + 2, "%02x%n", &c, &p) > 0 && p > 0)
+                {
+                  rstr.push_back ((char)c);
+                  toksrc_col += p + 2;
+                  continue;
+                }
+              else
+                goto lexical_error_backslash;
+            }
+            case 'u': // four hexdigit escape Unicode
+            {
+              int p = -1;
+              int c = 0;
+              if (sscanf (curp + 2, "%04x%n", &c, &p) > 0 && p > 0)
+                {
+                  int l =
+                    u8_uctomb ((uint8_t *) shortbuf, (ucs4_t) c, sizeof(shortbuf));
+                  if (l > 0)
+                    {
+                      rstr.append(shortbuf);
+                      toksrc_col += p + l;
+                      continue;
+                    }
+                  else
+                    goto lexical_error_backslash;
+                }
+              else
+                goto lexical_error_backslash;
+            }
+            case 'U': // eight hexdigit escape Unicode
+            {
+              int p = -1;
+              int c = 0;
+              if (sscanf (curp + 2, "%08x%n", &c, &p) > 0 && p > 0)
+                {
+                  int l =
+                    u8_uctomb ((uint8_t *) shortbuf, (ucs4_t) c, sizeof(shortbuf));
+                  if (l > 0)
+                    {
+                      rstr.append(shortbuf);
+                      toksrc_col += p + l;
+                      continue;
+                    }
+                  else
+                    goto lexical_error_backslash;
+                }
+            }
+            default:
+              goto lexical_error_backslash;
+            } // end switch nextch
+        } // end if curch is '\\'
+      else if (curch >= ' ' && curch < 0x7f)
+        {
+          rstr.push_back (curch);
+          toksrc_col++;
+          continue;
+        }
+      /// accepts any correctly encoded UTF-8
+      else if (int l = u8_mblen ((uint8_t *)(curp), eol-curp); l>0)
+        {
+          rstr.append(curp, l);
+          toksrc_col += l;
+          continue;
+        }
+      /// improbable lexical error....
+      else
+        {
+          RPS_WARNOUT("Rps_TokenSource::lex_quoted_literal_string : lexical error at "
+                      << position_str());
+          throw std::runtime_error("lexical error");
+        }
+    } // end while
+lexical_error_backslash:
+  RPS_WARNOUT("Rps_TokenSource::lex_quoted_literal_string  : bad backslash escape at "
+              << position_str());
+  throw std::runtime_error("lexical bad backslash escape");
+} // end Rps_TokenSource::lex_quoted_literal_string
 
 std::string
 Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
