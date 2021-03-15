@@ -196,6 +196,8 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
   if (!descoid) descoid=Rps_Id("_7WsQyJK6lty02uz5KT");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
                            callerframe,
+                           Rps_ObjectRef replcmdob;
+                           Rps_Value lextokv;
                 );
   RPS_DEBUG_LOG(CMD, "REPL command show start arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
@@ -205,6 +207,20 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                 << "∈" << arg2.compute_class(&_)
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
+  _f.replcmdob = arg0.to_object();
+  _f.lextokv = arg1;
+  RPS_ASSERT(_.call_frame_depth() < 7);
+  RPS_DEBUG_LOG(CMD, "REPL command show framedepth=" << _.call_frame_depth()
+                << " lextokv=" << _f.lextokv
+                <<" curframe:"
+                << std::endl << Rps_ShowCallFrame(&_)
+                << RPS_FULL_BACKTRACE_HERE(1, "REPL command show rpsapply_7WsQyJK6lty02uz5KT"));
+  const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
+  RPS_ASSERT (ltokz != nullptr);
+  {
+    Rps_TokenSource*tksrc = ltokz->lxsrc();
+    RPS_ASSERT (tksrc != nullptr);
+  }
 #warning incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show
   RPS_WARNOUT("incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
