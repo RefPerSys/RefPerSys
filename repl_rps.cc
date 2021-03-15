@@ -1676,8 +1676,8 @@ rps_read_eval_print_loop(int &argc, char **argv)
           != RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ))  //object∈class
         {
           RPS_WARNOUT("rps_read_eval_print_loop command at "
-                      << commandpos
-                      << " should start with an object but got "
+                      << commandpos << std::endl
+                      << "Should start with an object but got "
                       << _f.lextokv);
           continue;
         }
