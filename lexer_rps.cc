@@ -1003,6 +1003,38 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
 } // end Rps_TokenSource::lex_chunk_element
 
 
+/// this gives some expression which could later be evaluated to a value
+Rps_Value
+Rps_TokenSource::parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq)
+{
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/callframe,
+                           Rps_Value lextokv;
+                );
+#warning unimplemented Rps_TokenSource::parse_value_expression
+  RPS_FATALOUT("unimplemented Rps_TokenSource::parse_value_expression "
+               << Rps_ShowCallFrame(&_)
+               << " token_deq:" << token_deq
+               << " position_str:" << position_str());
+} // end Rps_TokenSource::parse_value_expression
+
+
+/// this gives some expression which could later be evaluated to an
+/// object
+Rps_Value
+Rps_TokenSource::parse_object_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq)
+{
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/callframe,
+                           Rps_Value lextokv;
+                );
+#warning unimplemented Rps_TokenSource::parse_object_expression
+  RPS_FATALOUT("unimplemented Rps_TokenSource::parse_object_expression "
+               << Rps_ShowCallFrame(&_)
+               << " token_deq:" << token_deq
+               << " position_str:" << position_str());
+} // end Rps_TokenSource::parse_object_expression
+
 
 void
 rps_repl_lexer_test(void)
