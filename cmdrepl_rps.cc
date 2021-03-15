@@ -111,7 +111,7 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   }
   std::string dumpdir;
   bool dumped=false;
-  RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexob=" << _f.lexob
+  RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexob=" << _f.lexob << " lextokv=" << _f.lextokv
                 << " nextlexob=" << _f.nextlexob << " nextlexval=" << _f.nextlexval
                 << " framedepth=" << _.call_frame_depth() << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD /nextlex"));
@@ -126,19 +126,20 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 << " nextlexob=" << _f.nextlexob
                 << " nextlexval=" << _f.nextlexval);
   ///
-  if (_f.nextlexob && _f.nextlexob->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
+  if (_f.nextlexval.is_object() && _f.nextlexval.to_object()->oid() == Rps_Id("_78wsBiJhJj1025DIs1"))  // the dot "."∈repl_delimiter
     {
       RPS_DEBUG_LOG(CMD, "REPL command dump dot callcnt#" << callcnt
                     << " framedepth=" << _.call_frame_depth());
       // dump to current directory
       rps_dump_into(".", &_);
       dumpdir=".";
+      dumped = true;
       RPS_DEBUG_LOG(CMD, "REPL command dumped  callcnt#" << callcnt << " into current directory callcnt#" << callcnt);
-      return {_f.nextlexob, nullptr};
+      return {_f.nextlexval, nullptr};
     }
-  else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE)) //string∈class #
+  else if (_f.nextlexval.is_string()) //string∈class #
     {
-      std::string dirstr = _f.lexval.as_cppstring();
+      std::string dirstr = _f.nextlexval.as_cppstring();
       RPS_DEBUG_LOG(CMD, "REPL command dumping into '" << Rps_Cjson_String (dirstr) << "' callcnt#" << callcnt
                     << " framedepth=" << _.call_frame_depth());
       DIR* dirh = opendir(dirstr.c_str());
@@ -148,12 +149,14 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
           RPS_DEBUG_LOG(CMD, "REPL command dumping into existing dir '" << Rps_Cjson_String (dirstr) << "' callcnt#" << callcnt);
           rps_dump_into(dirstr.c_str(), &_);
           dumpdir = dirstr;
+	  dumped = true;
         }
       else if (!mkdir(dirstr.c_str(), 0750))
         {
           RPS_DEBUG_LOG(CMD, "REPL command dumping into fresh dir '" << Rps_Cjson_String (dirstr) << "' callcnt#" << callcnt);
           rps_dump_into(dirstr.c_str(), &_);
           dumpdir = dirstr;
+	  dumped = true;
         }
       else
 #warning rpsapply_61pgHb5KRq600RLnKD should use wordexp(3) on the string
@@ -164,11 +167,13 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
   if (dumped)
     return {Rps_StringValue(dumpdir),nullptr};
   else
-    RPS_WARNOUT("non-dumped REPL token for command dump - dumpdir=" << dumpdir << " callcnt#" << callcnt<< " nextlexob:" << _f.nextlexval);
+    RPS_WARNOUT("non-dumped REPL token for command dump - dumpdir=" << dumpdir << " callcnt#" << callcnt<< " nextlexval" << _f.nextlexval);
 #warning incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump
   RPS_WARNOUT("incomplete rpsapply_61pgHb5KRq600RLnKD for REPL command dump from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD for REPL command dump") << std::endl
-              << " arg0=" << arg0 << " arg1=" << arg1 << " callcnt#" << callcnt<< " nextlexob:" << _f.nextlexval);
+              << " arg0=" << arg0 << " arg1=" << arg1 << " callcnt#" << callcnt
+	      << " nextlexob:" << _f.nextlexob << std::endl
+	      << " lextokv:" << _f.lextokv << ", nextokv:"  << _f.nextokv);
   RPS_FATALOUT("REPL command dump rpsapply_61pgHb5KRq600RLnKD incomplete, should test nextlexob=" << _f.nextlexob
                << " and nextlexval=" << _f.nextlexval);
   return {nullptr,nullptr};
