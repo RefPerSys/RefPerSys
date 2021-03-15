@@ -2141,6 +2141,8 @@ public:
 }; // end class Rps_Double
 
 
+std::ostream&
+operator << (std::ostream&out, const std::deque<Rps_Value>& dq);
 
 ////////////////////////////////////////////////////////////////
 struct Rps_ChunkData_st;
@@ -2187,9 +2189,12 @@ public:
   const std::string position_str(int col= -1) const;
   // return the name as a string value, hopefully memoized 
   Rps_Value name_val(Rps_CallFrame*callframe);
-  //// parsing routines; the token dequeue pointer is for lookahead...
+  //// parsing routines; the token dequeue pointer is for
+  //// lookahead... Both are parsing *expressions* (giving a value, or
+  //// an object), so returning values.... (which could later be
+  //// "evaluated")
   Rps_Value parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq);
-  Rps_ObjectRef parse_object_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq);
+  Rps_Value parse_object_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq);
   int line(void) const { return toksrc_line; };
   int col(void) const { return toksrc_col; };
   /// on lexical error, get_token returns null and does not change the position
