@@ -1705,6 +1705,7 @@ rps_read_eval_print_loop(int &argc, char **argv)
               if (!_f.parsmainv && !_f.parsextrav)
                 RPS_WARNOUT("rps_read_eval_print_loop: REPL command " << _f.cmdob << " at " << commandpos << " failed using "
                             << _f.cmdparserv << std::endl);
+              continue;
             }
           else
             {
@@ -1712,12 +1713,15 @@ rps_read_eval_print_loop(int &argc, char **argv)
                           << " after " << _f.lexval);
               continue;
             }
-#warning rps_read_eval_print_loop TODO: cmdparserv is probably a closure, we should check that and we need to apply it!
+          RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop at  " << commandpos << " count#" << count <<  " pos=" << rltoksrc.position_str());
         }
-#warning rps_read_eval_print_loop should process the command like rps_repl_cmd_tokenizer did below
-      RPS_FATALOUT("unimplemented rps_read_eval_print_loop lextokv=" << _f.lextokv << " lexval=" << _f.lexval);
-      RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop done prompt=" << prompt << std::endl);
+      else
+        {
+          RPS_WARNOUT("rps_read_eval_print_loop: REPL command unexpected token " <<  _f.lextokv << " at " << commandpos << " now at " << rltoksrc.position_str());
+          continue;
+        }
     };
+  RPS_INFORMOUT("rps_read_eval_print_loop ending count#" << count << " at " << rltoksrc.position_str());
 } // end of rps_read_eval_print_loop
 
 //- Rps_Value
