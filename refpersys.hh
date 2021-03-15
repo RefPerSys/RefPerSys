@@ -602,10 +602,19 @@ while (0)
 
 #define RPS_ASSERTPRINTF_AT(Fil,Lin,Func,Cond,Fmt,...) RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,##__VA_ARGS__)
 #define RPS_ASSERTPRINTF(Cond,Fmt,...) RPS_ASSERTPRINTF_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,(Cond),Fmt,##__VA_ARGS__)
+#define RPS_ASSERT_PTR(ptr)                                     \
+    do {                                                        \
+        if (RPS_UNLIKELY ((ptr) == nullptr))                    \
+            rps_fatal_stop_at(__FILE__, __LINE__);               \
+            fprintf(stderr, "[!] assertion failed: pointer "    \
+              #ptr " != nullptr\n");                            \
+    } while(0)
 #else
 #define RPS_ASSERT(Cond) do { if (false && (Cond)) rps_fatal_stop_at(__FILE_,__LINE__); } while(0)
 #define RPS_ASSERTPRINTF(Cond,Fmt,...)  do { if (false && (Cond)) \
       fprintf(stderr, Fmt "\n", ##__VA_ARGS__); } while(0)
+#define RPS_ASSERT_PTR(ptr)
+
 #endif /*NDEBUG*/
 
 

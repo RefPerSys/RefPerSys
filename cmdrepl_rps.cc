@@ -95,10 +95,10 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 << std::endl << Rps_ShowCallFrame(&_)
                 << RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD"));
   const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
-  RPS_ASSERT(ltokz != nullptr);
+  RPS_ASSERT_PTR (ltokz);
   {
     Rps_TokenSource*tksrc = ltokz->lxsrc();
-    RPS_ASSERT(tksrc);
+    RPS_ASSERT_PTR (tksrc);
     _f.nextokv = tksrc->get_token(&_);
     RPS_DEBUG_LOG(CMD, "REPL command dump callcnt#" << callcnt << " lexval=" << _f.lexval << " nextokv=" << _f.nextokv
                   << " framedepth=" << _.call_frame_depth());
