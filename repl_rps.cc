@@ -222,7 +222,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
 
 
 
-static std::ostream&
+std::ostream&
 operator << (std::ostream&out, const std::deque<Rps_Value>& dq)
 {
   int cnt=0;
