@@ -1173,7 +1173,8 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                 );
   double cpustartim = rps_process_cpu_time();
   double realstartim = rps_wallclock_real_time();
-  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  //RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_ASSERT_CALLFRAME (callerframe);
   RPS_ASSERT(rps_is_main_thread());
   rps_edit_cplusplus_callframe = &_;
   char tempfilprefix[80];

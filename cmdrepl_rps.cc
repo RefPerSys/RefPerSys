@@ -52,7 +52,8 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                             [[maybe_unused]] const Rps_Value arg3,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
-  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  //RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_ASSERT_CALLFRAME (callerframe);
   static long callcnt;
   callcnt++;
   static Rps_Id descoid;

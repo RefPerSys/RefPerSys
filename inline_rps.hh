@@ -1609,7 +1609,8 @@ Rps_ClosureValue::connob(void) const
 Rps_TwoValues
 Rps_ClosureValue::apply0(Rps_CallFrame*callerframe) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   if (is_empty() || !is_closure())
     return nullptr;
   Rps_ObjectRef obconn = connob();
@@ -1630,7 +1631,8 @@ Rps_ClosureValue::apply0(Rps_CallFrame*callerframe) const
 Rps_TwoValues
 Rps_ClosureValue::apply1(Rps_CallFrame*callerframe, const Rps_Value arg0) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   if (is_empty() || !is_closure())
     return nullptr;
   Rps_ObjectRef obconn = connob();
@@ -1653,7 +1655,8 @@ Rps_TwoValues
 Rps_ClosureValue::apply2(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg1) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   if (is_empty() || !is_closure())
     return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
@@ -1678,7 +1681,8 @@ Rps_TwoValues
 Rps_ClosureValue::apply3(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg1, const Rps_Value arg2) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   if (is_empty() || !is_closure())
     return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
@@ -1701,7 +1705,8 @@ Rps_ClosureValue::apply4(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg1, const Rps_Value arg2,
                          const Rps_Value arg3) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   if (is_empty() || !is_closure())
     return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
@@ -1725,7 +1730,8 @@ Rps_ClosureValue::apply5(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg1, const Rps_Value arg2,
                          const Rps_Value arg3, const Rps_Value arg4) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   if (is_empty() || !is_closure())
     return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
@@ -1751,7 +1757,8 @@ Rps_ClosureValue::apply6(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg3, const Rps_Value arg4,
                          const Rps_Value arg5) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   if (is_empty() || !is_closure())
     return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
@@ -1779,7 +1786,8 @@ Rps_ClosureValue::apply7(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg3, const Rps_Value arg4,
                          const Rps_Value arg5, const Rps_Value arg6) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   if (is_empty() || !is_closure())
     return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
@@ -1809,7 +1817,8 @@ Rps_ClosureValue::apply8(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg5, const Rps_Value arg6,
                          const Rps_Value arg7) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   if (is_empty() || !is_closure())
     return  Rps_TwoValues(nullptr);
   Rps_ObjectRef obconn = connob();
@@ -1839,7 +1848,8 @@ Rps_ClosureValue::apply9(Rps_CallFrame*callerframe, const Rps_Value arg0,
                          const Rps_Value arg5, const Rps_Value arg6,
                          const Rps_Value arg7, const Rps_Value arg8) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   if (is_empty() || !is_closure())
     return nullptr;
   Rps_ObjectRef obconn = connob();
@@ -1870,7 +1880,8 @@ Rps_ClosureValue::apply10(Rps_CallFrame*callerframe, const Rps_Value arg0,
                           const Rps_Value arg7, const Rps_Value arg8,
                           const Rps_Value arg9) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   if (is_empty() || !is_closure())
     return nullptr;
   Rps_ObjectRef obconn = connob();

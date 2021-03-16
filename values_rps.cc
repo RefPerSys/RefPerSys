@@ -457,7 +457,8 @@ Rps_ClosureZone::make(Rps_ObjectRef connob, const std::vector<Rps_Value>& valvec
 Rps_TwoValues
 Rps_ClosureValue::apply_vect(Rps_CallFrame*callerframe, const std::vector<Rps_Value>& argvec) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   if (is_empty() || !is_closure())
     return nullptr;
   Rps_ObjectRef obconn = connob();
@@ -685,7 +686,8 @@ Rps_Value::closure_for_method_selector(Rps_CallFrame*callerframe, Rps_ObjectRef 
 Rps_TwoValues
 Rps_Value::send0(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
                  Rps_Value selfv; // the receiver
@@ -717,7 +719,8 @@ Rps_TwoValues
 Rps_Value::send1(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  Rps_Value arg0) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
                  Rps_Value selfv; // the receiver
@@ -751,8 +754,9 @@ Rps_TwoValues
 Rps_Value::send2(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  Rps_Value arg0, const Rps_Value arg1) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
                  Rps_Value selfv; // the receiver
@@ -799,7 +803,8 @@ Rps_TwoValues
 Rps_Value::send3(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  const Rps_Value arg0, const Rps_Value arg1, const Rps_Value arg2) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
                  Rps_Value selfv; // the receiver
@@ -842,7 +847,8 @@ Rps_Value::send4(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  const Rps_Value arg0, const Rps_Value arg1,
                  const Rps_Value arg2, const Rps_Value arg3) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
                  Rps_Value selfv; // the receiver
@@ -889,7 +895,8 @@ Rps_Value::send5(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  const Rps_Value arg2, const Rps_Value arg3,
                  const Rps_Value arg4) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
                  Rps_Value selfv; // the receiver
@@ -938,7 +945,8 @@ Rps_Value::send6(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  const Rps_Value arg2, const Rps_Value arg3,
                  const Rps_Value arg4, const Rps_Value arg5) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
                  Rps_Value selfv; // the receiver
@@ -991,7 +999,8 @@ Rps_Value::send7(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  const Rps_Value arg4, const Rps_Value arg5,
                  const Rps_Value arg6) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
                  Rps_Value selfv; // the receiver
@@ -1047,7 +1056,8 @@ Rps_Value::send8(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  const Rps_Value arg4, const Rps_Value arg5,
                  const Rps_Value arg6, const Rps_Value arg7) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
                  Rps_Value selfv; // the receiver
@@ -1104,7 +1114,8 @@ Rps_Value::send9(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                  const Rps_Value arg6, const Rps_Value arg7,
                  const Rps_Value arg8) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
                  Rps_Value selfv; // the receiver
@@ -1160,7 +1171,8 @@ Rps_TwoValues
 Rps_Value::send_vect(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                      const std::vector<Rps_Value>& argvecarg) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
                  Rps_Value selfv; // the receiver
@@ -1199,7 +1211,8 @@ Rps_TwoValues
 Rps_Value::send_ilist(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
                       const std::initializer_list<Rps_Value>& argilarg) const
 {
-  RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  //RPS_ASSERT(callerframe && callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_ASSERT_CALLFRAME (callerframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_5yQcFbU0seU018B48Z), // `message_sending` symbol
                  callerframe,
                  Rps_Value selfv; // the receiver
