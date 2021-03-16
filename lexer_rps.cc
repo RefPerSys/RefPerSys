@@ -1003,6 +1003,42 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
 } // end Rps_TokenSource::lex_chunk_element
 
 
+Rps_Value
+Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, unsigned rank)
+{
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/callframe,
+                           Rps_Value lextokv;
+                );
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token start rank#" << rank << " token_deq:" << token_deq
+                << " pos:" << position_str() << " from:" << std::endl << Rps_ShowCallFrame(&_));
+  while (token_deq.size() < rank)
+    {
+      _f.lextokv = get_token(&_);
+      if (_f.lextokv)
+        token_deq.push_back(_f.lextokv);
+      else
+        {
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " missing from:"
+                        << std::endl << Rps_ShowCallFrame(&_));
+          return nullptr;
+        }
+    };
+  if (rank<token_deq.size())
+    {
+      _f.lextokv = token_deq[rank];
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " => " << _f.lextokv);
+      return _f.lextokv;
+    }
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " missing:"
+                << std::endl << Rps_ShowCallFrame(&_));
+  return nullptr;
+} // end Rps_TokenSource::lookahead_token
+
+
+
 /// this gives some expression which could later be evaluated to a value
 Rps_Value
 Rps_TokenSource::parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq)

@@ -2192,6 +2192,8 @@ public:
   const std::string position_str(int col= -1) const;
   // return the name as a string value, hopefully memoized 
   Rps_Value name_val(Rps_CallFrame*callframe);
+  // lookahead a lexical token, with a deque of them rank#0 being the next one
+  Rps_Value lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, unsigned rank=0);
   //// parsing routines; the token dequeue pointer is for
   //// lookahead... Both are parsing *expressions* (giving a value, or
   //// an object), so returning values.... (which could later be
