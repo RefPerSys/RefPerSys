@@ -199,7 +199,15 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                            callerframe,
                            Rps_ObjectRef replcmdob;
                            Rps_Value lextokv;
+                           Rps_Value showv;
                 );
+  // a double ended queue to keep the lexical tokens
+  std::deque<Rps_Value> token_deq;
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
+  {
+    for (auto tokenv : token_deq)
+      gc->mark_value(tokenv);
+  });
   RPS_DEBUG_LOG(CMD, "REPL command show start arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
                 << ";  arg1=" << arg1
@@ -220,7 +228,13 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
   RPS_ASSERT (ltokz != nullptr);
   {
     Rps_TokenSource*tksrc = ltokz->lxsrc();
-    RPS_ASSERT (tksrc != nullptr);
+    RPS_ASSERT (tksrc != nullptr);;
+    RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _.lextokv << " framedepth:"<< _.call_frame_depth()
+                  << " before parse_value_expression");
+    _f.showv = tksrc->parse_value_expression(&_, token_deq);
+    RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _.lextokv << " framedepth:"<< _.call_frame_depth()
+                  << " after parse_value_expression showv=" << _f.showv);
+    RPS_INFORMOUT("REPL command show:" << _f.showv << std::endl);
   }
 #warning incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show
   RPS_WARNOUT("incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show from " << std::endl
