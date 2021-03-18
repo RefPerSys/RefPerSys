@@ -229,10 +229,10 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
   {
     Rps_TokenSource*tksrc = ltokz->lxsrc();
     RPS_ASSERT (tksrc != nullptr);;
-    RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _.lextokv << " framedepth:"<< _.call_frame_depth()
+    RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                   << " before parse_value_expression");
     _f.showv = tksrc->parse_value_expression(&_, token_deq);
-    RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _.lextokv << " framedepth:"<< _.call_frame_depth()
+    RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                   << " after parse_value_expression showv=" << _f.showv);
     RPS_INFORMOUT("REPL command show:" << _f.showv << std::endl);
   }
