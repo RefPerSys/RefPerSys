@@ -1047,10 +1047,15 @@ Rps_TokenSource::parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_
                            /*callerframe:*/callframe,
                            Rps_Value lextokv;
                 );
+  _f.lextokv =  lookahead_token(&_, token_deq, 0);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_value_expression lextokv=" << _f.lextokv << " position:" << position_str());
+  if (!_f.lextokv)
+    return nullptr;
 #warning unimplemented Rps_TokenSource::parse_value_expression
   RPS_FATALOUT("unimplemented Rps_TokenSource::parse_value_expression "
                << Rps_ShowCallFrame(&_)
                << " token_deq:" << token_deq
+	       << " lextokv:" << _f.lextokv
                << " position_str:" << position_str());
 } // end Rps_TokenSource::parse_value_expression
 
