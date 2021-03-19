@@ -1043,19 +1043,34 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>&
 Rps_Value
 Rps_TokenSource::parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq)
 {
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/callframe,
-                           Rps_Value lextokv;
+		 /*callerframe:*/callframe,
+		 Rps_Value lextokv;
+		 Rps_ObjectRef lexkindob;
+		 Rps_Value lexvalv;
                 );
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_value_expression lextokv=" << _f.lextokv << " position:" << position_str());
   if (!_f.lextokv)
     return nullptr;
+  const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
+  RPS_ASSERT (ltokz != nullptr);
+  _f.lexkindob = ltokz->lxkind();
+  _f.lexvalv = ltokz->lxval();
 #warning unimplemented Rps_TokenSource::parse_value_expression
+  /** TODO:
+   * we probably want to code some recursive descent parser for REPL,
+   * but we need some specification (in written English, using EBNF
+   * notation....) of REPL expressions
+   **/
   RPS_FATALOUT("unimplemented Rps_TokenSource::parse_value_expression "
                << Rps_ShowCallFrame(&_)
                << " token_deq:" << token_deq
-	       << " lextokv:" << _f.lextokv
+	       << " lextokv:" << _f.lextokv << std::endl
+	       << " ... lexkindob:" << _f.lexkindob
+	       << " lexvalv:" << _f.lexvalv
                << " position_str:" << position_str());
 } // end Rps_TokenSource::parse_value_expression
 
