@@ -65,9 +65,18 @@ function, which in turn would be associated with a RefPerSys closure.
 
 **INCOMPLETE**
 
-We need expressions evaluated to values, and other expressions evaluated to objects.
+We need expressions evaluated to values, and other expressions
+evaluated to objects. Since objects and values are different, we have
+two kind of expressions: those giving a value, and those evaluated to
+an object.
 
-## Concrete examples
+### Value expressions
+
+Scalars like integers `-10` or `0x1f` or `2300` are values.
+Scalars like doubles `3.2` or `-2.0e1` are boxed double values.
+Scalars like strings `"abc"` or `"twø\nlines"` are strings.
+
+## Concrete examples of commands
 
 0. Help for possible commands
 
