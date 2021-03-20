@@ -226,20 +226,27 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                 << RPS_FULL_BACKTRACE_HERE(1, "REPL command show rpsapply_7WsQyJK6lty02uz5KT"));
   const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
   RPS_ASSERT (ltokz != nullptr);
+  std::string showpos;
   {
     Rps_TokenSource*tksrc = ltokz->lxsrc();
-    RPS_ASSERT (tksrc != nullptr);;
+    RPS_ASSERT (tksrc != nullptr);
+    showpos = tksrc->position_str();
     RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                   << " before parse_value_expression");
     _f.lextokv = tksrc->get_token(&_);
     RPS_DEBUG_LOG(CMD, "REPL command show got lextokv=" << _f.lextokv
-		  << " from " << RPS_FULL_BACKTRACE_HERE(1, "REPL command show rpsapply_7WsQyJK6lty02uz5KT/gotnext"));
+                  << " from " << RPS_FULL_BACKTRACE_HERE(1, "REPL command show rpsapply_7WsQyJK6lty02uz5KT/gotnext"));
     if (_f.lextokv)
       token_deq.push_back(_f.lextokv);
     _f.showv = tksrc->parse_value_expression(&_, token_deq);
     RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                   << " after parse_value_expression showv=" << _f.showv);
-    RPS_INFORMOUT("REPL command show:" << _f.showv << std::endl);
+    std::cout << "##" << RPS_TERMINAL_BOLD_ESCAPE << showpos
+              << RPS_TERMINAL_NORMAL_ESCAPE << " : "
+              << _f.showv << std::endl;
+#warning rpsapply_7WsQyJK6lty02uz5KT for REPL command show should probably EVALUATE showv
+    /** TODO: we probably need some evaluating function, perhaps some
+    Rps_CallFrame::evaluate_expr(Rps_Value) member function **/
     return {_f.replcmdob, _f.showv};
   }
 #warning incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show
