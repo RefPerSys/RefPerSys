@@ -1048,6 +1048,7 @@ Rps_TokenSource::parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_
   RPS_LOCALFRAME(/*descr:*/nullptr,
 		 /*callerframe:*/callframe,
 		 Rps_Value lextokv;
+		 Rps_Value lexgotokv;
 		 Rps_ObjectRef lexkindob;
 		 Rps_Value lexvalv;
                 );
@@ -1058,7 +1059,33 @@ Rps_TokenSource::parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_
   const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
   RPS_ASSERT (ltokz != nullptr);
   _f.lexkindob = ltokz->lxkind();
-  _f.lexvalv = ltokz->lxval();
+  _f.lexvalv = ltokz->lxval();;
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_value_expression lexkindob="
+		<< _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str());
+  if (_f.lexkindob == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b) // int
+      && _f.lexvalv.is_int())
+    {
+      _f.lexgotokv = get_token(&_);
+      RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_value_expression int " << _f.lexvalv);
+      return _f.lexvalv;
+    }
+  else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
+	   && _f.lexvalv.is_string())
+    {
+      _f.lexgotokv = get_token(&_);
+      RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_value_expression string " << _f.lexvalv);
+      return _f.lexvalv;
+    }
+  else if (_f.lexkindob == RPS_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
+	   && _f.lexvalv.is_double())
+    {
+      _f.lexgotokv = get_token(&_);
+      RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_value_expression double " << _f.lexvalv);
+      return _f.lexvalv;
+    }
 #warning unimplemented Rps_TokenSource::parse_value_expression
   /** TODO:
    * we probably want to code some recursive descent parser for REPL,
