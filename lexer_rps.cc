@@ -1046,11 +1046,11 @@ Rps_TokenSource::parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(/*descr:*/nullptr,
-		 /*callerframe:*/callframe,
-		 Rps_Value lextokv;
-		 Rps_Value lexgotokv;
-		 Rps_ObjectRef lexkindob;
-		 Rps_Value lexvalv;
+                           /*callerframe:*/callframe,
+                           Rps_Value lextokv;
+                           Rps_Value lexgotokv;
+                           Rps_ObjectRef lexkindob;
+                           Rps_Value lexvalv;
                 );
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_value_expression lextokv=" << _f.lextokv << " position:" << position_str());
@@ -1061,7 +1061,7 @@ Rps_TokenSource::parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_
   _f.lexkindob = ltokz->lxkind();
   _f.lexvalv = ltokz->lxval();;
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_value_expression lexkindob="
-		<< _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str());
+                << _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str());
   if (_f.lexkindob == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b) // int
       && _f.lexvalv.is_int())
     {
@@ -1071,7 +1071,7 @@ Rps_TokenSource::parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_
       return _f.lexvalv;
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
-	   && _f.lexvalv.is_string())
+           && _f.lexvalv.is_string())
     {
       _f.lexgotokv = get_token(&_);
       RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
@@ -1079,7 +1079,7 @@ Rps_TokenSource::parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_
       return _f.lexvalv;
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
-	   && _f.lexvalv.is_double())
+           && _f.lexvalv.is_double())
     {
       _f.lexgotokv = get_token(&_);
       RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
@@ -1095,9 +1095,9 @@ Rps_TokenSource::parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_
   RPS_FATALOUT("unimplemented Rps_TokenSource::parse_value_expression "
                << Rps_ShowCallFrame(&_)
                << " token_deq:" << token_deq
-	       << " lextokv:" << _f.lextokv << std::endl
-	       << " ... lexkindob:" << _f.lexkindob
-	       << " lexvalv:" << _f.lexvalv
+               << " lextokv:" << _f.lextokv << std::endl
+               << " ... lexkindob:" << _f.lexkindob
+               << " lexvalv:" << _f.lexvalv
                << " position_str:" << position_str());
 } // end Rps_TokenSource::parse_value_expression
 
