@@ -2194,12 +2194,10 @@ public:
   Rps_Value name_val(Rps_CallFrame*callframe);
   // lookahead a lexical token, with a deque of them rank#0 being the next one
   Rps_Value lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, unsigned rank=0);
-  //// parsing routines; the token dequeue pointer is for
-  //// lookahead... Both are parsing *expressions* (giving a value, or
-  //// an object), so returning values.... (which could later be
-  //// "evaluated")
-  Rps_Value parse_value_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq);
-  Rps_Value parse_object_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq);
+  //// Ours parsing routines; the token dequeue pointer is for
+  //// lookahead...
+  Rps_Value parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq);
+#warning other recursive descent parsing routines are needed, with a syntax documented in doc/repl.md
   int line(void) const { return toksrc_line; };
   int col(void) const { return toksrc_col; };
   /// on lexical error, get_token returns null and does not change the position
