@@ -76,6 +76,27 @@ Scalars like integers `-10` or `0x1f` or `2300` are values.
 Scalars like doubles `3.2` or `-2.0e1` are boxed double values.
 Scalars like strings `"abc"` or `"twø\nlines"` are strings.
 
+
+### Object expressions
+* Addition of two or more objects: add <obj1> <obj2> ... <objn>
+* Subtraction of two or more objects: sub <obj1> <obj2> ... <objn>
+* Multiplication of two or more objects: mul <obj1> <obj2> ... <objn>
+* Division of two or more objects: div <obj1> <obj2> ... <objn>
+* Modulus operator (only two objects): mod <obj1> <obj2>
+
+### Logical expressions evaluation to true or false
+* We need objects representing TRUE and FALSE, or we could use boxed values 1
+  and 0
+* Less than: lt <obj1> <obj2>
+* less than equal: lte <obj1> <obj2>
+* equal: eq <obj1> <obj2>
+* greater than: gt <obj1> <obj2>
+* greater than equal: gte <obj1> <obj2>
+
+#### Combining object expressions
+* add <obj1> (mul <obj2> <obj3> (sub <obj4> <obj5>)), equivalent to
+  obj1 + (obj2 * obj3 * (obj4 - obj5))
+
 ## Concrete examples of commands
 
 0. Help for possible commands
