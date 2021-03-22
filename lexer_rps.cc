@@ -1041,7 +1041,7 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>&
 
 /// this gives some expression which could later be evaluated to a value
 Rps_Value
-Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq)
+Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
@@ -1054,8 +1054,11 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
                 );
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression lextokv=" << _f.lextokv << " position:" << position_str());
-  if (!_f.lextokv)
+  if (!_f.lextokv) {
+    if (pokparse)
+      *pokparse = false;
     return nullptr;
+  }
   const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
   RPS_ASSERT (ltokz != nullptr);
   _f.lexkindob = ltokz->lxkind();
@@ -1068,6 +1071,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
       _f.lexgotokv = get_token(&_);
       RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression int " << _f.lexvalv);
+    if (pokparse)
+      *pokparse = true;
       return _f.lexvalv;
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
@@ -1076,6 +1081,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
       _f.lexgotokv = get_token(&_);
       RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression string " << _f.lexvalv);
+    if (pokparse)
+      *pokparse = true;
       return _f.lexvalv;
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
@@ -1084,6 +1091,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
       _f.lexgotokv = get_token(&_);
       RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression double " << _f.lexvalv);
+    if (pokparse)
+      *pokparse = true;
       return _f.lexvalv;
     }
 #warning unimplemented Rps_TokenSource::parse_expression
@@ -1091,6 +1100,9 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
    * we probably want to code some recursive descent parser for REPL,
    * but we need some specification (in written English, using EBNF
    * notation....) of REPL expressions
+   *
+   * That specification of REPL expressions should go into file
+   * doc/repl.md or into doc/
    **/
   RPS_FATALOUT("unimplemented Rps_TokenSource::parse_expression "
                << Rps_ShowCallFrame(&_)
