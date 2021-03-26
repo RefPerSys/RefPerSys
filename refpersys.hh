@@ -2196,9 +2196,12 @@ public:
   Rps_Value lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, unsigned rank=0);
   //// Ours parsing routines; the token dequeue pointer is for
   //// lookahead... The flag pointed by `pokparse` is set to true if
-  //// provided, non-nil, and parsing successful
+  //// provided, non-nil, and parsing successful. On success, the
+  //// parsed expression is returned. On failure, the nil value is
+  //// returned, and *pokparse is set to false when given.
   Rps_Value parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
 #warning other recursive descent parsing routines are needed, with a syntax documented in doc/repl.md
+  ///////
   int line(void) const { return toksrc_line; };
   int col(void) const { return toksrc_col; };
   /// on lexical error, get_token returns null and does not change the position

@@ -1039,7 +1039,9 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>&
 
 
 
-/// this gives some expression which could later be evaluated to a value
+/// This member function returns some expression which could later be
+/// evaluated to a value; the *pokparse flag, when given, is set to
+/// true if and only if parsing was successful.
 Rps_Value
 Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
@@ -1062,7 +1064,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
   const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
   RPS_ASSERT (ltokz != nullptr);
   _f.lexkindob = ltokz->lxkind();
-  _f.lexvalv = ltokz->lxval();;
+  _f.lexvalv = ltokz->lxval();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression lexkindob="
                 << _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str());
   if (_f.lexkindob == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b) // int
