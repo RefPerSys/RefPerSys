@@ -235,6 +235,11 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                            Rps_ObjectRef obdictdelim;
                 );
   const char* curp = curcptr();
+  if (curp)
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token start curp='" << Rps_Cjson_String(curp) << "' at " << position_str());
+  else
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token start no curp at " << position_str());
+
   ucs4_t curuc=0;
   size_t linelen = toksrc_linebuf.size();
   // check that we have a proper UTF-8 character
@@ -489,37 +494,47 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
               strcat(delimbuf, curp+delimoff[nbpunct]);
               nbpunct++;
             }
+          else
+            break;
         }
       while (nbpunct < 4 && strlen(delimbuf) < sizeof(delimbuf)-8);
-      int startcol = toksrc_col;
-      do
-        {
-          _f.delimv = paylstrdict->find(delimbuf);
-          if (_f.delimv)
-            {
-              _f.lexkindob = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
-              _f.lextokv = _f.delimv;
-              toksrc_col += strlen(delimbuf);
-              const Rps_String* strv = _f.namev.to_string();
-              Rps_LexTokenZone* lextok =
-                Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-                (this,_f.lexkindob, _f.lextokv,
-                 strv,
-                 toksrc_line, startcol);
-              _f.res = Rps_LexTokenValue(lextok);
-              RPS_DEBUG_LOG(REPL, "get_token delimiter :-◑> " << _f.res);
-              return _f.res;
-              nbpunct--;
-              if (nbpunct>0)
-                delimbuf[delimoff[nbpunct]] = (char)0;
-              else
-                delimbuf[0] = (char)0;
-            }
-        }
-      while (delimbuf[0]);
-      RPS_WARNOUT("Rps_TokenSource::get_token unexpected delimiter " <<  curcptr()
-                  << " at " << toksrc_name << ":L" << toksrc_line << ",C" << startcol);
-      throw std::runtime_error("unexpected delimiter");
+      RPS_DEBUG_LOG(REPL, "get_token punctuation delimbuf='" << Rps_Cjson_String(delimbuf)
+                    << "' at " << position_str() << " nbpunct=" << nbpunct);
+      ///
+      {
+        int startcol = toksrc_col;
+        do
+          {
+            RPS_DEBUG_LOG(REPL, "get_token punctuation delimbuf='" << Rps_Cjson_String(delimbuf)
+                          << "' at " << position_str());
+            _f.delimv = paylstrdict->find(delimbuf);
+            RPS_DEBUG_LOG(REPL, "get_token punctuation delimv=" << _f.delimv);
+            if (_f.delimv)
+              {
+                _f.lexkindob = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
+                _f.lextokv = _f.delimv;
+                toksrc_col += strlen(delimbuf);
+                const Rps_String* strv = _f.namev.to_string();
+                Rps_LexTokenZone* lextok =
+                  Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+                  (this,_f.lexkindob, _f.lextokv,
+                   strv,
+                   toksrc_line, startcol);
+                _f.res = Rps_LexTokenValue(lextok);
+                RPS_DEBUG_LOG(REPL, "get_token delimiter :-◑> " << _f.res << " at " << position_str());
+                return _f.res;
+              }
+            else
+              {
+                RPS_DEBUG_LOG(REPL, "get_token no delimiter " << position_str());
+                break;
+              }
+          }
+        while (delimbuf[0]);
+        RPS_WARNOUT("Rps_TokenSource::get_token unexpected delimiter " <<  curcptr()
+                    << " at " << toksrc_name << ":L" << toksrc_line << ",C" << startcol);
+        throw std::runtime_error("unexpected delimiter");
+      }
     }
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name() << " @! " << position_str());
