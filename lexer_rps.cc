@@ -253,6 +253,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     }
   while (curp && isspace(*curp) && toksrc_col<(int)linelen)
     curp++, toksrc_col++;
+  if (curp)
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token curp='" << Rps_Cjson_String(curp) << "' at " << position_str());
+  else
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token no curp at " << position_str());
   if (toksrc_col>=(int)linelen)
     return nullptr;
   /// lex numbers?
@@ -531,8 +535,11 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
               }
           }
         while (delimbuf[0]);
-        RPS_WARNOUT("Rps_TokenSource::get_token unexpected delimiter " <<  curcptr()
-                    << " at " << toksrc_name << ":L" << toksrc_line << ",C" << startcol);
+        if (curcptr())
+          RPS_WARNOUT("Rps_TokenSource::get_token unexpected delimiter '" <<  Rps_Cjson_String(curcptr()) << "'"
+                      << " at " << position_str());
+        else
+          RPS_WARNOUT("Rps_TokenSource::get_token missing delimiter at " << position_str());
         throw std::runtime_error("unexpected delimiter");
       }
     }
