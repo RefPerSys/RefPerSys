@@ -479,6 +479,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   //// sequence of at most four ASCII or UTF-8 punctuation
   else if (ispunct(*curp) || uc_is_punct(curuc))
     {
+      RPS_DEBUG_LOG(REPL, "get_token start punctuation curp='" << Rps_Cjson_String(curp) << "' at " << position_str());
       _f.obdictdelim = RPS_ROOT_OB(_627ngdqrVfF020ugC5); //"repl_delim"∈string_dictionary
       auto paylstrdict = _f.obdictdelim->get_dynamic_payload<Rps_PayloadStringDict>();
       RPS_ASSERT (paylstrdict != nullptr);
@@ -490,16 +491,31 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       do
         {
           curp = curcptr();
-          int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
-          if (ulen>0 && strlen(delimbuf)+ulen<sizeof(delimbuf)-1
-              && uc_is_punct(curuc))
-            {
-              delimoff[nbpunct] = strlen(delimbuf);
-              strcat(delimbuf, curp+delimoff[nbpunct]);
-              nbpunct++;
-            }
-          else
-            break;
+	  if (!curp)
+	    break;
+	  if (curp && isspace(*curp))
+	    break;
+	  if (*curp < 127 && ispunct(*curp))
+	    {
+	      delimbuf[0] = *curp;
+	      delimbuf[1] = 0;
+              delimoff[nbpunct] = 1;
+	      nbpunct++;
+	    }
+	  else {
+	    int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
+	    RPS_DEBUG_LOG(REPL, "get_token punctuation curp='" << curp << "' ulen=" << ulen << " delimbuf='" << delimbuf
+			  << "' nbpunct=" << nbpunct);
+	    if (ulen>0 && strlen(delimbuf)+ulen<sizeof(delimbuf)-1
+		&& ((curuc<127 && ispunct((char)curuc)) || uc_is_punct(curuc)))
+	      {
+		delimoff[nbpunct] = strlen(delimbuf);
+		strcat(delimbuf, curp+delimoff[nbpunct]);
+		nbpunct++;
+	      }
+	    else
+	      break;
+	  }
         }
       while (nbpunct < 4 && strlen(delimbuf) < sizeof(delimbuf)-8);
       RPS_DEBUG_LOG(REPL, "get_token punctuation delimbuf='" << Rps_Cjson_String(delimbuf)
@@ -542,6 +558,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           RPS_WARNOUT("Rps_TokenSource::get_token missing delimiter at " << position_str());
         throw std::runtime_error("unexpected delimiter");
       }
+      RPS_DEBUG_LOG(REPL, "get_token punct @! " << position_str());
     }
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name() << " @! " << position_str());
