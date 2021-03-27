@@ -282,7 +282,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
          str,
          curlin, curcol);
       _f.res = Rps_LexTokenValue(lextok);
-      RPS_DEBUG_LOG(REPL, "get_token number :-◑> " << _f.res);
+      RPS_DEBUG_LOG(REPL, "get_token number :-◑> " << _f.res << " @! " << position_str());
       return _f.res;
     } //- end lexing numbers
   ///
@@ -308,7 +308,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
          str,
          curlin, curcol);
       _f.res = Rps_LexTokenValue(lextok);
-      RPS_DEBUG_LOG(REPL, "get_token infinity :-◑> " << _f.res);
+      RPS_DEBUG_LOG(REPL, "get_token infinity :-◑> " << _f.res << " @! " << position_str());
       return _f.res;
     } //- end lexing infinities
 
@@ -340,7 +340,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
              str,
              curlin, curcol);
           _f.res = Rps_LexTokenValue(lextokz);
-          RPS_DEBUG_LOG(REPL, "get_token object :-◑> " << _f.res);
+          RPS_DEBUG_LOG(REPL, "get_token object :-◑> " << _f.res << " @! " << position_str());
           return _f.res;
         }
       else if (isalpha(namestr[0]))  // new symbol
@@ -353,14 +353,13 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
              str,
              curlin, curcol);
           _f.res = Rps_LexTokenValue(lextok);
-          RPS_DEBUG_LOG(REPL, "get_token symbol :-◑> " << _f.res);
+          RPS_DEBUG_LOG(REPL, "get_token symbol :-◑> " << _f.res << " @! " << position_str());
           return _f.res;
         }
       else   // bad name
         {
           toksrc_col = startcol;
-          RPS_DEBUG_LOG(REPL, "get_token bad name " << _f.namev << " at L" << toksrc_line << ",C" << toksrc_col
-                        << " of " << toksrc_name);
+          RPS_DEBUG_LOG(REPL, "get_token bad name " << _f.namev << " @! " << position_str());
           return nullptr;
         }
     }
@@ -380,7 +379,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
          str,
          linestart, colstart);
       _f.res = Rps_LexTokenValue(lextok);
-      RPS_DEBUG_LOG(REPL, "get_token single-line string :-◑> " << _f.res);
+      RPS_DEBUG_LOG(REPL, "get_token single-line string :-◑> " << _f.res << " @! " << position_str());
       return _f.res;
     } // end single-line literal string token
 
@@ -402,7 +401,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
          str,
          linestart, colstart);
       _f.res = Rps_LexTokenValue(lextok);
-      RPS_DEBUG_LOG(REPL, "get_token multi-line literal string :-◑> " << _f.res);
+      RPS_DEBUG_LOG(REPL, "get_token multi-line literal string :-◑> " << _f.res << " @! " << position_str());
       return _f.res;
     } // end possibly multi-line raw literal strings
 
@@ -464,7 +463,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
          str,
          linestart, colstart);
       _f.res = Rps_LexTokenValue(lextok);
-      RPS_DEBUG_LOG(REPL, "get_token code_chunk :-◑> " << _f.res);
+      RPS_DEBUG_LOG(REPL, "get_token code_chunk :-◑> " << _f.res << " @! " << position_str());
       return _f.res;
     } // end lexing code chunk
 
@@ -523,8 +522,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       throw std::runtime_error("unexpected delimiter");
     }
 #warning Rps_TokenSource::get_token unimplemented
-  RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
-               << ":L" << toksrc_line << ",C" << toksrc_col);
+  RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name() << " @! " << position_str());
   // we should refactor properly the rps_repl_lexer & Rps_LexTokenZone constructor here
 } // end Rps_TokenSource::get_token
 
@@ -736,8 +734,7 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
     toksrc_col += endp - curp;
   RPS_DEBUG_LOG(REPL, "lex_raw_literal_string gives '"
                 << Rps_Cjson_String(result)
-                << "' at " << locname << "@L" << startlineno
-                << ",C" << startcolno);
+                << "' at " << position_str());
   return result;
 } // end Rps_TokenSource::lex_raw_literal_string
 
@@ -815,10 +812,8 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
       /// https://framalistes.org/sympa/arc/refpersys-forum/2020-12/msg00036.html
     }
   while (_f.chunkelemv || toksrc_col>oldcol || toksrc_line>oldline);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk @ " << name()
-                << ":L" << toksrc_line << ",C" << toksrc_col
-                << std::endl
-                << " :-◑> obchunk=" << _f.obchunk);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk "
+                << " :-◑> obchunk=" << _f.obchunk << " @!" << position_str());
   return _f.obchunk;
 } // end of Rps_TokenSource::lex_code_chunk
 
@@ -1056,11 +1051,12 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
                 );
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression lextokv=" << _f.lextokv << " position:" << position_str());
-  if (!_f.lextokv) {
-    if (pokparse)
-      *pokparse = false;
-    return nullptr;
-  }
+  if (!_f.lextokv)
+    {
+      if (pokparse)
+        *pokparse = false;
+      return nullptr;
+    }
   const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
   RPS_ASSERT (ltokz != nullptr);
   _f.lexkindob = ltokz->lxkind();
@@ -1073,8 +1069,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
       _f.lexgotokv = get_token(&_);
       RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression int " << _f.lexvalv);
-    if (pokparse)
-      *pokparse = true;
+      if (pokparse)
+        *pokparse = true;
       return _f.lexvalv;
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
@@ -1083,8 +1079,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
       _f.lexgotokv = get_token(&_);
       RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression string " << _f.lexvalv);
-    if (pokparse)
-      *pokparse = true;
+      if (pokparse)
+        *pokparse = true;
       return _f.lexvalv;
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
@@ -1093,8 +1089,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
       _f.lexgotokv = get_token(&_);
       RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression double " << _f.lexvalv);
-    if (pokparse)
-      *pokparse = true;
+      if (pokparse)
+        *pokparse = true;
       return _f.lexvalv;
     }
 #warning unimplemented Rps_TokenSource::parse_expression
