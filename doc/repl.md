@@ -101,6 +101,11 @@ Scalars like strings `"abc"` or `"twø\nlines"` are strings.
 * Hence, the order of evaluation would be, in terms of precedence, brackets,
   division, multiplication, addition, subtraction.
 
+## Representation of sets and tuples
+* Sets: {o1, o2, o3 ...} where o1, o2 and o3 are discrete objects
+* Tuples: [o1, o2, o3 ...} where o1, o2 and o3 may or may not be discrete
+  objects
+
 ## Concrete examples of commands
 
 0. Help for possible commands
