@@ -96,6 +96,10 @@ Scalars like strings `"abc"` or `"twø\nlines"` are strings.
 #### Combining object expressions
 * add <obj1> (mul <obj2> <obj3> (sub <obj4> <obj5>)), equivalent to
   obj1 + (obj2 * obj3 * (obj4 - obj5))
+* The normal rules of precedence apply when evaluating the order of the terms in
+  an expression.
+* Hence, the order of evaluation would be, in terms of precedence, brackets,
+  division, multiplication, addition, subtraction.
 
 ## Concrete examples of commands
 
