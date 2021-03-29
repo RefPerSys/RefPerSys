@@ -102,8 +102,11 @@ Scalars like strings `"abc"` or `"twø\nlines"` are strings.
   - Whitespace is not significant between the operator and operand
   - Associative property does not hold, i.e. `o1 / (o2 / o3) != (o1 / o2) / o3`
 
-* Modulus operator (only two objects):
-  - TODO: Do we need an modulus operator now?
+* Modulo operator (only two objects):
+  - Computing the modulo is denoted by the operator `%`
+  - `o1 % o2 % o3 % ... <on>` where `o1`, `o2`, `o3` are object operands
+  - Whitespace is not significant between the operator and operand
+  - Associative property does not hold, i.e. `o1 % (o2 % o3) != (o1 % o2) % o3`
 
 ### Logical expressions evaluation to true or false
 * We need objects representing TRUE and FALSE, or we could use boxed values 1
