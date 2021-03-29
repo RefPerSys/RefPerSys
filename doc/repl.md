@@ -78,11 +78,32 @@ Scalars like strings `"abc"` or `"twø\nlines"` are strings.
 
 
 ### Object expressions
-* Addition of two or more objects: add <obj1> <obj2> ... <objn>
-* Subtraction of two or more objects: sub <obj1> <obj2> ... <objn>
-* Multiplication of two or more objects: mul <obj1> <obj2> ... <objn>
+* Addition of two or more objects: 
+  - Addition is denoted by the operator `+`
+  - `o1 + o2 + o3 + ... <on>` where `o1`, `o2`, `o3` are object operands
+  - Whitespace is not significant between the operator and operand
+  - Associative property holds, i.e. `o1 + (o2 + o3) == (o1 + o2) + o3`
+
+* Subtraction of two or more objects: 
+  - Subtraction is denoted by the operator `-`
+  - `o1 - o2 - o3 + ... <on>` where `o1`, `o2`, `o3` are object operands
+  - Whitespace is not significant between the operator and operand
+  - Associative property does not hold, i.e. `o1 - (o2 - o3) != (o1 - o2) - o3`
+
+* Multiplication of two or more objects:
+  - Multiplication is denoted by the operator `*`
+  - `o1 * o2 * o3 * ... <on>` where `o1`, `o2`, `o3` are objects
+  - Whitespace is not significant between the operator and operand
+  - Associative property holds, i.e. `o1 * (o2 * o3) == (o1 * o2) * o3`
+
 * Division of two or more objects: div <obj1> <obj2> ... <objn>
-* Modulus operator (only two objects): mod <obj1> <obj2>
+  - Division is denoted by the operator `/`
+  - `o1 / o2 / o3 / ... <on>` where `o1`, `o2`, `o3` are object operands
+  - Whitespace is not significant between the operator and operand
+  - Associative property does not hold, i.e. `o1 / (o2 / o3) != (o1 / o2) / o3`
+
+* Modulus operator (only two objects):
+  - TODO: Do we need an modulus operator now?
 
 ### Logical expressions evaluation to true or false
 * We need objects representing TRUE and FALSE, or we could use boxed values 1
