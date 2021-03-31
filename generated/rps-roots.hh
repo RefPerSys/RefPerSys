@@ -71,6 +71,7 @@ RPS_INSTALL_ROOT_OB(_4CZZ2JlnkQT02YJ6sM) //repl_command∈symbol
 RPS_INSTALL_ROOT_OB(_4FBkYDlynyC02QtkfG) //"name"∈named_attribute
 RPS_INSTALL_ROOT_OB(_4I8GwXXfO3P01cdzyd) //repl_command_parser∈symbol
 RPS_INSTALL_ROOT_OB(_54CP9eaTmxT00lzbEW) //rps_command_textedit∈class
+RPS_INSTALL_ROOT_OB(_55Z5Wgzuprq01MU6Br) //repl_binary_operator∈class
 RPS_INSTALL_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
 RPS_INSTALL_ROOT_OB(_5yQcFbU0seU018B48Z) //message_sending∈symbol
 RPS_INSTALL_ROOT_OB(_5CYWxcChKN002rw1fI) //contributor_to_RefPerSys∈class
@@ -81,6 +82,7 @@ RPS_INSTALL_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
 RPS_INSTALL_ROOT_OB(_6fmq7pZkmNd03UyPuO) //class∈symbol
 RPS_INSTALL_ROOT_OB(_6gxiw0snqrX01tZWW9) //"set_of_core_functions"∈mutable_set
 RPS_INSTALL_ROOT_OB(_6ulDdOP2ZNr001cqVZ) //immutable_instance∈class
+RPS_INSTALL_ROOT_OB(_6vcJz35mTam01zYLjL) //repl_unary_operator∈class
 RPS_INSTALL_ROOT_OB(_6x4XcZ1fxp403uBUoz) //"rps_repl_interpret_token_source"∈core_function
 RPS_INSTALL_ROOT_OB(_6JbWqOsjX5T03M1eGM) //closure_for_method_selector∈symbol
 RPS_INSTALL_ROOT_OB(_6JYterg6iAu00cV9Ye) //set∈class
@@ -88,6 +90,7 @@ RPS_INSTALL_ROOT_OB(_6NVM7sMcITg01ug5TC) //tuple∈class
 RPS_INSTALL_ROOT_OB(_6QAanFi9yLx00spBST) //last_name∈symbol
 RPS_INSTALL_ROOT_OB(_6XLY6QfcDre02922jz) //value∈class
 RPS_INSTALL_ROOT_OB(_7b8jzCpOStA04e0jxs) //qobject∈class
+RPS_INSTALL_ROOT_OB(_7iVRsTR8u3D00Cy0hp) //repl_precedence∈symbol
 RPS_INSTALL_ROOT_OB(_7OrPRWQEg2o043XvK2) //rps_routine∈class
 RPS_INSTALL_ROOT_OB(_7X9eGs8601M021nMue) //object∈symbol
 RPS_INSTALL_ROOT_OB(_7Y3AyF9gNx700bQJXc) //string_buffer∈class
@@ -100,12 +103,13 @@ RPS_INSTALL_ROOT_OB(_8Iz9vBfs4sl041FiuR) //mutable_value_vector∈class
 RPS_INSTALL_ROOT_OB(_8J6vNYtP5E800eCr5q) //∈space
 RPS_INSTALL_ROOT_OB(_8YknAApDQiF04BDe3W) //mutable_object_vector∈class
 RPS_INSTALL_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
+RPS_INSTALL_ROOT_OB(_9j12Nhm4itk00YYUW7) //repl_operator∈class
 RPS_INSTALL_ROOT_OB(_9uwZtDshW4401x6MsY) //space∈symbol
 RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 83
+#define RPS_NB_ROOT_OB 87
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
