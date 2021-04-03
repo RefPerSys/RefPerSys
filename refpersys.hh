@@ -2201,6 +2201,11 @@ public:
   //// parsed expression is returned. On failure, the nil value is
   //// returned, and *pokparse is set to false when given.
   Rps_Value parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_disjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_conjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
   /// a primary expression is a simple thing
   Rps_Value parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
   /// Once we have parsed a primary, it could be followed by a primary
