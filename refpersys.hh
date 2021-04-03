@@ -1,5 +1,6 @@
 /****************************************************************
  * file refpersys.hh
+ * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
@@ -2200,6 +2201,13 @@ public:
   //// parsed expression is returned. On failure, the nil value is
   //// returned, and *pokparse is set to false when given.
   Rps_Value parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
+  /// a primary expression is a simple thing
+  Rps_Value parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
+  /// Once we have parsed a primary, it could be followed by a primary
+  /// complement. This routine is given the primary expression and
+  /// return, when successful, a larger expression. It accepts fields
+  /// and message sending.
+  Rps_Value parse_primary_complement(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, Rps_Value primaryexp, bool*pokparse=nullptr);
 #warning other recursive descent parsing routines are needed, with a syntax documented in doc/repl.md
   ///////
   int line(void) const { return toksrc_line; };
