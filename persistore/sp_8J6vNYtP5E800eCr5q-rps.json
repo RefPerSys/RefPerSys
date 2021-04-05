@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 186,
+ "nbobjects" : 190,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -534,6 +534,31 @@
 //-ob_1aGtWm38Vw701jDhZn
 
 
+//+ob_1ghZV0g1dtR02xPgqk
+//∈repl_binary_operator
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "or!binop"
+  },
+  {
+   "at" : "_2wdmxJecnFZ02VGGFK",
+   "va" : "_1HsUfOkNw0W033EIW1"
+  },
+  {
+   "at" : "_7iVRsTR8u3D00Cy0hp",
+   "va" : 15
+  }
+ ],
+ "class" : "_55Z5Wgzuprq01MU6Br",
+ "mtime" : 1617611331.77,
+ "oid" : "_1ghZV0g1dtR02xPgqk"
+}
+//-ob_1ghZV0g1dtR02xPgqk
+
+
 //+ob_1hhqFyDFWqG01Fmryr
 //∈symbol
 {
@@ -760,6 +785,31 @@
  "symb_val" : "_4FBkYDlynyC02QtkfG"
 }
 //-ob_1EBVGSfW2m200z18rx
+
+
+//+ob_1HsUfOkNw0W033EIW1
+//∈repl_delimiter
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "or!delim"
+  },
+  {
+   "at" : "_2wdmxJecnFZ02VGGFK",
+   "va" : "||"
+  },
+  {
+   "at" : "_55Z5Wgzuprq01MU6Br",
+   "va" : "_1ghZV0g1dtR02xPgqk"
+  }
+ ],
+ "class" : "_2wdmxJecnFZ02VGGFK",
+ "mtime" : 1617611331.77,
+ "oid" : "_1HsUfOkNw0W033EIW1"
+}
+//-ob_1HsUfOkNw0W033EIW1
 
 
 //+ob_1Io89yIORqn02SXx4p
@@ -1236,6 +1286,31 @@
  "oid" : "_2TZNwgyOdVd001uasl"
 }
 //-ob_2TZNwgyOdVd001uasl
+
+
+//+ob_2YVmrhVcwW00120rTK
+//∈repl_delimiter
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "and!delim"
+  },
+  {
+   "at" : "_2wdmxJecnFZ02VGGFK",
+   "va" : "&&"
+  },
+  {
+   "at" : "_55Z5Wgzuprq01MU6Br",
+   "va" : "_8xk4sKglyzG01dloqq"
+  }
+ ],
+ "class" : "_2wdmxJecnFZ02VGGFK",
+ "mtime" : 1617611331.77,
+ "oid" : "_2YVmrhVcwW00120rTK"
+}
+//-ob_2YVmrhVcwW00120rTK
 
 
 //+ob_312DlYVXeEs01aTJpg
@@ -2375,6 +2450,10 @@
    "val" : "_5yI4nqeRQdR02PcUIi"
   },
   {
+   "str" : "&&",
+   "val" : "_2YVmrhVcwW00120rTK"
+  },
+  {
    "str" : "(",
    "val" : "_4YM7mv0GrSp03OkF8T"
   },
@@ -2429,6 +2508,10 @@
   {
    "str" : "{",
    "val" : "_6kHcxtGAtWW03dZ14O"
+  },
+  {
+   "str" : "||",
+   "val" : "_1HsUfOkNw0W033EIW1"
   },
   {
    "str" : "}",
@@ -3299,6 +3382,31 @@
  "oid" : "_8p431uwpLJI00r5FQD"
 }
 //-ob_8p431uwpLJI00r5FQD
+
+
+//+ob_8xk4sKglyzG01dloqq
+//∈repl_binary_operator
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "and!binop"
+  },
+  {
+   "at" : "_2wdmxJecnFZ02VGGFK",
+   "va" : "_2YVmrhVcwW00120rTK"
+  },
+  {
+   "at" : "_7iVRsTR8u3D00Cy0hp",
+   "va" : 14
+  }
+ ],
+ "class" : "_55Z5Wgzuprq01MU6Br",
+ "mtime" : 1617611331.77,
+ "oid" : "_8xk4sKglyzG01dloqq"
+}
+//-ob_8xk4sKglyzG01dloqq
 
 
 //+ob_8xCV6GDXYMa02mK5xy
