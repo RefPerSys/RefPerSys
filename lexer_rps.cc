@@ -493,6 +493,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           curp = curcptr();
 	  if (!curp)
 	    break;
+	  RPS_DEBUG_LOG(REPL, "get_token punctuationloop curp='" << Rps_Cjson_String(curp) << "' nbpunct=" << nbpunct);
 	  if (curp && isspace(*curp))
 	    break;
 	  if (*curp < 127 && ispunct(*curp))
@@ -512,6 +513,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 	      {
 		delimoff[nbpunct] = strlen(delimbuf);
 		strcat(delimbuf, curp+delimoff[nbpunct]);
+		RPS_DEBUG_LOG(REPL, "get_token punctuation delimbuf='" << delimbuf << "'");
 		nbpunct++;
 	      }
 	    else {
