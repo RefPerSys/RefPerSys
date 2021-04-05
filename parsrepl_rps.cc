@@ -84,7 +84,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
       again = false;
       break;
     };
-#warning this code is incomplete.... do we check for `and` or `&&` here?
+#warning this code is incomplete.... we need to check for `&&` here
   } while (again);
   /** TODO:
    * we probably want to code some recursive descent parser for REPL,

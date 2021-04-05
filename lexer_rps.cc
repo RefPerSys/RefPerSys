@@ -503,6 +503,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 	      nbpunct++;
 	    }
 	  else {
+	    curuc = 0;
 	    int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
 	    RPS_DEBUG_LOG(REPL, "get_token punctuation curp='" << curp << "' ulen=" << ulen << " delimbuf='" << delimbuf
 			  << "' nbpunct=" << nbpunct);
@@ -513,22 +514,34 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 		strcat(delimbuf, curp+delimoff[nbpunct]);
 		nbpunct++;
 	      }
-	    else
+	    else {
+	      RPS_DEBUG_LOG(REPL, "get_token punctuation bad delimbuf='" << delimbuf
+			    << "' nbpunct=" << nbpunct);
 	      break;
+	    }
 	  }
         }
       while (nbpunct < 4 && strlen(delimbuf) < sizeof(delimbuf)-8);
       RPS_DEBUG_LOG(REPL, "get_token punctuation delimbuf='" << Rps_Cjson_String(delimbuf)
-                    << "' at " << position_str() << " nbpunct=" << nbpunct);
+                    << "' at " << position_str() << " nbpunct=" << nbpunct
+		    << " delims" << Rps_Do_Output([&](std::ostream&outs) {
+						    for (int i=0; i<nbpunct; i++) {
+						      char curbuf[32];
+						      memset (curbuf, 0, sizeof(curbuf));
+						      strncpy(curbuf, delimbuf, delimoff[i]);
+						      outs << " [" << i << "]='" << Rps_Cjson_String(curbuf) << "'";
+						    }
+						   }));
       ///
       {
         int startcol = toksrc_col;
         do
           {
             RPS_DEBUG_LOG(REPL, "get_token punctuation delimbuf='" << Rps_Cjson_String(delimbuf)
-                          << "' at " << position_str());
+                          << "' at " << position_str() << " strdict.own:" << Rps_ObjectRef(paylstrdict->owner()));
             _f.delimv = paylstrdict->find(delimbuf);
-            RPS_DEBUG_LOG(REPL, "get_token punctuation delimv=" << _f.delimv);
+            RPS_DEBUG_LOG(REPL, "get_token punctuation delimv=" << _f.delimv << " for delimbuf='"
+			  << Rps_Cjson_String(delimbuf) << "' ");
             if (_f.delimv)
               {
                 _f.lexkindob = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
