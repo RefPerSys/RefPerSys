@@ -41,15 +41,17 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(/*descr:*/nullptr,
-		 /*callerframe:*/callframe,
-		 Rps_Value lextokv;
-		 Rps_Value lexgotokv;
-		 Rps_Value leftv;
-		 Rps_Value disjv;
-		 Rps_ObjectRef lexkindob;
-		 Rps_Value lexvalv;
-		 );
-  std::vector<Rps_Value> disjvect;  
+                           /*callerframe:*/callframe,
+                           Rps_Value lextokv;
+                           Rps_Value lexgotokv;
+                           Rps_Value leftv;
+                           Rps_Value rightv;
+                           Rps_Value disjv;
+                           Rps_ObjectRef lexkindob;
+                           Rps_ObjectRef andob;
+                           Rps_Value lexvalv;
+                );
+  std::vector<Rps_Value> disjvect;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
     // maybe token_deq is already GC-marked by caller....
@@ -77,30 +79,59 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
     }
   disjvect.push_back(_f.leftv);
   bool again = false;
-  do {
-    again = false;
-    _f.lextokv =  lookahead_token(&_, token_deq, 0);
-    if (!_f.lextokv) {
+  static Rps_Id idand;
+  if (!idand)
+    idand = Rps_Id("_8xk4sKglyzG01dloqq"); // id of "and!binop"∈repl_binary_operato
+  do
+    {
       again = false;
-      break;
-    };
-#warning this code is incomplete.... we need to check for `&&` here
-  } while (again);
-  /** TODO:
-   * we probably want to code some recursive descent parser for REPL,
-   * but we need some specification (in written English, using EBNF
-   * notation....) of REPL expressions
-   *
-   * That specification of REPL expressions should go into file
-   * doc/repl.md or into doc/
-   **/
-  RPS_FATALOUT("unimplemented Rps_TokenSource::parse_expression "
-               << Rps_ShowCallFrame(&_)
-               << " token_deq:" << token_deq
-               << " lextokv:" << _f.lextokv << std::endl
-               << " ... lexkindob:" << _f.lexkindob
-               << " lexvalv:" << _f.lexvalv
-               << " position_str:" << position_str());
+      _f.lextokv =  lookahead_token(&_, token_deq, 0);
+      if (!_f.lextokv)
+        {
+          again = false;
+          break;
+        };
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression testing and lextokv=" << _f.lextokv << " position:" << position_str());
+      if (_f.lextokv.is_lextoken()
+          && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
+          &&  _f.lextokv.to_lextoken()->lxval().is_object()
+          &&  _f.lextokv.to_lextoken()->lxval().to_object()->oid() == idand)
+        {
+          (void) get_token(&_); // consume the and operator
+          again = true;
+          if (!_f.andob)
+            _f.andob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,idand);
+        }
+      else
+        again = false;
+      if (again)
+        {
+          bool okright=false;
+          _f.rightv = parse_disjunct(&_, token_deq, &okright);
+          if (okright)
+            disjvect.push_back(_f.rightv);
+          else
+            {
+              RPS_WARNOUT("failed to parse disjunct at " << position_str());
+              return nullptr;
+            }
+        }
+    }
+  while (again);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression  andob=" << _f.andob
+                << "nbdisj:" << disjvect.size());
+  if (disjvect.size() > 1)
+    {
+      /// we make an instance:
+      _f.disjv = Rps_InstanceValue(_f.andob, disjvect);
+    }
+  else
+    {
+      _f.disjv = disjvect[0];
+    }
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression gives "
+                << _f.disjv);
+  return _f.disjv;
 } // end Rps_TokenSource::parse_expression
 
 
@@ -113,7 +144,7 @@ Rps_TokenSource::parse_disjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
 } // end Rps_TokenSource::parse_disjunct
 
 
-Rps_Value 
+Rps_Value
 Rps_TokenSource::parse_conjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
 } // end Rps_TokenSource::parse_conjunct
