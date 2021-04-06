@@ -491,49 +491,53 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       do
         {
           curp = curcptr();
-	  if (!curp)
-	    break;
-	  RPS_DEBUG_LOG(REPL, "get_token punctuationloop curp='" << Rps_Cjson_String(curp) << "' nbpunct=" << nbpunct);
-	  if (curp && isspace(*curp))
-	    break;
-	  if (*curp < 127 && ispunct(*curp))
-	    {
-	      delimbuf[0] = *curp;
-	      delimbuf[1] = 0;
+          if (!curp)
+            break;
+          RPS_DEBUG_LOG(REPL, "get_token punctuationloop curp='" << Rps_Cjson_String(curp) << "' nbpunct=" << nbpunct);
+          if (curp && isspace(*curp))
+            break;
+          if (*curp < 127 && ispunct(*curp))
+            {
+              delimbuf[0] = *curp;
+              delimbuf[1] = 0;
               delimoff[nbpunct] = 1;
-	      nbpunct++;
-	    }
-	  else {
-	    curuc = 0;
-	    int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
-	    RPS_DEBUG_LOG(REPL, "get_token punctuation curp='" << curp << "' ulen=" << ulen << " delimbuf='" << delimbuf
-			  << "' nbpunct=" << nbpunct);
-	    if (ulen>0 && strlen(delimbuf)+ulen<sizeof(delimbuf)-1
-		&& ((curuc<127 && ispunct((char)curuc)) || uc_is_punct(curuc)))
-	      {
-		delimoff[nbpunct] = strlen(delimbuf);
-		strcat(delimbuf, curp+delimoff[nbpunct]);
-		RPS_DEBUG_LOG(REPL, "get_token punctuation delimbuf='" << delimbuf << "'");
-		nbpunct++;
-	      }
-	    else {
-	      RPS_DEBUG_LOG(REPL, "get_token punctuation bad delimbuf='" << delimbuf
-			    << "' nbpunct=" << nbpunct);
-	      break;
-	    }
-	  }
+              nbpunct++;
+            }
+          else
+            {
+              curuc = 0;
+              int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
+              RPS_DEBUG_LOG(REPL, "get_token punctuation curp='" << curp << "' ulen=" << ulen << " delimbuf='" << delimbuf
+                            << "' nbpunct=" << nbpunct);
+              if (ulen>0 && strlen(delimbuf)+ulen<sizeof(delimbuf)-1
+                  && ((curuc<127 && ispunct((char)curuc)) || uc_is_punct(curuc)))
+                {
+                  delimoff[nbpunct] = strlen(delimbuf);
+                  strcat(delimbuf, curp+delimoff[nbpunct]);
+                  RPS_DEBUG_LOG(REPL, "get_token punctuation delimbuf='" << delimbuf << "'");
+                  nbpunct++;
+                }
+              else
+                {
+                  RPS_DEBUG_LOG(REPL, "get_token punctuation bad delimbuf='" << delimbuf
+                                << "' nbpunct=" << nbpunct);
+                  break;
+                }
+            }
         }
       while (nbpunct < 4 && strlen(delimbuf) < sizeof(delimbuf)-8);
       RPS_DEBUG_LOG(REPL, "get_token punctuation delimbuf='" << Rps_Cjson_String(delimbuf)
                     << "' at " << position_str() << " nbpunct=" << nbpunct
-		    << " delims" << Rps_Do_Output([&](std::ostream&outs) {
-						    for (int i=0; i<nbpunct; i++) {
-						      char curbuf[32];
-						      memset (curbuf, 0, sizeof(curbuf));
-						      strncpy(curbuf, delimbuf, delimoff[i]);
-						      outs << " [" << i << "]='" << Rps_Cjson_String(curbuf) << "'";
-						    }
-						   }));
+                    << " delims" << Rps_Do_Output([&](std::ostream&outs)
+      {
+        for (int i=0; i<nbpunct; i++)
+          {
+            char curbuf[32];
+            memset (curbuf, 0, sizeof(curbuf));
+            strncpy(curbuf, delimbuf, delimoff[i]);
+            outs << " [" << i << "]='" << Rps_Cjson_String(curbuf) << "'";
+          }
+      }));
       ///
       {
         int startcol = toksrc_col;
@@ -543,7 +547,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                           << "' at " << position_str() << " strdict.own:" << Rps_ObjectRef(paylstrdict->owner()));
             _f.delimv = paylstrdict->find(delimbuf);
             RPS_DEBUG_LOG(REPL, "get_token punctuation delimv=" << _f.delimv << " for delimbuf='"
-			  << Rps_Cjson_String(delimbuf) << "' ");
+                          << Rps_Cjson_String(delimbuf) << "' ");
             if (_f.delimv)
               {
                 _f.lexkindob = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
