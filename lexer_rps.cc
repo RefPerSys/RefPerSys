@@ -501,6 +501,9 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
               delimbuf[0] = *curp;
               delimbuf[1] = 0;
               delimoff[nbpunct] = 1;
+              RPS_DEBUG_LOG(REPL, "get_token simplepunct delimbuf '"
+                            << Rps_Cjson_String(delimbuf)
+                            << "' nbpunct#" << nbpunct);
               nbpunct++;
             }
           else
@@ -508,22 +511,27 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
               curuc = 0;
               int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
               RPS_DEBUG_LOG(REPL, "get_token punctuation curp='" << curp << "' ulen=" << ulen << " delimbuf='" << delimbuf
-                            << "' nbpunct=" << nbpunct);
+                            << "' nbpunct#" << nbpunct);
               if (ulen>0 && strlen(delimbuf)+ulen<sizeof(delimbuf)-1
                   && ((curuc<127 && ispunct((char)curuc)) || uc_is_punct(curuc)))
                 {
                   delimoff[nbpunct] = strlen(delimbuf);
                   strcat(delimbuf, curp+delimoff[nbpunct]);
-                  RPS_DEBUG_LOG(REPL, "get_token punctuation delimbuf='" << delimbuf << "'");
+                  RPS_DEBUG_LOG(REPL, "get_token simplepunctuation delimbuf='" << Rps_Cjson_String(delimbuf)
+                                << "' nbpunct#" << nbpunct);
                   nbpunct++;
                 }
               else
                 {
-                  RPS_DEBUG_LOG(REPL, "get_token punctuation bad delimbuf='" << delimbuf
+                  RPS_DEBUG_LOG(REPL, "get_token punctuation bad delimbuf='"
+                                << Rps_Cjson_String(delimbuf)
                                 << "' nbpunct=" << nbpunct);
                   break;
                 }
             }
+          RPS_DEBUG_LOG(REPL, "get_token endingloop nbpunct=" << nbpunct
+                        << " delimbuf='" << Rps_Cjson_String(delimbuf)
+                        << "'");
         }
       while (nbpunct < 4 && strlen(delimbuf) < sizeof(delimbuf)-8);
       RPS_DEBUG_LOG(REPL, "get_token punctuation delimbuf='" << Rps_Cjson_String(delimbuf)
