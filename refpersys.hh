@@ -2172,6 +2172,7 @@ protected:
     toksrc_line++;
     toksrc_col=0;
   };
+  Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public:
   static constexpr unsigned max_gc_depth = 128;
   const char*curcptr(void) const {
