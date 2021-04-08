@@ -487,22 +487,23 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       _f.delimv = get_delimiter(&_);
       std::string delimstartstr {curp};
       RPS_DEBUG_LOG(REPL, "get_token after get_delimiter_object delimv=" << _f.delimv << " at " << position_str());
-      if (!_f.delimv) {
-	RPS_WARNOUT("invalid delimiter " << Rps_Cjson_String(delimstartstr) << " at " << delimpos);
-	std::string warndelimstr{"invalid delimiter "};
-	warndelimstr +=  Rps_Cjson_String(delimstartstr);
-	warndelimstr += " at ";
-	warndelimstr += delimpos;
-	throw std::runtime_error(warndelimstr);
-      }
+      if (!_f.delimv)
+        {
+          RPS_WARNOUT("invalid delimiter " << Rps_Cjson_String(delimstartstr) << " at " << delimpos);
+          std::string warndelimstr{"invalid delimiter "};
+          warndelimstr +=  Rps_Cjson_String(delimstartstr);
+          warndelimstr += " at ";
+          warndelimstr += delimpos;
+          throw std::runtime_error(warndelimstr);
+        }
       _f.lexkindob = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
       _f.lextokv = _f.delimv;
       const Rps_String* strv = _f.namev.to_string();
       Rps_LexTokenZone* lextok =
-	Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-	(this,_f.lexkindob, _f.lextokv,
-	 strv,
-	 toksrc_line, startcol);
+        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+        (this,_f.lexkindob, _f.lextokv,
+         strv,
+         toksrc_line, startcol);
       _f.res = Rps_LexTokenValue(lextok);
       RPS_DEBUG_LOG(REPL, "get_token delimiter :-◑> " << _f.res << " at " << position_str());
       return _f.res;
@@ -516,41 +517,93 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 Rps_Value
 Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
 {
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/callframe,
+                           Rps_Value res;
+                           Rps_ObjectRef obdictdelim;
+                );
+  const char*curp=nullptr;
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  std::string startpos = position_str();
+  _f.obdictdelim = RPS_ROOT_OB(_627ngdqrVfF020ugC5); //"repl_delim"∈string_dictionary
+  auto paylstrdict = _f.obdictdelim->get_dynamic_payload<Rps_PayloadStringDict>();
+  RPS_ASSERT (paylstrdict != nullptr);
+  std::string delimstr;
+  int nbdelimch=0; // number of delimiter UTF8 characters
+  bool again=false;
+  const char* startp = curcptr();
+  RPS_ASSERT(startp);
+  curp = startp;
+  do
+    {
+      ucs4_t curuc=0;
+      int ulen= -1;
+      again=false;
+      if (!curp)
+        break;
+      if (isspace(*curp))
+        break;
+      // FIXME: maybe we should remember the byte position of every delimiter character (it can be UTF-8 like °)
+      if (*curp < 127 && ispunct(*curp))
+        {
+          delimstr.push_back(*curp);
+          curp ++;
+          nbdelimch ++;
+          again = true;
+        }
+      else if (*curp > 128
+               && (ulen=u8_strmbtouc(&curuc, (const uint8_t*)curp) // length in bytes
+                        > 0)
+               &&  uc_is_punct(curuc))
+        {
+          delimstr.append(curp, ulen);
+          curp += ulen;
+          nbdelimch ++;
+          again = true;
+        }
+      else
+        again = false;
+    }
+  while (again);
+  RPS_DEBUG_LOG(REPL, "get_delimiter delimstr='" << Rps_Cjson_String(delimstr) << "' nbdelimch="
+                << nbdelimch << " startpos:" << startpos);
+  /***
+   * TODO: we need to find the longest substring in delimstr which is a known delimiter
+  ***/
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_delimiter at " << position_str());
 #if 0 && oldcode
-      _f.obdictdelim = RPS_ROOT_OB(_627ngdqrVfF020ugC5); //"repl_delim"∈string_dictionary
-      auto paylstrdict = _f.obdictdelim->get_dynamic_payload<Rps_PayloadStringDict>();
-      RPS_ASSERT (paylstrdict != nullptr);
-      char delimbuf[32];
-      memset(delimbuf, 0, sizeof(delimbuf));
-      unsigned short delimoff[8];
-      memset (delimoff, 0, sizeof(delimoff));
-      int nbpunct = 0;
-      do
+  char delimbuf[32];
+  memset(delimbuf, 0, sizeof(delimbuf));
+  unsigned short delimoff[8];
+  memset (delimoff, 0, sizeof(delimoff));
+  int nbpunct = 0;
+  do
+    {
+      curp = curcptr();
+      if (!curp)
+        break;
+      RPS_DEBUG_LOG(REPL, "get_delimiter punctuationloop curp='" << Rps_Cjson_String(curp) << "' nbpunct=" << nbpunct);
+      if (curp && isspace(*curp))
+        break;
+      if (*curp < 127 && ispunct(*curp))
         {
-          curp = curcptr();
-          if (!curp)
-            break;
-          RPS_DEBUG_LOG(REPL, "get_delimiter punctuationloop curp='" << Rps_Cjson_String(curp) << "' nbpunct=" << nbpunct);
-          if (curp && isspace(*curp))
-            break;
-          if (*curp < 127 && ispunct(*curp))
+          delimbuf[0] = *curp;
+          delimbuf[1] = 0;
+          delimoff[nbpunct] = 1;
+          RPS_DEBUG_LOG(REPL, "get_delimiter simplepunct delimbuf '"
+                        << Rps_Cjson_String(delimbuf)
+                        << "' nbpunct#" << nbpunct);
+          nbpunct++;
+        }
+      else
+        {
+          curuc = 0;
+          int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
+          if (ulen>0 &&
+              ((curcuc<128 && ispunct((char)curuc))
+               ||  uc_is_punct(curuc)))
             {
-              delimbuf[0] = *curp;
-              delimbuf[1] = 0;
-              delimoff[nbpunct] = 1;
-              RPS_DEBUG_LOG(REPL, "get_delimiter simplepunct delimbuf '"
-                            << Rps_Cjson_String(delimbuf)
-                            << "' nbpunct#" << nbpunct);
-              nbpunct++;
-            }
-          else
-            {
-              curuc = 0;
-              int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
-              RPS_DEBUG_LOG(REPL, "get_delimiter punctuation curp='" << curp << "' ulen=" << ulen << " delimbuf='" << delimbuf
-                            << "' nbpunct#" << nbpunct);
+              RPS_DEBUG_LOG(REPL, "get_delimiter punctuation curp='" << curp << "' ulen=" << ulen);
               if (ulen>0 && strlen(delimbuf)+ulen<sizeof(delimbuf)-1
                   && ((curuc<127 && ispunct((char)curuc)) || uc_is_punct(curuc)))
                 {
@@ -626,577 +679,577 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
       }
       RPS_DEBUG_LOG(REPL, "get_delimiter punct @! " << position_str());
 #endif /*oldcode*/
-} // end Rps_TokenSource::get_delimiter
+    } // end Rps_TokenSource::get_delimiter
 
-std::string
-Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
-{
-  RPS_ASSERT(callframe && callframe->is_good_call_frame());
-  std::string rstr;
-  const char* curp = curcptr();
-  ucs4_t curuc=0;
-  size_t linelen = toksrc_linebuf.size();
-  const char*eol = curp + (linelen-toksrc_col);
-  rstr.reserve(4+2*(eol-curp)/3);
-  RPS_ASSERT(*curp == '"');
-  toksrc_col++, curp++;
-  char curch = 0;
-  while ((curch=(*curp)) != (char)0)
-    {
-      if (curch == '"')
-        {
-          toksrc_col++;
-          return rstr;
-        }
-      else if (curch == '\\')
-        {
-          char nextch = curp[1];
-          char shortbuf[16];
-          memset(shortbuf, 0, sizeof(shortbuf));
-          switch (nextch)
-            {
-            case '\'':
-            case '\"':
-            case '\\':
-              rstr.push_back (nextch);
-              toksrc_col += 2;
-              continue;
-            case 'a':
-              rstr.push_back ('\a');
-              toksrc_col += 2;
-              continue;
-            case 'b':
-              rstr.push_back ('\b');
-              toksrc_col += 2;
-              continue;
-            case 'f':
-              rstr.push_back ('\f');
-              toksrc_col += 2;
-              continue;
-            case 'e':			// ESCAPE
-              rstr.push_back ('\033');
-              toksrc_col += 2;
-              continue;
-            case 'n':
-              rstr.push_back ('\n');
-              toksrc_col += 2;
-              continue;
-            case 'r':
-              rstr.push_back ('\r');
-              toksrc_col += 2;
-              continue;
-            case 't':
-              rstr.push_back ('\t');
-              toksrc_col += 2;
-              continue;
-            case 'v':
-              rstr.push_back ('\v');
-              toksrc_col += 2;
-              continue;
-            case 'x':
-            {
-              int p = -1;
-              int c = 0;
-              if (sscanf (curp + 2, "%02x%n", &c, &p) > 0 && p > 0)
-                {
-                  rstr.push_back ((char)c);
-                  toksrc_col += p + 2;
-                  continue;
-                }
-              else
-                goto lexical_error_backslash;
-            }
-            case 'u': // four hexdigit escape Unicode
-            {
-              int p = -1;
-              int c = 0;
-              if (sscanf (curp + 2, "%04x%n", &c, &p) > 0 && p > 0)
-                {
-                  int l =
-                    u8_uctomb ((uint8_t *) shortbuf, (ucs4_t) c, sizeof(shortbuf));
-                  if (l > 0)
-                    {
-                      rstr.append(shortbuf);
-                      toksrc_col += p + l;
-                      continue;
-                    }
-                  else
-                    goto lexical_error_backslash;
-                }
-              else
-                goto lexical_error_backslash;
-            }
-            case 'U': // eight hexdigit escape Unicode
-            {
-              int p = -1;
-              int c = 0;
-              if (sscanf (curp + 2, "%08x%n", &c, &p) > 0 && p > 0)
-                {
-                  int l =
-                    u8_uctomb ((uint8_t *) shortbuf, (ucs4_t) c, sizeof(shortbuf));
-                  if (l > 0)
-                    {
-                      rstr.append(shortbuf);
-                      toksrc_col += p + l;
-                      continue;
-                    }
-                  else
-                    goto lexical_error_backslash;
-                }
-            }
-            default:
-              goto lexical_error_backslash;
-            } // end switch nextch
-        } // end if curch is '\\'
-      else if (curch >= ' ' && curch < 0x7f)
-        {
-          rstr.push_back (curch);
-          toksrc_col++;
-          continue;
-        }
-      /// accepts any correctly encoded UTF-8
-      else if (int l = u8_mblen ((uint8_t *)(curp), eol-curp); l>0)
-        {
-          rstr.append(curp, l);
-          toksrc_col += l;
-          continue;
-        }
-      /// improbable lexical error....
-      else
-        {
-          RPS_WARNOUT("Rps_TokenSource::lex_quoted_literal_string : lexical error at "
-                      << position_str());
-          throw std::runtime_error("lexical error");
-        }
-    } // end while
-lexical_error_backslash:
-  RPS_WARNOUT("Rps_TokenSource::lex_quoted_literal_string  : bad backslash escape at "
-              << position_str());
-  throw std::runtime_error("lexical bad backslash escape");
-} // end Rps_TokenSource::lex_quoted_literal_string
-
-std::string
-Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
-{
-  std::string result;
-#warning some code from rps_lex_raw_literal_string file repl_rps.cc lines 1050-1115 should go here
-  RPS_ASSERT(callframe && callframe->is_good_call_frame());
-  RPS_ASSERT(rps_is_main_thread());
-  const char* curp = curcptr();
-  size_t linelen = toksrc_linebuf.size();
-  /// For C++, raw literal strings are multi-line, and explained in
-  /// en.cppreference.com/w/cpp/language/string_literal ... For
-  /// example R"delim(raw characters \)delim" In RefPerSys, we
-  /// restrict the <delim> to contain only letters, up to 15 of
-  /// them...
-  char delim[16];
-  memset (delim, 0, sizeof(delim));
-  int pos= -1;
-  int startlineno= toksrc_line;
-  int startcolno= toksrc_col;
-  std::string locname = toksrc_name;
-  if (sscanf(curp,  "R\"%15[A-Za-z](%n", delim, &pos) < 1
-      || !isalpha(delim[0])
-      || pos<=1)
-    /// should never happen
-    RPS_FATALOUT("corrupted Rps_TokenSource::lex_raw_literal_string '"
-                 << Rps_Cjson_String(curp) << "'"
-                 << std::endl
-                 << Rps_ShowCallFrame(callframe));
-  toksrc_col += pos;
-  RPS_ASSERT(strlen(delim)>0 && strlen(delim)<15);
-  char endstr[24];
-  memset(endstr, 0, sizeof(endstr));
-  snprintf(endstr, sizeof(endstr), ")%s\"", delim);
-  RPS_DEBUG_LOG(REPL, "lex_raw_literal_string start L" << startlineno
-                << ",C" << startcolno
-                << "@" << toksrc_name
-                << " endstr " << endstr);
-  const char*endp = nullptr;
-  while ((curp = curcptr()) != nullptr
-         && (endp=strstr(curp, endstr)) == nullptr)
-    {
-      std::string reststr{curp};
-      if (!get_line())
-        {
-          RPS_WARNOUT("Rps_TokenSource::lex_raw_literal_string without end of string "
-                      << endstr
-                      << " starting L" << startlineno
-                      << ",C" << startcolno
-                      << "@" << toksrc_name
-                      << std::endl
-                      << Rps_ShowCallFrame(callframe));
-          throw std::runtime_error(std::string{"lex_raw_literal_string failed to find "}
-                                   + endstr);
-        }
-      result += reststr;
-    };				// end while curp....
-  if (endp)
-    toksrc_col += endp - curp;
-  RPS_DEBUG_LOG(REPL, "lex_raw_literal_string gives '"
-                << Rps_Cjson_String(result)
-                << "' at " << position_str());
-  return result;
-} // end Rps_TokenSource::lex_raw_literal_string
-
-
-Rps_Value
-Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
-{
-  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
-                           /*callerframe:*/callframe,
-                           Rps_ObjectRef obchunk;
-                           Rps_Value namev;
-                           Rps_Value res;
-                           Rps_Value chunkelemv;
-                );
-  RPS_ASSERT(callframe && callframe->is_good_call_frame());
-  RPS_ASSERT(rps_is_main_thread());
-  struct Rps_ChunkData_st chkdata = {};
-  chkdata.chunkdata_magic = rps_chunkdata_magicnum;
-  chkdata.chunkdata_lineno = toksrc_line;
-  chkdata.chunkdata_colno = toksrc_col;
-  chkdata.chunkdata_name = toksrc_name;
-  const char* curp = curcptr();
-  _f.namev= name_val(&_);
-  RPS_ASSERT(curp != nullptr && *curp != (char)0);
-  char startchunk[12];
-  memset(startchunk, 0, sizeof(startchunk));
-  int pos= -1;
-  if (!strncmp(curp, "#{", 2))
-    {
-      pos = 2;
-      startchunk[0] = (char)0;
-      strcpy(chkdata.chunkdata_endstr, "}#");
-    }
-  else if (sscanf(curp,  "#%6[a-zA-Z]{%n", startchunk, &pos)>0 && pos>0 && isalpha(startchunk[0]))
-    {
-      snprintf(chkdata.chunkdata_endstr, sizeof(chkdata.chunkdata_endstr), "}%s#", startchunk);
-    }
-  else // should never happen
-    RPS_FATALOUT("corrupted Rps_TokenSource::lex_code_chunk @ " << position_str()
-                 << " " << curp
-                 << std::endl);
-  _f.obchunk =
-    Rps_ObjectRef::make_object(&_,
-                               RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
-                               nullptr);
-  _f.obchunk->put_attr2(RPS_ROOT_OB(_1B7ITSHTZWp00ektj1), //input∈symbol
-                        _f.namev,
-                        RPS_ROOT_OB(_5FMX3lrhiw601iqPy5), //line∈symbol
-                        Rps_Value((intptr_t)chkdata.chunkdata_lineno, Rps_Value::Rps_IntTag{})
-                       );
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk @ " << position_str()
-                << " start obchunk:" << _f.obchunk
-                << " endstr:'" << chkdata.chunkdata_endstr << "'");
-  auto paylvec = _f.obchunk->put_new_plain_payload<Rps_PayloadVectVal>();
-  RPS_ASSERT(paylvec);
-  int oldline = -1;
-  int oldcol = -1;
-  toksrc_col += strlen(chkdata.chunkdata_endstr);
-  chkdata.chunkdata_colno += strlen(chkdata.chunkdata_endstr);
-  do
-    {
-      oldline = toksrc_line;
-      oldcol = toksrc_col;
-      _f.chunkelemv = lex_chunk_element(&_, _f.obchunk, &chkdata);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk @ " << name()
-                    << ":L" << toksrc_line << ",C" << toksrc_col
-                    << std::endl
-                    << " obchunk=" << _f.obchunk
-                    << ", chunkelemv=" << _f.chunkelemv);
-      if (_f.chunkelemv)
-        paylvec->push_back(_f.chunkelemv);
-      /// for $. chunkelemv is null, but position changed...
-      ///
-      /// possibly related:
-      /// https://framalistes.org/sympa/arc/refpersys-forum/2020-12/msg00036.html
-    }
-  while (_f.chunkelemv || toksrc_col>oldcol || toksrc_line>oldline);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk "
-                << " :-◑> obchunk=" << _f.obchunk << " @!" << position_str());
-  return _f.obchunk;
-} // end of Rps_TokenSource::lex_code_chunk
-
-
-
-Rps_Value
-Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata)
-{
-  RPS_ASSERT(callframe && callframe->is_good_call_frame());
-  RPS_ASSERT(rps_is_main_thread());
-  RPS_ASSERT(chkdata && chkdata->chunkdata_magic == rps_chunkdata_magicnum);
-  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
-                           /*callerframe:*/callframe,
-                           Rps_Value res;
-                           Rps_ObjectRef obchunk;
-                           Rps_ObjectRef namedob;
-                );
-  _f.obchunk = obchkarg;
-  RPS_DEBUG_LOG(LOW_REPL, "Rps_TokenSource::lex_chunk_element chunkdata_colno=" << chkdata->chunkdata_colno
-                << " curpos:" << position_str()
-                << " linebuf:'" << toksrc_linebuf << "' of size:" << toksrc_linebuf.size());
-  RPS_ASSERT(chkdata->chunkdata_colno>=0
-             && chkdata->chunkdata_colno <= (int)toksrc_linebuf.size());
-  const char*pc = toksrc_linebuf.c_str() + chkdata->chunkdata_colno;
-  const char*eol =  toksrc_linebuf.c_str() +  toksrc_linebuf.size();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element pc='" << Rps_Cjson_String(pc) << "'"
-                << " @" << position_str(chkdata->chunkdata_colno));
-  if (!pc || pc[0] == (char)0 || pc == eol)
-    {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element end-of-line");
-      toksrc_col = toksrc_linebuf.size();
-      return nullptr;
-    }
-  // name-like chunk element
-  if (isalpha(*pc))
-    {
-      /// For C name-like things, we return the object naming them or else a string
-      int startnamecol =  chkdata->chunkdata_colno;
-      const char*startname = pc;
-      const char*endname = pc;
-      const char*eol =  toksrc_linebuf.c_str() +  toksrc_linebuf.size();
-      while ((isalnum(*endname) || *endname=='_') && endname<eol)
-        endname++;
-      std::string curname(startname, endname - startname);
-      _f.namedob = Rps_ObjectRef::find_object_or_null_by_string(&_, curname);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element curname='" << curname
-                    << "' in " << position_str(startnamecol)
-                    << " namedob=" << _f.namedob);
-      chkdata->chunkdata_colno += endname - startname;
-      if (_f.namedob)
-        _f.res = Rps_ObjectValue(_f.namedob);
-      else
-        _f.res = Rps_StringValue(curname);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element curname='" << curname
-                    << "' res=" << _f.res << " at " << position_str(startnamecol));
-
-      return _f.res;
-    }
-  // integer (base 10) chunk element
-  else if (isdigit(*pc) || pc[0] == '-' && isdigit(pc[1]))
-    {
-      char* endnum = nullptr;
-      long long ll = strtoll(pc, &endnum, 10);
-      int startcol =  chkdata->chunkdata_colno ;
-      chkdata->chunkdata_colno += endnum - pc;
-      _f.res = Rps_Value((intptr_t)ll,
-                         Rps_Value::Rps_IntTag{});
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element number=" << ll
-                    << " res=" << _f.res << " at " << position_str(startcol));
-      return _f.res;
-    }
-  /// For sequence of spaces, we return an instance of class space and
-  /// value the number of space characters
-  else if (isspace(*pc))
-    {
-      int startspacecol = chkdata->chunkdata_colno;
-      int endspacecol = startspacecol;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element start space obchunk=" << _f.obchunk
-                    << " @L" << chkdata->chunkdata_lineno << ",C"
-                    <<  chkdata->chunkdata_colno);
-      while (pc<eol && isspace(*pc))
-        endspacecol++, pc++;
-      _f.res = Rps_InstanceValue(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx), //space∈class
-                                 std::initializer_list<Rps_Value>
+  std::string
+  Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
+  {
+    RPS_ASSERT(callframe && callframe->is_good_call_frame());
+    std::string rstr;
+    const char* curp = curcptr();
+    ucs4_t curuc=0;
+    size_t linelen = toksrc_linebuf.size();
+    const char*eol = curp + (linelen-toksrc_col);
+    rstr.reserve(4+2*(eol-curp)/3);
+    RPS_ASSERT(*curp == '"');
+    toksrc_col++, curp++;
+    char curch = 0;
+    while ((curch=(*curp)) != (char)0)
       {
-        Rps_Value((intptr_t)(endspacecol-startspacecol),
-        Rps_Value::Rps_IntTag{})
-      });
-      chkdata->chunkdata_colno += endspacecol-startspacecol;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element obchunk=" << _f.obchunk
-                    << " -> number res=" << _f.res
-                    << " @" << position_str(startspacecol)
-                    << " now chunking @ " << position_str(chkdata->chunkdata_colno));
-      return _f.res;
-    }
-  /// code chunk meta-variable or meta-notation....
-  else if (*pc == '$' && pc < eol)
-    {
-      int startcol = chkdata->chunkdata_colno;
-      // a dollar followed by a name is a meta-variable; that name should be known
-      if (isalpha(pc[1]))
-        {
-          const char*startname = pc+1;
-          const char*endname = startname;
-          while (endname < eol && (isalnum(*endname) || *endname == '_'))
-            endname++;;
-          std::string metaname(startname, endname-startname);
-          _f.namedob = Rps_ObjectRef::find_object_or_null_by_string(&_, metaname);
-          if (!_f.namedob)
-            {
-              RPS_WARNOUT("lex_chunk_element: unknown metavariable name " << metaname
-                          << " in " << position_str(startcol));
-              throw std::runtime_error(std::string{"lexical error - bad metaname "} + metaname + " in code chunk");
-            }
-          chkdata->chunkdata_colno += (endname-startname) + 1;
-          _f.res = Rps_InstanceValue(RPS_ROOT_OB(_1oPsaaqITVi03OYZb9), //meta_variable∈symbol
-                                     std::initializer_list<Rps_Value> {_f.namedob});
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element space obchunk=" << _f.obchunk
-                        << " -> metavariable res=" << _f.res
-                        << " @L" << chkdata->chunkdata_lineno << ",C"
-                        <<  chkdata->chunkdata_colno);
-          return _f.res;
-        }
-      /// two dollars are parsed as one
-      else if (pc[1]=='$')
-        {
-          chkdata->chunkdata_colno += 2;
-          _f.res = Rps_StringValue("$");
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element dollar obchunk=" << _f.obchunk
-                        << " -> dollar-string res=" << _f.res
-                        << " @L" << chkdata->chunkdata_lineno << ",C"
-                        <<  chkdata->chunkdata_colno);
-          return _f.res;
-        }
-    }
-  //// end of chunk is }letters# or }#
-  else if (*pc == '}' && !strcmp(pc, chkdata->chunkdata_endstr))
-    {
-      chkdata->chunkdata_colno += strlen(chkdata->chunkdata_endstr);
-      _f.res = nullptr;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element end-of-chunk obchunk=" << _f.obchunk
-                    << " @L" << chkdata->chunkdata_lineno << ",C"
-                    <<  chkdata->chunkdata_colno);
-      toksrc_col += strlen(chkdata->chunkdata_endstr);
-      return nullptr;
-    }
-  //// any other sequence of UTF-8 excluding right brace } or dollar sign $; we stop lexing when letter, digit, space
-  else
-    {
-      RPS_ASSERT(eol != nullptr && eol >= pc);
-      size_t restsiz = eol - pc;
-      const char *startpc = pc;
-      const uint8_t* curu8p = (const uint8_t*)pc;
-      const uint8_t* eolu8p = (const uint8_t*)eol;
-      while (curu8p < eolu8p)
-        {
-          if (*(const char*)curu8p == '}' || *(const char*)curu8p == '$')
-            break;
-          if (isspace(*pc))
-            break;
-          if (isalnum(*pc))
-            break;
-          int u8len = u8_mblen(curu8p, eolu8p - curu8p);
-          if (u8len <= 0)
-            break;
-          curu8p += u8len;
-          pc += u8len;
-        };
-      std::string str{startpc, curu8p-(const uint8_t*)startpc};
-      _f.res = Rps_StringValue(str);
-      chkdata->chunkdata_colno += str.size();
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element strseq obchunk=" << _f.obchunk
-                    << " -> plain-string res=" << _f.res
-                    << " @L" << chkdata->chunkdata_lineno << ",C"
-                    <<  chkdata->chunkdata_colno);
-      return _f.res;
-    }
-#warning Rps_TokenSource::lex_chunk_element should parse delimiters...
-  RPS_FATALOUT("unimplemented Rps_TokenSource::lex_chunk_element obchunk=" << _f.obchunk << " @ " << name()
-               << ":L" << toksrc_line << ",C" << toksrc_col);
-#warning unimplemented Rps_TokenSource::lex_chunk_element, see rps_lex_chunk_element in repl_rps.cc:1229-1415
-} // end Rps_TokenSource::lex_chunk_element
+        if (curch == '"')
+          {
+            toksrc_col++;
+            return rstr;
+          }
+        else if (curch == '\\')
+          {
+            char nextch = curp[1];
+            char shortbuf[16];
+            memset(shortbuf, 0, sizeof(shortbuf));
+            switch (nextch)
+              {
+              case '\'':
+              case '\"':
+              case '\\':
+                rstr.push_back (nextch);
+                toksrc_col += 2;
+                continue;
+              case 'a':
+                rstr.push_back ('\a');
+                toksrc_col += 2;
+                continue;
+              case 'b':
+                rstr.push_back ('\b');
+                toksrc_col += 2;
+                continue;
+              case 'f':
+                rstr.push_back ('\f');
+                toksrc_col += 2;
+                continue;
+              case 'e':			// ESCAPE
+                rstr.push_back ('\033');
+                toksrc_col += 2;
+                continue;
+              case 'n':
+                rstr.push_back ('\n');
+                toksrc_col += 2;
+                continue;
+              case 'r':
+                rstr.push_back ('\r');
+                toksrc_col += 2;
+                continue;
+              case 't':
+                rstr.push_back ('\t');
+                toksrc_col += 2;
+                continue;
+              case 'v':
+                rstr.push_back ('\v');
+                toksrc_col += 2;
+                continue;
+              case 'x':
+              {
+                int p = -1;
+                int c = 0;
+                if (sscanf (curp + 2, "%02x%n", &c, &p) > 0 && p > 0)
+                  {
+                    rstr.push_back ((char)c);
+                    toksrc_col += p + 2;
+                    continue;
+                  }
+                else
+                  goto lexical_error_backslash;
+              }
+              case 'u': // four hexdigit escape Unicode
+              {
+                int p = -1;
+                int c = 0;
+                if (sscanf (curp + 2, "%04x%n", &c, &p) > 0 && p > 0)
+                  {
+                    int l =
+                      u8_uctomb ((uint8_t *) shortbuf, (ucs4_t) c, sizeof(shortbuf));
+                    if (l > 0)
+                      {
+                        rstr.append(shortbuf);
+                        toksrc_col += p + l;
+                        continue;
+                      }
+                    else
+                      goto lexical_error_backslash;
+                  }
+                else
+                  goto lexical_error_backslash;
+              }
+              case 'U': // eight hexdigit escape Unicode
+              {
+                int p = -1;
+                int c = 0;
+                if (sscanf (curp + 2, "%08x%n", &c, &p) > 0 && p > 0)
+                  {
+                    int l =
+                      u8_uctomb ((uint8_t *) shortbuf, (ucs4_t) c, sizeof(shortbuf));
+                    if (l > 0)
+                      {
+                        rstr.append(shortbuf);
+                        toksrc_col += p + l;
+                        continue;
+                      }
+                    else
+                      goto lexical_error_backslash;
+                  }
+              }
+              default:
+                goto lexical_error_backslash;
+              } // end switch nextch
+          } // end if curch is '\\'
+        else if (curch >= ' ' && curch < 0x7f)
+          {
+            rstr.push_back (curch);
+            toksrc_col++;
+            continue;
+          }
+        /// accepts any correctly encoded UTF-8
+        else if (int l = u8_mblen ((uint8_t *)(curp), eol-curp); l>0)
+          {
+            rstr.append(curp, l);
+            toksrc_col += l;
+            continue;
+          }
+        /// improbable lexical error....
+        else
+          {
+            RPS_WARNOUT("Rps_TokenSource::lex_quoted_literal_string : lexical error at "
+                        << position_str());
+            throw std::runtime_error("lexical error");
+          }
+      } // end while
+lexical_error_backslash:
+    RPS_WARNOUT("Rps_TokenSource::lex_quoted_literal_string  : bad backslash escape at "
+                << position_str());
+    throw std::runtime_error("lexical bad backslash escape");
+  } // end Rps_TokenSource::lex_quoted_literal_string
 
-
-Rps_Value
-Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, unsigned rank)
-{
-  RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/callframe,
-                           Rps_Value lextokv;
-                );
-  RPS_ASSERT(rps_is_main_thread());
-  RPS_ASSERT(callframe && callframe->is_good_call_frame());
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token start rank#" << rank << " token_deq:" << token_deq
-                << " pos:" << position_str() << " from:" << std::endl << Rps_ShowCallFrame(&_));
-  while (token_deq.size() < rank)
-    {
-      _f.lextokv = get_token(&_);
-      if (_f.lextokv)
-        token_deq.push_back(_f.lextokv);
-      else
-        {
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " missing from:"
-                        << std::endl << Rps_ShowCallFrame(&_));
-          return nullptr;
-        }
-    };
-  if (rank<token_deq.size())
-    {
-      _f.lextokv = token_deq[rank];
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " => " << _f.lextokv);
-      return _f.lextokv;
-    }
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " missing:"
-                << std::endl << Rps_ShowCallFrame(&_));
-  return nullptr;
-} // end Rps_TokenSource::lookahead_token
-
-
-
-
-void
-rps_repl_lexer_test(void)
-{
-  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
-                           /*callerframe:*/nullptr,
-                           Rps_Value curlextokenv;
-                );
-  RPS_ASSERT(rps_is_main_thread());
-
-  RPS_TIMER_START();
-
-  RPS_DEBUG_LOG(REPL, "start rps_repl_lexer_test gitid " << rps_gitid
-                << " callframe:" << Rps_ShowCallFrame(&_));
-  rl_attempted_completion_function = rpsrepl_name_or_oid_completion;
-  Rps_ReadlineTokenSource rltoksrc("-*-");
-  int tokcnt=0;
-  int lincnt = 0;
-  while (!rps_repl_stopped)
-    {
-      char prompt[32];
-      memset(prompt, 0, sizeof(prompt));
-      if (lincnt % 4 == 0)
-        {
-          usleep(32768); // to slow down on infinite loop
-          RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test startloop lincnt=" << lincnt
-                        << " "
-                        << rltoksrc.position_str()
+  std::string
+  Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
+  {
+    std::string result;
+#warning some code from rps_lex_raw_literal_string file repl_rps.cc lines 1050-1115 should go here
+    RPS_ASSERT(callframe && callframe->is_good_call_frame());
+    RPS_ASSERT(rps_is_main_thread());
+    const char* curp = curcptr();
+    size_t linelen = toksrc_linebuf.size();
+    /// For C++, raw literal strings are multi-line, and explained in
+    /// en.cppreference.com/w/cpp/language/string_literal ... For
+    /// example R"delim(raw characters \)delim" In RefPerSys, we
+    /// restrict the <delim> to contain only letters, up to 15 of
+    /// them...
+    char delim[16];
+    memset (delim, 0, sizeof(delim));
+    int pos= -1;
+    int startlineno= toksrc_line;
+    int startcolno= toksrc_col;
+    std::string locname = toksrc_name;
+    if (sscanf(curp,  "R\"%15[A-Za-z](%n", delim, &pos) < 1
+        || !isalpha(delim[0])
+        || pos<=1)
+      /// should never happen
+      RPS_FATALOUT("corrupted Rps_TokenSource::lex_raw_literal_string '"
+                   << Rps_Cjson_String(curp) << "'"
+                   << std::endl
+                   << Rps_ShowCallFrame(callframe));
+    toksrc_col += pos;
+    RPS_ASSERT(strlen(delim)>0 && strlen(delim)<15);
+    char endstr[24];
+    memset(endstr, 0, sizeof(endstr));
+    snprintf(endstr, sizeof(endstr), ")%s\"", delim);
+    RPS_DEBUG_LOG(REPL, "lex_raw_literal_string start L" << startlineno
+                  << ",C" << startcolno
+                  << "@" << toksrc_name
+                  << " endstr " << endstr);
+    const char*endp = nullptr;
+    while ((curp = curcptr()) != nullptr
+           && (endp=strstr(curp, endstr)) == nullptr)
+      {
+        std::string reststr{curp};
+        if (!get_line())
+          {
+            RPS_WARNOUT("Rps_TokenSource::lex_raw_literal_string without end of string "
+                        << endstr
+                        << " starting L" << startlineno
+                        << ",C" << startcolno
+                        << "@" << toksrc_name
                         << std::endl
-                        <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test startloop"));
-        };
-      snprintf(prompt, sizeof(prompt), "Rps_LEXTEST#%d:", lincnt);
-      rltoksrc.set_prompt(prompt);
-      do
-        {
-          _f.curlextokenv = rltoksrc.get_token(&_);
-          if (_f.curlextokenv)
-            {
-              tokcnt++;
-              RPS_INFORMOUT("token#" << tokcnt << ":" << _f.curlextokenv
-                            << " from " << rltoksrc.position_str());
-            }
-          else
-            RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test no token "
-                          << rltoksrc.position_str());
-        }
-      while (_f.curlextokenv);
-      if (!rltoksrc.get_line())
-        break;
-      lincnt++;
-      RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test got fresh line#" << lincnt
-                    << " '"
-                    << Rps_Cjson_String(rltoksrc.current_line()) << "' "
-                    << rltoksrc.position_str());
-    }
-  RPS_DEBUG_LOG(REPL, "end rps_repl_lexer_test lincnt=" << lincnt
-                << " tokcnt=" << tokcnt
-                << " at " << rltoksrc.position_str()
-                << std::endl);
+                        << Rps_ShowCallFrame(callframe));
+            throw std::runtime_error(std::string{"lex_raw_literal_string failed to find "}
+                                     + endstr);
+          }
+        result += reststr;
+      };				// end while curp....
+    if (endp)
+      toksrc_col += endp - curp;
+    RPS_DEBUG_LOG(REPL, "lex_raw_literal_string gives '"
+                  << Rps_Cjson_String(result)
+                  << "' at " << position_str());
+    return result;
+  } // end Rps_TokenSource::lex_raw_literal_string
 
-  RPS_TIMER_STOP(REPL);
-} // end rps_repl_lexer_test
+
+  Rps_Value
+  Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
+  {
+    RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
+                             /*callerframe:*/callframe,
+                             Rps_ObjectRef obchunk;
+                             Rps_Value namev;
+                             Rps_Value res;
+                             Rps_Value chunkelemv;
+                  );
+    RPS_ASSERT(callframe && callframe->is_good_call_frame());
+    RPS_ASSERT(rps_is_main_thread());
+    struct Rps_ChunkData_st chkdata = {};
+    chkdata.chunkdata_magic = rps_chunkdata_magicnum;
+    chkdata.chunkdata_lineno = toksrc_line;
+    chkdata.chunkdata_colno = toksrc_col;
+    chkdata.chunkdata_name = toksrc_name;
+    const char* curp = curcptr();
+    _f.namev= name_val(&_);
+    RPS_ASSERT(curp != nullptr && *curp != (char)0);
+    char startchunk[12];
+    memset(startchunk, 0, sizeof(startchunk));
+    int pos= -1;
+    if (!strncmp(curp, "#{", 2))
+      {
+        pos = 2;
+        startchunk[0] = (char)0;
+        strcpy(chkdata.chunkdata_endstr, "}#");
+      }
+    else if (sscanf(curp,  "#%6[a-zA-Z]{%n", startchunk, &pos)>0 && pos>0 && isalpha(startchunk[0]))
+      {
+        snprintf(chkdata.chunkdata_endstr, sizeof(chkdata.chunkdata_endstr), "}%s#", startchunk);
+      }
+    else // should never happen
+      RPS_FATALOUT("corrupted Rps_TokenSource::lex_code_chunk @ " << position_str()
+                   << " " << curp
+                   << std::endl);
+    _f.obchunk =
+      Rps_ObjectRef::make_object(&_,
+                                 RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
+                                 nullptr);
+    _f.obchunk->put_attr2(RPS_ROOT_OB(_1B7ITSHTZWp00ektj1), //input∈symbol
+                          _f.namev,
+                          RPS_ROOT_OB(_5FMX3lrhiw601iqPy5), //line∈symbol
+                          Rps_Value((intptr_t)chkdata.chunkdata_lineno, Rps_Value::Rps_IntTag{})
+                         );
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk @ " << position_str()
+                  << " start obchunk:" << _f.obchunk
+                  << " endstr:'" << chkdata.chunkdata_endstr << "'");
+    auto paylvec = _f.obchunk->put_new_plain_payload<Rps_PayloadVectVal>();
+    RPS_ASSERT(paylvec);
+    int oldline = -1;
+    int oldcol = -1;
+    toksrc_col += strlen(chkdata.chunkdata_endstr);
+    chkdata.chunkdata_colno += strlen(chkdata.chunkdata_endstr);
+    do
+      {
+        oldline = toksrc_line;
+        oldcol = toksrc_col;
+        _f.chunkelemv = lex_chunk_element(&_, _f.obchunk, &chkdata);
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk @ " << name()
+                      << ":L" << toksrc_line << ",C" << toksrc_col
+                      << std::endl
+                      << " obchunk=" << _f.obchunk
+                      << ", chunkelemv=" << _f.chunkelemv);
+        if (_f.chunkelemv)
+          paylvec->push_back(_f.chunkelemv);
+        /// for $. chunkelemv is null, but position changed...
+        ///
+        /// possibly related:
+        /// https://framalistes.org/sympa/arc/refpersys-forum/2020-12/msg00036.html
+      }
+    while (_f.chunkelemv || toksrc_col>oldcol || toksrc_line>oldline);
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk "
+                  << " :-◑> obchunk=" << _f.obchunk << " @!" << position_str());
+    return _f.obchunk;
+  } // end of Rps_TokenSource::lex_code_chunk
+
+
+
+  Rps_Value
+  Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata)
+  {
+    RPS_ASSERT(callframe && callframe->is_good_call_frame());
+    RPS_ASSERT(rps_is_main_thread());
+    RPS_ASSERT(chkdata && chkdata->chunkdata_magic == rps_chunkdata_magicnum);
+    RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
+                             /*callerframe:*/callframe,
+                             Rps_Value res;
+                             Rps_ObjectRef obchunk;
+                             Rps_ObjectRef namedob;
+                  );
+    _f.obchunk = obchkarg;
+    RPS_DEBUG_LOG(LOW_REPL, "Rps_TokenSource::lex_chunk_element chunkdata_colno=" << chkdata->chunkdata_colno
+                  << " curpos:" << position_str()
+                  << " linebuf:'" << toksrc_linebuf << "' of size:" << toksrc_linebuf.size());
+    RPS_ASSERT(chkdata->chunkdata_colno>=0
+               && chkdata->chunkdata_colno <= (int)toksrc_linebuf.size());
+    const char*pc = toksrc_linebuf.c_str() + chkdata->chunkdata_colno;
+    const char*eol =  toksrc_linebuf.c_str() +  toksrc_linebuf.size();
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element pc='" << Rps_Cjson_String(pc) << "'"
+                  << " @" << position_str(chkdata->chunkdata_colno));
+    if (!pc || pc[0] == (char)0 || pc == eol)
+      {
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element end-of-line");
+        toksrc_col = toksrc_linebuf.size();
+        return nullptr;
+      }
+    // name-like chunk element
+    if (isalpha(*pc))
+      {
+        /// For C name-like things, we return the object naming them or else a string
+        int startnamecol =  chkdata->chunkdata_colno;
+        const char*startname = pc;
+        const char*endname = pc;
+        const char*eol =  toksrc_linebuf.c_str() +  toksrc_linebuf.size();
+        while ((isalnum(*endname) || *endname=='_') && endname<eol)
+          endname++;
+        std::string curname(startname, endname - startname);
+        _f.namedob = Rps_ObjectRef::find_object_or_null_by_string(&_, curname);
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element curname='" << curname
+                      << "' in " << position_str(startnamecol)
+                      << " namedob=" << _f.namedob);
+        chkdata->chunkdata_colno += endname - startname;
+        if (_f.namedob)
+          _f.res = Rps_ObjectValue(_f.namedob);
+        else
+          _f.res = Rps_StringValue(curname);
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element curname='" << curname
+                      << "' res=" << _f.res << " at " << position_str(startnamecol));
+
+        return _f.res;
+      }
+    // integer (base 10) chunk element
+    else if (isdigit(*pc) || pc[0] == '-' && isdigit(pc[1]))
+      {
+        char* endnum = nullptr;
+        long long ll = strtoll(pc, &endnum, 10);
+        int startcol =  chkdata->chunkdata_colno ;
+        chkdata->chunkdata_colno += endnum - pc;
+        _f.res = Rps_Value((intptr_t)ll,
+                           Rps_Value::Rps_IntTag{});
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element number=" << ll
+                      << " res=" << _f.res << " at " << position_str(startcol));
+        return _f.res;
+      }
+    /// For sequence of spaces, we return an instance of class space and
+    /// value the number of space characters
+    else if (isspace(*pc))
+      {
+        int startspacecol = chkdata->chunkdata_colno;
+        int endspacecol = startspacecol;
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element start space obchunk=" << _f.obchunk
+                      << " @L" << chkdata->chunkdata_lineno << ",C"
+                      <<  chkdata->chunkdata_colno);
+        while (pc<eol && isspace(*pc))
+          endspacecol++, pc++;
+        _f.res = Rps_InstanceValue(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx), //space∈class
+                                   std::initializer_list<Rps_Value>
+        {
+          Rps_Value((intptr_t)(endspacecol-startspacecol),
+          Rps_Value::Rps_IntTag{})
+        });
+        chkdata->chunkdata_colno += endspacecol-startspacecol;
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element obchunk=" << _f.obchunk
+                      << " -> number res=" << _f.res
+                      << " @" << position_str(startspacecol)
+                      << " now chunking @ " << position_str(chkdata->chunkdata_colno));
+        return _f.res;
+      }
+    /// code chunk meta-variable or meta-notation....
+    else if (*pc == '$' && pc < eol)
+      {
+        int startcol = chkdata->chunkdata_colno;
+        // a dollar followed by a name is a meta-variable; that name should be known
+        if (isalpha(pc[1]))
+          {
+            const char*startname = pc+1;
+            const char*endname = startname;
+            while (endname < eol && (isalnum(*endname) || *endname == '_'))
+              endname++;;
+            std::string metaname(startname, endname-startname);
+            _f.namedob = Rps_ObjectRef::find_object_or_null_by_string(&_, metaname);
+            if (!_f.namedob)
+              {
+                RPS_WARNOUT("lex_chunk_element: unknown metavariable name " << metaname
+                            << " in " << position_str(startcol));
+                throw std::runtime_error(std::string{"lexical error - bad metaname "} + metaname + " in code chunk");
+              }
+            chkdata->chunkdata_colno += (endname-startname) + 1;
+            _f.res = Rps_InstanceValue(RPS_ROOT_OB(_1oPsaaqITVi03OYZb9), //meta_variable∈symbol
+                                       std::initializer_list<Rps_Value> {_f.namedob});
+            RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element space obchunk=" << _f.obchunk
+                          << " -> metavariable res=" << _f.res
+                          << " @L" << chkdata->chunkdata_lineno << ",C"
+                          <<  chkdata->chunkdata_colno);
+            return _f.res;
+          }
+        /// two dollars are parsed as one
+        else if (pc[1]=='$')
+          {
+            chkdata->chunkdata_colno += 2;
+            _f.res = Rps_StringValue("$");
+            RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element dollar obchunk=" << _f.obchunk
+                          << " -> dollar-string res=" << _f.res
+                          << " @L" << chkdata->chunkdata_lineno << ",C"
+                          <<  chkdata->chunkdata_colno);
+            return _f.res;
+          }
+      }
+    //// end of chunk is }letters# or }#
+    else if (*pc == '}' && !strcmp(pc, chkdata->chunkdata_endstr))
+      {
+        chkdata->chunkdata_colno += strlen(chkdata->chunkdata_endstr);
+        _f.res = nullptr;
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element end-of-chunk obchunk=" << _f.obchunk
+                      << " @L" << chkdata->chunkdata_lineno << ",C"
+                      <<  chkdata->chunkdata_colno);
+        toksrc_col += strlen(chkdata->chunkdata_endstr);
+        return nullptr;
+      }
+    //// any other sequence of UTF-8 excluding right brace } or dollar sign $; we stop lexing when letter, digit, space
+    else
+      {
+        RPS_ASSERT(eol != nullptr && eol >= pc);
+        size_t restsiz = eol - pc;
+        const char *startpc = pc;
+        const uint8_t* curu8p = (const uint8_t*)pc;
+        const uint8_t* eolu8p = (const uint8_t*)eol;
+        while (curu8p < eolu8p)
+          {
+            if (*(const char*)curu8p == '}' || *(const char*)curu8p == '$')
+              break;
+            if (isspace(*pc))
+              break;
+            if (isalnum(*pc))
+              break;
+            int u8len = u8_mblen(curu8p, eolu8p - curu8p);
+            if (u8len <= 0)
+              break;
+            curu8p += u8len;
+            pc += u8len;
+          };
+        std::string str{startpc, curu8p-(const uint8_t*)startpc};
+        _f.res = Rps_StringValue(str);
+        chkdata->chunkdata_colno += str.size();
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element strseq obchunk=" << _f.obchunk
+                      << " -> plain-string res=" << _f.res
+                      << " @L" << chkdata->chunkdata_lineno << ",C"
+                      <<  chkdata->chunkdata_colno);
+        return _f.res;
+      }
+#warning Rps_TokenSource::lex_chunk_element should parse delimiters...
+    RPS_FATALOUT("unimplemented Rps_TokenSource::lex_chunk_element obchunk=" << _f.obchunk << " @ " << name()
+                 << ":L" << toksrc_line << ",C" << toksrc_col);
+#warning unimplemented Rps_TokenSource::lex_chunk_element, see rps_lex_chunk_element in repl_rps.cc:1229-1415
+  } // end Rps_TokenSource::lex_chunk_element
+
+
+  Rps_Value
+  Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, unsigned rank)
+  {
+    RPS_LOCALFRAME(/*descr:*/nullptr,
+                             /*callerframe:*/callframe,
+                             Rps_Value lextokv;
+                  );
+    RPS_ASSERT(rps_is_main_thread());
+    RPS_ASSERT(callframe && callframe->is_good_call_frame());
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token start rank#" << rank << " token_deq:" << token_deq
+                  << " pos:" << position_str() << " from:" << std::endl << Rps_ShowCallFrame(&_));
+    while (token_deq.size() < rank)
+      {
+        _f.lextokv = get_token(&_);
+        if (_f.lextokv)
+          token_deq.push_back(_f.lextokv);
+        else
+          {
+            RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " missing from:"
+                          << std::endl << Rps_ShowCallFrame(&_));
+            return nullptr;
+          }
+      };
+    if (rank<token_deq.size())
+      {
+        _f.lextokv = token_deq[rank];
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " => " << _f.lextokv);
+        return _f.lextokv;
+      }
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " missing:"
+                  << std::endl << Rps_ShowCallFrame(&_));
+    return nullptr;
+  } // end Rps_TokenSource::lookahead_token
+
+
+
+
+  void
+  rps_repl_lexer_test(void)
+  {
+    RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
+                             /*callerframe:*/nullptr,
+                             Rps_Value curlextokenv;
+                  );
+    RPS_ASSERT(rps_is_main_thread());
+
+    RPS_TIMER_START();
+
+    RPS_DEBUG_LOG(REPL, "start rps_repl_lexer_test gitid " << rps_gitid
+                  << " callframe:" << Rps_ShowCallFrame(&_));
+    rl_attempted_completion_function = rpsrepl_name_or_oid_completion;
+    Rps_ReadlineTokenSource rltoksrc("-*-");
+    int tokcnt=0;
+    int lincnt = 0;
+    while (!rps_repl_stopped)
+      {
+        char prompt[32];
+        memset(prompt, 0, sizeof(prompt));
+        if (lincnt % 4 == 0)
+          {
+            usleep(32768); // to slow down on infinite loop
+            RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test startloop lincnt=" << lincnt
+                          << " "
+                          << rltoksrc.position_str()
+                          << std::endl
+                          <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test startloop"));
+          };
+        snprintf(prompt, sizeof(prompt), "Rps_LEXTEST#%d:", lincnt);
+        rltoksrc.set_prompt(prompt);
+        do
+          {
+            _f.curlextokenv = rltoksrc.get_token(&_);
+            if (_f.curlextokenv)
+              {
+                tokcnt++;
+                RPS_INFORMOUT("token#" << tokcnt << ":" << _f.curlextokenv
+                              << " from " << rltoksrc.position_str());
+              }
+            else
+              RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test no token "
+                            << rltoksrc.position_str());
+          }
+        while (_f.curlextokenv);
+        if (!rltoksrc.get_line())
+          break;
+        lincnt++;
+        RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test got fresh line#" << lincnt
+                      << " '"
+                      << Rps_Cjson_String(rltoksrc.current_line()) << "' "
+                      << rltoksrc.position_str());
+      }
+    RPS_DEBUG_LOG(REPL, "end rps_repl_lexer_test lincnt=" << lincnt
+                  << " tokcnt=" << tokcnt
+                  << " at " << rltoksrc.position_str()
+                  << std::endl);
+
+    RPS_TIMER_STOP(REPL);
+  } // end rps_repl_lexer_test
 
 
 //// end of file lexer_rps.cc
