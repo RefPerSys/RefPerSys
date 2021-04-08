@@ -483,6 +483,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     {
       RPS_DEBUG_LOG(REPL, "get_token start punctuation curp='" << Rps_Cjson_String(curp) << "' at " << position_str());
       std::string delimpos = position_str();
+      int startcol = toksrc_col;
       _f.delimv = get_delimiter(&_);
       std::string delimstartstr {curp};
       RPS_DEBUG_LOG(REPL, "get_token after get_delimiter_object delimv=" << _f.delimv << " at " << position_str());
