@@ -38,18 +38,20 @@
 Rps_Value
 Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
+  // a REPL expression is a sequence of disjuncts separated by ||
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/callframe,
-                           Rps_Value lextokv;
-                           Rps_Value lexgotokv;
-                           Rps_Value leftv;
-                           Rps_Value rightv;
-                           Rps_Value disjv;
-                           Rps_ObjectRef lexkindob;
-                           Rps_ObjectRef andob;
-                           Rps_Value lexvalv;
+		 /*callerframe:*/callframe,
+		 Rps_Value lextokv;
+		 Rps_Value lexgotokv;
+		 Rps_Value leftv;
+		 Rps_Value rightv;
+		 Rps_Value disjv;
+		 Rps_ObjectRef lexkindob;
+		 Rps_ObjectRef ordelimob;
+		 Rps_ObjectRef oroperob;
+		 Rps_Value lexvalv;
                 );
   std::vector<Rps_Value> disjvect;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
@@ -70,6 +72,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
         *pokparse = false;
       return nullptr;
     }
+  std::string startpos = position_str();
   _f.leftv = parse_disjunct(&_, token_deq, &ok);
   if (!ok)
     {
@@ -79,9 +82,12 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
     }
   disjvect.push_back(_f.leftv);
   bool again = false;
-  static Rps_Id idand;
-  if (!idand)
-    idand = Rps_Id("_8xk4sKglyzG01dloqq"); // id of "and!binop"∈repl_binary_operato
+  static Rps_Id idordelim;
+  if (!idordelim)
+    idordelim = Rps_Id("_1HsUfOkNw0W033EIW1"); // id of "or!binop"∈repl_delimiter
+  static Rps_Id idoroper;
+  if (!idoroper)
+    idoroper = Rps_Id("_1ghZV0g1dtR02xPgqk"); // id of "or!binop"∈repl_binary_operator
   do
     {
       again = false;
@@ -91,16 +97,16 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
           again = false;
           break;
         };
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression testing and lextokv=" << _f.lextokv << " position:" << position_str());
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression testing or lextokv=" << _f.lextokv << " position:" << position_str());
       if (_f.lextokv.is_lextoken()
           && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
           &&  _f.lextokv.to_lextoken()->lxval().is_object()
-          &&  _f.lextokv.to_lextoken()->lxval().to_object()->oid() == idand)
+          &&  _f.lextokv.to_lextoken()->lxval().to_object()->oid() == idordelim)
         {
-          (void) get_token(&_); // consume the and operator
+          (void) get_token(&_); // consume the or operator
           again = true;
-          if (!_f.andob)
-            _f.andob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,idand);
+          if (!_f.oroperob)
+            _f.oroperob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,idoroper);
         }
       else
         again = false;
@@ -118,12 +124,12 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
         }
     }
   while (again);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression  andob=" << _f.andob
-                << "nbdisj:" << disjvect.size());
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression oroperob=" << _f.oroperob
+                << "nbdisj:" << disjvect.size() << " at " << startpos);
   if (disjvect.size() > 1)
     {
       /// we make an instance:
-      _f.disjv = Rps_InstanceValue(_f.andob, disjvect);
+      _f.disjv = Rps_InstanceValue(_f.oroperob, disjvect);
     }
   else
     {
