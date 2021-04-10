@@ -518,10 +518,14 @@ Rps_Value
 Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/callframe,
-                           Rps_Value res;
-                           Rps_ObjectRef obdictdelim;
-                );
+		 /*callerframe:*/callframe,
+		 Rps_Value res;
+		 Rps_ObjectRef obdictdelim;
+		 Rps_Value delimv;
+		 Rps_Value namev;
+		 Rps_ObjectRef lexkindob;
+		 Rps_Value lextokv;
+		 );
   const char*curp=nullptr;
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   std::string startpos = position_str();
@@ -532,18 +536,21 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
   int nbdelimch=0; // number of delimiter UTF8 characters
   bool again=false;
   const char* startp = curcptr();
+  unsigned startcol = toksrc_col;
+  ucs4_t curuc=0;
   RPS_ASSERT(startp);
   curp = startp;
   do
     {
-      ucs4_t curuc=0;
+      curuc = 0;
       int ulen= -1;
       again=false;
       if (!curp)
         break;
       if (isspace(*curp))
         break;
-      // FIXME: maybe we should remember the byte position of every delimiter character (it can be UTF-8 like °)
+      // FIXME: maybe we should remember the byte position of every
+      // delimiter character (it can be UTF-8 like °)
       if (*curp < 127 && ispunct(*curp))
         {
           delimstr.push_back(*curp);
@@ -551,9 +558,9 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
           nbdelimch ++;
           again = true;
         }
-      else if (*curp > 128
+      else if (*(const uint8_t*)curp > 128
                && (ulen=u8_strmbtouc(&curuc, (const uint8_t*)curp) // length in bytes
-                        > 0)
+		   > 0)
                &&  uc_is_punct(curuc))
         {
           delimstr.append(curp, ulen);
@@ -569,117 +576,47 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
                 << nbdelimch << " startpos:" << startpos);
   /***
    * TODO: we need to find the longest substring in delimstr which is a known delimiter
-  ***/
-  RPS_FATALOUT("unimplemented Rps_TokenSource::get_delimiter at " << position_str());
-#if 0 && oldcode
-  char delimbuf[32];
-  memset(delimbuf, 0, sizeof(delimbuf));
-  unsigned short delimoff[8];
-  memset (delimoff, 0, sizeof(delimoff));
-  int nbpunct = 0;
-  do
-    {
-      curp = curcptr();
-      if (!curp)
-        break;
-      RPS_DEBUG_LOG(REPL, "get_delimiter punctuationloop curp='" << Rps_Cjson_String(curp) << "' nbpunct=" << nbpunct);
-      if (curp && isspace(*curp))
-        break;
-      if (*curp < 127 && ispunct(*curp))
-        {
-          delimbuf[0] = *curp;
-          delimbuf[1] = 0;
-          delimoff[nbpunct] = 1;
-          RPS_DEBUG_LOG(REPL, "get_delimiter simplepunct delimbuf '"
-                        << Rps_Cjson_String(delimbuf)
-                        << "' nbpunct#" << nbpunct);
-          nbpunct++;
-        }
-      else
-        {
-          curuc = 0;
-          int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
-          if (ulen>0 &&
-              ((curcuc<128 && ispunct((char)curuc))
-               ||  uc_is_punct(curuc)))
-            {
-              RPS_DEBUG_LOG(REPL, "get_delimiter punctuation curp='" << curp << "' ulen=" << ulen);
-              if (ulen>0 && strlen(delimbuf)+ulen<sizeof(delimbuf)-1
-                  && ((curuc<127 && ispunct((char)curuc)) || uc_is_punct(curuc)))
-                {
-                  delimoff[nbpunct] = strlen(delimbuf);
-                  strcat(delimbuf, curp+delimoff[nbpunct]);
-                  RPS_DEBUG_LOG(REPL, "get_delimiter simplepunctuation delimbuf='" << Rps_Cjson_String(delimbuf)
-                                << "' nbpunct#" << nbpunct);
-                  nbpunct++;
-                }
-              else
-                {
-                  RPS_DEBUG_LOG(REPL, "get_delimiter punctuation bad delimbuf='"
-                                << Rps_Cjson_String(delimbuf)
-                                << "' nbpunct=" << nbpunct);
-                  break;
-                }
-            }
-          RPS_DEBUG_LOG(REPL, "get_delimiter endingloop nbpunct=" << nbpunct
-                        << " delimbuf='" << Rps_Cjson_String(delimbuf)
-                        << "' @" << position_str());
-        }
-      while (nbpunct < 4 && strlen(delimbuf) < sizeof(delimbuf)-8);
-      RPS_DEBUG_LOG(REPL, "get_delimiter punctuation delimbuf='" << Rps_Cjson_String(delimbuf)
-                    << "' at " << position_str() << " nbpunct=" << nbpunct
-                    << " delims" << Rps_Do_Output([&](std::ostream&outs)
+   ***/
+  while (!delimstr.empty()) {
+    _f.delimv = paylstrdict->find(delimstr);
+    RPS_DEBUG_LOG(REPL, "get_delimiter punctuation delimv=" << _f.delimv << " for delimstr='"
+		  << Rps_Cjson_String(delimstr) << "' ");
+    if (_f.delimv)
       {
-        for (int i=0; i<nbpunct; i++)
-          {
-            char curbuf[32];
-            memset (curbuf, 0, sizeof(curbuf));
-            strncpy(curbuf, delimbuf, delimoff[i]);
-            outs << " [" << i << "]='" << Rps_Cjson_String(curbuf) << "'";
-          }
-      }));
-      ///
-      {
-        int startcol = toksrc_col;
-        do
-          {
-            RPS_DEBUG_LOG(REPL, "get_delimiter punctuation delimbuf='" << Rps_Cjson_String(delimbuf)
-                          << "' at " << position_str() << " strdict.own:" << Rps_ObjectRef(paylstrdict->owner()));
-            _f.delimv = paylstrdict->find(delimbuf);
-            RPS_DEBUG_LOG(REPL, "get_delimiter punctuation delimv=" << _f.delimv << " for delimbuf='"
-                          << Rps_Cjson_String(delimbuf) << "' ");
-            if (_f.delimv)
-              {
-                _f.lexkindob = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
-                _f.lextokv = _f.delimv;
-                toksrc_col += strlen(delimbuf);
-                const Rps_String* strv = _f.namev.to_string();
-                Rps_LexTokenZone* lextok =
-                  Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-                  (this,_f.lexkindob, _f.lextokv,
-                   strv,
-                   toksrc_line, startcol);
-                _f.res = Rps_LexTokenValue(lextok);
-                RPS_DEBUG_LOG(REPL, "get_delimiter delimiter :-◑> " << _f.res << " at " << position_str());
-                return _f.res;
-              }
-            else
-              {
-                RPS_DEBUG_LOG(REPL, "get_delimiter no delimiter " << position_str());
-                break;
-              }
-          }
-        while (delimbuf[0]);
-        if (curcptr())
-          RPS_WARNOUT("Rps_TokenSource::get_delimiter unexpected delimiter '" <<  Rps_Cjson_String(curcptr()) << "'"
-                      << " at " << position_str());
-        else
-          RPS_WARNOUT("Rps_TokenSource::get_delimiter missing delimiter at " << position_str());
-        throw std::runtime_error("unexpected delimiter");
-      }
-      RPS_DEBUG_LOG(REPL, "get_delimiter punct @! " << position_str());
-#endif /*oldcode*/
-    } // end Rps_TokenSource::get_delimiter
+	_f.lexkindob = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
+	_f.lextokv = _f.delimv;
+	toksrc_col += delimstr.size();
+	const Rps_String* strv = _f.namev.to_string();
+	Rps_LexTokenZone* lextok =
+	  Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
+	  (this,_f.lexkindob, _f.lextokv,
+	   strv,
+	   toksrc_line, startcol);
+	_f.res = Rps_LexTokenValue(lextok);
+	RPS_DEBUG_LOG(REPL, "get_delimiter delimiter :-◑> " << _f.res << " at " << position_str());
+	return _f.res;
+      };
+    /// truncate the delimstr by one ending UTF-8
+    const uint8_t* prevu8 = u8_prev(&curuc,
+				    reinterpret_cast<const uint8_t*>
+				    (delimstr.c_str()+delimstr.size()), 
+				    reinterpret_cast<const uint8_t*>(delimstr.c_str()));
+    RPS_DEBUG_LOG(REPL, "get_delimiter prevu8=" << (const char*)prevu8
+		  << " for delimstr='" << delimstr << "' with curuc#" << (int)curuc);
+    if (!prevu8)
+      break;
+    unsigned prevlen = delimstr.c_str()+delimstr.size() - (const char*)prevu8;
+    if (prevlen==0 || prevlen > delimstr.size())
+      break;
+    delimstr[prevlen] = (char)0; /// facilitates debugging, in principle useless
+    delimstr.resize(prevlen);
+  }
+  RPS_WARNOUT("Rps_TokenSource::get_delimiter failing at " << startpos
+	      << " for " << startp);
+  std::string failmsg {"Rps_TokenSource::get_delimiter failing at "};
+  failmsg += startpos;
+  throw std::runtime_error{failmsg};
+} // end Rps_TokenSource::get_delimiter
 
   std::string
   Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
