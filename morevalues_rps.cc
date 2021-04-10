@@ -57,6 +57,23 @@ Rps_InstanceZone::make_from_components(Rps_ObjectRef classob, const std::initial
 } // end Rps_InstanceZone::make_from_components
 
 
+Rps_InstanceZone*
+Rps_InstanceZone::make_from_components(Rps_ObjectRef classob, const std::vector<Rps_Value>& valvect)
+{
+  if (!classob)
+    return nullptr;
+  auto nbsons = valvect.size();
+  Rps_InstanceZone* inst
+    = Rps_QuasiZone::rps_allocate_with_wordgap<Rps_InstanceZone,unsigned,Rps_ObjectRef,Rps_InstanceTag>((nbsons*sizeof(Rps_Value)/sizeof(void*)),
+        (unsigned)nbsons, classob,  Rps_InstanceTag{});
+  int ix=0;
+  Rps_Value*sonarr = inst->raw_data_sons();
+  for (auto val: valvect)
+    sonarr[ix++] = val;
+  return inst;
+} // end Rps_InstanceZone::make_from_components
+
+
 const Rps_SetOb*
 Rps_InstanceZone::class_attrset(Rps_ObjectRef obclass)
 {
