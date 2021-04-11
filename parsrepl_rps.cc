@@ -255,6 +255,8 @@ Rps_TokenSource::parse_disjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
 
 
 ////////////////
+// Note: we may have a typo in parse_disjunct; if so, we will simply reverse
+// the names for parse_conjunct() and parse_disjunct()
 Rps_Value
 Rps_TokenSource::parse_conjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
