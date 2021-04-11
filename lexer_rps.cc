@@ -577,11 +577,14 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
   /***
    * TODO: we need to find the longest substring in delimstr which is a known delimiter
    ***/
-  while (!delimstr.empty())
+  int loopcnt = 0;
+  static constexpr int maxloopdelim = 16;
+  while (!delimstr.empty() && loopcnt < maxloopdelim)
     {
+      loopcnt ++;
       _f.delimv = paylstrdict->find(delimstr);
       RPS_DEBUG_LOG(REPL, "get_delimiter punctuation delimv=" << _f.delimv << " for delimstr='"
-                    << Rps_Cjson_String(delimstr) << "' ");
+                    << Rps_Cjson_String(delimstr) << "' loopcnt#" << loopcnt);
       if (_f.delimv)
         {
           _f.lexkindob = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
@@ -602,15 +605,23 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
                                       reinterpret_cast<const uint8_t*>
                                       (delimstr.c_str()+delimstr.size()),
                                       reinterpret_cast<const uint8_t*>(delimstr.c_str()));
-      RPS_DEBUG_LOG(REPL, "get_delimiter prevu8=" << (const char*)prevu8
-                    << " for delimstr='" << delimstr << "' with curuc#" << (int)curuc);
+      RPS_DEBUG_LOG(REPL, "get_delimiter prevu8='" << (const char*)prevu8
+                    << "' for delimstr='" << delimstr << "' with curuc#" << (int)curuc
+                    << " at " << startpos << " loopcnt#" << loopcnt);
       if (!prevu8)
         break;
-      unsigned prevlen = delimstr.c_str()+delimstr.size() - (const char*)prevu8;
+      unsigned curlen = delimstr.size();
+      unsigned prevlen = (delimstr.c_str()+delimstr.size() - (const char*)prevu8) +1;
+      RPS_DEBUG_LOG(REPL, "get_delimiter for delimstr='" << delimstr <<"' curlen=" << curlen
+                    << " prevlen=" << prevlen);
       if (prevlen==0 || prevlen > delimstr.size())
         break;
       delimstr[prevlen] = (char)0; /// facilitates debugging, in principle useless
       delimstr.resize(prevlen);
+      RPS_DEBUG_LOG(REPL, "get_delimiter now delimstr='" << delimstr << "' at " << startpos
+                    << " prevlen=" << prevlen << " curlen=" << curlen
+                    << " loopcnt#" << loopcnt << std::endl);
+      usleep (250000);
     }
   RPS_WARNOUT("Rps_TokenSource::get_delimiter failing at " << startpos
               << " for " << startp);
