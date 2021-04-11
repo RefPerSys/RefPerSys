@@ -265,11 +265,20 @@ Rps_TokenSource::parse_conjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
     Rps_Value lexgotokv;
     Rps_Value leftv;
     Rps_Value rightv;
-    Rps_Value conjv;
+    Rps_Value disjv;
     Rps_ObjectRef lexkindob;
     Rps_ObjectRef ordelimob;
     Rps_ObjectRef oroperob;
     Rps_Value lexvalv;);
+
+  std::vector<Rps_Value> disjvect;
+  _.set_additional_gc_marker([&](Rps_GarbageCollector* gc) {
+    for (auto tokenv : token_deq)
+      gc->mark_value(tokenv);
+
+    for (auto disjv : disjvect)
+      gc->mark_value(disjv);
+  });
 
 #warning missing code in Rps_TokenSource::parse_conjunct; maybe it a conjunct is a comparison, or something simpler...
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_conjunct from " << Rps_ShowCallFrame(callframe)
