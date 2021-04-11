@@ -309,6 +309,9 @@ Rps_TokenSource::parse_conjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
 
   disjvect.push_back(_f.leftv);
 
+  bool again = false;
+  static Rps_Id id_or_delim;
+
 #warning missing code in Rps_TokenSource::parse_conjunct; maybe it a conjunct is a comparison, or something simpler...
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_conjunct from " << Rps_ShowCallFrame(callframe)
 	       << " with token_deq=" << token_deq << " at " << position_str());
