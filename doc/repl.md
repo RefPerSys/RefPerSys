@@ -130,6 +130,42 @@ Scalars like strings `"abc"` or `"twø\nlines"` are strings.
 * Tuples: [o1, o2, o3 ...} where o1, o2 and o3 may or may not be discrete
   objects
 
+## EBNF
+
+expression = disjunction { or disjunction }
+
+disjunction = conjunction { and conjunction }
+
+conjunction = comparand [ compare-operator comparand ]
+
+compare-operator = < | > | <= | >= | = | == | < | >
+
+comparand = factor [ multiplicative-operator factor ]
+
+multiplicative-operator = * | / | %
+
+factor = term [ additive-operator term ]
+
+additive-operator = + | -
+
+term = primary { primary-complement }
+
+primary = object-ref | string-literal | float-literal | ( expression ) | set-expr | tuple-expr
+
+object-ref = oid | named-object
+
+primary-complement = field-selection | message-send
+
+field-selection = . object-ref | . ( expression )
+
+message-send = => object-ref ( arglist )
+
+arglist = ∅ | expression { , expression }
+
+set-expr = { arglist }
+
+tuple-expr = [ arglist ]
+
 ## Concrete examples of commands
 
 0. Help for possible commands
