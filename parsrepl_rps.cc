@@ -175,10 +175,10 @@ Rps_TokenSource::parse_disjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
   });
   bool ok = false;
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunct lextokv=" 
-    << _f.lextokv 
-    << " position: " 
-    << position_str());
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunct lextokv="
+                << _f.lextokv
+                << " position: "
+                << position_str());
   if (!_f.lextokv)
     {
       if (pokparse)
@@ -264,18 +264,19 @@ Rps_Value
 Rps_TokenSource::parse_conjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
   RPS_LOCALFRAME(nullptr, callframe,
-    Rps_Value lextokv;
-    Rps_Value lexgotokv;
-    Rps_Value leftv;
-    Rps_Value rightv;
-    Rps_Value disjv;
-    Rps_ObjectRef lexkindob;
-    Rps_ObjectRef ordelimob;
-    Rps_ObjectRef oroperob;
-    Rps_Value lexvalv;);
+                 Rps_Value lextokv;
+                 Rps_Value lexgotokv;
+                 Rps_Value leftv;
+                 Rps_Value rightv;
+                 Rps_Value disjv;
+                 Rps_ObjectRef lexkindob;
+                 Rps_ObjectRef ordelimob;
+                 Rps_ObjectRef oroperob;
+                 Rps_Value lexvalv;);
 
   std::vector<Rps_Value> disjvect;
-  _.set_additional_gc_marker([&](Rps_GarbageCollector* gc) {
+  _.set_additional_gc_marker([&](Rps_GarbageCollector* gc)
+  {
     for (auto tokenv : token_deq)
       gc->mark_value(tokenv);
 
@@ -286,26 +287,28 @@ Rps_TokenSource::parse_conjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
   bool ok = false;
   _f.lextokv = lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TOkenSource::parse_conjunct lextokv="
-    << _f.lextokv
-    << " position: "
-    << position_str());
+                << _f.lextokv
+                << " position: "
+                << position_str());
 
-  if (!_f.lextokv) {
-    if (pokparse)
-      *pokparse = false;
+  if (!_f.lextokv)
+    {
+      if (pokparse)
+        *pokparse = false;
 
-    return nullptr;
-  }
+      return nullptr;
+    }
 
   std::string startpos = position_str();
   _f.leftv = parse_disjunct(&_, token_deq, &ok);
 
-  if (!ok) {
-    if (pokparse)
-      *pokparse = false;
+  if (!ok)
+    {
+      if (pokparse)
+        *pokparse = false;
 
-    return nullptr;
-  }
+      return nullptr;
+    }
 
   disjvect.push_back(_f.leftv);
 
@@ -314,9 +317,34 @@ Rps_TokenSource::parse_conjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
 
 #warning missing code in Rps_TokenSource::parse_conjunct; maybe it a conjunct is a comparison, or something simpler...
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_conjunct from " << Rps_ShowCallFrame(callframe)
-	       << " with token_deq=" << token_deq << " at " << position_str());
+               << " with token_deq=" << token_deq << " at " << position_str());
 } // end Rps_TokenSource::parse_conjunct
 
+
+Rps_Value
+Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
+{
+#warning unimplemented Rps_TokenSource::parse_comparand
+  RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand from " << Rps_ShowCallFrame(callframe)
+               << " with token_deq=" << token_deq << " at " << position_str());
+} // end Rps_TokenSource::parse_comparand
+
+
+Rps_Value
+Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
+{
+#warning unimplemented Rps_TokenSource::parse_factor
+  RPS_FATALOUT("missing code in Rps_TokenSource::parse_factor from " << Rps_ShowCallFrame(callframe)
+               << " with token_deq=" << token_deq << " at " << position_str());
+} // end Rps_TokenSource::parse_factor
+
+Rps_Value
+Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
+{
+#warning unimplemented Rps_TokenSource::parse_term
+  RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
+               << " with token_deq=" << token_deq << " at " << position_str());
+} // end Rps_TokenSource::parse_term
 
 /// This member function returns some expression which could later be
 /// evaluated to a value; the *pokparse flag, when given, is set to
@@ -394,4 +422,15 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
                << " lexvalv:" << _f.lexvalv
                << " position_str:" << position_str());
 } // end Rps_TokenSource::parse_primary
+
+Rps_Value
+Rps_TokenSource::parse_primary_complement(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, Rps_Value primaryexp, bool*pokparse)
+{
+#warning unimplemented Rps_TokenSource::parse_primary_complement
+  RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary_complement "
+               << Rps_ShowCallFrame(callframe)
+               << " token_deq:" << token_deq
+               << " primaryexp:" << primaryexp
+               << " position_str:" << position_str());
+} // end Rps_TokenSource::parse_primary_complement
 
