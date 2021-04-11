@@ -175,7 +175,7 @@ Rps_TokenSource::parse_disjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
   });
   bool ok = false;
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunct lextokv=" << _f.lextokv << " position:" << position_str());
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunct lextokv=" << _f.lextokv << " position:" << position_str());
   if (!_f.lextokv)
     {
       if (pokparse)
