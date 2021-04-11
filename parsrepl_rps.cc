@@ -175,7 +175,10 @@ Rps_TokenSource::parse_disjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
   });
   bool ok = false;
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunct lextokv=" << _f.lextokv << " position:" << position_str());
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunct lextokv=" 
+    << _f.lextokv 
+    << " position: " 
+    << position_str());
   if (!_f.lextokv)
     {
       if (pokparse)
@@ -279,6 +282,32 @@ Rps_TokenSource::parse_conjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
     for (auto disjv : disjvect)
       gc->mark_value(disjv);
   });
+
+  bool ok = false;
+  _f.lextokv = lookahead_token(&_, token_deq, 0);
+  RPS_DEBUG_LOG(REPL, "Rps_TOkenSource::parse_conjunct lextokv="
+    << _f.lextokv
+    << " position: "
+    << position_str());
+
+  if (!_f.lextokv) {
+    if (pokparse)
+      *pokparse = false;
+
+    return nullptr;
+  }
+
+  std::string startpos = position_str();
+  _f.leftv = parse_disjunct(&_, token_deq, &ok);
+
+  if (!ok) {
+    if (pokparse)
+      *pokparse = false;
+
+    return nullptr;
+  }
+
+  disjvect.push_back(_f.leftv);
 
 #warning missing code in Rps_TokenSource::parse_conjunct; maybe it a conjunct is a comparison, or something simpler...
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_conjunct from " << Rps_ShowCallFrame(callframe)
