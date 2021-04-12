@@ -271,7 +271,7 @@ Rps_TokenSource::parse_conjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
                  Rps_Value disjv;
                  Rps_ObjectRef lexkindob;
                  Rps_ObjectRef ordelimob;
-                 Rps_ObjectRef oroperob;
+                 Rps_ObjectRef orbinopob;
                  Rps_Value lexvalv;);
 
   std::vector<Rps_Value> disjvect;
@@ -283,13 +283,23 @@ Rps_TokenSource::parse_conjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
     for (auto disjv : disjvect)
       gc->mark_value(disjv);
   });
-
+  static Rps_Id id_or_delim;
+  if (!id_or_delim)
+    id_or_delim = Rps_Id("_1HsUfOkNw0W033EIW1");
+  static Rps_Id id_or_binop;
+  if (!id_or_binop)
+    id_or_binop = Rps_Id("_1ghZV0g1dtR02xPgqk");
+  _f.ordelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_or_delim);
+  _f.orbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_or_binop);
+  //
   bool ok = false;
   _f.lextokv = lookahead_token(&_, token_deq, 0);
-  RPS_DEBUG_LOG(REPL, "Rps_TOkenSource::parse_conjunct lextokv="
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunct lextokv="
                 << _f.lextokv
                 << " position: "
-                << position_str());
+                << position_str()
+		<< " ordelim:" << _f.ordelimob
+		<< " orbinop:" << _f.orbinopob);
 
   if (!_f.lextokv)
     {
@@ -313,7 +323,6 @@ Rps_TokenSource::parse_conjunct(Rps_CallFrame*callframe, std::deque<Rps_Value>& 
   disjvect.push_back(_f.leftv);
 
   bool again = false;
-  static Rps_Id id_or_delim;
 
 #warning missing code in Rps_TokenSource::parse_conjunct; maybe it a conjunct is a comparison, or something simpler...
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_conjunct from " << Rps_ShowCallFrame(callframe)
