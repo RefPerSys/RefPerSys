@@ -2204,6 +2204,7 @@ public:
   Rps_Value parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
   Rps_Value parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
   Rps_Value parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
   Rps_Value parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
   Rps_Value parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
   Rps_Value parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);

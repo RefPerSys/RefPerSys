@@ -272,13 +272,13 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
                  Rps_ObjectRef andbinopob;
                  Rps_Value lexvalv;);
 
-  std::vector<Rps_Value> disjvect;
+  std::vector<Rps_Value> conjvect;
   _.set_additional_gc_marker([&](Rps_GarbageCollector* gc)
   {
     for (auto tokenv : token_deq)
       gc->mark_value(tokenv);
 
-    for (auto disjv : disjvect)
+    for (auto disjv : conjvect)
       gc->mark_value(disjv);
   });
   static Rps_Id id_and_delim;
@@ -308,7 +308,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
     }
 
   std::string startpos = position_str();
-  _f.leftv = parse_comparand(&_, token_deq, &ok);
+  _f.leftv = parse_comparison(&_, token_deq, &ok);
 
   if (!ok)
     {
@@ -318,14 +318,60 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
       return nullptr;
     }
 
-  disjvect.push_back(_f.leftv);
+  conjvect.push_back(_f.leftv);
 
   bool again = false;
+  do
+    {
+      again = false;
+      _f.lextokv =  lookahead_token(&_, token_deq, 0);
+      if (!_f.lextokv)
+        {
+          again = false;
+          break;
+        };
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction testing or lextokv=" << _f.lextokv << " position:" << position_str());
+      if (_f.lextokv.is_lextoken()
+          && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
+          &&  _f.lextokv.to_lextoken()->lxval().is_object()
+          &&  _f.lextokv.to_lextoken()->lxval().to_object()->oid() == id_and_delim)
+        {
+          (void) get_token(&_); // consume the and operator
+          again = true;
+          if (!_f.andbinopob)
+            _f.andbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_and_binop);
+        }
+      else
+        again = false;
+      if (again)
+        {
+          bool okright=false;
+          _f.rightv = parse_conjunction(&_, token_deq, &okright);
+          if (okright)
+            conjvect.push_back(_f.rightv);
+          else
+            {
+              RPS_WARNOUT("failed to parse conjunct at " << position_str());
+              return nullptr;
+            }
+        }
+    }
+  while (again);
 
 #warning missing code in Rps_TokenSource::parse_conjunction; maybe it a conjunct is a comparison, or something simpler...
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_conjunction from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << position_str());
 } // end Rps_TokenSource::parse_conjunction
+
+
+Rps_Value
+Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
+{
+#warning unimplemented Rps_TokenSource::parse_comparison
+  RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparison from " << Rps_ShowCallFrame(callframe)
+               << " with token_deq=" << token_deq << " at " << position_str());
+} // end Rps_TokenSource::parse_comparison
+
 
 
 Rps_Value
