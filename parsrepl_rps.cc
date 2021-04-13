@@ -267,6 +267,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
                  Rps_Value leftv;
                  Rps_Value rightv;
                  Rps_Value disjv;
+                 Rps_Value conjv;
                  Rps_ObjectRef lexkindob;
                  Rps_ObjectRef anddelimob;
                  Rps_ObjectRef andbinopob;
@@ -357,10 +358,20 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
         }
     }
   while (again);
-
-#warning missing code in Rps_TokenSource::parse_conjunction; maybe it a conjunct is a comparison, or something simpler...
-  RPS_FATALOUT("missing code in Rps_TokenSource::parse_conjunction from " << Rps_ShowCallFrame(callframe)
-               << " with token_deq=" << token_deq << " at " << position_str());
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction andbinopob=" << _f.andbinopob
+                << "nbconj:" << conjvect.size() << " at " << startpos);
+  if (conjvect.size() > 1)
+    {
+      /// we make an instance:
+      _f.conjv = Rps_InstanceValue(_f.andbinob, conjvect);
+    }
+  else
+    {
+      _f.conjv = conjvect[0];
+    }
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction gives "
+                << _f.conjv << " at " << startpos);
+  return _f.conjv;
 } // end Rps_TokenSource::parse_conjunction
 
 
