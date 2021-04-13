@@ -401,6 +401,20 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>
   static Rps_Id id_less_binop;
   if (!id_less_binop)
     id_less_binop = Rps_Id("_7E9GRiz630X04AEDlB");
+  /// greater is >
+  static Rps_Id id_greater_delim;
+  if (!id_greater_delim)
+    id_greater_delim = Rps_Id("_04IcidRP5Jh00zW0qs");
+  static Rps_Id id_greater_binop;
+  if (!id_greater_binop)
+    id_greater_binop = Rps_Id("_40mWEiSX65P02fzIdD");
+  /// greaterequal is >=
+  static Rps_Id id_greaterequal_delim;
+  if (!id_greaterequal_delim)
+    id_greaterequal_delim = Rps_Id("_312DlYVXeEs01aTJpg");
+  static Rps_Id id_greaterequal_binop;
+  if (!id_greaterequal_binop)
+    id_greaterequal_binop = Rps_Id("_8p431uwpLJI00r5FQD");
 #warning unimplemented Rps_TokenSource::parse_comparison
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparison from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << position_str());
