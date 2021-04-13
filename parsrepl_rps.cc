@@ -347,7 +347,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
       if (again)
         {
           bool okright=false;
-          _f.rightv = parse_conjunction(&_, token_deq, &okright);
+          _f.rightv = parse_comparison(&_, token_deq, &okright);
           if (okright)
             conjvect.push_back(_f.rightv);
           else
