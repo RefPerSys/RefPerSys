@@ -378,6 +378,29 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
 Rps_Value
 Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
+  RPS_LOCALFRAME(nullptr, callframe,
+                 Rps_Value lextokv;
+                 Rps_Value lexgotokv;
+                 Rps_Value leftv;
+                 Rps_Value rightv;
+                 Rps_Value compv;
+		 Rps_ObjectRef cmpdelimob;
+		 Rps_ObjectRef cmpbinopob;
+		 );
+  /// lessequal is <=
+  static Rps_Id id_lessequal_delim;
+  if (!id_lessequal_delim)
+    id_lessequal_delim = Rps_Id("_1mfq8qfixB401umCL9");
+  static Rps_Id id_lessequal_binop;
+  if (!id_lessequal_binop)
+    id_lessequal_binop = Rps_Id("_7kiAonuM6tZ018OcyU");
+  // less is <
+  static Rps_Id id_less_delim;
+  if (!id_less_delim)
+    id_less_delim = Rps_Id("_0yxQCphDiO102S0BnY");
+  static Rps_Id id_less_binop;
+  if (!id_less_binop)
+    id_less_binop = Rps_Id("_7E9GRiz630X04AEDlB");
 #warning unimplemented Rps_TokenSource::parse_comparison
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparison from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << position_str());
