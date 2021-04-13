@@ -363,7 +363,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
   if (conjvect.size() > 1)
     {
       /// we make an instance:
-      _f.conjv = Rps_InstanceValue(_f.andbinob, conjvect);
+      _f.conjv = Rps_InstanceValue(_f.andbinopob, conjvect);
     }
   else
     {
