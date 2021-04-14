@@ -976,7 +976,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
       return _f.res;
     }
   // integer (base 10) chunk element
-  else if (isdigit(*pc) || pc[0] == '-' && isdigit(pc[1]))
+  else if (isdigit(*pc) || (pc[0] == '-' && isdigit(pc[1])))
     {
       char* endnum = nullptr;
       long long ll = strtoll(pc, &endnum, 10);
