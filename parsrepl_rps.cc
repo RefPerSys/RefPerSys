@@ -462,6 +462,21 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>&
                  Rps_ObjectRef cmpbinopob;
                 );
   std::string startpos = position_str();
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand start from " << Rps_ShowCallFrame(&_)
+                << " with token_deq=" << token_deq << " at " <<  startpos);
+  bool okleft = false;
+  _f.leftv = parse_factor(&_, token_deq, &okleft);
+  if (okleft)
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand leftv=" << _f.leftv << " startpos:" << startpos);
+    }
+  else
+    {
+      RPS_WARNOUT("parse_comparand failed to parse left comparand at " << startpos);
+      if (pokparse)
+        *pokparse = false;
+      return nullptr;
+    }
 #warning unimplemented Rps_TokenSource::parse_comparand
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << startpos);
