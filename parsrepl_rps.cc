@@ -297,8 +297,8 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
                 << _f.lextokv
                 << " position: "
                 << position_str()
-		<< " anddelim:" << _f.anddelimob
-		<< " andbinop:" << _f.andbinopob);
+                << " anddelim:" << _f.anddelimob
+                << " andbinop:" << _f.andbinopob);
 
   if (!_f.lextokv)
     {
@@ -378,15 +378,18 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
 Rps_Value
 Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(nullptr, callframe,
                  Rps_Value lextokv;
                  Rps_Value lexgotokv;
                  Rps_Value leftv;
                  Rps_Value rightv;
                  Rps_Value compv;
-		 Rps_ObjectRef cmpdelimob;
-		 Rps_ObjectRef cmpbinopob;
-		 );
+                 Rps_ObjectRef cmpdelimob;
+                 Rps_ObjectRef cmpbinopob;
+                );
+  std::string startpos = position_str();
   /// lessequal is <=
   static Rps_Id id_lessequal_delim;
   if (!id_lessequal_delim)
@@ -415,6 +418,28 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>
   static Rps_Id id_greaterequal_binop;
   if (!id_greaterequal_binop)
     id_greaterequal_binop = Rps_Id("_8p431uwpLJI00r5FQD");
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparison startpos:" << startpos);
+  bool okleft = false;
+  _f.leftv = parse_comparand(&_, token_deq, &okleft);
+  if (okleft)
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparison leftv=" << _f.leftv << " startpos:" << startpos);
+    }
+  else
+    {
+      RPS_WARNOUT("parse_comparison failed to parse left comparand at " << startpos);
+      if (pokparse)
+        *pokparse = false;
+      return nullptr;
+    }
+  _f.lextokv =  lookahead_token(&_, token_deq, 0);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparison after left lextok=" << _f.lextokv << " pos:" << position_str());
+  if (!_f.lextokv)
+    {
+      if (pokparse)
+        *pokparse = true;
+      return _f.leftv;
+    }
 #warning unimplemented Rps_TokenSource::parse_comparison
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparison from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << position_str());
@@ -425,26 +450,56 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>
 Rps_Value
 Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(nullptr, callframe,
+                 Rps_Value lextokv;
+                 Rps_Value lexgotokv;
+                 Rps_Value leftv;
+                 Rps_Value rightv;
+                 Rps_Value compv;
+                 Rps_ObjectRef cmpdelimob;
+                 Rps_ObjectRef cmpbinopob;
+                );
+  std::string startpos = position_str();
 #warning unimplemented Rps_TokenSource::parse_comparand
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand from " << Rps_ShowCallFrame(callframe)
-               << " with token_deq=" << token_deq << " at " << position_str());
+               << " with token_deq=" << token_deq << " at " << startpos);
 } // end Rps_TokenSource::parse_comparand
 
 
 Rps_Value
 Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(nullptr, callframe,
+                 Rps_Value lextokv;
+                 Rps_Value lexgotokv;
+                 Rps_Value leftv;
+                 Rps_Value rightv;
+                );
+  std::string startpos = position_str();
 #warning unimplemented Rps_TokenSource::parse_factor
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_factor from " << Rps_ShowCallFrame(callframe)
-               << " with token_deq=" << token_deq << " at " << position_str());
+               << " with token_deq=" << token_deq << " at " << startpos);
 } // end Rps_TokenSource::parse_factor
 
 Rps_Value
 Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(nullptr, callframe,
+                 Rps_Value lextokv;
+                 Rps_Value lexgotokv;
+                 Rps_Value leftv;
+                 Rps_Value rightv;
+                );
+  std::string startpos = position_str();
 #warning unimplemented Rps_TokenSource::parse_term
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
-               << " with token_deq=" << token_deq << " at " << position_str());
+               << " with token_deq=" << token_deq << " at " << startpos);
 } // end Rps_TokenSource::parse_term
 
 /// This member function returns some expression which could later be
@@ -462,8 +517,9 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
                            Rps_ObjectRef lexkindob;
                            Rps_Value lexvalv;
                 );
+  std::string startpos = position_str();
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary lextokv=" << _f.lextokv << " position:" << position_str());
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary lextokv=" << _f.lextokv << " position:" << startpos);
   if (!_f.lextokv)
     {
       if (pokparse)
@@ -525,13 +581,28 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
 } // end Rps_TokenSource::parse_primary
 
 Rps_Value
-Rps_TokenSource::parse_primary_complement(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, Rps_Value primaryexp, bool*pokparse)
+Rps_TokenSource::parse_primary_complement(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, Rps_Value primaryexparg, bool*pokparse)
 {
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/callframe,
+                           Rps_Value lextokv;
+                           Rps_Value lexgotokv;
+                           Rps_Value primaryexpv;
+                           Rps_ObjectRef lexkindob;
+                           Rps_Value lexvalv;
+                );
+  std::string startpos = position_str();
+  _f.primaryexpv = primaryexparg;
+  _f.lextokv =  lookahead_token(&_, token_deq, 0);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary_complement start lextokv=" << _f.lextokv
+                << " token_deq:" << token_deq
+                << " primaryexpv:" << _f.primaryexpv
+                << " position:" << startpos);
 #warning unimplemented Rps_TokenSource::parse_primary_complement
   RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary_complement "
                << Rps_ShowCallFrame(callframe)
                << " token_deq:" << token_deq
                << " primaryexp:" << primaryexp
-               << " position_str:" << position_str());
+               << " startpos:" << startpos);
 } // end Rps_TokenSource::parse_primary_complement
 
