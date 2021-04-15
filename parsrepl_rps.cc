@@ -602,7 +602,7 @@ Rps_TokenSource::parse_primary_complement(Rps_CallFrame*callframe, std::deque<Rp
   RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary_complement "
                << Rps_ShowCallFrame(callframe)
                << " token_deq:" << token_deq
-               << " primaryexp:" << primaryexp
+               << " primaryexp:" << _f.primaryexpv
                << " startpos:" << startpos);
 } // end Rps_TokenSource::parse_primary_complement
 
