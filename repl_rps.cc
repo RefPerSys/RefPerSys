@@ -226,11 +226,13 @@ std::ostream&
 operator << (std::ostream&out, const std::deque<Rps_Value>& dq)
 {
   int cnt=0;
+  out << "{|";
   for (const Rps_Value v : dq)
     {
       if (cnt++ > 0) out << ", ";
       out << v;
     }
+  out << "|}";
   return out;
 } // end operator << (std::ostream&out, const std::deque<Rps_Value>& dq)
 
