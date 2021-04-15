@@ -477,6 +477,8 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>&
         *pokparse = false;
       return nullptr;
     }
+  _f.lextokv =  lookahead_token(&_, token_deq, 0);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand  leftv=" << _f.leftv << " lextokv:" << _f.lextokv);
 #warning unimplemented Rps_TokenSource::parse_comparand
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << startpos);
@@ -495,6 +497,24 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
                  Rps_Value rightv;
                 );
   std::string startpos = position_str();
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor start from " << Rps_ShowCallFrame(&_)
+                << " with token_deq=" << token_deq << " at " <<  startpos);
+  bool okleft = false;
+  _f.leftv = parse_term(&_, token_deq, &okleft);
+  if (okleft)
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor leftv=" << _f.leftv << " startpos:" << startpos);
+    }
+  else
+    {
+      RPS_WARNOUT("parse_factor failed to parse left comparand at " << startpos);
+      if (pokparse)
+        *pokparse = false;
+      return nullptr;
+    }
+  _f.lextokv =  lookahead_token(&_, token_deq, 0);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor lextokv=" << _f.lextokv
+                << " with token_deq=" << token_deq << " at " <<  startpos);
 #warning unimplemented Rps_TokenSource::parse_factor
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_factor from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << startpos);
@@ -512,6 +532,22 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                  Rps_Value rightv;
                 );
   std::string startpos = position_str();
+  bool okleft = false;
+  _f.leftv = parse_primary(&_, token_deq, &okleft);
+  if (okleft)
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term leftv=" << _f.leftv << " startpos:" << startpos);
+    }
+  else
+    {
+      RPS_WARNOUT("parse_term failed to parse left primary at " << startpos);
+      if (pokparse)
+        *pokparse = false;
+      return nullptr;
+    }
+  _f.lextokv =  lookahead_token(&_, token_deq, 0);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lextokv=" << _f.lextokv
+                << " with token_deq=" << token_deq << " at " <<  startpos);
 #warning unimplemented Rps_TokenSource::parse_term
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << startpos);
