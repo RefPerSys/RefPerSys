@@ -1112,7 +1112,7 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>&
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token start rank#" << rank << " token_deq:" << token_deq
                 << " pos:" << position_str() << " from:" << std::endl << Rps_ShowCallFrame(&_));
-  RPS_ASSERT(_.call_frame_depth() < 10);
+  RPS_ASSERT(_.call_frame_depth() < 32);
   while (token_deq.size() < rank)
     {
       _f.lextokv = get_token(&_);
