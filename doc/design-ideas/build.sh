@@ -19,8 +19,8 @@ for svgfile in ../CC-BY-SA-icon.svg \
 		   spiral-model-softdevel.svg spiral-stairs.svg \
 	       heap-refpersys.svg ; do
     svgbase=$(basename $svgfile .svg)
-    inkscape --batch --export-filename=$svgbase.pdf --export-type=pdf $svgfile
-    inkscape --batch --export-filename=$svgbase.eps --export-type=eps $svgfile
+    inkscape  --batch-process --export-filename=$svgbase.pdf --export-type=pdf $svgfile
+    inkscape  --batch-process --export-filename=$svgbase.eps --export-type=eps $svgfile
 done
 
 ################
