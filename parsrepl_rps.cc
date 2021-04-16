@@ -623,7 +623,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
    * doc/repl.md or into doc/
    **/
   RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary "
-               << Rps_ShowCallFrame(&_)
+               << Rps_ShowCallFrame(&_) << std::endl
                << " token_deq:" << token_deq
                << " lextokv:" << _f.lextokv << std::endl
                << " ... lexkindob:" << _f.lexkindob
