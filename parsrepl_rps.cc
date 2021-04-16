@@ -536,7 +536,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
   _f.leftv = parse_primary(&_, token_deq, &okleft);
   if (okleft)
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term leftv=" << _f.leftv << " startpos:" << startpos);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term leftv=" << _f.leftv << " startpos:" << startpos << " token_deq:" << token_deq);
     }
   else
     {
@@ -545,8 +545,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
         *pokparse = false;
       return nullptr;
     }
-  _f.lextokv =  lookahead_token(&_, token_deq, 0);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lextokv=" << _f.lextokv
+  _f.lextokv = lookahead_token(&_, token_deq, 0);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term after leftv=" << _f.leftv << " lextokv=" << _f.lextokv
                 << " with token_deq=" << token_deq << " at " <<  startpos);
 #warning unimplemented Rps_TokenSource::parse_term
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
@@ -587,8 +587,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
       && _f.lexvalv.is_int())
     {
       _f.lexgotokv = get_token(&_);
-      RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary int " << _f.lexvalv);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary int " << _f.lexvalv << " lexgotokv:" << _f.lexgotokv);
       if (pokparse)
         *pokparse = true;
       return _f.lexvalv;
@@ -597,8 +596,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
            && _f.lexvalv.is_string())
     {
       _f.lexgotokv = get_token(&_);
-      RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary string " << _f.lexvalv);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary string " << _f.lexvalv << " lexgotokv:" << _f.lexgotokv);
       if (pokparse)
         *pokparse = true;
       return _f.lexvalv;
@@ -607,8 +605,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
            && _f.lexvalv.is_double())
     {
       _f.lexgotokv = get_token(&_);
-      RPS_ASSERT(_f.lexgotokv == _f.lexgotokv);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary double " << _f.lexvalv);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary double " << _f.lexvalv << " lexgotokv:" << _f.lexgotokv);
       if (pokparse)
         *pokparse = true;
       return _f.lexvalv;
@@ -628,7 +625,9 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
                << " lextokv:" << _f.lextokv << std::endl
                << " ... lexkindob:" << _f.lexkindob
                << " lexvalv:" << _f.lexvalv
-               << " position_str:" << position_str());
+	       << " lexgotokv:" << _f.lexgotokv
+               << " position_str:" << position_str()
+	       << " startpos:" << startpos);
 } // end Rps_TokenSource::parse_primary
 
 Rps_Value
