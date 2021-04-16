@@ -2506,9 +2506,12 @@ Auto-completion (in particular of existing names, and of
 \textit{exiting} oids) is practically essential. This is why
 \textit{GNU readline} is needed.
 
-Given the lack of popularity of Lisp syntax in 2020, the syntax of the
-REPL language should be closer to JavaScript or to Python, even if the
-semantics of \RefPerSys~ is heavily Lisp-inspired.
+Given the lack of popularity of Lisp syntax in 2020 or 2021, the
+syntax of the REPL language should be closer to JavaScript or to
+Python, even if the semantics of \RefPerSys~ is heavily
+Lisp-inspired. See markup file
+\href{https://github.com/RefPerSys/RefPerSys/blob/master/doc/repl.md}{doc/repl.md}
+for details.
 
 The lexer C++ routine \texttt{rps\_repl\_lexer} in our C++ file
 \texttt{repl\_rps.cc} is returning (for each lexical token) a
