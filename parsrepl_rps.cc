@@ -527,6 +527,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(nullptr, callframe,
                  Rps_Value lextokv;
+                 Rps_Value lexopertokv;
                  Rps_Value lexgotokv;
                  Rps_Value leftv;
                  Rps_Value rightv;
@@ -552,6 +553,13 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                 << " with token_deq=" << token_deq << " at " <<  startpos
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after left"));
+  _f.lexopertokv = lookahead_token(&_, token_deq, 1);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term after leftv=" << _f.leftv << " lextokv="
+		<< _f.lextokv
+		<< " lexopertokv=" << _f.lexopertokv);
+  _f.lextokv = get_token(&_);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term got token after leftv=" << _f.leftv << " lextok=" << _f.lextokv
+		<< " @! " << position_str());
 #warning unimplemented Rps_TokenSource::parse_term
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << startpos);
