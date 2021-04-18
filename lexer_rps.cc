@@ -597,7 +597,9 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
              strv,
              toksrc_line, startcol);
           _f.res = Rps_LexTokenValue(lextok);
-          RPS_DEBUG_LOG(REPL, "get_delimiter delimiter :-◑> " << _f.res << " at " << position_str());
+          RPS_DEBUG_LOG(REPL, "get_delimiter delimiter :-◑> " << _f.res << " at " << position_str()
+			<< " at " << startpos << std::endl
+			<< RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter"));
           return _f.res;
         };
       /// truncate the delimstr by one ending UTF-8
