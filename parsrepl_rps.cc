@@ -537,7 +537,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
   _f.leftv = parse_primary(&_, token_deq, &okleft);
   if (okleft)
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term leftv=" << _f.leftv << " startpos:" << startpos << " token_deq:" << token_deq);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term leftv=" << _f.leftv << " startpos:" << startpos << " token_deq:" << token_deq
+		    << " pos:" << position_str());
     }
   else
     {
@@ -600,6 +601,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
     {
       _f.lexgotokv = get_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary int " << _f.lexvalv << " lexgotokv:" << _f.lexgotokv
+		    << " startpos " << startpos
                     << " at " << position_str());
       if (pokparse)
         *pokparse = true;
