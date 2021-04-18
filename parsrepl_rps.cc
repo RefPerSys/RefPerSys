@@ -531,9 +531,22 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                  Rps_Value lexgotokv;
                  Rps_Value leftv;
                  Rps_Value rightv;
-                );
+		 Rps_ObjectRef plusdelimob;
+		 Rps_ObjectRef plusbinopob;
+		 Rps_ObjectRef minusdelimob;
+		 Rps_ObjectRef minusbinopob;
+		 );
   std::string startpos = position_str();
   bool okleft = false;
+  static Rps_Id id_plus_delim;
+  if (!id_plus_delim)
+    id_plus_delim = Rps_Id("_4ShDsOWk7al02eDRTM");
+  static Rps_Id id_plus_binop;
+  if (!id_plus_binop)
+    id_plus_binop = Rps_Id("_51jvc2mFhql03qwRg6");
+  _f.plusdelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_plus_delim);
+  _f.plusbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_plus_binop);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term plusdelimob=" << _f.plusdelimob << " plusbinopob=" << _f.plusbinopob);
   _f.leftv = parse_primary(&_, token_deq, &okleft);
   if (okleft)
     {
