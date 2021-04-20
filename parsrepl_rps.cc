@@ -562,7 +562,7 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
                     << " with token_deq=" << token_deq << " at "
                     <<  startpos << " binoperob=" << _f.binoperob);
       RPS_ASSERT(_f.lexgotokv  == _f.lextokv);
-      bool okright = false;
+      //bool okright = false;
       _f.rightv = parse_term(&_, token_deq, &okright);
       if (!okright)
         {
