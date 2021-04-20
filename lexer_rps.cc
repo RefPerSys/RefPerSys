@@ -598,8 +598,8 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
              toksrc_line, startcol);
           _f.res = Rps_LexTokenValue(lextok);
           RPS_DEBUG_LOG(REPL, "get_delimiter delimiter :-◑> " << _f.res << " at " << position_str()
-			<< " at " << startpos << std::endl
-			<< RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter"));
+                        << " at " << startpos << std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter"));
           return _f.res;
         };
       /// truncate the delimstr by one ending UTF-8
@@ -1114,7 +1114,7 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>&
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token start rank#" << rank << " token_deq:" << token_deq
                 << " pos:" << position_str() << " from:" << std::endl << Rps_ShowCallFrame(&_)
-		<< std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::lookahead_token start"));
+                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::lookahead_token start"));
   RPS_ASSERT(_.call_frame_depth() < 32);
   while (token_deq.size() < rank)
     {
