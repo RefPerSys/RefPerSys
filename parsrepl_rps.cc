@@ -502,6 +502,7 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
                  Rps_ObjectRef minusbinopob;
                 );
   std::string startpos = position_str();
+#warning Rps_TokenSource::parse_factor is probably wrong since should use * / % operators
   /// + delimiter and binary operator
   static Rps_Id id_plus_delim;
   if (!id_plus_delim)
@@ -526,6 +527,7 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor start from " << Rps_ShowCallFrame(&_)
                 << " with token_deq=" << token_deq << " at " <<  startpos);
   bool okleft = false;
+#warning Rps_TokenSource::parse_factor should probably use parse_primary here
   _f.leftv = parse_term(&_, token_deq, &okleft);
   if (okleft)
     {
@@ -562,7 +564,6 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
                     << " with token_deq=" << token_deq << " at "
                     <<  startpos << " binoperob=" << _f.binoperob);
       RPS_ASSERT(_f.lexgotokv  == _f.lextokv);
-      //bool okright = false;
       _f.rightv = parse_term(&_, token_deq, &okright);
       if (!okright)
         {
