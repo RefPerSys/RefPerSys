@@ -496,17 +496,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           warndelimstr += delimpos;
           throw std::runtime_error(warndelimstr);
         }
-      _f.lexkindob = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
-      _f.lextokv = _f.delimv;
-      const Rps_String* strv = _f.namev.to_string();
-      Rps_LexTokenZone* lextok =
-        Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-        (this,_f.lexkindob, _f.lextokv,
-         strv,
-         toksrc_line, startcol);
-      _f.res = Rps_LexTokenValue(lextok);
-      RPS_DEBUG_LOG(REPL, "get_token delimiter :-◑> " << _f.res << " at " << position_str());
-      return _f.res;
+      RPS_DEBUG_LOG(REPL, "get_token delimiter :-◑> " << _f.delimv << " at " << position_str());
+      return _f.delimv;
     }
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name() << " @! " << position_str());
