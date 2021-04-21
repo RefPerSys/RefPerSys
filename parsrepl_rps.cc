@@ -446,7 +446,7 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>
 } // end Rps_TokenSource::parse_comparison
 
 
-
+// a comparand - something on left or right side of compare operators is a sequence of terms with additive operators
 Rps_Value
 Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
@@ -465,7 +465,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>&
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand start from " << Rps_ShowCallFrame(&_)
                 << " with token_deq=" << token_deq << " at " <<  startpos);
   bool okleft = false;
-  _f.leftv = parse_factor(&_, token_deq, &okleft);
+  _f.leftv = parse_term(&_, token_deq, &okleft);
   if (okleft)
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand leftv=" << _f.leftv << " startpos:" << startpos);
@@ -502,7 +502,6 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
                  Rps_ObjectRef minusbinopob;
                 );
   std::string startpos = position_str();
-#warning Rps_TokenSource::parse_factor is probably wrong since should use * / % operators
   /// + delimiter and binary operator
   static Rps_Id id_plus_delim;
   if (!id_plus_delim)
