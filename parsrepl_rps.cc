@@ -606,6 +606,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                  Rps_ObjectRef divbinopob;
                  Rps_ObjectRef moddelimob;
                  Rps_ObjectRef modbinopob;
+                 Rps_ObjectRef lexoperdelimob;
                 );
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term starting startpos:" << startpos);
@@ -675,6 +676,13 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                 << " lexopertokv=" << _f.lexopertokv
                 << " @! " << position_str()
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after-left"));
+  if (_f.lexopertokv && _f.lexopertokv.is_lextoken()
+      &&  _f.lexopertokv.to_lextoken()->lxkind()
+      == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
+      &&  _f.lexopertokv.to_lextoken()->lxval().is_object()) {
+    _f.lexoperdelimob =  _f.lexopertokv.to_lextoken()->lxval().to_object();
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " lexoperdelimob:" << _f.lexoperdelimob);
+  }
 #warning unimplemented Rps_TokenSource::parse_term
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << startpos);
