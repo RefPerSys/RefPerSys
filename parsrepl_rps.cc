@@ -427,7 +427,8 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>
     }
   else
     {
-      RPS_WARNOUT("parse_comparison failed to parse left comparand at " << startpos);
+      RPS_WARNOUT("parse_comparison failed to parse left comparand at " << startpos
+		  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparison fail")));
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -472,7 +473,8 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>&
     }
   else
     {
-      RPS_WARNOUT("parse_comparand failed to parse left comparand at " << startpos);
+      RPS_WARNOUT("parse_comparand failed to parse left comparand at " << startpos
+		  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparand fail"));
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -694,8 +696,11 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
         {
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " modulus at " << position_str());
         }
-      else
-        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " strange lexoperdelimob:" << _f.lexoperdelimob);
+      else {
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv
+		      << " strange lexoperdelimob:" << _f.lexoperdelimob << " :!-> return leftv:" << _f.leftv);
+	return _f.leftv;
+      }
     }
 #warning unimplemented Rps_TokenSource::parse_term
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
