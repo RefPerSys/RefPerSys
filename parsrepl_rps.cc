@@ -679,10 +679,24 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
   if (_f.lexopertokv && _f.lexopertokv.is_lextoken()
       &&  _f.lexopertokv.to_lextoken()->lxkind()
       == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
-      &&  _f.lexopertokv.to_lextoken()->lxval().is_object()) {
-    _f.lexoperdelimob =  _f.lexopertokv.to_lextoken()->lxval().to_object();
-    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " lexoperdelimob:" << _f.lexoperdelimob);
-  }
+      &&  _f.lexopertokv.to_lextoken()->lxval().is_object())
+    {
+      _f.lexoperdelimob =  _f.lexopertokv.to_lextoken()->lxval().to_object();
+      if (_f.lexoperdelimob == _f.multbinopob)
+        {
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " multiply at " << position_str());
+        }
+      else if (_f.lexoperdelimob == _f.divbinopob)
+        {
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " divide at " << position_str());
+        }
+      else if (_f.lexoperdelimob == _f.modbinopob)
+        {
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " modulus at " << position_str());
+        }
+      else
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " strange lexoperdelimob:" << _f.lexoperdelimob);
+    }
 #warning unimplemented Rps_TokenSource::parse_term
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << startpos);
