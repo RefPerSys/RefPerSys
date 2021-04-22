@@ -586,6 +586,8 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
 
 
 
+/// a term is a sequence of factors with multiplicative operators
+/// between them....
 Rps_Value
 Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
@@ -597,8 +599,51 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                  Rps_Value lexgotokv;
                  Rps_Value leftv;
                  Rps_Value rightv;
+                 Rps_ObjectRef binoperob;
+                 Rps_ObjectRef multdelimob;
+                 Rps_ObjectRef multbinopob;
+                 Rps_ObjectRef divdelimob;
+                 Rps_ObjectRef divbinopob;
+                 Rps_ObjectRef moddelimob;
+                 Rps_ObjectRef modbinopob;
                 );
   std::string startpos = position_str();
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term starting startpos:" << startpos);
+  /// multiplication operator and * delim
+  static Rps_Id id_mult_delim;
+  if (!id_mult_delim)
+    id_mult_delim = Rps_Id("_2uw3Se5dPOU00yhxpA"); // id of "mult!delim"∈repl_delimiter
+  static Rps_Id id_mult_oper;
+  if (!id_mult_oper)
+    id_mult_oper = Rps_Id("_4QX7Cg3gDkd005b9bn"); // id of "mult!binop"∈repl_binary_operator
+  _f.multdelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_mult_delim); // "mult!delim"∈repl_delimiter
+  _f.multbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_mult_oper); // "mult!binop"∈repl_binary_operator
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term  startpos:" << startpos << " multdelimob:" << _f.multdelimob
+                << " multbinopob: " << _f.multbinopob);
+  /// division operator and / delim
+  static Rps_Id id_div_delim;
+  if (!id_div_delim)
+    id_div_delim = Rps_Id("_3ak80l3pr9700M90pz"); // id of "div!delim"∈repl_delimiter
+  static Rps_Id id_div_oper;
+  if (!id_div_oper)
+    id_div_oper = Rps_Id("_0GTVGelTnCP01I0od2"); // id of "div!binop"∈repl_binary_operator
+  _f.divdelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_div_delim); // "div!delim"∈repl_delimiter
+  _f.divbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_div_oper); // "div!binop"∈repl_binary_operator
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term  startpos:" << startpos << " divdelimob:" << _f.divdelimob
+                << " divbinopob: " << _f.divbinopob);
+  /// modulus operator and % delim
+  static Rps_Id id_mod_delim;
+  if (!id_mod_delim)
+    id_mod_delim = Rps_Id("_5yI4nqeRQdR02PcUIi"); // id of mod!delim"∈repl_delimiter
+  static Rps_Id id_mod_oper;
+  if (!id_mod_oper)
+    id_mod_oper = Rps_Id("_07mKKY7ByIq03w7k4J"); // id of "mod!binop"∈repl_binary_operator
+  _f.moddelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_mod_delim); // "mod!delim"∈repl_delimiter
+  _f.modbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_mod_oper); // "mod!binop"∈repl_binary_operator
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term  startpos:" << startpos << " moddelimob:" << _f.moddelimob
+                << " modbinopob: " << _f.modbinopob);
+  /////
+  ////////////////
   bool okleft = false;
   _f.leftv = parse_primary(&_, token_deq, &okleft);
   if (okleft)
@@ -634,6 +679,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << startpos);
 } // end Rps_TokenSource::parse_term
+
+
 
 /// This member function returns some expression which could later be
 /// evaluated to a value; the *pokparse flag, when given, is set to
