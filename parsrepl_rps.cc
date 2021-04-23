@@ -608,6 +608,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                  Rps_Value leftv;
                  Rps_Value rightv;
                  Rps_ObjectRef binoperob;
+                 Rps_ObjectRef curoperob;
                  Rps_ObjectRef bindelimob;
                  Rps_ObjectRef multdelimob;
                  Rps_ObjectRef multbinopob;
@@ -617,6 +618,16 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                  Rps_ObjectRef modbinopob;
                  Rps_ObjectRef lexoperdelimob;
                 );
+  std::vector<Rps_Value> operandvect;
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
+  {
+    // maybe token_deq is already GC-marked by caller....
+    for (auto tokenv : token_deq)
+      gc->mark_value(tokenv);
+    // but the operandvect needs to be GC-marked
+    for (auto operv : operandvect)
+      gc->mark_value(operv);
+  });
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term starting startpos:" << startpos);
   /// multiplication operator and * delim
@@ -660,6 +671,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term leftv=" << _f.leftv << " startpos:" << startpos << " token_deq:" << token_deq
                     << " pos:" << position_str());
+      operandvect.push_back(_f.leftv);
     }
   else
     {
@@ -670,51 +682,79 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term before lookahead_token leftv=" << _f.leftv
                 << " token_deq=" << token_deq << " position_str:" << position_str());
-  _f.lextokv = lookahead_token(&_, token_deq, 0);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term after leftv=" << _f.leftv << " lextokv=" << _f.lextokv
-                << " with token_deq=" << token_deq << " at " <<  startpos
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after left"));
-  _f.lexopertokv = lookahead_token(&_, token_deq, 1);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term after leftv=" << _f.leftv << " lextokv="
-                << _f.lextokv
-                << " lexopertokv=" << _f.lexopertokv
-                << " pos:" << position_str() << " startpos:" << startpos);
-  _f.lextokv = get_token(&_);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term got token after leftv=" << _f.leftv << " got lextok=" << _f.lextokv
-                << " lexopertokv=" << _f.lexopertokv
-                << " @! " << position_str()
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after-left"));
-  if (_f.lexopertokv && _f.lexopertokv.is_lextoken()
-      &&  _f.lexopertokv.to_lextoken()->lxkind()
-      == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
-      &&  _f.lexopertokv.to_lextoken()->lxval().is_object())
+  bool again;
+  while (again)
     {
-      _f.lexoperdelimob =  _f.lexopertokv.to_lextoken()->lxval().to_object();
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term got token after leftv=" << _f.leftv
-		    << " got lexopertokv=" << _f.lexopertokv << " bindelimob=" << _f.bindelimob
-		    << " binoperob=" << _f.binoperob);
-      if (_f.lexoperdelimob == _f.multdelimob)
+      again = false;
+      _f.lextokv = lookahead_token(&_, token_deq, 0);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term after leftv=" << _f.leftv << " lextokv=" << _f.lextokv
+                    << " with token_deq=" << token_deq << " at " <<  startpos
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after left"));
+      _f.lexopertokv = lookahead_token(&_, token_deq, 1);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term after leftv=" << _f.leftv << " lextokv="
+                    << _f.lextokv
+                    << " lexopertokv=" << _f.lexopertokv
+                    << " pos:" << position_str() << " startpos:" << startpos);
+      _f.lextokv = get_token(&_);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term got token after leftv=" << _f.leftv << " got lextok=" << _f.lextokv
+                    << " lexopertokv=" << _f.lexopertokv
+                    << " @! " << position_str()
+                    << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after-left"));
+      if (_f.lexopertokv && _f.lexopertokv.is_lextoken()
+          &&  _f.lexopertokv.to_lextoken()->lxkind()
+          == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
+          &&  _f.lexopertokv.to_lextoken()->lxval().is_object())
         {
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " multiply at " << position_str());
+          _f.lexoperdelimob =  _f.lexopertokv.to_lextoken()->lxval().to_object();
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term got token after leftv=" << _f.leftv
+                        << " got lexopertokv=" << _f.lexopertokv << " bindelimob=" << _f.bindelimob
+                        << " binoperob=" << _f.binoperob);
+          if (_f.lexoperdelimob == _f.multdelimob)
+            {
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " multiply at " << position_str());
+              _f.curoperob = _f.multbinopob;
+            }
+          else if (_f.lexoperdelimob == _f.divdelimob)
+            {
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " divide at " << position_str());
+              _f.curoperob = _f.divbinopob;
+            }
+          else if (_f.lexoperdelimob == _f.moddelimob)
+            {
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " modulus at " << position_str());
+              _f.curoperob = _f.modbinopob;
+            }
+          else
+            {
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv
+                            << " strange lexoperdelimob:" << _f.lexoperdelimob << " :!-> return leftv:" << _f.leftv);
+              if (pokparse)
+                *pokparse = true;
+              return _f.leftv;
+            }
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term got token after leftv=" << _f.leftv << " curoperob=" << _f.curoperob
+                        << " lexopertokv=" << _f.lexopertokv);
         }
-      else if (_f.lexoperdelimob == _f.divdelimob)
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term operandvect:" << operandvect
+                    << " curoperob=" << _f.curoperob << " binoperob=" << _f.binoperob);
+      if (_f.curoperob)
         {
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " divide at " << position_str());
+          if (!_f.binoperob)
+            _f.binoperob = _f.curoperob;
+          else if (_f.binoperob == _f.curoperob)
+            {
+#warning Rps_TokenSource::parse_term should collect operand into operandvect
+            }
+          else
+            {
+#warning Rps_TokenSource::parse_term make two things?
+            }
         }
-      else if (_f.lexoperdelimob == _f.moddelimob)
-        {
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " modulus at " << position_str());
-        }
-      else
-        {
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv
-                        << " strange lexoperdelimob:" << _f.lexoperdelimob << " :!-> return leftv:" << _f.leftv);
-          if (pokparse)
-            *pokparse = true;
-          return _f.leftv;
-        }
-    }
+      RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
+                   << " with token_deq=" << token_deq << " at " << startpos
+                   << " operandvect:" << operandvect);
+    } // end while (again)
 #warning unimplemented Rps_TokenSource::parse_term
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << startpos);
