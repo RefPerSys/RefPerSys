@@ -1246,5 +1246,20 @@ Rps_Value::send_ilist(Rps_CallFrame*callerframe, const Rps_ObjectRef obselarg,
   return Rps_TwoValues(nullptr,nullptr);
 } // end Rps_Value::send_ilist
 
+std::ostream&
+operator << (std::ostream&out, const std::vector<Rps_Value>& vect)
+{
+  out << "(|";
+  auto sz = vect.size();
+  for (unsigned ix=0; ix<(unsigned)sz; ix++)
+    {
+      if (ix>0) out << ",";
+      if (ix % 4 == 0) out << std::endl << " ";
+      vect[ix].output(out,1);
+    }
+  out << "|)";
+  return out;
+};				// end operator << for std::vector<Rps_Value>
+
 /* end of file value_rps.cc */
 

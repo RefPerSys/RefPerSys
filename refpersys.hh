@@ -1359,6 +1359,8 @@ operator << (std::ostream&out, Rps_Value val)
   return out;
 }
 
+std::ostream&operator << (std::ostream&out, const std::vector<Rps_Value>& vect);
+
 namespace std
 {
 template <> struct hash<Rps_ObjectRef>
