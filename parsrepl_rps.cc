@@ -608,6 +608,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                  Rps_Value leftv;
                  Rps_Value rightv;
                  Rps_ObjectRef binoperob;
+                 Rps_ObjectRef bindelimob;
                  Rps_ObjectRef multdelimob;
                  Rps_ObjectRef multbinopob;
                  Rps_ObjectRef divdelimob;
@@ -690,15 +691,18 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
       &&  _f.lexopertokv.to_lextoken()->lxval().is_object())
     {
       _f.lexoperdelimob =  _f.lexopertokv.to_lextoken()->lxval().to_object();
-      if (_f.lexoperdelimob == _f.multbinopob)
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term got token after leftv=" << _f.leftv
+		    << " got lexopertokv=" << _f.lexopertokv << " bindelimob=" << _f.bindelimob
+		    << " binoperob=" << _f.binoperob);
+      if (_f.lexoperdelimob == _f.multdelimob)
         {
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " multiply at " << position_str());
         }
-      else if (_f.lexoperdelimob == _f.divbinopob)
+      else if (_f.lexoperdelimob == _f.divdelimob)
         {
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " divide at " << position_str());
         }
-      else if (_f.lexoperdelimob == _f.modbinopob)
+      else if (_f.lexoperdelimob == _f.moddelimob)
         {
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " modulus at " << position_str());
         }
