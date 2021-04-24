@@ -744,6 +744,12 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
             _f.binoperob = _f.curoperob;
           else if (_f.binoperob == _f.curoperob)
             {
+	      bool okright = false;
+	      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term operandvect:" << operandvect << " leftv=" << _f.leftv
+			    << " before parse_primary of right" << position_str());
+	      _f.rightv = parse_primary(&_, token_deq, &okright);
+	      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term operandvect:" << operandvect << " leftv=" << _f.leftv
+			    << " curoperob=" << _f.curoperob << " right=" << _f.rightv);
 #warning Rps_TokenSource::parse_term should collect operand into operandvect
             }
           else
@@ -757,6 +763,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
     } // end while (again)
 #warning unimplemented Rps_TokenSource::parse_term
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
+	       << " operandvect:" << operandvect
                << " with token_deq=" << token_deq << " at " << startpos);
 } // end Rps_TokenSource::parse_term
 
