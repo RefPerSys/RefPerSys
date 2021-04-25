@@ -1254,7 +1254,7 @@ operator << (std::ostream&out, const std::vector<Rps_Value>& vect)
   for (unsigned ix=0; ix<(unsigned)sz; ix++)
     {
       if (ix>0) out << ",";
-      if (ix % 4 == 0) out << std::endl << " ";
+      if (ix % 4 == 0 && ix > 0) out << std::endl << " ";
       vect[ix].output(out,1);
     }
   out << "|)";
