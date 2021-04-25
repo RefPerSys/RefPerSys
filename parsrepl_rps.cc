@@ -682,7 +682,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term before lookahead_token leftv=" << _f.leftv
                 << " token_deq=" << token_deq << " position_str:" << position_str());
-  bool again;
+  bool again = true;
   while (again)
     {
       again = false;
@@ -777,6 +777,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
   /* we probably should make a term with operandvect here ... */
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
 	       << " operandvect:" << operandvect
+	       << " binoperob:" << binoperob
                << " with token_deq=" << token_deq << " at " << startpos);
 } // end Rps_TokenSource::parse_term
 
