@@ -777,7 +777,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
   /* we probably should make a term with operandvect here ... */
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
 	       << " operandvect:" << operandvect
-	       << " binoperob:" << binoperob
+	       << " binoperob:" << _f.binoperob
                << " with token_deq=" << token_deq << " at " << startpos);
 } // end Rps_TokenSource::parse_term
 
