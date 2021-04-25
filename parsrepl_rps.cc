@@ -748,20 +748,33 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
 	      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term operandvect:" << operandvect << " leftv=" << _f.leftv
 			    << " before parse_primary of right" << position_str());
 	      _f.rightv = parse_primary(&_, token_deq, &okright);
+	      if (!okright) {
+		RPS_WARNOUT("Rps_TokenSource::parse_term with invalid primary on right of "
+			    << _f.curoperob << " at " << position_str()
+			    << " with operandvect:" << operandvect);
+		if (pokparse)
+		  *pokparse = false;
+		return nullptr;
+	      }
 	      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term operandvect:" << operandvect << " leftv=" << _f.leftv
 			    << " curoperob=" << _f.curoperob << " right=" << _f.rightv);
-#warning Rps_TokenSource::parse_term should collect operand into operandvect
+	      operandvect.push_back(_f.rightv);
+	      again = true;
             }
           else
             {
 #warning Rps_TokenSource::parse_term make two things?
+	      RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
+			   << " with token_deq=" << token_deq << " at " << startpos
+			   << " operandvect:" << operandvect
+			   << " rightv:" << _f.rightv
+			   << " binoperob:" << _f.binoperob
+			   << " curoperob:" << _f.curoperob);
             }
         }
-      RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
-                   << " with token_deq=" << token_deq << " at " << startpos
-                   << " operandvect:" << operandvect);
     } // end while (again)
 #warning unimplemented Rps_TokenSource::parse_term
+  /* we probably should make a term with operandvect here ... */
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
 	       << " operandvect:" << operandvect
                << " with token_deq=" << token_deq << " at " << startpos);
