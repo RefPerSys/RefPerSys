@@ -662,16 +662,20 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
   _f.moddelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_mod_delim); // "mod!delim"∈repl_delimiter
   _f.modbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_mod_oper); // "mod!binop"∈repl_binary_operator
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term  startpos:" << startpos << " moddelimob:" << _f.moddelimob
-                << " modbinopob: " << _f.modbinopob);
+                << " modbinopob: " << _f.modbinopob 
+		<< " pos:" << position_str()
+		<< " curcptr " << Rps_QuotedC_String(curcptr()));
   /////
   ////////////////
   bool okleft = false;
   _f.leftv = parse_primary(&_, token_deq, &okleft);
   if (okleft)
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term leftv=" << _f.leftv << " startpos:" << startpos << " token_deq:" << token_deq
-                    << " pos:" << position_str());
       operandvect.push_back(_f.leftv);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term leftv=" << _f.leftv << " startpos:" << startpos << " token_deq:" << token_deq
+		    << " operandvect:" << operandvect
+                    << " pos:" << position_str()
+		    << " curcptr " << Rps_QuotedC_String(curcptr()));
     }
   else
     {
@@ -681,13 +685,14 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
       return nullptr;
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term before lookahead_token leftv=" << _f.leftv
-                << " token_deq=" << token_deq << " position_str:" << position_str());
+                << " token_deq=" << token_deq << " position_str:" << position_str()
+		    << " curcptr " << Rps_QuotedC_String(curcptr()));
   bool again = true;
   int loopcnt = 0;
   while (again)
     {
       loopcnt++;
-      RPS_DEBUGNL_LOG(REPL, "Rps_TokenSource::parse_term **startloop @ " << position_str() << " loopcnt#" << loopcnt << "curcptr:" << curcptr());
+      RPS_DEBUGNL_LOG(REPL, "Rps_TokenSource::parse_term **startloop @ " << position_str() << " loopcnt#" << loopcnt << "curcptr " << Rps_QuotedC_String(curcptr()));
       again = false;
       _f.lextokv = lookahead_token(&_, token_deq, 0);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term after leftv=" << _f.leftv << " lextokv=" << _f.lextokv
@@ -699,12 +704,14 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term after leftv=" << _f.leftv << " lextokv="
                     << _f.lextokv
                     << " lexopertokv=" << _f.lexopertokv
-                    << " pos:" << position_str() << " startpos:" << startpos);
+                    << " pos:" << position_str() << " startpos:" << startpos
+		    << " curcptr " << Rps_QuotedC_String(curcptr()));
       usleep (250000);
       _f.lextokv = get_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term got token after leftv=" << _f.leftv << " got lextok=" << _f.lextokv
                     << " lexopertokv=" << _f.lexopertokv
                     << " @! " << position_str()
+		    << " curcptr " << Rps_QuotedC_String(curcptr())
                     << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after-left"));
       if (!_f.lextokv)
 	break;
@@ -716,7 +723,9 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
           _f.lexoperdelimob =  _f.lexopertokv.to_lextoken()->lxval().to_object();
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term got token after leftv=" << _f.leftv
                         << " got lexopertokv=" << _f.lexopertokv << " bindelimob=" << _f.bindelimob
-                        << " binoperob=" << _f.binoperob);
+                        << " binoperob=" << _f.binoperob
+			<< " @! " << position_str()
+			<< " curcptr " << Rps_QuotedC_String(curcptr()));
           if (_f.lexoperdelimob == _f.multdelimob)
             {
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term lexopertokv:" << _f.lexopertokv << " multiply at " << position_str());
