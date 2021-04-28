@@ -687,11 +687,12 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
   while (again)
     {
       loopcnt++;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term startloop @ " << position_str() << " loopcnt#" << loopcnt << "curcptr:" << curcptr());
+      RPS_DEBUGNL_LOG(REPL, "Rps_TokenSource::parse_term **startloop @ " << position_str() << " loopcnt#" << loopcnt << "curcptr:" << curcptr());
       again = false;
       _f.lextokv = lookahead_token(&_, token_deq, 0);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term after leftv=" << _f.leftv << " lextokv=" << _f.lextokv
-                    << " with token_deq=" << token_deq << " at " <<  startpos
+                    << " with token_deq=" << token_deq << " at " <<  startpos << " loopcnt#" << loopcnt
+		    << " curcptr " << Rps_QuotedC_String(curcptr())
                     << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after left"));
       _f.lexopertokv = lookahead_token(&_, token_deq, 1);
@@ -744,7 +745,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
         }
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term operandvect:" << operandvect
                     << " curoperob=" << _f.curoperob << " binoperob=" << _f.binoperob << " loopcnt#" << loopcnt
-		    << " pos:" << position_str() << " '" << Rps_Cjson_String(curcptr()) << "'");
+		    << " pos:" << position_str() << Rps_QuotedC_String(curcptr()));
       if (_f.curoperob)
         {
           if (!_f.binoperob)
@@ -767,7 +768,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
 	      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term operandvect:" << operandvect << " leftv=" << _f.leftv
 			    << " rightv=" << _f.rightv << " loopcnt#" << loopcnt
 			    << " curoperob=" << _f.curoperob << " position_str:" << position_str()
-			    << " '" << Rps_Cjson_String(curcptr()) << "'");
+			    << " " << Rps_QuotedC_String(curcptr()));
 	      again = true;
 	      continue;
             }
@@ -780,7 +781,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
 			   << " rightv:" << _f.rightv
 			   << " binoperob:" << _f.binoperob
 			   << " curoperob:" << _f.curoperob << _f.curoperob << " position_str:" << position_str()
-			    << " '" << Rps_Cjson_String(curcptr()) << "'");
+			    << " " << Rps_QuotedC_String(curcptr()));
             }
         }
       else
