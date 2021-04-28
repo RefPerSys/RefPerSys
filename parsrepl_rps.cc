@@ -743,7 +743,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                         << " lexopertokv=" << _f.lexopertokv);
         }
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term operandvect:" << operandvect
-                    << " curoperob=" << _f.curoperob << " binoperob=" << _f.binoperob);
+                    << " curoperob=" << _f.curoperob << " binoperob=" << _f.binoperob << " loopcnt#" << loopcnt
+		    << " pos:" << position_str() << " '" << Rps_Cjson_String(curcptr()) << "'");
       if (_f.curoperob)
         {
           if (!_f.binoperob)
