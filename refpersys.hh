@@ -4151,7 +4151,7 @@ extern "C" void rps_output_utf8_cjson(std::ostream&out, const char*str, int bytl
 class Rps_Html_String : public std::string {
 public:
   Rps_Html_String(const char*str, int len= -1) :
-    std::string(str, (len>=0)?len:strlen(str)) {};
+    std::string(str?str:"", (len>=0 && str)?len:strlen(str?str:"")) {};
   Rps_Html_String(const std::string&str) : std::string(str) {};
   ~Rps_Html_String() = default;
   virtual void output(std::ostream&out) const
@@ -4175,7 +4175,7 @@ public:
 class Rps_Cjson_String : public std::string {
 public:
   Rps_Cjson_String(const char*str, int len= -1) :
-    std::string(str, (len>=0)?len:strlen(str)) {};
+    std::string(str?str:"", (len>=0 && str)?len:strlen(str?str:"")) {};
   Rps_Cjson_String(const std::string&str) : std::string(str) {};
   ~Rps_Cjson_String() = default;
   void output(std::ostream&out) const
@@ -4189,7 +4189,7 @@ inline std::ostream&operator << (std::ostream&out, const Rps_Cjson_String&hstr) 
 class Rps_QuotedC_String : public std::string {
 public:
   Rps_QuotedC_String(const char*str, int len= -1) :
-    std::string(str, (len>=0)?len:strlen(str)) {};
+    std::string(str?str:"", (len>=0 && str)?len:strlen(str?str:"")) {};
   Rps_QuotedC_String(const std::string&str) : std::string(str) {};
   ~Rps_QuotedC_String() = default;
   void output(std::ostream&out) const
