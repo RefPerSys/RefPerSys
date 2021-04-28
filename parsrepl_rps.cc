@@ -853,6 +853,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary lexgotokv " << _f.lexgotokv
 		    << " lexval " << _f.lexvalv
 		    << " position:" << position_str() << " curcptr " << Rps_QuotedC_String(curcptr()));
+#warning Rps_TokenSource::parse_primary  buggy near here for REPL command show 1 * 2 + 3 * 4
       if (_f.lexgotokv) ///@@@ very suspicious, probably wrong...
         token_deq.push_back(_f.lexgotokv);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary int " << _f.lexvalv
