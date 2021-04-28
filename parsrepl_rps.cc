@@ -763,9 +763,11 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
 		  *pokparse = false;
 		return nullptr;
 	      }
-	      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term operandvect:" << operandvect << " leftv=" << _f.leftv
-			    << " curoperob=" << _f.curoperob << " right=" << _f.rightv);
 	      operandvect.push_back(_f.rightv);
+	      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term operandvect:" << operandvect << " leftv=" << _f.leftv
+			    << " rightv=" << _f.rightv << " loopcnt#" << loopcnt
+			    << " curoperob=" << _f.curoperob << " position_str:" << position_str()
+			    << " '" << Rps_Cjson_String(curcptr()) << "'");
 	      again = true;
 	      continue;
             }
@@ -777,7 +779,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
 			   << " operandvect:" << operandvect
 			   << " rightv:" << _f.rightv
 			   << " binoperob:" << _f.binoperob
-			   << " curoperob:" << _f.curoperob);
+			   << " curoperob:" << _f.curoperob << _f.curoperob << " position_str:" << position_str()
+			    << " '" << Rps_Cjson_String(curcptr()) << "'");
             }
         }
       else
