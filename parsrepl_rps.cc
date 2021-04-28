@@ -692,7 +692,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
   while (again)
     {
       loopcnt++;
-      RPS_DEBUGNL_LOG(REPL, "Rps_TokenSource::parse_term **startloop @ " << position_str() << " loopcnt#" << loopcnt << "curcptr " << Rps_QuotedC_String(curcptr()));
+      RPS_DEBUGNL_LOG(REPL, "Rps_TokenSource::parse_term **startloop @ " << position_str()
+		      << " loopcnt#" << loopcnt << " curcptr " << Rps_QuotedC_String(curcptr()));
       again = false;
       _f.lextokv = lookahead_token(&_, token_deq, 0);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term after leftv=" << _f.leftv << " lextokv=" << _f.lextokv
@@ -843,12 +844,16 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
   _f.lexkindob = ltokz->lxkind();
   _f.lexvalv = ltokz->lxval();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary lexkindob="
-                << _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str());
+                << _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str()
+		<< " curcptr " << Rps_QuotedC_String(curcptr()));
   if (_f.lexkindob == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b) // int
       && _f.lexvalv.is_int())
     {
       _f.lexgotokv = get_token(&_);
-      if (_f.lexgotokv)
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary lexgotokv " << _f.lexgotokv
+		    << " lexval " << _f.lexvalv
+		    << " position:" << position_str() << " curcptr " << Rps_QuotedC_String(curcptr()));
+      if (_f.lexgotokv) ///@@@ very suspicious, probably wrong...
         token_deq.push_back(_f.lexgotokv);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary int " << _f.lexvalv
                     << " lextokv:" << _f.lextokv
