@@ -2158,6 +2158,7 @@ class Rps_TokenSource		// this is *not* a value .....
   friend class Rps_LexTokenZone;
   std::string toksrc_name;
   int toksrc_line, toksrc_col;
+  int toksrc_counter;
 protected:
   /// could be called by subclasses
   void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth);
