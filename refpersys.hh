@@ -2281,10 +2281,13 @@ class Rps_LexTokenZone  : public Rps_LazyHashedZoneValue
   const Rps_TokenSource* lex_src;
   int lex_lineno;
   int lex_colno;
+  unsigned lex_serial;
 public:
   inline void* operator new (std::size_t siz, std::nullptr_t) {
     return Rps_QuasiZone::operator new(siz,nullptr);
   }
+  void set_serial (unsigned serial);
+  unsigned serial(void) const  {return lex_serial; };
 protected:
   Rps_LexTokenZone(Rps_TokenSource*psrc, Rps_ObjectRef kind, Rps_Value val, const Rps_String*string, int line, int col);
 protected:
