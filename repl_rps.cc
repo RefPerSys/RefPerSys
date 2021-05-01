@@ -1196,11 +1196,20 @@ Rps_LexTokenZone::Rps_LexTokenZone(Rps_TokenSource* tsrc, Rps_ObjectRef kindob, 
     lex_file(filestringp),
     lex_src(tsrc),
     lex_lineno(line),
-    lex_colno(col)
+    lex_colno(col),
+    lex_serial(0)
 {
   RPS_ASSERT (!kindob || kindob->stored_type() == Rps_Type::Object);
   RPS_ASSERT (!filestringp || filestringp->stored_type() == Rps_Type::String);
 } // end Rps_LexTokenZone::Rps_LexTokenZone
+
+void
+Rps_LexTokenZone::set_serial(unsigned serial)
+{
+  if (serial==0) return;
+  RPS_ASSERT (lex_serial==0);
+  lex_serial = serial;
+} // end Rps_LexTokenZone::set_serial
 
 Rps_LexTokenZone::~Rps_LexTokenZone()
 {
@@ -1272,7 +1281,10 @@ void
 Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
 {
   bool showchunk = false;
-  out << "LexToken{";
+  if (lex_serial>0)
+    out << "LexToken#" << lex_serial << "{";
+  else
+    out << "LexToken{";
   if (lex_kind == RPS_ROOT_OB(_36I1BY2NetN03WjrOv)) // symbol∈class
     out<<"°symbol";
   else if (lex_kind == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b)) // int∈class
