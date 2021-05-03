@@ -646,7 +646,6 @@ Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   std::string rstr;
   const char* curp = curcptr();
-  ucs4_t curuc=0;
   size_t linelen = toksrc_linebuf.size();
   const char*eol = curp + (linelen-toksrc_col);
   rstr.reserve(4+2*(eol-curp)/3);
@@ -1077,7 +1076,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
   else
     {
       RPS_ASSERT(eol != nullptr && eol >= pc);
-      size_t restsiz = eol - pc;
+      //size_t restsiz = eol - pc;
       const char *startpc = pc;
       const uint8_t* curu8p = (const uint8_t*)pc;
       const uint8_t* eolu8p = (const uint8_t*)eol;
