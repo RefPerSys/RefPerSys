@@ -1793,6 +1793,14 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
     pthread_mutex_lock(&rps_debug_mutex);
     long ndbg = debug_count++;
     //
+    char debugcntstr[16];
+    memset (debugcntstr, 0, sizeof(debugcntstr));
+    if (ndbg<1000)
+      snprintf(debugcntstr, sizeof(debugcntstr), "%03ld", ndbg);
+    else if (ndbg<100000)
+      snprintf(debugcntstr, sizeof(debugcntstr), "%05ld", ndbg);
+    else
+      snprintf(debugcntstr, sizeof(debugcntstr), "%ld", ndbg);
     char datebfr[48];
     memset(datebfr, 0, sizeof (datebfr));
     char debugcstr[16];
@@ -1808,22 +1816,24 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
     //
     if (rps_syslog_enabled)
       {
-        syslog(RPS_DEBUG_LOG_LEVEL, "RPS-DEBUG %7s %s @%s:%d %s %s",
+        syslog(RPS_DEBUG_LOG_LEVEL, "RPS-DEBUG#%s %7s %s @%s:%d %s %s",
+	       debugcntstr,
                debugcstr, threadbfr, fname, fline, tmbfr, msg);
       }
     else if (rps_debug_file)
       {
-        fprintf(rps_debug_file, "RPS DEBUG %7s %s",
+        fprintf(rps_debug_file, "RPS DEBUG#%s %7s %s",
+		debugcntstr,
                 debugcstr, threadbfr);
         fprintf(rps_debug_file, " %s:%d %s %s\n",
                 fname, (fline>0)?fline:(-fline),
                 tmbfr, msg);
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
           {
-            fprintf(stderr, "RPS DEBUG %04ld ~  *^*^* %s\n",
-                    ndbg, datebfr);
-            fprintf(rps_debug_file, "RPS DEBUG %04ld ~  *^*^* %s\n",
-                    ndbg, datebfr);
+            fprintf(stderr, "\nRPS-DEBUG#%s *^*^* %s\n",
+                    debugcntstr, datebfr);
+            fprintf(rps_debug_file, "RPS DEBUG#%s ~  *^*^* %s\n",
+                    debugcntstr, datebfr);
           }
         fflush(rps_debug_file);
       }
@@ -1832,8 +1842,9 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
         bool ontty = isatty(STDERR_FILENO);
         if (fline<0 || strchr(msg, '\n'))
           fputc('\n', stderr);
-        fprintf(stderr, "%sRPS DEBUG %7s%s %s",
+        fprintf(stderr, "%sRPS DEBUG#%s %7s%s %s",
                 ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
+		debugcntstr,
                 debugcstr,
                 ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
                 threadbfr);
@@ -1846,7 +1857,7 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
         //
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
           {
-            fprintf(stderr, "%sRPS DEBUG %04ld ~ %s *^*^*%s\n",
+            fprintf(stderr, "%sRPS DEBUG %04ld ~ %s *^*^*%s\n\n",
                     ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
                     ndbg, datebfr,
                     ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
