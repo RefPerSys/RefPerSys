@@ -246,20 +246,28 @@ extern "C" void rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string p
 //////////////// fatal error - aborting
 extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
-#define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {			\
-    fprintf(stderr, "\n\n"		       			\
-	    "*** RefPerSys FATAL:%s:%d: {%s}\n " Fmt "\n\n",	\
-            Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);     	\
+#define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {				\
+    bool ontty = rps_stderr_istty;					\
+    fprintf(stderr, "\n\n"						\
+	    "%s*** RefPerSys FATAL:%s%s:%d: {%s}\n " Fmt "\n\n",	\
+		  ontty?RPS_TERMINAL_BOLD_ESCAPE:"",			\
+            Fil, Lin, __PRETTY_FUNCTION__,				\
+		  ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",			\
+		  ##__VA_ARGS__);					\
     rps_fatal_stop_at (Fil,Lin); } while(0)
 
 #define RPS_FATAL_AT(Fil,Lin,Fmt,...) RPS_FATAL_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
 
 #define RPS_FATAL(Fmt,...) RPS_FATAL_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
-#define RPS_FATALOUT_AT_BIS(Fil,Lin,...) do {	\
-    std::cerr << "** RefPerSys FATAL! "		\
-	      << (Fil) << ":" << Lin << ":: "	\
-	      << __VA_ARGS__ << std::endl;	\
+#define RPS_FATALOUT_AT_BIS(Fil,Lin,...) do {		\
+    bool ontty = rps_stderr_istty;			\
+    std::cerr << std::endl << std::endl			\
+	      << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")	\
+	      << "** RefPerSys FATAL!"			\
+	      << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")	\
+	      << " " << (Fil) << ":" << Lin << ":: "	\
+	      << __VA_ARGS__ << std::endl;		\
     rps_fatal_stop_at (Fil,Lin); } while(0)
 
 #define RPS_FATALOUT_AT(Fil,Lin,...) RPS_FATALOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
