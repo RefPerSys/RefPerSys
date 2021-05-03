@@ -603,7 +603,7 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
             (this,_f.lexkindob, _f.lextokv,
              strv,
              toksrc_line, startcol);
-	  lextok->set_serial(++toksrc_counter);
+          lextok->set_serial(++toksrc_counter);
           _f.res = Rps_LexTokenValue(lextok);
           RPS_DEBUG_LOG(REPL, "get_delimiter delimiter :-◑> " << _f.res << " at " << position_str()
                         << " at " << startpos << std::endl
