@@ -470,7 +470,8 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>&
   _f.leftv = parse_term(&_, token_deq, &okleft);
   if (okleft)
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand leftv=" << _f.leftv << " startpos:" << startpos);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand leftv=" << _f.leftv << " startpos:" << startpos
+		    << " currentpos:" << position_str());
     }
   else
     {
@@ -483,13 +484,18 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>&
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   _f.lexopertokv =  lookahead_token(&_, token_deq, 1);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand  leftv=" << _f.leftv
-                << " lextokv:" << _f.lextokv << " lexopertokv:" << _f.lexopertokv);
+                << " lextokv:" << _f.lextokv << " lexopertokv:" << _f.lexopertokv
+		<< " startpos:" << startpos
+		<< " currentpos:" << position_str()
+                << " curcptr " << Rps_QuotedC_String(curcptr()));
 #warning unimplemented Rps_TokenSource::parse_comparand
   /***
    * we probably should loop and collect all terms if they are separated by the same additive operator
    ***/
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand from " << Rps_ShowCallFrame(callframe)
-               << " with token_deq=" << token_deq << " at " << startpos);
+               << " with token_deq=" << token_deq << " at startpos: " << startpos
+		<< " currentpos:" << position_str()
+                << " curcptr " << Rps_QuotedC_String(curcptr()));
 } // end Rps_TokenSource::parse_comparand
 
 
