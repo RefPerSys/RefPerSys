@@ -284,7 +284,7 @@ bool rps_stderr_istty = false;
 
 unsigned rps_debug_flags;
 
-static FILE* rps_debug_file;
+FILE* rps_debug_file;
 static char rps_debug_path[128];
 
 thread_local Rps_Random Rps_Random::_rand_thr_;
@@ -1487,7 +1487,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
   snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
   bool ontty = isatty(STDERR_FILENO);
   if (rps_debug_file)
-    fprintf(rps_debug_file, "\n*** RPS FATAL %s:%d ***\n", filnam, lin);
+    fprintf(rps_debug_file, "\n*§*§* RPS FATAL %s:%d *§*§*\n", filnam, lin);
   fprintf(stderr, "\n%s%sRPS FATAL:%s\n"
           " RefPerSys gitid %s,\n"
           "\t built timestamp %s,\n"

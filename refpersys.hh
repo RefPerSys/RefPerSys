@@ -243,6 +243,8 @@ extern "C" const std::string& rps_get_loaddir(void);
 
 extern "C" void rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string linprefix, std::string linsuffix);
 
+extern "C" FILE*rps_debug_file;
+
 //////////////// fatal error - aborting
 extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
@@ -254,6 +256,11 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 	    (ontty?RPS_TERMINAL_NORMAL_ESCAPE:""),			\
             Fil, Lin, __PRETTY_FUNCTION__,				\
 	    ##__VA_ARGS__);						\
+    if (rps_debug_file && rps_debug_file != stderr)			\
+      fprintf(rps_debug_file,						\
+	      "\n\n*°* RefPerSys °FATAL° %s:%d:%s " Fmt "*°*\n",	\
+	      Fil, Lin, __PRETTY_FUNCTION__,				\
+	      ##__VA_ARGS__);						\
     rps_fatal_stop_at (Fil,Lin); } while(0)
 
 #define RPS_FATAL_AT(Fil,Lin,Fmt,...) RPS_FATAL_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
@@ -268,6 +275,12 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 	      << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")	\
 	      << " " << (Fil) << ":" << Lin << ":: "	\
 	      << __VA_ARGS__ << std::endl;		\
+    if (rps_debug_file && rps_debug_file != stderr) {	\
+      std::ostringstream out##Lin;			\
+      out##Lin <<   __VA_ARGS__ << std::endl;		\
+      fprintf(rps_debug_file,				\
+	      "°* RefPerSys °FATAL° %s:%d: %s *°\n",	\
+	      out##Lin.str());	}			\
     rps_fatal_stop_at (Fil,Lin); } while(0)
 
 #define RPS_FATALOUT_AT(Fil,Lin,...) RPS_FATALOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
