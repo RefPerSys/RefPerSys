@@ -285,6 +285,7 @@ bool rps_stderr_istty = false;
 unsigned rps_debug_flags;
 
 static FILE* rps_debug_file;
+static char rps_debug_path[128];
 
 thread_local Rps_Random Rps_Random::_rand_thr_;
 
@@ -1497,7 +1498,11 @@ rps_fatal_stop_at (const char *filnam, int lin)
           ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
           rps_gitid, rps_timestamp, rps_hostname(), rps_md5sum,
           rps_elapsed_real_time(), rps_process_cpu_time());
-  fflush(stderr);
+  if (rps_debug_file && rps_debug_file != stderr && rps_debug_path[0]) {
+    fprintf(stderr, "*°* see debug output in %s\n", rps_debug_path);
+  }
+  fflush (stderr);
+  fflush (rps_debug_file);
   {
     auto backt= Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},
                                filnam, lin,
@@ -1702,7 +1707,13 @@ static void rps_close_debug_file(void)
 {
   if (rps_debug_file)
     {
-      fprintf(rps_debug_file, "*** end of RefPerSys debug file ****\n");
+      if (rps_debug_path)
+	fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug file %s ****\n", rps_debug_path);
+      else	
+	fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug ***\n");
+      fprintf(rps_debug_file, "gitid %s, built %s, on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
+	      rps_gitid, rps_timestamp, rps_hostname(),  rps_md5sum,
+	      rps_elapsed_real_time(), rps_process_cpu_time());
       fflush(rps_debug_file);
       fclose(rps_debug_file);
       rps_debug_file=nullptr;
@@ -1724,14 +1735,16 @@ rps_set_debug_output_path(const char*filepath)
   FILE* fdbg=fopen(filepath, "w");
   if (!fdbg)
     RPS_FATAL("cannot open debug file %s - %m", filepath);
-  fprintf(fdbg, "**** RefPerSys debug file ****\n"
+  fprintf(fdbg, "*@#*@#*@#* RefPerSys debug file %s *@#*@#*@#*\n"
           "See refpersys.org - built %s\n"
           "On host %s pid %d gitid %s topdir %s\n"
-          "####################################\n",
+          "####################################\n\n",
+	  filepath,
           rps_timestamp,
           rps_hostname(), (int)getpid(), rps_gitid, rps_topdirectory);
   fflush(fdbg);
   rps_debug_file = fdbg;
+  strncpy(rps_debug_path, filepath, sizeof(rps_debug_path)-1);
   atexit(rps_close_debug_file);
 } // end rps_set_debug_output_path
 
