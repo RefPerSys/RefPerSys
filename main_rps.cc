@@ -1817,23 +1817,25 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
     if (rps_syslog_enabled)
       {
         syslog(RPS_DEBUG_LOG_LEVEL, "RPS-DEBUG#%s %7s %s @%s:%d %s %s",
-	       debugcntstr,
+               debugcntstr,
                debugcstr, threadbfr, fname, fline, tmbfr, msg);
       }
     else if (rps_debug_file)
       {
         fprintf(rps_debug_file, "RPS DEBUG#%s %7s %s",
-		debugcntstr,
+                debugcntstr,
                 debugcstr, threadbfr);
         fprintf(rps_debug_file, " %s:%d %s %s\n",
                 fname, (fline>0)?fline:(-fline),
                 tmbfr, msg);
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
           {
-            fprintf(stderr, "\nRPS-DEBUG#%s *^*^* %s\n",
-                    debugcntstr, datebfr);
-            fprintf(rps_debug_file, "RPS DEBUG#%s ~  *^*^* %s\n",
-                    debugcntstr, datebfr);
+            if (!rps_debug_file && rps_debug_file != stdout && rps_debug_file != stderr)
+              fprintf(stderr, "\n¤RPS-DEBUG#%s *^*^* %s\n",
+                      debugcntstr, datebfr);
+            else
+              fprintf(rps_debug_file, "\n*RPS DEBUG#%s ~  *^*^* %s\n",
+                      debugcntstr, datebfr);
           }
         fflush(rps_debug_file);
       }
@@ -1844,7 +1846,7 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
           fputc('\n', stderr);
         fprintf(stderr, "%sRPS DEBUG#%s %7s%s %s",
                 ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
-		debugcntstr,
+                debugcntstr,
                 debugcstr,
                 ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
                 threadbfr);
