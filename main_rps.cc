@@ -1793,7 +1793,7 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
     pthread_mutex_lock(&rps_debug_mutex);
     long ndbg = debug_count++;
     //
-    char debugcntstr[16];
+    char debugcntstr[32];
     memset (debugcntstr, 0, sizeof(debugcntstr));
     if (ndbg<1000)
       snprintf(debugcntstr, sizeof(debugcntstr), "%03ld", ndbg);
