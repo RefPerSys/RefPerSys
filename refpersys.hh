@@ -250,10 +250,10 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
     bool ontty = rps_stderr_istty;					\
     fprintf(stderr, "\n\n"						\
 	    "%s*** RefPerSys FATAL:%s%s:%d: {%s}\n " Fmt "\n\n",	\
-		  ontty?RPS_TERMINAL_BOLD_ESCAPE:"",			\
+	    (ontty?RPS_TERMINAL_BOLD_ESCAPE:""),			\
+	    (ontty?RPS_TERMINAL_NORMAL_ESCAPE:""),			\
             Fil, Lin, __PRETTY_FUNCTION__,				\
-		  ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",			\
-		  ##__VA_ARGS__);					\
+	    ##__VA_ARGS__);						\
     rps_fatal_stop_at (Fil,Lin); } while(0)
 
 #define RPS_FATAL_AT(Fil,Lin,Fmt,...) RPS_FATAL_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
