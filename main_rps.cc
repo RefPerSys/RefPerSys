@@ -571,6 +571,7 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
       assert(fraction >= 0.0 && fraction < 1.0);
 
       snprintf(minibfr, sizeof (minibfr), "%.02f", fraction);
+      minibfr[4] = (char)0;
       const char* dotminib = strchr(minibfr, '.');
       if (dotminib && dotminib<minibfr+sizeof(minibfr)-4)
         {
