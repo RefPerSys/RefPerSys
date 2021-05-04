@@ -60,7 +60,7 @@ extern "C" std::string rps_dumpdir_str;
 std::string rps_dumpdir_str;
 
 #define RPS_DEFAULT_WEB_SERVICE "localhost:9090"
-static const char*rps_web_service;
+const char*rps_web_service;
 
 error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 struct argp_option rps_progoptions[] =
@@ -904,12 +904,13 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     return 0;
     case RPSPROGOPT_WEB:
     {
-      if (side_effect && arg) {
-	if (!strcmp(arg, "."))
-	 rps_web_service = RPS_DEFAULT_WEB_SERVICE;
-	else
-	  rps_web_service = arg;
-      }
+      if (side_effect && arg)
+        {
+          if (!strcmp(arg, "."))
+            rps_web_service = RPS_DEFAULT_WEB_SERVICE;
+          else
+            rps_web_service = arg;
+        }
     }
     return 0;
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:
@@ -1154,10 +1155,11 @@ rps_run_application(int &argc, char **argv)
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after repl")
                     << std::endl);
     }
-  else if (rps_web_service) {
+  else if (rps_web_service)
+    {
 #warning rps_run_web_service from rps_run_web_service might not work
       rps_run_web_service();
-  }
+    }
   else
     {
       RPS_WARNOUT("rps_run_application incomplete"
@@ -1504,9 +1506,10 @@ rps_fatal_stop_at (const char *filnam, int lin)
           ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
           rps_gitid, rps_timestamp, rps_hostname(), rps_md5sum,
           rps_elapsed_real_time(), rps_process_cpu_time());
-  if (rps_debug_file && rps_debug_file != stderr && rps_debug_path[0]) {
-    fprintf(stderr, "*°* see debug output in %s\n", rps_debug_path);
-  }
+  if (rps_debug_file && rps_debug_file != stderr && rps_debug_path[0])
+    {
+      fprintf(stderr, "*°* see debug output in %s\n", rps_debug_path);
+    }
   fflush (stderr);
   fflush (rps_debug_file);
   {
@@ -1714,12 +1717,12 @@ static void rps_close_debug_file(void)
   if (rps_debug_file)
     {
       if (rps_debug_path)
-	fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug file %s ****\n", rps_debug_path);
-      else	
-	fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug ***\n");
+        fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug file %s ****\n", rps_debug_path);
+      else
+        fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug ***\n");
       fprintf(rps_debug_file, "gitid %s, built %s, on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
-	      rps_gitid, rps_timestamp, rps_hostname(),  rps_md5sum,
-	      rps_elapsed_real_time(), rps_process_cpu_time());
+              rps_gitid, rps_timestamp, rps_hostname(),  rps_md5sum,
+              rps_elapsed_real_time(), rps_process_cpu_time());
       fflush(rps_debug_file);
       fclose(rps_debug_file);
       rps_debug_file=nullptr;
@@ -1745,7 +1748,7 @@ rps_set_debug_output_path(const char*filepath)
           "See refpersys.org - built %s\n"
           "On host %s pid %d gitid %s topdir %s\n"
           "####################################\n\n",
-	  filepath,
+          filepath,
           rps_timestamp,
           rps_hostname(), (int)getpid(), rps_gitid, rps_topdirectory);
   fflush(fdbg);

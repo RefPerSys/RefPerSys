@@ -189,6 +189,11 @@ rps_run_web_service()
     return onstat;
   });
   RPS_DEBUG_LOG(WEB, "rps_run_web_service added 𝜦, listening to onion server @" << &rps_onion_server);
+  RPS_INFORMOUT("rps_run_web_service on " << rps_web_service << " from "
+                << rps_current_pthread_name()
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service")
+                << std::endl);
   rps_onion_server.listen();
   ///
   /// TODO: Conventionally, URLs containing either .. or README.md
