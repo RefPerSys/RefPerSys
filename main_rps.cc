@@ -60,7 +60,7 @@ extern "C" std::string rps_dumpdir_str;
 std::string rps_dumpdir_str;
 
 #define RPS_DEFAULT_WEB_SERVICE "localhost:9090"
-[[maybe_unused]] static const char*rps_web_service = RPS_DEFAULT_WEB_SERVICE;
+static const char*rps_web_service;
 
 error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 struct argp_option rps_progoptions[] =
@@ -904,8 +904,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     return 0;
     case RPSPROGOPT_WEB:
     {
-      if (side_effect)
-        RPS_FATALOUT("NOT DOING rps_web_initialize_service " << arg);
+      if (side_effect && arg) {
+	if (!strcmp(arg, "."))
+	 rps_web_service = RPS_DEFAULT_WEB_SERVICE;
+	else
+	  rps_web_service = arg;
+      }
     }
     return 0;
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:
@@ -1150,13 +1154,15 @@ rps_run_application(int &argc, char **argv)
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after repl")
                     << std::endl);
     }
-  else
-    {
-      RPS_WARNOUT("rps_run_application incomplete, trying to rps_run_web_service"
-                  << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application/web"));
+  else if (rps_web_service) {
 #warning rps_run_web_service from rps_run_web_service might not work
       rps_run_web_service();
+  }
+  else
+    {
+      RPS_WARNOUT("rps_run_application incomplete"
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application incomplete"));
     }
 #warning incomplete rps_run_application
   RPS_WARNOUT("incomplete rps_run_application " << std::endl
