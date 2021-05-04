@@ -495,7 +495,9 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>&
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at startpos: " << startpos
                << " currentpos:" << position_str()
-               << " curcptr " << Rps_QuotedC_String(curcptr()));
+               << " curcptr " << Rps_QuotedC_String(curcptr())
+	       << std::endl
+	       << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparand incomplete"));
 } // end Rps_TokenSource::parse_comparand
 
 
