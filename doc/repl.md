@@ -130,40 +130,50 @@ Scalars like strings `"abc"` or `"twø\nlines"` are strings.
 * Tuples: [o1, o2, o3 ...} where o1, o2 and o3 may or may not be discrete
   objects
 
+## Syntactic conventions for EBNF
+
+In the syntax below, braces are for repetition, and quotes are for
+literals (or keywords, lexed as objects). Brackets denote optional
+syntax. The vertical bar means "or" metasyntax. and ∅ denotes the
+empty sequence.  See also
+[EBNF](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form)
+wikipedia page.
+
 ## EBNF
 
-expression = disjunction { or disjunction }
 
-disjunction = conjunction { and conjunction }
+expression = disjunction { `or` disjunction }
+
+disjunction = conjunction { `and` conjunction }
 
 conjunction = comparand [ compare-operator comparand ]
 
-compare-operator = < | > | <= | >= | = | == | < | >
+compare-operator = `<` | `>` | `<=` | `>=` | `=` | `==` | `<` | `>`
 
-comparand = factor [ multiplicative-operator factor ]
+comparand = factor { multiplicative-operator factor }
 
-multiplicative-operator = * | / | %
+multiplicative-operator = `*` | `/` | `%`
 
-additive-operator = + | -
+additive-operator = `+` | `-`
 
 factor = primary { primary-complement }
-term = factor [additive-operator term]
+term = factor [ additive-operator term ]
 
-primary = object-ref | string-literal | float-literal | ( expression ) | set-expr | tuple-expr
+primary = object-ref | string-literal | float-literal | `(` expression `)` | set-expr | tuple-expr
 
 object-ref = oid | named-object
 
 primary-complement = field-selection | message-send
 
-field-selection = . object-ref | . ( expression )
+field-selection = . object-ref | `.` `(` expression `)`
 
-message-send = => object-ref ( arglist )
+message-send = `=>` object-ref `(` arglist `)`
 
-arglist = ∅ | expression { , expression }
+arglist = ∅ | expression { `,` expression }
 
-set-expr = { arglist }
+set-expr = `{` arglist `}`
 
-tuple-expr = [ arglist ]
+tuple-expr = `[` arglist `]`
 
 ## Concrete examples of commands
 
