@@ -1568,7 +1568,7 @@ rps_set_debug(const std::string &deblev)
       didhelp = true;
       fprintf(stderr, "%s debugging options for git %s built at %s ...\n",
               rps_progname, rps_shortgitid, rps_timestamp);
-      fprintf(stderr, "Comma separated debugging levels with -d<debug-level> or --debug=<debug-level>:\n");
+      fprintf(stderr, "Comma separated debugging levels with -D<debug-level> or --debug=<debug-level> or --debug-after-load=<debug-level>:\n");
 
 #define Rps_SHOW_DEBUG(Opt) fprintf(stderr, "\t%s\n", #Opt);
       RPS_DEBUG_OPTIONS(Rps_SHOW_DEBUG);
