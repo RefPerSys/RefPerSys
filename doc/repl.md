@@ -144,11 +144,10 @@ comparand = factor [ multiplicative-operator factor ]
 
 multiplicative-operator = * | / | %
 
-factor = term [ additive-operator term ]
-
 additive-operator = + | -
 
-term = primary { primary-complement }
+factor = primary { primary-complement }
+term = factor [additive-operator term]
 
 primary = object-ref | string-literal | float-literal | ( expression ) | set-expr | tuple-expr
 
