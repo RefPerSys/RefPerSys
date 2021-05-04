@@ -277,11 +277,13 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 	      << __VA_ARGS__ << std::endl;		\
     if (rps_debug_file && rps_debug_file != stderr) {	\
       std::ostringstream out##Lin;			\
-      out##Lin <<   __VA_ARGS__ << std::endl;		\
+      out##Lin <<   __VA_ARGS__ << std::flush;		\
+      out##Lin.flush();                                 \
       fprintf(rps_debug_file,				\
 	      "°* RefPerSys °FATAL° %s:%d:: %s *°\n",	\
 	      (Fil), (Lin),                             \
-	      out##Lin.str().c_str());	}		\
+	      out##Lin.str().c_str());			\
+      fflush(rps_debug_file);	}			\
     rps_fatal_stop_at (Fil,Lin); } while(0)
 
 #define RPS_FATALOUT_AT(Fil,Lin,...) RPS_FATALOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
