@@ -41,7 +41,7 @@ static std::atomic<uint64_t> rps_onion_reqcount;
 static const char* rps_onion_serverarg;
 
 
-#if 0 && ONION_HEADER_WATCHER
+
 static void rps_onion_header_watcher(onion*onion, const void*clientdata,
                                      onion_response* resp,
                                      const char*key, const char*val);
@@ -60,7 +60,6 @@ rps_onion_header_watcher(onion*onion, void*clientdata,
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_onion_header_watcher"));
 } // end rps_onion_header_watcher
 
-#endif /* no ONION_HEADER_WATCHER */
 
 
 
@@ -93,15 +92,6 @@ rps_web_initialize_service(const char*servarg)
   else
     RPS_FATALOUT("rps_web_initialize_service: bad server " << servarg);
 
-#if 0 && ONION_HEADER_WATCHER
-  //// see https://framalistes.org/sympa/arc/refpersys-forum/2020-10/msg00034.html
-  if (RPS_DEBUG_ENABLED(WEB))
-    {
-      onion_set_header_watcher(rps_onion_server.c_handler(),
-                               rps_onion_header_watcher,
-                               &rps_onion_server);
-    }
-#endif /* no ONION_HEADER_WATCHER */
 
   rps_onion_serverarg = servarg;
 } // end rps_web_initialize_service
@@ -204,14 +194,20 @@ rps_run_web_service()
     RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service onstat#" << (int) onstat);
     return onstat;
   });
-  RPS_DEBUG_LOG(WEB, "rps_run_web_service added 𝜦, listening to onion server @"
-                << &rps_onion_server << " on " << rps_web_service);
+  RPS_DEBUG_LOG(WEB, "rps_run_web_service added 𝜦, listening to onion server on "
+                << rps_web_service);
+  RPS_INFORMOUT("rps_run_web_service before listen on " << rps_web_service << " from "
+                << rps_current_pthread_name()
+		<< " pid#" << getpid()
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service/before-listen")
+                << std::endl);
+  rps_onion_server.listen();
   RPS_INFORMOUT("rps_run_web_service on " << rps_web_service << " from "
                 << rps_current_pthread_name()
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service")
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service/after.listen")
                 << std::endl);
-  rps_onion_server.listen();
   ///
   /// TODO: Conventionally, URLs containing either .. or README.md
   /// should not be served.
