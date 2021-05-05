@@ -181,9 +181,21 @@ rps_run_web_service()
               [&](Onion::Request &req, Onion::Response &res)
   {
     RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service req@" << (void*)&req
-                  << " res@" << (void*)&res
+                  << " res@" << (void*)&res << " reqpath:" << req.path()
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "𝜦-rps_run_web_service"));
+    auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res);
+    RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service onstat#" << (int) onstat);
+    return onstat;
+  });
+  ///
+  rooturl.add("",
+              [&](Onion::Request &req, Onion::Response &res)
+  {
+    RPS_DEBUG_LOG(WEB, "∅-rps_run_web_service req@" << (void*)&req
+                  << " res@" << (void*)&res << " reqpath:" << req.path()
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "∅-rps_run_web_service"));
     auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res);
     RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service onstat#" << (int) onstat);
     return onstat;
