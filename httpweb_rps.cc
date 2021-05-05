@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2020 The Reflective Persistent System Team
+ *      © Copyright 2020 - 2021 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -188,7 +188,8 @@ rps_run_web_service()
     RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service onstat#" << (int) onstat);
     return onstat;
   });
-  RPS_DEBUG_LOG(WEB, "rps_run_web_service added 𝜦, listening to onion server @" << &rps_onion_server);
+  RPS_DEBUG_LOG(WEB, "rps_run_web_service added 𝜦, listening to onion server @"
+		<< &rps_onion_server << " on " << rps_web_service);
   RPS_INFORMOUT("rps_run_web_service on " << rps_web_service << " from "
                 << rps_current_pthread_name()
                 << std::endl
