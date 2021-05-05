@@ -36,6 +36,8 @@
 /// our onion web server
 Onion::Onion rps_onion_server;
 
+static std::atomic<uint64_t> rps_onion_reqcount;
+
 static const char* rps_onion_serverarg;
 
 
@@ -180,11 +182,12 @@ rps_run_web_service()
   rooturl.add("^",
               [&](Onion::Request &req, Onion::Response &res)
   {
+    uint64_t reqnum = 1+rps_onion_reqcount.fetch_add(1);
     RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service req@" << (void*)&req
-                  << " res@" << (void*)&res << " reqpath:" << req.path()
+                  << " res@" << (void*)&res << " reqpath:" << req.path() << " reqnum#" << reqnum
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "𝜦-rps_run_web_service"));
-    auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res);
+    auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res, reqnum);
     RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service onstat#" << (int) onstat);
     return onstat;
   });
@@ -192,16 +195,17 @@ rps_run_web_service()
   rooturl.add("",
               [&](Onion::Request &req, Onion::Response &res)
   {
+    uint64_t reqnum = 1+rps_onion_reqcount.fetch_add(1);
     RPS_DEBUG_LOG(WEB, "∅-rps_run_web_service req@" << (void*)&req
-                  << " res@" << (void*)&res << " reqpath:" << req.path()
+                  << " res@" << (void*)&res << " reqpath:" << req.path() << " reqnum#" << reqnum
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "∅-rps_run_web_service"));
-    auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res);
+    auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res, reqnum);
     RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service onstat#" << (int) onstat);
     return onstat;
   });
   RPS_DEBUG_LOG(WEB, "rps_run_web_service added 𝜦, listening to onion server @"
-		<< &rps_onion_server << " on " << rps_web_service);
+                << &rps_onion_server << " on " << rps_web_service);
   RPS_INFORMOUT("rps_run_web_service on " << rps_web_service << " from "
                 << rps_current_pthread_name()
                 << std::endl
@@ -633,7 +637,7 @@ Rps_PayloadWebHandler::add_dict_handler(const std::string& path, Rps_Value val)
 
 
 onion_connection_status
-rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion::Response*presp)
+rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion::Response*presp, uint64_t reqnum)
 {
   RPS_ASSERT(purl != nullptr);
   RPS_ASSERT(prequ != nullptr);
@@ -644,8 +648,6 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
     thnambuf[0] = '?';
   else
     thnambuf[sizeof(thnambuf)-1] = (char)0;
-  static std::atomic<uint64_t> reqcount;
-  uint64_t reqnum = 1+reqcount.fetch_add(1);
   const std::string reqpath =prequ->path();
   const onion_request_flags reqflags=prequ->flags();
   const unsigned reqmethnum = reqflags&OR_METHODS;
@@ -654,7 +656,8 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
                 << " reqpath='" << Rps_Cjson_String(reqpath)
                 << "' reqmethname=" << reqmethname
                 << " reqnum#" << reqnum
-                << " val=" << val << std::endl);
+                << " val=" << val << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web/start"));
   /**
    * We first need to ensure that the URL does not contain neither
    * ".." nor "README.md" as a substring.  Then (for GET or HEAD) we

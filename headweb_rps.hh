@@ -48,7 +48,7 @@
 extern "C" Onion::Onion rps_onion_server;
 
 extern "C" onion_connection_status
-rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres);
+rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum);
 
 extern "C" onion_connection_status
 rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath);
@@ -71,7 +71,7 @@ class Rps_PayloadWebex : // the payload for a web exchange; see
   friend class Rps_Agenda;
   friend void rps_run_web_service(void);
   friend onion_connection_status
-  rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion::Response*presp);
+  rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion::Response*presp, uint64_t reqcnt);
   friend Rps_PayloadWebex*
   Rps_QuasiZone::rps_allocate3<Rps_PayloadWebex,Rps_ObjectZone*,Onion::Request&,Onion::Response&>(Rps_ObjectZone*,Onion::Request&,Onion::Response&);
 protected:
