@@ -194,16 +194,17 @@ rps_run_web_service()
   });
   RPS_DEBUG_LOG(WEB, "rps_run_web_service added 𝜦, listening to onion server on "
                 << rps_web_service);
-  RPS_INFORMOUT("rps_run_web_service before listen on " << rps_web_service << " from "
+  RPS_INFORMOUT(" web listening on " << rps_web_service << std::endl
+		<< "... from "
                 << rps_current_pthread_name()
-		<< " pid#" << getpid() << " on " << rps_hostname
+		<< " pid#" << getpid() << " on " << rps_hostname()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service/before-listen")
                 << std::endl);
   rps_onion_server.listen();
   RPS_INFORMOUT("rps_run_web_service on " << rps_web_service << " from "
                 << rps_current_pthread_name() << " pid#" << getpid()
-		<< " on " << rps_hostname
+		<< " on " << rps_hostname()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service/after.listen")
                 << std::endl);
