@@ -80,6 +80,7 @@ rps_web_initialize_service(const char*servarg)
   if (sscanf(servarg, "%72[a-zA-Z0-9.-]:%d",
              serverbuf, &portnum)>=2 && portnum>0)
     {
+      RPS_DEBUG_LOG (WEB, "serverbuf:"<< serverbuf << " port#" << portnum);
       if (serverbuf[0])
         rps_onion_server.setHostname(std::string{serverbuf});
       rps_onion_server.setPort(portnum);
