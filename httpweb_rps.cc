@@ -91,8 +91,6 @@ rps_web_initialize_service(const char*servarg)
     }
   else
     RPS_FATALOUT("rps_web_initialize_service: bad server " << servarg);
-
-
   rps_onion_serverarg = servarg;
 } // end rps_web_initialize_service
 
@@ -198,13 +196,14 @@ rps_run_web_service()
                 << rps_web_service);
   RPS_INFORMOUT("rps_run_web_service before listen on " << rps_web_service << " from "
                 << rps_current_pthread_name()
-		<< " pid#" << getpid()
+		<< " pid#" << getpid() << " on " << rps_hostname
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service/before-listen")
                 << std::endl);
   rps_onion_server.listen();
   RPS_INFORMOUT("rps_run_web_service on " << rps_web_service << " from "
-                << rps_current_pthread_name()
+                << rps_current_pthread_name() << " pid#" << getpid()
+		<< " on " << rps_hostname
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service/after.listen")
                 << std::endl);
