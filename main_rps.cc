@@ -1160,6 +1160,8 @@ rps_run_application(int &argc, char **argv)
       usleep(100000);
       RPS_DEBUG_LOG(WEB, "rps_web_service: " << rps_web_service);
 #warning rps_run_web_service from rps_run_web_service might not work
+      rps_web_initialize_service(rps_web_service);
+      usleep(10000);
       rps_run_web_service();
     }
   else
