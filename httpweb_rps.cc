@@ -1098,11 +1098,12 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                       _f.obaction = Rps_ObjectRef::find_object_or_null_by_oid (&_, actid);
                       RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
                                     << " reqnum#" << reqnum
-                                    << " pi=" << pi << " inpjs=" << Rps_Cjson_String(inpjs)
+                                    << " pi=" << pi << " inpjs=" << Rps_QuotedC_String(inpjs)
                                     << " actid=" << actid
                                     << " obaction=" << _f.obaction
                                     << " val=" << _f.valv
-                                    << " fd#" << fileno(fil)
+				    << std::endl
+                                    << "... fd#" << fileno(fil)
                                     << " linecnt=" << linecnt
                                     << " reqnum#" << reqnum
                                     << " js=" << js
@@ -1118,7 +1119,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                       RPS_FATALOUT("partly unimplemented rps_serve_onion_expanded_stream"
                                    << " linecnt=" << linecnt
                                    << " reqnum#" << reqnum
-                                   << " for " << reqmethname << " of " << Rps_Cjson_String(reqpath)
+                                   << " for " << reqmethname << " of " << Rps_QuotedC_String(reqpath)
                                    << " js=" << js);
                     }
 #warning partly unimplemented rps_serve_onion_expanded_stream for processing instruction
