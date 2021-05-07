@@ -197,16 +197,16 @@ rps_run_web_service()
   RPS_DEBUG_LOG(WEB, "rps_run_web_service added 𝜦, listening to onion server on "
                 << rps_web_service);
   RPS_INFORMOUT(" web listening on " << rps_web_service << std::endl
-		<< "... from "
+                << "... from "
                 << rps_current_pthread_name()
-		<< " pid#" << getpid() << " on " << rps_hostname()
+                << " pid#" << getpid() << " on " << rps_hostname()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service/before-listen")
                 << std::endl);
   rps_onion_server.listen();
   RPS_INFORMOUT("rps_run_web_service on " << rps_web_service << " from "
                 << rps_current_pthread_name() << " pid#" << getpid()
-		<< " on " << rps_hostname()
+                << " on " << rps_hostname()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service/after.listen")
                 << std::endl);
@@ -978,13 +978,15 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
   RPS_LOCALFRAME(/*descr:*/ RPS_ROOT_OB(_1rfASGBBbFz02VUsMw), //"rps_serve_onion_expanded_stream"∈rps_routine
-		 /*prev:*/callframe,
-		 /*locals:*/
-		 Rps_Value valv;
-		 Rps_ObjectRef obstrbuf;
-		 Rps_ObjectRef obaction;
-		 Rps_ObjectRef obwebex;
-		 Rps_Value closurev;
+                            /*prev:*/callframe,
+                            /*locals:*/
+                            Rps_Value valv;
+                            Rps_Value mainv;
+                            Rps_Value xtrav;
+                            Rps_ObjectRef obstrbuf;
+                            Rps_ObjectRef obaction;
+                            Rps_ObjectRef obwebex;
+                            Rps_Value closurev;
                 );
   _f.valv = valarg;
   _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
@@ -1094,7 +1096,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                         RPS_FATALOUT("rps_serve_onion_expanded_stream"
                                      << " linecnt=" << linecnt
                                      << " reqnum#" << reqnum
-                                     << " for " << reqmethname << " of " << Rps_Cjson_String(reqpath)
+                                     << " for " << reqmethname << " of " << Rps_QuotedC_String(reqpath)
                                      << " bad rps_action:" << rps_action);
                       _f.obaction = Rps_ObjectRef::find_object_or_null_by_oid (&_, actid);
                       RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  linecnt=" << linecnt
@@ -1103,29 +1105,40 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                                     << " actid=" << actid
                                     << " obaction=" << _f.obaction
                                     << " val=" << _f.valv
-				    << std::endl
+                                    << std::endl
                                     << "... fd#" << fileno(fil)
                                     << " linecnt=" << linecnt
                                     << " reqnum#" << reqnum
                                     << " js=" << js
                                     << std::endl
                                     << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
-#warning rps_serve_onion_expanded_stream should use obaction with js
                       /***
                        * TODO: we probably need to specify how to make
                        * a RefPerSys closure of connective obaction
                        * and closed value js, then apply that closure
                        * to a webexchange object....
                        ***/
-		      _f.closurev = Rps_ClosureValue(_f.obaction, {Rps_JsonValue(js)});
-		      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream closurev=" << _f.closurev
-                                    << " reqnum#" << reqnum);
+                      _f.closurev = Rps_ClosureValue(_f.obaction, {Rps_JsonValue(js)});
+                      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream closurev=" << _f.closurev
+                                    << " reqnum#" << reqnum << " obwebex=" << _f.obwebex);
+                      {
+                        Rps_TwoValues twoval =
+                          Rps_ClosureValue(_f.closurev).apply2(&_, Rps_ObjectValue(_f.obwebex),
+                                                               Rps_Value(reqnum,  Rps_Value::Rps_IntTag{}));
+                        _f.mainv = twoval.main();
+                        _f.xtrav = twoval.xtra();
+                        RPS_DEBUG_LOG(WEB, "after appplication of closurev=" << _f.closurev
+                                      << " reqnum#" << reqnum << " -> mainv=" << _f.mainv
+                                      << " & xtrav=" << _f.xtrav);
+                      }
+#warning rps_serve_onion_expanded_stream should use obaction with js still incomplete
                       RPS_FATALOUT("partly unimplemented rps_serve_onion_expanded_stream"
                                    << " linecnt=" << linecnt
                                    << " reqnum#" << reqnum
                                    << " for " << reqmethname << " of " << Rps_QuotedC_String(reqpath)
                                    << " js=" << js
-				   << std::endl << "closurev=" << _f.closurev);
+                                   << std::endl << "closurev=" << _f.closurev
+                                   << " obwebex=" << _f.obwebex);
                     }
 #warning partly unimplemented rps_serve_onion_expanded_stream for processing instruction
                 }
@@ -1278,7 +1291,7 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
                  Rps_ObjectRef oba;
                 );
   RPS_DEBUG_LOG(WEB, "\"rpshtml webaction\"∈core_function _2sl5Gjb7swO04EcMqf arg0=" << arg0 << " arg1=" << arg1
-		<< RPS_FULL_BACKTRACE_HERE(1, "'rpshtml webaction'∈core_function start"));
+                << RPS_FULL_BACKTRACE_HERE(1, "'rpshtml webaction'∈core_function start"));
   RPS_FATALOUT("unimplemented rpsapply_2sl5Gjb7swO04EcMqf rpshtml webaction∈core_function" << std::endl);
 #warning unimplemented rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction∈core_function"
 } // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
