@@ -971,7 +971,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
 {
   RPS_ASSERT (purl != nullptr);
   RPS_ASSERT (preq != nullptr);
-  RPS_ASSERT (file != nullptr);
+  RPS_ASSERT (fil != nullptr);
 
   const std::string reqpath =preq->path();
   const onion_request_flags reqflags=preq->flags();
