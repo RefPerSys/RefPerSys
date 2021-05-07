@@ -2543,9 +2543,22 @@ interface is worked upon (but buggy). You might run the
 \href{http://localhost:9090}{\texttt{localhost:9090}} URL. The file
 \texttt{webroot/index.html.rps} is then served, and hopefully should be template-expanded. Inspired by PHP, processing instructions like
 \begin{verbatim}
-<?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf' rps_json='{"foo":1}'?>
+<?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf' 
+            rps_json='{"foo":1}'?>
 \end{verbatim}
 should be expanded by closure applications.
+
+The advantage of a Web interface is at first to be able to generate and use HTML5, and hopefully to generate web forms.
+
+In May 2021 the \texttt{refpersys} program should not be used as a web
+server accessible to outside, there are cybersecurity concerns. It
+could in a month be run on some isolated laptop to hopefully make a
+tiny demo. With websockets, some JavaScript code could be generated
+and running in the web browser, in parallel of the agenda mechanism
+running inside \texttt{refpersys} process. This has to be implemented,
+hopefully with generated C++ code which would generate JavaScript code
+and send it to web browser, which would use websockets to communicate
+asynchronously with the \texttt{refpersys} process.
 
 \clearpage
 \printnoidxglossaries
