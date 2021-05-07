@@ -978,12 +978,13 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
   RPS_LOCALFRAME(/*descr:*/ RPS_ROOT_OB(_1rfASGBBbFz02VUsMw), //"rps_serve_onion_expanded_stream"∈rps_routine
-                            /*prev:*/callframe,
-                            /*locals:*/
-                            Rps_Value valv;
-                            Rps_ObjectRef obstrbuf;
-                            Rps_ObjectRef obaction;
-                            Rps_ObjectRef obwebex;
+		 /*prev:*/callframe,
+		 /*locals:*/
+		 Rps_Value valv;
+		 Rps_ObjectRef obstrbuf;
+		 Rps_ObjectRef obaction;
+		 Rps_ObjectRef obwebex;
+		 Rps_Value closurev;
                 );
   _f.valv = valarg;
   _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
@@ -1116,11 +1117,15 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                        * and closed value js, then apply that closure
                        * to a webexchange object....
                        ***/
+		      _f.closurev = Rps_ClosureValue(_f.obaction, {Rps_JsonValue(js)});
+		      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream closurev=" << _f.closurev
+                                    << " reqnum#" << reqnum);
                       RPS_FATALOUT("partly unimplemented rps_serve_onion_expanded_stream"
                                    << " linecnt=" << linecnt
                                    << " reqnum#" << reqnum
                                    << " for " << reqmethname << " of " << Rps_QuotedC_String(reqpath)
-                                   << " js=" << js);
+                                   << " js=" << js
+				   << std::endl << "closurev=" << _f.closurev);
                     }
 #warning partly unimplemented rps_serve_onion_expanded_stream for processing instruction
                 }
