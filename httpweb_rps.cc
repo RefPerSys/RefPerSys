@@ -1127,20 +1127,11 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                                                                Rps_Value(reqnum,  Rps_Value::Rps_IntTag{}));
                         _f.mainv = twoval.main();
                         _f.xtrav = twoval.xtra();
-                        RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  after appplication of closurev=" << _f.closurev
+                        RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  after application of closurev=" << _f.closurev
                                       << " reqnum#" << reqnum << " -> mainv=" << _f.mainv
                                       << " & xtrav=" << _f.xtrav);
                       }
-#warning rps_serve_onion_expanded_stream should use obaction with js still incomplete
-                      RPS_FATALOUT("partly unimplemented rps_serve_onion_expanded_stream"
-                                   << " linecnt=" << linecnt
-                                   << " reqnum#" << reqnum
-                                   << " for " << reqmethname << " of " << Rps_QuotedC_String(reqpath)
-                                   << " js=" << js
-                                   << std::endl << "closurev=" << _f.closurev
-                                   << " obwebex=" << _f.obwebex);
                     }
-#warning partly unimplemented rps_serve_onion_expanded_stream for processing instruction
                 }
               else
                 {
@@ -1299,7 +1290,8 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
   _f.webexob = arg0.to_object();
   reqnum= arg1.to_int();
   RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml webaction\"∈core_function webexob="<< _f.webexob << " reqnum#" << reqnum);
-  RPS_FATALOUT("unimplemented rpsapply_2sl5Gjb7swO04EcMqf rpshtml webaction∈core_function" << std::endl);
+  RPS_WARNOUT("unimplemented rpsapply_2sl5Gjb7swO04EcMqf rpshtml webaction∈core_function" << std::endl);
+  return {_f.webexob};
 #warning unimplemented rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction∈core_function"
 } // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
 
