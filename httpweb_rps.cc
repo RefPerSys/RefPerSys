@@ -1127,7 +1127,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                                                                Rps_Value(reqnum,  Rps_Value::Rps_IntTag{}));
                         _f.mainv = twoval.main();
                         _f.xtrav = twoval.xtra();
-                        RPS_DEBUG_LOG(WEB, "after appplication of closurev=" << _f.closurev
+                        RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream  after appplication of closurev=" << _f.closurev
                                       << " reqnum#" << reqnum << " -> mainv=" << _f.mainv
                                       << " & xtrav=" << _f.xtrav);
                       }
@@ -1290,7 +1290,9 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
                  callerframe, //
                  Rps_ObjectRef oba;
                 );
-  RPS_DEBUG_LOG(WEB, "\"rpshtml webaction\"∈core_function _2sl5Gjb7swO04EcMqf arg0=" << arg0 << " arg1=" << arg1
+  RPS_DEBUGNL_LOG(WEB, "°+° \"rpshtml webaction\"∈core_function _2sl5Gjb7swO04EcMqf arg0=" << arg0
+		  << " arg1=" << arg1
+		  << " arg2=" << arg2
                 << RPS_FULL_BACKTRACE_HERE(1, "'rpshtml webaction'∈core_function start"));
   RPS_FATALOUT("unimplemented rpsapply_2sl5Gjb7swO04EcMqf rpshtml webaction∈core_function" << std::endl);
 #warning unimplemented rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction∈core_function"
