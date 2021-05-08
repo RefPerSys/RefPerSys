@@ -1289,11 +1289,16 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_2sl5Gjb7swO04EcMqf,
                  callerframe, //
                  Rps_ObjectRef oba;
+		 Rps_ObjectRef webexob;
                 );
+  int64_t reqnum= -1;
   RPS_DEBUGNL_LOG(WEB, "°+° \"rpshtml webaction\"∈core_function _2sl5Gjb7swO04EcMqf arg0=" << arg0
 		  << " arg1=" << arg1
-		  << " arg2=" << arg2
+		  << " arg2=" << arg2 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "'rpshtml webaction'∈core_function start"));
+  _f.webexob = arg0.to_object();
+  reqnum= arg1.to_int();
+  RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml webaction\"∈core_function webexob="<< _f.webexob << " reqnum#" << reqnum);
   RPS_FATALOUT("unimplemented rpsapply_2sl5Gjb7swO04EcMqf rpshtml webaction∈core_function" << std::endl);
 #warning unimplemented rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction∈core_function"
 } // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
