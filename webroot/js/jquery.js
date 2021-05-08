@@ -1,1 +1,1 @@
-jquery-3.5.1.js
+jquery-3.6.0.js
