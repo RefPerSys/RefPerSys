@@ -34,7 +34,7 @@
 \addbibresource{../bib-refpersys.bib}
 \usepackage[a4paper, margin=4cm]{geometry}
 \setstretch{1.2}
-\date{October 2019 - April 2021}
+\date{October 2019 - May 2021}
 \newcommand*{\ac}[1]{\mbox{#1}}
 \tolerance=600
 
@@ -2542,11 +2542,18 @@ interface is worked upon (but buggy). You might run the
   -W.}) shell command and browse the
 \href{http://localhost:9090}{\texttt{localhost:9090}} URL. The file
 \texttt{webroot/index.html.rps} is then served, and hopefully should be template-expanded. Inspired by PHP, processing instructions like
+\begin{relsize}{-1.8}
 \begin{verbatim}
-<?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf' 
-            rps_json='{"foo":1}'?>
+<?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf' rps_json='{"foo":1}'?>
 \end{verbatim}
-should be expanded by closure applications.
+\end{relsize}
+should be expanded by closure applications\footnote{In this example,
+the applied closure has as connective the object of oid
+\texttt{\_2sl5Gjb7swO04EcMqf}. See our C++ function
+\texttt{rps\_serve\_onion\_expanded\_stream} in file
+\texttt{httpweb\_rps.cc} for details.}. However, such processing
+instructions should be on one single line (for example in file
+\texttt{webroot/index.html.rps}).
 
 The advantage of a Web interface is at first to be able to generate and use HTML5, and hopefully to generate web forms.
 
