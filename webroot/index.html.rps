@@ -51,6 +51,8 @@
 
     <script src="./js/jquery.js"></script>
 
+    <script src="./js/vue.js"></script>
+
     <!-- RefPerSys handwritten JavaScript: -->
     <script src="./js/refpersys.js"></script>
   </head>
@@ -58,9 +60,10 @@
   <body>
 
     <h1><a href='http://refpersys.org/'>RefPerSys</a>
-      running on
+      running on host 
+      <?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf'?>
     </h1>
-    
+
   </body>
   <!-- end of file webroot/index.html.rps in refpersys.org -->
 </html>
