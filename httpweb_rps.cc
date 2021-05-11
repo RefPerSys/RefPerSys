@@ -698,6 +698,7 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_web should send:" << std::endl
                         << reqout.str());
           presp->write(outstr.c_str(), outstr.size());
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_web wrote " << Rps_QuotedC_String(outstr));
           return OCS_PROCESSED;
         }
       else
@@ -937,6 +938,7 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
       curoff += linlen;
       linecnt++;
       pres->write(linbuf, linlen);
+      RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream wrote " << Rps_QuotedC_String(linbuf, linlen));
       if (linecnt < line_threshold && curoff < offset_threshold)
         RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream val=" << val
                       << " fd#" << fileno(fil) << " curoff:" << curoff
@@ -1041,6 +1043,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
 			     << " in " << filepath << ":" << linecnt
 			     << " is not properly ended by ?> on the same line");
 	      pres->write(linbuf, pi-linbuf);
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(linbuf, pi-linbuf));
 	      std::string pistr{pi, endpi-pi};
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream linecnt=" << linecnt
                             << " reqnum#" << reqnum
@@ -1157,6 +1160,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                               << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
                 }
 	      pres->write(endpi, linlen-(endpi-pi));
+	      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(endpi, linlen-(endpi-pi)));
             } // end if pi
         }
       else if (linecnt < 2*line_threshold)
@@ -1164,10 +1168,12 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                       << " fd#" << fileno(fil) << " curoff:" << curoff
                       << " linlen=" << linlen<< " linecnt=" << linecnt
                       << " reqnum#" << reqnum);
-      if (!pi)
+      if (!pi) {
 	pres->write(linbuf, linlen);
-	
+        RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(linbuf, linlen));
+      }	
     };				// end for each line
+  ////
   RPS_WARNOUT("partly unimplemented rps_serve_onion_expanded_stream val="
               << _f.valv << " reqnum#" << reqnum << " filepath=" << filepath
               << " " << reqmethname << " of '"
