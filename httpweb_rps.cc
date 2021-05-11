@@ -938,7 +938,6 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
       curoff += linlen;
       linecnt++;
       pres->write(linbuf, linlen);
-      RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream wrote " << Rps_QuotedC_String(linbuf, linlen));
       if (linecnt < line_threshold && curoff < offset_threshold)
         RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream val=" << val
                       << " fd#" << fileno(fil) << " curoff:" << curoff
@@ -1036,15 +1035,15 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
           pi = strstr(linbuf, "<?refpersys");
           if (pi)
             {
-	      endpi = strstr(pi, "?>");
-	      if (!endpi)
-		RPS_FATALOUT("processing instruction in " << linbuf
-			     << " for reqnum#" << reqnum
-			     << " in " << filepath << ":" << linecnt
-			     << " is not properly ended by ?> on the same line");
-	      pres->write(linbuf, pi-linbuf);
+              endpi = strstr(pi, "?>");
+              if (!endpi)
+                RPS_FATALOUT("processing instruction in " << linbuf
+                             << " for reqnum#" << reqnum
+                             << " in " << filepath << ":" << linecnt
+                             << " is not properly ended by ?> on the same line");
+              pres->write(linbuf, pi-linbuf);
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(linbuf, pi-linbuf));
-	      std::string pistr{pi, endpi-pi};
+              std::string pistr{pi, endpi-pi};
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream linecnt=" << linecnt
                             << " reqnum#" << reqnum
                             << " found pi=" <<  Rps_Cjson_String(pistr));
@@ -1159,8 +1158,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                               << "'" << std::endl
                               << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
                 }
-	      pres->write(endpi, linlen-(endpi-pi));
-	      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(endpi, linlen-(endpi-pi)));
+              /// don't write endpi ... it is '?>'
             } // end if pi
         }
       else if (linecnt < 2*line_threshold)
@@ -1168,10 +1166,11 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                       << " fd#" << fileno(fil) << " curoff:" << curoff
                       << " linlen=" << linlen<< " linecnt=" << linecnt
                       << " reqnum#" << reqnum);
-      if (!pi) {
-	pres->write(linbuf, linlen);
-        RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(linbuf, linlen));
-      }	
+      if (!pi)
+        {
+          pres->write(linbuf, linlen);
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(linbuf, linlen));
+        }
     };				// end for each line
   ////
   RPS_WARNOUT("partly unimplemented rps_serve_onion_expanded_stream val="
@@ -1299,13 +1298,13 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
   RPS_LOCALFRAME(rpskob_2sl5Gjb7swO04EcMqf,
                  callerframe, //
                  Rps_ObjectRef oba;
-		 Rps_ObjectRef webexob;
+                 Rps_ObjectRef webexob;
                 );
   int64_t reqnum= -1;
   RPS_DEBUGNL_LOG(WEB, "°+° \"rpshtml webaction\"∈core_function _2sl5Gjb7swO04EcMqf arg0=" << arg0
-		  << " arg1=" << arg1
-		  << " arg2=" << arg2 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "'rpshtml webaction'∈core_function start"));
+                  << " arg1=" << arg1
+                  << " arg2=" << arg2 << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "'rpshtml webaction'∈core_function start"));
   _f.webexob = arg0.to_object();
   reqnum= arg1.to_int();
   RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml webaction\"∈core_function webexob="<< _f.webexob << " reqnum#" << reqnum);
