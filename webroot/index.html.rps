@@ -61,7 +61,7 @@
 
     <h1><a href='http://refpersys.org/'>RefPerSys</a>
       running on host 
-      <?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf'?>
+      <?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf' rps_json='{}'?>
     </h1>
 
   </body>
