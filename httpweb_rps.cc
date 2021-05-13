@@ -1281,7 +1281,22 @@ rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
   return nullptr;
 } // end rps_web_output
 
+////////////////////////////////////////////////////////////////
+//// methods for transient payload Rps_PayloadPiWeb
+void
+Rps_PayloadPiWeb::gc_mark(Rps_GarbageCollector&gc) const
+{
+} // end Rps_PayloadPiWeb::gc_mark
 
+void
+Rps_PayloadPiWeb::dump_scan(Rps_Dumper*du) const
+{
+} // end Rps_PayloadPiWeb::dump_scan
+
+void
+Rps_PayloadPiWeb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+} // end Rps_PayloadPiWeb::dump_json_content
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for "rpshtml webaction"∈core_function
