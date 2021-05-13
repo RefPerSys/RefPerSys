@@ -1298,6 +1298,16 @@ Rps_PayloadPiWeb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
 } // end Rps_PayloadPiWeb::dump_json_content
 
+Rps_ObjectRef
+Rps_PayloadPiWeb::the_web_processing_instruction_class(void)
+{
+#warning unimplemented Rps_PayloadPiWeb::the_web_processing_instruction_class
+  /****
+   * TODO: we should create a root object ...
+   ***/
+  RPS_FATALOUT("unimplemented Rps_PayloadPiWeb::the_web_processing_instruction_class");
+} // end Rps_PayloadPiWeb::the_web_processing_instruction_class
+
 ////////////////////////////////////////////////////////////////
 // C++ closure for "rpshtml webaction"∈core_function
 

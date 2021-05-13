@@ -3887,6 +3887,7 @@ public:
   {
     return "pi_web";
   };
+  static Rps_ObjectRef the_web_processing_instruction_class(void);
 };				// end Rps_PayloadPiWeb
 
 ////////////////////////////////////////////////////////////////
