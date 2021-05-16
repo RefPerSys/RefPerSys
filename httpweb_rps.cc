@@ -1301,11 +1301,7 @@ Rps_PayloadPiWeb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 Rps_ObjectRef
 Rps_PayloadPiWeb::the_web_processing_instruction_class(void)
 {
-#warning unimplemented Rps_PayloadPiWeb::the_web_processing_instruction_class
-  /****
-   * TODO: we should create a root object ...
-   ***/
-  RPS_FATALOUT("unimplemented Rps_PayloadPiWeb::the_web_processing_instruction_class");
+  return RPS_ROOT_OB(_36G9Fl8FqDE01dMaZa); //web_processing_instruction_class∈class
 } // end Rps_PayloadPiWeb::the_web_processing_instruction_class
 
 ////////////////////////////////////////////////////////////////
