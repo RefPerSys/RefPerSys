@@ -2413,6 +2413,9 @@ The \textsc{Json} representation of payloads vary. The figure
 \label{fig:json-class-payload}  
 \end{figure}
 
+
+\medskip
+
  The figure \ref{fig:json-setob-payload} gives the format of mutable
  set of objects payload. The \texttt{"setob":} array might be empty.
 
@@ -2429,6 +2432,8 @@ The \textsc{Json} representation of payloads vary. The figure
 \end{figure}
 
 
+\medksip
+
  The figure \ref{fig:json-vectob-payload} gives the format of mutable
  vector of objects payload. The \texttt{"vectob":} array might be
  empty. Some components could be null.
@@ -2442,7 +2447,7 @@ The \textsc{Json} representation of payloads vary. The figure
     \end{tabular}
   \end {center}
   \caption {\textsc{Json} syntax of mutable vector of objects payload}
-\label{fig:json-vector-payload}  
+\label{fig:json-vectob-payload}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2582,8 +2587,15 @@ server that can process the plugin code received by it.
 
 Handling of HTTP requests is done with the help of
 \texttt{libonion}\footnote{an HTTP server open source library from
-\href{https://coralbits.com/static/onion/}{\texttt{coralbits.com/static/onion/}}}.
+\href{https://coralbits.com/static/onion/}{\texttt{coralbits.com/static/onion/}}}. We
+handle only \texttt{GET}, \texttt{POST}, and \texttt{HEAD} methods in
+HTTP requests.
 
+For cybersecurity reasons, an URL should not contain \texttt{..} -
+this ensures that the file system is not ``overflowed'' by malicious
+URLs having many {../..}. As usual, we have a webroot, the Linux
+directory containing plain files (like JSON files for Jquery, images,
+...).
 
 \clearpage
 \printnoidxglossaries
