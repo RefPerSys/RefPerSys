@@ -2567,17 +2567,23 @@ hopefully with generated C++ code which would generate JavaScript code
 and send it to web browser, which would use websockets to communicate
 asynchronously with the \texttt{refpersys} process.
 
-At the initial stage, we aim primarily to allow the user to enter C++ code for a
-specific plugin, and to display the details for a selected object.
+At the initial stage, we aim primarily to allow the user to enter C++
+code for a specific plugin, and to display the details for a selected
+object.
 
-In the case of the former (entering C++ code), we would require to take
-advantage of Javascript code editing plugin, such as that provided by
-codemirror.net. We would need to add the codemirror.js file to the webroot/js
-directory, and include it from our index.html.rps file. We would then create a
-textarea in our index HTML file, and apply the codemirror API on it. We would
-also require an HTTP POST endpoint in the RefPerSys web server that can process
-the plugin code received by it.
+In the case of the former (entering C++ code), we would require to
+take advantage of Javascript code editing plugin, such as that
+provided by codemirror.net. We would need to add the
+\texttt{codemirror.js} file to the \texttt{webroot/js/} directory, and
+include it from our \texttt{index.html.rps} file. We would then create
+a textarea in our index HTML file, and apply the codemirror API on
+it. We would also require an HTTP POST endpoint in the RefPerSys web
+server that can process the plugin code received by it.
 
+Handling of HTTP requests is done with the help of \texttt{libonion}
+(from
+\href{https://coralbits.com/static/onion/}{\texttt{coralbits.com/static/onion/}};
+it is an HTTP server open source library).
 
 \clearpage
 \printnoidxglossaries
