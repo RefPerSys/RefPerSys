@@ -429,6 +429,7 @@ enum rps_progoption_en
   RPSPROGOPT_BATCH='B',
   RPSPROGOPT_JOBS='j',
   RPSPROGOPT_DUMP='D',
+  RPSPROGOPT_COMMAND='c',
   RPSPROGOPT_WEB='W',
 
   RPSPROGOPT_HOMEDIR=1000,
@@ -2279,6 +2280,16 @@ public:
   virtual bool get_line(void);
   void set_prompt(const std::string& prompt) { readline_prompt= prompt; };
 };	       // end Rps_ReadlineTokenSource
+
+
+class Rps_StringTokenSource : public Rps_TokenSource {
+  std::istringstream toksrcstr_inp;
+public:
+  Rps_StringTokenSource(std::string inpstr, std::string name);
+  virtual  ~Rps_StringTokenSource();
+  virtual bool get_line();
+};							      // end Rps_StringTokenSource
+
 
 
 constexpr const unsigned rps_chunkdata_magicnum = 0x2fa19e6d; // 799121005
@@ -4187,6 +4198,8 @@ extern "C" void rps_load_add_todo(Rps_Loader*,const std::function<void(Rps_Loade
 extern "C" void rps_print_types_info (void);
 
 extern "C" void rps_read_eval_print_loop(int &argc, char**argv); // GNU readline based
+
+extern "C" void rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec);
 
 extern "C" void rps_repl_lexer_test(void);
 

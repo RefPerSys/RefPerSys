@@ -197,6 +197,8 @@ Rps_CinTokenSource::get_line(void)
 } // end Rps_CinTokenSource::get_line
 
 
+
+////////////////
 Rps_ReadlineTokenSource::Rps_ReadlineTokenSource(std::string path)
   : Rps_TokenSource(path)
 {
@@ -220,7 +222,26 @@ Rps_ReadlineTokenSource::get_line(void)
   return true;
 } // end Rps_ReadlineTokenSource::get_line
 
+////////////////
+Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string name)
+  : Rps_TokenSource(name), toksrcstr_inp(inptstr)
+{
+} // end Rps_StringTokenSource::Rps_StringTokenSource
 
+Rps_StringTokenSource::~Rps_StringTokenSource()
+{
+} // end Rps_StringTokenSource::~Rps_StringTokenSource
+
+bool
+Rps_StringTokenSource::get_line()
+{
+  std::getline(toksrcstr_inp, toksrc_linebuf);
+  if (!toksrcstr_inp && toksrc_linebuf.empty())
+    return false;
+  return true;
+} // end Rps_StringTokenSource::get_line()
+
+////////////////
 Rps_LexTokenValue
 Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 {
