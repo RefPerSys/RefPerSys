@@ -876,8 +876,8 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                     << " mime=" << mime
                     << std::endl << "callframe:"
                     << Rps_ShowCallFrame(callframe)
-		    << std::endl
-		    << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file done"));
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file done"));
       callframe->set_state_value(nullptr);
       callframe->set_state_rank(- __LINE__);
       callframe->clear_closure();
@@ -917,8 +917,8 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
                 << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
                 << std::endl
                 << "... start " << Rps_ShowCallFrame(callframe)
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_raw_stream/start"));
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_raw_stream/start"));
   {
     char lenbuf[24];
     memset(lenbuf, 0, sizeof(lenbuf));

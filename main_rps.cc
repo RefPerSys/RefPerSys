@@ -58,6 +58,9 @@ extern "C" std::string rps_cplusplusflags_str;
 std::string rps_cplusplusflags_str;
 extern "C" std::string rps_dumpdir_str;
 std::string rps_dumpdir_str;
+extern "C" std::vector<std::string> rps_command_vec;
+std::vector<std::string> rps_command_vec;
+
 
 #define RPS_DEFAULT_WEB_SERVICE "localhost:9090"
 const char*rps_web_service;
@@ -178,12 +181,20 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Show version information, then exit.", //
     /*group:*/0 ///
   },
-  /* ======= run a command with system(3) after load ======= */
+  /* ======= run a shell command with system(3) after load ======= */
   {/*name:*/ "run-after-load", ///
     /*key:*/ RPSPROGOPT_RUN_AFTER_LOAD, ///
     /*arg:*/ "COMMAND", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Run using system(3) the given COMMAND after load and plugins; environment variable REFPERSYS_PID has been set", //
+    /*doc:*/ "Run using system(3) the given shell COMMAND after load and plugins; environment variable REFPERSYS_PID has been set", //
+    /*group:*/0 ///
+  },
+  /* ======= run a REPL command after load ======= */
+  {/*name:*/ "command", ///
+    /*key:*/ RPSPROGOPT_COMMAND, ///
+    /*arg:*/ "REPL_COMMAND", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Run the given REPL_COMMAND", //
     /*group:*/0 ///
   },
   /* ======= web interface  ======= */
@@ -764,6 +775,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_my_load_dir = std::string(arg);
     }
     return 0;
+    case RPSPROGOPT_COMMAND:
+    {
+      rps_command_vec.push_back(std::string(arg));
+    }
+    return 0;
     case RPSPROGOPT_BATCH:
     {
       rps_batch = true;
@@ -1139,6 +1155,12 @@ rps_run_application(int &argc, char **argv)
       RPS_DEBUG_LOG(WEB,
                     "rps_run_application in batch mode");
       return;
+    }
+  if (!rps_command_vec.empty())
+    {
+      RPS_INFORMOUT("before running " << rps_command_vec.size() << " commands");
+      rps_do_repl_commands_vec(rps_command_vec);
+      RPS_INFORMOUT("after running " << rps_command_vec.size() << " commands");
     }
   if (rps_run_repl)
     {

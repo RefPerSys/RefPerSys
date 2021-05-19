@@ -1647,6 +1647,9 @@ rpsrepl_name_or_oid_generator(const char *text, int state)
   return nullptr;
 } // end rpsrepl_name_or_oid_generator
 
+
+
+
 void
 rps_read_eval_print_loop(int &argc, char **argv)
 {
@@ -1740,6 +1743,39 @@ rps_read_eval_print_loop(int &argc, char **argv)
     };
   RPS_INFORMOUT("rps_read_eval_print_loop ending count#" << count << " at " << rltoksrc.position_str());
 } // end of rps_read_eval_print_loop
+
+
+void
+rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
+{
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/nullptr,
+                           Rps_Value lextokv;
+                           Rps_Value lexval;
+                           Rps_ObjectRef cmdob;
+                           Rps_Value cmdparserv;
+                           Rps_Value parsmainv;
+                           Rps_Value parsextrav;
+                );
+  RPS_ASSERT(rps_is_main_thread());
+  int nbcmd = (int) (cmdvec.size());
+  std::string cmdstr;
+  unsigned int cmdsiz = 0;
+  for (int cix=0; cix<nbcmd; cix++)
+    {
+      RPS_DEBUG_LOG(REPL, "REPL command [" << cix << "]: " << cmdvec[cix]);
+      {
+        char bufpath[24];
+        memset (bufpath, 0, sizeof(bufpath));
+        snprintf(bufpath, sizeof(bufpath), "[%d]", cix);
+        Rps_StringTokenSource intoksrc(cmdvec[cix], std::string(bufpath));
+      }
+    }
+} // end of rps_do_repl_commands_vec
+
+
+
+
 
 //- Rps_Value
 //- rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
