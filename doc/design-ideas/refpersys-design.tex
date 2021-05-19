@@ -2585,6 +2585,21 @@ a textarea in our index HTML file, and apply the codemirror API on
 it. We would also require an HTTP POST endpoint in the RefPerSys web
 server that can process the plugin code received by it.
 
+In the case of the latter (displaying RefPerSys objects; there are two
+approaches. The first approach is a quick way of displaying existing objects in
+the heap store, and is not necessarily the best approach; however, for the
+purpose of an initial demo, this approach could work. The second approach is
+more involved, but is also probably closer to we would have in mind.
+
+In the first approach, we would serve the index page with a generated JS array
+containing the details of all the objects in the object heap. Additionally, the
+generated index page will contain a \href{https://select2.org}{\textit{select2}}
+widget. The \textit{select2} widget takes care of displaying the full object ID
+when the first few characters have been typed in.
+
+\textbf{TODO}
+
+
 Handling of HTTP requests is done with the help of
 \texttt{libonion}\footnote{an HTTP server open source library from
 \href{https://coralbits.com/static/onion/}{\texttt{coralbits.com/static/onion/}}}. We
