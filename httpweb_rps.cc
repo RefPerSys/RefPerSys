@@ -1047,10 +1047,10 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                              << " is not properly ended by ?> on the same line");
               pres->write(linbuf, pi-linbuf);
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(linbuf, pi-linbuf));
-              std::string pistr{pi, endpi-pi};
+              std::string pistr{pi, endpi-pi+sizeof("?>")-1};
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream linecnt=" << linecnt
                             << " reqnum#" << reqnum
-                            << " found pi=" <<  Rps_Cjson_String(pistr));
+                            << " found pistr=" <<  Rps_Cjson_String(pistr));
               if (nbpi > 0)
                 RPS_FATALOUT("rps_serve_onion_expanded_stream val=" << _f.valv
                              << " fd#" << fileno(fil) << " curoff:" << curoff
