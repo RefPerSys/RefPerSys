@@ -1050,7 +1050,8 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
               std::string pistr{pi, endpi-pi+sizeof("?>")-1};
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream linecnt=" << linecnt
                             << " reqnum#" << reqnum
-                            << " found pistr=" <<  Rps_Cjson_String(pistr));
+                            << " found pistr=" <<  Rps_Cjson_String(pistr) << std::endl
+			    << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_expanded_stream/pistr"));
               if (nbpi > 0)
                 RPS_FATALOUT("rps_serve_onion_expanded_stream val=" << _f.valv
                              << " fd#" << fileno(fil) << " curoff:" << curoff
