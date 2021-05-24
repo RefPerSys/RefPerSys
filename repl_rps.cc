@@ -1770,68 +1770,68 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
         memset (bufpath, 0, sizeof(bufpath));
         snprintf(bufpath, sizeof(bufpath), "[%d]", cix);
         Rps_StringTokenSource intoksrc(cmdvec[cix], std::string(bufpath));
-	if (cix % 4 == 0)
-	  usleep(128*1024);
-	if (!intoksrc.get_line())
-	  break;
-      std::string commandpos = intoksrc.position_str();
-      RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec command#" << cix
-		    << Rps_Cjson_String(cmdvec[cix])
-		    << " @" << bufpath);
-      _f.lextokv = intoksrc.get_token(&_);
-      RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec got lextokv=" << _f.lextokv << " pos=" << intoksrc.position_str());
-      if (!_f.lextokv)
-        break;
-      const Rps_LexTokenZone* lextokz = _f.lextokv.as_lextoken();
-      RPS_ASSERT(lextokz);
-      if (lextokz->lxkind()
-          != RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ))  //object∈class
-        {
-          RPS_WARNOUT("rps_do_repl_commands_vec command at "
-                      << commandpos << std::endl
-                      << "Should start with an object but got "
-                      << _f.lextokv);
-          continue;
-        }
-      _f.lexval = lextokz->lxval();
-      RPS_ASSERT(_f.lexval.is_object());
-      _f.cmdob = _f.lexval.as_object();
-      RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec cmdob=" << _f.cmdob
-                    << " at " << commandpos);
-      if (_f.lexval.is_instance_of(&_,RPS_ROOT_OB(_8CncrUdoSL303T5lOK)))   //repl_command∈class
-        {
-          _f.cmdparserv = _f.cmdob
-                          ->get_attr1(&_,RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd)); //repl_command_parser∈symbol
-          RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec cmdob=" << _f.cmdob
-                        << " is repl_command of repl_command_parser: " << _f.cmdparserv
-                        << " lextokv=" << _f.lextokv);
-          if (_f.cmdparserv.is_closure())
-            {
-              Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply2 (&_, _f.cmdob, _f.lextokv);
-              _f.parsmainv = parspair.main();
-              _f.parsextrav = parspair.xtra();
-              RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec applied " << _f.cmdparserv << " to "
-                            << _f.cmdob
-                            << " and got parsmainv:" << _f.parsmainv << ", parsextrav=" << _f.parsextrav
-                            << " now position is " <<  intoksrc.position_str());
-              if (!_f.parsmainv && !_f.parsextrav)
-                RPS_WARNOUT("rps_do_repl_commands_vec: REPL command " << _f.cmdob << " at " << commandpos << " failed using "
-                            << _f.cmdparserv << std::endl);
-              continue;
-            }
-          else
-            {
-              RPS_WARNOUT("rps_do_repl_commands_vec: REPL command " << _f.cmdob << " has a bad command parser " << _f.cmdparserv
-                          << " after " << _f.lexval);
-              continue;
-            }
-          RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec at  " << commandpos << " count#" << count <<  " pos=" << intoksrc.position_str());
-        }
-      else
-        {
-          RPS_WARNOUT("rps_do_repl_commands_vec: REPL command unexpected token " <<  _f.lextokv << " at " << commandpos << " now at " << intoksrc.position_str());
-          continue;
-        }
+        if (cix % 4 == 0)
+          usleep(128*1024);
+        if (!intoksrc.get_line())
+          break;
+        std::string commandpos = intoksrc.position_str();
+        RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec command#" << cix
+                      << Rps_Cjson_String(cmdvec[cix])
+                      << " @" << bufpath);
+        _f.lextokv = intoksrc.get_token(&_);
+        RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec got lextokv=" << _f.lextokv << " pos=" << intoksrc.position_str());
+        if (!_f.lextokv)
+          break;
+        const Rps_LexTokenZone* lextokz = _f.lextokv.as_lextoken();
+        RPS_ASSERT(lextokz);
+        if (lextokz->lxkind()
+            != RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ))  //object∈class
+          {
+            RPS_WARNOUT("rps_do_repl_commands_vec command at "
+                        << commandpos << std::endl
+                        << "Should start with an object but got "
+                        << _f.lextokv);
+            continue;
+          }
+        _f.lexval = lextokz->lxval();
+        RPS_ASSERT(_f.lexval.is_object());
+        _f.cmdob = _f.lexval.as_object();
+        RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec cmdob=" << _f.cmdob
+                      << " at " << commandpos);
+        if (_f.lexval.is_instance_of(&_,RPS_ROOT_OB(_8CncrUdoSL303T5lOK)))   //repl_command∈class
+          {
+            _f.cmdparserv = _f.cmdob
+                            ->get_attr1(&_,RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd)); //repl_command_parser∈symbol
+            RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec cmdob=" << _f.cmdob
+                          << " is repl_command of repl_command_parser: " << _f.cmdparserv
+                          << " lextokv=" << _f.lextokv);
+            if (_f.cmdparserv.is_closure())
+              {
+                Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply2 (&_, _f.cmdob, _f.lextokv);
+                _f.parsmainv = parspair.main();
+                _f.parsextrav = parspair.xtra();
+                RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec applied " << _f.cmdparserv << " to "
+                              << _f.cmdob
+                              << " and got parsmainv:" << _f.parsmainv << ", parsextrav=" << _f.parsextrav
+                              << " now position is " <<  intoksrc.position_str());
+                if (!_f.parsmainv && !_f.parsextrav)
+                  RPS_WARNOUT("rps_do_repl_commands_vec: REPL command " << _f.cmdob << " at " << commandpos << " failed using "
+                              << _f.cmdparserv << std::endl);
+                continue;
+              }
+            else
+              {
+                RPS_WARNOUT("rps_do_repl_commands_vec: REPL command " << _f.cmdob << " has a bad command parser " << _f.cmdparserv
+                            << " after " << _f.lexval);
+                continue;
+              }
+            RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec at  " << commandpos << " count#" << count <<  " pos=" << intoksrc.position_str());
+          }
+        else
+          {
+            RPS_WARNOUT("rps_do_repl_commands_vec: REPL command unexpected token " <<  _f.lextokv << " at " << commandpos << " now at " << intoksrc.position_str());
+            continue;
+          }
       }
     }
 } // end of rps_do_repl_commands_vec
