@@ -1041,8 +1041,6 @@ public:
   };
   // create an object of given class
   static Rps_ObjectRef make_object(Rps_CallFrame*callerframe, Rps_ObjectRef classob, Rps_ObjectRef spaceob=nullptr);
-  // create a mutable set oject
-  static Rps_ObjectRef make_mutable_set_object(Rps_CallFrame*callerframe, Rps_ObjectRef spaceob=nullptr);
   // the superclass of all objects, that is the `object` object
   static inline Rps_ObjectRef the_object_class(void);
   // the class of all classes, that is the `class` object
@@ -3630,6 +3628,11 @@ public:
   {
     return "setob";
   };
+  /// make a mutable set of given class and space.
+  /// if the class is wrong, throw an exception
+  static Rps_ObjectRef make_mutable_set_object(Rps_CallFrame*cfr,
+					Rps_ObjectRef classob=nullptr,
+					Rps_ObjectRef spaceob=nullptr);
   inline Rps_PayloadSetOb(Rps_ObjectZone*obz, Rps_Loader*ld);
   bool contains(const Rps_ObjectZone* obelem) const
   {

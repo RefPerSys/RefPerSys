@@ -1580,7 +1580,47 @@ Rps_PayloadSetOb::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 } // end Rps_PayloadSetOb::dump_json_content
 
 
-
+Rps_ObjectRef
+Rps_PayloadSetOb::make_mutable_set_object(Rps_CallFrame*callerframe,
+    Rps_ObjectRef classobarg,
+    Rps_ObjectRef spaceobarg)
+{
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0J1C39JoZiv03qA2HA), //mutable_set∈class
+                           callerframe,
+                           Rps_ObjectRef classob;
+                           Rps_ObjectRef spaceob;
+                           Rps_ObjectRef resob;
+                );
+  if (classobarg.is_empty())
+    _f.classob = RPS_ROOT_OB(_0J1C39JoZiv03qA2HA); // mutable_set∈class
+  else
+    _f.classob = classobarg;
+  if (!spaceobarg.is_empty())
+    _f.spaceob = spaceobarg;
+  else
+    _f.spaceob = nullptr;
+  if (!_f.classob)
+    throw std::runtime_error("make_mutable_set_object missing class");
+  if (!_f.classob->is_class())
+    {
+      std::string classobstr = _f.classob.as_string();
+      throw std::runtime_error(std::string{"make_mutable_set_object: bad class:"} + classobstr);
+    };
+  RPS_ASSERT(_f.classob);
+  if (!_f.classob->is_subclass_of(RPS_ROOT_OB(_0J1C39JoZiv03qA2HA))) // mutable_set∈class
+    {
+      std::string classobstr = _f.classob.as_string();
+      throw std::runtime_error(std::string{"make_mutable_set_object: invalid class:"} + classobstr);
+    }
+  if (_f.spaceob && !_f.spaceob->is_subclass_of(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx))) //space∈class
+    {
+      std::string spaceobstr = _f.spaceob.as_string();
+      throw std::runtime_error(std::string{"make_mutable_set_object: invalid space:"} + spaceobstr);
+    }
+  _f.resob = Rps_ObjectRef::make_object(&_, _f.classob, _f.spaceob);
+  _f.resob->put_new_plain_payload<Rps_PayloadSetOb>();
+  return _f.resob;
+} // end Rps_PayloadSetOb::make_mutable_set_object
 
 
 /***************** mutable vector of objects payload **********/
@@ -2149,31 +2189,6 @@ Rps_ObjectRef::make_object(Rps_CallFrame*callerframe, Rps_ObjectRef classobarg, 
   /// FIXME: perhaps we should send some `initialize_object` message?
   return _f.resultob;
 } // end Rps_ObjectRef::make_object
-
-// create a mutable set oject:
-Rps_ObjectRef
-Rps_ObjectRef::make_mutable_set_object(Rps_CallFrame*callerframe, Rps_ObjectRef spaceobarg)
-{
-  RPS_LOCALFRAME(RPS_ROOT_OB(_0J1C39JoZiv03qA2HA), //mutable_set∈class
-                 callerframe,
-                 Rps_ObjectRef spaceob; // the space
-                 Rps_ObjectRef resultob; // resulting object
-                );
-  _f.spaceob = spaceobarg;
-  if (_f.spaceob
-      && RPS_UNLIKELY(!_f.spaceob->is_instance_of(RPS_ROOT_OB(_2i66FFjmS7n03HNNBx))))   //space∈class
-    {
-      RPS_WARNOUT("invalid spaceob " << _f.spaceob
-                  << "for make_mutable_set_object");
-      throw RPS_RUNTIME_ERROR_OUT("invalid spaceob " << _f.spaceob
-                                  << "for make_mutable_set_object");
-    };
-  _f.resultob = Rps_ObjectZone::make();
-  _f.resultob->ob_class.store(RPS_ROOT_OB(_0J1C39JoZiv03qA2HA)); //mutable_set∈class
-  _f.resultob->put_new_plain_payload<Rps_PayloadSetOb>();
-  _f.resultob->put_space(_f.spaceob);
-  return _f.resultob;
-} // end Rps_ObjectRef::make_mutable_set_object
 
 
 
