@@ -203,7 +203,7 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ "HOST:PORT", ///
     /*flags:*/ 0, ///
     /*doc:*/ "start web service as given on HOST:PORT,"
-             " where -W. means --web=http:" RPS_DEFAULT_WEB_HOST_PORT, //
+    " where -W. means --web=http:" RPS_DEFAULT_WEB_HOST_PORT, //
     /*group:*/0 ///
   },
   /* ======= edit the C++ code of  a temporary plugin after load ======= */
