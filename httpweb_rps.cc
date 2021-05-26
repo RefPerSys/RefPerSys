@@ -201,6 +201,8 @@ rps_run_web_service()
                 << rps_current_pthread_name()
                 << " pid#" << getpid() << " on " << rps_hostname()
                 << std::endl
+		<< " rps_onion_server@" << (void*)(&rps_onion_server)
+		<< std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service/before-listen")
                 << std::endl);
   rps_onion_server.listen();
