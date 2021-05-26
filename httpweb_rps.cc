@@ -33,8 +33,8 @@
 
 #include "headweb_rps.hh"
 
-/// our onion web server
-Onion::Onion rps_onion_server;
+/// our onion web server pointer
+Onion::Onion* rps_ptr_onion_server;
 
 static std::atomic<uint64_t> rps_onion_reqcount;
 
@@ -81,10 +81,12 @@ rps_web_initialize_service(const char*servarg)
   if (sscanf(servarg, "%72[a-zA-Z0-9.-]:%d",
              serverbuf, &portnum)>=2 && portnum>0)
     {
-      RPS_DEBUG_LOG (WEB, "serverbuf:"<< serverbuf << " port#" << portnum);
+      RPS_DEBUG_LOG (WEB, "serverbuf:"<< serverbuf << " port#" << portnum
+		     << " thread:" << rps_current_pthread_name());
+      rps_ptr_onion_server = new Onion::Onion { O_THREADED };
       if (serverbuf[0])
-        rps_onion_server.setHostname(std::string{serverbuf});
-      rps_onion_server.setPort(portnum);
+        rps_ptr_onion_server->setHostname(std::string{serverbuf});
+      rps_ptr_onion_server->setPort(portnum);
       RPS_INFORMOUT("rps_web_initialize_service initialized Onion webserver on "
                     << serverbuf << ":" << portnum
                     << " using libonion " << onion_version()
@@ -119,7 +121,7 @@ rps_run_web_service()
    *  having some templates, in the libonion sense...
    **/
   /// FIXME: use rps_serve_onion_web here
-  Onion::Url rooturl(&rps_onion_server);
+  Onion::Url rooturl(rps_ptr_onion_server);
   /// set the error handler
   auto errhandlerfun =
     [&](Onion::Request& req, Onion::Response&resp)->onion_connection_status
@@ -166,7 +168,7 @@ rps_run_web_service()
 
   auto errh = Onion::Handler::make<Onion::HandlerFunction>(errhandlerfun);
   RPS_ASSERT(errh);
-  rps_onion_server.setInternalErrorHandler(errh.get());
+  rps_ptr_onion_server->setInternalErrorHandler(errh.get());
 
 #warning we should use rps_serve_onion_web in rps_run_web_service
   rooturl.add("^",
@@ -201,11 +203,11 @@ rps_run_web_service()
                 << rps_current_pthread_name()
                 << " pid#" << getpid() << " on " << rps_hostname()
                 << std::endl
-		<< " rps_onion_server@" << (void*)(&rps_onion_server)
+		<< " rps_onion_ptr_server@" << (void*)(rps_ptr_onion_server)
 		<< std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service/before-listen")
                 << std::endl);
-  rps_onion_server.listen();
+  rps_ptr_onion_server->listen();
   RPS_INFORMOUT("rps_run_web_service on " << rps_web_service << " from "
                 << rps_current_pthread_name() << " pid#" << getpid()
                 << " on " << rps_hostname()
@@ -216,6 +218,7 @@ rps_run_web_service()
   /// TODO: Conventionally, URLs containing either .. or README.md
   /// should not be served.
   RPS_DEBUG_LOG(WEB, "end rps_run_web_service" << std::endl
+		<< " thread:" << rps_current_pthread_name() << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service-end"));
 } // end rps_run_web_service
 
