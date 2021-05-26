@@ -3901,7 +3901,10 @@ public:
   {
     return "pi_web";
   };
+  /// gives the web_processing_instruction_class∈class
   static Rps_ObjectRef the_web_processing_instruction_class(void);
+  /// gives the mutable_set object collecting objects whose oid can appear in *rps files
+  static Rps_ObjectRef the_mutable_set_for_web(void);
 };				// end Rps_PayloadPiWeb
 
 ////////////////////////////////////////////////////////////////

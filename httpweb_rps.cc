@@ -1309,6 +1309,18 @@ Rps_PayloadPiWeb::the_web_processing_instruction_class(void)
   return RPS_ROOT_OB(_36G9Fl8FqDE01dMaZa); //web_processing_instruction_class∈class
 } // end Rps_PayloadPiWeb::the_web_processing_instruction_class
 
+Rps_ObjectRef
+Rps_PayloadPiWeb::the_mutable_set_for_web(void)
+{
+  Rps_ObjectRef webservob = RPS_ROOT_OB(_0MInvb6lXCQ006IiJZ); //"web_service"∈string_dictionary
+  Rps_ObjectRef resob;
+  RPS_ASSERT(webservob);
+  resob = webservob->get_physical_attr(RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) //object∈class
+    .as_object();
+  RPS_ASSERT(resob);
+  return resob;
+} // end Rps_PayloadPiWeb::the_mutable_set_for_web
+
 ////////////////////////////////////////////////////////////////
 // C++ closure for "rpshtml webaction"∈core_function
 
