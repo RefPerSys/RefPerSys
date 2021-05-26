@@ -983,15 +983,16 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
   RPS_LOCALFRAME(/*descr:*/ RPS_ROOT_OB(_1rfASGBBbFz02VUsMw), //"rps_serve_onion_expanded_stream"∈rps_routine
-                            /*prev:*/callframe,
-                            /*locals:*/
-                            Rps_Value valv;
-                            Rps_Value mainv;
-                            Rps_Value xtrav;
-                            Rps_ObjectRef obstrbuf;
-                            Rps_ObjectRef obaction;
-                            Rps_ObjectRef obwebex;
-                            Rps_Value closurev;
+		 /*prev:*/callframe,
+		 /*locals:*/
+		 Rps_Value valv;
+		 Rps_Value mainv;
+		 Rps_Value xtrav;
+		 Rps_ObjectRef obstrbuf;
+		 Rps_ObjectRef obaction;
+		 Rps_ObjectRef obwebex;
+		 Rps_ObjectRef obmutsetweb;
+		 Rps_Value closurev;
                 );
   _f.valv = valarg;
   _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
@@ -1129,6 +1130,24 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                                     << " js=" << js
                                     << std::endl
                                     << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
+		      bool badobaction = !_f.obaction;
+		      if (!badobaction) {
+			_f.obmutsetweb = Rps_PayloadPiWeb::the_mutable_set_for_web();
+			RPS_ASSERT(_f.obmutsetweb);
+			std::lock_guard<std::recursive_mutex> guobmutsetweb(*(_f.obmutsetweb->objmtxptr()));
+			Rps_PayloadSetOb* paylset = _f.obmutsetweb->get_dynamic_payload<Rps_PayloadSetOb>();
+			if (!paylset) badobaction=true;
+			else badobaction=!paylset->contains(_f.obaction);
+		      }
+		      if (badobaction) {
+			RPS_WARNOUT("rps_serve_onion_expanded_stream"
+				    << " linecnt=" << linecnt
+				    << " reqnum#" << reqnum
+				    << " for " << reqmethname << " of " << Rps_Cjson_String(reqpath)
+				    << "linbuf '" << Rps_Cjson_String(std::string(linbuf))
+				    << " bad obaction:" << _f.obaction);
+			return OCS_NOT_PROCESSED;
+		      }
                       /***
                        * TODO: we probably need to specify how to make
                        * a RefPerSys closure of connective obaction
