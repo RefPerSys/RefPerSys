@@ -366,18 +366,19 @@ Rps_PayloadWebex::make_obwebex(Rps_CallFrame*callerframe, Onion::Request*req, On
                             /*locals:*/
                             Rps_ObjectRef obwebex);
   _f.obwebex = Rps_ObjectRef::make_object(&_, web_exchange_ob);
-  
   Rps_PayloadWebex* paylwebex
     = _f.obwebex->put_new_plain_payload<Rps_PayloadWebex>();
   RPS_ASSERT(paylwebex != nullptr);
   paylwebex->put_web_data(reqnum, req, resp);
-  RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::make_obwebex end reqnum#" << reqnum
-                << " obwebex=" << _f.obwebex << " startim:" <<  paylwebex->webex_startim
+  RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::make_obwebex/end reqnum#" << reqnum
+		<< std::endl
+                << "... obwebex=" << _f.obwebex << " startim:" <<  paylwebex->webex_startim
 		<< " webmeth:" << onion_request_methods[req->flags() & OR_METHODS]
-		<< " weburl:" << Rps_Cjson_String(req->path())
+		<< " weburl:" << Rps_QuotedC_String(req->path())
+		<< " paylwebex@" << (void*)paylwebex
 		<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex::make_obwebex end")
-		<< std::endl << "make_obwebex thread:" << rps_current_pthread_name());
+		<< std::endl << "make_obwebex thread:" << (rps_current_pthread_name()));
   return _f.obwebex;
 } // end PayloadWebex::make_obwebex
 
@@ -764,8 +765,8 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
                         << "' reqnum#" << reqnum
                         << " presp@" << (void*)presp
                         << " oniresp@" << (presp->c_handler())
-                        << " for reqpath='" << Rps_Cjson_String(reqpath)
-                        << "'");
+                        << " for reqpath=" << Rps_QuotedC_String(reqpath)
+                        << " thread:" << rps_current_pthread_name());
           if (!access(filpath.c_str(), F_OK))
             {
               RPS_LOCALFRAME(/*descr:*/ web_exchange_ob,
@@ -1397,7 +1398,9 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
                   << RPS_FULL_BACKTRACE_HERE(1, "'rpshtml webaction'∈core_function start"));
   _f.webexob = arg0.to_object();
   reqnum= arg1.to_int();
-  RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml webaction\"∈core_function webexob="<< _f.webexob << " reqnum#" << reqnum);
+  RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml webaction\"∈core_function webexob="<< _f.webexob << " with payload@" << (_f.webexob->get_payload())
+		<< "/" << (_f.webexob->payload_type_name())
+		<< " reqnum#" << reqnum);
   Rps_PayloadWebex* webex = Rps_PayloadWebex::webex_of_object(&_, _f.webexob);
   RPS_ASSERT(webex);
   std::ostream*pout = webex->web_ostream_ptr();
