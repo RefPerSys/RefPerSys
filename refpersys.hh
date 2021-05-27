@@ -2600,7 +2600,8 @@ public:
   {
     std::lock_guard<std::recursive_mutex> gu(ob_mtx);
     PaylClass*newpayl =
-      Rps_QuasiZone::rps_allocate4<PaylClass,Arg1Class,Arg2Class,Arg3Class>(this,arg1,arg2,arg3);
+      Rps_QuasiZone::rps_allocate4<PaylClass,Arg1Class,Arg2Class,Arg3Class>
+      (this,arg1,arg2,arg3);
     Rps_Payload*oldpayl = ob_payload.exchange(newpayl);
     if (oldpayl)
       delete oldpayl;
