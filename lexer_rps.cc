@@ -1115,7 +1115,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
           curu8p += u8len;
           pc += u8len;
         };
-      std::string str{startpc, curu8p-(const uint8_t*)startpc};
+      std::string str{startpc, (unsigned) (curu8p-(const uint8_t*)startpc)};
       _f.res = Rps_StringValue(str);
       chkdata->chunkdata_colno += str.size();
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_chunk_element strseq obchunk=" << _f.obchunk
