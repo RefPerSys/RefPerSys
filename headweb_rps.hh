@@ -87,13 +87,14 @@ public:
   {
     return "webex";
   };
+  Rps_PayloadWebex(Rps_ObjectZone*);
   Rps_PayloadWebex(Rps_ObjectZone*,uint64_t,Onion::Request*,Onion::Response*);
   virtual ~Rps_PayloadWebex();
   /// if ob is of class web_exchange, gives its payload. Otherwise
   /// return null:
   static Rps_PayloadWebex*webex_of_object(Rps_CallFrame*callerframe, Rps_ObjectRef ob);
 private:
-  uint64_t webex_reqnum;	// unique request number
+  std::atomic<uint64_t> webex_reqnum;	// unique request number
   double webex_startim;		// start monotonic time
   Onion::Request* webex_requ;	// pointer to request
   Onion::Response* webex_resp;	// pointer to response
@@ -107,6 +108,7 @@ private:
   // response.... but I am not sure...
 #warning perhaps some std::ostringstream* webex_stream field is needed
 public:
+  void put_web_data(uint64_t reqnum, Onion::Request*requ, Onion::Response*resp);
   Onion::Request*  web_request() const
   {
     return webex_requ;
@@ -144,7 +146,7 @@ public:
   };
   uint64_t web_request_num() const
   {
-    return  webex_reqnum;
+    return  webex_reqnum.load();
   };
   double web_request_start_time() const
   {

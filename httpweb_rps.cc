@@ -264,6 +264,18 @@ Rps_PayloadWebex::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   return;
 } // end Rps_PayloadWebex::dump_json_content
 
+Rps_PayloadWebex::Rps_PayloadWebex(Rps_ObjectZone*ownerobz)
+  : Rps_Payload(Rps_Type::PaylWebex, ownerobz),
+    webex_reqnum(0),
+    webex_startim(rps_monotonic_real_time()),
+    webex_requ(nullptr),
+    webex_resp(nullptr),
+    webex_state(nullptr),
+    webex_numstate(0),
+    webex_indent(0)
+{
+} // end Rps_PayloadWebex::Rps_PayloadWebex
+
 Rps_PayloadWebex::Rps_PayloadWebex(Rps_ObjectZone*ownerobz,uint64_t reqnum,Onion::Request*preq,Onion::Response*presp)
   : Rps_Payload(Rps_Type::PaylWebex, ownerobz),
     webex_reqnum(reqnum),
@@ -321,6 +333,21 @@ Rps_PayloadWebex::~Rps_PayloadWebex()
 } // end  Rps_PayloadWebex::~Rps_PayloadWebex
 
 
+/// initialize (once) the web related data inside an empty-created
+/// Rps_PayloadWebex
+void
+Rps_PayloadWebex::put_web_data(uint64_t reqnum, Onion::Request*requ, Onion::Response*resp)
+{
+  RPS_ASSERT(reqnum>0);
+  RPS_ASSERT(requ != nullptr);
+  RPS_ASSERT(resp != nullptr);
+  RPS_ASSERT(webex_reqnum.load() == 0);
+  RPS_ASSERT(webex_requ == nullptr);
+  RPS_ASSERT(webex_resp == nullptr);
+  webex_reqnum.store(reqnum);
+  webex_requ = requ;
+  webex_resp = resp;
+} // end Rps_PayloadWebex::put_web_data
 
 Rps_ObjectRef
 Rps_PayloadWebex::make_obwebex(Rps_CallFrame*callerframe, Onion::Request*req, Onion::Response*resp,
@@ -331,25 +358,26 @@ Rps_PayloadWebex::make_obwebex(Rps_CallFrame*callerframe, Onion::Request*req, On
   RPS_ASSERT(resp != nullptr);
   auto web_exchange_ob = RPS_ROOT_OB(_8zNtuRpzXUP013WG9S);
   RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::make_obwebex start reqnum#" << reqnum
-               );
+		<< " thread:" << (rps_current_pthread_name())
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex::make_obwebex start"));
   RPS_LOCALFRAME(/*descr:*/ web_exchange_ob,
                             /*prev:*/callerframe,
                             /*locals:*/
                             Rps_ObjectRef obwebex);
   _f.obwebex = Rps_ObjectRef::make_object(&_, web_exchange_ob);
-
-#if 0 && BAD_CODE
-  auto paylwebex =
-    _f.obwebex->put_new_arg3_payload<Rps_PayloadWebex>(reqnum,req,resp);
-  RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::make_obwebex end reqnum#" << reqnum
-                << " obwebex=" << _f.obwebex << " startim:" <<  paylwebex->webex_startim);
+  
+  Rps_PayloadWebex* paylwebex
+    = _f.obwebex->put_new_plain_payload<Rps_PayloadWebex>();
   RPS_ASSERT(paylwebex != nullptr);
-#endif
-
-  RPS_WARNOUT("Rps_PayloadWebex::make_obwebex incomplete  reqnum#" << reqnum
-              << Rps_ShowCallFrame(&_)
-              << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex::make_obwebex"));
+  paylwebex->put_web_data(reqnum, req, resp);
+  RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::make_obwebex end reqnum#" << reqnum
+                << " obwebex=" << _f.obwebex << " startim:" <<  paylwebex->webex_startim
+		<< " webmeth:" << onion_request_methods[req->flags() & OR_METHODS]
+		<< " weburl:" << Rps_Cjson_String(req->path())
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex::make_obwebex end")
+		<< std::endl << "make_obwebex thread:" << rps_current_pthread_name());
   return _f.obwebex;
 } // end PayloadWebex::make_obwebex
 
@@ -1351,8 +1379,8 @@ Rps_PayloadPiWeb::the_mutable_set_for_web(void)
 extern "C" rps_applyingfun_t rpsapply_2sl5Gjb7swO04EcMqf;
 Rps_TwoValues
 rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
-                            [[maybe_unused]] const Rps_Value arg0,
-                            [[maybe_unused]] const Rps_Value arg1, ///
+			    const Rps_Value arg0,
+			    const Rps_Value arg1, ///
                             [[maybe_unused]]const Rps_Value arg2,
                             [[maybe_unused]] const Rps_Value arg3_,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
@@ -1370,7 +1398,11 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
   _f.webexob = arg0.to_object();
   reqnum= arg1.to_int();
   RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml webaction\"∈core_function webexob="<< _f.webexob << " reqnum#" << reqnum);
-  RPS_WARNOUT("unimplemented rpsapply_2sl5Gjb7swO04EcMqf rpshtml webaction∈core_function" << std::endl);
+  Rps_PayloadWebex* webex = Rps_PayloadWebex::webex_of_object(&_, _f.webexob);
+  RPS_ASSERT(webex);
+  std::ostream*pout = webex->web_ostream_ptr();
+  RPS_ASSERT(pout);
+  *pout << "host <tt>" << (rps_hostname()) << "</tt> pid " << (int)getpid();
   return {_f.webexob};
 #warning unimplemented rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction∈core_function"
 } // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
