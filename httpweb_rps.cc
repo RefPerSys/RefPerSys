@@ -147,7 +147,11 @@ rps_run_web_service()
 
     resp << "<!DOCTYPE html>\n"
          << "<html><head><title>RefPerSys error</title></head>\n"
-         << "<body><p><b>Backtrace:</b><br/><tt>";
+         << "<body><p><b>Backtrace on <tt>" << (rps_hostname())
+	 << "</tt> pid <i>" << (int)getpid() << "</i> git "
+	 << rps_shortgitid
+	 << ":</b><br/>" << std::endl
+	 << "<tt>";
     {
       std::ostringstream outs;
       outs  <<  RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error");
@@ -729,7 +733,7 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
               ;
           reqout << "<p>From <a href='http://refpersys.org/'>RefPerSys</a> git <tt>"
                  << Rps_Html_String(rps_lastgitcommit) << "</tt>"
-                 << " running on <tt>" << rps_hostname() << "</tt> pid "
+                 << " running on machine <tt>" << rps_hostname() << "</tt> pid "
                  << (int)getpid()
                  << " at " << Rps_Html_String(nowbuf) << ".</p>"
                  << "</body>\n</html>" << std::endl;
@@ -1411,9 +1415,9 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
   RPS_ASSERT(webex);
   std::ostream*pout = webex->web_ostream_ptr();
   RPS_ASSERT(pout);
-  *pout << "host <tt>" << (rps_hostname()) << "</tt> pid " << (int)getpid();
+  *pout << "host <tt>" << (rps_hostname()) << "</tt> pid " << (int)getpid()
+	<< " <small>git " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
   return {_f.webexob};
-#warning unimplemented rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction∈core_function"
 } // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
 
 ///////// end of file httpweb_rps.cc
