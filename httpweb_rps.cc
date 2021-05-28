@@ -144,10 +144,14 @@ rps_run_web_service()
                 << reqmethname
                 << " of "
                 << reqpath);
-
-    resp << "<!DOCTYPE html>\n"
-         << "<html><head><title>RefPerSys error</title></head>\n"
-         << "<body><p><b>Backtrace on <tt>" << (rps_hostname())
+#warning FIXME: errhandlerfun in rps_run_web_service should be improved
+    /* we should not output the DOCTYPE line if it has been emitted */
+    resp << "<!DOCTYPE html>\n<html>\n";
+    /* we should not output the <head> if it has been emitted */
+    resp << "<head><title>RefPerSys error!</title></head>\n" << std::endl;
+    /* we should emit the <body> tag only if it was absent */
+    resp << "<body>" << std::endl;
+    resp << "<p><b>* Backtrace on <tt>" << (rps_hostname())
 	 << "</tt> pid <i>" << (int)getpid() << "</i> git "
 	 << rps_shortgitid
 	 << ":</b><br/>" << std::endl
