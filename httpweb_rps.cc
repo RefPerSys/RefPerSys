@@ -148,7 +148,7 @@ rps_run_web_service()
     /* we should not output the DOCTYPE line if it has been emitted */
     resp << "<!DOCTYPE html>\n<html>\n";
     /* we should not output the <head> if it has been emitted */
-    resp << "<head><title>RefPerSys error!</title></head>\n" << std::endl;
+    resp << "<head><title>RefPerSys error (p" << (int)getpid() << "@" << rps_hostname << ")</title></head>" << std::endl;
     /* we should emit the <body> tag only if it was absent */
     resp << "<body>" << std::endl;
     resp << "<p><b>* Backtrace on <tt>" << (rps_hostname())
