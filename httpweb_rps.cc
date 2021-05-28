@@ -1416,7 +1416,8 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
   std::ostream*pout = webex->web_ostream_ptr();
   RPS_ASSERT(pout);
   *pout << "host <tt>" << (rps_hostname()) << "</tt> pid " << (int)getpid()
-	<< " <small>git " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
+	<< "<br/>" << std::endl
+	<<" <small>git " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
   return {_f.webexob};
 } // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
 
