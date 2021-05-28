@@ -9,7 +9,6 @@
       It holds the root HTML content when e.g. http://localhost:9090/
       is accessed, and ./refpersys -W. is running.
 --!>
-<?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf' rps_json='{"foo":1}'?>
 <!--
  Author(s):
       Basile Starynkevitch <basile@starynkevitch.net>
@@ -61,6 +60,7 @@
 
     <h1><a href='http://refpersys.org/'>RefPerSys</a>
       running on
+     <?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf' rps_json='{"foo":1}'?>
       <?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf' rps_json='{}'?>
     </h1>
 
