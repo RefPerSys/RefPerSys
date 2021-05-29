@@ -1049,7 +1049,8 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
                 << " for reqnum#" << reqnum
                 << " filepath=" << Rps_Cjson_String(filepath)
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_raw_stream"));
+                << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_raw_stream/end")
+		<< std::endl);
   free(linbuf), linbuf=nullptr;
   return OCS_PROCESSED;
 } // end rps_serve_onion_raw_stream
@@ -1098,6 +1099,10 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
   long curoff=0;
   int linecnt = 0;
   int nbpi=0;
+  Rps_PayloadWebex* pwebex = _f.obwebex->get_dynamic_payload<Rps_PayloadWebex>();
+  RPS_ASSERT(pwebex);
+  std::ostream*pwebout = pwebex->web_ostream_ptr();
+  RPS_ASSERT(pwebout);
   /****
    * TODO: We should read the fil line by line and make some expansion
    * in each of them, and append the raw lines and the expanded lines
@@ -1133,7 +1138,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                              << " for reqnum#" << reqnum
                              << " in " << filepath << ":" << linecnt
                              << " is not properly ended by ?> on the same line");
-              pres->write(linbuf, pi-linbuf);
+              pwebout->write(linbuf, pi-linbuf);
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(linbuf, pi-linbuf));
               std::string pistr{pi, endpi-pi+sizeof("?>")-1};
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream linecnt=" << linecnt
@@ -1281,19 +1286,22 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                       << " reqnum#" << reqnum);
       if (!pi)
         {
-          pres->write(linbuf, linlen);
+          pwebout->write(linbuf, linlen);
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(linbuf, linlen));
         }
     };				// end for each line
+  /*** here pwebnout is an internal string stream. We should write it as the HTTP reply.***/
+  RPS_ASSERT(pwebex);
+  pwebex->write_buffered_response();
   ////
-  RPS_WARNOUT("partly unimplemented rps_serve_onion_expanded_stream val="
+  RPS_WARNOUT("maybe unimplemented rps_serve_onion_expanded_stream val="
               << _f.valv << " reqnum#" << reqnum << " filepath=" << filepath
               << " " << reqmethname << " of '"
               << Rps_Cjson_String(reqpath)
               << "'" << std::endl
               << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
   return OCS_PROCESSED;
-#warning partly unimplemented rps_serve_onion_expanded_stream
+#warning maybe partly unimplemented rps_serve_onion_expanded_stream
 } // end rps_serve_onion_expanded_stream
 
 
@@ -1393,6 +1401,30 @@ rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
   RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_) << " ob:" << _f.ob << " with bad class " <<_f.obclass);
   return nullptr;
 } // end rps_web_output
+
+void
+Rps_PayloadWebex::write_buffered_response(void)
+{
+  std::ostringstream& outbuf = webex_outbuf;
+  outbuf << std::flush;
+  const std::string& outstr = outbuf.str();
+  unsigned outsiz= (unsigned) outstr.size();
+  RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::write_buffered_response reqnum#" << webex_reqnum.load() << " owner:" << owner()
+		<< " contype:" << webex_content_type
+		<< "outsiz:" << outsiz << std::endl
+		<< outstr << std::endl
+		<< "##### end reqnum#" << webex_reqnum.load() << " owner:" << owner());
+  RPS_ASSERT(webex_resp);
+  webex_resp->setHeader("Cache-Control", "max-age=1");
+  {
+    char buflen[24];
+    memset(buflen, 0, sizeof(buflen));
+    snprintf(buflen, sizeof(buflen), "%u", outsiz);
+    webex_resp->setHeader("Content-Length", buflen);
+  }
+  webex_resp->write(outstr.c_str(), outsiz);
+  RPS_DEBUG_LOG(WEB,  RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex::write_buffered_response/end") << std::endl);
+} // end Rps_PayloadWebex::write_buffered_response
 
 ////////////////////////////////////////////////////////////////
 //// methods for transient payload Rps_PayloadPiWeb

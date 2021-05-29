@@ -105,10 +105,6 @@ private:
   // might want to emit indented HTML, etc...
   //// the buffer containing the response data
   mutable std::ostringstream webex_outbuf;
-  ///
-  // FIXME: we may need to have some internal buffer output stream for the
-  // response.... but I am not sure...
-#warning perhaps some std::ostringstream* webex_stream field is needed
 public:
   void put_web_data(uint64_t reqnum, Onion::Request*requ, Onion::Response*resp);
   Onion::Request*  web_request() const
@@ -133,6 +129,7 @@ public:
   {
     return webex_state;
   };
+  void write_buffered_response(void);
   uint64_t numstate() const
   {
     return webex_numstate;
