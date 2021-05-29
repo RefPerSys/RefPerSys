@@ -63,6 +63,10 @@
      <?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf' rps_json='{"foo":1}'?>
     </h1>
 
+    <h2>Show object:</h2>
+
+    <p>Show: <input id='showobj_inp' type='input' class='showobj_rpscl'/></p>
+
   </body>
   <!-- end of file webroot/index.html.rps in refpersys.org -->
 </html>
