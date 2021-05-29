@@ -96,13 +96,15 @@ public:
 private:
   std::atomic<uint64_t> webex_reqnum;	// unique request number
   double webex_startim;		// start monotonic time
+  std::string webex_content_type;	// the Content-type
   Onion::Request* webex_requ;	// pointer to request
   Onion::Response* webex_resp;	// pointer to response
   Rps_Value webex_state; 	// some mutable state
   uint64_t webex_numstate;	// some numerical state
   int webex_indent;		// indentation in response, since we
-  // might want to emit indented HTML,
-  // etc...
+  // might want to emit indented HTML, etc...
+  //// the buffer containing the response data
+  mutable std::ostringstream webex_outbuf;
   ///
   // FIXME: we may need to have some internal buffer output stream for the
   // response.... but I am not sure...
@@ -117,11 +119,15 @@ public:
   {
     return webex_resp;
   };
+  void set_content_type(std::string);
   std::ostream* web_ostream_ptr() const
   {
-    /// TODO: maybe we need some internal string output stream....
-    return webex_resp;
+    return &webex_outbuf;
   };
+  bool web_output_contains(const std::string&substr) const {
+    webex_outbuf.flush();
+    return webex_outbuf.str().find(substr) >= 0;
+  }
   Rps_Value state_value() const
   {
     return webex_state;

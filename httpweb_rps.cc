@@ -141,10 +141,11 @@ rps_run_web_service()
                  );
 
     resp.setHeader("Cache-Control", "max-age=1");
+    resp.setHeader("Content-Type", "text/html; charset=UTF-8");
     RPS_WARNOUT("ONION internal error for web request "
                 << reqmethname
                 << " of "
-                << reqpath);
+                << Rps_QuotedC_String(reqpath));
 #warning FIXME: errhandlerfun in rps_run_web_service should be improved
     /* we should not output the DOCTYPE line if it has been emitted */
     resp << "<!DOCTYPE html>\n<html>\n";
@@ -264,6 +265,31 @@ Rps_PayloadWebex::dump_scan(Rps_Dumper*du) const
 
 
 void
+Rps_PayloadWebex::set_content_type(std::string ctype)
+{
+  RPS_ASSERT(webex_resp);
+  if (ctype.find("text/")) {
+    if (!ctype.find("charset"))
+      ctype += "; charset=UTF-8";
+  }
+  RPS_DEBUG_LOG(WEB, "set_content_type/start reqnum#"
+		<< webex_reqnum.load()
+		<< " ctype:" << Rps_QuotedC_String(ctype));
+  if (webex_content_type.empty()) {
+    webex_content_type = ctype;
+    if (webex_resp)
+      webex_resp->setHeader("Content-Type", webex_content_type);
+  }
+  else
+    RPS_WARNOUT("Web Content-type set more than once to "
+		<< Rps_QuotedC_String(ctype)
+		<< " and " << Rps_QuotedC_String(webex_content_type)
+		<< " for webexchange reqnum#" << webex_reqnum.load()
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex::set_content_type"));
+} // end Rps_PayloadWebex::set_content_type
+
+void
 Rps_PayloadWebex::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
   /// see function rpsldpy_vectob in store_rps.cc
@@ -277,11 +303,13 @@ Rps_PayloadWebex::Rps_PayloadWebex(Rps_ObjectZone*ownerobz)
   : Rps_Payload(Rps_Type::PaylWebex, ownerobz),
     webex_reqnum(0),
     webex_startim(rps_monotonic_real_time()),
+    webex_content_type(),
     webex_requ(nullptr),
     webex_resp(nullptr),
     webex_state(nullptr),
     webex_numstate(0),
-    webex_indent(0)
+    webex_indent(0),
+    webex_outbuf()
 {
 } // end Rps_PayloadWebex::Rps_PayloadWebex
 
@@ -289,11 +317,13 @@ Rps_PayloadWebex::Rps_PayloadWebex(Rps_ObjectZone*ownerobz,uint64_t reqnum,Onion
   : Rps_Payload(Rps_Type::PaylWebex, ownerobz),
     webex_reqnum(reqnum),
     webex_startim(rps_monotonic_real_time()),
+    webex_content_type(),
     webex_requ(preq),
     webex_resp(presp),
     webex_state(nullptr),
     webex_numstate(0),
-    webex_indent(0)
+    webex_indent(0),
+    webex_outbuf()
 {
   RPS_ASSERT(ownerobz && ownerobz->stored_type() == Rps_Type::Object);
   RPS_ASSERT(preq != nullptr);
@@ -881,12 +911,12 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                             << " reqnum#" << reqnum
                             << " reqmethname=" << reqmethname
                             << " fullmimebuf='" << fullmimebuf<< "'");
-              pres->setHeader("Content-Type:", fullmimebuf);
+              pres->setHeader("Content-Type", fullmimebuf);
             }
         }
       else
         {
-          pres->setHeader("Content-Type:", mime);
+          pres->setHeader("Content-Type", mime);
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_file filepath=" << filepath
                         << " reqnum#" << reqnum
                         << " reqmethname=" << reqmethname
