@@ -1541,9 +1541,17 @@ rpsapply_5DZWF0ZGjIM00eyylS(Rps_CallFrame*callerframe, ///
   RPS_ASSERT(webex);
   std::ostream*pout = webex->web_ostream_ptr();
   RPS_ASSERT(pout);
-  *pout <<  "<link rel=\"canonical\" href='" << Rps_Html_String(rps_onion_serverarg) << "'/>" << std::endl;
+  *pout <<  "<link rel=\"canonical\" href='" << Rps_Html_String(rps_onion_serverarg) << "'/>"
+	<< std::endl
+	<< "<!--°self-link reqnum#" << reqnum << "°--!>" << std::endl;
+  RPS_DEBUG_LOG(WEB, "*² \"rpshtml webaction url\"∈core_function webexob="<< _f.webexob
+		<< "@self-link " << Rps_QuotedC_String(rps_onion_serverarg) << " reqnum#" << reqnum);  
   return {_f.webexob};
 } // end rpsapply_5DZWF0ZGjIM00eyylS "rpshtml url webaction"∈core_function
+
+
+
+
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for "rpshtml webaction detail"∈core_function
