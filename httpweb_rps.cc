@@ -852,6 +852,9 @@ extern "C" onion_connection_status
 rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath, FILE*fil);
 
 
+
+
+
 onion_connection_status
 rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath)
 {
@@ -902,7 +905,7 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
   if (mime && (reqmethnum==OR_GET || reqmethnum==OR_HEAD))
     {
       // for textual content, ensure encoding is UTF-8
-      if (strstr(mime, "html") || strstr(mime, "svg") || strstr(mime, "css")
+      if (strstr(mime, "html") || strstr(mime, "svg") || strstr(mime, "css") || strstr(mime, "javascript")
           || strstr(mime, "text/"))
         {
           if (!strstr(mime, "UTF-8"))
@@ -996,7 +999,8 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
                  << " reqmethname=" << reqmethname
                  << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
                  " fstat failed: " << strerror(errno));
-  RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream filepath=" << Rps_Cjson_String(filepath)
+  unsigned long filsiz = (unsigned long)filstat.st_size;
+  RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream filepath=" << Rps_Cjson_String(filepath) << " of " << filsiz << " bytes"
                 << " reqnum#" << reqnum
                 << " reqmethname=" << reqmethname
                 << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
@@ -1007,7 +1011,7 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
   {
     char lenbuf[24];
     memset(lenbuf, 0, sizeof(lenbuf));
-    snprintf(lenbuf, sizeof(lenbuf), "%ld", (long)filstat.st_size);
+    snprintf(lenbuf, sizeof(lenbuf), "%lu", (long)filsiz);
     pres->setHeader("Content-length:", lenbuf);
   }
   pres->setHeader("Cache-Control", "max-age=1");
@@ -1042,7 +1046,7 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
     };
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_raw_stream ending val=" << val
                 << " fd#" << fileno(fil)
-                << " ending off=" << ftell(fil)
+                << " ending off=" << ftell(fil) << " filsiz:" << filsiz
                 << " linecnt=" << linecnt << ' '
                 << ((linlen<width_threshold)?"lastline=":"lastline:")
                 << ((linlen<width_threshold)?Rps_Cjson_String(std::string(linbuf)):Rps_Cjson_String(std::string(linbuf,width_threshold)))
@@ -1050,10 +1054,13 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
                 << " filepath=" << Rps_Cjson_String(filepath)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_raw_stream/end")
-		<< std::endl);
+                << std::endl);
   free(linbuf), linbuf=nullptr;
   return OCS_PROCESSED;
 } // end rps_serve_onion_raw_stream
+
+
+
 
 
 onion_connection_status
@@ -1410,10 +1417,10 @@ Rps_PayloadWebex::write_buffered_response(void)
   const std::string& outstr = outbuf.str();
   unsigned outsiz= (unsigned) outstr.size();
   RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::write_buffered_response reqnum#" << webex_reqnum.load() << " owner:" << owner()
-		<< " contype:" << webex_content_type
-		<< "outsiz:" << outsiz << std::endl
-		<< outstr << std::endl
-		<< "##### end reqnum#" << webex_reqnum.load() << " owner:" << owner());
+                << " contype:" << webex_content_type
+                << "outsiz:" << outsiz << std::endl
+                << outstr << std::endl
+                << "##### end reqnum#" << webex_reqnum.load() << " owner:" << owner());
   RPS_ASSERT(webex_resp);
   webex_resp->setHeader("Cache-Control", "max-age=1");
   {
