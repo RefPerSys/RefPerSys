@@ -1,4 +1,4 @@
-/* File webroot/css/refpersys.css in RefPerSys http://refpersys.org/
+*/* File webroot/css/refpersys.css in RefPerSys http://refpersys.org/
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
@@ -9,7 +9,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2020 The Reflective Persistent System Team
+ *      © Copyright 2020 - 2021 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -221,6 +221,14 @@ dd.methodselclo_rpscl {
     border: 0.5px dashed olive;
 }
 
+
+/********************** input of objects by name or by oid *******/
+input.showobj_rpscl {
+    background-color: azure;
+    color: brown;
+    border: 0.5px dasked navy;
+    margin: 2px;
+}
 
 /******
  * TODO: This remains incomplete, see #warning-s in C++ function
