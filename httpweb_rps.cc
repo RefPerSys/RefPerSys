@@ -140,6 +140,7 @@ rps_run_web_service()
                   << RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error")
                  );
 
+    resp.setHeader("Cache-Control", "max-age=1");
     RPS_WARNOUT("ONION internal error for web request "
                 << reqmethname
                 << " of "
@@ -891,6 +892,7 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                         << " reqmethname=" << reqmethname
                         << " plain mime="<< mime);
         }
+      pres->setHeader("Cache-Control", "max-age=1");
       FILE *fil = fopen(filepath.c_str(), "r");
       if (!fil)
         RPS_FATALOUT("rps_serve_onion_file filepath=" << filepath
@@ -974,6 +976,7 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
     snprintf(lenbuf, sizeof(lenbuf), "%ld", (long)filstat.st_size);
     pres->setHeader("Content-length:", lenbuf);
   }
+  pres->setHeader("Cache-Control", "max-age=1");
   constexpr int line_threshold = 48;
   constexpr long offset_threshold = 2048;
   constexpr int width_threshold = 80;
@@ -1044,6 +1047,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
 		 Rps_Value closurev;
                 );
   _f.valv = valarg;
+  pres->setHeader("Cache-Control", "max-age=1");
   _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
   _f.obwebex = Rps_PayloadWebex::make_obwebex(&_, preq, pres, reqnum);
   RPS_DEBUG_LOG(WEB, "start rps_serve_onion_expanded_stream reqnum:" << reqnum
