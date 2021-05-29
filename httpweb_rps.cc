@@ -892,7 +892,7 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                 << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
                 << " pres@" << (void*)pres
                 << " oniresp@" << (pres->c_handler())
-                << (expandrps?"EXPAND-RPS":"RAW")
+                << (expandrps?" EXPAND-RPS":" RAW")
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
 
@@ -1008,12 +1008,7 @@ rps_serve_onion_raw_stream(Rps_CallFrame*callframe, Rps_Value val,
                 << "... start " << Rps_ShowCallFrame(callframe)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_raw_stream/start"));
-  {
-    char lenbuf[24];
-    memset(lenbuf, 0, sizeof(lenbuf));
-    snprintf(lenbuf, sizeof(lenbuf), "%lu", (long)filsiz);
-    pres->setHeader("Content-length:", lenbuf);
-  }
+  pres->setLength(filsiz);
   pres->setHeader("Cache-Control", "max-age=1");
   constexpr int line_threshold = 48;
   constexpr long offset_threshold = 2048;
@@ -1300,6 +1295,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
   /*** here pwebnout is an internal string stream. We should write it as the HTTP reply.***/
   RPS_ASSERT(pwebex);
   pwebex->write_buffered_response();
+  pwebex->set_http_response_code(HTTP_OK);
   ////
   RPS_WARNOUT("maybe unimplemented rps_serve_onion_expanded_stream val="
               << _f.valv << " reqnum#" << reqnum << " filepath=" << filepath
@@ -1423,16 +1419,19 @@ Rps_PayloadWebex::write_buffered_response(void)
                 << "##### end reqnum#" << webex_reqnum.load() << " owner:" << owner());
   RPS_ASSERT(webex_resp);
   webex_resp->setHeader("Cache-Control", "max-age=1");
-  {
-    char buflen[24];
-    memset(buflen, 0, sizeof(buflen));
-    snprintf(buflen, sizeof(buflen), "%u", outsiz);
-    webex_resp->setHeader("Content-Length", buflen);
-  }
+  webex_resp->setLength(outsiz);
   webex_resp->write(outstr.c_str(), outsiz);
   RPS_DEBUG_LOG(WEB,  RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex::write_buffered_response/end") << std::endl);
 } // end Rps_PayloadWebex::write_buffered_response
 
+void
+Rps_PayloadWebex::set_http_response_code(int cod)
+{
+  RPS_DEBUG_LOG(WEB, "Rps_PayloadWebex::write_buffered_response reqnum#" << webex_reqnum.load() << " owner:" << owner() << " cod:" << cod);
+  RPS_ASSERT(webex_resp);
+  webex_resp->setCode(cod);
+} // end Rps_PayloadWebex::set_http_response_code
+  
 ////////////////////////////////////////////////////////////////
 //// methods for transient payload Rps_PayloadPiWeb
 void

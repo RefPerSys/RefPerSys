@@ -116,6 +116,7 @@ public:
     return webex_resp;
   };
   void set_content_type(std::string);
+  void set_http_response_code(int code);
   std::ostream* web_ostream_ptr() const
   {
     return &webex_outbuf;
