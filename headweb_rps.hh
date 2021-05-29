@@ -126,7 +126,7 @@ public:
   };
   bool web_output_contains(const std::string&substr) const {
     webex_outbuf.flush();
-    return webex_outbuf.str().find(substr) >= 0;
+    return webex_outbuf.str().find(substr) != std::string::npos;
   }
   Rps_Value state_value() const
   {

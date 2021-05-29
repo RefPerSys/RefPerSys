@@ -780,7 +780,7 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
           presp->write(outstr.c_str(), outstr.size());
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_web wrote " << Rps_QuotedC_String(outstr));
           return OCS_PROCESSED;
-        }
+        } // end if forbidden request to URL with .. or README.md
       else
         {
           auto web_exchange_ob = RPS_ROOT_OB(_8zNtuRpzXUP013WG9S);
@@ -1459,5 +1459,40 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
 	<<" <small>git " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
   return {_f.webexob};
 } // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
+
+////////////////////////////////////////////////////////////////
+// C++ closure for "rpshtml webaction detail"∈core_function
+
+extern "C" rps_applyingfun_t rpsapply_75D80xNEeeW007ERQI;
+Rps_TwoValues
+rpsapply_75D80xNEeeW007ERQI(Rps_CallFrame*callerframe, ///
+			    const Rps_Value arg0,
+			    const Rps_Value arg1, ///
+                            [[maybe_unused]]const Rps_Value arg2,
+                            [[maybe_unused]] const Rps_Value arg3_,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
+{
+  RPS_LOCALFRAME(nullptr,
+                 callerframe, //
+                 Rps_ObjectRef oba;
+                 Rps_ObjectRef webexob;
+                );
+  int64_t reqnum= -1;
+  RPS_DEBUGNL_LOG(WEB, "°+° \"rpshtml webaction details\"∈core_function _75D80xNEeeW007ERQI arg0=" << arg0
+                  << " arg1=" << arg1
+                  << " arg2=" << arg2 << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "'rpshtml webaction details'∈core_function start"));
+  _f.webexob = arg0.to_object();
+  reqnum= arg1.to_int();
+  RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml webaction details\"∈core_function webexob="<< _f.webexob << " with payload@" << (_f.webexob->get_payload())
+		<< "/" << (_f.webexob->payload_type_name())
+		<< " reqnum#" << reqnum);
+  Rps_PayloadWebex* webex = Rps_PayloadWebex::webex_of_object(&_, _f.webexob);
+  RPS_ASSERT(webex);
+  std::ostream*pout = webex->web_ostream_ptr();
+  RPS_ASSERT(pout);
+  *pout <<" <small>git " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
+  return {_f.webexob};
+} // end rpsapply_75D80xNEeeW007ERQI "rpshtml webaction"∈core_function
 
 ///////// end of file httpweb_rps.cc
