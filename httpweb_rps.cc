@@ -1447,9 +1447,12 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
                   << RPS_FULL_BACKTRACE_HERE(1, "'rpshtml webaction'∈core_function start"));
   _f.webexob = arg0.to_object();
   reqnum= arg1.to_int();
-  RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml webaction\"∈core_function webexob="<< _f.webexob << " with payload@" << (_f.webexob->get_payload())
+  RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml webaction\"∈core_function webexob="
+		<< _f.webexob << " with payload@" << (_f.webexob->get_payload())
 		<< "/" << (_f.webexob->payload_type_name())
-		<< " reqnum#" << reqnum);
+		<< " reqnum#" << reqnum
+		<< " from:" << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rpsapply_2sl5Gjb7swO04EcMqf"));
   Rps_PayloadWebex* webex = Rps_PayloadWebex::webex_of_object(&_, _f.webexob);
   RPS_ASSERT(webex);
   std::ostream*pout = webex->web_ostream_ptr();
@@ -1486,7 +1489,10 @@ rpsapply_75D80xNEeeW007ERQI(Rps_CallFrame*callerframe, ///
   reqnum= arg1.to_int();
   RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml webaction details\"∈core_function webexob="<< _f.webexob << " with payload@" << (_f.webexob->get_payload())
 		<< "/" << (_f.webexob->payload_type_name())
-		<< " reqnum#" << reqnum);
+		<< " reqnum#" << reqnum
+		<< " thread:" << rps_current_pthread_name()
+		<< " from:" << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rpsapply_75D80xNEeeW007ERQI"));
   Rps_PayloadWebex* webex = Rps_PayloadWebex::webex_of_object(&_, _f.webexob);
   RPS_ASSERT(webex);
   std::ostream*pout = webex->web_ostream_ptr();
