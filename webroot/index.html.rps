@@ -40,7 +40,8 @@
     <meta name="description" content="the RefPerSys system"/>
     <meta name="author" content="team@refpersys.org"/>
     <link rel="icon" href="./favicon.ico">
-    <link rel="canonical" href="http://refpersys.org"/>
+    <!-- self-link is: -->
+   <?refpersys suffix='rpshtml' action='_5DZWF0ZGjIM00eyylS' rps_json='{}'?>
 
     <title>RefPerSys</title>
 

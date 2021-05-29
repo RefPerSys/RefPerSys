@@ -124,7 +124,8 @@ public:
   {
     return &webex_outbuf;
   };
-  bool web_output_contains(const std::string&substr) const {
+  bool web_output_contains(const std::string&substr) const
+  {
     webex_outbuf.flush();
     return webex_outbuf.str().find(substr) != std::string::npos;
   }
