@@ -1121,6 +1121,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
     {
       curoff = ftell(fil);
       linlen = getline(&linbuf, &linsiz, fil);
+      nbpi = 0;
       if (linlen <= 0)
         break;
       curoff += linlen;
