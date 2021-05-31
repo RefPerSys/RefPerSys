@@ -1092,9 +1092,11 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                 << " valv=" << _f.valv << " obstrbuf=" << _f.obstrbuf
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_expanded_stream"));
-  [[maybe_unused]] constexpr int line_threshold = 64;
-  [[maybe_unused]] constexpr long offset_threshold = 2048;
-  [[maybe_unused]] constexpr int width_threshold = 80;
+  /// processing instructions should be in the first 128 lines, and
+  /// before offset 4096...
+  constexpr int line_threshold = 128;
+  constexpr long offset_threshold = 4096;
+  constexpr int width_threshold = 96;
   char*linbuf=nullptr;
   ssize_t linlen=0;
   size_t linsiz=0;
