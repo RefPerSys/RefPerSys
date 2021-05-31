@@ -1178,8 +1178,8 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                             << " reqnum#" << reqnum
                             << " sscanf nbscanpi=" << nbscanpi
                             << " pos_json=" << pos_json
-                            << " rps_suffix=|" << rps_suffix
-                            << "| rps_action=|" << rps_action << "|"
+                            << " rps_suffix=" << Rps_QuotedC_String(rps_suffix)
+                            << " rps_action=|" << rps_action << "|"
                             << std::endl
                             << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_expanded_stream+scanf"));
               if (nbscanpi >= 2 && pos_json>0)
@@ -1222,7 +1222,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                                     << " obaction=" << _f.obaction
                                     << " val=" << _f.valv
                                     << std::endl
-                                    << "... fd#" << fileno(fil)
+                                    << "... fd#" << fileno(fil) << ":" << filepath
                                     << " linecnt=" << linecnt
                                     << " reqnum#" << reqnum
                                     << " js=" << js
