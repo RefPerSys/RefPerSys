@@ -1134,6 +1134,8 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
           pi = strstr(linbuf, "<?refpersys");
           if (pi)
             {
+	      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream reqnum#"
+			    << reqnum << " pi:" << Rps_QuotedC_String(pi));
               endpi = strstr(pi, "?>");
               if (!endpi)
                 RPS_FATALOUT("processing instruction in " << linbuf
@@ -1141,7 +1143,9 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                              << " in " << filepath << ":" << linecnt
                              << " is not properly ended by ?> on the same line");
               pwebout->write(linbuf, pi-linbuf);
-              RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(linbuf, pi-linbuf));
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(linbuf, pi-linbuf)
+			    << " for reqnum#" << reqnum
+			    << " out-offset:" << pwebout->tellp());
               std::string pistr{pi, endpi-pi+sizeof("?>")-1};
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream linecnt=" << linecnt
                             << " reqnum#" << reqnum
