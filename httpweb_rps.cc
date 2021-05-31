@@ -1116,6 +1116,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
    ***/
   char rps_suffix[64];
   memset (rps_suffix, 0, sizeof(rps_suffix));
+  int piline = -1;
   for(;;)
     {
       curoff = ftell(fil);
@@ -1136,8 +1137,8 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
           pi = strstr(linbuf, "<?refpersys");
           if (pi)
             {
-	      RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream reqnum#"
-			    << reqnum << " pi:" << Rps_QuotedC_String(pi));
+              RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream reqnum#"
+                            << reqnum << " pi:" << Rps_QuotedC_String(pi));
               endpi = strstr(pi, "?>");
               if (!endpi)
                 RPS_FATALOUT("processing instruction in " << linbuf
@@ -1146,8 +1147,8 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                              << " is not properly ended by ?> on the same line");
               pwebout->write(linbuf, pi-linbuf);
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(linbuf, pi-linbuf)
-			    << " for reqnum#" << reqnum
-			    << " out-offset:" << pwebout->tellp());
+                            << " for reqnum#" << reqnum
+                            << " out-offset:" << pwebout->tellp());
               std::string pistr{pi, endpi-pi+sizeof("?>")-1};
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream linecnt=" << linecnt
                             << " reqnum#" << reqnum
@@ -1160,7 +1161,9 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                              << " reqnum#" << reqnum
                              << " filepath=" << filepath
                              << " duplicate processing instruction:" << std::endl
-                             << linbuf);
+                             << linbuf
+			     << std::endl << " previous pi line#" << piline);
+	      piline = linecnt;
               nbpi++;
               char rps_action[(Rps_Id::nbchars|3)+5];
               static_assert(sizeof(rps_action)>20);
@@ -1285,6 +1288,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                               << RPS_FULL_BACKTRACE_HERE(1,"rps_serve_onion_expanded_stream"));
                 }
               /// don't write endpi ... it is '?>'
+              pistr.erase();
             } // end if pi
         }
       else if (linecnt < 2*line_threshold)
@@ -1297,6 +1301,7 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
           pwebout->write(linbuf, linlen);
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_expanded_stream wrote " << Rps_QuotedC_String(linbuf, linlen));
         }
+      pi = nullptr;
     };				// end for each line
   /*** here pwebnout is an internal string stream. We should write it as the HTTP reply.***/
   RPS_ASSERT(pwebex);
@@ -1437,7 +1442,7 @@ Rps_PayloadWebex::set_http_response_code(int cod)
   RPS_ASSERT(webex_resp);
   webex_resp->setCode(cod);
 } // end Rps_PayloadWebex::set_http_response_code
-  
+
 ////////////////////////////////////////////////////////////////
 //// methods for transient payload Rps_PayloadPiWeb
 void
@@ -1548,10 +1553,10 @@ rpsapply_5DZWF0ZGjIM00eyylS(Rps_CallFrame*callerframe, ///
   std::ostream*pout = webex->web_ostream_ptr();
   RPS_ASSERT(pout);
   *pout <<  "<link rel=\"canonical\" href='" << Rps_Html_String(rps_onion_serverarg) << "'/>"
-	<< std::endl
-	<< "<!--°self-link reqnum#" << reqnum << "°--!>" << std::endl;
+        << std::endl
+        << "<!--°self-link reqnum#" << reqnum << "°--!>" << std::endl;
   RPS_DEBUG_LOG(WEB, "*² \"rpshtml webaction url\"∈core_function webexob="<< _f.webexob
-		<< "@self-link " << Rps_QuotedC_String(rps_onion_serverarg) << " reqnum#" << reqnum);  
+                << "@self-link " << Rps_QuotedC_String(rps_onion_serverarg) << " reqnum#" << reqnum);
   return {_f.webexob};
 } // end rpsapply_5DZWF0ZGjIM00eyylS "rpshtml url webaction"∈core_function
 
