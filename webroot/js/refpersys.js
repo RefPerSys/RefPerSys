@@ -27,6 +27,23 @@ function object_input_keypress_event_wrps(ev)
     console.group("object_input_keypress_event_wrps");
     var inp = ev.target;
     console.debug("ev=", ev, " inp=", inp);
+    //// We probably need to make some AJAX call here doing
+    //// autocompletion (in the RefPerSys server). And document it.
+    ////
+    //// We probably want some visual feedback. If a keypress is
+    //// wrong, we might change the background color of the input.
+    ////
+    //// If it is complete and refers to only one object, we might
+    //// also change the color.
+    
+    //// If it is not complete and refers to at most a dozen of
+    //// objects, perhaps have some teardown menu....  If it is not
+    //// complete and refers to many object, change the color
+    //// differently.
+    ////
+    //// The related C++ functions in RefPerSys are
+    //// Rps_ObjectZone::autocomplete_oid and
+    //// Rps_PayloadSymbol::autocomplete_name
     console.groupEnd();
 }				// end object_input_keypress_event_wrps
 
