@@ -1163,8 +1163,8 @@ rps_serve_onion_expanded_stream(Rps_CallFrame*callframe, Rps_Value valarg,
                              << " filepath=" << filepath
                              << " duplicate processing instruction:" << std::endl
                              << linbuf
-			     << std::endl << " previous pi line#" << piline);
-	      piline = linecnt;
+                             << std::endl << " previous pi line#" << piline);
+              piline = linecnt;
               nbpi++;
               char rps_action[(Rps_Id::nbchars|3)+5];
               static_assert(sizeof(rps_action)>20);
