@@ -1599,7 +1599,7 @@ rpsapply_75D80xNEeeW007ERQI(Rps_CallFrame*callerframe, ///
   RPS_ASSERT(webex);
   std::ostream*pout = webex->web_ostream_ptr();
   RPS_ASSERT(pout);
-  *pout <<" <small>git " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
+  *pout <<" <small class='gitinfo_rpscl'>git " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
   return {_f.webexob};
 } // end rpsapply_75D80xNEeeW007ERQI "rpshtml webaction"∈core_function
 
