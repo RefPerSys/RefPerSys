@@ -222,6 +222,17 @@ dd.methodselclo_rpscl {
 }
 
 
+span.end_details_rpscl {
+    color: red;
+}
+
+small.gitinfo_rpscl {
+    font-size: 75%;
+    margin: 1px;
+    font-family: Courier, monospace;
+    background-color: MintCream;
+}
+
 /********************** input of objects by name or by oid *******/
 input.showobj_rpscl {
     background-color: azure;
