@@ -69,7 +69,17 @@
 
     <h2>Show object:</h2>
 
-    <p>Show: <input id='showobj_inp' type='input' class='showobj_rpscl'/></p>
+    <p>Show: <input id='showobj_inp_webrpsid' type='input' class='showobj_rpscl'/></p>
+
+    <h3 id='shownobjects_webrpsid'>objects</h3>
+
+    <!-- the intuition is that AJAX machinery will add HTML elements inside the below div to show objects -->
+    <div id='shownobjects_webrpsid'>
+    </div>
+
+    <script>
+      did_load_main_page_wrps();
+    </script>
 
   </body>
   <!-- end of file webroot/index.html.rps in refpersys.org -->
