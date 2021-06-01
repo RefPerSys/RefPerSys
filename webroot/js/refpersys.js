@@ -36,8 +36,11 @@ function object_input_keypress_event_wrps(ev,w)
 /// page (index.html.rps)
 function did_load_main_page_wrps()
 {
+    console.group("did_load_main_page_wrps");
     var showobj_inp = $('#showobj_inp_webrpsid');
     showobj_inp.keypress(object_input_keypress_event_wrps);
+    console.debug("showobj_inp=", showobj_inp);
+    console.groupEnd();
 }		  // end did_load_main_page_wrps
 
 // end file webroot/js/refpersys.js of refpersys.org
