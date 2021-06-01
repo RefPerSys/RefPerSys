@@ -22,10 +22,11 @@
 
 /// Jquery function to be called on every keypress event for all input
 /// elements for a RefPerSys object.
-function object_input_keypress_event_wrps(ev,w)
+function object_input_keypress_event_wrps(ev)
 {
     console.group("object_input_keypress_event_wrps");
-    console.debug("ev=", ev, " w=", w);
+    var inp = ev.target;
+    console.debug("ev=", ev, " inp=", inp);
     console.groupEnd();
 }				// end object_input_keypress_event_wrps
 
