@@ -51,7 +51,7 @@
 
     <script src="./js/jquery.js"></script>
 
-    <script src="./js/vue.js"></script>
+    <!-- we could use js/vue.js later here -->
 
     <!-- RefPerSys handwritten JavaScript: -->
     <script src="./js/refpersys.js"></script>
@@ -64,7 +64,8 @@
      <?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf' rps_json='{"foo":1}'?>
     </h1>
 
-    <p>details: <?refpersys suffix='rpshtml' action='_75D80xNEeeW007ERQI' rps_json='{}'?></p>
+    <p>details: <?refpersys suffix='rpshtml' action='_75D80xNEeeW007ERQI' rps_json='{}'?>
+      <span class='end_details_rpscl'>•</span></p>
 
     <h2>Show object:</h2>
 
