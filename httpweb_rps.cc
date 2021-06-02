@@ -1517,10 +1517,14 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
 	<< " onion-server:" << rps_onion_serverarg << " -->" << std::endl
 	<< "<a class='selflink_rpscl' href='" << rps_onion_serverarg << "'>"
 	<< "host</a>: <tt>" << (rps_hostname()) << "</tt> pid " << (int)getpid()
-        << "<br/>" << std::endl
-        <<" <small>gitid " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
+        << "<br/>" << std::endl;
   return {_f.webexob};
 } // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
+
+#warning emission of gitid should go elsewhere
+/**** should go elsewhere
+        <<" <small>gitid " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
+***/
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for "rpshtml webaction url"∈core_function
