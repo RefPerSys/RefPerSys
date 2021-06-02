@@ -64,6 +64,9 @@
      <?refpersys suffix='rpshtml' action='_2sl5Gjb7swO04EcMqf' rps_json='{"foo":1}'?>
     </h1>
 
+    <!-- should use another processing instruction -->
+    <h3>gitid should be here</h3>
+
     <p>details: <?refpersys suffix='rpshtml' action='_75D80xNEeeW007ERQI' rps_json='{}'?>
       <span class='end_details_rpscl'>•</span></p>
 
