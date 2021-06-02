@@ -150,7 +150,7 @@ rps_run_web_service()
     /* we should not output the DOCTYPE line if it has been emitted */
     resp << "<!DOCTYPE html>\n<html>\n";
     /* we should not output the <head> if it has been emitted */
-    resp << "<head><title>RefPerSys error (p" << (int)getpid() << "@" << rps_hostname << ")</title></head>" << std::endl;
+    resp << "<head><title>RefPerSys error (p" << (int)getpid() << "@" << rps_hostname() << ")</title></head>" << std::endl;
     /* we should emit the <body> tag only if it was absent */
     resp << "<body>" << std::endl;
     resp << "<p><b>* Backtrace on <tt>" << (rps_hostname())
@@ -1513,8 +1513,10 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
   RPS_ASSERT(webex);
   std::ostream*pout = webex->web_ostream_ptr();
   RPS_ASSERT(pout);
-  *pout << "<!-- from¤ " << __FILE__ ":" << __LINE__ << " -->" << std::endl;
-  *pout << "host: <tt>" << (rps_hostname()) << "</tt> pid " << (int)getpid()
+  *pout << "<!-- from¤ " << __FILE__ ":" << __LINE__
+	<< " onion-server:" << rps_onion_serverarg << " -->" << std::endl
+	<< "<a class='selflink_rpscl' href='" << rps_onion_serverarg << "'>"
+	<< "host</a>: <tt>" << (rps_hostname()) << "</tt> pid " << (int)getpid()
         << "<br/>" << std::endl
         <<" <small>git " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
   return {_f.webexob};
