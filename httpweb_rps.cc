@@ -1521,10 +1521,43 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
   return {_f.webexob};
 } // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
 
-#warning emission of gitid should go elsewhere
-/**** should go elsewhere
-        <<" <small>gitid " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
-***/
+
+extern "C" rps_applyingfun_t rpsapply_5uPNoIZjxAw00VptvB;
+Rps_TwoValues
+rpsapply_5uPNoIZjxAw00VptvB(Rps_CallFrame*callerframe, ///
+                            const Rps_Value arg0,
+                            const Rps_Value arg1, ///
+                            [[maybe_unused]]const Rps_Value arg2,
+                            [[maybe_unused]] const Rps_Value arg3_,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs_)
+{
+  RPS_LOCALFRAME(nullptr,
+                 callerframe, //
+                 Rps_ObjectRef oba;
+                 Rps_ObjectRef webexob;
+                );
+  int64_t reqnum= -1;
+  RPS_DEBUGNL_LOG(WEB, "°+° \"rpshtml version webaction\"∈core_function _5uPNoIZjxAw00VptvB arg0=" << arg0
+                  << " arg1=" << arg1
+                  << " arg2=" << arg2 << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "'rpshtml version webaction'∈core_function start"));
+  _f.webexob = arg0.to_object();
+  reqnum= arg1.to_int();
+  RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml version webaction\"∈core_function webexob="
+                << _f.webexob << " with payload@" << (_f.webexob->get_payload())
+                << "/" << (_f.webexob->payload_type_name())
+                << " reqnum#" << reqnum
+                << " from:" << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_5uPNoIZjxAw00VptvB"));
+  Rps_PayloadWebex* webex = Rps_PayloadWebex::webex_of_object(&_, _f.webexob);
+  RPS_ASSERT(webex);
+  std::ostream*pout = webex->web_ostream_ptr();
+  RPS_ASSERT(pout);
+  *pout << "<!-- from¤ " << __FILE__ ":" << __LINE__  << " -->" << std::endl
+        <<" <small class='version_rpscl'>gitid " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
+  return {_f.webexob};
+} // end rpsapply_5uPNoIZjxAw00VptvB "rpshtml version webaction"∈core_function
+
 
 ////////////////////////////////////////////////////////////////
 // C++ closure for "rpshtml webaction url"∈core_function
