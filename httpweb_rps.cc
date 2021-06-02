@@ -1513,7 +1513,8 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
   RPS_ASSERT(webex);
   std::ostream*pout = webex->web_ostream_ptr();
   RPS_ASSERT(pout);
-  *pout << "host <tt>" << (rps_hostname()) << "</tt> pid " << (int)getpid()
+  *pout << "<!-- from¤ " << __FILE__ ":" << __LINE__ << " -->" << std::endl;
+  *pout << "host: <tt>" << (rps_hostname()) << "</tt> pid " << (int)getpid()
         << "<br/>" << std::endl
         <<" <small>git " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
   return {_f.webexob};
@@ -1553,6 +1554,7 @@ rpsapply_5DZWF0ZGjIM00eyylS(Rps_CallFrame*callerframe, ///
   RPS_ASSERT(webex);
   std::ostream*pout = webex->web_ostream_ptr();
   RPS_ASSERT(pout);
+  *pout << "<!-- from¤ " << __FILE__ ":" << __LINE__ << " -->" << std::endl;
   *pout <<  "<link rel=\"canonical\" href='" << Rps_Html_String(rps_onion_serverarg) << "'/>"
         << std::endl
         << "<!--°self-link reqnum#" << reqnum << "°--!>" << std::endl;
@@ -1560,7 +1562,6 @@ rpsapply_5DZWF0ZGjIM00eyylS(Rps_CallFrame*callerframe, ///
                 << "@self-link " << Rps_QuotedC_String(rps_onion_serverarg) << " reqnum#" << reqnum);
   return {_f.webexob};
 } // end rpsapply_5DZWF0ZGjIM00eyylS "rpshtml url webaction"∈core_function
-
 
 
 
@@ -1599,6 +1600,7 @@ rpsapply_75D80xNEeeW007ERQI(Rps_CallFrame*callerframe, ///
   RPS_ASSERT(webex);
   std::ostream*pout = webex->web_ostream_ptr();
   RPS_ASSERT(pout);
+  *pout << "<!-- from¤ " << __FILE__ ":" << __LINE__ << " -->" << std::endl;
   *pout <<" <small class='gitinfo_rpscl'>git " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
   return {_f.webexob};
 } // end rpsapply_75D80xNEeeW007ERQI "rpshtml webaction"∈core_function
