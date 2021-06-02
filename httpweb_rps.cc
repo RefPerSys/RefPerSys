@@ -1518,7 +1518,7 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
 	<< "<a class='selflink_rpscl' href='" << rps_onion_serverarg << "'>"
 	<< "host</a>: <tt>" << (rps_hostname()) << "</tt> pid " << (int)getpid()
         << "<br/>" << std::endl
-        <<" <small>git " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
+        <<" <small>gitid " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
   return {_f.webexob};
 } // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
 
