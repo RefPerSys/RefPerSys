@@ -43,6 +43,11 @@ span.emptyval_rpscl {
     background-color: lavender;
 }
 
+/* display of the link to the URL running RefPerSys */
+a.selflink_rpscl {
+    background-color: peachpuff;
+}
+
 /* display of string values, see C++ function rpsapply_0TwK4TkhEGZ03oTa5m */
 q.decor_rpscl {
     color: darkolivegreen;
