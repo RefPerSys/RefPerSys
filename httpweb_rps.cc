@@ -1554,7 +1554,7 @@ rpsapply_5uPNoIZjxAw00VptvB(Rps_CallFrame*callerframe, ///
   std::ostream*pout = webex->web_ostream_ptr();
   RPS_ASSERT(pout);
   *pout << "<!-- from¤ " << __FILE__ ":" << __LINE__  << " -->" << std::endl
-        <<" <small class='version_rpscl'>gitid " << rps_shortgitid << " timestamp " << rps_timestamp << "</small>" << std::endl;
+        <<" <p><small class='version_rpscl'>gitid " << rps_shortgitid << " timestamp " << rps_timestamp << "</small></p>" << std::endl;
   return {_f.webexob};
 } // end rpsapply_5uPNoIZjxAw00VptvB "rpshtml version webaction"∈core_function
 
