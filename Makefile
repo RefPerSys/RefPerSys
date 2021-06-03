@@ -51,12 +51,20 @@ RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
 RPS_DEBUG_BISON_OBJECTS = $(patsubst %.yy, %.dbg.o, $(RPS_BISON_SOURCES))
 
 
+-include $(shell /bin/ls ~/.refpersys.mk)
+
 #RPS_BUILD_CCACHE?= ccache
 RPS_BUILD_CCACHE=
 # the GCC compiler, see gcc.gnu.org
-## for some reason GCC 9 dont compile 
+## for some reason GCC 9 dont compile
+ifndef RPS_BUILD_CC
 RPS_BUILD_CC?= gcc-10
+endif
+
+ifndef RPS_BUILD_CXX
 RPS_BUILD_CXX?= g++-10
+endif
+
 # the GNU bison parser generator, see www.gnu.org/software/bison/
 RPS_BUILD_BISON?= bison
 RPS_BUILD_BISON_FLAGS?= --language=C++ --verbose
