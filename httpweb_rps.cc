@@ -1555,6 +1555,9 @@ rpsapply_5uPNoIZjxAw00VptvB(Rps_CallFrame*callerframe, ///
   RPS_ASSERT(pout);
   *pout << "<!-- from¤ " << __FILE__ ":" << __LINE__  << " -->" << std::endl
         <<" <p><small class='version_rpscl'>gitid " << rps_shortgitid << " timestamp " << rps_timestamp << "</small></p>" << std::endl;
+  RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml version webaction\"∈core_function webexob="
+                << _f.webexob << " ending reqnum#" << reqnum
+		<< " weboffset@" << (*pout).tellp());
   return {_f.webexob};
 } // end rpsapply_5uPNoIZjxAw00VptvB "rpshtml version webaction"∈core_function
 
