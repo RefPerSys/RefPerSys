@@ -3463,21 +3463,21 @@ public:
 
 
 
-#define RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,...)    \
-  struct RpsFrameData##Lin {__VA_ARGS__; };		    \
-  typedef                                           \
-  Rps_FieldedCallFrame<RpsFrameData##Lin>           \
-   Rps_FldCallFrame##Lin;                           \
-  class Rps_FrameAt##Lin :                          \
-    public Rps_FldCallFrame##Lin {                  \
-public:                                             \
- Rps_FrameAt##Lin(Rps_ObjectRef obd##Lin,           \
-		  Rps_CallFrame* prev##Lin) :               \
- Rps_FldCallFrame##Lin(obd##Lin, prev##Lin)         \
-    { };                                            \
-  };                                                \
-  Rps_FrameAt##Lin _((Descr),(Prev));               \
-  [[maybe_unused]] auto& _f = *_.fieldsptr();       \
+#define RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,...)        \
+  struct RpsFrameData##Lin {__VA_ARGS__; };             \
+  typedef                                               \
+  Rps_FieldedCallFrame<RpsFrameData##Lin>               \
+   Rps_FldCallFrame##Lin;                               \
+  class Rps_FrameAt##Lin :                              \
+    public Rps_FldCallFrame##Lin {                      \
+public:                                                 \
+ Rps_FrameAt##Lin(Rps_ObjectRef obd##Lin,               \
+                  Rps_CallFrame* prev##Lin) :           \
+ Rps_FldCallFrame##Lin(obd##Lin, prev##Lin)             \
+    { };                                                \
+  };                                                    \
+  Rps_FrameAt##Lin _((Descr),(Prev));                   \
+  [[maybe_unused]] auto& _f = *_.fieldsptr();           \
   /*end RPS_LOCALFRAME_ATBIS*/
 
 
