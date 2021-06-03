@@ -50,6 +50,8 @@
     <link href="./css/refpersys.css" rel="stylesheet">
 
     <script src="./js/jquery.js"></script>
+    
+    <script src="./js/jquery_ui.js"></script>
 
     <!-- we could use js/vue.js later here -->
 
