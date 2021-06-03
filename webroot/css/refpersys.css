@@ -235,7 +235,14 @@ small.gitinfo_rpscl {
     font-size: 75%;
     margin: 1px;
     font-family: Courier, monospace;
-    background-color: MintCream;
+    background-color: mintcream;
+}
+
+small.version_rpscl {
+    font-size: 70%;
+    font-family: Helvetica;
+    colorl: firebrick;
+    background-color: beige;
 }
 
 /********************** input of objects by name or by oid *******/
