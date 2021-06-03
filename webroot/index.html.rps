@@ -66,10 +66,10 @@
 
     <!-- should use another processing instruction for gitid-->
     <h3>version: 
-      <?refpersys suffix='rpshtml' action='_5uPNoIZjxAw00VptvB' rps_json='{}'?>
+      <?refpersys suffix='rpshtml' action='_5uPNoIZjxAw00VptvB' rps_json='{"showing":"gitid"}'?>
     </h3>
 
-    <p>details: <?refpersys suffix='rpshtml' action='_75D80xNEeeW007ERQI' rps_json='{}'?>
+    <p>details: <?refpersys suffix='rpshtml' action='_75D80xNEeeW007ERQI' rps_json='{"show":"details"}'?>
       <span class='end_details_rpscl'>•</span></p>
 
     <h2>Show object:</h2>
