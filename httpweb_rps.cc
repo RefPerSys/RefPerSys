@@ -834,14 +834,16 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
 
         };
     }
-  RPS_FATALOUT("unimplemented rps_serve_onion_web val: " << val << std::endl
-               << "... purl@" << (void*)purl
-               << " prequ@" << (void*)prequ
-               << " presp@" << (void*)presp
-               << " thread: " << thnambuf
-               << " reqnum#" << reqnum << ' ' << reqmethname <<  " reqpath: '" << reqpath << "'"
-              );
-#warning rps_serve_onion_web unimplemented
+#warning rps_serve_onion_web maybe unimplemented
+  RPS_WARNOUT("maybe unimplemented rps_serve_onion_web val: " << val << std::endl
+	      << "... purl@" << (void*)purl
+	      << " prequ@" << (void*)prequ
+	      << " presp@" << (void*)presp
+	      << " thread: " << rps_current_pthread_name()
+	      << " reqnum#" << reqnum << ' ' << reqmethname
+	      <<  " reqpath:" << Rps_QuotedC_String(reqpath) << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web/end"));
+  return OCS_NOT_PROCESSED;
 } // end rps_serve_onion_web
 
 
