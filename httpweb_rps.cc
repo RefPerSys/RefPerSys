@@ -1555,8 +1555,16 @@ rpsapply_5uPNoIZjxAw00VptvB(Rps_CallFrame*callerframe, ///
   RPS_ASSERT(webex);
   std::ostream*pout = webex->web_ostream_ptr();
   RPS_ASSERT(pout);
-  *pout << "<!-- from¤ " << __FILE__ ":" << __LINE__  << " -->" << std::endl
-        <<" <p><small class='version_rpscl'>gitid " << rps_shortgitid << " timestamp " << rps_timestamp << "</small></p>" << std::endl;
+  {
+    char startimbuf[64];
+    memset (startimbuf, 0, sizeof(startimbuf));
+    *pout << "<!-- from¤ " << __FILE__ ":" << __LINE__  << " -->" << std::endl
+	  <<" <p><small class='version_rpscl'>gitid " << rps_shortgitid << " started "
+	  << rps_strftime_centiseconds(startimbuf, sizeof(startimbuf),
+				       "%Y %b %d, %T.__ %Z",
+				       rps_get_start_wallclock_real_time())
+	  << "</small></p>" << std::endl;
+  }
   RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml version webaction\"∈core_function webexob="
                 << _f.webexob << " ending reqnum#" << reqnum
 		<< " weboffset@" << (*pout).tellp());
