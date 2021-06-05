@@ -76,7 +76,16 @@
 
     <h2>Show object:</h2>
 
-    <p>Show: <input id='showobj_inp_webrpsid' type='input' class='showobj_rpscl'/></p>
+    <div class="rpsShowObject">
+      <div class="rpsShowObject__id">
+        <span>Show:&nbsp;&nbsp;<span> 
+        <input type="input">
+      </div> <!-- .rpsShowObject__id -->
+
+      <div class="rpsShowObject__list">
+        <h3></h3>
+      </div> <!-- rpsShowObject__list" -->
+    </div> <!-- .rpsShowObject -->
 
     <h3 id='shownobjects_webrpsid'>objects</h3>
 

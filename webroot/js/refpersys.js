@@ -61,4 +61,10 @@ function did_load_main_page_wrps()
     console.groupEnd();
 }		  // end did_load_main_page_wrps
 
+
+$(document).ready(function () {
+    var $inp = $(); // TODO
+});
+
+
 // end file webroot/js/refpersys.js of refpersys.org
