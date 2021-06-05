@@ -63,7 +63,9 @@ function did_load_main_page_wrps()
 
 
 $(document).ready(function () {
-    var $inp = $(); // TODO
+    var $inp = $(".rpsShowObject__id input");
+
+    // TODO
 });
 
 

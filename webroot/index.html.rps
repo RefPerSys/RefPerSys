@@ -74,18 +74,20 @@
     <p>details: <?refpersys suffix='rpshtml' action='_75D80xNEeeW007ERQI' rps_json='{"show":"details"}'?>
       <span class='end_details_rpscl'>•</span></p>
 
-    <h2>Show object:</h2>
+    <section class=rpsShowObject">
+      <h2>Show object:</h2>
 
-    <div class="rpsShowObject">
       <div class="rpsShowObject__id">
-        <span>Show:&nbsp;&nbsp;<span> 
-        <input type="input">
+        <span>Object ID:&nbsp;<span> 
+        <input type="input" 
+               title="Type in the object ID starting with an underscore">
       </div> <!-- .rpsShowObject__id -->
 
       <div class="rpsShowObject__list">
         <h3></h3>
+        <span>TODO</span>
       </div> <!-- rpsShowObject__list" -->
-    </div> <!-- .rpsShowObject -->
+    </section> <!-- .rpsShowObject -->
 
     <h3 id='shownobjects_webrpsid'>objects</h3>
 
