@@ -75,11 +75,14 @@ function did_load_main_page_wrps()
 // will probably conflict with it.
 
 $(document).ready(function () {
+    console.group("document-ready");
     let $inp = $(".rpsShowObject__id input");
-    let $lst = $(".rpsShowObject__list 
+    let $lst = $(".rpsShowObject__list");
+    console.debug(" inp=", $inp, " lst=", $lst);
 
     $inp.autocomplete({
         source: function (request, response) {
+	    console.group("inp-autocomplete");
             $.ajax({
                 dataType: "json",
 
@@ -121,6 +124,7 @@ $(document).ready(function () {
             // TODO if required
         }
     });
+    console.groupEnd();
 });
 
 
