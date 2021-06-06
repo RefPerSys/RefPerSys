@@ -790,8 +790,8 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
           auto web_exchange_ob = RPS_ROOT_OB(_8zNtuRpzXUP013WG9S);
           std::string filpath =  std::string{rps_topdirectory}  + "/webroot/";
           RPS_DEBUG_LOG(WEB, "rps_serve_onion_web reqnum#" << reqnum
-			<< " reqmeth:" << onion_request_methods[reqmethnum]
-			<< " reqpath:" << Rps_QuotedC_String(reqpath));
+                        << " reqmeth:" << onion_request_methods[reqmethnum]
+                        << " reqpath:" << Rps_QuotedC_String(reqpath));
           if (reqpath.empty())
             {
               std::string rpsfilpath = filpath + "index.html.rps";
@@ -807,7 +807,7 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
                              << " oniresp@" << (presp->c_handler())
                              << " for reqpath=" << Rps_QuotedC_String(reqpath)
                              << " reqmethname=" << reqmethname
-			     << " filpath=" << Rps_QuotedC_String(filpath));
+                             << " filpath=" << Rps_QuotedC_String(filpath));
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_web found filpath='"
                             << Rps_Cjson_String(filpath)
                             << "' for empty " << reqmethname << " reqnum#" << reqnum);
@@ -819,8 +819,8 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
                         << " reqnum#" << reqnum
                         << " presp@" << (void*)presp
                         << " oniresp@" << (presp->c_handler())
-			<< " filpath=" << Rps_QuotedC_String(filpath)
-			<< " reqmethname=" << reqmethname
+                        << " filpath=" << Rps_QuotedC_String(filpath)
+                        << " reqmethname=" << reqmethname
                         << " for reqpath=" << Rps_QuotedC_String(reqpath)
                         << " thread:" << rps_current_pthread_name());
           if (!access(filpath.c_str(), F_OK))
@@ -842,13 +842,13 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
     }
 #warning rps_serve_onion_web maybe unimplemented
   RPS_WARNOUT("maybe unimplemented rps_serve_onion_web val: " << val << std::endl
-	      << "... purl@" << (void*)purl
-	      << " prequ@" << (void*)prequ
-	      << " presp@" << (void*)presp
-	      << " thread: " << rps_current_pthread_name()
-	      << " reqnum#" << reqnum << ' ' << reqmethname
-	      <<  " reqpath:" << Rps_QuotedC_String(reqpath) << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web/end"));
+              << "... purl@" << (void*)purl
+              << " prequ@" << (void*)prequ
+              << " presp@" << (void*)presp
+              << " thread: " << rps_current_pthread_name()
+              << " reqnum#" << reqnum << ' ' << reqmethname
+              <<  " reqpath:" << Rps_QuotedC_String(reqpath) << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web/end"));
   return OCS_NOT_PROCESSED;
 } // end rps_serve_onion_web
 
@@ -886,21 +886,24 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
     {
       expandrps = true;
       realfilepath.erase(realfilepath.end()-strlen(".rps"), realfilepath.end());
+      mime = onion_mime_get(realfilepath.c_str());
       RPS_DEBUG_LOG(WEB, "rps_serve_onion_file expandrps filepath=" << filepath << " reqnum#" << reqnum
                     << " reqmethname=" << reqmethname
-                    << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
-                    << " realfilepath='" << Rps_Cjson_String(realfilepath) << "'" << std::endl
+                    << " reqpath=" << Rps_QuotedC_String(reqpath)
+                    << " realfilepath=" << Rps_QuotedC_String(realfilepath)
+                    << " mime:" << mime
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
     }
-  mime = onion_mime_get(reqpath.c_str());
+  else
+    mime = onion_mime_get(reqpath.c_str());
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val << " mime=" << mime
-                << " filepath=" << filepath << " realfilepath=" << realfilepath
+                << " filepath=" << Rps_QuotedC_String(filepath) << " realfilepath=" << Rps_QuotedC_String(realfilepath)
                 << " reqnum#" << reqnum
                 << " reqmethname=" << reqmethname
-                << " reqpath=" << Rps_QuotedC_String(reqpath) << "'"
+                << " reqpath=" << Rps_QuotedC_String(reqpath)
                 << " pres@" << (void*)pres
                 << " oniresp@" << (pres->c_handler())
-                << (expandrps?" EXPAND-RPS":" RAW")
+                << (expandrps?" EXPAND-RPS":" NONEXPANDED")
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
 
@@ -981,10 +984,10 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
     }
   else
     {
-      RPS_FATALOUT("unimplemented rps_serve_onion_file filepath=" << filepath
+      RPS_FATALOUT("incomplete rps_serve_onion_file filepath=" << Rps_QuotedC_String(filepath)
                    << " reqnum#" << reqnum
                    << " reqmethname=" << reqmethname
-                   << " reqpath='" << reqpath << "'");
+                   << " reqpath=" << Rps_QuotedC_String(reqpath));
     }
 } // end rps_serve_onion_file
 
@@ -1522,9 +1525,9 @@ rpsapply_2sl5Gjb7swO04EcMqf(Rps_CallFrame*callerframe, ///
   std::ostream*pout = webex->web_ostream_ptr();
   RPS_ASSERT(pout);
   *pout << "<!-- from¤ " << __FILE__ ":" << __LINE__
-	<< " onion-server:" << rps_onion_serverarg << " -->" << std::endl
-	<< "<a class='selflink_rpscl' href='" << rps_onion_serverarg << "'>"
-	<< "host</a>: <tt>" << (rps_hostname()) << "</tt> pid " << (int)getpid()
+        << " onion-server:" << rps_onion_serverarg << " -->" << std::endl
+        << "<a class='selflink_rpscl' href='" << rps_onion_serverarg << "'>"
+        << "host</a>: <tt>" << (rps_hostname()) << "</tt> pid " << (int)getpid()
         << "<br/>" << std::endl;
   return {_f.webexob};
 } // end rpsapply_2sl5Gjb7swO04EcMqf "rpshtml webaction"∈core_function
@@ -1565,15 +1568,15 @@ rpsapply_5uPNoIZjxAw00VptvB(Rps_CallFrame*callerframe, ///
     char startimbuf[64];
     memset (startimbuf, 0, sizeof(startimbuf));
     *pout << "<!-- from¤ " << __FILE__ ":" << __LINE__  << " -->" << std::endl
-	  <<" <p><small class='version_rpscl'>gitid " << rps_shortgitid << " started "
-	  << rps_strftime_centiseconds(startimbuf, sizeof(startimbuf),
-				       "%Y %b %d, %T.__ %Z",
-				       rps_get_start_wallclock_real_time())
-	  << "</small></p>" << std::endl;
+          <<" <p><small class='version_rpscl'>gitid " << rps_shortgitid << " started "
+          << rps_strftime_centiseconds(startimbuf, sizeof(startimbuf),
+                                       "%Y %b %d, %T.__ %Z",
+                                       rps_get_start_wallclock_real_time())
+          << "</small></p>" << std::endl;
   }
   RPS_DEBUG_LOG(WEB, "*¹ \"rpshtml version webaction\"∈core_function webexob="
                 << _f.webexob << " ending reqnum#" << reqnum
-		<< " weboffset@" << (*pout).tellp());
+                << " weboffset@" << (*pout).tellp());
   return {_f.webexob};
 } // end rpsapply_5uPNoIZjxAw00VptvB "rpshtml version webaction"∈core_function
 
