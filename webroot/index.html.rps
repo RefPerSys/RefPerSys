@@ -8,7 +8,7 @@
 
       It holds the root HTML content when e.g. http://localhost:9090/
       is accessed, and ./refpersys -W. is running.
---!>
+-->
 <!--
  Author(s):
       Basile Starynkevitch <basile@starynkevitch.net>
@@ -49,14 +49,6 @@
     <!-- RefPerSys CSS -->
     <link href="./css/refpersys.css" rel="stylesheet">
 
-    <script src="./js/jquery.js"></script>
-    
-    <script src="./js/jquery_ui.js"></script>
-
-    <!-- we could use js/vue.js later here -->
-
-    <!-- RefPerSys handwritten JavaScript: -->
-    <script src="./js/refpersys.js"></script>
   </head>
 
   <body>
@@ -74,11 +66,11 @@
     <p>details: <?refpersys suffix='rpshtml' action='_75D80xNEeeW007ERQI' rps_json='{"show":"details"}'?>
       <span class='end_details_rpscl'>•</span></p>
 
-    <section class=rpsShowObject">
+    <section class="rpsShowObject">
       <h2>Show object:</h2>
 
       <div class="rpsShowObject__id">
-        <span>Object ID:&nbsp;<span> 
+        <span>Object ID:&nbsp;</span> 
         <input type="input" 
                title="Type in the object ID starting with an underscore">
       </div> <!-- .rpsShowObject__id -->
@@ -95,10 +87,10 @@
     <div id='shownobjects_webrpsid'>
     </div>
 
-    <script>
-      did_load_main_page_wrps();
-    </script>
-
+    <script src="./js/jquery.js"></script>
+    <script src="./js/jquery_ui.js"></script>
+    <!-- RefPerSys handwritten JavaScript: -->
+    <script src="./js/refpersys.js"></script>
   </body>
   <!-- end of file webroot/index.html.rps in refpersys.org -->
 </html>
