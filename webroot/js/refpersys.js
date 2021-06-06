@@ -26,7 +26,7 @@ function object_input_keypress_event_wrps(ev)
 {
     console.group("object_input_keypress_event_wrps");
     var inp = ev.target;
-    console.debug("ev=", ev, " inp=", inp);
+    console.debug("ev=", ev, " inp=", inp, " text=", inp.text);
     //// We probably need to make some AJAX call here doing
     //// autocompletion (in the RefPerSys server). And document it.
     ////
