@@ -59,8 +59,8 @@ span.stringval_rpscl {
 
 /* decoration of composite values */
 span.decorval_rpscl {
-    font: Arial Bold;
-    text-color: DarkSlateGrey;
+    font-family: Arial Bold;
+    color: DarkSlateGrey;
 }
 
 br.decor_rpscl {
@@ -145,7 +145,7 @@ span.objclass_rpscl {
 
 /* display of object space: */
 span.objspace_rpscl {
-    text-color: darkmagenta;
+    color: darkmagenta;
     font-size: 85%;
 }
 
@@ -241,7 +241,7 @@ small.gitinfo_rpscl {
 small.version_rpscl {
     font-size: 70%;
     font-family: Helvetica;
-    colorl: firebrick;
+    color: firebrick;
     background-color: beige;
 }
 
@@ -249,7 +249,7 @@ small.version_rpscl {
 input.showobj_rpscl {
     background-color: azure;
     color: brown;
-    border: 0.5px dasked navy;
+    border: 0.5px dashed navy;
     margin: 2px;
 }
 
