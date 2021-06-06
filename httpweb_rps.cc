@@ -734,8 +734,8 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
   const unsigned reqmethnum = reqflags&OR_METHODS;
   const char* reqmethname = onion_request_methods[reqmethnum];
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_web thread=" << thnambuf
-                << " reqpath='" << Rps_Cjson_String(reqpath)
-                << "' reqmethname=" << reqmethname
+                << " reqpath=" << Rps_QuotedC_String(reqpath)
+                << " reqmethname=" << reqmethname
                 << " reqnum#" << reqnum
                 << " val=" << val << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web/start"));
@@ -789,6 +789,9 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
         {
           auto web_exchange_ob = RPS_ROOT_OB(_8zNtuRpzXUP013WG9S);
           std::string filpath =  std::string{rps_topdirectory}  + "/webroot/";
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_web reqnum#" << reqnum
+			<< " reqmeth:" << onion_request_methods[reqmethnum]
+			<< " reqpath:" << Rps_QuotedC_String(reqpath));
           if (reqpath.empty())
             {
               std::string rpsfilpath = filpath + "index.html.rps";
@@ -802,19 +805,22 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
                              << "' reqnum#" << reqnum
                              << " presp@" << (void*)presp
                              << " oniresp@" << (presp->c_handler())
-                             << " for reqpath='" << Rps_Cjson_String(reqpath)
-                             << "'");
+                             << " for reqpath=" << Rps_QuotedC_String(reqpath)
+                             << " reqmethname=" << reqmethname
+			     << " filpath=" << Rps_QuotedC_String(filpath));
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_web found filpath='"
                             << Rps_Cjson_String(filpath)
                             << "' for empty " << reqmethname << " reqnum#" << reqnum);
             }
           else
             filpath += reqpath;
-          RPS_DEBUG_LOG(WEB, "rps_serve_onion_web filpath='"
-                        << Rps_Cjson_String(filpath)
-                        << "' reqnum#" << reqnum
+          RPS_DEBUG_LOG(WEB, "rps_serve_onion_web filpath="
+                        << Rps_QuotedC_String(filpath)
+                        << " reqnum#" << reqnum
                         << " presp@" << (void*)presp
                         << " oniresp@" << (presp->c_handler())
+			<< " filpath=" << Rps_QuotedC_String(filpath)
+			<< " reqmethname=" << reqmethname
                         << " for reqpath=" << Rps_QuotedC_String(reqpath)
                         << " thread:" << rps_current_pthread_name());
           if (!access(filpath.c_str(), F_OK))
@@ -871,9 +877,9 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
   std::string realfilepath = filepath;
   bool expandrps = false;
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_file start reqnum#" << reqnum
-                << " " << reqmethname << " '" << Rps_Cjson_String(reqpath)
-                << "', filepath='" << Rps_Cjson_String(filepath)
-                << "'" << std::endl
+                << " " << reqmethname << " " << Rps_QuotedC_String(reqpath)
+                << "', filepath=" << Rps_QuotedC_String(filepath)
+                << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
   if (filepath.size() > sizeof(".rps")
       && !strcmp(filepath.c_str() + filepath.size() - strlen(".rps"), ".rps"))
@@ -886,12 +892,12 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                     << " realfilepath='" << Rps_Cjson_String(realfilepath) << "'" << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
     }
-  mime = onion_mime_get(realfilepath.c_str());
+  mime = onion_mime_get(reqpath.c_str());
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val << " mime=" << mime
                 << " filepath=" << filepath << " realfilepath=" << realfilepath
                 << " reqnum#" << reqnum
                 << " reqmethname=" << reqmethname
-                << " reqpath='" << Rps_Cjson_String(reqpath) << "'"
+                << " reqpath=" << Rps_QuotedC_String(reqpath) << "'"
                 << " pres@" << (void*)pres
                 << " oniresp@" << (pres->c_handler())
                 << (expandrps?" EXPAND-RPS":" RAW")
