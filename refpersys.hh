@@ -669,11 +669,14 @@ static inline double rps_thread_cpu_time(void);
 char *rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt,
                                 double m);
 
-#define rps_now_strftime_centiseconds(bfr, len, fmt) \
-  rps_strftime_centiseconds((bfr), (len), (fmt), rps_wallclock_real_time())
+#define rps_now_strftime_centiseconds(Bfr, Len, Fmt) \
+  rps_strftime_centiseconds((Bfr), (Len), (Fmt), rps_wallclock_real_time())
 
-#define rps_now_strftime_centiseconds_nolen(bfr, fmt) \
-  rps_now_strftime_centiseconds((bfr), sizeof ((bfr)), (fmt))
+#define rps_now_strftime_centiseconds_nolen(Bfr, Fmt) do {      \
+    static_assert(sizeof((Bfr)) > 16);                          \
+    rps_now_strftime_centiseconds((Bfr), sizeof ((Bfr)),        \
+                                  (Fmt));                       \
+} while (0)
 
 
 struct rps_timer {
