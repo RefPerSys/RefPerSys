@@ -562,7 +562,7 @@ rps_check_mtime_files(void)
 char *
 rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
 {
-  if (!bfr || !fmt || !len)
+  if (!bfr || !fmt || len<4)
     return nullptr;
   //
   memset (bfr, 0, len);
@@ -579,14 +579,14 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
       double intpart = 0.0;
       double fraction = modf(tm, &intpart);
 
-      char minibfr[16];
-      memset(minibfr, 0, sizeof (minibfr));
+      char minibuf[16];
+      memset(minibuf, 0, sizeof (minibuf));
       assert(fraction >= 0.0 && fraction < 1.0);
 
-      snprintf(minibfr, sizeof (minibfr), "%.02f", fraction);
-      minibfr[4] = (char)0;
-      const char* dotminib = strchr(minibfr, '.');
-      if (dotminib && dotminib<minibfr+sizeof(minibfr)-4)
+      snprintf(minibuf, sizeof (minibuf), "%.02f", fraction);
+      minibuf[4] = (char)0;
+      const char* dotminib = strchr(minibuf, '.');
+      if (dotminib && dotminib<minibuf+sizeof(minibuf)-4)
         {
           strncpy(dotdunder, dotminib, 3);
         }
@@ -1908,7 +1908,7 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
         //
         if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
           {
-            fprintf(stderr, "%sRPS DEBUG %04ld ~ %s *^*^*%s\n\n",
+            fprintf(stderr, "%sRPS.DEBUG %04ld ~ %s *^*^*%s\n\n",
                     ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
                     ndbg, datebfr,
                     ontty?RPS_TERMINAL_NORMAL_ESCAPE:"");
