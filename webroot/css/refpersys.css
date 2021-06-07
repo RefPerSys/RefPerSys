@@ -48,6 +48,14 @@ a.selflink_rpscl {
     background-color: peachpuff;
 }
 
+/* div containing the input for the object to show */
+div.showobjdiv_rpscl {
+    background-color: azure;
+    border: dashed 2px;
+    margin: 1.5px;
+    padding: 3px;
+}
+
 /* display of string values, see C++ function rpsapply_0TwK4TkhEGZ03oTa5m */
 q.decor_rpscl {
     color: darkolivegreen;
