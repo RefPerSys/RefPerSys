@@ -69,16 +69,12 @@
     <section class="rpsShowObject">
       <h2>Show object:</h2>
 
-      <div class="rpsShowObject__id">
-        <span>Object ID:&nbsp;</span> 
-        <input type="input" 
-               title="Type in the object ID starting with an underscore">
-      </div> <!-- .rpsShowObject__id -->
+      <div class="showobjdiv_rpscl">
+        <label for='showobjinp_rpsid'>Object to show:&nbsp;</label> 
+        <input type="input" id='showobjinp_rpsid'
+               title="Enter object (by name or by oid)">
+      </div> <!-- showobjdiv_rpscl"
 
-      <div class="rpsShowObject__list">
-        <h3></h3>
-        <span>TODO</span>
-      </div> <!-- rpsShowObject__list" -->
     </section> <!-- .rpsShowObject -->
 
     <h3 id='shownobjects_webrpsid'>objects</h3>
