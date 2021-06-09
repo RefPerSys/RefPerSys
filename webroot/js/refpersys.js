@@ -61,71 +61,89 @@ function did_load_main_page_wrps()
     console.groupEnd();
 }		  // end did_load_main_page_wrps
 
-// IMPORTANT NOTE: 
-// The above two functions won't work because jQuery UI's $.autocomplete()
-// function takes care of binding the required events $.autocomplete() function
-// takes care of binding the required events. Instead, we need to define the
-// required variables and functions required by $.autocomplete(). Also, jQuery
-// UI seems to expect GET responses, and handling POST responses requires
-// additional tweaking which I'm not aware of. Suggest for the demo that we use
-// GET response for now, and then later see how we can use POST responses. In a
-// demo, the client won't care about whether objects are being displayed as GET
-// or POST requests.
-// Also please note that jQuery UI enforces its own custom CSS, so our own CSS
-// will probably conflict with it.
 
-$(document).ready(function () {
-    console.group("document-ready");
-    let $inp = $(".rpsShowObject__id input");
-    let $lst = $(".rpsShowObject__list");
-    console.debug(" inp=", $inp, " lst=", $lst);
 
-    $inp.autocomplete({
-        source: function (request, response) {
-	    console.group("inp-autocomplete");
-            $.ajax({
-                dataType: "json",
 
-                type: "get",
 
-                url: "http://localhost:9090/getobject", // replace URL
+/***
+ * Basile don't understand a single line below, so comments it.
+ * Several dozen words of written English (with URLs) are needed as
+ * explanation.  The intuition remains: most keypresses should make an
+ * AJAX request to RefPerSys.  These AJAX requests should be handled
+ * by C++ code which would call (inside RefPerSys) the C++ functions
+ * Rps_PayloadSymbol::autocomplete_name and
+ * Rps_ObjectZone::autocomplete_oid...
+ *
+ * Of course that C++ code should be related to documented HTTP
+ * requests. If possible, explain in written English the involved HTTP
+ * request and the expected HTTP response (and their MIME content-type
+ * and HTTP methods -for the request- and HTTP response code).
+ ***/
 
-                success: function (data) {
-                    $inp.removeClass("ui-autocomplete-loading");
-
-                    response($.map(data, function (item) {
-                        // TODO: htm needs to contain the code for displaying
-                        // the object details"
-                        
-                        let htm = "<h3>Showing object " 
-                                + item.oid 
-                                + "</h3>";
-                        $lst.html(htm);
-                    }));
-                }
-            });
-        },
-
-        minLength: 3,
-
-        open: function() {
-            // TODO if required
-        },
-
-        close: function() {
-            // TODO if required
-        },
-
-        focus: function(event, ui) {
-            // TODO if required
-        },
-
-        select: function(event, ui) {
-            // TODO if required
-        }
-    });
-    console.groupEnd();
-});
+//-// IMPORTANT NOTE: 
+//-// The above two functions won't work because jQuery UI's $.autocomplete()
+//-// function takes care of binding the required events $.autocomplete() function
+//-// takes care of binding the required events. Instead, we need to define the
+//-// required variables and functions required by $.autocomplete(). Also, jQuery
+//-// UI seems to expect GET responses, and handling POST responses requires
+//-// additional tweaking which I'm not aware of. Suggest for the demo that we use
+//-// GET response for now, and then later see how we can use POST responses. In a
+//-// demo, the client won't care about whether objects are being displayed as GET
+//-// or POST requests.
+//-// Also please note that jQuery UI enforces its own custom CSS, so our own CSS
+//-// will probably conflict with it.
+//-
+//-   $(document).ready(function () {
+//-       console.group("document-ready");
+//-       let obinp= $("#showobjinp_rpsid");
+//-       console.debug(" obinp=", obinp);
+//-
+//-       $inp.autocomplete({
+//-           source: function (request, response) {
+//-   	    console.group("inp-autocomplete");
+//-               $.ajax({
+//-                   dataType: "json",
+//-
+//-                   type: "get",
+//-
+//-                   url: "http://localhost:9090/getobject", // replace URL
+//-
+//-                   success: function (data) {
+//-                       $inp.removeClass("ui-autocomplete-loading");
+//-
+//-                       response($.map(data, function (item) {
+//-                           // TODO: htm needs to contain the code for displaying
+//-                           // the object details"
+//-                           
+//-                           let htm = "<h3>Showing object " 
+//-                                   + item.oid 
+//-                                   + "</h3>";
+//-                           $lst.html(htm);
+//-                       }));
+//-                   }
+//-               });
+//-           },
+//-
+//-           minLength: 3,
+//-
+//-           open: function() {
+//-               // TODO if required
+//-           },
+//-
+//-           close: function() {
+//-               // TODO if required
+//-           },
+//-
+//-           focus: function(event, ui) {
+//-               // TODO if required
+//-           },
+//-
+//-           select: function(event, ui) {
+//-               // TODO if required
+//-           }
+//-       });
+//-       console.groupEnd();
+//-   });
 
 
 // end file webroot/js/refpersys.js of refpersys.org
