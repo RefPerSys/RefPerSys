@@ -831,6 +831,9 @@ rps_serve_onion_web(Rps_Value val, Onion::Url*purl, Onion::Request*prequ, Onion:
                             );
               _f.valv = val;
               RPS_DEBUG_LOG(WEB, "rps_serve_onion_web reqnum#" << reqnum<< " should call rps_serve_onion_file" << std::endl
+                            << " reqmethname=" << reqmethname
+                            << " for reqpath=" << Rps_QuotedC_String(reqpath)
+                            << std::endl
                             << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_web-servefile"));
               return rps_serve_onion_file(&_, _f.valv, purl, prequ, presp, reqnum, filpath);
             }
@@ -903,7 +906,7 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                 << " reqpath=" << Rps_QuotedC_String(reqpath)
                 << " pres@" << (void*)pres
                 << " oniresp@" << (pres->c_handler())
-                << (expandrps?" EXPAND-RPS":" NONEXPANDED")
+                << (expandrps?" EXPAND-RPS":" NONEXPANDED_RPS")
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
 
