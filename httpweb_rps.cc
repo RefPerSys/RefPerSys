@@ -200,6 +200,8 @@ rps_run_web_service()
     uint64_t reqnum = 1+rps_onion_reqcount.fetch_add(1);
     RPS_DEBUG_LOG(WEB, "∅-rps_run_web_service req@" << (void*)&req
                   << " res@" << (void*)&res << " reqpath:" << req.path() << " reqnum#" << reqnum
+                  << " reqfullpath:" << req.fullpath()
+                  << " reqmeth:" << onion_request_methods[req.flags() & OR_METHODS]
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "∅-rps_run_web_service"));
     auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res, reqnum);
@@ -879,11 +881,11 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
   const char*mime = nullptr;
   std::string realfilepath = filepath;
   bool expandrps = false;
-  RPS_DEBUG_LOG(WEB, "rps_serve_onion_file start reqnum#" << reqnum
-                << " " << reqmethname << " " << Rps_QuotedC_String(reqpath)
-                << "', filepath=" << Rps_QuotedC_String(filepath)
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
+  RPS_DEBUGNL_LOG(WEB, "rps_serve_onion_file start reqnum#" << reqnum
+                  << " " << reqmethname << " " << Rps_QuotedC_String(reqpath)
+                  << "', filepath=" << Rps_QuotedC_String(filepath)
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
   if (filepath.size() > sizeof(".rps")
       && !strcmp(filepath.c_str() + filepath.size() - strlen(".rps"), ".rps"))
     {
@@ -897,12 +899,14 @@ rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, On
                     << " mime:" << mime
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_serve_onion_file"));
     }
-  else
+  else /*no .rps in reqpath*/
     mime = onion_mime_get(reqpath.c_str());
   RPS_DEBUG_LOG(WEB, "rps_serve_onion_file val=" << val << " mime=" << mime
-                << " filepath=" << Rps_QuotedC_String(filepath) << " realfilepath=" << Rps_QuotedC_String(realfilepath)
+                << " filepath=" << Rps_QuotedC_String(filepath)
+                << " realfilepath=" << Rps_QuotedC_String(realfilepath)
                 << " reqnum#" << reqnum
                 << " reqmethname=" << reqmethname
+                << " reqmethnum=" << reqmethnum
                 << " reqpath=" << Rps_QuotedC_String(reqpath)
                 << " pres@" << (void*)pres
                 << " oniresp@" << (pres->c_handler())
