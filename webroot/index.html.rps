@@ -46,8 +46,14 @@
     <title>RefPerSys</title>
 
 
-    <!-- RefPerSys CSS -->
+    <!-- RefPerSys CSS; conventionally our CSS class names end with _rpscl -->
     <link href="./css/refpersys.css" rel="stylesheet">
+
+    <!-- we use JQuery, at least 3.6, see http://jquery.com/ -->
+    <script src="./js/jquery.js"></script>
+
+    <!-- we need JQueryUI, at least 1.12, see http://jqueryui.com/ -->
+    <script src="./js/jquery-ui.js"></script>
 
   </head>
 
@@ -83,8 +89,6 @@
     <div id='shownobjects_webrpsid'>
     </div>
 
-    <script src="./js/jquery.js"></script>
-    <script src="./js/jquery-ui.js"></script>
     <!-- RefPerSys handwritten JavaScript: -->
     <script src="./js/refpersys.js"></script>
   </body>
