@@ -93,57 +93,62 @@ function did_load_main_page_wrps()
 //-// Also please note that jQuery UI enforces its own custom CSS, so our own CSS
 //-// will probably conflict with it.
 //-
-//-   $(document).ready(function () {
-//-       console.group("document-ready");
-//-       let obinp= $("#showobjinp_rpsid");
-//-       console.debug(" obinp=", obinp);
-//-
-//-       $inp.autocomplete({
-//-           source: function (request, response) {
-//-   	    console.group("inp-autocomplete");
-//-               $.ajax({
-//-                   dataType: "json",
-//-
-//-                   type: "get",
-//-
-//-                   url: "http://localhost:9090/getobject", // replace URL
-//-
-//-                   success: function (data) {
-//-                       $inp.removeClass("ui-autocomplete-loading");
-//-
-//-                       response($.map(data, function (item) {
-//-                           // TODO: htm needs to contain the code for displaying
-//-                           // the object details"
-//-                           
-//-                           let htm = "<h3>Showing object " 
-//-                                   + item.oid 
-//-                                   + "</h3>";
-//-                           $lst.html(htm);
-//-                       }));
-//-                   }
-//-               });
-//-           },
-//-
-//-           minLength: 3,
-//-
-//-           open: function() {
-//-               // TODO if required
-//-           },
-//-
-//-           close: function() {
-//-               // TODO if required
-//-           },
-//-
-//-           focus: function(event, ui) {
-//-               // TODO if required
-//-           },
-//-
-//-           select: function(event, ui) {
-//-               // TODO if required
-//-           }
-//-       });
-//-       console.groupEnd();
-//-   });
+$(document).ready(function () {
+       console.group("document-ready");
+       let $inp= $("#showobjinp_rpsid");
+       console.debug(" $inp=", $inp);
+
+       $inp.autocomplete({
+           source: function (request, response) {
+   	    console.group("inp-autocomplete");
+               $.ajax({
+                   dataType: "json",
+
+                   type: "get",
+
+                   url: "http://localhost:9090/getobject", // replace URL
+
+                   success: function (data) {
+                       $inp.removeClass("ui-autocomplete-loading");
+
+                       response($.map(data, function (item) {
+                           // TODO: htm needs to contain the code for displaying
+                           // the object details"
+                           
+                           let htm = "<h3>Showing object " 
+                                   + item.oid 
+                                   + "</h3>";
+                           $lst.html(htm);
+                       }));
+                   },
+
+                   error: function (data) {
+                       console.log("http://localhost:9090/getobject needs to be implemented");
+                       console.log(data);
+                   }
+               });
+           },
+
+           minLength: 3,
+
+           open: function() {
+               // TODO if required
+           },
+
+           close: function() {
+               // TODO if required
+           },
+
+           focus: function(event, ui) {
+               // TODO if required
+           },
+
+           select: function(event, ui) {
+               // TODO if required
+           }
+       });
+       console.groupEnd();
+   });
 
 
 // end file webroot/js/refpersys.js of refpersys.org
