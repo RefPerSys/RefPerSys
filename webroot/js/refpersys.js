@@ -100,7 +100,10 @@ $(document).ready(function () {
 
        $inp.autocomplete({
            source: function (request, response) {
-   	    console.group("inp-autocomplete");
+   	       console.group("inp-autocomplete");
+	       console.debug(" autocompleting $inp=", $inp,
+			     " request=", request,
+			     " response=", response);
                $.ajax({
                    dataType: "json",
 
@@ -110,7 +113,10 @@ $(document).ready(function () {
 
                    success: function (data) {
                        $inp.removeClass("ui-autocomplete-loading");
-
+		       console.debug(" autocompleted success $inp=", $inp,
+				     " data=", data,
+				     " request was:", request,
+				     " response was:", response);
                        response($.map(data, function (item) {
                            // TODO: htm needs to contain the code for displaying
                            // the object details"
@@ -147,6 +153,7 @@ $(document).ready(function () {
                // TODO if required
            }
        });
+       console.debug("after setting autocomplete $inp=", $inp);
        console.groupEnd();
    });
 
