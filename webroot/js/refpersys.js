@@ -45,7 +45,7 @@ function object_input_keypress_event_wrps(ev)
     //// Rps_ObjectZone::autocomplete_oid and
     //// Rps_PayloadSymbol::autocomplete_name
     console.groupEnd();
-}				// end object_input_keypress_event_wrps
+}                               // end object_input_keypress_event_wrps
 
 
 
@@ -59,7 +59,7 @@ function did_load_main_page_wrps()
     showobj_inp.keypress(object_input_keypress_event_wrps);
     console.debug("showobj_inp=", showobj_inp);
     console.groupEnd();
-}		  // end did_load_main_page_wrps
+}                 // end did_load_main_page_wrps
 
 
 
@@ -96,28 +96,37 @@ function did_load_main_page_wrps()
 $(document).ready(function () {
        console.group("document-ready");
        let $inp= $("#showobjinp_rpsid");
-       console.debug(" $inp=", $inp);
+       console.debug(" $inp=", $inp, " arguments=", arguments);
 
        $inp.autocomplete({
            source: function (request, response) {
-   	       console.group("inp-autocomplete");
-	       console.debug(" autocompleting $inp=", $inp,
-			     " request=", request,
-			     " response=", response);
+               console.group("inp-autocomplete");
+               console.debug(" autocompleting $inp=", $inp,
+                             " request=", request,
+                             " response=", response,
+                             " arguments=", arguments);
                $.ajax({
                    dataType: "json",
 
                    type: "get",
 
+                   //// the localhost:9090 URL should not be hardcoded
+                   //// below.  Perhaps that could be computed, maybe
+                   //// from $inp....?
                    url: "http://localhost:9090/getobject", // replace URL
 
                    success: function (data) {
+                       console.group("inp-autocomplete-success");
                        $inp.removeClass("ui-autocomplete-loading");
-		       console.debug(" autocompleted success $inp=", $inp,
-				     " data=", data,
-				     " request was:", request,
-				     " response was:", response);
+                       console.debug(" autocompleted success $inp=", $inp,
+                                     " data=", data,
+                                     " arguments=", arguments,
+                                     " request was:", request,
+                                     " response was:", response);
                        response($.map(data, function (item) {
+                           console.group("inp-autocomplete-response");
+                           console.debug("data=", data, " response=", response,
+                                         " arguments=", arguments);
                            // TODO: htm needs to contain the code for displaying
                            // the object details"
                            
@@ -125,12 +134,17 @@ $(document).ready(function () {
                                    + item.oid 
                                    + "</h3>";
                            $lst.html(htm);
+                           console.groupEnd();
                        }));
+                       console.groupEnd();
                    },
 
                    error: function (data) {
+                       console.group("inp-autocomplete-error");
+                       /// again, localhost:9090 should not be hardcoded
                        console.log("http://localhost:9090/getobject needs to be implemented");
-                       console.log(data);
+                       console.log("data=", data, " arguments=", arguments);
+                       console.groupEnd();
                    }
                });
            },
@@ -139,23 +153,33 @@ $(document).ready(function () {
 
            open: function() {
                // TODO if required
+               console.debug("inp-autocomplete-open arguments=", arguments,
+                             " $inp=", $inp);
            },
 
            close: function() {
                // TODO if required
+               console.debug("inp-autocomplete-close arguments=", arguments,
+                             " $inp=", $inp);
            },
 
            focus: function(event, ui) {
                // TODO if required
+               console.debug("inp-autocomplete-focus arguments=", arguments,
+                             " $inp=", $inp);
            },
 
            select: function(event, ui) {
                // TODO if required
+               console.debug("inp-autocomplete-select arguments=", arguments,
+                             " $inp=", $inp);
            }
        });
-       console.debug("after setting autocomplete $inp=", $inp);
-       console.groupEnd();
+    console.debug("after setting autocomplete $inp=", $inp,
+                  " arguments=", arguments);
+    console.groupEnd();
    });
 
 
+console.log("file webroot/js/refpersys.js has been parsed");
 // end file webroot/js/refpersys.js of refpersys.org
