@@ -57,7 +57,9 @@ function did_load_main_page_wrps()
     console.group("did_load_main_page_wrps");
     var showobj_inp = $('#showobj_inp_webrpsid');
     showobj_inp.keypress(object_input_keypress_event_wrps);
-    console.debug("showobj_inp=", showobj_inp);
+    console.debug("showobj_inp=", showobj_inp,
+		  " with keypress handler object_input_keypress_event_wrps=",
+		  object_input_keypress_event_wrps);
     console.groupEnd();
 }                 // end did_load_main_page_wrps
 
