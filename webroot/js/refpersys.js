@@ -108,16 +108,21 @@ $(document).ready(function () {
                $.ajax({
                    dataType: "json",
 
+		   /// FIXME: probably autocompletion should use some
+		   /// POST request, with the keyboard event?
                    type: "get",
 
-                   //// the localhost:9090 URL should not be hardcoded
+                   //// FIXME: the localhost:9090 URL should not be hardcoded
                    //// below.  Perhaps that could be computed, maybe
-                   //// from $inp....?
+                   //// from $inp....? And the getobject is *really*
+                   //// confusing....
                    url: "http://localhost:9090/getobject", // replace URL
 
                    success: function (data) {
                        console.group("inp-autocomplete-success");
-                       $inp.removeClass("ui-autocomplete-loading");
+		       /// it is unclear why the removeClass below is
+		       /// needed or useful...
+                       ///? $inp.removeClass("ui-autocomplete-loading");
                        console.debug(" autocompleted success $inp=", $inp,
                                      " data=", data,
                                      " arguments=", arguments,
@@ -126,7 +131,8 @@ $(document).ready(function () {
                        response($.map(data, function (item) {
                            console.group("inp-autocomplete-response");
                            console.debug("data=", data, " response=", response,
-                                         " arguments=", arguments);
+                                         " arguments=", arguments,
+					 " $inp=", inp);
                            // TODO: htm needs to contain the code for displaying
                            // the object details"
                            
