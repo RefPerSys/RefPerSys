@@ -8,7 +8,7 @@
 ##      Basile Starynkevitch <basile@starynkevitch.net>
 ##      Abhishek Chakravarti <abhishek@taranjali.org>
 ##      Nimesh Neema <nimeshneema@gmail.com>
-##
+ ##
 ##      © Copyright 2019 - 2021 The Reflective Persistent System Team
 ##      team@refpersys.org
 ##
@@ -40,6 +40,9 @@ RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
+RPS_QT_HEADERS:= $(sort $(wildcard *_qrps.hh))
+RPS_QT_SOURCES:= $(sort ($(wildcard *_qrps.cc))
+RPS_QT_MOC= moc
 ## for GNU bison
 RPS_BISON_SOURCES:= $(sort $(wildcard *_rps.yy))
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
@@ -166,8 +169,10 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 	$(COMPILE.cc)  $(RPS_BUILD_DEBUGFLAGS) -c -o $@ $<
 
 
-
-
+## for the Qt5 MOC (meta-object compiler)
+## see https://doc.qt.io/qt-5/moc.html
+%-qrps.moc.hh: %-qrps.hh
+	$(RPS_QT_MOC) $< -o $@
 
 clean:
 	$(RM) *.o *.orig *~ refpersys sanitized-refpersys *.gch *~
