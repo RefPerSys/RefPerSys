@@ -41,7 +41,7 @@ RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
 RPS_QT_HEADERS:= $(sort $(wildcard *_qrps.hh))
-RPS_QT_SOURCES:= $(sort ($(wildcard *_qrps.cc))
+RPS_QT_SOURCES:= $(sort $(wildcard *_qrps.cc))
 RPS_QT_MOC= moc
 ## for GNU bison
 RPS_BISON_SOURCES:= $(sort $(wildcard *_rps.yy))
