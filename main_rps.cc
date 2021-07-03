@@ -173,6 +173,14 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Run in batch mode, that is without any user interface (either graphical or command-line REPL).", //
     /*group:*/0 ///
   },
+  /* ======= Qt ======= */
+  {/*name:*/ "Qt", ///
+    /*key:*/ RPSPROGOPT_QT, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "dlopen-s tempgui-qrps.so and to run a temporary Qt interface", //
+    /*group:*/0 ///
+  },
   /* ======= version info ======= */
   {/*name:*/ "version", ///
     /*key:*/ RPSPROGOPT_VERSION, ///
@@ -285,6 +293,7 @@ std::vector<std::function<void(Rps_CallFrame*)>> rps_do_after_load_vect;
 void* rps_proghdl = nullptr;
 
 bool rps_batch = false;
+bool rps_do_qt = false;
 bool rps_disable_aslr = false;
 bool rps_without_terminal_escape = false;
 bool rps_without_quick_tests = false;
@@ -791,6 +800,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_batch = true;
     }
     return 0;
+    case RPSPROGOPT_QT:
+    {
+      rps_do_qt = true;
+    }
+    return 0;
     case RPSPROGOPT_JOBS:
     {
       int nbjobs = atoi(arg);
@@ -1063,6 +1077,7 @@ rps_parse_program_arguments(int &argc, char**argv)
 void
 rps_run_application(int &argc, char **argv)
 {
+  void* qtso = nullptr;
   RPS_LOCALFRAME(/*descr:*/nullptr,
                            /*callerframe:*/nullptr,
                            Rps_ObjectRef tempob;
@@ -1156,6 +1171,24 @@ rps_run_application(int &argc, char **argv)
         }
     };
   /////
+  /////////////////// dlopen temporary Qt
+  if (rps_do_qt) {
+    RPS_INFORMOUT("rps_run_application will do Qt from pid " << (int)getpid()
+		  << " on " << rps_hostname());
+    int badqtso = system("make tempgui-qrps.so");
+    if (badqtso)
+      RPS_FATALOUT("make tempgui-qrps.so failed : " << badqtso);
+    qtso = dlopen("./tempgui-qrps.so", RTLD_NOW);
+    if (!qtso)
+      RPS_FATALOUT("dlopen tempgui-qrps.so failed : " << dlerror());
+    typedef void rps_tempgui_init_progarg_sig(int &, char**);
+    rps_tempgui_init_progarg_sig*initfun
+      = (rps_tempgui_init_progarg_sig*)dlsym(qtso,
+					     "rps_tempgui_init_progarg");
+    if (!initfun)
+      RPS_FATALOUT("dlsym of rps_tempgui_init_progarg in ./tempgui-qrps.so failed : " << dlerror());
+    (*initfun)(argc, argv);
+  }
   if (rps_batch)
     {
       RPS_DEBUG_LOG(WEB,
@@ -1183,6 +1216,18 @@ rps_run_application(int &argc, char **argv)
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after repl")
                     << std::endl);
     }
+  else if (rps_do_qt) {
+    usleep (20000);
+    RPS_ASSERT (qtso != nullptr);
+    typedef void rps_tempgui_run_sig(void);
+    rps_tempgui_run_sig*qtrun
+      = (rps_tempgui_run_sig*)dlsym(qtso, "rps_tempgui_run");
+    if (!qtrun)
+      RPS_FATALOUT("dlsym of rps_tempgui_run in ./tempgui-qrps.so failed : " << dlerror());
+      RPS_INFORMOUT("Before running rps_tempgui_run" << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before rps_tempgui_run"));
+    (*qtrun);
+  }
   else if (rps_web_service)
     {
       usleep(100000);

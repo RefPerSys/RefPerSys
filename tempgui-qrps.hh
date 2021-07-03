@@ -39,6 +39,24 @@
 
 #include "refpersys.hh"
 
+/***
+  The Qt toolkit is known to run several threads internally. The
+  current RefPerSys runtime and garbage collector is not multi-thread
+  friendly. So by convention every Qt related code which deals with
+  RefPerSys values should do that under protection of some
+  mutex. Otherwise, non-reproducible crashes or unexpected behavior is
+  very likely to happen.
+ ***/
+extern "C" std::recursive_mutex rpsqt_mtx;
+#define RPSQT_WITH_LOCK() rpsqt_mtx.lock()
+#define RPSQT_LOCKED(Foo) ({rpsqt_mtx.lock(); (Foo);})
 
-#endif TEMPGUI_QRPS_INCLUDED
+#include <QApplication>
+
+extern "C" QApplication* rpsqt_app;
+
+extern "C" void rps_tempgui_init(int &argc, char**argv);
+extern "C" void rps_tempgui_run(void);
+
+#endif /*TEMPGUI_QRPS_INCLUDED*/
 //// end of file tempgui_qrps.hh for refpersys.org

@@ -91,3 +91,4 @@ tags
 synrepl_rps.cc
 synrepl_rps.hh
 synrepl_rps.output
+tempgui-qrps.moc.hh
