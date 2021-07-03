@@ -55,7 +55,7 @@ extern "C" std::recursive_mutex rpsqt_mtx;
 
 extern "C" QApplication* rpsqt_app;
 
-extern "C" void rps_tempgui_init(int &argc, char**argv);
+extern "C" void rps_tempgui_init_progarg(int &argc, char**argv);
 extern "C" void rps_tempgui_run(void);
 
 #endif /*TEMPGUI_QRPS_INCLUDED*/

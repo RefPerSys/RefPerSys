@@ -37,6 +37,7 @@
 #include "tempgui-qrps.moc.hh"
 
 std::recursive_mutex rpsqt_mtx;
+QApplication* rpsqt_app;
 
 void
 rps_tempgui_init_progarg(int &argc, char**argv)
@@ -44,15 +45,21 @@ rps_tempgui_init_progarg(int &argc, char**argv)
   RPSQT_WITH_LOCK();
   RPS_ASSERT(rpsqt_app == nullptr);
   rpsqt_app = new QApplication(argc, argv);
+  QCoreApplication::setOrganizationName("refpersys.org");
+  QCoreApplication::setApplicationName("RefPerSys temporary Qt");
+  QCoreApplication::setApplicationVersion(rps_shortgitid);
   RPS_INFORMOUT("with QApplication " << rpsqt_app);
 } // end rps_tempgui_init
+
+
 
 void
 rps_tempgui_run(void)
 {
   RPS_INFORMOUT("rps_tempgui_run:"<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "rps_tempgui_run"));
-  #warning incomplete rps_tempgui_run
+  RPS_ASSERT(rpsqt_app != nullptr);
+#warning incomplete rps_tempgui_run
   RPS_WARNOUT("should use rpsqt_app->exec");
 #warning rps_tempgui_run should use rpsqt_app->exec
 } //  end rps_tempgui_run

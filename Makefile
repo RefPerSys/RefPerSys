@@ -109,12 +109,13 @@ all:
 	$(RM) __timestamp.o __timestamp.c
 	sync &
 	$(MAKE) -$(MAKEFLAGS) refpersys
+	$(MAKE) -$(MAKEFLAGS) tempgui-qrps.so
 	sync
 
 .SECONDARY:  __timestamp.c $(RPS_BISON_CPLUSPLUS)
 
 refpersys: $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
-	$(LINK.cc) $(RPS_CORE_OBJECTS)  __timestamp.o \
+	$(LINK.cc) -rdynamic $(RPS_CORE_OBJECTS)  __timestamp.o \
            $(LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
