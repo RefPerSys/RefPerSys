@@ -39,6 +39,16 @@
 std::recursive_mutex rpsqt_mtx;
 QApplication* rpsqt_app;
 
+
+RpsTemp_MainWindow::RpsTemp_MainWindow() {
+  RPS_DEBUG_LOG(GUI, "start RpsTemp_MainWindow this@" << (void*)this);
+#warning incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor
+  RPS_WARNOUT("incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor this@" << (void*)this
+	      << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::RpsTemp_MainWindow"));
+} // end RpsTemp_MainWindow::RpsTemp_MainWindow
+
+
 void
 rps_tempgui_init_progarg(int &argc, char**argv)
 {
