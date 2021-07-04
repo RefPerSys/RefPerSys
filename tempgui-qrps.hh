@@ -38,6 +38,8 @@
 #define TEMPGUI_QRPS_INCLUDED
 
 #include "refpersys.hh"
+#include <QApplication>
+#include <QtWidgets>
 
 /***
   The Qt toolkit is known to run several threads internally. The
@@ -51,9 +53,14 @@ extern "C" std::recursive_mutex rpsqt_mtx;
 #define RPSQT_WITH_LOCK() rpsqt_mtx.lock()
 #define RPSQT_LOCKED(Foo) ({rpsqt_mtx.lock(); (Foo);})
 
-#include <QApplication>
 
 extern "C" QApplication* rpsqt_app;
+
+class RpsTemp_MainWindow : public QMainWindow {
+  Q_OBJECT
+public:
+  RpsTemp_MainWindow();
+};				// end class RpsTemp_MainWindow
 
 extern "C" void rps_tempgui_init_progarg(int &argc, char**argv);
 extern "C" void rps_tempgui_run(void);
