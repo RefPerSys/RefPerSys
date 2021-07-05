@@ -58,6 +58,8 @@ extern "C" QApplication* rpsqt_app;
 
 class RpsTemp_MainWindow : public QMainWindow {
   Q_OBJECT
+protected:
+  static std::set<RpsTemp_MainWindow*> mainwin_set;
 public:
   RpsTemp_MainWindow();
 };				// end class RpsTemp_MainWindow

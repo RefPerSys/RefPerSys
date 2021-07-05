@@ -39,9 +39,24 @@
 std::recursive_mutex rpsqt_mtx;
 QApplication* rpsqt_app;
 
-
+std::set<RpsTemp_MainWindow*> RpsTemp_MainWindow::mainwin_set;
 RpsTemp_MainWindow::RpsTemp_MainWindow() {
-  RPS_DEBUG_LOG(GUI, "start RpsTemp_MainWindow this@" << (void*)this);
+  {
+    RPS_DEBUG_LOG(GUI, "start RpsTemp_MainWindow this@" << (void*)this);
+    RPSQT_WITH_LOCK();
+    RPS_DEBUG_LOG(GUI, "start RpsTemp_MainWindow window#" << mainwin_set.size());
+    mainwin_set.insert(this);
+    connect(this, &QObject::destroyed, this,
+	    [=](){
+	      RPSQT_WITH_LOCK();
+	      mainwin_set.erase(this);
+	      RPS_ASSERT(rpsqt_app != nullptr);
+	      RPS_DEBUG_LOG(GUI, "destroying RpsTemp_MainWindow @" << (void*)this);
+	      if (mainwin_set.empty()) {
+		rpsqt_app->exit();
+	      }
+	    });
+  }
 #warning incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor
   RPS_WARNOUT("incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor this@" << (void*)this
 	      << std::endl
