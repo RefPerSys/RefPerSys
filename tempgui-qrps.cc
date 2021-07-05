@@ -39,20 +39,37 @@
 std::recursive_mutex rpsqt_mtx;
 QApplication* rpsqt_app;
 
-std::set<RpsTemp_MainWindow*> RpsTemp_MainWindow::mainwin_set;
-RpsTemp_MainWindow::RpsTemp_MainWindow() {
+
+//////////////// main window
+std::set<RpsTemp_MainWindow*> RpsTemp_MainWindow::mainwin_set_;
+RpsTemp_MainWindow::RpsTemp_MainWindow()
+  : mainwin_rank(0),
+    mainwin_dumpact(nullptr),
+    mainwin_quitact(nullptr),
+    mainwin_exitact(nullptr),
+    mainwin_objbrowser(nullptr)
+{
   {
     RPS_DEBUG_LOG(GUI, "start RpsTemp_MainWindow this@" << (void*)this);
     RPSQT_WITH_LOCK();
-    RPS_DEBUG_LOG(GUI, "start RpsTemp_MainWindow window#" << mainwin_set.size());
-    mainwin_set.insert(this);
+    RPS_DEBUG_LOG(GUI, "start RpsTemp_MainWindow window#" << mainwin_set_.size());
+    mainwin_set_.insert(this);
+    mainwin_rank = mainwin_set_.size();
+    setMinimumSize(512, 480); // minimal size in pixels
+    {
+      char titlebuf[48];
+      memset (titlebuf, 0, sizeof(titlebuf));
+      snprintf(titlebuf, sizeof(titlebuf), "RefPerSys/p%d window#%d",
+	       (int)getpid(), mainwin_rank);
+      setWindowTitle(QString(titlebuf));
+    }
     connect(this, &QObject::destroyed, this,
 	    [=](){
 	      RPSQT_WITH_LOCK();
-	      mainwin_set.erase(this);
+	      mainwin_set_.erase(this);
 	      RPS_ASSERT(rpsqt_app != nullptr);
 	      RPS_DEBUG_LOG(GUI, "destroying RpsTemp_MainWindow @" << (void*)this);
-	      if (mainwin_set.empty()) {
+	      if (mainwin_set_.empty()) {
 		rpsqt_app->exit();
 	      }
 	    });
@@ -62,6 +79,20 @@ RpsTemp_MainWindow::RpsTemp_MainWindow() {
 	      << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::RpsTemp_MainWindow"));
 } // end RpsTemp_MainWindow::RpsTemp_MainWindow
+
+
+////////////////////////////////////////////////////////////////
+///// object browser
+RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser()
+  : QTextBrowser()
+{
+#warning incomplete RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser constructor
+  RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser constructor this@" << (void*)this
+	      << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser"));
+} // end RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser
+
+
 
 
 void

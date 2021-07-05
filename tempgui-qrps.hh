@@ -39,6 +39,7 @@
 
 #include "refpersys.hh"
 #include <QApplication>
+#include <QTextBrowser>
 #include <QtWidgets>
 
 /***
@@ -56,11 +57,27 @@ extern "C" std::recursive_mutex rpsqt_mtx;
 
 extern "C" QApplication* rpsqt_app;
 
+class RpsTemp_ObjectBrowser : public QTextBrowser {
+  Q_OBJECT
+public:
+  RpsTemp_ObjectBrowser();
+#warning class RpsTemp_ObjectBrowser is incomplete
+};				// end RpsTemp_ObjectBrowser
+
 class RpsTemp_MainWindow : public QMainWindow {
   Q_OBJECT
+  int mainwin_rank;
+  /// actions in the top menubar
+  QAction* mainwin_dumpact;
+  QAction* mainwin_quitact;
+  QAction* mainwin_exitact;
+  //// the central widget is an object browser
+  RpsTemp_ObjectBrowser* mainwin_objbrowser;
 protected:
-  static std::set<RpsTemp_MainWindow*> mainwin_set;
+  static std::set<RpsTemp_MainWindow*> mainwin_set_;
 public:
+  int rank() const { return mainwin_rank; };
+  RpsTemp_ObjectBrowser* objbrowser() const { return mainwin_objbrowser; };
   RpsTemp_MainWindow();
 };				// end class RpsTemp_MainWindow
 
