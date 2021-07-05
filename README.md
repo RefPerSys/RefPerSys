@@ -189,7 +189,7 @@ The [JsonCPP](https://github.com/open-source-parsers/jsoncpp/) and
 [mail](https://linux.die.net/man/1/mail) command in your `$PATH`.
 
 To install the dependencies on a recent [Debian](https://debian.org/) 10 *buster* or
-[Ubuntu](https://ubuntu.com/) 19 system, you could run the following
+[Ubuntu](https://ubuntu.com/) 20 or 21 system, you could run the following
 steps
 
 * `sudo apt install libunistring-dev`
@@ -207,9 +207,12 @@ steps
 ### Build instructions
 
 You need a recent C++17 compiler such as `g++` (We use
-[GCC](http://gcc.gnu.org/) version [9](https://gcc.gnu.org/gcc-9/)) or
-[`clang++`](http://clang.llvm.org/) version, `libunistring-dev`. Look into,
-and perhaps improve, our `Makefile`. Build using `make -j 3` or more.
+[GCC](http://gcc.gnu.org/) version [GCC
+10](https://gcc.gnu.org/gcc-10/)) or [GCC
+11](https://gcc.gnu.org/gcc-11/) or
+[`clang++`](http://clang.llvm.org/) version [Clang
+11](https://releases.llvm.org/download.html). Look into, and perhaps
+improve, our `Makefile`. Build using `make -j 3` or more.
  
 You also should do a  `make clean` after any `git pull`
 
