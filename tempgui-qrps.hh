@@ -75,6 +75,7 @@ class RpsTemp_MainWindow : public QMainWindow {
   RpsTemp_ObjectBrowser* mainwin_objbrowser;
 protected:
   static std::set<RpsTemp_MainWindow*> mainwin_set_;
+  void create_menus(void);
 public:
   int rank() const { return mainwin_rank; };
   RpsTemp_ObjectBrowser* objbrowser() const { return mainwin_objbrowser; };

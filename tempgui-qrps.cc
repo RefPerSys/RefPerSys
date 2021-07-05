@@ -52,9 +52,9 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
   {
     RPS_DEBUG_LOG(GUI, "start RpsTemp_MainWindow this@" << (void*)this);
     RPSQT_WITH_LOCK();
-    RPS_DEBUG_LOG(GUI, "start RpsTemp_MainWindow window#" << mainwin_set_.size());
     mainwin_set_.insert(this);
     mainwin_rank = mainwin_set_.size();
+    RPS_DEBUG_LOG(GUI, "start RpsTemp_MainWindow window#" << mainwin_rank);
     setMinimumSize(512, 480); // minimal size in pixels
     {
       char titlebuf[48];
@@ -74,11 +74,27 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
 	      }
 	    });
   }
+  create_menus();
 #warning incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor
   RPS_WARNOUT("incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor this@" << (void*)this
 	      << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::RpsTemp_MainWindow"));
 } // end RpsTemp_MainWindow::RpsTemp_MainWindow
+
+
+void
+RpsTemp_MainWindow::create_menus(void)
+{
+    RPSQT_WITH_LOCK();
+    RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::create_menus start mainwin#"
+		  << rank());
+    auto mbar = menuBar();
+    auto appmenu = mbar->addMenu("App");
+   mainwin_dumpact =  appmenu->addAction("&Dump");
+   mainwin_quitact =  appmenu->addAction("&Quit");
+   mainwin_exitact =  appmenu->addAction("e&Xit");
+   mbar->show();
+} // end RpsTemp_MainWindow::create_menus
 
 
 ////////////////////////////////////////////////////////////////
@@ -104,8 +120,14 @@ rps_tempgui_init_progarg(int &argc, char**argv)
   QCoreApplication::setOrganizationName("refpersys.org");
   QCoreApplication::setApplicationName("RefPerSys temporary Qt");
   QCoreApplication::setApplicationVersion(rps_shortgitid);
+  {
+    RpsTemp_MainWindow*firstwin = new RpsTemp_MainWindow();
+    firstwin->setVisible(true);
+    firstwin->show();
+    RPS_DEBUG_LOG(GUI, "showing firstwin@" << (void*)firstwin << " rank#" << firstwin->rank());
+  }
   RPS_INFORMOUT("with QApplication " << rpsqt_app);
-} // end rps_tempgui_init
+} // end rps_tempgui_init_progarg
 
 
 
@@ -115,8 +137,9 @@ rps_tempgui_run(void)
   RPS_INFORMOUT("rps_tempgui_run:"<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "rps_tempgui_run"));
   RPS_ASSERT(rpsqt_app != nullptr);
-#warning incomplete rps_tempgui_run
-  RPS_WARNOUT("should use rpsqt_app->exec");
-#warning rps_tempgui_run should use rpsqt_app->exec
+  int ok = rpsqt_app->exec();
+  RPS_DEBUG_LOG(GUI, "rps_tempgui_run after exec ok=" << ok<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "ending rps_tempgui_run"));
 } //  end rps_tempgui_run
+
 //// end of file tempgui-qrps.cc for refpersys.org
