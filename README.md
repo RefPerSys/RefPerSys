@@ -213,6 +213,14 @@ and perhaps improve, our `Makefile`. Build using `make -j 3` or more.
  
 You also should do a  `make clean` after any `git pull`
 
+You may want to edit your `$HOME/.refpersys.mk` file to contain
+definitions of GNU `make` variables for your particular C and C++ compiler,
+like e.g.
+
+     # file ~/.refpersys.mk
+     RPS_BUILD_CC= gcc-11
+     RPS_BUILD_CXX= g++-11
+
 ## Garbage collection
 
 *RefPerSys* is a multi-threaded and garbage-collected system. We are
