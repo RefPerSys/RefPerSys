@@ -54,6 +54,11 @@ RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
 RPS_DEBUG_BISON_OBJECTS = $(patsubst %.yy, %.dbg.o, $(RPS_BISON_SOURCES))
 
 
+### The optional file $HOME/.refpersys.mk could contain definitions like
+###     # file ~/.refpersys.mk
+###     RPS_BUILD_CC= gcc-11
+###     RPS_BUILD_CXX= g++-11
+### This enables changing C and C++ compiler versions
 -include $(shell /bin/ls ~/.refpersys.mk)
 
 #RPS_BUILD_CCACHE?= ccache
