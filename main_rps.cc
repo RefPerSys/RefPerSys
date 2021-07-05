@@ -1224,9 +1224,11 @@ rps_run_application(int &argc, char **argv)
       = (rps_tempgui_run_sig*)dlsym(qtso, "rps_tempgui_run");
     if (!qtrun)
       RPS_FATALOUT("dlsym of rps_tempgui_run in ./tempgui-qrps.so failed : " << dlerror());
-      RPS_INFORMOUT("Before running rps_tempgui_run" << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before rps_tempgui_run"));
+    RPS_INFORMOUT("Before running rps_tempgui_run" << std::endl
+		  << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before rps_tempgui_run"));
     (*qtrun);
+    RPS_DEBUG_LOG(GUI, "after running rps_tempgui_run@" << (void*)qtrun << std::endl
+		  << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after rps_tempgui_run")););
   }
   else if (rps_web_service)
     {
