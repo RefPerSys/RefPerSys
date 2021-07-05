@@ -1231,7 +1231,6 @@ rps_run_application(int &argc, char **argv)
       (*qtrun);
       RPS_DEBUG_LOG(GUI, "after running rps_tempgui_run@" << (void*)qtrun << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after rps_tempgui_run"));
-      );
     }
   else if (rps_web_service)
     {
