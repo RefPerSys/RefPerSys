@@ -107,7 +107,7 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
   }
   create_menus();
 #warning incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor
-  RPS_WARNOUT("incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor this@" << (void*)this
+  RPS_WARNOUT("incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor this@" << (void*)this << " window#" << mainwin_rank
 	      << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::RpsTemp_MainWindow"));
 } // end RpsTemp_MainWindow::RpsTemp_MainWindow
