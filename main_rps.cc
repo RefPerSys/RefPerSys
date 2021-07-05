@@ -536,7 +536,7 @@ rps_check_mtime_files(void)
       /// care about them being newer than executable....
       auto wrp = curpathstr.find("webroot/");
       if (wrp >= 0 && wrp < curpathstr.size())
-	continue;
+        continue;
       std::string curfullpathstr= std::string{rps_topdirectory} + "/" + curpathstr;
       struct stat curstat = {};
       if (stat(curfullpathstr.c_str(), &curstat))
@@ -1172,23 +1172,24 @@ rps_run_application(int &argc, char **argv)
     };
   /////
   /////////////////// dlopen temporary Qt
-  if (rps_do_qt) {
-    RPS_INFORMOUT("rps_run_application will do Qt from pid " << (int)getpid()
-		  << " on " << rps_hostname());
-    int badqtso = system("make tempgui-qrps.so");
-    if (badqtso)
-      RPS_FATALOUT("make tempgui-qrps.so failed : " << badqtso);
-    qtso = dlopen("./tempgui-qrps.so", RTLD_NOW);
-    if (!qtso)
-      RPS_FATALOUT("dlopen tempgui-qrps.so failed : " << dlerror());
-    typedef void rps_tempgui_init_progarg_sig(int &, char**);
-    rps_tempgui_init_progarg_sig*initfun
-      = (rps_tempgui_init_progarg_sig*)dlsym(qtso,
-					     "rps_tempgui_init_progarg");
-    if (!initfun)
-      RPS_FATALOUT("dlsym of rps_tempgui_init_progarg in ./tempgui-qrps.so failed : " << dlerror());
-    (*initfun)(argc, argv);
-  }
+  if (rps_do_qt)
+    {
+      RPS_INFORMOUT("rps_run_application will do Qt from pid " << (int)getpid()
+                    << " on " << rps_hostname());
+      int badqtso = system("make tempgui-qrps.so");
+      if (badqtso)
+        RPS_FATALOUT("make tempgui-qrps.so failed : " << badqtso);
+      qtso = dlopen("./tempgui-qrps.so", RTLD_NOW);
+      if (!qtso)
+        RPS_FATALOUT("dlopen tempgui-qrps.so failed : " << dlerror());
+      typedef void rps_tempgui_init_progarg_sig(int &, char**);
+      rps_tempgui_init_progarg_sig*initfun
+        = (rps_tempgui_init_progarg_sig*)dlsym(qtso,
+            "rps_tempgui_init_progarg");
+      if (!initfun)
+        RPS_FATALOUT("dlsym of rps_tempgui_init_progarg in ./tempgui-qrps.so failed : " << dlerror());
+      (*initfun)(argc, argv);
+    }
   if (rps_batch)
     {
       RPS_DEBUG_LOG(WEB,
@@ -1216,20 +1217,22 @@ rps_run_application(int &argc, char **argv)
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after repl")
                     << std::endl);
     }
-  else if (rps_do_qt) {
-    usleep (20000);
-    RPS_ASSERT (qtso != nullptr);
-    typedef void rps_tempgui_run_sig(void);
-    rps_tempgui_run_sig*qtrun
-      = (rps_tempgui_run_sig*)dlsym(qtso, "rps_tempgui_run");
-    if (!qtrun)
-      RPS_FATALOUT("dlsym of rps_tempgui_run in ./tempgui-qrps.so failed : " << dlerror());
-    RPS_INFORMOUT("Before running rps_tempgui_run" << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before rps_tempgui_run"));
-    (*qtrun);
-    RPS_DEBUG_LOG(GUI, "after running rps_tempgui_run@" << (void*)qtrun << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after rps_tempgui_run")););
-  }
+  else if (rps_do_qt)
+    {
+      usleep (20000);
+      RPS_ASSERT (qtso != nullptr);
+      typedef void rps_tempgui_run_sig(void);
+      rps_tempgui_run_sig*qtrun
+        = (rps_tempgui_run_sig*)dlsym(qtso, "rps_tempgui_run");
+      if (!qtrun)
+        RPS_FATALOUT("dlsym of rps_tempgui_run in ./tempgui-qrps.so failed : " << dlerror());
+      RPS_INFORMOUT("Before running rps_tempgui_run" << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before rps_tempgui_run"));
+      (*qtrun);
+      RPS_DEBUG_LOG(GUI, "after running rps_tempgui_run@" << (void*)qtrun << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after rps_tempgui_run"));
+      );
+    }
   else if (rps_web_service)
     {
       usleep(100000);
