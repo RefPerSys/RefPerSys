@@ -55,7 +55,17 @@ extern "C" std::recursive_mutex rpsqt_mtx;
 #define RPSQT_LOCKED(Foo) ({rpsqt_mtx.lock(); (Foo);})
 
 
-extern "C" QApplication* rpsqt_app;
+class RpsTemp_Application : public QApplication {
+Q_OBJECT
+public slots:
+  void do_dump(void);
+  void do_exit(void);
+  void do_quit(void);
+public:
+  RpsTemp_Application(int&argc, char**argv);
+};				// end RpsTemp_Application
+
+extern "C" RpsTemp_Application* rpsqt_app;
 
 class RpsTemp_ObjectBrowser : public QTextBrowser {
   Q_OBJECT

@@ -37,8 +37,39 @@
 #include "tempgui-qrps.moc.hh"
 
 std::recursive_mutex rpsqt_mtx;
-QApplication* rpsqt_app;
+RpsTemp_Application* rpsqt_app;
 
+RpsTemp_Application::RpsTemp_Application(int &argc, char **argv)
+  : QApplication::QApplication(argc, argv) {
+};				// end RpsTemp_Application::RpsTemp_Application
+
+void
+RpsTemp_Application::do_dump(void)
+{
+  RPSQT_WITH_LOCK();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_dump start" <<std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_dump")
+		);
+} // end RpsTemp_Application::do_dump
+
+void
+RpsTemp_Application::do_exit(void)
+{
+  RPSQT_WITH_LOCK();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_exit start" <<std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_exit")
+		);
+} // end RpsTemp_Application::do_exit
+
+
+void
+RpsTemp_Application::do_quit(void)
+{
+  RPSQT_WITH_LOCK();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_quit start" <<std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_quit")
+		);
+} // end RpsTemp_Application::do_quit
 
 //////////////// main window
 std::set<RpsTemp_MainWindow*> RpsTemp_MainWindow::mainwin_set_;
@@ -85,15 +116,24 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
 void
 RpsTemp_MainWindow::create_menus(void)
 {
-    RPSQT_WITH_LOCK();
-    RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::create_menus start mainwin#"
-		  << rank());
-    auto mbar = menuBar();
-    auto appmenu = mbar->addMenu("App");
-   mainwin_dumpact =  appmenu->addAction("&Dump");
-   mainwin_quitact =  appmenu->addAction("&Quit");
-   mainwin_exitact =  appmenu->addAction("e&Xit");
-   mbar->show();
+  RPSQT_WITH_LOCK();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::create_menus start mainwin#"
+		<< rank());
+  auto mbar = menuBar();
+  auto appmenu = mbar->addMenu("App");
+  mainwin_dumpact = appmenu->addAction("&Dump");
+  mainwin_dumpact->setToolTip("dump the heap and continue");
+  connect(mainwin_dumpact, &QAction::triggered,
+	  rpsqt_app, &RpsTemp_Application::do_dump);
+  mainwin_quitact = appmenu->addAction("&Quit");
+  mainwin_quitact->setToolTip("quit without dumping state");
+  connect(mainwin_quitact, &QAction::triggered,
+	  rpsqt_app, &RpsTemp_Application::do_quit);
+  mainwin_exitact = appmenu->addAction("e&Xit");
+  mainwin_exitact->setToolTip("exit after dumping the heap");
+  connect(mainwin_exitact, &QAction::triggered,
+	  rpsqt_app, &RpsTemp_Application::do_exit);
+  mbar->show();
 } // end RpsTemp_MainWindow::create_menus
 
 
@@ -116,7 +156,7 @@ rps_tempgui_init_progarg(int &argc, char**argv)
 {
   RPSQT_WITH_LOCK();
   RPS_ASSERT(rpsqt_app == nullptr);
-  rpsqt_app = new QApplication(argc, argv);
+  rpsqt_app = new RpsTemp_Application(argc, argv);
   QCoreApplication::setOrganizationName("refpersys.org");
   QCoreApplication::setApplicationName("RefPerSys temporary Qt");
   QCoreApplication::setApplicationVersion(rps_shortgitid);
