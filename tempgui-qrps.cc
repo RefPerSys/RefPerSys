@@ -134,6 +134,10 @@ RpsTemp_MainWindow::create_menus(void)
   connect(mainwin_exitact, &QAction::triggered,
 	  rpsqt_app, &RpsTemp_Application::do_exit);
   mbar->show();
+  setVisible(true);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::create_menus ended mainwin#"
+		<< rank() << " @" << (void*)this
+		<< (isVisible()?" shown":" hidden"));
 } // end RpsTemp_MainWindow::create_menus
 
 
@@ -164,7 +168,8 @@ rps_tempgui_init_progarg(int &argc, char**argv)
     RpsTemp_MainWindow*firstwin = new RpsTemp_MainWindow();
     firstwin->setVisible(true);
     firstwin->show();
-    RPS_DEBUG_LOG(GUI, "showing firstwin@" << (void*)firstwin << " rank#" << firstwin->rank());
+    RPS_DEBUG_LOG(GUI, "showing firstwin@" << (void*)firstwin << " rank#" << firstwin->rank() 
+	      << (firstwin->isVisible()?" visible":" hidden"));
   }
   RPS_INFORMOUT("with QApplication " << rpsqt_app);
 } // end rps_tempgui_init_progarg
