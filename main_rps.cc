@@ -559,6 +559,8 @@ rps_check_mtime_files(void)
       if (bad)
         RPS_WARNOUT("rps_check_mtime_files: " << makecmd
                     << " failed with status# " << bad);
+      else
+        RPS_INFORMOUT("rps_check_mtime_files: did " << std::string(makecmd) << " successfully");
     }
   else
     RPS_FATAL("rps_check_mtime_files failed to construct makecmd in %s: %m",
@@ -1188,7 +1190,9 @@ rps_run_application(int &argc, char **argv)
             "rps_tempgui_init_progarg");
       if (!initfun)
         RPS_FATALOUT("dlsym of rps_tempgui_init_progarg in ./tempgui-qrps.so failed : " << dlerror());
+      RPS_DEBUG_LOG(GUI, "before calling rps_tempgui_init_progarg thru initfun=" << (void*)initfun);
       (*initfun)(argc, argv);
+      RPS_DEBUG_LOG(GUI, "after calling rps_tempgui_init_progarg thru initfun=" << (void*)initfun);
     }
   if (rps_batch)
     {
