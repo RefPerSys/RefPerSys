@@ -73,6 +73,10 @@ ifndef RPS_BUILD_CXX
 RPS_BUILD_CXX?= g++-10
 endif
 
+ifndef RPS_BUILD_COMPILER_FLAGS
+RPS_BUILD_COMPILER_FLAGS?= -std=gnu17
+endif
+
 # the GNU bison parser generator, see www.gnu.org/software/bison/
 RPS_BUILD_BISON?= bison
 RPS_BUILD_BISON_FLAGS?= --language=C++ --verbose
@@ -104,7 +108,8 @@ CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
 	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) \
 	    $(RPS_PKG_CFLAGS) \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
-            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\"
+            -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+            $(RPS_BUILD_COMPILER_FLAGS)
 
 LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 
