@@ -74,7 +74,7 @@ RPS_BUILD_CXX?= g++-10
 endif
 
 ifndef RPS_BUILD_COMPILER_FLAGS
-RPS_BUILD_COMPILER_FLAGS?= -std=gnu17
+RPS_BUILD_COMPILER_FLAGS?= -std=gnu++17
 endif
 
 # the GNU bison parser generator, see www.gnu.org/software/bison/
