@@ -188,9 +188,11 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 ### this shared object would be made then dlopened if ./refpersys gets
 ### some --Qt program argument...
 tempgui-qrps.so: tempgui-qrps.cc refpersys.hh tempgui-qrps.hh tempgui-qrps.moc.hh | refpersys
-	$(CXX) -shared -o $@ -fPIC -Wall -Wextra -O -g \
+	$(RPS_BUILD_CXX) $(RPS_BUILD_COMPILER_FLAGS) \
+                         -shared -o $@ -fPIC -Wall -Wextra -O -g \
 	              $(shell pkg-config --cflags Qt5Core Qt5Gui Qt5Widgets $(RPS_PKG_NAMES)) \
 	              $(shell pkg-config --libs Qt5Core Qt5Gui Qt5Widgets $(RPS_PKG_NAMES)) \
+                      -std=gnu++17 \
 	$<
 
 ################
