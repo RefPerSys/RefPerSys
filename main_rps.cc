@@ -535,7 +535,7 @@ rps_check_mtime_files(void)
       /// Files under webroot could be sent to browser, so we don't
       /// care about them being newer than executable....
       auto wrp = curpathstr.find("webroot/");
-      if (wrp >= 0 && wrp < curpathstr.size())
+      if (wrp < curpathstr.size())
         continue;
       std::string curfullpathstr= std::string{rps_topdirectory} + "/" + curpathstr;
       struct stat curstat = {};
