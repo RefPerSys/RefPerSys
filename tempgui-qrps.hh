@@ -83,7 +83,9 @@ class RpsTemp_MainWindow : public QMainWindow {
   QAction* mainwin_quitact;
   QAction* mainwin_exitact;
   QAction* mainwin_newact;
-  //// the central widget is a vertical box
+  //// the central windget is a frame
+  QFrame* mainwin_centralframe;
+  //// containing a vertical box
   QVBoxLayout* mainwin_vbox;
   //// .... containing an horizontal frame for showing objects
   QFrame* mainwin_showframe;

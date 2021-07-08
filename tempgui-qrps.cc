@@ -137,8 +137,13 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
 	    });
   }
   create_menus();
-  mainwin_vbox = new QVBoxLayout;
+  mainwin_centralframe = new QFrame(this);
+  mainwin_centralframe->setFrameStyle(QFrame::Box|QFrame::Plain);
+  mainwin_vbox = new QVBoxLayout(mainwin_centralframe);
   fill_vbox();
+  mainwin_centralframe->update();
+  mainwin_centralframe->show();
+  setCentralWidget(mainwin_centralframe);
 #warning incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor
   RPS_WARNOUT("incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor this@" << (void*)this << " window#" << mainwin_rank
 	      << std::endl
@@ -197,9 +202,11 @@ RpsTemp_MainWindow::fill_vbox(void)
   mainwin_showframe->setFrameStyle(QFrame::Box|QFrame::Plain);
   mainwin_showlabel = new QLabel(QString("show object:"),mainwin_showframe);
   mainwin_showlabel->show();
+  mainwin_showframe->update();
   mainwin_showframe->show();
   mainwin_vbox->addWidget(mainwin_showframe);
   mainwin_vbox->addWidget(mainwin_objbrowser);
+  mainwin_vbox->update();
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox end mainwin#"
 		<< rank());
 } // end RpsTemp_MainWindow::fill_vbox
