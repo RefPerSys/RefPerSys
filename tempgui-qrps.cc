@@ -220,6 +220,8 @@ RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser(QWidget*parent)
   RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser constructor this@" << (void*)this
 	      << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser"));
+  setHtml(QString("<h1>object browser</h1>"));
+  setReadOnly(true);
 } // end RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser
 
 
