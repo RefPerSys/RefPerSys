@@ -77,6 +77,18 @@ ifndef RPS_BUILD_COMPILER_FLAGS
 RPS_BUILD_COMPILER_FLAGS?= -std=gnu++17
 endif
 
+ifndef RPS_INCLUDE_DIRS
+RPS_INCLUDE_DIRS ?= /usr/local/include /usr/include /usr/include/jsoncpp
+endif
+
+ifndef RPS_INCLUDE_FLAGS
+RPS_INCLUDE_FLAGS ?= $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
+endif
+
+ifndef RPS_BUILD_INCLUDE_FLAGS
+RPS_BUILD_INCLUDE_FLAGS?=  -I . $(RPS_INCLUDE_FLAGS)
+endif
+
 # the GNU bison parser generator, see www.gnu.org/software/bison/
 RPS_BUILD_BISON?= bison
 RPS_BUILD_BISON_FLAGS?= --language=C++ --verbose
@@ -86,9 +98,9 @@ override RPS_BUILD_OPTIMFLAGS ?= -Og -g3
 RPS_BUILD_DEBUGFLAGS = -O0 -fno-inline -g3
 RPS_BUILD_CODGENFLAGS = 
 RPS_BUILD_SANITFLAGS = -fsanitize=address
-RPS_INCLUDE_DIRS = /usr/local/include /usr/include /usr/include/jsoncpp
-RPS_INCLUDE_FLAGS = $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
-RPS_BUILD_INCLUDE_FLAGS=  -I . $(RPS_INCLUDE_FLAGS)
+#RPS_INCLUDE_DIRS = /usr/local/include /usr/include /usr/include/jsoncpp
+#RPS_INCLUDE_FLAGS = $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
+#RPS_BUILD_INCLUDE_FLAGS=  -I . $(RPS_INCLUDE_FLAGS)
 
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
@@ -105,7 +117,7 @@ CXX= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CXX)
 LINK.cc= $(RPS_BUILD_CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             $(RPS_BUILD_CODGENFLAGS) \
-	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) \
+	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) -I/usr/include/jsoncpp \
 	    $(RPS_PKG_CFLAGS) \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
