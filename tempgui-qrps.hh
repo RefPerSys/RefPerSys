@@ -71,7 +71,7 @@ extern "C" RpsTemp_Application* rpsqt_app;
 class RpsTemp_ObjectBrowser : public QTextBrowser {
   Q_OBJECT
 public:
-  RpsTemp_ObjectBrowser();
+  RpsTemp_ObjectBrowser(QWidget*parent=nullptr);
 #warning class RpsTemp_ObjectBrowser is incomplete
 };				// end RpsTemp_ObjectBrowser
 
@@ -83,11 +83,17 @@ class RpsTemp_MainWindow : public QMainWindow {
   QAction* mainwin_quitact;
   QAction* mainwin_exitact;
   QAction* mainwin_newact;
-  //// the central widget is an object browser
+  //// the central widget is a vertical box
+  QVBoxLayout* mainwin_vbox;
+  //// .... containing an horizontal frame for showing objects
+  QFrame* mainwin_showframe;
+  QLabel* mainwin_showlabel;
+  //// .... containing an object browser
   RpsTemp_ObjectBrowser* mainwin_objbrowser;
 protected:
   static std::set<RpsTemp_MainWindow*> mainwin_set_;
   void create_menus(void);
+  void fill_vbox();
 public:
   int rank() const { return mainwin_rank; };
   RpsTemp_ObjectBrowser* objbrowser() const { return mainwin_objbrowser; };

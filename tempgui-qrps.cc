@@ -137,6 +137,8 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
 	    });
   }
   create_menus();
+  mainwin_vbox = new QVBoxLayout;
+  fill_vbox();
 #warning incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor
   RPS_WARNOUT("incomplete RpsTemp_MainWindow::RpsTemp_MainWindow constructor this@" << (void*)this << " window#" << mainwin_rank
 	      << std::endl
@@ -181,10 +183,31 @@ RpsTemp_MainWindow::create_menus(void)
 } // end RpsTemp_MainWindow::create_menus
 
 
+void
+RpsTemp_MainWindow::fill_vbox(void)
+{
+  RPSQT_WITH_LOCK();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox start mainwin#"
+		<< rank());
+  RPS_ASSERT(mainwin_vbox);
+  mainwin_objbrowser = new RpsTemp_ObjectBrowser(this);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox mainwin_objbrowser@" << (void*)mainwin_objbrowser
+		<< " mainwin#" << rank());
+  mainwin_showframe = new QFrame(this);
+  mainwin_showframe->setFrameStyle(QFrame::Box|QFrame::Plain);
+  mainwin_showlabel = new QLabel(QString("show object:"),mainwin_showframe);
+  mainwin_showlabel->show();
+  mainwin_showframe->show();
+  mainwin_vbox->addWidget(mainwin_showframe);
+  mainwin_vbox->addWidget(mainwin_objbrowser);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox end mainwin#"
+		<< rank());
+} // end RpsTemp_MainWindow::fill_vbox
+
 ////////////////////////////////////////////////////////////////
 ///// object browser
-RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser()
-  : QTextBrowser()
+RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser(QWidget*parent)
+  : QTextBrowser(parent)
 {
 #warning incomplete RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser constructor
   RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser constructor this@" << (void*)this
