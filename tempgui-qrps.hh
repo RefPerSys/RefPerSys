@@ -61,6 +61,7 @@ public slots:
   void do_dump(void);
   void do_exit(void);
   void do_quit(void);
+  void do_new_window(void);
 public:
   RpsTemp_Application(int&argc, char**argv);
 };				// end RpsTemp_Application
@@ -81,6 +82,7 @@ class RpsTemp_MainWindow : public QMainWindow {
   QAction* mainwin_dumpact;
   QAction* mainwin_quitact;
   QAction* mainwin_exitact;
+  QAction* mainwin_newact;
   //// the central widget is an object browser
   RpsTemp_ObjectBrowser* mainwin_objbrowser;
 protected:

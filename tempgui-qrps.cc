@@ -85,6 +85,23 @@ RpsTemp_Application::do_quit(void)
   RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_quit end");
 } // end RpsTemp_Application::do_quit
 
+void
+RpsTemp_Application::do_new_window(void)
+{
+  RPSQT_WITH_LOCK();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_new_window start" <<std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_new_window")
+		);
+  {
+    RpsTemp_MainWindow*newwin = new RpsTemp_MainWindow();
+    newwin->setVisible(true);
+    newwin->show();
+    RPS_DEBUG_LOG(GUI, "showing newwin@" << (void*)newwin << " rank#" << newwin->rank() 
+	      << (newwin->isVisible()?" visible":" hidden"));
+  }
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_new_window end");
+} // end RpsTemp_Application::do_dump
+
 //////////////// main window
 std::set<RpsTemp_MainWindow*> RpsTemp_MainWindow::mainwin_set_;
 RpsTemp_MainWindow::RpsTemp_MainWindow()
@@ -135,18 +152,27 @@ RpsTemp_MainWindow::create_menus(void)
 		<< rank());
   auto mbar = menuBar();
   auto appmenu = mbar->addMenu("App");
+  /// dump action
   mainwin_dumpact = appmenu->addAction("&Dump");
   mainwin_dumpact->setToolTip("dump the heap and continue");
   connect(mainwin_dumpact, &QAction::triggered,
 	  rpsqt_app, &RpsTemp_Application::do_dump);
+  /// quit action
   mainwin_quitact = appmenu->addAction("&Quit");
   mainwin_quitact->setToolTip("quit without dumping state");
   connect(mainwin_quitact, &QAction::triggered,
 	  rpsqt_app, &RpsTemp_Application::do_quit);
+  /// exit action
   mainwin_exitact = appmenu->addAction("e&Xit");
   mainwin_exitact->setToolTip("exit after dumping the heap");
   connect(mainwin_exitact, &QAction::triggered,
 	  rpsqt_app, &RpsTemp_Application::do_exit);
+  /// new window action
+  mainwin_newact = appmenu->addAction("N&ew window");
+  mainwin_newact->setToolTip("make a new window");
+  connect(mainwin_newact, &QAction::triggered,
+	  rpsqt_app, &RpsTemp_Application::do_new_window);
+  ///
   mbar->show();
   setVisible(true);
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::create_menus ended mainwin#"
