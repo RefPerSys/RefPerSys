@@ -50,6 +50,11 @@ RpsTemp_Application::do_dump(void)
   RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_dump start" <<std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_dump")
 		);
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                 /*callerframe:*/nullptr,
+		 );
+  rps_dump_into(".", &_);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_dump end");
 } // end RpsTemp_Application::do_dump
 
 void
@@ -59,6 +64,13 @@ RpsTemp_Application::do_exit(void)
   RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_exit start" <<std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_exit")
 		);
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                 /*callerframe:*/nullptr,
+		 );
+  rps_dump_into(".", &_);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_exit did dump");
+  this->exit(0);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_exit end");
 } // end RpsTemp_Application::do_exit
 
 
@@ -69,6 +81,8 @@ RpsTemp_Application::do_quit(void)
   RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_quit start" <<std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_quit")
 		);
+  this->exit(0);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_quit end");
 } // end RpsTemp_Application::do_quit
 
 //////////////// main window
