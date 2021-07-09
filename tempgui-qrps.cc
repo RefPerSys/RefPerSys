@@ -109,6 +109,11 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
     mainwin_dumpact(nullptr),
     mainwin_quitact(nullptr),
     mainwin_exitact(nullptr),
+    mainwin_newact(nullptr),
+    mainwin_centralframe(nullptr),
+    mainwin_vbox(nullptr),
+    mainwin_showframe(nullptr),
+    mainwin_showlabel(nullptr),
     mainwin_objbrowser(nullptr)
 {
   {
@@ -202,6 +207,7 @@ RpsTemp_MainWindow::fill_vbox(void)
   mainwin_showframe->setFrameStyle(QFrame::Box|QFrame::Plain);
   mainwin_showlabel = new QLabel(QString("show object:"),mainwin_showframe);
   mainwin_showlabel->show();
+  this->setStyleSheet("RpsTemp_ObjectBrowser {background-color: yellow}");
   mainwin_showframe->update();
   mainwin_showframe->show();
   mainwin_vbox->addWidget(mainwin_showframe);
