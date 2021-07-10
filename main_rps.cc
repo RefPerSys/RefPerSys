@@ -1177,7 +1177,8 @@ rps_run_application(int &argc, char **argv)
   if (rps_do_qt)
     {
       RPS_INFORMOUT("rps_run_application will do Qt from pid " << (int)getpid()
-                    << " on " << rps_hostname());
+                    << " on " << rps_hostname()
+                    << " so make tempgui-qrps.so");
       int badqtso = system("make tempgui-qrps.so");
       if (badqtso)
         RPS_FATALOUT("make tempgui-qrps.so failed : " << badqtso);
