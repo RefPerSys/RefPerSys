@@ -132,10 +132,10 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
     RPS_DEBUG_LOG(GUI, "start RpsTemp_MainWindow window#" << mainwin_rank);
     setMinimumSize(512, 480); // minimal size in pixels
     {
-      char titlebuf[48];
+      char titlebuf[64];
       memset (titlebuf, 0, sizeof(titlebuf));
-      snprintf(titlebuf, sizeof(titlebuf), "RefPerSys/p%d window#%d",
-	       (int)getpid(), mainwin_rank);
+      snprintf(titlebuf, sizeof(titlebuf), "RefPerSys/p%d°%s window#%d",
+	       (int)getpid(), rps_shortgitid, mainwin_rank);
       setWindowTitle(QString(titlebuf));
     }
     connect(this, &QObject::destroyed, this,
@@ -221,7 +221,8 @@ RpsTemp_MainWindow::fill_vbox(void)
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox mainwin#" << rank()
 		<< " mainwin_vbox@" << (void*)mainwin_vbox
 		<< " mainwin_showframe@" << (void*)mainwin_showframe
-		<< " mainwin_objbrowser@" << (void*)mainwin_objbrowser);
+		<< " mainwin_objbrowser@" << (void*)mainwin_objbrowser
+		<< " objbrowser¤" << mainwin_objbrowser->rect());
   mainwin_vbox->addWidget(mainwin_showframe);
   mainwin_vbox->addWidget(mainwin_objbrowser);
   mainwin_vbox->update();
