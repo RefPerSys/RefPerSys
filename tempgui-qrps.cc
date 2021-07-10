@@ -212,8 +212,10 @@ RpsTemp_MainWindow::fill_vbox(void)
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox mainwin_objbrowser@" << (void*)mainwin_objbrowser
 		<< " mainwin#" << rank());
   mainwin_showframe = new QFrame(this);
+  mainwin_showframe->setMinimumSize(32,16);
   mainwin_showframe->setFrameStyle(QFrame::Box|QFrame::Plain);
   mainwin_showlabel = new QLabel(QString("show object:"),mainwin_showframe);
+  mainwin_showlabel->setMinimumSize(16,10);
   mainwin_showlabel->show();
   this->setStyleSheet("RpsTemp_ObjectBrowser {background-color: yellow}");
   mainwin_showframe->update();
