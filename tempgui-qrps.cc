@@ -43,6 +43,14 @@ RpsTemp_Application::RpsTemp_Application(int &argc, char **argv)
   : QApplication::QApplication(argc, argv) {
 };				// end RpsTemp_Application::RpsTemp_Application
 
+std::ostream&
+operator << (std::ostream&out, const QRect&r)
+{
+  out<< "rect[x=" << r.x() << ",y=" << r.y()
+     << ",w=" << r.width() << ",h=" << r.height() << "]";
+  return out;
+}
+
 void
 RpsTemp_Application::do_dump(void)
 {
@@ -210,11 +218,17 @@ RpsTemp_MainWindow::fill_vbox(void)
   this->setStyleSheet("RpsTemp_ObjectBrowser {background-color: yellow}");
   mainwin_showframe->update();
   mainwin_showframe->show();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox mainwin#" << rank()
+		<< " mainwin_vbox@" << (void*)mainwin_vbox
+		<< " mainwin_showframe@" << (void*)mainwin_showframe
+		<< " mainwin_objbrowser@" << (void*)mainwin_objbrowser);
   mainwin_vbox->addWidget(mainwin_showframe);
   mainwin_vbox->addWidget(mainwin_objbrowser);
   mainwin_vbox->update();
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox end mainwin#"
-		<< rank());
+		<< rank() << " showlabel¤" << mainwin_showlabel->rect()
+		<< " showframe¤" << mainwin_showframe->rect()
+		<< " objbrowser¤" << mainwin_objbrowser->rect());
 } // end RpsTemp_MainWindow::fill_vbox
 
 ////////////////////////////////////////////////////////////////

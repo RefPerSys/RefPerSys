@@ -54,6 +54,7 @@ extern "C" std::recursive_mutex rpsqt_mtx;
 #define RPSQT_WITH_LOCK() rpsqt_mtx.lock()
 #define RPSQT_LOCKED(Foo) ({rpsqt_mtx.lock(); (Foo);})
 
+extern std::ostream& operator << (std::ostream&, const QRect&);
 
 class RpsTemp_Application : public QApplication {
 Q_OBJECT
