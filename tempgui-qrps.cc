@@ -121,7 +121,9 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
     mainwin_centralframe(nullptr),
     mainwin_vbox(nullptr),
     mainwin_showframe(nullptr),
+    mainwin_showhbox(nullptr),
     mainwin_showlabel(nullptr),
+    mainwin_shownobject(nullptr),
     mainwin_objbrowser(nullptr)
 {
   {
@@ -207,6 +209,8 @@ RpsTemp_MainWindow::fill_vbox(void)
   RPSQT_WITH_LOCK();
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox start mainwin#"
 		<< rank());
+  this->setStyleSheet("RpsTemp_ObjectBrowser {background-color: yellow}");
+  this->setStyleSheet("RpsTemp_LineEdit {background-color: azure}");
   RPS_ASSERT(mainwin_vbox);
   mainwin_objbrowser = new RpsTemp_ObjectBrowser(this);
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox mainwin_objbrowser@" << (void*)mainwin_objbrowser
@@ -214,10 +218,14 @@ RpsTemp_MainWindow::fill_vbox(void)
   mainwin_showframe = new QFrame(this);
   mainwin_showframe->setMinimumSize(32,16);
   mainwin_showframe->setFrameStyle(QFrame::Box|QFrame::Plain);
+  mainwin_showhbox = new QHBoxLayout(mainwin_showframe);
   mainwin_showlabel = new QLabel(QString("show object:"),mainwin_showframe);
   mainwin_showlabel->setMinimumSize(16,10);
   mainwin_showlabel->show();
-  this->setStyleSheet("RpsTemp_ObjectBrowser {background-color: yellow}");
+  mainwin_showhbox->addWidget(mainwin_showlabel);
+  mainwin_shownobject = new RpsTemp_ObjectLineEdit(mainwin_showframe);
+  mainwin_showhbox->addWidget(mainwin_shownobject);
+  mainwin_shownobject->show();
   mainwin_showframe->update();
   mainwin_showframe->show();
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox mainwin#" << rank()
@@ -247,7 +255,13 @@ RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser(QWidget*parent)
   setReadOnly(true);
 } // end RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser
 
-
+RpsTemp_ObjectLineEdit::RpsTemp_ObjectLineEdit(QWidget*parent)
+  : QLineEdit(parent) {
+  RPSQT_WITH_LOCK();
+  setToolTip("enter object id or name\n"
+	     "the TAB is autocompleting");
+  setMinimumSize(40,10);
+} // end RpsTemp_ObjectLineEdit
 
 
 void

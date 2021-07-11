@@ -69,6 +69,16 @@ public:
 
 extern "C" RpsTemp_Application* rpsqt_app;
 
+/// a single line entry with autocompletion for RefPerSys objects
+class RpsTemp_ObjectLineEdit : public QLineEdit {
+  Q_OBJECT
+public:
+  RpsTemp_ObjectLineEdit(QWidget*parent=nullptr);
+};				// end RpsTemp_ObjectLineEdit
+
+
+
+/// the object browser shows (using HTML) the content of RefPerSys objects
 class RpsTemp_ObjectBrowser : public QTextBrowser {
   Q_OBJECT
 public:
@@ -90,7 +100,9 @@ class RpsTemp_MainWindow : public QMainWindow {
   QVBoxLayout* mainwin_vbox;
   //// .... containing an horizontal frame for showing objects
   QFrame* mainwin_showframe;
+  QHBoxLayout*mainwin_showhbox;
   QLabel* mainwin_showlabel;
+  RpsTemp_ObjectLineEdit* mainwin_shownobject;
   //// .... containing an object browser
   RpsTemp_ObjectBrowser* mainwin_objbrowser;
 protected:
