@@ -124,6 +124,7 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
     mainwin_showhbox(nullptr),
     mainwin_showlabel(nullptr),
     mainwin_shownobject(nullptr),
+    mainwin_showncompleter(nullptr),
     mainwin_objbrowser(nullptr)
 {
   {
@@ -224,6 +225,7 @@ RpsTemp_MainWindow::fill_vbox(void)
   mainwin_showlabel->show();
   mainwin_showhbox->addWidget(mainwin_showlabel);
   mainwin_shownobject = new RpsTemp_ObjectLineEdit(mainwin_showframe);
+  mainwin_showncompleter = new RpsTemp_ObjectCompleter(mainwin_shownobject);
   mainwin_showhbox->addWidget(mainwin_shownobject);
   mainwin_shownobject->show();
   mainwin_showframe->update();
@@ -263,6 +265,13 @@ RpsTemp_ObjectLineEdit::RpsTemp_ObjectLineEdit(QWidget*parent)
   setMinimumSize(40,10);
 } // end RpsTemp_ObjectLineEdit
 
+RpsTemp_ObjectCompleter::RpsTemp_ObjectCompleter(QObject*parent)
+  : QCompleter(parent)
+{  
+  RPSQT_WITH_LOCK();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectCompleter::RpsTemp_ObjectCompleter this@" << (void*)this
+		<< " parent@" << (void*)parent);
+} // end RpsTemp_ObjectCompleter
 
 void
 rps_tempgui_init_progarg(int &argc, char**argv)

@@ -76,7 +76,12 @@ public:
   RpsTemp_ObjectLineEdit(QWidget*parent=nullptr);
 };				// end RpsTemp_ObjectLineEdit
 
-
+class RpsTemp_ObjectCompleter : public QCompleter {
+  Q_OBJECT
+public:
+  RpsTemp_ObjectCompleter(QObject*);
+			  
+};				// end RpsTemp_ObjectCompleter
 
 /// the object browser shows (using HTML) the content of RefPerSys objects
 class RpsTemp_ObjectBrowser : public QTextBrowser {
@@ -103,6 +108,7 @@ class RpsTemp_MainWindow : public QMainWindow {
   QHBoxLayout*mainwin_showhbox;
   QLabel* mainwin_showlabel;
   RpsTemp_ObjectLineEdit* mainwin_shownobject;
+  RpsTemp_ObjectCompleter* mainwin_showncompleter;
   //// .... containing an object browser
   RpsTemp_ObjectBrowser* mainwin_objbrowser;
 protected:
