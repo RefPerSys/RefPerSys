@@ -67,6 +67,7 @@ public slots:
 public:
   RpsTemp_Application(int&argc, char**argv);
 protected:
+  void xtra_gc_mark(Rps_GarbageCollector*gc);
 };				// end RpsTemp_Application
 
 extern "C" RpsTemp_Application* rpsqt_app;
@@ -126,8 +127,9 @@ protected:
   static std::set<RpsTemp_MainWindow*> mainwin_set_;
   void create_menus(void);
   void fill_vbox();
-  void garbage_collect_main_window(Rps_GarbageCollector&gc);
+  void garbage_collect_main_window(Rps_GarbageCollector*gc);
 public:
+  static void garbage_collect_all_main_windows(Rps_GarbageCollector*gc);
   int rank() const { return mainwin_rank; };
   RpsTemp_ObjectBrowser* objbrowser() const { return mainwin_objbrowser; };
   RpsTemp_MainWindow();

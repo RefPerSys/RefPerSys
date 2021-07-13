@@ -118,13 +118,26 @@ RpsTemp_Application::do_garbage_collect(void)
   RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_garbage_collect start" <<std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_garbage_collect")
 		);
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                 nullptr, // no caller frame
+                );
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
+  {
+    this->xtra_gc_mark(gc);
+  });
   RPS_WARNOUT("unimplemented RpsTemp_Application::do_garbage_collect"
 	      << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_garbage_collect"));
 #warning unimplemented RpsTemp_Application::do_garbage_collect     
 } // end RpsTemp_Application::do_garbage_collect
 
-
+void
+RpsTemp_Application::xtra_gc_mark(Rps_GarbageCollector*gc)
+{
+  RPSQT_WITH_LOCK();
+  RPS_ASSERT(gc != nullptr);
+  RpsTemp_MainWindow::garbage_collect_all_main_windows(gc);
+} // end RpsTemp_Application::xtra_gc_mark
 
 //// main window
 std::set<RpsTemp_MainWindow*> RpsTemp_MainWindow::mainwin_set_;
@@ -183,6 +196,14 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::RpsTemp_MainWindow"));
 } // end RpsTemp_MainWindow::RpsTemp_MainWindow
 
+void
+RpsTemp_MainWindow::garbage_collect_all_main_windows(Rps_GarbageCollector*gc)
+{
+  RPS_ASSERT(gc);
+  for (RpsTemp_MainWindow*mainwin: mainwin_set_)
+    mainwin->garbage_collect_main_window(gc);
+} // end RpsTemp_Application::garbage_collect_all_main_windows
+
 
 void
 RpsTemp_MainWindow::create_menus(void)
@@ -224,6 +245,14 @@ RpsTemp_MainWindow::create_menus(void)
 		<< rank() << " @" << (void*)this
 		<< (isVisible()?" shown":" hidden"));
 } // end RpsTemp_MainWindow::create_menus
+
+
+void
+RpsTemp_MainWindow::garbage_collect_main_window(Rps_GarbageCollector*gc)
+{
+#warning RpsTemp_MainWindow::garbage_collect_main_window should mark every shown ojbect
+  RPS_FATALOUT("unimplemented RpsTemp_MainWindow::garbage_collect_main_window");
+} // end RpsTemp_MainWindow::garbage_collect_main_window
 
 
 void
