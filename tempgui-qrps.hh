@@ -125,6 +125,8 @@ public:
   int rank() const { return mainwin_rank; };
   RpsTemp_ObjectBrowser* objbrowser() const { return mainwin_objbrowser; };
   RpsTemp_MainWindow();
+public slots:
+  void do_enter_shown_object(void);
 };				// end class RpsTemp_MainWindow
 
 extern "C" void rps_tempgui_init_progarg(int &argc, char**argv);

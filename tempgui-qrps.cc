@@ -238,11 +238,32 @@ RpsTemp_MainWindow::fill_vbox(void)
   mainwin_vbox->addWidget(mainwin_showframe);
   mainwin_vbox->addWidget(mainwin_objbrowser);
   mainwin_vbox->update();
+  connect(mainwin_shownobject, &RpsTemp_ObjectLineEdit::editingFinished,
+	  this, &RpsTemp_MainWindow::do_enter_shown_object);
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox end mainwin#"
 		<< rank() << " showlabel¤" << mainwin_showlabel->rect()
 		<< " showframe¤" << mainwin_showframe->rect()
 		<< " objbrowser¤" << mainwin_objbrowser->rect());
 } // end RpsTemp_MainWindow::fill_vbox
+
+
+// slot when mainwin_shownobject has been entered
+void
+RpsTemp_MainWindow::do_enter_shown_object(void)
+{
+  RPSQT_WITH_LOCK();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object start mainwin#"
+		<< rank());
+  RPS_ASSERT(mainwin_shownobject != nullptr);
+  std::string obshowstring = mainwin_shownobject->text().toStdString();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object obshowstring="
+		<< Rps_QuotedC_String(obshowstring)
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "incomplete RpsTemp_MainWindow::do_enter_shown_object"));
+  RPS_WARNOUT("incomplete RpsTemp_MainWindow::do_enter_shown_object mainwin#" << rank()
+	      << " obshowstring=" << Rps_QuotedC_String(obshowstring));
+#warning incomplete RpsTemp_MainWindow::do_enter_shown_object
+} // end RpsTemp_MainWindow::do_enter_shown_object
 
 ////////////////////////////////////////////////////////////////
 ///// object browser
