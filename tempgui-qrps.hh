@@ -63,8 +63,10 @@ public slots:
   void do_exit(void);
   void do_quit(void);
   void do_new_window(void);
+  void do_garbage_collect(void);
 public:
   RpsTemp_Application(int&argc, char**argv);
+protected:
 };				// end RpsTemp_Application
 
 extern "C" RpsTemp_Application* rpsqt_app;
@@ -96,6 +98,8 @@ public:
 #warning class RpsTemp_ObjectBrowser is incomplete
 };				// end RpsTemp_ObjectBrowser
 
+
+
 class RpsTemp_MainWindow : public QMainWindow {
   Q_OBJECT
   ///- conventional field prefix: mainwin_
@@ -105,6 +109,7 @@ class RpsTemp_MainWindow : public QMainWindow {
   QAction* mainwin_quitact;
   QAction* mainwin_exitact;
   QAction* mainwin_newact;
+  QAction* mainwin_garbcollact;
   //// the central windget is a frame
   QFrame* mainwin_centralframe;
   //// containing a vertical box
@@ -121,6 +126,7 @@ protected:
   static std::set<RpsTemp_MainWindow*> mainwin_set_;
   void create_menus(void);
   void fill_vbox();
+  void garbage_collect_main_window(Rps_GarbageCollector&gc);
 public:
   int rank() const { return mainwin_rank; };
   RpsTemp_ObjectBrowser* objbrowser() const { return mainwin_objbrowser; };

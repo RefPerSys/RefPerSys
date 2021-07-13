@@ -110,7 +110,23 @@ RpsTemp_Application::do_new_window(void)
   RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_new_window end");
 } // end RpsTemp_Application::do_dump
 
-//////////////// main window
+////////////
+void
+RpsTemp_Application::do_garbage_collect(void)
+{
+  RPSQT_WITH_LOCK();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_garbage_collect start" <<std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_garbage_collect")
+		);
+  RPS_WARNOUT("unimplemented RpsTemp_Application::do_garbage_collect"
+	      << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_garbage_collect"));
+#warning unimplemented RpsTemp_Application::do_garbage_collect     
+} // end RpsTemp_Application::do_garbage_collect
+
+
+
+//// main window
 std::set<RpsTemp_MainWindow*> RpsTemp_MainWindow::mainwin_set_;
 RpsTemp_MainWindow::RpsTemp_MainWindow()
   : mainwin_rank(0),
@@ -118,6 +134,7 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
     mainwin_quitact(nullptr),
     mainwin_exitact(nullptr),
     mainwin_newact(nullptr),
+    mainwin_garbcollact(nullptr),
     mainwin_centralframe(nullptr),
     mainwin_vbox(nullptr),
     mainwin_showframe(nullptr),
@@ -191,10 +208,15 @@ RpsTemp_MainWindow::create_menus(void)
   connect(mainwin_exitact, &QAction::triggered,
 	  rpsqt_app, &RpsTemp_Application::do_exit);
   /// new window action
-  mainwin_newact = appmenu->addAction("N&ew window");
+  mainwin_newact = appmenu->addAction("&New window");
   mainwin_newact->setToolTip("make a new window");
   connect(mainwin_newact, &QAction::triggered,
 	  rpsqt_app, &RpsTemp_Application::do_new_window);
+  /// garbage collect action
+  mainwin_garbcollact = appmenu->addAction("&Garb. Coll.");
+  mainwin_garbcollact->setToolTip("force entire garbage collection");
+  connect(mainwin_garbcollact, &QAction::triggered,
+	  rpsqt_app, &RpsTemp_Application::do_garbage_collect);
   ///
   mbar->show();
   setVisible(true);
