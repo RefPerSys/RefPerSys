@@ -258,12 +258,17 @@ RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser(QWidget*parent)
 } // end RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser
 
 RpsTemp_ObjectLineEdit::RpsTemp_ObjectLineEdit(QWidget*parent)
-  : QLineEdit(parent) {
+  : QLineEdit(parent),
+    oblined_completer(nullptr) {
   RPSQT_WITH_LOCK();
   setToolTip("enter object id or name\n"
 	     "the TAB is autocompleting");
   setMinimumSize(40,10);
+  oblined_completer = new RpsTemp_ObjectCompleter(this);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectLineEdit::RpsTemp_ObjectLineEdit this@"
+		<< (void*)this << " oblined_completer@" << (void*)oblined_completer);
 } // end RpsTemp_ObjectLineEdit
+
 
 RpsTemp_ObjectCompleter::RpsTemp_ObjectCompleter(QObject*parent)
   : QCompleter(parent)
