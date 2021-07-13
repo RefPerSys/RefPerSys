@@ -69,18 +69,23 @@ public:
 
 extern "C" RpsTemp_Application* rpsqt_app;
 
+class RpsTemp_ObjectCompleter;	// forward declaration
+
 /// a single line entry with autocompletion for RefPerSys objects
 class RpsTemp_ObjectLineEdit : public QLineEdit {
+  ///- conventional field prefix: oblined_
   Q_OBJECT
+  RpsTemp_ObjectCompleter*oblined_completer; 
 public:
   RpsTemp_ObjectLineEdit(QWidget*parent=nullptr);
 };				// end RpsTemp_ObjectLineEdit
+
+
 
 class RpsTemp_ObjectCompleter : public QCompleter {
   Q_OBJECT
 public:
   RpsTemp_ObjectCompleter(QObject*);
-			  
 };				// end RpsTemp_ObjectCompleter
 
 /// the object browser shows (using HTML) the content of RefPerSys objects
@@ -93,6 +98,7 @@ public:
 
 class RpsTemp_MainWindow : public QMainWindow {
   Q_OBJECT
+  ///- conventional field prefix: mainwin_
   int mainwin_rank;
   /// actions in the top menubar
   QAction* mainwin_dumpact;
