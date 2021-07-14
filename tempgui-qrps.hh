@@ -96,6 +96,7 @@ class RpsTemp_ObjectBrowser : public QTextBrowser {
   Q_OBJECT
 public:
   RpsTemp_ObjectBrowser(QWidget*parent=nullptr);
+  void garbage_collect_object_browser(Rps_GarbageCollector*gc);
 #warning class RpsTemp_ObjectBrowser is incomplete
 };				// end RpsTemp_ObjectBrowser
 

@@ -250,8 +250,9 @@ RpsTemp_MainWindow::create_menus(void)
 void
 RpsTemp_MainWindow::garbage_collect_main_window(Rps_GarbageCollector*gc)
 {
-#warning RpsTemp_MainWindow::garbage_collect_main_window should mark every shown ojbect
-  RPS_FATALOUT("unimplemented RpsTemp_MainWindow::garbage_collect_main_window");
+  RpsTemp_ObjectBrowser* objbr = objbrowser();
+  RPS_ASSERT(objbr);
+  objbr->garbage_collect_object_browser(gc);
 } // end RpsTemp_MainWindow::garbage_collect_main_window
 
 
@@ -328,6 +329,17 @@ RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser(QWidget*parent)
   setHtml(QString("<h1>object browser</h1>"));
   setReadOnly(true);
 } // end RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser
+
+void
+RpsTemp_ObjectBrowser::garbage_collect_object_browser(Rps_GarbageCollector*gc)
+{
+  RPSQT_WITH_LOCK();
+  #warning RpsTemp_ObjectBrowser::garbage_collect_object_browser unimplemented
+  /// we should gc->mark_obj(ObS) every shown object ObS
+  RPS_WARNOUT("unimplemented RpsTemp_ObjectBrowser::garbage_collect_object_browser" << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::garbage_collect_object_browser"));
+} // end RpsTemp_ObjectBrowser::garbage_collect_object_browser
+
 
 RpsTemp_ObjectLineEdit::RpsTemp_ObjectLineEdit(QWidget*parent)
   : QLineEdit(parent),
