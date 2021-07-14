@@ -105,7 +105,7 @@ RPS_BUILD_SANITFLAGS = -fsanitize=address
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
-RPS_PKG_NAMES= jsoncpp readline libcurl zlib openssl onion
+RPS_PKG_NAMES= jsoncpp readline libcurl zlib onion
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
@@ -138,7 +138,7 @@ all:
 
 refpersys: $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
 	$(LINK.cc) -rdynamic $(RPS_CORE_OBJECTS)  __timestamp.o \
-           $(LIBES) -o $@-tmp
+           $(LIBES) $(RPS_PKG_LIBS) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
