@@ -94,8 +94,26 @@ public:
 /// the object browser shows (using HTML) the content of RefPerSys objects
 class RpsTemp_ObjectBrowser : public QTextBrowser {
   Q_OBJECT
+  struct shown_object_st {
+    Rps_ObjectRef shob_obref;	// the shown object
+    int shob_depth;		// the display depth
+    std::string shob_subtitle;	// the optional subtitle string
+  };
+  std::mutex objbr_mtx;
+  int objbr_defaultdepth;
+  std::vector<shown_object_st> objbr_shownobvect;
+  std::map<Rps_ObjectRef,int> objbr_mapshownob;
+  /*** NOTICE
+       We want to use
+       https://doc.qt.io/qt-5/qtextedit.html#insertHtml, since a
+       QTextBrowser inherits from QTextEdit
+   ***/
 public:
   RpsTemp_ObjectBrowser(QWidget*parent=nullptr);
+  /// add at end a shown object, if it was not shown
+  void append_shown_object(Rps_ObjectRef ob, std::string htmlsubtitle=nullptr, int depth=0);
+  /// remove a shown object
+  void remove_shown_object(Rps_ObjectRef ob);
   void garbage_collect_object_browser(Rps_GarbageCollector*gc);
 #warning class RpsTemp_ObjectBrowser is incomplete
 };				// end RpsTemp_ObjectBrowser

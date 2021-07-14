@@ -320,7 +320,11 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
 ////////////////////////////////////////////////////////////////
 ///// object browser
 RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser(QWidget*parent)
-  : QTextBrowser(parent)
+  : QTextBrowser(parent),
+    objbr_mtx(),
+    objbr_defaultdepth(3),
+    objbr_shownobvect(),
+    objbr_mapshownob()
 {
 #warning incomplete RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser constructor
   RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser constructor this@" << (void*)this
@@ -333,11 +337,14 @@ RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser(QWidget*parent)
 void
 RpsTemp_ObjectBrowser::garbage_collect_object_browser(Rps_GarbageCollector*gc)
 {
-  RPSQT_WITH_LOCK();
-  #warning RpsTemp_ObjectBrowser::garbage_collect_object_browser unimplemented
-  /// we should gc->mark_obj(ObS) every shown object ObS
-  RPS_WARNOUT("unimplemented RpsTemp_ObjectBrowser::garbage_collect_object_browser" << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::garbage_collect_object_browser"));
+  RPS_ASSERT(gc != nullptr);
+  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  int nbshownob = (int)objbr_shownobvect.size();
+  for (int shix=0; shix<nbshownob; shix++) {
+    struct shown_object_st& curshob= objbr_shownobvect[shix];
+    RPS_ASSERT(curshob.shob_obref);
+    gc->mark_obj(curshob.shob_obref);
+  }
 } // end RpsTemp_ObjectBrowser::garbage_collect_object_browser
 
 
