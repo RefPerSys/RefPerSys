@@ -120,15 +120,19 @@ RpsTemp_Application::do_garbage_collect(void)
 		);
   RPS_LOCALFRAME(/*descr:*/nullptr,
                  nullptr, // no caller frame
-                );
+		 );
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
     this->xtra_gc_mark(gc);
   });
-  RPS_WARNOUT("unimplemented RpsTemp_Application::do_garbage_collect"
-	      << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_garbage_collect"));
-#warning unimplemented RpsTemp_Application::do_garbage_collect     
+  std::function<void(Rps_GarbageCollector*)> gcfun([&](Rps_GarbageCollector*gc)
+  {
+    gc->mark_call_stack(&_);
+  });
+  rps_garbage_collect(&gcfun);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_garbage_collect done"<<std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "done RpsTemp_Application::do_garbage_collect")
+	);
 } // end RpsTemp_Application::do_garbage_collect
 
 void
