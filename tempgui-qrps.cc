@@ -140,7 +140,11 @@ RpsTemp_Application::xtra_gc_mark(Rps_GarbageCollector*gc)
 {
   RPSQT_WITH_LOCK();
   RPS_ASSERT(gc != nullptr);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::xtra_gc_mark"<<std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::xtra_gc_mark")
+	);
   RpsTemp_MainWindow::garbage_collect_all_main_windows(gc);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::xtra_gc_mark done");
 } // end RpsTemp_Application::xtra_gc_mark
 
 //// main window
