@@ -314,12 +314,21 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
   RPSQT_WITH_LOCK();
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object start mainwin#"
 		<< rank());
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                 /*callerframe:*/nullptr,
+		 Rps_ObjectRef showob;
+		 );
   RPS_ASSERT(mainwin_shownobject != nullptr);
   std::string obshowstring = mainwin_shownobject->text().toStdString();
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object obshowstring="
 		<< Rps_QuotedC_String(obshowstring)
 		<< std::endl
+		<< Rps_ShowCallFrame(&_)
+		<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "incomplete RpsTemp_MainWindow::do_enter_shown_object"));
+  _f.showob = Rps_ObjectRef::find_object_or_null_by_string(&_, obshowstring);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object by name showob="
+		<< _f.showob);
   RPS_WARNOUT("incomplete RpsTemp_MainWindow::do_enter_shown_object mainwin#" << rank()
 	      << " obshowstring=" << Rps_QuotedC_String(obshowstring));
 #warning incomplete RpsTemp_MainWindow::do_enter_shown_object
