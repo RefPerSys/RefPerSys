@@ -448,7 +448,11 @@ Rps_PayloadWebex::webex_of_object(Rps_CallFrame*callerframe, Rps_ObjectRef ob)
       return nullptr;
     }
   Rps_PayloadWebex* pwebex = ob->get_dynamic_payload<Rps_PayloadWebex>();
-  RPS_DEBUG_LOG(WEB, "webex_of_object ob:" << ob << " gives pwebex@" << (void*)pwebex);
+  if (pwebex)
+    RPS_DEBUG_LOG(WEB, "webex_of_object ob:" << ob << " gives pwebex@" << (void*)pwebex);
+  else
+    RPS_DEBUG_LOG(WEB, "webex_of_object ob:" << ob << " is null" << std::endl
+		  << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex::webex_of_object->null"));
   return pwebex;
 } // end of Rps_PayloadWebex::webex_of_object
 ////////////////////////////////////////////////////////////////
