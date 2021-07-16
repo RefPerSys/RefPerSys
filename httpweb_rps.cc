@@ -1389,6 +1389,7 @@ rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
         }
       return resp;
     } // end if ob is a web_exchange
+  RPS_DEBUG_LOG(WEB, "rps_web_output non-web_exchange ob:" << _f.ob);
   auto string_buffer_ob = RPS_ROOT_OB(_7Y3AyF9gNx700bQJXc);
   if (_f.obclass == string_buffer_ob || Rps_Value(_f.obclass).is_subclass_of(&_, string_buffer_ob))
     {
