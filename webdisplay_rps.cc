@@ -985,6 +985,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   RPS_ASSERT (!_f.optdocposv || _f.optdocposv.is_int());
   std::lock_guard<std::recursive_mutex> obwebmtx(*(_f.obweb->objmtxptr()));
   RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_web recvob=" << _f.recvob
+                << " of class:" <<  _f.recvob->compute_class(&_)
                 << ", obweb =" << _f.obweb
                 << " of class:" <<  _f.obweb->compute_class(&_) << std::endl
                 << "... depthi=" <<  depthi
