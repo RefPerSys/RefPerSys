@@ -1363,10 +1363,20 @@ rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
   RPS_DEBUG_LOG(WEB, "rps_web_output start ob=" << _f.ob
                 << " of class:" << _f.obclass);
   auto web_exchange_ob = RPS_ROOT_OB(_8zNtuRpzXUP013WG9S);
-  if (_f.obclass == web_exchange_ob || Rps_Value(_f.obclass).is_subclass_of(&_, web_exchange_ob))
+  bool iswebex = false;
+  if (_f.obclass == web_exchange_ob) {
+    iswebex = true;
+    RPS_DEBUG_LOG(WEB, "rps_web_output ob=" << _f.ob << " is trivially a webex");
+  }
+  else if (Rps_Value(_f.obclass).is_subclass_of(&_, web_exchange_ob)) {
+    iswebex = true;
+    RPS_DEBUG_LOG(WEB, "rps_web_output ob=" << _f.ob << " is indirectly a webex of class" << _f.obclass);
+  }
+  if (iswebex)
     {
       Rps_PayloadWebex*paylwebex = Rps_PayloadWebex::webex_of_object(&_, _f.ob);
-      RPS_DEBUG_LOG(WEB, "rps_web_output ob=" << _f.ob << " with paylwebex@" << (void*)paylwebex);
+      RPS_DEBUG_LOG(WEB, "rps_web_output ob=" << _f.ob << " of class:" << _f.obclass
+		    << " web_exchange_ob=" << web_exchange_ob << " with paylwebex@" << (void*)paylwebex);
       if (!paylwebex)
         {
           if (check)
