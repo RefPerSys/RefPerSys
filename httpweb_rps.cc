@@ -452,7 +452,7 @@ Rps_PayloadWebex::webex_of_object(Rps_CallFrame*callerframe, Rps_ObjectRef ob)
     RPS_DEBUG_LOG(WEB, "webex_of_object ob:" << ob << " gives pwebex@" << (void*)pwebex);
   else
     RPS_DEBUG_LOG(WEB, "webex_of_object ob:" << ob << " is null" << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex::webex_of_object->null"));
+                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadWebex::webex_of_object->null"));
   return pwebex;
 } // end of Rps_PayloadWebex::webex_of_object
 ////////////////////////////////////////////////////////////////
@@ -1360,10 +1360,13 @@ rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
     };
   std::lock_guard<std::recursive_mutex> gu(*_f.ob->objmtxptr());
   _f.obclass = _f.ob->compute_class(&_);
+  RPS_DEBUG_LOG(WEB, "rps_web_output start ob=" << _f.ob
+                << " of class:" << _f.obclass);
   auto web_exchange_ob = RPS_ROOT_OB(_8zNtuRpzXUP013WG9S);
   if (_f.obclass == web_exchange_ob || Rps_Value(_f.obclass).is_subclass_of(&_, web_exchange_ob))
     {
       Rps_PayloadWebex*paylwebex = Rps_PayloadWebex::webex_of_object(&_, _f.ob);
+      RPS_DEBUG_LOG(WEB, "rps_web_output ob=" << _f.ob << " with paylwebex@" << (void*)paylwebex);
       if (!paylwebex)
         {
           if (check)
@@ -1393,12 +1396,14 @@ rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
         }
       return resp;
     } // end if ob is a web_exchange
-  RPS_DEBUG_LOG(WEB, "rps_web_output non-web_exchange ob:" << _f.ob);
+  RPS_DEBUG_LOG(WEB, "rps_web_output non-web_exchange ob:" << _f.ob << " of class:" << _f.obclass);
   auto string_buffer_ob = RPS_ROOT_OB(_7Y3AyF9gNx700bQJXc);
   if (_f.obclass == string_buffer_ob || Rps_Value(_f.obclass).is_subclass_of(&_, string_buffer_ob))
     {
       Rps_PayloadStrBuf* paylsbuf
         = _f.ob->get_dynamic_payload<Rps_PayloadStrBuf>();
+      RPS_DEBUG_LOG(WEB, "rps_web_output ob:" << _f.ob
+                    << " of paylsbuf@" << (void*)paylsbuf);
       if (!paylsbuf)
         {
           if (check)
@@ -1426,8 +1431,10 @@ rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
           RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_) << " ob:" << _f.ob << " with bad Rps_PayloadStrBuf");
           return nullptr;
         }
+      RPS_DEBUG_LOG(WEB, "rps_web_output ob=" << _f.ob << " end pouts=" << (void*)pouts);
       return pouts;
     } // end if ob is a string_buffer
+  RPS_DEBUG_LOG(WEB, "rps_web_output ob=" << _f.ob << " of oid:" << _f.ob->oid() << (check?" with check":" without_check"));
   if (check)
     {
       std::ostringstream errout;
