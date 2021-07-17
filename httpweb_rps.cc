@@ -1369,11 +1369,18 @@ rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
       iswebex = true;
       RPS_DEBUG_LOG(WEB, "rps_web_output ob=" << _f.ob << " is trivially a webex");
     }
-  else if (Rps_Value(_f.obclass).is_subclass_of(&_, web_exchange_ob))
+  if (!iswebex)
     {
-      iswebex = true;
-      RPS_DEBUG_LOG(WEB, "rps_web_output ob=" << _f.ob << " is indirectly a webex of class" << _f.obclass);
+      RPS_DEBUG_LOG(WEB, "rps_web_output before testing that " << _f.obclass
+                    << " is_subclass_of web_exchange_ob=" << web_exchange_ob);
+      if (Rps_Value(_f.obclass).is_subclass_of(&_, web_exchange_ob))
+        {
+          iswebex = true;
+          RPS_DEBUG_LOG(WEB, "rps_web_output ob=" << _f.ob << " is indirectly a webex of class" << _f.obclass);
+        }
     }
+  RPS_DEBUG_LOG(WEB, "rps_web_output ob=" << _f.ob
+                << " is " << (iswebex?"":" NOT ") << "a webex");
   if (iswebex)
     {
       Rps_PayloadWebex*paylwebex = Rps_PayloadWebex::webex_of_object(&_, _f.ob);
