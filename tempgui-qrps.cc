@@ -436,12 +436,15 @@ void
 rps_tempgui_run(void)
 {
   RPS_INFORMOUT("rps_tempgui_run start:"<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_tempgui_run"));
+		<< RPS_FULL_BACKTRACE_HERE(1, "start rps_tempgui_run"));
   RPS_ASSERT(rpsqt_app != nullptr);
   RPS_DEBUG_LOG(GUI, "rps_tempgui_run before one RpsTemp_Application::processEvents");
   /* In principle, these are useless. Since rpsqt_app->exec should do it. */
   RpsTemp_Application::processEvents();
+  RPS_DEBUG_LOG(GUI, "rps_tempgui_run after one RpsTemp_Application::processEvents"<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "in rps_tempgui_run"));
   RpsTemp_Application::sendPostedEvents();
+  RPS_DEBUG_LOG(GUI, "rps_tempgui_run after one RpsTemp_Application::sendPostedEvents");
   usleep(1000);
   RPS_DEBUG_LOG(GUI, "rps_tempgui_run before exec"<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "rps_tempgui_run/before exec"));
