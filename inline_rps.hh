@@ -949,19 +949,23 @@ bool
 Rps_Value::is_subclass_of(Rps_CallFrame*callerframe, Rps_ObjectRef obsuperclass) const
 {
   RPS_ASSERT(!callerframe || callerframe->stored_type() == Rps_Type::CallFrame);
-  if (!obsuperclass || !obsuperclass->is_class()) {
-    
-    RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_of FAIL this=" << *this
-		  << ", obsuperclass=" << obsuperclass);
-    return false;
-  }
+  if (!obsuperclass || !obsuperclass->is_class())
+    {
+
+      RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_of FAIL this=" << *this
+                    << ", obsuperclass=" << obsuperclass);
+      return false;
+    }
   Rps_ObjectRef thisclass = compute_class(callerframe);
   RPS_ASSERT(thisclass);
-  if (thisclass == obsuperclass) {
-    RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_of PASSES this=" << *this
-		  << " of class:" << thisclass << ", obsuperclass=" << obsuperclass);
-    return true;
-  }
+  if (thisclass == obsuperclass)
+    {
+      RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_of PASSES this=" << *this
+                    << " of class:" << thisclass << ", obsuperclass=" << obsuperclass);
+      return true;
+    }
+  RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_of RECUR this=" << *this
+                << " of class:" << thisclass << ", obsuperclass=" << obsuperclass);
   return thisclass->is_subclass_of(obsuperclass);
 } // end Rps_Value::is_subclass_of
 
