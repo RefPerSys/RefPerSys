@@ -1167,12 +1167,14 @@ class Rps_SetValue;
 class Rps_InstanceValue;
 class Rps_TupleValue;
 class Rps_LexTokenValue; // mostly in repl_rps.cc
+class Rps_OutputValue;
 struct Rps_TwoValues;
 
 //////////////// our value, a single word
 class Rps_Value
 {
   friend class Rps_PayloadSymbol;
+  friend class Rps_OutputValue;
 public:
   // the maximal depth of the inheritance graph. An arbitrary, but small limit.
   static constexpr unsigned maximal_inheritance_depth = 32;
@@ -1344,6 +1346,24 @@ static_assert(alignof(Rps_Value) == alignof(void*),
               "Rps_Value should have the alignment of a word");
 
 
+////////////////////////////////////////////////////////////////
+//// utility class to output a value with a given depth to some std::ostream
+//// typical usage: RPS_DEBUG_LOG("v1=" << Rps_OutputValue(v1, 3));
+class Rps_OutputValue {
+  friend class Rps_Value;
+  const Rps_Value _out_val;
+  const int _out_depth;
+  static constexpr unsigned out_default_depth=3;
+public:
+  Rps_OutputValue(const Rps_Value val, unsigned depth=out_default_depth) : _out_val(val), _out_depth(depth) {};
+  ~Rps_OutputValue() {};
+  void do_output(std::ostream& out) const; /// in morevalues_rps.cc
+};				// end class Rps_OutputValue
+  
+inline std::ostream& operator<< (std::ostream&out, const Rps_OutputValue oval) {
+  oval.do_output(out);
+  return out;
+} // end of operator<< (std::ostream&out, const Rps_OutputValue oval)
 
 ////////////////////////////////////////////////////////////////
 

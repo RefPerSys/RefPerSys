@@ -396,7 +396,25 @@ Rps_JsonZone::less(const Rps_ZoneValue&zv) const
     return  Rps_Type::Json < zv.stored_type();
 } // end Rps_JsonZone::less
 
-
+////////////////////////////////////////////////////////////////
+void
+Rps_OutputValue::do_output(std::ostream& out) const
+{
+  /// output value _out_val at _out_depth to out, using Rps_ZoneValue::val_output....
+  if (_out_val.is_empty())
+    {
+      out << "*nil*";
+      return;
+    }
+  else if (_out_val.is_int())
+    {
+      out << _out_val.as_int();
+      return;
+    };
+  const Rps_ZoneValue* outzv = _out_val.as_ptr();
+  RPS_ASSERT(outzv);
+  outzv->val_output(out, _out_depth);
+} // end Rps_OutputValue::do_output
 
 
 /********************************************** end of file morevalues_rps.cc */
