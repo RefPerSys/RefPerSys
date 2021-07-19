@@ -331,8 +331,10 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
 		<< RPS_FULL_BACKTRACE_HERE(1, "incomplete RpsTemp_MainWindow::do_enter_shown_object"));
   _f.showob = Rps_ObjectRef::find_object_or_null_by_string(&_, obshowstring);
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object by name showob="
-		<< _f.showob);
+		<< _f.showob << " == " << Rps_OutputValue(_f.showob));
   _f.strbufob = Rps_PayloadStrBuf::make_string_buffer_object(&_);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object strbufob="
+		<< _f.strbufob << " == " << Rps_OutputValue(_f.strbufob));
   int displaydepth = 3;
 #warning  RpsTemp_MainWindow::do_enter_shown_object displaydepth should be tunable
   /// should send selector display_object_content_web to showob with arguments strbufob depth=tagged<>
@@ -352,7 +354,8 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
   RPS_WARNOUT("incomplete RpsTemp_MainWindow::do_enter_shown_object mainwin#" << rank()
 	      << " obshowstring=" << Rps_QuotedC_String(obshowstring)
 	      << " showob=" << _f.showob << " strbufob=" << _f.strbufob
-	      << " mainv=" << _f.mainv << " xtrav=" << _f.xtrav
+	      << " mainv=" << Rps_OutputValue(_f.mainv)
+	      << " xtrav=" << Rps_OutputValue(_f.xtrav)
 	      << "::::" << std::endl
 	      << outstr);
   /*** TODO: the outstr should be displayed as HTML using Qt5 ***/
