@@ -949,25 +949,42 @@ bool
 Rps_Value::is_subclass_of(Rps_CallFrame*callerframe, Rps_ObjectRef obsuperclass) const
 {
   RPS_ASSERT(!callerframe || callerframe->stored_type() == Rps_Type::CallFrame);
+  Rps_ObjectRef obthisclass = compute_class(callerframe);
+  RPS_ASSERT(obthisclass);
+  RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_of START this=" << Rps_OutputValue(*this)
+                << ", obsuperclass=" << obsuperclass << ", obthisclass=" << obthisclass);
+  return is_subclass_with_depth(callerframe, obsuperclass, obthisclass, 0);
+} // end Rps_Value::is_subclass_of
+
+
+
+//// internal routine:
+bool
+Rps_Value::is_subclass_with_depth(Rps_CallFrame*callerframe, Rps_ObjectRef obsuperclass, Rps_ObjectRef obthisclass, int depth) const
+{
+  RPS_ASSERT(!callerframe || callerframe->stored_type() == Rps_Type::CallFrame);
   if (!obsuperclass || !obsuperclass->is_class())
     {
 
-      RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_of FAIL this=" << *this
-                    << ", obsuperclass=" << obsuperclass);
+      RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_with_depth FAIL this=" << *this
+                    << ", obsuperclass=" << obsuperclass << ", depth=" << depth);
       return false;
     }
-  Rps_ObjectRef thisclass = compute_class(callerframe);
-  RPS_ASSERT(thisclass);
-  if (thisclass == obsuperclass)
+  if (obthisclass == obsuperclass)
     {
-      RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_of PASSES this=" << *this
-                    << " of class:" << thisclass << ", obsuperclass=" << obsuperclass);
+      RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_with_depth PASSES this=" << *this
+                    << ", obthisclass:" << obthisclass << ", obsuperclass=" << obsuperclass << ", depth=" << depth);
       return true;
     }
-  RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_of RECUR this=" << *this
-                << " of class:" << thisclass << ", obsuperclass=" << obsuperclass);
-  return thisclass->is_subclass_of(obsuperclass);
-} // end Rps_Value::is_subclass_of
+  /// recur on the superclass parent class
+  const Rps_PayloadClassInfo* superclassinfo ///
+    = obsuperclass->get_dynamic_payload<Rps_PayloadClassInfo>();
+  RPS_ASSERT(superclassinfo != nullptr);
+  Rps_ObjectRef obparentclass = superclassinfo->superclass();
+  RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_with_depth RECUR this=" << *this
+                << ", obthisclass:" << obthisclass << ", obparentclass=" << obparentclass << ", depth=" << depth);
+  return is_subclass_with_depth(callerframe, obparentclass, obthisclass, depth+1);
+} // end Rps_Value::is_subclass_with_depth
 
 
 

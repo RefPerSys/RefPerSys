@@ -1339,6 +1339,7 @@ private:
     const Rps_ZoneValue* _pval;
     const void* _wptr;
   };
+  inline bool is_subclass_with_depth(Rps_CallFrame*callerframe, Rps_ObjectRef obsuperclass,  Rps_ObjectRef obthisclass, int depth) const;
 };    // end of Rps_Value
 static_assert(sizeof(Rps_Value) == sizeof(void*),
               "Rps_Value should have the size of a word");
