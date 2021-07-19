@@ -1351,10 +1351,11 @@ rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
                             Rps_ObjectRef ob;
                             Rps_ObjectRef obclass);
   _f.ob = obarg;
-  RPS_DEBUG_LOG(WEB, "rps_web_output start ob=" << _f.ob);
+  RPS_DEBUGNL_LOG(WEB, "rps_web_output start ob=" << _f.ob
+		  << " callframe:" << Rps_ShowCallFrame(&_));
   if (!_f.ob)
     {
-      RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_) <<" empty ob");
+      RPS_DEBUG_LOG(WEB, "rps_web_output empty ob");
       if (check)
         throw std::runtime_error("rps_web_output empty ob");
       return nullptr;
