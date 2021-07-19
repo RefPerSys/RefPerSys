@@ -331,10 +331,12 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
 		<< RPS_FULL_BACKTRACE_HERE(1, "incomplete RpsTemp_MainWindow::do_enter_shown_object"));
   _f.showob = Rps_ObjectRef::find_object_or_null_by_string(&_, obshowstring);
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object by name showob="
-		<< _f.showob << " == " << Rps_OutputValue(_f.showob));
+		<< _f.showob << " == " << Rps_OutputValue(_f.showob)
+		<< " of class " << Rps_OutputValue(_f.showob->compute_class(&_)));
   _f.strbufob = Rps_PayloadStrBuf::make_string_buffer_object(&_);
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object strbufob="
-		<< _f.strbufob << " == " << Rps_OutputValue(_f.strbufob));
+		<< _f.strbufob << " == " << Rps_OutputValue(_f.strbufob)
+		<< " of class " << Rps_OutputValue(_f.strbufob->compute_class(&_)));
   int displaydepth = 3;
 #warning  RpsTemp_MainWindow::do_enter_shown_object displaydepth should be tunable
   /// should send selector display_object_content_web to showob with arguments strbufob depth=tagged<>
