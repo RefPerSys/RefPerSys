@@ -1351,6 +1351,7 @@ rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
                             Rps_ObjectRef ob;
                             Rps_ObjectRef obclass);
   _f.ob = obarg;
+  RPS_DEBUG_LOG(WEB, "rps_web_output start ob=" << _f.ob);
   if (!_f.ob)
     {
       RPS_DEBUG_LOG(WEB, "rps_web_output callframe:" << Rps_ShowCallFrame(&_) <<" empty ob");
@@ -1360,7 +1361,7 @@ rps_web_output(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
     };
   std::lock_guard<std::recursive_mutex> gu(*_f.ob->objmtxptr());
   _f.obclass = _f.ob->compute_class(&_);
-  RPS_DEBUG_LOG(WEB, "rps_web_output start ob=" << _f.ob
+  RPS_DEBUG_LOG(WEB, "rps_web_output ob=" << _f.ob
                 << " of class:" << _f.obclass);
   auto web_exchange_ob = RPS_ROOT_OB(_8zNtuRpzXUP013WG9S);
   bool iswebex = false;
