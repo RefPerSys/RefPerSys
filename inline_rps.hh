@@ -962,6 +962,7 @@ Rps_Value::is_subclass_of(Rps_CallFrame*callerframe, Rps_ObjectRef obsuperclass)
 bool
 Rps_Value::is_subclass_with_depth(Rps_CallFrame*callerframe, Rps_ObjectRef obsuperclass, Rps_ObjectRef obthisclass, int depth) const
 {
+  /// the callerframe is not really used, except for this check.
   RPS_ASSERT(!callerframe || callerframe->stored_type() == Rps_Type::CallFrame);
   if (!obsuperclass || !obsuperclass->is_class())
     {
@@ -976,7 +977,10 @@ Rps_Value::is_subclass_with_depth(Rps_CallFrame*callerframe, Rps_ObjectRef obsup
                     << ", obthisclass:" << obthisclass << ", obsuperclass=" << obsuperclass << ", depth=" << depth);
       return true;
     }
-  /// recur on the superclass parent class
+  /// If the recursion depth is too big, something very bad happened...
+  /// In practice, recursion depth is at most a few dozens....
+  RPS_ASSERT(depth<256);
+  /// Recur on the parent class object's superclass
   const Rps_PayloadClassInfo* superclassinfo ///
     = obsuperclass->get_dynamic_payload<Rps_PayloadClassInfo>();
   RPS_ASSERT(superclassinfo != nullptr);
