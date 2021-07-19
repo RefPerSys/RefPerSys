@@ -70,7 +70,8 @@ Rps_ObjectRef::output(std::ostream&outs) const
   else
     {
       Rps_Value valname = obptr()->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name
-      outs << obptr()->oid().to_string();
+      outs << "◌" /*U+25CC DOTTED CIRCLE*/
+	   << obptr()->oid().to_string();
       if (valname.is_string())
         {
           outs << "/" << valname.as_cstring();
@@ -138,6 +139,7 @@ void
 Rps_ObjectZone::val_output(std::ostream&out, unsigned int depth) const
 {
   out << oid().to_string();
+  bool isnamed = false;
   if (depth<2)
     {
       std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
@@ -150,6 +152,7 @@ Rps_ObjectZone::val_output(std::ostream&out, unsigned int depth) const
             {
               out << "⏵"; // U+23F5 BLACK MEDIUM RIGHT-POINTING TRIANGLE
               out << namv.as_cstring();
+	      isnamed = true;
             }
         }
       auto obcl = ob_class.load();
@@ -163,7 +166,7 @@ Rps_ObjectZone::val_output(std::ostream&out, unsigned int depth) const
             }
         };
       out << "⟧"; // U+27E7 MATHEMATICAL RIGHT WHITE SQUARE BRACKET
-    }
+    };
 } // end Rps_ObjectZone::val_output
 
 void
