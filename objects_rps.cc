@@ -71,7 +71,7 @@ Rps_ObjectRef::output(std::ostream&outs) const
     {
       Rps_Value valname = obptr()->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name
       outs << "◌" /*U+25CC DOTTED CIRCLE*/
-	   << obptr()->oid().to_string();
+           << obptr()->oid().to_string();
       if (valname.is_string())
         {
           outs << "/" << valname.as_cstring();
@@ -152,7 +152,7 @@ Rps_ObjectZone::val_output(std::ostream&out, unsigned int depth) const
             {
               out << "⏵"; // U+23F5 BLACK MEDIUM RIGHT-POINTING TRIANGLE
               out << namv.as_cstring();
-	      isnamed = true;
+              isnamed = true;
             }
         }
       auto obcl = ob_class.load();

@@ -953,7 +953,7 @@ Rps_Value::is_subclass_of(Rps_CallFrame*callerframe, Rps_ObjectRef obsuperclass)
   RPS_ASSERT(obthisclass);
   RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_of START this=" << Rps_OutputValue(*this)
                 << ", obsuperclass=" << Rps_OutputValue(obsuperclass)
-		<< ", obthisclass=" << Rps_OutputValue(obthisclass));
+                << ", obthisclass=" << Rps_OutputValue(obthisclass));
   return is_subclass_with_depth(callerframe, obsuperclass, obthisclass, 0);
 } // end Rps_Value::is_subclass_of
 
@@ -970,7 +970,7 @@ Rps_Value::is_subclass_with_depth(Rps_CallFrame*callerframe, Rps_ObjectRef obsup
 
       RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_with_depth FAIL this=" << Rps_OutputValue(*this)
                     << ", obsuperclass=" << Rps_OutputValue(obsuperclass)
-		    << ", depth=" << depth);
+                    << ", depth=" << depth);
       return false;
     }
   if (obthisclass == obsuperclass)
