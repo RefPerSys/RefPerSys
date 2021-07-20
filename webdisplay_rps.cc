@@ -72,7 +72,7 @@ rpsapply_0TwK4TkhEGZ03oTa5m(Rps_CallFrame*callerframe, ///
                 << ", webob=" << _f.webob1
                 << ", depth=" << depth);
   ////==== body of _0TwK4TkhEGZ03oTa5m ====
-  std::ostream* pout = rps_web_output(&_, _f.webob1, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.webob1, RPS_CHECK_OSTREAM_PTR);
   /////////
   /// we now can emit HTML code into pwebex, using its webex_resp...
   switch (_f.val0v.type())
@@ -321,7 +321,7 @@ rps_web_display_html_for_value(Rps_CallFrame*callerframe,
   _f.val0v = arg0val;
   _f.webob1 = arg1obweb.to_object();
   _f.depth2v = Rps_Value(depth, Rps_Value::Rps_IntTag{});
-  std::ostream* pout = rps_web_output(&_, _f.webob1, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.webob1, RPS_CHECK_OSTREAM_PTR);
   if (!_f.val0v)
     {
       *pout << "<span class='nullval_rpscl'>_</span>";
@@ -353,7 +353,7 @@ rps_web_display_html_for_objref(Rps_CallFrame*callerframe,
   _f.obdisp0 = arg0ob;
   _f.webob1 = arg1obweb;
   RPS_ASSERT(_f.obdisp0);
-  std::ostream* pout = rps_web_output(&_, _f.webob1, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.webob1, RPS_CHECK_OSTREAM_PTR);
   std::lock_guard<std::recursive_mutex> guobdisp(*(_f.obdisp0->objmtxptr()));
   _f.namev = _f.obdisp0->get_attr1(&_,
                                    RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name∈named_attribute
@@ -400,7 +400,7 @@ rpsapply_8KJHUldX8GJ03G5OWp(Rps_CallFrame*callerframe, ///
                 << ", depthv=" << _f.depthv);
   int depth =  _f.depthv.to_int();
   RPS_ASSERT(depth>=0);
-  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   RPS_ASSERT(pout);
   intptr_t i = _f.intv.as_int();
   *pout << "<span class='intval_rpscl'>" << i << "</span>";
@@ -440,7 +440,7 @@ rpsapply_2KnFhlj8xW800kpgPt(Rps_CallFrame*callerframe,
                 << ", depthv=" <<  _f.depthv);
   int depth =  _f.depthv.to_int();
   RPS_ASSERT(depth>=0);
-  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   RPS_ASSERT(pout);
   const std::string str = _f.stringv.as_cppstring();
   *pout << "<q class='decor_rpscl'>"
@@ -483,7 +483,7 @@ rpsapply_7oa7eIzzcxv03TmmZH(Rps_CallFrame*callerframe, ///
                 << ", depthv=" <<  _f.depthv);
   int depth =  _f.depthv.to_int();
   RPS_ASSERT(depth>=0);
-  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   RPS_ASSERT(pout);
   double x = _f.doublev.as_double();
   *pout << "<span class='doubleval_rpscl'>"
@@ -527,7 +527,7 @@ rpsapply_33DFyPOJxbF015ZYoi(Rps_CallFrame*callerframe, //
                 << "obweb =" << _f.obweb
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
-  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   RPS_ASSERT(pout);
   constexpr unsigned period_nl = 5;
   unsigned nbcomp = _f.tuplev.as_tuple()->cnt();
@@ -596,7 +596,7 @@ rpsapply_1568ZHTl0Pa00461I2(Rps_CallFrame*callerframe, ///
                 << "obweb =" << _f.obweb
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
-  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   constexpr int max_depth = 5; // FIXME, should be improved
   RPS_ASSERT(pout);
   constexpr unsigned period_nl = 5;
@@ -662,7 +662,7 @@ rpsapply_18DO93843oX02UWzq6(Rps_CallFrame*callerframe, ///
                 << RPS_DEBUG_BACKTRACE_HERE(1, "rpsapply_18DO93843oX02UWzq6") << std::endl);
   RPS_ASSERT(_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
-  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   RPS_ASSERT(pout);
   rps_web_display_html_for_objref(&_,
                                   _f.obrecv,
@@ -702,7 +702,7 @@ rpsapply_0rgijx7CCnq041IZEd (Rps_CallFrame*callerframe, ///
   RPS_ASSERT (_f.recdepth.is_int());
   auto depthi = _f.recdepth.to_int();
   constexpr int max_depth = 5; // FIXME, should be improved
-  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   RPS_ASSERT(pout);
   RPS_DEBUG_LOG(WEB, "rpsapply_0rgijx7CCnq041IZEd start instrecv=" << _f.instrecv
                 << "obweb =" << _f.obweb
@@ -787,7 +787,7 @@ rpsapply_6Wi00FwXYID00gl9Ma (Rps_CallFrame*callerframe, ///
                 << "obweb =" << _f.obweb
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
-  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   RPS_ASSERT(pout);
   _f.obconn = _f.closrecv->conn();
   unsigned arity = _f.closrecv->cnt();
@@ -870,7 +870,7 @@ rpsapply_42cCN1FRQSS03bzbTz(Rps_CallFrame*callerframe, ///
                 << "obweb =" << _f.obweb
                 << ", recdepth=" <<  _f.recdepth
                 << ", depthi=" << depthi);
-  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   constexpr int max_depth = 5; // FIXME, should be improved
   RPS_ASSERT(pout);
   if (depthi <  max_depth)
@@ -990,7 +990,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                 << " of class:" <<  _f.obweb->compute_class(&_) << std::endl
                 << "... depthi=" <<  depthi
                 << std::endl << "+++ object!display_object_content_web +++");
-  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   RPS_ASSERT(pout);
   _f.setattrs = _f.obweb->set_of_attributes(&_);
   _f.classob = _f.obweb->compute_class(&_);
@@ -1141,7 +1141,7 @@ rpsapply_8lKdW7lgcHV00WUOiT (Rps_CallFrame*callerframe, ///
                     "?£!? rpsapply_8lKdW7lgcHV00WUOiT !method class/display_object_payload_web")
                 << std::endl
                );
-  std::ostream* pout = rps_web_output(&_, _f.obweb, RPS_CHECK_OUTPUT);
+  std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   RPS_ASSERT(pout);
   auto paylcla = _f.obclass->get_classinfo_payload();
   RPS_ASSERT(paylcla);
