@@ -352,8 +352,13 @@ rps_web_display_html_for_objref(Rps_CallFrame*callerframe,
                 );
   _f.obdisp0 = arg0ob;
   _f.webob1 = arg1obweb;
-  RPS_ASSERT(_f.obdisp0);
+  RPS_DEBUG_LOG(WEB, "rps_web_display_html_for_objref obdisp0=" << _f.obdisp0 << " webob1=" << _f.webob1);
   std::ostream* pout = rps_web_ostream_ptr(&_, _f.webob1, RPS_CHECK_OSTREAM_PTR);
+  if (!_f.obdisp0)
+    {
+      *pout << "<span class='nullobref_rpscl'>__</span>";
+      return;
+    }
   std::lock_guard<std::recursive_mutex> guobdisp(*(_f.obdisp0->objmtxptr()));
   _f.namev = _f.obdisp0->get_attr1(&_,
                                    RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name∈named_attribute

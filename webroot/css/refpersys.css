@@ -39,6 +39,12 @@ span.nullval_rpscl {
     background-color: cyan;
 }
 
+/* display of null objectref */
+span.nullobref_rpscl {
+    font-family: "Lucida Console", Monaco, monospace;
+    background-color: red;
+}
+
 span.emptyval_rpscl {
     background-color: lavender;
 }
