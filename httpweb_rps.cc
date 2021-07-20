@@ -1347,10 +1347,10 @@ std::ostream*
 rps_web_ostream_ptr(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
 {
   RPS_LOCALFRAME(/*descr:*/ nullptr,
-		 /*prev:*/callframe,
-		 /*locals:*/
-		 Rps_ObjectRef ob;
-		 Rps_ObjectRef obclass);
+                            /*prev:*/callframe,
+                            /*locals:*/
+                            Rps_ObjectRef ob;
+                            Rps_ObjectRef obclass);
   _f.ob = obarg;
   RPS_DEBUGNL_LOG(WEB, "rps_web_ostream_ptr start ob=" << _f.ob
                   << " callframe:" << Rps_ShowCallFrame(&_));
@@ -1369,44 +1369,49 @@ rps_web_ostream_ptr(Rps_CallFrame*callframe, Rps_ObjectRef obarg, bool check)
   auto string_buffer_ob = RPS_ROOT_OB(_7Y3AyF9gNx700bQJXc); //string_buffer∈class
   int loopcnt = 0;
   /// we loop on the class, its super class etc....
-  while (_f.obclass) {
-    /// stop the loop if object class is reached
-    if (_f.obclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
-	)
-      break;
-    /// Just in case, count the loops and avoid looping
-    /// indefinitely, which could happen only if the heap is
-    /// severely corrupted...
-    loopcnt++;
-    RPS_ASSERT(loopcnt < 64);
-    ///
-    if (_f.obclass == web_exchange_ob) {
-      Rps_PayloadWebex*paylwebex = _f.ob->get_dynamic_payload<Rps_PayloadWebex>();
-      RPS_ASSERT(paylwebex != nullptr);
-      RPS_DEBUG_LOG(WEB, "rps_web_ostream_ptr ob=" << _f.ob << " good web exchange");
-      return paylwebex->web_ostream_ptr();
+  while (_f.obclass)
+    {
+      /// stop the loop if object class is reached
+      if (_f.obclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
+         )
+        break;
+      /// Just in case, count the loops and avoid looping
+      /// indefinitely, which could happen only if the heap is
+      /// severely corrupted...
+      loopcnt++;
+      RPS_ASSERT(loopcnt < 64);
+      ///
+      if (_f.obclass == web_exchange_ob)
+        {
+          Rps_PayloadWebex*paylwebex = _f.ob->get_dynamic_payload<Rps_PayloadWebex>();
+          RPS_ASSERT(paylwebex != nullptr);
+          RPS_DEBUG_LOG(WEB, "rps_web_ostream_ptr ob=" << _f.ob << " good web exchange");
+          return paylwebex->web_ostream_ptr();
+        }
+      else if (_f.obclass == string_buffer_ob)
+        {
+          Rps_PayloadStrBuf* paylstrbuf =  _f.ob->get_dynamic_payload<Rps_PayloadStrBuf>();
+          RPS_ASSERT(paylstrbuf != nullptr);
+          RPS_DEBUG_LOG(WEB, "rps_web_ostream_ptr ob=" << _f.ob << " good string buffer");
+          return paylstrbuf->output_string_stream_ptr();
+        }
+      else
+        {
+          // replace _f.obclass by its superclass
+          std::lock_guard<std::recursive_mutex> guclass(*_f.obclass->objmtxptr());
+          Rps_PayloadClassInfo*paylclinfo = _f.obclass->get_classinfo_payload();
+          RPS_ASSERT(paylclinfo != nullptr);
+          _f.obclass = paylclinfo->superclass();
+          RPS_DEBUG_LOG(WEB, "rps_web_ostream_ptr ob=" << _f.ob << " peeking superclass " << _f.obclass);
+          continue;
+        }
+    };				// end while _f.obclass
+  if (check)
+    {
+      std::ostringstream errout;
+      errout << "rps_web_ostream_ptr bad ob " << _f.ob << std::flush;
+      throw std::runtime_error(errout.str());
     }
-    else if (_f.obclass == string_buffer_ob) {
-      Rps_PayloadStrBuf* paylstrbuf =  _f.ob->get_dynamic_payload<Rps_PayloadStrBuf>();
-      RPS_ASSERT(paylstrbuf != nullptr);
-      RPS_DEBUG_LOG(WEB, "rps_web_ostream_ptr ob=" << _f.ob << " good string buffer");
-      return paylstrbuf->output_string_stream_ptr();
-    }
-    else {
-      // replace _f.obclass by its superclass
-      std::lock_guard<std::recursive_mutex> guclass(*_f.obclass->objmtxptr());
-      Rps_PayloadClassInfo*paylclinfo = _f.obclass->get_classinfo_payload();
-      RPS_ASSERT(paylclinfo != nullptr);
-      _f.obclass = paylclinfo->superclass();
-      RPS_DEBUG_LOG(WEB, "rps_web_ostream_ptr ob=" << _f.ob << " peeking superclass " << _f.obclass);
-      continue;
-    }
-  };				// end while _f.obclass
-  if (check) {
-    std::ostringstream errout;
-    errout << "rps_web_ostream_ptr bad ob " << _f.ob << std::flush;
-    throw std::runtime_error(errout.str());
-  }
   return nullptr;
 } // end rps_web_ostream_ptr
 
