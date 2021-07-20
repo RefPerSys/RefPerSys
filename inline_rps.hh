@@ -1382,9 +1382,9 @@ Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
           throw RPS_RUNTIME_ERROR_OUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
                                       << " of class " << obinitclass);
         }
-      if (obcurclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
-        return true;
       if (obthisclass == obcurclass)
+        return true;
+      if (obcurclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
         return true;
       if (obcurclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz)) // `value` class
         return false;
