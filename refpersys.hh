@@ -3876,9 +3876,8 @@ public:
   {
     return "string_buffer";
   };
-  std::ostringstream* output_string_stream(void) { return &strbuf_out; };
+  std::ostringstream* output_string_stream_ptr(void) { return &strbuf_out; };
   const std::ostream& output_stream(void) const { return strbuf_out; };
-   std::ostream& writable_output_stream(void)  { return strbuf_out; };
   int indentation(void) const { return strbuf_indent; };
   void set_indentation(int ind=0) {  strbuf_indent = ind; };
   void more_indentation(int delta) { strbuf_indent += delta; };
