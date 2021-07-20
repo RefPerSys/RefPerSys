@@ -352,7 +352,14 @@ rps_web_display_html_for_objref(Rps_CallFrame*callerframe,
                 );
   _f.obdisp0 = arg0ob;
   _f.webob1 = arg1obweb;
-  RPS_DEBUG_LOG(WEB, "rps_web_display_html_for_objref obdisp0=" << _f.obdisp0 << " webob1=" << _f.webob1);
+  if (depth >= 2)
+    RPS_DEBUG_LOG(WEB, "rps_web_display_html_for_objref obdisp0=" << _f.obdisp0
+		  << " webob1=" << _f.webob1 << " depth:" << depth);
+  else
+    RPS_DEBUG_LOG(WEB, "rps_web_display_html_for_objref obdisp0=" << _f.obdisp0
+		  << " webob1=" << _f.webob1 << " depth:" << depth << std::endl
+		  << RPS_DEBUG_BACKTRACE_HERE(1, "rps_web_display_html_for_objref"));
+  //
   std::ostream* pout = rps_web_ostream_ptr(&_, _f.webob1, RPS_CHECK_OSTREAM_PTR);
   if (!_f.obdisp0)
     {
