@@ -204,6 +204,7 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::RpsTemp_MainWindow"));
 } // end RpsTemp_MainWindow::RpsTemp_MainWindow
 
+
 void
 RpsTemp_MainWindow::garbage_collect_all_main_windows(Rps_GarbageCollector*gc)
 {
@@ -307,7 +308,7 @@ RpsTemp_MainWindow::fill_vbox(void)
 } // end RpsTemp_MainWindow::fill_vbox
 
 
-// slot when mainwin_shownobject has been entered
+// slot when some text in mainwin_shownobject Qt5 widget has been entered
 void
 RpsTemp_MainWindow::do_enter_shown_object(void)
 {
@@ -333,11 +334,47 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object by name showob="
 		<< _f.showob << " == " << Rps_OutputValue(_f.showob)
 		<< " of class " << Rps_OutputValue(_f.showob->compute_class(&_)));
+  /****
+   * we need to handle several cases:
+   * first case: _f.showob is null; then display some error dialog
+   * second case: _f.showob is already shown, then redisplay every object in this window.
+   * third case: _f.showob is another object, then append it and redisplay every object
+   ****/
+  if (!_f.showob) {		// first case: no shown object, should display a Qt dialog
+#warning  missing C++ code in RpsTemp_MainWindow::do_enter_shown_object to display a Qt dialog when there is no object to show.
+    RPS_WARNOUT("RpsTemp_MainWindow::do_enter_shown_object lacks C++ code when no shown object in window#" << mainwin_rank << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::do_enter_shown_object - none"));
+    return;
+  }
+  else if (mainwin_objbrowser->refpersys_object_is_shown(_f.showob)) { // second case, _f.showob is already shown
+#warning  missing C++ code in RpsTemp_MainWindow::do_enter_shown_object to redisplay an already shown object
+    /***
+     * We probably need to define some Qt signal refresh_object_browser and emit it later, e.g. 10 milliseconds later
+     * See https://stackoverflow.com/a/62692088/841108
+     ***/
+    RPS_WARNOUT("RpsTemp_MainWindow::do_enter_shown_object lacks C++ code redisplaying later object " << _f.showob << " in window#" << mainwin_rank << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::do_enter_shown_object - redisplay"));
+  }
+  else { // third case, _f.showob is not shown
+#warning  missing C++ code in RpsTemp_MainWindow::do_enter_shown_object to redisplay an already shown object
+    /***
+     * We probably need to define some Qt signal refresh_object_browser and emit it later, e.g. 10 milliseconds later
+     * See https://stackoverflow.com/a/62692088/841108
+     ***/
+    RPS_WARNOUT("RpsTemp_MainWindow::do_enter_shown_object lacks C++ code redisplaying later object " << _f.showob << " in window#" << mainwin_rank << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::do_enter_shown_object - redisplay"));
+  }
+  /****
+   * FIXME: the code below is probably obsolete and should be
+   * refactored. It was somehow running on Basile's machine, july 21,
+   * 2021, git commit 9d849d44252271dd. For some reason, Abhishek did not observe the same.
+   ****/
+#warning probably obsolete C++ code in RpsTemp_MainWindow::do_enter_shown_object 
   _f.strbufob = Rps_PayloadStrBuf::make_string_buffer_object(&_);
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object strbufob="
 		<< _f.strbufob << " == " << Rps_OutputValue(_f.strbufob)
 		<< " of class " << Rps_OutputValue(_f.strbufob->compute_class(&_)));
-  int displaydepth = 3;
+  int displaydepth = 3; /// FIXME: that displaydepth should be tunable thru some Qt interface....
 #warning  RpsTemp_MainWindow::do_enter_shown_object displaydepth should be tunable
   /// should send selector display_object_content_web to showob with arguments strbufob depth=tagged<>
   {
@@ -394,7 +431,40 @@ RpsTemp_ObjectBrowser::garbage_collect_object_browser(Rps_GarbageCollector*gc)
   }
 } // end RpsTemp_ObjectBrowser::garbage_collect_object_browser
 
+/// Return the default object display depth
+int
+RpsTemp_ObjectBrowser::default_display_depth(void) const
+{
+  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  return objbr_defaultdepth;
+} // end of RpsTemp_ObjectBrowser::default_display_depth
 
+
+/// Set the default object display depth. Ensure it is reasonable.
+void
+RpsTemp_ObjectBrowser::put_default_display_depth(int newdepth)
+{
+  if (newdepth<=0)
+    newdepth=1;
+  else if (newdepth>_objbr_maxdepth)
+    newdepth= _objbr_maxdepth;
+  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  objbr_defaultdepth = newdepth;
+} // end RpsTemp_ObjectBrowser::put_default_display_depth
+
+
+bool
+RpsTemp_ObjectBrowser::refpersys_object_is_shown(Rps_ObjectRef ob) const
+{
+  if (!ob)
+    return false;
+  RPSQT_WITH_LOCK();
+  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  return objbr_mapshownob.find(ob) != objbr_mapshownob.end();
+} // end RpsTemp_ObjectBrowser::refpersys_object_is_shown
+
+////////////////////////////////////////////////////////////////
+///// the linedit Qt widget to enter some object by id or name
 RpsTemp_ObjectLineEdit::RpsTemp_ObjectLineEdit(QWidget*parent)
   : QLineEdit(parent),
     oblined_completer(nullptr) {

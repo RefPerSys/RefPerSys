@@ -99,8 +99,9 @@ class RpsTemp_ObjectBrowser : public QTextBrowser {
     int shob_depth;		// the display depth
     std::string shob_subtitle;	// the optional subtitle string
   };
-  std::mutex objbr_mtx;
+  mutable std::mutex objbr_mtx;
   int objbr_defaultdepth;
+  static constexpr int _objbr_maxdepth = 8;
   std::vector<shown_object_st> objbr_shownobvect;
   std::map<Rps_ObjectRef,int> objbr_mapshownob;
   /*** NOTICE
@@ -114,7 +115,13 @@ public:
   void append_shown_object(Rps_ObjectRef ob, std::string htmlsubtitle=nullptr, int depth=0);
   /// remove a shown object
   void remove_shown_object(Rps_ObjectRef ob);
+  /// GC support
   void garbage_collect_object_browser(Rps_GarbageCollector*gc);
+  /// fetch the default display depth
+  int default_display_depth(void) const;
+  /// put the default display depth
+  void put_default_display_depth(int newdepth);
+  bool refpersys_object_is_shown(Rps_ObjectRef ob) const;
 #warning class RpsTemp_ObjectBrowser is incomplete
 };				// end RpsTemp_ObjectBrowser
 
