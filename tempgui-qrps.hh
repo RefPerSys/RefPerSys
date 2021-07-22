@@ -124,6 +124,7 @@ public slots:
   void add_shown_object(Rps_ObjectRef ob, std::string htmlsubtitle=nullptr, int depth=0);
   /// Remove a shown object
   void remove_shown_object(Rps_ObjectRef ob);
+  void refresh_object_browser(void);
 signals:
   void need_refresh_display(void);
 #warning class RpsTemp_ObjectBrowser is incomplete

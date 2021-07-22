@@ -301,6 +301,9 @@ RpsTemp_MainWindow::fill_vbox(void)
   mainwin_vbox->update();
   connect(mainwin_shownobject, &RpsTemp_ObjectLineEdit::editingFinished,
 	  this, &RpsTemp_MainWindow::do_enter_shown_object);
+  connect(mainwin_objbrowser, &RpsTemp_ObjectBrowser::need_refresh_display,
+	  mainwin_objbrowser, &RpsTemp_ObjectBrowser::refresh_object_browser,
+	  Qt::QueuedConnection);
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::fill_vbox end mainwin#"
 		<< rank() << " showlabel¤" << mainwin_showlabel->rect()
 		<< " showframe¤" << mainwin_showframe->rect()
@@ -512,6 +515,17 @@ RpsTemp_ObjectBrowser::remove_shown_object(Rps_ObjectRef ob)
   }
   emit need_refresh_display();
 } // end RpsTemp_ObjectBrowser::remove_shown_object
+
+void
+RpsTemp_ObjectBrowser::refresh_object_browser(void)
+{
+  RPSQT_WITH_LOCK();
+  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::refresh_object_browser this@" << (void*)this
+	      << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::refresh_object_browser"));
+  #warning incomplete RpsTemp_ObjectBrowser::refresh_object_browser
+} // end RpsTemp_ObjectBrowser::refresh_object_browser
 
 ////////////////////////////////////////////////////////////////
 ///// the linedit Qt widget to enter some object by id or name
