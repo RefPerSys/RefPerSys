@@ -308,6 +308,8 @@ RpsTemp_MainWindow::fill_vbox(void)
 } // end RpsTemp_MainWindow::fill_vbox
 
 
+
+
 // slot when some text in mainwin_shownobject Qt5 widget has been entered
 void
 RpsTemp_MainWindow::do_enter_shown_object(void)
@@ -462,6 +464,54 @@ RpsTemp_ObjectBrowser::refpersys_object_is_shown(Rps_ObjectRef ob) const
   std::lock_guard<std::mutex> curguard(objbr_mtx);
   return objbr_mapshownob.find(ob) != objbr_mapshownob.end();
 } // end RpsTemp_ObjectBrowser::refpersys_object_is_shown
+
+void
+RpsTemp_ObjectBrowser::add_shown_object(Rps_ObjectRef ob, std::string htmlsubtitle, int depth)
+{
+  if (!ob)
+    return;
+  RPSQT_WITH_LOCK();
+  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  int defdepth = default_display_depth();
+  RPS_ASSERT(defdepth>0);
+  if (depth<=0)
+    depth=defdepth;
+  struct shown_object_st shob;
+  shob.shob_obref=ob;
+  shob.shob_depth=depth;
+  shob.shob_subtitle=htmlsubtitle;
+  auto it = objbr_mapshownob.find(ob);
+  if (it == objbr_mapshownob.end()) {
+    int nbshownobjs = (int) objbr_mapshownob.size();
+    objbr_mapshownob.insert({ob, nbshownobjs});
+    objbr_shownobvect.push_back(shob);
+  }
+  else
+    objbr_shownobvect[it->second] = shob;
+  emit need_refresh_display();
+} // end RpsTemp_ObjectBrowser::add_shown_object
+
+void
+RpsTemp_ObjectBrowser::remove_shown_object(Rps_ObjectRef ob)
+{
+  if (!ob)
+    return;
+  RPSQT_WITH_LOCK();
+  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  auto it = objbr_mapshownob.find(ob);
+  if (it == objbr_mapshownob.end())
+    return;
+  int oix = it->second;
+  RPS_ASSERT(oix>=0 && oix < (int)objbr_shownobvect.size());
+  objbr_mapshownob.erase(it);
+  objbr_shownobvect.erase(objbr_shownobvect.begin()+oix);
+  for (int curix=oix; curix<objbr_shownobvect.size(); curix++) {
+    Rps_ObjectRef curob = objbr_shownobvect[curix].shob_obref;
+    RPS_ASSERT(curob);
+    objbr_mapshownob[curob] = curix;
+  }
+  emit need_refresh_display();
+} // end RpsTemp_ObjectBrowser::remove_shown_object
 
 ////////////////////////////////////////////////////////////////
 ///// the linedit Qt widget to enter some object by id or name

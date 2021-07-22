@@ -111,10 +111,6 @@ class RpsTemp_ObjectBrowser : public QTextBrowser {
    ***/
 public:
   RpsTemp_ObjectBrowser(QWidget*parent=nullptr);
-  /// add at end a shown object, if it was not shown
-  void append_shown_object(Rps_ObjectRef ob, std::string htmlsubtitle=nullptr, int depth=0);
-  /// remove a shown object
-  void remove_shown_object(Rps_ObjectRef ob);
   /// GC support
   void garbage_collect_object_browser(Rps_GarbageCollector*gc);
   /// fetch the default display depth
@@ -122,6 +118,14 @@ public:
   /// put the default display depth
   void put_default_display_depth(int newdepth);
   bool refpersys_object_is_shown(Rps_ObjectRef ob) const;
+public slots:
+  /// Add at end a shown object, if it was not shown, or update its
+  /// title and depth, if it was already shown
+  void add_shown_object(Rps_ObjectRef ob, std::string htmlsubtitle=nullptr, int depth=0);
+  /// Remove a shown object
+  void remove_shown_object(Rps_ObjectRef ob);
+signals:
+  void need_refresh_display(void);
 #warning class RpsTemp_ObjectBrowser is incomplete
 };				// end RpsTemp_ObjectBrowser
 
