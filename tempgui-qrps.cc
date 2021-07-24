@@ -483,14 +483,49 @@ RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struc
   RPSQT_WITH_LOCK();
   RPS_LOCALFRAME(nullptr,
                  callerframe, //
-		 Rps_ObjectRef ob;
+		 Rps_ObjectRef showob;
+		 Rps_ObjectRef strbufob;
+		 Rps_Value mainv;
+		 Rps_Value xtrav;
 		 );
-  _f.ob = shob.shob_obref;
-  RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::show_one_object_in_frame incomplete ob=" << _f.ob
+  _f.showob = shob.shob_obref;
+  _f.strbufob = Rps_PayloadStrBuf::make_string_buffer_object(&_);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object strbufob="
+		<< _f.strbufob << " == " << Rps_OutputValue(_f.strbufob)
+		<< " of class " << Rps_OutputValue(_f.strbufob->compute_class(&_)));
+  int displaydepth = shob.shob_depth;
+  RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::show_one_object_in_frame incomplete showob=" << _f.showob
 	      << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::show_one_object_in_frame"));
+  /// should send selector display_object_content_web to showob with arguments strbufob depth=tagged<>
+  {
+    Rps_TwoValues two = //
+      Rps_Value(_f.showob).send2(&_, //
+				 RPS_ROOT_OB(_02iWbXmFx8f04ldLRt), //"display_object_content_web"∈named_selector
+				 _f.strbufob,
+				 Rps_Value::make_tagged_int(displaydepth));
+    _f.mainv = two.main();
+    _f.xtrav = two.xtra();
+  }
+  Rps_PayloadStrBuf*paylsbuf =
+    _f.strbufob->get_dynamic_payload<Rps_PayloadStrBuf>();
+  RPS_ASSERT(paylsbuf != nullptr);
+  std::string outstr = paylsbuf->buffer_cppstring();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectBrowser::show_one_object_in_frame "
+	      << " showob=" << _f.showob << " strbufob=" << _f.strbufob
+	      << " mainv=" << Rps_OutputValue(_f.mainv)
+	      << " xtrav=" << Rps_OutputValue(_f.xtrav)
+	      << "::::" << std::endl
+	      << outstr
+	      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::show_one_object_in_frame"));
+  QString qoutstr = QString::fromStdString(outstr);
+  /*** TODO: the qoutstr should be displayed as HTML using Qt5 ....
+       see https://forum.qt.io/topic/128780/working-example-of-qmessage/
+   ***/
 #warning incomplete RpsTemp_ObjectBrowser::show_one_object_in_frame
 } // end RpsTemp_ObjectBrowser::show_one_object_in_frame
+
+
 
 bool
 RpsTemp_ObjectBrowser::refpersys_object_is_shown(Rps_ObjectRef ob) const
