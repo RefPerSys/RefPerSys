@@ -473,6 +473,25 @@ RpsTemp_ObjectBrowser::put_default_display_depth(int newdepth)
 } // end RpsTemp_ObjectBrowser::put_default_display_depth
 
 
+void
+RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struct shown_object_st& shob)
+{
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_ASSERT(shob.shob_obref);
+  RPS_ASSERT(shob.shob_depth >= 0);
+  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  RPSQT_WITH_LOCK();
+  RPS_LOCALFRAME(nullptr,
+                 callerframe, //
+		 Rps_ObjectRef ob;
+		 );
+  _f.ob = shob.shob_obref;
+  RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::show_one_object_in_frame incomplete ob=" << _f.ob
+	      << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::show_one_object_in_frame"));
+#warning incomplete RpsTemp_ObjectBrowser::show_one_object_in_frame
+} // end RpsTemp_ObjectBrowser::show_one_object_in_frame
+
 bool
 RpsTemp_ObjectBrowser::refpersys_object_is_shown(Rps_ObjectRef ob) const
 {

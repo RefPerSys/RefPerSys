@@ -118,6 +118,7 @@ public:
   /// put the default display depth
   void put_default_display_depth(int newdepth);
   bool refpersys_object_is_shown(Rps_ObjectRef ob) const;
+  void show_one_object_in_frame (Rps_CallFrame*caller, struct shown_object_st& shob);
 public slots:
   /// Add at end a shown object, if it was not shown, or update its
   /// title and depth, if it was already shown
