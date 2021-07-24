@@ -395,15 +395,18 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
     _f.strbufob->get_dynamic_payload<Rps_PayloadStrBuf>();
   RPS_ASSERT(paylsbuf != nullptr);
   std::string outstr = paylsbuf->buffer_cppstring();
-  RPS_WARNOUT("incomplete RpsTemp_MainWindow::do_enter_shown_object mainwin#" << rank()
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object mainwin#" << rank()
 	      << " obshowstring=" << Rps_QuotedC_String(obshowstring)
 	      << " showob=" << _f.showob << " strbufob=" << _f.strbufob
 	      << " mainv=" << Rps_OutputValue(_f.mainv)
 	      << " xtrav=" << Rps_OutputValue(_f.xtrav)
 	      << "::::" << std::endl
 	      << outstr
-	      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "ending RpsTemp_MainWindow::do_enter_shown_object"));
-  /*** TODO: the outstr should be displayed as HTML using Qt5 ***/
+	      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::do_enter_shown_object"));
+  QString qoutstr = QString::fromStdString(outstr);
+  /*** TODO: the qoutstr should be displayed as HTML using Qt5 ....
+       see https://forum.qt.io/topic/128780/working-example-of-qmessage/
+   ***/
 #warning incomplete RpsTemp_MainWindow::do_enter_shown_object
 } // end RpsTemp_MainWindow::do_enter_shown_object
 
