@@ -336,19 +336,30 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
 		<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "incomplete RpsTemp_MainWindow::do_enter_shown_object"));
   _f.showob = Rps_ObjectRef::find_object_or_null_by_string(&_, obshowstring);
-  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object by name showob="
-		<< _f.showob << " == " << Rps_OutputValue(_f.showob)
-		<< " of class " << Rps_OutputValue(_f.showob->compute_class(&_)));
+  if (_f.showob)
+    RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object by name showob="
+		  << _f.showob << " == " << Rps_OutputValue(_f.showob)
+		  << " of class " << Rps_OutputValue(_f.showob->compute_class(&_)));
+  else
+    RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object no object for " << obshowstring);
   /****
    * we need to handle several cases:
    * first case: _f.showob is null; then display some error dialog
    * second case: _f.showob is already shown, then redisplay every object in this window.
    * third case: _f.showob is another object, then append it and redisplay every object
    ****/
-  if (!_f.showob) {		// first case: no shown object, should display a Qt dialog
-#warning  missing C++ code in RpsTemp_MainWindow::do_enter_shown_object to display a Qt dialog when there is no object to show.
-    RPS_WARNOUT("RpsTemp_MainWindow::do_enter_shown_object lacks C++ code when no shown object in window#" << mainwin_rank << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::do_enter_shown_object - none"));
+  if (!_f.showob) {		// first case: no shown object, should display a Qt dialog and clear
+    char warntitle[64];
+    memset (warntitle, 0, sizeof(warntitle));
+    snprintf (warntitle, sizeof(warntitle), "no object for window #%d", mainwin_rank);
+    QString qwarndetails;
+    mainwin_shownobject->clear();
+    qwarndetails.append("Input <tt>");
+    qwarndetails.append(obshowstring.c_str());
+    qwarndetails.append("</tt> is <b>not</b> a valid RefPerSys object.");
+    #warning for some reason this Qt warning appears twice.
+    /* FIXME: postpone the display of the below Qt warning... */      
+    QMessageBox::warning(this, QString(warntitle), qwarndetails);
     return;
   }
   else if (mainwin_objbrowser->refpersys_object_is_shown(_f.showob)) { // second case, _f.showob is already shown
