@@ -401,7 +401,8 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
 	      << " mainv=" << Rps_OutputValue(_f.mainv)
 	      << " xtrav=" << Rps_OutputValue(_f.xtrav)
 	      << "::::" << std::endl
-	      << outstr);
+	      << outstr
+	      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "ending RpsTemp_MainWindow::do_enter_shown_object"));
   /*** TODO: the outstr should be displayed as HTML using Qt5 ***/
 #warning incomplete RpsTemp_MainWindow::do_enter_shown_object
 } // end RpsTemp_MainWindow::do_enter_shown_object
