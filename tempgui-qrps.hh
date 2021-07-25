@@ -165,6 +165,7 @@ public:
   int rank() const { return mainwin_rank; };
   RpsTemp_ObjectBrowser* objbrowser() const { return mainwin_objbrowser; };
   RpsTemp_MainWindow();
+  void do_a_millisecond_later(std::function<void(RpsTemp_MainWindow*w)> fun);
 public slots:
   void do_enter_shown_object(void);
 };				// end class RpsTemp_MainWindow

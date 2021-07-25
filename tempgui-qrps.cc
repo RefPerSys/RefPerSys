@@ -357,7 +357,7 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
     qwarndetails.append("Input <tt>");
     qwarndetails.append(obshowstring.c_str());
     qwarndetails.append("</tt> is <b>not</b> a valid RefPerSys object.");
-    #warning for some reason this Qt warning appears twice.
+#warning for some reason this Qt warning appears twice.
     /* FIXME: postpone the display of the below Qt warning... */      
     QMessageBox::warning(this, QString(warntitle), qwarndetails);
     return;
@@ -380,46 +380,13 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
     RPS_WARNOUT("RpsTemp_MainWindow::do_enter_shown_object lacks C++ code redisplaying later object " << _f.showob << " in window#" << mainwin_rank << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::do_enter_shown_object - redisplay"));
   }
-  /****
-   * FIXME: the code below is probably obsolete and should be
-   * refactored. It was somehow running on Basile's machine, july 21,
-   * 2021, git commit 9d849d44252271dd. For some reason, Abhishek did not observe the same.
-   ****/
-#warning probably obsolete C++ code in RpsTemp_MainWindow::do_enter_shown_object 
-  _f.strbufob = Rps_PayloadStrBuf::make_string_buffer_object(&_);
-  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object strbufob="
-		<< _f.strbufob << " == " << Rps_OutputValue(_f.strbufob)
-		<< " of class " << Rps_OutputValue(_f.strbufob->compute_class(&_)));
-  int displaydepth = 3; /// FIXME: that displaydepth should be tunable thru some Qt interface....
-#warning  RpsTemp_MainWindow::do_enter_shown_object displaydepth should be tunable
-  /// should send selector display_object_content_web to showob with arguments strbufob depth=tagged<>
-  {
-    Rps_TwoValues two = //
-      Rps_Value(_f.showob).send2(&_, //
-				 RPS_ROOT_OB(_02iWbXmFx8f04ldLRt), //"display_object_content_web"∈named_selector
-				 _f.strbufob,
-				 Rps_Value::make_tagged_int(displaydepth));
-    _f.mainv = two.main();
-    _f.xtrav = two.xtra();
-  }
-  Rps_PayloadStrBuf*paylsbuf =
-    _f.strbufob->get_dynamic_payload<Rps_PayloadStrBuf>();
-  RPS_ASSERT(paylsbuf != nullptr);
-  std::string outstr = paylsbuf->buffer_cppstring();
-  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object mainwin#" << rank()
-	      << " obshowstring=" << Rps_QuotedC_String(obshowstring)
-	      << " showob=" << _f.showob << " strbufob=" << _f.strbufob
-	      << " mainv=" << Rps_OutputValue(_f.mainv)
-	      << " xtrav=" << Rps_OutputValue(_f.xtrav)
-	      << "::::" << std::endl
-	      << outstr
-	      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::do_enter_shown_object"));
-  QString qoutstr = QString::fromStdString(outstr);
-  /*** TODO: the qoutstr should be displayed as HTML using Qt5 ....
-       see https://forum.qt.io/topic/128780/working-example-of-qmessage/
-   ***/
-#warning incomplete RpsTemp_MainWindow::do_enter_shown_object
 } // end RpsTemp_MainWindow::do_enter_shown_object
+
+void
+RpsTemp_MainWindow::do_a_millisecond_later(std::function<void(RpsTemp_MainWindow*w)> fun)
+{
+  QTimer::singleShot(1, Qt::CoarseTimer, [=](void){fun(this);});
+} // end RpsTemp_MainWindow::do_a_millisecond_later
 
 ////////////////////////////////////////////////////////////////
 ///// object browser
@@ -577,7 +544,7 @@ RpsTemp_ObjectBrowser::remove_shown_object(Rps_ObjectRef ob)
   RPS_ASSERT(oix>=0 && oix < (int)objbr_shownobvect.size());
   objbr_mapshownob.erase(it);
   objbr_shownobvect.erase(objbr_shownobvect.begin()+oix);
-  for (int curix=oix; curix<objbr_shownobvect.size(); curix++) {
+  for (int curix=oix; curix<(int)objbr_shownobvect.size(); curix++) {
     Rps_ObjectRef curob = objbr_shownobvect[curix].shob_obref;
     RPS_ASSERT(curob);
     objbr_mapshownob[curob] = curix;
