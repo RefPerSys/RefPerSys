@@ -96,7 +96,7 @@ RPS_BUILD_DIALECTFLAGS = -std=gnu++17
 RPS_BUILD_WARNFLAGS = -Wall -Wextra
 override RPS_BUILD_OPTIMFLAGS ?= -Og -g3
 RPS_BUILD_DEBUGFLAGS = -O0 -fno-inline -g3
-RPS_BUILD_CODGENFLAGS = 
+RPS_BUILD_CODGENFLAGS = -fPIC
 RPS_BUILD_SANITFLAGS = -fsanitize=address
 #RPS_INCLUDE_DIRS = /usr/local/include /usr/include /usr/include/jsoncpp
 #RPS_INCLUDE_FLAGS = $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
@@ -105,7 +105,7 @@ RPS_BUILD_SANITFLAGS = -fsanitize=address
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
-RPS_PKG_NAMES= jsoncpp readline libcurl zlib onion
+RPS_PKG_NAMES= jsoncpp readline libcurl zlib onion Qt5Widgets
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
@@ -169,6 +169,7 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
 %.o: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -o $@ $<
+
 
 %.sanit.o: %.cc refpersys.hh.sanit.gch
 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<

@@ -35,11 +35,34 @@
 #include "onion/version.h"
 #include "readline/readline.h"
 
+//// ugly, but temporarily needed near commit 8506e5955bc59d (july 2021)
+//// see framalistes.org/sympa/arc/refpersys-forum/2021-07/msg00082.html
+#include <QApplication>
+#include <QtWidgets>
+
+
+
 extern "C" const char rps_main_gitid[];
 const char rps_main_gitid[]= RPS_GITID;
 
 extern "C" const char rps_main_date[];
 const char rps_main_date[]= __DATE__;
+
+
+//// ugly, but temporarily needed near commit 8506e5955bc59d (july 2021)
+//// see framalistes.org/sympa/arc/refpersys-forum/2021-07/msg00082.html
+//// see https://stackoverflow.com/q/68516253/841108
+static void
+rps_force_link_qt(int& argc, char**argv)
+{
+  QApplication app(argc, argv);
+  QMainWindow* mainwin =  new QMainWindow();
+  mainwin->setMinimumSize(200,100);
+  QPushButton* button = new QPushButton(QString{"click"},mainwin);
+  mainwin->show();
+  if (getpid() % 2 == 0)
+    app.exec();
+} // end of rps_force_link_qt
 
 /// actually, in function main we have something like  asm volatile ("rps_end_of_main: nop");
 extern "C" void rps_end_of_main(void);
@@ -686,6 +709,10 @@ main (int argc, char** argv)
           RPS_INFORM("%s disabled ASLR (git %s).", rps_progname, rps_gitid);
       }
   }
+  /// this should never run, but we hope that our C++ compiler is not
+  /// clever enough to optimize....
+  if (getpid() < 5) 
+    rps_force_link_qt(argc, argv);
   Rps_Agenda::initialize();
   if (rps_run_repl && rps_without_terminal_escape)
     RPS_FATAL("%s cannot run REPL without terminal escape", rps_progname);
