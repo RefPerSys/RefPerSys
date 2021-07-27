@@ -711,7 +711,7 @@ main (int argc, char** argv)
   }
   /// this should never run, but we hope that our C++ compiler is not
   /// clever enough to optimize....
-  if (getpid() < 5) 
+  if (getpid() < 5)
     rps_force_link_qt(argc, argv);
   Rps_Agenda::initialize();
   if (rps_run_repl && rps_without_terminal_escape)

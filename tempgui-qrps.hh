@@ -117,7 +117,9 @@ public:
   int default_display_depth(void) const;
   /// put the default display depth
   void put_default_display_depth(int newdepth);
-  bool refpersys_object_is_shown(Rps_ObjectRef ob) const;
+  /// If an object is shown and pix is given, it contains the index in
+  /// objbr_shownobvect....
+  bool refpersys_object_is_shown(Rps_ObjectRef ob, int *pix=nullptr) const;
   void show_one_object_in_frame (Rps_CallFrame*caller, struct shown_object_st& shob);
 public slots:
   /// Add at end a shown object, if it was not shown, or update its

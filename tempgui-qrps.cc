@@ -327,6 +327,7 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
 		 Rps_Value mainv;
 		 Rps_Value xtrav;
 		 );
+  int ix = -1;
   RPS_ASSERT(mainwin_shownobject != nullptr);
   std::string obshowstring = mainwin_shownobject->text().toStdString();
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object obshowstring="
@@ -358,28 +359,22 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
     qwarndetails.append(obshowstring.c_str());
     qwarndetails.append("</tt> is <b>not</b> a valid RefPerSys object.");
 #warning for some reason this Qt warning appears twice.
-    /* FIXME: postpone the display of the below Qt warning... */      
+    /* FIXME: Basile tried to postpone with do_a_millisecond_later the display of
+       the below Qt warning, but it does not improve ... */
     QMessageBox::warning(this, QString(warntitle), qwarndetails);
     return;
   }
-  else if (mainwin_objbrowser->refpersys_object_is_shown(_f.showob)) { // second case, _f.showob is already shown
-#warning  missing C++ code in RpsTemp_MainWindow::do_enter_shown_object to redisplay an already shown object
-    /***
-     * We probably need to define some Qt signal refresh_object_browser and emit it later, e.g. 10 milliseconds later
-     * See https://stackoverflow.com/a/62692088/841108
-     ***/
-    RPS_WARNOUT("RpsTemp_MainWindow::do_enter_shown_object lacks C++ code redisplaying later object " << _f.showob << " in window#" << mainwin_rank << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::do_enter_shown_object - redisplay"));
+  else if (mainwin_objbrowser->refpersys_object_is_shown(_f.showob, &ix)) { // second case, _f.showob is already shown
+    RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object already shown object "
+		  << _f.showob << " at index " << ix << " in window#" << mainwin_rank);
   }
   else { // third case, _f.showob is not shown
-#warning  missing C++ code in RpsTemp_MainWindow::do_enter_shown_object to redisplay an already shown object
-    /***
-     * We probably need to define some Qt signal refresh_object_browser and emit it later, e.g. 10 milliseconds later
-     * See https://stackoverflow.com/a/62692088/841108
-     ***/
-    RPS_WARNOUT("RpsTemp_MainWindow::do_enter_shown_object lacks C++ code redisplaying later object " << _f.showob << " in window#" << mainwin_rank << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::do_enter_shown_object - redisplay"));
+    mainwin_objbrowser->add_shown_object(_f.showob, obshowstring);
   }
+  do_a_millisecond_later([this](RpsTemp_MainWindow*mainw) {
+    RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object refreshing window#" << mainw->mainwin_rank);    
+    mainw->mainwin_objbrowser->refresh_object_browser();
+  });
 } // end RpsTemp_MainWindow::do_enter_shown_object
 
 void
@@ -495,13 +490,21 @@ RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struc
 
 
 bool
-RpsTemp_ObjectBrowser::refpersys_object_is_shown(Rps_ObjectRef ob) const
+RpsTemp_ObjectBrowser::refpersys_object_is_shown(Rps_ObjectRef ob, int* pix) const
 {
   if (!ob)
     return false;
   RPSQT_WITH_LOCK();
   std::lock_guard<std::mutex> curguard(objbr_mtx);
-  return objbr_mapshownob.find(ob) != objbr_mapshownob.end();
+  auto it =  objbr_mapshownob.find(ob);
+  if (it ==  objbr_mapshownob.end()) {
+    if (pix)
+      *pix = -1;
+    return false;
+  }
+  if (pix)
+    *pix = it->second;
+  return true;
 } // end RpsTemp_ObjectBrowser::refpersys_object_is_shown
 
 void
@@ -560,7 +563,9 @@ RpsTemp_ObjectBrowser::refresh_object_browser(void)
   RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::refresh_object_browser this@" << (void*)this
 	      << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::refresh_object_browser"));
-  #warning incomplete RpsTemp_ObjectBrowser::refresh_object_browser
+#warning incomplete RpsTemp_ObjectBrowser::refresh_object_browser
+  /* FIXME: We need have some Rps_CallFrame, then to loop on
+     RpsTemp_ObjectBrowser::show_one_object_in_frame here. */
 } // end RpsTemp_ObjectBrowser::refresh_object_browser
 
 ////////////////////////////////////////////////////////////////
