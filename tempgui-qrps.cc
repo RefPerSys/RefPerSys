@@ -400,6 +400,8 @@ RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser(QWidget*parent)
   setReadOnly(true);
 } // end RpsTemp_ObjectBrowser::RpsTemp_ObjectBrowser
 
+
+
 void
 RpsTemp_ObjectBrowser::garbage_collect_object_browser(Rps_GarbageCollector*gc)
 {
@@ -555,11 +557,40 @@ RpsTemp_ObjectBrowser::remove_shown_object(Rps_ObjectRef ob)
   emit need_refresh_display();
 } // end RpsTemp_ObjectBrowser::remove_shown_object
 
+
+
 void
 RpsTemp_ObjectBrowser::refresh_object_browser(void)
 {
   RPSQT_WITH_LOCK();
   std::lock_guard<std::mutex> curguard(objbr_mtx);
+  int nbshob = (int) objbr_shownobvect.size();
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                 /*callerframe:*/nullptr,
+		 Rps_ObjectRef obstrbuf;
+		 Rps_ObjectRef obshown;
+		 );
+  //// The shown objects should be GC marked thru the windows
+  //// containing them, so we hope that adding a GC marking extra
+  //// routine is not needed here.
+  clear();
+  if (nbshob==0)
+    setHtml(QString("<h1>object browser</h1>\n"));
+  else if (nbshob==1)
+    setHtml(QString("<h1>browser for one object</h1>\n"));
+  else
+    setHtml(QString("<h1>browser for ") + QString(nbshob) + QString(" objects</h1>\n"));
+  _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
+  Rps_PayloadStrBuf*paylsbuf = _f.obstrbuf->get_dynamic_payload<Rps_PayloadStrBuf>();
+  RPS_ASSERT (paylsbuf != nullptr);
+  for (int obix=0; obix<nbshob; obix++) {
+    paylsbuf->clear_buffer();
+    std::ostream* poutsbuf = paylsbuf->output_string_stream_ptr();
+    RPS_ASSERT(poutsbuf);
+    _f.obshown = objbr_shownobvect[obix].shob_obref;
+    RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser obix#" << obix
+		  << " obshown=" << _f.obshown);
+  }
   RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::refresh_object_browser this@" << (void*)this
 	      << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::refresh_object_browser"));
