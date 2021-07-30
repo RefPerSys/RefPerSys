@@ -456,7 +456,7 @@ RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struc
 		 );
   _f.showob = shob.shob_obref;
   _f.strbufob = Rps_PayloadStrBuf::make_string_buffer_object(&_);
-  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object strbufob="
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::show_one_object_in_frame strbufob="
 		<< _f.strbufob << " == " << Rps_OutputValue(_f.strbufob)
 		<< " of class " << Rps_OutputValue(_f.strbufob->compute_class(&_)));
   int displaydepth = shob.shob_depth;
@@ -465,7 +465,7 @@ RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struc
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::show_one_object_in_frame"));
   /// should send selector display_object_content_web to showob with arguments strbufob depth=tagged<>
   {
-    RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object sending display_object_content_web to showob="
+    RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::show_one_object_in_frame sending display_object_content_web to showob="
 		  << _f.showob);
     Rps_TwoValues two = //
       Rps_Value(_f.showob).send2(&_, //
@@ -475,8 +475,8 @@ RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struc
     _f.mainv = two.main();
     _f.xtrav = two.xtra();
   }
-  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object after display_object_content_web showob="
-		<< _f.showob << " mainv=" _f.mainv);
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::show_one_object_in_frame after display_object_content_web showob="
+		<< _f.showob << " mainv=" << _f.mainv);
   Rps_PayloadStrBuf*paylsbuf =
     _f.strbufob->get_dynamic_payload<Rps_PayloadStrBuf>();
   RPS_ASSERT(paylsbuf != nullptr);
