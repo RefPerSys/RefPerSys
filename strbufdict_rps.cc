@@ -157,6 +157,14 @@ rpsldpy_string_buffer(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, 
   paylsbuf->strbuf_indent = jv["strbuf_indent"].asInt();
 } // end of rpsldpy_string_buffer
 
+
+void
+Rps_PayloadStrBuf::clear_buffer()
+{
+/// clear the buffer used by strbuf_out, which is a std::ostringstream
+  strbuf_out.str("");
+} // end Rps_PayloadStrBuf::clear_buffer
+
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
