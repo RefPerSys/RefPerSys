@@ -137,7 +137,7 @@ all:
 .SECONDARY:  __timestamp.c $(RPS_BISON_CPLUSPLUS)
 
 refpersys: $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
-	$(LINK.cc) -rdynamic $(RPS_CORE_OBJECTS)  __timestamp.o \
+	$(LINK.cc) -rdynamic -pie -Bdynamic $(RPS_CORE_OBJECTS)  __timestamp.o \
            $(LIBES) $(RPS_PKG_LIBS) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
