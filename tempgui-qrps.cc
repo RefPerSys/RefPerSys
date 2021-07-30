@@ -372,8 +372,10 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
     mainwin_objbrowser->add_shown_object(_f.showob, obshowstring);
   }
   do_a_millisecond_later([this](RpsTemp_MainWindow*mainw) {
-    RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object refreshing window#" << mainw->mainwin_rank);    
+    RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object refreshing millisec window#" << mainw->mainwin_rank);
     mainw->mainwin_objbrowser->refresh_object_browser();
+    RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object did refresh_object_browser window#"
+		  << mainw->mainwin_rank << " millisec"); 
   });
 } // end RpsTemp_MainWindow::do_enter_shown_object
 
@@ -463,6 +465,8 @@ RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struc
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::show_one_object_in_frame"));
   /// should send selector display_object_content_web to showob with arguments strbufob depth=tagged<>
   {
+    RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object sending display_object_content_web to showob="
+		  << _f.showob);
     Rps_TwoValues two = //
       Rps_Value(_f.showob).send2(&_, //
 				 RPS_ROOT_OB(_02iWbXmFx8f04ldLRt), //"display_object_content_web"∈named_selector
@@ -471,6 +475,8 @@ RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struc
     _f.mainv = two.main();
     _f.xtrav = two.xtra();
   }
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object after display_object_content_web showob="
+		<< _f.showob << " mainv=" _f.mainv);
   Rps_PayloadStrBuf*paylsbuf =
     _f.strbufob->get_dynamic_payload<Rps_PayloadStrBuf>();
   RPS_ASSERT(paylsbuf != nullptr);
@@ -588,8 +594,16 @@ RpsTemp_ObjectBrowser::refresh_object_browser(void)
     std::ostream* poutsbuf = paylsbuf->output_string_stream_ptr();
     RPS_ASSERT(poutsbuf);
     _f.obshown = objbr_shownobvect[obix].shob_obref;
+    int showdepth =  objbr_shownobvect[obix].shob_depth;
+    std::string subtitle = objbr_shownobvect[obix].shob_subtitle;
     RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser obix#" << obix
-		  << " obshown=" << _f.obshown);
+		  << " obshown=" << _f.obshown << " showdepth=" << showdepth
+		  << " subtitle=" << subtitle);
+    show_one_object_in_frame(&_, objbr_shownobvect[obix]);
+    RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser obix#" << obix
+		  << " obshown=" << _f.obshown << " after show_one_object_in_frame from " << std::endl
+		  << Rps_ShowCallFrame(&_) << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::refresh_object_browser loop"));
   }
   RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::refresh_object_browser this@" << (void*)this
 	      << std::endl
