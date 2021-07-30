@@ -99,7 +99,7 @@ class RpsTemp_ObjectBrowser : public QTextBrowser {
     int shob_depth;		// the display depth
     std::string shob_subtitle;	// the optional subtitle string
   };
-  mutable std::mutex objbr_mtx;
+  mutable std::recursive_mutex objbr_mtx;
   int objbr_defaultdepth;
   static constexpr int _objbr_maxdepth = 8;
   std::vector<shown_object_st> objbr_shownobvect;

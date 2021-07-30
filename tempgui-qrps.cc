@@ -408,7 +408,7 @@ void
 RpsTemp_ObjectBrowser::garbage_collect_object_browser(Rps_GarbageCollector*gc)
 {
   RPS_ASSERT(gc != nullptr);
-  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  std::lock_guard<std::recursive_mutex> curguard(objbr_mtx);
   int nbshownob = (int)objbr_shownobvect.size();
   for (int shix=0; shix<nbshownob; shix++) {
     struct shown_object_st& curshob= objbr_shownobvect[shix];
@@ -421,7 +421,7 @@ RpsTemp_ObjectBrowser::garbage_collect_object_browser(Rps_GarbageCollector*gc)
 int
 RpsTemp_ObjectBrowser::default_display_depth(void) const
 {
-  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  std::lock_guard<std::recursive_mutex> curguard(objbr_mtx);
   return objbr_defaultdepth;
 } // end of RpsTemp_ObjectBrowser::default_display_depth
 
@@ -434,7 +434,7 @@ RpsTemp_ObjectBrowser::put_default_display_depth(int newdepth)
     newdepth=1;
   else if (newdepth>_objbr_maxdepth)
     newdepth= _objbr_maxdepth;
-  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  std::lock_guard<std::recursive_mutex> curguard(objbr_mtx);
   objbr_defaultdepth = newdepth;
 } // end RpsTemp_ObjectBrowser::put_default_display_depth
 
@@ -445,7 +445,7 @@ RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struc
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(shob.shob_obref);
   RPS_ASSERT(shob.shob_depth >= 0);
-  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  std::lock_guard<std::recursive_mutex> curguard(objbr_mtx);
   RPSQT_WITH_LOCK();
   RPS_LOCALFRAME(nullptr,
                  callerframe, //
@@ -503,7 +503,7 @@ RpsTemp_ObjectBrowser::refpersys_object_is_shown(Rps_ObjectRef ob, int* pix) con
   if (!ob)
     return false;
   RPSQT_WITH_LOCK();
-  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  std::lock_guard<std::recursive_mutex> curguard(objbr_mtx);
   auto it =  objbr_mapshownob.find(ob);
   if (it ==  objbr_mapshownob.end()) {
     if (pix)
@@ -521,7 +521,7 @@ RpsTemp_ObjectBrowser::add_shown_object(Rps_ObjectRef ob, std::string htmlsubtit
   if (!ob)
     return;
   RPSQT_WITH_LOCK();
-  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  std::lock_guard<std::recursive_mutex> curguard(objbr_mtx);
   int defdepth = default_display_depth();
   RPS_ASSERT(defdepth>0);
   if (depth<=0)
@@ -547,7 +547,7 @@ RpsTemp_ObjectBrowser::remove_shown_object(Rps_ObjectRef ob)
   if (!ob)
     return;
   RPSQT_WITH_LOCK();
-  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  std::lock_guard<std::recursive_mutex> curguard(objbr_mtx);
   auto it = objbr_mapshownob.find(ob);
   if (it == objbr_mapshownob.end())
     return;
@@ -569,7 +569,7 @@ void
 RpsTemp_ObjectBrowser::refresh_object_browser(void)
 {
   RPSQT_WITH_LOCK();
-  std::lock_guard<std::mutex> curguard(objbr_mtx);
+  std::lock_guard<std::recursive_mutex> curguard(objbr_mtx);
   int nbshob = (int) objbr_shownobvect.size();
   RPS_LOCALFRAME(/*descr:*/nullptr,
                  /*callerframe:*/nullptr,
