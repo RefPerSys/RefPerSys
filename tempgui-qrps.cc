@@ -489,10 +489,7 @@ RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struc
 	      << outstr
 	      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::show_one_object_in_frame"));
   QString qoutstr = QString::fromStdString(outstr);
-  /*** TODO: the qoutstr should be displayed as HTML using Qt5 ....
-       see https://forum.qt.io/topic/128780/working-example-of-qmessage/
-   ***/
-#warning incomplete RpsTemp_ObjectBrowser::show_one_object_in_frame
+  insertHtml(qoutstr);
 } // end RpsTemp_ObjectBrowser::show_one_object_in_frame
 
 

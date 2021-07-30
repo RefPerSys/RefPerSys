@@ -1028,7 +1028,7 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   /// should display the class and space
   *pout << "<span class='objclass_rpscl' id='rpsobcla_"
         <<_f.recvob->oid()
-        << "'> ∈&npsp;";//U+2208 ELEMENT OF
+        << "'> ∈&nbsp;";//U+2208 ELEMENT OF
   rps_web_display_html_for_objref(&_, _f.classob, _f.obweb, 0);
   *pout << "</span>" << std::endl;
   *pout << "<span class='objspace_rpscl' id='rpsobspa_"
