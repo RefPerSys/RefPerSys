@@ -224,6 +224,8 @@ like e.g.
      RPS_BUILD_CC= gcc-11
      RPS_BUILD_CXX= g++-11
 
+You then build with `make -j4 refpersys && make all`
+
 ## Garbage collection
 
 *RefPerSys* is a multi-threaded and garbage-collected system. We are
