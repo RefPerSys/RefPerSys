@@ -573,6 +573,13 @@ RpsTemp_ObjectBrowser::refresh_object_browser(void)
 		 Rps_ObjectRef obstrbuf;
 		 Rps_ObjectRef obshown;
 		 );
+  RpsTemp_MainWindow* mainwin = dynamic_cast<RpsTemp_MainWindow*>(parentWidget());
+  RPS_ASSERT(mainwin != nullptr);
+  int winrank = mainwin->rank();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::refresh_object_browser winrank#"
+		<< winrank << " nbshob=" << nbshob
+		<< " start from "
+		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::refresh_object_browser start"));
   //// The shown objects should be GC marked thru the windows
   //// containing them, so we hope that adding a GC marking extra
   //// routine is not needed here.
