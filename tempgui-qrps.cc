@@ -573,7 +573,10 @@ RpsTemp_ObjectBrowser::refresh_object_browser(void)
 		 Rps_ObjectRef obstrbuf;
 		 Rps_ObjectRef obshown;
 		 );
-  RpsTemp_MainWindow* mainwin = dynamic_cast<RpsTemp_MainWindow*>(parentWidget());
+  QWidget* parwid = parentWidget();
+  RpsTemp_MainWindow* mainwin = dynamic_cast<RpsTemp_MainWindow*>(window());
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::refresh_object_browser start parwid@" << parwid
+		<< "€" << parwid->metaObject()->className());
   RPS_ASSERT(mainwin != nullptr);
   int winrank = mainwin->rank();
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::refresh_object_browser winrank#"
