@@ -493,6 +493,11 @@ RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struc
 } // end RpsTemp_ObjectBrowser::show_one_object_in_frame
 
 
+int
+RpsTemp_ObjectBrowser::cursor_position(void) const {
+  QTextCursor tcur = textCursor();
+  return tcur.position();
+} // end RpsTemp_ObjectBrowser::cursor_position
 
 bool
 RpsTemp_ObjectBrowser::refpersys_object_is_shown(Rps_ObjectRef ob, int* pix) const
@@ -605,9 +610,11 @@ RpsTemp_ObjectBrowser::refresh_object_browser(void)
     std::string subtitle = objbr_shownobvect[obix].shob_subtitle;
     RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser obix#" << obix
 		  << " obshown=" << _f.obshown << " showdepth=" << showdepth
-		  << " subtitle=" << subtitle);
+		  << " subtitle=" << subtitle
+		  << " cursorpos=" << cursor_position());
     show_one_object_in_frame(&_, objbr_shownobvect[obix]);
     RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser obix#" << obix
+		  << " cursorpos=" << cursor_position()
 		  << " obshown=" << _f.obshown << " after show_one_object_in_frame from " << std::endl
 		  << Rps_ShowCallFrame(&_) << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::refresh_object_browser loop"));

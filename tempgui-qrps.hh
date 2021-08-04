@@ -121,6 +121,7 @@ public:
   /// objbr_shownobvect....
   bool refpersys_object_is_shown(Rps_ObjectRef ob, int *pix=nullptr) const;
   void show_one_object_in_frame (Rps_CallFrame*caller, struct shown_object_st& shob);
+  int cursor_position(void) const;
 public slots:
   /// Add at end a shown object, if it was not shown, or update its
   /// title and depth, if it was already shown
