@@ -597,8 +597,12 @@ RpsTemp_ObjectBrowser::refresh_object_browser(void)
     setHtml(QString("<h1>object browser</h1>\n"));
   else if (nbshob==1)
     setHtml(QString("<h1>browser for one object</h1>\n"));
-  else
-    setHtml(QString("<h1>browser for ") + QString(nbshob) + QString(" objects</h1>\n"));
+  else {
+    char bufnbshob[16];
+    memset (bufnbshob, 0, sizeof(bufnbshob));
+    snprintf (bufnbshob, sizeof(bufnbshob), "%d", nbshob);
+    setHtml(QString("<h1>browser for ") + QString(bufnbshob) + QString(" objects</h1>\n"));
+  }
   _f.obstrbuf = Rps_PayloadStrBuf::make_string_buffer_object(&_);
   Rps_PayloadStrBuf*paylsbuf = _f.obstrbuf->get_dynamic_payload<Rps_PayloadStrBuf>();
   RPS_ASSERT (paylsbuf != nullptr);
@@ -609,16 +613,18 @@ RpsTemp_ObjectBrowser::refresh_object_browser(void)
     _f.obshown = objbr_shownobvect[obix].shob_obref;
     int showdepth =  objbr_shownobvect[obix].shob_depth;
     std::string subtitle = objbr_shownobvect[obix].shob_subtitle;
-    RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser obix#" << obix
-		  << " obshown=" << _f.obshown << " showdepth=" << showdepth
-		  << " subtitle=" << subtitle
-		  << " cursorpos=" << cursor_position());
+    RPS_DEBUGNL_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser obix#" << obix
+		    << " obshown=" << _f.obshown << " showdepth=" << showdepth
+		    << " subtitle=" << subtitle
+		    << " cursorpos=" << cursor_position()
+		    << " poutsbuf/tellp:" << poutsbuf->tellp());
     show_one_object_in_frame(&_, objbr_shownobvect[obix]);
     RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser obix#" << obix
 		  << " cursorpos=" << cursor_position()
+		  << " poutsbuf/tellp:" << poutsbuf->tellp()
 		  << " obshown=" << _f.obshown << " after show_one_object_in_frame from " << std::endl
 		  << Rps_ShowCallFrame(&_) << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::refresh_object_browser loop"));
+		  << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::refresh_object_browser loop"));
   }
   RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser ending cursorpos=" << cursor_position() << " winrank#" << winrank);
   RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::refresh_object_browser this@" << (void*)this
