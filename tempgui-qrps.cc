@@ -586,7 +586,8 @@ RpsTemp_ObjectBrowser::refresh_object_browser(void)
   int winrank = mainwin->rank();
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::refresh_object_browser winrank#"
 		<< winrank << " nbshob=" << nbshob
-		<< " start from "
+		<< " cursorpos=" << cursor_position()
+		<< " start from " << std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_MainWindow::refresh_object_browser start"));
   //// The shown objects should be GC marked thru the windows
   //// containing them, so we hope that adding a GC marking extra
@@ -619,6 +620,7 @@ RpsTemp_ObjectBrowser::refresh_object_browser(void)
 		  << Rps_ShowCallFrame(&_) << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::refresh_object_browser loop"));
   }
+  RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser ending cursorpos=" << cursor_position() << " winrank#" << winrank);
   RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::refresh_object_browser this@" << (void*)this
 	      << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::refresh_object_browser"));
