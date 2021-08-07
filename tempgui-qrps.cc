@@ -323,6 +323,7 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
   RPS_LOCALFRAME(/*descr:*/nullptr,
                  /*callerframe:*/nullptr,
 		 Rps_ObjectRef showob;
+		 Rps_ObjectRef classob;
 		 Rps_ObjectRef strbufob;
 		 Rps_Value mainv;
 		 Rps_Value xtrav;
@@ -340,9 +341,12 @@ RpsTemp_MainWindow::do_enter_shown_object(void)
   if (_f.showob)
     RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object by name showob="
 		  << _f.showob << " == " << Rps_OutputValue(_f.showob)
-		  << " of class " << Rps_OutputValue(_f.showob->compute_class(&_)));
+		  << " of class " << _f.showob->compute_class(&_)
+		  << " == " << Rps_OutputValue(_f.showob->compute_class(&_)));
   else
     RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object no object for " << obshowstring);
+  _f.classob = _f.showob?(_f.showob->compute_class(&_)):nullptr;
+  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::do_enter_shown_object showob=" << _f.showob << " of class " << _f.classob);
   /****
    * we need to handle several cases:
    * first case: _f.showob is null; then display some error dialog
@@ -597,15 +601,20 @@ RpsTemp_ObjectBrowser::refresh_object_browser(void)
   //// containing them, so we hope that adding a GC marking extra
   //// routine is not needed here.
   clear();
-  if (nbshob==0)
+  if (nbshob==0) {
     setHtml(QString("<h1>object browser</h1>\n"));
-  else if (nbshob==1)
+    RPS_DEBUGNL_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser no object 'object browser'");
+  }
+  else if (nbshob==1) {
     setHtml(QString("<h1>browser for one object</h1>\n"));
+    RPS_DEBUGNL_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser 'browser for one object'");
+  }
   else {
     char bufnbshob[16];
     memset (bufnbshob, 0, sizeof(bufnbshob));
     snprintf (bufnbshob, sizeof(bufnbshob), "%d", nbshob);
     setHtml(QString("<h1>browser for ") + QString(bufnbshob) + QString(" objects</h1>\n"));
+    RPS_DEBUGNL_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser 'browser for " << nbshob <<" objects'");
   }
   RPS_DEBUGNL_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser after title cursorpos=" << cursor_position()
 		  << " window rank#" << winrank);
