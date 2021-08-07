@@ -996,12 +996,13 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
     Rps_PayloadSymbol::find_named_object(std::string("display_object_payload_web"));
   RPS_ASSERT (!_f.optdocposv || _f.optdocposv.is_int());
   std::lock_guard<std::recursive_mutex> obwebmtx(*(_f.obweb->objmtxptr()));
-  RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_web recvob=" << _f.recvob
-                << " of class:" <<  _f.recvob->compute_class(&_)
-                << ", obweb =" << _f.obweb
-                << " of class:" <<  _f.obweb->compute_class(&_) << std::endl
-                << "... depthi=" <<  depthi
-                << std::endl << "+++ object!display_object_content_web +++");
+  RPS_DEBUGNL_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA start object!display_object_content_web recvob=" << _f.recvob
+                  << " of class:" <<  _f.recvob->compute_class(&_)
+                  << ", obweb =" << _f.obweb
+                  << " of class:" <<  _f.obweb->compute_class(&_) << std::endl
+                  << "... depthi=" <<  depthi
+                  << std::endl
+                  << "+++ object!display_object_content_web +++");
   std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   RPS_ASSERT(pout);
   _f.setattrs = _f.obweb->set_of_attributes(&_);
@@ -1022,13 +1023,17 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   /// display the object title
   *pout << "<span class='objtitle_rpsl' id='rpsobtit_"
         <<_f.recvob->oid()
-        << "'>";
+        << "'>" << std::flush;
+  RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA object!display_object_content_web displaying recv="
+                << _f.recvob << " classob=" << _f.classob << " obweb=" << _f.obweb);
   rps_web_display_html_for_objref(&_, _f.recvob, _f.obweb, 0);
   *pout << "</span>" << std::endl;
   /// should display the class and space
   *pout << "<span class='objclass_rpscl' id='rpsobcla_"
         <<_f.recvob->oid()
         << "'> ∈&nbsp;";//U+2208 ELEMENT OF
+  RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA object!display_object_content_web displaying classob=" << _f.classob << " obweb="
+                << _f.obweb << " for recvob=" << _f.recvob);
   rps_web_display_html_for_objref(&_, _f.classob, _f.obweb, 0);
   *pout << "</span>" << std::endl;
   *pout << "<span class='objspace_rpscl' id='rpsobspa_"
