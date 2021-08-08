@@ -458,19 +458,17 @@ RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struc
 		 Rps_Value mainv;
 		 Rps_Value xtrav;
 		 );
+  move_cursor_at_end();
   _f.showob = shob.shob_obref;
   _f.strbufob = Rps_PayloadStrBuf::make_string_buffer_object(&_);
   RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::show_one_object_in_frame strbufob="
 		<< _f.strbufob << " == " << Rps_OutputValue(_f.strbufob)
 		<< " of class " << Rps_OutputValue(_f.strbufob->compute_class(&_)));
   int displaydepth = shob.shob_depth;
-  RPS_WARNOUT("incomplete RpsTemp_ObjectBrowser::show_one_object_in_frame incomplete showob=" << _f.showob
-	      << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_ObjectBrowser::show_one_object_in_frame"));
   /// should send selector display_object_content_web to showob with arguments strbufob depth=tagged<>
   {
     RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::show_one_object_in_frame sending display_object_content_web to showob="
-		  << _f.showob);
+		  << _f.showob << " cursorpos=" << cursor_position());
     Rps_TwoValues two = //
       Rps_Value(_f.showob).send2(&_, //
 				 RPS_ROOT_OB(_02iWbXmFx8f04ldLRt), //"display_object_content_web"∈named_selector
@@ -640,6 +638,9 @@ RpsTemp_ObjectBrowser::refresh_object_browser(void)
 		    << " subtitle=" << subtitle
 		    << " cursorpos=" << cursor_position()
 		    << " poutsbuf/tellp:" << poutsbuf->tellp());
+    move_cursor_at_end();
+    insertHtml("<hr/>\n");
+    move_cursor_at_end();
     show_one_object_in_frame(&_, objbr_shownobvect[obix]);
     *poutsbuf << std::flush;
     RPS_DEBUG_LOG(GUI, "RpsTemp_ObjectBrowser::refresh_object_browser obix#" << obix
