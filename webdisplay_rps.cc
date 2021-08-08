@@ -380,6 +380,7 @@ rps_web_display_html_for_objref(Rps_CallFrame*callerframe,
       *pout << "<span class='anonob_rpscl' rps_obid='" << _f.obdisp0->oid() << "'>"
             << _f.obdisp0->oid() << "</span>";
     };
+  RPS_DEBUG_LOG(WEB, "end rps_web_display_html_for_objref obdisp0=" << _f.obdisp0 << " depth:" << depth << " filetell:" << pout->tellp());
 } // end rps_web_display_html_for_objref
 
 ////////////////////////////////////////////////////////////////
@@ -945,7 +946,7 @@ rpsapply_4x9jd2yAe8A02SqKAx (Rps_CallFrame*callerframe, ///
   rps_web_display_html_for_objref(&_,
                                   _f.recvob,
                                   _f.obweb,
-                                  depthi+1);
+                                  depthi);
   return Rps_TwoValues{ _f.obweb};
 } // end of rpsapply_4x9jd2yAe8A02SqKAx !method object/display_object_occurrence_web
 
@@ -1005,9 +1006,9 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                   << "+++ object!display_object_content_web +++");
   std::ostream* pout = rps_web_ostream_ptr(&_, _f.obweb, RPS_CHECK_OSTREAM_PTR);
   RPS_ASSERT(pout);
-  _f.setattrs = _f.obweb->set_of_attributes(&_);
-  _f.classob = _f.obweb->compute_class(&_);
-  _f.spacob = _f.obweb->get_space();
+  _f.setattrs = _f.recvob->set_of_attributes(&_);
+  _f.classob = _f.recvob->compute_class(&_);
+  _f.spacob = _f.recvob->get_space();
   RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA object!display_object_content_web recvob=" << _f.recvob
                 << " setattrs=" << _f.setattrs
                 << ", classob=" << _f.classob
