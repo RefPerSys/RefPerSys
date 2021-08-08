@@ -507,6 +507,13 @@ RpsTemp_ObjectBrowser::cursor_position(void) const {
   return tcur.position();
 } // end RpsTemp_ObjectBrowser::cursor_position
 
+
+void
+RpsTemp_ObjectBrowser::move_cursor_at_end(void) {
+  moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+} // end RpsTemp_ObjectBrowser::move_cursor_at_end
+
+
 bool
 RpsTemp_ObjectBrowser::refpersys_object_is_shown(Rps_ObjectRef ob, int* pix) const
 {
