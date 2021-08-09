@@ -458,14 +458,14 @@ RpsTemp_ObjectBrowser::show_one_object_in_frame(Rps_CallFrame*callerframe, struc
 		 Rps_Value mainv;
 		 Rps_Value xtrav;
 		 );
-  move_cursor_at_end();
-  _f.showob = shob.shob_obref;
-  _f.strbufob = Rps_PayloadStrBuf::make_string_buffer_object(&_);
-  RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::show_one_object_in_frame strbufob="
-		<< _f.strbufob << " == " << Rps_OutputValue(_f.strbufob)
-		<< " of class " << Rps_OutputValue(_f.strbufob->compute_class(&_)));
   int displaydepth = shob.shob_depth;
+  _f.showob = shob.shob_obref;
+  RPS_DEBUGNL_LOG(GUI, "RpsTemp_MainWindow::show_one_object_in_frame start displaydepth=" << displaydepth
+		  << " showob=" << _f.showob << " cursorpos=" << cursor_position()
+		  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "start RpsTemp_ObjectBrowser::show_one_object_in_frame"));
+  move_cursor_at_end();
   /// should send selector display_object_content_web to showob with arguments strbufob depth=tagged<>
+  _f.strbufob = Rps_PayloadStrBuf::make_string_buffer_object(&_);
   {
     RPS_DEBUG_LOG(GUI, "RpsTemp_MainWindow::show_one_object_in_frame sending display_object_content_web to showob="
 		  << _f.showob << " cursorpos=" << cursor_position());
