@@ -374,6 +374,12 @@ rps_web_display_html_for_objref(Rps_CallFrame*callerframe,
       *pout << "<span class='namedob_rpscl' rps_obid='" << _f.obdisp0->oid() << "'>"
             << Rps_Html_Nl2br_String(_f.namev.to_string()->cppstring())
             << "</span>";
+      if (depth==0) {
+	*pout << "⁖" // U+2056 THREE DOT PUNCTUATION
+	      <<  "<span class='namedoid_rpscl' rps_obid='" << _f.obdisp0->oid() << "'>"
+	      << _f.obdisp0->oid()
+	      << "</span>";
+      }
     }
   else   // no name
     {
