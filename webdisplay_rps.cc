@@ -1024,7 +1024,9 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   /// display the object title
   *pout << "<span class='objtitle_rpsl' id='rpsobtit_"
         <<_f.recvob->oid()
-        << "'>" << std::flush;
+        << "'>"
+	<< "⁑" // U+2051 TWO ASTERISKS ALIGNED VERTICALLY
+	<< std::flush;
   RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA object!display_object_content_web displaying recv="
                 << _f.recvob << " classob=" << _f.classob << " obweb=" << _f.obweb);
   rps_web_display_html_for_objref(&_, _f.recvob, _f.obweb, 0);
