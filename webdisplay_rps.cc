@@ -374,12 +374,13 @@ rps_web_display_html_for_objref(Rps_CallFrame*callerframe,
       *pout << "<span class='namedob_rpscl' rps_obid='" << _f.obdisp0->oid() << "'>"
             << Rps_Html_Nl2br_String(_f.namev.to_string()->cppstring())
             << "</span>";
-      if (depth==0) {
-	*pout << "⁖" // U+2056 THREE DOT PUNCTUATION
-	      <<  "<span class='namedoid_rpscl' rps_obid='" << _f.obdisp0->oid() << "'>"
-	      << _f.obdisp0->oid()
-	      << "</span>";
-      }
+      if (depth==0)
+        {
+          *pout << "⁖" // U+2056 THREE DOT PUNCTUATION
+                <<  "<span class='namedoid_rpscl' rps_obid='" << _f.obdisp0->oid() << "'>"
+                << _f.obdisp0->oid()
+                << "</span>";
+        }
     }
   else   // no name
     {
@@ -1031,8 +1032,8 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
   *pout << "<span class='objtitle_rpsl' id='rpsobtit_"
         <<_f.recvob->oid()
         << "'>"
-	<< "⁑" // U+2051 TWO ASTERISKS ALIGNED VERTICALLY
-	<< std::flush;
+        << "⁑" // U+2051 TWO ASTERISKS ALIGNED VERTICALLY
+        << std::flush;
   RPS_DEBUG_LOG(WEB, "rpsapply_5nSiRIxoYQp00MSnYA object!display_object_content_web displaying recv="
                 << _f.recvob << " classob=" << _f.classob << " obweb=" << _f.obweb);
   rps_web_display_html_for_objref(&_, _f.recvob, _f.obweb, 0);
@@ -1045,17 +1046,34 @@ rpsapply_5nSiRIxoYQp00MSnYA (Rps_CallFrame*callerframe, ///
                 << _f.obweb << " for recvob=" << _f.recvob);
   rps_web_display_html_for_objref(&_, _f.classob, _f.obweb, 0);
   *pout << "</span>" << std::endl;
-  *pout << "<span class='objspace_rpscl' id='rpsobspa_"
-        <<_f.recvob->oid()
-        << "'> ＊&nbsp;"; //U+FF0A FULLWIDTH ASTERISK
-  rps_web_display_html_for_objref(&_, _f.spacob, _f.obweb, 0);
-  *pout << "</span>" << std::endl;
-  *pout << "<br class='objbreak_rpscl' id='rpsobbrtit_"
-        <<_f.recvob->oid()
-        << "'/>" << std::endl;
-  *pout  << "<span class='objspace_rpscl' id='rpsobspa_"
-         <<_f.recvob->oid()
-         << "'/>" << std::endl;
+  if (!_f.spacob)
+    {
+      // temporary object without space
+      *pout << "<span class='objspace_rpscl' id='rpsobspa_"
+            <<_f.recvob->oid()
+            << "'>temporary</span>" << std::endl;
+    }
+  else if (_f.spacob == RPS_ROOT_OB(_8J6vNYtP5E800eCr5q))
+    {
+      // object inside the initial space
+      *pout << "<span class='objspace_rpscl' id='rpsobspa_"
+            <<_f.recvob->oid()
+            << "'>initial space</span>" << std::endl;
+    }
+  else
+    {
+      *pout << "<span class='objspace_rpscl' id='rpsobspa_"
+            <<_f.recvob->oid()
+            << "'> ＊space&nbsp;"; //U+FF0A FULLWIDTH ASTERISK
+      rps_web_display_html_for_objref(&_, _f.spacob, _f.obweb, 0);
+      *pout << "</span>" << std::endl;
+      *pout << "<br class='objbreak_rpscl' id='rpsobbrtit_"
+            <<_f.recvob->oid()
+            << "'/>" << std::endl;
+      *pout  << "<span class='objspace_rpscl' id='rpsobspa_"
+             <<_f.recvob->oid()
+             << "'/>" << std::endl;
+    }
   //// output attributes:
   {
     unsigned nbattr = _f.setattrs.as_set()->cardinal();
