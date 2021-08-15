@@ -151,7 +151,6 @@ rps_run_web_service()
 		<< " req#" << reqnum
 		<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error"));
-    int reqnum =  rps_onion_reqcount.load();
 #warning FIXME: errhandlerfun in rps_run_web_service should be improved
     /* we should not output the DOCTYPE line if it has been emitted */
     resp << "<!DOCTYPE html>\n<html>\n";
