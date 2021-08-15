@@ -163,6 +163,13 @@ span.objspace_rpscl {
     font-size: 85%;
 }
 
+/* for the initial space: */
+i.objspace_rpscl {
+    color: darkmagenta;
+    font-size: 85%;
+    font-style: italic;
+}
+
 /* display of object attribute */
 ul.objattr_rpscl {
     background-color: floralwhite;

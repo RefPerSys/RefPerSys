@@ -129,6 +129,7 @@ rps_run_web_service()
     const std::string reqpath = req.path();
     const onion_request_flags reqflags = req.flags();
     const unsigned reqmethnum = reqflags & OR_METHODS;
+    int reqnum =  rps_onion_reqcount.load();
     const char* reqmethname = onion_request_methods[reqmethnum];
     RPS_DEBUG_LOG(WEB, "Onion-internal-error from "
                   << rps_current_pthread_name()
@@ -136,6 +137,7 @@ rps_run_web_service()
                   << reqmethname
                   << " of "
                   << reqpath
+		  << " req#" << reqnum
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error")
                  );
@@ -145,7 +147,11 @@ rps_run_web_service()
     RPS_WARNOUT("ONION internal error for web request "
                 << reqmethname
                 << " of "
-                << Rps_QuotedC_String(reqpath));
+                << Rps_QuotedC_String(reqpath)
+		<< " req#" << reqnum
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error"));
+    int reqnum =  rps_onion_reqcount.load();
 #warning FIXME: errhandlerfun in rps_run_web_service should be improved
     /* we should not output the DOCTYPE line if it has been emitted */
     resp << "<!DOCTYPE html>\n<html>\n";
@@ -168,8 +174,8 @@ rps_run_web_service()
 
     resp << "<p>For <tt>"
          << reqmethname << "</tt> of <tt>"
-         << reqpath
-         << "</tt></p>\n"
+         << reqpath << "</tt> #" << reqnum
+         << "</p>\n"
          << "</body></html>"
          << std::endl;
 
@@ -233,6 +239,7 @@ rps_run_web_service()
                 << " thread:" << rps_current_pthread_name() << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_run_web_service-end"));
 } // end rps_run_web_service
+
 
 void
 rps_onion_header_watcher(onion*onion, const void*clientdata,
