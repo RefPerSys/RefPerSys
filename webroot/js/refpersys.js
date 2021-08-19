@@ -96,14 +96,17 @@ function did_load_main_page_wrps()
 //-// will probably conflict with it.
 //-
 $(document).ready(function () {
-       console.group("document-ready");
-       let $inp= $("#showobjinp_rpsid");
-       console.debug(" $inp=", $inp, " arguments=", arguments);
-
+    console.group("document-ready");
+    let $inp= $("#showobjinp_rpsid");
+    /// https://www.tutsmake.com/how-to-get-the-current-page-url-path-host-using-jquery/
+    let cururl = $(location).attr("href");
+    console.debug(" $inp=", $inp, " arguments=", arguments,
+		  " cururl=", cururl);
        $inp.autocomplete({
            source: function (request, response) {
                console.group("inp-autocomplete");
                console.debug(" autocompleting $inp=", $inp,
+			     " cururl=", cururl,
                              " request=", request,
                              " response=", response,
                              " arguments=", arguments);
@@ -117,7 +120,7 @@ $(document).ready(function () {
                    //// FIXME: the localhost:9090 URL should not be hardcoded
                    //// below.  Perhaps that could be computed, maybe
                    //// from $inp....? And the getobject is *really*
-                   //// confusing....
+                   //// confusing...., it probably should be complete_object
                    url: "http://localhost:9090/getobject", // replace URL
 
                    success: function (data) {
@@ -127,6 +130,7 @@ $(document).ready(function () {
                        ///? $inp.removeClass("ui-autocomplete-loading");
                        console.debug(" autocompleted success $inp=", $inp,
                                      " data=", data,
+				     " cururl=", cururl,
                                      " arguments=", arguments,
                                      " request was:", request,
                                      " response was:", response);
@@ -134,9 +138,10 @@ $(document).ready(function () {
                            console.group("inp-autocomplete-response");
                            console.debug("data=", data, " response=", response,
                                          " arguments=", arguments,
-					 " $inp=", inp);
-                           // TODO: htm needs to contain the code for displaying
-                           // the object details"
+					 " $inp=", inp,
+					 " cururl=", cururl);
+                           // TODO: Below, htm needs to contain the
+                           // code for displaying the object details"
                            
                            let htm = "<h3>Showing object " 
                                    + item.oid 
