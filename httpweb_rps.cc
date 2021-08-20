@@ -98,6 +98,8 @@ rps_web_initialize_service(const char*servarg)
   rps_onion_serverarg = servarg;
 } // end rps_web_initialize_service
 
+
+
 onion_connection_status
 rps_web_error_handler(Onion::Request& req, Onion::Response& resp)
 {
@@ -126,7 +128,7 @@ rps_web_error_handler(Onion::Request& req, Onion::Response& resp)
               << " req#" << reqnum
               << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_web_error_handler"));
-#warning FIXME: errhandlerfun in rps_run_web_service should be improved
+#warning FIXME: rps_web_error_handler should be improved
   /* we should not output the DOCTYPE line if it has been emitted */
   resp << "<!DOCTYPE html>\n<html>\n";
   /* we should not output the <head> if it has been emitted */
@@ -172,7 +174,7 @@ rps_run_web_service()
       https://github.com/davidmoreno/onion/tree/master/examples/cpp
       ...
   ***/
-#warning rps_run_web_service unimplemented, should add URLs and handlers
+#warning rps_run_web_service partly unimplemented, should add URLs and handlers
   /***
    *  The handler of some URLs would create a temporary object whose
    *  payload would be some Rps_PayloadWebex....  For other URL the
@@ -181,69 +183,18 @@ rps_run_web_service()
    **/
   /// FIXME: use rps_serve_onion_web here
   Onion::Url rooturl(rps_ptr_onion_server);
-  /// set the error handler
-  auto errhandlerfun =
-    [&](Onion::Request& req, Onion::Response&resp)->onion_connection_status
+  /// set the global web error handler
   {
-    const std::string reqpath = req.path();
-    const onion_request_flags reqflags = req.flags();
-    const unsigned reqmethnum = reqflags & OR_METHODS;
-    int reqnum =  rps_onion_reqcount.load();
-    const char* reqmethname = onion_request_methods[reqmethnum];
-    RPS_DEBUG_LOG(WEB, "Onion-internal-error from "
-                  << rps_current_pthread_name()
-                  << " for "
-                  << reqmethname
-                  << " of "
-                  << reqpath
-                  << " req#" << reqnum
-                  << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error")
-                 );
-
-    resp.setHeader("Cache-Control", "max-age=1");
-    resp.setHeader("Content-Type", "text/html; charset=UTF-8");
-    RPS_WARNOUT("ONION internal error for web request "
-                << reqmethname
-                << " of "
-                << Rps_QuotedC_String(reqpath)
-                << " req#" << reqnum
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error"));
-#warning FIXME: errhandlerfun in rps_run_web_service should be improved
-    /* we should not output the DOCTYPE line if it has been emitted */
-    resp << "<!DOCTYPE html>\n<html>\n";
-    /* we should not output the <head> if it has been emitted */
-    resp << "<head><title>RefPerSys error (p" << (int)getpid() << "@" << rps_hostname() << ")</title></head>" << std::endl;
-    /* we should emit the <body> tag only if it was absent */
-    resp << "<body>" << std::endl;
-    resp << "<p><b>* Backtrace on <tt>" << (rps_hostname())
-         << "</tt> pid <i>" << (int)getpid() << "</i> git "
-         << rps_shortgitid
-         << ":</b><br/>" << std::endl
-         << "<tt>";
+    auto errhandlerfun =
+      [&](Onion::Request& req, Onion::Response&resp)->onion_connection_status
     {
-      std::ostringstream outs;
-      outs  <<  RPS_FULL_BACKTRACE_HERE(1, "RefPerSys onion-internal-error");
-      std::string outstr = outs.str();
-      resp << Rps_Html_Nl2br_String(outstr);
-    }
-    resp << "</tt></p>\n";
-
-    resp << "<p>For <tt>"
-         << reqmethname << "</tt> of <tt>"
-         << reqpath << "</tt> #" << reqnum
-         << "</p>\n"
-         << "</body></html>"
-         << std::endl;
-
-    return OCS_PROCESSED;
-  };
-
-  auto errh = Onion::Handler::make<Onion::HandlerFunction>(errhandlerfun);
-  RPS_ASSERT(errh);
-  rps_ptr_onion_server->setInternalErrorHandler(errh.get());
-
+      return rps_web_error_handler(req, resp);
+    };
+    auto errh = Onion::Handler::make<Onion::HandlerFunction>(errhandlerfun);
+    RPS_ASSERT(errh);
+    rps_ptr_onion_server->setInternalErrorHandler(errh.get());
+  }
+  ////
 #warning we should use rps_serve_onion_web in rps_run_web_service
   rooturl.add("^",
               [&](Onion::Request &req, Onion::Response &res)
