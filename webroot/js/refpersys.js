@@ -99,14 +99,14 @@ $(document).ready(function () {
     console.group("document-ready");
     let $inp= $("#showobjinp_rpsid");
     /// https://www.tutsmake.com/how-to-get-the-current-page-url-path-host-using-jquery/
-    let cururl = $(location).attr("href");
+    let pageurl = $(location).attr("href");
     console.debug(" $inp=", $inp, " arguments=", arguments,
-		  " cururl=", cururl);
+		  " pageurl=", pageurl);
        $inp.autocomplete({
            source: function (request, response) {
                console.group("inp-autocomplete");
                console.debug(" autocompleting $inp=", $inp,
-			     " cururl=", cururl,
+			     " pageurl=", pageurl,
                              " request=", request,
                              " response=", response,
                              " arguments=", arguments);
@@ -130,7 +130,7 @@ $(document).ready(function () {
                        ///? $inp.removeClass("ui-autocomplete-loading");
                        console.debug(" autocompleted success $inp=", $inp,
                                      " data=", data,
-				     " cururl=", cururl,
+				     " pageurl=", pageurl,
                                      " arguments=", arguments,
                                      " request was:", request,
                                      " response was:", response);
@@ -139,7 +139,7 @@ $(document).ready(function () {
                            console.debug("data=", data, " response=", response,
                                          " arguments=", arguments,
 					 " $inp=", inp,
-					 " cururl=", cururl);
+					 " pageurl=", pageurl);
                            // TODO: Below, htm needs to contain the
                            // code for displaying the object details"
                            
@@ -155,8 +155,9 @@ $(document).ready(function () {
                    error: function (data) {
                        console.group("inp-autocomplete-error");
                        /// again, localhost:9090 should not be hardcoded
-                       console.log("http://localhost:9090/getobject needs to be implemented");
-                       console.log("data=", data, " arguments=", arguments);
+                       console.log("URL http://localhost:9090/getobject needs to be implemented");
+                       console.log("data=", data, " arguments=", arguments,
+				   " pageurl=", pageurl);
                        console.groupEnd();
                    }
                });
