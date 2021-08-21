@@ -205,7 +205,12 @@ rps_run_web_service()
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "𝜦-rps_run_web_service"));
     auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res, reqnum);
-    RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service onstat#" << (int) onstat);
+    RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service served reqpath:" << req.path()
+                  << " reqmeth:" << onion_request_methods[req.flags() & OR_METHODS]
+                  << " reqnum#" << reqnum << " onstat#" << (int) onstat
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "𝜦-rps_run_web_service"));
+               );
     return onstat;
   });
   ///
@@ -220,7 +225,12 @@ rps_run_web_service()
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "∅-rps_run_web_service"));
     auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res, reqnum);
-    RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service onstat#" << (int) onstat);
+    RPS_DEBUG_LOG(WEB, "∅-rps_run_web_service served reqpath:" << req.path()
+                  << " reqmeth:" << onion_request_methods[req.flags() & OR_METHODS]
+                  << " reqnum#" << reqnum << " onstat#" << (int) onstat
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "∅-rps_run_web_service"));
+               );
     return onstat;
   });
   RPS_DEBUG_LOG(WEB, "rps_run_web_service added 𝜦, listening to onion server on "
