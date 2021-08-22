@@ -210,7 +210,6 @@ rps_run_web_service()
                   << " reqnum#" << reqnum << " onstat#" << (int) onstat
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "𝜦-rps_run_web_service"));
-               );
     return onstat;
   });
   ///
@@ -230,7 +229,6 @@ rps_run_web_service()
                   << " reqnum#" << reqnum << " onstat#" << (int) onstat
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "∅-rps_run_web_service"));
-               );
     return onstat;
   });
   RPS_DEBUG_LOG(WEB, "rps_run_web_service added 𝜦, listening to onion server on "
