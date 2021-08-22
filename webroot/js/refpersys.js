@@ -102,97 +102,100 @@ $(document).ready(function () {
     let pageurl = $(location).attr("href");
     console.debug(" $inp=", $inp, " arguments=", arguments,
 		  " pageurl=", pageurl);
-       $inp.autocomplete({
-           source: function (request, response) {
-               console.group("inp-autocomplete");
-               console.debug(" autocompleting $inp=", $inp,
-			     " pageurl=", pageurl,
-                             " request=", request,
-                             " response=", response,
-                             " arguments=", arguments);
-               $.ajax({
-                   dataType: "json",
+    $inp.autocomplete({
+        source: function (request, response) {
+            console.group("inp-autocomplete");
+            console.debug(" autocompleting $inp=", $inp,
+			  " pageurl=", pageurl,
+                          " request=", request,
+                          " response=", response,
+                          " arguments=", arguments);
+            $.ajax({
+                dataType: "json",
 
-		   /// FIXME: probably autocompletion should use some
-		   /// POST request, with the keyboard event?
-                   type: "POST",
+		/// FIXME: probably autocompletion should use some
+		/// POST request, with the keyboard event?
+                type: "POST",
 
-                   url: pageurl + "/complete_object",
+                url: pageurl + "/complete_object",
 
-		   data: {
-		       "obprefix": $inp
-		   },
+		data: {
+		    "obprefix": $inp
+		},
 
-                   success: function (data) {
-                       console.group("inp-autocomplete-success");
-		       /// it is unclear why the removeClass below is
-		       /// needed or useful...
-                       ///? $inp.removeClass("ui-autocomplete-loading");
-                       console.debug(" autocompleted success $inp=", $inp,
-                                     " data=", data,
-				     " pageurl=", pageurl,
-                                     " arguments=", arguments,
-                                     " request was:", request,
-                                     " response was:", response);
-                       response($.map(data, function (item) {
-                           console.group("inp-autocomplete-response");
-                           console.debug("data=", data, " response=", response,
-                                         " arguments=", arguments,
-					 " $inp=", inp,
-					 " pageurl=", pageurl);
-                           // TODO: Below, htm needs to contain the
-                           // code for displaying the object details"
-                           
-                           let htm = "<h3>Showing object " 
-                                   + item.oid 
-                                   + "</h3>";
-                           $lst.html(htm);
-                           console.groupEnd();
-                       }));
-                       console.groupEnd();
-                   },
+                success: function (data) {
+                    console.group("inp-autocomplete-success");
+		    /// it is unclear why the removeClass below is
+		    /// needed or useful...
+                    ///? $inp.removeClass("ui-autocomplete-loading");
+                    console.debug(" autocompleted success $inp=", $inp,
+                                  " data=", data,
+				  " pageurl=", pageurl,
+                                  " arguments=", arguments,
+                                  " request was:", request,
+                                  " response was:", response);
+                    response($.map(data, function (item) {
+                        console.group("inp-autocomplete-response");
+                        console.debug("data=", data, " response=", response,
+                                      " arguments=", arguments,
+				      " $inp=", inp,
+				      " pageurl=", pageurl);
+                        // TODO: Below, htm needs to contain the
+                        // code for displaying the object details"
+                        
+                        let htm = "<h3>Showing object " 
+                            + item.oid 
+                            + "</h3>";
+                        $lst.html(htm);
+                        console.groupEnd();
+                    }));
+                    console.groupEnd();
+                },
 
-                   error: function (data) {
-                       console.group("inp-autocomplete-error");
-                       /// again, localhost:9090 should not be hardcoded
-                       console.log("URL http://localhost:9090/getobject needs to be implemented");
-                       console.log("data=", data, " arguments=", arguments,
-				   " pageurl=", pageurl);
-                       console.groupEnd();
-                   }
-               });
-           },
+                error: function (data) {
+                    console.group("inp-autocomplete-error");
+                    /// again, localhost:9090 should not be hardcoded
+                    console.log("URL http://localhost:9090/getobject needs to be implemented");
+                    console.log("data=", data, " arguments=", arguments,
+				" pageurl=", pageurl);
+                    console.groupEnd();
+                }
+            });
+        },
 
-           minLength: 3,
+        minLength: 3,
 
-           open: function() {
-               // TODO if required
-               console.debug("inp-autocomplete-open arguments=", arguments,
-                             " $inp=", $inp);
-           },
+        open: function() {
+            // TODO if required
+            console.debug("inp-autocomplete-open arguments=", arguments,
+                          " $inp=", $inp);
+        },
 
-           close: function() {
-               // TODO if required
-               console.debug("inp-autocomplete-close arguments=", arguments,
-                             " $inp=", $inp);
-           },
+        close: function() {
+            // TODO if required
+            console.debug("inp-autocomplete-close arguments=", arguments,
+                          " $inp=", $inp);
+        },
 
-           focus: function(event, ui) {
-               // TODO if required
-               console.debug("inp-autocomplete-focus arguments=", arguments,
-                             " $inp=", $inp);
-           },
+        focus: function(event, ui) {
+            // TODO if required
+            console.debug("inp-autocomplete-focus arguments=", arguments,
+                          " $inp=", $inp);
+        },
 
-           select: function(event, ui) {
-               // TODO if required
-               console.debug("inp-autocomplete-select arguments=", arguments,
-                             " $inp=", $inp);
-           }
-       });
+        select: function(event, ui) {
+            // TODO if required
+            console.debug("inp-autocomplete-select arguments=", arguments,
+                          " $inp=", $inp);
+        }
+    });
     console.debug("after setting autocomplete $inp=", $inp,
                   " arguments=", arguments);
+    $inp.clear();
+    did_load_main_page_wrps();
+    console.debug("ending document ready with document=", $(document));
     console.groupEnd();
-   });
+});				// end of $(document).ready(function () 
 
 
 console.log("file webroot/js/refpersys.js has been parsed");
