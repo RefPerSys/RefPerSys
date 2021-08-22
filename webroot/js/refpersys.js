@@ -115,13 +115,13 @@ $(document).ready(function () {
 
 		   /// FIXME: probably autocompletion should use some
 		   /// POST request, with the keyboard event?
-                   type: "get",
+                   type: "POST",
 
-                   //// FIXME: the localhost:9090 URL should not be hardcoded
-                   //// below.  Perhaps that could be computed, maybe
-                   //// from $inp....? And the getobject is *really*
-                   //// confusing...., it probably should be complete_object
-                   url: "http://localhost:9090/getobject", // replace URL
+                   url: pageurl + "/complete_object",
+
+		   data: {
+		       "obprefix": $inp
+		   },
 
                    success: function (data) {
                        console.group("inp-autocomplete-success");

@@ -284,7 +284,7 @@ rps_run_web_service()
   {
     uint64_t reqnum = 1+rps_onion_reqcount.fetch_add(1);
     RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service request " << req
-                  << " res@" << (void*)&res << " reqpath:" << req.path() << " reqnum#" << reqnum
+                  << " res@" << (void*)&res  << " reqnum#" << reqnum
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "𝜦-rps_run_web_service"));
     auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res, reqnum);
@@ -294,6 +294,17 @@ rps_run_web_service()
                   << RPS_FULL_BACKTRACE_HERE(1, "𝜦-rps_run_web_service"));
     return onstat;
   });
+  /// server side support for object autocompletion
+  rooturl.add("/complete_object",
+              [&](Onion::Request &req, Onion::Response &res)
+  {
+    uint64_t reqnum = 1+rps_onion_reqcount.fetch_add(1);
+    RPS_DEBUG_LOG(WEB, "¤complete_object request " << req << " reqnum#" << reqnum
+                  << RPS_FULL_BACKTRACE_HERE(1, "¤complete_object"));
+#warning incomplete server side support for object autocompletion
+    return OCS_NOT_PROCESSED;
+  });
+
   ///
   rooturl.add("",
               [&](Onion::Request &req, Onion::Response &res)
