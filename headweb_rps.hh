@@ -54,6 +54,11 @@ extern "C" onion_connection_status
 rps_serve_onion_file(Rps_CallFrame*callframe, Rps_Value val, Onion::Url*purl, Onion::Request*preq, Onion::Response*pres, uint64_t reqnum, const std::string& filepath);
 
 
+/// mostly for debugging
+std::ostream&operator << (std::ostream&out, const Onion::Request& req);
+extern  "C" void
+rps_web_onion_dict_iterate(const Onion::Dict& dict, std::function<void(std::string,std::string)>& funentry);
+
 /// given an object which is either a web_exchange or string_buffer, returns its ostream pointer. If check is true, raise an exception when none.
 extern "C" std::ostream* rps_web_ostream_ptr(Rps_CallFrame*, Rps_ObjectRef ob, bool check=false);
 constexpr bool RPS_CHECK_OSTREAM_PTR = true;

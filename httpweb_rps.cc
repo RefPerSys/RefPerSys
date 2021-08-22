@@ -61,7 +61,93 @@ rps_onion_header_watcher(onion*onion, void*clientdata,
 } // end rps_onion_header_watcher
 
 
+std::ostream&
+operator << (std::ostream&out, const Onion::Request& req)
+{
+  out << "OnionReq-";
+  const std::string reqpath = req.path();
+  const onion_request_flags reqflags = req.flags();
+  const unsigned reqmethnum = reqflags & OR_METHODS;
+  const char* reqmethname = onion_request_methods[reqmethnum];
+  out << reqmethname << "{";
+  out <<  Rps_QuotedC_String(reqpath);
+  const Onion::Dict requerydict = req.query();
+  requerydict.readLock();
+  if (requerydict.count() >0)
+    {
+      int nbk=0;
+      std::function<void(std::string key, std::string val)> dovisitq =
+        [&](std::string key, std::string value)->void
+      {
+        if (nbk++ > 0)
+          out << "&";
+        out << key << "=" << Rps_QuotedC_String(value);
+        return;
+      };
+      rps_web_onion_dict_iterate(requerydict,dovisitq);
+    }
+  const Onion::Dict reqcookiedict = req.cookies();
+  reqcookiedict.readLock();
+  if (reqcookiedict.count() >0)
+    {
+      std::function<void(std::string key, std::string val)> dovisitc =
+        [&](std::string key, std::string value)->void
+      {
+        out << " §" << key << ":" <<  Rps_QuotedC_String(value);
+        return;
+      };
+      rps_web_onion_dict_iterate(reqcookiedict,dovisitc);
+    }
+  out << "}";
+  return out;
+} // end operator << (std::ostream&out, const Onion::Request& req)
 
+
+/// internal stack allocated structure to traverse an Onion::Dict using onion_dict_preorder
+struct Rps_WebOnionDictVisitor
+{
+  static constexpr unsigned odicv_MAGICNUM = 0xf0edea7; // 252632743
+  unsigned odicv_magic;
+  const Onion::Dict* odicv_odict;
+  std::function<void(std::string,std::string)> odicv_fun;
+  Rps_WebOnionDictVisitor(const Onion::Dict*odic, std::function<void(std::string,std::string)> fun)
+    : odicv_magic(odicv_MAGICNUM), odicv_odict(odic), odicv_fun(fun) {};
+  Rps_WebOnionDictVisitor(void) :  odicv_magic(0), odicv_odict(nullptr),
+    odicv_fun() {};
+  ~Rps_WebOnionDictVisitor()
+  {
+    odicv_magic = 0;
+  };
+  Rps_WebOnionDictVisitor(Rps_WebOnionDictVisitor&&src) = default;
+  Rps_WebOnionDictVisitor(const Rps_WebOnionDictVisitor&src) = default;
+  bool valid (void) const
+  {
+    return odicv_magic == odicv_MAGICNUM;
+  };
+};
+
+static void
+rps_visit_onion_dict_entry(void*data, const char*key, const void*value, int flags)
+{
+  const Rps_WebOnionDictVisitor*visitor = (const Rps_WebOnionDictVisitor*)data;
+  RPS_ASSERT(visitor && visitor->valid());
+  RPS_ASSERT(visitor->odicv_fun);
+  if (flags & OD_STRING)
+    visitor->odicv_fun(std::string(key),std::string((const char*)value));
+} // end rps_visit_onion_dict_entry
+
+
+void
+rps_web_onion_dict_iterate(const Onion::Dict& dict, std::function<void(std::string,std::string)>& funentry)
+{
+  if (dict.count() == 0)
+    return;
+  const onion_dict *dh = dict.c_handler();
+  if (!dh)
+    return;
+  Rps_WebOnionDictVisitor visitor(&dict, funentry);
+  onion_dict_preorder(dh, (void*)rps_visit_onion_dict_entry, (void*)&visitor);
+} // end rps_web_onion_dict_iterate
 
 /// Called from main with an argument like "localhost:9090". Should
 /// initialize the data structures to serve web requests.
@@ -110,10 +196,7 @@ rps_web_error_handler(Onion::Request& req, Onion::Response& resp)
   const char* reqmethname = onion_request_methods[reqmethnum];
   RPS_DEBUG_LOG(WEB, "rps_web_error_handler from "
                 << rps_current_pthread_name()
-                << " for "
-                << reqmethname
-                << " of "
-                << reqpath
+                << " for " << req
                 << " req#" << reqnum
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_web_error_handler")
@@ -200,13 +283,12 @@ rps_run_web_service()
               [&](Onion::Request &req, Onion::Response &res)
   {
     uint64_t reqnum = 1+rps_onion_reqcount.fetch_add(1);
-    RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service req@" << (void*)&req
+    RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service request " << req
                   << " res@" << (void*)&res << " reqpath:" << req.path() << " reqnum#" << reqnum
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "𝜦-rps_run_web_service"));
     auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res, reqnum);
-    RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service served reqpath:" << req.path()
-                  << " reqmeth:" << onion_request_methods[req.flags() & OR_METHODS]
+    RPS_DEBUG_LOG(WEB, "𝜦-rps_run_web_service served  request " << req
                   << " reqnum#" << reqnum << " onstat#" << (int) onstat
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "𝜦-rps_run_web_service"));
@@ -217,15 +299,12 @@ rps_run_web_service()
               [&](Onion::Request &req, Onion::Response &res)
   {
     uint64_t reqnum = 1+rps_onion_reqcount.fetch_add(1);
-    RPS_DEBUG_LOG(WEB, "∅-rps_run_web_service req@" << (void*)&req
-                  << " res@" << (void*)&res << " reqpath:" << req.path() << " reqnum#" << reqnum
-                  << " reqfullpath:" << req.fullpath()
-                  << " reqmeth:" << onion_request_methods[req.flags() & OR_METHODS]
+    RPS_DEBUG_LOG(WEB, "∅-rps_run_web_service " << req << " reqnum#" << reqnum
+                  << " res@" << (void*)&res
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "∅-rps_run_web_service"));
     auto onstat = rps_serve_onion_web((Rps_Value)(nullptr), &rooturl, &req, &res, reqnum);
-    RPS_DEBUG_LOG(WEB, "∅-rps_run_web_service served reqpath:" << req.path()
-                  << " reqmeth:" << onion_request_methods[req.flags() & OR_METHODS]
+    RPS_DEBUG_LOG(WEB, "∅-rps_run_web_service served " << req
                   << " reqnum#" << reqnum << " onstat#" << (int) onstat
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "∅-rps_run_web_service"));
