@@ -191,8 +191,11 @@ $(document).ready(function () {
     });
     console.debug("after setting autocomplete $inp=", $inp,
                   " arguments=", arguments);
-    $inp.clear();
+    $inp.html("");		// clear input field
+    console.debug("*document ready before did_load_main_page_wrps");
     did_load_main_page_wrps();
+    console.debug("*document ready after did_load_main_page_wrps document=",
+		  $(document), " inp=", $inp);
     console.debug("ending document ready with document=", $(document));
     console.groupEnd();
 });				// end of $(document).ready(function () 
