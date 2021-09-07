@@ -409,3 +409,16 @@ requests. In particular the following subdirectories:
 * `webroot/img/` for additional images. Prefer SVG or PNG formats.
 
 * `webroot/js/` for JavaScript code.
+
+### Dependency installation notes (Ubuntu 20.04 Focal Fossa)
+
+  - apt install make
+  - apt install pkg-config
+  - apt install libcurl4-openssl-dev
+  - apt install zlib1g-dev
+  - apt install libreadline-dev
+  - apt install libjsoncpp-dev
+  - apt install qt5-default
+  - apt install cmake
+  - apt install build-essential
+
