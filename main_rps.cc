@@ -215,9 +215,10 @@ struct argp_option rps_progoptions[] =
   /* ======= run a shell command with system(3) after load ======= */
   {/*name:*/ "run-after-load", ///
     /*key:*/ RPSPROGOPT_RUN_AFTER_LOAD, ///
-    /*arg:*/ "COMMAND", ///
+    /*arg:*/ "SHELL_COMMAND", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Run using system(3) the given shell COMMAND after load and plugins; environment variable REFPERSYS_PID has been set", //
+    /*doc:*/ "Run using system(3) the given shell SHELL_COMMAND after load and plugins;\n"
+    " The environment variable REFPERSYS_PID has been set", //
     /*group:*/0 ///
   },
   /* ======= run a REPL command after load ======= */
@@ -225,7 +226,8 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_COMMAND, ///
     /*arg:*/ "REPL_COMMAND", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Run the given REPL_COMMAND", //
+    /*doc:*/ "Run the given REPL_COMMAND;\n"
+    "Try the help command for details.", //
     /*group:*/0 ///
   },
   /* ======= web interface  ======= */
@@ -1222,12 +1224,6 @@ rps_run_application(int &argc, char **argv)
       (*initfun)(argc, argv);
       RPS_DEBUG_LOG(GUI, "after calling rps_tempgui_init_progarg thru initfun=" << (void*)initfun);
     }
-  if (rps_batch)
-    {
-      RPS_DEBUG_LOG(WEB,
-                    "rps_run_application in batch mode");
-      return;
-    }
   if (!rps_command_vec.empty())
     {
       RPS_INFORMOUT("before running " << rps_command_vec.size() << " commands");
@@ -1236,8 +1232,7 @@ rps_run_application(int &argc, char **argv)
     }
   if (rps_run_repl)
     {
-      RPS_DEBUG_LOG(WEB,
-                    "rps_run_application in REPL");
+      RPS_INFORMOUT("rps_run_application in REPL with " << argc << " program arguments");
       rps_read_eval_print_loop (argc, argv);
     }
   else if (rps_test_repl_lexer)
