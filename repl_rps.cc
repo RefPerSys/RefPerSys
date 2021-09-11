@@ -1784,15 +1784,37 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
           break;
         const Rps_LexTokenZone* lextokz = _f.lextokv.as_lextoken();
         RPS_ASSERT(lextokz);
+        _f.lexval = nullptr;
         if (lextokz->lxkind()
-            != RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ))  //object∈class
+            == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ))  //object∈class
+          {
+            _f.lexval = lextokz->lxval();
+            RPS_ASSERT(_f.lexval.is_object());
+            _f.cmdob = _f.lexval.as_object();
+            RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec cmdob=" << _f.cmdob
+                          << " at " << commandpos);
+          }
+        else if (lextokz->lxkind()
+                 ==RPS_ROOT_OB(_36I1BY2NetN03WjrOv) //symbol∈class
+                )
+          {
+            _f.lexval = lextokz->lxval();
+            RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec symbol token " << _f.lextokv << " of value " << _f.lexval
+                          << " at " << commandpos);
+#warning unimplemented symbol token rps_do_repl_commands_vec
+            RPS_WARNOUT("unimplemented symbol token rps_do_repl_commands_vec "
+                        << _f.lextokv
+                        << std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/symbol"));
+          }
+        else
           {
             RPS_WARNOUT("rps_do_repl_commands_vec command at "
                         << commandpos << std::endl
-                        << "Should start with an object but got "
+                        << "Should start with an object or symbol but got "
                         << _f.lextokv << " of kind " << lextokz->lxkind()
-			<< std::endl
-			<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/non-obj-cmd"));
+                        << std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/non-obj-cmd"));
             continue;
           }
         _f.lexval = lextokz->lxval();
