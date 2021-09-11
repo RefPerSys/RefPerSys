@@ -296,8 +296,11 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 extern "C" void rps_debug_warn_at(const char*file, int line);
 #define RPS_WARN_AT_BIS(Fil,Lin,Fmt,...) do {			\
+    bool ontty = rps_stderr_istty;				\
     fprintf(stderr, "\n\n"		       			\
-	    "*** RefPerSys WARN:%s:%d: {%s}\n " Fmt "\n\n",	\
+	    "%s*** RefPerSys WARN:%s%s:%d: {%s}\n " Fmt "\n\n",	\
+	    ontty?RPS_TERMINAL_BOLD_ESCAPE:"",			\
+	    ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",		\
             Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);     	\
     rps_debug_warn_at(Fil,Lin);					\
     fflush(stderr); } while(0)
