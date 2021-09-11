@@ -1790,7 +1790,9 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
             RPS_WARNOUT("rps_do_repl_commands_vec command at "
                         << commandpos << std::endl
                         << "Should start with an object but got "
-                        << _f.lextokv);
+                        << _f.lextokv
+			<< std::endl
+			<< RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/non-obj-cmd"));
             continue;
           }
         _f.lexval = lextokz->lxval();
