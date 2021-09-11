@@ -753,11 +753,14 @@ main (int argc, char** argv)
     openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
   rps_parse_program_arguments(argc, argv);
   ///
-  RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" " %s process %d on host %s\n"
+  RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" " %s process %d on host %s (stdout %s, stderr %s)\n"
              "... gitid %.16s built %s (main@%p) %s mode (%d jobs)",
              RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
              RPS_TERMINAL_NORMAL_ESCAPE,
-             argv[0], (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
+             argv[0], (int)getpid(), rps_hostname(),
+             rps_stdout_istty?"tty":"plain",
+             rps_stderr_istty?"tty":"plain",
+             rps_gitid, rps_timestamp,
              (void*)main,
              (rps_batch?"batch":"interactive"),
              rps_nbjobs);
