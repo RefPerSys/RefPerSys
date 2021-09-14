@@ -20,7 +20,7 @@
 ///!!! prologue of RefPerSys space file:
 {
  "format" : "RefPerSysFormat2019A",
- "nbobjects" : 196,
+ "nbobjects" : 198,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -2269,6 +2269,29 @@
 //-ob_55Z5Wgzuprq01MU6Br
 
 
+//+ob_5dkRQtwGUHs02MVQT0
+//∈string_dictionary
+{
+ "attrs" : 
+ [
+  {
+   "at" : "_1EBVGSfW2m200z18rx",
+   "va" : "repl_command_dict"
+  },
+  {
+   "at" : "_3Q3hJsSgCDN03GTYW5",
+   "va" : "_65qXZE5jFDn03gogiy"
+  }
+ ],
+ "class" : "_3FztYBKABxZ02DUPRm",
+ "dictionary" : [],
+ "mtime" : 1631645358.05,
+ "oid" : "_5dkRQtwGUHs02MVQT0",
+ "payload" : "string_dictionary"
+}
+//-ob_5dkRQtwGUHs02MVQT0
+
+
 //+ob_5nSiRIxoYQp00MSnYA
 //∈core_function
 {
@@ -2667,6 +2690,19 @@
  "payload" : "classinfo"
 }
 //-ob_62LTwxwKpQ802SsmjE
+
+
+//+ob_65qXZE5jFDn03gogiy
+//∈symbol
+{
+ "class" : "_36I1BY2NetN03WjrOv",
+ "mtime" : 1631645358.05,
+ "oid" : "_65qXZE5jFDn03gogiy",
+ "payload" : "symbol",
+ "symb_name" : "repl_command_dict",
+ "symb_val" : "_5dkRQtwGUHs02MVQT0"
+}
+//-ob_65qXZE5jFDn03gogiy
 
 
 //+ob_65QLbRro79q03PSiNo
