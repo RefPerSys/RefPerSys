@@ -836,7 +836,9 @@ extern "C" std::string rps_json_to_string(const Json::Value&jv);
 static_assert(RPS_SMALL_BLOCK_SIZE & (~ (RPS_SMALL_BLOCK_SIZE-1)),
               "RPS_SMALL_BLOCK_SIZE should be some power of two");
 
-// give, using some a table of primes, some prime number above or below a
+
+//////// Prime numbers; useful e.g. for hashing, etc....
+// Give, using some a table of primes, some prime number above or below a
 // given integer, and reasonably close to it (e.g. less than 20% from
 // it).
 extern "C" int64_t rps_prime_above (int64_t n);
@@ -849,6 +851,8 @@ extern "C" int64_t rps_prime_greaterequal_ranked (int64_t n, int*prank);
 // give some prime less or equal to a given integer, and set the
 // rank if non-null pointer
 extern "C" int64_t rps_prime_lessequal_ranked (int64_t n, int*prank);
+/////////////////
+
 
 // give the name of the current pthread
 static inline std::string rps_current_pthread_name(void);
