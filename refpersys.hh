@@ -3547,7 +3547,7 @@ class Rps_PayloadClassInfo : public Rps_Payload
   Rps_QuasiZone::rps_allocate1<Rps_PayloadClassInfo,Rps_ObjectZone*>(Rps_ObjectZone*);
   // the superclass:
   Rps_ObjectRef pclass_super;
-  // the dictionnary from selector to own methods
+  // the dictionary from selector to own methods
   std::map<Rps_ObjectRef,Rps_ClosureValue> pclass_methdict;
   // the optional name (a symbol)
   Rps_ObjectRef pclass_symbname;
@@ -3941,13 +3941,13 @@ public:
 };				// end Rps_PayloadPiWeb
 
 ////////////////////////////////////////////////////////////////
-////// mutable dictionnary payload  - associate strings to values
-extern "C" rpsldpysig_t rpsldpy_string_dictionnary;
+////// mutable dictionary payload  - associate strings to values
+extern "C" rpsldpysig_t rpsldpy_string_dictionary;
 class Rps_PayloadStringDict : public Rps_Payload
 {
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
-  friend rpsldpysig_t rpsldpy_string_dictionnary;
+  friend rpsldpysig_t rpsldpy_string_dictionary;
   friend Rps_PayloadStringDict*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadStringDict,Rps_ObjectZone*>(Rps_ObjectZone*);
   Rps_PayloadStringDict(Rps_ObjectZone*owner);

@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2020 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2021 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -208,7 +208,7 @@ Rps_PayloadStringDict::dump_scan(Rps_Dumper*du) const
 void
 Rps_PayloadStringDict::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
-  /// see function rpsldpy_string_dictionnary below
+  /// see function rpsldpy_string_dictionary below
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   if (dict_is_transient)
@@ -224,33 +224,33 @@ Rps_PayloadStringDict::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
       jent["val"] = jcur;
       jarr.append(jent);
     }
-  jv["payload"] = "string_dictionnary";
-  jv["dictionnary"] = jarr;
+  jv["payload"] = "string_dictionary";
+  jv["dictionary"] = jarr;
 } // end Rps_PayloadStringDict::dump_json_content
 
 
 //// loading of Rps_PayloadStringDict; see above Rps_PayloadStringDict::dump_json_content
 void
-rpsldpy_string_dictionnary(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+rpsldpy_string_dictionary(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
   RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  if (!jv.isMember("dictionnary"))
+  if (!jv.isMember("dictionary"))
     {
-      RPS_FATALOUT("rpsldpy_string_dictionnary: object " << obz->oid()
+      RPS_FATALOUT("rpsldpy_string_dictionary: object " << obz->oid()
                    << " in space " << spacid << " lineno#" << lineno
                    << " has incomplete payload"
                    << std::endl
                    << " jv " << (jv));
     }
   auto payldict = obz->put_new_plain_payload<Rps_PayloadStringDict>();
-  Json::Value jarr = jv["dictionnary"];
+  Json::Value jarr = jv["dictionary"];
   if (!jarr.isArray())
-    RPS_FATALOUT("rpsldpy_string_dictionnary: object " << obz->oid()
+    RPS_FATALOUT("rpsldpy_string_dictionary: object " << obz->oid()
                  << " in space " << spacid << " lineno#" << lineno
-                 << " has bad dictionnary "
+                 << " has bad dictionary "
                  << std::endl
                  << jarr);
   unsigned nbent = jarr.size();
@@ -266,7 +266,7 @@ rpsldpy_string_dictionnary(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value&
         continue;
       payldict->add(curstr, Rps_Value(jcurent["val"],ld));
     }
-} // end rpsldpy_string_dictionnary
+} // end rpsldpy_string_dictionary
 
 void
 Rps_PayloadStringDict::add(const std::string&str, Rps_Value val)

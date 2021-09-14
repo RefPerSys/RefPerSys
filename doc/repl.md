@@ -10,7 +10,7 @@ It is not possible to enter a fresh objid. Only *existing* objids can
 be typed.
 
 Lexing of delimiters is done thru the `_627ngdqrVfF020ugC5` object (a
-`string_dictionnary` named `repl_delim` and mapping delimiters to
+`string_dictionary` named `repl_delim` and mapping delimiters to
 values describing them).
 
 ## Features considered

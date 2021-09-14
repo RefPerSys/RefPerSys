@@ -96,7 +96,7 @@ class Rps_Loader
   std::deque<struct todo_st> ld_todoque;
   unsigned ld_todocount;
   static constexpr unsigned ld_maxtodo = 1<<20;
-  /// dictionnary of payload loaders - used as a cache to avoid most dlsym-s
+  /// dictionary of payload loaders - used as a cache to avoid most dlsym-s
   std::map<std::string,rpsldpysig_t*> ld_payloadercache;
   bool is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid);
   Rps_ObjectRef fetch_one_constant_at(const char*oid,int lin);
