@@ -27,6 +27,8 @@ We absolutely want to avoid any
 Don't expect anything useful from RefPerSys before at least 2023. But
 you could have fun sharing our ideas and experimenting yours.
 
+A rewrite of RefPerSys in C happens on [refpersys-in-c](https://github.com/RefPerSys/refpersys-in-c).
+
 We considered previously to use the garbage collector from [Ravenbrook
 MPS](https://www.ravenbrook.com/project/mps/). Since that project is
 now obsolete, we gave up that idea.
