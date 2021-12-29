@@ -6,7 +6,7 @@ rm -vf  refpersys-design.{aux,bcf,blg,log,run.xml,toc} dot*.{eps,pdf,svg}
 ## see http://inkscape.org/
 ## we need Inkscape 1.0
 INKSCAPE_VERSION=$(inkscape --version | head -1)
-if inkscape --version | fgrep 'Inkscape 1.0' ; then
+if inkscape --version | fgrep 'Inkscape 1.' ; then
     printf "Using %s\n" $INKSCAPE_VERSION
 else
     printf "Bad inkscape version %s; %s needs 1.0 from http://inkscape.org/\n" $INKSCAPE_VERSION $0 > /dev/stderr
