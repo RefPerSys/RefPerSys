@@ -1783,7 +1783,7 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
                       << " @" << bufpath);
         _f.lextokv = intoksrc.get_token(&_);
         _f.lexval = nullptr;
-	_f.cmdob = nullptr;
+        _f.cmdob = nullptr;
         RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec got lextokv=" << _f.lextokv << " pos=" << intoksrc.position_str());
         if (!_f.lextokv)
           break;
@@ -1805,12 +1805,12 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
             _f.lexval = lextokz->lxval();
             RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec symbol token " << _f.lextokv << " of value " << _f.lexval
                           << " at " << commandpos);
-	    if (_f.lexval.is_string())
-	      _f.cmdob = Rps_PayloadSymbol::find_named_object(_f.lexval.as_string()->cppstring());
+            if (_f.lexval.is_string())
+              _f.cmdob = Rps_PayloadSymbol::find_named_object(_f.lexval.as_string()->cppstring());
 #warning unimplemented symbol token rps_do_repl_commands_vec
             RPS_WARNOUT("unimplemented symbol token rps_do_repl_commands_vec lextok="
                         << _f.lextokv
-			<< " cmdob=" << _f.cmdob
+                        << " cmdob=" << _f.cmdob
                         << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/symbol"));
           }
