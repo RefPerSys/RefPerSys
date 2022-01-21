@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2021 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2022 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -784,6 +784,7 @@ Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
         {
           rstr.push_back (curch);
           toksrc_col++;
+	  curp++;
           continue;
         }
       /// accepts any correctly encoded UTF-8
@@ -791,6 +792,7 @@ Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
         {
           rstr.append(curp, l);
           toksrc_col += l;
+	  curp += l;
           continue;
         }
       /// improbable lexical error....
