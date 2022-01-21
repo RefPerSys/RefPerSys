@@ -15,7 +15,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2021 The Reflective Persistent System Team
+ *      © Copyright 2021 - 2022 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -136,6 +136,41 @@ RpsTemp_Application::do_garbage_collect(void)
 } // end RpsTemp_Application::do_garbage_collect
 
 void
+RpsTemp_Application::do_open_command(void)
+{
+  RPSQT_WITH_LOCK();
+  RPS_DEBUG_LOG(GUI, "RpsTemp_Application::do_open_command start" <<std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "RpsTemp_Application::do_open_command")
+		);
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                 nullptr, // no caller frame
+		 );
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
+  {
+    this->xtra_gc_mark(gc);
+  });
+  if (!_app_cmdwin) {
+    _app_cmdwin = new QMainWindow();
+      char titlebuf[64];
+      memset (titlebuf, 0, sizeof(titlebuf));
+      snprintf(titlebuf, sizeof(titlebuf), "RefPerSys/p%d°%s command",
+	       (int)getpid(), rps_shortgitid);
+     _app_cmdwin->setWindowTitle(QString(titlebuf));
+     _app_cmdwin->setMinimumSize(QSize{550,250});
+  };
+  if (!_app_cmdedit) {
+    _app_cmdedit = new RpsTemp_CommandEdit();
+    _app_cmdwin->setCentralWidget(_app_cmdedit);
+  }
+  _app_cmdedit->show();
+  _app_cmdwin->show();
+  std::function<void(Rps_GarbageCollector*)> gcfun([&](Rps_GarbageCollector*gc)
+  {
+    gc->mark_call_stack(&_);
+  });
+} // end RpsTemp_Application::do_open_command
+
+void
 RpsTemp_Application::xtra_gc_mark(Rps_GarbageCollector*gc)
 {
   RPSQT_WITH_LOCK();
@@ -156,6 +191,7 @@ RpsTemp_MainWindow::RpsTemp_MainWindow()
     mainwin_exitact(nullptr),
     mainwin_newact(nullptr),
     mainwin_garbcollact(nullptr),
+    mainwin_commandact(nullptr),
     mainwin_centralframe(nullptr),
     mainwin_vbox(nullptr),
     mainwin_showframe(nullptr),
@@ -247,6 +283,11 @@ RpsTemp_MainWindow::create_menus(void)
   mainwin_garbcollact->setToolTip("force entire garbage collection");
   connect(mainwin_garbcollact, &QAction::triggered,
 	  rpsqt_app, &RpsTemp_Application::do_garbage_collect);
+  /// command action
+  mainwin_commandact = appmenu->addAction("&Command");
+  mainwin_commandact->setToolTip("open command window");
+  connect(mainwin_commandact, &QAction::triggered,
+	  rpsqt_app, &RpsTemp_Application::do_open_command);
   ///
   mbar->show();
   setVisible(true);
@@ -679,6 +720,21 @@ RpsTemp_ObjectCompleter::RpsTemp_ObjectCompleter(QObject*parent)
 		<< " parent@" << (void*)parent);
 } // end RpsTemp_ObjectCompleter
 
+
+
+////////////////////////////////////////////////////////////////
+RpsTemp_CommandEdit::RpsTemp_CommandEdit(QWidget*parent)
+  : QTextEdit::QTextEdit(parent)
+{
+} // end RpsTemp_CommandEdit::RpsTemp_CommandEdit
+
+void
+RpsTemp_CommandEdit::garbage_collect_command_edit(Rps_GarbageCollector*gc)
+{
+} // end RpsTemp_CommandEdit::garbage_collect_command_edit
+
+
+////////////////////////////////////////////////////////////////
 void
 rps_tempgui_init_progarg(int &argc, char**argv)
 {

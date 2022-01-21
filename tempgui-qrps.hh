@@ -15,7 +15,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2021 The Reflective Persistent System Team
+ *      © Copyright 2021 - 2022 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -55,7 +55,7 @@ extern "C" std::recursive_mutex rpsqt_mtx;
 #define RPSQT_LOCKED(Foo) ({rpsqt_mtx.lock(); (Foo);})
 
 extern std::ostream& operator << (std::ostream&, const QRect&);
-
+class RpsTemp_CommandEdit;
 class RpsTemp_Application : public QApplication {
 Q_OBJECT
 public slots:
@@ -64,10 +64,14 @@ public slots:
   void do_quit(void);
   void do_new_window(void);
   void do_garbage_collect(void);
+  void do_open_command(void);
 public:
   RpsTemp_Application(int&argc, char**argv);
 protected:
   void xtra_gc_mark(Rps_GarbageCollector*gc);
+private:
+  QPointer<RpsTemp_CommandEdit> _app_cmdedit;
+  QPointer<QMainWindow> _app_cmdwin;
 };				// end RpsTemp_Application
 
 extern "C" RpsTemp_Application* rpsqt_app;
@@ -136,6 +140,15 @@ signals:
 };				// end RpsTemp_ObjectBrowser
 
 
+class RpsTemp_CommandEdit : public QTextEdit {
+  Q_OBJECT
+public:
+  RpsTemp_CommandEdit(QWidget*parent = nullptr);
+  /// GC support
+  void garbage_collect_command_edit(Rps_GarbageCollector*gc);
+public slots:
+signals:
+};				// end RpsTemp_CommandEdit
 
 class RpsTemp_MainWindow : public QMainWindow {
   Q_OBJECT
@@ -147,6 +160,7 @@ class RpsTemp_MainWindow : public QMainWindow {
   QAction* mainwin_exitact;
   QAction* mainwin_newact;
   QAction* mainwin_garbcollact;
+  QAction* mainwin_commandact;
   //// the central windget is a frame
   QFrame* mainwin_centralframe;
   //// containing a vertical box
