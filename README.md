@@ -27,6 +27,8 @@ We absolutely want to avoid any
 Don't expect anything useful from RefPerSys before at least 2023. But
 you could have fun sharing our ideas and experimenting yours.
 
+A rewrite of RefPerSys in C happens on [refpersys-in-c](https://github.com/RefPerSys/refpersys-in-c).
+
 We considered previously to use the garbage collector from [Ravenbrook
 MPS](https://www.ravenbrook.com/project/mps/). Since that project is
 now obsolete, we gave up that idea.
@@ -192,6 +194,8 @@ To install the dependencies on a recent [Debian](https://debian.org/) 10 *buster
 [Ubuntu](https://ubuntu.com/) 20 or 21 system, you could run the following
 steps
 
+* `sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test` (for Ubuntu 20.04)
+* `sudo apt install -y gcc-11 g++-11 clang-11 libc++-11-dev libc++abi-11-dev` (for Ubuntu 20.04)
 * `sudo apt install libunistring-dev`
 * `sudo apt install qt5-default libqt5x11extras5-dev libqt5xdg-dev`
 * `sudo apt install libjsoncpp-dev`
