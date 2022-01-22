@@ -1,14 +1,11 @@
 /****************************************************************
- * file tempgui_qrps.cc
+ * file qtgui_qrps.cc
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
  *
- *      This file is part of the Reflective Persistent System.  It is
- *      the header file for some optional dlopen-ed plugin using Qt5
- *      It is tightly related to tempgui_qrps.cc
- *      See on https://framalistes.org/sympa/arc/refpersys-forum/
- *      the messages 2021-07/msg00002.html
+ *      This file is part of the Reflective Persistent System.
+ *      It is the Qt graphical user interface, enabled by -Q program argument
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -33,8 +30,8 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-#include "tempgui-qrps.hh"
-#include "tempgui-qrps.moc.hh"
+#include "qtgui-qrps.hh"
+#include "qtgui-qrps.moc.hh"
 
 std::recursive_mutex rpsqt_mtx;
 RpsTemp_Application* rpsqt_app;
@@ -736,7 +733,7 @@ RpsTemp_CommandEdit::garbage_collect_command_edit(Rps_GarbageCollector*gc)
 
 ////////////////////////////////////////////////////////////////
 void
-rps_tempgui_init_progarg(int &argc, char**argv)
+rps_qtgui_init_progarg(int &argc, char**argv)
 {
   RPSQT_WITH_LOCK();
   RPS_ASSERT(rpsqt_app == nullptr);
@@ -752,29 +749,29 @@ rps_tempgui_init_progarg(int &argc, char**argv)
 	      << (firstwin->isVisible()?" visible":" hidden"));
   }
   RPS_INFORMOUT("with QApplication " << rpsqt_app);
-} // end rps_tempgui_init_progarg
+} // end rps_qtgui_init_progarg
 
 
 
 void
-rps_tempgui_run(void)
+rps_qtgui_run(void)
 {
-  RPS_INFORMOUT("rps_tempgui_run start:"<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "start rps_tempgui_run"));
+  RPS_INFORMOUT("rps_qtgui_run start:"<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "start rps_qtgui_run"));
   RPS_ASSERT(rpsqt_app != nullptr);
-  RPS_DEBUG_LOG(GUI, "rps_tempgui_run before one RpsTemp_Application::processEvents");
+  RPS_DEBUG_LOG(GUI, "rps_qtgui_run before one RpsTemp_Application::processEvents");
   /* In principle, these are useless. Since rpsqt_app->exec should do it. */
   RpsTemp_Application::processEvents();
-  RPS_DEBUG_LOG(GUI, "rps_tempgui_run after one RpsTemp_Application::processEvents"<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "in rps_tempgui_run"));
+  RPS_DEBUG_LOG(GUI, "rps_qtgui_run after one RpsTemp_Application::processEvents"<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "in rps_qtgui_run"));
   RpsTemp_Application::sendPostedEvents();
-  RPS_DEBUG_LOG(GUI, "rps_tempgui_run after one RpsTemp_Application::sendPostedEvents");
+  RPS_DEBUG_LOG(GUI, "rps_qtgui_run after one RpsTemp_Application::sendPostedEvents");
   usleep(1000);
-  RPS_DEBUG_LOG(GUI, "rps_tempgui_run before exec"<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_tempgui_run/before exec"));
+  RPS_DEBUG_LOG(GUI, "rps_qtgui_run before exec"<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_qtgui_run/before exec"));
   int ok = rpsqt_app->exec();
-  RPS_DEBUG_LOG(GUI, "rps_tempgui_run after exec ok=" << ok<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "ending rps_tempgui_run"));
-} //  end rps_tempgui_run
+  RPS_DEBUG_LOG(GUI, "rps_qtgui_run after exec ok=" << ok<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "ending rps_qtgui_run"));
+} //  end rps_qtgui_run
 
-//// end of file tempgui-qrps.cc for refpersys.org
+//// end of file qtgui-qrps.cc for refpersys.org

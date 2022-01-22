@@ -1,12 +1,12 @@
 /****************************************************************
- * file tempgui-qrps.hh
+ * file qtgui-qrps.hh
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
  *
  *      This file is part of the Reflective Persistent System.  It is
  *      the header file for some optional dlopen-ed plugin using Qt5
- *      It is tightly related to tempgui_qrps.cc
+ *      It is tightly related to qtgui-qrps.cc ; used to be tempgui-qrps.hh
  *      See on https://framalistes.org/sympa/arc/refpersys-forum/
  *      the messages 2021-07/msg00002.html
  *
@@ -34,8 +34,8 @@
  ******************************************************************************/
 
 
-#ifndef TEMPGUI_QRPS_INCLUDED
-#define TEMPGUI_QRPS_INCLUDED
+#ifndef QTGUI_QRPS_INCLUDED
+#define QTGUI_QRPS_INCLUDED
 
 #include "refpersys.hh"
 #include <QApplication>
@@ -188,8 +188,8 @@ public slots:
   void do_enter_shown_object(void);
 };				// end class RpsTemp_MainWindow
 
-extern "C" void rps_tempgui_init_progarg(int &argc, char**argv);
-extern "C" void rps_tempgui_run(void);
+extern "C" void rps_qtgui_init_progarg(int &argc, char**argv);
+extern "C" void rps_qtgui_run(void);
 
-#endif /*TEMPGUI_QRPS_INCLUDED*/
-//// end of file tempgui_qrps.hh for refpersys.org
+#endif /*QTGUI_QRPS_INCLUDED*/
+//// end of file qtgui_qrps.hh for refpersys.org

@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2021 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2022 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -32,6 +32,8 @@
  ******************************************************************************/
 
 #include "refpersys.hh"
+#include "qtgui-qrps.hh"
+
 #include "onion/version.h"
 #include "readline/readline.h"
 
@@ -201,7 +203,7 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_QT, ///
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
-    /*doc:*/ "dlopen-s tempgui-qrps.so and to run a temporary Qt interface", //
+    /*doc:*/ " run a Qt graphical interface", //
     /*group:*/0 ///
   },
   /* ======= version info ======= */
@@ -1205,39 +1207,32 @@ rps_run_application(int &argc, char **argv)
         }
     };
   /////
-  /////////////////// dlopen temporary Qt
+  /////////////////// with Qt graphical interface
   if (rps_do_qt)
     {
       RPS_INFORMOUT("rps_run_application will do Qt from pid " << (int)getpid()
-                    << " on " << rps_hostname()
-                    << " so make tempgui-qrps.so");
-      int badqtso = system("make tempgui-qrps.so");
-      if (badqtso)
-        RPS_FATALOUT("make tempgui-qrps.so failed : " << badqtso);
-      qtso = dlopen("./tempgui-qrps.so", RTLD_NOW);
-      if (!qtso)
-        RPS_FATALOUT("dlopen tempgui-qrps.so failed : " << dlerror());
-      typedef void rps_tempgui_init_progarg_sig(int &, char**);
-      rps_tempgui_init_progarg_sig*initfun
-        = (rps_tempgui_init_progarg_sig*)dlsym(qtso,
-            "rps_tempgui_init_progarg");
-      if (!initfun)
-        RPS_FATALOUT("dlsym of rps_tempgui_init_progarg in ./tempgui-qrps.so failed : " << dlerror());
-      RPS_DEBUG_LOG(GUI, "before calling rps_tempgui_init_progarg thru initfun=" << (void*)initfun);
-      (*initfun)(argc, argv);
-      RPS_DEBUG_LOG(GUI, "after calling rps_tempgui_init_progarg thru initfun=" << (void*)initfun);
+                    << " on " << rps_hostname());
+      RPS_DEBUG_LOG(GUI, "before calling rps_qtgui_init_progarg");
+      rps_qtgui_init_progarg(argc, argv);
+      RPS_DEBUG_LOG(GUI, "after calling rps_qtgui_init_progarg");
     }
+  /////
+  ////  command vectors
   if (!rps_command_vec.empty())
     {
       RPS_INFORMOUT("before running " << rps_command_vec.size() << " commands");
       rps_do_repl_commands_vec(rps_command_vec);
       RPS_INFORMOUT("after running " << rps_command_vec.size() << " commands");
     }
+  ////
+  //// console REPL
   if (rps_run_repl)
     {
       RPS_INFORMOUT("rps_run_application in REPL with " << argc << " program arguments");
       rps_read_eval_print_loop (argc, argv);
     }
+  ////
+  //// testing the REPL
   else if (rps_test_repl_lexer)
     {
       RPS_INFORMOUT("Before running the REPL lexer test...." << std::endl

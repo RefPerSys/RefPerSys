@@ -1,5 +1,5 @@
 #!/bin/bash
-# RefPerSys file generate-gitid.sh - see refpersys.org
+# RefPerSys file do-generate-gitid.sh - see refpersys.org
 ###
 # it just emits a string with the full git commit id, appending + if
 # the git status is not clean.

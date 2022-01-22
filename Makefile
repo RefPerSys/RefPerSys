@@ -9,7 +9,7 @@
 ##      Abhishek Chakravarti <abhishek@taranjali.org>
 ##      Nimesh Neema <nimeshneema@gmail.com>
  ##
-##      © Copyright 2019 - 2021 The Reflective Persistent System Team
+##      © Copyright 2019 - 2022 The Reflective Persistent System Team
 ##      team@refpersys.org
 ##
 ## License:
@@ -40,15 +40,17 @@ RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
-RPS_QT_HEADERS:= $(sort $(wildcard *_qrps.hh))
-RPS_QT_SOURCES:= $(sort $(wildcard *_qrps.cc))
+RPS_QT_HEADERS:= $(sort $(wildcard *-qrps.hh))
+RPS_QT_SOURCES:= $(sort $(wildcard *-qrps.cc))
 RPS_QT_MOC= moc
 ## for GNU bison
 RPS_BISON_SOURCES:= $(sort $(wildcard *_rps.yy))
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
+RPS_QT_OBJECTS = $(patsubst %.cc, %.o, $(RPS_QT_SOURCES))
 RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
 RPS_BISON_CPLUSPLUS = $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES))
 RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
+RPS_SANITIZED_QT_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_QT_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
 RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
 RPS_DEBUG_BISON_OBJECTS = $(patsubst %.yy, %.dbg.o, $(RPS_BISON_SOURCES))
@@ -105,7 +107,7 @@ RPS_BUILD_SANITFLAGS = -fsanitize=address
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
-RPS_PKG_NAMES= jsoncpp readline libcurl zlib onion Qt5Widgets
+RPS_PKG_NAMES= jsoncpp readline libcurl zlib onion  Qt5Core Qt5Gui Qt5Widgets
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
@@ -131,21 +133,21 @@ all:
 	$(RM) __timestamp.o __timestamp.c
 	sync &
 	$(MAKE) -$(MAKEFLAGS) refpersys
-	$(MAKE) -$(MAKEFLAGS) tempgui-qrps.so
 	sync
 
 .SECONDARY:  __timestamp.c $(RPS_BISON_CPLUSPLUS)
 
-refpersys: $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
-	$(LINK.cc) -rdynamic -pie -Bdynamic $(RPS_CORE_OBJECTS)  __timestamp.o \
-           $(LIBES) $(RPS_PKG_LIBS) -o $@-tmp
+refpersys: $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  $(RPS_QT_OBJECTS) __timestamp.o
+	-sync
+	$(LINK.cc) -rdynamic -pie -Bdynamic $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  $(RPS_QT_OBJECTS)  __timestamp.o \
+	         $(LIBES) $(RPS_PKG_LIBS) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
-sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) __timestamp.o
+sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_BISON_OBJECTS)  $(RPS_SANITIZED_QT_OBJECTS) __timestamp.o
 	$(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
-           $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o \
+           $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_BISON_OBJECTS) $(RPS_SANITIZED_QT_OBJECTS)  __timestamp.o \
            $(LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
@@ -162,10 +164,13 @@ sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) __timestamp.o
 #-         $(MV) --backup __timestamp.c __timestamp.c~
 #-         $x(RM) __timestamp.o
 
-objects:  $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS)
+objects:  $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS)  $(RPS_QT_OBJECTS)
 
 $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
+	sync
 
+$(RPS_QT_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_QT_HEADERS) $(RPS_QT_SOURCES)
+	sync
 
 %.o: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -o $@ $<
@@ -198,15 +203,6 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 %-qrps.moc.hh: %-qrps.hh
 	$(RPS_QT_MOC) $< -o $@
 
-### this shared object would be made then dlopened if ./refpersys gets
-### some --Qt program argument...
-tempgui-qrps.so: tempgui-qrps.cc refpersys.hh tempgui-qrps.hh tempgui-qrps.moc.hh | $(RPS_CORE_OBJECTS)
-	$(RPS_BUILD_CXX) $(RPS_BUILD_COMPILER_FLAGS) \
-                         -shared -o $@ -fPIC -Wall -Wextra -O -g \
-	              $(shell pkg-config --cflags Qt5Core Qt5Gui Qt5Widgets $(RPS_PKG_NAMES)) \
-	              $(shell pkg-config --libs Qt5Core Qt5Gui Qt5Widgets $(RPS_PKG_NAMES)) \
-                      -std=gnu++17 \
-	$<
 
 ################
 clean:
