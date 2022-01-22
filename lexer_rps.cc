@@ -784,7 +784,7 @@ Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
         {
           rstr.push_back (curch);
           toksrc_col++;
-	  curp++;
+          curp++;
           continue;
         }
       /// accepts any correctly encoded UTF-8
@@ -792,7 +792,7 @@ Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
         {
           rstr.append(curp, l);
           toksrc_col += l;
-	  curp += l;
+          curp += l;
           continue;
         }
       /// improbable lexical error....

@@ -47,6 +47,7 @@ RPS_QT_MOC= moc
 RPS_BISON_SOURCES:= $(sort $(wildcard *_rps.yy))
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_QT_OBJECTS = $(patsubst %.cc, %.o, $(RPS_QT_SOURCES))
+RPS_QT_MOC_HEADERS =  $(patsubst %.cc, %.moc.hh, $(RPS_QT_SOURCES))
 RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
 RPS_BISON_CPLUSPLUS = $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES))
 RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
@@ -167,14 +168,16 @@ sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_BISON_OBJECT
 objects:  $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS)  $(RPS_QT_OBJECTS)
 
 $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
-	sync
 
-$(RPS_QT_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_QT_HEADERS) $(RPS_QT_SOURCES)
+$(RPS_QT_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_QT_HEADERS) $(RPS_QT_SOURCES) $(RPS_QT_MOC_HEADERS)
+
+%-qrps.o: %-qrps.cc refpersys.hh.gch %-qrps.moc.hh
+	$(COMPILE.cc) -o $@ $<
 	sync
 
 %.o: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -o $@ $<
-
+	sync
 
 %.sanit.o: %.cc refpersys.hh.sanit.gch
 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
