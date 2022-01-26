@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean plugin fullclean redump altredump print-plugin-settings indent test01 test02 test03 test-load analyze gitpush gitpush2
+.PHONY: all objects clean plugin fullclean redump altredump print-plugin-settings indent test01 test02 test03 test04 test-load analyze gitpush gitpush2
 
 
 ## tell GNU make to export all variables by default
@@ -319,6 +319,9 @@ test02: ./refpersys
 
 test03: ./refpersys
 	@echo missing test03 ; exit 1
+
+test04: ./refpersys
+	@echo 'show 1 * 2 + 3 * 4 + 5 < 6 - 7' | ./refpersys --debug=REPL --repl
 
 test-load: ./refpersys
 	./refpersys --batch
