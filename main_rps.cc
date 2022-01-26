@@ -1631,6 +1631,11 @@ void rps_debug_warn_at(const char*file, int line)
       fprintf(rps_debug_file, "\n*** REFPERSYS WARNING at %s:%d ***\n", file, line);
       fflush(rps_debug_file);
     }
+  else
+    {
+      std::cerr << std::flush;
+      std::cerr << std::endl << "**!** REFPERSYS WARNING at " << file << ":" << line << std::endl;
+    }
 } // end rps_debug_warn_at
 
 ///////////////////////////////////////////////////////// debugging support
