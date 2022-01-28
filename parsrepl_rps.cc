@@ -444,20 +444,21 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparison testing lextokv=" << _f.lextokv << " position:" << position_str());
   if (_f.lextokv.is_lextoken()
       && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
-          &&  _f.lextokv.to_lextoken()->lxval().is_object())
-       {
-	 Rps_Id delimid =  _f.lextokv.to_lextoken()->lxval().to_object()->oid();
-	 RPS_WARNOUT("Rps_TokenSource::parse_comparison incomplete delimid=" << delimid  << " position:" << position_str()
-		     << std::endl << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
-  }
-  else {
-	 RPS_WARNOUT("Rps_TokenSource::parse_comparison unexpected lextokv=" << _f.lextokv << " position:" << position_str()
-		     << std::endl << " leftv=" << _f.leftv);
-  }
+      &&  _f.lextokv.to_lextoken()->lxval().is_object())
+    {
+      Rps_Id delimid =  _f.lextokv.to_lextoken()->lxval().to_object()->oid();
+      RPS_WARNOUT("Rps_TokenSource::parse_comparison incomplete delimid=" << delimid  << " position:" << position_str()
+                  << std::endl << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
+    }
+  else
+    {
+      RPS_WARNOUT("Rps_TokenSource::parse_comparison unexpected lextokv=" << _f.lextokv << " position:" << position_str()
+                  << std::endl << " leftv=" << _f.leftv);
+    }
 #warning unimplemented Rps_TokenSource::parse_comparison
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparison from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << position_str() << std::endl
-	       << "... leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
+               << "... leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
 } // end Rps_TokenSource::parse_comparison
 
 
@@ -509,7 +510,9 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>&
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at startpos: " << startpos
                << " currentpos:" << position_str()
-               << " curcptr " << Rps_QuotedC_String(curcptr()) << " token_deq=" << token_deq
+               << " curcptr " << Rps_QuotedC_String(curcptr())
+               << std::endl
+               << "... lextokv=" << _f.lextokv << " lexopertokv=" << _f.lexopertokv << " leftv=" << _f.leftv
                << std::endl
                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparand incomplete"));
 } // end Rps_TokenSource::parse_comparand
@@ -815,7 +818,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                            << " rightv:" << _f.rightv
                            << " binoperob:" << _f.binoperob
                            << " curoperob:" << _f.curoperob << _f.curoperob << " position_str:" << position_str()
-			   << " " << Rps_QuotedC_String(curcptr()));
+                           << " " << Rps_QuotedC_String(curcptr()));
             }
         }
       else
@@ -826,10 +829,10 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
           break;
         };
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term **endloop @ " << position_str()
-		    << " operandvect:" << operandvect << " curoperob:" << _f.curoperob
-		    << std::endl << "... token_deq=" << token_deq
-		    << (again?"again":"stop")
-                      << " loopcnt#" << loopcnt << " curcptr " << Rps_QuotedC_String(curcptr()));
+                    << " operandvect:" << operandvect << " curoperob:" << _f.curoperob
+                    << std::endl << "... token_deq=" << token_deq
+                    << (again?"again":"stop")
+                    << " loopcnt#" << loopcnt << " curcptr " << Rps_QuotedC_String(curcptr()));
     } // end while (again)
 #warning unimplemented Rps_TokenSource::parse_term
   /* we probably should make a term with operandvect here ... */
