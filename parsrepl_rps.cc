@@ -735,7 +735,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
       usleep (250000);
       _f.lextokv = get_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term got token after leftv=" << _f.leftv << " got lextok=" << _f.lextokv
-                    << " lexopertokv=" << _f.lexopertokv
+                    << " lexopertokv=" << _f.lexopertokv << " token_deq:" << token_deq
                     << " @! " << position_str()
                     << " curcptr " << Rps_QuotedC_String(curcptr())
                     << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after-left"));
@@ -834,12 +834,17 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                     << (again?"again":"stop")
                     << " loopcnt#" << loopcnt << " curcptr " << Rps_QuotedC_String(curcptr()));
     } // end while (again)
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term endloop#" << loopcnt
+		<< " leftv=" << _f.leftv << " token_deq=" << token_deq
+		<< std::endl << " operandvect:" << operandvect
+		<< " curcptr " << Rps_QuotedC_String(curcptr()));
 #warning unimplemented Rps_TokenSource::parse_term
   /* we probably should make a term with operandvect here ... */
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
                << " operandvect:" << operandvect
                << " binoperob:" << _f.binoperob
                << " curoperob:" << _f.curoperob
+	       << " leftv=" << _f.leftv
                << " with token_deq=" << token_deq << " at " << startpos
                << "  curpos:" << position_str());
 } // end Rps_TokenSource::parse_term
@@ -864,7 +869,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
                 );
   std::string startpos = position_str();
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary lextokv=" << _f.lextokv << " position:" << startpos);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary start lextokv=" << _f.lextokv << " position:" << startpos);
   if (!_f.lextokv)
     {
       if (pokparse)
@@ -886,9 +891,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
                     << " lexval " << _f.lexvalv
                     << " position:" << position_str() << " curcptr " << Rps_QuotedC_String(curcptr()));
 #warning Rps_TokenSource::parse_primary  buggy near here for REPL command show 1 * 2 + 3 * 4
-      if (_f.lexgotokv) ///@@@ very suspicious, probably wrong...
-        token_deq.push_back(_f.lexgotokv);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary int " << _f.lexvalv
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary => int " << _f.lexvalv
                     << " lextokv:" << _f.lextokv
                     << " lexgotokv:" << _f.lexgotokv
                     << " startpos: " << startpos << " token_deq:" << token_deq
@@ -920,7 +923,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
         *pokparse = true;
       if (_f.lexgotokv)
         token_deq.push_back(_f.lexgotokv);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary double " << _f.lexvalv << " lexgotokv:" << _f.lexgotokv
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary => double " << _f.lexvalv << " lexgotokv:" << _f.lexgotokv
                     << " token_deq:" << token_deq
                     << " at " << position_str());
       return _f.lexvalv;
