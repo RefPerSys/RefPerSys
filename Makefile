@@ -312,7 +312,7 @@ analyze:
 #### simple tests
 test01: ./refpersys
 #was    ./refpersys -dGUI --display=object
-	@echo missing test01 ; exit 1
+	@(rm -rvf /tmp/rps1; printf 'show 1\n dump "/tmp/rps1"\n')  | ./refpersys --debug=REPL --repl
 
 test02: ./refpersys
 	@echo missing test02 ; exit 1
