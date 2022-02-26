@@ -40,18 +40,17 @@ RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
-RPS_QT_HEADERS:= $(sort $(wildcard *-qrps.hh))
-RPS_QT_SOURCES:= $(sort $(wildcard *-qrps.cc))
-RPS_QT_MOC= moc
+
+RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 ## for GNU bison
 RPS_BISON_SOURCES:= $(sort $(wildcard *_rps.yy))
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
-RPS_QT_OBJECTS = $(patsubst %.cc, %.o, $(RPS_QT_SOURCES))
-RPS_QT_MOC_HEADERS =  $(patsubst %.cc, %.moc.hh, $(RPS_QT_SOURCES))
+#RPS_QT_OBJECTS = $(patsubst %.cc, %.o, $(RPS_QT_SOURCES))
+#RPS_QT_MOC_HEADERS =  $(patsubst %.cc, %.moc.hh, $(RPS_QT_SOURCES))
 RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
 RPS_BISON_CPLUSPLUS = $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES))
 RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
-RPS_SANITIZED_QT_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_QT_SOURCES))
+#RPS_SANITIZED_QT_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_QT_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
 RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
 RPS_DEBUG_BISON_OBJECTS = $(patsubst %.yy, %.dbg.o, $(RPS_BISON_SOURCES))
@@ -108,7 +107,7 @@ RPS_BUILD_SANITFLAGS = -fsanitize=address
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
-RPS_PKG_NAMES= jsoncpp readline libcurl zlib onion  Qt5Core Qt5Gui Qt5Widgets
+RPS_PKG_NAMES= jsoncpp readline libcurl zlib onion
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
@@ -138,17 +137,17 @@ all:
 
 .SECONDARY:  __timestamp.c $(RPS_BISON_CPLUSPLUS)
 
-refpersys: $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  $(RPS_QT_OBJECTS) __timestamp.o
+refpersys: $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	-sync
-	$(LINK.cc) -rdynamic -pie -Bdynamic $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  $(RPS_QT_OBJECTS)  __timestamp.o \
+	$(RPS_COMPILER_TIMER) $(LINK.cc) -rdynamic -pie -Bdynamic $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o \
 	         $(LIBES) $(RPS_PKG_LIBS) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
-sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_BISON_OBJECTS)  $(RPS_SANITIZED_QT_OBJECTS) __timestamp.o
-	$(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
-           $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_BISON_OBJECTS) $(RPS_SANITIZED_QT_OBJECTS)  __timestamp.o \
+sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
+	$(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
+           $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_BISON_OBJECTS)  __timestamp.o \
            $(LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
@@ -165,51 +164,40 @@ sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_BISON_OBJECT
 #-         $(MV) --backup __timestamp.c __timestamp.c~
 #-         $x(RM) __timestamp.o
 
-objects:  $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS)  $(RPS_QT_OBJECTS)
+objects:  $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS) 
 
 $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
-$(RPS_QT_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_QT_HEADERS) $(RPS_QT_SOURCES) $(RPS_QT_MOC_HEADERS)
-
-%-qrps.o: %-qrps.cc refpersys.hh.gch %-qrps.moc.hh
-	$(COMPILE.cc) -o $@ $<
-	sync
-
 %.o: %.cc refpersys.hh.gch
-	$(COMPILE.cc) -o $@ $<
+	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -o $@ $<
 	sync
 
 %.sanit.o: %.cc refpersys.hh.sanit.gch
-	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
+	$(RPS_COMPILER_TIMER) 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
 
 %.dbg.o: %.cc refpersys.hh.dbg.gch
-	$(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
+	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
 
 %.ii: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -C -E $< | sed s:^#://#:g > $@
 
 %.cc: %.yy
-	$(RPS_BUILD_BISON) $(RPS_BUILD_BISON_FLAGS) --output=$@ $<
+	$(RPS_COMPILER_TIMER) $(RPS_BUILD_BISON) $(RPS_BUILD_BISON_FLAGS) --output=$@ $<
 
 # see https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html 
 
 refpersys.hh.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
-	$(COMPILE.cc) -c -o $@ $<
+	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -c -o $@ $<
 refpersys.hh.sanit.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
-	$(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@ $<
+	$(RPS_COMPILER_TIMER) $(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@ $<
 refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
-	$(COMPILE.cc)  $(RPS_BUILD_DEBUGFLAGS) -c -o $@ $<
+	$(RPS_COMPILER_TIMER) $(COMPILE.cc)  $(RPS_BUILD_DEBUGFLAGS) -c -o $@ $<
 
-
-## for the Qt5 MOC (meta-object compiler)
-## see https://doc.qt.io/qt-5/moc.html
-%-qrps.moc.hh: %-qrps.hh
-	$(RPS_QT_MOC) $< -o $@
 
 
 ################
 clean:
-	$(RM) *.o *.orig *~ refpersys sanitized-refpersys *.gch *~
+	$(RM) *.o *.orig *~ refpersys sanitized-refpersys *.gch *~ _build.time
 	$(RM) *.so
 	$(RM) *.moc.hh
 	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~

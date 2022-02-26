@@ -32,15 +32,10 @@
  ******************************************************************************/
 
 #include "refpersys.hh"
-#include "qtgui-qrps.hh"
 
 #include "onion/version.h"
 #include "readline/readline.h"
 
-//// ugly, but temporarily needed near commit 8506e5955bc59d (july 2021)
-//// see framalistes.org/sympa/arc/refpersys-forum/2021-07/msg00082.html
-#include <QApplication>
-#include <QtWidgets>
 
 
 
@@ -51,20 +46,6 @@ extern "C" const char rps_main_date[];
 const char rps_main_date[]= __DATE__;
 
 
-//// ugly, but temporarily needed near commit 8506e5955bc59d (july 2021)
-//// see framalistes.org/sympa/arc/refpersys-forum/2021-07/msg00082.html
-//// see https://stackoverflow.com/q/68516253/841108
-static void
-rps_force_link_qt(int& argc, char**argv)
-{
-  QApplication app(argc, argv);
-  QMainWindow* mainwin =  new QMainWindow();
-  mainwin->setMinimumSize(200,100);
-  QPushButton* button = new QPushButton(QString{"click"},mainwin);
-  mainwin->show();
-  if (getpid() % 2 == 0)
-    app.exec();
-} // end of rps_force_link_qt
 
 /// actually, in function main we have something like  asm volatile ("rps_end_of_main: nop");
 extern "C" void rps_end_of_main(void);
@@ -198,14 +179,6 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Run in batch mode, that is without any user interface (either graphical or command-line REPL).", //
     /*group:*/0 ///
   },
-  /* ======= Qt ======= */
-  {/*name:*/ "Qt", ///
-    /*key:*/ RPSPROGOPT_QT, ///
-    /*arg:*/ nullptr, ///
-    /*flags:*/ 0, ///
-    /*doc:*/ " run a Qt graphical interface", //
-    /*group:*/0 ///
-  },
   /* ======= version info ======= */
   {/*name:*/ "version", ///
     /*key:*/ RPSPROGOPT_VERSION, ///
@@ -320,7 +293,6 @@ std::vector<std::function<void(Rps_CallFrame*)>> rps_do_after_load_vect;
 void* rps_proghdl = nullptr;
 
 bool rps_batch = false;
-bool rps_do_qt = false;
 bool rps_disable_aslr = false;
 bool rps_without_terminal_escape = false;
 bool rps_without_quick_tests = false;
@@ -713,10 +685,6 @@ main (int argc, char** argv)
           RPS_INFORM("%s disabled ASLR (git %s).", rps_progname, rps_gitid);
       }
   }
-  /// this should never run, but we hope that our C++ compiler is not
-  /// clever enough to optimize....
-  if (getpid() < 5)
-    rps_force_link_qt(argc, argv);
   Rps_Agenda::initialize();
   if (rps_run_repl && rps_without_terminal_escape)
     RPS_FATAL("%s cannot run REPL without terminal escape", rps_progname);
@@ -834,11 +802,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     case RPSPROGOPT_BATCH:
     {
       rps_batch = true;
-    }
-    return 0;
-    case RPSPROGOPT_QT:
-    {
-      rps_do_qt = true;
     }
     return 0;
     case RPSPROGOPT_JOBS:
@@ -1206,15 +1169,6 @@ rps_run_application(int &argc, char **argv)
         }
     };
   /////
-  /////////////////// with Qt graphical interface
-  if (rps_do_qt)
-    {
-      RPS_INFORMOUT("rps_run_application will do Qt from pid " << (int)getpid()
-                    << " on " << rps_hostname());
-      RPS_DEBUG_LOG(GUI, "before calling rps_qtgui_init_progarg");
-      rps_qtgui_init_progarg(argc, argv);
-      RPS_DEBUG_LOG(GUI, "after calling rps_qtgui_init_progarg");
-    }
   /////
   ////  command vectors
   if (!rps_command_vec.empty())
@@ -1240,15 +1194,6 @@ rps_run_application(int &argc, char **argv)
       RPS_INFORMOUT("After running the REPL lexer test...." << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after repl")
                     << std::endl);
-    }
-  else if (rps_do_qt)
-    {
-      usleep (20000);
-      RPS_INFORMOUT("Before running rps_qtgui_run" << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before rps_tempgui_run"));
-      rps_qtgui_run ();
-      RPS_DEBUG_LOG(GUI, "after running rps_qtgui_run@" << (void*)rps_qtgui_run << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after rps_qtgui_run"));
     }
   else if (rps_web_service)
     {
