@@ -2,6 +2,7 @@
 */*.mkd
 _*.c
 _*.h
+_build.time
 */*.mkd
 *.orig
 refpersys
