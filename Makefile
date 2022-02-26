@@ -54,7 +54,8 @@ RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
 RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
 RPS_DEBUG_BISON_OBJECTS = $(patsubst %.yy, %.dbg.o, $(RPS_BISON_SOURCES))
-
+RPS_FLTK_CXXFLAGS = $(shell fltk-config --includedir --cxxflags)
+RPS_FLTK_LIBES = $(shell fltk-config --ldflags)
 
 ### The optional file $HOME/.refpersys.mk could contain definitions like
 ###     # file ~/.refpersys.mk
@@ -109,18 +110,18 @@ RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 RPS_PKG_CONFIG=  pkg-config
 RPS_PKG_NAMES= jsoncpp readline libcurl zlib onion
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
-RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
+RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES)) $(RPS_FLTK_LIBES)
 
 LIBES= $(RPS_PKG_LIBS) -lonioncpp -lonion -lunistring -lbacktrace -ldl
 RM= rm -f
 MV= mv
 CC= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CC)
 CXX= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CXX)
-LINK.cc= $(RPS_BUILD_CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
+LINK.cc= $(RPS_BUILD_CXX)
 CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             $(RPS_BUILD_CODGENFLAGS) \
 	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) -I/usr/include/jsoncpp \
-	    $(RPS_PKG_CFLAGS) \
+	    $(RPS_PKG_CFLAGS)  $(RPS_FLTK_CXXFLAGS) \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
             $(RPS_BUILD_COMPILER_FLAGS)
@@ -139,8 +140,8 @@ all:
 
 refpersys: $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	-sync
-	$(RPS_COMPILER_TIMER) $(LINK.cc) -rdynamic -pie -Bdynamic $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o \
-	         $(LIBES) $(RPS_PKG_LIBS) -o $@-tmp
+	$(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o \
+	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_FLTK_LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
@@ -148,7 +149,7 @@ refpersys: $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
 	$(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
            $(RPS_SANITIZED_CORE_OBJECTS) $(RPS_SANITIZED_BISON_OBJECTS)  __timestamp.o \
-           $(LIBES) -o $@-tmp
+           $(LIBES) $(RPS_FLTK_LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
@@ -171,6 +172,7 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 %.o: %.cc refpersys.hh.gch
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -o $@ $<
 	sync
+
 
 %.sanit.o: %.cc refpersys.hh.sanit.gch
 	$(RPS_COMPILER_TIMER) 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<

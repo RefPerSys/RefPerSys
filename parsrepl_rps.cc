@@ -835,16 +835,16 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                     << " loopcnt#" << loopcnt << " curcptr " << Rps_QuotedC_String(curcptr()));
     } // end while (again)
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term endloop#" << loopcnt
-		<< " leftv=" << _f.leftv << " token_deq=" << token_deq
-		<< std::endl << " operandvect:" << operandvect
-		<< " curcptr " << Rps_QuotedC_String(curcptr()));
+                << " leftv=" << _f.leftv << " token_deq=" << token_deq
+                << std::endl << " operandvect:" << operandvect
+                << " curcptr " << Rps_QuotedC_String(curcptr()));
 #warning unimplemented Rps_TokenSource::parse_term
   /* we probably should make a term with operandvect here ... */
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
                << " operandvect:" << operandvect
                << " binoperob:" << _f.binoperob
                << " curoperob:" << _f.curoperob
-	       << " leftv=" << _f.leftv
+               << " leftv=" << _f.leftv
                << " with token_deq=" << token_deq << " at " << startpos
                << "  curpos:" << position_str());
 } // end Rps_TokenSource::parse_term

@@ -212,6 +212,8 @@ extern "C" bool rps_disable_aslr;
 
 extern "C" bool rps_run_web;
 extern "C" bool rps_run_repl;
+extern "C" bool rps_fltk_gui;
+extern "C" void add_fltk_arg_rps(char*arg);
 
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_common_state;
@@ -392,20 +394,20 @@ extern "C" void rps_set_debug(const std::string &deblev);
 /// keep the debug options in alphabetical order
 #define RPS_DEBUG_OPTIONS(dbgmacro) \
   dbgmacro(CMD)                     \
+  dbgmacro(COMPL_REPL)              \
   dbgmacro(DUMP)                    \
   dbgmacro(GARBAGE_COLLECTOR)       \
   dbgmacro(GENERATED_CODE)          \
-  dbgmacro(WEB)                     \
+  dbgmacro(GUI)                     \
   dbgmacro(LOAD)                    \
   dbgmacro(LOWREP)                  \
+  dbgmacro(LOW_REPL)                \
   dbgmacro(MISC)                    \
   dbgmacro(MSGSEND)                 \
   dbgmacro(PARSE)                   \
   dbgmacro(PARSE_STRING)            \
   dbgmacro(REPL)                    \
-  dbgmacro(COMPL_REPL)              \
-  dbgmacro(LOW_REPL)                \
-  dbgmacro(GUI)                     \
+  dbgmacro(WEB)                     \
   /*end RPS_DEBUG_OPTIONS*/
 
 #define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
@@ -435,6 +437,8 @@ enum rps_progoption_en
   RPSPROGOPT_DUMP='D',
   RPSPROGOPT_COMMAND='c',
   RPSPROGOPT_WEB='W',
+  RPSPROGOPT_GUI='G',
+  RPSPROGOPT_FLTK='F',
 
   RPSPROGOPT_HOMEDIR=1000,
   RPSPROGOPT_RANDOMOID,
@@ -4456,6 +4460,10 @@ public:
 #define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam) extern "C" Rps_ObjectRef RPS_SYMB_OB(Nam);
 #include "generated/rps-names.hh"
 
+//// for FLTK graphical user interface
+extern "C" int fltk_api_version_rps(void);
+extern "C" void add_fltk_arg_rps(char*arg);
+extern "C" void guifltk_initialize_rps(void);
 
 // the default HTTP host and portnumber
 #define RPS_DEFAULT_WEB_HOST_PORT "localhost:9090"

@@ -71,6 +71,7 @@ void
 Rps_CallFrame::gc_mark_frame(Rps_GarbageCollector* gc)
 {
   RPS_ASSERT(gc != nullptr);
+  //
   if (!cfram_descr.is_empty() && cfram_descr)
     cfram_descr->gc_mark(*gc);
   if (!cfram_state.is_empty() && cfram_state.is_ptr())

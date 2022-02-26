@@ -205,13 +205,29 @@ struct argp_option rps_progoptions[] =
     "Try the help command for details.", //
     /*group:*/0 ///
   },
-  /* ======= web interface  ======= */
+  /* ======= web interface; it may be buggy  ======= */
   {/*name:*/ "web", ///
     /*key:*/ RPSPROGOPT_WEB, ///
     /*arg:*/ "HOST:PORT", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "start web service as given on HOST:PORT,"
+    /*doc:*/ "start web service (BUGGY) as given on HOST:PORT,"
     " where -W. means --web=http:" RPS_DEFAULT_WEB_HOST_PORT, //
+    /*group:*/0 ///
+  },
+  /* ======= graphical user interface  ======= */
+  {/*name:*/ "gui", ///
+    /*key:*/ RPSPROGOPT_GUI, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "run a graphical user interface using FLTK (see fltk.org)", //
+    /*group:*/0 ///
+  },
+  {/*name:*/ "fltk", ///
+    /*key:*/ RPSPROGOPT_FLTK, ///
+    /*arg:*/ "FLTKOPTION", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "pass the given FLTKOPTION to FLTK graphical library\n"
+    "\t e.g. --fltk=bg:pink or --fltk:iconic\n", //
     /*group:*/0 ///
   },
   /* ======= edit the C++ code of  a temporary plugin after load ======= */
@@ -948,6 +964,16 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         }
     }
     return 0;
+    case RPSPROGOPT_GUI:
+    {
+      rps_fltk_gui=true;
+    }
+    return 0;
+    case RPSPROGOPT_FLTK:
+    {
+      add_fltk_arg_rps(arg);
+    }
+    return 0;
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:
     {
       void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
@@ -1022,6 +1048,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
                     << " Libonion web server library version: " << onion_version() << std::endl
+                    << " FLTK toolkit API version " << fltk_api_version_rps() << std::endl
                     << " made with: " << rps_makefile << std::endl
                     << " running on " << rps_hostname();
           {
@@ -1043,6 +1070,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
   return ARGP_ERR_UNKNOWN;
 } // end rps_parse1opt
 
+struct argp argparser_rps;
 
 void
 rps_parse_program_arguments(int &argc, char**argv)
@@ -1050,11 +1078,10 @@ rps_parse_program_arguments(int &argc, char**argv)
   errno = 0;
   struct argp_state argstate;
   memset (&argstate, 0, sizeof(argstate));
-  static struct argp argparser;
-  argparser.options = rps_progoptions;
-  argparser.parser = rps_parse1opt;
-  argparser.args_doc = " ; # ";
-  argparser.doc =
+  argparser_rps.options = rps_progoptions;
+  argparser_rps.parser = rps_parse1opt;
+  argparser_rps.args_doc = " ; # ";
+  argparser_rps.doc =
     "RefPerSys - an Artificial General Intelligence project,\n"
     " open science, for Linux/x86-64; see refpersys.org for more.\n"
     " (REFlexive PERsystem SYStem is GPLv3+ licensed free software)\n"
@@ -1064,10 +1091,10 @@ rps_parse_program_arguments(int &argc, char**argv)
     " +++!!! use at your own risk !!!+++\n"
     " (shortgitid " RPS_SHORTGITID " built at " __DATE__ ")\n"
     "\n Accepted program options are:\n";
-  argparser.children = nullptr;
-  argparser.help_filter = nullptr;
-  argparser.argp_domain = nullptr;
-  if (argp_parse(&argparser, argc, argv, 0, nullptr, nullptr))
+  argparser_rps.children = nullptr;
+  argparser_rps.help_filter = nullptr;
+  argparser_rps.argp_domain = nullptr;
+  if (argp_parse(&argparser_rps, argc, argv, 0, nullptr, nullptr))
     RPS_FATALOUT("failed to parse program arguments to " << argv[0]);
 } // end rps_parse_program_arguments
 
