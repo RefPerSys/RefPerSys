@@ -1231,6 +1231,15 @@ rps_run_application(int &argc, char **argv)
       usleep(10000);
       rps_run_web_service();
     }
+  else if (rps_fltk_gui)
+    {
+      extern void guifltk_run_application_rps();
+      RPS_INFORMOUT("Before running guifltk_run_application_rps" << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before GUI"));
+      guifltk_run_application_rps();
+      RPS_INFORMOUT("After running guifltk_run_application_rps" << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after GUI"));
+    }
   else
     {
       RPS_WARNOUT("rps_run_application incomplete"
