@@ -40,6 +40,8 @@ std::vector<char*> fltk_vector_arg_rps;
 
 bool rps_fltk_gui;
 
+Fl_Window* rps_fltk_mainwin;
+
 int fltk_api_version_rps(void)
 {
   return Fl::api_version();
@@ -62,7 +64,34 @@ void add_fltk_arg_rps(char*arg)
     fltk_vector_arg_rps.push_back(argtail);
 } // end add_fltk_arg_rps
 
-void guifltk_initialize_rps(void)
+
+void
+guifltk_initialize_rps(void)
 {
   Fl::args(fltk_vector_arg_rps.size(), fltk_vector_arg_rps.data());
+  char titlbuf[128];
+  memset(titlbuf, 0, sizeof(titlbuf));
+  snprintf(titlbuf, sizeof(titlbuf), "refpersys-fltk/p%d-%s",
+           (int)getpid(),
+           rps_shortgitid);
+  rps_fltk_mainwin = new Fl_Window(720, 460, titlbuf);
+  rps_fltk_mainwin->show();
+  RPS_DEBUG_LOG(GUI, "guifltk_initialize_rps: rps_fltk_mainwin@"
+                << (void*)rps_fltk_mainwin
+                << " titlbuf:" << titlbuf << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "guifltk_initialize_rps")
+                << std::endl);
+  RPS_DEBUG_LOG(GUI, "rps_fltk_mainwin@" << (void*)rps_fltk_mainwin);
 } // end guifltk_initialize_rps
+
+
+void
+guifltk_run_application_rps (void)
+{
+  RPS_DEBUG_LOG(GUI, "guifltk_run_application_rps: rps_fltk_mainwin@"
+                << (void*)rps_fltk_mainwin << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "guifltk_run_application_rps")
+                << std::endl);
+  Fl::run();
+  RPS_DEBUG_LOG(GUI, "guifltk_run_application_rps ending");
+} // end guifltk_run_application_rps
