@@ -75,6 +75,14 @@ guifltk_initialize_rps(void)
            (int)getpid(),
            rps_shortgitid);
   rps_fltk_mainwin = new Fl_Window(720, 460, titlbuf);
+  int maxw = 3200, maxh = 1300;
+  if (maxw > Fl::w())
+    maxw = Fl::w()- 40;
+  if (maxh > Fl::h())
+    maxh = Fl::h() - 40;
+  rps_fltk_mainwin->size_range(/*min dim w&h:*/ 330, 220,
+      /*max dim w&h:*/ maxw, maxh,
+      /*delta w&h:*/ 10, 10);
   rps_fltk_mainwin->show();
   RPS_DEBUG_LOG(GUI, "guifltk_initialize_rps: rps_fltk_mainwin@"
                 << (void*)rps_fltk_mainwin
