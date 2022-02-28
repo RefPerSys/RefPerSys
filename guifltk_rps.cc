@@ -5,8 +5,8 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the initial.
- graphical user interface using FLTK 1.3 (see fltk.org)
+ *      It has the initial graphical user interface using FLTK 1.3
+ *      (see fltk.org)
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -35,6 +35,7 @@
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
+#include <FL/Fl_Menu_Bar.H>
 
 std::vector<char*> fltk_vector_arg_rps;
 
@@ -65,6 +66,31 @@ void add_fltk_arg_rps(char*arg)
 } // end add_fltk_arg_rps
 
 
+
+// This callback is invoked for dumping
+static void
+menub_dumpcbrps(Fl_Widget *w, void *)
+{
+  RPS_DEBUG_LOG(GUI, "menub_dumpcbrps incomplete");
+#warning menub_dumpcbrps incomplete
+} // end menub_dumpcbrps
+
+// This callback is invoked for exiting after dump
+static void
+menub_exitcbrps(Fl_Widget *w, void *)
+{
+  RPS_DEBUG_LOG(GUI, "menub_exitcbrps incomplete");
+#warning menub_dumpcbrps incomplete
+} // end menub_exitcbrps
+
+// This callback is invoked for quitting
+static void
+menub_quitcbrps(Fl_Widget *w, void *)
+{
+  RPS_DEBUG_LOG(GUI, "menub_quitcbrps incomplete");
+#warning menub_quitcbrps incomplete
+} // end menub_quitcbrps
+
 void
 guifltk_initialize_rps(void)
 {
@@ -75,6 +101,11 @@ guifltk_initialize_rps(void)
            (int)getpid(),
            rps_shortgitid);
   rps_fltk_mainwin = new Fl_Window(720, 460, titlbuf);
+  Fl_Menu_Bar *menub = new Fl_Menu_Bar(0,0,720,20);
+  menub->add("&App/&Dump", "^d", menub_dumpcbrps);
+  menub->add("&App/e&Xit", "^x", menub_exitcbrps);
+  menub->add("&App/&Quit", "^q", menub_quitcbrps);
+  rps_fltk_mainwin->end();
   int maxw = 3200, maxh = 1300;
   if (maxw > Fl::w())
     maxw = Fl::w()- 40;
