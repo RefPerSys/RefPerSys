@@ -37,6 +37,7 @@
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
 
+extern "C" std::string rps_dumpdir_str;
 std::vector<char*> fltk_vector_arg_rps;
 
 bool rps_fltk_gui;
@@ -71,7 +72,15 @@ void add_fltk_arg_rps(char*arg)
 static void
 menub_dumpcbrps(Fl_Widget *w, void *)
 {
-  RPS_DEBUG_LOG(GUI, "menub_dumpcbrps incomplete");
+  RPS_DEBUG_LOG(GUI, "menub_dumpcbrps start");
+  char cwdbuf[128];
+  memset(cwdbuf, 0, sizeof(cwdbuf));
+  getcwd(cwdbuf, sizeof(cwdbuf)-1);
+  RPS_INFORM("RefPerSys (pid %d on %s shortgit %s) GUI dump into %s\n"
+             "... from current directory %s\n",
+             (int)getpid(), rps_hostname(), rps_shortgitid,
+             rps_dumpdir_str.c_str(), cwdbuf);
+  rps_dump_into(rps_dumpdir_str);
 #warning menub_dumpcbrps incomplete
 } // end menub_dumpcbrps
 
@@ -79,7 +88,16 @@ menub_dumpcbrps(Fl_Widget *w, void *)
 static void
 menub_exitcbrps(Fl_Widget *w, void *)
 {
+  char cwdbuf[128];
+  memset(cwdbuf, 0, sizeof(cwdbuf));
+  getcwd(cwdbuf, sizeof(cwdbuf)-1);
   RPS_DEBUG_LOG(GUI, "menub_exitcbrps incomplete");
+  RPS_INFORM("RefPerSys (pid %d on %s shortgit %s) final dump into %s\n"
+             "... from current directory %s\n",
+             (int)getpid(), rps_hostname(), rps_shortgitid,
+             rps_dumpdir_str.c_str(), cwdbuf);
+  rps_dump_into(rps_dumpdir_str);
+  exit(EXIT_SUCCESS);
 #warning menub_dumpcbrps incomplete
 } // end menub_exitcbrps
 
@@ -88,6 +106,10 @@ static void
 menub_quitcbrps(Fl_Widget *w, void *)
 {
   RPS_DEBUG_LOG(GUI, "menub_quitcbrps incomplete");
+  // we probably need a dialog to confirm quitting?
+  RPS_INFORM("RefPerSys (pid %d on %s shortgit %s) quit",
+             (int)getpid(), rps_hostname(), rps_shortgitid);
+  exit(EXIT_FAILURE);
 #warning menub_quitcbrps incomplete
 } // end menub_quitcbrps
 
