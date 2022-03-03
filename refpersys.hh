@@ -4206,7 +4206,7 @@ extern "C" char *rpsrepl_name_or_oid_generator(const char *, int);
 extern "C" std::string rps_curl_version(void); // in curl_rps.cc
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
-extern "C" void rps_dump_into (const std::string dirpath = ".", Rps_CallFrame* callframe = nullptr); // in store_rps.cc
+extern "C" void rps_dump_into (std::string dirpath = ".", Rps_CallFrame* callframe = nullptr); // in store_rps.cc
 extern "C" double rps_dump_start_elapsed_time(Rps_Dumper*);
 extern "C" double rps_dump_start_process_time(Rps_Dumper*);
 extern "C" double rps_dump_start_wallclock_time(Rps_Dumper*);

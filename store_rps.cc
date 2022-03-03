@@ -2259,7 +2259,7 @@ Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
 
 
 ////////////////////////////////////////////////////////////////
-void rps_dump_into (const std::string dirpath, Rps_CallFrame* callframe)
+void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/callframe,
                            Rps_ObjectRef obdumper);
@@ -2268,6 +2268,8 @@ void rps_dump_into (const std::string dirpath, Rps_CallFrame* callframe)
   RPS_DEBUG_LOG(DUMP, "rps_dump_into start dirpath=" << dirpath
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_dump_into"));
+  if (dirpath.empty())
+    dirpath = std::string(".");
   {
     DIR* d = opendir(dirpath.c_str());
     if (d)
