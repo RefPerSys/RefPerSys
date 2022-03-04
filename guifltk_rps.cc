@@ -36,6 +36,7 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Text_Editor.H>
 
 extern "C" std::string rps_dumpdir_str;
 std::vector<char*> fltk_vector_arg_rps;
@@ -43,6 +44,25 @@ std::vector<char*> fltk_vector_arg_rps;
 bool rps_fltk_gui;
 
 Fl_Window* rps_fltk_mainwin;
+
+class Fltk_Editor_rps : public Fl_Text_Editor {
+  Fl_Text_Buffer*ed_tbuf;
+public:
+  Fltk_Editor_rps(int X,int Y,int W,int H);
+  virtual ~Fltk_Editor_rps();
+};				// end class Fltk_Editor_rps
+
+
+Fltk_Editor_rps::Fltk_Editor_rps(int X,int Y,int W,int H)
+  : Fl_Text_Editor(X,Y,W,H), ed_tbuf(nullptr) {
+  ed_tbuf = new Fl_Text_Buffer();
+  buffer (ed_tbuf);
+} // end Fltk_Editor_rps::Fltk_Editor_rps
+
+Fltk_Editor_rps::~Fltk_Editor_rps() {
+  delete ed_tbuf;
+} // end Fltk_Editor_rps::~Fltk_Editor_rps
+
 
 int fltk_api_version_rps(void)
 {
@@ -81,7 +101,6 @@ menub_dumpcbrps(Fl_Widget *w, void *)
              (int)getpid(), rps_hostname(), rps_shortgitid,
              rps_dumpdir_str.c_str(), cwdbuf);
   rps_dump_into(rps_dumpdir_str);
-#warning menub_dumpcbrps incomplete
 } // end menub_dumpcbrps
 
 // This callback is invoked for exiting after dump
@@ -127,6 +146,8 @@ guifltk_initialize_rps(void)
   menub->add("&App/&Dump", "^d", menub_dumpcbrps);
   menub->add("&App/e&Xit", "^x", menub_exitcbrps);
   menub->add("&App/&Quit", "^q", menub_quitcbrps);
+#warning should create some Fltk_Editor_rps
+  // ensure the editor follows the size of the mainwin
   rps_fltk_mainwin->end();
   int maxw = 3200, maxh = 1300;
   if (maxw > Fl::w())
