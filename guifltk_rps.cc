@@ -55,7 +55,10 @@ public:
   virtual void resize(int X, int Y, int W, int H);
   Fltk_MainWindow_rps(int X, int Y, const char*title);
   virtual ~Fltk_MainWindow_rps();
-  int rank() const { return mainw_rank; };
+  int rank() const
+  {
+    return mainw_rank;
+  };
 };				// end Fltk_MainWindow_rps
 int Fltk_MainWindow_rps::mainw_count;
 
@@ -68,6 +71,7 @@ public:
   virtual ~Fltk_Editor_rps();
 };				// end class Fltk_Editor_rps
 
+#warning we probably need a set of main windows...
 Fltk_MainWindow_rps* rps_fltk_mainwin;
 
 static void menub_dumpcbrps(Fl_Widget *w, void *);
@@ -76,6 +80,7 @@ static void menub_quitcbrps(Fl_Widget *w, void *);
 static void menub_copycbrps(Fl_Widget *w, void *);
 static void menub_pastecbrps(Fl_Widget *w, void *);
 static void menub_quitcbrps(Fl_Widget *w, void *);
+static void menub_makewincbrps(Fl_Widget *w, void *);
 
 Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H, const char*title)
   : Fl_Window(W,H,title), mainw_rank(0)
@@ -85,7 +90,7 @@ Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H, const char*title)
   mainw_menub->add("&App/&Dump", "^d", menub_dumpcbrps);
   mainw_menub->add("&App/e&Xit", "^x", menub_exitcbrps);
   mainw_menub->add("&App/&Quit", "^q", menub_quitcbrps);
-  mainw_menub->add("&App/&Quit", "^q", menub_quitcbrps);
+  mainw_menub->add("&App/&Make Window", "^q", menub_makewincbrps);
   mainw_menub->add("&Edit/&Copy", "^c", menub_copycbrps);
   mainw_menub->add("&Edit/&Paste", "^p", menub_pastecbrps);
   RPS_DEBUG_LOG(GUI, "made Fltk_MainWindow_rps @"
@@ -106,9 +111,9 @@ Fltk_MainWindow_rps::resize(int X, int Y, int W, int H)
   if (mainw_menub)
     mainw_menub->resize(1,1,W,mainw_menuheight);
   RPS_DEBUG_LOG(GUI, "resize Fltk_MainWindow_rps#" << mainw_rank  << " X="<< X << ", Y="<< Y
-		<< ", W=" << W << ", H=" << H
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainWindow_rps::resize"));
+                << ", W=" << W << ", H=" << H
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainWindow_rps::resize"));
 } // end Fltk_MainWindow_rps::resize
 
 Fltk_Editor_rps::Fltk_Editor_rps(int X,int Y,int W,int H)
@@ -191,6 +196,14 @@ menub_quitcbrps(Fl_Widget *w, void *)
   exit(EXIT_FAILURE);
 #warning menub_quitcbrps incomplete
 } // end menub_quitcbrps
+
+// This callback is invoked for making a new window
+static void
+menub_makewincbrps(Fl_Widget *w, void *)
+{
+  RPS_DEBUG_LOG(GUI, "menub_makewincbrps incomplete");
+#warning menub_makewincbrps incomplete
+} // end menub_makewincbrps
 
 // This callback is invoked for copy
 static void
