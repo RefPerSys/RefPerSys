@@ -73,6 +73,9 @@ Fltk_MainWindow_rps* rps_fltk_mainwin;
 static void menub_dumpcbrps(Fl_Widget *w, void *);
 static void menub_exitcbrps(Fl_Widget *w, void *);
 static void menub_quitcbrps(Fl_Widget *w, void *);
+static void menub_copycbrps(Fl_Widget *w, void *);
+static void menub_pastecbrps(Fl_Widget *w, void *);
+static void menub_quitcbrps(Fl_Widget *w, void *);
 
 Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H, const char*title)
   : Fl_Window(W,H,title), mainw_rank(0)
@@ -82,6 +85,9 @@ Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H, const char*title)
   mainw_menub->add("&App/&Dump", "^d", menub_dumpcbrps);
   mainw_menub->add("&App/e&Xit", "^x", menub_exitcbrps);
   mainw_menub->add("&App/&Quit", "^q", menub_quitcbrps);
+  mainw_menub->add("&App/&Quit", "^q", menub_quitcbrps);
+  mainw_menub->add("&Edit/&Copy", "^c", menub_copycbrps);
+  mainw_menub->add("&Edit/&Paste", "^p", menub_pastecbrps);
   RPS_DEBUG_LOG(GUI, "made Fltk_MainWindow_rps @"
                 << (void*)this << "#" << mainw_rank << " mainw_menub@" << (void*)mainw_menub
                 << " title:" << title);
@@ -185,6 +191,22 @@ menub_quitcbrps(Fl_Widget *w, void *)
   exit(EXIT_FAILURE);
 #warning menub_quitcbrps incomplete
 } // end menub_quitcbrps
+
+// This callback is invoked for copy
+static void
+menub_copycbrps(Fl_Widget *w, void *)
+{
+  RPS_DEBUG_LOG(GUI, "menub_copycbrps incomplete");
+#warning menub_copycbrps incomplete
+} // end menub_copycbrps
+
+// This callback is invoked for quitting
+static void
+menub_pastecbrps(Fl_Widget *w, void *)
+{
+  RPS_DEBUG_LOG(GUI, "menub_pastecbrps incomplete");
+#warning menub_pastecbrps incomplete
+} // end menub_pastecbrps
 
 void
 guifltk_initialize_rps(void)
