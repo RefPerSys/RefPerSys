@@ -54,7 +54,7 @@ RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
 RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
 RPS_DEBUG_BISON_OBJECTS = $(patsubst %.yy, %.dbg.o, $(RPS_BISON_SOURCES))
-RPS_FLTK_CXXFLAGS = $(shell fltk-config --includedir --cxxflags)
+RPS_FLTK_CXXFLAGS = $(shell fltk-config  --cxxflags)
 RPS_FLTK_LIBES = $(shell fltk-config --ldflags)
 
 ### The optional file $HOME/.refpersys.mk could contain definitions like
@@ -85,11 +85,11 @@ RPS_INCLUDE_DIRS ?= /usr/local/include /usr/include /usr/include/jsoncpp
 endif
 
 ifndef RPS_INCLUDE_FLAGS
-RPS_INCLUDE_FLAGS ?= $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
+RPS_INCLUDE_FLAGS ?= $(patsubst %, -I%, $(RPS_INCLUDE_DIRS))
 endif
 
 ifndef RPS_BUILD_INCLUDE_FLAGS
-RPS_BUILD_INCLUDE_FLAGS?=  -I . $(RPS_INCLUDE_FLAGS)
+RPS_BUILD_INCLUDE_FLAGS?=  -I. $(RPS_INCLUDE_FLAGS)
 endif
 
 # the GNU bison parser generator, see www.gnu.org/software/bison/
