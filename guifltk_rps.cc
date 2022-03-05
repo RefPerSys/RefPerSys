@@ -50,10 +50,12 @@ class Fltk_MainWindow_rps : public Fl_Window
   static int mainw_count;
   Fl_Menu_Bar *mainw_menub;
   int mainw_rank;
+  char mainw_title[80];
   static constexpr int mainw_menuheight = 20;
+  static std::set<Fltk_MainWindow_rps*>set_mainw;
 public:
   virtual void resize(int X, int Y, int W, int H);
-  Fltk_MainWindow_rps(int X, int Y, const char*title);
+  Fltk_MainWindow_rps(int X, int Y);
   virtual ~Fltk_MainWindow_rps();
   int rank() const
   {
@@ -61,7 +63,7 @@ public:
   };
 };				// end Fltk_MainWindow_rps
 int Fltk_MainWindow_rps::mainw_count;
-
+std::set<Fltk_MainWindow_rps*>Fltk_MainWindow_rps::set_mainw;
 
 class Fltk_Editor_rps : public Fl_Text_Editor
 {
@@ -82,26 +84,33 @@ static void menub_pastecbrps(Fl_Widget *w, void *);
 static void menub_quitcbrps(Fl_Widget *w, void *);
 static void menub_makewincbrps(Fl_Widget *w, void *);
 
-Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H, const char*title)
-  : Fl_Window(W,H,title), mainw_rank(0)
+Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
+  : Fl_Window(W,H), mainw_rank(0)
 {
+  memset (mainw_title, 0, sizeof(mainw_title));
   mainw_rank = 1+Fltk_MainWindow_rps::mainw_count++;
   mainw_menub = new Fl_Menu_Bar(0,0,W,mainw_menuheight);
   mainw_menub->add("&App/&Dump", "^d", menub_dumpcbrps);
   mainw_menub->add("&App/e&Xit", "^x", menub_exitcbrps);
   mainw_menub->add("&App/&Quit", "^q", menub_quitcbrps);
-  mainw_menub->add("&App/&Make Window", "^q", menub_makewincbrps);
+  mainw_menub->add("&App/&Make Window", "^q", menub_makewincbrps, this);
   mainw_menub->add("&Edit/&Copy", "^c", menub_copycbrps);
   mainw_menub->add("&Edit/&Paste", "^p", menub_pastecbrps);
+  set_mainw.insert(this);
+  snprintf(mainw_title, sizeof(mainw_title),
+           "RefPerSys %s p%d git %s #%d", rps_hostname(), (int)getpid(),
+           rps_shortgitid, mainw_rank);
+  label (mainw_title);
   RPS_DEBUG_LOG(GUI, "made Fltk_MainWindow_rps @"
                 << (void*)this << "#" << mainw_rank << " mainw_menub@" << (void*)mainw_menub
-                << " title:" << title);
+                << " title:" << mainw_title);
 } // end Fltk_MainWindow_rps::Fltk_MainWindow_rps
 
 
 Fltk_MainWindow_rps::~Fltk_MainWindow_rps()
 {
   RPS_DEBUG_LOG(GUI, "delete Fltk_MainWindow_rps#" << mainw_rank);
+  set_mainw.erase(this);
 } // end Fltk_MainWindow_rps::~Fltk_MainWindow_rps
 
 void
@@ -202,6 +211,8 @@ static void
 menub_makewincbrps(Fl_Widget *w, void *)
 {
   RPS_DEBUG_LOG(GUI, "menub_makewincbrps incomplete");
+  Fltk_MainWindow_rps* freshwin = new Fltk_MainWindow_rps(720, 460);
+  freshwin->show();
 #warning menub_makewincbrps incomplete
 } // end menub_makewincbrps
 
@@ -225,30 +236,22 @@ void
 guifltk_initialize_rps(void)
 {
   Fl::args(fltk_vector_arg_rps.size(), fltk_vector_arg_rps.data());
-  char titlbuf[128];
-  memset(titlbuf, 0, sizeof(titlbuf));
-  snprintf(titlbuf, sizeof(titlbuf), "refpersys-fltk/p%d-%s",
-           (int)getpid(),
-           rps_shortgitid);
-  rps_fltk_mainwin = new Fltk_MainWindow_rps(720, 460, titlbuf);
+  auto mwin = new Fltk_MainWindow_rps(720, 460);
 #warning should create some Fltk_Editor_rps
   // ensure the editor follows the size of the mainwin
-  rps_fltk_mainwin->end();
   int maxw = 3200, maxh = 1300;
   if (maxw > Fl::w())
     maxw = Fl::w()- 40;
   if (maxh > Fl::h())
     maxh = Fl::h() - 40;
-  rps_fltk_mainwin->size_range(/*min dim w&h:*/ 330, 220,
-      /*max dim w&h:*/ maxw, maxh,
-      /*delta w&h:*/ 10, 10);
-  rps_fltk_mainwin->show();
-  RPS_DEBUG_LOG(GUI, "guifltk_initialize_rps: rps_fltk_mainwin@"
-                << (void*)rps_fltk_mainwin
-                << " titlbuf:" << titlbuf << std::endl
+  mwin->size_range(/*min dim w&h:*/ 330, 220,
+                                    /*max dim w&h:*/ maxw, maxh,
+                                    /*delta w&h:*/ 10, 10);
+  mwin->show();
+  RPS_DEBUG_LOG(GUI, "guifltk_initialize_rps: mwin@"
+                << (void*)mwin << "#" << mwin->rank()
                 << RPS_FULL_BACKTRACE_HERE(1, "guifltk_initialize_rps")
                 << std::endl);
-  RPS_DEBUG_LOG(GUI, "rps_fltk_mainwin@" << (void*)rps_fltk_mainwin);
 } // end guifltk_initialize_rps
 
 
