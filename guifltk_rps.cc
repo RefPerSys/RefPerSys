@@ -43,23 +43,68 @@ std::vector<char*> fltk_vector_arg_rps;
 
 bool rps_fltk_gui;
 
-Fl_Window* rps_fltk_mainwin;
+class Fltk_Editor_rps;
 
-class Fltk_Editor_rps : public Fl_Text_Editor {
+class Fltk_MainWindow_rps : public Fl_Window
+{
+  Fl_Menu_Bar *mainw_menub;
+public:
+  virtual void resize(int X, int Y, int W, int H);
+  Fltk_MainWindow_rps(int X, int Y, const char*title);
+  virtual ~Fltk_MainWindow_rps();
+};				// end Fltk_MainWindow_rps
+
+class Fltk_Editor_rps : public Fl_Text_Editor
+{
   Fl_Text_Buffer*ed_tbuf;
 public:
   Fltk_Editor_rps(int X,int Y,int W,int H);
   virtual ~Fltk_Editor_rps();
 };				// end class Fltk_Editor_rps
 
+Fltk_MainWindow_rps* rps_fltk_mainwin;
+
+static void menub_dumpcbrps(Fl_Widget *w, void *);
+static void menub_exitcbrps(Fl_Widget *w, void *);
+static void menub_quitcbrps(Fl_Widget *w, void *);
+
+Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H, const char*title)
+  : Fl_Window(W,H,title)
+{
+  mainw_menub = new Fl_Menu_Bar(0,0,W,H);
+  mainw_menub->add("&App/&Dump", "^d", menub_dumpcbrps);
+  mainw_menub->add("&App/e&Xit", "^x", menub_exitcbrps);
+  mainw_menub->add("&App/&Quit", "^q", menub_quitcbrps);
+  RPS_DEBUG_LOG(GUI, "made Fltk_MainWindow_rps @"
+                << (void*)this << " mainw_menub@" << (void*)mainw_menub
+                << " title:" << title);
+} // end Fltk_MainWindow_rps::Fltk_MainWindow_rps
+
+
+Fltk_MainWindow_rps::~Fltk_MainWindow_rps()
+{
+  RPS_DEBUG_LOG(GUI, "delete Fltk_MainWindow_rps@"
+                << (void*)this);
+} // end Fltk_MainWindow_rps::~Fltk_MainWindow_rps
+
+void
+Fltk_MainWindow_rps::resize(int X, int Y, int W, int H)
+{
+  Fl_Window::resize(X,Y,W,H);
+  RPS_DEBUG_LOG(GUI, "resize Fltk_MainWindow_rps@"
+                << (void*)this << "X="<< X << ", Y="<< Y
+		<< ", W=" << W << ", H=" << H);
+} // end Fltk_MainWindow_rps::resize
 
 Fltk_Editor_rps::Fltk_Editor_rps(int X,int Y,int W,int H)
-  : Fl_Text_Editor(X,Y,W,H), ed_tbuf(nullptr) {
+  : Fl_Text_Editor(X,Y,W,H), ed_tbuf(nullptr)
+{
   ed_tbuf = new Fl_Text_Buffer();
   buffer (ed_tbuf);
 } // end Fltk_Editor_rps::Fltk_Editor_rps
 
-Fltk_Editor_rps::~Fltk_Editor_rps() {
+Fltk_Editor_rps::~Fltk_Editor_rps()
+{
   delete ed_tbuf;
 } // end Fltk_Editor_rps::~Fltk_Editor_rps
 
@@ -141,11 +186,7 @@ guifltk_initialize_rps(void)
   snprintf(titlbuf, sizeof(titlbuf), "refpersys-fltk/p%d-%s",
            (int)getpid(),
            rps_shortgitid);
-  rps_fltk_mainwin = new Fl_Window(720, 460, titlbuf);
-  Fl_Menu_Bar *menub = new Fl_Menu_Bar(0,0,720,20);
-  menub->add("&App/&Dump", "^d", menub_dumpcbrps);
-  menub->add("&App/e&Xit", "^x", menub_exitcbrps);
-  menub->add("&App/&Quit", "^q", menub_quitcbrps);
+  rps_fltk_mainwin = new Fltk_MainWindow_rps(720, 460, titlbuf);
 #warning should create some Fltk_Editor_rps
   // ensure the editor follows the size of the mainwin
   rps_fltk_mainwin->end();
