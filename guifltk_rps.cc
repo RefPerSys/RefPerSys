@@ -47,12 +47,18 @@ class Fltk_Editor_rps;
 
 class Fltk_MainWindow_rps : public Fl_Window
 {
+  static int mainw_count;
   Fl_Menu_Bar *mainw_menub;
+  int mainw_rank;
+  static constexpr int mainw_menuheight = 20;
 public:
   virtual void resize(int X, int Y, int W, int H);
   Fltk_MainWindow_rps(int X, int Y, const char*title);
   virtual ~Fltk_MainWindow_rps();
+  int rank() const { return mainw_rank; };
 };				// end Fltk_MainWindow_rps
+int Fltk_MainWindow_rps::mainw_count;
+
 
 class Fltk_Editor_rps : public Fl_Text_Editor
 {
@@ -69,31 +75,34 @@ static void menub_exitcbrps(Fl_Widget *w, void *);
 static void menub_quitcbrps(Fl_Widget *w, void *);
 
 Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H, const char*title)
-  : Fl_Window(W,H,title)
+  : Fl_Window(W,H,title), mainw_rank(0)
 {
-  mainw_menub = new Fl_Menu_Bar(0,0,W,H);
+  mainw_rank = 1+Fltk_MainWindow_rps::mainw_count++;
+  mainw_menub = new Fl_Menu_Bar(0,0,W,mainw_menuheight);
   mainw_menub->add("&App/&Dump", "^d", menub_dumpcbrps);
   mainw_menub->add("&App/e&Xit", "^x", menub_exitcbrps);
   mainw_menub->add("&App/&Quit", "^q", menub_quitcbrps);
   RPS_DEBUG_LOG(GUI, "made Fltk_MainWindow_rps @"
-                << (void*)this << " mainw_menub@" << (void*)mainw_menub
+                << (void*)this << "#" << mainw_rank << " mainw_menub@" << (void*)mainw_menub
                 << " title:" << title);
 } // end Fltk_MainWindow_rps::Fltk_MainWindow_rps
 
 
 Fltk_MainWindow_rps::~Fltk_MainWindow_rps()
 {
-  RPS_DEBUG_LOG(GUI, "delete Fltk_MainWindow_rps@"
-                << (void*)this);
+  RPS_DEBUG_LOG(GUI, "delete Fltk_MainWindow_rps#" << mainw_rank);
 } // end Fltk_MainWindow_rps::~Fltk_MainWindow_rps
 
 void
 Fltk_MainWindow_rps::resize(int X, int Y, int W, int H)
 {
   Fl_Window::resize(X,Y,W,H);
-  RPS_DEBUG_LOG(GUI, "resize Fltk_MainWindow_rps@"
-                << (void*)this << "X="<< X << ", Y="<< Y
-		<< ", W=" << W << ", H=" << H);
+  if (mainw_menub)
+    mainw_menub->resize(1,1,W,mainw_menuheight);
+  RPS_DEBUG_LOG(GUI, "resize Fltk_MainWindow_rps#" << mainw_rank  << " X="<< X << ", Y="<< Y
+		<< ", W=" << W << ", H=" << H
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainWindow_rps::resize"));
 } // end Fltk_MainWindow_rps::resize
 
 Fltk_Editor_rps::Fltk_Editor_rps(int X,int Y,int W,int H)
