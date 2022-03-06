@@ -200,20 +200,20 @@ menub_quitcbrps(Fl_Widget *w, void *)
 {
   RPS_DEBUG_LOG(GUI, "menub_quitcbrps incomplete");
   // we probably need a dialog to confirm quitting?
+#warning menub_quitcbrps incomplete
   RPS_INFORM("RefPerSys (pid %d on %s shortgit %s) quit",
              (int)getpid(), rps_hostname(), rps_shortgitid);
   exit(EXIT_FAILURE);
-#warning menub_quitcbrps incomplete
 } // end menub_quitcbrps
 
 // This callback is invoked for making a new window
 static void
 menub_makewincbrps(Fl_Widget *w, void *)
 {
-  RPS_DEBUG_LOG(GUI, "menub_makewincbrps incomplete");
   Fltk_MainWindow_rps* freshwin = new Fltk_MainWindow_rps(720, 460);
   freshwin->show();
-#warning menub_makewincbrps incomplete
+  RPS_DEBUG_LOG(GUI, "menub_makewincbrps made freshwin@" << (void*)freshwin
+                << "#" << freshwin->rank());
 } // end menub_makewincbrps
 
 // This callback is invoked for copy
