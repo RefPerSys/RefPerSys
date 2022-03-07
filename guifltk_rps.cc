@@ -36,6 +36,7 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Tile.H>
 #include <FL/Fl_Text_Editor.H>
 
 extern "C" std::string rps_dumpdir_str;
@@ -44,11 +45,23 @@ std::vector<char*> fltk_vector_arg_rps;
 bool rps_fltk_gui;
 
 class Fltk_Editor_rps;
+class Fltk_Browser_rps;
+
+// below its menubar, main windows have a tile
+class Fltk_MainTile_rps : public Fl_Tile
+{
+  /* FIXME: we need to have some Fltk_Editor_rps, some  and two Fltk_Browser_rps sharing the same buffer */
+public:
+#warning very incomplete Fltk_MainTile_rps
+  Fltk_MainTile_rps(int X, int Y, int W, int H);
+  ~Fltk_MainTile_rps();
+};				// end Fltk_MainTile_rps
 
 class Fltk_MainWindow_rps : public Fl_Window
 {
   static int mainw_count;
-  Fl_Menu_Bar *mainw_menub;
+  Fl_Menu_Bar mainw_menub;
+  Fltk_MainTile_rps mainw_tile;
   int mainw_rank;
   char mainw_title[80];
   static constexpr int mainw_menuheight = 20;
@@ -85,24 +98,26 @@ static void menub_quitcbrps(Fl_Widget *w, void *);
 static void menub_makewincbrps(Fl_Widget *w, void *);
 
 Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
-  : Fl_Window(W,H), mainw_rank(0)
+  : Fl_Window(W,H),
+    mainw_menub(1,1,W-2, mainw_menuheight),
+    mainw_tile(1,mainw_menuheight+1, W, H -mainw_menuheight-1),
+    mainw_rank(0)
 {
   memset (mainw_title, 0, sizeof(mainw_title));
   mainw_rank = 1+Fltk_MainWindow_rps::mainw_count++;
-  mainw_menub = new Fl_Menu_Bar(0,0,W,mainw_menuheight);
-  mainw_menub->add("&App/&Dump", "^d", menub_dumpcbrps);
-  mainw_menub->add("&App/e&Xit", "^x", menub_exitcbrps);
-  mainw_menub->add("&App/&Quit", "^q", menub_quitcbrps);
-  mainw_menub->add("&App/&Make Window", "^q", menub_makewincbrps, this);
-  mainw_menub->add("&Edit/&Copy", "^c", menub_copycbrps);
-  mainw_menub->add("&Edit/&Paste", "^p", menub_pastecbrps);
+  mainw_menub.add("&App/&Dump", "^d", menub_dumpcbrps);
+  mainw_menub.add("&App/e&Xit", "^x", menub_exitcbrps);
+  mainw_menub.add("&App/&Quit", "^q", menub_quitcbrps);
+  mainw_menub.add("&App/&Make Window", "^q", menub_makewincbrps, this);
+  mainw_menub.add("&Edit/&Copy", "^c", menub_copycbrps);
+  mainw_menub.add("&Edit/&Paste", "^p", menub_pastecbrps);
   set_mainw.insert(this);
   snprintf(mainw_title, sizeof(mainw_title),
            "RefPerSys %s p%d git %s #%d", rps_hostname(), (int)getpid(),
            rps_shortgitid, mainw_rank);
   label (mainw_title);
   RPS_DEBUG_LOG(GUI, "made Fltk_MainWindow_rps @"
-                << (void*)this << "#" << mainw_rank << " mainw_menub@" << (void*)mainw_menub
+                << (void*)this << "#" << mainw_rank
                 << " title:" << mainw_title);
 } // end Fltk_MainWindow_rps::Fltk_MainWindow_rps
 
@@ -113,12 +128,21 @@ Fltk_MainWindow_rps::~Fltk_MainWindow_rps()
   set_mainw.erase(this);
 } // end Fltk_MainWindow_rps::~Fltk_MainWindow_rps
 
+Fltk_MainTile_rps::Fltk_MainTile_rps(int X, int Y, int W, int H)
+  :  Fl_Tile(X,Y,W,H)
+{
+}; // end Fltk_MainTile_rps::Fltk_MainTile_rps
+
+Fltk_MainTile_rps::~Fltk_MainTile_rps()
+{
+};				// end Fltk_Maintile_rps::~Fltk_MainTile_rps()
+
 void
 Fltk_MainWindow_rps::resize(int X, int Y, int W, int H)
 {
   Fl_Window::resize(X,Y,W,H);
-  if (mainw_menub)
-    mainw_menub->resize(1,1,W,mainw_menuheight);
+  mainw_menub.resize(1,1,W-2,mainw_menuheight);
+  mainw_tile.resize(1,1,W-2,H-mainw_menuheight-1);
   RPS_DEBUG_LOG(GUI, "resize Fltk_MainWindow_rps#" << mainw_rank  << " X="<< X << ", Y="<< Y
                 << ", W=" << W << ", H=" << H
                 << std::endl
@@ -169,7 +193,8 @@ menub_dumpcbrps(Fl_Widget *w, void *)
   RPS_DEBUG_LOG(GUI, "menub_dumpcbrps start");
   char cwdbuf[128];
   memset(cwdbuf, 0, sizeof(cwdbuf));
-  getcwd(cwdbuf, sizeof(cwdbuf)-1);
+  if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+    RPS_FATAL("getcwd failed %m");
   RPS_INFORM("RefPerSys (pid %d on %s shortgit %s) GUI dump into %s\n"
              "... from current directory %s\n",
              (int)getpid(), rps_hostname(), rps_shortgitid,
@@ -183,7 +208,8 @@ menub_exitcbrps(Fl_Widget *w, void *)
 {
   char cwdbuf[128];
   memset(cwdbuf, 0, sizeof(cwdbuf));
-  getcwd(cwdbuf, sizeof(cwdbuf)-1);
+  if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+    RPS_FATAL("getcwd failed %m");
   RPS_DEBUG_LOG(GUI, "menub_exitcbrps incomplete");
   RPS_INFORM("RefPerSys (pid %d on %s shortgit %s) final dump into %s\n"
              "... from current directory %s\n",
