@@ -1912,10 +1912,10 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
       snprintf(debugcntstr, sizeof(debugcntstr), "%ld", ndbg);
     char datebfr[48];
     memset(datebfr, 0, sizeof (datebfr));
-    char debugcstr[16];
+    char debugcstr[24];
     memset (debugcstr, 0, sizeof(debugcstr));
     if (!rps_debug_level(dbgopt).empty())
-      strncpy(debugcstr, rps_debug_level(dbgopt).c_str(), sizeof(debugcstr));
+      strncpy(debugcstr, rps_debug_level(dbgopt).c_str(), sizeof(debugcstr)-1);
     //
 #define RPS_DEBUG_DATE_PERIOD 64
     if (ndbg % RPS_DEBUG_DATE_PERIOD == 0)
