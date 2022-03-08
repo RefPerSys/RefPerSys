@@ -53,8 +53,12 @@ class Fltk_Browser_rps;
 class Fltk_MainTile_rps : public Fl_Tile
 {
   /* FIXME: we need to have some Fltk_Editor_rps (for the main window
-     editor buffer), some and two Fltk_Browser_rps sharing the same
-     main window browser buffer */
+     editor buffer), some text buffer and two Fltk_Browser_rps sharing
+     the same main window browser buffer */
+  Fltk_MainWindow_rps* mtil_mainwin;
+  Fltk_Editor_rps* mtil_editor;
+  Fltk_Browser_rps*mtil_top_browser;
+  Fltk_Browser_rps*mtil_bottom_browser;
 public:
 #warning very incomplete Fltk_MainTile_rps
   Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin, int X, int Y, int W, int H);
@@ -152,13 +156,25 @@ Fltk_MainWindow_rps::~Fltk_MainWindow_rps()
 
 Fltk_MainTile_rps::Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin,
                                      int X, int Y, int W, int H)
-  :  Fl_Tile(X,Y,W,H)
+  :  Fl_Tile(X,Y,W,H), mtil_mainwin(mainwin),
+     mtil_editor(nullptr),
+     mtil_top_browser(nullptr), mtil_bottom_browser(nullptr)
 {
+  mtil_editor = new  Fltk_Editor_rps(mtil_mainwin,X,Y,W,H/3);
+  mtil_top_browser = new Fltk_Browser_rps(mtil_mainwin,X,Y+H/3,W,H/3);
+  mtil_bottom_browser =  new Fltk_Browser_rps(mtil_mainwin,X,Y+2*H/3,W,H/3);
 #warning should create the Fltk_Editor_rps and the two Fltk_Browser_rps
 }; // end Fltk_MainTile_rps::Fltk_MainTile_rps
 
 Fltk_MainTile_rps::~Fltk_MainTile_rps()
 {
+  delete mtil_editor;
+  delete mtil_top_browser;
+  delete mtil_bottom_browser;
+  mtil_mainwin = nullptr;
+  mtil_editor = nullptr;
+  mtil_top_browser = nullptr;
+  mtil_bottom_browser = nullptr;
 };				// end Fltk_Maintile_rps::~Fltk_MainTile_rps()
 
 void
