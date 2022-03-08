@@ -38,29 +38,36 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Tile.H>
 #include <FL/Fl_Text_Editor.H>
+#include <FL/Fl_Text_Display.H>
 
 extern "C" std::string rps_dumpdir_str;
 std::vector<char*> fltk_vector_arg_rps;
 
 bool rps_fltk_gui;
 
+class Fltk_MainWindow_rps;
 class Fltk_Editor_rps;
 class Fltk_Browser_rps;
 
 // below its menubar, main windows have a tile
 class Fltk_MainTile_rps : public Fl_Tile
 {
-  /* FIXME: we need to have some Fltk_Editor_rps, some  and two Fltk_Browser_rps sharing the same buffer */
+  /* FIXME: we need to have some Fltk_Editor_rps (for the main window
+     editor buffer), some and two Fltk_Browser_rps sharing the same
+     main window browser buffer */
 public:
 #warning very incomplete Fltk_MainTile_rps
-  Fltk_MainTile_rps(int X, int Y, int W, int H);
+  Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin, int X, int Y, int W, int H);
   ~Fltk_MainTile_rps();
 };				// end Fltk_MainTile_rps
 
 class Fltk_MainWindow_rps : public Fl_Window
 {
   static int mainw_count;
-  Fl_Menu_Bar mainw_menub;
+  Fl_Menu_Bar mainw_menub; // a menu bar
+  Fl_Text_Buffer mainw_editorbuf; // a buffer for edited commands
+  Fl_Text_Buffer mainw_browserbuf; // another buffer for browsed output, shared by two browser widgets in the tile
+  /* the tile shows one editor, for our mainw_editorbuf and two browsers sharing the same mainw_browserbuf */
   Fltk_MainTile_rps mainw_tile;
   int mainw_rank;
   char mainw_title[80];
@@ -68,6 +75,14 @@ class Fltk_MainWindow_rps : public Fl_Window
   static std::set<Fltk_MainWindow_rps*>set_mainw;
 public:
   virtual void resize(int X, int Y, int W, int H);
+  Fl_Text_Buffer*editor_buffer()
+  {
+    return &mainw_editorbuf;
+  };
+  Fl_Text_Buffer*browser_buffer()
+  {
+    return &mainw_browserbuf;
+  };
   Fltk_MainWindow_rps(int X, int Y);
   virtual ~Fltk_MainWindow_rps();
   int rank() const
@@ -80,14 +95,20 @@ std::set<Fltk_MainWindow_rps*>Fltk_MainWindow_rps::set_mainw;
 
 class Fltk_Editor_rps : public Fl_Text_Editor
 {
-  Fl_Text_Buffer*ed_tbuf;
+  Fltk_MainWindow_rps* editor_mainwin;
 public:
-  Fltk_Editor_rps(int X,int Y,int W,int H);
+  Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin, int X,int Y,int W,int H);
   virtual ~Fltk_Editor_rps();
 };				// end class Fltk_Editor_rps
 
-#warning we probably need a set of main windows...
-Fltk_MainWindow_rps* rps_fltk_mainwin;
+class Fltk_Browser_rps : public Fl_Text_Display
+{
+  Fltk_MainWindow_rps* browser_mainwin;
+public:
+  Fltk_Browser_rps(Fltk_MainWindow_rps*mainwin, int X,int Y,int W,int H);
+  virtual ~Fltk_Browser_rps();
+};				// end class Fltk_Browser_rps
+
 
 static void menub_dumpcbrps(Fl_Widget *w, void *);
 static void menub_exitcbrps(Fl_Widget *w, void *);
@@ -100,7 +121,8 @@ static void menub_makewincbrps(Fl_Widget *w, void *);
 Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
   : Fl_Window(W,H),
     mainw_menub(1,1,W-2, mainw_menuheight),
-    mainw_tile(1,mainw_menuheight+1, W, H -mainw_menuheight-1),
+    mainw_tile(this, 1,mainw_menuheight+1, W, H -mainw_menuheight-1),
+    mainw_editorbuf(),  mainw_browserbuf(),
     mainw_rank(0)
 {
   memset (mainw_title, 0, sizeof(mainw_title));
@@ -128,9 +150,11 @@ Fltk_MainWindow_rps::~Fltk_MainWindow_rps()
   set_mainw.erase(this);
 } // end Fltk_MainWindow_rps::~Fltk_MainWindow_rps
 
-Fltk_MainTile_rps::Fltk_MainTile_rps(int X, int Y, int W, int H)
+Fltk_MainTile_rps::Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin,
+                                     int X, int Y, int W, int H)
   :  Fl_Tile(X,Y,W,H)
 {
+#warning should create the Fltk_Editor_rps and the two Fltk_Browser_rps
 }; // end Fltk_MainTile_rps::Fltk_MainTile_rps
 
 Fltk_MainTile_rps::~Fltk_MainTile_rps()
@@ -149,17 +173,28 @@ Fltk_MainWindow_rps::resize(int X, int Y, int W, int H)
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainWindow_rps::resize"));
 } // end Fltk_MainWindow_rps::resize
 
-Fltk_Editor_rps::Fltk_Editor_rps(int X,int Y,int W,int H)
-  : Fl_Text_Editor(X,Y,W,H), ed_tbuf(nullptr)
+Fltk_Editor_rps::Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,int H)
+  : Fl_Text_Editor(X,Y,W,H),  editor_mainwin(mainwin)
 {
-  ed_tbuf = new Fl_Text_Buffer();
-  buffer (ed_tbuf);
+  assert (mainwin != nullptr);
 } // end Fltk_Editor_rps::Fltk_Editor_rps
 
 Fltk_Editor_rps::~Fltk_Editor_rps()
 {
-  delete ed_tbuf;
+  editor_mainwin = nullptr;
 } // end Fltk_Editor_rps::~Fltk_Editor_rps
+
+
+Fltk_Browser_rps::Fltk_Browser_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,int H)
+  : Fl_Text_Display(X,Y,W,H),  browser_mainwin(mainwin)
+{
+  assert (mainwin != nullptr);
+} // end Fltk_Browser_rps::Fltk_Browser_rps
+
+Fltk_Browser_rps::~Fltk_Browser_rps()
+{
+  browser_mainwin = nullptr;
+} // end Fltk_Browser_rps::~Fltk_Browser_rps
 
 
 int fltk_api_version_rps(void)
@@ -270,9 +305,9 @@ guifltk_initialize_rps(void)
     maxw = Fl::w()- 40;
   if (maxh > Fl::h())
     maxh = Fl::h() - 40;
-  mwin->size_range(/*min dim w&h:*/ 330, 220,
-                                    /*max dim w&h:*/ maxw, maxh,
-                                    /*delta w&h:*/ 10, 10);
+  mwin->size_range(330, 220, //: min dim w & h
+                   maxw, maxh, //: max dim w & h
+                   /*delta w&h:*/ 10, 10);
   mwin->show();
   RPS_DEBUG_LOG(GUI, "guifltk_initialize_rps: mwin@"
                 << (void*)mwin << "#" << mwin->rank()
@@ -284,8 +319,7 @@ guifltk_initialize_rps(void)
 void
 guifltk_run_application_rps (void)
 {
-  RPS_DEBUG_LOG(GUI, "guifltk_run_application_rps: rps_fltk_mainwin@"
-                << (void*)rps_fltk_mainwin << std::endl
+  RPS_DEBUG_LOG(GUI, "guifltk_run_application_rps: " << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "guifltk_run_application_rps")
                 << std::endl);
   Fl::run();
