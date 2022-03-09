@@ -121,6 +121,9 @@ static void menub_copycbrps(Fl_Widget *w, void *);
 static void menub_pastecbrps(Fl_Widget *w, void *);
 static void menub_quitcbrps(Fl_Widget *w, void *);
 static void menub_makewincbrps(Fl_Widget *w, void *);
+static void editorbufmodify_cbrps(int pos, int nInserted, int nDeleted,
+                                  int nRestyled, const char* deletedText,
+                                  void* cbArg);
 
 Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
   : Fl_Window(W,H),
@@ -138,6 +141,7 @@ Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
   mainw_menub.add("&Edit/&Copy", "^c", menub_copycbrps);
   mainw_menub.add("&Edit/&Paste", "^p", menub_pastecbrps);
   set_mainw.insert(this);
+  mainw_editorbuf.add_modify_callback(editorbufmodify_cbrps, this);
   snprintf(mainw_title, sizeof(mainw_title),
            "RefPerSys %s p%d git %s #%d", rps_hostname(), (int)getpid(),
            rps_shortgitid, mainw_rank);
@@ -330,6 +334,25 @@ guifltk_initialize_rps(void)
                 << RPS_FULL_BACKTRACE_HERE(1, "guifltk_initialize_rps")
                 << std::endl);
 } // end guifltk_initialize_rps
+
+static void
+editorbufmodify_cbrps(int pos, int nInserted, int nDeleted,
+                      int nRestyled, const char* deletedText,
+                      void* cbArg)
+{
+  Fltk_MainWindow_rps*mwin = (Fltk_MainWindow_rps*)cbArg;
+  RPS_ASSERT(mwin != nullptr);
+  RPS_DEBUG_LOG(GUI, "editormodify_cbrps pos=" << pos
+                << " nInserted=" << nInserted
+                << " nDeleted=" << nDeleted
+                << " nRestyled=" << nRestyled
+                << std::endl
+                << "... deletedText=" << Rps_QuotedC_String(deletedText)
+                << std::endl
+                << " mwin#" << mwin->rank()
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "editormodify_cbrps"));
+} // end editorbufmodify_cbrps
 
 
 void
