@@ -134,7 +134,7 @@ Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
   mainw_menub.add("&App/&Dump", "^d", menub_dumpcbrps);
   mainw_menub.add("&App/e&Xit", "^x", menub_exitcbrps);
   mainw_menub.add("&App/&Quit", "^q", menub_quitcbrps);
-  mainw_menub.add("&App/&Make Window", "^q", menub_makewincbrps, this);
+  mainw_menub.add("&App/&Make Window", "^m", menub_makewincbrps, this);
   mainw_menub.add("&Edit/&Copy", "^c", menub_copycbrps);
   mainw_menub.add("&Edit/&Paste", "^p", menub_pastecbrps);
   set_mainw.insert(this);
