@@ -146,6 +146,7 @@ Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
            "RefPerSys %s p%d git %s #%d", rps_hostname(), (int)getpid(),
            rps_shortgitid, mainw_rank);
   label (mainw_title);
+  mainw_tile.show();
   RPS_DEBUG_LOG(GUI, "made Fltk_MainWindow_rps @"
                 << (void*)this << "#" << mainw_rank
                 << " title:" << mainw_title);
@@ -165,9 +166,11 @@ Fltk_MainTile_rps::Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin,
      mtil_top_browser(nullptr), mtil_bottom_browser(nullptr)
 {
   mtil_editor = new  Fltk_Editor_rps(mtil_mainwin,X,Y,W,H/3);
+  mtil_editor->show();
   mtil_top_browser = new Fltk_Browser_rps(mtil_mainwin,X,Y+H/3,W,H/3);
   mtil_bottom_browser =  new Fltk_Browser_rps(mtil_mainwin,X,Y+2*H/3,W,H/3);
-#warning should create the Fltk_Editor_rps and the two Fltk_Browser_rps
+  mtil_top_browser->show();
+  mtil_bottom_browser->show();
 }; // end Fltk_MainTile_rps::Fltk_MainTile_rps
 
 Fltk_MainTile_rps::~Fltk_MainTile_rps()
@@ -197,6 +200,7 @@ Fltk_Editor_rps::Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,i
   : Fl_Text_Editor(X,Y,W,H),  editor_mainwin(mainwin)
 {
   assert (mainwin != nullptr);
+  color (FL_DARK_YELLOW);
 } // end Fltk_Editor_rps::Fltk_Editor_rps
 
 Fltk_Editor_rps::~Fltk_Editor_rps()
@@ -318,7 +322,6 @@ guifltk_initialize_rps(void)
 {
   Fl::args(fltk_vector_arg_rps.size(), fltk_vector_arg_rps.data());
   auto mwin = new Fltk_MainWindow_rps(720, 460);
-#warning should create some Fltk_Editor_rps
   // ensure the editor follows the size of the mainwin
   int maxw = 3200, maxh = 1300;
   if (maxw > Fl::w())
