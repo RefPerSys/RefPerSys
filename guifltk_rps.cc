@@ -93,9 +93,20 @@ public:
   {
     return mainw_rank;
   };
+  void flush()
+  {
+    Fl_Window::flush();
+  };
 };				// end Fltk_MainWindow_rps
+
+
+
 int Fltk_MainWindow_rps::mainw_count;
 std::set<Fltk_MainWindow_rps*>Fltk_MainWindow_rps::set_mainw;
+
+
+
+
 
 class Fltk_Editor_rps : public Fl_Text_Editor
 {
@@ -104,6 +115,8 @@ public:
   Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin, int X,int Y,int W,int H);
   virtual ~Fltk_Editor_rps();
 };				// end class Fltk_Editor_rps
+
+
 
 class Fltk_Browser_rps : public Fl_Text_Display
 {
@@ -114,6 +127,9 @@ public:
 };				// end class Fltk_Browser_rps
 
 
+
+
+static void menub_refreshcbrps(Fl_Widget *w, void *);
 static void menub_dumpcbrps(Fl_Widget *w, void *);
 static void menub_exitcbrps(Fl_Widget *w, void *);
 static void menub_quitcbrps(Fl_Widget *w, void *);
@@ -125,6 +141,7 @@ static void editorbufmodify_cbrps(int pos, int nInserted, int nDeleted,
                                   int nRestyled, const char* deletedText,
                                   void* cbArg);
 
+
 Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
   : Fl_Window(W,H),
     mainw_menub(1,1,W-2, mainw_menuheight),
@@ -134,6 +151,7 @@ Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
 {
   memset (mainw_title, 0, sizeof(mainw_title));
   mainw_rank = 1+Fltk_MainWindow_rps::mainw_count++;
+  mainw_menub.add("&App/&Refresh", "^r", menub_refreshcbrps);
   mainw_menub.add("&App/&Dump", "^d", menub_dumpcbrps);
   mainw_menub.add("&App/e&Xit", "^x", menub_exitcbrps);
   mainw_menub.add("&App/&Quit", "^q", menub_quitcbrps);
@@ -159,22 +177,34 @@ Fltk_MainWindow_rps::~Fltk_MainWindow_rps()
   set_mainw.erase(this);
 } // end Fltk_MainWindow_rps::~Fltk_MainWindow_rps
 
+
+
 Fltk_MainTile_rps::Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin,
                                      int X, int Y, int W, int H)
   :  Fl_Tile(X,Y,W,H), mtil_mainwin(mainwin),
      mtil_editor(nullptr),
      mtil_top_browser(nullptr), mtil_bottom_browser(nullptr)
 {
+  RPS_DEBUG_LOG(GUI, "made Fltk_MainTile_rps @" << (void*)this
+		<< " in mainwin#" << mainwin->rank());
   mtil_editor = new  Fltk_Editor_rps(mtil_mainwin,X,Y,W,H/3);
   mtil_editor->show();
   mtil_top_browser = new Fltk_Browser_rps(mtil_mainwin,X,Y+H/3,W,H/3);
   mtil_bottom_browser =  new Fltk_Browser_rps(mtil_mainwin,X,Y+2*H/3,W,H/3);
   mtil_top_browser->show();
+  RPS_DEBUG_LOG(GUI, "Fltk_MainTile_rps @" << (void*)this
+		<< " mainwin#" << mainwin->rank()
+		<< " mtil_editor@" << (void*)mtil_editor
+		<< " mtil_top_browser@" << (void*)mtil_top_browser
+		<< " mtil_bottom_browser@" << (void*)mtil_bottom_browser);
   mtil_bottom_browser->show();
 }; // end Fltk_MainTile_rps::Fltk_MainTile_rps
 
+
 Fltk_MainTile_rps::~Fltk_MainTile_rps()
 {
+  RPS_DEBUG_LOG(GUI, "destroy Fltk_MainTile_rps @" << (void*)this
+		<< " in mainwin#" << mtil_mainwin->rank());
   delete mtil_editor;
   delete mtil_top_browser;
   delete mtil_bottom_browser;
@@ -190,8 +220,11 @@ Fltk_MainWindow_rps::resize(int X, int Y, int W, int H)
   Fl_Window::resize(X,Y,W,H);
   mainw_menub.resize(1,1,W-2,mainw_menuheight);
   mainw_tile.resize(1,1,W-2,H-mainw_menuheight-1);
+  mainw_menub.show();
+  mainw_tile.show();
   RPS_DEBUG_LOG(GUI, "resize Fltk_MainWindow_rps#" << mainw_rank  << " X="<< X << ", Y="<< Y
-                << ", W=" << W << ", H=" << H
+                << ", W=" << W << ", H=" << H << ", "
+                << ((this->shown())?"shown":"hidden")
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainWindow_rps::resize"));
 } // end Fltk_MainWindow_rps::resize
@@ -200,11 +233,15 @@ Fltk_Editor_rps::Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,i
   : Fl_Text_Editor(X,Y,W,H),  editor_mainwin(mainwin)
 {
   assert (mainwin != nullptr);
+  RPS_DEBUG_LOG(GUI, "made Fltk_Editor_rps @" << (void*)this
+		<< " in mainwin#" << mainwin->rank());
   color (FL_DARK_YELLOW);
 } // end Fltk_Editor_rps::Fltk_Editor_rps
 
 Fltk_Editor_rps::~Fltk_Editor_rps()
 {
+  RPS_DEBUG_LOG(GUI, "destroy Fltk_Editor_rps @" << (void*)this
+		<< " in mainwin#" << editor_mainwin->rank());
   editor_mainwin = nullptr;
 } // end Fltk_Editor_rps::~Fltk_Editor_rps
 
@@ -212,11 +249,16 @@ Fltk_Editor_rps::~Fltk_Editor_rps()
 Fltk_Browser_rps::Fltk_Browser_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,int H)
   : Fl_Text_Display(X,Y,W,H),  browser_mainwin(mainwin)
 {
-  assert (mainwin != nullptr);
+  RPS_ASSERT (mainwin != nullptr);
+  RPS_DEBUG_LOG(GUI, "made Fltk_Browser_rps @" << (void*)this
+		<< " in mainwin#" << mainwin->rank());
 } // end Fltk_Browser_rps::Fltk_Browser_rps
 
 Fltk_Browser_rps::~Fltk_Browser_rps()
 {
+  
+  RPS_DEBUG_LOG(GUI, "destroy Fltk_Browser_rps @" << (void*)this
+		<< " in mainwin#" << browser_mainwin->rank());
   browser_mainwin = nullptr;
 } // end Fltk_Browser_rps::~Fltk_Browser_rps
 
@@ -244,6 +286,17 @@ void add_fltk_arg_rps(char*arg)
 } // end add_fltk_arg_rps
 
 
+// This callback is invoked for dumping
+static void
+menub_refreshcbrps(Fl_Widget *w, void *ad)
+{
+  Fltk_MainWindow_rps* win = reinterpret_cast<Fltk_MainWindow_rps*>(ad);
+  RPS_DEBUG_LOG(GUI, "menub_refreshcbrps start win#" << win->rank() << " w@" << (void*)w);
+  win->show();
+  win->flush();
+  RPS_DEBUG_LOG(GUI, "menub_refreshcbrps ending win#" << win->rank());
+  RPS_ASSERT(win != NULL && w != NULL);
+} // end menub_refreshcbrps
 
 // This callback is invoked for dumping
 static void
