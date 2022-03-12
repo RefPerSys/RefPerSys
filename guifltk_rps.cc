@@ -352,7 +352,7 @@ editorbufmodify_cbrps(int pos, int nInserted, int nDeleted,
                 << std::endl
                 << "... deletedText=" << Rps_QuotedC_String(deletedText)
                 << std::endl
-                << " mwin#" << mwin->rank()
+                << " mwin#" << mwin->rank() << ((mwin->shown())?"shown":"hidden")
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "editormodify_cbrps"));
 } // end editorbufmodify_cbrps
