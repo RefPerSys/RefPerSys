@@ -159,6 +159,7 @@ Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
   mainw_menub.add("&Edit/&Copy", "^c", menub_copycbrps);
   mainw_menub.add("&Edit/&Paste", "^p", menub_pastecbrps);
   set_mainw.insert(this);
+  mainw_editorbuf.text("//⁑ editor\n");
   mainw_editorbuf.add_modify_callback(editorbufmodify_cbrps, this);
   snprintf(mainw_title, sizeof(mainw_title),
            "RefPerSys %s p%d git %s #%d", rps_hostname(), (int)getpid(),
@@ -232,7 +233,8 @@ Fltk_MainWindow_rps::resize(int X, int Y, int W, int H)
 Fltk_Editor_rps::Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,int H)
   : Fl_Text_Editor(X,Y,W,H),  editor_mainwin(mainwin)
 {
-  assert (mainwin != nullptr);
+  RPS_ASSERT (mainwin != nullptr);
+  buffer (mainwin->editor_buffer());
   RPS_DEBUG_LOG(GUI, "made Fltk_Editor_rps @" << (void*)this
 		<< " in mainwin#" << mainwin->rank());
   color (FL_DARK_YELLOW);
