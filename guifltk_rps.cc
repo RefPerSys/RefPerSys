@@ -160,6 +160,7 @@ Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
   mainw_menub.add("&Edit/&Paste", "^p", menub_pastecbrps);
   set_mainw.insert(this);
   mainw_editorbuf.text("//⁑ editor\n");
+  mainw_browserbuf.text("▼\n");
   mainw_editorbuf.add_modify_callback(editorbufmodify_cbrps, this);
   snprintf(mainw_title, sizeof(mainw_title),
            "RefPerSys %s p%d git %s #%d", rps_hostname(), (int)getpid(),
@@ -255,10 +256,11 @@ Fltk_Browser_rps::Fltk_Browser_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W
   RPS_DEBUG_LOG(GUI, "made Fltk_Browser_rps @" << (void*)this << " "
                 << (istop?"top":"bottom")
                 << " in mainwin#" << mainwin->rank());
+  buffer (mainwin->browser_buffer());
   if (istop)
-    color (fl_lighter(fl_lighter(FL_CYAN)));
+    color (fl_lighter(fl_lighter(fl_lighter(FL_CYAN))));
   else
-    color (fl_lighter(fl_lighter(FL_MAGENTA)));
+    color (fl_lighter(fl_lighter(fl_lighter(FL_MAGENTA))));
 } // end Fltk_Browser_rps::Fltk_Browser_rps
 
 Fltk_Browser_rps::~Fltk_Browser_rps()
