@@ -151,7 +151,7 @@ Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
 {
   memset (mainw_title, 0, sizeof(mainw_title));
   mainw_rank = 1+Fltk_MainWindow_rps::mainw_count++;
-  mainw_menub.add("&App/&Refresh", "^r", menub_refreshcbrps);
+  mainw_menub.add("&App/&Refresh", "^r", menub_refreshcbrps, this);
   mainw_menub.add("&App/&Dump", "^d", menub_dumpcbrps);
   mainw_menub.add("&App/e&Xit", "^x", menub_exitcbrps);
   mainw_menub.add("&App/&Quit", "^q", menub_quitcbrps);
