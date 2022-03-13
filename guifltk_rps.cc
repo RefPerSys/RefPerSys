@@ -122,7 +122,7 @@ class Fltk_Browser_rps : public Fl_Text_Display
 {
   Fltk_MainWindow_rps* browser_mainwin;
 public:
-  Fltk_Browser_rps(Fltk_MainWindow_rps*mainwin, int X,int Y,int W,int H);
+  Fltk_Browser_rps(Fltk_MainWindow_rps*mainwin, int X,int Y,int W,int H, bool top);
   virtual ~Fltk_Browser_rps();
 };				// end class Fltk_Browser_rps
 
@@ -187,17 +187,17 @@ Fltk_MainTile_rps::Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin,
      mtil_top_browser(nullptr), mtil_bottom_browser(nullptr)
 {
   RPS_DEBUG_LOG(GUI, "made Fltk_MainTile_rps @" << (void*)this
-		<< " in mainwin#" << mainwin->rank());
+                << " in mainwin#" << mainwin->rank());
   mtil_editor = new  Fltk_Editor_rps(mtil_mainwin,X,Y,W,H/3);
   mtil_editor->show();
-  mtil_top_browser = new Fltk_Browser_rps(mtil_mainwin,X,Y+H/3,W,H/3);
-  mtil_bottom_browser =  new Fltk_Browser_rps(mtil_mainwin,X,Y+2*H/3,W,H/3);
+  mtil_top_browser = new Fltk_Browser_rps(mtil_mainwin,X,Y+H/3,W,H/3, true);
+  mtil_bottom_browser =  new Fltk_Browser_rps(mtil_mainwin,X,Y+2*H/3,W,H/3, false);
   mtil_top_browser->show();
   RPS_DEBUG_LOG(GUI, "Fltk_MainTile_rps @" << (void*)this
-		<< " mainwin#" << mainwin->rank()
-		<< " mtil_editor@" << (void*)mtil_editor
-		<< " mtil_top_browser@" << (void*)mtil_top_browser
-		<< " mtil_bottom_browser@" << (void*)mtil_bottom_browser);
+                << " mainwin#" << mainwin->rank()
+                << " mtil_editor@" << (void*)mtil_editor
+                << " mtil_top_browser@" << (void*)mtil_top_browser
+                << " mtil_bottom_browser@" << (void*)mtil_bottom_browser);
   mtil_bottom_browser->show();
 }; // end Fltk_MainTile_rps::Fltk_MainTile_rps
 
@@ -205,7 +205,7 @@ Fltk_MainTile_rps::Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin,
 Fltk_MainTile_rps::~Fltk_MainTile_rps()
 {
   RPS_DEBUG_LOG(GUI, "destroy Fltk_MainTile_rps @" << (void*)this
-		<< " in mainwin#" << mtil_mainwin->rank());
+                << " in mainwin#" << mtil_mainwin->rank());
   delete mtil_editor;
   delete mtil_top_browser;
   delete mtil_bottom_browser;
@@ -220,7 +220,7 @@ Fltk_MainWindow_rps::resize(int X, int Y, int W, int H)
 {
   Fl_Window::resize(X,Y,W,H);
   mainw_menub.resize(1,1,W-2,mainw_menuheight);
-  mainw_tile.resize(1,1,W-2,H-mainw_menuheight-1);
+  mainw_tile.resize(1,mainw_menuheight,W-2,H-mainw_menuheight-1);
   mainw_menub.show();
   mainw_tile.show();
   RPS_DEBUG_LOG(GUI, "resize Fltk_MainWindow_rps#" << mainw_rank  << " X="<< X << ", Y="<< Y
@@ -236,31 +236,36 @@ Fltk_Editor_rps::Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,i
   RPS_ASSERT (mainwin != nullptr);
   buffer (mainwin->editor_buffer());
   RPS_DEBUG_LOG(GUI, "made Fltk_Editor_rps @" << (void*)this
-		<< " in mainwin#" << mainwin->rank());
-  color (FL_DARK_YELLOW);
+                << " in mainwin#" << mainwin->rank());
+  color (fl_lighter(fl_lighter(FL_YELLOW)));
 } // end Fltk_Editor_rps::Fltk_Editor_rps
 
 Fltk_Editor_rps::~Fltk_Editor_rps()
 {
   RPS_DEBUG_LOG(GUI, "destroy Fltk_Editor_rps @" << (void*)this
-		<< " in mainwin#" << editor_mainwin->rank());
+                << " in mainwin#" << editor_mainwin->rank());
   editor_mainwin = nullptr;
 } // end Fltk_Editor_rps::~Fltk_Editor_rps
 
 
-Fltk_Browser_rps::Fltk_Browser_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,int H)
+Fltk_Browser_rps::Fltk_Browser_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,int H, bool istop)
   : Fl_Text_Display(X,Y,W,H),  browser_mainwin(mainwin)
 {
   RPS_ASSERT (mainwin != nullptr);
-  RPS_DEBUG_LOG(GUI, "made Fltk_Browser_rps @" << (void*)this
-		<< " in mainwin#" << mainwin->rank());
+  RPS_DEBUG_LOG(GUI, "made Fltk_Browser_rps @" << (void*)this << " "
+                << (istop?"top":"bottom")
+                << " in mainwin#" << mainwin->rank());
+  if (istop)
+    color (fl_lighter(fl_lighter(FL_CYAN)));
+  else
+    color (fl_lighter(fl_lighter(FL_MAGENTA)));
 } // end Fltk_Browser_rps::Fltk_Browser_rps
 
 Fltk_Browser_rps::~Fltk_Browser_rps()
 {
-  
+
   RPS_DEBUG_LOG(GUI, "destroy Fltk_Browser_rps @" << (void*)this
-		<< " in mainwin#" << browser_mainwin->rank());
+                << " in mainwin#" << browser_mainwin->rank());
   browser_mainwin = nullptr;
 } // end Fltk_Browser_rps::~Fltk_Browser_rps
 
