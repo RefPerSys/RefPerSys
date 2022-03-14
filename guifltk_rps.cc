@@ -113,6 +113,7 @@ class Fltk_Editor_rps : public Fl_Text_Editor
   Fltk_MainWindow_rps* editor_mainwin;
 public:
   Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin, int X,int Y,int W,int H);
+  Fltk_MainWindow_rps* mainwin() { return editor_mainwin; };
   virtual ~Fltk_Editor_rps();
 };				// end class Fltk_Editor_rps
 
@@ -129,6 +130,7 @@ public:
 
 
 
+static  int editor_keyfuncbrps(int key, Fl_Text_Editor*ed);
 static void menub_refreshcbrps(Fl_Widget *w, void *);
 static void menub_dumpcbrps(Fl_Widget *w, void *);
 static void menub_exitcbrps(Fl_Widget *w, void *);
@@ -240,6 +242,20 @@ Fltk_Editor_rps::Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,i
                 << " in mainwin#" << mainwin->rank());
   color (fl_lighter(fl_lighter(FL_YELLOW)));
 } // end Fltk_Editor_rps::Fltk_Editor_rps
+
+
+// A key binding for our editor. Should handle at least the TAB key for autocompletion.
+int
+editor_keyfuncbrps(int key, Fl_Text_Editor*txed)
+{
+  RPS_ASSERT(txed != nullptr);
+  Fltk_Editor_rps* ed = dynamic_cast<Fltk_Editor_rps*>(txed);
+  RPS_DEBUG_LOG(GUI, "editor_keyfuncbrps key="
+		<< key << " ed@" << (void*) ed
+		<< " in mainwin#" << ed->mainwin()->rank());
+#warning unimplemented and unbound editor_keyfuncbrps
+} // end editor_keyfuncbrps
+
 
 Fltk_Editor_rps::~Fltk_Editor_rps()
 {
@@ -414,7 +430,8 @@ editorbufmodify_cbrps(int pos, int nInserted, int nDeleted,
                 << std::endl
                 << "... deletedText=" << Rps_QuotedC_String(deletedText)
                 << std::endl
-                << " mwin#" << mwin->rank() << ((mwin->shown())?"shown":"hidden")
+                << " mwin#" << mwin->rank() 
+		<< ' ' << ((mwin->shown())?"shown":"hidden")
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "editormodify_cbrps"));
 } // end editorbufmodify_cbrps
