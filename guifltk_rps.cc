@@ -113,7 +113,16 @@ class Fltk_Editor_rps : public Fl_Text_Editor
   Fltk_MainWindow_rps* editor_mainwin;
 public:
   Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin, int X,int Y,int W,int H);
-  Fltk_MainWindow_rps* mainwin() { return editor_mainwin; };
+  Fltk_MainWindow_rps* mainwin()
+  {
+    return editor_mainwin;
+  };
+  int text_editor_handle(int event)
+  {
+    return Fl_Text_Editor::handle(event);
+  };
+  //// https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
+  virtual int handle(int event);
   virtual ~Fltk_Editor_rps();
 };				// end class Fltk_Editor_rps
 
@@ -241,7 +250,26 @@ Fltk_Editor_rps::Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,i
   RPS_DEBUG_LOG(GUI, "made Fltk_Editor_rps @" << (void*)this
                 << " in mainwin#" << mainwin->rank());
   color (fl_lighter(fl_lighter(FL_YELLOW)));
+  add_key_binding(/*key:*/0,
+                          /*state:*/0,
+                          editor_keyfuncbrps);
+
 } // end Fltk_Editor_rps::Fltk_Editor_rps
+
+
+
+int
+Fltk_Editor_rps::handle(int event)
+{
+  RPS_DEBUG_LOG(GUI, "handle event=" << event
+                <<  std::endl
+                << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
+  // https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
+  int h = text_editor_handle(event);
+  RPS_DEBUG_LOG(GUI, "handle event=" << event << " h=" << h);
+  return h;
+} // end Fltk_Editor_rps::handle
+
 
 
 // A key binding for our editor. Should handle at least the TAB key for autocompletion.
@@ -251,8 +279,10 @@ editor_keyfuncbrps(int key, Fl_Text_Editor*txed)
   RPS_ASSERT(txed != nullptr);
   Fltk_Editor_rps* ed = dynamic_cast<Fltk_Editor_rps*>(txed);
   RPS_DEBUG_LOG(GUI, "editor_keyfuncbrps key="
-		<< key << " ed@" << (void*) ed
-		<< " in mainwin#" << ed->mainwin()->rank());
+                << key << " ed@" << (void*) ed
+                << " in mainwin#" << ed->mainwin()->rank());
+  // should return 1 to accept the key....
+  return 0;
 #warning unimplemented and unbound editor_keyfuncbrps
 } // end editor_keyfuncbrps
 
@@ -430,8 +460,8 @@ editorbufmodify_cbrps(int pos, int nInserted, int nDeleted,
                 << std::endl
                 << "... deletedText=" << Rps_QuotedC_String(deletedText)
                 << std::endl
-                << " mwin#" << mwin->rank() 
-		<< ' ' << ((mwin->shown())?"shown":"hidden")
+                << " mwin#" << mwin->rank()
+                << ' ' << ((mwin->shown())?"shown":"hidden")
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "editormodify_cbrps"));
 } // end editorbufmodify_cbrps
