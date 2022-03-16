@@ -279,18 +279,50 @@ Fltk_Editor_rps::handle(int event)
                 <<  std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
   // https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
-  int h = text_editor_handle(event);
+  int h = 0;
   if (event == FL_KEYUP || event == FL_KEYDOWN)
     {
+      const char*ktext = Fl::event_text();
+      bool specialkey = false;
+      if (Fl::event_key() == FL_Escape)
+        {
+          ktext = "ESC";
+          specialkey = true;
+        }
+      else if (Fl::event_key() == FL_Tab)
+        {
+          ktext = "TAB";
+          specialkey = true;
+        }
+      else if (Fl::event_key() == FL_BackSpace)
+        {
+          ktext = "BACKSPACE";
+          specialkey = false;
+        }
+      else if (Fl::event_key() > FL_F && Fl::event_key() < FL_F+10)
+        {
+          char kbuf[8];
+          memset (kbuf, 0, sizeof(kbuf));
+          snprintf(kbuf, sizeof(kbuf), "F%d", Fl::event_key() - FL_F);
+          specialkey = true;
+          ktext = kbuf;
+        }
+      if (!specialkey)
+        h = text_editor_handle(event);
+      char hexk[8];
+      memset (hexk, 0, sizeof(hexk));
+      snprintf(hexk, sizeof(hexk), "%#x", Fl::event_key());
       RPS_DEBUG_LOG(GUI, "handled keyboard event=" << event
                     << ":" <<  event_name_fltkrps(event)
-                    << " text='" << Rps_QuotedC_String(Fl::event_text())
-                    << "' key=" << Fl::event_key()
+                    << " text='" << Rps_QuotedC_String(ktext)
+                    << "' key=" << Fl::event_key() << "=" << hexk
                     << ((isprint( Fl::event_key()))?"=":"!")
                     << ((isprint( Fl::event_key()))?((char) Fl::event_key()):' ')
+                    << " insertpos:" << insert_position()
                     << " -> h=" << h
                     << std::endl);
     }
+  else  h = text_editor_handle(event);
   RPS_DEBUG_LOG(GUI, "handled event=" << event
                 << ":" <<  event_name_fltkrps(event) << " -> h=" << h
                 << std::endl);
