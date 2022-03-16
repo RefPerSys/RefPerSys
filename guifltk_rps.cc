@@ -39,9 +39,11 @@
 #include <FL/Fl_Tile.H>
 #include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Text_Display.H>
+#include <FL/names.h>
 
 extern "C" std::string rps_dumpdir_str;
 std::vector<char*> fltk_vector_arg_rps;
+extern const char*event_name_fltkrps(int event);
 
 bool rps_fltk_gui;
 
@@ -257,11 +259,21 @@ Fltk_Editor_rps::Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,i
 } // end Fltk_Editor_rps::Fltk_Editor_rps
 
 
+const char*
+event_name_fltkrps(int event) {
+  if (event >= 0 && event < sizeof(fl_eventnames)/sizeof(fl_eventnames[0]))
+    return fl_eventnames[event];
+  static char evnambuf[32];
+  memset (evnambuf, 0, sizeof(evnambuf));
+  snprintf(evnambuf, sizeof(evnambuf), "FlStrangeEvent%d", event);
+  return evnambuf;
+} // end event_name_fltkrps
+
 
 int
 Fltk_Editor_rps::handle(int event)
 {
-  RPS_DEBUG_LOG(GUI, "handle event=" << event
+  RPS_DEBUG_LOG(GUI, "handle event=" << event << ":" << event_name_fltkrps(event)
                 <<  std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
   // https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
