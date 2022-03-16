@@ -278,7 +278,9 @@ Fltk_Editor_rps::handle(int event)
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
   // https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
   int h = text_editor_handle(event);
-  RPS_DEBUG_LOG(GUI, "handle event=" << event << " h=" << h);
+  RPS_DEBUG_LOG(GUI, "handled event=" << event
+		<< ":" <<  event_name_fltkrps(event) << " -> h=" << h
+		<< std::endl);
   return h;
 } // end Fltk_Editor_rps::handle
 
