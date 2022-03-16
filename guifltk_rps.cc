@@ -40,6 +40,7 @@
 #include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Text_Display.H>
 #include <FL/names.h>
+#include <ctype.h>
 
 extern "C" std::string rps_dumpdir_str;
 std::vector<char*> fltk_vector_arg_rps;
@@ -260,7 +261,8 @@ Fltk_Editor_rps::Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,i
 
 
 const char*
-event_name_fltkrps(int event) {
+event_name_fltkrps(int event)
+{
   if (event >= 0 && event < sizeof(fl_eventnames)/sizeof(fl_eventnames[0]))
     return fl_eventnames[event];
   static char evnambuf[32];
@@ -278,9 +280,20 @@ Fltk_Editor_rps::handle(int event)
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
   // https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
   int h = text_editor_handle(event);
+  if (event == FL_KEYUP || event == FL_KEYDOWN)
+    {
+      RPS_DEBUG_LOG(GUI, "handled keyboard event=" << event
+                    << ":" <<  event_name_fltkrps(event)
+                    << " text='" << Rps_QuotedC_String(Fl::event_text())
+                    << "' key=" << Fl::event_key()
+                    << ((isprint( Fl::event_key()))?"=":"!")
+                    << ((isprint( Fl::event_key()))?((char) Fl::event_key()):' ')
+                    << " -> h=" << h
+                    << std::endl);
+    }
   RPS_DEBUG_LOG(GUI, "handled event=" << event
-		<< ":" <<  event_name_fltkrps(event) << " -> h=" << h
-		<< std::endl);
+                << ":" <<  event_name_fltkrps(event) << " -> h=" << h
+                << std::endl);
   return h;
 } // end Fltk_Editor_rps::handle
 
