@@ -139,7 +139,11 @@ class RpsFltk_EditorSource : public Rps_TokenSource
 {
   Fltk_Editor_rps* edsrc_editor;
   int edsrc_position;
+protected:
   virtual bool get_line();
+public:
+  RpsFltk_EditorSource(Fltk_Editor_rps*editor);
+  virtual ~RpsFltk_EditorSource();
 };				// end RpsFltk_EditorSource
 
 class Fltk_Browser_rps : public Fl_Text_Display
@@ -270,6 +274,20 @@ Fltk_Editor_rps::Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,i
 
 } // end Fltk_Editor_rps::Fltk_Editor_rps
 
+RpsFltk_EditorSource::RpsFltk_EditorSource(Fltk_Editor_rps*editor)
+  : Rps_TokenSource("*editor*"), edsrc_editor(editor), edsrc_position(0)
+{
+  RPS_ASSERT(editor);
+  RPS_ASSERT(editor->mainwin());
+  char nambuf[32];
+  memset(nambuf, 0, sizeof(nambuf));
+  snprintf(nambuf, sizeof(nambuf), "editor#%d", editor->mainwin()->rank());
+  set_name(std::string{nambuf});
+} // end RpsFltk_EditorSource::RpsFltk_EditorSource
+
+RpsFltk_EditorSource::~RpsFltk_EditorSource()
+{
+} // end RpsFltk_EditorSource::~RpsFltk_EditorSource
 
 const char*
 event_name_fltkrps(int event)
