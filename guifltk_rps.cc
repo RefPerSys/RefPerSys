@@ -51,6 +51,7 @@ bool rps_fltk_gui;
 class Fltk_MainWindow_rps;
 class Fltk_Editor_rps;
 class Fltk_Browser_rps;
+class RpsFltk_EditorSource;
 
 // below its menubar, main windows have a tile
 class Fltk_MainTile_rps : public Fl_Tile
@@ -114,6 +115,7 @@ std::set<Fltk_MainWindow_rps*>Fltk_MainWindow_rps::set_mainw;
 class Fltk_Editor_rps : public Fl_Text_Editor
 {
   Fltk_MainWindow_rps* editor_mainwin;
+  friend class RpsFltk_EditorSource;
 public:
   Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin, int X,int Y,int W,int H);
   Fltk_MainWindow_rps* mainwin()
@@ -126,10 +128,19 @@ public:
   };
   //// https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
   virtual int handle(int event);
+  /* The prettify function is colorizing and syntax-hightlighting the
+     editor buffer. */
+  void prettify(Rps_CallFrame*caller=nullptr);
   virtual ~Fltk_Editor_rps();
 };				// end class Fltk_Editor_rps
 
 
+class RpsFltk_EditorSource : public Rps_TokenSource
+{
+  Fltk_Editor_rps* edsrc_editor;
+  int edsrc_position;
+  virtual bool get_line();
+};				// end RpsFltk_EditorSource
 
 class Fltk_Browser_rps : public Fl_Text_Display
 {
@@ -271,6 +282,18 @@ event_name_fltkrps(int event)
   return evnambuf;
 } // end event_name_fltkrps
 
+bool
+RpsFltk_EditorSource::get_line(void)
+{
+  RPS_FATAL("unimplemented RpsFltk_EditorSource");
+#warning unimplemented RpsFltk_EditorSource::get_line
+  /***
+   * This function should get line by line from the editor's
+   * buffer. So fill toksrc_linebuf and update toksrc_line and
+   * toksrc_col
+   ***/
+  return false;
+} // end RpsFltk_EditorSource::get_line
 
 int
 Fltk_Editor_rps::handle(int event)
@@ -319,7 +342,7 @@ Fltk_Editor_rps::handle(int event)
                     << ((isprint( Fl::event_key()))?"=":"!")
                     << ((isprint( Fl::event_key()))?((char) Fl::event_key()):' ')
                     << " insertpos:" << insert_position()
-		    << " line:" << buffer()->count_lines(0, insert_position())
+                    << " line:" << buffer()->count_lines(0, insert_position())
                     << " -> h=" << h
                     << std::endl);
     }
@@ -331,6 +354,17 @@ Fltk_Editor_rps::handle(int event)
 } // end Fltk_Editor_rps::handle
 
 
+
+/* The prettify function is colorizing and syntax-hightlighting the
+   editor buffer. */
+void
+Fltk_Editor_rps::prettify(Rps_CallFrame*caller)
+{
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_LOCALFRAME(nullptr,caller,
+                 Rps_LexTokenValue tokval);
+#warning incomplete Fltk_Editor_rps::prettify
+} // end Fltk_Editor_rps::prettify
 
 // A key binding for our editor. Should handle at least the TAB key for autocompletion.
 int
