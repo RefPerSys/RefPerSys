@@ -319,6 +319,7 @@ Fltk_Editor_rps::handle(int event)
                     << ((isprint( Fl::event_key()))?"=":"!")
                     << ((isprint( Fl::event_key()))?((char) Fl::event_key()):' ')
                     << " insertpos:" << insert_position()
+		    << " line:" << buffer()->count_lines(0, insert_position())
                     << " -> h=" << h
                     << std::endl);
     }
