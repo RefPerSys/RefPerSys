@@ -101,6 +101,7 @@ public:
   {
     Fl_Window::flush();
   };
+  virtual int handle(int event);
 };				// end Fltk_MainWindow_rps
 
 
@@ -202,6 +203,17 @@ Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
 } // end Fltk_MainWindow_rps::Fltk_MainWindow_rps
 
 
+int
+Fltk_MainWindow_rps::handle(int ev)
+{
+  RPS_DEBUG_LOG(GUI, "Fltk_MainWindow_rps::handle ev=" << ev
+		<< ":" << event_name_fltkrps(ev));
+  int h = Fl_Window::handle(ev);
+  usleep (1000);
+  RPS_DEBUG_LOG(GUI, "end Fltk_MainWindow_rps::handle ev=" << ev 
+		<< ":" << event_name_fltkrps(ev)
+		<< " h=" << h << std::endl);
+} // end Fltk_MainWindow_rps::handle
 
 Fltk_MainWindow_rps::~Fltk_MainWindow_rps()
 {
@@ -326,6 +338,9 @@ Fltk_Editor_rps::handle(int event)
 {
   // https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
   int h = 0;
+  RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle event=" << event
+		<< ":" <<  event_name_fltkrps(event)
+		<< RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
   if (event == FL_KEYUP || event == FL_KEYDOWN)
     {
       const char*ktext = Fl::event_text();
@@ -372,7 +387,7 @@ Fltk_Editor_rps::handle(int event)
   else
     {
 
-      RPS_DEBUG_LOG(GUI, "handle non-key event=" << event << ":" << event_name_fltkrps(event)
+      RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle non-key event=" << event << ":" << event_name_fltkrps(event)
                     <<  std::endl
                     << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
     }
