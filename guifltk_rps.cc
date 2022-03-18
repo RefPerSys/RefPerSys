@@ -202,6 +202,7 @@ Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
 } // end Fltk_MainWindow_rps::Fltk_MainWindow_rps
 
 
+
 Fltk_MainWindow_rps::~Fltk_MainWindow_rps()
 {
   RPS_DEBUG_LOG(GUI, "delete Fltk_MainWindow_rps#" << mainw_rank);
@@ -248,6 +249,9 @@ Fltk_MainTile_rps::~Fltk_MainTile_rps()
 void
 Fltk_MainWindow_rps::resize(int X, int Y, int W, int H)
 {
+  RPS_DEBUG_LOG(GUI, "start resize Fltk_MainWindow_rps#" << mainw_rank  << " X="<< X << ", Y="<< Y
+                << ", W=" << W << ", H=" << H << ", "
+                << ((this->shown())?"shown":"hidden"));
   Fl_Window::resize(X,Y,W,H);
   mainw_menub.resize(1,1,W-2,mainw_menuheight);
   mainw_tile.resize(1,mainw_menuheight,W-2,H-mainw_menuheight-1);
@@ -257,7 +261,8 @@ Fltk_MainWindow_rps::resize(int X, int Y, int W, int H)
                 << ", W=" << W << ", H=" << H << ", "
                 << ((this->shown())?"shown":"hidden")
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainWindow_rps::resize"));
+                << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainWindow_rps::resize")
+                << std::endl);
 } // end Fltk_MainWindow_rps::resize
 
 Fltk_Editor_rps::Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,int H)
@@ -319,9 +324,6 @@ RpsFltk_EditorSource::get_line(void)
 int
 Fltk_Editor_rps::handle(int event)
 {
-  RPS_DEBUG_LOG(GUI, "handle event=" << event << ":" << event_name_fltkrps(event)
-                <<  std::endl
-                << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
   // https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
   int h = 0;
   if (event == FL_KEYUP || event == FL_KEYDOWN)
@@ -367,7 +369,13 @@ Fltk_Editor_rps::handle(int event)
                     << " -> h=" << h
                     << std::endl);
     }
-  else  h = text_editor_handle(event);
+  else
+    {
+
+      RPS_DEBUG_LOG(GUI, "handle non-key event=" << event << ":" << event_name_fltkrps(event)
+                    <<  std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
+    }
   RPS_DEBUG_LOG(GUI, "handled event=" << event
                 << ":" <<  event_name_fltkrps(event) << " -> h=" << h
                 << std::endl);
