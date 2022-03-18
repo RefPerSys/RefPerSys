@@ -51,12 +51,13 @@ rps_curl_version(void)
   std::string res("CURL ");
   char* cv = curl_version ();
   int nc = 0;
-  for (char *pc = cv; *pc; pc++) {
-     if (isspace(*pc)) 
+  for (char *pc = cv; *pc; pc++)
+    {
+      if (isspace(*pc))
         res += "\n\t";
-     else
+      else
         res += *pc;
-  }
+    }
   res += " git ";
   res += curlgitbuf;
   return res;
