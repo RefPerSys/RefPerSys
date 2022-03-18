@@ -45,14 +45,20 @@ const char rps_curl_date[]= __DATE__;
 std::string
 rps_curl_version(void)
 {
-  char curlgitbuf[64];
+  char curlgitbuf[16];
   memset (curlgitbuf, 0, sizeof(curlgitbuf));
   strncpy(curlgitbuf, rps_curl_gitid, 3*sizeof(curlgitbuf)/4);
   std::string res("CURL ");
-  res += "git ";
+  char* cv = curl_version ();
+  int nc = 0;
+  for (char *pc = cv; *pc; pc++) {
+     if (isspace(*pc)) 
+        res += "\n\t";
+     else
+        res += *pc;
+  }
+  res += " git ";
   res += curlgitbuf;
-  res += "; ";
-  res += curl_version();
   return res;
 } // end rps_curl_version
 
