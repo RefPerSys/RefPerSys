@@ -303,6 +303,9 @@ event_name_fltkrps(int event)
 bool
 RpsFltk_EditorSource::get_line(void)
 {
+  RPS_ASSERT(edsrc_editor != nullptr);
+  RPS_ASSERT(edsrc_position > 0);
+  /// should get the FLTK text buffer...
   RPS_FATAL("unimplemented RpsFltk_EditorSource");
 #warning unimplemented RpsFltk_EditorSource::get_line
   /***
