@@ -271,7 +271,9 @@ Fltk_MainTile_rps::resize(int X, int Y, int W, int H)
                 << " resize X=" << X
                 << ", Y=" << Y
                 << ", W=" << W
-                << ", H=" << H);
+                << ", H=" << H
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainTile_rps::resize"));
 } // end Fltk_MainTile_rps::resize
 
 Fltk_MainTile_rps::~Fltk_MainTile_rps()
