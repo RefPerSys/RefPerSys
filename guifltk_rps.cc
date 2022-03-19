@@ -63,8 +63,14 @@ class Fltk_MainTile_rps : public Fl_Tile
   Fltk_Editor_rps* mtil_editor;
   Fltk_Browser_rps*mtil_top_browser;
   Fltk_Browser_rps*mtil_bottom_browser;
+  static constexpr double mtil_min_ratio = 0.1;
+  static constexpr double mtil_max_ratio = 1.0 - mtil_min_ratio;
+  static constexpr double mtil_initial_ratio = 1.0 / 3.0;
+  double mtil_ratio_editor; // > mtil_min_ratio and mtil_max_ratio;
+  double mtil_ratio_top; //  > mtil_min_ratio and mtil_max_ratio;
 public:
 #warning very incomplete Fltk_MainTile_rps
+  virtual void resize(int X, int Y, int W, int H);
   Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin, int X, int Y, int W, int H);
   ~Fltk_MainTile_rps();
 };				// end Fltk_MainTile_rps
@@ -207,12 +213,12 @@ int
 Fltk_MainWindow_rps::handle(int ev)
 {
   RPS_DEBUG_LOG(GUI, "Fltk_MainWindow_rps::handle ev=" << ev
-		<< ":" << event_name_fltkrps(ev));
+                << ":" << event_name_fltkrps(ev));
   int h = Fl_Window::handle(ev);
   usleep (1000);
-  RPS_DEBUG_LOG(GUI, "end Fltk_MainWindow_rps::handle ev=" << ev 
-		<< ":" << event_name_fltkrps(ev)
-		<< " h=" << h << std::endl);
+  RPS_DEBUG_LOG(GUI, "end Fltk_MainWindow_rps::handle ev=" << ev
+                << ":" << event_name_fltkrps(ev)
+                << " h=" << h << std::endl);
 } // end Fltk_MainWindow_rps::handle
 
 Fltk_MainWindow_rps::~Fltk_MainWindow_rps()
@@ -227,14 +233,26 @@ Fltk_MainTile_rps::Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin,
                                      int X, int Y, int W, int H)
   :  Fl_Tile(X,Y,W,H), mtil_mainwin(mainwin),
      mtil_editor(nullptr),
-     mtil_top_browser(nullptr), mtil_bottom_browser(nullptr)
+     mtil_top_browser(nullptr), mtil_bottom_browser(nullptr),
+     mtil_ratio_editor(mtil_initial_ratio),
+     mtil_ratio_top(mtil_initial_ratio)
 {
   RPS_DEBUG_LOG(GUI, "made Fltk_MainTile_rps @" << (void*)this
                 << " in mainwin#" << mainwin->rank());
-  mtil_editor = new  Fltk_Editor_rps(mtil_mainwin,X,Y,W,H/3);
+  mtil_editor =
+    new Fltk_Editor_rps(mtil_mainwin,X,Y,W,H*mtil_ratio_editor);
   mtil_editor->show();
-  mtil_top_browser = new Fltk_Browser_rps(mtil_mainwin,X,Y+H/3,W,H/3, true);
-  mtil_bottom_browser =  new Fltk_Browser_rps(mtil_mainwin,X,Y+2*H/3,W,H/3, false);
+  mtil_top_browser = //
+    new Fltk_Browser_rps(mtil_mainwin,X,
+                         Y+H*mtil_ratio_editor,W,
+                         H*(mtil_ratio_editor + mtil_ratio_top), true);
+  mtil_bottom_browser = //
+    new Fltk_Browser_rps(mtil_mainwin,
+                         X,
+                         Y+H*(mtil_ratio_editor+mtil_ratio_top),
+                         W,
+                         H*(mtil_ratio_editor+mtil_ratio_top),
+                         false);
   mtil_top_browser->show();
   RPS_DEBUG_LOG(GUI, "Fltk_MainTile_rps @" << (void*)this
                 << " mainwin#" << mainwin->rank()
@@ -244,6 +262,17 @@ Fltk_MainTile_rps::Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin,
   mtil_bottom_browser->show();
 }; // end Fltk_MainTile_rps::Fltk_MainTile_rps
 
+void
+Fltk_MainTile_rps::resize(int X, int Y, int W, int H)
+{
+  RPS_ASSERT(mtil_mainwin != nullptr);
+  RPS_DEBUG_LOG(GUI, "Fltk_MainTile_rps @" << (void*)this
+                << " mainwin#" << mtil_mainwin->rank()
+                << " resize X=" << X
+                << ", Y=" << Y
+                << ", W=" << W
+                << ", H=" << H);
+} // end Fltk_MainTile_rps::resize
 
 Fltk_MainTile_rps::~Fltk_MainTile_rps()
 {
@@ -339,8 +368,8 @@ Fltk_Editor_rps::handle(int event)
   // https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
   int h = 0;
   RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle event=" << event
-		<< ":" <<  event_name_fltkrps(event)
-		<< RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
+                << ":" <<  event_name_fltkrps(event)
+                << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
   if (event == FL_KEYUP || event == FL_KEYDOWN)
     {
       const char*ktext = Fl::event_text();
