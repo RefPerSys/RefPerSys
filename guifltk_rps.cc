@@ -71,6 +71,7 @@ class Fltk_MainTile_rps : public Fl_Tile
 public:
 #warning very incomplete Fltk_MainTile_rps
   virtual void resize(int X, int Y, int W, int H);
+  virtual int handle(int event);
   Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin, int X, int Y, int W, int H);
   ~Fltk_MainTile_rps();
 };				// end Fltk_MainTile_rps
@@ -272,10 +273,29 @@ Fltk_MainTile_rps::resize(int X, int Y, int W, int H)
                 << ", Y=" << Y
                 << ", W=" << W
                 << ", H=" << H
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainTile_rps::resize"));
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainTile_rps::resize"));
   Fl_Tile::resize(X, Y, W, H);
 } // end Fltk_MainTile_rps::resize
+
+
+
+int
+Fltk_MainTile_rps::handle(int event)
+{
+  RPS_DEBUG_LOG(GUI, "Fltk_MainTile_rps::handle @" << (void*)this
+                << " mainwin#" << mtil_mainwin->rank()
+                << " event#" << event << ":" << event_name_fltkrps(event) 
+		<< " evx=" << Fl::event_x() << ", evy=" << Fl::event_y()
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainTile_rps::event"));
+  int h = Fl_Tile::handle(event);
+  RPS_DEBUG_LOG(GUI, "Fltk_MainTile_rps::handle @" << (void*)this
+                << " event#" << event << ":" << event_name_fltkrps(event) << " -> h=" << h);
+  return h;
+} // end Fltk_MainTile_rps::handle
+
+
 
 Fltk_MainTile_rps::~Fltk_MainTile_rps()
 {
