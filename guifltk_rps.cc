@@ -137,7 +137,8 @@ public:
   //// https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
   virtual int handle(int event);
   /* The prettify function is colorizing and syntax-hightlighting the
-     editor buffer. */
+     editor buffer.  It probably should be called no more than five
+     times per second, e.g. with some delay after each key event. */
   void prettify(Rps_CallFrame*caller=nullptr);
   virtual ~Fltk_Editor_rps();
 };				// end class Fltk_Editor_rps
@@ -214,7 +215,8 @@ int
 Fltk_MainWindow_rps::handle(int ev)
 {
   RPS_DEBUG_LOG(GUI, "Fltk_MainWindow_rps::handle ev=" << ev
-                << ":" << event_name_fltkrps(ev));
+                << ":" << event_name_fltkrps(ev) << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Fltk_MainWindow_rps::handle"));
   int h = Fl_Window::handle(ev);
   usleep (1000);
   RPS_DEBUG_LOG(GUI, "end Fltk_MainWindow_rps::handle ev=" << ev
@@ -261,6 +263,8 @@ Fltk_MainTile_rps::Fltk_MainTile_rps(Fltk_MainWindow_rps*mainwin,
                 << " mtil_top_browser@" << (void*)mtil_top_browser
                 << " mtil_bottom_browser@" << (void*)mtil_bottom_browser);
   mtil_bottom_browser->show();
+  RPS_DEBUG_LOG(GUI, "end Fltk_MainTile_rps @" << (void*)this
+                << " mainwin#" << mainwin->rank() << std::endl);
 }; // end Fltk_MainTile_rps::Fltk_MainTile_rps
 
 void
@@ -285,8 +289,12 @@ Fltk_MainTile_rps::handle(int event)
 {
   RPS_DEBUG_LOG(GUI, "Fltk_MainTile_rps::handle @" << (void*)this
                 << " mainwin#" << mtil_mainwin->rank()
-                << " event#" << event << ":" << event_name_fltkrps(event) 
-		<< " evx=" << Fl::event_x() << ", evy=" << Fl::event_y()
+                << " at <x=" <<  mtil_mainwin->x()
+                << ", y=" << mtil_mainwin->y()
+                << ", w=" << mtil_mainwin->w()
+                << ", h="  << mtil_mainwin->h() << ">"
+                << " event#" << event << ":" << event_name_fltkrps(event)
+                << " evx=" << Fl::event_x() << ", evy=" << Fl::event_y()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainTile_rps::event"));
   int h = Fl_Tile::handle(event);
@@ -459,6 +467,10 @@ Fltk_Editor_rps::prettify(Rps_CallFrame*caller)
   RPS_ASSERT(rps_is_main_thread());
   RPS_LOCALFRAME(nullptr,caller,
                  Rps_LexTokenValue tokval);
+  RPS_ASSERT(mainwin());
+  RPS_DEBUG_LOG(GUI,
+                "Fltk_Editor_rps::prettify start in mainwin#"
+                << mainwin()->rank());
 #warning incomplete Fltk_Editor_rps::prettify
 } // end Fltk_Editor_rps::prettify
 
