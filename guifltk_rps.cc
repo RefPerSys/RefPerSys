@@ -221,7 +221,9 @@ Fltk_MainWindow_rps::handle(int ev)
   usleep (1000);
   RPS_DEBUG_LOG(GUI, "end Fltk_MainWindow_rps::handle ev=" << ev
                 << ":" << event_name_fltkrps(ev)
-                << " h=" << h << std::endl);
+                << " h=" << h << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "end Fltk_MainWindow_rps::handle"));
+  return h;
 } // end Fltk_MainWindow_rps::handle
 
 Fltk_MainWindow_rps::~Fltk_MainWindow_rps()
@@ -482,7 +484,8 @@ editor_keyfuncbrps(int key, Fl_Text_Editor*txed)
   Fltk_Editor_rps* ed = dynamic_cast<Fltk_Editor_rps*>(txed);
   RPS_DEBUG_LOG(GUI, "editor_keyfuncbrps key="
                 << key << " ed@" << (void*) ed
-                << " in mainwin#" << ed->mainwin()->rank());
+                << " in mainwin#" << ed->mainwin()->rank() << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "editor_keyfuncbrps"));
   // should return 1 to accept the key....
   return 0;
 #warning unimplemented and unbound editor_keyfuncbrps
