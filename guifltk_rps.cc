@@ -320,8 +320,8 @@ Fltk_MainWindow_rps::Fltk_MainWindow_rps(int W, int H)
 int
 Fltk_MainWindow_rps::handle(int ev)
 {
-  RPS_DEBUG_LOG(GUI, "Fltk_MainWindow_rps::handle ev=" << ev
-                << ":" << event_name_fltkrps(ev) << std::endl
+  RPS_DEBUG_LOG(GUI, "Fltk_MainWindow_rps::handle event "
+		<< fltk_event_string_rps(ev) << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Fltk_MainWindow_rps::handle"));
   int h = Fl_Window::handle(ev);
   usleep (1000);
@@ -395,38 +395,13 @@ Fltk_MainTile_rps::resize(int X, int Y, int W, int H)
 int
 Fltk_MainTile_rps::handle(int event)
 {
-  char detailev[64];
-  memset (detailev, 0, sizeof(detailev));
-  if (RPS_DEBUG_ENABLED(GUI) && (event == FL_KEYUP || event == FL_KEYDOWN))
-    {
-      int evkey = Fl::event_key();
-      if (evkey == FL_Escape)
-        strcpy(detailev, " ESC");
-      else if (evkey ==  FL_Tab)
-        strcpy(detailev, " TAB");
-      else if (evkey ==  FL_BackSpace)
-        strcpy(detailev, " BACKSPACE");
-      else if (evkey ==  FL_Delete)
-        strcpy(detailev, " DELETE");
-      else if (evkey ==  FL_Insert)
-        strcpy(detailev, " INSERT");
-      else if (evkey > FL_F && evkey < FL_F+10)
-        snprintf(detailev, sizeof(detailev), " F%d", Fl::event_key() - FL_F);
-      else
-        {
-          const char*ktext = Fl::event_text();
-          snprintf(detailev, sizeof(detailev), " key #%x %s", evkey, Rps_QuotedC_String(ktext).c_str());
-        }
-    };
   RPS_DEBUG_LOG(GUI, "Fltk_MainTile_rps::handle @" << (void*)this
                 << " mainwin#" << mtil_mainwin->rank()
                 << " at <x=" <<  mtil_mainwin->x()
                 << ", y=" << mtil_mainwin->y()
                 << ", w=" << mtil_mainwin->w()
                 << ", h="  << mtil_mainwin->h() << ">"
-                << " event#" << event << ":" << event_name_fltkrps(event)
-                << detailev
-                << " evx=" << Fl::event_x() << ", evy=" << Fl::event_y()
+		<< " event: " << fltk_event_string_rps(event)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainTile_rps::event"));
   int h = Fl_Tile::handle(event);
