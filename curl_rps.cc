@@ -47,7 +47,7 @@ rps_curl_version(void)
 {
   char curlgitbuf[16];
   memset (curlgitbuf, 0, sizeof(curlgitbuf));
-  strncpy(curlgitbuf, rps_curl_gitid, 3*sizeof(curlgitbuf)/4);
+  strncpy(curlgitbuf, rps_curl_gitid, (3*sizeof(curlgitbuf))/4);
   std::string res("CURL ");
   char* cv = curl_version ();
   int nc = 0;
