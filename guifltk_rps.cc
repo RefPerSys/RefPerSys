@@ -289,6 +289,27 @@ Fltk_MainTile_rps::resize(int X, int Y, int W, int H)
 int
 Fltk_MainTile_rps::handle(int event)
 {
+  char detailev[64];
+  memset (detailev, 0, sizeof(detailev));
+  if (RPS_DEBUG_ENABLED(GUI) && (event == FL_KEYUP || event == FL_KEYDOWN)) {
+    int evkey = Fl::event_key();
+    if (evkey == FL_Escape)
+      strcpy(detailev, " ESC");
+    else if (evkey ==  FL_Tab)
+      strcpy(detailev, " TAB");
+    else if (evkey ==  FL_BackSpace)
+      strcpy(detailev, " BACKSPACE");
+    else if (evkey ==  FL_Delete)
+      strcpy(detailev, " DELETE");
+    else if (evkey ==  FL_Insert)
+      strcpy(detailev, " INSERT");
+    else if (evkey > FL_F && evkey < FL_F+10)
+      snprintf(detailev, sizeof(detailev), " F%d", Fl::event_key() - FL_F);
+    else {
+      const char*ktext = Fl::event_text();
+      snprintf(detailev, sizeof(detailev), " key #%x %s", evkey, Rps_QuotedC_String(ktext).c_str());
+    }
+  };
   RPS_DEBUG_LOG(GUI, "Fltk_MainTile_rps::handle @" << (void*)this
                 << " mainwin#" << mtil_mainwin->rank()
                 << " at <x=" <<  mtil_mainwin->x()
@@ -296,6 +317,7 @@ Fltk_MainTile_rps::handle(int event)
                 << ", w=" << mtil_mainwin->w()
                 << ", h="  << mtil_mainwin->h() << ">"
                 << " event#" << event << ":" << event_name_fltkrps(event)
+		<< detailev
                 << " evx=" << Fl::event_x() << ", evy=" << Fl::event_y()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainTile_rps::event"));
@@ -362,16 +384,18 @@ RpsFltk_EditorSource::RpsFltk_EditorSource(Fltk_Editor_rps*editor)
   memset(nambuf, 0, sizeof(nambuf));
   snprintf(nambuf, sizeof(nambuf), "editor#%d", editor->mainwin()->rank());
   set_name(std::string{nambuf});
+  RPS_DEBUG_LOG(GUI, "RpsFltk_EditorSource::RpsFltk_EditorSource " << nambuf);
 } // end RpsFltk_EditorSource::RpsFltk_EditorSource
 
 RpsFltk_EditorSource::~RpsFltk_EditorSource()
 {
+  RPS_DEBUG_LOG(GUI, "RpsFltk_EditorSource::~RpsFltk_EditorSource " << name());
 } // end RpsFltk_EditorSource::~RpsFltk_EditorSource
 
 const char*
 event_name_fltkrps(int event)
 {
-  if (event >= 0 && event < sizeof(fl_eventnames)/sizeof(fl_eventnames[0]))
+  if (event >= 0 && event < (int)sizeof(fl_eventnames)/sizeof(fl_eventnames[0]))
     return fl_eventnames[event];
   static char evnambuf[32];
   memset (evnambuf, 0, sizeof(evnambuf));
@@ -401,7 +425,7 @@ Fltk_Editor_rps::handle(int event)
   // https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
   int h = 0;
   RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle event=" << event
-                << ":" <<  event_name_fltkrps(event)
+                << ":" <<  event_name_fltkrps(event) << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
   if (event == FL_KEYUP || event == FL_KEYDOWN)
     {
@@ -430,8 +454,9 @@ Fltk_Editor_rps::handle(int event)
           specialkey = true;
           ktext = kbuf;
         }
-      if (!specialkey)
+      if (!specialkey) {
         h = text_editor_handle(event);
+      }
       char hexk[8];
       memset (hexk, 0, sizeof(hexk));
       snprintf(hexk, sizeof(hexk), "%#x", Fl::event_key());
