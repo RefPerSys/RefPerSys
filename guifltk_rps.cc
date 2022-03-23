@@ -111,6 +111,112 @@ public:
   virtual int handle(int event);
 };				// end Fltk_MainWindow_rps
 
+std::string
+fltk_event_string_rps(int event)
+{
+  std::ostringstream out;
+  out << "¤" << event << ":" << event_name_fltkrps(event);
+  switch (event)
+    {
+    case FL_KEYUP:
+    case FL_KEYDOWN:
+    {
+      int evkey = Fl::event_key();
+      out << " ";
+      switch (evkey)
+        {
+#define KEYCASE(K) case K: out << #K; break
+          KEYCASE(FL_BackSpace);
+          KEYCASE(FL_Tab);
+          KEYCASE(FL_Iso_Key);
+          KEYCASE(FL_Enter);
+          KEYCASE(FL_Pause);
+          KEYCASE(FL_Scroll_Lock);
+          KEYCASE(FL_Escape);
+          KEYCASE(FL_Kana);
+          KEYCASE(FL_Eisu);
+          KEYCASE(FL_Yen);
+          KEYCASE(FL_JIS_Underscore);
+          KEYCASE(FL_Home);
+          KEYCASE(FL_Left);
+          KEYCASE(FL_Up);
+          KEYCASE(FL_Right);
+          KEYCASE(FL_Down);
+          KEYCASE(FL_Page_Up);
+          KEYCASE(FL_Page_Down);
+          KEYCASE(FL_End);
+          KEYCASE(FL_Print);
+          KEYCASE(FL_Insert);
+          KEYCASE(FL_Menu);
+          KEYCASE(FL_Help);
+          KEYCASE(FL_Num_Lock);
+        case FL_KP + 0 ... FL_KP + 9:
+          out << "FL_KP" << (int) (evkey-FL_KP);
+          break;
+          KEYCASE(FL_KP_Enter);
+        case FL_F ... FL_F_Last:
+          out << "FL_F" << (int) (evkey-FL_F);
+          break;
+          KEYCASE(FL_Shift_L);
+          KEYCASE(FL_Shift_R);
+          KEYCASE(FL_Control_L);
+          KEYCASE(FL_Control_R);
+          KEYCASE(FL_Caps_Lock);
+          KEYCASE(FL_Meta_L);
+          KEYCASE(FL_Meta_R);
+          KEYCASE(FL_Alt_L);
+          KEYCASE(FL_Alt_R);
+          KEYCASE(FL_Delete);
+          KEYCASE(FL_Volume_Down);
+          KEYCASE(FL_Volume_Mute);
+          KEYCASE(FL_Volume_Up);
+          KEYCASE(FL_Media_Play);
+          KEYCASE(FL_Media_Stop);
+          KEYCASE(FL_Media_Prev);
+          KEYCASE(FL_Media_Next);
+          KEYCASE(FL_Home_Page);
+          KEYCASE(FL_Mail);
+          KEYCASE(FL_Search);
+          KEYCASE(FL_Back);
+          KEYCASE(FL_Forward);
+          KEYCASE(FL_Stop);
+          KEYCASE(FL_Refresh);
+          KEYCASE(FL_Sleep);
+          KEYCASE(FL_Favorites);
+    case FL_Button + 1:
+      out << "Fl_Button+1 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
+      break;
+    case FL_Button + 2:
+      out << "Fl_Button+2 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
+      break;
+    case FL_Button + 3:
+      out << "Fl_Button+3 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
+      break;
+    case FL_Button + 4:
+      out << "Fl_Button+3 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
+      break;
+    case FL_Button + 5:
+      out << "Fl_Button+5 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
+      break;
+        default:
+        {
+          const char*ktext = Fl::event_text();
+          char kbuf[32];
+          memset (kbuf, 0, sizeof(kbuf));
+          snprintf(kbuf, sizeof(kbuf), "%d=%#x", evkey, evkey);
+          out << "key " << kbuf << ' ' << Rps_QuotedC_String(ktext).c_str();
+        };
+        }
+    } // end FL_KEYUP or FL_KEYDOWN
+    break;
+    case FL_PUSH: case FL_RELEASE: case FL_DRAG: case FL_MOVE:
+      out << " evx=" << Fl::event_x() << ", evy=" << Fl::event_y(); break;
+    case FL_MOUSEWHEEL:
+      out << " dx=" << Fl::event_dx() << ", dy=" << Fl::event_dy(); break;
+    };
+  out.flush();
+  return out.str();
+} // end fltk_event_string_rps
 
 
 int Fltk_MainWindow_rps::mainw_count;
@@ -291,25 +397,27 @@ Fltk_MainTile_rps::handle(int event)
 {
   char detailev[64];
   memset (detailev, 0, sizeof(detailev));
-  if (RPS_DEBUG_ENABLED(GUI) && (event == FL_KEYUP || event == FL_KEYDOWN)) {
-    int evkey = Fl::event_key();
-    if (evkey == FL_Escape)
-      strcpy(detailev, " ESC");
-    else if (evkey ==  FL_Tab)
-      strcpy(detailev, " TAB");
-    else if (evkey ==  FL_BackSpace)
-      strcpy(detailev, " BACKSPACE");
-    else if (evkey ==  FL_Delete)
-      strcpy(detailev, " DELETE");
-    else if (evkey ==  FL_Insert)
-      strcpy(detailev, " INSERT");
-    else if (evkey > FL_F && evkey < FL_F+10)
-      snprintf(detailev, sizeof(detailev), " F%d", Fl::event_key() - FL_F);
-    else {
-      const char*ktext = Fl::event_text();
-      snprintf(detailev, sizeof(detailev), " key #%x %s", evkey, Rps_QuotedC_String(ktext).c_str());
-    }
-  };
+  if (RPS_DEBUG_ENABLED(GUI) && (event == FL_KEYUP || event == FL_KEYDOWN))
+    {
+      int evkey = Fl::event_key();
+      if (evkey == FL_Escape)
+        strcpy(detailev, " ESC");
+      else if (evkey ==  FL_Tab)
+        strcpy(detailev, " TAB");
+      else if (evkey ==  FL_BackSpace)
+        strcpy(detailev, " BACKSPACE");
+      else if (evkey ==  FL_Delete)
+        strcpy(detailev, " DELETE");
+      else if (evkey ==  FL_Insert)
+        strcpy(detailev, " INSERT");
+      else if (evkey > FL_F && evkey < FL_F+10)
+        snprintf(detailev, sizeof(detailev), " F%d", Fl::event_key() - FL_F);
+      else
+        {
+          const char*ktext = Fl::event_text();
+          snprintf(detailev, sizeof(detailev), " key #%x %s", evkey, Rps_QuotedC_String(ktext).c_str());
+        }
+    };
   RPS_DEBUG_LOG(GUI, "Fltk_MainTile_rps::handle @" << (void*)this
                 << " mainwin#" << mtil_mainwin->rank()
                 << " at <x=" <<  mtil_mainwin->x()
@@ -317,7 +425,7 @@ Fltk_MainTile_rps::handle(int event)
                 << ", w=" << mtil_mainwin->w()
                 << ", h="  << mtil_mainwin->h() << ">"
                 << " event#" << event << ":" << event_name_fltkrps(event)
-		<< detailev
+                << detailev
                 << " evx=" << Fl::event_x() << ", evy=" << Fl::event_y()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainTile_rps::event"));
@@ -454,9 +562,10 @@ Fltk_Editor_rps::handle(int event)
           specialkey = true;
           ktext = kbuf;
         }
-      if (!specialkey) {
-        h = text_editor_handle(event);
-      }
+      if (!specialkey)
+        {
+          h = text_editor_handle(event);
+        }
       char hexk[8];
       memset (hexk, 0, sizeof(hexk));
       snprintf(hexk, sizeof(hexk), "%#x", Fl::event_key());
@@ -510,7 +619,7 @@ editor_keyfuncbrps(int key, Fl_Text_Editor*txed)
   RPS_DEBUG_LOG(GUI, "editor_keyfuncbrps key="
                 << key << " ed@" << (void*) ed
                 << " in mainwin#" << ed->mainwin()->rank() << std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "editor_keyfuncbrps"));
+                << RPS_FULL_BACKTRACE_HERE(1, "editor_keyfuncbrps"));
   // should return 1 to accept the key....
   return 0;
 #warning unimplemented and unbound editor_keyfuncbrps
