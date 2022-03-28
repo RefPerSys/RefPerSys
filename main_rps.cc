@@ -545,6 +545,9 @@ rps_check_mtime_files(void)
     RPS_FATAL("readlink /proc/self/exe: %m");
   for (const char*const*curpath = rps_files; *curpath; curpath++)
     {
+      int lencurpath = strlen(*curpath);
+      if (lencurpath < 6 || strstr(*curpath, "attic/"))
+        continue;
       std::string curpathstr(*curpath);
       /// Files under webroot could be sent to browser, so we don't
       /// care about them being newer than executable....
