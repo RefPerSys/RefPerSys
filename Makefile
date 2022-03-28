@@ -39,11 +39,15 @@ RPS_GIT_ORIGIN := $(shell git remote -v | grep "RefPerSys/RefPerSys.git" | head 
 RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -1 | awk '{print $$1}')
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
-RPS_CORE_SOURCES:= $(sort $(wildcard *_rps.cc))
+RPS_CORE_SOURCES:= $(sort $(filter-out gui, $(wildcard *_rps.cc)))
+RPS_FLTK_SOURCES:=  $(sort $(wildcard *fltk*_rps.cc))
+RPS_GTKMM_SOURCES:= $((sort $(wildcard *gtk*_rps.cc))
 RPS_BISON_SOURCES:=  $(sort $(wildcard *_rps.yy))
 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
+RPS_FLTK_OBJECTS = $(patsubst %.cc, %.o, $(RPS_FLTK_SOURCES))
+RPS_GTKMM_OBJECTS = $(patsubst %.cc, %.o, $(RPS_GTKMM_SOURCES))
 RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
 #RPS_QT_OBJECTS = $(patsubst %.cc, %.o, $(RPS_QT_SOURCES))
 #RPS_QT_MOC_HEADERS =  $(patsubst %.cc, %.moc.hh, $(RPS_QT_SOURCES))
@@ -119,7 +123,7 @@ LINK.cc= $(RPS_BUILD_CXX)
 CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             $(RPS_BUILD_CODGENFLAGS) \
 	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) -I/usr/include/jsoncpp \
-	    $(RPS_PKG_CFLAGS)  $(RPS_FLTK_CXXFLAGS) \
+	    $(RPS_PKG_CFLAGS) \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
             $(RPS_BUILD_COMPILER_FLAGS)
@@ -136,7 +140,7 @@ all:
 
 .SECONDARY:  __timestamp.c
 
-refpersys: $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
+refpersys: $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
 	-sync
 	$(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic $(RPS_CORE_OBJECTS)  __timestamp.o \
 	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_FLTK_LIBES) -o $@-tmp
@@ -169,6 +173,11 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
 %.o: %.cc refpersys.hh.gch
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -o $@ $<
+	sync
+
+
+guifltk_rps.o: guifltk_rps.cc refpersys.hh.gch
+	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_FLTK_CXXFLAGS) -DRPSFLTK -o $@ $<
 	sync
 
 
