@@ -33,7 +33,6 @@
 
 #include "refpersys.hh"
 
-#include "onion/version.h"
 #include "readline/readline.h"
 
 
@@ -1047,7 +1046,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " parser generator: " << rps_gnubison_version << std::endl
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
-                    << " Libonion web server library version: " << onion_version() << std::endl
                     << " FLTK toolkit API version " << fltk_api_version_rps() << std::endl
                     << " made with: " << rps_makefile << std::endl
                     << " running on " << rps_hostname();
@@ -1221,15 +1219,6 @@ rps_run_application(int &argc, char **argv)
       RPS_INFORMOUT("After running the REPL lexer test...." << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after repl")
                     << std::endl);
-    }
-  else if (rps_web_service)
-    {
-      usleep(100000);
-      RPS_DEBUG_LOG(WEB, "rps_web_service: " << rps_web_service);
-#warning rps_run_web_service from rps_run_web_service might not work
-      rps_web_initialize_service(rps_web_service);
-      usleep(10000);
-      rps_run_web_service();
     }
   else if (rps_fltk_gui)
     {

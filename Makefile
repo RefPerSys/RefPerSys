@@ -106,11 +106,11 @@ RPS_BUILD_SANITFLAGS = -fsanitize=address
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
-RPS_PKG_NAMES= jsoncpp readline libcurl zlib onion
+RPS_PKG_NAMES= jsoncpp readline libcurl zlib
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES)) $(RPS_FLTK_LIBES)
 
-LIBES= $(RPS_PKG_LIBS) -lonioncpp -lonion -lunistring -lbacktrace -lpthread -ldl
+LIBES= $(RPS_PKG_LIBS) -lunistring -lbacktrace -lpthread -ldl
 RM= rm -f
 MV= mv
 CC= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CC)

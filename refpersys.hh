@@ -204,7 +204,7 @@ public:
   }
 };				// end class RpsColophon
 
-// when set, no GUI or web service is running
+// when set, no GUI is running
 extern "C" bool rps_batch;
 
 /// https://en.wikipedia.org/wiki/Address_space_layout_randomization
@@ -3914,34 +3914,6 @@ public:
   void clear_buffer(void);
 };				// end of class Rps_PayloadStrBuf
 
-
-////////////////////////////////////////////////////////////////
-////// transient web processing instruction payload (for <?refpersys ...?>)
-class Rps_PayloadPiWeb : public Rps_Payload {
-  friend Rps_PayloadPiWeb*
-  Rps_QuasiZone::rps_allocate1<Rps_PayloadPiWeb,Rps_ObjectZone*>(Rps_ObjectZone*);
-  Rps_PayloadPiWeb(Rps_ObjectZone*owner);
-  Rps_PayloadPiWeb(Rps_ObjectRef obr) :
-    Rps_PayloadPiWeb(obr?obr.optr():nullptr) {};
-  virtual ~Rps_PayloadPiWeb();
-  virtual uint32_t wordsize(void) const
-  {
-    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
-  };
-protected:
-  virtual void gc_mark(Rps_GarbageCollector&gc) const;
-  virtual void dump_scan(Rps_Dumper*du) const;
-  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
-public:
-  virtual const std::string payload_type_name(void) const
-  {
-    return "pi_web";
-  };
-  /// gives the web_processing_instruction_class∈class
-  static Rps_ObjectRef the_web_processing_instruction_class(void);
-  /// gives the mutable_set object collecting objects whose oid can appear in *rps files
-  static Rps_ObjectRef the_mutable_set_for_web(void);
-};				// end Rps_PayloadPiWeb
 
 ////////////////////////////////////////////////////////////////
 ////// mutable dictionary payload  - associate strings to values
