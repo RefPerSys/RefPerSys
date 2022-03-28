@@ -1854,7 +1854,7 @@ Rps_Dumper::scan_every_cplusplus_source_file_for_constants(void)
     {
       const char*curpath = *pcurfilename;
       int lencurpath = strlen(curpath);
-      if (lencurpath < 6 || strstr(curpath, "generated/"))
+      if (lencurpath < 6 || strstr(curpath, "generated/") || strstr(curpath, "attic/"))
         continue;
       if (curpath[lencurpath-3] != '.') continue;
       if ((curpath[lencurpath-2] == 'h' && curpath[lencurpath-1] == 'h')
