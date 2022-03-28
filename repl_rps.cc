@@ -66,7 +66,7 @@ rps_repl_version(void)
 
   std::string res = "REPL";
   {
-    char gitstart[24];
+    char gitstart[48];
     memset (gitstart, 0, sizeof(gitstart));
     strncpy(gitstart, rps_repl_gitid, (2*sizeof(gitstart))/3+2);
     res += " git ";

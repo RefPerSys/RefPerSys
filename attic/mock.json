@@ -495,20 +495,6 @@
 		},
 
 
-		{
-			"meta_comment": "∈core_function",
-			"applying" : true,
-			"attrs" : 
-			[
-				{
-					"at" : "_0jdbikGJFq100dgX1n",
-					"va" : "method string/display_value_web"
-				}
-			],
-			"class" : "_9Gz1oNPCnkB00I6VRS",
-			"mtime" : 1582010341,
-			"oid" : "_2KnFhlj8xW800kpgPt"
-		},
 
 
 		{
