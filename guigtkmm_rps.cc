@@ -36,6 +36,9 @@
 /// /usr/include/gtkmm-3.0/gtkmm.h
 #include <gtkmm.h>
 
+
+Glib::RefPtr<Gtk::Application> gtkmm_app_rps;
+
 const char*
 gtkmm_version_rps(void)
 {
@@ -45,3 +48,13 @@ gtkmm_version_rps(void)
              GTKMM_MAJOR_VERSION, GTKMM_MINOR_VERSION, GTKMM_MICRO_VERSION);
   return vbuf;
 } // end gtkmm_version_rps
+
+
+
+
+void
+gtkmm_initialize_app_rps(void)
+{
+  gtkmm_app_rps =  Gtk::Application::create("org.refpersys.gtkmm");
+#warning gtkmm_initialize_app_rps incomplete
+} // end gtkmm_initialize_app_rps
