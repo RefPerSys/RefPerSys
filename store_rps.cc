@@ -2629,8 +2629,8 @@ void Rps_Loader::load_install_roots(void)
   };
 #include "generated/rps-roots.hh"
   RPS_ASSERTPRINTF(nbroots == RPS_NB_ROOT_OB,
-		   "load_install_roots nbroots=%u wanted %u",
-		   nbroots, RPS_NB_ROOT_OB);
+                   "load_install_roots nbroots=%u wanted %u",
+                   nbroots, RPS_NB_ROOT_OB);
   RPS_DEBUG_LOG(LOAD, "loader load_install_roots nbroots=" << nbroots);
   ///
   /// install the hard coded symbols

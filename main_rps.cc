@@ -1,3 +1,4 @@
+
 /****************************************************************
  * file main_rps.cc
  * SPDX-License-Identifier: GPL-3.0-or-later
@@ -66,9 +67,6 @@ std::string rps_dumpdir_str;
 extern "C" std::vector<std::string> rps_command_vec;
 std::vector<std::string> rps_command_vec;
 
-
-#define RPS_DEFAULT_WEB_SERVICE "localhost:9090"
-const char*rps_web_service;
 
 error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 struct argp_option rps_progoptions[] =
@@ -204,15 +202,6 @@ struct argp_option rps_progoptions[] =
     "Try the help command for details.", //
     /*group:*/0 ///
   },
-  /* ======= web interface; it may be buggy  ======= */
-  {/*name:*/ "web", ///
-    /*key:*/ RPSPROGOPT_WEB, ///
-    /*arg:*/ "HOST:PORT", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "start web service (BUGGY) as given on HOST:PORT,"
-    " where -W. means --web=http:" RPS_DEFAULT_WEB_HOST_PORT, //
-    /*group:*/0 ///
-  },
   /* ======= graphical user interface  ======= */
   {/*name:*/ "gui", ///
     /*key:*/ RPSPROGOPT_GUI, ///
@@ -265,7 +254,7 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
     /*doc:*/ "Run with a textual read-eval-print-loop user interface using GNU readline.\n"
-    " (this option might become obsolete, once a web interface exists)", //
+    " (this option might become obsolete)", //
     /*group:*/0 ///
   },
   /* ======= command textual read eval print loop lexer testing ======= */
@@ -955,17 +944,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_run_command_after_load = arg;
     }
     return 0;
-    case RPSPROGOPT_WEB:
-    {
-      if (side_effect && arg)
-        {
-          if (!strcmp(arg, "."))
-            rps_web_service = RPS_DEFAULT_WEB_SERVICE;
-          else
-            rps_web_service = arg;
-        }
-    }
-    return 0;
     case RPSPROGOPT_GUI:
     {
       rps_fltk_gui=true;
@@ -1050,6 +1028,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
                     << " FLTK toolkit API version " << fltk_api_version_rps() << std::endl
+                    << " GTKmm toolkit version " << gtkmm_version_rps() << std::endl
                     << " made with: " << rps_makefile << std::endl
                     << " running on " << rps_hostname();
           {

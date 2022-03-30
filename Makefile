@@ -41,7 +41,7 @@ RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(filter-out gui, $(wildcard *_rps.cc)))
 RPS_FLTK_SOURCES:=  $(sort $(wildcard *fltk*_rps.cc))
-RPS_GTKMM_SOURCES:= $((sort $(wildcard *gtk*_rps.cc))
+RPS_GTKMM_SOURCES:= $(sort $(wildcard *gtk*_rps.cc))
 RPS_BISON_SOURCES:=  $(sort $(wildcard *_rps.yy))
 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
@@ -110,7 +110,7 @@ RPS_BUILD_SANITFLAGS = -fsanitize=address
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
-RPS_PKG_NAMES= jsoncpp readline libcurl zlib
+RPS_PKG_NAMES= jsoncpp readline libcurl zlib gtkmm-3.0
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES)) $(RPS_FLTK_LIBES)
 

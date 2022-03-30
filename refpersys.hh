@@ -210,7 +210,6 @@ extern "C" bool rps_batch;
 /// https://en.wikipedia.org/wiki/Address_space_layout_randomization
 extern "C" bool rps_disable_aslr;
 
-extern "C" bool rps_run_web;
 extern "C" bool rps_run_repl;
 extern "C" bool rps_fltk_gui;
 extern "C" void add_fltk_arg_rps(char*arg);
@@ -407,7 +406,6 @@ extern "C" void rps_set_debug(const std::string &deblev);
   dbgmacro(PARSE)                   \
   dbgmacro(PARSE_STRING)            \
   dbgmacro(REPL)                    \
-  dbgmacro(WEB)                     \
   /*end RPS_DEBUG_OPTIONS*/
 
 #define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
@@ -436,7 +434,6 @@ enum rps_progoption_en
   RPSPROGOPT_JOBS='j',
   RPSPROGOPT_DUMP='D',
   RPSPROGOPT_COMMAND='c',
-  RPSPROGOPT_WEB='W',
   RPSPROGOPT_GUI='G',
   RPSPROGOPT_FLTK='F',
 
@@ -4437,11 +4434,10 @@ extern "C" int fltk_api_version_rps(void);
 extern "C" void add_fltk_arg_rps(char*arg);
 extern "C" void guifltk_initialize_rps(void);
 
-// the default HTTP host and portnumber
-#define RPS_DEFAULT_WEB_HOST_PORT "localhost:9090"
-extern "C" void rps_web_initialize_service(const char*);
-extern "C" void rps_run_web_service(void);
-extern "C" const char*rps_web_service;
+/// for the GTKmm graphical interface
+extern "C" const char*gtkmm_version_rps(void);
+
+
 extern "C" Rps_CallFrame*rps_edit_cplusplus_callframe;
 #include "inline_rps.hh"
 

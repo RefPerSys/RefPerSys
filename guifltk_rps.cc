@@ -183,21 +183,21 @@ fltk_event_string_rps(int event)
           KEYCASE(FL_Refresh);
           KEYCASE(FL_Sleep);
           KEYCASE(FL_Favorites);
-    case FL_Button + 1:
-      out << "Fl_Button+1 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
-      break;
-    case FL_Button + 2:
-      out << "Fl_Button+2 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
-      break;
-    case FL_Button + 3:
-      out << "Fl_Button+3 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
-      break;
-    case FL_Button + 4:
-      out << "Fl_Button+3 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
-      break;
-    case FL_Button + 5:
-      out << "Fl_Button+5 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
-      break;
+        case FL_Button + 1:
+          out << "Fl_Button+1 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
+          break;
+        case FL_Button + 2:
+          out << "Fl_Button+2 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
+          break;
+        case FL_Button + 3:
+          out << "Fl_Button+3 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
+          break;
+        case FL_Button + 4:
+          out << "Fl_Button+3 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
+          break;
+        case FL_Button + 5:
+          out << "Fl_Button+5 @ x=" <<  Fl::event_x() << ",y=" << Fl::event_y();
+          break;
         default:
         {
           const char*ktext = Fl::event_text();
@@ -209,10 +209,15 @@ fltk_event_string_rps(int event)
         }
     } // end FL_KEYUP or FL_KEYDOWN
     break;
-    case FL_PUSH: case FL_RELEASE: case FL_DRAG: case FL_MOVE:
-      out << " evx=" << Fl::event_x() << ", evy=" << Fl::event_y(); break;
+    case FL_PUSH:
+    case FL_RELEASE:
+    case FL_DRAG:
+    case FL_MOVE:
+      out << " evx=" << Fl::event_x() << ", evy=" << Fl::event_y();
+      break;
     case FL_MOUSEWHEEL:
-      out << " dx=" << Fl::event_dx() << ", dy=" << Fl::event_dy(); break;
+      out << " dx=" << Fl::event_dx() << ", dy=" << Fl::event_dy();
+      break;
     };
   out.flush();
   return out.str();
@@ -321,7 +326,7 @@ int
 Fltk_MainWindow_rps::handle(int ev)
 {
   RPS_DEBUG_LOG(GUI, "Fltk_MainWindow_rps::handle event "
-		<< fltk_event_string_rps(ev) << std::endl
+                << fltk_event_string_rps(ev) << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Fltk_MainWindow_rps::handle"));
   int h = Fl_Window::handle(ev);
   usleep (1000);
@@ -401,7 +406,7 @@ Fltk_MainTile_rps::handle(int event)
                 << ", y=" << mtil_mainwin->y()
                 << ", w=" << mtil_mainwin->w()
                 << ", h="  << mtil_mainwin->h() << ">"
-		<< " event: " << fltk_event_string_rps(event)
+                << " event: " << fltk_event_string_rps(event)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainTile_rps::event"));
   int h = Fl_Tile::handle(event);
