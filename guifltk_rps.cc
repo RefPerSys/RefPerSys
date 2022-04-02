@@ -483,7 +483,7 @@ RpsFltk_EditorSource::~RpsFltk_EditorSource()
 const char*
 event_name_fltkrps(int event)
 {
-  if (event >= 0 && event < (int)sizeof(fl_eventnames)/sizeof(fl_eventnames[0]))
+  if (event >= 0 && event < (int)(sizeof(fl_eventnames)/sizeof(fl_eventnames[0])))
     return fl_eventnames[event];
   static char evnambuf[32];
   memset (evnambuf, 0, sizeof(evnambuf));

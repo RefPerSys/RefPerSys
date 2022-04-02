@@ -211,8 +211,10 @@ extern "C" bool rps_batch;
 extern "C" bool rps_disable_aslr;
 
 extern "C" bool rps_run_repl;
+extern "C" bool rps_gtkmm_gui;
 extern "C" bool rps_fltk_gui;
 extern "C" void add_fltk_arg_rps(char*arg);
+extern "C" void add_gtkmm_arg_rps(char*arg);
 
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_common_state;
@@ -434,8 +436,8 @@ enum rps_progoption_en
   RPSPROGOPT_JOBS='j',
   RPSPROGOPT_DUMP='D',
   RPSPROGOPT_COMMAND='c',
-  RPSPROGOPT_GUI='G',
-  RPSPROGOPT_FLTK='F',
+  RPSPROGOPT_GTK='G',		// the GTKmm graphical user toolkit
+  RPSPROGOPT_FLTK='F',		// trhe FLTK graphical user toolkit
 
   RPSPROGOPT_HOMEDIR=1000,
   RPSPROGOPT_RANDOMOID,

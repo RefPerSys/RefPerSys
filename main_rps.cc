@@ -203,18 +203,20 @@ struct argp_option rps_progoptions[] =
     /*group:*/0 ///
   },
   /* ======= graphical user interface  ======= */
-  {/*name:*/ "gui", ///
-    /*key:*/ RPSPROGOPT_GUI, ///
-    /*arg:*/ nullptr, ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "run a graphical user interface using FLTK (see fltk.org)", //
+  {/*name:*/ "gtk", ///
+    /*key:*/ RPSPROGOPT_GTK, ///
+    /*arg:*/ "GTKOPTION", ///
+    /*flags:*/ OPTION_ARG_OPTIONAL, ///
+    /*doc:*/ "run a graphical user interface using GTKmm (see gtkmm.org)", //
     /*group:*/0 ///
   },
+  /* ======= FLTK options  ======= */
   {/*name:*/ "fltk", ///
     /*key:*/ RPSPROGOPT_FLTK, ///
     /*arg:*/ "FLTKOPTION", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "pass the given FLTKOPTION to FLTK graphical library\n"
+    /*flags:*/ OPTION_ARG_OPTIONAL, ///
+    /*doc:*/ "run a graphical user interface using FLTK (see fltk.org)\n"
+    "\t passing the optional FLTKOPTIION to that toolkit\n"
     "\t e.g. --fltk=bg:pink or --fltk:iconic\n", //
     /*group:*/0 ///
   },
@@ -729,6 +731,10 @@ main (int argc, char** argv)
   if (rps_syslog_enabled && rps_debug_flags != 0)
     openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
   rps_parse_program_arguments(argc, argv);
+
+  /// GTKmm and FLTK are exclusive
+  if (rps_fltk_gui && rps_gtkmm_gui)
+    RPS_FATAL("cannot run both FLTK graphical interface and GTKmm graphical interface, choose one (-G or -F program option)");
   ///
   RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" " %s process %d on host %s (stdout %s, stderr %s)\n"
              "... gitid %.16s built %s (main@%p) %s mode (%d jobs)",
@@ -944,14 +950,18 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_run_command_after_load = arg;
     }
     return 0;
-    case RPSPROGOPT_GUI:
+    case RPSPROGOPT_GTK:
     {
-      rps_fltk_gui=true;
+      rps_gtkmm_gui=true;
+      if (arg)
+        add_gtkmm_arg_rps(arg);
     }
     return 0;
     case RPSPROGOPT_FLTK:
     {
-      add_fltk_arg_rps(arg);
+      rps_fltk_gui=true;
+      if (arg)
+        add_fltk_arg_rps(arg);
     }
     return 0;
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:

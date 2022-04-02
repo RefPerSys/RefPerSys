@@ -36,6 +36,7 @@
 /// /usr/include/gtkmm-3.0/gtkmm.h
 #include <gtkmm.h>
 
+bool rps_gtkmm_gui;
 
 Glib::RefPtr<Gtk::Application> gtkmm_app_rps;
 
@@ -50,6 +51,12 @@ gtkmm_version_rps(void)
 } // end gtkmm_version_rps
 
 
+void
+add_gtkmm_arg_rps(char*arg)
+{
+  RPS_FATALOUT("unimplemented add_gtkmm_arg_rps arg:" << arg);
+#warning add_gtkmm_arg_rps unimplemented
+} // end add_gtkmm_arg_rps
 
 
 void
