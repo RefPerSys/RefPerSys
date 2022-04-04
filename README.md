@@ -207,6 +207,19 @@ steps
 * `make`
 * `make install`
 
+
+### compiling FLTK with DWARF debug information
+
+[RefPerSys](http://refpersys.org/) is using (e.g. in its commit
+[843a6f0ddf1c22](https://github.com/RefPerSys/RefPerSys/commit/843a6f0ddf1c22149560f8d5a145638d78eda187)...)
+the [FLTK](https://fltk.org/) graphical user interface toolkit
+(e.g. FLTK version
+[1.3.8](https://www.fltk.org/pub/fltk/1.3.8/fltk-1.3.8-source.tar.bz2)
+or [newer](https://github.com/fltk/fltk)...).  That toolkit should be
+compiled with both debug information and optimization, by [configuring
+it](https://groups.google.com/g/fltkgeneral/c/QA70GfnWYvE/m/iIvJGb1uBwAJ)
+with `./configure --enable-debug --with-optim="-O2"`
+
 ### Build instructions
 
 You need a recent C++17 compiler such as `g++` (We use
