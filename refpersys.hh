@@ -436,7 +436,6 @@ enum rps_progoption_en
   RPSPROGOPT_JOBS='j',
   RPSPROGOPT_DUMP='D',
   RPSPROGOPT_COMMAND='c',
-  RPSPROGOPT_GTK='G',		// the GTKmm graphical user toolkit
   RPSPROGOPT_FLTK='F',		// trhe FLTK graphical user toolkit
 
   RPSPROGOPT_HOMEDIR=1000,

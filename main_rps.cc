@@ -202,14 +202,6 @@ struct argp_option rps_progoptions[] =
     "Try the help command for details.", //
     /*group:*/0 ///
   },
-  /* ======= graphical user interface  ======= */
-  {/*name:*/ "gtk", ///
-    /*key:*/ RPSPROGOPT_GTK, ///
-    /*arg:*/ "GTKOPTION", ///
-    /*flags:*/ OPTION_ARG_OPTIONAL, ///
-    /*doc:*/ "run a graphical user interface using GTKmm (see gtkmm.org)", //
-    /*group:*/0 ///
-  },
   /* ======= FLTK options  ======= */
   {/*name:*/ "fltk", ///
     /*key:*/ RPSPROGOPT_FLTK, ///
@@ -732,9 +724,6 @@ main (int argc, char** argv)
     openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
   rps_parse_program_arguments(argc, argv);
 
-  /// GTKmm and FLTK are exclusive
-  if (rps_fltk_gui && rps_gtkmm_gui)
-    RPS_FATAL("cannot run both FLTK graphical interface and GTKmm graphical interface, choose one (-G or -F program option)");
   ///
   RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" " %s process %d on host %s (stdout %s, stderr %s)\n"
              "... gitid %.16s built %s (main@%p) %s mode (%d jobs)",
@@ -950,13 +939,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_run_command_after_load = arg;
     }
     return 0;
-    case RPSPROGOPT_GTK:
-    {
-      rps_gtkmm_gui=true;
-      if (arg)
-        add_gtkmm_arg_rps(arg);
-    }
-    return 0;
     case RPSPROGOPT_FLTK:
     {
       rps_fltk_gui=true;
@@ -1038,7 +1020,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
                     << " FLTK toolkit API version " << fltk_api_version_rps() << std::endl
-                    << " GTKmm toolkit version " << gtkmm_version_rps() << std::endl
                     << " made with: " << rps_makefile << std::endl
                     << " running on " << rps_hostname();
           {
