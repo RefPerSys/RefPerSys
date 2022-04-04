@@ -213,6 +213,8 @@ fltk_event_string_rps(int event)
     case FL_RELEASE:
     case FL_DRAG:
     case FL_MOVE:
+    case FL_ENTER:
+    case FL_LEAVE:
       out << " evx=" << Fl::event_x() << ", evy=" << Fl::event_y();
       break;
     case FL_MOUSEWHEEL:
@@ -512,8 +514,8 @@ Fltk_Editor_rps::handle(int event)
 {
   // https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
   int h = 0;
-  RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle event=" << event
-                << ":" <<  event_name_fltkrps(event) << std::endl
+  RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle event="
+		<< fltk_event_string_rps(event) << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
   if (event == FL_KEYUP || event == FL_KEYDOWN)
     {
@@ -563,12 +565,14 @@ Fltk_Editor_rps::handle(int event)
   else
     {
 
-      RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle non-key event=" << event << ":" << event_name_fltkrps(event)
+      RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle non-key event="
+		    << fltk_event_string_rps(event)
                     <<  std::endl
                     << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
     }
-  RPS_DEBUG_LOG(GUI, "handled event=" << event
-                << ":" <<  event_name_fltkrps(event) << " -> h=" << h
+  RPS_DEBUG_LOG(GUI, "handled event="  
+		<< fltk_event_string_rps(event)
+		<<  std::endl << " -> h=" << h
                 << std::endl);
   return h;
 } // end Fltk_Editor_rps::handle
