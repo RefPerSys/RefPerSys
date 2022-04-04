@@ -412,8 +412,9 @@ Fltk_MainTile_rps::handle(int event)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_MainTile_rps::event"));
   int h = Fl_Tile::handle(event);
-  RPS_DEBUG_LOG(GUI, "Fltk_MainTile_rps::handle @" << (void*)this
-                << " event#" << event << ":" << event_name_fltkrps(event) << " -> h=" << h);
+  RPS_DEBUG_LOG(GUI, "Fltk_MainTile_rps::handled @" << (void*)this
+                << " mainwin#" << mtil_mainwin->rank()
+                << " event: " << fltk_event_string_rps(event) << " -> h=" << h);
   return h;
 } // end Fltk_MainTile_rps::handle
 
@@ -515,7 +516,7 @@ Fltk_Editor_rps::handle(int event)
   // https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
   int h = 0;
   RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle event="
-		<< fltk_event_string_rps(event) << std::endl
+                << fltk_event_string_rps(event) << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
   if (event == FL_KEYUP || event == FL_KEYDOWN)
     {
@@ -566,13 +567,13 @@ Fltk_Editor_rps::handle(int event)
     {
 
       RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle non-key event="
-		    << fltk_event_string_rps(event)
+                    << fltk_event_string_rps(event)
                     <<  std::endl
                     << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
     }
-  RPS_DEBUG_LOG(GUI, "handled event="  
-		<< fltk_event_string_rps(event)
-		<<  std::endl << " -> h=" << h
+  RPS_DEBUG_LOG(GUI, "handled event="
+                << fltk_event_string_rps(event)
+                <<  std::endl << " -> h=" << h
                 << std::endl);
   return h;
 } // end Fltk_Editor_rps::handle
