@@ -204,7 +204,8 @@ fltk_event_string_rps(int event)
           char kbuf[32];
           memset (kbuf, 0, sizeof(kbuf));
           snprintf(kbuf, sizeof(kbuf), "%d=%#x", evkey, evkey);
-          out << "key " << kbuf << ' ' << Rps_QuotedC_String(ktext).c_str();
+          out << "key " << kbuf << " `" << Rps_QuotedC_String(ktext).c_str()
+	      << '`';
         };
         }
     } // end FL_KEYUP or FL_KEYDOWN
