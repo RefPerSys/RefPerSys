@@ -30,13 +30,19 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Notice: this file is compiled with preprocessor symbol 
  ******************************************************************************/
 
 #include "refpersys.hh"
 
 #include "readline/readline.h"
 
-
+#if !defined(RPSFLTK) && !defined(RPSFOX)
+#error one of RPSFLTK or RPSFOX should be defined in compilation command
+#elif defined(RPSFLTK) && defined(RPSFOX)
+#error RPSFLTK and RPSFOX cannot be both defined
+#endif /*RPSFOX or RPSFOX*/
 
 
 extern "C" const char rps_main_gitid[];
@@ -202,6 +208,7 @@ struct argp_option rps_progoptions[] =
     "Try the help command for details.", //
     /*group:*/0 ///
   },
+#if RPSFLTK
   /* ======= FLTK options  ======= */
   {/*name:*/ "fltk", ///
     /*key:*/ RPSPROGOPT_FLTK, ///
@@ -212,6 +219,7 @@ struct argp_option rps_progoptions[] =
     "\t e.g. --fltk=bg:pink or --fltk:iconic\n", //
     /*group:*/0 ///
   },
+#endif /*RPSFLTK*/
   /* ======= edit the C++ code of  a temporary plugin after load ======= */
   {/*name:*/ "cplusplus-editor-after-load", ///
     /*key:*/ RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD, ///
@@ -939,6 +947,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_run_command_after_load = arg;
     }
     return 0;
+#ifdef RPSFLTK
     case RPSPROGOPT_FLTK:
     {
       rps_fltk_gui=true;
@@ -946,6 +955,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         add_fltk_arg_rps(arg);
     }
     return 0;
+#endif /*RPSFLTK*/
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:
     {
       void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
@@ -1019,7 +1029,9 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " parser generator: " << rps_gnubison_version << std::endl
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
+#ifdef RPSFLTK
                     << " FLTK toolkit API version " << fltk_api_version_rps() << std::endl
+#endif /*RPSFLTK*/
                     << " made with: " << rps_makefile << std::endl
                     << " running on " << rps_hostname();
           {
@@ -1193,6 +1205,7 @@ rps_run_application(int &argc, char **argv)
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after repl")
                     << std::endl);
     }
+#ifdef RPSFLTK
   else if (rps_fltk_gui)
     {
       extern void guifltk_initialize_rps(void);
@@ -1204,6 +1217,7 @@ rps_run_application(int &argc, char **argv)
       RPS_INFORMOUT("After running guifltk_run_application_rps" << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after GUI"));
     }
+#endif /*RPSFLTK*/
   else
     {
       RPS_WARNOUT("rps_run_application incomplete"

@@ -39,8 +39,9 @@ RPS_GIT_ORIGIN := $(shell git remote -v | grep "RefPerSys/RefPerSys.git" | head 
 RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -1 | awk '{print $$1}')
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
-RPS_CORE_SOURCES:= $(sort $(filter-out gui, $(wildcard *_rps.cc)))
+RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcard *_rps.cc)))
 RPS_FLTK_SOURCES:=  $(sort $(wildcard *fltk*_rps.cc))
+RPS_FOX_SOURCES:=  $(sort $(wildcard *fox*_rps.cc))
 #RPS_GTKMM_SOURCES:= $(sort $(wildcard *gtk*_rps.cc))
 RPS_BISON_SOURCES:=  $(sort $(wildcard *_rps.yy))
 
@@ -57,6 +58,8 @@ RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
 RPS_FLTK_CXXFLAGS = $(shell fltk-config  --cxxflags)
 RPS_FLTK_LIBES = $(shell fltk-config --ldflags)
+RPS_FOX_CXXFLAGS = $(shell fox-config  --cflags)
+RPS_FOX_LIBES = $(shell fox-config --libs)
 
 ### The optional file $HOME/.refpersys.mk could contain definitions like
 ###     # file ~/.refpersys.mk
@@ -135,20 +138,21 @@ all:
 	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
 	sync &
-	$(MAKE) -$(MAKEFLAGS) refpersys
+	$(MAKE) -$(MAKEFLAGS) refpersys 
+	$(MAKE) -$(MAKEFLAGS) foxrefpersys 
 	sync
 
 .SECONDARY:  __timestamp.c
 
-refpersys: $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
+refpersys: _fltk-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
 	-sync
-	$(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic $(RPS_CORE_OBJECTS)  __timestamp.o \
+	$(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic _fltk-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS)   __timestamp.o \
 	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_FLTK_LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
-sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
+sanitized-refpersys:   _fltk-main_rps.sanit.o $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
 	$(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
            $(RPS_SANITIZED_CORE_OBJECTS)  __timestamp.o \
            $(LIBES) $(RPS_FLTK_LIBES) -o $@-tmp
@@ -156,6 +160,14 @@ sanitized-refpersys:  $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANITIZED_BISON_OBJEC
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
+
+foxrefpersys:  _fox-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FOX_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
+	$(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic _fox-main_rps.o $(RPS_CORE_OBJECTS) \
+                 $(RPS_FOX_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o \
+	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_FOX_LIBES) -o $@-tmp
+	$(MV) --backup $@-tmp $@
+	$(MV) --backup __timestamp.c __timestamp.c~
+	$(RM) __timestamp.o
 
 ## the below target don't work yet
 #- dbg-refpersys:  $(RPS_DEBUG_CORE_OBJECTS) __timestamp.o
@@ -175,9 +187,21 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -o $@ $<
 	sync
 
+_fox-main_rps.o: main_rps.cc  refpersys.hh.gch
+	$(RPS_COMPILER_TIMER)  $(COMPILE.cc)  -DRPSFOX  $(COMPILE.cc) -o $@ $<
+	sync
+_fltk-main_rps.o: main_rps.cc  refpersys.hh.gch
+	$(RPS_COMPILER_TIMER)  $(COMPILE.cc) -DRPSFLTK  $(COMPILE.cc) -o $@ $<
+	sync
 
 guifltk_rps.o: guifltk_rps.cc refpersys.hh.gch
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_FLTK_CXXFLAGS) -DRPSFLTK -o $@ $<
+	sync
+
+
+
+guifox_rps.o: guifox_rps.cc refpersys.hh.gch
+	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_FOX_CXXFLAGS) -DRPSFOX  -o $@ $<
 	sync
 
 
@@ -206,7 +230,7 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 
 ################
 clean:
-	$(RM) *.o *.orig *~ refpersys sanitized-refpersys *.gch *~ _build.time
+	$(RM) *.o *.orig *~ refpersys sanitized-refpersys foxrefpersys *.gch *~ _build.time
 	$(RM) *.so
 	$(RM) *.moc.hh
 	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~
