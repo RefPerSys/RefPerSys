@@ -38,14 +38,21 @@
 
 bool rps_fox_gui;
 
-std::vector<const char*> fox_args_vect_rps;
+std::vector<char*> fox_args_vect_rps;
 
+
+static void delete_fox_app_on_exit_rps(void)
+{
+  FXApp* a= FXApp::instance();
+  if (a)
+    delete a;
+} // end delete_fox_app_on_exit_rps
 
 void
 add_fox_arg_rps(char*arg)
 {
   if (fox_args_vect_rps.empty())
-    fox_args_vect_rps.push_back(rps_progname);
+    fox_args_vect_rps.push_back((char*)rps_progname);
   if (arg)
     fox_args_vect_rps.push_back(arg);
 } // end add_fox_arg_rps
@@ -53,8 +60,14 @@ add_fox_arg_rps(char*arg)
 void
 guifox_initialize_rps(void)
 {
-  RPS_FATAL("unimplemented guifox_initialize_rps");
-#warning unimplemented guifox_initialize_rps
+  if (fox_args_vect_rps.empty())
+    fox_args_vect_rps.push_back((char*)rps_progname);
+  fox_args_vect_rps.push_back(nullptr);
+  /// the sole FXApp is accessible as FXApp::instance()
+  auto ap = new FXApp("foxrefpersys", "refpersys.org");
+  static int foxargc = fox_args_vect_rps.size()-1;
+  ap->init(foxargc,fox_args_vect_rps.data());
+  atexit(delete_fox_app_on_exit_rps);
 } // end guifox_initialize_rps
 
 
