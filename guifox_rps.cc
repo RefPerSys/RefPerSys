@@ -40,6 +40,36 @@ bool rps_fox_gui;
 
 std::vector<char*> fox_args_vect_rps;
 
+class Fox_Main_Window_Rps: public FXMainWindow {
+  FXDECLARE(Fox_Main_Window_Rps);
+protected:
+  FXMenuBar* fxmwin_menubar;
+  Fox_Main_Window_Rps() {};
+public:
+  Fox_Main_Window_Rps(FXApp*);
+  virtual ~Fox_Main_Window_Rps();
+};				// end Fox_Main_Window_Rps
+
+Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
+  FXMainWindow(ap, FXString("foxrepersys")) {
+} // end Fox_Main_Window_Rps::Fox_Main_Window_Rps
+
+Fox_Main_Window_Rps::~Fox_Main_Window_Rps() {
+  delete fxmwin_menubar;
+} // end Fox_Main_Window_Rps::~Fox_Main_Window_Rps
+
+// Map
+FXDEFMAP(Fox_Main_Window_Rps) Fox_Main_Window_Map_rps[]={
+  };
+
+//  implementation
+FXIMPLEMENT(Fox_Main_Window_Rps,FXMainWindow,Fox_Main_Window_Map_rps,ARRAYNUMBER(Fox_Main_Window_Map_rps))
+
+
+
+
+
+
 
 static void delete_fox_app_on_exit_rps(void)
 {
@@ -74,8 +104,7 @@ guifox_initialize_rps(void)
 void
 guifox_run_application_rps(void)
 {
-  RPS_FATAL("unimplemented guifox_run_application_rps");
-#warning unimplemented guifox_run_application_rps
+  new Fox_Main_Window_Rps(FXApp::instance());
 } // end of guifox_run_application_rps
 
 //// end of file guifox_rps.cc
