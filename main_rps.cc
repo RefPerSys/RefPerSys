@@ -31,7 +31,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Notice: this file is compiled with preprocessor symbol 
+ * Notice: this file is compiled with preprocessor symbol RPSFLTK or
+ * RPSFOX -but not both- defined at compilation command.
  ******************************************************************************/
 
 #include "refpersys.hh"
@@ -956,6 +957,15 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     }
     return 0;
 #endif /*RPSFLTK*/
+#ifdef RPSFOX
+    case RPSPROGOPT_FOX:
+    {
+      rps_fox_gui=true;
+      if (arg)
+        add_fox_arg_rps(arg);
+    }
+    return 0;
+#endif /*RPSFOX*/
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:
     {
       void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
@@ -1212,10 +1222,24 @@ rps_run_application(int &argc, char **argv)
       extern void guifltk_run_application_rps();
       guifltk_initialize_rps();
       RPS_INFORMOUT("Before running guifltk_run_application_rps" << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before GUI"));
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before FLTK GUI"));
       guifltk_run_application_rps();
       RPS_INFORMOUT("After running guifltk_run_application_rps" << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after GUI"));
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after FLTK GUI"));
+    }
+#endif /*RPSFLTK*/
+  ////
+#ifdef RPSFOX
+  else if (rps_fox_gui)
+    {
+      extern void guifox_initialize_rps(void);
+      extern void guifox_run_application_rps();
+      guifox_initialize_rps();
+      RPS_INFORMOUT("Before running guifox_run_application_rps" << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before FOX GUI"));
+      guifox_run_application_rps();
+      RPS_INFORMOUT("After running guifox_run_application_rps" << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after FOX GUI"));
     }
 #endif /*RPSFLTK*/
   else

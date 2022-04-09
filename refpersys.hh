@@ -211,10 +211,23 @@ extern "C" bool rps_batch;
 extern "C" bool rps_disable_aslr;
 
 extern "C" bool rps_run_repl;
-extern "C" bool rps_gtkmm_gui;
+
+#ifdef RPSFLTK
+//// for FLTK graphical user interface
 extern "C" bool rps_fltk_gui;
+extern "C" int fltk_api_version_rps(void);
 extern "C" void add_fltk_arg_rps(char*arg);
-extern "C" void add_gtkmm_arg_rps(char*arg);
+extern "C" void guifltk_initialize_rps(void);
+#endif /*RPSFLTK*/
+
+
+#ifdef RPSFOX
+//// for FOX graphical user interface
+extern "C" bool rps_fox_gui;
+extern "C" int fox_api_version_rps(void);
+extern "C" void add_fox_arg_rps(char*arg);
+extern "C" void guifox_initialize_rps(void);
+#endif /*RPSFOX*/
 
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_common_state;
@@ -436,8 +449,12 @@ enum rps_progoption_en
   RPSPROGOPT_JOBS='j',
   RPSPROGOPT_DUMP='D',
   RPSPROGOPT_COMMAND='c',
+#ifdef RPSFLTK
   RPSPROGOPT_FLTK='F',		// trhe FLTK graphical user toolkit
-
+#endif
+#ifdef RPSFOX
+  RPSPROGOPT_FOX='X',		// the FOX graphical user toolkit
+#endif
   RPSPROGOPT_HOMEDIR=1000,
   RPSPROGOPT_RANDOMOID,
   RPSPROGOPT_TYPEINFO,
@@ -4430,13 +4447,7 @@ public:
 #define RPS_INSTALL_NAMED_ROOT_OB(Oid,Nam) extern "C" Rps_ObjectRef RPS_SYMB_OB(Nam);
 #include "generated/rps-names.hh"
 
-//// for FLTK graphical user interface
-extern "C" int fltk_api_version_rps(void);
-extern "C" void add_fltk_arg_rps(char*arg);
-extern "C" void guifltk_initialize_rps(void);
 
-/// for the GTKmm graphical interface
-extern "C" const char*gtkmm_version_rps(void);
 
 
 extern "C" Rps_CallFrame*rps_edit_cplusplus_callframe;
