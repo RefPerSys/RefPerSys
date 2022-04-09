@@ -193,10 +193,10 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 	sync
 
 _fox-main_rps.o: main_rps.cc  refpersys.hh.gch
-	$(RPS_COMPILER_TIMER)  $(COMPILE.cc)  -DRPSFOX  $(COMPILE.cc) -o $@ $<
+	$(RPS_COMPILER_TIMER)  $(COMPILE.cc) -c  -DRPSFOX  -o $@ $<
 	sync
 _fltk-main_rps.o: main_rps.cc  refpersys.hh.gch
-	$(RPS_COMPILER_TIMER)  $(COMPILE.cc) -DRPSFLTK  $(COMPILE.cc) -o $@ $<
+	$(RPS_COMPILER_TIMER)  $(COMPILE.cc) -c -DRPSFLTK  -o $@ $<
 	sync
 
 guifltk_rps.o: guifltk_rps.cc refpersys.hh.gch
