@@ -36,6 +36,33 @@
 
 #include "fx.h"
 
+bool rps_fox_gui;
 
+std::vector<const char*> fox_args_vect_rps;
+
+
+void
+add_fox_arg_rps(char*arg)
+{
+  if (fox_args_vect_rps.empty())
+    fox_args_vect_rps.push_back(rps_progname);
+  if (arg)
+    fox_args_vect_rps.push_back(arg);
+} // end add_fox_arg_rps
+
+void
+guifox_initialize_rps(void)
+{
+  RPS_FATAL("unimplemented guifox_initialize_rps");
+#warning unimplemented guifox_initialize_rps
+} // end guifox_initialize_rps
+
+
+void
+guifox_run_application_rps(void)
+{
+  RPS_FATAL("unimplemented guifox_run_application_rps");
+#warning unimplemented guifox_run_application_rps
+} // end of guifox_run_application_rps
 
 //// end of file guifox_rps.cc
