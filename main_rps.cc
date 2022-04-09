@@ -216,11 +216,23 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ "FLTKOPTION", ///
     /*flags:*/ OPTION_ARG_OPTIONAL, ///
     /*doc:*/ "run a graphical user interface using FLTK (see fltk.org)\n"
-    "\t passing the optional FLTKOPTIION to that toolkit\n"
+    "\t passing the optional FLTKOPTION to that toolkit\n"
     "\t e.g. --fltk=bg:pink or --fltk:iconic\n", //
     /*group:*/0 ///
   },
 #endif /*RPSFLTK*/
+#if RPSFOX
+  /* ======= FOX options  ======= */
+  {/*name:*/ "fox", ///
+    /*key:*/ RPSPROGOPT_FOX, ///
+    /*arg:*/ "FOXOPTION", ///
+    /*flags:*/ OPTION_ARG_OPTIONAL, ///
+    /*doc:*/ "run a graphical user interface using FOX (see fox-toolkit.org)\n"
+    "\t passing the optional FOXOPTION to that toolkit (see its FXApp.cpp file)\n"
+    "\t e.g. --fox:sync or --fox:config=FOXCONFIGFILE\n", //
+    /*group:*/0 ///
+  },
+#endif /*RPSFOX*/
   /* ======= edit the C++ code of  a temporary plugin after load ======= */
   {/*name:*/ "cplusplus-editor-after-load", ///
     /*key:*/ RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD, ///
