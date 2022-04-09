@@ -1218,6 +1218,7 @@ rps_run_application(int &argc, char **argv)
 #ifdef RPSFLTK
   else if (rps_fltk_gui)
     {
+#pragma message "main_rps.cc with RPSFLTK:" __DATE__ "@" __TIME__
       extern void guifltk_initialize_rps(void);
       extern void guifltk_run_application_rps();
       guifltk_initialize_rps();
@@ -1232,6 +1233,7 @@ rps_run_application(int &argc, char **argv)
 #ifdef RPSFOX
   else if (rps_fox_gui)
     {
+#pragma message "main_rps.cc with RPSFOX:" __DATE__ "@" __TIME__
       extern void guifox_initialize_rps(void);
       extern void guifox_run_application_rps();
       guifox_initialize_rps();
