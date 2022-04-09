@@ -48,6 +48,7 @@ RPS_BISON_SOURCES:=  $(sort $(wildcard *_rps.yy))
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_FLTK_OBJECTS = $(patsubst %.cc, %.o, $(RPS_FLTK_SOURCES))
+RPS_FOX_OBJECTS = $(patsubst %.cc, %.o, $(RPS_FOX_SOURCES))
 #RPS_GTKMM_OBJECTS = $(patsubst %.cc, %.o, $(RPS_GTKMM_SOURCES))
 RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
 #RPS_QT_OBJECTS = $(patsubst %.cc, %.o, $(RPS_QT_SOURCES))
@@ -145,8 +146,9 @@ all:
 .SECONDARY:  __timestamp.c
 
 refpersys: _fltk-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
+	-echo $@: RPS_FLTK_OBJECTS= $(RPS_FLTK_OBJECTS)
 	-sync
-	$(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic _fltk-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS)   __timestamp.o \
+	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic _fltk-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS)   __timestamp.o \
 	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_FLTK_LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
@@ -162,7 +164,10 @@ sanitized-refpersys:   _fltk-main_rps.sanit.o $(RPS_SANITIZED_CORE_OBJECTS)  $(R
 
 
 foxrefpersys:  _fox-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FOX_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
-	$(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic _fox-main_rps.o $(RPS_CORE_OBJECTS) \
+	-echo $@: RPS_FOX_OBJECTS= $(RPS_FOX_OBJECTS)
+	-sync
+	$(RPS_COMPILER_TIMER) $(LINK.cc)  -DFOXREFPERYS_BUILD  $(RPS_BUILD_CODGENFLAGS) \
+                 -rdynamic -pie -Bdynamic _fox-main_rps.o $(RPS_CORE_OBJECTS) \
                  $(RPS_FOX_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o \
 	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_FOX_LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
