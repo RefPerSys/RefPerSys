@@ -51,7 +51,14 @@ public:
 };				// end Fox_Main_Window_Rps
 
 Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
-  FXMainWindow(ap, FXString("foxrepersys")) {
+  FXMainWindow(ap, FXString("foxrepersys")),
+  fxmwin_menubar(nullptr) {
+#warning Fox_Main_Window_Rps::Fox_Main_Window_Rps should build the fxmwin_menubar
+  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::Fox_Main_Window_Rps ap@"
+		<< (void*)ap << " this@" << (void*)this
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Fox_Main_Window_Rps::Fox_Main_Window_Rps"));
+  //// TODO: create the fxmwin_menubar
 } // end Fox_Main_Window_Rps::Fox_Main_Window_Rps
 
 Fox_Main_Window_Rps::~Fox_Main_Window_Rps() {
