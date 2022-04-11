@@ -97,6 +97,8 @@ guifox_initialize_rps(void)
   auto ap = new FXApp("foxrefpersys", "refpersys.org");
   static int foxargc = fox_args_vect_rps.size()-1;
   ap->init(foxargc,fox_args_vect_rps.data());
+  RPS_DEBUG_LOG(GUI, "guifox_initialize_rps ap@" << (void*)ap
+		<< RPS_FULL_BACKTRACE_HERE(1, "guifox_initialize_rps"));
   atexit(delete_fox_app_on_exit_rps);
 } // end guifox_initialize_rps
 
@@ -104,7 +106,10 @@ guifox_initialize_rps(void)
 void
 guifox_run_application_rps(void)
 {
-  new Fox_Main_Window_Rps(FXApp::instance());
+  auto mainwin=new Fox_Main_Window_Rps(FXApp::instance());
+  RPS_DEBUG_LOG(GUI, "guifox_initialize_rps app@" << FXApp::instance()
+		<< " mainwin@" << (void*)mainwin
+		<< RPS_FULL_BACKTRACE_HERE(1, "guifox_initialize_rps"));
 } // end of guifox_run_application_rps
 
 //// end of file guifox_rps.cc
