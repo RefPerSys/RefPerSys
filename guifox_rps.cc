@@ -54,6 +54,9 @@ Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
   FXMainWindow(ap, FXString("foxrepersys")),
   fxmwin_menubar(nullptr) {
 #warning Fox_Main_Window_Rps::Fox_Main_Window_Rps should build the fxmwin_menubar
+  auto topdock=new FXDockSite(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X);
+  auto dragshell1=new FXToolBarShell(this,FRAME_RAISED);
+  fxmwin_menubar = new FXMenuBar(topdock,dragshell1,LAYOUT_DOCK_NEXT|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|FRAME_RAISED); 
   RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::Fox_Main_Window_Rps ap@"
 		<< (void*)ap << " this@" << (void*)this
 		<< std::endl
@@ -113,10 +116,17 @@ guifox_initialize_rps(void)
 void
 guifox_run_application_rps(void)
 {
+  auto app = FXApp::instance();
   auto mainwin=new Fox_Main_Window_Rps(FXApp::instance());
-  RPS_DEBUG_LOG(GUI, "guifox_initialize_rps app@" << FXApp::instance()
+  RPS_DEBUG_LOG(GUI, "guifox_run_application_rps app@" << (void*)app
 		<< " mainwin@" << (void*)mainwin
-		<< RPS_FULL_BACKTRACE_HERE(1, "guifox_initialize_rps"));
+		<< RPS_FULL_BACKTRACE_HERE(1, "guifox_run_application_rps"));
+  app->create();
+  RPS_DEBUG_LOG(GUI, "guifox_initialize_rps created app@" << (void*)app);
+  int r = app->run();;
+  RPS_DEBUG_LOG(GUI, "guifox_run_application_rps did run app@" << (void*)app
+		<< " r=" << r <<std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "ending guifox_run_application_rps"));
 } // end of guifox_run_application_rps
 
 //// end of file guifox_rps.cc
