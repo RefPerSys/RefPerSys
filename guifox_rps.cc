@@ -48,6 +48,12 @@ protected:
 public:
   Fox_Main_Window_Rps(FXApp*);
   virtual ~Fox_Main_Window_Rps();
+  enum {
+    ID_XXX=FXMainWindow::ID_LAST,
+    /// TODO: we probably need our own IDs....
+    ID_LAST
+    };
+#warning missing onCmdXXX(FXObject*,FXSelector,void*) declarations in Fox_Main_Window_Rps
 };				// end Fox_Main_Window_Rps
 
 Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
@@ -56,28 +62,42 @@ Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
 #warning Fox_Main_Window_Rps::Fox_Main_Window_Rps should build the fxmwin_menubar
   auto topdock=new FXDockSite(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X);
   auto dragshell1=new FXToolBarShell(this,FRAME_RAISED);
-  fxmwin_menubar = new FXMenuBar(topdock,dragshell1,LAYOUT_DOCK_NEXT|LAYOUT_SIDE_TOP|LAYOUT_FILL_X|FRAME_RAISED); 
+  //// TODO: create the fxmwin_menubar
+  fxmwin_menubar = new FXMenuBar(topdock,dragshell1, //
+				 LAYOUT_DOCK_NEXT    //
+				 |LAYOUT_SIDE_TOP    //
+				 |LAYOUT_FILL_X      //
+				 |FRAME_RAISED);
   RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::Fox_Main_Window_Rps ap@"
 		<< (void*)ap << " this@" << (void*)this
+		<< " fxmwin_menubar@" << (void*)fxmwin_menubar
 		<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "Fox_Main_Window_Rps::Fox_Main_Window_Rps"));
-  //// TODO: create the fxmwin_menubar
 } // end Fox_Main_Window_Rps::Fox_Main_Window_Rps
 
+
 Fox_Main_Window_Rps::~Fox_Main_Window_Rps() {
+  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::~Fox_Main_Window_Rps this@" << (void*)this
+		<< " fxmwin_menubar@" << (void*)fxmwin_menubar
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Fox_Main_Window_Rps::~Fox_Main_Window_Rps"));
   delete fxmwin_menubar;
 } // end Fox_Main_Window_Rps::~Fox_Main_Window_Rps
 
 // Map
 FXDEFMAP(Fox_Main_Window_Rps) Fox_Main_Window_Map_rps[]={
+  /// FXMAPFUNC(<selector>,<id>,<handler>),
   };
 
 //  implementation
 FXIMPLEMENT(Fox_Main_Window_Rps,FXMainWindow,Fox_Main_Window_Map_rps,ARRAYNUMBER(Fox_Main_Window_Map_rps))
 
 
-
-
+#warning missing Fox_Main_Window_Rps::onCmdXXX implementations
+//// missing handlers, like
+// long Fox_Main_Window_Rps::onCmdXXX(FXObject*,FXSelector,void*){
+//  return 1;
+//  }
 
 
 
