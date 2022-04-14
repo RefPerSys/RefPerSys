@@ -522,6 +522,8 @@ Fltk_Editor_rps::handle(int event)
   if (event == FL_KEYUP || event == FL_KEYDOWN)
     {
       const char*ktext = Fl::event_text();
+      RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle event="
+		    << fltk_event_string_rps(event) << " ktext=" << ktext);
       bool specialkey = false;
       if (Fl::event_key() == FL_Escape)
         {
@@ -546,6 +548,10 @@ Fltk_Editor_rps::handle(int event)
           specialkey = true;
           ktext = kbuf;
         }
+      RPS_DEBUG_LOG(GUI, " keyboard event event="
+		    << fltk_event_string_rps(event) << ' '
+		    << (specialkey?"special":"plain") << " key" << std::endl
+		    << RPS_FULL_BACKTRACE_HERE(1, "Fltk_Editor_rps::handle"));
       if (!specialkey)
         {
           h = text_editor_handle(event);
