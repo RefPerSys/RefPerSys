@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2021 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2022 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -2156,6 +2156,28 @@ Rps_Dumper::write_manifest_file(void)
   }
   /// this is not used for loading, but could be useful for other purposes.
   jmanifest["origitid"] = Json::Value (rps_gitid);
+  {
+    time_t nowt = 0;
+    time(&nowt);
+    if (nowt > 0)
+      {
+        struct tm nowtm = {};
+        memset (&nowtm, 0, sizeof(nowtm));
+        if (gmtime_r(&nowt, &nowtm) != nullptr)
+          {
+            char datbuf[64];
+            memset (datbuf, 0, sizeof(datbuf));
+            if (strftime(datbuf, sizeof(datbuf), "%Y %b %d", &nowtm) && datbuf[0])
+              jmanifest["dumpdate"] = Json::Value (datbuf);
+          }
+      }
+  }
+  if (rps_progname)
+    jmanifest["progname"] = Json::Value (rps_progname);
+  if (rps_timestamp)
+    jmanifest["progtimestamp"] = Json::Value (rps_timestamp);
+  if (rps_md5sum)
+    jmanifest["progmd5sum"] = Json::Value(rps_md5sum);
   jsonwriter->write(jmanifest, pouts.get());
   *pouts << std::endl <<  std::endl << "//// end of RefPerSys manifest file" << std::endl;
   RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file ending ... " << rps_gitid << std::endl);
