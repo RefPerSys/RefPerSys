@@ -141,9 +141,16 @@ guifox_run_application_rps(void)
   RPS_DEBUG_LOG(GUI, "guifox_run_application_rps app@" << (void*)app
 		<< " mainwin@" << (void*)mainwin
 		<< RPS_FULL_BACKTRACE_HERE(1, "guifox_run_application_rps"));
+  mainwin->layout();
+  RPS_DEBUG_LOG(GUI, "guifox_run_application_rps app@" << (void*)app
+		<< " mainwin@" << (void*)mainwin << " after layout");
+  mainwin->show();
+  RPS_DEBUG_LOG(GUI, "guifox_run_application_rps app@" << (void*)app
+		<< " mainwin@" << (void*)mainwin << " after show");
   app->create();
-  RPS_DEBUG_LOG(GUI, "guifox_initialize_rps created app@" << (void*)app);
-  int r = app->run();;
+  RPS_DEBUG_LOG(GUI, "guifox_initialize_rps created app@" << (void*)app << "before run"
+		<< RPS_FULL_BACKTRACE_HERE(1, "guifox_run_application_rps before run"));
+  int r = app->run();
   RPS_DEBUG_LOG(GUI, "guifox_run_application_rps did run app@" << (void*)app
 		<< " r=" << r <<std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "ending guifox_run_application_rps"));
