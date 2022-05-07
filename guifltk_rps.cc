@@ -666,7 +666,7 @@ void add_fltk_arg_rps(char*arg)
   char *argtail = nullptr;
   if (!strncmp(arg, "--fltk", 6))
     argtail = arg+6;
-  else if (!strncmp(arg,"-F"))
+  else if (!strncmp(arg,"-F", 2))
     argtail = arg+3;
   if (!argtail) return;
   char*colon = strchr(argtail, ':');
