@@ -663,11 +663,14 @@ void add_fltk_arg_rps(char*arg)
 {
   if (fltk_vector_arg_rps.empty())
     fltk_vector_arg_rps.push_back((char*)rps_progname);
-  RPS_ASSERT(!strncmp(arg,"--fltk",6));
-  char*argtail = arg+6;
+  char *argtail = nullptr;
+  if (!strncmp(arg, "--fltk", 6))
+    argtail = arg+6;
+  else if (!strncmp(arg,"-F"))
+    argtail = arg+3;
+  if (!argtail) return;
   char*colon = strchr(argtail, ':');
-  if (colon)
-    {
+  if (colon) {
       *colon = (char)0;
       fltk_vector_arg_rps.push_back(argtail);
       fltk_vector_arg_rps.push_back(colon+1);
