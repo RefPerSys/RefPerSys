@@ -238,6 +238,7 @@ class Fltk_Editor_rps : public Fl_Text_Editor
 {
   Fltk_MainWindow_rps* editor_mainwin;
   friend class RpsFltk_EditorSource;
+  int editor_evcnt;
 public:
   Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin, int X,int Y,int W,int H);
   Fltk_MainWindow_rps* mainwin()
@@ -250,6 +251,7 @@ public:
   };
   //// https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
   virtual int handle(int event);
+  int evcnt() const { return editor_evcnt; };
   /* The prettify function is colorizing and syntax-hightlighting the
      editor buffer.  It probably should be called no more than five
      times per second, e.g. with some delay after each key event. */
@@ -453,8 +455,10 @@ Fltk_MainWindow_rps::resize(int X, int Y, int W, int H)
                 << std::endl);
 } // end Fltk_MainWindow_rps::resize
 
+
+
 Fltk_Editor_rps::Fltk_Editor_rps(Fltk_MainWindow_rps*mainwin,int X,int Y,int W,int H)
-  : Fl_Text_Editor(X,Y,W,H),  editor_mainwin(mainwin)
+  : Fl_Text_Editor(X,Y,W,H),  editor_mainwin(mainwin), editor_evcnt(0)
 {
   RPS_ASSERT (mainwin != nullptr);
   buffer (mainwin->editor_buffer());
@@ -516,7 +520,8 @@ Fltk_Editor_rps::handle(int event)
 {
   // https://groups.google.com/u/1/g/fltkgeneral/c/61nWL2ryFts
   int h = 0;
-  RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle event="
+  editor_evcnt++;
+  RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle event#" << editor_evcnt << " "
                 << fltk_event_string_rps(event) << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
   if (event == FL_KEYUP || event == FL_KEYDOWN)
@@ -578,7 +583,7 @@ Fltk_Editor_rps::handle(int event)
                     <<  std::endl
                     << RPS_FULL_BACKTRACE_HERE(1,"Fltk_Editor_rps::handle"));
     }
-  RPS_DEBUG_LOG(GUI, "handled event="
+  RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle handled event#" << editor_evcnt << " "
                 << fltk_event_string_rps(event)
                 <<  std::endl << " -> h=" << h
                 << std::endl);
