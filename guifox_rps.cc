@@ -86,7 +86,15 @@ Fox_Main_Window_Rps::output(std::ostream&out) const {
 } // end Fox_Main_Window_Rps::output
 
 Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
-  FXMainWindow(ap, FXString("foxrepersys")),
+  FXMainWindow(ap, FXString("foxrepersys"),
+	       (FXIcon*)nullptr,
+	       (FXIcon*)nullptr,
+	       DECOR_ALL,
+	       100+((int)getpid()%256), //:x
+	       100+((int)getpid()%256), //:y
+	       600, //width
+	       300 //height
+	       ),
   fxmwin_menubar(nullptr),
   fxmwin_rank(++fxmwin_counter)
 {
