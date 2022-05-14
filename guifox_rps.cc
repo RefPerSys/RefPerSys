@@ -44,9 +44,12 @@ class Fox_Main_Window_Rps: public FXMainWindow {
   FXDECLARE(Fox_Main_Window_Rps);
 protected:
   FXMenuBar* fxmwin_menubar;
+  unsigned fxmwin_rank;
+  static unsigned fxmwin_counter;
   Fox_Main_Window_Rps() {};
 public:
   Fox_Main_Window_Rps(FXApp*);
+  void output(std::ostream&out) const;
   virtual ~Fox_Main_Window_Rps();
   enum {
     ID_XXX=FXMainWindow::ID_LAST,
@@ -56,9 +59,37 @@ public:
 #warning missing onCmdXXX(FXObject*,FXSelector,void*) declarations in Fox_Main_Window_Rps
 };				// end Fox_Main_Window_Rps
 
+std::ostream& operator << (std::ostream&out, const Fox_Main_Window_Rps&mwin)
+{
+  mwin.output(out);
+  return out;
+} // end operator << (std::ostream&out, const Fox_Main_Window_Rps&mwin)
+
+unsigned Fox_Main_Window_Rps::fxmwin_counter=0;
+
+void
+Fox_Main_Window_Rps::output(std::ostream&out) const {
+  out << "fox_main_window#" << fxmwin_rank
+      << "{x=" << getX() << ",y=" << getY()  << ",w=" << getWidth()
+      << ",h=" << getHeight();
+  if (!isEnabled())
+    out <<";disabled";
+  if (!isActive())
+    out << ";inactive";
+  if (hasFocus())
+    out << ";focused";
+  if (shown())
+    out << ";shown";
+  else
+    out << ";hidden";
+  out << "}";
+} // end Fox_Main_Window_Rps::output
+
 Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
   FXMainWindow(ap, FXString("foxrepersys")),
-  fxmwin_menubar(nullptr) {
+  fxmwin_menubar(nullptr),
+  fxmwin_rank(++fxmwin_counter)
+{
 #warning Fox_Main_Window_Rps::Fox_Main_Window_Rps should build the fxmwin_menubar
   auto topdock=new FXDockSite(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X);
   auto dragshell1=new FXToolBarShell(this,FRAME_RAISED);
@@ -68,7 +99,9 @@ Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
 				 |LAYOUT_SIDE_TOP    //
 				 |LAYOUT_FILL_X      //
 				 |FRAME_RAISED);
-  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::Fox_Main_Window_Rps ap@"
+  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::Fox_Main_Window_Rps#"
+		<< fxmwin_rank
+		<<" ap@"
 		<< (void*)ap << " this@" << (void*)this
 		<< " fxmwin_menubar@" << (void*)fxmwin_menubar
 		<< std::endl
@@ -77,7 +110,9 @@ Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
 
 
 Fox_Main_Window_Rps::~Fox_Main_Window_Rps() {
-  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::~Fox_Main_Window_Rps this@" << (void*)this
+  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::~Fox_Main_Window_Rps#"<<
+		fxmwin_rank
+		<< " this@" << (void*)this
 		<< " fxmwin_menubar@" << (void*)fxmwin_menubar
 		<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "Fox_Main_Window_Rps::~Fox_Main_Window_Rps"));
@@ -146,7 +181,7 @@ guifox_run_application_rps(void)
 		<< " mainwin@" << (void*)mainwin << " after layout");
   mainwin->show();
   RPS_DEBUG_LOG(GUI, "guifox_run_application_rps app@" << (void*)app
-		<< " mainwin@" << (void*)mainwin << " after show");
+		<< " mainwin=" << (*mainwin) << " after show");
   app->create();
   RPS_DEBUG_LOG(GUI, "guifox_initialize_rps created app@" << (void*)app << "before run"
 		<< RPS_FULL_BACKTRACE_HERE(1, "guifox_run_application_rps before run"));
