@@ -50,6 +50,7 @@ protected:
 public:
   Fox_Main_Window_Rps(FXApp*);
   void output(std::ostream&out) const;
+  void initialize(void);
   virtual ~Fox_Main_Window_Rps();
   enum {
     ID_XXX=FXMainWindow::ID_LAST,
@@ -100,16 +101,6 @@ Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
   fxmwin_menubar(nullptr),
   fxmwin_rank(++fxmwin_counter)
 {
-#warning Fox_Main_Window_Rps::Fox_Main_Window_Rps should build the fxmwin_menubar
-  //// TODO: create and fill the fxmwin_menubar
-  fxmwin_menubar = new FXMenuBar(this,nullptr, //
-				 LAYOUT_DOCK_NEXT    //
-				 |LAYOUT_SIDE_TOP    //
-				 |LAYOUT_FILL_X      //
-				 |FRAME_RAISED);
-  auto appmenu = new FXMenuPane(fxmwin_menubar);
-  new FXMenuTitle(fxmwin_menubar, "&App", nullptr, appmenu);
-  appmenu->show();
   RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::Fox_Main_Window_Rps#"
 		<< fxmwin_rank
 		<<" ap@"
@@ -119,6 +110,23 @@ Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
 		<< RPS_FULL_BACKTRACE_HERE(1, "Fox_Main_Window_Rps::Fox_Main_Window_Rps"));
 } // end Fox_Main_Window_Rps::Fox_Main_Window_Rps
 
+void
+Fox_Main_Window_Rps::initialize(void) {
+#warning Fox_Main_Window_Rps::initialize should build the fxmwin_menubar
+  //// TODO: create and fill the fxmwin_menubar
+  fxmwin_menubar = new FXMenuBar(this,nullptr, //
+				 LAYOUT_DOCK_NEXT    //
+				 |LAYOUT_SIDE_TOP    //
+				 |LAYOUT_FILL_X      //
+				 |FRAME_RAISED);
+  auto appmenu = new FXMenuPane(fxmwin_menubar);
+  new FXMenuTitle(fxmwin_menubar, "&App", nullptr, appmenu);
+  appmenu->show();
+  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::initialize " << (*this)
+		<< " appmenu@" << (void*)appmenu
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Fox_Main_Window_Rps::initialize"));		
+} // end Fox_Main_Window_Rps::initialize
 
 Fox_Main_Window_Rps::~Fox_Main_Window_Rps() {
   RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::~Fox_Main_Window_Rps#"<<
