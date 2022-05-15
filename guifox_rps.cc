@@ -195,6 +195,10 @@ guifox_run_application_rps(void)
   RPS_DEBUG_LOG(GUI, "guifox_run_application_rps app@" << (void*)app
 		<< " mainwin@" << (void*)mainwin
 		<< RPS_FULL_BACKTRACE_HERE(1, "guifox_run_application_rps"));
+  mainwin->initialize();
+  RPS_DEBUG_LOG(GUI, "guifox_run_application_rps app@" << (void*)app
+		<< " initialized mainwin@" << (void*)mainwin
+		<< ":" << (*mainwin));
   mainwin->layout();
   RPS_DEBUG_LOG(GUI, "guifox_run_application_rps app@" << (void*)app
 		<< " mainwin@" << (void*)mainwin << " after layout");
