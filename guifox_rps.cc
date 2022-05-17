@@ -145,11 +145,21 @@ Fox_Main_Window_Rps::initialize(void) {
   //// TODO: create and fill the fxmwin_menubar
   fxmwin_menubar = new Fox_Menubar_Rps(this);
   auto filemenu = new FXMenuPane(fxmwin_menubar);
-  new FXMenuCommand(filemenu,"&Quit\tCtl-Q",nullptr,getApp(),FXApp::ID_QUIT);
-  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::initialize " << (*this) << " fxmwin_menubar:" << (void*)fxmwin_menubar
+  auto quitcmd = new FXMenuCommand(filemenu,"&Quit\tCtl-Q",nullptr,getApp(),FXApp::ID_QUIT);
+  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::initialize " << (*this)
+		<< " fxmwin_menubar:" << (void*)fxmwin_menubar
+		<< " filemenu@" << (void*)filemenu
+		<< " quitcmd@" << (void*)quitcmd
 		<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "Fox_Main_Window_Rps::initialize"));
+  filemenu->show();
+  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::initialize " << (*this)
+		<< " show filemenu@" << (void*)filemenu);
+  quitcmd->show();
+  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::initialize " << (*this)
+		<< " show quitcmd@" << (void*)quitcmd);
   fxmwin_menubar->show();
+  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::initialize done " << (*this));
 } // end Fox_Main_Window_Rps::initialize
 
 
