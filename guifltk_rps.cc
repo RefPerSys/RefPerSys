@@ -530,20 +530,27 @@ Fltk_Editor_rps::handle(int event)
       RPS_DEBUG_LOG(GUI, "Fltk_Editor_rps::handle event="
 		    << fltk_event_string_rps(event) << " ktext=" << ktext);
       bool specialkey = false;
+      bool escapekey = false;
+      bool tabkey = false;
+      bool backspacekey = false;
+      int functionkeynum = -1;
       if (Fl::event_key() == FL_Escape)
         {
           ktext = "ESC";
           specialkey = true;
+	  escapekey = true;
         }
       else if (Fl::event_key() == FL_Tab)
         {
           ktext = "TAB";
           specialkey = true;
+	  tabkey = true;
         }
       else if (Fl::event_key() == FL_BackSpace)
         {
           ktext = "BACKSPACE";
           specialkey = false;
+	  backspacekey = true;
         }
       else if (Fl::event_key() > FL_F && Fl::event_key() < FL_F+10)
         {
@@ -551,13 +558,37 @@ Fltk_Editor_rps::handle(int event)
           memset (kbuf, 0, sizeof(kbuf));
           snprintf(kbuf, sizeof(kbuf), "F%d", Fl::event_key() - FL_F);
           specialkey = true;
+	  functionkeynum = Fl::event_key() - FL_F;
           ktext = kbuf;
         }
-      RPS_DEBUG_LOG(GUI, " keyboard event event="
+      RPS_DEBUG_LOG(GUI, "editor keyboard event event="
 		    << fltk_event_string_rps(event) << ' '
 		    << (specialkey?"special":"plain") << " key" << std::endl
 		    << RPS_FULL_BACKTRACE_HERE(1, "Fltk_Editor_rps::handle"));
-      if (!specialkey)
+      if (specialkey)
+	{
+#warning Fltk_Editor_rps::handle should handle special keys
+	  RPS_DEBUG_LOG(GUI, "edit special keyboard event#" << editor_evcnt 
+			<< ' ' << fltk_event_string_rps(event)
+			<< " ktext=" << ktext);
+	  if (escapekey) {
+	  RPS_DEBUG_LOG(GUI, "editor ESCAPE key event#"<< editor_evcnt 
+			<< ' ' << fltk_event_string_rps(event));
+	  // TODO: handle escape key in editor
+	  }
+	  else if (tabkey) {
+	  RPS_DEBUG_LOG(GUI, "editor TAB key event#"<< editor_evcnt 
+			<< ' ' << fltk_event_string_rps(event));
+	  // TODO: handle tab key in editor, doing autocompletion
+	  }
+	  else if (functionkeynum >= 0) {
+	    RPS_DEBUG_LOG(GUI, "editor function F" << functionkeynum
+			  << " key event#"<< editor_evcnt 
+			  << ' ' << fltk_event_string_rps(event));
+	    // TODO: define roles for some function keys in editor
+	  }
+	}
+      else // ordinary (non special) keyboard event
         {
           h = text_editor_handle(event);
         }
