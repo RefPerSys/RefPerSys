@@ -49,7 +49,9 @@ protected:
 public:
   static constexpr int mb_height = 14;
   void output(std::ostream&out) const;
-  Fox_Menubar_Rps(Fox_Main_Window_Rps*mwin);
+  Fox_Menubar_Rps(Fox_Main_Window_Rps*mwin,
+		  int x= -1, int y= -1, int w= -1, int h= -1);
+  virtual ~Fox_Menubar_Rps();
 };				// end class Fox_Menubar_Rps
 
 std::ostream& operator << (std::ostream&out, const Fox_Menubar_Rps&mbar)
@@ -94,14 +96,19 @@ std::ostream& operator << (std::ostream&out, const Fox_Main_Window_Rps&mwin)
   return out;
 } // end operator << (std::ostream&out, const Fox_Main_Window_Rps&mwin)
 
-Fox_Menubar_Rps::Fox_Menubar_Rps(Fox_Main_Window_Rps*mwin)
+Fox_Menubar_Rps::Fox_Menubar_Rps(Fox_Main_Window_Rps*mwin, int x, int y, int w, int h)
 : FXMenuBar(mwin, //
 	    0, // options
-	    1, //:x
-	    1, //:y
-	    mwin->getWidth()-2, //:w
-	    mb_height
-	    ){
+	    ((x>=0)?x:(mwin->getX()+1)), //:x
+	    ((y>=0)?y:(mwin->getY()+1)), //:y
+	    ((w>=0)?w:(mwin->getWidth()-2)), //:w
+	    ((h>=0)?h:mb_height) //:h
+	    )
+{
+  RPS_DEBUG_LOG(GUI, "Fox_Menubar_Rps::Fox_Menubar_Rps mwin=" << *mwin
+		<< "(x=" << x << ",y=" << y << ",w=" << w << ",h=" << h
+		<< " new @" << (void*)this << "=" << (*this) << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Fox_Menubar_Rps::Fox_Menubar_Rps"));
 } // end Fox_Menubar_Rps::Fox_Menubar_Rps
 
 unsigned Fox_Main_Window_Rps::fxmwin_counter=0;
@@ -144,6 +151,10 @@ Fox_Menubar_Rps::output(std::ostream&out) const {
 } // end Fox_Menubar_Rps::output
 
 
+Fox_Menubar_Rps::~Fox_Menubar_Rps() {
+  RPS_DEBUG_LOG(GUI, "Fox_Menubar_Rps::~Fox_Menubar_Rps this@" << (void*)this
+		<< ":" << (*this) << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Fox_Menubar_Rps::~Fox_Menubar_Rps"));
+} // end Fox_Menubar_Rps::~Fox_Menubar_Rps
 
 Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
   FXMainWindow(ap, FXString("foxrepersys"),
