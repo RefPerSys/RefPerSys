@@ -449,6 +449,7 @@ enum rps_progoption_en
   RPSPROGOPT_JOBS='j',
   RPSPROGOPT_DUMP='D',
   RPSPROGOPT_COMMAND='c',
+  RPSPROGOPT_INTERFACEFIFO='i',
 #ifdef RPSFLTK
   RPSPROGOPT_FLTK='F',		// trhe FLTK graphical user toolkit
 #endif

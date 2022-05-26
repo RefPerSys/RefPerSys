@@ -233,6 +233,15 @@ struct argp_option rps_progoptions[] =
     /*group:*/0 ///
   },
 #endif /*RPSFOX*/
+  /* ======= interface thru some FIFO  ======= */
+  {/*name:*/ "interface-fifo", ///
+   /*key:*/ RPSPROGOPT_INTERFACEFIFO, ///
+    /*arg:*/ "FIFO", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "use a pair of fifo(7) named FIFO.in and FIFO.out for communication"
+    , //
+    /*group:*/0 ///
+  },
   /* ======= edit the C++ code of  a temporary plugin after load ======= */
   {/*name:*/ "cplusplus-editor-after-load", ///
     /*key:*/ RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD, ///
@@ -331,6 +340,11 @@ thread_local Rps_Random Rps_Random::_rand_thr_;
 typedef std::function<void(void)> rps_todo_func_t;
 static std::vector<rps_todo_func_t> rps_main_todo_vect;
 static std::string rps_my_load_dir;
+static std::string rps_fifo_prefix;
+
+#warning missing code to deal with rps_fifo_prefix and --fifointerface program option
+
+
 static void rps_parse_program_arguments(int &argc, char**argv);
 
 static char rps_bufpath_homedir[384];
@@ -822,6 +836,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_command_vec.push_back(std::string(arg));
     }
     return 0;
+    case RPSPROGOPT_INTERFACEFIFO:
+      {
+	rps_fifo_prefix = std::string(arg);
+      }
+      return 0;
     case RPSPROGOPT_BATCH:
     {
       rps_batch = true;
