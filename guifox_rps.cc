@@ -153,7 +153,8 @@ Fox_Menubar_Rps::output(std::ostream&out) const {
 
 Fox_Menubar_Rps::~Fox_Menubar_Rps() {
   RPS_DEBUG_LOG(GUI, "Fox_Menubar_Rps::~Fox_Menubar_Rps this@" << (void*)this
-		<< ":" << (*this) << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Fox_Menubar_Rps::~Fox_Menubar_Rps"));
+		<< ":" << (*this) << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Fox_Menubar_Rps::~Fox_Menubar_Rps"));
 } // end Fox_Menubar_Rps::~Fox_Menubar_Rps
 
 Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
@@ -179,7 +180,6 @@ Fox_Main_Window_Rps::Fox_Main_Window_Rps(FXApp* ap):
 
 void
 Fox_Main_Window_Rps::initialize(void) {
-#warning Fox_Main_Window_Rps::initialize should build the fxmwin_menubar
   //// TODO: create and fill the fxmwin_menubar
   fxmwin_menubar = new Fox_Menubar_Rps(this);
   auto filemenu = new FXMenuPane(fxmwin_menubar);
@@ -197,15 +197,17 @@ Fox_Main_Window_Rps::initialize(void) {
   RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::initialize " << (*this)
 		<< " show quitcmd@" << (void*)quitcmd);
   fxmwin_menubar->show();
-  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::initialize done " << (*this));
+  RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::initialize done " << (*this)
+		<< " menubar:" << (*fxmwin_menubar));
 } // end Fox_Main_Window_Rps::initialize
 
 
 Fox_Main_Window_Rps::~Fox_Main_Window_Rps() {
   RPS_DEBUG_LOG(GUI, "Fox_Main_Window_Rps::~Fox_Main_Window_Rps#"<<
 		fxmwin_rank
-		<< " this@" << (void*)this
+		<< " this@" << (void*)this << ":" << (*this)
 		<< " fxmwin_menubar@" << (void*)fxmwin_menubar
+		<< ":" << (*fxmwin_menubar)
 		<< std::endl
 		<< RPS_FULL_BACKTRACE_HERE(1, "Fox_Main_Window_Rps::~Fox_Main_Window_Rps"));
   delete fxmwin_menubar;
