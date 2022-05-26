@@ -48,8 +48,15 @@ protected:
   Fox_Menubar_Rps() {};
 public:
   static constexpr int mb_height = 14;
+  void output(std::ostream&out) const;
   Fox_Menubar_Rps(Fox_Main_Window_Rps*mwin);
 };				// end class Fox_Menubar_Rps
+
+std::ostream& operator << (std::ostream&out, const Fox_Menubar_Rps&mbar)
+{
+  mbar.output(out);
+  return out;
+} // end operator << (std::ostream&out, const Fox_Main_Menubar_Rps&mbar)
 
 // Map
 FXDEFMAP(Fox_Menubar_Rps) Fox_Menubar_Map_rps[]={
@@ -77,6 +84,7 @@ public:
     /// TODO: we probably need our own IDs....
     ID_LAST
     };
+  Fox_Menubar_Rps* menubar() const { return fxmwin_menubar; };
 #warning missing onCmdXXX(FXObject*,FXSelector,void*) declarations in Fox_Main_Window_Rps
 };				// end Fox_Main_Window_Rps
 
@@ -115,6 +123,25 @@ Fox_Main_Window_Rps::output(std::ostream&out) const {
     out << ";hidden";
   out << "}";
 } // end Fox_Main_Window_Rps::output
+
+
+void
+Fox_Menubar_Rps::output(std::ostream&out) const {
+  out << "foxmenubar"
+      << "{x=" << getX() << ",y=" << getY()  << ",w=" << getWidth()
+      << ",h=" << getHeight();
+  if (!isEnabled())
+    out <<";disabled";
+  if (!isActive())
+    out << ";inactive";
+  if (hasFocus())
+    out << ";focused";
+  if (shown())
+    out << ";shown";
+  else
+    out << ";hidden";
+  out << "}";
+} // end Fox_Menubar_Rps::output
 
 
 
@@ -240,7 +267,8 @@ guifox_run_application_rps(void)
 		<< " mainwin@" << (void*)mainwin << " after layout:" << (*mainwin));
   mainwin->show();
   RPS_DEBUG_LOG(GUI, "guifox_run_application_rps app@" << (void*)app
-		<< " mainwin=" << (*mainwin) << " after show");
+		<< " mainwin=" << (*mainwin) << " after show menubar="
+		<< *(mainwin->menubar()));
   app->create();
   RPS_DEBUG_LOG(GUI, "guifox_initialize_rps created app@" << (void*)app << "before run"
 		<< RPS_FULL_BACKTRACE_HERE(1, "guifox_run_application_rps before run"));
