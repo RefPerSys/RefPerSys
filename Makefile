@@ -61,6 +61,8 @@ RPS_FLTK_CXXFLAGS = $(shell fltk-config  --cxxflags)
 RPS_FLTK_LIBES = $(shell fltk-config --ldflags)
 RPS_FOX_CXXFLAGS = $(shell fox-config  --cflags)
 RPS_FOX_LIBES = $(shell fox-config --libs)
+RPS_JSONRPC_CXXFLAGS = $(shell pkg-config  --cflags jsoncpp)
+RPS_JSONRPC_LIBES = $(shell pkg-config --libs jsoncpp)
 
 ### The optional file $HOME/.refpersys.mk could contain definitions like
 ###     # file ~/.refpersys.mk
@@ -137,19 +139,32 @@ LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 -include $(wildcard $$HOME/build-refpersys.mk)
 all:
 	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
+	if [ -f fltkrefpersys ] ; then  $(MV) -f --backup fltkrefpersys fltkrefpersys~ ; fi
+	if [ -f foxrefpersys ] ; then  $(MV) -f --backup foxrefpersys foxrefpersys~ ; fi
+	if [ -f jsonrpcrefpersys ] ; then  $(MV) -f --backup jsonrpcrefpersys jsonrpcrefpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
 	sync &
-	$(MAKE) -$(MAKEFLAGS) refpersys 
+	$(MAKE) -$(MAKEFLAGS) fltkrefpersys 
 	$(MAKE) -$(MAKEFLAGS) foxrefpersys 
+	$(MAKE) -$(MAKEFLAGS) jsonrpcrefpersys 
 	sync
 
 .SECONDARY:  __timestamp.c
 
-refpersys: _fltk-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
+fltkrefpersys: _fltk-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
 	-echo $@: RPS_FLTK_OBJECTS= $(RPS_FLTK_OBJECTS)
 	-sync
 	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic _fltk-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS)   __timestamp.o \
 	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_FLTK_LIBES) -o $@-tmp
+	$(MV) --backup $@-tmp $@
+	$(MV) --backup __timestamp.c __timestamp.c~
+	$(RM) __timestamp.o
+
+jsonrpcrefpersys: _jsonrpc-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_JSONRPC_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
+	-echo $@: RPS_JSONRPC_OBJECTS= $(RPS_JSONRPC_OBJECTS)
+	-sync
+	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic _jsonrpc-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_JSONRPC_OBJECTS)   __timestamp.o \
+	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_JSONRPC_LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
@@ -197,6 +212,9 @@ _fox-main_rps.o: main_rps.cc  refpersys.hh.gch
 	sync
 _fltk-main_rps.o: main_rps.cc  refpersys.hh.gch
 	$(RPS_COMPILER_TIMER)  $(COMPILE.cc) -c -DRPSFLTK  -o $@ $<
+	sync
+_jsonrpc-main_rps.o: main_rps.cc  refpersys.hh.gch
+	$(RPS_COMPILER_TIMER)  $(COMPILE.cc) -c -DRPSJSONRPC  -o $@ $<
 	sync
 
 guifltk_rps.o: guifltk_rps.cc refpersys.hh.gch

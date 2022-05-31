@@ -39,11 +39,15 @@
 
 #include "readline/readline.h"
 
-#if !defined(RPSFLTK) && !defined(RPSFOX)
-#error one of RPSFLTK or RPSFOX should be defined in compilation command
+#if !defined(RPSFLTK) && !defined(RPSFOX) && !defined(RPSJSONRPC)
+#error one of RPSFLTK or RPSFOX or RPSJSONRPC should be defined in compilation command
 #elif defined(RPSFLTK) && defined(RPSFOX)
 #error RPSFLTK and RPSFOX cannot be both defined
-#endif /*RPSFOX or RPSFOX*/
+#elif defined(RPSFLTK) && defined(RPSJSONRPC)
+#error RPSFLTK and RPSJSONRPC cannot be both defined
+#elif defined(RPSFOX) && defined(RPSJSONRPC)
+#error RPSFOX and RPSJSONRPC cannot be both defined
+#endif /*RPSFOX or RPSFOX or RPSJSONRPC*/
 
 
 extern "C" const char rps_main_gitid[];
@@ -342,7 +346,7 @@ static std::vector<rps_todo_func_t> rps_main_todo_vect;
 static std::string rps_my_load_dir;
 static std::string rps_fifo_prefix;
 
-#warning missing code to deal with rps_fifo_prefix and --fifointerface program option
+#warning missing code to deal with rps_fifo_prefix and --fifo-interface program option
 
 
 static void rps_parse_program_arguments(int &argc, char**argv);
