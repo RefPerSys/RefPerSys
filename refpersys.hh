@@ -456,6 +456,10 @@ enum rps_progoption_en
 #ifdef RPSFOX
   RPSPROGOPT_FOX='X',		// the FOX graphical user toolkit
 #endif
+#ifdef RPSJSONRPC
+  /// see also github.com/bstarynk/misc-basile/blob/master/mini-edit-JSONRPC.md
+  RPSPROGOPT_JSONRPC='J',      // no direct GUI, but use JSONRPC
+#endif
   RPSPROGOPT_HOMEDIR=1000,
   RPSPROGOPT_RANDOMOID,
   RPSPROGOPT_TYPEINFO,

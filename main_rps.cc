@@ -35,10 +35,6 @@
  * RPSFOX -but not both- defined at compilation command.
  ******************************************************************************/
 
-#include "refpersys.hh"
-
-#include "readline/readline.h"
-
 #if !defined(RPSFLTK) && !defined(RPSFOX) && !defined(RPSJSONRPC)
 #error one of RPSFLTK or RPSFOX or RPSJSONRPC should be defined in compilation command
 #elif defined(RPSFLTK) && defined(RPSFOX)
@@ -48,6 +44,10 @@
 #elif defined(RPSFOX) && defined(RPSJSONRPC)
 #error RPSFOX and RPSJSONRPC cannot be both defined
 #endif /*RPSFOX or RPSFOX or RPSJSONRPC*/
+
+#include "refpersys.hh"
+
+#include "readline/readline.h"
 
 
 extern "C" const char rps_main_gitid[];
@@ -237,12 +237,13 @@ struct argp_option rps_progoptions[] =
     /*group:*/0 ///
   },
 #endif /*RPSFOX*/
-  /* ======= interface thru some FIFO  ======= */
+  /* ======= interface thru some FIFO, relevant for JSONRPC  ======= */
   {/*name:*/ "interface-fifo", ///
    /*key:*/ RPSPROGOPT_INTERFACEFIFO, ///
     /*arg:*/ "FIFO", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "use a pair of fifo(7) named FIFO.in and FIFO.out for communication"
+    /*doc:*/ "use a pair of fifo(7) named FIFO.cmd (written) "
+    "and FIFO.out (read) for communication"
     , //
     /*group:*/0 ///
   },

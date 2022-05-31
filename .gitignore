@@ -7,6 +7,8 @@ _build.time
 *.orig
 refpersys
 foxrefpersys
+fltkrefpersys
+jsonrpcrefpersys
 sanitized-refpersys
 *.ii
 
