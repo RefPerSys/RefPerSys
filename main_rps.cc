@@ -345,6 +345,13 @@ thread_local Rps_Random Rps_Random::_rand_thr_;
 typedef std::function<void(void)> rps_todo_func_t;
 static std::vector<rps_todo_func_t> rps_main_todo_vect;
 static std::string rps_my_load_dir;
+
+// we may have a pair of FIFO to communicate with some external
+// process (for graphical user interface), perhaps mini-edit-fltk on
+// https://github.com/bstarynk/misc-basile/ ... The FIFO prefix is
+// $FIFOPREFIX. The messages from the GUI user interface to RefPerSys
+// are on $FIFOPREFIX.out; the messages from RefPerSys to that GUI
+// user interface are on $FIFOPREFIX.cmd
 static std::string rps_fifo_prefix;
 
 #warning missing code to deal with rps_fifo_prefix and --fifo-interface program option
@@ -653,7 +660,25 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
 
 
 
-
+////////////////////////////////////////////////////////////////
+void
+rps_extend_env(void)
+{
+  static char pidenv[64];
+  snprintf(pidenv, sizeof(pidenv), "REFPERSYS_PID=%d", (int)getpid());
+  putenv(pidenv);
+  static char gitenv[64];
+  snprintf(gitenv, sizeof(gitenv), "REFPERSYS_GITID=%s", rps_gitid);
+  putenv(gitenv);
+  static char topdirenv[384];
+  snprintf(topdirenv, sizeof(topdirenv), "REFPERSYS_TOPDIR=%s", rps_topdirectory);
+  putenv(topdirenv);
+  static char fifoenv[256];
+  if (!rps_fifo_prefix.empty()) {
+    snprintf(fifoenv, sizeof(fifoenv), "REFPERSYS_FIFO_PREFIX=%s", rps_fifo_prefix.c_str());
+    putenv(fifoenv);
+  }
+} // end rps_extend_env
 
 
 ////////////////////////////////////////////////////////////////
@@ -763,7 +788,6 @@ main (int argc, char** argv)
   if (rps_syslog_enabled && rps_debug_flags != 0)
     openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
   rps_parse_program_arguments(argc, argv);
-
   ///
   RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" " %s process %d on host %s (stdout %s, stderr %s)\n"
              "... gitid %.16s built %s (main@%p) %s mode (%d jobs)",
@@ -776,6 +800,9 @@ main (int argc, char** argv)
              (void*)main,
              (rps_batch?"batch":"interactive"),
              rps_nbjobs);
+  ////
+  //// extend the environment if needed
+  rps_extend_env();
   ////
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
