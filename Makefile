@@ -39,9 +39,10 @@ RPS_GIT_ORIGIN := $(shell git remote -v | grep "RefPerSys/RefPerSys.git" | head 
 RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -1 | awk '{print $$1}')
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
-RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcard *_rps.cc)))
+RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc *jsonrpc*.cc), $(wildcard *_rps.cc)))
 RPS_FLTK_SOURCES:=  $(sort $(wildcard *fltk*_rps.cc))
 RPS_FOX_SOURCES:=  $(sort $(wildcard *fox*_rps.cc))
+RPS_JSONRPC_SOURCES:=  $(sort $(wildcard *jsonrpc*_rps.cc))
 #RPS_GTKMM_SOURCES:= $(sort $(wildcard *gtk*_rps.cc))
 RPS_BISON_SOURCES:=  $(sort $(wildcard *_rps.yy))
 
@@ -49,6 +50,7 @@ RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E e
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_FLTK_OBJECTS = $(patsubst %.cc, %.o, $(RPS_FLTK_SOURCES))
 RPS_FOX_OBJECTS = $(patsubst %.cc, %.o, $(RPS_FOX_SOURCES))
+RPS_JSONRPC_OBJECTS = $(patsubst %.cc, %.o, $(RPS_JSONRPC_SOURCES))
 #RPS_GTKMM_OBJECTS = $(patsubst %.cc, %.o, $(RPS_GTKMM_SOURCES))
 RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
 #RPS_QT_OBJECTS = $(patsubst %.cc, %.o, $(RPS_QT_SOURCES))

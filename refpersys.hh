@@ -238,6 +238,11 @@ extern "C" void add_fox_arg_rps(char*arg);
 extern "C" void guifox_initialize_rps(void);
 #endif /*RPSFOX*/
 
+#ifdef RPSJSONRPC
+extern "C" void jsonrpc_initialize_rps(void);
+extern "C" void jsonrpc_run_application_rps(void);
+#endif /*RPSJSONRPC*/
+
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_common_state;
 

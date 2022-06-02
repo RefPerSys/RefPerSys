@@ -1315,7 +1315,7 @@ rps_run_application(int &argc, char **argv)
     {
 #pragma message "main_rps.cc with RPSFOX:" __DATE__ "@" __TIME__
       extern void guifox_initialize_rps(void);
-      extern void guifox_run_application_rps();
+      extern void guifox_run_application_rps(void);
       guifox_initialize_rps();
       RPS_INFORMOUT("Before running guifox_run_application_rps" << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before FOX GUI"));
@@ -1324,6 +1324,21 @@ rps_run_application(int &argc, char **argv)
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after FOX GUI"));
     }
 #endif /*RPSFLTK*/
+  /////
+#ifdef RPSJSONRPC
+  else if (!rps_fifo_prefix.empty()) {
+#pragma message "main_rps.cc with RPSJSONRPC:" __DATE__ "@" __TIME__
+    //extern void jsonrpc_initialize_rps(void);
+    //extern void jsonrpc_run_application_rps(void);
+      jsonrpc_initialize_rps();
+      RPS_INFORMOUT("Before running jsonrpc_run_application_rps" << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before JSONRPC"));
+      jsonrpc_run_application_rps();
+      RPS_INFORMOUT("After running jsonrpc_run_application_rps" << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after JSONRPC"));
+  }
+  
+#endif /*RPSJSONRPC*/
   else
     {
       RPS_WARNOUT("rps_run_application incomplete"
