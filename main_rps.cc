@@ -339,6 +339,8 @@ unsigned rps_debug_flags;
 
 FILE* rps_debug_file;
 static char rps_debug_path[128];
+static  struct rps_fifo_fdpair_st rps_fifo_pair;
+static pid_t rps_gui_pid;
 
 thread_local Rps_Random Rps_Random::_rand_thr_;
 
@@ -354,7 +356,22 @@ static std::string rps_my_load_dir;
 // user interface are on $FIFOPREFIX.cmd
 static std::string rps_fifo_prefix;
 
-#warning missing code to deal with rps_fifo_prefix and --fifo-interface program option
+
+struct rps_fifo_fdpair_st
+rps_get_gui_fifo_fds(void)
+{
+  if (rps_gui_pid)
+    return rps_fifo_pair;
+  else return {-1, -1};
+} // end  rps_get_gui_fifo_fd
+
+pid_t
+rps_get_gui_pid(void)
+{
+  return rps_gui_pid;
+} // end rps_get_gui_pid
+
+#warning missing code to deal with rps_fifo_prefix and --interface-fifo=<FIFO> program option
 
 
 static void rps_parse_program_arguments(int &argc, char**argv);

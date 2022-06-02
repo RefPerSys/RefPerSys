@@ -204,6 +204,15 @@ public:
   }
 };				// end class RpsColophon
 
+
+/// a pair of Unix file descriptors, JSONRPC....
+struct rps_fifo_fdpair_st {
+  int fifo_ui_wcmd; // the commands written to the GUI process
+  int fifo_ui_rout; // the outputs read from the GUI process
+};
+extern "C" struct rps_fifo_fdpair_st rps_get_gui_fifo_fds(void);
+extern "C" pid_t rps_get_gui_pid(void);
+
 // when set, no GUI is running
 extern "C" bool rps_batch;
 
