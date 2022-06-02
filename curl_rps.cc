@@ -45,7 +45,7 @@ const char rps_curl_date[]= __DATE__;
 std::string
 rps_curl_version(void)
 {
-  char curlgitbuf[16];
+  char curlgitbuf[64];
   memset (curlgitbuf, 0, sizeof(curlgitbuf));
   strncpy(curlgitbuf, rps_curl_gitid, (3*sizeof(curlgitbuf))/4);
   std::string res("CURL ");
