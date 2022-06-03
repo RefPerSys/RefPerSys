@@ -358,6 +358,7 @@ analyze:
 #### simple tests
 test01: ./jsonrpcrefpersys
 #was    ./refpersys -dGUI --display=object
+	@printf 'test01 is sending show 1\\n dump "/tmp/rps1" to jsonrpcrefpersys\n'
 	@(rm -rvf /tmp/rps1; printf 'show 1\n dump "/tmp/rps1"\n')  | ./jsonrpcrefpersys --debug=REPL --repl
 
 test02: ./jsonrpcrefpersys
