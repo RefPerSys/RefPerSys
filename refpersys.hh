@@ -4301,14 +4301,18 @@ inline std::ostream&operator << (std::ostream&out, const Rps_Cjson_String&hstr) 
 
 /// for output a string quoted like for C
 class Rps_QuotedC_String : public std::string {
+  bool qtc_empty;
 public:
   Rps_QuotedC_String(const char*str, int len= -1) :
-    std::string(str?str:"", (len>=0 && str)?len:strlen(str?str:"")) {};
-  Rps_QuotedC_String(const std::string&str) : std::string(str) {};
+    std::string(str?str:"", (len>=0 && str)?len:strlen(str?str:"")),
+    qtc_empty(str==nullptr){};
+  Rps_QuotedC_String(const std::string&str) : std::string(str), qtc_empty(false) {};
+  Rps_QuotedC_String(const Rps_QuotedC_String&) = default;
+  Rps_QuotedC_String(Rps_QuotedC_String&&) = default;
   ~Rps_QuotedC_String() = default;
   void output(std::ostream&out) const
   {
-    if (!c_str())
+    if (qtc_empty)
       out << "*nullstring*";
     else {
       out << "\"";
@@ -4317,7 +4321,10 @@ public:
     }
   };
 };
-inline std::ostream&operator << (std::ostream&out, const Rps_QuotedC_String&hstr) { hstr.output(out); return out;
+
+inline std::ostream&operator << (std::ostream&out, const Rps_QuotedC_String&hstr) {
+  hstr.output(out);
+  return out;
 };  // end << Rps_QuotedC_String
 
 //////////////////////////////////////////////////////////////////
