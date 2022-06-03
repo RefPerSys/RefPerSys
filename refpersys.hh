@@ -920,6 +920,7 @@ class Rps_Id;
 typedef uint32_t Rps_HashInt;
 typedef Rps_ProtoCallFrame Rps_CallFrame;
 
+extern "C" unsigned rps_call_frame_depth(const Rps_CallFrame*);
 ////////////////////////////////////////////////////////////////
 class Rps_ObjectRef // reference to objects, per C++ rule of five.
 {
@@ -3377,6 +3378,7 @@ typedef void Rps_CallFrameOutputSig_t(std::ostream&, const Rps_ProtoCallFrame*);
 //// the common superclass of our call frames
 class Rps_ProtoCallFrame : public Rps_TypedZone
 {
+  friend unsigned rps_call_frame_depth(const Rps_CallFrame*);
 protected:
   const unsigned cfram_size;
   Rps_ObjectRef cfram_descr;

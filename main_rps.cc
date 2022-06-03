@@ -374,6 +374,13 @@ rps_get_gui_pid(void)
 #warning missing code to deal with rps_fifo_prefix and --interface-fifo=<FIFO> program option
 
 
+unsigned rps_call_frame_depth(const Rps_CallFrame*callframe)
+{
+  if (callframe==nullptr) return 0;
+  else
+    return callframe->call_frame_depth();
+} // end rps_call_frame_depth
+
 static void rps_parse_program_arguments(int &argc, char**argv);
 
 static char rps_bufpath_homedir[384];
