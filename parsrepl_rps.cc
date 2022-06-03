@@ -841,26 +841,29 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                         << " binoperob=" << _f.binoperob);
           break;
         };
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term **endloop @ " << position_str()
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term **endingloop @ " << position_str()
                     << " operandvect:" << operandvect << " curoperob:" << _f.curoperob
                     << std::endl << "... token_deq=" << token_deq
                     << (again?"again":"stop")
-                    << " loopcnt#" << loopcnt << " curcptr " << Rps_QuotedC_String(curcptr()));
+                    << " loopcnt#" << loopcnt << " curcptr " << Rps_QuotedC_String(curcptr())
+		    << "@" << (void*)(curcptr()));
     } // end while (again)
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term endloop#" << loopcnt
                 << " leftv=" << _f.leftv << " token_deq=" << token_deq
                 << std::endl << " operandvect:" << operandvect
                 << " curcptr " << Rps_QuotedC_String(curcptr())
-		<< "@" << (void*)curcptr());
+		<< "@" << ((void*)curcptr()));
 #warning unimplemented Rps_TokenSource::parse_term
   /* we probably should make a term with operandvect here ... */
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe)
                << " operandvect:" << operandvect
                << " binoperob:" << _f.binoperob
                << " curoperob:" << _f.curoperob
-               << " leftv=" << _f.leftv
-               << " with token_deq=" << token_deq << " at " << startpos
-               << "  curpos:" << position_str());
+               << " leftv=" << _f.leftv << std::endl
+               << "... with token_deq=" << token_deq << " at " << startpos
+               << "  curpos:" << position_str()
+                << " curcptr " << Rps_QuotedC_String(curcptr())
+		<< "@" << ((void*)curcptr()));
 } // end Rps_TokenSource::parse_term
 
 
