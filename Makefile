@@ -356,18 +356,18 @@ analyze:
 
 ################################################################
 #### simple tests
-test01: ./refpersys
+test01: ./jsonrpcrefpersys
 #was    ./refpersys -dGUI --display=object
-	@(rm -rvf /tmp/rps1; printf 'show 1\n dump "/tmp/rps1"\n')  | ./refpersys --debug=REPL --repl
+	@(rm -rvf /tmp/rps1; printf 'show 1\n dump "/tmp/rps1"\n')  | ./jsonrpcrefpersys --debug=REPL --repl
 
-test02: ./refpersys
+test02: ./jsonrpcrefpersys
 	@echo missing test02 ; exit 1
 
-test03: ./refpersys
+test03: ./jsonrpcrefpersys
 	@echo missing test03 ; exit 1
 
-test04: ./refpersys
-	@echo 'show 1 * 2 + 3 * 4 + 5 < 6 - 7' | ./refpersys --debug=REPL --repl
+test04: ./jsonrpcrefpersys
+	@echo 'show 1 * 2 + 3 * 4 + 5 < 6 - 7' | ./jsonrpcrefpersys --debug=REPL --repl
 
 test-load: ./refpersys
 	./refpersys --batch
