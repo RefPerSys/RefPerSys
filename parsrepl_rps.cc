@@ -113,8 +113,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
       else
         again = false;
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression oroperob="
-		    << _f.oroperob
-		    << " position:" << position_str()<< " startpos:" << startpos);
+                    << _f.oroperob
+                    << " position:" << position_str()<< " startpos:" << startpos);
       if (again)
         {
           bool okright=false;
@@ -131,7 +131,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
   while (again);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression oroperob=" << _f.oroperob
                 << "nbdisj:" << disjvect.size()
-		<< " position:" << position_str()<< " startpos:" << startpos);
+                << " position:" << position_str()<< " startpos:" << startpos);
   if (disjvect.size() > 1)
     {
       /// we make an instance:
@@ -200,8 +200,8 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
       return nullptr;
     }
   conjvect.push_back(_f.leftv);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction leftv=" << _f.leftv 
-                << " position: " << position_str() << " startpos:" << startpos); 
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction leftv=" << _f.leftv
+                << " position: " << position_str() << " startpos:" << startpos);
   bool again = false;
   static Rps_Id idanddelim;
   if (!idanddelim)
@@ -243,10 +243,12 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
               return nullptr;
             }
         }
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction position:" << position_str() << " startpos:" << startpos << "endloop "
+                    << (again?"again":"STOP"));
     }
   while (again);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction andoperob=" << _f.andoperob
-                << "nbconj:" << conjvect.size() << " at " << startpos);
+                << "nbconj:" << conjvect.size()  << " position:" << position_str() << " startpos:" << startpos);
   if (conjvect.size() > 1)
     {
       /// we make an instance:
