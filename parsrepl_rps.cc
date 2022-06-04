@@ -224,7 +224,7 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(/*descr:*/nullptr,callframe,
-                           Rps_Value resexprsymv;
+                           Rps_Value resexprv;
                            Rps_Value lextokv;
                            Rps_Value lexgotokv;
                            Rps_Value leftv;
@@ -234,6 +234,9 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
                 );
   std::vector<Rps_Value> argvect;
   bool leftok = false;
+  /// GC needs this:
+  _f.operob = polyoper;
+  _f.delimob = polydelim;
   _.set_additional_gc_marker([&](Rps_GarbageCollector* gc)
   {
     for (auto tokenv : token_deq)
@@ -259,7 +262,7 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
   while (_f.lextokv.is_lextoken()
       && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
       &&  _f.lextokv.to_lextoken()->lxval().is_object()
-      &&  _f.lextokv.to_lextoken()->lxval().to_object() == delimob)
+      &&  _f.lextokv.to_lextoken()->lxval().to_object() == polydelim)
     {
       bool okarg = false;
       (void) get_token(&_); // consume the operator delimiter
@@ -271,8 +274,15 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
       }
       argvect.push_back(_f.curargv);
     }
-#warning unimplemented Rps_TokenSource::parse_polyop
-  RPS_FATALOUT("unimplemented Rps_TokenSource::parse_polyop");
+  _f.resexprv = Rps_InstanceValue(_f.operob, argvect);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse poly oper " << opername <<" END position:" << position_str()
+                << " startpos:" << startpos
+		<< " resexpr:" << _f.resexprv
+                << " calldepth="
+                << rps_call_frame_depth(&_));
+  if (pokparse)
+    *pokparse = true;
+  return _f.resexprv;
 } // end Rps_TokenSource::parse_polyop
 
 
