@@ -65,7 +65,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
   });
   bool ok = false;
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression start position:" << startpos);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression start position:" << startpos << " calldepth="
+		<< rps_call_frame_depth(&_));
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression lextokv="
 		<< _f.lextokv << " position:" << position_str()<< " startpos:" << startpos);
@@ -143,7 +144,9 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
       _f.disjv = disjvect[0];
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression gives "
-                << _f.disjv << " position:" << position_str()<< " startpos:" << startpos);
+                << _f.disjv << " position:" << position_str()<< " startpos:" << startpos
+		<< " calldepth=" << rps_call_frame_depth(&_)
+		<< " token_deq=" << token_deq);
   return _f.disjv;
 } // end Rps_TokenSource::parse_expression
 
@@ -182,7 +185,8 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
   });
   bool ok = false;
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction startpos:" << startpos);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction startpos:"
+		<< startpos << " calldepth#" << rps_call_frame_depth(&_));
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction lextokv="
                 << _f.lextokv
@@ -245,11 +249,13 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
             }
         }
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction position:" << position_str() << " startpos:" << startpos << "endloop "
-                    << (again?"again":"STOP"));
+                    << (again?"again":"STOP")
+		    << " calldepth#" << rps_call_frame_depth(&_));
     }
   while (again);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction andoperob=" << _f.andoperob
-                << "nbconj:" << conjvect.size()  << " position:" << position_str() << " startpos:" << startpos);
+                << "nbconj:" << conjvect.size()  << " position:" << position_str() << " startpos:" << startpos
+		<< " calldepth#" << rps_call_frame_depth(&_));
   if (conjvect.size() > 1)
     {
       /// we make an instance:
@@ -260,7 +266,9 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
       _f.conjv = conjvect[0];
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction gives "
-                << _f.conjv << " position:" << position_str() << " startpos:" << startpos);
+                << _f.conjv << " position:" << position_str()
+		<< " startpos:" << startpos
+		<< " calldepth#" << rps_call_frame_depth(&_));
   return _f.conjv;
 } // end Rps_TokenSource::parse_disjunction
 
