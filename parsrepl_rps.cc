@@ -34,23 +34,23 @@
 
 
 /// hopefully these routines could be used a lot...
-Rps_Value 
+Rps_Value
 Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,
-					    Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
-					    std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)> parser_binop,
-					    bool*pokparse, const char*opername)
+    Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
+    std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)> parser_binop,
+    bool*pokparse, const char*opername)
 {
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(/*descr:*/nullptr,callframe,
-		 Rps_Value resexprsymv;
-		 Rps_Value lextokv;
-		 Rps_Value lexgotokv;
-		 Rps_Value leftv;
-		 Rps_Value rightv;
-		 Rps_ObjectRef binoperob;
-		 Rps_ObjectRef bindelimob;
-		 );
+                           Rps_Value resexprsymv;
+                           Rps_Value lextokv;
+                           Rps_Value lexgotokv;
+                           Rps_Value leftv;
+                           Rps_Value rightv;
+                           Rps_ObjectRef binoperob;
+                           Rps_ObjectRef bindelimob;
+                );
   if (!opername)
     opername="???";
   bool leftok = false;
@@ -60,24 +60,28 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe, std::deque<
   _f.binoperob = binoper;
   _f.bindelimob = bindelim;
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse symmetrical binop " << opername <<" START position:" << startpos << " calldepth="
-		<< rps_call_frame_depth(&_));
+                << rps_call_frame_depth(&_));
   _f.leftv = parser_binop(&_,this,token_deq,&leftok);
-  if (!leftok) {
-    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse symmetrical binop " << opername << " LEFT FAILURE startpos:" <<  startpos
-		  << " curpos" << position_str()  << " calldepth="
-		  << rps_call_frame_depth(&_));
-    if (pokparse) *pokparse = false;
-    return nullptr;
-  }
+  if (!leftok)
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse symmetrical binop " << opername << " LEFT FAILURE startpos:" <<  startpos
+                    << " curpos" << position_str()  << " calldepth="
+                    << rps_call_frame_depth(&_));
+      if (pokparse)
+        *pokparse = false;
+      return nullptr;
+    }
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
-  if (!_f.lextokv) {
-    if (pokparse) *pokparse = true;
-    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse " << opername << " LEFTONLY  startpos:" <<  startpos
-		  << " curpos" << position_str()  << " calldepth="
-		  << rps_call_frame_depth(&_)
-		  << " GIVES " << _f.leftv);
-    return _f.leftv;
-  }
+  if (!_f.lextokv)
+    {
+      if (pokparse)
+        *pokparse = true;
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse " << opername << " LEFTONLY  startpos:" <<  startpos
+                    << " curpos" << position_str()  << " calldepth="
+                    << rps_call_frame_depth(&_)
+                    << " GIVES " << _f.leftv);
+      return _f.leftv;
+    }
   if (_f.lextokv.is_lextoken()
       && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
       &&  _f.lextokv.to_lextoken()->lxval().is_object()
@@ -85,27 +89,151 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe, std::deque<
     {
       (void) get_token(&_); // consume the operator
       _f.rightv = parser_binop(&_,this,token_deq,&rightok);
-      if (!rightok) {
-	RPS_WARNOUT("failed to parse right operand for "<< opername << " at " << position_str()
-		    << " starting " << startpos);
-	if (pokparse) *pokparse = false;
-	return nullptr;	
-      }
+      if (!rightok)
+        {
+          RPS_WARNOUT("failed to parse right operand for "<< opername << " at " << position_str()
+                      << " starting " << startpos);
+          if (pokparse)
+            *pokparse = false;
+          return nullptr;
+        }
     }
-  else  {
-    if (pokparse) *pokparse = true;
-    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse " << opername << " LEFTONLY  startpos:" <<  startpos
-		  << " curpos" << position_str()  << " calldepth="
-		  << rps_call_frame_depth(&_)
-		  << " GIVES " << _f.leftv);
-    return _f.leftv;
-  }
+  else
+    {
+      if (pokparse)
+        *pokparse = true;
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse " << opername << " LEFTONLY  startpos:" <<  startpos
+                    << " curpos" << position_str()  << " calldepth="
+                    << rps_call_frame_depth(&_)
+                    << " GIVES " << _f.leftv);
+      return _f.leftv;
+    }
   _f.resexprsymv = Rps_InstanceValue(_f.binoperob, {_f.leftv, _f.rightv});
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse symmetrical binop " << opername <<" END position:" << position_str()
-		<< " startpos:" << startpos
-		<< " calldepth="
-		<< rps_call_frame_depth(&_));
+                << " startpos:" << startpos
+                << " calldepth="
+                << rps_call_frame_depth(&_));
 } // end Rps_TokenSource::parse_symmetrical_binaryop
+
+
+
+Rps_Value
+Rps_TokenSource::parse_asymmetrical_binaryop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,
+    Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
+    std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)>
+    parser_leftop,
+    std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)>
+    parser_rightop,
+    bool*pokparse, const char*opername)
+{
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(/*descr:*/nullptr,callframe,
+                           Rps_Value resexprsymv;
+                           Rps_Value lextokv;
+                           Rps_Value lexgotokv;
+                           Rps_Value leftv;
+                           Rps_Value rightv;
+                           Rps_ObjectRef binoperob;
+                           Rps_ObjectRef bindelimob;
+                );
+  if (!opername)
+    opername="???";
+  bool leftok = false;
+  bool rightok = false;
+  std::string startpos = position_str();
+  /// ensure the GC knows them
+  _f.binoperob = binoper;
+  _f.bindelimob = bindelim;
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse asymmetrical binop " << opername <<" START position:" << startpos << " calldepth="
+                << rps_call_frame_depth(&_));
+  _f.leftv = parser_leftop(&_,this,token_deq,&leftok);
+  if (!leftok)
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse asymmetrical binop " << opername << " LEFT FAILURE startpos:" <<  startpos
+                    << " curpos" << position_str()  << " calldepth="
+                    << rps_call_frame_depth(&_));
+      if (pokparse)
+        *pokparse = false;
+      return nullptr;
+    }
+  _f.lextokv =  lookahead_token(&_, token_deq, 0);
+  if (!_f.lextokv)
+    {
+      if (pokparse)
+        *pokparse = true;
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse asymmetrical " << opername << " LEFTONLY  startpos:" <<  startpos
+                    << " curpos" << position_str()  << " calldepth="
+                    << rps_call_frame_depth(&_)
+                    << " GIVES " << _f.leftv);
+      return _f.leftv;
+    }
+  if (_f.lextokv.is_lextoken()
+      && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
+      &&  _f.lextokv.to_lextoken()->lxval().is_object()
+      &&  _f.lextokv.to_lextoken()->lxval().to_object() == bindelim)
+    {
+      (void) get_token(&_); // consume the operator
+      _f.rightv = parser_rightop(&_,this,token_deq,&rightok);
+      if (!rightok)
+        {
+          RPS_WARNOUT("failed to parse asymmetrical right operand for "<< opername << " at " << position_str()
+                      << " starting " << startpos);
+          if (pokparse)
+            *pokparse = false;
+          return nullptr;
+        }
+    }
+  else
+    {
+      if (pokparse)
+        *pokparse = true;
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse asymmetrical " << opername << " LEFTONLY  startpos:" <<  startpos
+                    << " curpos" << position_str()  << " calldepth="
+                    << rps_call_frame_depth(&_)
+                    << " GIVES " << _f.leftv);
+      return _f.leftv;
+    }
+  _f.resexprsymv = Rps_InstanceValue(_f.binoperob, {_f.leftv, _f.rightv});
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse asymmetrical binop " << opername <<" END position:" << position_str()
+                << " startpos:" << startpos
+                << " calldepth="
+                << rps_call_frame_depth(&_));
+} // end Rps_TokenSource::parse_asymmetrical_binaryop
+
+
+
+
+Rps_Value
+Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,  Rps_ObjectRef polyoper, Rps_ObjectRef polydelim,
+                              std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)> parser_suboperand,
+                              bool*pokparse, const char*opername)
+{
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(/*descr:*/nullptr,callframe,
+                           Rps_Value resexprsymv;
+                           Rps_Value lextokv;
+                           Rps_Value lexgotokv;
+                           Rps_Value leftv;
+                           Rps_Value rightv;
+                           Rps_ObjectRef operob;
+                           Rps_ObjectRef delimob;
+                );
+  std::vector<Rps_Value> argvect;
+  _.set_additional_gc_marker([&](Rps_GarbageCollector* gc)
+  {
+    for (auto tokenv : token_deq)
+      gc->mark_value(tokenv);
+
+    for (auto curargv : argvect)
+      gc->mark_value(curargv);
+  });
+  if (!opername)
+    opername="???";
+#warning unimplemented Rps_TokenSource::parse_polyop
+  RPS_FATALOUT("unimplemented Rps_TokenSource::parse_polyop");
+} // end Rps_TokenSource::parse_polyop
 
 
 
@@ -143,10 +271,10 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
   bool ok = false;
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression start position:" << startpos << " calldepth="
-		<< rps_call_frame_depth(&_));
+                << rps_call_frame_depth(&_));
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression lextokv="
-		<< _f.lextokv << " position:" << position_str()<< " startpos:" << startpos);
+                << _f.lextokv << " position:" << position_str()<< " startpos:" << startpos);
   if (!_f.lextokv)
     {
       if (pokparse)
@@ -222,8 +350,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression result: "
                 << _f.resexprv << " position:" << position_str()<< " startpos:" << startpos
-		<< " calldepth=" << rps_call_frame_depth(&_)
-		<< " token_deq=" << token_deq);
+                << " calldepth=" << rps_call_frame_depth(&_)
+                << " token_deq=" << token_deq);
   return _f.resexprv;
 } // end Rps_TokenSource::parse_expression
 
@@ -264,7 +392,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
   bool ok = false;
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction startpos:"
-		<< startpos << " calldepth#" << rps_call_frame_depth(&_));
+                << startpos << " calldepth#" << rps_call_frame_depth(&_));
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction lextokv="
                 << _f.lextokv
@@ -304,7 +432,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction testing and lextokv=" << _f.lextokv << " position:" << position_str() << " startpos:" << startpos);
       if (_f.lextokv.is_lextoken()
           && _f.lextokv.to_lextoken()->lxkind()
-	  == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
+          == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
           &&  _f.lextokv.to_lextoken()->lxval().is_object()
           &&  _f.lextokv.to_lextoken()->lxval().to_object()->oid() == idordelim)
         {
@@ -329,12 +457,12 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
         }
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction position:" << position_str() << " startpos:" << startpos << "endloop "
                     << (again?"again":"STOP")
-		    << " calldepth#" << rps_call_frame_depth(&_));
+                    << " calldepth#" << rps_call_frame_depth(&_));
     }
   while (again);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction oroperob=" << _f.oroperob
                 << "nbconj:" << conjvect.size()  << " position:" << position_str() << " startpos:" << startpos
-		<< " calldepth#" << rps_call_frame_depth(&_));
+                << " calldepth#" << rps_call_frame_depth(&_));
   if (conjvect.size() > 1)
     {
       /// we make an instance:
@@ -346,8 +474,8 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction result "
                 << _f.resdisjv << " position:" << position_str()
-		<< " startpos:" << startpos
-		<< " calldepth#" << rps_call_frame_depth(&_));
+                << " startpos:" << startpos
+                << " calldepth#" << rps_call_frame_depth(&_));
   return _f.resdisjv;
 } // end Rps_TokenSource::parse_disjunction
 
@@ -942,11 +1070,13 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                 << std::endl << " operandvect:" << operandvect
                 << " curcptr " << Rps_QuotedC_String(curcptr())
                 << "@" << ((void*)curcptr())
-		<< " calldepth:" << rps_call_frame_depth(&_));
-  if (operandvect.size() == 1) {
-  }
-  else {
-  }
+                << " calldepth:" << rps_call_frame_depth(&_));
+  if (operandvect.size() == 1)
+    {
+    }
+  else
+    {
+    }
 #warning unimplemented Rps_TokenSource::parse_term
   /* we probably should make a term with operandvect here ... */
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe) << std::endl
@@ -958,7 +1088,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                << "  curpos:" << position_str()
                << " curcptr " << Rps_QuotedC_String(curcptr())
                << "@" << ((void*)curcptr())
-		<< " calldepth:" << rps_call_frame_depth(&_));
+               << " calldepth:" << rps_call_frame_depth(&_));
 } // end Rps_TokenSource::parse_term
 
 
