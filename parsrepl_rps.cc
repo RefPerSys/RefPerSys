@@ -43,11 +43,11 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(/*descr:*/nullptr,
                            /*callerframe:*/callframe,
+                           Rps_Value resexprv;
                            Rps_Value lextokv;
                            Rps_Value lexgotokv;
                            Rps_Value leftv;
                            Rps_Value rightv;
-                           Rps_Value disjv;
                            Rps_ObjectRef lexkindob;
                            Rps_ObjectRef ordelimob;
                            Rps_ObjectRef oroperob;
@@ -137,17 +137,17 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
   if (disjvect.size() > 1)
     {
       /// we make an instance:
-      _f.disjv = Rps_InstanceValue(_f.oroperob, disjvect);
+      _f.resexprv = Rps_InstanceValue(_f.oroperob, disjvect);
     }
   else
     {
-      _f.disjv = disjvect[0];
+      _f.resexprv = disjvect[0];
     }
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression gives "
-                << _f.disjv << " position:" << position_str()<< " startpos:" << startpos
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression result: "
+                << _f.resexprv << " position:" << position_str()<< " startpos:" << startpos
 		<< " calldepth=" << rps_call_frame_depth(&_)
 		<< " token_deq=" << token_deq);
-  return _f.disjv;
+  return _f.resexprv;
 } // end Rps_TokenSource::parse_expression
 
 
@@ -160,17 +160,18 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
 Rps_Value
 Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
 {
-  /// a disjunct is a sequence of one or more conjunct separated by && - the and operator
+  /// a disjunction is a sequence of one or more conjunct separated by
+  /// && - the and operator
   RPS_LOCALFRAME(/*descr:*/nullptr,
                            /*callerframe:*/callframe,
+                           Rps_Value resdisjv;
                            Rps_Value lextokv;
                            Rps_Value lexgotokv;
                            Rps_Value leftv;
                            Rps_Value rightv;
-                           Rps_Value conjv;
                            Rps_ObjectRef lexkindob;
-                           Rps_ObjectRef anddelimob;
-                           Rps_ObjectRef andoperob;
+                           Rps_ObjectRef ordelimob;
+                           Rps_ObjectRef oroperob;
                            Rps_Value lexvalv;
                 );
   std::vector<Rps_Value> conjvect;
@@ -208,12 +209,12 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction leftv=" << _f.leftv
                 << " position: " << position_str() << " startpos:" << startpos);
   bool again = false;
-  static Rps_Id idanddelim;
-  if (!idanddelim)
-    idanddelim = Rps_Id("_1HsUfOkNw0W033EIW1"); // id of "and!binop"∈repl_delimiter
-  static Rps_Id idandoper;
-  if (!idandoper)
-    idandoper = Rps_Id("_2YVmrhVcwW00120rTK"); // id of "and!binop"∈repl_binary_operator
+  static Rps_Id idordelim;
+  if (!idordelim)
+    idordelim = Rps_Id("_1HsUfOkNw0W033EIW1"); // id of "or!delim"∈repl_delimiter
+  static Rps_Id idoroper;
+  if (!idoroper)
+    idoroper = Rps_Id("_1ghZV0g1dtR02xPgqk"); // id of "or!binop"∈repl_binary_operator
   do
     {
       again = false;
@@ -225,14 +226,15 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
         };
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction testing and lextokv=" << _f.lextokv << " position:" << position_str() << " startpos:" << startpos);
       if (_f.lextokv.is_lextoken()
-          && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
+          && _f.lextokv.to_lextoken()->lxkind()
+	  == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
           &&  _f.lextokv.to_lextoken()->lxval().is_object()
-          &&  _f.lextokv.to_lextoken()->lxval().to_object()->oid() == idanddelim)
+          &&  _f.lextokv.to_lextoken()->lxval().to_object()->oid() == idordelim)
         {
-          (void) get_token(&_); // consume the and operator
+          (void) get_token(&_); // consume the or operator
           again = true;
-          if (!_f.andoperob)
-            _f.andoperob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,idandoper);
+          if (!_f.oroperob)
+            _f.oroperob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,idoroper);
         }
       else
         again = false;
@@ -244,7 +246,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
             conjvect.push_back(_f.rightv);
           else
             {
-              RPS_WARNOUT("failed to parse conjunct at " << position_str());
+              RPS_WARNOUT("Rps_TokenSource::parse_disjunction failed to parse conjunct at " << position_str() << " starting " << startpos);
               return nullptr;
             }
         }
@@ -253,23 +255,23 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
 		    << " calldepth#" << rps_call_frame_depth(&_));
     }
   while (again);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction andoperob=" << _f.andoperob
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction oroperob=" << _f.oroperob
                 << "nbconj:" << conjvect.size()  << " position:" << position_str() << " startpos:" << startpos
 		<< " calldepth#" << rps_call_frame_depth(&_));
   if (conjvect.size() > 1)
     {
       /// we make an instance:
-      _f.conjv = Rps_InstanceValue(_f.andoperob, conjvect);
+      _f.resdisjv = Rps_InstanceValue(_f.oroperob, conjvect);
     }
   else
     {
-      _f.conjv = conjvect[0];
+      _f.resdisjv = conjvect[0];
     }
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction gives "
-                << _f.conjv << " position:" << position_str()
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction result "
+                << _f.resdisjv << " position:" << position_str()
 		<< " startpos:" << startpos
 		<< " calldepth#" << rps_call_frame_depth(&_));
-  return _f.conjv;
+  return _f.resdisjv;
 } // end Rps_TokenSource::parse_disjunction
 
 
