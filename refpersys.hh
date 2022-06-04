@@ -2300,6 +2300,20 @@ public:
   //// parsed expression is returned. On failure, the nil value is
   //// returned, and *pokparse is set to false when given.
   Rps_Value parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_symmetrical_binaryop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,
+				       Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
+				      std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)> parser_binop,
+				       bool*pokparse, const char*opername=nullptr);
+  Rps_Value parse_asymmetrical_binaryop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,
+					Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
+				       std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,
+					std::deque<Rps_Value>&,bool*)> parser_leftop,
+			   std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)>
+					parser_rightop,
+			   bool*pokparse, const char*opername=nullptr);
+  Rps_Value parse_polyop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,  Rps_ObjectRef polyoper, Rps_ObjectRef polydelim,
+			 std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)> parser_suboperand,
+			 bool*pokparse, const char*opername=nullptr);
   Rps_Value parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
   Rps_Value parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
   Rps_Value parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
