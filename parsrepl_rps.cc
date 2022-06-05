@@ -67,7 +67,15 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe, std::deque<
   _f.bindelimob = bindelim;
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse symmetrical binop " << opername <<" START position:" << startpos << " calldepth="
                 << rps_call_frame_depth(&_));
-  _f.leftv = parser_binop(&_,this,token_deq,&leftok);
+  if (is_looking_ahead(pokparse))
+    {
+      // TODO: review, ... only lookahead for left part....
+      _f.leftv = parser_binop(&_,this,token_deq, RPS_DO_LOOKAHEAD);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse symmetrical binop " << opername << " lookahead " << (_f.leftv?"success":"failure"));
+      return _f.leftv;
+    }
+  else
+    _f.leftv = parser_binop(&_,this,token_deq,&leftok);
   if (!leftok)
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse symmetrical binop " << opername << " LEFT FAILURE startpos:" <<  startpos
@@ -127,7 +135,7 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe, std::deque<
 //// BINOP as an operation (semantics) and a delimiter (syntax). Is
 //// given the parsing C++ closure for parsing A and the other parsing
 //// C++ closure for parsing B.
-//// 
+////
 Rps_Value
 Rps_TokenSource::parse_asymmetrical_binaryop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,
     Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
@@ -260,24 +268,25 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
     }
   argvect.push_back(_f.leftv);
   while (_f.lextokv.is_lextoken()
-      && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
-      &&  _f.lextokv.to_lextoken()->lxval().is_object()
-      &&  _f.lextokv.to_lextoken()->lxval().to_object() == polydelim)
+         && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
+         &&  _f.lextokv.to_lextoken()->lxval().is_object()
+         &&  _f.lextokv.to_lextoken()->lxval().to_object() == polydelim)
     {
       bool okarg = false;
       (void) get_token(&_); // consume the operator delimiter
       _f.curargv = parser_suboperand(&_,this,token_deq,&okarg);
-      if (!okarg) {
-	RPS_WARNOUT("parse_polyop failed to parse operand#" << argvect.size() <<" for "<< opername << " at " << position_str()
+      if (!okarg)
+        {
+          RPS_WARNOUT("parse_polyop failed to parse operand#" << argvect.size() <<" for "<< opername << " at " << position_str()
                       << " starting " << startpos);
-	break;
-      }
+          break;
+        }
       argvect.push_back(_f.curargv);
     }
   _f.resexprv = Rps_InstanceValue(_f.operob, argvect);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse poly oper " << opername <<" END position:" << position_str()
                 << " startpos:" << startpos
-		<< " resexpr:" << _f.resexprv
+                << " resexpr:" << _f.resexprv
                 << " calldepth="
                 << rps_call_frame_depth(&_));
   if (pokparse)
