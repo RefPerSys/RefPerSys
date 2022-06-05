@@ -43,6 +43,7 @@ RPS_INSTALL_ROOT_OB(_1B7ITSHTZWp00ektj1) //input∈symbol
 RPS_INSTALL_ROOT_OB(_1DBiKRl70P304DEMoR) //our_contributors∈symbol
 RPS_INSTALL_ROOT_OB(_1DUx3zfUzIb04lqNVt) //rps_window∈class
 RPS_INSTALL_ROOT_OB(_1EBVGSfW2m200z18rx) //name∈named_attribute
+RPS_INSTALL_ROOT_OB(_1GIJ6Koh9Rn009AWww) //true∈symbol
 RPS_INSTALL_ROOT_OB(_1Io89yIORqn02SXx4p) //RefPerSys_system∈the_system_class
 RPS_INSTALL_ROOT_OB(_1NWEOIzo3WU03mE42Q) //rps_output_textedit∈class
 RPS_INSTALL_ROOT_OB(_1R1LKwGhoTr02e90bn) //web_handler∈class
@@ -110,7 +111,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 88
+#define RPS_NB_ROOT_OB 89
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
