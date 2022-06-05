@@ -2294,6 +2294,11 @@ public:
   Rps_Value name_val(Rps_CallFrame*callframe);
   // lookahead a lexical token, with a deque of them rank#0 being the next one
   Rps_Value lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, unsigned rank=0);
+  /* TODO: parsing routines can also be used for lookahead purpose,
+     with the convention that the bool pointer -pokparse- is null, and
+     returning nullptr on lookahead falure, and the true object (of
+     oid _1GIJ6Koh9Rn009AWww) on lookahead success */
+#define RPS_DO_LOOKAHEAD ((bool*)nullptr)
   //// Ours parsing routines; the token dequeue pointer is for
   //// lookahead... The flag pointed by `pokparse` is set to true if
   //// provided, non-nil, and parsing successful. On success, the
