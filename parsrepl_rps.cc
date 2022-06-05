@@ -166,7 +166,18 @@ Rps_TokenSource::parse_asymmetrical_binaryop(Rps_CallFrame*callframe, std::deque
   _f.bindelimob = bindelim;
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse asymmetrical binop " << opername <<" START position:" << startpos << " calldepth="
                 << rps_call_frame_depth(&_));
-  _f.leftv = parser_leftop(&_,this,token_deq,&leftok);
+  if (is_looking_ahead(pokparse))
+    {
+      /// for lookahead just run the left parsing...
+      _f.leftv = parser_leftop(&_,this,token_deq,RPS_DO_LOOKAHEAD);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse symmetrical binop " << opername <<" LOOKAHEAD "
+                    << (_f.leftv?"success":"failure")
+                    << "  startpos:" << startpos
+                    << " calldepth="
+                    << rps_call_frame_depth(&_));
+    }
+  else
+    _f.leftv = parser_leftop(&_,this,token_deq,&leftok);
   if (!leftok)
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse asymmetrical binop " << opername << " LEFT FAILURE startpos:" <<  startpos
@@ -256,6 +267,13 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
   std::string startpos = position_str();
   if (!opername)
     opername="???";
+  if (is_looking_ahead(pokparse))
+    {
+      // TODO: review, ... only lookahead for first suboperand....
+      _f.leftv = parser_suboperand(&_,this,token_deq, RPS_DO_LOOKAHEAD);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse symmetrical binop " << opername << " lookahead " << (_f.leftv?"success":"failure"));
+      return _f.leftv;
+    }
   _f.leftv = parser_suboperand(&_,this,token_deq,&leftok);
   if (!leftok)
     {
