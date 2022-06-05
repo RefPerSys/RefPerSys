@@ -2299,6 +2299,7 @@ public:
      returning nullptr on lookahead falure, and the true object (of
      oid _1GIJ6Koh9Rn009AWww) on lookahead success */
 #define RPS_DO_LOOKAHEAD ((bool*)nullptr)
+  static bool is_looking_ahead(bool*p) { return p == RPS_DO_LOOKAHEAD; };
   //// Ours parsing routines; the token dequeue pointer is for
   //// lookahead... The flag pointed by `pokparse` is set to true if
   //// provided, non-nil, and parsing successful. On success, the
