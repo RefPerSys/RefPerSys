@@ -1008,7 +1008,9 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
     }
   else
     {
-      RPS_WARNOUT("parse_term failed to parse left primary at " << startpos);
+      RPS_WARNOUT("parse_term failed to parse left primary starting " << startpos
+                    << " pos:" << position_str()
+                    << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr());
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -1150,6 +1152,12 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
                 << " calldepth:" << rps_call_frame_depth(&_));
   if (operandvect.size() == 1)
     {
+      _f.restermv = operandvect[0];
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term GIVES restermv=" << _f.restermv << " token_deq=" << token_deq
+                << " curcptr " << Rps_QuotedC_String(curcptr())
+                << "@" << ((void*)curcptr())
+                << " calldepth:" << rps_call_frame_depth(&_));
+      return _f.restermv;
     }
   else
     {
