@@ -120,7 +120,7 @@ RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 RPS_PKG_CONFIG=  pkg-config
 RPS_PKG_NAMES= jsoncpp readline libcurl zlib
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
-RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES)) $(RPS_FLTK_LIBES)
+RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
 LIBES= $(RPS_PKG_LIBS) -lunistring -lbacktrace -lpthread -ldl
 RM= rm -f
@@ -163,7 +163,10 @@ fltkrefpersys: _fltk-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS) $(RPS_BI
 	$(RM) __timestamp.o
 
 jsonrpcrefpersys: _jsonrpc-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_JSONRPC_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
+	-echo $@: RPS_CORE_OBJECTS= $(RPS_CORE_OBJECTS)
 	-echo $@: RPS_JSONRPC_OBJECTS= $(RPS_JSONRPC_OBJECTS)
+	-echo $@: RPS_BISON_OBJECTS= $(RPS_BISON_OBJECTS)
+	-echo $@: RPS_PKG_LIBS= $(RPS_PKG_LIBS)
 	-sync
 	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic _jsonrpc-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_JSONRPC_OBJECTS)   __timestamp.o \
 	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_JSONRPC_LIBES) -o $@-tmp
@@ -279,6 +282,7 @@ fullclean:
 	$(MAKE) clean
 
 __timestamp.c: | Makefile do-generate-timestamp.sh
+	echo $@:
 	./do-generate-timestamp.sh $@  > $@-tmp
 	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
 	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
