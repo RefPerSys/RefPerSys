@@ -2266,9 +2266,9 @@ protected:
   std::string lex_raw_literal_string(Rps_CallFrame*callframe);
   Rps_Value lex_code_chunk(Rps_CallFrame*callframe);
   Rps_Value lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata);
-  void new_input_line(void) {
-    toksrc_line++;
+  void starting_new_input_line(void) {
     toksrc_col=0;
+    toksrc_line++;
   };
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public:
