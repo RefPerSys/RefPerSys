@@ -40,6 +40,7 @@
 #include "unictype.h"
 #include "uniconv.h"
 
+#include <termios.h>
 #include <wordexp.h>
 
 extern "C" const char rps_lexer_gitid[];
@@ -202,10 +203,18 @@ Rps_CinTokenSource::get_line(void)
 Rps_ReadlineTokenSource::Rps_ReadlineTokenSource(std::string path)
   : Rps_TokenSource(path)
 {
+  RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::Rps_ReadlineTokenSource path="
+		<< Rps_QuotedC_String(path));
+  struct termios ts={};
+  ts.c_iflag = IUTF8;      /* input modes */
+  if (tcsetattr(0,TCSANOW, &ts))
+    RPS_WARNOUT("Rps_ReadlineTokenSource failed to set UTF8 input mode");
+  rl_initialize();
 } // end Rps_ReadlineTokenSource::Rps_ReadlineTokenSource
 
 Rps_ReadlineTokenSource::~Rps_ReadlineTokenSource()
 {
+  RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::~Rps_ReadlineTokenSource");
 };	// end Rps_ReadlineTokenSource::~Rps_ReadlineTokenSource
 
 bool
