@@ -731,6 +731,8 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>
   else
     {
       RPS_WARNOUT("parse_comparison failed to parse left comparand at " << startpos
+		  << " current line:" << Rps_QuotedC_String(current_line())
+		  << " curpos " << position_str()
                   << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparison fail"));
       if (pokparse)
         *pokparse = false;
