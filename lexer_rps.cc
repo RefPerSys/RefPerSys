@@ -220,7 +220,12 @@ Rps_ReadlineTokenSource::get_line(void)
 		  << position_str());
     return false;
   }
-  toksrc_linebuf.assign(rl);
+  int rlinsiz = strlen(rl);
+  toksrc_linebuf.clear();
+  toksrc_linebuf.reserve(rlinsiz);
+  for (const char*pc = rl; *pc; pc++)
+    toksrc_linebuf.push_back(*pc);
+  memset (rl, 0, rlinsiz);
   free (rl), rl = nullptr;
   new_input_line();
   RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::get_line SUCCEED "
