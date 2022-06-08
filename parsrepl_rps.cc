@@ -751,16 +751,21 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>
     {
       Rps_Id delimid =  _f.lextokv.to_lextoken()->lxval().to_object()->oid();
       RPS_WARNOUT("Rps_TokenSource::parse_comparison incomplete delimid=" << delimid  << " position:" << position_str()
+		  << " startpos:" << startpos
                   << std::endl << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
     }
   else
     {
-      RPS_WARNOUT("Rps_TokenSource::parse_comparison unexpected lextokv=" << _f.lextokv << " position:" << position_str()
+      RPS_WARNOUT("Rps_TokenSource::parse_comparison unexpected lextokv="
+		  << _f.lextokv << " position:" << position_str()
+		  << " startpos:" << startpos
                   << std::endl << " leftv=" << _f.leftv);
     }
 #warning unimplemented Rps_TokenSource::parse_comparison
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparison from " << Rps_ShowCallFrame(callframe)
-               << " with token_deq=" << token_deq << " at " << position_str() << std::endl
+               << " with token_deq=" << token_deq << " at " << position_str()
+	       << " startpos:" << startpos
+	       << std::endl
                << "... leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
 } // end Rps_TokenSource::parse_comparison
 
