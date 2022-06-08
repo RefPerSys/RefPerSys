@@ -215,10 +215,16 @@ Rps_ReadlineTokenSource::get_line(void)
   RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::get_line from" << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_ReadlineTokenSource::get_line"));
   char *rl = readline(readline_prompt.c_str());
-  if (!rl) return false;
+  if (!rl) {
+    RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::get_line FAIL "
+		  << position_str());
+    return false;
+  }
   toksrc_linebuf.assign(rl);
   free (rl), rl = nullptr;
   new_input_line();
+  RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::get_line SUCCEED "
+		<< position_str() << " line is: " << Rps_QuotedC_String(toksrc_linebuf));
   return true;
 } // end Rps_ReadlineTokenSource::get_line
 
