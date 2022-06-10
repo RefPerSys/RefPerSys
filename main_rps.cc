@@ -277,15 +277,6 @@ struct argp_option rps_progoptions[] =
     " and run its " RPS_PLUGIN_INIT_NAME "(const Rps_Plugin*) function", //
     /*group:*/0 ///
   },
-  /* ======= command textual read eval print loop user interface, perhaps obsolete ======= */
-  {/*name:*/ "repl", ///
-    /*key:*/ RPSPROGOPT_REPL, ///
-    /*arg:*/ nullptr, ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "Run with a textual read-eval-print-loop user interface using GNU readline.\n"
-    " (this option might become obsolete)", //
-    /*group:*/0 ///
-  },
   /* ======= command textual read eval print loop lexer testing ======= */
   {/*name:*/ "test-repl-lexer", ///
     /*key:*/ RPSPROGOPT_TEST_REPL_LEXER, ///
@@ -329,7 +320,6 @@ bool rps_batch = false;
 bool rps_disable_aslr = false;
 bool rps_without_terminal_escape = false;
 bool rps_without_quick_tests = false;
-bool rps_run_repl = false;
 bool rps_test_repl_lexer = false;
 bool rps_syslog_enabled = false;
 bool rps_stdout_istty = false;
@@ -709,7 +699,6 @@ rps_extend_env(void)
 int
 main (int argc, char** argv)
 {
-  rl_readline_name = argv[0]; // required by GNU readline
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
   rps_stderr_istty = isatty(STDERR_FILENO);
@@ -762,8 +751,6 @@ main (int argc, char** argv)
           rps_disable_aslr = true;
         else if (!strcmp(argv[ix], "-B") || !strcmp(argv[ix], "--batch"))
           rps_batch = true;
-        else if (!strcmp(argv[ix], "-R") || !strcmp(argv[ix], "--repl"))
-          rps_run_repl = true;
         else if (!strcmp(argv[ix], "--without-terminal"))
           rps_without_terminal_escape = true;
       }
@@ -776,8 +763,6 @@ main (int argc, char** argv)
       }
   }
   Rps_Agenda::initialize();
-  if (rps_run_repl && rps_without_terminal_escape)
-    RPS_FATAL("%s cannot run REPL without terminal escape", rps_progname);
   unsetenv("LANG");
   unsetenv("LC_ADDRESS");
   unsetenv("LC_ALL");
@@ -1005,13 +990,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     case RPSPROGOPT_NO_QUICK_TESTS:
     {
       rps_without_quick_tests = true;
-    }
-    return 0;
-    case RPSPROGOPT_REPL:
-    {
-      rps_run_repl = true;
-      if (side_effect)
-        RPS_DEBUG_LOG(REPL, "will run with a textual Read-Eval-Print-Loop using GNU readline");
     }
     return 0;
     case RPSPROGOPT_TEST_REPL_LEXER:
@@ -1285,53 +1263,7 @@ rps_run_application(int &argc, char **argv)
       RPS_INFORMOUT("after running " << rps_command_vec.size() << " commands");
     }
   ////
-  //// console REPL
-  if (rps_run_repl)
-    {
-      RPS_INFORMOUT("rps_run_application in REPL with " << argc << " program arguments");
-      rps_read_eval_print_loop (argc, argv);
-    }
   ////
-  //// testing the REPL
-  else if (rps_test_repl_lexer)
-    {
-      RPS_INFORMOUT("Before running the REPL lexer test...." << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before repl"));
-      rps_repl_lexer_test();
-      RPS_INFORMOUT("After running the REPL lexer test...." << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after repl")
-                    << std::endl);
-    }
-#ifdef RPSFLTK
-  else if (rps_fltk_gui)
-    {
-#pragma message "main_rps.cc with RPSFLTK:" __DATE__ "@" __TIME__
-      extern void guifltk_initialize_rps(void);
-      extern void guifltk_run_application_rps();
-      guifltk_initialize_rps();
-      RPS_INFORMOUT("Before running guifltk_run_application_rps" << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before FLTK GUI"));
-      guifltk_run_application_rps();
-      RPS_INFORMOUT("After running guifltk_run_application_rps" << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after FLTK GUI"));
-    }
-#endif /*RPSFLTK*/
-  ////
-#ifdef RPSFOX
-  else if (rps_fox_gui)
-    {
-#pragma message "main_rps.cc with RPSFOX:" __DATE__ "@" __TIME__
-      extern void guifox_initialize_rps(void);
-      extern void guifox_run_application_rps(void);
-      guifox_initialize_rps();
-      RPS_INFORMOUT("Before running guifox_run_application_rps" << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before FOX GUI"));
-      guifox_run_application_rps();
-      RPS_INFORMOUT("After running guifox_run_application_rps" << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after FOX GUI"));
-    }
-#endif /*RPSFLTK*/
-  /////
 #ifdef RPSJSONRPC
   else if (!rps_fifo_prefix.empty()) {
 #pragma message "main_rps.cc with RPSJSONRPC:" __DATE__ "@" __TIME__

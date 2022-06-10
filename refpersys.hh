@@ -481,7 +481,6 @@ enum rps_progoption_en
   RPSPROGOPT_NO_TERMINAL,
   RPSPROGOPT_NO_ASLR,
   RPSPROGOPT_NO_QUICK_TESTS,
-  RPSPROGOPT_REPL,
   RPSPROGOPT_TEST_REPL_LEXER,
   RPSPROGOPT_RUN_AFTER_LOAD,
   RPSPROGOPT_PLUGIN_AFTER_LOAD,
@@ -2360,16 +2359,6 @@ public:
 };	       // end Rps_StreamTokenSource
 
 
-class Rps_ReadlineTokenSource : public Rps_TokenSource
-{
-  std::string readline_prompt;
-public:
-  Rps_ReadlineTokenSource(std::string path);
-  virtual ~Rps_ReadlineTokenSource();
-  virtual bool get_line(void);
-  void set_prompt(const std::string& prompt) { readline_prompt= prompt; };
-};	       // end Rps_ReadlineTokenSource
-
 
 class Rps_StringTokenSource : public Rps_TokenSource {
   std::istringstream toksrcstr_inp;
@@ -4219,15 +4208,6 @@ rps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*inp
 extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
 
 
-/// for GNU readline autocompletion.  See example in
-/// https://thoughtbot.com/blog/tab-completion-in-gnu-readline and
-/// documentation in
-/// https://tiswww.case.edu/php/chet/readline/readline.html#SEC45
-
-extern "C"  std::vector<std::string> rps_completion_vect;
-extern "C" char **rpsrepl_name_or_oid_completion(const char *, int, int);
-extern "C" char *rpsrepl_name_or_oid_generator(const char *, int);
-
 
 ////////////////////////////////////////////////////////////////
 
@@ -4267,12 +4247,9 @@ extern "C" void rps_load_add_todo(Rps_Loader*,const std::function<void(Rps_Loade
 
 extern "C" void rps_print_types_info (void);
 
-extern "C" void rps_read_eval_print_loop(int &argc, char**argv); // GNU readline based
-
-extern "C" void rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec);
-
 extern "C" void rps_repl_lexer_test(void);
 
+extern "C" void rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec);
 
 extern "C" void rps_run_application(int &argc, char **argv);
 

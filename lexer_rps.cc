@@ -32,10 +32,6 @@
 
 #include "refpersys.hh"
 
-/// GNU readline www.gnu.org/software/readline/
-#include "readline/readline.h"
-#include "readline/history.h"
-
 /// libunistring www.gnu.org/software/libunistring/
 #include "unictype.h"
 #include "uniconv.h"
@@ -198,49 +194,6 @@ Rps_CinTokenSource::get_line(void)
 } // end Rps_CinTokenSource::get_line
 
 
-
-////////////////
-Rps_ReadlineTokenSource::Rps_ReadlineTokenSource(std::string path)
-  : Rps_TokenSource(path)
-{
-  RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::Rps_ReadlineTokenSource path="
-		<< Rps_QuotedC_String(path));
-  struct termios ts={};
-  ts.c_iflag = IUTF8;      /* input modes */
-  if (tcsetattr(0,TCSANOW, &ts))
-    RPS_WARNOUT("Rps_ReadlineTokenSource failed to set UTF8 input mode");
-  rl_initialize();
-} // end Rps_ReadlineTokenSource::Rps_ReadlineTokenSource
-
-Rps_ReadlineTokenSource::~Rps_ReadlineTokenSource()
-{
-  RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::~Rps_ReadlineTokenSource");
-};	// end Rps_ReadlineTokenSource::~Rps_ReadlineTokenSource
-
-bool
-Rps_ReadlineTokenSource::get_line(void)
-{
-  RPS_ASSERT(rps_is_main_thread());
-  RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::get_line from" << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_ReadlineTokenSource::get_line"));
-  char *rl = readline(readline_prompt.c_str());
-  if (!rl) {
-    RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::get_line FAIL "
-		  << position_str());
-    return false;
-  }
-  int rlinsiz = strlen(rl);
-  toksrc_linebuf.clear();
-  toksrc_linebuf.reserve(rlinsiz);
-  for (const char*pc = rl; *pc; pc++)
-    toksrc_linebuf.push_back(*pc);
-  memset (rl, 0, rlinsiz);
-  free (rl), rl = nullptr;
-  starting_new_input_line();
-  RPS_DEBUG_LOG(REPL, "Rps_ReadlineTokenSource::get_line SUCCEED "
-		<< position_str() << " line is: " << Rps_QuotedC_String(toksrc_linebuf));
-  return true;
-} // end Rps_ReadlineTokenSource::get_line
 
 ////////////////
 Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string name)
@@ -1193,67 +1146,65 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>&
 
 
 
-void
-rps_repl_lexer_test(void)
-{
-  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
-                           /*callerframe:*/nullptr,
-                           Rps_Value curlextokenv;
-                );
-  RPS_ASSERT(rps_is_main_thread());
-
-  RPS_TIMER_START();
-
-  RPS_DEBUG_LOG(REPL, "start rps_repl_lexer_test gitid " << rps_gitid
-                << " callframe:" << Rps_ShowCallFrame(&_));
-  rl_attempted_completion_function = rpsrepl_name_or_oid_completion;
-  Rps_ReadlineTokenSource rltoksrc("-*-");
-  int tokcnt=0;
-  int lincnt = 0;
-  while (!rps_repl_stopped)
-    {
-      char prompt[32];
-      memset(prompt, 0, sizeof(prompt));
-      if (lincnt % 4 == 0)
-        {
-          usleep(32768); // to slow down on infinite loop
-          RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test startloop lincnt=" << lincnt
-                        << " "
-                        << rltoksrc.position_str()
-                        << std::endl
-                        <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test startloop"));
-        };
-      snprintf(prompt, sizeof(prompt), "Rps_LEXTEST#%d:", lincnt);
-      rltoksrc.set_prompt(prompt);
-      do
-        {
-          _f.curlextokenv = rltoksrc.get_token(&_);
-          if (_f.curlextokenv)
-            {
-              tokcnt++;
-              RPS_INFORMOUT("token#" << tokcnt << ":" << _f.curlextokenv
-                            << " from " << rltoksrc.position_str());
-            }
-          else
-            RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test no token "
-                          << rltoksrc.position_str());
-        }
-      while (_f.curlextokenv);
-      if (!rltoksrc.get_line())
-        break;
-      lincnt++;
-      RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test got fresh line#" << lincnt
-                    << " '"
-                    << Rps_Cjson_String(rltoksrc.current_line()) << "' "
-                    << rltoksrc.position_str());
-    }
-  RPS_DEBUG_LOG(REPL, "end rps_repl_lexer_test lincnt=" << lincnt
-                << " tokcnt=" << tokcnt
-                << " at " << rltoksrc.position_str()
-                << std::endl);
-
-  RPS_TIMER_STOP(REPL);
-} // end rps_repl_lexer_test
+//§ void
+//§ rps_repl_lexer_test(void)
+//§ {
+//§   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
+//§                            /*callerframe:*/nullptr,
+//§                            Rps_Value curlextokenv;
+//§                 );
+//§   RPS_ASSERT(rps_is_main_thread());
+//§
+//§   RPS_TIMER_START();
+//§
+//§   RPS_DEBUG_LOG(REPL, "start rps_repl_lexer_test gitid " << rps_gitid
+//§                 << " callframe:" << Rps_ShowCallFrame(&_));
+//§   int tokcnt=0;
+//§   int lincnt = 0;
+//§   while (!rps_repl_stopped)
+//§     {
+//§       char prompt[32];
+//§       memset(prompt, 0, sizeof(prompt));
+//§       if (lincnt % 4 == 0)
+//§         {
+//§           usleep(32768); // to slow down on infinite loop
+//§           RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test startloop lincnt=" << lincnt
+//§                         << " "
+//§                         << rltoksrc.position_str()
+//§                         << std::endl
+//§                         <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test startloop"));
+//§         };
+//§       snprintf(prompt, sizeof(prompt), "Rps_LEXTEST#%d:", lincnt);
+//§       rltoksrc.set_prompt(prompt);
+//§       do
+//§         {
+//§           _f.curlextokenv = rltoksrc.get_token(&_);
+//§           if (_f.curlextokenv)
+//§             {
+//§               tokcnt++;
+//§               RPS_INFORMOUT("token#" << tokcnt << ":" << _f.curlextokenv
+//§                             << " from " << rltoksrc.position_str());
+//§             }
+//§           else
+//§             RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test no token "
+//§                           << rltoksrc.position_str());
+//§         }
+//§       while (_f.curlextokenv);
+//§       if (!rltoksrc.get_line())
+//§         break;
+//§       lincnt++;
+//§       RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test got fresh line#" << lincnt
+//§                     << " '"
+//§                     << Rps_Cjson_String(rltoksrc.current_line()) << "' "
+//§                     << rltoksrc.position_str());
+//§     }
+//§   RPS_DEBUG_LOG(REPL, "end rps_repl_lexer_test lincnt=" << lincnt
+//§                 << " tokcnt=" << tokcnt
+//§                 << " at " << rltoksrc.position_str()
+//§                 << std::endl);
+//§
+//§   RPS_TIMER_STOP(REPL);
+//§ } // end rps_repl_lexer_test
 
 
 //// end of file lexer_rps.cc

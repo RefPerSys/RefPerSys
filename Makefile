@@ -40,29 +40,16 @@ RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc *jsonrpc*.cc), $(wildcard *_rps.cc)))
-RPS_FLTK_SOURCES:=  $(sort $(wildcard *fltk*_rps.cc))
-RPS_FOX_SOURCES:=  $(sort $(wildcard *fox*_rps.cc))
 RPS_JSONRPC_SOURCES:=  $(sort $(wildcard *jsonrpc*_rps.cc))
-#RPS_GTKMM_SOURCES:= $(sort $(wildcard *gtk*_rps.cc))
 RPS_BISON_SOURCES:=  $(sort $(wildcard *_rps.yy))
 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
-RPS_FLTK_OBJECTS = $(patsubst %.cc, %.o, $(RPS_FLTK_SOURCES))
-RPS_FOX_OBJECTS = $(patsubst %.cc, %.o, $(RPS_FOX_SOURCES))
 RPS_JSONRPC_OBJECTS = $(patsubst %.cc, %.o, $(RPS_JSONRPC_SOURCES))
-#RPS_GTKMM_OBJECTS = $(patsubst %.cc, %.o, $(RPS_GTKMM_SOURCES))
 RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
-#RPS_QT_OBJECTS = $(patsubst %.cc, %.o, $(RPS_QT_SOURCES))
-#RPS_QT_MOC_HEADERS =  $(patsubst %.cc, %.moc.hh, $(RPS_QT_SOURCES))
 RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
-#RPS_SANITIZED_QT_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_QT_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
-RPS_FLTK_CXXFLAGS = $(shell fltk-config  --cxxflags)
-RPS_FLTK_LIBES = $(shell fltk-config --ldflags)
-RPS_FOX_CXXFLAGS = $(shell fox-config  --cflags)
-RPS_FOX_LIBES = $(shell fox-config --libs)
 RPS_JSONRPC_CXXFLAGS = $(shell pkg-config  --cflags jsoncpp)
 RPS_JSONRPC_LIBES = $(shell pkg-config --libs jsoncpp)
 
@@ -118,7 +105,7 @@ RPS_BUILD_SANITFLAGS = -fsanitize=address
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
-RPS_PKG_NAMES= jsoncpp readline libcurl zlib
+RPS_PKG_NAMES= jsoncpp libcurl zlib
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
@@ -141,14 +128,11 @@ LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 -include $(wildcard $$HOME/build-refpersys.mk)
 all:
 	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
-	if [ -f fltkrefpersys ] ; then  $(MV) -f --backup fltkrefpersys fltkrefpersys~ ; fi
-	if [ -f foxrefpersys ] ; then  $(MV) -f --backup foxrefpersys foxrefpersys~ ; fi
-	if [ -f jsonrpcrefpersys ] ; then  $(MV) -f --backup jsonrpcrefpersys jsonrpcrefpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
-	sync &
-	$(MAKE) -$(MAKEFLAGS) fltkrefpersys 
-	$(MAKE) -$(MAKEFLAGS) foxrefpersys 
-	$(MAKE) -$(MAKEFLAGS) jsonrpcrefpersys 
+	sync 
+#	$(MAKE) -$(MAKEFLAGS) fltkrefpersys 
+#	$(MAKE) -$(MAKEFLAGS) foxrefpersys 
+	$(MAKE) -$(MAKEFLAGS) refpersys 
 	sync
 
 .SECONDARY:  __timestamp.c
@@ -162,13 +146,13 @@ fltkrefpersys: _fltk-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS) $(RPS_BI
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
-jsonrpcrefpersys: _jsonrpc-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_JSONRPC_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
+refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_JSONRPC_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
 	-echo $@: RPS_CORE_OBJECTS= $(RPS_CORE_OBJECTS)
 	-echo $@: RPS_JSONRPC_OBJECTS= $(RPS_JSONRPC_OBJECTS)
 	-echo $@: RPS_BISON_OBJECTS= $(RPS_BISON_OBJECTS)
 	-echo $@: RPS_PKG_LIBS= $(RPS_PKG_LIBS)
 	-sync
-	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic _jsonrpc-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_JSONRPC_OBJECTS)   __timestamp.o \
+	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic main_rps.o $(RPS_CORE_OBJECTS) $(RPS_JSONRPC_OBJECTS)   __timestamp.o \
 	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_JSONRPC_LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
@@ -212,24 +196,8 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -o $@ $<
 	sync
 
-_fox-main_rps.o: main_rps.cc  refpersys.hh.gch
-	$(RPS_COMPILER_TIMER)  $(COMPILE.cc) -c  -DRPSFOX  -o $@ $<
-	sync
-_fltk-main_rps.o: main_rps.cc  refpersys.hh.gch
-	$(RPS_COMPILER_TIMER)  $(COMPILE.cc) -c -DRPSFLTK  -o $@ $<
-	sync
-_jsonrpc-main_rps.o: main_rps.cc  refpersys.hh.gch
+main_rps.o: main_rps.cc  refpersys.hh.gch
 	$(RPS_COMPILER_TIMER)  $(COMPILE.cc) -c -DRPSJSONRPC  -o $@ $<
-	sync
-
-guifltk_rps.o: guifltk_rps.cc refpersys.hh.gch
-	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_FLTK_CXXFLAGS) -DRPSFLTK -o $@ $<
-	sync
-
-
-
-guifox_rps.o: guifox_rps.cc refpersys.hh.gch
-	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_FOX_CXXFLAGS) -DRPSFOX  -o $@ $<
 	sync
 
 
@@ -302,8 +270,8 @@ indent:
 		$(RPS_CORE_SOURCES) 
 
 ## redump target
-redump: jsonrpcrefpersys
-	./jsonrpcrefpersys --dump=. --batch
+redump: refpersys
+	./refpersys --dump=. --batch
 	@if git diff -U1|grep '^[+-] ' | grep -v origitid ; then \
 	  printf "make redump changed in %s git %s\n" $$(pwd)  $(RPS_SHORTGIT_ID); \
           git diff ; \
@@ -313,8 +281,8 @@ redump: jsonrpcrefpersys
         fi
 
 ## alternate redump target
-altredump:  ./jsonrpcrefpersys
-	./jsonrpcrefpersys --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
+altredump:  ./refpersys
+	./refpersys --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
 
 
 check:
@@ -360,19 +328,17 @@ analyze:
 
 ################################################################
 #### simple tests
-test01: ./jsonrpcrefpersys
-#was    ./refpersys -dGUI --display=object
-	@printf 'test01 is sending show 1\\n dump "/tmp/rps1" to jsonrpcrefpersys\n'
-	@(rm -rvf /tmp/rps1; printf 'show 1\n dump "/tmp/rps1"\n')  | ./jsonrpcrefpersys --debug=REPL --repl
+test01: ./refpersys
+	@echo missing test01 ; exit 1
 
-test02: ./jsonrpcrefpersys
+test02: ./refpersys
 	@echo missing test02 ; exit 1
 
-test03: ./jsonrpcrefpersys
+test03: ./refpersys
 	@echo missing test03 ; exit 1
 
-test04: ./jsonrpcrefpersys
-	@echo 'show 1 * 2 + 3 * 4 + 5 < 6 - 7' | ./jsonrpcrefpersys --debug=REPL --repl
+test04: ./refpersys
+	@echo missing test04 ; exit 1
 
 test-load: ./refpersys
 	./refpersys --batch
