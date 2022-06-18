@@ -226,7 +226,7 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 
 ################
 clean:
-	$(RM) *.o *.orig *~ refpersys sanitized-refpersys foxrefpersys *.gch *~ _build.time
+	$(RM) *.o *.orig *~ refpersys sanitized-refpersys foxrefpersys fltkrefpersys jsonrpcrefpersys *.gch *~ _build.time
 	$(RM) *.so
 	$(RM) *.moc.hh
 	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~
