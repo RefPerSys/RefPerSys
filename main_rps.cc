@@ -1045,6 +1045,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " with " << nbsubdirs << " subdirectories." << std::endl
                     << " GNU glibc: " << gnu_get_libc_version() << std::endl
                     << " parser generator: " << rps_gnubison_version << std::endl
+		    << " default GUI script: " << rps_gui_script_executable << std::endl
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
                     << " made with: " << rps_makefile << std::endl
@@ -1202,6 +1203,8 @@ rps_run_application(int &argc, char **argv)
       rps_do_repl_commands_vec(rps_command_vec);
       RPS_INFORMOUT("after running " << rps_command_vec.size() << " commands");
     }
+  if (access(rps_gui_script_executable, X_OK))
+    RPS_WARNOUT("default GUI script " << rps_gui_script_executable << " is not executable");
   ////
   ////
 #ifdef RPSJSONRPC
