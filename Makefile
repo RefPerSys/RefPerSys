@@ -129,22 +129,11 @@ LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 all:
 	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
-	sync 
-#	$(MAKE) -$(MAKEFLAGS) fltkrefpersys 
-#	$(MAKE) -$(MAKEFLAGS) foxrefpersys 
-	$(MAKE) -$(MAKEFLAGS) refpersys 
+	$(MAKE) -$(MAKEFLAGS) refpersys
+	@echo all make target syncing
 	sync
 
 .SECONDARY:  __timestamp.c
-
-fltkrefpersys: _fltk-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
-	-echo $@: RPS_FLTK_OBJECTS= $(RPS_FLTK_OBJECTS)
-	-sync
-	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic _fltk-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FLTK_OBJECTS)   __timestamp.o \
-	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_FLTK_LIBES) -o $@-tmp
-	$(MV) --backup $@-tmp $@
-	$(MV) --backup __timestamp.c __timestamp.c~
-	$(RM) __timestamp.o
 
 refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_JSONRPC_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
 	-echo $@: RPS_CORE_OBJECTS= $(RPS_CORE_OBJECTS)
@@ -158,25 +147,14 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_JSONRPC_OBJECTS) $(RPS_BISON_OBJ
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
-sanitized-refpersys:   _fltk-main_rps.sanit.o $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
+sanitized-refpersys:  main_rps.sanit.o $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
 	$(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
            $(RPS_SANITIZED_CORE_OBJECTS)  __timestamp.o \
-           $(LIBES) $(RPS_FLTK_LIBES) -o $@-tmp
+           $(LIBES) -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
-
-foxrefpersys:  _fox-main_rps.o $(RPS_CORE_OBJECTS) $(RPS_FOX_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
-	-echo $@: RPS_FOX_OBJECTS= $(RPS_FOX_OBJECTS)
-	-sync
-	$(RPS_COMPILER_TIMER) $(LINK.cc)  -DFOXREFPERYS_BUILD  $(RPS_BUILD_CODGENFLAGS) \
-                 -rdynamic -pie -Bdynamic _fox-main_rps.o $(RPS_CORE_OBJECTS) \
-                 $(RPS_FOX_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o \
-	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_FOX_LIBES) -o $@-tmp
-	$(MV) --backup $@-tmp $@
-	$(MV) --backup __timestamp.c __timestamp.c~
-	$(RM) __timestamp.o
 
 ## the below target don't work yet
 #- dbg-refpersys:  $(RPS_DEBUG_CORE_OBJECTS) __timestamp.o
@@ -226,7 +204,7 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 
 ################
 clean:
-	$(RM) *.o *.orig *~ refpersys sanitized-refpersys foxrefpersys fltkrefpersys jsonrpcrefpersys *.gch *~ _build.time
+	$(RM) *.o *.orig *~ refpersys sanitized-refpersys *.gch *~ _build.time
 	$(RM) *.so
 	$(RM) *.moc.hh
 	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~

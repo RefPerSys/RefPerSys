@@ -31,23 +31,9 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Notice: this file is compiled with preprocessor symbol RPSFLTK or
- * RPSFOX -but not both- defined at compilation command.
  ******************************************************************************/
 
-#if !defined(RPSFLTK) && !defined(RPSFOX) && !defined(RPSJSONRPC)
-#error one of RPSFLTK or RPSFOX or RPSJSONRPC should be defined in compilation command
-#elif defined(RPSFLTK) && defined(RPSFOX)
-#error RPSFLTK and RPSFOX cannot be both defined
-#elif defined(RPSFLTK) && defined(RPSJSONRPC)
-#error RPSFLTK and RPSJSONRPC cannot be both defined
-#elif defined(RPSFOX) && defined(RPSJSONRPC)
-#error RPSFOX and RPSJSONRPC cannot be both defined
-#endif /*RPSFOX or RPSFOX or RPSJSONRPC*/
-
 #include "refpersys.hh"
-
-#include "readline/readline.h"
 
 
 extern "C" const char rps_main_gitid[];
@@ -213,30 +199,6 @@ struct argp_option rps_progoptions[] =
     "Try the help command for details.", //
     /*group:*/0 ///
   },
-#if RPSFLTK
-  /* ======= FLTK options  ======= */
-  {/*name:*/ "fltk", ///
-    /*key:*/ RPSPROGOPT_FLTK, ///
-    /*arg:*/ "FLTKOPTION", ///
-    /*flags:*/ OPTION_ARG_OPTIONAL, ///
-    /*doc:*/ "run a graphical user interface using FLTK (see fltk.org)\n"
-    "\t passing the optional FLTKOPTION to that toolkit\n"
-    "\t e.g. --fltk=bg:pink or --fltk:iconic\n", //
-    /*group:*/0 ///
-  },
-#endif /*RPSFLTK*/
-#if RPSFOX
-  /* ======= FOX options  ======= */
-  {/*name:*/ "fox", ///
-    /*key:*/ RPSPROGOPT_FOX, ///
-    /*arg:*/ "FOXOPTION", ///
-    /*flags:*/ OPTION_ARG_OPTIONAL, ///
-    /*doc:*/ "run a graphical user interface using FOX (see fox-toolkit.org)\n"
-    "\t passing the optional FOXOPTION to that toolkit (see its FXApp.cpp file)\n"
-    "\t e.g. --fox:sync or --fox:config=FOXCONFIGFILE\n", //
-    /*group:*/0 ///
-  },
-#endif /*RPSFOX*/
   /* ======= interface thru some FIFO, relevant for JSONRPC  ======= */
   {/*name:*/ "interface-fifo", ///
    /*key:*/ RPSPROGOPT_INTERFACEFIFO, ///
@@ -847,8 +809,7 @@ main (int argc, char** argv)
 
 
 
-// Parse a single program option, skipping side effects (for FLTK
-// argument parsing) when state is empty.
+// Parse a single program option, skipping side effects  when state is empty.
 error_t
 rps_parse1opt (int key, char *arg, struct argp_state *state)
 {
@@ -1013,24 +974,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_run_command_after_load = arg;
     }
     return 0;
-#ifdef RPSFLTK
-    case RPSPROGOPT_FLTK:
-    {
-      rps_fltk_gui=true;
-      if (arg)
-        add_fltk_arg_rps(arg);
-    }
-    return 0;
-#endif /*RPSFLTK*/
-#ifdef RPSFOX
-    case RPSPROGOPT_FOX:
-    {
-      rps_fox_gui=true;
-      if (arg)
-        add_fox_arg_rps(arg);
-    }
-    return 0;
-#endif /*RPSFOX*/
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:
     {
       void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
@@ -1104,9 +1047,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " parser generator: " << rps_gnubison_version << std::endl
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
-#ifdef RPSFLTK
-                    << " FLTK toolkit API version " << fltk_api_version_rps() << std::endl
-#endif /*RPSFLTK*/
                     << " made with: " << rps_makefile << std::endl
                     << " running on " << rps_hostname();
           {

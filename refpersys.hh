@@ -221,22 +221,6 @@ extern "C" bool rps_disable_aslr;
 
 extern "C" bool rps_run_repl;
 
-#ifdef RPSFLTK
-//// for FLTK graphical user interface
-extern "C" bool rps_fltk_gui;
-extern "C" int fltk_api_version_rps(void);
-extern "C" void add_fltk_arg_rps(char*arg);
-extern "C" void guifltk_initialize_rps(void);
-#endif /*RPSFLTK*/
-
-
-#ifdef RPSFOX
-//// for FOX graphical user interface
-extern "C" bool rps_fox_gui;
-extern "C" int fox_api_version_rps(void);
-extern "C" void add_fox_arg_rps(char*arg);
-extern "C" void guifox_initialize_rps(void);
-#endif /*RPSFOX*/
 
 #ifdef RPSJSONRPC
 extern "C" void jsonrpc_initialize_rps(void);
@@ -464,12 +448,6 @@ enum rps_progoption_en
   RPSPROGOPT_DUMP='D',
   RPSPROGOPT_COMMAND='c',
   RPSPROGOPT_INTERFACEFIFO='i',
-#ifdef RPSFLTK
-  RPSPROGOPT_FLTK='F',		// trhe FLTK graphical user toolkit
-#endif
-#ifdef RPSFOX
-  RPSPROGOPT_FOX='X',		// the FOX graphical user toolkit
-#endif
 #ifdef RPSJSONRPC
   /// see also github.com/bstarynk/misc-basile/blob/master/mini-edit-JSONRPC.md
   RPSPROGOPT_JSONRPC='J',      // no direct GUI, but use JSONRPC
@@ -491,8 +469,7 @@ enum rps_progoption_en
 };
 
 
-/// if state is RPS_EMPTYSLOT no serious side-effect happens, since
-/// FLTK is parsing options a second time.
+/// if state is RPS_EMPTYSLOT no serious side-effect happens
 extern "C" error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 extern "C" struct argp_option rps_progoptions[];
 
