@@ -1207,7 +1207,6 @@ rps_run_application(int &argc, char **argv)
     RPS_WARNOUT("default GUI script " << rps_gui_script_executable << " is not executable");
   ////
   ////
-#ifdef RPSJSONRPC
   else if (!rps_fifo_prefix.empty()) {
 #pragma message "main_rps.cc with RPSJSONRPC:" __DATE__ "@" __TIME__
     //extern void jsonrpc_initialize_rps(void);
@@ -1218,9 +1217,7 @@ rps_run_application(int &argc, char **argv)
       jsonrpc_run_application_rps();
       RPS_INFORMOUT("After running jsonrpc_run_application_rps" << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after JSONRPC"));
-  }
-  
-#endif /*RPSJSONRPC*/
+  }  
   else
     {
       RPS_WARNOUT("rps_run_application incomplete"

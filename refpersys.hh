@@ -223,10 +223,8 @@ extern "C" bool rps_disable_aslr;
 extern "C" bool rps_run_repl;
 
 
-#ifdef RPSJSONRPC
 extern "C" void jsonrpc_initialize_rps(void);
 extern "C" void jsonrpc_run_application_rps(void);
-#endif /*RPSJSONRPC*/
 
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_common_state;
@@ -449,10 +447,8 @@ enum rps_progoption_en
   RPSPROGOPT_DUMP='D',
   RPSPROGOPT_COMMAND='c',
   RPSPROGOPT_INTERFACEFIFO='i',
-#ifdef RPSJSONRPC
   /// see also github.com/bstarynk/misc-basile/blob/master/mini-edit-JSONRPC.md
   RPSPROGOPT_JSONRPC='J',      // no direct GUI, but use JSONRPC
-#endif
   RPSPROGOPT_HOMEDIR=1000,
   RPSPROGOPT_RANDOMOID,
   RPSPROGOPT_TYPEINFO,

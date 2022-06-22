@@ -174,9 +174,6 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -o $@ $<
 	sync
 
-main_rps.o: main_rps.cc  refpersys.hh.gch
-	$(RPS_COMPILER_TIMER)  $(COMPILE.cc) -c -DRPSJSONRPC  -o $@ $<
-	sync
 
 
 %.sanit.o: %.cc refpersys.hh.sanit.gch
