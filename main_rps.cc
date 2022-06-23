@@ -181,6 +181,16 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Show version information, then exit.", //
     /*group:*/0 ///
   },
+  /* ======= interface thru some FIFO, relevant for JSONRPC  ======= */
+  {/*name:*/ "interface-fifo", ///
+   /*key:*/ RPSPROGOPT_INTERFACEFIFO, ///
+    /*arg:*/ "FIFO", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "use a pair of fifo(7) named FIFO.cmd (written) "
+    "and FIFO.out (read) for communication"
+    , //
+    /*group:*/0 ///
+  },
   /* ======= run a shell command with system(3) after load ======= */
   {/*name:*/ "run-after-load", ///
     /*key:*/ RPSPROGOPT_RUN_AFTER_LOAD, ///
@@ -197,16 +207,6 @@ struct argp_option rps_progoptions[] =
     /*flags:*/ 0, ///
     /*doc:*/ "Run the given REPL_COMMAND;\n"
     "Try the help command for details.", //
-    /*group:*/0 ///
-  },
-  /* ======= interface thru some FIFO, relevant for JSONRPC  ======= */
-  {/*name:*/ "interface-fifo", ///
-   /*key:*/ RPSPROGOPT_INTERFACEFIFO, ///
-    /*arg:*/ "FIFO", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "use a pair of fifo(7) named FIFO.cmd (written) "
-    "and FIFO.out (read) for communication"
-    , //
     /*group:*/0 ///
   },
   /* ======= edit the C++ code of  a temporary plugin after load ======= */
@@ -1155,9 +1155,17 @@ rps_run_application(int &argc, char **argv)
   //// running the given command after load
   if (rps_run_command_after_load)
     {
-      RPS_INFORM("before running command '%s' after load with REFPERSYS_PID=%ld",
-                 rps_run_command_after_load, (long)getpid());
-      fflush(nullptr);
+      if (rps_fifo_prefix.empty())
+      RPS_INFORM("before running command '%s' after load with environment variables...\n"
+		 " REFPERSYS_PID=%ld, REFPERSYS_GITID=%s, REFPERSYS_TOPDIR=%s",
+                 rps_run_command_after_load, (long)getpid(), rps_gitid, rps_topdirectory);
+      else
+	RPS_INFORM("before running command '%s' after load with environment variables...\n"
+		   "... REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
+		   "... REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
+		   rps_run_command_after_load, (long)getpid(), rps_gitid,
+		   rps_topdirectory, rps_fifo_prefix.c_str());
+      fflush(nullptr); /// needed before system
       int nok = system(rps_run_command_after_load);
       if (nok)
         RPS_FATAL("failed to run command '%s' after load (status #%d)",
@@ -1165,6 +1173,14 @@ rps_run_application(int &argc, char **argv)
       else
         RPS_INFORM("after successfully running command '%s' after load", rps_run_command_after_load);
     }
+  else if (!rps_fifo_prefix.empty()) {
+      RPS_INFORM("before running default GUI command '%s'  after load with environment variables...\n"
+		 "... REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
+		 " ... REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
+		 rps_gui_script_executable, (long)getpid(), rps_gitid,
+		 rps_topdirectory, rps_fifo_prefix.c_str());
+#warning incomplete code should fork/exec rps_gui_script_executable
+  }
   //// if told, run an editor for C++ code
   if (!rps_cpluspluseditor_str.empty() || !rps_cplusplusflags_str.empty())
     {
@@ -1214,8 +1230,6 @@ rps_run_application(int &argc, char **argv)
   ////
   else if (!rps_fifo_prefix.empty()) {
 #pragma message "main_rps.cc with RPSJSONRPC:" __DATE__ "@" __TIME__
-    //extern void jsonrpc_initialize_rps(void);
-    //extern void jsonrpc_run_application_rps(void);
       jsonrpc_initialize_rps();
       RPS_INFORMOUT("Before running jsonrpc_run_application_rps" << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before JSONRPC"));
