@@ -731,8 +731,8 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>
   else
     {
       RPS_WARNOUT("parse_comparison failed to parse left comparand at " << startpos
-		  << " current line:" << Rps_QuotedC_String(current_line())
-		  << " curpos " << position_str()
+                  << " current line:" << Rps_QuotedC_String(current_line())
+                  << " curpos " << position_str()
                   << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparison fail"));
       if (pokparse)
         *pokparse = false;
@@ -753,21 +753,21 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>
     {
       Rps_Id delimid =  _f.lextokv.to_lextoken()->lxval().to_object()->oid();
       RPS_WARNOUT("Rps_TokenSource::parse_comparison incomplete delimid=" << delimid  << " position:" << position_str()
-		  << " startpos:" << startpos
+                  << " startpos:" << startpos
                   << std::endl << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
     }
   else
     {
       RPS_WARNOUT("Rps_TokenSource::parse_comparison unexpected lextokv="
-		  << _f.lextokv << " position:" << position_str()
-		  << " startpos:" << startpos
+                  << _f.lextokv << " position:" << position_str()
+                  << " startpos:" << startpos
                   << std::endl << " leftv=" << _f.leftv);
     }
 #warning unimplemented Rps_TokenSource::parse_comparison
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparison from " << Rps_ShowCallFrame(callframe)
                << " with token_deq=" << token_deq << " at " << position_str()
-	       << " startpos:" << startpos
-	       << std::endl
+               << " startpos:" << startpos
+               << std::endl
                << "... leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
 } // end Rps_TokenSource::parse_comparison
 
@@ -1016,8 +1016,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
   else
     {
       RPS_WARNOUT("parse_term failed to parse left primary starting " << startpos
-                    << " pos:" << position_str()
-                    << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr());
+                  << " pos:" << position_str()
+                  << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr());
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -1161,9 +1161,9 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
     {
       _f.restermv = operandvect[0];
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term GIVES restermv=" << _f.restermv << " token_deq=" << token_deq
-                << " curcptr " << Rps_QuotedC_String(curcptr())
-                << "@" << ((void*)curcptr())
-                << " calldepth:" << rps_call_frame_depth(&_));
+                    << " curcptr " << Rps_QuotedC_String(curcptr())
+                    << "@" << ((void*)curcptr())
+                    << " calldepth:" << rps_call_frame_depth(&_));
       return _f.restermv;
     }
   else
