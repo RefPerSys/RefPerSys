@@ -308,6 +308,11 @@ static std::string rps_my_load_dir;
 // user interface are on $FIFOPREFIX.cmd
 static std::string rps_fifo_prefix;
 
+std::string
+rps_get_fifo_prefix(void)
+{
+  return rps_fifo_prefix;
+} // end rps_get_fifo_prefix
 
 struct rps_fifo_fdpair_st
 rps_get_gui_fifo_fds(void)
