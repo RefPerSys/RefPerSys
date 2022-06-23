@@ -36,17 +36,25 @@
 extern "C" void jsonrpc_initialize_rps(void);
 extern "C" void jsonrpc_run_application_rps(void);
 
-
-void jsonrpc_initialize_rps(void)
+/**
+   Function jsonrpc_initialize_rps is called once from main, when
+   rps_fifo_prefix is not empty. It is expected to create the FIFOs if
+   they dont exist ....
+***/
+void
+jsonrpc_initialize_rps(void)
 {
 #warning unimplemented  jsonrpc_initialize_rps
-  RPS_FATALOUT("unimplemented jsonrpc_initialize_rps");
+  RPS_FATALOUT("unimplemented jsonrpc_initialize_rps with fifo prefix "
+	       << rps_get_fifo_prefix());
 } // end jsonrpc_initialize_rps
 
-void jsonrpc_run_application_rps(void)
+void
+jsonrpc_run_application_rps(void)
 {
 #warning jsonrpc_run_application_rps unimplemented
-  RPS_FATALOUT("unimplemented jsonrpc_run_application_rps");
+  RPS_FATALOUT("unimplemented jsonrpc_run_application_rps with fifo prefix "
+	       << rps_get_fifo_prefix());
 } // end jsonrpc_run_application_rps
 
 /// end of file jsonrpc_rps.cc
