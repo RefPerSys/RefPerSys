@@ -83,6 +83,7 @@
 #include <ctype.h>
 #include <sys/mman.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/syscall.h>
