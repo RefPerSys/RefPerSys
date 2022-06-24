@@ -43,6 +43,8 @@ extern "C" const char rps_main_date[];
 const char rps_main_date[]= __DATE__;
 
 
+extern "C" pid_t rps_gui_pid;
+
 
 /// actually, in function main we have something like  asm volatile ("rps_end_of_main: nop");
 extern "C" void rps_end_of_main(void);
@@ -50,6 +52,7 @@ extern "C" void rps_end_of_main(void);
 extern "C" void rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe);
 
 extern "C" void rps_small_quick_tests_after_load (void);
+
 
 extern "C" std::vector<Rps_Plugin> rps_plugins_vector;
 std::vector<Rps_Plugin> rps_plugins_vector;
@@ -64,6 +67,7 @@ std::string rps_dumpdir_str;
 extern "C" std::vector<std::string> rps_command_vec;
 std::vector<std::string> rps_command_vec;
 
+static void rps_kill_wait_gui_process(void);
 
 error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 struct argp_option rps_progoptions[] =
@@ -292,7 +296,7 @@ unsigned rps_debug_flags;
 FILE* rps_debug_file;
 static char rps_debug_path[128];
 static  struct rps_fifo_fdpair_st rps_fifo_pair;
-static pid_t rps_gui_pid;
+pid_t rps_gui_pid;
 
 thread_local Rps_Random Rps_Random::_rand_thr_;
 
@@ -1179,7 +1183,25 @@ rps_run_application(int &argc, char **argv)
 		 " ... REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
 		 rps_gui_script_executable, (long)getpid(), rps_gitid,
 		 rps_topdirectory, rps_fifo_prefix.c_str());
-#warning incomplete code should fork/exec rps_gui_script_executable
+      fflush(nullptr);
+      pid_t guipid = fork();
+      if (guipid < 0)
+	RPS_FATALOUT("failed to fork for running the GUI script" << rps_gui_script_executable);
+      if (guipid == 0) {
+	// child process
+	// close many file desriptors
+	for (int fd=3; fd<128; fd++) close(fd);
+	close(STDIN_FILENO);
+	int nullfd = open("/dev/null", O_RDONLY);
+	if (nullfd>0)
+	  dup2(nullfd, STDIN_FILENO);
+	execl(rps_gui_script_executable, rps_gui_script_executable, rps_fifo_prefix.c_str(), nullptr);
+	perror(rps_gui_script_executable);
+	_exit(126);
+	return;
+      };
+      rps_gui_pid = guipid;
+      atexit(rps_kill_wait_gui_process);
   }
   //// if told, run an editor for C++ code
   if (!rps_cpluspluseditor_str.empty() || !rps_cplusplusflags_str.empty())
@@ -1974,5 +1996,21 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
     free(bigbfr);
 } // end rps_debug_printf_at
 
+
+/// function called by atexit to kill then wait the GUI process
+void
+rps_kill_wait_gui_process(void)
+{
+  int guistatus = 0;
+  if (kill(rps_gui_pid, SIGTERM))
+    RPS_WARNOUT("failed to SIGTERM the GUI process " << rps_gui_pid);
+  usleep(32*1024);
+  (void) kill(rps_gui_pid, SIGKILL);
+  usleep(32*1024);
+  if (waitpid(rps_gui_pid, &guistatus, 0) == rps_gui_pid)
+    RPS_INFORMOUT("GUI process ended with status " << guistatus);
+  if (guistatus >0)
+    RPS_FATALOUT("GUI process failed with status " << guistatus);
+} // end rps_kill_wait_gui_process
 
 /////////////////// end of file main_rps.cc
