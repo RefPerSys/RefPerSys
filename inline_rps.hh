@@ -537,6 +537,9 @@ Rps_SetOb::element_index(const Rps_ObjectRef obelem) const
 } // end Rps_SetOb::element_index
 
 
+
+////////////////////////////////// Rps_SetOb::element_after***
+
 Rps_ObjectRef
 Rps_SetOb::element_after_or_equal(const Rps_ObjectRef obelem) const
 {
@@ -579,8 +582,11 @@ Rps_SetOb::element_after_or_equal(const Rps_ObjectRef obelem) const
   return nullptr;
 } // end of Rps_SetOb::element_after_or_equal
 
+
+////////////////////////////////// Rps_SetOb::element_before***
+
 Rps_ObjectRef
-Rps_SetOb::element_after(const Rps_ObjectRef obelem) const
+Rps_SetOb::element_before(const Rps_ObjectRef obelem) const
 {
   if (stored_type() != Rps_Type::Set)
     return nullptr;
@@ -603,8 +609,8 @@ Rps_SetOb::element_after(const Rps_ObjectRef obelem) const
                  && curobr->stored_type() == Rps_Type::Object);
       if (RPS_UNLIKELY(curobr == obelem))
         {
-          if (md+1 < card)
-            return setdata[md+1];
+          if (md>0)
+            return setdata[md-1];
           else
             return nullptr;
         }
@@ -620,14 +626,62 @@ Rps_SetOb::element_after(const Rps_ObjectRef obelem) const
                  && curobr->stored_type() == Rps_Type::Object);
       if (RPS_UNLIKELY(curobr == obelem))
         {
-          if (md+1 < card)
-            return setdata[md+1];
+          if (md>0)
+            return setdata[md-1];
         }
       else if (curobr > obelem)
-        return curobr;
+        return nullptr;
     };
   return nullptr;
-} // end of Rps_SetOb::element_after
+} // end of Rps_SetOb::element_before
+
+Rps_ObjectRef
+Rps_SetOb::element_before_or_equal(const Rps_ObjectRef obelem) const
+{
+  if (stored_type() != Rps_Type::Set)
+    return nullptr;
+  if (!obelem)
+    return nullptr;
+  int ix = element_index(obelem);
+  if (ix<0)
+    return nullptr;
+  unsigned card = cnt();
+  if (card == 0)
+    return nullptr;
+  RPS_ASSERT(card <= maxsize);
+  auto setdata = (raw_const_data());
+  int lo = 0, hi = (int)card - 1;
+  while (lo + 4 < hi)
+    {
+      int md = (lo + hi) / 2;
+      auto curobr = setdata[md];
+      RPS_ASSERT(!curobr.is_empty()
+                 && curobr->stored_type() == Rps_Type::Object);
+      if (RPS_UNLIKELY(curobr == obelem))
+        {
+	  return curobr;
+        }
+      else if (curobr < obelem)
+        lo = md;
+      else
+        hi = md;
+    };
+  for (int md = lo; md < hi; md++)
+    {
+      auto curobr = setdata[md];
+      RPS_ASSERT(!curobr.is_empty()
+                 && curobr->stored_type() == Rps_Type::Object);
+      if (RPS_UNLIKELY(curobr == obelem))
+        {
+	  return curobr;
+        }
+      else if (curobr > obelem)
+        return nullptr;
+      else
+	return curobr;
+    };
+  return nullptr;
+} // end of Rps_SetOb::element_before_or_equal
 
 ////////////////////////////////////////////////////////////////
 
