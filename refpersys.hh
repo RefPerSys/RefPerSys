@@ -2984,7 +2984,13 @@ public:
   inline bool contains(const Rps_ObjectRef obelem) const { return element_index(obelem) >= 0; };
   unsigned cardinal() const { return cnt(); };
   static const Rps_SetOb& the_empty_set(void) { return _setob_emptyset_; };
-#warning Rps_SetOb very incomplete
+  inline Rps_ObjectRef element_after_or_equal(const Rps_ObjectRef obelem) const;
+  inline Rps_ObjectRef element_after(const Rps_ObjectRef obelem) const;
+  inline Rps_ObjectRef element_before_or_equal(const Rps_ObjectRef obelem) const;
+  inline Rps_ObjectRef element_before(const Rps_ObjectRef obelem) const;
+  inline Rps_ObjectRef minimal_element(void) const;
+  inline Rps_ObjectRef maximal_element(void) const;
+#warning Rps_SetOb could be still incomplete
 };// end of Rps_SetOb
 
 /////////////////////////// tuples of Rps_ObjectRef
