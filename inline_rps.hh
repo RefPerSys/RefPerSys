@@ -11,7 +11,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2021 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2022 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -659,7 +659,7 @@ Rps_SetOb::element_before_or_equal(const Rps_ObjectRef obelem) const
                  && curobr->stored_type() == Rps_Type::Object);
       if (RPS_UNLIKELY(curobr == obelem))
         {
-	  return curobr;
+          return curobr;
         }
       else if (curobr < obelem)
         lo = md;
@@ -673,12 +673,12 @@ Rps_SetOb::element_before_or_equal(const Rps_ObjectRef obelem) const
                  && curobr->stored_type() == Rps_Type::Object);
       if (RPS_UNLIKELY(curobr == obelem))
         {
-	  return curobr;
+          return curobr;
         }
       else if (curobr > obelem)
         return nullptr;
       else
-	return curobr;
+        return curobr;
     };
   return nullptr;
 } // end of Rps_SetOb::element_before_or_equal
@@ -720,6 +720,27 @@ Rps_SetValue::Rps_SetValue(const Rps_Value val)
   : Rps_Value (val.is_set()?val.as_set():nullptr, Rps_ValPtrTag{})
 {
 } // end Rps_SetValue::Rps_SetValue dynamic
+
+
+////////////////
+int
+Rps_TupleOb::index_found_after(Rps_ObjectRef findob, int startix)
+{
+  if (stored_type() != Rps_Type::Tuple)
+    return -1;
+  if (!findob)
+    return -1;
+  unsigned siz = cnt();
+  if (startix < 0)
+    startix += siz;
+  if (startix < 0 || startix >= (int)siz)
+    return -1;
+  auto tupdata = (raw_const_data());
+  for (int ix=startix; ix<(int)siz; ix++)
+    if (tupdata[ix] == findob)
+      return ix;
+  return -1;
+} // end Rps_TupleOb::index_found_after
 
 ////////////////
 const Rps_TupleOb*

@@ -2993,6 +2993,8 @@ public:
 #warning Rps_SetOb could be still incomplete
 };// end of Rps_SetOb
 
+
+
 /////////////////////////// tuples of Rps_ObjectRef
 unsigned constexpr rps_tuple_k1 = 5939;
 unsigned constexpr rps_tuple_k2 = 18917;
@@ -3018,6 +3020,10 @@ public:
   virtual Json::Value dump_json(Rps_Dumper*) const;
   virtual void val_output(std::ostream& outs, unsigned depth) const;
   virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
+  /* find then compute the index of the first component equal to a
+     given object not smaller than a starting index, or -1; if startix
+     is negative count from last component... */
+  inline int index_found_after(Rps_ObjectRef findob, int startix=0);
 #warning Rps_TupleOb very incomplete
 };// end of Rps_TupleOb
 
