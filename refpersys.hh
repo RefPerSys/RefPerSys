@@ -3021,9 +3021,11 @@ public:
   virtual void val_output(std::ostream& outs, unsigned depth) const;
   virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
   /* find then compute the index of the first component equal to a
-     given object not smaller than a starting index, or -1; if startix
+     given object, not smaller than a starting index, or -1; if startix
      is negative count from last component... */
   inline int index_found_after(Rps_ObjectRef findob, int startix=0);
+  /* symetrically find the index before an ending index.. */
+  inline int index_found_before(Rps_ObjectRef findob, int endix= -1);
 #warning Rps_TupleOb very incomplete
 };// end of Rps_TupleOb
 

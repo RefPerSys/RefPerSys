@@ -742,6 +742,25 @@ Rps_TupleOb::index_found_after(Rps_ObjectRef findob, int startix)
   return -1;
 } // end Rps_TupleOb::index_found_after
 
+int
+Rps_TupleOb::index_found_before(Rps_ObjectRef findob, int endix)
+{
+  if (stored_type() != Rps_Type::Tuple)
+    return -1;
+  if (!findob)
+    return -1;
+  unsigned siz = cnt();
+  if (endix < 0)
+    endix += siz;
+  if (endix < 0 || endix >= (int)siz)
+    return -1;
+  auto tupdata = (raw_const_data());
+  for (int ix=endix; ix >= 0; ix--)
+    if (tupdata[ix] == findob)
+      return ix;
+  return -1;
+} // end Rps_TupleOb::index_found_before
+
 ////////////////
 const Rps_TupleOb*
 Rps_Value::as_tuple() const
