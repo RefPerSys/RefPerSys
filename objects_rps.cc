@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2021 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2022 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1693,6 +1693,14 @@ Rps_PayloadVectVal::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   jv["vectval"] = jarr;
 } // end Rps_PayloadVectVal::dump_json_content
 
+
+
+const Rps_ClosureZone*
+Rps_PayloadVectVal::make_closure_zone_from_vector(Rps_ObjectRef connob)
+{
+  if (!connob) return nullptr;
+  return Rps_ClosureZone::make(connob, pvectval);
+} // end Rps_PayloadVectVal::make_closure_zone_from_vector
 
 /***************** space payload **********/
 

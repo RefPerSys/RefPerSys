@@ -3888,7 +3888,8 @@ public:
     if (obrcomp)
       pvectval.push_back(Rps_ObjectValue(obrcomp));
   };
-#warning missing method to make a node from some Rps_PayloadVectVal
+  const Rps_ClosureZone* make_closure_zone_from_vector(Rps_ObjectRef connob);
+#warning missing method to make an instance from some Rps_PayloadVectVal
 };				// end Rps_PayloadVectVal
 
 
