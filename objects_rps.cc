@@ -139,7 +139,6 @@ void
 Rps_ObjectZone::val_output(std::ostream&out, unsigned int depth) const
 {
   out << oid().to_string();
-  bool isnamed = false;
   if (depth<2)
     {
       std::lock_guard<std::recursive_mutex> gu(ob_idmtx_);
@@ -152,7 +151,6 @@ Rps_ObjectZone::val_output(std::ostream&out, unsigned int depth) const
             {
               out << "⏵"; // U+23F5 BLACK MEDIUM RIGHT-POINTING TRIANGLE
               out << namv.as_cstring();
-              isnamed = true;
             }
         }
       auto obcl = ob_class.load();
@@ -168,6 +166,7 @@ Rps_ObjectZone::val_output(std::ostream&out, unsigned int depth) const
       out << "⟧"; // U+27E7 MATHEMATICAL RIGHT WHITE SQUARE BRACKET
     };
 } // end Rps_ObjectZone::val_output
+
 
 void
 Rps_ObjectZone::register_objzone(Rps_ObjectZone*obz)
