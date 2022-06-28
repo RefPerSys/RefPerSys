@@ -683,6 +683,23 @@ Rps_SetOb::element_before_or_equal(const Rps_ObjectRef obelem) const
   return nullptr;
 } // end of Rps_SetOb::element_before_or_equal
 
+Rps_ObjectRef
+Rps_SetOb::random_element_or_fail(int startix, int endix)  const
+{
+  if (stored_type() != Rps_Type::Set)
+    throw std::runtime_error("non set value");
+  return  random_object_in_sequence_or_fail (startix, endix);
+} // end Rps_SetOb::random_element_or_fail
+
+////////////////////////
+Rps_ObjectRef
+Rps_SetOb::random_element_or_default(Rps_ObjectRef defob, int startix, int endix)  const
+{
+  if (stored_type() != Rps_Type::Set)
+    return defob;
+  return  random_object_in_sequence_or_default (defob, startix, endix);
+} // end Rps_SetOb::random_element_or_default
+
 ////////////////////////////////////////////////////////////////
 
 Rps_SetValue::Rps_SetValue (void)
@@ -760,6 +777,24 @@ Rps_TupleOb::index_found_before(Rps_ObjectRef findob, int endix)
       return ix;
   return -1;
 } // end Rps_TupleOb::index_found_before
+
+Rps_ObjectRef
+Rps_TupleOb::random_component_or_fail(int startix, int endix)  const
+{
+  if (stored_type() != Rps_Type::Tuple)
+    throw std::runtime_error("non tuple value");
+  return  random_object_in_sequence_or_fail (startix, endix);
+} // end Rps_TupleOb::random_component_or_fail
+
+Rps_ObjectRef
+Rps_TupleOb::random_component_or_default(Rps_ObjectRef defob, int startix, int endix)  const
+{
+  if (stored_type() != Rps_Type::Tuple)
+    return defob;
+  return  random_object_in_sequence_or_default (defob, startix, endix);
+} // end Rps_TupleOb::random_component_or_default
+
+////////////////////////
 
 ////////////////
 const Rps_TupleOb*

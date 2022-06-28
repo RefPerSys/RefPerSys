@@ -2833,12 +2833,51 @@ public:
     return _seqlen;
   };
   const Rps_ObjectRef at(int ix) const {
-    if (ix<0) ix+= cnt();
+    if (ix<0)
+      ix += cnt();
     if (ix>=0 && ix <(int)cnt())
       return _seqob[ix];
     else
       throw std::range_error("index out of range in objref sequence");
   }
+  const Rps_ObjectRef random_object_in_sequence_or_fail (int startix= 0, int endix= -1) const {
+    if (startix < 0)
+      startix += cnt();
+    if (endix < 0)
+      endix += cnt();
+    if (endix < 0)
+      endix += cnt();
+    if (startix < 0 || startix >= cnt()-1)
+      throw std::range_error("start index out of range");
+    if (endix < 0 || endix >= cnt()-1)
+      throw std::range_error("end index out of range");
+    if (startix > endix)
+      throw std::invalid_argument("start index after end index");
+    if (startix == endix)
+      return _seqob[startix];
+    RPS_ASSERT(startix < endix);
+    unsigned rd = Rps_Random::random_32u() % (endix - startix);
+    return _seqob[startix + rd];
+  };
+  const Rps_ObjectRef random_object_in_sequence_or_default (Rps_ObjectRef defob, int startix= 0, int endix= -1) const {
+    if (startix < 0)
+      startix += cnt();
+    if (endix < 0)
+      endix += cnt();
+    if (endix < 0)
+      endix += cnt();
+    if (startix < 0 || startix >= cnt()-1)
+      return defob;
+    if (endix < 0 || endix >= cnt()-1)
+      return defob;
+    if (startix > endix)
+      return defob;
+    if (startix == endix)
+      return _seqob[startix];
+    RPS_ASSERT(startix < endix);
+    unsigned rd = Rps_Random::random_32u() % (endix - startix);
+    return _seqob[startix + rd];
+  };
   typedef const Rps_ObjectRef*iterator_t;
   iterator_t begin() const
   {
@@ -2990,6 +3029,8 @@ public:
   inline Rps_ObjectRef element_before(const Rps_ObjectRef obelem) const;
   inline Rps_ObjectRef minimal_element(void) const;
   inline Rps_ObjectRef maximal_element(void) const;
+  inline Rps_ObjectRef random_element_or_fail(int startix=0, int endix= -1) const;
+  inline Rps_ObjectRef random_element_or_default(Rps_ObjectRef defob, int startix=0, int endix= -1) const;
 #warning Rps_SetOb could be still incomplete
 };// end of Rps_SetOb
 
@@ -3026,6 +3067,8 @@ public:
   inline int index_found_after(Rps_ObjectRef findob, int startix=0);
   /* symetrically find the index before an ending index.. */
   inline int index_found_before(Rps_ObjectRef findob, int endix= -1);
+  inline Rps_ObjectRef random_component_or_fail(int startix=0, int endix= -1) const;
+  inline Rps_ObjectRef random_component_or_default(Rps_ObjectRef defob, int startix=0, int endix= -1) const;
 #warning Rps_TupleOb very incomplete
 };// end of Rps_TupleOb
 
