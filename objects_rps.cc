@@ -1698,9 +1698,23 @@ Rps_PayloadVectVal::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 const Rps_ClosureZone*
 Rps_PayloadVectVal::make_closure_zone_from_vector(Rps_ObjectRef connob)
 {
-  if (!connob) return nullptr;
+  if (!connob)
+    return nullptr;
+  std::lock_guard<std::recursive_mutex> gu(*(connob->objmtxptr()));
   return Rps_ClosureZone::make(connob, pvectval);
 } // end Rps_PayloadVectVal::make_closure_zone_from_vector
+
+
+const Rps_InstanceZone*
+Rps_PayloadVectVal::make_instance_zone_from_vector(Rps_ObjectRef classob)
+{
+  if (!classob)
+    return nullptr;
+  std::lock_guard<std::recursive_mutex> gu(*(classob->objmtxptr()));
+  if (!classob->is_class())
+    return nullptr;
+  return Rps_InstanceZone::make_from_components(classob, pvectval);
+} // end Rps_PayloadVectVal::make_instance_zone_from_vector
 
 /***************** space payload **********/
 

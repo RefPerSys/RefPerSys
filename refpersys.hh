@@ -2847,9 +2847,9 @@ public:
       endix += cnt();
     if (endix < 0)
       endix += cnt();
-    if (startix < 0 || startix >= cnt()-1)
+    if (startix < 0 || startix >= (int)cnt()-1)
       throw std::range_error("start index out of range");
-    if (endix < 0 || endix >= cnt()-1)
+    if (endix < 0 || endix >= (int)cnt()-1)
       throw std::range_error("end index out of range");
     if (startix > endix)
       throw std::invalid_argument("start index after end index");
@@ -2866,9 +2866,9 @@ public:
       endix += cnt();
     if (endix < 0)
       endix += cnt();
-    if (startix < 0 || startix >= cnt()-1)
+    if (startix < 0 || startix >= (int)cnt()-1)
       return defob;
-    if (endix < 0 || endix >= cnt()-1)
+    if (endix < 0 || endix >= (int)cnt()-1)
       return defob;
     if (startix > endix)
       return defob;
@@ -3870,7 +3870,7 @@ public:
 
 ////////////////////////////////////////////////////////////////
 ////// mutable vector of values payload - for PaylVectVal and objects
-////// of class `mutable_value_vector
+////// of class `mutable_value_vector` €_8Iz9vBfs4sl041FiuR
 extern "C" rpsldpysig_t rpsldpy_vectval;
 class Rps_PayloadVectVal : public Rps_Payload
 {
@@ -3932,6 +3932,7 @@ public:
       pvectval.push_back(Rps_ObjectValue(obrcomp));
   };
   const Rps_ClosureZone* make_closure_zone_from_vector(Rps_ObjectRef connob);
+  const Rps_InstanceZone* make_instance_zone_from_vector(Rps_ObjectRef classob);
 #warning missing method to make an instance from some Rps_PayloadVectVal
 };				// end Rps_PayloadVectVal
 
