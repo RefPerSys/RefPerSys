@@ -955,7 +955,7 @@ public:
     else
       _optr = oth._optr;
   };
-  Rps_ObjectRef(Rps_ObjectRef&&oth) : _optr(std::exchange(oth._optr, nullptr))
+  Rps_ObjectRef(Rps_ObjectRef&&oth) : _optr(std::move(oth._optr))
   {
     if (RPS_UNLIKELY((_optr == (Rps_ObjectZone*)RPS_EMPTYSLOT)))
       _optr = nullptr;
