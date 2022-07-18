@@ -127,6 +127,7 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe, std::deque<
                 << " startpos:" << startpos
                 << " calldepth="
                 << rps_call_frame_depth(&_));
+  return _f.resexprsymv;
 } // end Rps_TokenSource::parse_symmetrical_binaryop
 
 
@@ -229,6 +230,7 @@ Rps_TokenSource::parse_asymmetrical_binaryop(Rps_CallFrame*callframe, std::deque
                 << " startpos:" << startpos
                 << " calldepth="
                 << rps_call_frame_depth(&_));
+  return _f.resexprsymv;
 } // end Rps_TokenSource::parse_asymmetrical_binaryop
 
 
