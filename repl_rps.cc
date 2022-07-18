@@ -1761,7 +1761,6 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
   RPS_ASSERT(rps_is_main_thread());
   int nbcmd = (int) (cmdvec.size());
   std::string cmdstr;
-  unsigned int cmdsiz = 0;
   for (int cix=0; cix<nbcmd; cix++)
     {
       RPS_DEBUG_LOG(REPL, "REPL command [" << cix << "]: " << cmdvec[cix]);
