@@ -50,7 +50,6 @@ rps_curl_version(void)
   strncpy(curlgitbuf, rps_curl_gitid, (3*sizeof(curlgitbuf))/4);
   std::string res("CURL ");
   char* cv = curl_version ();
-  int nc = 0;
   for (char *pc = cv; *pc; pc++)
     {
       if (isspace(*pc))
