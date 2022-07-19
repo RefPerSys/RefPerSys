@@ -1815,7 +1815,7 @@ static void rps_close_debug_file(void)
 {
   if (rps_debug_file)
     {
-      if (rps_debug_path)
+      if (rps_debug_path[0])
         fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug file %s ****\n", rps_debug_path);
       else
         fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug ***\n");
