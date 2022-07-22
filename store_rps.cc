@@ -2036,6 +2036,7 @@ Rps_Dumper::write_all_generated_files(void)
                            Rps_Value tempsuffixv;
                            Rps_ObjectRef refpersysob;
                            Rps_ObjectRef gencodselob;
+                           Rps_ObjectRef genstoreob;
                            Rps_Value mainv;
                            Rps_Value refpersysv;
                            Rps_Value xtrav;
@@ -2047,11 +2048,14 @@ Rps_Dumper::write_all_generated_files(void)
   try
     {
       _f.refpersysv = Rps_ObjectValue(_f.refpersysob);
+      /* We create a temporary object to hold some "arbitrary"
+	 information about this particular generation */
+      _f.genstoreob = Rps_ObjectRef::make_object(&_, Rps_ObjectRef::the_object_class());
       RPS_DEBUG_LOG(DUMP, "Rps_Dumper::write_all_generated_files before sending "<< _f.gencodselob << " to "
-                    << _f.refpersysv << " with " << _f.dumpdirnamev << " & " << _f.tempsuffixv
+                    << _f.refpersysv << " with " << _f.dumpdirnamev << " & " << _f.tempsuffixv << " genstoreob=" << _f.genstoreob
                     << std::endl
                     << Rps_ShowCallFrame(&_));
-      Rps_TwoValues two = _f.refpersysv.send2(&_, _f.gencodselob, _f.dumpdirnamev, _f.tempsuffixv);
+      Rps_TwoValues two = _f.refpersysv.send3(&_, _f.gencodselob, _f.dumpdirnamev, _f.tempsuffixv, _f.genstoreob);
       _f.mainv = two.main();
       _f.xtrav  = two.xtra();
       RPS_DEBUG_LOG(DUMP, "Rps_Dumper::write_all_generated_files after sending "<< _f.gencodselob << " to "
@@ -2172,12 +2176,9 @@ Rps_Dumper::write_manifest_file(void)
           }
       }
   }
-  if (rps_progname)
-    jmanifest["progname"] = Json::Value (rps_progname);
-  if (rps_timestamp)
-    jmanifest["progtimestamp"] = Json::Value (rps_timestamp);
-  if (rps_md5sum)
-    jmanifest["progmd5sum"] = Json::Value(rps_md5sum);
+  jmanifest["progname"] = Json::Value (rps_progname);
+  jmanifest["progtimestamp"] = Json::Value (rps_timestamp);
+  jmanifest["progmd5sum"] = Json::Value(rps_md5sum);
   jsonwriter->write(jmanifest, pouts.get());
   *pouts << std::endl <<  std::endl << "//// end of RefPerSys manifest file" << std::endl;
   RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file ending ... " << rps_gitid << std::endl);
