@@ -1302,6 +1302,8 @@ Rps_TokenSource::parse_primary_complement(Rps_CallFrame*callframe, std::deque<Rp
                 << " token_deq:" << token_deq
                 << " primaryexpv:" << _f.primaryexpv
                 << " position:" << startpos);
+  if (pokparse)
+    *pokparse = false;
 #warning unimplemented Rps_TokenSource::parse_primary_complement
   RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary_complement "
                << Rps_ShowCallFrame(callframe)
