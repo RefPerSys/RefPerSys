@@ -2258,7 +2258,7 @@ public:
   };				// end Rps_TokenSource::curcptr
   const std::string current_line(void) const { return toksrc_linebuf; };
   const Rps_LexTokenZone* make_token(Rps_CallFrame*callframe,
-			       Rps_ObjectRef lexkind, Rps_Value lexval, Rps_String*sourcev);
+			       Rps_ObjectRef lexkind, Rps_Value lexval, const Rps_String*sourcev);
   virtual ~Rps_TokenSource();
   virtual bool get_line(void) =0; // gives true when another line has been read
   Rps_TokenSource(const Rps_TokenSource&) = delete;

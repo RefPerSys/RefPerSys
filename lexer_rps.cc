@@ -69,6 +69,8 @@ Rps_TokenSource::really_gc_mark(Rps_GarbageCollector&gc, unsigned depth)
   RPS_ASSERT(depth < max_gc_depth);
   if (rps_lexer_token_name_str_val)
     rps_lexer_token_name_str_val.gc_mark(gc,depth);
+  if (toksrc_ptrnameval)
+    toksrc_ptrnameval->gc_mark(gc, depth+1);
 } // end Rps_TokenSource::really_gc_mark
 
 
@@ -91,7 +93,8 @@ Rps_TokenSource::name_val(Rps_CallFrame*callframe)
 
 const Rps_LexTokenZone*
 Rps_TokenSource::make_token(Rps_CallFrame*callframe,
-                            Rps_ObjectRef lexkindarg, Rps_Value lexvalarg, Rps_String*sourcev)
+                            Rps_ObjectRef lexkindarg, Rps_Value lexvalarg,
+			    const Rps_String*sourcev)
 {
   RPS_LOCALFRAME(RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                  /*callerframe:*/callframe,
@@ -100,17 +103,21 @@ Rps_TokenSource::make_token(Rps_CallFrame*callframe,
                  Rps_LexTokenZone*tokenp;
                  Rps_Value namestrv;
                  const Rps_String* nstrv;
+                 const Rps_String* srcv;
                 );
   RPS_ASSERT(rps_is_main_thread());
   _f.lexkindob = lexkindarg;
   _f.lexval = lexvalarg;
   _f.namestrv = name_val(&_);
   _f.nstrv = _f.namestrv.as_string();
+  _f.srcv = sourcev;
+  RPS_ASSERT (!_f.srcv || _f.srcv->stored_type() == Rps_Type::String);
   _f.tokenp =
     Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,
     Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
     (this, _f.lexkindob, _f.lexval, _f.nstrv,
      toksrc_line, toksrc_col);
+#warning Rps_TokenSource::make_token should probably use _f.srcv
   return _f.tokenp;
 } // end Rps_TokenSource::make_token
 
