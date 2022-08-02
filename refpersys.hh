@@ -4189,6 +4189,8 @@ public:
 ////////////////////////////////////////////////////////////////
 
 #define RPS_MANIFEST_JSON "rps_manifest.json"
+// same as used in rps_manifest.json file
+#define RPS_MANIFEST_FORMAT "RefPerSysFormat2019A"
 
 // the user manifest is optional, in the rps_homedir()
 // so using $REFPERSYS_HOME or $HOME
@@ -4248,6 +4250,16 @@ extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, co
 
 extern "C" std::string rps_curl_version(void); // in curl_rps.cc
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
+
+
+
+
+////................................................................
+//// load and dump routines.  See files load_rps.cc and dump_rps.cc
+////................................................................
+
+extern "C" Json::Value rps_load_string_to_json(const std::string&str);
+extern "C" std::string rps_load_json_to_string(const Json::Value&jv);
 
 extern "C" void rps_dump_into (std::string dirpath = ".", Rps_CallFrame* callframe = nullptr); // in store_rps.cc
 extern "C" double rps_dump_start_elapsed_time(Rps_Dumper*);
