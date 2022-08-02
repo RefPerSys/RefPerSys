@@ -94,7 +94,7 @@ Rps_TokenSource::name_val(Rps_CallFrame*callframe)
 const Rps_LexTokenZone*
 Rps_TokenSource::make_token(Rps_CallFrame*callframe,
                             Rps_ObjectRef lexkindarg, Rps_Value lexvalarg,
-			    const Rps_String*sourcev)
+                            const Rps_String*sourcev)
 {
   RPS_LOCALFRAME(RPS_ROOT_OB(_0S6DQvp3Gop015zXhL), //lexical_token∈class
                  /*callerframe:*/callframe,

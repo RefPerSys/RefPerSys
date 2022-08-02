@@ -2049,7 +2049,7 @@ Rps_Dumper::write_all_generated_files(void)
     {
       _f.refpersysv = Rps_ObjectValue(_f.refpersysob);
       /* We create a temporary object to hold some "arbitrary"
-	 information about this particular generation */
+      information about this particular generation */
       _f.genstoreob = Rps_ObjectRef::make_object(&_, Rps_ObjectRef::the_object_class());
       RPS_DEBUG_LOG(DUMP, "Rps_Dumper::write_all_generated_files before sending "<< _f.gencodselob << " to "
                     << _f.refpersysv << " with " << _f.dumpdirnamev << " & " << _f.tempsuffixv << " genstoreob=" << _f.genstoreob
