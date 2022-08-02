@@ -46,7 +46,6 @@ const char rps_repl_date[]= __DATE__;
 /// or using readline if inp is null.
 extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
 
-static Rps_CallFrame*rps_readline_callframe;
 std::vector<std::string> rps_completion_vect;
 
 /// a C++ closure for getting the REPL lexical token.... with
@@ -85,17 +84,39 @@ rpsapply_repl_not_implemented(Rps_CallFrame*callerframe,
                               const Rps_Value arg1,
                               const Rps_Value arg2,
                               const Rps_Value arg3,
-                              [[maybe_unused]] const std::vector<Rps_Value>* restargs)
+                              const std::vector<Rps_Value>* restargs)
 {
-  RPS_WARNOUT("rpsapply_repl_not_implemented arg0:" << arg0
-              << " arg1:" << arg1
-              << " arg2:" << arg2
-              << " arg3:" << arg3
-              << std::endl
-              << " from caller frame:"
-              << Rps_ShowCallFrame(callerframe)
-              << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_repl_not_implemented"));
+  if (!restargs)
+    RPS_WARNOUT("rpsapply_repl_not_implemented arg0:" << arg0
+                << " arg1:" << arg1
+                << " arg2:" << arg2
+                << " arg3:" << arg3
+                << std::endl
+                << " from caller frame:"
+                << Rps_ShowCallFrame(callerframe)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_repl_not_implemented"));
+  else
+    {
+      auto nbargs = restargs->size();
+      std::ostringstream outs;
+      for (int aix = 0; aix < (int)nbargs; aix++)
+        {
+          outs << " rest#" << aix << ":" << restargs->at(aix);
+        }
+      outs.flush();
+      RPS_WARNOUT("rpsapply_repl_not_implemented arg0:" << arg0
+                  << " arg1:" << arg1
+                  << " arg2:" << arg2
+                  << " arg3:" << arg3
+                  << std::endl
+                  << outs.str()
+                  << std::endl
+                  << " from caller frame:"
+                  << Rps_ShowCallFrame(callerframe)
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_repl_not_implemented/many"));
+    }
   return {nullptr,nullptr};
 } // end rpsapply_repl_not_implemented
 
