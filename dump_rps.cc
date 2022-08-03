@@ -997,6 +997,8 @@ Rps_Dumper::write_all_generated_files(void)
   _f.gencodselob = RPS_ROOT_OB(_5VC4IuJ0dyr01b8lA0); //generate_code∈named_selector
   try
     {
+      std::unique_lock<std::recursive_mutex> gurefpersysob(*(_f.refpersysob->objmtxptr()));
+
       _f.refpersysv = Rps_ObjectValue(_f.refpersysob);
       /* We create a temporary object to hold some "arbitrary"
       information about this particular generation */
@@ -1016,7 +1018,11 @@ Rps_Dumper::write_all_generated_files(void)
       if (!_f.mainv && !_f.xtrav)
         {
           RPS_WARNOUT("Rps_Dumper::write_all_generated_files failed to send " << _f.gencodselob << " to "
-                      << _f.refpersysob << " with " << _f.dumpdirnamev << " & " << _f.tempsuffixv
+                      << _f.refpersysob << " (of class "
+                      <<  _f.refpersysob->get_class() << " and "
+                      << "payload type " << _f.refpersysob->payload_type_name() << ")"
+                      << " genstoreob:" << _f.genstoreob
+                      << " with " << _f.dumpdirnamev << " & " << _f.tempsuffixv
                       << std::endl << Rps_ShowCallFrame(&_)
                       << std::endl
                       << RPS_FULL_BACKTRACE_HERE(1,"Rps_Dumper::write_all_generated_files"));
