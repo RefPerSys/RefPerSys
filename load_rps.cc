@@ -453,7 +453,8 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                      << " lineno:" << lineno
                      << " objid:" << objid
                      << " bad objbuf:" << std::endl
-                     << objbuf);
+                     << objbuf
+		     << std::endl << "... and objjson:" << objjson);
     }
   catch (std::exception& exc)
     {
