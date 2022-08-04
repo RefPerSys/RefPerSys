@@ -462,8 +462,9 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                    << " objid:" << objid
                    << " parse failure "
                    << exc.what()
-                   << " with objbuf:" << std::endl
-                   << objbuf);
+                   << "... with objbuf:" << std::endl
+                   << objbuf
+                   << std::endl << "... and objjson:" << objjson);
     }
   Json::Value oidjson = objjson["oid"];
   if (oidjson.asString() != objid.to_string())
