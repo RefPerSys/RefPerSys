@@ -46,15 +46,20 @@ extern "C" const char rps_load_date[];
 const char rps_load_date[]= __DATE__;
 
 Json::Value
-rps_load_string_to_json(const std::string&str)
+rps_load_string_to_json(const std::string&str, const char*filnam, int lineno)
 {
   Json::CharReaderBuilder jsonreaderbuilder;
   std::unique_ptr<Json::CharReader> pjsonreader(jsonreaderbuilder.newCharReader());
   Json::Value jv;
   JSONCPP_STRING errstr;
   RPS_ASSERT(pjsonreader);
-  if (!pjsonreader->parse(str.c_str(), str.c_str() + str.size(), &jv, &errstr))
+  if (!pjsonreader->parse(str.c_str(), str.c_str() + str.size(), &jv, &errstr)) {
+    if (filnam != nullptr && lineno > 0) {
+      RPS_WARNOUT("JSON parse failure (loading) at " << filnam << ":" << lineno
+		  << std::endl << str);
+    }
     throw std::runtime_error(std::string("JSON parsing error:") + errstr);
+  }
   return jv;
 } // end rps_load_string_to_json
 

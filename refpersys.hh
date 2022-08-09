@@ -4258,7 +4258,7 @@ extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 //// load and dump routines.  See files load_rps.cc and dump_rps.cc
 ////................................................................
 
-extern "C" Json::Value rps_load_string_to_json(const std::string&str);
+extern "C" Json::Value rps_load_string_to_json(const std::string&str, const char*filnam=nullptr, int lineno=0);
 extern "C" std::string rps_load_json_to_string(const Json::Value&jv);
 
 extern "C" void rps_dump_into (std::string dirpath = ".", Rps_CallFrame* callframe = nullptr); // in store_rps.cc
