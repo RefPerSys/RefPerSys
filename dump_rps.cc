@@ -1349,5 +1349,12 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
 } // end of rps_dump_into
 
 
+#warning rpsapply_5Q5E0Lw9v4f046uAKZ should be installed as "generate_code°the_system_class"
+/***
+ * We need to manually edit the persistore/sp_8J6vNYtP5E800eCr5q-rps.json to avoid:::
+** RefPerSys WARN! dump_rps.cc:1020:: Rps_Dumper::write_all_generated_files failed to send ◌_5VC4IuJ0dyr01b8lA0/generate_code to ◌_1Io89yIORqn02SXx4p/RefPerSys_system (of class ◌_10YXWeY7lYc01RpQTA/the_system_class and payload type symbol) genstoreob:◌_9wFykw9FYCj01qGGmB with "/tmp/refpersys-822d425661847d20+_144752" & "_2Z5MwS-p144753%"
+***/
+
+extern "C" rps_applyingfun_t rpsapply_5Q5E0Lw9v4f046uAKZ;
 
 //// end of file dump_rps.cc
