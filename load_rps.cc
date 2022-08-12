@@ -53,13 +53,15 @@ rps_load_string_to_json(const std::string&str, const char*filnam, int lineno)
   Json::Value jv;
   JSONCPP_STRING errstr;
   RPS_ASSERT(pjsonreader);
-  if (!pjsonreader->parse(str.c_str(), str.c_str() + str.size(), &jv, &errstr)) {
-    if (filnam != nullptr && lineno > 0) {
-      RPS_WARNOUT("JSON parse failure (loading) at " << filnam << ":" << lineno
-		  << std::endl << str);
+  if (!pjsonreader->parse(str.c_str(), str.c_str() + str.size(), &jv, &errstr))
+    {
+      if (filnam != nullptr && lineno > 0)
+        {
+          RPS_WARNOUT("JSON parse failure (loading) at " << filnam << ":" << lineno
+                      << std::endl << str);
+        }
+      throw std::runtime_error(std::string("JSON parsing error:") + errstr);
     }
-    throw std::runtime_error(std::string("JSON parsing error:") + errstr);
-  }
   return jv;
 } // end rps_load_string_to_json
 
@@ -459,7 +461,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                      << " objid:" << objid
                      << " bad objbuf:" << std::endl
                      << objbuf
-		     << std::endl << "... and objjson:" << objjson);
+                     << std::endl << "... and objjson:" << objjson);
     }
   catch (std::exception& exc)
     {
