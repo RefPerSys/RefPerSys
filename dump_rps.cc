@@ -1357,4 +1357,21 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
 
 extern "C" rps_applyingfun_t rpsapply_5Q5E0Lw9v4f046uAKZ;
 
+Rps_TwoValues
+rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe,
+                            const Rps_Value arg0,
+                            const Rps_Value arg1,
+                            const Rps_Value arg2,
+                            const Rps_Value arg3,
+                            [[maybe_unused]] const std::vector<Rps_Value>* restargs)
+{
+  //RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_ASSERT_CALLFRAME (callerframe);
+  RPS_ASSERT(restargs == nullptr);
+  RPS_WARNOUT("unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class arg0=" << arg0 << " arg1=" << arg1 << " arg2=" << arg2 << " arg3=" << arg3
+              << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"));
+#warning unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ "generate_code°the_system_class"
+  return {arg0,nullptr};
+} // end  rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class
+
 //// end of file dump_rps.cc
