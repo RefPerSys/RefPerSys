@@ -1510,8 +1510,8 @@ void rpsldpy_classinfo(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
     {
       Json::Value jvcurmethent = jvmethodict[methix];
       if (!jvcurmethent.isObject()
-          || !jvcurmethent.isMember("methosel")
-          || !jvcurmethent.isMember("methclos")
+          || !(jvcurmethent.isMember("methosel")
+               && jvcurmethent.isMember("methclos"))
          )
         RPS_FATALOUT("rpsldpy_classinfo: object " << obz->oid()
                      << " in space " << spacid << " lineno#" << lineno
