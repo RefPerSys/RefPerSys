@@ -1508,18 +1508,19 @@ void rpsldpy_classinfo(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
   nbmeth = jvmethodict.size();
   for (int methix=0; methix<(int)nbmeth; methix++)
     {
-      Json::Value jvcurmeth = jvmethodict[methix];
-      if (!jvcurmeth.isObject()
-          || !jvcurmeth.isMember("methosel")
-          || !jvcurmeth.isMember("methclos")
+      Json::Value jvcurmethent = jvmethodict[methix];
+      if (!jvcurmethent.isObject()
+          || !jvcurmethent.isMember("methosel")
+          || !jvcurmethent.isMember("methclos")
          )
         RPS_FATALOUT("rpsldpy_classinfo: object " << obz->oid()
                      << " in space " << spacid << " lineno#" << lineno
                      << " has bad methodict entry#" << methix
                      << std::endl
-                     << " jvcurmeth " << (jvcurmeth));
-      auto obsel = Rps_ObjectRef(jvcurmeth["methosel"], ld);
-      auto valclo = Rps_Value(jvcurmeth["methclos"], ld);
+                     << " jvcurmethent " << (jvcurmethent)
+                     << std::endl << " needs methosel & methclos");
+      auto obsel = Rps_ObjectRef(jvcurmethent["methosel"], ld);
+      auto valclo = Rps_Value(jvcurmethent["methclos"], ld);
       if (!obsel || !valclo.is_closure())
         RPS_FATALOUT("rpsldpy_classinfo: object " << obz->oid()
                      << " in space " << spacid << " lineno#" << lineno
@@ -1527,7 +1528,7 @@ void rpsldpy_classinfo(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
                      << " for obsel=" << obsel
                      << ", valclo=" << valclo
                      << std::endl
-                     << " jvcurmeth: " <<jvcurmeth);
+                     << " jvcurmethent: " <<jvcurmethent);
       paylclainf->put_own_method(obsel,valclo);
     }
   if (jv.isMember("class_attrset"))
