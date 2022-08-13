@@ -419,7 +419,7 @@
     "class_methodict" : [
 	{ "methosel" : 
 	  "_5VC4IuJ0dyr01b8lA0" ,
-	  " methclos" : {
+	  "methclos" : {
     "env" : [ null, "@@@fake/closed/in/generate_code°the_system_class" ],
     "fn" : "_5Q5E0Lw9v4f046uAKZ",
     "vtype" : "closure"
