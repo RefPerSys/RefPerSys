@@ -1369,6 +1369,7 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe,
   RPS_ASSERT_CALLFRAME (callerframe);
   RPS_ASSERT(restargs == nullptr);
   RPS_WARNOUT("unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class arg0=" << arg0 << " arg1=" << arg1 << " arg2=" << arg2 << " arg3=" << arg3
+	      << " closure:" << callerframe->call_frame_closure()
               << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"));
 #warning unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ "generate_code°the_system_class"
   //// for inspiration read https://en.wikipedia.org/wiki/Quine_(computing)
