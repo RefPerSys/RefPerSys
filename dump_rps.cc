@@ -1371,6 +1371,10 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe,
   RPS_WARNOUT("unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class arg0=" << arg0 << " arg1=" << arg1 << " arg2=" << arg2 << " arg3=" << arg3
               << " closure:" << callerframe->call_frame_closure()
               << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"));
+  // arg0 is reciever, so _1Io89yIORqn02SXx4p⟦⏵RefPerSys_system∈the_system_class⟧
+  // arg1 is the dumped directory string, e.g. ~/RefPerSys
+  // arg2 is a temporary prefix like "_3MPAZx-p1084952%"
+  // arg3 is a temporary dump object
 #warning unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ "generate_code°the_system_class"
   //// for inspiration read https://en.wikipedia.org/wiki/Quine_(computing)
   return {arg0,nullptr};
