@@ -417,10 +417,13 @@
  ],
  "class" : "_41OFI3r0S1t03qdB2E",
     "class_methodict" : [
-	"_5VC4IuJ0dyr01b8lA0" : {
-    "env" : [ null, null ],
+	{ "methosel" : 
+	  "_5VC4IuJ0dyr01b8lA0" ,
+	  " methclos" : {
+    "env" : [ null, "@@@fake/closed/in/generate_code°the_system_class" ],
     "fn" : "_5Q5E0Lw9v4f046uAKZ",
     "vtype" : "closure"
+	  }
 	}
     ],
  "class_name" : "the_system_class",
