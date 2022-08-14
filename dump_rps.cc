@@ -1379,9 +1379,13 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe,
   _f.suffixstrv = arg2;
   _f.dumpob = arg3.as_object();
   _f.closurev = callerframe->call_frame_closure();
+  char cwdbuf[128];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
+  getcwd(cwdbuf, sizeof(cwdbuf)-1);
   RPS_WARNOUT("unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class arg0=" << arg0 << " arg1=" << arg1 << " arg2=" << arg2 << " arg3=" << arg3
               << " closure:" << callerframe->call_frame_closure()
-              << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"));
+              << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class")
+              << std::endl << "cwd:" << cwdbuf << " pid:" << (int)getpid() << " from " << (rps_is_main_thread()?"main":"other") << " thread");
   // arg0 is reciever, so _1Io89yIORqn02SXx4p⟦⏵RefPerSys_system∈the_system_class⟧
   RPS_ASSERT(arg0.is_object());
   // arg1 is the dumped directory string, e.g. ~/RefPerSys
