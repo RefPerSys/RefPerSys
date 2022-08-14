@@ -1365,16 +1365,31 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe,
                             const Rps_Value arg3,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
-  //RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
-  RPS_ASSERT_CALLFRAME (callerframe);
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(restargs == nullptr);
+  RPS_LOCALFRAME(/*descr:*/nullptr, callerframe,
+                           Rps_ObjectRef sysob;
+                           Rps_Value dumpstrv;
+                           Rps_Value suffixstrv;
+                           Rps_ObjectRef dumpob;
+                           Rps_Value closurev;
+                );
+  _f.sysob = arg0.as_object();
+  _f.dumpstrv = arg1;
+  _f.suffixstrv = arg2;
+  _f.dumpob = arg3.as_object();
+  _f.closurev = callerframe->call_frame_closure();
   RPS_WARNOUT("unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class arg0=" << arg0 << " arg1=" << arg1 << " arg2=" << arg2 << " arg3=" << arg3
               << " closure:" << callerframe->call_frame_closure()
               << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"));
   // arg0 is reciever, so _1Io89yIORqn02SXx4p⟦⏵RefPerSys_system∈the_system_class⟧
+  RPS_ASSERT(arg0.is_object());
   // arg1 is the dumped directory string, e.g. ~/RefPerSys
-  // arg2 is a temporary prefix like "_3MPAZx-p1084952%"
+  RPS_ASSERT(_f.dumpstrv.is_string());
+  // arg2 is a temporary suffix like "_3MPAZx-p1084952%"
+  RPS_ASSERT(_f.suffixstrv.is_string());
   // arg3 is a temporary dump object
+  RPS_ASSERT(_f.dumpob);
 #warning unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ "generate_code°the_system_class"
   //// for inspiration read https://en.wikipedia.org/wiki/Quine_(computing)
   return {arg0,nullptr};
