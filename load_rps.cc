@@ -1519,10 +1519,10 @@ void rpsldpy_classinfo(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv,
                      << std::endl
                      << " jvcurmethent " << (jvcurmethent)
                      << std::endl << "... needs methosel & methclos"
-		     << std::endl << "... isobject? " <<  jvcurmethent.isObject()
-		     << " .. has-methosel?" << jvcurmethent.isMember("methosel")
-		     << " .. has-methclos?" << jvcurmethent.isMember("methclos")
-);
+                     << std::endl << "... isobject? " <<  jvcurmethent.isObject()
+                     << " .. has-methosel?" << jvcurmethent.isMember("methosel")
+                     << " .. has-methclos?" << jvcurmethent.isMember("methclos")
+                    );
       auto obsel = Rps_ObjectRef(jvcurmethent["methosel"], ld);
       auto valclo = Rps_Value(jvcurmethent["methclos"], ld);
       if (!obsel || !valclo.is_closure())
