@@ -1242,7 +1242,7 @@ rps_run_application(int &argc, char **argv)
   ////  command vectors
   if (!rps_command_vec.empty())
     {
-      RPS_INFORMOUT("before running " << rps_command_vec.size() << " commands");
+      RPS_INFORMOUT("before running " << rps_command_vec.size() << " command[s]");
       rps_do_repl_commands_vec(rps_command_vec);
       RPS_INFORMOUT("after running " << rps_command_vec.size() << " commands");
     }
