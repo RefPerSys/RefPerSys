@@ -2299,8 +2299,9 @@ Rps_PayloadSymbol::find_named_object(const std::string&str)
           RPS_DEBUG_LOG(LOWREP, "find_named_object str='" << str << "' symb=" << symb << " owner=" << symb->owner());
           return symb->owner();
         }
-    };
-  RPS_DEBUG_LOG(LOWREP, "find_named_object str='" << str << "' not found");
+    }
+  else
+    RPS_DEBUG_LOG(LOWREP, "find_named_object str='" << str << "' not found");
   return nullptr;
 } // end Rps_PayloadSymbol::find_named_object
 
