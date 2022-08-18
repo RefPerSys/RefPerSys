@@ -1237,7 +1237,8 @@ std::string
 Rps_ObjectZone::string_oid(void) const
 {
   return oid().to_string();
-}
+} // end Rps_ObjectZone::string_oid
+
 
 int
 Rps_ObjectZone::autocomplete_oid(const char*prefix,
