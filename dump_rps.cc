@@ -1049,6 +1049,7 @@ Rps_Dumper::write_manifest_file(void)
   rps_emit_gplv3_copyright_notice(*pouts, RPS_MANIFEST_JSON, "//!! ", "");
   Json::Value jmanifest(Json::objectValue);
   jmanifest["format"] = Json::Value (RPS_MANIFEST_FORMAT);
+  jmanifest["jsoncpp-version"] = JSONCPP_VERSION_STRING;
   {
     int nbroots=0;
     Json::Value jglobalroots(Json::arrayValue);
@@ -1154,6 +1155,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
   std::set<Rps_ObjectRef> curspaset;
   Rps_Id spacid;
   std::unique_ptr<std::ofstream> pouts;
+  RPS_ASSERT(du_jsonwriterbuilder["indentation"] == std::string{" "});
   std::unique_ptr<Json::StreamWriter> jsonwriter(du_jsonwriterbuilder.newStreamWriter());
   {
     std::lock_guard<std::recursive_mutex> gu(du_mtx);
@@ -1172,6 +1174,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     Json::Value jprologue(Json::objectValue);
     jprologue["format"] = Json::Value (RPS_MANIFEST_FORMAT);
     jprologue["spaceid"] = Json::Value (spacid.to_string());
+    jprologue["jsoncpp-version"] =  JSONCPP_VERSION_STRING;
     jprologue["nbobjects"] = Json::Value ((int)(curspaset.size()));
     jsonwriter->write(jprologue, pouts.get());
     *pouts << std::endl;
@@ -1217,7 +1220,32 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
       Json::Value jobject(Json::objectValue);
       jobject["oid"] = Json::Value (curobr->oid().to_string());
       curobr->dump_json_content(this,jobject);
-      jsonwriter->write(jobject, pouts.get());
+      *pouts << "{" << std::endl;
+      *pouts << " \"oid\": \"" << curobr->oid().to_string() << '"' << ',' << std::endl;
+      {
+        double curmtim = curobr->ob_mtime;
+        char mtimbuf[16];
+        memset (mtimbuf, 0, sizeof(mtimbuf));
+        snprintf (mtimbuf, sizeof(mtimbuf), "%.2f", curmtim);
+        *pouts << " \"mtime\": " << mtimbuf << ',' << std::endl;
+      }
+      int countjat = 2; // both oid & mtime have been output
+      int nbjat = jobject.size();
+      Json::Value::Members jmembvec = jobject.getMemberNames();
+      for (const std::string curmemstr : jmembvec)
+        {
+          const Json::Value& jcurmem = jobject[curmemstr];
+          if (curmemstr != std::string{"oid"} && curmemstr != std::string{"mtime"})
+            {
+              *pouts << " \"" << curmemstr << "\" : " << jcurmem;
+              if (countjat+1 < nbjat)
+                *pouts << ',' << std::endl;
+              else
+                *pouts << std::endl;
+              countjat++;
+            }
+        }
+      *pouts << "}" << std::endl;
       *pouts << std::endl;
       *pouts << "//-ob" << curobr->oid().to_string() << std::endl;
     }
@@ -1381,11 +1409,13 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe,
   _f.closurev = callerframe->call_frame_closure();
   char cwdbuf[128];
   memset (cwdbuf, 0, sizeof(cwdbuf));
-  getcwd(cwdbuf, sizeof(cwdbuf)-1);
+  const char*cwds = getcwd(cwdbuf, sizeof(cwdbuf)-1);
+  if (!cwds)
+    cwds = ".";
   RPS_WARNOUT("unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class arg0=" << arg0 << " arg1=" << arg1 << " arg2=" << arg2 << " arg3=" << arg3
               << " closure:" << callerframe->call_frame_closure()
               << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class")
-              << std::endl << "cwd:" << cwdbuf << " pid:" << (int)getpid() << " from " << (rps_is_main_thread()?"main":"other") << " thread");
+              << std::endl << "cwd:" << cwds << " pid:" << (int)getpid() << " from " << (rps_is_main_thread()?"main":"other") << " thread");
   // arg0 is reciever, so _1Io89yIORqn02SXx4p⟦⏵RefPerSys_system∈the_system_class⟧
   RPS_ASSERT(arg0.is_object());
   // arg1 is the dumped directory string, e.g. ~/RefPerSys
