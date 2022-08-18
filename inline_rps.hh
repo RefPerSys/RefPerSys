@@ -2299,10 +2299,11 @@ Rps_PayloadSymbol::find_named_object(const std::string&str)
           RPS_DEBUG_LOG(LOWREP, "find_named_object str='" << str << "' symb=" << symb << " owner=" << symb->owner());
           return symb->owner();
         }
-      else { /// should never happen!
-	RPS_WARNOUT("find_named_object str='" << str << "' corrupted symbol table" << std::endl
-		    << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadSymbol::find_named_object"));
-      }
+      else   /// should never happen!
+        {
+          RPS_WARNOUT("find_named_object str='" << str << "' corrupted symbol table" << std::endl
+                      << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadSymbol::find_named_object"));
+        }
     }
   else
     RPS_DEBUG_LOG(LOWREP, "find_named_object str='" << str << "' not found");
