@@ -1,11 +1,12 @@
 ################################################################################
-# file main_rps.cc
+# file tools/msg.sh
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Description:
 #      This file is part of the Reflective Persistent System.
 #
-#      It implements the agenda mechanism.
+#      It implements the shell script functions to display timestamped and
+#      coloured messages to stdout.
 #
 # Author(s):
 #      Basile Starynkevitch <basile@starynkevitch.net>
