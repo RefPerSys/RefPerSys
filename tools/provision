@@ -1,12 +1,13 @@
+#!/bin/sh
 ################################################################################
-# file tools/os.sh
+# file tools/provision
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Description:
 #      This file is part of the Reflective Persistent System.
 #
-#      It verifies that a supported Linux distribution is running on the host
-#      machine.
+#      It provisions a Debian 11 virtual machine through Vagrant on which to
+#      build the RefPerSys binary.
 #
 # Author(s):
 #      Basile Starynkevitch <basile@starynkevitch.net>
@@ -32,34 +33,24 @@
 ################################################################################
 
 
+. "$(dirname "0")/msg.sh"
 
-# Linux distribution
-export DISTRO
 
-# Determine kernel
-kernel=$(uname -s | tr '[:upper:]' '[:lower:]')
+# Writes the Vagrantfile for a generic/debian11 box
+write_debian_vgfile()
+{
+	msg_info 'writing Vagrantfile for Debian 11'
 
-# Ensure we're using a Linux kernel
-if [ "$kernel" != linux ]
-then
-	msg_fail "please use a Linux distribution"
-fi
+	{
+		echo 'Vagrant.configure("2") do |config|';
+		echo '  config.vm.box = "generic/debian11"';
+		echo '  config.vm.define = "refpersys_debian11";
+		echo '  config.ssh.forward_agent = true';
+		echo '  config.vm.provision "shell", inline: <<-SHELL';
+		echo '    apt update && apt upgrade -y';
+		echo '  SHELL';
+		echo 'end';
+	} > Vagrantfile
 
-# Ensusre /etc/os-release is available
-emsg='failed to determine Linux distribution'
-[ -f /etc/os-release ] || msg_fail "$emsg"
-
-# Determine Linux distribution
-DISTRO=$(grep 'NAME' /etc/os-release \
-	| head -n 1 \
-	| cut -d '=' -f 2 \
-	| tr -d '"' \
-	| cut -d ' ' -f 1 \
-	| tr '[:upper:]' '[:lower:]')
-
-# Ensure we're using either Debian or Ubuntu
-emsg="unsupported Linux distribution: $DISTRO"
-[ "$DISTRO" != debian ]	\
-	&& [ "$DISTRO" != ubuntu ] \
-	&& msg_fail "$emsg"
-	
+	msg_ok 'Vagrantfile written for Debian 11'
+}
