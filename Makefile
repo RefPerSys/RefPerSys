@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean plugin fullclean redump altredump print-plugin-settings indent test01 test02 test03 test04 test-load analyze gitpush gitpush2
+.PHONY: all objects clean plugin fullclean redump undump altredump print-plugin-settings indent test01 test02 test03 test04 test-load analyze gitpush gitpush2
 
 
 ## tell GNU make to export all variables by default
@@ -119,7 +119,7 @@ CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             $(RPS_BUILD_CODGENFLAGS) \
 	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) -I/usr/include/jsoncpp \
 	    $(RPS_PKG_CFLAGS) \
-            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
+0            -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
             $(RPS_BUILD_COMPILER_FLAGS)
 
@@ -176,7 +176,7 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
 
 
-%.sanit.o: %.cc refpersys.hh.sanit.gch
+0%.sanit.o: %.cc refpersys.hh.sanit.gch
 	$(RPS_COMPILER_TIMER) 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
 
 %.dbg.o: %.cc refpersys.hh.dbg.gch
@@ -254,6 +254,11 @@ redump: refpersys
 	  git checkout rps_manifest.json ; \
             printf "make redump reached fixpoint in %s git %s\n" $$(pwd) $(RPS_SHORTGIT_ID) ; \
         fi
+
+
+## undump target, use git to checkout what last redump changed....
+## see https://devtutorial.io/how-to-get-a-list-of-the-changed-files-in-git-p1201.html
+undump:
 
 ## alternate redump target
 altredump:  ./refpersys
