@@ -17,7 +17,7 @@
 //!! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {
  "constset" : [ "_41OFI3r0S1t03qdB2E", "_9uwZtDshW4401x6MsY" ],
- "dumpdate" : "2022 Aug 13",
+ "dumpdate" : "2022 Sep 11",
  "format" : "RefPerSysFormat2019A",
  "globalnames" : 
  [
@@ -234,11 +234,12 @@
   "_9BnrMLXUhfG00llx8X",
   "_9Gz1oNPCnkB00I6VRS"
  ],
- "origitid" : "8faed76a6ef5997aed062a5465bd46a2e8c8d75e+",
+ "jsoncpp-version" : "1.9.5",
+ "origitid" : "394d95d195c8297ea6aa365cd56e0f108422f8e6+",
  "plugins" : [],
- "progmd5sum" : "4a3c849c8e3542237ab7e8c8e74878a6",
+ "progmd5sum" : "483b987491d6b46adad9e7db4e649a30",
  "progname" : "./refpersys",
- "progtimestamp" : "Sat 13 Aug 2022 09:05:56 AM MEST",
+ "progtimestamp" : "Sun 11 Sep 2022 06:46:33 PM MEST",
  "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }
 
