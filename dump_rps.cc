@@ -1235,23 +1235,30 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
       for (const std::string curmemstr : jmembvec)
         {
           const Json::Value& jcurmem = jobject[curmemstr];
-          if (curmemstr != std::string{"oid"} && curmemstr != std::string{"mtime"})
+          if (curmemstr != std::string{"oid"}
+              && curmemstr != std::string{"mtime"})
             {
-	      std::ostringstream outmem;
-	      outmem << jcurmem << std::flush;
-	      std::string outstr = outmem.str();
-	      if (!outstr.empty() && outstr[outstr.size()-1] == '\n') {
-		outstr.pop_back();
-	      }
+              std::ostringstream outmem;
+              outmem << jcurmem << std::flush;
+              std::string outstr = outmem.str();
+              if (!outstr.empty() && outstr[outstr.size()-1] == '\n')
+                {
+                  outstr.pop_back();
+                }
+	      RPS_DEBUG_LOG(DUMP, "outstr=\"" << Rps_QuotedC_String(outstr)
+			    << "\" for oid=" << curobr->oid().to_string());
               *pouts << " \"" << curmemstr << "\" : ";
-	      int cnt = 0;
-	      for (char c : outstr) {
-		if (c=='\n' && cnt>0)
-		  *pouts << "\n  " << c;
-		else
-		  *pouts << c;
-		cnt++;
-	      }
+              int cnt = 0;
+              for (char c : outstr)
+                {
+                  if (c=='\n' && cnt>0)
+                    {
+                      *pouts << "\n  ";
+                    }
+                  else
+                    *pouts << c;
+                  cnt++;
+                }
               if (countjat+1 < nbjat)
                 *pouts << ',' << std::endl;
               else
@@ -1260,7 +1267,6 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
             }
         }
       *pouts << "}" << std::endl;
-      *pouts << std::endl;
       *pouts << "//-ob" << curobr->oid().to_string() << std::endl;
     }
 
