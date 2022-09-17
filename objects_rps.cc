@@ -2011,12 +2011,17 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
                     << str << "'  obsymb=" << _f.obsymb);
       if (!_f.obsymb)
         {
+	  RPS_DEBUG_LOG(LOWREP, "find_object_by_string for str='"
+			<< str << "' SYMBOL NOT FOUND");
           if (behav == Rps_Null_When_Missing)
             return Rps_ObjectRef(nullptr);
           throw std::runtime_error("Rps_ObjectRef::find_object_by_string: no symbol named " + str);
-        }
+        };
       auto symbpayl = _f.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
       RPS_ASSERT(symbpayl != nullptr);
+      RPS_DEBUG_LOG(LOWREP, "find_object_by_string for str='"
+		    << str << "' got symbol of oid " << _f.obsymb->oid()
+		    << " and value:" << symbpayl->symbol_value());
       if (symbpayl->symbol_value().is_object())
         _f.obfound = symbpayl->symbol_value().as_object();
       if (!_f.obfound)
