@@ -311,7 +311,9 @@ analyze:
 ################################################################
 #### simple tests
 test01: ./refpersys
-	@echo missing test01 ; exit 1
+	@echo test01 testing simple commands
+	./refpersys -AREPL -c help -c "show help" -B
+
 
 test02: ./refpersys
 	@echo missing test02 ; exit 1
