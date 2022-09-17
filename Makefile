@@ -311,8 +311,8 @@ analyze:
 ################################################################
 #### simple tests
 test01: ./refpersys
-	@echo test01 testing simple commands
-	./refpersys -AREPL -c help -c "show help" -B
+	@echo test01 testing simple commands with a lot of debug
+	./refpersys -AREPL -ALOWREP -c help -c "show help" -B
 
 
 test02: ./refpersys
