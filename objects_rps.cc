@@ -2020,7 +2020,8 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
       auto symbpayl = _f.obsymb->get_dynamic_payload<Rps_PayloadSymbol>();
       RPS_ASSERT(symbpayl != nullptr);
       RPS_DEBUG_LOG(LOWREP, "find_object_by_string for str='"
-		    << str << "' got symbol of oid " << _f.obsymb->oid()
+		    << str << "' got symbol "
+		    << _f.obsymb << " of oid " << _f.obsymb->oid()
 		    << " and value:" << symbpayl->symbol_value());
       if (symbpayl->symbol_value().is_object())
         _f.obfound = symbpayl->symbol_value().as_object();
