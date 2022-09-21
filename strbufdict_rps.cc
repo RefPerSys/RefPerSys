@@ -235,6 +235,9 @@ rpsldpy_string_dictionary(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& 
 {
   RPS_ASSERT(obz != nullptr);
   RPS_ASSERT(ld != nullptr);
+  RPS_DEBUG_LOG(LOAD, "rpsldpy_string_dictionary object " << obz->oid()
+                << " in space " << spacid << " lineno#" << lineno << " jv="
+                << jv);
   RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   if (!jv.isMember("dictionary"))

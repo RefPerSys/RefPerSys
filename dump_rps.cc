@@ -1245,8 +1245,8 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
                 {
                   outstr.pop_back();
                 }
-	      RPS_DEBUG_LOG(DUMP, "outstr=\"" << Rps_QuotedC_String(outstr)
-			    << "\" for oid=" << curobr->oid().to_string());
+              RPS_DEBUG_LOG(DUMP, "outstr=\"" << Rps_QuotedC_String(outstr)
+                            << "\" for oid=" << curobr->oid().to_string());
               *pouts << " \"" << curmemstr << "\" : ";
               int cnt = 0;
               for (char c : outstr)
