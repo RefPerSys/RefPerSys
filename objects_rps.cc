@@ -1810,9 +1810,11 @@ Rps_PayloadSymbol::load_register_name(const char*name, Rps_Loader*ld, bool weak)
                              + owner()->oid().to_string());
   symb_table.insert({symb_name, this});
   symb_is_weak.store(weak);
-  RPS_NOPRINTOUT("Rps_PayloadSymbol::load_register_name symb_name:" << symb_name
-                 << " " << (weak?"weak":"strong")
-                 << " owner:" << owner()->oid().to_string());
+  RPS_DEBUG_LOG(LOAD,
+                "Rps_PayloadSymbol::load_register_name symb_name:" << symb_name
+                << " " << (weak?"weak":"strong")
+                << " owner:" << owner()->oid().to_string() << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadSymbol::load_register_name"));
 } // end Rps_PayloadSymbol::load_register_name
 
 void
