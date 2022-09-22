@@ -316,7 +316,7 @@ test01: ./refpersys
 
 
 test02: ./refpersys
-	@echo missing test02 ; exit 1
+	./refpersys -AREPL  -c "show RefPerSys_system" -B
 
 test03: ./refpersys
 	@echo missing test03 ; exit 1
