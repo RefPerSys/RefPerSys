@@ -345,7 +345,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "get_token oid|name '" << namestr << "' oblex=" << _f.oblex);
       const Rps_String* str = _f.namev.to_string();
       RPS_DEBUG_LOG(REPL, "get_token namestr='" << Rps_Cjson_String(namestr) << "' oblex=" << _f.oblex
-                    << " namev=" << _f.namev << ", str=" << Rps_Value(str));
+                    << " namev=" << _f.namev << ", str=" << Rps_Value(str)<< " at "
+                    << position_str(startcol) << " ... " << position_str());
       if (_f.oblex)
         {
           _f.lexkindob = RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ); //object∈class
