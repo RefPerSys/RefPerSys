@@ -237,7 +237,11 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
     RPS_DEBUG_LOG(CMD, "REPL command show got lextokv=" << _f.lextokv
                   << " from " << RPS_FULL_BACKTRACE_HERE(1, "REPL command show rpsapply_7WsQyJK6lty02uz5KT/gotnext"));
     if (_f.lextokv)
-      token_deq.push_back(_f.lextokv);
+      {
+        token_deq.push_back(_f.lextokv);
+        RPS_DEBUG_LOG(REPL, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show token_deq becomes " << token_deq
+                      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
+      }
     _f.showv = tksrc->parse_expression(&_, token_deq);
     RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                   << " after parse_expression showv=" << _f.showv);
