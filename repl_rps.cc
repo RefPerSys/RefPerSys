@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2021 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2022 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1976,6 +1976,7 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
 //-         if (_f.lextokenv)
 //-           {
 //-             token_deq.push_back(_f.lextokenv);
+//-             RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer new token_deq=" << token_deq);
 //-             continue; /// the while  (lookahead > token_deq.size()) loop
 //-           }
 //-         else
