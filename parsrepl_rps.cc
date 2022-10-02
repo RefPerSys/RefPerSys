@@ -350,7 +350,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
   bool ok = false;
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression start position:" << startpos << " calldepth="
-                << rps_call_frame_depth(&_));
+                << rps_call_frame_depth(&_) << std::endl << "parse_expression callframe:"
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression start"));
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression lextokv="
                 << _f.lextokv << " position:" << position_str()<< " startpos:" << startpos);
@@ -361,6 +362,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
       return nullptr;
     }
   _f.leftv = parse_disjunction(&_, token_deq, &ok);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression got disjunction " << (ok?"ok":"bad") << " leftv=" << _f.leftv
+                <<  " position:" << position_str()<< " startpos:" << startpos);
   if (!ok)
     {
       if (pokparse)
@@ -368,7 +371,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
       return nullptr;
     }
   disjvect.push_back(_f.leftv);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression leftv=" << _f.leftv <<  " position:" << position_str()<< " startpos:" << startpos);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression leftv=" << _f.leftv
+                <<  " position:" << position_str()<< " startpos:" << startpos);
   bool again = false;
   static Rps_Id idordelim;
   if (!idordelim)
@@ -385,7 +389,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
           again = false;
           break;
         };
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression testing or lextokv=" << _f.lextokv << " position:" << position_str()<< " startpos:" << startpos);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression testing or lextokv=" << _f.lextokv
+                    << " position:" << position_str()<< " startpos:" << startpos << " disjvect:" << disjvect);
       if (_f.lextokv.is_lextoken()
           && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
           &&  _f.lextokv.to_lextoken()->lxval().is_object()
