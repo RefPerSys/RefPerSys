@@ -1269,6 +1269,21 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
                     << " at " << position_str());
       return _f.lexvalv;
     }
+  else if (_f.lexkindob == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
+	   && _f.lexvalv.is_object())
+    {
+#warning  unimplemented Rps_TokenSource::parse_primary with object
+      /* 
+      RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary object§unimplemented: "
+		   << " token_deq:" << token_deq
+		   << " lextokv:" << _f.lextokv
+		   << " lexkindob:" << _f.lexkindob);
+    }
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary incomplete"
+		<< " token_deq:" << token_deq
+		<< " lextokv:" << _f.lextokv
+		<< " lexkindob:" << _f.lexkindob);
+  ///////@@@@@@@@@@Rps_TokenSource::parse_primary_complement should be called?
 #warning unimplemented Rps_TokenSource::parse_primary
   /** TODO:
    * we probably want to code some recursive descent parser for REPL,
