@@ -1273,7 +1273,6 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
 	   && _f.lexvalv.is_object())
     {
 #warning  unimplemented Rps_TokenSource::parse_primary with object
-      /* 
       RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary object§unimplemented: "
 		   << " token_deq:" << token_deq
 		   << " lextokv:" << _f.lextokv
