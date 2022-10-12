@@ -1276,7 +1276,8 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
       RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary object§unimplemented: "
                    << " token_deq:" << token_deq
                    << " lextokv:" << _f.lextokv
-                   << " lexkindob:" << _f.lexkindob);
+                   << " lexkindob:" << _f.lexkindob
+                   << " lexvalv:" << _f.lexvalv);
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary incomplete"
                 << " token_deq:" << token_deq
