@@ -1477,8 +1477,8 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
       _f.lextokv = pque->front();
       pque->pop_front();
       RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize dequeued " << _f.lextokv
-		    << std::endl
-		    << RPS_FULL_BACKTRACE_HERE(1, "Rps_LexTokenZone::tokenize dequeuing"));
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_LexTokenZone::tokenize dequeuing"));
       return _f.lextokv.to_lextoken();
     }
   else

@@ -1223,7 +1223,8 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
   _f.lexvalv = ltokz->lxval();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary lexkindob="
                 << _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str()
-                << " curcptr " << Rps_QuotedC_String(curcptr()));
+                << " curcptr " << Rps_QuotedC_String(curcptr())
+                << " token_deq:" << token_deq);
   if (_f.lexkindob == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b) // int
       && _f.lexvalv.is_int())
     {
@@ -1250,7 +1251,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
         *pokparse = true;
       if (_f.lexgotokv)
         token_deq.push_back(_f.lexgotokv);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary string " << _f.lexvalv
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary => string " << _f.lexvalv
                     << " token_deq:" << token_deq
                     << " lexgotokv:" << _f.lexgotokv
                     << " at " << position_str());
@@ -1272,6 +1273,9 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
   else if (_f.lexkindob == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
            && _f.lexvalv.is_object())
     {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary :: object " << _f.lexvalv << " lexgotokv:" << _f.lexgotokv
+                    << " token_deq:" << token_deq
+                    << " at " << position_str());
 #warning  unimplemented Rps_TokenSource::parse_primary with object
       RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary object§unimplemented: "
                    << " token_deq:" << token_deq
