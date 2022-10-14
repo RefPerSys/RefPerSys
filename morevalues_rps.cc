@@ -544,8 +544,9 @@ Rps_DequVal::output(std::ostream&out, unsigned depth) const
                   };
                 out << "₎₌"; // U+208E SUBSCRIPT RIGHT PARENTHESIS & U+208C SUBSCRIPT EQUALS SIGN
               };
+              curval.output(out, depth+1);
               cnt++;
-            }
+            };
           out << ">)";
         }
     }
