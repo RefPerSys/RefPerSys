@@ -513,17 +513,17 @@ void
 Rps_DequVal::output(std::ostream&out, unsigned depth) const
 {
   if (depth > Rps_Value::max_output_depth)
-    out << "deqval(<...>)";
+    out << "°deqval(<...>)";
   else
     {
       unsigned siz = size();
       if (siz == 0)
         {
-          out << "deqval(⦰)"; //U+29B0 REVERSED EMPTY SET;
+          out << "°deqval(⦰)"; //U+29B0 REVERSED EMPTY SET;
         }
       else
         {
-          out << "deqval.l" << siz << "(<";
+          out << "°deqval.l" << siz << "(<";
           int cnt = 0;
           for (Rps_Value curval: *this)
             {
