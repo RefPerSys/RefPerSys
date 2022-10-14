@@ -244,20 +244,6 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
 
 
 
-std::ostream&
-operator << (std::ostream&out, const Rps_DequVal& dq)
-{
-  int cnt=0;
-  out << "{|";
-  for (const Rps_Value v : dq)
-    {
-      if (cnt++ > 0) out << ", ";
-      out << v;
-    }
-  out << "|}";
-  return out;
-} // end operator << (std::ostream&out, const Rps_DequVal& dq)
-
 
 
 #if 0 && oldcode
