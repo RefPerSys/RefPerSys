@@ -2216,6 +2216,22 @@ public:
   };
 }; // end class Rps_Double
 
+class Rps_DequVal : public std::deque<Rps_Value> {
+public:
+  typedef std::deque<Rps_Value> std_deque_superclass;
+  Rps_DequVal() = default;
+  virtual ~Rps_DequVal() {};
+  virtual Rps_HashInt compute_hash(void) const;
+  Rps_DequVal(std::initializer_list<Rps_Value> il);
+  Rps_DequVal(const std::vector<Rps_Value>& vec);
+  Rps_DequVal(const Json::Value&jv, Rps_Loader*ld);
+  void output(std::ostream&out, unsigned depth=0) const;
+  Json::Value dump_json(Rps_Dumper*du) const;
+  virtual void dump_scan(Rps_Dumper* du, unsigned depth) const;
+  void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth) const;
+  virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0) const
+  { really_gc_mark(gc, depth); };
+};				// end class Rps_DequVal
 
 std::ostream&
 operator << (std::ostream&out, const std::deque<Rps_Value>& dq);

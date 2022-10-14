@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2020 - 2021 The Reflective Persistent System Team
+ *      © Copyright 2020 - 2022 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -415,6 +415,57 @@ Rps_OutputValue::do_output(std::ostream& out) const
   RPS_ASSERT(outzv);
   outzv->val_output(out, _out_depth);
 } // end Rps_OutputValue::do_output
+
+
+
+
+///////////////// support of Rps_DequVal
+Rps_DequVal::Rps_DequVal(std::initializer_list<Rps_Value> il)
+  : Rps_DequVal::std_deque_superclass(il) {};
+
+Rps_DequVal::Rps_DequVal(const std::vector<Rps_Value>& vec)
+  : Rps_DequVal::std_deque_superclass() {
+  for (const Rps_Value curval: vec) {
+    push_back(curval);
+  }
+};
+
+Rps_HashInt
+Rps_DequVal::compute_hash(void) const
+{
+  Rps_HashInt h1 = 0, h2 = size();
+  unsigned ix=0;
+  for (auto it: *this) {
+    const Rps_Value curval =it;
+    if (ix % 2 == 0)
+      h1 = (h1 * 12107) + (11 * curval.valhash()) - h2&0xffff;
+    else
+      h2 = (h2 * 22247) ^ (223 * curval.valhash() + h1);
+    ix++;
+  }
+  Rps_HashInt h= h1^h2;
+  if (h == 0)
+    h = ((h1&0xffff) | (h2&0xffff)) + (size() & 0xff) + 3;
+  RPS_ASSERT(h != 0);
+  return h;
+} // end  Rps_DequVal::compute_hash
+
+
+
+void
+Rps_DequVal::really_gc_mark(Rps_GarbageCollector&gc, unsigned depth) const
+{
+  RPS_ASSERT(gc.is_valid_garbcoll());
+  RPS_ASSERT(depth < Rps_Value::max_gc_mark_depth);
+  for (const Rps_Value curval: *this)
+    curval.gc_mark(gc, depth+1);
+} // end Rps_DequVal::really_gc_mark
+
+void
+Rps_DequVal::dump_scan(Rps_Dumper*du, unsigned int) const {
+  #warning unimplemented Rps_DequVal::dump_scan
+  RPS_FATALOUT("unimplemented Rps_DequVal::dump_scan");
+} // end Rps_DequVal::dump_scan
 
 
 /********************************************** end of file morevalues_rps.cc */
