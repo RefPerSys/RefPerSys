@@ -551,4 +551,10 @@ Rps_DequVal::output(std::ostream&out, unsigned depth) const
     }
 } // end Rps_DequVal::output
 
+std::ostream&
+operator << (std::ostream&out, const Rps_DequVal& dq)
+{
+  dq.output(out);
+  return out;
+} // end operator << (std::ostream&out, const Rps_DequVal& dq)
 /********************************************** end of file morevalues_rps.cc */
