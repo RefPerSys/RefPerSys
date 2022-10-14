@@ -508,4 +508,43 @@ Rps_DequVal::Rps_DequVal(const Json::Value&jv, Rps_Loader*ld)
     }
 }; // end constructor Rps_DequVal(const Json::Value&jv, Rps_Loader*ld)
 
+
+void
+Rps_DequVal::output(std::ostream&out, unsigned depth) const
+{
+  if (depth > Rps_Value::max_output_depth)
+    out << "deqval(<...>)";
+  else
+    {
+      unsigned siz = size();
+      if (siz == 0) {
+	out << "deqval(⦰)"; //U+29B0 REVERSED EMPTY SET;
+      }
+      else {
+	out << "deqval.l" << siz << "(<";
+	int cnt = 0;
+	for (Rps_Value curval: *this) {
+	  if (cnt > 0)
+	    out << " ";
+	  {
+	    char cntbuf[16];
+	    memset (cntbuf, 0, sizeof(cntbuf));
+	    snprintf (cntbuf, sizeof(cntbuf), "%d", cnt);
+	    out << "₍"; //U+208D SUBSCRIPT LEFT PARENTHESIS
+	    for (char *pc = cntbuf; *pc; pc++) {
+	      char subdigit[8];
+	      memset (subdigit, 0, sizeof(subdigit));
+	      strcpy (subdigit, "₀"); // U+2080 SUBSCRIPT ZERO so \342\202\200
+	      subdigit[2] += ((*pc)-'0');
+	      out << subdigit;
+	    };
+	    out << "₎₌"; // U+208E SUBSCRIPT RIGHT PARENTHESIS & U+208C SUBSCRIPT EQUALS SIGN
+	  };
+	  cnt++;
+	}
+	out << ">)";
+      }
+    }
+} // end Rps_DequVal::output
+
 /********************************************** end of file morevalues_rps.cc */
