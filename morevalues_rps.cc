@@ -421,7 +421,9 @@ Rps_OutputValue::do_output(std::ostream& out) const
 
 ///////////////// support of Rps_DequVal
 Rps_DequVal::Rps_DequVal(std::initializer_list<Rps_Value> il)
-  : Rps_DequVal::std_deque_superclass(il) {};
+  : Rps_DequVal::std_deque_superclass(il)
+{
+};				// end constructor Rps_DequVal(std::initializer_list<Rps_Value> il)
 
 Rps_DequVal::Rps_DequVal(const std::vector<Rps_Value>& vec)
   : Rps_DequVal::std_deque_superclass()
@@ -430,7 +432,8 @@ Rps_DequVal::Rps_DequVal(const std::vector<Rps_Value>& vec)
     {
       push_back(curval);
     }
-};
+};				// end constructor Rps_DequVal(const std::vector<Rps_Value>& vec)
+
 
 Rps_HashInt
 Rps_DequVal::compute_hash(void) const
@@ -486,5 +489,23 @@ Rps_DequVal::dump_json(Rps_Dumper*du) const
   return job;
 } // end Rps_DequVal::dump_json
 
+
+Rps_DequVal::Rps_DequVal(const Json::Value&jv, Rps_Loader*ld)
+  : Rps_DequVal::std_deque_superclass()
+{
+  RPS_ASSERT(ld != nullptr);
+  if (!jv.isObject() || !jv.isMember("dequval"))
+    throw RPS_RUNTIME_ERROR_OUT("Rps_DequVal loading... bad jv=" << jv);
+  Json::Value jseq = jv["dequval"];
+  if (!jseq.isArray())
+    throw RPS_RUNTIME_ERROR_OUT("Rps_DequVal loading... non-array dequval in jv=" << jv);
+  int sqlen = jseq.size();
+  for (int ix=0; ix<sqlen; ix++)
+    {
+      Json::Value jcomp = jseq[ix];
+      Rps_Value curval(jcomp,ld);
+      push_back(curval);
+    }
+}; // end constructor Rps_DequVal(const Json::Value&jv, Rps_Loader*ld)
 
 /********************************************** end of file morevalues_rps.cc */
