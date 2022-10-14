@@ -1115,7 +1115,7 @@ Rps_TokenSource::lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchka
 
 
 Rps_Value
-Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, unsigned rank)
+Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, Rps_DequVal& token_deq, unsigned rank)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr,
                            /*callerframe:*/callframe,

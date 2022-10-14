@@ -878,6 +878,7 @@ class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects
 class Rps_JsonZone; // memory for Json values
 class Rps_LexTokenZone; /// memory for reified lexical tokens, mostly in repl_rps.cc
+class Rps_DequVal;
 class Rps_GarbageCollector;
 class Rps_Payload;
 class Rps_PayloadSymbol;
@@ -2234,7 +2235,7 @@ public:
 };				// end class Rps_DequVal
 
 std::ostream&
-operator << (std::ostream&out, const std::deque<Rps_Value>& dq);
+operator << (std::ostream&out, const Rps_DequVal& dq);
 
 ////////////////////////////////////////////////////////////////
 struct Rps_ChunkData_st;
@@ -2284,7 +2285,7 @@ public:
   // return the name as a string value, hopefully memoized 
   Rps_Value name_val(Rps_CallFrame*callframe);
   // lookahead a lexical token, with a deque of them rank#0 being the next one
-  Rps_Value lookahead_token(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, unsigned rank=0);
+  Rps_Value lookahead_token(Rps_CallFrame*callframe, Rps_DequVal& token_deq, unsigned rank=0);
   /* TODO: parsing routines can also be used for lookahead purpose,
      with the convention that the bool pointer -pokparse- is null, and
      returning nullptr on lookahead falure, and the true object (of
@@ -2296,34 +2297,34 @@ public:
   //// provided, non-nil, and parsing successful. On success, the
   //// parsed expression is returned. On failure, the nil value is
   //// returned, and *pokparse is set to false when given.
-  Rps_Value parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
-  Rps_Value parse_symmetrical_binaryop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,
+  Rps_Value parse_expression(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_symmetrical_binaryop(Rps_CallFrame*callframe, Rps_DequVal& token_deq,
 				       Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
-				      std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)> parser_binop,
+				      std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,Rps_DequVal&,bool*)> parser_binop,
 				       bool*pokparse, const char*opername=nullptr);
-  Rps_Value parse_asymmetrical_binaryop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,
+  Rps_Value parse_asymmetrical_binaryop(Rps_CallFrame*callframe, Rps_DequVal& token_deq,
 					Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
 				       std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,
-					std::deque<Rps_Value>&,bool*)> parser_leftop,
-			   std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)>
+					Rps_DequVal&,bool*)> parser_leftop,
+			   std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,Rps_DequVal&,bool*)>
 					parser_rightop,
 			   bool*pokparse, const char*opername=nullptr);
-  Rps_Value parse_polyop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,  Rps_ObjectRef polyoper, Rps_ObjectRef polydelim,
-			 std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)> parser_suboperand,
+  Rps_Value parse_polyop(Rps_CallFrame*callframe, Rps_DequVal& token_deq,  Rps_ObjectRef polyoper, Rps_ObjectRef polydelim,
+			 std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,Rps_DequVal&,bool*)> parser_suboperand,
 			 bool*pokparse, const char*opername=nullptr);
-  Rps_Value parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
-  Rps_Value parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
-  Rps_Value parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
-  Rps_Value parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
-  Rps_Value parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
-  Rps_Value parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_disjunction(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_conjunction(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_comparison(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_comparand(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_factor(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_term(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse=nullptr);
   /// a primary expression is a simple thing
-  Rps_Value parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse=nullptr);
+  Rps_Value parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse=nullptr);
   /// Once we have parsed a primary, it could be followed by a primary
   /// complement. This routine is given the primary expression and
   /// return, when successful, a larger expression. It accepts fields
   /// and message sending.
-  Rps_Value parse_primary_complement(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, Rps_Value primaryexp, bool*pokparse=nullptr);
+  Rps_Value parse_primary_complement(Rps_CallFrame*callframe, Rps_DequVal& token_deq, Rps_Value primaryexp, bool*pokparse=nullptr);
 #warning other recursive descent parsing routines are needed, with a syntax documented in doc/repl.md
   ///////
   int line(void) const { return toksrc_line; };

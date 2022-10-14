@@ -41,9 +41,9 @@
 //// (syntax). Is given the parsing C++ closure for both Aleft and
 //// Aright.
 Rps_Value
-Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,
+Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe, Rps_DequVal& token_deq,
     Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
-    std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)> parser_binop,
+    std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,Rps_DequVal&,bool*)> parser_binop,
     bool*pokparse, const char*opername)
 {
   RPS_ASSERT(rps_is_main_thread());
@@ -138,11 +138,11 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe, std::deque<
 //// C++ closure for parsing B.
 ////
 Rps_Value
-Rps_TokenSource::parse_asymmetrical_binaryop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,
+Rps_TokenSource::parse_asymmetrical_binaryop(Rps_CallFrame*callframe, Rps_DequVal& token_deq,
     Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
-    std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)>
+    std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,Rps_DequVal&,bool*)>
     parser_leftop,
-    std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)>
+    std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,Rps_DequVal&,bool*)>
     parser_rightop,
     bool*pokparse, const char*opername)
 {
@@ -238,8 +238,8 @@ Rps_TokenSource::parse_asymmetrical_binaryop(Rps_CallFrame*callframe, std::deque
 ///// Routine to parse a sequence of n operands X1, X2, ... each
 ///// separated by the same operation OP so X1 OP X2 OP X3 ... OP Xn
 Rps_Value
-Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq,  Rps_ObjectRef polyoper, Rps_ObjectRef polydelim,
-                              std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,std::deque<Rps_Value>&,bool*)> parser_suboperand,
+Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, Rps_DequVal& token_deq,  Rps_ObjectRef polyoper, Rps_ObjectRef polydelim,
+                              std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,Rps_DequVal&,bool*)> parser_suboperand,
                               bool*pokparse, const char*opername)
 {
   RPS_ASSERT(rps_is_main_thread());
@@ -320,7 +320,7 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
 /// evaluated to a value; the *pokparse flag, when given, is set to
 /// true if and only if parsing was successful.
 Rps_Value
-Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
+Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse)
 {
   // a REPL expression is a sequence of disjuncts separated by ||
   RPS_ASSERT(rps_is_main_thread());
@@ -447,7 +447,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, std::deque<Rps_Value>
 /// evaluated to a value; the *pokparse flag, when given, is set to
 /// true if and only if parsing was successful.
 Rps_Value
-Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
+Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse)
 {
   /// a disjunction is a sequence of one or more conjunct separated by
   /// && - the and operator
@@ -569,7 +569,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
 
 ////////////////
 Rps_Value
-Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
+Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse)
 {
   RPS_LOCALFRAME(nullptr, callframe,
                  Rps_Value lextokv;
@@ -686,7 +686,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, std::deque<Rps_Value
 
 
 Rps_Value
-Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
+Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse)
 {
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
@@ -781,7 +781,7 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, std::deque<Rps_Value>
 
 // a comparand - something on left or right side of compare operators is a sequence of terms with additive operators
 Rps_Value
-Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
+Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse)
 {
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
@@ -836,7 +836,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, std::deque<Rps_Value>&
 
 
 Rps_Value
-Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
+Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse)
 {
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
@@ -939,7 +939,7 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, std::deque<Rps_Value>& to
 /// a term is a sequence of factors with multiplicative operators
 /// between them.... All the operators should be the same. Otherwise we build intermediate subexpressions
 Rps_Value
-Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
+Rps_TokenSource::parse_term(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse)
 {
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
@@ -1197,7 +1197,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, std::deque<Rps_Value>& toke
 /// evaluated to a value; the *pokparse flag, when given, is set to
 /// true if and only if parsing was successful.
 Rps_Value
-Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, bool*pokparse)
+Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse)
 {
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
@@ -1309,7 +1309,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, std::deque<Rps_Value>& t
 } // end Rps_TokenSource::parse_primary
 
 Rps_Value
-Rps_TokenSource::parse_primary_complement(Rps_CallFrame*callframe, std::deque<Rps_Value>& token_deq, Rps_Value primaryexparg, bool*pokparse)
+Rps_TokenSource::parse_primary_complement(Rps_CallFrame*callframe, Rps_DequVal& token_deq, Rps_Value primaryexparg, bool*pokparse)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr,
                            /*callerframe:*/callframe,

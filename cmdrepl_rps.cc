@@ -202,7 +202,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                            Rps_Value showv;
                 );
   // a double ended queue to keep the lexical tokens
-  std::deque<Rps_Value> token_deq;
+  Rps_DequVal token_deq;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
     for (auto tokenv : token_deq)

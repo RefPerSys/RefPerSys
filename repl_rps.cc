@@ -245,7 +245,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
 
 
 std::ostream&
-operator << (std::ostream&out, const std::deque<Rps_Value>& dq)
+operator << (std::ostream&out, const Rps_DequVal& dq)
 {
   int cnt=0;
   out << "{|";
@@ -256,7 +256,7 @@ operator << (std::ostream&out, const std::deque<Rps_Value>& dq)
     }
   out << "|}";
   return out;
-} // end operator << (std::ostream&out, const std::deque<Rps_Value>& dq)
+} // end operator << (std::ostream&out, const Rps_DequVal& dq)
 
 
 
@@ -274,7 +274,7 @@ rps_repl_interpret_token_source(Rps_CallFrame*callframe, Rps_TokenSource& toksou
                            Rps_Value lexval;
                 );
   // a double ended queue to keep the lexical tokens
-  std::deque<Rps_Value> token_deq;
+  Rps_DequVal token_deq;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
     for (auto tokenv : token_deq)
@@ -1896,7 +1896,7 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
 //-                        Rps_ObjectRef cmdreplobarg,
 //-                        Rps_Value cmdparserarg,
 //-                        unsigned lookahead,
-//-                        std::deque<Rps_Value>& token_deq,
+//-                        Rps_DequVal& token_deq,
 //-                        const char*input_name,
 //-                        const char*&linebuf, int &lineno, int &colno,
 //-                        std::string prompt
