@@ -430,7 +430,7 @@ Rps_DequVal::Rps_DequVal(const std::vector<Rps_Value>& vec)
 {
   for (const Rps_Value curval: vec)
     {
-      push_back(curval);
+      std_deque_superclass::push_back(curval);
     }
 };				// end constructor Rps_DequVal(const std::vector<Rps_Value>& vec)
 
