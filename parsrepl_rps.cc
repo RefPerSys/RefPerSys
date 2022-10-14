@@ -1209,8 +1209,12 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                            Rps_Value lexvalv;
                 );
   std::string startpos = position_str();
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary starting startpos:" << startpos
+                << " token_deq:" << token_deq
+                << " callframe:" << callframe);
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary start lextokv=" << _f.lextokv << " position:" << startpos);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary start lextokv=" << _f.lextokv
+                << " startpos:" << startpos << " token_deq:" << token_deq);
   if (!_f.lextokv)
     {
       if (pokparse)
