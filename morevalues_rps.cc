@@ -424,10 +424,12 @@ Rps_DequVal::Rps_DequVal(std::initializer_list<Rps_Value> il)
   : Rps_DequVal::std_deque_superclass(il) {};
 
 Rps_DequVal::Rps_DequVal(const std::vector<Rps_Value>& vec)
-  : Rps_DequVal::std_deque_superclass() {
-  for (const Rps_Value curval: vec) {
-    push_back(curval);
-  }
+  : Rps_DequVal::std_deque_superclass()
+{
+  for (const Rps_Value curval: vec)
+    {
+      push_back(curval);
+    }
 };
 
 Rps_HashInt
@@ -435,14 +437,15 @@ Rps_DequVal::compute_hash(void) const
 {
   Rps_HashInt h1 = 0, h2 = size();
   unsigned ix=0;
-  for (auto it: *this) {
-    const Rps_Value curval =it;
-    if (ix % 2 == 0)
-      h1 = (h1 * 12107) + (11 * curval.valhash()) - h2&0xffff;
-    else
-      h2 = (h2 * 22247) ^ (223 * curval.valhash() + h1);
-    ix++;
-  }
+  for (auto it: *this)
+    {
+      const Rps_Value curval =it;
+      if (ix % 2 == 0)
+        h1 = (h1 * 12107) + (11 * curval.valhash()) - h2&0xffff;
+      else
+        h2 = (h2 * 22247) ^ (223 * curval.valhash() + h1);
+      ix++;
+    }
   Rps_HashInt h= h1^h2;
   if (h == 0)
     h = ((h1&0xffff) | (h2&0xffff)) + (size() & 0xff) + 3;
@@ -462,10 +465,26 @@ Rps_DequVal::really_gc_mark(Rps_GarbageCollector&gc, unsigned depth) const
 } // end Rps_DequVal::really_gc_mark
 
 void
-Rps_DequVal::dump_scan(Rps_Dumper*du, unsigned int) const {
-  #warning unimplemented Rps_DequVal::dump_scan
-  RPS_FATALOUT("unimplemented Rps_DequVal::dump_scan");
+Rps_DequVal::dump_scan(Rps_Dumper*du, unsigned depth) const
+{
+  RPS_ASSERT(du != nullptr);
+  for (const Rps_Value curval: *this)
+    rps_dump_scan_value(du, curval, depth+1);
 } // end Rps_DequVal::dump_scan
+
+Json::Value
+Rps_DequVal::dump_json(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du != nullptr);
+  Json::Value job(Json::objectValue);
+  Json::Value jseq(Json::arrayValue);
+  for (const Rps_Value curval: *this)
+    {
+      jseq.append(rps_dump_json_value(du, curval));
+    }
+  job["dequval"] = jseq;
+  return job;
+} // end Rps_DequVal::dump_json
 
 
 /********************************************** end of file morevalues_rps.cc */
