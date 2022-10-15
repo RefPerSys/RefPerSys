@@ -1528,6 +1528,7 @@ Rps_PayloadClassInfo::compute_set_of_own_method_selectors(Rps_CallFrame*callerfr
   std::lock_guard<std::recursive_mutex> guown(*(obrown->objmtxptr()));
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
+    RPS_ASSERT(gc != nullptr);
     std::lock_guard<std::mutex> gu(mutlock);
     for (Rps_ObjectRef obr: mutset)
       {

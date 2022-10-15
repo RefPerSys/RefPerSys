@@ -205,8 +205,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
   Rps_DequVal token_deq;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
-    for (auto tokenv : token_deq)
-      gc->mark_value(tokenv);
+    token_deq.gc_mark(*gc);
   });
   RPS_DEBUG_LOG(CMD, "REPL command show start arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)

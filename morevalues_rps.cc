@@ -444,7 +444,7 @@ Rps_DequVal::compute_hash(void) const
     {
       const Rps_Value curval =it;
       if (ix % 2 == 0)
-        h1 = (h1 * 12107) + (11 * curval.valhash()) - h2&0xffff;
+        h1 = (h1 * 12107) + (11 * curval.valhash()) - (h2&0xffff);
       else
         h2 = (h2 * 22247) ^ (223 * curval.valhash() + h1);
       ix++;

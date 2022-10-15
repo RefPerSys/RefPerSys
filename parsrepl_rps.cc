@@ -260,9 +260,8 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, Rps_DequVal& token_deq,  
   _f.delimob = polydelim;
   _.set_additional_gc_marker([&](Rps_GarbageCollector* gc)
   {
-    for (auto tokenv : token_deq)
-      gc->mark_value(tokenv);
-
+    RPS_ASSERT(gc != nullptr);
+    token_deq.gc_mark(*gc);
     for (auto curargv : argvect)
       gc->mark_value(curargv);
   });
@@ -340,9 +339,9 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, Rps_DequVal& token_de
   std::vector<Rps_Value> disjvect;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
+    RPS_ASSERT(gc != nullptr);
     // maybe token_deq is already GC-marked by caller....
-    for (auto tokenv : token_deq)
-      gc->mark_value(tokenv);
+    token_deq.gc_mark(*gc);
     // but the disjvect needs to be GC-marked
     for (auto disjv : disjvect)
       gc->mark_value(disjv);
@@ -466,9 +465,9 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, Rps_DequVal& token_d
   std::vector<Rps_Value> conjvect;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
+    RPS_ASSERT(gc != nullptr);
     // maybe token_deq is already GC-marked by caller....
-    for (auto tokenv : token_deq)
-      gc->mark_value(tokenv);
+    token_deq.gc_mark(*gc);
     // but the conjvect needs to be GC-marked
     for (auto conjv : conjvect)
       gc->mark_value(conjv);
@@ -586,9 +585,8 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, Rps_DequVal& token_d
   std::vector<Rps_Value> conjvect;
   _.set_additional_gc_marker([&](Rps_GarbageCollector* gc)
   {
-    for (auto tokenv : token_deq)
-      gc->mark_value(tokenv);
-
+    RPS_ASSERT(gc != nullptr);
+    token_deq.gc_mark(*gc);
     for (auto disjv : conjvect)
       gc->mark_value(disjv);
   });
@@ -965,8 +963,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, Rps_DequVal& token_deq, boo
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
     // maybe token_deq is already GC-marked by caller....
-    for (auto tokenv : token_deq)
-      gc->mark_value(tokenv);
+    RPS_ASSERT(gc != nullptr);
+    token_deq.gc_mark(*gc);
     // but the operandvect needs to be GC-marked
     for (auto operv : operandvect)
       gc->mark_value(operv);

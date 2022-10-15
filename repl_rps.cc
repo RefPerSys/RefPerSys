@@ -263,8 +263,7 @@ rps_repl_interpret_token_source(Rps_CallFrame*callframe, Rps_TokenSource& toksou
   Rps_DequVal token_deq;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
-    for (auto tokenv : token_deq)
-      gc->mark_value(tokenv);
+    token_deq.gc_mark(gc);
   });
   std::string startpos = toksource.position_str();
   RPS_DEBUG_LOG(REPL, "rps_repl_interpret_token_source start "
@@ -1441,10 +1440,7 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
     if (pque)
-      {
-        for (Rps_LexTokenZone* lxtokv: *pque)
-          gc->mark_value(lxtokv);
-      };
+      pque->gc_mark(gc);
   });
   std::string inputstr(input_name?:"");
   const char*curinp = (plinebuf && colno>=0 && colno<(int)strlen(*plinebuf))
