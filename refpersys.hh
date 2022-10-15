@@ -2232,6 +2232,8 @@ public:
   void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth) const;
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0) const
   { really_gc_mark(gc, depth); };
+  void push_back(const Rps_Value val);
+  void pop_front(void);
 };				// end class Rps_DequVal
 
 std::ostream&

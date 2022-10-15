@@ -552,6 +552,21 @@ Rps_DequVal::output(std::ostream&out, unsigned depth) const
     }
 } // end Rps_DequVal::output
 
+/// see framalistes.org/sympa/arc/refpersys-forum/2022-10/msg00006.html
+void
+Rps_DequVal::push_back(const Rps_Value val) { 
+       RPS_DEBUG_LOG(REPL, "Rps_DequVal::push_back this@" << (void*)this << " push_back " << val);
+       std_deque_superclass::push_back(val);
+} // end Rps_DequVal::push_back
+
+void
+Rps_DequVal::pop_front(void) {
+  if (empty())
+    throw std::runtime_error("empty Rps_DequVal cannot pop_front");
+  std_deque_superclass::pop_front();
+  RPS_DEBUG_LOG(REPL, "Rps_DequVal::pop_front this@" << (void*)this);  
+} // end Rps_DequVal::pop_front
+
 std::ostream&
 operator << (std::ostream&out, const Rps_DequVal& dq)
 {
