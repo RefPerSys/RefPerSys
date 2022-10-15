@@ -1129,10 +1129,14 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, Rps_DequVal& token_deq
   RPS_ASSERT(_.call_frame_depth() < 32);
   while (token_deq.size() < rank)
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token loop token_deq " << token_deq << " pos:" << position_str());
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token loop rank#" << rank << " token_deq " << token_deq << " pos:" << position_str());
       _f.lextokv = get_token(&_);
       if (_f.lextokv)
-        token_deq.push_back(_f.lextokv);
+        {
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token got-token-pushing lextokv:" << _f.lextokv << " pos:" << position_str()
+                        << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::lookahead_token pushing"));
+          token_deq.push_back(_f.lextokv);
+        }
       else
         {
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " missing from:"
