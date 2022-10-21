@@ -2279,11 +2279,13 @@ public:
   const Rps_LexTokenZone* make_token(Rps_CallFrame*callframe,
 			       Rps_ObjectRef lexkind, Rps_Value lexval, const Rps_String*sourcev);
   virtual ~Rps_TokenSource();
+  virtual void output (std::ostream&out) const = 0;
   virtual bool get_line(void) =0; // gives true when another line has been read
   Rps_TokenSource(const Rps_TokenSource&) = delete;
   Rps_TokenSource() = delete;
   const std::string& name(void) const { return toksrc_name; };
   const std::string position_str(int col= -1) const;
+  int token_count(void) const { return  toksrc_counter;};
   // return the name as a string value, hopefully memoized 
   Rps_Value name_val(Rps_CallFrame*callframe);
   // lookahead a lexical token, with a deque of them rank#0 being the next one
@@ -2335,9 +2337,17 @@ public:
   Rps_LexTokenValue get_token(Rps_CallFrame*callframe);
 };				// end Rps_TokenSource
 
+inline std::ostream& operator << (std::ostream&out, Rps_TokenSource& toksrc)
+{
+  toksrc.output(out);
+  return out;
+}
+
 class Rps_CinTokenSource : public Rps_TokenSource
 {
 public:
+  virtual void output(std::ostream&out) const {
+    out << "CinTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count(); };
   Rps_CinTokenSource();
   virtual ~Rps_CinTokenSource();
   virtual bool get_line(void);
@@ -2349,6 +2359,8 @@ class Rps_StreamTokenSource : public Rps_TokenSource
   std::ifstream toksrc_input_stream;
 public:
   Rps_StreamTokenSource(std::string path);
+  virtual void output(std::ostream&out) const {
+    out << "StreamTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count(); };
   virtual ~Rps_StreamTokenSource();
   virtual bool get_line(void);
 };	       // end Rps_StreamTokenSource
@@ -2359,6 +2371,8 @@ class Rps_StringTokenSource : public Rps_TokenSource {
   std::istringstream toksrcstr_inp;
 public:
   Rps_StringTokenSource(std::string inpstr, std::string name);
+  virtual void output(std::ostream&out) const {
+    out << "StringTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count(); };
   virtual  ~Rps_StringTokenSource();
   virtual bool get_line();
 };							      // end Rps_StringTokenSource
