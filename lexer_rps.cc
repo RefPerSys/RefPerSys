@@ -163,12 +163,18 @@ Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
   char* curword = wx.we_wordv[0];
   toksrc_input_stream.open(curword);
   set_name(std::string(curword));
+  RPS_DEBUG_LOG(REPL, "constr StreamTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "constr StreamTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(CMD, "constr StreamTokenSource@ " <<(void*)this << " " << *this);
 } // end Rps_StreamTokenSource::Rps_StreamTokenSource
 
 
 Rps_StreamTokenSource::~Rps_StreamTokenSource()
 {
   toksrc_input_stream.close();
+  RPS_DEBUG_LOG(REPL, "destr StreamTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "destr StreamTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(CMD, "destr StreamTokenSource@ " <<(void*)this << " " << *this);
 } // end ps_StreamTokenSource::~Rps_StreamTokenSource
 
 bool
@@ -185,10 +191,16 @@ Rps_StreamTokenSource::get_line(void)
 Rps_CinTokenSource::Rps_CinTokenSource()
   : Rps_TokenSource("-")
 {
+  RPS_DEBUG_LOG(REPL, "constr CinTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "constr CinTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(CMD, "constr CinTokenSource@ " <<(void*)this << " " << *this);
 };				// end Rps_CinTokenSource::Rps_CinTokenSource
 
 Rps_CinTokenSource::~Rps_CinTokenSource()
 {
+  RPS_DEBUG_LOG(REPL, "destr CinTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "destr CinTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(CMD, "destr CinTokenSource@ " <<(void*)this << " " << *this);
 };	// end Rps_CinTokenSource::~Rps_CinTokenSource
 
 bool
@@ -206,10 +218,19 @@ Rps_CinTokenSource::get_line(void)
 Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string name)
   : Rps_TokenSource(name), toksrcstr_inp(inptstr)
 {
+  RPS_DEBUG_LOG(REPL, "constr StringTokenSource@ " <<(void*)this << " " << *this
+                << " from '" << Rps_QuotedC_String(inptstr) << "'");
+  RPS_DEBUG_LOG(LOWREP, "constr StringTokenSource@ " <<(void*)this << " " << *this
+                << " from '" << Rps_QuotedC_String(inptstr) << "'");
+  RPS_DEBUG_LOG(CMD, "constr StringTokenSource@ " <<(void*)this << " " << *this
+                << " from '" << Rps_QuotedC_String(inptstr) << "'");
 } // end Rps_StringTokenSource::Rps_StringTokenSource
 
 Rps_StringTokenSource::~Rps_StringTokenSource()
 {
+  RPS_DEBUG_LOG(REPL, "destr StringTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(LOWREP, "destr StringTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(CMD, "destr StringTokenSource@ " <<(void*)this << " " << *this);
 } // end Rps_StringTokenSource::~Rps_StringTokenSource
 
 bool
