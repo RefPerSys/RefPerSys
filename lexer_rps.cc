@@ -359,6 +359,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       while ((isalpha(*curp) || *curp == '_') && toksrc_col<(int)linelen)
         curp++, toksrc_col++;
       std::string namestr(startname, toksrc_col-startcol);
+      RPS_DEBUG_LOG(REPL, "get_token namestr: '"
+		    << Rps_Cjson_String(namestr)
+		    << "' tokensrc:" << *this << " startcol=" << startcol
+		    << " toksrc_col:" << toksrc_col);
       _f.namev = name_val(&_);
       RPS_DEBUG_LOG(REPL, "get_token oid|name '" << namestr << "' namev=" << _f.namev << " at "
                     << position_str(startcol) << " ... " << position_str());
