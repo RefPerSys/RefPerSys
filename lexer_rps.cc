@@ -218,12 +218,12 @@ Rps_CinTokenSource::get_line(void)
 Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string name)
   : Rps_TokenSource(name), toksrcstr_inp(inptstr)
 {
-  RPS_DEBUG_LOG(REPL, "constr StringTokenSource@ " <<(void*)this << " " << *this
-                << " from '" << Rps_QuotedC_String(inptstr) << "'");
-  RPS_DEBUG_LOG(LOWREP, "constr StringTokenSource@ " <<(void*)this << " " << *this
-                << " from '" << Rps_QuotedC_String(inptstr) << "'");
-  RPS_DEBUG_LOG(CMD, "constr StringTokenSource@ " <<(void*)this << " " << *this
-                << " from '" << Rps_QuotedC_String(inptstr) << "'");
+  RPS_DEBUG_LOG(REPL, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
+                << " from '" << Rps_QuotedC_String(toksrcstr_inp.str()) << "'");
+  RPS_DEBUG_LOG(LOWREP, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
+                << " from '" << Rps_QuotedC_String(toksrcstr_inp.str()) << "'");
+  RPS_DEBUG_LOG(CMD, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
+                << " from '" << Rps_QuotedC_String(toksrcstr_inp.str()) << "'");
 } // end Rps_StringTokenSource::Rps_StringTokenSource
 
 Rps_StringTokenSource::~Rps_StringTokenSource()
@@ -241,6 +241,13 @@ Rps_StringTokenSource::get_line()
     return false;
   return true;
 } // end Rps_StringTokenSource::get_line()
+
+void
+Rps_StringTokenSource::output (std::ostream&out) const
+{
+  out << "StringTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count()
+      << " str: '" << Rps_QuotedC_String(toksrcstr_inp.str()) << "'";
+}	// end Rps_StringTokenSource::output
 
 ////////////////
 Rps_LexTokenValue
@@ -360,9 +367,9 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
         curp++, toksrc_col++;
       std::string namestr(startname, toksrc_col-startcol);
       RPS_DEBUG_LOG(REPL, "get_token namestr: '"
-		    << Rps_Cjson_String(namestr)
-		    << "' tokensrc:" << *this << " startcol=" << startcol
-		    << " toksrc_col:" << toksrc_col);
+                    << Rps_Cjson_String(namestr)
+                    << "' tokensrc:" << *this << " startcol=" << startcol
+                    << " toksrc_col:" << toksrc_col);
       _f.namev = name_val(&_);
       RPS_DEBUG_LOG(REPL, "get_token oid|name '" << namestr << "' namev=" << _f.namev << " at "
                     << position_str(startcol) << " ... " << position_str());

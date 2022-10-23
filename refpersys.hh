@@ -2371,8 +2371,7 @@ class Rps_StringTokenSource : public Rps_TokenSource {
   std::istringstream toksrcstr_inp;
 public:
   Rps_StringTokenSource(std::string inpstr, std::string name);
-  virtual void output(std::ostream&out) const {
-    out << "StringTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count(); };
+  virtual void output(std::ostream&out) const;
   virtual  ~Rps_StringTokenSource();
   virtual bool get_line();
 };							      // end Rps_StringTokenSource
