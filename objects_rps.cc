@@ -73,17 +73,40 @@ Rps_ObjectRef::output(std::ostream&outs, unsigned depth) const
       Rps_Value valname = obptr()->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name
       outs << "◌" /*U+25CC DOTTED CIRCLE*/
            << obptr()->oid().to_string();
+      if (depth <= 1)
+        outs << std::flush;
       if (valname.is_string())
         {
           outs << "/" << valname.as_cstring();
+          if (depth <= 1)
+            outs << std::flush;
         }
       else if (auto symbpayl = obptr()-> get_dynamic_payload<Rps_PayloadSymbol>())
         {
           outs << "!sy°" << symbpayl->symbol_name();
+          if (depth <= 1)
+            outs << std::flush;
         }
       else if (auto classpayl =  obptr()-> get_dynamic_payload<Rps_PayloadClassInfo>())
         {
           outs << "!cla°" << classpayl->class_name_str();
+          if (depth <= 1)
+            outs << std::flush;
+        };
+      if (depth <= 2)
+        {
+          Rps_ObjectRef obclass = obptr() -> get_class();
+          if (obclass)
+            {
+              std::lock_guard<std::recursive_mutex> gucl(*obclass->objmtxptr());
+              auto obclpayl = obclass->get_dynamic_payload<Rps_PayloadClassInfo>();
+              if (obclpayl)
+                {
+                  outs << "∊" //U+220A SMALL ELEMENT OF
+                       << obclpayl->class_name_str()
+                       << std::flush;
+                }
+            }
         }
     };
 } // end Rps_ObjectRef::output
