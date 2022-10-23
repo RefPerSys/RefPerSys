@@ -63,12 +63,13 @@ Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*callerframe, const char*oidstr, Rps_O
 } // end Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*, constexpr const char*oidstr, Rps_ObjIdStrTag)
 
 void
-Rps_ObjectRef::output(std::ostream&outs) const
+Rps_ObjectRef::output(std::ostream&outs, unsigned depth) const
 {
   if (is_empty())
     outs << "__";
   else
     {
+      std::lock_guard<std::recursive_mutex> gu(*_optr->objmtxptr());
       Rps_Value valname = obptr()->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name
       outs << "◌" /*U+25CC DOTTED CIRCLE*/
            << obptr()->oid().to_string();

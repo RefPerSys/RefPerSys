@@ -1032,7 +1032,7 @@ public:
   inline void gc_mark(Rps_GarbageCollector&) const;
   inline void dump_scan(Rps_Dumper* du, unsigned depth) const;
   inline Json::Value dump_json(Rps_Dumper* du) const;
-  void output(std::ostream&os) const;
+  void output(std::ostream&out, unsigned depth=0) const;
   /////////// the root space
   static inline Rps_ObjectRef root_space(void);
   ///////////
