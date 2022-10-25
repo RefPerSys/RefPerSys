@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2020 The Reflective Persistent System Team
+ *      © Copyright 2020 - 2022 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -524,7 +524,7 @@ void
 Rps_PayloadTasklet::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT (du != nullptr);
-  if (!tasklet_transient && tasklet_todoclos)
+  if (tasklet_permanent && tasklet_todoclos)
     {
       if (tasklet_obsoltime < rps_dump_start_wallclock_time(du))
         rps_dump_scan_value(du, tasklet_obsoltime,0);
@@ -537,7 +537,7 @@ Rps_PayloadTasklet::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
   RPS_ASSERT (du != nullptr);
   jv["payload"] = "tasklet";
-  if (!tasklet_transient && tasklet_todoclos)
+  if (tasklet_permanent && tasklet_todoclos)
     {
       if (tasklet_obsoltime < rps_dump_start_wallclock_time(du))
         {

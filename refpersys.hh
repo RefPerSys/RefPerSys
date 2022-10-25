@@ -4513,7 +4513,7 @@ class Rps_PayloadTasklet : public Rps_Payload
   /// and a obsolescence time
   Rps_ClosureValue tasklet_todoclos; // the closure to apply to
   double tasklet_obsoltime; // obsolescence time
-  bool tasklet_transient;
+  bool tasklet_permanent;
 public:
   inline Rps_PayloadTasklet(Rps_ObjectZone*owner);
   inline Rps_PayloadTasklet(Rps_ObjectZone*owner, Rps_Loader*ld);

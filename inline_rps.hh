@@ -2378,7 +2378,10 @@ Rps_Agenda::tasklet_class()
 
 
 Rps_PayloadTasklet::Rps_PayloadTasklet(Rps_ObjectZone*obz)
-  : Rps_Payload(Rps_Type::PaylTasklet, obz)
+  : Rps_Payload(Rps_Type::PaylTasklet, obz),
+    tasklet_todoclos(nullptr),
+    tasklet_obsoltime(0.0),
+    tasklet_permanent(false)
 {
 } // end Rps_PayloadTasklet::Rps_PayloadTasklet(Rps_ObjectZone*)
 
