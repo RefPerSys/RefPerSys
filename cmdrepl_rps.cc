@@ -213,11 +213,21 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                 << "∈" << arg1.compute_class(&_) <<std::endl
                 << ";  arg2=" << arg2
                 << "∈" << arg2.compute_class(&_)
+                << " token_deq:" << token_deq
+                << " from " << std::endl
+                << Rps_ShowCallFrame(&_));
+  RPS_DEBUG_LOG(REPL, "REPL command show start arg0=" << arg0
+                << "∈" << arg0.compute_class(&_)
+                << ";  arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) <<std::endl
+                << ";  arg2=" << arg2
+                << "∈" << arg2.compute_class(&_)
+                << " token_deq:" << token_deq
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
   _f.replcmdob = arg0.to_object();
   _f.lextokv = arg1;
-  RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/start  token_deq:" << token_deq << " replcmdob:" << _f.replcmdob << " lextokv:" << _f.lextokv
+  RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/started token_deq:" << token_deq << " replcmdob:" << _f.replcmdob << " lextokv:" << _f.lextokv
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT"));
   RPS_ASSERT(_.call_frame_depth() < 7);
   RPS_DEBUG_LOG(CMD, "REPL command show framedepth=" << _.call_frame_depth()
