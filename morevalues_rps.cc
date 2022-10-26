@@ -518,11 +518,11 @@ Rps_DequVal::output(std::ostream&out, unsigned depth) const
       if (siz == 0)
         {
           out << "°deqval(@" << (dqu_srcfil?:"?") << ":" << dqu_srclin
-              << ":⦰)"; //U+29B0 REVERSED EMPTY SET;
+              << "⁖⦰)"; //U+29B0 REVERSED EMPTY SET;
         }
       else
         {
-          out << "°deqval.l" << siz << "(<";
+          out << "°deqval.l" << siz << "(@" << (dqu_srcfil?:"?") << ":" << dqu_srclin<<"⁖";
           int cnt = 0;
           for (Rps_Value curval: *this)
             {
