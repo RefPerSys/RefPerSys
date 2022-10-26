@@ -319,7 +319,7 @@ test02: ./refpersys
 	./refpersys -AREPL  -c "show RefPerSys_system" -B
 
 test03: ./refpersys
-	@echo missing test03 ; exit 1
+	./refpersys -AREPL  -c "show (1 + 2)" -B
 
 test04: ./refpersys
 	@echo missing test04 ; exit 1
