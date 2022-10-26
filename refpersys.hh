@@ -2218,14 +2218,18 @@ public:
 }; // end class Rps_Double
 
 class Rps_DequVal : public std::deque<Rps_Value> {
+  const char*dqu_srcfil;
+  int dqu_srclin;
 public:
   typedef std::deque<Rps_Value> std_deque_superclass;
-  Rps_DequVal() = default;
-  virtual ~Rps_DequVal() {};
+  Rps_DequVal() : std::deque<Rps_Value>(), dqu_srcfil("?"), dqu_srclin(-1) {} ;
+  Rps_DequVal(const char*sfil, int lin) : std::deque<Rps_Value>(), dqu_srcfil(sfil), dqu_srclin(lin) {};
+  virtual ~Rps_DequVal() {dqu_srcfil=nullptr; dqu_srclin=0;};
   virtual Rps_HashInt compute_hash(void) const;
-  Rps_DequVal(std::initializer_list<Rps_Value> il);
-  Rps_DequVal(const std::vector<Rps_Value>& vec);
-  Rps_DequVal(const Json::Value&jv, Rps_Loader*ld);
+  Rps_DequVal(std::initializer_list<Rps_Value> il,const char*sfil=nullptr, int lin=0)
+    : std::deque<Rps_Value>(il), dqu_srcfil(sfil), dqu_srclin(lin) {};
+  Rps_DequVal(const std::vector<Rps_Value>& vec,const char*sfil=nullptr, int lin=0);
+  Rps_DequVal(const Json::Value&jv, Rps_Loader*ld,const char*sfil=nullptr, int lin=0);
   void output(std::ostream&out, unsigned depth=0) const;
   Json::Value dump_json(Rps_Dumper*du) const;
   virtual void dump_scan(Rps_Dumper* du, unsigned depth) const;

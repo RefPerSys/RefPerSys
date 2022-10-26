@@ -420,13 +420,9 @@ Rps_OutputValue::do_output(std::ostream& out) const
 
 
 ///////////////// support of Rps_DequVal
-Rps_DequVal::Rps_DequVal(std::initializer_list<Rps_Value> il)
-  : Rps_DequVal::std_deque_superclass(il)
-{
-};				// end constructor Rps_DequVal(std::initializer_list<Rps_Value> il)
 
-Rps_DequVal::Rps_DequVal(const std::vector<Rps_Value>& vec)
-  : Rps_DequVal::std_deque_superclass()
+Rps_DequVal::Rps_DequVal(const std::vector<Rps_Value>& vec,const char*sfil, int lin)
+  : Rps_DequVal::std_deque_superclass(), dqu_srcfil(sfil), dqu_srclin(lin)
 {
   for (const Rps_Value curval: vec)
     {
@@ -490,8 +486,8 @@ Rps_DequVal::dump_json(Rps_Dumper*du) const
 } // end Rps_DequVal::dump_json
 
 
-Rps_DequVal::Rps_DequVal(const Json::Value&jv, Rps_Loader*ld)
-  : Rps_DequVal::std_deque_superclass()
+Rps_DequVal::Rps_DequVal(const Json::Value&jv, Rps_Loader*ld,const char*sfil, int lin)
+  : Rps_DequVal::std_deque_superclass(), dqu_srcfil(sfil), dqu_srclin(lin)
 {
   RPS_ASSERT(ld != nullptr);
   if (!jv.isObject() || !jv.isMember("dequval"))
@@ -512,14 +508,17 @@ Rps_DequVal::Rps_DequVal(const Json::Value&jv, Rps_Loader*ld)
 void
 Rps_DequVal::output(std::ostream&out, unsigned depth) const
 {
-  if (depth > Rps_Value::max_output_depth)
+  if (depth > 1+Rps_Value::max_output_depth)
     out << "°deqval(<...>)";
+  else if (depth==Rps_Value::max_output_depth)
+    out << "°deqval(@" << (dqu_srcfil?:"?") << ":" << dqu_srclin;
   else
     {
       unsigned siz = size();
       if (siz == 0)
         {
-          out << "°deqval(⦰)"; //U+29B0 REVERSED EMPTY SET;
+          out << "°deqval(@" << (dqu_srcfil?:"?") << ":" << dqu_srclin
+              << ":⦰)"; //U+29B0 REVERSED EMPTY SET;
         }
       else
         {

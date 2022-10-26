@@ -202,7 +202,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                            Rps_Value showv;
                 );
   // a double ended queue to keep the lexical tokens
-  Rps_DequVal token_deq;
+  Rps_DequVal token_deq(__FILE__,__LINE__);
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
     token_deq.gc_mark(*gc);

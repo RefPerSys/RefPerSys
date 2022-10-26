@@ -260,7 +260,7 @@ rps_repl_interpret_token_source(Rps_CallFrame*callframe, Rps_TokenSource& toksou
                            Rps_Value lexval;
                 );
   // a double ended queue to keep the lexical tokens
-  Rps_DequVal token_deq;
+  Rps_DequVal token_deq(__FILE__,__LINE__);
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
     token_deq.gc_mark(gc);
