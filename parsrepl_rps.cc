@@ -1291,7 +1291,8 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                     << " at " << position_str());
       if (!_f.lexgotokv)
 	return _f.obres;
-#warning  unimplemented Rps_TokenSource::parse_primary with object
+#warning  incomplete Rps_TokenSource::parse_primary with object
+      /*** sometimes a primary make be followed by complement */
       RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary object§unimplemented: "
                    << " token_deq:" << token_deq
                    << " lextokv:" << _f.lextokv
