@@ -1200,12 +1200,12 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(/*descr:*/nullptr,
-		 /*callerframe:*/callframe,
-		 Rps_Value lextokv;
-		 Rps_Value lexgotokv;
-		 Rps_ObjectRef lexkindob;
-		 Rps_Value lexvalv;
-		 Rps_ObjectRef obres;
+                           /*callerframe:*/callframe,
+                           Rps_Value lextokv;
+                           Rps_Value lexgotokv;
+                           Rps_ObjectRef lexkindob;
+                           Rps_Value lexvalv;
+                           Rps_ObjectRef obres;
                 );
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary starting startpos:" << startpos
@@ -1281,16 +1281,16 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
       _f.obres = _f.lexvalv.to_object();
       token_deq.pop_front();
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary :: object "
-		    << _f.obres << " lexgotokv:" << _f.lexgotokv << std::endl
+                    << _f.obres << " lexgotokv:" << _f.lexgotokv << std::endl
                     << "... token_deq:" << token_deq
                     << " at " << position_str());
       _f.lexgotokv = get_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary :: object "
-		    << _f.obres << " next lexgotokv:" << _f.lexgotokv << std::endl
+                    << _f.obres << " next lexgotokv:" << _f.lexgotokv << std::endl
                     << "... token_deq:" << token_deq
                     << " at " << position_str());
       if (!_f.lexgotokv)
-	return _f.obres;
+        return _f.obres;
 #warning  incomplete Rps_TokenSource::parse_primary with object
       /*** sometimes a primary make be followed by complement */
       RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary object§unimplemented: "
@@ -1323,6 +1323,44 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                << " position_str:" << position_str()
                << " startpos:" << startpos);
 } // end Rps_TokenSource::parse_primary
+
+bool
+Rps_TokenSource::can_start_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq)
+{
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/callframe,
+                           Rps_Value lextokv;
+                           Rps_ObjectRef lexkindob;
+                           Rps_Value lexvalv;
+                );
+  std::string startpos = position_str();
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary starting startpos:" << startpos
+                << " token_deq:" << token_deq
+                << " callframe:" << callframe);
+  _f.lextokv =  lookahead_token(&_, token_deq, 0);
+  if (!_f.lextokv)
+    return false;
+  const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
+  RPS_ASSERT (ltokz != nullptr);
+  _f.lexkindob = ltokz->lxkind();
+  _f.lexvalv = ltokz->lxval();
+  if (_f.lexkindob == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b) // int
+      && _f.lexvalv.is_int())
+    return true;
+  else if (_f.lexkindob == RPS_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
+           && _f.lexvalv.is_double())
+    return true;
+  else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
+           && _f.lexvalv.is_string())
+    return true;
+  else if (_f.lexkindob == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
+           && _f.lexvalv.is_object())
+    return true;
+#warning incomplete Rps_TokenSource::can_start_primary
+  return false;
+} // end Rps_TokenSource::can_start_primary
 
 Rps_Value
 Rps_TokenSource::parse_primary_complement(Rps_CallFrame*callframe, Rps_DequVal& token_deq, Rps_Value primaryexparg, bool*pokparse)

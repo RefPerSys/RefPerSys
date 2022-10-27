@@ -2328,6 +2328,7 @@ public:
   Rps_Value parse_term(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse=nullptr);
   /// a primary expression is a simple thing
   Rps_Value parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, bool*pokparse=nullptr);
+  bool can_start_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq);
   /// Once we have parsed a primary, it could be followed by a primary
   /// complement. This routine is given the primary expression and
   /// return, when successful, a larger expression. It accepts fields
