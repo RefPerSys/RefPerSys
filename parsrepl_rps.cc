@@ -1368,9 +1368,10 @@ Rps_TokenSource::can_start_primary(Rps_CallFrame*callframe, Rps_DequVal& token_d
   else if (_f.lexkindob == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
            && _f.lexvalv.is_object())
     return true;
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary lexkindob=" << _f.lexkindob
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary incomplete lexkindob=" << _f.lexkindob
                 << " lexvalv=" << _f.lexvalv);
 #warning incomplete Rps_TokenSource::can_start_primary
+  // TODO: what about an open parenthesis?
   return false;
 } // end Rps_TokenSource::can_start_primary
 
