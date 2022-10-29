@@ -1228,6 +1228,16 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                 << _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str()
                 << " curcptr " << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << token_deq);
+  if (!can_start_primary(&_, token_deq))
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary failing bad start lexkindob="
+                    << _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str()
+                    << " curcptr " << Rps_QuotedC_String(curcptr())
+                    << " token_deq:" << token_deq);
+      if (pokparse)
+        *pokparse = false;
+      return nullptr;
+    }
   if (_f.lexkindob == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b) // int
       && _f.lexvalv.is_int())
     {
