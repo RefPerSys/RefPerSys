@@ -1844,14 +1844,20 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
                 Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply2 (&_, _f.cmdob, _f.lextokv);
                 _f.parsmainv = parspair.main();
                 _f.parsextrav = parspair.xtra();
-                RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec applied " << _f.cmdparserv << " to "
+                RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec applied " << _f.cmdparserv << " to cmd#" << cix << " "
                               << _f.cmdob
-                              << " and got parsmainv:" << _f.parsmainv << ", parsextrav=" << _f.parsextrav
-                              << " now position is " <<  intoksrc.position_str());
+                              << " and got parsmainv:" << _f.parsmainv << ", parsextrav=" << _f.parsextrav << std::endl
+                              << "... now position is " <<  intoksrc.position_str() << " curptr:'" << Rps_QuotedC_String(intoksrc.curcptr()) << "'" << std::endl
+                              <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/applied"));
                 if (!_f.parsmainv && !_f.parsextrav)
-                  RPS_WARNOUT("rps_do_repl_commands_vec: REPL command " << _f.cmdob << " at " << commandpos << " failed using "
-                              << _f.cmdparserv << std::endl);
-                continue;
+                  {
+                    RPS_WARNOUT("rps_do_repl_commands_vec: REPL command#" << cix <<
+                                " " << _f.cmdob << " at " << commandpos << " failed using "
+                                << _f.cmdparserv << std::endl
+                                << " ... at position " <<  intoksrc.position_str() << " curptr:'" << Rps_QuotedC_String(intoksrc.curcptr()) << "'" << std::endl
+                                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/apply failed"));
+                    continue;
+                  }
               }
             else
               {
