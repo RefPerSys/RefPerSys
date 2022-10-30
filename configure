@@ -1,0 +1,118 @@
+#!/bin/sh
+# -*- mode: sh -*-
+
+#
+# Prints an info message to stderr
+#
+
+info()
+{
+ echo "[INFO] $1..." 1>&2
+}
+
+
+#
+# Prints a failure message to stderr and exits
+#
+
+fail()
+{
+ echo "[FAIL] $1..." 1>&2
+ exit 1
+}
+
+
+#
+# Parse command line options. Currently we support only three flags:
+# - h: usage help
+# - l: license info
+# - v: version info
+#
+# The above flags are mutually exclusive to each other.
+#
+
+HELP=1
+LICENSE=1
+VERSION=1
+
+EMSG='Invalid usage; run ./configure -h to get help'
+ARGC=$#
+while getopts 'hlv' o; do
+ case $o in
+ h) HELP=0;;
+ l) LICENSE=0;;
+ v) VERSION=0;;
+ *) fail "$EMSG";;
+ esac
+done
+
+[ $ARGC -gt 2 ] && fail "$EMSG"
+
+if [ $ARGC -gt 1 ]; then
+ [ $HELP -ne 0 ] && [ $LICENSE -ne 0 ] && [ $VERSION -ne 0 ] && fail "$EMSG"
+fi
+
+if [ $HELP -eq 0 ]; then
+ printf '\nUsage: ./configure [h | l | v]\n\n'
+ printf 'Options:\n'
+ printf ' -h\tshow usage\n'
+ printf ' -l\tshow license information\n'
+ printf ' -v\tshow version information\n'
+ exit 0
+fi
+
+if [ $LICENSE -eq 0 ]; then
+ echo ''
+ echo 'RefPerSys is free software: you can redistribute it and/or modify'
+ echo 'it under the terms of the GNU General Public License as published'
+ echo 'by the Free Software Foundation, either version 3 of the License,'
+ echo 'or (at your option) any later version.'
+ echo ''
+ echo 'RefPerSys is distributed in the hope that it will be useful, but'
+ echo 'WITHOUT ANY WARRANTY; without even the implied warranty of'
+ echo 'MERCHANTIBILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU'
+ echo 'General Public License for more details.'
+ echo ''
+ echo 'You should have received a copy of the GNU General Public License'
+ echo 'along with RefPerSys. If not, see <https://www.gnu.org/licenses/>.'
+ exit 0
+fi
+
+if [ $VERSION -eq 0 ]; then
+ echo "Commit: $(git rev-parse HEAD)"
+ echo "Date: $(git log -1 --format=%cd)"
+ exit 0
+fi
+
+
+# Installs a Debian package if not already installed
+install() {
+ if dpkg-query -W --showformat='${Status}\n' "$1" \
+ | grep -q 'not-installed'; then
+ info "Installing $1"
+ sudo apt install -y "$1"
+ fi
+}
+
+
+# Create ~/.refpersys.mk
+info 'Creating local makefile configuration file'
+{
+ echo 'RPS_BUILD_CC= gcc-10';
+ echo 'RPS_BUILD_CXX= g++-10';
+} > "$HOME/.refpersys.mk"
+
+
+# Ensure apt database is updated
+info 'Updating APT database'
+sudo apt update
+
+
+# Ensure required Debian packages are installed
+sudo apt install time
+sudo apt install libunistring-dev
+sudo apt install libreadline-dev
+install libjsoncpp-dev
+install libcurl4-openssl-dev
+install zlib1g-dev
+
