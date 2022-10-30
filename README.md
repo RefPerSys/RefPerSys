@@ -27,26 +27,29 @@ We absolutely want to avoid any
 Don't expect anything useful from RefPerSys before at least 2023. But
 you could have fun sharing our ideas and experimenting yours.
 
-A rewrite of RefPerSys in C happens on [refpersys-in-c](https://github.com/RefPerSys/refpersys-in-c).
+A rewrite of RefPerSys in C was attempted on [refpersys-in-c](https://github.com/RefPerSys/refpersys-in-c).
 
 We considered previously to use the garbage collector from [Ravenbrook
 MPS](https://www.ravenbrook.com/project/mps/). Since that project is
 now obsolete, we gave up that idea.
 
 **Don't expect RefPerSys to be a realistic project.** It is not (and
-certainly not before 2025).
+certainly not before 2023).
 
 Some draft design ideas are written in the [RefPerSys design
 draft](http://starynkevitch.net/Basile/refpersys-design.pdf) which is
 very incomplete **work in progress**.
 
 If you happen to know about any research call for proposals or funding
-opportunities in Europe (Euro zone) about this (e.g. related to
-[artificial general
-intelligence](https://en.wikipedia.org/wiki/Artificial_general_intelligence)
-goals) please mention them to [Basile
+opportunities e.g. thru some [HorizonEurope
+consortium](https://research-and-innovation.ec.europa.eu/funding/funding-opportunities/funding-programmes-and-open-calls/horizon-europe_en)
+in Europe (Euro zone) about this (e.g. related to [artificial
+intelligence](https://en.wikipedia.org/wiki/Artificial_intelligence)
+goals) and [open source](https://en.wikipedia.org/wiki/Open_source)
+please mention them to [Basile
 Starynkevitch](http://starynkevitch.net/Basile/) (France) by email to
-`basile@starynkevitch.net`.
+`basile@starynkevitch.net` (personal email) or
+`basile.starynkevitch@cea.fr` (professional email).
 
 ## persistent values
 
@@ -399,9 +402,12 @@ We may want to use, either soon or within a few years, (usually after 2022) inte
 
 We should list other libraries interesting for us here, just in case (to avoid forgetting them).
 
-## past contributors
+## some contributors
 
-Thanks to Niklas Rosencrantz (Sweden) for past minor contributions.
+Thanks to Niklas Rosencrantz (Sweden) (he is `montao` on github) for several contributions.
+Thanks to Abhishek Chkravarti (India) (he is `achakravarti` on github) for several contributions.
+
+Other contributors, please email `basile@starynkevitch.net` about you.
 
 ## HTTP service
 
