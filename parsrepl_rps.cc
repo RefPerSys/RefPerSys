@@ -1343,6 +1343,7 @@ Rps_TokenSource::can_start_primary(Rps_CallFrame*callframe, Rps_DequVal& token_d
                            /*callerframe:*/callframe,
                            Rps_Value lextokv;
                            Rps_ObjectRef lexkindob;
+                           Rps_ObjectRef delimob;
                            Rps_Value lexvalv;
                 );
   std::string startpos = position_str();
@@ -1371,9 +1372,16 @@ Rps_TokenSource::can_start_primary(Rps_CallFrame*callframe, Rps_DequVal& token_d
   else if (_f.lexkindob == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK))   //repl_delimiter∊class
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary delimiter "
-                    << " lexvalv=" << _f.lexvalv << " at startpos: "       << startpos
+                    << " lexvalv=" << _f.lexvalv << " at startpos: " << startpos
                     << " position_str:" << position_str() << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::can_parse_primary delim"));
+                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::can_parse_primary§delim"));
+      if (_f.lexvalv.is_object())
+        {
+          _f.delimob = _f.lexvalv.to_object();
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary delimob "
+                        << _f.delimob<< " at startpos: " << startpos
+                        << " position_str:" << position_str());
+        }
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary incomplete lexkindob=" << _f.lexkindob
                 << " lexvalv=" << _f.lexvalv);
