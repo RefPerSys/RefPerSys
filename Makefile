@@ -26,7 +26,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean plugin fullclean redump undump altredump print-plugin-settings indent test01 test02 test03 test04 test-load analyze gitpush gitpush2
+.PHONY: all objects clean plugin fullclean redump undump altredump print-plugin-settings indent test01 test02 test03 test04 test-load analyze gitpush gitpush2 withclang
 
 
 ## tell GNU make to export all variables by default
@@ -55,21 +55,23 @@ RPS_JSONRPC_LIBES = $(shell pkg-config --libs jsoncpp)
 
 ### The optional file $HOME/.refpersys.mk could contain definitions like
 ###     # file ~/.refpersys.mk
-###     RPS_BUILD_CC= gcc-11
-###     RPS_BUILD_CXX= g++-11
+###     RPS_BUILD_CC= gcc-12
+###     RPS_BUILD_CXX= g++-12
 ### This enables changing C and C++ compiler versions
+ifndef RPS_BUILD_CC
 -include $(shell /bin/ls ~/.refpersys.mk)
+endif
 
 #RPS_BUILD_CCACHE?= ccache
 RPS_BUILD_CCACHE=
 # the GCC compiler, see gcc.gnu.org
 ## for some reason GCC 9 dont compile
 ifndef RPS_BUILD_CC
-RPS_BUILD_CC?= gcc-11
+RPS_BUILD_CC?= gcc-12
 endif
 
 ifndef RPS_BUILD_CXX
-RPS_BUILD_CXX?= g++-11
+RPS_BUILD_CXX?= g++-12
 endif
 
 ifndef RPS_BUILD_COMPILER_FLAGS
@@ -156,7 +158,12 @@ sanitized-refpersys:  main_rps.sanit.o $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANI
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
-
+## it is assumed that clang and clang++ are some symbolic links to
+## clang compiler in the user's $PATH .... (suppose it has $HOME/bin/ ...)
+## for example: ln -s /usr/bin/clang-15 $HOME/bin/clang
+withclang:
+	$(MAKE) clean
+	env RPS_BUILD_CC=clang RPS_BUILD_CXX=clang++ $(MAKE) refpersys
 ## the below target don't work yet
 #- dbg-refpersys:  $(RPS_DEBUG_CORE_OBJECTS) __timestamp.o
 #-         env RPS_BUILD_OPTIMFLAGS='$(RPS_BUILD_DEBUGFLAGS)' $(MAKE) $(MAKEFLAGS) -e  $(RPS_DEBUG_CORE_OBJECTS) 
