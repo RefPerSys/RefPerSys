@@ -1773,9 +1773,9 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
       RPS_DEBUG_LOG(REPL, "REPL command [" << cix << "]: " << cmdvec[cix]);
       int count=0;
       {
-        char bufpath[24];
+        char bufpath[64];
         memset (bufpath, 0, sizeof(bufpath));
-        snprintf(bufpath, sizeof(bufpath), "[%d]", cix);
+        snprintf(bufpath, sizeof(bufpath), "ReplCmd[%d]", cix);
         Rps_StringTokenSource intoksrc(cmdvec[cix], std::string(bufpath));
         if (cix % 4 == 0)
           usleep(128*1024);
