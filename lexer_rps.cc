@@ -219,16 +219,20 @@ Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string na
   : Rps_TokenSource(name), toksrcstr_inp(inptstr)
 {
   RPS_DEBUG_LOG(REPL, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
-                << " from '" << Rps_QuotedC_String(toksrcstr_inp.str()) << "'");
+                << " from " << Rps_QuotedC_String(toksrcstr_inp.str())
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "const StringTokenSource"));
   RPS_DEBUG_LOG(LOWREP, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
-                << " from '" << Rps_QuotedC_String(toksrcstr_inp.str()) << "'");
+                << " from " << Rps_QuotedC_String(toksrcstr_inp.str()));
   RPS_DEBUG_LOG(CMD, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
-                << " from '" << Rps_QuotedC_String(toksrcstr_inp.str()) << "'");
+                << " from " << Rps_QuotedC_String(toksrcstr_inp.str()));
 } // end Rps_StringTokenSource::Rps_StringTokenSource
 
 Rps_StringTokenSource::~Rps_StringTokenSource()
 {
-  RPS_DEBUG_LOG(REPL, "destr StringTokenSource@ " <<(void*)this << " " << *this);
+  RPS_DEBUG_LOG(REPL, "destr StringTokenSource@ " <<(void*)this << " " << *this
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "destr StringTokenSource"));
   RPS_DEBUG_LOG(LOWREP, "destr StringTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(CMD, "destr StringTokenSource@ " <<(void*)this << " " << *this);
 } // end Rps_StringTokenSource::~Rps_StringTokenSource
@@ -246,7 +250,7 @@ void
 Rps_StringTokenSource::output (std::ostream&out) const
 {
   out << "StringTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count()
-      << " str: '" << Rps_QuotedC_String(toksrcstr_inp.str()) << "'";
+      << " str: " << Rps_QuotedC_String(toksrcstr_inp.str());
 }	// end Rps_StringTokenSource::output
 
 ////////////////
