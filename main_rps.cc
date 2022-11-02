@@ -1015,7 +1015,21 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 		       << " should be shorter than " << ( sizeof(plugname) + sizeof(plugarg)) << " bytes");
 	if (sscanf(arg, "%78[a-zA-Z0-9_]:%126s", plugname, plugarg) < 2)
 	  RPS_FATALOUT("expecting --plugin-arg=<plugin-name>:<plugin-arg-string but got " << arg);
-#warning incomplete RPSPROGOPT_PLUGIN_ARG
+	int pluginix= -1;
+	int plugcnt = 0;
+	for (Rps_Plugin curplugin: rps_plugins_vector) {
+	  if (curplugin.plugin_name == plugname) {
+	    pluginix = plugcnt;
+	    break;
+	  };
+	  plugcnt++;
+	}
+	if (pluginix<0)
+	  RPS_FATALOUT("--plugin-arg=" << plugname << ":" << plugarg
+		       << " without such loaded plugin");
+	Rps_Plugin thisplugin = rps_plugins_vector[pluginix];
+	rps_pluginargs_map[thisplugin.plugin_name] = std::string{plugarg};
+#warning still incomplete RPSPROGOPT_PLUGIN_ARG
 	RPS_WARNOUT("incomplete processing of --plugin-arg " << arg
 		    << " plugname=" << plugname
 		    << " plugarg=" << plugarg
