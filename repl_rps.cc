@@ -1841,13 +1841,20 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
                           << " lextokv=" << _f.lextokv);
             if (_f.cmdparserv.is_closure())
               {
+                RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec cmdob=" << _f.cmdob << " before applying cmdparserv=" << _f.cmdparserv << " with lextokv=" << _f.lextokv
+                              << " command at " << commandpos
+                              << " ... at position " <<  intoksrc.position_str()
+                              << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
+                              <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/before-apply"));
                 Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply2 (&_, _f.cmdob, _f.lextokv);
                 _f.parsmainv = parspair.main();
                 _f.parsextrav = parspair.xtra();
                 RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec applied " << _f.cmdparserv << " to cmd#" << cix << " "
                               << _f.cmdob
-                              << " and got parsmainv:" << _f.parsmainv << ", parsextrav=" << _f.parsextrav << std::endl
-                              << "... now position is " <<  intoksrc.position_str() << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr())  << std::endl
+                              << " and got parsmainv:" << _f.parsmainv << ", parsextrav=" << _f.parsextrav
+                              << std::endl
+                              << "... now position is " <<  intoksrc.position_str() << " curptr:" <<
+                              Rps_QuotedC_String(intoksrc.curcptr())  << std::endl
                               <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/applied"));
                 if (!_f.parsmainv && !_f.parsextrav)
                   {
