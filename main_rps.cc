@@ -236,8 +236,8 @@ struct argp_option rps_progoptions[] =
     /*group:*/0 ///
   },
   /* ======= dlopen a given plugin file after load ======= */
-  {/*name:*/ "run-after-load", ///
-    /*key:*/ RPSPROGOPT_RUN_AFTER_LOAD, ///
+  {/*name:*/ "plugin-after-load", ///
+    /*key:*/ RPSPROGOPT_PLUGIN_AFTER_LOAD, ///
     /*arg:*/ "PLUGIN", ///
     /*flags:*/ 0, ///
     /*doc:*/ "dlopen(3) after load the given PLUGIN "
