@@ -4,7 +4,7 @@
 // © Copyright Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin install one new root object given by its existing oid
 // once compiled, use it as:
-/// ./refpersys --plugin-after-load=/tmp/rpsplug_installrootoid.so --batch --dump=.
+/// ./refpersys --plugin-after-load=/tmp/rpsplug_installrootoid.so --plugin-arg=rpsplug_installrootoid:someoid --batch --dump=.
 
 
 #include "refpersys.hh"
