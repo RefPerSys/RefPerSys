@@ -16,7 +16,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
 		 Rps_ObjectRef obnewroot;
 		 );
   RPS_INFORMOUT("running plugin " << plugin->plugin_name);
-  RPS_WARNOUT("incomplete rpsplug_installrootoid "
+  RPS_WARNOUT("incomplete rpsplug_installrootoid " << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "rps_do_plugin/installrootoid"));
 #warning incomplete rpsplug_installrootoid.cc
 } // end rps_do_plugin

@@ -56,6 +56,8 @@ extern "C" void rps_small_quick_tests_after_load (void);
 
 extern "C" std::vector<Rps_Plugin> rps_plugins_vector;
 std::vector<Rps_Plugin> rps_plugins_vector;
+extern "C" std::map<std::string,std::string> rps_pluginargs_map;
+std::map<std::string,std::string> rps_pluginargs_map;
 
 
 extern "C" std::string rps_cpluspluseditor_str;
@@ -234,8 +236,8 @@ struct argp_option rps_progoptions[] =
     /*group:*/0 ///
   },
   /* ======= dlopen a given plugin file after load ======= */
-  {/*name:*/ "plugin-after-load", ///
-    /*key:*/ RPSPROGOPT_PLUGIN_AFTER_LOAD, ///
+  {/*name:*/ "run-after-load", ///
+    /*key:*/ RPSPROGOPT_RUN_AFTER_LOAD, ///
     /*arg:*/ "PLUGIN", ///
     /*flags:*/ 0, ///
     /*doc:*/ "dlopen(3) after load the given PLUGIN "
@@ -243,7 +245,15 @@ struct argp_option rps_progoptions[] =
     " and run its " RPS_PLUGIN_INIT_NAME "(const Rps_Plugin*) function", //
     /*group:*/0 ///
   },
-  /* ======= command textual read eval print loop lexer testing ======= */
+  /* ======= string argument to a previously given plugin file after load ======= */
+  {/*name:*/ "plugin-arg", ///
+    /*key:*/ RPSPROGOPT_PLUGIN_ARG, ///
+    /*arg:*/ "PLUGIN_NAME:PLUGIN_ARG", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "pass to the loaded plugin <PLUGIN_NAME> the string <PLUGIN_ARG> "
+    "(notice the colon separating them)", //
+    /*group:*/0 ///
+  }, 
   {/*name:*/ "test-repl-lexer", ///
     /*key:*/ RPSPROGOPT_TEST_REPL_LEXER, ///
     /*arg:*/ nullptr, ///
@@ -992,6 +1002,27 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       rps_plugins_vector.push_back(curplugin);
     }
     return 0;
+    case RPSPROGOPT_PLUGIN_ARG:
+      {
+	char plugname[80];
+	char plugarg[128];
+	memset (plugname, 0, sizeof(plugname));
+	memset (plugarg, 0, sizeof(plugarg));
+	if (!arg)
+	  RPS_FATALOUT("missing --plugin-arg");
+	if (strlen(arg) >= sizeof(plugname) + sizeof(plugarg) - 1)
+	  RPS_FATALOUT("too long --plugin-arg" << arg
+		       << " should be shorter than " << ( sizeof(plugname) + sizeof(plugarg)) << " bytes");
+	if (sscanf(arg, "%78[a-zA-Z0-9_]:%126s", plugname, plugarg) < 2)
+	  RPS_FATALOUT("expecting --plugin-arg=<plugin-name>:<plugin-arg-string but got " << arg);
+#warning incomplete RPSPROGOPT_PLUGIN_ARG
+	RPS_WARNOUT("incomplete processing of --plugin-arg " << arg
+		    << " plugname=" << plugname
+		    << " plugarg=" << plugarg
+		    << std::endl
+		    << RPS_FULL_BACKTRACE_HERE(1, "--plugin-arg processing"));
+      }
+      return 0;
     case RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD:
     {
       RPS_DEBUG_LOG(CMD, "option --cplusplus-editor "
