@@ -375,6 +375,10 @@ struct Rps_Plugin {
 #define RPS_PLUGIN_INIT_NAME "rps_do_plugin"
 typedef void rps_plugin_init_sig_t(const Rps_Plugin*curplugin);
 extern "C" rps_plugin_init_sig_t rps_do_plugin;
+// if plugin not found or without argument, return the nullptr
+extern "C" const char*rps_get_plugin_cstr_argument(const Rps_Plugin*plugin);
+
+
 ////////////////////////////////////////////////////////////////
 
 struct Rps_Status {

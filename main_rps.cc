@@ -826,6 +826,16 @@ main (int argc, char** argv)
   return 0;
 } // end of main
 
+const char*
+rps_get_plugin_cstr_argument(const Rps_Plugin*plugin)
+{
+  if (!plugin)
+    return nullptr;
+  auto it = rps_pluginargs_map.find(plugin->plugin_name);
+  if (it == rps_pluginargs_map.end())
+    return nullptr;
+  return it->second.c_str();
+} // end rps_get_plugin_cstr_argument
 
 
 // Parse a single program option, skipping side effects  when state is empty.
@@ -1029,8 +1039,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 		       << " without such loaded plugin");
 	Rps_Plugin thisplugin = rps_plugins_vector[pluginix];
 	rps_pluginargs_map[thisplugin.plugin_name] = std::string{plugarg};
-#warning still incomplete RPSPROGOPT_PLUGIN_ARG
-	RPS_WARNOUT("incomplete processing of --plugin-arg " << arg
+	RPS_INFORMOUT("registering plugin argument of --plugin-arg " << arg
 		    << " plugname=" << plugname
 		    << " plugarg=" << plugarg
 		    << std::endl
