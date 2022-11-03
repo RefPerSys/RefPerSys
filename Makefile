@@ -214,6 +214,7 @@ clean:
 	$(RM) *.moc.hh
 	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~
 	$(RM) persistore/*~ persistore/*%
+	$(RM) plugins/*~  plugins/*% plugins/*.cc.orig plugins/*.so *.so
 	$(RM) *.ii
 	$(RM) *% core vgcore*
 	$(RM) -rf bld
@@ -223,10 +224,10 @@ clean:
 
 ## usual invocation: make plugin RPS_PLUGIN_SOURCE=/tmp/foo.cc RPS_PLUGIN_SHARED_OBJECT=/tmp/foo.so
 ## see also our ./build-plugin.sh script
-plugin:
-	if [ -n "$RPS_PLUGIN_SOURCE" ]; then echo missing RPS_PLUGIN_SOURCE > /dev/stderr ; exit 1; fi
-	if [ -n "$RPS_PLUGIN_SHARED_OBJECT" ]; then echo missing RPS_PLUGIN_SHARED_OBJECT  > /dev/stderr ; exit 1; fi
-	$(COMPILE.cc) -fPIC -shared -DRPS_PLUGIN_SOURCE=\"$RPS_PLUGIN_SOURCE\" $RPS_BUILD_OPTIMFLAGS $RPS_PLUGIN_SOURCE -o $RPS_PLUGIN_SHARED_OBJECT
+plugin: | ./build-plugin.sh
+	if [ -n "$(RPS_PLUGIN_SOURCE)" ]; then echo missing RPS_PLUGIN_SOURCE > /dev/stderr ; exit 1; fi
+	if [ -n "$(RPS_PLUGIN_SHARED_OBJECT)" ]; then echo missing RPS_PLUGIN_SHARED_OBJECT  > /dev/stderr ; exit 1; fi
+	./build-plugin.sh $(RPS_PLUGIN_SOURCE) $(RPS_PLUGIN_SHARED_OBJECT)
 
 fullclean:
 	$(RPS_BUILD_CCACHE) -C
