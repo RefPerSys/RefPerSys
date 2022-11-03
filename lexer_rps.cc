@@ -536,7 +536,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     {
       RPS_DEBUG_LOG(REPL, "get_token start punctuation curp='" << Rps_Cjson_String(curp) << "' at " << position_str());
       std::string delimpos = position_str();
-      int startcol = toksrc_col;
+      //int startcol = toksrc_col;
       _f.delimv = get_delimiter(&_);
       std::string delimstartstr {curp};
       RPS_DEBUG_LOG(REPL, "get_token after get_delimiter_object delimv=" << _f.delimv << " at " << position_str());
@@ -835,7 +835,7 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_ASSERT(rps_is_main_thread());
   const char* curp = curcptr();
-  size_t linelen = toksrc_linebuf.size();
+  //size_t linelen = toksrc_linebuf.size();
   /// For C++, raw literal strings are multi-line, and explained in
   /// en.cppreference.com/w/cpp/language/string_literal ... For
   /// example R"delim(raw characters \)delim" In RefPerSys, we
