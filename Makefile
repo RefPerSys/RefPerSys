@@ -251,6 +251,7 @@ print-plugin-settings:
 indent:
 	./indent-cxx-files.sh $(RPS_CORE_HEADERS) \
 		$(RPS_CORE_SOURCES) 
+	./indent-cxx-files.sh $(sort $(wildcard plugins/*.cc))
 
 ## redump target
 redump: refpersys
