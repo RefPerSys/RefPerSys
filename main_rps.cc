@@ -696,11 +696,14 @@ main (int argc, char** argv)
   {
     char cwdbuf[128];
     memset (cwdbuf, 0, sizeof(cwdbuf));
+    char tmbfr[64];
+    memset(tmbfr, 0, sizeof (tmbfr));
     getcwd(cwdbuf, sizeof(cwdbuf));
     if (cwdbuf[0] == (char)0)
       strcpy(cwdbuf, "./");
+    rps_now_strftime_centiseconds_nolen(tmbfr, "%H:%M:%S.__ ");
     std::cout << std::endl << "** STARTING RefPerSys git " << rps_shortgitid << " on " << rps_hostname() << " pid#" << getpid()
-	      << " in " << cwdbuf << std::endl;
+	      << " in " << cwdbuf << " at " << tmbfr << std::endl;
   }
   /// handle early a debug flag request
   if (argc > 1
