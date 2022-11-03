@@ -701,7 +701,7 @@ main (int argc, char** argv)
     getcwd(cwdbuf, sizeof(cwdbuf));
     if (cwdbuf[0] == (char)0)
       strcpy(cwdbuf, "./");
-    rps_now_strftime_centiseconds_nolen(tmbfr, "%H:%M:%S.__ ");
+    rps_now_strftime_centiseconds_nolen(tmbfr, "%Y, %b, %D %H:%M:%S.__ %Z");
     std::cout << std::endl << "** STARTING RefPerSys git " << rps_shortgitid << " on " << rps_hostname() << " pid#" << getpid()
 	      << " in " << cwdbuf << " at " << tmbfr << std::endl;
   }
