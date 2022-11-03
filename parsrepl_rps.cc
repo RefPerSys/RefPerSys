@@ -874,15 +874,17 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, Rps_DequVal& token_deq, b
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor start from " << Rps_ShowCallFrame(&_)
                 << " with token_deq=" << token_deq << " at " <<  startpos);
   bool okleft = false;
-#warning Rps_TokenSource::parse_factor should probably use parse_primary here
-  _f.leftv = parse_term(&_, token_deq, &okleft);
+  _f.leftv = parse_primary(&_, token_deq, &okleft);
   if (okleft)
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor leftv=" << _f.leftv << " startpos:" << startpos);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor got primary leftv=" << _f.leftv
+                    << " startpos:" << startpos << " at " << position_str());
     }
   else
     {
-      RPS_WARNOUT("parse_factor failed to parse left term at " << startpos);
+      RPS_WARNOUT("Rps_TokenSource::parse_factor failed to parse left primary at " << position_str()
+                  << " startpos:" << startpos << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_factor fail/left"));
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -921,15 +923,19 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, Rps_DequVal& token_deq, b
         }
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor leftv=" << _f.leftv
                     << " rightv=" << _f.rightv
-                    << " with token_deq=" << token_deq << " at "
-                    <<  startpos << " binoperob=" << _f.binoperob);
+                    << " with token_deq=" << token_deq << " at " << position_str()
+                    << " startpos:" <<  startpos << " binoperob=" << _f.binoperob);
     }
   else
     {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor leftv=" << _f.leftv
+                    << " with token_deq=" << token_deq << " at "
+                    <<  position_str() << " startpos:" << startpos);
     }
-#warning unimplemented Rps_TokenSource::parse_factor
+#warning incomplete Rps_TokenSource::parse_factor
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_factor from " << Rps_ShowCallFrame(callframe)
-               << " with token_deq=" << token_deq << " at " << startpos);
+               << " with token_deq=" << token_deq << " at " << position_str()  << " startpos:" << startpos
+               << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_factor incomplete"));
 } // end Rps_TokenSource::parse_factor
 
 
