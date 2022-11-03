@@ -13,7 +13,7 @@ void
 rps_do_plugin(const Rps_Plugin* plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
-		 Rps_ObjectRef obnewroot;
+                           Rps_ObjectRef obnewroot;
                 );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   if (!plugarg)
@@ -27,13 +27,13 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (!oid || !idend || *idend != (char)0 || !goodid)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " with invalid argument "
-		 << Rps_QuotedC_String(plugarg) << " - not a valid objid");
+                 << Rps_QuotedC_String(plugarg) << " - not a valid objid");
   _f.obnewroot = Rps_ObjectRef::find_object_or_fail_by_oid(&_, oid);
   RPS_ASSERT(_f.obnewroot);
   rps_add_root_object (_f.obnewroot);
   RPS_INFORMOUT("rpsplug_installrootoid with oid=" << oid
-	       << " new root obnewroot=" << _f.obnewroot << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_do_plugin/installrootoid"));
+                << " new root obnewroot=" << _f.obnewroot << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_do_plugin/installrootoid"));
 } // end rps_do_plugin
 
 /****************
