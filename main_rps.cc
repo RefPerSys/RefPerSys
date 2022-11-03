@@ -693,6 +693,15 @@ main (int argc, char** argv)
       exit(EXIT_FAILURE);
     };
   rps_main_thread_handle = pthread_self();
+  {
+    char cwdbuf[128];
+    memset (cwdbuf, 0, sizeof(cwdbuf));
+    getcwd(cwdbuf, sizeof(cwdbuf));
+    if (cwdbuf[0] == (char)0)
+      strcpy(cwdbuf, "./");
+    std::cout << std::endl << "** STARTING RefPerSys git " << rps_shortgitid << " on " << rps_hostname() << " pid#" << getpid()
+	      << " in " << cwdbuf << std::endl;
+  }
   /// handle early a debug flag request
   if (argc > 1
       && !strncmp(argv[1], "--debug=", strlen("--debug=")))
@@ -816,7 +825,7 @@ main (int argc, char** argv)
   asm volatile (".globl rps_end_of_main; .type rps_end_of_main, @function");
   asm volatile ("rps_end_of_main: nop; nop; nop; nop; nop; nop");
   asm volatile (".size rps_end_of_main, . - rps_end_of_main");
-  asm volatile ("nop; nop; nop;");
+  asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop; ");
   if (rps_debug_file)
     fflush(rps_debug_file);
   RPS_INFORM("end of RefPerSys process %d on host %s\n"
@@ -1008,7 +1017,10 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
       if (!dlh)
         RPS_FATALOUT("failed to dlopen plugin " << arg << " : " << dlerror());
-      Rps_Plugin curplugin(arg, dlh);
+      const char* bnplug = basename(arg);
+      Rps_Plugin curplugin(bnplug, dlh);
+      RPS_INFORMOUT("loaded plugin#" << rps_plugins_vector.size() << " from " << arg << " from process pid#" << (int)getpid()
+		    << " basenamed " << Rps_QuotedC_String(bnplug));
       rps_plugins_vector.push_back(curplugin);
     }
     return 0;
@@ -1028,7 +1040,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 	int pluginix= -1;
 	int plugcnt = 0;
 	for (Rps_Plugin curplugin: rps_plugins_vector) {
-	  if (curplugin.plugin_name == plugname) {
+	  std::string curplugname = curplugin.plugin_name;
+	  int pluglenam= curplugname.length();
+	  if (pluglenam > 4 && curplugname.substr(pluglenam-3) == ".so")
+	    curplugname.erase(pluglenam-3);
+	  RPS_DEBUG_LOG (REPL, "plugin#" << plugcnt << " is named " << Rps_QuotedC_String(curplugname));
+	  if (curplugname == plugname) {
 	    pluginix = plugcnt;
 	    break;
 	  };
@@ -1036,12 +1053,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 	}
 	if (pluginix<0)
 	  RPS_FATALOUT("--plugin-arg=" << plugname << ":" << plugarg
-		       << " without such loaded plugin");
+		       << " without such loaded plugin (loaded " << plugcnt << " plugins)");
 	Rps_Plugin thisplugin = rps_plugins_vector[pluginix];
-	rps_pluginargs_map[thisplugin.plugin_name] = std::string{plugarg};
+	rps_pluginargs_map[plugname] = std::string{plugarg};
 	RPS_INFORMOUT("registering plugin argument of --plugin-arg " << arg
-		    << " plugname=" << plugname
-		    << " plugarg=" << plugarg
+		      << " plugname=" << Rps_QuotedC_String(plugname)
+		      << " plugarg=" << Rps_QuotedC_String(plugarg)
 		    << std::endl
 		    << RPS_FULL_BACKTRACE_HERE(1, "--plugin-arg processing"));
       }
