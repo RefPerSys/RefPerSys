@@ -73,6 +73,7 @@ RPS_INSTALL_ROOT_OB(_4CZZ2JlnkQT02YJ6sM) //repl_command∈symbol
 RPS_INSTALL_ROOT_OB(_4FBkYDlynyC02QtkfG) //"name"∈named_attribute
 RPS_INSTALL_ROOT_OB(_4I8GwXXfO3P01cdzyd) //repl_command_parser∈symbol
 RPS_INSTALL_ROOT_OB(_4ShDsOWk7al02eDRTM) //"plus!delim"∈repl_delimiter
+RPS_INSTALL_ROOT_OB(_4YM7mv0GrSp03OkF8T) //"leftparen!delim"∈repl_delimiter
 RPS_INSTALL_ROOT_OB(_54CP9eaTmxT00lzbEW) //rps_command_textedit∈class
 RPS_INSTALL_ROOT_OB(_55Z5Wgzuprq01MU6Br) //repl_binary_operator∈class
 RPS_INSTALL_ROOT_OB(_5dkRQtwGUHs02MVQT0) //"repl_command_dict"∈string_dictionary
@@ -112,7 +113,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 90
+#define RPS_NB_ROOT_OB 91
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
