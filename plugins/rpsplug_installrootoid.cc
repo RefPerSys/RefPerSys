@@ -39,6 +39,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "g++ -I$HOME/RefPerSys -I/usr/include/jsoncpp -std=gnu++17 -Wall -Wextra -g -shared -fPIC plugins/rpsplug_installrootoid.cc -o /tmp/rpsplug_installrootoid.so" ;;
+ ** compile-command: "cd ..; ./build-plugin.sh plugins/rpsplug_installrootoid.cc -o /tmp/rpsplug_installrootoid.so" ;;
  ** End: ;;
  ****************/
