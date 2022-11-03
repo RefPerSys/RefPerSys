@@ -5,7 +5,7 @@
 #      Abhishek Chakravarti <abhishek@taranjali.org>
 #      Nimesh Neema <nimeshneema@gmail.com>
 #
-#      © Copyright 2020 - 2021 The Reflective Persistent System Team
+#      © Copyright 2020 - 2022 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ cppfile=$1
 pluginfile=$2
 
 printf "start %s at %s: C++ file %s, plugin file %s\n" $0 $(date +%c) $cppfile $pluginfile > /dev/stderr
-logger --id=$$ -s  -t $0 "starting" cppfile= $1 pluginfile= $2 
+logger --id=$$ -s  -t "$0:" "starting" cppfile= $1 pluginfile= $2
 eval $(make print-plugin-settings)
 
 ## check that we have the necessary shell variables set in above eval
