@@ -424,7 +424,7 @@ Rps_OutputValue::do_output(std::ostream& out) const
 Rps_DequVal::Rps_DequVal(const std::vector<Rps_Value>& vec,const char*sfil, int lin)
   : Rps_DequVal::std_deque_superclass(), dqu_srcfil(sfil), dqu_srclin(lin)
 {
-  for (const Rps_Value curval: vec)
+  for (const Rps_Value& curval: vec)
     {
       std_deque_superclass::push_back(curval);
     }
@@ -459,7 +459,7 @@ Rps_DequVal::really_gc_mark(Rps_GarbageCollector&gc, unsigned depth) const
 {
   RPS_ASSERT(gc.is_valid_garbcoll());
   RPS_ASSERT(depth < Rps_Value::max_gc_mark_depth);
-  for (const Rps_Value curval: *this)
+  for (const Rps_Value& curval: *this)
     curval.gc_mark(gc, depth+1);
 } // end Rps_DequVal::really_gc_mark
 
@@ -467,7 +467,7 @@ void
 Rps_DequVal::dump_scan(Rps_Dumper*du, unsigned depth) const
 {
   RPS_ASSERT(du != nullptr);
-  for (const Rps_Value curval: *this)
+  for (const Rps_Value& curval: *this)
     rps_dump_scan_value(du, curval, depth+1);
 } // end Rps_DequVal::dump_scan
 
@@ -477,7 +477,7 @@ Rps_DequVal::dump_json(Rps_Dumper*du) const
   RPS_ASSERT(du != nullptr);
   Json::Value job(Json::objectValue);
   Json::Value jseq(Json::arrayValue);
-  for (const Rps_Value curval: *this)
+  for (const Rps_Value& curval: *this)
     {
       jseq.append(rps_dump_json_value(du, curval));
     }
@@ -524,7 +524,7 @@ Rps_DequVal::output(std::ostream&out, unsigned depth) const
         {
           out << "°deqval.l" << siz << "(@" << (dqu_srcfil?:"?") << ":" << dqu_srclin<<"⁖";
           int cnt = 0;
-          for (Rps_Value curval: *this)
+          for (const Rps_Value& curval: *this)
             {
               if (cnt > 0)
                 out << " ";
