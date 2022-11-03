@@ -370,7 +370,16 @@ struct Rps_Plugin {
   std::string plugin_name;
   void* plugin_dlh;
   Rps_Plugin (const char*name, void*dlh)
-    : plugin_name(name), plugin_dlh(dlh) {};
+    : plugin_name(name), plugin_dlh(dlh) {
+    int plnamlen = plugin_name.length();
+    if (plnamlen > 4
+	&& plugin_name.substr(plnamlen-3) == ".so")
+      plugin_name.erase(plnamlen-3);
+  };
+  ~Rps_Plugin () {
+    plugin_name.erase();
+    plugin_dlh = nullptr;
+  }
 };
 #define RPS_PLUGIN_INIT_NAME "rps_do_plugin"
 typedef void rps_plugin_init_sig_t(const Rps_Plugin*curplugin);
