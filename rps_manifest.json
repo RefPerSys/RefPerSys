@@ -236,11 +236,11 @@
   "_9Gz1oNPCnkB00I6VRS"
  ],
  "jsoncpp-version" : "1.9.5",
- "origitid" : "255d739d35dd8ab607a8587acc7509c696044a32+",
+ "origitid" : "c16a040f0fd76742f32429a4f94e15d6b09dc06a+",
  "plugins" : [],
- "progmd5sum" : "8d1d72a8159800dc394b0082ada54d77",
- "progname" : "/home/basile/RefPerSys/refpersys",
- "progtimestamp" : "Thu 03 Nov 2022 05:50:14 PM MET",
+ "progmd5sum" : "233a205fab704f323c781d323017292f",
+ "progname" : "./refpersys",
+ "progtimestamp" : "Thu 03 Nov 2022 08:05:51 PM MET",
  "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }
 
