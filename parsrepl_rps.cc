@@ -1315,7 +1315,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                    << " lexkindob:" << _f.lexkindob
                    << " lexvalv:" << _f.lexvalv);
     }
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary incomplete"
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary @@incomplete"
                 << " token_deq:" << token_deq
                 << " lextokv:" << _f.lextokv
                 << " lexkindob:" << _f.lexkindob);
@@ -1387,14 +1387,16 @@ Rps_TokenSource::can_start_primary(Rps_CallFrame*callframe, Rps_DequVal& token_d
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary delimob "
                         << _f.delimob<< " at startpos: " << startpos
                         << " position_str:" << position_str());
+	  if (_f.delimob == RPS_ROOT_OB(_4YM7mv0GrSp03OkF8T)) { // leftparen!delim∊repl_delimiter
+	    return true;
+	  }
         }
     }
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary incomplete lexkindob=" << _f.lexkindob
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary fail lexkindob=" << _f.lexkindob
                 << " lexvalv=" << _f.lexvalv);
-#warning incomplete Rps_TokenSource::can_start_primary
-  // TODO: what about an open parenthesis?
   return false;
 } // end Rps_TokenSource::can_start_primary
+
 
 Rps_Value
 Rps_TokenSource::parse_primary_complement(Rps_CallFrame*callframe, Rps_DequVal& token_deq, Rps_Value primaryexparg, bool*pokparse)
