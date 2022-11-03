@@ -698,8 +698,7 @@ main (int argc, char** argv)
     memset (cwdbuf, 0, sizeof(cwdbuf));
     char tmbfr[64];
     memset(tmbfr, 0, sizeof (tmbfr));
-    getcwd(cwdbuf, sizeof(cwdbuf));
-    if (cwdbuf[0] == (char)0)
+    if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
       strcpy(cwdbuf, "./");
     rps_now_strftime_centiseconds_nolen(tmbfr, "%Y, %b, %D %H:%M:%S.__ %Z");
     std::cout << std::endl << "** STARTING RefPerSys git " << rps_shortgitid << " on " << rps_hostname() << " pid#" << getpid()
