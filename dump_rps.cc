@@ -1232,7 +1232,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
       int countjat = 2; // both oid & mtime have been output
       int nbjat = jobject.size();
       Json::Value::Members jmembvec = jobject.getMemberNames();
-      for (const std::string curmemstr : jmembvec)
+      for (const std::string& curmemstr : jmembvec)
         {
           const Json::Value& jcurmem = jobject[curmemstr];
           if (curmemstr != std::string{"oid"}
