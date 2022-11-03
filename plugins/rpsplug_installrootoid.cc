@@ -15,7 +15,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
 		 Rps_ObjectRef obnewroot;
 		 );
-  RPS_INFORMOUT("running plugin " << plugin->plugin_name);
+  const char*plugarg = rps_get_plugin_cstr_argument(plugin);
+  RPS_INFORMOUT("running plugin " << plugin->plugin_name << " with argument "
+		<< Rps_QuotedC_String(plugarg));
   RPS_WARNOUT("incomplete rpsplug_installrootoid " << std::endl
 	      << RPS_FULL_BACKTRACE_HERE(1, "rps_do_plugin/installrootoid"));
 #warning incomplete rpsplug_installrootoid.cc
