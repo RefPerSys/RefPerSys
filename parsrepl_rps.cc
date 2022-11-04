@@ -1320,9 +1320,22 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
     {
       _f.obdelim =  _f.lexvalv.to_object();
       token_deq.pop_front();
-      // TODO: should handle  leftparen _4YM7mv0GrSp03OkF8T
-      RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary with delimiter " << _f.obdelim
-                   << " token_deq:" << token_deq);
+      // test for  leftparen _4YM7mv0GrSp03OkF8T
+      if (_f.obdelim
+          == RPS_ROOT_OB(_4YM7mv0GrSp03OkF8T) //leftparen!delim∊repl_delimiter
+         )
+        {
+          RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary with leftparen " << _f.obdelim
+                       << " token_deq:" << token_deq
+                       << " startpos:" << startpos
+                       << " position:" << position_str());
+#warning TODO: Rps_TokenSource::parse_primary use rightparen _7CG9m1NXpMo01edTUl
+        }
+      else
+        RPS_FATALOUT("Rps_TokenSource::parse_primary unexpected delimiter " << _f.obdelim
+                     << " token_deq:" << token_deq
+                     << " startpos:" << startpos
+                     << " position:" << position_str());
 #warning incomplete Rps_TokenSource::parse_primary with delimiter
     } // end if lexkindob is _2wdmxJecnFZ02VGGFK //repl_delimiter∊class
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary @@incomplete"
