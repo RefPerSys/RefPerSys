@@ -1368,7 +1368,12 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary @@incomplete"
                 << " token_deq:" << token_deq
                 << " lextokv:" << _f.lextokv
-                << " lexkindob:" << _f.lexkindob);
+                << " lexkindob:" << _f.lexkindob
+                << " startpos:" << startpos
+                << " position:" << position_str()
+		<< std::endl
+                << "... curcptr:" << Rps_QuotedC_String(curcptr())
+		<< " obdelim:" << _f.obdelim);
   ///////@@@@@@@@@@Rps_TokenSource::parse_primary_complement should be called?
 #warning unimplemented Rps_TokenSource::parse_primary
   /** TODO:
