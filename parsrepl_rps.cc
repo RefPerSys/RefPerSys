@@ -1332,9 +1332,9 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
           == RPS_ROOT_OB(_4YM7mv0GrSp03OkF8T) //leftparen!delim∊repl_delimiter
          )
         {
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary subexpression"
-                        << " token_deq:" << token_deq
-                        << " lextokv:" << _f.lextokv
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary got leftparen before subexpression"
+                        << " token_deq:" << token_deq << std::endl
+                        << "... lextokv:" << _f.lextokv
                         << " lexkindob:" << _f.lexkindob
                         << " obdelim=" << _f.obdelim
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
@@ -1371,10 +1371,10 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
 #warning incomplete Rps_TokenSource::parse_primary with delimiter
     } // end if lexkindob is _2wdmxJecnFZ02VGGFK //repl_delimiter∊class
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary @@incomplete"
-                << " token_deq:" << token_deq
-                << " lextokv:" << _f.lextokv
-                << " lexkindob:" << _f.lexkindob
-                << " startpos:" << startpos
+                << " token_deq:" << token_deq << std::endl
+                << "... lextokv:" << _f.lextokv
+                << " lexkindob:" << _f.lexkindob << std::endl
+                << "... startpos:" << startpos
                 << " position:" << position_str()
                 << std::endl
                 << "... curcptr:" << Rps_QuotedC_String(curcptr())
