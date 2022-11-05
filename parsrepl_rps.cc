@@ -1213,6 +1213,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                            Rps_Value lexvalv;
                            Rps_ObjectRef obres;
                            Rps_ObjectRef obdelim;
+                           Rps_Value exprv;
                 );
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary starting startpos:" << startpos
@@ -1325,6 +1326,20 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
           == RPS_ROOT_OB(_4YM7mv0GrSp03OkF8T) //leftparen!delim∊repl_delimiter
          )
         {
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary subexpression"
+                        << " token_deq:" << token_deq
+                        << " lextokv:" << _f.lextokv
+                        << " lexkindob:" << _f.lexkindob
+                        << " obdelim=" << _f.obdelim);
+          bool oksubexpr = false;
+          _f.exprv = parse_expression(&_,token_deq, &oksubexpr);
+          if (oksubexpr)
+            {
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary gotsubexpression "
+                            << _f.exprv << " startpos:" << startpos << " position:" << position_str()
+                            << " token_deq:" << token_deq);
+#warning TODO:  Rps_TokenSource::parse_primary should build a subexpression object...
+            }
           RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary with leftparen " << _f.obdelim
                        << " token_deq:" << token_deq
                        << " startpos:" << startpos
