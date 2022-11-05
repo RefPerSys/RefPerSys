@@ -1322,6 +1322,11 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
     {
       _f.obdelim =  _f.lexvalv.to_object();
       token_deq.pop_front();
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary delimited"
+                    << " lexkindob:" << _f.lexkindob
+                    << " obdelim=" << _f.obdelim
+                    << " curcptr:" << Rps_QuotedC_String(curcptr())
+                    << " position:" << position_str() << " startpos:" << startpos);
       // test for  leftparen _4YM7mv0GrSp03OkF8T
       if (_f.obdelim
           == RPS_ROOT_OB(_4YM7mv0GrSp03OkF8T) //leftparen!delim∊repl_delimiter
@@ -1371,9 +1376,9 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                 << " lexkindob:" << _f.lexkindob
                 << " startpos:" << startpos
                 << " position:" << position_str()
-		<< std::endl
+                << std::endl
                 << "... curcptr:" << Rps_QuotedC_String(curcptr())
-		<< " obdelim:" << _f.obdelim);
+                << " obdelim:" << _f.obdelim);
   ///////@@@@@@@@@@Rps_TokenSource::parse_primary_complement should be called?
 #warning unimplemented Rps_TokenSource::parse_primary
   /** TODO:
