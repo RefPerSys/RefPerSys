@@ -1,3 +1,4 @@
+
 /****************************************************************
  * file parsrepl_rps.cc
  * SPDX-License-Identifier: GPL-3.0-or-later
@@ -1354,14 +1355,21 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                            << " startpos:" << startpos
                            << " position:" << position_str());
 #warning TODO: Rps_TokenSource::parse_primary use rightparen _7CG9m1NXpMo01edTUl and build subexpression object
+              /* TODO: we probably should make then return some object or some
+              instance for that primary in parenthesis... */
             }
           else
-            RPS_WARNOUT("Rps_TokenSource::parse_primary failed to parse subexpression in parenthesis"
-                        << " token_deq:" << token_deq
-                        << " startpos:" << startpos
-                        << " position:" << position_str()
-                        << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
-                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary/failed-subexpression"));
+            {
+              RPS_WARNOUT("Rps_TokenSource::parse_primary failed to parse subexpression in parenthesis"
+                          << " token_deq:" << token_deq
+                          << " startpos:" << startpos
+                          << " position:" << position_str()
+                          << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
+                          << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary/failed-subexpression"));
+              if (pokparse)
+                *pokparse = false;
+              return nullptr;
+            }
         }
       else
         RPS_FATALOUT("Rps_TokenSource::parse_primary unexpected delimiter " << _f.obdelim
