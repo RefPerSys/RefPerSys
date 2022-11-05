@@ -1338,13 +1338,17 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary gotsubexpression "
                             << _f.exprv << " startpos:" << startpos << " position:" << position_str()
                             << " token_deq:" << token_deq);
-#warning TODO:  Rps_TokenSource::parse_primary should build a subexpression object...
+              RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary with leftparen " << _f.obdelim
+                           << " token_deq:" << token_deq
+                           << " startpos:" << startpos
+                           << " position:" << position_str());
+#warning TODO: Rps_TokenSource::parse_primary use rightparen _7CG9m1NXpMo01edTUl and build subexpression object
             }
-          RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary with leftparen " << _f.obdelim
-                       << " token_deq:" << token_deq
-                       << " startpos:" << startpos
-                       << " position:" << position_str());
-#warning TODO: Rps_TokenSource::parse_primary use rightparen _7CG9m1NXpMo01edTUl
+          else
+            RPS_WARNOUT("Rps_TokenSource::parse_primary failed to parse subexpression in parenthesis"
+                        << " token_deq:" << token_deq
+                        << " startpos:" << startpos
+                        << " position:" << position_str());
         }
       else
         RPS_FATALOUT("Rps_TokenSource::parse_primary unexpected delimiter " << _f.obdelim
