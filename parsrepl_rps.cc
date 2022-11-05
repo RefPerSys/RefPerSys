@@ -353,7 +353,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, Rps_DequVal& token_de
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression start"));
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression lextokv="
-                << _f.lextokv << " position:" << position_str()<< " startpos:" << startpos);
+                << _f.lextokv << " position:" << position_str()<< " startpos:" << startpos
+                << " curcptr:" << Rps_QuotedC_String(curcptr()));
   if (!_f.lextokv)
     {
       if (pokparse)
@@ -1330,14 +1331,19 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                         << " token_deq:" << token_deq
                         << " lextokv:" << _f.lextokv
                         << " lexkindob:" << _f.lexkindob
-                        << " obdelim=" << _f.obdelim);
+                        << " obdelim=" << _f.obdelim
+                        << " curcptr:" << Rps_QuotedC_String(curcptr())
+                        << " position:" << position_str() << " startpos:" << startpos << std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary subexpression"));
           bool oksubexpr = false;
           _f.exprv = parse_expression(&_,token_deq, &oksubexpr);
           if (oksubexpr)
             {
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary gotsubexpression "
                             << _f.exprv << " startpos:" << startpos << " position:" << position_str()
-                            << " token_deq:" << token_deq);
+                            << " curcptr:" << Rps_QuotedC_String(curcptr())
+                            << " token_deq:" << token_deq
+                            << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary subexpression"));
               RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary with leftparen " << _f.obdelim
                            << " token_deq:" << token_deq
                            << " startpos:" << startpos
@@ -1348,7 +1354,9 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
             RPS_WARNOUT("Rps_TokenSource::parse_primary failed to parse subexpression in parenthesis"
                         << " token_deq:" << token_deq
                         << " startpos:" << startpos
-                        << " position:" << position_str());
+                        << " position:" << position_str()
+                        << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary/failed-subexpression"));
         }
       else
         RPS_FATALOUT("Rps_TokenSource::parse_primary unexpected delimiter " << _f.obdelim
