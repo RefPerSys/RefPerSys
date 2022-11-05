@@ -1387,7 +1387,8 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                << " lexvalv:" << _f.lexvalv
                << " lexgotokv:" << _f.lexgotokv
                << " position_str:" << position_str()
-               << " startpos:" << startpos);
+               << " startpos:" << startpos
+               << " curcptr:" << Rps_QuotedC_String(curcptr()));
 } // end Rps_TokenSource::parse_primary
 
 bool
