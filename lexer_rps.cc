@@ -270,10 +270,11 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                            Rps_ObjectRef obdelim;
                 );
   const char* curp = curcptr();
+  std::string startpos = position_str();
   if (curp)
-    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token start curp='" << Rps_Cjson_String(curp) << "' at " << position_str());
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token start curp='" << Rps_Cjson_String(curp) << "' at " << startpos);
   else
-    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token start no curp at " << position_str());
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token start no curp at " << startpos);
 
   ucs4_t curuc=0;
   int ulen= -1;
@@ -289,12 +290,13 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     }
   while (curp && isspace(*curp) && toksrc_col<(int)linelen)
     curp++, toksrc_col++;
-  if (curp)
-    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token curp='" << Rps_Cjson_String(curp) << "' at " << position_str());
-  else
-    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token no curp at " << position_str());
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token number startpos:" <<
+                startpos << " curp=" << Rps_QuotedC_String(curp) << " at " << position_str());
   if (toksrc_col>=(int)linelen)
-    return nullptr;
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token EOL at " << position_str());
+      return nullptr;
+    }
   ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
   /// lex numbers?
   if (isdigit(*curp) ||
@@ -308,6 +310,11 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       long long l = strtoll(startnum, &endint, 0);
       double d = strtod(startnum, &endfloat);
       RPS_ASSERT(endint != nullptr && endfloat != nullptr);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token number startpos:" <<
+                    startpos
+                    << " startnum:" << Rps_QuotedC_String(startnum)
+                    << " endint:" << Rps_QuotedC_String(endint) << " for l:" << l
+                    << " endfloat:" << Rps_QuotedC_String(endfloat) << " for d:" << d);
       if (endfloat > endint)
         {
           toksrc_col += endfloat - startnum;
