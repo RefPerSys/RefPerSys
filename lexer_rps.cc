@@ -541,7 +541,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   //// sequence of at most four ASCII or UTF-8 punctuation
   else if (ispunct(*curp) || uc_is_punct(curuc))
     {
-      RPS_DEBUG_LOG(REPL, "get_token start punctuation curp='" << Rps_Cjson_String(curp) << "' at " << position_str());
+      RPS_DEBUG_LOG(REPL, "get_token start punctuation curp='" << Rps_QuotedC_String(curp) << "' at " << position_str());
       std::string delimpos = position_str();
       //int startcol = toksrc_col;
       _f.delimv = get_delimiter(&_);
@@ -549,7 +549,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "get_token after get_delimiter_object delimv=" << _f.delimv << " at " << position_str());
       if (!_f.delimv)
         {
-          RPS_WARNOUT("invalid delimiter " << Rps_Cjson_String(delimstartstr) << " at " << delimpos);
+          RPS_WARNOUT("invalid delimiter " << Rps_QuotedC_String(delimstartstr) << " at " << delimpos);
           std::string warndelimstr{"invalid delimiter "};
           warndelimstr +=  Rps_Cjson_String(delimstartstr);
           warndelimstr += " at ";
