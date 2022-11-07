@@ -307,6 +307,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       char*endint=nullptr;
       char*endfloat=nullptr;
       const char*startnum = curp;
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token startnum="  Rps_QuotedC_String(startnum) << " at " << position_str());
       long long l = strtoll(startnum, &endint, 0);
       double d = strtod(startnum, &endfloat);
       RPS_ASSERT(endint != nullptr && endfloat != nullptr);
