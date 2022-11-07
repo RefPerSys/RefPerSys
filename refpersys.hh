@@ -2304,8 +2304,8 @@ public:
   const std::string& name(void) const { return toksrc_name; };
   const std::string position_str(int col= -1) const;
   int token_count(void) const { return  toksrc_counter;};
-  // return the name as a string value, hopefully memoized 
-  Rps_Value name_val(Rps_CallFrame*callframe);
+  // return the source name as a string value, hopefully memoized 
+  Rps_Value source_name_val(Rps_CallFrame*callframe);
   // lookahead a lexical token, with a deque of them rank#0 being the next one
   Rps_Value lookahead_token(Rps_CallFrame*callframe, Rps_DequVal& token_deq, unsigned rank=0);
   /* TODO: parsing routines can also be used for lookahead purpose,

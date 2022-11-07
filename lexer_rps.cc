@@ -79,7 +79,7 @@ Rps_TokenSource::really_gc_mark(Rps_GarbageCollector&gc, unsigned depth)
 /// source name, as a RefPerSys string, at every lexical token. So we
 /// try to memoize it in rps_lexer_token_name_str_val;
 Rps_Value
-Rps_TokenSource::name_val(Rps_CallFrame*callframe)
+Rps_TokenSource::source_name_val(Rps_CallFrame*callframe)
 {
   RPS_ASSERT(callframe==nullptr || callframe->is_good_call_frame());
   RPS_ASSERT(rps_is_main_thread());
@@ -88,7 +88,7 @@ Rps_TokenSource::name_val(Rps_CallFrame*callframe)
     return rps_lexer_token_name_str_val;
   rps_lexer_token_name_str_val = Rps_String::make(toksrc_name);
   return rps_lexer_token_name_str_val;
-} // end Rps_TokenSource::name_val
+} // end Rps_TokenSource::source_name_val
 
 
 const Rps_LexTokenZone*
@@ -108,7 +108,7 @@ Rps_TokenSource::make_token(Rps_CallFrame*callframe,
   RPS_ASSERT(rps_is_main_thread());
   _f.lexkindob = lexkindarg;
   _f.lexval = lexvalarg;
-  _f.namestrv = name_val(&_);
+  _f.namestrv = source_name_val(&_);
   _f.nstrv = _f.namestrv.as_string();
   _f.srcv = sourcev;
   RPS_ASSERT (!_f.srcv || _f.srcv->stored_type() == Rps_Type::String);
@@ -324,7 +324,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           _f.lextokv = Rps_Value::make_tagged_int(l);
           _f.lexkindob = RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); //int∈class
         }
-      _f.namev = name_val(&_);
+      _f.namev = source_name_val(&_);
       const Rps_String* str = _f.namev.to_string();
       Rps_LexTokenZone* lextok =
         Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
@@ -352,7 +352,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       toksrc_col += 4;
       _f.lextokv = Rps_DoubleValue(infd);
       _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
-      _f.namev= name_val(&_);
+      _f.namev= source_name_val(&_);
       const Rps_String* str = _f.namev.to_string();
       Rps_LexTokenZone* lextok =
         Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
@@ -380,7 +380,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << Rps_Cjson_String(namestr)
                     << "' tokensrc:" << *this << " startcol=" << startcol
                     << " toksrc_col:" << toksrc_col);
-      _f.namev = name_val(&_);
+      _f.namev = source_name_val(&_);
       RPS_DEBUG_LOG(REPL, "get_token oid|name '" << namestr << "' namev=" << _f.namev << " at "
                     << position_str(startcol) << " ... " << position_str());
       _f.oblex = Rps_ObjectRef::find_object_or_null_by_string(&_, namestr);
@@ -432,7 +432,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       int linestart = toksrc_line;
       int colstart = toksrc_col;
       std::string litstr = lex_quoted_literal_string(&_);
-      _f.namev= name_val(&_);
+      _f.namev= source_name_val(&_);
       const Rps_String* str = _f.namev.to_string();
       _f.lexkindob = RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); //string∈class
       _f.lextokv = Rps_String::make(litstr);
@@ -456,7 +456,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       int linestart = toksrc_line;
       int colstart = toksrc_col;
       std::string litstr = lex_raw_literal_string(&_);
-      _f.namev= name_val(&_);
+      _f.namev= source_name_val(&_);
       const Rps_String* str = _f.namev.to_string();
       _f.lexkindob = RPS_ROOT_OB(_62LTwxwKpQ802SsmjE); //string∈class
       _f.lextokv = Rps_String::make(litstr);
@@ -520,7 +520,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       int linestart = toksrc_line;
       int colstart = toksrc_col;
       RPS_DEBUG_LOG(REPL, "get_token code_chunk starting at " << position_str() << curp);
-      _f.namev= name_val(&_);
+      _f.namev= source_name_val(&_);
       const Rps_String* str = _f.namev.to_string();
       _f.lextokv = lex_code_chunk(&_);
       _f.lexkindob = RPS_ROOT_OB(_3rXxMck40kz03RxRLM); //code_chunk∈class
@@ -544,7 +544,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       //int startcol = toksrc_col;
       _f.delimv = get_delimiter(&_);
       std::string delimstartstr {curp};
-      RPS_DEBUG_LOG(REPL, "get_token after get_delimiter_object delimv=" << _f.delimv << " at " << position_str());
+      RPS_DEBUG_LOG(REPL, "get_token after get_delimiter_object delimv=" << _f.delimv << " at " << position_str() << " curp:" << Rps_QuotedC_String(curp));
       if (!_f.delimv)
         {
           RPS_WARNOUT("invalid delimiter " << Rps_QuotedC_String(delimstartstr) << " at " << delimpos);
@@ -556,7 +556,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
         }
       toksrc_counter++;
       RPS_DEBUG_LOG(REPL, "get_token#" << toksrc_counter
-                    << " delimiter :-◑> " << _f.delimv << " at " << position_str());
+                    << " delimiter :-◑> " << _f.delimv << " at " << position_str()
+		    << " curp:" << Rps_QuotedC_String(curp));
       return _f.delimv;
     }
 #warning Rps_TokenSource::get_token unimplemented
@@ -915,7 +916,7 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
   chkdata.chunkdata_colno = toksrc_col;
   chkdata.chunkdata_name = toksrc_name;
   const char* curp = curcptr();
-  _f.namev= name_val(&_);
+  _f.namev= source_name_val(&_);
   RPS_ASSERT(curp != nullptr && *curp != (char)0);
   char startchunk[12];
   memset(startchunk, 0, sizeof(startchunk));
