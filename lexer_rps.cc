@@ -271,11 +271,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                 );
   const char* curp = curcptr();
   std::string startpos = position_str();
-  if (curp)
-    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token start curp='" << Rps_Cjson_String(curp) << "' at " << startpos);
-  else
-    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token start no curp at " << startpos);
-
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token start curp='" << Rps_QuotedC_String(curp) << "' at " << startpos << " source:" << *this);
   ucs4_t curuc=0;
   int ulen= -1;
   size_t linelen = toksrc_linebuf.size();
@@ -290,8 +286,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     }
   while (curp && isspace(*curp) && toksrc_col<(int)linelen)
     curp++, toksrc_col++;
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token number startpos:" <<
-                startpos << " curp=" << Rps_QuotedC_String(curp) << " at " << position_str());
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token afterspace curp='" << Rps_QuotedC_String(curp)
+		<< " startpos:" << startpos << " at:" << position_str());
   if (toksrc_col>=(int)linelen)
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token EOL at " << position_str());
@@ -348,6 +344,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     {
       int curlin = toksrc_line;
       int curcol = toksrc_col;
+      RPS_DEBUG_LOG(REPL, "get_token#" << toksrc_counter << " infinity " << position_str());
       bool pos = *curp == '+';
       double infd = (pos
                      ?std::numeric_limits<double>::infinity()
