@@ -271,7 +271,9 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                 );
   const char* curp = curcptr();
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token start curp='" << Rps_QuotedC_String(curp) << "' at " << startpos << " source:" << *this);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token start curp="
+		<< Rps_QuotedC_String(curp) << " at " << startpos
+		<< " source:" << *this);
   ucs4_t curuc=0;
   int ulen= -1;
   size_t linelen = toksrc_linebuf.size();
@@ -281,12 +283,12 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     {
       std::ostringstream errout;
       errout << "bad UTF-8 encoding in " << toksrc_name << ":L" << toksrc_line << ",C" << toksrc_col << std::flush;
-      RPS_WARNOUT("Rps_TokenSource::get_token: " << errout.str());
+      RPS_WARNOUT("Rps_TokenSource::get_token fails: " << errout.str());
       throw std::runtime_error(errout.str());
     }
   while (curp && isspace(*curp) && toksrc_col<(int)linelen)
     curp++, toksrc_col++;
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token afterspace curp='" << Rps_QuotedC_String(curp)
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token afterspace curp=" << Rps_QuotedC_String(curp)
 		<< " startpos:" << startpos << " at:" << position_str());
   if (toksrc_col>=(int)linelen)
     {
@@ -303,7 +305,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       char*endint=nullptr;
       char*endfloat=nullptr;
       const char*startnum = curp;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token startnum=" << Rps_QuotedC_String(startnum) << " at " << position_str());
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token startnum=" << Rps_QuotedC_String(startnum)
+		    << " at " << position_str() << " startpos:" << startpos);
       long long l = strtoll(startnum, &endint, 0);
       double d = strtod(startnum, &endfloat);
       RPS_ASSERT(endint != nullptr && endfloat != nullptr);
@@ -317,12 +320,14 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           toksrc_col += endfloat - startnum;
           _f.lextokv = Rps_DoubleValue(d);
           _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
+	  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token doubleval " << _f.lextokv << " curpos:" << position_str());
         }
       else
         {
           toksrc_col += endint - startnum;
           _f.lextokv = Rps_Value::make_tagged_int(l);
           _f.lexkindob = RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); //int∈class
+	  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token intval " << _f.lextokv << " curpos:" << position_str());
         }
       _f.namev = source_name_val(&_);
       const Rps_String* str = _f.namev.to_string();
