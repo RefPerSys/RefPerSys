@@ -1001,8 +1001,9 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 	if (!rps_test_repl_string.empty())
 	  RPS_FATALOUT("only one --test-repl-lexer=TESTLEXSTRING can be given, but already got " << rps_test_repl_string);
 	rps_test_repl_string = arg;
-	RPS_INFORMOUT("will test the REPL lexer on " << rps_test_repl_string
-		      << " that is " << Rps_QuotedC_String(rps_test_repl_string));
+	RPS_INFORMOUT("will test the REPL lexer on:" << rps_test_repl_string
+		      << std::endl << "... that is the " << rps_test_repl_string.size()
+		      << " bytes string " << Rps_QuotedC_String(rps_test_repl_string));
       }
     }
     return 0;
