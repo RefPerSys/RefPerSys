@@ -1207,66 +1207,57 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, Rps_DequVal& token_deq
 
 
 
+extern "C" void rps_run_test_repl_lexer(const std::string&);
 
-//§ void
-//§ rps_repl_lexer_test(void)
-//§ {
-//§   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
-//§                            /*callerframe:*/nullptr,
-//§                            Rps_Value curlextokenv;
-//§                 );
-//§   RPS_ASSERT(rps_is_main_thread());
-//§
-//§   RPS_TIMER_START();
-//§
-//§   RPS_DEBUG_LOG(REPL, "start rps_repl_lexer_test gitid " << rps_gitid
-//§                 << " callframe:" << Rps_ShowCallFrame(&_));
-//§   int tokcnt=0;
-//§   int lincnt = 0;
-//§   while (!rps_repl_stopped)
-//§     {
-//§       char prompt[32];
-//§       memset(prompt, 0, sizeof(prompt));
-//§       if (lincnt % 4 == 0)
-//§         {
-//§           usleep(32768); // to slow down on infinite loop
-//§           RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test startloop lincnt=" << lincnt
-//§                         << " "
-//§                         << rltoksrc.position_str()
-//§                         << std::endl
-//§                         <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_lexer_test startloop"));
-//§         };
-//§       snprintf(prompt, sizeof(prompt), "Rps_LEXTEST#%d:", lincnt);
-//§       rltoksrc.set_prompt(prompt);
-//§       do
-//§         {
-//§           _f.curlextokenv = rltoksrc.get_token(&_);
-//§           if (_f.curlextokenv)
-//§             {
-//§               tokcnt++;
-//§               RPS_INFORMOUT("token#" << tokcnt << ":" << _f.curlextokenv
-//§                             << " from " << rltoksrc.position_str());
-//§             }
-//§           else
-//§             RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test no token "
-//§                           << rltoksrc.position_str());
-//§         }
-//§       while (_f.curlextokenv);
-//§       if (!rltoksrc.get_line())
-//§         break;
-//§       lincnt++;
-//§       RPS_DEBUG_LOG(REPL, "rps_repl_lexer_test got fresh line#" << lincnt
-//§                     << " '"
-//§                     << Rps_Cjson_String(rltoksrc.current_line()) << "' "
-//§                     << rltoksrc.position_str());
-//§     }
-//§   RPS_DEBUG_LOG(REPL, "end rps_repl_lexer_test lincnt=" << lincnt
-//§                 << " tokcnt=" << tokcnt
-//§                 << " at " << rltoksrc.position_str()
-//§                 << std::endl);
-//§
-//§   RPS_TIMER_STOP(REPL);
-//§ } // end rps_repl_lexer_test
+void
+rps_run_test_repl_lexer(const std::string& teststr)
+{
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
+                           /*callerframe:*/nullptr,
+                           Rps_Value curlextokenv;
+                );
+  RPS_ASSERT(rps_is_main_thread());
+
+  RPS_TIMER_START();
+  Rps_StringTokenSource toktestsrc(teststr, "*test-repl-lexer*");
+
+  RPS_DEBUG_LOG(REPL, "start rps_run_test_repl_lexer gitid " << rps_gitid
+                << " teststr: " << Rps_QuotedC_String(teststr)
+                << " callframe:" << Rps_ShowCallFrame(&_)
+                << " toktestsrc:" << toktestsrc);
+  int tokcnt=0;
+  int lincnt = 0;
+  while (!rps_repl_stopped)
+    {
+      do
+        {
+          _f.curlextokenv = toktestsrc.get_token(&_);
+          if (_f.curlextokenv)
+            {
+              tokcnt++;
+              RPS_INFORMOUT("token#" << tokcnt << ":" << _f.curlextokenv
+                            << " from " << toktestsrc.position_str());
+            }
+          else
+            RPS_DEBUG_LOG(REPL, "rps_run_test_repl_lexer no token "
+                          << toktestsrc.position_str());
+        }
+      while (_f.curlextokenv);
+      if (!toktestsrc.get_line())
+        break;
+      lincnt++;
+      RPS_DEBUG_LOG(REPL, "rps_run_test_repl_lexer got fresh line#" << lincnt
+                    << " '"
+                    << Rps_Cjson_String(toktestsrc.current_line()) << "' "
+                    << toktestsrc.position_str());
+    }
+  RPS_DEBUG_LOG(REPL, "end rps_run_test_repl_lexer lincnt=" << lincnt
+                << " tokcnt=" << tokcnt
+                << " at " << toktestsrc.position_str()
+                << std::endl);
+
+  RPS_TIMER_STOP(REPL);
+} // end rps_test_repl_string
 
 
 //// end of file lexer_rps.cc

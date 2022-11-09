@@ -68,6 +68,8 @@ extern "C" std::string rps_dumpdir_str;
 std::string rps_dumpdir_str;
 extern "C" std::vector<std::string> rps_command_vec;
 std::vector<std::string> rps_command_vec;
+extern "C" std::string rps_test_repl_string;
+std::string rps_test_repl_string;
 
 static void rps_kill_wait_gui_process(void);
 
@@ -256,9 +258,9 @@ struct argp_option rps_progoptions[] =
   }, 
   {/*name:*/ "test-repl-lexer", ///
     /*key:*/ RPSPROGOPT_TEST_REPL_LEXER, ///
-    /*arg:*/ nullptr, ///
+    /*arg:*/ "TESTLEXSTRING", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Test the read-eval-print-loop lexer.\n"
+    /*doc:*/ "Test the read-eval-print-loop lexer on given TESTLEXSTRING."
     " (this option might become obsolete)", //
     /*group:*/0 ///
   },
@@ -995,9 +997,13 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     return 0;
     case RPSPROGOPT_TEST_REPL_LEXER:
     {
-      rps_test_repl_lexer = true;
-      if (side_effect)
-        RPS_DEBUG_LOG(REPL, "will run with a textual Read-Eval-Print-Loop lexer GNU readline");
+      if (side_effect) {
+	if (!rps_test_repl_string.empty())
+	  RPS_FATALOUT("only one --test-repl-lexer=TESTLEXSTRING can be given, but already got " << rps_test_repl_string);
+	rps_test_repl_string = arg;
+	RPS_INFORMOUT("will test the REPL lexer on " << rps_test_repl_string
+		      << " that is " << Rps_QuotedC_String(rps_test_repl_string));
+      }
     }
     return 0;
     case RPSPROGOPT_DEBUG_AFTER_LOAD:
@@ -1181,10 +1187,12 @@ rps_parse_program_arguments(int &argc, char**argv)
 
 
 
+extern "C" void rps_run_test_repl_lexer(const std::string&); // defined in file lexer_rps.cc
 void
 rps_run_application(int &argc, char **argv)
 {
-  RPS_LOCALFRAME(/*descr:*/nullptr,
+
+    RPS_LOCALFRAME(/*descr:*/nullptr,
                            /*callerframe:*/nullptr,
                            Rps_ObjectRef tempob;
                 );
@@ -1229,7 +1237,7 @@ rps_run_application(int &argc, char **argv)
       rps_small_quick_tests_after_load();
       RPS_DEBUG_LOG(LOWREP, "rps_run_application after running rps_small_quick_tests_after_load");
     }
-  //// running the given command after load
+  //// running the given Unix command after load
   if (rps_run_command_after_load)
     {
       if (rps_fifo_prefix.empty())
@@ -1311,6 +1319,10 @@ rps_run_application(int &argc, char **argv)
         }
     };
   /////
+  ///// testing the REPL lexer
+  if (!rps_test_repl_string.empty()) {
+    rps_run_test_repl_lexer(rps_test_repl_string);
+  }
   /////
   ////  command vectors
   if (!rps_command_vec.empty())
