@@ -2388,11 +2388,13 @@ public:
 
 class Rps_StringTokenSource : public Rps_TokenSource {
   std::istringstream toksrcstr_inp;
+  const std::string toksrcstr_str;
 public:
   Rps_StringTokenSource(std::string inpstr, std::string name);
   virtual void output(std::ostream&out) const;
   virtual  ~Rps_StringTokenSource();
   virtual bool get_line();
+  const std::string str() const { return toksrcstr_str; };
 };							      // end Rps_StringTokenSource
 
 
