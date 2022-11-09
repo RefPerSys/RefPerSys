@@ -26,7 +26,9 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean plugin fullclean redump undump altredump print-plugin-settings indent test01 test02 test03 test04 test-load analyze gitpush gitpush2 withclang
+.PHONY: all objects clean plugin fullclean redump undump altredump print-plugin-settings indent \
+   test00 test01 test02 test03 test04 test-load \
+   analyze gitpush gitpush2 withclang
 
 
 ## tell GNU make to export all variables by default
@@ -319,6 +321,12 @@ analyze:
 
 ################################################################
 #### simple tests
+test00: ./refpersys
+	@echo test00 testing REPL lexer
+	./refpersys  -AREPL -ALOWREP  --test-repl-lexer="show help" -B
+	./refpersys  -AREPL -ALOWREP  --test-repl-lexer="show RefPerSys_system" -B
+	./refpersys  -AREPL -ALOWREP  --test-repl-lexer="show (1 + 2)" -B
+
 test01: ./refpersys
 	@echo test01 testing simple commands with a lot of debug
 	./refpersys -AREPL -ALOWREP -c help -c "show help" -B
