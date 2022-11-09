@@ -181,7 +181,8 @@ bool
 Rps_StreamTokenSource::get_line(void)
 {
   std::getline( toksrc_input_stream, toksrc_linebuf);
-  if (!toksrc_input_stream && toksrc_linebuf.empty()) return false;
+  if (!toksrc_input_stream && toksrc_linebuf.empty())
+    return false;
   starting_new_input_line();
   return true;
 } // end Rps_StreamTokenSource::get_line
@@ -220,7 +221,7 @@ Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string na
 {
   RPS_DEBUG_LOG(REPL, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
                 << " from " << Rps_QuotedC_String(toksrcstr_str)
-                << " named " << name
+                << " of " << toksrcstr_str.size() << " bytes, named " << name
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "const StringTokenSource"));
   RPS_DEBUG_LOG(LOWREP, "constr StringTokenSource@ " <<(void*)this << " " << (*this)
@@ -245,6 +246,8 @@ Rps_StringTokenSource::get_line()
   std::getline(toksrcstr_inp, toksrc_linebuf);
   if (!toksrcstr_inp && toksrc_linebuf.empty())
     return false;
+  starting_new_input_line();
+  RPS_DEBUG_LOG(REPL, "Rps_StringTokenSource::get_line at " << position_str());
   return true;
 } // end Rps_StringTokenSource::get_line()
 
@@ -1221,11 +1224,12 @@ rps_run_test_repl_lexer(const std::string& teststr)
 
   RPS_TIMER_START();
   Rps_StringTokenSource toktestsrc(teststr, "*test-repl-lexer*");
-
+  bool gotl = toktestsrc.get_line();
   RPS_DEBUG_LOG(REPL, "start rps_run_test_repl_lexer gitid " << rps_gitid
                 << " teststr: " << Rps_QuotedC_String(teststr)
                 << " callframe:" << Rps_ShowCallFrame(&_)
-                << " toktestsrc:" << toktestsrc);
+                << " toktestsrc:" << toktestsrc
+                << (gotl?" got line": " no line"));
   int tokcnt=0;
   int lincnt = 0;
   int loopcnt=0;
