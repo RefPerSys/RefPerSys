@@ -1227,8 +1227,13 @@ rps_run_test_repl_lexer(const std::string& teststr)
                 << " toktestsrc:" << toktestsrc);
   int tokcnt=0;
   int lincnt = 0;
+  int loopcnt=0;
   while (!rps_repl_stopped)
     {
+      loopcnt++;
+      RPS_DEBUG_LOG(REPL, "rps_run_test_repl_lexer toktestsrc:" << toktestsrc
+                    << " at " << toktestsrc.position_str()
+                    << " loopcnt#" << loopcnt);
       do
         {
           _f.curlextokenv = toktestsrc.get_token(&_);
@@ -1239,8 +1244,13 @@ rps_run_test_repl_lexer(const std::string& teststr)
                             << " from " << toktestsrc.position_str());
             }
           else
-            RPS_DEBUG_LOG(REPL, "rps_run_test_repl_lexer no token "
-                          << toktestsrc.position_str());
+            {
+              RPS_DEBUG_LOG(REPL, "rps_run_test_repl_lexer will stop since no token in " << toktestsrc
+                            << " at:"
+                            << toktestsrc.position_str());
+              rps_repl_stopped= true;
+              break;
+            }
         }
       while (_f.curlextokenv);
       if (!toktestsrc.get_line())
