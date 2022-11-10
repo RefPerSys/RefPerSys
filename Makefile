@@ -322,23 +322,24 @@ analyze:
 ################################################################
 #### simple tests
 test00: ./refpersys
-	@printf '\n\n\n////test0 first\n'
+	@printf '\n\n\n////test00 first\n'
 	./refpersys  -AREPL  --test-repl-lexer 'show help' -B
-	@printf '\n\n\n////test0 second\n'
+	@printf '\n\n\n////test00 second\n'
 	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B
-	@printf '\n\n\n////test0 third\n'
+	@printf '\n\n\n////test00 third\n'
 	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B
+	@printf '\n\n\n////test00 FINISHED¤\n'
 
 test01: ./refpersys
 	@echo test01 testing simple commands with a lot of debug
-	./refpersys -AREPL -c help -c "show help" -B
+	./refpersys -AREPL -c help -c 'show help' -B
 
 
 test02: ./refpersys
-	./refpersys -AREPL  -c "show RefPerSys_system" -B
+	./refpersys -AREPL  -c 'show RefPerSys_system' -B
 
 test03: ./refpersys
-	./refpersys -AREPL  -c "show (1 + 2)" -B
+	./refpersys -AREPL  -c 'show (1 + 2)' -B
 
 test04: ./refpersys
 	@echo missing test04 ; exit 1
