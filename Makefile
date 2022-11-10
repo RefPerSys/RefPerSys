@@ -322,9 +322,11 @@ analyze:
 ################################################################
 #### simple tests
 test00: ./refpersys
-	@echo test00 testing REPL lexer
+	@printf '\n\n\n////test0 first\n'
 	./refpersys  -AREPL  --test-repl-lexer 'show help' -B
+	@printf '\n\n\n////test0 second\n'
 	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B
+	@printf '\n\n\n////test0 third\n'
 	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B
 
 test01: ./refpersys
