@@ -251,10 +251,37 @@ Rps_StringTokenSource::get_line()
   return true;
 } // end Rps_StringTokenSource::get_line()
 
+
 void
 Rps_StringTokenSource::output (std::ostream&out) const
 {
-  out << "StringTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count()
+  std::string abbrev = toksrcstr_str;
+  auto firstnl = abbrev.find('\n');
+  if (firstnl>0)
+    abbrev.resize(firstnl-1);
+  const size_t maxabbrevlen = 24;
+  if (abbrev.length() > maxabbrevlen) {
+    const uint8_t* curabc = (const uint8_t*)abbrev.c_str();
+    const uint8_t* abstart = (const uint8_t*)abbrev.c_str();
+    while (curabc - abstart < maxabbrevlen && *curabc) {
+      int curclen = u8_strmblen(curabc);
+      if (curclen<=0)
+	break;
+      auto prevabc = curabc;
+      curabc += curclen;
+      if (curabc - abstart >= maxabbrevlen && prevabc > abstart) {
+	abbrev.resize(abstart - prevabc);
+	break;
+      }
+    }
+  }
+  out << "StringTokenSource" << name();
+  if (abbrev.length() < toksrcstr_str.length())
+    out << Rps_QuotedC_String(abbrev) << "⋯" // U+22EF MIDLINE HORIZONTAL ELLIPSIS;
+	<< "l" << toksrcstr_str.length();
+  else
+    out << Rps_QuotedC_String(abbrev);
+  out << '@' << position_str() << " tok.cnt:" << token_count()
       << " str: " << Rps_QuotedC_String(toksrcstr_inp.str());
 }	// end Rps_StringTokenSource::output
 
