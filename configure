@@ -56,7 +56,7 @@ if [ $ARGC -gt 1 ]; then
 fi
 
 if [ $HELP -eq 0 ]; then
- printf '\nUsage: ./configure [h | l | v]\n\n'
+ printf '\nUsage: ./configure [-h | -l | -v]\n\n'
  printf 'Options:\n'
  printf ' -h\tshow usage\n'
  printf ' -l\tshow license information\n'
