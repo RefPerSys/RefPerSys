@@ -257,7 +257,7 @@ Rps_StringTokenSource::output (std::ostream&out) const
 {
   std::string abbrev = toksrcstr_str;
   auto firstnl = abbrev.find('\n');
-  if (firstnl>0)
+  if (firstnl>0 && firstnl<toksrcstr_str.length())
     abbrev.resize(firstnl-1);
   const size_t maxabbrevlen = 24;
   if (abbrev.length() > maxabbrevlen) {
