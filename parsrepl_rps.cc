@@ -1286,6 +1286,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, Rps_DequVal& token_deq, boo
     {
       _f.restermv = operandvect[0];
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term GIVES restermv=" << _f.restermv << " token_deq=" << token_deq
+                    << " startpos:" << startpos << " at:" << position_str()
                     << " curcptr " << Rps_QuotedC_String(curcptr())
                     << "@" << ((void*)curcptr())
                     << " calldepth:" << rps_call_frame_depth(&_));
@@ -1293,19 +1294,17 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, Rps_DequVal& token_deq, boo
     }
   else
     {
+#warning incomplete  Rps_TokenSource::parse_term
+      RPS_FATALOUT("Rps_TokenSource::parse_term INCOMPLETE token_deq=" << token_deq
+                   << " curcptr " << Rps_QuotedC_String(curcptr())
+                   << "  curpos:" << position_str()
+                   << " operandvect:" << operandvect
+                   << "  calldepth:" << rps_call_frame_depth(&_)
+                   << " binoperob:" << _f.binoperob
+                   << " curoperob:" << _f.curoperob
+                   << " leftv=" << _f.leftv << std::endl
+                   << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term/INCOMPLETE"));
     }
-#warning unimplemented Rps_TokenSource::parse_term
-  /* we probably should make a term with operandvect here ... */
-  RPS_FATALOUT("missing code in Rps_TokenSource::parse_term from " << Rps_ShowCallFrame(callframe) << std::endl
-               << "... operandvect:" << operandvect
-               << " binoperob:" << _f.binoperob
-               << " curoperob:" << _f.curoperob
-               << " leftv=" << _f.leftv << std::endl
-               << "... with token_deq=" << token_deq << " at " << startpos
-               << "  curpos:" << position_str()
-               << " curcptr " << Rps_QuotedC_String(curcptr())
-               << "@" << ((void*)curcptr())
-               << " calldepth:" << rps_call_frame_depth(&_));
 } // end Rps_TokenSource::parse_term
 
 
