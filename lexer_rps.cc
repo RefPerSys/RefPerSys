@@ -260,25 +260,28 @@ Rps_StringTokenSource::output (std::ostream&out) const
   if (firstnl>0 && firstnl<toksrcstr_str.length())
     abbrev.resize(firstnl-1);
   const size_t maxabbrevlen = 24;
-  if (abbrev.length() > maxabbrevlen) {
-    const uint8_t* curabc = (const uint8_t*)abbrev.c_str();
-    const uint8_t* abstart = (const uint8_t*)abbrev.c_str();
-    while (curabc - abstart < maxabbrevlen && *curabc) {
-      int curclen = u8_strmblen(curabc);
-      if (curclen<=0)
-	break;
-      auto prevabc = curabc;
-      curabc += curclen;
-      if (curabc - abstart >= maxabbrevlen && prevabc > abstart) {
-	abbrev.resize(abstart - prevabc);
-	break;
-      }
+  if (abbrev.length() > maxabbrevlen)
+    {
+      const uint8_t* curabc = (const uint8_t*)abbrev.c_str();
+      const uint8_t* abstart = (const uint8_t*)abbrev.c_str();
+      while (curabc - abstart < maxabbrevlen && *curabc)
+        {
+          int curclen = u8_strmblen(curabc);
+          if (curclen<=0)
+            break;
+          auto prevabc = curabc;
+          curabc += curclen;
+          if (curabc - abstart >= maxabbrevlen && prevabc > abstart)
+            {
+              abbrev.resize(abstart - prevabc);
+              break;
+            }
+        }
     }
-  }
   out << "StringTokenSource" << name();
   if (abbrev.length() < toksrcstr_str.length())
     out << Rps_QuotedC_String(abbrev) << "⋯" // U+22EF MIDLINE HORIZONTAL ELLIPSIS;
-	<< "l" << toksrcstr_str.length();
+        << "l" << toksrcstr_str.length();
   else
     out << Rps_QuotedC_String(abbrev);
   out << '@' << position_str() << " tok.cnt:" << token_count()
