@@ -351,6 +351,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, Rps_DequVal& token_de
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression start position:"
                 << startpos << " curcptr:" << Rps_QuotedC_String(curcptr())
+		<< " token_deq:" << token_deq
                 << std::endl
                 << "... calldepth=" << rps_call_frame_depth(&_)
                 << std::endl << "parse_expression callframe:"
