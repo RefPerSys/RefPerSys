@@ -1109,7 +1109,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, Rps_DequVal& token_deq, boo
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term failing_A (left nonok) at startpos:" << startpos
                     << " token_deq:" << token_deq
-		    << " leftv:" << _f.leftv
+                    << " leftv:" << _f.leftv
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << std::endl
@@ -1413,19 +1413,12 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                     << _f.obres << " next lexgotokv:" << _f.lexgotokv << std::endl
                     << "... token_deq:" << token_deq
                     << " at " << position_str());
-      if (!_f.lexgotokv) {
-	if (pokparse)
-	  *pokparse = true;
-        return _f.obres;
-      }
-#warning  incomplete Rps_TokenSource::parse_primary with object
-      /*** sometimes a primary make be followed by complement */
-      RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary object§unimplemented: "
-                   << " token_deq:" << token_deq
-                   << " lextokv:" << _f.lextokv
-                   << " lexkindob:" << _f.lexkindob
-                   << " lexvalv:" << _f.lexvalv
-                   << " at " << position_str() << " startpos:" << startpos);
+      if (!_f.lexgotokv)
+        {
+          if (pokparse)
+            *pokparse = true;
+          return _f.obres;
+        }
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK)) //repl_delimiter∊class
     {
@@ -1514,7 +1507,9 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                 << " position:" << position_str()
                 << std::endl
                 << "... curcptr:" << Rps_QuotedC_String(curcptr())
-                << " obdelim:" << _f.obdelim);
+                << " obdelim:" << _f.obdelim
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary@@incomplete"));
   ///////@@@@@@@@@@Rps_TokenSource::parse_primary_complement should be called?
 #warning unimplemented Rps_TokenSource::parse_primary
   /** TODO:
