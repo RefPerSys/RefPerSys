@@ -1107,8 +1107,9 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, Rps_DequVal& token_deq, boo
     }
   else
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term failing_A at startpos:" << startpos
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term failing_A (left nonok) at startpos:" << startpos
                     << " token_deq:" << token_deq
+		    << " leftv:" << _f.leftv
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << std::endl
@@ -1412,8 +1413,11 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                     << _f.obres << " next lexgotokv:" << _f.lexgotokv << std::endl
                     << "... token_deq:" << token_deq
                     << " at " << position_str());
-      if (!_f.lexgotokv)
+      if (!_f.lexgotokv) {
+	if (pokparse)
+	  *pokparse = true;
         return _f.obres;
+      }
 #warning  incomplete Rps_TokenSource::parse_primary with object
       /*** sometimes a primary make be followed by complement */
       RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary object§unimplemented: "
