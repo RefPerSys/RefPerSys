@@ -518,8 +518,9 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, Rps_DequVal& token_d
   });
   bool ok = false;
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction startpos:"
-                << startpos << " calldepth#" << rps_call_frame_depth(&_));
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction begin startpos:"
+                << startpos << " calldepth#" << rps_call_frame_depth(&_)
+                << " token_deq:" << token_deq);
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction lextokv="
                 << _f.lextokv
@@ -663,7 +664,8 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, Rps_DequVal& token_d
       gc->mark_value(disjv);
   });
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction starting at " << startpos);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction begin at " << startpos
+                << " token_deq:" << token_deq);
   static Rps_Id id_and_delim;
   if (!id_and_delim)
     id_and_delim = Rps_Id("_2YVmrhVcwW00120rTK");
@@ -801,6 +803,8 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, Rps_DequVal& token_de
                  Rps_ObjectRef cmpbinopob;
                 );
   std::string startpos = position_str();
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparison begin at " << startpos
+                << " token_deq:" << token_deq);
   /// lessequal is <=
   static Rps_Id id_lessequal_delim;
   if (!id_lessequal_delim)
@@ -906,7 +910,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, Rps_DequVal& token_deq
                  Rps_ObjectRef cmpbinopob;
                 );
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand start from " << Rps_ShowCallFrame(&_)
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand begin from " << Rps_ShowCallFrame(&_)
                 << " with token_deq=" << token_deq << " at " <<  startpos);
   bool okleft = false;
   _f.leftv = parse_term(&_, token_deq, &okleft);
@@ -968,6 +972,8 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, Rps_DequVal& token_deq, b
                  Rps_ObjectRef minusbinopob;
                 );
   std::string startpos = position_str();
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor begin startpos:" << startpos
+                << " token_deq:" << token_deq);
   /// + delimiter and binary operator
   static Rps_Id id_plus_delim;
   if (!id_plus_delim)
@@ -989,7 +995,7 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, Rps_DequVal& token_deq, b
   _f.minusbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_minus_binop); // "minus!binop"∈repl_binary_operator
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor minusdelimob=" << _f.minusdelimob << " minusbinopob=" << _f.minusbinopob);
   ///
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor start from " << Rps_ShowCallFrame(&_)
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor started from " << Rps_ShowCallFrame(&_)
                 << " with token_deq=" << token_deq << " at " <<  startpos);
   bool okleft = false;
   _f.leftv = parse_primary(&_, token_deq, &okleft);
@@ -1100,7 +1106,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, Rps_DequVal& token_deq, boo
       gc->mark_value(operv);
   });
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term starting startpos:" << startpos);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term begin startpos:"
+                << startpos << " token_deq:" << token_deq);
   /// multiplication operator and * delim
   static Rps_Id id_mult_delim;
   if (!id_mult_delim)
@@ -1352,7 +1359,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
                            Rps_Value exprv;
                 );
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary starting startpos:" << startpos
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary begin startpos:" << startpos
                 << " token_deq:" << token_deq
                 << " callframe:" << callframe);
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
@@ -1647,6 +1654,8 @@ Rps_TokenSource::parse_primary_complement(Rps_CallFrame*callframe, Rps_DequVal& 
                 );
   std::string startpos = position_str();
   _f.primaryexpv = primaryexparg;
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary_complement begin startpos:" << startpos
+                << " token_deq=" << token_deq << " primaryexpv:" << _f.primaryexpv);
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary_complement start lextokv=" << _f.lextokv
                 << " token_deq:" << token_deq
