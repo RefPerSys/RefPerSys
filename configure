@@ -1,6 +1,9 @@
 #!/bin/sh
 # -*- mode: sh -*-
-
+# file RefPerSys/configure under GPLv3+ license (see below)
+# 
+# © Copyright 2022 The Reflective Persistent System Team
+# contact team@refpersys.org and see http://refpersys.org/
 #
 # Prints an info message to stderr
 #
