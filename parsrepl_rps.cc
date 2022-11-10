@@ -537,16 +537,26 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, Rps_DequVal& token_d
       return nullptr;
     }
   _f.leftv = parse_conjunction(&_, token_deq, &ok);
-  if (!ok)
+  if (ok)
     {
-      if (pokparse)
-        *pokparse = false;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction failing_B at startpos:" << startpos
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction after leftconj leftv=" << _f.leftv
+                    << " at startpos:" << startpos
                     << " token_deq:" << token_deq
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_disjunction failing_B"));
+                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_disjunction/after-leftconj"));
+    }
+  else
+    {
+      if (pokparse)
+        *pokparse = false;
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction failing_B (noleftconj) at startpos:" << startpos
+                    << " token_deq:" << token_deq
+                    << " position:" << position_str()
+                    << " curcptr:" << Rps_QuotedC_String(curcptr())
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_disjunction failing_B/noleftconj"));
       return nullptr;
     }
   conjvect.push_back(_f.leftv);
@@ -653,6 +663,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, Rps_DequVal& token_d
       gc->mark_value(disjv);
   });
   std::string startpos = position_str();
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction starting at " << startpos);
   static Rps_Id id_and_delim;
   if (!id_and_delim)
     id_and_delim = Rps_Id("_2YVmrhVcwW00120rTK");
@@ -685,18 +696,30 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, Rps_DequVal& token_d
       return nullptr;
     }
   //
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction before left comparison token_deq=" << token_deq
+                << " position:" << position_str()
+                << " startpos:" << startpos
+                << " curcptr:" << Rps_QuotedC_String(curcptr()));
   _f.leftv = parse_comparison(&_, token_deq, &ok);
 
-  if (!ok)
+  if (ok)
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction got left comparison " << _f.leftv
+                    << " position:" << position_str()
+                    << " startpos:" << startpos
+                    << " curcptr:" << Rps_QuotedC_String(curcptr()));
+
+    }
+  else
     {
       if (pokparse)
         *pokparse = false;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction failing_B at startpos:" << startpos
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction failing_B (noleftcompar) at startpos:" << startpos
                     << " token_deq:" << token_deq
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_conjunction failing_B"));
+                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_conjunction failing_B/noleftcompar"));
       return nullptr;
     }
 
@@ -1378,7 +1401,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe, Rps_DequVal& token_deq, 
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary lexgotokv " << _f.lexgotokv
                     << " lexval " << _f.lexvalv
                     << " position:" << position_str() << " curcptr " << Rps_QuotedC_String(curcptr()));
-#warning Rps_TokenSource::parse_primary  buggy near here for REPL command show 1 * 2 + 3 * 4
+#warning Rps_TokenSource::parse_primary perhaps buggy for test04
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary => int " << _f.lexvalv
                     << " lextokv:" << _f.lextokv
                     << " lexgotokv:" << _f.lexgotokv
