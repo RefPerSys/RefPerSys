@@ -41,8 +41,8 @@ RPS_GIT_ORIGIN := $(shell git remote -v | grep "RefPerSys/RefPerSys.git" | head 
 RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -1 | awk '{print $$1}')
 
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
-RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc *jsonrpc*.cc), $(wildcard *_rps.cc)))
-RPS_JSONRPC_SOURCES:=  $(sort $(wildcard *jsonrpc*_rps.cc))
+RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcard *_rps.cc)))
+#RPS_JSONRPC_SOURCES:=  $(sort $(wildcard *jsonrpc*_rps.cc))
 RPS_BISON_SOURCES:=  $(sort $(wildcard *_rps.yy))
 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
@@ -52,8 +52,8 @@ RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
 RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
-RPS_JSONRPC_CXXFLAGS = $(shell pkg-config  --cflags jsoncpp)
-RPS_JSONRPC_LIBES = $(shell pkg-config --libs jsoncpp)
+#RPS_JSONRPC_CXXFLAGS = $(shell pkg-config  --cflags jsoncpp)
+#RPS_JSONRPC_LIBES = $(shell pkg-config --libs jsoncpp)
 
 ### The optional file $HOME/.refpersys.mk could contain definitions like
 ###     # file ~/.refpersys.mk
@@ -113,7 +113,7 @@ RPS_PKG_NAMES= jsoncpp libcurl zlib
 RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
-LIBES= $(RPS_PKG_LIBS) -lunistring -lbacktrace -lpthread -ldl
+LIBES= -lunistring -lbacktrace -lpthread -ldl
 RM= rm -f
 MV= mv
 CC= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CC)
@@ -140,14 +140,16 @@ all:
 
 .SECONDARY:  __timestamp.c
 
-refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_JSONRPC_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
-	-echo $@: RPS_CORE_OBJECTS= $(RPS_CORE_OBJECTS)
-	-echo $@: RPS_JSONRPC_OBJECTS= $(RPS_JSONRPC_OBJECTS)
-	-echo $@: RPS_BISON_OBJECTS= $(RPS_BISON_OBJECTS)
-	-echo $@: RPS_PKG_LIBS= $(RPS_PKG_LIBS)
+refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
+	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
+	@echo $@: RPS_BUILD_CODGENFLAGS= $(RPS_BUILD_CODGENFLAGS)
+	@echo $@: RPS_CORE_OBJECTS= $(RPS_CORE_OBJECTS)
+	@echo $@: RPS_BISON_OBJECTS= $(RPS_BISON_OBJECTS)
+	@echo $@: LIBES= $(LIBES)
 	-sync
-	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic main_rps.o $(RPS_CORE_OBJECTS) $(RPS_JSONRPC_OBJECTS)   __timestamp.o \
-	         $(LIBES) $(RPS_PKG_LIBS) $(RPS_JSONRPC_LIBES) -o $@-tmp
+	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic \
+                              main_rps.o $(RPS_CORE_OBJECTS)    __timestamp.o \
+	         $(LIBES) $(RPS_PKG_LIBS)  -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
