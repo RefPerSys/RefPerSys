@@ -1326,8 +1326,8 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
       Rps_ObjectRef obr = lex_val.as_object();
       if (obr)
         {
-          auto paylvect = obr->get_dynamic_payload<Rps_PayloadVectVal>();
-          if (paylvect)
+          std::unique_lock<std::recursive_mutex> guobr (*obr->objmtxptr());
+          if (auto paylvect = obr->get_dynamic_payload<Rps_PayloadVectVal>())
             {
               unsigned vsiz = paylvect->size();
               out << "⟪";
@@ -1343,6 +1343,14 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
                   out << "["<< ix << "]:" << paylvect->at(ix);
                 }
               out << "⟫";
+            }
+          else if (auto paylsymb = obr->get_dynamic_payload<Rps_PayloadSymbol>())
+            {
+              out << "symb:" << paylsymb->symbol_name();
+            }
+          else if (auto paylclass = obr->get_dynamic_payload<Rps_PayloadClassInfo>())
+            {
+              out << "class:" << paylclass->class_name_str();
             }
         }
     }
