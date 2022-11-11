@@ -46,7 +46,7 @@ jsonrpc_initialize_rps(void)
 {
 #warning unimplemented  jsonrpc_initialize_rps
   RPS_FATALOUT("unimplemented jsonrpc_initialize_rps with fifo prefix "
-	       << rps_get_fifo_prefix());
+               << rps_get_fifo_prefix());
 } // end jsonrpc_initialize_rps
 
 void
@@ -54,7 +54,7 @@ jsonrpc_run_application_rps(void)
 {
 #warning jsonrpc_run_application_rps unimplemented
   RPS_FATALOUT("unimplemented jsonrpc_run_application_rps with fifo prefix "
-	       << rps_get_fifo_prefix());
+               << rps_get_fifo_prefix());
 } // end jsonrpc_run_application_rps
 
 /// end of file jsonrpc_rps.cc
