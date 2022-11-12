@@ -1321,7 +1321,7 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
     };
   out << ", val=";
   lex_val.output(out, depth+1);
-  if (lex_val.is_object() && showchunk && depth<=1)
+  if (lex_val.is_object() && depth<=1)
     {
       Rps_ObjectRef obr = lex_val.as_object();
       if (obr)
