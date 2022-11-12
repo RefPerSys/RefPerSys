@@ -385,7 +385,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     {
       int curlin = toksrc_line;
       int curcol = toksrc_col;
-      RPS_DEBUG_LOG(REPL, "get_token#" << toksrc_counter << " infinity " << position_str());
+      RPS_DEBUG_LOG(REPL, "get_token#" << toksrc_counter
+                    << " from¤ " << *this << " infinity " << position_str());
       bool pos = *curp == '+';
       double infd = (pos
                      ?std::numeric_limits<double>::infinity()
@@ -641,6 +642,7 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
   unsigned startcol = toksrc_col;
   ucs4_t curuc=0;
   RPS_ASSERT(startp);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter start " << *this << Rps_QuotedC_String(startp) << " at startpos:" << startpos);
   curp = startp;
   do
     {
@@ -685,7 +687,7 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
     {
       loopcnt ++;
       _f.delimv = paylstrdict->find(delimstr);
-      RPS_DEBUG_LOG(REPL, "get_delimiter punctuation delimv=" << _f.delimv << " for delimstr='"
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter punctuation delimv=" << _f.delimv << " for delimstr='"
                     << Rps_Cjson_String(delimstr) << "' loopcnt#" << loopcnt);
       if (_f.delimv)
         {
@@ -700,8 +702,9 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
              toksrc_line, startcol);
           lextok->set_serial(++toksrc_counter);
           _f.res = Rps_LexTokenValue(lextok);
-          RPS_DEBUG_LOG(REPL, "get_delimiter delimiter :-◑> " << _f.res << " at " << position_str()
-                        << " at " << startpos << std::endl
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter delimiter :-◑> " << _f.res << " at " << position_str()
+			<< " from¤ " << *this
+                        << " startpos " << startpos << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter"));
           return _f.res;
         };
@@ -710,14 +713,14 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
                                       reinterpret_cast<const uint8_t*>
                                       (delimstr.c_str()+delimstr.size()),
                                       reinterpret_cast<const uint8_t*>(delimstr.c_str()));
-      RPS_DEBUG_LOG(REPL, "get_delimiter prevu8='" << (const char*)prevu8
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter prevu8='" << (const char*)prevu8
                     << "' for delimstr='" << delimstr << "' with curuc#" << (int)curuc
                     << " at " << startpos << " loopcnt#" << loopcnt);
       if (!prevu8)
         break;
       unsigned curlen = delimstr.size();
       unsigned prevlen = (delimstr.c_str()+delimstr.size() - (const char*)prevu8) +1;
-      RPS_DEBUG_LOG(REPL, "get_delimiter for delimstr='" << delimstr <<"' curlen=" << curlen
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter for delimstr='" << delimstr <<"' curlen=" << curlen
                     << " prevlen=" << prevlen);
       if (prevlen==0 || prevlen > delimstr.size())
         break;
@@ -729,11 +732,13 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
       usleep (250000);
     }
   RPS_WARNOUT("Rps_TokenSource::get_delimiter failing at " << startpos
-              << " for " << startp);
+              << " for " << startp << " in " << *this);
   std::string failmsg {"Rps_TokenSource::get_delimiter failing at "};
   failmsg += startpos;
   throw std::runtime_error{failmsg};
 } // end Rps_TokenSource::get_delimiter
+
+
 
 std::string
 Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
@@ -873,13 +878,13 @@ Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
       else
         {
           RPS_WARNOUT("Rps_TokenSource::lex_quoted_literal_string : lexical error at "
-                      << position_str());
+                      << position_str() << " in " << *this);
           throw std::runtime_error("lexical error");
         }
     } // end while
 lexical_error_backslash:
   RPS_WARNOUT("Rps_TokenSource::lex_quoted_literal_string  : bad backslash escape at "
-              << position_str());
+              << position_str() << " in " << *this);
   throw std::runtime_error("lexical bad backslash escape");
 } // end Rps_TokenSource::lex_quoted_literal_string
 
@@ -907,8 +912,8 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
       || !isalpha(delim[0])
       || pos<=1)
     /// should never happen
-    RPS_FATALOUT("corrupted Rps_TokenSource::lex_raw_literal_string '"
-                 << Rps_Cjson_String(curp) << "'"
+    RPS_FATALOUT("corrupted Rps_TokenSource::lex_raw_literal_string "
+                 << Rps_QuotedC_String(curp) << " in " << *this
                  << std::endl
                  << Rps_ShowCallFrame(callframe));
   toksrc_col += pos;
@@ -916,10 +921,10 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
   char endstr[24];
   memset(endstr, 0, sizeof(endstr));
   snprintf(endstr, sizeof(endstr), ")%s\"", delim);
-  RPS_DEBUG_LOG(REPL, "lex_raw_literal_string start L" << startlineno
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_raw_literal_string start L" << startlineno
                 << ",C" << startcolno
                 << "@" << toksrc_name
-                << " endstr " << endstr);
+                << " endstr " << endstr << " in " << *this);
   const char*endp = nullptr;
   while ((curp = curcptr()) != nullptr
          && (endp=strstr(curp, endstr)) == nullptr)
@@ -933,7 +938,8 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
                       << ",C" << startcolno
                       << "@" << toksrc_name
                       << std::endl
-                      << Rps_ShowCallFrame(callframe));
+                      << Rps_ShowCallFrame(callframe)
+		      << " in " << *this);
           throw std::runtime_error(std::string{"lex_raw_literal_string failed to find "}
                                    + endstr);
         }
@@ -941,9 +947,9 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
     };				// end while curp....
   if (endp)
     toksrc_col += endp - curp;
-  RPS_DEBUG_LOG(REPL, "lex_raw_literal_string gives '"
-                << Rps_Cjson_String(result)
-                << "' at " << position_str());
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_raw_literal_string gives "
+                << Rps_QuotedC_String(result)
+                << " at " << position_str() << " in " << *this);
   return result;
 } // end Rps_TokenSource::lex_raw_literal_string
 
@@ -967,6 +973,7 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
   chkdata.chunkdata_name = toksrc_name;
   const char* curp = curcptr();
   _f.namev= source_name_val(&_);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk start " << *this << " curp:" << Rps_QuotedC_String(curp));
   RPS_ASSERT(curp != nullptr && *curp != (char)0);
   char startchunk[12];
   memset(startchunk, 0, sizeof(startchunk));
@@ -1021,7 +1028,7 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
       /// https://framalistes.org/sympa/arc/refpersys-forum/2020-12/msg00036.html
     }
   while (_f.chunkelemv || toksrc_col>oldcol || toksrc_line>oldline);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk "
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk " << " in " << *this
                 << " :-◑> obchunk=" << _f.obchunk << " @!" << position_str());
   return _f.obchunk;
 } // end of Rps_TokenSource::lex_code_chunk
