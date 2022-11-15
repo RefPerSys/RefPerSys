@@ -1,0 +1,4 @@
+# Build artefacts
+config.mk
+*.o
+refpersys
