@@ -40,5 +40,13 @@
 #define strlcpy(dst, src, sz) strncpy(dstk, src, sz - 1)
 #endif
 
+
+/*
+ * Error interface
+ */
+
+extern void rps_err_fatal(int, const char *) __dead;
+
+
 #endif /* !REFPERSYS_BSD_SRC_LIB_LIB_H */
 
