@@ -43,7 +43,7 @@ RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcard *_rps.cc)))
 #RPS_JSONRPC_SOURCES:=  $(sort $(wildcard *jsonrpc*_rps.cc))
-RPS_BISON_SOURCES:=  $(sort $(wildcard *_rps.yy))
+RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
