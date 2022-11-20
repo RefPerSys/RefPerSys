@@ -31,6 +31,7 @@
    analyze gitpush gitpush2 withclang
 
 
+
 ## tell GNU make to export all variables by default
 export
 
@@ -43,7 +44,12 @@ RPS_GIT_MIRROR := $(shell git remote -v | grep "bstarynk/refpersys.git" | head -
 RPS_CORE_HEADERS:= $(sort $(wildcard *_rps.hh))
 RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcard *_rps.cc)))
 #RPS_JSONRPC_SOURCES:=  $(sort $(wildcard *jsonrpc*_rps.cc))
+
+# for the GNU bison parser generator
 RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
+
+# for the ANTLR3 parser generator
+RPS_ANTLR_SOURCES:= $(sort $(wildcard [a-z]*rps.g))
 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
@@ -80,8 +86,12 @@ ifndef RPS_BUILD_COMPILER_FLAGS
 RPS_BUILD_COMPILER_FLAGS?= -std=gnu++17
 endif
 
-## GNU bison ; see www.gnu.org/software/bison/
+## GNU bison (parser generator) ; see www.gnu.org/software/bison/
 RPS_BUILD_BISON= bison
+
+## ANTLR3 (parser generator) ; see www.antlr3.org/
+## and https://theantlrguy.atlassian.net/wiki/spaces/ANTLR3/pages/2687234/ANTLR+v3+documentation
+RPS_BUILD_ANTLR= antlr3
 
 ifndef RPS_INCLUDE_DIRS
 RPS_INCLUDE_DIRS ?= /usr/local/include /usr/include /usr/include/jsoncpp
@@ -242,6 +252,7 @@ __timestamp.c: | Makefile do-generate-timestamp.sh
 	./do-generate-timestamp.sh $@  > $@-tmp
 	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
 	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
+	printf 'const char rps_antlr3_version[]="%s";\n'  "$$($(RPS_BUILD_ANTLR) -version 2>&1)" >> $@-tmp
 	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp
 	$(MV) --backup $@-tmp $@
 

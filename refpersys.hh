@@ -144,7 +144,10 @@ extern "C" const char*const rps_files[];
 extern "C" const char rps_makefile[];
 extern "C" const char*const rps_subdirectories[];
 extern "C" const char rps_cxx_compiler_version[];
+// GNU bison is a parser generator
 extern "C" const char rps_gnubison_version[];
+// ANTL3 is another parser generator
+extern "C" const char rps_antlr3_version[];
 extern "C" const char rps_gui_script_executable[];
 
 
