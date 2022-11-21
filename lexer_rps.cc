@@ -264,14 +264,14 @@ Rps_StringTokenSource::output (std::ostream&out) const
     {
       const uint8_t* curabc = (const uint8_t*)abbrev.c_str();
       const uint8_t* abstart = (const uint8_t*)abbrev.c_str();
-      while (curabc - abstart < maxabbrevlen && *curabc)
+      while ((int)(curabc - abstart) < (int)maxabbrevlen && *curabc)
         {
           int curclen = u8_strmblen(curabc);
           if (curclen<=0)
             break;
           auto prevabc = curabc;
           curabc += curclen;
-          if (curabc - abstart >= maxabbrevlen && prevabc > abstart)
+          if ((int)(curabc - abstart) >= (int)maxabbrevlen && prevabc > abstart)
             {
               abbrev.resize(abstart - prevabc);
               break;
@@ -358,7 +358,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
         }
       else
         {
-          toksrc_col += endint - startnum;
+          toksrc_col += (int)(endint - startnum);
           _f.lextokv = Rps_Value::make_tagged_int(l);
           _f.lexkindob = RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); //int∈class
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token intval " << _f.lextokv << " curpos:" << position_str());
