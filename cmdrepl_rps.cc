@@ -254,13 +254,14 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                       << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
       }
     RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/before pars.expr.  token_deq:" << token_deq << " replcmdob:" << _f.replcmdob << " lextokv:" << _f.lextokv
-                  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT"));
+                  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/before parsexp")
+                  << std::endl << ".... before parse_expression");
     _f.showv = tksrc->parse_expression(&_, token_deq);
     RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                   << " after parse_expression showv=" << _f.showv);
     RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr.  token_deq:" << token_deq << " replcmdob:" << _f.replcmdob
                   << " lextokv:" << _f.lextokv << " showv:" << _f.showv
-                  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT"));
+                  << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/after parsexp"));
     std::cout << "##" << RPS_TERMINAL_BOLD_ESCAPE << showpos
               << RPS_TERMINAL_NORMAL_ESCAPE << " : "
               << _f.showv << std::endl;
