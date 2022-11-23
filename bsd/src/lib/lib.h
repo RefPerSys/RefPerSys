@@ -48,5 +48,37 @@
 extern void rps_err_fatal(int, const char *) __dead;
 
 
+/*
+ * Memory interface and string interface
+ * Will be replaced by RefPerSys's own GC
+ */
+
+typedef void rps_mem;
+
+__BEGIN_DECLS
+extern rps_mem *rps_mem_new(size_t) __malloc;
+extern size_t rps_mem_sz(const rps_mem *);
+extern void rps_mem_free(rps_mem *);
+__END_DECLS
+
+
+/*
+ * String interface
+ */
+
+typedef char str;
+
+__BEGIN_DECLS
+extern rps_str *rps_str_new(const char *) __malloc;
+extern rps_str *rps_str_new_raw(size_t) __malloc;
+extern void rps_str_free(str **);
+extern int rps_str_cmp(const rps_str *, const char *);
+extern size_t rps_str_len(const rps_str *);
+extern size_t rps_str_sz(const rps_str *);
+extern void rps_str_rawcp(char *, const char *, size_t);
+__END_DECLS
+
+
+
 #endif /* !REFPERSYS_BSD_SRC_LIB_LIB_H */
 
