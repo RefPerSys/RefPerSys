@@ -1327,7 +1327,7 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
       if (obr)
         {
           std::unique_lock<std::recursive_mutex> guobr (*obr->objmtxptr());
-          Rps_Value vname = obr->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx));
+          Rps_Value vname = obr->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name∈named_attribute
           if (auto paylvect = obr->get_dynamic_payload<Rps_PayloadVectVal>())
             {
               unsigned vsiz = paylvect->size();
@@ -1355,7 +1355,7 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
             }
           else if (vname.is_string())
             {
-              out << "named" << Rps_QuotedC_String(vname.to_string()->cppstring());
+              out << "°named" << Rps_QuotedC_String(vname.to_string()->cppstring());
             }
         }
     }
