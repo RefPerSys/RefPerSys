@@ -42,10 +42,20 @@
 
 
 /*
- * Error interface
+ * Log interface
  */
 
-extern void rps_err_fatal(int, const char *) __dead;
+__BEGIN_DECLS
+extern const char	*rps_log_file(void);
+extern void		 rps_log_file_set(const char *);
+extern void 		 rps_log_ok(const char *);
+extern void 		 rps_log_info(const char *);
+extern void 		 rps_log_debug(const char *);
+extern void 		 rps_log_warn(const char *);
+extern void		 rps_log_fail(const char *, int) __dead;
+
+extern void rps_err_fatal(int, const char *) __dead; /* deprecated */
+__END_DECLS
 
 
 /*
