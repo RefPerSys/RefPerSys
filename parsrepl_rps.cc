@@ -544,7 +544,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, Rps_DequVal& token_d
                 << " token_deq:" << token_deq << " curcptr:" << Rps_QuotedC_String(curcptr()));
   _f.lextokv =  lookahead_token(&_, token_deq, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction lextokv=" << _f.lextokv
-                0<< " position: " << position_str() << " startpos=" << startpos
+                << " position: " << position_str() << " startpos=" << startpos
                 << " curcptr:" << Rps_QuotedC_String(curcptr()));
   if (!_f.lextokv)
     {
@@ -764,46 +764,46 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, Rps_DequVal& token_d
           break;
         };
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction testing or lextokv=" << _f.lextokv
-                    << " position:" << position_str()
-                    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction conjvect:" << conjvect
-                                  << " at startpos:" << startpos
-                                  << " token_deq:" << token_deq
-                                  << " curcptr:" << Rps_QuotedC_String(curcptr()));
-                    if (_f.lextokv.is_lextoken()
-                        && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
-                        &&  _f.lextokv.to_lextoken()->lxval().is_object()
-                        &&  _f.lextokv.to_lextoken()->lxval().to_object()->oid() == id_and_delim)
-      {
-        (void) get_token(&_); // consume the and operator
+                    << " position:" << position_str());
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction conjvect:" << conjvect
+                    << " at startpos:" << startpos
+                    << " token_deq:" << token_deq
+                    << " curcptr:" << Rps_QuotedC_String(curcptr()));
+      if (_f.lextokv.is_lextoken()
+          && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
+          &&  _f.lextokv.to_lextoken()->lxval().is_object()
+          &&  _f.lextokv.to_lextoken()->lxval().to_object()->oid() == id_and_delim)
+        {
+          (void) get_token(&_); // consume the and operator
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction startpos:" << startpos
                         << " token_deq:" << token_deq
-                        << " position:" << position_str() <<
-                        << " curcptr:" << Rps_QuotedC_String(curcptr()))
+                        << " position:" << position_str()
+                        << " curcptr:" << Rps_QuotedC_String(curcptr()));
           again = true;
           if (!_f.andbinopob)
             _f.andbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_and_binop);
         }
       else
         again = false;
-                if (again)
+      if (again)
         {
           bool okright=false;
           _f.rightv = parse_comparison(&_, token_deq, &okright);
-            if (okright)
-              conjvect.push_back(_f.rightv);
-            else
-              {
-                RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction failing_C at startpos:" << startpos
-                              << " token_deq:" << token_deq
-                              << " position:" << position_str()
-                              << " curcptr:" << Rps_QuotedC_String(curcptr())
-                              << std::endl
-                              << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_conjunction failing_C"));
+          if (okright)
+            conjvect.push_back(_f.rightv);
+          else
+            {
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction failing_C at startpos:" << startpos
+                            << " token_deq:" << token_deq
+                            << " position:" << position_str()
+                            << " curcptr:" << Rps_QuotedC_String(curcptr())
+                            << std::endl
+                            << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_conjunction failing_C"));
 
-                RPS_WARNOUT("failed to parse conjunct at " << position_str());
-                return nullptr;
-              }
-          }
+              RPS_WARNOUT("failed to parse conjunct at " << position_str());
+              return nullptr;
+            }
+        }
     }
   while (again);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction andbinopob=" << _f.andbinopob
