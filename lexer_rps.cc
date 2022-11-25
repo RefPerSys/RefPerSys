@@ -289,6 +289,7 @@ Rps_StringTokenSource::output (std::ostream&out) const
 }	// end Rps_StringTokenSource::output
 
 ////////////////
+#warning maybe Rps_TokenSource::get_token should be given the token_deq
 Rps_LexTokenValue
 Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 {
