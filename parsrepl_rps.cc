@@ -85,7 +85,9 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_symmetrical_binop "
                     << opername << " LEFT FAILURE startpos:" <<  startpos
                     << " curpos" << position_str()  << " calldepth="
-                    << rps_call_frame_depth(&_));
+                    << rps_call_frame_depth(&_)
+		    << std::endl
+		    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-left"));
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -98,7 +100,7 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
     {
       if (pokparse)
         *pokparse = true;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse " << opername << " LEFTONLY  startpos:" <<  startpos
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_symmetrical_binop " << opername << " LEFTONLY  startpos:" <<  startpos
                     << " curpos" << position_str()  << " calldepth="
                     << rps_call_frame_depth(&_)
                     << " GIVES " << _f.leftv);
@@ -107,13 +109,27 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_symmetrical_binop " << opername << " after leftv=" << _f.leftv
                 << " lextokv:" << _f.lextokv
                 << " in:" << (*this)
-                << "startpos:" << startpos << " pos:" << position_str());
+                << "startpos:" << startpos << " pos:" << position_str()
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/after-leftv"));
   if (_f.lextokv.is_lextoken()
       && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
       &&  _f.lextokv.to_lextoken()->lxval().is_object()
       &&  _f.lextokv.to_lextoken()->lxval().to_object() == bindelim)
     {
       (void) get_token(&_); // consume the operator
+    }
+  else
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_symmetrical_binop "
+                    << opername << " BAD DELIM FAILURE startpos:" <<  startpos
+                    << " curpos" << position_str()  << " calldepth="
+                    << rps_call_frame_depth(&_)
+		    << std::endl
+		    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-bad-delim"));
+      if (pokparse)
+        *pokparse = false;
+      return nullptr;
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_symmetrical_binop " << opername << " after bindelim:" << bindelim
                 << " leftv=" << _f.leftv
@@ -124,7 +140,8 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
   if (!rightok)
     {
       RPS_WARNOUT("failed to parse right operand for "<< opername << " at " << position_str()
-                  << " starting " << startpos);
+                  << " starting " << startpos
+		    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-right"));
       if (pokparse)
         *pokparse = false;
       return nullptr;
