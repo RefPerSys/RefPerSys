@@ -201,11 +201,8 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                            Rps_Value lextokv;
                            Rps_Value showv;
                 );
-  // a double ended queue to keep the lexical tokens
-  Rps_DequVal token_deq(__FILE__,__LINE__);
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
-    token_deq.gc_mark(*gc);
   });
   RPS_DEBUG_LOG(CMD, "REPL command show start arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
@@ -213,7 +210,6 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                 << "∈" << arg1.compute_class(&_) <<std::endl
                 << ";  arg2=" << arg2
                 << "∈" << arg2.compute_class(&_)
-                << " token_deq:" << token_deq
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
   RPS_DEBUG_LOG(REPL, "REPL command show start arg0=" << arg0
@@ -222,12 +218,12 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                 << "∈" << arg1.compute_class(&_) <<std::endl
                 << ";  arg2=" << arg2
                 << "∈" << arg2.compute_class(&_)
-                << " token_deq:" << token_deq
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
+#warning REPL command show may need some local Rps_TokenSource
   _f.replcmdob = arg0.to_object();
   _f.lextokv = arg1;
-  RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/started token_deq:" << token_deq << " replcmdob:" << _f.replcmdob << " lextokv:" << _f.lextokv
+  RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/started replcmdob:" << _f.replcmdob << " lextokv:" << _f.lextokv
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT"));
   RPS_ASSERT(_.call_frame_depth() < 7);
   RPS_DEBUG_LOG(CMD, "REPL command show framedepth=" << _.call_frame_depth()
@@ -249,17 +245,17 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                   << " from " << RPS_FULL_BACKTRACE_HERE(1, "REPL command show rpsapply_7WsQyJK6lty02uz5KT/gotnext"));
     if (_f.lextokv)
       {
-        token_deq.push_back(_f.lextokv);
-        RPS_DEBUG_LOG(REPL, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show token_deq becomes " << token_deq
+        tksrc->token_dequeue().push_back(_f.lextokv);
+        RPS_DEBUG_LOG(REPL, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show tksrc becomes " << (*tksrc)
                       << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
       }
-    RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/before pars.expr.  token_deq:" << token_deq << " replcmdob:" << _f.replcmdob << " lextokv:" << _f.lextokv
+    RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/before pars.expr. tksrc:" << (*tksrc) << " replcmdob:" << _f.replcmdob << " lextokv:" << _f.lextokv
                   << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/before parsexp")
                   << std::endl << ".... before parse_expression");
-    _f.showv = tksrc->parse_expression(&_, token_deq);
+    _f.showv = tksrc->parse_expression(&_);
     RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                   << " after parse_expression showv=" << _f.showv);
-    RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr.  token_deq:" << token_deq << " replcmdob:" << _f.replcmdob
+    RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr. tksrc:" << (*tksrc) << " replcmdob:" << _f.replcmdob
                   << " lextokv:" << _f.lextokv << " showv:" << _f.showv
                   << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/after parsexp"));
     std::cout << "##" << RPS_TERMINAL_BOLD_ESCAPE << showpos
