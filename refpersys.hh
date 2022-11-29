@@ -2273,6 +2273,7 @@ protected:
   /// could be called by subclasses
   void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth);
   std::string toksrc_linebuf;
+  Rps_DequVal toksrc_token_deq;
   Rps_StringValue* toksrc_ptrnameval;
   Rps_TokenSource(std::string name);
   void set_name(std::string name) { toksrc_name = name; };

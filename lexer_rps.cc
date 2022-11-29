@@ -51,6 +51,7 @@ Rps_StringValue rps_lexer_token_name_str_val(nullptr);
 Rps_TokenSource::Rps_TokenSource(std::string name)
   : toksrc_name(name), toksrc_line(0), toksrc_col(0), toksrc_counter(0),
     toksrc_linebuf{},
+    toksrc_token_deq(),
     toksrc_ptrnameval(nullptr)
 {
 } // end Rps_TokenSource::Rps_TokenSource
@@ -71,6 +72,7 @@ Rps_TokenSource::really_gc_mark(Rps_GarbageCollector&gc, unsigned depth)
     rps_lexer_token_name_str_val.gc_mark(gc,depth);
   if (toksrc_ptrnameval)
     toksrc_ptrnameval->gc_mark(gc, depth+1);
+  toksrc_token_deq.gc_mark(gc, depth+1);
 } // end Rps_TokenSource::really_gc_mark
 
 
@@ -136,6 +138,7 @@ Rps_TokenSource::~Rps_TokenSource()
   toksrc_line= -1;
   toksrc_col= -1;
   toksrc_linebuf.clear();
+  toksrc_token_deq.clear();
 } // end Rps_TokenSource::~Rps_TokenSource
 
 Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
