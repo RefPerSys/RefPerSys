@@ -1,7 +1,10 @@
+#include <errno.h> /* errno(3) */
+
 #include "lib.h"
 
 
 #define SZHDR 1
+#define EMSG "Failed to allocate memory through malloc()"
 
 
 rps_mem *
@@ -11,7 +14,7 @@ rps_mem_new(size_t sz)
 	
 	assert(sz);
 	if (__predict_false(!(bfr = malloc(sz + SZHDR))))
-		err_fatal(ENOMEM, ERR_L01);
+		rps_log_fail(EMSG, ENOMEM);
 
 	*bfr = sz;
 	explicit_bzero(bfr + SZHDR, sz);
