@@ -1,5 +1,8 @@
-#include <stdio.h> /* fprintf(3) */
-#include <time.h>  /* time(3), strftime(3) */
+#include <assert.h> /* assert(3) */
+#include <errno.h>  /* errno(3) */
+#include <stdio.h>  /* fprintf(3) */
+#include <stdlib.h> /* exit(3) */
+#include <time.h>   /* time(3), strftime(3) */
 
 #include "lib.h"
 
@@ -42,5 +45,62 @@ tty_print(const char *cpn, const char *msg)
 	strftime(bfr, sizeof(bfr), "", localtime(&now));
 	fprintf(stderr, "%s " TTY_MAGENTA "%s" TTY_RESET ": %s\n",
 	    cpn, bfr, msg);
+}
+
+
+/*
+ * Logs an OK message to stderr.
+ */
+void
+rps_log_ok(const char *msg)
+{
+	assert(msg && *msg && "message must be valid string");
+	tty_print(CPN_OK, msg);
+}
+
+
+/*
+ * Logs an INFO message to stderr.
+ */
+void
+rps_log_info(const char *msg)
+{
+	assert(msg && *msg && "message must be valid string");
+	tty_print(CPN_INFO, msg);
+}
+
+
+/*
+ * Logs a DEBUG message to stderr.
+ */
+void
+rps_log_debug(const char *msg)
+{
+	assert(msg && *msg && "message must be valid string");
+	tty_print(CPN_DEBUG, msg);
+}
+
+
+/*
+ * Logs a WARN message to stderr.
+ */
+void
+rps_log_warn(const char *msg)
+{
+	assert(msg && *msg && "message must be valid string");
+	tty_print(CPN_WARN, msg);
+}
+
+
+/*
+ * Logs a FAIL message to stderr.
+ */
+void
+rps_log_fail(const char *msg, int erno)
+{
+	assert(msg && *msg && "message must be valid string");
+	tty_print(CPN_FAIL, msg);
+	errno = erno;
+	exit(erno);
 }
 
