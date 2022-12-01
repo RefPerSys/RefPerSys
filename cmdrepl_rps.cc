@@ -245,7 +245,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                   << " from " << RPS_FULL_BACKTRACE_HERE(1, "REPL command show rpsapply_7WsQyJK6lty02uz5KT/gotnext"));
     if (_f.lextokv)
       {
-        tksrc->token_dequeue().push_back(_f.lextokv);
+        tksrc->append_back_new_token(&_, _f.lextokv);
         RPS_DEBUG_LOG(REPL, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show tksrc becomes " << (*tksrc)
                       << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
       }

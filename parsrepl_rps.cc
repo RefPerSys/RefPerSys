@@ -1533,7 +1533,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
            && _f.lexvalv.is_object())
     {
       _f.obres = _f.lexvalv.to_object();
-      toksrc_token_deq.pop_front();
+      consume_front_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary :: object "
                     << _f.obres << " lexgotokv:" << _f.lexgotokv << std::endl
                     << "...  in:" << (*this)
@@ -1553,7 +1553,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
   else if (_f.lexkindob == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK)) //repl_delimiter∊class
     {
       _f.obdelim =  _f.lexvalv.to_object();
-      toksrc_token_deq.pop_front();
+      consume_front_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary delimited"
                     << " lexkindob:" << _f.lexkindob
                     << " obdelim=" << _f.obdelim << std::endl

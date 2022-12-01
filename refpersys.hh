@@ -2302,8 +2302,9 @@ public:
 			       Rps_ObjectRef lexkind, Rps_Value lexval, const Rps_String*sourcev);
   virtual ~Rps_TokenSource();
   virtual void output (std::ostream&out) const = 0;
-  Rps_DequVal& token_dequeue(void) { return toksrc_token_deq; };
-  const Rps_DequVal& const_token_dequeue(void) const { return toksrc_token_deq; };
+  const Rps_DequVal& token_dequeue(void) const { return toksrc_token_deq; };
+  void consume_front_token(Rps_CallFrame*callframe);
+  void append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv);
   virtual bool get_line(void) =0; // gives true when another line has been read
   Rps_TokenSource(const Rps_TokenSource&) = delete;
   Rps_TokenSource() = delete;
