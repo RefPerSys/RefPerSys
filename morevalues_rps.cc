@@ -511,18 +511,31 @@ Rps_DequVal::output(std::ostream&out, unsigned depth) const
   if (depth > 1+Rps_Value::max_output_depth)
     out << "°deqval(<...>)";
   else if (depth==Rps_Value::max_output_depth)
-    out << "°deqval(@" << (dqu_srcfil?:"?") << ":" << dqu_srclin;
+    {
+      if (dqu_srcfil && dqu_srcfil[0] && dqu_srclin>0)
+        out << "°deqval(@" << dqu_srcfil << ":" << dqu_srclin;
+      else
+        out << "°deqval(@";
+    }
   else
     {
       unsigned siz = size();
       if (siz == 0)
         {
-          out << "°deqval(@" << (dqu_srcfil?:"?") << ":" << dqu_srclin
-              << "⁖⦰)"; //U+29B0 REVERSED EMPTY SET;
+          if (dqu_srcfil && dqu_srcfil[0] && dqu_srclin>0)
+            out << "°deqval(@" << dqu_srcfil << ":" << dqu_srclin << "⁖";
+          else
+
+            out << "°deqval(";
+          out << "⦰)"; //U+29B0 REVERSED EMPTY SET;
         }
-      else
+      else // siz > 0
         {
-          out << "°deqval.l" << siz << "(@" << (dqu_srcfil?:"?") << ":" << dqu_srclin<<"⁖";
+          if (dqu_srcfil && dqu_srcfil[0] && dqu_srclin>0)
+            out << "°deqval(<@" << dqu_srcfil << ":" << dqu_srclin << "⁖";
+          else
+
+            out << "°deqval(<";
           int cnt = 0;
           for (const Rps_Value& curval: *this)
             {
