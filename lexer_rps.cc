@@ -1280,7 +1280,8 @@ Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe)
   if (toksrc_token_deq.empty())
     throw std::runtime_error("Rps_TokenSource::consume_front_token without any queued token");
   toksrc_token_deq.pop_front();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token done, now token_deq:" << toksrc_token_deq);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token done€, now token_deq:" << toksrc_token_deq
+                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::consume_front_token/done€"));
 } // end Rps_TokenSource::consume_front_token
 
 
@@ -1300,7 +1301,8 @@ Rps_TokenSource::append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv
                 << " tokenv:" << _f.lextokv);
   RPS_ASSERT (_f.lextokv && _f.lextokv.is_lextoken());
   toksrc_token_deq.push_back(tokenv);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::append_back_new_token done token_deq=" << toksrc_token_deq);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::append_back_new_token done€ token_deq=" << toksrc_token_deq
+                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::append_back_new_token/done€"));
 } // end Rps_TokenSource::append_back_new_token
 
 extern "C" void rps_run_test_repl_lexer(const std::string&);
