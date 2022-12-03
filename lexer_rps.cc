@@ -605,7 +605,6 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           warndelimstr += delimpos;
           throw std::runtime_error(warndelimstr);
         }
-      toksrc_counter++;
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this
                     << " delimiter :-◑> " << _f.delimv << " at " << position_str()
@@ -615,7 +614,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
                << " from " << *this
-               << " @! " << position_str());
+               << " @! " << position_str()
+               << " curp:" << Rps_QuotedC_String(curp));
   // we should refactor properly the rps_repl_lexer & Rps_LexTokenZone constructor here
 } // end Rps_TokenSource::get_token
 
