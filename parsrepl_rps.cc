@@ -869,7 +869,7 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, bool*pokparse)
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparison begin at " << startpos
                 << "  in:" << (*this)
-		<< " curcptr:" << Rps_QuotedC_String(curcptr())
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq);
   /// lessequal is <=
   static Rps_Id id_lessequal_delim;
@@ -978,7 +978,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand begin from " << Rps_ShowCallFrame(&_)
                 << " in " << (*this) << " at " <<  startpos
-		<< " curcptr:" << Rps_QuotedC_String(curcptr())
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq);
   bool okleft = false;
   _f.leftv = parse_term(&_,  &okleft);
@@ -1042,7 +1042,7 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, bool*pokparse)
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor begin startpos:" << startpos
                 << "  in:" << (*this)
-		<< " curcptr:" << Rps_QuotedC_String(curcptr())
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq);
   /// + delimiter and binary operator
   static Rps_Id id_plus_delim;
@@ -1193,8 +1193,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
   _f.multbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_mult_oper); // "mult!binop"∈repl_binary_operator
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term startpos:" << startpos << " multdelimob:" << _f.multdelimob
                 << " multbinopob: " << _f.multbinopob
-		<< " token_deq:" << toksrc_token_deq
-		<< " curcptr:" << Rps_QuotedC_String(curcptr()));
+                << " token_deq:" << toksrc_token_deq
+                << " curcptr:" << Rps_QuotedC_String(curcptr()));
   /// division operator and / delim
   static Rps_Id id_div_delim;
   if (!id_div_delim)
@@ -1578,7 +1578,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                         << " obdelim=" << _f.obdelim
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
                         << " position:" << position_str() << " startpos:" << startpos << std::endl
-			<< " token_deq:" << toksrc_token_deq
+                        << " token_deq:" << toksrc_token_deq
                         << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary subexpression"));
           bool oksubexpr = false;
           _f.exprv = parse_expression(&_, &oksubexpr);
@@ -1587,7 +1587,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary gotsubexpression "
                             << _f.exprv << " startpos:" << startpos << " position:" << position_str()
                             << " curcptr:" << Rps_QuotedC_String(curcptr())
-			    << " token_deq:" << toksrc_token_deq
+                            << " token_deq:" << toksrc_token_deq
                             << "  in:" << (*this)
                             << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary subexpression"));
 #warning  Rps_TokenSource::parse_primary should check for rightparen and consume
@@ -1595,8 +1595,8 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                            << "  in:" << (*this)
                            << " startpos:" << startpos
                            << " position:" << position_str()
-                            << " curcptr:" << Rps_QuotedC_String(curcptr())
-			    << " token_deq:" << toksrc_token_deq);
+                           << " curcptr:" << Rps_QuotedC_String(curcptr())
+                           << " token_deq:" << toksrc_token_deq);
 #warning TODO: Rps_TokenSource::parse_primary use rightparen _7CG9m1NXpMo01edTUl and build subexpression object
               /* TODO: we probably should make then return some object or some
               instance for that primary in parenthesis... */
@@ -1606,7 +1606,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary failing_C at startpos:" << startpos
                             << "  in:" << (*this)
                             << " position:" << position_str()
-			    << " token_deq:" << toksrc_token_deq
+                            << " token_deq:" << toksrc_token_deq
                             << " curcptr:" << Rps_QuotedC_String(curcptr())
                             << std::endl
                             << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary failing_C"));
@@ -1627,7 +1627,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                         << "  in:" << (*this)
                         << " position:" << position_str()
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
-			<< " token_deq:" << toksrc_token_deq
+                        << " token_deq:" << toksrc_token_deq
                         << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary failing_C"));
           RPS_WARNOUT("Rps_TokenSource::parse_primary failing, unexpected delimiter " << _f.obdelim
@@ -1690,9 +1690,9 @@ Rps_TokenSource::can_start_primary(Rps_CallFrame*callframe)
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary starting startpos:" << startpos
                 << "  in:" << (*this)
-		<< " curcptr:" << Rps_QuotedC_String(curcptr())
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " callframe:" << callframe
-		<< " token_deq:" << toksrc_token_deq);
+                << " token_deq:" << toksrc_token_deq);
   _f.lextokv =  lookahead_token(&_,  0);
   if (!_f.lextokv)
     return false;
