@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2021 The Reflective Persistent System Team
+ *      © Copyright 2021 - 2022 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -251,11 +251,15 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
       }
     RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/before pars.expr. tksrc:" << (*tksrc) << " replcmdob:" << _f.replcmdob << " lextokv:" << _f.lextokv
                   << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/before parsexp")
-                  << std::endl << ".... before parse_expression");
+                  << std::endl << ".... before parse_expression token_deq:"
+                  << tksrc->token_dequeue()
+                  << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr()));
     _f.showv = tksrc->parse_expression(&_);
     RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                   << " after parse_expression showv=" << _f.showv);
     RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr. tksrc:" << (*tksrc) << " replcmdob:" << _f.replcmdob
+                  << " token_deq:" << tksrc->token_dequeue()
+                  << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
                   << " lextokv:" << _f.lextokv << " showv:" << _f.showv
                   << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/after parsexp"));
     std::cout << "##" << RPS_TERMINAL_BOLD_ESCAPE << showpos
