@@ -358,14 +358,16 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           toksrc_col += endfloat - startnum;
           _f.lextokv = Rps_DoubleValue(d);
           _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token doubleval " << _f.lextokv << " curpos:" << position_str());
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token doubleval " << _f.lextokv << " curpos:" << position_str()
+			<< " curcptr:" << Rps_QuotedC_String(curcptr()));
         }
       else
         {
           toksrc_col += (int)(endint - startnum);
           _f.lextokv = Rps_Value::make_tagged_int(l);
           _f.lexkindob = RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); //int∈class
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token intval " << _f.lextokv << " curpos:" << position_str());
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token intval " << _f.lextokv << " curpos:" << position_str()
+			<< " curcptr:" << Rps_QuotedC_String(curcptr()));
         }
       _f.namev = source_name_val(&_);
       const Rps_String* str = _f.namev.to_string();
