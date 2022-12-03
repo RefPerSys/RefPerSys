@@ -68,8 +68,10 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
   _f.bindelimob = bindelim;
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_symmetrical_binop " << opername
                 << " in " << (*this)
-                << " START position:" << startpos << " calldepth="
-                << rps_call_frame_depth(&_));
+                << " START position:" << startpos
+                << " token_deq:" << toksrc_token_deq
+                << " curcptr:" << curcptr()
+                << " calldepth=" << rps_call_frame_depth(&_));
   if (is_looking_ahead(pokparse))
     {
       // TODO: review, ... only lookahead for left part....
@@ -202,8 +204,9 @@ Rps_TokenSource::parse_asymmetrical_binaryop(Rps_CallFrame*callframe,
   _f.bindelimob = bindelim;
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse asymmetrical binop " << opername
                 <<" START position:" << startpos
-                << " in " << (*this) << " calldepth="
-                << rps_call_frame_depth(&_));
+                << " token_deq:" << toksrc_token_deq
+                << " curcptr:" << curcptr()
+                << " in " << (*this) << " calldepth="  << rps_call_frame_depth(&_));
   if (is_looking_ahead(pokparse))
     {
       /// for lookahead just run the left parsing...
@@ -306,17 +309,22 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, Rps_ObjectRef polyoper, R
   std::string startpos = position_str();
   if (!opername)
     opername="???";
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_polyop " << opername
+                << " START position:" << startpos
+                << " token_deq:" << toksrc_token_deq
+                << " curcptr:" << curcptr()
+                << " calldepth=" << rps_call_frame_depth(&_));
   if (is_looking_ahead(pokparse))
     {
       // TODO: review, ... only lookahead for first suboperand....
       _f.leftv = parser_suboperand(&_,this, RPS_DO_LOOKAHEAD);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse symmetrical binop " << opername << " lookahead " << (_f.leftv?"success":"failure"));
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_polyop " << opername << " lookahead " << (_f.leftv?"success":"failure"));
       return _f.leftv;
     }
   _f.leftv = parser_suboperand(&_,this,&leftok);
   if (!leftok)
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse polyop " << opername << " LEFT FAILURE startpos:" <<  startpos
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_polyop " << opername << " LEFT FAILURE startpos:" <<  startpos
                     << " curpos" << position_str()  << " calldepth="
                     << rps_call_frame_depth(&_));
       if (pokparse)
@@ -563,7 +571,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
   });
   bool ok = false;
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction begin startpos:"
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction START startpos:"
                 << startpos << " calldepth#" << rps_call_frame_depth(&_)
                 << "  in:" << (*this) << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq);
@@ -712,9 +720,11 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
       gc->mark_value(disjv);
   });
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction begin at " << startpos
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction DTART at " << startpos
                 << "  in:" << (*this)
-                << " token_deq:" << toksrc_token_deq);
+                << " token_deq:" << toksrc_token_deq
+                << " curcptr:" << curcptr()
+                << " calldepth=" << rps_call_frame_depth(&_));
   static Rps_Id id_and_delim;
   if (!id_and_delim)
     id_and_delim = Rps_Id("_2YVmrhVcwW00120rTK");
@@ -976,7 +986,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                  Rps_ObjectRef cmpbinopob;
                 );
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand begin from " << Rps_ShowCallFrame(&_)
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand START from " << Rps_ShowCallFrame(&_)
                 << " in " << (*this) << " at " <<  startpos
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq);
@@ -1040,7 +1050,7 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, bool*pokparse)
                  Rps_ObjectRef minusbinopob;
                 );
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor begin startpos:" << startpos
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor START startpos:" << startpos
                 << "  in:" << (*this)
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq);
@@ -1204,8 +1214,11 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
     id_div_oper = Rps_Id("_0GTVGelTnCP01I0od2"); // id of "div!binop"∈repl_binary_operator
   _f.divdelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_div_delim); // "div!delim"∈repl_delimiter
   _f.divbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_div_oper); // "div!binop"∈repl_binary_operator
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term  startpos:" << startpos << " divdelimob:" << _f.divdelimob
-                << " divbinopob: " << _f.divbinopob);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term START startpos:" << startpos << " divdelimob:" << _f.divdelimob
+                << " divbinopob: " << _f.divbinopob
+                << " token_deq:" << toksrc_token_deq
+                << " curcptr:" << curcptr()
+                << " calldepth=" << rps_call_frame_depth(&_));
   /// modulus operator and % delim
   static Rps_Id id_mod_delim;
   if (!id_mod_delim)
@@ -1441,7 +1454,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
 #warning code review needed. Do we need  this->gc_mark(*gc) in Rps_TokenSource::parse_primary ?
   });
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary begin startpos:" << startpos
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary START startpos:" << startpos
                 << "  in:" << (*this)
                 << " callframe:" << callframe<< " curcptr:" << Rps_QuotedC_String(curcptr())
                 << std::endl
