@@ -330,7 +330,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                 << " startpos:" << startpos << " at:" << position_str());
   if (toksrc_col>=(int)linelen)
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token EOL at " << position_str());
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token EOL at " << position_str());
       return nullptr;
     }
   ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
@@ -376,7 +376,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
          curlin, curcol);
       _f.res = Rps_LexTokenValue(lextok);
       lextok->set_serial(++toksrc_counter);
-      RPS_DEBUG_LOG(REPL, "get_token#" << toksrc_counter
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this
                     << " number :-◑> " << _f.res << " @! " << position_str());
       return _f.res;
@@ -407,7 +407,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
          curlin, curcol);
       _f.res = Rps_LexTokenValue(lextok);
       lextok->set_serial(++toksrc_counter);
-      RPS_DEBUG_LOG(REPL, "get_token#" << toksrc_counter
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this
                     <<" infinity :-◑> " << _f.res << " @! " << position_str());
       return _f.res;
@@ -447,7 +447,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
              curlin, curcol);
           _f.res = Rps_LexTokenValue(lextokz);
           lextokz->set_serial(++toksrc_counter);
-          RPS_DEBUG_LOG(REPL, "get_token#" << toksrc_counter
+          RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                         << " from¤ " << *this
                         << " object :-◑> " << _f.res << " @! " << position_str());
           return _f.res;
@@ -463,7 +463,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
              curlin, curcol);
           _f.res = Rps_LexTokenValue(lextok);
           lextok->set_serial(++toksrc_counter);
-          RPS_DEBUG_LOG(REPL, "get_token#" << toksrc_counter
+          RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                         << " from¤ " << *this
                         << " symbol :-◑> " << _f.res << " @! " << position_str());
           return _f.res;
@@ -471,7 +471,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       else   // bad name
         {
           toksrc_col = startcol;
-          RPS_DEBUG_LOG(REPL, "get_token FAIL bad name " << _f.namev << " @! " << position_str());
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token FAIL bad name " << _f.namev << " @! " << position_str());
           return nullptr;
         }
     }
@@ -492,7 +492,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
          linestart, colstart);
       _f.res = Rps_LexTokenValue(lextok);
       lextok->set_serial(++toksrc_counter);
-      RPS_DEBUG_LOG(REPL, "get_token#" << toksrc_counter
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this
                     << " single-line string :-◑> " << _f.res << " @! " << position_str());
       return _f.res;
@@ -500,8 +500,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 
   //// raw literal strings may span across several lines, like in C++
   //// see https://en.cppreference.com/w/cpp/language/string_literal
-  else if (*curp == 'R'
-           && curp[0] == 'R' && curp[1] == '"' && isalpha(curp[2]))
+  else if (curp[0] == 'R' && curp[1] == '"' && isalpha(curp[2]))
     {
       int linestart = toksrc_line;
       int colstart = toksrc_col;
@@ -517,7 +516,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
          linestart, colstart);
       _f.res = Rps_LexTokenValue(lextok);
       lextok->set_serial(++toksrc_counter);
-      RPS_DEBUG_LOG(REPL, "get_token#" << toksrc_counter
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this
                     << " multi-line literal string :-◑> " << _f.res << " @! " << position_str());
       return _f.res;
@@ -582,7 +581,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
          linestart, colstart);
       _f.res = Rps_LexTokenValue(lextok);
       lextok->set_serial(++toksrc_counter);
-      RPS_DEBUG_LOG(REPL, "get_token#" << toksrc_counter
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this
                     << " code_chunk :-◑> " << _f.res << " @! " << position_str());
       return _f.res;
@@ -607,7 +606,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           throw std::runtime_error(warndelimstr);
         }
       toksrc_counter++;
-      RPS_DEBUG_LOG(REPL, "get_token#" << toksrc_counter
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this
                     << " delimiter :-◑> " << _f.delimv << " at " << position_str()
                     << " curp:" << Rps_QuotedC_String(curp));
