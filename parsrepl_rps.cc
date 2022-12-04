@@ -396,7 +396,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
   static std::atomic_long exprcounter;
   long exprnum = 1+ exprcounter.fetch_add(1);
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression#" << exprnum << " start position:"
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression#" << exprnum << " START position:"
                 << startpos << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " in:" << (*this)
                 << std::endl
@@ -1591,18 +1591,18 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                         << " obdelim=" << _f.obdelim
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
                         << " position:" << position_str() << " startpos:" << startpos << std::endl
-                        << " token_deq:" << toksrc_token_deq
-                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary subexpression"));
+                        << " token_deq:" << toksrc_token_deq << std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary before subexpression"));
           bool oksubexpr = false;
           _f.exprv = parse_expression(&_, &oksubexpr);
           if (oksubexpr)
             {
-              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary gotsubexpression "
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary after subexpression "
                             << _f.exprv << " startpos:" << startpos << " position:" << position_str()
                             << " curcptr:" << Rps_QuotedC_String(curcptr())
                             << " token_deq:" << toksrc_token_deq
                             << "  in:" << (*this)
-                            << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary subexpression"));
+                            << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary after subexpression"));
 #warning  Rps_TokenSource::parse_primary should check for rightparen and consume
               RPS_FATALOUT("unimplemented Rps_TokenSource::parse_primary with leftparen " << _f.obdelim
                            << "  in:" << (*this)
