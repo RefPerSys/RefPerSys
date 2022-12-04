@@ -398,14 +398,13 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression#" << exprnum << " START position:"
                 << startpos << " curcptr:" << Rps_QuotedC_String(curcptr())
-                << " in:" << (*this)
+                << " in:" << (*this) << std::endl
+                << "... token_deq:" << toksrc_token_deq
+                << " calldepth=" << rps_call_frame_depth(&_)
                 << std::endl
-                << " token_deq:" << toksrc_token_deq
-                << "... calldepth=" << rps_call_frame_depth(&_)
-                << std::endl << "parse_expression callframe:"
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression start"));
   _f.lextokv =  lookahead_token(&_,  0);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression#"  << exprnum << " looked tok0 lextokv="
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression#"  << exprnum << " looked tokrk0 lextokv="
                 << _f.lextokv << std::endl << "... in:" << (*this)
                 << " position:" << position_str() << " startpos:" << startpos
                 << " token_deq:" << toksrc_token_deq
