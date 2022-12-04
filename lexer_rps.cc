@@ -331,7 +331,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   if (toksrc_col>=(int)linelen)
     {
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token EOL at " << position_str()
-		    << " startpos:" << startpos);
+                    << " startpos:" << startpos);
       return nullptr;
     }
   ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
@@ -453,7 +453,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           lextokz->set_serial(++toksrc_counter);
           RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                         << " from¤ " << *this
-			<< std::endl
+                        << std::endl
                         << " object :-◑> " << _f.res << " @! " << position_str());
           return _f.res;
         }
@@ -1233,8 +1233,9 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token start rank#" << rank << " in " << (*this) << std::endl
                 << " pos:" << position_str()
-                << " curcptr:" << Rps_QuotedC_String(curcptr())
-                << " called from:" << std::endl << Rps_ShowCallFrame(&_)
+                << " token_deq:" << toksrc_token_deq << std::endl
+                << "... curcptr:" << Rps_QuotedC_String(curcptr())
+                //<< " called from:" << std::endl << Rps_ShowCallFrame(&_)
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::lookahead_token start"));
   RPS_ASSERT(_.call_frame_depth() < 32);
   while (toksrc_token_deq.size() < rank)
