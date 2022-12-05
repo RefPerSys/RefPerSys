@@ -32,7 +32,8 @@
 
 
 /*
- * Thread local log file path.
+ * Thread local log file path. NULL or an empty string indicates that logging to
+ * file is currently disabled.
  */
 static __thread const char *log_path = NULL;
 
@@ -52,6 +53,16 @@ tty_print(const char *cpn, const char *msg)
 	strftime(bfr, sizeof(bfr), "", localtime(&now));
 	fprintf(stderr, "%s " TTY_MAGENTA "%s" TTY_RESET ": %s\n",
 	    cpn, bfr, msg);
+}
+
+
+/*
+ * Helper function to write timestamped message to the current log file
+ * along with a caption. Assumes that log_path is valid.
+ */
+static void
+file_write(const char *cpn, const char *msg)
+{
 }
 
 
@@ -83,6 +94,9 @@ rps_log_ok(const char *msg)
 {
 	assert(msg && *msg && "message must be valid string");
 	tty_print(CPN_OK, msg);
+
+	if (log_path && *log_path)
+		file_write("[OK]", msg);
 }
 
 
@@ -94,6 +108,9 @@ rps_log_info(const char *msg)
 {
 	assert(msg && *msg && "message must be valid string");
 	tty_print(CPN_INFO, msg);
+	
+	if (log_path && *log_path)
+		file_write("[INFO]", msg);
 }
 
 
@@ -105,6 +122,9 @@ rps_log_debug(const char *msg)
 {
 	assert(msg && *msg && "message must be valid string");
 	tty_print(CPN_DEBUG, msg);
+	
+	if (log_path && *log_path)
+		file_write("[DEBUG]", msg);
 }
 
 
@@ -116,6 +136,9 @@ rps_log_warn(const char *msg)
 {
 	assert(msg && *msg && "message must be valid string");
 	tty_print(CPN_WARN, msg);
+
+	if (log_path && *log_path)
+		file_write("[WARN]", msg);
 }
 
 
@@ -127,6 +150,10 @@ rps_log_fail(const char *msg, int erno)
 {
 	assert(msg && *msg && "message must be valid string");
 	tty_print(CPN_FAIL, msg);
+	
+	if (log_path && *log_path)
+		file_write("[FAIL]", msg);
+
 	errno = erno;
 	exit(erno);
 }
