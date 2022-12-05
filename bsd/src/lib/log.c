@@ -38,7 +38,6 @@
 static __thread const char *log_path = NULL;
 
 
-
 /*
  * Helper function to print a coloured timestamped message to TTY along with a
  * caption.
@@ -63,6 +62,22 @@ tty_print(const char *cpn, const char *msg)
 static void
 file_write(const char *cpn, const char *msg)
 {
+	FILE	*fd;
+	char  	 bfr[32];
+	time_t	 now;
+
+	assert(log_path && *log_path && "invalid log path");
+	fd = fopen(log_path);
+
+	if (__predict_false(!fd)) {
+		log_path = NULL;
+		tty_print(CPN_WARN, "Could not open log file");
+		return;
+	}
+
+	now = time(NULL);
+	strftime(bfr, sizeof(bfr), "", localtime(&now));
+	fprintf(fd, "%s %s: %s\n", cpn, bfr, msg);
 }
 
 
