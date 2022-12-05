@@ -32,6 +32,13 @@
 
 
 /*
+ * Thread local log file path.
+ */
+static __thread const char *log_path = NULL;
+
+
+
+/*
  * Helper function to print a coloured timestamped message to TTY along with a
  * caption.
  */
@@ -45,6 +52,26 @@ tty_print(const char *cpn, const char *msg)
 	strftime(bfr, sizeof(bfr), "", localtime(&now));
 	fprintf(stderr, "%s " TTY_MAGENTA "%s" TTY_RESET ": %s\n",
 	    cpn, bfr, msg);
+}
+
+
+/*
+ * Gets the path to the current log file.
+ */
+const char *
+rps_log_file(void)
+{
+	return log_path;
+}
+
+
+/*
+ * Sets the path to the current log file.
+ */
+void
+rps_log_file_set(const char *path)
+{
+	log_path = path;
 }
 
 
