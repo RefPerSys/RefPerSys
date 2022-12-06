@@ -1267,7 +1267,9 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " => " << _f.lextokv);
       return _f.lextokv;
     }
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " missing:"
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token FAIL rank#" << rank << " missing,"
+                << " pos:" << position_str()
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << std::endl << Rps_ShowCallFrame(&_));
   return nullptr;
 } // end Rps_TokenSource::lookahead_token
@@ -1302,6 +1304,7 @@ Rps_TokenSource::append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::append_back_new_token called from:" << std::endl << Rps_ShowCallFrame(&_)
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSourc::append_back_new_token start")
+		<< std::endl
                 << " this:" << (*this) << " token_deq:" << toksrc_token_deq
                 << " tokenv:" << _f.lextokv);
   RPS_ASSERT (_f.lextokv && _f.lextokv.is_lextoken());
