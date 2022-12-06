@@ -1304,7 +1304,7 @@ Rps_TokenSource::append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::append_back_new_token called from:" << std::endl << Rps_ShowCallFrame(&_)
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSourc::append_back_new_token start")
-		<< std::endl
+                << std::endl
                 << " this:" << (*this) << " token_deq:" << toksrc_token_deq
                 << " tokenv:" << _f.lextokv);
   RPS_ASSERT (_f.lextokv && _f.lextokv.is_lextoken());
