@@ -509,6 +509,13 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
     {
       if (pokparse)
         *pokparse = false;
+      RPS_PARSREPL_FAILURE(&_,
+                           "Rps_TokenSource::parse_expression#"  << exprnum << " failing_A at startpos:" << startpos
+                           << " in:" << (*this)
+                           << " position:" << position_str()
+                           << " curcptr:" << Rps_QuotedC_String(curcptr())
+                           << std::endl
+                           << " token_deq:" << toksrc_token_deq);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression#"  << exprnum << " failing_A at startpos:" << startpos
                     << " in:" << (*this)
                     << " position:" << position_str()
