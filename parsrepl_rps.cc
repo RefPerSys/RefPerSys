@@ -110,12 +110,11 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
     _f.leftv = parser_binop(&_, &leftok);
   if (!leftok)
     {
-      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::parse_symmetrical_binop- "
-                    << opername << " LEFT FAILURE startpos:" <<  startpos
-                    << " curpos" << position_str()  << " calldepth="
-                    << rps_call_frame_depth(&_)
-                    << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-left"));
+      RPS_PARSREPL_FAILURE(&_,"-Rps_TokenSource::parse_symmetrical_binop- "
+                           << opername << " LEFT FAILURE startpos:" <<  startpos
+                           << " curpos" << position_str()
+                           << std::endl
+                           << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-left"));
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -149,12 +148,12 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
     }
   else
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_symmetrical_binop "
-                    << opername << " BAD DELIM FAILURE startpos:" <<  startpos
-                    << " curpos" << position_str()  << " calldepth="
-                    << rps_call_frame_depth(&_)
-                    << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-bad-delim"));
+      RPS_PARSREPL_FAILURE(&_, "Rps_TokenSource::parse_symmetrical_binop "
+                           << opername << " BAD DELIM FAILURE startpos:" <<  startpos
+                           << " curpos" << position_str()  << " calldepth="
+                           << rps_call_frame_depth(&_)
+                           << std::endl
+                           << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-bad-delim"));
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -166,13 +165,15 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
                 << "startpos:" << startpos << " pos:" << position_str());
   _f.rightv = parser_binop(&_,&rightok);
   if (!rightok)
+
     {
-      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::parse_symmetrical_binop " << opername << " FAIL at  " << position_str()
-                    << " start: " << startpos
-                    << "leftv:" << _f.leftv
-                    << " lextokv:" << _f.lextokv
-                    << " in:" << (*this) << std::endl
-                    << "... token_deq:" << toksrc_token_deq);
+      RPS_PARSREPL_FAILURE(&_, "Rps_TokenSource::parse_symmetrical_binop "
+                           << opername << " FAIL at  " << position_str()
+                           << " start: " << startpos
+                           << "leftv:" << _f.leftv
+                           << " lextokv:" << _f.lextokv
+                           << " in:" << (*this) << std::endl
+                           << "... token_deq:" << toksrc_token_deq);
       RPS_WARNOUT("Rps_TokenSource::parse_symmetrical_binop failed for "<< opername << " at " << position_str()
                   << " starting " << startpos
                   << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_symmetrical_binop/fail-right"));
@@ -259,11 +260,11 @@ Rps_TokenSource::parse_asymmetrical_binaryop(Rps_CallFrame*callframe,
     _f.leftv = parser_leftop(&_,this,&leftok);
   if (!leftok)
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_asymmetrical_binop " << opername << " LEFT FAILURE startpos:" <<  startpos
-                    << " curpos" << position_str()  << " calldepth="
-                    << rps_call_frame_depth(&_)
-                    << " token_deq:" << toksrc_token_deq
-                    << " curcptr:" << curcptr());
+      RPS_PARSREPL_FAILURE(&_, "Rps_TokenSource::parse_asymmetrical_binop " << opername << " LEFT FAILURE startpos:" <<  startpos
+                           << " curpos" << position_str()  << " calldepth="
+                           << rps_call_frame_depth(&_)
+                           << " token_deq:" << toksrc_token_deq
+                           << " curcptr:" << curcptr());
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -304,11 +305,11 @@ Rps_TokenSource::parse_asymmetrical_binaryop(Rps_CallFrame*callframe,
                     << " curcptr:" << curcptr() << " rightv=" << _f.rightv);
       if (!rightok)
         {
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_asymmetrical_binop " << opername << " RIGHT FAILURE startpos:" <<  startpos
-                        << " curpos" << position_str()  << " calldepth="
-                        << rps_call_frame_depth(&_)
-                        << " token_deq:" << toksrc_token_deq
-                        << " curcptr:" << curcptr());
+          RPS_PARSREPL_FAILURE(&_, "Rps_TokenSource::parse_asymmetrical_binop " << opername << " RIGHT FAILURE startpos:" <<  startpos
+                               << " curpos" << position_str()  << " calldepth="
+                               << rps_call_frame_depth(&_)
+                               << " token_deq:" << toksrc_token_deq
+                               << " curcptr:" << curcptr());
           RPS_WARNOUT("failed to parse asymmetrical right operand for "<< opername << " at " << position_str()
                       << " starting " << startpos);
           if (pokparse)
@@ -383,9 +384,14 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, Rps_ObjectRef polyoper, R
     {
       // TODO: review, ... only lookahead for first suboperand....
       _f.leftv = parser_suboperand(&_,this, RPS_DO_LOOKAHEAD);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_polyop " << opername << " lookahead " << (_f.leftv?"success":"failure")
-                    << " token_deq:" << toksrc_token_deq
-                    << " curcptr:" << curcptr());
+      if (_f.leftv)
+        RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_polyop " << opername << " lookahead success"
+                      << " token_deq:" << toksrc_token_deq
+                      << " curcptr:" << curcptr());
+      else
+        RPS_PARSREPL_FAILURE(&_, "Rps_TokenSource::parse_polyop " << opername << " lookahead failure"
+                             << " token_deq:" << toksrc_token_deq
+                             << " curcptr:" << curcptr());
       return _f.leftv;
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_polyop " << opername << " before leftsuboper"
@@ -395,11 +401,11 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, Rps_ObjectRef polyoper, R
   _f.leftv = parser_suboperand(&_,this,&leftok);
   if (!leftok)
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_polyop " << opername << " LEFT FAILURE startpos:" <<  startpos
-                    << " curpos" << position_str()  << " calldepth="
-                    << rps_call_frame_depth(&_)
-                    << " token_deq:" << toksrc_token_deq
-                    << " curcptr:" << curcptr());
+      RPS_PARSREPL_FAILURE(&_, "Rps_TokenSource::parse_polyop " << opername << " LEFT FAILURE startpos:" <<  startpos
+                           << " curpos" << position_str()  << " calldepth="
+                           << rps_call_frame_depth(&_)
+                           << " token_deq:" << toksrc_token_deq
+                           << " curcptr:" << curcptr());
       if (pokparse)
         *pokparse = false;
       return nullptr;
@@ -430,6 +436,9 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, Rps_ObjectRef polyoper, R
                     << (okarg?"ok":"fail"));
       if (!okarg)
         {
+          RPS_PARSREPL_FAILURE(&_, "Rps_TokenSource::parse_polyop " << opername
+                               << " failed to parse operand#" << argvect.size() <<" for "<< opername << " at " << position_str()
+                               << " starting " << startpos);
           RPS_WARNOUT("parse_polyop failed to parse operand#" << argvect.size() <<" for "<< opername << " at " << position_str()
                       << " starting " << startpos);
           break;
