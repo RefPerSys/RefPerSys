@@ -1130,6 +1130,13 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, bool*pokparse)
                     << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparison failing_A"));
 
+      RPS_PARSREPL_FAILURE(&_,
+                           "Rps_TokenSource::parse_comparison failing_A at startpos:" << startpos
+                           << "  in:" << (*this)
+                           << " position:" << position_str()
+                           << " curcptr:" << Rps_QuotedC_String(curcptr())
+                           << " token_deq:" << toksrc_token_deq);
+
       RPS_WARNOUT("parse_comparison failed to parse left comparand at " << startpos
                   << " current line:" << Rps_QuotedC_String(current_line())
                   << " curpos " << position_str()
@@ -1162,14 +1169,31 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, bool*pokparse)
                   << _f.lextokv << " position:" << position_str()
                   << " startpos:" << startpos
                   << std::endl << " leftv=" << _f.leftv);
+      RPS_PARSREPL_FAILURE(&_,
+                           "Rps_TokenSource::parse_comparison failing_XX at startpos:" << startpos
+                           << "  in:" << (*this)
+                           << " position:" << position_str()
+                           << " curcptr:" << Rps_QuotedC_String(curcptr())
+                           << " token_deq:" << toksrc_token_deq);
+
     }
 #warning unimplemented Rps_TokenSource::parse_comparison
+  RPS_PARSREPL_FAILURE(&_,
+                       "Rps_TokenSource::parse_comparison failing_final at startpos:" << startpos
+                       << "  in:" << (*this)
+                       << " position:" << position_str()
+                       << "... leftv=" << _f.leftv
+                       << " curcptr:" << Rps_QuotedC_String(curcptr())
+                       << " token_deq:" << toksrc_token_deq);
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparison from " << Rps_ShowCallFrame(callframe)
                << " in:" << (*this) << " at " << position_str()
                << " startpos:" << startpos
                << std::endl
                << "... leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
 } // end Rps_TokenSource::parse_comparison
+
+
+
 
 
 // a comparand - something on left or right side of compare operators is a sequence of terms with additive operators
@@ -1206,6 +1230,13 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                   << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparand fail"));
       if (pokparse)
         *pokparse = false;
+      RPS_PARSREPL_FAILURE(&_,
+                           "Rps_TokenSource::parse_comparand failing_A at startpos:" << startpos
+                           << "  in:" << (*this)
+                           << " position:" << position_str()
+                           << "... leftv=" << _f.leftv
+                           << " curcptr:" << Rps_QuotedC_String(curcptr())
+                           << " token_deq:" << toksrc_token_deq);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand failing_A at startpos:" << startpos
                     << "  in:" << (*this)
                     << " position:" << position_str()
@@ -1215,6 +1246,9 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
       return nullptr;
     }
   _f.lextokv =  lookahead_token(&_,  0);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand lextok-at0: " << _f.lextokv
+                << " position:" << position_str()
+                << " curcptr:" << Rps_QuotedC_String(curcptr()));
   _f.lexopertokv =  lookahead_token(&_,  1);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand  leftv=" << _f.leftv
                 << " lextokv:" << _f.lextokv << " lexopertokv:" << _f.lexopertokv
@@ -1225,6 +1259,12 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
   /***
    * we probably should loop and collect all terms if they are separated by the same additive operator
    ***/
+  RPS_PARSREPL_FAILURE(&_,
+                       "Rps_TokenSource::parse_comparand missing code at startpos:" << startpos
+                       << " in:" << (*this)
+                       << " position:" << position_str()
+                       << " curcptr:" << Rps_QuotedC_String(curcptr())
+                       << " token_deq:" << toksrc_token_deq);
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand from " << Rps_ShowCallFrame(callframe)
                << " in:" << (*this) << " at startpos: " << startpos
                << " currentpos:" << position_str()
@@ -1234,6 +1274,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                << std::endl
                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparand incomplete"));
 } // end Rps_TokenSource::parse_comparand
+
 
 
 Rps_Value
