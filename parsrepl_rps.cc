@@ -683,12 +683,35 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression/endloop"));
     }
   while (again);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum << " oroperob=" << _f.oroperob
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum
+                << " oroperob=" << _f.oroperob
                 << "nbdisj:" << disjvect.size()
                 << std::endl
                 << "...token_deq:" << toksrc_token_deq
-                << " position:" << position_str()<< " startpos:" << startpos);
-  if (disjvect.size() > 1)
+                << " position:" << position_str()
+                << " startpos:" << startpos
+                << " disjvect:" << disjvect);
+  if (disjvect.empty())
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum << " failing_empty at startpos:" << startpos
+                    << "  in:" << (*this)
+                    << " position:" << position_str()
+                    << " curcptr:" << Rps_QuotedC_String(curcptr())
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression failing_empty"));
+      RPS_PARSREPL_FAILURE(&_,
+                           "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum
+                           << " failing_empty at startpos:" << startpos
+                           << " in:" << (*this)
+                           << " position:" << position_str()
+                           << " curcptr:" << Rps_QuotedC_String(curcptr())
+                           << std::endl
+                           << " token_deq:" << toksrc_token_deq);
+      RPS_WARNOUT("parse_expression failed to parse disjunct (none) at " << position_str()
+                  << " startpos:" << startpos);
+      return nullptr;
+    }
+  else if (disjvect.size() > 1)
     {
       /// we make an instance:
       _f.resexprv = Rps_InstanceValue(_f.oroperob, disjvect);
