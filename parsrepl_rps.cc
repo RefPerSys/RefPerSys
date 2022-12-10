@@ -2012,8 +2012,9 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
                         << " position:" << position_str() << " startpos:" << startpos << std::endl
                         << " token_deq:" << toksrc_token_deq);
-          _f.lexgotokv = get_token(&_); /// consume the leftparen
-#warning perhaps Rps_TokenSource::consume_front_token(&_) should be called here?
+	  /// we did consume the leftparen-
+	  _f.lexgotokv = get_token(&_);
+          //WRONG _f.lexgotokv = lookahead_token(&_, 0);
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " got leftparen before subexpression"
                         << "  in:" << (*this) << std::endl
                         << "... lextokv:" << _f.lextokv
