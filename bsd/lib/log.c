@@ -44,20 +44,16 @@ static __thread const char *log_path = NULL;
  * caption.
  */
 static void
-tty_print(const char *cpn, const char *msg, ...)
+tty_print(const char *cpn, const char *msg, va_list args)
 {
 	char 	bfr[32];
 	time_t	now;
-	va_list	ap;
 
 	now = time(NULL);
 	strftime(bfr, sizeof(bfr), "", localtime(&now));
-	fprintf(stderr, "%s " TTY_MAGENTA "%s" TTY_RESET ": ", cpn, bfr);
-
-	va_start(ap, msg);
-	vfprintf(stderr, msg, ap);
-	va_end(ap);
 	
+	fprintf(stderr, "%s " TTY_MAGENTA "%s" TTY_RESET ": ", cpn, bfr);
+	vfprintf(stderr, msg, args);
 	fprintf(stderr, "\n");
 }
 
@@ -67,12 +63,11 @@ tty_print(const char *cpn, const char *msg, ...)
  * along with a caption. Assumes that log_path is valid.
  */
 static void
-file_write(const char *cpn, const char *msg, ...)
+file_write(const char *cpn, const char *msg, va_list args)
 {
 	FILE	*fd;
 	char  	 bfr[32];
 	time_t	 now;
-	va_list	 ap;
 
 	assert(log_path && *log_path && "invalid log path");
 	fd = fopen(log_path);
@@ -85,12 +80,9 @@ file_write(const char *cpn, const char *msg, ...)
 
 	now = time(NULL);
 	strftime(bfr, sizeof(bfr), "", localtime(&now));
+
 	fprintf(fd, "%s %s: ", cpn, bfr);
-
-	va_start(ap, msg);
-	vfprintf(fd, msg, ap);
-	va_end(ap);
-
+	vfprintf(fd, msg, args);
 	fprintf(fd, "\n");
 }
 
