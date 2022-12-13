@@ -72,6 +72,7 @@ file_write(const char *cpn, const char *msg, ...)
 	FILE	*fd;
 	char  	 bfr[32];
 	time_t	 now;
+	va_list	 ap;
 
 	assert(log_path && *log_path && "invalid log path");
 	fd = fopen(log_path);
@@ -84,7 +85,13 @@ file_write(const char *cpn, const char *msg, ...)
 
 	now = time(NULL);
 	strftime(bfr, sizeof(bfr), "", localtime(&now));
-	fprintf(fd, "%s %s: %s\n", cpn, bfr, msg);
+	fprintf(fd, "%s %s: ", cpn, bfr);
+
+	va_start(ap, msg);
+	vfprintf(fd, msg, ap);
+	va_end(ap);
+
+	fprintf(fd, "\n");
 }
 
 
