@@ -119,13 +119,19 @@ rps_log_file_set(const char *path)
  * Logs an OK message to stderr.
  */
 void
-rps_log_ok(const char *msg)
+rps_log_ok(const char *msg, ...)
 {
+	va_list	ap;
+
 	assert(msg && *msg && "message must be valid string");
-	tty_print(CPN_OK, msg);
+		
+	va_start(ap, msg);
+	tty_print(CPN_OK, msg, ap);
 
 	if (log_path && *log_path)
-		file_write("[OK]", msg);
+		file_write("[OK]", msg, ap);
+		
+	va_end(ap);
 }
 
 
@@ -133,13 +139,19 @@ rps_log_ok(const char *msg)
  * Logs an INFO message to stderr.
  */
 void
-rps_log_info(const char *msg)
+rps_log_info(const char *msg, ...)
 {
+	va_list	ap;
+
 	assert(msg && *msg && "message must be valid string");
-	tty_print(CPN_INFO, msg);
+
+	va_start(ap)
+	tty_print(CPN_INFO, msg, ap);
 	
 	if (log_path && *log_path)
-		file_write("[INFO]", msg);
+		file_write("[INFO]", msg, ap);
+
+	va_end(ap);
 }
 
 
@@ -147,13 +159,19 @@ rps_log_info(const char *msg)
  * Logs a DEBUG message to stderr.
  */
 void
-rps_log_debug(const char *msg)
+rps_log_debug(const char *msg, ...)
 {
+	va_list	ap;
+	
 	assert(msg && *msg && "message must be valid string");
-	tty_print(CPN_DEBUG, msg);
+
+	va_start(ap);
+	tty_print(CPN_DEBUG, msg, ap);
 	
 	if (log_path && *log_path)
-		file_write("[DEBUG]", msg);
+		file_write("[DEBUG]", msg, ap);
+
+	va_end(ap);
 }
 
 
@@ -161,13 +179,19 @@ rps_log_debug(const char *msg)
  * Logs a WARN message to stderr.
  */
 void
-rps_log_warn(const char *msg)
+rps_log_warn(const char *msg, ...)
 {
+	va_list	ap;
+
 	assert(msg && *msg && "message must be valid string");
-	tty_print(CPN_WARN, msg);
+
+	va_start(ap);
+	tty_print(CPN_WARN, msg, ap);
 
 	if (log_path && *log_path)
-		file_write("[WARN]", msg);
+		file_write("[WARN]", msg, ap);
+
+	va_end(ap);
 }
 
 
@@ -175,13 +199,19 @@ rps_log_warn(const char *msg)
  * Logs a FAIL message to stderr.
  */
 void
-rps_log_fail(const char *msg, int erno)
+rps_log_fail(int erno, const char *msg, ...)
 {
+	va_list	ap;
+
 	assert(msg && *msg && "message must be valid string");
-	tty_print(CPN_FAIL, msg);
+
+	va_start(ap);
+	tty_print(CPN_FAIL, msg, ap);
 	
 	if (log_path && *log_path)
-		file_write("[FAIL]", msg);
+		file_write("[FAIL]", msg, ap);
+
+	va_end(ap)
 
 	errno = erno;
 	exit(erno);
