@@ -1,5 +1,6 @@
 #include <assert.h> /* assert(3) */
 #include <errno.h>  /* errno(3) */
+#include <stdarg.h> /* va_start(3) */
 #include <stdio.h>  /* fprintf(3) */
 #include <stdlib.h> /* exit(3) */
 #include <time.h>   /* time(3), strftime(3) */
@@ -43,15 +44,21 @@ static __thread const char *log_path = NULL;
  * caption.
  */
 static void
-tty_print(const char *cpn, const char *msg)
+tty_print(const char *cpn, const char *msg, ...)
 {
 	char 	bfr[32];
 	time_t	now;
+	va_list	ap;
 
 	now = time(NULL);
 	strftime(bfr, sizeof(bfr), "", localtime(&now));
-	fprintf(stderr, "%s " TTY_MAGENTA "%s" TTY_RESET ": %s\n",
-	    cpn, bfr, msg);
+	fprintf(stderr, "%s " TTY_MAGENTA "%s" TTY_RESET ": ", cpn, bfr);
+
+	va_start(ap, msg);
+	vfprintf(stderr, msg, ap);
+	va_end(ap);
+	
+	fprintf(stderr, "\n");
 }
 
 
@@ -60,7 +67,7 @@ tty_print(const char *cpn, const char *msg)
  * along with a caption. Assumes that log_path is valid.
  */
 static void
-file_write(const char *cpn, const char *msg)
+file_write(const char *cpn, const char *msg, ...)
 {
 	FILE	*fd;
 	char  	 bfr[32];
