@@ -57,7 +57,9 @@ rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const std::string&fail
   ///
   RPS_DEBUG_PRINTF_AT(fil,lin,REPL,"§ParsReplFailing#%d: %s", cnt, failstr.c_str());
   /// added to facilitate gdb debugging....
-  asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop;");
+  asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;"
+		/// The gdb debugger understands: break RPS_PARSREPL_FAILING_LABEL
+		" RPS_PARSREPL_FAILING_LABEL:  nop; nop; nop; nop; nop; nop; nop; nop; nop; nop;");
   ///
 } // end rps_parsrepl_failing_at
 
