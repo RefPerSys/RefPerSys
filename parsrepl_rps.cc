@@ -33,28 +33,29 @@
 
 #include "refpersys.hh"
 
-extern "C" void rps_parsrepl_failing_at(const char*fil, int lin, const std::string&failstr);
+extern "C" void rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const std::string&failstr);
 
-#define RPS_PARSREPL_FAILURE_AT(Fram,Out,Fil,Lin) do {		\
+#define RPS_PARSREPL_FAILURE_AT(Fram,Out,Fil,Lin,Cnt) do {	\
     std::ostringstream _failstream_##Lin;			\
-    _failstream_##Lin << Out << std::endl;			\
+    _failstream_##Lin << Out << " ~#" << Cnt << std::endl;	\
     Rps_Backtracer backtr##Lin(Rps_Backtracer::FullOut_Tag{},	\
 			       (Fil),(Lin),1,			\
 			       "ParsReplFailing",		\
 			       &_failstream_##Lin);		\
-    rps_parsrepl_failing_at(Fil,Lin, _failstream_##Lin.str());	\
+    rps_parsrepl_failing_at(Fil,Lin,Cnt,			\
+			    _failstream_##Lin.str());		\
 } while(0)
 
 #define RPS_PARSREPL_FAILURE(Fram,Out) \
-   RPS_PARSREPL_FAILURE_AT(Fram,Out,__FILE__,__LINE__)
+  RPS_PARSREPL_FAILURE_AT(Fram,Out,__FILE__,__LINE__,__COUNTER__)
 
 void
-rps_parsrepl_failing_at(const char*fil, int lin, const std::string&failstr)
+rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const std::string&failstr)
 {
   /// added to facilitate gdb debugging and breakpoints....
   asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop;");
   ///
-  RPS_DEBUG_PRINTF_AT(fil,lin,REPL,"§ParsReplFailing: %s", failstr.c_str());
+  RPS_DEBUG_PRINTF_AT(fil,lin,REPL,"§ParsReplFailing#%d: %s", cnt, failstr.c_str());
   /// added to facilitate gdb debugging....
   asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop;");
   ///
