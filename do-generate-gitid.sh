@@ -34,7 +34,7 @@ else
 fi
 
 if [ "$1" = "-s" ]; then
-    printf "%.16s%s\n" $(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n') $endgitid     
+    printf "%.12s%s\n" $(git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n') $endgitid     
 else
     (git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n';
      echo $endgitid)
