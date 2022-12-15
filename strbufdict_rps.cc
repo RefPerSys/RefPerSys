@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2021 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2022 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -31,6 +31,14 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 #include "refpersys.hh"
+
+
+
+extern "C" const char rps_strbufdict_gitid[];
+const char rps_strbufdict_gitid[]= RPS_GITID;
+
+extern "C" const char rps_strbufdict_date[];
+const char rps_strbufdict_date[]= __DATE__;
 
 
 Rps_PayloadStrBuf::Rps_PayloadStrBuf(Rps_ObjectZone*obz)

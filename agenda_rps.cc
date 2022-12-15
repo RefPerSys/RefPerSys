@@ -33,6 +33,13 @@
 #include "refpersys.hh"
 
 
+extern "C" const char rps_agenda_gitid[];
+const char rps_main_gitid[]= RPS_GITID;
+
+extern "C" const char rps_agenda_date[];
+const char rps_main_date[]= __DATE__;
+
+
 std::recursive_mutex Rps_Agenda::agenda_mtx_;
 std::condition_variable_any Rps_Agenda::agenda_changed_condvar_;
 

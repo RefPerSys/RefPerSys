@@ -33,6 +33,14 @@
 
 #include "refpersys.hh"
 
+
+extern "C" const char rps_jsonrpc_gitid[];
+const char rps_jsonrpc_gitid[]= RPS_GITID;
+
+extern "C" const char rps_jsonrpc_date[];
+const char rps_jsonrpc_date[]= __DATE__;
+
+
 extern "C" void jsonrpc_initialize_rps(void);
 extern "C" void jsonrpc_run_application_rps(void);
 

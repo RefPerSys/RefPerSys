@@ -33,6 +33,13 @@
 
 #include "refpersys.hh"
 
+
+extern "C" const char rps_parsrepl_gitid[];
+const char rps_parsrepl_gitid[]= RPS_GITID;
+
+extern "C" const char rps_parsrepl_date[];
+const char rps_parsrepl_date[]= __DATE__;
+
 extern "C" void rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const std::string&failstr);
 
 #define RPS_PARSREPL_FAILURE_AT(Fram,Out,Fil,Lin,Cnt) do {	\
