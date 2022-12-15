@@ -58,8 +58,8 @@ rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const std::string&fail
   RPS_DEBUG_PRINTF_AT(fil,lin,REPL,"§ParsReplFailing#%d: %s", cnt, failstr.c_str());
   /// added to facilitate gdb debugging....
   asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;"
-		/// The gdb debugger understands: break RPS_PARSREPL_FAILING_LABEL
-		" RPS_PARSREPL_FAILING_LABEL:  nop; nop; nop; nop; nop; nop; nop; nop; nop; nop;");
+                /// The gdb debugger understands: break RPS_PARSREPL_FAILING_LABEL
+                " RPS_PARSREPL_FAILING_LABEL:  nop; nop; nop; nop; nop; nop; nop; nop; nop; nop;");
   ///
 } // end rps_parsrepl_failing_at
 
@@ -1866,10 +1866,10 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
   });
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " START startpos:" << startpos
-                << "  in:" << (*this)
-                << " callframe:" << callframe<< " curcptr:" << Rps_QuotedC_String(curcptr())
+                << "  in:" << (*this) << std::endl
+                << "... callframe:" << callframe<< " curcptr:" << Rps_QuotedC_String(curcptr())
                 << std::endl
-                << " token_deq:" << toksrc_token_deq<< std::endl
+                << "... token_deq:" << toksrc_token_deq<< std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary start"));
   _f.lextokv =  lookahead_token(&_,  0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " started lextokv=" << _f.lextokv
@@ -2015,13 +2015,13 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
                         << " position:" << position_str() << " startpos:" << startpos << std::endl
                         << " token_deq:" << toksrc_token_deq);
-	  /// we did consume the leftparen-
-	  _f.lexgotokv = get_token(&_);
+          /// we did consume the leftparen-
+          _f.lexgotokv = get_token(&_);
           //WRONG _f.lexgotokv = lookahead_token(&_, 0);
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " got leftparen before subexpression"
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " got leftparen before parsing-subexpression"
                         << "  in:" << (*this) << std::endl
-                        << "... lextokv:" << _f.lextokv
-                        << "... lexgotokv:" << _f.lexgotokv
+                        << "... lextokv:" << _f.lextokv << std::endl
+                        << "... lexgotokv:" << _f.lexgotokv << std::endl
                         << " lexkindob:" << _f.lexkindob
                         << " obdelim=" << _f.obdelim
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
