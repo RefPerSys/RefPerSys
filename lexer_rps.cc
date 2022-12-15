@@ -291,8 +291,10 @@ Rps_StringTokenSource::output (std::ostream&out) const
       << " str: " << Rps_QuotedC_String(toksrcstr_inp.str());
 }	// end Rps_StringTokenSource::output
 
-////////////////
-#warning maybe Rps_TokenSource::get_token should be given the token_deq
+
+
+
+////////////////////////////////
 Rps_LexTokenValue
 Rps_TokenSource::get_token(Rps_CallFrame*callframe)
 {
@@ -321,9 +323,11 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     {
       std::ostringstream errout;
       errout << "bad UTF-8 encoding in " << toksrc_name << ":L" << toksrc_line << ",C" << toksrc_col << std::flush;
-      RPS_WARNOUT("Rps_TokenSource::get_token fails: " << errout.str());
+      RPS_WARNOUT("Rps_TokenSource::get_token fails: " << errout.str() << " in " << (*this));
       throw std::runtime_error(errout.str());
     }
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token beforespace curp=" << Rps_QuotedC_String(curp)
+                << " startpos:" << startpos << " at:" << position_str());
   while (curp && isspace(*curp) && toksrc_col<(int)linelen)
     curp++, toksrc_col++;
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token afterspace curp=" << Rps_QuotedC_String(curp)
@@ -1252,7 +1256,7 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
         }
       else
         {
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " missing from:"
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " (get_token/fail) missing from:"
                         << std::endl << Rps_ShowCallFrame(&_));
           return nullptr;
         }
