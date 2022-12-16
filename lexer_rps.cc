@@ -509,7 +509,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       lextok->set_serial(++toksrc_counter);
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this << std::endl
-                    << " single-line string :-◑> " << _f.res << " @! " << position_str());
+                    << " single-line string :-◑> " << _f.res << " @! " << position_str()
+                    << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
       return _f.res;
     } // end single-line literal string token
 
@@ -533,7 +534,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       lextok->set_serial(++toksrc_counter);
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this << std::endl
-                    << " multi-line literal string :-◑> " << _f.res << " @! " << position_str());
+                    << " multi-line literal string :-◑> " << _f.res << " @! " << position_str()
+                    << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
       return _f.res;
     } // end possibly multi-line raw literal strings
 
@@ -598,22 +600,27 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       lextok->set_serial(++toksrc_counter);
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this << std::endl
-                    << " code_chunk :-◑> " << _f.res << " @! " << position_str());
+                    << " code_chunk :-◑> " << _f.res << " @! " << position_str()  << std::endl
+                    << "... curcptr:" <<  Rps_QuotedC_String(curcptr()));
       return _f.res;
     } // end lexing code chunk
 
   //// sequence of at most four ASCII or UTF-8 punctuation
   else if (ispunct(*curp) || uc_is_punct(curuc))
     {
-      RPS_DEBUG_LOG(REPL, "get_token start punctuation curp='" << Rps_QuotedC_String(curp) << "' at " << position_str());
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1)
+                    <<"? start punctuation curp='" << Rps_QuotedC_String(curp) << "' at " << position_str());
       std::string delimpos = position_str();
       //int startcol = toksrc_col;
       _f.delimv = get_delimiter(&_);
       std::string delimstartstr {curp};
-      RPS_DEBUG_LOG(REPL, "get_token after get_delimiter_object delimv=" << _f.delimv << " at " << position_str() << " curp:" << Rps_QuotedC_String(curp));
+      RPS_DEBUG_LOG(REPL, "get_token after get_delimiter_object delimv=" << _f.delimv << " at " << position_str()
+                    << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
       if (!_f.delimv)
         {
-          RPS_WARNOUT("invalid delimiter " << Rps_QuotedC_String(delimstartstr) << " at " << delimpos);
+          RPS_WARNOUT("invalid delimiter " << Rps_QuotedC_String(delimstartstr) << " at " << delimpos
+                      << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token"));
           std::string warndelimstr{"invalid delimiter "};
           warndelimstr +=  Rps_Cjson_String(delimstartstr);
           warndelimstr += " at ";
@@ -623,14 +630,16 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this << std::endl
                     << " delimiter :-◑> " << _f.delimv << " at " << position_str()
-                    << " curp:" << Rps_QuotedC_String(curp));
+                    << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
       return _f.delimv;
     }
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token @ " << name()
                << " from " << *this
                << " @! " << position_str()
-               << " curp:" << Rps_QuotedC_String(curp));
+               << " curp:" << Rps_QuotedC_String(curp) << std::endl
+               << "... curcptr:" <<  Rps_QuotedC_String(curcptr())
+               << " token_deq:" << toksrc_token_deq);
   // we should refactor properly the rps_repl_lexer & Rps_LexTokenZone constructor here
 } // end Rps_TokenSource::get_token
 
