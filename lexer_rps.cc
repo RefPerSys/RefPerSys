@@ -1244,7 +1244,7 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
                 //<< " called from:" << std::endl << Rps_ShowCallFrame(&_)
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::lookahead_token start"));
   RPS_ASSERT(_.call_frame_depth() < 32);
-  while (toksrc_token_deq.size() < rank)
+  while (rank >= toksrc_token_deq.size())
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token loop rank#"
                     << rank << " in " << (*this) << " pos:" << position_str()
@@ -1262,7 +1262,8 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
                         << std::endl << Rps_ShowCallFrame(&_));
           return nullptr;
         }
-    };
+    };				// end while rank >= toksrc_token_deq.size()
+  //
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank
                 << " pos:" << position_str()
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
