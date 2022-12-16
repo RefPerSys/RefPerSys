@@ -27,7 +27,8 @@
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
 .PHONY: all objects clean plugin fullclean redump undump altredump print-plugin-settings indent \
-   test00 test01 test02 test03 test04 test05 test-load \
+   test00 test01 test02 test03 test04 test05 test06 test07 test08 \
+   test-load \
    analyze gitpush gitpush2 withclang
 
 
@@ -352,13 +353,22 @@ test02: ./refpersys
 	./refpersys -AREPL  -c 'show RefPerSys_system' -B
 
 test03: ./refpersys
-	./refpersys -AREPL  -c 'show (1 + 2)' -B
+	./refpersys -AREPL  -c 'show 1 + 2' -B
 
 test04: ./refpersys
 	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B
 
 test05: ./refpersys
-	@echo missing test05 ; exit 1
+	./refpersys -AREPL  -c 'show (1 + 2) ' -B
+
+test06: ./refpersys
+	@echo missing test06 ; exit 1
+
+test07: ./refpersys
+	@echo missing test07 ; exit 1
+
+test08: ./refpersys
+	@echo missing test08 ; exit 1
 
 test-load: ./refpersys
 	./refpersys --batch
