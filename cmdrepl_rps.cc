@@ -238,9 +238,18 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
     Rps_TokenSource*tksrc = ltokz->lxsrc();
     RPS_ASSERT (tksrc != nullptr);
     showpos = tksrc->position_str();
+    RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6 tksrc:" << *tksrc
+                  << " before pars_expression pos:" << showpos
+                  << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
+                  << " token_deq:" << tksrc->token_dequeue());
     RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                   << " before parse_expression");
     _f.lextokv = tksrc->get_token(&_);
+    RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6 tksrc:" << *tksrc
+                  << " before pars_expression pos:" << showpos
+                  << " got-tok " << _f.lextokv
+                  << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
+                  << " token_deq:" << tksrc->token_dequeue());
     RPS_DEBUG_LOG(CMD, "REPL command show got lextokv=" << _f.lextokv
                   << " from " << RPS_FULL_BACKTRACE_HERE(1, "REPL command show rpsapply_7WsQyJK6lty02uz5KT/gotnext"));
     if (_f.lextokv)
