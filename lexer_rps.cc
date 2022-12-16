@@ -16,15 +16,17 @@
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
+ *    This program is free software: you can redistribute it
+ *    and/or modify it under the terms of the GNU General Public
+ *    License as published by the Free Software Foundation, either
+ *    version 3 of the License, or (at your option) any later
+ *    version. Alternatively, at your choice you can also use the GNU
+ *    Lesser General Public License v3 or any later version.
  *
  *    This program is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
+ *    GNU General Public License for more details (or LGPLv3).
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -1271,10 +1273,12 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank << " => " << _f.lextokv);
       return _f.lextokv;
     }
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token FAIL rank#" << rank << " missing,"
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token§FAIL rank#" << rank << " missing,"
                 << " pos:" << position_str()
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
-                << std::endl << Rps_ShowCallFrame(&_));
+                << std::endl << RPS_DEBUG_BACKTRACE_HERE(1, "Rps_TokenSource::lookahead_token FAIL")
+		<< "... in " << *this
+		<< "... token_deq:" << toksrc_token_deq);
   return nullptr;
 } // end Rps_TokenSource::lookahead_token
 
