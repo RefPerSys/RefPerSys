@@ -263,23 +263,42 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                   << std::endl << ".... before parse_expression token_deq:"
                   << tksrc->token_dequeue()
                   << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr()) << std::endl);
-    _f.showv = tksrc->parse_expression(&_);
-    RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
-                  << " after parse_expression showv=" << _f.showv);
-    RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr. tksrc:" << (*tksrc) << " replcmdob:" << _f.replcmdob << std::endl
-                  << "... token_deq:" << tksrc->token_dequeue()
-                  << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
-                  << " lextokv:" << _f.lextokv << " showv:" << _f.showv
-                  << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/after parsexp")
-		  << std::endl);
-    std::cout << "##" << RPS_TERMINAL_BOLD_ESCAPE << showpos
-              << RPS_TERMINAL_NORMAL_ESCAPE << " : "
-              << _f.showv << std::endl;
+    bool okparsexp = false;
+    _f.showv = tksrc->parse_expression(&_,&okparsexp);
+    if (okparsexp)
+      {
+        RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
+                      << " after parse_expression showv=" << _f.showv);
+        RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr. tksrc:" << (*tksrc)
+                      << " replcmdob:" << _f.replcmdob << std::endl
+                      << "... token_deq:" << tksrc->token_dequeue()
+                      << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
+                      << " lextokv:" << _f.lextokv << " showv:" << _f.showv
+                      << std::endl
+                      << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/after parsexp")
+                      << std::endl);
+        std::cout << "##" << RPS_TERMINAL_BOLD_ESCAPE << showpos
+                  << RPS_TERMINAL_NORMAL_ESCAPE << " : "
+                  << _f.showv << std::endl;
 #warning rpsapply_7WsQyJK6lty02uz5KT for REPL command show should probably EVALUATE showv
-    /** TODO: we probably need some evaluating function, perhaps some
-    Rps_CallFrame::evaluate_expr(Rps_Value) member function **/
-    return {_f.replcmdob, _f.showv};
+        /** TODO: we probably need some evaluating function, perhaps some
+        Rps_CallFrame::evaluate_repl_expr(Rps_Value expr,Rps_ObjectRef ctxob) member function **/
+        /// temporary return. Should do something fancy
+        return {_f.replcmdob, _f.showv};
+      }
+    else   // command show°_7WsQyJK6/failed to parse expression
+      {
+        RPS_WARNOUT("command show°_7WsQyJK6 failed to parse expression in " << (*tksrc)
+                    << std::endl
+                    << " replcmdob:" << _f.replcmdob << std::endl
+                    << "... token_deq:" << tksrc->token_dequeue()
+                    << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
+                    << " lextokv:" << _f.lextokv << " showv:" << _f.showv
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/fail parsexp")
+                    << std::endl);
+
+      };
   }
 #warning incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show
   RPS_WARNOUT("incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show from " << std::endl
