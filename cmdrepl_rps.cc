@@ -243,7 +243,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                   << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
                   << " token_deq:" << tksrc->token_dequeue());
     RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"
-		  << _.call_frame_depth()
+                  << _.call_frame_depth()
                   << " before parse_expression");
     _f.lextokv = tksrc->get_token(&_);
     RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6 tksrc:" << *tksrc
@@ -258,9 +258,9 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
         tksrc->append_back_new_token(&_, _f.lextokv);
         RPS_DEBUG_LOG(REPL, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show tksrc becomes " << (*tksrc)
                       << std::endl
-		      << "... curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
-		      << " token_deq:" << tksrc->token_dequeue()
-		      << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
+                      << "... curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
+                      << " token_deq:" << tksrc->token_dequeue()
+                      << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
       }
     RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/before pars.expr. tksrc:" << (*tksrc) << " replcmdob:" << _f.replcmdob << " lextokv:" << _f.lextokv
                   << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/before parsexp")
@@ -285,8 +285,14 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                   << RPS_TERMINAL_NORMAL_ESCAPE << " : "
                   << _f.showv << std::endl;
 #warning rpsapply_7WsQyJK6lty02uz5KT for REPL command show should probably EVALUATE showv
-        /** TODO: we probably need some evaluating function, perhaps some
-        Rps_CallFrame::evaluate_repl_expr(Rps_Value expr,Rps_ObjectRef ctxob) member function **/
+        /** TODO:
+        *
+        * We probably need some evaluating function, perhaps some
+        *  Rps_CallFrame::evaluate_repl_expr(Rps_Valu expr,
+        *  Rps_ObjectRef envob) member function where `expr` is the
+        *  expression to evaluate - here showv - and `envob` is some
+        *  environment object describing variables and their
+        *  values. **/
         /// temporary return. Should do something fancy
         return {_f.replcmdob, _f.showv};
       }
