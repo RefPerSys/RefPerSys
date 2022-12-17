@@ -797,7 +797,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
                 << " token_deq:" << toksrc_token_deq);
   _f.lextokv =  lookahead_token(&_,  0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction¤" << callnum << " lextokv=" << _f.lextokv
-                << " position: " << position_str() << " startpos=" << startpos
+                << " position: " << position_str() << std::endl << "... startpos=" << startpos
                 << "  in:" << (*this)
                 << " token_deq:" << toksrc_token_deq
                 << " curcptr:" << Rps_QuotedC_String(curcptr()));
@@ -822,8 +822,10 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
                            << " token_deq:" << toksrc_token_deq);
       return nullptr;
     }
+  // now _f.lextokv is non-null
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction¤" << callnum << " before parse_conjun left at startpos:" << startpos
-                << "  in:" << (*this)
+                << "  in:" << (*this) << std::endl
+		<< "... lextokv=" << _f.lextokv
                 << " position:" << position_str()
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq);
