@@ -1963,9 +1963,11 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                     << " position:" << position_str() << " curcptr " << Rps_QuotedC_String(curcptr()));
 #warning Rps_TokenSource::parse_primary perhaps buggy for test04
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary => int " << _f.lexvalv
-                    << " lextokv:" << _f.lextokv
-                    << " lexgotokv:" << _f.lexgotokv
-                    << " startpos: " << startpos << "  in:" << (*this)
+                    << " lextokv:" << _f.lextokv << std::endl
+                    << " ... lexgotokv:" << _f.lexgotokv
+                    << " curcptr " << Rps_QuotedC_String(curcptr())
+                    << " startpos: " << startpos << std::endl
+                    << "...  in:" << (*this)
                     << " at " << position_str() << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary int"));
       if (pokparse)
@@ -1995,9 +1997,13 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
         *pokparse = true;
       if (_f.lexgotokv)
         toksrc_token_deq.push_back(_f.lexgotokv);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " => double " << _f.lexvalv << " lexgotokv:" << _f.lexgotokv
-                    << "  in:" << (*this)
-                    << " at " << position_str() << " startpos:" << startpos
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " => double "
+                    << _f.lexvalv << " lexgotokv:" << _f.lexgotokv << std::endl
+                    << "... in:" << (*this)
+                    << " lexgotokv:" << _f.lexgotokv
+                    << " curcptr " << Rps_QuotedC_String(curcptr())
+                    << " startpos: " << startpos << std::endl
+                    << " at " << position_str()
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary double"));
       return _f.lexvalv;
     }
@@ -2005,22 +2011,37 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
            && _f.lexvalv.is_object())
     {
       _f.obres = _f.lexvalv.to_object();
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " before consumetok "
+                    << _f.obres << " lexgotokv:" << _f.lexgotokv << std::endl
+                    << "...  in:" << (*this)
+                    << " at " << position_str()
+                    << " token_deq:" << toksrc_token_deq
+                    << " curcptr " << Rps_QuotedC_String(curcptr()));
       consume_front_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " :: object "
                     << _f.obres << " lexgotokv:" << _f.lexgotokv << std::endl
                     << "...  in:" << (*this)
                     << " at " << position_str()
-                    << " token_deq:" << toksrc_token_deq);
+                    << " token_deq:" << toksrc_token_deq
+                    << " curcptr " << Rps_QuotedC_String(curcptr()));
       _f.lexgotokv = get_token(&_);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " :: object "
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum
+                    << " :: object after gettok"
                     << _f.obres << " next lexgotokv:" << _f.lexgotokv << std::endl
                     << "...  in:" << (*this)
                     << " at " << position_str()
-                    << " token_deq:" << toksrc_token_deq);
+                    << " token_deq:" << toksrc_token_deq
+                    << " curcptr " << Rps_QuotedC_String(curcptr()));
       if (!_f.lexgotokv)
         {
           if (pokparse)
             *pokparse = true;
+          RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::parse_primary¤" << callnum
+                        << " succeeds give obres:" << _f.obres
+                        << std::endl << "... in " << (*this)
+                        << " at " << position_str()
+                        << " token_deq:" << toksrc_token_deq
+                        << " curcptr " << Rps_QuotedC_String(curcptr()));
           return _f.obres;
         }
     }
