@@ -235,6 +235,7 @@ Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string na
                 << " from " << Rps_QuotedC_String(toksrcstr_str));
 } // end Rps_StringTokenSource::Rps_StringTokenSource
 
+
 Rps_StringTokenSource::~Rps_StringTokenSource()
 {
   RPS_DEBUG_LOG(REPL, "destr StringTokenSource@ " <<(void*)this << " " << *this
@@ -244,6 +245,7 @@ Rps_StringTokenSource::~Rps_StringTokenSource()
   RPS_DEBUG_LOG(LOWREP, "destr StringTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(CMD, "destr StringTokenSource@ " <<(void*)this << " " << *this);
 } // end Rps_StringTokenSource::~Rps_StringTokenSource
+
 
 bool
 Rps_StringTokenSource::get_line()
@@ -315,7 +317,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? start curp="
                 << Rps_QuotedC_String(curp) << " at " << startpos << std::endl
-                << "... token_deq:" << toksrc_token_deq << " source:" << *this);
+                << "... token_deq:" << toksrc_token_deq << " source:" << *this
+                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/start"));
   ucs4_t curuc=0;
   int ulen= -1;
   size_t linelen = toksrc_linebuf.size();
@@ -441,7 +444,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << " toksrc_col:" << toksrc_col);
       _f.namev = source_name_val(&_);
       RPS_DEBUG_LOG(REPL, "get_token oid|name '" << namestr << "' namev=" << _f.namev << " at "
-                    << position_str(startcol) << " ... " << position_str());
+                    << position_str(startcol) << " ... " << position_str()
+                    << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
       _f.oblex = Rps_ObjectRef::find_object_or_null_by_string(&_, namestr);
       RPS_DEBUG_LOG(REPL, "get_token oid|name '" << namestr << "' oblex=" << _f.oblex);
       const Rps_String* str = _f.namev.to_string();
@@ -479,14 +483,17 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           lextok->set_serial(++toksrc_counter);
           RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                         << " from¤ " << *this << std::endl
-                        << " symbol :-◑> " << _f.res << " @! " << position_str() << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
+                        << " symbol :-◑> " << _f.res << " @! " << position_str()
+                        << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
           return _f.res;
         }
       else   // bad name
         {
           toksrc_col = startcol;
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << toksrc_counter << "? FAIL bad name " << _f.namev << " @! " << position_str()
-                        << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << toksrc_counter << "? FAIL bad name " << _f.namev
+                        << " @! " << position_str()
+                        << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                        RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/badname"));
           return nullptr;
         }
     }
