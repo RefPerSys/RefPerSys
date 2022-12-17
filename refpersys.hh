@@ -3583,6 +3583,8 @@ public:
     for (Rps_CallFrame const*curf = this; curf && is_good_call_frame(curf); curf=curf->cfram_prev) d++;
     return d;
   };
+  /// TODO: we may need some evaluate_repl_expr(Rps_Value expr,Rps_ObjectRef ctxob) member function here.
+  /// See function rpsapply_7WsQyJK6lty02uz5KT for REPL command show
 };				// end class Rps_ProtoCallFrame
 
 class Rps_ShowCallFrame {
