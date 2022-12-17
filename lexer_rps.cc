@@ -493,7 +493,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << toksrc_counter << "? FAIL bad name " << _f.namev
                         << " @! " << position_str()
                         << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-                        RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/badname"));
+                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/badname"));
           return nullptr;
         }
     }
