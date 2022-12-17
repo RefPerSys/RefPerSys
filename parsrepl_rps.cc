@@ -991,10 +991,11 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
   long callnum= ++ callcnt;
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum << " START at " << startpos
-                << "  in:" << (*this)
-                << " token_deq:" << toksrc_token_deq
+                << "  in:" << (*this) << std::endl
+                << "... token_deq:" << toksrc_token_deq
                 << " curcptr:" << curcptr()
-                << " calldepth=" << rps_call_frame_depth(&_));
+                << " calldepth=" << rps_call_frame_depth(&_) << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_conjunction/start"));
   static Rps_Id id_and_delim;
   if (!id_and_delim)
     id_and_delim = Rps_Id("_2YVmrhVcwW00120rTK");
@@ -1012,7 +1013,6 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
                 << " anddelim:" << _f.anddelimob
                 << " andbinop:" << _f.andbinopob
                 << " token_deq:" << toksrc_token_deq);
-
   if (!_f.lextokv)
     {
       if (pokparse)
@@ -1117,7 +1117,16 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
           bool okright=false;
           _f.rightv = parse_comparison(&_,  &okright);
           if (okright)
-            conjvect.push_back(_f.rightv);
+            {
+              conjvect.push_back(_f.rightv);
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum << " rightv:" << _f.rightv
+                            << " at startpos:" << startpos << std::endl
+                            << "...  in:" << (*this)
+                            << " conjvect:" << conjvect
+                            << " position:" << position_str()
+                            << " curcptr:" << Rps_QuotedC_String(curcptr()));
+
+            }
           else
             {
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum << " failing_C at startpos:" << startpos
