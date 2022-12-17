@@ -3583,8 +3583,13 @@ public:
     for (Rps_CallFrame const*curf = this; curf && is_good_call_frame(curf); curf=curf->cfram_prev) d++;
     return d;
   };
-  /// TODO: we may need some evaluate_repl_expr(Rps_Value expr,Rps_ObjectRef ctxob) member function here.
-  /// See function rpsapply_7WsQyJK6lty02uz5KT for REPL command show
+  /// TODO: we may need some evaluate_repl_expr(Rps_Value
+  /// expr,Rps_ObjectRef envob) member function here.
+  ///
+  /// Where `expr` would be some expression to evaluate, and `envob`
+  /// would be an object reifying the environment (variables and their
+  /// associated values) See function rpsapply_7WsQyJK6lty02uz5KT for
+  /// REPL command show
 };				// end class Rps_ProtoCallFrame
 
 class Rps_ShowCallFrame {
