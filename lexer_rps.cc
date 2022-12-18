@@ -736,8 +736,9 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
              toksrc_line, startcol);
           lextok->set_serial(++toksrc_counter);
           _f.res = Rps_LexTokenValue(lextok);
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter delimiter :-◑> " << _f.res << " at " << position_str()
-                        << " from¤ " << *this
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter delimiter :-◑> " << _f.res << std::endl
+                        << "... at " << position_str() << std::endl
+                        << "... from¤ " << *this
                         << " startpos " << startpos << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter"));
           return _f.res;
