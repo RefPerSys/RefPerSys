@@ -2332,16 +2332,24 @@ public:
      oid _1GIJ6Koh9Rn009AWww) on lookahead success */
 #define RPS_DO_LOOKAHEAD ((bool*)nullptr)
   static bool is_looking_ahead(bool*p) { return p == RPS_DO_LOOKAHEAD; };
-  //// Ours parsing routines; the token dequeue pointer is for
+  ///////////////////
+  //// Our parsing routines; the token dequeue pointer is for
   //// lookahead... The flag pointed by `pokparse` is set to true if
-  //// provided, non-nil, and parsing successful. On success, the
-  //// parsed expression is returned. On failure, the nil value is
-  //// returned, and *pokparse is set to false when given.
+  //// provided, non-nil, and parsing successful.
+  ///////////////////
+  ////
+  //// Parse an expression. On success, the parsed expression is
+  //// returned. On failure, the nil value is returned, and *pokparse
+  //// is set to false when given.
   Rps_Value parse_expression(Rps_CallFrame*callframe, bool*pokparse=nullptr);
+  //// generic routine to parse symetrical binary operations like
+  //// addition +
   Rps_Value parse_symmetrical_binaryop(Rps_CallFrame*callframe,
 				       Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
 				      std::function<Rps_Value(Rps_CallFrame*,bool*)> parser_binop,
 				       bool*pokparse, const char*opername=nullptr);
+  //// generic routine to parse asymmetrical non commutative
+  //// operations like division /
   Rps_Value parse_asymmetrical_binaryop(Rps_CallFrame*callframe,
 					Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
 				       std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,
@@ -2352,8 +2360,21 @@ public:
   Rps_Value parse_polyop(Rps_CallFrame*callframe,  Rps_ObjectRef polyoper, Rps_ObjectRef polydelim,
 			 std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,bool*)> parser_suboperand,
 			 bool*pokparse, const char*opername=nullptr);
+  ///
+  /// A disjunction is a sequence of one or more disjuncts separated
+  /// by the logical or operator denoted || (see delimiter
+  /// _1HsUfOkNw0W033EIW1)
   Rps_Value parse_disjunction(Rps_CallFrame*callframe,  bool*pokparse=nullptr);
+  ///
+  /// A conjunction is a sequence of one or more conjuncts seperated
+  /// by the logical and operator denoted && (see delimiter
+  /// _2YVmrhVcwW00120rTK)
   Rps_Value parse_conjunction(Rps_CallFrame*callframe, bool*pokparse=nullptr);
+  ///
+  /// A comparison is either a simple comparand (or sum) or two of
+  /// them deparated by compare operators like != (see delimiter
+  /// _1vF5VHnSdhr01VBomx) or <= (see delimiter _1mfq8qfixB401umCL9")
+  /// etc..
   Rps_Value parse_comparison(Rps_CallFrame*callframe, bool*pokparse=nullptr);
   Rps_Value parse_comparand(Rps_CallFrame*callframe, bool*pokparse=nullptr);
   Rps_Value parse_factor(Rps_CallFrame*callframe, bool*pokparse=nullptr);
