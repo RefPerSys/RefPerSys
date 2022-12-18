@@ -829,6 +829,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
                 << " position:" << position_str()
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq);
+  ok = false;
   _f.leftv = parse_conjunction(&_,  &ok);
   if (ok)
     {
@@ -910,8 +911,14 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
                         << " leftv:" << _f.leftv);
           _f.rightv = parse_conjunction(&_,  &okright);
-          if (okright)
+          if (okright) {
             conjvect.push_back(_f.rightv);
+	    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction¤" << callnum << " parsed right conjunct rightv="
+			  << _f.rightv << std::endl << "... startpos:" << startpos
+			  << " curcptr:" << Rps_QuotedC_String(curcptr())
+			  << " conjvect:" << conjvect << std::endl
+			  << "... position:" << position_str() << " in " << (*this));
+	  }
           else
             {
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction¤" << callnum << " failing_C at startpos:" << startpos
