@@ -1712,10 +1712,13 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
         *pokparse = false;
       return nullptr;
     }
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " before lookahead_token leftv=" << _f.leftv
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum
+                << " before loop leftv=" << _f.leftv
                 << " in:" << (*this) << " position_str:" << position_str()
                 << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)(curcptr())
-                << " token_deq:" << toksrc_token_deq);
+                << " token_deq:" << toksrc_token_deq
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term/bef.loop"));
   bool again = true;
   int loopcnt = 0;
   while (again)
