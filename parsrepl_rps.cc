@@ -1008,7 +1008,8 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
   bool ok = false;
   _f.lextokv = lookahead_token(&_,  0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum << " lextokv="  << _f.lextokv
-                << " position: " << position_str() << " startpos:" << startpos
+                << " position: " << position_str() << std::endl
+		<< "... startpos:" << startpos
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " anddelim:" << _f.anddelimob
                 << " andbinop:" << _f.andbinopob
@@ -1033,8 +1034,9 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
       return nullptr;
     }
   //
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum << " before left comparison in:" << (*this)
-                << " position:" << position_str()
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum << " before parsing left comparison in:" << (*this)
+		<< std::endl
+                << "... position:" << position_str()
                 << " lextokv:" << _f.lextokv
                 << " startpos:" << startpos
                 << " curcptr:" << Rps_QuotedC_String(curcptr()));
