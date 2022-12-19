@@ -1685,9 +1685,11 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
   if (okleft)
     {
       operandvect.push_back(_f.leftv);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " leftv=" << _f.leftv << " startpos:" << startpos << "  in:" << (*this)
-                    << " operandvect:" << operandvect
-                    << " pos:" << position_str()
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " leftv=" << _f.leftv
+                    << " startpos:" << startpos << "  in:" << (*this)
+                    << " operandvect:" << operandvect << std::endl
+                    << ".. pos:" << position_str()
+                    << " token_deq:" << toksrc_token_deq
                     << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr());
     }
   else
@@ -1985,7 +1987,8 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
     }
   /// can_start_primary was successful...
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " ok can_start_primary lexkindob="
-                << _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str()
+                << _f.lexkindob << " lexval=" << _f.lexvalv << std::endl
+                << "... startpos:" << startpos << " position:" << position_str()
                 << " curcptr " << Rps_QuotedC_String(curcptr())
                 << " lextokv=" << _f.lextokv
                 << "  in:" << (*this)
@@ -1993,17 +1996,16 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
   if (_f.lexkindob == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b) // int
       && _f.lexvalv.is_int())
     {
-      _f.lexgotokv = get_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " lexgotokv " << _f.lexgotokv
                     << " lexval " << _f.lexvalv
                     << " position:" << position_str() << " curcptr " << Rps_QuotedC_String(curcptr()));
-#warning Rps_TokenSource::parse_primary perhaps buggy for test04
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary => int " << _f.lexvalv
                     << " lextokv:" << _f.lextokv << std::endl
                     << " ... lexgotokv:" << _f.lexgotokv
                     << " curcptr " << Rps_QuotedC_String(curcptr())
                     << " startpos: " << startpos << std::endl
                     << "...  in:" << (*this)
+                    << " token_deq:" << toksrc_token_deq
                     << " at " << position_str() << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary int"));
       if (pokparse)
@@ -2013,26 +2015,21 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
   else if (_f.lexkindob == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
            && _f.lexvalv.is_string())
     {
-      _f.lexgotokv = get_token(&_);
       if (pokparse)
         *pokparse = true;
-      if (_f.lexgotokv)
-        toksrc_token_deq.push_back(_f.lexgotokv);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " => string " << _f.lexvalv
                     << "  in:" << (*this)
                     << " lexgotokv:" << _f.lexgotokv
                     << " at " << position_str() << " startpos:" << startpos
+                    << " token_deq:" << toksrc_token_deq
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary string"));
       return _f.lexvalv;
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
            && _f.lexvalv.is_double())
     {
-      _f.lexgotokv = get_token(&_);
       if (pokparse)
         *pokparse = true;
-      if (_f.lexgotokv)
-        toksrc_token_deq.push_back(_f.lexgotokv);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " => double "
                     << _f.lexvalv << " lexgotokv:" << _f.lexgotokv << std::endl
                     << "... in:" << (*this)
@@ -2040,6 +2037,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                     << " curcptr " << Rps_QuotedC_String(curcptr())
                     << " startpos: " << startpos << std::endl
                     << " at " << position_str()
+                    << " token_deq:" << toksrc_token_deq
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary double"));
       return _f.lexvalv;
     }
@@ -2060,7 +2058,6 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                     << " at " << position_str()
                     << " token_deq:" << toksrc_token_deq
                     << " curcptr " << Rps_QuotedC_String(curcptr()));
-      _f.lexgotokv = get_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum
                     << " :: object after gettok"
                     << _f.obres << " next lexgotokv:" << _f.lexgotokv << std::endl
@@ -2068,18 +2065,15 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                     << " at " << position_str()
                     << " token_deq:" << toksrc_token_deq
                     << " curcptr " << Rps_QuotedC_String(curcptr()));
-      if (!_f.lexgotokv)
-        {
-          if (pokparse)
-            *pokparse = true;
-          RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::parse_primary¤" << callnum
-                        << " succeeds give obres:" << _f.obres
-                        << std::endl << "... in " << (*this)
-                        << " at " << position_str()
-                        << " token_deq:" << toksrc_token_deq
-                        << " curcptr " << Rps_QuotedC_String(curcptr()));
-          return _f.obres;
-        }
+      if (pokparse)
+        *pokparse = true;
+      RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::parse_primary¤" << callnum
+                    << " succeeds give obres:" << _f.obres
+                    << std::endl << "... in " << (*this)
+                    << " at " << position_str()
+                    << " token_deq:" << toksrc_token_deq
+                    << " curcptr " << Rps_QuotedC_String(curcptr()));
+      return _f.obres;
     }
   else if (_f.lexkindob == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK)) //repl_delimiter∊class
     {
