@@ -1963,7 +1963,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                 << " token_deq:" << toksrc_token_deq);
   if (!can_start_primary(&_))
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " failing bad start lexkindob="
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " failing canstartprim lexkindob="
                     << _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str()
                     << " curcptr " << Rps_QuotedC_String(curcptr())
                     << "  in:" << (*this));
@@ -2246,7 +2246,19 @@ Rps_TokenSource::can_start_primary(Rps_CallFrame*callframe)
                 << " token_deq:" << toksrc_token_deq);
   _f.lextokv =  lookahead_token(&_,  0);
   if (!_f.lextokv)
-    return false;
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary¤" << callnum << " CANNOT, startpos:" << startpos
+                    << "  in:" << (*this)
+                    << " curcptr:" << Rps_QuotedC_String(curcptr())
+                    << " token_deq:" << toksrc_token_deq);
+      return false;
+    }
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary¤" << callnum << " lextokv:" << _f.lextokv
+                <<" startpos:" << startpos
+                << "  in:" << (*this)
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
+                << " callframe:" << callframe
+                << " token_deq:" << toksrc_token_deq);
   const Rps_LexTokenZone* ltokz = _f.lextokv.to_lextoken();
   RPS_ASSERT (ltokz != nullptr);
   _f.lexkindob = ltokz->lxkind();
