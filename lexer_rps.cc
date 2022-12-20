@@ -361,8 +361,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token number startpos:" <<
                     startpos
                     << " startnum:" << Rps_QuotedC_String(startnum)
-                    << " endint:" << Rps_QuotedC_String(endint) << " for l:" << l
-                    << " endfloat:" << Rps_QuotedC_String(endfloat) << " for d:" << d);
+                    << " endint:" << Rps_QuotedC_String(endint) << "==" << (void*)endint<< " for l:" << l
+                    << " endfloat:" << Rps_QuotedC_String(endfloat) << "==" << (void*)endfloat << " for d:" << d);
       if (endfloat > endint)
         {
           toksrc_col += endfloat - startnum;
@@ -377,11 +377,15 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           _f.lextokv = Rps_Value::make_tagged_int(l);
           _f.lexkindob = RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); //int∈class
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token intval " << _f.lextokv << " curpos:" << position_str()
-                        << " curcptr:" << Rps_QuotedC_String(curcptr())
-                        << " token_deq:" << toksrc_token_deq);
+                        << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
+                        << "... token_deq:" << toksrc_token_deq);
         }
       _f.namev = source_name_val(&_);
       const Rps_String* str = _f.namev.to_string();
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token namev:" << _f.namev
+		    << " curpos:" << position_str()
+		    << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
+		    << "... in:" << (*this));
       Rps_LexTokenZone* lextok =
         Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
         (this,_f.lexkindob, _f.lextokv,
