@@ -315,7 +315,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                 );
   const char* curp = curcptr();
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? start curp="
+  RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? start curp="
                 << Rps_QuotedC_String(curp) << " at " << startpos << std::endl
                 << "... token_deq:" << toksrc_token_deq << " source:" << *this
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/start"));

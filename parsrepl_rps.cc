@@ -1439,8 +1439,9 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                        << " position:" << position_str()
                        << " curcptr:" << Rps_QuotedC_String(curcptr())
                        << " token_deq:" << toksrc_token_deq);
-  RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand¤" << callnum << " from " << Rps_ShowCallFrame(callframe)
-               << " in:" << (*this) << " at startpos: " << startpos
+  RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand¤" << callnum << std::endl
+	       << "... from " << std::endl << Rps_ShowCallFrame(callframe) << std::endl
+               << "... parse_comparand in:" << (*this) << " at startpos: " << startpos
                << " currentpos:" << position_str()
                << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr()
                << std::endl
