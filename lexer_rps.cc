@@ -383,9 +383,9 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       _f.namev = source_name_val(&_);
       const Rps_String* str = _f.namev.to_string();
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token namev:" << _f.namev
-		    << " curpos:" << position_str()
-		    << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
-		    << "... in:" << (*this));
+                    << " curpos:" << position_str()
+                    << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
+                    << "... in:" << (*this));
       Rps_LexTokenZone* lextok =
         Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
         (this,_f.lexkindob, _f.lextokv,

@@ -338,6 +338,12 @@ rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe,
                 << "∈" << arg1.compute_class(&_) << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
+  RPS_DEBUG_LOG(REPL, "REPL command help start arg0=" << arg0
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) << std::endl
+                << " from " << std::endl
+                << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_2TZNwgyOdVd001uasl for REPL command help
   RPS_WARNOUT("incomplete rpsapply_2TZNwgyOdVd001uasl for REPL command help from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_2TZNwgyOdVd001uasl for REPL command help"));
@@ -367,6 +373,13 @@ rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe,
                 << "∈" << arg1.compute_class(&_) << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
+  RPS_DEBUG_LOG(REPL, "REPL command put start arg0=" << arg0
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) << std::endl
+                << " from " << std::endl
+                << Rps_ShowCallFrame(&_));
+
 #warning incomplete rpsapply_28DGtmXCyOX02AuPLd for REPL command put
   RPS_WARNOUT("incomplete rpsapply_28DGtmXCyOX02AuPLd for REPL command put from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_28DGtmXCyOX02AuPLd for REPL command put"));
@@ -391,6 +404,12 @@ rpsapply_09ehnxiXQKo006cZer(Rps_CallFrame*callerframe,
                            callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command remove start arg0=" << arg0
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) << std::endl
+                << " from " << std::endl
+                << Rps_ShowCallFrame(&_));
+  RPS_DEBUG_LOG(REPL, "REPL command remove start arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
                 << " arg1=" << arg1
                 << "∈" << arg1.compute_class(&_) << std::endl
@@ -426,6 +445,13 @@ rpsapply_9LCCu7TQI0Z0166mw3(Rps_CallFrame*callerframe,
                 << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
+  RPS_DEBUG_LOG(REPL, "REPL command append start arg0=" << arg0
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_)
+                << std::endl
+                << " from " << std::endl
+                << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append
   RPS_WARNOUT("incomplete rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_9LCCu7TQI0Z0166mw3 for REPL command append"));
@@ -450,6 +476,12 @@ rpsapply_982LHCTfHdC02o4a6Q(Rps_CallFrame*callerframe,
                            callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command add_root start arg0=" << arg0
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) << std::endl
+                << " from " << std::endl
+                << Rps_ShowCallFrame(&_));
+  RPS_DEBUG_LOG(REPL, "REPL command add_root start arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
                 << " arg1=" << arg1
                 << "∈" << arg1.compute_class(&_) << std::endl
@@ -484,6 +516,12 @@ rpsapply_2G5DNSyfWoP002Vv6X(Rps_CallFrame*callerframe,
                 << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
+  RPS_DEBUG_LOG(REPL, "REPL command remove_root start arg0=" << arg0
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) << std::endl
+                << " from " << std::endl
+                << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root
   RPS_WARNOUT("incomplete rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_2G5DNSyfWoP002Vv6X for REPL command remove_root"));
@@ -506,6 +544,13 @@ rpsapply_55RPnvwSLXz028jyDk(Rps_CallFrame*callerframe,
                            callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command make_symbol start arg0=" << arg0
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_)
+                << std::endl
+                << " from " << std::endl
+                << Rps_ShowCallFrame(&_));
+  RPS_DEBUG_LOG(REPL, "REPL command make_symbol start arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
                 << " arg1=" << arg1
                 << "∈" << arg1.compute_class(&_)
