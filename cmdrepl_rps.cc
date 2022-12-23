@@ -87,6 +87,16 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 << Rps_ShowCallFrame(&_)
                 << "**calldepth=" << _.call_frame_depth()
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD/REPL cmd dump"));
+  RPS_DEBUG_LOG(REPL, "REPL command dump start callcnt#" << callcnt << " arg0=" << arg0
+                << "∈" << arg0.compute_class(&_)
+                << " arg1=" << arg1
+                << "∈" << arg1.compute_class(&_) <<std::endl
+                << " arg2=" << arg2 << " arg3=" << arg3 << std::endl
+                << " callingclos=" << _f.closv
+                << " from " << std::endl
+                << Rps_ShowCallFrame(&_)
+                << "**calldepth=" << _.call_frame_depth()
+                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_61pgHb5KRq600RLnKD/REPL cmd dump"));
   _f.replcmdob = arg0.to_object();
   _f.lextokv = arg1;
   RPS_ASSERT(_.call_frame_depth() < 7);
