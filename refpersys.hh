@@ -2279,6 +2279,7 @@ class Rps_TokenSource		// this is *not* a value .....
   std::string toksrc_name;
   int toksrc_line, toksrc_col;
   int toksrc_counter;
+  static Rps_TokenSource* toksrc_current_;
 protected:
   /// could be called by subclasses
   void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth);
@@ -2299,6 +2300,7 @@ protected:
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public:
   static constexpr unsigned max_gc_depth = 128;
+  static Rps_TokenSource* current_token_source(void) { return toksrc_current_; };
   const char*curcptr(void) const {
     if (toksrc_linebuf.empty())
       return nullptr;
@@ -2337,6 +2339,7 @@ public:
   //// lookahead... The flag pointed by `pokparse` is set to true if
   //// provided, non-nil, and parsing successful.
   ///////////////////
+  Rps_Value parse_using_closure(Rps_CallFrame*callframe, Rps_ClosureValue closval);
   ////
   //// Parse an expression. On success, the parsed expression is
   //// returned. On failure, the nil value is returned, and *pokparse

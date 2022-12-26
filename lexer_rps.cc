@@ -50,12 +50,16 @@ const char rps_lexer_date[]= __DATE__;
 extern "C" Rps_StringValue rps_lexer_token_name_str_val;
 Rps_StringValue rps_lexer_token_name_str_val(nullptr);
 
+Rps_TokenSource* Rps_TokenSource::toksrc_current_;
+
 Rps_TokenSource::Rps_TokenSource(std::string name)
   : toksrc_name(name), toksrc_line(0), toksrc_col(0), toksrc_counter(0),
     toksrc_linebuf{},
     toksrc_token_deq(),
     toksrc_ptrnameval(nullptr)
 {
+  RPS_ASSERT(toksrc_current_ == nullptr);
+  toksrc_current_ = this;
 } // end Rps_TokenSource::Rps_TokenSource
 
 void
@@ -141,6 +145,7 @@ Rps_TokenSource::~Rps_TokenSource()
   toksrc_col= -1;
   toksrc_linebuf.clear();
   toksrc_token_deq.clear();
+  toksrc_current_ = nullptr;
 } // end Rps_TokenSource::~Rps_TokenSource
 
 Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
