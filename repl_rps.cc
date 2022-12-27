@@ -1304,7 +1304,7 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
     {
       out<<"°code_chunk";
       if (depth==0)
-	showchunk = true;
+        showchunk = true;
     }
   else if (lex_kind == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // object∈class
     out<<"°object";
@@ -1359,11 +1359,12 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
             }
         }
     }
-  if (showchunk) {
+  if (showchunk)
+    {
 #warning missing code in Rps_LexTokenZone::val_output for code_chunk
-    RPS_WARNOUT("Rps_LexTokenZone::val_output missing code to show a code chunk "
-		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_LexTokenZone::val_output/codechunk?"));
-  }
+      RPS_WARNOUT("Rps_LexTokenZone::val_output missing code to show a code chunk "
+                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_LexTokenZone::val_output/codechunk?"));
+    }
   if (lex_file)
     {
       out << ", @" << lex_file->cppstring() << ":" << lex_lineno << ":" << lex_colno;
