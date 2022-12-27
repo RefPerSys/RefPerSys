@@ -1440,7 +1440,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                        << " curcptr:" << Rps_QuotedC_String(curcptr())
                        << " token_deq:" << toksrc_token_deq);
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand¤" << callnum << std::endl
-	       << "... from " << std::endl << Rps_ShowCallFrame(callframe) << std::endl
+               << "... from " << std::endl << Rps_ShowCallFrame(callframe) << std::endl
                << "... parse_comparand in:" << (*this) << " at startpos: " << startpos
                << " currentpos:" << position_str()
                << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr()
@@ -1746,8 +1746,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                     << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr());
       usleep (250000);
       _f.lextokv = get_token(&_);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " got token after leftv=" << _f.leftv << " got lextok=" << _f.lextokv
-                    << " lexopertokv=" << _f.lexopertokv << "  in:" << (*this) << std::endl
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " got token after leftv=" << _f.leftv << " got lextok=" << _f.lextokv << std::endl
+                    << "... lexopertokv=" << _f.lexopertokv << "  in:" << (*this) << std::endl
                     << "... @! " << position_str()
                     << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr()
                     << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after-left"));
