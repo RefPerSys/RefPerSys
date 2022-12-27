@@ -358,18 +358,16 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       char*endint=nullptr;
       char*endfloat=nullptr;
       const char*startnum = curp;
+      bool isfloat = false;
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "?  startnum=" << Rps_QuotedC_String(startnum)
                     << " at " << position_str() << " startpos:" << startpos);
       long long l = strtoll(startnum, &endint, 0);
       double d = strtod(startnum, &endfloat);
+
       RPS_ASSERT(endint != nullptr && endfloat != nullptr);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "?  number startpos:" <<
-                    startpos
-                    << " startnum:" << Rps_QuotedC_String(startnum)
-                    << " endint:" << Rps_QuotedC_String(endint) << "==" << (void*)endint<< " for l:" << l
-                    << " endfloat:" << Rps_QuotedC_String(endfloat) << "==" << (void*)endfloat << " for d:" << d);
       if (endfloat > endint)
         {
+          isfloat = true;
           toksrc_col += endfloat - startnum;
           _f.lextokv = Rps_DoubleValue(d);
           _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
@@ -378,6 +376,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
         }
       else
         {
+          isfloat = false;
           toksrc_col += (int)(endint - startnum);
           _f.lextokv = Rps_Value::make_tagged_int(l);
           _f.lexkindob = RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); //int∈class
@@ -390,7 +389,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? namev:" << _f.namev
                     << " curpos:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
-                    << "... in:" << (*this));
+                    << "... in:" << (*this)
+                    << " " << (isfloat?"floating-point":"integer") << " number");
       Rps_LexTokenZone* lextok =
         Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
         (this,_f.lexkindob, _f.lextokv,
@@ -630,13 +630,16 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       //int startcol = toksrc_col;
       _f.delimv = get_delimiter(&_);
       std::string delimstartstr {curp};
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token #" << (toksrc_counter+1) << "? after get_delimiter_object delimv="
-		    << _f.delimv << " at " << position_str() << std::endl
-                    << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:" <<  Rps_QuotedC_String(curcptr()));
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? after "
+		    << " get_delimiter_object delimv="
+                    << _f.delimv << " at " << position_str() << std::endl
+                    << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:"
+		    << Rps_QuotedC_String(curcptr()));
       if (!_f.delimv)
         {
           RPS_WARNOUT("invalid delimiter " << Rps_QuotedC_String(delimstartstr) << " at " << delimpos
-                      << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                      << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:"
+		      <<  Rps_QuotedC_String(curcptr())
                       << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token"));
           std::string warndelimstr{"invalid delimiter "};
           warndelimstr +=  Rps_Cjson_String(delimstartstr);
@@ -652,8 +655,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
     }
 #warning Rps_TokenSource::get_token unimplemented
   RPS_FATALOUT("unimplemented Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? @ " << name()
-               << " from " << *this
-               << " @! " << position_str()
+               << std::endl << "... from " << *this << std::endl
+               << "... pos: " << position_str() << " start:" << startpos
                << " curp:" << Rps_QuotedC_String(curp) << std::endl
                << "... curcptr:" <<  Rps_QuotedC_String(curcptr())
                << " token_deq:" << toksrc_token_deq);
