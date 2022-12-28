@@ -1392,7 +1392,8 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, bool*pokparse)
 
 
 
-// a comparand - something on left or right side of compare operators is a sequence of terms with additive operators
+// a comparand - something on left or right side of compare operators
+// is a sequence of terms with additive operators
 Rps_Value
 Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
 {
