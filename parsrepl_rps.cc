@@ -500,11 +500,11 @@ Rps_TokenSource::parse_using_closure(Rps_CallFrame*callframe, Rps_ClosureValue c
 		 );
   _f.closv = closval;
   RPS_ASSERT(_f.closv.is_closure());
-  RPS_DEBUG(REPL, "Rps_TokenSource::parse_using_closure unimplemented closv=" << _f.closv
-	    << " position:" << position_str()
-	    << " token_deq:" << toksrc_token_deq
-	    << " in:" << (*this)
-	    << " curcptr:" << curcptr());
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_using_closure unimplemented closv=" << _f.closv
+		<< " position:" << position_str()
+		<< " token_deq:" << toksrc_token_deq
+		<< " in:" << (*this)
+		<< " curcptr:" << curcptr());
   RPS_PARSREPL_FAILURE(&_,"Rps_TokenSource::parse_using_closure unimplemented closv=" << _f.closv
 		       << " position:" << position_str()
 		       << " token_deq:" << toksrc_token_deq
