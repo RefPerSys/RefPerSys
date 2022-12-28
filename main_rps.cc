@@ -204,8 +204,12 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_RUN_AFTER_LOAD, ///
     /*arg:*/ "SHELL_COMMAND", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Run using system(3) the given shell SHELL_COMMAND after load and plugins;\n"
-    " The environment variable REFPERSYS_PID has been set", //
+    /*doc:*/ "Run using system(3) the given shell SHELL_COMMAND after load and plugins;\n" //
+    " The following environment variables have been set:\n" //
+    "  * REFPERSYS_GITID to the git id (with a + suffix if locally changed);\n" //
+    "  * REFPERSYS_TOPDIR to the top directory with source code and persistore/ ...;\n" //
+    "  * REFPERSYS_PID to the process id  running refpersys;\n" //
+    "  * REFPERSYS_USER_OID to the objectid corresponding to current user;\n",
     /*group:*/0 ///
   },
   /* ======= run a REPL command after load ======= */
