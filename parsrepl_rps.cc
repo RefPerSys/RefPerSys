@@ -488,33 +488,33 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, Rps_ObjectRef polyoper, R
   return _f.resexprv;
 } // end Rps_TokenSource::parse_polyop
 
-Rps_Value 
+Rps_Value
 Rps_TokenSource::parse_using_closure(Rps_CallFrame*callframe, Rps_ClosureValue closval)
 {
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(/*descr:*/nullptr,
-		 /*callerframe:*/callframe,
-		 Rps_ClosureValue closv;
-		 Rps_Value resv;
-		 );
+                           /*callerframe:*/callframe,
+                           Rps_ClosureValue closv;
+                           Rps_Value resv;
+                );
   _f.closv = closval;
   RPS_ASSERT(_f.closv.is_closure());
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_using_closure unimplemented closv=" << _f.closv
-		<< " position:" << position_str()
-		<< " token_deq:" << toksrc_token_deq
-		<< " in:" << (*this)
-		<< " curcptr:" << curcptr());
+                << " position:" << position_str()
+                << " token_deq:" << toksrc_token_deq
+                << " in:" << (*this)
+                << " curcptr:" << curcptr());
   RPS_PARSREPL_FAILURE(&_,"Rps_TokenSource::parse_using_closure unimplemented closv=" << _f.closv
-		       << " position:" << position_str()
-		       << " token_deq:" << toksrc_token_deq
-		       << " in:" << (*this)
-		       << " curcptr:" << curcptr());
+                       << " position:" << position_str()
+                       << " token_deq:" << toksrc_token_deq
+                       << " in:" << (*this)
+                       << " curcptr:" << curcptr());
   RPS_FATALOUT("Rps_TokenSource::parse_using_closure unimplemented closv=" << _f.closv
-	       << " position:" << position_str()
-	       << " token_deq:" << toksrc_token_deq
-	       << " in:" << (*this)
-	       << " curcptr:" << curcptr());
+               << " position:" << position_str()
+               << " token_deq:" << toksrc_token_deq
+               << " in:" << (*this)
+               << " curcptr:" << curcptr());
 #warning unimplemented Rps_TokenSource::parse_using_closure
   /* TODO: we should apply the _f.closv .... */
   return _f.resv;
