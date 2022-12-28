@@ -491,6 +491,7 @@ enum rps_progoption_en
   RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD,
   RPSPROGOPT_CPLUSPLUSFLAGS_AFTER_LOAD,
   RPSPROGOPT_DEBUG_PATH,
+  RPSPROGOPT_EXTRA_ARG,
   RPSPROGOPT_VERSION,
 };
 
@@ -499,7 +500,7 @@ enum rps_progoption_en
 extern "C" error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 extern "C" struct argp_option rps_progoptions[];
 
-
+extern "C" const char*rps_get_extra_arg(const char*name);
 
 ////////////////////////////////////////////////////////////////
 extern "C" bool rps_syslog_enabled;
