@@ -71,7 +71,7 @@ std::vector<std::string> rps_command_vec;
 extern "C" std::string rps_test_repl_string;
 std::string rps_test_repl_string;
 
-static std::map<std::string,std:string> rps_dict_extra_arg;
+static std::map<std::string,std::string> rps_dict_extra_arg;
 
 static void rps_kill_wait_gui_process(void);
 
@@ -2120,7 +2120,7 @@ rps_get_extra_arg(const char*name)
   auto it = rps_dict_extra_arg.find(goodstr);
   if (it == rps_dict_extra_arg.end())
     return nullptr;
-  return it.second.c_str();
+  return it->second.c_str();
 } // end rps_get_extra_arg
 
 /////////////////// end of file main_rps.cc
