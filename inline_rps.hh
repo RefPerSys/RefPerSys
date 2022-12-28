@@ -1592,13 +1592,13 @@ Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
   if (!obinitclass || !obinitclass->is_class())
     return false;
   Rps_ObjectRef obthisclass = get_class();
-  /// if the heap is severely corrupted, we might loop
+  /// If the heap is severely corrupted, we might loop
   /// indefinitely... This should never happen, but we test against
   /// it...
   for (;;)
     {
       cnt++;
-      /// this should not happen, except if our inheritance graph is corrupted
+      /// This should not happen, except when our inheritance graph is corrupted
       if (RPS_UNLIKELY(cnt > (int)Rps_Value::maximal_inheritance_depth))
         {
           RPS_WARNOUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
