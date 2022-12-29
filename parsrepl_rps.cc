@@ -1458,9 +1458,17 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                 << " currentpos:" << position_str()
                 << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr()
                 << " token_deq:" << toksrc_token_deq);
-#warning unimplemented Rps_TokenSource::parse_comparand
+#warning TODO: missing code in Rps_TokenSource::parse_comparand
   /***
-   * we probably should loop and collect all terms if they are separated by the same additive operator
+   * We probably should loop and collect all terms if they are
+   * separated by the same additive operator.
+   *
+   * Near commit 95d44aa788cf1 (dec. 2022) we should probably improve
+   * our plugins/rpsplug_createcommutativeoperator.cc to create more
+   * classes, new operators and delimiters, and get attribute from
+   * them, etc...
+   *
+   * See https://framalistes.org/sympa/arc/refpersys-forum/2022-12/msg00069.html
    ***/
   RPS_PARSREPL_FAILURE(&_,
                        "Rps_TokenSource::parse_comparand¤" << callnum << " missing code at startpos:" << startpos
