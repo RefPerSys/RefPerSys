@@ -167,6 +167,14 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Forcibly disable Adress Space Layout Randomization.", //
     /*group:*/0 ///
   },
+  /* ======= debug flags ======= */
+  {/*name:*/ "extra", ///
+    /*key:*/ RPSPROGOPT_EXTRA_ARG, ///
+    /*arg:*/ "EXTRA=ARG", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "To set for RefPerSys a named EXTRA argument to ARG.", ///
+    /*group:*/0 ///
+  },
   /* ======= without quick tests ======= */
   {/*name:*/ "no-quick-tests", ///
     /*key:*/ RPSPROGOPT_NO_QUICK_TESTS, ///
@@ -1019,6 +1027,30 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         rps_debugflags_after_load = arg;
     }
     return 0;
+    case RPSPROGOPT_EXTRA_ARG:
+      {
+	int eqnextpos= -1;
+	char extraname[64];
+	memset (extraname, 0, sizeof(extraname));
+	if (sscanf(arg, "%60[A-Za-z0-9]*=%n", extraname, &eqnextpos)
+	    && eqnextpos > 1 && arg[eqnextpos-1] == '='
+	    && isalpha(extraname[0])) {
+	  for (const char*n = extraname; *n; n++)
+	    if (!isalnum(*n) && *n != '_')
+	      RPS_FATALOUT("invalid extra named argument " << extraname);
+	  if (rps_dict_extra_arg.find(extraname) != rps_dict_extra_arg.end())
+	    RPS_FATALOUT("extra named argument " << extraname
+			 << " cannot be set more than once");
+	  std::string extraval{arg+eqnextpos};
+	  rps_dict_extra_arg.insert({extraname, extraval});
+	  RPS_INFORMOUT("set extra argument " << extraname
+			<< " to " << Rps_QuotedC_String(extraval));
+	}
+	else
+	  RPS_FATALOUT("bad extra named argument " << arg
+		       << " i.e. " << Rps_QuotedC_String(extraname));
+      }
+      return 0;
     case RPSPROGOPT_RUN_AFTER_LOAD:
     {
       if (rps_run_command_after_load)
