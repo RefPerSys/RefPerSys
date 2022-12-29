@@ -1032,7 +1032,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 	int eqnextpos= -1;
 	char extraname[64];
 	memset (extraname, 0, sizeof(extraname));
-	if (sscanf(arg, "%60[A-Za-z0-9]*=%n", extraname, &eqnextpos)
+	if (sscanf(arg, "%60[A-Za-z0-9]=%n", extraname, &eqnextpos) >= 1
+	    && isalpha(extraname[0])
 	    && eqnextpos > 1 && arg[eqnextpos-1] == '='
 	    && isalpha(extraname[0])) {
 	  for (const char*n = extraname; *n; n++)
@@ -1048,7 +1049,9 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 	}
 	else
 	  RPS_FATALOUT("bad extra named argument " << arg
-		       << " i.e. " << Rps_QuotedC_String(extraname));
+		       << " that is " << Rps_QuotedC_String(arg)
+		       << " extra name is " << Rps_QuotedC_String(extraname)
+		      );
       }
       return 0;
     case RPSPROGOPT_RUN_AFTER_LOAD:
