@@ -21,7 +21,7 @@
 {
  "format" : "RefPerSysFormat2019A",
  "jsoncpp-version" : "1.9.5",
- "nbobjects" : 183,
+ "nbobjects" : 185,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -962,6 +962,27 @@
 //-ob_28DGtmXCyOX02AuPLd
 
 
+//+ob_2dvQOlSMjOu02zWx1n
+//∈class
+{
+ "oid": "_2dvQOlSMjOu02zWx1n",
+ "mtime": 1672395480.89,
+ "attrs" : [
+  	{
+  		"at" : "_1EBVGSfW2m200z18rx",
+  		"va" : "repl_commutative_operator_class"
+  	}
+  ],
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "repl_commutative_operator_class",
+ "class_super" : "_9j12Nhm4itk00YYUW7",
+ "class_symb" : "_3Dmo5LeMAoO00FQxrV",
+ "payload" : "classinfo"
+}
+//-ob_2dvQOlSMjOu02zWx1n
+
+
 //+ob_2i66FFjmS7n03HNNBx
 //∈class
 {
@@ -1454,6 +1475,19 @@
  "symb_val" : "_0J1C39JoZiv03qA2HA"
 }
 //-ob_3Am8E82pFkw00D7jFU
+
+
+//+ob_3Dmo5LeMAoO00FQxrV
+//∈symbol
+{
+ "oid": "_3Dmo5LeMAoO00FQxrV",
+ "mtime": 1672395480.89,
+ "class" : "_36I1BY2NetN03WjrOv",
+ "payload" : "symbol",
+ "symb_name" : "repl_commutative_operator_class",
+ "symb_val" : "_2dvQOlSMjOu02zWx1n"
+}
+//-ob_3Dmo5LeMAoO00FQxrV
 
 
 //+ob_3FztYBKABxZ02DUPRm
