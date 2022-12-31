@@ -4034,9 +4034,13 @@ public:
     if (obrcomp)
       pvectval.push_back(Rps_ObjectValue(obrcomp));
   };
+  /* make a new closure from a given connective and the values inside
+     the vector payload: */
   const Rps_ClosureZone* make_closure_zone_from_vector(Rps_ObjectRef connob);
+  //
+  /* make a new instance of a given class and the values inside the
+     vector payload: */
   const Rps_InstanceZone* make_instance_zone_from_vector(Rps_ObjectRef classob);
-#warning missing method to make an instance from some Rps_PayloadVectVal
 };				// end Rps_PayloadVectVal
 
 
