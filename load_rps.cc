@@ -129,10 +129,12 @@ public:
   };
 };				// end class Rps_Loader
 
+
+
 Rps_Loader::Rps_Loader(const std::string&topdir) :
   ld_topdir(topdir),
-  ld_mtx(),
   ld_startclock(rps_wallclock_real_time()),
+  ld_mtx(),
   ld_spaceset(),
   ld_globrootsidset(),
   ld_pluginsmap(),
@@ -154,6 +156,7 @@ Rps_Loader::~Rps_Loader()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_Loader constr"));
 } // end Rps_Loader::~Rps_Loader
+
 
 std::string
 Rps_Loader::load_real_path(const std::string& path)
