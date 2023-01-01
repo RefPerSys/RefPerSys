@@ -1922,6 +1922,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                     << " curcptr " << Rps_QuotedC_String(curcptr())
                     << "@" << ((void*)curcptr())
                     << " calldepth:" << rps_call_frame_depth(&_));
+      if (pokparse)
+	*pokparse = true;
       return _f.restermv;
     }
   else
