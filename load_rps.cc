@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2022 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -70,6 +70,7 @@ rps_load_string_to_json(const std::string&str, const char*filnam, int lineno)
 class Rps_Loader
 {
   std::string ld_topdir;
+  double ld_startclock;
   /// dlsym and dlopen are not reentrant, so we need a mutex; is is
   /// recursive since we might lock it in a nested way
   std::recursive_mutex ld_mtx;
@@ -131,6 +132,7 @@ public:
 Rps_Loader::Rps_Loader(const std::string&topdir) :
   ld_topdir(topdir),
   ld_mtx(),
+  ld_startclock(rps_wallclock_real_time()),
   ld_spaceset(),
   ld_globrootsidset(),
   ld_pluginsmap(),
@@ -489,7 +491,16 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
   obz->loader_set_class (this, Rps_ObjectRef(objjson["class"], this));
   RPS_ASSERT (obzspace);
   obz->loader_set_space (this, obzspace);
-  obz->loader_set_mtime (this, objjson["mtime"].asDouble());
+  double mtim =  objjson["mtime"].asDouble();
+  if (mtim > this->ld_startclock + 300.0) {
+    double cormtim = this->ld_startclock + 300.0;
+    RPS_WARNOUT("parse_json_buffer_second_pass mtime of object " << objid
+		<< " is too far in the future in  spacid=" << spacid
+		<< " lineno:" << lineno
+		<< " changed from " << mtim << " to " << cormtim);
+    mtim = cormtim;
+  }
+  obz->loader_set_mtime (this,mtim);
   if (objjson.isMember("comps"))
     {
       auto compjson = objjson["comps"];

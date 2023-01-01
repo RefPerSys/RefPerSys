@@ -572,7 +572,7 @@
 //∈symbol
 {
  "oid": "_1oPsaaqITVi03OYZb9",
- "mtime": 16055917681.00,
+ "mtime": 1672582687.99,
  "attrs" : [
   	{
   		"at" : "_1EBVGSfW2m200z18rx",
@@ -1914,21 +1914,21 @@
 
 
 //+ob_4QX7Cg3gDkd005b9bn
-//∈repl_binary_operator
+//∈repl_commutative_operator
 {
  "oid": "_4QX7Cg3gDkd005b9bn",
- "mtime": 1617204211.50,
+ "mtime": 1672581908.50,
  "attrs" : [
   	{
   		"at" : "_1EBVGSfW2m200z18rx",
-  		"va" : "mult!binop"
+  		"va" : "mult!commutop"
   	},
   	{
   		"at" : "_2wdmxJecnFZ02VGGFK",
   		"va" : "_2uw3Se5dPOU00yhxpA"
   	}
   ],
- "class" : "_55Z5Wgzuprq01MU6Br"
+ "class" : "_2dvQOlSMjOu02zWx1n"
 }
 //-ob_4QX7Cg3gDkd005b9bn
 
@@ -1978,21 +1978,21 @@
 
 
 //+ob_51jvc2mFhql03qwRg6
-//∈repl_binary_operator
+//∈repl_commutative_operator
 {
  "oid": "_51jvc2mFhql03qwRg6",
- "mtime": 1617204211.50,
+ "mtime": 1672581377.50,
  "attrs" : [
   	{
   		"at" : "_1EBVGSfW2m200z18rx",
-  		"va" : "plus!binop"
+  		"va" : "plus!commutop"
   	},
   	{
   		"at" : "_2wdmxJecnFZ02VGGFK",
   		"va" : "_4ShDsOWk7al02eDRTM"
   	}
   ],
- "class" : "_55Z5Wgzuprq01MU6Br"
+ "class" : "_2dvQOlSMjOu02zWx1n"
 }
 //-ob_51jvc2mFhql03qwRg6
 
@@ -3125,14 +3125,14 @@
 
 
 //+ob_8xk4sKglyzG01dloqq
-//∈repl_binary_operator
+//∈repl_commutative_operator
 {
  "oid": "_8xk4sKglyzG01dloqq",
- "mtime": 1617611331.77,
+ "mtime": 1672581377.77,
  "attrs" : [
   	{
   		"at" : "_1EBVGSfW2m200z18rx",
-  		"va" : "and!binop"
+  		"va" : "and!commutop"
   	},
   	{
   		"at" : "_2wdmxJecnFZ02VGGFK",
@@ -3143,7 +3143,7 @@
   		"va" : 14
   	}
   ],
- "class" : "_55Z5Wgzuprq01MU6Br"
+ "class" : "_2dvQOlSMjOu02zWx1n"
 }
 //-ob_8xk4sKglyzG01dloqq
 
