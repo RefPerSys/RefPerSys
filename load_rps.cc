@@ -492,14 +492,15 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
   RPS_ASSERT (obzspace);
   obz->loader_set_space (this, obzspace);
   double mtim =  objjson["mtime"].asDouble();
-  if (mtim > this->ld_startclock + 300.0) {
-    double cormtim = this->ld_startclock + 300.0;
-    RPS_WARNOUT("parse_json_buffer_second_pass mtime of object " << objid
-		<< " is too far in the future in  spacid=" << spacid
-		<< " lineno:" << lineno
-		<< " changed from " << mtim << " to " << cormtim);
-    mtim = cormtim;
-  }
+  if (mtim > this->ld_startclock + 300.0)
+    {
+      double cormtim = this->ld_startclock + 300.0;
+      RPS_WARNOUT("parse_json_buffer_second_pass mtime of object " << objid
+                  << " is too far in the future in  spacid=" << spacid
+                  << " lineno:" << lineno
+                  << " changed from " << mtim << " to " << cormtim);
+      mtim = cormtim;
+    }
   obz->loader_set_mtime (this,mtim);
   if (objjson.isMember("comps"))
     {

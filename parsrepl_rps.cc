@@ -1773,7 +1773,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " after leftv=" << _f.leftv << " lextokv=" << _f.lextokv
                     << " in:" << (*this) << " at " <<  startpos << " loopcnt#" << loopcnt
                     << " curcptr " << Rps_QuotedC_String(curcptr())
-		    << " token_deq:" << toksrc_token_deq
+                    << " token_deq:" << toksrc_token_deq
                     << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after left"));
       _f.lexopertokv = lookahead_token(&_,  1);
@@ -1923,7 +1923,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                     << "@" << ((void*)curcptr())
                     << " calldepth:" << rps_call_frame_depth(&_));
       if (pokparse)
-	*pokparse = true;
+        *pokparse = true;
       return _f.restermv;
     }
   else
