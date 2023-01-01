@@ -1,6 +1,6 @@
 //: GENERATED file generated/rps-roots.hh / DO NOT EDIT!
 //: This file is part of the Reflective Persistent System.
-//:  © Copyright 2019 - 2022 The Reflective Persistent System Team.
+//:  © Copyright 2019 - 2023 The Reflective Persistent System Team.
 //:  see refpersys.org and contact team@refpersys.org for more.
 //: _
 //: This program is free software: you can redistribute it and/or modify
@@ -49,7 +49,7 @@ RPS_INSTALL_ROOT_OB(_1NWEOIzo3WU03mE42Q) //rps_output_textedit∈class
 RPS_INSTALL_ROOT_OB(_1R1LKwGhoTr02e90bn) //web_handler∈class
 RPS_INSTALL_ROOT_OB(_1Win5yzaf1L02cBUlV) //"display_value_web"∈named_selector
 RPS_INSTALL_ROOT_OB(_1Zo12toMRTa03uqsXh) //display_object_occurrence_web∈symbol
-RPS_INSTALL_ROOT_OB(_2dvQOlSMjOu02zWx1n) //repl_commutative_operator_class∈class
+RPS_INSTALL_ROOT_OB(_2dvQOlSMjOu02zWx1n) //repl_commutative_operator∈class
 RPS_INSTALL_ROOT_OB(_2i66FFjmS7n03HNNBx) //space∈class
 RPS_INSTALL_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
 RPS_INSTALL_ROOT_OB(_2A2mrPpR3Qf03p6o5b) //int∈class
