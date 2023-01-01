@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2022 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1772,7 +1772,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
       _f.lextokv = lookahead_token(&_,  0);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " after leftv=" << _f.leftv << " lextokv=" << _f.lextokv
                     << " in:" << (*this) << " at " <<  startpos << " loopcnt#" << loopcnt
-                    << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << ((void*)curcptr())
+                    << " curcptr " << Rps_QuotedC_String(curcptr())
+		    << " token_deq:" << toksrc_token_deq
                     << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after left"));
       _f.lexopertokv = lookahead_token(&_,  1);
