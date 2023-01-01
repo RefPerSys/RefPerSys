@@ -1,7 +1,7 @@
 // see http://refpersys.org/
 // passed to commits after dd0c90db2992da (of Dec 28, 2022) of RefPerSys
 // GPLv3+ licensed
-// © Copyright 2022 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright 2023 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin installs a commutative REPL operator
 /*****
  * Once compiled, use it for example as:
@@ -38,7 +38,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   _f.obreplprecedence = RPS_ROOT_OB(_7iVRsTR8u3D00Cy0hp); //repl_precedence∈symbol
   /// get the repl_operator superclass
   _f.obclassoper =  RPS_ROOT_OB(_9j12Nhm4itk00YYUW7); //repl_operator∈class
-  _f.obclasscommut =  RPS_ROOT_OB(_2dvQOlSMjOu02zWx1n); //repl_commutative_operator_class∈class
+  _f.obclasscommut =  RPS_ROOT_OB(_2dvQOlSMjOu02zWx1n); //repl_commutative_operator∈class
   _f.obclassrepldelim = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
   RPS_ASSERT(_f.obclassoper);
   RPS_ASSERT(_f.obclasscommut);

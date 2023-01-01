@@ -1,6 +1,6 @@
 //// GENERATED file persistore/sp_8J6vNYtP5E800eCr5q-rps.json / DO NOT EDIT!
 //// This file is part of the Reflective Persistent System.
-////  © Copyright 2019 - 2022 The Reflective Persistent System Team.
+////  © Copyright 2019 - 2023 The Reflective Persistent System Team.
 ////  see refpersys.org and contact team@refpersys.org for more.
 //// _
 //// This program is free software: you can redistribute it and/or modify
@@ -966,16 +966,16 @@
 //∈class
 {
  "oid": "_2dvQOlSMjOu02zWx1n",
- "mtime": 1672395480.89,
+ "mtime": 1672581002.89,
  "attrs" : [
   	{
   		"at" : "_1EBVGSfW2m200z18rx",
-  		"va" : "repl_commutative_operator_class"
+  		"va" : "repl_commutative_operator"
   	}
   ],
  "class" : "_41OFI3r0S1t03qdB2E",
  "class_methodict" : [],
- "class_name" : "repl_commutative_operator_class",
+ "class_name" : "repl_commutative_operator",
  "class_super" : "_9j12Nhm4itk00YYUW7",
  "class_symb" : "_3Dmo5LeMAoO00FQxrV",
  "payload" : "classinfo"
@@ -1481,10 +1481,10 @@
 //∈symbol
 {
  "oid": "_3Dmo5LeMAoO00FQxrV",
- "mtime": 1672395480.89,
+ "mtime": 1672581003.50,
  "class" : "_36I1BY2NetN03WjrOv",
  "payload" : "symbol",
- "symb_name" : "repl_commutative_operator_class",
+ "symb_name" : "repl_commutative_operator",
  "symb_val" : "_2dvQOlSMjOu02zWx1n"
 }
 //-ob_3Dmo5LeMAoO00FQxrV
