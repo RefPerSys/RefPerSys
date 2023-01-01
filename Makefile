@@ -9,7 +9,7 @@
 ##      Abhishek Chakravarti <abhishek@taranjali.org>
 ##      Nimesh Neema <nimeshneema@gmail.com>
  ##
-##      © Copyright 2019 - 2022 The Reflective Persistent System Team
+##      © Copyright 2019 - 2023 The Reflective Persistent System Team
 ##      team@refpersys.org
 ##
 ## License:
@@ -27,7 +27,7 @@
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
 .PHONY: all objects clean plugin fullclean redump undump altredump print-plugin-settings indent \
-   test00 test01 test02 test03 test04 test05 test06 test07 test08 \
+   test00 test01 test02 test03 test04 test05 test06 test07 test08 test09 \
    test-load \
    analyze gitpush gitpush2 withclang
 
@@ -362,13 +362,16 @@ test05: ./refpersys
 	./refpersys -AREPL  -c 'show (1 + 2) ' -B
 
 test06: ./refpersys
-	@echo missing test06 ; exit 1
+	./refpersys -AREPL  -c 'show 1' -B
 
 test07: ./refpersys
 	@echo missing test07 ; exit 1
 
 test08: ./refpersys
 	@echo missing test08 ; exit 1
+
+test09: ./refpersys
+	@echo missing test09 ; exit 1
 
 test-load: ./refpersys
 	./refpersys --batch
