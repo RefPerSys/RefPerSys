@@ -1109,13 +1109,27 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
                            << " token_deq:" << toksrc_token_deq);
       return nullptr;
     }
+  ///
+
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum
+                << " conjvect:" << conjvect << " leftv:" << _f.leftv
+                << " in:" << (*this)
+                << " position:" << position_str()
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
+                << " token_deq:" << toksrc_token_deq);
   conjvect.push_back(_f.leftv);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum
+                << " grown conjvect:" << conjvect << " leftv:" << _f.leftv
+                << " in:" << (*this)
+                << " position:" << position_str()
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
+                << " token_deq:" << toksrc_token_deq);
 
   bool again = false;
   do
     {
       again = false;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum << " conjvect:" << conjvect
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum << " looping conjvect:" << conjvect
                     << " at startpos:" << startpos
                     << "  in:" << (*this)
                     << " position:" << position_str()
@@ -1127,9 +1141,10 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
           //end of input!
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum << " EOI at startpos:" << startpos
                         << "  in:" << (*this)
-                        << " position:" << position_str()
-                        << " curcptr:" << Rps_QuotedC_String(curcptr())
-                        << " token_deq:" << toksrc_token_deq);
+                        << " position:" << position_str() << std::endl
+                        << ".. curcptr:" << Rps_QuotedC_String(curcptr())
+                        << " token_deq:" << toksrc_token_deq
+                        << " conjvect:" << conjvect);
           again = false;
           break;
         };
@@ -1464,7 +1479,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
     {
       consume_front_token(&_);
       if (pokparse)
-	*pokparse = true;
+        *pokparse = true;
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " ending gives " << _f.leftv
                     << " startpos:" << startpos
                     << " currentpos:" << position_str()
