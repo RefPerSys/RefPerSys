@@ -877,9 +877,10 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
                     << "  in:" << (*this)
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
-		    << " leftv:" << _f.leftv << " should be null"
+                    << " leftv:" << _f.leftv << " should be null"
                     << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_disjunction failing_B/noleftconj"));
+      RPS_ASSERT (_f.leftv == nullptr);
       RPS_PARSREPL_FAILURE(&_,
                            "Rps_TokenSource::parse_disjunction¤" << callnum << " failing_B at startpos:" << startpos
                            << " in:" << (*this)
@@ -995,6 +996,8 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
                 << _f.resdisjv << " position:" << position_str()
                 << " startpos:" << startpos
                 << " calldepth#" << rps_call_frame_depth(&_));
+  if (pokparse)
+    *pokparse = true;
   return _f.resdisjv;
 } // end Rps_TokenSource::parse_disjunction
 
@@ -1258,6 +1261,8 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
                 << _f.conjv << " at " << startpos
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq << std::endl);
+  if (pokparse)
+    *pokparse = true;
   return _f.conjv;
 } // end Rps_TokenSource::parse_conjunction
 
