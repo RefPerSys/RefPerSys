@@ -1453,11 +1453,25 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                 << " token_deq:" << toksrc_token_deq);
   _f.lexopertokv =  lookahead_token(&_,  1);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << "  leftv=" << _f.leftv
-                << " lextokv:" << _f.lextokv << " lexopertokv-at1:" << _f.lexopertokv
+                << " lextokv:" << _f.lextokv
+                << std::endl
+                << "... lexopertokv-at1:" << _f.lexopertokv
                 << " startpos:" << startpos
                 << " currentpos:" << position_str()
-                << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr()
+                << " curcptr " << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq);
+  if (!_f.lexopertokv)
+    {
+      consume_front_token(&_);
+      if (pokparse)
+	*pokparse = true;
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " ending gives " << _f.leftv
+                    << " startpos:" << startpos
+                    << " currentpos:" << position_str()
+                    << " curcptr " << Rps_QuotedC_String(curcptr())
+                    << " token_deq:" << toksrc_token_deq);
+      return _f.leftv;
+    }
 #warning TODO: missing code in Rps_TokenSource::parse_comparand
   /***
    * We probably should loop and collect all terms if they are
