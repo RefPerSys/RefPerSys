@@ -776,6 +776,8 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
                 << " token_deq:" << toksrc_token_deq
                 << " calldepth=" << rps_call_frame_depth(&_) << std::endl
                 << " in:" << (*this));
+  if (pokparse)
+    *pokparse = true;
   return _f.resexprv;
 } // end Rps_TokenSource::parse_expression
 
