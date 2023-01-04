@@ -877,6 +877,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
                     << "  in:" << (*this)
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
+		    << " leftv:" << _f.leftv << " should be null"
                     << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_disjunction failing_B/noleftconj"));
       RPS_PARSREPL_FAILURE(&_,
