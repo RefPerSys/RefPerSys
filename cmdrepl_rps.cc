@@ -142,10 +142,18 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   if (_f.exprv.is_instance())
     {
       _f.classob = _f.exprv.compute_class(&_);
+      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number 
+		    << " instance expr:" << _f.exprv
+		    << " of class:" << _f.classob
+		    << " in env:" << _f.envob);
     };
   if (_f.exprv.is_object())
     {
       _f.classob = _f.exprv.compute_class(&_);
+      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number 
+		    << " object expr:" << _f.exprv
+		    << " of class:" << _f.classob
+		    << " in env:" << _f.envob);
     };
   ///
 #warning rps_full_evaluate_repl_expr not really implemented
