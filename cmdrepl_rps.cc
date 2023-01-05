@@ -42,6 +42,127 @@ const char rps_repl_gitid[]= RPS_GITID;
 extern "C" const char rps_cmdrepl_date[];
 const char rps_cmdrepl_date[]= __DATE__;
 
+
+/// Evaluate for the REPL machinery in given callframe the expression
+/// `expr` in the environment given by `envob`; should give two values
+/// which should not be both null.  This routine might be called in a
+/// non-REPL thread by agenda....
+Rps_TwoValues
+rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value expr, Rps_ObjectRef envob)
+{
+  RPS_ASSERT_CALLFRAME (callframe);
+  RPS_ASSERT(envob);
+  static std::atomic<unsigned long> eval_repl_counter_;
+  const unsigned long eval_number = 1+eval_repl_counter_.fetch_add(1);
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           callframe,
+                           Rps_Value closv;
+                           Rps_Value exprv;
+                           Rps_ObjectRef envobv;
+                           Rps_Value mainresv;
+                           Rps_Value extraresv;
+                );
+  _f.closv = _.call_frame_closure();
+  _f.exprv = expr;
+  _f.envobv = envob;
+  /// macros to ease debugging
+#define RPS_REPLEVAL_GIVES_BOTH_AT(V1,V2,LIN) do {			\
+  _f.mainresv = (V1);							\
+  _f.extraresv = (V2);							\
+  RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL, "rps_full_evaluate_repl_expr#"	\
+		   << eval_number << " of expr:" << _f.exprv		\
+		   << " in envob:" << _f.envobv				\
+		   << " gives main:" << _f.mainresv			\
+		   << ", extra:" << _f.extraresv);			\
+  return Rps_TwoValues(_f.mainresv,_f.extraresv);			\
+ } while(0)
+#define RPS_REPLEVAL_GIVES_BOTH(V1,V2) RPS_REPLEVAL_GIVES_BOTH_AT((V1),(V2),__LINE__)
+  ///
+#define RPS_REPLEVAL_GIVES_PLAIN_AT(V1,LIN) do {			\
+  _f.mainresv = (V1);							\
+  _f.extraresv = nullptr;						\
+  RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL, "rps_full_evaluate_repl_expr#"	\
+		   << eval_number << " of expr:" << _f.exprv		\
+		   << " in envob:" << _f.envobv				\
+		   << " gives main:" << _f.mainresv			\
+		   << ", extra:" << _f.extraresv);			\
+  return Rps_TwoValues(_f.mainresv,_f.extraresv);			\
+ } while(0)
+#define RPS_REPLEVAL_GIVES_PLAIN(V) RPS_REPLEVAL_GIVES_PLAIN_AT((V),__LINE__)
+  ///
+#define RPS_REPLEVAL_FAIL_AT(MSG,LOG,LIN) do {				\
+  RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL, "rps_full_evaluate_repl_expr#"	\
+		   << eval_number << " FAILS for expr:" << _f.exprv	\
+		   << " in envob:" << _f.envobv	<< "::" << MSG		\
+		   << "; " << LOG);					\
+  throw  std::runtime_error("rps_full_evaluate_repl_expr fail "		\
+			    #MSG "@" #LIN); } while(0)
+#define  RPS_REPLEVAL_FAIL(MSG,LOG) RPS_REPLEVAL_FAIL_AT(MSG,LOG,__LINE__)
+  ///
+  /// to check the above failure macro:
+  if (!_f.envobv)  		// this dont happen
+    {
+      RPS_REPLEVAL_FAIL("*check-fail*","never happens no envob" << _f.envobv);
+    };
+  if (_f.exprv.is_empty())
+    RPS_REPLEVAL_GIVES_BOTH(nullptr,RPS_ROOT_OB(_2i66FFjmS7n03HNNBx)); //space∈class
+  if (_f.exprv.is_int())
+    RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
+  else if (_f.exprv.is_double())
+    RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
+  else if (_f.exprv.is_string())
+    RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
+  ///
+#warning rps_full_evaluate_repl_expr not really implemented
+  RPS_REPLEVAL_FAIL("*unimplemented*",_f.exprv);
+  /// forget our macros
+#undef RPS_REPLEVAL_GIVES_BOTH_AT
+#undef RPS_REPLEVAL_GIVES_BOTH
+#undef RPS_REPLEVAL_GIVES_PLAIN_AT
+#undef RPS_REPLEVAL_GIVES_PLAIN
+} // end rps_full_evaluate_repl_expr
+
+Rps_Value
+rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value expr, Rps_ObjectRef envob)
+{
+  RPS_ASSERT_CALLFRAME (callframe);
+  RPS_ASSERT(envob);
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           callframe,
+                           Rps_Value exprv;
+                           Rps_ObjectRef envob;
+                           Rps_Value mainresv;
+                           Rps_Value otheresv;
+                );
+  _f.exprv = expr;
+  _f.envob = envob;
+  {
+    Rps_TwoValues two = rps_full_evaluate_repl_expr(&_,_f.exprv,_f.envob);
+    _f.mainresv = two.main();
+    _f.otheresv = two.xtra();
+  }
+  return _f.mainresv;
+} // end rps_simple_evaluate_repl_expr
+
+
+
+
+Rps_TwoValues
+Rps_CallFrame::evaluate_repl_expr(Rps_Value expr, Rps_ObjectRef envob)
+{
+  return rps_full_evaluate_repl_expr(this,expr,envob);
+} // end Rps_CallFrame::evaluate_repl_expr
+
+
+
+Rps_Value
+Rps_CallFrame::evaluate_repl_expr1(Rps_Value expr, Rps_ObjectRef envob)
+{
+  return rps_simple_evaluate_repl_expr(this,expr,envob);
+} // end Rps_CallFrame::evaluate_repl_expr1
+
+
+
 /* C++ closure _61pgHb5KRq600RLnKD for REPL command dump parsing*/
 extern "C" rps_applyingfun_t rpsapply_61pgHb5KRq600RLnKD;
 Rps_TwoValues
@@ -284,11 +405,11 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
       {
         RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                       << " after successful parse_expression showv=" << _f.showv);
-        RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr. tksrc:" << (*tksrc)
-                      << " replcmdob:" << _f.replcmdob << std::endl
+        RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr. tksrc:" << (*tksrc) << std::endl
+                      << "... replcmdob:" << _f.replcmdob << std::endl
                       << "... token_deq:" << tksrc->token_dequeue()
                       << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
-                      << " lextokv:" << _f.lextokv << " showv:" << _f.showv
+                      << " lextokv:" << _f.lextokv << " should evaluate showv:" << _f.showv
                       << std::endl
                       << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/after parsexp")
                       << std::endl);

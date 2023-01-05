@@ -11,7 +11,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2022 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * You can consider RefPerSys as either GPLv3+ or LGPLv3+ licensed (at
@@ -3608,14 +3608,21 @@ public:
     for (Rps_CallFrame const*curf = this; curf && is_good_call_frame(curf); curf=curf->cfram_prev) d++;
     return d;
   };
-  /// TODO: we may need some evaluate_repl_expr(Rps_Value
-  /// expr,Rps_ObjectRef envob) member function here.
+  /// TODO: implement fully in cmldrepl_rps.cc file some
+  /// evaluate_repl_expr(Rps_Value expr,Rps_ObjectRef envob) member
+  /// function here.  can throw some runtime exception on failure...
+  Rps_TwoValues evaluate_repl_expr(Rps_Value expr,Rps_ObjectRef envob);
+  Rps_Value evaluate_repl_expr1(Rps_Value expr,Rps_ObjectRef envob);
   ///
   /// Where `expr` would be some expression to evaluate, and `envob`
   /// would be an object reifying the environment (variables and their
   /// associated values) See function rpsapply_7WsQyJK6lty02uz5KT for
   /// REPL command show
 };				// end class Rps_ProtoCallFrame
+
+extern "C" Rps_TwoValues rps_full_evaluate_repl_expr(Rps_CallFrame*callframe,Rps_Value expr,Rps_ObjectRef envob);
+extern "C" Rps_Value rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe,Rps_Value expr,Rps_ObjectRef envob);
+
 
 class Rps_ShowCallFrame {
   const Rps_ProtoCallFrame* _callframe;
