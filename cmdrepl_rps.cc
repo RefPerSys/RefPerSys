@@ -142,18 +142,18 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   if (_f.exprv.is_instance())
     {
       _f.classob = _f.exprv.compute_class(&_);
-      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number 
-		    << " instance expr:" << _f.exprv
-		    << " of class:" << _f.classob
-		    << " in env:" << _f.envob);
+      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
+                    << " instance expr:" << _f.exprv
+                    << " of class:" << _f.classob
+                    << " in env:" << _f.envob);
     };
   if (_f.exprv.is_object())
     {
       _f.classob = _f.exprv.compute_class(&_);
-      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number 
-		    << " object expr:" << _f.exprv
-		    << " of class:" << _f.classob
-		    << " in env:" << _f.envob);
+      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
+                    << " object expr:" << _f.exprv
+                    << " of class:" << _f.classob
+                    << " in env:" << _f.envob);
     };
   ///
 #warning rps_full_evaluate_repl_expr not really implemented
@@ -373,8 +373,10 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
                            callerframe,
                            Rps_ObjectRef replcmdob;
+                           Rps_ObjectRef evalenvob;
                            Rps_Value lextokv;
                            Rps_Value showv;
+                           Rps_Value evalshowv;
                 );
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
@@ -447,6 +449,9 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
     _f.showv = tksrc->parse_expression(&_,&okparsexp);
     if (okparsexp)
       {
+#warning missing code to find evalenvob in REPL command show _7WsQyJK6 after pars.expr.
+        /* TODO: compute a suitable environment for REPL evaluation in
+           evalenvob */
         RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                       << " after successful parse_expression showv=" << _f.showv);
         RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr. tksrc:" << (*tksrc) << std::endl
@@ -454,9 +459,12 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                       << "... token_deq:" << tksrc->token_dequeue()
                       << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
                       << " lextokv:" << _f.lextokv << " should evaluate showv:" << _f.showv
+                      << " in evalenvob:" << _f.evalenvob
                       << std::endl
                       << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/after parsexp")
                       << std::endl);
+        _f.evalshowv = rps_simple_evaluate_repl_expr(&_,
+                       _f.showv, _f.evalenvob);
         std::cout << "##" << RPS_TERMINAL_BOLD_ESCAPE << showpos
                   << RPS_TERMINAL_NORMAL_ESCAPE << " : "
                   << _f.showv << std::endl;
