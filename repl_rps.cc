@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2022 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1833,16 +1833,16 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
                 )
           {
             _f.lexval = lextokz->lxval();
-            RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec symbol token " << _f.lextokv << " of value " << _f.lexval
-                          << " at " << commandpos<< std::endl
+            RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec symbol token "
+                          << _f.lextokv << " of value " << _f.lexval
+                          << " at " << commandpos << std::endl
                           << "... intoksrc:" << intoksrc
                           << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
             if (_f.lexval.is_string())
               _f.cmdob = Rps_PayloadSymbol::find_named_object(_f.lexval.as_string()->cppstring());
 #warning unimplemented symbol token rps_do_repl_commands_vec
-            RPS_WARNOUT("unimplemented symbol token rps_do_repl_commands_vec lextok="
-                        << _f.lextokv
-                        << " cmdob=" << _f.cmdob<< std::endl
+            RPS_WARNOUT("unimplemented symbol token rps_do_repl_commands_vec lextok=" << _f.lextokv
+                        << " lexval:" << _f.lexval << " cmdob=" << _f.cmdob<< std::endl
                         << "... intoksrc:" << intoksrc
                         << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
                         << std::endl
