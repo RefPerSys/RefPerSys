@@ -1812,15 +1812,18 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
         RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec got lextokv=" << _f.lextokv
                       << " pos=" << intoksrc.position_str() << std::endl
                       << "... intoksrc:" << intoksrc
-                      << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
+                      << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+		      << " token_deq:" << intoksrc.token_dequeue());
         if (!_f.lextokv)
           break;
         const Rps_LexTokenZone* lextokz = _f.lextokv.as_lextoken();
         RPS_ASSERT(lextokz);
+	RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec lextokv=" << _f.lextokv << " of kind:" << lextokz->lxkind());
         if (lextokz->lxkind()
             == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ))  //object∈class
           {
             _f.lexval = lextokz->lxval();
+	    RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec lextokv=" << _f.lextokv << " lexval=" << _f.lexval);
             RPS_ASSERT(_f.lexval.is_object());
             _f.cmdob = _f.lexval.as_object();
             RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec cmdob=" << _f.cmdob
@@ -1837,7 +1840,8 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
                           << _f.lextokv << " of value " << _f.lexval
                           << " at " << commandpos << std::endl
                           << "... intoksrc:" << intoksrc
-                          << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
+                          << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+			  << " token_deq:" << intoksrc.token_dequeue());
             if (_f.lexval.is_string())
               _f.cmdob = Rps_PayloadSymbol::find_named_object(_f.lexval.as_string()->cppstring());
 #warning unimplemented symbol token rps_do_repl_commands_vec
