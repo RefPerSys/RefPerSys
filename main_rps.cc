@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2022 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -300,6 +300,9 @@ struct argp_option rps_progoptions[] =
 
 struct backtrace_state* rps_backtrace_common_state;
 const char* rps_progname;
+
+int rps_argc;
+char** rps_argv;
 
 char* rps_run_command_after_load = nullptr;
 char* rps_debugflags_after_load = nullptr;
@@ -696,6 +699,8 @@ rps_extend_env(void)
 int
 main (int argc, char** argv)
 {
+  rps_argc = argc;
+  rps_argv = argv;
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
   rps_stderr_istty = isatty(STDERR_FILENO);
@@ -1723,7 +1728,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
   bool ontty = isatty(STDERR_FILENO);
   if (rps_debug_file)
     fprintf(rps_debug_file, "\n*§*§* RPS FATAL %s:%d *§*§*\n", filnam, lin);
-  fprintf(stderr, "\n%s%sRPS FATAL:%s\n"
+  fprintf(stderr, "\n" "%s%sRPS FATAL:%s\n"
           " RefPerSys gitid %s,\n"
           "\t built timestamp %s,\n"
           "\t on host %s, md5sum %s,\n"
@@ -1736,6 +1741,23 @@ rps_fatal_stop_at (const char *filnam, int lin)
   if (rps_debug_file && rps_debug_file != stderr && rps_debug_path[0])
     {
       fprintf(stderr, "*°* see debug output in %s\n", rps_debug_path);
+      fprintf(rps_debug_file, "RefPerSys gitid %s built %s was started on %s pid %d as:\n",
+	      rps_shortgitid, rps_timestamp, rps_hostname(), (int)getpid());
+      for (int aix=0; aix<rps_argc; aix++) {
+	fputc(' ', rps_debug_file);
+	const char*curarg = rps_argv[aix];
+	bool isplainarg = isalnum(curarg[0]) || curarg[0]=='/'
+	  || curarg[0]=='_' || curarg[0]=='.' || curarg[0]=='-';
+	for (const char*pc = curarg; *pc != (char)0 && isplainarg; pc++)
+	  isplainarg = *pc>' ' && *pc<(char)127
+	    && *pc != '\'' && *pc != '\\' && *pc != '\"'
+	    && isprint(*pc);
+	if (isplainarg)
+	  fputs(curarg, rps_debug_file);
+	else
+	  fprintf(rps_debug_file, "'%s'", Rps_QuotedC_String(curarg));
+      }
+      fputc('\n', rps_debug_file);
     }
   fflush (stderr);
   fflush (rps_debug_file);
@@ -1747,10 +1769,27 @@ rps_fatal_stop_at (const char *filnam, int lin)
     backt.output(std::clog);
     std::clog << "===== end fatal error at " << filnam << ":" << lin
               << " ======" << std::endl << std::flush;
+    std::clog << "RefPerSys gitid " << rps_shortgitid << " built " << rps_timestamp
+	      << " was started on " << rps_hostname() << " pid " << (int)getpid() << " as:" << std::endl;
+      for (int aix=0; aix<rps_argc; aix++) {
+	const char*curarg = rps_argv[aix];
+	bool isplainarg = isalnum(curarg[0]) || curarg[0]=='/'
+	  || curarg[0]=='_' || curarg[0]=='.'  || curarg[0]=='-';
+	for (const char*pc = curarg; *pc != (char)0 && isplainarg; pc++)
+	  isplainarg = *pc>' ' && *pc<(char)127
+	    && *pc != '\'' && *pc != '\\' && *pc != '\"'
+	    && isprint(*pc);
+	if (isplainarg)
+	  std::clog << ' ' << curarg;
+	else
+	  std::clog << ' ' << Rps_QuotedC_String(curarg);
+      }
+      std::clog << std::endl << std::flush;
   }
   fflush(nullptr);
   abort();
 } // end rps_fatal_stop_at
+
 
 void rps_debug_warn_at(const char*file, int line)
 {
