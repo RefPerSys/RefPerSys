@@ -3,6 +3,7 @@
 
 
 #include <sys/types.h>
+#include <stdio.h>
 
 
 /*
@@ -55,13 +56,13 @@
  */
 
 __BEGIN_DECLS
-extern const char	*rps_log_file(void);
-extern void		 rps_log_file_set(const char *);
-extern void 		 rps_log_ok(const char *, ...);
-extern void 		 rps_log_info(const char *, ...);
-extern void 		 rps_log_debug(const char *, ...);
-extern void 		 rps_log_warn(const char *, ...);
-extern void		 rps_log_fail(int, const char *, ...) __dead;
+extern FILE	*rps_log_file(void);
+extern void	 rps_log_file_set(FILE *);
+extern void 	 rps_log_ok(const char *, ...);
+extern void 	 rps_log_info(const char *, ...);
+extern void 	 rps_log_debug(const char *, ...);
+extern void 	 rps_log_warn(const char *, ...);
+extern void	 rps_log_fail(int, const char *, ...) __dead;
 __END_DECLS
 
 

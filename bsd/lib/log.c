@@ -33,10 +33,10 @@
 
 
 /*
- * Thread local log file path. NULL or an empty string indicates that logging to
- * file is currently disabled.
+ * Thread local log file path. NULL indicates that logging to file is currently
+ * disabled.
  */
-static __thread const char *log_path = NULL;
+static __thread FILE *log_hnd = NULL;
 
 
 /*
@@ -65,35 +65,27 @@ tty_print(const char *cpn, const char *msg, va_list args)
 static void
 file_write(const char *cpn, const char *msg, va_list args)
 {
-	FILE	*fd;
 	char  	 bfr[32];
 	time_t	 now;
 
-	assert(log_path && *log_path && "invalid log path");
-	fd = fopen(log_path);
+	if (__predict_true(log_hnd != NULL)) {
+	       now = time(NULL);
+	       strftime(bfr, sizeof(bfr), "", localtime(&now));
 
-	if (__predict_false(!fd)) {
-		log_path = NULL;
-		tty_print(CPN_WARN, "Could not open log file");
-		return;
+	       fprintf(log_hnd, "%s %s: ", cpn, bfr);
+	       vfprintf(log_hnd, msg, args);
+	       fprintf(log_hnd, "\n");
 	}
-
-	now = time(NULL);
-	strftime(bfr, sizeof(bfr), "", localtime(&now));
-
-	fprintf(fd, "%s %s: ", cpn, bfr);
-	vfprintf(fd, msg, args);
-	fprintf(fd, "\n");
 }
 
 
 /*
- * Gets the path to the current log file.
+ * Gets the handle to the current log file.
  */
-const char *
+FILE *
 rps_log_file(void)
 {
-	return log_path;
+	return log_hnd;
 }
 
 
@@ -101,9 +93,9 @@ rps_log_file(void)
  * Sets the path to the current log file.
  */
 void
-rps_log_file_set(const char *path)
+rps_log_file_set(FILE *hnd)
 {
-	log_path = path;
+	log_hnd = hnd;
 }
 
 
@@ -120,7 +112,7 @@ rps_log_ok(const char *msg, ...)
 	va_start(ap, msg);
 	tty_print(CPN_OK, msg, ap);
 
-	if (log_path && *log_path)
+	if (__predict_true(log_hnd != NULL))
 		file_write("[OK]", msg, ap);
 		
 	va_end(ap);
@@ -140,7 +132,7 @@ rps_log_info(const char *msg, ...)
 	va_start(ap)
 	tty_print(CPN_INFO, msg, ap);
 	
-	if (log_path && *log_path)
+	if (__predict_true(log_hnd != NULL))
 		file_write("[INFO]", msg, ap);
 
 	va_end(ap);
@@ -160,7 +152,7 @@ rps_log_debug(const char *msg, ...)
 	va_start(ap);
 	tty_print(CPN_DEBUG, msg, ap);
 	
-	if (log_path && *log_path)
+	if (__predict_true(log_hnd != NULL))
 		file_write("[DEBUG]", msg, ap);
 
 	va_end(ap);
@@ -180,7 +172,7 @@ rps_log_warn(const char *msg, ...)
 	va_start(ap);
 	tty_print(CPN_WARN, msg, ap);
 
-	if (log_path && *log_path)
+	if (__predict_true(log_hnd != NULL))
 		file_write("[WARN]", msg, ap);
 
 	va_end(ap);
@@ -200,7 +192,7 @@ rps_log_fail(int erno, const char *msg, ...)
 	va_start(ap);
 	tty_print(CPN_FAIL, msg, ap);
 	
-	if (log_path && *log_path)
+	if (__predict_true(log_hnd != NULL))
 		file_write("[FAIL]", msg, ap);
 
 	va_end(ap)
