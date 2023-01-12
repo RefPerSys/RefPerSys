@@ -134,9 +134,10 @@ Rps_TokenSource::position_str(int col) const
 {
   if (col<0) col = toksrc_col;
   std::ostringstream outs;
-  outs << toksrc_name << ":L" << toksrc_line << ",C:"  << col << std::flush;
+  outs << toksrc_name << ":L" << toksrc_line << ",C"  << col << std::flush;
   return outs.str();
 } // end Rps_TokenSource::position_str
+
 
 Rps_TokenSource::~Rps_TokenSource()
 {
