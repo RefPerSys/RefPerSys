@@ -1498,7 +1498,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
 #warning TODO: missing code in Rps_TokenSource::parse_comparand
   /***
    * We probably should loop and collect all terms if they are
-   * separated by the same additive operator.
+   * separated by the same additive delimiter with its operator.
    *
    * Near commit 95d44aa788cf1 (dec. 2022) we should probably improve
    * our plugins/rpsplug_createcommutativeoperator.cc to create more
@@ -1513,7 +1513,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                        << ".... position:" << position_str()
                        << " curcptr:" << Rps_QuotedC_String(curcptr())
                        << " token_deq:" << toksrc_token_deq
-		       << " lextokv=" << _f.lextokv);
+                       << " lextokv=" << _f.lextokv);
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand¤" << callnum << std::endl
                << "... from " << std::endl << Rps_ShowCallFrame(callframe) << std::endl
                << "... parse_comparand in:" << (*this) << " at startpos: " << startpos
