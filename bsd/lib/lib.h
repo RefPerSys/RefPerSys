@@ -75,12 +75,12 @@ __END_DECLS
  * String interface
  */
 
-typedef char str;
+typedef char rps_str;
 
 __BEGIN_DECLS
 extern rps_str *rps_str_new(const char *) __malloc;
 extern rps_str *rps_str_new_raw(size_t) __malloc;
-extern void rps_str_free(str **);
+extern void rps_str_free(rps_str **);
 extern int rps_str_cmp(const rps_str *, const char *);
 extern size_t rps_str_len(const rps_str *);
 extern size_t rps_str_sz(const rps_str *);
