@@ -26,15 +26,6 @@
 #define __predict_false(x) (__builtin_expect(!!(x), 0))
 #endif
 
-#ifndef __thread
-#if (defined __STDC_VERSION__) && (__STDC_VERSION__ > 201100L)
-#include <threads.h>
-#define __thread thread_local
-#else
-#error "__thread not available; try compiling with -std=c11"
-#endif
-#endif
-
 #if (defined __cplusplus && !defined __BEGIN_DECLS)
 #define __BEGIN_DECLS extern "C" {
 #endif
