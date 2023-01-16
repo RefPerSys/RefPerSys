@@ -1,5 +1,4 @@
 #include <assert.h> /* assert(3) */
-#include <errno.h>  /* errno(3) */
 #include <stdarg.h> /* va_start(3) */
 #include <stdio.h>  /* fprintf(3) */
 #include <stdlib.h> /* exit(3) */
@@ -129,7 +128,7 @@ rps_log_info(const char *msg, ...)
 
 	assert(msg && *msg && "message must be valid string");
 
-	va_start(ap)
+	va_start(ap, msg);
 	tty_print(CPN_INFO, msg, ap);
 	
 	if (__predict_true(log_hnd != NULL))
@@ -149,7 +148,7 @@ rps_log_debug(const char *msg, ...)
 	
 	assert(msg && *msg && "message must be valid string");
 
-	va_start(ap);
+	va_start(ap, msg);
 	tty_print(CPN_DEBUG, msg, ap);
 	
 	if (__predict_true(log_hnd != NULL))
@@ -169,7 +168,7 @@ rps_log_warn(const char *msg, ...)
 
 	assert(msg && *msg && "message must be valid string");
 
-	va_start(ap);
+	va_start(ap, msg);
 	tty_print(CPN_WARN, msg, ap);
 
 	if (__predict_true(log_hnd != NULL))
@@ -189,15 +188,13 @@ rps_log_fail(int erno, const char *msg, ...)
 
 	assert(msg && *msg && "message must be valid string");
 
-	va_start(ap);
+	va_start(ap, msg);
 	tty_print(CPN_FAIL, msg, ap);
 	
 	if (__predict_true(log_hnd != NULL))
 		file_write("[FAIL]", msg, ap);
 
-	va_end(ap)
-
-	errno = erno;
+	va_end(ap);
 	exit(erno);
 }
 
