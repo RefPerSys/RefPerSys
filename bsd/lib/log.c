@@ -25,11 +25,11 @@
  * Captions indicating the severity level of messages logged to TTY. Each
  * caption is enclosed in brackets and colour coded.
  */
-#define CPN_OK 		"[" TTY_GREEN "OK" TTY_RESET "]
-#define CPN_INFO 	"[" TTY_BLUE "INFO" TTY_RESET "]
-#define CPN_DEBUG	"[" TTY_CYAN "DEBUG" TTY_RESET "]
-#define CPN_WARN 	"[" TTY_YELLOW "WARN" TTY_RESET "]
-#define CPN_FAIL 	"[" TTY_RED "FAIL" TTY_RESET "]
+#define CPN_OK 		"[" TTY_GREEN "OK" TTY_RESET "]"
+#define CPN_INFO 	"[" TTY_BLUE "INFO" TTY_RESET "]"
+#define CPN_DEBUG	"[" TTY_CYAN "DEBUG" TTY_RESET "]"
+#define CPN_WARN 	"[" TTY_YELLOW "WARN" TTY_RESET "]"
+#define CPN_FAIL 	"[" TTY_RED "FAIL" TTY_RESET "]"
 
 
 /*
