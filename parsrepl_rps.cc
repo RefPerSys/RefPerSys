@@ -1415,7 +1415,7 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, bool*pokparse)
 
 
 
-// a comparand - something on left or right side of compare operators
+// a comparand - something on left or right side of compare operators such as < or !=
 // is a sequence of terms with additive operators
 Rps_Value
 Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
@@ -1495,6 +1495,14 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                     << " token_deq:" << toksrc_token_deq);
       return _f.leftv;
     }
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " *INCOMPLETE* leftv=" << _f.leftv
+                << " lextokv:" << _f.lextokv
+                << std::endl
+                << "... lexopertokv-at1:" << _f.lexopertokv
+                << " startpos:" << startpos
+                << " currentpos:" << position_str()
+                << " curcptr " << Rps_QuotedC_String(curcptr())
+                << " token_deq:" << toksrc_token_deq);
 #warning TODO: missing code in Rps_TokenSource::parse_comparand
   /***
    * We probably should loop and collect all terms if they are
