@@ -1454,7 +1454,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                  << " - " << strerror(errno));
   //// fill the temporary file
   {
-    fprintf (tfil, "//// temporary file %s for RefPerSys\n", tempcppfilename);
+    fprintf (tfil, "//// temporary [plugin] file %s for RefPerSys\n", tempcppfilename);
     fprintf (tfil, "//// see refpersys.org website\n");
     fprintf (tfil, "//// passed to commit %s\n", rps_lastgitcommit);
     fprintf (tfil, "//// rps_shortgitid %s\n", rps_shortgitid);
@@ -1475,7 +1475,9 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
     fprintf (tfil, "  RPS_DEBUG_LOG(CMD, \"start plugin \"\n"
              "                      << plugin->plugin_name << \" from \" << std::endl\n");
     fprintf (tfil, "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary C++ plugin\"));\n");
-    fprintf (tfil, "#warning incomplete %s\n", tempcppfilename);
+    fprintf (tfil, "#warning temporary incomplete %s\n", tempcppfilename);
+    fprintf (tfil, "  RPS_INFORMOUT(\"did run temporary plugin %s from pid %%d on %%s\\n\", (int)getpid(), rps_hostname());\n",
+	     tempcppfilename);
     fprintf (tfil, "} // end rps_do_plugin in %s\n", tempcppfilename);
     fprintf (tfil, "\n\n\n // ********* eof %s *********\n", tempcppfilename);
     fflush (tfil);
@@ -1575,6 +1577,8 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
         }
       RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code buildplugincmd: " << buildplugincmd);
       errno = 0;
+      RPS_INFORMOUT("building temporary plugin with " << buildplugincmd << " from pid:" << (int)getpid());
+      fflush(nullptr);
       int buildres = system(buildplugincmd.c_str());
       if (buildres != 0)
         RPS_WARNOUT("rps_edit_run_cplusplus_code build command " << buildplugincmd
@@ -1607,7 +1611,9 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
   {
     if (access(tempsofilename, R_OK))
       RPS_FATALOUT("rps_edit_run_cplusplus_code cannot access " << tempsofilename << " : " << strerror(errno));
+    // we dlopen now to check that the plugin machinerey will be able to do so.
     void* tempdlh = dlopen (tempsofilename, RTLD_NOW|RTLD_GLOBAL);
+    // so it is dlopen-ed twice (once here, later by plugin loading) but we don't care!
     if (!tempdlh)
       RPS_FATALOUT("rps_edit_run_cplusplus_code failed to dlopen temporary C++ plugin "
                    << tempsofilename << " : " << dlerror());
@@ -1626,7 +1632,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
               << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code ending"));
 #warning rps_edit_cplusplus_code still incomplete
   rps_edit_cplusplus_callframe = nullptr;
-#warning rps_edit_cplusplus_code is very incomplete
+#warning rps_edit_cplusplus_code is perhaps incomplete
 } // end rps_edit_run_cplusplus_code
 
 
