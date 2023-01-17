@@ -1552,13 +1552,13 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
       needchdir = cwdpath != std::string{};
       //// our compilation command is...
       std::string buildplugincmd{rps_topdirectory};
-      buildplugincmd += "/build-temporary-plugin.sh ";
+      buildplugincmd += "/build-plugin.sh ";
       buildplugincmd += tempcppfilename;
       buildplugincmd += " ";
       buildplugincmd += tempsofilename;
       RPS_WARNOUT("rps_edit_run_cplusplus_code incomplete for C++ code in "<< tempcppfilename
                   << " should compile into " << tempsofilename
-                  << " using either make plugin or build-temporary-plugin.sh"
+                  << " using either make plugin or build-plugin.sh"
                   << std::endl
                   << " - from "
                   << Rps_ShowCallFrame(&_)
@@ -1755,7 +1755,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
 	if (isplainarg)
 	  fputs(curarg, rps_debug_file);
 	else
-	  fprintf(rps_debug_file, "'%s'", Rps_QuotedC_String(curarg));
+	  fprintf(rps_debug_file, "'%s'", Rps_QuotedC_String(curarg).c_str());
       }
       fputc('\n', rps_debug_file);
     }
