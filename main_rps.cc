@@ -1413,6 +1413,8 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                            /*callerframe:*/callerframe,
                            Rps_ObjectRef tempob;
                 );
+  static int tcnt;
+  tcnt++;
   double cpustartim = rps_process_cpu_time();
   double realstartim = rps_wallclock_real_time();
   //RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
@@ -1464,9 +1466,10 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
     fprintf (tfil, "\n\n#" "include \"refpersys.hh\"\n\n");
     fprintf (tfil, "\n" "void rps_do_plugin(const Rps_Plugin*plugin)\n{\n");
     fprintf (tfil,
-             "  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::find_object_by_string(rps_edit_cplusplus_callframe,\n"
+             "  RPS_LOCALFRAME(/*descr:*/\n"
+	     "                 Rps_ObjectRef::find_object_by_string(rps_edit_cplusplus_callframe,\n"
              "                                                                std::string{\"%s\"},\n"
-             "                                                               Rps_ObjectRef::Fail_When_Missing),\n"
+             "                                                               Rps_ObjectRef::Rps_Fail_If_Not_Found),\n"
              "                 /*callerframe:*/rps_edit_cplusplus_callframe,\n"
              "                 /***** your locals here ******/\n"
              "                 );\n",
@@ -1476,8 +1479,13 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
              "                      << plugin->plugin_name << \" from \" << std::endl\n");
     fprintf (tfil, "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary C++ plugin\"));\n");
     fprintf (tfil, "#warning temporary incomplete %s\n", tempcppfilename);
-    fprintf (tfil, "  RPS_INFORMOUT(\"did run temporary plugin %s from pid %%d on %%s\\n\", (int)getpid(), rps_hostname());\n",
-	     tempcppfilename);
+    fprintf (tfil, //
+	     "  RPS_INFORMOUT(\"did run temporary plugin \" << plugin->plugin_name\n"
+	     "                << \" from pid \" << (int)getpid()\n"
+	     "                << \" on \" << rps_hostname() << \" orig.git %s\"\n"
+	     "                << std::endl\n"
+	     "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary %s#%d\"));\n",
+	     rps_shortgitid, _f.tempob->oid().to_string().c_str(), tcnt);
     fprintf (tfil, "} // end rps_do_plugin in %s\n", tempcppfilename);
     fprintf (tfil, "\n\n\n // ********* eof %s *********\n", tempcppfilename);
     fflush (tfil);
@@ -1512,9 +1520,10 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                     << "tfilfd#" << fileno(tfil)
                     << " see /proc/" << getpid() << "/fd/" << fileno(tfil));
       int cmdbad = system(cmdout.str().c_str());
-      if (cmdbad != 0)
-        RPS_FATALOUT("rps_edit_run_cplusplus_code failed to run " << cmdout.str()
+      if (cmdbad != 0) {
+        RPS_FATALOUT("rps_edit_run_cplusplus_code failed to edit with " << cmdout.str()
                      << " which exited " << cmdbad);
+      };
       struct stat tempstat;
       memset (&tempstat, 0, sizeof(tempstat));
       if (fstat(fileno(tfil), &tempstat))
@@ -1580,13 +1589,15 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
       RPS_INFORMOUT("building temporary plugin with " << buildplugincmd << " from pid:" << (int)getpid());
       fflush(nullptr);
       int buildres = system(buildplugincmd.c_str());
-      if (buildres != 0)
+      if (buildres != 0) {
         RPS_WARNOUT("rps_edit_run_cplusplus_code build command " << buildplugincmd
                     << " failed -> " << buildres
                     << " - from "
                     << Rps_ShowCallFrame(&_)
                     << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code build failure"));
+	cppcompilegood = false;
+      }
       else
         cppcompilegood = true;
       if (needchdir)
