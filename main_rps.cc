@@ -71,6 +71,8 @@ std::vector<std::string> rps_command_vec;
 extern "C" std::string rps_test_repl_string;
 std::string rps_test_repl_string;
 
+
+
 static std::map<std::string,std::string> rps_dict_extra_arg;
 
 static void rps_kill_wait_gui_process(void);
@@ -828,8 +830,14 @@ main (int argc, char** argv)
   ////
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
-  if (rps_my_load_dir.empty())
-    rps_my_load_dir = std::string(rps_topdirectory);
+  if (rps_my_load_dir.empty()) {
+    const char* rpld = realpath(rps_topdirectory, nullptr);
+    if (!rpld)
+      rpld = rps_topdirectory;
+    RPS_ASSERT(rpld != nullptr);
+    rps_my_load_dir = std::string(rpld);
+    free ((void*)rpld);
+  };
   rps_load_from(rps_my_load_dir);
   rps_run_application(argc, argv);
   ////
@@ -845,15 +853,22 @@ main (int argc, char** argv)
                  rps_dumpdir_str.c_str(), cwdbuf);
       rps_dump_into(rps_dumpdir_str);
     }
+  /// The following assembler code sets the C symbol rps_end_of_main
+  /// and the several nop assembler instructions could facilitate self
+  /// modification of machine code, or GDB breakpoints.
+  ///
+  /// Of course, we don't care about inefficiency....
   asm volatile (".globl rps_end_of_main; .type rps_end_of_main, @function");
-  asm volatile ("rps_end_of_main: nop; nop; nop; nop; nop; nop");
+  asm volatile ("rps_end_of_main: nop; nop; nop; nop; nop; nop; nop; nop; bop");
   asm volatile (".size rps_end_of_main, . - rps_end_of_main");
   asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop; ");
   if (rps_debug_file)
     fflush(rps_debug_file);
-  RPS_INFORM("end of RefPerSys process %d on host %s\n"
+  RPS_INFORM("end of RefPerSys process %d on host %s loaded state %s\n"
              "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
-             (int)getpid(), rps_hostname(), rps_gitid, rps_timestamp,
+             (int)getpid(), rps_hostname(),
+	     rps_my_load_dir.c_str(),
+	     rps_gitid, rps_timestamp,
              rps_elapsed_real_time(), rps_process_cpu_time());
   return 0;
 } // end of main
