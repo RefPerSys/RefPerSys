@@ -859,9 +859,11 @@ main (int argc, char** argv)
   ///
   /// Of course, we don't care about inefficiency....
   asm volatile (".globl rps_end_of_main; .type rps_end_of_main, @function");
-  asm volatile ("rps_end_of_main: nop; nop; nop; nop; nop; nop; nop; nop; bop");
+  asm volatile ("rps_end_of_main: nop; nop; nop; nop; nop; nop; nop; nop;"
+		" nop; nop; nop; nop; nop; nop; nop; nop; nop");
   asm volatile (".size rps_end_of_main, . - rps_end_of_main");
-  asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop; ");
+  asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;"
+		" nop; nop; nop; nop; nop; nop; nop; nop; nop");
   if (rps_debug_file)
     fflush(rps_debug_file);
   RPS_INFORM("end of RefPerSys process %d on host %s loaded state %s\n"
