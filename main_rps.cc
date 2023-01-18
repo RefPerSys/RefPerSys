@@ -1404,6 +1404,58 @@ rps_run_application(int &argc, char **argv)
 } // end rps_run_application
 
 
+static long
+rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempobarg, int tcnt, const char*tempcppfilename)
+{
+  long tfilsiz = -1;
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+                           /*callerframe:*/callerframe,
+                           Rps_ObjectRef tempob;
+                );
+  _f.tempob = tempobarg;
+  RPS_DEBUG_LOG(CMD, "rps_fill_cplusplus_temporary_code tempob=" << _f.tempob
+                << " tempcppfilename=" << tempcppfilename
+                << " from " << std::endl
+                << Rps_ShowCallFrame(&_));
+  FILE* tfil = fopen(tempcppfilename, "w");
+    fprintf (tfil, "//// temporary [plugin] file %s for RefPerSys\n", tempcppfilename);
+    fprintf (tfil, "//// see refpersys.org website\n");
+    fprintf (tfil, "//// passed to commit %s\n", rps_lastgitcommit);
+    fprintf (tfil, "//// rps_shortgitid %s\n", rps_shortgitid);
+    fprintf (tfil, "//// rps_md5sum %s\n", rps_md5sum);
+    fprintf (tfil, "//// rps_timestamp %s\n", rps_timestamp);
+    fprintf (tfil, "//// GPLv3+ licensed - see /www.gnu.org/licenses/quick-guide-gplv3.en.html\n");
+    fprintf (tfil, "\n\n#" "include \"refpersys.hh\"\n\n");
+    fprintf (tfil, "\n" "void rps_do_plugin(const Rps_Plugin*plugin)\n{\n");
+    fprintf (tfil,
+             "  RPS_LOCALFRAME(/*descr:*/\n"
+	     "                 Rps_ObjectRef::find_object_by_string(rps_edit_cplusplus_callframe,\n"
+             "                                                                std::string{\"%s\"},\n"
+             "                                                               Rps_ObjectRef::Rps_Fail_If_Not_Found),\n"
+             "                 /*callerframe:*/rps_edit_cplusplus_callframe,\n"
+             "                 /***** your locals here ******/\n"
+             "                 );\n",
+             _f.tempob->oid().to_string().c_str());
+    fprintf (tfil, "  RPS_ASSERT(plugin != nullptr);\n");
+    fprintf (tfil, "  RPS_DEBUG_LOG(CMD, \"start plugin \"\n"
+             "                      << plugin->plugin_name << \" from \" << std::endl\n");
+    fprintf (tfil, "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary C++ plugin\"));\n");
+    fprintf (tfil, "#warning temporary incomplete %s\n", tempcppfilename);
+    fprintf (tfil, //
+	     "  RPS_INFORMOUT(\"did run temporary plugin \" << plugin->plugin_name\n"
+	     "                << \" from pid \" << (int)getpid()\n"
+	     "                << \" on \" << rps_hostname() << \" orig.git %s\"\n"
+	     "                << std::endl\n"
+	     "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary %s#%d\"));\n",
+	     rps_shortgitid, _f.tempob->oid().to_string().c_str(), tcnt);
+    fprintf (tfil, "} // end rps_do_plugin in %s\n", tempcppfilename);
+    fprintf (tfil, "\n\n\n // ********* eof %s *********\n", tempcppfilename);
+    fflush (tfil);
+    tfilsiz = ftell(tfil);
+    RPS_INFORMOUT("filled temporary plugin " << tempcppfilename << " with " << tfilsiz << " bytes from pid " << (int)getpid() << " git " << rps_shortgitid
+		  << std::endl << " using object " << _f.tempob << " count " << tcnt);
+    return tfilsiz;
+} // end rps_fill_cplusplus_temporary_code
 
 Rps_CallFrame*rps_edit_cplusplus_callframe;
 void
@@ -1449,48 +1501,9 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                 << " tempsofilename=" << tempsofilename
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
-  FILE* tfil = fopen(tempcppfilename, "w");
-  long tfilsiz = 0;
-  if (!tfil)
-    RPS_FATALOUT("rps_edit_run_cplusplus_code failed fopen for tempcppfilename " << tempcppfilename
-                 << " - " << strerror(errno));
-  //// fill the temporary file
-  {
-    fprintf (tfil, "//// temporary [plugin] file %s for RefPerSys\n", tempcppfilename);
-    fprintf (tfil, "//// see refpersys.org website\n");
-    fprintf (tfil, "//// passed to commit %s\n", rps_lastgitcommit);
-    fprintf (tfil, "//// rps_shortgitid %s\n", rps_shortgitid);
-    fprintf (tfil, "//// rps_md5sum %s\n", rps_md5sum);
-    fprintf (tfil, "//// rps_timestamp %s\n", rps_timestamp);
-    fprintf (tfil, "//// GPLv3+ licensed - see /www.gnu.org/licenses/quick-guide-gplv3.en.html\n");
-    fprintf (tfil, "\n\n#" "include \"refpersys.hh\"\n\n");
-    fprintf (tfil, "\n" "void rps_do_plugin(const Rps_Plugin*plugin)\n{\n");
-    fprintf (tfil,
-             "  RPS_LOCALFRAME(/*descr:*/\n"
-	     "                 Rps_ObjectRef::find_object_by_string(rps_edit_cplusplus_callframe,\n"
-             "                                                                std::string{\"%s\"},\n"
-             "                                                               Rps_ObjectRef::Rps_Fail_If_Not_Found),\n"
-             "                 /*callerframe:*/rps_edit_cplusplus_callframe,\n"
-             "                 /***** your locals here ******/\n"
-             "                 );\n",
-             _f.tempob->oid().to_string().c_str());
-    fprintf (tfil, "  RPS_ASSERT(plugin != nullptr);\n");
-    fprintf (tfil, "  RPS_DEBUG_LOG(CMD, \"start plugin \"\n"
-             "                      << plugin->plugin_name << \" from \" << std::endl\n");
-    fprintf (tfil, "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary C++ plugin\"));\n");
-    fprintf (tfil, "#warning temporary incomplete %s\n", tempcppfilename);
-    fprintf (tfil, //
-	     "  RPS_INFORMOUT(\"did run temporary plugin \" << plugin->plugin_name\n"
-	     "                << \" from pid \" << (int)getpid()\n"
-	     "                << \" on \" << rps_hostname() << \" orig.git %s\"\n"
-	     "                << std::endl\n"
-	     "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary %s#%d\"));\n",
-	     rps_shortgitid, _f.tempob->oid().to_string().c_str(), tcnt);
-    fprintf (tfil, "} // end rps_do_plugin in %s\n", tempcppfilename);
-    fprintf (tfil, "\n\n\n // ********* eof %s *********\n", tempcppfilename);
-    fflush (tfil);
-    tfilsiz = ftell(tfil);
-  }
+  long tfilsiz = -1;
+  //// fill once the temporary file
+  tfilsiz = rps_fill_cplusplus_temporary_code(&_, _f.tempob, tcnt, tempcppfilename);
   if (rps_cpluspluseditor_str.empty())
     {
       const char*editorenv = getenv("EDITOR");
@@ -1516,9 +1529,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
     {
       std::ostringstream cmdout;
       cmdout << rps_cpluspluseditor_str << " " << tempcppfilename;
-      RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before running " << cmdout.str()
-                    << "tfilfd#" << fileno(tfil)
-                    << " see /proc/" << getpid() << "/fd/" << fileno(tfil));
+      RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before running " << cmdout.str());
       int cmdbad = system(cmdout.str().c_str());
       if (cmdbad != 0) {
         RPS_FATALOUT("rps_edit_run_cplusplus_code failed to edit with " << cmdout.str()
@@ -1526,14 +1537,11 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
       };
       struct stat tempstat;
       memset (&tempstat, 0, sizeof(tempstat));
-      if (fstat(fileno(tfil), &tempstat))
-        RPS_FATALOUT("rps_edit_run_cplusplus_code failed to stat fd#" << fileno(tfil)
-                     << " for " << tempcppfilename << ":" << strerror(errno)
+      if (stat(tempcppfilename, &tempstat))
+        RPS_FATALOUT("rps_edit_run_cplusplus_code failed to stat file " << tempcppfilename << ":" << strerror(errno)
                      << std::endl
                      << " - from "
-                     << Rps_ShowCallFrame(&_)
-                     << std::endl
-                     << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *fstatfailure*"));
+                     << Rps_ShowCallFrame(&_));
       RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code tempcppfilename=" << tempcppfilename
                     << " with " << tempstat.st_size << " bytes");
       if ((long)tempstat.st_size == (long)tfilsiz)
@@ -1544,7 +1552,6 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                     << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1,
                                                "rps_edit_run_cplusplus_code *unchangedsize*"));
-      fclose(tfil);
       RPS_INFORMOUT("rps_edit_run_cplusplus_code should compile C++ code in " << tempcppfilename
                     << std::endl
                     << " - from "
