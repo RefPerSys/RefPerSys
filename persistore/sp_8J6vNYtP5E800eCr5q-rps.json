@@ -21,7 +21,7 @@
 {
  "format" : "RefPerSysFormat2019A",
  "jsoncpp-version" : "1.9.5",
- "nbobjects" : 185,
+ "nbobjects" : 186,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -1848,6 +1848,24 @@
  "symb_val" : "_8CncrUdoSL303T5lOK"
 }
 //-ob_4CZZ2JlnkQT02YJ6sM
+
+
+//+ob_4DsQEs8zZf901wT1LH
+//∈mutable_set
+{
+ "oid": "_4DsQEs8zZf901wT1LH",
+ "mtime": 1674140720.52,
+ "attrs" : [
+  	{
+  		"at" : "_1EBVGSfW2m200z18rx",
+  		"va" : "the_mutable_set_of_classes"
+  	}
+  ],
+ "class" : "_0J1C39JoZiv03qA2HA",
+ "payload" : "setob",
+ "setob" : []
+}
+//-ob_4DsQEs8zZf901wT1LH
 
 
 //+ob_4FBkYDlynyC02QtkfG
