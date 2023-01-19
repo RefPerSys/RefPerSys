@@ -1297,6 +1297,17 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_dump_into"));
   if (dirpath.empty())
     dirpath = std::string(".");
+  int lendirpath = dirpath.size();
+  if (dirpath[0] == '.' && lendirpath > 2 && dirpath[1] != '/' && dirpath[1] != '.')
+    {
+      RPS_WARNOUT("invalid directory to dump into " << Rps_QuotedC_String(dirpath));
+      throw std::runtime_error("bad dump directory with dot");
+    }
+  if (dirpath[0] == '-' || isspace(dirpath[0]))
+    {
+      RPS_WARNOUT("invalid directory to dump into " << Rps_QuotedC_String(dirpath));
+      throw std::runtime_error("bad dump directory with dash or space");
+    }
   {
     DIR* d = opendir(dirpath.c_str());
     if (d)
