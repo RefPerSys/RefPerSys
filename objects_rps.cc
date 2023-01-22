@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2022 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -2130,10 +2130,12 @@ Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef supercl
 {
   RPS_LOCALFRAME(nullptr,
                  callerframe,
+		 Rps_ObjectRef obthemutsetclasses;
                  Rps_ObjectRef obsuperclass;
                  Rps_ObjectRef obsymbol; // the symbol
                  Rps_ObjectRef obclass; //
                 );
+  _f.obthemutsetclasses =  RPS_ROOT_OB(_4DsQEs8zZf901wT1LH); //"the_mutable_set_of_classes"∈mutable_set
   _f.obsuperclass = superclassarg;
   RPS_INFORMOUT("Rps_ObjectRef::make_named_class obsuperclass="
                 << _f.obsuperclass << ", name=" << name << " start");
@@ -2181,6 +2183,10 @@ Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef supercl
   rps_add_root_object (_f.obclass);
   RPS_INFORMOUT("Rps_ObjectRef::make_named_class name="<< name
                 << " gives obclass=" << _f.obclass);
+  std::unique_lock<std::recursive_mutex> gumutsetcla (*(_f.obthemutsetclasses->objmtxptr()));
+  auto paylsetcla = _f.obthemutsetclasses->get_dynamic_payload< Rps_PayloadSetOb>();
+  RPS_ASSERT(paylsetcla != nullptr);
+  paylsetcla->add(_f.obclass);
   return _f.obclass;
 } // end Rps_ObjectRef::make_named_class
 
