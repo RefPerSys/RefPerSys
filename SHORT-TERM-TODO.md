@@ -9,7 +9,12 @@ than a few days of work.
 
 ## TODO List
 
-For *RefPerSys* near commit `dd3b0d0c848a441f` (jan. 2023)
+For *RefPerSys* near commit `111e7d81a00fe` (jan. 2023)
+
+
+Improve the REPL parsing so that `make test03` works
+
+## DONE  List
 
 The predefined root object `_4DsQEs8zZf901wT1LH` informally named
 `the_mutable_set_of_classes` should have its naming symbol
@@ -17,11 +22,3 @@ The predefined root object `_4DsQEs8zZf901wT1LH` informally named
 objects. The routine `Rps_ObjectRef::make_named_class` should be
 improved to fill `the_mutable_set_of_classes`
 
-## DONE  List
-
-### create a mutable set of *RefPerSys* classes
-
-We have the predefined root object `_4DsQEs8zZf901wT1LH`, of *RefPerSys* class `mutable_set`
- to be named
-`the_mutable_set_of_classes` whose payload is a mutable set (i.e. in
-C++ parlance `Rps_PayloadSetOb`). 
