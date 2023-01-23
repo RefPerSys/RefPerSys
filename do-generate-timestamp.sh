@@ -37,4 +37,8 @@ printf "const char rps_makefile[]=\"%s\";\n"   $(realpath Makefile)
 
 printf "const char rps_gui_script_executable[]=\"%s\";\n" $(realpath gui-script-refpersys.sh)
 
-printf "const char rps_building_user_info[]=\"%s\";\n" $(git config user.name)
+printf "const char rps_building_user_name[]=\"%s\";\n" $(git config user.name)
+
+printf "const char rps_building_user_email[]=\"%s\";\n" $(git config user.email)
+
+
