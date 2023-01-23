@@ -36,3 +36,5 @@ cp -va /tmp/refpersys-$$.tar.gz $HOME/tmp/refpersys.tar.gz >& /dev/stderr
 printf "const char rps_makefile[]=\"%s\";\n"   $(realpath Makefile)
 
 printf "const char rps_gui_script_executable[]=\"%s\";\n" $(realpath gui-script-refpersys.sh)
+
+printf "const char rps_building_user_info[]=\"%s\";\n" $(git config user.name)
