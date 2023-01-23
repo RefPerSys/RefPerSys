@@ -159,7 +159,8 @@ extern "C" const char rps_gnubison_version[];
 // ANTLR3 is another parser generator, see www.antlr3.org/
 extern "C" const char rps_antlr3_version[];
 extern "C" const char rps_gui_script_executable[];
-
+extern "C" const char rps_building_user_name[];
+extern "C" const char rps_building_user_email[];
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Provides miscellaneous runtime information for RefPerSys.
