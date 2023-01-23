@@ -1212,7 +1212,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
                     << " made with: " << rps_makefile << std::endl
-                    << " running on " << rps_hostname();
+                    << " running on " << rps_hostname() << std::endl
+		    << "This executable was built by "
+		    << rps_building_user_name
+		    << " of email " << rps_building_user_email
+		    << std::endl;
           {
             char cwdbuf[256];
             memset (cwdbuf, 0, sizeof(cwdbuf));
