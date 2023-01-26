@@ -53,6 +53,7 @@ extern "C" void rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe);
 
 extern "C" void rps_small_quick_tests_after_load (void);
 
+extern "C" void rps_publish_me(const char*url);
 
 extern "C" std::vector<Rps_Plugin> rps_plugins_vector;
 std::vector<Rps_Plugin> rps_plugins_vector;
@@ -73,6 +74,7 @@ std::string rps_test_repl_string;
 
 
 
+static std::string rps_publisher_url_str;
 static std::map<std::string,std::string> rps_dict_extra_arg;
 
 static void rps_kill_wait_gui_process(void);
@@ -286,6 +288,15 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ "NBJOBS", ///
     /*flags:*/ 0, ///
     /*doc:*/ "Run <NBJOBS> threads - default is 3, minimum 2, maximum 20", //
+    /*group:*/0 ///
+  },
+  /* ====== publish some data to a remote URL which might make some statistics about RefPerSys ===== */
+  {/*name:*/ "publish-me", ///
+    /*key:*/ RPSPROGOPT_PUBLISH_ME, ///
+    /*arg:*/ "URL", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Send to the given URL the build timestamp and builder. See rps_publish_me function."
+    , //
     /*group:*/0 ///
   },
   /* ======= terminating empty option ======= */
@@ -839,6 +850,8 @@ main (int argc, char** argv)
     free ((void*)rpld);
   };
   rps_load_from(rps_my_load_dir);
+  if (!rps_publisher_url_str.empty())
+    rps_publish_me(rps_publisher_url_str.c_str());
   rps_run_application(argc, argv);
   ////
   if (!rps_dumpdir_str.empty())
@@ -945,6 +958,13 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         nbjobs = RPS_NBJOBS_MAX;
       rps_nbjobs = nbjobs;
     }
+    return 0;
+    case RPSPROGOPT_PUBLISH_ME:
+      {
+	if (!rps_publisher_url_str.empty())
+	  RPS_FATAL("cannot give twice the --publish-me <URL> option");
+	rps_publisher_url_str = arg;
+      }
     return 0;
     case RPSPROGOPT_DUMP:
     {
@@ -2251,5 +2271,19 @@ rps_get_extra_arg(const char*name)
     return nullptr;
   return it->second.c_str();
 } // end rps_get_extra_arg
+
+void
+rps_publish_me(const char*url)
+{
+  RPS_ASSERT(url != nullptr);
+  RPS_FATALOUT("unimplemented rps_publish_me function for " << url);
+  /** TODO:
+   * This function should do one or a few HTTP requests to the web service running at given url.
+   * Initially on http://refpersys.org/ probably.
+   * Sending there the various public data in __timestamp.c probably as HTTP POST parameters
+   * and probably the owner of the git, e.g. parse the .git/config file for its name and email in section user.
+   **/
+#warning rps_publish_me unimplemented
+} // end rps_publish_me
 
 /////////////////// end of file main_rps.cc
