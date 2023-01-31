@@ -90,9 +90,6 @@ endif
 ## GNU bison (parser generator) ; see www.gnu.org/software/bison/
 RPS_BUILD_BISON= bison
 
-## ANTLR3 (parser generator) ; see www.antlr3.org/
-## and https://theantlrguy.atlassian.net/wiki/spaces/ANTLR3/pages/2687234/ANTLR+v3+documentation
-RPS_BUILD_ANTLR= antlr3
 
 ifndef RPS_INCLUDE_DIRS
 RPS_INCLUDE_DIRS ?= /usr/local/include /usr/include /usr/include/jsoncpp
@@ -253,7 +250,6 @@ __timestamp.c: | Makefile do-generate-timestamp.sh
 	./do-generate-timestamp.sh $@  > $@-tmp
 	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
 	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
-	printf 'const char rps_antlr3_version[]="%s";\n'  "$$($(RPS_BUILD_ANTLR) -version 2>&1)" >> $@-tmp
 	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp
 	$(MV) --backup $@-tmp $@
 

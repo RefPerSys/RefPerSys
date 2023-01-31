@@ -295,7 +295,8 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_PUBLISH_ME, ///
     /*arg:*/ "URL", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Send to the given URL the build timestamp and builder. See rps_publish_me function."
+    /*doc:*/ "Send to the given URL the build timestamp and builder.\n"
+    " See rps_publish_me function in this " __FILE__ " source file.\n"
     , //
     /*group:*/0 ///
   },
@@ -708,9 +709,8 @@ rps_extend_env(void)
 } // end rps_extend_env
 
 
-////////////////////////////////////////////////////////////////
-int
-main (int argc, char** argv)
+static void
+rps_early_initialization(int argc, char** argv)
 {
   rps_argc = argc;
   rps_argv = argv;
@@ -822,6 +822,13 @@ main (int argc, char** argv)
   ///
   if (rps_syslog_enabled && rps_debug_flags != 0)
     openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
+} // end rps_early_initialization
+
+////////////////////////////////////////////////////////////////
+int
+main (int argc, char** argv)
+{
+  rps_early_initialization(argc, argv);
   rps_parse_program_arguments(argc, argv);
   ///
   RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" " %s process %d on host %s (stdout %s, stderr %s)\n"
@@ -1227,7 +1234,6 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " with " << nbsubdirs << " subdirectories." << std::endl
                     << " GNU glibc: " << gnu_get_libc_version() << std::endl
                     << " BISON parser generator: " << rps_gnubison_version << std::endl
-		    << " ANTLR3 parser generator: " << rps_antlr3_version << std::endl
 		    << " default GUI script: " << rps_gui_script_executable << std::endl
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
@@ -1268,7 +1274,7 @@ rps_parse_program_arguments(int &argc, char**argv)
   argparser_rps.parser = rps_parse1opt;
   argparser_rps.args_doc = " ; # ";
   argparser_rps.doc =
-    "RefPerSys - an Artificial General Intelligence project,\n"
+    "RefPerSys - an opensource Artificial Intelligence project,\n"
     " open science, for Linux/x86-64; see refpersys.org for more.\n"
     " (REFlexive PERsystem SYStem is GPLv3+ licensed free software)\n"
     " You should have received a copy of the GNU General Public License\n"
