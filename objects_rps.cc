@@ -2130,7 +2130,7 @@ Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef supercl
 {
   RPS_LOCALFRAME(nullptr,
                  callerframe,
-		 Rps_ObjectRef obthemutsetclasses;
+                 Rps_ObjectRef obthemutsetclasses;
                  Rps_ObjectRef obsuperclass;
                  Rps_ObjectRef obsymbol; // the symbol
                  Rps_ObjectRef obclass; //
