@@ -2282,14 +2282,28 @@ void
 rps_publish_me(const char*url)
 {
   RPS_ASSERT(url != nullptr);
-  RPS_FATALOUT("unimplemented rps_publish_me function for " << url);
+  RPS_INFORMOUT("rps_publish_me start top url '" << Rps_QuotedC_String(url) << "'");
+  std::string topurlstr ({url});
+  CURL* my_curl = curl_easy_init();
+  if (!my_curl)
+    RPS_FATALOUT("failed to curl_easy_init");
+  curl_mime *mime = curl_mime_init(my_curl);
+  if (!mime)
+    RPS_FATALOUT("failed to curl_mime_init");
+ curl_mimepart *part = curl_mime_addpart(mime);
+ if (!part)
+   RPS_FATALOUT("failed to curl_mime_addpart");
+  std::string versionurlstr = topurlstr + "/refpersys_version";
+  curl_easy_setopt(my_curl, CURLOPT_URL, versionurlstr.c_str());
   /** TODO:
    * This function should do one or a few HTTP requests to the web service running at given url.
    * Initially on http://refpersys.org/ probably.
    * Sending there the various public data in __timestamp.c probably as HTTP POST parameters
    * and probably the owner of the git, e.g. parse the .git/config file for its name and email in section user.
    **/
-#warning rps_publish_me unimplemented
+  curl_easy_cleanup (my_curl);
+  RPS_FATALOUT("unimplemented rps_publish_me function for " << url);
+#warning rps_publish_me incomplete, using CURL easy interface
 } // end rps_publish_me
 
 /////////////////// end of file main_rps.cc
