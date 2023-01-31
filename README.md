@@ -1,9 +1,20 @@
-# refpersys
+# RefPerSys
 
 
-This project is on https://gitlab.com/bstarynk/refpersys/ and has its
-own web site on http://refpersys.org/ where more details are given.
+This [free software](https://en.wikipedia.org/wiki/Free_software)
+project has its source code on https://gitlab.com/bstarynk/refpersys/
+and on https://github.com/RefPerSys/RefPerSys . It is its own web site
+on http://refpersys.org/ where more details are given.
 
+*RefPerSys* is aiming to become a free software symbolic artificial
+intelligence system or [inference
+engine](https://en.wikipedia.org/wiki/Inference_engine), e.g. an
+alternative to [CLIPSrules](https://clipsrules.net/).
+
+Contributions to *RefPerSys* are welcome. Contact by email [Basile
+Starynkevitch](http://starynkevitch.net/Basile/) (near Paris, France)
+at `basile@starynkevitch.net` or Abhishek Chakravarti (near Kolkotta,
+India) at `abhishek@taranjali.org`
 
 ## A research project
 
