@@ -80,150 +80,19 @@ static std::map<std::string,std::string> rps_dict_extra_arg;
 static void rps_kill_wait_gui_process(void);
 
 error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
+
+
+/// Keep the options in alphabetical order of the name
 struct argp_option rps_progoptions[] =
 {
-  /* ======= the load directory ======= */
-  {/*name:*/ "load", ///
-    /*key:*/ RPSPROGOPT_LOADDIR, ///
-    /*arg:*/ "LOADDIR", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "loads persistent state from LOADDIR, defaults to the source directory", ///
-    /*group:*/0 ///
-  },
-  /* ======= the RefPerSys home directory ======= */
-  {/*name:*/ "refpersys-home", ///
-    /*key:*/ RPSPROGOPT_HOMEDIR, ///
-    /*arg:*/ "HOMEDIR", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "set the RefPerSys homedir, default to $REFPERSYS_HOME or $HOME", ///
-    /*group:*/0 ///
-  },
-  /* ======= debug flags ======= */
-  {/*name:*/ "debug", ///
-    /*key:*/ RPSPROGOPT_DEBUG, ///
-    /*arg:*/ "DEBUGFLAGS", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "To set RefPerSys comma separated debug flags, pass --debug=help to get their list.\n"
-    " Also from $REFPERSYS_DEBUG environment variable, if provided", ///
-    /*group:*/0 ///
-  },
-  /* ======= debug after load flags ======= */
-  {/*name:*/ "debug-after-load", ///
-    /*key:*/ RPSPROGOPT_DEBUG_AFTER_LOAD, ///
-    /*arg:*/ "DEBUGFLAGS", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "To set RefPerSys comma separated debug flags after the sucessful load.", ///
-    /*group:*/0 ///
-  },
-  /* ======= debug file path ======= */
-  {/*name:*/ "debug-path", ///
-    /*key:*/ RPSPROGOPT_DEBUG_PATH, ///
-    /*arg:*/ "DEBUGFILEPATH", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "Output debug messages into given DEBUGFILEPATH instead of stderr.", ///
-    /*group:*/0 ///
-  },
-  /* ======= dump into given directory ======= */
-  {/*name:*/ "dump", ///
-    /*key:*/ RPSPROGOPT_DUMP, ///
-    /*arg:*/ "DUMPDIR", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "Dump the persistent state to given DUMPDIR directory.", ///
-    /*group:*/0 ///
-  },
-  /* ======= random oids ======= */
-  {/*name:*/ "random-oid", ///
-    /*key:*/ RPSPROGOPT_RANDOMOID, ///
-    /*arg:*/ "NBOIDS", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "Print NBOIDS random object identifiers",
-    /*group:*/0 ///
-  },
-  /* ======= type information ======= */
-  {/*name:*/ "type-info", ///
-    /*key:*/ RPSPROGOPT_TYPEINFO, ///
-    /*arg:*/ nullptr, ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "Show type information (and test tagged integers)", //
-    /*group:*/0 ///
-  },
-  /* ======= syslog-ing ======= */
-  {/*name:*/ "syslog", ///
-    /*key:*/ RPSPROGOPT_SYSLOG, ///
-    /*arg:*/ nullptr, ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "use system log with syslog(3)", //
-    /*group:*/0 ///
-  },
-  /* ======= without terminal ======= */
-  {/*name:*/ "no-terminal", ///
-    /*key:*/ RPSPROGOPT_NO_TERMINAL, ///
-    /*arg:*/ nullptr, ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "Forcibly disable terminal ANSI escape codes, even if stdout is a tty.", //
-    /*group:*/0 ///
-  },
-  /* ======= without ASLR ======= */
-  {/*name:*/ "no-aslr", ///
-    /*key:*/ RPSPROGOPT_NO_ASLR, ///
-    /*arg:*/ nullptr, ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "Forcibly disable Adress Space Layout Randomization.", //
-    /*group:*/0 ///
-  },
-  /* ======= debug flags ======= */
-  {/*name:*/ "extra", ///
-    /*key:*/ RPSPROGOPT_EXTRA_ARG, ///
-    /*arg:*/ "EXTRA=ARG", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "To set for RefPerSys a named EXTRA argument to ARG.", ///
-    /*group:*/0 ///
-  },
-  /* ======= without quick tests ======= */
-  {/*name:*/ "no-quick-tests", ///
-    /*key:*/ RPSPROGOPT_NO_QUICK_TESTS, ///
-    /*arg:*/ nullptr, ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "Disable quick tests after load by rps_small_quick_tests_after_load.", //
-    /*group:*/0 ///
-  },
+
   /* ======= batch ======= */
   {/*name:*/ "batch", ///
     /*key:*/ RPSPROGOPT_BATCH, ///
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Run in batch mode, that is without any user interface (either graphical or command-line REPL).", //
-    /*group:*/0 ///
-  },
-  /* ======= version info ======= */
-  {/*name:*/ "version", ///
-    /*key:*/ RPSPROGOPT_VERSION, ///
-    /*arg:*/ nullptr, ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "Show version information, then exit.", //
-    /*group:*/0 ///
-  },
-  /* ======= interface thru some FIFO, relevant for JSONRPC  ======= */
-  {/*name:*/ "interface-fifo", ///
-   /*key:*/ RPSPROGOPT_INTERFACEFIFO, ///
-    /*arg:*/ "FIFO", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "use a pair of fifo(7) named FIFO.cmd (written) "
-    "and FIFO.out (read) for communication"
-    , //
-    /*group:*/0 ///
-  },
-  /* ======= run a shell command with system(3) after load ======= */
-  {/*name:*/ "run-after-load", ///
-    /*key:*/ RPSPROGOPT_RUN_AFTER_LOAD, ///
-    /*arg:*/ "SHELL_COMMAND", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "Run using system(3) the given shell SHELL_COMMAND after load and plugins;\n" //
-    " The following environment variables have been set:\n" //
-    "  * REFPERSYS_GITID to the git id (with a + suffix if locally changed);\n" //
-    "  * REFPERSYS_TOPDIR to the top directory with source code and persistore/ ...;\n" //
-    "  * REFPERSYS_PID to the process id  running refpersys;\n" //
-    "  * REFPERSYS_USER_OID to the objectid corresponding to current user;\n",
+    /*doc:*/ "Run in batch mode, that is without any user interface "
+    "(either graphical or command-line REPL).\n", //
     /*group:*/0 ///
   },
   /* ======= run a REPL command after load ======= */
@@ -232,7 +101,7 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ "REPL_COMMAND", ///
     /*flags:*/ 0, ///
     /*doc:*/ "Run the given REPL_COMMAND;\n"
-    "Try the help command for details.", //
+    "Try the help command for details.\n", //
     /*group:*/0 ///
   },
   /* ======= edit the C++ code of  a temporary plugin after load ======= */
@@ -252,7 +121,98 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_CPLUSPLUSFLAGS_AFTER_LOAD, ///
     /*arg:*/ "FLAGS", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "set to FLAGS the extra compilation flags for the C++ code of the temporary plugin.", //
+    /*doc:*/ "set to FLAGS the extra compilation flags for the C++ code of the temporary plugin.\n", //
+    /*group:*/0 ///
+  },
+  /* ======= debug flags ======= */
+  {/*name:*/ "debug", ///
+    /*key:*/ RPSPROGOPT_DEBUG, ///
+    /*arg:*/ "DEBUGFLAGS", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "To set RefPerSys comma separated debug flags, pass --debug=help to get their list.\n"
+    " Also from $REFPERSYS_DEBUG environment variable, if provided\n", ///
+    /*group:*/0 ///
+  },
+  /* ======= debug after load flags ======= */
+  {/*name:*/ "debug-after-load", ///
+    /*key:*/ RPSPROGOPT_DEBUG_AFTER_LOAD, ///
+    /*arg:*/ "DEBUGFLAGS", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "To set RefPerSys comma separated debug flags after the sucessful load.\n", ///
+    /*group:*/0 ///
+  },
+  /* ======= debug file path ======= */
+  {/*name:*/ "debug-path", ///
+    /*key:*/ RPSPROGOPT_DEBUG_PATH, ///
+    /*arg:*/ "DEBUGFILEPATH", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Output debug messages into given DEBUGFILEPATH instead of stderr.\n", ///
+    /*group:*/0 ///
+  },
+  /* ======= dump into given directory ======= */
+  {/*name:*/ "dump", ///
+    /*key:*/ RPSPROGOPT_DUMP, ///
+    /*arg:*/ "DUMPDIR", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Dump the persistent state to given DUMPDIR directory.\n", ///
+    /*group:*/0 ///
+  },
+  /* ======= extra argument ======= */
+  {/*name:*/ "extra", ///
+    /*key:*/ RPSPROGOPT_EXTRA_ARG, ///
+    /*arg:*/ "EXTRA=ARG", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "To set for RefPerSys a named EXTRA argument to ARG.\n", ///
+    /*group:*/0 ///
+  },
+  /* ======= interface thru some FIFO, relevant for JSONRPC  ======= */
+  {/*name:*/ "interface-fifo", ///
+   /*key:*/ RPSPROGOPT_INTERFACEFIFO, ///
+    /*arg:*/ "FIFO", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "use a pair of fifo(7) named FIFO.cmd (written) "
+    "and FIFO.out (read) for communication.\n"
+    , //
+    /*group:*/0 ///
+  },
+  /* ======= number of jobs or threads ======= */
+  {/*name:*/ "jobs", ///
+    /*key:*/ RPSPROGOPT_JOBS, ///
+    /*arg:*/ "NBJOBS", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Run <NBJOBS> threads - default is 3, minimum 2, maximum 20.\n", //
+    /*group:*/0 ///
+  },
+  /* ======= the load directory ======= */
+  {/*name:*/ "load", ///
+    /*key:*/ RPSPROGOPT_LOADDIR, ///
+    /*arg:*/ "LOADDIR", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "loads persistent state from LOADDIR, defaults to the source directory", ///
+    /*group:*/0 ///
+  },
+  /* ======= without ASLR ; perhaps might not work in feb. 2023 ======= */
+  {/*name:*/ "no-aslr", ///
+    /*key:*/ RPSPROGOPT_NO_ASLR, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Forcibly disable Adress Space Layout Randomization. Might not work.\n", //
+    /*group:*/0 ///
+  },
+  /* ======= without quick tests ======= */
+  {/*name:*/ "no-quick-tests", ///
+    /*key:*/ RPSPROGOPT_NO_QUICK_TESTS, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Disable quick tests after load by rps_small_quick_tests_after_load.\n", //
+    /*group:*/0 ///
+  },
+  /* ======= without terminal ======= */
+  {/*name:*/ "no-terminal", ///
+    /*key:*/ RPSPROGOPT_NO_TERMINAL, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Forcibly disable terminal ANSI escape codes, even if stdout is a tty.\n", //
     /*group:*/0 ///
   },
   /* ======= dlopen a given plugin file after load ======= */
@@ -262,7 +222,7 @@ struct argp_option rps_progoptions[] =
     /*flags:*/ 0, ///
     /*doc:*/ "dlopen(3) after load the given PLUGIN "
     "(some *.so ELF shared object)"
-    " and run its " RPS_PLUGIN_INIT_NAME "(const Rps_Plugin*) function", //
+    " and run its " RPS_PLUGIN_INIT_NAME "(const Rps_Plugin*) function.\n", //
     /*group:*/0 ///
   },
   /* ======= string argument to a previously given plugin file after load ======= */
@@ -271,25 +231,9 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ "PLUGIN_NAME:PLUGIN_ARG", ///
     /*flags:*/ 0, ///
     /*doc:*/ "pass to the loaded plugin <PLUGIN_NAME> the string <PLUGIN_ARG> "
-    "(notice the colon separating them)", //
+    "(notice the colon separating them).\n", //
     /*group:*/0 ///
   }, 
-  {/*name:*/ "test-repl-lexer", ///
-    /*key:*/ RPSPROGOPT_TEST_REPL_LEXER, ///
-    /*arg:*/ "TESTLEXSTRING", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "Test the read-eval-print-loop lexer on given TESTLEXSTRING."
-    " (this option might become obsolete)", //
-    /*group:*/0 ///
-  },
-  /* ======= number of jobs or threads ======= */
-  {/*name:*/ "jobs", ///
-    /*key:*/ RPSPROGOPT_JOBS, ///
-    /*arg:*/ "NBJOBS", ///
-    /*flags:*/ 0, ///
-    /*doc:*/ "Run <NBJOBS> threads - default is 3, minimum 2, maximum 20", //
-    /*group:*/0 ///
-  },
   /* ====== publish some data to a remote URL which might make some statistics about RefPerSys ===== */
   {/*name:*/ "publish-me", ///
     /*key:*/ RPSPROGOPT_PUBLISH_ME, ///
@@ -298,6 +242,68 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Send to the given URL the build timestamp and builder.\n"
     " See rps_publish_me function in this " __FILE__ " source file.\n"
     , //
+    /*group:*/0 ///
+  },
+  /* ======= random oids ======= */
+  {/*name:*/ "random-oid", ///
+    /*key:*/ RPSPROGOPT_RANDOMOID, ///
+    /*arg:*/ "NBOIDS", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Print NBOIDS random object identifiers.\n",
+    /*group:*/0 ///
+  },
+  /* ======= the RefPerSys home directory ======= */
+  {/*name:*/ "refpersys-home", ///
+    /*key:*/ RPSPROGOPT_HOMEDIR, ///
+    /*arg:*/ "HOMEDIR", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "set the RefPerSys homedir, default to $REFPERSYS_HOME or $HOME\n", ///
+    /*group:*/0 ///
+  },
+  /* ======= run a shell command with system(3) after load ======= */
+  {/*name:*/ "run-after-load", ///
+    /*key:*/ RPSPROGOPT_RUN_AFTER_LOAD, ///
+    /*arg:*/ "SHELL_COMMAND", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Run using system(3) the given shell SHELL_COMMAND after load and plugins;\n" //
+    " The following environment variables have been set:\n" //
+    "\t    * REFPERSYS_GITID to the git id (with a + suffix if locally changed);\n" //
+    "\t    * REFPERSYS_TOPDIR to the top directory with source code and persistore/ ...;\n" //
+    "\t    * REFPERSYS_PID to the process id  running refpersys;\n" //
+    "\t    * REFPERSYS_USER_OID to the objectid corresponding to current user;\n",
+    /*group:*/0 ///
+  },
+  /* ======= syslog-ing ======= */
+  {/*name:*/ "syslog", ///
+    /*key:*/ RPSPROGOPT_SYSLOG, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "use system log with syslog(3) ...\n", //
+    /*group:*/0 ///
+  },
+  /* ======= test the read-eval-print lexer ======== */
+  {/*name:*/ "test-repl-lexer", ///
+    /*key:*/ RPSPROGOPT_TEST_REPL_LEXER, ///
+    /*arg:*/ "TESTLEXSTRING", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Test the read-eval-print-loop lexer on given TESTLEXSTRING."
+    " (this option might become obsolete).\n", //
+    /*group:*/0 ///
+  },
+  /* ======= type information ======= */
+  {/*name:*/ "type-info", ///
+    /*key:*/ RPSPROGOPT_TYPEINFO, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Show type information (and test tagged integers).\n", //
+    /*group:*/0 ///
+  },
+  /* ======= version info ======= */
+  {/*name:*/ "version", ///
+    /*key:*/ RPSPROGOPT_VERSION, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Show version information, then exit.\n", //
     /*group:*/0 ///
   },
   /* ======= terminating empty option ======= */
