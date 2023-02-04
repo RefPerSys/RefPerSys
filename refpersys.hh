@@ -473,16 +473,17 @@ enum Rps_Debug
 enum rps_progoption_en
 {
   RPSPROGOPT__NONE=0,
-  RPSPROGOPT_LOADDIR='L',
-  RPSPROGOPT_DEBUG='d',
+  /// keep these options in numerical order!
   RPSPROGOPT_DEBUG_AFTER_LOAD='A',
   RPSPROGOPT_BATCH='B',
-  RPSPROGOPT_JOBS='j',
   RPSPROGOPT_DUMP='D',
+  RPSPROGOPT_JSONRPC='J',      // no direct GUI, but use JSONRPC
+  RPSPROGOPT_LOADDIR='L',
   RPSPROGOPT_COMMAND='c',
+  RPSPROGOPT_DEBUG='d',
   RPSPROGOPT_INTERFACEFIFO='i',
   /// see also github.com/bstarynk/misc-basile/blob/master/mini-edit-JSONRPC.md
-  RPSPROGOPT_JSONRPC='J',      // no direct GUI, but use JSONRPC
+  RPSPROGOPT_JOBS='j',
   RPSPROGOPT_HOMEDIR=1000,
   RPSPROGOPT_RANDOMOID,
   RPSPROGOPT_TYPEINFO,
