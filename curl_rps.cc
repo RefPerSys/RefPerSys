@@ -107,29 +107,28 @@ rps_publish_me(const char*url)
   };
   ///
   std::string topurlstr ({url});
-  CURL* my_curl = curl_easy_init();
-  if (!my_curl)
-    RPS_FATALOUT("failed to curl_easy_init");
-  curl_easy_setopt (my_curl, CURLOPT_USERAGENT,
-		    "RefPerSys/" RPS_SHORTGITID);
   std::string statusurlstr = topurlstr + "/status";
-  curl_mime *mime = curl_mime_init(my_curl);
-  if (!mime)
-    RPS_FATALOUT("failed to curl_mime_init");
- curl_mimepart *part = curl_mime_addpart(mime);
- if (!part)
-   RPS_FATALOUT("failed to curl_mime_addpart");
-  
-  ////
-  std::string versionurlstr = topurlstr + "/refpersys_version";
-  curl_easy_setopt(my_curl, CURLOPT_URL, versionurlstr.c_str());
+  {
+    curlpp::options::Url mystaturl(statusurlstr);
+    curlpp::Easy mystatusreq;
+    mystatusreq.setOpt(mystaturl);
+    std::list<std::string> statheaders;
+    std::string headua("User-Agent:");
+    headua += "RefPerSys/";
+    headua += rps_shortgitid;
+    statheaders.push_back(headua);     
+    mystatusreq.setOpt(new curlpp::options::HttpHeader(statheaders)); 
+    std::ostringstream os;
+    curlpp::options::WriteStream ws(&os);
+    mystatusreq.setOpt(ws);
+    mystatusreq.perform();
+  }
   /** TODO:
    * This function should do one or a few HTTP requests to the web service running at given url.
    * Initially on http://refpersys.org/ probably.
    * Sending there the various public data in __timestamp.c probably as HTTP POST parameters
    * and probably the owner of the git, e.g. parse the .git/config file for its name and email in section user.
    **/
-  curl_easy_cleanup (my_curl);
   RPS_FATALOUT("unimplemented rps_publish_me function for " << url);
 #warning rps_publish_me incomplete, using CURL easy interface
 } // end rps_publish_me
