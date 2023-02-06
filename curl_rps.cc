@@ -33,7 +33,12 @@
 
 #include "refpersys.hh"
 
-#include "curl/curl.h"
+#include <curlpp/cURLpp.hpp>
+#include <curlpp/Easy.hpp>
+#include <curlpp/Options.hpp>
+#include <curlpp/Exception.hpp>
+
+
 
 
 extern "C" const char rps_curl_gitid[];
@@ -57,27 +62,67 @@ rps_curl_version(void)
       else
         res += *pc;
     }
+  res += "LibCurlPp " LIBCURLPP_VERSION;
   res += " git ";
   res += curlgitbuf;
   return res;
 } // end rps_curl_version
 
+void
+rps_initialize_curl(void)
+{
+  curlpp::initialize(CURL_GLOBAL_ALL);
+  atexit (curlpp::terminate);
+} // end rps_initialize_curl
 
 void
 rps_publish_me(const char*url)
 {
   RPS_ASSERT(url != nullptr);
-  RPS_INFORMOUT("rps_publish_me start top url '" << Rps_QuotedC_String(url) << "'");
+  const char* homedir=getenv("HOME");
+  RPS_INFORMOUT("rps_publish_me start top url '" << Rps_QuotedC_String(url) << "'" << " HOME=" << homedir);
+  /// parse our $HOME/.gitconfig for name and email
+  {
+    std::string path_gitconf= std::string(homedir) + "/.gitconfig";
+    std::string gitname;
+    std::string gitemail; 
+    FILE* fgitconf = fopen(path_gitconf.c_str(),  "r");
+    if (!fgitconf)
+      RPS_FATALOUT("failed to fopen git configure file " << path_gitconf.c_str() << ':' << strerror(errno));
+    char linbuf[128];
+    do {
+      memset (linbuf, 0, sizeof(linbuf));
+      char *curline = fgets(linbuf, sizeof(linbuf)-2, fgitconf);
+      if (!curline)
+	break;
+      char *eol = strchr(curline, '\n');
+      if (eol)
+	*eol = (char)0;
+      int col = 0;
+      if ((col=-1), sscanf(curline, " name = %n", &col) >= 0 && col > 1 && gitname.empty()) 
+	gitname = std::string(curline + col);
+      else if ((col= -1), sscanf(curline, " email = %n", &col) >= 0
+	       && col>1 && gitemail.empty())
+	gitemail = std::string(curline + col);
+    } while (!feof(fgitconf));
+    fclose(fgitconf);
+  };
+  ///
   std::string topurlstr ({url});
   CURL* my_curl = curl_easy_init();
   if (!my_curl)
     RPS_FATALOUT("failed to curl_easy_init");
+  curl_easy_setopt (my_curl, CURLOPT_USERAGENT,
+		    "RefPerSys/" RPS_SHORTGITID);
+  std::string statusurlstr = topurlstr + "/status";
   curl_mime *mime = curl_mime_init(my_curl);
   if (!mime)
     RPS_FATALOUT("failed to curl_mime_init");
  curl_mimepart *part = curl_mime_addpart(mime);
  if (!part)
    RPS_FATALOUT("failed to curl_mime_addpart");
+  
+  ////
   std::string versionurlstr = topurlstr + "/refpersys_version";
   curl_easy_setopt(my_curl, CURLOPT_URL, versionurlstr.c_str());
   /** TODO:

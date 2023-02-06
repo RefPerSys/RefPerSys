@@ -158,11 +158,11 @@ extern "C" const char rps_md5sum[];
 extern "C" const char*const rps_files[];
 extern "C" const char rps_makefile[];
 extern "C" const char*const rps_subdirectories[];
+extern "C" const char rps_cxx_compiler_command[];
+extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];
 // GNU bison is a parser generator,  see www.gnu.org/software/bison/
 extern "C" const char rps_gnubison_version[];
-// ANTLR3 is another parser generator, see www.antlr3.org/
-extern "C" const char rps_antlr3_version[];
 extern "C" const char rps_gui_script_executable[];
 extern "C" const char rps_building_user_name[];
 extern "C" const char rps_building_user_email[];
@@ -4376,6 +4376,7 @@ extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, co
 
 ////////////////////////////////////////////////////////////////
 
+extern "C" void rps_initialize_curl(void);
 extern "C" std::string rps_curl_version(void); // in curl_rps.cc
 extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 

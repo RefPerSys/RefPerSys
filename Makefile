@@ -83,6 +83,8 @@ ifndef RPS_BUILD_CXX
 RPS_BUILD_CXX?= g++-12
 endif
 
+RPS_BUILD_CXX_REALPATH= $(realpath $(RPS_BUILD_CXX))
+
 ifndef RPS_BUILD_COMPILER_FLAGS
 RPS_BUILD_COMPILER_FLAGS?= -std=gnu++17
 endif
@@ -117,11 +119,14 @@ RPS_BUILD_SANITFLAGS = -fsanitize=address
 RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
+RPS_CURLPP_CONFIG= curlpp-config
 RPS_PKG_NAMES= jsoncpp libcurl zlib
-RPS_PKG_CFLAGS:= $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
-RPS_PKG_LIBS:= $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
+RPS_PKG_CFLAGS:= $(shell $(RPS_CURLPP_CONFIG) --cflags) \
+                 $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 
-LIBES= -lunistring -lbacktrace -lpthread -ldl
+RPS_PKG_LIBS:=  $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
+
+LIBES=  -lunistring -lbacktrace -lpthread -ldl
 RM= rm -f
 MV= mv
 CC= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CC)
@@ -157,6 +162,7 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
 	-sync
 	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic \
                               main_rps.o $(RPS_CORE_OBJECTS)    __timestamp.o \
+                 $(shell $(RPS_CURLPP_CONFIG) --libs) \
 	         $(LIBES) $(RPS_PKG_LIBS)  -o $@-tmp
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
@@ -248,6 +254,8 @@ fullclean:
 __timestamp.c: | Makefile do-generate-timestamp.sh
 	echo $@:
 	./do-generate-timestamp.sh $@  > $@-tmp
+	printf 'const char rps_cxx_compiler_command[]="%s";\n' $(RPS_BUILD_CXX) >> $@-tmp
+	printf 'const char rps_cxx_compiler_realpath[]="%s";\n' $(RPS_BUILD_CXX_REALPATH) >> $@-tmp
 	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
 	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
 	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp

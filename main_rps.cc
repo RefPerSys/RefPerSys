@@ -854,6 +854,7 @@ main (int argc, char** argv)
   ////
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
+  rps_initialize_curl();
   if (rps_my_load_dir.empty()) {
     const char* rpld = realpath(rps_topdirectory, nullptr);
     if (!rpld)
