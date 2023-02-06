@@ -62,9 +62,7 @@ rps_curl_version(void)
       else
         res += *pc;
     }
-  res += "LibCurlPp " LIBCURLPP_VERSION;
-  res += " git ";
-  res += curlgitbuf;
+  res += "; LibCurlPp " LIBCURLPP_VERSION;
   return res;
 } // end rps_curl_version
 
