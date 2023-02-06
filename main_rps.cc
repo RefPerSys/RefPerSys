@@ -53,7 +53,6 @@ extern "C" void rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe);
 
 extern "C" void rps_small_quick_tests_after_load (void);
 
-extern "C" void rps_publish_me(const char*url);
 
 extern "C" std::vector<Rps_Plugin> rps_plugins_vector;
 std::vector<Rps_Plugin> rps_plugins_vector;
@@ -234,7 +233,8 @@ struct argp_option rps_progoptions[] =
     "(notice the colon separating them).\n", //
     /*group:*/0 ///
   }, 
-  /* ====== publish some data to a remote URL which might make some statistics about RefPerSys ===== */
+  /* ====== publish some data to a remote URL and Web service which
+     might make some statistics about RefPerSys ===== */
   {/*name:*/ "publish-me", ///
     /*key:*/ RPSPROGOPT_PUBLISH_ME, ///
     /*arg:*/ "URL", ///
@@ -2283,33 +2283,5 @@ rps_get_extra_arg(const char*name)
     return nullptr;
   return it->second.c_str();
 } // end rps_get_extra_arg
-
-void
-rps_publish_me(const char*url)
-{
-  RPS_ASSERT(url != nullptr);
-  RPS_INFORMOUT("rps_publish_me start top url '" << Rps_QuotedC_String(url) << "'");
-  std::string topurlstr ({url});
-  CURL* my_curl = curl_easy_init();
-  if (!my_curl)
-    RPS_FATALOUT("failed to curl_easy_init");
-  curl_mime *mime = curl_mime_init(my_curl);
-  if (!mime)
-    RPS_FATALOUT("failed to curl_mime_init");
- curl_mimepart *part = curl_mime_addpart(mime);
- if (!part)
-   RPS_FATALOUT("failed to curl_mime_addpart");
-  std::string versionurlstr = topurlstr + "/refpersys_version";
-  curl_easy_setopt(my_curl, CURLOPT_URL, versionurlstr.c_str());
-  /** TODO:
-   * This function should do one or a few HTTP requests to the web service running at given url.
-   * Initially on http://refpersys.org/ probably.
-   * Sending there the various public data in __timestamp.c probably as HTTP POST parameters
-   * and probably the owner of the git, e.g. parse the .git/config file for its name and email in section user.
-   **/
-  curl_easy_cleanup (my_curl);
-  RPS_FATALOUT("unimplemented rps_publish_me function for " << url);
-#warning rps_publish_me incomplete, using CURL easy interface
-} // end rps_publish_me
 
 /////////////////// end of file main_rps.cc

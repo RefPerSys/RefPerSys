@@ -428,6 +428,12 @@ inline std::ostream& operator << (std::ostream&out, const Rps_Status& rst) {
   return out;
 };				// end operator << for Rps_Status
 
+
+//// a function to interact with some web service, usually on
+//// http://refpersys.org/ to transmit information about this
+//// RefPerSys process.. This is related to the --publish-me <URL>
+//// program option in main_rps.cc
+extern "C" void rps_publish_me(const char*url);
 ///////////////////////////////////////////////////////////////////////////////
 // DEBUGGING MACROS
 // Adapted from MELT Monitor project
