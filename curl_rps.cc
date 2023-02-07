@@ -115,9 +115,12 @@ rps_publish_me(const char*url)
                 << " gitemail " << Rps_QuotedC_String(gitemail));
   /// first HTTP interaction GET - obtain the status as JSON
   std::string topurlstr ({url});
-  std::string statusurlstr = topurlstr + "/status";
+  std::string statusurlstr = topurlstr;
+  int statuslen = statusurlstr.size();
+  if (statuslen>0 && statusurlstr[statuslen-1]=='/')
+    statusurlstr.resize(statuslen-1);
   {
-    RPS_DEBUG_LOG(REPL, "statusurlstr='" << Rps_QuotedC_String(statusurlstr) << "'");
+    RPS_DEBUG_LOG(REPL, "statusurlstr=" << Rps_QuotedC_String(statusurlstr));
     curlpp::options::Url mystaturl(statusurlstr);
     curlpp::Easy mystatusreq;
     mystatusreq.setOpt(mystaturl);
@@ -130,6 +133,8 @@ rps_publish_me(const char*url)
     std::ostringstream os;
     curlpp::options::WriteStream ws(&os);
     mystatusreq.setOpt(ws);
+    RPS_DEBUG_LOG(REPL, "before performing GET request for status to "
+		  << statusurlstr);
     mystatusreq.perform();
     os << std::flush;
     RPS_DEBUG_LOG(REPL, "status os:" << os.str());
