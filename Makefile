@@ -56,8 +56,8 @@ RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E e
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_JSONRPC_OBJECTS = $(patsubst %.cc, %.o, $(RPS_JSONRPC_SOURCES))
 RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
-RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
-RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
+#RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
+#RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
 #RPS_JSONRPC_CXXFLAGS = $(shell pkg-config  --cflags jsoncpp)
 #RPS_JSONRPC_LIBES = $(shell pkg-config --libs jsoncpp)
@@ -111,7 +111,7 @@ RPS_BUILD_WARNFLAGS = -Wall -Wextra
 override RPS_BUILD_OPTIMFLAGS ?= -Og -g3
 RPS_BUILD_DEBUGFLAGS = -O0 -fno-inline -g3
 RPS_BUILD_CODGENFLAGS = -fPIC
-RPS_BUILD_SANITFLAGS = -fsanitize=address
+#RPS_BUILD_SANITFLAGS = -fsanitize=address
 #RPS_INCLUDE_DIRS = /usr/local/include /usr/include /usr/include/jsoncpp
 #RPS_INCLUDE_FLAGS = $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
 #RPS_BUILD_INCLUDE_FLAGS=  -I . $(RPS_INCLUDE_FLAGS)
@@ -168,13 +168,13 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
-sanitized-refpersys:  main_rps.sanit.o $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
-	$(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
-           $(RPS_SANITIZED_CORE_OBJECTS)  __timestamp.o \
-           $(LIBES) -o $@-tmp
-	$(MV) --backup $@-tmp $@
-	$(MV) --backup __timestamp.c __timestamp.c~
-	$(RM) __timestamp.o
+#sanitized-refpersys:  main_rps.sanit.o $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
+#       $(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
+#          $(RPS_SANITIZED_CORE_OBJECTS)  __timestamp.o \
+#          $(LIBES) -o $@-tmp
+#       $(MV) --backup $@-tmp $@
+#       $(MV) --backup __timestamp.c __timestamp.c~
+#       $(RM) __timestamp.o
 
 ## it is assumed that clang and clang++ are some symbolic links to
 ## clang compiler in the user's $PATH .... (suppose it has $HOME/bin/ ...)
@@ -202,8 +202,8 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
 
 
-0%.sanit.o: %.cc refpersys.hh.sanit.gch
-	$(RPS_COMPILER_TIMER) 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
+#%.sanit.o: %.cc refpersys.hh.sanit.gch
+#	$(RPS_COMPILER_TIMER) 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
 
 %.dbg.o: %.cc refpersys.hh.dbg.gch
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
@@ -218,8 +218,8 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
 refpersys.hh.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -c -o $@ $<
-refpersys.hh.sanit.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
-	$(RPS_COMPILER_TIMER) $(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@ $<
+#refpersys.hh.sanit.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
+#	$(RPS_COMPILER_TIMER) $(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@ $<
 refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc)  $(RPS_BUILD_DEBUGFLAGS) -c -o $@ $<
 
@@ -227,7 +227,8 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 
 ################
 clean:
-	$(RM) *.o *.orig *~ refpersys sanitized-refpersys *.gch *~ _build.time
+	$(RM) *.o *.orig *~ refpersys *.gch *~ _build.time
+	$(RM) sanitized-refpersys 
 	$(RM) *.so
 	$(RM) *.moc.hh
 	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~
