@@ -119,6 +119,7 @@ rps_publish_me(const char*url)
   int statuslen = statusurlstr.size();
   if (statuslen>0 && statusurlstr[statuslen-1]=='/')
     statusurlstr.resize(statuslen-1);
+  statusurlstr += "/status";
   {
     RPS_DEBUG_LOG(REPL, "statusurlstr=" << Rps_QuotedC_String(statusurlstr));
     curlpp::options::Url mystaturl(statusurlstr);
