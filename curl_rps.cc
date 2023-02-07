@@ -78,13 +78,16 @@ rps_publish_me(const char*url)
 {
   RPS_ASSERT(url != nullptr);
   const char* homedir=getenv("HOME");
+  const char* repldb = RPS_DEBUG_ENABLED(REPL)?"REPL debugging":"no repldbg";
   RPS_INFORMOUT("rps_publish_me start top url " << Rps_QuotedC_String(url)
-                << " HOME=" << homedir);
+                << " HOME=" << homedir << " " << repldb);
+  RPS_DEBUG_LOG(REPL, "rps_publish_me pid:" << (int)getpid());
   std::string gitname;
   std::string gitemail;
   /// parse our $HOME/.gitconfig for name and email
   {
     std::string path_gitconf= std::string(homedir) + "/.gitconfig";
+    RPS_DEBUG_LOG(REPL, "rps_publish_me path_gitconf=" << path_gitconf);
     FILE* fgitconf = fopen(path_gitconf.c_str(),  "r");
     if (!fgitconf)
       RPS_FATALOUT("failed to fopen git configure file " << path_gitconf.c_str() << ':' << strerror(errno));
