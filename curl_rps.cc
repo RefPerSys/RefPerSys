@@ -105,10 +105,11 @@ rps_publish_me(const char*url)
     } while (!feof(fgitconf));
     fclose(fgitconf);
   };
-  ///
+  /// first HTTP interaction GET - obtain the status as JSON
   std::string topurlstr ({url});
   std::string statusurlstr = topurlstr + "/status";
   {
+    RPS_DEBUG_LOG(REPL, "statusurlstr='" << Rps_QuotedC_String(statusurlstr) << "'");
     curlpp::options::Url mystaturl(statusurlstr);
     curlpp::Easy mystatusreq;
     mystatusreq.setOpt(mystaturl);
@@ -122,10 +123,16 @@ rps_publish_me(const char*url)
     curlpp::options::WriteStream ws(&os);
     mystatusreq.setOpt(ws);
     mystatusreq.perform();
+    os << std::flush;
+    RPS_DEBUG_LOG(REPL, "status os:" << os.str());
   }
+  ///
+  /// should do an HTTP interaction POST sending our data and the
+  /// obtained git of the web service
+#warning missing C++ code in rps_publish_me
   /** TODO:
    * This function should do one or a few HTTP requests to the web service running at given url.
-   * Initially on http://refpersys.org/ probably.
+   * Initially on http://refpersys.org/ probably (or when debugging on http://localhost:8080/ ...)
    * Sending there the various public data in __timestamp.c probably as HTTP POST parameters
    * and probably the owner of the git, e.g. parse the .git/config file for its name and email in section user.
    **/
