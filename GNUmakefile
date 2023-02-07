@@ -2,7 +2,7 @@
 ## Description:
 ##      This file is part of the Reflective Persistent System. refpersys.org
 ##
-##      It is its Makefile, for the GNU make automation builder.
+##      It is its GNUmakefile, for the GNU make automation builder.
 ##
 ## Author(s):
 ##      Basile Starynkevitch <basile@starynkevitch.net>
@@ -252,7 +252,7 @@ fullclean:
 	$(RPS_BUILD_CCACHE) -C
 	$(MAKE) clean
 
-__timestamp.c: | Makefile do-generate-timestamp.sh
+__timestamp.c: | GNUmakefile do-generate-timestamp.sh
 	echo $@:
 	./do-generate-timestamp.sh $@  > $@-tmp
 	printf 'const char rps_cxx_compiler_command[]="%s";\n' $(RPS_BUILD_CXX) >> $@-tmp
@@ -380,5 +380,5 @@ test09: ./refpersys
 
 test-load: ./refpersys
 	./refpersys --batch
-## eof Makefile
+## eof GNUmakefile
 
