@@ -131,14 +131,28 @@ rps_publish_me(const char*url)
     headua += rps_shortgitid;
     statheaders.push_back(headua);
     mystatusreq.setOpt(new curlpp::options::HttpHeader(statheaders));
-    std::ostringstream os;
-    curlpp::options::WriteStream ws(&os);
+    std::ostringstream outs;
+    curlpp::options::WriteStream ws(&outs);
     mystatusreq.setOpt(ws);
     RPS_DEBUG_LOG(REPL, "before performing GET request for status to "
-		  << statusurlstr);
+                  << statusurlstr);
     mystatusreq.perform();
-    os << std::flush;
-    RPS_DEBUG_LOG(REPL, "status os:" << os.str());
+    outs << std::flush;
+    RPS_DEBUG_LOG(REPL, "status outs:" << outs.str());
+    Json::Value jstatus;
+    Json::CharReaderBuilder jsonreaderbuilder;
+    std::unique_ptr<Json::CharReader> pjsonreader(jsonreaderbuilder.newCharReader());
+    RPS_ASSERT(pjsonreader);
+    std::string errstr;
+    if (!pjsonreader->parse(outs.str().c_str(),
+                            outs.str().c_str()+outs.str().size()-1,
+                            &jstatus, &errstr))
+      RPS_FATALOUT("failed to parse result of status web request to " << statusurlstr
+                   << " got " << errstr << " parsing " << Rps_QuotedC_String(outs.str()));
+    RPS_DEBUG_LOG(REPL, "jstatus:" << jstatus);
+    if (!jstatus.isObject())
+      RPS_FATALOUT("status web request to " << statusurlstr
+                   << " gave non-object " << jstatus);
   }
   ///
   /// should do an HTTP interaction POST sending our data and the
