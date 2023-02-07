@@ -1,4 +1,4 @@
-
+#!/usr/bin/gmake
 ## Description:
 ##      This file is part of the Reflective Persistent System. refpersys.org
 ##
