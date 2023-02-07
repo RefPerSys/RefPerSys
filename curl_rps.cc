@@ -78,33 +78,38 @@ rps_publish_me(const char*url)
 {
   RPS_ASSERT(url != nullptr);
   const char* homedir=getenv("HOME");
-  RPS_INFORMOUT("rps_publish_me start top url '" << Rps_QuotedC_String(url) << "'" << " HOME=" << homedir);
+  RPS_INFORMOUT("rps_publish_me start top url " << Rps_QuotedC_String(url)
+                << " HOME=" << homedir);
+  std::string gitname;
+  std::string gitemail;
   /// parse our $HOME/.gitconfig for name and email
   {
     std::string path_gitconf= std::string(homedir) + "/.gitconfig";
-    std::string gitname;
-    std::string gitemail; 
     FILE* fgitconf = fopen(path_gitconf.c_str(),  "r");
     if (!fgitconf)
       RPS_FATALOUT("failed to fopen git configure file " << path_gitconf.c_str() << ':' << strerror(errno));
     char linbuf[128];
-    do {
-      memset (linbuf, 0, sizeof(linbuf));
-      char *curline = fgets(linbuf, sizeof(linbuf)-2, fgitconf);
-      if (!curline)
-	break;
-      char *eol = strchr(curline, '\n');
-      if (eol)
-	*eol = (char)0;
-      int col = 0;
-      if ((col=-1), sscanf(curline, " name = %n", &col) >= 0 && col > 1 && gitname.empty()) 
-	gitname = std::string(curline + col);
-      else if ((col= -1), sscanf(curline, " email = %n", &col) >= 0
-	       && col>1 && gitemail.empty())
-	gitemail = std::string(curline + col);
-    } while (!feof(fgitconf));
+    do
+      {
+        memset (linbuf, 0, sizeof(linbuf));
+        char *curline = fgets(linbuf, sizeof(linbuf)-2, fgitconf);
+        if (!curline)
+          break;
+        char *eol = strchr(curline, '\n');
+        if (eol)
+          *eol = (char)0;
+        int col = 0;
+        if ((col=-1), sscanf(curline, " name = %n", &col) >= 0 && col > 1 && gitname.empty())
+          gitname = std::string(curline + col);
+        else if ((col= -1), sscanf(curline, " email = %n", &col) >= 0
+                 && col>1 && gitemail.empty())
+          gitemail = std::string(curline + col);
+      }
+    while (!feof(fgitconf));
     fclose(fgitconf);
   };
+  RPS_DEBUG_LOG(REPL, "rps_publish_me gitname " << Rps_QuotedC_String(gitname)
+                << " gitemail " << Rps_QuotedC_String(gitemail));
   /// first HTTP interaction GET - obtain the status as JSON
   std::string topurlstr ({url});
   std::string statusurlstr = topurlstr + "/status";
@@ -117,8 +122,8 @@ rps_publish_me(const char*url)
     std::string headua("User-Agent:");
     headua += "RefPerSys/";
     headua += rps_shortgitid;
-    statheaders.push_back(headua);     
-    mystatusreq.setOpt(new curlpp::options::HttpHeader(statheaders)); 
+    statheaders.push_back(headua);
+    mystatusreq.setOpt(new curlpp::options::HttpHeader(statheaders));
     std::ostringstream os;
     curlpp::options::WriteStream ws(&os);
     mystatusreq.setOpt(ws);
