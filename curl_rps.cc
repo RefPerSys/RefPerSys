@@ -150,7 +150,8 @@ rps_publish_me(const char*url)
                   << " endp+" << (endp-startp));
     if (!pjsonreader->parse(startp, endp, &jstatus, &errstr))
       RPS_FATALOUT("failed to parse result of status web request to " << statusurlstr
-                   << " got " << errstr << " parsing " << Rps_QuotedC_String(outs.str()));
+                   << " got " << errstr << " parsing " << Rps_QuotedC_String(outs.str())
+		   << " using JSONCPP " << JSONCPP_VERSION_STRING);
     RPS_DEBUG_LOG(REPL, "jstatus:" << jstatus);
     if (!jstatus.isObject())
       RPS_FATALOUT("status web request to " << statusurlstr

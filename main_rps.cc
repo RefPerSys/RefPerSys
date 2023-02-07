@@ -1242,6 +1242,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 		    << " default GUI script: " << rps_gui_script_executable << std::endl
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
+		    << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
                     << " made with: " << rps_makefile << std::endl
                     << " running on " << rps_hostname() << std::endl
 		    << "This executable was built by "
