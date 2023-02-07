@@ -864,8 +864,6 @@ main (int argc, char** argv)
     free ((void*)rpld);
   };
   rps_load_from(rps_my_load_dir);
-  if (!rps_publisher_url_str.empty())
-    rps_publish_me(rps_publisher_url_str.c_str());
   rps_run_application(argc, argv);
   ////
   if (!rps_dumpdir_str.empty())
@@ -1089,7 +1087,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     return 0;
     case RPSPROGOPT_DEBUG_AFTER_LOAD:
     {
-      if (side_effect)
+      if (!rps_debugflags_after_load || side_effect)
         rps_debugflags_after_load = arg;
     }
     return 0;
@@ -1436,6 +1434,10 @@ rps_run_application(int &argc, char **argv)
     rps_run_test_repl_lexer(rps_test_repl_string);
   }
   /////
+  /// publish using web techniques information about this process
+  if (!rps_publisher_url_str.empty())
+    rps_publish_me(rps_publisher_url_str.c_str());
+
   ////  command vectors
   if (!rps_command_vec.empty())
     {
