@@ -144,9 +144,10 @@ rps_publish_me(const char*url)
     std::unique_ptr<Json::CharReader> pjsonreader(jsonreaderbuilder.newCharReader());
     RPS_ASSERT(pjsonreader);
     std::string errstr;
-    char*startp = outs.str().c_str();
-    char*endp = startp + outs.str().size()-1;
-    RPS_DEBUG_LOG(REPL, "status pjsonreader:" << pjsonreader << " startp:" << startp << "=" << (void*)startp
+    const char*startp = outs.str().c_str();
+    const char*endp = startp + outs.str().size()-1;
+    RPS_DEBUG_LOG(REPL, "status pjsonreader@" << (void*)pjsonreader.get()
+                  << " startp:" << startp << "=" << (void*)startp
                   << " endp+" << (endp-startp));
     if (!pjsonreader->parse(startp, endp, &jstatus, &errstr))
       RPS_FATALOUT("failed to parse result of status web request to " << statusurlstr
