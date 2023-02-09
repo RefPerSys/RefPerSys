@@ -1469,6 +1469,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                            << " token_deq:" << toksrc_token_deq);
       return nullptr;
     }
+  //// Here _f.leftv has been parsed
   _f.lextokv =  lookahead_token(&_,  0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " lextok-at0: " << _f.lextokv
                 << " position:" << position_str()
