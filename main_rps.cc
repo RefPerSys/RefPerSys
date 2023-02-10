@@ -922,7 +922,8 @@ rps_get_plugin_cstr_argument(const Rps_Plugin*plugin)
 } // end rps_get_plugin_cstr_argument
 
 
-// Parse a single program option, skipping side effects  when state is empty.
+// Parse a single program option, skipping side effects when state is
+// empty.
 error_t
 rps_parse1opt (int key, char *arg, struct argp_state *state)
 {
@@ -1077,7 +1078,9 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     {
       if (side_effect) {
 	if (!rps_test_repl_string.empty())
-	  RPS_FATALOUT("only one --test-repl-lexer=TESTLEXSTRING can be given, but already got " << rps_test_repl_string);
+	  RPS_FATALOUT("only one --test-repl-lexer=TESTLEXSTRING can"
+		       " be given, but already got "
+		       << rps_test_repl_string);
 	rps_test_repl_string = arg;
 	RPS_INFORMOUT("will test the REPL lexer on:" << rps_test_repl_string
 		      << std::endl << "... that is the " << rps_test_repl_string.size()
@@ -1197,9 +1200,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                 }
             };
           if (!arg || !arg[0])
-            RPS_FATALOUT("program option --cplusplus-editor-after-load without explicit editor, and no $EDITOR environment variable");
+            RPS_FATALOUT("program option --cplusplus-editor-after-load"
+			 " without explicit editor,\n"
+			 "... and no $EDITOR environment variable");
           if (!rps_cpluspluseditor_str.empty())
-            RPS_FATALOUT("program option --cplusplus-editor-after-load given twice with "
+            RPS_FATALOUT("program option --cplusplus-editor-after-load"
+			 " given twice with "
                          << rps_cpluspluseditor_str << " and " << arg);
           rps_cpluspluseditor_str.assign(arg);
         };
@@ -1370,7 +1376,8 @@ rps_run_application(int &argc, char **argv)
         RPS_INFORM("after successfully running command '%s' after load", rps_run_command_after_load);
     }
   else if (!rps_fifo_prefix.empty()) {
-      RPS_INFORM("before running default GUI command '%s'  after load with environment variables...\n"
+      RPS_INFORM("before running default GUI command '%s'  after load"
+		 " with environment variables...\n"
 		 "... REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
 		 " ... REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
 		 rps_gui_script_executable, (long)getpid(), rps_gitid,
@@ -1378,16 +1385,19 @@ rps_run_application(int &argc, char **argv)
       fflush(nullptr);
       pid_t guipid = fork();
       if (guipid < 0)
-	RPS_FATALOUT("failed to fork for running the GUI script" << rps_gui_script_executable);
+	RPS_FATALOUT("failed to fork for running the GUI script"
+		     << rps_gui_script_executable);
       if (guipid == 0) {
 	// child process
 	// close many file desriptors
-	for (int fd=3; fd<128; fd++) close(fd);
+	for (int fd=3; fd<256; fd++)
+	  close(fd);
 	close(STDIN_FILENO);
 	int nullfd = open("/dev/null", O_RDONLY);
-	if (nullfd>0)
+	if (nullfd>0) //unlikely
 	  dup2(nullfd, STDIN_FILENO);
-	execl(rps_gui_script_executable, rps_gui_script_executable, rps_fifo_prefix.c_str(), nullptr);
+	execl(rps_gui_script_executable, rps_gui_script_executable,
+	      rps_fifo_prefix.c_str(), nullptr);
 	perror(rps_gui_script_executable);
 	_exit(126);
 	return;
@@ -1404,7 +1414,8 @@ rps_run_application(int &argc, char **argv)
                     << " with call frame " << Rps_ShowCallFrame(&_));
       rps_edit_run_cplusplus_code (&_);
     }
-  //// running the given plugins after load - should happen after edition of C++ code
+  //// running the given plugins after load - should happen after
+  //// edition of C++ code
   if (!rps_plugins_vector.empty())
     {
       int pluginix = 0;
