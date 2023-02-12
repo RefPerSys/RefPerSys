@@ -50,6 +50,10 @@ is suggested to add a new C++ file (perhaps named
 `transientobj_rps.cc` for our *transient RefPerSys objects and
 payloads* ...) for them.
 
+Use the `create-refpersys-root-class.sh` shell script to create
+RefPerSys classes related to Unix processes, `popen`-ed file handles
+etc...
+
 ## DONE  List
 
 The predefined root object `_4DsQEs8zZf901wT1LH` informally named
