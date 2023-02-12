@@ -561,7 +561,8 @@ Rps_PayloadTasklet::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 bool
 Rps_PayloadTasklet::is_erasable() const
 {
-  RPS_WARNOUT("Rps_PayloadTasklet::is_erasable() still a stub");
+  RPS_WARNOUT("Rps_PayloadTasklet::is_erasable() still a stub"
+              << RPS_FULL_BACKTRACE_HERE(1, "Rps_PayloadTasklet::is_erasable"));
   // a tasklet might be mutated to something else, even if I cannot
   // imagine why that could be useful.
   return true;
