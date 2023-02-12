@@ -40,6 +40,99 @@ extern "C" const char rps_transientobj_date[];
 const char rps_transientobj_date[]= __DATE__;
 
 
+
+////////////////////////////////////////////////////////////////
+////// trensient unix process payload
+Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner)  // See PaylUnixProcess
+  : Rps_Payload(Rps_Type::PaylUnixProcess,owner)
+{
+} // end constructor Rps_PayloadUnixProcess
+
+Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylUnixProcess,owner)
+{
+  RPS_FATALOUT("cannot load payload of unix process for owner " << owner);
+} // end constructor Rps_PayloadUnixProcess
+
+Rps_PayloadUnixProcess::~Rps_PayloadUnixProcess()
+{
+} // end destructor Rps_PayloadUnixProcess
+
+void
+Rps_PayloadUnixProcess::dump_scan(Rps_Dumper*du)  const
+{
+  // do nothing, this payload for unix process is transient!
+  RPS_ASSERT(du);
+} // end Rps_PayloadUnixProcess::dump_scan
+
+
+void
+Rps_PayloadUnixProcess::dump_json_content(Rps_Dumper*du, Json::Value&)  const
+{
+  // do nothing, this payload for unix process is transient!
+  RPS_ASSERT(du);
+} // end Rps_PayloadUnixProcess::dump_scan
+
+bool
+Rps_PayloadUnixProcess::is_erasable(void) const
+{
+  return false;
+} // end Rps_PayloadUnixProcess::is_erasable
+
+void
+Rps_PayloadUnixProcess::gc_mark(Rps_GarbageCollector&gc) const
+{
+} // end Rps_PayloadUnixProcess::gc_mark
+
+
+
+
+
+///////////////////////////////////////
+///// transient popened file payload
+Rps_PayloadPopenedFile::Rps_PayloadPopenedFile(Rps_ObjectZone*owner)  // See PaylPopenedFile
+  : Rps_Payload(Rps_Type::PaylPopenedFile,owner)
+{
+} // end constructor Rps_PayloadPopenedFile
+
+Rps_PayloadPopenedFile::Rps_PayloadPopenedFile(Rps_ObjectZone*owner, Rps_Loader*ld)
+  : Rps_Payload(Rps_Type::PaylPopenedFile,owner)
+{
+  RPS_FATALOUT("cannot load payload of popened file for owner " << owner);
+} // end constructor Rps_PayloadUnixProcess
+
+Rps_PayloadPopenedFile::~Rps_PayloadPopenedFile()
+{
+} // end destructor Rps_PayloadPopenedFile
+
+
+void
+Rps_PayloadPopenedFile::dump_scan(Rps_Dumper*du)  const
+{
+  // do nothing, this payload for unix process is transient!
+  RPS_ASSERT(du);
+} // end Rps_PayloadPopenedFile::dump_scan
+
+
+void
+Rps_PayloadPopenedFile::dump_json_content(Rps_Dumper*du, Json::Value&)  const
+{
+  // do nothing, this payload for unix process is transient!
+  RPS_ASSERT(du);
+} // end Rps_PayloadPopenedFile::dump_scan
+
+bool
+Rps_PayloadPopenedFile::is_erasable(void) const
+{
+  return false;
+} // end Rps_PayloadPopenedFile::is_erasable
+
+void
+Rps_PayloadPopenedFile::gc_mark(Rps_GarbageCollector&gc) const
+{
+} // end Rps_PayloadPopenedFile::gc_mark
+
+
 #warning transientobj_rps.cc is nearly empty
 
 /*** end of file transientobj_rps.cc ***/

@@ -41,13 +41,14 @@ Remove there `class Rps_PayloadWebPi` and `PaylWebHandler` and
 classes related to Web from the persistent store....
 
 Add transient (non-dumped) payloads for: *forked* Unix processes,
-`popen `-ed or `fopen`-ed file handles, smart pointers to C++ input or
-output streams and the corresponding RefPerSys classes. The handling
-of forked Unix processes should be known to our `agenda_rps.cc`
+`popen`-ed file handles, smart pointers to C++ input or output
+streams and the corresponding RefPerSys classes. The handling of
+forked Unix processes should be known to our `agenda_rps.cc`
 machinery. These payloads may need C++ locking or synchronizing
 facilities (e.g. `std::mutex` or `std::condition_variable`-s ...). It
-is suggested to add a new C++ file (perhaps named `transientobj_rps.cc`
-for our *transient RefPerSys objects* ...) for them.
+is suggested to add a new C++ file (perhaps named
+`transientobj_rps.cc` for our *transient RefPerSys objects and
+payloads* ...) for them.
 
 ## DONE  List
 

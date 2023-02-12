@@ -927,6 +927,11 @@ class Rps_PayloadSymbol;
 class Rps_PayloadClassInfo;
 class Rps_PayloadStrBuf;
 class Rps_PayloadWebPi;
+class Rps_PayloadAgenda;
+class Rps_PayloadTasklet;
+class Rps_PayloadUnixProcess;	// transient payload for forked processes
+class Rps_PayloadPopenedFile;   // transient payload for popened command
+class Rps_PayloadCppStream;	// transient payload for C++ streams
 class Rps_Loader;
 class Rps_Dumper;
 class Rps_ProtoCallFrame;
@@ -1170,6 +1175,9 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
+  PaylCppStream = -18,	   // for transient C++ streams
+  PaylPopenedFile = -17,   // for transient popened commands
+  PaylUnixProcess = -16,	// for transient of forked unix processes
   PaylWebHandler = -15, // for reification of Web handlers,
 			// i.e. Rps_PayloadWebHandler-s
   PaylWebex = -14, // for reification as temporary objects of HTTP
@@ -4630,6 +4638,53 @@ public:
   virtual const std::string payload_type_name(void) const { return "tasklet"; };
   Rps_ClosureValue todo_closure(void) const { return tasklet_todoclos; };
 };  // end of Rps_PayloadTasklet
+
+
+
+/// the transient payload for unix processes (see PaylUnixProcess)
+class Rps_PayloadUnixProcess : public Rps_Payload
+{
+public:
+  Rps_PayloadUnixProcess(Rps_ObjectZone*owner);
+  Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*ld); // impossible
+  Rps_PayloadUnixProcess(Rps_ObjectRef obr) :
+    Rps_PayloadUnixProcess(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadUnixProcess();
+protected:
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  virtual bool is_erasable(void) const;
+public:
+  virtual const std::string payload_type_name(void) const { return "unixprocess"; };
+};  // end of Rps_PayloadUnixProcess
+
+
+/// the transient payload for popened files (see PaylOpenedFile)
+class Rps_PayloadPopenedFile : public Rps_Payload
+{
+public:
+  Rps_PayloadPopenedFile(Rps_ObjectZone*owner);
+  Rps_PayloadPopenedFile(Rps_ObjectZone*owner, Rps_Loader*ld); // impossible
+  Rps_PayloadPopenedFile(Rps_ObjectRef obr) :
+    Rps_PayloadPopenedFile(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadPopenedFile();
+protected:
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  virtual bool is_erasable(void) const;
+public:
+  virtual const std::string payload_type_name(void) const { return "popenedfile"; };
+};  // end of Rps_PayloadPopenedFile
 
 
 //////////////////////////////////////////////////////////////////
