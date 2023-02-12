@@ -46,14 +46,14 @@ output streams and the corresponding RefPerSys classes. The handling
 of forked Unix processes should be known to our `agenda_rps.cc`
 machinery. These payloads may need C++ locking or synchronizing
 facilities (e.g. `std::mutex` or `std::condition_variable`-s ...). It
-is suggested to add a new C++ file (perhaps named `volatobj_rps.cc`
-for our *volatile RefPerSys objects* ...) for them.
+is suggested to add a new C++ file (perhaps named `transientobj_rps.cc`
+for our *transient RefPerSys objects* ...) for them.
 
 ## DONE  List
 
 The predefined root object `_4DsQEs8zZf901wT1LH` informally named
 `the_mutable_set_of_classes` should have its naming symbol
 `the_mutable_set_of_classes` and should be filled with all classes
-objects. The routine `Rps_ObjectRef::make_named_class` should be
+objects. The routine `Rps_ObjectRef::make_named_class` has been
 improved to fill `the_mutable_set_of_classes`
 
