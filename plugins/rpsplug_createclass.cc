@@ -21,7 +21,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
 		 Rps_ObjectRef obsuperclass;
 		 Rps_ObjectRef obnewclass;
 		 Rps_ObjectRef obsymbol;
-		 Rps_Value classname; // a string
+		 Rps_Value namestr; // a string
 		 );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*supername = rps_get_extra_arg("super");
@@ -70,6 +70,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
   paylsymb->symbol_put_value(_f.obnewclass);
   _f.obnewclass->put_attr(RPS_ROOT_OB(_3Q3hJsSgCDN03GTYW5), //symbol∈symbol
 			  _f.obsymbol);
+  _f.namestr = Rps_Value{std::string(plugarg)}
+  _f.obnewclass->put_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG), //"name"∈named_attribute
+			  _f.namestr);
   RPS_FATALOUT("rpsplug_createclass not implemented for "
                <<  Rps_QuotedC_String(plugarg)
 		   << " with super name " << Rps_QuotedC_String(supername));
