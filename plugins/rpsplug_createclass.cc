@@ -20,6 +20,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
 		 Rps_ObjectRef obsuperclass;
 		 Rps_ObjectRef obnewclass;
+		 Rps_ObjectRef obsymbol;
 		 Rps_Value classname; // a string
 		 );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
@@ -58,12 +59,20 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (!_f.obsuperclass->is_class())
       RPS_FATALOUT("failure: plugin " << plugin->plugin_name
 		   << " with super name " << Rps_QuotedC_String(supername)
-		   << " not naming a class but " << _f.obsuperclass);
-  /* TODO: create the new obnewclass. */
-  /* TODO: create a symbol for the new name. */
-  /* TODO: put the obnewclass as value of the symbol. */
+		   << " not naming a class but the object " << _f.obsuperclass << " of RefPerSys class "
+		   << _f.obsuperclass->get_class());
+  /* Create the new obnewclass. */
+  _f.obnewclass = Rps_ObjectRef::make_named_class(&_, _f.obsuperclass, std::string{plugarg});
+  /* Create a symbol for the new class name. */
+  _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, std::string{plugarg});
+  Rps_PayloadSymbol* paylsymb = _f.obsymbol->get_dynamic_payload<Rps_PayloadSymbol>();
+  RPS_ASSERT (paylsymb != nullptr);
+  paylsymb->symbol_put_value(_f.obnewclass);
+  _f.obnewclass->put_attr(RPS_ROOT_OB(_3Q3hJsSgCDN03GTYW5), //symbol∈symbol
+			  _f.obsymbol);
   RPS_FATALOUT("rpsplug_createclass not implemented for "
-               <<  Rps_QuotedC_String(plugarg));
+               <<  Rps_QuotedC_String(plugarg)
+		   << " with super name " << Rps_QuotedC_String(supername));
 #warning incomplete plugin code rpsplug_createclass
 } // end rps_do_plugin
 
