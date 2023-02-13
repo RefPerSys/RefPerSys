@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # SPDX-License-Identifier: GPL-3.0-or-later
 # script file create-refpersys-root-class.sh in RefPerSys - see http://refpersys.org/
 #
