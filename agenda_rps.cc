@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2020 - 2022 The Reflective Persistent System Team
+ *      © Copyright 2020 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -375,6 +375,12 @@ rps_run_agenda_mechanism(int nbjobs)
                   << nbjobs << " reduced to " << rps_nbjobs);
       nbjobs = rps_nbjobs;
     };
+  /*** TODO (1):
+   *
+   * We may need to run one posix thread, which is mostly sleeping,
+   * and waiting for SIGCHLD of Rps_PayloadUnixProcess and polling
+   * Rps_PayloadPopenedFile etc...  See Todo §2 below
+   **/
   Rps_Agenda::agenda_is_running_.store(true);
   /// start all worker threads
   for (int ix=1; ix<nbjobs; ix++)
@@ -385,6 +391,13 @@ rps_run_agenda_mechanism(int nbjobs)
     }
   while (true)
     {
+      /*** TODO (2):
+       *
+       * Cooperation with unix processes and popen-ed commands is
+       * needed in the agenda.  We probably need to use poll(2) system
+       * call and waitpid(2) system calls and/or to handle SIGCHLD
+       * signals.  See Todo §1 above.
+       ***/
       Rps_Agenda::agenda_changed_condvar_.wait_for(Rps_Agenda::agenda_mtx_,
           30ms + 1ms * Rps_Random::random_quickly_4bits());
       if (Rps_Agenda::agenda_is_running_.load())
