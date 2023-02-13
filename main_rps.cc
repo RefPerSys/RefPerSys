@@ -2290,12 +2290,12 @@ const char*
 rps_get_extra_arg(const char*name)
 {
   if (!name) return nullptr;
-  bool goodname=isalpha(name[0]);
-  for (const char*pc = name; goodname && *pc; pc++)
-    goodname = isalnum(*pc) || *pc == '_';
-  if (!goodname)
+  bool is_good_name=isalpha(name[0]);
+  for (const char*pc = name; is_good_name && *pc; pc++)
+    is_good_name = isalnum(*pc) || *pc == '_';
+  if (!is_good_name)
     return nullptr;
-  std::string goodstr{goodname};
+  std::string goodstr{name};
   auto it = rps_dict_extra_arg.find(goodstr);
   if (it == rps_dict_extra_arg.end())
     return nullptr;
