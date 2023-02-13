@@ -36,9 +36,10 @@ program option works. See function `rps_publish_me` in file
 
 Review file `refpersys.hh` for spelling mistakes in comments.
 
-Remove there `class Rps_PayloadWebPi` and `PaylWebHandler` and
-`PaylWebex` and simulatnously remove the persistent objects and
-classes related to Web from the persistent store....
+Not sure if we want to remove there `class Rps_PayloadWebPi` and
+`PaylWebHandler` and `PaylWebex` and simulatnously remove the
+persistent objects and classes related to Web from the persistent
+store....
 
 Add transient (non-dumped) payloads for: *forked* Unix processes,
 `popen`-ed file handles, smart pointers to C++ input or output
