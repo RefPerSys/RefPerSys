@@ -44,12 +44,18 @@ const char rps_transientobj_date[]= __DATE__;
 ////////////////////////////////////////////////////////////////
 ////// trensient unix process payload
 Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner)  // See PaylUnixProcess
-  : Rps_Payload(Rps_Type::PaylUnixProcess,owner)
+  : Rps_Payload(Rps_Type::PaylUnixProcess,owner),
+    unixproc_pid(0),
+    unixproc_exe(),
+    unixproc_argv()
 {
 } // end constructor Rps_PayloadUnixProcess
 
 Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*ld)
-  : Rps_Payload(Rps_Type::PaylUnixProcess,owner)
+  : Rps_Payload(Rps_Type::PaylUnixProcess,owner),
+    unixproc_pid(0),
+    unixproc_exe(),
+    unixproc_argv()
 {
   RPS_FATALOUT("cannot load payload of unix process for owner " << owner);
 } // end constructor Rps_PayloadUnixProcess
