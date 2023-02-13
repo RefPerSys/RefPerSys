@@ -1184,7 +1184,7 @@ enum class Rps_Type : std::int16_t
 		   // requests+replies, i.e. Web exchanges.
   PaylTasklet = -13, // for small tasklets inside agenda
   PaylStringDict = -12, // the dictionnaries associating strings to values
-  PaylAgenda = -11, // the the unique agenda
+  PaylAgenda = -11, // *the* unique agenda
   PaylSymbol = -10, // symbol payload
   PaylSpace = -9, // space payload
   PaylStrBuf = -8, // mutable string buffer
@@ -4644,6 +4644,20 @@ public:
 /// the transient payload for unix processes (see PaylUnixProcess)
 class Rps_PayloadUnixProcess : public Rps_Payload
 {
+  friend class Rps_Agenda;
+  friend class Rps_PayloadAgenda;
+  pid_t unixproc_pid;
+  std::string unixproc_exe;
+  std::vector<std::string> unixproc_argv;
+#warning Rps_PayloadUnixProcess may need cooperation with agenda.
+  /*** TODO:
+   *
+   *   Perhaps we need a field containing a Rps_ClosureValue to handle
+   * termination of that process in the agenda?
+   *
+   * The agenda machinery needs to handle unix process termination and
+   * SIGCHLD signal.
+   **/
 public:
   Rps_PayloadUnixProcess(Rps_ObjectZone*owner);
   Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*ld); // impossible
@@ -4661,6 +4675,19 @@ protected:
   virtual bool is_erasable(void) const;
 public:
   virtual const std::string payload_type_name(void) const { return "unixprocess"; };
+#warning incomplete Rps_PayloadUnixProcess
+  /*** TODO:
+   *
+   * We probably need a static member function to fork a unix process,
+   * given the executable path and program arguments.  We may also
+   * need to redirect its stdin/stdout/stderr ...  The QProcess class
+   * from Qt might be inspirational.
+   **/
+  /*** TODO:
+   *
+   * We need to keep the set of forked unix process and improve the
+   * agenda machinery to handle their termination.
+   */
 };  // end of Rps_PayloadUnixProcess
 
 
