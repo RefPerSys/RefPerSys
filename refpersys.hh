@@ -105,6 +105,8 @@
 #include <dlfcn.h>
 #include <dirent.h>
 #include <pthread.h>
+#include <limits.h>
+#include <stdlib.h>
 #include <sys/personality.h>
 
 extern "C" {
@@ -4649,6 +4651,8 @@ class Rps_PayloadUnixProcess : public Rps_Payload
   pid_t unixproc_pid;
   std::string unixproc_exe;
   std::vector<std::string> unixproc_argv;
+  friend Rps_PayloadUnixProcess*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadUnixProcess,Rps_ObjectZone*>(Rps_ObjectZone*);
 #warning Rps_PayloadUnixProcess may need cooperation with agenda.
   /*** TODO:
    *
@@ -4664,6 +4668,7 @@ public:
   Rps_PayloadUnixProcess(Rps_ObjectRef obr) :
     Rps_PayloadUnixProcess(obr?obr.optr():nullptr) {};
   virtual ~Rps_PayloadUnixProcess();
+  static Rps_ObjectRef make_dormant_unix_process_object(Rps_CallFrame*curf,const std::string& exec, const std::vector<std::string>& progargs);
 protected:
   virtual uint32_t wordsize(void) const
   {

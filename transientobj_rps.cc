@@ -91,7 +91,32 @@ Rps_PayloadUnixProcess::gc_mark(Rps_GarbageCollector&gc) const
 } // end Rps_PayloadUnixProcess::gc_mark
 
 
-
+/// static member function to create a dormant (potential, not yet forked) unix process object
+Rps_ObjectRef
+Rps_PayloadUnixProcess::make_dormant_unix_process_object(Rps_CallFrame*callerframe,
+    const std::string& exec, const std::vector<std::string>& progargs)
+{
+  if (exec.empty())
+    throw std::runtime_error("no executable given to make_dormant_unix_process");
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_LOCALFRAME(RPS_ROOT_OB(_61uFnhRCXfe00Mir2n), //unix_process∈class
+                 callerframe,
+                 Rps_ObjectRef obres;
+                );
+  char *realpath = ::realpath(exec.c_str(), nullptr);
+  if (!realpath)
+    throw RPS_RUNTIME_ERROR_OUT("cannot make_dormant_unix_process_object from executable " << Rps_QuotedC_String(exec)
+                                << " without a real path");
+  _f.obres = Rps_ObjectRef::make_object(&_, RPS_ROOT_OB(_61uFnhRCXfe00Mir2n)); //unix_process∈class
+  Rps_PayloadUnixProcess* payl = _f.obres->put_new_plain_payload<Rps_PayloadUnixProcess>();
+  payl->unixproc_exe = std::string(realpath);
+  payl->unixproc_pid = 0;
+  payl->unixproc_argv.clear();
+  for (std::string curarg: progargs)
+    payl->unixproc_argv.push_back(curarg);
+  free (realpath);
+  return _f.obres;
+} // end Rps_PayloadUnixProcess::make_dormant_unix_process_object
 
 
 ///////////////////////////////////////
