@@ -4533,6 +4533,8 @@ extern "C" rpsldpysig_t rpsldpy_agenda;
 class Rps_Agenda { /// all member functions are static...
   friend class Rps_GarbageCollector;
   friend class Rps_PayloadAgenda;
+  friend class Rps_PayloadUnixProcess;
+  friend class Rps_PayloadPopenedFile;
   friend rpsldpysig_t rpsldpy_agenda;
   friend void rps_run_agenda_mechanism(int nbjobs);
   friend void rps_stop_agenda_mechanism(void);
@@ -4648,9 +4650,9 @@ class Rps_PayloadUnixProcess : public Rps_Payload
 {
   friend class Rps_Agenda;
   friend class Rps_PayloadAgenda;
-  pid_t unixproc_pid;
-  std::string unixproc_exe;
-  std::vector<std::string> unixproc_argv;
+  std::atomic<pid_t> _unixproc_pid;
+  std::string _unixproc_exe;
+  std::vector<std::string> _unixproc_argv;
   friend Rps_PayloadUnixProcess*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadUnixProcess,Rps_ObjectZone*>(Rps_ObjectZone*);
 #warning Rps_PayloadUnixProcess may need cooperation with agenda.
@@ -4663,10 +4665,8 @@ class Rps_PayloadUnixProcess : public Rps_Payload
    * SIGCHLD signal.
    **/
 public:
-  Rps_PayloadUnixProcess(Rps_ObjectZone*owner);
   Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*ld); // impossible
-  Rps_PayloadUnixProcess(Rps_ObjectRef obr) :
-    Rps_PayloadUnixProcess(obr?obr.optr():nullptr) {};
+  Rps_PayloadUnixProcess(Rps_ObjectZone*owner, std::string exec, std::vector<std::string> argv);
   virtual ~Rps_PayloadUnixProcess();
   static Rps_ObjectRef make_dormant_unix_process_object(Rps_CallFrame*curf,const std::string& exec, const std::vector<std::string>& progargs);
 protected:
@@ -4699,11 +4699,16 @@ public:
 /// the transient payload for popened files (see PaylOpenedFile)
 class Rps_PayloadPopenedFile : public Rps_Payload
 {
+  friend class Rps_Agenda;
+  friend class Rps_PayloadAgenda;
+  const std::string _popened_cmd;
+  const bool _popened_to_read;
+  std::atomic<FILE*> _popened_file;
 public:
-  Rps_PayloadPopenedFile(Rps_ObjectZone*owner);
+  Rps_PayloadPopenedFile(Rps_ObjectZone*owner, const std::string command, bool reading);
   Rps_PayloadPopenedFile(Rps_ObjectZone*owner, Rps_Loader*ld); // impossible
-  Rps_PayloadPopenedFile(Rps_ObjectRef obr) :
-    Rps_PayloadPopenedFile(obr?obr.optr():nullptr) {};
+  Rps_PayloadPopenedFile(Rps_ObjectRef obr, const std::string command, bool reading) :
+    Rps_PayloadPopenedFile(obr?obr.optr():nullptr, command, reading) {};
   virtual ~Rps_PayloadPopenedFile();
 protected:
   virtual uint32_t wordsize(void) const
@@ -4716,6 +4721,10 @@ protected:
   virtual bool is_erasable(void) const;
 public:
   virtual const std::string payload_type_name(void) const { return "popenedfile"; };
+  const std::string command_string_popen() const { return _popened_cmd; };
+  bool is_reading_popen() const { return _popened_to_read; };
+  bool is_writing_popen() const { return !_popened_to_read; };
+  FILE* get_popened_file() const { return _popened_file.load(); };
 };  // end of Rps_PayloadPopenedFile
 
 
