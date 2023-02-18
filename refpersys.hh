@@ -92,6 +92,7 @@
 #include <argp.h>
 #include <ctype.h>
 #include <sys/mman.h>
+#include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -4654,6 +4655,15 @@ class Rps_PayloadUnixProcess : public Rps_Payload
   std::atomic<pid_t> _unixproc_pid;
   std::string _unixproc_exe;
   rps_cppvect_of_string_t _unixproc_argv;
+  std::atomic<unsigned> _unixproc_cpu_time_limit; // for setrlimit(RLIMIT_CPU, ...) in child
+  std::atomic<unsigned> _unixproc_elapsed_time_limit;
+  std::atomic<time_t> _unixproc_start_time;
+  /// limits which are 0 are not set!
+  std::atomic<unsigned> _unixproc_as_mb_limit; // megabytes for  setrlimit(RRLIMIT_AS, ...) in child
+  std::atomic<unsigned> _unixproc_fsize_mb_limit; // megabytes for  setrlimit(RRLIMIT_FSIZE, ...) in child
+  std::atomic<unsigned> _unixproc_core_mb_limit; // megabytes for  setrlimit(RRLIMIT_CORE, ...) in child
+  std::atomic<bool> _unixproc_forbid_core;
+  std::atomic<unsigned> _unixproc_nofile_limit; // fds for  setrlimit(RRLIMIT_NOFILE, ...) in child
   friend Rps_PayloadUnixProcess*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadUnixProcess,Rps_ObjectZone*>(Rps_ObjectZone*);
 #warning Rps_PayloadUnixProcess may need cooperation with agenda.
@@ -4671,6 +4681,13 @@ public:
   virtual ~Rps_PayloadUnixProcess();
   static Rps_ObjectRef make_dormant_unix_process_object(Rps_CallFrame*curf,const std::string& exec);
   void add_process_argument (const std::string& arg);
+  /// the methods related to limits return the old one, and if given a >0 number set it
+  // if a process is running, gives it current .rlim_cur as obtained with prlimit....
+  unsigned address_space_megabytes_limit(unsigned newlimit=0);
+  unsigned file_size_megabytes_limit(unsigned newlimit=0);
+  unsigned core_megabytes_limit(unsigned newlimit=0);
+  void forbid_core_dump();	// force the CORE limit to 0
+  unsigned nofile_limit(unsigned newlimit=0);
 protected:
   virtual uint32_t wordsize(void) const
   {

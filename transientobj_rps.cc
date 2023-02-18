@@ -47,7 +47,15 @@ Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner)  // See Pay
   : Rps_Payload(Rps_Type::PaylUnixProcess,owner),
     _unixproc_pid(0),
     _unixproc_exe(),
-    _unixproc_argv()
+    _unixproc_argv(),
+    _unixproc_cpu_time_limit(0),
+    _unixproc_elapsed_time_limit(0),
+    _unixproc_start_time(0),
+    _unixproc_as_mb_limit(0),
+    _unixproc_fsize_mb_limit(0),
+    _unixproc_core_mb_limit(0),
+    _unixproc_forbid_core(false),
+    _unixproc_nofile_limit(0)
 {
 } // end constructor Rps_PayloadUnixProcess
 
@@ -57,7 +65,15 @@ Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*
   : Rps_Payload(Rps_Type::PaylUnixProcess,owner),
     _unixproc_pid(0),
     _unixproc_exe(),
-    _unixproc_argv()
+    _unixproc_argv(),
+    _unixproc_cpu_time_limit(0),
+    _unixproc_elapsed_time_limit(0),
+    _unixproc_start_time(0),
+    _unixproc_as_mb_limit(0),
+    _unixproc_fsize_mb_limit(0),
+    _unixproc_core_mb_limit(0),
+    _unixproc_forbid_core(false),
+    _unixproc_nofile_limit(0)
 {
   RPS_FATALOUT("cannot load payload of unix process for owner " << owner);
 } // end constructor Rps_PayloadUnixProcess
@@ -71,7 +87,106 @@ Rps_PayloadUnixProcess::add_process_argument(const std::string& arg)
 {
   std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
   _unixproc_argv.push_back(arg);
-}
+} // end Rps_PayloadUnixProcess::add_process_argument
+
+void
+Rps_PayloadUnixProcess::forbid_core_dump(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  pid_t pid = _unixproc_pid.load();
+  _unixproc_forbid_core.store(true);
+  if (pid >0)
+    {
+      struct rlimit newlim= {.rlim_cur=0, .rlim_max= RLIM_INFINITY};
+      struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
+      prlimit(pid, RLIMIT_CORE, &newlim, &oldlim);
+    };
+} // end Rps_PayloadUnixProcess::forbid_core_dump
+
+
+unsigned
+Rps_PayloadUnixProcess::core_megabytes_limit(unsigned newlimit)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  pid_t pid = _unixproc_pid.load();
+  _unixproc_forbid_core.store(false);
+  if (pid >0)
+    {
+      struct rlimit newlim= {.rlim_cur=((newlimit>0)?(newlimit<<20):RLIM_INFINITY),
+               .rlim_max= RLIM_INFINITY
+      };
+      struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
+      (void)prlimit(pid, RLIMIT_CORE, &newlim, &oldlim);
+      if (oldlim.rlim_cur < RLIM_INFINITY)
+        return oldlim.rlim_cur>>20;
+    }
+  return _unixproc_core_mb_limit.exchange(newlimit);
+} // end Rps_PayloadUnixProcess::core_megabytes_limit
+
+unsigned
+Rps_PayloadUnixProcess::address_space_megabytes_limit(unsigned newlimit)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  pid_t pid = _unixproc_pid.load();
+  if (pid >0)
+    {
+      struct rlimit newlim= {.rlim_cur=(newlimit?(newlimit<<20):RLIM_INFINITY),
+               .rlim_max= RLIM_INFINITY
+      };
+      struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
+      if (!prlimit(pid, RLIMIT_AS, &newlim, &oldlim))
+        {
+          _unixproc_as_mb_limit.store(oldlim.rlim_cur>>20);
+          return oldlim.rlim_cur>>20;
+        }
+    };
+  return _unixproc_as_mb_limit.exchange(newlimit);
+} // end Rps_PayloadUnixProcess::address_space_megabytes_limit
+
+
+unsigned
+Rps_PayloadUnixProcess::file_size_megabytes_limit(unsigned newlimit)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  pid_t pid = _unixproc_pid.load();
+  if (pid >0)
+    {
+      struct rlimit newlim= {.rlim_cur=(newlimit?(newlimit<<20):RLIM_INFINITY),
+               .rlim_max= RLIM_INFINITY
+      };
+      struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
+      if (!prlimit(pid, RLIMIT_FSIZE, &newlim, &oldlim))
+        {
+          _unixproc_fsize_mb_limit.store(oldlim.rlim_cur>>20);
+          return oldlim.rlim_cur>>20;
+        }
+    };
+  return _unixproc_fsize_mb_limit.exchange(newlimit);
+} // end Rps_PayloadUnixProcess::address_space_megabytes_limit
+
+
+unsigned
+Rps_PayloadUnixProcess::nofile_limit(unsigned newlimit)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  pid_t pid = _unixproc_pid.load();
+  if (pid >0)
+    {
+      struct rlimit newlim= {.rlim_cur=(newlimit?newlimit:RLIM_INFINITY),
+               .rlim_max= RLIM_INFINITY
+      };
+      struct rlimit oldlim= {.rlim_cur=0, .rlim_max= 0};
+      if (!prlimit(pid, RLIMIT_NOFILE, &newlim, &oldlim))
+        {
+          _unixproc_fsize_mb_limit.store(oldlim.rlim_cur);
+          return oldlim.rlim_cur;
+        }
+    };
+  return _unixproc_fsize_mb_limit.exchange(newlimit);
+} // end Rps_PayloadUnixProcess::nofile_limit
+
+
+
 void
 Rps_PayloadUnixProcess::dump_scan(Rps_Dumper*du)  const
 {
@@ -111,17 +226,55 @@ Rps_PayloadUnixProcess::make_dormant_unix_process_object(Rps_CallFrame*callerfra
                  callerframe,
                  Rps_ObjectRef obres;
                 );
-  char *realexepath = ::realpath(exec.c_str(), nullptr);
-  if (!realexepath)
-    throw RPS_RUNTIME_ERROR_OUT("cannot make_dormant_unix_process_object from executable " << Rps_QuotedC_String(exec)
-                                << " without a real path for " << exec);
-  std::string realexestr{realexepath};
+  std::string realexestr;
+  if (exec.find("/") > 0)
+    {
+      char *realexepath = ::realpath(exec.c_str(), nullptr);
+      if (!realexepath)
+        throw RPS_RUNTIME_ERROR_OUT("cannot make_dormant_unix_process_object from executable " << Rps_QuotedC_String(exec)
+                                    << " without a real path for " << exec);
+      realexestr = std::string{realexepath};
+      free (realexepath);
+    }
+  else
+    {
+      const char*curpath = getenv("PATH");
+      RPS_ASSERT(curpath);
+      const char*pc= curpath;
+      const char*next = nullptr;
+      do
+        {
+          std::string dir;
+          next = nullptr;
+          const char*colon = strchr(pc, ':');
+          if (colon)
+            {
+              next = colon+1;
+              dir = std::string(pc, colon-1);
+              if (dir.empty())
+                dir= std::string{"."};
+              dir += '/';
+            }
+          else
+            {
+              dir = std::string(pc);
+              next= nullptr;
+            };
+          std::string curexepath = dir + exec;
+          if (!access(curexepath.c_str(), X_OK))
+            {
+              realexestr = curexepath;
+              break;
+            };
+          pc = next;
+        }
+      while(realexestr.empty());
+    };
   _f.obres = Rps_ObjectRef::make_object(&_, RPS_ROOT_OB(_61uFnhRCXfe00Mir2n)); //unix_process∈class
   Rps_PayloadUnixProcess* payl = //
     _f.obres->put_new_plain_payload<Rps_PayloadUnixProcess>(); //
   payl->_unixproc_exe = realexestr;
   payl->_unixproc_argv.push_back(exec);
-  free (realexepath);
   return _f.obres;
 } // end Rps_PayloadUnixProcess::make_dormant_unix_process_object
 
