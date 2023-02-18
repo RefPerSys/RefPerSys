@@ -867,7 +867,8 @@ main (int argc, char** argv)
     free ((void*)rpld);
   };
   rps_load_from(rps_my_load_dir);
-  rps_run_application(argc, argv);
+  if (!rps_batch)
+    rps_event_loop();
   ////
   if (!rps_dumpdir_str.empty())
     {
@@ -1464,24 +1465,12 @@ rps_run_application(int &argc, char **argv)
     RPS_WARNOUT("default GUI script " << rps_gui_script_executable << " is not executable");
   ////
   ////
-  else if (!rps_fifo_prefix.empty()) {
+  if (!rps_fifo_prefix.empty()) {
 #pragma message "main_rps.cc with RPSJSONRPC:" __DATE__ "@" __TIME__
+    RPS_INFORMOUT("initialize JSONRPC with rps_fifo_prefix:" << rps_fifo_prefix<< std::endl
+		  << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application JSONRPC"));
       jsonrpc_initialize_rps();
-      RPS_INFORMOUT("Before running jsonrpc_run_application_rps" << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application before JSONRPC"));
-      jsonrpc_run_application_rps();
-      RPS_INFORMOUT("After running jsonrpc_run_application_rps" << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application after JSONRPC"));
-  }  
-  else
-    {
-      RPS_WARNOUT("rps_run_application incomplete"
-                  << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application incomplete"));
-    }
-#warning incomplete rps_run_application
-  RPS_WARNOUT("incomplete rps_run_application " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
+  };
 } // end rps_run_application
 
 

@@ -1,5 +1,5 @@
 /****************************************************************
- * file jsonrpc_rps.cc
+ * file eventloop_rps.cc
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
@@ -42,7 +42,7 @@ const char rps_jsonrpc_date[]= __DATE__;
 
 
 extern "C" void jsonrpc_initialize_rps(void);
-extern "C" void jsonrpc_run_application_rps(void);
+
 
 /**
    Function jsonrpc_initialize_rps is called once from main, when
@@ -57,12 +57,15 @@ jsonrpc_initialize_rps(void)
                << rps_get_fifo_prefix());
 } // end jsonrpc_initialize_rps
 
-void
-jsonrpc_run_application_rps(void)
-{
-#warning jsonrpc_run_application_rps unimplemented
-  RPS_FATALOUT("unimplemented jsonrpc_run_application_rps with fifo prefix "
-               << rps_get_fifo_prefix());
-} // end jsonrpc_run_application_rps
+ void
+ rps_event_loop(void)
+ {
+#warning unimplemented rps_event_loop
+   RPS_ASSERT(rps_is_main_thread()); 
+   RPS_FATALOUT("unimplemented rps_event_loop");
+ } // end rps_event_loop
 
-/// end of file jsonrpc_rps.cc
+
+
+
+/// end of file eventloop_rps.cc
