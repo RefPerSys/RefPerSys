@@ -15,7 +15,7 @@ than a few days of work.
 
 ### context
 
-For *RefPerSys* near commit `85667c8506a34a` (feb. 2023). Please email
+For *RefPerSys* near commit `a714af43fe96995` (feb. 2023). Please email
 [refpersys-forum@framalistes.org](mailto:refpersys-forum@framalistes.org)
 or at least contact [Basile
 Starynkevitch](http://starynkevitch.net/Basile/) by SMS, WhatsApp, or
@@ -41,21 +41,37 @@ Not sure if we want to remove there `class Rps_PayloadWebPi` and
 persistent objects and classes related to Web from the persistent
 store....
 
-Add transient (non-dumped) payloads for: *forked* Unix processes,
-`popen`-ed file handles, smart pointers to C++ input or output
+Add some `start` *RefPerSys* symbol and code for `the_agenda` which
+starts the agenda by sending that `start` selector to `the_agenda`
+after load.
+
+Add transient payloads for smart pointers to C++ input or output
 streams and the corresponding RefPerSys classes. The handling of
 forked Unix processes should be known to our `agenda_rps.cc`
 machinery. These payloads may need C++ locking or synchronizing
-facilities (e.g. `std::mutex` or `std::condition_variable`-s ...). It
-is suggested to add a new C++ file (perhaps named
-`transientobj_rps.cc` for our *transient RefPerSys objects and
-payloads* ...) for them.
+facilities (e.g. `std::mutex` or `std::condition_variable`-s
+...). Complete file `transientobj_rps.cc` for our *transient RefPerSys
+objects and payloads* ...) for them.
+
+Code the `rps_event_loop` around a
+[poll(2)](https://man7.org/linux/man-pages/man2/poll.2.html) system
+call. It should cooperate with `Rps_PayloadUnixProcess` and manage
+both processes and file descriptors handled by that event loop. These
+file descriptors may be related to JSONRPC service, etc...
+
+
+Consider linking [GNU
+lightning](https://www.gnu.org/software/lightning) machine code
+generation library.
+
+## DONE  List
+
+Added transient (non-dumped) payloads for: *forked* Unix processes,
+`popen`-ed file handles
 
 Use the `create-refpersys-root-class.sh` shell script to create
 RefPerSys classes related to Unix processes, `popen`-ed file handles
 etc...
-
-## DONE  List
 
 The predefined root object `_4DsQEs8zZf901wT1LH` informally named
 `the_mutable_set_of_classes` should have its naming symbol
