@@ -4655,7 +4655,7 @@ class Rps_PayloadUnixProcess : public Rps_Payload
   std::string _unixproc_exe;
   rps_cppvect_of_string_t _unixproc_argv;
   friend Rps_PayloadUnixProcess*
-  Rps_QuasiZone::rps_allocate3<Rps_PayloadUnixProcess,Rps_ObjectZone*,std::string,rps_cppvect_of_string_t>(Rps_ObjectZone*,std::string,rps_cppvect_of_string_t);
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadUnixProcess,Rps_ObjectZone*>(Rps_ObjectZone*);
 #warning Rps_PayloadUnixProcess may need cooperation with agenda.
   /*** TODO:
    *
@@ -4667,9 +4667,10 @@ class Rps_PayloadUnixProcess : public Rps_Payload
    **/
 public:
   Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*ld); // impossible
-  Rps_PayloadUnixProcess(Rps_ObjectZone*owner, std::string exec, rps_cppvect_of_string_t argv);
+  Rps_PayloadUnixProcess(Rps_ObjectZone*owner);
   virtual ~Rps_PayloadUnixProcess();
-  static Rps_ObjectRef make_dormant_unix_process_object(Rps_CallFrame*curf,const std::string& exec, const rps_cppvect_of_string_t& progargs);
+  static Rps_ObjectRef make_dormant_unix_process_object(Rps_CallFrame*curf,const std::string& exec);
+  void add_process_argument (const std::string& arg);
 protected:
   virtual uint32_t wordsize(void) const
   {
@@ -4691,7 +4692,7 @@ public:
    **/
   /*** TODO:
    *
-   * We need to keep the set of forked unix process and improve the
+   * We need to manage and keep the set of forked unix processes and improve the
    * agenda machinery to handle their termination.
    */
 };  // end of Rps_PayloadUnixProcess

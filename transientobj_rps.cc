@@ -43,11 +43,11 @@ const char rps_transientobj_date[]= __DATE__;
 
 ////////////////////////////////////////////////////////////////
 ////// trensient unix process payload
-Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner, std::string exec, std::vector<std::string> args)  // See PaylUnixProcess
+Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner)  // See PaylUnixProcess
   : Rps_Payload(Rps_Type::PaylUnixProcess,owner),
     _unixproc_pid(0),
-    _unixproc_exe(exec),
-    _unixproc_argv(args)
+    _unixproc_exe(),
+    _unixproc_argv()
 {
 } // end constructor Rps_PayloadUnixProcess
 
@@ -66,6 +66,12 @@ Rps_PayloadUnixProcess::~Rps_PayloadUnixProcess()
 {
 } // end destructor Rps_PayloadUnixProcess
 
+void
+Rps_PayloadUnixProcess::add_process_argument(const std::string& arg)
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  _unixproc_argv.push_back(arg);
+}
 void
 Rps_PayloadUnixProcess::dump_scan(Rps_Dumper*du)  const
 {
@@ -96,7 +102,7 @@ Rps_PayloadUnixProcess::gc_mark(Rps_GarbageCollector&gc) const
 /// static member function to create a dormant (potential, not yet forked) unix process object
 Rps_ObjectRef
 Rps_PayloadUnixProcess::make_dormant_unix_process_object(Rps_CallFrame*callerframe,
-    const std::string& exec, const std::vector<std::string>& progargs)
+    const std::string& exec)
 {
   if (exec.empty())
     throw std::runtime_error("no executable given to make_dormant_unix_process");
@@ -109,14 +115,12 @@ Rps_PayloadUnixProcess::make_dormant_unix_process_object(Rps_CallFrame*callerfra
   if (!realexepath)
     throw RPS_RUNTIME_ERROR_OUT("cannot make_dormant_unix_process_object from executable " << Rps_QuotedC_String(exec)
                                 << " without a real path for " << exec);
+  std::string realexestr{realexepath};
   _f.obres = Rps_ObjectRef::make_object(&_, RPS_ROOT_OB(_61uFnhRCXfe00Mir2n)); //unix_process∈class
-#if 0 && badcode
   Rps_PayloadUnixProcess* payl = //
-    _f.obres->put_new_arg2_payload<Rps_PayloadUnixProcess,std::string,std::vector<std::string>> //
-    (std::string{realexepath}, //
-     progargs);
-#endif
-#warning C++ code with put_new_arg2_payload should be fixed in Rps_PayloadUnixProcess::make_dormant_unix_process_object
+    _f.obres->put_new_plain_payload<Rps_PayloadUnixProcess>(); //
+  payl->_unixproc_exe = realexestr;
+  payl->_unixproc_argv.push_back(exec);
   free (realexepath);
   return _f.obres;
 } // end Rps_PayloadUnixProcess::make_dormant_unix_process_object
