@@ -248,8 +248,8 @@ extern "C" bool rps_run_repl;
 
 
 extern "C" void jsonrpc_initialize_rps(void);
-extern "C" void jsonrpc_run_application_rps(void);
 
+extern "C" void rps_event_loop(void);
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_common_state;
 
@@ -267,6 +267,7 @@ extern "C" int rps_nbjobs;
 
 extern "C" bool rps_stdout_istty;
 extern "C" bool rps_stderr_istty;
+
 
 /// is the current thread the main thread?
 extern "C" bool rps_is_main_thread(void);
@@ -4438,7 +4439,7 @@ extern "C" void rps_repl_lexer_test(void);
 
 extern "C" void rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec);
 
-extern "C" void rps_run_application(int &argc, char **argv);
+extern "C" void rps_run_application();
 
 ///// UTF8 encoded string output (in file scalar_rps.cc)
 /// output a C string in HTML encoding; if nl2br is true, every newline is output as <br/>
