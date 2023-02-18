@@ -220,7 +220,7 @@ Rps_PayloadUnixProcess::gc_mark(Rps_GarbageCollector&gc) const
     }
 } // end Rps_PayloadUnixProcess::gc_mark
 
-Rps_ClosureValue
+const Rps_ClosureValue
 Rps_PayloadUnixProcess::get_process_closure(void) const
 {
   std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
