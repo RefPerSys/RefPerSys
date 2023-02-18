@@ -4537,6 +4537,7 @@ class Rps_Agenda { /// all member functions are static...
   friend class Rps_PayloadAgenda;
   friend class Rps_PayloadUnixProcess;
   friend class Rps_PayloadPopenedFile;
+  friend void rps_event_loop (void);
   friend rpsldpysig_t rpsldpy_agenda;
   friend void rps_run_agenda_mechanism(int nbjobs);
   friend void rps_stop_agenda_mechanism(void);
@@ -4653,6 +4654,7 @@ class Rps_PayloadUnixProcess : public Rps_Payload
 {
   friend class Rps_Agenda;
   friend class Rps_PayloadAgenda;
+  friend void rps_event_loop(void);
   std::atomic<pid_t> _unixproc_pid;
   std::string _unixproc_exe;
   rps_cppvect_of_string_t _unixproc_argv;
