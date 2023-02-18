@@ -48,6 +48,7 @@ Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner)  // See Pay
     _unixproc_pid(0),
     _unixproc_exe(),
     _unixproc_argv(),
+    _unixproc_closure(),
     _unixproc_cpu_time_limit(0),
     _unixproc_elapsed_time_limit(0),
     _unixproc_start_time(0),
@@ -66,6 +67,7 @@ Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*
     _unixproc_pid(0),
     _unixproc_exe(),
     _unixproc_argv(),
+    _unixproc_closure(),
     _unixproc_cpu_time_limit(0),
     _unixproc_elapsed_time_limit(0),
     _unixproc_start_time(0),
@@ -211,7 +213,28 @@ Rps_PayloadUnixProcess::is_erasable(void) const
 void
 Rps_PayloadUnixProcess::gc_mark(Rps_GarbageCollector&gc) const
 {
+  if (_unixproc_closure)
+    {
+      RPS_ASSERT(_unixproc_closure.is_closure());
+      _unixproc_closure.gc_mark(gc,1);
+    }
 } // end Rps_PayloadUnixProcess::gc_mark
+
+Rps_ClosureValue
+Rps_PayloadUnixProcess::get_process_closure(void) const
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  return _unixproc_closure;
+} // end Rps_PayloadUnixProcess::get_process_closure
+
+
+void
+Rps_PayloadUnixProcess::put_process_closure(Rps_ClosureValue closv)
+{
+  if (!closv || !closv.is_closure()) return;
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  _unixproc_closure = closv;
+} // end Rps_PayloadUnixProcess::put_process_closure
 
 
 /// static member function to create a dormant (potential, not yet forked) unix process object

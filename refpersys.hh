@@ -4655,6 +4655,7 @@ class Rps_PayloadUnixProcess : public Rps_Payload
   std::atomic<pid_t> _unixproc_pid;
   std::string _unixproc_exe;
   rps_cppvect_of_string_t _unixproc_argv;
+  Rps_ClosureValue _unixproc_closure; // handle termination of the Unix process
   std::atomic<unsigned> _unixproc_cpu_time_limit; // for setrlimit(RLIMIT_CPU, ...) in child
   std::atomic<unsigned> _unixproc_elapsed_time_limit;
   std::atomic<time_t> _unixproc_start_time;
@@ -4680,14 +4681,6 @@ public:
   Rps_PayloadUnixProcess(Rps_ObjectZone*owner);
   virtual ~Rps_PayloadUnixProcess();
   static Rps_ObjectRef make_dormant_unix_process_object(Rps_CallFrame*curf,const std::string& exec);
-  void add_process_argument (const std::string& arg);
-  /// the methods related to limits return the old one, and if given a >0 number set it
-  // if a process is running, gives it current .rlim_cur as obtained with prlimit....
-  unsigned address_space_megabytes_limit(unsigned newlimit=0);
-  unsigned file_size_megabytes_limit(unsigned newlimit=0);
-  unsigned core_megabytes_limit(unsigned newlimit=0);
-  void forbid_core_dump();	// force the CORE limit to 0
-  unsigned nofile_limit(unsigned newlimit=0);
 protected:
   virtual uint32_t wordsize(void) const
   {
@@ -4699,6 +4692,16 @@ protected:
   virtual bool is_erasable(void) const;
 public:
   virtual const std::string payload_type_name(void) const { return "unixprocess"; };
+  void add_process_argument (const std::string& arg);
+  /// the methods related to limits return the old one, and if given a >0 number set it
+  // if a process is running, gives it current .rlim_cur as obtained with prlimit....
+  unsigned address_space_megabytes_limit(unsigned newlimit=0);
+  unsigned file_size_megabytes_limit(unsigned newlimit=0);
+  unsigned core_megabytes_limit(unsigned newlimit=0);
+  void forbid_core_dump();	// force the CORE limit to 0
+  unsigned nofile_limit(unsigned newlimit=0);
+  const Rps_ClosureValue get_process_closure(void) const;
+  void put_process_closure(Rps_ClosureValue);
 #warning incomplete Rps_PayloadUnixProcess
   /*** TODO:
    *
