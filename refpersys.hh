@@ -4644,6 +4644,7 @@ public:
 };  // end of Rps_PayloadTasklet
 
 
+typedef std::vector<std::string> rps_cppvect_of_string_t;
 
 /// the transient payload for unix processes (see PaylUnixProcess)
 class Rps_PayloadUnixProcess : public Rps_Payload
@@ -4652,9 +4653,9 @@ class Rps_PayloadUnixProcess : public Rps_Payload
   friend class Rps_PayloadAgenda;
   std::atomic<pid_t> _unixproc_pid;
   std::string _unixproc_exe;
-  std::vector<std::string> _unixproc_argv;
+  rps_cppvect_of_string_t _unixproc_argv;
   friend Rps_PayloadUnixProcess*
-  Rps_QuasiZone::rps_allocate1<Rps_PayloadUnixProcess,Rps_ObjectZone*>(Rps_ObjectZone*);
+  Rps_QuasiZone::rps_allocate3<Rps_PayloadUnixProcess,Rps_ObjectZone*,std::string,rps_cppvect_of_string_t>(Rps_ObjectZone*,std::string,rps_cppvect_of_string_t);
 #warning Rps_PayloadUnixProcess may need cooperation with agenda.
   /*** TODO:
    *
@@ -4666,9 +4667,9 @@ class Rps_PayloadUnixProcess : public Rps_Payload
    **/
 public:
   Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*ld); // impossible
-  Rps_PayloadUnixProcess(Rps_ObjectZone*owner, std::string exec, std::vector<std::string> argv);
+  Rps_PayloadUnixProcess(Rps_ObjectZone*owner, std::string exec, rps_cppvect_of_string_t argv);
   virtual ~Rps_PayloadUnixProcess();
-  static Rps_ObjectRef make_dormant_unix_process_object(Rps_CallFrame*curf,const std::string& exec, const std::vector<std::string>& progargs);
+  static Rps_ObjectRef make_dormant_unix_process_object(Rps_CallFrame*curf,const std::string& exec, const rps_cppvect_of_string_t& progargs);
 protected:
   virtual uint32_t wordsize(void) const
   {
