@@ -1386,6 +1386,11 @@ rps_run_application(int &argc, char **argv)
 		 " ... REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
 		 rps_gui_script_executable, (long)getpid(), rps_gitid,
 		 rps_topdirectory, rps_fifo_prefix.c_str());
+      std::string fifo_cmd_path, fifo_out_path;
+      fifo_cmd_path = rps_get_fifo_prefix() + ".cmd";
+      fifo_out_path = rps_get_fifo_prefix() + ".out";
+      /* TODO: use rps_is_fifo to avoid useless mkfifo */
+#warning should mkfifo here and fill 
       fflush(nullptr);
       pid_t guipid = fork();
       if (guipid < 0)
