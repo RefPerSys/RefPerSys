@@ -237,6 +237,7 @@ struct rps_fifo_fdpair_st {
 extern "C" std::string rps_get_fifo_prefix(void);
 extern "C" struct rps_fifo_fdpair_st rps_get_gui_fifo_fds(void);
 extern "C" pid_t rps_get_gui_pid(void);
+extern "C" bool rps_is_fifo(std::string path); // in eventloop_rps.cc
 
 // when set, no GUI is running
 extern "C" bool rps_batch;

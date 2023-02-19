@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2022 The Reflective Persistent System Team
+ *      © Copyright 2022 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -28,7 +28,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ ***************************************************************************0***/
 
 
 #include "refpersys.hh"
@@ -43,27 +43,36 @@ const char rps_jsonrpc_date[]= __DATE__;
 
 extern "C" void jsonrpc_initialize_rps(void);
 
+bool
+rps_is_fifo(std::string path)
+{
+  struct stat s = {};
+  if (!stat(path.c_str(), &s))
+    return (s.st_mode & S_IFMT) == S_IFIFO;
+  return false;
+} // end rps_is_fifo
 
 /**
    Function jsonrpc_initialize_rps is called once from main, when
-   rps_fifo_prefix is not empty. It is expected to create the FIFOs if
-   they dont exist ....
+   rps_fifo_prefix is not empty. The FIFOs have been created in
+   main_rps.cc...
 ***/
 void
 jsonrpc_initialize_rps(void)
 {
+  RPS_ASSERT(!rps_get_fifo_prefix().empty());
 #warning unimplemented  jsonrpc_initialize_rps
   RPS_FATALOUT("unimplemented jsonrpc_initialize_rps with fifo prefix "
                << rps_get_fifo_prefix());
 } // end jsonrpc_initialize_rps
 
- void
- rps_event_loop(void)
- {
+void
+rps_event_loop(void)
+{
 #warning unimplemented rps_event_loop
-   RPS_ASSERT(rps_is_main_thread()); 
-   RPS_FATALOUT("unimplemented rps_event_loop");
- } // end rps_event_loop
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_FATALOUT("unimplemented rps_event_loop");
+} // end rps_event_loop
 
 
 
