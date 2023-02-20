@@ -177,6 +177,7 @@ Rps_GarbageCollector::mark_gcroots(void)
   if (rpskob##Oid)				\
     this->mark_root_objectref(rpskob##Oid);	\
 };
+  Rps_PayloadUnixProcess::gc_mark_active_processes(*this);
 #include "generated/rps-constants.hh"
   ///
   if (gc_rootmarkers)
