@@ -235,6 +235,7 @@ struct rps_fifo_fdpair_st {
   int fifo_ui_rout; // the outputs read from the GUI process
 };
 extern "C" std::string rps_get_fifo_prefix(void);
+extern "C" void rps_do_create_fifos(std::string prefix);
 extern "C" struct rps_fifo_fdpair_st rps_get_gui_fifo_fds(void);
 extern "C" pid_t rps_get_gui_pid(void);
 extern "C" bool rps_is_fifo(std::string path); // in eventloop_rps.cc

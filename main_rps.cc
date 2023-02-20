@@ -381,7 +381,50 @@ rps_get_gui_pid(void)
   return rps_gui_pid;
 } // end rps_get_gui_pid
 
-#warning missing code to deal with rps_fifo_prefix and --interface-fifo=<FIFO> program option
+
+static void
+rps_remove_fifos(void)
+{
+  std::string cmdfifo = rps_get_fifo_prefix()+".cmd";
+  if (rps_is_fifo(cmdfifo))
+  remove(cmdfifo.c_str());
+  std::string outfifo = rps_get_fifo_prefix()+".out";
+  if (rps_is_fifo(outfifo))
+  remove(outfifo.c_str());
+} // end rps_remove_fifos
+
+void
+rps_do_create_fifos(std::string prefix)
+{
+  int cmdfd= -1;
+  int outfd= -1;
+  bool rmatex = false;
+  if (rps_fifo_prefix.empty())
+    rps_fifo_prefix = prefix;
+  std::string cmdfifo = rps_get_fifo_prefix()+".cmd";
+  std::string outfifo = rps_get_fifo_prefix()+".out";
+  if (!rps_is_fifo(cmdfifo)) {
+    if (mkfifo(cmdfifo.c_str(), 0660)<0)
+      RPS_FATALOUT("failed to create command FIFO " << cmdfifo << ":" << strerror(errno));
+    rmatex = true;
+  }
+  cmdfd = open(cmdfifo.c_str(), 0660 | O_CLOEXEC);
+  if (cmdfd<0) 
+    RPS_FATALOUT("failed to open command FIFO " << cmdfifo << ":" << strerror(errno));
+  if (!rps_is_fifo(outfifo)) {
+    if (mkfifo(outfifo.c_str(), 0660)<0)
+      RPS_FATALOUT("failed to create output FIFO " << outfifo << ":" << strerror(errno));
+    rmatex = true;
+  }
+  outfd = open(outfifo.c_str(), 0440 | O_CLOEXEC);
+  if (outfd<0) 
+    RPS_FATALOUT("failed to open output FIFO " << outfifo << ":" << strerror(errno));
+  if (rmatex)
+    atexit(rps_remove_fifos);
+  rps_fifo_pair.fifo_ui_wcmd = cmdfd;
+  rps_fifo_pair.fifo_ui_rout = outfd;
+} // end rps_do_create_fifos
+
 
 
 unsigned rps_call_frame_depth(const Rps_CallFrame*callframe)
@@ -1357,7 +1400,10 @@ rps_run_application(int &argc, char **argv)
                     << Rps_ShowCallFrame(&_));
       rps_small_quick_tests_after_load();
       RPS_DEBUG_LOG(LOWREP, "rps_run_application after running rps_small_quick_tests_after_load");
-    }
+    };
+  /// create the fifos if a prefix is given with 
+   if (!rps_fifo_prefix.empty())
+     rps_do_create_fifos(rps_fifo_prefix);
   //// running the given Unix command after load
   if (rps_run_command_after_load)
     {
