@@ -301,6 +301,41 @@ Rps_PayloadUnixProcess::make_dormant_unix_process_object(Rps_CallFrame*callerfra
   return _f.obres;
 } // end Rps_PayloadUnixProcess::make_dormant_unix_process_object
 
+std::set<Rps_PayloadUnixProcess*>
+Rps_PayloadUnixProcess::set_of_runnable_processes;
+
+std::mutex
+Rps_PayloadUnixProcess::mtx_of_runnable_processes;
+std::deque<Rps_PayloadUnixProcess*>
+Rps_PayloadUnixProcess::queue_of_runnable_processes;
+
+void
+Rps_PayloadUnixProcess::gc_mark_active_processes(Rps_GarbageCollector&gc)
+{
+  std::lock_guard<std::mutex> gu(mtx_of_runnable_processes);
+  /// Both set_of_runnable_processes and queue_of_runnable_processes
+  /// should contain the same objects, but for sure we want to mark
+  /// both.
+  for (Rps_PayloadUnixProcess*paylup : set_of_runnable_processes)
+    {
+      paylup->owner()->gc_mark(gc);
+    }
+  for (Rps_PayloadUnixProcess*paylup : queue_of_runnable_processes)
+    {
+      paylup->owner()->gc_mark(gc);
+    }
+} // end Rps_PayloadUnixProcess::gc_mark_active_processes
+
+void
+Rps_PayloadUnixProcess::start_process(Rps_CallFrame*callframe)
+{
+  RPS_ASSERT(!callframe || callframe->is_good_call_frame());
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  if (_unixproc_pid.load()>0)
+    throw std::runtime_error("already running Rps_PayloadUnixProcess");
+  /// code in eventloop_rps.cc should be related.
+  #warning incomplete Rps_PayloadUnixProcess::start_process 
+} // end Rps_PayloadUnixProcess::start_process
 
 ///////////////////////////////////////
 ///// transient popened file payload

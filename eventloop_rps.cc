@@ -74,6 +74,7 @@ rps_event_loop(void)
 {
 #warning unimplemented rps_event_loop
   RPS_ASSERT(rps_is_main_thread());
+#warning related file transietobj_rps.cc
   RPS_FATALOUT("unimplemented rps_event_loop");
 } // end rps_event_loop
 
