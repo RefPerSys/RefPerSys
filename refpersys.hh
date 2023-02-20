@@ -4670,6 +4670,9 @@ class Rps_PayloadUnixProcess : public Rps_Payload
   std::atomic<unsigned> _unixproc_core_mb_limit; // megabytes for  setrlimit(RRLIMIT_CORE, ...) in child
   std::atomic<bool> _unixproc_forbid_core;
   std::atomic<unsigned> _unixproc_nofile_limit; // fds for  setrlimit(RRLIMIT_NOFILE, ...) in child
+  static std::set<Rps_PayloadUnixProcess*> set_of_runnable_processes;
+  static std::deque<Rps_PayloadUnixProcess*> queue_of_runnable_processes;
+  static std::mutex mtx_of_runnable_processes;
   friend Rps_PayloadUnixProcess*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadUnixProcess,Rps_ObjectZone*>(Rps_ObjectZone*);
 #warning Rps_PayloadUnixProcess may need cooperation with agenda.
@@ -4705,9 +4708,11 @@ public:
   unsigned core_megabytes_limit(unsigned newlimit=0);
   void forbid_core_dump();	// force the CORE limit to 0
   unsigned nofile_limit(unsigned newlimit=0);
+  /// the process closure is called when the process has ended...
   const Rps_ClosureValue get_process_closure(void) const;
   void put_process_closure(Rps_ClosureValue);
-#warning incomplete Rps_PayloadUnixProcess
+  void start_process(Rps_CallFrame*callframe);
+  static void gc_mark_active_processes(Rps_GarbageCollector&);
   /*** TODO:
    *
    * We probably need a static member function to fork a unix process,
