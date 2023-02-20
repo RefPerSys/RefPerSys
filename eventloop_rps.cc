@@ -66,6 +66,9 @@ jsonrpc_initialize_rps(void)
                << rps_get_fifo_prefix());
 } // end jsonrpc_initialize_rps
 
+/* TODO: an event loop using poll(2) and also handling SIGCHLD using
+   https://man7.org/linux/man-pages/man2/signalfd.2.html
+ */
 void
 rps_event_loop(void)
 {
