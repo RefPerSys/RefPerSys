@@ -40,6 +40,7 @@ const char rps_jsonrpc_gitid[]= RPS_GITID;
 extern "C" const char rps_jsonrpc_date[];
 const char rps_jsonrpc_date[]= __DATE__;
 
+static int sigfd;		// file descriptor for https://man7.org/linux/man-pages/man2/signalfd.2.html
 
 extern "C" void jsonrpc_initialize_rps(void);
 
@@ -76,7 +77,7 @@ jsonrpc_initialize_rps(void)
    * the RefPerSys process.
   **/
   RPS_FATALOUT("unimplemented jsonrpc_initialize_rps with fifo prefix "
-               << rps_get_fifo_prefix() << " and wcmd.fd#" << fdp.fifo_ui_wcmd " << and rout.fd#" << fdp.fifo_ui_rout);
+               << rps_get_fifo_prefix() << " and wcmd.fd#" << fdp.fifo_ui_wcmd  << " and rout.fd#" << fdp.fifo_ui_rout);
 } // end jsonrpc_initialize_rps
 
 /* TODO: an event loop using poll(2) and also handling SIGCHLD using
@@ -87,7 +88,17 @@ rps_event_loop(void)
 {
 #warning unimplemented rps_event_loop
   RPS_ASSERT(rps_is_main_thread());
-#warning related file transietobj_rps.cc
+  sigset_t msk={};
+  sigemptyset(&msk);
+  sigaddset(&msk, SIGCHLD);
+  sigaddset(&msk, SIGTERM);
+  sigaddset(&msk, SIGXCPU);
+  sigaddset(&msk, SIGALRM);
+  sigaddset(&msk, SIGVTALRM);
+  sigfd = signalfd(-1, &msk, SFD_CLOEXEC);
+  if (sigfd<0)
+    RPS_FATALOUT("failed to call signalfd:" << strerror(errno));
+#warning related file transientobj_rps.cc
   RPS_FATALOUT("unimplemented rps_event_loop");
 } // end rps_event_loop
 

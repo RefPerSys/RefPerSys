@@ -109,6 +109,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <sys/personality.h>
+#include <sys/signalfd.h>
 
 extern "C" {
   // https://curl.se/libcurl/ is a web client library
