@@ -61,9 +61,22 @@ void
 jsonrpc_initialize_rps(void)
 {
   RPS_ASSERT(!rps_get_fifo_prefix().empty());
+  struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
+  if (fdp.fifo_ui_wcmd <= 0)
+    RPS_FATALOUT("invalid command FIFO fd " << fdp.fifo_ui_wcmd << " with FIFO prefix " << rps_get_fifo_prefix());
+  if (fdp.fifo_ui_rout <= 0)
+    RPS_FATALOUT("invalid output FIFO fd " << fdp.fifo_ui_rout << " with FIFO prefix " << rps_get_fifo_prefix());
 #warning unimplemented  jsonrpc_initialize_rps
+  /** TODO: we probably want to make a first JsonRpc with some meta
+   *  data, e.g. a JSON grouping information from __timestamp.c and we
+   *  need to document the JSONRPC protocol between the GUI software
+   *  and RefPerSys
+   *
+   * That JSONRPC protocol should also be able to "disconnect" from
+   * the RefPerSys process.
+  **/
   RPS_FATALOUT("unimplemented jsonrpc_initialize_rps with fifo prefix "
-               << rps_get_fifo_prefix());
+               << rps_get_fifo_prefix() << " and wcmd.fd#" << fdp.fifo_ui_wcmd " << and rout.fd#" << fdp.fifo_ui_rout);
 } // end jsonrpc_initialize_rps
 
 /* TODO: an event loop using poll(2) and also handling SIGCHLD using
