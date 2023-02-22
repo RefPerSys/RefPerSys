@@ -41,6 +41,7 @@ extern "C" const char rps_jsonrpc_date[];
 const char rps_jsonrpc_date[]= __DATE__;
 
 static int sigfd;		// file descriptor for https://man7.org/linux/man-pages/man2/signalfd.2.html
+static int timfd;		// file descriptor for https://man7.org/linux/man-pages/man2/timerfd_create.2.html
 
 extern "C" void jsonrpc_initialize_rps(void);
 
@@ -88,7 +89,7 @@ rps_event_loop(void)
 {
 #warning unimplemented rps_event_loop
   RPS_ASSERT(rps_is_main_thread());
-  sigset_t msk={};
+  sigset_t msk= {};
   sigemptyset(&msk);
   sigaddset(&msk, SIGCHLD);
   sigaddset(&msk, SIGTERM);
@@ -96,9 +97,14 @@ rps_event_loop(void)
   sigaddset(&msk, SIGALRM);
   sigaddset(&msk, SIGVTALRM);
   sigfd = signalfd(-1, &msk, SFD_CLOEXEC);
-  if (sigfd<0)
+  if (sigfd<=0)
     RPS_FATALOUT("failed to call signalfd:" << strerror(errno));
-#warning related file transientobj_rps.cc
+  timfd = timerfd_create(CLOCK_REALTIME_ALARM, TFD_CLOEXEC);
+  if (timfd<=0)
+    RPS_FATALOUT("failed to call timerfd:" << strerror(errno));
+  /*TODO: cooperation with transientobj_rps.cc ... */
+#warning see related file transientobj_rps.cc, missing code
+  /*TODO: use Rps_PayloadUnixProcess::do_on_active_process_queue to collect file descriptors inside such payloads */
   RPS_FATALOUT("unimplemented rps_event_loop");
 } // end rps_event_loop
 
