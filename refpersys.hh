@@ -110,6 +110,7 @@
 #include <stdlib.h>
 #include <sys/personality.h>
 #include <sys/signalfd.h>
+#include <sys/timerfd.h>
 
 extern "C" {
   // https://curl.se/libcurl/ is a web client library
@@ -4714,6 +4715,7 @@ public:
   void put_process_closure(Rps_ClosureValue);
   void start_process(Rps_CallFrame*callframe);
   static void gc_mark_active_processes(Rps_GarbageCollector&);
+  static void do_on_active_process_queue(std::function<void(Rps_ObjectRef,Rps_CallFrame*,void*)> fun, Rps_CallFrame*callframe, void*client_data=nullptr);
   /*** TODO:
    *
    * We probably need a static member function to fork a unix process,

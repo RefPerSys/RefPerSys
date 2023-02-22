@@ -334,9 +334,22 @@ Rps_PayloadUnixProcess::start_process(Rps_CallFrame*callframe)
   if (_unixproc_pid.load()>0)
     throw std::runtime_error("already running Rps_PayloadUnixProcess");
   /// code in eventloop_rps.cc should be related.
-  #warning incomplete Rps_PayloadUnixProcess::start_process 
+#warning incomplete Rps_PayloadUnixProcess::start_process
 } // end Rps_PayloadUnixProcess::start_process
 
+void
+Rps_PayloadUnixProcess::do_on_active_process_queue(std::function<void(Rps_ObjectRef, Rps_CallFrame*,void*)> fun,
+    Rps_CallFrame*callframe, void*client_data)
+{
+  std::lock_guard<std::mutex> gu(mtx_of_runnable_processes);
+  RPS_ASSERT(!callframe || callframe->is_good_call_frame());
+  for (Rps_PayloadUnixProcess*paylup : queue_of_runnable_processes)
+    {
+      Rps_ObjectRef obown = paylup->owner();
+      std::lock_guard<std::recursive_mutex> gu(*obown->objmtxptr());
+      fun(obown,callframe,client_data);
+    }
+} // end Rps_PayloadUnixProcess::do_on_active_process_queue
 ///////////////////////////////////////
 ///// transient popened file payload
 Rps_PayloadPopenedFile::Rps_PayloadPopenedFile(Rps_ObjectZone*owner, const std::string command, bool reading)  // See PaylPopenedFile
