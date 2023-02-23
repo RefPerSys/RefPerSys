@@ -244,12 +244,22 @@ Rps_PayloadUnixProcess::put_process_closure(Rps_ClosureValue closv)
   _unixproc_closure = closv;
 } // end Rps_PayloadUnixProcess::put_process_closure
 
-#warning missing C++ code for Rps_PayloadUnixProcess::get_input_closure
+const Rps_ClosureValue
+Rps_PayloadUnixProcess::get_input_closure(void) const
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  return _unixproc_inputclos;
+} // end Rps_PayloadUnixProcess::get_input_closure
 
 #warning missing C++ code for Rps_PayloadUnixProcess::put_input_closure
 
 
-#warning missing C++ code for Rps_PayloadUnixProcess::get_output_closure
+const Rps_ClosureValue
+Rps_PayloadUnixProcess::get_output_closure(void) const
+{
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  return _unixproc_outputclos;
+} // end Rps_PayloadUnixProcess::get_output_closure
 
 #warning missing C++ code for Rps_PayloadUnixProcess::put_output_closure
 
