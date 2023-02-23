@@ -49,6 +49,10 @@ Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner)  // See Pay
     _unixproc_exe(),
     _unixproc_argv(),
     _unixproc_closure(),
+    _unixproc_inputclos(),
+    _unixproc_outputclos(),
+    _unixproc_pipeinputfd(-1),
+    _unixproc_pipeoutputfd(-1),
     _unixproc_cpu_time_limit(0),
     _unixproc_elapsed_time_limit(0),
     _unixproc_start_time(0),
@@ -68,6 +72,10 @@ Rps_PayloadUnixProcess::Rps_PayloadUnixProcess(Rps_ObjectZone*owner, Rps_Loader*
     _unixproc_exe(),
     _unixproc_argv(),
     _unixproc_closure(),
+    _unixproc_inputclos(),
+    _unixproc_outputclos(),
+    _unixproc_pipeinputfd(-1),
+    _unixproc_pipeoutputfd(-1),
     _unixproc_cpu_time_limit(0),
     _unixproc_elapsed_time_limit(0),
     _unixproc_start_time(0),
@@ -235,6 +243,16 @@ Rps_PayloadUnixProcess::put_process_closure(Rps_ClosureValue closv)
   std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
   _unixproc_closure = closv;
 } // end Rps_PayloadUnixProcess::put_process_closure
+
+#warning missing C++ code for Rps_PayloadUnixProcess::get_input_closure
+
+#warning missing C++ code for Rps_PayloadUnixProcess::put_input_closure
+
+
+#warning missing C++ code for Rps_PayloadUnixProcess::get_output_closure
+
+#warning missing C++ code for Rps_PayloadUnixProcess::put_output_closure
+
 
 
 /// static member function to create a dormant (potential, not yet forked) unix process object

@@ -4663,6 +4663,10 @@ class Rps_PayloadUnixProcess : public Rps_Payload
   std::string _unixproc_exe;
   rps_cppvect_of_string_t _unixproc_argv;
   Rps_ClosureValue _unixproc_closure; // handle termination of the Unix process
+  Rps_ClosureValue _unixproc_inputclos; // handle input condition
+  Rps_ClosureValue _unixproc_outputclos; // handle output condition
+  int _unixproc_pipeinputfd;		 // input pipe(2)
+  int _unixproc_pipeoutputfd;		 // output pipe(2)
   std::atomic<unsigned> _unixproc_cpu_time_limit; // for setrlimit(RLIMIT_CPU, ...) in child
   std::atomic<unsigned> _unixproc_elapsed_time_limit;
   std::atomic<time_t> _unixproc_start_time;
@@ -4713,6 +4717,22 @@ public:
   /// the process closure is called when the process has ended...
   const Rps_ClosureValue get_process_closure(void) const;
   void put_process_closure(Rps_ClosureValue);
+  /// the input closure is called when the process needs some input on
+  /// its stdin, which is then some pipe(2). The closure is given the
+  /// owner of the Rps_PayloadUnixProcess as argument and should
+  /// return a string, a number, a Json which gets written on the
+  /// pipe.
+  const Rps_ClosureValue get_input_closure(void) const;
+  // set the input closure, should be called before forking.
+  void put_input_closure(Rps_ClosureValue);
+  /// the output closure is called when the process give some output on
+  /// its stdout, which is then some pipe(2). The closure is given the
+  /// owner of the Rps_PayloadUnixProcess as argument
+  const Rps_ClosureValue get_output_closure(void) const;
+  // set the input closure, should be called before forking.
+  void put_output_closure(Rps_ClosureValue);
+#warning missing member functions related to output pipe...
+  /// fork the process
   void start_process(Rps_CallFrame*callframe);
   static void gc_mark_active_processes(Rps_GarbageCollector&);
   static void do_on_active_process_queue(std::function<void(Rps_ObjectRef,Rps_CallFrame*,void*)> fun, Rps_CallFrame*callframe, void*client_data=nullptr);
