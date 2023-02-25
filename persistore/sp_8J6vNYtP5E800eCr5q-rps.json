@@ -21,7 +21,7 @@
 {
  "format" : "RefPerSysFormat2019A",
  "jsoncpp-version" : "1.9.5",
- "nbobjects" : 188,
+ "nbobjects" : 189,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -2172,7 +2172,12 @@
   	}
   ],
  "class" : "_3FztYBKABxZ02DUPRm",
- "dictionary" : [],
+ "dictionary" : [
+  	{
+  		"str" : "help",
+  		"val" : "_7Zk6KbX2cnw035YU2E"
+  	}
+  ],
  "payload" : "string_dictionary"
 }
 //-ob_5dkRQtwGUHs02MVQT0
@@ -2854,6 +2859,25 @@
 //-ob_7b8jzCpOStA04e0jxs
 
 
+//+ob_7eiD1Fcg6me03Ohnmv
+//∈symbol
+{
+ "oid": "_7eiD1Fcg6me03Ohnmv",
+ "mtime": 1677325336.98,
+ "attrs" : [
+  	{
+  		"at" : "_1EBVGSfW2m200z18rx",
+  		"va" : "help"
+  	}
+  ],
+ "class" : "_36I1BY2NetN03WjrOv",
+ "payload" : "symbol",
+ "symb_name" : "help",
+ "symb_val" : "_7Zk6KbX2cnw035YU2E"
+}
+//-ob_7eiD1Fcg6me03Ohnmv
+
+
 //+ob_7iVRsTR8u3D00Cy0hp
 //∈symbol
 {
@@ -3070,11 +3094,15 @@
 //∈repl_command
 {
  "oid": "_7Zk6KbX2cnw035YU2E",
- "mtime": 1610432725.07,
+ "mtime": 1677325336.98,
  "attrs" : [
   	{
   		"at" : "_1EBVGSfW2m200z18rx",
   		"va" : "help"
+  	},
+  	{
+  		"at" : "_36I1BY2NetN03WjrOv",
+  		"va" : "_7eiD1Fcg6me03Ohnmv"
   	},
   	{
   		"at" : "_4I8GwXXfO3P01cdzyd",
