@@ -44,6 +44,11 @@ static int sigfd;		// file descriptor for https://man7.org/linux/man-pages/man2/
 static int timfd;		// file descriptor for https://man7.org/linux/man-pages/man2/timerfd_create.2.html
 
 
+extern "C" std::atomic<bool> rps_stop_event_loop;
+
+std::atomic<bool> rps_stop_event_loop;
+
+const int rps_poll_delay_millisec = 500;
 
 #define RPS_MAXPOLL_FD 128
 
@@ -94,13 +99,13 @@ rps_event_loop(void)
   int nbpoll=0;
   struct pollfd pollarr[RPS_MAXPOLL_FD+1];
   memset ((void*)&pollarr, 0, sizeof(pollarr));
-  std::array<std::function<void(int/*fd*/)>,RPS_MAXPOLL_FD+1> handlarr;
+  std::array<std::function<void(int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
   RPS_LOCALFRAME(/*descr:*/nullptr,
-		 /*callerframe:*/nullptr,
-		 /** locals **/
-		 Rps_Value valarr[RPS_MAXPOLL_FD+1];
-		 Rps_ClosureValue closarr[RPS_MAXPOLL_FD+1];
-		 );
+                           /*callerframe:*/nullptr,
+                           /** locals **/
+                           Rps_Value valarr[RPS_MAXPOLL_FD+1];
+                           Rps_ClosureValue closarr[RPS_MAXPOLL_FD+1];
+                );
 #warning incomplete rps_event_loop
   RPS_ASSERT(rps_is_main_thread());
   sigset_t msk= {};
@@ -116,16 +121,93 @@ rps_event_loop(void)
   timfd = timerfd_create(CLOCK_REALTIME_ALARM, TFD_CLOEXEC);
   if (timfd<=0)
     RPS_FATALOUT("failed to call timerfd:" << strerror(errno));
-  struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
-  if (fdp.fifo_ui_wcmd >0) {
-    /// could copy paste most of the few lines below
-    RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
-    int pix = nbpoll++;
-    pollarr[pix].fd = fdp.fifo_ui_wcmd;
-    pollarr[pix].events = POLLOUT;
-  };
-  if (fdp.fifo_ui_rout>0) {
-  };  
+  while (!rps_stop_event_loop.load())
+    {
+      memset ((void*)&pollarr, 0, sizeof(pollarr));
+      nbpoll=0;
+      struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
+      if (fdp.fifo_ui_wcmd >0)
+        {
+          /// JSONRPC commands written from RefPerSys to the GUI process...
+          /// could copy paste most of the few lines below
+          RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
+          int pix = nbpoll++;
+          pollarr[pix].fd = fdp.fifo_ui_wcmd;
+          pollarr[pix].events = POLLOUT;
+          handlarr[pix] = [&](int fd, short rev)
+          {
+            RPS_ASSERT(fd ==  pollarr[pix].fd);
+#warning missing code to handle JsonRpc output to the GUI process
+          };
+        };
+      if (fdp.fifo_ui_rout>0)
+        {
+          /// JSONRPC responses/events sent by the GUI process to RefPerSys
+          RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
+          int pix = nbpoll++;
+          pollarr[pix].fd = fdp.fifo_ui_rout;
+          pollarr[pix].events = POLLIN;
+          handlarr[pix] = [&](int fd, short rev)
+          {
+            char buf[1024];
+            RPS_ASSERT(fd ==  pollarr[pix].fd);
+            /* TODO: should read(2) */
+            memset(buf, 0, sizeof(buf));
+            int nbr = read(fd, buf, sizeof(buf));
+#warning missing code to handle JsonRpc input from the GUI process
+          };
+        };
+      if (sigfd>0)
+        {
+          /// signals transformed to data with signalfd(2)
+          RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
+          int pix = nbpoll++;
+          pollarr[pix].fd = sigfd;
+          pollarr[pix].events = POLLIN;
+          handlarr[pix] = [&](int fd, short rev)
+          {
+            struct signalfd_siginfo infsig;
+            memset(&infsig, 0, sizeof(infsig));
+            RPS_ASSERT(fd ==  pollarr[pix].fd && fd == sigfd);
+            int nbr = read(fd, (void*)&infsig, sizeof(infsig));
+#warning missing code to handle signalfd...
+          };
+        }
+      if (timfd>0)
+        {
+          /// timers transformed to data with timerfd_create(2)
+          RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
+          int pix = nbpoll++;
+          pollarr[pix].fd = timfd;
+          pollarr[pix].events = POLLIN;
+          handlarr[pix] = [&](int fd, short rev)
+          {
+            RPS_ASSERT(fd ==  pollarr[pix].fd);
+            uint64_t timbuf[16];
+            memset (&timbuf, 0, sizeof(timbuf));
+            int nbr = read(fd, (void*)&timbuf, sizeof(timbuf));
+#warning missing code to handle timerfd...
+          };
+        };
+      errno = 0;
+      int respoll = poll(pollarr, nbpoll, rps_poll_delay_millisec);
+      if (respoll>0)
+        {
+          for (int pix=0; pix<nbpoll; pix++)
+            {
+              if (pollarr[pix].revents > 0)
+                {
+                  if (handlarr[pix])
+                    handlarr[pix](pollarr[pix].fd, pollarr[pix].revents);
+                };
+            }
+        }
+      else if (respoll==0)   // timed out poll
+        {
+        }
+      else if (errno != EINTR)
+        RPS_FATALOUT("rps_event_loop failure : " << strerror(errno));
+    };		   // end while not rps_stop_event_loop
   /*TODO: cooperation with transientobj_rps.cc ... */
 #warning incomplete rps_event_loop see related file transientobj_rps.cc, missing code
   /*TODO: use Rps_PayloadUnixProcess::do_on_active_process_queue to collect file descriptors inside such payloads */
