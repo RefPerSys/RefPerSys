@@ -114,7 +114,7 @@ rps_publish_me(const char*url)
   RPS_DEBUG_LOG(REPL, "rps_publish_me gitname " << Rps_QuotedC_String(gitname)
                 << " gitemail " << Rps_QuotedC_String(gitemail));
   /// first HTTP interaction GET - obtain the status as JSON
-  std::string topurlstr ({url});
+  std::string topurlstr {url};
   std::string statusurlstr = topurlstr;
   int statuslen = statusurlstr.size();
   if (statuslen>0 && statusurlstr[statuslen-1]=='/')
