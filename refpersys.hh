@@ -108,6 +108,7 @@
 #include <pthread.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <sys/poll.h>
 #include <sys/personality.h>
 #include <sys/signalfd.h>
 #include <sys/timerfd.h>

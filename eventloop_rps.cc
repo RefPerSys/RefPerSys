@@ -43,6 +43,10 @@ const char rps_jsonrpc_date[]= __DATE__;
 static int sigfd;		// file descriptor for https://man7.org/linux/man-pages/man2/signalfd.2.html
 static int timfd;		// file descriptor for https://man7.org/linux/man-pages/man2/timerfd_create.2.html
 
+
+
+#define RPS_MAXPOLL_FD 128
+
 extern "C" void jsonrpc_initialize_rps(void);
 
 bool
@@ -87,7 +91,17 @@ jsonrpc_initialize_rps(void)
 void
 rps_event_loop(void)
 {
-#warning unimplemented rps_event_loop
+  int nbpoll=0;
+  struct pollfd pollarr[RPS_MAXPOLL_FD+1];
+  memset ((void*)&pollarr, 0, sizeof(pollarr));
+  std::array<std::function<void(int/*fd*/)>,RPS_MAXPOLL_FD+1> handlarr;
+  RPS_LOCALFRAME(/*descr:*/nullptr,
+		 /*callerframe:*/nullptr,
+		 /** locals **/
+		 Rps_Value valarr[RPS_MAXPOLL_FD+1];
+		 Rps_ClosureValue closarr[RPS_MAXPOLL_FD+1];
+		 );
+#warning incomplete rps_event_loop
   RPS_ASSERT(rps_is_main_thread());
   sigset_t msk= {};
   sigemptyset(&msk);
@@ -102,8 +116,18 @@ rps_event_loop(void)
   timfd = timerfd_create(CLOCK_REALTIME_ALARM, TFD_CLOEXEC);
   if (timfd<=0)
     RPS_FATALOUT("failed to call timerfd:" << strerror(errno));
+  struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
+  if (fdp.fifo_ui_wcmd >0) {
+    /// could copy paste most of the few lines below
+    RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
+    int pix = nbpoll++;
+    pollarr[pix].fd = fdp.fifo_ui_wcmd;
+    pollarr[pix].events = POLLOUT;
+  };
+  if (fdp.fifo_ui_rout>0) {
+  };  
   /*TODO: cooperation with transientobj_rps.cc ... */
-#warning see related file transientobj_rps.cc, missing code
+#warning incomplete rps_event_loop see related file transientobj_rps.cc, missing code
   /*TODO: use Rps_PayloadUnixProcess::do_on_active_process_queue to collect file descriptors inside such payloads */
   RPS_FATALOUT("unimplemented rps_event_loop");
 } // end rps_event_loop
