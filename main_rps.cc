@@ -1571,6 +1571,18 @@ rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempo
 	     "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary %s#%d\"));\n",
 	     rps_shortgitid, _f.tempob->oid().to_string().c_str(), tcnt);
     fprintf (tfil, "} // end rps_do_plugin in %s\n", tempcppfilename);
+  fprintf (tfil, "\n\n\n");
+  fprintf (tfil,
+	   "/*********\n" //
+	   " **                 for Emacs...\n" //
+	   " ** Local-Variables: ;;\n" //
+	   " ** compile-command: \"%s -I%s -I/usr/local/include/  -I/usr/include/jsoncpp -std=gnu++17 -Wall -Wextra -Og -g -shared -fPIC ",
+	   rps_cxx_compiler_command, rps_topdirectory);
+  fprintf (tfil, "%s ", tempcppfilename);
+  fprintf (tfil, " -o /tmp/rpsplug_%s.so\" ;;\n",  _f.tempob->oid().to_string().c_str());
+  fprintf (tfil, //
+	   " ** End: ;;\n" //
+	   " ********/\n");
     fprintf (tfil, "\n\n\n // ********* eof %s *********\n", tempcppfilename);
     fflush (tfil);
     tfilsiz = ftell(tfil);
