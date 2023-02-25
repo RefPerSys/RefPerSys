@@ -4443,7 +4443,7 @@ extern "C" void rps_repl_lexer_test(void);
 
 extern "C" void rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec);
 
-extern "C" void rps_run_application();
+extern "C" void rps_run_application(int &argc, char **argv);
 
 ///// UTF8 encoded string output (in file scalar_rps.cc)
 /// output a C string in HTML encoding; if nl2br is true, every newline is output as <br/>
