@@ -1,5 +1,5 @@
 /****************************************************************
- * file main_rps.cc
+ * file agenda_rps.cc
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
@@ -34,10 +34,10 @@
 
 
 extern "C" const char rps_agenda_gitid[];
-const char rps_main_gitid[]= RPS_GITID;
+const char rps_agenda_gitid[]= RPS_GITID;
 
 extern "C" const char rps_agenda_date[];
-const char rps_main_date[]= __DATE__;
+const char rps_agenda_date[]= __DATE__;
 
 
 std::recursive_mutex Rps_Agenda::agenda_mtx_;
@@ -581,5 +581,7 @@ Rps_PayloadTasklet::is_erasable() const
   return true;
 } // end Rps_PayloadTasklet::is_erasable
 
+/// adding a pragma which works for both GCC and Clang
+#pragma message "compiled agenda_rps.cc"
 
 //// end of file agenda_rps.cc
