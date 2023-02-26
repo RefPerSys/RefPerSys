@@ -2092,7 +2092,7 @@ Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, Rps_Obj
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  callerframe,
                  Rps_ObjectRef obfound;
-		 );
+                );
   RPS_DEBUG_LOG(LOWREP, "find_object_by_oid oid=" << oid << " from "
                 << Rps_ShowCallFrame(&_)
                 << std::endl

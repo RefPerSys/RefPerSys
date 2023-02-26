@@ -114,10 +114,10 @@ rps_event_loop(void)
     RPS_FATALOUT("rps_event_loop has already been called " << nbcall << " times");
 
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*callerframe:*/RPS_NULL_CALL_FRAME, //
-		 /** locals **/
-		 Rps_Value valarr[RPS_MAXPOLL_FD+1];
-		 Rps_ClosureValue closarr[RPS_MAXPOLL_FD+1];
+                 /*callerframe:*/RPS_NULL_CALL_FRAME, //
+                 /** locals **/
+                 Rps_Value valarr[RPS_MAXPOLL_FD+1];
+                 Rps_ClosureValue closarr[RPS_MAXPOLL_FD+1];
                 );
 #warning incomplete rps_event_loop
   sigset_t msk= {};

@@ -669,14 +669,14 @@ Rps_Value
 Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*callerframe:*/callframe,
-		 Rps_Value res;
-		 Rps_ObjectRef obdictdelim;
-		 Rps_Value delimv;
-		 Rps_Value namev;
-		 Rps_ObjectRef lexkindob;
-		 Rps_Value lextokv;
-		 );
+                 /*callerframe:*/callframe,
+                 Rps_Value res;
+                 Rps_ObjectRef obdictdelim;
+                 Rps_Value delimv;
+                 Rps_Value namev;
+                 Rps_ObjectRef lexkindob;
+                 Rps_Value lextokv;
+                );
   const char*curp=nullptr;
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   std::string startpos = position_str();
@@ -1267,8 +1267,8 @@ Rps_Value
 Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*callerframe:*/callframe,
-		 Rps_Value lextokv;
+                 /*callerframe:*/callframe,
+                 Rps_Value lextokv;
                 );
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
@@ -1340,8 +1340,8 @@ void
 Rps_TokenSource::append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*callerframe:*/callframe,
-		 Rps_Value lextokv;
+                 /*callerframe:*/callframe,
+                 Rps_Value lextokv;
                 );
   _f.lextokv = tokenv;
   RPS_ASSERT(rps_is_main_thread());

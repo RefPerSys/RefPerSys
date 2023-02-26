@@ -981,15 +981,15 @@ Rps_Dumper::write_all_generated_files(void)
   write_generated_names_file();
   write_generated_constants_file();
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 du_callframe,
-		 Rps_Value dumpdirnamev;
-		 Rps_Value tempsuffixv;
-		 Rps_ObjectRef refpersysob;
-		 Rps_ObjectRef gencodselob;
-		 Rps_ObjectRef genstoreob;
-		 Rps_Value mainv;
-		 Rps_Value refpersysv;
-		 Rps_Value xtrav;
+                 du_callframe,
+                 Rps_Value dumpdirnamev;
+                 Rps_Value tempsuffixv;
+                 Rps_ObjectRef refpersysob;
+                 Rps_ObjectRef gencodselob;
+                 Rps_ObjectRef genstoreob;
+                 Rps_Value mainv;
+                 Rps_Value refpersysv;
+                 Rps_Value xtrav;
                 );
   _f.dumpdirnamev = Rps_StringValue(du_topdir);
   _f.tempsuffixv = Rps_StringValue(du_tempsuffix);
@@ -1289,8 +1289,8 @@ Rps_PayloadSpace::dump_scan(Rps_Dumper*du) const
 void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
-		 /*callerframe:*/callframe, //
-		 Rps_ObjectRef obdumper);
+                 /*callerframe:*/callframe, //
+                 Rps_ObjectRef obdumper);
   double startelapsed = rps_elapsed_real_time();
   double startcputime = rps_process_cpu_time();
   RPS_DEBUG_LOG(DUMP, "rps_dump_into start dirpath=" << dirpath
@@ -1428,12 +1428,12 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe,
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(restargs == nullptr);
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
-		 callerframe,
-		 Rps_ObjectRef sysob;
-		 Rps_Value dumpstrv;
-		 Rps_Value suffixstrv;
-		 Rps_ObjectRef dumpob;
-		 Rps_Value closurev;
+                 callerframe,
+                 Rps_ObjectRef sysob;
+                 Rps_Value dumpstrv;
+                 Rps_Value suffixstrv;
+                 Rps_ObjectRef dumpob;
+                 Rps_Value closurev;
                 );
   _f.sysob = arg0.as_object();
   _f.dumpstrv = arg1;

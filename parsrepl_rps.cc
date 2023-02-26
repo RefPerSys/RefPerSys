@@ -89,14 +89,14 @@ Rps_TokenSource::parse_symmetrical_binaryop(Rps_CallFrame*callframe,
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
-                           callframe,
-                           Rps_Value resexprsymv;
-                           Rps_Value lextokv;
-                           Rps_Value lexgotokv;
-                           Rps_Value leftv;
-                           Rps_Value rightv;
-                           Rps_ObjectRef binoperob;
-                           Rps_ObjectRef bindelimob;
+                 callframe,
+                 Rps_Value resexprsymv;
+                 Rps_Value lextokv;
+                 Rps_Value lexgotokv;
+                 Rps_Value leftv;
+                 Rps_Value rightv;
+                 Rps_ObjectRef binoperob;
+                 Rps_ObjectRef bindelimob;
                 );
   static long callcnt;
   long callnum= ++callcnt;
@@ -378,14 +378,14 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, Rps_ObjectRef polyoper, R
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 callframe,
-		 Rps_Value resexprv;
-		 Rps_Value lextokv;
-		 Rps_Value lexgotokv;
-		 Rps_Value leftv;
-		 Rps_Value curargv;
-		 Rps_ObjectRef operob;
-		 Rps_ObjectRef delimob;
+                 callframe,
+                 Rps_Value resexprv;
+                 Rps_Value lextokv;
+                 Rps_Value lexgotokv;
+                 Rps_Value leftv;
+                 Rps_Value curargv;
+                 Rps_ObjectRef operob;
+                 Rps_ObjectRef delimob;
                 );
   std::vector<Rps_Value> argvect;
   bool leftok = false;
@@ -500,9 +500,9 @@ Rps_TokenSource::parse_using_closure(Rps_CallFrame*callframe, Rps_ClosureValue c
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-                           /*callerframe:*/callframe,
-                           Rps_ClosureValue closv;
-                           Rps_Value resv;
+                 /*callerframe:*/callframe,
+                 Rps_ClosureValue closv;
+                 Rps_Value resv;
                 );
   _f.closv = closval;
   RPS_ASSERT(_f.closv.is_closure());
@@ -536,16 +536,16 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*callerframe:*/callframe,
-		 Rps_Value resexprv;
-		 Rps_Value lextokv;
-		 Rps_Value lexgotokv;
-		 Rps_Value leftv;
-		 Rps_Value rightv;
-		 Rps_ObjectRef lexkindob;
-		 Rps_ObjectRef ordelimob;
-		 Rps_ObjectRef oroperob;
-		 Rps_Value lexvalv;
+                 /*callerframe:*/callframe,
+                 Rps_Value resexprv;
+                 Rps_Value lextokv;
+                 Rps_Value lexgotokv;
+                 Rps_Value leftv;
+                 Rps_Value rightv;
+                 Rps_ObjectRef lexkindob;
+                 Rps_ObjectRef ordelimob;
+                 Rps_ObjectRef oroperob;
+                 Rps_Value lexvalv;
                 );
   std::vector<Rps_Value> disjvect;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
@@ -802,16 +802,16 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
   /// a disjunction is a sequence of one or more conjunct separated by
   /// && - the and operator
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*callerframe:*/callframe,
-		 Rps_Value resdisjv;
-		 Rps_Value lextokv;
-		 Rps_Value lexgotokv;
-		 Rps_Value leftv;
-		 Rps_Value rightv;
-		 Rps_ObjectRef lexkindob;
-		 Rps_ObjectRef ordelimob;
-		 Rps_ObjectRef oroperob;
-		 Rps_Value lexvalv;
+                 /*callerframe:*/callframe,
+                 Rps_Value resdisjv;
+                 Rps_Value lextokv;
+                 Rps_Value lexgotokv;
+                 Rps_Value leftv;
+                 Rps_Value rightv;
+                 Rps_ObjectRef lexkindob;
+                 Rps_ObjectRef ordelimob;
+                 Rps_ObjectRef oroperob;
+                 Rps_Value lexvalv;
                 );
   std::vector<Rps_Value> conjvect;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
@@ -1696,7 +1696,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
   long callnum= ++ callcnt;
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 callframe,
+                 callframe,
                  Rps_Value restermv;
                  Rps_Value lextokv;
                  Rps_Value lexopertokv;
@@ -2009,14 +2009,14 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
   long callnum= ++ callcnt;
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*callerframe:*/callframe,
-		 Rps_Value lextokv;
-		 Rps_Value lexgotokv;
-		 Rps_ObjectRef lexkindob;
-		 Rps_Value lexvalv;
-		 Rps_ObjectRef obres;
-		 Rps_ObjectRef obdelim;
-		 Rps_Value exprv;
+                 /*callerframe:*/callframe,
+                 Rps_Value lextokv;
+                 Rps_Value lexgotokv;
+                 Rps_ObjectRef lexkindob;
+                 Rps_Value lexvalv;
+                 Rps_ObjectRef obres;
+                 Rps_ObjectRef obdelim;
+                 Rps_Value exprv;
                 );
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
@@ -2327,11 +2327,11 @@ Rps_TokenSource::can_start_primary(Rps_CallFrame*callframe)
   long callnum= ++ callcnt;
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*callerframe:*/callframe,
-		 Rps_Value lextokv;
-		 Rps_ObjectRef lexkindob;
-		 Rps_ObjectRef delimob;
-		 Rps_Value lexvalv;
+                 /*callerframe:*/callframe,
+                 Rps_Value lextokv;
+                 Rps_ObjectRef lexkindob;
+                 Rps_ObjectRef delimob;
+                 Rps_Value lexvalv;
                 );
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::can_parse_primary¤" << callnum <<" starting startpos:" << startpos
@@ -2398,12 +2398,12 @@ Rps_Value
 Rps_TokenSource::parse_primary_complement(Rps_CallFrame*callframe, Rps_Value primaryexparg, bool*pokparse)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-                           /*callerframe:*/callframe,
-                           Rps_Value lextokv;
-                           Rps_Value lexgotokv;
-                           Rps_Value primaryexpv;
-                           Rps_ObjectRef lexkindob;
-                           Rps_Value lexvalv;
+                 /*callerframe:*/callframe,
+                 Rps_Value lextokv;
+                 Rps_Value lexgotokv;
+                 Rps_Value primaryexpv;
+                 Rps_ObjectRef lexkindob;
+                 Rps_Value lexvalv;
                 );
   std::string startpos = position_str();
   _f.primaryexpv = primaryexparg;

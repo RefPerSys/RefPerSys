@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2022 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -43,7 +43,7 @@ const char rps_strbufdict_date[]= __DATE__;
 
 Rps_PayloadStrBuf::Rps_PayloadStrBuf(Rps_ObjectZone*obz)
   : Rps_Payload(Rps_Type::PaylStrBuf, obz),
-    strbuf_out(),
+    strbuf_buffer(),
     strbuf_indent(0),
     strbuf_transient(false)
 {
@@ -58,6 +58,26 @@ void
 Rps_PayloadStrBuf::gc_mark([[maybe_unused]] Rps_GarbageCollector& gc) const
 {
 } // end Rps_PayloadStrBuf::gc_mark
+
+
+void
+Rps_PayloadStrBuf::append_string(const std::string&str)
+{
+  if (str.empty())
+    return;
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  strbuf_buffer.sputn(str.c_str(), str.size());
+} // end Rps_PayloadStrBuf::append_string
+
+void
+Rps_PayloadStrBuf::prepend_string(const std::string&str)
+{
+  if (str.empty())
+    return;
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+#warning unimplemented Rps_PayloadStrBuf::prepend_string
+  RPS_FATALOUT("unimplemented Rps_PayloadStrBuf::prepend_string for owner:" << *owner() << " str:" << Rps_QuotedC_String(str));
+} // end Rps_PayloadStrBuf::prepend_string
 
 void
 Rps_PayloadStrBuf::dump_scan(Rps_Dumper*du) const
@@ -101,7 +121,7 @@ Rps_PayloadStrBuf::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   RPS_ASSERT(jv.type() == Json::objectValue);
   if (strbuf_transient)
     return;
-  const std::string&str = strbuf_out.str();
+  const std::string&str = strbuf_buffer.str();
   auto eol = str.find('\n');
   if (eol > 0)
     {
@@ -149,14 +169,15 @@ rpsldpy_string_buffer(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, 
             {
               auto& jcomp = jarr[ix];
               if (jcomp.isString())
-                paylsbuf->strbuf_out << jcomp.asString();
+                paylsbuf->append_string(jcomp.asString());
+              paylsbuf->append_string("\n");
             }
         }
     }
   else if (jv.isMember("strbuf_string"))
     {
       std::string str = jv["strbuf_string"].asString();
-      paylsbuf->strbuf_out << str;
+      paylsbuf->append_string(str);
     }
   else
     RPS_WARNOUT("rpsldpy_string_buffer: incorrect jv=" << jv
@@ -169,8 +190,8 @@ rpsldpy_string_buffer(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, 
 void
 Rps_PayloadStrBuf::clear_buffer()
 {
-/// clear the buffer used by strbuf_out, which is a std::ostringstream
-  strbuf_out.str("");
+/// clear the buffer
+  strbuf_buffer = std::stringbuf("");
 } // end Rps_PayloadStrBuf::clear_buffer
 
 ////////////////////////////////////////////////////////////////
@@ -339,11 +360,11 @@ void
 Rps_PayloadStringDict::iterate_apply(Rps_CallFrame*callerframe, Rps_Value closarg)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*prev:*/callerframe,
-		 Rps_ObjectRef obown;
-		 Rps_Value closv;
-		 Rps_Value curstrv;
-		 Rps_Value curval;
+                 /*prev:*/callerframe,
+                 Rps_ObjectRef obown;
+                 Rps_Value closv;
+                 Rps_Value curstrv;
+                 Rps_Value curval;
                 );
 
   RPS_ASSERT(callerframe == nullptr || callerframe->is_good_call_frame());

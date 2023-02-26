@@ -436,12 +436,12 @@ rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
   char litprefix[16];
   memset (litprefix, 0, sizeof(litprefix));
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*callerframe:*/callframe,
-		 Rps_ObjectRef oblex;
-		 Rps_Value chunkv;
-		 Rps_Value semval;
-		 Rps_ObjectRef obdictdelim;
-		 Rps_Value delimv;
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef oblex;
+                 Rps_Value chunkv;
+                 Rps_Value semval;
+                 Rps_ObjectRef obdictdelim;
+                 Rps_Value delimv;
                 );
   RPS_ASSERT(colno >= 0 && colno <= linelen);
   RPS_DEBUG_LOG(REPL, "rps_repl_lexer start callcnt#" << callcnt <<" inp@"<< inp
@@ -1009,10 +1009,10 @@ rps_lex_chunk_element(Rps_CallFrame *callframe,
   RPS_ASSERT(chkdata != nullptr && chkdata->chunkdata_magic ==  rps_chunkdata_magicnum);
   RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*callerframe:*/callframe,
-		 Rps_ObjectRef obchunk;
-		 Rps_Value chkelemv;
-		 Rps_ObjectRef namedobv;
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obchunk;
+                 Rps_Value chkelemv;
+                 Rps_ObjectRef namedobv;
                 );
 #warning rps_lex_chunk_element is obsolete code
 #if 0 && oldcode
@@ -1775,14 +1775,14 @@ void
 rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*callerframe:*/RPS_NULL_CALL_FRAME,
-		 Rps_Value lextokv;
-		 Rps_Value lexval;
-		 Rps_ObjectRef cmdob;
-                           Rps_Value cmdparserv;
-		 Rps_Value parsmainv;
-		 Rps_Value parsextrav;
-		 );
+                 /*callerframe:*/RPS_NULL_CALL_FRAME,
+                 Rps_Value lextokv;
+                 Rps_Value lexval;
+                 Rps_ObjectRef cmdob;
+                 Rps_Value cmdparserv;
+                 Rps_Value parsmainv;
+                 Rps_Value parsextrav;
+                );
   RPS_ASSERT(rps_is_main_thread());
   int nbcmd = (int) (cmdvec.size());
   RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec start nbcmd:" << nbcmd);

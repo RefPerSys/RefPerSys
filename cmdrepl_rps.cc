@@ -55,13 +55,13 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   static std::atomic<unsigned long> eval_repl_counter_;
   const unsigned long eval_number = 1+eval_repl_counter_.fetch_add(1);
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 callframe,
-		 Rps_Value closv;
-		 Rps_Value exprv;
-		 Rps_ObjectRef envob;
-		 Rps_ObjectRef classob;
-		 Rps_Value mainresv;
-		 Rps_Value extraresv;
+                 callframe,
+                 Rps_Value closv;
+                 Rps_Value exprv;
+                 Rps_ObjectRef envob;
+                 Rps_ObjectRef classob;
+                 Rps_Value mainresv;
+                 Rps_Value extraresv;
                 );
   _f.closv = _.call_frame_closure();
   _f.exprv = exprarg;
@@ -172,11 +172,11 @@ rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value expr, Rps_Objec
   RPS_ASSERT_CALLFRAME (callframe);
   RPS_ASSERT(envob);
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 callframe,
-		 Rps_Value exprv;
-		 Rps_ObjectRef envob;
-		 Rps_Value mainresv;
-		 Rps_Value otheresv;
+                 callframe,
+                 Rps_Value exprv;
+                 Rps_ObjectRef envob;
+                 Rps_Value mainresv;
+                 Rps_Value otheresv;
                 );
   _f.exprv = expr;
   _f.envob = envob;
@@ -230,17 +230,17 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
                 << Rps_ShowCallFrame(callerframe) << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "REPL command dump rpsapply_61pgHb5KRq600RLnKD"));
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-		 callerframe,
-		 Rps_ObjectRef replcmdob;
-		 Rps_ObjectRef lexkindob;
-		 Rps_Value lexval;
-		 Rps_Value closv;
-		 Rps_Value lextokv;
-		 Rps_Value nextokv;
-		 Rps_ObjectRef lexob;
-		 Rps_ObjectRef nextlexob;
-		 Rps_Value nextlexval;
-		 );
+                           callerframe,
+                           Rps_ObjectRef replcmdob;
+                           Rps_ObjectRef lexkindob;
+                           Rps_Value lexval;
+                           Rps_Value closv;
+                           Rps_Value lextokv;
+                           Rps_Value nextokv;
+                           Rps_ObjectRef lexob;
+                           Rps_ObjectRef nextlexob;
+                           Rps_Value nextlexval;
+                );
   _f.closv = _.call_frame_closure();
   RPS_DEBUG_LOG(CMD, "REPL command dump start callcnt#" << callcnt << " arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
@@ -514,7 +514,7 @@ rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe,
   static Rps_Id descoid;
   if (!descoid) descoid=Rps_Id("_2TZNwgyOdVd001uasl");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-		 callerframe,
+                           callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command help start arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
@@ -549,7 +549,7 @@ rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe,
   static Rps_Id descoid;
   if (!descoid) descoid=Rps_Id("_28DGtmXCyOX02AuPLd");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-		 callerframe,
+                           callerframe,
                 );
   RPS_DEBUG_LOG(CMD, "REPL command put start arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)

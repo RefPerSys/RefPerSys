@@ -4105,7 +4105,7 @@ class Rps_PayloadStrBuf : public Rps_Payload
   Rps_PayloadStrBuf(Rps_ObjectRef obr) :
     Rps_PayloadStrBuf(obr?obr.optr():nullptr) {};
   virtual ~Rps_PayloadStrBuf();
-  mutable std::ostringstream strbuf_out;
+  mutable std::stringbuf strbuf_buffer;
   int strbuf_indent;
   bool strbuf_transient;
 protected:
@@ -4120,8 +4120,11 @@ public:
   {
     return "string_buffer";
   };
-  std::ostringstream* output_string_stream_ptr(void) { return &strbuf_out; };
-  const std::ostream& output_stream(void) const { return strbuf_out; };
+  std::stringbuf& string_buffer(void) { return strbuf_buffer; };
+  const std::stringbuf& const_string_buffer(void) const { return strbuf_buffer; };
+  //std::ostringstream* output_string_stream_ptr(void) { return &strbuf_stream; };
+  //const std::ostream& output_stream(void) const { return strbuf_out; };
+  //std::ostringstream& output_string_stream(void) { return strbuf_out; };
   int indentation(void) const { return strbuf_indent; };
   void set_indentation(int ind=0) {  strbuf_indent = ind; };
   void more_indentation(int delta) { strbuf_indent += delta; };
@@ -4134,18 +4137,17 @@ public:
   };
   inline Rps_PayloadStrBuf(Rps_ObjectZone*obz, Rps_Loader*ld);
   static inline Rps_ObjectRef the_string_buffer_class(void);
-  unsigned buffer_offset(void) const {
-    return (unsigned) strbuf_out.tellp();
-  }
-  unsigned buffer_length(void) const
-  {
-    return strbuf_out.str().size();
-  };
+  //- unsigned buffer_length(void) const
+  //- {
+  //-  return strbuf_buffer.size();
+  //- };
   std::string buffer_cppstring(void) const {
-    return strbuf_out.str();
+    return strbuf_buffer.str();
   };
   Rps_StringValue buffer_stringval(void);
   void clear_buffer(void);
+  void append_string(const std::string&str);
+  void prepend_string(const std::string&str);
 };				// end of class Rps_PayloadStrBuf
 
 
