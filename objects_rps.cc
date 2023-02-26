@@ -2015,7 +2015,7 @@ Rps_PayloadSymbol::set_of_all_symbols(void)
 Rps_ObjectRef
 Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::string& str, Rps_ObjectRef::Find_Behavior_en behav)
 {
-  RPS_LOCALFRAME(nullptr,
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  callerframe,
                  Rps_ObjectRef obsymb;
                  Rps_ObjectRef obfound;
@@ -2089,10 +2089,10 @@ Rps_ObjectRef::find_object_by_string(Rps_CallFrame*callerframe, const std::strin
 Rps_ObjectRef
 Rps_ObjectRef::find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, Rps_ObjectRef::Find_Behavior_en behav)
 {
-  RPS_LOCALFRAME(nullptr,
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  callerframe,
                  Rps_ObjectRef obfound;
-                );
+		 );
   RPS_DEBUG_LOG(LOWREP, "find_object_by_oid oid=" << oid << " from "
                 << Rps_ShowCallFrame(&_)
                 << std::endl
@@ -2128,7 +2128,7 @@ Rps_ObjectRef::really_find_object_by_oid(const Rps_Id& oid)
 Rps_ObjectRef
 Rps_ObjectRef::make_named_class(Rps_CallFrame*callerframe, Rps_ObjectRef superclassarg, std::string name)
 {
-  RPS_LOCALFRAME(nullptr,
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  callerframe,
                  Rps_ObjectRef obthemutsetclasses;
                  Rps_ObjectRef obsuperclass;
@@ -2196,7 +2196,7 @@ static std::mutex rps_symbol_mtx;
 Rps_ObjectRef
 Rps_ObjectRef::make_new_symbol(Rps_CallFrame*callerframe, std::string name, bool isweak)
 {
-  RPS_LOCALFRAME(nullptr,
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  callerframe,
                  Rps_ObjectRef obsymbol; // the symbol
                 );

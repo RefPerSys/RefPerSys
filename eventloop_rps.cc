@@ -103,18 +103,23 @@ jsonrpc_initialize_rps(void)
 void
 rps_event_loop(void)
 {
+  static int nbcall;
   int nbpoll=0;
   struct pollfd pollarr[RPS_MAXPOLL_FD+1];
   memset ((void*)&pollarr, 0, sizeof(pollarr));
   std::array<std::function<void(int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
-  RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/nullptr,
-                           /** locals **/
-                           Rps_Value valarr[RPS_MAXPOLL_FD+1];
-                           Rps_ClosureValue closarr[RPS_MAXPOLL_FD+1];
+  if (!rps_is_main_thread())
+    RPS_FATALOUT("rps_event_loop should be called only from the main thread");
+  if (nbcall++>0)
+    RPS_FATALOUT("rps_event_loop has already been called " << nbcall << " times");
+
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+		 /*callerframe:*/RPS_NULL_CALL_FRAME, //
+		 /** locals **/
+		 Rps_Value valarr[RPS_MAXPOLL_FD+1];
+		 Rps_ClosureValue closarr[RPS_MAXPOLL_FD+1];
                 );
 #warning incomplete rps_event_loop
-  RPS_ASSERT(rps_is_main_thread());
   sigset_t msk= {};
   sigemptyset(&msk);
   sigaddset(&msk, SIGCHLD);

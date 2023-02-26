@@ -338,12 +338,12 @@ Rps_PayloadStringDict::iterate_with_data(void*data, const std::function <bool(vo
 void
 Rps_PayloadStringDict::iterate_apply(Rps_CallFrame*callerframe, Rps_Value closarg)
 {
-  RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*prev:*/callerframe,
-                           Rps_ObjectRef obown;
-                           Rps_Value closv;
-                           Rps_Value curstrv;
-                           Rps_Value curval;
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+		 /*prev:*/callerframe,
+		 Rps_ObjectRef obown;
+		 Rps_Value closv;
+		 Rps_Value curstrv;
+		 Rps_Value curval;
                 );
 
   RPS_ASSERT(callerframe == nullptr || callerframe->is_good_call_frame());

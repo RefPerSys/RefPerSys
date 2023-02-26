@@ -1357,9 +1357,9 @@ void
 rps_run_application(int &argc, char **argv)
 {
 
-    RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/nullptr,
-                           Rps_ObjectRef tempob;
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
+		 /*callerframe:*/RPS_NULL_CALL_FRAME,
+		 Rps_ObjectRef tempob;
                 );
   {
     char cwdbuf[128];
@@ -1530,9 +1530,9 @@ static long
 rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempobarg, int tcnt, const char*tempcppfilename)
 {
   long tfilsiz = -1;
-  RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/callerframe,
-                           Rps_ObjectRef tempob;
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
+		 /*callerframe:*/callerframe,
+		 Rps_ObjectRef tempob;
                 );
   _f.tempob = tempobarg;
   RPS_DEBUG_LOG(CMD, "rps_fill_cplusplus_temporary_code tempob=" << _f.tempob
@@ -1595,9 +1595,9 @@ Rps_CallFrame*rps_edit_cplusplus_callframe;
 void
 rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
 {
-  RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/callerframe,
-                           Rps_ObjectRef tempob;
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+		 /*callerframe:*/callerframe,
+		 Rps_ObjectRef tempob;
                 );
   static int tcnt;
   tcnt++;
@@ -2083,12 +2083,12 @@ rps_hardcoded_number_of_constants(void)
 void
 rps_small_quick_tests_after_load(void)
 {
-  RPS_LOCALFRAME(/*descr:*/nullptr,
-                           /*callerframe:*/nullptr,
-                           Rps_ObjectRef obtempcpp;
-                           Rps_ObjectRef obdispweb;
-                           Rps_ObjectRef obnew;
-                           Rps_ObjectRef obfoundnew;
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+		 RPS_NULL_CALL_FRAME,
+		 Rps_ObjectRef obtempcpp;
+		 Rps_ObjectRef obdispweb;
+		 Rps_ObjectRef obnew;
+		 Rps_ObjectRef obfoundnew;
                 );
   RPS_DEBUG_LOG(CMD, "start rps_small_quick_tests_after_load in "
                 << Rps_ShowCallFrame(&_)

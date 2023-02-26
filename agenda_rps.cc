@@ -173,7 +173,7 @@ Rps_Agenda::run_agenda_worker(int ix)
   snprintf(pthname, sizeof(pthname), "rps-agw#%hd", (short) ix);
   pthread_setname_np(pthread_self(), pthname);
   RPS_LOCALFRAME(RPS_ROOT_OB(_1aGtWm38Vw701jDhZn), //the_agenda,
-                 nullptr, // no caller frame
+                 RPS_NULL_CALL_FRAME, // no caller frame
                  Rps_ObjectRef obtasklet;
                  Rps_InstanceValue descrval;
                  Rps_ClosureValue clostodo;

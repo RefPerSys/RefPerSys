@@ -954,6 +954,9 @@ class Rps_Id;
 typedef uint32_t Rps_HashInt;
 typedef Rps_ProtoCallFrame Rps_CallFrame;
 
+#define RPS_NULL_CALL_FRAME ((Rps_CallFrame*)nullptr)
+#define RPS_CALL_FRAME_UNDESCRIBED ((Rps_ObjectRef)nullptr)
+
 extern "C" unsigned rps_call_frame_depth(const Rps_CallFrame*);
 ////////////////////////////////////////////////////////////////
 class Rps_ObjectRef // reference to objects, per C++ rule of five.
@@ -3737,6 +3740,10 @@ public:                                                 \
   [[maybe_unused]] auto& _f = *_.fieldsptr();           \
   /*end RPS_LOCALFRAME_ATBIS*/
 
+
+/// coding convention in RPS_LOCALFRAME: if the Prev-ious frame is
+/// null, use the RPS_NULL_CALL_FRAME macro... if the Descr-iptor is
+/// null, use RPS_CALL_FRAME_UNDESCRIBED
 
 #define RPS_LOCALFRAME_AT(Lin,Descr,Prev,...)       \
   RPS_LOCALFRAME_ATBIS(Lin,Descr,Prev,__VA_ARGS__)
