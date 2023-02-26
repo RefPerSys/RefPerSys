@@ -34,23 +34,30 @@
 #include "refpersys.hh"
 
 
-extern "C" const char rps_jsonrpc_gitid[];
-const char rps_jsonrpc_gitid[]= RPS_GITID;
+extern "C" const char rps_eventloop_gitid[];
+const char rps_eventloop_gitid[]= RPS_GITID;
 
-extern "C" const char rps_jsonrpc_date[];
-const char rps_jsonrpc_date[]= __DATE__;
+extern "C" const char rps_eventloop_date[];
+const char rps_eventloop_date[]= __DATE__;
 
 static int sigfd;		// file descriptor for https://man7.org/linux/man-pages/man2/signalfd.2.html
 static int timfd;		// file descriptor for https://man7.org/linux/man-pages/man2/timerfd_create.2.html
 
 
-extern "C" std::atomic<bool> rps_stop_event_loop;
+//extern "C" std::atomic<bool> rps_stop_event_loop_flag;
 
-std::atomic<bool> rps_stop_event_loop;
+std::atomic<bool> rps_stop_event_loop_flag;
 
 const int rps_poll_delay_millisec = 500;
 
 #define RPS_MAXPOLL_FD 128
+
+
+void
+rps_do_stop_event_loop(void)
+{
+  rps_stop_event_loop_flag.store(true);
+} // end rps_do_stop_event_loop
 
 extern "C" void jsonrpc_initialize_rps(void);
 
@@ -121,7 +128,7 @@ rps_event_loop(void)
   timfd = timerfd_create(CLOCK_REALTIME_ALARM, TFD_CLOEXEC);
   if (timfd<=0)
     RPS_FATALOUT("failed to call timerfd:" << strerror(errno));
-  while (!rps_stop_event_loop.load())
+  while (!rps_stop_event_loop_flag.load())
     {
       memset ((void*)&pollarr, 0, sizeof(pollarr));
       nbpoll=0;
@@ -207,7 +214,7 @@ rps_event_loop(void)
         }
       else if (errno != EINTR)
         RPS_FATALOUT("rps_event_loop failure : " << strerror(errno));
-    };		   // end while not rps_stop_event_loop
+    };		   // end while not rps_stop_event_loop_flag
   /*TODO: cooperation with transientobj_rps.cc ... */
 #warning incomplete rps_event_loop see related file transientobj_rps.cc, missing code
   /*TODO: use Rps_PayloadUnixProcess::do_on_active_process_queue to collect file descriptors inside such payloads */

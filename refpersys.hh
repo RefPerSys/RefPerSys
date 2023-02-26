@@ -255,6 +255,8 @@ extern "C" bool rps_run_repl;
 extern "C" void jsonrpc_initialize_rps(void);
 
 extern "C" void rps_event_loop(void);
+extern "C" void rps_do_stop_event_loop(void);
+
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_common_state;
 
