@@ -302,8 +302,12 @@ than MPS), with the following ideas:
   local call frame is conventionally reified as the `_` local
   variable, so an [automatic
   variable](https://en.wikipedia.org/wiki/Automatic_variable) GC-ed
-  pointer `foo` is coded `_.foo` in our C++ runtime. A local frame in
-  RefPerSys should be declared in C++ using `RPS_LOCALFRAME`.
+  pointer `foo` is coded `_f.foo` in our C++ runtime. A local frame in
+  RefPerSys should be declared in C++ using `RPS_LOCALFRAME`.  By
+  convention, and for readability, use `RPS_NULL_CALL_FRAME` in C++
+  code when the caller frame argument of invocation of C++ macro
+  `RPS_LOCALFRAME` is statically null, and
+  `RPS_CALL_FRAME_UNDESCRIBED` when its descriptor is not given.
 
 * our garbage collector manages *memory zones* inside a set of
   `mmap`-ed *memory blocks* : either small blocks of a megaword that
