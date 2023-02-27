@@ -4540,6 +4540,7 @@ extern "C" void rps_run_agenda_mechanism(int nbjobs);
 /// stop the agenda mechanism
 extern "C" void rps_stop_agenda_mechanism(void);
 
+extern "C" void rps_initialize_event_loop(void);
 /****
  * The agenda is a unique and central data-structure (and RefPerSys
  * object `the_agenda` with a `Rps_PayloadAgenda` payload) managing
@@ -4554,6 +4555,7 @@ class Rps_Agenda { /// all member functions are static...
   friend class Rps_PayloadUnixProcess;
   friend class Rps_PayloadPopenedFile;
   friend void rps_event_loop (void);
+  friend void rps_initialize_event_loop(void);
   friend rpsldpysig_t rpsldpy_agenda;
   friend void rps_run_agenda_mechanism(int nbjobs);
   friend void rps_stop_agenda_mechanism(void);

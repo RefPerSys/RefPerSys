@@ -42,7 +42,13 @@ const char rps_eventloop_date[]= __DATE__;
 
 static int sigfd;		// file descriptor for https://man7.org/linux/man-pages/man2/signalfd.2.html
 static int timfd;		// file descriptor for https://man7.org/linux/man-pages/man2/timerfd_create.2.html
-
+/**
+ * We probably want to use the pipe to self trick.
+ * https://www.sitepoint.com/the-self-pipe-trick-explained/
+ *
+ * in cooperation with Rps_PayloadUnixProcess::start_process
+ **/
+static int self_pipe_read_fd, self_pipe_write_fd;
 
 //extern "C" std::atomic<bool> rps_stop_event_loop_flag;
 
@@ -69,6 +75,22 @@ rps_is_fifo(std::string path)
     return (s.st_mode & S_IFMT) == S_IFIFO;
   return false;
 } // end rps_is_fifo
+
+void
+rps_initialize_event_loop(void)
+{
+  static int count;
+  if (!rps_is_main_thread())
+    RPS_FATALOUT("rps_initialize_event_loop should be called only from the main thread");
+  if (count++ > 0)
+    RPS_FATALOUT("rps_initialize_event_loop should be called once");
+  RPS_WARNOUT("unimplemented rps_initialize_event_loop");
+#warning unimplemented rps_initialize_event_loop
+  /** TODO:
+   *
+   * create the pipe to self
+   **/
+} // end rps_initialize_event_loop
 
 /**
    Function jsonrpc_initialize_rps is called once from main, when

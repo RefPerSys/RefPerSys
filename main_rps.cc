@@ -910,6 +910,8 @@ main (int argc, char** argv)
     free ((void*)rpld);
   };
   rps_load_from(rps_my_load_dir);
+  if (!rps_batch)
+    rps_initialize_event_loop();
   rps_run_application(argc, argv);
   if (!rps_batch)
     rps_event_loop();
