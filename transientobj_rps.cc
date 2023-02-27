@@ -251,8 +251,14 @@ Rps_PayloadUnixProcess::get_input_closure(void) const
   return _unixproc_inputclos;
 } // end Rps_PayloadUnixProcess::get_input_closure
 
-#warning missing C++ code for Rps_PayloadUnixProcess::put_input_closure
 
+void
+Rps_PayloadUnixProcess::put_input_closure(Rps_ClosureValue closv)
+{
+  if (!closv || !closv.is_closure()) return;
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  _unixproc_inputclos = closv;
+} // end Rps_PayloadUnixProcess::put_input_closure
 
 const Rps_ClosureValue
 Rps_PayloadUnixProcess::get_output_closure(void) const
@@ -261,7 +267,14 @@ Rps_PayloadUnixProcess::get_output_closure(void) const
   return _unixproc_outputclos;
 } // end Rps_PayloadUnixProcess::get_output_closure
 
-#warning missing C++ code for Rps_PayloadUnixProcess::put_output_closure
+
+void
+Rps_PayloadUnixProcess::put_output_closure(Rps_ClosureValue closv)
+{
+  if (!closv || !closv.is_closure()) return;
+  std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
+  _unixproc_outputclos = closv;
+} // end Rps_PayloadUnixProcess::put_input_closure
 
 
 
