@@ -371,9 +371,22 @@ void
 Rps_PayloadUnixProcess::start_process(Rps_CallFrame*callframe)
 {
   RPS_ASSERT(!callframe || callframe->is_good_call_frame());
+  std::lock_guard<std::mutex> rungu(mtx_of_runnable_processes);
   std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
   if (_unixproc_pid.load()>0)
-    throw std::runtime_error("already running Rps_PayloadUnixProcess");
+    {
+      RPS_WARNOUT("already running Rps_PayloadUnixProcess owned by " << owner()
+                  << std::endl << Rps_ShowCallFrame(callframe));
+      throw std::runtime_error("already running Rps_PayloadUnixProcess");
+    }
+  queue_of_runnable_processes.push_back(this);
+  /** TODO:
+   *
+   * We probably want to use the pipe to self trick.
+   * https://www.sitepoint.com/the-self-pipe-trick-explained/
+   *
+   * But on a pipe to self we should write 32 bits integers....
+   **/
   /// code in eventloop_rps.cc should be related.
 #warning incomplete Rps_PayloadUnixProcess::start_process
 } // end Rps_PayloadUnixProcess::start_process
