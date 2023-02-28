@@ -134,6 +134,9 @@ rps_event_loop(void)
   int nbpoll=0;
   struct pollfd pollarr[RPS_MAXPOLL_FD+1];
   memset ((void*)&pollarr, 0, sizeof(pollarr));
+  double startelapsedtime=rps_elapsed_real_time();
+  double startcputime=rps_process_cpu_time();
+  long nbloops=0;
   std::array<std::function<void(int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
   if (!rps_is_main_thread())
     RPS_FATALOUT("rps_event_loop should be called only from the main thread");
@@ -160,8 +163,16 @@ rps_event_loop(void)
   timfd = timerfd_create(CLOCK_REALTIME, TFD_CLOEXEC);
   if (timfd<=0)
     RPS_FATALOUT("failed to call timerfd:" << strerror(errno));
+#warning TODO: consider using rps_timer ...?
+  /*** give output
+   ***/
+  RPS_INFORMOUT("starting rps_event_loop in pid " << (int)getpid() << " on " << rps_hostname()
+		<< " git " << rps_shortgitid << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop")
+	       );
   while (!rps_stop_event_loop_flag.load())
     {
+      nbloops++;
       memset ((void*)&pollarr, 0, sizeof(pollarr));
       nbpoll=0;
       struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
@@ -280,7 +291,15 @@ rps_event_loop(void)
   /*TODO: cooperation with transientobj_rps.cc ... */
 #warning incomplete rps_event_loop see related file transientobj_rps.cc, missing code
   /*TODO: use Rps_PayloadUnixProcess::do_on_active_process_queue to collect file descriptors inside such payloads */
-  RPS_FATALOUT("unimplemented rps_event_loop");
+  
+  double endelapsedtime=rps_elapsed_real_time();
+  double endcputime=rps_process_cpu_time();
+  RPS_INFORMOUT("ended rps_event_loop " << nbloops << " times in pid " << (int)getpid() << " on " << rps_hostname()
+		<< " in " << (endelapsedtime-startelapsedtime) << " elapsed and "
+		<< (endcputime-startcputime) << " cpu seconds"
+		<< " git " << rps_shortgitid << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop")
+	       );
 } // end rps_event_loop
 
 
