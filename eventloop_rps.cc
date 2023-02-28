@@ -304,8 +304,8 @@ rps_event_loop(void)
               if (pollarr[pix].events & POLLNVAL)
                 evstr += " POLLNVAL";
               rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                  "poll[%d]:fd#%d:%s,%s\n",
-                                  pix, explarr[pix], pollarr[pix].fd,evstr.c_str());
+                                  "poll[%d] loop%ld:fd#%d:%s,%s\n",
+                                  pix, nbloops, pollarr[pix].fd, explarr[pix], evstr.c_str());
             }
         };
       errno = 0;
@@ -314,39 +314,47 @@ rps_event_loop(void)
         {
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-				"respoll=%d\n", respoll);
-          for (int pix=0; debugpoll && pix<nbpoll; pix++)
+                                "respoll=%d loop%ld\n", respoll, nbloops);
+          int nbrev=0;
+          for (int pix=0; pix<nbpoll; pix++)
             {
-              if (pollarr[pix].revents > 0)
+              if (pollarr[pix].revents != 0)
                 {
-                  std::string evstr;
-                  if (pollarr[pix].revents & POLLIN)
-                    evstr += " POLLIN";
-                  if (pollarr[pix].revents & POLLOUT)
-                    evstr += " POLLOUT";
-                  if (pollarr[pix].revents & POLLPRI)
-                    evstr += " POLLPRI";
-                  if (pollarr[pix].revents & POLLRDHUP)
-                    evstr += " POLLRDHUP";
-                  if (pollarr[pix].revents & POLLERR)
-                    evstr += " POLLERR";
-                  if (pollarr[pix].revents & POLLHUP)
-                    evstr += " POLLHUP";
-                  if (pollarr[pix].revents & POLLNVAL)
-                    evstr += " POLLNVAL";
-                  rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                      "polled[%d]:fd#%d:%s>%s\n",
-                                      pix,explarr[pix],  pollarr[pix].fd,evstr.c_str());
-                }
-              if (handlarr[pix])
-                handlarr[pix](pollarr[pix].fd, pollarr[pix].revents);
+                  nbrev++;
+                  if (debugpoll)
+                    {
+                      std::string evstr;
+                      if (pollarr[pix].revents & POLLIN)
+                        evstr += " POLLIN";
+                      if (pollarr[pix].revents & POLLOUT)
+                        evstr += " POLLOUT";
+                      if (pollarr[pix].revents & POLLPRI)
+                        evstr += " POLLPRI";
+                      if (pollarr[pix].revents & POLLRDHUP)
+                        evstr += " POLLRDHUP";
+                      if (pollarr[pix].revents & POLLERR)
+                        evstr += " POLLERR";
+                      if (pollarr[pix].revents & POLLHUP)
+                        evstr += " POLLHUP";
+                      if (pollarr[pix].revents & POLLNVAL)
+                        evstr += " POLLNVAL";
+                      rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+                                          "polled[%d]:fd#%d:%s>%s\n",
+                                          pix, pollarr[pix].fd, explarr[pix], evstr.c_str());
+                    }
+                  if (handlarr[pix])
+                    handlarr[pix](pollarr[pix].fd, pollarr[pix].revents);
+                };
             };
+          if (debugpoll)
+            rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+                                "respoll=%d nbrev=%d\n", respoll, nbrev);
         }
       else if (respoll==0)   // timed out poll
         {
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-				"poll timeout\n");
+                                "poll timeout loop%ld\n", nbloops);
         }
       else if (errno != EINTR)
         RPS_FATALOUT("rps_event_loop failure : " << strerror(errno));
@@ -354,7 +362,7 @@ rps_event_loop(void)
         {
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-				"poll interrupt\n");
+                                "poll interrupt loop%ld\n", nbloops);
         };
       fflush(nullptr);
     };		   // end while not rps_stop_event_loop_flag
