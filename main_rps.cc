@@ -2123,6 +2123,8 @@ rps_debug_level(Rps_Debug dbgopt)
   switch (dbgopt)
     {
       RPS_DEBUG_OPTIONS(DEBUG_LEVEL);
+    case RPS_DEBUG__EVERYTHING:
+      return std::string{"*EveryDbg*"};
     //
     default:
     {
