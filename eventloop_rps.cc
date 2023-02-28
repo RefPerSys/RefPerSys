@@ -84,12 +84,17 @@ rps_initialize_event_loop(void)
     RPS_FATALOUT("rps_initialize_event_loop should be called only from the main thread");
   if (count++ > 0)
     RPS_FATALOUT("rps_initialize_event_loop should be called once");
-  RPS_WARNOUT("unimplemented rps_initialize_event_loop");
-#warning unimplemented rps_initialize_event_loop
-  /** TODO:
-   *
+  /** 
    * create the pipe to self
    **/
+  {
+    int pipefdarr[2] = {-1, -1};
+    if (pipe2(pipefdarr, O_CLOEXEC) <0)
+      RPS_FATALOUT("rps_initialize_event_loop failed to create pipe to self:" << strerror(errno));
+    self_pipe_read_fd = pipefdarr[0];
+    RPS_ASSERT(self_pipe_read_fd > 0);
+    self_pipe_write_fd = pipefdarr[1];
+  }
 } // end rps_initialize_event_loop
 
 /**
@@ -152,7 +157,7 @@ rps_event_loop(void)
   sigfd = signalfd(-1, &msk, SFD_CLOEXEC);
   if (sigfd<=0)
     RPS_FATALOUT("failed to call signalfd:" << strerror(errno));
-  timfd = timerfd_create(CLOCK_REALTIME_ALARM, TFD_CLOEXEC);
+  timfd = timerfd_create(CLOCK_REALTIME, TFD_CLOEXEC);
   if (timfd<=0)
     RPS_FATALOUT("failed to call timerfd:" << strerror(errno));
   while (!rps_stop_event_loop_flag.load())
@@ -223,6 +228,36 @@ rps_event_loop(void)
 #warning missing code to handle timerfd...
           };
         };
+      if (self_pipe_read_fd>0) {
+          RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
+          int pix = nbpoll++;
+          pollarr[pix].fd = self_pipe_read_fd;
+          pollarr[pix].events = POLLIN;
+          handlarr[pix] = [&](int fd, short rev)
+          {
+	    char buf[1024];
+            RPS_ASSERT(fd == self_pipe_read_fd);
+	    RPS_ASSERT(rev == POLLIN);
+            /* TODO: should read(2) */
+            memset(buf, 0, sizeof(buf));
+            int nbr = read(fd, buf, sizeof(buf));
+#warning missing code to handle self_pipe_read_fd...
+	  };
+      };
+      if (self_pipe_write_fd>0) {
+          RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
+          int pix = nbpoll++;
+          pollarr[pix].fd = self_pipe_write_fd;
+          pollarr[pix].events = POLLOUT;
+          handlarr[pix] = [&](int fd, short rev)
+          {
+	    char buf[1024];
+            RPS_ASSERT(fd == self_pipe_write_fd);
+	    RPS_ASSERT(rev == POLLOUT);
+            /* TODO: should write(2) */
+#warning missing code to handle self_pipe_write_fd...
+	  };
+      };
       errno = 0;
       int respoll = poll(pollarr, nbpoll, rps_poll_delay_millisec);
       if (respoll>0)
