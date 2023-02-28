@@ -54,7 +54,7 @@ static int self_pipe_read_fd, self_pipe_write_fd;
 
 std::atomic<bool> rps_stop_event_loop_flag;
 
-const int rps_poll_delay_millisec = 500;
+int rps_poll_delay_millisec = 500;
 
 #define RPS_MAXPOLL_FD 128
 
@@ -84,7 +84,7 @@ rps_initialize_event_loop(void)
     RPS_FATALOUT("rps_initialize_event_loop should be called only from the main thread");
   if (count++ > 0)
     RPS_FATALOUT("rps_initialize_event_loop should be called once");
-  /** 
+  /**
    * create the pipe to self
    **/
   {
@@ -134,6 +134,11 @@ rps_event_loop(void)
   int nbpoll=0;
   struct pollfd pollarr[RPS_MAXPOLL_FD+1];
   memset ((void*)&pollarr, 0, sizeof(pollarr));
+  const char*explarr[RPS_MAXPOLL_FD+1];
+  memset (explarr, 0, sizeof(explarr));
+#define EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl) do { explarr[Ix] = Fil ":" #Lin " " Expl; } while(0)
+#define EXPLAIN_EVFD_ATBIS(Fil,Lin,Ix,Expl)  EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl)
+#define EXPLAIN_EVFD_RPS(Ix,Expl) EXPLAIN_EVFD_ATBIS(__FILE__,__LINE__,(Ix),Expl)
   double startelapsedtime=rps_elapsed_real_time();
   double startcputime=rps_process_cpu_time();
   long nbloops=0;
@@ -167,9 +172,9 @@ rps_event_loop(void)
   /*** give output
    ***/
   RPS_INFORMOUT("starting rps_event_loop in pid " << (int)getpid() << " on " << rps_hostname()
-		<< " git " << rps_shortgitid << std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop")
-	       );
+                << " git " << rps_shortgitid << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop")
+               );
   while (!rps_stop_event_loop_flag.load())
     {
       nbloops++;
@@ -197,6 +202,7 @@ rps_event_loop(void)
           int pix = nbpoll++;
           pollarr[pix].fd = fdp.fifo_ui_rout;
           pollarr[pix].events = POLLIN;
+          EXPLAIN_EVFD_RPS(pix, "JsonRpc responses from GUI");
           handlarr[pix] = [&](int fd, short rev)
           {
             char buf[1024];
@@ -214,6 +220,7 @@ rps_event_loop(void)
           int pix = nbpoll++;
           pollarr[pix].fd = sigfd;
           pollarr[pix].events = POLLIN;
+          EXPLAIN_EVFD_RPS(pix, "signalfd");
           handlarr[pix] = [&](int fd, short rev)
           {
             struct signalfd_siginfo infsig;
@@ -230,6 +237,7 @@ rps_event_loop(void)
           int pix = nbpoll++;
           pollarr[pix].fd = timfd;
           pollarr[pix].events = POLLIN;
+          EXPLAIN_EVFD_RPS(pix, "timerfd");
           handlarr[pix] = [&](int fd, short rev)
           {
             RPS_ASSERT(fd ==  pollarr[pix].fd);
@@ -239,67 +247,132 @@ rps_event_loop(void)
 #warning missing code to handle timerfd...
           };
         };
-      if (self_pipe_read_fd>0) {
+      if (self_pipe_read_fd>0)
+        {
           RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
           int pix = nbpoll++;
           pollarr[pix].fd = self_pipe_read_fd;
           pollarr[pix].events = POLLIN;
+          EXPLAIN_EVFD_RPS(pix, "self_pipe_read_fd");
           handlarr[pix] = [&](int fd, short rev)
           {
-	    char buf[1024];
+            char buf[1024];
             RPS_ASSERT(fd == self_pipe_read_fd);
-	    RPS_ASSERT(rev == POLLIN);
+            RPS_ASSERT(rev == POLLIN);
             /* TODO: should read(2) */
             memset(buf, 0, sizeof(buf));
             int nbr = read(fd, buf, sizeof(buf));
 #warning missing code to handle self_pipe_read_fd...
-	  };
-      };
-      if (self_pipe_write_fd>0) {
+          };
+        };
+      if (self_pipe_write_fd>0)
+        {
           RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
           int pix = nbpoll++;
           pollarr[pix].fd = self_pipe_write_fd;
           pollarr[pix].events = POLLOUT;
+          EXPLAIN_EVFD_RPS(pix, "self_pipe_write_fd");
           handlarr[pix] = [&](int fd, short rev)
           {
-	    char buf[1024];
+            char buf[1024];
             RPS_ASSERT(fd == self_pipe_write_fd);
-	    RPS_ASSERT(rev == POLLOUT);
+            RPS_ASSERT(rev == POLLOUT);
             /* TODO: should write(2) */
 #warning missing code to handle self_pipe_write_fd...
-	  };
-      };
-      errno = 0;
-      int respoll = poll(pollarr, nbpoll, rps_poll_delay_millisec);
-      if (respoll>0)
+          };
+        };
+      bool debugpoll = RPS_DEBUG_ENABLED(REPL) //
+                       || RPS_DEBUG_ENABLED(EVENT_LOOP) //
+                       || RPS_DEBUG_ENABLED(GUI);
+      if (debugpoll)
         {
           for (int pix=0; pix<nbpoll; pix++)
             {
+              std::string evstr;
+              if (pollarr[pix].events & POLLIN)
+                evstr += " POLLIN";
+              if (pollarr[pix].events & POLLOUT)
+                evstr += " POLLOUT";
+              if (pollarr[pix].events & POLLPRI)
+                evstr += " POLLPRI";
+              if (pollarr[pix].events & POLLRDHUP)
+                evstr += " POLLRDHUP";
+              if (pollarr[pix].events & POLLERR)
+                evstr += " POLLERR";
+              if (pollarr[pix].events & POLLHUP)
+                evstr += " POLLHUP";
+              if (pollarr[pix].events & POLLNVAL)
+                evstr += " POLLNVAL";
+              rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+                                  "poll[%d]:fd#%d:%s,%s\n",
+                                  pix, explarr[pix], pollarr[pix].fd,evstr.c_str());
+            }
+        };
+      errno = 0;
+      int respoll = poll(pollarr, nbpoll, (rps_poll_delay_millisec*(debugpoll?3:1)));
+      if (respoll>0)
+        {
+          if (debugpoll)
+            rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+				"respoll=%d\n", respoll);
+          for (int pix=0; debugpoll && pix<nbpoll; pix++)
+            {
               if (pollarr[pix].revents > 0)
                 {
-                  if (handlarr[pix])
-                    handlarr[pix](pollarr[pix].fd, pollarr[pix].revents);
-                };
-            }
+                  std::string evstr;
+                  if (pollarr[pix].revents & POLLIN)
+                    evstr += " POLLIN";
+                  if (pollarr[pix].revents & POLLOUT)
+                    evstr += " POLLOUT";
+                  if (pollarr[pix].revents & POLLPRI)
+                    evstr += " POLLPRI";
+                  if (pollarr[pix].revents & POLLRDHUP)
+                    evstr += " POLLRDHUP";
+                  if (pollarr[pix].revents & POLLERR)
+                    evstr += " POLLERR";
+                  if (pollarr[pix].revents & POLLHUP)
+                    evstr += " POLLHUP";
+                  if (pollarr[pix].revents & POLLNVAL)
+                    evstr += " POLLNVAL";
+                  rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+                                      "polled[%d]:fd#%d:%s>%s\n",
+                                      pix,explarr[pix],  pollarr[pix].fd,evstr.c_str());
+                }
+              if (handlarr[pix])
+                handlarr[pix](pollarr[pix].fd, pollarr[pix].revents);
+            };
         }
       else if (respoll==0)   // timed out poll
         {
+          if (debugpoll)
+            rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+				"poll timeout\n");
         }
       else if (errno != EINTR)
         RPS_FATALOUT("rps_event_loop failure : " << strerror(errno));
+      else
+        {
+          if (debugpoll)
+            rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+				"poll interrupt\n");
+        };
+      fflush(nullptr);
     };		   // end while not rps_stop_event_loop_flag
   /*TODO: cooperation with transientobj_rps.cc ... */
 #warning incomplete rps_event_loop see related file transientobj_rps.cc, missing code
   /*TODO: use Rps_PayloadUnixProcess::do_on_active_process_queue to collect file descriptors inside such payloads */
-  
+
   double endelapsedtime=rps_elapsed_real_time();
   double endcputime=rps_process_cpu_time();
   RPS_INFORMOUT("ended rps_event_loop " << nbloops << " times in pid " << (int)getpid() << " on " << rps_hostname()
-		<< " in " << (endelapsedtime-startelapsedtime) << " elapsed and "
-		<< (endcputime-startcputime) << " cpu seconds"
-		<< " git " << rps_shortgitid << std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop")
-	       );
+                << " in " << (endelapsedtime-startelapsedtime) << " elapsed and "
+                << (endcputime-startcputime) << " cpu seconds"
+                << " git " << rps_shortgitid << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop")
+               );
+#undef EXPLAIN_EVFD_AT
+#undef EXPLAIN_EVFD_ATBIS
+#undef EXPLAIN_EVFD_RPS
 } // end rps_event_loop
 
 
