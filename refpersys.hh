@@ -458,6 +458,7 @@ extern "C" void rps_set_debug(const std::string &deblev);
   dbgmacro(CMD)                     \
   dbgmacro(COMPL_REPL)              \
   dbgmacro(DUMP)                    \
+  dbgmacro(EVENT_LOOP)              \
   dbgmacro(GARBAGE_COLLECTOR)       \
   dbgmacro(GENERATED_CODE)          \
   dbgmacro(GUI)                     \
@@ -481,7 +482,8 @@ enum Rps_Debug
   RPS_DEBUG__NONE,
   // expands to RPS_DEBUG_CMD, RPS_DEBUG_DUMP, RPS_DEBUG_GARBAGE_COLLECTOR...
   RPS_DEBUG_OPTIONS(RPS_DEBUG_OPTION_DEFINE)
-  RPS_DEBUG__LAST
+  RPS_DEBUG__LAST,
+  RPS_DEBUG__EVERYTHING=0xffff,
 };
 
 
