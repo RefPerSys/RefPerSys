@@ -54,7 +54,7 @@ static int self_pipe_read_fd, self_pipe_write_fd;
 
 std::atomic<bool> rps_stop_event_loop_flag;
 
-int rps_poll_delay_millisec = 500;
+int rps_poll_delay_millisec = 1500;
 
 #define RPS_MAXPOLL_FD 128
 
@@ -348,7 +348,7 @@ rps_event_loop(void)
             };
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                "respoll=%d nbrev=%d\n", respoll, nbrev);
+                                "respoll=%d nbrev=%d nbloops=%ld\n", respoll, nbrev, nbloops);
         }
       else if (respoll==0)   // timed out poll
         {
