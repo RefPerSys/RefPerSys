@@ -344,6 +344,8 @@ rps_event_loop(void)
                     }
                   if (handlarr[pix])
                     handlarr[pix](pollarr[pix].fd, pollarr[pix].revents);
+		  else
+		    usleep((5+(pix & 0xf))*1024);
                 };
             };
           if (debugpoll)
