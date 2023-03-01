@@ -257,7 +257,7 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_HOMEDIR, ///
     /*arg:*/ "HOMEDIR", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "set the RefPerSys homedir, default to $REFPERSYS_HOME or $HOME\n", ///
+    /*doc:*/ "set the RefPerSys homedir, default to $REFPERSYS_HOME or $HOME\n\n", ///
     /*group:*/0 ///
   },
   /* ======= run a shell command with system(3) after load ======= */
@@ -267,10 +267,11 @@ struct argp_option rps_progoptions[] =
     /*flags:*/ 0, ///
     /*doc:*/ "Run using system(3) the given shell SHELL_COMMAND after load and plugins;\n" //
     " The following environment variables have been set:\n" //
-    "\t    * REFPERSYS_GITID to the git id (with a + suffix if locally changed);\n" //
-    "\t    * REFPERSYS_TOPDIR to the top directory with source code and persistore/ ...;\n" //
-    "\t    * REFPERSYS_PID to the process id  running refpersys;\n" //
-    "\t    * REFPERSYS_USER_OID to the objectid corresponding to current user;\n",
+    "  * $REFPERSYS_GITID to the git id (with a + suffix if locally changed);\n" //
+    "  * $REFPERSYS_TOPDIR to the top directory with source code and persistore/ ...;\n" //
+    "  * $REFPERSYS_PID to the process id running the refpersys executable;\n" //
+    "  * $REFPERSYS_USER_OID to the objectid corresponding to current user;\n" //
+    "\n\n",
     /*group:*/0 ///
   },
   /* ======= syslog-ing ======= */
