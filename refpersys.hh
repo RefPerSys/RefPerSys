@@ -170,6 +170,9 @@ extern "C" const char rps_cxx_compiler_version[];
 // GNU bison is a parser generator,  see www.gnu.org/software/bison/
 extern "C" const char rps_gnubison_version[];
 extern "C" const char rps_gui_script_executable[];
+// ANTLR is another parser generator. See www.antlr4.org
+extern "C" const char rps_antlr_path[];
+extern "C" const char rps_antlr_version[];
 extern "C" const char rps_building_user_name[];
 extern "C" const char rps_building_user_email[];
 

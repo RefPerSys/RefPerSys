@@ -52,7 +52,7 @@ RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 # for the ANTLR4 parser generator ; see http://www.antlr4.org/
 RPS_ANTLR_SOURCES:= $(sort $(wildcard [a-z]*antlr*rps.g4))
 ANTLR = /usr/bin/antlr4
-
+ANTLR_FLAGS = -message-format gnu  -long-messages -visitor -listener -depend  -Dlanguage=Cpp 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_JSONRPC_OBJECTS = $(patsubst %.cc, %.o, $(RPS_JSONRPC_SOURCES))
