@@ -49,8 +49,9 @@ RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcar
 # for the GNU bison parser generator
 RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 
-# for the ANTLR3 parser generator
-RPS_ANTLR_SOURCES:= $(sort $(wildcard [a-z]*rps.g))
+# for the ANTLR4 parser generator ; see http://www.antlr4.org/
+RPS_ANTLR_SOURCES:= $(sort $(wildcard [a-z]*antlr*rps.g4))
+ANTLR = /usr/bin/antlr4
 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
@@ -260,6 +261,8 @@ __timestamp.c: | GNUmakefile do-generate-timestamp.sh
 	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
 	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
 	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp
+	printf 'const char rps_antlr_path[] = "%s";\n' $(ANTLR) >> $@-tmp
+	dpkg -l  antlr4 | tail -1 | awk '{printf "const char rps_antlr_version[]=\"%s\";\n", $$3}' >> $@-tmp
 	$(MV) --backup $@-tmp $@
 
 
