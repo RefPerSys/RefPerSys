@@ -29,7 +29,8 @@
 .PHONY: all objects clean plugin fullclean redump undump altredump print-plugin-settings indent \
    test00 test01 test02 test03 test04 test05 test06 test07 test08 test09 \
    test-load \
-   analyze gitpush gitpush2 withclang
+   analyze gitpush gitpush2 withclang \
+   do-antlr
 
 
 
@@ -51,8 +52,11 @@ RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 
 # for the ANTLR4 parser generator ; see http://www.antlr4.org/
 RPS_ANTLR_SOURCES:= $(sort $(wildcard [a-z]*antlr*rps.g4))
+
+RPS_ANTLR_GENERATED:= $(wildcard [a-z]*antlr*rps*.h)  $(wildcard [a-z]*antlr*rps*.cpp)  $(wildcard [a-z]*antlr*rps*.tokens)
+
 ANTLR = /usr/bin/antlr4
-ANTLR_FLAGS = -message-format gnu  -long-messages -visitor -listener -depend  -Dlanguage=Cpp 
+ANTLR_FLAGS = -message-format gnu  -long-messages -visitor -listener  -Dlanguage=Cpp 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_JSONRPC_OBJECTS = $(patsubst %.cc, %.o, $(RPS_JSONRPC_SOURCES))
@@ -145,6 +149,9 @@ CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
 LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 
 -include $(wildcard $$HOME/build-refpersys.mk)
+
+-include _antlr_dependencies.mk
+
 all:
 	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
@@ -152,7 +159,7 @@ all:
 	@echo all make target syncing
 	sync
 
-.SECONDARY:  __timestamp.c
+.SECONDARY:  __timestamp.c _antlr_dependencies.mk
 
 refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
@@ -232,7 +239,7 @@ clean:
 	$(RM) sanitized-refpersys 
 	$(RM) *.so
 	$(RM) *.moc.hh
-	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~
+	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~ _*.mk
 	$(RM) persistore/*~ persistore/*%
 	$(RM) plugins/*~  plugins/*% plugins/*.cc.orig plugins/*.so *.so
 	$(RM) *.ii
@@ -241,6 +248,7 @@ clean:
 	$(RM) $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES))
 	$(RM) $(patsubst %.yy, %.output, $(RPS_BISON_SOURCES))
 	$(RM) *.tmp
+	$(RM) $(RPS_ANTLR_GENERATED)
 
 ## usual invocation: make plugin RPS_PLUGIN_SOURCE=/tmp/foo.cc RPS_PLUGIN_SHARED_OBJECT=/tmp/foo.so
 ## see also our ./build-plugin.sh script
@@ -248,6 +256,17 @@ plugin: | ./build-plugin.sh
 	if [ -n "$(RPS_PLUGIN_SOURCE)" ]; then echo missing RPS_PLUGIN_SOURCE > /dev/stderr ; exit 1; fi
 	if [ -n "$(RPS_PLUGIN_SHARED_OBJECT)" ]; then echo missing RPS_PLUGIN_SHARED_OBJECT  > /dev/stderr ; exit 1; fi
 	./build-plugin.sh $(RPS_PLUGIN_SOURCE) $(RPS_PLUGIN_SHARED_OBJECT)
+
+do-antlr:
+	for f in $(RPS_ANTLR_SOURCES) ; do \
+	   $(ANTLR) $(ANTLR_FLAGS) $$f ; \
+	done
+
+_antlr_dependencies.mk: $(RPS_ANTLR_SOURCES)
+	date +'# file $@ generated %c%n' > $@
+	for f in $(RPS_ANTLR_SOURCES) ; do \
+	   $(ANTLR) $(ANTLR_FLAGS) -depend $$f >> $@ ; \
+	done
 
 fullclean:
 	$(RPS_BUILD_CCACHE) -C
