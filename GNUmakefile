@@ -150,7 +150,6 @@ LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 
 -include $(wildcard $$HOME/build-refpersys.mk)
 
--include _antlr_dependencies.mk
 
 all:
 	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
@@ -175,6 +174,8 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
+
+-include _antlr_dependencies.mk
 
 #sanitized-refpersys:  main_rps.sanit.o $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
 #       $(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
