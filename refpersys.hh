@@ -397,6 +397,8 @@ extern "C" bool rps_without_terminal_escape;
 
 
 
+extern "C" void rps_set_exit_code(std::uint8_t); // in main_rps.cc
+
 /////////////////////////////////////////////////////// PLUGINS AFTER LOAD
 
 struct Rps_Plugin {

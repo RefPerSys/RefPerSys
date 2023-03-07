@@ -45,6 +45,9 @@ const char rps_main_date[]= __DATE__;
 
 extern "C" pid_t rps_gui_pid;
 
+static std::atomic<std::uint8_t> rps_exit_atomic_code;
+
+
 
 /// actually, in function main we have something like  asm volatile ("rps_end_of_main: nop");
 extern "C" void rps_end_of_main(void);
@@ -486,7 +489,11 @@ rps_hostname(void)
 } // end rps_hostname
 
 
-
+void
+rps_set_exit_code(std::uint8_t ex)
+{
+  rps_exit_atomic_code.store(ex);
+} // end rps_set_exit_code
 
 void
 rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string linprefix, std::string linsuffix)
@@ -958,7 +965,7 @@ main (int argc, char** argv)
 	     rps_my_load_dir.c_str(),
 	     rps_gitid, rps_timestamp,
              rps_elapsed_real_time(), rps_process_cpu_time());
-  return 0;
+  return rps_exit_atomic_code.load();
 } // end of main
 
 const char*
