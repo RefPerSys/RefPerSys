@@ -66,12 +66,22 @@ RPS_ANTLR_GENERATED:= $(wildcard [a-z]*antlr*rps*.h)  $(wildcard [a-z]*antlr*rps
 
 ANTLR = /usr/bin/antlr4
 ANTLR_FLAGS = -message-format gnu  -long-messages -visitor -listener  -Dlanguage=Cpp 
-RPS_ANTLR_GENERATED_CPP_CODES= $(patsubst %.g4, \
-     %Parser.cpp \
-     %Lexer.cpp \
-     %Listener.cpp %BaseListener.cpp \
-     %Visitor.cpp %BaseVisitor.cpp, \
-    $(RPS_ANTLR_SOURCES))
+RPS_ANTLR_GENERATED_CPP_PARSERS= $(patsubst %.g4, %Parser.cpp, $(RPS_ANTLR_SOURCES))
+RPS_ANTLR_GENERATED_CPP_LEXERS= $(patsubst %.g4, %Lexer.cpp, $(RPS_ANTLR_SOURCES))
+RPS_ANTLR_GENERATED_CPP_LISTENERS= $(patsubst %.g4, %Listener.cpp, $(RPS_ANTLR_SOURCES))
+RPS_ANTLR_GENERATED_CPP_BASE_LISTENERS= $(patsubst %.g4, %BaseListener.cpp, $(RPS_ANTLR_SOURCES))
+
+RPS_ANTLR_GENERATED_CPP_VISITORS= $(patsubst %.g4, %Visitor.cpp, $(RPS_ANTLR_SOURCES))
+RPS_ANTLR_GENERATED_CPP_BASE_VISITORS= $(patsubst %.g4, %BaseVisitor.cpp, $(RPS_ANTLR_SOURCES))
+
+RPS_ANTLR_GENERATED_CPP_CODES= \
+ $(RPS_ANTLR_GENERATED_CPP_PARSERS) \
+ $(RPS_ANTLR_GENERATED_CPP_LEXERS) \
+ $(RPS_ANTLR_GENERATED_CPP_LISTENERS) \
+ $(RPS_ANTLR_GENERATED_CPP_BASE_LISTENERS) \
+ $(RPS_ANTLR_GENERATED_CPP_VISITORS) \
+ $(RPS_ANTLR_GENERATED_CPP_BASE_VISITORS)
+
 
 RPS_ANTLR_GENERATED_CPP_HEADERS=  $(patsubst %.g4, \
      %Parser.h \
@@ -151,7 +161,7 @@ RPS_PKG_CFLAGS:= $(shell $(RPS_CURLPP_CONFIG) --cflags) \
 
 RPS_PKG_LIBS:=  $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
-LIBES=  -lunistring -lbacktrace -lpthread -ldl
+LIBES=  -lantlr4-runtime -lunistring -lbacktrace -lpthread -ldl
 RM= rm -f
 MV= mv
 CC= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CC)
@@ -160,7 +170,7 @@ LINK.cc= $(RPS_BUILD_CXX)
 CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             $(RPS_BUILD_CODGENFLAGS) \
 	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) \
-            -I/usr/include/jsoncpp \
+            -I/usr/include/jsoncpp -I/usr/include/antlr4-runtime \
 	    $(RPS_PKG_CFLAGS) \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
@@ -174,13 +184,14 @@ LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 all:
 	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
+	$(MAKE) do-antlr
 	$(MAKE) -$(MAKEFLAGS) refpersys
 	@echo all make target syncing
 	sync
 
-.SECONDARY:  __timestamp.c _antlr_dependencies.mk
+.SECONDARY:  __timestamp.c _antlr_dependencies.mk $(RPS_ANTLR_GENERATED_CPP_CODES) $(RPS_ANTLR_GENERATED_CPP_HEADERS) 
 
-refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
+refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) $(RPS_ANTLR_OBJECTS) __timestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
 	@echo $@: RPS_BUILD_CODGENFLAGS= $(RPS_BUILD_CODGENFLAGS)
 	@echo $@: RPS_CORE_OBJECTS= $(RPS_CORE_OBJECTS)
@@ -195,7 +206,29 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) __timestamp.o
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
 
+
+_antlr_dependencies.mk: $(RPS_ANTLR_SOURCES)
+	date +'# file $@ generated %c%n' > $@
+	for f in $(RPS_ANTLR_SOURCES) ; do \
+	   $(ANTLR) $(ANTLR_FLAGS) -depend $$f >> $@ ; \
+	done
+
 -include _antlr_dependencies.mk
+
+gramrepl_antlr_rpsParser.h          \
+gramrepl_antlr_rpsParser.cpp        \
+gramrepl_antlr_rps.tokens           \
+gramrepl_antlr_rpsLexer.cpp         \
+gramrepl_antlr_rpsLexer.tokens      \
+gramrepl_antlr_rpsListener.h        \
+gramrepl_antlr_rpsListener.cpp      \
+gramrepl_antlr_rpsBaseListener.h    \
+gramrepl_antlr_rpsBaseListener.cpp  \
+gramrepl_antlr_rpsVisitor.h         \
+gramrepl_antlr_rpsVisitor.cpp       \
+gramrepl_antlr_rpsBaseVisitor.h     \
+gramrepl_antlr_rpsBaseVisitor.cpp &: gramrepl_antlr_rps.g4
+	$(ANTLR) $(ANTLR_FLAGS) gramrepl_antlr_rps.g4
 
 #sanitized-refpersys:  main_rps.sanit.o $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
 #       $(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
@@ -283,11 +316,6 @@ do-antlr:
 	   $(ANTLR) $(ANTLR_FLAGS) $$f ; \
 	done
 
-_antlr_dependencies.mk: $(RPS_ANTLR_SOURCES)
-	date +'# file $@ generated %c%n' > $@
-	for f in $(RPS_ANTLR_SOURCES) ; do \
-	   $(ANTLR) $(ANTLR_FLAGS) -depend $$f >> $@ ; \
-	done
 
 fullclean:
 	$(RPS_BUILD_CCACHE) -C
