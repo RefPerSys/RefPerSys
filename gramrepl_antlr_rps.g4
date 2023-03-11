@@ -36,5 +36,15 @@
 /// the name of the grammar has to be the base name of this file
 grammar gramrepl_antlr_rps;
 
-// Parser rules
+// the start symbol is the REPL command
 
+repl_command : 'show' val_expr
+	     | 'in' obj_expr 'put' obj_expr ':' val_expr
+	     | 'in' obj_expr 'rem' obj_expr
+	     | 'in' obj_expr 'append' val_expr
+	     ;
+
+val_expr : INT | STRING | DOUBLE | obj_expr;
+
+obj_expr: OBJID | NAME
+;
