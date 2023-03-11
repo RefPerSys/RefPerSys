@@ -44,7 +44,25 @@ repl_command : 'show' val_expr
 	     | 'in' obj_expr 'append' val_expr
 	     ;
 
-val_expr : INT | STRING | DOUBLE | obj_expr;
+val_expr : INT
+         /// later | STRING
+	 | DOUBLE
+	 | obj_expr;
 
 obj_expr: OBJID | NAME
+;
+
+
+INT: [0-9]+
+;
+
+DOUBLE: [0-9]+ '.' [0-9]+
+;
+
+
+OBJID: '_' [A-Za-z0-9]*
+;
+
+
+NAME: [A-Z][a-z][A-Za-z0-9]*
 ;
