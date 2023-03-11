@@ -2061,8 +2061,8 @@ test_antlr4_parsing_rps(std::string& s)
   /* TODO in march 2023: design something using parser generated from
      file gramrepl_antlr_rps.g4 */
   RPS_FATALOUT("unimplemented test_antlr4_parsing_rps for "
-	       << Rps_QuotedC_String(s) << " using antlr input @"
-	       << (void*)&ins);
+               << Rps_QuotedC_String(s) << " using antlr input @"
+               << (void*)&ins);
 } // end test_antlr4_parsing_rps
 
 // end of file repl_rps.cc

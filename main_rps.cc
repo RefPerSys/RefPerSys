@@ -1302,7 +1302,13 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
                     << " with " << nbsubdirs << " subdirectories." << std::endl
                     << " GNU glibc: " << gnu_get_libc_version() << std::endl
+	    /* TODO: near commit 191d55e1b31c, march 2023; decide
+	       which parser generator to really use... and drop the
+	       other one.  Non technical considerations,
+	       e.g. licensing, is important to some partners... */
+#warning decide what parser generator should be removed in 2023
                     << " BISON parser generator: " << rps_gnubison_version << std::endl
+		    << " ANTLR parser generator: " << rps_antlr_path << " version " << rps_antlr_version << std::endl
 		    << " default GUI script: " << rps_gui_script_executable << std::endl
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
