@@ -204,15 +204,16 @@ The [JsonCPP](https://github.com/open-source-parsers/jsoncpp/) and and
 also a [mail](https://linux.die.net/man/1/mail) command in your
 `$PATH`.
 
-To install the dependencies on a recent [Debian](https://debian.org/) 10 *buster* or
-[Ubuntu](https://ubuntu.com/) 20 or 21 system, you could run the following
+To install the dependencies on a recent [Debian](https://debian.org/) 12 *bookworm* or
+[Ubuntu](https://ubuntu.com/) 22 system, you could run the following
 steps
 
 * `sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test` (for Ubuntu 20.04)
-* `sudo apt install -y gcc-11 g++-11 clang-11 libc++-11-dev libc++abi-11-dev` (for Ubuntu 20.04)
+* `sudo apt install -y gcc-12 g++-12 clang-14 libc++-11-dev libc++abi-11-dev` (for Ubuntu 20.04)
 * `sudo apt install libunistring-dev`
 * `sudo apt install libjsoncpp-dev`
 * `sudo apt-get install libssl-dev`
+* `sudo apt install antlr4 libantlr4-runtime-dev antlr4-doc`
 * `sudo apt install ccache g++ make build-essential remake gdb automake`
 * `sudo apt install ttf-unifont ttf-mscorefonts-installer unifont msttcorefonts fonts-ubuntu fonts-tuffy fonts-spleen fonts-roboto fonts-recommended fonts-yanone-kaffeesatz fonts-play fonts-eurofurence fonts-ecolier-court fonts-dejavu fonts-croscore fonts-cegui fonts-inter fonts-inconsolata`
 * `git clone https://github.com/ianlancetaylor/libbacktrace.git`
