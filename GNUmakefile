@@ -37,6 +37,15 @@
 ## tell GNU make to export all variables by default
 export
 
+### The optional file $HOME/.refpersys.mk could contain definitions like
+###     # file ~/.refpersys.mk
+###     RPS_BUILD_CC= gcc-12
+###     RPS_BUILD_CXX= g++-12
+### This enables changing C and C++ compiler versions
+ifndef RPS_BUILD_CC
+-include $(shell /bin/ls ~/.refpersys.mk)
+endif
+
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 
@@ -57,24 +66,35 @@ RPS_ANTLR_GENERATED:= $(wildcard [a-z]*antlr*rps*.h)  $(wildcard [a-z]*antlr*rps
 
 ANTLR = /usr/bin/antlr4
 ANTLR_FLAGS = -message-format gnu  -long-messages -visitor -listener  -Dlanguage=Cpp 
+RPS_ANTLR_GENERATED_CPP_CODES= $(patsubst %.g4, \
+     %Parser.cpp \
+     %Lexer.cpp \
+     %Listener.cpp %BaseListener.cpp \
+     %Visitor.cpp %BaseVisitor.cpp, \
+    $(RPS_ANTLR_SOURCES))
+
+RPS_ANTLR_GENERATED_CPP_HEADERS=  $(patsubst %.g4, \
+     %Parser.h \
+     %Lexer.h \
+     %Listener.h %BaseListener.h \
+     %Visitor.h %BaseVisitor.h, \
+    $(RPS_ANTLR_SOURCES))
+
+RPS_ANTLR_GENERATED_CPP_TOKENS=   $(patsubst %.g4, \
+     %.tokens  %Lexer.tokens, \
+    $(RPS_ANTLR_SOURCES))
+
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_JSONRPC_OBJECTS = $(patsubst %.cc, %.o, $(RPS_JSONRPC_SOURCES))
 RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
+RPS_ANTLR_OBJECTS = $(patsubst %.cpp, %.o, $(RPS_ANTLR_GENERATED_CPP_CODES))
+
 #RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 #RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
 #RPS_JSONRPC_CXXFLAGS = $(shell pkg-config  --cflags jsoncpp)
 #RPS_JSONRPC_LIBES = $(shell pkg-config --libs jsoncpp)
-
-### The optional file $HOME/.refpersys.mk could contain definitions like
-###     # file ~/.refpersys.mk
-###     RPS_BUILD_CC= gcc-12
-###     RPS_BUILD_CXX= g++-12
-### This enables changing C and C++ compiler versions
-ifndef RPS_BUILD_CC
--include $(shell /bin/ls ~/.refpersys.mk)
-endif
 
 #RPS_BUILD_CCACHE?= ccache
 RPS_BUILD_CCACHE=
