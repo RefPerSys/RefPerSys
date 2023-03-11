@@ -2047,5 +2047,22 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
 //- } // end rps_repl_cmd_tokenizer
 //-
 
+#warning test_antlr4_parsing_rps should be coded cleverly
+extern "C" void test_antlr4_parsing_rps(std::string& s);
+
+
+///In git commit near 69a2eb69154e27f (march, 11, 2023) the only
+///purpose of this is to link ANTLR runtime.
+void
+test_antlr4_parsing_rps(std::string& s)
+{
+  antlr4::ANTLRInputStream ins(s);
+#warning unimplemented test_antlr4_parsing_rps
+  /* TODO in march 2023: design something using parser generated from
+     file gramrepl_antlr_rps.g4 */
+  RPS_FATALOUT("unimplemented test_antlr4_parsing_rps for "
+	       << Rps_QuotedC_String(s) << " using antlr input @"
+	       << (void*)&ins);
+} // end test_antlr4_parsing_rps
 
 // end of file repl_rps.cc

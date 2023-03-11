@@ -89,6 +89,9 @@
 #include <clocale>
 #include <filesystem>
 
+
+/// ANTLR4 is a parser generator
+#include <antlr4-runtime/antlr4-runtime.h>
 #include <argp.h>
 #include <ctype.h>
 #include <sys/mman.h>
