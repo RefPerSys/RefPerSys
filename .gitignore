@@ -98,3 +98,22 @@ synrepl_rps.hh
 synrepl_rps.output
 tempgui-qrps.moc.hh
 _antlr_dependencies.mk
+
+
+### ANTLR4 generated from gramrepl_antlr_rps.g4
+gramrepl_antlr_rps.interp
+gramrepl_antlr_rps.tokens
+gramrepl_antlr_rpsBaseListener.cpp
+gramrepl_antlr_rpsBaseListener.h
+gramrepl_antlr_rpsBaseVisitor.cpp
+gramrepl_antlr_rpsBaseVisitor.h
+gramrepl_antlr_rpsLexer.cpp
+gramrepl_antlr_rpsLexer.h
+gramrepl_antlr_rpsLexer.interp
+gramrepl_antlr_rpsLexer.tokens
+gramrepl_antlr_rpsListener.cpp
+gramrepl_antlr_rpsListener.h
+gramrepl_antlr_rpsParser.cpp
+gramrepl_antlr_rpsParser.h
+gramrepl_antlr_rpsVisitor.cpp
+gramrepl_antlr_rpsVisitor.h
