@@ -39,30 +39,88 @@ grammar gramrepl_antlr_rps;
 // the start symbol is the REPL command
 
 repl_command : 'show' val_expr
+   {
+   /* C++ code for show REPL */
+#warning missing C++ code for show command (ANTLR)
+   }
 	     | 'in' obj_expr 'put' obj_expr ':' val_expr
+   {
+   /* C++ code for ANTLR in .. put */
+#warning missing C++ code for in ... put ... ':' ... command (ANTLR)
+   }
 	     | 'in' obj_expr 'rem' obj_expr
+   {
+   /* C++ code for ANTLR in .. rem */
+#warning missing C++ code for in ... rem ... command (ANTLR)
+   }
 	     | 'in' obj_expr 'append' val_expr
+   {
+   /* C++ code for ANTLR in ... append ... command */
+#warning missing C++ code for in ... append ... command (ANTLR)
+   }
 	     ;
 
 val_expr : INT
+   {
+   /* C++ code for ANTLR integer value expr */
+#warning missing C++ code for integer value expr (ANTLR)
+   }
+   
          /// later | STRING
+	 
 	 | DOUBLE
-	 | obj_expr;
+   {
+   /* C++ code for ANTLR integer value expr */
+#warning missing C++ code for double value expr (ANTLR)
+   }
+	 | obj_expr
+   {
+   /* C++ code for ANTLR object value expr */
+#warning missing C++ code for object value expr (ANTLR)
+   }
+	 ;
 
-obj_expr: OBJID | NAME
+obj_expr: OBJID
+   {
+   /* C++ code for ANTLR objectexpr by OBJID */
+#warning missing C++ code for object expr by OBJID (ANTLR)
+   }
+   | NAME
+   {
+   /* C++ code for ANTLR objectexpr by NAME */
+#warning missing C++ code for object expr by NAME (ANTLR)
+   }
+   
 ;
 
 
 INT: [0-9]+
+   {
+   /* C++ code for ANTLR literal INT */
+#warning missing C++ code for literal INT (ANTLR)
+   }
 ;
 
 DOUBLE: [0-9]+ '.' [0-9]+
+   {
+   /* C++ code for ANTLR literal DOUBLE */
+#warning missing C++ code for literal DOUBLE (ANTLR)
+   }
 ;
 
 
+
 OBJID: '_' [A-Za-z0-9]*
+   {
+   /* C++ code for ANTLR literal OBJID */
+#warning missing C++ code for literal OBJID (ANTLR)
+   }
 ;
 
 
 NAME: [A-Z][a-z][A-Za-z0-9]*
+   {
+   /* C++ code for ANTLR literal NAME */
+#warning missing C++ code for literal NAME (ANTLR)
+   }
 ;
