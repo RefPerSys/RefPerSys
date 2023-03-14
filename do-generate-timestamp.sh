@@ -2,7 +2,7 @@
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export LC_TIME=en_US.UTF-8
-printf "// generated file %s -- DONT EDIT - see refpersys.org\n" $1
+printf "// generated file %s by %s -- DONT EDIT - see refpersys.org\n" $1 $0
 date +"const char rps_timestamp[]=\"%c\";%nconst unsigned long rps_timelong=%sL;"
 printf "const char rps_topdirectory[]=\"%s\";\n" $(realpath $(pwd))
 
@@ -33,7 +33,7 @@ cp -va /tmp/refpersys-$$.tar.gz $HOME/tmp/refpersys.tar.gz >& /dev/stderr
 
 (echo  'const char*const rps_subdirectories[]= {' ; tar tf /tmp/refpersys-$$.tar.gz | grep  '/$' | tr -s " \n"  | sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
 
-printf "const char rps_makefile[]=\"%s\";\n"   $(realpath Makefile)
+printf "const char rps_makefile[]=\"%s\";\n"   $(realpath GNUmakefile)
 
 printf "const char rps_gui_script_executable[]=\"%s\";\n" $(realpath gui-script-refpersys.sh)
 
@@ -41,4 +41,5 @@ printf "const char rps_building_user_name[]=\"%s\";\n" "$(git config user.name)"
 
 printf "const char rps_building_user_email[]=\"%s\";\n" $(git config user.email)
 
-
+printf "/// see also GNUmakefile for refpersys.org;\n"
+### some things are generated in GNUmakefile 

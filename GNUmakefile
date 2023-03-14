@@ -30,8 +30,7 @@
 .PHONY: all objects clean plugin fullclean redump undump altredump print-plugin-settings indent \
    test00 test01 test02 test03 test04 test05 test06 test07 test08 test09 \
    test-load \
-   analyze gitpush gitpush2 withclang \
-   do-antlr
+   analyze gitpush gitpush2 withclang 
 
 
 
@@ -63,47 +62,16 @@ RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 # for the bisonc++ parser generator
 ## TODO: complete..
 RPS_BISONCPP_SOURCES:=
-# for the ANTLR4 parser generator ; see http://www.antlr4.org/
-RPS_ANTLR_SOURCES:= $(sort $(wildcard [a-z]*antlr*rps.g4))
 
-RPS_ANTLR_GENERATED:= $(wildcard [a-z]*antlr*rps*.h)  $(wildcard [a-z]*antlr*rps*.cpp)  $(wildcard [a-z]*antlr*rps*.tokens)
+# note: Antlr parser generator is obsolete at commit  427be821cb (March 2023)
 
-ANTLR = /usr/bin/antlr4
-ANTLR_FLAGS = -message-format gnu  -long-messages -visitor -listener  -Dlanguage=Cpp
-BISONCPP= bisonc++
-RPS_ANTLR_GENERATED_CPP_PARSERS= $(patsubst %.g4, %Parser.cpp, $(RPS_ANTLR_SOURCES))
-RPS_ANTLR_GENERATED_CPP_LEXERS= $(patsubst %.g4, %Lexer.cpp, $(RPS_ANTLR_SOURCES))
-RPS_ANTLR_GENERATED_CPP_LISTENERS= $(patsubst %.g4, %Listener.cpp, $(RPS_ANTLR_SOURCES))
-RPS_ANTLR_GENERATED_CPP_BASE_LISTENERS= $(patsubst %.g4, %BaseListener.cpp, $(RPS_ANTLR_SOURCES))
-
-RPS_ANTLR_GENERATED_CPP_VISITORS= $(patsubst %.g4, %Visitor.cpp, $(RPS_ANTLR_SOURCES))
-RPS_ANTLR_GENERATED_CPP_BASE_VISITORS= $(patsubst %.g4, %BaseVisitor.cpp, $(RPS_ANTLR_SOURCES))
-
-RPS_ANTLR_GENERATED_CPP_CODES= \
- $(RPS_ANTLR_GENERATED_CPP_PARSERS) \
- $(RPS_ANTLR_GENERATED_CPP_LEXERS) \
- $(RPS_ANTLR_GENERATED_CPP_LISTENERS) \
- $(RPS_ANTLR_GENERATED_CPP_BASE_LISTENERS) \
- $(RPS_ANTLR_GENERATED_CPP_VISITORS) \
- $(RPS_ANTLR_GENERATED_CPP_BASE_VISITORS)
-
-
-RPS_ANTLR_GENERATED_CPP_HEADERS=  $(patsubst %.g4, \
-     %Parser.h \
-     %Lexer.h \
-     %Listener.h %BaseListener.h \
-     %Visitor.h %BaseVisitor.h, \
-    $(RPS_ANTLR_SOURCES))
-
-RPS_ANTLR_GENERATED_CPP_TOKENS=   $(patsubst %.g4, \
-     %.tokens  %Lexer.tokens, \
-    $(RPS_ANTLR_SOURCES))
+RPS_BISONCPP= bisonc++
 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_JSONRPC_OBJECTS = $(patsubst %.cc, %.o, $(RPS_JSONRPC_SOURCES))
 RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
-RPS_ANTLR_OBJECTS = $(patsubst %.cpp, %.o, $(RPS_ANTLR_GENERATED_CPP_CODES))
+
 
 #RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 #RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
@@ -166,7 +134,7 @@ RPS_PKG_CFLAGS:= $(shell $(RPS_CURLPP_CONFIG) --cflags) \
 
 RPS_PKG_LIBS:=  $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
-LIBES=  -lantlr4-runtime -lunistring -lbacktrace -lpthread -ldl
+LIBES=  -lunistring -lbacktrace -lpthread -ldl
 RM= rm -f
 MV= mv
 CC= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CC)
@@ -175,7 +143,7 @@ LINK.cc= $(RPS_BUILD_CXX)
 CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             $(RPS_BUILD_CODGENFLAGS) \
 	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) \
-            -I/usr/include/jsoncpp -I/usr/include/antlr4-runtime \
+            -I/usr/include/jsoncpp  \
 	    $(RPS_PKG_CFLAGS) \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
@@ -189,14 +157,13 @@ LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 all:
 	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
-	$(MAKE) do-antlr
 	$(MAKE) -$(MAKEFLAGS) refpersys
 	@echo all make target syncing
 	sync
 
-.SECONDARY:  __timestamp.c _antlr_dependencies.mk $(RPS_ANTLR_GENERATED_CPP_CODES) $(RPS_ANTLR_GENERATED_CPP_HEADERS) 
+.SECONDARY:  __timestamp.c 
 
-refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) $(RPS_ANTLR_OBJECTS) __timestamp.o
+refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
 	@echo $@: RPS_BUILD_CODGENFLAGS= $(RPS_BUILD_CODGENFLAGS)
 	@echo $@: RPS_CORE_OBJECTS= $(RPS_CORE_OBJECTS)
@@ -212,28 +179,6 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) $(RPS_ANTLR_OBJEC
 	$(RM) __timestamp.o
 
 
-_antlr_dependencies.mk: $(RPS_ANTLR_SOURCES)
-	date +'# file $@ generated %c%n' > $@
-	for f in $(RPS_ANTLR_SOURCES) ; do \
-	   $(ANTLR) $(ANTLR_FLAGS) -depend $$f >> $@ ; \
-	done
-
--include _antlr_dependencies.mk
-
-gramrepl_antlr_rpsParser.h          \
-gramrepl_antlr_rpsParser.cpp        \
-gramrepl_antlr_rps.tokens           \
-gramrepl_antlr_rpsLexer.cpp         \
-gramrepl_antlr_rpsLexer.tokens      \
-gramrepl_antlr_rpsListener.h        \
-gramrepl_antlr_rpsListener.cpp      \
-gramrepl_antlr_rpsBaseListener.h    \
-gramrepl_antlr_rpsBaseListener.cpp  \
-gramrepl_antlr_rpsVisitor.h         \
-gramrepl_antlr_rpsVisitor.cpp       \
-gramrepl_antlr_rpsBaseVisitor.h     \
-gramrepl_antlr_rpsBaseVisitor.cpp &: gramrepl_antlr_rps.g4
-	$(ANTLR) $(ANTLR_FLAGS) gramrepl_antlr_rps.g4
 
 #sanitized-refpersys:  main_rps.sanit.o $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
 #       $(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
@@ -307,7 +252,6 @@ clean:
 	$(RM) $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES))
 	$(RM) $(patsubst %.yy, %.output, $(RPS_BISON_SOURCES))
 	$(RM) *.tmp
-	$(RM) $(RPS_ANTLR_GENERATED)
 
 ## usual invocation: make plugin RPS_PLUGIN_SOURCE=/tmp/foo.cc RPS_PLUGIN_SHARED_OBJECT=/tmp/foo.so
 ## see also our ./build-plugin.sh script
@@ -316,11 +260,6 @@ plugin: | ./build-plugin.sh
 	if [ -n "$(RPS_PLUGIN_SHARED_OBJECT)" ]; then echo missing RPS_PLUGIN_SHARED_OBJECT  > /dev/stderr ; exit 1; fi
 	./build-plugin.sh $(RPS_PLUGIN_SOURCE) $(RPS_PLUGIN_SHARED_OBJECT)
 
-do-antlr:
-	for f in $(RPS_ANTLR_SOURCES) ; do \
-	   $(ANTLR) $(ANTLR_FLAGS) $$f ; \
-	done
-
 
 fullclean:
 	$(RPS_BUILD_CCACHE) -C
@@ -328,16 +267,21 @@ fullclean:
 
 __timestamp.c: | GNUmakefile do-generate-timestamp.sh
 	echo $@:
-	./do-generate-timestamp.sh $@  > $@-tmp
+	printf '/// $@ generated by do-generate-timestamp.sh\n' >> $@-tmp
+	./do-generate-timestamp.sh $@  >> $@-tmp
+	printf '/// below is generated in GNUmakefile by %s\n' $(realpath GNUmakefile) >> $@-tmp
 	printf 'const char rps_cxx_compiler_command[]="%s";\n' $(RPS_BUILD_CXX) >> $@-tmp
-	printf 'const char rps_cxx_compiler_realpath[]="%s";\n' $(RPS_BUILD_CXX_REALPATH) >> $@-tmp
+	printf 'const char rps_cxx_compiler_realpath[]="%s";\n' '$(shell /bin/which $(RPS_BUILD_CXX))' >> $@-tmp
 	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
+	printf 'const char rps_gnubison_command[]="%s";\n' "$(RPS_BUILD_BISON)" >> $@-tmp
+	printf 'const char rps_gnubison_realpath[]="%s";\n' '$(shell /bin/which $(RPS_BUILD_BISON))' >> $@-tmp
 	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
-	printf 'const char rps_bisoncpp_realpath[]="%s";\n' $(realpath $(RPS_BISONCPP))
-	printf 'const char rps_bisoncpp_version[]="%s";\n' $(shell $(RPS_BISONCPP) --version)
+	printf '// in GNUmakefile RPS_BISONCPP is %s\n' '$(RPS_BISONCPP)' >> $@-tmp
+	printf 'const char rps_bisoncpp_command[]="%s";\n' "$(RPS_BISONCPP)" >> $@-tmp
+	printf 'const char rps_bisoncpp_realpath[]="%s";\n' '$(shell /bin/which $(RPS_BISONCPP))' >> $@-tmp
+	printf 'const char rps_bisoncpp_version[]="%s";\n' "$(shell $(RPS_BISONCPP) --version)" >> $@-tmp
 	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp
-	printf 'const char rps_antlr_path[] = "%s";\n' $(ANTLR) >> $@-tmp
-	dpkg -l  antlr4 | tail -1 | awk '{printf "const char rps_antlr_version[]=\"%s\";\n", $$3}' >> $@-tmp
+	printf '/// end of generated file $@\n' >> $@-tmp
 	$(MV) --backup $@-tmp $@
 
 
