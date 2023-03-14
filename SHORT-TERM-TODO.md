@@ -15,7 +15,7 @@ than a few days of work.
 
 ### context
 
-For *RefPerSys* near commit `a714af43fe96995` (feb. 2023). Please email
+For *RefPerSys* near commit 3bab35f78a7b (i.e. `3bab35f78a7b`, March 2023). Please email
 [refpersys-forum@framalistes.org](mailto:refpersys-forum@framalistes.org)
 or at least contact [Basile
 Starynkevitch](http://starynkevitch.net/Basile/) by SMS, WhatsApp, or
