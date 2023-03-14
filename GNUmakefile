@@ -8,7 +8,8 @@
 ##      Basile Starynkevitch <basile@starynkevitch.net>
 ##      Abhishek Chakravarti <abhishek@taranjali.org>
 ##      Nimesh Neema <nimeshneema@gmail.com>
- ##
+##      Abdullah Siddiqui <siddiquiabdullah92@gmail.com>
+##
 ##      © Copyright 2019 - 2023 The Reflective Persistent System Team
 ##      team@refpersys.org
 ##
@@ -59,13 +60,17 @@ RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcar
 # for the GNU bison parser generator
 RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 
+# for the bisonc++ parser generator
+## TODO: complete..
+RPS_BISONCPP_SOURCES:=
 # for the ANTLR4 parser generator ; see http://www.antlr4.org/
 RPS_ANTLR_SOURCES:= $(sort $(wildcard [a-z]*antlr*rps.g4))
 
 RPS_ANTLR_GENERATED:= $(wildcard [a-z]*antlr*rps*.h)  $(wildcard [a-z]*antlr*rps*.cpp)  $(wildcard [a-z]*antlr*rps*.tokens)
 
 ANTLR = /usr/bin/antlr4
-ANTLR_FLAGS = -message-format gnu  -long-messages -visitor -listener  -Dlanguage=Cpp 
+ANTLR_FLAGS = -message-format gnu  -long-messages -visitor -listener  -Dlanguage=Cpp
+BISONCPP= bisonc++
 RPS_ANTLR_GENERATED_CPP_PARSERS= $(patsubst %.g4, %Parser.cpp, $(RPS_ANTLR_SOURCES))
 RPS_ANTLR_GENERATED_CPP_LEXERS= $(patsubst %.g4, %Lexer.cpp, $(RPS_ANTLR_SOURCES))
 RPS_ANTLR_GENERATED_CPP_LISTENERS= $(patsubst %.g4, %Listener.cpp, $(RPS_ANTLR_SOURCES))
@@ -328,6 +333,8 @@ __timestamp.c: | GNUmakefile do-generate-timestamp.sh
 	printf 'const char rps_cxx_compiler_realpath[]="%s";\n' $(RPS_BUILD_CXX_REALPATH) >> $@-tmp
 	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
 	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
+	printf 'const char rps_bisoncpp_realpath[]="%s";\n' $(realpath $(RPS_BISONCPP))
+	printf 'const char rps_bisoncpp_version[]="%s";\n' $(shell $(RPS_BISONCPP) --version)
 	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp
 	printf 'const char rps_antlr_path[] = "%s";\n' $(ANTLR) >> $@-tmp
 	dpkg -l  antlr4 | tail -1 | awk '{printf "const char rps_antlr_version[]=\"%s\";\n", $$3}' >> $@-tmp
