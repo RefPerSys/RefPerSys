@@ -1307,8 +1307,14 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 	       other one.  Non technical considerations,
 	       e.g. licensing, is important to some partners... */
 #warning decide what parser generator should be removed in 2023
-                    << " BISON parser generator: " << rps_gnubison_version << std::endl
-		    << " ANTLR parser generator: " << rps_antlr_path << " version " << rps_antlr_version << std::endl
+                    << " BISON parser generator: " << rps_gnubison_command
+		    << " version: " << rps_gnubison_version
+		    << " at: " << rps_gnubison_realpath
+		    << std::endl
+		    << " bisonc++ parser generator: " << rps_bisoncpp_command
+		    << " version " << rps_bisoncpp_version
+		    << " at: " << rps_bisoncpp_realpath
+		    << std::endl
 		    << " default GUI script: " << rps_gui_script_executable << std::endl
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl
