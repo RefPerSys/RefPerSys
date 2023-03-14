@@ -209,11 +209,11 @@ To install the dependencies on a recent [Debian](https://debian.org/) 12 *bookwo
 steps
 
 * `sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test` (for Ubuntu 20.04)
-* `sudo apt install -y gcc-12 g++-12 clang-14 libc++-11-dev libc++abi-11-dev` (for Ubuntu 20.04)
+* `sudo apt install -y gcc-12 g++-12 clang-14 libc++-11-dev libc++abi-11-dev` (for Ubuntu 22.04)
 * `sudo apt install libunistring-dev`
 * `sudo apt install libjsoncpp-dev`
 * `sudo apt-get install libssl-dev`
-* `sudo apt install antlr4 libantlr4-runtime-dev antlr4-doc`
+* `sudo apt install bisonc++ bisonc++-doc`
 * `sudo apt install ccache g++ make build-essential remake gdb automake`
 * `sudo apt install ttf-unifont ttf-mscorefonts-installer unifont msttcorefonts fonts-ubuntu fonts-tuffy fonts-spleen fonts-roboto fonts-recommended fonts-yanone-kaffeesatz fonts-play fonts-eurofurence fonts-ecolier-court fonts-dejavu fonts-croscore fonts-cegui fonts-inter fonts-inconsolata`
 * `git clone https://github.com/ianlancetaylor/libbacktrace.git`
@@ -225,7 +225,7 @@ steps
 
 ### compiling FLTK with DWARF debug information
 
-[RefPerSys](http://refpersys.org/) is using (e.g. in its commit
+[RefPerSys](http://refpersys.org/) was using (e.g. in its commit
 [843a6f0ddf1c22](https://github.com/RefPerSys/RefPerSys/commit/843a6f0ddf1c22149560f8d5a145638d78eda187)...)
 the [FLTK](https://fltk.org/) graphical user interface toolkit
 (e.g. FLTK version
