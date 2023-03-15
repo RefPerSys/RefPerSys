@@ -59,9 +59,9 @@ RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcar
 # for the GNU bison parser generator
 RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 
-# for the bisonc++ parser generator
-## TODO: complete..
-RPS_BISONCPP_SOURCES:=
+# for the bisonc++ parser generator, our RefPerSys convention is to
+# use .yyy as suffix
+RPS_BISONCPP_SOURCES:= $(sort $(wildcard [a-z]_rps.yyy))
 
 # note: Antlr parser generator is obsolete at commit  427be821cb (March 2023)
 
@@ -225,6 +225,9 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
 %.cc: %.yy
 	$(RPS_COMPILER_TIMER) $(RPS_BUILD_BISON) $(RPS_BUILD_BISON_FLAGS) --output=$@ $<
+
+%.cc: %.yyy
+	$(RPS_COMPILER_TIMER) $(RPS_BISONCPP) --show-filenames --verbose --thread-safe $<
 
 # see https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html 
 
