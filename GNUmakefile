@@ -166,7 +166,10 @@ all:
 	@echo all make target syncing
 	sync
 
-.SECONDARY:  __timestamp.c 
+.SECONDARY:  __timestamp.c _lemonrepl_rps.cc
+
+_lemonrepl_rps.cc : lemonrepl_rps.y
+	$(RPS_LEMON) -s $^ > $@
 
 refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)

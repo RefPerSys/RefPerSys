@@ -117,3 +117,6 @@ gramrepl_antlr_rpsParser.cpp
 gramrepl_antlr_rpsParser.h
 gramrepl_antlr_rpsVisitor.cpp
 gramrepl_antlr_rpsVisitor.h
+_lemonrepl_rps.cc
+lemonrepl_rps.c
+lemonrepl_rps.h
