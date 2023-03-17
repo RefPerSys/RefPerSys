@@ -169,16 +169,24 @@ extern "C" const char*const rps_subdirectories[];
 extern "C" const char rps_cxx_compiler_command[];
 extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];
+////
+//// TODO: it is hoped, near commit bbed1a6a87b4 of mid-March 2023, that RefPerSys contributors will choose a single parser generator.
 // GNU bison is a parser generator,  see www.gnu.org/software/bison/
 extern "C" const char rps_gnubison_command[];
 extern "C" const char rps_gnubison_realpath[];
 extern "C" const char rps_gnubison_version[];
+///// a process running the GUI communicating using JSONRPC
 extern "C" const char rps_gui_script_executable[];
 // bisonc++ is another parser generator. See fbb-git.gitlab.io/bisoncpp/
 extern "C" const char rps_bisoncpp_realpath[];
 extern "C" const char rps_bisoncpp_command[];
 extern "C" const char rps_bisoncpp_version[];
+// lemon is another parser generator.  See https://www.sqlite.org/lemon.html
+extern "C" const char rps_lemon_realpath[];
+extern "C" const char rps_lemon_command[];
+extern "C" const char rps_lemon_version[];
 
+// the Linux user compiling RefPerSys
 extern "C" const char rps_building_user_name[];
 extern "C" const char rps_building_user_email[];
 
