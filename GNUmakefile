@@ -64,8 +64,13 @@ RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 RPS_BISONCPP_SOURCES:= $(sort $(wildcard [a-z]_rps.yyy))
 
 # note: Antlr parser generator is obsolete at commit  427be821cb (March 2023)
-
 RPS_BISONCPP= bisonc++
+
+## we consider using the lemon parser generator inside sqlite.org
+## https://www.sqlite.org/lemon.html
+## it might have been defined in ~/.refpersys.mk
+RPS_LEMON ?= lemon
+
 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
