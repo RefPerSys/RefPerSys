@@ -71,7 +71,8 @@ RPS_BISONCPP= bisonc++
 ## https://www.sqlite.org/lemon.html
 ## it might have been defined in ~/.refpersys.mk
 RPS_LEMON ?= lemon
-
+## see also https://sqlite.org/forum/forumpost/265ee57b50
+RPS_LEMON_SKELETON ?= /usr/share/lemon/lempar.c
 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
@@ -171,9 +172,9 @@ all:
 
 lemonrepl_rps.c lemonrepl_rps.h : lemonrepl_rps.y
 #fixme: we could specify our lemon skeleton file lemskep_rps.skel with e.g. 	$(RPS_LEMON) -s -Tlemskel_rps.skel  $^
-	$(RPS_LEMON) -s $^ > $@
+	$(RPS_LEMON) -T$(RPS_LEMON_SKELETON) -s $^ > $@
 
-do-lemon: _lemonrepl_rps.c
+do-lemon: lemonrepl_rps.c
 
 refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
