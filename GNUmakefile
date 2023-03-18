@@ -30,7 +30,8 @@
 .PHONY: all objects clean plugin fullclean redump undump altredump print-plugin-settings indent \
    test00 test01 test02 test03 test04 test05 test06 test07 test08 test09 \
    test-load \
-   analyze gitpush gitpush2 withclang 
+   analyze gitpush gitpush2 withclang \
+   do-lemon
 
 
 
@@ -166,10 +167,13 @@ all:
 	@echo all make target syncing
 	sync
 
-.SECONDARY:  __timestamp.c _lemonrepl_rps.cc
+.SECONDARY:  __timestamp.c lemonrepl_rps.c lemonrepl_rps.h
 
-_lemonrepl_rps.cc : lemonrepl_rps.y
+lemonrepl_rps.c lemonrepl_rps.h : lemonrepl_rps.y
+#fixme: we could specify our lemon skeleton file lemskep_rps.skel with e.g. 	$(RPS_LEMON) -s -Tlemskel_rps.skel  $^
 	$(RPS_LEMON) -s $^ > $@
+
+do-lemon: _lemonrepl_rps.c
 
 refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
