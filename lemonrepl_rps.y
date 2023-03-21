@@ -25,8 +25,8 @@
   
   struct RpsLemon_Parsing_Argument {
     unsigned long lemparg_magic; /* should be RpsLemon_Arg_Magic */
-    RpsCallStack* lemparg_stack;
-    RpsTokenSource lemparg_toksrc;
+    Rps_CallFrame* lemparg_frame;
+    Rps_TokenSource* lemparg_toksrc;
     void* lemparg_xtra;
   };
 
@@ -83,7 +83,8 @@
 lemrepl_command ::= SHOW value_expr(v) .
   {
 #warning missing code for SHOW command
-    RPS_FATALOUT("missing code to show " << $v);
+    RPS_ASSERT(parsarg != nullptr && parsarg->lemparg_magic == RpsLemon_Arg_Magic);
+    RPS_FATALOUT("missing code to show " << v);
   }
 
 /// command to put an attribute in an object
@@ -91,45 +92,50 @@ lemrepl_command ::= IN obj_expr(ob) PUT obj_expr(obat)
                     COLON value_expr(valat) .
   {
 #warning missing code to put an attribute in an object
-    RPS_FATALOUT("missing code to put in " << $ob << " attr " << $obat << " value " << $valat);
+    RPS_FATALOUT("missing code to put in " << ob << " attr " << obat << " value " << valat);
   }
    ///
 lemrepl_command ::= IN obj_expr(ob)  REMOVE obj_expr(obat) .
   {
 #warning missing code to remove an attribute in an object
-    RPS_FATALOUT("missing code to remove in object"  << $ob << " attr " << $obat);
+    RPS_FATALOUT("missing code to remove in object"  << ob << " attr " << obat);
   }
+
+
+%type obj_expr {Rps_ObjectRef}
 
   obj_expr ::= NAME(n) .
   {
 #warning missing code for object with name
-    RPS_FATALOUT("missing code for object named " << $n);
+    RPS_FATALOUT("missing code for object named " << n);
   }
 
     obj_expr ::= OID(oi) .
   {
     #warning missing code for object with oid
-    RPS_FATALOUT("missing code for object of oid " << $oi);
+    RPS_FATALOUT("missing code for object of oid " << oi);
   }
-   
+
+%type value_expr {Rps_Value}
+
 /// TODO: lots of other rules for obj_expr are missing
 
       value_expr ::= INTEGER(vi) .
   {
 #warning missing code for value from int
-    RPS_FATALOUT("missing code for value from int " << $vi);
+    RPS_FATALOUT("missing code for value from int " << vi);
   }
 
 	value_expr ::= STRING(vs) .
   {
 #warning missing code for value from string
-    RPS_FATALOUT("missing code for value from string " << $vs);
+    RPS_FATALOUT("missing code for value from string " << vs);
   }
 
 	  value_expr ::= FLOAT(vf) .
   {
 #warning missing code for value from float
-    RPS_FATALOUT("missing code for value from float " << $vf);
+    RPS_FATALOUT("missing code for value from float " << vf);
   }
 
 
@@ -138,7 +144,7 @@ lemrepl_command ::= IN obj_expr(ob)  REMOVE obj_expr(obat) .
 value_expr ::= obj_expr(ob) DOT obj_expr(obat) .
   {
 #warning missing code to get an attribute in an object
-    RPS_FATALOUT("missing code to get in object " << $ob << " attribute " << $obat);
+    RPS_FATALOUT("missing code to get in object " << ob << " attribute " << obat);
   }
 
 
@@ -146,6 +152,6 @@ value_expr ::= obj_expr(ob) LEFTBRACKET value_expr(v) RIGHTBRACKET
 .
   {
 #warning missing code to get a component in an object
-    RPS_FATALOUT("missing code get in an object " << $ob << " component " << $v);
+    RPS_FATALOUT("missing code get in an object " << ob << " component " << v);
   }
 
