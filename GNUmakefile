@@ -302,9 +302,9 @@ __timestamp.c: GNUmakefile do-generate-timestamp.sh
 	printf 'const char rps_bisoncpp_version[]="%s";\n' "$(shell $(RPS_BISONCPP) --version)" >> $@-tmp
 	printf '// in GNUmakefile RPS_LEMON is %s\n' '$(RPS_LEMON)' >> $@-tmp
 	printf '// RPS_LEMON is a parser generator from sqlite.org\n' >> $@-tmp
-	printf 'const char rps_lemon_command[]="%s"\n' '$(RPS_LEMON)' >> $@-tmp
-	printf 'const char rps_lemon_realpath[]="%s"\n' '$(shell /bin/which $(RPS_LEMON))' >> $@-tmp
-	printf 'const char rps_lemon_version[]="%s"\n' '$(shell $(RPS_LEMON) -x)' >> $@-tmp
+	printf 'const char rps_lemon_command[]="%s";\n' '$(RPS_LEMON)' >> $@-tmp
+	printf 'const char rps_lemon_realpath[]="%s";\n' '$(shell /bin/which $(RPS_LEMON))' >> $@-tmp
+	printf 'const char rps_lemon_version[]="%s";\n' '$(shell $(RPS_LEMON) -x)' >> $@-tmp
 	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp
 	printf '/// end of generated file $@\n' >> $@-tmp
 	$(MV) --backup $@-tmp $@
