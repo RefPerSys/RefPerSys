@@ -172,7 +172,11 @@ all:
 
 lemonrepl_rps.c lemonrepl_rps.h : lemonrepl_rps.y
 #fixme: we could specify our lemon skeleton file lemskep_rps.skel with e.g. 	$(RPS_LEMON) -s -Tlemskel_rps.skel  $^
-	$(RPS_LEMON) -T$(RPS_LEMON_SKELETON) -s $^ > $@
+	$(RPS_LEMON) -T$(RPS_LEMON_SKELETON) -s $^ > lemonrepl_rps.out
+
+lemonrepl_rps.o: lemonrepl_rps.c refpersys.hh lemonrepl_rps.h
+	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -std=gnu++17 -o $@ $<
+	sync
 
 do-lemon: lemonrepl_rps.c
 
