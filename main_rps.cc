@@ -891,7 +891,9 @@ main (int argc, char** argv)
   RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" //
 	     " %s process %d on host %s\n" //
 	     "... (stdout %s, stderr %s) with %d arguments\n" //
-             "... gitid %.16s built %s (main@%p) %s mode (%d jobs)",
+             "... gitid %.16s built %s, %s mode (%d jobs)\n"
+	     "This is open source software, GPL licensed, no warranty!\n"
+	     ".... See http://refpersys.org/ .....\n",
              RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
              RPS_TERMINAL_NORMAL_ESCAPE,
              argv[0], (int)getpid(), rps_hostname(),
@@ -899,9 +901,12 @@ main (int argc, char** argv)
              rps_stderr_istty?"tty":"plain",
 	     argc,
              rps_gitid, rps_timestamp,
-             (void*)main,
              (rps_batch?"batch":"interactive"),
              rps_nbjobs);
+  RPS_DEBUG_PRINTF(REPL, "main is at @%p, rps_end_of_main is at @%p (pid %d on %s)",
+		   (void*)main,
+		   (void*)rps_end_of_main,
+		   (int)getpid(), rps_hostname());
   ////
   //// extend the environment if needed
   rps_extend_env();
