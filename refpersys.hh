@@ -4811,6 +4811,12 @@ public:
 };  // end of Rps_PayloadPopenedFile
 
 
+/// related to eventloop and agenda
+extern "C" void rps_postpone_dump(void);
+extern "C" void rps_postpone_garbage_collection(void);
+extern "C" void rps_postpone_quit(void);
+extern "C" void rps_postpone_exit_with_dump(void);
+
 //////////////////////////////////////////////////////////////////
 /// C++ code can refer to root objects
 #define RPS_ROOT_OB(Oid) rps_rootob##Oid

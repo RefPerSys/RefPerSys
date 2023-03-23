@@ -51,6 +51,14 @@ static int timfd;		// file descriptor for https://man7.org/linux/man-pages/man2/
 static int self_pipe_read_fd, self_pipe_write_fd;
 static std::deque<unsigned char> self_pipe_fifo;
 static std::mutex self_pipe_mtx;
+enum self_pipe_code_en
+{
+  SelfPipe__NONE=0,
+  SelfPipe_Dump = 'D',
+  SelfPipe_GarbColl = 'G',
+  SelfPipe_Quit = 'Q',
+  SelfPipe_Exit = 'X',
+};
 
 extern "C" void rps_self_pipe_write_byte(unsigned char b);
 
@@ -250,9 +258,9 @@ rps_event_loop(void)
             std::int32_t scod= infsig.ssi_code;
             pid_t origpid= infsig.ssi_pid;
             std::int32_t status= infsig.ssi_status;
-	    int signum= infsig.ssi_signo;
-	    RPS_DEBUG_LOG(REPL, "eventloop sigfd signal#" << signum << ":" << strsignal(signum)
-			  << " scod:" << scod << " origpid:"<< origpid << " status:" << status);
+            int signum= infsig.ssi_signo;
+            RPS_DEBUG_LOG(REPL, "eventloop sigfd signal#" << signum << ":" << strsignal(signum)
+                          << " scod:" << scod << " origpid:"<< origpid << " status:" << status);
             switch (infsig.ssi_signo)
               {
               case SIGTERM:
@@ -277,6 +285,8 @@ rps_event_loop(void)
                 RPS_INFORMOUT("event loop got SIGCHLD from pid " << origpid << " status:" << status);
               };
               break;
+              default:
+                RPS_FATALOUT("unexpected signal#" << signum << ":" << strsignal(signum));
               };
 #warning missing code to handle signalfd...
           };
@@ -295,6 +305,18 @@ rps_event_loop(void)
             uint64_t timbuf[16];
             memset (&timbuf, 0, sizeof(timbuf));
             int nbr = read(fd, (void*)&timbuf, sizeof(timbuf));
+            if (nbr>0)
+              {
+                RPS_DEBUG_LOG(REPL, "eventloop read " << nbr << " bytes on timerfd, so " << (nbr/sizeof(std::uint64_t)) << " int64s: "
+                              << Rps_Do_Output([=](std::ostream& out)
+                {
+                  for (int ix=0; ix< (nbr/sizeof(std::uint64_t)); ix++)
+                    out << ' ' << timbuf[ix];
+                }
+                                              )
+                    << std::flush);
+                RPS_FATALOUT("unimplemented timerfd handling of " << (nbr/sizeof(std::uint64_t)) << " int64s.");
+              }
 #warning missing code to handle timerfd...
           };
         };
@@ -313,9 +335,9 @@ rps_event_loop(void)
             /* TODO: should read(2) */
             memset(buf, 0, sizeof(buf));
             int nbr = read(fd, buf, sizeof(buf));
-	    if (nbr > 0)
-	      for (int i = 0; i<nbr; i++)
-		handle_self_pipe_byte_rps(buf[i]);
+            if (nbr > 0)
+              for (int i = 0; i<nbr; i++)
+                handle_self_pipe_byte_rps(buf[i]);
           };
         };
       if (self_pipe_write_fd>0)
@@ -329,14 +351,15 @@ rps_event_loop(void)
           {
             RPS_ASSERT(fd == self_pipe_write_fd);
             RPS_ASSERT(rev == POLLOUT);
-	    std::lock_guard<std::mutex> gu(self_pipe_mtx);
-	    while (!self_pipe_fifo.empty()) {
-	      unsigned char b = self_pipe_fifo.back();
-	      if (write(fd, &b, 1) > 0)
-		self_pipe_fifo.pop_back();
-	      else
-		break;
-	    };
+            std::lock_guard<std::mutex> gu(self_pipe_mtx);
+            while (!self_pipe_fifo.empty())
+              {
+                unsigned char b = self_pipe_fifo.back();
+                if (write(fd, &b, 1) > 0)
+                  self_pipe_fifo.pop_back();
+                else
+                  break;
+              };
           };
         };
       bool debugpoll = RPS_DEBUG_ENABLED(REPL) //
@@ -443,16 +466,54 @@ rps_event_loop(void)
 #undef EXPLAIN_EVFD_RPS
 } // end rps_event_loop
 
- void
- handle_self_pipe_byte_rps(unsigned char b)
- {
-   RPS_ASSERT(rps_is_main_thread());
-   RPS_DEBUG_LOG(REPL, "handle_self_pipe_byte_rps b=" << (char)b << "#" << (unsigned)b);
-   switch (b) {
-   default:
-     RPS_FATALOUT("unexpected byte " << (char)b << "#" << (unsigned)b << " on self pipe");
-   };
- } // end handle_self_pipe_byte_rps
+void
+handle_self_pipe_byte_rps(unsigned char b)
+{
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_DEBUG_LOG(REPL, "handle_self_pipe_byte_rps b=" << (char)b << "#" << (unsigned)b);
+  switch (b)
+    {
+    case SelfPipe_Dump:
+      rps_dump_into (rps_get_loaddir());
+      break;
+    case SelfPipe_GarbColl:
+      rps_garbage_collect();
+      break;
+    case SelfPipe_Quit:
+      rps_stop_event_loop_flag.store(true);
+      break;
+    case SelfPipe_Exit:
+      rps_dump_into (rps_get_loaddir());
+      rps_stop_event_loop_flag.store(true);
+      break;
+    default:
+      RPS_FATALOUT("unexpected byte " << (char)b << "#" << (unsigned)b << " on self pipe");
+    };
+} // end handle_self_pipe_byte_rps
 
+
+void
+rps_postpone_dump(void)
+{
+  rps_self_pipe_write_byte(SelfPipe_Dump);
+} // end rps_postpone_dump
+
+void
+rps_postpone_garbage_collection(void)
+{
+  rps_self_pipe_write_byte(SelfPipe_GarbColl);
+} // end rps_postpone_garbage_collection
+
+void
+rps_postpone_quit(void)
+{
+  rps_self_pipe_write_byte(SelfPipe_Quit);
+} // end rps_postpone_quit
+
+void
+rps_postpone_exit_with_dump(void)
+{
+  rps_self_pipe_write_byte(SelfPipe_Exit);
+} // end rps_postpone_exit_with_dump
 
 /// end of file eventloop_rps.cc
