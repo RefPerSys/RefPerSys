@@ -192,6 +192,7 @@ rps_event_loop(void)
           handlarr[pix] = [&](int fd, short rev)
           {
             RPS_ASSERT(fd ==  pollarr[pix].fd);
+            RPS_FATALOUT("missing code to handle JsonRpc output to fd#" << fd << " pix#" << pix);
 #warning missing code to handle JsonRpc output to the GUI process
           };
         };
@@ -210,6 +211,7 @@ rps_event_loop(void)
             /* TODO: should read(2) */
             memset(buf, 0, sizeof(buf));
             int nbr = read(fd, buf, sizeof(buf));
+            RPS_FATALOUT("missing code to handle JsonRpc input from fd#" << fd << " pix#" << pix);
 #warning missing code to handle JsonRpc input from the GUI process
           };
         };
@@ -227,6 +229,37 @@ rps_event_loop(void)
             memset(&infsig, 0, sizeof(infsig));
             RPS_ASSERT(fd ==  pollarr[pix].fd && fd == sigfd);
             int nbr = read(fd, (void*)&infsig, sizeof(infsig));
+            if (nbr != sizeof(infsig))
+              RPS_FATALOUT("signalfd read failure on fd#" << fd << " pix#" << pix << " got " << nbr << " bytes, expecting " << sizeof(infsig)
+                           << ":" << strerror(errno));
+            std::int32_t scod= infsig.ssi_code;
+            pid_t origpid= infsig.ssi_pid;
+            std::int32_t status= infsig.ssi_status;
+            switch (infsig.ssi_signo)
+              {
+              case SIGTERM:
+              {
+                RPS_INFORMOUT("event loop got SIGTERM from pid " << origpid);
+                rps_stop_event_loop_flag.store(true);
+              };
+              break;
+              case SIGQUIT:
+              {
+                RPS_INFORMOUT("event loop got SIGQUIT from pid " << origpid);
+                rps_stop_event_loop_flag.store(true);
+              };
+              break;
+              case SIGINT:
+              {
+                RPS_INFORMOUT("event loop got SIGINT from pid " << origpid);
+              };
+              break;
+              case SIGCHLD:
+              {
+                RPS_INFORMOUT("event loop got SIGCHLD from pid " << origpid << " status:" << status);
+              };
+              break;
+              };
 #warning missing code to handle signalfd...
           };
         }
