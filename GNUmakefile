@@ -178,7 +178,7 @@ lemonrepl_rps.o: lemonrepl_rps.c refpersys.hh lemonrepl_rps.h
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -std=gnu++17 -o $@ $<
 	sync
 
-do-lemon: lemonrepl_rps.c
+do-lemon: lemonrepl_rps.c lemonrepl_rps.h
 
 refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
@@ -271,6 +271,7 @@ clean:
 	$(RM) -rf bld
 	$(RM) $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES))
 	$(RM) $(patsubst %.yy, %.output, $(RPS_BISON_SOURCES))
+	$(RM) lemonrepl_rps.c lemonrepl_rps.h lemonrepl_rps.out
 	$(RM) *.tmp
 
 ## usual invocation: make plugin RPS_PLUGIN_SOURCE=/tmp/foo.cc RPS_PLUGIN_SHARED_OBJECT=/tmp/foo.so

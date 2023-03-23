@@ -120,3 +120,4 @@ gramrepl_antlr_rpsVisitor.h
 _lemonrepl_rps.cc
 lemonrepl_rps.c
 lemonrepl_rps.h
+doc/design-ideas/cc-by-sa.png
