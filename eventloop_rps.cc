@@ -49,6 +49,12 @@ static int timfd;		// file descriptor for https://man7.org/linux/man-pages/man2/
  * in cooperation with Rps_PayloadUnixProcess::start_process
  **/
 static int self_pipe_read_fd, self_pipe_write_fd;
+static std::deque<unsigned char> self_pipe_fifo;
+static std::mutex self_pipe_mtx;
+
+extern "C" void rps_self_pipe_write_byte(unsigned char b);
+
+static void handle_self_pipe_byte_rps(unsigned char b);
 
 //extern "C" std::atomic<bool> rps_stop_event_loop_flag;
 
@@ -66,6 +72,15 @@ rps_do_stop_event_loop(void)
 } // end rps_do_stop_event_loop
 
 extern "C" void jsonrpc_initialize_rps(void);
+
+
+void
+rps_self_pipe_write_byte(unsigned char b)
+{
+  RPS_ASSERT(b != (char)0);
+  std::lock_guard<std::mutex> gu(self_pipe_mtx);
+  self_pipe_fifo.push_back(b);
+} // end rps_self_pipe_write_byte
 
 bool
 rps_is_fifo(std::string path)
@@ -235,6 +250,9 @@ rps_event_loop(void)
             std::int32_t scod= infsig.ssi_code;
             pid_t origpid= infsig.ssi_pid;
             std::int32_t status= infsig.ssi_status;
+	    int signum= infsig.ssi_signo;
+	    RPS_DEBUG_LOG(REPL, "eventloop sigfd signal#" << signum << ":" << strsignal(signum)
+			  << " scod:" << scod << " origpid:"<< origpid << " status:" << status);
             switch (infsig.ssi_signo)
               {
               case SIGTERM:
@@ -289,13 +307,15 @@ rps_event_loop(void)
           EXPLAIN_EVFD_RPS(pix, "self_pipe_read_fd");
           handlarr[pix] = [&](int fd, short rev)
           {
-            char buf[1024];
+            unsigned char buf[128];
             RPS_ASSERT(fd == self_pipe_read_fd);
             RPS_ASSERT(rev == POLLIN);
             /* TODO: should read(2) */
             memset(buf, 0, sizeof(buf));
             int nbr = read(fd, buf, sizeof(buf));
-#warning missing code to handle self_pipe_read_fd...
+	    if (nbr > 0)
+	      for (int i = 0; i<nbr; i++)
+		handle_self_pipe_byte_rps(buf[i]);
           };
         };
       if (self_pipe_write_fd>0)
@@ -307,11 +327,16 @@ rps_event_loop(void)
           EXPLAIN_EVFD_RPS(pix, "self_pipe_write_fd");
           handlarr[pix] = [&](int fd, short rev)
           {
-            char buf[1024];
             RPS_ASSERT(fd == self_pipe_write_fd);
             RPS_ASSERT(rev == POLLOUT);
-            /* TODO: should write(2) */
-#warning missing code to handle self_pipe_write_fd...
+	    std::lock_guard<std::mutex> gu(self_pipe_mtx);
+	    while (!self_pipe_fifo.empty()) {
+	      unsigned char b = self_pipe_fifo.back();
+	      if (write(fd, &b, 1) > 0)
+		self_pipe_fifo.pop_back();
+	      else
+		break;
+	    };
           };
         };
       bool debugpoll = RPS_DEBUG_ENABLED(REPL) //
@@ -418,7 +443,16 @@ rps_event_loop(void)
 #undef EXPLAIN_EVFD_RPS
 } // end rps_event_loop
 
-
+ void
+ handle_self_pipe_byte_rps(unsigned char b)
+ {
+   RPS_ASSERT(rps_is_main_thread());
+   RPS_DEBUG_LOG(REPL, "handle_self_pipe_byte_rps b=" << (char)b << "#" << (unsigned)b);
+   switch (b) {
+   default:
+     RPS_FATALOUT("unexpected byte " << (char)b << "#" << (unsigned)b << " on self pipe");
+   };
+ } // end handle_self_pipe_byte_rps
 
 
 /// end of file eventloop_rps.cc
