@@ -1311,14 +1311,9 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 	       which parser generator to really use... and drop the
 	       other one.  Non technical considerations,
 	       e.g. licensing, is important to some partners... */
-#warning decide what parser generator should be removed in 2023
-                    << " BISON parser generator: " << rps_gnubison_command
+                    << " Gnu Bison parser generator: " << rps_gnubison_command
 		    << " version: " << rps_gnubison_version
 		    << " at: " << rps_gnubison_realpath
-		    << std::endl
-		    << " bisonc++ parser generator: " << rps_bisoncpp_command
-		    << " version " << rps_bisoncpp_version
-		    << " at: " << rps_bisoncpp_realpath
 		    << std::endl
 		    << " default GUI script: " << rps_gui_script_executable << std::endl
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
