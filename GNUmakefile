@@ -30,8 +30,8 @@
 .PHONY: all objects clean plugin fullclean redump undump altredump print-plugin-settings indent \
    test00 test01 test02 test03 test04 test05 test06 test07 test08 test09 \
    test-load \
-   analyze gitpush gitpush2 withclang \
-   do-lemon
+   analyze gitpush gitpush2 withclang 
+
 
 
 
@@ -60,19 +60,11 @@ RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcar
 # for the GNU bison parser generator
 RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 
-# for the bisonc++ parser generator, our RefPerSys convention is to
-# use .yyy as suffix
-RPS_BISONCPP_SOURCES:= $(sort $(wildcard [a-z]_rps.yyy))
 
-# note: Antlr parser generator is obsolete at commit  427be821cb (March 2023)
-RPS_BISONCPP= bisonc++
-
-## we consider using the lemon parser generator inside sqlite.org
-## https://www.sqlite.org/lemon.html
-## it might have been defined in ~/.refpersys.mk
-RPS_LEMON ?= lemon
-## see also https://sqlite.org/forum/forumpost/265ee57b50
-RPS_LEMON_SKELETON ?= /usr/share/lemon/lempar.c
+## bisonc++ parser generator obsolete in commit 51fd71d8e750 (March 2023)
+# note: the ANTLR parser generator is obsolete at commit  427be821cb (March 2023)
+## we did consider using the lemon parser generator inside sqlite.org
+## https://www.sqlite.org/lemon.html up to commit 51fd71d8e75
 
 RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E elapsed; %M RSS' --output=_build.time
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
@@ -168,17 +160,8 @@ all:
 	@echo all make target syncing
 	sync
 
-.SECONDARY:  __timestamp.c lemonrepl_rps.c lemonrepl_rps.h
+.SECONDARY:  __timestamp.c
 
-lemonrepl_rps.c lemonrepl_rps.h : lemonrepl_rps.y
-#fixme: we could specify our lemon skeleton file lemskep_rps.skel with e.g. 	$(RPS_LEMON) -s -Tlemskel_rps.skel  $^
-	$(RPS_LEMON) -T$(RPS_LEMON_SKELETON) -s $^ > lemonrepl_rps.out
-
-lemonrepl_rps.o: lemonrepl_rps.c refpersys.hh lemonrepl_rps.h
-	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -std=gnu++17 -o $@ $<
-	sync
-
-do-lemon: lemonrepl_rps.c lemonrepl_rps.h
 
 refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
@@ -271,7 +254,6 @@ clean:
 	$(RM) -rf bld
 	$(RM) $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES))
 	$(RM) $(patsubst %.yy, %.output, $(RPS_BISON_SOURCES))
-	$(RM) lemonrepl_rps.c lemonrepl_rps.h lemonrepl_rps.out
 	$(RM) *.tmp
 
 ## usual invocation: make plugin RPS_PLUGIN_SOURCE=/tmp/foo.cc RPS_PLUGIN_SHARED_OBJECT=/tmp/foo.so
@@ -297,15 +279,6 @@ __timestamp.c: GNUmakefile do-generate-timestamp.sh
 	printf 'const char rps_gnubison_command[]="%s";\n' "$(RPS_BUILD_BISON)" >> $@-tmp
 	printf 'const char rps_gnubison_realpath[]="%s";\n' '$(shell /bin/which $(RPS_BUILD_BISON))' >> $@-tmp
 	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
-	printf '// in GNUmakefile RPS_BISONCPP is %s\n' '$(RPS_BISONCPP)' >> $@-tmp
-	printf 'const char rps_bisoncpp_command[]="%s";\n' "$(RPS_BISONCPP)" >> $@-tmp
-	printf 'const char rps_bisoncpp_realpath[]="%s";\n' '$(shell /bin/which $(RPS_BISONCPP))' >> $@-tmp
-	printf 'const char rps_bisoncpp_version[]="%s";\n' "$(shell $(RPS_BISONCPP) --version)" >> $@-tmp
-	printf '// in GNUmakefile RPS_LEMON is %s\n' '$(RPS_LEMON)' >> $@-tmp
-	printf '// RPS_LEMON is a parser generator from sqlite.org\n' >> $@-tmp
-	printf 'const char rps_lemon_command[]="%s";\n' '$(RPS_LEMON)' >> $@-tmp
-	printf 'const char rps_lemon_realpath[]="%s";\n' '$(shell /bin/which $(RPS_LEMON))' >> $@-tmp
-	printf 'const char rps_lemon_version[]="%s";\n' '$(shell $(RPS_LEMON) -x)' >> $@-tmp
 	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp
 	printf '/// end of generated file $@\n' >> $@-tmp
 	$(MV) --backup $@-tmp $@
