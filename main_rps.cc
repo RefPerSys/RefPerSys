@@ -1332,6 +1332,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
               std::cout << " in " << cwdbuf;
           };
           std::cout << std::endl << " C++ compiler: " << rps_cxx_compiler_version << std::endl
+		    << " extra compilation flags: " << rps_build_xtra_cflags << std::endl
                     << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl
                     << "+++++ there is no WARRANTY, to the extent permitted by law ++++" << std::endl
                     << "***** see also refpersys.org *****"

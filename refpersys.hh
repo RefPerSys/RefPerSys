@@ -169,6 +169,7 @@ extern "C" const char*const rps_subdirectories[];
 extern "C" const char rps_cxx_compiler_command[];
 extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];
+extern "C" const char rps_build_xtra_cflags[];
 ////
 //// TODO: it is hoped, near commit bbed1a6a87b4 of mid-March 2023, that RefPerSys contributors will choose a single parser generator.
 // GNU bison is a parser generator,  see www.gnu.org/software/bison/

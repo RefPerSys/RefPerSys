@@ -42,10 +42,13 @@ export
 ###     # file ~/.refpersys.mk
 ###     RPS_BUILD_CC= gcc-12
 ###     RPS_BUILD_CXX= g++-12
+###  and perhaps
+###     RPS_BUILD_XTRA_CFLAGS= -pg
 ### This enables changing C and C++ compiler versions
 ifndef RPS_BUILD_CC
 -include $(shell /bin/ls ~/.refpersys.mk)
 endif
+
 
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
@@ -146,7 +149,7 @@ CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
 	    $(RPS_PKG_CFLAGS) \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
-            $(RPS_BUILD_COMPILER_FLAGS)
+            $(RPS_BUILD_COMPILER_FLAGS) $(RPS_BUILD_XTRA_CFLAGS)
 
 LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 
@@ -170,7 +173,7 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	@echo $@: RPS_BISON_OBJECTS= $(RPS_BISON_OBJECTS)
 	@echo $@: LIBES= $(LIBES)
 	-sync
-	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS) -rdynamic -pie -Bdynamic \
+	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS)  $(RPS_BUILD_XTRA_CFLAGS) -rdynamic -pie -Bdynamic \
                               main_rps.o $(RPS_CORE_OBJECTS)    __timestamp.o \
                  $(shell $(RPS_CURLPP_CONFIG) --libs) \
 	         $(LIBES) $(RPS_PKG_LIBS)  -o $@-tmp
@@ -276,6 +279,7 @@ __timestamp.c: GNUmakefile do-generate-timestamp.sh
 	printf 'const char rps_cxx_compiler_command[]="%s";\n' $(RPS_BUILD_CXX) >> $@-tmp
 	printf 'const char rps_cxx_compiler_realpath[]="%s";\n' '$(shell /bin/which $(RPS_BUILD_CXX))' >> $@-tmp
 	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
+	printf 'const char rps_build_xtra_cflags[]="%s";\n' '$(RPS_BUILD_XTRA_CFLAGS)' >> $@-tmp
 	printf 'const char rps_gnubison_command[]="%s";\n' "$(RPS_BUILD_BISON)" >> $@-tmp
 	printf 'const char rps_gnubison_realpath[]="%s";\n' '$(shell /bin/which $(RPS_BUILD_BISON))' >> $@-tmp
 	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
