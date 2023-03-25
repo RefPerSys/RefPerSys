@@ -245,7 +245,7 @@ rps_event_loop(void)
           handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
           {
             RPS_ASSERT(fd ==  pollarr[pix].fd);
-	    RPS_ASSERT(rev == POLLOUT);
+            RPS_ASSERT(rev == POLLOUT);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             RPS_FATALOUT("missing code to handle JsonRpc output to fd#" << fd << " pix#" << pix);
 #warning missing code to handle JsonRpc output to the GUI process
@@ -263,7 +263,7 @@ rps_event_loop(void)
           {
             char buf[1024];
             RPS_ASSERT(fd ==  pollarr[pix].fd);
-	    RPS_ASSERT(rev == POLLIN);
+            RPS_ASSERT(rev == POLLIN);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             /* TODO: should read(2) */
             memset(buf, 0, sizeof(buf));
@@ -285,7 +285,7 @@ rps_event_loop(void)
             struct signalfd_siginfo infsig;
             memset(&infsig, 0, sizeof(infsig));
             RPS_ASSERT(fd ==  pollarr[pix].fd && fd == rps_eventloopdata.eld_sigfd);
-	    RPS_ASSERT(rev == POLLIN);
+            RPS_ASSERT(rev == POLLIN);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             int nbr = read(fd, (void*)&infsig, sizeof(infsig));
             if (nbr != sizeof(infsig))
