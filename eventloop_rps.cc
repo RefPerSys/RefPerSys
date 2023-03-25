@@ -60,12 +60,26 @@ std::atomic<bool> rps_stop_event_loop_flag;
 int rps_poll_delay_millisec = 1500;
 
 
+#define RPS_EVENTLOOPDATA_MAGIC 814538509 /*0x308cdf0d*/
 struct event_loop_data_st
 {
-  double eld_startelapsedtime;
-  double eld_startcputime;
+  unsigned eld_magic;		// should be RPS_EVENTLOOPDATA_MAGIC
+  std::mutex eld_mtx;
+  double eld_startelapsedtime; // start real time of event loop
+  double eld_startcputime; // start CPU time of event loop
   std::array<std::function<void(Rps_CallFrame*, int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> eld_handlarr;
+  int eld_sigfd;	// file descriptor from signalfd(2)
+  int eld_timfd;        // file descriptor from timerfd_create(2)
+  int eld_selfpipereadfd; // self pipe, reading end
+  int eld_selfpipewritefd; // self pipe, writing end
+  std::deque<unsigned char> eld_selfpipefifo;
+  std::atomic<bool> eld_eventloopisactive;
+  std::atomic<long> eld_nbloops;
 };
+
+extern "C" struct event_loop_data_st rps_eventloopdata;
+struct event_loop_data_st rps_eventloopdata;
+
 
 static int sigfd;		// file descriptor for https://man7.org/linux/man-pages/man2/signalfd.2.html
 static int timfd;		// file descriptor for https://man7.org/linux/man-pages/man2/timerfd_create.2.html
