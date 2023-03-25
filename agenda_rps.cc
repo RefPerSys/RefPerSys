@@ -377,9 +377,10 @@ rps_run_agenda_mechanism(int nbjobs)
     };
   /*** TODO (1):
    *
-   * We may need to run one posix thread, which is mostly sleeping,
-   * and waiting for SIGCHLD of Rps_PayloadUnixProcess and polling
-   * Rps_PayloadPopenedFile etc...  See Todo §2 below
+   * We are running the event loop in one posix thread, which is
+   * mostly sleeping, and waiting for SIGCHLD of
+   * Rps_PayloadUnixProcess and polling Rps_PayloadPopenedFile etc...
+   * See C++ code in file eventloop_rps.cc.  See Todo §2 below
    **/
   Rps_Agenda::agenda_is_running_.store(true);
   /// start all worker threads
@@ -394,9 +395,10 @@ rps_run_agenda_mechanism(int nbjobs)
       /*** TODO (2):
        *
        * Cooperation with unix processes and popen-ed commands is
-       * needed in the agenda.  We probably need to use poll(2) system
-       * call and waitpid(2) system calls and/or to handle SIGCHLD
-       * signals.  See Todo §1 above.
+       * needed in the agenda. See our file eventloop_rps.cc.  We do
+       * need to use poll(2) system call and waitpid(2) system calls
+       * and/or to handle SIGCHLD signals in that eventloop_rps.cc
+       * file.  See Todo §1 above.
        ***/
       Rps_Agenda::agenda_changed_condvar_.wait_for(Rps_Agenda::agenda_mtx_,
           30ms + 1ms * Rps_Random::random_quickly_4bits());
