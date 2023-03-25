@@ -162,7 +162,7 @@ rps_event_loop(void)
   int nbpoll=0;
   double startelapsedtime=rps_elapsed_real_time();
   double startcputime=rps_process_cpu_time();
-  std::array<std::function<void(int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
+  std::array<std::function<void(Rps_CallFrame*, int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
   if (!rps_is_main_thread())
     RPS_FATALOUT("rps_event_loop should be called only from the main thread");
   if (nbcall++>0)
@@ -216,9 +216,10 @@ rps_event_loop(void)
           int pix = nbpoll++;
           pollarr[pix].fd = fdp.fifo_ui_wcmd;
           pollarr[pix].events = POLLOUT;
-          handlarr[pix] = [&](int fd, short rev)
+          handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
           {
             RPS_ASSERT(fd ==  pollarr[pix].fd);
+            RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             RPS_FATALOUT("missing code to handle JsonRpc output to fd#" << fd << " pix#" << pix);
 #warning missing code to handle JsonRpc output to the GUI process
           };
@@ -231,10 +232,11 @@ rps_event_loop(void)
           pollarr[pix].fd = fdp.fifo_ui_rout;
           pollarr[pix].events = POLLIN;
           EXPLAIN_EVFD_RPS(pix, "JsonRpc responses from GUI");
-          handlarr[pix] = [&](int fd, short rev)
+          handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
           {
             char buf[1024];
             RPS_ASSERT(fd ==  pollarr[pix].fd);
+            RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             /* TODO: should read(2) */
             memset(buf, 0, sizeof(buf));
             int nbr = read(fd, buf, sizeof(buf));
@@ -250,11 +252,12 @@ rps_event_loop(void)
           pollarr[pix].fd = sigfd;
           pollarr[pix].events = POLLIN;
           EXPLAIN_EVFD_RPS(pix, "signalfd");
-          handlarr[pix] = [&](int fd, short rev)
+          handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
           {
             struct signalfd_siginfo infsig;
             memset(&infsig, 0, sizeof(infsig));
             RPS_ASSERT(fd ==  pollarr[pix].fd && fd == sigfd);
+            RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             int nbr = read(fd, (void*)&infsig, sizeof(infsig));
             if (nbr != sizeof(infsig))
               RPS_FATALOUT("signalfd read failure on fd#" << fd << " pix#" << pix << " got " << nbr << " bytes, expecting " << sizeof(infsig)
@@ -303,9 +306,10 @@ rps_event_loop(void)
           pollarr[pix].fd = timfd;
           pollarr[pix].events = POLLIN;
           EXPLAIN_EVFD_RPS(pix, "timerfd");
-          handlarr[pix] = [&](int fd, short rev)
+          handlarr[pix] = [&](Rps_CallFrame*cf, int fd, short rev)
           {
             RPS_ASSERT(fd ==  pollarr[pix].fd);
+            RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             RPS_ASSERT(rev == POLLIN);
             uint64_t timbuf[16];
             memset (&timbuf, 0, sizeof(timbuf));
@@ -332,10 +336,11 @@ rps_event_loop(void)
           pollarr[pix].fd = self_pipe_read_fd;
           pollarr[pix].events = POLLIN;
           EXPLAIN_EVFD_RPS(pix, "self_pipe_read_fd");
-          handlarr[pix] = [&](int fd, short rev)
+          handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
           {
             unsigned char buf[128];
             RPS_ASSERT(fd == self_pipe_read_fd);
+            RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             RPS_ASSERT(rev == POLLIN);
             /* TODO: should read(2) */
             memset(buf, 0, sizeof(buf));
@@ -357,10 +362,11 @@ rps_event_loop(void)
           pollarr[pix].fd = self_pipe_write_fd;
           pollarr[pix].events = POLLOUT;
           EXPLAIN_EVFD_RPS(pix, "self_pipe_write_fd");
-          handlarr[pix] = [&](int fd, short rev)
+          handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
           {
             RPS_ASSERT(fd == self_pipe_write_fd);
             RPS_ASSERT(rev == POLLOUT);
+            RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             std::lock_guard<std::mutex> gu(self_pipe_mtx);
             while (!self_pipe_fifo.empty())
               {
@@ -434,7 +440,7 @@ rps_event_loop(void)
                                           pix, pollarr[pix].fd, explarr[pix], evstr.c_str());
                     }
                   if (handlarr[pix])
-                    handlarr[pix](pollarr[pix].fd, pollarr[pix].revents);
+                    handlarr[pix](&_, pollarr[pix].fd, pollarr[pix].revents);
                   else
                     usleep((5+(pix & 0xf))*1024);
                 };
