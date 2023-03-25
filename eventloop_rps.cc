@@ -91,10 +91,6 @@ struct event_loop_data_st rps_eventloopdata;
  *
  * in cooperation with Rps_PayloadUnixProcess::start_process
  **/
-static int self_pipe_read_fd, self_pipe_write_fd;
-static std::deque<unsigned char> self_pipe_fifo;
-static std::mutex self_pipe_mtx;
-
 static std::atomic<bool> event_loop_is_active;
 
 static std::atomic<long> nbloops;
@@ -249,6 +245,7 @@ rps_event_loop(void)
           handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
           {
             RPS_ASSERT(fd ==  pollarr[pix].fd);
+	    RPS_ASSERT(rev == POLLOUT);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             RPS_FATALOUT("missing code to handle JsonRpc output to fd#" << fd << " pix#" << pix);
 #warning missing code to handle JsonRpc output to the GUI process
@@ -266,11 +263,12 @@ rps_event_loop(void)
           {
             char buf[1024];
             RPS_ASSERT(fd ==  pollarr[pix].fd);
+	    RPS_ASSERT(rev == POLLIN);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             /* TODO: should read(2) */
             memset(buf, 0, sizeof(buf));
             int nbr = read(fd, buf, sizeof(buf));
-            RPS_FATALOUT("missing code to handle JsonRpc input from fd#" << fd << " pix#" << pix);
+            RPS_FATALOUT("missing code to handle JsonRpc input from fd#" << fd << " pix#" << pix << " did read " << nbr << " bytes");
 #warning missing code to handle JsonRpc input from the GUI process
           };
         };
@@ -287,6 +285,7 @@ rps_event_loop(void)
             struct signalfd_siginfo infsig;
             memset(&infsig, 0, sizeof(infsig));
             RPS_ASSERT(fd ==  pollarr[pix].fd && fd == rps_eventloopdata.eld_sigfd);
+	    RPS_ASSERT(rev == POLLIN);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             int nbr = read(fd, (void*)&infsig, sizeof(infsig));
             if (nbr != sizeof(infsig))
@@ -349,7 +348,7 @@ rps_event_loop(void)
                 RPS_DEBUG_LOG(REPL, "eventloop read " << nbr << " bytes on timerfd, so " << (nbr/sizeof(std::uint64_t)) << " int64s: "
                               << Rps_Do_Output([=](std::ostream& out)
                 {
-                  for (int ix=0; ix< (nbr/sizeof(std::uint64_t)); ix++)
+                  for (int ix=0; ix< (int) (nbr/sizeof(std::uint64_t)); ix++)
                     out << ' ' << timbuf[ix];
                 }
                                               )
@@ -382,7 +381,7 @@ rps_event_loop(void)
         };
       bool wantselfwrite = false;
       {
-        std::lock_guard<std::mutex> gu(self_pipe_mtx);
+        std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
         wantselfwrite = !rps_eventloopdata.eld_selfpipefifo.empty();
       }
       if (rps_eventloopdata.eld_selfpipewritefd>0 && wantselfwrite)
@@ -397,7 +396,7 @@ rps_event_loop(void)
             RPS_ASSERT(fd == rps_eventloopdata.eld_selfpipewritefd);
             RPS_ASSERT(rev == POLLOUT);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
-            std::lock_guard<std::mutex> gu(self_pipe_mtx);
+            std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
             while (!rps_eventloopdata.eld_selfpipefifo.empty())
               {
                 unsigned char b = rps_eventloopdata.eld_selfpipefifo.back();
