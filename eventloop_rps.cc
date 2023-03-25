@@ -68,6 +68,7 @@ struct event_loop_data_st
   double eld_startelapsedtime; // start real time of event loop
   double eld_startcputime; // start CPU time of event loop
   std::array<std::function<void(Rps_CallFrame*, int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> eld_handlarr;
+  const char*eld_explarr[RPS_MAXPOLL_FD+1];
   int eld_sigfd;	// file descriptor from signalfd(2)
   int eld_timfd;        // file descriptor from timerfd_create(2)
   int eld_selfpipereadfd; // self pipe, reading end
@@ -215,6 +216,8 @@ rps_event_loop(void)
   timfd = timerfd_create(CLOCK_REALTIME, TFD_CLOEXEC);
   if (timfd<=0)
     RPS_FATALOUT("failed to call timerfd:" << strerror(errno));
+  const char*explarr[RPS_MAXPOLL_FD+1];
+  memset (explarr, 0, sizeof(explarr));
 #warning TODO: consider using rps_timer ...?
   /*** give output
    ***/
@@ -226,8 +229,6 @@ rps_event_loop(void)
     {
       struct pollfd pollarr[RPS_MAXPOLL_FD+1];
       memset ((void*)&pollarr, 0, sizeof(pollarr));
-      const char*explarr[RPS_MAXPOLL_FD+1];
-      memset (explarr, 0, sizeof(explarr));
 #define EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl) do { explarr[Ix] = Fil ":" #Lin " " Expl; } while(0)
 #define EXPLAIN_EVFD_ATBIS(Fil,Lin,Ix,Expl)  EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl)
 #define EXPLAIN_EVFD_RPS(Ix,Expl) EXPLAIN_EVFD_ATBIS(__FILE__,__LINE__,(Ix),Expl)
