@@ -2047,6 +2047,5 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
 //- } // end rps_repl_cmd_tokenizer
 //-
 
-#warning consider using bisonc++ generated C++ files...
 
 // end of file repl_rps.cc
