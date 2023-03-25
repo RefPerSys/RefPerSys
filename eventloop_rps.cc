@@ -83,8 +83,8 @@ extern "C" struct event_loop_data_st rps_eventloopdata;
 struct event_loop_data_st rps_eventloopdata;
 
 
-static int sigfd;		// file descriptor for https://man7.org/linux/man-pages/man2/signalfd.2.html
-static int timfd;		// file descriptor for https://man7.org/linux/man-pages/man2/timerfd_create.2.html
+
+
 /**
  * We probably want to use the pipe to self trick.
  * https://www.sitepoint.com/the-self-pipe-trick-explained/
@@ -119,8 +119,8 @@ void
 rps_self_pipe_write_byte(unsigned char b)
 {
   RPS_ASSERT(b != (char)0);
-  std::lock_guard<std::mutex> gu(self_pipe_mtx);
-  self_pipe_fifo.push_back(b);
+  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  rps_eventloopdata.eld_selfpipefifo.push_back(b);
 } // end rps_self_pipe_write_byte
 
 bool
@@ -147,9 +147,9 @@ rps_initialize_event_loop(void)
     int pipefdarr[2] = {-1, -1};
     if (pipe2(pipefdarr, O_CLOEXEC) <0)
       RPS_FATALOUT("rps_initialize_event_loop failed to create pipe to self:" << strerror(errno));
-    self_pipe_read_fd = pipefdarr[0];
-    RPS_ASSERT(self_pipe_read_fd > 0);
-    self_pipe_write_fd = pipefdarr[1];
+    rps_eventloopdata.eld_selfpipereadfd = pipefdarr[0];
+    RPS_ASSERT(rps_eventloopdata.eld_selfpipereadfd > 0);
+    rps_eventloopdata.eld_selfpipewritefd = pipefdarr[1];
   }
 } // end rps_initialize_event_loop
 
@@ -212,11 +212,11 @@ rps_event_loop(void)
   sigaddset(&msk, SIGXCPU);
   sigaddset(&msk, SIGALRM);
   sigaddset(&msk, SIGVTALRM);
-  sigfd = signalfd(-1, &msk, SFD_CLOEXEC);
-  if (sigfd<=0)
+  rps_eventloopdata.eld_sigfd = signalfd(-1, &msk, SFD_CLOEXEC);
+  if (rps_eventloopdata.eld_sigfd<=0)
     RPS_FATALOUT("failed to call signalfd:" << strerror(errno));
-  timfd = timerfd_create(CLOCK_REALTIME, TFD_CLOEXEC);
-  if (timfd<=0)
+  rps_eventloopdata.eld_timfd = timerfd_create(CLOCK_REALTIME, TFD_CLOEXEC);
+  if (rps_eventloopdata.eld_timfd<=0)
     RPS_FATALOUT("failed to call timerfd:" << strerror(errno));
   const char*explarr[RPS_MAXPOLL_FD+1];
   memset (explarr, 0, sizeof(explarr));
@@ -274,19 +274,19 @@ rps_event_loop(void)
 #warning missing code to handle JsonRpc input from the GUI process
           };
         };
-      if (sigfd>0)
+      if (rps_eventloopdata.eld_sigfd>0)
         {
           /// signals transformed to data with signalfd(2)
           RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
           int pix = nbpoll++;
-          pollarr[pix].fd = sigfd;
+          pollarr[pix].fd = rps_eventloopdata.eld_sigfd;
           pollarr[pix].events = POLLIN;
           EXPLAIN_EVFD_RPS(pix, "signalfd");
           handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
           {
             struct signalfd_siginfo infsig;
             memset(&infsig, 0, sizeof(infsig));
-            RPS_ASSERT(fd ==  pollarr[pix].fd && fd == sigfd);
+            RPS_ASSERT(fd ==  pollarr[pix].fd && fd == rps_eventloopdata.eld_sigfd);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             int nbr = read(fd, (void*)&infsig, sizeof(infsig));
             if (nbr != sizeof(infsig))
@@ -328,12 +328,12 @@ rps_event_loop(void)
 #warning missing code to handle signalfd...
           };
         }
-      if (timfd>0)
+      if (rps_eventloopdata.eld_timfd>0)
         {
           /// timers transformed to data with timerfd_create(2)
           RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
           int pix = nbpoll++;
-          pollarr[pix].fd = timfd;
+          pollarr[pix].fd = rps_eventloopdata.eld_timfd;
           pollarr[pix].events = POLLIN;
           EXPLAIN_EVFD_RPS(pix, "timerfd");
           handlarr[pix] = [&](Rps_CallFrame*cf, int fd, short rev)
@@ -359,17 +359,17 @@ rps_event_loop(void)
 #warning missing code to handle timerfd...
           };
         };
-      if (self_pipe_read_fd>0)
+      if (rps_eventloopdata.eld_selfpipereadfd>0)
         {
           RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
           int pix = nbpoll++;
-          pollarr[pix].fd = self_pipe_read_fd;
+          pollarr[pix].fd = rps_eventloopdata.eld_selfpipereadfd;
           pollarr[pix].events = POLLIN;
           EXPLAIN_EVFD_RPS(pix, "self_pipe_read_fd");
           handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
           {
             unsigned char buf[128];
-            RPS_ASSERT(fd == self_pipe_read_fd);
+            RPS_ASSERT(fd == rps_eventloopdata.eld_selfpipereadfd);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             RPS_ASSERT(rev == POLLIN);
             /* TODO: should read(2) */
@@ -383,26 +383,26 @@ rps_event_loop(void)
       bool wantselfwrite = false;
       {
         std::lock_guard<std::mutex> gu(self_pipe_mtx);
-        wantselfwrite = !self_pipe_fifo.empty();
+        wantselfwrite = !rps_eventloopdata.eld_selfpipefifo.empty();
       }
-      if (self_pipe_write_fd>0 && wantselfwrite)
+      if (rps_eventloopdata.eld_selfpipewritefd>0 && wantselfwrite)
         {
           RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
           int pix = nbpoll++;
-          pollarr[pix].fd = self_pipe_write_fd;
+          pollarr[pix].fd = rps_eventloopdata.eld_selfpipewritefd;
           pollarr[pix].events = POLLOUT;
           EXPLAIN_EVFD_RPS(pix, "self_pipe_write_fd");
           handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
           {
-            RPS_ASSERT(fd == self_pipe_write_fd);
+            RPS_ASSERT(fd == rps_eventloopdata.eld_selfpipewritefd);
             RPS_ASSERT(rev == POLLOUT);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             std::lock_guard<std::mutex> gu(self_pipe_mtx);
-            while (!self_pipe_fifo.empty())
+            while (!rps_eventloopdata.eld_selfpipefifo.empty())
               {
-                unsigned char b = self_pipe_fifo.back();
+                unsigned char b = rps_eventloopdata.eld_selfpipefifo.back();
                 if (write(fd, &b, 1) > 0)
-                  self_pipe_fifo.pop_back();
+                  rps_eventloopdata.eld_selfpipefifo.pop_back();
                 else
                   break;
               };
