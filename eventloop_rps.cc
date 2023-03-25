@@ -160,13 +160,6 @@ rps_event_loop(void)
 {
   static int nbcall;
   int nbpoll=0;
-  struct pollfd pollarr[RPS_MAXPOLL_FD+1];
-  memset ((void*)&pollarr, 0, sizeof(pollarr));
-  const char*explarr[RPS_MAXPOLL_FD+1];
-  memset (explarr, 0, sizeof(explarr));
-#define EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl) do { explarr[Ix] = Fil ":" #Lin " " Expl; } while(0)
-#define EXPLAIN_EVFD_ATBIS(Fil,Lin,Ix,Expl)  EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl)
-#define EXPLAIN_EVFD_RPS(Ix,Expl) EXPLAIN_EVFD_ATBIS(__FILE__,__LINE__,(Ix),Expl)
   double startelapsedtime=rps_elapsed_real_time();
   double startcputime=rps_process_cpu_time();
   std::array<std::function<void(int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
@@ -204,6 +197,13 @@ rps_event_loop(void)
                );
   while (!rps_stop_event_loop_flag.load())
     {
+      struct pollfd pollarr[RPS_MAXPOLL_FD+1];
+      memset ((void*)&pollarr, 0, sizeof(pollarr));
+      const char*explarr[RPS_MAXPOLL_FD+1];
+      memset (explarr, 0, sizeof(explarr));
+#define EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl) do { explarr[Ix] = Fil ":" #Lin " " Expl; } while(0)
+#define EXPLAIN_EVFD_ATBIS(Fil,Lin,Ix,Expl)  EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl)
+#define EXPLAIN_EVFD_RPS(Ix,Expl) EXPLAIN_EVFD_ATBIS(__FILE__,__LINE__,(Ix),Expl)
       nbloops.fetch_add(1);
       memset ((void*)&pollarr, 0, sizeof(pollarr));
       nbpoll=0;
