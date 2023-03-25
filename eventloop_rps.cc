@@ -40,6 +40,33 @@ const char rps_eventloop_gitid[]= RPS_GITID;
 extern "C" const char rps_eventloop_date[];
 const char rps_eventloop_date[]= __DATE__;
 
+enum self_pipe_code_en
+{
+  SelfPipe__NONE=0,
+  SelfPipe_Dump = 'D',
+  SelfPipe_GarbColl = 'G',
+  SelfPipe_Quit = 'Q',
+  SelfPipe_Exit = 'X',
+};
+
+
+
+#define RPS_MAXPOLL_FD 128
+
+//extern "C" std::atomic<bool> rps_stop_event_loop_flag;
+
+std::atomic<bool> rps_stop_event_loop_flag;
+
+int rps_poll_delay_millisec = 1500;
+
+
+struct event_loop_data_st
+{
+  double eld_startelapsedtime;
+  double eld_startcputime;
+  std::array<std::function<void(Rps_CallFrame*, int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> eld_handlarr;
+};
+
 static int sigfd;		// file descriptor for https://man7.org/linux/man-pages/man2/signalfd.2.html
 static int timfd;		// file descriptor for https://man7.org/linux/man-pages/man2/timerfd_create.2.html
 /**
@@ -56,26 +83,11 @@ static std::atomic<bool> event_loop_is_active;
 
 static std::atomic<long> nbloops;
 
-enum self_pipe_code_en
-{
-  SelfPipe__NONE=0,
-  SelfPipe_Dump = 'D',
-  SelfPipe_GarbColl = 'G',
-  SelfPipe_Quit = 'Q',
-  SelfPipe_Exit = 'X',
-};
 
 extern "C" void rps_self_pipe_write_byte(unsigned char b);
 
 static void handle_self_pipe_byte_rps(unsigned char b);
 
-//extern "C" std::atomic<bool> rps_stop_event_loop_flag;
-
-std::atomic<bool> rps_stop_event_loop_flag;
-
-int rps_poll_delay_millisec = 1500;
-
-#define RPS_MAXPOLL_FD 128
 
 
 void
@@ -151,6 +163,7 @@ jsonrpc_initialize_rps(void)
   RPS_FATALOUT("unimplemented jsonrpc_initialize_rps with fifo prefix "
                << rps_get_fifo_prefix() << " and wcmd.fd#" << fdp.fifo_ui_wcmd  << " and rout.fd#" << fdp.fifo_ui_rout);
 } // end jsonrpc_initialize_rps
+
 
 /* TODO: an event loop using poll(2) and also handling SIGCHLD using
    https://man7.org/linux/man-pages/man2/signalfd.2.html
