@@ -306,7 +306,7 @@ rps_event_loop(void)
           handlarr[pix] = [&](int fd, short rev)
           {
             RPS_ASSERT(fd ==  pollarr[pix].fd);
-	    RPS_ASSERT(rev == POLLIN);
+            RPS_ASSERT(rev == POLLIN);
             uint64_t timbuf[16];
             memset (&timbuf, 0, sizeof(timbuf));
             int nbr = read(fd, (void*)&timbuf, sizeof(timbuf));
@@ -347,8 +347,8 @@ rps_event_loop(void)
         };
       bool wantselfwrite = false;
       {
-            std::lock_guard<std::mutex> gu(self_pipe_mtx);
-	    wantselfwrite = !self_pipe_fifo.empty();
+        std::lock_guard<std::mutex> gu(self_pipe_mtx);
+        wantselfwrite = !self_pipe_fifo.empty();
       }
       if (self_pipe_write_fd>0 && wantselfwrite)
         {
@@ -442,7 +442,7 @@ rps_event_loop(void)
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
                                 "respoll=%d nbrev=%d nbloops=%ld\n",
-				respoll, nbrev, nbloops.load());
+                                respoll, nbrev, nbloops.load());
         }
       else if (respoll==0)   // timed out poll
         {
