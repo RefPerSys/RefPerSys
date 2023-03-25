@@ -57,13 +57,14 @@ enum self_pipe_code_en
 
 std::atomic<bool> rps_stop_event_loop_flag;
 
-int rps_poll_delay_millisec = 1500;
+int rps_poll_delay_millisec;
 
 
 #define RPS_EVENTLOOPDATA_MAGIC 814538509 /*0x308cdf0d*/
 struct event_loop_data_st
 {
   unsigned eld_magic;		// should be RPS_EVENTLOOPDATA_MAGIC
+  int eld_polldelaymillisec;
   std::mutex eld_mtx;
   double eld_startelapsedtime; // start real time of event loop
   double eld_startcputime; // start CPU time of event loop
@@ -190,6 +191,7 @@ rps_event_loop(void)
   int nbpoll=0;
   double startelapsedtime=rps_elapsed_real_time();
   double startcputime=rps_process_cpu_time();
+  rps_poll_delay_millisec= 1500; // milliseconds
   std::array<std::function<void(Rps_CallFrame*, int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
   if (!rps_is_main_thread())
     RPS_FATALOUT("rps_event_loop should be called only from the main thread");
