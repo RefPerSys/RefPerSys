@@ -340,7 +340,12 @@ rps_event_loop(void)
                 handle_self_pipe_byte_rps(buf[i]);
           };
         };
-      if (self_pipe_write_fd>0)
+      bool wantselfwrite = false;
+      {
+            std::lock_guard<std::mutex> gu(self_pipe_mtx);
+	    wantselfwrite = !self_pipe_fifo.empty();
+      }
+      if (self_pipe_write_fd>0 && wantselfwrite)
         {
           RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
           int pix = nbpoll++;
