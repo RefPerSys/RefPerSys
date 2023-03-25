@@ -253,6 +253,8 @@ extern "C" struct rps_fifo_fdpair_st rps_get_gui_fifo_fds(void);
 extern "C" pid_t rps_get_gui_pid(void);
 extern "C" bool rps_is_fifo(std::string path); // in eventloop_rps.cc
 
+
+
 // when set, no GUI is running
 extern "C" bool rps_batch;
 
@@ -264,8 +266,13 @@ extern "C" bool rps_run_repl;
 
 extern "C" void jsonrpc_initialize_rps(void);
 
-extern "C" void rps_event_loop(void);
+extern "C" void rps_event_loop(void); // run the event loop
 extern "C" void rps_do_stop_event_loop(void);
+// in eventloop_rps.cc, tell if the event loop is running.
+extern "C" bool rps_event_loop_is_running(void);
+// in eventloop_rps.cc, give the counter for the loop, or -1 if it is
+// not running.
+extern "C" long rps_event_loop_counter(void);
 
 /// backtrace support
 extern "C" struct backtrace_state* rps_backtrace_common_state;

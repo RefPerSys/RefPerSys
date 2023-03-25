@@ -51,6 +51,11 @@ static int timfd;		// file descriptor for https://man7.org/linux/man-pages/man2/
 static int self_pipe_read_fd, self_pipe_write_fd;
 static std::deque<unsigned char> self_pipe_fifo;
 static std::mutex self_pipe_mtx;
+
+static std::atomic<bool> event_loop_is_active;
+
+static std::atomic<long> nbloops;
+
 enum self_pipe_code_en
 {
   SelfPipe__NONE=0,
@@ -164,7 +169,6 @@ rps_event_loop(void)
 #define EXPLAIN_EVFD_RPS(Ix,Expl) EXPLAIN_EVFD_ATBIS(__FILE__,__LINE__,(Ix),Expl)
   double startelapsedtime=rps_elapsed_real_time();
   double startcputime=rps_process_cpu_time();
-  long nbloops=0;
   std::array<std::function<void(int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
   if (!rps_is_main_thread())
     RPS_FATALOUT("rps_event_loop should be called only from the main thread");
@@ -200,7 +204,7 @@ rps_event_loop(void)
                );
   while (!rps_stop_event_loop_flag.load())
     {
-      nbloops++;
+      nbloops.fetch_add(1);
       memset ((void*)&pollarr, 0, sizeof(pollarr));
       nbpoll=0;
       struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
@@ -302,6 +306,7 @@ rps_event_loop(void)
           handlarr[pix] = [&](int fd, short rev)
           {
             RPS_ASSERT(fd ==  pollarr[pix].fd);
+	    RPS_ASSERT(rev == POLLIN);
             uint64_t timbuf[16];
             memset (&timbuf, 0, sizeof(timbuf));
             int nbr = read(fd, (void*)&timbuf, sizeof(timbuf));
@@ -391,7 +396,7 @@ rps_event_loop(void)
                 evstr += " POLLNVAL";
               rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
                                   "poll[%d] loop%ld:fd#%d:%s,%s\n",
-                                  pix, nbloops, pollarr[pix].fd, explarr[pix], evstr.c_str());
+                                  pix, nbloops.load(), pollarr[pix].fd, explarr[pix], evstr.c_str());
             }
         };
       errno = 0;
@@ -400,7 +405,7 @@ rps_event_loop(void)
         {
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                "respoll=%d loop%ld\n", respoll, nbloops);
+                                "respoll=%d loop%ld\n", respoll, nbloops.load());
           int nbrev=0;
           for (int pix=0; pix<nbpoll; pix++)
             {
@@ -436,13 +441,14 @@ rps_event_loop(void)
             };
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                "respoll=%d nbrev=%d nbloops=%ld\n", respoll, nbrev, nbloops);
+                                "respoll=%d nbrev=%d nbloops=%ld\n",
+				respoll, nbrev, nbloops.load());
         }
       else if (respoll==0)   // timed out poll
         {
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                "poll timeout loop%ld\n", nbloops);
+                                "poll timeout loop%ld\n", nbloops.load());
         }
       else if (errno != EINTR)
         RPS_FATALOUT("rps_event_loop failure : " << strerror(errno));
@@ -450,7 +456,7 @@ rps_event_loop(void)
         {
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                "poll interrupt loop%ld\n", nbloops);
+                                "poll interrupt loop%ld\n", nbloops.load());
         };
       fflush(nullptr);
     };		   // end while not rps_stop_event_loop_flag
@@ -460,7 +466,7 @@ rps_event_loop(void)
 
   double endelapsedtime=rps_elapsed_real_time();
   double endcputime=rps_process_cpu_time();
-  RPS_INFORMOUT("ended rps_event_loop " << nbloops << " times in pid " << (int)getpid() << " on " << rps_hostname()
+  RPS_INFORMOUT("ended rps_event_loop " << nbloops.load() << " times in pid " << (int)getpid() << " on " << rps_hostname()
                 << " in " << (endelapsedtime-startelapsedtime) << " elapsed and "
                 << (endcputime-startcputime) << " cpu seconds"
                 << " git " << rps_shortgitid << std::endl
@@ -496,6 +502,27 @@ handle_self_pipe_byte_rps(unsigned char b)
     };
 } // end handle_self_pipe_byte_rps
 
+bool
+rps_event_loop_is_running(void)
+{
+  if (rps_stop_event_loop_flag.load())
+    return false;
+  return event_loop_is_active.load();
+} // end rps_event_loop_is_running
+
+
+
+// Give the counter for the loop, or -1 if it is
+// not running.
+long
+rps_event_loop_counter(void)
+{
+  if (rps_stop_event_loop_flag.load())
+    return -1;
+  if (event_loop_is_active.load())
+    return nbloops.load();
+  return -1L;
+} // end rps_event_loop_counter
 
 void
 rps_postpone_dump(void)
