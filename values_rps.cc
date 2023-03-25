@@ -305,6 +305,39 @@ Rps_SetOb::compute_class(Rps_CallFrame*) const
   return RPS_ROOT_OB(_6JYterg6iAu00cV9Ye); // the `set` class
 } // end Rps_SetOb::compute_class
 
+
+void
+Rps_SetOb::repeat_increasing_each_element_until(Rps_CallFrame*cf, void*data,
+    const std::function<bool(Rps_CallFrame*,void*/*data*/,Rps_ObjectRef/*elem*/)>& func) const
+{
+  RPS_ASSERT (cf==nullptr || cf->is_good_call_frame());
+  RPS_ASSERT (this->type() == Rps_Type::Set);
+  unsigned card = cnt();
+  if (card > 0)
+    {
+      const Rps_ObjectRef* arr = raw_const_data();
+      for (unsigned ix=0; ix<card; ix++)
+        if (func(cf,data,arr[ix]))
+          return;
+    };
+} // end Rps_SetOb::repeat_increasing_each_element_until
+
+void
+Rps_SetOb::repeat_decreasing_each_element_until(Rps_CallFrame*cf, void*data,
+    const std::function<bool(Rps_CallFrame*,void*/*data*/,Rps_ObjectRef/*elem*/)>& func) const
+{
+  RPS_ASSERT (cf==nullptr || cf->is_good_call_frame());
+  RPS_ASSERT (this->type() == Rps_Type::Set);
+  unsigned card = cnt();
+  if (card > 0)
+    {
+      const Rps_ObjectRef* arr = raw_const_data();
+      for (int ix=(int)card-1; ix>=0; ix--)
+        if (func(cf,data,arr[ix]))
+          return;
+    };
+} // end Rps_SetOb::repeat_decreasing_each_element_each_element_until
+
 //////////////////////////////////////// tuples
 const Rps_TupleOb*
 Rps_TupleOb::make(const std::vector<Rps_ObjectRef>& vecob)

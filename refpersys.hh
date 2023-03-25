@@ -3184,7 +3184,12 @@ public:
   inline Rps_ObjectRef maximal_element(void) const;
   inline Rps_ObjectRef random_element_or_fail(int startix=0, int endix= -1) const;
   inline Rps_ObjectRef random_element_or_default(Rps_ObjectRef defob, int startix=0, int endix= -1) const;
-#warning Rps_SetOb could be still incomplete
+  // repeat the given func on each element, in increasing order, till the func returns false
+  void repeat_increasing_each_element_until(Rps_CallFrame*cf, void*data,
+					    const std::function<bool(Rps_CallFrame*,void*/*data*/,Rps_ObjectRef/*elem*/)>& func) const;
+  // repeat the given func on each element, in decreasing order, till the func returns false
+  void repeat_decreasing_each_element_until(Rps_CallFrame*cf, void*data,
+					    const std::function<bool(Rps_CallFrame*,void*/*data*/,Rps_ObjectRef/*elem*/)>& func) const;
 };// end of Rps_SetOb
 
 
