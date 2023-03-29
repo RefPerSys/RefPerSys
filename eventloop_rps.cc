@@ -45,6 +45,7 @@ enum self_pipe_code_en
   SelfPipe__NONE=0,
   SelfPipe_Dump = 'D',
   SelfPipe_GarbColl = 'G',
+  SelfPipe_Process = 'P',
   SelfPipe_Quit = 'Q',
   SelfPipe_Exit = 'X',
 };
@@ -532,6 +533,11 @@ handle_self_pipe_byte_rps(unsigned char b)
       rps_dump_into (rps_get_loaddir());
       rps_stop_event_loop_flag.store(true);
       break;
+    case SelfPipe_Process:
+#warning should call something from transientobj_rps.cc to perhaps fork a process related to some Rps_PayloadUnixProcess
+      /* TODO: see Rps_PayloadUnixProcess::queue_of_runnable_processes
+	 in transientobj_rps.cc; the dormant processes should somehow
+	 be started by fork/exec */
     default:
       RPS_FATALOUT("unexpected byte " << (char)b << "#" << (unsigned)b << " on self pipe");
     };
@@ -582,5 +588,12 @@ rps_postpone_exit_with_dump(void)
 {
   rps_self_pipe_write_byte(SelfPipe_Exit);
 } // end rps_postpone_exit_with_dump
+
+
+void
+rps_postpone_child_process(void)
+{
+  rps_self_pipe_write_byte(SelfPipe_Process);
+} // end rps_postpone_child_process
 
 /// end of file eventloop_rps.cc

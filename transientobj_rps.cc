@@ -380,15 +380,8 @@ Rps_PayloadUnixProcess::start_process(Rps_CallFrame*callframe)
       throw std::runtime_error("already running Rps_PayloadUnixProcess");
     }
   queue_of_runnable_processes.push_back(this);
-  /** TODO:
-   *
-   * We probably want to use the pipe to self trick.
-   * https://www.sitepoint.com/the-self-pipe-trick-explained/
-   *
-   * But on a pipe to self we should write 32 bits integers....
-   **/
+  rps_postpone_child_process();
   /// code in eventloop_rps.cc should be related.
-#warning incomplete Rps_PayloadUnixProcess::start_process
 } // end Rps_PayloadUnixProcess::start_process
 
 void
