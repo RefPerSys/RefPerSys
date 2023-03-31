@@ -535,9 +535,9 @@ handle_self_pipe_byte_rps(unsigned char b)
       break;
     case SelfPipe_Process:
 #warning should call something from transientobj_rps.cc to perhaps fork a process related to some Rps_PayloadUnixProcess
-      /* TODO: see Rps_PayloadUnixProcess::queue_of_runnable_processes
-	 in transientobj_rps.cc; the dormant processes should somehow
-	 be started by fork/exec */
+    /* TODO: see Rps_PayloadUnixProcess::queue_of_runnable_processes
+    in transientobj_rps.cc; the dormant processes should somehow
+    be started by fork/exec */
     default:
       RPS_FATALOUT("unexpected byte " << (char)b << "#" << (unsigned)b << " on self pipe");
     };
