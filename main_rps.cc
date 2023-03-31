@@ -427,6 +427,12 @@ rps_do_create_fifos(std::string prefix)
     atexit(rps_remove_fifos);
   rps_fifo_pair.fifo_ui_wcmd = cmdfd;
   rps_fifo_pair.fifo_ui_rout = outfd;
+  RPS_INFORMOUT("RefPerSys did create (in pid " << (int)getpid()
+		<< ") command and output FIFOs to communicate with GUI" << std::endl
+		<< "... using for written commands to GUI " << cmdfifo << " fd#" << cmdfd
+		<< std::endl
+		<< "... and for reading JSON output from GUI " << outfifo << " fd#" << outfd);
+  usleep(1000);
 } // end rps_do_create_fifos
 
 
@@ -1459,8 +1465,9 @@ rps_run_application(int &argc, char **argv)
       std::string fifo_cmd_path, fifo_out_path;
       fifo_cmd_path = rps_get_fifo_prefix() + ".cmd";
       fifo_out_path = rps_get_fifo_prefix() + ".out";
-      /* TODO: use rps_is_fifo to avoid useless mkfifo */
-#warning should mkfifo here and fill 
+      /* create the fifo if they dont exist */
+      if (!rps_is_fifo(fifo_cmd_path) || !rps_is_fifo(fifo_out_path))
+	rps_do_create_fifos(rps_get_fifo_prefix());
       fflush(nullptr);
       pid_t guipid = fork();
       if (guipid < 0)
