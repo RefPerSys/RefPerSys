@@ -42,6 +42,7 @@ const char rps_main_gitid[]= RPS_GITID;
 extern "C" const char rps_main_date[];
 const char rps_main_date[]= __DATE__;
 
+struct utsname rps_utsname;
 
 extern "C" pid_t rps_gui_pid;
 
@@ -779,6 +780,12 @@ rps_early_initialization(int argc, char** argv)
   rps_argv = argv;
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
+  if (!uname (&rps_utsname)) {
+    fprintf(stderr, "%s pid %d failed to uname : %s\n", rps_progname,
+	    (int) getpid(),
+	    strerror(errno));
+    exit(EXIT_FAILURE);
+  };
   rps_stderr_istty = isatty(STDERR_FILENO);
   rps_stdout_istty = isatty(STDOUT_FILENO);
   rps_progname = argv[0];

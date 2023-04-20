@@ -101,6 +101,7 @@
 #include <fcntl.h>
 #include <sys/syscall.h>
 #include <sys/syslog.h>
+#include <sys/utsname.h>
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
@@ -182,6 +183,7 @@ extern "C" const char rps_gui_script_executable[];
 // the Linux user compiling RefPerSys
 extern "C" const char rps_building_user_name[];
 extern "C" const char rps_building_user_email[];
+extern "C" struct utsname rps_utsname;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Provides miscellaneous runtime information for RefPerSys.
