@@ -781,8 +781,8 @@ rps_early_initialization(int argc, char** argv)
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
   if (!uname (&rps_utsname)) {
-    fprintf(stderr, "%s pid %d failed to uname : %s\n", rps_progname,
-	    (int) getpid(),
+    fprintf(stderr, "%s: pid %d on %s failed to uname (%s:%d git %s): %s\n", rps_progname,
+	    (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
 	    strerror(errno));
     exit(EXIT_FAILURE);
   };
@@ -898,6 +898,7 @@ rps_early_initialization(int argc, char** argv)
 int
 main (int argc, char** argv)
 {
+  rps_progname = argv[0];
   rps_early_initialization(argc, argv);
   rps_parse_program_arguments(argc, argv);
   ///
