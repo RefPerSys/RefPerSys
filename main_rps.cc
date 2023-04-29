@@ -780,7 +780,7 @@ rps_early_initialization(int argc, char** argv)
   rps_argv = argv;
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
-  if (!uname (&rps_utsname)) {
+  if (uname (&rps_utsname)) {
     fprintf(stderr, "%s: pid %d on %s failed to uname (%s:%d git %s): %s\n", rps_progname,
 	    (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
 	    strerror(errno));
