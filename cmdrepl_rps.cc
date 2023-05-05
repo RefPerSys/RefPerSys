@@ -146,8 +146,8 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                     << " instance expr:" << _f.exprv
                     << " of class:" << _f.classob
                     << " in env:" << _f.envob);
-    };
-  if (_f.exprv.is_object())
+    }
+  else if (_f.exprv.is_object())
     {
       _f.classob = _f.exprv.compute_class(&_);
       RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
@@ -156,8 +156,10 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                     << " in env:" << _f.envob);
     };
   ///
+  RPS_ASSERT(_f.classob && _f.classob->is_class());
 #warning rps_full_evaluate_repl_expr not really implemented
   RPS_REPLEVAL_FAIL("*unimplemented*","REPL evaluation of " <<_f.exprv
+		    << " of class:" << _f.classob
                     << " in env:" << _f.envob);
   /// forget our macros
 #undef RPS_REPLEVAL_GIVES_BOTH_AT
