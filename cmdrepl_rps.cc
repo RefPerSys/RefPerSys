@@ -121,25 +121,25 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   /* we try to put common cases first... */
   if (_f.exprv.is_int())
     RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
-  if (_f.exprv.is_double())
+  else if (_f.exprv.is_double())
     RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
-  if (_f.exprv.is_string())
+  else if (_f.exprv.is_string())
     RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
-  if (_f.exprv.is_tuple())
+  else if (_f.exprv.is_tuple())
     RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
-  if (_f.exprv.is_set())
+  else if (_f.exprv.is_set())
     RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
-  if (_f.exprv.is_closure())
+  else if (_f.exprv.is_closure())
     RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
-  if (_f.exprv.is_empty())
+  else if (_f.exprv.is_empty())
     /// return a secondary value to avoid "failure"
     RPS_REPLEVAL_GIVES_BOTH(nullptr,
                             RPS_ROOT_OB(_2i66FFjmS7n03HNNBx)); //space∈class
-  if (_f.exprv.is_json())
+  else if (_f.exprv.is_json())
     RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
-  if (_f.exprv.is_lextoken())
+  else if (_f.exprv.is_lextoken())
     RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
-  if (_f.exprv.is_instance())
+  else if (_f.exprv.is_instance())
     {
       _f.classob = _f.exprv.compute_class(&_);
       RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
@@ -147,7 +147,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                     << " of class:" << _f.classob
                     << " in env:" << _f.envob);
     }
-  else if (_f.exprv.is_object())
+  else else if (_f.exprv.is_object())
     {
       _f.classob = _f.exprv.compute_class(&_);
       RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
@@ -157,7 +157,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     };
   ///
   RPS_ASSERT(_f.classob && _f.classob->is_class());
-#warning rps_full_evaluate_repl_expr not really implemented
+#warning rps_full_evaluate_repl_expr not really implemented should dispatch on classob
   RPS_REPLEVAL_FAIL("*unimplemented*","REPL evaluation of " <<_f.exprv
 		    << " of class:" << _f.classob
                     << " in env:" << _f.envob);
@@ -167,6 +167,10 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
 #undef RPS_REPLEVAL_GIVES_PLAIN_AT
 #undef RPS_REPLEVAL_GIVES_PLAIN
 } // end rps_full_evaluate_repl_expr
+
+
+
+
 
 Rps_Value
 rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value expr, Rps_ObjectRef envob)
