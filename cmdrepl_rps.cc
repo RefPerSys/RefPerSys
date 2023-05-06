@@ -160,13 +160,13 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   ///
   RPS_ASSERT(_f.classob && _f.classob->is_class());
   if (_f.classob == RPS_ROOT_OB(_4HJvNCh35Lu00n5z3R) //variable∈class
-      || _f.classob->is_subclass_of(&_, RPS_ROOT_OB(_4HJvNCh35Lu00n5z3R) //variable∈class
+      || _f.classob->is_subclass_of(RPS_ROOT_OB(_4HJvNCh35Lu00n5z3R) //variable∈class
                                    ))
     {
 #warning rps_full_evaluate_repl_expr unimplemented for variable-s
     }
   else if (_f.classob ==  RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
-           || _f.classob->is_subclass_of(&_, RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
+           || _f.classob->is_subclass_of(RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
                                         ))
     {
 #warning rps_full_evaluate_repl_expr unimplemented for symbolic_variable-s
