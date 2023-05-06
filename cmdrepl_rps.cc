@@ -114,6 +114,8 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     {
       RPS_REPLEVAL_FAIL("*check-fail*","never happens no envob" << _f.envob);
     };
+  /* environments should have bindings, probably with Rps_PayloadEnvironment */
+#warning rps_full_evaluate_repl_expr should check that envob is an environment, with bindings and optional parent env....
   RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
                 << eval_number << " *STARTEVAL*"
                 << " expr:" << _f.exprv
@@ -157,9 +159,21 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     };
   ///
   RPS_ASSERT(_f.classob && _f.classob->is_class());
+  if (_f.classob == RPS_ROOT_OB(_4HJvNCh35Lu00n5z3R) //variable∈class
+      || _f.classob->is_subclass_of(&_, RPS_ROOT_OB(_4HJvNCh35Lu00n5z3R) //variable∈class
+                                   ))
+    {
+#warning rps_full_evaluate_repl_expr unimplemented for variable-s
+    }
+  else if (_f.classob ==  RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
+           || _f.classob->is_subclass_of(&_, RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
+                                        ))
+    {
+#warning rps_full_evaluate_repl_expr unimplemented for symbolic_variable-s
+    }
 #warning rps_full_evaluate_repl_expr not really implemented, should dispatch on classob
   RPS_REPLEVAL_FAIL("*unimplemented*","REPL evaluation of " <<_f.exprv
-		    << " of class:" << _f.classob
+                    << " of class:" << _f.classob
                     << " in env:" << _f.envob);
   /// forget our macros
 #undef RPS_REPLEVAL_GIVES_BOTH_AT

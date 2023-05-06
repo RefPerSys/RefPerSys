@@ -4369,6 +4369,9 @@ public:
 };				// end Rps_PayloadSymbol
 
 
+#warning we probably need some Rps_PayloadEnvironment, used by rps_full_evaluate_repl_expr
+// a Rps_PayloadEnvironment - or Rps_PayloadObjMap should contain a
+// std::map of objects to values.
 
 ////////////////////////////////////////////////////////////////
 
