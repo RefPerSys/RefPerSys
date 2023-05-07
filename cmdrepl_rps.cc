@@ -208,7 +208,26 @@ rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value expr, Rps_Objec
 } // end rps_simple_evaluate_repl_expr
 
 
+////////////////
 
+void
+Rps_CallFrame::interpret_repl_statement(Rps_ObjectRef stmtob,Rps_ObjectRef envob)
+{
+  RPS_FATALOUT("unimplemented Rps_CallFrame::interpret_repl_statement stmtob=" << stmtob << " envob=" << envob);
+#warning unimplemented Rps_CallFrame::interpret_repl_statement
+} // end Rps_CallFrame::interpret_repl_statement
+
+
+void rps_interpret_repl_statement(Rps_CallFrame*callframe, Rps_ObjectRef stmtob,Rps_ObjectRef envob)
+{
+  RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
+  RPS_ASSERT(stmtob);
+  RPS_ASSERT(envob);
+  callframe->interpret_repl_statement(stmtob, envob);
+} // end rps_interpret_repl_statement
+
+
+////////////////
 
 Rps_TwoValues
 Rps_CallFrame::evaluate_repl_expr(Rps_Value expr, Rps_ObjectRef envob)

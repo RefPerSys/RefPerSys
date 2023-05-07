@@ -3677,6 +3677,8 @@ public:
   /// function here.  can throw some runtime exception on failure...
   Rps_TwoValues evaluate_repl_expr(Rps_Value expr,Rps_ObjectRef envob);
   Rps_Value evaluate_repl_expr1(Rps_Value expr,Rps_ObjectRef envob);
+  //// TODO: interpret a REPL statement; may throw an exception
+  void interpret_repl_statement(Rps_ObjectRef stmtob,Rps_ObjectRef envob);
   ///
   /// Where `expr` would be some expression to evaluate, and `envob`
   /// would be an object reifying the environment (variables and their
@@ -3686,7 +3688,7 @@ public:
 
 extern "C" Rps_TwoValues rps_full_evaluate_repl_expr(Rps_CallFrame*callframe,Rps_Value expr,Rps_ObjectRef envob);
 extern "C" Rps_Value rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe,Rps_Value expr,Rps_ObjectRef envob);
-
+extern "C" void rps_interpret_repl_statement(Rps_CallFrame*callframe, Rps_ObjectRef stmtob,Rps_ObjectRef envob);
 
 class Rps_ShowCallFrame {
   const Rps_ProtoCallFrame* _callframe;
