@@ -449,6 +449,6 @@ Rps_PayloadPopenedFile::gc_mark(Rps_GarbageCollector&gc) const
 } // end Rps_PayloadPopenedFile::gc_mark
 
 
-#warning transientobj_rps.cc is nearly empty
+#warning transientobj_rps.cc is probably incomplete
 
 /*** end of file transientobj_rps.cc ***/
