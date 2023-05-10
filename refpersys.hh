@@ -4372,8 +4372,86 @@ public:
 
 
 #warning we probably need some Rps_PayloadEnvironment, used by rps_full_evaluate_repl_expr
-// a Rps_PayloadEnvironment - or Rps_PayloadObjMap should contain a
-// std::map of objects to values.
+// Rps_PayloadObjMap should contain a std::map of objects to values.
+
+
+
+extern "C" rpsldpysig_t rpsldpy_objmap;
+class Rps_PayloadObjMap : public Rps_Payload {
+  std::map<Rps_ObjectRef,Rps_Value> obm_map;
+  Rps_Value obm_descr;
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend rpsldpysig_t rpsldpy_objmap;
+  friend Rps_PayloadObjMap*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadObjMap,Rps_ObjectZone*>(Rps_ObjectZone*);
+protected:
+  inline Rps_PayloadObjMap(Rps_ObjectZone*owner);
+  Rps_PayloadObjMap(Rps_ObjectRef obr) :
+    Rps_PayloadObjMap(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadObjMap()
+  {
+  };
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  virtual bool is_erasable(void) const
+  {
+    return false;
+  };
+public:
+  virtual const std::string payload_type_name(void) const
+  {
+    return "objmap";
+  };
+  inline Rps_PayloadObjMap(Rps_ObjectZone*obz, Rps_Loader*ld);
+#warning Rps_PayloadObjMap not really implemented
+};				// end Rps_PayloadObjMap
+
+
+
+/// environments also have a parent environment
+
+extern "C" rpsldpysig_t rpsldpy_environment;
+class Rps_PayloadEnvironment : public Rps_PayloadObjMap {
+  Rps_ObjectRef env_parent;
+  friend class Rps_ObjectRef;
+  friend class Rps_ObjectZone;
+  friend rpsldpysig_t rpsldpy_environment;
+  friend Rps_PayloadEnvironment*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadEnvironment,Rps_ObjectZone*>(Rps_ObjectZone*);
+protected:
+  inline Rps_PayloadEnvironment(Rps_ObjectZone*owner);
+  Rps_PayloadEnvironment(Rps_ObjectRef obr) :
+    Rps_PayloadObjMap(obr?obr.optr():nullptr) {};
+  virtual ~Rps_PayloadEnvironment()
+  {
+  };
+  virtual uint32_t wordsize(void) const
+  {
+    return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
+  };
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  virtual bool is_erasable(void) const
+  {
+    return false;
+  };
+public:
+  virtual const std::string payload_type_name(void) const
+  {
+    return "environment";
+  };
+  inline Rps_PayloadEnvironment(Rps_ObjectZone*obz, Rps_Loader*ld);
+  #warning Rps_PayloadEnvironment not really implemented
+};				// end Rps_PayloadEnvironment
+
+  
 
 ////////////////////////////////////////////////////////////////
 

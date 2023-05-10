@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2020 - 2022 The Reflective Persistent System Team
+ *      © Copyright 2020 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -587,4 +587,8 @@ operator << (std::ostream&out, const Rps_DequVal& dq)
   dq.output(out);
   return out;
 } // end operator << (std::ostream&out, const Rps_DequVal& dq)
+
+
+#warning Rps_PayloadObjMap could be implemented here
+
 /********************************************** end of file morevalues_rps.cc */
