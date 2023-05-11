@@ -4425,6 +4425,8 @@ public:
   bool has_key_obmap(Rps_ObjectRef obkey) const;
   static bool has_key(Rps_ObjectRef obmap, Rps_ObjectRef obkey);
   inline Rps_PayloadObjMap(Rps_ObjectZone*obz, Rps_Loader*ld);
+  Rps_Value get_descr() const { return obm_descr; };
+  void put_descr(Rps_Value d) { obm_descr = d; };
 };				// end Rps_PayloadObjMap
 
 

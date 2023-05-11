@@ -703,6 +703,13 @@ Rps_PayloadObjMap::make(Rps_CallFrame*callframe, Rps_ObjectRef classob, Rps_Obje
 } // end Rps_PayloadObjMap::make
 
 void
+Rps_PayloadObjMap::put_obmap(Rps_ObjectRef obkey, Rps_Value val)
+{
+  RPS_ASSERT(obkey);
+  obm_map.insert({obkey,val});
+} // end Rps_PayloadObjMap::put_obmap
+
+void
 rpsldpy_objmap(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
   RPS_ASSERT(obz != nullptr);
@@ -714,13 +721,15 @@ rpsldpy_objmap(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
   const Json::Value&  jdescr = jv["descr"];
   if (jobmap.type () == Json::objectValue)
     {
-      for ( const Json::Value& jkey : jobmap)
+      auto membvec = jobmap.getMemberNames(); // vector of strings
+      for (const std::string& keystr : membvec)
         {
-          if (jkey.type() == Json::stringValue)
-            {
-            }
+          Rps_ObjectRef keyob(keystr, ld);
+          Rps_Value val = Rps_Value(jobmap[keystr], ld);
+          paylobjmap->put_obmap(keyob, val);
         }
     }
+  paylobjmap->put_descr(Rps_Value(jdescr, ld));
 } // end rpsldpy_objmap
 
 /********************************************** end of file morevalues_rps.cc */
