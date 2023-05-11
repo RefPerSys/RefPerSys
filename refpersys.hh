@@ -1212,6 +1212,8 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
+  PaylEnviron = -20,	     // for environments
+  PaylObjMap = -19,	     // for object maps
   PaylCppStream = -18,	   // for transient C++ streams
   PaylPopenedFile = -17,   // for transient popened commands
   PaylUnixProcess = -16,	// for transient of forked unix processes
@@ -4400,7 +4402,9 @@ protected:
   };
   virtual void gc_mark(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
+  void dump_scan_internal(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  void dump_json_internal_content(Rps_Dumper*, Json::Value&) const;
   virtual bool is_erasable(void) const
   {
     return false;
