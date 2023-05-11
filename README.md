@@ -265,8 +265,8 @@ definitions of GNU `make` variables for your particular C and C++ compiler,
 like e.g.
 
      # file ~/.refpersys.mk
-     RPS_BUILD_CC= gcc-11
-     RPS_BUILD_CXX= g++-11
+     RPS_BUILD_CC= gcc-12
+     RPS_BUILD_CXX= g++-12
 
 You then build with `make -j4 refpersys && make all`
 
