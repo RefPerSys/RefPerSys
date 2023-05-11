@@ -4388,7 +4388,7 @@ class Rps_PayloadObjMap : public Rps_Payload {
   friend Rps_PayloadObjMap*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadObjMap,Rps_ObjectZone*>(Rps_ObjectZone*);
 protected:
-  inline Rps_PayloadObjMap(Rps_ObjectZone*owner);
+  Rps_PayloadObjMap(Rps_ObjectZone*owner);
   Rps_PayloadObjMap(Rps_ObjectRef obr) :
     Rps_PayloadObjMap(obr?obr.optr():nullptr) {};
   virtual ~Rps_PayloadObjMap()
@@ -4414,7 +4414,8 @@ public:
   {
     return "objmap";
   };
-  static Rps_ObjectZone* make(Rps_ObjectRef classob=nullptr);
+  static Rps_ObjectZone* make(Rps_CallFrame*cf, Rps_ObjectRef classob=nullptr,
+			      Rps_ObjectRef spaceob=nullptr);
   static Rps_Value get(Rps_ObjectRef obmap, Rps_ObjectRef obkey, Rps_Value defaultval=nullptr, bool*missing=nullptr);
   Rps_Value get_obmap(Rps_ObjectRef obkey, Rps_Value defaultval=nullptr, bool*missing=nullptr);
   static void put(Rps_ObjectRef obmap, Rps_ObjectRef  obkey, Rps_Value val);
@@ -4424,7 +4425,6 @@ public:
   bool has_key_obmap(Rps_ObjectRef obkey) const;
   static bool has_key(Rps_ObjectRef obmap, Rps_ObjectRef obkey);
   inline Rps_PayloadObjMap(Rps_ObjectZone*obz, Rps_Loader*ld);
-#warning Rps_PayloadObjMap not really implemented
 };				// end Rps_PayloadObjMap
 
 
@@ -4463,6 +4463,7 @@ public:
     return "environment";
   };
   inline Rps_PayloadEnvironment(Rps_ObjectZone*obz, Rps_Loader*ld);
+  static Rps_ObjectZone* make(Rps_CallFrame*cf, Rps_ObjectRef classob=nullptr, Rps_ObjectRef spaceob=nullptr);
   #warning Rps_PayloadEnvironment not really implemented
 };				// end Rps_PayloadEnvironment
 

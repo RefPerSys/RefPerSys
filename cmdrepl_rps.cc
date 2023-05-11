@@ -210,7 +210,15 @@ rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value expr, Rps_Objec
 
 
 ////////////////
-#warning Rps_PayloadEnvironment could be implemented here
+
+Rps_ObjectZone*
+Rps_PayloadEnvironment::make(Rps_CallFrame*callframe, Rps_ObjectRef classob, Rps_ObjectRef spaceob)
+{
+  RPS_FATALOUT("unimplemented Rps_PayloadEnvironment::make");
+#warning unimplemented Rps_PayloadEnvironment::make
+} // end Rps_PayloadEnvironment::make
+
+
 ////////////////
 
 void

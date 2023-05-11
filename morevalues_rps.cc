@@ -648,6 +648,60 @@ Rps_PayloadObjMap::dump_json_internal_content(Rps_Dumper*du, Json::Value&jv) con
   jv["descr"] = rps_dump_json_value(du, obm_descr);
 } // end Rps_PayloadObjMap::dump_json_internal_content
 
+Rps_Value
+Rps_PayloadObjMap::get_obmap(Rps_ObjectRef obkey, Rps_Value defaultval, bool*pmissing)
+{
+  auto it = obm_map.find(obkey);
+  if (it != obm_map.end())
+    {
+      if (pmissing)
+        *pmissing = false;
+      return it->second;
+    }
+  if (pmissing)
+    *pmissing = true;
+  return defaultval;
+} // end Rps_PayloadObjMap::get_obmap
+
+Rps_ObjectZone*
+Rps_PayloadObjMap::make(Rps_CallFrame*callframe, Rps_ObjectRef classob, Rps_ObjectRef spaceob)
+{
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 callframe,
+                 Rps_ObjectRef classob;
+                 Rps_ObjectRef spaceob;
+                 Rps_ObjectRef mapob;
+                );
+  _f.classob = classob;
+  _f.spaceob = spaceob;
+  if (!classob)
+    classob = _f.classob = RPS_ROOT_OB(_21O0aRqBH0p030SV0R); //objmap∈class
+  if (classob == RPS_ROOT_OB(_21O0aRqBH0p030SV0R)) //objmap∈class
+    {
+      _f.mapob = Rps_ObjectRef::make_object(&_, _f.classob, _f.spaceob);
+      auto paylobmap = _f.mapob->put_new_plain_payload<Rps_PayloadObjMap>();
+      paylobmap->obm_map.clear();
+      paylobmap->obm_descr = nullptr;;
+      return _f.mapob;
+    }
+  // TODO: do we want the below hack?
+  else if (classob == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)) //environment∈class
+    {
+      return Rps_PayloadEnvironment::make(&_, classob, spaceob);
+    }
+  else if (_f.classob->is_subclass_of(RPS_ROOT_OB(_21O0aRqBH0p030SV0R)) //objmap∈class
+          )
+    {
+      _f.mapob = Rps_ObjectRef::make_object(&_, _f.classob, _f.spaceob);
+      auto paylobmap = _f.mapob->put_new_plain_payload<Rps_PayloadObjMap>();
+      paylobmap->obm_map.clear();
+      paylobmap->obm_descr = nullptr;;
+      return _f.mapob;
+    }
+  return nullptr;
+} // end Rps_PayloadObjMap::make
+
 void
 rpsldpy_objmap(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
@@ -656,6 +710,17 @@ rpsldpy_objmap(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
   RPS_ASSERT(obz->get_payload() == nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
   auto paylobjmap = obz->put_new_plain_payload<Rps_PayloadObjMap>();
+  const Json::Value& jobmap = jv["objmap"];
+  const Json::Value&  jdescr = jv["descr"];
+  if (jobmap.type () == Json::objectValue)
+    {
+      for ( const Json::Value& jkey : jobmap)
+        {
+          if (jkey.type() == Json::stringValue)
+            {
+            }
+        }
+    }
 } // end rpsldpy_objmap
 
 /********************************************** end of file morevalues_rps.cc */
