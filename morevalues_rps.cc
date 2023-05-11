@@ -589,6 +589,73 @@ operator << (std::ostream&out, const Rps_DequVal& dq)
 } // end operator << (std::ostream&out, const Rps_DequVal& dq)
 
 
-#warning Rps_PayloadObjMap could be implemented here
+
+
+Rps_PayloadObjMap::Rps_PayloadObjMap(Rps_ObjectZone*obz) :
+  Rps_Payload(Rps_Type::PaylObjMap, obz),
+  obm_map(), obm_descr(nullptr)
+{
+} // end Rps_PayloadObjMap::Rps_PayloadObjMap
+void
+Rps_PayloadObjMap::gc_mark(Rps_GarbageCollector&gc) const
+{
+  for (auto it: obm_map)
+    {
+      gc.mark_obj(it.first);
+      gc.mark_value(it.second);
+    };
+  gc.mark_value (obm_descr);
+} // end Rps_PayloadObjMap::gc_mark
+
+
+void
+Rps_PayloadObjMap::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT (du != nullptr);
+  dump_scan_internal(du);
+} // end Rps_PayloadObjMap::dump_scan
+
+void
+Rps_PayloadObjMap::dump_scan_internal(Rps_Dumper*du) const
+{
+  RPS_ASSERT (du != nullptr);
+  for (auto it: obm_map)
+    {
+      rps_dump_scan_object(du, it.first);
+      rps_dump_scan_value(du, it.second, 0);
+    };
+  rps_dump_scan_value(du, obm_descr, 0);
+} // end Rps_PayloadObjMap::dump_scan_internal
+
+void
+Rps_PayloadObjMap::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  RPS_ASSERT (du != nullptr);
+  jv["payload"] = "objmap";
+  dump_json_internal_content(du, jv);
+} // end Rps_PayloadObjMap::dump_json_content
+
+void
+Rps_PayloadObjMap::dump_json_internal_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  RPS_ASSERT (du != nullptr);
+  Json::Value jmap(Json::objectValue);
+  for (auto it: obm_map)
+    {
+      jmap[it.first.as_string()] = rps_dump_json_value(du, it.second);
+    };
+  jv["objmap"] = jmap;
+  jv["descr"] = rps_dump_json_value(du, obm_descr);
+} // end Rps_PayloadObjMap::dump_json_internal_content
+
+void
+rpsldpy_objmap(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+{
+  RPS_ASSERT(obz != nullptr);
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(obz->get_payload() == nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  auto paylobjmap = obz->put_new_plain_payload<Rps_PayloadObjMap>();
+} // end rpsldpy_objmap
 
 /********************************************** end of file morevalues_rps.cc */
