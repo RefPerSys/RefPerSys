@@ -4372,11 +4372,11 @@ public:
 
 
 #warning we probably need some Rps_PayloadEnvironment, used by rps_full_evaluate_repl_expr
-// Rps_PayloadObjMap should contain a std::map of objects to values.
 
 
 
 extern "C" rpsldpysig_t rpsldpy_objmap;
+// Rps_PayloadObjMap contains a std::map of objects to values.
 class Rps_PayloadObjMap : public Rps_Payload {
   std::map<Rps_ObjectRef,Rps_Value> obm_map;
   Rps_Value obm_descr;
@@ -4391,6 +4391,8 @@ protected:
     Rps_PayloadObjMap(obr?obr.optr():nullptr) {};
   virtual ~Rps_PayloadObjMap()
   {
+    obm_map.clear();
+    obm_descr = nullptr;
   };
   virtual uint32_t wordsize(void) const
   {
@@ -4408,6 +4410,15 @@ public:
   {
     return "objmap";
   };
+  static Rps_ObjectZone* make(Rps_ObjectRef classob=nullptr);
+  static Rps_Value get(Rps_ObjectRef obmap, Rps_ObjectRef obkey, Rps_Value defaultval=nullptr, bool*missing=nullptr);
+  Rps_Value get_obmap(Rps_ObjectRef obkey, Rps_Value defaultval=nullptr, bool*missing=nullptr);
+  static void put(Rps_ObjectRef obmap, Rps_ObjectRef  obkey, Rps_Value val);
+  void put_obmap(Rps_ObjectRef obkey, Rps_Value val);
+  static bool remove(Rps_ObjectRef obmap, Rps_ObjectRef obkey);
+  bool remove_obmap(Rps_ObjectRef obkey);
+  bool has_key_obmap(Rps_ObjectRef obkey) const;
+  static bool has_key(Rps_ObjectRef obmap, Rps_ObjectRef obkey);
   inline Rps_PayloadObjMap(Rps_ObjectZone*obz, Rps_Loader*ld);
 #warning Rps_PayloadObjMap not really implemented
 };				// end Rps_PayloadObjMap
