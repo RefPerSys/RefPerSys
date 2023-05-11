@@ -21,7 +21,7 @@
 {
  "format" : "RefPerSysFormat2019A",
  "jsoncpp-version" : "1.9.5",
- "nbobjects" : 193,
+ "nbobjects" : 197,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -857,6 +857,19 @@
 //-ob_1KldKZY03Qz00Efcqm
 
 
+//+ob_1NpdAB6W2YQ00XwqeL
+//∈symbol
+{
+ "oid": "_1NpdAB6W2YQ00XwqeL",
+ "mtime": 1683791208.99,
+ "class" : "_36I1BY2NetN03WjrOv",
+ "payload" : "symbol",
+ "symb_name" : "environment",
+ "symb_val" : "_5LMLyzRp6kq04AMM8a"
+}
+//-ob_1NpdAB6W2YQ00XwqeL
+
+
 //+ob_1NWEOIzo3WU03mE42Q
 //∈class
 {
@@ -965,6 +978,21 @@
  "symb_val" : "_4ojpzRzyRWz02DNWMe"
 }
 //-ob_1Zo12toMRTa03uqsXh
+
+
+//+ob_21O0aRqBH0p030SV0R
+//∈class
+{
+ "oid": "_21O0aRqBH0p030SV0R",
+ "mtime": 1683791144.54,
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "objmap",
+ "class_super" : "_5yhJGgxLwLp00X0xEQ",
+ "class_symb" : "_7rBF0a47s2o02ba1yM",
+ "payload" : "classinfo"
+}
+//-ob_21O0aRqBH0p030SV0R
 
 
 //+ob_28AK5czKyu701KF2lg
@@ -1910,6 +1938,7 @@
   	"_1DUx3zfUzIb04lqNVt",
   	"_1NWEOIzo3WU03mE42Q",
   	"_1R1LKwGhoTr02e90bn",
+  	"_21O0aRqBH0p030SV0R",
   	"_2dvQOlSMjOu02zWx1n",
   	"_2i66FFjmS7n03HNNBx",
   	"_2wdmxJecnFZ02VGGFK",
@@ -1930,6 +1959,7 @@
   	"_55Z5Wgzuprq01MU6Br",
   	"_5yhJGgxLwLp00X0xEQ",
   	"_5CYWxcChKN002rw1fI",
+  	"_5LMLyzRp6kq04AMM8a",
   	"_61uFnhRCXfe00Mir2n",
   	"_62LTwxwKpQ802SsmjE",
   	"_6ulDdOP2ZNr001cqVZ",
@@ -2380,6 +2410,21 @@
  "symb_val" : "_6NVM7sMcITg01ug5TC"
 }
 //-ob_5KVs9kaMYiU040KwVj
+
+
+//+ob_5LMLyzRp6kq04AMM8a
+//∈class
+{
+ "oid": "_5LMLyzRp6kq04AMM8a",
+ "mtime": 1683791208.99,
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "environment",
+ "class_super" : "_21O0aRqBH0p030SV0R",
+ "class_symb" : "_1NpdAB6W2YQ00XwqeL",
+ "payload" : "classinfo"
+}
+//-ob_5LMLyzRp6kq04AMM8a
 
 
 //+ob_5Q5E0Lw9v4f046uAKZ
@@ -2977,6 +3022,19 @@
  "class" : "_55Z5Wgzuprq01MU6Br"
 }
 //-ob_7kiAonuM6tZ018OcyU
+
+
+//+ob_7rBF0a47s2o02ba1yM
+//∈symbol
+{
+ "oid": "_7rBF0a47s2o02ba1yM",
+ "mtime": 1683791144.54,
+ "class" : "_36I1BY2NetN03WjrOv",
+ "payload" : "symbol",
+ "symb_name" : "objmap",
+ "symb_val" : "_21O0aRqBH0p030SV0R"
+}
+//-ob_7rBF0a47s2o02ba1yM
 
 
 //+ob_7vUmzaAjb2f000BAFb
