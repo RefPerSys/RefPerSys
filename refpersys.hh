@@ -4434,6 +4434,36 @@ public:
 /// environments also have a parent environment
 
 extern "C" rpsldpysig_t rpsldpy_environment;
+
+/// Find it the given environment envob the binding for varob. If
+/// pfound is given set it to true when a binding was found.
+extern "C" Rps_Value rps_environment_get_shallow_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob,
+							     bool *pfound=nullptr);
+/// Find the depth of the environment with a binding for varob, or else return -1
+extern "C" int rps_environment_find_binding_depth(Rps_ObjectRef envob, Rps_ObjectRef varob);
+/// Find in the given envob or its parent or ancestor environment the
+/// bound value of a given variable; if found, the *pdepth (when
+/// given) is set to the depth of the environment and the *penv (when
+/// given) to the environment object...; if missing *pdepth becomes
+/// negative, and *penvob is cleared.
+extern "C" Rps_Value rps_environment_get_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob,
+						     int*pdepth=nullptr, Rps_ObjectRef*penvob=nullptr);
+/// Add or put a binding in the current environment.
+void rps_environment_add_shallow_binding(Rps_CallFrame*callframe,
+					 Rps_ObjectRef envob, Rps_ObjectRef varob, Rps_Value val);
+/// overwrite a binding in the deep environment containing it, or when not found in the current one
+extern "C" int rps_environment_overwrite_binding(Rps_CallFrame*callframe,
+					   Rps_ObjectRef envob, Rps_ObjectRef varob, Rps_Value val,
+					   Rps_ObjectRef*penvob=nullptr);
+/// remove a binding in the current environment, returning old value
+Rps_Value rps_environment_remove_shallow_binding(Rps_CallFrame*callframe,
+						 Rps_ObjectRef envob, Rps_ObjectRef varob, bool*pfound=nullptr);
+/// remove a binding in the environment containing it (perhaps deeply) - return the depth or -1 if not found
+extern "C" int rps_environment_remove_deep_binding(Rps_CallFrame*callframe,
+						   Rps_ObjectRef startenvob, Rps_ObjectRef varob,
+						   Rps_ObjectRef*penvob=nullptr,
+						   Rps_Value*poldval=nullptr);
+
 class Rps_PayloadEnvironment : public Rps_PayloadObjMap {
   Rps_ObjectRef env_parent;
   friend class Rps_ObjectRef;
@@ -4441,6 +4471,8 @@ class Rps_PayloadEnvironment : public Rps_PayloadObjMap {
   friend rpsldpysig_t rpsldpy_environment;
   friend Rps_PayloadEnvironment*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadEnvironment,Rps_ObjectZone*>(Rps_ObjectZone*);
+  friend Rps_Value rps_environment_get_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob,
+						     int*pdepth, Rps_ObjectRef*penvob);
 protected:
   inline Rps_PayloadEnvironment(Rps_ObjectZone*owner);
   Rps_PayloadEnvironment(Rps_ObjectRef obr) :

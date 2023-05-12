@@ -270,6 +270,48 @@ Rps_PayloadEnvironment::make_with_parent_environment(Rps_CallFrame*callframe, Rp
   return _f.obenv;
 } // end Rps_PayloadEnvironment::make_with_parent_environment
 
+Rps_Value
+rps_environment_get_shallow_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob,
+                                        bool *pfound)
+{
+  if (envob.is_empty())
+    {
+      if (pfound)
+        *pfound=false;
+      return nullptr;
+    }
+  std::lock_guard gu(*envob->objmtxptr());
+  bool goodenv = false;
+  if (envob->get_class() == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)) //environment∈class
+    goodenv = true;
+  else if (envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
+    goodenv = true;
+  if (!goodenv)
+    {
+      if (pfound)
+        *pfound=false;
+      return nullptr;
+    };
+  auto paylenv = envob->get_dynamic_payload<Rps_PayloadEnvironment>();
+  if (!paylenv)
+    {
+      if (pfound)
+        *pfound=false;
+      return nullptr;
+    };
+  bool missing= false;
+  Rps_Value val = paylenv->get_obmap(varob, nullptr, &missing);
+  if (missing)
+    {
+      if (pfound)
+        *pfound = false;
+      return nullptr;
+    };
+  if (pfound)
+    *pfound = true;
+  return val;
+} // end rps_environment_get_shallow_bound_value
+
 void
 Rps_PayloadEnvironment::gc_mark(Rps_GarbageCollector&gc) const
 {
