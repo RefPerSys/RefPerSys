@@ -67,50 +67,50 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   _f.exprv = exprarg;
   _f.envob = envobarg;
   /// macros to ease debugging
-#define RPS_REPLEVAL_GIVES_BOTH_AT(V1,V2,LIN) do {		\
-    _f.mainresv = (V1);						\
-    _f.extraresv = (V2);					\
-    RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL,				\
-		     "rps_full_evaluate_repl_expr#"		\
-		     << eval_number << " of expr:" << _f.exprv	\
-		     << " in envob:" << _f.envob		\
-		     << " gives main:" << _f.mainresv		\
-		     << ", extra:" << _f.extraresv);		\
-    return Rps_TwoValues(_f.mainresv,_f.extraresv);		\
+#define RPS_REPLEVAL_GIVES_BOTH_AT(V1,V2,LIN) do {              \
+    _f.mainresv = (V1);                                         \
+    _f.extraresv = (V2);                                        \
+    RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL,                         \
+                     "rps_full_evaluate_repl_expr#"             \
+                     << eval_number << " of expr:" << _f.exprv  \
+                     << " in envob:" << _f.envob                \
+                     << " gives main:" << _f.mainresv           \
+                     << ", extra:" << _f.extraresv);            \
+    return Rps_TwoValues(_f.mainresv,_f.extraresv);             \
   } while(0)
 #define RPS_REPLEVAL_GIVES_BOTH(V1,V2) RPS_REPLEVAL_GIVES_BOTH_AT((V1),(V2),__LINE__)
   ///
-#define RPS_REPLEVAL_GIVES_PLAIN_AT(V1,LIN) do {	\
-    _f.mainresv = (V1);					\
-    _f.extraresv = nullptr;				\
-    RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL,			\
-		     "rps_full_evaluate_repl_expr#"	\
-		     << eval_number << " of expr:"	\
-		     << _f.exprv			\
-		     << " in envob:" << _f.envob	\
-		     << " gives main:" << _f.mainresv	\
-		     << ", extra:" << _f.extraresv);	\
-    return Rps_TwoValues(_f.mainresv,_f.extraresv);	\
+#define RPS_REPLEVAL_GIVES_PLAIN_AT(V1,LIN) do {        \
+    _f.mainresv = (V1);                                 \
+    _f.extraresv = nullptr;                             \
+    RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL,                 \
+                     "rps_full_evaluate_repl_expr#"     \
+                     << eval_number << " of expr:"      \
+                     << _f.exprv                        \
+                     << " in envob:" << _f.envob        \
+                     << " gives main:" << _f.mainresv   \
+                     << ", extra:" << _f.extraresv);    \
+    return Rps_TwoValues(_f.mainresv,_f.extraresv);     \
   } while(0)
   ///
 #define RPS_REPLEVAL_GIVES_PLAIN(V) RPS_REPLEVAL_GIVES_PLAIN_AT((V),__LINE__)
   ///
-#define RPS_REPLEVAL_FAIL_AT(MSG,LOG,LIN) do {			\
-    RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL,				\
-		     "rps_full_evaluate_repl_expr#"		\
-		     << eval_number << " FAILS for expr:"	\
-		     << _f.exprv				\
-		     << " in envob:" << _f.envob		\
-		     << "::" << (MSG)				\
-		     << "; " << LOG);				\
-    throw  std::runtime_error("rps_full_evaluate_repl_expr "	\
-			      " fail " #MSG "@" #LIN); }	\
+#define RPS_REPLEVAL_FAIL_AT(MSG,LOG,LIN) do {                  \
+    RPS_DEBUG_LOG_AT(__FILE__,LIN,REPL,                         \
+                     "rps_full_evaluate_repl_expr#"             \
+                     << eval_number << " FAILS for expr:"       \
+                     << _f.exprv                                \
+                     << " in envob:" << _f.envob                \
+                     << "::" << (MSG)                           \
+                     << "; " << LOG);                           \
+    throw  std::runtime_error("rps_full_evaluate_repl_expr "    \
+                              " fail " #MSG "@" #LIN); }        \
   while(0)
   ///
 #define  RPS_REPLEVAL_FAIL(MSG,LOG) RPS_REPLEVAL_FAIL_AT(MSG,LOG,__LINE__)
   ///
   /// to check the above failure macro:
-  if (!_f.envob)  		// this dont happen
+  if (!_f.envob)                // this dont happen
     {
       RPS_REPLEVAL_FAIL("*check-fail*","never happens no envob" << _f.envob);
     };
@@ -272,12 +272,12 @@ Rps_PayloadEnvironment::make_with_parent_environment(Rps_CallFrame*callframe, Rp
 
 Rps_Value
 rps_environment_get_shallow_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob,
-                                        bool *pfound)
+                                        bool *pmissing)
 {
   if (envob.is_empty())
     {
-      if (pfound)
-        *pfound=false;
+      if (pmissing)
+        *pmissing = true;
       return nullptr;
     }
   std::lock_guard gu(*envob->objmtxptr());
@@ -288,29 +288,63 @@ rps_environment_get_shallow_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob
     goodenv = true;
   if (!goodenv)
     {
-      if (pfound)
-        *pfound=false;
+      if (pmissing)
+        *pmissing=true;
       return nullptr;
     };
   auto paylenv = envob->get_dynamic_payload<Rps_PayloadEnvironment>();
   if (!paylenv)
     {
-      if (pfound)
-        *pfound=false;
+      if (pmissing)
+        *pmissing = true;
       return nullptr;
     };
   bool missing= false;
-  Rps_Value val = paylenv->get_obmap(varob, nullptr, &missing);
-  if (missing)
-    {
-      if (pfound)
-        *pfound = false;
-      return nullptr;
-    };
-  if (pfound)
-    *pfound = true;
-  return val;
+  return paylenv->get_obmap(varob, nullptr, pmissing);
 } // end rps_environment_get_shallow_bound_value
+
+int
+rps_environment_find_binding_depth(Rps_ObjectRef envob, Rps_ObjectRef varob)
+{
+  int depth=0;
+  int loopcnt = 0;
+  constexpr int maxloop = 4096;
+  Rps_ObjectRef firstenvob = envob;
+  for(;;)
+    {
+      if (loopcnt++ > maxloop)
+        {
+          // this should never happen in practice....
+          RPS_WARNOUT("rps_environment_find_binding_depth looping "
+                      << loopcnt << " times for initial environment " << envob << " and variable " << varob
+                      << std::endl <<  RPS_FULL_BACKTRACE_HERE(1, "rps_environment_find_binding_depth"));
+          return -1;
+        }
+      if (envob.is_empty())
+        {
+          return -1;
+        };
+      bool goodenv = false;
+      if (envob->get_class() == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)) //environment∈class
+        goodenv = true;
+      else if (envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
+        goodenv = true;
+      if (!goodenv)
+        return -1;
+      std::lock_guard gu(*envob->objmtxptr());
+      bool missing = true;
+      auto paylenv = envob->get_dynamic_payload<Rps_PayloadEnvironment>();
+      if (!paylenv)
+        return -1;
+      if (paylenv->has_key_obmap(varob))
+        return depth;
+      depth++;
+      envob = paylenv->get_parent_environment();
+      if (!envob)
+        return -1;
+    };
+} // end rps_environment_find_binding_depth
+
 
 void
 Rps_PayloadEnvironment::gc_mark(Rps_GarbageCollector&gc) const

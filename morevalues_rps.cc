@@ -428,7 +428,7 @@ Rps_DequVal::Rps_DequVal(const std::vector<Rps_Value>& vec,const char*sfil, int 
     {
       std_deque_superclass::push_back(curval);
     }
-};				// end constructor Rps_DequVal(const std::vector<Rps_Value>& vec)
+};                              // end constructor Rps_DequVal(const std::vector<Rps_Value>& vec)
 
 
 Rps_HashInt
@@ -655,7 +655,8 @@ Rps_PayloadObjMap::dump_json_objmap_internal_content(Rps_Dumper*du, Json::Value&
 } // end Rps_PayloadObjMap::dump_json_internal_content
 
 Rps_Value
-Rps_PayloadObjMap::get_obmap(Rps_ObjectRef obkey, Rps_Value defaultval, bool*pmissing)
+Rps_PayloadObjMap::get_obmap(Rps_ObjectRef obkey, Rps_Value defaultval,
+                             bool*pmissing) const
 {
   auto it = obm_map.find(obkey);
   if (it != obm_map.end())
@@ -668,6 +669,12 @@ Rps_PayloadObjMap::get_obmap(Rps_ObjectRef obkey, Rps_Value defaultval, bool*pmi
     *pmissing = true;
   return defaultval;
 } // end Rps_PayloadObjMap::get_obmap
+
+bool
+Rps_PayloadObjMap::has_key_obmap(Rps_ObjectRef obkey) const
+{
+  return obm_map.find(obkey) != obm_map.end();
+} // end Rps_PayloadObjMap::has_key_obmap
 
 Rps_ObjectZone*
 Rps_PayloadObjMap::make(Rps_CallFrame*callframe, Rps_ObjectRef classob, Rps_ObjectRef spaceob)
