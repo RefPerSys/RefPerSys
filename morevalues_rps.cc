@@ -596,8 +596,9 @@ Rps_PayloadObjMap::Rps_PayloadObjMap(Rps_ObjectZone*obz) :
   obm_map(), obm_descr(nullptr)
 {
 } // end Rps_PayloadObjMap::Rps_PayloadObjMap
+
 void
-Rps_PayloadObjMap::gc_mark(Rps_GarbageCollector&gc) const
+Rps_PayloadObjMap::gc_mark_objmap(Rps_GarbageCollector&gc) const
 {
   for (auto it: obm_map)
     {
@@ -605,18 +606,23 @@ Rps_PayloadObjMap::gc_mark(Rps_GarbageCollector&gc) const
       gc.mark_value(it.second);
     };
   gc.mark_value (obm_descr);
-} // end Rps_PayloadObjMap::gc_mark
+} // end Rps_PayloadObjMap::gc_mark_objmap
 
+void
+Rps_PayloadObjMap::gc_mark(Rps_GarbageCollector&gc) const
+{
+  gc_mark_objmap(gc);
+} // end Rps_GarbageCollector::gc_mark
 
 void
 Rps_PayloadObjMap::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT (du != nullptr);
-  dump_scan_internal(du);
+  dump_scan_objmap_internal(du);
 } // end Rps_PayloadObjMap::dump_scan
 
 void
-Rps_PayloadObjMap::dump_scan_internal(Rps_Dumper*du) const
+Rps_PayloadObjMap::dump_scan_objmap_internal(Rps_Dumper*du) const
 {
   RPS_ASSERT (du != nullptr);
   for (auto it: obm_map)
@@ -632,11 +638,11 @@ Rps_PayloadObjMap::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 {
   RPS_ASSERT (du != nullptr);
   jv["payload"] = "objmap";
-  dump_json_internal_content(du, jv);
+  dump_json_objmap_internal_content(du, jv);
 } // end Rps_PayloadObjMap::dump_json_content
 
 void
-Rps_PayloadObjMap::dump_json_internal_content(Rps_Dumper*du, Json::Value&jv) const
+Rps_PayloadObjMap::dump_json_objmap_internal_content(Rps_Dumper*du, Json::Value&jv) const
 {
   RPS_ASSERT (du != nullptr);
   Json::Value jmap(Json::objectValue);

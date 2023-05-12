@@ -4373,7 +4373,6 @@ public:
 };				// end Rps_PayloadSymbol
 
 
-#warning we probably need some Rps_PayloadEnvironment, used by rps_full_evaluate_repl_expr
 
 
 
@@ -4401,10 +4400,11 @@ protected:
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
   };
   virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  void gc_mark_objmap(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
-  void dump_scan_internal(Rps_Dumper*du) const;
+  void dump_scan_objmap_internal(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
-  void dump_json_internal_content(Rps_Dumper*, Json::Value&) const;
+  void dump_json_objmap_internal_content(Rps_Dumper*, Json::Value&) const;
   virtual bool is_erasable(void) const
   {
     return false;
@@ -4466,7 +4466,14 @@ public:
   };
   inline Rps_PayloadEnvironment(Rps_ObjectZone*obz, Rps_Loader*ld);
   static Rps_ObjectZone* make(Rps_CallFrame*cf, Rps_ObjectRef classob=nullptr, Rps_ObjectRef spaceob=nullptr);
-  #warning Rps_PayloadEnvironment not really implemented
+  static Rps_ObjectZone* make_with_parent_environment(Rps_CallFrame*cf,
+						      Rps_ObjectRef parentob,
+						      Rps_ObjectRef classob=nullptr,
+						      Rps_ObjectRef spaceob=nullptr);
+  
+  Rps_ObjectRef get_parent_environment() const { return  env_parent; };
+  void put_parent_environment(Rps_ObjectRef envob);
+#warning Rps_PayloadEnvironment not really implemented
 };				// end Rps_PayloadEnvironment
 
   

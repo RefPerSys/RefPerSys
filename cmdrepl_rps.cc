@@ -114,6 +114,11 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     {
       RPS_REPLEVAL_FAIL("*check-fail*","never happens no envob" << _f.envob);
     };
+  if (!_f.envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
+    {
+      RPS_REPLEVAL_FAIL("bad environment","The envob " << _f.envob << " of class "
+                        << _f.envob->get_class() << " is not a valid environment");
+    };
   /* environments should have bindings, probably with Rps_PayloadEnvironment */
 #warning rps_full_evaluate_repl_expr should check that envob is an environment, with bindings and optional parent env....
   RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
@@ -163,12 +168,16 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       || _f.classob->is_subclass_of(RPS_ROOT_OB(_4HJvNCh35Lu00n5z3R) //variable∈class
                                    ))
     {
+      std::lock_guard gu(*_f.envob->objmtxptr());
+      auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
 #warning rps_full_evaluate_repl_expr unimplemented for variable-s
     }
   else if (_f.classob ==  RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
            || _f.classob->is_subclass_of(RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
                                         ))
     {
+      std::lock_guard gu(*_f.envob->objmtxptr());
+      auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
 #warning rps_full_evaluate_repl_expr unimplemented for symbolic_variable-s
     }
 #warning rps_full_evaluate_repl_expr not really implemented, should dispatch on classob
@@ -211,13 +220,110 @@ rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value expr, Rps_Objec
 
 ////////////////
 
+Rps_PayloadEnvironment::Rps_PayloadEnvironment(Rps_ObjectZone*obown) :
+  Rps_PayloadObjMap(obown),
+  env_parent(nullptr)
+{
+} // end Rps_PayloadEnvironment::Rps_PayloadEnvironment
+
 Rps_ObjectZone*
 Rps_PayloadEnvironment::make(Rps_CallFrame*callframe, Rps_ObjectRef classob, Rps_ObjectRef spaceob)
 {
-  RPS_FATALOUT("unimplemented Rps_PayloadEnvironment::make");
-#warning unimplemented Rps_PayloadEnvironment::make
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, callframe,
+                 Rps_ObjectRef obclass;
+                 Rps_ObjectRef obspace;
+                 Rps_ObjectRef obenv;
+                );
+  _f.obclass = classob;
+  _f.obspace = spaceob;
+  RPS_ASSERT(classob);
+  RPS_ASSERT(classob == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a) //environment∈class
+             || classob->is_subclass_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)));
+  _f.obenv = Rps_ObjectRef::make_object(&_, _f.obclass, _f.obspace);
+  auto paylenv = _f.obenv->put_new_plain_payload<Rps_PayloadEnvironment>();
+  RPS_ASSERT(paylenv);
+  return _f.obenv;
 } // end Rps_PayloadEnvironment::make
 
+Rps_ObjectZone*
+Rps_PayloadEnvironment::make_with_parent_environment(Rps_CallFrame*callframe, Rps_ObjectRef parentob, Rps_ObjectRef classob, Rps_ObjectRef spaceob)
+{
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, callframe,
+                 Rps_ObjectRef obparent;
+                 Rps_ObjectRef obclass;
+                 Rps_ObjectRef obspace;
+                 Rps_ObjectRef obenv;
+                );
+  _f.obclass = classob;
+  _f.obparent = parentob;
+  _f.obspace = spaceob;
+  RPS_ASSERT(classob);
+  RPS_ASSERT(classob == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a) //environment∈class
+             || classob->is_subclass_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)));
+  RPS_ASSERT(!parentob || parentob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)));
+  _f.obenv = Rps_ObjectRef::make_object(&_, _f.obclass, _f.obspace);
+  auto paylenv = _f.obenv->put_new_plain_payload<Rps_PayloadEnvironment>();
+  RPS_ASSERT(paylenv);
+  paylenv->env_parent = parentob;
+  return _f.obenv;
+} // end Rps_PayloadEnvironment::make_with_parent_environment
+
+void
+Rps_PayloadEnvironment::gc_mark(Rps_GarbageCollector&gc) const
+{
+  gc_mark_objmap(gc);
+  if (env_parent)
+    gc.mark_obj(env_parent);
+} // end Rps_PayloadEnvironment::gc_mark
+
+void
+Rps_PayloadEnvironment::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du);
+  dump_scan_objmap_internal(du);
+  if (rps_is_dumpable_objref(du, env_parent))
+    rps_dump_scan_object(du, env_parent);
+} // end Rps_PayloadEnvironment::dump_scan
+
+void
+Rps_PayloadEnvironment::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  RPS_ASSERT(du);
+  jv["payload"] = "environment";
+  dump_json_objmap_internal_content(du, jv);
+  if (rps_is_dumpable_objref(du, env_parent))
+    jv["parent_env"] = rps_dump_json_objectref(du, env_parent);
+  else
+    jv["parent_env"] = Json::nullValue;
+} // end Rps_PayloadEnvironment::dump_json_content
+
+void
+rpsldpy_environment (Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
+{
+  RPS_ASSERT(obz != nullptr);
+  RPS_ASSERT(ld != nullptr);
+  RPS_ASSERT(obz->get_payload() == nullptr);
+  RPS_ASSERT(jv.type() == Json::objectValue);
+  auto paylenv = obz->put_new_plain_payload<Rps_PayloadEnvironment>();
+  const Json::Value& jobmap = jv["objmap"];
+  const Json::Value&  jdescr = jv["descr"];
+  const Json::Value& jparent = jv["parent_env"];
+  if (jobmap.type () == Json::objectValue)
+    {
+      auto membvec = jobmap.getMemberNames(); // vector of strings
+      for (const std::string& keystr : membvec)
+        {
+          Rps_ObjectRef keyob(keystr, ld);
+          Rps_Value val = Rps_Value(jobmap[keystr], ld);
+          paylenv->put_obmap(keyob, val);
+        }
+    }
+  paylenv->put_descr(Rps_Value(jdescr, ld));
+  if (jparent)
+    paylenv->env_parent = Rps_ObjectRef(jparent,ld);
+} // end rpsldpy_environment
 
 ////////////////
 
