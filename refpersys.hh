@@ -4449,10 +4449,10 @@ extern "C" int rps_environment_find_binding_depth(Rps_ObjectRef envob, Rps_Objec
 /// negative, and *penvob is cleared.
 extern "C" Rps_Value rps_environment_find_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob,
                                                      int*pdepth=nullptr, Rps_ObjectRef*penvob=nullptr);
-/// Add or put a binding in the current environment.
+/// Add or put a binding in the current environment.  Do nothing when envob is not an environment.
 void rps_environment_add_shallow_binding(Rps_CallFrame*callframe,
                                          Rps_ObjectRef envob, Rps_ObjectRef varob, Rps_Value val);
-/// overwrite a binding in the deep environment containing it, or when not found in the current one
+/// overwrite a binding in the deep environment containing it, or when not found in the current one. Return affected depth
 extern "C" int rps_environment_overwrite_binding(Rps_CallFrame*callframe,
                                            Rps_ObjectRef envob, Rps_ObjectRef varob, Rps_Value val,
                                            Rps_ObjectRef*penvob=nullptr);

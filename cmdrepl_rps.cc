@@ -281,12 +281,12 @@ rps_environment_get_shallow_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob
       return nullptr;
     }
   std::lock_guard gu(*envob->objmtxptr());
-  bool goodenv = false;
+  bool isgoodenv = false;
   if (envob->get_class() == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)) //environment∈class
-    goodenv = true;
+    isgoodenv = true;
   else if (envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
-    goodenv = true;
-  if (!goodenv)
+    isgoodenv = true;
+  if (!isgoodenv)
     {
       if (pmissing)
         *pmissing=true;
@@ -303,16 +303,17 @@ rps_environment_get_shallow_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob
   return paylenv->get_obmap(varob, nullptr, pmissing);
 } // end rps_environment_get_shallow_bound_value
 
+constexpr int rps_environment_maxloop = 4096;
+
 int
 rps_environment_find_binding_depth(Rps_ObjectRef envob, Rps_ObjectRef varob)
 {
   int depth=0;
   int loopcnt = 0;
-  constexpr int maxloop = 4096;
   Rps_ObjectRef firstenvob = envob;
   for(;;)
     {
-      if (loopcnt++ > maxloop)
+      if (loopcnt++ > rps_environment_maxloop)
         {
           // this should never happen in practice....
           RPS_WARNOUT("rps_environment_find_binding_depth looping "
@@ -324,14 +325,14 @@ rps_environment_find_binding_depth(Rps_ObjectRef envob, Rps_ObjectRef varob)
         {
           return -1;
         };
-      bool goodenv = false;
-      if (envob->get_class() == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)) //environment∈class
-        goodenv = true;
-      else if (envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
-        goodenv = true;
-      if (!goodenv)
-        return -1;
       std::lock_guard gu(*envob->objmtxptr());
+      bool isgoodenv = false;
+      if (envob->get_class() == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)) //environment∈class
+        isgoodenv = true;
+      else if (envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
+        isgoodenv = true;
+      if (!isgoodenv)
+        return -1;
       bool missing = true;
       auto paylenv = envob->get_dynamic_payload<Rps_PayloadEnvironment>();
       if (!paylenv)
@@ -344,6 +345,207 @@ rps_environment_find_binding_depth(Rps_ObjectRef envob, Rps_ObjectRef varob)
         return -1;
     };
 } // end rps_environment_find_binding_depth
+
+
+
+Rps_Value
+rps_environment_find_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob,
+                                 int*pdepth, Rps_ObjectRef*penvob)
+{
+  int depth=0;
+  int loopcnt = 0;
+  Rps_ObjectRef firstenvob = envob;
+  for(;;)
+    {
+      if (loopcnt++ > rps_environment_maxloop)
+        {
+          // this should never happen in practice....
+          RPS_WARNOUT("rps_environment_find_bound_value looping "
+                      << loopcnt << " times for initial environment " << envob << " and variable " << varob
+                      << std::endl <<  RPS_FULL_BACKTRACE_HERE(1, "rps_environment_find_binding_depth"));
+          if (pdepth)
+            *pdepth = -1;
+          if (penvob)
+            *penvob = envob;
+          return nullptr;
+        }
+      if (envob.is_empty())
+        {
+          if (pdepth)
+            *pdepth = -1;
+          if (penvob)
+            *penvob = nullptr;
+          return nullptr;
+        };
+      std::lock_guard gu(*envob->objmtxptr());
+      bool isgoodenv = false;
+      if (envob->get_class() == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)) //environment∈class
+        isgoodenv = true;
+      else if (envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
+        isgoodenv = true;
+      if (!isgoodenv)
+        {
+          if (pdepth)
+            *pdepth = -1;
+          if (penvob)
+            *penvob = nullptr;
+          return nullptr;
+        }
+      auto paylenv = envob->get_dynamic_payload<Rps_PayloadEnvironment>();
+      if (!paylenv)
+        {
+          if (pdepth)
+            *pdepth = -1;
+          if (penvob)
+            *penvob = nullptr;
+          return nullptr;
+        }
+      if (Rps_Value v = paylenv->get_obmap(varob))
+        {
+          if (pdepth)
+            *pdepth = depth;
+          if (penvob)
+            *penvob = envob;
+          return v;
+        }
+      depth++;
+      envob = paylenv->get_parent_environment();
+      if (!envob)
+        {
+          if (pdepth)
+            *pdepth = -1;
+          if (penvob)
+            *penvob = nullptr;
+          return nullptr;
+        }
+    };
+} // end rps_environment_find_bound_value
+
+
+void
+rps_environment_add_shallow_binding(Rps_CallFrame*callframe,
+                                    Rps_ObjectRef envob, Rps_ObjectRef varob, Rps_Value val)
+{
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 callframe,
+                 Rps_ObjectRef envob;
+                 Rps_ObjectRef varob;
+                 Rps_Value valv;
+                );
+  _f.envob = envob;
+  _f.varob = varob;
+  _f.valv = val;
+  if (!envob || envob.is_empty())
+    return;
+  if (!varob || varob.is_empty())
+    return;
+  std::lock_guard gu(*envob->objmtxptr());
+  bool isgoodenv = false;
+  if (envob->get_class() == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)) //environment∈class
+    isgoodenv = true;
+  else if (envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
+    isgoodenv = true;
+  if (!isgoodenv)
+    return;
+  auto paylenv = envob->get_dynamic_payload<Rps_PayloadEnvironment>();
+  if (!paylenv)
+    return;
+  paylenv->put_obmap(_f.varob, _f.valv);
+} // end rps_environment_add_shallow_binding
+
+/// overwrite a binding in the deep environment containing it, or when
+/// not found in the current one.  Return affected depth.
+int
+rps_environment_overwrite_binding(Rps_CallFrame*callframe,
+                                  Rps_ObjectRef envob,
+                                  Rps_ObjectRef varob, Rps_Value val,
+                                  Rps_ObjectRef*penvob)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 callframe,
+                 Rps_ObjectRef envob;
+                 Rps_ObjectRef firstenvob;
+                 Rps_ObjectRef varob;
+                 Rps_Value valv;
+                );
+  _f.envob = envob;
+  _f.firstenvob = envob;
+  _f.varob = varob;
+  _f.valv = val;
+  int loopcnt = 0;
+  int depth = 0;
+  for(;;)
+    {
+      if (loopcnt++ > rps_environment_maxloop)
+        {
+          // this should never happen in practice....
+          RPS_WARNOUT("rps_environment_overwrite_binding looping "
+                      << loopcnt << " times for initial environment " << _f.firstenvob << " and variable " << _f.varob << " value " << _f.valv
+                      << std::endl <<  RPS_FULL_BACKTRACE_HERE(1, "rps_environment_find_binding_depth"));
+          if (penvob)
+            *penvob = _f.envob;
+          return -1;
+        }
+      if (_f.envob.is_empty())
+        {
+          if (penvob)
+            *penvob = nullptr;
+          return -1;
+        };
+      std::lock_guard gu(*_f.envob->objmtxptr());
+      bool isgoodenv = false;
+      if (_f.envob->get_class() == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)) //environment∈class
+        isgoodenv = true;
+      else if (_f.envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
+        isgoodenv = true;
+      if (!isgoodenv)
+        {
+          if (penvob)
+            *penvob = nullptr;
+          return -1;
+        }
+      auto paylenv = envob->get_dynamic_payload<Rps_PayloadEnvironment>();
+      if (!paylenv)
+        {
+          if (penvob)
+            *penvob = nullptr;
+          return -1;
+        }
+      if (Rps_Value v = paylenv->get_obmap(_f.varob))
+        {
+          if (penvob)
+            *penvob = _f.envob;
+          paylenv->put_obmap(_f.varob, _f.valv);
+          return depth;
+        }
+      depth++;
+      envob = paylenv->get_parent_environment();
+      if (!envob)
+        break;
+    };
+  std::lock_guard gu(*_f.firstenvob->objmtxptr());
+  bool isgoodenv = false;
+  if (_f.firstenvob->get_class() == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a)) //environment∈class
+    isgoodenv = true;
+  else if (_f.firstenvob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
+    isgoodenv = true;
+  if (!isgoodenv)
+    {
+      if (penvob)
+        *penvob = nullptr;
+      return -1;
+    };
+  auto paylenv = _f.firstenvob->get_dynamic_payload<Rps_PayloadEnvironment>();
+  if (!paylenv)
+    {
+      if (penvob)
+        *penvob = nullptr;
+      return -1;
+    }
+  paylenv->put_obmap(_f.varob, _f.valv);
+  return 0;
+} // end rps_environment_overwrite_binding
 
 
 void
