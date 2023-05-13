@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2022 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1326,7 +1326,7 @@ Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe)
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token called from:" << std::endl << Rps_ShowCallFrame(callframe)
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::consume_front_token start")
-                << " this:" << (*this) << " token_deq:" << toksrc_token_deq);
+                << " this-token:" << (*this) << " token_deq:" << toksrc_token_deq);
   RPS_ASSERT(!toksrc_token_deq.empty());
   if (toksrc_token_deq.empty())
     throw std::runtime_error("Rps_TokenSource::consume_front_token without any queued token");
@@ -1349,7 +1349,7 @@ Rps_TokenSource::append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::append_back_new_token called from:" << std::endl << Rps_ShowCallFrame(&_)
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::append_back_new_token start")
                 << std::endl
-                << " this:" << (*this) << " token_deq:" << toksrc_token_deq
+                << " this-token:" << (*this) << " token_deq:" << toksrc_token_deq
                 << " tokenv:" << _f.lextokv);
   RPS_ASSERT (_f.lextokv && _f.lextokv.is_lextoken());
   toksrc_token_deq.push_back(tokenv);

@@ -156,7 +156,7 @@ genuine C++ code than we do and will find our C++ code pityful. We
 just want our runtime to work, not to serve as an example of well
 written C++17 code.
 
-The prefered C++ compiler (in 2023Q1) for *RefPerSys* is
+The prefered C++ compiler (in 2023Q2) for *RefPerSys* is
 [GCC](http://gcc.gnu.org/) version [12](https://gcc.gnu.org/gcc-12/) or
 [13](https://gcc.gnu.org/gcc-13).
 
