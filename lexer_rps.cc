@@ -179,6 +179,12 @@ Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
   RPS_DEBUG_LOG(CMD, "constr StreamTokenSource@ " <<(void*)this << " " << *this);
 } // end Rps_StreamTokenSource::Rps_StreamTokenSource
 
+void
+Rps_StreamTokenSource::display(std::ostream&out, unsigned depth) const
+{
+#warning unimplemented Rps_StreamTokenSource::display
+  RPS_FATALOUT("unimplemented Rps_StreamTokenSource::display this=" << (void*)this << " depth:" << depth);
+} // end Rps_StreamTokenSource::display
 
 Rps_StreamTokenSource::~Rps_StreamTokenSource()
 {
@@ -206,14 +212,14 @@ Rps_CinTokenSource::Rps_CinTokenSource()
   RPS_DEBUG_LOG(REPL, "constr CinTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(LOWREP, "constr CinTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(CMD, "constr CinTokenSource@ " <<(void*)this << " " << *this);
-};				// end Rps_CinTokenSource::Rps_CinTokenSource
+};                              // end Rps_CinTokenSource::Rps_CinTokenSource
 
 Rps_CinTokenSource::~Rps_CinTokenSource()
 {
   RPS_DEBUG_LOG(REPL, "destr CinTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(LOWREP, "destr CinTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(CMD, "destr CinTokenSource@ " <<(void*)this << " " << *this);
-};	// end Rps_CinTokenSource::~Rps_CinTokenSource
+};      // end Rps_CinTokenSource::~Rps_CinTokenSource
 
 bool
 Rps_CinTokenSource::get_line(void)
@@ -224,6 +230,13 @@ Rps_CinTokenSource::get_line(void)
   return true;
 } // end Rps_CinTokenSource::get_line
 
+
+void
+Rps_CinTokenSource::display(std::ostream&out, unsigned depth) const
+{
+#warning unimplemented Rps_CinTokenSource::display
+  RPS_FATALOUT("unimplemented Rps_CinTokenSource::display this=" << (void*)this << " depth:" << depth);
+} // end Rps_CinTokenSource::display
 
 
 ////////////////
@@ -299,7 +312,15 @@ Rps_StringTokenSource::output (std::ostream&out) const
     out << Rps_QuotedC_String(abbrev);
   out << '@' << position_str() << " tok.cnt:" << token_count()
       << " str: " << Rps_QuotedC_String(toksrcstr_inp.str());
-}	// end Rps_StringTokenSource::output
+}       // end Rps_StringTokenSource::output
+
+
+void
+Rps_StringTokenSource::display(std::ostream&out, unsigned depth) const
+{
+#warning unimplemented Rps_StringTokenSource::display
+  RPS_FATALOUT("unimplemented Rps_StringTokenSource::display this=" << (void*)this << " depth:" << depth);
+} // end Rps_StringTokenSource::display
 
 
 
@@ -833,7 +854,7 @@ Rps_TokenSource::lex_quoted_literal_string(Rps_CallFrame*callframe)
               rstr.push_back ('\f');
               toksrc_col += 2;
               continue;
-            case 'e':			// ESCAPE
+            case 'e':                   // ESCAPE
               rstr.push_back ('\033');
               toksrc_col += 2;
               continue;
@@ -993,7 +1014,7 @@ Rps_TokenSource::lex_raw_literal_string(Rps_CallFrame*callframe)
                                    + endstr);
         }
       result += reststr;
-    };				// end while curp....
+    };                          // end while curp....
   if (endp)
     toksrc_col += endp - curp;
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_raw_literal_string gives "
@@ -1297,7 +1318,7 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
                         << std::endl << Rps_ShowCallFrame(&_));
           return nullptr;
         }
-    };				// end while rank >= toksrc_token_deq.size()
+    };                          // end while rank >= toksrc_token_deq.size()
   //
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank
                 << " pos:" << position_str()
