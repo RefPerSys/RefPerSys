@@ -156,9 +156,9 @@ genuine C++ code than we do and will find our C++ code pityful. We
 just want our runtime to work, not to serve as an example of well
 written C++17 code.
 
-The prefered C++ compiler (in 2020Q1) for *RefPerSys* is
-[GCC](http://gcc.gnu.org/) version [8](https://gcc.gnu.org/gcc-8/) or
-[9](https://gcc.gnu.org/gcc-9).
+The prefered C++ compiler (in 2023Q1) for *RefPerSys* is
+[GCC](http://gcc.gnu.org/) version [12](https://gcc.gnu.org/gcc-12/) or
+[13](https://gcc.gnu.org/gcc-13).
 
 It could be worthwhile to sometimes compile *RefPerSys* with `clang++`
 (see http://clang.llvm.org/ for more). In practice `make clean` then
