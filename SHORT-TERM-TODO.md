@@ -7,7 +7,7 @@ technical small tasks related to [RefPerSys](http://refpersys.org/)
 code on https://github.com/RefPerSys/RefPerSys
 
 The intuition is to mention here a few things which should take less
-than a few days of work.
+than a few days or weeks of work.
 
 
 ## TODO List
@@ -15,16 +15,17 @@ than a few days of work.
 
 ### context
 
-For *RefPerSys* near commit 3bab35f78a7b (i.e. `3bab35f78a7b`, March 2023). Please email
+For *RefPerSys* near commit [d53653c37f7a](https://github.com/RefPerSys/RefPerSys/commit/d53653c37f7a5dd0817a5f86256ef6f095944e25)  (i.e. `d53653c37f7a`, May 2023). Please email
 [refpersys-forum@framalistes.org](mailto:refpersys-forum@framalistes.org)
 or at least contact [Basile
 Starynkevitch](http://starynkevitch.net/Basile/) by SMS, WhatsApp, or
 private email to
-[basile@starynkevitch.net](mailto:basile@starynkevitch.net) if you
+[basile@starynkevitch.net](mailto:basile@starynkevitch.net), or at [CEA LIST](https://list.cea.fr/) office (till sept. 2023) to 
+[basile.starynkevitch@cea.fr](mailto:basile.starynkevitch@cea.fr) if you
 want to contribute.
 
 
-Please mention *RefPerSys* to colleagues, students, teachers et al...
+Please mention *RefPerSys* and the http://refpersys.org/ URL to colleagues, students, teachers et al...
 
 ### small useful TODO coding tasks
 
