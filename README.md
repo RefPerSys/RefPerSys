@@ -391,9 +391,8 @@ calling function**.
 
 ### useful references
 
-For Bismon, see http://github.com/bstarynk/bismon and read its [dfraft
-Bismon report](http://starynkevitch.net/Basile/chariot-bismon-doc.pdf)
-(updated quite often).
+For Bismon, see http://github.com/bstarynk/bismon and read its [draft
+Bismon report](http://starynkevitch.net/Basile/chariot-bismon-doc.pdf).
 
 For the C++17 language, see this [C++ reference](https://en.cppreference.com/w/cpp).
 

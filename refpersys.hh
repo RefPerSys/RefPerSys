@@ -4506,7 +4506,7 @@ public:
   
   Rps_ObjectRef get_parent_environment() const { return  env_parent; };
   void put_parent_environment(Rps_ObjectRef envob);
-#warning Rps_PayloadEnvironment not really implemented
+#warning Rps_PayloadEnvironment not fully implemented
 };                              // end Rps_PayloadEnvironment
 
   
