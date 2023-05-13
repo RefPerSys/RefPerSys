@@ -2334,6 +2334,7 @@ operator << (std::ostream&out, const Rps_DequVal& dq);
 
 ////////////////////////////////////////////////////////////////
 struct Rps_ChunkData_st;
+
 class Rps_TokenSource           // this is *not* a value .....
 {
   friend class Rps_LexTokenValue;
@@ -2375,12 +2376,13 @@ public:
   const Rps_LexTokenZone* make_token(Rps_CallFrame*callframe,
                                Rps_ObjectRef lexkind, Rps_Value lexval, const Rps_String*sourcev);
   virtual ~Rps_TokenSource();
+  void display_current_line_with_cursor(std::ostream&out) const;
   virtual void output (std::ostream&out) const = 0;
   /// TODO: the display method for token source would also show the cursor in a fancy way,
   /// inspired by GCC-12 error messages.  Maybe like
   /// ***** line 345 "abcdef" col 2
   /// *****             ^
-  virtual void display (std::ostream&out, unsigned depth=0) const = 0;
+  virtual void display (std::ostream&out) const = 0;
   const Rps_DequVal& token_dequeue(void) const { return toksrc_token_deq; };
   void consume_front_token(Rps_CallFrame*callframe);
   void append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv);
@@ -2479,7 +2481,7 @@ public:
   Rps_CinTokenSource();
   virtual ~Rps_CinTokenSource();
   virtual bool get_line(void);
-  virtual void display(std::ostream&out, unsigned depth) const;
+  virtual void display(std::ostream&out) const;
 };             // end Rps_CinTokenSource
 
 
@@ -2492,7 +2494,7 @@ public:
     out << "StreamTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count(); };
   virtual ~Rps_StreamTokenSource();
   virtual bool get_line(void);
-  virtual void display(std::ostream&out, unsigned depth) const;
+  virtual void display(std::ostream&out) const;
 };             // end Rps_StreamTokenSource
 
 
@@ -2506,7 +2508,7 @@ public:
   virtual  ~Rps_StringTokenSource();
   virtual bool get_line();
   const std::string str() const { return toksrcstr_str; };
-  virtual void display(std::ostream&out, unsigned depth) const;
+  virtual void display(std::ostream&out) const;
 };                                                            // end Rps_StringTokenSource
 
 

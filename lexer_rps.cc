@@ -139,6 +139,27 @@ Rps_TokenSource::position_str(int col) const
 } // end Rps_TokenSource::position_str
 
 
+void
+Rps_TokenSource::display_current_line_with_cursor(std::ostream&out) const
+{
+  out << toksrc_linebuf << std::endl;
+  int curcol = col();
+  const char*nextp = nullptr;
+  int i = 0;
+  for (const char* curp = toksrc_linebuf.c_str();
+       curp && *curp && i < curcol;
+       curp = nextp, i++)
+    {
+      ucs4_t curuc=0;
+      int ulen=curp?u8_strmbtouc(&curuc, (const uint8_t*)curp):0; // length in bytes
+      if (ulen<0 || curuc==0)
+        break;
+      out << ' ';
+      nextp = curp+ulen;
+    }
+  out << "↑" << std::endl;
+} // end Rps_TokenSource::display_current_line_with_cursor
+
 Rps_TokenSource::~Rps_TokenSource()
 {
   toksrc_name.clear();
@@ -180,10 +201,10 @@ Rps_StreamTokenSource::Rps_StreamTokenSource(std::string path)
 } // end Rps_StreamTokenSource::Rps_StreamTokenSource
 
 void
-Rps_StreamTokenSource::display(std::ostream&out, unsigned depth) const
+Rps_StreamTokenSource::display(std::ostream&out) const
 {
-#warning unimplemented Rps_StreamTokenSource::display
-  RPS_FATALOUT("unimplemented Rps_StreamTokenSource::display this=" << (void*)this << " depth:" << depth);
+  output(out);
+  display_current_line_with_cursor(out);
 } // end Rps_StreamTokenSource::display
 
 Rps_StreamTokenSource::~Rps_StreamTokenSource()
@@ -232,10 +253,11 @@ Rps_CinTokenSource::get_line(void)
 
 
 void
-Rps_CinTokenSource::display(std::ostream&out, unsigned depth) const
+Rps_CinTokenSource::display(std::ostream&out) const
 {
-#warning unimplemented Rps_CinTokenSource::display
-  RPS_FATALOUT("unimplemented Rps_CinTokenSource::display this=" << (void*)this << " depth:" << depth);
+  output(out);
+  out << std::endl;
+  display_current_line_with_cursor(out);
 } // end Rps_CinTokenSource::display
 
 
@@ -316,10 +338,11 @@ Rps_StringTokenSource::output (std::ostream&out) const
 
 
 void
-Rps_StringTokenSource::display(std::ostream&out, unsigned depth) const
+Rps_StringTokenSource::display(std::ostream&out) const
 {
-#warning unimplemented Rps_StringTokenSource::display
-  RPS_FATALOUT("unimplemented Rps_StringTokenSource::display this=" << (void*)this << " depth:" << depth);
+  output(out);
+  out << std::endl;
+  display_current_line_with_cursor(out);
 } // end Rps_StringTokenSource::display
 
 
