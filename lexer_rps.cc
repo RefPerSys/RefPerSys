@@ -448,10 +448,11 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << "... curcptr:" <<  Rps_QuotedC_String(curcptr())
                     << " token_deq:" << toksrc_token_deq
                     << " number :-◑> " << _f.res << " @! " << position_str()
-		    << Rps_Do_Output([&](std::ostream& out) {
-		      this->display_current_line_with_cursor(out);
-		    })
-		   );
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      })
+                   );
       return _f.res;
     } //- end lexing numbers
   ///
@@ -483,9 +484,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this << std::endl
                     <<" infinity :-◑> " << _f.res << " @! " << position_str()
-		    << Rps_Do_Output([&](std::ostream& out) {
-		      this->display_current_line_with_cursor(out);
-		    }));
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
       return _f.res;
     } //- end lexing infinities
 
@@ -529,9 +531,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                         << std::endl
                         << " object :-◑> " << _f.res << std::endl
                         << "... @! " << position_str() << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-		    << Rps_Do_Output([&](std::ostream& out) {
-		      this->display_current_line_with_cursor(out);
-		    }));
+                        << Rps_Do_Output([&](std::ostream& out)
+          {
+            this->display_current_line_with_cursor(out);
+          }));
           return _f.res;
         }
       else if (isalpha(namestr[0]))  // new symbol
@@ -549,9 +552,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                         << " from¤ " << *this << std::endl
                         << " symbol :-◑> " << _f.res << " @! " << position_str()
                         << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-			<< Rps_Do_Output([&](std::ostream& out) {
-			  this->display_current_line_with_cursor(out);
-			}));
+                        << Rps_Do_Output([&](std::ostream& out)
+          {
+            this->display_current_line_with_cursor(out);
+          }));
           return _f.res;
         }
       else   // bad name
@@ -585,9 +589,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << " from¤ " << *this << std::endl
                     << " single-line string :-◑> " << _f.res << " @! " << position_str()
                     << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-		    << Rps_Do_Output([&](std::ostream& out) {
-		      this->display_current_line_with_cursor(out);
-		    }));
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
       return _f.res;
     } // end single-line literal string token
 
@@ -613,9 +618,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << " from¤ " << *this << std::endl
                     << " multi-line literal string :-◑> " << _f.res << " @! " << position_str()
                     << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-		    << Rps_Do_Output([&](std::ostream& out) {
-		      this->display_current_line_with_cursor(out);
-		    }));
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
       return _f.res;
     } // end possibly multi-line raw literal strings
 
@@ -682,9 +688,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << " from¤ " << *this << std::endl
                     << " code_chunk :-◑> " << _f.res << " @! " << position_str()  << std::endl
                     << "... curcptr:" <<  Rps_QuotedC_String(curcptr())
-		    << Rps_Do_Output([&](std::ostream& out) {
-		      this->display_current_line_with_cursor(out);
-		    }));
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
       return _f.res;
     } // end lexing code chunk
 
@@ -718,9 +725,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << " from¤ " << *this << std::endl
                     << " delimiter :-◑> " << _f.delimv << " at " << position_str()
                     << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-		    << Rps_Do_Output([&](std::ostream& out) {
-		      this->display_current_line_with_cursor(out);
-		    }));
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
       return _f.delimv;
     }
 #warning Rps_TokenSource::get_token unimplemented
@@ -822,11 +830,12 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter delimiter :-◑> " << _f.res << std::endl
                         << "... at " << position_str() << std::endl
                         << "... from¤ " << *this
-			<< Rps_Do_Output([&](std::ostream& out) {
-			  this->display_current_line_with_cursor(out);
-			})
-                        << " startpos " << startpos << std::endl
-                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter"));
+                        << Rps_Do_Output([&](std::ostream& out)
+          {
+            this->display_current_line_with_cursor(out);
+          })
+              << " startpos " << startpos << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter"));
           return _f.res;
         };
       /// truncate the delimstr by one ending UTF-8
@@ -1151,9 +1160,10 @@ Rps_TokenSource::lex_code_chunk(Rps_CallFrame*callframe)
   while (_f.chunkelemv || toksrc_col>oldcol || toksrc_line>oldline);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lex_code_chunk " << " in " << *this
                 << " :-◑> obchunk=" << _f.obchunk << " @!" << position_str()
-		    << Rps_Do_Output([&](std::ostream& out) {
-		      this->display_current_line_with_cursor(out);
-		    }));
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
   return _f.obchunk;
 } // end of Rps_TokenSource::lex_code_chunk
 
