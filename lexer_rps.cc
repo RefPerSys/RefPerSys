@@ -530,7 +530,9 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                         << " from¤ " << *this
                         << std::endl
                         << " object :-◑> " << _f.res << std::endl
-                        << "... @! " << position_str() << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                        << "... @! " << position_str()
+			<< " curcptr:" <<  Rps_QuotedC_String(curcptr())
+			<< std::endl
                         << Rps_Do_Output([&](std::ostream& out)
           {
             this->display_current_line_with_cursor(out);
