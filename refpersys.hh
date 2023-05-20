@@ -119,6 +119,13 @@
 extern "C" {
   // https://curl.se/libcurl/ is a web client library
 #include "curl/curl.h"
+
+  // GNU lightning on https://www.gnu.org/software/lightning/ for
+  // machine code generation
+
+#include "lightning.h"
+
+  
 };
 
 // http://man7.org/linux/man-pages/man3/gnu_get_libc_version.3.html

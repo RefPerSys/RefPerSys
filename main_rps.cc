@@ -789,6 +789,8 @@ rps_early_initialization(int argc, char** argv)
   rps_stderr_istty = isatty(STDERR_FILENO);
   rps_stdout_istty = isatty(STDOUT_FILENO);
   rps_progname = argv[0];
+  // initialize GNU lightning
+  init_jit (rps_progname);
   rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
   if (!rps_proghdl)
     {
@@ -978,6 +980,8 @@ main (int argc, char** argv)
 		" nop; nop; nop; nop; nop; nop; nop; nop; nop");
   if (rps_debug_file)
     fflush(rps_debug_file);
+  /// finalize GNU lightning for machine code generation
+  finish_jit();
   RPS_INFORM("end of RefPerSys process %d on host %s loaded state %s\n"
              "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
              (int)getpid(), rps_hostname(),

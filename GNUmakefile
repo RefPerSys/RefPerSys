@@ -118,7 +118,7 @@ endif
 
 RPS_BUILD_DIALECTFLAGS = -std=gnu++17
 RPS_BUILD_WARNFLAGS = -Wall -Wextra
-override RPS_BUILD_OPTIMFLAGS ?= -Og -g3
+override RPS_BUILD_OPTIMFLAGS ?= -O1 -g3
 RPS_BUILD_DEBUGFLAGS = -O0 -fno-inline -g3
 RPS_BUILD_CODGENFLAGS = -fPIC
 #RPS_BUILD_SANITFLAGS = -fsanitize=address
@@ -130,7 +130,26 @@ RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 
 RPS_PKG_CONFIG=  pkg-config
 RPS_CURLPP_CONFIG= curlpp-config
-RPS_PKG_NAMES= jsoncpp libcurl zlib
+
+## useful packages and libraries:
+##
+## * JSONCPP from github.com/open-source-parsers/jsoncpp
+##   to process JSON format in C++
+##
+## * libcurl from https://curl.se/libcurl/ to access web services
+##
+## * curlpp on www.curlpp.org/ to wrap them as C++ code
+##
+## * zlib from http://www.zlib.net/ as compression utilities
+##
+## * GNU lightning from https://www.gnu.org/software/lightning/ to generate code
+##
+## * libunistring to process Unicode or UTF-8 strings
+##
+## * libbacktrace from github.com/ianlancetaylor/libbacktrace to
+##   inspect the call stack
+
+RPS_PKG_NAMES= jsoncpp libcurl zlib lightning
 RPS_PKG_CFLAGS:= $(shell $(RPS_CURLPP_CONFIG) --cflags) \
                  $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 
