@@ -727,8 +727,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << " from¤ " << *this << std::endl
                     << " delimiter :-◑> " << _f.delimv << " at " << position_str()
                     << " curp:" << Rps_QuotedC_String(curp)
-		    << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-		    << std::endl
+                    << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+                    << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
         this->display_current_line_with_cursor(out);
@@ -742,10 +742,10 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                << " curp:" << Rps_QuotedC_String(curp) << std::endl
                << "... curcptr:" <<  Rps_QuotedC_String(curcptr())
                << " token_deq:" << toksrc_token_deq << std::endl
-                    << Rps_Do_Output([&](std::ostream& out)
-		    {
-		      this->display_current_line_with_cursor(out);
-		    }));
+               << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
   // we should refactor properly the rps_repl_lexer & Rps_LexTokenZone constructor here
 } // end Rps_TokenSource::get_token
 

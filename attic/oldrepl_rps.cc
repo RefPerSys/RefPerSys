@@ -687,4 +687,130 @@ rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char
 
 
 
+
+//- Rps_Value
+//- rps_repl_cmd_tokenizer(Rps_CallFrame*lexcallframe,
+//-                        Rps_ObjectRef cmdreplobarg,
+//-                        Rps_Value cmdparserarg,
+//-                        unsigned lookahead,
+//-                        Rps_DequVal& token_deq,
+//-                        const char*input_name,
+//-                        const char*&linebuf, int &lineno, int &colno,
+//-                        std::string prompt
+//-                       )
+//- {
+//-   static long tokencount;
+//-   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+//-                            /*callerframe:*/lexcallframe,
+//-                            Rps_ObjectRef lexkindob;
+//-                            Rps_ObjectRef cmdreplob;
+//-                            Rps_Value cmdparserv;
+//-                            Rps_Value lexdatav;
+//-                            Rps_Value lextokenv;
+//-                            Rps_Value parsmainv;
+//-                            Rps_Value parsxtrav;
+//-                 );
+//-   _f.cmdreplob = cmdreplobarg;
+//-   _f.cmdparserv = cmdparserarg;
+//-   int startline = lineno;
+//-   int startcol = colno;
+//-   int eol = linebuf?strlen(linebuf):(-1);
+//-   const char*curp = (linebuf && lineno < eol)?(linebuf+lineno):nullptr;
+//-   RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer°start input_name=" << input_name
+//-                 << " linebuf=" << linebuf << std::endl
+//-                 << "... L" << lineno << "C" << colno
+//-                 << " prompt=" << prompt
+//-                 << " cmdreplob=" << _f.cmdreplob
+//-                 << " cmdparserv=" << _f.cmdparserv
+//-                 << " lookahead=" << lookahead << std::endl
+//-                 << "...curframe:" << Rps_ShowCallFrame(&_)
+//-                 << RPS_FULL_BACKTRACE_HERE(1, "rps_repl_cmd_tokenizer")
+//-                 << "...@curp='" << Rps_Cjson_String(curp) << "'"  << " calldepth=" << _.call_frame_depth() << std::endl);
+//-   while (lookahead > token_deq.size())
+//-     {
+//-       RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer§ input_name=" << input_name
+//-                     << " linebuf=" << linebuf << std::endl
+//-                     << "... L" << lineno << "C" << colno
+//-                     << "...lookahead=" << lookahead  << " token_deq.size=" << token_deq.size());
+//-       {
+//-         RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer lookahead=" << lookahead
+//-                       << " need lexing since token_deq.size=" << token_deq.size()
+//-                       <<  " @"
+//-                       << input_name << "L" << startline << "C" << startcol
+//-                       << std::endl
+//-                       << " curframe:" << Rps_ShowCallFrame(&_));
+//-         Rps_TwoValues lexpair = rps_repl_lexer(&_, rps_repl_input,   input_name, linebuf, lineno, colno);
+//-         _f.lexkindob = lexpair.main().to_object();
+//-         _f.lexdatav = lexpair.xtra();
+//-         RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer lexkindob=" << _f.lexkindob
+//-                       << " lexdatav=" << _f.lexdatav
+//-                       << " @" << input_name
+//-                       << "L" << lineno
+//-                       << "C" << colno);
+//-         if (!_f.lexkindob)
+//-           return Rps_Value{nullptr};
+//-         _f.lextokenv
+//-           = Rps_LexTokenZone::tokenize(&_,
+//-                                        rps_repl_input,   input_name, &linebuf, lineno, colno,
+//-                                        [&](Rps_CallFrame*tokencallframe,
+//-                                            std::istream*tokeninp,
+//-                                            const char*tokeninputname,
+//-                                            const char**tokenplinebuf,
+//-                                            int*tokenplineno)
+//-         {
+//-           RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer getnextline tokeninputname="
+//-                         << tokeninputname << " tokenplineno=" << *tokenplineno);
+//-           return
+//-             rps_repl_get_next_line(tokencallframe,
+//-                                    tokeninp,
+//-                                    tokeninputname,
+//-                                    tokenplinebuf,
+//-                                    tokenplineno,
+//-                                    prompt);
+//-         }
+//-                                       );
+//-         RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer lextokenv=" << _f.lextokenv
+//-                       << " lookahead=" << lookahead
+//-                       << " token_deq.size:" << token_deq.size());
+//-         if (_f.lextokenv)
+//-           {
+//-             token_deq.push_back(_f.lextokenv);
+//-             RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer new token_deq=" << token_deq);
+//-             continue; /// the while  (lookahead > token_deq.size()) loop
+//-           }
+//-         else
+//-           return Rps_Value(nullptr);
+//-       };
+//-       RPS_ASSERT(lookahead >= token_deq.size());
+//-       RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer lookahead=" << lookahead
+//-                     << " cmdreplob=" << _f.cmdreplob
+//-                     << " :->◑ " << token_deq[lookahead]
+//-                     << " #" << ++tokencount);
+//-       return token_deq[lookahead];
+//-     };                         // end while (lookahead > token_deq.size())
+//-   RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer before applying " << _f.cmdparserv
+//-                 << " to cmdreplob=" << _f.cmdreplob
+//-                 << std::endl
+//-                 <<  " @"
+//-                 << input_name << "L" << startline << "C" << startcol
+//-                 << std::endl
+//-                 << " curframe:" << Rps_ShowCallFrame(&_));
+//-   Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply1 (&_, _f.cmdreplob);
+//-   rps_repl_cmd_lexer_fun = nullptr;
+//-   rps_repl_consume_cmd_token_fun = nullptr;
+//-   _f.parsmainv = parspair.main();
+//-   _f.parsxtrav = parspair.xtra();
+//-   RPS_DEBUG_LOG(REPL, "rps_repl_cmd_tokenizer for command " << _f.cmdreplob << " after applying " << _f.cmdparserv
+//-                 << " -> parsmainv=" << _f.parsmainv
+//-                 << ", parsxtrav=" << _f.parsxtrav
+//-                 << " :->◑ " << _f.lextokenv
+//-                 << " #" << ++tokencount
+//-                 << std::endl
+//-                 <<  " @"
+//-                 << input_name << "L" << startline << "C" << startcol);
+//-   return _f.lextokenv;
+//- } // end rps_repl_cmd_tokenizer
+//-
+
+
 ///// end of useless file RefPerSys/attic/oldrepl_rps.cc
