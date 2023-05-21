@@ -4587,12 +4587,12 @@ extern "C" Rps_Value OBSOLETErps_lex_code_chunk(Rps_CallFrame*callframe, std::is
 extern "C" bool
 OBSOLETErps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf,
 			       int*plineno, std::string prompt="");
-#endif /*0 && obsolete_code */
-
 
 /// Interpret from either a given input stream,
 /// or using readline if inp is null.
-extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
+extern "C" void OBSOLETErps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
+
+#endif /*0 && obsolete_code */
 
 
 

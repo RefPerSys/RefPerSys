@@ -42,10 +42,6 @@ extern "C" const char rps_repl_date[];
 const char rps_repl_date[]= __DATE__;
 
 
-/// Interpret from either a given input stream,
-/// or using readline if inp is null.
-extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
-
 std::vector<std::string> rps_completion_vect;
 
 /// a C++ closure for getting the REPL lexical token.... with
@@ -235,7 +231,7 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
   _f.obreplcmdclass->append_comp1(Rps_ObjectValue(_f.obcommand));
   RPS_DEBUG_LOG(CMD, "rps_repl_create_command commandname " << commandname
                 << " added " << _f.obcommand << " to repl_command class " << _f.obreplcmdclass);
-  /* see also rps_repl_interpret which would apply that closure */
+  /* see also OBSOLETErps_repl_interpret which would apply that closure */
 #warning rps_repl_create_command incomplete
   RPS_WARNOUT("rps_repl_create_command incomplete for command "
               << commandname << " obfun=" << _f.obfun
