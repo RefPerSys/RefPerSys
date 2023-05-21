@@ -4568,15 +4568,21 @@ extern "C" void rps_repl_create_command(Rps_CallFrame*callframe, const char*comm
 extern "C" std::istream*rps_repl_input;
 extern "C" bool rps_repl_stopped;
 
-/*** The lexer. We return a pair of values. The first describing the
+
+#if 0 && obsolete_code
+/*** The obsolete lexer. We return a pair of values. The first describing the
      second.  For example, a lexed integer is given as
      (int,<tagged-integer-value>).
 ***/
-extern "C" Rps_TwoValues rps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char*linebuf, int &lineno, int& colno);
+extern "C" Rps_TwoValues OBSOLETErps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
+						const char*linebuf, int &lineno, int& colno);
 
-extern "C" std::string rps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int lineno, int& colno);
+extern "C" std::string OBSOLETErps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
+							  const char**plinebuf, int lineno, int& colno);
 
-extern "C" Rps_Value rps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf, int& lineno, int& colno);
+extern "C" Rps_Value OBSOLETErps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
+						const char**plinebuf, int& lineno, int& colno);
+#endif /*0 && obsolete_code */
 
 // return true iff th next line has been gotten
 extern "C" bool
