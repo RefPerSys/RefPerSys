@@ -421,7 +421,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           toksrc_col += endfloat - startnum;
           _f.lextokv = Rps_DoubleValue(d);
           _f.lexkindob = RPS_ROOT_OB(_98sc8kSOXV003i86w5); //double∈class
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? doubleval " << _f.lextokv << " curpos:" << position_str()
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#"
+			<< (toksrc_counter+1) << "? doubleval " << _f.lextokv << " curpos:" << position_str()
                         << " curcptr:" << Rps_QuotedC_String(curcptr()));
         }
       else
@@ -430,7 +431,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           toksrc_col += (int)(endint - startnum);
           _f.lextokv = Rps_Value::make_tagged_int(l);
           _f.lexkindob = RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b); //int∈class
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? intval " << _f.lextokv << " curpos:" << position_str()
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? intval "
+			<< _f.lextokv << " curpos:" << position_str()
                         << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
                         << "... token_deq:" << toksrc_token_deq);
         }
@@ -453,6 +455,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << "... curcptr:" <<  Rps_QuotedC_String(curcptr())
                     << " token_deq:" << toksrc_token_deq
                     << " number :-◑> " << _f.res << " @! " << position_str()
+		    << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
         this->display_current_line_with_cursor(out);
@@ -489,6 +492,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::get_token#" << toksrc_counter
                     << " from¤ " << *this << std::endl
                     <<" infinity :-◑> " << _f.res << " @! " << position_str()
+		    << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
         this->display_current_line_with_cursor(out);
@@ -559,6 +563,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                         << " from¤ " << *this << std::endl
                         << " symbol :-◑> " << _f.res << " @! " << position_str()
                         << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+			<< std::endl
                         << Rps_Do_Output([&](std::ostream& out)
           {
             this->display_current_line_with_cursor(out);
@@ -571,7 +576,12 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_token#" << toksrc_counter << "? FAIL bad name " << _f.namev
                         << " @! " << position_str()
                         << " curcptr:" <<  Rps_QuotedC_String(curcptr())
-                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/badname"));
+                        << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/badname")
+			<< std::endl
+                        << Rps_Do_Output([&](std::ostream& out)
+          {
+            this->display_current_line_with_cursor(out);
+          }));
           return nullptr;
         }
     }
@@ -596,6 +606,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << " from¤ " << *this << std::endl
                     << " single-line string :-◑> " << _f.res << " @! " << position_str()
                     << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+		    << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
         this->display_current_line_with_cursor(out);
@@ -625,6 +636,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << " from¤ " << *this << std::endl
                     << " multi-line literal string :-◑> " << _f.res << " @! " << position_str()
                     << " curcptr:" <<  Rps_QuotedC_String(curcptr())
+		    << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
         this->display_current_line_with_cursor(out);
@@ -695,6 +707,7 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
                     << " from¤ " << *this << std::endl
                     << " code_chunk :-◑> " << _f.res << " @! " << position_str()  << std::endl
                     << "... curcptr:" <<  Rps_QuotedC_String(curcptr())
+		    << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
       {
         this->display_current_line_with_cursor(out);
@@ -721,7 +734,12 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
           RPS_WARNOUT("invalid delimiter " << Rps_QuotedC_String(delimstartstr) << " at " << delimpos
                       << " curp:" << Rps_QuotedC_String(curp)  << " curcptr:"
                       <<  Rps_QuotedC_String(curcptr())
-                      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token"));
+                      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token")
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
           std::string warndelimstr{"invalid delimiter "};
           warndelimstr +=  Rps_Cjson_String(delimstartstr);
           warndelimstr += " at ";
@@ -740,8 +758,8 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
       }));
       return _f.delimv;
     }
-#warning Rps_TokenSource::get_token unimplemented
-  RPS_FATALOUT("unimplemented Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? @ " << name()
+#warning Rps_TokenSource::get_token incomplete
+  RPS_FATALOUT("unimplemented / incomplete Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? @ " << name()
                << std::endl << "... from " << *this << std::endl
                << "... pos: " << position_str() << " start:" << startpos
                << " curp:" << Rps_QuotedC_String(curp) << std::endl
