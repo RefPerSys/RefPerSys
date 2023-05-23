@@ -116,6 +116,12 @@
 #include <sys/signalfd.h>
 #include <sys/timerfd.h>
 
+/// libtar-dev package on Debian
+#include <libtar.h>
+
+/// libssh2-1-dev package on Debian
+#include <libssh2.h>
+
 extern "C" {
   // https://curl.se/libcurl/ is a web client library
 #include "curl/curl.h"

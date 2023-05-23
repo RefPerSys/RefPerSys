@@ -149,7 +149,7 @@ RPS_CURLPP_CONFIG= curlpp-config
 ## * libbacktrace from github.com/ianlancetaylor/libbacktrace to
 ##   inspect the call stack
 
-RPS_PKG_NAMES= jsoncpp libcurl zlib lightning
+RPS_PKG_NAMES= jsoncpp libcurl zlib lightning libssh2
 RPS_PKG_CFLAGS:= $(shell $(RPS_CURLPP_CONFIG) --cflags) \
                  $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 
