@@ -1449,8 +1449,9 @@ Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe)
 {
   RPS_ASSERT(rps_is_main_thread());
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token START from:" << std::endl << Rps_ShowCallFrame(callframe)
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::consume_front_token start")
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token START from:"
+		<< std::endl << Rps_ShowCallFrame(callframe)
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::consume_front_token start")
                 << " this-token:" << (*this) << " token_deq:" << toksrc_token_deq
                 << " pos:" << position_str()
                 << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
