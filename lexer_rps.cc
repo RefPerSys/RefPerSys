@@ -8,9 +8,9 @@
  *      It has the lexer support for the Read Eval Print Loop
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch <basile@starynkevitch.net> (France)
+ *      Abhishek Chakravarti <abhishek@taranjali.org> (India)
+ *      Nimesh Neema <nimeshneema@gmail.com> (India)
  *
  *      © Copyright 2019 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -368,7 +368,12 @@ Rps_TokenSource::get_token(Rps_CallFrame*callframe)
   RPS_DEBUG_LOG(REPL, "+Rps_TokenSource::get_token#" << (toksrc_counter+1) << "? start curp="
                 << Rps_QuotedC_String(curp) << " at " << startpos << std::endl
                 << "... token_deq:" << toksrc_token_deq << " source:" << *this
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/start"));
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  })
+      << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_token/start"));
   ucs4_t curuc=0;
   int ulen= -1;
   size_t linelen = toksrc_linebuf.size();
