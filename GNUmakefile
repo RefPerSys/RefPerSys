@@ -397,22 +397,28 @@ test00: ./refpersys
 test01: ./refpersys
 	@echo test01 testing simple commands with a lot of debug
 	./refpersys -AREPL -c help -c 'show help' -B
+	@printf '\n\n\n////test01 FINISHED¤\n'
 
 
 test02: ./refpersys
 	./refpersys -AREPL  -c 'show RefPerSys_system' -B
+	@printf '\n\n\n////test02 FINISHED¤\n'
 
 test03: ./refpersys
 	./refpersys -AREPL  -c 'show 1 + 2' -B
+	@printf '\n\n\n////test03 FINISHED¤\n'
 
 test04: ./refpersys
 	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B
+	@printf '\n\n\n////test04 FINISHED¤\n'
 
 test05: ./refpersys
 	./refpersys -AREPL  -c 'show (1 + 2) ' -B
+	@printf '\n\n\n////test05 FINISHED¤\n'
 
 test06: ./refpersys
 	./refpersys -AREPL  -c 'show 1' -B
+	@printf '\n\n\n////test06 FINISHED¤\n'
 
 test07: ./refpersys
 	@echo missing test07 ; exit 1
@@ -425,5 +431,6 @@ test09: ./refpersys
 
 test-load: ./refpersys
 	./refpersys --batch
+	@printf '\n\n\n////test-load FINISHED¤\n'
 ## eof GNUmakefile
 
