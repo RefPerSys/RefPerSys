@@ -1659,7 +1659,44 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                 << " token_deq:" << toksrc_token_deq);
   if (!_f.lexopertokv)
     {
-      consume_front_token(&_);
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " no lexopertokv  leftv=" << _f.leftv
+                    << " lextokv:" << _f.lextokv
+                    << " startpos:" << startpos
+                    << " currentpos:" << position_str()
+                    << " curcptr " << Rps_QuotedC_String(curcptr())
+                    << " token_deq:" << toksrc_token_deq
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
+      if (!toksrc_token_deq.empty())
+        {
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " no lexopertokv  leftv=" << _f.leftv
+                        << " consume front token"
+                        << " lextokv:" << _f.lextokv
+                        << " startpos:" << startpos
+                        << " currentpos:" << position_str()
+                        << " curcptr " << Rps_QuotedC_String(curcptr())
+                        << " token_deq:" << toksrc_token_deq
+                        << std::endl
+                        << Rps_Do_Output([&](std::ostream& out)
+          {
+            this->display_current_line_with_cursor(out);
+          }));
+          consume_front_token(&_);
+        };
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " no lexopertokv  leftv=" << _f.leftv
+                    << " lextokv:" << _f.lextokv
+                    << " startpos:" << startpos
+                    << " currentpos:" << position_str()
+                    << " curcptr " << Rps_QuotedC_String(curcptr())
+                    << " token_deq:" << toksrc_token_deq
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
       if (pokparse)
         *pokparse = true;
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " ending gives " << _f.leftv
