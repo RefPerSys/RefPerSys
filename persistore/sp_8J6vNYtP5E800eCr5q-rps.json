@@ -899,14 +899,18 @@
 //∈environment
 {
  "oid": "_1QftoFojCHM00P7pQU",
- "mtime": 1684953174.83,
+ "mtime": 1684953684.50,
  "attrs" : [
   	{
   		"at" : "_1EBVGSfW2m200z18rx",
   		"va" : "initial_repl_environment"
   	}
   ],
- "class" : "_5LMLyzRp6kq04AMM8a"
+ "class" : "_5LMLyzRp6kq04AMM8a",
+ "descr" : "the initial REPL environment",
+ "objmap" : {},
+ "parent_env" : null,
+ "payload" : "environment"
 }
 //-ob_1QftoFojCHM00P7pQU
 
