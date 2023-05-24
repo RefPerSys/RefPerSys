@@ -198,7 +198,6 @@ Rps_Value
 rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value expr, Rps_ObjectRef envob)
 {
   RPS_ASSERT_CALLFRAME (callframe);
-  RPS_ASSERT(envob);
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  callframe,
                  Rps_Value exprv;
@@ -208,6 +207,9 @@ rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value expr, Rps_Objec
                 );
   _f.exprv = expr;
   _f.envob = envob;
+
+  RPS_DEBUG_LOG(REPL, "rps_simple_evaluate_repl_expr START expr:" << _f.exprv << " envob:" << _f.envob << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_simple_evaluate_repl_expr"));
   {
     Rps_TwoValues two = rps_full_evaluate_repl_expr(&_,_f.exprv,_f.envob);
     _f.mainresv = two.main();
@@ -880,40 +882,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                   << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr()) << std::endl);
     bool okparsexp = false;
     _f.showv = tksrc->parse_expression(&_,&okparsexp);
-    if (okparsexp)
-      {
-#warning missing code to find evalenvob in REPL command show _7WsQyJK6 after pars.expr.
-        /* TODO: compute a suitable environment for REPL evaluation in
-           evalenvob */
-        RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
-                      << " after successful parse_expression showv=" << _f.showv);
-        RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr. tksrc:" << (*tksrc) << std::endl
-                      << "... replcmdob:" << _f.replcmdob << std::endl
-                      << "... token_deq:" << tksrc->token_dequeue()
-                      << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
-                      << " lextokv:" << _f.lextokv << " should evaluate showv:" << _f.showv
-                      << " in evalenvob:" << _f.evalenvob
-                      << std::endl
-                      << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/after parsexp")
-                      << std::endl);
-        _f.evalshowv = rps_simple_evaluate_repl_expr(&_,
-                       _f.showv, _f.evalenvob);
-        std::cout << "##" << RPS_TERMINAL_BOLD_ESCAPE << showpos
-                  << RPS_TERMINAL_NORMAL_ESCAPE << " : "
-                  << _f.showv << std::endl;
-#warning rpsapply_7WsQyJK6lty02uz5KT for REPL command show should probably EVALUATE showv
-        /** TODO:
-        *
-        * We probably need some evaluating function, perhaps some
-        *  Rps_CallFrame::evaluate_repl_expr(Rps_Valu expr,
-        *  Rps_ObjectRef envob) member function where `expr` is the
-        *  expression to evaluate - here showv - and `envob` is some
-        *  environment object describing variables and their
-        *  values. **/
-        /// temporary return. Should do something fancy
-        return {_f.replcmdob, _f.showv};
-      }
-    else   // command show°_7WsQyJK6/failed to parse expression
+    if (!okparsexp)
       {
         RPS_WARNOUT("command show°_7WsQyJK6 failed to parse expression in " << (*tksrc)
                     << std::endl
@@ -922,10 +891,46 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                     << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
                     << " lextokv:" << _f.lextokv << " showv:" << _f.showv
                     << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/fail parsexp")
-                    << std::endl);
-
+                    << Rps_Do_Output([&](std::ostream& out)
+        {
+          tksrc->display_current_line_with_cursor(out);
+        })
+            << std::endl
+            << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/fail parsexp")
+            << std::endl);
+        return  {nullptr,nullptr};
       };
+#warning missing code to find evalenvob in REPL command show _7WsQyJK6 after pars.expr.
+    /* TODO: compute a suitable environment for REPL evaluation in
+       evalenvob */
+    RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
+                  << " after successful parse_expression showv=" << _f.showv);
+    RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr. tksrc:" << (*tksrc) << std::endl
+                  << "... replcmdob:" << _f.replcmdob << std::endl
+                  << "... token_deq:" << tksrc->token_dequeue()
+                  << " curcptr:" << Rps_QuotedC_String(tksrc->curcptr())
+                  << " lextokv:" << _f.lextokv << " should evaluate showv:" << _f.showv
+                  << " in evalenvob:" << _f.evalenvob
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT/after parsexp")
+                  << std::endl);
+    _f.evalshowv = rps_simple_evaluate_repl_expr(&_,
+                   _f.showv, _f.evalenvob);
+    std::cout << "##" << RPS_TERMINAL_BOLD_ESCAPE << showpos
+              << RPS_TERMINAL_NORMAL_ESCAPE << " : "
+              << _f.showv << std::endl;
+#warning rpsapply_7WsQyJK6lty02uz5KT for REPL command show should probably EVALUATE showv
+    /** TODO:
+    *
+    * We probably need some evaluating function, perhaps some
+    *  Rps_CallFrame::evaluate_repl_expr(Rps_Valu expr,
+    *  Rps_ObjectRef envob) member function where `expr` is the
+    *  expression to evaluate - here showv - and `envob` is some
+    *  environment object describing variables and their
+    *  values. **/
+    /// temporary return. Should do something fancy
+    return {_f.replcmdob, _f.showv};
+
   }
 #warning incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show
   RPS_WARNOUT("incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show from " << std::endl
