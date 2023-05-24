@@ -112,7 +112,7 @@ RPS_INSTALL_ROOT_OB(_8xCV6GDXYMa02mK5xy) //display_object_content_web∈symbol
 RPS_INSTALL_ROOT_OB(_8zNtuRpzXUP013WG9S) //web_exchange∈class
 RPS_INSTALL_ROOT_OB(_8CncrUdoSL303T5lOK) //repl_command∈class
 RPS_INSTALL_ROOT_OB(_8Iz9vBfs4sl041FiuR) //mutable_value_vector∈class
-RPS_INSTALL_ROOT_OB(_8J6vNYtP5E800eCr5q) //∈space
+RPS_INSTALL_ROOT_OB(_8J6vNYtP5E800eCr5q) //"initial_space"∈space
 RPS_INSTALL_ROOT_OB(_8YknAApDQiF04BDe3W) //mutable_object_vector∈class
 RPS_INSTALL_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
 RPS_INSTALL_ROOT_OB(_9j12Nhm4itk00YYUW7) //repl_operator∈class
