@@ -1145,6 +1145,17 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
                            << " has magicgetter " << (void*)mgfun
                            << " dli_fname=" << (di.dli_fname?:"???")
                            << " dli_sname=" << (di.dli_sname?:"???"));
+	    if (di.dli_sname && !strncmp(di.dli_sname, RPS_APPLYINGFUN_PREFIX, sizeof(RPS_APPLYINGFUN_PREFIX)-1)
+		&& di.dli_sname[sizeof(RPS_APPLYINGFUN_PREFIX)] == '_'
+		&& isdigit(di.dli_sname[sizeof(RPS_APPLYINGFUN_PREFIX)+1])) {
+	      const char* pend=nullptr;
+	      bool ok = false;
+	      Rps_Id oidfun(di.dli_sname+sizeof(RPS_APPLYINGFUN_PREFIX), &pend, &ok);
+	      if (ok && oidfun) {
+		/* TODO: add more code */
+#warning Rps_ObjectZone::dump_json_content should deal with rpsapply_* function name (magic getter)
+	      }
+	    };
           }
         else
           {
