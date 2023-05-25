@@ -1145,17 +1145,24 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
                            << " has magicgetter " << (void*)mgfun
                            << " dli_fname=" << (di.dli_fname?:"???")
                            << " dli_sname=" << (di.dli_sname?:"???"));
-	    if (di.dli_sname && !strncmp(di.dli_sname, RPS_APPLYINGFUN_PREFIX, sizeof(RPS_APPLYINGFUN_PREFIX)-1)
-		&& di.dli_sname[sizeof(RPS_APPLYINGFUN_PREFIX)] == '_'
-		&& isdigit(di.dli_sname[sizeof(RPS_APPLYINGFUN_PREFIX)+1])) {
-	      const char* pend=nullptr;
-	      bool ok = false;
-	      Rps_Id oidfun(di.dli_sname+sizeof(RPS_APPLYINGFUN_PREFIX), &pend, &ok);
-	      if (ok && oidfun) {
-		/* TODO: add more code */
+            if (di.dli_sname && !strncmp(di.dli_sname, RPS_APPLYINGFUN_PREFIX, sizeof(RPS_APPLYINGFUN_PREFIX)-1)
+                && di.dli_sname[sizeof(RPS_APPLYINGFUN_PREFIX)] == '_'
+                && isdigit(di.dli_sname[sizeof(RPS_APPLYINGFUN_PREFIX)+1]))
+              {
+                const char* pend=nullptr;
+                bool ok = false;
+                Rps_Id oidfun(di.dli_sname+sizeof(RPS_APPLYINGFUN_PREFIX), &pend, &ok);
+                if (ok && oidfun)
+                  {
+                    /* TODO: add more code */
 #warning Rps_ObjectZone::dump_json_content should deal with rpsapply_* function name (magic getter)
-	      }
-	    };
+                    RPS_WARNOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob <<
+                                " dli_sname:" << di.dli_sname
+                                << " @@oidfun:" << oidfun << std::endl
+                                << RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::dump_json_content@@oidfun"));
+                    json["magicgetter"] = oidfun.to_string();
+                  }
+              };
           }
         else
           {
@@ -1180,17 +1187,44 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
                           << " has applyingfun " << (void*)apfun
                           << " dli_fname=" << (di.dli_fname?:"???")
                           << " dli_sname=" << (di.dli_sname?:"???"));
+
+            Dl_info di = {};
+            if (dladdr((void*)apfun, &di))
+              {
+                RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+                               << " has applyingfun " << (void*)apfun
+                               << " dli_fname=" << (di.dli_fname?:"???")
+                               << " dli_sname=" << (di.dli_sname?:"???"));
+                if (di.dli_sname && !strncmp(di.dli_sname, RPS_APPLYINGFUN_PREFIX, sizeof(RPS_APPLYINGFUN_PREFIX)-1)
+                    && di.dli_sname[sizeof(RPS_APPLYINGFUN_PREFIX)] == '_'
+                    && isdigit(di.dli_sname[sizeof(RPS_APPLYINGFUN_PREFIX)+1]))
+                  {
+                    const char* pend=nullptr;
+                    bool ok = false;
+                    Rps_Id apoidfun(di.dli_sname+sizeof(RPS_APPLYINGFUN_PREFIX), &pend, &ok);
+                    if (ok && apoidfun)
+                      {
+                        /* TODO: add more code */
+#warning Rps_ObjectZone::dump_json_content should deal with rpsapply_* function name (applying function)
+                        RPS_WARNOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob <<
+                                    " applyingfun dli_sname:" << di.dli_sname
+                                    << " @@apoidfun:" << apoidfun << std::endl
+                                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::dump_json_content@@apoidfun"));
+                        json["applyfun"] = apoidfun.to_string();
+                      }
+                  };
+              }
+            else // dladdr apfun failed
+              {
+                RPS_WARNOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+                            << " has strange applyingfun " << (void*)apfun);
+              };
+            json["applying"] = Json::Value(true);
           }
         else
-          {
-            RPS_WARNOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
-                        << " has strange applyingfun " << (void*)apfun);
-          };
-        json["applying"] = Json::Value(true);
+          RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
+                         << " has applying function");
       }
-    else
-      RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob
-                     << " has applying function");
   }
   /// attributes
   RPS_NOPRINTOUT("Rps_ObjectZone::dump_json_content thisob=" << thisob << ", attrs#" << ob_attrs.size());
