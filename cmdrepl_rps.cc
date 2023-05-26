@@ -58,6 +58,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                  callframe,
                  Rps_Value closv;
                  Rps_Value exprv;
+		 Rps_ObjectRef evalob;
                  Rps_ObjectRef envob;
                  Rps_ObjectRef classob;
                  Rps_Value mainresv;
@@ -156,6 +157,8 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     }
   else if (_f.exprv.is_object())
     {
+      _f.evalob = _f.exprv.as_object();
+      std::lock_guard<std::recursive_mutex> gu(*_f.evalob->objmtxptr());
       _f.classob = _f.exprv.compute_class(&_);
       RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                     << " object expr:" << _f.exprv
@@ -170,7 +173,13 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     {
       std::lock_guard gu(*_f.envob->objmtxptr());
       auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
-#warning rps_full_evaluate_repl_expr unimplemented for variable-s
+      if (paylenv) {
+	bool missing = false;
+	_f.mainresv = paylenv->get_obmap(_f.evalob,nullptr,&missing);
+	if (!missing)
+	  return {_f.mainresv, nullptr};
+      };
+#warning should handle unbound variable-s in rps_full_evaluate_repl_expr
     }
   else if (_f.classob ==  RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
            || _f.classob->is_subclass_of(RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
@@ -178,8 +187,18 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     {
       std::lock_guard gu(*_f.envob->objmtxptr());
       auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
-#warning rps_full_evaluate_repl_expr unimplemented for symbolic_variable-s
+      if (paylenv) {
+	bool missing = false;
+	_f.mainresv = paylenv->get_obmap(_f.evalob,nullptr,&missing);
+	if (!missing)
+	  return {_f.mainresv, nullptr};
+      };
+#warning should handle unbound symbolic_variable-s in rps_full_evaluate_repl_expr
     }
+  else {
+    // any other object is self evaluating! or NOT?
+    // TODO: think more.
+  }
 #warning rps_full_evaluate_repl_expr not really implemented, should dispatch on classob
   RPS_REPLEVAL_FAIL("*unimplemented*","REPL evaluation of " <<_f.exprv
                     << " of class:" << _f.classob
