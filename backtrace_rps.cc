@@ -233,6 +233,37 @@ Rps_Backtracer::pc_to_string(uintptr_t pc, bool* gotmain)
                   if (demangled && demangled[0])
                     funamestr = std::string (demangled);
                 };
+              if (!strncmp(dif.dli_sname, RPS_APPLYINGFUN_PREFIX,
+                           sizeof(RPS_APPLYINGFUN_PREFIX)-1))
+                {
+                  char nambuf[80];
+                  memset (nambuf, 0, sizeof(nambuf));
+                  const char* pend=nullptr;
+                  bool ok = false;
+                  Rps_Id oid(dif.dli_sname
+                             + sizeof(RPS_APPLYINGFUN_PREFIX),//
+                             &pend, &ok);
+                  if (ok && oid)
+                    {
+                      Rps_ObjectZone* obzf = Rps_ObjectZone::find(oid);
+                      if (obzf)
+                        {
+                          Rps_Value namev =
+                            obzf-> get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name∈named_attribute
+                          if (namev && namev.is_string())
+                            {
+                              u8_strncpy((uint8_t*)nambuf,
+                                         (const uint8_t*)(namev.as_cstring()),
+                                         sizeof(nambuf)-1);
+                            }
+                        }
+                      if (nambuf[0])
+                        funamestr = std::string(dif.dli_sname) + ":"
+                                    + std::string(nambuf);
+                      else
+                        funamestr = std::string(dif.dli_sname) + "?";
+                    }
+                }
               if (funamestr.empty())
                 funamestr = std::string(dif.dli_sname);
             }
