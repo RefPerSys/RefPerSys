@@ -900,9 +900,8 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
             << std::endl);
         return  {nullptr,nullptr};
       };
-#warning missing code to find evalenvob in REPL command show _7WsQyJK6 after pars.expr.
-    /* TODO: compute a suitable environment for REPL evaluation in
-       evalenvob */
+    if (!_f.evalenvob)
+      _f.evalenvob = rps_get_first_repl_environment();
     RPS_DEBUG_LOG(CMD, "REPL command show lextokv=" << _f.lextokv << " framedepth:"<< _.call_frame_depth()
                   << " after successful parse_expression showv=" << _f.showv);
     RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/after pars.expr. tksrc:" << (*tksrc) << std::endl
@@ -938,6 +937,14 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
   return {nullptr,nullptr};
 } //end of rpsapply_7WsQyJK6lty02uz5KT for REPL command show
 
+
+Rps_ObjectRef
+rps_get_first_repl_environment(void)
+{
+  return RPS_ROOT_OB(_1Io89yIORqn02SXx4p) //RefPerSys_system∈the_system_class
+        ->get_physical_attr(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a) //environment∈class
+                           ).as_object();
+} // end rps_get_first_repl_environment
 
 /* C++ function _2TZNwgyOdVd001uasl for REPL command help*/
 extern "C" rps_applyingfun_t rpsapply_2TZNwgyOdVd001uasl;
