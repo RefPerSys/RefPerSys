@@ -52,14 +52,16 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
 {
   RPS_ASSERT_CALLFRAME (callframe);
   RPS_ASSERT(envobarg);
+  constexpr int maxloop=256;
   static std::atomic<unsigned long> eval_repl_counter_;
   const unsigned long eval_number = 1+eval_repl_counter_.fetch_add(1);
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  callframe,
                  Rps_Value closv;
                  Rps_Value exprv;
-		 Rps_ObjectRef evalob;
+                 Rps_ObjectRef evalob;
                  Rps_ObjectRef envob;
+                 Rps_ObjectRef firstenvob;
                  Rps_ObjectRef classob;
                  Rps_Value mainresv;
                  Rps_Value extraresv;
@@ -67,6 +69,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   _f.closv = _.call_frame_closure();
   _f.exprv = exprarg;
   _f.envob = envobarg;
+  _f.firstenvob = envobarg;
   /// macros to ease debugging
 #define RPS_REPLEVAL_GIVES_BOTH_AT(V1,V2,LIN) do {              \
     _f.mainresv = (V1);                                         \
@@ -105,7 +108,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                      << "::" << (MSG)                           \
                      << "; " << LOG);                           \
     throw  std::runtime_error("rps_full_evaluate_repl_expr "    \
-                              " fail " #MSG "@" #LIN); }        \
+                              " fail " #MSG "@" #LIN); }       \
   while(0)
   ///
 #define  RPS_REPLEVAL_FAIL(MSG,LOG) RPS_REPLEVAL_FAIL_AT(MSG,LOG,__LINE__)
@@ -171,34 +174,61 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       || _f.classob->is_subclass_of(RPS_ROOT_OB(_4HJvNCh35Lu00n5z3R) //variable∈class
                                    ))
     {
-      std::lock_guard gu(*_f.envob->objmtxptr());
-      auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
-      if (paylenv) {
-	bool missing = false;
-	_f.mainresv = paylenv->get_obmap(_f.evalob,nullptr,&missing);
-	if (!missing)
-	  return {_f.mainresv, nullptr};
-      };
-#warning should handle unbound variable-s in rps_full_evaluate_repl_expr
+      int count=0;
+      while (count++ < maxloop && _f.envob)
+        {
+          std::lock_guard gu(*_f.envob->objmtxptr());
+          auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
+          if (paylenv)
+            {
+              bool missing = false;
+              _f.mainresv = paylenv->get_obmap(_f.evalob,/*defaultval:*/nullptr,&missing);
+              if (!missing)
+                RPS_REPLEVAL_GIVES_PLAIN(_f.mainresv);
+              _f.envob = paylenv->get_parent_environment();
+            }
+          else // envob without Rps_PayloadEnvironment
+            RPS_REPLEVAL_FAIL("bad environment","The envob " << _f.envob << " of class "
+                              << _f.envob->get_class() << " has no payload environment;"
+                              << " first env was " <<_f.firstenvob
+                              << " evaluating variable " << _f.exprv);
+        }
+      RPS_REPLEVAL_FAIL("unbound variable","Variable " << _f.evalob << " unbound with envob " << _f.envob << " of class "
+                        << _f.envob->get_class()
+                        << " first env was " <<_f.firstenvob);
     }
   else if (_f.classob ==  RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
            || _f.classob->is_subclass_of(RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
                                         ))
     {
-      std::lock_guard gu(*_f.envob->objmtxptr());
-      auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
-      if (paylenv) {
-	bool missing = false;
-	_f.mainresv = paylenv->get_obmap(_f.evalob,nullptr,&missing);
-	if (!missing)
-	  return {_f.mainresv, nullptr};
-      };
-#warning should handle unbound symbolic_variable-s in rps_full_evaluate_repl_expr
+      int count=0;
+      while (count++ < maxloop && _f.envob)
+        {
+          std::lock_guard gu(*_f.envob->objmtxptr());
+          auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
+          if (paylenv)
+            {
+              bool missing = false;
+              _f.mainresv = paylenv->get_obmap(_f.evalob,nullptr,&missing);
+              if (!missing)
+                RPS_REPLEVAL_GIVES_PLAIN(_f.mainresv);
+              _f.envob = paylenv->get_parent_environment();
+            }
+          else // envob without Rps_PayloadEnvironment
+            RPS_REPLEVAL_FAIL("bad environment","The envob " << _f.envob << " of class "
+                              << _f.envob->get_class() << " has no payload environment;"
+                              << " first env was " <<_f.firstenvob
+                              << " evaluating symbolic variable " << _f.exprv);
+        };
+      RPS_REPLEVAL_FAIL("unbound symbolic variable","Symbolic variable " << _f.evalob << " unbound with envob " << _f.envob << " of class "
+                        << _f.envob->get_class()
+                        << " first env was " <<_f.firstenvob);
     }
-  else {
-    // any other object is self evaluating! or NOT?
-    // TODO: think more.
-  }
+  else
+    {
+      // any other object is self evaluating! or NOT?
+      // TODO: think more.
+    }
 #warning rps_full_evaluate_repl_expr not really implemented, should dispatch on classob
   RPS_REPLEVAL_FAIL("*unimplemented*","REPL evaluation of " <<_f.exprv
                     << " of class:" << _f.classob
@@ -961,8 +991,8 @@ Rps_ObjectRef
 rps_get_first_repl_environment(void)
 {
   return RPS_ROOT_OB(_1Io89yIORqn02SXx4p) //RefPerSys_system∈the_system_class
-        ->get_physical_attr(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a) //environment∈class
-                           ).as_object();
+         ->get_physical_attr(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a) //environment∈class
+                            ).as_object();
 } // end rps_get_first_repl_environment
 
 /* C++ function _2TZNwgyOdVd001uasl for REPL command help*/
