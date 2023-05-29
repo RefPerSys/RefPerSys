@@ -925,8 +925,10 @@ main (int argc, char** argv)
 		   (void*)rps_end_of_main,
 		   (int)getpid(), rps_hostname());
   ////
-  //// extend the environment if needed
+  //// extend the Unix environment if needed
   rps_extend_env();
+  //// test the macro (generating nop instructions in assembler) for possible breakpoints;
+  RPS_POSSIBLE_BREAKPOINT();
   ////
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
