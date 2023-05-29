@@ -108,8 +108,9 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                      << "::" << (MSG)                           \
                      << "; " << LOG);                           \
     throw  std::runtime_error("rps_full_evaluate_repl_expr "    \
-                              " fail " #MSG "@" #LIN); }       \
+                              " fail " #MSG "@" #LIN); }        \
   while(0)
+  ///
   ///
 #define  RPS_REPLEVAL_FAIL(MSG,LOG) RPS_REPLEVAL_FAIL_AT(MSG,LOG,__LINE__)
   ///
@@ -175,6 +176,9 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                                    ))
     {
       int count=0;
+      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
+                    << " object expr:" << _f.exprv
+                    << " is variable envob:" <<_f.envob);
       while (count++ < maxloop && _f.envob)
         {
           std::lock_guard gu(*_f.envob->objmtxptr());
@@ -202,6 +206,9 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                                         ))
     {
       int count=0;
+      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
+                    << " object expr:" << _f.exprv
+                    << " is symbolic_variable envob:" <<_f.envob);
       while (count++ < maxloop && _f.envob)
         {
           std::lock_guard gu(*_f.envob->objmtxptr());
