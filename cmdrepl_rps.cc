@@ -171,6 +171,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     };
   ///
   RPS_ASSERT(_f.classob && _f.classob->is_class());
+  RPS_POSSIBLE_BREAKPOINT();
   if (_f.classob == RPS_ROOT_OB(_4HJvNCh35Lu00n5z3R) //variable∈class
       || _f.classob->is_subclass_of(RPS_ROOT_OB(_4HJvNCh35Lu00n5z3R) //variable∈class
                                    ))
