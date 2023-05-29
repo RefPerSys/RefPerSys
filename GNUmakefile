@@ -392,11 +392,13 @@ test00: ./refpersys
 	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B
 	@printf '\n\n\n////test00 third\n'
 	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B
+	@printf '\n\n\n////test00 help REPL command\n'
+	./refpersys -AREPL -c help -B
 	@printf '\n\n\n////test00 FINISHED¤\n'
 
 test01: ./refpersys
-	@echo test01 testing simple commands with a lot of debug
-	./refpersys -AREPL -c help -c 'show help' -B
+	@echo test01 testing simple show help with a lot of debug
+	./refpersys -AREPL -c 'show help' -B
 	@printf '\n\n\n////test01 FINISHED¤\n'
 
 
