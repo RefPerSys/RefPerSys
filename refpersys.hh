@@ -914,8 +914,9 @@ rps_timer_cpu_elapsed(const rps_timer *hnd)
         << rps_timer_cpu_elapsed(&__timer));
 
 
-/* the debugger could put a breakpoint, or we could overwrite the code
-   with a call */
+/* the debugger could put a breakpoint, or we could overwrite the
+   binary executable code with a call; don't forget to flush the
+   caches! */
 #define RPS_POSSIBLE_BREAKPOINT() do { \
   asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;\n" \
                 "nop; nop; nop; nop; nop; nop; nop; nop;\n" \
