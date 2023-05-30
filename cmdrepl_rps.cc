@@ -184,6 +184,13 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
         {
           std::lock_guard gu(*_f.envob->objmtxptr());
           auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
+          RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
+                        << " object expr:" << _f.exprv
+                        << " evalob=" << _f.evalob
+                        << ", loopcount:" << count
+                        << " envob=" << _f.envob << ' '
+                        << ((paylenv != nullptr)?"*env*":"*notenv*")
+                        << ", firstenvob=" << _f.firstenvob);
           if (paylenv)
             {
               bool missing = false;
