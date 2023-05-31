@@ -183,7 +183,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       while (count++ < maxloop && _f.envob)
         {
           std::lock_guard gu(*_f.envob->objmtxptr());
-	  RPS_POSSIBLE_BREAKPOINT();
+          RPS_POSSIBLE_BREAKPOINT();
           auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
           RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                         << " object expr:" << _f.exprv
