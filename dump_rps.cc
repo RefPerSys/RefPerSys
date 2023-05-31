@@ -1184,7 +1184,16 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     {
       *pouts << std::endl << std::endl;
       ++count;
-      *pouts << "//+ob" << curobr->oid().to_string() << std::endl;
+      std::lock_guard<std::recursive_mutex> gucurob(*(curobr->objmtxptr()));
+      std::string namestr;
+      Rps_Value vname = curobr //
+                        ->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name∈named_attribute
+      if (vname && vname.is_string())
+        namestr = vname.to_cppstring();
+      *pouts << "//+ob" << curobr->oid().to_string();
+      if (!namestr.empty())
+        *pouts << ":" << namestr;
+      *pouts << std::endl;
       RPS_NOPRINTOUT("Rps_Dumper::write_space_file emits " << (curobr->oid().to_string())
                      << " of hi=" <<  (curobr->oid().hi())
                      << " #" << count);
@@ -1267,8 +1276,12 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
             }
         }
       *pouts << "}" << std::endl;
-      *pouts << "//-ob" << curobr->oid().to_string() << std::endl;
-    }
+      *pouts << "//-ob" << curobr->oid().to_string();
+      if (!namestr.empty())
+        *pouts << ":" << namestr;
+      *pout << std::endl;
+      *pout << std::endl;
+    } // end for curobr: ....
 
   *pouts << std::endl << std::endl;
   *pouts << "//// end of RefPerSys generated space file " << curelpath << std::endl;

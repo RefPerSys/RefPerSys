@@ -226,7 +226,7 @@ Rps_Loader::is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::s
     }
   {
     Rps_Id tempoid(linbuf.c_str()+strlen("//+ob"), &end, &ok);
-    if (!end || (*end && !isspace(*end)))
+    if (!end || (*end && !isspace(*end) && *end != ':'))
       {
         reason= "too long";
         goto bad;
