@@ -131,6 +131,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                 << " expr:" << _f.exprv
                 << " in env:" << _f.envob);
   /* we try to put common cases first... */
+  RPS_POSSIBLE_BREAKPOINT();
   if (_f.exprv.is_int())
     RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
   else if (_f.exprv.is_double())
