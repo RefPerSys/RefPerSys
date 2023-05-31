@@ -27,7 +27,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all objects clean plugin fullclean redump undump altredump print-plugin-settings indent \
+.PHONY: all debug objects clean plugin fullclean redump undump altredump print-plugin-settings indent \
    test00 test01 test02 test03 test04 test05 test06 test07 test08 test09 \
    test-load \
    analyze gitpush gitpush2 withclang 
@@ -156,8 +156,8 @@ RPS_PKG_CFLAGS:= $(shell $(RPS_CURLPP_CONFIG) --cflags) \
 RPS_PKG_LIBS:=  $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 
 LIBES=  -lunistring -lbacktrace -lpthread -ldl
-RM= rm -f
-MV= mv
+RM= /bin/rm -f
+MV= /bin/mv
 CC= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CC)
 CXX= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CXX)
 LINK.cc= $(RPS_BUILD_CXX)
@@ -176,7 +176,7 @@ LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 
 
 all:
-	if [ -f refpersys ] ; then  $(MV) -f --backup refpersys refpersys~ ; fi
+	if [ -f refpersys ] ; then  $(MV) -f -v --backup refpersys refpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
 	$(MAKE) -$(MAKEFLAGS) refpersys
 	@echo all make target syncing
@@ -184,6 +184,11 @@ all:
 
 .SECONDARY:  __timestamp.c
 
+debug:
+	@echo making debug version of refpersys
+	if [ refpersys ] ; then  $(MV) -f -v --backup refpersys refpersys~ ; fi
+	$(RM) __timestamp.o
+	$(MAKE)  -$(MAKEFLAGS) RPS_BUILD_OPTIMFLAGS='-Og -g3' refpersys
 
 refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
