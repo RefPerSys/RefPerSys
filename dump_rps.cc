@@ -1279,10 +1279,10 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
       *pouts << "//-ob" << curobr->oid().to_string();
       if (!namestr.empty())
         *pouts << ":" << namestr;
-      *pout << std::endl;
-      *pout << std::endl;
+      *pouts << std::endl;
+      *pouts << std::endl;
     } // end for curobr: ....
-
+  ////
   *pouts << std::endl << std::endl;
   *pouts << "//// end of RefPerSys generated space file " << curelpath << std::endl;
   RPS_DEBUG_LOG(DUMP, "dumper write_space_file end " << curelpath << " with " << count << " objects." << std::endl);
