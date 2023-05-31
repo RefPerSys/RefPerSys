@@ -965,7 +965,8 @@ main (int argc, char** argv)
   /// modification of machine code, or GDB breakpoints.
   ///
   /// Of course, we don't care about inefficiency.... Code size does
-  /// not matter, and CPU time neither
+  /// not matter, and CPU time neither.  See also similar
+  /// RPS_POSSIBLE_BREAKPOINT macro in refpersys.hh
   asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;"
 		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
 		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
@@ -993,6 +994,7 @@ main (int argc, char** argv)
              rps_elapsed_real_time(), rps_process_cpu_time());
   return rps_exit_atomic_code.load();
 } // end of main
+
 
 const char*
 rps_get_plugin_cstr_argument(const Rps_Plugin*plugin)
@@ -1397,6 +1399,9 @@ rps_parse_program_arguments(int &argc, char**argv)
 
 
 extern "C" void rps_run_test_repl_lexer(const std::string&); // defined in file lexer_rps.cc
+
+
+/// the rps_run_application is called after loading...
 void
 rps_run_application(int &argc, char **argv)
 {
@@ -2148,6 +2153,7 @@ rps_small_quick_tests_after_load(void)
   _f.obfoundnew = Rps_ObjectRef::find_object_or_fail_by_oid(&_, _f.obnew->oid());
   RPS_DEBUG_LOG(CMD, "rps_small_quick_tests_after_load obfoundnew=" << _f.obfoundnew << " obnew=" << _f.obnew);
   RPS_ASSERT(_f.obnew == _f.obfoundnew);
+#warning should add some clever tests on  Rps_Value::is_instance_of and Rps_Value::is_subclass_of
   RPS_DEBUG_LOG(CMD, "end rps_small_quick_tests_after_load");
 } // end rps_small_quick_tests_after_load
 
