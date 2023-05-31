@@ -111,6 +111,11 @@ Rps_ObjectRef::output(std::ostream&outs, unsigned depth) const
     };
 } // end Rps_ObjectRef::output
 
+void
+rps_print_objectref(Rps_ObjectRef ob)
+{
+  std::cout << ob << std::endl;
+} // end rps_print_objectref
 
 const std::string
 Rps_ObjectRef::as_string(void) const

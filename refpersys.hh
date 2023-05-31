@@ -1204,6 +1204,8 @@ static_assert(sizeof(Rps_ObjectRef) == sizeof(void*),
 static_assert(alignof(Rps_ObjectRef) == alignof(void*),
               "Rps_ObjectRef should have the alignment of a word");
 
+extern "C" void rps_print_objectref(Rps_ObjectRef ob);
+
 // we could code Rps_ObjectFromOidRef(&_,"_41OFI3r0S1t03qdB2E") instead of rpskob_41OFI3r0S1t03qdB2E
 class Rps_ObjectFromOidRef : public Rps_ObjectRef {
 public:
@@ -1492,7 +1494,10 @@ public:
   ~Rps_OutputValue() {};
   void do_output(std::ostream& out) const; /// in morevalues_rps.cc
 };                              // end class Rps_OutputValue
-  
+
+
+extern "C" void rps_print_value(const Rps_Value val);
+
 inline std::ostream& operator<< (std::ostream&out, const Rps_OutputValue oval) {
   oval.do_output(out);
   return out;

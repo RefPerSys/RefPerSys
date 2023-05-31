@@ -198,6 +198,11 @@ Rps_QuasiZone::clear_all_gcmarks(Rps_GarbageCollector&gc)
 std::mutex Rps_LazyHashedZoneValue::lazy_mtxarr[Rps_LazyHashedZoneValue::lazy_nbmutexes];
 
 
+void
+rps_print_value(const Rps_Value val)
+{
+  std::cout << Rps_OutputValue(val) << std::endl;
+} // end rps_print_value
 
 //////////////////////////////////////////////// sets
 
