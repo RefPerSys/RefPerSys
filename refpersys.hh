@@ -1497,6 +1497,7 @@ public:
 
 
 extern "C" void rps_print_value(const Rps_Value val);
+extern "C" void rps_print_ptr_value(const void*v);
 
 inline std::ostream& operator<< (std::ostream&out, const Rps_OutputValue oval) {
   oval.do_output(out);

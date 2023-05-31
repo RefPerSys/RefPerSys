@@ -204,6 +204,12 @@ rps_print_value(const Rps_Value val)
   std::cout << Rps_OutputValue(val) << std::endl;
 } // end rps_print_value
 
+void
+rps_print_ptr_value(const void*v)
+{
+  std::cout << Rps_OutputValue(Rps_Value(v)) << std::endl;
+} // end rps_print_ptr_value
+
 //////////////////////////////////////////////// sets
 
 Rps_SetOb::Rps_SetOb(const std::set<Rps_ObjectRef>& setob, Rps_SetTag)
