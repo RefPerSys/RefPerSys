@@ -280,9 +280,9 @@ clean:
 	$(RM) *.ii
 	$(RM) *% core vgcore*
 	$(RM) -rf bld
-	$(RM) $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES))
-	$(RM) $(patsubst %.yy, %.output, $(RPS_BISON_SOURCES))
-	$(RM) *.tmp
+	$(RM) $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES)) \
+	      $(patsubst %.yy, %.output, $(RPS_BISON_SOURCES)) \
+	      *.tmp
 
 ## usual invocation: make plugin RPS_PLUGIN_SOURCE=/tmp/foo.cc RPS_PLUGIN_SHARED_OBJECT=/tmp/foo.so
 ## see also our ./build-plugin.sh script
