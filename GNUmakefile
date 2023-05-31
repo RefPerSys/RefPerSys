@@ -186,7 +186,7 @@ all:
 
 debug:
 	@echo making debug version of refpersys
-	if [ refpersys ] ; then  $(MV) -f -v --backup refpersys refpersys~ ; fi
+	if [ -f refpersys ] ; then  $(MV) -f -v --backup refpersys refpersys~ ; fi
 	$(RM) __timestamp.o
 	$(MAKE)  -$(MAKEFLAGS) RPS_BUILD_OPTIMFLAGS='-Og -g3' refpersys
 
