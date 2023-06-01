@@ -520,6 +520,9 @@ enum Rps_Debug
   RPS_DEBUG__EVERYTHING=0xffff,
 };
 
+/// add or remove a comma or space separated list of debug flags
+extern "C" void rps_add_debug_cstr(const char*);
+extern "C" void rps_remove_debug_cstr(const char*);
 
 ////////////////////////////////////////////////////////////////
 ///// parsing program options
@@ -566,7 +569,7 @@ extern "C" const char*rps_get_extra_arg(const char*name);
 ////////////////////////////////////////////////////////////////
 extern "C" bool rps_syslog_enabled;
 
-extern "C" unsigned rps_debug_flags;
+extern "C" std::atomic<unsigned> rps_debug_flags;
 
 void rps_set_debug_output_path(const char*filepath);
 

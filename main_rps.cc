@@ -346,7 +346,7 @@ bool rps_syslog_enabled = false;
 bool rps_stdout_istty = false;
 bool rps_stderr_istty = false;
 
-unsigned rps_debug_flags;
+std::atomic<unsigned> rps_debug_flags;
 
 FILE* rps_debug_file;
 static char rps_debug_path[128];
