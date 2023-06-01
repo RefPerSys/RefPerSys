@@ -207,7 +207,10 @@ rps_print_value(const Rps_Value val)
 void
 rps_print_ptr_value(const void*v)
 {
-  std::cout << Rps_OutputValue(Rps_Value(v)) << std::endl;
+  static_assert(sizeof(Rps_Value) == sizeof(v));
+  Rps_Value val;
+  memcpy((void*)&val, (const void*)&v, sizeof(v));
+  std::cout << Rps_OutputValue(val) << std::endl;
 } // end rps_print_ptr_value
 
 //////////////////////////////////////////////// sets
