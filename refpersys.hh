@@ -122,7 +122,46 @@
 /// libssh2-1-dev package on Debian
 #include <libssh2.h>
 
+class Rps_QuasiZone; // GC-managed piece of memory
+class Rps_ZoneValue; // memory for values
+class Rps_ObjectZone; // memory for objects
+class Rps_JsonZone; // memory for Json values
+class Rps_LexTokenZone; /// memory for reified lexical tokens, mostly in repl_rps.cc
+class Rps_DequVal;
+class Rps_GarbageCollector;
+class Rps_Payload;
+class Rps_PayloadSymbol;
+class Rps_PayloadClassInfo;
+class Rps_PayloadStrBuf;
+class Rps_PayloadWebPi;
+class Rps_PayloadAgenda;
+class Rps_PayloadTasklet;
+class Rps_PayloadUnixProcess;   // transient payload for forked processes
+class Rps_PayloadPopenedFile;   // transient payload for popened command
+class Rps_PayloadCppStream;     // transient payload for C++ streams
+class Rps_Loader;
+class Rps_Dumper;
+class Rps_ProtoCallFrame;
+class Rps_TokenSource;
+class Rps_Value;
+class Rps_Id;
+
+
+typedef uint32_t Rps_HashInt;
+typedef Rps_ProtoCallFrame Rps_CallFrame;
+
+constexpr unsigned rps_path_byte_size = 384;
+extern "C" char rps_bufpath_homedir[rps_path_byte_size];
+
+extern "C" std::map<std::string,std::string> rps_pluginargs_map;
+extern "C" std::string rps_cpluspluseditor_str;
+extern "C" std::string rps_cplusplusflags_str;
+extern "C" std::string rps_dumpdir_str;
+extern "C" std::vector<std::string> rps_command_vec;
+extern "C" std::string rps_test_repl_string;
 extern "C" {
+
+  
   // https://curl.se/libcurl/ is a web client library
 #include "curl/curl.h"
 
@@ -257,17 +296,30 @@ public:
 };                              // end class RpsColophon
 
 
+extern "C" pid_t rps_gui_pid;
+
 /// a pair of Unix file descriptors, JSONRPC....
 struct rps_fifo_fdpair_st {
   int fifo_ui_wcmd; // the commands written to the GUI process
   int fifo_ui_rout; // the outputs read from the GUI process
 };
+extern "C" void rps_put_fifo_prefix(const char*pref);
 extern "C" std::string rps_get_fifo_prefix(void);
 extern "C" void rps_do_create_fifos(std::string prefix);
 extern "C" struct rps_fifo_fdpair_st rps_get_gui_fifo_fds(void);
 extern "C" pid_t rps_get_gui_pid(void);
 extern "C" bool rps_is_fifo(std::string path); // in eventloop_rps.cc
 
+
+extern "C" void rps_run_test_repl_lexer(const std::string&); // defined in file lexer_rps.cc
+
+/// actually, in function main we have something like  asm volatile ("rps_end_of_main: nop");
+extern "C" void rps_end_of_main(void);
+
+
+extern "C" void rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe);
+
+extern "C" void rps_small_quick_tests_after_load (void);
 
 
 // when set, no GUI is running
@@ -294,6 +346,9 @@ extern "C" struct backtrace_state* rps_backtrace_common_state;
 
 /// the program name
 extern "C" const char* rps_progname;
+
+/// the load directory
+extern "C" std::string rps_my_load_dir;
 
 
 /// the initial copyright year of RefPerSys
@@ -565,6 +620,10 @@ extern "C" error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 extern "C" struct argp_option rps_progoptions[];
 
 extern "C" const char*rps_get_extra_arg(const char*name);
+
+extern "C" void rps_do_create_fifos_from_prefix(void);
+
+extern "C" void rps_extend_env(void);
 
 ////////////////////////////////////////////////////////////////
 extern "C" bool rps_syslog_enabled;
@@ -973,34 +1032,6 @@ static inline std::string rps_current_pthread_name(void);
 static constexpr unsigned rps_allocation_unit = 2*sizeof(void*);
 static_assert ((rps_allocation_unit & (rps_allocation_unit-1)) == 0,
                "rps_allocation_unit is not a power of two");
-
-class Rps_QuasiZone; // GC-managed piece of memory
-class Rps_ZoneValue; // memory for values
-class Rps_ObjectZone; // memory for objects
-class Rps_JsonZone; // memory for Json values
-class Rps_LexTokenZone; /// memory for reified lexical tokens, mostly in repl_rps.cc
-class Rps_DequVal;
-class Rps_GarbageCollector;
-class Rps_Payload;
-class Rps_PayloadSymbol;
-class Rps_PayloadClassInfo;
-class Rps_PayloadStrBuf;
-class Rps_PayloadWebPi;
-class Rps_PayloadAgenda;
-class Rps_PayloadTasklet;
-class Rps_PayloadUnixProcess;   // transient payload for forked processes
-class Rps_PayloadPopenedFile;   // transient payload for popened command
-class Rps_PayloadCppStream;     // transient payload for C++ streams
-class Rps_Loader;
-class Rps_Dumper;
-class Rps_ProtoCallFrame;
-class Rps_TokenSource;
-class Rps_Value;
-class Rps_Id;
-
-
-typedef uint32_t Rps_HashInt;
-typedef Rps_ProtoCallFrame Rps_CallFrame;
 
 #define RPS_NULL_CALL_FRAME ((Rps_CallFrame*)nullptr)
 #define RPS_CALL_FRAME_UNDESCRIBED ((Rps_ObjectRef)nullptr)
