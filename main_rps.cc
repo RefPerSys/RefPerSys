@@ -47,7 +47,6 @@ struct utsname rps_utsname;
 static std::atomic<std::uint8_t> rps_exit_atomic_code;
 
 
-extern "C" std::vector<Rps_Plugin> rps_plugins_vector;
 std::vector<Rps_Plugin> rps_plugins_vector;
 std::map<std::string,std::string> rps_pluginargs_map;
 
@@ -60,8 +59,7 @@ std::string rps_test_repl_string;
 
 
 
-static std::string rps_publisher_url_str;
-static std::map<std::string,std::string> rps_dict_extra_arg;
+
 
 static void rps_kill_wait_gui_process(void);
 
@@ -332,7 +330,6 @@ bool rps_stderr_istty = false;
 std::atomic<unsigned> rps_debug_flags;
 
 FILE* rps_debug_file;
-static char rps_debug_path[128];
 pid_t rps_gui_pid;
 
 thread_local Rps_Random Rps_Random::_rand_thr_;
@@ -350,16 +347,8 @@ unsigned rps_call_frame_depth(const Rps_CallFrame*callframe)
     return callframe->call_frame_depth();
 } // end rps_call_frame_depth
 
-static void rps_parse_program_arguments(int &argc, char**argv);
 
 
-static pthread_t rps_main_thread_handle;
-
-
-bool rps_is_main_thread(void)
-{
-  return pthread_self() == rps_main_thread_handle;
-} // end rps_is_main_thread
 
 void
 rps_set_exit_code(std::uint8_t ex)
@@ -368,712 +357,12 @@ rps_set_exit_code(std::uint8_t ex)
 } // end rps_set_exit_code
 
 
-
-////////////////////////////////////////////////////////////////
-// TIME ROUTINES
-////////////////////////////////////////////////////////////////
-
 int rps_nbjobs = RPS_NBJOBS_MIN + 1;
 
-static double rps_start_monotonic_time;
-static double rps_start_wallclock_real_time;
-double rps_elapsed_real_time(void)
-{
-  return rps_monotonic_real_time() - rps_start_monotonic_time;
-}
 
-double rps_get_start_wallclock_real_time()
-{
-  return rps_start_wallclock_real_time;
-}
-
-static void
-rps_check_mtime_files(void)
-{
-  struct stat selfstat = {};
-  if (stat("/proc/self/exe", &selfstat))
-    RPS_FATAL("stat /proc/self/exe: %m");
-  char exebuf[128];
-  memset (exebuf, 0, sizeof(exebuf));
-  if (readlink("/proc/self/exe", exebuf, sizeof(exebuf)-1)<0)
-    RPS_FATAL("readlink /proc/self/exe: %m");
-  for (const char*const*curpath = rps_files; *curpath; curpath++)
-    {
-      int lencurpath = strlen(*curpath);
-      if (lencurpath < 6 || strstr(*curpath, "attic/"))
-        continue;
-      std::string curpathstr(*curpath);
-      /// Files under webroot could be sent to browser, so we don't
-      /// care about them being newer than executable....
-      auto wrp = curpathstr.find("webroot/");
-      if (wrp < curpathstr.size())
-        continue;
-      std::string curfullpathstr= std::string{rps_topdirectory} + "/" + curpathstr;
-      struct stat curstat = {};
-      if (stat(curfullpathstr.c_str(), &curstat))
-        {
-          RPS_WARNOUT("rps_check_mtime_files: stat " << curfullpathstr << " failed: " << strerror(errno));
-          continue;
-        };
-      if (curstat.st_mtime > (time_t) rps_timelong)
-        RPS_WARNOUT("rps_check_mtime_files: " << curfullpathstr.c_str()
-                    << " is younger by "
-                    << (curstat.st_mtime - (time_t) rps_timelong)
-                    << " seconds than current executable " << exebuf
-                    << ", so consider rebuilding with make");
-    }
-  char makecmd [128];
-  memset (makecmd, 0, sizeof(makecmd));
-  if (snprintf(makecmd, sizeof(makecmd), "make -t -C %s -q objects", rps_topdirectory) < (int)sizeof(makecmd)-1)
-    {
-      int bad = system(makecmd);
-      if (bad)
-        RPS_WARNOUT("rps_check_mtime_files: " << makecmd
-                    << " failed with status# " << bad);
-      else
-        RPS_INFORMOUT("rps_check_mtime_files: did " << std::string(makecmd) << " successfully");
-    }
-  else
-    RPS_FATAL("rps_check_mtime_files failed to construct makecmd in %s: %m",
-              rps_topdirectory);
-} // end rps_check_mtime_files
-
-
-
-
-////////////////////////////////////////////////////////////////
-
-
-static void
-rps_early_initialization(int argc, char** argv)
-{
-  rps_argc = argc;
-  rps_argv = argv;
-  rps_start_monotonic_time = rps_monotonic_real_time();
-  rps_start_wallclock_real_time = rps_wallclock_real_time();
-  if (uname (&rps_utsname)) {
-    fprintf(stderr, "%s: pid %d on %s failed to uname (%s:%d git %s): %s\n", rps_progname,
-	    (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
-	    strerror(errno));
-    exit(EXIT_FAILURE);
-  };
-  rps_stderr_istty = isatty(STDERR_FILENO);
-  rps_stdout_istty = isatty(STDOUT_FILENO);
-  rps_progname = argv[0];
-  // initialize GNU lightning
-  init_jit (rps_progname);
-  rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
-  if (!rps_proghdl)
-    {
-      fprintf(stderr, "%s failed to dlopen whole program (%s)\n", rps_progname,
-              dlerror());
-      exit(EXIT_FAILURE);
-    };
-  rps_main_thread_handle = pthread_self();
-  {
-    char cwdbuf[128];
-    memset (cwdbuf, 0, sizeof(cwdbuf));
-    char tmbfr[64];
-    memset(tmbfr, 0, sizeof (tmbfr));
-    if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
-      strcpy(cwdbuf, "./");
-    rps_now_strftime_centiseconds_nolen(tmbfr, "%Y, %b, %D %H:%M:%S.__ %Z");
-    std::cout << std::endl << "** STARTING RefPerSys git " << rps_shortgitid << " on " << rps_hostname() << " pid#" << getpid()
-	      << " in " << cwdbuf << " at " << tmbfr << std::endl;
-  }
-  /// handle early a debug flag request
-  if (argc > 1
-      && !strncmp(argv[1], "--debug=", strlen("--debug=")))
-    {
-      rps_set_debug(argv[1]+strlen("--debug="));
-    }
-  else if (argc > 1 && argv[1][0]=='-' && argv[1][1]==RPSPROGOPT_DEBUG)
-    {
-      rps_set_debug(argv[1]+2);
-    };
-  // also use REFPERSYS_DEBUG
-  {
-    const char*debugenv = getenv("REFPERSYS_DEBUG");
-    if (debugenv)
-      rps_set_debug(debugenv);
-  }
-  // For weird reasons, the program arguments are parsed more than
-  // once... We don't care that much in practice...
-  RPS_ASSERT(argc>0);
-  // we forcibly set the REFPERSYS_PID environment variable
-  {
-    static char envpid[32];
-    if (snprintf(envpid, sizeof(envpid), "REFPERSYS_PID=%d", (int)getpid()) < 1)
-      RPS_FATAL("failed to snprintf buffer for REFPERSYS_PID: %m");
-    if (putenv(envpid))
-      RPS_FATAL("failed to putenv %s %m", envpid);
-  }
-  /// disable ASLR programmatically if --no-aslr is passed ; this
-  /// should ease low-level debugging with GDB
-  /// https://en.wikipedia.org/wiki/Address_space_layout_randomization
-  /// see https://askubuntu.com/a/507954/64680
-  rps_disable_aslr = false;
-  {
-    for (int ix=1; ix<argc; ix++)
-      {
-        if (!strcmp(argv[ix], "--no-aslr"))
-          rps_disable_aslr = true;
-        else if (!strcmp(argv[ix], "-B") || !strcmp(argv[ix], "--batch"))
-          rps_batch = true;
-        else if (!strcmp(argv[ix], "--without-terminal"))
-          rps_without_terminal_escape = true;
-      }
-    if (rps_disable_aslr)
-      {
-        if (personality(ADDR_NO_RANDOMIZE) == -1)
-          RPS_FATAL("%s failed to disable ASLR: %m", rps_progname);
-        else
-          RPS_INFORM("%s disabled ASLR (git %s).", rps_progname, rps_gitid);
-      }
-  }
-  Rps_Agenda::initialize();
-  unsetenv("LANG");
-  unsetenv("LC_ADDRESS");
-  unsetenv("LC_ALL");
-  unsetenv("LC_IDENTIFICATION");
-  unsetenv("LC_MEASUREMENT");
-  unsetenv("LC_MONETARY");
-  unsetenv("LC_NAME");
-  unsetenv("LC_NUMERIC");
-  unsetenv("LC_NUMERIC");
-  unsetenv("LC_PAPER");
-  unsetenv("LC_TELEPHONE");
-  unsetenv("LC_TIME");
-  setenv("LANG", "C", (int)true);
-  setenv("LC_ALL", "C.UTF-8", (int)true);
-  std::setlocale(LC_ALL, "C.UTF-8");
-  rps_backtrace_common_state =
-    backtrace_create_state(rps_progname, (int)true,
-                           Rps_Backtracer::bt_error_cb,
-                           nullptr);
-  if (!rps_backtrace_common_state)
-    {
-      fprintf(stderr, "%s failed to make backtrace state.\n", rps_progname);
-      exit(EXIT_FAILURE);
-    }
-  pthread_setname_np(pthread_self(), "rps-main");
-  // hack to handle debug flag as first program argument
-  if (argc>1 && !strncmp(argv[1], "--debug=", strlen("--debug=")))
-    rps_set_debug(std::string(argv[1]+strlen("--debug=")));
-  if (argc>1 && !strncmp(argv[1], "-d", strlen("-d")))
-    rps_set_debug(std::string(argv[1]+strlen("-d")));
-  ///
-  if (rps_syslog_enabled && rps_debug_flags != 0)
-    openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
-} // end rps_early_initialization
-
-////////////////////////////////////////////////////////////////
-int
-main (int argc, char** argv)
-{
-  rps_progname = argv[0];
-  rps_early_initialization(argc, argv);
-  rps_parse_program_arguments(argc, argv);
-  ///
-  RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" //
-	     " %s process %d on host %s\n" //
-	     "... (stdout %s, stderr %s) with %d arguments\n" //
-             "... gitid %.16s built %s, %s mode (%d jobs)\n"
-	     "This is open source software, GPL licensed, no warranty!\n"
-	     ".... See http://refpersys.org/ .....\n",
-             RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
-             RPS_TERMINAL_NORMAL_ESCAPE,
-             argv[0], (int)getpid(), rps_hostname(),
-             rps_stdout_istty?"tty":"plain",
-             rps_stderr_istty?"tty":"plain",
-	     argc,
-             rps_gitid, rps_timestamp,
-             (rps_batch?"batch":"interactive"),
-             rps_nbjobs);
-  RPS_DEBUG_PRINTF(REPL, "main is at @%p, rps_end_of_main is at @%p (pid %d on %s)",
-		   (void*)main,
-		   (void*)rps_end_of_main,
-		   (int)getpid(), rps_hostname());
-  ////
-  //// extend the Unix environment if needed
-  rps_extend_env();
-  //// test the macro (generating nop instructions in assembler) for possible breakpoints;
-  RPS_POSSIBLE_BREAKPOINT();
-  ////
-  Rps_QuasiZone::initialize();
-  rps_check_mtime_files();
-  rps_initialize_curl();
-  if (rps_my_load_dir.empty()) {
-    const char* rpld = realpath(rps_topdirectory, nullptr);
-    if (!rpld)
-      rpld = rps_topdirectory;
-    RPS_ASSERT(rpld != nullptr);
-    rps_my_load_dir = std::string(rpld);
-    free ((void*)rpld);
-  };
-  rps_load_from(rps_my_load_dir);
-  if (!rps_batch)
-    rps_initialize_event_loop();
-  rps_run_application(argc, argv);
-  if (!rps_batch)
-    rps_event_loop();
-  ////
-  if (!rps_dumpdir_str.empty())
-    {
-      char cwdbuf[128];
-      memset (cwdbuf, 0, sizeof(cwdbuf));
-      if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
-        strcpy(cwdbuf, "./");
-      RPS_INFORM("RefPerSys (pid %d on %s shortgit %s) will dump into %s\n"
-                 "... from current directory %s\n",
-                 (int)getpid(), rps_hostname(), rps_shortgitid,
-                 rps_dumpdir_str.c_str(), cwdbuf);
-      rps_dump_into(rps_dumpdir_str);
-    }
-  /// The following assembler code sets the C symbol rps_end_of_main
-  /// and the several nop assembler instructions could facilitate self
-  /// modification of machine code, or GDB breakpoints.
-  ///
-  /// Of course, we don't care about inefficiency.... Code size does
-  /// not matter, and CPU time neither.  See also similar
-  /// RPS_POSSIBLE_BREAKPOINT macro in refpersys.hh
-  asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop");
-  asm volatile (".globl rps_end_of_main; .type rps_end_of_main, @function");
-  asm volatile ("rps_end_of_main: nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;");
-  asm volatile (".size rps_end_of_main, . - rps_end_of_main");
-  asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop");
-  if (rps_debug_file)
-    fflush(rps_debug_file);
-  /// finalize GNU lightning for machine code generation
-  finish_jit();
-  RPS_INFORM("end of RefPerSys process %d on host %s loaded state %s\n"
-             "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
-             (int)getpid(), rps_hostname(),
-	     rps_my_load_dir.c_str(),
-	     rps_gitid, rps_timestamp,
-             rps_elapsed_real_time(), rps_process_cpu_time());
-  return rps_exit_atomic_code.load();
-} // end of main
-
-
-// Parse a single program option, skipping side effects when state is
-// empty.
-error_t
-rps_parse1opt (int key, char *arg, struct argp_state *state)
-{
-  bool side_effect = state && (void*)state != RPS_EMPTYSLOT;
-  switch (key)
-    {
-    case RPSPROGOPT_DEBUG:
-    {
-      if (side_effect)
-        rps_set_debug(std::string(arg));
-    }
-    return 0;
-    case RPSPROGOPT_DEBUG_PATH:
-    {
-      if (side_effect)
-        rps_set_debug_output_path(arg);
-    }
-    return 0;
-    case RPSPROGOPT_LOADDIR:
-    {
-      rps_my_load_dir = std::string(arg);
-    }
-    return 0;
-    case RPSPROGOPT_COMMAND:
-    {
-      rps_command_vec.push_back(std::string(arg));
-    }
-    return 0;
-    case RPSPROGOPT_INTERFACEFIFO:
-      {
-	rps_put_fifo_prefix(arg);
-      }
-      return 0;
-    case RPSPROGOPT_BATCH:
-    {
-      rps_batch = true;
-    }
-    return 0;
-    case RPSPROGOPT_JOBS:
-    {
-      int nbjobs = atoi(arg);
-      if (nbjobs <= RPS_NBJOBS_MIN)
-        nbjobs = RPS_NBJOBS_MIN;
-      else if (nbjobs > RPS_NBJOBS_MAX)
-        nbjobs = RPS_NBJOBS_MAX;
-      rps_nbjobs = nbjobs;
-    }
-    return 0;
-    case RPSPROGOPT_PUBLISH_ME:
-      {
-	if (!rps_publisher_url_str.empty())
-	  RPS_FATAL("cannot give twice the --publish-me <URL> option");
-	rps_publisher_url_str = arg;
-      }
-    return 0;
-    case RPSPROGOPT_DUMP:
-    {
-      if (side_effect)
-        rps_dumpdir_str = std::string(arg);
-    }
-    return 0;
-    case RPSPROGOPT_HOMEDIR:
-    {
-      struct stat rhomstat;
-      memset (&rhomstat, 0, sizeof(rhomstat));
-      if (stat(arg, &rhomstat))
-        RPS_FATAL("failed to stat --refpersys-home %s: %m",
-                  arg);
-      if (!S_ISDIR(rhomstat.st_mode))
-        RPS_FATAL("given --refpersys-home %s is not a directory",
-                  arg);
-      if ((rhomstat.st_mode & (S_IRUSR|S_IXUSR)) !=  (S_IRUSR|S_IXUSR))
-        RPS_FATAL("given --refpersys-home %s is not user readable and executable",
-                  arg);
-      if (side_effect)
-        {
-          char*rhomrp = realpath(arg, nullptr);
-          if (!rhomrp)
-            RPS_FATAL("realpath failed on given --refpersys-home %s - %m",
-                      arg);
-          if (strlen(rhomrp) >= rps_path_byte_size -1)
-            RPS_FATAL("too long realpath %s on given --refpersys-home %s - %m",
-                      rhomrp, arg);
-          strncpy(rps_bufpath_homedir, rhomrp, rps_path_byte_size -1);
-          free (rhomrp), rhomrp = nullptr;
-          RPS_INFORMOUT("set RefPerSys home directory to " << rps_bufpath_homedir);
-        };
-    }
-    return 0;
-    case RPSPROGOPT_RANDOMOID:
-    {
-      int nbrand = atoi(arg);
-      if (nbrand <= 0) nbrand = 2;
-      else if (nbrand > 100) nbrand = 100;
-      if (side_effect)
-        {
-          RPS_INFORM("output of %d random objids generated on %.2f\n", nbrand,
-                     rps_wallclock_real_time());
-          printf("*    %-20s" "\t  %-19s" "   %-12s" "\t %-10s\n",
-                 " objid", "hi", "lo", "hash");
-          printf("========================================================"
-                 "===========================\n");
-          for (int ix = 0; ix<nbrand; ix++)
-            {
-              auto rid = Rps_Id::random();
-              printf("! %22s" "\t  %19lld" " %12lld" "\t %10u\n",
-                     rid.to_string().c_str(),
-                     (long long) rid.hi(),
-                     (long long) rid.lo(),
-                     (unsigned) rid.hash());
-            }
-          printf("--------------------------------------------------------"
-                 "---------------------------\n");
-          fflush(nullptr);
-        }
-    }
-    return 0;
-    case RPSPROGOPT_TYPEINFO:
-    {
-      if (side_effect)
-        rps_print_types_info ();
-      rps_batch = true;
-    }
-    return 0;
-    case RPSPROGOPT_SYSLOG:
-    {
-      if (side_effect)
-        {
-          rps_syslog_enabled = true;
-          openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
-          RPS_INFORM("using syslog");
-        }
-    }
-    return 0;
-    case RPSPROGOPT_NO_TERMINAL:
-    {
-      rps_without_terminal_escape = true;
-    }
-    return 0;
-    case RPSPROGOPT_NO_ASLR:
-    {
-      // was already handled
-      RPS_ASSERT(rps_disable_aslr);
-    }
-    return 0;
-    case RPSPROGOPT_NO_QUICK_TESTS:
-    {
-      rps_without_quick_tests = true;
-    }
-    return 0;
-    case RPSPROGOPT_TEST_REPL_LEXER:
-    {
-      if (side_effect) {
-	if (!rps_test_repl_string.empty())
-	  RPS_FATALOUT("only one --test-repl-lexer=TESTLEXSTRING can"
-		       " be given, but already got "
-		       << rps_test_repl_string);
-	rps_test_repl_string = arg;
-	RPS_INFORMOUT("will test the REPL lexer on:" << rps_test_repl_string
-		      << std::endl << "... that is the " << rps_test_repl_string.size()
-		      << " bytes string " << Rps_QuotedC_String(rps_test_repl_string));
-      }
-    }
-    return 0;
-    case RPSPROGOPT_DEBUG_AFTER_LOAD:
-    {
-      if (!rps_debugflags_after_load || side_effect)
-        rps_debugflags_after_load = arg;
-    }
-    return 0;
-    case RPSPROGOPT_EXTRA_ARG:
-      {
-	int eqnextpos= -1;
-	char extraname[64];
-	memset (extraname, 0, sizeof(extraname));
-	if (sscanf(arg, "%60[A-Za-z0-9]=%n", extraname, &eqnextpos) >= 1
-	    && isalpha(extraname[0])
-	    && eqnextpos > 1 && arg[eqnextpos-1] == '='
-	    && isalpha(extraname[0])) {
-	  for (const char*n = extraname; *n; n++)
-	    if (!isalnum(*n) && *n != '_')
-	      RPS_FATALOUT("invalid extra named argument " << extraname);
-	  if (rps_dict_extra_arg.find(extraname) != rps_dict_extra_arg.end())
-	    RPS_FATALOUT("extra named argument " << extraname
-			 << " cannot be set more than once");
-	  std::string extraval{arg+eqnextpos};
-	  rps_dict_extra_arg.insert({extraname, extraval});
-	  RPS_INFORMOUT("set extra argument " << extraname
-			<< " to " << Rps_QuotedC_String(extraval));
-	}
-	else
-	  RPS_FATALOUT("bad extra named argument " << arg
-		       << " that is " << Rps_QuotedC_String(arg)
-		       << " extra name is " << Rps_QuotedC_String(extraname)
-		      );
-      }
-      return 0;
-    case RPSPROGOPT_RUN_AFTER_LOAD:
-    {
-      if (rps_run_command_after_load)
-        RPS_FATALOUT("only one --run-after-load command can be given, not both " << rps_run_command_after_load
-                     << " and " << arg);
-      rps_run_command_after_load = arg;
-    }
-    return 0;
-    case RPSPROGOPT_PLUGIN_AFTER_LOAD:
-    {
-      void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
-      if (!dlh)
-        RPS_FATALOUT("failed to dlopen plugin " << arg << " : " << dlerror());
-      const char* bnplug = basename(arg);
-      Rps_Plugin curplugin(bnplug, dlh);
-      RPS_INFORMOUT("loaded plugin#" << rps_plugins_vector.size() << " from " << arg << " from process pid#" << (int)getpid()
-		    << " basenamed " << Rps_QuotedC_String(bnplug));
-      rps_plugins_vector.push_back(curplugin);
-    }
-    return 0;
-    case RPSPROGOPT_PLUGIN_ARG:
-      {
-	char plugname[80];
-	char plugarg[128];
-	memset (plugname, 0, sizeof(plugname));
-	memset (plugarg, 0, sizeof(plugarg));
-	if (!arg)
-	  RPS_FATALOUT("missing --plugin-arg");
-	if (strlen(arg) >= sizeof(plugname) + sizeof(plugarg) - 1)
-	  RPS_FATALOUT("too long --plugin-arg" << arg
-		       << " should be shorter than " << ( sizeof(plugname) + sizeof(plugarg)) << " bytes");
-	if (sscanf(arg, "%78[a-zA-Z0-9_]:%126s", plugname, plugarg) < 2)
-	  RPS_FATALOUT("expecting --plugin-arg=<plugin-name>:<plugin-arg-string but got " << arg);
-	int pluginix= -1;
-	int plugcnt = 0;
-	for (Rps_Plugin curplugin: rps_plugins_vector) {
-	  std::string curplugname = curplugin.plugin_name;
-	  int pluglenam= curplugname.length();
-	  if (pluglenam > 4 && curplugname.substr(pluglenam-3) == ".so")
-	    curplugname.erase(pluglenam-3);
-	  RPS_DEBUG_LOG (REPL, "plugin#" << plugcnt << " is named " << Rps_QuotedC_String(curplugname));
-	  if (curplugname == plugname) {
-	    pluginix = plugcnt;
-	    break;
-	  };
-	  plugcnt++;
-	}
-	if (pluginix<0)
-	  RPS_FATALOUT("--plugin-arg=" << plugname << ":" << plugarg
-		       << " without such loaded plugin (loaded " << plugcnt << " plugins)");
-	Rps_Plugin thisplugin = rps_plugins_vector[pluginix];
-	rps_pluginargs_map[plugname] = std::string{plugarg};
-	RPS_INFORMOUT("registering plugin argument of --plugin-arg " << arg
-		      << " plugname=" << Rps_QuotedC_String(plugname)
-		      << " plugarg=" << Rps_QuotedC_String(plugarg)
-		    << std::endl
-		    << RPS_FULL_BACKTRACE_HERE(1, "--plugin-arg processing"));
-      }
-      return 0;
-    case RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD:
-    {
-      RPS_DEBUG_LOG(CMD, "option --cplusplus-editor "
-                    << (arg?" with '":" without ")
-                    << (arg?arg:" argument")
-                    << (arg?"'":" !!!")
-                    << (side_effect?" side-effecting"
-                        :" without side effect"));
-      if (side_effect)
-        {
-          if (!arg || !arg[0])
-            {
-              char* editor = getenv("EDITOR");
-              if (editor && editor[0])
-                {
-                  arg = editor;
-                  RPS_INFORMOUT("using $EDITOR variable " << editor << " as C++ editor");
-                }
-            };
-          if (!arg || !arg[0])
-            RPS_FATALOUT("program option --cplusplus-editor-after-load"
-			 " without explicit editor,\n"
-			 "... and no $EDITOR environment variable");
-          if (!rps_cpluspluseditor_str.empty())
-            RPS_FATALOUT("program option --cplusplus-editor-after-load"
-			 " given twice with "
-                         << rps_cpluspluseditor_str << " and " << arg);
-          rps_cpluspluseditor_str.assign(arg);
-        };
-    }
-    return 0;
-    case RPSPROGOPT_CPLUSPLUSFLAGS_AFTER_LOAD:
-    {
-      if (side_effect)
-        {
-          if (!rps_cplusplusflags_str.empty())
-            RPS_FATALOUT("program option --cplusplus-flags-after-load given twice with "
-                         << rps_cplusplusflags_str << " and " << arg);
-          rps_cplusplusflags_str.assign(arg);
-        }
-    }
-    return 0;
-    case RPSPROGOPT_VERSION:
-    {
-      if (side_effect)
-        {
-          int nbfiles=0;
-          int nbsubdirs=0;
-          for (auto pfiles=rps_files; *pfiles; pfiles++)
-            nbfiles++;
-          for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
-            nbsubdirs++;
-          std::cout << "RefPerSys, an Artificial Intelligence system - work in progress..." << std::endl;
-          std::cout << "version information:\n"
-                    << " program name: " << rps_progname << std::endl
-                    << " build time: " << rps_timestamp << std::endl
-                    << " top directory: " << rps_topdirectory << std::endl
-                    << " git id: " << rps_gitid << std::endl
-                    << " short git id: " << rps_shortgitid << std::endl
-                    << " last git tag: " << rps_lastgittag << std::endl
-                    << " last git commit: " << rps_lastgitcommit << std::endl
-                    << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
-                    << " with " << nbsubdirs << " subdirectories." << std::endl
-                    << " GNU glibc: " << gnu_get_libc_version() << std::endl
-	    /* TODO: near commit 191d55e1b31c, march 2023; decide
-	       which parser generator to really use... and drop the
-	       other one.  Non technical considerations,
-	       e.g. licensing, is important to some partners... */
-                    << " Gnu Bison parser generator: " << rps_gnubison_command
-		    << " version: " << rps_gnubison_version
-		    << " at: " << rps_gnubison_realpath
-		    << std::endl
-		    << " default GUI script: " << rps_gui_script_executable << std::endl
-                    << " Read Eval Print Loop: " << rps_repl_version() << std::endl
-                    << " libCURL for web client: " << rps_curl_version() << std::endl
-		    << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
-                    << " made with: " << rps_makefile << std::endl
-                    << " running on " << rps_hostname() << std::endl
-		    << "This executable was built by "
-		    << rps_building_user_name
-		    << " of email " << rps_building_user_email
-		    << std::endl;
-          {
-            char cwdbuf[256];
-            memset (cwdbuf, 0, sizeof(cwdbuf));
-            if (getcwd(cwdbuf, sizeof(cwdbuf)))
-              std::cout << " in " << cwdbuf;
-          };
-          std::cout << std::endl << " C++ compiler: " << rps_cxx_compiler_version << std::endl
-		    << " extra compilation flags: " << rps_build_xtra_cflags << std::endl
-                    << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl
-                    << "+++++ there is no WARRANTY, to the extent permitted by law ++++" << std::endl
-                    << "***** see also refpersys.org *****"
-                    << std::endl << std::endl;
-          exit(EXIT_SUCCESS);
-        }
-    }
-    return 0;
-    };				// end switch key
-  return ARGP_ERR_UNKNOWN;
-} // end rps_parse1opt
-
-struct argp argparser_rps;
-
+/// the rps_run_loaded_application is called after loading...
 void
-rps_parse_program_arguments(int &argc, char**argv)
-{
-  errno = 0;
-  struct argp_state argstate;
-  memset (&argstate, 0, sizeof(argstate));
-  argparser_rps.options = rps_progoptions;
-  argparser_rps.parser = rps_parse1opt;
-  argparser_rps.args_doc = " ; # ";
-  argparser_rps.doc =
-    "RefPerSys - an opensource Artificial Intelligence project,\n"
-    " open science, for Linux/x86-64; see refpersys.org for more.\n"
-    " (REFlexive PERsystem SYStem is GPLv3+ licensed free software)\n"
-    " You should have received a copy of the GNU General Public License\n"
-    " along with this program.  If not, see www.gnu.org/licenses\n"
-    " *** NO WARRANTY, not even for FITNESS FOR A PARTICULAR PURPOSE ***\n"
-    " +++!!! use at your own risk !!!+++\n"
-    " (shortgitid " RPS_SHORTGITID " built at " __DATE__ ")\n"
-    "\n Accepted program options are:\n";
-  argparser_rps.children = nullptr;
-  argparser_rps.help_filter = nullptr;
-  argparser_rps.argp_domain = nullptr;
-  if (argp_parse(&argparser_rps, argc, argv, 0, nullptr, nullptr))
-    RPS_FATALOUT("failed to parse program arguments to " << argv[0]);
-} // end rps_parse_program_arguments
-
-
-
-
-const char*
-rps_get_plugin_cstr_argument(const Rps_Plugin*plugin)
-{
-  if (!plugin)
-    return nullptr;
-  auto it = rps_pluginargs_map.find(plugin->plugin_name);
-  if (it == rps_pluginargs_map.end())
-    return nullptr;
-  return it->second.c_str();
-} // end rps_get_plugin_cstr_argument
-
-
-
-
-/// the rps_run_application is called after loading...
-void
-rps_run_application(int &argc, char **argv)
+rps_run_loaded_application(int &argc, char **argv)
 {
 
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
@@ -1084,9 +373,9 @@ rps_run_application(int &argc, char **argv)
     char cwdbuf[128];
     memset (cwdbuf, 0, sizeof(cwdbuf));
     if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
-      RPS_FATALOUT("rps_run_application failed to getcwd " << strerror(errno)
-                   << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application"));
-    RPS_INFORM("rps_run_application: start of %s\n"
+      RPS_FATALOUT("rps_run_loaded_application failed to getcwd " << strerror(errno)
+                   << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application"));
+    RPS_INFORM("rps_run_loaded_application: start of %s\n"
                ".. gitid %s\n"
                ".. build timestamp %s\n"
                ".. last git commit %s\n"
@@ -1104,22 +393,22 @@ rps_run_application(int &argc, char **argv)
   if (rps_debugflags_after_load)
     {
       rps_set_debug(rps_debugflags_after_load);
-      RPS_INFORM("rps_run_application did set debug after load to %s", rps_debugflags_after_load);
+      RPS_INFORM("rps_run_loaded_application did set debug after load to %s", rps_debugflags_after_load);
     }
   ////
   if (rps_without_quick_tests)
     {
-      RPS_INFORM("rps_run_application dont run quick tests after load");
+      RPS_INFORM("rps_run_loaded_application dont run quick tests after load");
     }
   else
     {
-      RPS_DEBUG_LOG(LOWREP, "rps_run_application before running rps_small_quick_tests_after_load from "
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application/quick-tests")
+      RPS_DEBUG_LOG(LOWREP, "rps_run_loaded_application before running rps_small_quick_tests_after_load from "
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application/quick-tests")
                     << std::endl
                     << " with call frame:" << std::endl
                     << Rps_ShowCallFrame(&_));
       rps_small_quick_tests_after_load();
-      RPS_DEBUG_LOG(LOWREP, "rps_run_application after running rps_small_quick_tests_after_load");
+      RPS_DEBUG_LOG(LOWREP, "rps_run_loaded_application after running rps_small_quick_tests_after_load");
     };
   /// create the fifos if a prefix is given with 
   if (!rps_get_fifo_prefix().empty())
@@ -1185,7 +474,7 @@ rps_run_application(int &argc, char **argv)
   //// if told, run an editor for C++ code
   if (!rps_cpluspluseditor_str.empty() || !rps_cplusplusflags_str.empty())
     {
-      RPS_INFORMOUT("rps_run_application should edit user C++ code with editor='"
+      RPS_INFORMOUT("rps_run_loaded_application should edit user C++ code with editor='"
                     << rps_cpluspluseditor_str << "' and compile flags '" << rps_cplusplusflags_str << "'"
                     << std::endl
                     << " with call frame " << Rps_ShowCallFrame(&_));
@@ -1211,7 +500,7 @@ rps_run_application(int &argc, char **argv)
         }
       catch (std::exception& exc)
         {
-          RPS_WARNOUT("rps_run_application failed to run plugin #" << pluginix
+          RPS_WARNOUT("rps_run_loaded_application failed to run plugin #" << pluginix
                       << rps_plugins_vector[pluginix].plugin_name
                       << " got exception " << exc.what()
                      );
@@ -1241,10 +530,10 @@ rps_run_application(int &argc, char **argv)
   if (!rps_get_fifo_prefix().empty()) {
 #pragma message "main_rps.cc with RPSJSONRPC:" __DATE__ "@" __TIME__
     RPS_INFORMOUT("initialize JSONRPC with rps_fifo_prefix:" << rps_get_fifo_prefix() << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "rps_run_application JSONRPC"));
+		  << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application JSONRPC"));
       jsonrpc_initialize_rps();
   };
-} // end rps_run_application
+} // end rps_run_loaded_application
 
 
 static long
@@ -1593,96 +882,6 @@ Rps_Random::deterministic_reseed(void)
 } // end of Rps_Random::deterministic_reseed
 
 
-
-////////////////
-void
-rps_fatal_stop_at (const char *filnam, int lin)
-{
-  static constexpr int skipfatal=2;
-  assert(filnam != nullptr);
-  assert (lin>=0);
-  char errbuf[80];
-  memset (errbuf, 0, sizeof(errbuf));
-  snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
-  bool ontty = isatty(STDERR_FILENO);
-  if (rps_debug_file)
-    fprintf(rps_debug_file, "\n*§*§* RPS FATAL %s:%d *§*§*\n", filnam, lin);
-  fprintf(stderr, "\n" "%s%sRPS FATAL:%s\n"
-          " RefPerSys gitid %s,\n"
-          "\t built timestamp %s,\n"
-          "\t on host %s, md5sum %s,\n"
-          "\t elapsed %.3f, process %.3f sec\n",
-          ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
-          ontty?RPS_TERMINAL_BLINK_ESCAPE:"",
-          ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
-          rps_gitid, rps_timestamp, rps_hostname(), rps_md5sum,
-          rps_elapsed_real_time(), rps_process_cpu_time());
-  if (rps_debug_file && rps_debug_file != stderr && rps_debug_path[0])
-    {
-      fprintf(stderr, "*°* see debug output in %s\n", rps_debug_path);
-      fprintf(rps_debug_file, "RefPerSys gitid %s built %s was started on %s pid %d as:\n",
-	      rps_shortgitid, rps_timestamp, rps_hostname(), (int)getpid());
-      for (int aix=0; aix<rps_argc; aix++) {
-	fputc(' ', rps_debug_file);
-	const char*curarg = rps_argv[aix];
-	bool isplainarg = isalnum(curarg[0]) || curarg[0]=='/'
-	  || curarg[0]=='_' || curarg[0]=='.' || curarg[0]=='-';
-	for (const char*pc = curarg; *pc != (char)0 && isplainarg; pc++)
-	  isplainarg = *pc>' ' && *pc<(char)127
-	    && *pc != '\'' && *pc != '\\' && *pc != '\"'
-	    && isprint(*pc);
-	if (isplainarg)
-	  fputs(curarg, rps_debug_file);
-	else
-	  fprintf(rps_debug_file, "'%s'", Rps_QuotedC_String(curarg).c_str());
-      }
-      fputc('\n', rps_debug_file);
-    }
-  fflush (stderr);
-  fflush (rps_debug_file);
-  {
-    auto backt= Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},
-                               filnam, lin,
-                               skipfatal, "RefPerSys FATAL ERROR",
-                               &std::clog);
-    backt.output(std::clog);
-    std::clog << "===== end fatal error at " << filnam << ":" << lin
-              << " ======" << std::endl << std::flush;
-    std::clog << "RefPerSys gitid " << rps_shortgitid << " built " << rps_timestamp
-	      << " was started on " << rps_hostname() << " pid " << (int)getpid() << " as:" << std::endl;
-      for (int aix=0; aix<rps_argc; aix++) {
-	const char*curarg = rps_argv[aix];
-	bool isplainarg = isalnum(curarg[0]) || curarg[0]=='/'
-	  || curarg[0]=='_' || curarg[0]=='.'  || curarg[0]=='-';
-	for (const char*pc = curarg; *pc != (char)0 && isplainarg; pc++)
-	  isplainarg = *pc>' ' && *pc<(char)127
-	    && *pc != '\'' && *pc != '\\' && *pc != '\"'
-	    && isprint(*pc);
-	if (isplainarg)
-	  std::clog << ' ' << curarg;
-	else
-	  std::clog << ' ' << Rps_QuotedC_String(curarg);
-      }
-      std::clog << std::endl << std::flush;
-  }
-  fflush(nullptr);
-  abort();
-} // end rps_fatal_stop_at
-
-
-void rps_debug_warn_at(const char*file, int line)
-{
-  if (rps_debug_file)
-    {
-      fprintf(rps_debug_file, "\n*** REFPERSYS WARNING at %s:%d ***\n", file, line);
-      fflush(rps_debug_file);
-    }
-  else
-    {
-      std::cerr << std::flush;
-      std::cerr << std::endl << "**!** REFPERSYS WARNING at " << file << ":" << line << std::endl;
-    }
-} // end rps_debug_warn_at
 
 ///////////////////////////////////////////////////////// debugging support
 /// X macro tricks used twice below... see en.wikipedia.org/wiki/X_Macro
@@ -2063,20 +1262,101 @@ rps_kill_wait_gui_process(void)
 } // end rps_kill_wait_gui_process
 
 
-const char*
-rps_get_extra_arg(const char*name)
+int
+main (int argc, char** argv)
 {
-  if (!name) return nullptr;
-  bool is_good_name=isalpha(name[0]);
-  for (const char*pc = name; is_good_name && *pc; pc++)
-    is_good_name = isalnum(*pc) || *pc == '_';
-  if (!is_good_name)
-    return nullptr;
-  std::string goodstr{name};
-  auto it = rps_dict_extra_arg.find(goodstr);
-  if (it == rps_dict_extra_arg.end())
-    return nullptr;
-  return it->second.c_str();
-} // end rps_get_extra_arg
+  rps_progname = argv[0];
+  rps_parse_program_arguments(argc, argv);
+  ///
+  RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" //
+	     " %s process %d on host %s\n" //
+	     "... (stdout %s, stderr %s) with %d arguments\n" //
+             "... gitid %.16s built %s, %s mode (%d jobs)\n"
+	     "This is open source software, GPL licensed, no warranty!\n"
+	     ".... See http://refpersys.org/ .....\n",
+             RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
+             RPS_TERMINAL_NORMAL_ESCAPE,
+             argv[0], (int)getpid(), rps_hostname(),
+             rps_stdout_istty?"tty":"plain",
+             rps_stderr_istty?"tty":"plain",
+	     argc,
+             rps_gitid, rps_timestamp,
+             (rps_batch?"batch":"interactive"),
+             rps_nbjobs);
+  RPS_DEBUG_PRINTF(REPL, "main is at @%p, rps_end_of_main is at @%p (pid %d on %s)",
+		   (void*)main,
+		   (void*)rps_end_of_main,
+		   (int)getpid(), rps_hostname());
+  ////
+  //// extend the Unix environment if needed
+  rps_extend_env();
+  //// test the macro (generating nop instructions in assembler) for possible breakpoints;
+  RPS_POSSIBLE_BREAKPOINT();
+  ////
+  Rps_QuasiZone::initialize();
+  rps_check_mtime_files();
+  rps_initialize_curl();
+  if (rps_my_load_dir.empty()) {
+    const char* rpld = realpath(rps_topdirectory, nullptr);
+    if (!rpld)
+      rpld = rps_topdirectory;
+    RPS_ASSERT(rpld != nullptr);
+    rps_my_load_dir = std::string(rpld);
+    free ((void*)rpld);
+  };
+  rps_load_from(rps_my_load_dir);
+  if (!rps_batch)
+    rps_initialize_event_loop();
+  rps_run_loaded_application(argc, argv);
+  if (!rps_batch)
+    rps_event_loop();
+  ////
+  if (!rps_dumpdir_str.empty())
+    {
+      char cwdbuf[128];
+      memset (cwdbuf, 0, sizeof(cwdbuf));
+      if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+        strcpy(cwdbuf, "./");
+      RPS_INFORM("RefPerSys (pid %d on %s shortgit %s) will dump into %s\n"
+                 "... from current directory %s\n",
+                 (int)getpid(), rps_hostname(), rps_shortgitid,
+                 rps_dumpdir_str.c_str(), cwdbuf);
+      rps_dump_into(rps_dumpdir_str);
+    }
+  /// The following assembler code sets the C symbol rps_end_of_main
+  /// and the several nop assembler instructions could facilitate self
+  /// modification of machine code, or GDB breakpoints.
+  ///
+  /// Of course, we don't care about inefficiency.... Code size does
+  /// not matter, and CPU time neither.  See also similar
+  /// RPS_POSSIBLE_BREAKPOINT macro in refpersys.hh
+  asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;"
+		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+		" nop; nop; nop; nop; nop; nop; nop; nop; nop");
+  asm volatile (".globl rps_end_of_main; .type rps_end_of_main, @function");
+  asm volatile ("rps_end_of_main: nop; nop; nop; nop; nop; nop; nop; nop;"
+		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+		" nop; nop; nop; nop; nop; nop; nop; nop; nop;");
+  asm volatile (".size rps_end_of_main, . - rps_end_of_main");
+  asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;"
+		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+		" nop; nop; nop; nop; nop; nop; nop; nop; nop");
+  if (rps_debug_file)
+    fflush(rps_debug_file);
+  /// finalize GNU lightning for machine code generation
+  finish_jit();
+  RPS_INFORM("end of RefPerSys process %d on host %s loaded state %s\n"
+             "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
+             (int)getpid(), rps_hostname(),
+	     rps_my_load_dir.c_str(),
+	     rps_gitid, rps_timestamp,
+             rps_elapsed_real_time(), rps_process_cpu_time());
+  return rps_exit_atomic_code.load();
+} // end of main
+
 
 /////////////////// end of file main_rps.cc

@@ -152,6 +152,7 @@ typedef Rps_ProtoCallFrame Rps_CallFrame;
 
 constexpr unsigned rps_path_byte_size = 384;
 extern "C" char rps_bufpath_homedir[rps_path_byte_size];
+extern "C" char rps_debug_path[rps_path_byte_size];
 
 extern "C" std::map<std::string,std::string> rps_pluginargs_map;
 extern "C" std::string rps_cpluspluseditor_str;
@@ -159,6 +160,12 @@ extern "C" std::string rps_cplusplusflags_str;
 extern "C" std::string rps_dumpdir_str;
 extern "C" std::vector<std::string> rps_command_vec;
 extern "C" std::string rps_test_repl_string;
+extern "C" std::string rps_publisher_url_str;
+extern "C" bool rps_without_quick_tests;
+
+extern "C" char* rps_run_command_after_load;
+extern "C" char* rps_debugflags_after_load;
+
 extern "C" {
 
   
@@ -310,6 +317,7 @@ extern "C" struct rps_fifo_fdpair_st rps_get_gui_fifo_fds(void);
 extern "C" pid_t rps_get_gui_pid(void);
 extern "C" bool rps_is_fifo(std::string path); // in eventloop_rps.cc
 
+extern "C" void rps_parse_program_arguments(int& argc, char**argv);
 
 extern "C" void rps_run_test_repl_lexer(const std::string&); // defined in file lexer_rps.cc
 
@@ -321,6 +329,7 @@ extern "C" void rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe);
 
 extern "C" void rps_small_quick_tests_after_load (void);
 
+extern "C" void rps_check_mtime_files (void);
 
 // when set, no GUI is running
 extern "C" bool rps_batch;
@@ -350,6 +359,10 @@ extern "C" const char* rps_progname;
 /// the load directory
 extern "C" std::string rps_my_load_dir;
 
+
+/// the program arguments
+extern "C" int rps_argc;
+extern "C" char** rps_argv;
 
 /// the initial copyright year of RefPerSys
 #define RPS_INITIAL_COPYRIGHT_YEAR 2019
@@ -506,6 +519,7 @@ extern "C" rps_plugin_init_sig_t rps_do_plugin;
 // if plugin not found or without argument, return the nullptr
 extern "C" const char*rps_get_plugin_cstr_argument(const Rps_Plugin*plugin);
 
+extern "C" std::vector<Rps_Plugin> rps_plugins_vector;
 
 ////////////////////////////////////////////////////////////////
 
@@ -4709,7 +4723,7 @@ extern "C" void rps_repl_lexer_test(void);
 
 extern "C" void rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec);
 
-extern "C" void rps_run_application(int &argc, char **argv);
+extern "C" void rps_run_loaded_application(int &argc, char **argv);
 
 ///// UTF8 encoded string output (in file scalar_rps.cc)
 /// output a C string in HTML encoding; if nl2br is true, every newline is output as <br/>
