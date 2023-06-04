@@ -464,6 +464,9 @@ rps_check_mtime_files(void)
 static double rps_start_monotonic_time;
 static double rps_start_wallclock_real_time;
 
+
+
+/// rps_early_initialization is called by rps_parse_program_arguments which is called early from main.
 static void
 rps_early_initialization(int argc, char** argv)
 {
@@ -481,8 +484,7 @@ rps_early_initialization(int argc, char** argv)
   rps_stderr_istty = isatty(STDERR_FILENO);
   rps_stdout_istty = isatty(STDOUT_FILENO);
   rps_progname = argv[0];
-  // initialize GNU lightning
-  init_jit (rps_progname);
+  /// dlopen to self
   rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
   if (!rps_proghdl)
     {
@@ -490,6 +492,8 @@ rps_early_initialization(int argc, char** argv)
               dlerror());
       exit(EXIT_FAILURE);
     };
+  // initialize GNU lightning
+  init_jit (rps_progname);
   rps_main_thread_handle = pthread_self();
   {
     char cwdbuf[128];
@@ -955,6 +959,9 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 
 struct argp argparser_rps;
 
+
+
+// rps_parse_program_arguments is called very early from main...
 void
 rps_parse_program_arguments(int &argc, char**argv)
 {
