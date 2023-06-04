@@ -196,13 +196,13 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
           if (paylenv)
             {
               bool missing = false;
-	      RPS_POSSIBLE_BREAKPOINT();
+              RPS_POSSIBLE_BREAKPOINT();
               _f.mainresv = paylenv->get_obmap(_f.evalob,/*defaultval:*/nullptr,&missing);
               if (!missing)
                 RPS_REPLEVAL_GIVES_PLAIN(_f.mainresv);
               RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                             << " object expr:" << _f.exprv << " missing in envob=" << _f.envob
-			    << ", firstenvob=" << _f.firstenvob
+                            << ", firstenvob=" << _f.firstenvob
                             << " loopcount:" << count);
               _f.envob = paylenv->get_parent_environment();
             }
@@ -211,7 +211,10 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                               << _f.envob->get_class() << " has no payload environment;"
                               << " first env was " <<_f.firstenvob
                               << " evaluating variable " << _f.exprv);
-        }
+          RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
+                        << " object variable:" << _f.evalob << " ending loop count#" << count
+                        << " is variable envob:" <<_f.envob << " firstenvob:" << _f.firstenvob);
+        } // end while count... loop
       RPS_REPLEVAL_FAIL("unbound variable","Variable " << _f.evalob << " unbound with envob " << _f.envob << " of class "
                         << _f.envob->get_class()
                         << " first env was " <<_f.firstenvob);
@@ -241,8 +244,12 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                               << _f.envob->get_class() << " has no payload environment;"
                               << " first env was " <<_f.firstenvob
                               << " evaluating symbolic variable " << _f.exprv);
-        };
-      RPS_REPLEVAL_FAIL("unbound symbolic variable","Symbolic variable " << _f.evalob << " unbound with envob " << _f.envob << " of class "
+          RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
+                        << " object variable:" << _f.evalob << " ending loop count#" << count
+                        << " is symbolic_variable envob:" <<_f.envob << " firstenvob:" << _f.firstenvob);
+        };			// end while count<... symbvar
+      RPS_REPLEVAL_FAIL("unbound symbolic variable","Symbolic variable " << _f.evalob
+                        << " unbound with envob " << _f.envob << " of class "
                         << _f.envob->get_class()
                         << " first env was " <<_f.firstenvob);
     }
