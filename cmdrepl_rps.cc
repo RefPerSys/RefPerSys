@@ -187,18 +187,23 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
           RPS_POSSIBLE_BREAKPOINT();
           auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
           RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
-                        << " object expr:" << _f.exprv
+                        << " object expr:" << _f.exprv << std::endl
                         << " evalob=" << _f.evalob
                         << ", loopcount:" << count
                         << " envob=" << _f.envob << ' '
-                        << ((paylenv != nullptr)?"*env*":"*notenv*")
+                        << ((paylenv != nullptr)?"*env*":"*NOTENV*")
                         << ", firstenvob=" << _f.firstenvob);
           if (paylenv)
             {
               bool missing = false;
+	      RPS_POSSIBLE_BREAKPOINT();
               _f.mainresv = paylenv->get_obmap(_f.evalob,/*defaultval:*/nullptr,&missing);
               if (!missing)
                 RPS_REPLEVAL_GIVES_PLAIN(_f.mainresv);
+              RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
+                            << " object expr:" << _f.exprv << " missing in envob=" << _f.envob
+			    << ", firstenvob=" << _f.firstenvob
+                            << " loopcount:" << count);
               _f.envob = paylenv->get_parent_environment();
             }
           else // envob without Rps_PayloadEnvironment
