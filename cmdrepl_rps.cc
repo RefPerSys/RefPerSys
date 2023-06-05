@@ -215,6 +215,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                         << " object variable:" << _f.evalob << " ending loop count#" << count
                         << " is variable envob:" <<_f.envob << " firstenvob:" << _f.firstenvob);
         } // end while count... loop
+      RPS_POSSIBLE_BREAKPOINT();
       RPS_REPLEVAL_FAIL("unbound variable","Variable " << _f.evalob << " unbound with envob " << _f.envob << " of class "
                         << _f.envob->get_class()
                         << " first env was " <<_f.firstenvob);
@@ -227,6 +228,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                     << " object expr:" << _f.exprv
                     << " is symbolic_variable envob:" <<_f.envob);
+      RPS_POSSIBLE_BREAKPOINT();
       while (count++ < maxloop && _f.envob)
         {
           std::lock_guard gu(*_f.envob->objmtxptr());
@@ -247,6 +249,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
           RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                         << " object variable:" << _f.evalob << " ending loop count#" << count
                         << " is symbolic_variable envob:" <<_f.envob << " firstenvob:" << _f.firstenvob);
+          RPS_POSSIBLE_BREAKPOINT();
         };			// end while count<... symbvar
       RPS_REPLEVAL_FAIL("unbound symbolic variable","Symbolic variable " << _f.evalob
                         << " unbound with envob " << _f.envob << " of class "
@@ -257,6 +260,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     {
       // any other object is self evaluating! or NOT?
       // TODO: think more.
+      RPS_POSSIBLE_BREAKPOINT();
     }
 #warning rps_full_evaluate_repl_expr not really implemented, should dispatch on classob
   RPS_REPLEVAL_FAIL("*unimplemented*","REPL evaluation of " <<_f.exprv
