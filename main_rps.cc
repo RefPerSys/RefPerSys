@@ -705,7 +705,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
       {
         // not very good, but in practice good enough before bootstrapping
         // see https://softwareengineering.stackexchange.com/q/289427/40065
-        char cwdbuf[128];
+        char cwdbuf[rps_path_byte_size];
         memset(cwdbuf, 0, sizeof(cwdbuf));
         if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
           RPS_FATAL("rps_edit_run_cplusplus_code getcwd failed: %m");
