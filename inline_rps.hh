@@ -1533,12 +1533,14 @@ Rps_ObjectZone::is_class(void) const
     return false;
   if (curclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
     return false;
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
   /// some classes might be instances of yet another metaclass, this is
   /// rare, and we use C++ dynamic cast of payload
   auto curpayl = get_dynamic_payload<Rps_PayloadClassInfo>();
   if (RPS_UNLIKELY(curpayl))
-    // the astute reader would notice that C++ dynamic_cast is likely
-    // to implement itself the ObjVlisp model, but this is a C++
+    // The astute reader would notice that C++ dynamic_cast is likely
+    // to implement -in simple cases not involving multiple C++
+    // inheritance- itself the ObjVlisp model, but this is a C++
     // implementation detail.
     return true;
   return false;
@@ -1588,10 +1590,10 @@ Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
   RPS_ASSERT(stored_type() == Rps_Type::Object);
   int cnt = 0;
   Rps_ObjectRef obinitclass = obsuperclass;
-  Rps_ObjectRef obcurclass = obsuperclass;
   if (!obinitclass || !obinitclass->is_class())
     return false;
   Rps_ObjectRef obthisclass = get_class();
+  Rps_ObjectRef obcurclass = this;
   /// If the heap is severely corrupted, we might loop
   /// indefinitely... This should never happen, but we test against
   /// it...
