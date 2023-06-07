@@ -988,6 +988,7 @@ rps_parse_program_arguments(int &argc, char**argv)
   argparser_rps.argp_domain = nullptr;
   if (argp_parse(&argparser_rps, argc, argv, 0, nullptr, nullptr))
     RPS_FATALOUT("failed to parse program arguments to " << argv[0]);
+  RPS_POSSIBLE_BREAKPOINT();
 } // end rps_parse_program_arguments
 
 
