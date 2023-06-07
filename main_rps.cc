@@ -1358,12 +1358,24 @@ main (int argc, char** argv)
   /// finalize GNU lightning for machine code generation
   finish_jit();
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_INFORM("end of RefPerSys process %d on host %s loaded state %s\n"
-             "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
-             (int)getpid(), rps_hostname(),
-	     rps_my_load_dir.c_str(),
-	     rps_gitid, rps_timestamp,
-             rps_elapsed_real_time(), rps_process_cpu_time());
+  RPS_INFORMOUT("end of RefPerSys process " << (int)getpid() << " on " << rps_hostname()
+		<< " git " << rps_gitid << " built " << rps_timestamp
+		<< " loaded state " << rps_my_load_dir << std::endl
+		<< " elapsed " << rps_elapsed_real_time()
+		<< ", cpu " << rps_process_cpu_time() << " seconds;"
+		<< " invocation was:" << std::endl
+		<< Rps_Do_Output([&](std::ostream& out) {
+		  rps_output_program_arguments(out, argc, argv);
+		})
+		<< Rps_Do_Output([&](std::ostream& out) {
+		  int ex = rps_exit_atomic_code.load();
+		  if (ex==0)
+		    out << " exiting normally";
+		  else
+		    out << " failing #" << ex;
+		})
+		<< std::flush
+		);
   return rps_exit_atomic_code.load();
 } // end of main
 

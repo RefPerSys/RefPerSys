@@ -992,6 +992,33 @@ rps_parse_program_arguments(int &argc, char**argv)
 } // end rps_parse_program_arguments
 
 
+void
+rps_output_program_arguments(std::ostream& out, int argc, const char*const*argv)
+{
+  for (int i=0; i<argc; i++)
+    {
+      if (i>0) out << ' ';
+      const char*curparg = argv[i];
+      if (!curparg)
+        break;
+      bool onlyalnum = true;
+      for (const char* pc = curparg; onlyalnum && *pc; pc++)
+        {
+          if (isalnum(*pc) || *pc=='_')
+            continue;
+          else
+            {
+              onlyalnum = false;
+              break;
+            }
+        };
+      if (onlyalnum)
+        out << curparg;
+      else
+        out << '\'' << Rps_QuotedC_String(curparg) << '\'';
+    };
+  out << std::flush;
+} // end rps_output_program_arguments
 
 
 const char*

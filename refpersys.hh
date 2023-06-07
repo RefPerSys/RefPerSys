@@ -1006,6 +1006,8 @@ extern "C" void*rps_proghdl; // dlopen handle of whole program
 
 extern "C" Json::Value rps_string_to_json(const std::string&str);
 extern "C" std::string rps_json_to_string(const Json::Value&jv);
+extern "C" void rps_output_program_arguments(std::ostream& out,
+					     int argc, const char*const*argv);
 
 #define RPS_FLEXIBLE_DIM 0      /* for flexible array members */
 
