@@ -1305,12 +1305,18 @@ main (int argc, char** argv)
     free ((void*)rpld);
   };
   rps_load_from(rps_my_load_dir);
+  RPS_POSSIBLE_BREAKPOINT();
   if (!rps_batch)
     rps_initialize_event_loop();
   rps_run_loaded_application(argc, argv);
-  if (!rps_batch)
+  RPS_POSSIBLE_BREAKPOINT();
+  if (!rps_batch) {
+    RPS_POSSIBLE_BREAKPOINT();
+    RPS_DEBUG_LOG(REPL, "before calling rps_event_loop");
     rps_event_loop();
+  }
   ////
+  RPS_POSSIBLE_BREAKPOINT();
   if (!rps_dumpdir_str.empty())
     {
       char cwdbuf[128];
@@ -1321,8 +1327,10 @@ main (int argc, char** argv)
                  "... from current directory %s\n",
                  (int)getpid(), rps_hostname(), rps_shortgitid,
                  rps_dumpdir_str.c_str(), cwdbuf);
+      RPS_POSSIBLE_BREAKPOINT();
       rps_dump_into(rps_dumpdir_str);
-    }
+    };
+  RPS_POSSIBLE_BREAKPOINT();
   /// The following assembler code sets the C symbol rps_end_of_main
   /// and the several nop assembler instructions could facilitate self
   /// modification of machine code, or GDB breakpoints.
@@ -1349,6 +1357,7 @@ main (int argc, char** argv)
     fflush(rps_debug_file);
   /// finalize GNU lightning for machine code generation
   finish_jit();
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_INFORM("end of RefPerSys process %d on host %s loaded state %s\n"
              "... gitid %.16s built %s elapsed %.3f sec, process %.3f sec",
              (int)getpid(), rps_hostname(),
