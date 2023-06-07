@@ -1,6 +1,9 @@
 # file refpersys/.gdbinit
-# GPLv3+ licensed
+# SPDX-License-Identifier: GPL-3.0-or-later
+# GPLv3+ licensed - see https://www.gnu.org/licenses/gpl-3.0.en.html
 ### see https://stackoverflow.com/a/56407988/841108
+### see http://refpersys.org/ and https://github.com/RefPerSys/RefPerSys
+### © Copyright 2019 - 2023 The Reflective Persistent System Team
 add-auto-load-safe-path ./.gdbinit
 break abort
 break rps_fatal_stop_at
