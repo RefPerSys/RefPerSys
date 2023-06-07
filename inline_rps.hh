@@ -1551,7 +1551,7 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obclass) const
 {
   RPS_ASSERT(stored_type() == Rps_Type::Object);
   RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_instance_of this=" << this
-		<< " obclass="<< obclass);
+                << " obclass="<< obclass);
   int cnt = 0;
   Rps_ObjectRef obinitclass = obclass;
   Rps_ObjectRef obcurclass = obclass;
@@ -1565,10 +1565,10 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obclass) const
     {
       cnt++;
       RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << this
-		    << " cnt#" << cnt << " this:" << this
-		    << " obclass=" << obclass
-		    << " obinitclass=" << obinitclass
-		    << " obcurclass=" << obcurclass);
+                    << " cnt#" << cnt << " this:" << this
+                    << " obclass=" << obclass
+                    << " obinitclass=" << obinitclass
+                    << " obcurclass=" << obcurclass);
       /// this should not happen, except if our inheritance graph is corrupted
       if (RPS_UNLIKELY(cnt > (int)Rps_Value::maximal_inheritance_depth))
         {
