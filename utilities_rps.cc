@@ -1015,9 +1015,9 @@ rps_output_program_arguments(std::ostream& out, int argc, const char*const*argv)
       if (onlyalnum)
         out << curparg;
       else
-        out << '\'' << Rps_QuotedC_String(curparg) << '\'';
+        out << Rps_QuotedC_String(curparg);
     };
-  out << std::flush;
+  out << std::endl;
 } // end rps_output_program_arguments
 
 
