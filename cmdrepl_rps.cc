@@ -61,6 +61,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                  Rps_Value exprv;
                  Rps_ObjectRef evalob;
                  Rps_ObjectRef envob;
+                 Rps_ObjectRef nextenvob;
                  Rps_ObjectRef firstenvob;
                  Rps_ObjectRef classob;
                  Rps_Value mainresv;
@@ -69,6 +70,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   _f.closv = _.call_frame_closure();
   _f.exprv = exprarg;
   _f.envob = envobarg;
+  _f.nextenvob = nullptr;
   _f.firstenvob = envobarg;
   /// macros to ease debugging
 #define RPS_REPLEVAL_GIVES_BOTH_AT(V1,V2,LIN) do {              \
@@ -173,6 +175,9 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   ///
   RPS_ASSERT(_f.classob && _f.classob->is_class());
   RPS_POSSIBLE_BREAKPOINT();
+  /****
+   * Evaluation of variables - perhaps anonymous ones
+   ****/
   if (_f.classob == RPS_ROOT_OB(_4HJvNCh35Lu00n5z3R) //variable∈class
       || _f.classob->is_subclass_of(RPS_ROOT_OB(_4HJvNCh35Lu00n5z3R) //variable∈class
                                    ))
@@ -183,6 +188,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                     << " is variable envob:" <<_f.envob);
       while (count++ < maxloop && _f.envob)
         {
+          _f.nextenvob = nullptr;
           std::lock_guard gu(*_f.envob->objmtxptr());
           RPS_POSSIBLE_BREAKPOINT();
           auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
@@ -204,7 +210,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                             << " object expr:" << _f.exprv << " missing in envob=" << _f.envob
                             << ", firstenvob=" << _f.firstenvob
                             << " loopcount:" << count);
-              _f.envob = paylenv->get_parent_environment();
+              _f.nextenvob = paylenv->get_parent_environment();
             }
           else // envob without Rps_PayloadEnvironment
             RPS_REPLEVAL_FAIL("bad environment","The envob " << _f.envob << " of class "
@@ -213,13 +219,19 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                               << " evaluating variable " << _f.exprv);
           RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                         << " object variable:" << _f.evalob << " ending loop count#" << count
-                        << " is variable envob:" <<_f.envob << " firstenvob:" << _f.firstenvob);
-        } // end while count... loop
+                        << " is variable envob:" <<_f.envob << " firstenvob:" << _f.firstenvob
+                        << " envob=" << _f.envob << " nextenvob=" << _f.nextenvob);
+          _f.envob = _f.nextenvob;
+          RPS_POSSIBLE_BREAKPOINT();
+        } // end while count... loop for variable
       RPS_POSSIBLE_BREAKPOINT();
       RPS_REPLEVAL_FAIL("unbound variable","Variable " << _f.evalob << " unbound with envob " << _f.envob << " of class "
                         << _f.envob->get_class()
                         << " first env was " <<_f.firstenvob);
     }
+  /****
+   * Evaluation of symbolic variables - named ones
+   ****/
   else if (_f.classob ==  RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
            || _f.classob->is_subclass_of(RPS_ROOT_OB(_4Si5RBkg1Qm0285SD0) //symbolic_variable∈class
                                         ))
@@ -231,6 +243,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       RPS_POSSIBLE_BREAKPOINT();
       while (count++ < maxloop && _f.envob)
         {
+          _f.nextenvob = nullptr;
           std::lock_guard gu(*_f.envob->objmtxptr());
           auto paylenv = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
           if (paylenv)
@@ -239,7 +252,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
               _f.mainresv = paylenv->get_obmap(_f.evalob,nullptr,&missing);
               if (!missing)
                 RPS_REPLEVAL_GIVES_PLAIN(_f.mainresv);
-              _f.envob = paylenv->get_parent_environment();
+              _f.nextenvob = paylenv->get_parent_environment();
             }
           else // envob without Rps_PayloadEnvironment
             RPS_REPLEVAL_FAIL("bad environment","The envob " << _f.envob << " of class "
@@ -248,8 +261,10 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                               << " evaluating symbolic variable " << _f.exprv);
           RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                         << " object variable:" << _f.evalob << " ending loop count#" << count
-                        << " is symbolic_variable envob:" <<_f.envob << " firstenvob:" << _f.firstenvob);
+                        << " is symbolic_variable envob:" <<_f.envob << " firstenvob:" << _f.firstenvob
+                        << " nextenvob:" << _f.nextenvob);
           RPS_POSSIBLE_BREAKPOINT();
+          _f.envob = _f.nextenvob;
         };			// end while count<... symbvar
       RPS_REPLEVAL_FAIL("unbound symbolic variable","Symbolic variable " << _f.evalob
                         << " unbound with envob " << _f.envob << " of class "
