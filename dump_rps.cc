@@ -1032,8 +1032,8 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_SIZEOF_RPS_CLOSUREZONE " << sizeof(Rps_ClosureZone) << std::endl;
   *pouts << "#define RPS_SIZEOF_RPS_INSTANCEZONE " << sizeof(Rps_InstanceZone) << std::endl;
   *pouts << "#define RPS_SIZEOF_RPS_CALLFRAME " << sizeof(Rps_CallFrame) << std::endl;
-  *pouts << "#define RPS_SIZEOF_RPS_PAYLOAD" << sizeof(Rps_Payload) << std::endl;
-  *pouts << "#define RPS_SIZEOF_RPS_TOKENSOURCE" << sizeof(Rps_TokenSource) << std::endl;
+  *pouts << "#define RPS_SIZEOF_RPS_PAYLOAD " << sizeof(Rps_Payload) << std::endl;
+  *pouts << "#define RPS_SIZEOF_RPS_TOKENSOURCE " << sizeof(Rps_TokenSource) << std::endl;
   
   *pouts << "///" << std::endl;
   *pouts << "#define RPS_ALIGNOF_SHORT " << alignof(short) << std::endl;
@@ -1060,8 +1060,8 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_ALIGNOF_RPS_CLOSUREZONE " << alignof(Rps_ClosureZone) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_INSTANCEZONE " << alignof(Rps_InstanceZone) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_CALLFRAME " << alignof(Rps_CallFrame) << std::endl;
-  *pouts << "#define RPS_ALIGNOF_RPS_PAYLOAD" << alignof(Rps_Payload) << std::endl;
-    *pouts << "#define RPS_ALIGNOF_RPS_TOKENSOURCE" << alignof(Rps_TokenSource) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_RPS_PAYLOAD " << alignof(Rps_Payload) << std::endl;
+    *pouts << "#define RPS_ALIGNOF_RPS_TOKENSOURCE " << alignof(Rps_TokenSource) << std::endl;
   *pouts << "///" << std::endl;
   *pouts << "#endif //RPS_DATA_INCLUDED\n" << std::endl;
   *pouts << std::endl << std::endl
