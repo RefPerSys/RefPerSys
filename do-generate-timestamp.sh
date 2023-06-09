@@ -41,5 +41,11 @@ printf "const char rps_building_user_name[]=\"%s\";\n" "$(git config user.name)"
 
 printf "const char rps_building_user_email[]=\"%s\";\n" $(git config user.email)
 
+printf "const char rps_building_host[]=\"%s\";\n" $(/bin/uname -n)
+
+printf "const char rps_building_operating_system[]=\"%s\";\n" $(/bin/uname -o)
+
+printf "const char rps_building_machine[]=\"%s\";\n" $(/bin/uname -m)
+
 printf "/// see also GNUmakefile for refpersys.org;\n"
 ### some things are generated in GNUmakefile 

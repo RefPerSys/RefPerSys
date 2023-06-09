@@ -242,6 +242,11 @@ extern "C" const char rps_gui_script_executable[];
 // the Linux user compiling RefPerSys
 extern "C" const char rps_building_user_name[];
 extern "C" const char rps_building_user_email[];
+
+/// the computer on which this RefPerSys is built
+extern "C" const char rps_building_host[];
+extern "C" const char rps_building_operating_system[];
+extern "C" const char rps_building_machine[];
 extern "C" struct utsname rps_utsname;
 
 ///////////////////////////////////////////////////////////////////////////////
