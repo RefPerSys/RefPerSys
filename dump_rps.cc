@@ -1007,6 +1007,7 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_BUILDING_HOST \"" << rps_building_host << "\"" << std::endl;
   *pouts << "#define RPS_BUILDING_OPERATING_SYSTEM \"" << osbuf << "\"" << std::endl;
   *pouts << "#define RPS_BUILDING_MACHINE \"" << machinebuf << "\"" << std::endl;
+  *pouts << "#define RPS_SIZEOF_BOOL " << sizeof(bool) << std::endl;
   *pouts << "#define RPS_SIZEOF_SHORT " << sizeof(short) << std::endl;
   *pouts << "#define RPS_SIZEOF_INT " << sizeof(int) << std::endl;
   *pouts << "#define RPS_SIZEOF_LONG " << sizeof(long) << std::endl;
@@ -1036,6 +1037,7 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_SIZEOF_RPS_TOKENSOURCE " << sizeof(Rps_TokenSource) << std::endl;
   
   *pouts << "///" << std::endl;
+  *pouts << "#define RPS_ALIGNOF_BOOL " << alignof(bool) << std::endl;
   *pouts << "#define RPS_ALIGNOF_SHORT " << alignof(short) << std::endl;
   *pouts << "#define RPS_ALIGNOF_INT " << alignof(int) << std::endl;
   *pouts << "#define RPS_ALIGNOF_LONG " << alignof(long) << std::endl;
