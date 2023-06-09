@@ -121,6 +121,7 @@ private:
   void write_generated_roots_file(void);
   void write_generated_names_file(void);
   void write_generated_constants_file(void);
+  void write_generated_data_file(void);
   void write_manifest_file(void);
   void write_space_file(Rps_ObjectRef spacobr);
   void scan_object_contents(Rps_ObjectRef obr);
@@ -974,12 +975,80 @@ Rps_Dumper::write_generated_constants_file(void)
 
 
 void
+Rps_Dumper::write_generated_data_file(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  char osbuf[64];
+  memset (osbuf, 0, sizeof(osbuf));
+  int osl = strlen(rps_building_operating_system);
+  if (osl > (int)sizeof(osbuf)-2)
+    osl = sizeof(osbuf)-2;
+  for (int i=0; i<osl; i++) {
+    if (isalnum(rps_building_operating_system[i]))
+	osbuf[i] = rps_building_operating_system[i];
+    else osbuf[i] = '_';
+  };
+  char machinebuf[48];
+  memset(machinebuf, 0, sizeof(machinebuf));
+  int ml = strlen(rps_building_machine);
+  if (ml>(int)sizeof(machinebuf)-2)
+    ml = (int)sizeof(machinebuf)-2;
+  for (int i=0; i<ml; i++) {
+    if (isalnum(rps_building_machine[i]))
+      machinebuf[i] = rps_building_machine[i];
+    else
+      machinebuf[i] = '_';
+  }
+  std::string datapathstr = std::string{"generated/rpsdata"}+std::string(osbuf)+std::string(machinebuf) + ".h";
+  auto pouts = open_output_file(datapathstr);
+  rps_emit_gplv3_copyright_notice(*pouts, datapathstr, "//: ", "");
+  *pouts << "#ifndef RPS_DATA_INCLUDED\n" << "#define RPS_DATA_INCLUDED 1" << std::endl;
+  *pouts << "#define RPS_BUILDING_HOST \"" << rps_building_host << "\"" << std::endl;
+  *pouts << "#define RPS_BUILDING_OPERATING_SYSTEM \"" << osbuf << "\"" << std::endl;
+  *pouts << "#define RPS_BUILDING_MACHINE \"" << machinebuf << "\"" << std::endl;
+  *pouts << "#define RPS_SIZEOF_SHORT " << sizeof(short) << std::endl;
+  *pouts << "#define RPS_SIZEOF_INT " << sizeof(int) << std::endl;
+  *pouts << "#define RPS_SIZEOF_LONG " << sizeof(long) << std::endl;
+  *pouts << "#define RPS_SIZEOF_FLOAT " << sizeof(float) << std::endl;
+  *pouts << "#define RPS_SIZEOF_DOUBLE " << sizeof(double) << std::endl;
+  *pouts << "#define RPS_SIZEOF_PTR " << sizeof(void*) << std::endl;
+  *pouts << "#define RPS_SIZEOF_INT " << sizeof(int) << std::endl;
+  *pouts << "#define RPS_SIZEOF_LONG " << sizeof(long) << std::endl;
+  *pouts << "#define RPS_SIZEOF_PTR " << sizeof(void*) << std::endl;
+  *pouts << "#define RPS_SIZEOF_INTPTR_T " << sizeof(std::intptr_t) << std::endl;
+  *pouts << "#define RPS_SIZEOF_PID_T " << sizeof(pid_t) << std::endl;
+  *pouts << "#define RPS_SIZEOF_VALUE " << sizeof(Rps_Value) << std::endl;
+  *pouts << "#define RPS_SIZEOF_OBJECTREF " << sizeof(Rps_ObjectRef) << std::endl;
+  *pouts << "///" << std::endl;
+  *pouts << "#define RPS_ALIGNOF_SHORT " << alignof(short) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_INT " << alignof(int) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_LONG " << alignof(long) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_FLOAT " << alignof(float) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_DOUBLE " << alignof(double) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_PTR " << alignof(void*) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_INT " << alignof(int) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_LONG " << alignof(long) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_PTR " << alignof(void*) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_INTPTR_T " << alignof(std::intptr_t) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_PID_T " << alignof(pid_t) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_VALUE " << alignof(Rps_Value) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_OBJECTREF " << alignof(Rps_ObjectRef) << std::endl;
+  *pouts << "///" << std::endl;
+  *pouts << "#endif //RPS_DATA_INCLUDED\n" << std::endl;
+  *pouts << std::endl << std::endl
+	 << "//// end of generated " << datapathstr
+	 << " for shortgitid:" << rps_shortgitid << std::endl;
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_data_file end " << datapathstr);
+} //  end Rps_Dumper::write_generated_data_file
+
+void
 Rps_Dumper::write_all_generated_files(void)
 {
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   write_generated_roots_file();
   write_generated_names_file();
   write_generated_constants_file();
+  write_generated_data_file();
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  du_callframe,
                  Rps_Value dumpdirnamev;

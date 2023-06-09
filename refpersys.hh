@@ -1349,8 +1349,8 @@ class Rps_LexTokenZone;
 class Rps_ClosureZone;
 class Rps_InstanceZone;
 class Rps_GarbageCollector;
-class Rps_Loader; // in store_rps.cc
-class Rps_Dumper; // in store_rps.cc
+class Rps_Loader; // in load_rps.cc
+class Rps_Dumper; // in dump_rps.cc
 class Rps_ClosureValue;
 class Rps_SetValue;
 class Rps_InstanceValue;
