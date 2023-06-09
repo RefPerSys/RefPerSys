@@ -106,6 +106,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <time.h>
+#include <setjmp.h>
 #include <dlfcn.h>
 #include <dirent.h>
 #include <pthread.h>
