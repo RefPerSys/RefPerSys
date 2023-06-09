@@ -999,7 +999,8 @@ Rps_Dumper::write_generated_data_file(void)
     else
       machinebuf[i] = '_';
   }
-  std::string datapathstr = std::string{"generated/rpsdata"}+std::string(osbuf)+std::string(machinebuf) + ".h";
+  std::string datapathstr = std::string{"generated/rpsdata_"}
+  + std::string(osbuf)+std::string{"_"} + std::string(machinebuf) + ".h";
   auto pouts = open_output_file(datapathstr);
   rps_emit_gplv3_copyright_notice(*pouts, datapathstr, "//: ", "");
   *pouts << "#ifndef RPS_DATA_INCLUDED\n" << "#define RPS_DATA_INCLUDED 1" << std::endl;
