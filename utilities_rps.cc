@@ -1001,18 +1001,19 @@ rps_output_program_arguments(std::ostream& out, int argc, const char*const*argv)
       const char*curparg = argv[i];
       if (!curparg)
         break;
-      bool onlyalnum = true;
-      for (const char* pc = curparg; onlyalnum && *pc; pc++)
+      bool goodchar = true;
+      for (const char* pc = curparg; goodchar && *pc; pc++)
         {
-          if (isalnum(*pc) || *pc=='_')
-            continue;
-          else
+          if (isalnum(*pc) || *pc=='_' || *pc=='-' || *pc=='+'
+	      || *pc=='/' || *pc=='.' || *pc==','' || *pc==':')
+              continue;
+              else
             {
-              onlyalnum = false;
+              goodchar = false;
               break;
             }
-        };
-      if (onlyalnum)
+      };
+    if (goodchar)
         out << curparg;
       else
         out << Rps_QuotedC_String(curparg);
