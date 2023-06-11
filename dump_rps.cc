@@ -983,24 +983,26 @@ Rps_Dumper::write_generated_data_file(void)
   int osl = strlen(rps_building_operating_system);
   if (osl > (int)sizeof(osbuf)-2)
     osl = sizeof(osbuf)-2;
-  for (int i=0; i<osl; i++) {
-    if (isalnum(rps_building_operating_system[i]))
-	osbuf[i] = rps_building_operating_system[i];
-    else osbuf[i] = '_';
-  };
+  for (int i=0; i<osl; i++)
+    {
+      if (isalnum(rps_building_operating_system[i]))
+        osbuf[i] = rps_building_operating_system[i];
+      else osbuf[i] = '_';
+    };
   char machinebuf[48];
   memset(machinebuf, 0, sizeof(machinebuf));
   int ml = strlen(rps_building_machine);
   if (ml>(int)sizeof(machinebuf)-2)
     ml = (int)sizeof(machinebuf)-2;
-  for (int i=0; i<ml; i++) {
-    if (isalnum(rps_building_machine[i]))
-      machinebuf[i] = rps_building_machine[i];
-    else
-      machinebuf[i] = '_';
-  }
+  for (int i=0; i<ml; i++)
+    {
+      if (isalnum(rps_building_machine[i]))
+        machinebuf[i] = rps_building_machine[i];
+      else
+        machinebuf[i] = '_';
+    }
   std::string datapathstr = std::string{"generated/rpsdata_"}
-  + std::string(osbuf)+std::string{"_"} + std::string(machinebuf) + ".h";
+                            + std::string(osbuf)+std::string{"_"} + std::string(machinebuf) + ".h";
   auto pouts = open_output_file(datapathstr);
   rps_emit_gplv3_copyright_notice(*pouts, datapathstr, "//: ", "");
   *pouts << "#ifndef RPS_DATA_INCLUDED\n" << "#define RPS_DATA_INCLUDED 1" << std::endl;
@@ -1035,7 +1037,7 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_SIZEOF_RPS_CALLFRAME " << sizeof(Rps_CallFrame) << std::endl;
   *pouts << "#define RPS_SIZEOF_RPS_PAYLOAD " << sizeof(Rps_Payload) << std::endl;
   *pouts << "#define RPS_SIZEOF_RPS_TOKENSOURCE " << sizeof(Rps_TokenSource) << std::endl;
-  
+
   *pouts << "///" << std::endl;
   *pouts << "#define RPS_ALIGNOF_BOOL " << alignof(bool) << std::endl;
   *pouts << "#define RPS_ALIGNOF_SHORT " << alignof(short) << std::endl;
@@ -1063,12 +1065,12 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_ALIGNOF_RPS_INSTANCEZONE " << alignof(Rps_InstanceZone) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_CALLFRAME " << alignof(Rps_CallFrame) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_PAYLOAD " << alignof(Rps_Payload) << std::endl;
-    *pouts << "#define RPS_ALIGNOF_RPS_TOKENSOURCE " << alignof(Rps_TokenSource) << std::endl;
+  *pouts << "#define RPS_ALIGNOF_RPS_TOKENSOURCE " << alignof(Rps_TokenSource) << std::endl;
   *pouts << "///" << std::endl;
   *pouts << "#endif //RPS_DATA_INCLUDED\n" << std::endl;
   *pouts << std::endl << std::endl
-	 << "//// end of generated " << datapathstr
-	 << " for shortgitid:" << rps_shortgitid << std::endl;
+         << "//// end of generated " << datapathstr
+         << " for shortgitid:" << rps_shortgitid << std::endl;
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_data_file end " << datapathstr);
 } //  end Rps_Dumper::write_generated_data_file
 
