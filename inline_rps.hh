@@ -1551,6 +1551,7 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obclass) const
 {
   RPS_ASSERT(stored_type() == Rps_Type::Object);
   RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_instance_of this=" << this
+                << "=" << Rps_ObjectRef(this)
                 << " obclass="<< obclass);
   int cnt = 0;
   Rps_ObjectRef obinitclass = obclass;
@@ -1564,8 +1565,9 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obclass) const
   for (;;)
     {
       cnt++;
-      RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << this
-                    << " cnt#" << cnt << " this:" << this
+      RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this="
+                    << this << "=" << Rps_ObjectRef(this)
+                    << " cnt#" << cnt
                     << " obclass=" << obclass
                     << " obinitclass=" << obinitclass
                     << " obcurclass=" << obcurclass);
@@ -1591,10 +1593,14 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obclass) const
     }
 } // end Rps_ObjectZone::is_instance_of
 
+
+
 bool
 Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
 {
   RPS_ASSERT(stored_type() == Rps_Type::Object);
+  RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_subclass_of this=" << this
+                << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass);
   int cnt = 0;
   Rps_ObjectRef obinitclass = obsuperclass;
   if (!obinitclass || !obinitclass->is_class())
@@ -1615,17 +1621,44 @@ Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
           throw RPS_RUNTIME_ERROR_OUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
                                       << " of class " << obinitclass);
         }
+      RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_subclass_of this=" << this
+                    << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass << " cnt#" << cnt
+                    << " obinitclass=" << obinitclass << " obthisclass=" << obthisclass
+                    << " obcurclass=" << obcurclass);
       if (obthisclass == obcurclass)
-        return true;
+        {
+          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of SUCCESS this=" << this
+                        << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass << " cnt#" << cnt);
+          return true;
+        }
       if (obcurclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
-        return true;
+        {
+          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of SUCCESS/object this=" << this
+                        << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass
+                        << " obcurclass=" << obcurclass << " cnt#" << cnt);
+          return true;
+        }
       if (obcurclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz)) // `value` class
-        return false;
+        {
+          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of FAIL/value this=" << this
+                        << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass
+                        << " obcurclass=" << obcurclass<< " cnt#" << cnt);
+          return false;
+        }
       if (!obcurclass || !obcurclass->is_class())
-        return false;
+        {
+          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of FAIL/nocurclass this=" << this
+                        << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass
+                        << " obcurclass=" << obcurclass << " cnt#" << cnt);
+          return false;
+        }
       auto curclasspayl = obcurclass->get_dynamic_payload<Rps_PayloadClassInfo>();
       RPS_ASSERT(curclasspayl);
       obcurclass = curclasspayl->superclass();
+      RPS_DEBUG_LOG(LOW_REPL, "!Rps_ObjectZone::is_subclass_of again this=" << this
+                    << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass << " cnt#" << cnt
+                    << " obinitclass=" << obinitclass << " obthisclass=" << obthisclass
+                    << " obcurclass=" << obcurclass);
     }
 } // end Rps_ObjectZone::is_superclass_of
 
