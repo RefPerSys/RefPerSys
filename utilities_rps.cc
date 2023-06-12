@@ -1005,15 +1005,15 @@ rps_output_program_arguments(std::ostream& out, int argc, const char*const*argv)
       for (const char* pc = curparg; goodchar && *pc; pc++)
         {
           if (isalnum(*pc) || *pc=='_' || *pc=='-' || *pc=='+'
-	      || *pc=='/' || *pc=='.' || *pc==',' || *pc==':')
-              continue;
-              else
+              || *pc=='/' || *pc=='.' || *pc==',' || *pc==':')
+            continue;
+          else
             {
               goodchar = false;
               break;
             }
-      };
-    if (goodchar)
+        };
+      if (goodchar)
         out << curparg;
       else
         out << Rps_QuotedC_String(curparg);
