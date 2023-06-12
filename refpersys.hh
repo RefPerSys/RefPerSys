@@ -562,6 +562,9 @@ extern "C" void rps_publish_me(const char*url);
 
 extern "C" void rps_set_debug(const std::string &deblev);
 
+// output a set of debug flags, or rps_debug_flags if flag is zero...
+extern "C" void rps_output_debug_flags(std::ostream&out, unsigned flags=0);
+
 /// keep the debug options in alphabetical order
 #define RPS_DEBUG_OPTIONS(dbgmacro) \
   dbgmacro(CMD)                     \
