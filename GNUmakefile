@@ -250,6 +250,7 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
 %.ii: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -C -E $< | sed s:^#://#:g > $@
+	astyle -v -s2 --style=gnu $@
 
 %.cc: %.yy
 	$(RPS_COMPILER_TIMER) $(RPS_BUILD_BISON) $(RPS_BUILD_BISON_FLAGS) --output=$@ $<
