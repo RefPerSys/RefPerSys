@@ -1302,24 +1302,27 @@ rps_set_debug(const std::string &deblev)
       fprintf(stderr, "%s debugging options for git %s built at %s ...\n",
               rps_progname, rps_shortgitid, rps_timestamp);
       fprintf(stderr, "Comma separated debugging levels with -D<debug-level>\n"
-	      "\tor --debug=<debug-level> or --debug-after-load=<debug-level>:\n");
+              "\tor --debug=<debug-level> or --debug-after-load=<debug-level>:\n");
 
 #define Rps_SHOW_DEBUG(Opt) fprintf(stderr, "\t%s\n", #Opt);
       RPS_DEBUG_OPTIONS(Rps_SHOW_DEBUG);
 #undef Rps_SHOW_DEBUG
       fflush(nullptr);
     }
-  else if (deblev.empty()) {
-    RPS_WARNOUT("empty debugging from " << RPS_FULL_BACKTRACE_HERE(1, "rps_set_debug/empty"));
-  }
-  else if (isdigit(deblev[0])) {
-    char*pend = nullptr;
-    long lev = strtol(&deblev[0], &pend, 0);
-    if (pend && *pend != (char)0)
-      RPS_WARNOUT("bad numerical debug level " << lev << " in " << deblev);
-    rps_debug_flags = lev;
-  }
-  else {
+  else if (deblev.empty())
+    {
+      RPS_WARNOUT("empty debugging from " << RPS_FULL_BACKTRACE_HERE(1, "rps_set_debug/empty"));
+    }
+  else if (isdigit(deblev[0]))
+    {
+      char*pend = nullptr;
+      long lev = strtol(&deblev[0], &pend, 0);
+      if (pend && *pend != (char)0)
+        RPS_WARNOUT("bad numerical debug level " << lev << " in " << deblev);
+      rps_debug_flags = lev;
+    }
+  else
+    {
       const char*comma=nullptr;
       for (const char*pc = deblev.c_str(); pc && *pc; pc = comma?(comma+1):nullptr)
         {
@@ -1349,7 +1352,7 @@ rps_output_debug_flags(std::ostream&out,  unsigned flags)
   //
 #define SHOW_DBGFLAG(Lev)			\
   do {						\
-    if (flags & RPS_DEBUG_##Lev) {		\
+    if (flags & (1<< RPS_DEBUG_##Lev)) {	\
       if (nbf > 0)				\
 	out << ',';				\
       out << #Lev;				\
@@ -1357,5 +1360,10 @@ rps_output_debug_flags(std::ostream&out,  unsigned flags)
     }						\
   } while(0);
   RPS_DEBUG_OPTIONS(SHOW_DBGFLAG);
-  #undef SHOW_DBGFLAG
+#undef SHOW_DBGFLAG
+  out << std::flush;
 } // end rps_output_debug_flags
+
+
+
+//// end of file utilities_rps.cc
