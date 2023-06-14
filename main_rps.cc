@@ -393,7 +393,14 @@ rps_run_loaded_application(int &argc, char **argv)
   if (rps_debugflags_after_load)
     {
       rps_set_debug(rps_debugflags_after_load);
-      RPS_INFORM("rps_run_loaded_application did set debug after load to %s", rps_debugflags_after_load);
+      RPS_INFORMOUT("did set after load "
+		    << " of RefPerSys process " << (int)getpid() << std::endl
+		    << "... on " << rps_hostname()
+		    << " shortgit " << rps_shortgitid
+		    << " debug to "
+		    << Rps_Do_Output([&](std::ostream& out) {
+		      rps_output_debug_flags(out);
+		    }));
     }
   ////
   if (rps_without_quick_tests)
@@ -1282,8 +1289,10 @@ main (int argc, char** argv)
 		" nop; nop; nop; nop; nop; nop; nop; nop; nop");
   if (rps_debug_file)
     fflush(rps_debug_file);
-  /// finalize GNU lightning for machine code generation
+  /// Finalize GNU lightning for machine code generation; see
+  /// https://www.gnu.org/software/lightning/
   finish_jit();
+  fflush(nullptr);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_INFORMOUT("end of RefPerSys process " << (int)getpid() << " on " << rps_hostname()
 		<< " git " << rps_gitid << " built " << rps_timestamp
