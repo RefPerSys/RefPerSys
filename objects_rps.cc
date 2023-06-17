@@ -106,10 +106,12 @@ Rps_ObjectRef::output(std::ostream&outs, unsigned depth) const
                        << obclpayl->class_name_str()
                        << std::flush;
                 }
-            }
+            };
+	  outs << std::flush;
         }
     };
 } // end Rps_ObjectRef::output
+
 
 const std::string
 Rps_ObjectRef::as_string(void) const
@@ -118,6 +120,7 @@ Rps_ObjectRef::as_string(void) const
     return std::string{"__"};
   else if (_optr == RPS_EMPTYSLOT)
     return std::string{"_⁂_"}; //U+2042 ASTERISM
+  const Rps_Id curoid = _optr->oid();
   std::lock_guard<std::recursive_mutex> gu(*_optr->objmtxptr());
   if (const Rps_PayloadSymbol*symbpayl = _optr->get_dynamic_payload<Rps_PayloadSymbol>())
     {
@@ -138,10 +141,11 @@ Rps_ObjectRef::as_string(void) const
         {
           std::string str {"⁑" /*U+2051 TWO ASTERISKS ALIGNED VERTICALLY*/};
           str.append  (namval.as_cppstring());
+	  str.append (":");
+	  str.append (curoid.to_string());
           return str;
         }
     }
-  const Rps_Id curoid = _optr->oid();
   return curoid.to_string();
 } // end Rps_ObjectRef::as_string
 
