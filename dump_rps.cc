@@ -1006,7 +1006,7 @@ Rps_Dumper::write_generated_data_file(void)
         machinebuf[i] = '_';
     }
   std::string datapathstr = std::string{"generated/rpsdata_"}
-  + std::string(osbuf)+std::string{"_"} + std::string(machinebuf) + ".h";
+                            + std::string(osbuf)+std::string{"_"} + std::string(machinebuf) + ".h";
   std::string gendatapathstr = std::string{"generated/rpsdata.h"};
   auto pouts = open_output_file(datapathstr);
   rps_emit_gplv3_copyright_notice(*pouts, datapathstr, "//: ", "");
@@ -1089,7 +1089,7 @@ Rps_Dumper::write_generated_data_file(void)
   (void) remove(gendatapathstr.c_str());
   if (symlink((std::string(cwdbuf) + "/" + datapathstr).c_str(), gendatapathstr.c_str()))
     RPS_FATALOUT("failed to symlink " << gendatapathstr << " to " << (std::string(cwdbuf) + "/" + datapathstr.c_str(), gendatapathstr.c_str())
-		 << ":" << strerror(errno));
+                 << ":" << strerror(errno));
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_data_file end " << datapathstr);
 } //  end Rps_Dumper::write_generated_data_file
 
