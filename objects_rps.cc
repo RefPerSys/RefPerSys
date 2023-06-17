@@ -107,7 +107,7 @@ Rps_ObjectRef::output(std::ostream&outs, unsigned depth) const
                        << std::flush;
                 }
             };
-	  outs << std::flush;
+          outs << std::flush;
         }
     };
 } // end Rps_ObjectRef::output
@@ -141,8 +141,8 @@ Rps_ObjectRef::as_string(void) const
         {
           std::string str {"⁑" /*U+2051 TWO ASTERISKS ALIGNED VERTICALLY*/};
           str.append  (namval.as_cppstring());
-	  str.append (":");
-	  str.append (curoid.to_string());
+          str.append (":");
+          str.append (curoid.to_string());
           return str;
         }
     }
