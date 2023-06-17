@@ -50,9 +50,11 @@ const char rps_cmdrepl_date[]= __DATE__;
 Rps_TwoValues
 rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_ObjectRef envobarg)
 {
+#define TEMPORARY_CODE 1
   RPS_ASSERT_CALLFRAME (callframe);
   RPS_ASSERT(envobarg);
   constexpr int maxloop=256;
+  unsigned startdbgflags = rps_debug_flags.load();
   static std::atomic<unsigned long> eval_repl_counter_;
   const unsigned long eval_number = 1+eval_repl_counter_.fetch_add(1);
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
@@ -169,12 +171,29 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       _f.classob = _f.exprv.compute_class(&_);
       RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                     << " object expr:" << _f.exprv
-                    << " of class:" << _f.classob
+                    << " of class:" << _f.classob << " physicalclass:" << _f.evalob->get_class()
                     << " in env:" << _f.envob);
     };
   ///
   RPS_ASSERT(_f.classob && _f.classob->is_class());
   RPS_POSSIBLE_BREAKPOINT();
+  /***
+      temporary code to find make test01 bug near commit 29d5221fe8561 of Jun 17, 2023
+   ***/
+#if TEMPORARY_CODE
+  if (eval_number < 4)
+    {
+      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
+                    << eval_number << " *TEMPCODE*"
+                    << " expr:" << _f.exprv << " of class " << _f.classob);
+      rps_set_debug("LOW_REPL,REPL");
+      RPS_INFORMOUT("forcing debug flag to " << Rps_Do_Output([&](std::ostream& out)
+      {
+        rps_output_debug_flags(out);
+      }));
+      RPS_POSSIBLE_BREAKPOINT();
+    };
+#endif /*TEMPORARY_CODE*/
   /****
    * Evaluation of variables - perhaps anonymous ones
    ****/
@@ -205,7 +224,19 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
               RPS_POSSIBLE_BREAKPOINT();
               _f.mainresv = paylenv->get_obmap(_f.evalob,/*defaultval:*/nullptr,&missing);
               if (!missing)
-                RPS_REPLEVAL_GIVES_PLAIN(_f.mainresv);
+                {
+#if TEMPORARY_CODE
+                  if (eval_number < 4)
+                    {
+                      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
+                                    << eval_number << " *TEMPCODE*"
+                                    << " expr:" << _f.exprv << " gives " << _f.mainresv);
+                      RPS_POSSIBLE_BREAKPOINT();
+                      rps_debug_flags.store(startdbgflags);
+                    };
+#endif /*TEMPORARY_CODE*/
+                  RPS_REPLEVAL_GIVES_PLAIN(_f.mainresv);
+                }
               RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                             << " object expr:" << _f.exprv << " missing in envob=" << _f.envob
                             << ", firstenvob=" << _f.firstenvob
@@ -251,7 +282,20 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
               bool missing = false;
               _f.mainresv = paylenv->get_obmap(_f.evalob,nullptr,&missing);
               if (!missing)
-                RPS_REPLEVAL_GIVES_PLAIN(_f.mainresv);
+                {
+
+#if TEMPORARY_CODE
+                  if (eval_number < 4)
+                    {
+                      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
+                                    << eval_number << " *TEMPCODE*"
+                                    << " expr:" << _f.exprv << " gives " << _f.mainresv);
+                      RPS_POSSIBLE_BREAKPOINT();
+                      rps_debug_flags.store(startdbgflags);
+                    };
+#endif /*TEMPORARY_CODE*/
+                  RPS_REPLEVAL_GIVES_PLAIN(_f.mainresv);
+                }
               _f.nextenvob = paylenv->get_parent_environment();
             }
           else // envob without Rps_PayloadEnvironment
@@ -271,11 +315,28 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                         << _f.envob->get_class()
                         << " first env was " <<_f.firstenvob);
     }
+#warning TODO: fixme evaluation of various repl_expression-s e.g. conditional, arithmetic, application
   else
     {
       // any other object is self evaluating! or NOT?
       // TODO: think more.
+      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
+                    << " object:" << _f.evalob << " of class " << _f.classob << " is selfevaluating in envob:" <<_f.envob << " firstenvob:" << _f.firstenvob);
+
+      /***
+          temporary code to find make test01 bug near commit 29d5221fe8561 of Jun 17, 2023
+       ***/
+#if TEMPORARY_CODE
+      if (eval_number < 4)
+        {
+          RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
+                        << eval_number << " *TEMPCODE*"
+                        << " expr:" << _f.exprv << " of class " << _f.classob << " *SELFEVAL*");
+          rps_debug_flags.store(startdbgflags);
+        };
+#endif /*TEMPORARY_CODE*/
       RPS_POSSIBLE_BREAKPOINT();
+      RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
     }
 #warning rps_full_evaluate_repl_expr not really implemented, should dispatch on classob
   RPS_REPLEVAL_FAIL("*unimplemented*","REPL evaluation of " <<_f.exprv
