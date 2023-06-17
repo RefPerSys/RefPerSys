@@ -980,6 +980,10 @@ Rps_Dumper::write_generated_data_file(void)
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   char osbuf[64];
   memset (osbuf, 0, sizeof(osbuf));
+  char cwdbuf[rps_path_byte_size];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
+  if (getcwd(cwdbuf, sizeof(cwdbuf)-16) == nullptr)
+    RPS_FATALOUT("failed to getcwd into buffer of " << (sizeof(cwdbuf)-16) << " bytes: " << strerror(errno));
   int osl = strlen(rps_building_operating_system);
   if (osl > (int)sizeof(osbuf)-2)
     osl = sizeof(osbuf)-2;
@@ -1002,13 +1006,16 @@ Rps_Dumper::write_generated_data_file(void)
         machinebuf[i] = '_';
     }
   std::string datapathstr = std::string{"generated/rpsdata_"}
-                            + std::string(osbuf)+std::string{"_"} + std::string(machinebuf) + ".h";
+  + std::string(osbuf)+std::string{"_"} + std::string(machinebuf) + ".h";
+  std::string gendatapathstr = std::string{"generated/rpsdata.h"};
   auto pouts = open_output_file(datapathstr);
   rps_emit_gplv3_copyright_notice(*pouts, datapathstr, "//: ", "");
   *pouts << "#ifndef RPS_DATA_INCLUDED\n" << "#define RPS_DATA_INCLUDED 1" << std::endl;
   *pouts << "#define RPS_BUILDING_HOST \"" << rps_building_host << "\"" << std::endl;
   *pouts << "#define RPS_BUILDING_OPERATING_SYSTEM \"" << osbuf << "\"" << std::endl;
   *pouts << "#define RPS_BUILDING_MACHINE \"" << machinebuf << "\"" << std::endl;
+  *pouts << "#define RPS_PATH_BYTE_SIZE " << rps_path_byte_size << std::endl;
+  *pouts << "#define RPS_BUILDING_WORKING_DIRECTORY " << Rps_QuotedC_String(cwdbuf) << std::endl;
   *pouts << "#define RPS_SIZEOF_BOOL " << sizeof(bool) << std::endl;
   *pouts << "#define RPS_SIZEOF_SHORT " << sizeof(short) << std::endl;
   *pouts << "#define RPS_SIZEOF_INT " << sizeof(int) << std::endl;
@@ -1066,11 +1073,23 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_ALIGNOF_RPS_CALLFRAME " << alignof(Rps_CallFrame) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_PAYLOAD " << alignof(Rps_Payload) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_TOKENSOURCE " << alignof(Rps_TokenSource) << std::endl;
+  if (sizeof(Rps_Value) == sizeof(void*) && alignof(Rps_Value) == alignof(void*))
+    *pouts << "#define RPS_VALUE_IS_VOIDPTR 1" << std::endl;
+  else
+    *pouts << "#define RPS_VALUE_IS_VOIDPTR 0" << std::endl;
+  if (sizeof(Rps_ObjectRef) == sizeof(void*) && alignof(Rps_ObjectRef) == alignof(void*))
+    *pouts << "#define RPS_OBJECTREF_IS_OBJECTPTR 1" << std::endl;
+  else
+    *pouts << "#define RPS_OBJECTREF_IS_OBJECTPTR 0" << std::endl;
   *pouts << "///" << std::endl;
   *pouts << "#endif //RPS_DATA_INCLUDED\n" << std::endl;
   *pouts << std::endl << std::endl
          << "//// end of generated " << datapathstr
          << " for shortgitid:" << rps_shortgitid << std::endl;
+  (void) remove(gendatapathstr.c_str());
+  if (symlink((std::string(cwdbuf) + "/" + datapathstr).c_str(), gendatapathstr.c_str()))
+    RPS_FATALOUT("failed to symlink " << gendatapathstr << " to " << (std::string(cwdbuf) + "/" + datapathstr.c_str(), gendatapathstr.c_str())
+		 << ":" << strerror(errno));
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_data_file end " << datapathstr);
 } //  end Rps_Dumper::write_generated_data_file
 
