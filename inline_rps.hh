@@ -1550,8 +1550,7 @@ bool
 Rps_ObjectZone::is_instance_of(Rps_ObjectRef obclass) const
 {
   RPS_ASSERT(stored_type() == Rps_Type::Object);
-  RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_instance_of this=" << this
-                << "=" << Rps_ObjectRef(this)
+  RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
                 << " obclass="<< obclass);
   int cnt = 0;
   Rps_ObjectRef obinitclass = obclass;
@@ -1565,13 +1564,12 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obclass) const
   for (;;)
     {
       cnt++;
-      RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this="
-                    << this << "=" << Rps_ObjectRef(this)
+      RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
                     << " cnt#" << cnt
                     << " obclass=" << obclass
                     << " obinitclass=" << obinitclass
                     << " obcurclass=" << obcurclass);
-      /// this should not happen, except if our inheritance graph is corrupted
+      /// This should not happen, except if our inheritance graph is corrupted
       if (RPS_UNLIKELY(cnt > (int)Rps_Value::maximal_inheritance_depth))
         {
           RPS_WARNOUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
@@ -1599,8 +1597,8 @@ bool
 Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
 {
   RPS_ASSERT(stored_type() == Rps_Type::Object);
-  RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_subclass_of this=" << this
-                << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass);
+  RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_subclass_of this="
+                << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass);
   int cnt = 0;
   Rps_ObjectRef obinitclass = obsuperclass;
   if (!obinitclass || !obinitclass->is_class())
@@ -1621,44 +1619,44 @@ Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
           throw RPS_RUNTIME_ERROR_OUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
                                       << " of class " << obinitclass);
         }
-      RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_subclass_of this=" << this
-                    << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass << " cnt#" << cnt
+      RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_subclass_of this=" <<  Rps_ObjectRef(this)
+                    << " obsuperclass=" << obsuperclass << " cnt#" << cnt
                     << " obinitclass=" << obinitclass << " obthisclass=" << obthisclass
                     << " obcurclass=" << obcurclass);
       if (obthisclass == obcurclass)
         {
-          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of SUCCESS this=" << this
-                        << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass << " cnt#" << cnt);
+          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of SUCCESS this="
+                        << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass << " cnt#" << cnt);
           return true;
         }
       if (obcurclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
         {
-          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of SUCCESS/object this=" << this
-                        << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass
+          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of SUCCESS/object this="
+                        << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass
                         << " obcurclass=" << obcurclass << " cnt#" << cnt);
           return true;
         }
       if (obcurclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz)) // `value` class
         {
-          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of FAIL/value this=" << this
-                        << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass
+          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of FAIL/value this="
+                        << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass
                         << " obcurclass=" << obcurclass<< " cnt#" << cnt);
           return false;
         }
       if (!obcurclass || !obcurclass->is_class())
         {
-          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of FAIL/nocurclass this=" << this
-                        << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass
+          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of FAIL/nocurclass this="
+                        << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass
                         << " obcurclass=" << obcurclass << " cnt#" << cnt);
           return false;
         }
       auto curclasspayl = obcurclass->get_dynamic_payload<Rps_PayloadClassInfo>();
       RPS_ASSERT(curclasspayl);
       obcurclass = curclasspayl->superclass();
-      RPS_DEBUG_LOG(LOW_REPL, "!Rps_ObjectZone::is_subclass_of again this=" << this
-                    << "=" << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass << " cnt#" << cnt
-                    << " obinitclass=" << obinitclass << " obthisclass=" << obthisclass
-                    << " obcurclass=" << obcurclass);
+      RPS_DEBUG_LOG(LOW_REPL, "!Rps_ObjectZone::is_subclass_of again this=" << Rps_ObjectRef(this)
+                    << " obsuperclass=" << obsuperclass << " cnt#" << cnt << std::endl
+                    << "... obinitclass=" << obinitclass << " obthisclass=" << obthisclass
+                    << " obcurclass becomes " << obcurclass);
     }
 } // end Rps_ObjectZone::is_superclass_of
 
