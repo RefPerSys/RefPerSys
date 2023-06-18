@@ -1175,7 +1175,7 @@ Rps_Value::is_subclass_of(Rps_CallFrame*callerframe, Rps_ObjectRef obsuperclass)
   RPS_ASSERT(!callerframe || callerframe->stored_type() == Rps_Type::CallFrame);
   Rps_ObjectRef obthisclass = compute_class(callerframe);
   RPS_ASSERT(obthisclass);
-  RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_of START this=" << Rps_OutputValue(*this)
+  RPS_DEBUG_LOG(REPL, "Rps_Value::is_subclass_of START this=" << Rps_OutputValue(*this)
                 << ", obsuperclass=" << Rps_OutputValue(obsuperclass)
                 << ", obthisclass=" << Rps_OutputValue(obthisclass));
   return is_subclass_with_depth(callerframe, obsuperclass, obthisclass, 0);
@@ -1189,17 +1189,28 @@ Rps_Value::is_subclass_with_depth(Rps_CallFrame*callerframe, Rps_ObjectRef obsup
 {
   /// the callerframe is not really used, except for this check.
   RPS_ASSERT(!callerframe || callerframe->stored_type() == Rps_Type::CallFrame);
+  RPS_DEBUG_LOG(REPL, "+Rps_Value::is_subclass_with_depth start this=" << Rps_OutputValue(*this)
+		<< " obsuperclass=" << obsuperclass << " obthisclass=" << obthisclass << " depth#" << depth
+		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_Value::is_subclass_with_depth"));
+  //// TEMPORARY DEBUG CODE
+  if (depth < 1)
+    RPS_DEBUG_LOG(REPL, "+Rps_Value::is_subclass_with_depth  this="
+		  << Rps_OutputValue(*this) << " obsuperclass=" << obsuperclass
+		  << " obthisclass=" << obthisclass
+		  << " depth#" << depth << std::endl
+		  << Rps_ShowCallFrame(callerframe));
+  //
   if (!obsuperclass || !obsuperclass->is_class())
     {
 
-      RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_with_depth FAIL this=" << Rps_OutputValue(*this)
+      RPS_DEBUG_LOG(REPL, "Rps_Value::is_subclass_with_depth FAIL this=" << Rps_OutputValue(*this)
                     << ", obsuperclass=" << Rps_OutputValue(obsuperclass)
                     << ", depth=" << depth);
       return false;
     }
   if (obthisclass == obsuperclass)
     {
-      RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_with_depth PASSES this=" << Rps_OutputValue(*this)
+      RPS_DEBUG_LOG(REPL, "Rps_Value::is_subclass_with_depth PASSES this=" << Rps_OutputValue(*this)
                     << ", obthisclass:" << Rps_OutputValue(obthisclass) << ", obsuperclass=" << Rps_OutputValue(obsuperclass) << ", depth=" << depth);
       return true;
     }
@@ -1211,9 +1222,10 @@ Rps_Value::is_subclass_with_depth(Rps_CallFrame*callerframe, Rps_ObjectRef obsup
     = obsuperclass->get_dynamic_payload<Rps_PayloadClassInfo>();
   RPS_ASSERT(superclassinfo != nullptr);
   Rps_ObjectRef obparentclass = superclassinfo->superclass();
-  RPS_DEBUG_LOG(GUI, "Rps_Value::is_subclass_with_depth RECUR this=" << Rps_OutputValue(*this)
+  RPS_DEBUG_LOG(REPL, "Rps_Value::is_subclass_with_depth RECUR this=" << Rps_OutputValue(*this)
                 << ", obthisclass:" << Rps_OutputValue(obthisclass) << ", obparentclass=" << Rps_OutputValue(obparentclass) << ", depth=" << depth);
-  return is_subclass_with_depth(callerframe, obparentclass, obthisclass, depth+1);
+  return is_subclass_with_depth(callerframe, obthisclass, obparentclass,
+				depth+1);
 } // end Rps_Value::is_subclass_with_depth
 
 
