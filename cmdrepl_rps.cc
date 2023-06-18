@@ -255,6 +255,10 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
           _f.envob = _f.nextenvob;
           RPS_POSSIBLE_BREAKPOINT();
         } // end while count... loop for variable
+      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
+                    << " object VARIABLE expr:" << _f.evalob << " exprv:" << _f.exprv
+                    << " unbound in envob=" << _f.envob << " firstenvob=" << _f.firstenvob << " count#" << count << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1,"rps_full_evaluate_repl_expr unboundvar"));
       RPS_POSSIBLE_BREAKPOINT();
       RPS_REPLEVAL_FAIL("unbound variable","Variable " << _f.evalob << " unbound with envob " << _f.envob << " of class "
                         << _f.envob->get_class()
