@@ -135,6 +135,12 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       RPS_REPLEVAL_FAIL("bad environment","The envob " << _f.envob << " of class "
                         << _f.envob->get_class() << " is not a valid environment");
     };
+  /* environments should have bindings, probably with Rps_PayloadEnvironment */
+#warning rps_full_evaluate_repl_expr should check that envob is an environment, with bindings and optional parent env....
+  RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
+                << eval_number << " *STARTEVAL*"
+                << " expr:" << _f.exprv
+                << " in env:" << _f.envob);
   /* we try to put common cases first... */
   RPS_POSSIBLE_BREAKPOINT();
   if (_f.exprv.is_int())
@@ -186,7 +192,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
     {
       RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
                     << eval_number << " *TEMPCODE*"
-                    << " expr:" << _f.exprv << " of class " << _f.classob);
+                    << " expr:" << _f.exprv << " evalob:" << _f.evalob << " of classob " << _f.classob);
       rps_set_debug("LOW_REPL,REPL");
       RPS_INFORMOUT("forcing debug flag to " << Rps_Do_Output([&](std::ostream& out)
       {
