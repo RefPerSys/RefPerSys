@@ -1087,6 +1087,10 @@ Rps_Dumper::write_generated_data_file(void)
          << "//// end of generated " << datapathstr
          << " for shortgitid:" << rps_shortgitid << std::endl;
   (void) remove(gendatapathstr.c_str());
+  /* FIXME: we need to add a symlink in the generated/ subdirectory,
+     using symlinkat since chdir is process-global and multi-thread
+     unfriendly, and later we might dump in a single thread...... */
+#warning TODO: use symlinkat in Rps_Dumper::write_generated_data_file
   if (symlink((std::string(cwdbuf) + "/" + datapathstr).c_str(), gendatapathstr.c_str()))
     RPS_FATALOUT("failed to symlink " << gendatapathstr << " to " << (std::string(cwdbuf) + "/" + datapathstr.c_str(), gendatapathstr.c_str())
                  << ":" << strerror(errno));
