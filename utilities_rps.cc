@@ -907,7 +907,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
             nbfiles++;
           for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
             nbsubdirs++;
-          std::cout << "RefPerSys, an Artificial Intelligence system - work in progress..." << std::endl;
+          std::cout << "RefPerSys, an open source Artificial Intelligence system" << std::endl;
+          std::cout << " symbolic inference engine - work in progress..." << std::endl;
           std::cout << "version information:\n"
                     << " program name: " << rps_progname << std::endl
                     << " build time: " << rps_timestamp << std::endl
