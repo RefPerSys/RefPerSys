@@ -118,22 +118,23 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   ///
 #define  RPS_REPLEVAL_FAIL(MSG,LOG) RPS_REPLEVAL_FAIL_AT(MSG,LOG,__LINE__)
   ///
+  RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
+                << eval_number << " *STARTEVAL*"
+                << " expr:" << _f.exprv
+                << " in env:" << _f.envob);
   /// to check the above failure macro:
-  if (!_f.envob)                // this dont happen
+  if (!_f.envob || _f.envob->stored_type() == Rps_Type::Object)
     {
-      RPS_REPLEVAL_FAIL("*check-fail*","never happens no envob" << _f.envob);
+      // This don't happen in practice, but tests that
+      // RPS_REPLEVAL_FAIL macro is good enough...
+      RPS_REPLEVAL_FAIL("*check-fail*","never happens no envob"
+			<< _f.envob);
     };
   if (!_f.envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
     {
       RPS_REPLEVAL_FAIL("bad environment","The envob " << _f.envob << " of class "
                         << _f.envob->get_class() << " is not a valid environment");
     };
-  /* environments should have bindings, probably with Rps_PayloadEnvironment */
-#warning rps_full_evaluate_repl_expr should check that envob is an environment, with bindings and optional parent env....
-  RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
-                << eval_number << " *STARTEVAL*"
-                << " expr:" << _f.exprv
-                << " in env:" << _f.envob);
   /* we try to put common cases first... */
   RPS_POSSIBLE_BREAKPOINT();
   if (_f.exprv.is_int())
