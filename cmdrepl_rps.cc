@@ -123,7 +123,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                 << " expr:" << _f.exprv
                 << " in env:" << _f.envob);
   /// to check the above failure macro:
-  if (!_f.envob || _f.envob->stored_type() == Rps_Type::Object)
+  if (!_f.envob || _f.envob->stored_type() != Rps_Type::Object)
     {
       // This don't happen in practice, but tests that
       // RPS_REPLEVAL_FAIL macro is good enough...
