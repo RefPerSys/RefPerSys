@@ -1602,13 +1602,34 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obwclass) const
                                       << " of class " << obinitclass);
         }
       if (!obthisclass)
-        return false;
-      if (obthisclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
-        return true;
+        {
+          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
+                        << " cnt#" << cnt
+                        << " obwclass=" << obwclass << " FAIL-!obthisclass");
+          return false;
+        }
       if (obthisclass == obwclass)
-        return true;				   // should probably never happen ...
-      if (obthisclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz)) // `value` class
-        return false;
+        {
+          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
+                        << " cnt#" << cnt
+                        << " obwclass=" << obwclass << " SUCCESS");
+          return true;
+        }
+      if (obthisclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
+        {
+          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
+                        << " cnt#" << cnt
+                        << " obwclass=" << obwclass << " SUCCEED/object");
+          return true;
+        }
+      // should probably never happen ...
+      if (obthisclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz))   // `value` class
+        {
+          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
+                        << " cnt#" << cnt
+                        << " obwclass=" << obwclass << " FAIL-value");
+          return false;
+        }
       std::lock_guard<std::recursive_mutex> gu(obthisclass->ob_mtx);
       if (!obthisclass->is_class())
         return false;
