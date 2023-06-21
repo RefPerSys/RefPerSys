@@ -1566,11 +1566,17 @@ Rps_ObjectZone::is_class(void) const
 bool
 Rps_ObjectZone::is_instance_of(Rps_ObjectRef obwclass) const
 {
+  /// TODO: fixme in commit  46aa6cb929 for test01b
+#warning Rps_ObjectZone::is_instance_of is buggy in 46aa6cb929 for test01b
   RPS_ASSERT(stored_type() == Rps_Type::Object);
+  if (!obwclass)
+    return false;
+  std::lock_guard<std::recursive_mutex> guthislock(this->ob_mtx);
+  std::lock_guard<std::recursive_mutex> guclasslock(obwclass->ob_mtx);
   RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
                 << " obwclass="<< obwclass);
   int cnt = 0;
-  if (!obwclass || !obwclass->is_class())
+  if (!obwclass->is_class())
     return false;
   Rps_ObjectRef obthisclass = get_class(); /// fetch the ob_class of this!
   //// Note: obthisclass might later be replaced by its superclass and so on.
