@@ -128,7 +128,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       // This don't happen in practice, but tests that
       // RPS_REPLEVAL_FAIL macro is good enough...
       RPS_REPLEVAL_FAIL("*check-fail*","never happens no envob"
-			<< _f.envob);
+                        << _f.envob);
     };
   if (!_f.envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
     {
