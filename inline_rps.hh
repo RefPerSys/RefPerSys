@@ -1558,18 +1558,25 @@ Rps_ObjectZone::is_class(void) const
   return false;
 } // end Rps_ObjectZone::is_class
 
+
+
+//// Test if this object is a direct or indirect instance of obwclass
+//// [the wanted class], in other words if the class ob_class of this
+//// is either obwclass or a subclass of it.
 bool
-Rps_ObjectZone::is_instance_of(Rps_ObjectRef obclass) const
+Rps_ObjectZone::is_instance_of(Rps_ObjectRef obwclass) const
 {
   RPS_ASSERT(stored_type() == Rps_Type::Object);
   RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
-                << " obclass="<< obclass);
+                << " obwclass="<< obwclass);
   int cnt = 0;
-  Rps_ObjectRef obinitclass = obclass;
-  Rps_ObjectRef obcurclass = obclass;
-  if (!obinitclass || !obinitclass->is_class())
+  if (!obwclass || !obwclass->is_class())
     return false;
-  Rps_ObjectRef obthisclass = get_class();
+  Rps_ObjectRef obthisclass = get_class(); /// fetch the ob_class of this!
+  //// Note: obthisclass might later be replaced by its superclass and so on.
+  Rps_ObjectRef obinitclass = obthisclass;
+  RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
+                << " obwclass="<< obwclass << " obthisclass=" << obthisclass);
   /// if the heap is severely corrupted, we might loop
   /// indefinitely... This should never happen, but we test against
   /// it...
@@ -1578,28 +1585,30 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obclass) const
       cnt++;
       RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
                     << " cnt#" << cnt
-                    << " obclass=" << obclass
-                    << " obinitclass=" << obinitclass
-                    << " obcurclass=" << obcurclass);
-      /// This should not happen, except if our inheritance graph is corrupted
+                    << " obwclass=" << obwclass
+                    << " obthisclass=" << obthisclass);
+      /// This should NEVER happen, except if our inheritance graph is corrupted
       if (RPS_UNLIKELY(cnt > (int)Rps_Value::maximal_inheritance_depth))
         {
           RPS_WARNOUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
-                      << " of class " << obinitclass);
+                      << " of class " <<  obinitclass);
           throw RPS_RUNTIME_ERROR_OUT("too deep (" << cnt << ") inheritance for " << Rps_ObjectRef(this)
                                       << " of class " << obinitclass);
         }
-      if (obcurclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
-        return true;
-      if (obthisclass == obcurclass)
-        return true;
-      if (obcurclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz)) // `value` class
+      if (!obthisclass)
         return false;
-      if (!obcurclass || !obcurclass->is_class())
+      if (obthisclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
+        return true;
+      if (obthisclass == obwclass)
+        return true;				   // should probably never happen ...
+      if (obthisclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz)) // `value` class
         return false;
-      auto curclasspayl = obcurclass->get_dynamic_payload<Rps_PayloadClassInfo>();
+      std::lock_guard<std::recursive_mutex> gu(obthisclass->ob_mtx);
+      if (!obthisclass->is_class())
+        return false;
+      auto curclasspayl = obthisclass->get_dynamic_payload<Rps_PayloadClassInfo>();
       RPS_ASSERT(curclasspayl);
-      obcurclass = curclasspayl->superclass();
+      obthisclass = curclasspayl->superclass();
     }
 } // end Rps_ObjectZone::is_instance_of
 
