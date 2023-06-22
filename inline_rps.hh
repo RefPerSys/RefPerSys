@@ -11,7 +11,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2022 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1573,7 +1573,7 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obwclass) const
     return false;
   std::lock_guard<std::recursive_mutex> guthislock(this->ob_mtx);
   std::lock_guard<std::recursive_mutex> guclasslock(obwclass->ob_mtx);
-  RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
+  RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_instance_of thisob=" << Rps_ObjectRef(this)
                 << " obwclass="<< obwclass);
   int cnt = 0;
   if (!obwclass->is_class())
@@ -1581,7 +1581,7 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obwclass) const
   Rps_ObjectRef obthisclass = get_class(); /// fetch the ob_class of this!
   //// Note: obthisclass might later be replaced by its superclass and so on.
   Rps_ObjectRef obinitclass = obthisclass;
-  RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
+  RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_instance_of thisob=" << Rps_ObjectRef(this)
                 << " obwclass="<< obwclass << " obthisclass=" << obthisclass);
   /// if the heap is severely corrupted, we might loop
   /// indefinitely... This should never happen, but we test against
@@ -1589,7 +1589,7 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obwclass) const
   for (;;)
     {
       cnt++;
-      RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
+      RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of thisob=" << Rps_ObjectRef(this)
                     << " cnt#" << cnt
                     << " obwclass=" << obwclass
                     << " obthisclass=" << obthisclass);
@@ -1603,21 +1603,21 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obwclass) const
         }
       if (!obthisclass)
         {
-          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
+          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of thisob=" << Rps_ObjectRef(this)
                         << " cnt#" << cnt
                         << " obwclass=" << obwclass << " FAIL-!obthisclass");
           return false;
         }
       if (obthisclass == obwclass)
         {
-          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
+          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of thisob=" << Rps_ObjectRef(this)
                         << " cnt#" << cnt
                         << " obwclass=" << obwclass << " SUCCESS");
           return true;
         }
       if (obthisclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
         {
-          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
+          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of thisob=" << Rps_ObjectRef(this)
                         << " cnt#" << cnt
                         << " obwclass=" << obwclass << " SUCCEED/object");
           return true;
@@ -1625,17 +1625,25 @@ Rps_ObjectZone::is_instance_of(Rps_ObjectRef obwclass) const
       // should probably never happen ...
       if (obthisclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz))   // `value` class
         {
-          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of this=" << Rps_ObjectRef(this)
+          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of thisob=" << Rps_ObjectRef(this)
                         << " cnt#" << cnt
                         << " obwclass=" << obwclass << " FAIL-value");
           return false;
         }
       std::lock_guard<std::recursive_mutex> gu(obthisclass->ob_mtx);
       if (!obthisclass->is_class())
-        return false;
+        {
+          RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of thisob=" << Rps_ObjectRef(this)
+                        << " cnt#" << cnt
+                        << " obwclass=" << obwclass << " obthisclass:" << obthisclass << " FAIL-no-this-class");
+          return false;
+        }
       auto curclasspayl = obthisclass->get_dynamic_payload<Rps_PayloadClassInfo>();
       RPS_ASSERT(curclasspayl);
       obthisclass = curclasspayl->superclass();
+      RPS_DEBUG_LOG(LOW_REPL, "%Rps_ObjectZone::is_instance_of thisob=" << Rps_ObjectRef(this)
+                    << " cnt#" << cnt << " AGAIN obthisclass:=" << obthisclass
+                    << " obwclass=" << obwclass);
     }
 } // end Rps_ObjectZone::is_instance_of
 
