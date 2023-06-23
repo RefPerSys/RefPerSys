@@ -1567,7 +1567,7 @@ bool
 Rps_ObjectZone::is_instance_of(Rps_ObjectRef obwclass) const
 {
   static std::atomic<uint64_t> atomiccallcounter;
-  uint64_t curcallcnt = atomiccallcounter.fetch_add(1);
+  uint64_t curcallcnt = 1 + atomiccallcounter.fetch_add(1);
   /// TODO: fixme in commit  46aa6cb929 for test01b
 #warning Rps_ObjectZone::is_instance_of is buggy in 46aa6cb929 for test01b
   RPS_ASSERT(stored_type() == Rps_Type::Object);
@@ -1656,7 +1656,7 @@ Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
 {
 
   static std::atomic<uint64_t> atomiccallcounter;
-  uint64_t curcallcnt = atomiccallcounter.fetch_add(1);
+  uint64_t curcallcnt = 1 + atomiccallcounter.fetch_add(1);
   RPS_ASSERT(stored_type() == Rps_Type::Object);
   RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_subclass_of call#" << curcallcnt << " thisob="
                 << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass);
