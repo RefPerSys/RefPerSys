@@ -1193,12 +1193,12 @@ Rps_Value::is_subclass_with_count_and_depth(Rps_CallFrame*callerframe,
 {
   /// the callerframe is not really used, except for this check.
   RPS_ASSERT(!callerframe || callerframe->stored_type() == Rps_Type::CallFrame);
-  RPS_DEBUG_LOG(REPL, "+Rps_Value::is_subclass_with_depth start call#" << count << " this=" << Rps_OutputValue(*this)
+  RPS_DEBUG_LOG(REPL, "+Rps_Value::is_subclass_with_count_and_depth start call#" << count << " this=" << Rps_OutputValue(*this)
                 << " obsuperclass=" << obsuperclass << " obthisclass=" << obthisclass << " depth#" << depth
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Value::is_subclass_with_depth"));
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_Value::is_subclass_with_count_and_depth"));
   //// TEMPORARY DEBUG CODE
   if (depth < 1)
-    RPS_DEBUG_LOG(REPL, "+Rps_Value::is_subclass_with_depth call#" << count << " this="
+    RPS_DEBUG_LOG(REPL, "+Rps_Value::is_subclass_with_count_and_depth call#" << count << " this="
                   << Rps_OutputValue(*this) << " obsuperclass=" << obsuperclass
                   << " obthisclass=" << obthisclass
                   << " depth#" << depth << std::endl
@@ -1207,14 +1207,14 @@ Rps_Value::is_subclass_with_count_and_depth(Rps_CallFrame*callerframe,
   if (!obsuperclass || !obsuperclass->is_class())
     {
 
-      RPS_DEBUG_LOG(REPL, "Rps_Value::is_subclass_with_depth call#" << count << "FAIL this=" << Rps_OutputValue(*this)
+      RPS_DEBUG_LOG(REPL, "Rps_Value::is_subclass_with_count_and_depth call#" << count << "FAIL this=" << Rps_OutputValue(*this)
                     << ", obsuperclass=" << Rps_OutputValue(obsuperclass)
                     << ", depth=" << depth);
       return false;
     }
   if (obthisclass == obsuperclass)
     {
-      RPS_DEBUG_LOG(REPL, "Rps_Value::is_subclass_with_depth call#" << count << " PASSES this=" << Rps_OutputValue(*this)
+      RPS_DEBUG_LOG(REPL, "Rps_Value::is_subclass_with_count_and_depth call#" << count << " PASSES this=" << Rps_OutputValue(*this)
                     << ", obthisclass:" << Rps_OutputValue(obthisclass) << ", obsuperclass=" << Rps_OutputValue(obsuperclass) << ", depth=" << depth);
       return true;
     }
@@ -1226,8 +1226,9 @@ Rps_Value::is_subclass_with_count_and_depth(Rps_CallFrame*callerframe,
     = obsuperclass->get_dynamic_payload<Rps_PayloadClassInfo>();
   RPS_ASSERT(superclassinfo != nullptr);
   Rps_ObjectRef obparentclass = superclassinfo->superclass();
-  RPS_DEBUG_LOG(REPL, "Rps_Value::is_subclass_with_depth call#" << count << " RECUR this=" << Rps_OutputValue(*this)
+  RPS_DEBUG_LOG(REPL, "Rps_Value::is_subclass_with_count_and_depth call#" << count << " RECUR this=" << Rps_OutputValue(*this)
                 << ", obthisclass:" << Rps_OutputValue(obthisclass) << ", obparentclass=" << Rps_OutputValue(obparentclass) << ", depth=" << depth);
+  /// tail recursive call, is optimized as a loop by most serious C++ compilers!
   return is_subclass_with_count_and_depth(callerframe, count, obthisclass, obparentclass,
                                           depth+1);
 } // end Rps_Value::is_subclass_with_count_and_depth
