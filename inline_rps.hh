@@ -1215,7 +1215,7 @@ Rps_Value::is_subclass_with_count_and_depth(Rps_CallFrame*callerframe,
   if (obthisclass == obsuperclass)
     {
       RPS_DEBUG_LOG(REPL, "Rps_Value::is_subclass_with_count_and_depth call#" << count << " PASSES this=" << Rps_OutputValue(*this)
-                    << ", obthisclass:" << Rps_OutputValue(obthisclass) << ", obsuperclass=" << Rps_OutputValue(obsuperclass) << ", depth=" << depth);
+                    << ", obthisclass:" << Rps_OutputValue(obthisclass) << " SAME as obsuperclass=" << Rps_OutputValue(obsuperclass) << ", depth=" << depth);
       return true;
     }
   /// If the recursion depth is too big, something very bad happened...
@@ -1228,8 +1228,11 @@ Rps_Value::is_subclass_with_count_and_depth(Rps_CallFrame*callerframe,
   Rps_ObjectRef obparentclass = superclassinfo->superclass();
   RPS_DEBUG_LOG(REPL, "Rps_Value::is_subclass_with_count_and_depth call#" << count << " RECUR this=" << Rps_OutputValue(*this)
                 << ", obthisclass:" << Rps_OutputValue(obthisclass) << ", obparentclass=" << Rps_OutputValue(obparentclass) << ", depth=" << depth);
-  /// tail recursive call, is optimized as a loop by most serious C++ compilers!
-  return is_subclass_with_count_and_depth(callerframe, count, obthisclass, obparentclass,
+  /// The following is a tail-recursive call, is optimized as a loop
+  /// by most serious C++ compilers!
+  return is_subclass_with_count_and_depth(callerframe, count,
+					  /*superclass:*/ obparentclass,
+					  /*thisclass:*/ obthisclass,
                                           depth+1);
 } // end Rps_Value::is_subclass_with_count_and_depth
 
