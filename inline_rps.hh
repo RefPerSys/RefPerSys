@@ -1197,7 +1197,7 @@ Rps_Value::is_subclass_with_count_and_depth(Rps_CallFrame*callerframe,
                 << " obsuperclass=" << obsuperclass << " obthisclass=" << obthisclass << " depth#" << depth
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_Value::is_subclass_with_count_and_depth"));
   //// TEMPORARY DEBUG CODE
-  if (depth < 1)
+  if (depth <= 1)
     RPS_DEBUG_LOG(REPL, "+Rps_Value::is_subclass_with_count_and_depth call#" << count << " this="
                   << Rps_OutputValue(*this) << " obsuperclass=" << obsuperclass
                   << " obthisclass=" << obthisclass
@@ -1668,13 +1668,22 @@ Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
   RPS_ASSERT(stored_type() == Rps_Type::Object);
   RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_subclass_of call#" << curcallcnt << " thisob="
                 << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass);
+  std::lock_guard<std::recursive_mutex> guthislock(this->ob_mtx);
+  {
+      auto thisclasspayl = get_dynamic_payload<Rps_PayloadClassInfo>();
+      if (!thisclasspayl) {
+	RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_subclass_of call#" << curcallcnt << " this=" <<  Rps_ObjectRef(this) << " FAIL notclass");
+	return false;
+      }
+  }
   int cnt = 0;
   Rps_ObjectRef obinitclass = obsuperclass;
   if (!obinitclass || !obinitclass->is_class())
     return false;
   Rps_ObjectRef obthisclass = get_class();
   Rps_ObjectRef obcurclass = this;
-  /// If the heap is severely corrupted, we might loop
+  /// Usually the following loop is done a few dozen times at most.
+  /// But if the heap is severely corrupted, we might loop
   /// indefinitely... This should never happen, but we test against
   /// it...
   for (;;)
@@ -1700,10 +1709,10 @@ Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
         }
       if (obcurclass == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)) // `object` class
         {
-          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of call#" << curcallcnt << " SUCCESS/object this="
+          RPS_DEBUG_LOG(LOW_REPL, "-Rps_ObjectZone::is_subclass_of call#" << curcallcnt << " FAIL/object this="
                         << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass
                         << " obcurclass=" << obcurclass << " cnt#" << cnt);
-          return true;
+          return false;
         }
       if (obcurclass == RPS_ROOT_OB(_6XLY6QfcDre02922jz)) // `value` class
         {
