@@ -1206,8 +1206,9 @@ main (int argc, char** argv)
 	     " %s process %d on host %s\n" //
 	     "... (stdout %s, stderr %s) with %d arguments\n" //
              "... gitid %.16s built %s, %s mode (%d jobs)\n"
-	     "This is open source software, GPL licensed, no warranty!\n"
-	     ".... See http://refpersys.org/ .....\n",
+	     "This is an open source inference engine software,\n"
+	     ".... GPLv3+ licensed, no warranty!\n"
+	     ".... See http://refpersys.org/ and https://www.gnu.org/licenses/gpl-3.0.en.html ....\n",
              RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
              RPS_TERMINAL_NORMAL_ESCAPE,
              argv[0], (int)getpid(), rps_hostname(),
