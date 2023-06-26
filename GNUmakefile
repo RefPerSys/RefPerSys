@@ -27,7 +27,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all debug objects clean plugin fullclean redump undump altredump print-plugin-settings indent \
+.PHONY: all debug objects lto clean plugin fullclean redump undump altredump print-plugin-settings indent \
    test00 test01 test02 test03 test04 test05 test06 test07 test08 test09 \
    test01b \
    test-load \
@@ -79,6 +79,9 @@ RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
 #RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 #RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
 RPS_DEBUG_CORE_OBJECTS = $(patsubst %.cc, %.dbg.o, $(RPS_CORE_SOURCES))
+RPS_LTO_CORE_OBJECTS = $(patsubst %.cc, %.lto.o, $(RPS_CORE_SOURCES))
+RPS_LTO_BISON_OBJECTS = $(patsubst %.yy, %.lto.o, $(RPS_BISON_SOURCES))
+
 #RPS_JSONRPC_CXXFLAGS = $(shell pkg-config  --cflags jsoncpp)
 #RPS_JSONRPC_LIBES = $(shell pkg-config --libs jsoncpp)
 
@@ -122,6 +125,7 @@ RPS_BUILD_WARNFLAGS = -Wall -Wextra
 override RPS_BUILD_OPTIMFLAGS ?= -O1 -g3
 RPS_BUILD_DEBUGFLAGS = -O0 -fno-inline -g3
 RPS_BUILD_CODGENFLAGS = -fPIC
+RPS_BUILD_LTOFLAGS = -O2 -g3 -flto
 #RPS_BUILD_SANITFLAGS = -fsanitize=address
 #RPS_INCLUDE_DIRS = /usr/local/include /usr/include /usr/include/jsoncpp
 #RPS_INCLUDE_FLAGS = $(patsubst %, -I %, $(RPS_INCLUDE_DIRS))
@@ -191,6 +195,13 @@ debug:
 	$(RM) __timestamp.o
 	$(MAKE)  -$(MAKEFLAGS) RPS_BUILD_OPTIMFLAGS='-Og -g3' refpersys
 
+
+lto: 
+	@echo making LTO optimized version of refpersys
+	if [ -f refpersys-lto ] ; then  $(MV) -f -v --backup refpersys-lto refpersys-lto~ ; fi
+	$(RM) __timestamp.o
+	$(MAKE)  -$(MAKEFLAGS) refpersys-lto
+
 refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
 	@echo $@: RPS_BUILD_CODGENFLAGS= $(RPS_BUILD_CODGENFLAGS)
@@ -199,7 +210,7 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	@echo $@: LIBES= $(LIBES)
 	-sync
 	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS)  $(RPS_BUILD_XTRA_CFLAGS) -rdynamic -pie -Bdynamic \
-                              main_rps.o $(RPS_CORE_OBJECTS)    __timestamp.o \
+                              main_rps.o $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS)   __timestamp.o \
                  $(shell $(RPS_CURLPP_CONFIG) --libs) \
 	         $(LIBES) $(RPS_PKG_LIBS)  -o $@-tmp
 	$(MV) --backup $@-tmp $@
@@ -207,7 +218,22 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	$(RM) __timestamp.o
 	-sync
 
-
+refpersys-lto: main_rps.lto.o $(RPS_LTO_CORE_OBJECTS) $(RPS_LTO_BISON_OBJECTS)  __timestamp.o
+	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
+	@echo $@: RPS_BUILD_CODGENFLAGS= $(RPS_BUILD_CODGENFLAGS)
+	@echo $@: RPS_BUILD_LTOFLAGS= $(RPS_BUILD_LTOFLAGS)
+	@echo $@: RPS_LTO_CORE_OBJECTS= $(RPS_LTO_CORE_OBJECTS)
+	@echo $@: RPS_LTO_BISON_OBJECTS= $(RPS_LTO_BISON_OBJECTS)
+	@echo $@: LIBES= $(LIBES)
+	-sync
+	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS)  $(RPS_BUILD_XTRA_CFLAGS) $(RPS_BUILD_LTOFLAGS) -rdynamic -pie -Bdynamic \
+                              main_rps.lto.o $(RPS_LTO_CORE_OBJECTS)  $(RPS_LTO_BISON_OBJECTS)   __timestamp.o \
+                 $(shell $(RPS_CURLPP_CONFIG) --libs) \
+	         $(LIBES) $(RPS_PKG_LIBS)  -o $@-tmp
+	$(MV) --backup $@-tmp $@
+	$(MV) --backup __timestamp.c __timestamp.c~
+	$(RM) __timestamp.o
+	-sync
 
 #sanitized-refpersys:  main_rps.sanit.o $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
 #       $(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
@@ -242,12 +268,20 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 	sync
 
 
+%.lto.o: %.cc refpersys.hh.gch
+	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_BUILD_LTOFLAGS) -o $@ $<
+	sync
+
+
 
 #%.sanit.o: %.cc refpersys.hh.sanit.gch
 #	$(RPS_COMPILER_TIMER) 	$(COMPILE.cc) $(RPS_BUILD_SANITFLAGS) -o $@ $<
 
 %.dbg.o: %.cc refpersys.hh.dbg.gch
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
+
+%.lto.o: %.cc refpersys.hh.dbg.gch
+	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_BUILD_LTOFLAGS) -o $@ $<
 
 %.ii: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -C -E $< | sed s:^#://#:g > $@
@@ -273,7 +307,8 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 ################
 clean:
 	$(RM) *.o *.orig *~ refpersys *.gch *~ _build.time
-	$(RM) sanitized-refpersys 
+	$(RM) sanitized-refpersys
+	$(RM) refpersys-lto
 	$(RM) *.so
 	$(RM) *.moc.hh
 	$(RM) _*.hh _*.cc _timestamp_rps.* generated/*~ _*.mk
