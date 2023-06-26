@@ -1164,7 +1164,7 @@ Rps_Value::is_instance_of(Rps_CallFrame*callerframe, Rps_ObjectRef obclass) cons
   RPS_ASSERT(thisclass);
   if (thisclass == obclass)
     return true;
-  return thisclass->is_instance_of(obclass);
+  return thisclass->is_subclass_of(obclass);
 } // end Rps_Value::is_instance_of
 
 
