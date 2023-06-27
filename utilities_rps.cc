@@ -934,7 +934,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
                     << " made with: " << rps_makefile << std::endl
                     << " running on " << rps_hostname() << std::endl
-                    << "This executable was built by "
+                    << "This " << ((rps_is_link_time_optimized>0)?"link-time-optimized":"normal") << " executable was built by "
                     << rps_building_user_name
                     << " of email " << rps_building_user_email
                     << std::endl;

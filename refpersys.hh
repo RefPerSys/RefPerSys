@@ -215,7 +215,7 @@ extern "C" {
 
 #define RPS_FRIEND_CLASS(Suffix) friend class Rps_##Suffix
 
-// generated in _timestamp_rps.c
+// generated in __timestamp.c or in __ltotimestamp.c
 extern "C" const char rps_timestamp[];
 extern "C" unsigned long rps_timelong;
 extern "C" const char rps_topdirectory[];
@@ -231,6 +231,7 @@ extern "C" const char rps_cxx_compiler_command[];
 extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];
 extern "C" const char rps_build_xtra_cflags[];
+extern "C" const int rps_is_link_time_optimized;
 ////
 //// TODO: it is hoped, near commit bbed1a6a87b4 of mid-March 2023, that RefPerSys contributors will choose a single parser generator.
 // GNU bison is a parser generator,  see www.gnu.org/software/bison/

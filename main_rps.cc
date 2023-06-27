@@ -1207,7 +1207,7 @@ main (int argc, char** argv)
 	     "... (stdout %s, stderr %s) with %d arguments\n" //
              "... gitid %.16s built %s, %s mode (%d jobs)\n"
 	     "This is an open source inference engine software,\n"
-	     ".... GPLv3+ licensed, no warranty!\n"
+	     ".... GPLv3+ licensed, no warranty (%s optimized)!\n"
 	     ".... See http://refpersys.org/ and https://www.gnu.org/licenses/gpl-3.0.en.html ....\n",
              RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
              RPS_TERMINAL_NORMAL_ESCAPE,
@@ -1217,7 +1217,8 @@ main (int argc, char** argv)
 	     argc,
              rps_gitid, rps_timestamp,
              (rps_batch?"batch":"interactive"),
-             rps_nbjobs);
+             rps_nbjobs,
+	     (rps_is_link_time_optimized!=0)?"link-time":"normal");
   RPS_DEBUG_PRINTF(REPL, "main is at @%p, rps_end_of_main is at @%p (pid %d on %s)",
 		   (void*)main,
 		   (void*)rps_end_of_main,

@@ -1231,8 +1231,8 @@ Rps_Value::is_subclass_with_count_and_depth(Rps_CallFrame*callerframe,
   /// The following is a tail-recursive call, is optimized as a loop
   /// by most serious C++ compilers!
   return is_subclass_with_count_and_depth(callerframe, count,
-					  /*superclass:*/ obparentclass,
-					  /*thisclass:*/ obthisclass,
+                                          /*superclass:*/ obparentclass,
+                                          /*thisclass:*/ obthisclass,
                                           depth+1);
 } // end Rps_Value::is_subclass_with_count_and_depth
 
@@ -1670,10 +1670,11 @@ Rps_ObjectZone::is_subclass_of(Rps_ObjectRef obsuperclass) const
                 << Rps_ObjectRef(this) << " obsuperclass=" << obsuperclass);
   std::lock_guard<std::recursive_mutex> guthislock(this->ob_mtx);
   {
-      auto thisclasspayl = get_dynamic_payload<Rps_PayloadClassInfo>();
-      if (!thisclasspayl) {
-	RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_subclass_of call#" << curcallcnt << " this=" <<  Rps_ObjectRef(this) << " FAIL notclass");
-	return false;
+    auto thisclasspayl = get_dynamic_payload<Rps_PayloadClassInfo>();
+    if (!thisclasspayl)
+      {
+        RPS_DEBUG_LOG(LOW_REPL, "+Rps_ObjectZone::is_subclass_of call#" << curcallcnt << " this=" <<  Rps_ObjectRef(this) << " FAIL notclass");
+        return false;
       }
   }
   int cnt = 0;
