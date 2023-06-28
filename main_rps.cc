@@ -1202,8 +1202,10 @@ main (int argc, char** argv)
   rps_progname = argv[0];
   rps_parse_program_arguments(argc, argv);
   ///
+  static char cwdbuf[rps_path_byte_size];
+  char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
   RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" //
-	     " %s process %d on host %s\n" //
+	     " %s process %d on host %s in %s build top dir %s\n" //
 	     "... (stdout %s, stderr %s) with %d arguments\n" //
              "... gitid %.16s built %s, %s mode (%d jobs)\n"
 	     "This is an open source inference engine software,\n"
@@ -1212,6 +1214,8 @@ main (int argc, char** argv)
              RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
              RPS_TERMINAL_NORMAL_ESCAPE,
              argv[0], (int)getpid(), rps_hostname(),
+	     (mycwd?mycwd:"./"),
+	     rps_topdirectory,
              rps_stdout_istty?"tty":"plain",
              rps_stderr_istty?"tty":"plain",
 	     argc,
@@ -1219,6 +1223,8 @@ main (int argc, char** argv)
              (rps_batch?"batch":"interactive"),
              rps_nbjobs,
 	     (rps_is_link_time_optimized!=0)?"link-time":"normal");
+  if (!mycwd)
+    RPS_FATALOUT("getcwd failed for " << (sizeof(cwdbuf)-2) << " bytes.");
   RPS_DEBUG_PRINTF(REPL, "main is at @%p, rps_end_of_main is at @%p (pid %d on %s)",
 		   (void*)main,
 		   (void*)rps_end_of_main,
