@@ -378,6 +378,9 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
 } // end rps_strftime_centiseconds
 
 
+
+/// this rps_extend_env is called early from main.  It is extending
+/// the Unix environment.
 void
 rps_extend_env(void)
 {
