@@ -499,7 +499,7 @@ rps_early_initialization(int argc, char** argv)
   init_jit (rps_progname);
   rps_main_thread_handle = pthread_self();
   {
-    char cwdbuf[128];
+    char cwdbuf[rps_path_byte_size];
     memset (cwdbuf, 0, sizeof(cwdbuf));
     char tmbfr[64];
     memset(tmbfr, 0, sizeof (tmbfr));
