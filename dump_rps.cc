@@ -72,6 +72,7 @@ class Rps_Dumper
   friend Json::Value rps_dump_json_value(Rps_Dumper*, Rps_Value val);
   friend Json::Value rps_dump_json_objectref(Rps_Dumper*, Rps_ObjectRef obr);
   std::string du_topdir;
+  std::string du_curworkdir;
   Json::StreamWriterBuilder du_jsonwriterbuilder;
   std::recursive_mutex du_mtx;
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
@@ -166,7 +167,7 @@ public:
 };				// end class Rps_Dumper
 
 Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
-  du_topdir(topdir), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
+  du_topdir(topdir), du_curworkdir(), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
   du_tempsuffix(make_temporary_suffix()),
   du_newobcount(0),
   du_startelapsedtime(rps_elapsed_real_time()),
@@ -175,6 +176,13 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
   du_startmonotonictime(rps_monotonic_real_time()),
   du_callframe(callframe), du_openedpathset()
 {
+  {
+    char cwdbuf[rps_path_byte_size];
+    memset(cwdbuf, 0, sizeof(cwdbuf));
+    if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
+      strcpy(cwdbuf, "./");
+    du_curworkdir.assign(cwdbuf);
+  }
   du_jsonwriterbuilder["commentStyle"] = "None";
   du_jsonwriterbuilder["indentation"] = " ";
   RPS_DEBUG_LOG(DUMP, "Rps_Dumper constr topdir=" << topdir
@@ -1016,9 +1024,9 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_BUILDING_MACHINE \"" << machinebuf << "\"" << std::endl;
   *pouts << "#define RPS_PATH_BYTE_SIZE " << rps_path_byte_size << std::endl;
   if (!strcmp(cwdbuf, rps_topdirectory))
-      *pouts << "#define RPS_BUILDING_WORKING_DIRECTORY rps_topdirectory" << std::endl;
+    *pouts << "#define RPS_BUILDING_WORKING_DIRECTORY rps_topdirectory" << std::endl;
   else
-  *pouts << "#define RPS_BUILDING_WORKING_DIRECTORY " << Rps_QuotedC_String(cwdbuf) << std::endl;
+    *pouts << "#define RPS_BUILDING_WORKING_DIRECTORY " << Rps_QuotedC_String(cwdbuf) << std::endl;
   *pouts << "#define RPS_SIZEOF_BOOL " << sizeof(bool) << std::endl;
   *pouts << "#define RPS_SIZEOF_SHORT " << sizeof(short) << std::endl;
   *pouts << "#define RPS_SIZEOF_INT " << sizeof(int) << std::endl;
