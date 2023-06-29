@@ -42,6 +42,13 @@ const char rps_repl_gitid[]= RPS_GITID;
 extern "C" const char rps_cmdrepl_date[];
 const char rps_cmdrepl_date[]= __DATE__;
 
+// internal code to evaluate composite expressions like arithmetic, conditionals, etc...
+static Rps_TwoValues
+rps_full_evaluate_repl_composite_object(Rps_CallFrame*callframe, unsigned long count, Rps_ObjectRef exprobarg, Rps_ObjectRef envobarg,  unsigned depth=0);
+
+
+/// FIXME: declare  rps_full_evaluate_repl_instance
+#warning should declare  rps_full_evaluate_repl_instance
 
 /// Evaluate for the REPL machinery in given callframe the expression
 /// `expr` in the environment given by `envob`; should give two values
@@ -170,6 +177,11 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                     << " instance expr:" << _f.exprv
                     << " of class:" << _f.classob
                     << " in env:" << _f.envob);
+#warning TODO: should probably define and call a rps_full_evaluate_repl_instance
+      RPS_FATALOUT("rps_full_evaluate_repl_expr#" << eval_number
+                   << " UNIMPLEMENTED instance expr:" << _f.exprv
+                   << " of class:" << _f.classob
+                   << " in env:" << _f.envob);
     }
   else if (_f.exprv.is_object())
     {
@@ -184,23 +196,6 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
   ///
   RPS_ASSERT(_f.classob && _f.classob->is_class());
   RPS_POSSIBLE_BREAKPOINT();
-  /***
-      temporary code to find make test01 bug near commit 29d5221fe8561 of Jun 17, 2023
-   ***/
-#if TEMPORARY_CODE
-  if (eval_number < 4)
-    {
-      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
-                    << eval_number << " *TEMPCODE*"
-                    << " expr:" << _f.exprv << " evalob:" << _f.evalob << " of classob " << _f.classob);
-      rps_set_debug("LOW_REPL,REPL");
-      RPS_INFORMOUT("forcing debug flag to " << Rps_Do_Output([&](std::ostream& out)
-      {
-        rps_output_debug_flags(out);
-      }));
-      RPS_POSSIBLE_BREAKPOINT();
-    };
-#endif /*TEMPORARY_CODE*/
   /****
    * Evaluation of variables - perhaps anonymous ones
    ****/
@@ -232,16 +227,6 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
               _f.mainresv = paylenv->get_obmap(_f.evalob,/*defaultval:*/nullptr,&missing);
               if (!missing)
                 {
-#if TEMPORARY_CODE
-                  if (eval_number < 4)
-                    {
-                      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
-                                    << eval_number << " *TEMPCODE*"
-                                    << " expr:" << _f.exprv << " gives " << _f.mainresv);
-                      RPS_POSSIBLE_BREAKPOINT();
-                      rps_debug_flags.store(startdbgflags);
-                    };
-#endif /*TEMPORARY_CODE*/
                   RPS_REPLEVAL_GIVES_PLAIN(_f.mainresv);
                 }
               RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
@@ -294,17 +279,6 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
               _f.mainresv = paylenv->get_obmap(_f.evalob,nullptr,&missing);
               if (!missing)
                 {
-
-#if TEMPORARY_CODE
-                  if (eval_number < 4)
-                    {
-                      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
-                                    << eval_number << " *TEMPCODE*"
-                                    << " expr:" << _f.exprv << " gives " << _f.mainresv);
-                      RPS_POSSIBLE_BREAKPOINT();
-                      rps_debug_flags.store(startdbgflags);
-                    };
-#endif /*TEMPORARY_CODE*/
                   RPS_REPLEVAL_GIVES_PLAIN(_f.mainresv);
                 }
               _f.nextenvob = paylenv->get_parent_environment();
@@ -327,6 +301,18 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                         << " first env was " <<_f.firstenvob);
     }
 #warning TODO: fixme evaluation of various repl_expression-s e.g. conditional, arithmetic, application
+  else if  (_f.classob ==  RPS_ROOT_OB(_1jJaY1usnpR02WUvSX) //repl_expression∈class
+            || _f.classob->is_subclass_of(RPS_ROOT_OB(_1jJaY1usnpR02WUvSX) //repl_expression∈class
+                                         ))
+    {
+      RPS_POSSIBLE_BREAKPOINT();
+      RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
+                    << " repl_expression:" << _f.evalob
+                    << " of class " << _f.classob
+                    << " in envob:" <<_f.envob << " firstenvob:" << _f.firstenvob);
+      Rps_TwoValues two = rps_full_evaluate_repl_composite_object(&_, eval_number, _f.evalob, _f.envob, 0);
+      RPS_REPLEVAL_GIVES_BOTH(two.main_val, two.xtra_val);
+    }
   else
     {
       // any other object is self evaluating! or NOT?
@@ -334,34 +320,36 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#" << eval_number
                     << " object:" << _f.evalob << " of class " << _f.classob << " is selfevaluating in envob:" <<_f.envob << " firstenvob:" << _f.firstenvob);
 
-      /***
-          temporary code to find make test01 bug near commit 29d5221fe8561 of Jun 17, 2023
-       ***/
-#if TEMPORARY_CODE
-      if (eval_number < 4)
-        {
-          RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_expr#"
-                        << eval_number << " *TEMPCODE*"
-                        << " expr:" << _f.exprv << " of class " << _f.classob << " *SELFEVAL*");
-          rps_debug_flags.store(startdbgflags);
-        };
-#endif /*TEMPORARY_CODE*/
       RPS_POSSIBLE_BREAKPOINT();
       RPS_REPLEVAL_GIVES_PLAIN(_f.exprv);
     }
-#warning rps_full_evaluate_repl_expr not really implemented, should dispatch on classob
-  RPS_REPLEVAL_FAIL("*unimplemented*","REPL evaluation of " <<_f.exprv
-                    << " of class:" << _f.classob
-                    << " in env:" << _f.envob);
-  /// forget our macros
+} // end rps_full_evaluate_repl_expr
+
+
+Rps_TwoValues
+rps_full_evaluate_repl_composite_object(Rps_CallFrame*callframe, unsigned long count, Rps_ObjectRef exprobarg, Rps_ObjectRef envobarg,  unsigned depth)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 callframe,
+                 Rps_ObjectRef exprob;
+                 Rps_ObjectRef envob;
+                 Rps_Value mainresv;
+                 Rps_Value otheresv;
+                );
+  _f.exprob = exprobarg;
+  _f.envob = envobarg;
+  RPS_DEBUG_LOG(REPL, "rps_full_evaluate_repl_composite_object#" << count <<" START exprob:" << _f.exprob << " envob:" << _f.envob
+                << " depth:" << depth << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_full_evaluate_repl_composite_object"));
+#warning unimplemented rps_full_evaluate_repl_composite_object
+  RPS_FATALOUT("rps_full_evaluate_repl_composite_object#" << count <<" UNIMPLEMENTED exprob:" << _f.exprob << " envob:" << _f.envob << " depth:" << depth);
+} // end rps_full_evaluate_repl_composite_object
+
+/// forget our macros
 #undef RPS_REPLEVAL_GIVES_BOTH_AT
 #undef RPS_REPLEVAL_GIVES_BOTH
 #undef RPS_REPLEVAL_GIVES_PLAIN_AT
 #undef RPS_REPLEVAL_GIVES_PLAIN
-} // end rps_full_evaluate_repl_expr
-
-
-
 
 Rps_Value
 rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value expr, Rps_ObjectRef envob)
