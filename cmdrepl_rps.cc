@@ -1075,21 +1075,14 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
     std::cout << "##" << RPS_TERMINAL_BOLD_ESCAPE << showpos
               << RPS_TERMINAL_NORMAL_ESCAPE << " : "
               << _f.showv << std::endl;
-#warning rpsapply_7WsQyJK6lty02uz5KT for REPL command show should probably EVALUATE showv
-    /** TODO:
-    *
-    * We probably need some evaluating function, perhaps some
-    *  Rps_CallFrame::evaluate_repl_expr(Rps_Valu expr,
-    *  Rps_ObjectRef envob) member function where `expr` is the
-    *  expression to evaluate - here showv - and `envob` is some
-    *  environment object describing variables and their
-    *  values. **/
-    /// temporary return. Should do something fancy
-    return {_f.replcmdob, _f.showv};
-
+    RPS_INFORMOUT("SHOW " << _f.showv << " in environment " << _f.evalenvob << " evaluated to " << _f.evalshowv);
+    if (_f.showv || _f.evalshowv)
+      return {_f.evalshowv, _f.showv};
+    else
+      return {nullptr, RPS_ROOT_OB(_9uwZtDshW4401x6MsY)}; //space∈symbol
   }
 #warning incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show
-  RPS_WARNOUT("incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show from " << std::endl
+  RPS_WARNOUT("incomplete rpsapply_7WsQyJK6lty02uz5KT for REPL command show  of " << _f.showv << " from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_7WsQyJK6lty02uz5KT for REPL command show"));
   return {nullptr,nullptr};
 } //end of rpsapply_7WsQyJK6lty02uz5KT for REPL command show
