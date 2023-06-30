@@ -1023,6 +1023,7 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_BUILDING_OPERATING_SYSTEM \"" << osbuf << "\"" << std::endl;
   *pouts << "#define RPS_BUILDING_MACHINE \"" << machinebuf << "\"" << std::endl;
   *pouts << "#define RPS_PATH_BYTE_SIZE " << rps_path_byte_size << std::endl;
+  RPS_POSSIBLE_BREAKPOINT();
   if (!strcmp(cwdbuf, rps_topdirectory))
     *pouts << "#define RPS_BUILDING_WORKING_DIRECTORY rps_topdirectory" << std::endl;
   else
