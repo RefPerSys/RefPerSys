@@ -1107,7 +1107,7 @@ Rps_Dumper::write_generated_data_file(void)
   const char *bdata = bdataslash?(bdataslash+1):datapathstr.c_str();
   if (symlink(bdata, gendatapathstr.c_str()))
     RPS_FATALOUT("failed to symlink " << gendatapathstr << " to "
-		 << bdata
+                 << bdata
                  << ":" << strerror(errno));
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_data_file end " << datapathstr);
 } //  end Rps_Dumper::write_generated_data_file
