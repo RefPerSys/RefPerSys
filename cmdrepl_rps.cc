@@ -1142,6 +1142,22 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                       << _f.shownob->payload_type_name() << " **" << std::endl;
 #warning we probably want to display some common payloads here
           }
+	rps_applyingfun_t* apfun = _f.shownob->get_applying_ptrfun();
+	if (!apfun)
+	  std::cout << "** without applying function **" << std::endl;
+	else
+	  {
+	    Dl_info appinfo;
+	    memset ((void*)&appinfo, 0, sizeof(appinfo));
+	    if (dladdr((void*)apfun,&appinfo)) {
+	      std::cout
+		<< "** with applying function " << appinfo.dli_sname
+		<< "@" << (void*)apfun
+		<< " in " << appinfo.dli_fname << std::endl;
+	    }
+	    else
+	      std::cout << "** with applying function unnamed @" << (void*)apfun << std::endl;
+	  }
       }
     else if (_f.evalshowv.is_instance())
       {
