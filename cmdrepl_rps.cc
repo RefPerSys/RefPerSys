@@ -966,9 +966,13 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
                            callerframe,
                            Rps_ObjectRef replcmdob;
                            Rps_ObjectRef evalenvob;
+                           Rps_ObjectRef shownob;
+                           Rps_ObjectRef curattrob;
                            Rps_Value lextokv;
                            Rps_Value showv;
                            Rps_Value evalshowv;
+                           Rps_SetValue attrsetv;
+                           Rps_Value subvalv;
                 );
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
@@ -1075,7 +1079,73 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
     std::cout << "##" << RPS_TERMINAL_BOLD_ESCAPE << showpos
               << RPS_TERMINAL_NORMAL_ESCAPE << " : "
               << _f.showv << std::endl;
-    RPS_INFORMOUT("SHOW " << _f.showv << " in environment " << _f.evalenvob << " evaluated to " << _f.evalshowv);
+    RPS_INFORMOUT(std::endl
+                  << "¤¤¤¤¤¤ SHOW " << _f.showv << " in environment " << _f.evalenvob << " evaluated to " << _f.evalshowv);
+    if (_f.evalshowv.is_object())
+      {
+        _f.shownob = _f.evalshowv.as_object();
+        std::lock_guard<std::recursive_mutex> gushownob(*_f.shownob->objmtxptr());
+        std::cout << "¤¤ showing object " << _f.shownob << " of class "
+                  << _f.shownob->get_class()
+                  << " in space " << _f.shownob->get_space() << std::endl;
+        double obmtim = _f.shownob->get_mtime();
+        {
+          char mtimbuf[64];
+          memset (mtimbuf, 0, sizeof(mtimbuf));
+          rps_strftime_centiseconds(mtimbuf, sizeof(mtimbuf),
+                                    "%Y, %b, %d %H:%M:%S.__ %Z", obmtim);
+          std::cout << "** mtime: " << mtimbuf << std::endl;
+        }
+        unsigned nbat = _f.shownob->nb_attributes(&_);
+        if (nbat == 0)
+          std::cout << "** without attributes **" << std::endl;
+        else if (nbat == 1)
+          std::cout << "** with one attribute:" << std::endl;
+        else
+          {
+            std::cout << "** with " << nbat << " attributes:" << std::endl;
+            _f.attrsetv = _f.shownob->set_of_attributes(&_);
+            for (int aix = 0; aix < (int) nbat; aix++)
+              {
+                _f.curattrob = _f.attrsetv.as_set()->at(aix);
+                if (!_f.curattrob)
+                  continue;
+                _f.subvalv = _f.shownob->get_physical_attr(_f.curattrob);
+                std::cout << "* " << _f.curattrob << " : ";
+                _f.subvalv.output(std::cout, 0);
+                std::cout << std::endl;
+              }
+          }
+        unsigned nbcomp = _f.shownob->nb_components(&_);
+        if (nbcomp == 0)
+          std::cout << "** without components **" << std::endl;
+        else
+          {
+            if (nbcomp == 1)
+              std::cout << "** with one component:" << std::endl;
+            else
+              std::cout << "** with " << nbcomp << " components:" << std::endl;
+            for (int cix=0; cix<(int)nbcomp; cix++)
+              {
+                _f.subvalv = _f.shownob->component_at(&_, cix);
+                std::cout << "[" << cix << "] ";
+                _f.subvalv.output(std::cout, 0);
+                std::cout << std::endl;
+              }
+          }
+        Rps_Payload*payl = _f.shownob->get_payload();
+        if (!payl)
+          std::cout << "** without payload **" << std::endl;
+        else
+          {
+            std::cout << "** with payload of "
+                      << _f.shownob->payload_type_name() << " **" << std::endl;
+#warning we probably want to display some common payloads here
+          }
+      }
+    else if (_f.evalshowv.is_instance())
+      {
+      }
     if (_f.showv || _f.evalshowv)
       return {_f.evalshowv, _f.showv};
     else
