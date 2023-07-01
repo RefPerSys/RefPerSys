@@ -76,17 +76,19 @@ Rps_PayloadStrBuf::prepend_string(const std::string&str)
     return;
   std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
 #warning Rps_PayloadStrBuf::prepend_string implementation is inefficient
-  if (strbuf_buffer.str().empty()) {
-    strbuf_buffer.sputn(str.c_str(), str.size());
-    return;
-  }
-  else {
-    /// inefficient; TODO: improve
-    std::string oldcont = strbuf_buffer.str();
-    std::string newcont = str + oldcont;
-    strbuf_buffer.sputn(newcont.c_str(), newcont.size());
-    return;
-  }
+  if (strbuf_buffer.str().empty())
+    {
+      strbuf_buffer.sputn(str.c_str(), str.size());
+      return;
+    }
+  else
+    {
+      /// inefficient; TODO: improve
+      std::string oldcont = strbuf_buffer.str();
+      std::string newcont = str + oldcont;
+      strbuf_buffer.sputn(newcont.c_str(), newcont.size());
+      return;
+    }
 } // end Rps_PayloadStrBuf::prepend_string
 
 void
