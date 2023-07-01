@@ -2875,6 +2875,7 @@ public:
   {
     return ob_applyingfun.load();
   };
+  inline rps_applyingfun_t* get_applying_ptrfun() const { return ob_applyingfun.load(); };
   inline void clear_payload(void);
   template<class PaylClass>
   PaylClass* put_new_plain_payload(void)
