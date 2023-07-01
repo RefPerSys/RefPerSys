@@ -1103,8 +1103,11 @@ Rps_Dumper::write_generated_data_file(void)
      using symlinkat since chdir is process-global and multi-thread
      unfriendly, and later we might dump in a single thread...... */
 #warning TODO: use symlinkat in Rps_Dumper::write_generated_data_file
-  if (symlink((std::string(cwdbuf) + "/" + datapathstr).c_str(), gendatapathstr.c_str()))
-    RPS_FATALOUT("failed to symlink " << gendatapathstr << " to " << (std::string(cwdbuf) + "/" + datapathstr.c_str(), gendatapathstr.c_str())
+  const char *bdataslash = strrchr(datapathstr.c_str(), '/');
+  const char *bdata = bdataslash?(bdataslash+1):datapathstr.c_str();
+  if (symlink(bdata, gendatapathstr.c_str()))
+    RPS_FATALOUT("failed to symlink " << gendatapathstr << " to "
+		 << bdata
                  << ":" << strerror(errno));
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_data_file end " << datapathstr);
 } //  end Rps_Dumper::write_generated_data_file
