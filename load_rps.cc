@@ -313,10 +313,12 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
               if (formatjson.type() !=Json::stringValue)
                 RPS_FATALOUT("space file " << spacepath
                              << " with bad format type#" << (int)formatjson.type());
-              if (formatjson.asString() != RPS_MANIFEST_FORMAT)
+              if (formatjson.asString() != RPS_MANIFEST_FORMAT
+		  && formatjson.asString() != RPS_PREVIOUS_MANIFEST_FORMAT)
                 RPS_FATALOUT("space file " << spacepath
                              << "should have format: "
                              << RPS_MANIFEST_FORMAT
+			     << " or " << RPS_PREVIOUS_MANIFEST_FORMAT
                              << " but got "
                              << formatjson);
               if (prologjson["spaceid"].asString() != spacid.to_string())
