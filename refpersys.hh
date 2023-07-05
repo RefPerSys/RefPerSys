@@ -4621,7 +4621,8 @@ public:
 
 #define RPS_MANIFEST_JSON "rps_manifest.json"
 // same as used in rps_manifest.json file
-#define RPS_MANIFEST_FORMAT "RefPerSysFormat2019A"
+#define RPS_PREVIOUS_MANIFEST_FORMAT "RefPerSysFormat2019A"
+#define RPS_MANIFEST_FORMAT "RefPerSysFormat2023A"
 
 // the user manifest is optional, in the rps_homedir()
 // so using $REFPERSYS_HOME or $HOME
