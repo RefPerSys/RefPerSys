@@ -331,8 +331,8 @@ clean:
 ## first fifty lines of generated C++ to give extra compilation flags
 ## or extra libraries in generated binary modules.
 ### **generated binary modules.
-generated/__rps_$(RPS_ARCH)_$(RPS_OPERSYS)_%.so: generated/_%.cc refpersys.hh.gch refpersys.hh
-	 $(COMPILE.cc) -fPIC -shared $(CXXFLAGS) $(RPS_BUILD_OPTIMFLAGS) $< -o $@
+generated/__rps_$(RPS_ARCH)_$(RPS_OPERSYS)_%.so: generated/_%.cc refpersys.hh.gch refpersys.hh build-plugin.sh
+	 ./build-plugin.sh $< $@
 
 
 ## usual invocation: make plugin RPS_PLUGIN_SOURCE=/tmp/foo.cc RPS_PLUGIN_SHARED_OBJECT=/tmp/foo.so

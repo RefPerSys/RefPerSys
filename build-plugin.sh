@@ -32,6 +32,11 @@ printf "start %s at %s: C++ file %s, plugin file %s\n" $0 "$curdate" $cppfile $p
 logger --id=$$ -s  -t "$0:" "starting" cppfile= $1 pluginfile= $2 curdate= $curdate
 eval $(make print-plugin-settings)
 
+plugincppflags=(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSCOMPILEFLAGS=/ { for (i=1; i<=NF; i++) print $i; }')
+pluginlinkerflags=(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSLIBES=/ { for (i=1; i<=NF; i++) print $i; }')
+
+
+
 ## check that we have the necessary shell variables set in above eval
 if [ -z "$RPSPLUGIN_CXX" ]; then
     echo RPSPLUGIN_CXX missing in $0 > /dev/stderr
@@ -47,6 +52,6 @@ if [ -z "$RPSPLUGIN_LDFLAGS" ]; then
 fi
 
 ## run the compiler suitably
-logger --id=$$ -s  -t $0 running: "$RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS -Wall -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS -o $pluginfile"
+logger --id=$$ -s  -t $0 running: "$RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS  $plugincppflags -Wall -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS  $pluginlinkerflags -o $pluginfile"
 ## 
-exec $RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS -Wall -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS -o $pluginfile 
+exec $RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS $plugincppflags -Wall -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS $pluginlinkerflags -o $pluginfile 
