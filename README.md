@@ -206,6 +206,12 @@ conventionally named `generated/_`*objid*`.cc`
 Binary modules are conventionally named `generated/__rps_*.so`, see in
 our `GNUmakefile` the line around comment `**generated binary modules`
 
+See our shell script `build-plugin.sh` to understand compiling
+conventions in binary modules or plugins. In particular, if the first
+fifty (50) lines of a generated C++ file contain - probably inside a
+comment - @RPSCOMPILEFLAGS= that is used to compile the plugin. If
+they contain @RPSLIBES= that is used to link the plugin.
+
 ## Building and dependencies.
 
 The [build automation](https://en.wikipedia.org/wiki/Build_automation)
