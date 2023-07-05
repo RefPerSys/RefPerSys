@@ -65,6 +65,9 @@ RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcar
 RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 
 
+RPS_ARCH := $(shell /bin/uname -m)
+RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
+
 ## bisonc++ parser generator obsolete in commit 51fd71d8e750 (March 2023)
 # note: the ANTLR parser generator is obsolete at commit  427be821cb (March 2023)
 ## we did consider using the lemon parser generator inside sqlite.org
@@ -181,6 +184,7 @@ LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 
 
 all:
+	@echo RefPerSys has RPS_ARCH: $(RPS_ARCH) and RPS_OPERSYS: $(RPS_OPERSYS)
 	if [ -f refpersys ] ; then  $(MV) -f -v --backup refpersys refpersys~ ; fi
 	$(RM) __timestamp.o __timestamp.c
 	$(MAKE) -$(MAKEFLAGS) refpersys
@@ -314,12 +318,22 @@ clean:
 	$(RM) _*.hh _*.cc __timestamp.* generated/*~ _*.mk
 	$(RM) persistore/*~ persistore/*%
 	$(RM) plugins/*~  plugins/*% plugins/*.cc.orig plugins/*.so *.so
+	$(RM) generated/__rps*.so
 	$(RM) *.ii
 	$(RM) *% core vgcore*
 	$(RM) -rf bld
 	$(RM) $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES)) \
 	      $(patsubst %.yy, %.output, $(RPS_BISON_SOURCES)) \
 	      *.tmp
+
+
+## TODO: we might need to have some conventions, maybe comments like ///|| in the
+## first fifty lines of generated C++ to give extra compilation flags
+## or extra libraries in generated binary modules.
+### **generated binary modules.
+generated/__rps_$(RPS_ARCH)_$(RPS_OPERSYS)_%.so: generated/_%.cc refpersys.hh.gch refpersys.hh
+	 $(COMPILE.cc) -fPIC -shared $(CXXFLAGS) $(RPS_BUILD_OPTIMFLAGS) $< -o $@
+
 
 ## usual invocation: make plugin RPS_PLUGIN_SOURCE=/tmp/foo.cc RPS_PLUGIN_SHARED_OBJECT=/tmp/foo.so
 ## see also our ./build-plugin.sh script
