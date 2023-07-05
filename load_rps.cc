@@ -1140,10 +1140,10 @@ Rps_Loader::parse_manifest_file(void)
     {
       RPS_FATALOUT("Rps_Loader::parse_manifest_file failed to parse: " << exc.what());
     };
-  if (manifjson["format"].asString() != RPS_MANIFEST_FORMAT)
-    RPS_FATAL("manifest map in %s should have format: '%s' but got:\n"
+  if (manifjson["format"].asString() != RPS_MANIFEST_FORMAT && manifjson["format"].asString() != RPS_PREVIOUS_MANIFEST_FORMAT)
+    RPS_FATAL("manifest map in %s should have format: '%s' or older '%s' but got:\n"
               "%s",
-              manifpath.c_str (), RPS_MANIFEST_FORMAT,
+              manifpath.c_str (), RPS_MANIFEST_FORMAT, RPS_PREVIOUS_MANIFEST_FORMAT,
               manifjson["format"].toStyledString().c_str());
   /// parse spaceset
   {
