@@ -19,7 +19,7 @@
 
 ///!!! prologue of RefPerSys space file:
 {
- "format" : "RefPerSysFormat2019A",
+ "format" : "RefPerSysFormat2023A",
  "jsoncpp-version" : "1.9.5",
  "nbobjects" : 200,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
