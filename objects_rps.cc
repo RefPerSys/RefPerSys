@@ -1164,8 +1164,8 @@ Rps_ObjectZone::dump_json_content(Rps_Dumper*du, Json::Value&json) const
                                 << " @@oidfun:" << oidfun << std::endl
                                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_ObjectZone::dump_json_content@@oidfun"));
                     json["magicgetter"] = oidfun.to_string();
-		    /// TODO: FIXME the C++ (or GNU lightning?) code
-		    /// of oidfun should be generated....
+                    /// TODO: FIXME the C++ (or GNU lightning?) code
+                    /// of oidfun should be generated....
 #warning the code of the magicgetter function should be somehow generated...
                   }
               };
