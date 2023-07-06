@@ -248,7 +248,9 @@ extern "C" const char rps_building_user_email[];
 /// the computer on which this RefPerSys is built
 extern "C" const char rps_building_host[];
 extern "C" const char rps_building_operating_system[];
+extern "C" const char rps_building_opersysname[]; /// with only letters, digits, underscores
 extern "C" const char rps_building_machine[];
+extern "C" const char rps_building_machname[]; /// with only letters, digits, underscores
 extern "C" struct utsname rps_utsname;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -258,6 +260,7 @@ extern "C" struct utsname rps_utsname;
 /// constants generated at runtime in the _timestamp_rps.c file. This class
 /// allows for a cleaner and more idiomatic way to reference the runtime
 /// generated constants.
+#warning RpsColophon is never used, should be removed.
 class RpsColophon
 {
 public:
