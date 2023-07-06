@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2022 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -426,9 +426,21 @@ Rps_Dumper::scan_code_addr(const void*ad)
    **/
   if (!ad)
     return;
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  static char rpsmodfmt[80];
+  static size_t rpsmodfmtlen;
+  if (!rpsmodfmt[0]) {
+    /// see GNUmakefile near its comment line containing:
+    ///       # **generated binary modules.
+    /// and the do-generate-timestamp.sh script.
+    snprintf(rpsmodfmt, sizeof(rpsmodfmt),
+	     "__rps_%s_%s_%%-mod.so",
+	     rps_building_machname, rps_building_opersysname);
+    rpsmodfmtlen = strlen(rpsmodfmt);
+    RPS_ASSERT(rpsmodfmtlen<sizeof(rpsmodfmt)-4);
+  };
   Dl_info di;
   memset(&di, 0, sizeof(di));
-  std::lock_guard<std::recursive_mutex> gu(du_mtx);
   if (!dladdr(ad, &di))
     return;
   if (!di.dli_fname)
@@ -439,8 +451,8 @@ Rps_Dumper::scan_code_addr(const void*ad)
   char idbuf[32];
   memset (idbuf, 0, sizeof(idbuf));
   int endpos = -1;
-  if (sscanf(lastslash+1, "rps_%19[a-zA-Z0-9]-mod.so%n", idbuf, &endpos) >= 1
-      && endpos>20)
+  if (sscanf(lastslash+1, rpsmodfmt, idbuf, &endpos) >= 1
+      && endpos>rpsmodfmtlen)
     {
       const char* endid=nullptr;
       bool okid=false;
