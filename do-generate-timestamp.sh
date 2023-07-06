@@ -45,7 +45,11 @@ printf "const char rps_building_host[]=\"%s\";\n" $(/bin/uname -n)
 
 printf "const char rps_building_operating_system[]=\"%s\";\n" $(/bin/uname -o)
 
+printf "const char rps_building_opersysname[]=\"%s\";\n" $(/bin/uname -o | /bin/sed 's/[^A-Za-z0-9]/_/')
+
 printf "const char rps_building_machine[]=\"%s\";\n" $(/bin/uname -m)
+
+printf "const char rps_building_machname[]=\"%s\";\n" $(/bin/uname -m | /bin/sed 's/[^A-Za-z0-9]/_/')
 
 printf "/// see also GNUmakefile for refpersys.org;\n"
 ### some things are generated in GNUmakefile 
