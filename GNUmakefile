@@ -331,7 +331,8 @@ clean:
 ## first fifty lines of generated C++ to give extra compilation flags
 ## or extra libraries in generated binary modules.
 ### **generated binary modules.
-generated/__rps_$(RPS_ARCH)_$(RPS_OPERSYS)_%.so: generated/_%.cc refpersys.hh.gch refpersys.hh build-plugin.sh
+## Nota Bene: see Rps_Dumper class and dump_rps.cc
+generated/__rps_$(RPS_ARCH)_$(RPS_OPERSYS)_%-mod.so: generated/_%.cc refpersys.hh.gch refpersys.hh build-plugin.sh
 	 ./build-plugin.sh $< $@
 
 
