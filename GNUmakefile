@@ -310,6 +310,7 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 
 ################
 clean:
+	if [ -f __timestamp.c ]; then /bin/sed '1,$$s:/home/[a-zA-Z]*:@REFPERSYS_HOME:g' __timestamp.c > %%__timestamp.c%% ; fi
 	$(RM) *.o *.orig *~ refpersys *.gch *~ _build.time
 	$(RM) sanitized-refpersys
 	$(RM) refpersys-lto
@@ -320,7 +321,7 @@ clean:
 	$(RM) plugins/*~  plugins/*% plugins/*.cc.orig plugins/*.so *.so
 	$(RM) generated/__rps*.so
 	$(RM) *.ii
-	$(RM) *% core vgcore*
+	$(RM) [a-z]*% core vgcore*
 	$(RM) -rf bld
 	$(RM) $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES)) \
 	      $(patsubst %.yy, %.output, $(RPS_BISON_SOURCES)) \
