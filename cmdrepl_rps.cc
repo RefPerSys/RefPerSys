@@ -948,6 +948,16 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
 } //end of rpsapply_61pgHb5KRq600RLnKD for REPL command dump
 
 
+extern "C"
+void rps_show_object_for_repl(Rps_CallFrame*callerframe,
+			      const Rps_ObjectRef shownobr,
+			      std::ostream* pout,
+			      unsigned depth)
+{
+#warning unimplemented rps_show_object_for_repl
+  RPS_FATALOUT("rps_show_object_for_repl unimplemented shownobr="
+	       << shownobr << " depth=" << depth);
+} // end rps_show_object_for_repl
 
 
 /* C++ function _7WsQyJK6lty02uz5KT for REPL command show*/
@@ -1079,8 +1089,9 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
     std::cout << "##" << RPS_TERMINAL_BOLD_ESCAPE << showpos
               << RPS_TERMINAL_NORMAL_ESCAPE << " : "
               << _f.showv << std::endl;
-    RPS_INFORMOUT(std::endl
-                  << "¤¤¤¤¤¤ SHOW " << _f.showv << " in environment " << _f.evalenvob << " evaluated to " << _f.evalshowv);
+    std::cout << std::endl
+	      << "¤¤¤¤¤¤ SHOW " << _f.showv
+	      << " in environment " << _f.evalenvob << " evaluated to " << _f.evalshowv;
     if (_f.evalshowv.is_object())
       {
         _f.shownob = _f.evalshowv.as_object();
