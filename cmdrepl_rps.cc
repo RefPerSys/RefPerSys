@@ -948,15 +948,39 @@ rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
 } //end of rpsapply_61pgHb5KRq600RLnKD for REPL command dump
 
 
+/***
+ * The signature of this function was approved on whatsapp by Abhishek
+ *  CHAKRAVARTI (India) on Fri July 7, 2023.
+ *
+ ** TODO: declare it in refpersys.hh
+ **/
 extern "C"
 void rps_show_object_for_repl(Rps_CallFrame*callerframe,
-			      const Rps_ObjectRef shownobr,
+			      const Rps_ObjectRef shownobarg,
 			      std::ostream* pout,
 			      unsigned depth)
 {
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_ASSERT(pout != nullptr);
+  static Rps_Id showdescoid;
+  if (!showdescoid)
+    showdescoid=Rps_Id("_2wi3wsd8tVF01MBeeF"); // for the show∈symbol
+  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(showdescoid),
+                           callerframe,
+		 Rps_ObjectRef shownob;
+		 Rps_ObjectRef attrob;
+		 Rps_Value curval;
+		 );
+  _f.shownob = shownobarg;
+  if (!_f.shownob) {
+    *pout << "__";
+    return;
+  }
 #warning unimplemented rps_show_object_for_repl
+  /* TODO: code from rpsapply_7WsQyJK6lty02uz5KT (below) for REPL
+     command show should be moved here. */
   RPS_FATALOUT("rps_show_object_for_repl unimplemented shownobr="
-	       << shownobr << " depth=" << depth);
+	       << _f.shownob << " depth=" << depth);
 } // end rps_show_object_for_repl
 
 
@@ -1094,6 +1118,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
 	      << " in environment " << _f.evalenvob << " evaluated to " << _f.evalshowv;
     if (_f.evalshowv.is_object())
       {
+#warning this code should be moved into  rps_show_object_for_repl above
         _f.shownob = _f.evalshowv.as_object();
         std::lock_guard<std::recursive_mutex> gushownob(*_f.shownob->objmtxptr());
         std::cout << "¤¤ showing object " << _f.shownob << " of class "
