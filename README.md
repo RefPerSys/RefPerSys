@@ -481,6 +481,6 @@ requests. In particular the following subdirectories:
   - apt install libreadline-dev
   - apt install libjsoncpp-dev
   - apt install qt5-default
-  - apt install cmake
+  - apt install cmake # we probably want to remove this dependency
   - apt install build-essential
 
