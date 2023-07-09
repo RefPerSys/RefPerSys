@@ -429,16 +429,17 @@ Rps_Dumper::scan_code_addr(const void*ad)
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   static char rpsmodfmt[80];
   static size_t rpsmodfmtlen;
-  if (!rpsmodfmt[0]) {
-    /// see GNUmakefile near its comment line containing:
-    ///       # **generated binary modules.
-    /// and the do-generate-timestamp.sh script.
-    snprintf(rpsmodfmt, sizeof(rpsmodfmt),
-	     "__rps_%s_%s_%%-mod.so",
-	     rps_building_machname, rps_building_opersysname);
-    rpsmodfmtlen = strlen(rpsmodfmt);
-    RPS_ASSERT(rpsmodfmtlen<sizeof(rpsmodfmt)-4);
-  };
+  if (!rpsmodfmt[0])
+    {
+      /// see GNUmakefile near its comment line containing:
+      ///       # **generated binary modules.
+      /// and the do-generate-timestamp.sh script.
+      snprintf(rpsmodfmt, sizeof(rpsmodfmt),
+               "__rps_%s_%s_%%-mod.so",
+               rps_building_machname, rps_building_opersysname);
+      rpsmodfmtlen = strlen(rpsmodfmt);
+      RPS_ASSERT(rpsmodfmtlen<sizeof(rpsmodfmt)-4);
+    };
   Dl_info di;
   memset(&di, 0, sizeof(di));
   if (!dladdr(ad, &di))
