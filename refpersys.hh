@@ -2435,6 +2435,22 @@ operator << (std::ostream&out, const Rps_DequVal& dq);
 ////////////////////////////////////////////////////////////////
 struct Rps_ChunkData_st;
 
+extern "C" void rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const std::string&failstr);
+
+#define RPS_PARSREPL_FAILURE_AT(Fram,Out,Fil,Lin,Cnt) do {	\
+    std::ostringstream _failstream_##Lin;			\
+    _failstream_##Lin << Out << " ~#" << Cnt << std::endl;	\
+    Rps_Backtracer backtr##Lin(Rps_Backtracer::FullOut_Tag{},	\
+			       (Fil),(Lin),1,			\
+			       "ParsReplFailing",		\
+			       &_failstream_##Lin);		\
+    rps_parsrepl_failing_at(Fil,Lin,Cnt,			\
+			    _failstream_##Lin.str());		\
+} while(0)
+
+#define RPS_PARSREPL_FAILURE(Fram,Out) \
+  RPS_PARSREPL_FAILURE_AT(Fram,Out,__FILE__,__LINE__,__COUNTER__)
+
 class Rps_TokenSource           // this is *not* a value .....
 {
   friend class Rps_LexTokenValue;
