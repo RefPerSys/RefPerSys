@@ -1184,8 +1184,8 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
   {
     this->display_current_line_with_cursor(out);
   })
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "incomplete Rps_TokenSource::parse_comparand"));
+      << std::endl
+      << RPS_FULL_BACKTRACE_HERE(1, "incomplete Rps_TokenSource::parse_comparand"));
 #warning TODO: missing code in Rps_TokenSource::parse_comparand
   /***
    * We probably should loop and collect all terms if they are
