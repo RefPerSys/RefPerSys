@@ -198,19 +198,21 @@ Rps_QuasiZone::clear_all_gcmarks(Rps_GarbageCollector&gc)
 std::mutex Rps_LazyHashedZoneValue::lazy_mtxarr[Rps_LazyHashedZoneValue::lazy_nbmutexes];
 
 
+#warning TODO: perhaps rps_print_value need depth and maxdepth formals?
 void
 rps_print_value(const Rps_Value val)
 {
-  std::cout << Rps_OutputValue(val) << std::endl;
+  std::cout << Rps_OutputValue(val, 0, Rps_Value::debug_maxdepth) << std::endl;
 } // end rps_print_value
 
+#warning TODO: perhaps rps_print_ptr_value need depth and maxdepth formals?
 void
 rps_print_ptr_value(const void*v)
 {
   static_assert(sizeof(Rps_Value) == sizeof(v));
   Rps_Value val;
   memcpy((void*)&val, (const void*)&v, sizeof(v));
-  std::cout << Rps_OutputValue(val) << std::endl;
+  std::cout << Rps_OutputValue(val, 0, Rps_Value::debug_maxdepth) << std::endl;
 } // end rps_print_ptr_value
 
 //////////////////////////////////////////////// sets
@@ -299,14 +301,19 @@ Rps_SetOb::collect(const std::vector<Rps_Value>&vecval)
 
 
 void
-Rps_SetOb::val_output(std::ostream&out, unsigned int) const
+Rps_SetOb::val_output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
+  if (depth>maxdepth)
+    {
+      out << "??";
+      return;
+    };
   out << "{";
   int cnt=0;
   for (Rps_ObjectRef ob: *this)
     {
       if (cnt>0) out <<", ";
-      out << ob;
+      ob.output(out, depth+1, maxdepth);
       cnt++;
     }
   out << "}";
@@ -453,14 +460,19 @@ Rps_TupleOb::compute_class( Rps_CallFrame*) const
 } // end Rps_TupleOb::compute_class
 
 void
-Rps_TupleOb::val_output(std::ostream&out, unsigned int) const
+Rps_TupleOb::val_output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
+  if (depth > maxdepth)
+    {
+      out << "??";
+      return;
+    };
   out << "[";
   int cnt=0;
   for (Rps_ObjectRef ob: *this)
     {
       if (cnt>0) out <<", ";
-      out << ob;
+      ob.output(out,depth+1,maxdepth);
       cnt++;
     }
   out << "]";
@@ -549,11 +561,16 @@ Rps_ClosureValue::apply_ilist(Rps_CallFrame*callerframe, const std::initializer_
 
 
 void
-Rps_ClosureZone::val_output(std::ostream&out, unsigned int depth) const
+Rps_ClosureZone::val_output(std::ostream&out, unsigned  depth, unsigned maxdepth) const
 {
+  if (depth>maxdepth)
+    {
+      out << "??";
+      return;
+    };
   out << "%";
-  conn().output(out);
-  if (depth > Rps_Value::max_output_depth)
+  conn().output(out, depth+1, maxdepth);
+  if (depth > Rps_Value::max_output_depth || depth>maxdepth)
     {
       out << "(...)";
     }
@@ -564,7 +581,7 @@ Rps_ClosureZone::val_output(std::ostream&out, unsigned int depth) const
       for (auto val: *this)
         {
           if (cnt>0) out <<", ";
-          val.output(out, depth+1);
+          val.output(out, depth+1, maxdepth);
           cnt++;
         }
       out << ")";

@@ -97,7 +97,7 @@ Rps_CallFrame::gc_mark_frame(Rps_GarbageCollector* gc)
 std::atomic<int> Rps_ProtoCallFrame::_cfram_output_depth_(16);
 
 void // this is Rps_ProtoCallFrame::output
-Rps_CallFrame::output(std::ostream&out, int depth) const
+Rps_CallFrame::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
   out << "𝚫" /*U+1D6AB MATHEMATICAL BOLD CAPITAL DELTA*/ << depth
       << "[{" << cfram_descr << "/" << cfram_state;
@@ -106,14 +106,14 @@ Rps_CallFrame::output(std::ostream&out, int depth) const
   if (cfram_clos)
     out << "" << cfram_clos;
   Rps_CallFrameOutputSig_t*outputter = cfram_outputter.load();
-  if (outputter)
+  if (outputter && depth < maxdepth)
     {
       out << ":";
-      (*outputter)(out,this);
+      (*outputter)(out,this, depth, maxdepth);
     }
   out << "}]" << std::endl;
-  if (depth<_cfram_output_depth_.load() && cfram_prev)
-    cfram_prev->output(out, depth+1);
+  if (depth<_cfram_output_depth_.load() && cfram_prev && depth < maxdepth)
+    cfram_prev->output(out, depth+1, maxdepth);
 } // end of Rps_CallFrame::output i.e. Rps_ProtoCallFrame::output
 
 void

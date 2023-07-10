@@ -63,16 +63,18 @@ Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*callerframe, const char*oidstr, Rps_O
 } // end Rps_ObjectRef::Rps_ObjectRef(Rps_CallFrame*, constexpr const char*oidstr, Rps_ObjIdStrTag)
 
 void
-Rps_ObjectRef::output(std::ostream&outs, unsigned depth) const
+Rps_ObjectRef::output(std::ostream&outs, unsigned depth, unsigned maxdepth) const
 {
   if (is_empty())
     outs << "__";
+  else if (depth>maxdepth)
+    outs << "??";
   else
     {
       std::lock_guard<std::recursive_mutex> gu(*_optr->objmtxptr());
       Rps_Value valname = obptr()->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name
       outs << "◌" /*U+25CC DOTTED CIRCLE*/
-           << obptr()->oid().to_string();
+           << obptr()-> oid().to_string();
       if (depth <= 1)
         outs << std::flush;
       if (valname.is_string())
@@ -95,7 +97,7 @@ Rps_ObjectRef::output(std::ostream&outs, unsigned depth) const
         };
       if (depth <= 2)
         {
-          Rps_ObjectRef obclass = obptr() -> get_class();
+          Rps_ObjectRef obclass = obptr()-> get_class();
           if (obclass)
             {
               std::lock_guard<std::recursive_mutex> gucl(*obclass->objmtxptr());
@@ -163,8 +165,13 @@ Rps_ObjectZone::payload_type_name(void) const
 } // end Rps_ObjectZone::payload_type_name
 
 void
-Rps_ObjectZone::val_output(std::ostream&out, unsigned int depth) const
+Rps_ObjectZone::val_output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
+  if (depth > maxdepth)
+    {
+      out << "??";
+      return;
+    };
   out << oid().to_string();
   if (depth<2)
     {

@@ -87,9 +87,13 @@ Rps_InstanceZone::class_attrset(Rps_ObjectRef obclass)
 } // end Rps_InstanceZone::class_attrset
 
 void
-Rps_InstanceZone::val_output(std::ostream& outs, unsigned depth) const
+Rps_InstanceZone::val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const
 {
-  constexpr int max_depth = 5; // FIXME, should be improved
+  if (depth>maxdepth)
+    {
+      outs << "...";
+      return;
+    }
   outs << "inst."<< compute_class(nullptr);
   outs << "*";
   if (is_transient())
@@ -105,25 +109,22 @@ Rps_InstanceZone::val_output(std::ostream& outs, unsigned depth) const
             outs << "#";
           outs << metarank() << ":";
           if (metaobject())
-            metaobject()->val_output(outs, 0);
+            metaobject()->val_output(outs, 0, maxdepth);
           else
             outs << "_";
         }
     }
   outs << "{";
-  if (depth>max_depth)
-    outs << "...";
-  else
-    {
-      int cnt=0;
-      for (auto sonv: *this)
-        {
-          if (cnt>0) outs << ",";
-          sonv.output(outs,depth+1);
-          if (cnt++ %4 == 0)
-            outs << std::endl;
-        }
-    }
+  {
+    int cnt=0;
+    for (auto sonv: *this)
+      {
+        if (cnt>0) outs << ",";
+        sonv.output(outs,depth+1);
+        if (cnt++ %4 == 0)
+          outs << std::endl;
+      }
+  }
   outs << "}";
 } // end Rps_InstanceZone::val_output
 
@@ -349,8 +350,13 @@ Rps_JsonZone::load_from_json(Rps_Loader*ld, const Json::Value& jv)
 } // end Rps_JsonZone::load_from_json
 
 void
-Rps_JsonZone::val_output(std::ostream& outs, unsigned depth) const
+Rps_JsonZone::val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const
 {
+  if (depth > maxdepth)
+    {
+      outs << "?";
+      return;
+    };
   std::ostringstream tempouts;
   tempouts << _jsonval << std::endl;
   if (depth==0)
@@ -401,6 +407,11 @@ void
 Rps_OutputValue::do_output(std::ostream& out) const
 {
   /// output value _out_val at _out_depth to out, using Rps_ZoneValue::val_output....
+  if (_out_depth > _out_maxdepth)
+    {
+      out << "?";
+      return;
+    };
   if (_out_val.is_empty())
     {
       out << "*nil*";
@@ -413,7 +424,7 @@ Rps_OutputValue::do_output(std::ostream& out) const
     };
   const Rps_ZoneValue* outzv = _out_val.as_ptr();
   RPS_ASSERT(outzv);
-  outzv->val_output(out, _out_depth);
+  outzv->val_output(out, _out_depth, _out_maxdepth);
 } // end Rps_OutputValue::do_output
 
 
@@ -506,11 +517,11 @@ Rps_DequVal::Rps_DequVal(const Json::Value&jv, Rps_Loader*ld,const char*sfil, in
 
 
 void
-Rps_DequVal::output(std::ostream&out, unsigned depth) const
+Rps_DequVal::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
-  if (depth > 1+Rps_Value::max_output_depth)
+  if (depth > 1+Rps_Value::max_output_depth || depth > maxdepth)
     out << "°deqval(<...>)";
-  else if (depth==Rps_Value::max_output_depth)
+  else if (depth==Rps_Value::max_output_depth || depth==maxdepth)
     {
       if (dqu_srcfil && dqu_srcfil[0] && dqu_srclin>0)
         out << "°deqval(@" << dqu_srcfil << ":" << dqu_srclin;
@@ -556,7 +567,7 @@ Rps_DequVal::output(std::ostream&out, unsigned depth) const
                   };
                 out << "₎₌"; // U+208E SUBSCRIPT RIGHT PARENTHESIS & U+208C SUBSCRIPT EQUALS SIGN
               };
-              curval.output(out, depth+1);
+              curval.output(out, depth+1, maxdepth);
               cnt++;
             };
           out << ">)";
@@ -584,7 +595,7 @@ Rps_DequVal::pop_front(void)
 std::ostream&
 operator << (std::ostream&out, const Rps_DequVal& dq)
 {
-  dq.output(out);
+  dq.output(out, 0, Rps_Value::debug_maxdepth);
   return out;
 } // end operator << (std::ostream&out, const Rps_DequVal& dq)
 

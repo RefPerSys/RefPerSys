@@ -121,8 +121,13 @@ Rps_String::dump_json(Rps_Dumper*du) const
 } // end Rps_String::dump_json
 
 void
-Rps_String::val_output(std::ostream&out, unsigned) const
+Rps_String::val_output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
+  if (depth > maxdepth)
+    {
+      out << "??";
+      return;
+    };
   Json::Value jstr(cstr());
   out << jstr;
 } // end Rps_String::val_output
@@ -134,8 +139,13 @@ Rps_String::compute_class(Rps_CallFrame*) const
 } // end Rps_String::compute_class
 
 void
-Rps_Double::val_output(std::ostream&out, unsigned) const
+Rps_Double::val_output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
+  if (depth > maxdepth)
+    {
+      out << "??";
+      return;
+    }
   out << dval();
 } // end Rps_Double::val_output
 

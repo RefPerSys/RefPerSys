@@ -1201,7 +1201,7 @@ public:
   inline void gc_mark(Rps_GarbageCollector&) const;
   inline void dump_scan(Rps_Dumper* du, unsigned depth) const;
   inline Json::Value dump_json(Rps_Dumper* du) const;
-  void output(std::ostream&out, unsigned depth=0) const;
+  void output(std::ostream&out, unsigned depth=0,unsigned maxdepth=0) const;
   /////////// the root space
   static inline Rps_ObjectRef root_space(void);
   ///////////
@@ -1375,6 +1375,7 @@ class Rps_Value
 public:
   // the maximal depth of the inheritance graph. An arbitrary, but small limit.
   static constexpr unsigned maximal_inheritance_depth = 32;
+  static constexpr unsigned debug_maxdepth= 3;
   /// various C++ tags
   struct Rps_IntTag {};
   struct Rps_DoubleTag {};
@@ -1476,8 +1477,8 @@ public:
   inline const Rps_LexTokenZone* to_lextoken(void) const;
   inline const std::string to_cppstring(std::string defstr= "") const;
   inline Rps_HashInt valhash() const noexcept;
-  inline void output(std::ostream&out, unsigned depth=0) const;
   static constexpr unsigned max_output_depth = 5;
+  inline void output(std::ostream&out, unsigned depth=0, unsigned maxdepth= max_output_depth) const;
   Rps_Value get_attr(Rps_CallFrame*stkf, const Rps_ObjectRef obattr) const;
   Rps_Value get_physical_attr(const Rps_ObjectRef obattr) const;
   inline void clear(void);
@@ -1547,20 +1548,26 @@ static_assert(alignof(Rps_Value) == alignof(void*),
 
 
 ////////////////////////////////////////////////////////////////
-//// utility class to output a value with a given depth to some std::ostream
-//// typical usage: RPS_DEBUG_LOG("v1=" << Rps_OutputValue(v1, 3));
+//// utility class to output a value with a given depth and maximal depth to some std::ostream
+//// typical usage: RPS_DEBUG_LOG("v1=" << Rps_OutputValue(v1, /*depth:*/3, /*maxdepth:*/5));
 class Rps_OutputValue {
   friend class Rps_Value;
   const Rps_Value _out_val;
-  const int _out_depth;
+  const unsigned _out_depth;
+  const unsigned _out_maxdepth;
   static constexpr unsigned out_default_depth=3;
 public:
-  Rps_OutputValue(const Rps_Value val, unsigned depth=out_default_depth) : _out_val(val), _out_depth(depth) {};
+  Rps_OutputValue(const Rps_Value val, unsigned depth, unsigned maxdepth)
+    : _out_val(val), _out_depth(depth), _out_maxdepth(maxdepth) {};
   ~Rps_OutputValue() {};
+  unsigned depth_out() const { return _out_depth; };
+  unsigned maxdepth_out() const { return _out_maxdepth; };
+  const Rps_Value value_out() const { return _out_val; };
   void do_output(std::ostream& out) const; /// in morevalues_rps.cc
 };                              // end class Rps_OutputValue
 
 
+#warning TODO: maybe rps_print_value and rps_print_ptr_value need depth and maxdepth arguments?
 extern "C" void rps_print_value(const Rps_Value val);
 extern "C" void rps_print_ptr_value(const void*v);
 
@@ -2221,7 +2228,7 @@ public:
   virtual void dump_scan(Rps_Dumper* du, unsigned depth) const =0;
   virtual Json::Value dump_json(Rps_Dumper* du) const =0;
   virtual Rps_HashInt val_hash () const =0;
-  virtual void val_output(std::ostream& outs, unsigned depth) const =0;
+  virtual void val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const =0;
   virtual bool equal(const Rps_ZoneValue&zv) const =0;
   virtual bool less(const Rps_ZoneValue&zv) const =0;
   inline bool operator == (const Rps_ZoneValue&zv) const;
@@ -2311,7 +2318,7 @@ public:
   {
     return (sizeof(Rps_String)+_bytsiz+1)/sizeof(void*);
   };
-  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual void val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const;
   virtual void dump_scan(Rps_Dumper*, unsigned) const {};
   virtual Json::Value dump_json(Rps_Dumper*) const;
   static const Rps_String* make(const char*cstr, int len= -1);
@@ -2371,7 +2378,7 @@ protected:
     return Json::Value(_dval);
   };
 public:
-  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual void val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const;
   double dval() const
   {
     return _dval;
@@ -2412,7 +2419,7 @@ public:
     : std::deque<Rps_Value>(il), dqu_srcfil(sfil), dqu_srclin(lin) {};
   Rps_DequVal(const std::vector<Rps_Value>& vec,const char*sfil=nullptr, int lin=0);
   Rps_DequVal(const Json::Value&jv, Rps_Loader*ld,const char*sfil=nullptr, int lin=0);
-  void output(std::ostream&out, unsigned depth=0) const;
+  void output(std::ostream&out, unsigned depth, unsigned maxdepth) const;
   Json::Value dump_json(Rps_Dumper*du) const;
   virtual void dump_scan(Rps_Dumper* du, unsigned depth) const;
   void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth) const;
@@ -2470,7 +2477,7 @@ public:
                                Rps_ObjectRef lexkind, Rps_Value lexval, const Rps_String*sourcev);
   virtual ~Rps_TokenSource();
   void display_current_line_with_cursor(std::ostream&out) const;
-  virtual void output (std::ostream&out) const = 0;
+  virtual void output (std::ostream&out, unsigned depth, unsigned maxdepth) const = 0;
   /// TODO: the display method for token source would also show the cursor in a fancy way,
   /// inspired by GCC-12 error messages.  Maybe like
   /// ***** line 345 "abcdef" col 2
@@ -2562,7 +2569,7 @@ public:
 
 inline std::ostream& operator << (std::ostream&out, Rps_TokenSource& toksrc)
 {
-  toksrc.output(out);
+  toksrc.output(out, 0, Rps_Value::debug_maxdepth);
   return out;
 }
 
@@ -2597,7 +2604,7 @@ class Rps_StringTokenSource : public Rps_TokenSource {
   const std::string toksrcstr_str;
 public:
   Rps_StringTokenSource(std::string inpstr, std::string name);
-  virtual void output(std::ostream&out) const;
+  virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const;
   virtual  ~Rps_StringTokenSource();
   virtual bool get_line();
   const std::string str() const { return toksrcstr_str; };
@@ -2655,7 +2662,7 @@ public:
   int lxline() const { return lex_lineno; };
   int lxcol() const { return lex_colno; };
   static Rps_ObjectRef the_lexical_token_class(void);
-  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual void val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const;
   virtual uint32_t wordsize() const
   {// we need to round the 64 bits word size up, hence...
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
@@ -3000,7 +3007,7 @@ public:
   {
     return obhash();
   };
-  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual void val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const;
   virtual bool equal(const Rps_ZoneValue&zv) const;
   virtual bool less(const Rps_ZoneValue&zv) const;
   virtual void mark_gc_inside(Rps_GarbageCollector&gc);
@@ -3277,7 +3284,7 @@ public:
   static const Rps_SetOb*collect(const std::initializer_list<Rps_Value>&valil);
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
-  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual void val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const;
   virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
   /// gives the element index, or a negative number if not found
   inline int element_index(const Rps_ObjectRef obelem) const;
@@ -3325,7 +3332,7 @@ public:
   static const Rps_TupleOb*collect(const std::initializer_list<Rps_Value>&valil);
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
-  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual void val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const;
   virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
   /* find then compute the index of the first component equal to a
      given object, not smaller than a starting index, or -1; if startix
@@ -3502,7 +3509,7 @@ protected:
 public:
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
-  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual void val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const;
   virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
   /// make a closure with given connective and values
   static Rps_ClosureZone* make(Rps_ObjectRef connob, const std::initializer_list<Rps_Value>& valil);
@@ -3596,7 +3603,7 @@ public:
   const Rps_Value* const_sons() const { return raw_const_data_sons(); };
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
-  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual void val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const;
   Rps_ObjectRef get_class(void) const { return conn(); };
   const Rps_SetOb* set_attributes(void) const;
   virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
@@ -3668,7 +3675,7 @@ public:
   {
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
   };
-  virtual void val_output(std::ostream& outs, unsigned depth) const;
+  virtual void val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const;
   virtual bool equal(const Rps_ZoneValue&zv) const;
   virtual bool less(const Rps_ZoneValue&zv) const;
   static Rps_JsonZone* load_from_json(Rps_Loader*ld, const Json::Value& jv);
@@ -3681,7 +3688,7 @@ public:
 
 class Rps_ProtoCallFrame;
 typedef Rps_ProtoCallFrame Rps_CallFrame;
-typedef void Rps_CallFrameOutputSig_t(std::ostream&, const Rps_ProtoCallFrame*);
+typedef void Rps_CallFrameOutputSig_t(std::ostream&/*out*/, const Rps_ProtoCallFrame*/*frame*/,unsigned/*depth*/,unsigned /*maxdepth*/);
 ////////////////////////////////////////////////////////////////
 //// the common superclass of our call frames
 class Rps_ProtoCallFrame : public Rps_TypedZone
@@ -3772,7 +3779,7 @@ public:
   Rps_ObjectRef call_frame_descriptor() const { return cfram_descr; };
   Rps_Value call_frame_state() const { return cfram_state; };
   Rps_ClosureValue call_frame_closure() const { return cfram_clos; };
-  void output(std::ostream&out, int depth=0) const;
+  void output(std::ostream&out, unsigned depth=0, unsigned maxdepth=0) const;
   unsigned call_frame_depth(void) const {
     unsigned d=0;
     for (Rps_CallFrame const*curf = this; curf && is_good_call_frame(curf); curf=curf->cfram_prev) d++;

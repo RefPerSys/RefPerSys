@@ -640,8 +640,13 @@ Rps_LexTokenZone::dump_json(Rps_Dumper*du) const
 
 
 void
-Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
+Rps_LexTokenZone::val_output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
+  if (depth > maxdepth)
+    {
+      out << "??";
+      return;
+    }
   bool showchunk = false;
   if (lex_serial>0)
     out << "LexToken#" << lex_serial << "{";
@@ -669,13 +674,13 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
     out<<"°°nul°°";
   else
     out<<"kind:" << lex_kind;
-  if (depth > Rps_Value::max_output_depth)
+  if (depth > Rps_Value::max_output_depth || depth > maxdepth)
     {
       out << "...}";
       return;
     };
   out << ", val=";
-  lex_val.output(out, depth+1);
+  lex_val.output(out, depth+1,maxdepth);
   if (lex_val.is_object() && depth<=1)
     {
       Rps_ObjectRef obr = lex_val.as_object();
@@ -696,7 +701,8 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned int depth) const
                       for (unsigned k=depth; k>0; k--) out << " ";
                     }
                   else if (ix>0) out << ", ";
-                  out << "["<< ix << "]:" << paylvect->at(ix);
+                  out << "["<< ix << "]:";
+                  paylvect->at(ix).output(out, depth+1, maxdepth);
                 }
               out << "⟫";
             }

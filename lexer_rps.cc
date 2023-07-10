@@ -301,8 +301,13 @@ Rps_StringTokenSource::get_line()
 
 
 void
-Rps_StringTokenSource::output (std::ostream&out) const
+Rps_StringTokenSource::output (std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
+  if (depth > maxdepth)
+    {
+      out << "??";
+      return;
+    };
   std::string abbrev = toksrcstr_str;
   auto firstnl = abbrev.find('\n');
   if (firstnl>0 && firstnl<toksrcstr_str.length())
@@ -340,7 +345,7 @@ Rps_StringTokenSource::output (std::ostream&out) const
 void
 Rps_StringTokenSource::display(std::ostream&out) const
 {
-  output(out);
+  output(out, 0, Rps_Value::debug_maxdepth);
   out << std::endl;
   display_current_line_with_cursor(out);
 } // end Rps_StringTokenSource::display
