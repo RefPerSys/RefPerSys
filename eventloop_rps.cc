@@ -178,6 +178,7 @@ jsonrpc_initialize_rps(void)
 } // end jsonrpc_initialize_rps
 
 
+
 /* TODO: an event loop using poll(2) and also handling SIGCHLD using
    https://man7.org/linux/man-pages/man2/signalfd.2.html
  */
@@ -186,6 +187,7 @@ rps_event_loop(void)
 {
   static int nbcall;
   int nbpoll=0;
+  long pollcount=0;
   double startelapsedtime=rps_elapsed_real_time();
   double startcputime=rps_process_cpu_time();
   rps_poll_delay_millisec= 1500; // milliseconds
@@ -226,6 +228,8 @@ rps_event_loop(void)
                );
   while (!rps_stop_event_loop_flag.load())
     {
+      char elapsbuf[32];
+      memset(elapsbuf, 0, sizeof(elapsbuf));
       struct pollfd pollarr[RPS_MAXPOLL_FD+1];
       memset ((void*)&pollarr, 0, sizeof(pollarr));
 #define EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl) do { explarr[Ix] = Fil ":" #Lin " " Expl; } while(0)
@@ -354,9 +358,6 @@ rps_event_loop(void)
                 }
                                               )
                     << std::flush);
-                if (Rps_Agenda::agenda_timeout > 0
-                    && rps_elapsed_real_time() >= Rps_Agenda::agenda_timeout)
-                  rps_stop_agenda_mechanism();
               }
 #warning some missing code to handle timerfd...
           };
@@ -438,12 +439,24 @@ rps_event_loop(void)
             }
         };
       errno = 0;
+      if (Rps_Agenda::agenda_timeout > 0
+          && rps_elapsed_real_time() >= Rps_Agenda::agenda_timeout)
+        {
+          RPS_INFORMOUT("stopping agenda mechanism because of agenda timeout" << std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/timeout"));
+          rps_stop_agenda_mechanism();
+          break;
+        };
+      errno = 0;
       int respoll = poll(pollarr, nbpoll, (rps_poll_delay_millisec*(debugpoll?3:1)));
+      pollcount++;
+      if (pollcount %2 && debugpoll)
+        snprintf(elapsbuf, sizeof(elapsbuf), " elti: %.3fs", rps_elapsed_real_time());
       if (respoll>0)
         {
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                "respoll=%d loop%ld\n", respoll, nbloops.load());
+                                "respoll=%d loop%ld%s\n", respoll, nbloops.load(), elapsbuf);
           int nbrev=0;
           for (int pix=0; pix<nbpoll; pix++)
             {
