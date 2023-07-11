@@ -39,6 +39,9 @@ const char rps_agenda_gitid[]= RPS_GITID;
 extern "C" const char rps_agenda_date[];
 const char rps_agenda_date[]= __DATE__;
 
+unsigned long rps_run_delay;
+
+double Rps_Agenda::agenda_timeout;
 
 std::recursive_mutex Rps_Agenda::agenda_mtx_;
 std::condition_variable_any Rps_Agenda::agenda_changed_condvar_;
@@ -62,6 +65,13 @@ Rps_Agenda::initialize(void)
   agenda_priority_names[AgPrio_Low]= "low_priority";
   agenda_priority_names[AgPrio_Normal]= "normal_priority";
   agenda_priority_names[AgPrio_High]= "high_priority";
+  if (rps_run_delay > 0)
+    {
+      agenda_timeout =  rps_elapsed_real_time() + (double)rps_run_delay;
+      RPS_ASSERT(agenda_timeout >0.0);
+    }
+  else
+    agenda_timeout = 0.0;
 } // end Rps_Agenda::initialize
 
 void
@@ -207,6 +217,9 @@ Rps_Agenda::run_agenda_worker(int ix)
     if (cnt>=maxloop) // won't happen in practice
       RPS_FATALOUT("run_agenda_worker: failed to be in agenda_thread_array_[" << ix << "]");
   }
+  ////
+  RPS_POSSIBLE_BREAKPOINT();
+  ////
   while (agenda_is_running_.load())
     {
       if (Rps_Agenda::agenda_cumulw_gc_.load() + Rps_Agenda::agenda_gc_threshold

@@ -246,6 +246,15 @@ struct argp_option rps_progoptions[] =
     "$REFPERSYS_HOME or $HOME\n", ///
     /*group:*/0 ///
   },
+  /* ======= Run RefPerSys for a limited time ======= */
+  {/*name:*/ "run-delay", ///
+   /*key:*/ RPSPROGOPT_RUN_DELAY, ///
+    /*arg:*/ "RUNDELAY", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Run RefPerSys agenda for a limited time,\n"
+    " e.g. --run-delay=50s or --run-delay=2m or --run-delay=5h\n", ///
+    /*group:*/0 ///
+  },
   /* ======= run a shell command with system(3) after load ======= */
   {/*name:*/ "run-after-load", ///
     /*key:*/ RPSPROGOPT_RUN_AFTER_LOAD, ///

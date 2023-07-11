@@ -630,6 +630,7 @@ enum rps_progoption_en
   RPSPROGOPT_NO_ASLR,
   RPSPROGOPT_NO_QUICK_TESTS,
   RPSPROGOPT_TEST_REPL_LEXER,
+  RPSPROGOPT_RUN_DELAY,
   RPSPROGOPT_RUN_AFTER_LOAD,
   RPSPROGOPT_PLUGIN_AFTER_LOAD,
   RPSPROGOPT_PLUGIN_ARG,
@@ -652,6 +653,7 @@ extern "C" void rps_do_create_fifos_from_prefix(void);
 
 extern "C" void rps_extend_env(void);
 
+extern "C" unsigned long rps_run_delay; // in seconds
 ////////////////////////////////////////////////////////////////
 extern "C" bool rps_syslog_enabled;
 
@@ -4869,6 +4871,9 @@ class Rps_Agenda { /// all member functions are static...
   friend rpsldpysig_t rpsldpy_agenda;
   friend void rps_run_agenda_mechanism(int nbjobs);
   friend void rps_stop_agenda_mechanism(void);
+  static double agenda_timeout; // elapsed real time when agenda
+				// should stop running, related to
+				// --run-deplay option...
 public:
   enum agenda_prio_en {
     AgPrio_Idle= -1,

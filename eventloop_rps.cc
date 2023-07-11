@@ -354,9 +354,11 @@ rps_event_loop(void)
                 }
                                               )
                     << std::flush);
-                RPS_FATALOUT("unimplemented timerfd handling of " << (nbr/sizeof(std::uint64_t)) << " int64s.");
+                if (Rps_Agenda::agenda_timeout > 0
+                    && rps_elapsed_real_time() >= Rps_Agenda::agenda_timeout)
+                  rps_stop_agenda_mechanism();
               }
-#warning missing code to handle timerfd...
+#warning some missing code to handle timerfd...
           };
         };
       if (rps_eventloopdata.eld_selfpipereadfd>0)

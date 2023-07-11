@@ -687,6 +687,45 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         };
     }
     return 0;
+    case RPSPROGOPT_RUN_DELAY:
+    {
+      int pos= -1;
+      long dl= -1;
+      /// example argument: --run-delay=45s for elapsed seconds
+      if ((pos= -1), sscanf(arg, "%li s%n", &rps_run_delay, &pos) > 0
+          && rps_run_delay>0 && pos>0)
+        RPS_INFORMOUT("RefPerSys will run its agenda for "
+                      <<  rps_run_delay
+                      << " elapsed seconds.");
+      ///
+      /// example argument: --run-delay=10m for elapsed minutes
+      else if ( ((pos= -1), (dl=0)),
+                sscanf(arg, "%li m%n", &dl, &pos) > 0
+                && dl>0 && pos>0)
+        {
+          rps_run_delay = dl*60;
+          RPS_INFORMOUT("RefPerSys will run its agenda for "
+                        << dl << " minutes so "
+                        << rps_run_delay << " elapsed seconds");
+        }
+
+      ///
+      /// example argument: --run-delay=3h for elapsed hours
+      else if ( ((pos= -1), (dl=0)),
+                sscanf(arg, "%li h%n", &dl, &pos) > 0
+                && dl>0 && pos>0)
+        {
+          rps_run_delay = dl*3600;
+          RPS_INFORMOUT("RefPerSys will run its agenda for "
+                        << dl << " hours so " << rps_run_delay
+                        << " elapsed seconds");
+        }
+      else
+        RPS_FATAL("invalid --run-delay=%s argument.\n"
+                  "\t (should be like 90s or 20m or 2h)",
+                  arg);
+    }
+    return 0;
     case RPSPROGOPT_RANDOMOID:
     {
       int nbrand = atoi(arg);
