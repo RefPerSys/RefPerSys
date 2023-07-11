@@ -1234,6 +1234,8 @@ main (int argc, char** argv)
 	     (rps_is_link_time_optimized!=0)?"link-time":"normal");
   if (!mycwd)
     RPS_FATALOUT("getcwd failed for " << (sizeof(cwdbuf)-2) << " bytes.");
+  if (rps_run_delay > 0 && rps_batch)
+    RPS_FATALOUT("a run delay of " << rps_run_delay << " seconds is incompatible with the batch mode");
   RPS_DEBUG_PRINTF(REPL, "main is at @%p, rps_end_of_main is at @%p (pid %d on %s)",
 		   (void*)main,
 		   (void*)rps_end_of_main,
