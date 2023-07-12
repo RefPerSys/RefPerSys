@@ -38,10 +38,10 @@
 
 
 
-extern "C" const char rps_lightgen_gitid[];
-const char rps_lightgen_gitid[]= RPS_GITID;
+extern "C" const char rps_cppgen_gitid[];
+const char rps_cppgen_gitid[]= RPS_GITID;
 
-extern "C" const char rps_lightgen_date[];
-const char rps_lightgen_date[]= __DATE__;
+extern "C" const char rps_cppgen_date[];
+const char rps_cppgen_date[]= __DATE__;
 
 #warning incomplete lightgen_rps.cc file
