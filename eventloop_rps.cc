@@ -5,7 +5,8 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the JSONRPC code to user-interface to an external process (using JSONRPC protocol)
+ *      It has the event loop and some JSONRPC code to user-interface
+ *      to an external process (using JSONRPC protocol)
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -39,6 +40,9 @@ const char rps_eventloop_gitid[]= RPS_GITID;
 
 extern "C" const char rps_eventloop_date[];
 const char rps_eventloop_date[]= __DATE__;
+
+// default or initial delay to poll(2) in milliseconds.
+#define RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC 1600
 
 enum self_pipe_code_en
 {
@@ -94,7 +98,7 @@ struct event_loop_data_st rps_eventloopdata;
  **/
 static std::atomic<bool> event_loop_is_active;
 
-static std::atomic<long> nbloops;
+static std::atomic<long> event_nbloops;
 
 
 extern "C" void rps_self_pipe_write_byte(unsigned char b);
@@ -132,11 +136,15 @@ rps_is_fifo(std::string path)
 void
 rps_initialize_event_loop(void)
 {
-  static int count;
-  if (!rps_is_main_thread())
-    RPS_FATALOUT("rps_initialize_event_loop should be called only from the main thread");
-  if (count++ > 0)
-    RPS_FATALOUT("rps_initialize_event_loop should be called once");
+  /// rps_initialize_event_loop should be called once, early, from the
+  /// main thread.
+  {
+    static int count;
+    if (!rps_is_main_thread())
+      RPS_FATALOUT("rps_initialize_event_loop should be called only from the main thread");
+    if (count++ > 0)
+      RPS_FATALOUT("rps_initialize_event_loop should be called once");
+  };
   /**
    * create the pipe to self
    **/
@@ -148,7 +156,11 @@ rps_initialize_event_loop(void)
     RPS_ASSERT(rps_eventloopdata.eld_selfpipereadfd > 0);
     rps_eventloopdata.eld_selfpipewritefd = pipefdarr[1];
   }
+  if (rps_poll_delay_millisec==0)
+    rps_poll_delay_millisec = RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC;
 } // end rps_initialize_event_loop
+
+
 
 /**
    Function jsonrpc_initialize_rps is called once from main, when
@@ -185,18 +197,25 @@ jsonrpc_initialize_rps(void)
 void
 rps_event_loop(void)
 {
-  static int nbcall;
-  int nbpoll=0;
+  /// see https://man7.org/linux/man-pages/man2/poll.2.html
+  int nbfdpoll=0; /// number of polled file descriptors, second argument to poll(2)
   long pollcount=0;
   double startelapsedtime=rps_elapsed_real_time();
   double startcputime=rps_process_cpu_time();
-  rps_poll_delay_millisec= 1500; // milliseconds
   std::array<std::function<void(Rps_CallFrame*, int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
-  if (!rps_is_main_thread())
-    RPS_FATALOUT("rps_event_loop should be called only from the main thread");
-  if (nbcall++>0)
-    RPS_FATALOUT("rps_event_loop has already been called " << nbcall << " times");
-
+  /// check that rps_event_loop is called exactly once from main
+  /// thread, and after rps_initialize_event_loop...
+  {
+    static int nbcall;
+    if (!rps_is_main_thread())
+      RPS_FATALOUT("rps_event_loop should be called only once, and from the main thread");
+    if (nbcall++>0)
+      RPS_FATALOUT("rps_event_loop has already been called " << nbcall << " times");
+    /// The rps_poll_delay_millisec should have been set by a prior call
+    /// ... to rps_initialize_event_loop above.
+    if (rps_poll_delay_millisec<=0)
+      RPS_FATALOUT("the poll event loop has not being properly initialized");
+  };
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  /*callerframe:*/RPS_NULL_CALL_FRAME, //
                  /** locals **/
@@ -235,16 +254,16 @@ rps_event_loop(void)
 #define EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl) do { explarr[Ix] = Fil ":" #Lin " " Expl; } while(0)
 #define EXPLAIN_EVFD_ATBIS(Fil,Lin,Ix,Expl)  EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl)
 #define EXPLAIN_EVFD_RPS(Ix,Expl) EXPLAIN_EVFD_ATBIS(__FILE__,__LINE__,(Ix),Expl)
-      nbloops.fetch_add(1);
+      event_nbloops.fetch_add(1);
       memset ((void*)&pollarr, 0, sizeof(pollarr));
-      nbpoll=0;
+      nbfdpoll=0;
       struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
       if (fdp.fifo_ui_wcmd >0)
         {
           /// JSONRPC commands written from RefPerSys to the GUI process...
           /// could copy paste most of the few lines below
-          RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
-          int pix = nbpoll++;
+          RPS_ASSERT(nbfdpoll<RPS_MAXPOLL_FD);
+          int pix = nbfdpoll++;
           pollarr[pix].fd = fdp.fifo_ui_wcmd;
           pollarr[pix].events = POLLOUT;
           handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
@@ -259,8 +278,8 @@ rps_event_loop(void)
       if (fdp.fifo_ui_rout>0)
         {
           /// JSONRPC responses/events sent by the GUI process to RefPerSys
-          RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
-          int pix = nbpoll++;
+          RPS_ASSERT(nbfdpoll<RPS_MAXPOLL_FD);
+          int pix = nbfdpoll++;
           pollarr[pix].fd = fdp.fifo_ui_rout;
           pollarr[pix].events = POLLIN;
           EXPLAIN_EVFD_RPS(pix, "JsonRpc responses from GUI");
@@ -280,8 +299,8 @@ rps_event_loop(void)
       if (rps_eventloopdata.eld_sigfd>0)
         {
           /// signals transformed to data with signalfd(2)
-          RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
-          int pix = nbpoll++;
+          RPS_ASSERT(nbfdpoll<RPS_MAXPOLL_FD);
+          int pix = nbfdpoll++;
           pollarr[pix].fd = rps_eventloopdata.eld_sigfd;
           pollarr[pix].events = POLLIN;
           EXPLAIN_EVFD_RPS(pix, "signalfd");
@@ -335,8 +354,8 @@ rps_event_loop(void)
       if (rps_eventloopdata.eld_timfd>0)
         {
           /// timers transformed to data with timerfd_create(2)
-          RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
-          int pix = nbpoll++;
+          RPS_ASSERT(nbfdpoll<RPS_MAXPOLL_FD);
+          int pix = nbfdpoll++;
           pollarr[pix].fd = rps_eventloopdata.eld_timfd;
           pollarr[pix].events = POLLIN;
           EXPLAIN_EVFD_RPS(pix, "timerfd");
@@ -364,8 +383,8 @@ rps_event_loop(void)
         };
       if (rps_eventloopdata.eld_selfpipereadfd>0)
         {
-          RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
-          int pix = nbpoll++;
+          RPS_ASSERT(nbfdpoll<RPS_MAXPOLL_FD);
+          int pix = nbfdpoll++;
           pollarr[pix].fd = rps_eventloopdata.eld_selfpipereadfd;
           pollarr[pix].events = POLLIN;
           EXPLAIN_EVFD_RPS(pix, "self_pipe_read_fd");
@@ -390,8 +409,8 @@ rps_event_loop(void)
       }
       if (rps_eventloopdata.eld_selfpipewritefd>0 && wantselfwrite)
         {
-          RPS_ASSERT(nbpoll<RPS_MAXPOLL_FD);
-          int pix = nbpoll++;
+          RPS_ASSERT(nbfdpoll<RPS_MAXPOLL_FD);
+          int pix = nbfdpoll++;
           pollarr[pix].fd = rps_eventloopdata.eld_selfpipewritefd;
           pollarr[pix].events = POLLOUT;
           EXPLAIN_EVFD_RPS(pix, "self_pipe_write_fd");
@@ -416,7 +435,7 @@ rps_event_loop(void)
                        || RPS_DEBUG_ENABLED(GUI);
       if (debugpoll)
         {
-          for (int pix=0; pix<nbpoll; pix++)
+          for (int pix=0; pix<nbfdpoll; pix++)
             {
               std::string evstr;
               if (pollarr[pix].events & POLLIN)
@@ -435,20 +454,21 @@ rps_event_loop(void)
                 evstr += " POLLNVAL";
               rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
                                   "poll[%d] loop%ld:fd#%d:%s,%s\n",
-                                  pix, nbloops.load(), pollarr[pix].fd, explarr[pix], evstr.c_str());
+                                  pix, event_nbloops.load(), pollarr[pix].fd, explarr[pix], evstr.c_str());
             }
         };
       errno = 0;
       if (Rps_Agenda::agenda_timeout > 0
           && rps_elapsed_real_time() >= Rps_Agenda::agenda_timeout)
         {
-          RPS_INFORMOUT("stopping agenda mechanism because of agenda timeout" << std::endl
+          RPS_INFORMOUT("stopping agenda mechanism because of agenda timeoutafter "
+                        << pollcount << " polling." << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/timeout"));
           rps_stop_agenda_mechanism();
           break;
         };
       errno = 0;
-      int respoll = poll(pollarr, nbpoll, (rps_poll_delay_millisec*(debugpoll?3:1)));
+      int respoll = poll(pollarr, nbfdpoll, (rps_poll_delay_millisec*(debugpoll?3:1)));
       pollcount++;
       if (pollcount %2 && debugpoll)
         snprintf(elapsbuf, sizeof(elapsbuf), " elti: %.3fs", rps_elapsed_real_time());
@@ -456,9 +476,9 @@ rps_event_loop(void)
         {
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                "respoll=%d loop%ld%s\n", respoll, nbloops.load(), elapsbuf);
+                                "respoll=%d loop%ld%s\n", respoll, event_nbloops.load(), elapsbuf);
           int nbrev=0;
-          for (int pix=0; pix<nbpoll; pix++)
+          for (int pix=0; pix<nbfdpoll; pix++)
             {
               if (pollarr[pix].revents != 0)
                 {
@@ -492,14 +512,14 @@ rps_event_loop(void)
             };
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                "respoll=%d nbrev=%d nbloops=%ld\n",
-                                respoll, nbrev, nbloops.load());
+                                "respoll=%d nbrev=%d event_nbloops=%ld\n",
+                                respoll, nbrev, event_nbloops.load());
         }
       else if (respoll==0)   // timed out poll
         {
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                "poll timeout loop%ld\n", nbloops.load());
+                                "poll timeout loop%ld\n", event_nbloops.load());
         }
       else if (errno != EINTR)
         RPS_FATALOUT("rps_event_loop failure : " << strerror(errno));
@@ -507,7 +527,7 @@ rps_event_loop(void)
         {
           if (debugpoll)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                "poll interrupt loop%ld\n", nbloops.load());
+                                "poll interrupt loop%ld\n", event_nbloops.load());
         };
       fflush(nullptr);
     };		   // end while not rps_stop_event_loop_flag
@@ -517,7 +537,7 @@ rps_event_loop(void)
 
   double endelapsedtime=rps_elapsed_real_time();
   double endcputime=rps_process_cpu_time();
-  RPS_INFORMOUT("ended rps_event_loop " << nbloops.load() << " times in pid " << (int)getpid() << " on " << rps_hostname()
+  RPS_INFORMOUT("ended rps_event_loop " << event_nbloops.load() << " times in pid " << (int)getpid() << " on " << rps_hostname()
                 << " in " << (endelapsedtime-startelapsedtime) << " elapsed and "
                 << (endcputime-startcputime) << " cpu seconds"
                 << " git " << rps_shortgitid << std::endl
@@ -576,7 +596,7 @@ rps_event_loop_counter(void)
   if (rps_stop_event_loop_flag.load())
     return -1;
   if (event_loop_is_active.load())
-    return nbloops.load();
+    return event_nbloops.load();
   return -1L;
 } // end rps_event_loop_counter
 
