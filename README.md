@@ -13,7 +13,9 @@ alternative to [CLIPSrules](https://clipsrules.net/).
 
 Contributions to *RefPerSys* are welcome. Contact by email [Basile
 Starynkevitch](http://starynkevitch.net/Basile/) (near Paris, France)
-at `basile@starynkevitch.net` or Abhishek Chakravarti (near Kolkotta,
+at `basile@starynkevitch.net` (or at office, [CEA
+LIST](https://www-list.cea.fr/) till end of september 2023, at
+`basile.starynkevitch@cea.fr`) or Abhishek Chakravarti (near Kolkotta,
 India) at `abhishek@taranjali.org`
 
 ## A research project
