@@ -209,23 +209,61 @@ bool
 Rps_Loader::is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::string&linbuf, Rps_Id*pobid)
 {
   const char*reason = nullptr;
+  const char*oidstart = nullptr;
+  const char*eol = nullptr;
+  const char*end = nullptr;
+  const char*linestart = nullptr;
+  char reasonbuf[48];
+  Rps_Id oid;
+  bool ok=false;
+  char c = 0;
+  int cix= -1;
+  size_t linelen = linbuf.size();
   if (pobid)
     *pobid = Rps_Id(nullptr);
-  Rps_Id oid;
-  const char*end=nullptr;
-  bool ok=false;
-  if (linbuf[0] != '/' || linbuf[1] != '/'
+  if (linelen < 8 || linbuf[0] != '/' || linbuf[1] != '/'
       || linbuf[2] != '+'
       || linbuf[3] != 'o'
-      || linbuf[4] != 'b')
+      || linbuf[4] != 'b'
+      || linbuf[5] != '_')
     return false;
-  if (linbuf.size() < strlen ("//+ob") + Rps_Id::nbchars)
+  if (linelen < strlen ("//+ob") + Rps_Id::nbchars)
     {
       reason = "too short";
       goto bad;
     }
+  linestart = linbuf.c_str();
+  eol = linestart+linelen;
+  oidstart = linestart + strlen("//+ob");
+  char oidbuf[Rps_Id::nbchars+8];
+  memset (oidbuf, 0, sizeof(oidbuf));
+  oidbuf[0] = '_';
+  for (cix=1; cix<(int)Rps_Id::nbchars; cix++)
+    {
+      c = oidstart[cix];
+      switch (c)
+        {
+        case '0' ... '9':
+        case 'a' ... 'z':
+        case 'A' ... 'Z':
+          oidbuf[cix] = c;
+          continue;
+        default:
+          memset (reasonbuf, 0, sizeof(reasonbuf));
+          if (c > ' ' && c < 127)
+            snprintf (reasonbuf, sizeof(reasonbuf)-1,
+                      "bad character %c at column %d",
+                      c, (int)(oidstart+cix-linestart));
+          else
+            snprintf (reasonbuf, sizeof(reasonbuf)-1,
+                      "bad character code %d (\\%#02x) at colum %d",
+                      (int)c, (int)c, (int)( oidstart+cix-linestart));
+          reason = reasonbuf;
+          goto bad;
+        } // end case c
+    };
   {
-    Rps_Id tempoid(linbuf.c_str()+strlen("//+ob"), &end, &ok);
+    Rps_Id tempoid(oidbuf, &end, &ok);
     if (!end || (*end && !isspace(*end) && *end != ':'))
       {
         reason= "too long";
