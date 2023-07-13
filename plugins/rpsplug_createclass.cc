@@ -1,5 +1,6 @@
 // see http://refpersys.org/
 // passed to commits after dd0c90db2992da (of Dec 28, 2022) of RefPerSys
+// with improvement after  9d1db4092 (of July 13, 2023)
 // GPLv3+ licensed
 // © Copyright 2023 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys class
@@ -26,6 +27,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                 );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*supername = rps_get_extra_arg("super");
+  const char*comment = rps_get_extra_arg("comment");
   const char*rooted = rps_get_extra_arg("rooted");
   bool isrooted = false;
   if (!plugarg || plugarg[0]==(char)0)
