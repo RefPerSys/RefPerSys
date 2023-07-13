@@ -32,8 +32,17 @@ printf "start %s at %s: C++ file %s, plugin file %s\n" $0 "$curdate" $cppfile $p
 logger --id=$$ -s  -t "$0:" "starting" cppfile= $1 pluginfile= $2 curdate= $curdate
 eval $(make print-plugin-settings)
 
-plugincppflags=(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSCOMPILEFLAGS=/ { for (i=1; i<=NF; i++) print $i; }')
-pluginlinkerflags=(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSLIBES=/ { for (i=1; i<=NF; i++) print $i; }')
+if /usr/bin/fgrep -q '@RPSCOMPILEFLAGS=' $cppfile ; then
+    plugincppflags=$(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSCOMPILEFLAGS=/ { for (i=1; i<=NF; i++) print $i; }')
+else
+    plugincppflags=()
+fi
+
+if /usr/bin/fgrep -q '@RPSLIBES=' $cppfile ; then
+    pluginlinkerflags=$(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSLIBES=/ { for (i=1; i<=NF; i++) print $i; }')
+else
+    pluginlinkerflags=()
+fi
 
 
 
