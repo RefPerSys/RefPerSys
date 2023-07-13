@@ -2,11 +2,11 @@
 // passed to commits after  9d1db4092 (of July 13, 2023)
 // GPLv3+ licensed
 // © Copyright 2023 Basile Starynkevitch <basile@starynkevitch.net>
-// This plugin creates a new RefPerSys symbol
+// This plugin creates a new RefPerSys named attribute
 /*****
  * Once compiled, use it for example as:
  * ./refpersys --plugin-after-load=/tmp/rpsplug_createnamedattribute.so \
- *             --plugin-arg=rpsplug_createnamedattribute:new_symbol_name \
+ *             --plugin-arg=rpsplug_createnamedattribute:new_attr_name \
  *             --batch --dump=.
  *
  ****/
@@ -20,6 +20,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                            Rps_ObjectRef obsymbol;
                            Rps_ObjectRef obnamedattr;
                            Rps_Value namestr; // a string
+                           Rps_Value commentstr;
                 );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*comment = rps_get_extra_arg("comment");
@@ -65,6 +66,11 @@ rps_do_plugin(const Rps_Plugin* plugin)
                           _f.namestr);
   _f.obnamedattr->put_attr(RPS_ROOT_OB(_3Q3hJsSgCDN03GTYW5), //symbol∈symbol
 			   _f.obsymbol);
+  if (comment) {
+    _f.commentstr = Rps_StringValue(comment);
+    _f.obnamedattr->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol,
+			     _f.commentstr);
+  }
   paylsymb->symbol_put_value(_f.obnamedattr);
   if (isrooted)
     {
