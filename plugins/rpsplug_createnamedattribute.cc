@@ -5,8 +5,8 @@
 // This plugin creates a new RefPerSys symbol
 /*****
  * Once compiled, use it for example as:
- * ./refpersys --plugin-after-load=/tmp/rpsplug_createsymbol.so \
- *             --plugin-arg=rpsplug_createsymbol:new_symbol_name \
+ * ./refpersys --plugin-after-load=/tmp/rpsplug_createnamedattribute.so \
+ *             --plugin-arg=rpsplug_createnamedattribute:new_symbol_name \
  *             --batch --dump=.
  *
  ****/
@@ -18,6 +18,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
                            Rps_ObjectRef obsymbol;
+                           Rps_ObjectRef obnamedattr;
                            Rps_Value namestr; // a string
                 );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
@@ -56,16 +57,27 @@ rps_do_plugin(const Rps_Plugin* plugin)
   _f.namestr = Rps_Value{std::string(plugarg)};
   _f.obsymbol->put_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG), //"name"∈named_attribute
                           _f.namestr);
+  _f.obnamedattr =
+    Rps_ObjectRef::make_object(&_,
+			       RPS_ROOT_OB(_4pSwobFHGf301Qgwzh), //named_attribute∈class,
+			       Rps_ObjectRef::root_space());
+  _f.obnamedattr->put_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG), //"name"∈named_attribute
+                          _f.namestr);
+  _f.obnamedattr->put_attr(RPS_ROOT_OB(_3Q3hJsSgCDN03GTYW5), //symbol∈symbol
+			   _f.obsymbol);
+  paylsymb->symbol_put_value(_f.obnamedattr);
   if (isrooted)
     {
-      rps_add_root_object(_f.obsymbol);
-      RPS_INFORMOUT("rpsplug_createsymbol added new root symbol " << _f.obsymbol
-                    << " named " << plugarg );
+      rps_add_root_object(_f.obnamedattr);
+      RPS_INFORMOUT("rpsplug_createnamedattribute added new root named attribute " << _f.obnamedattr
+                    << " named " << plugarg
+		    << " with symbol " << _f.obsymbol);
     }
   else
     {
-      RPS_INFORMOUT("rpsplug_createsymbol added new symbol " << _f.obsymbol
-                    << " named " << plugarg);
+      RPS_INFORMOUT("rpsplug_createnamedattribute added new named attribute " << _f.obnamedattr
+                    << " named " << plugarg
+		    << " with symbol " << _f.obsymbol);
     }
 } // end rps_do_plugin
 
@@ -73,6 +85,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./build-plugin.sh plugins/rpsplug_createsymbol.cc /tmp/rpsplug_createsymbol.so" ;;
+ ** compile-command: "cd ..; ./build-plugin.sh plugins/rpsplug_createnamedattribute.cc /tmp/rpsplug_createnamedattribute.so" ;;
  ** End: ;;
  ****************/
