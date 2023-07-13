@@ -24,6 +24,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
                            Rps_ObjectRef obnewclass;
                            Rps_ObjectRef obsymbol;
                            Rps_Value namestr; // a string
+                           Rps_Value commentstr; // a string
                 );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*supername = rps_get_extra_arg("super");
@@ -75,6 +76,11 @@ rps_do_plugin(const Rps_Plugin* plugin)
   /* Create the new obnewclass. */
   _f.obnewclass = Rps_ObjectRef::make_named_class(&_, _f.obsuperclass, std::string{plugarg});
   std::lock_guard<std::recursive_mutex> gunewclass(*(_f.obnewclass->objmtxptr()));
+  if (comment) {
+    _f.commentstr = Rps_StringValue(comment);
+    _f.obnewclass->put_attr(_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
+			    _f.commentstr);
+  }
   /* Create a symbol for the new class name. */
   _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, std::string{plugarg});
   std::lock_guard<std::recursive_mutex> gusymbol(*(_f.obsymbol->objmtxptr()));
