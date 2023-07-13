@@ -1348,9 +1348,9 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
       if (!namestr.empty())
         *pouts << ":" << namestr;
       if (curobr->get_class() == RPS_ROOT_OB(_41OFI3r0S1t03qdB2E)) //class∈class
-	*pouts << "/CLASS";
+        *pouts << "/CLASS";
       if (curobr->get_space() == RPS_ROOT_OB(_8J6vNYtP5E800eCr5q)) //"initial_space"∈space
-	*pouts << "!";
+        *pouts << "!";
       *pouts << std::endl;
       RPS_NOPRINTOUT("Rps_Dumper::write_space_file emits " << (curobr->oid().to_string())
                      << " of hi=" <<  (curobr->oid().hi())
