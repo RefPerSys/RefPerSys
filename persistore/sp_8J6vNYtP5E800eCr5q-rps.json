@@ -3170,7 +3170,7 @@
 
 
 
-//+ob_6T9qz9O6Vlv004js2P/CLASS!
+//+ob_6T9qz9O6Vlv004js2P:midend_code_object/CLASS!
 //∈class
 {
  "oid": "_6T9qz9O6Vlv004js2P",
@@ -3179,6 +3179,10 @@
   	{
   		"at" : "_0jdbikGJFq100dgX1n",
   		"va" : "common superclass for middle-end code objects"
+  	},
+  	{
+  		"at" : "_1EBVGSfW2m200z18rx",
+  		"va" : "midend_code_object"
   	}
   ],
  "class" : "_41OFI3r0S1t03qdB2E",
@@ -3188,7 +3192,7 @@
  "class_symb" : "_1OQAea6dVnK02vBSSW",
  "payload" : "classinfo"
 }
-//-ob_6T9qz9O6Vlv004js2P
+//-ob_6T9qz9O6Vlv004js2P:midend_code_object
 
 
 
