@@ -81,6 +81,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
     _f.obnewclass->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
 			    _f.commentstr);
   }
+  _f.namestr = Rps_Value{std::string(plugarg)};
+  _f.obnewclass->put_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG), //"name"∈named_attribute
+                          _f.namestr);
   /* Create a symbol for the new class name. */
   _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, std::string{plugarg});
   std::lock_guard<std::recursive_mutex> gusymbol(*(_f.obsymbol->objmtxptr()));
@@ -89,9 +92,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
   paylsymb->symbol_put_value(_f.obnewclass);
   _f.obnewclass->put_attr(RPS_ROOT_OB(_3Q3hJsSgCDN03GTYW5), //symbol∈symbol
                           _f.obsymbol);
-  _f.namestr = Rps_Value{std::string(plugarg)};
-  _f.obnewclass->put_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG), //"name"∈named_attribute
-                          _f.namestr);
   {
     _f.obmutsetclass = RPS_ROOT_OB(_4DsQEs8zZf901wT1LH); //"the_mutable_set_of_classes"∈mutable_set
     std::lock_guard<std::recursive_mutex> gumutsetclass(*(_f.obmutsetclass->objmtxptr()));
@@ -103,12 +103,12 @@ rps_do_plugin(const Rps_Plugin* plugin)
     {
       rps_add_root_object(_f.obnewclass);
       RPS_INFORMOUT("rpsplug_createclass added new root class " << _f.obnewclass
-                    << " named " << plugarg << " of super class " << _f.obsuperclass);
+                    << " named " << plugarg << " of super class " << _f.obsuperclass << " and symbol " << _f.obsymbol);
     }
   else
     {
       RPS_INFORMOUT("rpsplug_createclass added new class " << _f.obnewclass
-                    << " named " << plugarg << " of super class " << _f.obsuperclass);
+                    << " named " << plugarg << " of super class " << _f.obsuperclass << " and symbol " << _f.obsymbol);
     }
 } // end rps_do_plugin
 
