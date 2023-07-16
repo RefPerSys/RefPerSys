@@ -21,7 +21,7 @@
 {
  "format" : "RefPerSysFormat2023A",
  "jsoncpp-version" : "1.9.5",
- "nbobjects" : 200,
+ "nbobjects" : 202,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -969,6 +969,20 @@
  "payload" : "classinfo"
 }
 //-ob_1NWEOIzo3WU03mE42Q:rps_output_textedit
+
+
+
+//+ob_1OQAea6dVnK02vBSSW!
+//∈symbol
+{
+ "oid": "_1OQAea6dVnK02vBSSW",
+ "mtime": 1689490454.07,
+ "class" : "_36I1BY2NetN03WjrOv",
+ "payload" : "symbol",
+ "symb_name" : "midend_code_object",
+ "symb_val" : "_6T9qz9O6Vlv004js2P"
+}
+//-ob_1OQAea6dVnK02vBSSW
 
 
 
@@ -2145,6 +2159,7 @@
   	"_6vcJz35mTam01zYLjL",
   	"_6JYterg6iAu00cV9Ye",
   	"_6NVM7sMcITg01ug5TC",
+  	"_6T9qz9O6Vlv004js2P",
   	"_6XLY6QfcDre02922jz",
   	"_7b8jzCpOStA04e0jxs",
   	"_7OrPRWQEg2o043XvK2",
@@ -3152,6 +3167,28 @@
  "symb_name" : "last_name"
 }
 //-ob_6QAanFi9yLx00spBST
+
+
+
+//+ob_6T9qz9O6Vlv004js2P/CLASS!
+//∈class
+{
+ "oid": "_6T9qz9O6Vlv004js2P",
+ "mtime": 1689490454.07,
+ "attrs" : [
+  	{
+  		"at" : "_0jdbikGJFq100dgX1n",
+  		"va" : "common superclass for middle-end code objects"
+  	}
+  ],
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "midend_code_object",
+ "class_super" : "_5yhJGgxLwLp00X0xEQ",
+ "class_symb" : "_1OQAea6dVnK02vBSSW",
+ "payload" : "classinfo"
+}
+//-ob_6T9qz9O6Vlv004js2P
 
 
 
