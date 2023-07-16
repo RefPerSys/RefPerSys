@@ -21,7 +21,7 @@
 {
  "format" : "RefPerSysFormat2023A",
  "jsoncpp-version" : "1.9.5",
- "nbobjects" : 202,
+ "nbobjects" : 204,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -2150,6 +2150,7 @@
   	"_4Si5RBkg1Qm0285SD0",
   	"_54CP9eaTmxT00lzbEW",
   	"_55Z5Wgzuprq01MU6Br",
+  	"_5wSiaLZxGzu00R0WuV",
   	"_5yhJGgxLwLp00X0xEQ",
   	"_5CYWxcChKN002rw1fI",
   	"_5LMLyzRp6kq04AMM8a",
@@ -2489,6 +2490,32 @@
  "payload" : "string_dictionary"
 }
 //-ob_5dkRQtwGUHs02MVQT0:repl_command_dict
+
+
+
+//+ob_5wSiaLZxGzu00R0WuV:midend_code_instance/CLASS!
+//∈class
+{
+ "oid": "_5wSiaLZxGzu00R0WuV",
+ "mtime": 1689491632.10,
+ "attrs" : [
+  	{
+  		"at" : "_0jdbikGJFq100dgX1n",
+  		"va" : "common superclass for middle-end code immutable instances"
+  	},
+  	{
+  		"at" : "_1EBVGSfW2m200z18rx",
+  		"va" : "midend_code_instance"
+  	}
+  ],
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "midend_code_instance",
+ "class_super" : "_6ulDdOP2ZNr001cqVZ",
+ "class_symb" : "_8RmNHHdc09D01ywL5W",
+ "payload" : "classinfo"
+}
+//-ob_5wSiaLZxGzu00R0WuV:midend_code_instance
 
 
 
@@ -3829,6 +3856,20 @@
  "symb_val" : "_0S6DQvp3Gop015zXhL"
 }
 //-ob_8OVpTFkd9cl03b3h71
+
+
+
+//+ob_8RmNHHdc09D01ywL5W!
+//∈symbol
+{
+ "oid": "_8RmNHHdc09D01ywL5W",
+ "mtime": 1689491632.10,
+ "class" : "_36I1BY2NetN03WjrOv",
+ "payload" : "symbol",
+ "symb_name" : "midend_code_instance",
+ "symb_val" : "_5wSiaLZxGzu00R0WuV"
+}
+//-ob_8RmNHHdc09D01ywL5W
 
 
 
