@@ -78,7 +78,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   std::lock_guard<std::recursive_mutex> gunewclass(*(_f.obnewclass->objmtxptr()));
   if (comment) {
     _f.commentstr = Rps_StringValue(comment);
-    _f.obnewclass->put_attr(_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
+    _f.obnewclass->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
 			    _f.commentstr);
   }
   /* Create a symbol for the new class name. */
