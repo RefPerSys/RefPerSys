@@ -124,20 +124,25 @@ Rps_ObjectRef::as_string(void) const
     return std::string{"_⁂_"}; //U+2042 ASTERISM
   const Rps_Id curoid = _optr->oid();
   std::lock_guard<std::recursive_mutex> gu(*_optr->objmtxptr());
-  if (const Rps_PayloadSymbol*symbpayl = _optr->get_dynamic_payload<Rps_PayloadSymbol>())
+  if (const Rps_PayloadSymbol*symbpayl
+      = _optr->get_dynamic_payload<Rps_PayloadSymbol>())
     {
       const std::string& syna = symbpayl->symbol_name();
       if (!syna.empty())
         return std::string{"¤" /*U+00A4 CURRENCY SIGN*/} + syna;
     }
-  else if (const Rps_PayloadClassInfo*classpayl =  _optr->get_dynamic_payload<Rps_PayloadClassInfo>())
+  else if (const Rps_PayloadClassInfo*classpayl
+           =  _optr->get_dynamic_payload<Rps_PayloadClassInfo>())
     {
       const std::string clana = classpayl->class_name_str();
       if (!clana.empty())
         return std::string{"∋" /*U+220B CONTAINS AS MEMBER*/} + clana;
     }
+  /** Up to commit 44bdcf1b86b983 dated Jul 16, 2023 we incorrectly
+      used the _4FBkYDlynyC02QtkfG "name"∈named_attribute instead of
+      the _1EBVGSfW2m200z18rx name∈named_attribute **/
   else if (const Rps_Value namval
-           = _optr->get_physical_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG)) /*"name"∈named_attribute*/)
+           = _optr->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)) /*name∈named_attribute*/)
     {
       if (namval.is_string())
         {
