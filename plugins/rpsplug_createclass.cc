@@ -76,11 +76,12 @@ rps_do_plugin(const Rps_Plugin* plugin)
   /* Create the new obnewclass. */
   _f.obnewclass = Rps_ObjectRef::make_named_class(&_, _f.obsuperclass, std::string{plugarg});
   std::lock_guard<std::recursive_mutex> gunewclass(*(_f.obnewclass->objmtxptr()));
-  if (comment) {
-    _f.commentstr = Rps_StringValue(comment);
-    _f.obnewclass->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
-			    _f.commentstr);
-  }
+  if (comment)
+    {
+      _f.commentstr = Rps_StringValue(comment);
+      _f.obnewclass->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
+                              _f.commentstr);
+    }
   _f.namestr = Rps_Value{std::string(plugarg)};
   _f.obnewclass->put_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG), //"name"∈named_attribute
                           _f.namestr);
