@@ -83,8 +83,11 @@ rps_do_plugin(const Rps_Plugin* plugin)
                               _f.commentstr);
     }
   _f.namestr = Rps_Value{std::string(plugarg)};
-  _f.obnewclass->put_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG), //"name"∈named_attribute
-                          _f.namestr);
+  /// Using below RPS_ROOT_OB(_4FBkYDlynyC02QtkfG):"name"∈named_attribute
+  /// was a mistake.
+  _f.obnewclass
+    ->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
+	       _f.namestr);
   /* Create a symbol for the new class name. */
   _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, std::string{plugarg});
   std::lock_guard<std::recursive_mutex> gusymbol(*(_f.obsymbol->objmtxptr()));
