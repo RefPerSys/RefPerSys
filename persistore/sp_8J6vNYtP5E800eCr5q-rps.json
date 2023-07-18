@@ -21,7 +21,7 @@
 {
  "format" : "RefPerSysFormat2023A",
  "jsoncpp-version" : "1.9.5",
- "nbobjects" : 204,
+ "nbobjects" : 203,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -849,7 +849,7 @@
  "class" : "_4pSwobFHGf301Qgwzh",
  "payload" : "symbol",
  "symb_name" : "name",
- "symb_val" : "_4FBkYDlynyC02QtkfG"
+ "symb_val" : "_1EBVGSfW2m200z18rx"
 }
 //-ob_1EBVGSfW2m200z18rx
 
@@ -2177,23 +2177,6 @@
   ]
 }
 //-ob_4DsQEs8zZf901wT1LH:the_mutable_set_of_classes
-
-
-
-//+ob_4FBkYDlynyC02QtkfG:name!
-//∈named_attribute
-{
- "oid": "_4FBkYDlynyC02QtkfG",
- "mtime": 1583088448.81,
- "attrs" : [
-  	{
-  		"at" : "_1EBVGSfW2m200z18rx",
-  		"va" : "name"
-  	}
-  ],
- "class" : "_4pSwobFHGf301Qgwzh"
-}
-//-ob_4FBkYDlynyC02QtkfG:name
 
 
 
