@@ -62,7 +62,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
     Rps_ObjectRef::make_object(&_,
                                RPS_ROOT_OB(_4pSwobFHGf301Qgwzh), //named_attribute∈class,
                                Rps_ObjectRef::root_space());
-  _f.obnamedattr->put_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG), //"name"∈named_attribute
+  _f.obnamedattr->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
                            _f.namestr);
   _f.obnamedattr->put_attr(RPS_ROOT_OB(_3Q3hJsSgCDN03GTYW5), //symbol∈symbol
                            _f.obsymbol);

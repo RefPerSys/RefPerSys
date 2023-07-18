@@ -83,8 +83,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
                               _f.commentstr);
     }
   _f.namestr = Rps_Value{std::string(plugarg)};
-  /// Using below RPS_ROOT_OB(_4FBkYDlynyC02QtkfG):"name"∈named_attribute
-  /// was a mistake.
+  /// Avoid using below RPS_ROOT_OB(4FBkYDlynyC02QtkfG):"name"∈named_attribute
+  /// it was was a mistake.
   _f.obnewclass
     ->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
 	       _f.namestr);
