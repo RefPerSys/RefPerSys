@@ -54,7 +54,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
   Rps_PayloadSymbol* paylsymb = _f.obsymbol->get_dynamic_payload<Rps_PayloadSymbol>();
   RPS_ASSERT (paylsymb != nullptr);
   _f.namestr = Rps_Value{std::string(plugarg)};
-  _f.obsymbol->put_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG), //"name"∈named_attribute
+  /// avoid using bad _4FBkYDlynyC02QtkfG //"name"∈named_attribute
+  _f.obsymbol->put_attr(RPS_ROOT_OB(_EBVGSfW2m200z18rx) //name∈named_attribute
                         _f.namestr);
   if (isrooted)
     {
