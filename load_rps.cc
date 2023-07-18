@@ -1443,7 +1443,10 @@ void Rps_Loader::load_install_roots(void)
     RPS_ASSERT(nbsymb == RPS_NB_NAMED_ROOT_OB);
   }
   // final check
-  RPS_ASSERT(rps_nb_root_objects() == RPS_NB_ROOT_OB);
+  if (rps_nb_root_objects() != RPS_NB_ROOT_OB)
+    RPS_FATALOUT("got rps_nb_root_objects()=" << rps_nb_root_objects()
+		 << " expecting RPS_NB_ROOT_OB=" << RPS_NB_ROOT_OB
+		 << " loading directory " << ld_topdir);
   RPS_DEBUG_LOG(LOAD, "loader load_install_roots ending nbsymb=" << nbsymb << ", nbroots=" << nbroots << std::endl);
 } // end Rps_Loader::load_install_roots
 
