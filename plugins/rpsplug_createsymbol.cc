@@ -35,7 +35,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
       goodplugarg = isalnum(*pa) || *pa=='_';
     if (!goodplugarg)
       RPS_FATALOUT("failure: plugin " << plugin->plugin_name
-		   << " with bad name " << Rps_QuotedC_String(plugarg));
+                   << " with bad name " << Rps_QuotedC_String(plugarg));
   }
   if (rooted)
     {
@@ -55,7 +55,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   RPS_ASSERT (paylsymb != nullptr);
   _f.namestr = Rps_Value{std::string(plugarg)};
   _f.obsymbol->put_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG), //"name"∈named_attribute
-                          _f.namestr);
+                        _f.namestr);
   if (isrooted)
     {
       rps_add_root_object(_f.obsymbol);

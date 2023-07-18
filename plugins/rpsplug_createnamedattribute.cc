@@ -37,7 +37,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
       goodplugarg = isalnum(*pa) || *pa=='_';
     if (!goodplugarg)
       RPS_FATALOUT("failure: plugin " << plugin->plugin_name
-		   << " with bad name " << Rps_QuotedC_String(plugarg));
+                   << " with bad name " << Rps_QuotedC_String(plugarg));
   }
   if (rooted)
     {
@@ -57,33 +57,34 @@ rps_do_plugin(const Rps_Plugin* plugin)
   RPS_ASSERT (paylsymb != nullptr);
   _f.namestr = Rps_Value{std::string(plugarg)};
   _f.obsymbol->put_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG), //"name"∈named_attribute
-                          _f.namestr);
+                        _f.namestr);
   _f.obnamedattr =
     Rps_ObjectRef::make_object(&_,
-			       RPS_ROOT_OB(_4pSwobFHGf301Qgwzh), //named_attribute∈class,
-			       Rps_ObjectRef::root_space());
+                               RPS_ROOT_OB(_4pSwobFHGf301Qgwzh), //named_attribute∈class,
+                               Rps_ObjectRef::root_space());
   _f.obnamedattr->put_attr(RPS_ROOT_OB(_4FBkYDlynyC02QtkfG), //"name"∈named_attribute
-                          _f.namestr);
+                           _f.namestr);
   _f.obnamedattr->put_attr(RPS_ROOT_OB(_3Q3hJsSgCDN03GTYW5), //symbol∈symbol
-			   _f.obsymbol);
-  if (comment) {
-    _f.commentstr = Rps_StringValue(comment);
-    _f.obnamedattr->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol,
-			     _f.commentstr);
-  }
+                           _f.obsymbol);
+  if (comment)
+    {
+      _f.commentstr = Rps_StringValue(comment);
+      _f.obnamedattr->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol,
+                               _f.commentstr);
+    }
   paylsymb->symbol_put_value(_f.obnamedattr);
   if (isrooted)
     {
       rps_add_root_object(_f.obnamedattr);
       RPS_INFORMOUT("rpsplug_createnamedattribute added new root named attribute " << _f.obnamedattr
                     << " named " << plugarg
-		    << " with symbol " << _f.obsymbol);
+                    << " with symbol " << _f.obsymbol);
     }
   else
     {
       RPS_INFORMOUT("rpsplug_createnamedattribute added new named attribute " << _f.obnamedattr
                     << " named " << plugarg
-		    << " with symbol " << _f.obsymbol);
+                    << " with symbol " << _f.obsymbol);
     }
 } // end rps_do_plugin
 
