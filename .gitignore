@@ -32,11 +32,12 @@ bld/
 # Prerequisites (for make)
 *.mkd
 
-# Object files
+# Object files and directory
 *.o
 *.ko
 *.obj
 *.elf
+obj/
 
 # Linker output
 *.ilk
