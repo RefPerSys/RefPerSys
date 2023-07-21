@@ -3,9 +3,7 @@
 
 .PHONY: all
 
-MAN= obj/Rps::Midend::Cmd.3pm \
-     obj/rpsmidend.1          \
-     obj/rpsprovision.8
+MAN= obj/Rps::Midend::Cmd.3pm  obj/rpsmidend.1 obj/rpsprovision.8
 
 all: ${MAN}
 
