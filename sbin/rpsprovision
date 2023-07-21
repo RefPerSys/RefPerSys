@@ -1,0 +1,9 @@
+#! /bin/sh
+
+
+#
+# Install Perl dependencies (Debian/Ubuntu only)
+#
+
+apt install libgetopt-long-descriptive-perl;
+apt install libsmart-comments-perl;
