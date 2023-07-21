@@ -1,0 +1,27 @@
+#! /usr/bin/env perl
+
+use 5.36.0;
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+use Rps::Midend::Cmd;
+
+
+#
+# Main entry point of script.
+#
+
+sub main()
+{
+    if (Rps::Midend:::Cmd::parse() < 1) {
+	goto fail;
+    }
+
+    # TODO
+    
+  fail:
+    Rps::Midend::Info::usage();
+    exit(1);
+}
+
+main();
