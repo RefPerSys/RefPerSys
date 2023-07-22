@@ -8,13 +8,14 @@
 
 .PHONY: all
 
+#MAN= obj/Rps::Midend::Cmd.3pm  obj/rpsmidend.1 obj/rpsprovision.8
 MAN= obj/Rps::Midend::Cmd.3pm  obj/rpsmidend.1 obj/rpsprovision.8
 
 all: ${MAN}
 
 
-obj/Rps::Midend::Cmd.3pm: Rps::Midend::Cmd.3pm
-	cat $< | awk 'NF' > $@
+#obj/Rps::Midend::Cmd.3pm: Rps::Midend::Cmd.3pm
+#	cat $< | awk 'NF' > $@
 
 obj/rpsmidend.1: rpsmidend.1
 	cat $< | awk 'NF' > $@
