@@ -1,3 +1,7 @@
+# lib/Rps/Midend/Cmd.pm - midend class utility command line manager
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (c) 2019 Basile Starynkevitch <basile@starynkevitch.net>
+
 # Command line parsing
 # Required deb packages:
 # 1. libgetopt-long-descriptive-perl
