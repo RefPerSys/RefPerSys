@@ -2,7 +2,7 @@
 # -*- mode: perl -*-
 # bin/rpsmidend - midend class utility
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Copyright (c) 2019 Basile Starynkevitch <basile@starynkevitch.net>
+# Copyright (c) 2023 RefPerSys team - see refpersys.org 
 
 use 5.36.0;
 
