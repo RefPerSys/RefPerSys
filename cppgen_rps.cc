@@ -31,7 +31,8 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Notice:
- *    See also companion file lightgen_rps.cc for GNU lightning code generation.
+ *    See also companion file lightgen_rps.cc for GNU lightning
+ *    code generation.
  ******************************************************************************/
 
 #include "refpersys.hh"
@@ -43,5 +44,18 @@ const char rps_cppgen_gitid[]= RPS_GITID;
 
 extern "C" const char rps_cppgen_date[];
 const char rps_cppgen_date[]= __DATE__;
+
+//// return true on successful code generation
+bool
+rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
+                            Rps_ObjectRef obmodule)
+{
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_ASSERT(obmodule);
+  std::lock_guard<std::recursive_mutex> gumodule(obmodule->objmtxptr());
+  RPS_FATALOUT("unimplemented rps_generate_cplusplus_code obmodule=" << obmodule);
+#warning unimplemented rps_generate_cplusplus_code
+} // end rps_generate_cplusplus_code
+
 
 #warning incomplete cppgen_rps.cc file

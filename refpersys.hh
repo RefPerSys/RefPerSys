@@ -4724,6 +4724,21 @@ extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
 
 
+
+////................................................................
+//// Code generation routines (either C++ files later compiled as a
+//// dlopen-able plugin using the build-plugin.sh script, or in-memory
+//// code generation of using GNU lightning).  Both routines return
+//// true on successful code generation.
+////................................................................
+
+/// approved on Whatsapp by Abishek Chakravarti on July, 24, 2023
+extern "C" bobol rps_generate_lightning_code(Rps_CallFrame*callerframe,
+					    Rps_ObjectRef obmodule);
+extern "C" bool rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
+					    Rps_ObjectRef obmodule);
+
+
 ////................................................................
 //// load and dump routines.  See files load_rps.cc and dump_rps.cc
 ////................................................................
