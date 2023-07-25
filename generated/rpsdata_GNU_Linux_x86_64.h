@@ -17,7 +17,7 @@
 //: along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RPS_DATA_INCLUDED
 #define RPS_DATA_INCLUDED 1
-#define RPS_BUILDING_HOST "rimski"
+#define RPS_BUILDING_HOST "guiseppe.lesours"
 #define RPS_BUILDING_OPERATING_SYSTEM "GNU_Linux"
 #define RPS_BUILDING_MACHINE "x86_64"
 #define RPS_PATH_BYTE_SIZE 384
@@ -85,4 +85,4 @@
 
 
 
-//// end of generated generated/rpsdata_GNU_Linux_x86_64.h for shortgitid:2526bb98ee31+
+//// end of generated generated/rpsdata_GNU_Linux_x86_64.h for shortgitid:889835cd1583
