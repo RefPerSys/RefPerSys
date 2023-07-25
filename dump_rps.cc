@@ -453,7 +453,7 @@ Rps_Dumper::scan_code_addr(const void*ad)
   memset (idbuf, 0, sizeof(idbuf));
   int endpos = -1;
   if (sscanf(lastslash+1, rpsmodfmt, idbuf, &endpos) >= 1
-      && endpos>rpsmodfmtlen)
+      && endpos>(int) rpsmodfmtlen)
     {
       const char* endid=nullptr;
       bool okid=false;
