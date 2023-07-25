@@ -50,8 +50,14 @@ bool
 rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                             Rps_ObjectRef obmodule)
 {
+  RPS_LOCALFRAME(nullptr,
+                 callerframe,
+                 Rps_ObjectRef obmodule;
+                );
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(obmodule);
+  _f.obmodule = obmodule;
+
   std::lock_guard<std::recursive_mutex> gumodule(*obmodule->objmtxptr());
   RPS_FATALOUT("unimplemented rps_generate_cplusplus_code obmodule=" << obmodule);
 #warning unimplemented rps_generate_cplusplus_code
