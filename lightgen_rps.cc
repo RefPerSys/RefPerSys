@@ -51,6 +51,11 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
 {
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(obmodule);
+  RPS_LOCALFRAME(nullptr,
+                 callerframe,
+                 Rps_ObjectRef obmodule;
+                );
+  _f.obmodule = obmodule;
   std::lock_guard<std::recursive_mutex> gumodule(*obmodule->objmtxptr());
   RPS_FATALOUT("unimplemented rps_generate_lightning_code obmodule=" << obmodule);
 #warning unimplemented rps_generate_lightning_code
