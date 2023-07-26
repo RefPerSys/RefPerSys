@@ -593,6 +593,9 @@ rps_early_initialization(int argc, char** argv)
   ///
   if (rps_syslog_enabled && rps_debug_flags != 0)
     openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
+  RPS_INFORMOUT("done early initialization of RefPerSys process "
+		<< (int)getpid() << " on host " << rps_hostname()
+		<< " git " << rps_shortgitid);
 } // end rps_early_initialization
 
 ////////////////////////////////////////////////////////////////
