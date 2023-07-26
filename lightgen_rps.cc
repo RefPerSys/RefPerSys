@@ -54,10 +54,18 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
   RPS_LOCALFRAME(nullptr,
                  callerframe,
                  Rps_ObjectRef obmodule;
+                 Rps_ObjectRef obgenerator;
                 );
   _f.obmodule = obmodule;
   std::lock_guard<std::recursive_mutex> gumodule(*obmodule->objmtxptr());
-  RPS_FATALOUT("unimplemented rps_generate_lightning_code obmodule=" << obmodule);
+  _f.obgenerator =
+    Rps_ObjectRef::make_object(&_,
+#warning TODO: improve class of generator in rps_generate_lightning_code
+                               /* FIXME: we probably need a lightning_generator class */
+                               RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)//object∈class
+                              );
+  RPS_FATALOUT("unimplemented rps_generate_lightning_code obmodule="
+               << obmodule << " obgenerator=" << _f.obgenerator);
 #warning unimplemented rps_generate_lightning_code
 } // end rps_generate_lightning_code
 
