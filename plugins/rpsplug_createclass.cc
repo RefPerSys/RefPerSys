@@ -59,7 +59,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " without super extra name. See comments in " << __FILE__);
   {
-    bool goodsupername = isalpha(supername[0]);
+    bool goodsupername = isalpha(supername[0]) || supername[0]=='_';
     for (const char*pn = supername; goodsupername && *pn; pn++)
       goodsupername = isalnum(*pn) || *pn=='_';
     if (!goodsupername)
