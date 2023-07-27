@@ -21,7 +21,7 @@
 {
  "format" : "RefPerSysFormat2023A",
  "jsoncpp-version" : "1.9.5",
- "nbobjects" : 203,
+ "nbobjects" : 205,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -2156,6 +2156,7 @@
   	"_4Si5RBkg1Qm0285SD0",
   	"_54CP9eaTmxT00lzbEW",
   	"_55Z5Wgzuprq01MU6Br",
+  	"_5apchd96kkK00iu9Tk",
   	"_5wSiaLZxGzu00R0WuV",
   	"_5yhJGgxLwLp00X0xEQ",
   	"_5CYWxcChKN002rw1fI",
@@ -2451,6 +2452,32 @@
  "payload" : "classinfo"
 }
 //-ob_55Z5Wgzuprq01MU6Br:repl_binary_operator
+
+
+
+//+ob_5apchd96kkK00iu9Tk:midend_generator/CLASS!
+//∈class
+{
+ "oid": "_5apchd96kkK00iu9Tk",
+ "mtime": 1690440071.73,
+ "attrs" : [
+  	{
+  		"at" : "_0jdbikGJFq100dgX1n",
+  		"va" : "superclass common to code generation information"
+  	},
+  	{
+  		"at" : "_1EBVGSfW2m200z18rx",
+  		"va" : "midend_generator"
+  	}
+  ],
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "midend_generator",
+ "class_super" : "_5yhJGgxLwLp00X0xEQ",
+ "class_symb" : "_9XdugDoJuNZ03Y7qcI",
+ "payload" : "classinfo"
+}
+//-ob_5apchd96kkK00iu9Tk:midend_generator
 
 
 
@@ -4137,6 +4164,20 @@
  "symb_val" : "_7OrPRWQEg2o043XvK2"
 }
 //-ob_9Wbq0oR52x400xe85F
+
+
+
+//+ob_9XdugDoJuNZ03Y7qcI!
+//∈symbol
+{
+ "oid": "_9XdugDoJuNZ03Y7qcI",
+ "mtime": 1690440071.73,
+ "class" : "_36I1BY2NetN03WjrOv",
+ "payload" : "symbol",
+ "symb_name" : "midend_generator",
+ "symb_val" : "_5apchd96kkK00iu9Tk"
+}
+//-ob_9XdugDoJuNZ03Y7qcI
 
 
 
