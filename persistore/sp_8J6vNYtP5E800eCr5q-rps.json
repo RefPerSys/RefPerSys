@@ -21,7 +21,7 @@
 {
  "format" : "RefPerSysFormat2023A",
  "jsoncpp-version" : "1.9.5",
- "nbobjects" : 205,
+ "nbobjects" : 207,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -204,6 +204,20 @@
  "symb_name" : "comment"
 }
 //-ob_0jdbikGJFq100dgX1n
+
+
+
+//+ob_0wUXjBK6nft029bVUm!
+//∈symbol
+{
+ "oid": "_0wUXjBK6nft029bVUm",
+ "mtime": 1690474742.57,
+ "class" : "_36I1BY2NetN03WjrOv",
+ "payload" : "symbol",
+ "symb_name" : "midend_cplusplus_code_generator",
+ "symb_val" : "_2yzD3HZ6VQc038ekBU"
+}
+//-ob_0wUXjBK6nft029bVUm
 
 
 
@@ -1305,6 +1319,32 @@
 
 
 
+//+ob_2yzD3HZ6VQc038ekBU:midend_cplusplus_code_generator/CLASS!
+//∈class
+{
+ "oid": "_2yzD3HZ6VQc038ekBU",
+ "mtime": 1690474742.57,
+ "attrs" : [
+  	{
+  		"at" : "_0jdbikGJFq100dgX1n",
+  		"va" : "class for C++ code generation"
+  	},
+  	{
+  		"at" : "_1EBVGSfW2m200z18rx",
+  		"va" : "midend_cplusplus_code_generator"
+  	}
+  ],
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "midend_cplusplus_code_generator",
+ "class_super" : "_5apchd96kkK00iu9Tk",
+ "class_symb" : "_0wUXjBK6nft029bVUm",
+ "payload" : "classinfo"
+}
+//-ob_2yzD3HZ6VQc038ekBU:midend_cplusplus_code_generator
+
+
+
 //+ob_2zoK8ilmqHH02mlmjx!
 //∈symbol
 {
@@ -2141,6 +2181,7 @@
   	"_2dvQOlSMjOu02zWx1n",
   	"_2i66FFjmS7n03HNNBx",
   	"_2wdmxJecnFZ02VGGFK",
+  	"_2yzD3HZ6VQc038ekBU",
   	"_2A2mrPpR3Qf03p6o5b",
   	"_36G9Fl8FqDE01dMaZa",
   	"_36I1BY2NetN03WjrOv",
