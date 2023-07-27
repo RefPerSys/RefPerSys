@@ -5,14 +5,14 @@
 // © Copyright 2023 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys class
 /*****
- * Once compiled, use it for example as:
- * ./refpersys --plugin-after-load=/tmp/rpsplug_createclass.so \
- *             --plugin-arg=rpsplug_createclass:new_class_name \
- *             --extra=super=superclass \
- *             --extra=comment='some comment' \
- *             --extra=rooted=0 \
- *             --batch --dump=.
- *
+  Once compiled, use it for example as:
+  ./refpersys --plugin-after-load=/tmp/rpsplug_createclass.so \
+              --plugin-arg=rpsplug_createclass:new_class_name \
+              --extra=super=superclass \
+              --extra=comment='some comment' \
+              --extra=rooted=0 \
+              --batch --dump=.
+ 
  ****/
 
 #include "refpersys.hh"
