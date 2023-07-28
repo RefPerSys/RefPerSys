@@ -210,14 +210,14 @@ Rps_Loader::is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::s
 {
   const char*reason = nullptr;
   const char*oidstart = nullptr;
-  const char*eol = nullptr;
   const char*end = nullptr;
   const char*linestart = nullptr;
-  char reasonbuf[48];
+  char reasonbuf[64];
   Rps_Id oid;
   bool ok=false;
   char c = 0;
   int cix= -1;
+  memset (reasonbuf, 0, sizeof(reasonbuf));
   size_t linelen = linbuf.size();
   if (pobid)
     *pobid = Rps_Id(nullptr);
@@ -233,7 +233,6 @@ Rps_Loader::is_object_starting_line(Rps_Id spacid, unsigned lineno, const std::s
       goto bad;
     }
   linestart = linbuf.c_str();
-  eol = linestart+linelen;
   oidstart = linestart + strlen("//+ob");
   char oidbuf[Rps_Id::nbchars+8];
   memset (oidbuf, 0, sizeof(oidbuf));
