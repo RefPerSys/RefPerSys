@@ -1216,6 +1216,10 @@ Rps_Loader::parse_manifest_file(void)
         RPS_ASSERT(curgrootid);
         ld_globrootsidset.insert(curgrootid);
       }
+    if (sizeglobroots != RPS_NB_ROOT_OB)
+      RPS_WARNOUT("in loaded manifest file " << manifpath
+		  << " we have " << sizeglobroots << " globalroots "
+		  << " for compiled RPS_NB_ROOT_OB=" << RPS_NB_ROOT_OB);
   }
   /// parse plugins
   {
