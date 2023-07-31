@@ -594,8 +594,8 @@ rps_early_initialization(int argc, char** argv)
   if (rps_syslog_enabled && rps_debug_flags != 0)
     openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
   RPS_INFORMOUT("done early initialization of RefPerSys process "
-		<< (int)getpid() << " on host " << rps_hostname()
-		<< " git " << rps_shortgitid);
+                << (int)getpid() << " on host " << rps_hostname()
+                << " git " << rps_shortgitid);
 } // end rps_early_initialization
 
 ////////////////////////////////////////////////////////////////
@@ -1035,7 +1035,7 @@ rps_parse_program_arguments(int &argc, char**argv)
   int aix= -1;
   if (argp_parse(&argparser_rps, argc, argv, 0, &aix, nullptr))
     RPS_FATALOUT("failed to parse program arguments to " << argv[0]
-		 << " at program argument index aix=" << aix);
+                 << " at program argument index aix=" << aix);
   RPS_POSSIBLE_BREAKPOINT();
 } // end rps_parse_program_arguments
 
