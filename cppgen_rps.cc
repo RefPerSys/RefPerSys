@@ -61,9 +61,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   std::lock_guard<std::recursive_mutex> gumodule(*obmodule->objmtxptr());
   _f.obgenerator =
     Rps_ObjectRef::make_object(&_,
-#warning TODO: improve class of generator in rps_generate_cplusplus_code
-                               /* FIXME: we probably need a cplusplus_generator class */
-                               RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ)//object∈class
+                               RPS_ROOT_OB(_2yzD3HZ6VQc038ekBU)//midend_cplusplus_code_generator∈class
                               );
   RPS_FATALOUT("unimplemented rps_generate_cplusplus_code obmodule="
                << obmodule << " obgenerator=" << _f.obgenerator);
