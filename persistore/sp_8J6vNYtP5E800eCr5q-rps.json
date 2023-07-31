@@ -21,7 +21,7 @@
 {
  "format" : "RefPerSysFormat2023A",
  "jsoncpp-version" : "1.9.5",
- "nbobjects" : 207,
+ "nbobjects" : 209,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -2208,6 +2208,7 @@
   	"_6vcJz35mTam01zYLjL",
   	"_6JYterg6iAu00cV9Ye",
   	"_6NVM7sMcITg01ug5TC",
+  	"_6SM7PykipQW01HVClH",
   	"_6T9qz9O6Vlv004js2P",
   	"_6XLY6QfcDre02922jz",
   	"_7b8jzCpOStA04e0jxs",
@@ -3254,6 +3255,32 @@
 
 
 
+//+ob_6SM7PykipQW01HVClH:midend_lightning_code_generator/CLASS!
+//∈class
+{
+ "oid": "_6SM7PykipQW01HVClH",
+ "mtime": 1690798226.90,
+ "attrs" : [
+  	{
+  		"at" : "_0jdbikGJFq100dgX1n",
+  		"va" : "class for GNU lightning code generation"
+  	},
+  	{
+  		"at" : "_1EBVGSfW2m200z18rx",
+  		"va" : "midend_lightning_code_generator"
+  	}
+  ],
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "midend_lightning_code_generator",
+ "class_super" : "_5apchd96kkK00iu9Tk",
+ "class_symb" : "_9jirZNcMG1000OKlC9",
+ "payload" : "classinfo"
+}
+//-ob_6SM7PykipQW01HVClH:midend_lightning_code_generator
+
+
+
 //+ob_6T9qz9O6Vlv004js2P:midend_code_object/CLASS!
 //∈class
 {
@@ -4054,6 +4081,20 @@
  "payload" : "classinfo"
 }
 //-ob_9j12Nhm4itk00YYUW7:repl_operator
+
+
+
+//+ob_9jirZNcMG1000OKlC9!
+//∈symbol
+{
+ "oid": "_9jirZNcMG1000OKlC9",
+ "mtime": 1690798226.90,
+ "class" : "_36I1BY2NetN03WjrOv",
+ "payload" : "symbol",
+ "symb_name" : "midend_lightning_code_generator",
+ "symb_val" : "_6SM7PykipQW01HVClH"
+}
+//-ob_9jirZNcMG1000OKlC9
 
 
 

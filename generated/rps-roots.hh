@@ -102,6 +102,7 @@ RPS_INSTALL_ROOT_OB(_6JbWqOsjX5T03M1eGM) //closure_for_method_selector∈symbol
 RPS_INSTALL_ROOT_OB(_6JYterg6iAu00cV9Ye) //set∈class
 RPS_INSTALL_ROOT_OB(_6NVM7sMcITg01ug5TC) //tuple∈class
 RPS_INSTALL_ROOT_OB(_6QAanFi9yLx00spBST) //last_name∈symbol
+RPS_INSTALL_ROOT_OB(_6SM7PykipQW01HVClH) //midend_lightning_code_generator∈class
 RPS_INSTALL_ROOT_OB(_6T9qz9O6Vlv004js2P) //midend_code_object∈class
 RPS_INSTALL_ROOT_OB(_6XLY6QfcDre02922jz) //value∈class
 RPS_INSTALL_ROOT_OB(_7b8jzCpOStA04e0jxs) //qobject∈class
@@ -125,7 +126,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 103
+#define RPS_NB_ROOT_OB 104
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
