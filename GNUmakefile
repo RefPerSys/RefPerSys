@@ -39,10 +39,11 @@
 ## tell GNU make to export all variables by default
 export
 
-### The optional file $HOME/.refpersys.mk could contain definitions like
+### The optional file $HOME/.refpersys.mk should contain definitions like
 ###     # file ~/.refpersys.mk
 ###     RPS_BUILD_CC= gcc-12
 ###     RPS_BUILD_CXX= g++-12
+###     RPS_BUILD_GNU_LIGHTNING_SOURCEDIR= /usr/src/Libs/lightning
 ###  and perhaps
 ###     RPS_BUILD_XTRA_CFLAGS= -pg
 ### This enables changing C and C++ compiler versions
@@ -50,6 +51,9 @@ ifndef RPS_BUILD_CC
 -include $(shell /bin/ls ~/.refpersys.mk)
 endif
 
+ifndef RPS_BUILD_GNU_LIGHTNING_SOURCEDIR
+$(error undefined RPS_BUILD_GNU_LIGHTNING_SOURCEDIR GNU make variable in ~/.refpersys.mk)
+endif
 
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
