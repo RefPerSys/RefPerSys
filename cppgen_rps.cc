@@ -5,8 +5,7 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for machine code generation using GNU
- *      lightning.  See also https://www.gnu.org/software/lightning/
+ *      It has the code for C++ code generation.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
