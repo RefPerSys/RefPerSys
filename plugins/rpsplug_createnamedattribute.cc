@@ -4,11 +4,13 @@
 // © Copyright 2023 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys named attribute
 /*****
- * Once compiled, use it for example as:
- * ./refpersys --plugin-after-load=/tmp/rpsplug_createnamedattribute.so \
- *             --plugin-arg=rpsplug_createnamedattribute:new_attr_name \
- *             --batch --dump=.
- *
+
+ Once compiled, use it for example as:
+ 
+  ./refpersys --plugin-after-load=/tmp/rpsplug_createnamedattribute.so \
+              --plugin-arg=rpsplug_createnamedattribute:new_attr_name \
+              --batch --dump=.
+
  ****/
 
 #include "refpersys.hh"
