@@ -12,7 +12,7 @@
               --extra=comment='some comment' \
               --extra=rooted=0 \
               --batch --dump=.
- 
+
  ****/
 
 #include "refpersys.hh"

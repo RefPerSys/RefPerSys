@@ -52,5 +52,7 @@ printf "const char rps_building_machine[]=\"%s\";\n" $(/bin/uname -m)
 
 printf "const char rps_building_machname[]=\"%s\";\n" $(/bin/uname -m | /bin/sed 's/[^A-Za-z0-9]/_/')
 
+printf "const char rps_gnu_lightning_source_dir[]=\"%s\";\n"   $(realpath $RPS_BUILD_GNU_LIGHTNING_SOURCEDIR)
+
 printf "/// see also GNUmakefile for refpersys.org;\n"
 ### some things are generated in GNUmakefile 

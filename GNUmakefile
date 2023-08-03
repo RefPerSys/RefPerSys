@@ -182,6 +182,7 @@ CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             -DRPS_OPERSYS=\"$(RPS_OPERSYS)\" -DRPS_HAVE_OPERSYS_$(RPS_OPERSYS) \
             -DRPS_GITID=\"$(RPS_GIT_ID)\" \
             -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+            -I$(realpath $(RPS_BUILD_GNU_LIGHTNING_SOURCEDIR)/include/lightning/) \
             $(RPS_BUILD_COMPILER_FLAGS) $(RPS_BUILD_XTRA_CFLAGS)
 
 LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib

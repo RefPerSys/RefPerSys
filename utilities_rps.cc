@@ -32,13 +32,26 @@
  ******************************************************************************/
 
 #include "refpersys.hh"
+#include <lightning.h>
 
+#ifdef RPS_HAVE_ARCH_x86_64
+#warning utilities_rps.cc includes lightning/jit_x86.h
+#include "lightning/jit_x86.h"
+#endif
 
 extern "C" const char rps_utilities_gitid[];
 const char rps_utilities_gitid[]= RPS_GITID;
 
 extern "C" const char rps_utilities_date[];
 const char rps_utilities_date[]= __DATE__;
+
+
+
+/// https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
+/// see also file lightgen_rps.cc
+
+extern "C" const int rps_gnulightning_jitstate_size;
+extern "C" const int rps_gnulightning_jitstate_align;
 
 // we may have a pair of FIFO to communicate with some external
 // process (for graphical user interface), perhaps mini-edit-fltk on
@@ -324,6 +337,12 @@ rps_print_types_info(void)
 #undef EXPLAIN_TYPE3
 #undef EXPLAIN_TYPE
 #undef TYPEFMT_rps
+  {
+    /// https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
+    /// see also lightgen_rps.cc file
+    printf("    GNU lightning jit_state size=%d align=%d\n",
+           rps_gnulightning_jitstate_size, rps_gnulightning_jitstate_align);
+  }
   putchar('\n');
   fflush(nullptr);
   std::cout << "@@°°@@ The tagged integer one hundred is "

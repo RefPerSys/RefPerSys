@@ -252,6 +252,10 @@ extern "C" const char rps_building_operating_system[];
 extern "C" const char rps_building_opersysname[]; /// with only letters, digits, underscores
 extern "C" const char rps_building_machine[];
 extern "C" const char rps_building_machname[]; /// with only letters, digits, underscores
+
+/// the installed path of GNU lightning
+extern "C" const char rps_gnu_lightning_source_dir[];
+
 extern "C" struct utsname rps_utsname;
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -36,13 +36,29 @@
 
 #include "refpersys.hh"
 
+/// GNU lightning implementation header
 
+/// FIXME for https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
+#define protected lightning_protected
+#include "jit_private.h"
+#undef protected
 
 extern "C" const char rps_lightgen_gitid[];
 const char rps_lightgen_gitid[]= RPS_GITID;
 
 extern "C" const char rps_lightgen_date[];
 const char rps_lightgen_date[]= __DATE__;
+
+
+/// https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
+extern "C" const int rps_gnulightning_jitstate_size;
+const int rps_gnulightning_jitstate_size = sizeof(jit_state);
+extern "C" const int rps_gnulightning_jitstate_align;
+const int rps_gnulightning_jitstate_align = alignof(jit_state);
+
+/// According to www.gnu.org/software/lightning/manual/lightning.html
+/// every GNU lightning macro uses the _jit identifier... The type of
+/// that identifier is a pointer to the abstract jit_state_t ...
 
 //// return true on successful code generation
 bool
