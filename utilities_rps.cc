@@ -336,13 +336,13 @@ rps_print_types_info(void)
 #undef EXPLAIN_TYPE4
 #undef EXPLAIN_TYPE3
 #undef EXPLAIN_TYPE
-#undef TYPEFMT_rps
   {
     /// https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
     /// see also lightgen_rps.cc file
-    printf("    GNU lightning jit_state size=%d align=%d\n",
+    printf(TYPEFMT_rps " %5d %5d\n","GNU lightning jit_state",
            rps_gnulightning_jitstate_size, rps_gnulightning_jitstate_align);
   }
+#undef TYPEFMT_rps
   putchar('\n');
   fflush(nullptr);
   std::cout << "@@°°@@ The tagged integer one hundred is "
