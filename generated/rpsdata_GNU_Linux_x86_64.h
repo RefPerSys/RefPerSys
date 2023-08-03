@@ -50,6 +50,7 @@
 #define RPS_SIZEOF_RPS_CALLFRAME 96
 #define RPS_SIZEOF_RPS_PAYLOAD 32
 #define RPS_SIZEOF_RPS_TOKENSOURCE 200
+#define RPS_SIZEOF_LIGHTNING_JIT_STATE 80
 ///
 #define RPS_ALIGNOF_BOOL 1
 #define RPS_ALIGNOF_SHORT 2
@@ -78,6 +79,8 @@
 #define RPS_ALIGNOF_RPS_CALLFRAME 8
 #define RPS_ALIGNOF_RPS_PAYLOAD 16
 #define RPS_ALIGNOF_RPS_TOKENSOURCE 8
+#define RPS_ALIGNOF_LIGHTNING_JIT_STATE 8
+
 #define RPS_VALUE_IS_VOIDPTR 1
 #define RPS_OBJECTREF_IS_OBJECTPTR 1
 ///
@@ -85,4 +88,4 @@
 
 
 
-//// end of generated generated/rpsdata_GNU_Linux_x86_64.h for shortgitid:855f6caaf356+
+//// end of generated generated/rpsdata_GNU_Linux_x86_64.h for shortgitid:1d728e2c8431+
