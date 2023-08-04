@@ -56,9 +56,42 @@ const int rps_gnulightning_jitstate_size = sizeof(jit_state);
 extern "C" const int rps_gnulightning_jitstate_align;
 const int rps_gnulightning_jitstate_align = alignof(jit_state);
 
+
+
 /// According to www.gnu.org/software/lightning/manual/lightning.html
 /// every GNU lightning macro uses the _jit identifier... The type of
 /// that identifier is a pointer to the abstract jit_state_t ...
+
+/// temporary payloag for GNU lightning code generation:
+class Rps_PayloadLighntingCodeGen : public Rps_Payload
+{
+  friend Rps_PayloadLighntingCodeGen*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadLighntingCodeGen,Rps_ObjectZone*>(Rps_ObjectZone*);
+  virtual ~Rps_PayloadLighntingCodeGen()
+  {
+  };
+  #warning PayloadLighntingCodeGen may need some jit_state_t* pointer
+protected:
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  inline Rps_PayloadLighntingCodeGen(Rps_ObjectZone*owner);
+  Rps_PayloadLighntingCodeGen(Rps_ObjectRef obr) :
+    Rps_PayloadLighntingCodeGen(obr?obr.optr():nullptr) {};
+  virtual const std::string payload_type_name(void) const
+  {
+    return "lightning_code_generator";
+  };
+  virtual uint32_t wordsize(void) const
+  {
+    return sizeof(*this)/sizeof(void*);
+  };
+  virtual bool is_erasable(void) const
+  {
+    return false;
+  };
+};				// end class Rps_PayloadLightningCodeGen
+
 
 //// return true on successful code generation
 bool

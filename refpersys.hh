@@ -1306,6 +1306,7 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
+  PaylLightCodeGen = -21,    // for GNU lightning code generation
   PaylEnviron = -20,         // for environments
   PaylObjMap = -19,          // for object maps
   PaylCppStream = -18,     // for transient C++ streams
