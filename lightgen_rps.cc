@@ -62,15 +62,14 @@ const int rps_gnulightning_jitstate_align = alignof(jit_state);
 /// every GNU lightning macro uses the _jit identifier... The type of
 /// that identifier is a pointer to the abstract jit_state_t ...
 
-/// temporary payloag for GNU lightning code generation:
+/// temporary payload for GNU lightning code generation:
 class Rps_PayloadLighntingCodeGen : public Rps_Payload
 {
   friend Rps_PayloadLighntingCodeGen*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadLighntingCodeGen,Rps_ObjectZone*>(Rps_ObjectZone*);
-  virtual ~Rps_PayloadLighntingCodeGen()
-  {
-  };
-  #warning PayloadLighntingCodeGen may need some jit_state_t* pointer
+  virtual ~Rps_PayloadLighntingCodeGen();
+  jit_state_t* lightg_jist;
+#warning PayloadLighntingCodeGen may need some jit_state_t* pointer
 protected:
   virtual void gc_mark(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
@@ -92,6 +91,33 @@ protected:
   };
 };				// end class Rps_PayloadLightningCodeGen
 
+Rps_PayloadLighntingCodeGen::Rps_PayloadLighntingCodeGen(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylLightCodeGen,owner), lightg_jist(nullptr)
+{
+} // end of Rps_PayloadLighntingCodeGen::Rps_PayloadLighntingCodeGen
+
+Rps_PayloadLighntingCodeGen::~Rps_PayloadLighntingCodeGen()
+{
+} // end destructor Rps_PayloadLighntingCodeGen::~Rps_PayloadLighntingCodeGen
+
+void
+Rps_PayloadLighntingCodeGen::gc_mark(Rps_GarbageCollector&gc) const
+{
+} // end of Rps_PayloadLighntingCodeGen::gc_mark
+
+void
+Rps_PayloadLighntingCodeGen::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du);
+  RPS_POSSIBLE_BREAKPOINT();
+} // end Rps_PayloadLighntingCodeGen::dump_scan
+
+void
+Rps_PayloadLighntingCodeGen::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  RPS_ASSERT(du);
+  RPS_POSSIBLE_BREAKPOINT();
+} // end Rps_PayloadLighntingCodeGen::dump_json_content
 
 //// return true on successful code generation
 bool
@@ -111,6 +137,7 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
     Rps_ObjectRef::make_object(&_,
                                RPS_ROOT_OB(_6SM7PykipQW01HVClH) //midend_lightning_code_generator∈class
                               );
+  _f.obgenerator->put_new_plain_payload<Rps_PayloadLighntingCodeGen>();
   RPS_FATALOUT("unimplemented rps_generate_lightning_code obmodule="
                << obmodule << " obgenerator=" << _f.obgenerator);
 #warning unimplemented rps_generate_lightning_code
