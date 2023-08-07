@@ -21,7 +21,7 @@
 {
  "format" : "RefPerSysFormat2023A",
  "jsoncpp-version" : "1.9.5",
- "nbobjects" : 209,
+ "nbobjects" : 210,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
 }
 
@@ -1498,6 +1498,27 @@
  "class" : "_9Gz1oNPCnkB00I6VRS"
 }
 //-ob_2TZNwgyOdVd001uasl:help°replcfun
+
+
+
+//+ob_2Xfl3YNgZg900K6zdC:code_module!
+//∈named_attribute
+{
+ "oid": "_2Xfl3YNgZg900K6zdC",
+ "mtime": 1691394223.25,
+ "attrs" : [
+  	{
+  		"at" : "_0jdbikGJFq100dgX1n",
+  		"va" : "attribute for code module in code generators"
+  	},
+  	{
+  		"at" : "_1EBVGSfW2m200z18rx",
+  		"va" : "code_module"
+  	}
+  ],
+ "class" : "_4pSwobFHGf301Qgwzh"
+}
+//-ob_2Xfl3YNgZg900K6zdC:code_module
 
 
 
