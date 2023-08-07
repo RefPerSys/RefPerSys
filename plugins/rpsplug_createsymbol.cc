@@ -5,7 +5,7 @@
 // This plugin creates a new RefPerSys symbol
 /*****
  * Once compiled, use it for example as:
- 
+
   ./refpersys --plugin-after-load=/tmp/rpsplug_createsymbol.so \
               --plugin-arg=rpsplug_createsymbol:new_symbol_name \
               --extra=comment='some comment' \
