@@ -9,6 +9,8 @@
 
   ./refpersys --plugin-after-load=/tmp/rpsplug_createnamedattribute.so \
               --plugin-arg=rpsplug_createnamedattribute:new_attr_name \
+              --extra=comment='some comment' \
+              --extra=rooted=0 \
               --batch --dump=.
 
  ****/
