@@ -1588,7 +1588,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
 #warning rpsapply_5Q5E0Lw9v4f046uAKZ should be installed as "generate_code°the_system_class"
 /***
  * We need to manually edit the persistore/sp_8J6vNYtP5E800eCr5q-rps.json to avoid:::
- 
+
  RefPerSys WARN! dump_rps.cc:1020:: Rps_Dumper::write_all_generated_files failed to send ◌_5VC4IuJ0dyr01b8lA0/generate_code to ◌_1Io89yIORqn02SXx4p/RefPerSys_system (of class ◌_10YXWeY7lYc01RpQTA/the_system_class and payload type symbol) genstoreob:◌_9wFykw9FYCj01qGGmB with "/tmp/refpersys-822d425661847d20+_144752" & "_2Z5MwS-p144753%"
 
 ***/
@@ -1623,12 +1623,22 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe,
   const char*cwds = getcwd(cwdbuf, sizeof(cwdbuf)-1);
   if (!cwds)
     cwds = ".";
-  RPS_WARNOUT("unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class arg0=" << arg0 << " arg1=" << arg1 << " arg2=" << arg2 << " arg3=" << arg3
-              << " closure:" << callerframe->call_frame_closure()
-              << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class")
-              << std::endl << "cwd:" << cwds << " pid:" << (int)getpid() << " from " << (rps_is_main_thread()?"main":"other") << " thread");
+  RPS_WARNOUT("unimplemented rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"
+              << std::endl
+              << "... sysob=" << Rps_OutputValue(Rps_ObjectValue{_f.sysob},0)
+              << " dumpstr=" <<  Rps_OutputValue(_f.dumpstrv,0)
+              << " suffixstr=" << Rps_OutputValue(_f.suffixstrv,0)
+              << std::endl
+              << "... dumpob=" << Rps_OutputValue(Rps_ObjectValue{_f.dumpob},0)
+              << " closurev=" << Rps_OutputValue(_f.closurev,0)
+              << std::endl
+              << "... cwds=" << cwds << " pid:" << (int)getpid()
+              << " from " << (rps_is_main_thread()?"main":"other")
+              << " thread"
+              << std::endl << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_5Q5E0Lw9v4f046uAKZ generate_code°the_system_class"));
   // arg0 is reciever, so _1Io89yIORqn02SXx4p⟦⏵RefPerSys_system∈the_system_class⟧
   RPS_ASSERT(arg0.is_object());
+  RPS_ASSERT(_f.sysob);
   // arg1 is the dumped directory string, e.g. ~/RefPerSys
   RPS_ASSERT(_f.dumpstrv.is_string());
   // arg2 is a temporary suffix like "_3MPAZx-p1084952%"
