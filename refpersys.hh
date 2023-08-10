@@ -1577,9 +1577,11 @@ public:
 };                              // end class Rps_OutputValue
 
 
-#warning TODO: maybe rps_print_value and rps_print_ptr_value need depth and maxdepth arguments?
 extern "C" void rps_print_value(const Rps_Value val);
 extern "C" void rps_print_ptr_value(const void*v);
+
+extern "C" void rps_limited_print_value(const Rps_Value val, unsigned depth, unsigned maxdepth);
+extern "C" void rps_limited_print_ptr_value(const void*v, unsigned depth, unsigned maxdepth);
 
 inline std::ostream& operator<< (std::ostream&out, const Rps_OutputValue oval) {
   oval.do_output(out);

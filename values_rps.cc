@@ -198,14 +198,12 @@ Rps_QuasiZone::clear_all_gcmarks(Rps_GarbageCollector&gc)
 std::mutex Rps_LazyHashedZoneValue::lazy_mtxarr[Rps_LazyHashedZoneValue::lazy_nbmutexes];
 
 
-#warning TODO: perhaps rps_print_value need depth and maxdepth formals?
 void
 rps_print_value(const Rps_Value val)
 {
   std::cout << Rps_OutputValue(val, 0, Rps_Value::debug_maxdepth) << std::endl;
 } // end rps_print_value
 
-#warning TODO: perhaps rps_print_ptr_value need depth and maxdepth formals?
 void
 rps_print_ptr_value(const void*v)
 {
@@ -214,6 +212,21 @@ rps_print_ptr_value(const void*v)
   memcpy((void*)&val, (const void*)&v, sizeof(v));
   std::cout << Rps_OutputValue(val, 0, Rps_Value::debug_maxdepth) << std::endl;
 } // end rps_print_ptr_value
+
+void
+rps_limited_print_value(const Rps_Value val, unsigned depth, unsigned maxdepth)
+{
+  std::cout << Rps_OutputValue(val, depth, maxdepth) << std::endl; 
+} // end rps_limited_print_value
+
+void
+rps_limited_print_ptr_value(const void*v, unsigned depth, unsigned maxdepth)
+{
+  static_assert(sizeof(Rps_Value) == sizeof(v));
+  Rps_Value val;
+  memcpy((void*)&val, (const void*)&v, sizeof(v));
+  std::cout << Rps_OutputValue(val, depth, maxdepth) << std::endl;
+} // end rps_limited_print_ptr_value
 
 //////////////////////////////////////////////// sets
 
