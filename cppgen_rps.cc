@@ -53,6 +53,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  callerframe,
                  Rps_ObjectRef obmodule;
                  Rps_ObjectRef obgenerator;
+		 Rps_ObjectRef obincludeset;
                 );
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(obmodule);
@@ -62,6 +63,8 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
     Rps_ObjectRef::make_object(&_,
                                RPS_ROOT_OB(_2yzD3HZ6VQc038ekBU)//midend_cplusplus_code_generator∈class
                               );
+  _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
+                           _f.obmodule);
   RPS_FATALOUT("unimplemented rps_generate_cplusplus_code obmodule="
                << obmodule << " obgenerator=" << _f.obgenerator);
 #warning unimplemented rps_generate_cplusplus_code
