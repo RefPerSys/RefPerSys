@@ -301,7 +301,21 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 	astyle -v -s2 --style=gnu $@
 
 %.cc: %.yy
+	/usr/bin/printf "GNU make generating %s from %s\n" $@ $<
+	/usr/bin/printenv
 	$(RPS_COMPILER_TIMER) $(RPS_BUILD_BISON) $(RPS_BUILD_BISON_FLAGS) --output=$@ $<
+
+%_gpprps.cc: %_gpprps.yy
+	/usr/bin/printf "GNU make generating using GPP+BISON %s from %s\n" $@ $<
+# GPP macro start sequence is @gpprps: (including at sign and colon)
+# GPP macro end sequence for a call without arguments is the empty string
+# GPP argument start sequence is the leftparen
+# GPP argument separator is the comma
+# GPP argument end sequence is the rightparen
+	$(RPS_COMPILER_TIMER) $(RPS_GPP) -U "@gpprps:"    ""    "("    ","  ")"  "("  ")" "$#" "\\"   \
+			      -M  "@gppmacrps:"  "\n"  " "   " "    "\n"   "("   ")"   \
+		              -x -o _$<
+	$(RPS_COMPILER_TIMER) $(RPS_BUILD_BISON) $(RPS_BUILD_BISON_FLAGS) --output=$@ _$<
 
 %.cc: %.yyy
 	$(RPS_COMPILER_TIMER) $(RPS_BISONCPP) --show-filenames --verbose --thread-safe $<
