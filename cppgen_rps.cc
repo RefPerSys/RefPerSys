@@ -53,7 +53,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  callerframe,
                  Rps_ObjectRef obmodule;
                  Rps_ObjectRef obgenerator;
-		 Rps_ObjectRef obincludeset;
+                 Rps_ObjectRef obincludeset;
                 );
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(obmodule);
