@@ -1588,7 +1588,9 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
 #warning rpsapply_5Q5E0Lw9v4f046uAKZ should be installed as "generate_code°the_system_class"
 /***
  * We need to manually edit the persistore/sp_8J6vNYtP5E800eCr5q-rps.json to avoid:::
-** RefPerSys WARN! dump_rps.cc:1020:: Rps_Dumper::write_all_generated_files failed to send ◌_5VC4IuJ0dyr01b8lA0/generate_code to ◌_1Io89yIORqn02SXx4p/RefPerSys_system (of class ◌_10YXWeY7lYc01RpQTA/the_system_class and payload type symbol) genstoreob:◌_9wFykw9FYCj01qGGmB with "/tmp/refpersys-822d425661847d20+_144752" & "_2Z5MwS-p144753%"
+ 
+ RefPerSys WARN! dump_rps.cc:1020:: Rps_Dumper::write_all_generated_files failed to send ◌_5VC4IuJ0dyr01b8lA0/generate_code to ◌_1Io89yIORqn02SXx4p/RefPerSys_system (of class ◌_10YXWeY7lYc01RpQTA/the_system_class and payload type symbol) genstoreob:◌_9wFykw9FYCj01qGGmB with "/tmp/refpersys-822d425661847d20+_144752" & "_2Z5MwS-p144753%"
+
 ***/
 
 extern "C" rps_applyingfun_t rpsapply_5Q5E0Lw9v4f046uAKZ;
@@ -1611,13 +1613,13 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe,
                  Rps_ObjectRef dumpob;
                  Rps_Value closurev;
                 );
+  char cwdbuf[128];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
   _f.sysob = arg0.as_object();
   _f.dumpstrv = arg1;
   _f.suffixstrv = arg2;
   _f.dumpob = arg3.as_object();
   _f.closurev = callerframe->call_frame_closure();
-  char cwdbuf[128];
-  memset (cwdbuf, 0, sizeof(cwdbuf));
   const char*cwds = getcwd(cwdbuf, sizeof(cwdbuf)-1);
   if (!cwds)
     cwds = ".";
