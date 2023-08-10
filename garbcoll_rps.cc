@@ -112,7 +112,7 @@ Rps_CallFrame::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
       (*outputter)(out,this, depth, maxdepth);
     }
   out << "}]" << std::endl;
-  if (depth<_cfram_output_depth_.load() && cfram_prev && depth < maxdepth)
+  if ((int)depth<_cfram_output_depth_.load() && cfram_prev && depth < maxdepth)
     cfram_prev->output(out, depth+1, maxdepth);
 } // end of Rps_CallFrame::output i.e. Rps_ProtoCallFrame::output
 
