@@ -1565,8 +1565,10 @@ class Rps_OutputValue {
   const unsigned _out_maxdepth;
   static constexpr unsigned out_default_depth=3;
 public:
-  Rps_OutputValue(const Rps_Value val, unsigned depth, unsigned maxdepth)
+  Rps_OutputValue(const Rps_Value val, unsigned depth, unsigned maxdepth= out_default_depth)
     : _out_val(val), _out_depth(depth), _out_maxdepth(maxdepth) {};
+  Rps_OutputValue(const Rps_ObjectRef ob, unsigned depth, unsigned maxdepth= out_default_depth)
+    : _out_val(ob), _out_depth(depth), _out_maxdepth(maxdepth) {};
   ~Rps_OutputValue() {};
   unsigned depth_out() const { return _out_depth; };
   unsigned maxdepth_out() const { return _out_maxdepth; };
