@@ -1613,7 +1613,7 @@ rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe,
                  Rps_ObjectRef dumpob;
                  Rps_Value closurev;
                 );
-  char cwdbuf[128];
+  char cwdbuf[rps_path_byte_size];
   memset (cwdbuf, 0, sizeof(cwdbuf));
   _f.sysob = arg0.as_object();
   _f.dumpstrv = arg1;
