@@ -520,7 +520,7 @@ rps_early_initialization(int argc, char** argv)
   {
     char cwdbuf[rps_path_byte_size];
     memset (cwdbuf, 0, sizeof(cwdbuf));
-    char tmbfr[64];
+    char tmbfr[64];		// the time buffer string
     memset(tmbfr, 0, sizeof (tmbfr));
     if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
       strcpy(cwdbuf, "./");
@@ -992,6 +992,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                     << " version: " << rps_gnubison_version
                     << " at: " << rps_gnubison_realpath
                     << std::endl
+		    << " GPP generic preprocessor: "
+		    << rps_gpp_command
+		    << " version: " << rps_gpp_version
+		    << " at: " << rps_gpp_realpath
+		    << std::endl
                     << " default GUI script: " << rps_gui_script_executable << std::endl
                     << " Read Eval Print Loop: " << rps_repl_version() << std::endl
                     << " libCURL for web client: " << rps_curl_version() << std::endl

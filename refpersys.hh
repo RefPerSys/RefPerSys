@@ -239,6 +239,12 @@ extern "C" const int rps_is_link_time_optimized;
 extern "C" const char rps_gnubison_command[];
 extern "C" const char rps_gnubison_realpath[];
 extern "C" const char rps_gnubison_version[];
+
+//// the GPP general purpose preprocessor see logological.org/gpp
+extern "C" const char rps_gpp_command[];
+extern "C" const char rps_gpp_realpath[];
+extern "C" const char rps_gpp_version[];
+
 ///// a process running the GUI communicating using JSONRPC
 extern "C" const char rps_gui_script_executable[];
 

@@ -16,6 +16,8 @@ fi
  git log --format=oneline -q -1 | cut '-d '  -f1 | tr -d '\n';
      echo $endgitid)  
 
+printf 'const char rps_shortgitid[] = "%s";\n' "$(./do-generate-gitid.sh -s)"
+
 (echo -n 'const char rps_lastgittag[]="'; (git describe --abbrev=0 --all || echo '*notag*') | tr -d '\n\r\f\"\\\\'; echo '";')
 
 (echo -n 'const char rps_lastgitcommit[]="' ; \

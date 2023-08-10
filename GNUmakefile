@@ -67,7 +67,7 @@ RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcar
 
 # for the GNU bison parser generator
 RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
-
+RPS_BISON_CPPFILES= $(patsubst %.yy,_%.cc,$(RPS_BISON_SOURCES))
 
 RPS_ARCH := $(shell /bin/uname -m)
 RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
@@ -113,6 +113,8 @@ endif
 ## GNU bison (parser generator) ; see www.gnu.org/software/bison/
 RPS_BUILD_BISON= bison
 
+## Generic preprocessor - see https://logological.org/gpp
+RPS_GPP= gpp
 
 ifndef RPS_INCLUDE_DIRS
 RPS_INCLUDE_DIRS ?= /usr/local/include /usr/include /usr/include/jsoncpp
@@ -366,10 +368,15 @@ __timestamp.c: GNUmakefile do-generate-timestamp.sh
 	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
 	printf 'const char rps_build_xtra_cflags[]="%s";\n' '$(RPS_BUILD_XTRA_CFLAGS)' >> $@-tmp
 	printf 'const int rps_is_link_time_optimized = 0;\n' >> $@-tmp
+	printf '\n/// the GNU bison parser generator from www.gnu.org/software/bison/\n' >> $@-tmp
 	printf 'const char rps_gnubison_command[]="%s";\n' "$(RPS_BUILD_BISON)" >> $@-tmp
 	printf 'const char rps_gnubison_realpath[]="%s";\n' '$(shell /bin/which $(RPS_BUILD_BISON))' >> $@-tmp
 	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
-	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp
+	printf '\n/// the generic preprocessor from logological.org/gpp\n' >> $@-tmp
+	printf 'const char rps_gpp_command[]="%s";\n' '$(RPS_GPP)' >> $@-tmp
+	printf 'const char rps_gpp_realpath[]="%s";\n' '$(shell /bin/which $(RPS_GPP))' >> $@-tmp
+	printf 'const char rps_gpp_version[]="%s";\n' "$$($(RPS_GPP) --version | head -1)" >> $@-tmp
+	printf '\n\n' >> $@-tmp
 	printf '/// end of generated file $@\n' >> $@-tmp
 	$(MV) --backup $@-tmp $@
 
