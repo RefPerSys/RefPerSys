@@ -1042,8 +1042,11 @@ void rps_show_object_for_repl(Rps_CallFrame*callerframe,
     (*pout) << "** without payload **" << std::endl;
   else
     {
+      Rps_Type typayl = payl->type();
       (*pout) << "** with payload of "
-              << _f.shownob->payload_type_name() << " **" << std::endl;
+              << _f.shownob->payload_type_name()
+              << " type#" << (int)typayl
+              << " **" << std::endl;
 #warning we probably want to display some common payloads here
     }
   rps_applyingfun_t* apfun = _f.shownob->get_applying_ptrfun();
