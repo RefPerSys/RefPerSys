@@ -198,6 +198,7 @@ Rps_QuasiZone::clear_all_gcmarks(Rps_GarbageCollector&gc)
 std::mutex Rps_LazyHashedZoneValue::lazy_mtxarr[Rps_LazyHashedZoneValue::lazy_nbmutexes];
 
 
+#warning TODO: the printing routines should use syslog not std::out when rps_syslog_enabled
 void
 rps_print_value(const Rps_Value val)
 {
@@ -216,7 +217,7 @@ rps_print_ptr_value(const void*v)
 void
 rps_limited_print_value(const Rps_Value val, unsigned depth, unsigned maxdepth)
 {
-  std::cout << Rps_OutputValue(val, depth, maxdepth) << std::endl; 
+  std::cout << Rps_OutputValue(val, depth, maxdepth) << std::endl;
 } // end rps_limited_print_value
 
 void

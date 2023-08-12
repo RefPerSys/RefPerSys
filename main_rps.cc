@@ -277,6 +277,14 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Use system log with syslog(3) ...\n", //
     /*group:*/0 ///
   },
+  /* ======= daemoning ======= */
+  {/*name:*/ "daemon", ///
+    /*key:*/ RPSPROGOPT_DAEMON, ///
+    /*arg:*/ nullptr, ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Use daemon(3) ...\n", //
+    /*group:*/0 ///
+  },
   /* ======= test the read-eval-print lexer ======== */
   {/*name:*/ "test-repl-lexer", ///
     /*key:*/ RPSPROGOPT_TEST_REPL_LEXER, ///
@@ -330,6 +338,7 @@ void* rps_proghdl = nullptr;
 bool rps_batch = false;
 bool rps_disable_aslr = false;
 bool rps_without_terminal_escape = false;
+bool rps_daemonized = false;
 bool rps_without_quick_tests = false;
 bool rps_test_repl_lexer = false;
 bool rps_syslog_enabled = false;
