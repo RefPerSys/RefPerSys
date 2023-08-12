@@ -414,6 +414,7 @@ extern "C" FILE*rps_debug_file;
 //////////////// fatal error - aborting
 extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
+#warning TODO: RPS_FATAL_AT_BIS should use syslog when rps_syslog_enabled
 #define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {                          \
     bool ontty = rps_stderr_istty;                                      \
     fprintf(stderr, "\n\n"                                              \
@@ -433,6 +434,7 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 #define RPS_FATAL(Fmt,...) RPS_FATAL_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
+#warning TODO: RPS_FATALOUT_AT_BIS should use syslog when rps_syslog_enabled
 #define RPS_FATALOUT_AT_BIS(Fil,Lin,...) do {           \
     bool ontty = rps_stderr_istty;                      \
     std::cerr << std::endl << std::endl                 \
@@ -460,6 +462,8 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 //////////////// warning
 
+
+#warning TODO: RPS_WARN_AT_BIS should use use syslog when rps_syslog_enabled
 extern "C" void rps_debug_warn_at(const char*file, int line);
 #define RPS_WARN_AT_BIS(Fil,Lin,Fmt,...) do {                   \
     bool ontty = rps_stderr_istty;                              \
@@ -476,6 +480,7 @@ extern "C" void rps_debug_warn_at(const char*file, int line);
 // typical usage could be RPS_WARN("something bad x=%d", x)
 #define RPS_WARN(Fmt,...) RPS_WARN_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
+#warning TODO: RPS_WARNOUT_AT_BIS should use use syslog when rps_syslog_enabled
 #define RPS_WARNOUT_AT_BIS(Fil,Lin,...) do {    \
     std::cerr << "** RefPerSys WARN! "          \
               << (Fil) << ":" << Lin << ":: "   \
@@ -499,6 +504,7 @@ static inline pid_t rps_thread_id(void)
 
 // see https://en.wikipedia.org/wiki/ANSI_escape_code
 extern "C" bool rps_without_terminal_escape;
+extern "C" bool rps_daemonized;
 // adapted from https://github.com/bstarynk
 #define RPS_TERMINAL_NORMAL_ESCAPE \
   (rps_without_terminal_escape?"":"\033[0m")
@@ -637,6 +643,7 @@ enum rps_progoption_en
   RPSPROGOPT_RANDOMOID,
   RPSPROGOPT_TYPEINFO,
   RPSPROGOPT_SYSLOG,
+  RPSPROGOPT_DAEMON,
   RPSPROGOPT_NO_TERMINAL,
   RPSPROGOPT_NO_ASLR,
   RPSPROGOPT_NO_QUICK_TESTS,
@@ -679,7 +686,7 @@ void rps_set_debug_output_path(const char*filepath);
 
 #define RPS_DEBUG_ENABLED(dbgopt) (rps_debug_flags & (1 << RPS_DEBUG_##dbgopt))
 
-/// debug print to stderr or to the file given to
+/// debug print to stderr or syslog or to the file given to
 /// rps_set_debug_output_path ....; if fline is negative, print a
 /// newline before....
 void 
@@ -753,7 +760,11 @@ while (0)
 
 #define RPS_INFORM_AT_BIS(Fil,Lin,Fmt,...) do {                 \
     bool ontty = rps_stdout_istty;                              \
-    fprintf(stdout, "\n\n"                                      \
+    if (rps_syslog_enabled) {					\
+      syslog(LOG_INFO, "RefPerSys INFORM %s:%d: %s " Fmt "\n",  \
+	     Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);	\
+    } else							\
+      fprintf(stdout, "\n\n"					\
             "%s*** RefPerSys INFORM:%s %s:%d: %s<%s>%s\n "      \
             Fmt "\n\n",                                         \
             ontty?RPS_TERMINAL_BOLD_ESCAPE:"",                  \
@@ -801,13 +812,14 @@ while (0)
 #define RPS_NOPRINT(Fmt,...) do { if (false) \
       RPS_INFORM(Fmt,##__VA_ARGS__); }while(0)
 
-#define RPS_NOPRINTOUT(...) do { if(false) \
+#define RPS_NOPRINTOUT(...) do { if (false) \
       RPS_INFORMOUT(__VA_ARGS__); }while(0)
 
 
 //////////////// assert
 #ifndef NDEBUG
 ///
+#warning TODO: RPS_ASSERT_AT_BIS should use use syslog when rps_syslog_enabled
 #define RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond) do {               \
   if (RPS_UNLIKELY(!(Cond))) {                                  \
   fprintf(stderr, "\n\n"                                        \
