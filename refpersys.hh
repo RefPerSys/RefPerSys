@@ -2224,6 +2224,7 @@ protected:
   //// the garbage collector.  It should be rounded up, not down (for
   //// potential gaps required by ABI alignment).
   virtual uint32_t wordsize() const =0;
+public:
   virtual Rps_Type type() const
   {
     return qz_type;
