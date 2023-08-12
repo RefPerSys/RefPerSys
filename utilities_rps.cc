@@ -1040,7 +1040,7 @@ rps_parse_program_arguments(int &argc, char**argv)
   errno = 0;
   struct argp_state argstate;
   memset (&argstate, 0, sizeof(argstate));
-  argparser_rps.options = rps_progoptions;
+  argparser_rps.options = rps_progoptions; // defined in main_rps.cc
   argparser_rps.parser = rps_parse1opt;
   argparser_rps.args_doc = " ; # ";
   argparser_rps.doc =
