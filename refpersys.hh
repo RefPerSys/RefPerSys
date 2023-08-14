@@ -784,6 +784,12 @@ while (0)
 #define RPS_INFORMOUT_AT_BIS(Fil,Lin,...) do {          \
     bool ontty = rps_stdout_istty;                      \
     std::ostringstream outs_##Lin;                      \
+    if (rps_daemonized) {				\
+      outs_##Lin << __VA_ARGS__  << std::flush;         \
+      syslog(LOG_INFO, "%s:%d:%s %s\n",			\
+	     (Fil), (Lin), __PRETTY_FUNCTION__,		\
+	     outs_##Lin.str().c_str());		        \
+    } else {						\
     outs_##Lin                                          \
       << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")            \
       << "** RefPerSys INFORM!"                         \
@@ -796,6 +802,7 @@ while (0)
     fputs(outs_##Lin.str().c_str(), stdout);            \
     fputc('\n', stdout);                                \
     fflush(stdout);                                     \
+  }							\
   } while(0)
 
 #define RPS_INFORMOUT_AT(Fil,Lin,...) RPS_INFORMOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
