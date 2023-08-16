@@ -494,6 +494,9 @@ rps_early_initialization(int argc, char** argv)
 {
   rps_argc = argc;
   rps_argv = argv;
+  rps_progname = argv[0];
+  rps_stderr_istty = isatty(STDERR_FILENO);
+  rps_stdout_istty = isatty(STDOUT_FILENO);
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
   if (uname (&rps_utsname))
@@ -501,17 +504,20 @@ rps_early_initialization(int argc, char** argv)
       fprintf(stderr, "%s: pid %d on %s failed to uname (%s:%d git %s): %s\n", rps_progname,
               (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
               strerror(errno));
+      syslog(LOG_ERR,  "%s: pid %d on %s failed to uname (%s:%d git %s): %s\n", rps_progname,
+              (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
+              strerror(errno));
       exit(EXIT_FAILURE);
     };
-  rps_stderr_istty = isatty(STDERR_FILENO);
-  rps_stdout_istty = isatty(STDOUT_FILENO);
-  rps_progname = argv[0];
   /// dlopen to self
   rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
   if (!rps_proghdl)
     {
+      char *err = dlerror();
       fprintf(stderr, "%s failed to dlopen whole program (%s)\n", rps_progname,
-              dlerror());
+              err);
+      syslog(LOG_ERR, "%s failed to dlopen whole program (%s)\n", rps_progname,
+              err);
       exit(EXIT_FAILURE);
     };
   // initialize GNU lightning
@@ -569,6 +575,10 @@ rps_early_initialization(int argc, char** argv)
           rps_batch = true;
         else if (!strcmp(argv[ix], "--without-terminal"))
           rps_without_terminal_escape = true;
+	else if (!strcmp(argv[ix], "--daemon"))
+	  rps_daemonized = true;
+	else if (!strcmp(argv[ix], "--syslog"))
+	  rps_syslog_enabled = true;
       }
     if (rps_disable_aslr)
       {
