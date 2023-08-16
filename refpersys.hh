@@ -261,8 +261,14 @@ extern "C" const char rps_building_machname[]; /// with only letters, digits, un
 
 /// the installed path of GNU lightning
 extern "C" const char rps_gnu_lightning_source_dir[];
-
+/// current utsname
 extern "C" struct utsname rps_utsname;
+
+
+////////////////////////////////////////////////////////////////
+//// from RefPerSys program arguments
+extern "C" bool rps_daemonized;  /// --daemon option
+extern "C" bool rps_syslog_enabled; /// --syslog option
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Provides miscellaneous runtime information for RefPerSys.
@@ -504,7 +510,6 @@ static inline pid_t rps_thread_id(void)
 
 // see https://en.wikipedia.org/wiki/ANSI_escape_code
 extern "C" bool rps_without_terminal_escape;
-extern "C" bool rps_daemonized;
 // adapted from https://github.com/bstarynk
 #define RPS_TERMINAL_NORMAL_ESCAPE \
   (rps_without_terminal_escape?"":"\033[0m")
@@ -673,7 +678,6 @@ extern "C" void rps_extend_env(void);
 
 extern "C" unsigned long rps_run_delay; // in seconds
 ////////////////////////////////////////////////////////////////
-extern "C" bool rps_syslog_enabled;
 
 extern "C" std::atomic<unsigned> rps_debug_flags;
 
