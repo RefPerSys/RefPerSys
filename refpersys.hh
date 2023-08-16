@@ -786,14 +786,14 @@ while (0)
 #define RPS_INFORM(Fmt,...) RPS_INFORM_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
 #define RPS_INFORMOUT_AT_BIS(Fil,Lin,...) do {          \
-    bool ontty = rps_stdout_istty;                      \
     std::ostringstream outs_##Lin;                      \
-    if (rps_daemonized) {				\
+    if (rps_syslog_enabled) {				\
       outs_##Lin << __VA_ARGS__  << std::flush;         \
       syslog(LOG_INFO, "%s:%d:%s %s\n",			\
 	     (Fil), (Lin), __PRETTY_FUNCTION__,		\
 	     outs_##Lin.str().c_str());		        \
     } else {						\
+    bool ontty = rps_stdout_istty;                      \
     outs_##Lin                                          \
       << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")            \
       << "** RefPerSys INFORM!"                         \
