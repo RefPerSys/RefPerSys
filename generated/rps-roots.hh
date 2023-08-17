@@ -31,6 +31,7 @@ RPS_INSTALL_ROOT_OB(_0LbCts6NacB03SMXz4) //home_page∈symbol
 RPS_INSTALL_ROOT_OB(_0MInvb6lXCQ006IiJZ) //"web_service"∈string_dictionary
 RPS_INSTALL_ROOT_OB(_0S6DQvp3Gop015zXhL) //lexical_token∈class
 RPS_INSTALL_ROOT_OB(_0TvVIbOU16z028VWvv) //"Rps_LexToken::tokenize"∈core_function
+RPS_INSTALL_ROOT_OB(_0XF2N1YQ87p02GXXir) //"include"∈named_attribute
 RPS_INSTALL_ROOT_OB(_0XMNvzdABUM03Bj7WP) //git_id∈symbol
 RPS_INSTALL_ROOT_OB(_0Z23UbC0G9b01WZZPN) //display_object_payload_web∈symbol
 RPS_INSTALL_ROOT_OB(_10YXWeY7lYc01RpQTA) //the_system_class∈class
@@ -127,7 +128,7 @@ RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 105
+#define RPS_NB_ROOT_OB 106
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh
