@@ -66,7 +66,21 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                               );
   _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
                            _f.obmodule);
-  _f.vinclude = _f.obmodule->get_attr1(&_, RPS_ROOT_OB(_0XF2N1YQ87p02GXXir)); //"include"∈named_attribute
+  _f.vinclude =
+    _f.obmodule->get_attr1(&_,
+			   RPS_ROOT_OB(_0XF2N1YQ87p02GXXir)); //"include"∈named_attribute
+  /**
+     TODO complete here:
+
+     if vinclude is a set or sequence, use it;
+     if it is a closure, apply it to the module and the generator
+
+     WHAT ELSE
+
+     How to deal with the (varying) set of types, of C++ routines, of
+     C++ struct-s or class-es
+
+  **/
   RPS_FATALOUT("unimplemented rps_generate_cplusplus_code obmodule="
                << obmodule << " obgenerator=" << _f.obgenerator);
 #warning unimplemented rps_generate_cplusplus_code
