@@ -55,6 +55,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  Rps_ObjectRef obgenerator;
                  Rps_ObjectRef obincludeset;
 		 Rps_Value vinclude;
+		 Rps_Value vtype;
                 );
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(obmodule);
@@ -66,6 +67,11 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                               );
   _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
                            _f.obmodule);
+  /**
+     The "include" attribute of the module describes how would the
+     #include-s in the generated C++ file be obtained and generated.
+
+     We need to document more.... **/
   _f.vinclude =
     _f.obmodule->get_attr1(&_,
 			   RPS_ROOT_OB(_0XF2N1YQ87p02GXXir)); //"include"∈named_attribute
