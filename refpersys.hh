@@ -415,6 +415,8 @@ extern "C" const std::string& rps_get_loaddir(void);
 
 extern "C" void rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string linprefix, std::string linsuffix);
 
+extern "C" void rps_emit_lgplv3_copyright_notice(std::ostream&outs, std::string path, std::string linprefix, std::string linsuffix, std::string owner="");
+
 extern "C" FILE*rps_debug_file;
 
 //////////////// fatal error - aborting
