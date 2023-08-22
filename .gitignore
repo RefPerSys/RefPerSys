@@ -124,3 +124,7 @@ lemonrepl_rps.h
 doc/design-ideas/cc-by-sa.png
 refpersys-lto
 %%__timestamp.c%%
+
+
+# Configurable build variables makefile fragment
+config.mk

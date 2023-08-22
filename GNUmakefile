@@ -35,25 +35,32 @@
 
 
 
-
 ## tell GNU make to export all variables by default
 export
 
-### The optional file $HOME/.refpersys.mk should contain definitions like
-###     # file ~/.refpersys.mk
-###     RPS_BUILD_CC= gcc-12
-###     RPS_BUILD_CXX= g++-12
-###     RPS_BUILD_GNU_LIGHTNING_SOURCEDIR= /usr/src/Libs/lightning
-###  and perhaps
-###     RPS_BUILD_XTRA_CFLAGS= -pg
-### This enables changing C and C++ compiler versions
-ifndef RPS_BUILD_CC
--include $(shell /bin/ls ~/.refpersys.mk)
+
+#
+# Include the optional config.mk with customised build variables:
+#   - RPS_BUILD_CC:                      the C compiler
+#   - RPS_BUILD_CXX:                     the C++ compiler
+#   - RPS_BUILD_GNU_LIGHTNING_SOURCEDIR: GNU Lightning source directory
+#   - RPS_BUILD_COMPILER_FLAGS:	         compiler flags 	
+#   - RPS_BUILD_XTRA_CFLAGS:             addiitional compiler flags
+#
+# In case the config.mk does not exist, default values are defined for these
+# build variables.
+#
+
+ifneq ($(wildcard config.mk),)
+include config.mk
 endif
 
-ifndef RPS_BUILD_GNU_LIGHTNING_SOURCEDIR
-$(error undefined RPS_BUILD_GNU_LIGHTNING_SOURCEDIR GNU make variable in ~/.refpersys.mk)
-endif
+RPS_BUILD_CC?=				gcc-12
+RPS_BUILD_CXX?=				g++-12
+RPS_BUILD_GNU_LIGHTNING_SOURCEDIR?=	/usr/src/Libs/lightning
+RPS_BUILD_COMPILER_FLAGS?= 		-std=gnu++17
+RPS_BUILD_XTRA_CFLAGS?= 		-pg
+
 
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
@@ -96,19 +103,8 @@ RPS_LTO_BISON_OBJECTS = $(patsubst %.yy, %.lto.o, $(RPS_BISON_SOURCES))
 RPS_BUILD_CCACHE=
 # the GCC compiler, see gcc.gnu.org
 ## for some reason GCC 9 dont compile
-ifndef RPS_BUILD_CC
-RPS_BUILD_CC?= gcc-12
-endif
-
-ifndef RPS_BUILD_CXX
-RPS_BUILD_CXX?= g++-12
-endif
 
 RPS_BUILD_CXX_REALPATH= $(realpath $(RPS_BUILD_CXX))
-
-ifndef RPS_BUILD_COMPILER_FLAGS
-RPS_BUILD_COMPILER_FLAGS?= -std=gnu++17
-endif
 
 ## GNU bison (parser generator) ; see www.gnu.org/software/bison/
 RPS_BUILD_BISON= bison
