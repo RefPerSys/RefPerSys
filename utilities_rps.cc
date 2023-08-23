@@ -355,6 +355,9 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(std::lock_guard<std::recursive_mutex>);
   EXPLAIN_TYPE(std::lock_guard<std::shared_mutex>);
   EXPLAIN_TYPE(std::string);
+  EXPLAIN_TYPE(std::ostream);
+  EXPLAIN_TYPE(std::ostringstream);
+  EXPLAIN_TYPE(FILE);
   EXPLAIN_TYPE(std::vector<std::string>);
   EXPLAIN_TYPE(std::set<std::string>);
   EXPLAIN_TYPE2(std::map<Rps_ObjectRef, Rps_Value>);
