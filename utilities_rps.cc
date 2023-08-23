@@ -228,8 +228,11 @@ rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string
     time_t nowtime = time(nullptr);
     struct tm nowtm = {};
     localtime_r(&nowtime, &nowtm);
-    outs << linprefix << " © Copyright " << RPS_INITIAL_COPYRIGHT_YEAR
-         << " - " << (nowtm.tm_year+1900)
+    outs << linprefix
+	 << "Copyright (C) "
+	 << RPS_INITIAL_COPYRIGHT_YEAR
+         << " - "
+	 << (nowtm.tm_year + 1900)
          << " The Reflective Persistent System Team."
          << linsuffix << std::endl;
     outs << linprefix
@@ -279,9 +282,14 @@ rps_emit_lgplv3_copyright_notice(std::ostream&outs, std::string path, std::strin
     time_t nowtime = time(nullptr);
     struct tm nowtm = {};
     localtime_r(&nowtime, &nowtm);
-    outs << linprefix << " © Copyright " << (nowtm.tm_year+1900)
-         << " " << ((owner.empty()?"the RefPerSys team":owner.c_str())
-         << linsuffix << std::endl;
+    outs << linprefix
+	 << "Copyright (C) "
+	 << RPS_INITIAL_COPYRIGHT_YEAR
+         << " - "
+	 << (nowtm.tm_year + 1900)
+	 << ((owner.empty() ? "The Reflective Persistent Team" : owner.c_str())
+         << linsuffix
+	 << std::endl;
   }
   outs << linprefix << "_"
        << linsuffix << std::endl;
