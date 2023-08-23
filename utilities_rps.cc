@@ -229,10 +229,10 @@ rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string
     struct tm nowtm = {};
     localtime_r(&nowtime, &nowtm);
     outs << linprefix
-	 << "Copyright (C) "
-	 << RPS_INITIAL_COPYRIGHT_YEAR
+         << "Copyright (C) "
+         << RPS_INITIAL_COPYRIGHT_YEAR
          << " - "
-	 << (nowtm.tm_year + 1900)
+         << (nowtm.tm_year + 1900)
          << " The Reflective Persistent System Team."
          << linsuffix << std::endl;
     outs << linprefix
@@ -283,13 +283,12 @@ rps_emit_lgplv3_copyright_notice(std::ostream&outs, std::string path, std::strin
     struct tm nowtm = {};
     localtime_r(&nowtime, &nowtm);
     outs << linprefix
-	 << "Copyright (C) "
-	 << RPS_INITIAL_COPYRIGHT_YEAR
+         << "Copyright (C) "
+         << RPS_INITIAL_COPYRIGHT_YEAR
          << " - "
-	 << (nowtm.tm_year + 1900)
-	 << ((owner.empty() ? "The Reflective Persistent Team" : owner.c_str())
-         << linsuffix
-	 << std::endl;
+         << (nowtm.tm_year + 1900)
+         << ((owner.empty()) ? "The Reflective Persistent Team" : owner.c_str());
+    outs << linsuffix << std::endl;
   }
   outs << linprefix << "_"
        << linsuffix << std::endl;
@@ -560,8 +559,8 @@ rps_early_initialization(int argc, char** argv)
               (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
               strerror(errno));
       syslog(LOG_ERR,  "%s: pid %d on %s failed to uname (%s:%d git %s): %s\n", rps_progname,
-              (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
-              strerror(errno));
+             (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
+             strerror(errno));
       exit(EXIT_FAILURE);
     };
   /// dlopen to self
@@ -572,7 +571,7 @@ rps_early_initialization(int argc, char** argv)
       fprintf(stderr, "%s failed to dlopen whole program (%s)\n", rps_progname,
               err);
       syslog(LOG_ERR, "%s failed to dlopen whole program (%s)\n", rps_progname,
-              err);
+             err);
       exit(EXIT_FAILURE);
     };
   // initialize GNU lightning
@@ -630,10 +629,10 @@ rps_early_initialization(int argc, char** argv)
           rps_batch = true;
         else if (!strcmp(argv[ix], "--without-terminal"))
           rps_without_terminal_escape = true;
-	else if (!strcmp(argv[ix], "--daemon"))
-	  rps_daemonized = true;
-	else if (!strcmp(argv[ix], "--syslog"))
-	  rps_syslog_enabled = true;
+        else if (!strcmp(argv[ix], "--daemon"))
+          rps_daemonized = true;
+        else if (!strcmp(argv[ix], "--syslog"))
+          rps_syslog_enabled = true;
       }
     if (rps_disable_aslr)
       {

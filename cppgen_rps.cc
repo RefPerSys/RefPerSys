@@ -54,8 +54,8 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  Rps_ObjectRef obmodule;
                  Rps_ObjectRef obgenerator;
                  Rps_ObjectRef obincludeset;
-		 Rps_Value vinclude;
-		 Rps_Value vtype;
+                 Rps_Value vinclude;
+                 Rps_Value vtype;
                 );
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(obmodule);
@@ -74,7 +74,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
      We need to document more.... **/
   _f.vinclude =
     _f.obmodule->get_attr1(&_,
-			   RPS_ROOT_OB(_0XF2N1YQ87p02GXXir)); //"include"∈named_attribute
+                           RPS_ROOT_OB(_0XF2N1YQ87p02GXXir)); //"include"∈named_attribute
   /**
      TODO complete here:
 
