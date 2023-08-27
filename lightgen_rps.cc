@@ -36,12 +36,19 @@
 
 #include "refpersys.hh"
 
-/// GNU lightning implementation header
+/// GNU lightning implementation header.
+/// See https://www.gnu.org/software/lightning/
 
-/// FIXME for https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
-#define protected lightning_protected
+/// a GNU lightning library after 2.2.2 (or GNU lightning commit
+/// 3b0fff9206a458d7e11db of August 21, 2023) is required.
+
+
+/// Notice
+/// https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
+/// the jit_private.h header is defining the abstract type
+/// jit_state. In principle we don't need it -or know its sizeof or
+/// alignof
 #include "jit_private.h"
-#undef protected
 
 extern "C" const char rps_lightgen_gitid[];
 const char rps_lightgen_gitid[]= RPS_GITID;
@@ -51,6 +58,9 @@ const char rps_lightgen_date[]= __DATE__;
 
 
 /// https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
+/// these are in principle not needed, since there is a single
+/// jit_state -a truely abstract datatype- is created thru the
+/// jit_new_state function and destroyed by jit_destroy_state
 extern "C" const int rps_gnulightning_jitstate_size;
 const int rps_gnulightning_jitstate_size = sizeof(jit_state);
 extern "C" const int rps_gnulightning_jitstate_align;
