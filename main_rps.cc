@@ -1213,6 +1213,26 @@ rps_kill_wait_gui_process(void)
     RPS_FATALOUT("GUI process failed with status " << guistatus);
 } // end rps_kill_wait_gui_process
 
+/// registered to atexit....
+extern "C" void rps_exiting(void);
+
+void rps_exiting(void)
+{
+  static char cwdbuf[rps_path_byte_size];
+  char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
+  syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s exiting (%d); elapsed %.3f sec, CPU %.3f sec",
+	 (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
+	 rps_exit_atomic_code.load(),
+	 rps_elapsed_real_time(), rps_process_cpu_time());
+  if (!rps_syslog_enabled) {
+    printf("RefPerSys process %d on host %s in %s git %s exiting (%d); elapsed %.3f sec, CPU %.3f sec",
+	 (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
+	 rps_exit_atomic_code.load(),
+	 rps_elapsed_real_time(), rps_process_cpu_time());
+    fflush(stdout);
+  }
+} // end rps_exiting
+
 
 int
 main (int argc, char** argv)
@@ -1268,6 +1288,7 @@ main (int argc, char** argv)
   };
   rps_load_from(rps_my_load_dir);
   RPS_POSSIBLE_BREAKPOINT();
+  atexit (rps_exiting);
   if (!rps_batch)
     rps_initialize_event_loop();
   rps_run_loaded_application(argc, argv);
