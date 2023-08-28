@@ -482,9 +482,12 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 //////////////// warnings
 
 
-#warning TODO: RPS_WARN_AT_BIS should use use syslog when rps_syslog_enabled
 extern "C" void rps_debug_warn_at(const char*file, int line);
 #define RPS_WARN_AT_BIS(Fil,Lin,Fmt,...) do {                   \
+    if (rps_syslog_enabled) {					\
+      syslog(LOG_WARNING, "RefPerSys WARN:%s:%d: {%s} " Fmt,	\
+	     Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);	\
+ } else {							\
     bool ontty = rps_stderr_istty;                              \
     fprintf(stderr, "\n\n"                                      \
             "%s*** RefPerSys WARN:%s%s:%d: {%s}\n " Fmt "\n\n", \
@@ -492,20 +495,26 @@ extern "C" void rps_debug_warn_at(const char*file, int line);
             ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",                \
             Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);      \
     rps_debug_warn_at(Fil,Lin);                                 \
-    fflush(stderr); } while(0)
+    fflush(stderr); } } while(0)
 
 #define RPS_WARN_AT(Fil,Lin,Fmt,...) RPS_WARN_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
 
 // typical usage could be RPS_WARN("something bad x=%d", x)
 #define RPS_WARN(Fmt,...) RPS_WARN_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
-#warning TODO: RPS_WARNOUT_AT_BIS should use use syslog when rps_syslog_enabled
-#define RPS_WARNOUT_AT_BIS(Fil,Lin,...) do {    \
-    std::cerr << "** RefPerSys WARN! "          \
-              << (Fil) << ":" << Lin << ":: "   \
-              << __VA_ARGS__ << std::endl;      \
-    rps_debug_warn_at(Fil,Lin);                 \
-    std::cerr << std::flush; } while(0)
+#define RPS_WARNOUT_AT_BIS(Fil,Lin,...) do {				\
+    if (rps_syslog_enabled) {						\
+      std::ostringstream outl##Lin;					\
+      outl##Lin <<   __VA_ARGS__ << std::flush;				\
+      outl##Lin.flush();						\
+      syslog(LOG_WARNING, "RefPerSys WARN:%s:%d: {%s} %s",		\
+	     Fil, Lin, __PRETTY_FUNCTION__, outl##Lin.str().c_str());	\
+    }									\
+    else								\
+      std::clog << "** RefPerSys WARN! "				\
+		<< (Fil) << ":" << Lin << ":: "				\
+		<< __VA_ARGS__ << std::endl;				\
+    rps_debug_warn_at(Fil,Lin);	 } while(0)
 
 #define RPS_WARNOUT_AT(Fil,Lin,...) RPS_WARNOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
 
