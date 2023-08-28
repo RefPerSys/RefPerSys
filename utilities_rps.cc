@@ -885,9 +885,9 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                                  /*noclose:*/0))
             RPS_FATAL("failed to daemon");
           rps_daemonized = true;
-          getcwd(cwdbuf, sizeof(cwdbuf)-1);
+          const char*cw = getcwd(cwdbuf, sizeof(cwdbuf)-1);
           RPS_INFORM("daemonized pid %d in dir %s git %s",
-                     (int)getpid(), cwdbuf, rps_shortgitid);
+                     (int)getpid(), cw, rps_shortgitid);
         };
     }
     return 0;
