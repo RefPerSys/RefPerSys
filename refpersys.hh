@@ -422,53 +422,64 @@ extern "C" FILE*rps_debug_file;
 //////////////// fatal error - aborting
 extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
-#warning TODO: RPS_FATAL_AT_BIS should use syslog when rps_syslog_enabled
 #define RPS_FATAL_AT_BIS(Fil,Lin,Fmt,...) do {                          \
-    bool ontty = rps_stderr_istty;                                      \
-    fprintf(stderr, "\n\n"                                              \
-            "%s*** RefPerSys FATAL:%s%s:%d: {%s}\n " Fmt "\n\n",        \
-            (ontty?RPS_TERMINAL_BOLD_ESCAPE:""),                        \
-            (ontty?RPS_TERMINAL_NORMAL_ESCAPE:""),                      \
-            Fil, Lin, __PRETTY_FUNCTION__,                              \
-            ##__VA_ARGS__);                                             \
-    if (rps_debug_file && rps_debug_file != stderr)                     \
-      fprintf(rps_debug_file,                                           \
-              "\n\n*°* RefPerSys °FATAL° %s:%d:%s " Fmt "*°*\n",        \
+    if (rps_syslog_enabled) {                                           \
+      syslog(LOG_ALERT, "*+* RefPerSys FATAL:%s:%d: {%s} " Fmt,         \
+             Fil, Lin, __PRETTY_FUNCTION__,                             \
+             ##__VA_ARGS__);                                            \
+    } else {                                                            \
+      bool ontty = rps_stderr_istty;                                    \
+      fprintf(stderr, "\n\n"                                            \
+              "%s*** RefPerSys FATAL:%s%s:%d: {%s}\n " Fmt "\n\n",      \
+              (ontty?RPS_TERMINAL_BOLD_ESCAPE:""),                      \
+              (ontty?RPS_TERMINAL_NORMAL_ESCAPE:""),                    \
               Fil, Lin, __PRETTY_FUNCTION__,                            \
               ##__VA_ARGS__);                                           \
-    rps_fatal_stop_at (Fil,Lin); } while(0)
-
+  };                                                                    \
+  if (rps_debug_file && rps_debug_file != stderr)                       \
+    fprintf(rps_debug_file,                                             \
+            "\n\n*°* RefPerSys °FATAL° %s:%d:%s " Fmt "*°*\n",          \
+            Fil, Lin, __PRETTY_FUNCTION__,                              \
+            ##__VA_ARGS__);                                             \
+  rps_fatal_stop_at (Fil,Lin); } while(0)
 #define RPS_FATAL_AT(Fil,Lin,Fmt,...) RPS_FATAL_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
-
 #define RPS_FATAL(Fmt,...) RPS_FATAL_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
-#warning TODO: RPS_FATALOUT_AT_BIS should use syslog when rps_syslog_enabled
-#define RPS_FATALOUT_AT_BIS(Fil,Lin,...) do {           \
-    bool ontty = rps_stderr_istty;                      \
-    std::cerr << std::endl << std::endl                 \
-              << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")    \
-              << "** RefPerSys FATAL!"                  \
-              << (ontty?RPS_TERMINAL_NORMAL_ESCAPE:"")  \
-              << " " << (Fil) << ":" << Lin << ":: "    \
-              << __VA_ARGS__ << std::endl;              \
-    if (rps_debug_file && rps_debug_file != stderr) {   \
-      std::ostringstream out##Lin;                      \
-      out##Lin <<   __VA_ARGS__ << std::flush;          \
-      out##Lin.flush();                                 \
-      fprintf(rps_debug_file,                           \
-              "°* RefPerSys °FATAL° %s:%d:: %s *°\n",   \
-              (Fil), (Lin),                             \
-              out##Lin.str().c_str());                  \
-      fflush(rps_debug_file);   }                       \
-    rps_fatal_stop_at (Fil,Lin); } while(0)
+
+
+#define RPS_FATALOUT_AT_BIS(Fil,Lin,...) do {                   \
+      std::ostringstream outl##Lin;                             \
+      outl##Lin <<   __VA_ARGS__ << std::flush;                 \
+      outl##Lin.flush();                                        \
+    if (rps_syslog_enabled) {                                   \
+      syslog(LOG_ALERT,                                         \
+             "*+* RefPerSys FATAL:%s:%d: {%s} %s",              \
+             Fil, Lin, __PRETTY_FUNCTION__,                     \
+             outl##Lin.str().c_str());                          \
+    } else {                                                    \
+      bool ontty = rps_stderr_istty;                            \
+      fprintf(stderr, "\n\n"                                    \
+              "%s*** RefPerSys FATAL:%s%s:%d: {%s}\n %s\n\n",   \
+              (ontty?RPS_TERMINAL_BOLD_ESCAPE:""),              \
+              (ontty?RPS_TERMINAL_NORMAL_ESCAPE:""),            \
+              Fil, Lin, __PRETTY_FUNCTION__,                    \
+              outl##Lin.str().c_str());                         \
+  };                                                            \
+  if (rps_debug_file && rps_debug_file != stderr)               \
+    fprintf(rps_debug_file,                                     \
+            "\n\n*°* RefPerSys °FATAL° %s:%d:%s %s*°*\n",       \
+            Fil, Lin, __PRETTY_FUNCTION__,                      \
+            outl##Lin.str().c_str());                           \
+  rps_fatal_stop_at (Fil,Lin); } while(0)
 
 #define RPS_FATALOUT_AT(Fil,Lin,...) RPS_FATALOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
-
 // typical usage would be RPS_FATALOUT("x=" << x)
 #define RPS_FATALOUT(...) RPS_FATALOUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
 
 
-//////////////// warning
+
+
+//////////////// warnings
 
 
 #warning TODO: RPS_WARN_AT_BIS should use use syslog when rps_syslog_enabled
