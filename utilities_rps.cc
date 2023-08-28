@@ -632,10 +632,11 @@ rps_early_initialization(int argc, char** argv)
           rps_batch = true;
         else if (!strcmp(argv[ix], "--without-terminal"))
           rps_without_terminal_escape = true;
-        else if (!strcmp(argv[ix], "--daemon")) {
-          rps_daemonized = true;
-	  rps_syslog_enabled = true;
-	}
+        else if (!strcmp(argv[ix], "--daemon"))
+          {
+            rps_daemonized = true;
+            rps_syslog_enabled = true;
+          }
         else if (!strcmp(argv[ix], "--syslog"))
           rps_syslog_enabled = true;
       }
@@ -1207,20 +1208,29 @@ rps_fatal_stop_at (const char *filnam, int lin)
   assert (lin>=0);
   char errbuf[80];
   memset (errbuf, 0, sizeof(errbuf));
+  char cwdbuf[rps_path_byte_size];
+  memset (cwdbuf, 0, sizeof(cwdbuf));
+  if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
+    strcpy(cwdbuf, "./");
   snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
+  /* we always syslog.... */
+  syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s build %s pid %d on %s, elapsed %.3f, process %.3f secin %s",
+         filnam, lin, rps_shortgitid, rps_timestamp, (int)getpid(), rps_hostname(),
+         rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf);
   bool ontty = isatty(STDERR_FILENO);
   if (rps_debug_file)
     fprintf(rps_debug_file, "\n*§*§* RPS FATAL %s:%d *§*§*\n", filnam, lin);
-  fprintf(stderr, "\n" "%s%sRPS FATAL:%s\n"
-          " RefPerSys gitid %s,\n"
-          "\t built timestamp %s,\n"
-          "\t on host %s, md5sum %s,\n"
-          "\t elapsed %.3f, process %.3f sec\n",
-          ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
-          ontty?RPS_TERMINAL_BLINK_ESCAPE:"",
-          ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
-          rps_gitid, rps_timestamp, rps_hostname(), rps_md5sum,
-          rps_elapsed_real_time(), rps_process_cpu_time());
+  if (!rps_syslog_enabled)
+    fprintf(stderr, "\n" "%s%sRPS FATAL:%s\n"
+            " RefPerSys gitid %s,\n"
+            "\t built timestamp %s,\n"
+            "\t on host %s, md5sum %s,\n"
+            "\t elapsed %.3f, process %.3f sec in %s\n",
+            ontty?RPS_TERMINAL_BOLD_ESCAPE:"",
+            ontty?RPS_TERMINAL_BLINK_ESCAPE:"",
+            ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",
+            rps_gitid, rps_timestamp, rps_hostname(), rps_md5sum,
+            rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf);
   if (rps_debug_file && rps_debug_file != stderr && rps_debug_path[0])
     {
       fprintf(stderr, "*°* see debug output in %s\n", rps_debug_path);
