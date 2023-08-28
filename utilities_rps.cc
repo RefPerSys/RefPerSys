@@ -632,8 +632,10 @@ rps_early_initialization(int argc, char** argv)
           rps_batch = true;
         else if (!strcmp(argv[ix], "--without-terminal"))
           rps_without_terminal_escape = true;
-        else if (!strcmp(argv[ix], "--daemon"))
+        else if (!strcmp(argv[ix], "--daemon")) {
           rps_daemonized = true;
+	  rps_syslog_enabled = true;
+	}
         else if (!strcmp(argv[ix], "--syslog"))
           rps_syslog_enabled = true;
       }
