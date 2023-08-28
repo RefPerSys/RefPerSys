@@ -1318,15 +1318,19 @@ rps_fatal_stop_at (const char *filnam, int lin)
 
 void rps_debug_warn_at(const char*file, int line)
 {
-  if (rps_debug_file)
-    {
-      fprintf(rps_debug_file, "\n*** REFPERSYS WARNING at %s:%d ***\n", file, line);
-      fflush(rps_debug_file);
-    }
+  if (rps_syslog_enabled) {
+    syslog(LOG_WARNING, "** REFPERSYS WARNING AT %s:%d (git %s pid %d) **", file, line,
+	   rps_shortgitid, (int)getpid());
+  }
   else
     {
       std::cerr << std::flush;
       std::cerr << std::endl << "**!** REFPERSYS WARNING at " << file << ":" << line << std::endl;
+    };
+  if (rps_debug_file)
+    {
+      fprintf(rps_debug_file, "\n*** REFPERSYS WARNING at %s:%d ***\n", file, line);
+      fflush(rps_debug_file);
     }
 } // end rps_debug_warn_at
 
