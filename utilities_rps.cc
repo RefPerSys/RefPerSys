@@ -1255,32 +1255,62 @@ rps_fatal_stop_at (const char *filnam, int lin)
     }
   fflush (stderr);
   fflush (rps_debug_file);
-  {
-    auto backt= Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},
-                               filnam, lin,
-                               skipfatal, "RefPerSys FATAL ERROR",
-                               &std::clog);
-    backt.output(std::clog);
-    std::clog << "===== end fatal error at " << filnam << ":" << lin
-              << " ======" << std::endl << std::flush;
-    std::clog << "RefPerSys gitid " << rps_shortgitid << " built " << rps_timestamp
-              << " was started on " << rps_hostname() << " pid " << (int)getpid() << " as:" << std::endl;
-    for (int aix=0; aix<rps_argc; aix++)
-      {
-        const char*curarg = rps_argv[aix];
-        bool isplainarg = isalnum(curarg[0]) || curarg[0]=='/'
-                          || curarg[0]=='_' || curarg[0]=='.'  || curarg[0]=='-';
-        for (const char*pc = curarg; *pc != (char)0 && isplainarg; pc++)
-          isplainarg = *pc>' ' && *pc<(char)127
-                       && *pc != '\'' && *pc != '\\' && *pc != '\"'
-                       && isprint(*pc);
-        if (isplainarg)
-          std::clog << ' ' << curarg;
-        else
-          std::clog << ' ' << Rps_QuotedC_String(curarg);
-      }
-    std::clog << std::endl << std::flush;
-  }
+  if (rps_syslog_enabled)
+    {
+      std::ostringstream outl;
+      auto backt= Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},
+                                 filnam, lin,
+                                 skipfatal, "RefPerSys FATAL ERROR",
+                                 &outl);
+      backt.output(outl);
+      outl << "===== end fatal error at " << filnam << ":" << lin
+           << " ======" << std::endl << std::flush;
+      outl << "RefPerSys gitid " << rps_shortgitid << " built " << rps_timestamp
+           << " was started on " << rps_hostname() << " pid " << (int)getpid() << " as:" << std::endl;
+      for (int aix=0; aix<rps_argc; aix++)
+        {
+          const char*curarg = rps_argv[aix];
+          bool isplainarg = isalnum(curarg[0]) || curarg[0]=='/'
+                            || curarg[0]=='_' || curarg[0]=='.'  || curarg[0]=='-';
+          for (const char*pc = curarg; *pc != (char)0 && isplainarg; pc++)
+            isplainarg = *pc>' ' && *pc<(char)127
+                         && *pc != '\'' && *pc != '\\' && *pc != '\"'
+                         && isprint(*pc);
+          if (isplainarg)
+            outl << ' ' << curarg;
+          else
+            outl << ' ' << Rps_QuotedC_String(curarg);
+        }
+      outl << std::endl << std::flush;
+      syslog(LOG_EMERG, "RefPerSys fatal from %s", outl.str().c_str());
+    }
+  else
+    {
+      auto backt= Rps_Backtracer(Rps_Backtracer::FullOut_Tag{},
+                                 filnam, lin,
+                                 skipfatal, "RefPerSys FATAL ERROR",
+                                 &std::clog);
+      backt.output(std::clog);
+      std::clog << "===== end fatal error at " << filnam << ":" << lin
+                << " ======" << std::endl << std::flush;
+      std::clog << "RefPerSys gitid " << rps_shortgitid << " built " << rps_timestamp
+                << " was started on " << rps_hostname() << " pid " << (int)getpid() << " as:" << std::endl;
+      for (int aix=0; aix<rps_argc; aix++)
+        {
+          const char*curarg = rps_argv[aix];
+          bool isplainarg = isalnum(curarg[0]) || curarg[0]=='/'
+                            || curarg[0]=='_' || curarg[0]=='.'  || curarg[0]=='-';
+          for (const char*pc = curarg; *pc != (char)0 && isplainarg; pc++)
+            isplainarg = *pc>' ' && *pc<(char)127
+                         && *pc != '\'' && *pc != '\\' && *pc != '\"'
+                         && isprint(*pc);
+          if (isplainarg)
+            std::clog << ' ' << curarg;
+          else
+            std::clog << ' ' << Rps_QuotedC_String(curarg);
+        }
+      std::clog << std::endl << std::flush;
+    }
   fflush(nullptr);
   abort();
 } // end rps_fatal_stop_at
