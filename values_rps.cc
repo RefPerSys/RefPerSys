@@ -198,7 +198,7 @@ Rps_QuasiZone::clear_all_gcmarks(Rps_GarbageCollector&gc)
 std::mutex Rps_LazyHashedZoneValue::lazy_mtxarr[Rps_LazyHashedZoneValue::lazy_nbmutexes];
 
 
-#warning TODO: the printing routines should use syslog not std::out when rps_syslog_enabled
+/* Printing routine likely to be called by GDB */
 void
 rps_print_value(const Rps_Value val)
 {

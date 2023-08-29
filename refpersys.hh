@@ -1628,6 +1628,7 @@ public:
 };                              // end class Rps_OutputValue
 
 
+/// printing routines likely to be called from GDB debugger
 extern "C" void rps_print_value(const Rps_Value val);
 extern "C" void rps_print_ptr_value(const void*v);
 
