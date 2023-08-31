@@ -124,6 +124,10 @@
 /// libssh2-1-dev package on Debian
 #include <libssh2.h>
 
+/// libgmp-dev package on Debian (GNU multiprecision library, and its
+/// C++ wrapper)
+#include <gmpxx.h>
+
 class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects

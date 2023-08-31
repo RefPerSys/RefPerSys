@@ -1083,6 +1083,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                        e.g. licensing, is important to some partners... */
                     << " Gnu Bison parser generator: " << rps_gnubison_command
                     << " version: " << rps_gnubison_version
+                    << " Gnu multi-precision library version: " << gmp_version << std::endl
                     << " at: " << rps_gnubison_realpath
                     << std::endl
                     << " GPP generic preprocessor: "
@@ -1318,10 +1319,11 @@ rps_fatal_stop_at (const char *filnam, int lin)
 
 void rps_debug_warn_at(const char*file, int line)
 {
-  if (rps_syslog_enabled) {
-    syslog(LOG_WARNING, "** REFPERSYS WARNING AT %s:%d (git %s pid %d) **", file, line,
-	   rps_shortgitid, (int)getpid());
-  }
+  if (rps_syslog_enabled)
+    {
+      syslog(LOG_WARNING, "** REFPERSYS WARNING AT %s:%d (git %s pid %d) **", file, line,
+             rps_shortgitid, (int)getpid());
+    }
   else
     {
       std::cerr << std::flush;
