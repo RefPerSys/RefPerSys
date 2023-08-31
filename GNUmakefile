@@ -158,8 +158,11 @@ RPS_CURLPP_CONFIG= curlpp-config
 ##
 ## * libbacktrace from github.com/ianlancetaylor/libbacktrace to
 ##   inspect the call stack
+##
+## * libgmp for arbitrary precision arithmetic. See GNU multiprecision
+##   arithmetic library on gmplib.org and its C++ variant on gmpxx
 
-RPS_PKG_NAMES= jsoncpp libcurl zlib lightning libssh2
+RPS_PKG_NAMES= jsoncpp libcurl zlib lightning libssh2 gmp gmpxx
 RPS_PKG_CFLAGS:= $(shell $(RPS_CURLPP_CONFIG) --cflags) \
                  $(shell $(RPS_PKG_CONFIG) --cflags $(RPS_PKG_NAMES))
 
