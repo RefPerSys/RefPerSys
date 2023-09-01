@@ -26,7 +26,7 @@ printf 'const char rps_shortgitid[] = "%s";\n' "$(./do-generate-gitid.sh -s)"
  echo '";') 
 
 git archive -o /tmp/refpersys-$$.tar.gz HEAD 
-trap "/bin/rm /tmp/refpersys-$$.tar.gz" /tmp/refpersys-$$.toc EXIT INT 
+trap "/bin/rm /tmp/refpersys-$$.tar.gz /tmp/refpersys-$$.toc" EXIT INT 
 
 cp -va /tmp/refpersys-$$.tar.gz $HOME/tmp/refpersys.tar.gz >& /dev/stderr
 
