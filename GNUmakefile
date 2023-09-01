@@ -59,7 +59,7 @@ RPS_BUILD_CC?=				gcc-12
 RPS_BUILD_CXX?=				g++-12
 RPS_BUILD_GNU_LIGHTNING_SOURCEDIR?=	/usr/src/Libs/lightning
 RPS_BUILD_COMPILER_FLAGS?= 		-std=gnu++17
-RPS_BUILD_XTRA_CFLAGS?= 		-pg
+#RPS_BUILD_XTRA_CFLAGS?= 		-pg
 
 
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
