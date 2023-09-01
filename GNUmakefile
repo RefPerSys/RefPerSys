@@ -57,6 +57,10 @@ endif
 
 RPS_BUILD_CC?=				gcc-12
 RPS_BUILD_CXX?=				g++-12
+
+## Generic PreProcessor, see https://logological.org/gpp
+## and https://joss.theoj.org/papers/10.21105/joss.02400
+RPS_GPP?=                               gpp
 RPS_BUILD_GNU_LIGHTNING_SOURCEDIR?=	/usr/src/Libs/lightning
 RPS_BUILD_COMPILER_FLAGS?= 		-std=gnu++17
 #RPS_BUILD_XTRA_CFLAGS?= 		-pg
@@ -76,6 +80,11 @@ RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcar
 RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 RPS_BISON_CPPFILES= $(patsubst %.yy,_%.cc,$(RPS_BISON_SOURCES))
 
+# for the GNU bison parser generator
+RPS_GPPBISON_GPPSOURCES:=  $(sort $(wildcard [a-z]*.yy.gpp))
+RPS_GPPBISON_YYFILES := $(patsubst %.yy.gpp,_%.yy,$(RPS_GPPBISON_SOURCES))
+RPS_GPPBISON_CPPFILES= $(patsubst %.yy.gpp,_%.cc,$(RPS_GPPBISON_SOURCES))
+
 RPS_ARCH := $(shell /bin/uname -m)
 RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
 
@@ -88,7 +97,7 @@ RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E e
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_JSONRPC_OBJECTS = $(patsubst %.cc, %.o, $(RPS_JSONRPC_SOURCES))
 RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
-
+RPS_GPPBISON_OBJECTS = $(patsubst %.yy.gpp, %.o, $(RPS_GPPBISON_SOURCES))
 
 #RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 #RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
@@ -188,7 +197,7 @@ CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
 
 LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 
--include $(wildcard $$HOME/build-refpersys.mk)
+#-include $(wildcard $$HOME/build-refpersys.mk)
 
 
 all:
@@ -214,7 +223,7 @@ lto:
 	$(RM) __timestamp.o
 	$(MAKE)  -$(MAKEFLAGS) refpersys-lto
 
-refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
+refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) $(RPS_GPPBISON_OBJECTS)  __timestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
 	@echo $@: RPS_BUILD_CODGENFLAGS= $(RPS_BUILD_CODGENFLAGS)
 	@echo $@: RPS_CORE_OBJECTS= $(RPS_CORE_OBJECTS)
@@ -230,12 +239,13 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS)  __timestamp.o
 	$(RM) __timestamp.o
 	-sync
 
-refpersys-lto: main_rps.lto.o $(RPS_LTO_CORE_OBJECTS) $(RPS_LTO_BISON_OBJECTS)  __ltotimestamp.o
+refpersys-lto: main_rps.lto.o $(RPS_LTO_CORE_OBJECTS) $(RPS_LTO_BISON_OBJECTS) $(RPS_LTO_GPPBISON_OBJECTS)  __ltotimestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
 	@echo $@: RPS_BUILD_CODGENFLAGS= $(RPS_BUILD_CODGENFLAGS)
 	@echo $@: RPS_BUILD_LTOFLAGS= $(RPS_BUILD_LTOFLAGS)
 	@echo $@: RPS_LTO_CORE_OBJECTS= $(RPS_LTO_CORE_OBJECTS)
 	@echo $@: RPS_LTO_BISON_OBJECTS= $(RPS_LTO_BISON_OBJECTS)
+	@echo $@: RPS_LTO_GPPBISON_OBJECTS= $(RPS_LTO_GPPBISON_OBJECTS)
 	@echo $@: LIBES= $(LIBES)
 	-sync
 	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS)  $(RPS_BUILD_XTRA_CFLAGS) $(RPS_BUILD_LTOFLAGS) -rdynamic -pie -Bdynamic \
@@ -304,24 +314,15 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 	/usr/bin/printenv
 	$(RPS_COMPILER_TIMER) $(RPS_BUILD_BISON) $(RPS_BUILD_BISON_FLAGS) --output=$@ $<
 
-%_gpprps.cc: %_gpprps.yy
-	/usr/bin/printf "GNU make generating using GPP+BISON %s from %s\n" $@ $<
-# GPP macro start sequence is @gpprps: (including at sign and colon)
-# GPP macro end sequence for a call without arguments is the empty string
-# GPP argument start sequence is the leftparen
-# GPP argument separator is the comma
-# GPP argument end sequence is the rightparen
-	$(RPS_COMPILER_TIMER) $(RPS_GPP) -U "@gpprps:"    ""    "("    ","  ")"  "("  ")" "$#" "\\"   \
-			      -M  "@gppmacrps:"  "\n"  " "   " "    "\n"   "("   ")"   \
-		              -x -o _$<
-	$(RPS_COMPILER_TIMER) $(RPS_BUILD_BISON) $(RPS_BUILD_BISON_FLAGS) --output=$@ _$<
+%.yy: %.yy.gpp
+	$(RPS_COMPILER_TIMER) $(RPS_GPP) -x -I generated/ -I . -D=RPS_SHORTGIT="$(RPS_SHORTGIT)" -o $@ $<
 
 %.cc: %.yyy
 	$(RPS_COMPILER_TIMER) $(RPS_BISONCPP) --show-filenames --verbose --thread-safe $<
 
 # see https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html 
 
-refpersys.hh.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
+refpersys.hh.gc0h: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -c -o $@ $<
 #refpersys.hh.sanit.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 #	$(RPS_COMPILER_TIMER) $(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@ $<
