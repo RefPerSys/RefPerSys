@@ -82,9 +82,9 @@ RPS_BISON_CPPFILES= $(patsubst %.yy,_%.cc,$(RPS_BISON_SOURCES))
 
 # for the GNU bison parser generator
 RPS_GPPBISON_GPPSOURCES:=  $(sort $(wildcard [a-z]*.yy.gpp))
-RPS_GPPBISON_YYFILES := $(patsubst %.yy.gpp,%.yy,$(RPS_GPPBISON_SOURCES))
-RPS_GPPBISON_CPPFILES= $(patsubst %.yy.gpp,%.cc,$(RPS_GPPBISON_SOURCES))
-RPS_GPPBISON_OBJECTS= $(patsubst %.yy.gpp,%.o,$(RPS_GPPBISON_SOURCES))
+RPS_GPPBISON_YYFILES := $(patsubst %.yy.gpp, %.yy, $(RPS_GPPBISON_GPPSOURCES))
+RPS_GPPBISON_CPPFILES := $(patsubst %.yy.gpp, %.cc, $(RPS_GPPBISON_GPPSOURCES))
+RPS_GPPBISON_OBJECTS := $(patsubst %.yy.gpp, %.o, $(RPS_GPPBISON_GPPSOURCES))
 
 RPS_ARCH := $(shell /bin/uname -m)
 RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
@@ -229,6 +229,9 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) $(RPS_GPPBISON_OB
 	@echo $@: RPS_BUILD_CODGENFLAGS= $(RPS_BUILD_CODGENFLAGS)
 	@echo $@: RPS_CORE_OBJECTS= $(RPS_CORE_OBJECTS)
 	@echo $@: RPS_BISON_OBJECTS= $(RPS_BISON_OBJECTS)
+	@echo $@: RPS_GPPBISON_GPPSOURCES= $(RPS_GPPBISON_GPPSOURCES)
+	@echo $@: RPS_GPPBISON_YYFILES= $(RPS_GPPBISON_YYFILES)
+	@echo $@: RPS_GPPBISON_CPPFILES= $(RPS_GPPBISON_CPPFILES)
 	@echo $@: RPS_GPPBISON_OBJECTS= $(RPS_GPPBISON_OBJECTS)
 	@echo $@: LIBES= $(LIBES)
 	-sync
