@@ -82,9 +82,9 @@ RPS_BISON_CPPFILES= $(patsubst %.yy,_%.cc,$(RPS_BISON_SOURCES))
 
 # for the GNU bison parser generator
 RPS_GPPBISON_GPPSOURCES:=  $(sort $(wildcard [a-z]*.yy.gpp))
-RPS_GPPBISON_YYFILES := $(patsubst %.yy.gpp,_%.yy,$(RPS_GPPBISON_SOURCES))
-RPS_GPPBISON_CPPFILES= $(patsubst %.yy.gpp,_%.cc,$(RPS_GPPBISON_SOURCES))
-RPS_GPPBISON_OBJECTS= $(patsubst %.yy.gpp,_%.o,$(RPS_GPPBISON_SOURCES))
+RPS_GPPBISON_YYFILES := $(patsubst %.yy.gpp,%.yy,$(RPS_GPPBISON_SOURCES))
+RPS_GPPBISON_CPPFILES= $(patsubst %.yy.gpp,%.cc,$(RPS_GPPBISON_SOURCES))
+RPS_GPPBISON_OBJECTS= $(patsubst %.yy.gpp,%.o,$(RPS_GPPBISON_SOURCES))
 
 RPS_ARCH := $(shell /bin/uname -m)
 RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
@@ -251,7 +251,7 @@ refpersys-lto: main_rps.lto.o $(RPS_LTO_CORE_OBJECTS) $(RPS_LTO_BISON_OBJECTS) $
 	@echo $@: LIBES= $(LIBES)
 	-sync
 	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS)  $(RPS_BUILD_XTRA_CFLAGS) $(RPS_BUILD_LTOFLAGS) -rdynamic -pie -Bdynamic \
-                              main_rps.lto.o $(RPS_LTO_CORE_OBJECTS)  $(RPS_LTO_BISON_OBJECTS)   __ltotimestamp.o \
+                              main_rps.lto.o $(RPS_LTO_CORE_OBJECTS)  $(RPS_LTO_BISON_OBJECTS) $(RPS_LTO_GPPBISON_OBJECTS)  __ltotimestamp.o \
                  $(shell $(RPS_CURLPP_CONFIG) --libs) \
 	         $(LIBES) $(RPS_PKG_LIBS)  -o $@-tmp
 	$(MV) --backup $@-tmp $@
@@ -283,7 +283,7 @@ withclang:
 #-         $(MV) --backup __timestamp.c __timestamp.c~
 #-         $x(RM) __timestamp.o
 
-objects:  $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS) 
+objects:  $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS)  $(RPS_GPPBISON_OBJECTS) 
 
 $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
