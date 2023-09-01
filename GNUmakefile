@@ -84,6 +84,7 @@ RPS_BISON_CPPFILES= $(patsubst %.yy,_%.cc,$(RPS_BISON_SOURCES))
 RPS_GPPBISON_GPPSOURCES:=  $(sort $(wildcard [a-z]*.yy.gpp))
 RPS_GPPBISON_YYFILES := $(patsubst %.yy.gpp,_%.yy,$(RPS_GPPBISON_SOURCES))
 RPS_GPPBISON_CPPFILES= $(patsubst %.yy.gpp,_%.cc,$(RPS_GPPBISON_SOURCES))
+RPS_GPPBISON_OBJECTS= $(patsubst %.yy.gpp,_%.o,$(RPS_GPPBISON_SOURCES))
 
 RPS_ARCH := $(shell /bin/uname -m)
 RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
@@ -208,7 +209,7 @@ all:
 	@echo all make target syncing
 	sync
 
-.SECONDARY:  __timestamp.c
+.SECONDARY:  __timestamp.c  rps_gramrepl.yy
 
 debug:
 	@echo making debug version of refpersys
@@ -228,10 +229,11 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) $(RPS_GPPBISON_OB
 	@echo $@: RPS_BUILD_CODGENFLAGS= $(RPS_BUILD_CODGENFLAGS)
 	@echo $@: RPS_CORE_OBJECTS= $(RPS_CORE_OBJECTS)
 	@echo $@: RPS_BISON_OBJECTS= $(RPS_BISON_OBJECTS)
+	@echo $@: RPS_GPPBISON_OBJECTS= $(RPS_GPPBISON_OBJECTS)
 	@echo $@: LIBES= $(LIBES)
 	-sync
 	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS)  $(RPS_BUILD_XTRA_CFLAGS) -rdynamic -pie -Bdynamic \
-                              main_rps.o $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS)   __timestamp.o \
+                              main_rps.o $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS) $(RPS_GPPBISON_OBJECTS)  __timestamp.o \
                  $(shell $(RPS_CURLPP_CONFIG) --libs) \
 	         $(LIBES) $(RPS_PKG_LIBS)  -o $@-tmp
 	$(MV) --backup $@-tmp $@
@@ -315,14 +317,14 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 	$(RPS_COMPILER_TIMER) $(RPS_BUILD_BISON) $(RPS_BUILD_BISON_FLAGS) --output=$@ $<
 
 %.yy: %.yy.gpp
-	$(RPS_COMPILER_TIMER) $(RPS_GPP) -x -I generated/ -I . -D=RPS_SHORTGIT="$(RPS_SHORTGIT)" -o $@ $<
+	$(RPS_COMPILER_TIMER) $(RPS_GPP) -x -I generated/ -I . -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" -o $@ $<
 
 %.cc: %.yyy
 	$(RPS_COMPILER_TIMER) $(RPS_BISONCPP) --show-filenames --verbose --thread-safe $<
 
 # see https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html 
 
-refpersys.hh.gc0h: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
+refpersys.hh.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -c -o $@ $<
 #refpersys.hh.sanit.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 #	$(RPS_COMPILER_TIMER) $(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@ $<
@@ -334,6 +336,7 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 ################
 clean:
 	if [ -f __timestamp.c ]; then /bin/sed '1,$$s:/home/[a-zA-Z]*:@REFPERSYS_HOME:g' __timestamp.c > %%__timestamp.c%% ; fi
+	$(RM) $(RPS_GPPBISON_YYFILES)
 	$(RM) *.o *.orig *~ refpersys *.gch *~ _build.time
 	$(RM) sanitized-refpersys
 	$(RM) refpersys-lto
