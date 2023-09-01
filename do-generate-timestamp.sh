@@ -26,15 +26,21 @@ printf 'const char rps_shortgitid[] = "%s";\n' "$(./do-generate-gitid.sh -s)"
  echo '";') 
 
 git archive -o /tmp/refpersys-$$.tar.gz HEAD 
-trap "/bin/rm /tmp/refpersys-$$.tar.gz" EXIT INT 
+trap "/bin/rm /tmp/refpersys-$$.tar.gz" /tmp/refpersys-$$.toc EXIT INT 
 
 cp -va /tmp/refpersys-$$.tar.gz $HOME/tmp/refpersys.tar.gz >& /dev/stderr
 
-(echo -n 'const char rps_md5sum[]="' ; cat $(tar tf /tmp/refpersys-$$.tar.gz | grep -v '/$') | md5sum | tr -d '\n -'  ;  echo '";')
+/bin/tar tf /tmp/refpersys-$$.tar.gz | /bin/grep -v 'attic' >  /tmp/refpersys-$$.toc
 
-(echo  'const char*const rps_files[]= {' ; tar tf /tmp/refpersys-$$.tar.gz | grep -v '/$' | tr -s " \n"  | sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
+printf "\n/// refpersys.toc:\n"
+/bin/sed s:^:///:g /tmp/refpersys-$$.toc
+printf "//// end refpersys.toc\n"
 
-(echo  'const char*const rps_subdirectories[]= {' ; tar tf /tmp/refpersys-$$.tar.gz | grep  '/$' | tr -s " \n"  | sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
+(echo -n 'const char rps_md5sum[]="' ; cat $(/bin/grep -v '/$' /tmp/refpersys-$$.toc ) | /usr/bin/md5sum | /usr/bin/tr -d '\n -'  ;  echo '";')
+
+(echo  'const char*const rps_files[]= {'; /bin/grep -v '/$' /tmp/refpersys-$$.toc  | /usr/bin/tr -s " \n"  | /usr/bin/sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
+
+(echo  'const char*const rps_subdirectories[]= {' ; /bin/grep  '/$' /tmp/refpersys-$$.toc | tr -s " \n"  | sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
 
 printf "const char rps_makefile[]=\"%s\";\n"   $(realpath GNUmakefile)
 
