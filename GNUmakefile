@@ -65,7 +65,7 @@ RPS_BUILD_GNU_LIGHTNING_SOURCEDIR?=	/usr/src/Libs/lightning
 RPS_BUILD_COMPILER_FLAGS?= 		-std=gnu++17
 #RPS_BUILD_XTRA_CFLAGS?= 		-pg
 
-
+RPS_HOME := $(shell echo $$HOME)
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 
@@ -113,7 +113,6 @@ RPS_LTO_BISON_OBJECTS = $(patsubst %.yy, %.lto.o, $(RPS_BISON_SOURCES))
 RPS_BUILD_CCACHE=
 # the GCC compiler, see gcc.gnu.org
 ## for some reason GCC 9 dont compile
-
 RPS_BUILD_CXX_REALPATH= $(realpath $(RPS_BUILD_CXX))
 
 ## GNU bison (parser generator) ; see www.gnu.org/software/bison/
@@ -338,7 +337,7 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 
 ################
 clean:
-	if [ -f __timestamp.c ]; then /bin/sed '1,$$s:/home/[a-zA-Z]*:@REFPERSYS_HOME:g' __timestamp.c > %%__timestamp.c%% ; fi
+	if [ -f __timestamp.c ]; then /bin/sed "1,$$$$s:$(RPS_HOME):@REFPERSYS_HOME:g" __timestamp.c > %%__timestamp.c%% ; fi
 	$(RM) $(RPS_GPPBISON_YYFILES)
 	$(RM) *.o *.orig *~ refpersys *.gch *~ _build.time
 	$(RM) sanitized-refpersys
