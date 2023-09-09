@@ -45,3 +45,12 @@
 /// git @&RPS_SHORTGIT&@ arch @&RPS_ARCH&@ opersys @&RPS_OPERSYS&@
 /// 
 ////////////////////////////
+%{
+/* prologue of generated  @&RPS_GPP_OUTPUT&@
+   done at @&date(%c %Z) on host @&RPS_HOST&@ */
+#include "refpersys.hh"
+%}
+
+%require "3.8"
+%define api.value.type {Rps_Value}
+%define api.symbol.prefix {RPSGRAMSYMB_}
