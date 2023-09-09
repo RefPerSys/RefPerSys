@@ -85,7 +85,7 @@ RPS_GPPBISON_GPPSOURCES:=  $(sort $(wildcard [a-z]*.yy.gpp))
 RPS_GPPBISON_YYFILES := $(patsubst %.yy.gpp, %.yy, $(RPS_GPPBISON_GPPSOURCES))
 RPS_GPPBISON_CPPFILES := $(patsubst %.yy.gpp, %.cc, $(RPS_GPPBISON_GPPSOURCES))
 RPS_GPPBISON_OBJECTS := $(patsubst %.yy.gpp, %.o, $(RPS_GPPBISON_GPPSOURCES))
-
+RPS_HOST := $(shell /bin/hostname -f)
 RPS_ARCH := $(shell /bin/uname -m)
 RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
 
@@ -318,8 +318,32 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 	/usr/bin/printenv
 	$(RPS_COMPILER_TIMER) $(RPS_BUILD_BISON) $(RPS_BUILD_BISON_FLAGS) --output=$@ $<
 
+
+## reminder from GPP man page:
+#|     -U arg1 ... arg9
+#|            User‐defined  mode. The nine following command‐line
+#|            arguments are taken to be  respectively  the  macro
+#|            start  sequence,  the macro end sequence for a call
+#|            without arguments, the argument start sequence, the
+#|            argument separator, the argument end sequence,  the
+#|            list of characters to stack for argument balancing,
+#|            the list of characters to unstack, the string to be
+#|            used  for  referring  to an argument by number, and
+#|            finally the quote character (if there  is  none  an
+#|            empty  string  should be provided).  These settings
+#|            apply both to user macros and to  meta‐macros,  un‐
+#|            less the -M option is used to define other settings
+#|            for meta‐macros. See the section on syntax specifi‐
+#|            cation for more details.
+
+
 %.yy: %.yy.gpp
-	$(RPS_COMPILER_TIMER) $(RPS_GPP) -x -I generated/ -I . -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" -o $@ $<
+	$(RPS_COMPILER_TIMER) $(RPS_GPP) -x -I generated/ -I . \
+            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_HOST=$(RPS_HOST) \
+            -DRPS_GPP_INPUT="$<"    -DRPS_GPP_OUTPUT="$@"    \
+            -U  "@&"  "&@"  "("  "&,"  ")"  "("  ")"  "@#"   "\\"  \
+            -o $@ $<
 
 %.cc: %.yyy
 	$(RPS_COMPILER_TIMER) $(RPS_BISONCPP) --show-filenames --verbose --thread-safe $<

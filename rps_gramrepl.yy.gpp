@@ -39,3 +39,8 @@
 //     You should have received a copy of the GNU General Public License
 //     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // *****************************************************************************/
+
+/// Gpp input @&RPS_GPP_INPUT&@
+/// Gpp output @&RPS_GPP_OUTPUT&@ done at @&date(%c %Z) on @&RPS_HOST&@
+/// git @&RPS_SHORTGIT&@
+////////////////////////////
