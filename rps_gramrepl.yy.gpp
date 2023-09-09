@@ -41,6 +41,7 @@
 // *****************************************************************************/
 
 /// Gpp input @&RPS_GPP_INPUT&@
-/// Gpp output @&RPS_GPP_OUTPUT&@ done at @&date(%c %Z) on @&RPS_HOST&@
-/// git @&RPS_SHORTGIT&@
+/// Gpp output @&RPS_GPP_OUTPUT&@ done at @&date(%c %Z) on host @&RPS_HOST&@
+/// git @&RPS_SHORTGIT&@ arch @&RPS_ARCH&@ opersys @&RPS_OPERSYS&@
+/// 
 ////////////////////////////

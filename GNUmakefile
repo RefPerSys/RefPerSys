@@ -341,6 +341,8 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 	$(RPS_COMPILER_TIMER) $(RPS_GPP) -x -I generated/ -I . \
             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
             -DRPS_HOST=$(RPS_HOST) \
+            -DRPS_ARCH=$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) \
             -DRPS_GPP_INPUT="$<"    -DRPS_GPP_OUTPUT="$@"    \
             -U  "@&"  "&@"  "("  "&,"  ")"  "("  ")"  "@#"   "\\"  \
             -o $@ $<
