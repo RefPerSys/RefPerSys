@@ -149,6 +149,14 @@ please **run `make clean` after any `git pull`**.
 The GPLv3+ license of RefPerSys is unlikely to change before 2025 (and
 probably even after).
 
+## Generated output.
+
+RefPerSys could be patched and extended to generate proprietary code
+or data. In 2023 some authors (including Basile Starynkevitch) are not
+interested to add such a features. Others authors (in India) are
+interested to add that. Their contributions are pending (in
+sept. 2023).
+
 ## File conventions
 
 The RefPerSys runtime is implemented in C++17, with hand-written C++
