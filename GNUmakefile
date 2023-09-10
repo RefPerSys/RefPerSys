@@ -114,8 +114,8 @@ RPS_BUILD_CCACHE=
 ## for some reason GCC 9 dont compile
 RPS_BUILD_CXX_REALPATH= $(realpath $(RPS_BUILD_CXX))
 
-## GNU bison (parser generator) ; see www.gnu.org/software/bison/
-RPS_BUILD_BISON= bison
+## bisonc++, see https://gitlab.com/fbb-git/bisoncpp
+RPS_BUILD_BISONCXX= bisonc++
 
 ## Generic preprocessor - see https://logological.org/gpp
 RPS_GPP= gpp
@@ -207,7 +207,7 @@ all:
 	@echo all make target syncing
 	sync
 
-.SECONDARY:  __timestamp.c  gramrepl_rps.yy
+.SECONDARY:  __timestamp.c  gramrepl_rps.yy gramrepl_rps.cc  gramrepl_rps.hh
 
 debug:
 	@echo making debug version of refpersys
@@ -312,10 +312,10 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 	$(COMPILE.cc) -C -E $< | sed s:^#://#:g > $@
 	astyle -v -s2 --style=gnu $@
 
-%.cc: %.yy
+%.cc %.hh: %.yy
 	/usr/bin/printf "GNU make generating %s from %s\n" $@ $<
 	/usr/bin/printenv
-	$(RPS_COMPILER_TIMER) $(RPS_BUILD_BISON) $(RPS_BUILD_BISON_FLAGS) --output=$@ $<
+	$(RPS_COMPILER_TIMER) $(RPS_BUILD_BISONCXX) $(RPS_BUILD_BISON_FLAGS) --output=$@ $<
 
 
 ## reminder from GPP man page:
@@ -413,9 +413,9 @@ __timestamp.c: GNUmakefile do-generate-timestamp.sh
 	printf 'const char rps_build_xtra_cflags[]="%s";\n' '$(RPS_BUILD_XTRA_CFLAGS)' >> $@-tmp
 	printf 'const int rps_is_link_time_optimized = 0;\n' >> $@-tmp
 	printf '\n/// the GNU bison parser generator from www.gnu.org/software/bison/\n' >> $@-tmp
-	printf 'const char rps_gnubison_command[]="%s";\n' "$(RPS_BUILD_BISON)" >> $@-tmp
-	printf 'const char rps_gnubison_realpath[]="%s";\n' '$(shell /bin/which $(RPS_BUILD_BISON))' >> $@-tmp
-	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
+	printf 'const char rps_bisoncxx_command[]="%s";\n' "$(RPS_BUILD_BISONCXX)" >> $@-tmp
+	printf 'const char rps_bisoncxx_realpath[]="%s";\n' '$(shell /bin/which $(RPS_BUILD_BISONCXX))' >> $@-tmp
+	printf 'const char rps_bisoncxx_version[]="%s";\n' "$$($(RPS_BUILD_BISONCXX) --version | head -1)" >> $@-tmp
 	printf '\n/// the generic preprocessor from logological.org/gpp\n' >> $@-tmp
 	printf 'const char rps_gpp_command[]="%s";\n' '$(RPS_GPP)' >> $@-tmp
 	printf 'const char rps_gpp_realpath[]="%s";\n' '$(shell /bin/which $(RPS_GPP))' >> $@-tmp
