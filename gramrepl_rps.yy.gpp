@@ -56,6 +56,7 @@
 //// the Bison declarations
 %require "3.8"
 %language "C++"
+%header
 %define api.prefix {rpsgram_}
 %define api.value.type {Rps_Value}
 %define api.symbol.prefix {RPSGRAMSYMB_}
@@ -77,6 +78,8 @@
 
 /// '[' and ']' square bracket
 %token LEFT_SQBRA RIGHT_SQBRA;
+
+%token END_OF_INPUT;
 
 repl_input: %empty
     | repl_command repl_input
