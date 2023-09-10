@@ -208,7 +208,7 @@ all:
 	@echo all make target syncing
 	sync
 
-.SECONDARY:  __timestamp.c  rps_gramrepl.yy
+.SECONDARY:  __timestamp.c  gramrepl_rps.yy
 
 debug:
 	@echo making debug version of refpersys
