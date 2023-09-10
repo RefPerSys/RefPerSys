@@ -59,29 +59,24 @@
 %define api.prefix {rpsgram_}
 %define api.value.type {Rps_Value}
 %define api.symbol.prefix {RPSGRAMSYMB_}
-%start repl_input
-
+%start repl_input;
+%type<void> repl_input;
 %%
-/// the lexical terminals
-%token INTEGER
-%token FLOAT
-%token STRING
-%token OBJID
-%token NAME
-%token CODE_CHUNK
+/* the lexical terminals */
+%token INTEGER FLOAT STRING OBJID NAME CODE_CHUNK;
 
-/// the keywords
-%token KW_SHOW
+/* the keywords */
+%token KW_SHOW;
 
 
 //// '(' and ')' parenthesis
-%token LEFT_PAREN RIGHT_PAREN
+%token LEFT_PAREN RIGHT_PAREN;
 
 ///  '{' and '}' brace
-%token LEFT_BRACE RIGHT_BRACE
+%token LEFT_BRACE RIGHT_BRACE;
 
 /// '[' and ']' square bracket
-%token LEFT_SQBRA RIGHT_SQBRA
+%token LEFT_SQBRA RIGHT_SQBRA;
 
 repl_input: %empty
     | repl_command repl_input
