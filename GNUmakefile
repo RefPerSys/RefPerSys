@@ -98,7 +98,6 @@ RPS_COMPILER_TIMER:= /usr/bin/time --append --format='%C : %S sys, %U user, %E e
 RPS_CORE_OBJECTS = $(patsubst %.cc, %.o, $(RPS_CORE_SOURCES))
 RPS_JSONRPC_OBJECTS = $(patsubst %.cc, %.o, $(RPS_JSONRPC_SOURCES))
 RPS_BISON_OBJECTS = $(patsubst %.yy, %.o, $(RPS_BISON_SOURCES))
-RPS_GPPBISON_OBJECTS = $(patsubst %.yy.gpp, %.o, $(RPS_GPPBISON_SOURCES))
 
 #RPS_SANITIZED_CORE_OBJECTS = $(patsubst %.cc, %.sanit.o, $(RPS_CORE_SOURCES))
 #RPS_SANITIZED_BISON_OBJECTS = $(patsubst %.yy, %.sanit.o, $(RPS_BISON_SOURCES))
