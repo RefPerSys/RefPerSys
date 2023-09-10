@@ -79,7 +79,7 @@ RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcar
 # for the GNU bison parser generator
 RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 RPS_BISON_CPPFILES= $(patsubst %.yy,_%.cc,$(RPS_BISON_SOURCES))
-
+RPS_BUILD_BISON_FLAGS= --feature=caret --warnings=all --color
 # for the GNU bison parser generator
 RPS_GPPBISON_GPPSOURCES:=  $(sort $(wildcard [a-z]*.yy.gpp))
 RPS_GPPBISON_YYFILES := $(patsubst %.yy.gpp, %.yy, $(RPS_GPPBISON_GPPSOURCES))
