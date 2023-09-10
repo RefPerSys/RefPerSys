@@ -46,14 +46,17 @@
 /// 
 ////////////////////////////
 %{
-/* prologue of generated  @&RPS_GPP_OUTPUT&@
+/** prologue of generated  @&RPS_GPP_OUTPUT&@
    done at @&date(%c %Z) on host @&RPS_HOST&@ */
 #include "refpersys.hh"
+/** end prologue of generated @&RPS_GPP_OUTPUT&@ from  @&RPS_GPP_INPUT&@ */
 %}
 
 
 //// the Bison declarations
 %require "3.8"
+%language "C++"
+%define api.prefix {rpsgram_}
 %define api.value.type {Rps_Value}
 %define api.symbol.prefix {RPSGRAMSYMB_}
 %start repl_input
