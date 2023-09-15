@@ -77,6 +77,7 @@ RPS_CORE_SOURCES:= $(sort $(filter-out $(wildcard *gui*.cc *main*.cc), $(wildcar
 #RPS_JSONRPC_SOURCES:=  $(sort $(wildcard *jsonrpc*_rps.cc))
 
 # for the GNU bison parser generator
+RPS_BUILD_BISON?= bison
 RPS_BISON_SOURCES:=  $(sort $(wildcard [a-z]*_rps.yy))
 RPS_BISON_CPPFILES= $(patsubst %.yy,_%.cc,$(RPS_BISON_SOURCES))
 RPS_BUILD_BISON_FLAGS= --feature=caret --warnings=all --color
@@ -114,6 +115,8 @@ RPS_BUILD_CCACHE=
 ## for some reason GCC 9 dont compile
 RPS_BUILD_CXX_REALPATH= $(realpath $(RPS_BUILD_CXX))
 
+## GNU bison, see https://www.gnu.org/software/bison/
+RPS_BUILD_GNUBISON= bison
 ## bisonc++, see https://gitlab.com/fbb-git/bisoncpp
 RPS_BUILD_BISONCXX= bisonc++
 
@@ -412,7 +415,11 @@ __timestamp.c: GNUmakefile do-generate-timestamp.sh
 	printf 'const char rps_cxx_compiler_version[]="%s";\n' "$$($(RPS_BUILD_CXX) --version | head -1)" >> $@-tmp
 	printf 'const char rps_build_xtra_cflags[]="%s";\n' '$(RPS_BUILD_XTRA_CFLAGS)' >> $@-tmp
 	printf 'const int rps_is_link_time_optimized = 0;\n' >> $@-tmp
-	printf '\n/// the GNU bison parser generator from www.gnu.org/software/bison/\n' >> $@-tmp
+	printf '\n/// the GNU bison parser generator from www.gnu.org/software/bison/ \n' >> $@-tmp
+	printf 'const char rps_gnubison_command[]="%s";\n' "$(RPS_BUILD_BISON)" >> $@-tmp
+	printf 'const char rps_gnubison_realpath[]="%s";\n' '$(shell /bin/which $(RPS_BUILD_BISON))' >> $@-tmp
+	printf 'const char rps_gnubison_version[]="%s";\n' "$$($(RPS_BUILD_BISON) --version | head -1)" >> $@-tmp
+	printf '\n/// the bisonc++ parser generator from fbb-git.gitlab.io/bisoncpp/ \n' >> $@-tmp
 	printf 'const char rps_bisoncxx_command[]="%s";\n' "$(RPS_BUILD_BISONCXX)" >> $@-tmp
 	printf 'const char rps_bisoncxx_realpath[]="%s";\n' '$(shell /bin/which $(RPS_BUILD_BISONCXX))' >> $@-tmp
 	printf 'const char rps_bisoncxx_version[]="%s";\n' "$$($(RPS_BUILD_BISONCXX) --version | head -1)" >> $@-tmp
