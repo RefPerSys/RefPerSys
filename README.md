@@ -270,6 +270,13 @@ compiled with both debug information and optimization, by [configuring
 it](https://groups.google.com/g/fltkgeneral/c/QA70GfnWYvE/m/iIvJGb1uBwAJ)
 with `./configure --enable-debug --with-optim="-O2"`
 
+### The `guifltk-refpersys` graphical user interface
+
+Near september 2023, a separate [FLTK](https://fltk.org/) based
+graphical user interface is being developed. See
+[guifltk-refpersys](https://github.com/RefPerSys/guifltk-refpersys)
+for its code.
+
 ### Build instructions
 
 You need a recent C++17 compiler such as `g++` (We use
