@@ -342,6 +342,14 @@ struct rps_fifo_fdpair_st {
   int fifo_ui_rout; // the outputs read from the GUI process
 };
 extern "C" void rps_put_fifo_prefix(const char*pref);
+
+//// postpone, by popening /bin/at, the remove of a file 5 minutes
+//// after RefPerSys normally exited.
+extern "C" void rps_postponed_remove_file(const std::string& path);
+
+/// this is scheduling their removal, called by atexit
+extern "C" void rps_schedule_files_postponed_removal(void);
+
 extern "C" std::string rps_get_fifo_prefix(void);
 extern "C" void rps_do_create_fifos(std::string prefix);
 extern "C" struct rps_fifo_fdpair_st rps_get_gui_fifo_fds(void);

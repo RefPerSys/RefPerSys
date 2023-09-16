@@ -64,6 +64,8 @@ char rps_bufpath_homedir[rps_path_byte_size];
 char rps_debug_path[rps_path_byte_size];
 static  struct rps_fifo_fdpair_st rps_fifo_pair;
 
+static std::vector<std::string> rps_postponed_removed_files_vector;
+static std::mutex rps_postponed_lock;
 
 std::string rps_publisher_url_str;
 
@@ -1211,6 +1213,42 @@ rps_get_plugin_cstr_argument(const Rps_Plugin*plugin)
   return it->second.c_str();
 } // end rps_get_plugin_cstr_argument
 
+void
+rps_postponed_remove_file(const std::string& path)
+{
+  std::lock_guard<std::mutex> gu(rps_postponed_lock);
+  if (rps_postponed_removed_files_vector.empty())
+    atexit(rps_schedule_files_postponed_removal);
+  rps_postponed_removed_files_vector.push_back(std::string(path));
+} // end rps_postponed_remove_file
+
+void
+rps_schedule_files_postponed_removal(void)
+{
+  std::lock_guard<std::mutex> gu(rps_postponed_lock);
+  if (rps_postponed_removed_files_vector.empty())
+    return;
+  FILE* pat = popen("/bin/at now + 5 minutes", "w");
+  if (!pat)
+    {
+      RPS_WARNOUT("failed to open /bin/at now + 5 minutes :" << strerror(errno));
+      return;
+    };
+  if (rps_syslog_enabled)
+    syslog(LOG_NOTICE, "RefPerSys will later remove %d files (in five minutes, with /bin/at)", (int) rps_postponed_removed_files_vector.size());
+  else
+    RPS_INFORM("RefPerSys will later remove %d files (in five minutes, with /bin/at)", (int) rps_postponed_removed_files_vector.size());
+  for  (auto rf: rps_postponed_removed_files_vector)
+    {
+      if (rps_syslog_enabled)
+        syslog(LOG_NOTICE, "*rm  %s",  Rps_QuotedC_String(rf));
+      else
+        printf(" *rm %s\n", Rps_QuotedC_String(rf));
+      fprintf(pat, "/bin/rm -f %s\n", Rps_QuotedC_String(rf));
+    }
+  rps_postponed_removed_files_vector.clear();
+  pclose(pat);
+} // end rps_schedule_files_postponed_removal
 
 ////////////////
 void
@@ -1325,6 +1363,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
       std::clog << std::endl << std::flush;
     }
   fflush(nullptr);
+  rps_schedule_files_postponed_removal();
   abort();
 } // end rps_fatal_stop_at
 
