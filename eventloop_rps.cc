@@ -435,6 +435,10 @@ rps_event_loop(void)
                        || RPS_DEBUG_ENABLED(GUI);
       if (debugpoll)
         {
+	  char pidbuf[16];
+	  memset(pidbuf, 0, sizeof(pidbuf));
+	  if (event_nbloops.load() % 10)
+	    snprintf(pidbuf, sizeof(pidbuf)-1, " pid %d", (int)getpid());
           for (int pix=0; pix<nbfdpoll; pix++)
             {
               std::string evstr;
@@ -453,8 +457,9 @@ rps_event_loop(void)
               if (pollarr[pix].events & POLLNVAL)
                 evstr += " POLLNVAL";
               rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
-                                  "poll[%d] loop%ld:fd#%d:%s,%s\n",
-                                  pix, event_nbloops.load(), pollarr[pix].fd, explarr[pix], evstr.c_str());
+                                  "poll[%d] loop%ld:fd#%d:%s,%s%s\n",
+                                  pix, event_nbloops.load(), pollarr[pix].fd,
+				  explarr[pix], evstr.c_str(), pidbuf);
             }
         };
       errno = 0;
