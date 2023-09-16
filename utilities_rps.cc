@@ -126,13 +126,21 @@ rps_do_create_fifos_from_prefix(void)
   int cmdfd= -1;
   int outfd= -1;
   bool rmatex = false;
+  char cwdbuf[rps_path_byte_size];
+  memset(cwdbuf, 0, sizeof(cwdbuf));
   RPS_ASSERT(rps_is_main_thread());
+  if (getcwd(cwdbuf, sizeof(cwdbuf)-1))
+    strcpy(cwdbuf, "./");
   std::string cmdfifo = rps_fifo_prefix+".cmd";
   std::string outfifo = rps_fifo_prefix+".out";
   if (!rps_is_fifo(cmdfifo))
     {
       if (mkfifo(cmdfifo.c_str(), 0660)<0)
         RPS_FATALOUT("failed to create command FIFO " << cmdfifo << ":" << strerror(errno));
+      RPS_INFORMOUT("created command FIFO " << cmdfifo
+                    << " cwd:" << cwdbuf << " pid "
+                    << (int)getpid() << " on " << rps_hostname()
+                    << " git " << rps_shortgitid);
       rmatex = true;
     }
   cmdfd = open(cmdfifo.c_str(), 0660 | O_CLOEXEC);
@@ -142,6 +150,10 @@ rps_do_create_fifos_from_prefix(void)
     {
       if (mkfifo(outfifo.c_str(), 0660)<0)
         RPS_FATALOUT("failed to create output FIFO " << outfifo << ":" << strerror(errno));
+      RPS_INFORMOUT("created output FIFO " << outfifo
+                    << " cwd:" << cwdbuf << " pid "
+                    << (int)getpid() << " on " << rps_hostname()
+                    << " git " << rps_shortgitid);
       rmatex = true;
     }
   outfd = open(outfifo.c_str(), 0440 | O_CLOEXEC);
