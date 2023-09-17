@@ -257,6 +257,13 @@ steps
 * `make`
 * `make install`
 
+### Important simple functions
+
+Some C++ code is important since shared between RefPerSys and the
+`guifltk-refpersys` program.  In particular, the code of
+`rps_compute_cstr_two_64bits_hash` should not be changed after
+mid-september 2023.  It uses GNU libunistring and is shared (in file
+`jsonrpsfltk.cc` of the `guifltk-refpersys`
 
 ### compiling FLTK with DWARF debug information
 

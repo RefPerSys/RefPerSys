@@ -2358,7 +2358,7 @@ public:
 //////////////////////////////////////////////////////////// immutable strings
 
 // compute a long hash in ht[0] and ht[1]. Return the number of UTF-8
-// character or else 0 if cstr with len bytes is not proper UTF-8
+// character or else 0 if cstr with len bytes is not proper UTF-8. This is an important function, whose source code is shared in guifltk-refpersys
 extern "C"
 int rps_compute_cstr_two_64bits_hash(int64_t ht[2], const char*cstr, int len= -1);
 

@@ -37,8 +37,28 @@ const char rps_scalar_gitid[]= RPS_GITID;
 extern "C" const char rps_scalar_date[];
 const char rps_scalar_date[]= __DATE__;
 
-
-int rps_compute_cstr_two_64bits_hash(int64_t ht[2], const char*cstr, int len)
+/** important NOTICE 
+ *
+ * Don't change the code of the below function
+ * rps_compute_cstr_two_64bits_hash after mid-september 2023. This
+ * code is shared (copied) into the guifltk-refpersys program file
+ * jsonrpsfltk.cc
+ *
+ * This rps_compute_cstr_two_64bits_hash function uses the u8_mbtouc
+ * function from GNU libunistring library to handle Unicode UTF8
+ * characters.
+ *
+ * Function: int u8_mbtouc (ucs4_t *puc, const uint8_t *s, size_t n)
+ *   Returns the length (number of units) of the first character in s,
+ *   putting its ucs4_t representation in *puc. Upon failure, *puc is
+ *   set to 0xfffd, and an appropriate number of units is returned.
+ *
+ * This u8_mbtouc function fails if an invalid sequence of units is
+ * encountered at the beginning of s, or if additional units (after
+ * the n provided units) would be needed to form a character.
+ **/
+int
+rps_compute_cstr_two_64bits_hash(int64_t ht[2], const char*cstr, int len)
 {
   if (!ht || !cstr)
     return 0;
