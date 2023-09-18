@@ -155,7 +155,14 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ "FIFO", ///
     /*flags:*/ 0, ///
     /*doc:*/ "use a pair of fifo(7) named FIFO.cmd (written) "
-    "and FIFO.out (read) for communication.\n"
+    "and FIFO.out (read) for JSONRPC communication between RefPerSys"
+    " and some graphical user interface.  So when RefPerSys is given"
+    " the program argument --interface-fifo=/tmp/chan, two"
+    " FIFO channels may be created, and are used: /tmp/chan.out"
+    " and /tmp/chan.cmd ... The /tmp/chan.out is written"
+    " by the GUI interface, and read by RefPerSys; the "
+    "/tmp/chan.cmd is read by the GUI interface, and written by "
+    "the RefPerSys process.\n"
     , //
     /*group:*/0 ///
   },
