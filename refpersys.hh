@@ -4911,7 +4911,8 @@ public:
   Rps_QuotedC_String(const char*str, int len= -1) :
     std::string(str?str:"", (len>=0 && str)?len:strlen(str?str:"")),
     qtc_empty(str==nullptr){};
-  Rps_QuotedC_String(const std::string&str) : std::string(str), qtc_empty(false) {};
+  Rps_QuotedC_String(const std::string&str)
+    : std::string(str), qtc_empty(false) {};
   Rps_QuotedC_String(const Rps_QuotedC_String&) = default;
   Rps_QuotedC_String(Rps_QuotedC_String&&) = default;
   ~Rps_QuotedC_String() = default;
@@ -4925,7 +4926,8 @@ public:
       out << "\"";
     }
   };
-};
+  bool is_empty() const { return qtc_empty; };
+};				// end class Rps_QuotedC_String
 
 inline std::ostream&operator << (std::ostream&out, const Rps_QuotedC_String&hstr) {
   hstr.output(out);
