@@ -1241,10 +1241,10 @@ rps_schedule_files_postponed_removal(void)
   for  (auto rf: rps_postponed_removed_files_vector)
     {
       if (rps_syslog_enabled)
-        syslog(LOG_NOTICE, "*rm  %s",  Rps_QuotedC_String(rf));
+        syslog(LOG_NOTICE, "*rm  %s",  Rps_QuotedC_String(rf).c_str());
       else
-        printf(" *rm %s\n", Rps_QuotedC_String(rf));
-      fprintf(pat, "/bin/rm -f %s\n", Rps_QuotedC_String(rf));
+        printf(" *rm %s\n", Rps_QuotedC_String(rf).c_str());
+      fprintf(pat, "/bin/rm -f %s\n", Rps_QuotedC_String(rf).c_str());
     }
   rps_postponed_removed_files_vector.clear();
   pclose(pat);
