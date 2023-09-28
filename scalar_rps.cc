@@ -37,7 +37,7 @@ const char rps_scalar_gitid[]= RPS_GITID;
 extern "C" const char rps_scalar_date[];
 const char rps_scalar_date[]= __DATE__;
 
-/** important NOTICE 
+/** important NOTICE
  *
  * Don't change the code of the below function
  * rps_compute_cstr_two_64bits_hash after mid-september 2023. This

@@ -123,6 +123,8 @@ private:
   void write_generated_names_file(void);
   void write_generated_constants_file(void);
   void write_generated_data_file(void);
+  void write_generated_parser_decl_file(Rps_CallFrame*, Rps_ObjectRef);
+  void write_generated_parser_impl_file(Rps_CallFrame*, Rps_ObjectRef);
   void write_manifest_file(void);
   void write_space_file(Rps_ObjectRef spacobr);
   void scan_object_contents(Rps_ObjectRef obr);
@@ -1130,6 +1132,39 @@ Rps_Dumper::write_generated_data_file(void)
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_data_file end " << datapathstr);
 } //  end Rps_Dumper::write_generated_data_file
 
+
+void
+Rps_Dumper::write_generated_parser_decl_file(Rps_CallFrame*callfr, Rps_ObjectRef genob)
+{
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  auto rootpathstr = std::string{"generated/rps-parser-decl.hh"};
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file start");
+  auto pouts = open_output_file(rootpathstr);
+  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
+  *pouts << "#warning empty parser declaration file " << rootpathstr
+         << " from " << __FILE__ << ":" << __LINE__
+         << std::endl;
+  *pouts << "/// generator object " << genob << std::endl;
+  *pouts << "/// git " << RPS_SHORTGITID << std::endl;
+#warning Rps_Dumper::write_generated_parser_decl_file needs to be written
+} // end Rps_Dumper::write_generated_parser_file
+
+void
+Rps_Dumper::write_generated_parser_impl_file(Rps_CallFrame*callfr, Rps_ObjectRef genob)
+{
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  auto rootpathstr = std::string{"generated/rps-parser-impl.cc"};
+  RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file start");
+  auto pouts = open_output_file(rootpathstr);
+  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
+  *pouts << "#warning empty parser implementation file " << rootpathstr
+         << " from " << __FILE__ << ":" << __LINE__
+         << std::endl;
+  *pouts << "/// generator object " << genob << std::endl;
+  *pouts << "/// git " << RPS_SHORTGITID << std::endl;
+#warning Rps_Dumper::write_generated_parser_impl_file needs to be written
+} // end Rps_Dumper::write_generated_parser_impl_file
+
 void
 Rps_Dumper::write_all_generated_files(void)
 {
@@ -1185,6 +1220,8 @@ Rps_Dumper::write_all_generated_files(void)
                       << std::endl
                       << RPS_FULL_BACKTRACE_HERE(1,"Rps_Dumper::write_all_generated_files"));
         }
+      write_generated_parser_decl_file(&_, _f.genstoreob);
+      write_generated_parser_impl_file(&_, _f.genstoreob);
     }
   catch (std::exception&exc)
     {

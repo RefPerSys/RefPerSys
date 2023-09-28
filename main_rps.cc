@@ -1350,7 +1350,8 @@ main (int argc, char** argv)
   finish_jit();
   fflush(nullptr);
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_INFORMOUT("end of RefPerSys process " << (int)getpid() << " on " << rps_hostname()
+  RPS_INFORMOUT("end of RefPerSys process "
+		<< (int)getpid() << " on " << rps_hostname()
 		<< " git " << rps_gitid << " built " << rps_timestamp
 		<< " loaded state " << rps_my_load_dir << std::endl
 		<< " elapsed " << rps_elapsed_real_time()
