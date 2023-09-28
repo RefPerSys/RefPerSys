@@ -2597,6 +2597,10 @@ public:
 #define RPS_DO_LOOKAHEAD ((bool*)nullptr)
   static bool is_looking_ahead(bool*p) { return p == RPS_DO_LOOKAHEAD; };
   ///////////////////
+  ////
+  //// generated parsing declarations
+  #include "generated/rps-parser-decl.hh"
+  ///////////////////
   //// Our parsing routines; the token dequeue pointer is for
   //// lookahead... The flag pointed by `pokparse` is set to true if
   //// provided, non-nil, and parsing successful.

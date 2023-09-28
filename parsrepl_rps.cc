@@ -2193,4 +2193,7 @@ Rps_TokenSource::parse_primary_complement(Rps_CallFrame*callframe, Rps_Value pri
                << " startpos:" << startpos);
 } // end Rps_TokenSource::parse_primary_complement
 
+
+#include "generated/rps-parser-impl.cc"
+
 ///// end of file parsrepl_rps.cc of RefPerSys

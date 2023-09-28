@@ -363,6 +363,7 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 
 
 
+parserepl_rps.o: | generated/rps-parser-impl.cc
 ################
 clean:
 	if [ -f __timestamp.c ]; then /bin/sed "1,$$$$s:$(RPS_HOME):@REFPERSYS_HOME:g" __timestamp.c > %%__timestamp.c%% ; fi
