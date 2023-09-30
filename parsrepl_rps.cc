@@ -80,7 +80,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#" << exprnum << " START position:"
                 << startpos << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " in:" << (*this) << std::endl
-                << "... token_deq:" << toksrc_token_deq
+                << "… token_deq:" << toksrc_token_deq
                 << " calldepth=" << rps_call_frame_depth(&_)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression start")
@@ -91,7 +91,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
   }));
   _f.lextokv =  lookahead_token(&_,  0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum << " looked tokrk0 lextokv="
-                << _f.lextokv << std::endl << "... in:" << (*this)
+                << _f.lextokv << std::endl << "… in:" << (*this)
                 << " position:" << position_str() << " startpos:" << startpos
                 << " token_deq:" << toksrc_token_deq
                 << " curcptr:" << Rps_QuotedC_String(curcptr()));
@@ -110,21 +110,21 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum
                     << " failing_A at startpos:" << startpos
                     << " in:" << (*this) << std::endl
-                    << "... position:" << position_str()
+                    << "… position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << std::endl
-                    << "... token_deq:" << toksrc_token_deq
+                    << "… token_deq:" << toksrc_token_deq
                     << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_expression failing_A"));
       return nullptr;
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum << " before parse_disjunction"
                 << " in:" << (*this) << std::endl
-                << "... position:" << position_str()
+                << "… position:" << position_str()
                 << " startpos:" << startpos
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << std::endl
-                << "... token_deq:" << toksrc_token_deq);
+                << "… token_deq:" << toksrc_token_deq);
   _f.leftv = parse_disjunction(&_, &ok);
   if (!ok)
     {
@@ -156,19 +156,19 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
     }
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum << " got disjunction "
                 << " in " << (*this) << std::endl
-                << "... leftv=" << _f.leftv
+                << "… leftv=" << _f.leftv
                 <<  " position:" << position_str()<< " startpos:" << startpos
                 << std::endl
-                << "... token_deq:" << toksrc_token_deq);
+                << "… token_deq:" << toksrc_token_deq);
   disjvect.push_back(_f.leftv);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum << std::endl
-                << "... in " << (*this)
+                << "… in " << (*this)
                 << " leftv=" << _f.leftv
                 << " disjvect:" << disjvect << std::endl
                 <<  " position:" << position_str()<< " startpos:" << startpos
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << std::endl
-                << "... token_deq:" << toksrc_token_deq);
+                << "… token_deq:" << toksrc_token_deq);
   bool again = false;
   static Rps_Id idordelim;
   if (!idordelim)
@@ -187,7 +187,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
                         << " failed lookahea.tokzero"
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
                         << std::endl
-                        << "... token_deq:" << toksrc_token_deq
+                        << "… token_deq:" << toksrc_token_deq
                         << std::endl
                         << Rps_Do_Output([&](std::ostream& out)
           {
@@ -198,7 +198,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
         };
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum << " testing or lextokv=" << _f.lextokv
                     << " position:" << position_str()<< " startpos:" << startpos << " disjvect:" << disjvect
-                    << std::endl << " ... in:" << (*this));
+                    << std::endl << " … in:" << (*this));
       if (_f.lextokv.is_lextoken()
           && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
           &&  _f.lextokv.to_lextoken()->lxval().is_object()
@@ -208,7 +208,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
 #warning please code review Rps_TokenSource::parse_expression on consuming or
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_expression¤" << callnum << "#"  << exprnum << " consumed or lextokv=" << _f.lextokv
                         << " position:" << position_str()<< " startpos:" << startpos << " disjvect:" << disjvect
-                        << std::endl << " ... in:" << (*this));
+                        << std::endl << " … in:" << (*this));
           again = true;
           if (!_f.oroperob)
             _f.oroperob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,idoroper);
@@ -279,7 +279,7 @@ Rps_TokenSource::parse_expression(Rps_CallFrame*callframe, bool*pokparse)
                 << " oroperob=" << _f.oroperob
                 << "nbdisj:" << disjvect.size()
                 << std::endl
-                << "...token_deq:" << toksrc_token_deq
+                << "…token_deq:" << toksrc_token_deq
                 << " position:" << position_str()
                 << " startpos:" << startpos
                 << " disjvect:" << disjvect
@@ -383,7 +383,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
   }));
   _f.lextokv =  lookahead_token(&_,  0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction¤" << callnum << " lextokv=" << _f.lextokv
-                << " position: " << position_str() << std::endl << "... startpos=" << startpos
+                << " position: " << position_str() << std::endl << "… startpos=" << startpos
                 << "  in:" << (*this)
                 << " token_deq:" << toksrc_token_deq
                 << " curcptr:" << Rps_QuotedC_String(curcptr()));
@@ -411,7 +411,7 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
   // now _f.lextokv is non-null and is token0
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction¤" << callnum << " before parse_conjun left at startpos:" << startpos
                 << "  in:" << (*this) << std::endl
-                << "... lextokv=" << _f.lextokv
+                << "… lextokv=" << _f.lextokv
                 << " position:" << position_str()
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq
@@ -523,10 +523,10 @@ Rps_TokenSource::parse_disjunction(Rps_CallFrame*callframe, bool*pokparse)
             {
               conjvect.push_back(_f.rightv);
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_disjunction¤" << callnum << " parsed right conjunct rightv="
-                            << _f.rightv << std::endl << "... startpos:" << startpos
+                            << _f.rightv << std::endl << "… startpos:" << startpos
                             << " curcptr:" << Rps_QuotedC_String(curcptr())
                             << " conjvect:" << conjvect << std::endl
-                            << "... position:" << position_str() << " in " << (*this)
+                            << "… position:" << position_str() << " in " << (*this)
                             << std::endl
                             << Rps_Do_Output([&](std::ostream& out)
               {
@@ -620,7 +620,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum << " START at " << startpos
                 << "  in:" << (*this) << std::endl
-                << "... token_deq:" << toksrc_token_deq
+                << "… token_deq:" << toksrc_token_deq
                 << " curcptr:" << curcptr()
                 << " calldepth=" << rps_call_frame_depth(&_) << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_conjunction/start") << std::endl
@@ -641,7 +641,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
   _f.lextokv = lookahead_token(&_,  0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum << " lextokv="  << _f.lextokv
                 << " position: " << position_str() << std::endl
-                << "... startpos:" << startpos
+                << "… startpos:" << startpos
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " anddelim:" << _f.anddelimob
                 << " andbinop:" << _f.andbinopob
@@ -673,7 +673,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
   //
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤" << callnum << " before parsing left comparison in:" << (*this)
                 << std::endl
-                << "... position:" << position_str()
+                << "… position:" << position_str()
                 << " lextokv:" << _f.lextokv
                 << " startpos:" << startpos
                 << " curcptr:" << Rps_QuotedC_String(curcptr()));
@@ -786,7 +786,7 @@ Rps_TokenSource::parse_conjunction(Rps_CallFrame*callframe, bool*pokparse)
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_conjunction¤"
                             << callnum << " rightv:" << _f.rightv
                             << " at startpos:" << startpos << std::endl
-                            << "...  in:" << (*this)
+                            << "…  in:" << (*this)
                             << " conjvect:" << conjvect
                             << " position:" << position_str()
                             << " curcptr:" << Rps_QuotedC_String(curcptr())
@@ -1025,7 +1025,7 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, bool*pokparse)
                        "Rps_TokenSource::parse_comparison¤" << callnum << " failing_final at startpos:" << startpos
                        << "  in:" << (*this)
                        << " position:" << position_str()
-                       << "... leftv=" << _f.leftv
+                       << "… leftv=" << _f.leftv
                        << " curcptr:" << Rps_QuotedC_String(curcptr())
                        << " token_deq:" << toksrc_token_deq
                        << std::endl
@@ -1037,7 +1037,7 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, bool*pokparse)
                << " in:" << (*this) << " at " << position_str()
                << " startpos:" << startpos
                << std::endl
-               << "... leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
+               << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
 } // end Rps_TokenSource::parse_comparison
 
 
@@ -1102,7 +1102,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                            "Rps_TokenSource::parse_comparand¤" << callnum << " failing_A at startpos:" << startpos
                            << "  in:" << (*this)
                            << " position:" << position_str()
-                           << "... leftv=" << _f.leftv
+                           << "… leftv=" << _f.leftv
                            << " curcptr:" << Rps_QuotedC_String(curcptr())
                            << " token_deq:" << toksrc_token_deq);
       return nullptr;
@@ -1115,10 +1115,10 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                 << " token_deq:" << toksrc_token_deq);
   _f.lexopertokv =  lookahead_token(&_,  1);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << "  leftv=" << _f.leftv
-                << " lextokv:" << _f.lextokv
+                << " lextokv°0:" << _f.lextokv
+                << "… lexopertokv°~:" << _f.lexopertokv
                 << std::endl
-                << "... lexopertokv-at1:" << _f.lexopertokv
-                << " startpos:" << startpos
+                << "… startpos:" << startpos
                 << " currentpos:" << position_str()
                 << " curcptr " << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq);
@@ -1174,7 +1174,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " *INCOMPLETE* leftv=" << _f.leftv
                 << " lextokv:" << _f.lextokv
                 << std::endl
-                << "... lexopertokv-at1:" << _f.lexopertokv
+                << "… lexopertokv-at1:" << _f.lexopertokv
                 << " startpos:" << startpos
                 << " currentpos:" << position_str()
                 << " curcptr " << Rps_QuotedC_String(curcptr())
@@ -1194,25 +1194,25 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
    * Near commit 95d44aa788cf1 (dec. 2022) we should probably improve
    * our plugins/rpsplug_createcommutativeoperator.cc to create more
    * classes, new operators and delimiters, and get attribute from
-   * them, etc...
+   * them, etc…
    *
    * See https://framalistes.org/sympa/arc/refpersys-forum/2022-12/msg00069.html
    ***/
   RPS_PARSREPL_FAILURE(&_,
                        "Rps_TokenSource::parse_comparand¤" << callnum << " missing code at startpos:" << startpos
                        << " in:" << (*this) << std::endl
-                       << ".... position:" << position_str()
+                       << "…. position:" << position_str()
                        << " curcptr:" << Rps_QuotedC_String(curcptr())
                        << " token_deq:" << toksrc_token_deq
                        << " lextokv=" << _f.lextokv);
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand¤" << callnum << std::endl
-               //<< "... from " << std::endl << Rps_ShowCallFrame(callframe) << std::endl
-               << "... parse_comparand in:" << (*this) << " at startpos: " << startpos
+               //<< "… from " << std::endl << Rps_ShowCallFrame(callframe) << std::endl
+               << "… parse_comparand in:" << (*this) << " at startpos: " << startpos
                << " currentpos:" << position_str()
                << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr()
                << std::endl
-               << "... lextokv=" << _f.lextokv << " lexopertokv=" << _f.lexopertokv << std::endl
-               << "... parse_comparand¤" << callnum << " leftv=" << _f.leftv
+               << "… lextokv=" << _f.lextokv << " lexopertokv=" << _f.lexopertokv << std::endl
+               << "… parse_comparand¤" << callnum << " leftv=" << _f.leftv
                << std::endl
                << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparand incomplete"));
 } // end Rps_TokenSource::parse_comparand
@@ -1322,7 +1322,7 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, bool*pokparse)
   if (_f.binoperob)
     {
       bool okright = false;
-      /// consume the + or - delimiter...
+      /// consume the + or - delimiter…
       _f.lexgotokv = get_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_factor¤" << callnum << " lexgotokv=" << _f.lexgotokv
                     << " in:" << (*this) << " at "
@@ -1383,7 +1383,7 @@ Rps_TokenSource::parse_factor(Rps_CallFrame*callframe, bool*pokparse)
 
 
 /// a term is a sequence of factors with multiplicative operators
-/// between them.... All the operators should be the same. Otherwise we build intermediate subexpressions
+/// between them…. All the operators should be the same. Otherwise we build intermediate subexpressions
 Rps_Value
 Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
 {
@@ -1413,7 +1413,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
   std::vector<Rps_Value> operandvect;
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
-    // maybe token_deq is already GC-marked by caller....
+    // maybe token_deq is already GC-marked by caller….
     RPS_ASSERT(gc != nullptr);
     this->gc_mark(*gc);
 #warning code review needed. Do we need  this->gc_mark(*gc) in Rps_TokenSource::parse_term ?
@@ -1555,8 +1555,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
       usleep (250000);
       _f.lextokv = get_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " got token after leftv=" << _f.leftv << " got lextok=" << _f.lextokv << std::endl
-                    << "... lexopertokv=" << _f.lexopertokv << "  in:" << (*this) << std::endl
-                    << "... @! " << position_str()
+                    << "… lexopertokv=" << _f.lexopertokv << "  in:" << (*this) << std::endl
+                    << "… @! " << position_str()
                     << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr()
                     << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after-left"));
       if (!_f.lextokv)
@@ -1582,26 +1582,26 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
           if (_f.lexoperdelimob == _f.multdelimob)
             {
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " lexopertokv:" << _f.lexopertokv << " multiply at " << position_str()
-                            << std::endl << "... token_deq:" << toksrc_token_deq << " startpos:" << startpos);
+                            << std::endl << "… token_deq:" << toksrc_token_deq << " startpos:" << startpos);
               _f.curoperob = _f.multbinopob;
             }
           else if (_f.lexoperdelimob == _f.divdelimob)
             {
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " lexopertokv:" << _f.lexopertokv << " divide at " << position_str()
-                            << std::endl << "... token_deq:" << toksrc_token_deq << " startpos:" << startpos);
+                            << std::endl << "… token_deq:" << toksrc_token_deq << " startpos:" << startpos);
               _f.curoperob = _f.divbinopob;
             }
           else if (_f.lexoperdelimob == _f.moddelimob)
             {
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " lexopertokv:" << _f.lexopertokv << " modulus at " << position_str()
-                            << std::endl << "... token_deq:" << toksrc_token_deq << " startpos:" << startpos);
+                            << std::endl << "… token_deq:" << toksrc_token_deq << " startpos:" << startpos);
               _f.curoperob = _f.modbinopob;
             }
           else
             {
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " lexopertokv:" << _f.lexopertokv
                             << " strange lexoperdelimob:" << _f.lexoperdelimob << " :!-> return leftv:" << _f.leftv
-                            << std::endl << "... token_deq:" << toksrc_token_deq << " startpos:" << startpos
+                            << std::endl << "… token_deq:" << toksrc_token_deq << " startpos:" << startpos
                             <<" curcptr " << Rps_QuotedC_String(curcptr()));
               if (pokparse)
                 *pokparse = true;
@@ -1683,7 +1683,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
         };
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term **endingloop @ " << position_str()
                     << " operandvect:" << operandvect << " curoperob:" << _f.curoperob
-                    << std::endl << "... in:" << (*this)
+                    << std::endl << "… in:" << (*this)
                     << (again?"again":"stop")
                     << " loopcnt#" << loopcnt << " curcptr " << Rps_QuotedC_String(curcptr())
                     << "@" << (void*)(curcptr())
@@ -1758,9 +1758,9 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
   std::string startpos = position_str();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " START startpos:" << startpos
                 << "  in:" << (*this) << std::endl
-                << "... callframe:" << callframe<< " curcptr:" << Rps_QuotedC_String(curcptr())
+                << "… callframe:" << callframe<< " curcptr:" << Rps_QuotedC_String(curcptr())
                 << std::endl
-                << "... token_deq:" << toksrc_token_deq<< std::endl
+                << "… token_deq:" << toksrc_token_deq<< std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary start")
                 << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
@@ -1822,10 +1822,10 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                            << " token_deq:" << toksrc_token_deq);
       return nullptr;
     }
-  /// can_start_primary was successful...
+  /// can_start_primary was successful…
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " ok can_start_primary lexkindob="
                 << _f.lexkindob << " lexval=" << _f.lexvalv << std::endl
-                << "... startpos:" << startpos << " position:" << position_str()
+                << "… startpos:" << startpos << " position:" << position_str()
                 << " curcptr " << Rps_QuotedC_String(curcptr())
                 << " lextokv=" << _f.lextokv
                 << "  in:" << (*this)
@@ -1843,10 +1843,10 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                     << " position:" << position_str() << " curcptr " << Rps_QuotedC_String(curcptr()));
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary => int " << _f.lexvalv
                     << " lextokv:" << _f.lextokv << std::endl
-                    << " ... lexgotokv:" << _f.lexgotokv
+                    << " … lexgotokv:" << _f.lexgotokv
                     << " curcptr " << Rps_QuotedC_String(curcptr())
                     << " startpos: " << startpos << std::endl
-                    << "...  in:" << (*this)
+                    << "…  in:" << (*this)
                     << " token_deq:" << toksrc_token_deq
                     << " at " << position_str() << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_primary int"));
@@ -1874,7 +1874,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
         *pokparse = true;
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " => double "
                     << _f.lexvalv << " lexgotokv:" << _f.lexgotokv << std::endl
-                    << "... in:" << (*this)
+                    << "… in:" << (*this)
                     << " lexgotokv:" << _f.lexgotokv
                     << " curcptr " << Rps_QuotedC_String(curcptr())
                     << " startpos: " << startpos << std::endl
@@ -1889,21 +1889,21 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
       _f.obres = _f.lexvalv.to_object();
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " before consumetok "
                     << _f.obres << " lexgotokv:" << _f.lexgotokv << std::endl
-                    << "...  in:" << (*this)
+                    << "…  in:" << (*this)
                     << " at " << position_str()
                     << " token_deq:" << toksrc_token_deq
                     << " curcptr " << Rps_QuotedC_String(curcptr()));
       consume_front_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " :: object "
                     << _f.obres << " lexgotokv:" << _f.lexgotokv << std::endl
-                    << "...  in:" << (*this)
+                    << "…  in:" << (*this)
                     << " at " << position_str()
                     << " token_deq:" << toksrc_token_deq
                     << " curcptr " << Rps_QuotedC_String(curcptr()));
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum
                     << " :: object after gettok"
                     << _f.obres << " next lexgotokv:" << _f.lexgotokv << std::endl
-                    << "...  in:" << (*this)
+                    << "…  in:" << (*this)
                     << " at " << position_str()
                     << " token_deq:" << toksrc_token_deq
                     << " curcptr " << Rps_QuotedC_String(curcptr())
@@ -1916,7 +1916,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
         *pokparse = true;
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::parse_primary¤" << callnum
                     << " succeeds give obres:" << _f.obres
-                    << std::endl << "... in " << (*this)
+                    << std::endl << "… in " << (*this)
                     << " at " << position_str()
                     << " token_deq:" << toksrc_token_deq
                     << " curcptr " << Rps_QuotedC_String(curcptr())
@@ -1934,7 +1934,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " delimited"
                     << " lexkindob:" << _f.lexkindob
                     << " obdelim=" << _f.obdelim << std::endl
-                    << "...  in:" << (*this)
+                    << "…  in:" << (*this)
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
                     << " position:" << position_str() << " startpos:" << startpos);
       // test for  leftparen _4YM7mv0GrSp03OkF8T
@@ -1944,7 +1944,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
         {
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " got leftparen "
                         << "  in:" << (*this) << std::endl
-                        << "... lextokv:" << _f.lextokv
+                        << "… lextokv:" << _f.lextokv
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
                         << " position:" << position_str() << " startpos:" << startpos << std::endl
                         << " token_deq:" << toksrc_token_deq
@@ -1958,8 +1958,8 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
           //WRONG _f.lexgotokv = lookahead_token(&_, 0);
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " got leftparen before parsing-subexpression"
                         << "  in:" << (*this) << std::endl
-                        << "... lextokv:" << _f.lextokv << std::endl
-                        << "... lexgotokv:" << _f.lexgotokv << std::endl
+                        << "… lextokv:" << _f.lextokv << std::endl
+                        << "… lexgotokv:" << _f.lexgotokv << std::endl
                         << " lexkindob:" << _f.lexkindob
                         << " obdelim=" << _f.obdelim
                         << " curcptr:" << Rps_QuotedC_String(curcptr())
@@ -1990,7 +1990,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                            << " token_deq:" << toksrc_token_deq);
 #warning TODO: Rps_TokenSource::parse_primary use rightparen _7CG9m1NXpMo01edTUl and build subexpression object
               /* TODO: we probably should make then return some object or some
-              instance for that primary in parenthesis... */
+              instance for that primary in parenthesis… */
             }
           else
             {
@@ -2046,12 +2046,12 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
     } // end if lexkindob is _2wdmxJecnFZ02VGGFK //repl_delimiter∊class
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " @@incomplete"
                 << "  in:" << (*this) << std::endl
-                << "... lextokv:" << _f.lextokv
+                << "… lextokv:" << _f.lextokv
                 << " lexkindob:" << _f.lexkindob << std::endl
-                << "... startpos:" << startpos
+                << "… startpos:" << startpos
                 << " position:" << position_str()
                 << std::endl
-                << "... curcptr:" << Rps_QuotedC_String(curcptr())
+                << "… curcptr:" << Rps_QuotedC_String(curcptr())
                 << " obdelim:" << _f.obdelim
                 << " token_deq:" << toksrc_token_deq
                 << std::endl
@@ -2066,7 +2066,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
   /** TODO:
    * we probably want to code some recursive descent parser for REPL,
    * but we need some specification (in written English, using EBNF
-   * notation....) of REPL expressions
+   * notation….) of REPL expressions
    *
    * That specification of REPL expressions should go into file
    * doc/repl.md or into doc/
@@ -2075,7 +2075,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                << Rps_ShowCallFrame(&_) << std::endl
                << "  in:" << (*this)
                << " lextokv:" << _f.lextokv << std::endl
-               << " ... lexkindob:" << _f.lexkindob
+               << " … lexkindob:" << _f.lexkindob
                << " lexvalv:" << _f.lexvalv
                << " lexgotokv:" << _f.lexgotokv
                << " position_str:" << position_str()
