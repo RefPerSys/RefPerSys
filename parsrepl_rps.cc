@@ -1093,7 +1093,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   _f.minusdelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_minus_delim); // "minus!delim"∈repl_delimiter
   _f.minusbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_minus_binop); // "minus!binop"∈repl_binary_operator
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
-                << " minusdelimob=" << _f.minusdelimob << std::endl
+                << "@missing minusdelimob=" << _f.minusdelimob << std::endl
                 << " minusbinopob=" << _f.minusbinopob
                 << " leftv=" << _f.leftv
                 << std::endl
