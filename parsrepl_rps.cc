@@ -1061,7 +1061,8 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   std::string startpos = position_str();
   static long callcnt;
   long callnum= ++ callcnt;
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " START from " << Rps_ShowCallFrame(&_)
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+                << " START from " << Rps_ShowCallFrame(&_)
                 << " in " << (*this) << " at " <<  startpos
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq << std::endl
@@ -1071,6 +1072,22 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   }));
   bool okleft = false;
   _f.leftv = parse_term(&_, &okleft);
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+                << " startpos:" << startpos << std::endl
+                << " after parse_term leftv=" << _f.leftv
+                << (okleft?"okleft":"NOTOKleft")
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
+                << " token_deq:" << toksrc_token_deq << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
+  if (!okleft)
+    {
+      if (pokparse)
+        *pokparse = false;
+      return nullptr;
+    };
   /// + delimiter and binary operator
   static Rps_Id id_plus_delim;
   if (!id_plus_delim)
