@@ -1053,6 +1053,10 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                  Rps_Value lexgotokv;
                  Rps_Value leftv;
                  Rps_Value rightv;
+                 Rps_ObjectRef plusdelimob;
+                 Rps_ObjectRef plusbinopob;
+                 Rps_ObjectRef minusdelimob;
+                 Rps_ObjectRef minusbinopob;
                 );
   std::string startpos = position_str();
   static long callcnt;
@@ -1060,7 +1064,41 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " START from " << Rps_ShowCallFrame(&_)
                 << " in " << (*this) << " at " <<  startpos
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
-                << " token_deq:" << toksrc_token_deq
+                << " token_deq:" << toksrc_token_deq << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
+  bool okleft = false;
+  _f.leftv = parse_term(&_, &okleft);
+  /// + delimiter and binary operator
+  static Rps_Id id_plus_delim;
+  if (!id_plus_delim)
+    id_plus_delim = Rps_Id("_4ShDsOWk7al02eDRTM");
+  static Rps_Id id_plus_binop;
+  if (!id_plus_binop)
+    id_plus_binop = Rps_Id("_51jvc2mFhql03qwRg6");
+  _f.plusdelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_plus_delim); // "plus!delim"∈repl_delimiter
+  _f.plusbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_plus_binop); // "plus!binop"∈repl_binary_operator
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+                << " plusdelimob=" << _f.plusdelimob << std::endl
+                << "… plusbinopob=" << _f.plusbinopob);
+  /// - delimiter and binary operator
+  static Rps_Id id_minus_delim;
+  if (!id_minus_delim)
+    id_minus_delim = Rps_Id("_3isfNUOsxXY02Bww6l");
+  static Rps_Id id_minus_binop;
+  if (!id_minus_binop)
+    id_minus_binop = Rps_Id("_13ffyyJhGHI01ySLhK");
+  _f.minusdelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_minus_delim); // "minus!delim"∈repl_delimiter
+  _f.minusbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_minus_binop); // "minus!binop"∈repl_binary_operator
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+                << " minusdelimob=" << _f.minusdelimob << std::endl
+                << " minusbinopob=" << _f.minusbinopob
+                << " leftv=" << _f.leftv
+                << std::endl
+                << "… curcptr:" << Rps_QuotedC_String(curcptr())
+                << " token_deq:" << toksrc_token_deq << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
     this->display_current_line_with_cursor(out);
@@ -1107,7 +1145,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " START from " << Rps_ShowCallFrame(&_)
                 << " in " << (*this) << " at " <<  startpos
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
-                << " token_deq:" << toksrc_token_deq
+                << " token_deq:" << toksrc_token_deq << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
   {
     this->display_current_line_with_cursor(out);
