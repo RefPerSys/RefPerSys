@@ -864,7 +864,6 @@ while (0)
 //////////////// assert
 #ifndef NDEBUG
 ///
-#warning TODO: RPS_ASSERT_AT_BIS should use use syslog when rps_syslog_enabled
 #define RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond) do {               \
   if (RPS_UNLIKELY(!(Cond))) {                                  \
     if (rps_syslog_enabled)					\
@@ -885,13 +884,13 @@ while (0)
 #define RPS_ASSERT(Cond) RPS_ASSERT_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,(Cond))
 
 #define RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,...) do { \
-    if (RPS_UNLIKELY(!(Cond))) {                                \
+  if (RPS_UNLIKELY(!(Cond))) {                                  \
     if (rps_syslog_enabled)					\
       syslog(LOG_CRIT,						\
 	     "*** RefPerSys ASSERTPRINTF failed:"		\
 	     " %s *** [%s:%d:%s]" Fmt,				\
 	     #Cond, Fil, Lin, Func, ##__VA_ARGS__);		\
-    else							\
+    else {							\
       fprintf(stderr, "\n\n"                                    \
               "%s*** RefPerSys ASSERTPRINTF failed:%s %s\n"     \
               "%s:%d: {%s}\n",                                  \
@@ -900,7 +899,9 @@ while (0)
           (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),     \
               Fil, Lin, Func);                                  \
       fprintf(stderr, "!*!*! " Fmt "\n\n", ##__VA_ARGS__);      \
-      rps_fatal_stop_at(Fil, Lin); }} while(0)
+    };								\
+    rps_fatal_stop_at(Fil, Lin); }				\
+ } while(0)
 
 #define RPS_ASSERTPRINTF_AT(Fil,Lin,Func,Cond,Fmt,...) RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,##__VA_ARGS__)
 #define RPS_ASSERTPRINTF(Cond,Fmt,...) RPS_ASSERTPRINTF_AT(__FILE__,__LINE__,__PRETTY_FUNCTION__,(Cond),Fmt,##__VA_ARGS__)
