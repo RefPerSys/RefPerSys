@@ -2646,6 +2646,9 @@ public:
   /// etc..
   Rps_Value parse_comparison(Rps_CallFrame*callframe, bool*pokparse=nullptr);
   Rps_Value parse_comparand(Rps_CallFrame*callframe, bool*pokparse=nullptr);
+  Rps_Value parse_sum(Rps_CallFrame*callframe, bool*pokparse=nullptr);
+  Rps_Value parse_product(Rps_CallFrame*callframe, bool*pokparse=nullptr);
+  
   Rps_Value parse_factor(Rps_CallFrame*callframe, bool*pokparse=nullptr);
   Rps_Value parse_term(Rps_CallFrame*callframe, bool*pokparse=nullptr);
   /// a primary expression is a simple thing

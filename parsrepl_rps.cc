@@ -1042,6 +1042,46 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, bool*pokparse)
 
 
 
+Rps_Value
+Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
+{
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(nullptr, callframe,
+                 Rps_Value lextokv;
+                 Rps_Value lexopertokv;
+                 Rps_Value lexgotokv;
+                 Rps_Value leftv;
+                 Rps_Value rightv;
+                );
+  std::string startpos = position_str();
+  static long callcnt;
+  long callnum= ++ callcnt;
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " START from " << Rps_ShowCallFrame(&_)
+                << " in " << (*this) << " at " <<  startpos
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
+                << " token_deq:" << toksrc_token_deq
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
+  /***
+   * We probably should loop and collect all terms if they are
+   * separated by the same additive delimiter with its operator.
+   *
+   * Near commit 95d44aa788cf1 (dec. 2022) we should probably improve
+   * our plugins/rpsplug_createcommutativeoperator.cc to create more
+   * classes, new operators and delimiters, and get attribute from
+   * them, etc…
+   *
+   * See https://framalistes.org/sympa/arc/refpersys-forum/2022-12/msg00069.html
+   ***/
+  RPS_FATALOUT("missing code in Rps_TokenSource::parse_sum¤" << callnum << " from " << Rps_ShowCallFrame(callframe)
+               << " in:" << (*this) << " at " << position_str()
+               << " startpos:" << startpos
+               << std::endl
+               << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
+} // end Rps_TokenSource::parse_sum
 
 
 // a comparand - something on left or right side of compare operators such as < or !=
@@ -1073,7 +1113,7 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
     this->display_current_line_with_cursor(out);
   }));
   bool okleft = false;
-  _f.leftv = parse_term(&_,  &okleft);
+  _f.leftv = parse_sum(&_,  &okleft);
   if (okleft)
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " leftv=" << _f.leftv << " startpos:" << startpos
@@ -1188,17 +1228,6 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
       << std::endl
       << RPS_FULL_BACKTRACE_HERE(1, "incomplete Rps_TokenSource::parse_comparand"));
 #warning TODO: missing code in Rps_TokenSource::parse_comparand
-  /***
-   * We probably should loop and collect all terms if they are
-   * separated by the same additive delimiter with its operator.
-   *
-   * Near commit 95d44aa788cf1 (dec. 2022) we should probably improve
-   * our plugins/rpsplug_createcommutativeoperator.cc to create more
-   * classes, new operators and delimiters, and get attribute from
-   * them, etc…
-   *
-   * See https://framalistes.org/sympa/arc/refpersys-forum/2022-12/msg00069.html
-   ***/
   RPS_PARSREPL_FAILURE(&_,
                        "Rps_TokenSource::parse_comparand¤" << callnum << " missing code at startpos:" << startpos<<
                        " leftv=" << _f.leftv
