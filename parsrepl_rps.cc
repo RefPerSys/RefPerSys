@@ -1109,7 +1109,8 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
     }
   //// Here _f.leftv has been parsed
   _f.lextokv =  lookahead_token(&_,  0);
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " lextok-at0: " << _f.lextokv
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_comparand¤" << callnum << " lextokv°0: " << _f.lextokv
+                << " leftv=" << _f.leftv
                 << " position:" << position_str()
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq);
@@ -1199,15 +1200,23 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
    * See https://framalistes.org/sympa/arc/refpersys-forum/2022-12/msg00069.html
    ***/
   RPS_PARSREPL_FAILURE(&_,
-                       "Rps_TokenSource::parse_comparand¤" << callnum << " missing code at startpos:" << startpos
+                       "Rps_TokenSource::parse_comparand¤" << callnum << " missing code at startpos:" << startpos<<
+                       " leftv=" << _f.leftv
+                       << " lextokv:" << _f.lextokv
                        << " in:" << (*this) << std::endl
                        << "…. position:" << position_str()
                        << " curcptr:" << Rps_QuotedC_String(curcptr())
-                       << " token_deq:" << toksrc_token_deq
-                       << " lextokv=" << _f.lextokv);
-  RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand¤" << callnum << std::endl
+                       << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  })
+      << " token_deq:" << toksrc_token_deq
+      << " lextokv=" << _f.lextokv);
+  RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand¤" << callnum
+               << std::endl
                //<< "… from " << std::endl << Rps_ShowCallFrame(callframe) << std::endl
-               << "… parse_comparand in:" << (*this) << " at startpos: " << startpos
+               << "… parse_comparand in:" << (*this)
+               << std::endl << " at startpos: " << startpos
                << " currentpos:" << position_str()
                << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr()
                << std::endl
