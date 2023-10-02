@@ -1205,11 +1205,12 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                        << " lextokv:" << _f.lextokv
                        << " in:" << (*this) << std::endl
                        << "…. position:" << position_str()
-                       << " curcptr:" << Rps_QuotedC_String(curcptr())
+                       << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
                        << Rps_Do_Output([&](std::ostream& out)
   {
     this->display_current_line_with_cursor(out);
   })
+      << std::endl
       << " token_deq:" << toksrc_token_deq
       << " lextokv=" << _f.lextokv);
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_comparand¤" << callnum
@@ -1223,7 +1224,12 @@ Rps_TokenSource::parse_comparand(Rps_CallFrame*callframe, bool*pokparse)
                << "… lextokv=" << _f.lextokv << " lexopertokv=" << _f.lexopertokv << std::endl
                << "… parse_comparand¤" << callnum << " leftv=" << _f.leftv
                << std::endl
-               << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparand incomplete"));
+               << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  })
+      << std::endl
+      << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_comparand incomplete"));
 } // end Rps_TokenSource::parse_comparand
 
 
