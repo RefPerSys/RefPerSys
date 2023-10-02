@@ -1516,9 +1516,9 @@ void
 rps_run_test_repl_lexer(const std::string& teststr)
 {
   RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0S6DQvp3Gop015zXhL),  //lexical_token∈class
-                           /*callerframe:*/RPS_NULL_CALL_FRAME,
-                           Rps_Value curlextokenv;
-                );
+		 /*callerframe:*/RPS_NULL_CALL_FRAME,
+		 Rps_Value curlextokenv;
+		 );
   RPS_ASSERT(rps_is_main_thread());
 
   RPS_TIMER_START();
@@ -1537,7 +1537,12 @@ rps_run_test_repl_lexer(const std::string& teststr)
       loopcnt++;
       RPS_DEBUG_LOG(REPL, "rps_run_test_repl_lexer toktestsrc:" << toktestsrc
                     << " at " << toktestsrc.position_str()
-                    << " loopcnt#" << loopcnt);
+                    << " loopcnt#" << loopcnt
+		    << std::endl
+		    << Rps_Do_Output([&](std::ostream& out)
+		    {
+		      toktestsrc.display_current_line_with_cursor(out);
+		    }));
       do
         {
           _f.curlextokenv = toktestsrc.get_token(&_);
@@ -1545,7 +1550,12 @@ rps_run_test_repl_lexer(const std::string& teststr)
             {
               tokcnt++;
               RPS_INFORMOUT("token#" << tokcnt << ":" << _f.curlextokenv
-                            << " from " << toktestsrc.position_str());
+                            << " from " << toktestsrc.position_str()
+			    << std::endl
+			    << Rps_Do_Output([&](std::ostream& out)
+			    {
+			      toktestsrc.display_current_line_with_cursor(out);
+			    }));
             }
           else
             {
