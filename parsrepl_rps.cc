@@ -1132,10 +1132,15 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
    * See https://framalistes.org/sympa/arc/refpersys-forum/2022-12/msg00069.html
    ***/
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_sum¤" << callnum << " from " << Rps_ShowCallFrame(callframe)
-               << " in:" << (*this) << " at " << position_str()
-               << " startpos:" << startpos
+               << " in:" << (*this) << " at " << position_str()<< std::endl
+               << "…  startpos:" << startpos << " token_deq:" << toksrc_token_deq
                << std::endl
-               << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv);
+               << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv
+               << std::endl
+               << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
 } // end Rps_TokenSource::parse_sum
 
 
