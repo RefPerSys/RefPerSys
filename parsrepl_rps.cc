@@ -1658,11 +1658,17 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                     << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr());
       usleep (250000);
       _f.lextokv = get_token(&_);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " got token after leftv=" << _f.leftv << " got lextok=" << _f.lextokv << std::endl
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " got token after leftv=" << _f.leftv
+                    << " got lextok=" << _f.lextokv << std::endl
                     << "… lexopertokv=" << _f.lexopertokv << "  in:" << (*this) << std::endl
                     << "… @! " << position_str()
                     << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr()
-                    << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after-left"));
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      })
+          << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term after-left"));
       if (!_f.lextokv)
         break;
       if (_f.lexopertokv && _f.lexopertokv.is_lextoken()
