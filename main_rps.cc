@@ -334,6 +334,9 @@ const char* rps_progname;
 
 int rps_argc;
 char** rps_argv;
+char* rps_program_invocation;
+
+
 
 char* rps_run_command_after_load = nullptr;
 char* rps_debugflags_after_load = nullptr;
@@ -1223,19 +1226,27 @@ rps_kill_wait_gui_process(void)
 /// registered to atexit....
 extern "C" void rps_exiting(void);
 
-void rps_exiting(void)
+void
+rps_exiting(void)
 {
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
-  syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s exiting (%d); elapsed %.3f sec, CPU %.3f sec",
+  syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s exiting (%d);\n"
+	 "... elapsed %.3f sec, CPU %.3f sec;\n"
+	 "%s%s",
 	 (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
 	 rps_exit_atomic_code.load(),
-	 rps_elapsed_real_time(), rps_process_cpu_time());
+	 rps_elapsed_real_time(), rps_process_cpu_time(),
+	 (rps_program_invocation?"invocation: ":""),
+	 rps_program_invocation?:"");
   if (!rps_syslog_enabled) {
-    printf("RefPerSys process %d on host %s in %s git %s exiting (%d); elapsed %.3f sec, CPU %.3f sec",
+    printf("RefPerSys process %d on host %s in %s git %s exiting (%d);\n"
+	   " ... elapsed %.3f sec, CPU %.3f sec\n",
 	 (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
 	 rps_exit_atomic_code.load(),
 	 rps_elapsed_real_time(), rps_process_cpu_time());
+    if (rps_program_invocation)
+      printf("... invocation: %s\n", rps_program_invocation);
     fflush(stdout);
   }
 } // end rps_exiting

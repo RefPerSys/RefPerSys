@@ -53,6 +53,8 @@ const char rps_utilities_date[]= __DATE__;
 extern "C" const int rps_gnulightning_jitstate_size;
 extern "C" const int rps_gnulightning_jitstate_align;
 
+static void rps_compute_program_invocation(int argc, char**argv);
+
 // we may have a pair of FIFO to communicate with some external
 // process (for graphical user interface), perhaps mini-edit-fltk on
 // https://github.com/bstarynk/misc-basile/ ... The FIFO prefix is
@@ -593,6 +595,8 @@ rps_early_initialization(int argc, char** argv)
     };
   // initialize GNU lightning
   init_jit (rps_progname);
+  // compute the program invocation string
+  rps_compute_program_invocation(argc, argv);
   rps_main_thread_handle = pthread_self();
   {
     char cwdbuf[rps_path_byte_size];
@@ -1201,6 +1205,18 @@ rps_output_program_arguments(std::ostream& out, int argc, const char*const*argv)
   out << std::endl;
 } // end rps_output_program_arguments
 
+void
+rps_compute_program_invocation(int argc, char**argv)
+{
+  std::ostringstream outs;
+  rps_output_program_arguments(outs, argc, argv);
+  outs.flush();
+  std::string pstr = outs.str();
+  size_t plen = pstr.size();
+  rps_program_invocation = calloc(1, ((plen+20)|0x1f)+1);
+  if (rps_program_invocation)
+    strncpy(rps_program_invocation, plen, pstr.c_str());
+} // end rps_compute_program_invocation
 
 const char*
 rps_get_plugin_cstr_argument(const Rps_Plugin*plugin)
@@ -1265,8 +1281,11 @@ rps_fatal_stop_at (const char *filnam, int lin)
     strcpy(cwdbuf, "./");
   snprintf (errbuf, sizeof(errbuf), "FATAL STOP (%s:%d)", filnam, lin);
   /* we always syslog.... */
-  syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s build %s pid %d on %s, elapsed %.3f, process %.3f secin %s",
-         filnam, lin, rps_shortgitid, rps_timestamp, (int)getpid(), rps_hostname(),
+  syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s,\n"
+         "... build %s pid %d on %s,\n"
+         "... elapsed %.3f, process %.3f sec in %s",
+         filnam, lin, rps_shortgitid,
+         rps_timestamp, (int)getpid(), rps_hostname(),
          rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf);
   bool ontty = isatty(STDERR_FILENO);
   if (rps_debug_file)

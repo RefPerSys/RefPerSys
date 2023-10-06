@@ -394,14 +394,18 @@ extern "C" struct backtrace_state* rps_backtrace_common_state;
 
 /// the program name
 extern "C" const char* rps_progname;
+/// the program arguments
+extern "C" int rps_argc;
+extern "C" char** rps_argv;
+/// the program invocation
+extern "C" char* rps_program_invocation;
+
+extern "C" void rps_compute_program_invocation(void);
 
 /// the load directory
 extern "C" std::string rps_my_load_dir;
 
 
-/// the program arguments
-extern "C" int rps_argc;
-extern "C" char** rps_argv;
 
 /// the initial copyright year of RefPerSys
 #define RPS_INITIAL_COPYRIGHT_YEAR 2019
