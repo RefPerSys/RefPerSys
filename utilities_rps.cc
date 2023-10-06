@@ -1213,9 +1213,9 @@ rps_compute_program_invocation(int argc, char**argv)
   outs.flush();
   std::string pstr = outs.str();
   size_t plen = pstr.size();
-  rps_program_invocation = calloc(1, ((plen+20)|0x1f)+1);
+  rps_program_invocation = (char*)calloc(1, ((plen+20)|0x1f)+1);
   if (rps_program_invocation)
-    strncpy(rps_program_invocation, plen, pstr.c_str());
+    strncpy(rps_program_invocation, pstr.c_str(), plen);
 } // end rps_compute_program_invocation
 
 const char*
@@ -1283,13 +1283,19 @@ rps_fatal_stop_at (const char *filnam, int lin)
   /* we always syslog.... */
   syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s,\n"
          "... build %s pid %d on %s,\n"
-         "... elapsed %.3f, process %.3f sec in %s",
+         "... elapsed %.3f, process %.3f sec in %s\n%s%s",
          filnam, lin, rps_shortgitid,
          rps_timestamp, (int)getpid(), rps_hostname(),
-         rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf);
+         rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf,
+         (rps_program_invocation?"... started as1 ":""),
+         (rps_program_invocation?:""));
   bool ontty = isatty(STDERR_FILENO);
   if (rps_debug_file)
-    fprintf(rps_debug_file, "\n*§*§* RPS FATAL %s:%d *§*§*\n", filnam, lin);
+    {
+      fprintf(rps_debug_file, "\n*§*§* RPS FATAL %s:%d *§*§*\n", filnam, lin);
+      if (rps_program_invocation)
+        fprintf(rps_debug_file, "... started as %s\n", rps_program_invocation);
+    }
   if (!rps_syslog_enabled)
     fprintf(stderr, "\n" "%s%sRPS FATAL:%s\n"
             " RefPerSys gitid %s,\n"

@@ -1380,6 +1380,10 @@ main (int argc, char** argv)
 		})
 		<< std::flush
 		);
+  if (rps_program_invocation) {
+    free(rps_program_invocation);
+    rps_program_invocation = nullptr;
+  };
   return rps_exit_atomic_code.load();
 } // end of main
 
