@@ -1287,7 +1287,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
          filnam, lin, rps_shortgitid,
          rps_timestamp, (int)getpid(), rps_hostname(),
          rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf,
-         (rps_program_invocation?"... started as1 ":""),
+         (rps_program_invocation?"... started as ":""),
          (rps_program_invocation?:""));
   bool ontty = isatty(STDERR_FILENO);
   if (rps_debug_file)
