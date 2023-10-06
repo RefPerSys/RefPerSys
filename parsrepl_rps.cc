@@ -1134,6 +1134,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_sum¤" << callnum << " from " << Rps_ShowCallFrame(callframe)
                << " in:" << (*this) << " at " << position_str()<< std::endl
                << "…  startpos:" << startpos << " token_deq:" << toksrc_token_deq
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
                << std::endl
                << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv
                << std::endl
