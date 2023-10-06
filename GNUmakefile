@@ -27,7 +27,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/lice
 
-.PHONY: all debug objects lto clean plugin fullclean redump undump altredump print-plugin-settings indent \
+.PHONY: all debug objects lto clean mostlyclean plugin fullclean redump undump altredump print-plugin-settings indent \
    test00 test01 test02 test03 test04 test05 test06 test07 test08 test09 \
    test01b \
    test-load \
@@ -365,12 +365,10 @@ refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 
 parserepl_rps.o: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh) | generated/rps-parser-impl.cc
 ################
-clean:
+mostlyclean:
 	if [ -f __timestamp.c ]; then /bin/sed "1,$$$$s:$(RPS_HOME):@REFPERSYS_HOME:g" __timestamp.c > %%__timestamp.c%% ; fi
 	$(RM) $(RPS_GPPBISON_YYFILES)
-	$(RM) *.o *.orig *~ refpersys *.gch *~ _build.time
-	$(RM) sanitized-refpersys
-	$(RM) refpersys-lto
+	$(RM) *.o *.orig *~ *.gch *~ _build.time
 	$(RM) *.so
 	$(RM) *.moc.hh
 	$(RM) _*.hh _*.cc __timestamp.* generated/*~ _*.mk
@@ -384,6 +382,8 @@ clean:
 	      $(patsubst %.yy, %.output, $(RPS_BISON_SOURCES)) \
 	      *.tmp
 
+clean: mostlyclean
+	$(RM) refpersys refpersys-lto
 
 ## TODO: we might need to have some conventions, maybe comments like ///|| in the
 ## first fifty lines of generated C++ to give extra compilation flags
