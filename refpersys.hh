@@ -394,6 +394,8 @@ extern "C" struct backtrace_state* rps_backtrace_common_state;
 
 /// the program name
 extern "C" const char* rps_progname;
+/// the program executable (readlink /proc/self/exe)
+extern "C" char rps_progexe[];
 /// the program arguments
 extern "C" int rps_argc;
 extern "C" char** rps_argv;

@@ -43,6 +43,7 @@ const char rps_main_date[]= __DATE__;
 
 struct utsname rps_utsname;
 
+char rps_progexe[rps_path_byte_size];
 
 static std::atomic<std::uint8_t> rps_exit_atomic_code;
 
@@ -57,7 +58,7 @@ std::string rps_dumpdir_str;
 std::vector<std::string> rps_command_vec;
 std::string rps_test_repl_string;
 
-
+/// the … is unicode U+2026 HORIZONTAL ELLIPSIS in UTF8 \xe2\x80\xA6
 
 
 
@@ -403,14 +404,14 @@ rps_run_loaded_application(int &argc, char **argv)
     if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
       RPS_FATALOUT("rps_run_loaded_application failed to getcwd " << strerror(errno)
                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application"));
-    RPS_INFORM("rps_run_loaded_application: start of %s\n"
+    RPS_INFORM("rps_run_loaded_application: start of %s (with %d args)\n"
                ".. gitid %s\n"
                ".. build timestamp %s\n"
                ".. last git commit %s\n"
                ".. md5sum %s\n"
                ".. in %s\n"
                ".. on host %s pid %d\n",
-               argv[0], rps_gitid,
+               argv[0], argc, rps_gitid,
                rps_timestamp,
                rps_lastgitcommit,
                rps_md5sum,
@@ -423,7 +424,7 @@ rps_run_loaded_application(int &argc, char **argv)
       rps_set_debug(rps_debugflags_after_load);
       RPS_INFORMOUT("did set after load "
 		    << " of RefPerSys process " << (int)getpid() << std::endl
-		    << "... on " << rps_hostname()
+		    << "… on " << rps_hostname()
 		    << " shortgit " << rps_shortgitid
 		    << " debug to "
 		    << Rps_Do_Output([&](std::ostream& out) {
@@ -458,8 +459,8 @@ rps_run_loaded_application(int &argc, char **argv)
                  rps_run_command_after_load, (long)getpid(), rps_gitid, rps_topdirectory);
       else
 	RPS_INFORM("before running command '%s' after load with environment variables...\n"
-		   "... REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
-		   "... REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
+		   "… REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
+		   "… REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
 		   rps_run_command_after_load, (long)getpid(), rps_gitid,
 		   rps_topdirectory, rps_get_fifo_prefix().c_str());
       fflush(nullptr); /// needed before system
@@ -473,7 +474,7 @@ rps_run_loaded_application(int &argc, char **argv)
   else if (!rps_get_fifo_prefix().empty()) {
       RPS_INFORM("before running default GUI command '%s'  after load"
 		 " with environment variables...\n"
-		 "... REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
+		 "… REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
 		 " ... REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
 		 rps_gui_script_executable, (long)getpid(), rps_gitid,
 		 rps_topdirectory, rps_get_fifo_prefix().c_str());
@@ -1232,7 +1233,7 @@ rps_exiting(void)
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
   syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s exiting (%d);\n"
-	 "... elapsed %.3f sec, CPU %.3f sec;\n"
+	 "… elapsed %.3f sec, CPU %.3f sec;\n"
 	 "%s%s",
 	 (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
 	 rps_exit_atomic_code.load(),
@@ -1246,7 +1247,7 @@ rps_exiting(void)
 	 rps_exit_atomic_code.load(),
 	 rps_elapsed_real_time(), rps_process_cpu_time());
     if (rps_program_invocation)
-      printf("... invocation: %s\n", rps_program_invocation);
+      printf("… invocation: %s\n", rps_program_invocation);
     fflush(stdout);
   }
 } // end rps_exiting
@@ -1256,14 +1257,22 @@ int
 main (int argc, char** argv)
 {
   rps_progname = argv[0];
+  static_assert(sizeof(rps_progexe) > 80);
+  {
+    ssize_t pxl = readlink("/proc/self/exe",
+			   rps_progexe, sizeof(rps_progexe));
+    if (pxl <= 0 || pxl >= (ssize_t) sizeof(rps_progexe)-2)
+      strcpy(rps_progexe, "$(which refpersys)");
+  }
   rps_parse_program_arguments(argc, argv);
   ///
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
   RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" //
 	     " %s process %d on host %s in %s build top dir %s\n" //
-	     "... (stdout %s, stderr %s) with %d arguments\n" //
-             "... gitid %.16s built %s, %s mode (%d jobs)\n"
+	     "… (stdout %s, stderr %s) with %d arguments\n" //
+             "… gitid %.16s built %s, %s mode (%d jobs)\n" ///
+	     "… executable %s\n" ///
 	     "This is an open source inference engine software,\n"
 	     ".... GPLv3+ licensed, no warranty (%s optimized)!\n"
 	     ".... See http://refpersys.org/ and https://www.gnu.org/licenses/gpl-3.0.en.html ....\n",
@@ -1278,6 +1287,7 @@ main (int argc, char** argv)
              rps_gitid, rps_timestamp,
              (rps_batch?"batch":"interactive"),
              rps_nbjobs,
+	     rps_progexe,
 	     (rps_is_link_time_optimized!=0)?"link-time":"normal");
   if (!mycwd)
     RPS_FATALOUT("getcwd failed for " << (sizeof(cwdbuf)-2) << " bytes.");
@@ -1325,7 +1335,7 @@ main (int argc, char** argv)
       if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
         strcpy(cwdbuf, "./");
       RPS_INFORM("RefPerSys (pid %d on %s shortgit %s) will dump into %s\n"
-                 "... from current directory %s\n",
+                 "… from current directory %s\n",
                  (int)getpid(), rps_hostname(), rps_shortgitid,
                  rps_dumpdir_str.c_str(), cwdbuf);
       RPS_POSSIBLE_BREAKPOINT();
@@ -1363,7 +1373,10 @@ main (int argc, char** argv)
   RPS_POSSIBLE_BREAKPOINT();
   RPS_INFORMOUT("end of RefPerSys process "
 		<< (int)getpid() << " on " << rps_hostname()
-		<< " git " << rps_gitid << " built " << rps_timestamp
+		<< std::endl
+		<< "… executable " << rps_progexe
+		<< " git " << rps_gitid << std::endl
+		<< "… built " << rps_timestamp
 		<< " loaded state " << rps_my_load_dir << std::endl
 		<< " elapsed " << rps_elapsed_real_time()
 		<< ", cpu " << rps_process_cpu_time() << " seconds;"
