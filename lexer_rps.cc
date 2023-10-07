@@ -279,7 +279,7 @@ Rps_StringTokenSource::Rps_StringTokenSource(std::string inptstr, std::string na
 
 Rps_StringTokenSource::~Rps_StringTokenSource()
 {
-  RPS_DEBUG_LOG(REPL, "destr StringTokenSource@ " <<(void*)this << " " << *this
+  RPS_DEBUG_LOG(REPL, "destr ~StringTokenSource " << *this
                 << " with "  << Rps_QuotedC_String(toksrcstr_str)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "destr StringTokenSource"));
