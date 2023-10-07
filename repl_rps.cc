@@ -1135,20 +1135,162 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
 
 void
 rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const std::string&cmd,
-			const char*title)
+                        const char*title)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  /*callerframe:*/callframe,
-		 Rps_ObjectRef obenv;
-		 Rps_Value lextokv;
-		 );
+                 Rps_ObjectRef obenv;
+                 Rps_Value lextokv;
+                 Rps_Value lexval;
+                 Rps_ObjectRef cmdob;
+                 Rps_Value parsmainv;
+                 Rps_Value parsextrav;
+                 Rps_Value cmdparserv;
+                );
   _f.obenv = obenvarg;
   if (!title)
     title="?";
   RPS_ASSERT(!_f.obenv || (Rps_Value(_f.obenv)).is_object());
 #warning rps_do_one_repl_command unimplemented
-  RPS_WARNOUT("rps_do_one_repl_command unimplemented obenv=" << _f.obenv
-	      << title << " " << Rps_Cjson_String(cmd));
+  RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command starting obenv=" << _f.obenv
+                << title << " " << Rps_Cjson_String(cmd));
+  Rps_StringTokenSource intoksrc(cmd, std::string(title));
+  if (!intoksrc.get_line())
+    {
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title << " no line from "
+                    << Rps_Cjson_String(cmd));
+      return;
+    }
+  std::string commandpos = intoksrc.position_str();
+  RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
+                << Rps_Cjson_String(cmd)
+                << "... intoksrc:" << intoksrc
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
+  /*** TODO:
+       For debugging purposes, we want builtin commands like !parse_term etc...
+   ***/
+#warning missing code for builtin commands starting with !
+  _f.lextokv = intoksrc.get_token(&_);
+  _f.lexval = nullptr;
+  _f.cmdob = nullptr;
+  RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command got lextokv=" << _f.lextokv
+                << " pos=" << intoksrc.position_str() << std::endl
+                << "... intoksrc:" << intoksrc
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                << " token_deq:" << intoksrc.token_dequeue());
+  if (!_f.lextokv)
+    {
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command no lexical token"
+                    << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                    << " in " << intoksrc);
+      return;
+    }
+  const Rps_LexTokenZone* lextokz = _f.lextokv.as_lextoken();
+  RPS_ASSERT(lextokz);
+  RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command lextokv="
+                << _f.lextokv << " of kind:" << lextokz->lxkind());
+  if (lextokz->lxkind()
+      == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ))  //object∈class
+    {
+      _f.lexval = lextokz->lxval();
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command lextokv=" << _f.lextokv << " lexval=" << _f.lexval);
+      RPS_ASSERT(_f.lexval.is_object());
+      _f.cmdob = _f.lexval.as_object();
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command cmdob=" << _f.cmdob
+                    << " at " << commandpos<< std::endl
+                    << "... intoksrc:" << intoksrc
+                    << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
+    }
+  else if (lextokz->lxkind()
+           ==RPS_ROOT_OB(_36I1BY2NetN03WjrOv) //symbol∈class
+          )
+    {
+      _f.lexval = lextokz->lxval();
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command symbol token "
+                    << _f.lextokv << " of value " << _f.lexval
+                    << " at " << commandpos << std::endl
+                    << "... intoksrc:" << intoksrc
+                    << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                    << " token_deq:" << intoksrc.token_dequeue());
+      if (_f.lexval.is_string())
+        _f.cmdob = Rps_PayloadSymbol::find_named_object(_f.lexval.as_string()->cppstring());
+#warning unimplemented symbol token rps_do_one_repl_command
+      RPS_WARNOUT("unimplemented symbol token rps_do_one_repl_command lextok=" << _f.lextokv
+                  << " lexval:" << _f.lexval << " cmdob=" << _f.cmdob<< std::endl
+                  << "... intoksrc:" << intoksrc
+                  << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/symbol"));
+    }
+  else
+    {
+      RPS_WARNOUT("rps_do_one_repl_command command at "
+                  << commandpos << std::endl
+                  << "Should start with an object or symbol but got "
+                  << _f.lextokv << " of kind " << lextokz->lxkind()
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/non-obj-cmd"));
+      return;
+    }
+  RPS_ASSERT(_f.lexval.is_object());
+  _f.cmdob = _f.lexval.as_object();
+  RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command cmdob=" << _f.cmdob
+                << " at " << commandpos);
+  if (_f.lexval.is_instance_of(&_,RPS_ROOT_OB(_8CncrUdoSL303T5lOK)))   //repl_command∈class
+    {
+      _f.cmdparserv = //
+        _f.cmdob->get_attr1(&_,RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd)); //repl_command_parser∈symbol
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command cmdob=" << _f.cmdob
+                    << " is repl_command of repl_command_parser: " << _f.cmdparserv
+                    << " lextokv=" << _f.lextokv);
+      if (_f.cmdparserv.is_closure())
+        {
+          RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command cmdob=" << _f.cmdob
+                        << " before applying cmdparserv=" << _f.cmdparserv << " with lextokv=" << _f.lextokv
+                        << " command at " << commandpos
+                        << " ... at position " <<  intoksrc.position_str()
+                        << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
+                        <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/before-apply"));
+          Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply2 (&_, _f.cmdob, _f.lextokv);
+          _f.parsmainv = parspair.main();
+          _f.parsextrav = parspair.xtra();
+          RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command applied " << _f.cmdparserv << " to cmd "
+                        << title << " "<< std::endl
+                        << "... intoksrc:" << intoksrc
+                        << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                        << _f.cmdob
+                        << " and got parsmainv:" << _f.parsmainv << ", parsextrav=" << _f.parsextrav
+                        << std::endl
+                        << "... now position is " <<  intoksrc.position_str() << " curptr:" <<
+                        Rps_QuotedC_String(intoksrc.curcptr())  << std::endl
+                        <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/applied"));
+          if (!_f.parsmainv && !_f.parsextrav)
+            {
+              RPS_WARNOUT("rps_do_one_repl_command: REPL command " << title
+                          << " " << _f.cmdob << " at " << commandpos << " failed using "
+                          << _f.cmdparserv << std::endl
+                          << " ... at position " <<  intoksrc.position_str()
+                          << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
+                          <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/apply failed"));
+              return;
+            }
+        }
+      else
+        {
+          RPS_WARNOUT("rps_do_one_repl_command: REPL command " << _f.cmdob << " has a bad command parser " << _f.cmdparserv
+                      << " after " << _f.lexval);
+          return;
+        }
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command at  " << commandpos
+                    << " " << title <<  " pos=" << intoksrc.position_str());
+    }
+  else
+    {
+      RPS_WARNOUT("rps_do_one_repl_command: REPL command unexpected token "
+                  <<  _f.lextokv << " at " << commandpos << " " << title
+                  << " now at " << intoksrc.position_str());
+      return;
+    }
 } // end rps_do_one_repl_command
 
 void
@@ -1156,147 +1298,26 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  /*callerframe:*/RPS_NULL_CALL_FRAME,
-                 Rps_Value lextokv;
-                 Rps_Value lexval;
-                 Rps_ObjectRef cmdob;
-                 Rps_Value cmdparserv;
-                 Rps_Value parsmainv;
-                 Rps_Value parsextrav;
+                 Rps_ObjectRef envob;
                 );
   RPS_ASSERT(rps_is_main_thread());
   int nbcmd = (int) (cmdvec.size());
+  _f.envob = Rps_ObjectRef::make_object(&_,
+                                        RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a) //environment∈class
+                                       );
   RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec start nbcmd:" << nbcmd);
-  std::string cmdstr;
   for (int cix=0; cix<nbcmd; cix++)
     {
       RPS_DEBUG_LOG(REPL, "REPL command [" << cix << "]: " << cmdvec[cix]);
       int count=0;
-      {
-        char bufpath[64];
-        memset (bufpath, 0, sizeof(bufpath));
-        snprintf(bufpath, sizeof(bufpath), "ReplCmd[%d]", cix);
-        Rps_StringTokenSource intoksrc(cmdvec[cix], std::string(bufpath));
-        if (cix % 4 == 0)
-          usleep(128*1024);
-        if (!intoksrc.get_line())
-          break;
-        std::string commandpos = intoksrc.position_str();
-        RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec command#" << cix
-                      << Rps_Cjson_String(cmdvec[cix])
-                      << " @" << bufpath << std::endl
-                      << "... intoksrc:" << intoksrc
-                      << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
-        _f.lextokv = intoksrc.get_token(&_);
-        _f.lexval = nullptr;
-        _f.cmdob = nullptr;
-        RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec got lextokv=" << _f.lextokv
-                      << " pos=" << intoksrc.position_str() << std::endl
-                      << "... intoksrc:" << intoksrc
-                      << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
-                      << " token_deq:" << intoksrc.token_dequeue());
-        if (!_f.lextokv)
-          break;
-        const Rps_LexTokenZone* lextokz = _f.lextokv.as_lextoken();
-        RPS_ASSERT(lextokz);
-        RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec lextokv=" << _f.lextokv << " of kind:" << lextokz->lxkind());
-        if (lextokz->lxkind()
-            == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ))  //object∈class
-          {
-            _f.lexval = lextokz->lxval();
-            RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec lextokv=" << _f.lextokv << " lexval=" << _f.lexval);
-            RPS_ASSERT(_f.lexval.is_object());
-            _f.cmdob = _f.lexval.as_object();
-            RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec cmdob=" << _f.cmdob
-                          << " at " << commandpos<< std::endl
-                          << "... intoksrc:" << intoksrc
-                          << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
-          }
-        else if (lextokz->lxkind()
-                 ==RPS_ROOT_OB(_36I1BY2NetN03WjrOv) //symbol∈class
-                )
-          {
-            _f.lexval = lextokz->lxval();
-            RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec symbol token "
-                          << _f.lextokv << " of value " << _f.lexval
-                          << " at " << commandpos << std::endl
-                          << "... intoksrc:" << intoksrc
-                          << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
-                          << " token_deq:" << intoksrc.token_dequeue());
-            if (_f.lexval.is_string())
-              _f.cmdob = Rps_PayloadSymbol::find_named_object(_f.lexval.as_string()->cppstring());
-#warning unimplemented symbol token rps_do_repl_commands_vec
-            RPS_WARNOUT("unimplemented symbol token rps_do_repl_commands_vec lextok=" << _f.lextokv
-                        << " lexval:" << _f.lexval << " cmdob=" << _f.cmdob<< std::endl
-                        << "... intoksrc:" << intoksrc
-                        << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
-                        << std::endl
-                        << RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/symbol"));
-          }
-        else
-          {
-            RPS_WARNOUT("rps_do_repl_commands_vec command at "
-                        << commandpos << std::endl
-                        << "Should start with an object or symbol but got "
-                        << _f.lextokv << " of kind " << lextokz->lxkind()
-                        << std::endl
-                        << RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/non-obj-cmd"));
-            continue;
-          }
-        RPS_ASSERT(_f.lexval.is_object());
-        _f.cmdob = _f.lexval.as_object();
-        RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec cmdob=" << _f.cmdob
-                      << " at " << commandpos);
-        if (_f.lexval.is_instance_of(&_,RPS_ROOT_OB(_8CncrUdoSL303T5lOK)))   //repl_command∈class
-          {
-            _f.cmdparserv = _f.cmdob
-                            ->get_attr1(&_,RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd)); //repl_command_parser∈symbol
-            RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec cmdob=" << _f.cmdob
-                          << " is repl_command of repl_command_parser: " << _f.cmdparserv
-                          << " lextokv=" << _f.lextokv);
-            if (_f.cmdparserv.is_closure())
-              {
-                RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec cmdob=" << _f.cmdob << " before applying cmdparserv=" << _f.cmdparserv << " with lextokv=" << _f.lextokv
-                              << " command at " << commandpos
-                              << " ... at position " <<  intoksrc.position_str()
-                              << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
-                              <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/before-apply"));
-                Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply2 (&_, _f.cmdob, _f.lextokv);
-                _f.parsmainv = parspair.main();
-                _f.parsextrav = parspair.xtra();
-                RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec applied " << _f.cmdparserv << " to cmd#" << cix << " "<< std::endl
-                              << "... intoksrc:" << intoksrc
-                              << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
-                              << _f.cmdob
-                              << " and got parsmainv:" << _f.parsmainv << ", parsextrav=" << _f.parsextrav
-                              << std::endl
-                              << "... now position is " <<  intoksrc.position_str() << " curptr:" <<
-                              Rps_QuotedC_String(intoksrc.curcptr())  << std::endl
-                              <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/applied"));
-                if (!_f.parsmainv && !_f.parsextrav)
-                  {
-                    RPS_WARNOUT("rps_do_repl_commands_vec: REPL command#" << cix
-                                << " " << _f.cmdob << " at " << commandpos << " failed using "
-                                << _f.cmdparserv << std::endl
-                                << " ... at position " <<  intoksrc.position_str() << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
-                                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_repl_commands_vec/apply failed"));
-                    continue;
-                  }
-              }
-            else
-              {
-                RPS_WARNOUT("rps_do_repl_commands_vec: REPL command " << _f.cmdob << " has a bad command parser " << _f.cmdparserv
-                            << " after " << _f.lexval);
-                continue;
-              }
-            RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec at  " << commandpos << " count#" << count <<  " pos=" << intoksrc.position_str());
-          }
-        else
-          {
-            RPS_WARNOUT("rps_do_repl_commands_vec: REPL command unexpected token " <<  _f.lextokv << " at " << commandpos << " now at " << intoksrc.position_str());
-            continue;
-          }
-      }
-    }
+      char bufpath[64];
+      memset (bufpath, 0, sizeof(bufpath));
+      snprintf(bufpath, sizeof(bufpath), "ReplCmd[%d]", cix);
+      if (cix % 4 == 0)
+        usleep(128*1024);
+      /// do the command
+      rps_do_one_repl_command(&_, _f.envob, cmdvec[cix], bufpath);
+    } // end for cix ...
 } // end of rps_do_repl_commands_vec
 
 
