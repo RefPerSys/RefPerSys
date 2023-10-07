@@ -1121,15 +1121,16 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
     this->display_current_line_with_cursor(out);
   }));
   /// simple case for test01 in commit  e23928170e (oct.7, 2023)
-  if (!curcptr() && toksrc_token_deq.empty()) {
-    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this) 
-		  << "simple-case-test01/e23928170e gives leftv="
-		  << _f.leftv);
+  if (!curcptr() && toksrc_token_deq.empty())
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
+                    << "simple-case-test01/e23928170e gives leftv="
+                    << _f.leftv);
 
       if (pokparse)
         *pokparse = true;
       return _f.leftv;
-  };
+    };
   /***
    * We probably should loop and collect all terms if they are
    * separated by the same additive delimiter with its operator.
@@ -1144,7 +1145,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   RPS_FATALOUT("missing code in Rps_TokenSource::parse_sum¤" << callnum << " from " << Rps_ShowCallFrame(callframe)
                << " in:" << (*this) << " at " << position_str()<< std::endl
                << "…  startpos:" << startpos << " token_deq:" << toksrc_token_deq
-                << " curcptr:" << Rps_QuotedC_String(curcptr())
+               << " curcptr:" << Rps_QuotedC_String(curcptr())
                << std::endl
                << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv
                << std::endl
