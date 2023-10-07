@@ -1131,6 +1131,15 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
         *pokparse = true;
       return _f.leftv;
     };
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
+                << " leftv=" << _f.leftv
+                << std::endl
+                << "… curcptr:" << Rps_QuotedC_String(curcptr())
+                << " token_deq:" << toksrc_token_deq << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
   /***
    * We probably should loop and collect all terms if they are
    * separated by the same additive delimiter with its operator.
