@@ -3921,6 +3921,9 @@ extern "C" Rps_TwoValues rps_full_evaluate_repl_expr(Rps_CallFrame*callframe,Rps
 extern "C" Rps_Value rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe,Rps_Value expr,Rps_ObjectRef envob);
 extern "C" void rps_interpret_repl_statement(Rps_CallFrame*callframe, Rps_ObjectRef stmtob,Rps_ObjectRef envob);
 
+extern "C" void rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv,
+					const std::string&cmd,
+					const char*title=nullptr);
 
 /// get the first REPL environment object (the environment attribute
 /// of RefPerSys_system)

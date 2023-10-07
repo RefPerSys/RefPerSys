@@ -1547,10 +1547,17 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
       gc->mark_value(operv);
   });
   std::string startpos = position_str();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " begin startpos:"
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum
+		<< " BEGIN startpos:"
                 << startpos << "  in:" << (*this)
                 << " token_deq:" << toksrc_token_deq
-                << " curcptr:" << Rps_QuotedC_String(curcptr()));
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
+		<< std::endl
+		<< Rps_Do_Output([&](std::ostream& out)
+		{
+		  this->display_current_line_with_cursor(out);
+		})
+		<< std::endl);
   /// multiplication operator and * delim
   static Rps_Id id_mult_delim;
   if (!id_mult_delim)
@@ -1578,7 +1585,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
     id_div_oper = Rps_Id("_0GTVGelTnCP01I0od2"); // id of "div!binop"∈repl_binary_operator
   _f.divdelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_div_delim); // "div!delim"∈repl_delimiter
   _f.divbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_div_oper); // "div!binop"∈repl_binary_operator
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " START startpos:" << startpos << " divdelimob:" << _f.divdelimob
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum
+		<< " START startpos:" << startpos << " divdelimob:" << _f.divdelimob
                 << " divbinopob: " << _f.divbinopob
                 << " token_deq:" << toksrc_token_deq
                 << " curcptr:" << curcptr()

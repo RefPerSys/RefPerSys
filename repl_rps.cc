@@ -1132,6 +1132,25 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
 //§ } // end of rps_read_eval_print_loop
 
 
+
+void
+rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const std::string&cmd,
+			const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+		 Rps_ObjectRef obenv;
+		 Rps_Value lextokv;
+		 );
+  _f.obenv = obenvarg;
+  if (!title)
+    title="?";
+  RPS_ASSERT(!_f.obenv || (Rps_Value(_f.obenv)).is_object());
+#warning rps_do_one_repl_command unimplemented
+  RPS_WARNOUT("rps_do_one_repl_command unimplemented obenv=" << _f.obenv
+	      << title << " " << Rps_Cjson_String(cmd));
+} // end rps_do_one_repl_command
+
 void
 rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
 {
