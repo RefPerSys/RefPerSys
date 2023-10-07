@@ -1120,6 +1120,16 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   {
     this->display_current_line_with_cursor(out);
   }));
+  /// simple case for test01 in commit  e23928170e (oct.7, 2023)
+  if (!curcptr() && toksrc_token_deq.empty()) {
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this) 
+		  << "simple-case-test01/e23928170e gives leftv="
+		  << _f.leftv);
+
+      if (pokparse)
+        *pokparse = true;
+      return _f.leftv;
+  };
   /***
    * We probably should loop and collect all terms if they are
    * separated by the same additive delimiter with its operator.
