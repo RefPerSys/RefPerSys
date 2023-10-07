@@ -4003,7 +4003,7 @@ public:                                                 \
     { };                                                \
   };                                                    \
   Rps_FrameAt##Lin _((Descr),(Prev));                   \
-  [[maybe_unused]] auto& _f = *_.fieldsptr();           \
+  auto& _f = *_.fieldsptr();                            \
   /*end RPS_LOCALFRAME_ATBIS*/
 
 
