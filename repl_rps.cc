@@ -302,7 +302,8 @@ rps_lex_code_chunk(Rps_CallFrame *callframe, [[maybe_unused]] std::istream *inp,
   //chkdata.chunkdata_inp = inp;
   chkdata.chunkdata_name.assign(input_name);
   //chkdata.chunkdata_plinebuf = plinebuf;
-  // TODO: we should add vector components to _f.obchk, reading several lines...
+  // TODO: we should add vector components to _f.obchk,
+  // reading several lines...
   do
     {
       RPS_DEBUG_LOG(REPL, "in rps_lex_chunk chunking "
@@ -310,7 +311,8 @@ rps_lex_code_chunk(Rps_CallFrame *callframe, [[maybe_unused]] std::istream *inp,
                     << " L"<< chkdata.chunkdata_lineno
                     << ",C" << chkdata.chunkdata_colno
                     << " endstr='" << chkdata.chunkdata_endstr << "'"
-                    << ((*chkdata.chunkdata_plinebuf)?" linbuf:":" no linbuf")
+                    << ((*chkdata.chunkdata_plinebuf)?" linbuf:"
+                        :" no linbuf")
                     << ((*chkdata.chunkdata_plinebuf)?:" **"));
       RPS_ASSERT(chkdata.chunkdata_magic == rps_chunkdata_magicnum);
       _f.chunkelemv = rps_lex_chunk_element(&_, _f.obchk, &chkdata);
@@ -332,8 +334,10 @@ rps_lex_code_chunk(Rps_CallFrame *callframe, [[maybe_unused]] std::istream *inp,
                       << ",C" << chkdata.chunkdata_colno);
     }
   while (_f.chunkelemv);
-  RPS_DEBUG_LOG(REPL, "ending rps_lex_chunk " << input_name << "L" << startlineno << "C" << startcolno
-                << "-L" << chkdata.chunkdata_lineno << "C" << chkdata.chunkdata_colno
+  RPS_DEBUG_LOG(REPL, "ending rps_lex_chunk " << input_name
+                << "L" << startlineno << "C" << startcolno
+                << "-L" << chkdata.chunkdata_lineno
+                << "C" << chkdata.chunkdata_colno
                 << " obchk=" << _f.obchk
                 << std::endl
                 << Rps_Do_Output([=](std::ostream&outs)
@@ -361,8 +365,10 @@ Rps_Value
 rps_lex_chunk_element(Rps_CallFrame *callframe,
                       [[maybe_unused]] Rps_ObjectRef obchkarg, Rps_ChunkData_st *chkdata)
 {
-  RPS_ASSERT(chkdata != nullptr && chkdata->chunkdata_magic ==  rps_chunkdata_magicnum);
-  RPS_ASSERT(callframe != nullptr && callframe->is_good_call_frame());
+  RPS_ASSERT(chkdata != nullptr
+             && chkdata->chunkdata_magic ==  rps_chunkdata_magicnum);
+  RPS_ASSERT(callframe != nullptr
+             && callframe->is_good_call_frame());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  /*callerframe:*/callframe,
                  Rps_ObjectRef obchunk;
@@ -676,7 +682,7 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned depth, unsigned maxdepth
     out<<"kind:" << lex_kind;
   if (depth > Rps_Value::max_output_depth || depth > maxdepth)
     {
-      out << "...}";
+      out << "…}";
       return;
     };
   out << ", val=";
@@ -722,13 +728,42 @@ Rps_LexTokenZone::val_output(std::ostream&out, unsigned depth, unsigned maxdepth
     }
   if (showchunk)
     {
-#warning missing code in Rps_LexTokenZone::val_output for code_chunk
-      RPS_WARNOUT("Rps_LexTokenZone::val_output missing code to show a code chunk "
-                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_LexTokenZone::val_output/codechunk?"));
+      /***
+       * a code chunk is a transient object of class
+       *   RPS_ROOT_OB(_3rXxMck40kz03RxRLM), code_chunk∈class and of
+       *   payload a vector
+       ***/
+      Rps_ObjectRef obr = lex_val.as_object();
+      if (obr)
+        {
+          std::unique_lock<std::recursive_mutex> guobr (*obr->objmtxptr());
+          if (auto paylvect = obr->get_dynamic_payload<Rps_PayloadVectVal>())
+            {
+              unsigned vsiz = paylvect->size();
+              out << "#{";
+              for (unsigned ix=0; ix<vsiz; ix++)
+                {
+                  if (ix>0 && ix % 4==0)
+                    {
+                      out << ",";
+                      out << std::endl;
+                      for (unsigned k=depth; k>0; k--) out << " ";
+                    }
+                  else if (ix>0) out << ", ";
+                  out << "["<< ix << "]:";
+                  paylvect->at(ix).output(out, depth+1, maxdepth);
+                }
+              out << "}#";
+            }
+        }
+      else
+        RPS_WARNOUT("Rps_LexTokenZone::val_output code chunk without object"
+                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_LexTokenZone::val_output/codechunk?"));
     }
   if (lex_file)
     {
-      out << ", @" << lex_file->cppstring() << ":" << lex_lineno << ":" << lex_colno;
+      out << ", @" << lex_file->cppstring()
+          << ":" << lex_lineno << ":" << lex_colno;
     };
   out << "}";
 } // end Rps_LexTokenZone::val_output
