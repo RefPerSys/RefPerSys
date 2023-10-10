@@ -1218,7 +1218,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
         RPS_FATALOUT("rps_do_do_one_repl_command " << title
                      << Rps_Cjson_String(cmd)
                      << " too long builtin command " << builtincmd);
-      intoksrc.advance_cursor_bytes(strlen(builtincmd));
+      intoksrc.advance_cursor_bytes(strlen(builtincmd)+1);
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
                     << Rps_Cjson_String(cmd)
                     << "... intoksrc:" << intoksrc << " BUILTIN " << builtincmd
