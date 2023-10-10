@@ -1204,7 +1204,29 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
   /*** TODO:
        For debugging purposes, we want builtin commands like !parse_term etc...
    ***/
+  if (cmd[0] == '!' && isalpha(cmd[1]))
+    {
+      char builtincmd[64];
+      memset (builtincmd, 0, sizeof(builtincmd));
+      for (int i=0; i<sizeof(builtincmd)-2; i++)
+        {
+          if (!isalnum(cmd[i+1]) && cmd[i+1] != '_')
+            break;
+          builtincmd[i] = cmd[i+1];
+        };
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
+                    << Rps_Cjson_String(cmd)
+                    << "... intoksrc:" << intoksrc << " BUILTIN " << builtincmd
+                    << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
+      RPS_WARNOUT("rps_do_one_repl_command: REPL command " << title
+                  << " " << _f.cmdob << " at " << commandpos << " unimplemented builtin "
+                  << builtincmd << std::endl
+                  << " ... at position " <<  intoksrc.position_str()
+                  << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
+                  <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/unimplemented builtin"));
+      return;
 #warning missing code for builtin commands starting with !
+    }
   _f.lextokv = intoksrc.get_token(&_);
   _f.lexval = nullptr;
   _f.cmdob = nullptr;
