@@ -1208,20 +1208,25 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
     {
       char builtincmd[64];
       memset (builtincmd, 0, sizeof(builtincmd));
-      for (int i=0; i<sizeof(builtincmd)-2; i++)
+      for (int i=0; i<(int)sizeof(builtincmd)-2; i++)
         {
           if (!isalnum(cmd[i+1]) && cmd[i+1] != '_')
             break;
           builtincmd[i] = cmd[i+1];
         };
+      if (strlen(builtincmd) >= sizeof(builtincmd)-4)
+        RPS_FATALOUT("rps_do_do_one_repl_command " << title
+                     << Rps_Cjson_String(cmd)
+                     << " too long builtin command " << builtincmd);
+      intoksrc.advance_cursor_bytes(strlen(builtincmd));
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
                     << Rps_Cjson_String(cmd)
                     << "... intoksrc:" << intoksrc << " BUILTIN " << builtincmd
                     << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
       RPS_WARNOUT("rps_do_one_repl_command: REPL command " << title
-                  << " " << _f.cmdob << " at " << commandpos << " unimplemented builtin "
-                  << builtincmd << std::endl
-                  << " ... at position " <<  intoksrc.position_str()
+                  << " " << _f.cmdob << " at " << commandpos << " unimplemented" << std::endl
+                  << "... builtin " << builtincmd << std::endl
+                  << "... at position " <<  intoksrc.position_str()
                   << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/unimplemented builtin"));
       return;

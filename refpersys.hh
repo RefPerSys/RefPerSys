@@ -759,8 +759,7 @@ while (0)
   RPS_DEBUG_PRINTF_AT_BIS(__FILE__, -__LINE__, dbgopt, fmt, ##__VA_ARGS__)
 
 
-#define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)              \
-do                                                                  \
+#define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)   do	    \
   {                                                                 \
     if (RPS_DEBUG_ENABLED(dbgopt))                                  \
       {                                                             \
@@ -2546,10 +2545,19 @@ extern "C" void rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const 
 #define RPS_PARSREPL_FAILURE(Fram,Out) \
   RPS_PARSREPL_FAILURE_AT(Fram,Out,__FILE__,__LINE__,__COUNTER__)
 
+extern "C" void rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv,
+					const std::string&cmd,
+					const char*title=nullptr);
+
 class Rps_TokenSource           // this is *not* a value .....
 {
   friend class Rps_LexTokenValue;
   friend class Rps_LexTokenZone;
+  friend void
+  rps_do_one_repl_command(Rps_CallFrame*callframe,
+			  Rps_ObjectRef obenvarg,
+			  const std::string&cmd,
+			  const char*title);
   std::string toksrc_name;
   int toksrc_line, toksrc_col;
   int toksrc_counter;
@@ -2570,6 +2578,11 @@ protected:
   void starting_new_input_line(void) {
     toksrc_col=0;
     toksrc_line++;
+  };
+  void advance_cursor_bytes(unsigned nb) {
+    toksrc_col += nb;
+    if (toksrc_col > toksrc_linebuf.size())
+      toksrc_col = toksrc_linebuf.size();
   };
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public:
@@ -3921,9 +3934,6 @@ extern "C" Rps_TwoValues rps_full_evaluate_repl_expr(Rps_CallFrame*callframe,Rps
 extern "C" Rps_Value rps_simple_evaluate_repl_expr(Rps_CallFrame*callframe,Rps_Value expr,Rps_ObjectRef envob);
 extern "C" void rps_interpret_repl_statement(Rps_CallFrame*callframe, Rps_ObjectRef stmtob,Rps_ObjectRef envob);
 
-extern "C" void rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv,
-					const std::string&cmd,
-					const char*title=nullptr);
 
 /// get the first REPL environment object (the environment attribute
 /// of RefPerSys_system)
