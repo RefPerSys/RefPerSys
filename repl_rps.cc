@@ -71,6 +71,9 @@ rps_repl_version(void)
 } // end rps_repl_version
 
 
+extern "C" void
+rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd, Rps_TokenSource& intoksrc,
+                            const char*title);
 
 extern "C" rps_applyingfun_t rpsapply_repl_not_implemented;
 
@@ -1169,6 +1172,32 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
 
 
 void
+rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd, Rps_TokenSource& intoksrc,
+                            const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                 Rps_Value lextokv;
+                 Rps_Value lexval;
+                );
+  _f.obenv = obenvarg;
+  RPS_DEBUG_LOG(REPL, "rps_do_builtin_repl_command " << title
+                << "... intoksrc:" << intoksrc << " BUILTIN " << builtincmd
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
+  if (!strcmp(builtincmd, "sh") || !strcmp(builtincmd, "shell"))
+    {
+      RPS_INFORMOUT("running shell command " <<  Rps_QuotedC_String(intoksrc.curcptr()));
+      fflush(nullptr);
+      int ret = system(intoksrc.curcptr());
+      if (ret == 0)
+        RPS_INFORMOUT("successful shell command " <<  Rps_QuotedC_String(intoksrc.curcptr()));
+      else
+        RPS_WARNOUT("failed shell command " << Rps_QuotedC_String(intoksrc.curcptr()) << " exited " << ret);
+    }
+} // end rps_do_builtin_repl_command
+
+void
 rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const std::string&cmd,
                         const char*title)
 {
@@ -1223,6 +1252,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
                     << Rps_Cjson_String(cmd)
                     << "... intoksrc:" << intoksrc << " BUILTIN " << builtincmd
                     << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
+      rps_do_builtin_repl_command(&_, _f.obenv, builtincmd, intoksrc, title);
       RPS_WARNOUT("rps_do_one_repl_command: REPL command " << title
                   << " " << _f.cmdob << " at " << commandpos << " unimplemented" << std::endl
                   << "... builtin " << builtincmd << std::endl
@@ -1230,7 +1260,6 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
                   << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
                   <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/unimplemented builtin"));
       return;
-#warning missing code for builtin commands starting with !
     }
   _f.lextokv = intoksrc.get_token(&_);
   _f.lexval = nullptr;
@@ -1354,6 +1383,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
       return;
     }
 } // end rps_do_one_repl_command
+
+
 
 void
 rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)

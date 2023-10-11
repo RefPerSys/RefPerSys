@@ -2581,7 +2581,7 @@ protected:
   };
   void advance_cursor_bytes(unsigned nb) {
     toksrc_col += nb;
-    if (toksrc_col > toksrc_linebuf.size())
+    if (toksrc_col > (int) toksrc_linebuf.size())
       toksrc_col = toksrc_linebuf.size();
   };
   Rps_Value get_delimiter(Rps_CallFrame*callframe);

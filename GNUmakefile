@@ -569,7 +569,9 @@ test06: ./refpersys
 	@printf '\n\n\n////test06 FINISHED¤\n'
 
 test07: ./refpersys
-	@echo missing test07 ; exit 1
+	./refpersys -AREPL -B -c '!parse_term 1'
+	./refpersys -AREPL -B -c '!parse_sum 1 + 2'
+	@printf '\n\n\n////test07 FINISHED¤\n'
 
 test08: ./refpersys
 	@echo missing test08 ; exit 1
