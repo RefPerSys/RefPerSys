@@ -1105,7 +1105,8 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
           << std::endl);
     }
   else
-    RPS_WARNOUT("invalid builtin " << builtincmd << " in " << intoksrc << " / " << title)    ;
+    RPS_WARNOUT("invalid builtin " << builtincmd << " in "
+		<< intoksrc << " / " << title)    ;
 } // end rps_do_builtin_repl_command
 
 
