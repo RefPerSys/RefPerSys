@@ -1866,6 +1866,110 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
 } // end Rps_TokenSource::parse_term
 
 
+/// a term is a sequence of factors with multiplicative operators
+/// between them…. All the operators should be the same. Otherwise we build intermediate subexpressions
+Rps_Value
+Rps_TokenSource::parse_product(Rps_CallFrame*callframe, bool*pokparse)
+{
+  RPS_ASSERT(rps_is_main_thread());
+  static long callcnt;
+  long callnum= ++ callcnt;
+  RPS_ASSERT(callframe && callframe->is_good_call_frame());
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 callframe,
+                 Rps_Value restermv;
+                 Rps_Value lextokv;
+                 Rps_Value lexopertokv;
+                 Rps_Value lexgotokv;
+                 Rps_Value leftv;
+                 Rps_Value rightv;
+                 Rps_ObjectRef binoperob;
+                 Rps_ObjectRef curoperob;
+                 Rps_ObjectRef bindelimob;
+                 Rps_ObjectRef multdelimob;
+                 Rps_ObjectRef multbinopob;
+                 Rps_ObjectRef divdelimob;
+                 Rps_ObjectRef divbinopob;
+                 Rps_ObjectRef moddelimob;
+                 Rps_ObjectRef modbinopob;
+                 Rps_ObjectRef lexoperdelimob;
+                );
+  std::vector<Rps_Value> operandvect;
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
+  {
+    // maybe token_deq is already GC-marked by caller….
+    RPS_ASSERT(gc != nullptr);
+    this->gc_mark(*gc);
+#warning code review needed. Do we need  this->gc_mark(*gc) in Rps_TokenSource::parse_term ?
+    // but the operandvect needs to be GC-marked
+    for (auto operv : operandvect)
+      gc->mark_value(operv);
+  });
+  std::string startpos = position_str();
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_product¤" << callnum
+                << " BEGIN startpos:"
+                << startpos << "  in:" << (*this)
+                << " token_deq:" << toksrc_token_deq
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  })
+      << std::endl);
+  /// multiplication operator and * delim
+  static Rps_Id id_mult_delim;
+  if (!id_mult_delim)
+    id_mult_delim = Rps_Id("_2uw3Se5dPOU00yhxpA"); // id of "mult!delim"∈repl_delimiter
+  static Rps_Id id_mult_oper;
+  if (!id_mult_oper)
+    id_mult_oper = Rps_Id("_4QX7Cg3gDkd005b9bn"); // id of "mult!binop"∈repl_binary_operator
+  _f.multdelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_mult_delim); // "mult!delim"∈repl_delimiter
+  _f.multbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_mult_oper); // "mult!binop"∈repl_binary_operator
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_product¤" << callnum << " startpos:" << startpos << " multdelimob:" << _f.multdelimob
+                << " multbinopob: " << _f.multbinopob
+                << " token_deq:" << toksrc_token_deq
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
+  /// division operator and / delim
+  static Rps_Id id_div_delim;
+  if (!id_div_delim)
+    id_div_delim = Rps_Id("_3ak80l3pr9700M90pz"); // id of "div!delim"∈repl_delimiter
+  static Rps_Id id_div_oper;
+  if (!id_div_oper)
+    id_div_oper = Rps_Id("_0GTVGelTnCP01I0od2"); // id of "div!binop"∈repl_binary_operator
+  _f.divdelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_div_delim); // "div!delim"∈repl_delimiter
+  _f.divbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_div_oper); // "div!binop"∈repl_binary_operator
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_product¤" << callnum
+                << " START startpos:" << startpos << " divdelimob:" << _f.divdelimob
+                << " divbinopob: " << _f.divbinopob
+                << " token_deq:" << toksrc_token_deq
+                << " curcptr:" << curcptr()
+                << " calldepth=" << rps_call_frame_depth(&_));
+  /// modulus operator and % delim
+  static Rps_Id id_mod_delim;
+  if (!id_mod_delim)
+    id_mod_delim = Rps_Id("_5yI4nqeRQdR02PcUIi"); // id of mod!delim"∈repl_delimiter
+  static Rps_Id id_mod_oper;
+  if (!id_mod_oper)
+    id_mod_oper = Rps_Id("_07mKKY7ByIq03w7k4J"); // id of "mod!binop"∈repl_binary_operator
+  _f.moddelimob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_mod_delim); // "mod!delim"∈repl_delimiter
+  _f.modbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_mod_oper); // "mod!binop"∈repl_binary_operator
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_product¤" << callnum << "  startpos:" << startpos << " moddelimob:" << _f.moddelimob
+                << " modbinopob: " << _f.modbinopob
+                << " pos:" << position_str()
+                << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr());
+  /////
+  RPS_FATALOUT("unimplemented Rps_TokenSource::parse_product¤" << callnum << "  startpos:" << startpos
+               << " curcptr " << Rps_QuotedC_String(curcptr())
+               << " in " << (*this));
+#warning unimplemented 	 Rps_TokenSource::parse_product
+  ////////////////
+}
 
 
 /// This member function returns some expression which could later be
