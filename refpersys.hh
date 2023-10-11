@@ -4675,6 +4675,13 @@ public:
   inline Rps_PayloadObjMap(Rps_ObjectZone*obz, Rps_Loader*ld);
   Rps_Value get_descr() const { return obm_descr; };
   void put_descr(Rps_Value d) { obm_descr = d; };
+  void do_each_entry(Rps_CallFrame*cf, std::function<bool(Rps_CallFrame*,Rps_ObjectRef,Rps_Value,void*)> f,
+		     void* clientdata=nullptr) const {
+    for (auto it: obm_map) {
+      if (f(cf, it.first, it.second, clientdata))
+	break;
+    }
+  };
 };                              // end Rps_PayloadObjMap
 
 

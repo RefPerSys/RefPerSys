@@ -1180,6 +1180,7 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
                  Rps_ObjectRef obenv;
                  Rps_Value lextokv;
                  Rps_Value lexval;
+		 Rps_Value descrv;
 		 );
   _f.obenv = obenvarg;
   RPS_DEBUG_LOG(REPL, "rps_do_builtin_repl_command " << title
@@ -1241,6 +1242,28 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
   }
   else if (!strcmp(builtincmd, "version")) {
     rps_show_version();
+  }
+  else if (!strcmp(builtincmd, "env")) {
+    auto paylenv = _f.obenv->get_dynamic_payload< Rps_PayloadEnvironment>();
+    RPS_INFORMOUT(std::endl << "environment object is " << _f.obenv
+		  << Rps_Do_Output([&](std::ostream&outs) {
+		    if (paylenv) {
+		      outs << " with parent environment:" << paylenv->get_parent_environment() << std::endl;
+		      _f.descrv = paylenv->get_descr();
+		      if (_f.descrv)
+			outs << "descriptor:" << _f.descrv << std::endl;
+		      std::function<bool(Rps_CallFrame*,Rps_ObjectRef,Rps_Value,void*)> outfun
+			= [&](Rps_CallFrame*cf,Rps_ObjectRef obvar,Rps_Value value,void*d) {
+			  outs << "*" << obvar << "::" << value << std::endl;
+			  return false;
+			};
+		      paylenv->do_each_entry(&_, outfun);
+		    }
+		    else
+		      outs << " [without environment payload]";
+		  })
+		  << std::endl);
+
   }
   else
     RPS_WARNOUT("invalid builtin " << builtincmd << " in " << intoksrc << " / " << title)    ;
