@@ -964,6 +964,7 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
                  Rps_Value lextokv;
                  Rps_Value lexval;
                  Rps_Value descrv;
+                 Rps_Value parvalv;
                 );
   _f.obenv = obenvarg;
   RPS_DEBUG_LOG(REPL, "rps_do_builtin_repl_command " << title
@@ -1003,39 +1004,43 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
         RPS_WARNOUT("failed getcwd " << strerror(errno));
       const char*cp = intoksrc.curcptr();
       while (cp && isspace(*cp))
-	cp++;
+        cp++;
       if (!cp)
-	RPS_WARNOUT("no path given to !cd builtin");
-      else {
-	int failexp = wordexp(cp, &wx, WRDE_SHOWERR|WRDE_UNDEF);
-	if (failexp)
-	  RPS_WARNOUT("!cd builtin failed to expand " << cp
-		      << ((failexp==WRDE_BADCHAR)?": bad char"
-			  : (failexp==WRDE_BADVAL)?": bad shell var"
-			  : (failexp==WRDE_NOSPACE)?": out of memory"
-			  : (failexp==WRDE_SYNTAX)?": shell syntax error"
-			  : ": other wordexp failure"));
-	if (wx.we_wordc == 0)
-	  RPS_WARNOUT("!cd builtin cannot expand " << cp);
-	else if (wx.we_wordc > 1)
-	  RPS_WARNOUT("!cd builtin ambiguous expand " << cp << " to "
-		      << wx.we_wordv[0] << " and " << wx.we_wordv[1]
-		      << ((wx.we_wordc > 2)?" etc.":""));
-	else {
-	  if (chdir(wx.we_wordv[0])) {
-	    const char*err = strerror(errno);
-	    RPS_WARNOUT("!cd " << cp << " failed to chdir to " << wx.we_wordv[0] << " :" << err);
-	  }
-	  else {
-	    char*cwd = getcwd(cwdbuf, rps_path_byte_size);
-	    if (cwd)
-	      RPS_INFORMOUT(std::endl << "!cd " << cp << " changed to new working directory " <<  cwdbuf);
-	    else
-	      RPS_WARNOUT("failed getcwd " << strerror(errno));
-	  }
-	};
-	wordfree(&wx);
-      }
+        RPS_WARNOUT("no path given to !cd builtin");
+      else
+        {
+          int failexp = wordexp(cp, &wx, WRDE_SHOWERR|WRDE_UNDEF);
+          if (failexp)
+            RPS_WARNOUT("!cd builtin failed to expand " << cp
+                        << ((failexp==WRDE_BADCHAR)?": bad char"
+                            : (failexp==WRDE_BADVAL)?": bad shell var"
+                            : (failexp==WRDE_NOSPACE)?": out of memory"
+                            : (failexp==WRDE_SYNTAX)?": shell syntax error"
+                            : ": other wordexp failure"));
+          if (wx.we_wordc == 0)
+            RPS_WARNOUT("!cd builtin cannot expand " << cp);
+          else if (wx.we_wordc > 1)
+            RPS_WARNOUT("!cd builtin ambiguous expand " << cp << " to "
+                        << wx.we_wordv[0] << " and " << wx.we_wordv[1]
+                        << ((wx.we_wordc > 2)?" etc.":""));
+          else
+            {
+              if (chdir(wx.we_wordv[0]))
+                {
+                  const char*err = strerror(errno);
+                  RPS_WARNOUT("!cd " << cp << " failed to chdir to " << wx.we_wordv[0] << " :" << err);
+                }
+              else
+                {
+                  char*cwd = getcwd(cwdbuf, rps_path_byte_size);
+                  if (cwd)
+                    RPS_INFORMOUT(std::endl << "!cd " << cp << " changed to new working directory " <<  cwdbuf);
+                  else
+                    RPS_WARNOUT("failed getcwd " << strerror(errno));
+                }
+            };
+          wordfree(&wx);
+        }
     }
   else if (!strcmp(builtincmd, "pid") || !strcmp(builtincmd, "getpid"))
     {
@@ -1104,9 +1109,107 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
       })
           << std::endl);
     }
+  //// testing the parsers
+  else if (!strncmp(builtincmd, "parse_", sizeof("parse_")-1))
+    {
+      bool ok= false;
+      const char*cp = intoksrc.curcptr();
+      if (!strcmp(builtincmd, "parse_expression") || !strcmp(builtincmd, "parse_expr"))
+        {
+          bool ok= false;
+          _f.parvalv = intoksrc.parse_expression(&_, &ok);
+          if (ok)
+            RPS_INFORMOUT(std::endl << " parse_expression " << cp << " as " << _f.parvalv);
+          else
+            RPS_WARNOUT("failed parse_expression " << cp << " in " << intoksrc);
+        }
+      else if (!strcmp(builtincmd, "parse_disjunction") || !strcmp(builtincmd, "parse_disj"))
+        {
+          bool ok= false;
+          _f.parvalv = intoksrc.parse_disjunction(&_, &ok);
+          if (ok)
+            RPS_INFORMOUT(std::endl << " parse_disjunction " << cp << " as " << _f.parvalv);
+          else
+            RPS_WARNOUT("failed parse_disjunction " << cp << " in " << intoksrc);
+        }
+      else if (!strcmp(builtincmd, "parse_conjunction") || !strcmp(builtincmd, "parse_conj"))
+        {
+          bool ok= false;
+          _f.parvalv = intoksrc.parse_conjunction(&_, &ok);
+          if (ok)
+            RPS_INFORMOUT(std::endl << " parse_conjunction " << cp << " as " << _f.parvalv);
+          else
+            RPS_WARNOUT("failed parse_conjunction " << cp << " in " << intoksrc);
+        }
+      else if (!strcmp(builtincmd, "parse_comparison"))
+        {
+          bool ok= false;
+          _f.parvalv = intoksrc.parse_comparison(&_, &ok);
+          if (ok)
+            RPS_INFORMOUT(std::endl << " parse_comparison " << cp << " as " << _f.parvalv);
+          else
+            RPS_WARNOUT("failed parse_comparison " << cp << " in " << intoksrc);
+        }
+      else if (!strcmp(builtincmd, "parse_comparand"))
+        {
+          bool ok= false;
+          _f.parvalv = intoksrc.parse_comparand(&_, &ok);
+          if (ok)
+            RPS_INFORMOUT(std::endl << " parse_comparand " << cp << " as " << _f.parvalv);
+          else
+            RPS_WARNOUT("failed parse_comparand " << cp << " in " << intoksrc);
+        }
+      else if (!strcmp(builtincmd, "parse_sum"))
+        {
+          bool ok= false;
+          _f.parvalv = intoksrc.parse_sum(&_, &ok);
+          if (ok)
+            RPS_INFORMOUT(std::endl << " parse_sum " << cp << " as " << _f.parvalv);
+          else
+            RPS_WARNOUT("failed parse_sum " << cp << " in " << intoksrc);
+        }
+      else if (!strcmp(builtincmd, "parse_product"))
+        {
+          bool ok= false;
+          _f.parvalv = intoksrc.parse_product(&_, &ok);
+          if (ok)
+            RPS_INFORMOUT(std::endl << " parse_product " << cp << " as " << _f.parvalv);
+          else
+            RPS_WARNOUT("failed parse_product " << cp << " in " << intoksrc);
+        }
+      else if (!strcmp(builtincmd, "parse_factor"))
+        {
+          bool ok= false;
+          _f.parvalv = intoksrc.parse_factor(&_, &ok);
+          if (ok)
+            RPS_INFORMOUT(std::endl << " parse_factor " << cp << " as " << _f.parvalv);
+          else
+            RPS_WARNOUT("failed parse_factor " << cp << " in " << intoksrc);
+        }
+      else if (!strcmp(builtincmd, "parse_term"))
+        {
+          bool ok= false;
+          _f.parvalv = intoksrc.parse_term(&_, &ok);
+          if (ok)
+            RPS_INFORMOUT(std::endl << " parse_term " << cp << " as " << _f.parvalv);
+          else
+            RPS_WARNOUT("failed parse_term " << cp << " in " << intoksrc);
+        }
+      else if (!strcmp(builtincmd, "parse_primary"))
+        {
+          bool ok= false;
+          _f.parvalv = intoksrc.parse_primary(&_, &ok);
+          if (ok)
+            RPS_INFORMOUT(std::endl << " parse_primary " << cp << " as " << _f.parvalv);
+          else
+            RPS_WARNOUT("failed parse_primary " << cp << " in " << intoksrc);
+        }
+      else
+        RPS_WARNOUT("unknown parsing command " << builtincmd << " in " << intoksrc);
+    }
   else
     RPS_WARNOUT("invalid builtin " << builtincmd << " in "
-		<< intoksrc << " / " << title)    ;
+                << intoksrc << " / " << title)    ;
 } // end rps_do_builtin_repl_command
 
 
