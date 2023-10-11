@@ -1180,7 +1180,7 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
                  Rps_ObjectRef obenv;
                  Rps_Value lextokv;
                  Rps_Value lexval;
-                );
+		 );
   _f.obenv = obenvarg;
   RPS_DEBUG_LOG(REPL, "rps_do_builtin_repl_command " << title
                 << "... intoksrc:" << intoksrc << " BUILTIN " << builtincmd
@@ -1229,12 +1229,21 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
     RPS_INFORMOUT(std::endl << "elapsed time (seconds): " <<  rps_elapsed_real_time()
 		  << ", cpu time: " << rps_process_cpu_time());
   }
+  else if (!strcmp(builtincmd, "gc")) {
+    std::function<void(Rps_GarbageCollector*)> markall = [&](Rps_GarbageCollector*gc) {
+      for (Rps_CallFrame* cf = &_; cf != nullptr; cf = cf->previous_call_frame())
+	cf->gc_mark_frame(gc);
+    };
+    rps_garbage_collect(&markall);
+  }
   else if (!strcmp(builtincmd, "typeinfo")) {
     rps_print_types_info();
   }
   else if (!strcmp(builtincmd, "version")) {
     rps_show_version();
   }
+  else
+    RPS_WARNOUT("invalid builtin " << builtincmd << " in " << intoksrc << " / " << title)    ;
 } // end rps_do_builtin_repl_command
 
 void
