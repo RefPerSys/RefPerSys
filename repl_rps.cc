@@ -1173,7 +1173,7 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
 
 void
 rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
-			    Rps_TokenSource& intoksrc,
+                            Rps_TokenSource& intoksrc,
                             const char*title)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
@@ -1181,8 +1181,8 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
                  Rps_ObjectRef obenv;
                  Rps_Value lextokv;
                  Rps_Value lexval;
-		 Rps_Value descrv;
-		 );
+                 Rps_Value descrv;
+                );
   _f.obenv = obenvarg;
   RPS_DEBUG_LOG(REPL, "rps_do_builtin_repl_command " << title
                 << "... intoksrc:" << intoksrc << " BUILTIN " << builtincmd
@@ -1216,55 +1216,65 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
   else if (!strcmp(builtincmd, "git"))
     {
       RPS_INFORMOUT(std::endl << "gitid:" << rps_gitid
-		    << std::endl << "topdir:" << rps_topdirectory);
+                    << std::endl << "topdir:" << rps_topdirectory);
       fflush(nullptr);
     }
-  else if (!strcmp(builtincmd, "pmap")) {
-    char pmapbuf[64];
-    memset (pmapbuf, 0, sizeof(pmapbuf));
-    fflush(nullptr);
-    snprintf(pmapbuf, sizeof(pmapbuf)-2, "/usr/bin/pmap %d", (int)getpid());
-    if (system(pmapbuf))
-      RPS_WARNOUT("failed running " << pmapbuf << ":" << strerror(errno));
-  }
-  else if (!strcmp(builtincmd, "time")) {
-    RPS_INFORMOUT(std::endl << "elapsed time (seconds): " <<  rps_elapsed_real_time()
-		  << ", cpu time: " << rps_process_cpu_time());
-  }
-  else if (!strcmp(builtincmd, "gc")) {
-    std::function<void(Rps_GarbageCollector*)> markall = [&](Rps_GarbageCollector*gc) {
-      for (Rps_CallFrame* cf = &_; cf != nullptr; cf = cf->previous_call_frame())
-	cf->gc_mark_frame(gc);
-    };
-    rps_garbage_collect(&markall);
-  }
-  else if (!strcmp(builtincmd, "typeinfo")) {
-    rps_print_types_info();
-  }
-  else if (!strcmp(builtincmd, "version")) {
-    rps_show_version();
-  }
-  else if (!strcmp(builtincmd, "env")) {
-    auto paylenv = _f.obenv->get_dynamic_payload< Rps_PayloadEnvironment>();
-    RPS_INFORMOUT(std::endl << "environment object is " << _f.obenv
-		  << Rps_Do_Output([&](std::ostream&outs) {
-		    if (paylenv) {
-		      outs << " with parent environment:" << paylenv->get_parent_environment() << std::endl;
-		      _f.descrv = paylenv->get_descr();
-		      if (_f.descrv)
-			outs << "descriptor:" << _f.descrv << std::endl;
-		      std::function<bool(Rps_CallFrame*,Rps_ObjectRef,Rps_Value,void*)> outfun
-			= [&](Rps_CallFrame*cf,Rps_ObjectRef obvar,Rps_Value value,void*d) {
-			  outs << "*" << obvar << "::" << value << std::endl;
-			  return false;
-			};
-		      paylenv->do_each_entry(&_, outfun);
-		    }
-		    else
-		      outs << " [without environment payload]";
-		  })
-		  << std::endl);
-  }
+  else if (!strcmp(builtincmd, "pmap"))
+    {
+      char pmapbuf[64];
+      memset (pmapbuf, 0, sizeof(pmapbuf));
+      fflush(nullptr);
+      snprintf(pmapbuf, sizeof(pmapbuf)-2, "/usr/bin/pmap %d", (int)getpid());
+      if (system(pmapbuf))
+        RPS_WARNOUT("failed running " << pmapbuf << ":" << strerror(errno));
+    }
+  else if (!strcmp(builtincmd, "time"))
+    {
+      RPS_INFORMOUT(std::endl << "elapsed time (seconds): " <<  rps_elapsed_real_time()
+                    << ", cpu time: " << rps_process_cpu_time());
+    }
+  else if (!strcmp(builtincmd, "gc"))
+    {
+      std::function<void(Rps_GarbageCollector*)> markall = [&](Rps_GarbageCollector*gc)
+      {
+        for (Rps_CallFrame* cf = &_; cf != nullptr; cf = cf->previous_call_frame())
+          cf->gc_mark_frame(gc);
+      };
+      rps_garbage_collect(&markall);
+    }
+  else if (!strcmp(builtincmd, "typeinfo"))
+    {
+      rps_print_types_info();
+    }
+  else if (!strcmp(builtincmd, "version"))
+    {
+      rps_show_version();
+    }
+  else if (!strcmp(builtincmd, "env"))
+    {
+      auto paylenv = _f.obenv->get_dynamic_payload< Rps_PayloadEnvironment>();
+      RPS_INFORMOUT(std::endl << "environment object is " << _f.obenv
+                    << Rps_Do_Output([&](std::ostream&outs)
+      {
+        if (paylenv)
+          {
+            outs << " with parent environment:" << paylenv->get_parent_environment() << std::endl;
+            _f.descrv = paylenv->get_descr();
+            if (_f.descrv)
+              outs << "descriptor:" << _f.descrv << std::endl;
+            std::function<bool(Rps_CallFrame*,Rps_ObjectRef,Rps_Value,void*)> outfun
+              = [&](Rps_CallFrame*cf,Rps_ObjectRef obvar,Rps_Value value,void*d)
+            {
+              outs << "*" << obvar << "::" << value << std::endl;
+              return false;
+            };
+            paylenv->do_each_entry(&_, outfun);
+          }
+        else
+          outs << " [without environment payload]";
+      })
+          << std::endl);
+    }
   else
     RPS_WARNOUT("invalid builtin " << builtincmd << " in " << intoksrc << " / " << title)    ;
 } // end rps_do_builtin_repl_command
