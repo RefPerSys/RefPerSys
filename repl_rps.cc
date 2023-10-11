@@ -34,6 +34,7 @@
 
 #include "readline/readline.h"
 #include "readline/history.h"
+#include "wordexp.h"
 
 extern "C" const char rps_repl_gitid[];
 const char rps_repl_gitid[]= RPS_GITID;
@@ -249,116 +250,6 @@ rps_repl_create_command(Rps_CallFrame*callframe, const char*commandname)
 Rps_Value
 rps_lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg,  Rps_ChunkData_st*chkdata);
 
-Rps_Value
-rps_lex_code_chunk(Rps_CallFrame *callframe, [[maybe_unused]] std::istream *inp,
-                   [[maybe_unused]] const char *input_name,
-                   [[maybe_unused]] const char **plinebuf, [[maybe_unused]] int &lineno,
-                   [[maybe_unused]] int& colno)
-{
-  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
-                           /*callerframe:*/callframe,
-                           Rps_ObjectRef obchk;
-                           Rps_Value inputnamestrv;
-                           Rps_Value chunkelemv;
-                );
-#warning rps_lex_code_chunk is obsolete -see Rps_TokenSource::lex_code_chunk
-#if 0 && oldcode
-  char endstr[16];
-  char start[8];
-  memset(endstr, 0, sizeof(endstr));
-  memset(start, 0, sizeof(start));
-  int pos= -1;
-  RPS_ASSERT(plinebuf);
-  RPS_ASSERT(input_name);
-  const char*linbuf= *plinebuf;
-  int startlineno = lineno;
-  int startcolno = colno;
-  if (linbuf[colno] == '#' && linbuf[colno+1] == '{')
-    strcpy(endstr, "}#");
-  else if (sscanf(linbuf+colno, "#%6[a-zA-Z]{%n", start, &pos)>0 && pos>0)
-    {
-      RPS_ASSERT(strlen(endstr) < sizeof(endstr)-2);
-      snprintf(endstr, sizeof(endstr), "}%s#", start);
-    }
-  colno += strlen(endstr);
-  _f.obchk =
-    Rps_ObjectRef::make_object(&_,
-                               RPS_ROOT_OB(_3rXxMck40kz03RxRLM), //code_chunk∈class
-                               nullptr);
-  RPS_DEBUG_LOG(REPL, "starting rps_lex_chunk " << input_name << "L" << startlineno << "C" << startcolno
-                << " new obchk=" << _f.obchk);
-  _f.inputnamestrv = Rps_StringValue(input_name);
-  _f.obchk->put_attr2(RPS_ROOT_OB(_1B7ITSHTZWp00ektj1), //input∈symbol
-                      _f.inputnamestrv,
-                      RPS_ROOT_OB(_5FMX3lrhiw601iqPy5), //line∈symbol
-                      Rps_Value((intptr_t)lineno, Rps_Value::Rps_IntTag{})
-                     );
-  // So we first need to create these attributes...
-  auto paylvec = _f.obchk->put_new_plain_payload<Rps_PayloadVectVal>();
-  RPS_ASSERT(paylvec);
-  struct Rps_ChunkData_st chkdata = {};
-  //memset (&chkdata, 0, sizeof(chkdata));
-  chkdata.chunkdata_magic = rps_chunkdata_magicnum;
-  chkdata.chunkdata_lineno = lineno;
-  chkdata.chunkdata_colno = colno;
-  strcpy(chkdata.chunkdata_endstr, endstr);
-  //chkdata.chunkdata_inp = inp;
-  chkdata.chunkdata_name.assign(input_name);
-  //chkdata.chunkdata_plinebuf = plinebuf;
-  // TODO: we should add vector components to _f.obchk,
-  // reading several lines...
-  do
-    {
-      RPS_DEBUG_LOG(REPL, "in rps_lex_chunk chunking "
-                    << chkdata.chunkdata_name
-                    << " L"<< chkdata.chunkdata_lineno
-                    << ",C" << chkdata.chunkdata_colno
-                    << " endstr='" << chkdata.chunkdata_endstr << "'"
-                    << ((*chkdata.chunkdata_plinebuf)?" linbuf:"
-                        :" no linbuf")
-                    << ((*chkdata.chunkdata_plinebuf)?:" **"));
-      RPS_ASSERT(chkdata.chunkdata_magic == rps_chunkdata_magicnum);
-      _f.chunkelemv = rps_lex_chunk_element(&_, _f.obchk, &chkdata);
-      if (_f.chunkelemv)
-        {
-          RPS_DEBUG_LOG(REPL, "rps_lex_code_chunk pushing " << _f.chunkelemv
-                        << " into " << _f.obchk << " @"
-                        << chkdata.chunkdata_input_name
-                        << " L"<< chkdata.chunkdata_lineno
-                        << ",C" << chkdata.chunkdata_colno);
-          paylvec->push_back(_f.chunkelemv);
-          // see https://framalistes.org/sympa/arc/refpersys-forum/2020-12/msg00036.html
-        }
-      else
-        RPS_DEBUG_LOG(REPL, "rps_lex_code_chunk no chunk into "
-                      << _f.obchk << " @"
-                      << chkdata.chunkdata_input_name
-                      << " L"<< chkdata.chunkdata_lineno
-                      << ",C" << chkdata.chunkdata_colno);
-    }
-  while (_f.chunkelemv);
-  RPS_DEBUG_LOG(REPL, "ending rps_lex_chunk " << input_name
-                << "L" << startlineno << "C" << startcolno
-                << "-L" << chkdata.chunkdata_lineno
-                << "C" << chkdata.chunkdata_colno
-                << " obchk=" << _f.obchk
-                << std::endl
-                << Rps_Do_Output([=](std::ostream&outs)
-  {
-    unsigned nbchk = paylvec->size();
-    for (unsigned ix=0; ix<nbchk; ix++)
-      {
-        outs << " [" << ix << "]="
-             << paylvec->at(ix) << std::endl;
-      }
-  }));
-  lineno = chkdata.chunkdata_lineno;
-  colno = chkdata.chunkdata_colno;
-  *plinebuf = *chkdata.chunkdata_plinebuf;
-  chkdata.chunkdata_magic =0;
-#endif /*0 && oldcode*/
-  return _f.obchk;
-} // end rps_lex_code_chunk
 
 
 
@@ -837,115 +728,6 @@ Rps_LexTokenZone::less(Rps_ZoneValue const&zv) const
     return  Rps_Type::LexToken < zv.stored_type();
 } // end Rps_LexTokenZone::less
 
-#if 0 && oldcode
-// Tokenize a lexical token; an optional double-ended queue of
-// already lexed token enable limited backtracking when needed....
-const Rps_LexTokenZone*
-Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
-                           const char*input_name,
-                           const char**plinebuf, int&lineno, int& colno,
-                           [[maybe_unused]] lexical_line_getter_fun linegetter,
-                           std::deque<Rps_LexTokenZone*>* pque)
-{
-  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_0TvVIbOU16z028VWvv),
-                           /*callerframe:*/callframe,
-                           Rps_ObjectRef lexkindob;
-                           Rps_Value lexdatav;
-                           Rps_Value lextokv;
-                           Rps_Value kindnamv;
-                           Rps_Value resv;
-                );
-  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
-  {
-    if (pque)
-      pque->gc_mark(gc);
-  });
-  std::string inputstr(input_name?:"");
-  const char*curinp = (plinebuf && colno>=0 && colno<(int)strlen(*plinebuf))
-                      ?((*plinebuf)+colno)
-                      :nullptr;
-  int pquelen = pque?pque->size():-1;
-  RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize start inputstr="
-                << inputstr << (curinp?"curinp=":"curinp ")
-                << (curinp?curinp:" *NUL*")
-                << ", lineno=" << lineno
-                << ", colno=" << colno
-                << (pque?", pque len: ":",no pque ")
-                << pquelen);
-  if (pquelen>0)
-    {
-      _f.lextokv = pque->front();
-      pque->pop_front();
-      RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize dequeued " << _f.lextokv
-                    << " from " << (*pque)
-                    << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_LexTokenZone::tokenize dequeued"));
-      return _f.lextokv.to_lextoken();
-    }
-  else
-    {
-      RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize inputstr="
-                    << inputstr << ", lineno=" << lineno
-                    << ", colno=" << colno << ", "
-                    << (curinp?"curinp='":"curinp ")
-                    << (curinp?curinp:" *NUL*")
-                    << (curinp?"' ":"")
-                    << " before calling rps_repl_lexer" << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_LexTokenZone::tokenize"));
-      int startline = lineno;
-      int startcol = colno;
-      int linelen= (*plinebuf)?((int)(strlen(*plinebuf))):0;
-      while (colno<linelen && isspace((*plinebuf)[colno]))
-        colno++;
-      curinp = (plinebuf && colno>=0 && colno<(int)strlen(*plinebuf))
-               ?((*plinebuf)+colno)
-               :nullptr;
-      RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize just  before rps_repl_lexer inputstr='"
-                    << Rps_Cjson_String(inputstr) << "', lineno=" << lineno
-                    << ", colno=" << colno
-                    << (curinp?", curinp='":", curinp ")
-                    << (curinp?curinp:" *NUL*")
-                    << (curinp?"' ":""));
-      Rps_TwoValues twolex =
-        rps_repl_lexer(&_, inp, input_name, *plinebuf, lineno, colno);
-      RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize "
-                    << " lineno=" << lineno
-                    << ", colno=" << colno
-                    << " twolex! main:" << twolex.main_val
-                    << ", xtra:" << twolex.xtra_val);
-      _f.lexkindob = twolex.main_val.to_object();
-      _f.lextokv = twolex.xtra_val;
-      _f.kindnamv = nullptr;
-      if (_f.lexkindob)
-        _f.kindnamv = _f.lexkindob
-                      ->get_attr1(&_,RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); // /name∈named_attribute
-      RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize from rps_repl_lexer got lexkindob=" << _f.lexkindob
-                    << "/" << _f.kindnamv
-                    << ", lextok=" << _f.lextokv
-                    << ", lineno=" << lineno
-                    << ", colno=" << colno);
-      {
-        Rps_LexTokenZone* lextok =
-          Rps_QuasiZone::rps_allocate6<Rps_LexTokenZone,Rps_TokenSource*,Rps_ObjectRef,Rps_Value,const Rps_String*,int,int>
-          (this,
-           _f.lexkindob,
-           _f.lextokv,
-           Rps_StringValue(input_name).as_string(),
-           startline,
-           startcol);
-        _f.resv = Rps_LexTokenValue(lextok);
-        RPS_DEBUG_LOG(REPL, "Rps_LexTokenZone::tokenize gives " << _f.resv);
-        return lextok;
-      }
-    }
-  RPS_FATALOUT("unimplemented Rps_LexTokenZone::tokenize inputstr="
-               << inputstr << " line:" << lineno
-               << ", column:" << colno
-               << (curinp?", current input:":", no input")
-               << (curinp?curinp:" ..."));
-#warning incomplete Rps_LexTokenZone::tokenize, should wrap rps_repl_lexer
-} // end Rps_LexTokenZone::tokenize
-#endif /*0 && oldcode*/
 ////////////////////////////////////////////////////////////////
 
 
@@ -1207,6 +989,53 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
       else
         RPS_WARNOUT("failed getcwd " << strerror(errno));
       fflush(nullptr);
+    }
+  else if (!strcmp(builtincmd, "cd"))
+    {
+      char cwdbuf[rps_path_byte_size+4];
+      memset(cwdbuf, 0, sizeof(cwdbuf));
+      wordexp_t wx;
+      memset(&wx, 0, sizeof(wx));
+      char*cwd = getcwd(cwdbuf, rps_path_byte_size);
+      if (cwd)
+        RPS_INFORMOUT(std::endl << "old working directory is " <<  cwdbuf);
+      else
+        RPS_WARNOUT("failed getcwd " << strerror(errno));
+      const char*cp = intoksrc.curcptr();
+      while (cp && isspace(*cp))
+	cp++;
+      if (!cp)
+	RPS_WARNOUT("no path given to !cd builtin");
+      else {
+	int failexp = wordexp(cp, &wx, WRDE_SHOWERR|WRDE_UNDEF);
+	if (failexp)
+	  RPS_WARNOUT("!cd builtin failed to expand " << cp
+		      << ((failexp==WRDE_BADCHAR)?": bad char"
+			  : (failexp==WRDE_BADVAL)?": bad shell var"
+			  : (failexp==WRDE_NOSPACE)?": out of memory"
+			  : (failexp==WRDE_SYNTAX)?": shell syntax error"
+			  : ": other wordexp failure"));
+	if (wx.we_wordc == 0)
+	  RPS_WARNOUT("!cd builtin cannot expand " << cp);
+	else if (wx.we_wordc > 1)
+	  RPS_WARNOUT("!cd builtin ambiguous expand " << cp << " to "
+		      << wx.we_wordv[0] << " and " << wx.we_wordv[1]
+		      << ((wx.we_wordc > 2)?" etc.":""));
+	else {
+	  if (chdir(wx.we_wordv[0])) {
+	    const char*err = strerror(errno);
+	    RPS_WARNOUT("!cd " << cp << " failed to chdir to " << wx.we_wordv[0] << " :" << err);
+	  }
+	  else {
+	    char*cwd = getcwd(cwdbuf, rps_path_byte_size);
+	    if (cwd)
+	      RPS_INFORMOUT(std::endl << "!cd " << cp << " changed to new working directory " <<  cwdbuf);
+	    else
+	      RPS_WARNOUT("failed getcwd " << strerror(errno));
+	  }
+	};
+	wordfree(&wx);
+      }
     }
   else if (!strcmp(builtincmd, "pid") || !strcmp(builtincmd, "getpid"))
     {
