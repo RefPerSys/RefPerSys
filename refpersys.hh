@@ -4730,7 +4730,7 @@ class Rps_PayloadEnvironment : public Rps_PayloadObjMap {
   friend Rps_Value rps_environment_get_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob,
                                                      int*pdepth, Rps_ObjectRef*penvob);
 protected:
-  inline Rps_PayloadEnvironment(Rps_ObjectZone*owner);
+  Rps_PayloadEnvironment(Rps_ObjectZone*owner);
   Rps_PayloadEnvironment(Rps_ObjectRef obr) :
     Rps_PayloadObjMap(obr?obr.optr():nullptr) {};
   virtual ~Rps_PayloadEnvironment()
