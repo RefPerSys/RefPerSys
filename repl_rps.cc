@@ -1187,7 +1187,7 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
   if (!strcmp(builtincmd, "sh") || !strcmp(builtincmd, "shell"))
     {
-      RPS_INFORMOUT("running shell command " <<  Rps_QuotedC_String(intoksrc.curcptr()));
+      RPS_INFORMOUT(std::endl << "running shell command " <<  Rps_QuotedC_String(intoksrc.curcptr()));
       fflush(nullptr);
       int ret = system(intoksrc.curcptr());
       if (ret == 0)
@@ -1195,6 +1195,46 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
       else
         RPS_WARNOUT("failed shell command " << Rps_QuotedC_String(intoksrc.curcptr()) << " exited " << ret);
     }
+  else if (!strcmp(builtincmd, "pwd"))
+    {
+      char cwdbuf[rps_path_byte_size+4];
+      memset(cwdbuf, 0, sizeof(cwdbuf));
+      char*cwd = getcwd(cwdbuf, rps_path_byte_size);
+      if (cwd)
+        RPS_INFORMOUT(std::endl << "working directory is " <<  cwdbuf);
+      else
+        RPS_WARNOUT("failed getcwd " << strerror(errno));
+      fflush(nullptr);
+    }
+  else if (!strcmp(builtincmd, "pid") || !strcmp(builtincmd, "getpid"))
+    {
+      RPS_INFORMOUT(std::endl << "process id is " <<  (int)getpid() << " on " << rps_hostname());
+      fflush(nullptr);
+    }
+  else if (!strcmp(builtincmd, "git"))
+    {
+      RPS_INFORMOUT(std::endl << "gitid:" << rps_gitid
+		    << std::endl << "topdir:" << rps_topdirectory);
+      fflush(nullptr);
+    }
+  else if (!strcmp(builtincmd, "pmap")) {
+    char pmapbuf[64];
+    memset (pmapbuf, 0, sizeof(pmapbuf));
+    fflush(nullptr);
+    snprintf(pmapbuf, sizeof(pmapbuf)-2, "/usr/bin/pmap %d", (int)getpid());
+    if (system(pmapbuf))
+      RPS_WARNOUT("failed running " << pmapbuf << ":" << strerror(errno));
+  }
+  else if (!strcmp(builtincmd, "time")) {
+    RPS_INFORMOUT(std::endl << "elapsed time (seconds): " <<  rps_elapsed_real_time()
+		  << ", cpu time: " << rps_process_cpu_time());
+  }
+  else if (!strcmp(builtincmd, "typeinfo")) {
+    rps_print_types_info();
+  }
+  else if (!strcmp(builtincmd, "version")) {
+    rps_show_version();
+  }
 } // end rps_do_builtin_repl_command
 
 void

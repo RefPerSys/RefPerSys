@@ -427,6 +427,67 @@ rps_print_types_info(void)
 } // end rps_print_types_info
 
 
+
+void
+rps_show_version(void)
+{
+          int nbfiles=0;
+          int nbsubdirs=0;
+          for (auto pfiles=rps_files; *pfiles; pfiles++)
+            nbfiles++;
+          for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
+            nbsubdirs++;
+          std::cout << "RefPerSys, an open source Artificial Intelligence system" << std::endl;
+          std::cout << " symbolic inference engine - work in progress..." << std::endl;
+          std::cout << "version information:\n"
+                    << " program name: " << rps_progname << std::endl
+                    << " build time: " << rps_timestamp << std::endl
+                    << " top directory: " << rps_topdirectory << std::endl
+                    << " git id: " << rps_gitid << std::endl
+                    << " short git id: " << rps_shortgitid << std::endl
+                    << " last git tag: " << rps_lastgittag << std::endl
+                    << " last git commit: " << rps_lastgitcommit << std::endl
+                    << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
+                    << " with " << nbsubdirs << " subdirectories." << std::endl
+                    << " GNU glibc: " << gnu_get_libc_version() << std::endl
+                    /* TODO: near commit 191d55e1b31c, march 2023; decide
+                       which parser generator to really use... and drop the
+                       other one.  Non technical considerations,
+                       e.g. licensing, is important to some partners... */
+                    << " Gnu Bison parser generator: " << rps_gnubison_command
+                    << " version: " << rps_gnubison_version
+                    << " Gnu multi-precision library version: " << gmp_version << std::endl
+                    << " at: " << rps_gnubison_realpath
+                    << std::endl
+                    << " GPP generic preprocessor: "
+                    << rps_gpp_command
+                    << " version: " << rps_gpp_version
+                    << " at: " << rps_gpp_realpath
+                    << std::endl
+                    << " default GUI script: " << rps_gui_script_executable << std::endl
+                    << " Read Eval Print Loop: " << rps_repl_version() << std::endl
+                    << " libCURL for web client: " << rps_curl_version() << std::endl
+                    << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
+                    << " made with: " << rps_makefile << std::endl
+                    << " running on " << rps_hostname() << std::endl
+                    << "This " << ((rps_is_link_time_optimized>0)?"link-time-optimized":"normal") << " executable was built by "
+                    << rps_building_user_name
+                    << " of email " << rps_building_user_email
+                    << std::endl;
+          {
+            char cwdbuf[rps_path_byte_size+4];
+            memset (cwdbuf, 0, sizeof(cwdbuf));
+            if (getcwd(cwdbuf, rps_path_byte_size))
+              std::cout << " in " << cwdbuf;
+          };
+          std::cout << std::endl << " C++ compiler: " << rps_cxx_compiler_version << std::endl
+                    << " extra compilation flags: " << rps_build_xtra_cflags << std::endl
+                    << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl
+                    << "+++++ there is no WARRANTY, to the extent permitted by law ++++" << std::endl
+                    << "***** see also refpersys.org *****"
+                    << std::endl << std::endl;
+} // end rps_show_version
+
 /// In a format string passed to strftime, replace .__ with the
 /// centisecond fractional part of the time. See of course
 /// http://man7.org/linux/man-pages/man3/strftime.3.html etc... Notice
@@ -1076,61 +1137,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     {
       if (side_effect)
         {
-          int nbfiles=0;
-          int nbsubdirs=0;
-          for (auto pfiles=rps_files; *pfiles; pfiles++)
-            nbfiles++;
-          for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
-            nbsubdirs++;
-          std::cout << "RefPerSys, an open source Artificial Intelligence system" << std::endl;
-          std::cout << " symbolic inference engine - work in progress..." << std::endl;
-          std::cout << "version information:\n"
-                    << " program name: " << rps_progname << std::endl
-                    << " build time: " << rps_timestamp << std::endl
-                    << " top directory: " << rps_topdirectory << std::endl
-                    << " git id: " << rps_gitid << std::endl
-                    << " short git id: " << rps_shortgitid << std::endl
-                    << " last git tag: " << rps_lastgittag << std::endl
-                    << " last git commit: " << rps_lastgitcommit << std::endl
-                    << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
-                    << " with " << nbsubdirs << " subdirectories." << std::endl
-                    << " GNU glibc: " << gnu_get_libc_version() << std::endl
-                    /* TODO: near commit 191d55e1b31c, march 2023; decide
-                       which parser generator to really use... and drop the
-                       other one.  Non technical considerations,
-                       e.g. licensing, is important to some partners... */
-                    << " Gnu Bison parser generator: " << rps_gnubison_command
-                    << " version: " << rps_gnubison_version
-                    << " Gnu multi-precision library version: " << gmp_version << std::endl
-                    << " at: " << rps_gnubison_realpath
-                    << std::endl
-                    << " GPP generic preprocessor: "
-                    << rps_gpp_command
-                    << " version: " << rps_gpp_version
-                    << " at: " << rps_gpp_realpath
-                    << std::endl
-                    << " default GUI script: " << rps_gui_script_executable << std::endl
-                    << " Read Eval Print Loop: " << rps_repl_version() << std::endl
-                    << " libCURL for web client: " << rps_curl_version() << std::endl
-                    << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
-                    << " made with: " << rps_makefile << std::endl
-                    << " running on " << rps_hostname() << std::endl
-                    << "This " << ((rps_is_link_time_optimized>0)?"link-time-optimized":"normal") << " executable was built by "
-                    << rps_building_user_name
-                    << " of email " << rps_building_user_email
-                    << std::endl;
-          {
-            char cwdbuf[256];
-            memset (cwdbuf, 0, sizeof(cwdbuf));
-            if (getcwd(cwdbuf, sizeof(cwdbuf)))
-              std::cout << " in " << cwdbuf;
-          };
-          std::cout << std::endl << " C++ compiler: " << rps_cxx_compiler_version << std::endl
-                    << " extra compilation flags: " << rps_build_xtra_cflags << std::endl
-                    << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl
-                    << "+++++ there is no WARRANTY, to the extent permitted by law ++++" << std::endl
-                    << "***** see also refpersys.org *****"
-                    << std::endl << std::endl;
+	  rps_show_version();
           exit(EXIT_SUCCESS);
         }
     }

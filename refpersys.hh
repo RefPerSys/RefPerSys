@@ -935,6 +935,7 @@ while (0)
 #define RPS_RUNTIME_ERROR_OUT(...) RPS_RUNTIME_ERROR_OUT_AT(__FILE__,__LINE__,##__VA_ARGS__)
 
 
+extern "C" void rps_show_version(void);
 
 ///////////////////////////////////////////////////////////////////////////////
 // TIME ROUTINES
