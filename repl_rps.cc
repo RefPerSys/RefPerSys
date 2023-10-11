@@ -1172,7 +1172,8 @@ Rps_LexTokenZone::tokenize(Rps_CallFrame*callframe, std::istream*inp,
 
 
 void
-rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd, Rps_TokenSource& intoksrc,
+rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+			    Rps_TokenSource& intoksrc,
                             const char*title)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
@@ -1263,11 +1264,12 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
 		      outs << " [without environment payload]";
 		  })
 		  << std::endl);
-
   }
   else
     RPS_WARNOUT("invalid builtin " << builtincmd << " in " << intoksrc << " / " << title)    ;
 } // end rps_do_builtin_repl_command
+
+
 
 void
 rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const std::string&cmd,
@@ -1470,6 +1472,8 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
   _f.envob = Rps_ObjectRef::make_object(&_,
                                         RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a) //environment∈class
                                        );
+  auto paylenv = _f.envob->put_new_plain_payload<Rps_PayloadEnvironment>();
+  RPS_ASSERT(paylenv);
   RPS_DEBUG_LOG(REPL, "rps_do_repl_commands_vec start nbcmd:" << nbcmd);
   for (int cix=0; cix<nbcmd; cix++)
     {
