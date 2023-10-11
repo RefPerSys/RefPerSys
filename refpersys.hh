@@ -4808,31 +4808,6 @@ extern "C" std::istream*rps_repl_input;
 extern "C" bool rps_repl_stopped;
 
 
-#if 0 && obsolete_code
-/*** The obsolete lexer. We return a pair of values. The first describing the
-     second.  For example, a lexed integer is given as
-     (int,<tagged-integer-value>).
-***/
-extern "C" Rps_TwoValues OBSOLETErps_repl_lexer(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
-						const char*linebuf, int &lineno, int& colno);
-
-extern "C" std::string OBSOLETErps_lex_raw_literal_string(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
-							  const char**plinebuf, int lineno, int& colno);
-
-extern "C" Rps_Value OBSOLETErps_lex_code_chunk(Rps_CallFrame*callframe, std::istream*inp, const char*input_name,
-						const char**plinebuf, int& lineno, int& colno);
-
-// return true iff the next line has been read and gotten
-extern "C" bool
-OBSOLETErps_repl_get_next_line(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, const char**plinebuf,
-			       int*plineno, std::string prompt="");
-
-/// Interpret from either a given input stream,
-/// or using readline if inp is null.
-extern "C" void OBSOLETErps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
-
-#endif /*0 && obsolete_code */
-
 
 
 ////////////////////////////////////////////////////////////////
