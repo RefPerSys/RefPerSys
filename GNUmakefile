@@ -29,7 +29,7 @@
 
 .PHONY: all debug objects lto clean mostlyclean plugin fullclean redump undump altredump print-plugin-settings indent \
    test00 test01 test02 test03 test04 test05 test06 test07 test08 test09 \
-   test01b \
+   test01b   test01c \
    test-load \
    analyze gitpush gitpush2 withclang 
 
@@ -547,6 +547,10 @@ test01: ./refpersys
 test01b: debug
 	./refpersys -AREPL,LOW_REPL  -c 'show help' -B
 	@printf '\n\n\n////test01b FINISHED¤\n'
+
+test01c: debug
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2' -B
+	@printf '\n\n\n////test01c FINISHED¤\n'
 
 test02: ./refpersys
 	./refpersys -AREPL  -c 'show RefPerSys_system' -B
