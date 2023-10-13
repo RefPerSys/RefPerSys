@@ -1058,7 +1058,17 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                  Rps_ObjectRef minusdelimob;
                  Rps_ObjectRef minusbinopob;
                  Rps_ObjectRef delimob;
+                 Rps_ObjectRef pastdelimob;
                 );
+  std::vector<Rps_Value> termvect;
+  _.set_additional_gc_marker([&](Rps_GarbageCollector* gc)
+  {
+    RPS_ASSERT(gc != nullptr);
+    this->gc_mark(*gc);
+#warning code review needed. Do we need  this->gc_mark(*gc) in Rps_TokenSource::parse_sum ?
+    for (auto termv : termvect)
+      gc->mark_value(termv);
+  });
   std::string startpos = position_str();
   static long callcnt;
   long callnum= ++ callcnt;
@@ -1153,18 +1163,73 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   bool again = false;
   if (_f.lextokv.is_lextoken()
       && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
-      &&  _f.lextokv.to_lextoken()->lxval().is_object()) {
-    _f.delimob =  _f.lextokv.to_lextoken()->lxval().as_object();
-    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
-		  << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
-		  << std::endl
-		  << "… curcptr:" << Rps_QuotedC_String(curcptr())
-		  << " token_deq:" << toksrc_token_deq << std::endl
-		  << Rps_Do_Output([&](std::ostream& out)
-		  {
-		    this->display_current_line_with_cursor(out);
-		  }));
-  };
+      &&  _f.lextokv.to_lextoken()->lxval().is_object())
+    {
+      _f.delimob =  _f.lextokv.to_lextoken()->lxval().as_object();
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
+                    << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
+                    << std::endl
+                    << "… curcptr:" << Rps_QuotedC_String(curcptr())
+                    << " token_deq:" << toksrc_token_deq << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
+      if (_f.delimob ==  _f.plusdelimob || _f.delimob == _f.minusdelimob)
+        {
+          if (!_f.pastdelimob)
+            _f.pastdelimob = _f.delimob;
+          again = (_f.delimob== _f.pastdelimob);
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
+                        << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
+                        << " pastdelimob=" << _f.pastdelimob << (again?"again":"stop")
+                        << std::endl
+                        << "… curcptr:" << Rps_QuotedC_String(curcptr())
+                        << " token_deq:" << toksrc_token_deq << std::endl);
+        };
+      while (again)
+        {
+          termvect.push_back(_f.leftv);
+          consume_front_token(&_);
+          _f.lextokv =  lookahead_token(&_, 0);
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
+                        << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
+                        << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
+                        << "… curcptr:" << Rps_QuotedC_String(curcptr())
+                        << " token_deq:" << toksrc_token_deq << std::endl
+                        << Rps_Do_Output([&](std::ostream& out)
+          {
+            this->display_current_line_with_cursor(out);
+          }));
+
+          okleft = false;
+          _f.leftv = parse_term(&_, &okleft);
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
+                        << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
+                        << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
+                        << "… curcptr:" << Rps_QuotedC_String(curcptr()) << " leftv=" << _f.leftv
+                        << (okleft?" OKleft":" NOTOKleft")
+                        << " token_deq:" << toksrc_token_deq << std::endl
+                        << Rps_Do_Output([&](std::ostream& out)
+          {
+            this->display_current_line_with_cursor(out);
+          }));
+          if (!okleft)
+            again = false;
+          RPS_FATALOUT("missing code in Rps_TokenSource::parse_sum¤" << callnum << " from " << Rps_ShowCallFrame(callframe)
+                       << " in:" << (*this) << " at " << position_str()<< std::endl
+                       << "…  startpos:" << startpos << " token_deq:" << toksrc_token_deq
+                       << " curcptr:" << Rps_QuotedC_String(curcptr())
+                       << std::endl
+                       << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " termvect=" << termvect
+                       << std::endl
+                       << Rps_Do_Output([&](std::ostream& out)
+          {
+            this->display_current_line_with_cursor(out);
+          }));
+#warning incomplete Rps_TokenSource::parse_sum
+        };
+    };
   /***
    * We probably should loop and collect all terms if they are
    * separated by the same additive delimiter with its operator.
