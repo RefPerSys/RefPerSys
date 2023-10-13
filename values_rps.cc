@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2021 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2023 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -44,7 +44,8 @@ Rps_Id::to_cbuf24(char cbuf[]) const
 {
   /// example cbuf = "_0abcdefghijABCDEFG"
   ///                  |0         |11    |19
-  static_assert(sizeof("_0abcdefghijABCDEFG")-1 == 1+nbdigits_hi+nbdigits_lo);
+  static_assert(sizeof("_0abcdefghijABCDEFG")-1
+                == 1+nbdigits_hi+nbdigits_lo);
   RPS_ASSERT (cbuf != nullptr);
   memset(cbuf, 0, buflen);
   char*last = cbuf+nbdigits_hi;
