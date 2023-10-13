@@ -1222,6 +1222,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                        << " curcptr:" << Rps_QuotedC_String(curcptr())
                        << std::endl
                        << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " termvect=" << termvect
+		       << (again?" again":" notagain")
                        << std::endl
                        << Rps_Do_Output([&](std::ostream& out)
           {
