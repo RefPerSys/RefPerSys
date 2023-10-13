@@ -1639,7 +1639,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
     }
   else
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " failing_A (left nonok) at startpos:" << startpos
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum
+                    << " failing_A (left primary nonok) at startpos:" << startpos
                     << "  in:" << (*this)
                     << " leftv:" << _f.leftv
                     << " position:" << position_str()
@@ -2104,6 +2105,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " lexgotokv " << _f.lexgotokv
                     << " lexval " << _f.lexvalv
                     << " position:" << position_str() << " curcptr " << Rps_QuotedC_String(curcptr()));
+      consume_front_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary => int " << _f.lexvalv
                     << " lextokv:" << _f.lextokv << std::endl
                     << " … lexgotokv:" << _f.lexgotokv
@@ -2122,6 +2124,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
     {
       if (pokparse)
         *pokparse = true;
+      consume_front_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " => string " << _f.lexvalv
                     << "  in:" << (*this)
                     << " lexgotokv:" << _f.lexgotokv
@@ -2135,6 +2138,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
     {
       if (pokparse)
         *pokparse = true;
+      consume_front_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " => double "
                     << _f.lexvalv << " lexgotokv:" << _f.lexgotokv << std::endl
                     << "… in:" << (*this)
