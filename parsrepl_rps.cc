@@ -1057,6 +1057,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                  Rps_ObjectRef plusbinopob;
                  Rps_ObjectRef minusdelimob;
                  Rps_ObjectRef minusbinopob;
+                 Rps_ObjectRef delimob;
                 );
   std::string startpos = position_str();
   static long callcnt;
@@ -1149,6 +1150,21 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   {
     this->display_current_line_with_cursor(out);
   }));
+  bool again = false;
+  if (_f.lextokv.is_lextoken()
+      && _f.lextokv.to_lextoken()->lxkind() == RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK) //repl_delimiter∈class
+      &&  _f.lextokv.to_lextoken()->lxval().is_object()) {
+    _f.delimob =  _f.lextokv.to_lextoken()->lxval().as_object();
+    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
+		  << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
+		  << std::endl
+		  << "… curcptr:" << Rps_QuotedC_String(curcptr())
+		  << " token_deq:" << toksrc_token_deq << std::endl
+		  << Rps_Do_Output([&](std::ostream& out)
+		  {
+		    this->display_current_line_with_cursor(out);
+		  }));
+  };
   /***
    * We probably should loop and collect all terms if they are
    * separated by the same additive delimiter with its operator.
