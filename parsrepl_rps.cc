@@ -1075,7 +1075,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
                 << " startpos:" << startpos << std::endl
                 << " after parse_term leftv=" << _f.leftv
-                << (okleft?"okleft":"NOTOKleft")
+                << (okleft?" okleft":" NOTOKleft")
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
