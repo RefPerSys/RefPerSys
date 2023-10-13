@@ -1099,7 +1099,15 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   _f.plusbinopob = Rps_ObjectRef::find_object_or_fail_by_oid(&_,id_plus_binop); // "plus!binop"∈repl_binary_operator
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
                 << " plusdelimob=" << _f.plusdelimob << std::endl
-                << "… plusbinopob=" << _f.plusbinopob);
+                << "… plusbinopob=" << _f.plusbinopob
+                << " in " << (*this) << std::endl
+		<< "… leftv=" << _f.leftv
+                << " curcptr:" << Rps_QuotedC_String(curcptr())
+                << " token_deq:" << toksrc_token_deq << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
   /// - delimiter and binary operator
   static Rps_Id id_minus_delim;
   if (!id_minus_delim)
