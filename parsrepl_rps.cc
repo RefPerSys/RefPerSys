@@ -1139,8 +1139,9 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
         *pokparse = true;
       return _f.leftv;
     };
+  _f.lextokv =  lookahead_token(&_, 0);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
-                << " leftv=" << _f.leftv
+                << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv
                 << std::endl
                 << "… curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq << std::endl
