@@ -1101,7 +1101,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                 << " plusdelimob=" << _f.plusdelimob << std::endl
                 << "… plusbinopob=" << _f.plusbinopob
                 << " in " << (*this) << std::endl
-		<< "… leftv=" << _f.leftv
+                << "… leftv=" << _f.leftv
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
                 << " token_deq:" << toksrc_token_deq << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
@@ -1611,7 +1611,12 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << "  startpos:" << startpos << " moddelimob:" << _f.moddelimob
                 << " modbinopob: " << _f.modbinopob
                 << " pos:" << position_str()
-                << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr());
+                << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr()
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    this->display_current_line_with_cursor(out);
+  }));
   /////
   ////////////////
   bool okleft = false;
@@ -1619,7 +1624,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
   if (okleft)
     {
       operandvect.push_back(_f.leftv);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " leftv=" << _f.leftv
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum
+                    << " did parseprimary leftv=" << _f.leftv
                     << " startpos:" << startpos << "  in:" << (*this)
                     << " operandvect:" << operandvect << std::endl
                     << ".. pos:" << position_str()
@@ -1693,8 +1699,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                     << " lexopertokv=" << _f.lexopertokv
                     << " pos:" << position_str() << " startpos:" << startpos
                     << " curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr()
-                      << std::endl
-                      << Rps_Do_Output([&](std::ostream& out)
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
       {
         this->display_current_line_with_cursor(out);
       }));
