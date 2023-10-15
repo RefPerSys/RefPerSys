@@ -1099,7 +1099,6 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
         *pokparse = false;
       return nullptr;
     };
-  termvect.push_back(_f.leftv);
   /// + delimiter and binary operator
   static Rps_Id id_plus_delim;
   if (!id_plus_delim)
@@ -1882,7 +1881,12 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                     << " curoperob=" << _f.curoperob << " binoperob=" << _f.binoperob
                     << " loopcnt#" << loopcnt
                     << " pos:" << position_str()
-                    << " curcptr:" << Rps_QuotedC_String(curcptr()) << "@" << ((void*)curcptr()));
+                    << " curcptr:" << Rps_QuotedC_String(curcptr()) << "@" << ((void*)curcptr())
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
       if (_f.curoperob)
         {
           if (!_f.binoperob)
@@ -1925,7 +1929,13 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                             << " curoperob=" << _f.curoperob << " position_str:" << position_str()
                             << " " << Rps_QuotedC_String(curcptr())
                             << " operandvect:" << operandvect
-                            << " token_deq:" << toksrc_token_deq);
+                            << " binoperop=" << _f.binoperob
+                            << " token_deq:" << toksrc_token_deq
+                            << std::endl
+                            << Rps_Do_Output([&](std::ostream& out)
+              {
+                this->display_current_line_with_cursor(out);
+              }));
               again = true;
               continue;
             }
@@ -1974,7 +1984,12 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                     << " startpos:" << startpos << " at:" << position_str()
                     << " curcptr " << Rps_QuotedC_String(curcptr())
                     << "@" << ((void*)curcptr())
-                    << " calldepth:" << rps_call_frame_depth(&_));
+                    << " calldepth:" << rps_call_frame_depth(&_)
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
       if (pokparse)
         *pokparse = true;
       return _f.restermv;
@@ -1989,6 +2004,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
                    << "  calldepth:" << rps_call_frame_depth(&_)
                    << " binoperob:" << _f.binoperob
                    << " curoperob:" << _f.curoperob
+                   << " operandvect:" << operandvect
                    << " leftv=" << _f.leftv << std::endl
                    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_term/INCOMPLETE"));
     }
