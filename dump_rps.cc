@@ -1505,7 +1505,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
                  /*callerframe:*/callframe, //
                  Rps_ObjectRef obdumper;
-		 );
+                );
   double startelapsed = rps_elapsed_real_time();
   double startcputime = rps_process_cpu_time();
   RPS_DEBUG_LOG(DUMP, "rps_dump_into start dirpath=" << dirpath
