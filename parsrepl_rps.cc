@@ -1099,6 +1099,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
         *pokparse = false;
       return nullptr;
     };
+  termvect.push_back(_f.leftv);
   /// + delimiter and binary operator
   static Rps_Id id_plus_delim;
   if (!id_plus_delim)
@@ -1187,8 +1188,28 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                         << "… curcptr:" << Rps_QuotedC_String(curcptr())
                         << " token_deq:" << toksrc_token_deq << std::endl);
         };
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum <<
+                    " termvect:" << termvect << " before while "
+                    <<  (again?"again":"stop")
+                    << std::endl
+                    << "… curcptr:" << Rps_QuotedC_String(curcptr())
+                    << " token_deq:" << toksrc_token_deq << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }));
       while (again)
         {
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum <<
+                        " termvect:" << termvect  << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
+                        << " pastdelimob=" << _f.pastdelimob << (again?"again":"stop")
+                        << std::endl
+                        << "… curcptr:" << Rps_QuotedC_String(curcptr())
+                        << " token_deq:" << toksrc_token_deq << std::endl
+                        << Rps_Do_Output([&](std::ostream& out)
+          {
+            this->display_current_line_with_cursor(out);
+          }));
           termvect.push_back(_f.leftv);
           consume_front_token(&_);
           _f.lextokv =  lookahead_token(&_, 0);
