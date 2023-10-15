@@ -1226,8 +1226,10 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           okleft = false;
           _f.leftv = parse_term(&_, &okleft);
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
-                        << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
+                        << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << std::endl
+                        << "… delimob=" << _f.delimob << " termvect=" << termvect
                         << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
+                        << std::endl
                         << "… curcptr:" << Rps_QuotedC_String(curcptr()) << " leftv=" << _f.leftv
                         << (okleft?" OKleft":" NOTOKleft")
                         << " token_deq:" << toksrc_token_deq << std::endl
@@ -1814,7 +1816,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
       RPS_POSSIBLE_BREAKPOINT();
       _f.lextokv = get_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " got token after leftv=" << _f.leftv
-		    << " operandvect=" << operandvect
+                    << " operandvect=" << operandvect
                     << " got lextok=" << _f.lextokv << std::endl
                     << "… lexopertokv=" << _f.lexopertokv << "  in:" << (*this) << std::endl
                     << "… @! " << position_str()
