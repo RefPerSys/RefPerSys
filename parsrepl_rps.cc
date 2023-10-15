@@ -1222,14 +1222,15 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                        << " curcptr:" << Rps_QuotedC_String(curcptr())
                        << std::endl
                        << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " termvect=" << termvect
-		       << (again?" again":" notagain")
+                       << (again?" again":" notagain") << " delimob=" << _f.delimob
+                       << " pastdelimob=" << _f.pastdelimob
                        << std::endl
                        << Rps_Do_Output([&](std::ostream& out)
           {
             this->display_current_line_with_cursor(out);
           }));
 #warning incomplete Rps_TokenSource::parse_sum
-        };
+        };			// end while again
     };
   /***
    * We probably should loop and collect all terms if they are
