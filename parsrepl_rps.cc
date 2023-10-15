@@ -1814,6 +1814,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
       RPS_POSSIBLE_BREAKPOINT();
       _f.lextokv = get_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " got token after leftv=" << _f.leftv
+		    << " operandvect=" << operandvect
                     << " got lextok=" << _f.lextokv << std::endl
                     << "… lexopertokv=" << _f.lexopertokv << "  in:" << (*this) << std::endl
                     << "… @! " << position_str()
