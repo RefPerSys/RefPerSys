@@ -166,6 +166,7 @@ public:
       };
     itspace->second->sp_setob.insert(obrcomp);
   };
+#warning perhaps keep some temporary dump object inside Rps_Dumper? see rps_dump_into
 };				// end class Rps_Dumper
 
 Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
@@ -1503,7 +1504,8 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
                  /*callerframe:*/callframe, //
-                 Rps_ObjectRef obdumper);
+                 Rps_ObjectRef obdumper;
+		 );
   double startelapsed = rps_elapsed_real_time();
   double startcputime = rps_process_cpu_time();
   RPS_DEBUG_LOG(DUMP, "rps_dump_into start dirpath=" << dirpath
@@ -1549,7 +1551,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
   {
     // not very good, but in practice good enough before bootstrapping
     // see https://softwareengineering.stackexchange.com/q/289427/40065
-    char cwdbuf[128];
+    char cwdbuf[rps_path_byte_size];
     memset(cwdbuf, 0, sizeof(cwdbuf));
     if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
       RPS_FATAL("getcwd failed: %m");
@@ -1560,6 +1562,10 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
   {
     RPS_ASSERT(strrchr(realdirpath.c_str(), '/') != nullptr);
   }
+  //// TODO: we may want to create a temporary object in obdumper to
+  //// keep data related to that particular dump. And keep that
+  //// dumpobject in Rps_Dumper.
+#warning we may want to make some temporary obdumper and keep it...
   Rps_Dumper dumper(realdirpath, &_);
   RPS_INFORMOUT("start dumping into " << dumper.get_top_dir()
                 << " with temporary suffix " << dumper.get_temporary_suffix());
