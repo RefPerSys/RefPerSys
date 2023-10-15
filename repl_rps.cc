@@ -1100,7 +1100,7 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
               = [&](Rps_CallFrame*cf,Rps_ObjectRef obvar,Rps_Value value,void*d)
             {
               outs << "*" << obvar << "::" << value << std::endl;
-	      RPS_ASSERT(d == nullptr);
+              RPS_ASSERT(d == nullptr);
               return false;
             };
             paylenv->do_each_entry(&_, outfun);
