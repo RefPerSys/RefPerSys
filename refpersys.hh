@@ -2609,7 +2609,7 @@ public:
   /// *****             ^
   virtual void display (std::ostream&out) const = 0;
   const Rps_DequVal& token_dequeue(void) const { return toksrc_token_deq; };
-  void consume_front_token(Rps_CallFrame*callframe);
+  void consume_front_token(Rps_CallFrame*callframe, bool *psuccess=nullptr);
   void append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv);
   virtual bool get_line(void) =0; // gives true when another line has been read
   Rps_TokenSource(const Rps_TokenSource&) = delete;
