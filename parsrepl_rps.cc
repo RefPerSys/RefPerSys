@@ -1254,7 +1254,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
               }));
               continue;
             };
-	  //// reached when okleft is false (see previous parse_term)....
+          //// reached when okleft is false (see previous parse_term)....
           RPS_FATALOUT("missing code in Rps_TokenSource::parse_sum¤" << callnum << " from " << Rps_ShowCallFrame(callframe)
                        << " in:" << (*this) << " at " << position_str()<< std::endl
                        << "…  startpos:" << startpos << " token_deq:" << toksrc_token_deq
