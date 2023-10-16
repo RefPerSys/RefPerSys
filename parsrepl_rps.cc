@@ -1221,7 +1221,6 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           {
             this->display_current_line_with_cursor(out);
           }));
-
           okleft = false;
           _f.leftv = parse_term(&_, &okleft);
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
@@ -1238,6 +1237,24 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           }));
           if (!okleft)
             again = false;
+          else
+            {
+              termvect.push_back(_f.leftv);
+              again = true;
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
+                            << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << std::endl
+                            << "… delimob=" << _f.delimob << " termvect=" << termvect
+                            << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
+                            << std::endl
+                            << "… curcptr:" << Rps_QuotedC_String(curcptr())
+                            << " continuing-loop token_deq:" << toksrc_token_deq << std::endl
+                            << Rps_Do_Output([&](std::ostream& out)
+              {
+                this->display_current_line_with_cursor(out);
+              }));
+              continue;
+            };
+	  //// reached when okleft is false (see previous parse_term)....
           RPS_FATALOUT("missing code in Rps_TokenSource::parse_sum¤" << callnum << " from " << Rps_ShowCallFrame(callframe)
                        << " in:" << (*this) << " at " << position_str()<< std::endl
                        << "…  startpos:" << startpos << " token_deq:" << toksrc_token_deq
