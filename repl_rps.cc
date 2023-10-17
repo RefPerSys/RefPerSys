@@ -1445,7 +1445,7 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
           RPS_WARNOUT("REPL command#" << cix << " " << cmdvec[cix]
                       << " in env:" << _f.envob
                       << std::endl
-                      << " failed with exception: " << ex.what() << " "
+                      << " failed with exception: " << ex.what() << (!status?" ":"")
                       << ((!status && extyprealname)?extyprealname:extyprawname.c_str()));
           free (extyprealname);
         }
