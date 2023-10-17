@@ -1432,11 +1432,22 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
       try
         {
           rps_do_one_repl_command(&_, _f.envob, cmdvec[cix], bufpath);
+          RPS_DEBUG_LOG(REPL, "REPL command " << Rps_Cjson_String(cmdvec[cix])
+                        << " done");
         }
       catch (std::exception&ex)
         {
-          RPS_WARNOUT("REPL command#" << cix << " " << cmdvec[cix] << " in env:" << _f.envob
-                      << " failed with exception:" << ex.what());
+          const std::type_info& extypinf= typeid(ex);
+          std::string extyprawname = extypinf.name();
+          int status = 0;
+          char*extyprealname = abi::__cxa_demangle(extyprawname.c_str(),
+                               nullptr, nullptr, &status);
+          RPS_WARNOUT("REPL command#" << cix << " " << cmdvec[cix]
+                      << " in env:" << _f.envob
+                      << std::endl
+                      << " failed with exception: " << ex.what() << " "
+                      << ((!status && extyprealname)?extyprealname:extyprawname.c_str()));
+          free (extyprealname);
         }
     } // end for cix ...
 } // end of rps_do_repl_commands_vec
