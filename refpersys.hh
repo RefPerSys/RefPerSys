@@ -502,15 +502,15 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 extern "C" void rps_debug_warn_at(const char*file, int line);
 #define RPS_WARN_AT_BIS(Fil,Lin,Fmt,...) do {                   \
-    if (rps_syslog_enabled) {					\
-      syslog(LOG_WARNING, "RefPerSys WARN:%s:%d: {%s} " Fmt,	\
-	     Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);	\
- } else {							\
-    bool ontty = rps_stderr_istty;                              \
+    if (rps_syslog_enabled) {                                   \
+      syslog(LOG_WARNING, "RefPerSys WARN:%s:%d: {%s} " Fmt,    \
+             Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);     \
+ } else {                                                       \
+    bool ontty##Lin = rps_stderr_istty;                         \
     fprintf(stderr, "\n\n"                                      \
             "%s*** RefPerSys WARN:%s%s:%d: {%s}\n " Fmt "\n\n", \
-            ontty?RPS_TERMINAL_BOLD_ESCAPE:"",                  \
-            ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",                \
+            ontty##Lin?RPS_TERMINAL_BOLD_ESCAPE:"",             \
+            ontty##Lin?RPS_TERMINAL_NORMAL_ESCAPE:"",           \
             Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);      \
     rps_debug_warn_at(Fil,Lin);                                 \
     fflush(stderr); } } while(0)
@@ -520,19 +520,24 @@ extern "C" void rps_debug_warn_at(const char*file, int line);
 // typical usage could be RPS_WARN("something bad x=%d", x)
 #define RPS_WARN(Fmt,...) RPS_WARN_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
-#define RPS_WARNOUT_AT_BIS(Fil,Lin,...) do {				\
-    if (rps_syslog_enabled) {						\
-      std::ostringstream outl##Lin;					\
-      outl##Lin <<   __VA_ARGS__ << std::flush;				\
-      outl##Lin.flush();						\
-      syslog(LOG_WARNING, "RefPerSys WARN:%s:%d: {%s} %s",		\
-	     Fil, Lin, __PRETTY_FUNCTION__, outl##Lin.str().c_str());	\
-    }									\
-    else								\
-      std::clog << "** RefPerSys WARN! "				\
-		<< (Fil) << ":" << Lin << ":: "				\
-		<< __VA_ARGS__ << std::endl;				\
-    rps_debug_warn_at(Fil,Lin);	 } while(0)
+#define RPS_WARNOUT_AT_BIS(Fil,Lin,...) do {                    \
+    if (rps_syslog_enabled) {                                   \
+      std::ostringstream outl##Lin;                             \
+      outl##Lin <<   __VA_ARGS__ << std::flush;                 \
+      outl##Lin.flush();                                        \
+      syslog(LOG_WARNING, "RefPerSys WARN:%s:%d: {%s} %s",      \
+             Fil, Lin, __PRETTY_FUNCTION__,                     \
+             outl##Lin.str().c_str());                          \
+    }                                                           \
+    else {                                                      \
+      bool ontty##Lin = rps_stderr_istty;                       \
+      std::clog << (ontty##Lin?RPS_TERMINAL_BOLD_ESCAPE:"")     \
+                << "** RefPerSys WARN!"                         \
+                << (ontty##Lin?RPS_TERMINAL_NORMAL_ESCAPE:"")   \
+                << " " << (Fil) << ":" << Lin << ":: "          \
+                << __VA_ARGS__ << std::endl;                    \
+    };                                                          \
+    rps_debug_warn_at(Fil,Lin);  } while(0)
 
 #define RPS_WARNOUT_AT(Fil,Lin,...) RPS_WARNOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
 
