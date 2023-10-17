@@ -1429,7 +1429,15 @@ rps_do_repl_commands_vec(const std::vector<std::string>&cmdvec)
       if (cix % 4 == 0)
         usleep(128*1024);
       /// do the command
-      rps_do_one_repl_command(&_, _f.envob, cmdvec[cix], bufpath);
+      try
+        {
+          rps_do_one_repl_command(&_, _f.envob, cmdvec[cix], bufpath);
+        }
+      catch (std::exception&ex)
+        {
+          RPS_WARNOUT("REPL command#" << cix << " " << cmdvec[cix] << " in env:" << _f.envob
+                      << " failed with exception:" << ex.what());
+        }
     } // end for cix ...
 } // end of rps_do_repl_commands_vec
 
