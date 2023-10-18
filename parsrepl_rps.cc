@@ -1281,7 +1281,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                      << Rps_Do_Output([&](std::ostream& out)
       {
         this->display_current_line_with_cursor(out);
-      }))
+      }));
     };
   /***
    * We probably should loop and collect all terms if they are
