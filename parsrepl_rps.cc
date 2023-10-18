@@ -1865,6 +1865,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
           _f.lexoperdelimob =  _f.lexopertokv.to_lextoken()->lxval().to_object();
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " got token after leftv=" << _f.leftv
                         << " got lexopertokv=" << _f.lexopertokv << " bindelimob=" << _f.bindelimob
+                        << " lexoperdelimob=" << _f.lexoperdelimob
                         << " binoperob=" << _f.binoperob
                         << " @! " << position_str() << std::endl
                         << " .. curcptr " << Rps_QuotedC_String(curcptr()) << "@" << (void*)curcptr()
@@ -1906,8 +1907,8 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " got token after leftv=" << _f.leftv << " curoperob=" << _f.curoperob
                         << " lexopertokv=" << _f.lexopertokv);
         }
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term operandvect:" << operandvect
-                    << " curoperob=" << _f.curoperob << " binoperob=" << _f.binoperob
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " operandvect:" << operandvect
+                    << " curoperob=" << _f.curoperob << " binoperob=" << _f.binoperob << " lexoperdelimob=" << _f.lexoperdelimob
                     << " loopcnt#" << loopcnt
                     << " pos:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr()) << "@" << ((void*)curcptr())
@@ -1983,12 +1984,13 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
         }
       else
         {
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term breakingloop operandvect:" << operandvect << " leftv=" << _f.leftv
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " breakingloop operandvect:"
+                        << operandvect << " leftv=" << _f.leftv
                         << " curoperob=" << _f.curoperob << " right=" << _f.rightv
                         << " binoperob=" << _f.binoperob);
           break;
         };
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term **endingloop @ " << position_str()
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " **endingloop @ " << position_str()
                     << " operandvect:" << operandvect << " curoperob:" << _f.curoperob
                     << std::endl << "… in:" << (*this)
                     << (again?"again":"stop")
@@ -2000,7 +2002,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
         this->display_current_line_with_cursor(out);
       }));
     } // end while (again)
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term endloop#" << loopcnt
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " endloop#" << loopcnt
                 << " leftv=" << _f.leftv << " in:" << (*this)
                 << std::endl << " operandvect:" << operandvect
                 << " curcptr " << Rps_QuotedC_String(curcptr())
@@ -2009,7 +2011,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
   if (operandvect.size() == 1)
     {
       _f.restermv = operandvect[0];
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term GIVES restermv=" << _f.restermv << " in:" << (*this)
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " GIVES restermv=" << _f.restermv << " in:" << (*this)
                     << " startpos:" << startpos << " at:" << position_str()
                     << " curcptr " << Rps_QuotedC_String(curcptr())
                     << "@" << ((void*)curcptr())
@@ -2026,7 +2028,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
   else
     {
 #warning incomplete  Rps_TokenSource::parse_term
-      RPS_FATALOUT("Rps_TokenSource::parse_term INCOMPLETE in:" << (*this)
+      RPS_FATALOUT("Rps_TokenSource::parse_term¤" << callnum << " INCOMPLETE in:" << (*this)
                    << " curcptr " << Rps_QuotedC_String(curcptr())
                    << "  curpos:" << position_str()
                    << " operandvect:" << operandvect
@@ -2259,7 +2261,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
                     << " lexval " << _f.lexvalv
                     << " position:" << position_str() << " curcptr " << Rps_QuotedC_String(curcptr()));
       consume_front_token(&_);
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary => int " << _f.lexvalv
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum <<" => int " << _f.lexvalv
                     << " lextokv:" << _f.lextokv << std::endl
                     << " … lexgotokv:" << _f.lexgotokv
                     << " curcptr " << Rps_QuotedC_String(curcptr())
@@ -2335,7 +2337,7 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
       if (pokparse)
         *pokparse = true;
       RPS_DEBUG_LOG(REPL, "-Rps_TokenSource::parse_primary¤" << callnum
-                    << " succeeds give obres:" << _f.obres
+                    << " succeeds => obres:" << _f.obres
                     << std::endl << "… in " << (*this)
                     << " at " << position_str()
                     << " token_deq:" << toksrc_token_deq
