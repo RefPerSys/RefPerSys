@@ -552,6 +552,10 @@ test01c: debug
 	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2' -B
 	@printf '\n\n\n////test01c FINISHED¤\n'
 
+test01d: debug
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 * 3' -B
+	@printf '\n\n\n////test01d FINISHED¤\n'
+
 test02: ./refpersys
 	./refpersys -AREPL  -c 'show RefPerSys_system' -B
 	@printf '\n\n\n////test02 FINISHED¤\n'

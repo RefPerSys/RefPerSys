@@ -172,6 +172,8 @@ extern "C" bool rps_without_quick_tests;
 extern "C" char* rps_run_command_after_load;
 extern "C" char* rps_debugflags_after_load;
 
+extern "C" std::string rps_run_name;
+
 extern "C" {
 
   
@@ -706,6 +708,7 @@ enum rps_progoption_en
   RPSPROGOPT_CPLUSPLUSFLAGS_AFTER_LOAD,
   RPSPROGOPT_DEBUG_PATH,
   RPSPROGOPT_EXTRA_ARG,
+  RPSPROGOPT_RUN_NAME,
   RPSPROGOPT_VERSION,
   RPSPROGOPT_PUBLISH_ME,
 };

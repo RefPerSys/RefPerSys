@@ -46,6 +46,7 @@ extern "C" const char rps_utilities_date[];
 const char rps_utilities_date[]= __DATE__;
 
 
+std::string rps_run_name;
 
 /// https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
 /// see also file lightgen_rps.cc
@@ -860,6 +861,15 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         };
     }
     return 0;
+    case RPSPROGOPT_RUN_NAME:
+      {
+	
+	if (!rps_run_name.empty())
+	  RPS_FATALOUT("duplicate RefPerSys run name " << rps_run_name << " and " << std::string(arg));
+	rps_run_name.assign(std::string(arg));
+	RPS_INFORMOUT("set RefPerSys run name to " <<  Rps_QuotedC_String(rps_run_name));
+      }
+      return 0;
     case RPSPROGOPT_RUN_DELAY:
     {
       int pos= -1;
@@ -1292,16 +1302,18 @@ rps_fatal_stop_at (const char *filnam, int lin)
   /* we always syslog.... */
   syslog(LOG_EMERG, "RefPerSys fatal stop (%s:%d) git %s,\n"
          "... build %s pid %d on %s,\n"
-         "... elapsed %.3f, process %.3f sec in %s\n%s%s",
+         "... elapsed %.3f, process %.3f sec in %s\n%s%s%s%s",
          filnam, lin, rps_shortgitid,
          rps_timestamp, (int)getpid(), rps_hostname(),
          rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf,
          (rps_program_invocation?"... started as ":""),
-         (rps_program_invocation?:""));
+         (rps_program_invocation?:""),
+	 (rps_run_name.empty()?"":" run "),
+	 rps_run_name.c_str());
   bool ontty = isatty(STDERR_FILENO);
   if (rps_debug_file)
     {
-      fprintf(rps_debug_file, "\n*§*§* RPS FATAL %s:%d *§*§*\n", filnam, lin);
+      fprintf(rps_debug_file, "\n*§*§* RPS FATAL %s:%d %s*§*§*\n", filnam, lin, rps_run_name.c_str());
       if (rps_program_invocation)
         fprintf(rps_debug_file, "... started as %s\n", rps_program_invocation);
     }
@@ -1378,8 +1390,10 @@ rps_fatal_stop_at (const char *filnam, int lin)
       backt.output(std::clog);
       std::clog << "===== end fatal error at " << filnam << ":" << lin
                 << " ======" << std::endl << std::flush;
-      std::clog << "RefPerSys gitid " << rps_shortgitid << " built " << rps_timestamp
-                << " was started on " << rps_hostname() << " pid " << (int)getpid() << " as:" << std::endl;
+      std::clog << "RefPerSys gitid " << rps_shortgitid << " built " << rps_timestamp;
+      if (!rps_run_name.empty())
+	std::clog << " run " << rps_run_name;
+      std::clog << " was started on " << rps_hostname() << " pid " << (int)getpid() << " as:" << std::endl;
       for (int aix=0; aix<rps_argc; aix++)
         {
           const char*curarg = rps_argv[aix];

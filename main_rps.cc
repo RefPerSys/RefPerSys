@@ -285,6 +285,14 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Use system log with syslog(3) ...\n", //
     /*group:*/0 ///
   },
+  /* ======= naming the run ======= */
+  {/*name:*/ "run-name", ///
+    /*key:*/ RPSPROGOPT_RUN_NAME, ///
+    /*arg:*/ "RUN_NAME", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Set the name of this run to given RUN_NAME ...\n", //
+    /*group:*/0 ///
+  },
   /* ======= daemoning ======= */
   {/*name:*/ "daemon", ///
     /*key:*/ RPSPROGOPT_DAEMON, ///
@@ -1234,12 +1242,14 @@ rps_exiting(void)
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
   syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s exiting (%d);\n"
 	 "… elapsed %.3f sec, CPU %.3f sec;\n"
-	 "%s%s",
+	 "%s%s%s%s",
 	 (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
 	 rps_exit_atomic_code.load(),
 	 rps_elapsed_real_time(), rps_process_cpu_time(),
 	 (rps_program_invocation?"invocation: ":""),
-	 rps_program_invocation?:"");
+	 (rps_program_invocation?:""),
+	 (rps_run_name.empty()?"":" run "),
+	 rps_run_name.c_str());
   if (!rps_syslog_enabled) {
     printf("RefPerSys process %d on host %s in %s git %s exiting (%d);\n"
 	   " ... elapsed %.3f sec, CPU %.3f sec\n",
@@ -1248,6 +1258,8 @@ rps_exiting(void)
 	 rps_elapsed_real_time(), rps_process_cpu_time());
     if (rps_program_invocation)
       printf("… invocation: %s\n", rps_program_invocation);
+    if (!rps_run_name.empty())
+      printf("… run: %s\n", rps_run_name.c_str());
     fflush(stdout);
   }
 } // end rps_exiting
