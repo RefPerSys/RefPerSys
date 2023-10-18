@@ -1212,6 +1212,8 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           termvect.push_back(_f.leftv);
           bool succeeded=false;
           consume_front_token(&_, &succeeded);
+          if (!succeeded)
+            break;
           _f.lextokv =  lookahead_token(&_, 0);
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
                         << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
@@ -1272,6 +1274,14 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           }));
 #warning incomplete Rps_TokenSource::parse_sum
         };			// end while again
+      RPS_DEBUG_LOG (REPL, "Rps_TokenSource::parse_sum¤" << callnum << " endloop"
+                     << " in:" << (*this) << " at " << position_str()<< std::endl
+                     <<  " termvect=" << termvect << " pastdelimob=" << _f.pastdelimob
+                     << std::endl
+                     << Rps_Do_Output([&](std::ostream& out)
+      {
+        this->display_current_line_with_cursor(out);
+      }))
     };
   /***
    * We probably should loop and collect all terms if they are
