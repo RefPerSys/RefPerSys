@@ -530,55 +530,55 @@ analyze:
 #### simple tests
 test00: ./refpersys
 	@printf '\n\n\n////test00 first\n'
-	./refpersys  -AREPL  --test-repl-lexer 'show help' -B
+	./refpersys  -AREPL  --test-repl-lexer 'show help' -B --run-name=$@.1
 	@printf '\n\n\n////test00 second\n'
-	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B
+	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B --run-name=$@.2
 	@printf '\n\n\n////test00 third\n'
-	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B
+	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B --run-name=$@.3
 	@printf '\n\n\n////test00 help REPL command\n'
 	./refpersys -AREPL -c help -B
 	@printf '\n\n\n////test00 FINISHED¤\n'
 
 test01: ./refpersys
 	@echo test01 testing simple show help with a lot of debug
-	./refpersys -AREPL -c 'show help' -B
+	./refpersys -AREPL -c 'show help' -B --run-name=$@
 	@printf '\n\n\n////test01 FINISHED¤\n'
 
 test01b: debug
-	./refpersys -AREPL,LOW_REPL  -c 'show help' -B
+	./refpersys -AREPL,LOW_REPL  -c 'show help' -B --run-name=$@
 	@printf '\n\n\n////test01b FINISHED¤\n'
 
 test01c: debug
-	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2' -B
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2' -B --run-name=$@
 	@printf '\n\n\n////test01c FINISHED¤\n'
 
 test01d: debug
-	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 * 3' -B
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 * 3' -B --run-name=$@
 	@printf '\n\n\n////test01d FINISHED¤\n'
 
 test02: ./refpersys
-	./refpersys -AREPL  -c 'show RefPerSys_system' -B
+	./refpersys -AREPL  -c 'show RefPerSys_system' -B --run-name=$@
 	@printf '\n\n\n////test02 FINISHED¤\n'
 
 test03: ./refpersys
-	./refpersys -AREPL  -c 'show 1 + 2' -B
+	./refpersys -AREPL  -c 'show 1 + 2' -B --run-name=$@
 	@printf '\n\n\n////test03 FINISHED¤\n'
 
 test04: ./refpersys
-	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B
+	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B --run-name=$@
 	@printf '\n\n\n////test04 FINISHED¤\n'
 
 test05: ./refpersys
-	./refpersys -AREPL  -c 'show (1 + 2) ' -B
+	./refpersys -AREPL  -c 'show (1 + 2) ' -B --run-name=$@
 	@printf '\n\n\n////test05 FINISHED¤\n'
 
 test06: ./refpersys
-	./refpersys -AREPL  -c 'show 1' -B
+	./refpersys -AREPL  -c 'show 1' -B --run-name=$@
 	@printf '\n\n\n////test06 FINISHED¤\n'
 
 test07: ./refpersys
-	./refpersys -AREPL -B -c '!parse_term 1'
-	./refpersys -AREPL -B -c '!parse_sum 1 + 2'
+	./refpersys -AREPL -B -c '!parse_term 1' --run-name=$@.1
+	./refpersys -AREPL -B -c '!parse_sum 1 + 2' --run-name=$@.2
 	@printf '\n\n\n////test07 FINISHED¤\n'
 
 test08: ./refpersys
