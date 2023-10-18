@@ -1115,6 +1115,19 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
     {
       bool ok= false;
       const char*cp = intoksrc.curcptr();
+
+      RPS_DEBUG_LOG(REPL, "rps_do_builtin_repl_command " << title
+                    << "... intoksrc:" << intoksrc << " ParsingBUILTIN "
+                    << builtincmd << " obenv=" << _f.obenv
+                    << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                    << std::endl
+                    <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_builtin_repl_command/Parsing-builtin")
+                    << std::endl
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        intoksrc.display_current_line_with_cursor(out);
+      })
+          << std::endl);
       if (!strcmp(builtincmd, "parse_expression") || !strcmp(builtincmd, "parse_expr"))
         {
           bool ok= false;
@@ -1234,8 +1247,9 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
     title="?";
   RPS_ASSERT(!_f.obenv || (Rps_Value(_f.obenv)).is_object());
 #warning rps_do_one_repl_command unimplemented
-  RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command starting obenv=" << _f.obenv
-                << title << " " << Rps_Cjson_String(cmd));
+  RPS_DEBUG_LOG(REPL,"rps_do_one_repl_command starting obenv="
+                << _f.obenv
+                << " " << title << " " << Rps_Cjson_String(cmd));
   Rps_StringTokenSource intoksrc(cmd, std::string(title));
   if (!intoksrc.get_line())
     {
