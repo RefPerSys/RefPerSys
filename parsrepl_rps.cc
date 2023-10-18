@@ -1210,11 +1210,13 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
             this->display_current_line_with_cursor(out);
           }));
           termvect.push_back(_f.leftv);
-          consume_front_token(&_);
+          bool succeeded=false;
+          consume_front_token(&_, &succeeded);
           _f.lextokv =  lookahead_token(&_, 0);
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
                         << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
                         << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
+                        << (succeeded?" consumed-front":" failed-consume-token")
                         << "… curcptr:" << Rps_QuotedC_String(curcptr())
                         << " token_deq:" << toksrc_token_deq << std::endl
                         << Rps_Do_Output([&](std::ostream& out)
