@@ -465,7 +465,7 @@ indent:
 
 ## redump target
 redump: refpersys
-	./refpersys --dump=. --batch
+	./refpersys --dump=. --batch --run-name=$@
 	@if git diff -U1|grep '^[+-] ' | grep -v origitid ; then \
 	  printf "make redump changed in %s git %s\n" $$(pwd)  $(RPS_SHORTGIT_ID); \
           git diff ; \
@@ -476,7 +476,7 @@ redump: refpersys
 
 ## alternate redump target
 altredump:  ./refpersys
-	./refpersys --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
+	./refpersys --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch --run-name=$@ 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
 
 
 check:
