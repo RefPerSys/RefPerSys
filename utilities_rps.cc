@@ -1208,11 +1208,13 @@ rps_output_program_arguments(std::ostream& out, int argc, const char*const*argv)
       for (const char* pc = curparg; goodchar && *pc; pc++)
         {
           if (isalnum(*pc) || *pc=='_' || *pc=='-' || *pc=='+'
-              || *pc=='/' || *pc=='.' || *pc==',' || *pc==':')
+              || *pc=='/' || *pc=='.' || *pc==',' || *pc==':'
+	      || *pc=='=' || *pc=='%' || *pc=='@')
             continue;
           else
             {
               goodchar = false;
+	      RPS_POSSIBLE_BREAKPOINT();
               break;
             }
         };
