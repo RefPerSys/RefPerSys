@@ -862,14 +862,14 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     }
     return 0;
     case RPSPROGOPT_RUN_NAME:
-      {
-	
-	if (!rps_run_name.empty())
-	  RPS_FATALOUT("duplicate RefPerSys run name " << rps_run_name << " and " << std::string(arg));
-	rps_run_name.assign(std::string(arg));
-	RPS_INFORMOUT("set RefPerSys run name to " <<  Rps_QuotedC_String(rps_run_name));
-      }
-      return 0;
+    {
+
+      if (!rps_run_name.empty())
+        RPS_FATALOUT("duplicate RefPerSys run name " << rps_run_name << " and " << std::string(arg));
+      rps_run_name.assign(std::string(arg));
+      RPS_INFORMOUT("set RefPerSys run name to " <<  Rps_QuotedC_String(rps_run_name));
+    }
+    return 0;
     case RPSPROGOPT_RUN_DELAY:
     {
       int pos= -1;
@@ -1209,12 +1209,12 @@ rps_output_program_arguments(std::ostream& out, int argc, const char*const*argv)
         {
           if (isalnum(*pc) || *pc=='_' || *pc=='-' || *pc=='+'
               || *pc=='/' || *pc=='.' || *pc==',' || *pc==':'
-	      || *pc=='=' || *pc=='%' || *pc=='@')
+              || *pc=='=' || *pc=='%' || *pc=='@')
             continue;
           else
             {
               goodchar = false;
-	      RPS_POSSIBLE_BREAKPOINT();
+              RPS_POSSIBLE_BREAKPOINT();
               break;
             }
         };
@@ -1310,14 +1310,15 @@ rps_fatal_stop_at (const char *filnam, int lin)
          rps_elapsed_real_time(), rps_process_cpu_time(), cwdbuf,
          (rps_program_invocation?"... started as ":""),
          (rps_program_invocation?:""),
-	 (rps_run_name.empty()?"":" run "),
-	 rps_run_name.c_str());
+         (rps_run_name.empty()?"":" run "),
+         rps_run_name.c_str());
   bool ontty = isatty(STDERR_FILENO);
   if (rps_debug_file)
     {
       fprintf(rps_debug_file, "\n*§*§* RPS FATAL %s:%d %s*§*§*\n", filnam, lin, rps_run_name.c_str());
       if (rps_program_invocation)
-        fprintf(rps_debug_file, "... started as %s\n", rps_program_invocation);
+        fprintf(rps_debug_file,
+                "… started as %s\n", rps_program_invocation);
     }
   if (!rps_syslog_enabled)
     fprintf(stderr, "\n" "%s%sRPS FATAL:%s\n"
@@ -1340,7 +1341,8 @@ rps_fatal_stop_at (const char *filnam, int lin)
           fputc(' ', rps_debug_file);
           const char*curarg = rps_argv[aix];
           bool isplainarg = isalnum(curarg[0]) || curarg[0]=='/'
-                            || curarg[0]=='_' || curarg[0]=='.' || curarg[0]=='-';
+                            || curarg[0]=='_' || curarg[0]=='.'
+                            || curarg[0]=='-' || curarg[0]=='=' || curarg[0]=='@';
           for (const char*pc = curarg; *pc != (char)0 && isplainarg; pc++)
             isplainarg = *pc>' ' && *pc<(char)127
                          && *pc != '\'' && *pc != '\\' && *pc != '\"'
@@ -1365,12 +1367,17 @@ rps_fatal_stop_at (const char *filnam, int lin)
       outl << "===== end fatal error at " << filnam << ":" << lin
            << " ======" << std::endl << std::flush;
       outl << "RefPerSys gitid " << rps_shortgitid << " built " << rps_timestamp
-           << " was started on " << rps_hostname() << " pid " << (int)getpid() << " as:" << std::endl;
+           << " was started on " << rps_hostname() << " pid "
+           << (int)getpid() << " as";
+      if (!rps_run_name.empty())
+        outl << " run " << rps_run_name;
+      outl << ':' << std::endl;
       for (int aix=0; aix<rps_argc; aix++)
         {
           const char*curarg = rps_argv[aix];
           bool isplainarg = isalnum(curarg[0]) || curarg[0]=='/'
-                            || curarg[0]=='_' || curarg[0]=='.'  || curarg[0]=='-';
+                            || curarg[0]=='_' || curarg[0]=='.'
+                            || curarg[0]=='-' || curarg[0]=='=' || curarg[0]=='@';
           for (const char*pc = curarg; *pc != (char)0 && isplainarg; pc++)
             isplainarg = *pc>' ' && *pc<(char)127
                          && *pc != '\'' && *pc != '\\' && *pc != '\"'
@@ -1394,7 +1401,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
                 << " ======" << std::endl << std::flush;
       std::clog << "RefPerSys gitid " << rps_shortgitid << " built " << rps_timestamp;
       if (!rps_run_name.empty())
-	std::clog << " run " << rps_run_name;
+        std::clog << " run " << rps_run_name;
       std::clog << " was started on " << rps_hostname() << " pid " << (int)getpid() << " as:" << std::endl;
       for (int aix=0; aix<rps_argc; aix++)
         {

@@ -1,4 +1,3 @@
-
 /****************************************************************
  * file parsrepl_rps.cc
  * SPDX-License-Identifier: GPL-3.0-or-later
@@ -1261,7 +1260,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           //// reached when okleft is false (see previous parse_term)....
           RPS_FATALOUT("missing code in Rps_TokenSource::parse_sum¤" << callnum << " from " << Rps_ShowCallFrame(callframe)
                        << " in:" << (*this) << " at " << position_str()<< std::endl
-                       << "…  startpos:" << startpos << " token_deq:" << toksrc_token_deq
+                       << "… startpos:" << startpos << " token_deq:" << toksrc_token_deq
                        << " curcptr:" << Rps_QuotedC_String(curcptr())
                        << std::endl
                        << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " termvect=" << termvect
@@ -2214,20 +2213,24 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
   _f.lexkindob = ltokz->lxkind();
   _f.lexvalv = ltokz->lxval();
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " lexkindob="
-                << _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str()
+                << _f.lexkindob << " lexval=" << _f.lexvalv
+                << std::endl
+                << " position:" << position_str()
                 << " curcptr " << Rps_QuotedC_String(curcptr())
                 << " lextokv=" << _f.lextokv
                 << "  in:" << (*this)
                 << " token_deq:" << toksrc_token_deq);
   if (!can_start_primary(&_))
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " failing canstartprim lexkindob="
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum
+                    << " failing canstartprim lexkindob="
                     << _f.lexkindob << " lexval=" << _f.lexvalv << " position:" << position_str()
                     << " curcptr " << Rps_QuotedC_String(curcptr())
                     << "  in:" << (*this));
       if (pokparse)
         *pokparse = false;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " failing_B at startpos:" << startpos
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum
+                    << " failing_B at startpos:" << startpos
                     << "  in:" << (*this)
                     << " position:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr())
@@ -2242,7 +2245,8 @@ Rps_TokenSource::parse_primary(Rps_CallFrame*callframe,  bool*pokparse)
       return nullptr;
     }
   /// can_start_primary was successful…
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum << " ok can_start_primary lexkindob="
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_primary¤" << callnum
+                << " ok can_start_primary lexkindob="
                 << _f.lexkindob << " lexval=" << _f.lexvalv << std::endl
                 << "… startpos:" << startpos << " position:" << position_str()
                 << " curcptr " << Rps_QuotedC_String(curcptr())
