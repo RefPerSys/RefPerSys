@@ -1418,17 +1418,17 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
       if (_f.lextokv)
         {
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token got-token-pushing lextokv:" << _f.lextokv
-			<< " pos:" << position_str()
+                        << " pos:" << position_str()
                         << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::lookahead_token pushing"));
           toksrc_token_deq.push_back(_f.lextokv);
         }
       else
         {
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank
-			<< " (get_token/fail) missing from:"
+                        << " (get_token/fail) missing from:"
                         << std::endl
-			<< "… pos:" << position_str()
-			<< " token_deq:" << toksrc_token_deq << std::endl << Rps_ShowCallFrame(&_));
+                        << "… pos:" << position_str()
+                        << " token_deq:" << toksrc_token_deq << std::endl << Rps_ShowCallFrame(&_));
           return nullptr;
         }
     };                          // end while rank >= toksrc_token_deq.size()
@@ -1436,7 +1436,7 @@ Rps_TokenSource::lookahead_token(Rps_CallFrame*callframe, unsigned rank)
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::lookahead_token rank#" << rank
                 << " pos:" << position_str()
                 << " curcptr:" << Rps_QuotedC_String(curcptr())
-                        << std::endl
+                << std::endl
                 << "… in " << *this << " token_deq:" << toksrc_token_deq);
   if (rank<toksrc_token_deq.size())
     {
