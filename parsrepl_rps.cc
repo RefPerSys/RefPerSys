@@ -1202,11 +1202,14 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
       {
         this->display_current_line_with_cursor(out);
       }));
+      int loopcnt = 0;
       while (again)
         {
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum <<
-                        " termvect:" << termvect  << " lextokv=" << _f.lextokv  << std::endl
-                        << "… delimob=" << _f.delimob
+          loopcnt++;
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+                        << " termvect:" << termvect    << std::endl
+                        << "… lextokv=" << _f.lextokv
+                        << " delimob=" << _f.delimob
                         << " pastdelimob=" << _f.pastdelimob << (again?"again":"stop")
                         << std::endl
                         << "… curcptr:" << Rps_QuotedC_String(curcptr())
@@ -1221,8 +1224,10 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           if (!succeeded)
             break;
           _f.lextokv =  lookahead_token(&_, 0);
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
-                        << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+                        << " in:" << (*this)
+                        << " termvect:" << termvect    << std::endl
+                        << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
                         << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
                         << (succeeded?" consumed-front":" failed-consume-token")
                         << "… curcptr:" << Rps_QuotedC_String(curcptr())
@@ -1233,9 +1238,10 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           }));
           okleft = false;
           _f.leftv = parse_term(&_, &okleft);
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
-                        << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << std::endl
-                        << "… delimob=" << _f.delimob << " termvect=" << termvect
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+                        << " in:" << (*this) << " termvect=" << termvect  << std::endl
+                        << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << std::endl
+                        << "… delimob=" << _f.delimob
                         << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
                         << std::endl
                         << "… curcptr:" << Rps_QuotedC_String(curcptr()) << " leftv=" << _f.leftv
@@ -1251,8 +1257,9 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
             {
               termvect.push_back(_f.leftv);
               again = true;
-              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " in:" << (*this)
-                            << " leftv=" << _f.leftv << " lextokv=" << _f.lextokv << std::endl
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+                            << " in:" << (*this) << std::endl
+                            << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << std::endl
                             << "… delimob=" << _f.delimob << " termvect=" << termvect
                             << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
                             << std::endl
@@ -1265,12 +1272,14 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
               continue;
             };
           //// reached when okleft is false (see previous parse_term)....
-          RPS_FATALOUT("missing code in Rps_TokenSource::parse_sum¤" << callnum << " from " << Rps_ShowCallFrame(callframe)
+          RPS_FATALOUT("missing code in Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+                       << " from " << Rps_ShowCallFrame(callframe)
                        << " in:" << (*this) << " at " << position_str()<< std::endl
                        << "… startpos:" << startpos << " token_deq:" << toksrc_token_deq
                        << " curcptr:" << Rps_QuotedC_String(curcptr())
                        << std::endl
-                       << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " termvect=" << termvect
+                       << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv
+                       << std::endl << "…  termvect=" << termvect
                        << (again?" again":" notagain") << " delimob=" << _f.delimob
                        << " pastdelimob=" << _f.pastdelimob
                        << std::endl
@@ -1280,7 +1289,8 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           }));
 #warning incomplete Rps_TokenSource::parse_sum
         };			// end while again
-      RPS_DEBUG_LOG (REPL, "Rps_TokenSource::parse_sum¤" << callnum << " endloop in:" << (*this)
+      RPS_DEBUG_LOG (REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+                     << " endloop in:" << (*this)
                      << std::endl
                      << "… at " << position_str()<< std::endl
                      <<  "… termvect=" << termvect << " pastdelimob=" << _f.pastdelimob
