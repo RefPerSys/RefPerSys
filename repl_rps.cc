@@ -1259,8 +1259,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
     }
   std::string commandpos = intoksrc.position_str();
   RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
-                << Rps_Cjson_String(cmd)
-                << "... intoksrc:" << intoksrc
+                << Rps_Cjson_String(cmd) << std::endl
+                << "… intoksrc:" << intoksrc
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
   /*** TODO:
        For debugging purposes, we want builtin commands like !parse_term etc...
