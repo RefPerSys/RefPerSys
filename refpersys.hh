@@ -4948,7 +4948,7 @@ public:
   void output(std::ostream&out) const
   {
     if (qtc_empty)
-      out << "*nullstring*";
+      out << "*null*";
     else {
       out << "\"";
       rps_output_utf8_cjson(out, c_str(), (int)size());
