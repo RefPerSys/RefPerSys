@@ -226,6 +226,7 @@ rps_event_loop(void)
   sigset_t msk= {};
   sigemptyset(&msk);
   sigaddset(&msk, SIGCHLD);
+  sigaddset(&msk, SIGINT);
   sigaddset(&msk, SIGTERM);
   sigaddset(&msk, SIGXCPU);
   sigaddset(&msk, SIGALRM);
@@ -254,7 +255,7 @@ rps_event_loop(void)
 #define EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl) do { explarr[Ix] = Fil ":" #Lin " " Expl; } while(0)
 #define EXPLAIN_EVFD_ATBIS(Fil,Lin,Ix,Expl)  EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl)
 #define EXPLAIN_EVFD_RPS(Ix,Expl) EXPLAIN_EVFD_ATBIS(__FILE__,__LINE__,(Ix),Expl)
-      event_nbloops.fetch_add(1);
+      int loopcnt=1+ event_nbloops.fetch_add(1);
       memset ((void*)&pollarr, 0, sizeof(pollarr));
       nbfdpoll=0;
       struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
@@ -325,28 +326,40 @@ rps_event_loop(void)
               {
               case SIGTERM:
               {
-                RPS_INFORMOUT("event loop got SIGTERM from pid " << origpid);
-                rps_stop_event_loop_flag.store(true);
-              };
-              break;
-              case SIGQUIT:
-              {
-                RPS_INFORMOUT("event loop got SIGQUIT from pid " << origpid);
+                RPS_INFORMOUT("event loop#"<< loopcnt
+                              << " got SIGTERM from pid " << origpid);
                 rps_stop_event_loop_flag.store(true);
               };
               break;
               case SIGINT:
               {
-                RPS_INFORMOUT("event loop got SIGINT from pid " << origpid);
+                RPS_INFORMOUT("event loop#" << loopcnt
+                              << " got SIGINT from pid " << origpid);
+                rps_stop_event_loop_flag.store(true);
+              };
+              break;
+              case SIGQUIT:
+              {
+                RPS_INFORMOUT("event loop#" << loopcnt
+                              << " got SIGQUIT from pid " << origpid);
+                rps_stop_event_loop_flag.store(true);
+              };
+              break;
+              case SIGINT:
+              {
+                RPS_INFORMOUT("event loop#" << loopcnt
+                              << " got SIGINT from pid " << origpid);
               };
               break;
               case SIGCHLD:
               {
-                RPS_INFORMOUT("event loop got SIGCHLD from pid " << origpid << " status:" << status);
+                RPS_INFORMOUT("event loop#" << loopcnt
+                              << " got SIGCHLD from pid " << origpid << " status:" << status);
               };
               break;
               default:
-                RPS_FATALOUT("unexpected signal#" << signum << ":" << strsignal(signum));
+                RPS_FATALOUT("event loop#" << loopcnt
+                             << " got unexpected signal#" << signum << ":" << strsignal(signum));
               };
 #warning missing code to handle signalfd...
           };
@@ -479,8 +492,8 @@ rps_event_loop(void)
       if (pollcount %2 && debugpoll)
         snprintf(elapsbuf, sizeof(elapsbuf), " elti: %.3fs", rps_elapsed_real_time());
       RPS_DEBUG_LOG(REPL, "rps_event_loop pollcount#"
-		    << pollcount << " respoll=" << respoll
-		    << " nbfdpoll=" << nbfdpoll);
+                    << pollcount << " respoll=" << respoll
+                    << " nbfdpoll=" << nbfdpoll);
       if (respoll>0)
         {
           if (debugpoll)
