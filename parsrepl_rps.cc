@@ -1193,7 +1193,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                         << " token_deq:" << toksrc_token_deq << std::endl);
         };
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum <<
-                    " termvect:" << termvect << " before while "
+                    " termvect:" << termvect << " before loop "
                     <<  (again?"again":"stop")
                     << std::endl
                     << "… curcptr:" << Rps_QuotedC_String(curcptr())
@@ -1207,7 +1207,9 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
         {
           loopcnt++;
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
-                        << " termvect:" << termvect << std::endl
+                        << " termvect:" << termvect
+			<< " leftv:" << _f.leftv
+			<< std::endl
                         << "… lextokv=" << _f.lextokv
                         << " delimob=" << _f.delimob
                         << " pastdelimob=" << _f.pastdelimob << (again?"again":"stop")
