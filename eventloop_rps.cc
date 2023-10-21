@@ -231,6 +231,9 @@ rps_event_loop(void)
   sigaddset(&msk, SIGXCPU);
   sigaddset(&msk, SIGALRM);
   sigaddset(&msk, SIGVTALRM);
+  RPS_DEBUG_LOG(REPL, "starting rps_event_loop from "
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/start")
+		);
   rps_eventloopdata.eld_sigfd = signalfd(-1, &msk, SFD_CLOEXEC);
   if (rps_eventloopdata.eld_sigfd<=0)
     RPS_FATALOUT("failed to call signalfd:" << strerror(errno));
@@ -343,12 +346,6 @@ rps_event_loop(void)
                 RPS_INFORMOUT("event loop#" << loopcnt
                               << " got SIGQUIT from pid " << origpid);
                 rps_stop_event_loop_flag.store(true);
-              };
-              break;
-              case SIGINT:
-              {
-                RPS_INFORMOUT("event loop#" << loopcnt
-                              << " got SIGINT from pid " << origpid);
               };
               break;
               case SIGCHLD:
