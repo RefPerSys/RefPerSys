@@ -472,11 +472,15 @@ rps_event_loop(void)
           rps_stop_agenda_mechanism();
           break;
         };
+      fflush(nullptr);
       errno = 0;
       int respoll = poll(pollarr, nbfdpoll, (rps_poll_delay_millisec*(debugpoll?3:1)));
       pollcount++;
       if (pollcount %2 && debugpoll)
         snprintf(elapsbuf, sizeof(elapsbuf), " elti: %.3fs", rps_elapsed_real_time());
+      RPS_DEBUG_LOG(REPL, "rps_event_loop pollcount#"
+		    << pollcount << " respoll=" << respoll
+		    << " nbfdpoll=" << nbfdpoll);
       if (respoll>0)
         {
           if (debugpoll)
