@@ -1303,17 +1303,26 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           }));
 #warning incomplete Rps_TokenSource::parse_sum
         };			// end while again
+      ////////////////////////////
       RPS_DEBUG_LOG (REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
                      << " endloop in:" << (*this)
                      << std::endl
                      << "… at " << position_str()<< std::endl
                      <<  "… termvect=" << termvect << " pastdelimob=" << _f.pastdelimob
+                     << " rightv=" << _f.rightv
+                     << std::endl
+                     << "… plusdelimob=" << _f.plusdelimob
+                     << " plusbinopob=" << _f.plusbinopob
+                     << std::endl
+                     << "… minusdelimob=" << _f.minusdelimob
+                     << " minusbinopob=" << _f.minusbinopob
+                     << " delimob=" << _f.delimob
                      << std::endl
                      << Rps_Do_Output([&](std::ostream& out)
       {
         this->display_current_line_with_cursor(out);
       }));
-    };
+    };				// end if
   /***
    * We probably should loop and collect all terms if they are
    * separated by the same additive delimiter with its operator.
@@ -1331,6 +1340,14 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                << " curcptr:" << Rps_QuotedC_String(curcptr())
                << std::endl
                << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv
+               << " rightv=" << _f.rightv
+               << std::endl
+               << "… plusdelimob=" << _f.plusdelimob
+               << " plusbinopob=" << _f.plusbinopob
+               << std::endl
+               << "… minusdelimob=" << _f.minusdelimob
+               << " minusbinopob=" << _f.minusbinopob
+               << " delimob=" << _f.delimob
                << std::endl
                << Rps_Do_Output([&](std::ostream& out)
   {
