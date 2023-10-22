@@ -238,7 +238,7 @@ Rps_Value::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
   if (is_int())
     out << as_int();
   else if (is_empty())
-    out << "___";
+    out << "__";
   else if (is_ptr())
     {
       if (depth > maxdepth)
