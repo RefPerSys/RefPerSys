@@ -1461,8 +1461,10 @@ void
 Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe, bool*psuccess)
 {
   RPS_ASSERT(rps_is_main_thread());
+  static unsigned callcnt;
+  callcnt++;
   RPS_ASSERT(callframe && callframe->is_good_call_frame());
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token START from:"
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token#" << callcnt <<" START from:"
                 << std::endl << Rps_ShowCallFrame(callframe)
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::consume_front_token start")
                 << " this-token:" << (*this) << " token_deq:" << toksrc_token_deq
@@ -1473,9 +1475,10 @@ Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe, bool*psuccess)
   {
     this->display_current_line_with_cursor(out);
   }));
+  ////
   if (toksrc_token_deq.empty())
     {
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token FAIL " << *this
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token#" << callcnt <<" FAIL " << *this
                     << std::endl << Rps_ShowCallFrame(callframe)
                     << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
@@ -1487,7 +1490,7 @@ Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe, bool*psuccess)
         throw std::runtime_error("Rps_TokenSource::consume_front_token without any queued token");
       else
         *psuccess=false;
-      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token fail€"
+      RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token#" << callcnt <<" fail€"
                     << " pos:" << position_str()
                     << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
@@ -1496,9 +1499,11 @@ Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe, bool*psuccess)
       }));
       return;
     };
+  ////
   RPS_ASSERT(!toksrc_token_deq.empty());
   toksrc_token_deq.pop_front();
-  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token done€, now token_deq:" << toksrc_token_deq
+  RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token#" << callcnt
+                << " done€, now token_deq:" << toksrc_token_deq
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::consume_front_token/done€")
                 << " pos:" << position_str()
                 << " curcptr:" << Rps_QuotedC_String(curcptr()) << std::endl
