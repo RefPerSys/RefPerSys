@@ -444,8 +444,8 @@ rps_show_version(void)
             << " program name: " << rps_progname << std::endl
             << " build time: " << rps_timestamp << std::endl
             << " top directory: " << rps_topdirectory << std::endl
-            << " git id: " << rps_gitid << std::endl
-            << " short git id: " << rps_shortgitid << std::endl
+            << " gitid: " << rps_gitid << std::endl
+            << " short-gitid: " << rps_shortgitid << std::endl
             << " last git tag: " << rps_lastgittag << std::endl
             << " last git commit: " << rps_lastgitcommit << std::endl
             << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
