@@ -1215,10 +1215,11 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
       {
         this->display_current_line_with_cursor(out);
       }));
+      ///////////
       while (again)
         {
           loopcnt++;
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+          RPS_DEBUGNL_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
                         << " termvect:" << termvect
                         << " leftv:" << _f.leftv
                         << std::endl
