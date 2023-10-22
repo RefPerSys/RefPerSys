@@ -233,7 +233,7 @@ rps_event_loop(void)
   sigaddset(&msk, SIGVTALRM);
   RPS_DEBUG_LOG(REPL, "starting rps_event_loop from "
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/start")
-		);
+               );
   rps_eventloopdata.eld_sigfd = signalfd(-1, &msk, SFD_CLOEXEC);
   if (rps_eventloopdata.eld_sigfd<=0)
     RPS_FATALOUT("failed to call signalfd:" << strerror(errno));
