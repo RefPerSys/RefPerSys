@@ -331,7 +331,7 @@ Rps_StringTokenSource::output (std::ostream&out, unsigned depth, unsigned maxdep
             }
         }
     }
-  out << "StringTokenSource" << name();
+  out << "StriTokSrc°" << name();
   if (abbrev.length() < toksrcstr_str.length())
     out << Rps_QuotedC_String(abbrev) << "⋯" // U+22EF MIDLINE HORIZONTAL ELLIPSIS;
         << "l" << toksrcstr_str.length();
