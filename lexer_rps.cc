@@ -1479,16 +1479,16 @@ Rps_TokenSource::consume_front_token(Rps_CallFrame*callframe, bool*psuccess)
   if (toksrc_token_deq.empty())
     {
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::consume_front_token#" << callcnt
-		    <<" FAIL" << std::endl
-		    << "… in " << *this
+                    <<" FAIL" << std::endl
+                    << "… in " << *this
                     << std::endl << Rps_ShowCallFrame(callframe)
                     << std::endl
                     << Rps_Do_Output([&](std::ostream& out)
-		    {
-		      this->display_current_line_with_cursor(out);
-		    })
-		    << std::endl
-		    << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::consume_front_token FAIL"));
+      {
+        this->display_current_line_with_cursor(out);
+      })
+          << std::endl
+          << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::consume_front_token FAIL"));
       if (psuccess==nullptr)
         throw std::runtime_error("Rps_TokenSource::consume_front_token without any queued token");
       else
