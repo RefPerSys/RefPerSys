@@ -1079,7 +1079,8 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                 << Rps_Do_Output([&](std::ostream& out)
   {
     this->display_current_line_with_cursor(out);
-  }));
+  })
+      << " termvect:" << termvect);
   bool okleft = false;
   _f.leftv = parse_term(&_, &okleft);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
@@ -1234,6 +1235,15 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
             this->display_current_line_with_cursor(out);
           }));
           termvect.push_back(_f.leftv);
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+                        << " in:" << (*this)
+                        << " termvect:" << termvect    << std::endl
+                        << "… leftv=" << _f.leftv
+                        << " token_deq:" << toksrc_token_deq << std::endl
+                        << Rps_Do_Output([&](std::ostream& out)
+          {
+            this->display_current_line_with_cursor(out);
+          }));
           bool succeeded=false;
           consume_front_token(&_, &succeeded);
           if (!succeeded)
@@ -1241,7 +1251,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           _f.lextokv =  lookahead_token(&_, 0);
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
                         << " in:" << (*this)
-                        << " termvect:" << termvect    << std::endl
+                        << " termvect:" << termvect << std::endl
                         << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
                         << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
                         << (succeeded?" consumed-front":" failed-consume-token")
@@ -1275,7 +1285,8 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
                             << " in:" << (*this) << std::endl
                             << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << std::endl
-                            << "… delimob=" << _f.delimob << " termvect=" << termvect
+                            << "… delimob=" << _f.delimob
+                            << " termvect=" << termvect
                             << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
                             << std::endl
                             << "… curcptr:" << Rps_QuotedC_String(curcptr())
