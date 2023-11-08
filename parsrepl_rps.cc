@@ -1220,13 +1220,14 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
       while (again)
         {
           loopcnt++;
-          RPS_DEBUGNL_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+          RPS_DEBUGNL_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+                          << " loopcnt#" << loopcnt
                           << " termvect:" << termvect
                           << " leftv:" << _f.leftv
                           << std::endl
                           << "… lextokv=" << _f.lextokv
                           << " delimob=" << _f.delimob
-                          << " pastdelimob=" << _f.pastdelimob << (again?"again":"stop")
+                          << " pastdelimob=" << _f.pastdelimob << (again?", again":"; stop")
                           << std::endl
                           << "… curcptr:" << Rps_QuotedC_String(curcptr())
                           << " token_deq:" << toksrc_token_deq << std::endl
@@ -1235,7 +1236,8 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
             this->display_current_line_with_cursor(out);
           }));
           termvect.push_back(_f.leftv);
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+                        << " loopcnt#" << loopcnt
                         << " in:" << (*this)
                         << " termvect:" << termvect << std::endl
                         << "… leftv=" << _f.leftv
@@ -1249,11 +1251,14 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           if (!succeeded)
             break;
           _f.lextokv =  lookahead_token(&_, 0);
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤"
+                        << callnum << " loopcnt#" << loopcnt
                         << " in:" << (*this)
                         << " termvect:" << termvect << std::endl
-                        << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << " delimob=" << _f.delimob
-                        << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
+                        << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv
+                        << " delimob=" << _f.delimob
+                        << " pastdelimob=" << _f.pastdelimob
+                        << " lextokv=" << _f.lextokv
                         << (succeeded?" consumed-front":" failed-consume-token")
                         << "… curcptr:" << Rps_QuotedC_String(curcptr())
                         << " token_deq:" << toksrc_token_deq << std::endl
@@ -1263,11 +1268,13 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           }));
           okleft = false;
           _f.leftv = parse_term(&_, &okleft);
-          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+                        << " loopcnt#" << loopcnt
                         << " in:" << (*this) << " termvect=" << termvect  << std::endl
                         << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << std::endl
                         << "… delimob=" << _f.delimob
-                        << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
+                        << " pastdelimob=" << _f.pastdelimob
+                        << " lextokv=" << _f.lextokv
                         << std::endl
                         << "… curcptr:" << Rps_QuotedC_String(curcptr()) << " leftv=" << _f.leftv
                         << (okleft?" OKleft":" NOTOKleft")
@@ -1280,16 +1287,20 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
             again = false;
           else
             {
-              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
-                            << " pushing leftv:" << _f.leftv << " to termvect:"<< termvect);
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+                            << " loopcnt#" << loopcnt
+                            << " pushing leftv:" << _f.leftv
+                            << " to termvect:"<< termvect);
               termvect.push_back(_f.leftv);
               again = true;
-              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+                            << " loopcnt#" << loopcnt
                             << " in:" << (*this) << std::endl
                             << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << std::endl
                             << "… delimob=" << _f.delimob
-                            << "pushed to termvect=" << termvect
-                            << " pastdelimob=" << _f.pastdelimob << " lextokv=" << _f.lextokv
+                            << " pushed to termvect=" << termvect
+                            << " pastdelimob=" << _f.pastdelimob
+                            << " lextokv=" << _f.lextokv
                             << std::endl
                             << "… curcptr:" << Rps_QuotedC_String(curcptr())
                             << " continuing-loop token_deq:" << toksrc_token_deq << std::endl
@@ -1300,7 +1311,8 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
               continue;
             };
           //// reached when okleft is false (see previous parse_term)....
-          RPS_FATALOUT("missing code in Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
+          RPS_FATALOUT("missing code in Rps_TokenSource::parse_sum¤" << callnum
+                       << " loopcnt#" << loopcnt
                        << " from " << Rps_ShowCallFrame(callframe)
                        << " in:" << (*this) << " at " << position_str()<< std::endl
                        << "… startpos:" << startpos << " token_deq:" << toksrc_token_deq
