@@ -553,6 +553,10 @@ test01c: debug
 	@printf '\n\n\n////test01c FINISHED¤\n'
 
 test01d: debug
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 + 3' -B --run-name=$@
+	@printf '\n\n\n////test01d FINISHED¤\n'
+
+test01e: debug
 	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 * 3' -B --run-name=$@
 	@printf '\n\n\n////test01d FINISHED¤\n'
 
