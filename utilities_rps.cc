@@ -655,9 +655,10 @@ rps_early_initialization(int argc, char** argv)
              err);
       exit(EXIT_FAILURE);
     };
-  // initialize GNU lightning
-#warning init_jit is changing its API
-  // see lists.gnu.org/archive/html/lightning/2023-10/msg00020.html
+  // initialize GNU lightning see
+  // lists.gnu.org/archive/html/lightning/2023-10/msg00020.html
+  // ... Notice that a recent GNU lightning is required, see
+  // https://lists.gnu.org/archive/html/lightning/2023-11/msg00012.html
   init_jit (rps_progname);
   // compute the program invocation string
   rps_compute_program_invocation(argc, argv);
