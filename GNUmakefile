@@ -182,6 +182,7 @@ RPS_PKG_LIBS:=  $(shell $(RPS_PKG_CONFIG) --libs $(RPS_PKG_NAMES))
 LIBES=  -lunistring -lbacktrace -lpthread -ldl
 RM= /bin/rm -f
 MV= /bin/mv
+SYNC= /bin/sync
 CC= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CC)
 CXX= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CXX)
 LINK.cc= $(RPS_BUILD_CXX)
@@ -205,13 +206,14 @@ LDFLAGS += -rdynamic -pthread -L /usr/local/lib -L /usr/lib
 all:
 	@echo RefPerSys has RPS_ARCH: $(RPS_ARCH) and RPS_OPERSYS: $(RPS_OPERSYS)
 	if [ -f refpersys ] ; then  $(MV) -f -v --backup refpersys refpersys~ ; fi
+	$(SYNC)
 	$(RM) __timestamp.o __timestamp.c
 	$(MAKE) -$(MAKEFLAGS) refpersys
 	@echo all make target syncing
-	sync
+	$(SYNC)
 
 .SECONDARY:  __timestamp.c  #gramrepl_rps.yy gramrepl_rps.cc  gramrepl_rps.hh
-
+	$(SYNC)
 debug:
 	@echo making debug version of refpersys
 	if [ -f refpersys ] ; then  $(MV) -f -v --backup refpersys refpersys~ ; fi
@@ -235,7 +237,7 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) $(RPS_GPPBISON_OB
 	@echo $@: RPS_GPPBISON_CPPFILES= $(RPS_GPPBISON_CPPFILES)
 	@echo $@: RPS_GPPBISON_OBJECTS= $(RPS_GPPBISON_OBJECTS)
 	@echo $@: LIBES= $(LIBES)
-	-sync
+	-$(SYNC)
 	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS)  $(RPS_BUILD_XTRA_CFLAGS) -rdynamic -pie -Bdynamic \
                               main_rps.o $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS) $(RPS_GPPBISON_OBJECTS)  __timestamp.o \
                  $(shell $(RPS_CURLPP_CONFIG) --libs) \
@@ -243,7 +245,7 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) $(RPS_GPPBISON_OB
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __timestamp.c __timestamp.c~
 	$(RM) __timestamp.o
-	-sync
+	-$(SYNC)
 
 refpersys-lto: main_rps.lto.o $(RPS_LTO_CORE_OBJECTS) $(RPS_LTO_BISON_OBJECTS) $(RPS_LTO_GPPBISON_OBJECTS)  __ltotimestamp.o
 	@echo $@: RPS_COMPILER_TIMER= $(RPS_COMPILER_TIMER)
@@ -253,7 +255,7 @@ refpersys-lto: main_rps.lto.o $(RPS_LTO_CORE_OBJECTS) $(RPS_LTO_BISON_OBJECTS) $
 	@echo $@: RPS_LTO_BISON_OBJECTS= $(RPS_LTO_BISON_OBJECTS)
 	@echo $@: RPS_LTO_GPPBISON_OBJECTS= $(RPS_LTO_GPPBISON_OBJECTS)
 	@echo $@: LIBES= $(LIBES)
-	-sync
+	-$(SYNC)
 	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS)  $(RPS_BUILD_XTRA_CFLAGS) $(RPS_BUILD_LTOFLAGS) -rdynamic -pie -Bdynamic \
                               main_rps.lto.o $(RPS_LTO_CORE_OBJECTS)  $(RPS_LTO_BISON_OBJECTS) $(RPS_LTO_GPPBISON_OBJECTS)  __ltotimestamp.o \
                  $(shell $(RPS_CURLPP_CONFIG) --libs) \
@@ -261,7 +263,7 @@ refpersys-lto: main_rps.lto.o $(RPS_LTO_CORE_OBJECTS) $(RPS_LTO_BISON_OBJECTS) $
 	$(MV) --backup $@-tmp $@
 	$(MV) --backup __ltotimestamp.c __ltotimestamp.c~
 	$(RM) __ltotimestamp.o
-	-sync
+	-$(SYNC)
 
 #sanitized-refpersys:  main_rps.sanit.o $(RPS_SANITIZED_CORE_OBJECTS)  $(RPS_SANITIZED_BISON_OBJECTS) __timestamp.o
 #       $(RPS_COMPILER_TIMER) $(LINK.cc)  $(RPS_BUILD_SANITFLAGS) \
@@ -293,12 +295,12 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
 %.o: %.cc refpersys.hh.gch
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -o $@ $<
-	sync
+	$(SYNC)
 
 
 %.lto.o: %.cc refpersys.hh.gch
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_BUILD_LTOFLAGS) -o $@ $<
-	sync
+	$(SYNC)
 
 
 
@@ -307,18 +309,22 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
 
 %.dbg.o: %.cc refpersys.hh.dbg.gch
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_BUILD_DEBUGFLAGS) -o $@ $<
+	$(SYNC)
 
 %.lto.o: %.cc refpersys.hh.dbg.gch
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) $(RPS_BUILD_LTOFLAGS) -o $@ $<
+	$(SYNC)
 
 %.ii: %.cc refpersys.hh.gch
 	$(COMPILE.cc) -C -E $< | sed s:^#://#:g > $@
-	astyle -v -s2 --style=gnu $@
+	$(ASTYLE) -v -s2 --style=gnu $@
+	$(SYNC)
 
 %.cc %.hh: %.yy
 	/usr/bin/printf "GNU make generating %s from %s\n" $@ $<
 	/usr/bin/printenv
 	$(RPS_COMPILER_TIMER) $(RPS_BUILD_BISONCXX) $(RPS_BUILD_BISON_FLAGS) --output=$@ $<
+	$(SYNC)
 
 
 ## reminder from GPP man page:
@@ -348,22 +354,28 @@ $(RPS_CORE_OBJECTS): $(RPS_CORE_HEADERS) $(RPS_CORE_SOURCES)
             -DRPS_GPP_INPUT="$<"    -DRPS_GPP_OUTPUT="$@"    \
             -U  "@&"  "&@"  "("  "&,"  ")"  "("  ")"  "@#"   "\\"  \
             -o $@ $<
+	$(SYNC)
 
 %.cc: %.yyy
 	$(RPS_COMPILER_TIMER) $(RPS_BISONCPP) --show-filenames --verbose --thread-safe $<
+	$(SYNC)
 
 # see https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html 
 
 refpersys.hh.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc) -c -o $@ $<
+	$(SYNC)
+
 #refpersys.hh.sanit.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 #	$(RPS_COMPILER_TIMER) $(COMPILE.cc)  $(RPS_BUILD_SANITFLAGS) -c -o $@ $<
 refpersys.hh.dbg.gch: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh)
 	$(RPS_COMPILER_TIMER) $(COMPILE.cc)  $(RPS_BUILD_DEBUGFLAGS) -c -o $@ $<
-
+	$(SYNC)
 
 
 parserepl_rps.o: refpersys.hh oid_rps.hh $(wildcard generated/rps*.hh) | generated/rps-parser-impl.cc
+	$(SYNC)
+
 ################
 mostlyclean:
 	if [ -f __timestamp.c ]; then /bin/sed "1,$$$$s:$(RPS_HOME):@REFPERSYS_HOME:g" __timestamp.c > %%__timestamp.c%% ; fi
@@ -381,9 +393,11 @@ mostlyclean:
 	$(RM) $(patsubst %.yy, %.cc, $(RPS_BISON_SOURCES)) \
 	      $(patsubst %.yy, %.output, $(RPS_BISON_SOURCES)) \
 	      *.tmp
+	$(SYNC)
 
 clean: mostlyclean
 	$(RM) refpersys refpersys-lto
+	$(SYNC)
 
 ## TODO: we might need to have some conventions, maybe comments like ///|| in the
 ## first fifty lines of generated C++ to give extra compilation flags
@@ -405,6 +419,7 @@ plugin: | ./build-plugin.sh
 fullclean:
 	$(RPS_BUILD_CCACHE) -C
 	$(MAKE) clean
+	$(SYNC)
 
 __timestamp.c: GNUmakefile do-generate-timestamp.sh
 	echo $@:
@@ -431,7 +446,7 @@ __timestamp.c: GNUmakefile do-generate-timestamp.sh
 	printf '\n\n' >> $@-tmp
 	printf '/// end of generated file $@\n' >> $@-tmp
 	$(MV) --backup $@-tmp $@
-
+	$(SYNC)
 
 __ltotimestamp.c: GNUmakefile do-generate-timestamp.sh
 	echo $@:
@@ -449,7 +464,7 @@ __ltotimestamp.c: GNUmakefile do-generate-timestamp.sh
 	printf 'const char rps_shortgitid[] = "%s";\n' "$(RPS_SHORTGIT_ID)" >> $@-tmp
 	printf '/// end of generated file $@\n' >> $@-tmp
 	$(MV) --backup $@-tmp $@
-
+	$(SYNC)
 
 ## for plugins, see build-plugin.sh
 print-plugin-settings:
@@ -462,6 +477,7 @@ indent:
 	./indent-cxx-files.sh $(RPS_CORE_HEADERS) \
 		$(RPS_CORE_SOURCES) 
 	./indent-cxx-files.sh $(sort $(wildcard plugins/*.cc))
+	$(SYNC)
 
 ## redump target
 redump: refpersys
@@ -473,11 +489,12 @@ redump: refpersys
 	  git checkout rps_manifest.json ; \
             printf "make redump reached fixpoint in %s git %s\n" $$(pwd) $(RPS_SHORTGIT_ID) ; \
         fi
+	$(SYNC)
 
 ## alternate redump target
 altredump:  ./refpersys
 	./refpersys --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch --run-name=$@ 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
-
+	$(SYNC)
 
 check:
 	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all \
@@ -498,6 +515,7 @@ endif
 	        "$$(git config --get user.email)" "$$(./do-generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
 	@git log -1 --format=oneline --abbrev=12 --abbrev-commit -q | head -1
 	if [ -x $$HOME/bin/push-refpersys ]; then $$HOME/bin/push-refpersys $(shell /bin/pwd) $(RPS_SHORTGIT_ID); fi
+	$(SYNC)
 
 gitpush2:
 ifeq ($(RPS_GIT_ORIGIN), )
@@ -512,19 +530,19 @@ ifeq ($(RPS_GIT_MIRROR), )
 else
 	git push $(RPS_GIT_MIRROR) master
 endif
-
+	$(SYNC)
 
 ## undump target, use git to checkout what last redump changed....
 ## see https://devtutorial.io/how-to-get-a-list-of-the-changed-files-in-git-p1201.html
 undump:
 	./undump-refpersys.sh
-
+	$(SYNC)
 
 analyze:
 	make clean
 	mkdir -p bld
 	scan-build -v -V -o bld make -j4
-
+	$(SYNC)
 
 ################################################################
 #### simple tests
