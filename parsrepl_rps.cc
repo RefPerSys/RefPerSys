@@ -1221,7 +1221,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
         {
           loopcnt++;
           RPS_DEBUGNL_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
-                          << " loopcnt#" << loopcnt
+                          << " BEGINLOOP loopcnt#" << loopcnt
                           << " termvect:" << termvect
                           << " leftv:" << _f.leftv
                           << std::endl
