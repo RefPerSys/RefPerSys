@@ -1373,9 +1373,11 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                << "… plusdelimob=" << _f.plusdelimob
                << " plusbinopob=" << _f.plusbinopob
                << std::endl
+	       << "… termvect=" << termvect << std::endl
                << "… minusdelimob=" << _f.minusdelimob
                << " minusbinopob=" << _f.minusbinopob
-               << " delimob=" << _f.delimob
+	       << std::endl
+               << "…  delimob=" << _f.delimob
                << std::endl
                << Rps_Do_Output([&](std::ostream& out)
   {
