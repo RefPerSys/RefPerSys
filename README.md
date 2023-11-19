@@ -13,10 +13,12 @@ alternative to [CLIPSrules](https://clipsrules.net/).
 
 Contributions to *RefPerSys* are welcome. Contact by email [Basile
 Starynkevitch](http://starynkevitch.net/Basile/) (near Paris, France)
-at `basile@starynkevitch.net` (or at office, [CEA
-LIST](https://www-list.cea.fr/) till end of september 2023, at
-`basile.starynkevitch@cea.fr`) or Abhishek Chakravarti (Kolkata,
+at `basile@starynkevitch.net` or Abhishek Chakravarti (Kolkata,
 India) at `chakravarti.avishek@gmail.com`
+
+[HorizonEurope](https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/programmes/horizon)
+or [ITEA](https://itea4.org/) consortia interested by
+[RefPerSys](http://refpersys.org/) are welcome to contact us.
 
 ## A research project
 
