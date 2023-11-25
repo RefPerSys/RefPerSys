@@ -1297,8 +1297,8 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                             << " loopcnt#" << loopcnt
                             << " in:" << (*this) << std::endl
                             << "… leftv=" << _f.leftv << " lextokv=" << _f.lextokv << std::endl
-                            << "… delimob=" << _f.delimob
-                            << " pushed to termvect=" << termvect
+                            << "… delimob=" << _f.delimob << std::endl
+                            << "… pushed to termvect=" << termvect
                             << " pastdelimob=" << _f.pastdelimob
                             << " lextokv=" << _f.lextokv
                             << std::endl
