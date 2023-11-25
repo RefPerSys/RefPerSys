@@ -578,6 +578,12 @@ test01e: debug
 	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 * 3' -B --run-name=$@
 	@printf '\n\n\n////test01d FINISHED¤\n'
 
+### notice the space after the 3 below
+test01f: debug
+	./refpersys -AREPL,LOW_REPL  -c '!parse_primary 3 ' -B --run-name=$@
+	@printf '\n\n\n////test01f FINISHED¤\n'
+
+
 test02: ./refpersys
 	./refpersys -AREPL  -c 'show RefPerSys_system' -B --run-name=$@
 	@printf '\n\n\n////test02 FINISHED¤\n'
