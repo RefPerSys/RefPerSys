@@ -1291,9 +1291,9 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                             << " loopcnt#" << loopcnt
                             << " pushing leftv:" << _f.leftv
                             << " to termvect:"<< termvect
-			    << std::endl
-			    << RPS_FULL_BACKTRACE_HERE(1,
-						       "Rps_TokenSource::parse_sum/pushleft"));
+                            << std::endl
+                            << RPS_FULL_BACKTRACE_HERE(1,
+                                "Rps_TokenSource::parse_sum/pushleft"));
               termvect.push_back(_f.leftv);
               again = true;
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
@@ -1376,10 +1376,10 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                << "… plusdelimob=" << _f.plusdelimob
                << " plusbinopob=" << _f.plusbinopob
                << std::endl
-	       << "… termvect=" << termvect << std::endl
+               << "… termvect=" << termvect << std::endl
                << "… minusdelimob=" << _f.minusdelimob
                << " minusbinopob=" << _f.minusbinopob
-	       << std::endl
+               << std::endl
                << "…  delimob=" << _f.delimob
                << std::endl
                << Rps_Do_Output([&](std::ostream& out)
