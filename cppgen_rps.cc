@@ -54,7 +54,10 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  Rps_ObjectRef obmodule;
                  Rps_ObjectRef obgenerator;
                  Rps_ObjectRef obincludeset;
+                 Rps_ClosureValue vclos;
                  Rps_Value vinclude;
+                 Rps_Value vmainres;
+                 Rps_Value vxtrares;
                  Rps_Value vtype;
                 );
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
@@ -87,8 +90,26 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
      C++ struct-s or class-es
 
   **/
-  RPS_FATALOUT("unimplemented rps_generate_cplusplus_code obmodule="
-               << obmodule << " obgenerator=" << _f.obgenerator);
+  if (_f.vinclude.is_closure())
+    {
+      _f.vclos = Rps_ClosureValue(_f.vinclude);
+      Rps_TwoValues tv = //
+        _f.vclos.apply2(&_, _f.obmodule, _f.obgenerator);
+      _f.vinclude = tv.main();
+      _f.vxtrares = tv.xtra();
+    };
+  if (_f.vinclude.is_set())
+    {
+#warning  rps_generate_cplusplus_code should handle set of includes
+    }
+  else if (_f.vinclude.is_tuple())
+    {
+#warning  rps_generate_cplusplus_code should handle tuple of includes
+    }
+  else
+    RPS_FATALOUT("unimplemented rps_generate_cplusplus_code obmodule="
+                 << obmodule << " obgenerator=" << _f.obgenerator
+		 << " include=" << _f.vinclude);
 #warning unimplemented rps_generate_cplusplus_code
 } // end rps_generate_cplusplus_code
 
