@@ -177,7 +177,8 @@ jsonrpc_initialize_rps(void)
   if (fdp.fifo_ui_rout <= 0)
     RPS_FATALOUT("invalid output FIFO fd " << fdp.fifo_ui_rout << " with FIFO prefix " << rps_get_fifo_prefix());
 #warning unimplemented  jsonrpc_initialize_rps
-  /** TODO: we probably want to make a first JsonRpc with some meta
+  /**
+   *  TODO: we probably want to make a first JsonRpc with some meta
    *  data, e.g. a JSON grouping information from __timestamp.c and we
    *  need to document the JSONRPC protocol between the GUI software
    *  and RefPerSys
@@ -296,7 +297,11 @@ rps_event_loop(void)
             /* TODO: should read(2) */
             memset(buf, 0, sizeof(buf));
             int nbr = read(fd, buf, sizeof(buf));
-            RPS_FATALOUT("missing code to handle JsonRpc input from fd#" << fd << " pix#" << pix << " did read " << nbr << " bytes");
+            if (nbr < 0)
+              return;
+            RPS_FATALOUT("missing code to handle JsonRpc input from fd#"
+                         << fd << " pix#" << pix
+                         << " did read " << nbr << " bytes");
 #warning missing code to handle JsonRpc input from the GUI process
           };
         };
