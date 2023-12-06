@@ -109,7 +109,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   else
     RPS_FATALOUT("unimplemented rps_generate_cplusplus_code obmodule="
                  << obmodule << " obgenerator=" << _f.obgenerator
-		 << " include=" << _f.vinclude);
+                 << " include=" << _f.vinclude);
 #warning unimplemented rps_generate_cplusplus_code
 } // end rps_generate_cplusplus_code
 
