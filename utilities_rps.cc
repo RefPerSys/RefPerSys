@@ -170,10 +170,11 @@ rps_do_create_fifos_from_prefix(void)
   rps_fifo_pair.fifo_ui_rout = outfd;
   RPS_INFORMOUT("RefPerSys did create (in pid " << (int)getpid()
                 << ") command and output FIFOs to communicate with GUI" << std::endl
-                << "... using for written commands to GUI " << cmdfifo << " fd#" << cmdfd
+                << "… using for written commands to GUI " << cmdfifo << " fd#" << cmdfd
                 << std::endl
-                << "... and for reading JSON output from GUI " << outfifo << " fd#" << outfd);
-  usleep(1000);
+                << "… and for reading JSON output from GUI " << outfifo << " fd#" << outfd
+		<< "… git " << rps_shortgitid);
+  RPS_POSSIBLE_BREAKPOINT();
 } // end rps_do_create_fifos
 
 
