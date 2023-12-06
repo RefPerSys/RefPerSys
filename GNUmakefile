@@ -58,6 +58,8 @@ endif
 RPS_BUILD_CC?=				gcc-13
 RPS_BUILD_CXX?=				g++-13
 
+ASTYLE?= /usr/bin/astyle
+
 ## Generic PreProcessor, see https://logological.org/gpp
 ## and https://joss.theoj.org/papers/10.21105/joss.02400
 RPS_GPP?=                               gpp
