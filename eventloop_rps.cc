@@ -87,8 +87,9 @@ struct event_loop_data_st
 extern "C" struct event_loop_data_st rps_eventloopdata;
 struct event_loop_data_st rps_eventloopdata;
 
-
-
+static std::mutex rps_jsonrpc_mtx; /// common mutex for below buffers
+static std::stringbuf rps_jsonrpc_cmdbuf; /// buffer for commands written to JSONRPC GUI process
+static std::stringbuf rps_jsonrpc_rspbuf; /// buffer for responses read from JSONRPC GUI process
 
 /**
  * We probably want to use the pipe to self trick.
@@ -173,9 +174,11 @@ jsonrpc_initialize_rps(void)
   RPS_ASSERT(!rps_get_fifo_prefix().empty());
   struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
   if (fdp.fifo_ui_wcmd <= 0)
-    RPS_FATALOUT("invalid command FIFO fd " << fdp.fifo_ui_wcmd << " with FIFO prefix " << rps_get_fifo_prefix());
+    RPS_FATALOUT("invalid command FIFO fd " << fdp.fifo_ui_wcmd
+		 << " with FIFO prefix " << rps_get_fifo_prefix());
   if (fdp.fifo_ui_rout <= 0)
-    RPS_FATALOUT("invalid output FIFO fd " << fdp.fifo_ui_rout << " with FIFO prefix " << rps_get_fifo_prefix());
+    RPS_FATALOUT("invalid output FIFO fd " << fdp.fifo_ui_rout
+		 << " with FIFO prefix " << rps_get_fifo_prefix());
 #warning unimplemented  jsonrpc_initialize_rps
   /**
    *  TODO: we probably want to make a first JsonRpc with some meta
@@ -266,7 +269,6 @@ rps_event_loop(void)
       if (fdp.fifo_ui_wcmd >0)
         {
           /// JSONRPC commands written from RefPerSys to the GUI process...
-          /// could copy paste most of the few lines below
           RPS_ASSERT(nbfdpoll<RPS_MAXPOLL_FD);
           int pix = nbfdpoll++;
           pollarr[pix].fd = fdp.fifo_ui_wcmd;
@@ -276,7 +278,9 @@ rps_event_loop(void)
             RPS_ASSERT(fd ==  pollarr[pix].fd);
             RPS_ASSERT(rev == POLLOUT);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
-            RPS_FATALOUT("missing code to handle JsonRpc output to fd#" << fd << " pix#" << pix);
+            RPS_FATALOUT("missing code to handle JSONRPC output commands to fd#"
+			 << fd << " pix#" << pix);
+	    /* TODO: write the bytes that are in rps_jsonrpc_cmdbuf */
 #warning missing code to handle JsonRpc output to the GUI process
           };
         };
@@ -299,9 +303,12 @@ rps_event_loop(void)
             int nbr = read(fd, buf, sizeof(buf));
             if (nbr < 0)
               return;
-            RPS_FATALOUT("missing code to handle JsonRpc input from fd#"
+            RPS_FATALOUT("missing code to handle JSONRPC input responses from fd#"
                          << fd << " pix#" << pix
                          << " did read " << nbr << " bytes");
+	    /* TODO: append the bytes we did read to
+	       rps_jsonrpc_rspbuf; by convention a double newline or a
+	       formfeed is ending the JSON message. */
 #warning missing code to handle JsonRpc input from the GUI process
           };
         };
