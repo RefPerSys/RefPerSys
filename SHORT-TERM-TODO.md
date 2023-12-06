@@ -20,8 +20,7 @@ For *RefPerSys* near commit [d53653c37f7a](https://github.com/RefPerSys/RefPerSy
 or at least contact [Basile
 Starynkevitch](http://starynkevitch.net/Basile/) by SMS, WhatsApp, or
 private email to
-[basile@starynkevitch.net](mailto:basile@starynkevitch.net), or at [CEA LIST](https://list.cea.fr/) office (till sept. 2023) to 
-[basile.starynkevitch@cea.fr](mailto:basile.starynkevitch@cea.fr) if you
+[basile@starynkevitch.net](mailto:basile@starynkevitch.net) if you
 want to contribute.
 
 
