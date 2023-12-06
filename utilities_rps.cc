@@ -1177,7 +1177,7 @@ rps_parse_program_arguments(int &argc, char**argv)
   argparser_rps.parser = rps_parse1opt;
   argparser_rps.args_doc = " ; # ";
   argparser_rps.doc =
-    "RefPerSys - an opensource Artificial Intelligence project,\n"
+    "RefPerSys - an opensource Artificial Intelligence inference engine project,\n"
     " open science, for Linux/x86-64; see refpersys.org for more.\n"
     " (REFlexive PERsystem SYStem is GPLv3+ licensed free software)\n"
     " You should have received a copy of the GNU General Public License\n"
