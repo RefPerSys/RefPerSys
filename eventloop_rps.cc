@@ -303,13 +303,27 @@ rps_event_loop(void)
             int nbr = read(fd, buf, sizeof(buf));
             if (nbr < 0)
               return;
-            RPS_FATALOUT("missing code to handle JSONRPC input responses from fd#"
-                         << fd << " pix#" << pix
-                         << " did read " << nbr << " bytes");
+	    if (nbr == 0) {
+            RPS_FATALOUT("missing code to handle JSONRPC input EOF from fd#"
+                         << fd << " pix#" << pix);
+#warning missing code to handle JsonRpc EOF from GUI process
+	    }
 	    /* TODO: append the bytes we did read to
 	       rps_jsonrpc_rspbuf; by convention a double newline or a
 	       formfeed is ending the JSON message. */
+	    {
+	      std::lock_guard<std::mutex> gu(rps_jsonrpc_mtx);
+#warning oldbufsiz need a code review
+	      std::size_t oldbufsiz= rps_jsonrpc_rspbuf.in_avail();
+	      std::size_t oldprevix = (oldbufsiz>0)?(oldbufsiz-1):0;
+	      auto newsiz = rps_jsonrpc_rspbuf.sputn(buf, nbr);
+	      /// TODO: find a double newline or formfeed at index
+	      /// oldprevix
 #warning missing code to handle JsonRpc input from the GUI process
+	    }
+            RPS_FATALOUT("missing code to handle JSONRPC input responses from fd#"
+                         << fd << " pix#" << pix
+                         << " did read " << nbr << " bytes");
           };
         };
       if (rps_eventloopdata.eld_sigfd>0)
