@@ -88,6 +88,7 @@ extern "C" struct event_loop_data_st rps_eventloopdata;
 struct event_loop_data_st rps_eventloopdata;
 
 static std::mutex rps_jsonrpc_mtx; /// common mutex for below buffers
+#warning TODO: maybe command and response should use std::stringstream?
 static std::stringbuf rps_jsonrpc_cmdbuf; /// buffer for commands written to JSONRPC GUI process
 static std::stringbuf rps_jsonrpc_rspbuf; /// buffer for responses read from JSONRPC GUI process
 
