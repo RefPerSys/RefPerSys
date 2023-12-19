@@ -233,7 +233,7 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ "URL", ///
     /*flags:*/ 0, ///
     /*doc:*/ "Send to the given URL the build timestamp and builder.\n"
-    " See rps_publish_me function in this " __FILE__ " source file.\n"
+    " See rps_publish_me function in curl_rps.cc source file.\n"
     , //
     /*group:*/0 ///
   },
