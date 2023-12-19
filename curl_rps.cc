@@ -115,6 +115,7 @@ rps_publish_me(const char*url)
                 << " gitemail " << Rps_QuotedC_String(gitemail));
   /// first HTTP interaction GET - obtain the status as JSON
   std::string topurlstr {url};
+  RPS_DEBUG_LOG(REPL, "rps_publish_me topurlstr: " << topurlstr);
   std::string statusurlstr = topurlstr;
   int statuslen = statusurlstr.size();
   if (statuslen>0 && statusurlstr[statuslen-1]=='/')
@@ -135,7 +136,8 @@ rps_publish_me(const char*url)
     curlpp::options::WriteStream ws(&outs);
     mystatusreq.setOpt(ws);
     RPS_DEBUG_LOG(REPL, "before performing GET request for status to "
-                  << statusurlstr);
+                  << statusurlstr << " statheaders:" << std::endl
+		  << statheaders);
     mystatusreq.perform();
     outs << std::flush;
     RPS_DEBUG_LOG(REPL, "status outs:" << outs.str());
@@ -164,7 +166,8 @@ rps_publish_me(const char*url)
 #warning missing C++ code in rps_publish_me
   /** TODO:
    * This function should do one or a few HTTP requests to the web service running at given url.
-   * Initially on http://refpersys.org/ probably (or when debugging on http://localhost:8080/ ...)
+   * Initially on http://refpersys.org/ probably (or when debugging on
+     http://localhost:8080/ ...)
    * Sending there the various public data in __timestamp.c probably as HTTP POST parameters
    * and probably the owner of the git, e.g. parse the .git/config file for its name and email in section user.
    **/
