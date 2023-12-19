@@ -173,7 +173,7 @@ RPS_CURLPP_CONFIG= curlpp-config
 ##   inspect the call stack
 ##
 ## * libgmp for arbitrary precision arithmetic. See GNU multiprecision
-##   arithmetic library on gmplib.org and its C++ variant on gmpxx
+##   arithmetic library on gmplib.org and its C++ variant in <gmpxx.h>
 
 RPS_PKG_NAMES= jsoncpp libcurl zlib lightning libssh2 gmp gmpxx
 RPS_PKG_CFLAGS:= $(shell $(RPS_CURLPP_CONFIG) --cflags) \
