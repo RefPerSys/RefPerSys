@@ -176,10 +176,10 @@ jsonrpc_initialize_rps(void)
   struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
   if (fdp.fifo_ui_wcmd <= 0)
     RPS_FATALOUT("invalid command FIFO fd " << fdp.fifo_ui_wcmd
-		 << " with FIFO prefix " << rps_get_fifo_prefix());
+                 << " with FIFO prefix " << rps_get_fifo_prefix());
   if (fdp.fifo_ui_rout <= 0)
     RPS_FATALOUT("invalid output FIFO fd " << fdp.fifo_ui_rout
-		 << " with FIFO prefix " << rps_get_fifo_prefix());
+                 << " with FIFO prefix " << rps_get_fifo_prefix());
 #warning unimplemented  jsonrpc_initialize_rps
   /**
    *  TODO: we probably want to make a first JsonRpc with some meta
@@ -280,8 +280,8 @@ rps_event_loop(void)
             RPS_ASSERT(rev == POLLOUT);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             RPS_FATALOUT("missing code to handle JSONRPC output commands to fd#"
-			 << fd << " pix#" << pix);
-	    /* TODO: write the bytes that are in rps_jsonrpc_cmdbuf */
+                         << fd << " pix#" << pix);
+            /* TODO: write the bytes that are in rps_jsonrpc_cmdbuf */
 #warning missing code to handle JsonRpc output to the GUI process
           };
         };
@@ -304,24 +304,25 @@ rps_event_loop(void)
             int nbr = read(fd, buf, sizeof(buf));
             if (nbr < 0)
               return;
-	    if (nbr == 0) {
-            RPS_FATALOUT("missing code to handle JSONRPC input EOF from fd#"
-                         << fd << " pix#" << pix);
+            if (nbr == 0)
+              {
+                RPS_FATALOUT("missing code to handle JSONRPC input EOF from fd#"
+                             << fd << " pix#" << pix);
 #warning missing code to handle JsonRpc EOF from GUI process
-	    }
-	    /* TODO: append the bytes we did read to
-	       rps_jsonrpc_rspbuf; by convention a double newline or a
-	       formfeed is ending the JSON message. */
-	    {
-	      std::lock_guard<std::mutex> gu(rps_jsonrpc_mtx);
+              }
+            /* TODO: append the bytes we did read to
+               rps_jsonrpc_rspbuf; by convention a double newline or a
+               formfeed is ending the JSON message. */
+            {
+              std::lock_guard<std::mutex> gu(rps_jsonrpc_mtx);
 #warning oldbufsiz need a code review
-	      std::size_t oldbufsiz= rps_jsonrpc_rspbuf.in_avail();
-	      std::size_t oldprevix = (oldbufsiz>0)?(oldbufsiz-1):0;
-	      auto newsiz = rps_jsonrpc_rspbuf.sputn(buf, nbr);
-	      /// TODO: find a double newline or formfeed at index
-	      /// oldprevix
+              std::size_t oldbufsiz= rps_jsonrpc_rspbuf.in_avail();
+              std::size_t oldprevix = (oldbufsiz>0)?(oldbufsiz-1):0;
+              auto newsiz = rps_jsonrpc_rspbuf.sputn(buf, nbr);
+              /// TODO: find a double newline or formfeed at index
+              /// oldprevix
 #warning missing code to handle JsonRpc input from the GUI process
-	    }
+            }
             RPS_FATALOUT("missing code to handle JSONRPC input responses from fd#"
                          << fd << " pix#" << pix
                          << " did read " << nbr << " bytes");

@@ -173,7 +173,7 @@ rps_do_create_fifos_from_prefix(void)
                 << "… using for written commands to GUI " << cmdfifo << " fd#" << cmdfd
                 << std::endl
                 << "… and for reading JSON output from GUI " << outfifo << " fd#" << outfd
-		<< "… git " << rps_shortgitid);
+                << "… git " << rps_shortgitid);
   RPS_POSSIBLE_BREAKPOINT();
 } // end rps_do_create_fifos
 
