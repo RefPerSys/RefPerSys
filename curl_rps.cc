@@ -166,7 +166,7 @@ rps_publish_me(const char*url)
 #warning missing C++ code in rps_publish_me
   /** TODO:
    * This function should do one or a few HTTP requests to the web service running at given url.
-   * Initially on http://refpersys.org/ probably (or when debugging on
+   * Initially on http://refpersys.org:8080/ probably (or when debugging on
      http://localhost:8080/ ...)
    * Sending there the various public data in __timestamp.c probably as HTTP POST parameters
    * and probably the owner of the git, e.g. parse the .git/config file for its name and email in section user.
