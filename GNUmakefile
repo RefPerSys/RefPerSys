@@ -10,7 +10,7 @@
 ##      Nimesh Neema <nimeshneema@gmail.com>
 ##      Abdullah Siddiqui <siddiquiabdullah92@gmail.com>
 ##
-##      © Copyright 2019 - 2023 The Reflective Persistent System Team
+##      © Copyright 2019 - 2024 The Reflective Persistent System Team
 ##      team@refpersys.org
 ##
 ## License:
@@ -55,8 +55,16 @@ ifneq ($(wildcard config.mk),)
 include config.mk
 endif
 
-RPS_BUILD_CC?=				gcc-13
-RPS_BUILD_CXX?=				g++-13
+RPS_BUILD_CC?=				gcc
+RPS_BUILD_CXX?=				g++
+
+ifneq ($(RPS_BUILD_CC),$(CC))
+$(warning RPS_BUILD_CC is $(RPS_BUILD_CC) different of CC which is $(CC))
+endif
+
+ifneq ($(RPS_BUILD_CXX),$(CXX))
+$(warning RPS_BUILD_CXX is $(RPS_BUILD_CXX) different of CC which is $(CXX))
+endif
 
 ASTYLE?= /usr/bin/astyle
 
@@ -187,7 +195,7 @@ MV= /bin/mv
 SYNC= /bin/sync
 CC= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CC)
 CXX= $(RPS_BUILD_CCACHE) $(RPS_BUILD_CXX)
-LINK.cc= $(RPS_BUILD_CXX)
+LINK.cc:= $(RPS_BUILD_CXX)
 CXXFLAGS= $(RPS_BUILD_DIALECTFLAGS) $(RPS_BUILD_OPTIMFLAGS) \
             $(RPS_BUILD_CODGENFLAGS) \
 	    $(RPS_BUILD_WARNFLAGS) $(RPS_BUILD_INCLUDE_FLAGS) \
@@ -239,6 +247,7 @@ refpersys: main_rps.o $(RPS_CORE_OBJECTS) $(RPS_BISON_OBJECTS) $(RPS_GPPBISON_OB
 	@echo $@: RPS_GPPBISON_CPPFILES= $(RPS_GPPBISON_CPPFILES)
 	@echo $@: RPS_GPPBISON_OBJECTS= $(RPS_GPPBISON_OBJECTS)
 	@echo $@: LIBES= $(LIBES)
+	@echo $@: LINK.cc= $(LINK.cc)
 	-$(SYNC)
 	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS)  $(RPS_BUILD_XTRA_CFLAGS) -rdynamic -pie -Bdynamic \
                               main_rps.o $(RPS_CORE_OBJECTS)  $(RPS_BISON_OBJECTS) $(RPS_GPPBISON_OBJECTS)  __timestamp.o \
@@ -257,6 +266,7 @@ refpersys-lto: main_rps.lto.o $(RPS_LTO_CORE_OBJECTS) $(RPS_LTO_BISON_OBJECTS) $
 	@echo $@: RPS_LTO_BISON_OBJECTS= $(RPS_LTO_BISON_OBJECTS)
 	@echo $@: RPS_LTO_GPPBISON_OBJECTS= $(RPS_LTO_GPPBISON_OBJECTS)
 	@echo $@: LIBES= $(LIBES)
+	@echo $@: LINK.cc= $(LINK.cc)
 	-$(SYNC)
 	$(RPS_COMPILER_TIMER) $(LINK.cc) -DREFPERYS_BUILD $(RPS_BUILD_CODGENFLAGS)  $(RPS_BUILD_XTRA_CFLAGS) $(RPS_BUILD_LTOFLAGS) -rdynamic -pie -Bdynamic \
                               main_rps.lto.o $(RPS_LTO_CORE_OBJECTS)  $(RPS_LTO_BISON_OBJECTS) $(RPS_LTO_GPPBISON_OBJECTS)  __ltotimestamp.o \
