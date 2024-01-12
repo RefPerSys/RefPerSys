@@ -99,10 +99,15 @@ install() {
 
 
 # Create ~/.refpersys.mk
-info 'Creating local makefile configuration file'
+info 'Creating local makefile configuration file ~/.refpersys.mk'
+if [ -f $HOME/.refpersys.mk ]; then
+    /bin/mv -v  $HOME/.refpersys.mk  $HOME/.refpersys.mk%
+fi
 {
- echo 'RPS_BUILD_CC= gcc-10';
- echo 'RPS_BUILD_CXX= g++-10';
+ echo 'CC= gcc-12';
+ echo 'CXX= g++-12';
+ echo 'RPS_BUILD_CC= gcc-12';
+ echo 'RPS_BUILD_CXX= g++-12';
 } > "$HOME/.refpersys.mk"
 
 
