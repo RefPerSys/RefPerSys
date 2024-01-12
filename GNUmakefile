@@ -55,8 +55,10 @@ ifneq ($(wildcard config.mk),)
 include config.mk
 endif
 
-RPS_BUILD_CC?=				gcc
-RPS_BUILD_CXX?=				g++
+CC?= gcc
+CXX?= g++
+RPS_BUILD_CC?=				$(CC)
+RPS_BUILD_CXX?=				$(CXX)
 
 ifneq ($(RPS_BUILD_CC),$(CC))
 $(warning RPS_BUILD_CC is $(RPS_BUILD_CC) different of CC which is $(CC))
