@@ -33,7 +33,8 @@ Improve the REPL parsing so that `make test03` works
 
 In commit c4935a77e45f3 (June 14, 2023) the `make test01`
 fails. Probably `Rps_ObjectZone::is_instance_of` and or
-`Rps_ObjectZone::is_subclass_of` are buggy.
+`Rps_ObjectZone::is_subclass_of` are buggy. This is corrected in
+commit 889f895c0b (Jan 17, 2024)
 
 Improve *RefPerSys* so that its `--publish-me=http://localhost:8086/`
 program option works. See function `rps_publish_me` in file
