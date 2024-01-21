@@ -66,7 +66,7 @@ $(warning RPS_BUILD_CC is "$(RPS_BUILD_CC)" different of CC which is "$(CC)")
 endif
 
 ifneq ($(RPS_BUILD_CXX),$(CXX))
-$(warning RPS_BUILD_CXX is "$(RPS_BUILD_CXX)" different of CC which is "$(CXX)")
+$(warning RPS_BUILD_CXX is "$(RPS_BUILD_CXX)" different of CXX which is "$(CXX)")
 endif
 
 ASTYLE?= /usr/bin/astyle
