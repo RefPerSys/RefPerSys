@@ -352,14 +352,20 @@ rps_print_types_info(void)
 				      (int)sizeof(Ty1,Ty2),	\
 				      (int)alignof(Ty1,Ty2))
 
-#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3) printf(TYPEFMT_rps " %5d %5d\n",	\
-					  #Ty1 "," #Ty2 "," #Ty3,	\
-					  (int)sizeof(Ty1,Ty2,Ty3),	\
-					  (int)alignof(Ty1,Ty2,Ty3))
-#define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4) printf(TYPEFMT_rps " %5d %5d\n",	\
-					      #Ty1 "," #Ty2 "," #Ty3 "," #Ty4, \
-					      (int)sizeof(Ty1,Ty2,Ty3,Ty4), \
-					      (int)alignof(Ty1,Ty2,Ty3,Ty4))
+#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3)		\
+  printf(TYPEFMT_rps " %5d %5d\n",		\
+	 #Ty1 "," #Ty2 ",\n"			\
+	 "                     "#Ty3,	\
+	 (int)sizeof(Ty1,Ty2,Ty3),		\
+	 (int)alignof(Ty1,Ty2,Ty3))
+
+#define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4)			\
+  printf(TYPEFMT_rps " %5d %5d\n",			\
+	 #Ty1 "," #Ty2 ",\n                " #Ty3	\
+	 "," #Ty4,					\
+	 (int)sizeof(Ty1,Ty2,Ty3,Ty4),			\
+	 (int)alignof(Ty1,Ty2,Ty3,Ty4))
+  
   EXPLAIN_TYPE(int);
   EXPLAIN_TYPE(double);
   EXPLAIN_TYPE(char);
@@ -382,6 +388,7 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(std::set<std::string>);
   EXPLAIN_TYPE2(std::map<Rps_ObjectRef, Rps_Value>);
   EXPLAIN_TYPE2(std::unordered_map<std::string, Rps_ObjectRef*>);
+  printf("#### %s:%d\n", __FILE__, __LINE__);
   EXPLAIN_TYPE3(std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher>);
   EXPLAIN_TYPE3(std::variant<unsigned, std::function<Rps_Value(void*)>,
                 std::function<int(void*,Rps_ObjectRef)>>);
