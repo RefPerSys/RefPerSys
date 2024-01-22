@@ -137,7 +137,7 @@ rps_publish_me(const char*url)
     mystatusreq.setOpt(ws);
     RPS_DEBUG_LOG(REPL, "before performing GET request for status to "
                   << statusurlstr << " statheaders:" << std::endl
-		  << statheaders);
+                  << statheaders);
     mystatusreq.perform();
     outs << std::flush;
     RPS_DEBUG_LOG(REPL, "status outs:" << outs.str());
