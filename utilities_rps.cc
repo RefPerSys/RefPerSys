@@ -365,6 +365,8 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(char);
   EXPLAIN_TYPE(bool);
   EXPLAIN_TYPE(void*);
+  EXPLAIN_TYPE(time_t);
+  EXPLAIN_TYPE(pid_t);
   EXPLAIN_TYPE(std::mutex);
   EXPLAIN_TYPE(std::shared_mutex);
   EXPLAIN_TYPE(std::recursive_mutex);
