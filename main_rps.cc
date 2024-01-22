@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2023 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1274,8 +1274,14 @@ main (int argc, char** argv)
     ssize_t pxl = readlink("/proc/self/exe",
 			   rps_progexe, sizeof(rps_progexe));
     if (pxl <= 0 || pxl >= (ssize_t) sizeof(rps_progexe)-2)
-      strcpy(rps_progexe, "$(which refpersys)");
+      strcpy(rps_progexe, "$(/usr/bin/which refpersys)");
   }
+  static_assert (sizeof(int64_t) == 8 && alignof(int64_t) == 8);
+  static_assert (sizeof(int32_t) == 4 && alignof(int32_t) == 4);
+  static_assert (sizeof(long) == 8 && alignof(long) == 8);
+  static_assert (sizeof(void*) == 8 && alignof(void*) == 8);
+  static_assert (sizeof(int) == 4 && alignof(int) == 4);
+  static_assert (sizeof(time_t) == 8 && alignof(time_t) == 8);
   rps_parse_program_arguments(argc, argv);
   ///
   static char cwdbuf[rps_path_byte_size];
