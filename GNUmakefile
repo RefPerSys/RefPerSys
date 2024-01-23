@@ -624,6 +624,10 @@ test07: ./refpersys
 	./refpersys -AREPL -B -c '!parse_sum 1 + 2' --run-name=$@.2
 	@printf '\n\n\n////test07 FINISHED¤\n'
 
+test07a: ./refpersys
+	./refpersys -AREPL -B -c '!parse_term 1' --run-name=$@
+	@printf '\n\n\n////test07a FINISHED¤\n'
+
 test08: ./refpersys
 	@echo missing test08 ; exit 1
 
