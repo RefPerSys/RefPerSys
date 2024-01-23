@@ -1041,6 +1041,9 @@ Rps_TokenSource::parse_comparison(Rps_CallFrame*callframe, bool*pokparse)
 
 
 
+
+////////////////////////////////////////////////////////////////
+
 Rps_Value
 Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
 {
@@ -1080,7 +1083,9 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   {
     this->display_current_line_with_cursor(out);
   })
-      << " termvect:" << termvect);
+		<< " termvect:" << termvect << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_sum/START")
+		);
   bool okleft = false;
   _f.leftv = parse_term(&_, &okleft);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
