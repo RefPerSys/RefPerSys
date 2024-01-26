@@ -29,9 +29,12 @@ taking many good ideas from
 (*except* static source code analysis) with it but avoiding bad ideas
 from it.
 
-For Linux/x86-64 only. Don't even think of running that on non-Linux
-systems, unless you provide patches for that. And we need a 64 bits
-processor.
+For Linux/x86-64 only, unless someone provides us `ssh` remote access
+to some other Linux 64 bits system. Don't even think of running that
+on non-Linux systems, unless you provide patches for that. And we need
+a 64 bits processor. If you can give us `ssh` access to non x86-64
+sixty-four bits machines (multi-core, at least 32Gbytes of RAM, at
+least 128Gbytes of disk space) please contact us.
 
 We have multi-threading in mind, but in some limited way. We think of
 a pool of a few dozen Pthreads at most (but not of a thousand
@@ -40,7 +43,7 @@ Pthreads).
 We absolutely want to avoid any
 [GIL](https://en.wikipedia.org/wiki/Global_interpreter_lock)
 
-Don't expect anything useful from RefPerSys before at least 2023. But
+Don't expect anything useful from RefPerSys before at least 2024. But
 you could have fun sharing our ideas and experimenting yours.
 
 A rewrite of RefPerSys in C was attempted on [refpersys-in-c](https://github.com/RefPerSys/refpersys-in-c).
