@@ -1627,8 +1627,8 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
   ///
 } // end of rps_dump_into
 
-
-#warning rpsapply_5Q5E0Lw9v4f046uAKZ should be installed as "generate_code°the_system_class"
+/// NB rpsapply_5Q5E0Lw9v4f046uAKZ is installed as
+/// "generate_code°the_system_class" in commit  a87e55f74f78537 and before
 /***
  * We need to manually edit the persistore/sp_8J6vNYtP5E800eCr5q-rps.json to avoid:::
 
