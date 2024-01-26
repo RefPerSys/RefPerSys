@@ -1083,9 +1083,9 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
   {
     this->display_current_line_with_cursor(out);
   })
-		<< " termvect:" << termvect << std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_sum/START")
-		);
+      << " termvect:" << termvect << std::endl
+      << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_sum/START")
+               );
   bool okleft = false;
   _f.leftv = parse_term(&_, &okleft);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
@@ -1254,7 +1254,29 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           bool succeeded=false;
           consume_front_token(&_, &succeeded);
           if (!succeeded)
-            break;
+            {
+              RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+                            << " loopcnt#" << loopcnt
+                            << " in:" << (*this)
+                            << " termvect:" << termvect << std::endl
+                            << "… curcptr:" << Rps_QuotedC_String(curcptr())
+                            << " failed-consume:"  << std::endl
+                            << Rps_Do_Output([&](std::ostream& out)
+              {
+                this->display_current_line_with_cursor(out);
+              }));
+              break;
+            }
+          RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+                        << " loopcnt#" << loopcnt
+                        << " in:" << (*this)
+                        << " termvect:" << termvect << std::endl
+                        << "… curcptr:" << Rps_QuotedC_String(curcptr())
+                        << " token_deq:" << toksrc_token_deq << std::endl
+                        << Rps_Do_Output([&](std::ostream& out)
+          {
+            this->display_current_line_with_cursor(out);
+          }));
           _f.lextokv =  lookahead_token(&_, 0);
           RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤"
                         << callnum << " loopcnt#" << loopcnt
@@ -1264,7 +1286,6 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                         << " delimob=" << _f.delimob
                         << " pastdelimob=" << _f.pastdelimob
                         << " lextokv=" << _f.lextokv
-                        << (succeeded?" consumed-front":" failed-consume-token")
                         << "… curcptr:" << Rps_QuotedC_String(curcptr())
                         << " token_deq:" << toksrc_token_deq << std::endl
                         << Rps_Do_Output([&](std::ostream& out)
