@@ -365,7 +365,7 @@ rps_print_types_info(void)
 	 "," #Ty4,					\
 	 (int)sizeof(Ty1,Ty2,Ty3,Ty4),			\
 	 (int)alignof(Ty1,Ty2,Ty3,Ty4))
-  
+
   EXPLAIN_TYPE(int);
   EXPLAIN_TYPE(double);
   EXPLAIN_TYPE(char);

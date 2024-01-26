@@ -1,6 +1,6 @@
 //: GENERATED file generated/rps-names.hh / DO NOT EDIT!
 //: This file is part of the Reflective Persistent System.
-//: Copyright (C) 2019 - 2023 The Reflective Persistent System Team.
+//: Copyright (C) 2019 - 2024 The Reflective Persistent System Team.
 //:  see refpersys.org and contact team@refpersys.org for more.
 //: _
 //: This program is free software: you can redistribute it and/or modify

@@ -1,6 +1,6 @@
 //!! GENERATED file rps_manifest.json / DO NOT EDIT!
 //!! This file is part of the Reflective Persistent System.
-//!! Copyright (C) 2019 - 2023 The Reflective Persistent System Team.
+//!! Copyright (C) 2019 - 2024 The Reflective Persistent System Team.
 //!!  see refpersys.org and contact team@refpersys.org for more.
 //!! _
 //!! This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 //!! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {
  "constset" : [ "_41OFI3r0S1t03qdB2E", "_9uwZtDshW4401x6MsY" ],
- "dumpdate" : "2023 Oct 30",
+ "dumpdate" : "2024 Jan 26",
  "format" : "RefPerSysFormat2023A",
  "globalnames" : 
  [
@@ -252,11 +252,11 @@
   "_9Gz1oNPCnkB00I6VRS"
  ],
  "jsoncpp-version" : "1.9.5",
- "origitid" : "9bec4e406e99154117a88903e6020f335a53824b+",
+ "origitid" : "b6d8446d17a27c335272c796ad593daabff385ec",
  "plugins" : [],
- "progmd5sum" : "cf349d467868c2e97c6f846e930ee34c",
+ "progmd5sum" : "5667694075c52cbed15cb472c1581772",
  "progname" : "./refpersys",
- "progtimestamp" : "Mon 30 Oct 2023 08:16:09 PM MET",
+ "progtimestamp" : "Fri 26 Jan 2024 12:15:17 PM CET",
  "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }
 

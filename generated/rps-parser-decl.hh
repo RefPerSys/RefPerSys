@@ -1,6 +1,6 @@
 //: GENERATED file generated/rps-parser-decl.hh / DO NOT EDIT!
 //: This file is part of the Reflective Persistent System.
-//: Copyright (C) 2019 - 2023 The Reflective Persistent System Team.
+//: Copyright (C) 2019 - 2024 The Reflective Persistent System Team.
 //:  see refpersys.org and contact team@refpersys.org for more.
 //: _
 //: This program is free software: you can redistribute it and/or modify
@@ -16,5 +16,5 @@
 //: You should have received a copy of the GNU General Public License
 //: along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #warning empty parser declaration file generated/rps-parser-decl.hh from dump_rps.cc:1146
-/// generator object ◌_5tffJCp8z2p038lc9T∊object
-/// git 9bec4e406e99+
+/// generator object ◌_2mwWG0qAelD02fXRtR∊object
+/// git b6d8446d17a2
