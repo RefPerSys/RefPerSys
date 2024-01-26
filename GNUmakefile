@@ -51,8 +51,8 @@ export
 # build variables.
 #
 
-CC?=gcc
-CXX?=g++
+CC=gcc
+CXX=g++
 RPS_BUILD_CC?=gcc
 RPS_BUILD_CXX?=g++
 
