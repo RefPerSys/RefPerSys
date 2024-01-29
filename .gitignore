@@ -128,3 +128,5 @@ refpersys-lto
 
 # Configurable build variables makefile fragment
 config.mk
+helloworld.c
+helloworld.test
