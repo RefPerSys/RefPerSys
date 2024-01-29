@@ -38,8 +38,8 @@ function try_c_compiler() { # $1 is the C compiler to try
 	printf '%s: failed to compile %s with %s\n' $script_name $csrc $1 > /dev/stderr
 	exit 1
     fi
-    files_to_remove+=$csrc
-    files_to_remove+=$testexe
+    files_to_remove+=($csrc)
+    files_to_remove+=($testexe)
 }
     
 function ask_c_compiler() {
@@ -59,7 +59,8 @@ function ask_c_compiler() {
 
 ask_c_compiler
 
-echo $0 should remove $files_to_remove
-for f in $files_to_remove ; do
+### TODO: not working so well in commit 8f0f3c2715a8 (Jan 29, 2024)
+echo $0 should remove ${#files_to_remove[@]} files from ${files_to_remove}
+for f in ${files_to_remove} ; do
     /bin/rm -vf $f
 done
