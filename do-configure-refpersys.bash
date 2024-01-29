@@ -19,26 +19,36 @@
 ##    along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 script_name=$0
+declare -a files_to_remove
 ## first step: ask for a C compiler
 
 function try_c_compiler() { # $1 is the C compiler to try
     # first step, compile a simple hello world program
-    echo '/// sample helloworld.c' > helloworld.c
-    printf '#include <stdio.h>\n' >> helloworld.c
-    printf 'int main(int argc, char**argv) {\n' >> helloworld.c
-    printf '  printf("hello from %%s HERE %%s\\n", argv[0], HERE);\n' >> helloworld.c
-    printf '  return 0;\n' >> helloworld.c
-    printf '}\n /// eof helloworld.c\n' >> helloworld.c
-    $1 -DHERE=\"$script_name\" -O -g -o helloworld.test helloworld.c
+    local csrc textexe
+    csrc=/tmp/helloworld$$.c
+    testexe=/tmp/helloworld$$.bin
+    echo '/// sample helloworld.c' > $csrc
+    printf '#include <stdio.h>\n' >> $csrc
+    printf 'int main(int argc, char**argv) {\n' >> $csrc
+    printf '  printf("hello from %%s HERE %%s\\n", argv[0], HERE);\n' >> $csrc
+    printf '  return 0;\n' >> $csrc
+    printf '}\n /// eof helloworld.c\n' >> $csrc
+    $1 -DHERE=\"$script_name\" -O -g -o $testexe $csrc
+    if [ $? -ne 0 ]; then
+	printf '%s: failed to compile %s with %s\n' $script_name $csrc $1 > /dev/stderr
+	exit 1
+    fi
+    files_to_remove+=$csrc
+    files_to_remove+=$testexe
 }
     
 function ask_c_compiler() {
     local c rc
     echo Enter path of C99 compiler "preferably GCC"
-    read -e -i /usr/bin/gcc -p "C compiler:" c
-    rc=$(realpath $c)
-    echo Using $rc as the C99 compiler
-    try_c_compiler $rc
+    read -e -i /usr/bin/gcc -p "C compiler: " c
+    echo Using $c as the C99 compiler
+    $c --version
+    try_c_compiler $c
 }
 
 
@@ -48,3 +58,8 @@ function ask_c_compiler() {
 
 
 ask_c_compiler
+
+echo $0 should remove $files_to_remove
+for f in $files_to_remove ; do
+    /bin/rm -vf $f
+done
