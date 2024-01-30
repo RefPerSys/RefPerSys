@@ -32,5 +32,12 @@
 
 config:
 	./do-configure-refpersys.bash
+
+clean:
+	$(RM) tmp* *~ *.o
+
+all:
+	/usr/bin/printf "make features %s\n" $(.FEATURES)
+
 ## eof GNUmakefile
 
