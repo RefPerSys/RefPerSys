@@ -25,17 +25,17 @@ declare -a files_to_remove
 function try_c_compiler() { # $1 is the C compiler to try
     # first step, compile a simple hello world program
     local csrc textexe
-    csrc=/tmp/helloworld$$.c
-    testexe=/tmp/helloworld$$.bin
-    echo '/// sample helloworld.c' > $csrc
+    csrc=$(/usr/bin/mktemp tmp_helloworld.XXXXX.c)
+    testexe=$(/usr/bin/mktemp --dry-run tmp_helloworld.XXXXX.bin)
+    printf '/// sample helloworld C program %s from %s\n' $csrc $script_name >> $csrc
     printf '#include <stdio.h>\n' >> $csrc
     printf 'int main(int argc, char**argv) {\n' >> $csrc
     printf '  printf("hello from %%s HERE %%s\\n", argv[0], HERE);\n' >> $csrc
     printf '  return 0;\n' >> $csrc
-    printf '}\n /// eof helloworld.c\n' >> $csrc
+    printf '}\n /// eof %s\n' $csrc >> $csrc
     $1 -DHERE=\"$script_name\" -O -g -o $testexe $csrc
     if [ $? -ne 0 ]; then
-	printf '%s: failed to compile %s with %s\n' $script_name $csrc $1 > /dev/stderr
+	printf '%s: failed to compile %s into %s with %s\n' $script_name $csrc $testexe $1 > /dev/stderr
 	exit 1
     fi
     files_to_remove+=($csrc)
