@@ -28,9 +28,17 @@
 ##    along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 
+
+## tell GNU make to export all variables by default
+export
+
+#                                                                
 .PHONY: all config objects clean gitpush
 
-config:
+### Human hand-written C++ sources
+REFPERSYS_CPPSOURCES := $(wildcard *_rps.cc)
+
+config: do-configure-refpersys.bash GNUmakefile
 	./do-configure-refpersys.bash
 
 clean:
@@ -38,6 +46,7 @@ clean:
 
 all:
 	/usr/bin/printf "make features %s\n" $(.FEATURES)
+	/usr/bin/printf "hand-written C++ code %s\n" $(REFPERSYS_CPPSOURCES)
 
 ## eof GNUmakefile
 
