@@ -38,8 +38,7 @@ function try_c_compiler() { # $1 is the C compiler to try
 	printf '%s: failed to compile %s into %s with %s\n' $script_name $csrc $testexe $1 > /dev/stderr
 	exit 1
     fi
-    files_to_remove+=($csrc)
-    files_to_remove+=($testexe)
+    files_to_remove+=($csrc $testexe)
 }
     
 function ask_c_compiler() {
