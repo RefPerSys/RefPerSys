@@ -35,7 +35,7 @@ function try_c_compiler() { # $1 is the C compiler to try
     printf '}\n /// eof %s\n' $csrc >> $csrc
     $1 -DHERE=\"$script_name\" -O -g -o $testexe $csrc
     if [ $? -ne 0 ]; then
-	printf '%s: failed to compile %s into %s with %s\n' $script_name $csrc $testexe $1 > /dev/stderr
+	printf '%s: failed to C compile %s into %s with %s\n' $script_name $csrc $testexe $1 > /dev/stderr
 	exit 1
     fi
     files_to_remove+=($csrc $testexe)
@@ -52,6 +52,27 @@ function ask_c_compiler() {
 
 
 ## second step: ask for a C++ compiler
+
+function try_cplusplus_compiler { # $1 is the C++ compiler to try
+    # first step, compile a simple hello world program
+    local cpsrc textexe
+    cpsrc=$(/usr/bin/mktemp tmp_helloworldcxx.XXXXX.cc)
+    testexe=$(/usr/bin/mktemp --dry-run tmp_helloworldcxx.XXXXX.bin)
+    printf '/// sample helloworld C++ program %s from %s\n' $cpsrc $script_name >> $cpsrc
+    printf '#include <iostream>\n' >> $cpsrc
+    printf 'int main(int argc, char**argv) {\n' >> $cpsrc
+    printf '  std::out << "hello from " << argv[0]\n' >> $cpsrc
+    printf '    << "  HERE=" << HERE << std::endl;\n' >> $cpsrc
+    printf '  return 0;\n' >> $cpsrc
+    printf '}\n /// eof %s\n' $cpsrc >> $cpsrc
+    $1 -DHERE=\"$script_name\" -O -g -o $testexe $cpsrc
+    if [ $? -ne 0 ]; then
+	printf '%s: failed to C++ compile %s into %s with %s\n' $script_name $csrc $testexe $1 > /dev/stderr
+	exit 1
+    fi
+    files_to_remove+=($cpsrc $testexe)
+}
+
 #function ask_cpp_compiler() {
 #}
 
