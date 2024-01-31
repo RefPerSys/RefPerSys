@@ -33,7 +33,7 @@ function try_c_compiler() { # $1 is the C compiler to try
     printf '  printf("hello from %%s HERE %%s in %s\\n", argv[0], HERE, __FILE__);\n' >> $csrc
     printf '  return 0;\n' >> $csrc
     printf '}\n /// eof %s\n' $csrc >> $csrc
-    echo $0 running $1 -DHERE=\"$script_name\" -O -g -o $testexe $csrc
+    echo $script_name running $1 -DHERE=\"$script_name\" -O -g -o $testexe $csrc
     $1 -DHERE=\"$script_name\" -O -g -o $testexe $csrc
     if [ $? -ne 0 ]; then
 	printf '%s: failed to C compile %s into %s with %s\n' $script_name $csrc $testexe $1 > /dev/stderr
@@ -41,18 +41,18 @@ function try_c_compiler() { # $1 is the C compiler to try
     fi
     files_to_remove+=($csrc $testexe)
     ##run the executable and test its output
-    $0 running ldd ./$testexe
+    $script_name running ldd ./$testexe
     /usr/bin/ldd ./$testexe
-    echo $0 testing ./$testexe
+    echo $script_name testing ./$testexe
     if ! ./$testexe | /bin/grep 'hello from' ; then
-	echo $0 failed ./$testexe "(no hello output)" > /dev/stderr
+	echo $script_name failed ./$testexe "(no hello output)" > /dev/stderr
 	exit 1
     fi
     if ! ./$testexe | /bin/grep $csrc ; then
-	echo $0 failed ./$testexe "(no $csrc output)" > /dev/stderr
+	echo $script_name failed ./$testexe "(no $csrc output)" > /dev/stderr
 	exit 1
     fi
-    echo $0 did test successfully  ./$testexe from $csrc
+    echo $script_name did test successfully  ./$testexe from $csrc
     #second step, compile a two files hello world
     csrc=$(/usr/bin/mktemp tmp_otherfirsthelloworld.XXXXX.c)
     othercsrc=$(/usr/bin/mktemp tmp_othersecondhelloworld.XXXXX.c)
@@ -85,23 +85,24 @@ function try_c_compiler() { # $1 is the C compiler to try
     files_to_remove+=($csrc $othercsrc)
     echo $script_name running $1 -O -g $firstobj $otherobj -o $otherexe
     $1 -O -g $firstobj $otherobj -o $otherexe
-    echo $0 running ldd on ./$otherexe
+    echo $script_name running ldd on ./$otherexe
     /usr/bin/ldd ./$otherexe
-    echo $0 testing ./$otherexe
+    echo $script_name testing ./$otherexe
     if ! ./$otherexe | /bin/grep 'hello from' ; then
-	echo $0 failed ./$testexe "(no hello output)" > /dev/stderr
+	echo $script_name failed ./$testexe "(no hello output)" > /dev/stderr
 	exit 1
     fi
     if ! ./$otherexe | /bin/grep $csrc ; then
-	echo $0 failed ./$testexe "(no $csrc output)" > /dev/stderr
+	echo $script_name failed ./$testexe "(no $csrc output)" > /dev/stderr
 	exit 1
     fi
-    echo $0 did test successfully  ./$otherexe from $csrc and $othercsrc
+    echo $script_name did test successfully  ./$otherexe from $csrc and $othercsrc
 }
     
 function ask_c_compiler() {
-    local c rc
-    echo Enter path of C99 compiler "preferably GCC"
+    local c
+    echo $script_name asking for a C compiler
+    echo Enter path of C99 compiler preferably GCC from gcc.gnu.org
     read -e -i /usr/bin/gcc -p "C compiler: " c
     echo Using $c as the C99 compiler
     $c --version
@@ -131,14 +132,17 @@ function try_cplusplus_compiler { # $1 is the C++ compiler to try
     files_to_remove+=($cpsrc $testexe)
 }
 
-#function ask_cpp_compiler() {
-#}
+function ask_cpp_compiler() {
+    local cpp
+}
 
 
 ask_c_compiler
 
+ask_cpp_compiler
+
 ### TODO: not working so well in commit 8f0f3c2715a8 (Jan 29, 2024)
-echo $0 should remove ${#files_to_remove[@]} files from ${files_to_remove}
+echo $script_name should remove ${#files_to_remove[@]} files from ${files_to_remove}
 for f in ${files_to_remove} ; do
     /bin/rm -vf $f
 done
