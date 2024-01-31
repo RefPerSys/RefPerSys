@@ -30,7 +30,7 @@ function try_c_compiler() { # $1 is the C compiler to try
     printf '/// sample helloworld C program %s from %s\n' $csrc $script_name >> $csrc
     printf '#include <stdio.h>\n' >> $csrc
     printf 'int main(int argc, char**argv) {\n' >> $csrc
-    printf '  printf("hello from %%s HERE %%s\\n", argv[0], HERE);\n' >> $csrc
+    printf '  printf("hello from %%s HERE %%s in %s\\n", argv[0], HERE, __FILE__);\n' >> $csrc
     printf '  return 0;\n' >> $csrc
     printf '}\n /// eof %s\n' $csrc >> $csrc
     echo $0 running $1 -DHERE=\"$script_name\" -O -g -o $testexe $csrc
@@ -40,6 +40,18 @@ function try_c_compiler() { # $1 is the C compiler to try
 	exit 1
     fi
     files_to_remove+=($csrc $testexe)
+    ##run the executable and test its output
+    $0 running ldd ./$testexe
+    /usr/bin/ldd ./$testexe
+    echo $0 testing ./$testexe
+    if ! ./$testexe | /bin/grep 'hello from' ; then
+	echo $0 failed ./$testexe "(no hello output)" > /dev/stderr
+	exit 1
+    fi
+    if ! ./$testexe | /bin/grep $csrc ; then
+	echo $0 failed ./$testexe "(no $csrc output)" > /dev/stderr
+	exit 1
+    fi
     #second step, compile a two files hello world
     csrc=$(/usr/bin/mktemp tmp_otherfirsthelloworld.XXXXX.c)
     othercsrc=$(/usr/bin/mktemp tmp_othersecondhelloworld.XXXXX.c)
@@ -49,7 +61,7 @@ function try_c_compiler() { # $1 is the C compiler to try
     printf '/// sample C program %s from %s\n' $csrc $script_name >> $csrc
     printf '#include <stdio.h>\n' >> $csrc
     printf 'void sayhello(const char*c) {\n' >> $csrc
-    printf '     printf("hello from %%s HERE %%s\\n", c, HERE);\n' >> $csrc
+    printf '     printf("hello from %%s HERE %%s in %s\\n", c, HERE, __FILE__);\n' >> $csrc
     printf '}\n // end sayhello\n/// eof %s\n' $csrc >> $csrc
     printf '/// sample main C file %s from %s\n' $othercsrc $script_name >> $othercsrc
     printf 'extern void sayhello(const char*c);\n' >> $othercsrc
@@ -72,6 +84,17 @@ function try_c_compiler() { # $1 is the C compiler to try
     files_to_remove+=($csrc $othercsrc)
     echo $script_name running $1 -O -g $firstobj $otherobj -o $otherexe
     $1 -O -g $firstobj $otherobj -o $otherexe
+    echo $0 running ldd on ./$otherexe
+    /usr/bin/ldd ./$otherexe
+    echo $0 testing ./$otherexe
+    if ! ./$otherexe | /bin/grep 'hello from' ; then
+	echo $0 failed ./$testexe "(no hello output)" > /dev/stderr
+	exit 1
+    fi
+    if ! ./$otherexe | /bin/grep $csrc ; then
+	echo $0 failed ./$testexe "(no $csrc output)" > /dev/stderr
+	exit 1
+    fi
 }
     
 function ask_c_compiler() {
