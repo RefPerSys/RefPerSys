@@ -20,6 +20,12 @@
 
 script_name=$0
 declare -a files_to_remove
+shopt -s extdebug
+
+
+## suggested by https://savannah.gnu.org/support/index.php?111015
+PS4='dolzero=$0 lineno=$LINENO bash_source=$BASH_SOURCE bash_lineno=$BASH_LINENO'
+
 ## first step: ask for a C compiler
 
 function try_c_compiler() { # $1 is the C compiler to try
