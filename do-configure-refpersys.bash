@@ -24,7 +24,7 @@ declare -a files_to_remove
 
 function try_c_compiler() { # $1 is the C compiler to try
     # first step, compile a simple hello world program
-    local csrc textexe
+    local csrc othercsrc textexe
     csrc=$(/usr/bin/mktemp tmp_helloworld.XXXXX.c)
     testexe=$(/usr/bin/mktemp --dry-run tmp_helloworld.XXXXX.bin)
     printf '/// sample helloworld C program %s from %s\n' $csrc $script_name >> $csrc
@@ -33,12 +33,45 @@ function try_c_compiler() { # $1 is the C compiler to try
     printf '  printf("hello from %%s HERE %%s\\n", argv[0], HERE);\n' >> $csrc
     printf '  return 0;\n' >> $csrc
     printf '}\n /// eof %s\n' $csrc >> $csrc
+    echo $0 running $1 -DHERE=\"$script_name\" -O -g -o $testexe $csrc
     $1 -DHERE=\"$script_name\" -O -g -o $testexe $csrc
     if [ $? -ne 0 ]; then
 	printf '%s: failed to C compile %s into %s with %s\n' $script_name $csrc $testexe $1 > /dev/stderr
 	exit 1
     fi
     files_to_remove+=($csrc $testexe)
+    #second step, compile a two files hello world
+    csrc=$(/usr/bin/mktemp tmp_otherfirsthelloworld.XXXXX.c)
+    othercsrc=$(/usr/bin/mktemp tmp_othersecondhelloworld.XXXXX.c)
+    otherexe=$(/usr/bin/mktemp tmp_otherhelloworld.XXXXX.bin)
+    firstobj=$(/usr/bin/basename $csrc .c).o
+    otherobj=$(/usr/bin/basename $othercsrc .c).o
+    printf '/// sample C program %s from %s\n' $csrc $script_name >> $csrc
+    printf '#include <stdio.h>\n' >> $csrc
+    printf 'void sayhello(const char*c) {\n' >> $csrc
+    printf '     printf("hello from %%s HERE %%s\\n", c, HERE);\n' >> $csrc
+    printf '}\n // end sayhello\n/// eof %s\n' $csrc >> $csrc
+    printf '/// sample main C file %s from %s\n' $othercsrc $script_name >> $othercsrc
+    printf 'extern void sayhello(const char*c);\n' >> $othercsrc
+    printf 'int main(int argc,char**argv) {\n' >> $othercsrc
+    printf '   if (argc>0) sayhello(argv[0]);\n' >> $othercsrc
+    printf '   return 0;\n' >> $othercsrc >> $othercsrc
+    printf '}\n /// end main\n///// eof %s\n' $othercsrc >> $othercsrc
+    echo $script_name running $1 -DHERE=\"$script_name\" -O -g -Wall -c $csrc
+    $1 -DHERE=\"$script_name\" -O -g -Wall -c $csrc
+    if [ $? -ne 0 ]; then
+	printf '%s: failed to C compile %s into object file with %s\n' $script_name $csrc $1 > /dev/stderr
+	exit 1
+    fi
+    echo $script_name running $1 -DHERE=\"$script_name\" -O -g -Wall  -c $othercsrc
+    $1 -DHERE=\"$script_name\" -O -g -Wall  -c $othercsrc
+    if [ $? -ne 0 ]; then
+	printf '%s: failed to C compile %s into object file with %s\n' $script_name $othercsrc $1 > /dev/stderr
+	exit 1
+    fi
+    files_to_remove+=($csrc $othercsrc)
+    echo $script_name running $1 -O -g $firstobj $otherobj -o $otherexe
+    $1 -O -g $firstobj $otherobj -o $otherexe
 }
     
 function ask_c_compiler() {
