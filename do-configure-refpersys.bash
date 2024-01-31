@@ -52,6 +52,7 @@ function try_c_compiler() { # $1 is the C compiler to try
 	echo $0 failed ./$testexe "(no $csrc output)" > /dev/stderr
 	exit 1
     fi
+    echo $0 did test successfully  ./$testexe from $csrc
     #second step, compile a two files hello world
     csrc=$(/usr/bin/mktemp tmp_otherfirsthelloworld.XXXXX.c)
     othercsrc=$(/usr/bin/mktemp tmp_othersecondhelloworld.XXXXX.c)
@@ -95,6 +96,7 @@ function try_c_compiler() { # $1 is the C compiler to try
 	echo $0 failed ./$testexe "(no $csrc output)" > /dev/stderr
 	exit 1
     fi
+    echo $0 did test successfully  ./$otherexe from $csrc and $othercsrc
 }
     
 function ask_c_compiler() {
