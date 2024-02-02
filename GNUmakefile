@@ -35,6 +35,20 @@ export
 #                                                                
 .PHONY: all config objects clean gitpush
 
+-include config-refpersys.mk
+
+all:
+
+	/usr/bin/printf "make features %s\n" $(.FEATURES)
+	/usr/bin/printf "hand-written C++ code %s\n" $(REFPERSYS_CPPSOURCES)
+	@if [ ! -f config-refpersys.mk ]; then \
+	   echo missing config-refpersys.mk for GNUmakefile > /dev/stderr; \
+	   echo run $(MAKE) config > /dev/stderr ; \
+	   exit 1 ; \
+	fi
+
+
+
 ### Human hand-written C++ sources
 REFPERSYS_CPPSOURCES := $(wildcard *_rps.cc)
 
@@ -48,10 +62,6 @@ do-configure-refpersys: do-configure-refpersys.c |GNUmakefile
 
 clean:
 	$(RM) tmp* *~ *.o do-configure-refpersys refpersys
-
-all:
-	/usr/bin/printf "make features %s\n" $(.FEATURES)
-	/usr/bin/printf "hand-written C++ code %s\n" $(REFPERSYS_CPPSOURCES)
 
 ## eof GNUmakefile
 
