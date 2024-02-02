@@ -38,11 +38,16 @@ export
 ### Human hand-written C++ sources
 REFPERSYS_CPPSOURCES := $(wildcard *_rps.cc)
 
-config: do-configure-refpersys.bash GNUmakefile
-	./do-configure-refpersys.bash
+config: do-configure-refpersys GNUmakefile
+	./do-configure-refpersys 
+
+do-configure-refpersys: do-configure-refpersys.c |GNUmakefile
+	$(CC) -Wall -Wextra -O -g $^ -o $@ -lreadline
+## if readline library is unavailable add -DWITHOUT_READLINE above
+
 
 clean:
-	$(RM) tmp* *~ *.o
+	$(RM) tmp* *~ *.o do-configure-refpersys refpersys
 
 all:
 	/usr/bin/printf "make features %s\n" $(.FEATURES)
