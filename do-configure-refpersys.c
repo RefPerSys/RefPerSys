@@ -207,8 +207,9 @@ void
 try_compile_run_hello_world_in_c (const char *cc)
 {
   char *helloworldsrc = NULL;
-  char helloworldbin[sizeof (helloworldsrc) + 8];
-  helloworldsrc = temporary_textual_file ("helloworld_", ".c", __LINE__);
+  char helloworldbin[128];
+  memset (helloworldbin, 0, sizeof (helloworldbin));
+  helloworldsrc = temporary_textual_file ("tmp_helloworld_", ".c", __LINE__);
   FILE *hwf = fopen (helloworldsrc, "w");
   if (!hwf)
     {
@@ -216,7 +217,6 @@ try_compile_run_hello_world_in_c (const char *cc)
 	       "%s failed to create temporary hello world C %s (%m)\n",
 	       prog_name, helloworldsrc);
     }
-  should_remove_file (helloworldsrc, __LINE__);
   fprintf (hwf, "/// temporary hello world C file %s\n", helloworldsrc);
   fprintf (hwf, "#include <stdio.h>\n");
   fprintf (hwf, "void say_hello(const char*c) {\n");
@@ -226,12 +226,14 @@ try_compile_run_hello_world_in_c (const char *cc)
   fprintf (hwf, "\n\n");
   fprintf (hwf, "int main(int argc,char**argv) { say_hello(argv[0]); }\n");
   fclose (hwf);
-  snprintf (helloworldbin, sizeof (helloworldbin), "./%s", helloworldsrc);
+  snprintf (helloworldbin, sizeof (helloworldbin), "./%s",
+	    basename (helloworldsrc));
   char *lastdot = strrchr (helloworldbin, '.');
   if (lastdot)
     strcpy (lastdot, ".bin");
   else
     strcat (helloworldbin, ".bin");
+  assert (lastdot);
   {
     char helloworldcompile[512];
     memset (helloworldcompile, 0, sizeof (helloworldcompile));
@@ -247,6 +249,7 @@ try_compile_run_hello_world_in_c (const char *cc)
 		 prog_name, helloworldcompile, e);
 	exit (EXIT_FAILURE);
       };
+    should_remove_file (helloworldsrc, __LINE__);
     should_remove_file (helloworldbin, __LINE__);
     printf ("popen-eing %s\n", helloworldbin);
     fflush (NULL);
@@ -306,24 +309,14 @@ test_cxx_compiler (const char *cxx)
   /* Generate two temporary simple C++ files, compile both of them in
      two commands, link the object files, and run the temporary
      helloworld executable in C++ */
-  char showvectsrc[128];
-  char maincxxsrc[128];
+  char *showvectsrc = NULL;
+  char *maincxxsrc = NULL;
   char showvectobj[128];
   char maincxxobj[128];
-  memset (showvectsrc, 0, sizeof (showvectsrc));
-  memset (maincxxsrc, 0, sizeof (maincxxsrc));
-  strcpy (showvectsrc, "tmp_showvectXXXXXXX.cxx");
+  showvectsrc = temporary_textual_file ("tmp_showvect", ".cxx", __LINE__);
+  maincxxsrc = temporary_textual_file ("tmp_maincxx", ".cxx", __LINE__);
   /// write the show vector C++ file
   {
-    errno = 0;
-    assert (sizeof (".cxx") - 1 == 4);
-    int svfd = mkostemps (showvectsrc, 4, R_OK | W_OK);
-    if (svfd < 0)
-      {
-	fprintf (stderr,
-		 "%s failed to create using mkostemps temporary show vector C++ %s (%m)[%s:%d]\n",
-		 prog_name, showvectsrc, __FILE__, __LINE__);
-      };
     FILE *svf = fopen (showvectsrc, "w");
     if (!svf)
       {
@@ -346,13 +339,12 @@ test_cxx_compiler (const char *cxx)
     fclose (svf);
     printf ("%s wrote C++ file %s (%s:%d)\n", prog_name, showvectsrc,
 	    __FILE__, __LINE__ - 1);
-    should_remove_file (showvectsrc, __LINE__);
     fflush (NULL);
   }
   /// compile the C++ show vector file
   strcpy (showvectobj, showvectsrc);
   {
-    char compilshowvect[2 * sizeof (showvectsrc) + 128];
+    char compilshowvect[3 * 128];
     memset (compilshowvect, 0, sizeof (compilshowvect));
     char *dot = strrchr (showvectobj, '.');
     assert (dot != NULL && dot < showvectobj + sizeof (showvectobj) - 3);
@@ -369,6 +361,7 @@ test_cxx_compiler (const char *cxx)
 		 prog_name, compilshowvect, ex);
 	exit (EXIT_FAILURE);
       };
+    should_remove_file (showvectsrc, __LINE__);
   }
   /// write the main C++ file
   {
@@ -398,8 +391,10 @@ test_cxx_compiler (const char *cxx)
     fprintf (mnf, "    v.push_back(std::string(argv[i]));\n");
     fprintf (mnf, "  std::cout << argv[0] << \" got \"\n");
     fprintf (mnf,
-	     "            << (argc-1) << \" arguments:\" << std::endl\n");
+	     "            << (argc-1) << \" arguments:\" << std::endl;\n");
     fprintf (mnf, "  show_str_vect(v);\n");
+    fprintf (mnf,
+	     "  std::cout << \" hello from \" << argv[0] << std::endl;\n");
     fprintf (mnf, "  std::cout << std::flush;\n");
     fprintf (mnf, "  return 0;\n");
     fprintf (mnf, "} // end main\n");
@@ -412,7 +407,7 @@ test_cxx_compiler (const char *cxx)
   /// compile the C++ main file
   strcpy (maincxxobj, maincxxsrc);
   {
-    char compilmaincxx[2 * sizeof (maincxxsrc) + 128];
+    char compilmaincxx[3 * 128];
     memset (compilmaincxx, 0, sizeof (compilmaincxx));
     char *dot = strrchr (maincxxobj, '.');
     assert (dot != NULL && dot < maincxxobj + sizeof (maincxxobj) - 3);
@@ -430,6 +425,52 @@ test_cxx_compiler (const char *cxx)
 	exit (EXIT_FAILURE);
       };
   }
+  /// link the two objects
+  char *cxxexe = temporary_binary_file ("./tmp_cxxprog", ".bin", __LINE__);
+  {
+    char linkmaincxx[3 * 128];
+    memset (linkmaincxx, 0, sizeof (linkmaincxx));
+    snprintf (linkmaincxx, sizeof (linkmaincxx),
+	      "%s %s  %s -o %s", cxx, maincxxobj, showvectobj, cxxexe);
+    should_remove_file (maincxxsrc, __LINE__);
+    should_remove_file (maincxxobj, __LINE__);
+    should_remove_file (showvectsrc, __LINE__);
+    should_remove_file (showvectobj, __LINE__);
+    fflush (NULL);
+    int ex = system (linkmaincxx);
+    if (ex)
+      {
+	fprintf (stderr, "%s: failed to compile with %s (exit %d)\n",
+		 prog_name, linkmaincxx, ex);
+	exit (EXIT_FAILURE);
+      };
+  }
+  /// run the C++ exe
+  should_remove_file (cxxexe, __LINE__);
+
+  fflush (NULL);
+  FILE *pf = popen (cxxexe, "r");
+  if (!pf)
+    {
+      fprintf (stderr, "%s failed to popen %s in C++ (%m)\n",
+	       prog_name, cxxexe);
+      exit (EXIT_FAILURE);
+    };
+  char hwline[128];
+  memset (hwline, 0, sizeof (hwline));
+  fgets (hwline, sizeof (hwline), pf);
+  if (!strstr (hwline, "hello"))
+    {
+      fprintf (stderr, "%s bad read from popen %s got:%s\n",
+	       prog_name, cxxexe, hwline);
+      exit (EXIT_FAILURE);
+    }
+  int ehw = pclose (pf);
+  if (ehw)
+    {
+      fprintf (stderr, "%s bad pclose %s (%d)\n", prog_name, cxxexe, ehw);
+      exit (EXIT_FAILURE);
+    };
 }				/* end test_cxx_compiler */
 
 void
@@ -530,6 +571,9 @@ main (int argc, char **argv)
   if (!cxx)
     cxx = my_readline ("C++ compiler:");
   try_then_set_cxx_compiler (cxx);
+  fprintf(stderr, "[%s:%d] missing code to write the refpersys-config.mk\n",
+	  __FILE__, __LINE__);
+  exit(EXIT_FAILURE);
 #warning TODO write the refpersys-config.mk file for GNU make
 }				/* end main */
 
