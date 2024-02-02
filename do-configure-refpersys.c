@@ -35,17 +35,37 @@
 #define _GNU_SOURCE 1
 #endif /*_GNU_SOURCE*/
 #include <sys/utsname.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
 #include <errno.h>
 #include <time.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <dlfcn.h>
 
 #ifndef WITHOUT_READLINE
 #include "readline/readline.h"
 #endif
+
+#ifndef MAX_PROG_ARGS
+#define MAX_PROG_ARGS 1024
+#endif
+
+const char *prog_name;
+
+char *preprocessor_args[MAX_PROG_ARGS];
+int preprocessor_argcount;
+char *compiler_args[MAX_PROG_ARGS];
+int compiler_argcount;
+char *linker_args[MAX_PROG_ARGS];
+int linker_argcount;
+char *c_compiler;
+char *cpp_compiler;
+
+
+void try_c_compiler (const char *cc);
 
 char *
 my_readline (const char *prompt)
@@ -71,10 +91,91 @@ my_readline (const char *prompt)
 #endif // WITHOUT_READLINE
 }				// end my_readline
 
+void
+try_then_set_c_compiler (const char *cc)
+{
+  if (cc[0] != '/')
+    {
+      fprintf (stderr,
+	       "%s given non-absolute path for C compiler %s [%s:%d]\n",
+	       prog_name, cc, __FILE__, __LINE__);
+      exit (EXIT_FAILURE);
+    };
+  if (access (cc, F_OK | X_OK))
+    {
+      fprintf (stderr,
+	       "%s given non-executable path for C compiler %s [%s:%d]\n",
+	       prog_name, cc, __FILE__, __LINE__);
+      exit (EXIT_FAILURE);
+    }
+}				/* end try_then_set_c_compiler */
 
 int
 main (int argc, char **argv)
 {
+  prog_name = argv[0];
+  if (argc > MAX_PROG_ARGS)
+    {
+      fprintf (stderr,
+	       "%s (from C file %s) limits MAX_PROG_ARGS to %d\n"
+	       "... but %d are given! Edit it and recompile!\n",
+	       argv[0], __FILE__, MAX_PROG_ARGS, argc);
+      exit (EXIT_FAILURE);
+    };
+  /// Any program argument like VAR=something is putenv-ed. And
+  /// program arguments like -I... -D... -U... are passed to
+  /// preprocessor. Those like -O... -g... -W... to
+  /// compilers. -L... and -l... -r.... are for the linker
+  for (int i = 1; i < argc; i++)
+    {
+      char *curarg = argv[i];
+      if (!curarg)
+	break;
+      int curlen = strlen (curarg);
+      if (curlen == 0)
+	continue;
+      if (curlen >= 2 && curarg[0] == '-')
+	{
+	  if (curarg[1] == 'I' || curarg[1] == 'D' || curarg[1] == 'U')
+	    {
+	      preprocessor_args[preprocessor_argcount++] = curarg;
+	      continue;
+	    };
+	  if (curarg[1] == 'O' || curarg[1] == 'g')
+	    {
+	      compiler_args[compiler_argcount++] = curarg;
+	      continue;
+	    };
+	  /// -std=gnu77 affects compiler and preprocessor
+	  if (!strncmp (curarg, "-std=", 5))
+	    {
+	      preprocessor_args[preprocessor_argcount++] = curarg;
+	      compiler_args[compiler_argcount++] = curarg;
+	      continue;
+	    }
+	  /// -fPIC and -fPIE affects compiler and linker
+	  /// -flto and -fwhopr affects compiler and linker
+	  if (!strcmp (curarg, "-flto") || !strcmp (curarg, "-fwhopr")
+	      || !strcmp (curarg, "-fPIC"))
+	    {
+	      compiler_args[compiler_argcount++] = curarg;
+	      linker_args[linker_argcount++] = curarg;
+	      continue;
+	    }
+	}
+      if (!isalpha (curarg[0]))
+	break;
+      char *pc = NULL;
+      for (pc = curarg; *pc && (isalnum (*pc) || *pc == '_'); pc++);
+      if (*pc == '=')
+	putenv (curarg);
+    };
+  char *cc = getenv ("CC");
+  if (!cc)
+    cc = my_readline ("C compiler, preferably gcc:");
+  if (!cc)
+    cc = "/usr/bin/gcc";
+  try_then_set_c_compiler (cc);
 }				/* end main */
 
 

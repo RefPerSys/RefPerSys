@@ -130,3 +130,4 @@ refpersys-lto
 config.mk
 
 tmp_*
+do-configure-refpersys
