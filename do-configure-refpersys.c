@@ -41,6 +41,7 @@
 #include <string.h>
 #include <errno.h>
 #include <time.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
@@ -67,23 +68,23 @@ char *linker_args[MAX_PROG_ARGS];
 int linker_argcount;
 
 /* absolute path to C and C++ compiler */
-char *c_compiler;
-char *cpp_compiler;
+const char *c_compiler;
+const char *cpp_compiler;
 
 #ifndef MAX_REMOVED_FILES
 #define MAX_REMOVED_FILES 4096
 #endif
 
-char *files_to_remove_at_exit[MAX_REMOVED_FILES];
+const char *files_to_remove_at_exit[MAX_REMOVED_FILES];
 int removedfiles_count;
 
 void try_c_compiler (const char *cc);
-void
-try_then_set_cxx_compiler (const char *cxx)
-     void should_remove_file (const char *path);
+void try_then_set_cxx_compiler (const char *cxx);
+void should_remove_file (const char *path, int lineno);
 
 
-     char *my_readline (const char *prompt)
+char *
+my_readline (const char *prompt)
 {
 #ifndef WITHOUT_READLINE
   return readline (prompt);
@@ -137,7 +138,7 @@ try_compile_run_hello_world_in_c (const char *cc)
 	       "%s failed to create temporary hello world C %s (%m)\n",
 	       prog_name, helloworldsrc);
     }
-  should_remove_file (helloworldsrc);
+  should_remove_file (helloworldsrc, __LINE__);
   fprintf (hwf, "/// temporary hello world C file %s\n", helloworldsrc);
   fprintf (hwf, "#include <stdio.h>\n");
   fprintf (hwf, "void say_hello(const char*c) {\n");
@@ -168,7 +169,7 @@ try_compile_run_hello_world_in_c (const char *cc)
 		 prog_name, helloworldcompile, e);
 	exit (EXIT_FAILURE);
       };
-    should_remove_file (helloworldbin);
+    should_remove_file (helloworldbin, __LINE__);
     printf ("popen-eing %s\n", helloworldbin);
     fflush (NULL);
     FILE *pf = popen (helloworldbin, "r");
@@ -224,12 +225,13 @@ try_then_set_c_compiler (const char *cc)
 void
 test_cxx_compiler (const char *cxx)
 {
-#warning unimplemented test_cxx_compiler
-  /* TODO: generate two temporary simple C++ files, compile both of
-     them in same command, and run the temporary helloworld executable
-     in C++ */
+  /* Generate two temporary simple C++ files, compile both of them in
+     two commands, link the object files, and run the temporary
+     helloworld executable in C++ */
   char showvectsrc[128];
   char maincxxsrc[128];
+  char showvectobj[128];
+  char maincxxobj[128];
   memset (showvectsrc, 0, sizeof (showvectsrc));
   memset (maincxxsrc, 0, sizeof (maincxxsrc));
   strcpy (showvectsrc, "tmp_showvect-XXXXXXX.cxx");
@@ -252,12 +254,36 @@ test_cxx_compiler (const char *cxx)
     fprintf (svf, "   int c=0;\n");
     fprintf (svf, "   for (auto s: v) {\n");
     fprintf (svf, "     if (c++ > 0) std::cout << ' ';\n");
-    fprintf (svf, "     std::cout << v;\n");
+    fprintf (svf, "     std::cout << s;\n");
     fprintf (svf, "   };\n");
     fprintf (svf, "} // end show_str_vect\n");
-    fprintf (svf, "} // eof \n", showvectsrc);
+    fprintf (svf, "} // eof %s \n", showvectsrc);
     fclose (svf);
-    should_remove_file (showvectsrc);
+    printf ("%s wrote C++ file %s (%s:%d)\n", prog_name, showvectsrc,
+	    __FILE__, __LINE__ - 1);
+    should_remove_file (showvectsrc, __LINE__);
+    fflush (NULL);
+  }
+  /// compile the C++ show vector file
+  strcpy (showvectobj, showvectsrc);
+  {
+    char compilshowvect[2 * sizeof (showvectsrc) + 128];
+    memset (compilshowvect, 0, sizeof (compilshowvect));
+    char *dot = strrchr (showvectobj, '.');
+    assert (dot != NULL && dot < showvectobj + sizeof (showvectobj) - 3);
+    strcpy (dot, ".o");
+    snprintf (compilshowvect, sizeof (compilshowvect),
+	      "%s -c -Wall -Wextra -O -g %s -o %s",
+	      cxx, showvectsrc, showvectobj);
+    printf ("%s compiling with %s\n", prog_name, compilshowvect);
+    fflush (NULL);
+    int ex = system (compilshowvect);
+    if (ex)
+      {
+	fprintf (stderr, "%s: failed to compile with %s (exit %d)\n",
+		 prog_name, compilshowvect, ex);
+	exit (EXIT_FAILURE);
+      };
   }
   /// write the main C++ file
   {
@@ -273,6 +299,7 @@ test_cxx_compiler (const char *cxx)
     fprintf (mnf, "#include <iostream>\n");
     fprintf (mnf, "#include <string>\n");
     fprintf (mnf, "#include <vector>\n");
+    fprintf (mnf, "#include <cassert>\n");
     fprintf (mnf, "extern\n"
 	     " void show_str_vect(const std::vector<std::string>&);\n");
     fprintf (mnf, "\n\n");
@@ -290,6 +317,30 @@ test_cxx_compiler (const char *cxx)
     fprintf (mnf, "} // end main\n");
     fprintf (mnf, "/// eof %s\n", maincxxsrc);
     fclose (mnf);
+    printf ("%s wrote main C++ file %s (%s:%d)\n", prog_name, maincxxsrc,
+	    __FILE__, __LINE__ - 1);
+    fflush (NULL);
+  }
+  /// compile the C++ main file
+  strcpy (maincxxobj, maincxxsrc);
+  {
+    char compilmaincxx[2 * sizeof (maincxxsrc) + 128];
+    memset (compilmaincxx, 0, sizeof (compilmaincxx));
+    char *dot = strrchr (maincxxobj, '.');
+    assert (dot != NULL && dot < maincxxobj + sizeof (maincxxobj) - 3);
+    strcpy (dot, ".o");
+    snprintf (compilmaincxx, sizeof (compilmaincxx),
+	      "%s -c -Wall -Wextra -O -g %s -o %s",
+	      cxx, maincxxsrc, maincxxobj);
+    printf ("%s compiling with %s\n", prog_name, compilmaincxx);
+    fflush (NULL);
+    int ex = system (compilmaincxx);
+    if (ex)
+      {
+	fprintf (stderr, "%s: failed to compile with %s (exit %d)\n",
+		 prog_name, compilmaincxx, ex);
+	exit (EXIT_FAILURE);
+      };
   }
 }				/* end test_cxx_compiler */
 
@@ -307,11 +358,11 @@ try_then_set_cxx_compiler (const char *cxx)
     {
       fprintf (stderr,
 	       "%s given non-executable path for C++ compiler %s [%s:%d]\n",
-	       prog_name, cc, __FILE__, __LINE__);
+	       prog_name, cxx, __FILE__, __LINE__);
       exit (EXIT_FAILURE);
     }
   test_cxx_compiler (cxx);
-}				/* end try_cxx_compiler */
+}				/* end try_then_set_cxx_compiler */
 
 void
 remove_files (void)
