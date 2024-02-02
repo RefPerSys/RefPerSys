@@ -130,6 +130,7 @@ try_compile_run_hello_world_in_c (const char *cc)
   memset (helloworldsrc, 0, sizeof (helloworldsrc));
   memset (helloworldbin, 0, sizeof (helloworldbin));
   strcpy (helloworldsrc, "tmp_helloworldXXXXXXX.c");
+  assert (sizeof (".c") - 1 == 2);
   int hwfd = mkostemps (helloworldsrc, 2, R_OK | W_OK);
   if (hwfd < 0)
     {
@@ -240,12 +241,12 @@ test_cxx_compiler (const char *cxx)
   char maincxxobj[128];
   memset (showvectsrc, 0, sizeof (showvectsrc));
   memset (maincxxsrc, 0, sizeof (maincxxsrc));
-  strcpy (showvectsrc, "tmp_showvect_XXXXXXX.cxx");
-  strcpy (maincxxsrc, "tmp_maincxx_XXXXXXX.cxx");
+  strcpy (showvectsrc, "tmp_showvectXXXXXXX.cxx");
   /// write the show vector C++ file
   {
     errno = 0;
-    int svfd = mkostemps (showvectsrc, 2, R_OK | W_OK);
+    assert (sizeof (".cxx") - 1 == 4);
+    int svfd = mkostemps (showvectsrc, 4, R_OK | W_OK);
     if (svfd < 0)
       {
 	fprintf (stderr,
@@ -300,8 +301,10 @@ test_cxx_compiler (const char *cxx)
   }
   /// write the main C++ file
   {
+    strcpy (maincxxsrc, "tmp_maincxxXXXXXXX.cxx");
     errno = 0;
-    int mnfd = mkostemps (maincxxsrc, 2, R_OK | W_OK);
+    assert (sizeof (".cxx") - 1 == 4);
+    int mnfd = mkostemps (maincxxsrc, 4, R_OK | W_OK);
     FILE *mnf = fopen (maincxxsrc, "w");
     if (mnfd < 0 || !mnf)
       {
