@@ -131,8 +131,14 @@ try_compile_run_hello_world_in_c (const char *cc)
   memset (helloworldbin, 0, sizeof (helloworldbin));
   strcpy (helloworldsrc, "tmp_helloworldXXXXXXX.c");
   int hwfd = mkostemps (helloworldsrc, 2, R_OK | W_OK);
+  if (hwfd < 0)
+    {
+      fprintf (stderr,
+	       "%s failed to create  mkostemps temporary hello world C %s (%m) [%s:%d]\n",
+	       prog_name, helloworldsrc, __FILE__, __LINE__);
+    }
   FILE *hwf = fopen (helloworldsrc, "w");
-  if (hwfd < 0 || !hwf)
+  if (!hwf)
     {
       fprintf (stderr,
 	       "%s failed to create temporary hello world C %s (%m)\n",
@@ -234,17 +240,24 @@ test_cxx_compiler (const char *cxx)
   char maincxxobj[128];
   memset (showvectsrc, 0, sizeof (showvectsrc));
   memset (maincxxsrc, 0, sizeof (maincxxsrc));
-  strcpy (showvectsrc, "tmp_showvect-XXXXXXX.cxx");
-  strcpy (maincxxsrc, "tmp_maincxx-XXXXXXX.cxx");
+  strcpy (showvectsrc, "tmp_showvect_XXXXXXX.cxx");
+  strcpy (maincxxsrc, "tmp_maincxx_XXXXXXX.cxx");
   /// write the show vector C++ file
   {
+    errno = 0;
     int svfd = mkostemps (showvectsrc, 2, R_OK | W_OK);
-    FILE *svf = fopen (showvectsrc, "w");
-    if (svfd < 0 || !svf)
+    if (svfd < 0)
       {
 	fprintf (stderr,
-		 "%s failed to create temporary show vector C++ %s (%m)\n",
-		 prog_name, showvectsrc);
+		 "%s failed to create using mkostemps temporary show vector C++ %s (%m)[%s:%d]\n",
+		 prog_name, showvectsrc, __FILE__, __LINE__);
+      };
+    FILE *svf = fopen (showvectsrc, "w");
+    if (!svf)
+      {
+	fprintf (stderr,
+		 "%s failed to create temporary show vector C++ %s (%m)[%s:%d]\n",
+		 prog_name, showvectsrc, __FILE__, __LINE__);
       }
     fprintf (svf, "/// temporary show vector C++ file %s\n", showvectsrc);
     fprintf (svf, "#include <iostream>\n");
@@ -287,6 +300,7 @@ test_cxx_compiler (const char *cxx)
   }
   /// write the main C++ file
   {
+    errno = 0;
     int mnfd = mkostemps (maincxxsrc, 2, R_OK | W_OK);
     FILE *mnf = fopen (maincxxsrc, "w");
     if (mnfd < 0 || !mnf)
