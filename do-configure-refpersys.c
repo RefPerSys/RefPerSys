@@ -64,8 +64,16 @@ int linker_argcount;
 char *c_compiler;
 char *cpp_compiler;
 
+#ifndef MAX_REMOVED_FILES
+#define MAX_REMOVED_FILES 4096
+#endif
+
+char *files_to_remove_at_exit[MAX_REMOVED_FILES];
+int removedfiles_count;
 
 void try_c_compiler (const char *cc);
+void should_remove_file(const char*path);
+
 
 char *
 my_readline (const char *prompt)
@@ -91,6 +99,19 @@ my_readline (const char *prompt)
 #endif // WITHOUT_READLINE
 }				// end my_readline
 
+void
+should_remove_file(const char*path, int lineno)
+{
+  if (access(path, F_OK))
+    return;
+  if (removedfiles_count>=MAX_REMOVED_FILES -1) {
+      fprintf (stderr,
+	       "%s too many files to remove (%s) from %s:%d\n",
+	       prog_name, path, __FILE__, lineno);
+      exit(EXIT_FAILURE);
+  }
+  files_to_remove_at_exit[removedfiles_count++] = path;
+} /* end should_remove_file */
 
 void
 try_compile_run_hello_world_in_c (const char *cc)
@@ -108,6 +129,7 @@ try_compile_run_hello_world_in_c (const char *cc)
 	       "%s failed to create temporary hello world C %s (%m)\n",
 	       prog_name, helloworldsrc);
     }
+  should_remove_file(helloworldsrc);
   fprintf (hwf, "/// temporary hello world C file %s\n", helloworldsrc);
   fprintf (hwf, "#include <stdio.h>\n");
   fprintf (hwf, "void say_hello(const char*c) {\n");
@@ -138,6 +160,7 @@ try_compile_run_hello_world_in_c (const char *cc)
 		 prog_name, helloworldcompile, e);
 	exit (EXIT_FAILURE);
       };
+    should_remove_file(helloworldbin);
     printf ("popen-eing %s\n", helloworldbin);
     fflush (NULL);
     FILE *pf = popen (helloworldbin, "r");
@@ -168,6 +191,7 @@ try_compile_run_hello_world_in_c (const char *cc)
   }
 }				/* end try_compile_run_hello_world_in_c */
 
+
 void
 try_then_set_c_compiler (const char *cc)
 {
@@ -186,12 +210,49 @@ try_then_set_c_compiler (const char *cc)
       exit (EXIT_FAILURE);
     }
   try_compile_run_hello_world_in_c (cc);
+  c_compiler = cc;
 }				/* end try_then_set_c_compiler */
+
+void
+test_cxx_compiler(const char*cxx)
+{
+#warning unimplemented test_cxx_compiler
+  /* TODO: generate two temporary simple C++ files, compile both of
+     them in same command, and run the temporary helloworld executable
+     in C++ */
+} /* end test_cxx_compiler */
+
+void
+try_then_set_cxx_compiler(const char*cxx)
+{
+  if (cxx[0] != '/')
+    {
+      fprintf (stderr,
+	       "%s given non-absolute path for C++ compiler %s [%s:%d]\n",
+	       prog_name, cxx, __FILE__, __LINE__);
+      exit (EXIT_FAILURE);
+    };
+  if (access (cxx, F_OK | X_OK))
+    {
+      fprintf (stderr,
+	       "%s given non-executable path for C++ compiler %s [%s:%d]\n",
+	       prog_name, cc, __FILE__, __LINE__);
+      exit (EXIT_FAILURE);
+    }
+  test_cxx_compiler(cxx);
+} /* end try_cxx_compiler */
+
+void remove_files(void)
+{
+  for (int i=0; i<removedfiles_count; i++)
+    unlink(files_to_remove_at_exit[i]);
+} /* end remove_files */
 
 int
 main (int argc, char **argv)
 {
   prog_name = argv[0];
+  atexit(remove_files);
   if (argc > MAX_PROG_ARGS)
     {
       fprintf (stderr,
@@ -254,6 +315,10 @@ main (int argc, char **argv)
   if (!cc)
     cc = "/usr/bin/gcc";
   try_then_set_c_compiler (cc);
+  char *cxx = getenv ("CXX");
+  if (!cxx)
+    cxx = my_readline("C++ compiler:");
+  try_then_set_cxx_compiler(cxx);
 }				/* end main */
 
 
