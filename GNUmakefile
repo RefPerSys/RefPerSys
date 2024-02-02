@@ -46,7 +46,7 @@ all:
 	   echo run $(MAKE) config > /dev/stderr ; \
 	   exit 1 ; \
 	fi
-
+	$(MAKE) refpersys
 
 
 ### Human hand-written C++ sources

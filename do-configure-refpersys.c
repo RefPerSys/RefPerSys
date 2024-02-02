@@ -55,12 +55,18 @@
 
 const char *prog_name;
 
+
+//// the below arguments are kept, they should be rewritten in
+//// config-refpersys.mk in a GNU make friendly way.
+
 char *preprocessor_args[MAX_PROG_ARGS];
 int preprocessor_argcount;
 char *compiler_args[MAX_PROG_ARGS];
 int compiler_argcount;
 char *linker_args[MAX_PROG_ARGS];
 int linker_argcount;
+
+/* absolute path to C and C++ compiler */
 char *c_compiler;
 char *cpp_compiler;
 
