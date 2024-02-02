@@ -319,6 +319,7 @@ main (int argc, char **argv)
   if (!cxx)
     cxx = my_readline("C++ compiler:");
   try_then_set_cxx_compiler(cxx);
+#warning TODO write the refpersys-config.mk file for GNU make
 }				/* end main */
 
 
