@@ -78,10 +78,91 @@ const char *cpp_compiler;
 const char *files_to_remove_at_exit[MAX_REMOVED_FILES];
 int removedfiles_count;
 
+/// return a malloced path to a temporary textual file inside /tmp
+char *temporary_textual_file (const char *prefix, const char *suffix,
+			      int lineno);
+/// return a malloced path to a temporary binary file in the current directory
+char *temporary_binary_file (const char *prefix, const char *suffix,
+			     int lineno);
+
 void try_c_compiler (const char *cc);
 void try_then_set_cxx_compiler (const char *cxx);
 void should_remove_file (const char *path, int lineno);
 
+char *
+temporary_textual_file (const char *prefix, const char *suffix, int lineno)
+{
+  char buf[256];
+  memset (buf, 0, sizeof (buf));
+  char *res = NULL;
+  assert (prefix != NULL);
+  for (const char *p = prefix; p && *p; p++)
+    assert (isalnum (*p) || *p == '_' || *p == '-');
+  if (!suffix)
+    suffix = "";
+  int suflen = strlen (suffix);
+  assert (strlen (prefix) + suflen < sizeof (buf) + 16);
+  snprintf (buf, sizeof (buf), "/tmp/%s-l%d_XXXXXX", prefix, lineno);
+  int fd = mkostemp (buf, suflen);
+  if (fd < 0)
+    {
+      fprintf (stderr,
+	       "%s failed to mkostemps from %s:%d\n", prog_name, __FILE__,
+	       lineno);
+      exit (EXIT_FAILURE);
+    };
+  strcat (buf, suffix);
+  res = strdup (buf);
+  if (!res)
+    {
+      fprintf (stderr,
+	       "%s failed to strdup temporay file path %s from %s:%d (%m)\n",
+	       prog_name, buf, __FILE__, lineno);
+      exit (EXIT_FAILURE);
+    };
+  close (fd);
+  printf ("%s temporary textual file is %s [%s:%d]\n",
+	  prog_name, res, __FILE__, lineno);
+  return res;
+}				/* end temporary_textual_file */
+
+/// return a malloced path to a temporary binary file in the current directory
+char *
+temporary_binary_file (const char *prefix, const char *suffix, int lineno)
+{
+  char buf[256];
+  memset (buf, 0, sizeof (buf));
+  char *res = NULL;
+  assert (prefix != NULL);
+  for (const char *p = prefix; p && *p; p++)
+    assert (isalnum (*p) || *p == '_' || *p == '-');
+  if (!suffix)
+    suffix = "";
+  int suflen = strlen (suffix);
+  assert (strlen (prefix) + suflen < sizeof (buf) + 16);
+  snprintf (buf, sizeof (buf), "%s-l%d_XXXXXX", prefix, lineno);
+  int fd = mkostemp (buf, suflen);
+  if (fd < 0)
+    {
+      fprintf (stderr,
+	       "%s failed to mkostemps from %s:%d\n", prog_name, __FILE__,
+	       lineno);
+      exit (EXIT_FAILURE);
+    };
+  close (fd);
+  strcat (buf, suffix);
+  res = strdup (buf);
+  if (!res)
+    {
+      fprintf (stderr,
+	       "%s failed to strdup temporary binary file path %s from %s:%d (%m)\n",
+	       prog_name, buf, __FILE__, lineno);
+      exit (EXIT_FAILURE);
+    };
+  printf ("%s temporary binary file is %s [%s:%d]\n",
+	  prog_name, res, __FILE__, lineno);
+  return res;
+}				/* end temporary_binary_file */
 
 char *
 my_readline (const char *prompt)
@@ -125,19 +206,9 @@ should_remove_file (const char *path, int lineno)
 void
 try_compile_run_hello_world_in_c (const char *cc)
 {
-  char helloworldsrc[128];
+  char *helloworldsrc = NULL;
   char helloworldbin[sizeof (helloworldsrc) + 8];
-  memset (helloworldsrc, 0, sizeof (helloworldsrc));
-  memset (helloworldbin, 0, sizeof (helloworldbin));
-  strcpy (helloworldsrc, "tmp_helloworldXXXXXXX.c");
-  assert (sizeof (".c") - 1 == 2);
-  int hwfd = mkostemps (helloworldsrc, 2, R_OK | W_OK);
-  if (hwfd < 0)
-    {
-      fprintf (stderr,
-	       "%s failed to create  mkostemps temporary hello world C %s (%m) [%s:%d]\n",
-	       prog_name, helloworldsrc, __FILE__, __LINE__);
-    }
+  helloworldsrc = temporary_textual_file ("helloworld_", ".c", __LINE__);
   FILE *hwf = fopen (helloworldsrc, "w");
   if (!hwf)
     {
