@@ -43,6 +43,7 @@
 #include <time.h>
 #include <assert.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <dlfcn.h>
 
@@ -274,13 +275,23 @@ try_compile_run_hello_world_in_c (const char *cc)
 		 prog_name, helloworldbin);
 	exit (EXIT_FAILURE);
       };
-    char hwline[128];
-    memset (hwline, 0, sizeof (hwline));
-    fgets (hwline, sizeof (hwline), pf);
-    if (!strstr (hwline, "hello"))
+    bool gothello = false;
+    int nblin = 0;
+    do
       {
-	fprintf (stderr, "%s bad read from popen %s got:%s\n",
-		 prog_name, helloworldbin, hwline);
+	char hwline[128];
+	memset (hwline, 0, sizeof (hwline));
+	if (!fgets (hwline, sizeof (hwline), pf))
+	  break;
+	nblin++;
+	if (strstr (hwline, "hello"))
+	  gothello = true;
+      }
+    while (!feof (pf));
+    if (!gothello)
+      {
+	fprintf (stderr, "%s popen %s without hello but %d lines (%d)\n",
+		 prog_name, helloworldbin, nblin);
 	exit (EXIT_FAILURE);
       }
     int ehw = pclose (pf);
