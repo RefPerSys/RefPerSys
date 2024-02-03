@@ -290,8 +290,8 @@ try_compile_run_hello_world_in_c (const char *cc)
     while (!feof (pf));
     if (!gothello)
       {
-	fprintf (stderr, "%s popen %s without hello but %d lines (%d)\n",
-		 prog_name, helloworldbin, nblin);
+	fprintf (stderr, "%s popen %s without hello but read %d lines from popen [%s:%d]\n",
+		 prog_name, helloworldbin, nblin, __FILE__, __LINE__-1);
 	exit (EXIT_FAILURE);
       }
     int ehw = pclose (pf);
@@ -463,6 +463,8 @@ test_cxx_compiler (const char *cxx)
     should_remove_file (maincxxobj, __LINE__);
     should_remove_file (showvectsrc, __LINE__);
     should_remove_file (showvectobj, __LINE__);
+    printf ("%s running C++ link %s [%s:%d]\n",
+	    prog_name, linkmaincxx, __FILE__, __LINE__ - 1);
     fflush (NULL);
     int ex = system (linkmaincxx);
     if (ex)
