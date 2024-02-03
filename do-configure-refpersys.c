@@ -290,8 +290,9 @@ try_compile_run_hello_world_in_c (const char *cc)
     while (!feof (pf));
     if (!gothello)
       {
-	fprintf (stderr, "%s popen %s without hello but read %d lines from popen [%s:%d]\n",
-		 prog_name, helloworldbin, nblin, __FILE__, __LINE__-1);
+	fprintf (stderr,
+		 "%s popen %s without hello but read %d lines from popen [%s:%d]\n",
+		 prog_name, helloworldbin, nblin, __FILE__, __LINE__ - 1);
 	exit (EXIT_FAILURE);
       }
     int ehw = pclose (pf);
@@ -476,7 +477,8 @@ test_cxx_compiler (const char *cxx)
   }
   /// run the C++ exe
   should_remove_file (cxxexe, __LINE__);
-
+  printf ("%s testing popen %s [%s:%d]\n", prog_name, cxxexe,
+	  __FILE__, __LINE__ - 1);
   fflush (NULL);
   FILE *pf = popen (cxxexe, "r");
   if (!pf)
@@ -485,21 +487,36 @@ test_cxx_compiler (const char *cxx)
 	       prog_name, cxxexe);
       exit (EXIT_FAILURE);
     };
-  char hwline[128];
-  memset (hwline, 0, sizeof (hwline));
-  fgets (hwline, sizeof (hwline), pf);
-  if (!strstr (hwline, "hello"))
-    {
-      fprintf (stderr, "%s bad read from popen %s got:%s\n",
-	       prog_name, cxxexe, hwline);
-      exit (EXIT_FAILURE);
-    }
-  int ehw = pclose (pf);
-  if (ehw)
-    {
-      fprintf (stderr, "%s bad pclose %s (%d)\n", prog_name, cxxexe, ehw);
-      exit (EXIT_FAILURE);
-    };
+  {
+    bool gothello = false;
+    do
+      {
+	char hwline[128];
+	memset (hwline, 0, sizeof (hwline));
+	if (!fgets (hwline, sizeof (hwline), pf))
+	  break;
+	if (!strstr (hwline, "hello"))
+	  gothello = true;
+	{
+	  fprintf (stderr, "%s bad read from popen %s got:%s\n",
+		   prog_name, cxxexe, hwline);
+	  exit (EXIT_FAILURE);
+	}
+      }
+    while (!feof (pf));
+    int ehw = pclose (pf);
+    if (ehw)
+      {
+	fprintf (stderr, "%s bad pclose %s (%d)\n", prog_name, cxxexe, ehw);
+	exit (EXIT_FAILURE);
+      };
+    if (!gothello)
+      {
+	fprintf (stderr, "%s no hello from C++ test popen %s [%s:%d]\n",
+		 prog_name, cxxexe, __FILE__, __LINE__ - 1);
+	exit (EXIT_FAILURE);
+      };
+  }
 }				/* end test_cxx_compiler */
 
 void
