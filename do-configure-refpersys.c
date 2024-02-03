@@ -54,8 +54,17 @@
 #define MAX_PROG_ARGS 1024
 #endif
 
+#ifndef MY_PATH_MAXLEN
+#define MY_PATH_MAXLEN 384
+#endif
+
 const char *prog_name;
 
+//// working directory
+char my_cwd_buf[MY_PATH_MAXLEN];
+
+//// host name
+char my_host_name[80];
 
 //// the below arguments are kept, they should be rewritten in
 //// config-refpersys.mk in a GNU make friendly way.
@@ -84,6 +93,9 @@ char *temporary_textual_file (const char *prefix, const char *suffix,
 /// return a malloced path to a temporary binary file in the current directory
 char *temporary_binary_file (const char *prefix, const char *suffix,
 			     int lineno);
+
+/// emit the configure-refperys.mk file to be included in GNUmakefile 
+void emit_configure_refpersys_mk (void);
 
 void try_c_compiler (const char *cc);
 void try_then_set_cxx_compiler (const char *cxx);
@@ -500,10 +512,102 @@ remove_files (void)
     unlink (files_to_remove_at_exit[i]);
 }				/* end remove_files */
 
+void
+emit_configure_refpersys_mk (void)
+{
+  const char *tmp_conf
+    = temporary_textual_file ("tmp_config_refpersys", ".mk", __LINE__);
+  FILE *f = fopen (tmp_conf, "w");
+  if (!f)
+    {
+      fprintf (stderr, "%s failed to fopen %s for config-refpersys.mk (%m)\n",
+	       prog_name, tmp_conf);
+      exit (EXIT_FAILURE);
+    };
+  time_t nowt = time (NULL);
+  fprintf (f, "# generated config-refpersys.mk for GNU make in refpersys\n");
+  fprintf (f, "# DO NOT EDIT but use make config\n");
+  fprintf (f, "# generated from %s:%d in %s\n", __FILE__, __LINE__,
+	   my_cwd_buf);
+  fprintf (f, "# see refpersys.org\n");
+  fprintf (f, "# generated %s\n", ctime (&nowt));
+  //// emit C compiler
+  fprintf (f, "\n\n" "# the C compiler for RefPerSys:\n");
+  fprintf (f, "REFPERSYS_CC=%s\n", c_compiler);
+  //// emit C++ compiler
+  fprintf (f, "\n\n" "# the C++ compiler for RefPerSys:\n");
+  fprintf (f, "REFPERSYS_CXX=%s\n", cpp_compiler);
+  //// emit preprocessor flags
+  fprintf (f, "\n\n"
+	   "# the %d preprocessor flags for RefPerSys:\n",
+	   preprocessor_argcount);
+  fprintf (f, "REFPERSYS_PREPRO_FLAGS=");
+  for (int i = 0; i < preprocessor_argcount; i++)
+    {
+      if (i > 0)
+	fputc (' ', f);
+      fputs (preprocessor_args[i], f);
+    };
+  //// emit compiler flags
+  fprintf (f, "\n\n"
+	   "# the %d compiler flags for RefPerSys:\n", compiler_argcount);
+  fprintf (f, "REFPERSYS_COMPILER_FLAGS=");
+  for (int i = 0; i < compiler_argcount; i++)
+    {
+      if (i > 0)
+	fputc (' ', f);
+      fputs (compiler_args[i], f);
+    };
+  //// emit linker flags
+  fprintf (f, "\n\n"
+	   "# the %d linker flags for RefPerSys:\n", linker_argcount);
+  fprintf (f, "REFPERSYS_LINKER_FLAGS=");
+  for (int i = 0; i < linker_argcount; i++)
+    {
+      if (i > 0)
+	fputc (' ', f);
+      fputs (linker_args[i], f);
+    };
+  fprintf (f, "\n\n### end of generated config-refpersys.mk file\n");
+  fflush (f);
+  if (!link (tmp_conf, "refpersys-config.mk"))
+    {
+      fprintf (stderr, "%s failed to link %s to config-refpersys.mk (%m)\n",
+	       prog_name, tmp_conf);
+      exit (EXIT_FAILURE);
+    };
+  fclose (f);
+  fflush (NULL);
+}				/* end emit_configure_refpersys_mk */
+
+
 int
 main (int argc, char **argv)
 {
   prog_name = argv[0];
+  memset (my_cwd_buf, 0, sizeof (my_cwd_buf));
+  if (!getcwd (my_cwd_buf, sizeof (my_cwd_buf)))
+    {
+      fprintf (stderr, "%s failed to getcwd (%m) [%s:%d]\n",
+	       prog_name, __FILE__, __LINE__ - 1);
+      exit (EXIT_FAILURE);
+    };
+  memset (my_host_name, 0, sizeof (my_host_name));
+  if (gethostname (my_host_name, sizeof (my_host_name) - 1))
+    {
+      fprintf (stderr, "%s failed to gethostname (%m) [%s:%d]\n",
+	       prog_name, __FILE__, __LINE__ - 1);
+      exit (EXIT_FAILURE);
+    };
+  assert (sizeof (my_cwd_buf) == MY_PATH_MAXLEN);
+  if (my_cwd_buf[MY_PATH_MAXLEN - 2])
+    {
+      my_cwd_buf[MY_PATH_MAXLEN - 1] = (char) 0;
+      fprintf (stderr,
+	       "%s failed too long current working directory %s [%s:%d]\n",
+	       prog_name, my_cwd_buf, __FILE__, __LINE__ - 1);
+      exit (EXIT_FAILURE);
+    };
   atexit (remove_files);
   if (argc > MAX_PROG_ARGS)
     {
@@ -571,10 +675,14 @@ main (int argc, char **argv)
   if (!cxx)
     cxx = my_readline ("C++ compiler:");
   try_then_set_cxx_compiler (cxx);
-  fprintf(stderr, "[%s:%d] missing code to write the refpersys-config.mk\n",
-	  __FILE__, __LINE__);
-  exit(EXIT_FAILURE);
-#warning TODO write the refpersys-config.mk file for GNU make
+  ///emit file config-refpersys.mk to be included by GNU make 
+  emit_configure_refpersys_mk ();
+  fprintf (stderr,
+	   "[%s:%d] perhaps missing code to emit some refpersys-config.h....\n",
+	   __FILE__, __LINE__);
+  return 0;
+#warning TODO perhaps we should emit also a refpersys-config.h file
+  /// that hypothetical refpersys-config.h would be included by refpersys.hh
 }				/* end main */
 
 
