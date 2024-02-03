@@ -108,6 +108,7 @@ temporary_textual_file (const char *prefix, const char *suffix, int lineno)
   memset (buf, 0, sizeof (buf));
   char *res = NULL;
   assert (prefix != NULL);
+  assert (isalnum (prefix[0]) || prefix[0] == '_');
   for (const char *p = prefix; p && *p; p++)
     assert (isalnum (*p) || *p == '_' || *p == '-');
   if (!suffix)
@@ -146,8 +147,9 @@ temporary_binary_file (const char *prefix, const char *suffix, int lineno)
   memset (buf, 0, sizeof (buf));
   char *res = NULL;
   assert (prefix != NULL);
+  assert (isalnum (prefix[0]) || prefix[0] == '_' || prefix[0] == '.');
   for (const char *p = prefix; p && *p; p++)
-    assert (isalnum (*p) || *p == '_' || *p == '-');
+    assert (isalnum (*p) || *p == '_' || *p == '-' || *p == '.' || *p == '/');
   if (!suffix)
     suffix = "";
   int suflen = strlen (suffix);
@@ -347,7 +349,8 @@ test_cxx_compiler (const char *cxx)
     fprintf (svf, "     std::cout << s;\n");
     fprintf (svf, "   };\n");
     fprintf (svf, "} // end show_str_vect\n");
-    fprintf (svf, "} // eof %s \n", showvectsrc);
+    fprintf (svf, "// eof generated %s [%s:%d]\n", showvectsrc, __FILE__,
+	     __LINE__);
     fclose (svf);
     printf ("%s wrote C++ file %s (%s:%d)\n", prog_name, showvectsrc,
 	    __FILE__, __LINE__ - 1);
@@ -410,7 +413,8 @@ test_cxx_compiler (const char *cxx)
     fprintf (mnf, "  std::cout << std::flush;\n");
     fprintf (mnf, "  return 0;\n");
     fprintf (mnf, "} // end main\n");
-    fprintf (mnf, "/// eof %s\n", maincxxsrc);
+    fprintf (mnf, "/// eof generated %s [%s:%d]\n", maincxxsrc, __FILE__,
+	     __LINE__);
     fclose (mnf);
     printf ("%s wrote main C++ file %s (%s:%d)\n", prog_name, maincxxsrc,
 	    __FILE__, __LINE__ - 1);
