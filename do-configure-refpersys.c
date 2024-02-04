@@ -60,6 +60,7 @@
 #endif
 
 const char *prog_name;
+bool failed;
 
 //// working directory
 char my_cwd_buf[MY_PATH_MAXLEN];
@@ -123,6 +124,7 @@ temporary_textual_file (const char *prefix, const char *suffix, int lineno)
       fprintf (stderr,
 	       "%s failed to mkostemps from %s:%d\n", prog_name, __FILE__,
 	       lineno);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   strcat (buf, suffix);
@@ -132,6 +134,7 @@ temporary_textual_file (const char *prefix, const char *suffix, int lineno)
       fprintf (stderr,
 	       "%s failed to strdup temporay file path %s from %s:%d (%m)\n",
 	       prog_name, buf, __FILE__, lineno);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   close (fd);
@@ -162,6 +165,7 @@ temporary_binary_file (const char *prefix, const char *suffix, int lineno)
       fprintf (stderr,
 	       "%s failed to mkostemps from %s:%d\n", prog_name, __FILE__,
 	       lineno);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   close (fd);
@@ -172,6 +176,7 @@ temporary_binary_file (const char *prefix, const char *suffix, int lineno)
       fprintf (stderr,
 	       "%s failed to strdup temporary binary file path %s from %s:%d (%m)\n",
 	       prog_name, buf, __FILE__, lineno);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   printf ("%s temporary binary file is %s [%s:%d]\n",
@@ -197,6 +202,7 @@ my_readline (const char *prompt)
   if (!res)
     {
       perror ("my_readline");
+      failed = true;
       exit (EXIT_FAILURE);
     };
   return res;
@@ -213,6 +219,7 @@ should_remove_file (const char *path, int lineno)
       fprintf (stderr,
 	       "%s too many files to remove (%s) from %s:%d\n",
 	       prog_name, path, __FILE__, lineno);
+      failed = true;
       exit (EXIT_FAILURE);
     }
   files_to_remove_at_exit[removedfiles_count++] = path;
@@ -262,6 +269,7 @@ try_compile_run_hello_world_in_c (const char *cc)
 	fprintf (stderr,
 		 "%s failed to compile hello world in C : %s exited %d\n",
 		 prog_name, helloworldcompile, e);
+	failed = true;
 	exit (EXIT_FAILURE);
       };
     should_remove_file (helloworldsrc, __LINE__);
@@ -273,6 +281,7 @@ try_compile_run_hello_world_in_c (const char *cc)
       {
 	fprintf (stderr, "%s failed to popen hello world in C %s (%m)\n",
 		 prog_name, helloworldbin);
+	failed = true;
 	exit (EXIT_FAILURE);
       };
     bool gothello = false;
@@ -293,6 +302,7 @@ try_compile_run_hello_world_in_c (const char *cc)
 	fprintf (stderr,
 		 "%s popen %s without hello but read %d lines from popen [%s:%d]\n",
 		 prog_name, helloworldbin, nblin, __FILE__, __LINE__ - 1);
+	failed = true;
 	exit (EXIT_FAILURE);
       }
     int ehw = pclose (pf);
@@ -300,6 +310,7 @@ try_compile_run_hello_world_in_c (const char *cc)
       {
 	fprintf (stderr, "%s bad pclose %s (%d)\n",
 		 prog_name, helloworldbin, ehw);
+	failed = true;
 	exit (EXIT_FAILURE);
       };
     printf ("%s: tested hello world C compilation and run [%s:%d]\n",
@@ -316,6 +327,7 @@ try_then_set_c_compiler (const char *cc)
       fprintf (stderr,
 	       "%s given non-absolute path for C compiler %s [%s:%d]\n",
 	       prog_name, cc, __FILE__, __LINE__);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   if (access (cc, F_OK | X_OK))
@@ -323,6 +335,7 @@ try_then_set_c_compiler (const char *cc)
       fprintf (stderr,
 	       "%s given non-executable path for C compiler %s [%s:%d]\n",
 	       prog_name, cc, __FILE__, __LINE__);
+      failed = true;
       exit (EXIT_FAILURE);
     }
   try_compile_run_hello_world_in_c (cc);
@@ -386,6 +399,7 @@ test_cxx_compiler (const char *cxx)
       {
 	fprintf (stderr, "%s: failed to compile with %s (exit %d)\n",
 		 prog_name, compilshowvect, ex);
+	failed = true;
 	exit (EXIT_FAILURE);
       };
     should_remove_file (showvectsrc, __LINE__);
@@ -450,6 +464,7 @@ test_cxx_compiler (const char *cxx)
       {
 	fprintf (stderr, "%s: failed to compile with %s (exit %d)\n",
 		 prog_name, compilmaincxx, ex);
+	failed = true;
 	exit (EXIT_FAILURE);
       };
   }
@@ -472,6 +487,7 @@ test_cxx_compiler (const char *cxx)
       {
 	fprintf (stderr, "%s: failed to compile with %s (exit %d)\n",
 		 prog_name, linkmaincxx, ex);
+	failed = true;
 	exit (EXIT_FAILURE);
       };
   }
@@ -485,6 +501,7 @@ test_cxx_compiler (const char *cxx)
     {
       fprintf (stderr, "%s failed to popen %s in C++ (%m)\n",
 	       prog_name, cxxexe);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   {
@@ -500,6 +517,7 @@ test_cxx_compiler (const char *cxx)
 	{
 	  fprintf (stderr, "%s bad read from popen %s got:%s\n",
 		   prog_name, cxxexe, hwline);
+	  failed = true;
 	  exit (EXIT_FAILURE);
 	}
       }
@@ -508,12 +526,14 @@ test_cxx_compiler (const char *cxx)
     if (ehw)
       {
 	fprintf (stderr, "%s bad pclose %s (%d)\n", prog_name, cxxexe, ehw);
+	failed = true;
 	exit (EXIT_FAILURE);
       };
     if (!gothello)
       {
 	fprintf (stderr, "%s no hello from C++ test popen %s [%s:%d]\n",
 		 prog_name, cxxexe, __FILE__, __LINE__ - 1);
+	failed = true;
 	exit (EXIT_FAILURE);
       };
   }
@@ -527,6 +547,7 @@ try_then_set_cxx_compiler (const char *cxx)
       fprintf (stderr,
 	       "%s given non-absolute path for C++ compiler %s [%s:%d]\n",
 	       prog_name, cxx, __FILE__, __LINE__);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   if (access (cxx, F_OK | X_OK))
@@ -534,6 +555,7 @@ try_then_set_cxx_compiler (const char *cxx)
       fprintf (stderr,
 	       "%s given non-executable path for C++ compiler %s [%s:%d]\n",
 	       prog_name, cxx, __FILE__, __LINE__);
+      failed = true;
       exit (EXIT_FAILURE);
     }
   test_cxx_compiler (cxx);
@@ -542,8 +564,19 @@ try_then_set_cxx_compiler (const char *cxx)
 void
 remove_files (void)
 {
-  for (int i = 0; i < removedfiles_count; i++)
-    unlink (files_to_remove_at_exit[i]);
+  if (failed)
+    {
+      printf ("%s: not removing %d files since failed at exit [%s:%d]\n",
+	      prog_name, removedfiles_count, __FILE__, __LINE__);
+      return;
+    }
+  else
+    {
+      printf ("%s: removing %d files at exit [%s:%d]\n",
+	      prog_name, removedfiles_count, __FILE__, __LINE__);
+      for (int i = 0; i < removedfiles_count; i++)
+	unlink (files_to_remove_at_exit[i]);
+    }
 }				/* end remove_files */
 
 void
@@ -556,6 +589,7 @@ emit_configure_refpersys_mk (void)
     {
       fprintf (stderr, "%s failed to fopen %s for config-refpersys.mk (%m)\n",
 	       prog_name, tmp_conf);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   time_t nowt = time (NULL);
@@ -608,6 +642,7 @@ emit_configure_refpersys_mk (void)
     {
       fprintf (stderr, "%s failed to link %s to config-refpersys.mk (%m)\n",
 	       prog_name, tmp_conf);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   fclose (f);
@@ -624,6 +659,7 @@ main (int argc, char **argv)
     {
       fprintf (stderr, "%s failed to getcwd (%m) [%s:%d]\n",
 	       prog_name, __FILE__, __LINE__ - 1);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   memset (my_host_name, 0, sizeof (my_host_name));
@@ -631,6 +667,7 @@ main (int argc, char **argv)
     {
       fprintf (stderr, "%s failed to gethostname (%m) [%s:%d]\n",
 	       prog_name, __FILE__, __LINE__ - 1);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   assert (sizeof (my_cwd_buf) == MY_PATH_MAXLEN);
@@ -640,6 +677,7 @@ main (int argc, char **argv)
       fprintf (stderr,
 	       "%s failed too long current working directory %s [%s:%d]\n",
 	       prog_name, my_cwd_buf, __FILE__, __LINE__ - 1);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   atexit (remove_files);
@@ -649,6 +687,7 @@ main (int argc, char **argv)
 	       "%s (from C file %s) limits MAX_PROG_ARGS to %d\n"
 	       "... but %d are given! Edit it and recompile!\n",
 	       argv[0], __FILE__, MAX_PROG_ARGS, argc);
+      failed = true;
       exit (EXIT_FAILURE);
     };
   /// Any program argument like VAR=something is putenv-ed. And
