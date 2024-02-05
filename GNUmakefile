@@ -40,7 +40,7 @@ SYNC=/bin/sync
 
 all:
 
-	/usr/bin/printf "make features %s\n" $(.FEATURES)
+	@/usr/bin/printf "make features %s\n" "$(.FEATURES)"
 	$(MAKE) do-configure-refpersys
 	/usr/bin/printf "hand-written C++ code %s\n" $(REFPERSYS_CPPSOURCES)
 	@if [ ! -f config-refpersys.mk ]; then \
