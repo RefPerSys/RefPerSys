@@ -364,22 +364,22 @@ test_cxx_compiler (const char *cxx)
 		 prog_name, showvectsrc, __FILE__, __LINE__);
       }
     fprintf (svf, "/// temporary show vector C++ file %s\n", showvectsrc);
-    fprintf (svf, "#include <iostream>\n");
-    fprintf (svf, "#include <string>\n");
-    fprintf (svf, "#include <vector>\n");
-    fprintf (svf, "void show_str_vect(const std::vector<std::string>&v) {\n");
-    fprintf (svf, "   int c=0;\n");
-    fprintf (svf, "   for (auto s: v) {\n");
-    fprintf (svf, "     if (c++ > 0) std::cout << ' ';\n");
-    fprintf (svf, "     std::cout << s;\n");
-    fprintf (svf, "   };\n");
-    fprintf (svf, "} // end show_str_vect\n");
-    fprintf (svf, "// eof generated %s [%s:%d]\n", showvectsrc, __FILE__,
-	     __LINE__);
-    fclose (svf);
-    printf ("%s wrote C++ file %s (%s:%d)\n", prog_name, showvectsrc,
-	    __FILE__, __LINE__ - 1);
-    fflush (NULL);
+      fprintf (svf, "#include <iostream>\n");
+      fprintf (svf, "#include <string>\n");
+      fprintf (svf, "#include <vector>\n");
+      fprintf (svf, "void show_str_vect(const std::vector<std::string>&v) {\n");
+      fprintf (svf, "   int c=0;\n");
+      fprintf (svf, "   for (auto s: v) {\n");
+      fprintf (svf, "     if (c++ > 0) std::cout << ' ';\n");
+      fprintf (svf, "     std::cout << s;\n");
+      fprintf (svf, "   };\n");
+      fprintf (svf, "} // end show_str_vect\n");
+      fprintf (svf, "// eof generated %s [%s:%d]\n", showvectsrc, __FILE__,
+	       __LINE__);
+      fclose (svf);
+      printf ("%s wrote C++ file %s (%s:%d)\n", prog_name, showvectsrc,
+	      __FILE__, __LINE__ - 1);
+      fflush (NULL);
   }
   /// compile the C++ show vector file
   strcpy (showvectobj, showvectsrc);
@@ -493,49 +493,54 @@ test_cxx_compiler (const char *cxx)
   }
   /// run the C++ exe
   should_remove_file (cxxexe, __LINE__);
-  printf ("%s testing popen %s [%s:%d]\n", prog_name, cxxexe,
-	  __FILE__, __LINE__ - 1);
-  fflush (NULL);
-  FILE *pf = popen (cxxexe, "r");
-  if (!pf)
-    {
-      fprintf (stderr, "%s failed to popen %s in C++ (%m)\n",
-	       prog_name, cxxexe);
-      failed = true;
-      exit (EXIT_FAILURE);
-    };
   {
-    bool gothello = false;
-    do
+    char cmdbuf[256];
+    memset(cmdbuf, 0, sizeof(cmdbuf));
+    snprintf(cmdbuf, sizeof(cmdbuf), "%s at %s:%d from %s",
+	     cxxexe, __FILE__, __LINE__, prog_name);
+    printf ("%s testing popen %s [%s:%d]\n", prog_name, cmdbuf,
+	    __FILE__, __LINE__ - 1);
+    fflush (NULL);
+    FILE *pf = popen (cxxexe, "r");
+    if (!pf)
       {
-	char hwline[128];
-	memset (hwline, 0, sizeof (hwline));
-	if (!fgets (hwline, sizeof (hwline), pf))
-	  break;
-	if (!strstr (hwline, "hello"))
-	  gothello = true;
+	fprintf (stderr, "%s failed to popen %s in C++ (%m)\n",
+		 prog_name, cxxexe);
+	failed = true;
+	exit (EXIT_FAILURE);
+      };
+    {
+      bool gothello = false;
+      bool gotfilename = false;
+      do
 	{
-	  fprintf (stderr, "%s bad read from popen %s got:%s\n",
-		   prog_name, cxxexe, hwline);
+	  char hwline[128];
+	  memset (hwline, 0, sizeof (hwline));
+	  if (!fgets (hwline, sizeof (hwline), pf))
+	    break;
+	  if (!strstr (hwline, "hello"))
+	    gothello = true;
+	  if (!strstr(hwline, maincxxsrc)
+	      || !strstr(hwline, showvectsrc))
+	    gotfilename = true;
+	}
+      while (!feof (pf));
+      int ehw = pclose (pf);
+      if (ehw)
+	{
+	  fprintf (stderr, "%s bad pclose %s (%d)\n", prog_name, cxxexe, ehw);
 	  failed = true;
 	  exit (EXIT_FAILURE);
-	}
-      }
-    while (!feof (pf));
-    int ehw = pclose (pf);
-    if (ehw)
-      {
-	fprintf (stderr, "%s bad pclose %s (%d)\n", prog_name, cxxexe, ehw);
-	failed = true;
-	exit (EXIT_FAILURE);
-      };
-    if (!gothello)
-      {
-	fprintf (stderr, "%s no hello from C++ test popen %s [%s:%d]\n",
-		 prog_name, cxxexe, __FILE__, __LINE__ - 1);
-	failed = true;
-	exit (EXIT_FAILURE);
-      };
+	};
+      if (!gothello || !gotfilename)
+	{
+	  fprintf (stderr,
+		   "%s no hello or file nnme from C++ test popen %s [%s:%d]\n",
+		   prog_name, cmdbuf, __FILE__, __LINE__ - 1);
+	  failed = true;
+	  exit (EXIT_FAILURE);
+	};
+    }
   }
 }				/* end test_cxx_compiler */
 
@@ -559,6 +564,7 @@ try_then_set_cxx_compiler (const char *cxx)
       exit (EXIT_FAILURE);
     }
   test_cxx_compiler (cxx);
+  cpp_compiler = cxx;
 }				/* end try_then_set_cxx_compiler */
 
 void
