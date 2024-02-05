@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2023 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1116,6 +1116,15 @@ Rps_Dumper::write_generated_data_file(void)
     *pouts << "#define RPS_OBJECTREF_IS_OBJECTPTR 0" << std::endl;
   *pouts << "///" << std::endl;
   *pouts << "#endif //RPS_DATA_INCLUDED\n" << std::endl;
+  {
+    char nowtimbuf[128];
+    memset (nowtimbuf, 0, sizeof(nowtimbuf));
+    *pouts << std::endl
+	   << "//// generated at "
+	   << rps_now_strftime_centiseconds(nowtimbuf, sizeof(nowtimbuf),
+					    "%Y-%b-%d %H:%M:%S %Z")
+	   << " on " << rps_hostname() << std::endl;
+  }
   *pouts << std::endl << std::endl
          << "//// end of generated " << datapathstr
          << " for shortgitid:" << rps_shortgitid << std::endl;
