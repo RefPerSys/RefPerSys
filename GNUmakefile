@@ -33,8 +33,9 @@
 export
 
 #                                                                
-.PHONY: all config objects clean gitpush
+.PHONY: all config objects clean gitpush gitpush2
 
+SYNC=/bin/sync
 -include config-refpersys.mk
 
 all:
@@ -65,5 +66,35 @@ clean:
 	$(RM) tmp* *~ *.o do-configure-refpersys refpersys
 	$(RM) *% %~
 	$(RM) */*~
+# Target to facilitate git push to both origin and GitHub mirrors
+gitpush:
+	@echo RefPerSys git pushing.... ; grep -2 url .git/config
+	@git push origin
+ifeq ($(shell git remote | grep github), github)
+	@git push github
+else
+	@echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
+	@printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
+endif
+	@printf "\n%s git-pushed commit %s of RefPerSys, branch %s ...\n" \
+	        "$$(git config --get user.email)" "$$(./do-generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
+	@git log -1 --format=oneline --abbrev=12 --abbrev-commit -q | head -1
+	if [ -x $$HOME/bin/push-refpersys ]; then $$HOME/bin/push-refpersys $(shell /bin/pwd) $(RPS_SHORTGIT_ID); fi
+	$(SYNC)
+
+gitpush2:
+ifeq ($(RPS_GIT_ORIGIN), )
+	git remote add origin https://github.com/RefPerSys/RefPerSys.git
+	echo "Added GitHub repository as remote, run make gitpush2 again..."
+else
+	git push $(RPS_GIT_ORIGIN) master
+endif
+ifeq ($(RPS_GIT_MIRROR), )
+	git remote add mirror https://gitlab.com/bstarynk/refpersys.git
+	echo "Added GitLab repository as remote, run make gitpush2 again..."
+else
+	git push $(RPS_GIT_MIRROR) master
+endif
+	$(SYNC)
 ## eof GNUmakefile
 
