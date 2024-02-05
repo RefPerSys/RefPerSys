@@ -36,13 +36,14 @@ export
 .PHONY: all config objects clean gitpush gitpush2
 
 SYNC=/bin/sync
+FMT=/usr/bin/fmt
 -include config-refpersys.mk
 
 all:
 
-	@/usr/bin/printf "make features %s\n" "$(.FEATURES)"
+	@/usr/bin/printf "make features: %s\n" "$(.FEATURES)" | $(FMT)
 	$(MAKE) do-configure-refpersys
-	/usr/bin/printf "hand-written C++ code %s\n" $(REFPERSYS_CPPSOURCES)
+	@/usr/bin/printf "hand-written C++ code: %s\n" "$(REFPERSYS_CPPSOURCES)" | $(FMT)
 	@if [ ! -f config-refpersys.mk ]; then \
 	   echo missing config-refpersys.mk for GNUmakefile > /dev/stderr; \
 	   echo run $(MAKE) config > /dev/stderr ; \
