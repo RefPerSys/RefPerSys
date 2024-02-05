@@ -59,6 +59,10 @@
 #define MY_PATH_MAXLEN 384
 #endif
 
+#ifndef GIT_ID
+#error GIT_ID should be defined at compilation time
+#endif
+
 const char *prog_name;
 bool failed;
 
@@ -611,8 +615,9 @@ emit_configure_refpersys_mk (void)
   fprintf (f, "\n\n" "# the C++ compiler for RefPerSys:\n");
   fprintf (f, "REFPERSYS_CXX=%s\n", cpp_compiler);
   //// emit preprocessor flags
+  if (preprocessor_argcount) {
   fprintf (f, "\n\n"
-	   "# the %d preprocessor flags for RefPerSys:\n",
+	   "# the given %d preprocessor flags for RefPerSys:\n",
 	   preprocessor_argcount);
   fprintf (f, "REFPERSYS_PREPRO_FLAGS=");
   for (int i = 0; i < preprocessor_argcount; i++)
@@ -621,6 +626,12 @@ emit_configure_refpersys_mk (void)
 	fputc (' ', f);
       fputs (preprocessor_args[i], f);
     };
+  } else
+    {
+      fprintf (f, "\n\n"
+	       "# the default preprocessor flags for RefPerSys:\n");
+      fprintf (f, "REFPERSYS_PREPRO_FLAGS= -I/usr/local/include\n");
+    }
   //// emit the given or default compiler flags
   if (compiler_argcount > 0) {
   fprintf (f, "\n\n"
@@ -686,10 +697,36 @@ emit_configure_refpersys_mk (void)
 }				/* end emit_configure_refpersys_mk */
 
 
+void usage(void)
+{
+  printf("%s usage:\n", prog_name);
+  puts("\t --version             # show version");
+  puts("\t --help                # this help");
+  puts("\t <var>=<value>         # putenv, set environment variable, e.g...");
+  puts("\t CC=<C compiler>       # set the C compiler, e.g. CC=/usr/bin/gcc");
+  puts("\t CXX=<C++ compiler>    # set the C++ compiler, e.g. CXX=/usr/bin/g++");
+  puts("\t -D<prepro>            # define a preprocessor thing, e.g. -DFOO=3");
+  puts("\t -U<prepro>            # undefine a preprocessor thing, e.g. -UBAR");
+  puts("\t -I<include-dir>       # preprocessor include, e.g. -I$HOME/inc/");
+  puts("\t -std=<standard>       # language standard for C++, e.g. -std=gnu++17");
+  puts("\t -O<flag>              # optimization flag, e.g. -O or -O2");
+  puts("\t -g<flag>              # debugging flag, e.g. -g or -g3");
+  puts("\t -fPIC                 # position independent code");
+  puts("\t -fPIE                 # position independent executable");
+} /* end usage */
+
 int
 main (int argc, char **argv)
 {
   prog_name = argv[0];
+  if (argc == 2 && !strcmp(argv[1], "--help")) {
+    usage();
+    return;
+  };
+  if (argc == 2 && !strcmp(argv[1], "--version")) {
+    printf("%s version gitid %s built on %s:%s\n",
+	   prog_name, GIT_ID, __DATE__, __TIME__);
+  };
   memset (my_cwd_buf, 0, sizeof (my_cwd_buf));
   if (!getcwd (my_cwd_buf, sizeof (my_cwd_buf)))
     {
@@ -760,7 +797,7 @@ main (int argc, char **argv)
 	  /// -fPIC and -fPIE affects compiler and linker
 	  /// -flto and -fwhopr affects compiler and linker
 	  if (!strcmp (curarg, "-flto") || !strcmp (curarg, "-fwhopr")
-	      || !strcmp (curarg, "-fPIC"))
+	      || !strcmp (curarg, "-fPIC") || !strcmp (curarg, "-fPIE"))
 	    {
 	      compiler_args[compiler_argcount++] = curarg;
 	      linker_args[linker_argcount++] = curarg;
