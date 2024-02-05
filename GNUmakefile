@@ -53,22 +53,22 @@ all:
 
 
 ### Human hand-written C++ sources
-REFPERSYS_HUMAN_CPP_SOURCES := $(wildcard *_rps.cc)
+REFPERSYS_HUMAN_CPP_SOURCES=$(wildcard *_rps.cc)
 
 ### corresponding object files
-REFPERSYS_HUMAN_CPP_OBJECTS=$(patsubst %.cc,%.o, $(REFPERSYS_HUMANCPP_SOURCES))
+REFPERSYS_HUMAN_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
 
 ### Generated C++ sources
 REFPERSYS_GENERATED_CPP_SOURCES := $(wildcard generated/*.cc)
 
 ### corresponding object files
-REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc,%.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
+REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
 
 config: do-configure-refpersys GNUmakefile
 	./do-configure-refpersys 
 
-do-configure-refpersys: do-configure-refpersys.c |GNUmakefile
-	$(CC) -Wall -Wextra -O -g $^ -o $@ -lreadline
+do-configure-refpersys: do-configure-refpersys.c |GNUmakefile do-generate-gitid.sh
+	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" -O -g $^ -o $@ -lreadline
 ## if readline library is unavailable add -DWITHOUT_READLINE above
 
 
@@ -78,6 +78,8 @@ clean:
 	$(RM) */*~
 
 refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS)
+	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
+	@echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
 
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
