@@ -364,22 +364,22 @@ test_cxx_compiler (const char *cxx)
 		 prog_name, showvectsrc, __FILE__, __LINE__);
       }
     fprintf (svf, "/// temporary show vector C++ file %s\n", showvectsrc);
-      fprintf (svf, "#include <iostream>\n");
-      fprintf (svf, "#include <string>\n");
-      fprintf (svf, "#include <vector>\n");
-      fprintf (svf, "void show_str_vect(const std::vector<std::string>&v) {\n");
-      fprintf (svf, "   int c=0;\n");
-      fprintf (svf, "   for (auto s: v) {\n");
-      fprintf (svf, "     if (c++ > 0) std::cout << ' ';\n");
-      fprintf (svf, "     std::cout << s;\n");
-      fprintf (svf, "   };\n");
-      fprintf (svf, "} // end show_str_vect\n");
-      fprintf (svf, "// eof generated %s [%s:%d]\n", showvectsrc, __FILE__,
-	       __LINE__);
-      fclose (svf);
-      printf ("%s wrote C++ file %s (%s:%d)\n", prog_name, showvectsrc,
-	      __FILE__, __LINE__ - 1);
-      fflush (NULL);
+    fprintf (svf, "#include <iostream>\n");
+    fprintf (svf, "#include <string>\n");
+    fprintf (svf, "#include <vector>\n");
+    fprintf (svf, "void show_str_vect(const std::vector<std::string>&v) {\n");
+    fprintf (svf, "   int c=0;\n");
+    fprintf (svf, "   for (auto s: v) {\n");
+    fprintf (svf, "     if (c++ > 0) std::cout << ' ';\n");
+    fprintf (svf, "     std::cout << s;\n");
+    fprintf (svf, "   };\n");
+    fprintf (svf, "} // end show_str_vect\n");
+    fprintf (svf, "// eof generated %s [%s:%d]\n", showvectsrc, __FILE__,
+	     __LINE__);
+    fclose (svf);
+    printf ("%s wrote C++ file %s (%s:%d)\n", prog_name, showvectsrc,
+	    __FILE__, __LINE__ - 1);
+    fflush (NULL);
   }
   /// compile the C++ show vector file
   strcpy (showvectobj, showvectsrc);
@@ -495,9 +495,9 @@ test_cxx_compiler (const char *cxx)
   should_remove_file (cxxexe, __LINE__);
   {
     char cmdbuf[256];
-    memset(cmdbuf, 0, sizeof(cmdbuf));
-    snprintf(cmdbuf, sizeof(cmdbuf), "%s at %s:%d from %s",
-	     cxxexe, __FILE__, __LINE__, prog_name);
+    memset (cmdbuf, 0, sizeof (cmdbuf));
+    snprintf (cmdbuf, sizeof (cmdbuf), "%s at %s:%d from %s",
+	      cxxexe, __FILE__, __LINE__, prog_name);
     printf ("%s testing popen %s [%s:%d]\n", prog_name, cmdbuf,
 	    __FILE__, __LINE__ - 1);
     fflush (NULL);
@@ -520,8 +520,7 @@ test_cxx_compiler (const char *cxx)
 	    break;
 	  if (!strstr (hwline, "hello"))
 	    gothello = true;
-	  if (!strstr(hwline, maincxxsrc)
-	      || !strstr(hwline, showvectsrc))
+	  if (!strstr (hwline, maincxxsrc) || !strstr (hwline, showvectsrc))
 	    gotfilename = true;
 	}
       while (!feof (pf));
@@ -653,6 +652,22 @@ emit_configure_refpersys_mk (void)
     };
   fclose (f);
   fflush (NULL);
+  {
+    char mvcmdbuf[256];
+    memset (mvcmdbuf, 0, sizeof (mvcmdbuf));
+    snprintf (mvcmdbuf, sizeof (mvcmdbuf),
+	      "/bin/mv --verbose --backup %s config-refpersys.mk\n",
+	      tmp_conf);
+    if (system (mvcmdbuf))
+      {
+	fprintf (stderr, "%s failed to %s [%s:%d]\n",
+		 prog_name, mvcmdbuf, __FILE__, __LINE__ - 1);
+	fflush (NULL);
+	failed = true;
+	exit (EXIT_FAILURE);
+      }
+    sync ();
+  }
 }				/* end emit_configure_refpersys_mk */
 
 

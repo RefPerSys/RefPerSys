@@ -63,6 +63,7 @@ do-configure-refpersys: do-configure-refpersys.c |GNUmakefile
 
 clean:
 	$(RM) tmp* *~ *.o do-configure-refpersys refpersys
-
+	$(RM) *% %~
+	$(RM) */*~
 ## eof GNUmakefile
 
