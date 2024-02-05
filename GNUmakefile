@@ -53,7 +53,16 @@ all:
 
 
 ### Human hand-written C++ sources
-REFPERSYS_CPPSOURCES := $(wildcard *_rps.cc)
+REFPERSYS_HUMAN_CPP_SOURCES := $(wildcard *_rps.cc)
+
+### corresponding object files
+REFPERSYS_HUMAN_CPP_OBJECTS=$(patsubst %.cc,%.o, $(REFPERSYS_HUMANCPP_SOURCES))
+
+### Generated C++ sources
+REFPERSYS_GENERATED_CPP_SOURCES := $(wildcard generated/*.cc)
+
+### corresponding object files
+REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc,%.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
 
 config: do-configure-refpersys GNUmakefile
 	./do-configure-refpersys 
@@ -67,6 +76,9 @@ clean:
 	$(RM) tmp* *~ *.o do-configure-refpersys refpersys
 	$(RM) *% %~
 	$(RM) */*~
+
+refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS)
+
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
 	@echo RefPerSys git pushing.... ; grep -2 url .git/config

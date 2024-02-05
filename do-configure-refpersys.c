@@ -621,9 +621,10 @@ emit_configure_refpersys_mk (void)
 	fputc (' ', f);
       fputs (preprocessor_args[i], f);
     };
-  //// emit compiler flags
+  //// emit the given or default compiler flags
+  if (compiler_argcount > 0) {
   fprintf (f, "\n\n"
-	   "# the %d compiler flags for RefPerSys:\n", compiler_argcount);
+	   "# the given %d compiler flags for RefPerSys:\n", compiler_argcount);
   fprintf (f, "REFPERSYS_COMPILER_FLAGS=");
   for (int i = 0; i < compiler_argcount; i++)
     {
@@ -631,9 +632,17 @@ emit_configure_refpersys_mk (void)
 	fputc (' ', f);
       fputs (compiler_args[i], f);
     };
+  }
+  else {
+    fprintf(f, "\n\n"
+	    "# default compiler flags for RefPerSys [%s:%d]:\n",
+	    __FILE__, __LINE__-1);
+    fprintf(f, "REFPERSYS_COMPILER_FLAGS= -O -g -fPIC\n");
+  }
   //// emit linker flags
+  if (linker_argcount >0) {
   fprintf (f, "\n\n"
-	   "# the %d linker flags for RefPerSys:\n", linker_argcount);
+	   "# the given %d linker flags for RefPerSys:\n", linker_argcount);
   fprintf (f, "REFPERSYS_LINKER_FLAGS=");
   for (int i = 0; i < linker_argcount; i++)
     {
@@ -641,6 +650,12 @@ emit_configure_refpersys_mk (void)
 	fputc (' ', f);
       fputs (linker_args[i], f);
     };
+  }
+  else {
+    fprintf(f, "# default linker flags for RefPerSys [%s:%d]:\n",
+	    __FILE__, __LINE__-1);
+  fprintf(f, "REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl\n");
+  }
   fprintf (f, "\n\n### end of generated config-refpersys.mk file\n");
   fflush (f);
   if (!link (tmp_conf, "refpersys-config.mk"))
