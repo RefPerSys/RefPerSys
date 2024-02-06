@@ -6,4 +6,4 @@ refpersys
 tmp_*
 *.o
 *~
-generated/*
+generated/*_config-refpersys.mk
