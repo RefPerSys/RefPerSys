@@ -33,25 +33,14 @@
 ## tell GNU make to export all variables by default
 export
 
+RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
+RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 #                                                                
 .PHONY: all config objects clean gitpush gitpush2
 
 SYNC=/bin/sync
 FMT=/usr/bin/fmt
 -include _config-refpersys.mk
-
-all:
-
-	@/usr/bin/printf "make features: %s\n" "$(.FEATURES)" | $(FMT)
-	$(MAKE) do-configure-refpersys
-	@/usr/bin/printf "hand-written C++ code: %s\n" "$(REFPERSYS_CPPSOURCES)" | $(FMT)
-	@if [ ! -f config-refpersys.mk ]; then \
-	   echo missing config-refpersys.mk for GNUmakefile > /dev/stderr; \
-	   echo run $(MAKE) config > /dev/stderr ; \
-	   exit 1 ; \
-	fi
-	$(MAKE) refpersys
-
 
 ### Human hand-written C++ sources
 REFPERSYS_HUMAN_CPP_SOURCES=$(wildcard *_rps.cc)
@@ -64,6 +53,21 @@ REFPERSYS_GENERATED_CPP_SOURCES := $(wildcard generated/*.cc)
 
 ### corresponding object files
 REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
+all:
+
+	@/usr/bin/printf "make features: %s\n" "$(.FEATURES)" | $(FMT)
+	$(MAKE) do-configure-refpersys
+	@/usr/bin/printf "hand-written C++ code: %s\n" "$(REFPERSYS_HUMAN_CPP_SOURCES)" | $(FMT)
+	@if [ ! -f _config-refpersys.mk ]; then \
+	   echo missing _config-refpersys.mk for GNUmakefile > /dev/stderr; \
+	   echo run $(MAKE) config > /dev/stderr ; \
+	   exit 1 ; \
+	fi
+	$(MAKE) refpersys
+
+
+.SECONDARY:  __timestamp.c  #gramrepl_rps.yy gramrepl_rps.cc  gramrepl_rps.hh
+	$(SYNC)
 
 config: do-configure-refpersys GNUmakefile
 	./do-configure-refpersys 
@@ -78,11 +82,18 @@ clean:
 	$(RM) *% %~
 	$(RM) */*~
 
-refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS)
-	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
-	@echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
-	@echo RefPerSys generated C++ object files $(REFPERSYS_GENERATED_CPP_OBJECTS)
+-include _scanned-pkgconfig.mk
 
+$(warning missing code to emit _scanned-pkgconfig.mk)
+## TODO: add script writing  _scanned-pkgconfig.mk
+
+refpersys: 
+	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
+#       @echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
+	@echo RefPerSys generated C++ files $(REFPERSYS_GENERATED_CPP_SOURCES)
+#	@echo RefPerSys generated C++ object files $(REFPERSYS_GENERATED_CPP_OBJECTS)
+	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
+	$(MAKE) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS)
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
 	@echo RefPerSys git pushing.... ; grep -2 url .git/config
@@ -112,6 +123,12 @@ ifeq ($(RPS_GIT_MIRROR), )
 else
 	git push $(RPS_GIT_MIRROR) master
 endif
+	$(SYNC)
+%_rps.o: %_rps.cc refpersys.hh
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -DRPS_THIS_SOURCE="$<" -DRPS_GITID="$(RPS_GIT_ID)"  \
+               -DRPS_SHORTGITID="$(RPS_SHORTGIT_ID)" \
+	       -c -o $@ $<
 	$(SYNC)
 ## eof GNUmakefile
 
