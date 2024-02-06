@@ -1,1 +1,9 @@
+## refpersys.org file .gitignore
+## SPDX-License-Identifier: GPL-3.0-or-later
+_configure-refpersys
 do-configure-refpersys
+refpersys
+tmp_*
+*.o
+*~
+generated/*
