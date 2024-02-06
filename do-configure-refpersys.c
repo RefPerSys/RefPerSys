@@ -602,7 +602,7 @@ emit_configure_refpersys_mk (void)
       exit (EXIT_FAILURE);
     };
   time_t nowt = time (NULL);
-  fprintf (f, "# generated config-refpersys.mk for GNU make in refpersys\n");
+  fprintf (f, "# generated _config-refpersys.mk for GNU make in refpersys\n");
   fprintf (f, "# DO NOT EDIT but use make config\n");
   fprintf (f, "# generated from %s:%d in %s\n", __FILE__, __LINE__,
 	   my_cwd_buf);
@@ -615,63 +615,71 @@ emit_configure_refpersys_mk (void)
   fprintf (f, "\n\n" "# the C++ compiler for RefPerSys:\n");
   fprintf (f, "REFPERSYS_CXX=%s\n", cpp_compiler);
   //// emit preprocessor flags
-  if (preprocessor_argcount) {
-  fprintf (f, "\n\n"
-	   "# the given %d preprocessor flags for RefPerSys:\n",
-	   preprocessor_argcount);
-  fprintf (f, "REFPERSYS_PREPRO_FLAGS=");
-  for (int i = 0; i < preprocessor_argcount; i++)
-    {
-      if (i > 0)
-	fputc (' ', f);
-      fputs (preprocessor_args[i], f);
-    };
-  } else
+  if (preprocessor_argcount)
     {
       fprintf (f, "\n\n"
-	       "# the default preprocessor flags for RefPerSys:\n");
+	       "# the given %d preprocessor flags for RefPerSys:\n",
+	       preprocessor_argcount);
+      fprintf (f, "REFPERSYS_PREPRO_FLAGS=");
+      for (int i = 0; i < preprocessor_argcount; i++)
+	{
+	  if (i > 0)
+	    fputc (' ', f);
+	  fputs (preprocessor_args[i], f);
+	};
+    }
+  else
+    {
+      fprintf (f, "\n\n" "# the default preprocessor flags for RefPerSys:\n");
       fprintf (f, "REFPERSYS_PREPRO_FLAGS= -I/usr/local/include\n");
     }
   //// emit the given or default compiler flags
-  if (compiler_argcount > 0) {
-  fprintf (f, "\n\n"
-	   "# the given %d compiler flags for RefPerSys:\n", compiler_argcount);
-  fprintf (f, "REFPERSYS_COMPILER_FLAGS=");
-  for (int i = 0; i < compiler_argcount; i++)
+  if (compiler_argcount > 0)
     {
-      if (i > 0)
-	fputc (' ', f);
-      fputs (compiler_args[i], f);
-    };
-  }
-  else {
-    fprintf(f, "\n\n"
-	    "# default compiler flags for RefPerSys [%s:%d]:\n",
-	    __FILE__, __LINE__-1);
-    fprintf(f, "REFPERSYS_COMPILER_FLAGS= -O -g -fPIC\n");
-  }
+      fprintf (f, "\n\n"
+	       "# the given %d compiler flags for RefPerSys:\n",
+	       compiler_argcount);
+      fprintf (f, "REFPERSYS_COMPILER_FLAGS=");
+      for (int i = 0; i < compiler_argcount; i++)
+	{
+	  if (i > 0)
+	    fputc (' ', f);
+	  fputs (compiler_args[i], f);
+	};
+    }
+  else
+    {
+      fprintf (f, "\n\n"
+	       "# default compiler flags for RefPerSys [%s:%d]:\n",
+	       __FILE__, __LINE__ - 1);
+      fprintf (f, "REFPERSYS_COMPILER_FLAGS= -O -g -fPIC\n");
+    }
   //// emit linker flags
-  if (linker_argcount >0) {
-  fprintf (f, "\n\n"
-	   "# the given %d linker flags for RefPerSys:\n", linker_argcount);
-  fprintf (f, "REFPERSYS_LINKER_FLAGS=");
-  for (int i = 0; i < linker_argcount; i++)
+  if (linker_argcount > 0)
     {
-      if (i > 0)
-	fputc (' ', f);
-      fputs (linker_args[i], f);
-    };
-  }
-  else {
-    fprintf(f, "# default linker flags for RefPerSys [%s:%d]:\n",
-	    __FILE__, __LINE__-1);
-  fprintf(f, "REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl\n");
-  }
-  fprintf (f, "\n\n### end of generated config-refpersys.mk file\n");
+      fprintf (f, "\n\n"
+	       "# the given %d linker flags for RefPerSys:\n",
+	       linker_argcount);
+      fprintf (f, "REFPERSYS_LINKER_FLAGS=");
+      for (int i = 0; i < linker_argcount; i++)
+	{
+	  if (i > 0)
+	    fputc (' ', f);
+	  fputs (linker_args[i], f);
+	};
+    }
+  else
+    {
+      fprintf (f, "# default linker flags for RefPerSys [%s:%d]:\n",
+	       __FILE__, __LINE__ - 1);
+      fprintf (f,
+	       "REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl\n");
+    }
+  fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
-  if (!link (tmp_conf, "refpersys-config.mk"))
+  if (!link (tmp_conf, "_refpersys-config.mk"))
     {
-      fprintf (stderr, "%s failed to link %s to config-refpersys.mk (%m)\n",
+      fprintf (stderr, "%s failed to link %s to _config-refpersys.mk (%m)\n",
 	       prog_name, tmp_conf);
       failed = true;
       exit (EXIT_FAILURE);
@@ -697,36 +705,49 @@ emit_configure_refpersys_mk (void)
 }				/* end emit_configure_refpersys_mk */
 
 
-void usage(void)
+void
+usage (void)
 {
-  printf("%s usage:\n", prog_name);
-  puts("\t --version             # show version");
-  puts("\t --help                # this help");
-  puts("\t <var>=<value>         # putenv, set environment variable, e.g...");
-  puts("\t CC=<C compiler>       # set the C compiler, e.g. CC=/usr/bin/gcc");
-  puts("\t CXX=<C++ compiler>    # set the C++ compiler, e.g. CXX=/usr/bin/g++");
-  puts("\t -D<prepro>            # define a preprocessor thing, e.g. -DFOO=3");
-  puts("\t -U<prepro>            # undefine a preprocessor thing, e.g. -UBAR");
-  puts("\t -I<include-dir>       # preprocessor include, e.g. -I$HOME/inc/");
-  puts("\t -std=<standard>       # language standard for C++, e.g. -std=gnu++17");
-  puts("\t -O<flag>              # optimization flag, e.g. -O or -O2");
-  puts("\t -g<flag>              # debugging flag, e.g. -g or -g3");
-  puts("\t -fPIC                 # position independent code");
-  puts("\t -fPIE                 # position independent executable");
-} /* end usage */
+  puts ("# utility program for refpersys.org");
+  printf ("%s usage:\n", prog_name);
+  puts ("\t --version             # show version");
+  puts ("\t --help                # this help");
+  puts
+    ("\t <var>=<value>         # putenv, set environment variable, e.g...");
+  puts
+    ("\t CC=<C compiler>       # set the C compiler, e.g. CC=/usr/bin/gcc");
+  puts
+    ("\t CXX=<C++ compiler>    # set the C++ compiler, e.g. CXX=/usr/bin/g++");
+  puts
+    ("\t -D<prepro>            # define a preprocessor thing, e.g. -DFOO=3");
+  puts
+    ("\t -U<prepro>            # undefine a preprocessor thing, e.g. -UBAR");
+  puts ("\t -I<include-dir>       # preprocessor include, e.g. -I$HOME/inc/");
+  puts
+    ("\t -std=<standard>       # language standard for C++, e.g. -std=gnu++17");
+  puts ("\t -O<flag>              # optimization flag, e.g. -O or -O2");
+  puts ("\t -g<flag>              # debugging flag, e.g. -g or -g3");
+  puts ("\t -fPIC                 # position independent code");
+  puts ("\t -fPIE                 # position independent executable");
+  puts
+    ("# generate the _configure-refpersys.mk file for inclusion by GNU make");
+  puts ("# GPLv3+ licensed, so no warranty");
+}				/* end usage */
 
 int
 main (int argc, char **argv)
 {
   prog_name = argv[0];
-  if (argc == 2 && !strcmp(argv[1], "--help")) {
-    usage();
-    return;
-  };
-  if (argc == 2 && !strcmp(argv[1], "--version")) {
-    printf("%s version gitid %s built on %s:%s\n",
-	   prog_name, GIT_ID, __DATE__, __TIME__);
-  };
+  if (argc == 2 && !strcmp (argv[1], "--help"))
+    {
+      usage ();
+      return;
+    };
+  if (argc == 2 && !strcmp (argv[1], "--version"))
+    {
+      printf ("%s version gitid %s built on %s:%s\n",
+	      prog_name, GIT_ID, __DATE__, __TIME__);
+    };
   memset (my_cwd_buf, 0, sizeof (my_cwd_buf));
   if (!getcwd (my_cwd_buf, sizeof (my_cwd_buf)))
     {

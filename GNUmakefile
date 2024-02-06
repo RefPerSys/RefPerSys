@@ -1,4 +1,5 @@
 #!/usr/bin/gmake
+## SPDX-License-Identifier: GPL-3.0-or-later
 ## Description:
 ##      This file is part of the Reflective Persistent System. refpersys.org
 ##
@@ -37,7 +38,7 @@ export
 
 SYNC=/bin/sync
 FMT=/usr/bin/fmt
--include config-refpersys.mk
+-include _config-refpersys.mk
 
 all:
 
@@ -80,6 +81,7 @@ clean:
 refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS)
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
 	@echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
+	@echo RefPerSys generated C++ object files $(REFPERSYS_GENERATED_CPP_OBJECTS)
 
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
