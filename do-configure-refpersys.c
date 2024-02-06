@@ -73,7 +73,7 @@ char my_cwd_buf[MY_PATH_MAXLEN];
 char my_host_name[80];
 
 //// the below arguments are kept, they should be rewritten in
-//// config-refpersys.mk in a GNU make friendly way.
+//// _config-refpersys.mk in a GNU make friendly way.
 
 char *preprocessor_args[MAX_PROG_ARGS];
 int preprocessor_argcount;
@@ -596,7 +596,7 @@ emit_configure_refpersys_mk (void)
   FILE *f = fopen (tmp_conf, "w");
   if (!f)
     {
-      fprintf (stderr, "%s failed to fopen %s for config-refpersys.mk (%m)\n",
+      fprintf (stderr, "%s failed to fopen %s for _config-refpersys.mk (%m)\n",
 	       prog_name, tmp_conf);
       failed = true;
       exit (EXIT_FAILURE);
@@ -607,7 +607,8 @@ emit_configure_refpersys_mk (void)
   fprintf (f, "# generated from %s:%d in %s\n", __FILE__, __LINE__,
 	   my_cwd_buf);
   fprintf (f, "# see refpersys.org\n");
-  fprintf (f, "# generated %s\n", ctime (&nowt));
+  fprintf (f, "# generated at %s## on %s git %s\n",
+	   ctime (&nowt), my_host_name, GIT_ID);
   //// emit C compiler
   fprintf (f, "\n\n" "# the C compiler for RefPerSys:\n");
   fprintf (f, "REFPERSYS_CC=%s\n", c_compiler);
@@ -677,7 +678,7 @@ emit_configure_refpersys_mk (void)
     }
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
-  if (!link (tmp_conf, "_refpersys-config.mk"))
+  if (!link (tmp_conf, "_config-refpersys.mk"))
     {
       fprintf (stderr, "%s failed to link %s to _config-refpersys.mk (%m)\n",
 	       prog_name, tmp_conf);
@@ -690,7 +691,7 @@ emit_configure_refpersys_mk (void)
     char mvcmdbuf[256];
     memset (mvcmdbuf, 0, sizeof (mvcmdbuf));
     snprintf (mvcmdbuf, sizeof (mvcmdbuf),
-	      "/bin/mv --verbose --backup %s config-refpersys.mk\n",
+	      "/bin/mv --verbose --backup %s _config-refpersys.mk\n",
 	      tmp_conf);
     if (system (mvcmdbuf))
       {
