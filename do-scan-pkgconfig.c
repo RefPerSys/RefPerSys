@@ -131,7 +131,7 @@ process_source_file (const char *origpath)
       exit (EXIT_FAILURE);
     }
   printf ("# [%s:%d] reading pathbuf=%s git %s\n",
-	  __FILE__, __LINE__-1, pathbuf, GIT_ID);
+	  __FILE__, __LINE__ - 1, pathbuf, GIT_ID);
   char *lastdot = strrchr (pathbuf, '.');
   char *lastslash = strrchr (pathbuf, '/');
   /// the asm volatile is to ease debugging and gdb breakpoints
@@ -148,7 +148,7 @@ process_source_file (const char *origpath)
     }
   else if (!lastslash && lastdot)
     {
-      assert (lastdot > pathbuf && lastdot < pathbuf+MY_PATH_MAXLEN);
+      assert (lastdot > pathbuf && lastdot < pathbuf + MY_PATH_MAXLEN);
       strncpy (my_naked_basename, pathbuf, lastdot - pathbuf);
       asm volatile ("nop; nop; nop; nop");
       printf ("# [%s:%d] pathbuf=%s NOlastslash lastdot=%s nakedbase=%s\n",
@@ -219,7 +219,17 @@ process_source_file (const char *origpath)
     {
       printf ("# source file %s with %d //@@PKGCONFIG comment lines\n",
 	      pathbuf, nbpkg);
+      printf ("PKGLIST_%s=", my_naked_basename);
+      for (int i = 0; i < nbpkg; i++)
+	{
+	  if (i > 0)
+	    putchar (' ');
+	  fputs (pkgarr[i], stdout);
+	}
+      putchar ('\n');
+      fflush (stdout);
     };
+  fflush (NULL);
 }				/* end process_source_file */
 
 int
