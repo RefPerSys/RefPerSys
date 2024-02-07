@@ -92,13 +92,22 @@ clean:
 _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgconfig
 	./do-scan-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
 
+__timestamp.c: do-generate-timestamp.sh |GNUmakefile
+	./do-generate-timestamp.sh > $@
+
 refpersys: 
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
 #       @echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
 	@echo RefPerSys generated C++ files $(REFPERSYS_GENERATED_CPP_SOURCES)
 #	@echo RefPerSys generated C++ object files $(REFPERSYS_GENERATED_CPP_OBJECTS)
+	@echo PACKAGES_LIST is $(PACKAGES_LIST)
 	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
-	$(MAKE) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS)
+	$(MAKE) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
+	$(REFPERSYS_CXX) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) -rdynamic \
+	      $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
+
+
+
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
 	@echo RefPerSys git pushing.... ; grep -2 url .git/config
