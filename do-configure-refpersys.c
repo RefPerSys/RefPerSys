@@ -709,7 +709,7 @@ emit_configure_refpersys_mk (void)
 void
 usage (void)
 {
-  puts ("# utility program for refpersys.org");
+  puts ("# configuration utility program for refpersys.org");
   printf ("%s usage:\n", prog_name);
   puts ("\t --version             # show version");
   puts ("\t --help                # this help");
