@@ -45,6 +45,9 @@ const char rps_dump_gitid[]= RPS_GITID;
 extern "C" const char rps_dump_date[];
 const char rps_dump_date[]= __DATE__;
 
+// comment for our do-scan-pkgconfig.c utility
+//@@PKGCONFIG jsoncpp
+
 std::string
 rps_dump_json_to_string(const Json::Value&jv)
 {
