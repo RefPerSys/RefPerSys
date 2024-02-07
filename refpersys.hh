@@ -40,6 +40,8 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+// comment for our do-scan-pkgconfig.c utility
+//@@PKGCONFIG jsoncpp
 
 
 #ifndef REFPERSYS_INCLUDED
