@@ -931,8 +931,6 @@ Rps_Dumper::write_generated_roots_file(void)
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_roots_file end rootcnt=" << rootcnt << std::endl);
 } // end Rps_Dumper::write_generated_roots_file
 
-extern "C" const int rps_gnulightning_jitstate_size;
-extern "C" const int rps_gnulightning_jitstate_align;
 void
 Rps_Dumper::write_generated_names_file(void)
 {
@@ -1077,7 +1075,6 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_SIZEOF_RPS_CALLFRAME " << sizeof(Rps_CallFrame) << std::endl;
   *pouts << "#define RPS_SIZEOF_RPS_PAYLOAD " << sizeof(Rps_Payload) << std::endl;
   *pouts << "#define RPS_SIZEOF_RPS_TOKENSOURCE " << sizeof(Rps_TokenSource) << std::endl;
-  *pouts << "#define RPS_SIZEOF_LIGHTNING_JIT_STATE " << rps_gnulightning_jitstate_size << std::endl;
 
   *pouts << "///" << std::endl;
   *pouts << "#define RPS_ALIGNOF_BOOL " << alignof(bool) << std::endl;
@@ -1107,7 +1104,6 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_ALIGNOF_RPS_CALLFRAME " << alignof(Rps_CallFrame) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_PAYLOAD " << alignof(Rps_Payload) << std::endl;
   *pouts << "#define RPS_ALIGNOF_RPS_TOKENSOURCE " << alignof(Rps_TokenSource) << std::endl;
-  *pouts << "#define RPS_ALIGNOF_LIGHTNING_JIT_STATE " << rps_gnulightning_jitstate_align << std::endl;
   *pouts << std::endl;
   if (sizeof(Rps_Value) == sizeof(void*) && alignof(Rps_Value) == alignof(void*))
     *pouts << "#define RPS_VALUE_IS_VOIDPTR 1" << std::endl;
