@@ -596,7 +596,8 @@ emit_configure_refpersys_mk (void)
   FILE *f = fopen (tmp_conf, "w");
   if (!f)
     {
-      fprintf (stderr, "%s failed to fopen %s for _config-refpersys.mk (%m)\n",
+      fprintf (stderr,
+	       "%s failed to fopen %s for _config-refpersys.mk (%m)\n",
 	       prog_name, tmp_conf);
       failed = true;
       exit (EXIT_FAILURE);

@@ -133,7 +133,7 @@ process_source_file (const char *origpath)
       exit (EXIT_FAILURE);
     }
   noprintf ("# [%s:%d] reading pathbuf=%s git %s\n",
-	  __FILE__, __LINE__ - 1, pathbuf, GIT_ID);
+	    __FILE__, __LINE__ - 1, pathbuf, GIT_ID);
   char *lastdot = strrchr (pathbuf, '.');
   char *lastslash = strrchr (pathbuf, '/');
   /// the asm volatile is to ease debugging and gdb breakpoints
@@ -142,15 +142,15 @@ process_source_file (const char *origpath)
     {
       strncpy (my_naked_basename, lastslash + 1, lastdot - lastslash - 1);
       noprintf ("# [%s:%d] pathbuf=%s lastdot=%s lastslash=%s nakedbase=%s\n",
-	      __FILE__, __LINE__ - 1, pathbuf, lastdot, lastslash,
-	      my_naked_basename);
+		__FILE__, __LINE__ - 1, pathbuf, lastdot, lastslash,
+		my_naked_basename);
     }
   else if (!lastslash && lastdot)
     {
       assert (lastdot > pathbuf && lastdot < pathbuf + MY_PATH_MAXLEN);
       strncpy (my_naked_basename, pathbuf, lastdot - pathbuf);
       noprintf ("# [%s:%d] pathbuf=%s NOlastslash lastdot=%s nakedbase=%s\n",
-	      __FILE__, __LINE__ - 1, pathbuf, lastdot, my_naked_basename);
+		__FILE__, __LINE__ - 1, pathbuf, lastdot, my_naked_basename);
     };
   if (!my_naked_basename[0])
     {
@@ -224,7 +224,12 @@ process_source_file (const char *origpath)
 	  fputs (pkgarr[i], stdout);
 	}
       putchar ('\n');
-      fflush (stdout);
+      for (int i = 0; i < nbpkg; i++)
+	{
+	  printf ("PACKAGES_LIST += %s\n", pkgarr[i]);
+	}
+      putchar ('\n');
+      putchar ('\n');
     };
   fflush (NULL);
 }				/* end process_source_file */
@@ -285,6 +290,7 @@ main (int argc, char **argv)
     strftime (timbuf, sizeof (timbuf), "%Y-%b-%d %H:%M:%S %Z",
 	      localtime (&nowt));
     printf ("# generated at %s\n", timbuf);
+    printf ("PACKAGES_LIST=\n");
   }
   for (int i = 1; i < argc; i++)
     process_source_file (argv[i]);
