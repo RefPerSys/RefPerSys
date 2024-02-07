@@ -42,6 +42,7 @@
 #include <time.h>
 #include <assert.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #ifndef MAX_PROG_ARGS
@@ -60,6 +61,10 @@
 
 #ifndef MY_HEAD_LINES_THRESHOLD
 #define MY_HEAD_LINES_THRESHOLD 256
+#endif
+
+#ifndef MY_MAX_PACKAGE
+#define MY_MAX_PACKAGE 32
 #endif
 
 #ifndef GIT_ID
@@ -89,6 +94,7 @@ usage (void)
   printf ("# scanning first %d lines in given files\n",
 	  MY_HEAD_LINES_THRESHOLD);
   printf ("# lines of at most %d bytes\n", MY_LINE_MAXLEN);
+  printf ("# at most %d packages per scanned source file\n", MY_MAX_PACKAGE);
 }				/* end usage */
 
 
@@ -97,8 +103,15 @@ process_source_file (const char *origpath)
 {
   char pathbuf[MY_PATH_MAXLEN];
   char linebuf[MY_LINE_MAXLEN + 4];
+  // for a dir/foo_rps.cc file the naked basename is foo_rps
+  char my_naked_basename[MY_PATH_MAXLEN];
+  char pkgbuf[80];
+  char *pkgarr[MY_MAX_PACKAGE];
+  int nbpkg = 0;
   memset (pathbuf, 0, sizeof (pathbuf));
   memset (linebuf, 0, sizeof (linebuf));
+  memset (pkgarr, 0, sizeof (pkgarr));
+  memset (pkgbuf, 0, sizeof (pkgbuf));
   assert (origpath != NULL);
   if (strlen (origpath) >= MY_PATH_MAXLEN)
     {
@@ -116,6 +129,25 @@ process_source_file (const char *origpath)
       fflush (NULL);
       exit (EXIT_FAILURE);
     }
+  char *lastdot = strrchr (pathbuf, '.');
+  char *lastslash = strrchr (pathbuf, '/');
+  /// the asm volatile is to ease debugging and gdb breakpoints
+  asm volatile ("nop; nop; nop; nop");
+  if (lastslash && lastdot && lastdot < lastslash)
+    {
+      /// the asm volatile is to ease debugging and gdb breakpoints
+      asm volatile ("nop; nop; nop; nop");
+      printf ("# [%s:%d] pathbuf=%s lastdot=%s lastslash=%s\n",
+	      __FILE__, __LINE__ - 1, pathbuf, lastdot, lastslash);
+      asm volatile ("nop; nop; nop; nop");
+    }
+  else if (!lastslash && lastdot)
+    {
+      asm volatile ("nop; nop; nop; nop");
+      printf ("# [%s:%d] pathbuf=%s NOlastdot lastslash=%s\n",
+	      __FILE__, __LINE__ - 1, pathbuf, lastslash);
+      asm volatile ("nop; nop; nop; nop");
+    };
   int linenum = 0;
   do
     {
@@ -125,10 +157,42 @@ process_source_file (const char *origpath)
       linenum++;
       if (linenum > MY_HEAD_LINES_THRESHOLD)
 	break;
-#warning missing code to scan line in process_source_file
+      if (linebuf[0] != '/' && linebuf[1] != '/')
+	continue;
+      memset (pkgbuf, 0, sizeof (pkgbuf));
+      assert (sizeof (pkgbuf) > 64);
+      if (sscanf (linebuf, "//@@PKGCONFIG %64[A-Za-z0-9-]", pkgbuf) > 0
+	  && isalpha (pkgbuf[0]))
+	{
+	  assert (strlen (pkgbuf) < sizeof (pkgbuf) - 1);
+	  if (nbpkg > MY_MAX_PACKAGE)
+	    {
+	      fprintf (stderr,
+		       "%s: too many (%d) packages in source file %s [%s:%d git %s]\n",
+		       prog_name, nbpkg, pathbuf,
+		       __FILE__, __LINE__ - 2, GIT_ID);
+	      exit (EXIT_FAILURE);
+	    };
+	  char *pkgname = strdup (pkgbuf);
+	  if (!pkgname)
+	    {
+	      fprintf (stderr,
+		       "%s: failed to strdup %s (%m) [%s:%d git %s]\n",
+		       prog_name, pkgbuf, __FILE__, __LINE__ - 1, GIT_ID);
+	      exit (EXIT_FAILURE);
+	    };
+	  pkgarr[nbpkg++] = pkgname;
+	}
     }
   while (!feof (f));
   fclose (f);
+  if (nbpkg == 0)
+    printf ("# source file %s without //@@PKGCONFIG comments\n", pathbuf);
+  else
+    {
+      printf ("# source file %s with %d //@@PKGCONFIG comment lines\n",
+	      pathbuf, nbpkg);
+    };
 }				/* end process_source_file */
 
 int
@@ -190,7 +254,7 @@ main (int argc, char **argv)
   }
   for (int i = 1; i < argc; i++)
     process_source_file (argv[i]);
-  fflush(NULL);
+  fflush (NULL);
   return 0;
 }				/* end function main */
 
