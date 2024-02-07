@@ -73,9 +73,13 @@ config: do-configure-refpersys GNUmakefile
 	./do-configure-refpersys 
 
 do-configure-refpersys: do-configure-refpersys.c |GNUmakefile do-generate-gitid.sh
-	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" -O -g $^ -o $@ -lreadline
+	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
+              -O -g $^ -o $@ -lreadline
 ## if readline library is unavailable add -DWITHOUT_READLINE above
 
+do-scan-pkgconfig: do-scan-pkgconfig.c |GNUmakefile do-generate-gitid.sh
+	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
+              -O -g $^ -o $@
 
 clean:
 	$(RM) tmp* *~ *.o do-configure-refpersys refpersys
