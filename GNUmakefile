@@ -130,9 +130,13 @@ else
 endif
 	$(SYNC)
 %_rps.o: %_rps.cc refpersys.hh
+	echo dollar-less-F is $(<F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist is $(PKGLIST_$(basename $(<F)))	
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
-               -DRPS_THIS_SOURCE="$<" -DRPS_GITID="$(RPS_GIT_ID)"  \
-               -DRPS_SHORTGITID="$(RPS_SHORTGIT_ID)" \
+	$(shell pkg-config --cflags $(PKGLIST_refpersys) $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
 	       -c -o $@ $<
 	$(SYNC)
 ## eof GNUmakefile
