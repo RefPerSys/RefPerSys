@@ -78,6 +78,8 @@ char my_cwd_buf[MY_PATH_MAXLEN];
 //// host name
 char my_host_name[80];
 
+#define noprintf(Fmt,...) do { if (false) printf(Fmt, __VA_ARGS__); }while(0)
+
 void
 usage (void)
 {
@@ -130,7 +132,7 @@ process_source_file (const char *origpath)
       fflush (NULL);
       exit (EXIT_FAILURE);
     }
-  printf ("# [%s:%d] reading pathbuf=%s git %s\n",
+  noprintf ("# [%s:%d] reading pathbuf=%s git %s\n",
 	  __FILE__, __LINE__ - 1, pathbuf, GIT_ID);
   char *lastdot = strrchr (pathbuf, '.');
   char *lastslash = strrchr (pathbuf, '/');
@@ -139,21 +141,16 @@ process_source_file (const char *origpath)
   if (lastslash && lastdot && lastdot > lastslash)
     {
       strncpy (my_naked_basename, lastslash + 1, lastdot - lastslash - 1);
-      /// the asm volatile is to ease debugging and gdb breakpoints
-      asm volatile ("nop; nop; nop; nop");
-      printf ("# [%s:%d] pathbuf=%s lastdot=%s lastslash=%s nakedbase=%s\n",
+      noprintf ("# [%s:%d] pathbuf=%s lastdot=%s lastslash=%s nakedbase=%s\n",
 	      __FILE__, __LINE__ - 1, pathbuf, lastdot, lastslash,
 	      my_naked_basename);
-      asm volatile ("nop; nop; nop; nop");
     }
   else if (!lastslash && lastdot)
     {
       assert (lastdot > pathbuf && lastdot < pathbuf + MY_PATH_MAXLEN);
       strncpy (my_naked_basename, pathbuf, lastdot - pathbuf);
-      asm volatile ("nop; nop; nop; nop");
-      printf ("# [%s:%d] pathbuf=%s NOlastslash lastdot=%s nakedbase=%s\n",
+      noprintf ("# [%s:%d] pathbuf=%s NOlastslash lastdot=%s nakedbase=%s\n",
 	      __FILE__, __LINE__ - 1, pathbuf, lastdot, my_naked_basename);
-      asm volatile ("nop; nop; nop; nop");
     };
   if (!my_naked_basename[0])
     {
