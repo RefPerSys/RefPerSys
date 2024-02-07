@@ -112,6 +112,7 @@ process_source_file (const char *origpath)
   memset (linebuf, 0, sizeof (linebuf));
   memset (pkgarr, 0, sizeof (pkgarr));
   memset (pkgbuf, 0, sizeof (pkgbuf));
+  memset (my_naked_basename, 0, sizeof (my_naked_basename));
   assert (origpath != NULL);
   if (strlen (origpath) >= MY_PATH_MAXLEN)
     {
@@ -144,8 +145,8 @@ process_source_file (const char *origpath)
   else if (!lastslash && lastdot)
     {
       asm volatile ("nop; nop; nop; nop");
-      printf ("# [%s:%d] pathbuf=%s NOlastdot lastslash=%s\n",
-	      __FILE__, __LINE__ - 1, pathbuf, lastslash);
+      printf ("# [%s:%d] pathbuf=%s NOlastslash lastdot=%s\n",
+	      __FILE__, __LINE__ - 1, pathbuf, lastdot);
       asm volatile ("nop; nop; nop; nop");
     };
   int linenum = 0;
