@@ -90,7 +90,7 @@ clean:
 -include _scanned-pkgconfig.mk
 
 _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgconfig
-	./do-scan-pkgconfig $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
+	./do-scan-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
 
 refpersys: 
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
