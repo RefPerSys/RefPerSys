@@ -136,19 +136,43 @@ process_source_file (const char *origpath)
   asm volatile ("nop; nop; nop; nop");
   if (lastslash && lastdot && lastdot < lastslash)
     {
+      strncpy (my_naked_basename, lastslash + 1, lastdot - lastslash - 1);
       /// the asm volatile is to ease debugging and gdb breakpoints
       asm volatile ("nop; nop; nop; nop");
-      printf ("# [%s:%d] pathbuf=%s lastdot=%s lastslash=%s\n",
-	      __FILE__, __LINE__ - 1, pathbuf, lastdot, lastslash);
+      printf ("# [%s:%d] pathbuf=%s lastdot=%s lastslash=%s nakedbase=%s\n",
+	      __FILE__, __LINE__ - 1, pathbuf, lastdot, lastslash,
+	      my_naked_basename);
       asm volatile ("nop; nop; nop; nop");
     }
   else if (!lastslash && lastdot)
     {
+      assert (lastdot > pathbuf && lastdot < pathbuf+MY_PATH_MAXLEN);
+      strncpy (my_naked_basename, pathbuf, lastdot - pathbuf - 1);
       asm volatile ("nop; nop; nop; nop");
-      printf ("# [%s:%d] pathbuf=%s NOlastslash lastdot=%s\n",
-	      __FILE__, __LINE__ - 1, pathbuf, lastdot);
+      printf ("# [%s:%d] pathbuf=%s NOlastslash lastdot=%s nakedbase=%s\n",
+	      __FILE__, __LINE__ - 1, pathbuf, lastdot, my_naked_basename);
       asm volatile ("nop; nop; nop; nop");
     };
+  if (!my_naked_basename[0])
+    {
+      fprintf (stderr,
+	       "%s failed to compute naked basename for %s [%s:%d git %s]\n",
+	       prog_name, pathbuf, __FILE__, __LINE__ - 1, GIT_ID);
+      exit (EXIT_FAILURE);
+    };
+  for (const char *pc = my_naked_basename; *pc; pc++)
+    {
+      if (!isalnum (*pc) && *pc != '_')
+	{
+	  fprintf (stderr,
+		   "%s for file %s has naked basename with invalid char %c\n",
+		   prog_name, pathbuf, *pc);
+	  fprintf (stderr,
+		   "the naked basename %s should be a valid C identifier\n",
+		   my_naked_basename);
+	  exit (EXIT_FAILURE);
+	}
+    }
   int linenum = 0;
   do
     {
