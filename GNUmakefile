@@ -69,8 +69,9 @@ all:
 .SECONDARY:  __timestamp.c  #gramrepl_rps.yy gramrepl_rps.cc  gramrepl_rps.hh
 	$(SYNC)
 
-config: do-configure-refpersys GNUmakefile
-	./do-configure-refpersys 
+config: do-configure-refpersys do-scan-pkgconfig GNUmakefile
+	./do-configure-refpersys
+	$(MAKE) _scanned-pkgconfig.mk
 
 do-configure-refpersys: do-configure-refpersys.c |GNUmakefile do-generate-gitid.sh
 	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
@@ -88,8 +89,8 @@ clean:
 
 -include _scanned-pkgconfig.mk
 
-$(warning missing code to emit _scanned-pkgconfig.mk)
-## TODO: add script writing  _scanned-pkgconfig.mk
+_scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgconfig
+	./do-scan-pkgconfig $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
 
 refpersys: 
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
