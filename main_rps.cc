@@ -172,7 +172,8 @@ struct argp_option rps_progoptions[] =
     /*key:*/ RPSPROGOPT_JOBS, ///
     /*arg:*/ "NBJOBS", ///
     /*flags:*/ 0, ///
-    /*doc:*/ "Run <NBJOBS> threads - default is 3, minimum 2, maximum 20.\n", //
+    /*doc:*/ "Run <NBJOBS> threads - default is 5, minimum 3, maximum 24.\n",
+    // see RPS_NBJOBS_MIN and RPS_NBJOBS_MAX in refpersys.hh and initial value below.
     /*group:*/0 ///
   },
   /* ======= the load directory ======= */
@@ -394,7 +395,7 @@ rps_set_exit_code(std::uint8_t ex)
 } // end rps_set_exit_code
 
 
-int rps_nbjobs = RPS_NBJOBS_MIN + 1;
+int rps_nbjobs = RPS_NBJOBS_MIN + 2;
 
 
 /// the rps_run_loaded_application is called after loading...
@@ -1275,6 +1276,9 @@ int
 main (int argc, char** argv)
 {
   rps_progname = argv[0];
+  bool helpwanted = false;
+  if (argc>1 && !strcmp(argv[1], "--help"))
+    helpwanted = true;
   static_assert(sizeof(rps_progexe) > 80);
   {
     ssize_t pxl = readlink("/proc/self/exe",
@@ -1289,6 +1293,9 @@ main (int argc, char** argv)
   static_assert (sizeof(int) == 4 && alignof(int) == 4);
   static_assert (sizeof(time_t) == 8 && alignof(time_t) == 8);
   rps_parse_program_arguments(argc, argv);
+  if (helpwanted)
+    printf("%s minimal jobs or threads number %d, maximal %d, default %d\n",
+           rps_progname, RPS_NBJOBS_MIN, RPS_NBJOBS_MAX, rps_nbjobs);
   ///
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
