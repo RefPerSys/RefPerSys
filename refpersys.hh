@@ -411,8 +411,8 @@ extern "C" std::string rps_my_load_dir;
 #define RPS_INITIAL_COPYRIGHT_YEAR 2019
 // the number of jobs, that is of threads, to run in parallel
 extern "C" int rps_nbjobs;
-#define RPS_NBJOBS_MIN 2
-#define RPS_NBJOBS_MAX 20
+#define RPS_NBJOBS_MIN 3
+#define RPS_NBJOBS_MAX 24
 
 
 extern "C" bool rps_stdout_istty;
