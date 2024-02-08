@@ -36,6 +36,7 @@ export
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 #                                                                
+.DEFAULT_GOAL: refpersys
 .PHONY: all config objects clean gitpush gitpush2 print-plugin-settings indent redump
 
 SYNC=/bin/sync
@@ -115,7 +116,7 @@ __timestamp.c: do-generate-timestamp.sh |GNUmakefile
 __timestamp.o: __timestamp.c |GNUmakefile
 	$(CC) -fPIC -c -O -g -Wall -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $^ -o $@
 
-refpersys: 
+refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) |  GNUmakefile
 	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
 #       @echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
