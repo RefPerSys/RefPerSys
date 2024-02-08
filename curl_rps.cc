@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2023 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -32,6 +32,10 @@
  ******************************************************************************/
 
 #include "refpersys.hh"
+
+
+// comment for our do-scan-pkgconfig.c utility
+//@@PKGCONFIG curlpp
 
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
