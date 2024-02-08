@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2023 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -33,6 +33,11 @@
 
 #include "refpersys.hh"
 #include <lightning.h>
+
+
+// comment for our do-scan-pkgconfig.c utility
+//@@PKGCONFIG gmp
+//@@PKGCONFIG gmpxx
 
 #ifdef RPS_HAVE_ARCH_x86_64
 #warning utilities_rps.cc includes lightning/jit_x86.h
