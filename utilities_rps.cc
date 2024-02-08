@@ -461,7 +461,6 @@ rps_show_version(void)
                other one.  Non technical considerations,
                e.g. licensing, is important to some partners... */
             << " Gnu multi-precision library version: " << gmp_version << std::endl
-            << " at: " << rps_gnubison_realpath
             << std::endl
             << " default GUI script: " << rps_gui_script_executable << std::endl
             << " Read Eval Print Loop: " << rps_repl_version() << std::endl
