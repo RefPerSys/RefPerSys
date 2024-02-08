@@ -103,6 +103,9 @@ _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgco
 __timestamp.c: do-generate-timestamp.sh |GNUmakefile
 	./do-generate-timestamp.sh > $@
 
+__timestamp.o: __timestamp.c |GNUmakefile
+	$(CC) -fPIC -c -O -g -Wall -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $^ -o $@
+
 refpersys: 
 	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
