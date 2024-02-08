@@ -234,13 +234,12 @@ extern "C" const char rps_lastgittag[];
 extern "C" const char rps_lastgitcommit[];
 extern "C" const char rps_md5sum[];
 extern "C" const char*const rps_files[];
-extern "C" const char rps_makefile[];
+extern "C" const char rps_gnumakefile[];
 extern "C" const char*const rps_subdirectories[];
-extern "C" const char rps_cxx_compiler_command[];
 extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];
 extern "C" const char rps_build_xtra_cflags[];
-extern "C" const int rps_is_link_time_optimized;
+extern "C" const char rps_plugin_builder_script[];
 ////
 //// TODO: it is hoped, near commit bbed1a6a87b4 of mid-March 2023, that RefPerSys contributors will choose a single parser generator.
 // GNU bison is a parser generator,  see www.gnu.org/software/bison/
