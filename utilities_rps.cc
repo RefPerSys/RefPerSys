@@ -1665,15 +1665,16 @@ rps_output_debug_flags(std::ostream&out,  unsigned flags)
   out << flags << "=" ;
   int nbf = 0;
   //
-#define SHOW_DBGFLAG(Lev)     \
-  do {            \
-    if (flags & (1<< RPS_DEBUG_##Lev)) {  \
-      if (nbf > 0)        \
-  out << ',';       \
-      out << #Lev;        \
-      nbf++;          \
-    }           \
+#define SHOW_DBGFLAG(Lev)                       \
+  do {                                          \
+    if (flags & (1<< RPS_DEBUG_##Lev)) {        \
+      if (nbf > 0)                              \
+  out << ',';                                   \
+      out << #Lev;                              \
+      nbf++;                                    \
+    }                                           \
   } while(0);
+  ///
   RPS_DEBUG_OPTIONS(SHOW_DBGFLAG);
 #undef SHOW_DBGFLAG
   out << std::flush;
