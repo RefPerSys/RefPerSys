@@ -44,7 +44,11 @@ else
     pluginlinkerflags=()
 fi
 
-
+if  /usr/bin/fgrep -q '//@@PKGCONFIG' $cppfile ; then
+    local pkglist=$(./do-scan-pkgconfig $cppfile)
+    plugincppflags="$plugincppflags $(pkg-config --cflags $pkglist)"
+    pluginlinkerflags="pluginlinkerflags $(pkg-config --libes $pkglist)"
+fi
 
 ## check that we have the necessary shell variables set in above eval
 if [ -z "$RPSPLUGIN_CXX" ]; then
