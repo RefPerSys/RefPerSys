@@ -36,7 +36,7 @@ export
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 #                                                                
-.PHONY: all config objects clean gitpush gitpush2
+.PHONY: all config objects clean gitpush gitpush2 print-plugin-settings
 
 SYNC=/bin/sync
 FMT=/usr/bin/fmt
@@ -101,7 +101,8 @@ _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgco
 	./do-scan-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
 
 __timestamp.c: do-generate-timestamp.sh |GNUmakefile
-	./do-generate-timestamp.sh > $@
+	echo MAKE is $(MAKE)
+	env MAKE=$(shell /bin/which gmake) CXX=$(REFPERSYS_CXX) ./do-generate-timestamp.sh > $@
 
 __timestamp.o: __timestamp.c |GNUmakefile
 	$(CC) -fPIC -c -O -g -Wall -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $^ -o $@
@@ -114,10 +115,10 @@ refpersys:
 #	@echo RefPerSys generated C++ object files $(REFPERSYS_GENERATED_CPP_OBJECTS)
 	@echo PACKAGES_LIST is $(PACKAGES_LIST)
 	$(MAKE) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
-	$(REFPERSYS_CXX) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) -rdynamic \
+	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
+	$(REFPERSYS_CXX) -rdynamic -o $@ $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o \
               $(REFPERSYS_NEEDED_LIBRARIES) \
 	      $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
-
 
 
 # Target to facilitate git push to both origin and GitHub mirrors
@@ -161,5 +162,11 @@ endif
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
 	       -c -o $@ $<
 	$(SYNC)
+
+## for plugins, see build-plugin.sh
+print-plugin-settings:
+	@printf "RPSPLUGIN_CXX='%s'\n" $(REFPERSYS_CXX)
+	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)"
+	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"
 ## eof GNUmakefile
 
