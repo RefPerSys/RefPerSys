@@ -86,7 +86,7 @@ protected:
   {
     return false;
   };
-};				// end class Rps_PayloadLightningCodeGen
+};        // end class Rps_PayloadLightningCodeGen
 
 Rps_PayloadLighntingCodeGen::Rps_PayloadLighntingCodeGen(Rps_ObjectZone*owner)
   : Rps_Payload(Rps_Type::PaylLightCodeGen,owner), lightg_jist(nullptr)

@@ -152,7 +152,7 @@ struct argp_option rps_progoptions[] =
   },
   /* ======= interface thru some FIFO, relevant for JSONRPC  ======= */
   {/*name:*/ "interface-fifo", ///
-   /*key:*/ RPSPROGOPT_INTERFACEFIFO, ///
+    /*key:*/ RPSPROGOPT_INTERFACEFIFO, ///
     /*arg:*/ "FIFO", ///
     /*flags:*/ 0, ///
     /*doc:*/ "use a pair of fifo(7) named FIFO.cmd (written) "
@@ -225,7 +225,7 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "pass to the loaded plugin <PLUGIN_NAME> the string <PLUGIN_ARG> "
     "(notice the colon separating them).\n", //
     /*group:*/0 ///
-  }, 
+  },
   /* ====== publish some data to a remote URL and Web service which
      might make some statistics about RefPerSys ===== */
   {/*name:*/ "publish-me", ///
@@ -256,7 +256,7 @@ struct argp_option rps_progoptions[] =
   },
   /* ======= Run RefPerSys for a limited time ======= */
   {/*name:*/ "run-delay", ///
-   /*key:*/ RPSPROGOPT_RUN_DELAY, ///
+    /*key:*/ RPSPROGOPT_RUN_DELAY, ///
     /*arg:*/ "RUNDELAY", ///
     /*flags:*/ 0, ///
     /*doc:*/ "Run RefPerSys agenda for a limited time,\n"
@@ -403,8 +403,8 @@ rps_run_loaded_application(int &argc, char **argv)
 {
 
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
-		 /*callerframe:*/RPS_NULL_CALL_FRAME,
-		 Rps_ObjectRef tempob;
+                 /*callerframe:*/RPS_NULL_CALL_FRAME,
+                 Rps_ObjectRef tempob;
                 );
   {
     char cwdbuf[128];
@@ -431,13 +431,14 @@ rps_run_loaded_application(int &argc, char **argv)
     {
       rps_set_debug(rps_debugflags_after_load);
       RPS_INFORMOUT("did set after load "
-		    << " of RefPerSys process " << (int)getpid() << std::endl
-		    << "… on " << rps_hostname()
-		    << " shortgit " << rps_shortgitid
-		    << " debug to "
-		    << Rps_Do_Output([&](std::ostream& out) {
-		      rps_output_debug_flags(out);
-		    }));
+                    << " of RefPerSys process " << (int)getpid() << std::endl
+                    << "… on " << rps_hostname()
+                    << " shortgit " << rps_shortgitid
+                    << " debug to "
+                    << Rps_Do_Output([&](std::ostream& out)
+      {
+        rps_output_debug_flags(out);
+      }));
     }
   ////
   if (rps_without_quick_tests)
@@ -454,23 +455,23 @@ rps_run_loaded_application(int &argc, char **argv)
       rps_small_quick_tests_after_load();
       RPS_DEBUG_LOG(LOWREP, "rps_run_loaded_application after running rps_small_quick_tests_after_load");
     };
-  /// create the fifos if a prefix is given with 
+  /// create the fifos if a prefix is given with
   if (!rps_get_fifo_prefix().empty())
-     rps_do_create_fifos_from_prefix();
+    rps_do_create_fifos_from_prefix();
   //// running the given Unix command after load
   if (rps_run_command_after_load)
     {
 #warning TODO: this needs a code review
       if (rps_get_fifo_prefix().empty())
-      RPS_INFORM("before running command '%s' after load with environment variables...\n"
-		 " REFPERSYS_PID=%ld, REFPERSYS_GITID=%s, REFPERSYS_TOPDIR=%s",
-                 rps_run_command_after_load, (long)getpid(), rps_gitid, rps_topdirectory);
+        RPS_INFORM("before running command '%s' after load with environment variables...\n"
+                   " REFPERSYS_PID=%ld, REFPERSYS_GITID=%s, REFPERSYS_TOPDIR=%s",
+                   rps_run_command_after_load, (long)getpid(), rps_gitid, rps_topdirectory);
       else
-	RPS_INFORM("before running command '%s' after load with environment variables...\n"
-		   "… REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
-		   "… REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
-		   rps_run_command_after_load, (long)getpid(), rps_gitid,
-		   rps_topdirectory, rps_get_fifo_prefix().c_str());
+        RPS_INFORM("before running command '%s' after load with environment variables...\n"
+                   "… REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
+                   "… REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
+                   rps_run_command_after_load, (long)getpid(), rps_gitid,
+                   rps_topdirectory, rps_get_fifo_prefix().c_str());
       fflush(nullptr); /// needed before system
       int nok = system(rps_run_command_after_load);
       if (nok)
@@ -479,42 +480,44 @@ rps_run_loaded_application(int &argc, char **argv)
       else
         RPS_INFORM("after successfully running command '%s' after load", rps_run_command_after_load);
     }
-  else if (!rps_get_fifo_prefix().empty()) {
+  else if (!rps_get_fifo_prefix().empty())
+    {
       RPS_INFORM("before running default GUI command '%s'  after load"
-		 " with environment variables...\n"
-		 "… REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
-		 " ... REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
-		 rps_gui_script_executable, (long)getpid(), rps_gitid,
-		 rps_topdirectory, rps_get_fifo_prefix().c_str());
+                 " with environment variables...\n"
+                 "… REFPERSYS_PID=%ld, REFPERSYS_GITID=%s,\n"
+                 " ... REFPERSYS_TOPDIR=%s, REFPERSYS_FIFO_PREFIX=%s",
+                 rps_gui_script_executable, (long)getpid(), rps_gitid,
+                 rps_topdirectory, rps_get_fifo_prefix().c_str());
       std::string fifo_cmd_path, fifo_out_path;
       fifo_cmd_path = rps_get_fifo_prefix() + ".cmd";
       fifo_out_path = rps_get_fifo_prefix() + ".out";
       /* create the fifo if they dont exist */
       if (!rps_is_fifo(fifo_cmd_path) || !rps_is_fifo(fifo_out_path))
-	rps_do_create_fifos_from_prefix();
+        rps_do_create_fifos_from_prefix();
       fflush(nullptr);
       pid_t guipid = fork();
       if (guipid < 0)
-	RPS_FATALOUT("failed to fork for running the GUI script"
-		     << rps_gui_script_executable);
-      if (guipid == 0) {
-	// child process
-	// close many file desriptors
-	for (int fd=3; fd<256; fd++)
-	  close(fd);
-	close(STDIN_FILENO);
-	int nullfd = open("/dev/null", O_RDONLY);
-	if (nullfd>0) //unlikely
-	  dup2(nullfd, STDIN_FILENO);
-	execl(rps_gui_script_executable, rps_gui_script_executable,
-	      rps_get_fifo_prefix().c_str(), nullptr);
-	perror(rps_gui_script_executable);
-	_exit(126);
-	return;
-      };
+        RPS_FATALOUT("failed to fork for running the GUI script"
+                     << rps_gui_script_executable);
+      if (guipid == 0)
+        {
+          // child process
+          // close many file desriptors
+          for (int fd=3; fd<256; fd++)
+            close(fd);
+          close(STDIN_FILENO);
+          int nullfd = open("/dev/null", O_RDONLY);
+          if (nullfd>0) //unlikely
+            dup2(nullfd, STDIN_FILENO);
+          execl(rps_gui_script_executable, rps_gui_script_executable,
+                rps_get_fifo_prefix().c_str(), nullptr);
+          perror(rps_gui_script_executable);
+          _exit(126);
+          return;
+        };
       rps_gui_pid = guipid;
       atexit(rps_kill_wait_gui_process);
-  }
+    }
   //// if told, run an editor for C++ code
   if (!rps_cpluspluseditor_str.empty() || !rps_cplusplusflags_str.empty())
     {
@@ -552,9 +555,10 @@ rps_run_loaded_application(int &argc, char **argv)
     };
   /////
   ///// testing the REPL lexer
-  if (!rps_test_repl_string.empty()) {
-    rps_run_test_repl_lexer(rps_test_repl_string);
-  }
+  if (!rps_test_repl_string.empty())
+    {
+      rps_run_test_repl_lexer(rps_test_repl_string);
+    }
   /////
   /// publish using web techniques information about this process
   if (!rps_publisher_url_str.empty())
@@ -571,12 +575,13 @@ rps_run_loaded_application(int &argc, char **argv)
     RPS_WARNOUT("default GUI script " << rps_gui_script_executable << " is not executable");
   ////
   ////
-  if (!rps_get_fifo_prefix().empty()) {
+  if (!rps_get_fifo_prefix().empty())
+    {
 #pragma message "main_rps.cc with RPSJSONRPC:" __DATE__ "@" __TIME__
-    RPS_INFORMOUT("initialize JSONRPC with rps_fifo_prefix:" << rps_get_fifo_prefix() << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application JSONRPC"));
+      RPS_INFORMOUT("initialize JSONRPC with rps_fifo_prefix:" << rps_get_fifo_prefix() << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application JSONRPC"));
       jsonrpc_initialize_rps();
-  };
+    };
 } // end rps_run_loaded_application
 
 
@@ -585,8 +590,8 @@ rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempo
 {
   long tfilsiz = -1;
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED, //
-		 /*callerframe:*/callerframe,
-		 Rps_ObjectRef tempob;
+                 /*callerframe:*/callerframe,
+                 Rps_ObjectRef tempob;
                 );
   _f.tempob = tempobarg;
   RPS_DEBUG_LOG(CMD, "rps_fill_cplusplus_temporary_code tempob=" << _f.tempob
@@ -594,53 +599,53 @@ rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempo
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
   FILE* tfil = fopen(tempcppfilename, "w");
-    fprintf (tfil, "//// temporary [plugin] file %s for RefPerSys\n", tempcppfilename);
-    fprintf (tfil, "//// see refpersys.org website\n");
-    fprintf (tfil, "//// passed to commit %s\n", rps_lastgitcommit);
-    fprintf (tfil, "//// rps_shortgitid %s\n", rps_shortgitid);
-    fprintf (tfil, "//// rps_md5sum %s\n", rps_md5sum);
-    fprintf (tfil, "//// rps_timestamp %s\n", rps_timestamp);
-    fprintf (tfil, "//// GPLv3+ licensed - see /www.gnu.org/licenses/quick-guide-gplv3.en.html\n");
-    fprintf (tfil, "\n\n#" "include \"refpersys.hh\"\n\n");
-    fprintf (tfil, "\n" "void rps_do_plugin(const Rps_Plugin*plugin)\n{\n");
-    fprintf (tfil,
-             "  RPS_LOCALFRAME(/*descr:*/\n"
-	     "                 Rps_ObjectRef::find_object_by_string(rps_edit_cplusplus_callframe,\n"
-             "                                                                std::string{\"%s\"},\n"
-             "                                                               Rps_ObjectRef::Rps_Fail_If_Not_Found),\n"
-             "                 /*callerframe:*/rps_edit_cplusplus_callframe,\n"
-             "                 /***** your locals here ******/\n"
-             "                 );\n",
-             _f.tempob->oid().to_string().c_str());
-    fprintf (tfil, "  RPS_ASSERT(plugin != nullptr);\n");
-    fprintf (tfil, "  RPS_DEBUG_LOG(CMD, \"start plugin \"\n"
-             "                      << plugin->plugin_name << \" from \" << std::endl\n");
-    fprintf (tfil, "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary C++ plugin\"));\n");
-    fprintf (tfil, "#warning temporary incomplete %s\n", tempcppfilename);
-    fprintf (tfil, //
-	     "  RPS_INFORMOUT(\"did run temporary plugin \" << plugin->plugin_name\n"
-	     "                << \" from pid \" << (int)getpid()\n"
-	     "                << \" on \" << rps_hostname() << \" orig.git %s\"\n"
-	     "                << std::endl\n"
-	     "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary %s#%d\"));\n",
-	     rps_shortgitid, _f.tempob->oid().to_string().c_str(), tcnt);
-    fprintf (tfil, "} // end rps_do_plugin in %s\n", tempcppfilename);
+  fprintf (tfil, "//// temporary [plugin] file %s for RefPerSys\n", tempcppfilename);
+  fprintf (tfil, "//// see refpersys.org website\n");
+  fprintf (tfil, "//// passed to commit %s\n", rps_lastgitcommit);
+  fprintf (tfil, "//// rps_shortgitid %s\n", rps_shortgitid);
+  fprintf (tfil, "//// rps_md5sum %s\n", rps_md5sum);
+  fprintf (tfil, "//// rps_timestamp %s\n", rps_timestamp);
+  fprintf (tfil, "//// GPLv3+ licensed - see /www.gnu.org/licenses/quick-guide-gplv3.en.html\n");
+  fprintf (tfil, "\n\n#" "include \"refpersys.hh\"\n\n");
+  fprintf (tfil, "\n" "void rps_do_plugin(const Rps_Plugin*plugin)\n{\n");
+  fprintf (tfil,
+           "  RPS_LOCALFRAME(/*descr:*/\n"
+           "                 Rps_ObjectRef::find_object_by_string(rps_edit_cplusplus_callframe,\n"
+           "                                                                std::string{\"%s\"},\n"
+           "                                                               Rps_ObjectRef::Rps_Fail_If_Not_Found),\n"
+           "                 /*callerframe:*/rps_edit_cplusplus_callframe,\n"
+           "                 /***** your locals here ******/\n"
+           "                 );\n",
+           _f.tempob->oid().to_string().c_str());
+  fprintf (tfil, "  RPS_ASSERT(plugin != nullptr);\n");
+  fprintf (tfil, "  RPS_DEBUG_LOG(CMD, \"start plugin \"\n"
+           "                      << plugin->plugin_name << \" from \" << std::endl\n");
+  fprintf (tfil, "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary C++ plugin\"));\n");
+  fprintf (tfil, "#warning temporary incomplete %s\n", tempcppfilename);
+  fprintf (tfil, //
+           "  RPS_INFORMOUT(\"did run temporary plugin \" << plugin->plugin_name\n"
+           "                << \" from pid \" << (int)getpid()\n"
+           "                << \" on \" << rps_hostname() << \" orig.git %s\"\n"
+           "                << std::endl\n"
+           "                << RPS_FULL_BACKTRACE_HERE(1, \"temporary %s#%d\"));\n",
+           rps_shortgitid, _f.tempob->oid().to_string().c_str(), tcnt);
+  fprintf (tfil, "} // end rps_do_plugin in %s\n", tempcppfilename);
   fprintf (tfil, "\n\n\n");
   fprintf (tfil,
-	   "/*********\n" //
-	   " **                 for Emacs...\n" //
-	   " ** Local-Variables: ;;\n" //
-	   " ** compile-command: \"cd %s; %s %s /tmp/rpsplug_%s.so\" ;;",
-	   rps_topdirectory, rps_plugin_builder_script, tempcppfilename, _f.tempob->oid().to_string().c_str());
+           "/*********\n" //
+           " **                 for Emacs...\n" //
+           " ** Local-Variables: ;;\n" //
+           " ** compile-command: \"cd %s; %s %s /tmp/rpsplug_%s.so\" ;;",
+           rps_topdirectory, rps_plugin_builder_script, tempcppfilename, _f.tempob->oid().to_string().c_str());
   fprintf (tfil, //
-	   " ** End: ;;\n" //
-	   " ********/\n");
-    fprintf (tfil, "\n\n\n // ********* eof %s *********\n", tempcppfilename);
-    fflush (tfil);
-    tfilsiz = ftell(tfil);
-    RPS_INFORMOUT("filled temporary plugin " << tempcppfilename << " with " << tfilsiz << " bytes from pid " << (int)getpid() << " git " << rps_shortgitid
-		  << std::endl << " using object " << _f.tempob << " count " << tcnt);
-    return tfilsiz;
+           " ** End: ;;\n" //
+           " ********/\n");
+  fprintf (tfil, "\n\n\n // ********* eof %s *********\n", tempcppfilename);
+  fflush (tfil);
+  tfilsiz = ftell(tfil);
+  RPS_INFORMOUT("filled temporary plugin " << tempcppfilename << " with " << tfilsiz << " bytes from pid " << (int)getpid() << " git " << rps_shortgitid
+                << std::endl << " using object " << _f.tempob << " count " << tcnt);
+  return tfilsiz;
 } // end rps_fill_cplusplus_temporary_code
 
 Rps_CallFrame*rps_edit_cplusplus_callframe;
@@ -648,8 +653,8 @@ void
 rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 /*callerframe:*/callerframe,
-		 Rps_ObjectRef tempob;
+                 /*callerframe:*/callerframe,
+                 Rps_ObjectRef tempob;
                 );
   static int tcnt;
   tcnt++;
@@ -717,10 +722,11 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
       cmdout << rps_cpluspluseditor_str << " " << tempcppfilename;
       RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code before running " << cmdout.str());
       int cmdbad = system(cmdout.str().c_str());
-      if (cmdbad != 0) {
-        RPS_FATALOUT("rps_edit_run_cplusplus_code failed to edit with " << cmdout.str()
-                     << " which exited " << cmdbad);
-      };
+      if (cmdbad != 0)
+        {
+          RPS_FATALOUT("rps_edit_run_cplusplus_code failed to edit with " << cmdout.str()
+                       << " which exited " << cmdbad);
+        };
       struct stat tempstat;
       memset (&tempstat, 0, sizeof(tempstat));
       if (stat(tempcppfilename, &tempstat))
@@ -782,15 +788,16 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
       RPS_INFORMOUT("building temporary plugin with " << buildplugincmd << " from pid:" << (int)getpid());
       fflush(nullptr);
       int buildres = system(buildplugincmd.c_str());
-      if (buildres != 0) {
-        RPS_WARNOUT("rps_edit_run_cplusplus_code build command " << buildplugincmd
-                    << " failed -> " << buildres
-                    << " - from "
-                    << Rps_ShowCallFrame(&_)
-                    << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code build failure"));
-	cppcompilegood = false;
-      }
+      if (buildres != 0)
+        {
+          RPS_WARNOUT("rps_edit_run_cplusplus_code build command " << buildplugincmd
+                      << " failed -> " << buildres
+                      << " - from "
+                      << Rps_ShowCallFrame(&_)
+                      << std::endl
+                      << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code build failure"));
+          cppcompilegood = false;
+        }
       else
         cppcompilegood = true;
       if (needchdir)
@@ -808,7 +815,7 @@ rps_edit_run_cplusplus_code (Rps_CallFrame*callerframe)
                      << Rps_ShowCallFrame(&_)
                      << std::endl
                      << RPS_FULL_BACKTRACE_HERE(1, "rps_edit_run_cplusplus_code *buildfail*"));
-    };				// end while !cppcompilegood
+    };        // end while !cppcompilegood
 
   RPS_DEBUG_LOG(CMD, "rps_edit_run_cplusplus_code after compilation to " << tempsofilename);
   errno = 0;
@@ -887,7 +894,7 @@ Rps_Status::output(std::ostream&out) const
   if (snprintf(buf, sizeof(buf), "%.3f", cputime_stat)<0)
     RPS_FATAL("Rps_Status::output snprintf elapsedtime failure %m");
   out << "elapsed:" << buf << "s}" << std::flush;
-};				// end Rps_Status::output
+};        // end Rps_Status::output
 
 ////////////////////////////////////////////////////////////////
 std::atomic<unsigned> Rps_Random::_rand_threadcount;
@@ -973,11 +980,11 @@ void
 rps_small_quick_tests_after_load(void)
 {
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-		 RPS_NULL_CALL_FRAME,
-		 Rps_ObjectRef obtempcpp;
-		 Rps_ObjectRef obdispweb;
-		 Rps_ObjectRef obnew;
-		 Rps_ObjectRef obfoundnew;
+                 RPS_NULL_CALL_FRAME,
+                 Rps_ObjectRef obtempcpp;
+                 Rps_ObjectRef obdispweb;
+                 Rps_ObjectRef obnew;
+                 Rps_ObjectRef obfoundnew;
                 );
   RPS_DEBUG_LOG(CMD, "start rps_small_quick_tests_after_load in "
                 << Rps_ShowCallFrame(&_)
@@ -1239,27 +1246,28 @@ rps_exiting(void)
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
   syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s exiting (%d);\n"
-	 "… elapsed %.3f sec, CPU %.3f sec;\n"
-	 "%s%s%s%s",
-	 (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
-	 rps_exit_atomic_code.load(),
-	 rps_elapsed_real_time(), rps_process_cpu_time(),
-	 (rps_program_invocation?"invocation: ":""),
-	 (rps_program_invocation?:""),
-	 (rps_run_name.empty()?"":" run "),
-	 rps_run_name.c_str());
-  if (!rps_syslog_enabled) {
-    printf("RefPerSys process %d on host %s in %s git %s exiting (%d);\n"
-	   " ... elapsed %.3f sec, CPU %.3f sec\n",
-	 (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
-	 rps_exit_atomic_code.load(),
-	 rps_elapsed_real_time(), rps_process_cpu_time());
-    if (rps_program_invocation)
-      printf("… invocation: %s\n", rps_program_invocation);
-    if (!rps_run_name.empty())
-      printf("… run: %s\n", rps_run_name.c_str());
-    fflush(stdout);
-  }
+         "… elapsed %.3f sec, CPU %.3f sec;\n"
+         "%s%s%s%s",
+         (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
+         rps_exit_atomic_code.load(),
+         rps_elapsed_real_time(), rps_process_cpu_time(),
+         (rps_program_invocation?"invocation: ":""),
+         (rps_program_invocation?:""),
+         (rps_run_name.empty()?"":" run "),
+         rps_run_name.c_str());
+  if (!rps_syslog_enabled)
+    {
+      printf("RefPerSys process %d on host %s in %s git %s exiting (%d);\n"
+             " ... elapsed %.3f sec, CPU %.3f sec\n",
+             (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
+             rps_exit_atomic_code.load(),
+             rps_elapsed_real_time(), rps_process_cpu_time());
+      if (rps_program_invocation)
+        printf("… invocation: %s\n", rps_program_invocation);
+      if (!rps_run_name.empty())
+        printf("… run: %s\n", rps_run_name.c_str());
+      fflush(stdout);
+    }
 } // end rps_exiting
 
 
@@ -1270,7 +1278,7 @@ main (int argc, char** argv)
   static_assert(sizeof(rps_progexe) > 80);
   {
     ssize_t pxl = readlink("/proc/self/exe",
-			   rps_progexe, sizeof(rps_progexe));
+                           rps_progexe, sizeof(rps_progexe));
     if (pxl <= 0 || pxl >= (ssize_t) sizeof(rps_progexe)-2)
       strcpy(rps_progexe, "$(/usr/bin/which refpersys)");
   }
@@ -1285,33 +1293,33 @@ main (int argc, char** argv)
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
   RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" //
-	     " %s process %d on host %s in %s build top dir %s\n" //
-	     "… (stdout %s, stderr %s) with %d arguments\n" //
+             " %s process %d on host %s in %s build top dir %s\n" //
+             "… (stdout %s, stderr %s) with %d arguments\n" //
              "… gitid %.16s built %s, %s mode (%d jobs)\n" ///
-	     "… executable %s\n" ///
-	     "This is an open source inference engine software,\n"
-	     ".... GPLv3+ licensed, no warranty !\n"
-	     ".... See http://refpersys.org/ and https://www.gnu.org/licenses/gpl-3.0.en.html ....\n",
+             "… executable %s\n" ///
+             "This is an open source inference engine software,\n"
+             ".... GPLv3+ licensed, no warranty !\n"
+             ".... See http://refpersys.org/ and https://www.gnu.org/licenses/gpl-3.0.en.html ....\n",
              RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
              RPS_TERMINAL_NORMAL_ESCAPE,
              argv[0], (int)getpid(), rps_hostname(),
-	     (mycwd?mycwd:"./"),
-	     rps_topdirectory,
+             (mycwd?mycwd:"./"),
+             rps_topdirectory,
              rps_stdout_istty?"tty":"plain",
              rps_stderr_istty?"tty":"plain",
-	     argc,
+             argc,
              rps_gitid, rps_timestamp,
              (rps_batch?"batch":"interactive"),
              rps_nbjobs,
-	     rps_progexe);
+             rps_progexe);
   if (!mycwd)
     RPS_FATALOUT("getcwd failed for " << (sizeof(cwdbuf)-2) << " bytes.");
   if (rps_run_delay > 0 && rps_batch)
     RPS_FATALOUT("a run delay of " << rps_run_delay << " seconds is incompatible with the batch mode");
   RPS_DEBUG_PRINTF(REPL, "main is at @%p, rps_end_of_main is at @%p (pid %d on %s)",
-		   (void*)main,
-		   (void*)rps_end_of_main,
-		   (int)getpid(), rps_hostname());
+                   (void*)main,
+                   (void*)rps_end_of_main,
+                   (int)getpid(), rps_hostname());
   ////
   //// extend the Unix environment if needed
   rps_extend_env();
@@ -1321,14 +1329,15 @@ main (int argc, char** argv)
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
   rps_initialize_curl();
-  if (rps_my_load_dir.empty()) {
-    const char* rpld = realpath(rps_topdirectory, nullptr);
-    if (!rpld)
-      rpld = rps_topdirectory;
-    RPS_ASSERT(rpld != nullptr);
-    rps_my_load_dir = std::string(rpld);
-    free ((void*)rpld);
-  };
+  if (rps_my_load_dir.empty())
+    {
+      const char* rpld = realpath(rps_topdirectory, nullptr);
+      if (!rpld)
+        rpld = rps_topdirectory;
+      RPS_ASSERT(rpld != nullptr);
+      rps_my_load_dir = std::string(rpld);
+      free ((void*)rpld);
+    };
   rps_load_from(rps_my_load_dir);
   RPS_POSSIBLE_BREAKPOINT();
   atexit (rps_exiting);
@@ -1336,11 +1345,12 @@ main (int argc, char** argv)
     rps_initialize_event_loop();
   rps_run_loaded_application(argc, argv);
   RPS_POSSIBLE_BREAKPOINT();
-  if (!rps_batch) {
-    RPS_POSSIBLE_BREAKPOINT();
-    RPS_DEBUG_LOG(REPL, "before calling rps_event_loop");
-    rps_event_loop();
-  }
+  if (!rps_batch)
+    {
+      RPS_POSSIBLE_BREAKPOINT();
+      RPS_DEBUG_LOG(REPL, "before calling rps_event_loop");
+      rps_event_loop();
+    }
   ////
   RPS_POSSIBLE_BREAKPOINT();
   if (!rps_dumpdir_str.empty())
@@ -1365,20 +1375,20 @@ main (int argc, char** argv)
   /// not matter, and CPU time neither.  See also similar
   /// RPS_POSSIBLE_BREAKPOINT macro in refpersys.hh
   asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop");
+                " nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+                " nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+                " nop; nop; nop; nop; nop; nop; nop; nop; nop");
   asm volatile (".globl rps_end_of_main; .type rps_end_of_main, @function");
   asm volatile ("rps_end_of_main: nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;");
+                " nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+                " nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+                " nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+                " nop; nop; nop; nop; nop; nop; nop; nop; nop;");
   asm volatile (".size rps_end_of_main, . - rps_end_of_main");
   asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop;"
-		" nop; nop; nop; nop; nop; nop; nop; nop; nop");
+                " nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+                " nop; nop; nop; nop; nop; nop; nop; nop; nop;"
+                " nop; nop; nop; nop; nop; nop; nop; nop; nop");
   if (rps_debug_file)
     fflush(rps_debug_file);
   /// Finalize GNU lightning for machine code generation; see
@@ -1387,31 +1397,34 @@ main (int argc, char** argv)
   fflush(nullptr);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_INFORMOUT("end of RefPerSys process "
-		<< (int)getpid() << " on " << rps_hostname()
-		<< std::endl
-		<< "… executable " << rps_progexe
-		<< " git " << rps_gitid << std::endl
-		<< "… built " << rps_timestamp
-		<< " loaded state " << rps_my_load_dir << std::endl
-		<< " elapsed " << rps_elapsed_real_time()
-		<< ", cpu " << rps_process_cpu_time() << " seconds;"
-		<< " invocation was:" << std::endl
-		<< Rps_Do_Output([&](std::ostream& out) {
-		  rps_output_program_arguments(out, argc, argv);
-		})
-		<< Rps_Do_Output([&](std::ostream& out) {
-		  int ex = rps_exit_atomic_code.load();
-		  if (ex==0)
-		    out << " exiting normally";
-		  else
-		    out << " failing #" << ex;
-		})
-		<< std::flush
-		);
-  if (rps_program_invocation) {
-    free(rps_program_invocation);
-    rps_program_invocation = nullptr;
-  };
+                << (int)getpid() << " on " << rps_hostname()
+                << std::endl
+                << "… executable " << rps_progexe
+                << " git " << rps_gitid << std::endl
+                << "… built " << rps_timestamp
+                << " loaded state " << rps_my_load_dir << std::endl
+                << " elapsed " << rps_elapsed_real_time()
+                << ", cpu " << rps_process_cpu_time() << " seconds;"
+                << " invocation was:" << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    rps_output_program_arguments(out, argc, argv);
+  })
+      << Rps_Do_Output([&](std::ostream& out)
+  {
+    int ex = rps_exit_atomic_code.load();
+    if (ex==0)
+      out << " exiting normally";
+    else
+      out << " failing #" << ex;
+  })
+      << std::flush
+               );
+  if (rps_program_invocation)
+    {
+      free(rps_program_invocation);
+      rps_program_invocation = nullptr;
+    };
   return rps_exit_atomic_code.load();
 } // end of main
 

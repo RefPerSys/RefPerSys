@@ -181,22 +181,22 @@ public:
     {
       return (std::size_t)(id.hash());
     };
-  };				// end Rps_Id::Hasher
+  };        // end Rps_Id::Hasher
   struct LessComparer
   {
     bool operator()  (const Rps_Id&id1, const Rps_Id&id2) const
     {
       return id1 < id2;
     }
-  };				// end Rps_Id::LessComparer
+  };        // end Rps_Id::LessComparer
   struct EqualTester
   {
     bool operator()  (const Rps_Id&id1, const Rps_Id&id2) const
     {
       return id1 == id2;
     }
-  };				// end Rps_Id::EqualTester
-};				// end class Rps_Id
+  };        // end Rps_Id::EqualTester
+};        // end class Rps_Id
 
 #endif /*OID_RPS_INCLUDED*/
 

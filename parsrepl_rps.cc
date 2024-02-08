@@ -1357,7 +1357,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
             this->display_current_line_with_cursor(out);
           }));
 #warning incomplete Rps_TokenSource::parse_sum
-        };			// end while again
+        };      // end while again
       ////////////////////////////
       /////////
       RPS_DEBUG_LOG (REPL, "Rps_TokenSource::parse_sum¤" << callnum << " loopcnt#" << loopcnt
@@ -1379,7 +1379,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
       {
         this->display_current_line_with_cursor(out);
       }));
-    };				// end if
+    };        // end if
   /***
    * We probably should loop and collect all terms if they are
    * separated by the same additive delimiter with its operator.
@@ -1947,7 +1947,7 @@ Rps_TokenSource::parse_term(Rps_CallFrame*callframe, bool*pokparse)
       {
         this->display_current_line_with_cursor(out);
       }));
-      usleep (250000);		// for debugging
+      usleep (250000);    // for debugging
       RPS_POSSIBLE_BREAKPOINT();
       _f.lextokv = get_token(&_);
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_term¤" << callnum << " got token after leftv=" << _f.leftv
@@ -2250,7 +2250,7 @@ Rps_TokenSource::parse_product(Rps_CallFrame*callframe, bool*pokparse)
   RPS_FATALOUT("unimplemented Rps_TokenSource::parse_product¤" << callnum << "  startpos:" << startpos
                << " curcptr " << Rps_QuotedC_String(curcptr())
                << " in " << (*this));
-#warning unimplemented 	 Rps_TokenSource::parse_product
+#warning unimplemented   Rps_TokenSource::parse_product
   ////////////////
 }
 

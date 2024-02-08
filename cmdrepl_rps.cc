@@ -294,7 +294,7 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
                         << " nextenvob:" << _f.nextenvob);
           RPS_POSSIBLE_BREAKPOINT();
           _f.envob = _f.nextenvob;
-        };			// end while count<... symbvar
+        };      // end while count<... symbvar
       RPS_REPLEVAL_FAIL("unbound symbolic variable","Symbolic variable " << _f.evalob
                         << " unbound with envob " << _f.envob << " of class "
                         << _f.envob->get_class()

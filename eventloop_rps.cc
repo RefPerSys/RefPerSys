@@ -68,14 +68,14 @@ int rps_poll_delay_millisec;
 #define RPS_EVENTLOOPDATA_MAGIC 814538509 /*0x308cdf0d*/
 struct event_loop_data_st
 {
-  unsigned eld_magic;		// should be RPS_EVENTLOOPDATA_MAGIC
+  unsigned eld_magic;   // should be RPS_EVENTLOOPDATA_MAGIC
   int eld_polldelaymillisec;
   std::mutex eld_mtx;
   double eld_startelapsedtime; // start real time of event loop
   double eld_startcputime; // start CPU time of event loop
   std::array<std::function<void(Rps_CallFrame*, int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> eld_handlarr;
   const char*eld_explarr[RPS_MAXPOLL_FD+1];
-  int eld_sigfd;	// file descriptor from signalfd(2)
+  int eld_sigfd;  // file descriptor from signalfd(2)
   int eld_timfd;        // file descriptor from timerfd_create(2)
   int eld_selfpipereadfd; // self pipe, reading end
   int eld_selfpipewritefd; // self pipe, writing end
@@ -579,7 +579,7 @@ rps_event_loop(void)
                                 "poll interrupt loop%ld\n", event_nbloops.load());
         };
       fflush(nullptr);
-    };		   // end while not rps_stop_event_loop_flag
+    };       // end while not rps_stop_event_loop_flag
   /*TODO: cooperation with transientobj_rps.cc ... */
 #warning incomplete rps_event_loop see related file transientobj_rps.cc, missing code
   /*TODO: use Rps_PayloadUnixProcess::do_on_active_process_queue to collect file descriptors inside such payloads */

@@ -509,7 +509,7 @@ Rps_TokenSource::parse_polyop(Rps_CallFrame*callframe, Rps_ObjectRef polyoper, R
                     << " curcptr:" << curcptr()
                     << std::endl
                     << "... argvect:" << argvect);
-    };				// end while loop
+    };        // end while loop
   _f.resexprv = Rps_InstanceValue(_f.operob, argvect);
   RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_polyop¤" << callnum << " " << opername <<" END position:" << position_str()
                 << " startpos:" << startpos

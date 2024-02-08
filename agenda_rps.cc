@@ -274,7 +274,7 @@ Rps_Agenda::run_agenda_worker(int ix)
               break;
               default:
                 break;
-              };			// end switch agenda_work_thread_state_[ix].load()
+              };      // end switch agenda_work_thread_state_[ix].load()
           } /// ending try...
         catch (std::exception& exc)
           {
@@ -285,7 +285,7 @@ Rps_Agenda::run_agenda_worker(int ix)
                         << " doing " << _f.clostodo);
             Rps_Agenda::agenda_work_thread_state_[ix].store(WthrAg_Idle);
           }
-    };				// end while (agenda_is_running_.load())
+    };        // end while (agenda_is_running_.load())
   Rps_Agenda::agenda_changed_condvar_.notify_all();
   Rps_Agenda::agenda_work_thread_state_[ix].store(WthrAg__None);
 } // end Rps_Agenda::run_agenda_worker

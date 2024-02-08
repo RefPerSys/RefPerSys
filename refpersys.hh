@@ -178,7 +178,7 @@ extern "C" std::string rps_run_name;
 
 extern "C" {
 
-  
+
   // https://curl.se/libcurl/ is a web client library
 #include "curl/curl.h"
 
@@ -187,7 +187,7 @@ extern "C" {
 
 #include "lightning.h"
 
-  
+
 };
 
 // http://man7.org/linux/man-pages/man3/gnu_get_libc_version.3.html
@@ -334,7 +334,8 @@ public:
 extern "C" pid_t rps_gui_pid;
 
 /// a pair of Unix file descriptors, JSONRPC....
-struct rps_fifo_fdpair_st {
+struct rps_fifo_fdpair_st
+{
   int fifo_ui_wcmd; // the commands written to the GUI process
   int fifo_ui_rout; // the outputs read from the GUI process
 };
@@ -572,17 +573,20 @@ extern "C" void rps_set_exit_code(std::uint8_t); // in main_rps.cc
 
 /////////////////////////////////////////////////////// PLUGINS AFTER LOAD
 
-struct Rps_Plugin {
+struct Rps_Plugin
+{
   std::string plugin_name;
   void* plugin_dlh;
   Rps_Plugin (const char*name, void*dlh)
-    : plugin_name(name), plugin_dlh(dlh) {
+    : plugin_name(name), plugin_dlh(dlh)
+  {
     int plnamlen = plugin_name.length();
     if (plnamlen > 4
         && plugin_name.substr(plnamlen-3) == ".so")
       plugin_name.erase(plnamlen-3);
   };
-  ~Rps_Plugin () {
+  ~Rps_Plugin ()
+  {
     plugin_name.erase();
     plugin_dlh = nullptr;
   }
@@ -597,7 +601,8 @@ extern "C" std::vector<Rps_Plugin> rps_plugins_vector;
 
 ////////////////////////////////////////////////////////////////
 
-struct Rps_Status {
+struct Rps_Status
+{
   // sizes in megabytes
   long prog_sizemb_stat;
   long rss_sizemb_stat;
@@ -606,12 +611,13 @@ struct Rps_Status {
   float cputime_stat;
   float elapsedtime_stat;
   Rps_Status() : prog_sizemb_stat(0), rss_sizemb_stat(0),
-                 shared_sizemb_stat(0), cputime_stat(0.0), elapsedtime_stat(0.0) {};
+    shared_sizemb_stat(0), cputime_stat(0.0), elapsedtime_stat(0.0) {};
   static const Rps_Status get(void);
   void output(std::ostream&out) const;
 };                              // end struct Rps_Status
 
-inline std::ostream& operator << (std::ostream&out, const Rps_Status& rst) {
+inline std::ostream& operator << (std::ostream&out, const Rps_Status& rst)
+{
   rst.output(out);
   return out;
 };                              // end operator << for Rps_Status
@@ -657,7 +663,7 @@ extern "C" void rps_output_debug_flags(std::ostream&out, unsigned flags=0);
 
 
 
-enum Rps_Debug 
+enum Rps_Debug
 {
   RPS_DEBUG__NONE,
   // expands to RPS_DEBUG_CMD, RPS_DEBUG_DUMP, RPS_DEBUG_GARBAGE_COLLECTOR...
@@ -736,9 +742,9 @@ void rps_set_debug_output_path(const char*filepath);
 /// debug print to stderr or syslog or to the file given to
 /// rps_set_debug_output_path ....; if fline is negative, print a
 /// newline before....
-void 
-rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt, 
-                    const char *fmt, ...) 
+void
+rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
+                    const char *fmt, ...)
 __attribute__ ((format (printf, 4, 5)));
 
 
@@ -762,7 +768,7 @@ while (0)
   RPS_DEBUG_PRINTF_AT_BIS(__FILE__, -__LINE__, dbgopt, fmt, ##__VA_ARGS__)
 
 
-#define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)   do	    \
+#define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)   do     \
   {                                                                 \
     if (RPS_DEBUG_ENABLED(dbgopt))                                  \
       {                                                             \
@@ -806,11 +812,11 @@ while (0)
 
 #define RPS_INFORM_AT_BIS(Fil,Lin,Fmt,...) do {                 \
     bool ontty = rps_stdout_istty;                              \
-    if (rps_syslog_enabled) {					\
+    if (rps_syslog_enabled) {         \
       syslog(LOG_INFO, "RefPerSys INFORM %s:%d: %s " Fmt "\n",  \
-	     Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);	\
-    } else							\
-      fprintf(stdout, "\n\n"					\
+       Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__); \
+    } else              \
+      fprintf(stdout, "\n\n"          \
             "%s*** RefPerSys INFORM:%s %s:%d: %s<%s>%s\n "      \
             Fmt "\n\n",                                         \
             ontty?RPS_TERMINAL_BOLD_ESCAPE:"",                  \
@@ -829,12 +835,12 @@ while (0)
 
 #define RPS_INFORMOUT_AT_BIS(Fil,Lin,...) do {          \
     std::ostringstream outs_##Lin;                      \
-    if (rps_syslog_enabled) {				\
+    if (rps_syslog_enabled) {       \
       outs_##Lin << __VA_ARGS__  << std::flush;         \
-      syslog(LOG_INFO, "%s:%d:%s %s\n",			\
-	     (Fil), (Lin), __PRETTY_FUNCTION__,		\
-	     outs_##Lin.str().c_str());		        \
-    } else {						\
+      syslog(LOG_INFO, "%s:%d:%s %s\n",     \
+       (Fil), (Lin), __PRETTY_FUNCTION__,   \
+       outs_##Lin.str().c_str());           \
+    } else {            \
     bool ontty = rps_stdout_istty;                      \
     outs_##Lin                                          \
       << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")            \
@@ -848,7 +854,7 @@ while (0)
     fputs(outs_##Lin.str().c_str(), stdout);            \
     fputc('\n', stdout);                                \
     fflush(stdout);                                     \
-  }							\
+  }             \
   } while(0)
 
 #define RPS_INFORMOUT_AT(Fil,Lin,...) RPS_INFORMOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
@@ -874,18 +880,18 @@ while (0)
 ///
 #define RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond) do {               \
   if (RPS_UNLIKELY(!(Cond))) {                                  \
-    if (rps_syslog_enabled)					\
-      syslog(LOG_CRIT,						\
-	     "*** RefPerSys ASSERT failed: %s *** [%s:%d:%s]",	\
-	     #Cond, Fil, Lin, Func);				\
-    else							\
-      fprintf(stderr, "\n\n"					\
-	      "%s*** RefPerSys ASSERT failed: %s%s\n"		\
-	      "%s:%d: {%s}\n\n",				\
-	      (rps_stderr_istty?RPS_TERMINAL_BOLD_ESCAPE:""),	\
-	      #Cond,						\
-	      (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),	\
-	      Fil,Lin,Func);					\
+    if (rps_syslog_enabled)         \
+      syslog(LOG_CRIT,            \
+       "*** RefPerSys ASSERT failed: %s *** [%s:%d:%s]",  \
+       #Cond, Fil, Lin, Func);        \
+    else              \
+      fprintf(stderr, "\n\n"          \
+        "%s*** RefPerSys ASSERT failed: %s%s\n"   \
+        "%s:%d: {%s}\n\n",        \
+        (rps_stderr_istty?RPS_TERMINAL_BOLD_ESCAPE:""), \
+        #Cond,            \
+        (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""), \
+        Fil,Lin,Func);          \
   rps_fatal_stop_at(Fil,Lin); }} while(0)
 
 #define RPS_ASSERT_AT(Fil,Lin,Func,Cond) RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond)
@@ -893,12 +899,12 @@ while (0)
 
 #define RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,...) do { \
   if (RPS_UNLIKELY(!(Cond))) {                                  \
-    if (rps_syslog_enabled)					\
-      syslog(LOG_CRIT,						\
-	     "*** RefPerSys ASSERTPRINTF failed:"		\
-	     " %s *** [%s:%d:%s]" Fmt,				\
-	     #Cond, Fil, Lin, Func, ##__VA_ARGS__);		\
-    else {							\
+    if (rps_syslog_enabled)         \
+      syslog(LOG_CRIT,            \
+       "*** RefPerSys ASSERTPRINTF failed:"   \
+       " %s *** [%s:%d:%s]" Fmt,        \
+       #Cond, Fil, Lin, Func, ##__VA_ARGS__);   \
+    else {              \
       fprintf(stderr, "\n\n"                                    \
               "%s*** RefPerSys ASSERTPRINTF failed:%s %s\n"     \
               "%s:%d: {%s}\n",                                  \
@@ -907,8 +913,8 @@ while (0)
           (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),     \
               Fil, Lin, Func);                                  \
       fprintf(stderr, "!*!*! " Fmt "\n\n", ##__VA_ARGS__);      \
-    };								\
-    rps_fatal_stop_at(Fil, Lin); }				\
+    };                \
+    rps_fatal_stop_at(Fil, Lin); }        \
  } while(0)
 
 #define RPS_ASSERTPRINTF_AT(Fil,Lin,Func,Cond,Fmt,...) RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,##__VA_ARGS__)
@@ -965,120 +971,121 @@ char *rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt,
 } while (0)
 
 
-struct rps_timer {
-    double monotonic_start;
-    double monotonic_stop;
-    double wallclock_start;
-    double wallclock_stop;
-    double cpu_start;
-    double cpu_stop;
+struct rps_timer
+{
+  double monotonic_start;
+  double monotonic_stop;
+  double wallclock_start;
+  double wallclock_stop;
+  double cpu_start;
+  double cpu_stop;
 };
 
 
 inline void
 rps_timer_start(struct rps_timer *hnd)
 {
-    RPS_ASSERT (hnd);
+  RPS_ASSERT (hnd);
 
-    hnd->monotonic_start = rps_monotonic_real_time();
-    hnd->wallclock_start = rps_wallclock_real_time();
-    hnd->cpu_start = rps_thread_cpu_time();
+  hnd->monotonic_start = rps_monotonic_real_time();
+  hnd->wallclock_start = rps_wallclock_real_time();
+  hnd->cpu_start = rps_thread_cpu_time();
 
-    hnd->monotonic_stop = 0.0;
-    hnd->wallclock_stop = 0.0;
-    hnd->cpu_stop = 0.0;
+  hnd->monotonic_stop = 0.0;
+  hnd->wallclock_stop = 0.0;
+  hnd->cpu_stop = 0.0;
 }
 
 
 inline void
 rps_timer_stop(struct rps_timer *hnd)
 {
-    RPS_ASSERT (hnd);
+  RPS_ASSERT (hnd);
 
-    hnd->monotonic_stop = rps_monotonic_real_time();
-    hnd->wallclock_stop = rps_wallclock_real_time();
-    hnd->cpu_stop = rps_thread_cpu_time();
+  hnd->monotonic_stop = rps_monotonic_real_time();
+  hnd->wallclock_stop = rps_wallclock_real_time();
+  hnd->cpu_stop = rps_thread_cpu_time();
 }
 
 
 inline double
 rps_timer_monotonic_start(const rps_timer *hnd)
 {
-    RPS_ASSERT (hnd);
+  RPS_ASSERT (hnd);
 
-    return hnd->monotonic_start;
+  return hnd->monotonic_start;
 }
 
 
 inline double
 rps_timer_monotonic_stop(const rps_timer *hnd)
 {
-    RPS_ASSERT (hnd);
+  RPS_ASSERT (hnd);
 
-    return hnd->monotonic_stop;
+  return hnd->monotonic_stop;
 }
 
 
 inline double
 rps_timer_monotonic_elapsed(const rps_timer *hnd)
 {
-    RPS_ASSERT (hnd);
+  RPS_ASSERT (hnd);
 
-    return hnd->monotonic_stop - hnd->monotonic_start;
+  return hnd->monotonic_stop - hnd->monotonic_start;
 }
 
 
 inline double
 rps_timer_wallclock_start(const rps_timer *hnd)
 {
-    RPS_ASSERT (hnd);
+  RPS_ASSERT (hnd);
 
-    return hnd->wallclock_start;
+  return hnd->wallclock_start;
 }
 
 
 inline double
 rps_timer_wallclock_stop(const rps_timer *hnd)
 {
-    RPS_ASSERT (hnd);
+  RPS_ASSERT (hnd);
 
-    return hnd->wallclock_stop;
+  return hnd->wallclock_stop;
 }
 
 
 inline double
 rps_timer_wallclock_elapsed(const rps_timer *hnd)
 {
-    RPS_ASSERT (hnd);
+  RPS_ASSERT (hnd);
 
-    return hnd->wallclock_stop - hnd->wallclock_start;
+  return hnd->wallclock_stop - hnd->wallclock_start;
 }
 
-    
+
 inline double
 rps_timer_cpu_start(const rps_timer *hnd)
 {
-    RPS_ASSERT (hnd);
+  RPS_ASSERT (hnd);
 
-    return hnd->cpu_start;
+  return hnd->cpu_start;
 }
 
 
 inline double
 rps_timer_cpu_stop(const rps_timer *hnd)
 {
-    RPS_ASSERT (hnd);
+  RPS_ASSERT (hnd);
 
-    return hnd->cpu_stop;
+  return hnd->cpu_stop;
 }
 
 
 inline double
 rps_timer_cpu_elapsed(const rps_timer *hnd)
 {
-    RPS_ASSERT (hnd);
+  RPS_ASSERT (hnd);
 
-    return hnd->cpu_stop - hnd->cpu_start;
+  return hnd->cpu_stop - hnd->cpu_start;
 }
 
 
@@ -1111,7 +1118,7 @@ extern "C" void*rps_proghdl; // dlopen handle of whole program
 extern "C" Json::Value rps_string_to_json(const std::string&str);
 extern "C" std::string rps_json_to_string(const Json::Value&jv);
 extern "C" void rps_output_program_arguments(std::ostream& out,
-					     int argc, const char*const*argv);
+    int argc, const char*const*argv);
 
 #define RPS_FLEXIBLE_DIM 0      /* for flexible array members */
 
@@ -1194,10 +1201,10 @@ public:
   }
   // get object from Json at load time
   Rps_ObjectRef(const Json::Value &, Rps_Loader*); //in store_rps.cc
-  
+
   // build an object from its existing string oid, or else fail with C++ exception
   Rps_ObjectRef(Rps_CallFrame*callerframe, const char*oidstr, Rps_ObjIdStrTag);
-  
+
   // rule of five
   Rps_ObjectRef(const Rps_ObjectZone*oz = nullptr)
     : _optr(const_cast<Rps_ObjectZone*>(oz))
@@ -1298,15 +1305,18 @@ public:
   ///////////
   // these functions throw an exception on failure (unless dontfail is true, then gives nil)
   // find an object with a given oid or name string
-  enum Find_Behavior_en {
-                         Rps_Null_When_Missing,
-                         Rps_Fail_If_Not_Found
+  enum Find_Behavior_en
+  {
+    Rps_Null_When_Missing,
+    Rps_Fail_If_Not_Found
   };
   static Rps_ObjectRef find_object_by_string(Rps_CallFrame*callerframe,  const std::string& str, Find_Behavior_en fb);
-  static inline Rps_ObjectRef find_object_or_null_by_string(Rps_CallFrame*callerframe,  const std::string& str) {
+  static inline Rps_ObjectRef find_object_or_null_by_string(Rps_CallFrame*callerframe,  const std::string& str)
+  {
     return find_object_by_string(callerframe, str, Rps_Null_When_Missing);
   };
-  static inline Rps_ObjectRef find_object_or_fail_by_string(Rps_CallFrame*callerframe,  const std::string& str) {
+  static inline Rps_ObjectRef find_object_or_fail_by_string(Rps_CallFrame*callerframe,  const std::string& str)
+  {
     return find_object_by_string(callerframe, str, Rps_Fail_If_Not_Found);
   };
   static Rps_ObjectRef find_object_by_oid(Rps_CallFrame*callerframe, Rps_Id oid, Find_Behavior_en fb);
@@ -1361,7 +1371,8 @@ static_assert(alignof(Rps_ObjectRef) == alignof(void*),
 extern "C" void rps_print_objectref(Rps_ObjectRef ob);
 
 // we could code Rps_ObjectFromOidRef(&_,"_41OFI3r0S1t03qdB2E") instead of rpskob_41OFI3r0S1t03qdB2E
-class Rps_ObjectFromOidRef : public Rps_ObjectRef {
+class Rps_ObjectFromOidRef : public Rps_ObjectRef
+{
 public:
   Rps_ObjectFromOidRef(Rps_CallFrame*callerframe, const char*oidstr) :
     Rps_ObjectRef(callerframe, oidstr, Rps_ObjectRef::Rps_ObjIdStrTag{}) {};
@@ -1397,9 +1408,9 @@ enum class Rps_Type : std::int16_t
   PaylPopenedFile = -17,   // for transient popened commands
   PaylUnixProcess = -16,        // for transient of forked unix processes
   PaylWebHandler = -15, // for reification of Web handlers,
-                        // i.e. Rps_PayloadWebHandler-s
+  // i.e. Rps_PayloadWebHandler-s
   PaylWebex = -14, // for reification as temporary objects of HTTP
-                   // requests+replies, i.e. Web exchanges.
+  // requests+replies, i.e. Web exchanges.
   PaylTasklet = -13, // for small tasklets inside agenda
   PaylStringDict = -12, // the dictionnaries associating strings to values
   PaylAgenda = -11, // *the* unique agenda
@@ -1621,7 +1632,10 @@ public:
                           const std::vector<Rps_Value>& argvec) const;
   Rps_TwoValues send_ilist(Rps_CallFrame*cframe, const Rps_ObjectRef obsel,
                            const std::initializer_list<Rps_Value>& argil) const;
-  const void* unsafe_wptr() const { return _wptr; };
+  const void* unsafe_wptr() const
+  {
+    return _wptr;
+  };
 private:
   union
   {
@@ -1630,8 +1644,8 @@ private:
     const void* _wptr;
   };
   inline bool is_subclass_with_count_and_depth(Rps_CallFrame*callerframe,
-					       uint64_t count, Rps_ObjectRef obsuperclass,
-					       Rps_ObjectRef obthisclass, int depth) const;
+      uint64_t count, Rps_ObjectRef obsuperclass,
+      Rps_ObjectRef obthisclass, int depth) const;
 };    // end of Rps_Value
 static_assert(sizeof(Rps_Value) == sizeof(void*),
               "Rps_Value should have the size of a word or pointer");
@@ -1642,7 +1656,8 @@ static_assert(alignof(Rps_Value) == alignof(void*),
 ////////////////////////////////////////////////////////////////
 //// utility class to output a value with a given depth and maximal depth to some std::ostream
 //// typical usage: RPS_DEBUG_LOG("v1=" << Rps_OutputValue(v1, /*depth:*/3, /*maxdepth:*/5));
-class Rps_OutputValue {
+class Rps_OutputValue
+{
   friend class Rps_Value;
   const Rps_Value _out_val;
   const unsigned _out_depth;
@@ -1654,9 +1669,18 @@ public:
   Rps_OutputValue(const Rps_ObjectRef ob, unsigned depth, unsigned maxdepth= out_default_depth)
     : _out_val(ob), _out_depth(depth), _out_maxdepth(maxdepth) {};
   ~Rps_OutputValue() {};
-  unsigned depth_out() const { return _out_depth; };
-  unsigned maxdepth_out() const { return _out_maxdepth; };
-  const Rps_Value value_out() const { return _out_val; };
+  unsigned depth_out() const
+  {
+    return _out_depth;
+  };
+  unsigned maxdepth_out() const
+  {
+    return _out_maxdepth;
+  };
+  const Rps_Value value_out() const
+  {
+    return _out_val;
+  };
   void do_output(std::ostream& out) const; /// in morevalues_rps.cc
 };                              // end class Rps_OutputValue
 
@@ -1668,7 +1692,8 @@ extern "C" void rps_print_ptr_value(const void*v);
 extern "C" void rps_limited_print_value(const Rps_Value val, unsigned depth, unsigned maxdepth);
 extern "C" void rps_limited_print_ptr_value(const void*v, unsigned depth, unsigned maxdepth);
 
-inline std::ostream& operator<< (std::ostream&out, const Rps_OutputValue oval) {
+inline std::ostream& operator<< (std::ostream&out, const Rps_OutputValue oval)
+{
   oval.do_output(out);
   return out;
 } // end of operator<< (std::ostream&out, const Rps_OutputValue oval)
@@ -1700,10 +1725,12 @@ struct Rps_TwoValues
     if (main_val) main_val.gc_mark(gc,depth);
     if (xtra_val) xtra_val.gc_mark(gc,depth);
   };
-  bool operator ! (void) const {
+  bool operator ! (void) const
+  {
     return !main_val && !xtra_val;
   };
-  operator bool (void) const {
+  operator bool (void) const
+  {
     return main_val || xtra_val;
   };
 };                              // end Rps_TwoValues
@@ -2012,11 +2039,12 @@ extern "C" struct backtrace_state* rps_backtrace_common_state;
 
 
 
-class Rps_Backtracer {
+class Rps_Backtracer
+{
 public:
   ////// define tagging empty structs
   /*** Below Xmacro expands to :
-   *    struct FullOut_Tag{}; 
+   *    struct FullOut_Tag{};
    *    struct FullClos_Tag{};
    *    /// etc...
    ***/
@@ -2025,27 +2053,29 @@ public:
 #undef Rps_BACKTRACER_TagXm
   ////
   static constexpr std::uint32_t _backtr_magicnum_ = 3364921659; // 0xc890a13b
-  enum class Kind : std::uint16_t {
+  enum class Kind : std::uint16_t
+  {
     None = 0,
-  ////// define kind enumarations
-  /*** Below Xmacro expands to :
-   *    FullOut_Kind,
-   *    FullClos_Kind
-   *    /// etc...
-   ***/
+    ////// define kind enumarations
+    /*** Below Xmacro expands to :
+     *    FullOut_Kind,
+     *    FullClos_Kind
+     *    /// etc...
+     ***/
 #define Rps_BACKTRACER_KindXm(Mac,X) Mac##_Kind,
-  RPS_BACKTRACE_XMACRO(Rps_BACKTRACER_KindXm)
+    RPS_BACKTRACE_XMACRO(Rps_BACKTRACER_KindXm)
 #undef Rps_BACKTRACER_KindXm
-      };
-  enum class Todo : std::uint16_t {
+  };
+  enum class Todo : std::uint16_t
+  {
     Do_Nothing = 0,
-      Do_Output,
-      Do_Print,
-      };
+    Do_Output,
+    Do_Print,
+  };
   typedef std::ostringstream FullOut_t;
   typedef std::function<bool(Rps_Backtracer&,  uintptr_t pc,
-                                  const char*pcfile, int pclineno,
-                              const char*pcfun)> FullClos_t;
+                             const char*pcfile, int pclineno,
+                             const char*pcfun)> FullClos_t;
 private:
   static std::recursive_mutex _backtr_mtx_;
   // see https://en.cppreference.com/w/cpp/utility/variant
@@ -2058,7 +2088,7 @@ private:
 #define Rps_BACKTRACER_VariantXm(Mac,X) , Mac##_t
   RPS_BACKTRACE_XMACRO(Rps_BACKTRACER_VariantXm)
 #undef Rps_BACKTRACER_VariantXm
-               >  backtr_variant;
+  >  backtr_variant;
   std::ostream*backtr_outs;
   const std::string backtr_fromfile;
   const int backtr_fromline;
@@ -2074,12 +2104,21 @@ private:
 public:
   /// function passed to backtrace_create_state as error handler
   static void bt_error_cb(void *data, const char *msg,  int errnum);
-  std::uint32_t magicnum() const { return backtr_magic; };
-  Kind bkind() const { return (Kind)backtr_variant.index(); };
+  std::uint32_t magicnum() const
+  {
+    return backtr_magic;
+  };
+  Kind bkind() const
+  {
+    return (Kind)backtr_variant.index();
+  };
   const std::string bkindname() const;
   std::ostream* boutput() const;
-  bool bmainthread() const { return backtr_mainthread; };
-  /// 
+  bool bmainthread() const
+  {
+    return backtr_mainthread;
+  };
+  ///
   virtual void output(std::ostream&outs);
   virtual void print(FILE*outf);
   Rps_Backtracer(struct FullOut_Tag,
@@ -2091,10 +2130,10 @@ public:
                  const std::function<bool(Rps_Backtracer&bt,  uintptr_t pc,
                                           const char*pcfile, int pclineno,
                                           const char*pcfun
-                                          )>& fun);
+                                         )>& fun);
   std::string pc_to_string(uintptr_t pc, bool*gotmain=nullptr);
   std::string detailed_pc_to_string(uintptr_t pc, const char*pcfile, int pclineno,
-                                   const char*pcfun);
+                                    const char*pcfun);
   virtual ~Rps_Backtracer();
 };                              // end Rps_Backtracer
 
@@ -2102,7 +2141,8 @@ public:
 
 
 static inline
-std::ostream& operator << (std::ostream& out, const Rps_Backtracer& rpb) {
+std::ostream& operator << (std::ostream& out, const Rps_Backtracer& rpb)
+{
   const_cast<Rps_Backtracer*>(&rpb)->output(out);
   return out;
 }
@@ -2150,7 +2190,8 @@ public:
   {
     return rps_process_cpu_time() - gc_startprocesstime;
   };
-  double start_real_time(void) const {
+  double start_real_time(void) const
+  {
     return gc_startrealtime;
   }
   uint64_t nb_roots() const
@@ -2175,7 +2216,10 @@ public:
   inline void mark_root_value(Rps_Value val);
   inline void mark_root_objectref(Rps_ObjectRef obr);
   inline void mark_call_stack(Rps_CallFrame*topframe);
-  inline bool is_valid_garbcoll() const { return gc_magic == _gc_magicnum_; };
+  inline bool is_valid_garbcoll() const
+  {
+    return gc_magic == _gc_magicnum_;
+  };
 };                              // end class Rps_GarbageCollector
 
 ////////////////////////////////////////////////////// quasi zones
@@ -2216,7 +2260,9 @@ public:
   /// gives the number of machine words (8 bytes) allocated since
   /// start of process...
   static uint64_t cumulative_allocated_wordcount()
-  { return qz_alloc_cumulw.load(); };
+  {
+    return qz_alloc_cumulw.load();
+  };
   static void initialize(void);
   static inline Rps_QuasiZone*nth_zone(uint32_t rk);
   static inline Rps_QuasiZone*raw_nth_zone(uint32_t rk, Rps_GarbageCollector&);
@@ -2482,7 +2528,8 @@ public:
     return _dval;
   };
   virtual uint32_t wordsize() const
-  {// we need to round the 64 bits word size up, hence...
+  {
+    // we need to round the 64 bits word size up, hence...
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
   };
   static inline const Rps_Double*make(double d=0.0);
@@ -2504,14 +2551,19 @@ public:
   };
 }; // end class Rps_Double
 
-class Rps_DequVal : public std::deque<Rps_Value> {
+class Rps_DequVal : public std::deque<Rps_Value>
+{
   const char*dqu_srcfil;
   int dqu_srclin;
 public:
   typedef std::deque<Rps_Value> std_deque_superclass;
   Rps_DequVal() : std::deque<Rps_Value>(), dqu_srcfil("?"), dqu_srclin(-1) {} ;
   Rps_DequVal(const char*sfil, int lin) : std::deque<Rps_Value>(), dqu_srcfil(sfil), dqu_srclin(lin) {};
-  virtual ~Rps_DequVal() {dqu_srcfil=nullptr; dqu_srclin=0;};
+  virtual ~Rps_DequVal()
+  {
+    dqu_srcfil=nullptr;
+    dqu_srclin=0;
+  };
   virtual Rps_HashInt compute_hash(void) const;
   Rps_DequVal(std::initializer_list<Rps_Value> il,const char*sfil=nullptr, int lin=0)
     : std::deque<Rps_Value>(il), dqu_srcfil(sfil), dqu_srclin(lin) {};
@@ -2522,7 +2574,9 @@ public:
   virtual void dump_scan(Rps_Dumper* du, unsigned depth) const;
   void really_gc_mark(Rps_GarbageCollector&gc, unsigned depth) const;
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0) const
-  { really_gc_mark(gc, depth); };
+  {
+    really_gc_mark(gc, depth);
+  };
   void push_back(const Rps_Value val);
   void pop_front(void);
 };                              // end class Rps_DequVal
@@ -2535,23 +2589,23 @@ struct Rps_ChunkData_st;
 
 extern "C" void rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const std::string&failstr);
 
-#define RPS_PARSREPL_FAILURE_AT(Fram,Out,Fil,Lin,Cnt) do {	\
-    std::ostringstream _failstream_##Lin;			\
-    _failstream_##Lin << Out << " ~#" << Cnt << std::endl;	\
-    Rps_Backtracer backtr##Lin(Rps_Backtracer::FullOut_Tag{},	\
-			       (Fil),(Lin),1,			\
-			       "ParsReplFailing",		\
-			       &_failstream_##Lin);		\
-    rps_parsrepl_failing_at(Fil,Lin,Cnt,			\
-			    _failstream_##Lin.str());		\
+#define RPS_PARSREPL_FAILURE_AT(Fram,Out,Fil,Lin,Cnt) do {  \
+    std::ostringstream _failstream_##Lin;     \
+    _failstream_##Lin << Out << " ~#" << Cnt << std::endl;  \
+    Rps_Backtracer backtr##Lin(Rps_Backtracer::FullOut_Tag{}, \
+             (Fil),(Lin),1,     \
+             "ParsReplFailing",   \
+             &_failstream_##Lin);   \
+    rps_parsrepl_failing_at(Fil,Lin,Cnt,      \
+          _failstream_##Lin.str());   \
 } while(0)
 
 #define RPS_PARSREPL_FAILURE(Fram,Out) \
   RPS_PARSREPL_FAILURE_AT(Fram,Out,__FILE__,__LINE__,__COUNTER__)
 
 extern "C" void rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenv,
-					const std::string&cmd,
-					const char*title=nullptr);
+                                        const std::string&cmd,
+                                        const char*title=nullptr);
 
 class Rps_TokenSource           // this is *not* a value .....
 {
@@ -2559,9 +2613,9 @@ class Rps_TokenSource           // this is *not* a value .....
   friend class Rps_LexTokenZone;
   friend void
   rps_do_one_repl_command(Rps_CallFrame*callframe,
-			  Rps_ObjectRef obenvarg,
-			  const std::string&cmd,
-			  const char*title);
+                          Rps_ObjectRef obenvarg,
+                          const std::string&cmd,
+                          const char*title);
   std::string toksrc_name;
   int toksrc_line, toksrc_col;
   int toksrc_counter;
@@ -2573,17 +2627,22 @@ protected:
   Rps_DequVal toksrc_token_deq;
   Rps_StringValue* toksrc_ptrnameval;
   Rps_TokenSource(std::string name);
-  void set_name(std::string name) { toksrc_name = name; };
+  void set_name(std::string name)
+  {
+    toksrc_name = name;
+  };
   virtual void gc_mark(Rps_GarbageCollector&gc, unsigned depth=0);
   std::string lex_quoted_literal_string(Rps_CallFrame*callframe);
   std::string lex_raw_literal_string(Rps_CallFrame*callframe);
   Rps_Value lex_code_chunk(Rps_CallFrame*callframe);
   Rps_Value lex_chunk_element(Rps_CallFrame*callframe, Rps_ObjectRef obchkarg, Rps_ChunkData_st*chkdata);
-  void starting_new_input_line(void) {
+  void starting_new_input_line(void)
+  {
     toksrc_col=0;
     toksrc_line++;
   };
-  void advance_cursor_bytes(unsigned nb) {
+  void advance_cursor_bytes(unsigned nb)
+  {
     toksrc_col += nb;
     if (toksrc_col > (int) toksrc_linebuf.size())
       toksrc_col = toksrc_linebuf.size();
@@ -2591,8 +2650,12 @@ protected:
   Rps_Value get_delimiter(Rps_CallFrame*callframe);
 public:
   static constexpr unsigned max_gc_depth = 128;
-  static Rps_TokenSource* current_token_source(void) { return toksrc_current_; };
-  const char*curcptr(void) const {
+  static Rps_TokenSource* current_token_source(void)
+  {
+    return toksrc_current_;
+  };
+  const char*curcptr(void) const
+  {
     if (toksrc_linebuf.empty())
       return nullptr;
     auto linesiz = toksrc_linebuf.size();
@@ -2600,9 +2663,12 @@ public:
       return toksrc_linebuf.c_str()+toksrc_col;
     return nullptr;
   };                            // end Rps_TokenSource::curcptr
-  const std::string current_line(void) const { return toksrc_linebuf; };
+  const std::string current_line(void) const
+  {
+    return toksrc_linebuf;
+  };
   const Rps_LexTokenZone* make_token(Rps_CallFrame*callframe,
-                               Rps_ObjectRef lexkind, Rps_Value lexval, const Rps_String*sourcev);
+                                     Rps_ObjectRef lexkind, Rps_Value lexval, const Rps_String*sourcev);
   virtual ~Rps_TokenSource();
   void display_current_line_with_cursor(std::ostream&out) const;
   virtual void output (std::ostream&out, unsigned depth, unsigned maxdepth) const = 0;
@@ -2611,16 +2677,25 @@ public:
   /// ***** line 345 "abcdef" col 2
   /// *****             ^
   virtual void display (std::ostream&out) const = 0;
-  const Rps_DequVal& token_dequeue(void) const { return toksrc_token_deq; };
+  const Rps_DequVal& token_dequeue(void) const
+  {
+    return toksrc_token_deq;
+  };
   void consume_front_token(Rps_CallFrame*callframe, bool *psuccess=nullptr);
   void append_back_new_token(Rps_CallFrame*callframe, Rps_Value tokenv);
   virtual bool get_line(void) =0; // gives true when another line has been read
   Rps_TokenSource(const Rps_TokenSource&) = delete;
   Rps_TokenSource() = delete;
-  const std::string& name(void) const { return toksrc_name; };
+  const std::string& name(void) const
+  {
+    return toksrc_name;
+  };
   const std::string position_str(int col= -1) const;
-  int token_count(void) const { return  toksrc_counter;};
-  // return the source name as a string value, hopefully memoized 
+  int token_count(void) const
+  {
+    return  toksrc_counter;
+  };
+  // return the source name as a string value, hopefully memoized
   Rps_Value source_name_val(Rps_CallFrame*callframe);
   // lookahead a lexical token, with a an empty toksrc_token_deq
   // rank#0 being the next one
@@ -2630,11 +2705,14 @@ public:
      returning nullptr on lookahead falure, and the true object (of
      oid _1GIJ6Koh9Rn009AWww) on lookahead success */
 #define RPS_DO_LOOKAHEAD ((bool*)nullptr)
-  static bool is_looking_ahead(bool*p) { return p == RPS_DO_LOOKAHEAD; };
+  static bool is_looking_ahead(bool*p)
+  {
+    return p == RPS_DO_LOOKAHEAD;
+  };
   ///////////////////
   ////
   //// generated parsing declarations
-  #include "generated/rps-parser-decl.hh"
+#include "generated/rps-parser-decl.hh"
   ///////////////////
   //// Our parsing routines; the token dequeue pointer is for
   //// lookahead... The flag pointed by `pokparse` is set to true if
@@ -2650,17 +2728,17 @@ public:
   //// addition +
   Rps_Value parse_symmetrical_binaryop(Rps_CallFrame*callframe,
                                        Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
-                                      std::function<Rps_Value(Rps_CallFrame*,bool*)> parser_binop,
+                                       std::function<Rps_Value(Rps_CallFrame*,bool*)> parser_binop,
                                        bool*pokparse, const char*opername=nullptr);
   //// generic routine to parse asymmetrical non commutative
   //// operations like division /
   Rps_Value parse_asymmetrical_binaryop(Rps_CallFrame*callframe,
                                         Rps_ObjectRef binoper, Rps_ObjectRef bindelim,
-                                       std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,
-                                        bool*)> parser_leftop,
-                           std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,bool*)>
+                                        std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,
+                                            bool*)> parser_leftop,
+                                        std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,bool*)>
                                         parser_rightop,
-                           bool*pokparse, const char*opername=nullptr);
+                                        bool*pokparse, const char*opername=nullptr);
   Rps_Value parse_polyop(Rps_CallFrame*callframe,  Rps_ObjectRef polyoper, Rps_ObjectRef polydelim,
                          std::function<Rps_Value(Rps_CallFrame*,Rps_TokenSource*,bool*)> parser_suboperand,
                          bool*pokparse, const char*opername=nullptr);
@@ -2683,7 +2761,7 @@ public:
   Rps_Value parse_comparand(Rps_CallFrame*callframe, bool*pokparse=nullptr);
   Rps_Value parse_sum(Rps_CallFrame*callframe, bool*pokparse=nullptr);
   Rps_Value parse_product(Rps_CallFrame*callframe, bool*pokparse=nullptr);
-  
+
   Rps_Value parse_factor(Rps_CallFrame*callframe, bool*pokparse=nullptr);
   Rps_Value parse_term(Rps_CallFrame*callframe, bool*pokparse=nullptr);
   /// a primary expression is a simple thing
@@ -2696,8 +2774,14 @@ public:
   Rps_Value parse_primary_complement(Rps_CallFrame*callframe, Rps_Value primaryexp, bool*pokparse=nullptr);
 #warning other recursive descent parsing routines are needed, with a syntax documented in doc/repl.md
   ///////
-  int line(void) const { return toksrc_line; };
-  int col(void) const { return toksrc_col; };
+  int line(void) const
+  {
+    return toksrc_line;
+  };
+  int col(void) const
+  {
+    return toksrc_col;
+  };
   /// on lexical error, get_token returns null and does not change the position
   Rps_LexTokenValue get_token(Rps_CallFrame*callframe);
 };                              // end Rps_TokenSource
@@ -2711,8 +2795,10 @@ inline std::ostream& operator << (std::ostream&out, Rps_TokenSource& toksrc)
 class Rps_CinTokenSource : public Rps_TokenSource
 {
 public:
-  virtual void output(std::ostream&out) const {
-    out << "CinTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count(); };
+  virtual void output(std::ostream&out) const
+  {
+    out << "CinTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count();
+  };
   Rps_CinTokenSource();
   virtual ~Rps_CinTokenSource();
   virtual bool get_line(void);
@@ -2725,8 +2811,10 @@ class Rps_StreamTokenSource : public Rps_TokenSource
   std::ifstream toksrc_input_stream;
 public:
   Rps_StreamTokenSource(std::string path);
-  virtual void output(std::ostream&out) const {
-    out << "StreamTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count(); };
+  virtual void output(std::ostream&out) const
+  {
+    out << "StreamTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count();
+  };
   virtual ~Rps_StreamTokenSource();
   virtual bool get_line(void);
   virtual void display(std::ostream&out) const;
@@ -2734,7 +2822,8 @@ public:
 
 
 
-class Rps_StringTokenSource : public Rps_TokenSource {
+class Rps_StringTokenSource : public Rps_TokenSource
+{
   std::istringstream toksrcstr_inp;
   const std::string toksrcstr_str;
 public:
@@ -2742,7 +2831,10 @@ public:
   virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const;
   virtual  ~Rps_StringTokenSource();
   virtual bool get_line();
-  const std::string str() const { return toksrcstr_str; };
+  const std::string str() const
+  {
+    return toksrcstr_str;
+  };
   virtual void display(std::ostream&out) const;
 };                                                            // end Rps_StringTokenSource
 
@@ -2775,11 +2867,15 @@ class Rps_LexTokenZone  : public Rps_LazyHashedZoneValue
   int lex_colno;
   unsigned lex_serial;
 public:
-  inline void* operator new (std::size_t siz, std::nullptr_t) {
+  inline void* operator new (std::size_t siz, std::nullptr_t)
+  {
     return Rps_QuasiZone::operator new(siz,nullptr);
   }
   void set_serial (unsigned serial);
-  unsigned serial(void) const  {return lex_serial; };
+  unsigned serial(void) const
+  {
+    return lex_serial;
+  };
 protected:
   Rps_LexTokenZone(Rps_TokenSource*psrc, Rps_ObjectRef kind, Rps_Value val, const Rps_String*string, int line, int col);
 protected:
@@ -2790,16 +2886,35 @@ protected:
   virtual void dump_scan(Rps_Dumper*, unsigned) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
 public:
-  Rps_ObjectRef lxkind() const { return lex_kind; };
-  Rps_Value lxval() const { return lex_val; };
-  const Rps_String* lxfile() const { return lex_file; };
-  Rps_TokenSource*lxsrc() const { return const_cast<Rps_TokenSource*>(lex_src);};
-  int lxline() const { return lex_lineno; };
-  int lxcol() const { return lex_colno; };
+  Rps_ObjectRef lxkind() const
+  {
+    return lex_kind;
+  };
+  Rps_Value lxval() const
+  {
+    return lex_val;
+  };
+  const Rps_String* lxfile() const
+  {
+    return lex_file;
+  };
+  Rps_TokenSource*lxsrc() const
+  {
+    return const_cast<Rps_TokenSource*>(lex_src);
+  };
+  int lxline() const
+  {
+    return lex_lineno;
+  };
+  int lxcol() const
+  {
+    return lex_colno;
+  };
   static Rps_ObjectRef the_lexical_token_class(void);
   virtual void val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const;
   virtual uint32_t wordsize() const
-  {// we need to round the 64 bits word size up, hence...
+  {
+    // we need to round the 64 bits word size up, hence...
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
   };
   virtual bool equal(const Rps_ZoneValue&zv) const;
@@ -2813,7 +2928,7 @@ public:
                      std::istream*inp,
                      const char*input_name,
                      const char**plinebuf, int*plineno)
-                > lexical_line_getter_fun;
+  > lexical_line_getter_fun;
   // Tokenize a lexical token; an optional double-ended queue of
   // already lexed token enable limited backtracking when needed....
   static const Rps_LexTokenZone* tokenize
@@ -2857,7 +2972,8 @@ class Rps_ObjectZone : public Rps_ZoneValue
 {
   ///
 public:
-  enum registermode_en {
+  enum registermode_en
+  {
     OBZ_DONT_REGISTER,
     OBZ_REGISTER
   };
@@ -2950,7 +3066,8 @@ public:
     return &ob_mtx;
   };
   void put_applying_function(rps_applyingfun_t*afun);
-  void touch_now(void) {
+  void touch_now(void)
+  {
     ob_mtime.store(rps_wallclock_real_time());
   };
   std::string string_oid(void) const;
@@ -3020,7 +3137,10 @@ public:
   {
     return ob_applyingfun.load();
   };
-  inline rps_applyingfun_t* get_applying_ptrfun() const { return ob_applyingfun.load(); };
+  inline rps_applyingfun_t* get_applying_ptrfun() const
+  {
+    return ob_applyingfun.load();
+  };
   inline void clear_payload(void);
   template<class PaylClass>
   PaylClass* put_new_plain_payload(void)
@@ -3183,7 +3303,7 @@ public:
   {
     RPS_ASSERT(ld != nullptr);
   };
-  virtual const std::string payload_type_name(void) const =0; 
+  virtual const std::string payload_type_name(void) const =0;
   /// a payload is erasable if it can be removed, e.g. replaced by another one.
   virtual bool is_erasable(void) const
   {
@@ -3235,7 +3355,8 @@ public:
   {
     return _seqlen;
   };
-  const Rps_ObjectRef at(int ix) const {
+  const Rps_ObjectRef at(int ix) const
+  {
     if (ix<0)
       ix += cnt();
     if (ix>=0 && ix <(int)cnt())
@@ -3243,7 +3364,8 @@ public:
     else
       throw std::range_error("index out of range in objref sequence");
   }
-  const Rps_ObjectRef random_object_in_sequence_or_fail (int startix= 0, int endix= -1) const {
+  const Rps_ObjectRef random_object_in_sequence_or_fail (int startix= 0, int endix= -1) const
+  {
     if (startix < 0)
       startix += cnt();
     if (endix < 0)
@@ -3262,7 +3384,8 @@ public:
     unsigned rd = Rps_Random::random_32u() % (endix - startix);
     return _seqob[startix + rd];
   };
-  const Rps_ObjectRef random_object_in_sequence_or_default (Rps_ObjectRef defob, int startix= 0, int endix= -1) const {
+  const Rps_ObjectRef random_object_in_sequence_or_default (Rps_ObjectRef defob, int startix= 0, int endix= -1) const
+  {
     if (startix < 0)
       startix += cnt();
     if (endix < 0)
@@ -3296,26 +3419,30 @@ public:
   void
   iterate_data(const std::function<bool(const Rps_ObjectRef,
                                         Datatype_t data)>& fun,
-               Datatype_t data) {
-    for (auto it: *this) {
-      Rps_ObjectRef curob = it;
-      if (fun(curob, data))
-        return;
-    }
+               Datatype_t data)
+  {
+    for (auto it: *this)
+      {
+        Rps_ObjectRef curob = it;
+        if (fun(curob, data))
+          return;
+      }
   } // end iterate_data
   /// repeatedly iterate on the sequence object in reverse order, till
   /// given function FUN returns true...
   template <typename Datatype_t>
   void
   reverse_iterate_data(const std::function<bool(const Rps_ObjectRef,
-                                                Datatype_t data)>& fun,
-                       Datatype_t data) {
+                       Datatype_t data)>& fun,
+                       Datatype_t data)
+  {
     const unsigned len = cnt();
-    for (int ix = (int)len-1; ix>=0; ix--) {
-      Rps_ObjectRef curob = _seqob[ix];
-      if (fun(curob, data))
-        return;
-    }
+    for (int ix = (int)len-1; ix>=0; ix--)
+      {
+        Rps_ObjectRef curob = _seqob[ix];
+        if (fun(curob, data))
+          return;
+      }
   } // end reverse_iterate_data
   //////////
   //// iteratively apply a given closure CLOSV in ascending order to
@@ -3423,9 +3550,18 @@ public:
   virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
   /// gives the element index, or a negative number if not found
   inline int element_index(const Rps_ObjectRef obelem) const;
-  inline bool contains(const Rps_ObjectRef obelem) const { return element_index(obelem) >= 0; };
-  unsigned cardinal() const { return cnt(); };
-  static const Rps_SetOb& the_empty_set(void) { return _setob_emptyset_; };
+  inline bool contains(const Rps_ObjectRef obelem) const
+  {
+    return element_index(obelem) >= 0;
+  };
+  unsigned cardinal() const
+  {
+    return cnt();
+  };
+  static const Rps_SetOb& the_empty_set(void)
+  {
+    return _setob_emptyset_;
+  };
   inline Rps_ObjectRef element_after_or_equal(const Rps_ObjectRef obelem) const;
   inline Rps_ObjectRef element_after(const Rps_ObjectRef obelem) const;
   inline Rps_ObjectRef element_before_or_equal(const Rps_ObjectRef obelem) const;
@@ -3436,10 +3572,10 @@ public:
   inline Rps_ObjectRef random_element_or_default(Rps_ObjectRef defob, int startix=0, int endix= -1) const;
   // repeat the given func on each element, in increasing order, till the func returns false
   void repeat_increasing_each_element_until(Rps_CallFrame*cf, void*data,
-                                            const std::function<bool(Rps_CallFrame*,void*/*data*/,Rps_ObjectRef/*elem*/)>& func) const;
+      const std::function<bool(Rps_CallFrame*,void*/*data*/,Rps_ObjectRef/*elem*/)>& func) const;
   // repeat the given func on each element, in decreasing order, till the func returns false
   void repeat_decreasing_each_element_until(Rps_CallFrame*cf, void*data,
-                                            const std::function<bool(Rps_CallFrame*,void*/*data*/,Rps_ObjectRef/*elem*/)>& func) const;
+      const std::function<bool(Rps_CallFrame*,void*/*data*/,Rps_ObjectRef/*elem*/)>& func) const;
 };// end of Rps_SetOb
 
 
@@ -3502,7 +3638,7 @@ class Rps_TreeZone : public Rps_LazyHashedZoneValue
   Rps_ObjectRef _treeconnob;
   Rps_Value _treesons[RPS_FLEXIBLE_DIM+1];
   Rps_TreeZone(unsigned len, Rps_ObjectRef obr=nullptr)
-    : Rps_LazyHashedZoneValue(treety), _treelen(len), 
+    : Rps_LazyHashedZoneValue(treety), _treelen(len),
       _treetransient(false), _treemetatransient(false),
       _treemetarank(0), _treemetaob(nullptr),
       _treeconnob(obr)
@@ -3528,15 +3664,33 @@ public:
   {
     return _treeconnob;
   }
-  bool is_transient(void) const { return _treetransient.load(); };
-  bool is_metatransient(void) const { return _treemetatransient.load(); };
-  int32_t metarank(void) const { return _treemetarank.load(); };
-  Rps_ObjectZone* metaobject(void) const { return _treemetaob.load(); };
+  bool is_transient(void) const
+  {
+    return _treetransient.load();
+  };
+  bool is_metatransient(void) const
+  {
+    return _treemetatransient.load();
+  };
+  int32_t metarank(void) const
+  {
+    return _treemetarank.load();
+  };
+  Rps_ObjectZone* metaobject(void) const
+  {
+    return _treemetaob.load();
+  };
   std::pair<Rps_ObjectZone*,int32_t> const get_metadata(void) const;
   std::pair<Rps_ObjectZone*,int32_t> swap_metadata(Rps_ObjectRef obr, int32_t num=0, bool transient=false);
   void put_metadata(Rps_ObjectRef obr, int32_t num=0, bool transient=false);
-  void put_transient_metadata(Rps_ObjectRef obr, int32_t num=0) { put_metadata(obr, num, true); };
-  void put_persistent_metadata(Rps_ObjectRef obr, int32_t num=0) { put_metadata(obr, num, false); };
+  void put_transient_metadata(Rps_ObjectRef obr, int32_t num=0)
+  {
+    put_metadata(obr, num, true);
+  };
+  void put_persistent_metadata(Rps_ObjectRef obr, int32_t num=0)
+  {
+    put_metadata(obr, num, false);
+  };
   typedef const Rps_Value*iterator_t;
   iterator_t begin() const
   {
@@ -3702,10 +3856,10 @@ public:
                               const Rps_Value arg5, const Rps_Value arg6,
                               const Rps_Value arg7, const Rps_Value arg8) const;
   inline Rps_TwoValues apply10(Rps_CallFrame*callerframe, const Rps_Value arg0,
-                              const Rps_Value arg1, const Rps_Value arg2,
-                              const Rps_Value arg3, const Rps_Value arg4,
-                              const Rps_Value arg5, const Rps_Value arg6,
-                              const Rps_Value arg7, const Rps_Value arg8, const Rps_Value arg9) const;
+                               const Rps_Value arg1, const Rps_Value arg2,
+                               const Rps_Value arg3, const Rps_Value arg4,
+                               const Rps_Value arg5, const Rps_Value arg6,
+                               const Rps_Value arg7, const Rps_Value arg8, const Rps_Value arg9) const;
   Rps_TwoValues apply_vect(Rps_CallFrame*callerframe, const std::vector<Rps_Value>& argvec) const;
   Rps_TwoValues apply_ilist(Rps_CallFrame*callerframe, const std::initializer_list<Rps_Value>& argil) const;
 };    // end Rps_ClosureValue
@@ -3735,11 +3889,17 @@ protected:
   friend Rps_InstanceZone*
   Rps_QuasiZone::rps_allocate_with_wordgap<Rps_InstanceZone,unsigned,Rps_ObjectRef,Rps_InstanceTag>(unsigned,unsigned,Rps_ObjectRef,Rps_InstanceTag);
 public:
-  const Rps_Value* const_sons() const { return raw_const_data_sons(); };
+  const Rps_Value* const_sons() const
+  {
+    return raw_const_data_sons();
+  };
   virtual void dump_scan(Rps_Dumper*du, unsigned depth=0) const;
   virtual Json::Value dump_json(Rps_Dumper*) const;
   virtual void val_output(std::ostream& outs, unsigned depth, unsigned maxdepth) const;
-  Rps_ObjectRef get_class(void) const { return conn(); };
+  Rps_ObjectRef get_class(void) const
+  {
+    return conn();
+  };
   const Rps_SetOb* set_attributes(void) const;
   virtual Rps_ObjectRef compute_class(Rps_CallFrame*stkf) const;
   /// get the set of attributes in a class
@@ -3755,15 +3915,15 @@ public:
   static Rps_InstanceZone* make_from_components(Rps_ObjectRef classob, const std::vector<Rps_Value>& valvec);
   /// make an instance from both attributes and components
   static Rps_InstanceZone* make_from_attributes_components(Rps_ObjectRef classob,
-                                                           const std::initializer_list<Rps_Value>& valil,const std::initializer_list<std::pair<Rps_ObjectRef,Rps_Value>>&attril);
+      const std::initializer_list<Rps_Value>& valil,const std::initializer_list<std::pair<Rps_ObjectRef,Rps_Value>>&attril);
   static Rps_InstanceZone* make_from_attributes_components(Rps_ObjectRef classob,
-                                                           const std::vector<Rps_Value>& valvec,
-                                                           const std::map<Rps_ObjectRef,Rps_Value>& attrmap);
+      const std::vector<Rps_Value>& valvec,
+      const std::map<Rps_ObjectRef,Rps_Value>& attrmap);
   /// make an instance from attributes
   static Rps_InstanceZone* make_from_attributes(Rps_ObjectRef classob,
-                                                const std::initializer_list<std::pair<Rps_ObjectRef,Rps_Value>>&attril);
+      const std::initializer_list<std::pair<Rps_ObjectRef,Rps_Value>>&attril);
   static Rps_InstanceZone* make_from_attributes(Rps_ObjectRef classob,
-                                                const std::map<Rps_ObjectRef,Rps_Value>& attrmap);
+      const std::map<Rps_ObjectRef,Rps_Value>& attrmap);
 };    // end class Rps_InstanceZone
 
 
@@ -3804,8 +3964,14 @@ protected:
   virtual void dump_scan(Rps_Dumper*, unsigned) const {};
   virtual Json::Value dump_json(Rps_Dumper*) const;
 public:
-  const Json::Value& json() const { return _jsonval; };
-  const Json::Value const_json() const { return _jsonval; };
+  const Json::Value& json() const
+  {
+    return _jsonval;
+  };
+  const Json::Value const_json() const
+  {
+    return _jsonval;
+  };
   virtual uint32_t wordsize() const
   {
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
@@ -3852,7 +4018,8 @@ public:
       cfram_clos(nullptr),
       cfram_xtradata((intptr_t*) xdata),
       cfram_outputter(nullptr),
-      cfram_marker() {
+      cfram_marker()
+  {
     // ensure that if some size is given, the xdata is a suitably
     // aligned pointer...
     assert (size == 0
@@ -3860,11 +4027,13 @@ public:
                 && (((intptr_t)xdata & (alignof(intptr_t)-1)) == 0)));
     assert (size < _cfram_max_size_);
   }; // end Rps_ProtoCallFrame constructor
-  ~Rps_ProtoCallFrame() {
-    if (cfram_size > 0) {
-      assert (cfram_xtradata != nullptr);
-      memset ((void*)cfram_xtradata, 0, cfram_size*sizeof(intptr_t));
-    }
+  ~Rps_ProtoCallFrame()
+  {
+    if (cfram_size > 0)
+      {
+        assert (cfram_xtradata != nullptr);
+        memset ((void*)cfram_xtradata, 0, cfram_size*sizeof(intptr_t));
+      }
     cfram_xtradata = nullptr;
     cfram_descr = nullptr;
     cfram_prev = nullptr;
@@ -3872,24 +4041,40 @@ public:
     cfram_rankstate = 0;
     cfram_clos = nullptr;
   }; // end Rps_ProtoCallFrame destructor
-  void set_outputter(std::nullptr_t) {  cfram_outputter.store(nullptr); };
-  void clear_outputter(void) { cfram_outputter.store(nullptr); };
+  void set_outputter(std::nullptr_t)
+  {
+    cfram_outputter.store(nullptr);
+  };
+  void clear_outputter(void)
+  {
+    cfram_outputter.store(nullptr);
+  };
   void set_outputter(Rps_CallFrameOutputSig_t*outputter=nullptr)
-  { cfram_outputter.store(outputter);};
+  {
+    cfram_outputter.store(outputter);
+  };
   void gc_mark_frame(Rps_GarbageCollector* gc);
   void set_closure(Rps_ClosureValue clos)
   {
     RPS_ASSERT(!clos.is_empty() && clos.is_closure());
     cfram_clos = clos;
   };
-  void set_state_value(Rps_Value val) {
+  void set_state_value(Rps_Value val)
+  {
     cfram_state = val;
   };
-  Rps_Value state_value() const { return cfram_state; };
-  void set_state_rank(int rk) {
+  Rps_Value state_value() const
+  {
+    return cfram_state;
+  };
+  void set_state_rank(int rk)
+  {
     cfram_rankstate = rk;
   };
-  int state_rank() { return cfram_rankstate; }; 
+  int state_rank()
+  {
+    return cfram_rankstate;
+  };
   void clear_closure(void)
   {
     cfram_clos = nullptr;
@@ -3906,16 +4091,30 @@ public:
   {
     cfram_marker = nullptr;
   };
-  bool is_good_call_frame() const {
+  bool is_good_call_frame() const
+  {
     assert (cfram_size <  _cfram_max_size_);
     return stored_type() == Rps_Type::CallFrame;
   };
-  static bool is_good_call_frame(const Rps_CallFrame*cf) { return cf==nullptr||cf->is_good_call_frame(); };
-  Rps_ObjectRef call_frame_descriptor() const { return cfram_descr; };
-  Rps_Value call_frame_state() const { return cfram_state; };
-  Rps_ClosureValue call_frame_closure() const { return cfram_clos; };
+  static bool is_good_call_frame(const Rps_CallFrame*cf)
+  {
+    return cf==nullptr||cf->is_good_call_frame();
+  };
+  Rps_ObjectRef call_frame_descriptor() const
+  {
+    return cfram_descr;
+  };
+  Rps_Value call_frame_state() const
+  {
+    return cfram_state;
+  };
+  Rps_ClosureValue call_frame_closure() const
+  {
+    return cfram_clos;
+  };
   void output(std::ostream&out, unsigned depth=0, unsigned maxdepth=0) const;
-  unsigned call_frame_depth(void) const {
+  unsigned call_frame_depth(void) const
+  {
     unsigned d=0;
     for (Rps_CallFrame const*curf = this; curf && is_good_call_frame(curf); curf=curf->cfram_prev) d++;
     return d;
@@ -3943,12 +4142,17 @@ extern "C" void rps_interpret_repl_statement(Rps_CallFrame*callframe, Rps_Object
 /// of RefPerSys_system)
 extern "C" Rps_ObjectRef rps_get_first_repl_environment(void);
 
-class Rps_ShowCallFrame {
+class Rps_ShowCallFrame
+{
   const Rps_ProtoCallFrame* _callframe;
 public:
   Rps_ShowCallFrame(const Rps_ProtoCallFrame*cf = nullptr) : _callframe(cf) {};
-  ~Rps_ShowCallFrame() { _callframe=nullptr; };
-  void output(std::ostream&out) const {
+  ~Rps_ShowCallFrame()
+  {
+    _callframe=nullptr;
+  };
+  void output(std::ostream&out) const
+  {
     if (_callframe)
       _callframe->output(out);
     else
@@ -3977,30 +4181,45 @@ template <unsigned WordSize> class Rps_SizedCallFrame;
 template <typename FrameFields> class Rps_FieldedCallFrame;
 
 template <unsigned WordSize> class Rps_SizedCallFrame
-  : public Rps_ProtoCallFrame {
+  : public Rps_ProtoCallFrame
+{
   void* cfram_word_data[WordSize];
 public:
   typedef Rps_SizedCallFrame<WordSize> This_frame;
-   Rps_SizedCallFrame<WordSize> (Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
-    :  Rps_ProtoCallFrame(WordSize, cfram_word_data, obdescr, prev) {
+  Rps_SizedCallFrame<WordSize> (Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
+    :  Rps_ProtoCallFrame(WordSize, cfram_word_data, obdescr, prev)
+  {
   };
-  ~Rps_SizedCallFrame<WordSize>() {
+  ~Rps_SizedCallFrame<WordSize>()
+  {
   };
 };                              // end of Rps_SizedCallFrame template
 
 
 template <typename FrameFields> class  Rps_FieldedCallFrame :
-public Rps_ProtoCallFrame {
+  public Rps_ProtoCallFrame
+{
   FrameFields cfram_fields;
 public:
   typedef  Rps_FieldedCallFrame<FrameFields> This_frame;
-  FrameFields& fields()  { return cfram_fields; };
-  FrameFields* fieldsptr() { return &cfram_fields; };
-  const FrameFields& constfields() const { return cfram_fields; };
-  Rps_FieldedCallFrame<FrameFields>  (Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
-    :  Rps_ProtoCallFrame(sizeof(FrameFields)/sizeof(void*), &cfram_fields, obdescr, prev) {
+  FrameFields& fields()
+  {
+    return cfram_fields;
   };
-  ~Rps_FieldedCallFrame<FrameFields> () {
+  FrameFields* fieldsptr()
+  {
+    return &cfram_fields;
+  };
+  const FrameFields& constfields() const
+  {
+    return cfram_fields;
+  };
+  Rps_FieldedCallFrame<FrameFields>  (Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
+    :  Rps_ProtoCallFrame(sizeof(FrameFields)/sizeof(void*), &cfram_fields, obdescr, prev)
+  {
+  };
+  ~Rps_FieldedCallFrame<FrameFields> ()
+  {
   };
 };                              // end of Rps_FieldedCallFrame template
 
@@ -4084,7 +4303,10 @@ protected:
   Rps_PayloadClassInfo(Rps_ObjectRef obr) :
     Rps_PayloadClassInfo(obr?obr.optr():nullptr) {};
 public:
-  const Rps_SetOb* attributes_set() const { return pclass_attrset.load(); };
+  const Rps_SetOb* attributes_set() const
+  {
+    return pclass_attrset.load();
+  };
   virtual const std::string payload_type_name(void) const
   {
     return "classinfo";
@@ -4117,7 +4339,9 @@ public:
   std::string class_name_str(void) const;
   void put_symbname(Rps_ObjectRef obr);
   const Rps_SetOb*class_attrset(void) const
-  { return  pclass_attrset.load(); };
+  {
+    return  pclass_attrset.load();
+  };
   void loader_put_symbname(Rps_ObjectRef obr, Rps_Loader*ld);
   void loader_put_attrset(const Rps_SetOb*setob, Rps_Loader*ld);
   ///
@@ -4179,8 +4403,8 @@ public:
   /// make a mutable set of given class and space.
   /// if the class is wrong, throw an exception
   static Rps_ObjectRef make_mutable_set_object(Rps_CallFrame*cfr,
-                                        Rps_ObjectRef classob=nullptr,
-                                        Rps_ObjectRef spaceob=nullptr);
+      Rps_ObjectRef classob=nullptr,
+      Rps_ObjectRef spaceob=nullptr);
   inline Rps_PayloadSetOb(Rps_ObjectZone*obz, Rps_Loader*ld);
   bool contains(const Rps_ObjectZone* obelem) const
   {
@@ -4375,7 +4599,7 @@ public:
 
 
 ////////////////////////////////////////////////////////////////
-////// mutable string buffer payload 
+////// mutable string buffer payload
 extern "C" rpsldpysig_t rpsldpy_string_buffer;
 class Rps_PayloadStrBuf : public Rps_Payload
 {
@@ -4403,17 +4627,41 @@ public:
   {
     return "string_buffer";
   };
-  std::stringbuf& string_buffer(void) { return strbuf_buffer; };
-  const std::stringbuf& const_string_buffer(void) const { return strbuf_buffer; };
+  std::stringbuf& string_buffer(void)
+  {
+    return strbuf_buffer;
+  };
+  const std::stringbuf& const_string_buffer(void) const
+  {
+    return strbuf_buffer;
+  };
   //std::ostringstream* output_string_stream_ptr(void) { return &strbuf_stream; };
   //const std::ostream& output_stream(void) const { return strbuf_out; };
   //std::ostringstream& output_string_stream(void) { return strbuf_out; };
-  int indentation(void) const { return strbuf_indent; };
-  void set_indentation(int ind=0) {  strbuf_indent = ind; };
-  void more_indentation(int delta) { strbuf_indent += delta; };
-  void less_indentation(int delta) { strbuf_indent -= delta; };
-  bool is_transient(void) const { return strbuf_transient; };
-  void set_transient(bool fl=true) { strbuf_transient=fl; };
+  int indentation(void) const
+  {
+    return strbuf_indent;
+  };
+  void set_indentation(int ind=0)
+  {
+    strbuf_indent = ind;
+  };
+  void more_indentation(int delta)
+  {
+    strbuf_indent += delta;
+  };
+  void less_indentation(int delta)
+  {
+    strbuf_indent -= delta;
+  };
+  bool is_transient(void) const
+  {
+    return strbuf_transient;
+  };
+  void set_transient(bool fl=true)
+  {
+    strbuf_transient=fl;
+  };
   virtual uint32_t wordsize(void) const
   {
     return (sizeof(*this)+sizeof(void*)-1)/sizeof(void*);
@@ -4424,7 +4672,8 @@ public:
   //- {
   //-  return strbuf_buffer.size();
   //- };
-  std::string buffer_cppstring(void) const {
+  std::string buffer_cppstring(void) const
+  {
     return strbuf_buffer.str();
   };
   Rps_StringValue buffer_stringval(void);
@@ -4629,7 +4878,8 @@ public:
 
 extern "C" rpsldpysig_t rpsldpy_objmap;
 // Rps_PayloadObjMap contains a std::map of objects to values.
-class Rps_PayloadObjMap : public Rps_Payload {
+class Rps_PayloadObjMap : public Rps_Payload
+{
   std::map<Rps_ObjectRef,Rps_Value> obm_map;
   Rps_Value obm_descr;
   friend class Rps_ObjectRef;
@@ -4676,14 +4926,22 @@ public:
   bool has_key_obmap(Rps_ObjectRef obkey) const;
   static bool has_key(Rps_ObjectRef obmap, Rps_ObjectRef obkey);
   inline Rps_PayloadObjMap(Rps_ObjectZone*obz, Rps_Loader*ld);
-  Rps_Value get_descr() const { return obm_descr; };
-  void put_descr(Rps_Value d) { obm_descr = d; };
+  Rps_Value get_descr() const
+  {
+    return obm_descr;
+  };
+  void put_descr(Rps_Value d)
+  {
+    obm_descr = d;
+  };
   void do_each_entry(Rps_CallFrame*cf, std::function<bool(Rps_CallFrame*,Rps_ObjectRef,Rps_Value,void*)> f,
-		     void* clientdata=nullptr) const {
-    for (auto it: obm_map) {
-      if (f(cf, it.first, it.second, clientdata))
-	break;
-    }
+                     void* clientdata=nullptr) const
+  {
+    for (auto it: obm_map)
+      {
+        if (f(cf, it.first, it.second, clientdata))
+          break;
+      }
   };
 };                              // end Rps_PayloadObjMap
 
@@ -4697,7 +4955,7 @@ extern "C" rpsldpysig_t rpsldpy_environment;
 /// pmissing is given, set it to true when a binding was missing, to
 /// false when a binding was found.
 extern "C" Rps_Value rps_environment_get_shallow_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob,
-                                                             bool *missing=nullptr);
+    bool *missing=nullptr);
 /// Find the depth of the environment with a binding for varob, or else return -1
 extern "C" int rps_environment_find_binding_depth(Rps_ObjectRef envob, Rps_ObjectRef varob);
 /// Find in the given envob or its parent or ancestor environment the
@@ -4706,24 +4964,25 @@ extern "C" int rps_environment_find_binding_depth(Rps_ObjectRef envob, Rps_Objec
 /// given) to the environment object...; if missing *pdepth becomes
 /// negative, and *penvob is cleared.
 extern "C" Rps_Value rps_environment_find_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob,
-                                                     int*pdepth=nullptr, Rps_ObjectRef*penvob=nullptr);
+    int*pdepth=nullptr, Rps_ObjectRef*penvob=nullptr);
 /// Add or put a binding in the current environment.  Do nothing when envob is not an environment.
 void rps_environment_add_shallow_binding(Rps_CallFrame*callframe,
-                                         Rps_ObjectRef envob, Rps_ObjectRef varob, Rps_Value val);
+    Rps_ObjectRef envob, Rps_ObjectRef varob, Rps_Value val);
 /// overwrite a binding in the deep environment containing it, or when not found in the current one. Return affected depth
 extern "C" int rps_environment_overwrite_binding(Rps_CallFrame*callframe,
-                                           Rps_ObjectRef envob, Rps_ObjectRef varob, Rps_Value val,
-                                           Rps_ObjectRef*penvob=nullptr);
+    Rps_ObjectRef envob, Rps_ObjectRef varob, Rps_Value val,
+    Rps_ObjectRef*penvob=nullptr);
 /// remove a binding in the current environment, returning old value
 Rps_Value rps_environment_remove_shallow_binding(Rps_CallFrame*callframe,
-                                                 Rps_ObjectRef envob, Rps_ObjectRef varob, bool*pfound=nullptr);
+    Rps_ObjectRef envob, Rps_ObjectRef varob, bool*pfound=nullptr);
 /// remove a binding in the environment containing it (perhaps deeply) - return the depth or -1 if not found
 extern "C" int rps_environment_remove_deep_binding(Rps_CallFrame*callframe,
-                                                   Rps_ObjectRef startenvob, Rps_ObjectRef varob,
-                                                   Rps_ObjectRef*penvob=nullptr,
-                                                   Rps_Value*poldval=nullptr);
+    Rps_ObjectRef startenvob, Rps_ObjectRef varob,
+    Rps_ObjectRef*penvob=nullptr,
+    Rps_Value*poldval=nullptr);
 
-class Rps_PayloadEnvironment : public Rps_PayloadObjMap {
+class Rps_PayloadEnvironment : public Rps_PayloadObjMap
+{
   Rps_ObjectRef env_parent;
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
@@ -4731,7 +4990,7 @@ class Rps_PayloadEnvironment : public Rps_PayloadObjMap {
   friend Rps_PayloadEnvironment*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadEnvironment,Rps_ObjectZone*>(Rps_ObjectZone*);
   friend Rps_Value rps_environment_get_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob,
-                                                     int*pdepth, Rps_ObjectRef*penvob);
+      int*pdepth, Rps_ObjectRef*penvob);
 protected:
   Rps_PayloadEnvironment(Rps_ObjectZone*owner);
   Rps_PayloadEnvironment(Rps_ObjectRef obr) :
@@ -4758,16 +5017,19 @@ public:
   inline Rps_PayloadEnvironment(Rps_ObjectZone*obz, Rps_Loader*ld);
   static Rps_ObjectZone* make(Rps_CallFrame*cf, Rps_ObjectRef classob=nullptr, Rps_ObjectRef spaceob=nullptr);
   static Rps_ObjectZone* make_with_parent_environment(Rps_CallFrame*cf,
-                                                      Rps_ObjectRef parentob,
-                                                      Rps_ObjectRef classob=nullptr,
-                                                      Rps_ObjectRef spaceob=nullptr);
-  
-  Rps_ObjectRef get_parent_environment() const { return  env_parent; };
+      Rps_ObjectRef parentob,
+      Rps_ObjectRef classob=nullptr,
+      Rps_ObjectRef spaceob=nullptr);
+
+  Rps_ObjectRef get_parent_environment() const
+  {
+    return  env_parent;
+  };
   void put_parent_environment(Rps_ObjectRef envob);
 #warning Rps_PayloadEnvironment not fully implemented
 };                              // end Rps_PayloadEnvironment
 
-  
+
 
 ////////////////////////////////////////////////////////////////
 
@@ -4778,7 +5040,7 @@ public:
 
 // the user manifest is optional, in the rps_homedir()
 // so using $REFPERSYS_HOME or $HOME
-#define RPS_USER_MANIFEST_JSON ".refpersys.json" 
+#define RPS_USER_MANIFEST_JSON ".refpersys.json"
 
 //// global roots for garbage collection and persistence
 /// the called function cannot add, remove or query the global root set
@@ -4832,9 +5094,9 @@ extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
 /// approved on Whatsapp by Abishek Chakravarti on July, 24, 2023
 extern "C" bool rps_generate_lightning_code(Rps_CallFrame*callerframe,
-					    Rps_ObjectRef obmodule);
+    Rps_ObjectRef obmodule);
 extern "C" bool rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
-					    Rps_ObjectRef obmodule);
+    Rps_ObjectRef obmodule);
 
 
 ////................................................................
@@ -4872,7 +5134,7 @@ extern "C" bool rps_is_dumpable_value(Rps_Dumper*, const Rps_Value val);
 
 
 extern "C" void rps_load_from (const std::string& dirpath); // in store_rps.cc
- 
+
 extern "C" void rps_load_add_todo(Rps_Loader*,const std::function<void(Rps_Loader*)>& todofun);
 
 extern "C" void rps_print_types_info (void);
@@ -4891,20 +5153,27 @@ extern "C" void rps_output_utf8_cjson(std::ostream&out, const char*str, int bytl
 
 
 /// output in HTML encoding
-class Rps_Html_String : public std::string {
+class Rps_Html_String : public std::string
+{
 public:
   Rps_Html_String(const char*str, int len= -1) :
     std::string(str?str:"", (len>=0 && str)?len:strlen(str?str:"")) {};
   Rps_Html_String(const std::string&str) : std::string(str) {};
   ~Rps_Html_String() = default;
   virtual void output(std::ostream&out) const
-  { rps_output_utf8_html(out, c_str(), (int)size()); };
+  {
+    rps_output_utf8_html(out, c_str(), (int)size());
+  };
 }; // end class  Rps_Html_String
-inline std::ostream&operator << (std::ostream&out, const Rps_Html_String&hstr) { hstr.output(out); return out;
+inline std::ostream&operator << (std::ostream&out, const Rps_Html_String&hstr)
+{
+  hstr.output(out);
+  return out;
 };  // end << Rps_Html_String
 
 /// output in HTML encoding, with newlines changed to <br/>
-class Rps_Html_Nl2br_String : public Rps_Html_String {
+class Rps_Html_Nl2br_String : public Rps_Html_String
+{
 public:
   Rps_Html_Nl2br_String(const char*str, int len= -1) :
     Rps_Html_String(str,len) {};
@@ -4912,29 +5181,38 @@ public:
     Rps_Html_String(str) {};
   ~Rps_Html_Nl2br_String() = default;
   virtual void output(std::ostream&out) const
-  { rps_output_utf8_html(out, c_str(), (int)size(), true); };
+  {
+    rps_output_utf8_html(out, c_str(), (int)size(), true);
+  };
 }; // end class Rps_Html_Nl2br_String
 
-class Rps_Cjson_String : public std::string {
+class Rps_Cjson_String : public std::string
+{
 public:
   Rps_Cjson_String(const char*str, int len= -1) :
     std::string(str?str:"", (len>=0 && str)?len:strlen(str?str:"")) {};
   Rps_Cjson_String(const std::string&str) : std::string(str) {};
   ~Rps_Cjson_String() = default;
   void output(std::ostream&out) const
-  { rps_output_utf8_cjson(out, c_str(), (int)size()); };
+  {
+    rps_output_utf8_cjson(out, c_str(), (int)size());
+  };
 };
-inline std::ostream&operator << (std::ostream&out, const Rps_Cjson_String&hstr) { hstr.output(out); return out;
+inline std::ostream&operator << (std::ostream&out, const Rps_Cjson_String&hstr)
+{
+  hstr.output(out);
+  return out;
 };  // end << Rps_Cjson_String
 
 
 /// for output a string quoted like for C
-class Rps_QuotedC_String : public std::string {
+class Rps_QuotedC_String : public std::string
+{
   bool qtc_empty;
 public:
   Rps_QuotedC_String(const char*str, int len= -1) :
     std::string(str?str:"", (len>=0 && str)?len:strlen(str?str:"")),
-    qtc_empty(str==nullptr){};
+    qtc_empty(str==nullptr) {};
   Rps_QuotedC_String(const std::string&str)
     : std::string(str), qtc_empty(false) {};
   Rps_QuotedC_String(const Rps_QuotedC_String&) = default;
@@ -4944,22 +5222,27 @@ public:
   {
     if (qtc_empty)
       out << "*null*";
-    else {
-      out << "\"";
-      rps_output_utf8_cjson(out, c_str(), (int)size());
-      out << "\"";
-    }
+    else
+      {
+        out << "\"";
+        rps_output_utf8_cjson(out, c_str(), (int)size());
+        out << "\"";
+      }
   };
-  bool is_empty() const { return qtc_empty; };
-};				// end class Rps_QuotedC_String
+  bool is_empty() const
+  {
+    return qtc_empty;
+  };
+};        // end class Rps_QuotedC_String
 
-inline std::ostream&operator << (std::ostream&out, const Rps_QuotedC_String&hstr) {
+inline std::ostream&operator << (std::ostream&out, const Rps_QuotedC_String&hstr)
+{
   hstr.output(out);
   return out;
 };  // end << Rps_QuotedC_String
 
 //////////////////////////////////////////////////////////////////
-/// initial agenda machinery; 
+/// initial agenda machinery;
 
 /// start and run the agenda mechanism, that is start NBJOBS worker threads
 /// each running Rps_Agenda::run_agenda_worker; this does not return
@@ -4977,7 +5260,8 @@ extern "C" void rps_initialize_event_loop(void);
  * payload).
  ****/
 extern "C" rpsldpysig_t rpsldpy_agenda;
-class Rps_Agenda { /// all member functions are static...
+class Rps_Agenda   /// all member functions are static...
+{
   friend class Rps_GarbageCollector;
   friend class Rps_PayloadAgenda;
   friend class Rps_PayloadUnixProcess;
@@ -4988,10 +5272,11 @@ class Rps_Agenda { /// all member functions are static...
   friend void rps_run_agenda_mechanism(int nbjobs);
   friend void rps_stop_agenda_mechanism(void);
   static double agenda_timeout; // elapsed real time when agenda
-				// should stop running, related to
-				// --run-deplay option...
+  // should stop running, related to
+  // --run-deplay option...
 public:
-  enum agenda_prio_en {
+  enum agenda_prio_en
+  {
     AgPrio_Idle= -1,
     AgPrio__None= 0,
     AgPrio_Low,
@@ -4999,12 +5284,13 @@ public:
     AgPrio_High,
     AgPrio__Last
   };
-  enum workthread_state_en {
+  enum workthread_state_en
+  {
     WthrAg__None,
     WthrAg_Idle, //  the worker thread is idle
     WthrAg_GC,   // the worker thread is garbage collecting
     WthrAg_EndGC, // the worker thread has ended garbage collection,
-                  // and will be running again on the next loop
+    // and will be running again on the next loop
     WthrAg_Run,  // the worker thread is running and allocating
     WthrAg__Last
   };
@@ -5039,7 +5325,7 @@ private:
 
 
 
-/// the payload with agenda, only for the_agenda predefined object 
+/// the payload with agenda, only for the_agenda predefined object
 class Rps_PayloadAgenda : public Rps_Payload
 {
   friend class Rps_Agenda;
@@ -5060,13 +5346,16 @@ protected:
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
   virtual bool is_erasable(void) const;
 public:
-  virtual const std::string payload_type_name(void) const { return "agenda"; };
+  virtual const std::string payload_type_name(void) const
+  {
+    return "agenda";
+  };
 };  // end of Rps_PayloadAgenda
 
 
 /// the payload with tasklets, inside the_agenda
 class Rps_PayloadTasklet : public Rps_Payload
-{ 
+{
   friend class Rps_Agenda;
   friend rpsldpysig_t rpsldpy_agenda;
   friend rpsldpysig_t rpsldpy_tasklet;
@@ -5091,8 +5380,14 @@ protected:
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
   virtual bool is_erasable(void) const;
 public:
-  virtual const std::string payload_type_name(void) const { return "tasklet"; };
-  Rps_ClosureValue todo_closure(void) const { return tasklet_todoclos; };
+  virtual const std::string payload_type_name(void) const
+  {
+    return "tasklet";
+  };
+  Rps_ClosureValue todo_closure(void) const
+  {
+    return tasklet_todoclos;
+  };
 };  // end of Rps_PayloadTasklet
 
 
@@ -5150,7 +5445,10 @@ protected:
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
   virtual bool is_erasable(void) const;
 public:
-  virtual const std::string payload_type_name(void) const { return "unixprocess"; };
+  virtual const std::string payload_type_name(void) const
+  {
+    return "unixprocess";
+  };
   void add_process_argument (const std::string& arg);
   /// the methods related to limits return the old one, and if given a >0 number set it
   // if a process is running, gives it current .rlim_cur as obtained with prlimit....
@@ -5220,11 +5518,26 @@ protected:
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
   virtual bool is_erasable(void) const;
 public:
-  virtual const std::string payload_type_name(void) const { return "popenedfile"; };
-  const std::string command_string_popen() const { return _popened_cmd; };
-  bool is_reading_popen() const { return _popened_to_read; };
-  bool is_writing_popen() const { return !_popened_to_read; };
-  FILE* get_popened_file() const { return _popened_file.load(); };
+  virtual const std::string payload_type_name(void) const
+  {
+    return "popenedfile";
+  };
+  const std::string command_string_popen() const
+  {
+    return _popened_cmd;
+  };
+  bool is_reading_popen() const
+  {
+    return _popened_to_read;
+  };
+  bool is_writing_popen() const
+  {
+    return !_popened_to_read;
+  };
+  FILE* get_popened_file() const
+  {
+    return _popened_file.load();
+  };
 };  // end of Rps_PayloadPopenedFile
 
 

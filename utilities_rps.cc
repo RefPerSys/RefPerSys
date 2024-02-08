@@ -345,27 +345,27 @@ rps_print_types_info(void)
 {
 #define TYPEFMT_rps "%-58s:"
   printf(TYPEFMT_rps "   size  align   (bytes)\n", "**TYPE**");
-#define EXPLAIN_TYPE(Ty) printf(TYPEFMT_rps " %5d %5d\n", #Ty,		\
-				(int)sizeof(Ty), (int)alignof(Ty))
+#define EXPLAIN_TYPE(Ty) printf(TYPEFMT_rps " %5d %5d\n", #Ty,    \
+        (int)sizeof(Ty), (int)alignof(Ty))
 
-#define EXPLAIN_TYPE2(Ty1,Ty2) printf(TYPEFMT_rps " %5d %5d\n",	\
-				      #Ty1 "," #Ty2,		\
-				      (int)sizeof(Ty1,Ty2),	\
-				      (int)alignof(Ty1,Ty2))
+#define EXPLAIN_TYPE2(Ty1,Ty2) printf(TYPEFMT_rps " %5d %5d\n", \
+              #Ty1 "," #Ty2,    \
+              (int)sizeof(Ty1,Ty2), \
+              (int)alignof(Ty1,Ty2))
 
-#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3)		\
-  printf(TYPEFMT_rps " %5d %5d\n",		\
-	 #Ty1 "," #Ty2 ",\n"			\
-	 "                     "#Ty3,	\
-	 (int)sizeof(Ty1,Ty2,Ty3),		\
-	 (int)alignof(Ty1,Ty2,Ty3))
+#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3)    \
+  printf(TYPEFMT_rps " %5d %5d\n",    \
+   #Ty1 "," #Ty2 ",\n"      \
+   "                     "#Ty3, \
+   (int)sizeof(Ty1,Ty2,Ty3),    \
+   (int)alignof(Ty1,Ty2,Ty3))
 
-#define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4)			\
-  printf(TYPEFMT_rps " %5d %5d\n",			\
-	 #Ty1 "," #Ty2 ",\n                " #Ty3	\
-	 "," #Ty4,					\
-	 (int)sizeof(Ty1,Ty2,Ty3,Ty4),			\
-	 (int)alignof(Ty1,Ty2,Ty3,Ty4))
+#define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4)      \
+  printf(TYPEFMT_rps " %5d %5d\n",      \
+   #Ty1 "," #Ty2 ",\n                " #Ty3 \
+   "," #Ty4,          \
+   (int)sizeof(Ty1,Ty2,Ty3,Ty4),      \
+   (int)alignof(Ty1,Ty2,Ty3,Ty4))
 
   EXPLAIN_TYPE(int);
   EXPLAIN_TYPE(double);
@@ -663,7 +663,7 @@ rps_early_initialization(int argc, char** argv)
   {
     char cwdbuf[rps_path_byte_size];
     memset (cwdbuf, 0, sizeof(cwdbuf));
-    char tmbfr[64];		// the time buffer string
+    char tmbfr[64];   // the time buffer string
     memset(tmbfr, 0, sizeof (tmbfr));
     if (!getcwd(cwdbuf, sizeof(cwdbuf)) || cwdbuf[0] == (char)0)
       strcpy(cwdbuf, "./");
@@ -1152,7 +1152,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         }
     }
     return 0;
-    };				// end switch key
+    };        // end switch key
   return ARGP_ERR_UNKNOWN;
 } // end rps_parse1opt
 
@@ -1518,15 +1518,15 @@ rps_initialize_roots_after_loading (Rps_Loader*ld)
   std::lock_guard<std::mutex> gu(rps_object_root_mtx);
   rps_object_global_root_hashtable.max_load_factor(3.5);
   rps_object_global_root_hashtable.reserve(5*rps_hardcoded_number_of_roots()/4+3);
-#define RPS_INSTALL_ROOT_OB(Oid) {		\
-    const char*end##Oid = nullptr;		\
-    bool ok##Oid = false;			\
-    Rps_Id id##Oid(#Oid, &end##Oid, &ok##Oid);	\
-    RPS_ASSERT (end##Oid && !*end##Oid);	\
-    RPS_ASSERT (ok##Oid);			\
-    RPS_ASSERT (id##Oid.valid());		\
-    rps_object_global_root_hashtable[id##Oid]	\
-      = &RPS_ROOT_OB(Oid);			\
+#define RPS_INSTALL_ROOT_OB(Oid) {    \
+    const char*end##Oid = nullptr;    \
+    bool ok##Oid = false;     \
+    Rps_Id id##Oid(#Oid, &end##Oid, &ok##Oid);  \
+    RPS_ASSERT (end##Oid && !*end##Oid);  \
+    RPS_ASSERT (ok##Oid);     \
+    RPS_ASSERT (id##Oid.valid());   \
+    rps_object_global_root_hashtable[id##Oid] \
+      = &RPS_ROOT_OB(Oid);      \
   };
 #include "generated/rps-roots.hh"
 } // end of rps_initialize_roots_after_loading
@@ -1567,9 +1567,9 @@ rps_initialize_symbols_after_loading(Rps_Loader*ld)
   std::lock_guard<std::recursive_mutex> gu(Rps_PayloadSymbol::symb_tablemtx);
   Rps_PayloadSymbol::symb_hardcoded_hashtable.max_load_factor(2.5);
   Rps_PayloadSymbol::symb_hardcoded_hashtable.reserve(5*rps_hardcoded_number_of_symbols()/4+3);
-#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name) {		\
-    Rps_PayloadSymbol::symb_hardcoded_hashtable[#Name]	\
-      = &RPS_SYMB_OB(Name);				\
+#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name) {   \
+    Rps_PayloadSymbol::symb_hardcoded_hashtable[#Name]  \
+      = &RPS_SYMB_OB(Name);       \
   };
 #include "generated/rps-names.hh"
 } // end of rps_initialize_symbols_after_loading
@@ -1591,13 +1591,13 @@ rps_set_debug_flag(const std::string &curlev)
   ///
   /* second X macro trick for processing several comma-separated debug flags, in all cases as else if branch  */
   ///
-#define Rps_SET_DEBUG(Opt)						\
-  else if (curlev == #Opt) {						\
-    bool alreadygiven = rps_debug_flags & (1 << RPS_DEBUG_##Opt);	\
-    rps_debug_flags |= (1 << RPS_DEBUG_##Opt);				\
-    goodflag = true;							\
-    if (!alreadygiven)							\
-      RPS_INFORMOUT("setting debugging flag " << #Opt);	 }
+#define Rps_SET_DEBUG(Opt)            \
+  else if (curlev == #Opt) {            \
+    bool alreadygiven = rps_debug_flags & (1 << RPS_DEBUG_##Opt); \
+    rps_debug_flags |= (1 << RPS_DEBUG_##Opt);        \
+    goodflag = true;              \
+    if (!alreadygiven)              \
+      RPS_INFORMOUT("setting debugging flag " << #Opt);  }
   ///
   RPS_DEBUG_OPTIONS(Rps_SET_DEBUG);
 #undef Rps_SET_DEBUG
@@ -1651,7 +1651,7 @@ rps_set_debug(const std::string &deblev)
           if (!rps_set_debug_flag(curlev))
             RPS_FATALOUT("unexpected debug level " << curlev
                          << "; use --debug=help to get all known debug levels");
-        };			// end for const char*pc ...
+        };      // end for const char*pc ...
 
     } // else case, for deblev which is not help
 
@@ -1666,14 +1666,14 @@ rps_output_debug_flags(std::ostream&out,  unsigned flags)
   out << flags << "=" ;
   int nbf = 0;
   //
-#define SHOW_DBGFLAG(Lev)			\
-  do {						\
-    if (flags & (1<< RPS_DEBUG_##Lev)) {	\
-      if (nbf > 0)				\
-	out << ',';				\
-      out << #Lev;				\
-      nbf++;					\
-    }						\
+#define SHOW_DBGFLAG(Lev)     \
+  do {            \
+    if (flags & (1<< RPS_DEBUG_##Lev)) {  \
+      if (nbf > 0)        \
+  out << ',';       \
+      out << #Lev;        \
+      nbf++;          \
+    }           \
   } while(0);
   RPS_DEBUG_OPTIONS(SHOW_DBGFLAG);
 #undef SHOW_DBGFLAG

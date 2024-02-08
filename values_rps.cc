@@ -72,7 +72,7 @@ Rps_Id::to_cbuf24(char cbuf[]) const
       pc--;
     }
   while (pc>start);
-};				// end Rps_Id::to_cbuf24
+};        // end Rps_Id::to_cbuf24
 
 
 /// opposite conversion from cbuf to oid
@@ -1338,7 +1338,7 @@ operator << (std::ostream&out, const std::vector<Rps_Value>& vect)
     }
   out << "|)";
   return out;
-};				// end operator << for std::vector<Rps_Value>
+};        // end operator << for std::vector<Rps_Value>
 
 /* end of file value_rps.cc */
 

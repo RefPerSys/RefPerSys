@@ -81,7 +81,7 @@ class Rps_Dumper
   std::unordered_map<Rps_Id, Rps_ObjectRef,Rps_Id::Hasher> du_mapobjects;
   std::deque<Rps_ObjectRef> du_scanque;
   std::string du_tempsuffix;
-  long du_newobcount;		// counter for new dumped objects
+  long du_newobcount;   // counter for new dumped objects
   double du_startelapsedtime;
   double du_startprocesstime;
   double du_startwallclockrealtime;
@@ -170,7 +170,7 @@ public:
     itspace->second->sp_setob.insert(obrcomp);
   };
 #warning perhaps keep some temporary dump object inside Rps_Dumper? see rps_dump_into
-};				// end class Rps_Dumper
+};        // end class Rps_Dumper
 
 Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
   du_topdir(topdir), du_curworkdir(), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
@@ -1119,10 +1119,10 @@ Rps_Dumper::write_generated_data_file(void)
     char nowtimbuf[128];
     memset (nowtimbuf, 0, sizeof(nowtimbuf));
     *pouts << std::endl
-	   << "//// generated at "
-	   << rps_now_strftime_centiseconds(nowtimbuf, sizeof(nowtimbuf),
-					    "%Y-%b-%d %H:%M:%S %Z")
-	   << " on " << rps_hostname() << std::endl;
+           << "//// generated at "
+           << rps_now_strftime_centiseconds(nowtimbuf, sizeof(nowtimbuf),
+                                            "%Y-%b-%d %H:%M:%S %Z")
+           << " on " << rps_hostname() << std::endl;
   }
   *pouts << std::endl << std::endl
          << "//// end of generated " << datapathstr

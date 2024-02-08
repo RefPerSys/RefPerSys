@@ -36,10 +36,17 @@ export
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 #                                                                
-.PHONY: all config objects clean gitpush gitpush2 print-plugin-settings
+.PHONY: all config objects clean gitpush gitpush2 print-plugin-settings indent
 
 SYNC=/bin/sync
+
+## a formatter to restrict width to 75 columns
 FMT=/usr/bin/fmt
+
+## a C++ indenter and its flags
+ASTYLE=/usr/bin/astyle
+ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
+
 -include _config-refpersys.mk
 
 ### Human hand-written C++ sources
@@ -168,5 +175,11 @@ print-plugin-settings:
 	@printf "RPSPLUGIN_CXX='%s'\n" $(REFPERSYS_CXX)
 	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)"
 	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"
+
+indent:
+	 $(ASTYLE) $(ASTYLEFLAGS) refpersys.hh
+	 $(ASTYLE) $(ASTYLEFLAGS) oid_rps.hh
+	 $(ASTYLE) $(ASTYLEFLAGS) inline_rps.hh
+	for f in $(REFPERSYS_HUMAN_CPP_SOURCES) ; do $(ASTYLE) $(ASTYLEFLAGS) $$f ; done
 ## eof GNUmakefile
 

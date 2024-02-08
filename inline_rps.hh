@@ -1311,7 +1311,7 @@ Rps_ZoneValue::operator > (const Rps_ZoneValue&zv) const
 Rps_LazyHashedZoneValue::Rps_LazyHashedZoneValue(Rps_Type typ) :
   Rps_ZoneValue(typ), _lazyhash(0)
 {
-};				// end Rps_LazyHashedZoneValue
+};        // end Rps_LazyHashedZoneValue
 
 //////////////////////////////////////////////////////////// strings
 Rps_HashInt

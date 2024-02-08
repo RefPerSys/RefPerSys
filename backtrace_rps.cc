@@ -40,12 +40,12 @@ const char rps_backtrace_gitid[]= RPS_GITID;
 extern "C" const char rps_backtrace_date[];
 const char rps_backtrace_date[]= __DATE__;
 
-#define RPS_FASTABORT(Msg) do {					\
-  std::clog << " RefPerSys FAST ABORT:" << __FILE__ << ':'	\
-	    << __LINE__  << std::endl				\
-	    << "..@" << __PRETTY_FUNCTION__			\
-	    << " §¤: " << Msg << std::endl << std::flush;	\
-  abort();							\
+#define RPS_FASTABORT(Msg) do {         \
+  std::clog << " RefPerSys FAST ABORT:" << __FILE__ << ':'  \
+      << __LINE__  << std::endl       \
+      << "..@" << __PRETTY_FUNCTION__     \
+      << " §¤: " << Msg << std::endl << std::flush; \
+  abort();              \
 } while(0)
 
 /// actually, in file main_rps.cc we have something like  asm volatile ("rps_end_of_main: nop");
