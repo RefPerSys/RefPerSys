@@ -630,10 +630,8 @@ rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempo
 	   "/*********\n" //
 	   " **                 for Emacs...\n" //
 	   " ** Local-Variables: ;;\n" //
-	   " ** compile-command: \"%s -I%s -I/usr/local/include/  -I/usr/include/jsoncpp -std=gnu++17 -Wall -Wextra -Og -g -shared -fPIC ",
-	   rps_cxx_compiler_command, rps_topdirectory);
-  fprintf (tfil, "%s ", tempcppfilename);
-  fprintf (tfil, " -o /tmp/rpsplug_%s.so\" ;;\n",  _f.tempob->oid().to_string().c_str());
+	   " ** compile-command: \"cd %s; %s %s /tmp/rpsplug_%s.so\" ;;",
+	   rps_topdirectory, rps_plugin_builder_script, tempcppfilename, _f.tempob->oid().to_string().c_str());
   fprintf (tfil, //
 	   " ** End: ;;\n" //
 	   " ********/\n");
@@ -1292,7 +1290,7 @@ main (int argc, char** argv)
              "… gitid %.16s built %s, %s mode (%d jobs)\n" ///
 	     "… executable %s\n" ///
 	     "This is an open source inference engine software,\n"
-	     ".... GPLv3+ licensed, no warranty (%s optimized)!\n"
+	     ".... GPLv3+ licensed, no warranty !\n"
 	     ".... See http://refpersys.org/ and https://www.gnu.org/licenses/gpl-3.0.en.html ....\n",
              RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
              RPS_TERMINAL_NORMAL_ESCAPE,
@@ -1305,8 +1303,7 @@ main (int argc, char** argv)
              rps_gitid, rps_timestamp,
              (rps_batch?"batch":"interactive"),
              rps_nbjobs,
-	     rps_progexe,
-	     (rps_is_link_time_optimized!=0)?"link-time":"normal");
+	     rps_progexe);
   if (!mycwd)
     RPS_FATALOUT("getcwd failed for " << (sizeof(cwdbuf)-2) << " bytes.");
   if (rps_run_delay > 0 && rps_batch)
