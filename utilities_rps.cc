@@ -38,11 +38,7 @@
 // comment for our do-scan-pkgconfig.c utility
 //@@PKGCONFIG gmp
 //@@PKGCONFIG gmpxx
-
-#ifdef RPS_HAVE_ARCH_x86_64
-#warning utilities_rps.cc includes lightning/jit_x86.h
-#include "lightning/jit_x86.h"
-#endif
+//@@PKGCONFIG lightning
 
 extern "C" const char rps_utilities_gitid[];
 const char rps_utilities_gitid[]= RPS_GITID;
@@ -425,12 +421,6 @@ rps_print_types_info(void)
 #undef EXPLAIN_TYPE4
 #undef EXPLAIN_TYPE3
 #undef EXPLAIN_TYPE
-  {
-    /// https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
-    /// see also lightgen_rps.cc file
-    printf(TYPEFMT_rps " %5d %5d\n","GNU lightning jit_state",
-           rps_gnulightning_jitstate_size, rps_gnulightning_jitstate_align);
-  }
 #undef TYPEFMT_rps
   putchar('\n');
   fflush(nullptr);
