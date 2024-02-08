@@ -474,9 +474,9 @@ rps_show_version(void)
             << " Read Eval Print Loop: " << rps_repl_version() << std::endl
             << " libCURL for web client: " << rps_curl_version() << std::endl
             << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
-            << " made with: " << rps_makefile << std::endl
+            << " made with: " << rps_gnumakefile << std::endl
             << " running on " << rps_hostname() << std::endl
-            << "This " << ((rps_is_link_time_optimized>0)?"link-time-optimized":"normal") << " executable was built by "
+            << "This executable was built by "
             << rps_building_user_name
             << " of email " << rps_building_user_email
             << std::endl;
