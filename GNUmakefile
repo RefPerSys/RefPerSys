@@ -53,6 +53,14 @@ REFPERSYS_GENERATED_CPP_SOURCES := $(wildcard generated/*.cc)
 
 ### corresponding object files
 REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
+
+### required libraries not being known to pkg-config
+## unistring is https://www.gnu.org/software/libunistring/
+## backtrace is https://github.com/ianlancetaylor/libbacktrace (also inside GCC source)
+REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace
+
+
+################
 all:
 
 	@/usr/bin/printf "make features: %s\n" "$(.FEATURES)" | $(FMT)
@@ -96,14 +104,15 @@ __timestamp.c: do-generate-timestamp.sh |GNUmakefile
 	./do-generate-timestamp.sh > $@
 
 refpersys: 
+	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
 #       @echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
 	@echo RefPerSys generated C++ files $(REFPERSYS_GENERATED_CPP_SOURCES)
 #	@echo RefPerSys generated C++ object files $(REFPERSYS_GENERATED_CPP_OBJECTS)
 	@echo PACKAGES_LIST is $(PACKAGES_LIST)
-	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
 	$(MAKE) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
 	$(REFPERSYS_CXX) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) -rdynamic \
+              $(REFPERSYS_NEEDED_LIBRARIES) \
 	      $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 
 
@@ -143,7 +152,8 @@ endif
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist is $(PKGLIST_$(basename $(<F)))	
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
-	$(shell pkg-config --cflags $(PKGLIST_refpersys) $(PKGLIST_$(basename $(<F)))) \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
 	       -c -o $@ $<
