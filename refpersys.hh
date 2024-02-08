@@ -238,19 +238,13 @@ extern "C" const char rps_gnumakefile[];
 extern "C" const char*const rps_subdirectories[];
 extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];
-extern "C" const char rps_build_xtra_cflags[];
 extern "C" const char rps_plugin_builder_script[];
-////
-//// TODO: it is hoped, near commit bbed1a6a87b4 of mid-March 2023, that RefPerSys contributors will choose a single parser generator.
-// GNU bison is a parser generator,  see www.gnu.org/software/bison/
-extern "C" const char rps_gnubison_command[];
-extern "C" const char rps_gnubison_realpath[];
-extern "C" const char rps_gnubison_version[];
 
-//// the GPP general purpose preprocessor see logological.org/gpp
-extern "C" const char rps_gpp_command[];
-extern "C" const char rps_gpp_realpath[];
-extern "C" const char rps_gpp_version[];
+/// In commit 92c6e6b70d2 of Feb, 8, 2024 we used to mention GNU bison and GPP
+/// GNU bison is a parser generator, see www.gnu.org/software/bison/
+/// GPP is a general purpose preprocessor, see logological.org/gpp
+/// we did had some constants in __timestamp.c related to them.
+
 
 ///// a process running the GUI communicating using JSONRPC
 extern "C" const char rps_gui_script_executable[];

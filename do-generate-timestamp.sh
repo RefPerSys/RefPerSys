@@ -42,7 +42,7 @@ printf "//// end refpersys.toc\n"
 
 (echo  'const char*const rps_subdirectories[]= {' ; /bin/grep  '/$' /tmp/refpersys-$$.toc | tr -s " \n"  | sed 's/^\(.*\)$/ "\1\",/';  echo ' (const char*)0} ;')
 
-printf "const char rps_gnu_makefile[]=\"%s\";\n"   $(realpath GNUmakefile)
+printf "const char rps_gnumakefile[]=\"%s\";\n"   $(realpath GNUmakefile)
 
 printf "const char rps_gnu_make[]=\"%s\";\n" $(/bin/which gmake)
 

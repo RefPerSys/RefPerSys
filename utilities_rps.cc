@@ -460,15 +460,8 @@ rps_show_version(void)
                which parser generator to really use... and drop the
                other one.  Non technical considerations,
                e.g. licensing, is important to some partners... */
-            << " Gnu Bison parser generator: " << rps_gnubison_command
-            << " version: " << rps_gnubison_version
             << " Gnu multi-precision library version: " << gmp_version << std::endl
             << " at: " << rps_gnubison_realpath
-            << std::endl
-            << " GPP generic preprocessor: "
-            << rps_gpp_command
-            << " version: " << rps_gpp_version
-            << " at: " << rps_gpp_realpath
             << std::endl
             << " default GUI script: " << rps_gui_script_executable << std::endl
             << " Read Eval Print Loop: " << rps_repl_version() << std::endl
@@ -487,7 +480,6 @@ rps_show_version(void)
       std::cout << " in " << cwdbuf;
   };
   std::cout << std::endl << " C++ compiler: " << rps_cxx_compiler_version << std::endl
-            << " extra compilation flags: " << rps_build_xtra_cflags << std::endl
             << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl
             << "+++++ there is no WARRANTY, to the extent permitted by law ++++" << std::endl
             << "***** see also refpersys.org *****"
