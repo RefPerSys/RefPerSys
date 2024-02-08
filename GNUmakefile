@@ -36,7 +36,7 @@ export
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 #                                                                
-.PHONY: all config objects clean gitpush gitpush2 print-plugin-settings indent
+.PHONY: all config objects clean gitpush gitpush2 print-plugin-settings indent redump
 
 SYNC=/bin/sync
 
@@ -182,5 +182,23 @@ indent:
 	 $(ASTYLE) $(ASTYLEFLAGS) oid_rps.hh
 	 $(ASTYLE) $(ASTYLEFLAGS) inline_rps.hh
 	for f in $(REFPERSYS_HUMAN_CPP_SOURCES) ; do $(ASTYLE) $(ASTYLEFLAGS) $$f ; done
+
+## redump target
+redump: refpersys
+	./refpersys --dump=. --batch --run-name=$@
+	@if git diff -U1|grep '^[+-] ' | grep -v origitid ; then \
+	  printf "make redump changed in %s git %s\n" $$(pwd)  $(RPS_SHORTGIT_ID); \
+          git diff ; \
+        else \
+	  git checkout rps_manifest.json ; \
+            printf "make redump reached fixpoint in %s git %s\n" $$(pwd) $(RPS_SHORTGIT_ID) ; \
+        fi
+	$(SYNC)
+
+## alternate redump target
+altredump:  ./refpersys
+	./refpersys --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch --run-name=$@ 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
+	$(SYNC)
+
 ## eof GNUmakefile
 
