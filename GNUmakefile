@@ -116,7 +116,7 @@ __timestamp.c: do-generate-timestamp.sh |GNUmakefile
 __timestamp.o: __timestamp.c |GNUmakefile
 	$(CC) -fPIC -c -O -g -Wall -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $^ -o $@
 
-refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) |  GNUmakefile
+refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o |  GNUmakefile
 	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
 #       @echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
@@ -128,6 +128,8 @@ refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) | 
 	$(REFPERSYS_CXX) -rdynamic -o $@ $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o \
               $(REFPERSYS_NEEDED_LIBRARIES) \
 	      $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
+	@/bin/mv -v --backup __timestamp.c __timestamp.c%
+	@/bin/rm __timestamp.o
 
 
 # Target to facilitate git push to both origin and GitHub mirrors
