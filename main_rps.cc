@@ -1355,6 +1355,7 @@ main (int argc, char** argv)
     };
   rps_load_from(rps_my_load_dir);
   RPS_POSSIBLE_BREAKPOINT();
+  //// at this point the persistent heap has been completely loaded!
   atexit (rps_exiting);
   if (!rps_batch)
     rps_initialize_event_loop();
