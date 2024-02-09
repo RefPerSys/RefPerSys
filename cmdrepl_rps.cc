@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2021 - 2023 The Reflective Persistent System Team
+ *      © Copyright 2021 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -1199,13 +1199,14 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
               << RPS_TERMINAL_NORMAL_ESCAPE << " : "
               << _f.showv << std::endl;
     std::cout << std::endl
-              << "¤¤¤¤¤¤ SHOW " << _f.showv
-              << " in environment " << _f.evalenvob << " evaluated to " << _f.evalshowv;
+              << "¤¤¤¤¤¤ SHOW expr. " << _f.showv << std::endl
+              << " in environment " << _f.evalenvob << std::endl
+              << " evaluated to " << _f.evalshowv;
     if (_f.evalshowv.is_object())
       {
 #warning this code should be moved into  rps_show_object_for_repl above
         _f.shownob = _f.evalshowv.as_object();
-        rps_show_object_for_repl(&_,_f.shownob,&std::cout,0);
+        rps_show_object_for_repl(&_,_f.shownob, &std::cout, 0);
       }
     else if (_f.evalshowv.is_instance())
       {
