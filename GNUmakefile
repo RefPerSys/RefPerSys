@@ -129,7 +129,7 @@ refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __
               $(REFPERSYS_NEEDED_LIBRARIES) \
 	      $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 	@/bin/mv -v --backup __timestamp.c __timestamp.c%
-	@/bin/rm __timestamp.o
+	@/bin/rm -vf __timestamp.o
 
 
 # Target to facilitate git push to both origin and GitHub mirrors
