@@ -1277,13 +1277,19 @@ main (int argc, char** argv)
 {
   rps_progname = argv[0];
   bool helpwanted = false;
+  bool versionwanted = false;
   if (argc>1 && !strcmp(argv[1], "--help"))
     helpwanted = true;
+  if (argc>1 && !strcmp(argv[1], "--version"))
+    versionwanted = true;
   static_assert(sizeof(rps_progexe) > 80);
   {
+    memset(rps_progexe, 0, sizeof(rps_progexe));
     ssize_t pxl = readlink("/proc/self/exe",
                            rps_progexe, sizeof(rps_progexe));
     if (pxl <= 0 || pxl >= (ssize_t) sizeof(rps_progexe)-2)
+#warning perhaps use a popen here
+      // maybe we want a popen of which of the realpath of argv[0]?
       strcpy(rps_progexe, "$(/usr/bin/which refpersys)");
   }
   static_assert (sizeof(int64_t) == 8 && alignof(int64_t) == 8);
@@ -1292,8 +1298,10 @@ main (int argc, char** argv)
   static_assert (sizeof(void*) == 8 && alignof(void*) == 8);
   static_assert (sizeof(int) == 4 && alignof(int) == 4);
   static_assert (sizeof(time_t) == 8 && alignof(time_t) == 8);
+  if (versionwanted)
+    rps_show_version();
   rps_parse_program_arguments(argc, argv);
-  if (helpwanted)
+  if (helpwanted || versionwanted)
     printf("%s minimal jobs or threads number %d, maximal %d, default %d\n",
            rps_progname, RPS_NBJOBS_MIN, RPS_NBJOBS_MAX, rps_nbjobs);
   ///
