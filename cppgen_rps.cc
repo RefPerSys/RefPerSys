@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2023 - 2023 The Reflective Persistent System Team
+ *      © Copyright 2023 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -54,6 +54,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  Rps_ObjectRef obmodule;
                  Rps_ObjectRef obgenerator;
                  Rps_ObjectRef obincludeset;
+                 Rps_ObjectRef obcurinclude;
                  Rps_ClosureValue vclos;
                  Rps_Value vinclude;
                  Rps_Value vmainres;
@@ -100,10 +101,12 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
     };
   if (_f.vinclude.is_set())
     {
+      unsigned cardinclset = _f.vinclude.as_set()->cardinal();
 #warning  rps_generate_cplusplus_code should handle set of includes
     }
   else if (_f.vinclude.is_tuple())
     {
+      unsigned lenincltup = _f.vinclude.as_tuple()->size();
 #warning  rps_generate_cplusplus_code should handle tuple of includes
     }
   else
