@@ -3613,6 +3613,10 @@ public:
   inline int index_found_before(Rps_ObjectRef findob, int endix= -1);
   inline Rps_ObjectRef random_component_or_fail(int startix=0, int endix= -1) const;
   inline Rps_ObjectRef random_component_or_default(Rps_ObjectRef defob, int startix=0, int endix= -1) const;
+  inline unsigned size() const
+  {
+    return cnt();
+  };
 #warning Rps_TupleOb very incomplete
 };// end of Rps_TupleOb
 
