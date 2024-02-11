@@ -53,8 +53,7 @@ We considered previously to use the garbage collector from [Ravenbrook
 MPS](https://www.ravenbrook.com/project/mps/). Since that project is
 now obsolete, we gave up that idea.
 
-**Don't expect RefPerSys to be a realistic project.** It is not (and
-certainly not before 2023).
+**Don't expect RefPerSys to be a mature project.** It is not in Feb 2024.
 
 Some draft design ideas are written in the [RefPerSys design
 draft](http://starynkevitch.net/Basile/refpersys-design.pdf) which is
@@ -141,6 +140,7 @@ copyrighted by the RefPerSys team, currently made of:
 		near Paris, France. So usual timezone `TZ=MEST`
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Niklaus Rozencrantz in Sweden.
 
 Some files might be "borrowed" from other similar GPLv3+ licensed
 projects (notably from [Bismon](http://github.com/bstarynk/bismon)...)
