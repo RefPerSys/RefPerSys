@@ -15,6 +15,7 @@
 //: _
 //: You should have received a copy of the GNU General Public License
 //: along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//: generated from git 2e8bf717d5de+ branch master
 
 #ifndef RPS_INSTALL_ROOT_OB
 #error RPS_INSTALL_ROOT_OB(Oid) macro undefined

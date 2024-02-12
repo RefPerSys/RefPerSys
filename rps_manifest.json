@@ -15,10 +15,12 @@
 //!! _
 //!! You should have received a copy of the GNU General Public License
 //!! along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//!! generated from git 2e8bf717d5de+ branch master
 {
  "constset" : [ "_41OFI3r0S1t03qdB2E", "_9uwZtDshW4401x6MsY" ],
- "dumpdate" : "2024 Jan 26",
+ "dumpdate" : "2024 Feb 12",
  "format" : "RefPerSysFormat2023A",
+ "git-branch" : "master",
  "globalnames" : 
  [
   {
@@ -252,11 +254,12 @@
   "_9Gz1oNPCnkB00I6VRS"
  ],
  "jsoncpp-version" : "1.9.5",
- "origitid" : "b6d8446d17a27c335272c796ad593daabff385ec",
+ "origitid" : "2e8bf717d5dec96244e72695687a38a36eddae0e+",
  "plugins" : [],
- "progmd5sum" : "5667694075c52cbed15cb472c1581772",
+ "progmd5sum" : "ab59619d531bbd7462396c00b9d54e64",
  "progname" : "./refpersys",
- "progtimestamp" : "Fri 26 Jan 2024 12:15:17 PM CET",
+ "progtimestamp" : "Mon 12 Feb 2024 09:14:53 AM CET",
+ "short-git-id" : "2e8bf717d5de+",
  "spaceset" : [ "_8J6vNYtP5E800eCr5q" ]
 }
 

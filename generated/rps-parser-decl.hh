@@ -15,6 +15,7 @@
 //: _
 //: You should have received a copy of the GNU General Public License
 //: along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#warning empty parser declaration file generated/rps-parser-decl.hh from dump_rps.cc:1146
-/// generator object ◌_2mwWG0qAelD02fXRtR∊object
-/// git b6d8446d17a2
+//: generated from git 2e8bf717d5de+ branch master
+#warning empty parser declaration file generated/rps-parser-decl.hh from dump_rps.cc:1154
+/// generator object ◌_1j1TQFYbBzC00Cq7Gt∊object
+/// git 24897826b00f+
