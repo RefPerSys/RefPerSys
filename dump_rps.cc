@@ -1254,6 +1254,8 @@ Rps_Dumper::write_manifest_file(void)
   Json::Value jmanifest(Json::objectValue);
   jmanifest["format"] = Json::Value (RPS_MANIFEST_FORMAT);
   jmanifest["jsoncpp-version"] = JSONCPP_VERSION_STRING;
+  jmanifest["short-git-id"] = rps_shortgitid;
+  jmanifest["git-branch"] = rps_gitbranch;
   {
     int nbroots=0;
     Json::Value jglobalroots(Json::arrayValue);

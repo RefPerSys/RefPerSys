@@ -285,6 +285,8 @@ rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string
        << linsuffix << std::endl;
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
+  outs << linprefix << "generated from git " << rps_shortgitid
+       << " branch " << rps_gitbranch << linsuffix << std::endl;
 } // end rps_emit_gplv3_copyright_notice
 
 
@@ -336,6 +338,8 @@ rps_emit_lgplv3_copyright_notice(std::ostream&outs, std::string path, std::strin
        << linsuffix << std::endl;
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
+  outs << linprefix << "generated from git " << rps_shortgitid
+       << " branch " << rps_gitbranch << linsuffix << std::endl;
 } // end rps_emit_lgplv3_copyright_notice
 
 
@@ -451,6 +455,7 @@ rps_show_version(void)
             << " top directory: " << rps_topdirectory << std::endl
             << " gitid: " << rps_gitid << std::endl
             << " short-gitid: " << rps_shortgitid << std::endl
+            << " gitbranch: " << rps_gitbranch << std::endl
             << " last git tag: " << rps_lastgittag << std::endl
             << " last git commit: " << rps_lastgitcommit << std::endl
             << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
