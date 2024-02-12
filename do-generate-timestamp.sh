@@ -18,6 +18,8 @@ fi
 
 printf 'const char rps_shortgitid[] = "%s";\n' "$(./do-generate-gitid.sh -s)"
 
+printf 'const char rps_gitbranch[] = "%s";\n' "$(git branch --show-current)"
+
 (echo -n 'const char rps_lastgittag[]="'; (git describe --abbrev=0 --all || echo '*notag*') | tr -d '\n\r\f\"\\\\'; echo '";')
 
 (echo -n 'const char rps_lastgitcommit[]="' ; \
