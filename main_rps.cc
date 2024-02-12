@@ -1310,7 +1310,7 @@ main (int argc, char** argv)
   RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" //
              " %s process %d on host %s in %s build top dir %s\n" //
              "… (stdout %s, stderr %s) with %d arguments\n" //
-             "… gitid %.16s built %s, %s mode (%d jobs)\n" ///
+             "… gitid %.16s branch %s built %s, %s mode (%d jobs)\n" ///
              "… executable %s\n" ///
              "This is an open source inference engine software,\n"
              ".... GPLv3+ licensed, no warranty !\n"
@@ -1323,7 +1323,7 @@ main (int argc, char** argv)
              rps_stdout_istty?"tty":"plain",
              rps_stderr_istty?"tty":"plain",
              argc,
-             rps_gitid, rps_timestamp,
+             rps_gitid, rps_gitbranch, rps_timestamp,
              (rps_batch?"batch":"interactive"),
              rps_nbjobs,
              rps_progexe);
@@ -1416,7 +1416,8 @@ main (int argc, char** argv)
                 << (int)getpid() << " on " << rps_hostname()
                 << std::endl
                 << "… executable " << rps_progexe
-                << " git " << rps_gitid << std::endl
+                << " git " << rps_gitid << " branch " << rps_gitbranch
+                << std::endl
                 << "… built " << rps_timestamp
                 << " loaded state " << rps_my_load_dir << std::endl
                 << " elapsed " << rps_elapsed_real_time()
