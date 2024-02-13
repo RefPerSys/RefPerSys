@@ -50,8 +50,7 @@ you could have fun sharing our ideas and experimenting yours.
 A rewrite of RefPerSys in C was attempted on [refpersys-in-c](https://github.com/RefPerSys/refpersys-in-c).
 
 We considered previously to use the garbage collector from [Ravenbrook
-MPS](https://www.ravenbrook.com/project/mps/). Since that project is
-now obsolete, we gave up that idea.
+MPS](https://github.com/Ravenbrook/mps).
 
 **Don't expect RefPerSys to be a mature project.** It is not in Feb 2024.
 
