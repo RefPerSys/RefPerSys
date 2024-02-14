@@ -271,24 +271,10 @@ Some C++ code is important since shared between RefPerSys and the
 mid-september 2023.  It uses GNU libunistring and is shared (in file
 `jsonrpsfltk.cc` of the `guifltk-refpersys`
 
-### compiling FLTK with DWARF debug information
 
-[RefPerSys](http://refpersys.org/) was using (e.g. in its commit
-[843a6f0ddf1c22](https://github.com/RefPerSys/RefPerSys/commit/843a6f0ddf1c22149560f8d5a145638d78eda187)...)
-the [FLTK](https://fltk.org/) graphical user interface toolkit
-(e.g. FLTK version
-[1.3.8](https://www.fltk.org/pub/fltk/1.3.8/fltk-1.3.8-source.tar.bz2)
-or [newer](https://github.com/fltk/fltk)...).  That toolkit should be
-compiled with both debug information and optimization, by [configuring
-it](https://groups.google.com/g/fltkgeneral/c/QA70GfnWYvE/m/iIvJGb1uBwAJ)
-with `./configure --enable-debug --with-optim="-O2"`
+### Related files
 
-### The `guifltk-refpersys` graphical user interface
-
-Near september 2023, a separate [FLTK](https://fltk.org/) based
-graphical user interface is being developed. See
-[guifltk-refpersys](https://github.com/RefPerSys/guifltk-refpersys)
-for its code.
+See also some files from [misc-basile](https://github.com/bstarynk/misc-basile)
 
 ### Build instructions
 
