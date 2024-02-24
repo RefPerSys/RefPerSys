@@ -15,7 +15,7 @@
 //: _
 //: You should have received a copy of the GNU General Public License
 //: along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//: generated from git 2e8bf717d5de+ branch master
+//: generated from git 9b5a369e048d+ branch master
 
 /// collection of constant objects, mentioned in C++ files, 
 /// .... prefixed with 'rpskob' followed by an oid.

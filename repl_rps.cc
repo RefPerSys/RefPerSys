@@ -5,7 +5,8 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the Read-Eval-Print-Loop code using GNU readline
+ *      It has the Read-Eval-Print-Loop code but don't use GNU readline
+ *      anymore in Feb. 2024 (after commit 5b20c981b9e)
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -32,11 +33,7 @@
 
 #include "refpersys.hh"
 
-// comment for our do-scan-pkgconfig.c utility
-//@@PKGCONFIG readline
 
-#include "readline/readline.h"
-#include "readline/history.h"
 #include "wordexp.h"
 
 extern "C" const char rps_repl_gitid[];
@@ -733,227 +730,20 @@ Rps_LexTokenZone::less(Rps_ZoneValue const&zv) const
 
 ////////////////////////////////////////////////////////////////
 
-
+/// removed after commit 5b20c981b9e (Feb 2024) where XXXrepl was rpsrepl
 
 //§ char **
-//§ rpsrepl_name_or_oid_completion(const char *text, int start, int end)
-//§ {
-//§   /* Notice that the start and end are byte indexes, and that matters
-//§    *  with UTF-8.  But they are indexes in the current line, while text
-//§    *  is what should be completed... */
-//§   RPS_DEBUG_LOG(COMPL_REPL, "text='" << text << "' start=" << start
-//§                 << ", end=" << end
-//§                 << std::endl
-//§                 << RPS_FULL_BACKTRACE_HERE(1, "rpsrepl_name_or_oid_completion"));
-//§   rps_completion_vect.clear();
-//§   std::string prefix;
-//§   int nbmatch = 0;
-//§   // for objid, we require four characters including the leading
-//§   // underscore to autocomplete...
-//§   if (end>start+4 && text[0] == '_' && isdigit(text[1])
-//§       && isalnum(text[2]) && isalnum(text[3]))
-//§     {
-//§       prefix.assign(text, end-start);
-//§       RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete prefix='" << prefix << "'");
-//§       // use oid autocompletion, with
-//§       // Rps_ObjectZone::autocomplete_oid...
-//§       nbmatch = Rps_ObjectZone::autocomplete_oid
-//§                 (prefix.c_str(),
-//§                  [&] (const Rps_ObjectZone* obz)
-//§       {
-//§         RPS_ASSERT(obz != nullptr);
-//§         Rps_Id oid = obz->oid();
-//§         RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete oid=" << oid
-//§                       << " for prefix='" << prefix << "'"
-//§                       << std::endl
-//§                       << RPS_FULL_BACKTRACE_HERE(1, "autocomploid/rpsrepl_name_or_oid_completion"));
-//§         rps_completion_vect.push_back(oid.to_string());
-//§         return false;
-//§       });
-//§       RPS_DEBUG_LOG(COMPL_REPL, "oid autocomplete prefix='" << prefix << "' -> nbmatch=" << nbmatch);
-//§     }
-//§   // for names, we require two characters to autocomplete
-//§   else if (end>start+2 && isalpha(text[0]) && (isalnum(text[1]) || text[1]=='_'))
-//§     {
-//§       // use symbol name autocompletion, with
-//§       // Rps_PayloadSymbol::autocomplete_name...
-//§       prefix.assign(text, end-start);
-//§       RPS_DEBUG_LOG(COMPL_REPL, "name autocomplete prefix='" << prefix << "'");
-//§       nbmatch =  Rps_PayloadSymbol::autocomplete_name
-//§                  (prefix.c_str(),
-//§                   [&] (const Rps_ObjectZone*obz, const std::string&name)
-//§       {
-//§         RPS_ASSERT(obz != nullptr);
-//§         RPS_DEBUG_LOG(COMPL_REPL, "symbol autocomplete name='" << name
-//§                       << "', obz:" << Rps_ObjectRef(obz)
-//§                       << " for prefix='" << prefix << "'"
-//§                       << std::endl
-//§                       << RPS_FULL_BACKTRACE_HERE(1, "autocomplname/rpsrepl_name_or_oid_completion"));
-//§         rps_completion_vect.push_back(name);
-//§         return false;
-//§       });
-//§       RPS_DEBUG_LOG(COMPL_REPL, "name autocomplete prefix='" << prefix << "' -> nbmatch=" << nbmatch);
-//§     }
-//§   else
-//§     RPS_DEBUG_LOG(COMPL_REPL, "no autocomplete prefix='" << prefix << "'"
-//§                   << " text='" << text << "' start=" << start << " end=" << end);
-//§   //
-//§   RPS_DEBUG_LOG(COMPL_REPL, "autocomplete rps_completion_vect nbmatch=" << nbmatch << "rps_completion_vect: siz#" << rps_completion_vect.size()
-//§                 << Rps_Do_Output([&](std::ostream& out)
-//§   {
-//§     int ix=0;
-//§     for (auto str: rps_completion_vect)
-//§       {
-//§         if (ix % 4 == 0)
-//§           out << std::endl << "...";
-//§         out << " [" << ix << "]::'" << str<< "'";
-//§         ix++;
-//§       }
-//§   })
-//§       << std::endl
-//§       << RPS_FULL_BACKTRACE_HERE(1, "rpsrepl_name_or_oid_completion-autocomplete"));
-//§   if (nbmatch==0)
-//§     return nullptr;
-//§   else
-//§     {
-//§       rl_attempted_completion_over = 1;
-//§       RPS_DEBUG_LOG(COMPL_REPL, "rpsrepl_name_or_oid_completion nbmatch=" << nbmatch
-//§                     << " text='" << text << "' start=" << start
-//§                     << " end='" << end);
-//§       return rl_completion_matches(text, rpsrepl_name_or_oid_generator);
-//§     }
-//§ } // end rpsrepl_name_or_oid_completion
-//§
-//§
+//§ XXXrepl_name_or_oid_completion(const char *text, int start, int end)
 //§
 //§ char *
-//§ rpsrepl_name_or_oid_generator(const char *text, int state)
-//§ {
-//§   /// the initial state is 0....
-//§   RPS_DEBUG_LOG(COMPL_REPL, "text='" << text << "' state#" << state << " rps_completion_vect.size="
-//§                 << rps_completion_vect.size()
-//§                 << Rps_Do_Output([&](std::ostream& outs)
-//§   {
-//§     int cix=0;
-//§     for (auto curcomp: rps_completion_vect)
-//§       {
-//§         if (cix % 4 == 0) outs << std::endl;
-//§         outs << "completion[" << cix << "]==" << curcomp;
-//§         cix++;
-//§       }
-//§   })
-//§       << std::endl
-//§       << RPS_FULL_BACKTRACE_HERE(1, "rpsrepl_name_or_oid_generator"));
-//§   if (rps_completion_vect.size() == 1)
-//§     {
-//§       if (state==0)
-//§         return strdup(rps_completion_vect[0].c_str());
-//§       else
-//§         return nullptr;
-//§     }
-//§   RPS_WARNOUT("rpsrepl_name_or_oid_generator incomplete text=='" << text << "' state#" << state
-//§               << " with " <<rps_completion_vect.size() << " completions");
-//§ #warning rpsrepl_name_or_oid_generator incomplete...
-//§   return nullptr;
-//§ } // end rpsrepl_name_or_oid_generator
-
-
-
+//§ XXXrepl_name_or_oid_generator(const char *text, int state)
+//§
+//§
 
 //§ void
 //§ rps_read_eval_print_loop(int &argc, char **argv)
-//§ {
-//§   RPS_LOCALFRAME(/*descr:*/RPS_CALL_FRAME_UNDESCRIBED,
-//§                            /*callerframe:*/RPS_NULL_CALL_FRAME,
-//§                            Rps_Value lextokv;
-//§                            Rps_Value lexval;
-//§                            Rps_ObjectRef cmdob;
-//§                            Rps_Value cmdparserv;
-//§                            Rps_Value parsmainv;
-//§                            Rps_Value parsextrav;
-//§                 );
-//§   for (int ix=0; ix<argc; ix++)
-//§     RPS_DEBUG_LOG(REPL, "REPL arg [" << ix << "]: " << argv[ix]);
-//§   RPS_ASSERT(rps_is_main_thread());
-//§   RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop start frame=" << Rps_ShowCallFrame(&_));
-//§   int count=0;
-//§   rl_attempted_completion_function = rpsrepl_name_or_oid_completion;
-//§   Rps_ReadlineTokenSource rltoksrc("_-_");
-//§   while (!rps_repl_stopped)
-//§     {
-//§       char prompt[32];
-//§       memset(prompt, 0, sizeof(prompt));
-//§       count++;
-//§       snprintf(prompt, sizeof(prompt), "Rps_REPL#%d: ", count);
-//§       rltoksrc.set_prompt(prompt);
-//§       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop command count#" << count);
-//§       if (count % 4 == 0)
-//§         usleep(128*1024);
-//§       if (!rltoksrc.get_line())
-//§         break;
-//§       std::string commandpos = rltoksrc.position_str();
-//§       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop count#" << count
-//§                     << " commandpos=" << commandpos
-//§                     << " current_line='"
-//§                     << Rps_Cjson_String(rltoksrc.current_line()) << "'");
-//§       _f.lextokv = rltoksrc.get_token(&_);
-//§       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop got lextokv=" << _f.lextokv << " pos=" << rltoksrc.position_str());
-//§       if (!_f.lextokv)
-//§         break;
-//§       const Rps_LexTokenZone* lextokz = _f.lextokv.as_lextoken();
-//§       RPS_ASSERT(lextokz);
-//§       if (lextokz->lxkind()
-//§           != RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ))  //object∈class
-//§         {
-//§           RPS_WARNOUT("rps_read_eval_print_loop command at "
-//§                       << commandpos << std::endl
-//§                       << "Should start with an object but got "
-//§                       << _f.lextokv);
-//§           continue;
-//§         }
-//§       _f.lexval = lextokz->lxval();
-//§       RPS_ASSERT(_f.lexval.is_object());
-//§       _f.cmdob = _f.lexval.as_object();
-//§       RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop cmdob=" << _f.cmdob
-//§                     << " at " << commandpos);
-//§       if (_f.lexval.is_instance_of(&_,RPS_ROOT_OB(_8CncrUdoSL303T5lOK)))   //repl_command∈class
-//§         {
-//§           _f.cmdparserv = _f.cmdob
-//§                           ->get_attr1(&_,RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd)); //repl_command_parser∈symbol
-//§           RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop cmdob=" << _f.cmdob
-//§                         << " is repl_command of repl_command_parser: " << _f.cmdparserv
-//§                         << " lextokv=" << _f.lextokv);
-//§           if (_f.cmdparserv.is_closure())
-//§             {
-//§               Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply2 (&_, _f.cmdob, _f.lextokv);
-//§               _f.parsmainv = parspair.main();
-//§               _f.parsextrav = parspair.xtra();
-//§               RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop applied " << _f.cmdparserv << " to "
-//§                             << _f.cmdob
-//§                             << " and got parsmainv:" << _f.parsmainv << ", parsextrav=" << _f.parsextrav
-//§                             << " now position is " <<  rltoksrc.position_str());
-//§               if (!_f.parsmainv && !_f.parsextrav)
-//§                 RPS_WARNOUT("rps_read_eval_print_loop: REPL command " << _f.cmdob << " at " << commandpos << " failed using "
-//§                             << _f.cmdparserv << std::endl);
-//§               continue;
-//§             }
-//§           else
-//§             {
-//§               RPS_WARNOUT("rps_read_eval_print_loop: REPL command " << _f.cmdob << " has a bad command parser " << _f.cmdparserv
-//§                           << " after " << _f.lexval);
-//§               continue;
-//§             }
-//§           RPS_DEBUG_LOG(REPL, "rps_read_eval_print_loop at  " << commandpos << " count#" << count <<  " pos=" << rltoksrc.position_str());
-//§         }
-//§       else
-//§         {
-//§           RPS_WARNOUT("rps_read_eval_print_loop: REPL command unexpected token " <<  _f.lextokv << " at " << commandpos << " now at " << rltoksrc.position_str());
-//§           continue;
-//§         }
-//§     };
-//§   RPS_INFORMOUT("rps_read_eval_print_loop ending count#" << count << " at " << rltoksrc.position_str());
-//§ } // end of rps_read_eval_print_loop
 
+////////////////////////////////////////////////////////////////
 
 
 void
