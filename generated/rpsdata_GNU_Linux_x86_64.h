@@ -15,7 +15,7 @@
 //: _
 //: You should have received a copy of the GNU General Public License
 //: along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//: generated from git 9b5a369e048d+ branch master
+//: generated from git 25224cad8338+ branch master
 #ifndef RPS_DATA_INCLUDED
 #define RPS_DATA_INCLUDED 1
 #define RPS_BUILDING_HOST "rimski"
@@ -86,7 +86,7 @@
 #endif //RPS_DATA_INCLUDED
 
 
-//// generated at 2024-Feb-15 18:14:49 CET on rimski
+//// generated at 2024-Feb-25 14:18:29 CET on rimski
 
 
-//// end of generated generated/rpsdata_GNU_Linux_x86_64.h for shortgitid:9b5a369e048d+
+//// end of generated generated/rpsdata_GNU_Linux_x86_64.h for shortgitid:25224cad8338+
