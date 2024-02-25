@@ -11,7 +11,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2023 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * You can consider RefPerSys as either GPLv3+ or LGPLv3+ licensed (at
@@ -694,6 +694,8 @@ enum rps_progoption_en
   /// see also github.com/bstarynk/misc-basile/blob/master/mini-edit-JSONRPC.md
   RPSPROGOPT_JOBS='j',
   RPSPROGOPT_HOMEDIR=1000,
+  RPSPROGOPT_CHDIR_BEFORE_LOAD,
+  RPSPROGOPT_CHDIR_AFTER_LOAD,
   RPSPROGOPT_RANDOMOID,
   RPSPROGOPT_TYPEINFO,
   RPSPROGOPT_SYSLOG,

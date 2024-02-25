@@ -47,7 +47,9 @@ char rps_progexe[rps_path_byte_size];
 
 static std::atomic<std::uint8_t> rps_exit_atomic_code;
 
+extern "C" char*rps_chdir_path_after_load;
 
+char*rps_chdir_path_after_load;
 std::vector<Rps_Plugin> rps_plugins_vector;
 std::map<std::string,std::string> rps_pluginargs_map;
 
@@ -253,6 +255,22 @@ struct argp_option rps_progoptions[] =
     /*flags:*/ 0, ///
     /*doc:*/ "Set the RefPerSys homedir, default to "
     "$REFPERSYS_HOME or $HOME\n", ///
+    /*group:*/0 ///
+  },
+  /* ======= change current directory before loading ======= */
+  {/*name:*/ "chdir-before-load", ///
+    /*key:*/ RPSPROGOPT_CHDIR_BEFORE_LOAD, ///
+    /*arg:*/ "DIRECTORY", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "change directory before loading to $DIRECTORY\n", ///
+    /*group:*/0 ///
+  },
+  /* ======= change current directory after loading ======= */
+  {/*name:*/ "chdir-after-load", ///
+    /*key:*/ RPSPROGOPT_CHDIR_AFTER_LOAD, ///
+    /*arg:*/ "DIRECTORY", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "change directory after loading to $DIRECTORY\n", ///
     /*group:*/0 ///
   },
   /* ======= Run RefPerSys for a limited time ======= */
@@ -1356,6 +1374,18 @@ main (int argc, char** argv)
   rps_load_from(rps_my_load_dir);
   RPS_POSSIBLE_BREAKPOINT();
   //// at this point the persistent heap has been completely loaded!
+  if (rps_chdir_path_after_load)
+    {
+      if (chdir(rps_chdir_path_after_load))
+        RPS_FATALOUT("failed to chdir to " << rps_chdir_path_after_load << " after loading :"
+                     << strerror(errno));
+      char cwdbuf[rps_path_byte_size+4];
+      memset (cwdbuf, 0, sizeof(cwdbuf));
+      if (!getcwd(cwdbuf, rps_path_byte_size))
+        RPS_FATALOUT("failed to getcwd after chdir after load to " << rps_chdir_path_after_load
+                     << ":" << strerror(errno));
+      RPS_INFORMOUT("after loading the current directory has changed to " << cwdbuf);
+    };
   atexit (rps_exiting);
   if (!rps_batch)
     rps_initialize_event_loop();
@@ -1371,9 +1401,9 @@ main (int argc, char** argv)
   RPS_POSSIBLE_BREAKPOINT();
   if (!rps_dumpdir_str.empty())
     {
-      char cwdbuf[128];
+      char cwdbuf[rps_path_byte_size+4];
       memset (cwdbuf, 0, sizeof(cwdbuf));
-      if (!getcwd(cwdbuf, sizeof(cwdbuf)-1))
+      if (!getcwd(cwdbuf, rps_path_byte_size))
         strcpy(cwdbuf, "./");
       RPS_INFORM("RefPerSys (pid %d on %s shortgit %s) will dump into %s\n"
                  "… from current directory %s\n",

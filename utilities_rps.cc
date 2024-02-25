@@ -47,13 +47,13 @@ extern "C" const char rps_utilities_date[];
 const char rps_utilities_date[]= __DATE__;
 
 
+extern "C" char*rps_chdir_path_after_load;
+
 std::string rps_run_name;
 
 /// https://lists.gnu.org/archive/html/lightning/2023-08/msg00004.html
 /// see also file lightgen_rps.cc
 
-extern "C" const int rps_gnulightning_jitstate_size;
-extern "C" const int rps_gnulightning_jitstate_align;
 
 static void rps_compute_program_invocation(int argc, char**argv);
 
@@ -835,6 +835,33 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         rps_dumpdir_str = std::string(arg);
     }
     return 0;
+    case RPSPROGOPT_CHDIR_BEFORE_LOAD:
+    {
+      char cwdbuf[rps_path_byte_size+4];
+      memset(cwdbuf, 0, sizeof(cwdbuf));
+      if (side_effect)
+        {
+          if (chdir(arg))
+            {
+              RPS_FATALOUT("failed to chdir before loading to " << arg
+                           << ":" << strerror(errno));
+              char*cwd = getcwd(cwdbuf, rps_path_byte_size);
+              if (!cwd)
+                RPS_FATALOUT("failed to getcwd after chdir to " << arg);
+              RPS_INFORMOUT("changed current directory before loading to "
+                            << cwd);
+            };
+        }
+      return 0;
+    }
+    case RPSPROGOPT_CHDIR_AFTER_LOAD:
+    {
+      if (side_effect)
+        {
+          rps_chdir_path_after_load = arg;
+        }
+      return 0;
+    }
     case RPSPROGOPT_HOMEDIR:
     {
       struct stat rhomstat;
