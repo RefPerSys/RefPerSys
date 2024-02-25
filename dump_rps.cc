@@ -1007,10 +1007,11 @@ Rps_Dumper::write_generated_data_file(void)
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   char osbuf[64];
   memset (osbuf, 0, sizeof(osbuf));
-  char cwdbuf[rps_path_byte_size];
+  char cwdbuf[rps_path_byte_size+4];
   memset (cwdbuf, 0, sizeof(cwdbuf));
-  if (getcwd(cwdbuf, sizeof(cwdbuf)-16) == nullptr)
-    RPS_FATALOUT("failed to getcwd into buffer of " << (sizeof(cwdbuf)-16) << " bytes: " << strerror(errno));
+  if (getcwd(cwdbuf, rps_path_byte_size) == nullptr)
+    RPS_FATALOUT("failed to getcwd into buffer of "
+		 << (rps_path_byte_size+4) << " bytes: " << strerror(errno));
   int osl = strlen(rps_building_operating_system);
   if (osl > (int)sizeof(osbuf)-2)
     osl = sizeof(osbuf)-2;
@@ -1137,7 +1138,8 @@ Rps_Dumper::write_generated_data_file(void)
   if (symlink(bdata, gendatapathstr.c_str()))
     RPS_FATALOUT("failed to symlink " << gendatapathstr << " to "
                  << bdata
-                 << ":" << strerror(errno));
+                 << ":" << strerror(errno)
+		 << " in " << du_curworkdir);
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_data_file end " << datapathstr);
 } //  end Rps_Dumper::write_generated_data_file
 
