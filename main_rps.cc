@@ -52,6 +52,7 @@ extern "C" char*rps_chdir_path_after_load;
 char*rps_chdir_path_after_load;
 std::vector<Rps_Plugin> rps_plugins_vector;
 std::map<std::string,std::string> rps_pluginargs_map;
+extern "C" char*rps_pidfile_path;
 
 
 std::string rps_cpluspluseditor_str;
@@ -59,7 +60,7 @@ std::string rps_cplusplusflags_str;
 std::string rps_dumpdir_str;
 std::vector<std::string> rps_command_vec;
 std::string rps_test_repl_string;
-
+char*rps_pidfile_path;
 /// the … is unicode U+2026 HORIZONTAL ELLIPSIS in UTF8 \xe2\x80\xA6
 
 
@@ -335,6 +336,14 @@ struct argp_option rps_progoptions[] =
     /*arg:*/ nullptr, ///
     /*flags:*/ 0, ///
     /*doc:*/ "Show type information (and test tagged integers).\n", //
+    /*group:*/0 ///
+  },
+  /* ======= pid-file ======= */
+  {/*name:*/ "pid-file", ///
+    /*key:*/ RPSPROGOPT_PID_FILE, ///
+    /*arg:*/ "PID_FILE", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Write the pid of the running process into given PID_FILE.\n", //
     /*group:*/0 ///
   },
   /* ======= version info ======= */
@@ -1322,6 +1331,15 @@ main (int argc, char** argv)
   if (helpwanted || versionwanted)
     printf("%s minimal jobs or threads number %d, maximal %d, default %d\n",
            rps_progname, RPS_NBJOBS_MIN, RPS_NBJOBS_MAX, rps_nbjobs);
+  if (rps_pidfile_path)
+    {
+      FILE* fpid = fopen(rps_pidfile_path, "w");
+      if (!fpid)
+        RPS_FATALOUT("failed to open pid file " << rps_pidfile_path << " - " << strerror(errno));
+      fprintf(fpid, "%ld\n", (long)getpid());
+      fflush(nullptr);
+      fclose(fpid);
+    };
   ///
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);

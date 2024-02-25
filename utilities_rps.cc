@@ -48,6 +48,7 @@ const char rps_utilities_date[]= __DATE__;
 
 
 extern "C" char*rps_chdir_path_after_load;
+extern "C" char*rps_chdir_path_after_load;
 
 std::string rps_run_name;
 
@@ -75,6 +76,7 @@ std::string rps_publisher_url_str;
 
 static pthread_t rps_main_thread_handle;
 
+extern "C" char*rps_pidfile_path;
 
 bool rps_is_main_thread(void)
 {
@@ -353,15 +355,15 @@ rps_print_types_info(void)
         (int)sizeof(Ty), (int)alignof(Ty))
 
 #define EXPLAIN_TYPE2(Ty1,Ty2) printf(TYPEFMT_rps " %5d %5d\n", \
-              #Ty1 "," #Ty2,    \
-              (int)sizeof(Ty1,Ty2), \
+              #Ty1 "," #Ty2,          \
+              (int)sizeof(Ty1,Ty2),       \
               (int)alignof(Ty1,Ty2))
 
-#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3)    \
-  printf(TYPEFMT_rps " %5d %5d\n",    \
-   #Ty1 "," #Ty2 ",\n"      \
-   "                     "#Ty3, \
-   (int)sizeof(Ty1,Ty2,Ty3),    \
+#define EXPLAIN_TYPE3(Ty1,Ty2,Ty3)              \
+  printf(TYPEFMT_rps " %5d %5d\n",              \
+   #Ty1 "," #Ty2 ",\n"                          \
+   "                     "#Ty3,                 \
+   (int)sizeof(Ty1,Ty2,Ty3),                    \
    (int)alignof(Ty1,Ty2,Ty3))
 
 #define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4)      \
@@ -1011,6 +1013,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         };
     }
     return 0;
+    case RPSPROGOPT_PID_FILE:
+    {
+      if (side_effect)
+        rps_pidfile_path = arg;
+    }
+    return 0;
     case RPSPROGOPT_NO_ASLR:
     {
       // was already handled
@@ -1196,7 +1204,7 @@ void
 rps_parse_program_arguments(int &argc, char**argv)
 {
   errno = 0;
-  rps_early_initialization(argc, argv);
+  rps_early_initialization  (argc, argv);
   errno = 0;
   struct argp_state argstate;
   memset (&argstate, 0, sizeof(argstate));

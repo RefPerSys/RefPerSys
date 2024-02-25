@@ -700,6 +700,7 @@ enum rps_progoption_en
   RPSPROGOPT_TYPEINFO,
   RPSPROGOPT_SYSLOG,
   RPSPROGOPT_DAEMON,
+  RPSPROGOPT_PID_FILE,
   RPSPROGOPT_NO_TERMINAL,
   RPSPROGOPT_NO_ASLR,
   RPSPROGOPT_NO_QUICK_TESTS,
@@ -842,7 +843,7 @@ while (0)
       outs_##Lin << __VA_ARGS__  << std::flush;         \
       syslog(LOG_INFO, "%s:%d:%s %s\n",     \
        (Fil), (Lin), __PRETTY_FUNCTION__,   \
-       outs_##Lin.str().c_str());           \
+       outs_##Lin.str().c_str());     \
     } else {            \
     bool ontty = rps_stdout_istty;                      \
     outs_##Lin                                          \
@@ -858,7 +859,7 @@ while (0)
     fputc('\n', stdout);                                \
     fflush(stdout);                                     \
   }             \
-  } while(0)
+} while(0)
 
 #define RPS_INFORMOUT_AT(Fil,Lin,...) RPS_INFORMOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)
 
