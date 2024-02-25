@@ -173,7 +173,7 @@ public:
 };        // end class Rps_Dumper
 
 Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
-  du_topdir(topdir), du_curworkdir(), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
+  du_topdir(), du_curworkdir(), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
   du_tempsuffix(make_temporary_suffix()),
   du_newobcount(0),
   du_startelapsedtime(rps_elapsed_real_time()),
@@ -182,6 +182,12 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
   du_startmonotonictime(rps_monotonic_real_time()),
   du_callframe(callframe), du_openedpathset()
 {
+  {
+    char topdirpath[PATH_MAX];
+    memset(topdirpath, 0, sizeof(topdirpath));
+    char *toprealpath = realpath(topdir.c_str(), topdirpath);
+    du_topdir.assign(toprealpath);
+  }
   {
     char cwdbuf[rps_path_byte_size];
     memset(cwdbuf, 0, sizeof(cwdbuf));
@@ -1011,7 +1017,7 @@ Rps_Dumper::write_generated_data_file(void)
   memset (cwdbuf, 0, sizeof(cwdbuf));
   if (getcwd(cwdbuf, rps_path_byte_size) == nullptr)
     RPS_FATALOUT("failed to getcwd into buffer of "
-		 << (rps_path_byte_size+4) << " bytes: " << strerror(errno));
+                 << (rps_path_byte_size+4) << " bytes: " << strerror(errno));
   int osl = strlen(rps_building_operating_system);
   if (osl > (int)sizeof(osbuf)-2)
     osl = sizeof(osbuf)-2;
@@ -1139,7 +1145,7 @@ Rps_Dumper::write_generated_data_file(void)
     RPS_FATALOUT("failed to symlink " << gendatapathstr << " to "
                  << bdata
                  << ":" << strerror(errno)
-		 << " in " << du_curworkdir);
+                 << " in " << du_curworkdir);
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_data_file end " << datapathstr);
 } //  end Rps_Dumper::write_generated_data_file
 
