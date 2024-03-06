@@ -876,7 +876,9 @@ Rps_Dumper::write_generated_roots_file(void)
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_roots_file start");
   auto rootpathstr = std::string{"generated/rps-roots.hh"};
   auto pouts = open_output_file(rootpathstr);
-  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
+  rps_emit_gplv3_copyright_notice(*pouts, /*path:*/rootpathstr,
+				  /*prefix:*/ "//: ", /*suffix:*/"",
+				  /*owner:*/"", /*reason:*/"");
   *pouts << std::endl
          << "#ifndef RPS_INSTALL_ROOT_OB" << std::endl
          << "#error RPS_INSTALL_ROOT_OB(Oid) macro undefined" << std::endl
@@ -944,7 +946,9 @@ Rps_Dumper::write_generated_names_file(void)
   auto rootpathstr = std::string{"generated/rps-names.hh"};
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_names_file start");
   auto pouts = open_output_file(rootpathstr);
-  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
+  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, 
+				  /*prefix:*/ "//: ", /*suffix:*/"",
+				  /*owner:*/"", /*reason:*/"");
   *pouts << std::endl
          << "#ifndef RPS_INSTALL_NAMED_ROOT_OB" << std::endl
          << "#error RPS_INSTALL_NAMED_ROOT_OB(Oid,Name) macro undefined" << std::endl
@@ -980,7 +984,9 @@ Rps_Dumper::write_generated_constants_file(void)
   auto rootpathstr = std::string{"generated/rps-constants.hh"};
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_constants_file start");
   auto pouts = open_output_file(rootpathstr);
-  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
+  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr,
+				  /*prefix:*/ "//: ", /*suffix:*/"",
+				  /*owner:*/"", /*reason:*/"");
   unsigned constcnt = 0;
   *pouts << std::endl << "/// collection of constant objects, mentioned in C++ files, "<< std::endl
          << "/// .... prefixed with '"
@@ -1043,7 +1049,9 @@ Rps_Dumper::write_generated_data_file(void)
                             + std::string(osbuf)+std::string{"_"} + std::string(machinebuf) + ".h";
   std::string gendatapathstr = std::string{"generated/rpsdata.h"};
   auto pouts = open_output_file(datapathstr);
-  rps_emit_gplv3_copyright_notice(*pouts, datapathstr, "//: ", "");
+  rps_emit_gplv3_copyright_notice(*pouts, datapathstr,
+				  /*prefix:*/ "//: ", /*suffix:*/"",
+				  /*owner:*/"", /*reason:*/"");
   *pouts << "#ifndef RPS_DATA_INCLUDED\n" << "#define RPS_DATA_INCLUDED 1" << std::endl;
   *pouts << "#define RPS_BUILDING_HOST \"" << rps_building_host << "\"" << std::endl;
   *pouts << "#define RPS_BUILDING_OPERATING_SYSTEM \"" << osbuf << "\"" << std::endl;
@@ -1157,7 +1165,9 @@ Rps_Dumper::write_generated_parser_decl_file(Rps_CallFrame*callfr, Rps_ObjectRef
   auto rootpathstr = std::string{"generated/rps-parser-decl.hh"};
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file start");
   auto pouts = open_output_file(rootpathstr);
-  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
+  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr,
+				  /*prefix:*/ "//: ", /*suffix:*/"",
+				  /*owner:*/"", /*reason:*/"");
   *pouts << "#warning empty parser declaration file " << rootpathstr
          << " from " << __FILE__ << ":" << __LINE__
          << std::endl;
@@ -1173,7 +1183,9 @@ Rps_Dumper::write_generated_parser_impl_file(Rps_CallFrame*callfr, Rps_ObjectRef
   auto rootpathstr = std::string{"generated/rps-parser-impl.cc"};
   RPS_DEBUG_LOG(DUMP, "dumper write_generated_parser_decl_file start");
   auto pouts = open_output_file(rootpathstr);
-  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr, "//: ", "");
+  rps_emit_gplv3_copyright_notice(*pouts, rootpathstr,
+				  /*prefix:*/ "//: ", /*suffix:*/"",
+				  /*owner:*/"", /*reason:*/"");
   *pouts << "#warning empty parser implementation file " << rootpathstr
          << " from " << __FILE__ << ":" << __LINE__
          << std::endl;
@@ -1258,7 +1270,9 @@ Rps_Dumper::write_manifest_file(void)
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
   RPS_DEBUG_LOG(DUMP, "dumper write_manifest_file start");
   auto pouts = open_output_file(RPS_MANIFEST_JSON);
-  rps_emit_gplv3_copyright_notice(*pouts, RPS_MANIFEST_JSON, "//!! ", "");
+  rps_emit_gplv3_copyright_notice(*pouts, RPS_MANIFEST_JSON,
+				  /*prefix:*/ "//!! ", /*suffix:*/"",
+				  /*owner:*/"", /*reason:*/"");
   Json::Value jmanifest(Json::objectValue);
   jmanifest["format"] = Json::Value (RPS_MANIFEST_FORMAT);
   jmanifest["jsoncpp-version"] = JSONCPP_VERSION_STRING;
@@ -1379,7 +1393,9 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     curspaset = curspa->sp_setob;
   }
   RPS_ASSERT(pouts);
-  rps_emit_gplv3_copyright_notice(*pouts, curelpath, "//// ", "");
+  rps_emit_gplv3_copyright_notice(*pouts, curelpath,
+				  /*prefix:*/ "//// ", /*suffix:*/"",
+				  /*owner:*/"", /*reason:*/"");
   *pouts << std::endl;
   // emit the prologue
   {
