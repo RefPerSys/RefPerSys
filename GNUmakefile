@@ -109,9 +109,9 @@ clean:
 _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgconfig
 	./do-scan-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
 
-__timestamp.c: do-generate-timestamp.sh |GNUmakefile
+__timestamp.c: do-generate-timestamp.sh GNUmakefile
 	echo MAKE is $(MAKE)
-	env MAKE=$(shell /bin/which gmake) CXX=$(REFPERSYS_CXX) ./do-generate-timestamp.sh > $@
+	env MAKE=$(shell /bin/which gmake) CXX=$(REFPERSYS_CXX) ./do-generate-timestamp.sh $@ > $@
 
 __timestamp.o: __timestamp.c |GNUmakefile
 	$(CC) -fPIC -c -O -g -Wall -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $^ -o $@
