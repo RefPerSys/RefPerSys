@@ -33,9 +33,6 @@
 
 #include "refpersys.hh"
 
-// #include "readline/readline.h"
-// #include "readline/history.h"
-
 extern "C" const char rps_cmdrepl_gitid[];
 const char rps_repl_gitid[]= RPS_GITID;
 
