@@ -643,11 +643,11 @@ extern "C" void rps_output_debug_flags(std::ostream&out, unsigned flags=0);
 /// keep the debug options in alphabetical order
 #define RPS_DEBUG_OPTIONS(dbgmacro) \
   dbgmacro(CMD)                     \
+  dbgmacro(CODEGEN)                 \
   dbgmacro(COMPL_REPL)              \
   dbgmacro(DUMP)                    \
   dbgmacro(EVENT_LOOP)              \
   dbgmacro(GARBAGE_COLLECTOR)       \
-  dbgmacro(GENERATED_CODE)          \
   dbgmacro(GUI)                     \
   dbgmacro(LOAD)                    \
   dbgmacro(LOWREP)                  \
