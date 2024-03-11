@@ -91,10 +91,13 @@ protected:
 Rps_PayloadLighntingCodeGen::Rps_PayloadLighntingCodeGen(Rps_ObjectZone*owner)
   : Rps_Payload(Rps_Type::PaylLightCodeGen,owner), lightg_jist(nullptr)
 {
+  lightg_jist = jit_new_state();
 } // end of Rps_PayloadLighntingCodeGen::Rps_PayloadLighntingCodeGen
 
 Rps_PayloadLighntingCodeGen::~Rps_PayloadLighntingCodeGen()
 {
+  _jit_destroy_state(lightg_jist);
+  lightg_jist = nullptr;
 } // end destructor Rps_PayloadLighntingCodeGen::~Rps_PayloadLighntingCodeGen
 
 void
@@ -137,6 +140,8 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
   _f.obgenerator->put_new_plain_payload<Rps_PayloadLighntingCodeGen>();
   _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
                            _f.obmodule);
+  RPS_DEBUG_LOG (CODEGEN, " lightning generator " << _f.obgenerator
+		 << " for module " << _f.obmodule);
   RPS_FATALOUT("unimplemented rps_generate_lightning_code obmodule="
                << obmodule << " obgenerator=" << _f.obgenerator);
 #warning unimplemented rps_generate_lightning_code
