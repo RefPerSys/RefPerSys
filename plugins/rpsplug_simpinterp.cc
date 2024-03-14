@@ -18,17 +18,20 @@
 extern "C" char *rpsint_start;
 extern "C" char *rpsint_cur;
 extern "C" char *rpsint_end;
+extern "C" int rpsint_lineno;
 
 
 /// on whatsapp March 14 2024 Abhishek approved a C like syntax
 
 extern "C" void rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef ob);
+extern "C" void rpsint_skip_spaces(void);
+
 void
 rps_do_plugin(const Rps_Plugin*plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
-		 Rps_ObjectRef ob;
-		 Rps_Value v1;
+                           Rps_ObjectRef ob;
+                           Rps_Value v1;
                 );
   int file_fd = -1;
   size_t file_len = 0;
@@ -73,20 +76,32 @@ rps_do_plugin(const Rps_Plugin*plugin)
     rpsint_end = (char*)ad + file_len;
   };
   _f.ob = Rps_PayloadObjMap::make(&_);
+  rpsint_lineno = 1;
   rpsint_parse_script(&_, _f.ob);
   RPS_WARNOUT("missing code:  plugin " <<  plugin->plugin_name
               << " script " << plugarg << " of " << file_len << " bytes");
 #warning a lot of missing code in rpsplug_simpinterp.cc
 } // end rps_do_plugin
 
+void
+rpsint_skip_spaces(void)
+{
+  while (rpsint_cur < rpsint_end)
+    {
+      if (!isspace(*rpsint_cur)) return;
+      if (*rpsint_cur=='\n') rpsint_lineno++;
+      rpsint_cur++;
+    }
+} // end rpsint_skip_spaces
 
 void
 rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef obint)
 {
-  RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
-		 Rps_ObjectRef obint;
-		 );
+  RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/cf,
+                           Rps_ObjectRef obint;
+                );
   _f.obint = obint;
+  rpsint_skip_spaces();
 #warning empty rpsint_parse_script
   RPS_WARNOUT("empty rpsint_parse_script obint=" << _f.obint);
 } // end rpsint_parse_script
@@ -94,7 +109,7 @@ rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef obint)
 char *rpsint_start;
 char *rpsint_cur;
 char *rpsint_end;
-
+int rpsint_lineno;
 
 
 ////////////////////////////// end of file RefPerSys/plugins/rpsplug_simpinterp.cc
