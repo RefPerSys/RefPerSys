@@ -16,7 +16,11 @@
 #include "refpersys.hh"
 
 extern "C" char *rpsint_start;
+extern "C" char *rpsint_cur;
 extern "C" char *rpsint_end;
+
+
+/// on whatsapp March 14 2024 Abhishek approved a C like syntax
 
 extern "C" void rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef ob);
 void
@@ -65,6 +69,7 @@ rps_do_plugin(const Rps_Plugin*plugin)
                    << " failed to mmap " << plugarg
                    << ":" << strerror(errno));
     rpsint_start = (char*)ad;
+    rpsint_cur = rpsint_start;
     rpsint_end = (char*)ad + file_len;
   };
   _f.ob = Rps_PayloadObjMap::make(&_);
@@ -87,6 +92,7 @@ rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef obint)
 } // end rpsint_parse_script
 
 char *rpsint_start;
+char *rpsint_cur;
 char *rpsint_end;
 
 
