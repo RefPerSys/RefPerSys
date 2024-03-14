@@ -37,7 +37,7 @@ RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 #                                                                
 .DEFAULT_GOAL: refpersys
-.PHONY: all config objects clean gitpush gitpush2 print-plugin-settings indent redump
+.PHONY: all config objects clean gitpush gitpush2 print-plugin-settings indent redump plugins
 
 SYNC=/bin/sync
 
@@ -67,7 +67,8 @@ REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_
 ## backtrace is https://github.com/ianlancetaylor/libbacktrace (also inside GCC source)
 REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace
 
-
+### desired plugins (their basename under plugins/)
+REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_simpinterp
 ################
 all:
 
@@ -80,6 +81,7 @@ all:
 	   exit 1 ; \
 	fi
 	$(MAKE) refpersys
+	$(MAKE) plugins
 
 
 .SECONDARY:  __timestamp.c  #gramrepl_rps.yy gramrepl_rps.cc  gramrepl_rps.hh
@@ -102,7 +104,8 @@ clean:
 	$(RM) tmp* *~ *.o do-configure-refpersys refpersys
 	$(RM) *% %~
 	$(RM) *.orig
-	$(RM) */*~
+	$(RM) */*~ */*.orig
+	$(RM) */*.so
 
 -include _scanned-pkgconfig.mk
 
@@ -131,6 +134,11 @@ refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __
 	@/bin/mv -v --backup __timestamp.c __timestamp.c%
 	@/bin/rm -vf __timestamp.o
 
+plugins: refpersys $(patsubst %, plugins/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) |GNUmakefile
+
+plugins/%.so: plugins/%.cc refpersys.hh build-plugin.sh |GNUmakefile
+	@printf "building plugin %s from source %s in %s\n" $@ $< $(/bin/pwd)
+	env PATH=$$PATH $(shell $(MAKE) print-plugin-settings) ./build-plugin.sh $< $@
 
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
@@ -181,10 +189,13 @@ print-plugin-settings:
 	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"
 
 indent:
-	 $(ASTYLE) $(ASTYLEFLAGS) refpersys.hh
-	 $(ASTYLE) $(ASTYLEFLAGS) oid_rps.hh
-	 $(ASTYLE) $(ASTYLEFLAGS) inline_rps.hh
-	for f in $(REFPERSYS_HUMAN_CPP_SOURCES) ; do $(ASTYLE) $(ASTYLEFLAGS) $$f ; done
+	$(ASTYLE) $(ASTYLEFLAGS) refpersys.hh
+	$(ASTYLE) $(ASTYLEFLAGS) oid_rps.hh
+	$(ASTYLE) $(ASTYLEFLAGS) inline_rps.hh
+	for f in $(REFPERSYS_HUMAN_CPP_SOURCES) ; do \
+	    $(ASTYLE) $(ASTYLEFLAGS) $$f ; done
+	for p in $(patsubst %, plugins/%.cc, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) ; do \
+	    $(ASTYLE) $(ASTYLEFLAGS) $$p ; done
 
 ## redump target
 redump: refpersys
