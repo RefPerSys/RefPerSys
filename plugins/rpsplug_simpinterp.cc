@@ -9,7 +9,7 @@
 
     Once compiled use it as
 
-  ./refpersys --plugin-after-load=rpsplug_simpinterp.so:script-file \
+  ./refpersys --plugin-after-load=rpsplug_simpinterp.so:$SCRIPTFILE \
               --plugin-arg=rpsplug_simpinterp: \
  ***/
 
@@ -18,12 +18,13 @@
 extern "C" char *rpsint_start;
 extern "C" char *rpsint_end;
 
+extern "C" void rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef ob);
 void
 rps_do_plugin(const Rps_Plugin*plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
-                           Rps_ObjectRef ob;
-                           Rps_Value v1;
+		 Rps_ObjectRef ob;
+		 Rps_Value v1;
                 );
   int file_fd = -1;
   size_t file_len = 0;
@@ -66,10 +67,28 @@ rps_do_plugin(const Rps_Plugin*plugin)
     rpsint_start = (char*)ad;
     rpsint_end = (char*)ad + file_len;
   };
+  _f.ob = Rps_PayloadObjMap::make(&_);
+  rpsint_parse_script(&_, _f.ob);
   RPS_WARNOUT("missing code:  plugin " <<  plugin->plugin_name
               << " script " << plugarg << " of " << file_len << " bytes");
 #warning a lot of missing code in rpsplug_simpinterp.cc
 } // end rps_do_plugin
 
+
+void
+rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef obint)
+{
+  RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
+		 Rps_ObjectRef obint;
+		 );
+  _f.obint = obint;
+#warning empty rpsint_parse_script
+  RPS_WARNOUT("empty rpsint_parse_script obint=" << _f.obint);
+} // end rpsint_parse_script
+
 char *rpsint_start;
 char *rpsint_end;
+
+
+
+////////////////////////////// end of file RefPerSys/plugins/rpsplug_simpinterp.cc
