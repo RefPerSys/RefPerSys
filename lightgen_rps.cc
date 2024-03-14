@@ -141,7 +141,7 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
   _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
                            _f.obmodule);
   RPS_DEBUG_LOG (CODEGEN, " lightning generator " << _f.obgenerator
-		 << " for module " << _f.obmodule);
+                 << " for module " << _f.obmodule);
   RPS_FATALOUT("unimplemented rps_generate_lightning_code obmodule="
                << obmodule << " obgenerator=" << _f.obgenerator);
 #warning unimplemented rps_generate_lightning_code

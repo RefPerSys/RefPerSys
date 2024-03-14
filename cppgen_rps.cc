@@ -80,7 +80,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
     _f.obmodule->get_attr1(&_,
                            RPS_ROOT_OB(_0XF2N1YQ87p02GXXir)); //"include"∈named_attribute
   RPS_DEBUG_LOG(CODEGEN,"rps_generate_cplusplus_code start obmodule=" << _f.obmodule
-		<< " obgenerator=" << _f.obgenerator << " vinclude=" << _f.vinclude);
+                << " obgenerator=" << _f.obgenerator << " vinclude=" << _f.vinclude);
   /**
      TODO complete here:
 
