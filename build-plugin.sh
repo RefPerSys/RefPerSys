@@ -5,7 +5,7 @@
 #      Abhishek Chakravarti <abhishek@taranjali.org>
 #      Nimesh Neema <nimeshneema@gmail.com>
 #
-#      © Copyright 2020 - 2022 The Reflective Persistent System Team
+#      © Copyright 2020 - 2024 The Reflective Persistent System Team
 #      team@refpersys.org & http://refpersys.org/
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -32,10 +32,19 @@ printf "start %s at %s: C++ file %s, plugin file %s\n" $0 "$curdate" $cppfile $p
 logger --id=$$ -s  -t "$0:" "starting" cppfile= $1 pluginfile= $2 curdate= $curdate
 eval $(make print-plugin-settings)
 
+### plugincppflags contain compiler flags
+### pluginlinkerflags contain linker flags
+
 if /usr/bin/fgrep -q '@RPSCOMPILEFLAGS=' $cppfile ; then
     plugincppflags=$(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSCOMPILEFLAGS=/ { for (i=1; i<=NF; i++) print $i; }')
 else
     plugincppflags=()
+fi
+
+
+## ugly hack needed in March 2024 after commit 456fcb27bc57f
+if [ -f /usr/include/jsoncpp/json/json.h ]; then
+    plugincppflags+="-I/usr/include/jsoncpp"
 fi
 
 if /usr/bin/fgrep -q '@RPSLIBES=' $cppfile ; then
@@ -67,4 +76,4 @@ fi
 ## run the compiler suitably
 logger --id=$$ -s  -t $0 running: "$RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS  $plugincppflags -Wall -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS  $pluginlinkerflags -o $pluginfile"
 ## 
-exec $RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS $plugincppflags -Wall -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS $pluginlinkerflags -o $pluginfile 
+exec $RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS $plugincppflags -Wall -Wextra -I. -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS $pluginlinkerflags -o $pluginfile 
