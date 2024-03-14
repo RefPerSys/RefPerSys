@@ -25,6 +25,7 @@ extern "C" int rpsint_lineno;
 
 extern "C" void rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef ob);
 extern "C" void rpsint_skip_spaces(void);
+extern "C" bool rpsint_has_keyword(const char*kw);
 
 void
 rps_do_plugin(const Rps_Plugin*plugin)
@@ -105,6 +106,23 @@ rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef obint)
 #warning empty rpsint_parse_script
   RPS_WARNOUT("empty rpsint_parse_script obint=" << _f.obint);
 } // end rpsint_parse_script
+
+bool
+rpsint_has_keyword(const char*kw)
+{
+  RPS_ASSERT(kw && isalpha(kw[0]));
+  rpsint_skip_spaces();
+  int kwlen = strlen(kw);
+  if (rpsint_cur+kwlen>rpsint_end)
+    return false;
+  for (int i=0; i<kwlen; i++)
+    if (kw[i] != rpsint_cur[i])
+      return false;
+  if (isalnum(rpsint_cur[kwlen]) || rpsint_cur[kwlen]=='_')
+    return false;
+  rpsint_cur += kwlen;
+  return true;
+} // end rpsint_has_keyword
 
 char *rpsint_start;
 char *rpsint_cur;
