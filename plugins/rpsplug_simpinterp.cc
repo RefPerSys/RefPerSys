@@ -118,7 +118,7 @@ rpsint_has_keyword(const char*kw)
   for (int i=0; i<kwlen; i++)
     if (kw[i] != rpsint_cur[i])
       return false;
-  if (isalnum(rpsint_cur[kwlen]) || rpsint_cur[kwlen]=='_')
+  if (!isalnum(rpsint_cur[kwlen]) || rpsint_cur[kwlen]=='_')
     return false;
   rpsint_cur += kwlen;
   return true;
