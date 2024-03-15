@@ -884,18 +884,18 @@ while (0)
 ///
 #define RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond) do {               \
   if (RPS_UNLIKELY(!(Cond))) {                                  \
-    if (rps_syslog_enabled)         \
-      syslog(LOG_CRIT,            \
-       "*** RefPerSys ASSERT failed: %s *** [%s:%d:%s]",  \
-       #Cond, Fil, Lin, Func);        \
-    else              \
-      fprintf(stderr, "\n\n"          \
-        "%s*** RefPerSys ASSERT failed: %s%s\n"   \
-        "%s:%d: {%s}\n\n",        \
-        (rps_stderr_istty?RPS_TERMINAL_BOLD_ESCAPE:""), \
-        #Cond,            \
-        (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""), \
-        Fil,Lin,Func);          \
+    if (rps_syslog_enabled)                                     \
+      syslog(LOG_CRIT,                                          \
+       "*** RefPerSys ASSERT failed: %s *** [%s:%d:%s]",        \
+       #Cond, Fil, Lin, Func);                                  \
+    else                                                        \
+      fprintf(stderr, "\n\n"                                    \
+        "%s*** RefPerSys ASSERT failed: %s%s\n"                 \
+        "%s:%d: {%s}\n\n",                                      \
+        (rps_stderr_istty?RPS_TERMINAL_BOLD_ESCAPE:""),         \
+        #Cond,                                                  \
+        (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),       \
+        Fil,Lin,Func);                                          \
   rps_fatal_stop_at(Fil,Lin); }} while(0)
 
 #define RPS_ASSERT_AT(Fil,Lin,Func,Cond) RPS_ASSERT_AT_BIS(Fil,Lin,Func,Cond)
@@ -903,12 +903,12 @@ while (0)
 
 #define RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,...) do { \
   if (RPS_UNLIKELY(!(Cond))) {                                  \
-    if (rps_syslog_enabled)         \
-      syslog(LOG_CRIT,            \
-       "*** RefPerSys ASSERTPRINTF failed:"   \
-       " %s *** [%s:%d:%s]" Fmt,        \
-       #Cond, Fil, Lin, Func, ##__VA_ARGS__);   \
-    else {              \
+    if (rps_syslog_enabled)                                     \
+      syslog(LOG_CRIT,                                          \
+       "*** RefPerSys ASSERTPRINTF failed:"                     \
+       " %s *** [%s:%d:%s]" Fmt,                                \
+       #Cond, Fil, Lin, Func, ##__VA_ARGS__);                   \
+    else {                                                      \
       fprintf(stderr, "\n\n"                                    \
               "%s*** RefPerSys ASSERTPRINTF failed:%s %s\n"     \
               "%s:%d: {%s}\n",                                  \
@@ -917,8 +917,8 @@ while (0)
           (rps_stderr_istty?RPS_TERMINAL_NORMAL_ESCAPE:""),     \
               Fil, Lin, Func);                                  \
       fprintf(stderr, "!*!*! " Fmt "\n\n", ##__VA_ARGS__);      \
-    };                \
-    rps_fatal_stop_at(Fil, Lin); }        \
+    };                                                          \
+    rps_fatal_stop_at(Fil, Lin); }                              \
  } while(0)
 
 #define RPS_ASSERTPRINTF_AT(Fil,Lin,Func,Cond,Fmt,...) RPS_ASSERTPRINTF_AT_BIS(Fil,Lin,Func,Cond,Fmt,##__VA_ARGS__)
@@ -2597,11 +2597,11 @@ extern "C" void rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const 
     std::ostringstream _failstream_##Lin;     \
     _failstream_##Lin << Out << " ~#" << Cnt << std::endl;  \
     Rps_Backtracer backtr##Lin(Rps_Backtracer::FullOut_Tag{}, \
-             (Fil),(Lin),1,     \
-             "ParsReplFailing",   \
-             &_failstream_##Lin);   \
+             (Fil),(Lin),1,         \
+             "ParsReplFailing",         \
+             &_failstream_##Lin);       \
     rps_parsrepl_failing_at(Fil,Lin,Cnt,      \
-          _failstream_##Lin.str());   \
+          _failstream_##Lin.str());       \
 } while(0)
 
 #define RPS_PARSREPL_FAILURE(Fram,Out) \
@@ -2611,6 +2611,10 @@ extern "C" void rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef o
                                         const std::string&cmd,
                                         const char*title=nullptr);
 
+
+
+
+////////////////////////////////// token sources are for lexing
 class Rps_TokenSource           // this is *not* a value .....
 {
   friend class Rps_LexTokenValue;
@@ -2799,7 +2803,7 @@ inline std::ostream& operator << (std::ostream&out, Rps_TokenSource& toksrc)
 class Rps_CinTokenSource : public Rps_TokenSource
 {
 public:
-  virtual void output(std::ostream&out) const
+  virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
   {
     out << "CinTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count();
   };
@@ -2815,7 +2819,7 @@ class Rps_StreamTokenSource : public Rps_TokenSource
   std::ifstream toksrc_input_stream;
 public:
   Rps_StreamTokenSource(std::string path);
-  virtual void output(std::ostream&out) const
+  virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
   {
     out << "StreamTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count();
   };
@@ -2842,6 +2846,24 @@ public:
   virtual void display(std::ostream&out) const;
 };                                                            // end Rps_StringTokenSource
 
+class Rps_MemoryFileTokenSource : public Rps_TokenSource
+{
+  const std::string toksrcmfil_path;
+  const char*toksrcmfil_start; // page-aligned, in memory
+  const char*toksrcmfil_line;
+  const char*toksrcmfil_end; // the end of the file as mmap-ed
+  const char*toksrcmfil_nextpage; // the next virtual memory page (page-aligned)
+public:
+  Rps_MemoryFileTokenSource(const std::string path);
+  virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const;
+  virtual  ~Rps_MemoryFileTokenSource();
+  virtual bool get_line();
+  const std::string path() const
+  {
+    return toksrcmfil_path;
+  };
+  virtual void display(std::ostream&out) const;
+};        // end Rps_MemoryFileTokenSource
 
 
 constexpr const unsigned rps_chunkdata_magicnum = 0x2fa19e6d; // 799121005
