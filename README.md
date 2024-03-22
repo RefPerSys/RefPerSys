@@ -134,11 +134,18 @@ This *research* project is
 [GPLv3+](https://www.gnu.org/licenses/gpl.html) licensed and
 copyrighted by the RefPerSys team, currently made of:
 
- *      Basile Starynkevitch <basile@starynkevitch.net>, 
+ *      Basile Starynkevitch <basile@starynkevitch.net>,
+        8 rue de la Faïencerie
+	92340 Bourg-la-Reine
+	France
         homepage http://starynkevitch.net/Basile/
 		near Paris, France. So usual timezone `TZ=MEST`
+		
  *      Abhishek Chakravarti <abhishek@taranjali.org>
+        Kolkotta, India
+	
  *      Nimesh Neema <nimeshneema@gmail.com>
+ 
  *      Niklaus Rozencrantz in Sweden.
 
 Some files might be "borrowed" from other similar GPLv3+ licensed
