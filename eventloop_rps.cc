@@ -13,7 +13,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2022 - 2023 The Reflective Persistent System Team
+ *      © Copyright 2022 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -311,7 +311,9 @@ rps_event_loop(void)
                 RPS_FATALOUT("missing code to handle JSONRPC input EOF from fd#"
                              << fd << " pix#" << pix);
 #warning missing code to handle JsonRpc EOF from GUI process
-              }
+              };
+            RPS_DEBUG_LOG(REPL, "got " << nbr << " bytes from JSONRPC fd#" << fd << std::endl
+                          << buf << std::endl);
             /* TODO: append the bytes we did read to
                rps_jsonrpc_rspbuf; by convention a double newline or a
                formfeed is ending the JSON message. */
