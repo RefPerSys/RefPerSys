@@ -2850,7 +2850,7 @@ class Rps_MemoryFileTokenSource : public Rps_TokenSource
 {
   const std::string toksrcmfil_path;
   const char*toksrcmfil_start; // page-aligned, in memory
-  const char*toksrcmfil_line;
+  const char*toksrcmfil_line;  // pointer to start of current line
   const char*toksrcmfil_end; // the end of the file as mmap-ed
   const char*toksrcmfil_nextpage; // the next virtual memory page (page-aligned)
 public:
