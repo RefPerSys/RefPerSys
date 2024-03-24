@@ -345,7 +345,7 @@ rps_event_loop(void)
                       {
                         int eombufoff = eombuf - buf;
                         again = true;
-			RPS_FATALOUT("missing code JSONRPC input eombufoff:" << eombufoff);
+                        RPS_FATALOUT("missing code JSONRPC input eombufoff:" << eombufoff);
 #warning should build a string with the JSON message, then decode and process that JSON
                       }
                   }
