@@ -137,7 +137,7 @@ refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __
 plugins: refpersys $(patsubst %, plugins/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) |GNUmakefile
 
 plugins/%.so: plugins/%.cc refpersys.hh build-plugin.sh |GNUmakefile
-	@printf "building plugin %s from source %s in %s\n" $@ $< $(/bin/pwd)
+	@printf "RefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	env PATH=$$PATH $(shell $(MAKE) print-plugin-settings) ./build-plugin.sh $< $@
 
 # Target to facilitate git push to both origin and GitHub mirrors
