@@ -370,7 +370,33 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
   if (fstat(fd, &st))
     RPS_FATALOUT("cannot fstat fd#" << fd << " for memory file " << path
                  << ":" << strerror(errno));
+  if ((st.st_mode & S_IFMT) != S_IFREG)
+    RPS_FATALOUT("memory file source " << path << " is not a plain regular file ; fd#" << fd);
   size_t fsiz = st.st_size;
+  long pgsiz = sysconf(_SC_PAGESIZE);
+  RPS_ASSERT(pgsiz > 0 && (pgsiz & (pgsiz-1)) == 0); // page size should be a power of 2
+  int logpgsiz = -1;
+  for (int i=10; i<32 && logpgsiz<0; i++)
+    {
+      if (1L<<i == pgsiz)
+        {
+          logpgsiz=i;
+          break;
+        }
+    };
+  RPS_ASSERT(pgsiz == 1L<<logpgsiz);
+  size_t mappedsize = fsiz;
+  if (mappedsize & (( 1L<<logpgsiz)-1))
+    mappedsize = (mappedsize | ( 1L<<logpgsiz)-1) + 1;
+  RPS_ASSERT(mappedsize % pgsiz == 0);
+  void* ad = mmap(nullptr, mappedsize, PROT_READ, MAP_PRIVATE, fd, mappedsize);
+  if (ad == MAP_FAILED)
+    RPS_FATALOUT("memory file source " << path << " mmap failure for fd#" << fd
+                 << " " << (mappedsize>>10) << " kb " << strerror(errno));
+  toksrcmfil_start = toksrcmfil_line = (char*)ad;
+  toksrcmfil_nextpage = (char*)ad + mappedsize;
+  toksrcmfil_end = (char*)ad + fsiz;
+  close(fd);
   RPS_DEBUG_LOG(REPL, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(LOWREP, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(CMD, "constr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
@@ -381,6 +407,16 @@ Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource()
   RPS_DEBUG_LOG(REPL, "destr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(LOWREP, "destr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
   RPS_DEBUG_LOG(CMD, "destr MemoryFileTokenSource@ " <<(void*)this << " " << *this);
+  RPS_ASSERT(toksrcmfil_start != nullptr && toksrcmfil_end != nullptr);
+  if (munmap((void*)toksrcmfil_start, toksrcmfil_nextpage-toksrcmfil_start))
+    RPS_FATALOUT("failed to munmap MemoryFileTokenSource@ " <<(void*)this
+                 << " path " << toksrcmfil_path
+                 << " from " << (void*)toksrcmfil_start
+                 << " to " << (void*)toksrcmfil_nextpage);
+  toksrcmfil_start=nullptr;
+  toksrcmfil_line=nullptr;
+  toksrcmfil_end=nullptr;
+  toksrcmfil_nextpage=nullptr;
 };      // end Rps_MemoryFileTokenSource::~Rps_MemoryFileTokenSource
 
 bool
