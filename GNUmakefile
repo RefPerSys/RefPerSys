@@ -103,8 +103,9 @@ do-scan-pkgconfig: do-scan-pkgconfig.c |GNUmakefile do-generate-gitid.sh
 clean:
 	$(RM) tmp* *~ *.o do-configure-refpersys refpersys
 	$(RM) *% %~
+	$(RM) *.gch
 	$(RM) *.orig
-	$(RM) */*~ */*.orig
+	$(RM) */*~ */*% */*.orig
 	$(RM) */*.so
 
 -include _scanned-pkgconfig.mk

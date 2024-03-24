@@ -323,7 +323,34 @@ rps_event_loop(void)
               std::size_t oldbufsiz= rps_jsonrpc_rspbuf.in_avail();
               std::size_t oldprevix = (oldbufsiz>0)?(oldbufsiz-1):0;
               auto newsiz = rps_jsonrpc_rspbuf.sputn(buf, nbr);
-              /// TODO: find a double newline or formfeed at index
+              bool again = false;
+              char* curp = buf;
+              do
+                {
+                  again = false;
+                  /// Find a double newline or formfeed at index. If there
+                  /// is one (or more) it is terminating a message...
+                  /* Invariant: there cannot be any double newline of
+                  formfeed before, since it would have been already
+                  processed. */
+                  {
+                    char*ffbuf = strchr(curp, '\f');
+                    char*nl2buf = strstr(curp, "\n\n");
+                    char*eombuf = nullptr;
+                    if (ffbuf && nl2buf)
+                      eombuf = (ffbuf>nl2buf)?ffbuf:nl2buf;
+                    else if (ffbuf) eombuf = ffbuf;
+                    else if (nl2buf) eombuf = nl2buf+1;
+                    if (eombuf)
+                      {
+                        int eombufoff = eombuf - buf;
+                        again = true;
+			RPS_FATALOUT("missing code JSONRPC input eombufoff:" << eombufoff);
+#warning should build a string with the JSON message, then decode and process that JSON
+                      }
+                  }
+                }
+              while (again);
               /// oldprevix
 #warning missing code to handle JsonRpc input from the GUI process
             }
