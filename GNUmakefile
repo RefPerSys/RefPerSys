@@ -49,6 +49,8 @@ FMT=/usr/bin/fmt
 ASTYLE=/usr/bin/astyle
 ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
 
+CFLAGS= -O -g
+
 -include _config-refpersys.mk
 
 ### Human hand-written C++ sources
@@ -94,12 +96,12 @@ config: do-configure-refpersys do-scan-pkgconfig GNUmakefile
 
 do-configure-refpersys: do-configure-refpersys.c |GNUmakefile do-generate-gitid.sh
 	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
-              -O -g $^ -o $@ -lreadline
+              $(CFLAGS) $^ -o $@ -lreadline
 ## if readline library is unavailable add -DWITHOUT_READLINE above
 
 do-scan-pkgconfig: do-scan-pkgconfig.c |GNUmakefile do-generate-gitid.sh
 	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
-              -O -g $^ -o $@
+              $(CFLAGS) $^ -o $@
 
 clean:
 	$(RM) tmp* *~ *.o do-configure-refpersys refpersys
