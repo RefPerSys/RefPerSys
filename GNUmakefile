@@ -97,7 +97,8 @@ config: do-configure-refpersys do-scan-pkgconfig GNUmakefile
 do-configure-refpersys: do-configure-refpersys.c |GNUmakefile do-generate-gitid.sh
 	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
               $(CFLAGS) $^ -o $@ -lreadline
-## if readline library is unavailable add -DWITHOUT_READLINE above
+## if GNU readline library is unavailable add -DWITHOUT_READLINE above
+## and remove the -lreadline above
 
 do-scan-pkgconfig: do-scan-pkgconfig.c |GNUmakefile do-generate-gitid.sh
 	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
@@ -119,8 +120,8 @@ _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgco
 	./do-scan-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
 
 __timestamp.c: do-generate-timestamp.sh GNUmakefile
-	@echo MAKE is $(MAKE)
-	env MAKE=$(shell /bin/which gmake) CXX=$(REFPERSYS_CXX) GPP=$(REFPERSYS_GPP) ./do-generate-timestamp.sh $@ > $@
+	@echo MAKE is "$(MAKE)" CXX is "$(REFPERSYS_CXX)" GPP is "$(REFPERSYS_GPP)" and "$(GPP)"
+	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" ./do-generate-timestamp.sh $@ > $@
 
 __timestamp.o: __timestamp.c |GNUmakefile
 	$(CC) -fPIC -c -O -g -Wall -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $^ -o $@
