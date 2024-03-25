@@ -682,7 +682,7 @@ emit_configure_refpersys_mk (void)
 	       "REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl\n");
     }
   //// emit the generic preprocessor
-  fprintf (f, "\n\n" "# the Generic Preprocessor for RefPerSys (ogological.org/gpp):\n");
+  fprintf (f, "\n\n" "# the Generic Preprocessor for RefPerSys (see logological.org/gpp):\n");
   fprintf (f, "REFPERSYS_GPP=%s\n", realpath(gpp, NULL));
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
