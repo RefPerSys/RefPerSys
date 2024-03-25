@@ -68,7 +68,7 @@ REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_
 ## backtrace is https://github.com/ianlancetaylor/libbacktrace (also inside GCC source)
 REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace
 
-### desired plugins (their basename under plugins/)
+### desired plugins (their basename under plugins_dir/)
 REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_simpinterp
 ################
 all:
@@ -136,9 +136,9 @@ refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __
 	@/bin/mv -v --backup __timestamp.c __timestamp.c%
 	@/bin/rm -vf __timestamp.o
 
-plugins: refpersys $(patsubst %, plugins/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) |GNUmakefile
+plugins: refpersys $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) |GNUmakefile
 
-plugins/%.so: plugins/%.cc refpersys.hh build-plugin.sh |GNUmakefile
+plugins_dir/%.so: plugins_dir/%.cc refpersys.hh build-plugin.sh |GNUmakefile
 	@printf "RefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	@printf "RefPerSys-gnumaking plugin %s MAKE is %s RPS_MAKE is %s\n" "$@" "$(MAKE)" "$(RPS_MAKE)"
 	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./build-plugin.sh $< $@
@@ -197,7 +197,7 @@ indent:
 	$(ASTYLE) $(ASTYLEFLAGS) inline_rps.hh
 	for f in $(REFPERSYS_HUMAN_CPP_SOURCES) ; do \
 	    $(ASTYLE) $(ASTYLEFLAGS) $$f ; done
-	for p in $(patsubst %, plugins/%.cc, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) ; do \
+	for p in $(patsubst %, plugins_dir/%.cc, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) ; do \
 	    $(ASTYLE) $(ASTYLEFLAGS) $$p ; done
 
 ## redump target
