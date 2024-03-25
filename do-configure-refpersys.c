@@ -330,6 +330,7 @@ try_compile_run_hello_world_in_c (const char *cc)
 void
 try_then_set_c_compiler (const char *cc)
 {
+  errno = 0;
   if (cc[0] != '/')
     {
       fprintf (stderr,
@@ -338,6 +339,7 @@ try_then_set_c_compiler (const char *cc)
       failed = true;
       exit (EXIT_FAILURE);
     };
+  errno = 0;
   if (access (cc, X_OK))
     {
       fprintf (stderr,
@@ -346,6 +348,7 @@ try_then_set_c_compiler (const char *cc)
       failed = true;
       exit (EXIT_FAILURE);
     }
+  errno = 0;
   try_compile_run_hello_world_in_c (cc);
   c_compiler = cc;
 }				/* end try_then_set_c_compiler */
@@ -360,8 +363,10 @@ test_cxx_compiler (const char *cxx)
   char *maincxxsrc = NULL;
   char showvectobj[128];
   char maincxxobj[128];
+  errno = 0;
   showvectsrc = temporary_textual_file ("tmp_showvect", ".cxx", __LINE__);
   maincxxsrc = temporary_textual_file ("tmp_maincxx", ".cxx", __LINE__);
+  errno = 0;
   /// write the show vector C++ file
   {
     FILE *svf = fopen (showvectsrc, "w");
@@ -852,6 +857,7 @@ main (int argc, char **argv)
   if (!cxx)
     cxx = my_readline ("C++ compiler:");
   try_then_set_cxx_compiler (cxx);
+  errno = 0;
   char* gpp = getenv ("GPP");
   if (!gpp) {
     puts("Generic Preprocessor (by Tristan Miller and Denis Auroux, see logological.org/gpp ...)");
