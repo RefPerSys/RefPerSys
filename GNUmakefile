@@ -35,6 +35,7 @@ export
 
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
+RPS_MAKE:= $(MAKE)
 #                                                                
 .DEFAULT_GOAL: refpersys
 .PHONY: all config objects clean gitpush gitpush2 print-plugin-settings indent redump plugins
@@ -139,7 +140,8 @@ plugins: refpersys $(patsubst %, plugins/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENA
 
 plugins/%.so: plugins/%.cc refpersys.hh build-plugin.sh |GNUmakefile
 	@printf "RefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	env PATH=$$PATH $(shell $(MAKE) print-plugin-settings) ./build-plugin.sh $< $@
+	@printf "RefPerSys-gnumaking plugin %s MAKE is %s RPS_MAKE is %s\n" "$@" "$(MAKE)" "$(RPS_MAKE)"
+	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./build-plugin.sh $< $@
 
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
