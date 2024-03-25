@@ -338,11 +338,11 @@ try_then_set_c_compiler (const char *cc)
       failed = true;
       exit (EXIT_FAILURE);
     };
-  if (access (cc, F_OK | X_OK))
+  if (access (cc, X_OK))
     {
       fprintf (stderr,
-	       "%s given non-executable path for C compiler %s [%s:%d]\n",
-	       prog_name, cc, __FILE__, __LINE__);
+	       "%s given non-executable path for C compiler %s [%s:%d] %s\n",
+	       prog_name, cc, __FILE__, __LINE__-1, strerror(errno));
       failed = true;
       exit (EXIT_FAILURE);
     }
@@ -562,7 +562,7 @@ try_then_set_cxx_compiler (const char *cxx)
       failed = true;
       exit (EXIT_FAILURE);
     };
-  if (access (cxx, F_OK | X_OK))
+  if (access (cxx, X_OK))
     {
       fprintf (stderr,
 	       "%s given non-executable path for C++ compiler %s [%s:%d]\n",
@@ -856,7 +856,7 @@ main (int argc, char **argv)
   if (!gpp) {
     puts("Generic Preprocessor (by Tristan Miller and Denis Auroux, see logological.org/gpp ...)");
     gpp = my_readline ("Generic Preprocessor full path:");
-    if (access(gpp, F_OK|X_OK)) {
+    if (access(gpp, X_OK)) {
       fprintf (stderr,
 	       "%s bad Generic Preprocessor %s (%s) [%s:%d]\n",
 	       prog_name, gpp?gpp:"???", strerror(errno),
