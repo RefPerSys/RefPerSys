@@ -38,7 +38,7 @@ RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 RPS_MAKE:= $(MAKE)
 #                                                                
 .DEFAULT_GOAL: refpersys
-.PHONY: all config objects clean gitpush gitpush2 print-plugin-settings indent redump plugins
+.PHONY: all config objects clean distclean gitpush gitpush2 print-plugin-settings indent redump plugins
 
 SYNC=/bin/sync
 
@@ -109,6 +109,8 @@ clean:
 	$(RM) */*~ */*% */*.orig
 	$(RM) */*.so
 
+distclean: clean
+	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __timestamp.*
 -include _scanned-pkgconfig.mk
 
 _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgconfig
