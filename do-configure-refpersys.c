@@ -88,7 +88,7 @@ const char *cpp_compiler;
 
 
 /* absolute path to Miller&Auroux Generic preprocessor */
-const char* gpp;
+const char *gpp;
 
 #ifndef MAX_REMOVED_FILES
 #define MAX_REMOVED_FILES 4096
@@ -344,7 +344,7 @@ try_then_set_c_compiler (const char *cc)
     {
       fprintf (stderr,
 	       "%s given non-executable path for C compiler %s [%s:%d] %s\n",
-	       prog_name, cc, __FILE__, __LINE__-1, strerror(errno));
+	       prog_name, cc, __FILE__, __LINE__ - 1, strerror (errno));
       failed = true;
       exit (EXIT_FAILURE);
     }
@@ -687,8 +687,10 @@ emit_configure_refpersys_mk (void)
 	       "REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl\n");
     }
   //// emit the generic preprocessor
-  fprintf (f, "\n\n" "# the Generic Preprocessor for RefPerSys (see logological.org/gpp):\n");
-  fprintf (f, "REFPERSYS_GPP=%s\n", realpath(gpp, NULL));
+  fprintf (f,
+	   "\n\n"
+	   "# the Generic Preprocessor for RefPerSys (see logological.org/gpp):\n");
+  fprintf (f, "REFPERSYS_GPP=%s\n", realpath (gpp, NULL));
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
@@ -858,19 +860,23 @@ main (int argc, char **argv)
     cxx = my_readline ("C++ compiler:");
   try_then_set_cxx_compiler (cxx);
   errno = 0;
-  char* gpp = getenv ("GPP");
-  if (!gpp) {
-    puts("Generic Preprocessor (by Tristan Miller and Denis Auroux, see logological.org/gpp ...)");
-    gpp = my_readline ("Generic Preprocessor full path:");
-    if (access(gpp, X_OK)) {
-      fprintf (stderr,
-	       "%s bad Generic Preprocessor %s (%s) [%s:%d]\n",
-	       prog_name, gpp?gpp:"???", strerror(errno),
-	       __FILE__, __LINE__ - 3);
-      failed = true;
-      exit (EXIT_FAILURE);
-    }
-  };
+  gpp = getenv ("GPP");
+  if (!gpp)
+    {
+      puts
+	("Generic Preprocessor (by Tristan Miller and Denis Auroux, see logological.org/gpp ...)");
+      gpp = my_readline ("Generic Preprocessor full path:");
+      if (access (gpp, X_OK))
+	{
+	  fprintf (stderr,
+		   "%s bad Generic Preprocessor %s (%s) [%s:%d]\n",
+		   prog_name, gpp ? gpp : "???", strerror (errno),
+		   __FILE__, __LINE__ - 3);
+	  failed = true;
+	  exit (EXIT_FAILURE);
+	}
+    };
+  assert (gpp != NULL);
   ///emit file config-refpersys.mk to be included by GNU make 
   emit_configure_refpersys_mk ();
   fprintf (stderr,
