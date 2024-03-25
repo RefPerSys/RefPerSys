@@ -115,8 +115,8 @@ _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgco
 	./do-scan-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
 
 __timestamp.c: do-generate-timestamp.sh GNUmakefile
-	echo MAKE is $(MAKE)
-	env MAKE=$(shell /bin/which gmake) CXX=$(REFPERSYS_CXX) ./do-generate-timestamp.sh $@ > $@
+	@echo MAKE is $(MAKE)
+	env MAKE=$(shell /bin/which gmake) CXX=$(REFPERSYS_CXX) GPP=$(REFPERSYS_GPP) ./do-generate-timestamp.sh $@ > $@
 
 __timestamp.o: __timestamp.c |GNUmakefile
 	$(CC) -fPIC -c -O -g -Wall -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $^ -o $@
@@ -130,8 +130,11 @@ refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __
 	@echo PACKAGES_LIST is $(PACKAGES_LIST)
 	$(MAKE) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
-	$(REFPERSYS_CXX) -rdynamic -o $@ $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o \
-              $(REFPERSYS_NEEDED_LIBRARIES) \
+	$(REFPERSYS_CXX) -rdynamic -o $@ \
+             $(REFPERSYS_HUMAN_CPP_OBJECTS) \
+             $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o \
+	      $(shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a) \
+              -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
 	      $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 	@/bin/mv -v --backup __timestamp.c __timestamp.c%
 	@/bin/rm -vf __timestamp.o
