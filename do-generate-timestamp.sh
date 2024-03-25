@@ -20,8 +20,11 @@
 ##      © Copyright 2019 - 2024 The Reflective Persistent System Team
 ##      team@refpersys.org
 ##
-##    This script generates some C file containing timestamp related constants for Linux
-##    related to the RefPerSys inference engine free software project on refpersys.org
+##    This internal script generates some C file containing timestamp
+##    related constants for Linux related to the RefPerSys inference
+##    engine free software project on refpersys.org.  It should be
+##    invoked by GNU make only.
+##    
 ##
 ##
 printf "/// invocation: %s %s in %s\n" $0 "$*" "$(realpath $(pwd))"
@@ -97,6 +100,11 @@ printf "const char rps_plugin_builder_script[]=\"%s\";\n" $(realpath ./build-plu
 printf "const char rps_cxx_compiler_realpath[]=\"%s\";\n" $(realpath $CXX)
 
 printf "const char rps_cxx_compiler_version[]=\"%s\";\n" "$($CXX --version | /bin/head -1)"
+
+
+printf "const char rps_gpp_preprocessor_realpath[]=\"%s\";\n" $(realpath $GPP)
+
+printf "const char rps_gpp_preprocessor_version[]=\"%s\";\n" "$($GPP --version | /bin/head -1)"
 
 printf "/// see also GNUmakefile in %s for refpersys.org;\n" $PWD
 
