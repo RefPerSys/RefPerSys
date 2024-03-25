@@ -86,6 +86,10 @@ int linker_argcount;
 const char *c_compiler;
 const char *cpp_compiler;
 
+
+/* absolute path to Miller&Auroux Generic preprocessor */
+const char* gpp;
+
 #ifndef MAX_REMOVED_FILES
 #define MAX_REMOVED_FILES 4096
 #endif
@@ -677,6 +681,10 @@ emit_configure_refpersys_mk (void)
       fprintf (f,
 	       "REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl\n");
     }
+  //// emit the generic preprocessor
+  fprintf (f, "\n\n" "# the Generic Preprocessor for RefPerSys (ogological.org/gpp):\n");
+  fprintf (f, "REFPERSYS_GPP=%s\n", realpath(gpp, NULL));
+  ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
   if (!link (tmp_conf, "_config-refpersys.mk"))
@@ -844,6 +852,19 @@ main (int argc, char **argv)
   if (!cxx)
     cxx = my_readline ("C++ compiler:");
   try_then_set_cxx_compiler (cxx);
+  char* gpp = getenv ("GPP");
+  if (!gpp) {
+    puts("Generic Preprocessor (by Tristan Miller and Denis Auroux, see logological.org/gpp ...)");
+    gpp = my_readline ("Generic Preprocessor full path:");
+    if (access(gpp, F_OK|X_OK)) {
+      fprintf (stderr,
+	       "%s bad Generic Preprocessor %s (%s) [%s:%d]\n",
+	       prog_name, gpp?gpp:"???", strerror(errno),
+	       __FILE__, __LINE__ - 3);
+      failed = true;
+      exit (EXIT_FAILURE);
+    }
+  };
   ///emit file config-refpersys.mk to be included by GNU make 
   emit_configure_refpersys_mk ();
   fprintf (stderr,
@@ -855,4 +876,4 @@ main (int argc, char **argv)
 }				/* end main */
 
 
-/// eof do-configure-refpersys.c
+/// end of file do-configure-refpersys.c
