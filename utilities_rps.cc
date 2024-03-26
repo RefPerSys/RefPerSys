@@ -490,6 +490,9 @@ rps_show_version(void)
             << " Read Eval Print Loop: " << rps_repl_version() << std::endl
             << " libCURL for web client: " << rps_curl_version() << std::endl
             << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
+            << " GPP preprocessor command: " << rps_gpp_preprocessor_command << std::endl
+            << " GPP preprocessor path: " << rps_gpp_preprocessor_realpath << std::endl
+            << " GPP preprocessor version: " << rps_gpp_preprocessor_version << std::endl
             << " made with: " << rps_gnumakefile << std::endl
             << " running on " << rps_hostname() << std::endl
             << "This executable was built by "

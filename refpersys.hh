@@ -239,6 +239,10 @@ extern "C" const char rps_gnumakefile[];
 extern "C" const char*const rps_subdirectories[];
 extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];
+extern "C" const char rps_gpp_preprocessor_command[];
+extern "C" const char rps_gpp_preprocessor_realpath[];
+extern "C" const char rps_gpp_preprocessor_version[];
+
 extern "C" const char rps_plugin_builder_script[];
 
 /// In commit 92c6e6b70d2 of Feb, 8, 2024 we used to mention GNU bison and GPP
