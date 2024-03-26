@@ -283,6 +283,7 @@ rps_event_loop(void)
           int pix = nbfdpoll++;
           pollarr[pix].fd = fdp.fifo_ui_wcmd;
           pollarr[pix].events = POLLOUT;
+          EXPLAIN_EVFD_RPS(pix, "JsonRpc commands to GUI");
           handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
           {
             RPS_ASSERT(fd ==  pollarr[pix].fd);
@@ -637,6 +638,8 @@ rps_event_loop(void)
 #undef EXPLAIN_EVFD_ATBIS
 #undef EXPLAIN_EVFD_RPS
 } // end rps_event_loop
+
+
 
 void
 handle_self_pipe_byte_rps(unsigned char b)
