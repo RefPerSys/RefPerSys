@@ -188,17 +188,15 @@ jsonrpc_initialize_rps(void)
                 << " routfd#" << fdp.fifo_ui_rout
                 << RPS_FULL_BACKTRACE_HERE(1, "jsonrpc_initialize_rps")
                 << std::endl << " in thread " << rps_current_pthread_name());
-#warning unimplemented  jsonrpc_initialize_rps
+#warning incomplete?  jsonrpc_initialize_rps
   /**
-   *  TODO: we probably want to make a first JsonRpc with some meta
-   *  data, e.g. a JSON grouping information from __timestamp.c and we
-   *  need to document the JSONRPC protocol between the GUI software
-   *  and RefPerSys
+   *  TODO: we need to document the JSONRPC protocol between the GUI
+   *  software and RefPerSys
    *
-   * That JSONRPC protocol should also be able to "disconnect" from
-   * the RefPerSys process.
+   *  A needed request is the _VERSION one....
+   *
   **/
-  RPS_FATALOUT("unimplemented jsonrpc_initialize_rps with fifo prefix "
+  RPS_DEBUG_LOG(REPL, "ending jsonrpc_initialize_rps with fifo prefix "
                << rps_get_fifo_prefix() //
                << " and wcmd.fd#" << fdp.fifo_ui_wcmd //
                << " and rout.fd#" << fdp.fifo_ui_rout);
