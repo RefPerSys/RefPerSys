@@ -1412,8 +1412,10 @@ main (int argc, char** argv)
   if (!rps_batch)
     {
       RPS_POSSIBLE_BREAKPOINT();
-      RPS_DEBUG_LOG(REPL, "before calling rps_event_loop");
+      RPS_DEBUG_LOG(REPL, "main before calling rps_event_loop"
+		    << RPS_FULL_BACKTRACE_HERE(1, "main"));
       rps_event_loop();
+      RPS_DEBUG_LOG(REPL, "main after calling rps_event_loop");
     }
   ////
   RPS_POSSIBLE_BREAKPOINT();
