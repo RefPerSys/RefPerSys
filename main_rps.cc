@@ -485,7 +485,14 @@ rps_run_loaded_application(int &argc, char **argv)
     };
   /// create the fifos if a prefix is given with
   if (!rps_get_fifo_prefix().empty())
-    rps_do_create_fifos_from_prefix();
+    {
+      RPS_DEBUG_LOG(REPL, "rps_run_loaded_application create fifo with prefix "
+                    << rps_get_fifo_prefix());
+      rps_do_create_fifos_from_prefix();
+    }
+  RPS_DEBUG_LOG(REPL, "rps_run_loaded_application after load & fifos"
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application"));
   //// running the given Unix command after load
   if (rps_run_command_after_load)
     {
@@ -610,6 +617,7 @@ rps_run_loaded_application(int &argc, char **argv)
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application JSONRPC"));
       jsonrpc_initialize_rps();
     };
+  RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended");
 } // end rps_run_loaded_application
 
 
@@ -1413,7 +1421,7 @@ main (int argc, char** argv)
     {
       RPS_POSSIBLE_BREAKPOINT();
       RPS_DEBUG_LOG(REPL, "main before calling rps_event_loop"
-		    << RPS_FULL_BACKTRACE_HERE(1, "main"));
+                    << RPS_FULL_BACKTRACE_HERE(1, "main"));
       rps_event_loop();
       RPS_DEBUG_LOG(REPL, "main after calling rps_event_loop");
     }
