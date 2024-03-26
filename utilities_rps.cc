@@ -141,6 +141,9 @@ rps_do_create_fifos_from_prefix(void)
     strcpy(cwdbuf, "./");
   std::string cmdfifo = rps_fifo_prefix+".cmd";
   std::string outfifo = rps_fifo_prefix+".out";
+  RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix " << rps_fifo_prefix
+                << " in " << cwdbuf << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_do_create_fifos_from_prefix"));
   if (!rps_is_fifo(cmdfifo))
     {
       if (mkfifo(cmdfifo.c_str(), 0660)<0)
