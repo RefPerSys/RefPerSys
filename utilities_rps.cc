@@ -134,10 +134,10 @@ rps_do_create_fifos_from_prefix(void)
   int cmdfd= -1;
   int outfd= -1;
   bool rmatex = false;
-  char cwdbuf[rps_path_byte_size];
+  char cwdbuf[rps_path_byte_size+4];
   memset(cwdbuf, 0, sizeof(cwdbuf));
   RPS_ASSERT(rps_is_main_thread());
-  if (getcwd(cwdbuf, sizeof(cwdbuf)-1))
+  if (!getcwd(cwdbuf, rps_path_byte_size))
     strcpy(cwdbuf, "./");
   std::string cmdfifo = rps_fifo_prefix+".cmd";
   std::string outfifo = rps_fifo_prefix+".out";
@@ -154,9 +154,12 @@ rps_do_create_fifos_from_prefix(void)
                     << " git " << rps_shortgitid);
       rmatex = true;
     }
-  cmdfd = open(cmdfifo.c_str(), 0660 | O_CLOEXEC);
+  RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix opening cmdfifo " << cmdfifo);
+  cmdfd = open(cmdfifo.c_str(), 0660 | O_CLOEXEC | O_NONBLOCK);
   if (cmdfd<0)
     RPS_FATALOUT("failed to open command FIFO " << cmdfifo << ":" << strerror(errno));
+  RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix cmdfd#" << cmdfd
+		<< " cmdfifo:" << cmdfifo);
   if (!rps_is_fifo(outfifo))
     {
       if (mkfifo(outfifo.c_str(), 0660)<0)
@@ -167,21 +170,24 @@ rps_do_create_fifos_from_prefix(void)
                     << " git " << rps_shortgitid);
       rmatex = true;
     }
-  outfd = open(outfifo.c_str(), 0440 | O_CLOEXEC);
+  RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix opening outfifo " << outfifo);
+  outfd = open(outfifo.c_str(), 0440 | O_CLOEXEC | O_NONBLOCK);
   if (outfd<0)
     RPS_FATALOUT("failed to open output FIFO " << outfifo << ":" << strerror(errno));
+  RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix outfd#" << outfd
+		<< " outfifo:" << outfifo);
   if (rmatex)
     atexit(rps_remove_fifos);
   rps_fifo_pair.fifo_ui_wcmd = cmdfd;
   rps_fifo_pair.fifo_ui_rout = outfd;
   RPS_INFORMOUT("RefPerSys did create (in pid " << (int)getpid()
                 << ") command and output FIFOs to communicate with GUI" << std::endl
-                << "… using for written commands to GUI " << cmdfifo << " fd#" << cmdfd
+                << "… using for writing commands to GUI " << cmdfifo << " fd#" << cmdfd
                 << std::endl
                 << "… and for reading JSON output from GUI " << outfifo << " fd#" << outfd
                 << "… git " << rps_shortgitid);
   RPS_POSSIBLE_BREAKPOINT();
-} // end rps_do_create_fifos
+} // end rps_do_create_fifos_from_prefix
 
 
 const char*
