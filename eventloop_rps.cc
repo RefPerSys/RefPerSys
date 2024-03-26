@@ -183,11 +183,11 @@ jsonrpc_initialize_rps(void)
     RPS_FATALOUT("invalid output FIFO fd " << fdp.fifo_ui_rout
                  << " with FIFO prefix " << rps_get_fifo_prefix());
   RPS_DEBUG_LOG(REPL, "jsonrpc_initialize_rps FIFO prefix "
-		<< rps_get_fifo_prefix()
-		<< " wcmdfd#" << fdp.fifo_ui_wcmd
-		<< " routfd#" << fdp.fifo_ui_rout
+                << rps_get_fifo_prefix()
+                << " wcmdfd#" << fdp.fifo_ui_wcmd
+                << " routfd#" << fdp.fifo_ui_rout
                 << RPS_FULL_BACKTRACE_HERE(1, "jsonrpc_initialize_rps")
-		<< std::endl << " in thread " << rps_current_pthread_name());
+                << std::endl << " in thread " << rps_current_pthread_name());
 #warning unimplemented  jsonrpc_initialize_rps
   /**
    *  TODO: we probably want to make a first JsonRpc with some meta
@@ -200,8 +200,8 @@ jsonrpc_initialize_rps(void)
   **/
   RPS_FATALOUT("unimplemented jsonrpc_initialize_rps with fifo prefix "
                << rps_get_fifo_prefix() //
-	       << " and wcmd.fd#" << fdp.fifo_ui_wcmd //
-	       << " and rout.fd#" << fdp.fifo_ui_rout);
+               << " and wcmd.fd#" << fdp.fifo_ui_wcmd //
+               << " and rout.fd#" << fdp.fifo_ui_rout);
 } // end jsonrpc_initialize_rps
 
 
@@ -260,7 +260,8 @@ rps_event_loop(void)
 #warning TODO: consider using rps_timer ...?
   /*** give output
    ***/
-  RPS_INFORMOUT("starting rps_event_loop in pid " << (int)getpid() << " on " << rps_hostname()
+  RPS_INFORMOUT("starting rps_event_loop in pid " << (long)getpid()
+                << " on " << rps_hostname()
                 << " git " << rps_shortgitid << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop")
                );
@@ -305,13 +306,14 @@ rps_event_loop(void)
           EXPLAIN_EVFD_RPS(pix, "JsonRpc responses from GUI");
           handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
           {
-            char buf[1024];
+            constexpr unsigned bufusefulen = 1024;
+            char buf[bufusefulen+8];
             RPS_ASSERT(fd ==  pollarr[pix].fd);
             RPS_ASSERT(rev == POLLIN);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             /* TODO: should read(2) */
             memset(buf, 0, sizeof(buf));
-            int nbr = read(fd, buf, sizeof(buf));
+            int nbr = read(fd, buf, bufusefulen);
             if (nbr < 0)
               return;
             if (nbr == 0)
@@ -320,6 +322,7 @@ rps_event_loop(void)
                              << fd << " pix#" << pix);
 #warning missing code to handle JsonRpc EOF from GUI process
               };
+            buf[nbr] = (char)0;
             RPS_DEBUG_LOG(REPL, "got " << nbr << " bytes from JSONRPC fd#" << fd << std::endl
                           << buf << std::endl);
             /* TODO: append the bytes we did read to
