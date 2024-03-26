@@ -182,6 +182,12 @@ jsonrpc_initialize_rps(void)
   if (fdp.fifo_ui_rout <= 0)
     RPS_FATALOUT("invalid output FIFO fd " << fdp.fifo_ui_rout
                  << " with FIFO prefix " << rps_get_fifo_prefix());
+  RPS_DEBUG_LOG(REPL, "jsonrpc_initialize_rps FIFO prefix "
+		<< rps_get_fifo_prefix()
+		<< " wcmdfd#" << fdp.fifo_ui_wcmd
+		<< " routfd#" << fdp.fifo_ui_rout
+                << RPS_FULL_BACKTRACE_HERE(1, "jsonrpc_initialize_rps")
+		<< std::endl << " in thread " << rps_current_pthread_name());
 #warning unimplemented  jsonrpc_initialize_rps
   /**
    *  TODO: we probably want to make a first JsonRpc with some meta
@@ -193,7 +199,9 @@ jsonrpc_initialize_rps(void)
    * the RefPerSys process.
   **/
   RPS_FATALOUT("unimplemented jsonrpc_initialize_rps with fifo prefix "
-               << rps_get_fifo_prefix() << " and wcmd.fd#" << fdp.fifo_ui_wcmd  << " and rout.fd#" << fdp.fifo_ui_rout);
+               << rps_get_fifo_prefix() //
+	       << " and wcmd.fd#" << fdp.fifo_ui_wcmd //
+	       << " and rout.fd#" << fdp.fifo_ui_rout);
 } // end jsonrpc_initialize_rps
 
 
