@@ -71,7 +71,7 @@ REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_
 REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace
 
 ### desired plugins (their basename under plugins_dir/)
-REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_simpinterp
+REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_simpinterp rpsplug_minigtkmm
 ################
 all:
 
