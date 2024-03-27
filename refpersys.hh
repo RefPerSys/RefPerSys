@@ -384,6 +384,12 @@ extern "C" bool rps_run_repl;
 
 extern "C" void jsonrpc_initialize_rps(void);
 
+/// our event loop can call C++ closures before the poll(2) system
+/// call in the event loop. return some index for the unregistering
+/// function.
+extern "C" int rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int& npoll, Rps_CallFrame*)> fun);
+extern "C" void rps_unregister_event_loop_prepoller(int rank);
+
 extern "C" void rps_event_loop(void); // run the event loop
 extern "C" void rps_do_stop_event_loop(void);
 // in eventloop_rps.cc, tell if the event loop is running.

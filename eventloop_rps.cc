@@ -82,6 +82,7 @@ struct event_loop_data_st
   std::deque<unsigned char> eld_selfpipefifo;
   std::atomic<bool> eld_eventloopisactive;
   std::atomic<long> eld_nbloops;
+  std::vector<std::function<void(struct pollfd*, int& npoll, Rps_CallFrame*)>> eld_prepollvect;
 };
 
 extern "C" struct event_loop_data_st rps_eventloopdata;
@@ -127,6 +128,39 @@ rps_self_pipe_write_byte(unsigned char b)
   std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
   rps_eventloopdata.eld_selfpipefifo.push_back(b);
 } // end rps_self_pipe_write_byte
+
+
+int rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int npoll, Rps_CallFrame*)> fun)
+{
+  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  int ln = rps_eventloopdata.eld_prepollvect.size();
+  if (ln > 1000)
+    RPS_FATALOUT("too many event loop prepoller " << ln);
+  for (int i=0; i<ln; i++)
+    {
+      if (!rps_eventloopdata.eld_prepollvect[i])
+        {
+          rps_eventloopdata.eld_prepollvect[i] = fun;
+          return i;
+        }
+    }
+  rps_eventloopdata.eld_prepollvect.push_back(fun);
+  return rps_eventloopdata.eld_prepollvect.size();
+} // end rps_register_event_loop_prepoller
+
+void rps_unregister_event_loop_prepoller(int rank)
+{
+  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  if (rank<0 || rank>rps_eventloopdata.eld_prepollvect.size())
+    {
+      RPS_WARNOUT("invalid rank to rps_unregister_event_loop_prepoller " << rank);
+      return;
+    };
+  rps_eventloopdata.eld_prepollvect[rank] = nullptr;
+} // end rps_unregister_event_loop_prepoller
+
 
 bool
 rps_is_fifo(std::string path)
@@ -555,6 +589,15 @@ rps_event_loop(void)
           break;
         };
       fflush(nullptr);
+      // call the registered event prepoller
+      {
+        std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+        for (auto fun : rps_eventloopdata.eld_prepollvect)
+          {
+            if (fun)
+              fun(pollarr, nbfdpoll, &_);
+          }
+      }
       errno = 0;
       int respoll = poll(pollarr, nbfdpoll, 20 + (rps_poll_delay_millisec*(debugpoll?4:1)));
       pollcount++;
@@ -622,6 +665,7 @@ rps_event_loop(void)
         };
       fflush(nullptr);
     };       // end while not rps_stop_event_loop_flag
+
   /*TODO: cooperation with transientobj_rps.cc ... */
 #warning incomplete rps_event_loop see related file transientobj_rps.cc, missing code
   /*TODO: use Rps_PayloadUnixProcess::do_on_active_process_queue to collect file descriptors inside such payloads */
