@@ -159,7 +159,7 @@ rps_do_create_fifos_from_prefix(void)
   if (cmdfd<0)
     RPS_FATALOUT("failed to open command FIFO " << cmdfifo << ":" << strerror(errno));
   RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix cmdfd#" << cmdfd
-		<< " cmdfifo:" << cmdfifo);
+                << " cmdfifo:" << cmdfifo);
   if (!rps_is_fifo(outfifo))
     {
       if (mkfifo(outfifo.c_str(), 0660)<0)
@@ -175,7 +175,7 @@ rps_do_create_fifos_from_prefix(void)
   if (outfd<0)
     RPS_FATALOUT("failed to open output FIFO " << outfifo << ":" << strerror(errno));
   RPS_DEBUG_LOG(REPL, "rps_do_create_fifos_from_prefix outfd#" << outfd
-		<< " outfifo:" << outfifo);
+                << " outfifo:" << outfifo);
   if (rmatex)
     atexit(rps_remove_fifos);
   rps_fifo_pair.fifo_ui_wcmd = cmdfd;

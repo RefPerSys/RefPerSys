@@ -197,9 +197,9 @@ jsonrpc_initialize_rps(void)
    *
   **/
   RPS_DEBUG_LOG(REPL, "ending jsonrpc_initialize_rps with fifo prefix "
-               << rps_get_fifo_prefix() //
-               << " and wcmd.fd#" << fdp.fifo_ui_wcmd //
-               << " and rout.fd#" << fdp.fifo_ui_rout);
+                << rps_get_fifo_prefix() //
+                << " and wcmd.fd#" << fdp.fifo_ui_wcmd //
+                << " and rout.fd#" << fdp.fifo_ui_rout);
 } // end jsonrpc_initialize_rps
 
 
@@ -289,7 +289,7 @@ rps_event_loop(void)
             RPS_ASSERT(fd ==  pollarr[pix].fd);
             RPS_ASSERT(rev == POLLOUT);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
-	    RPS_DEBUG_LOG(REPL, "should write JSONRPC to GUI on cmdfd#" << fd);
+            RPS_DEBUG_LOG(REPL, "should write JSONRPC to GUI on cmdfd#" << fd);
             RPS_FATALOUT("missing code to handle JSONRPC output commands to fd#"
                          << fd << " pix#" << pix);
             /* TODO: write the bytes that are in rps_jsonrpc_cmdbuf */
@@ -313,8 +313,8 @@ rps_event_loop(void)
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
             /* TODO: should read(2) */
             memset(buf, 0, sizeof(buf));
-	    RPS_DEBUG_LOG(REPL, "reading JSONRPC from GUI on outfd#" << fd);
-	    errno = 0;
+            RPS_DEBUG_LOG(REPL, "reading JSONRPC from GUI on outfd#" << fd);
+            errno = 0;
             int nbr = read(fd, buf, bufusefulen);
             if (nbr < 0)
               return;
@@ -561,7 +561,7 @@ rps_event_loop(void)
       if (pollcount %2 && debugpoll)
         snprintf(elapsbuf, sizeof(elapsbuf), " elti: %.3fs", rps_elapsed_real_time());
       RPS_DEBUG_LOG(REPL, "rps_event_loop pollcount#"  << pollcount ///
-		    << " respoll=" << respoll
+                    << " respoll=" << respoll
                     << " nbfdpoll=" << nbfdpoll);
       if (respoll>0)
         {
