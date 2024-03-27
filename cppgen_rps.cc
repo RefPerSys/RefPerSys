@@ -57,6 +57,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  Rps_ObjectRef obcurinclude;
                  Rps_ClosureValue vclos;
                  Rps_Value vinclude;
+                 Rps_Value vold;
                  Rps_Value vmainres;
                  Rps_Value vxtrares;
                  Rps_Value vtype;
@@ -95,27 +96,41 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   **/
   if (_f.vinclude.is_closure())
     {
+      _f.vold = _f.vinclude;
       _f.vclos = Rps_ClosureValue(_f.vinclude);
       Rps_TwoValues tv = //
         _f.vclos.apply2(&_, _f.obmodule, _f.obgenerator);
       _f.vinclude = tv.main();
       _f.vxtrares = tv.xtra();
-    };
+      RPS_DEBUG_LOG(CODEGEN,
+                    "rps_generate_cplusplus_code computed include "
+                    << _f.vinclude << " with closure=" << _f.vold << " obmodule=" << _f.obmodule
+                    << " obgenerator=" << _f.obgenerator);
+    }
+  else
+    RPS_DEBUG_LOG(CODEGEN,
+                  "rps_generate_cplusplus_code plain include "
+                  << _f.vinclude << " obmodule=" << _f.obmodule
+                  << " obgenerator=" << _f.obgenerator);
   if (_f.vinclude.is_set())
     {
       unsigned cardinclset = _f.vinclude.as_set()->cardinal();
 #warning  rps_generate_cplusplus_code should handle set of includes
+      throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code unimplemented set vinclude:" << _f.vinclude<< " obmodule=" << _f.obmodule
+                                  << " obgenerator=" << _f.obgenerator);
     }
   else if (_f.vinclude.is_tuple())
     {
       unsigned lenincltup = _f.vinclude.as_tuple()->size();
 #warning  rps_generate_cplusplus_code should handle tuple of includes
+      throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code unimplemented tuple vinclude:" << _f.vinclude<< " obmodule=" << _f.obmodule
+                                  << " obgenerator=" << _f.obgenerator);
     }
   else
-    RPS_FATALOUT("unimplemented rps_generate_cplusplus_code obmodule="
+    RPS_FATALOUT("in rps_generate_cplusplus_code obmodule="
                  << obmodule << " obgenerator=" << _f.obgenerator
-                 << " include=" << _f.vinclude);
-#warning unimplemented rps_generate_cplusplus_code
+                 << "unexpected include=" << _f.vinclude);
+#warning missing code in rps_generate_cplusplus_code
 } // end rps_generate_cplusplus_code
 
 
