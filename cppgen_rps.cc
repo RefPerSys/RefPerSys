@@ -104,7 +104,8 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
       _f.vxtrares = tv.xtra();
       RPS_DEBUG_LOG(CODEGEN,
                     "rps_generate_cplusplus_code computed include "
-                    << _f.vinclude << " with closure=" << _f.vold << " obmodule=" << _f.obmodule
+                    << _f.vinclude << " with closure=" << _f.vold
+                    << " obmodule=" << _f.obmodule
                     << " obgenerator=" << _f.obgenerator);
     }
   else
