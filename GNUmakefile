@@ -104,6 +104,9 @@ do-scan-pkgconfig: do-scan-pkgconfig.c |GNUmakefile do-generate-gitid.sh
 	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
               $(CFLAGS) $^ -o $@
 
+do-build-plugin: do-build-plugin.cc __timestamp.c
+	$(CXX) -Wall -Wextra  -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" -O -g $^ -o $@
+
 clean:
 	$(RM) tmp* *~ *.o do-configure-refpersys refpersys
 	$(RM) *% %~
