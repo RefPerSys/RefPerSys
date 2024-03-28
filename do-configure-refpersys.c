@@ -90,6 +90,9 @@ const char *cpp_compiler;
 /* absolute path to Miller&Auroux Generic preprocessor */
 const char *gpp;
 
+/* absolute path to ninja builder (see ninja-build.org) */
+const char *ninja_builder;
+
 #ifndef MAX_REMOVED_FILES
 #define MAX_REMOVED_FILES 4096
 #endif
@@ -597,6 +600,9 @@ remove_files (void)
     }
 }				/* end remove_files */
 
+
+
+
 void
 emit_configure_refpersys_mk (void)
 {
@@ -691,6 +697,8 @@ emit_configure_refpersys_mk (void)
 	   "\n\n"
 	   "# the Generic Preprocessor for RefPerSys (see logological.org/gpp):\n");
   fprintf (f, "REFPERSYS_GPP=%s\n", realpath (gpp, NULL));
+  fprintf (f, "\n\n" "# ninja builder from ninja-build.org\n");
+  fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (ninja_builder, NULL));
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
@@ -727,27 +735,30 @@ usage (void)
 {
   puts ("# configuration utility program for refpersys.org");
   printf ("%s usage:\n", prog_name);
-  puts ("\t --version             # show version");
-  puts ("\t --help                # this help");
-  puts
-    ("\t <var>=<value>         # putenv, set environment variable, e.g...");
-  puts
-    ("\t CC=<C compiler>       # set the C compiler, e.g. CC=/usr/bin/gcc");
-  puts
-    ("\t CXX=<C++ compiler>    # set the C++ compiler, e.g. CXX=/usr/bin/g++");
-  puts
-    ("\t -D<prepro>            # define a preprocessor thing, e.g. -DFOO=3");
-  puts
-    ("\t -U<prepro>            # undefine a preprocessor thing, e.g. -UBAR");
-  puts ("\t -I<include-dir>       # preprocessor include, e.g. -I$HOME/inc/");
-  puts
-    ("\t -std=<standard>       # language standard for C++, e.g. -std=gnu++17");
-  puts ("\t -O<flag>              # optimization flag, e.g. -O or -O2");
-  puts ("\t -g<flag>              # debugging flag, e.g. -g or -g3");
-  puts ("\t -fPIC                 # position independent code");
-  puts ("\t -fPIE                 # position independent executable");
-  puts
-    ("# generate the _configure-refpersys.mk file for inclusion by GNU make");
+  puts ("\t --version               # show version");
+  puts ("\t --help                  # this help");
+  puts ("\t <var>=<value>           # putenv, set environment variable");
+  puts ("\t                         # ... e.g. PRINTER=lp0");
+  puts ("\t CC=<C compiler>         # set the C compiler,");
+  puts ("\t                         # e.g. CC=/usr/bin/gcc");
+  puts ("\t CXX=<C++ compiler>      # set the C++ compiler,");
+  puts ("\t                         # e.g. CXX=/usr/bin/g++");
+  puts ("\t NINJA=<ninja-builder>   # set builder from ninja-build.org");
+  puts ("\t                         # e.g. NINJA=/usr/bin/ninja");
+  puts ("\t -D<prepro>              # define a preprocessor thing,");
+  puts ("\t                         # e.g. -DFOO=3");
+  puts ("\t -U<prepro>              # undefine a preprocessor thing,");
+  puts ("\t                         # e.g. -UBAR");
+  puts ("\t -I<include-dir>         # preprocessor include,");
+  puts ("\t                         # e.g. -I$HOME/inc/");
+  puts ("\t -std=<standard>         # language standard for C++,");
+  puts ("\t                         # e.g. -std=gnu++17");
+  puts ("\t -O<flag>                # optimization flag, e.g. -O2");
+  puts ("\t -g<flag>                # debugging flag, e.g. -g or -g3");
+  puts ("\t -fPIC                   # position independent code");
+  puts ("\t -fPIE                   # position independent executable");
+  puts ("# generate the _configure-refpersys.mk file");
+  puts ("# for inclusion by GNU make");
   puts ("# GPLv3+ licensed, so no warranty");
 }				/* end usage */
 
@@ -859,6 +870,7 @@ main (int argc, char **argv)
   if (!cxx)
     cxx = my_readline ("C++ compiler:");
   try_then_set_cxx_compiler (cxx);
+
   errno = 0;
   gpp = getenv ("GPP");
   if (!gpp)
@@ -877,6 +889,21 @@ main (int argc, char **argv)
 	}
     };
   assert (gpp != NULL);
+
+  ninja_builder = getenv ("NINJA");
+  if (!ninja_builder)
+    {
+      ninja_builder = my_readline ("ninja builder:");
+      if (access (ninja_builder, X_OK))
+	{
+	  fprintf (stderr,
+		   "%s bad ninja builder %s (%s) [%s:%d]\n",
+		   prog_name, ninja_builder ? ninja_builder : "???",
+		   strerror (errno), __FILE__, __LINE__ - 3);
+	  failed = true;
+	  exit (EXIT_FAILURE);
+	}
+    };
   ///emit file config-refpersys.mk to be included by GNU make 
   emit_configure_refpersys_mk ();
   fprintf (stderr,
