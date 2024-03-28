@@ -101,6 +101,8 @@ printf "const char rps_cxx_compiler_realpath[]=\"%s\";\n" $(realpath $CXX)
 
 printf "const char rps_cxx_compiler_version[]=\"%s\";\n" "$($CXX --version | /bin/head -1)"
 
+printf "const char rps_cxx_compiler_flags[]=\"%s\";\n" "$CXXFLAGS"
+
 printf "const char rps_gpp_preprocessor_command[]=\"%s\";\n" $GPP
 
 printf "const char rps_gpp_preprocessor_realpath[]=\"%s\";\n" $(realpath $GPP)

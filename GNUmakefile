@@ -108,7 +108,7 @@ do-build-plugin: do-build-plugin.cc __timestamp.c
 	$(CXX) -Wall -Wextra  -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" -O -g $^ -o $@
 
 clean:
-	$(RM) tmp* *~ *.o do-configure-refpersys refpersys
+	$(RM) tmp* *~ *.o do-configure-refpersys do-build-plugin refpersys
 	$(RM) *% %~
 	$(RM) *.gch
 	$(RM) *.orig
@@ -124,7 +124,7 @@ _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgco
 
 __timestamp.c: do-generate-timestamp.sh GNUmakefile
 	@echo MAKE is "$(MAKE)" CXX is "$(REFPERSYS_CXX)" GPP is "$(REFPERSYS_GPP)" and "$(GPP)"
-	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" ./do-generate-timestamp.sh $@ > $@
+	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./do-generate-timestamp.sh $@ > $@
 
 __timestamp.o: __timestamp.c |GNUmakefile
 	$(CC) -fPIC -c -O -g -Wall -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $^ -o $@

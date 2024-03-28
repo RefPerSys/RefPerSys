@@ -34,6 +34,8 @@ extern "C" {
 #include "__timestamp.c"
   const char bp_git_id[]=GIT_ID;
   const char* bp_progname;
+  const char* bp_plugin_source;
+  const char* bp_plugin_binary;
 };
 
 
@@ -43,6 +45,7 @@ void bp_version (void)
 	    << " built " __DATE__ "@" << __TIME__ << " [refpersys.org]"
 	    << std::endl;
   std::cerr << "\t using " << rps_ninja_builder << " " << rps_ninja_version << std::endl;
+  std::cerr << "# run " << bp_progname <<" --help for details." << std::endl;
 } // end bp_version
 
 void bp_usage(void)
@@ -78,6 +81,8 @@ main(int argc, char**argv)
       std::cerr << bp_progname << " needs two arguments." << std::endl;
       exit(EXIT_FAILURE);
     };
+  bp_plugin_source = argv[1];
+  bp_plugin_binary = argv[2];
 } // end main
 
 
