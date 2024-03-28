@@ -8,3 +8,4 @@ tmp_*
 *.o
 *~
 *.BAKdo-build-plugin
+do-build-plugin
