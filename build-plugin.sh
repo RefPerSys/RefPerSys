@@ -37,7 +37,7 @@ eval $(make print-plugin-settings)
 ### pluginlinkerflags contain linker flags
 
 if /usr/bin/fgrep -q '@RPSCOMPILEFLAGS=' $cppfile ; then
-    plugincppflags=$(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSCOMPILEFLAGS=/ { for (i=1; i<=NF; i++) print $i; }')
+    plugincppflags=$(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSCOMPILEFLAGS=/ { for (i=2; i<=NF; i++) print $i; }')
 else
     plugincppflags=()
 fi
@@ -45,11 +45,11 @@ fi
 
 ## ugly hack needed in March 2024 after commit 456fcb27bc57f
 if [ -f /usr/include/jsoncpp/json/json.h ]; then
-    plugincppflags+="-I/usr/include/jsoncpp"
+    plugincppflags+=" -I/usr/include/jsoncpp"
 fi
 
 if /usr/bin/fgrep -q '@RPSLIBES=' $cppfile ; then
-    pluginlinkerflags=$(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSLIBES=/ { for (i=1; i<=NF; i++) print $i; }')
+    pluginlinkerflags=$(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSLIBES=/ { for (i=2; i<=NF; i++) print $i; }')
 else
     pluginlinkerflags=()
 fi
