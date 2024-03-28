@@ -9,8 +9,10 @@
 
     Once compiled use it as
 
-  ./refpersys --plugin-after-load=rpsplug_simpinterp.so:$SCRIPTFILE \
-              --plugin-arg=rpsplug_simpinterp: \
+  ./refpersys --plugin-after-load=plugins_dir/rpsplug_simpinterp.so \
+              --plugin-arg=rpsplug_simpinterp:$SCRIPT_FILE
+
+  ... and probably other program arguments (e.g. -AREPL)
  ***/
 
 #include "refpersys.hh"
@@ -40,6 +42,9 @@ rps_do_plugin(const Rps_Plugin*plugin)
   _f.v1 = nullptr;
   errno = 0;
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
+  RPS_DEBUG_LOG(REPL, "rps_do_plugin " << plugin->plugin_name
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, __FILE__ " plugin"));
   if (!plugarg || !plugarg[0])
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " without argument (script file expected)");
