@@ -242,6 +242,8 @@ extern "C" const char rps_cxx_compiler_version[];
 extern "C" const char rps_gpp_preprocessor_command[];
 extern "C" const char rps_gpp_preprocessor_realpath[];
 extern "C" const char rps_gpp_preprocessor_version[];
+extern "C" const char rps_ninja_builder[];
+extern "C" const char rps_ninja_version[];
 
 extern "C" const char rps_plugin_builder_script[];
 
