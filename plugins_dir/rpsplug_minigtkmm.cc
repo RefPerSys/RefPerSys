@@ -12,9 +12,6 @@
   ./refpersys --plugin-after-load=rpsplug_minigtkmm.so:$DISPLAY \
               --plugin-arg=rpsplug_minigtkmm: \
  ***/
-/**
-@RPSCOMPILEFLAGS= -O -g
-**/
 //@PKGCONFIG gtkmm-3.0
 
 #include "refpersys.hh"
