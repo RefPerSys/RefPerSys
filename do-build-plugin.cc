@@ -42,6 +42,7 @@ void bp_version (void)
   std::cerr << bp_progname << " version " << bp_git_id
 	    << " built " __DATE__ "@" << __TIME__ << " [refpersys.org]"
 	    << std::endl;
+  std::cerr << "\t using " << rps_ninja_builder << " " << rps_ninja_version << std::endl;
 } // end bp_version
 
 void bp_usage(void)
