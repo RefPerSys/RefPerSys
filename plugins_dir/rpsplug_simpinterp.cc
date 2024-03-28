@@ -43,8 +43,8 @@ rps_do_plugin(const Rps_Plugin*plugin)
   errno = 0;
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   RPS_DEBUG_LOG(REPL, "rps_do_plugin " << plugin->plugin_name
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, __FILE__ " plugin"));
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, __FILE__ " plugin"));
   if (!plugarg || !plugarg[0])
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " without argument (script file expected)");
