@@ -287,17 +287,34 @@ main(int argc, char**argv)
   {
     char ninjacmd[256];
     memset (ninjacmd, 0, sizeof(ninjacmd));
-    snprintf (ninjacmd, sizeof(ninjacmd), "%s -C %s %s\n",
+    snprintf (ninjacmd, sizeof(ninjacmd), "%s -C %s -f %s %s\n",
               rps_ninja_builder,
               rps_topdirectory,
+              bp_temp_ninja.c_str(),
               bp_plugin_binary);
     printf("%s running %s (source %s)\n", bp_progname,
            bp_plugin_source, ninjacmd);
     fflush (nullptr);
     int ex = system(ninjacmd);
     sync ();
-    return ex;
+    if (ex)
+      return ex;
   }
+  {
+    char atcmd[80];
+    memset (atcmd, 0, sizeof(atcmd));
+    snprintf(atcmd, sizeof(atcmd), "/bin/at now + 10 minutes");
+    FILE *p = popen(atcmd, "w");
+    if (!p)
+      {
+        fprintf(stderr, "%s won't remove later file %s\n",
+                bp_progname, bp_temp_ninja.c_str());
+        return 0;
+      }
+    fprintf (p, "/bin/rm -f '%s'", bp_temp_ninja.c_str());
+    pclose(p);
+  }
+  return 0;
 } // end main
 
 
