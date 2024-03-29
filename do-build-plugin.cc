@@ -137,21 +137,53 @@ bp_complete_ninja(FILE*f, const std::string& src)
                   exit(EXIT_FAILURE);
                 }
             }
-	  continue;
+          continue;
         }
-      /// handle @NINJA lines, followed by one name, then insert all the lines up to @ENDNINJA.
-      /// for example ///@NINJA.foo .... ended by ///@ENDNINJA.foo
+      /// handle @NINJA lines, followed by one name, then insert all
+      /// the lines up to @ENDNINJA in the generated ninja file...
+      /**
+       * for example a line
+       *
+       *  ///@NINJA.foo
+       *
+       *  up to the line
+       *
+       *  //-   @ENDNINJA.foo
+       *
+       **/
       char*nj = strstr(linbuf, "@NINJA");
       if (nj)
         {
-	  char name[64];
-	  memset (name, 0, sizeof (name));
-          //char*n = nj + strlen("@NINJA");
-#warning incomplete code in bp_complete_ninja to handle @NINJA ... @ENDNINJA
-	  std::cerr << bp_progname << " : unimplemented @NINJA "
-		    << " ["<< src << ":" << lineno << "]" << std::endl;
-	  exit(EXIT_FAILURE);
-	};
+          char name[64];
+          memset (name, 0, sizeof (name));
+          char*n = nj + strlen("@NINJA");
+          if (sscanf(n, ".%60[a-zA-z0-9_]", name) >0 && name[0])
+            {
+              char endline[80];
+              memset (endline, 0, sizeof(endline));
+              snprintf(endline, sizeof(endline), "@ENDNINJA.%s", name);
+	      fprintf(f, "///@NINJA.%s at %s:%d\n",
+		      name, src.c_str(), lineno);
+	      while (inp) {
+		memset (linbuf, 0, sizeof(linbuf));
+		inp.getline(linbuf, sizeof(linbuf)-2);
+		if (!inp)
+		  break;
+		lineno++;
+		if (strstr(linbuf, endline))
+		  break;
+		fputs(linbuf, f);
+	      };
+	      fprintf(f, "///@ENDNINJA.%s at %s:%d\n",
+		      name, src.c_str(), lineno);
+            }
+          else
+            {
+              std::cerr << bp_progname << " : bad @NINJA "
+                        << " ["<< src << ":" << lineno << "]" << std::endl;
+              exit(EXIT_FAILURE);
+            }
+        };
     }
   while (inp);
 } // end bp_complete_ninja
@@ -251,6 +283,7 @@ main(int argc, char**argv)
   }
   fprintf(bp_ninja_file, "\n#end of file %s\n", bp_base.c_str());
   fclose(bp_ninja_file);
+#warning incomplete main should run ninja on the temporary ninja file
   return 0;
 } // end main
 
