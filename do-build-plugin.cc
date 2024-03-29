@@ -187,7 +187,7 @@ bp_complete_ninja(FILE*f, const std::string& src)
         };
     }
   while (inp);
-  fprintf(f, "\n// final from %s:%d\n", __FILE__, __LINE__);
+  fprintf(f, "\n##/ final from %s:%d\n", __FILE__, __LINE__);
   fprintf(f, "build %s : LINKSHARED $object_files\n",
 	  bp_plugin_binary);
 } // end bp_complete_ninja
