@@ -188,7 +188,7 @@ bp_complete_ninja(FILE*f, const std::string& src)
     }
   while (inp);
   fprintf(f, "\n// final from %s:%d\n", __FILE__, __LINE__);
-  fprintf(f, "build %s: LINKSHARED $object_files\n",
+  fprintf(f, "build %s : LINKSHARED $object_files\n",
 	  bp_plugin_binary);
 } // end bp_complete_ninja
 
@@ -234,7 +234,7 @@ bp_write_prologue_ninja(const char*njpath)
           "rule LINKSHARED\n"
           "  command $cxx -rdynamic -shared $in -o $out\n");
   fprintf(bp_ninja_file, "\n"
-	  "build %s: CC %s\n",
+	  "build %s : CC %s\n",
 	  objbuf, bp_plugin_source);
 } // end bp_write_prologue_ninja
 
