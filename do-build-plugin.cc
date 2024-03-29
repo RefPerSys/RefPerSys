@@ -200,7 +200,7 @@ bp_write_prologue_ninja(const char*njpath)
           bp_plugin_source);
   fprintf(bp_ninja_file, "# refpersys generated plugin %s\n",
           bp_plugin_binary);
-  fprintf(bp_ninja_file, "ninja_required_version 1.10\n");
+  fprintf(bp_ninja_file, "ninja_required_version = 1.10\n");
   fflush(bp_ninja_file);
   fprintf(bp_ninja_file, "default %s\n", bp_plugin_binary);
   fprintf(bp_ninja_file, "deps = gcc\n");
