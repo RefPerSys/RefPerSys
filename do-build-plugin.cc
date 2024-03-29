@@ -205,7 +205,6 @@ bp_write_prologue_ninja(const char*njpath)
           bp_plugin_binary);
   fprintf(bp_ninja_file, "ninja_required_version = 1.10\n");
   fflush(bp_ninja_file);
-  fprintf(bp_ninja_file, "default %s\n", bp_plugin_binary);
   fprintf(bp_ninja_file, "refpersys_plugin_source = %s\n", bp_plugin_source);
   fprintf(bp_ninja_file, "refpersys_plugin_binary = %s\n", bp_plugin_binary);
   fprintf(bp_ninja_file, "cplusplus_sources = $refpersys_plugin_source\n");
@@ -232,7 +231,7 @@ bp_write_prologue_ninja(const char*njpath)
           "  command = $cxx $cflags -c $in -MD -MF $out.mkd -o $out\n");
   fprintf(bp_ninja_file, "\n"
           "rule LINKSHARED\n"
-          "  command $cxx -rdynamic -shared $in -o $out\n");
+          "  command = $cxx -rdynamic -shared $in -o $out\n");
   fprintf(bp_ninja_file, "\n"
 	  "build %s : CC %s\n",
 	  objbuf, bp_plugin_source);
@@ -302,6 +301,7 @@ main(int argc, char**argv)
     bp_write_prologue_ninja(temp);
     bp_complete_ninja(bp_ninja_file, bp_plugin_source);
   }
+  fprintf(bp_ninja_file, "\n\ndefault %s\n", bp_plugin_binary);
   fprintf(bp_ninja_file, "\n#end of generated ninja file %s\n", bp_temp_ninja.c_str());
   fclose(bp_ninja_file);
   {
