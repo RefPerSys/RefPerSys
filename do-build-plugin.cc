@@ -188,7 +188,7 @@ bp_complete_ninja(FILE*f, const std::string& src)
     }
   while (inp);
   fprintf(f, "\n// final from %s:%d\n", __FILE__, __LINE__);
-  fprintf(f, "build %s: LINKSHARED $plugin_objects\n",
+  fprintf(f, "build %s: LINKSHARED $object_files\n",
 	  bp_plugin_binary);
 } // end bp_complete_ninja
 
@@ -209,7 +209,6 @@ bp_write_prologue_ninja(const char*njpath)
   fprintf(bp_ninja_file, "refpersys_plugin_source = %s\n", bp_plugin_source);
   fprintf(bp_ninja_file, "refpersys_plugin_binary = %s\n", bp_plugin_binary);
   fprintf(bp_ninja_file, "cplusplus_sources = $refpersys_plugin_source\n");
-  {
     char objbuf[128];
     memset (objbuf, 0, sizeof(objbuf));
     const char* lastdot = strrchr(bp_plugin_binary, '.');
@@ -222,7 +221,6 @@ bp_write_prologue_ninja(const char*njpath)
       objbuf[i++] = 'o';
       fprintf(bp_ninja_file, "object_files = %s\n", objbuf);
     }
-  }
   fprintf(bp_ninja_file, "deps = gcc\n");
   fprintf(bp_ninja_file, "cxx = %s\n", rps_cxx_compiler_realpath);
   fprintf(bp_ninja_file, "cflags = -Wall -Wextra -I%s %s\n",
@@ -235,6 +233,9 @@ bp_write_prologue_ninja(const char*njpath)
   fprintf(bp_ninja_file, "\n"
           "rule LINKSHARED\n"
           "  command $cxx -rdynamic -shared $in -o $out\n");
+  fprintf(bp_ninja_file, "\n"
+	  "build %s: CC %s\n",
+	  objbuf, bp_plugin_source);
 } // end bp_write_prologue_ninja
 
 int
