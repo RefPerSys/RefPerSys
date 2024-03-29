@@ -84,6 +84,7 @@ bp_complete_ninja(FILE*f, const std::string& src)
       if (!inp)
         break;
       lineno++;
+      /// handle @PKGCONFIG lines, followed by one name of pkg-config managed packages
       char*pk = strstr(linbuf, "@PKGCONFIG");
       if (pk)
         {
@@ -136,7 +137,21 @@ bp_complete_ninja(FILE*f, const std::string& src)
                   exit(EXIT_FAILURE);
                 }
             }
+	  continue;
         }
+      /// handle @NINJA lines, followed by one name, then insert all the lines up to @ENDNINJA.
+      /// for example ///@NINJA.foo .... ended by ///@ENDNINJA.foo
+      char*nj = strstr(linbuf, "@NINJA");
+      if (nj)
+        {
+	  char name[64];
+	  memset (name, 0, sizeof (name));
+          //char*n = nj + strlen("@NINJA");
+#warning incomplete code in bp_complete_ninja to handle @NINJA ... @ENDNINJA
+	  std::cerr << bp_progname << " : unimplemented @NINJA "
+		    << " ["<< src << ":" << lineno << "]" << std::endl;
+	  exit(EXIT_FAILURE);
+	};
     }
   while (inp);
 } // end bp_complete_ninja
