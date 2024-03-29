@@ -203,6 +203,8 @@ bp_write_prologue_ninja(const char*njpath)
   fprintf(bp_ninja_file, "ninja_required_version = 1.10\n");
   fflush(bp_ninja_file);
   fprintf(bp_ninja_file, "default %s\n", bp_plugin_binary);
+  fprintf(bp_ninja_file, "refpersys_plugin_source = %s\n", bp_plugin_source);
+  fprintf(bp_ninja_file, "refpersys_plugin_binary = %s\n", bp_plugin_binary);
   fprintf(bp_ninja_file, "deps = gcc\n");
   fprintf(bp_ninja_file, "cxx = %s\n", rps_cxx_compiler_realpath);
   fprintf(bp_ninja_file, "cflags = -Wall -Wextra -I%s %s\n",
@@ -281,7 +283,7 @@ main(int argc, char**argv)
     bp_write_prologue_ninja(temp);
     bp_complete_ninja(bp_ninja_file, bp_plugin_source);
   }
-  fprintf(bp_ninja_file, "\n#end of file %s\n", bp_base.c_str());
+  fprintf(bp_ninja_file, "\n#end of generated ninja file %s\n", bp_temp_ninja.c_str());
   fclose(bp_ninja_file);
   {
     char ninjacmd[256];
@@ -291,8 +293,8 @@ main(int argc, char**argv)
               rps_topdirectory,
               bp_temp_ninja.c_str(),
               bp_plugin_binary);
-    printf("%s running %s (source %s)\n", bp_progname,
-           bp_plugin_source, ninjacmd);
+    printf("%s running %s (source %s)\n", bp_progname, ninjacmd,
+           bp_plugin_source);
     fflush (nullptr);
     int ex = system(ninjacmd);
     sync ();
