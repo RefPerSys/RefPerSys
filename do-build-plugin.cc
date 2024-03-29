@@ -295,6 +295,7 @@ main(int argc, char**argv)
            bp_plugin_source, ninjacmd);
     fflush (nullptr);
     int ex = system(ninjacmd);
+    sync ();
     return ex;
   }
 } // end main
