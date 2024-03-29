@@ -162,20 +162,21 @@ bp_complete_ninja(FILE*f, const std::string& src)
               char endline[80];
               memset (endline, 0, sizeof(endline));
               snprintf(endline, sizeof(endline), "@ENDNINJA.%s", name);
-	      fprintf(f, "///@NINJA.%s at %s:%d\n",
-		      name, src.c_str(), lineno);
-	      while (inp) {
-		memset (linbuf, 0, sizeof(linbuf));
-		inp.getline(linbuf, sizeof(linbuf)-2);
-		if (!inp)
-		  break;
-		lineno++;
-		if (strstr(linbuf, endline))
-		  break;
-		fputs(linbuf, f);
-	      };
-	      fprintf(f, "///@ENDNINJA.%s at %s:%d\n",
-		      name, src.c_str(), lineno);
+              fprintf(f, "///@NINJA.%s at %s:%d\n",
+                      name, src.c_str(), lineno);
+              while (inp)
+                {
+                  memset (linbuf, 0, sizeof(linbuf));
+                  inp.getline(linbuf, sizeof(linbuf)-2);
+                  if (!inp)
+                    break;
+                  lineno++;
+                  if (strstr(linbuf, endline))
+                    break;
+                  fputs(linbuf, f);
+                };
+              fprintf(f, "///@ENDNINJA.%s at %s:%d\n",
+                      name, src.c_str(), lineno);
             }
           else
             {
@@ -283,8 +284,19 @@ main(int argc, char**argv)
   }
   fprintf(bp_ninja_file, "\n#end of file %s\n", bp_base.c_str());
   fclose(bp_ninja_file);
-#warning incomplete main should run ninja on the temporary ninja file
-  return 0;
+  {
+    char ninjacmd[256];
+    memset (ninjacmd, 0, sizeof(ninjacmd));
+    snprintf (ninjacmd, sizeof(ninjacmd), "%s -C %s %s\n",
+              rps_ninja_builder,
+              rps_topdirectory,
+              bp_plugin_binary);
+    printf("%s running %s (source %s)\n", bp_progname,
+           bp_plugin_source, ninjacmd);
+    fflush (nullptr);
+    int ex = system(ninjacmd);
+    return ex;
+  }
 } // end main
 
 
