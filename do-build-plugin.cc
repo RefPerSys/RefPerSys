@@ -265,10 +265,9 @@ main(int argc, char**argv)
   }
   {
     char temp[128];
-    snprintf (temp, sizeof(temp), "/tmp/%s_XXXXXX", bp_base.c_str());
-    int fd = mkstemp(temp);
+    snprintf (temp, sizeof(temp), "/tmp/%s_XXXXXX.ninja", bp_base.c_str());
+    int fd = mkstemps(temp, strlen(".ninja"));
     bp_temp_ninja.assign(temp);
-    bp_temp_ninja += ".ninja";
     errno = 0;
     bp_ninja_file = fdopen(fd, "w");
     if (!bp_ninja_file)
