@@ -142,7 +142,32 @@ bp_complete_ninja(FILE*f, const std::string& src)
 } // end bp_complete_ninja
 
 
-
+void
+bp_write_prologue_ninja(const char*njpath)
+{
+  fprintf(bp_ninja_file, "# generated ninja file %s\n", njpath);
+  fprintf(bp_ninja_file, "# for refpersys.org\n");
+  fprintf(bp_ninja_file, "# generator %s git %s\n", __FILE__, bp_git_id);
+  fprintf(bp_ninja_file, "# refpersys source plugin %s\n",
+          bp_plugin_source);
+  fprintf(bp_ninja_file, "# refpersys generated plugin %s\n",
+          bp_plugin_binary);
+  fprintf(bp_ninja_file, "ninja_required_version 1.10\n");
+  fflush(bp_ninja_file);
+  fprintf(bp_ninja_file, "default %s\n", bp_plugin_binary);
+  fprintf(bp_ninja_file, "deps = gcc\n");
+  fprintf(bp_ninja_file, "cxx = %s\n", rps_cxx_compiler_realpath);
+  fprintf(bp_ninja_file, "cflags = -Wall -Wextra -I%s %s\n",
+          rps_topdirectory, rps_cxx_compiler_flags);
+  fprintf(bp_ninja_file, "ldflags = -rdynamic -L/usr/local/lib\n");
+  fprintf(bp_ninja_file, "\n\n"
+          "rule CC\n"
+          "  depfile = $out.mkd\n"
+          "  command = $cxx $cflags -c $in -MD -MF $out.mkd -o $out\n");
+  fprintf(bp_ninja_file, "\n"
+          "rule LINKSO\n"
+          "  command $cxx -rdynamic -shared $in -o $out\n");
+} // end bp_write_prologue_ninja
 
 int
 main(int argc, char**argv)
@@ -175,6 +200,7 @@ main(int argc, char**argv)
     {
       std::cerr << bp_progname << " cannot read source file "
                 << bp_plugin_source << " : " << strerror(errno) << std::endl;
+      exit(EXIT_FAILURE);
     }
   {
     const char*lastslash = nullptr;
@@ -195,29 +221,17 @@ main(int argc, char**argv)
     int fd = mkstemp(temp);
     bp_temp_ninja.assign(temp);
     bp_temp_ninja += ".ninja";
+    errno = 0;
     bp_ninja_file = fdopen(fd, "w");
-    fprintf(bp_ninja_file, "# generated ninja file %s\n", temp);
-    fprintf(bp_ninja_file, "# for refpersys.org\n");
-    fprintf(bp_ninja_file, "# generator %s git %s\n", __FILE__, bp_git_id);
-    fprintf(bp_ninja_file, "# refpersys source plugin %s\n",
-            bp_plugin_source);
-    fprintf(bp_ninja_file, "# refpersys generated plugin %s\n",
-            bp_plugin_binary);
-    fprintf(bp_ninja_file, "ninja_required_version 1.10\n");
-    fflush(bp_ninja_file);
-    fprintf(bp_ninja_file, "default %s\n", bp_plugin_binary);
-    fprintf(bp_ninja_file, "deps = gcc\n");
-    fprintf(bp_ninja_file, "cxx = %s\n", rps_cxx_compiler_realpath);
-    fprintf(bp_ninja_file, "cflags = -Wall -Wextra -I%s %s\n",
-            rps_topdirectory, rps_cxx_compiler_flags);
-    fprintf(bp_ninja_file, "ldflags = -rdynamic -L/usr/local/lib\n");
-    fprintf(bp_ninja_file, "\n\n"
-            "rule CC\n"
-            "  depfile = $out.mkd\n"
-            "  command = $cxx $cflags -c $in -MD -MF $out.mkd -o $out\n");
-    fprintf(bp_ninja_file, "\n"
-            "rule LINKSO\n"
-            "  command $cxx -rdynamic -shared $in -o $out\n");
+    if (!bp_ninja_file)
+      {
+        std::cerr << bp_progname << " cannot open generated ninja file " << temp
+                  << " fd#" << fd
+                  << " for plugin source " << bp_plugin_source
+                  << " : " << strerror(errno) << std::endl;
+        exit(EXIT_FAILURE);
+      }
+    bp_write_prologue_ninja(temp);
     bp_complete_ninja(bp_ninja_file, bp_plugin_source);
   }
   fprintf(bp_ninja_file, "\n#end of file %s\n", bp_base.c_str());
