@@ -9,3 +9,5 @@ tmp_*
 *~
 *.BAKdo-build-plugin
 do-build-plugin
+.ninja_deps
+.ninja_logs
