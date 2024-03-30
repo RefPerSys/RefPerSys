@@ -29,6 +29,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <cassert>
 #include <set>
 #include <stdlib.h>
 #include <stdio.h>
@@ -209,7 +210,19 @@ bp_complete_ninja(FILE*f, const std::string& src)
 
     }
   while (inp);
-  fprintf(f, "\n##/ final from [%s:%d]\n", __FILE__, __LINE__);
+  fprintf(f, "\n\n##/ %d objects from [%s:%d]\n", (int)bp_set_objects.size(),
+	  __FILE__, __LINE__-1);
+  for (std::string ob: bp_set_objects) {
+    std::string src = ob;
+    assert(src.size()>=3);
+    src.pop_back();
+    src.pop_back();
+    src.append(".cc");
+    fprintf(f, "\n"
+	    "build %s : CC %s\n", ob.c_str(), src.c_str());
+    fprintf (f, "object_files = $object_files %s\n", ob.c_str());
+  }
+  fprintf(f, "\n\n##/ final from [%s:%d]\n", __FILE__, __LINE__);
   fprintf(f, "build %s : LINKSHARED $object_files\n",
           bp_plugin_binary);
 } // end bp_complete_ninja
