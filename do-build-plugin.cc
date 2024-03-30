@@ -211,17 +211,18 @@ bp_complete_ninja(FILE*f, const std::string& src)
     }
   while (inp);
   fprintf(f, "\n\n##/ %d objects from [%s:%d]\n", (int)bp_set_objects.size(),
-	  __FILE__, __LINE__-1);
-  for (std::string ob: bp_set_objects) {
-    std::string src = ob;
-    assert(src.size()>=3);
-    src.pop_back();
-    src.pop_back();
-    src.append(".cc");
-    fprintf(f, "\n"
-	    "build %s : CC %s\n", ob.c_str(), src.c_str());
-    fprintf (f, "object_files = $object_files %s\n", ob.c_str());
-  }
+          __FILE__, __LINE__-1);
+  for (std::string ob: bp_set_objects)
+    {
+      std::string src = ob;
+      assert(src.size()>=3);
+      src.pop_back();
+      src.pop_back();
+      src.append(".cc");
+      fprintf(f, "\n"
+              "build %s : CC %s\n", ob.c_str(), src.c_str());
+      fprintf (f, "object_files =$object_files %s\n", ob.c_str());
+    }
   fprintf(f, "\n\n##/ final from [%s:%d]\n", __FILE__, __LINE__);
   fprintf(f, "build %s : LINKSHARED $object_files\n",
           bp_plugin_binary);
@@ -255,7 +256,7 @@ bp_write_prologue_ninja(const char*njpath)
         objbuf[i] = bp_plugin_binary[i];
       objbuf[i++] = '.';
       objbuf[i++] = 'o';
-      fprintf(bp_ninja_file, "object_files = %s\n", objbuf);
+      fprintf(bp_ninja_file, "object_files =\n");
       bp_set_objects.insert(std::string(objbuf));
     }
   fprintf(bp_ninja_file, "deps = gcc\n");
@@ -270,9 +271,8 @@ bp_write_prologue_ninja(const char*njpath)
   fprintf(bp_ninja_file, "\n"
           "rule LINKSHARED\n"
           "  command = $cxx -rdynamic -shared $in -o $out\n");
-  fprintf(bp_ninja_file, "\n"
-          "build %s : CC %s\n",
-          objbuf, bp_plugin_source);
+  fprintf(bp_ninja_file, "\n""#end prologue from <%s:%d>\n\n",
+          __FILE__, __LINE__-1);
 } // end bp_write_prologue_ninja
 
 int
@@ -339,18 +339,18 @@ main(int argc, char**argv)
     bp_write_prologue_ninja(temp);
     bp_complete_ninja(bp_ninja_file, bp_plugin_source);
   }
-  fprintf(bp_ninja_file, "\n\ndefault %s\n", bp_plugin_binary);
+  fprintf(bp_ninja_file, "\ndefault %s\n", bp_plugin_binary);
   fprintf(bp_ninja_file, "\n#end of generated ninja file %s\n", bp_temp_ninja.c_str());
   fclose(bp_ninja_file);
   {
     char ninjacmd[256];
     memset (ninjacmd, 0, sizeof(ninjacmd));
-    snprintf (ninjacmd, sizeof(ninjacmd), "%s -C %s -f %s %s\n",
+    snprintf (ninjacmd, sizeof(ninjacmd), "%s -C %s -f %s %s",
               rps_ninja_builder,
               rps_topdirectory,
               bp_temp_ninja.c_str(),
               bp_plugin_binary);
-    printf("%s running %s (source %s)\n", bp_progname, ninjacmd,
+    printf("%s running\n  %s\n (source %s)\n", bp_progname, ninjacmd,
            bp_plugin_source);
     fflush (nullptr);
     int ex = system(ninjacmd);
