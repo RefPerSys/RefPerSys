@@ -199,7 +199,12 @@ char *
 my_readline (const char *prompt)
 {
 #ifndef WITHOUT_READLINE
-  return readline (prompt);
+  {
+  char*lin = readline (prompt);
+  if (lin && isspace(lin[strlen(lin)-1]))
+    lin[strlen(lin)-1] = (char)0;
+  return lin;
+  }
 #else
   char linebuf[512];
   memset (linebuf, 0, linebuf);
@@ -209,6 +214,8 @@ my_readline (const char *prompt)
   if (!p)
     return NULL;
   linebuf[sizeof (linebuf) - 1] = (char) 0;
+  if (isspace(p[strlen(p)-1]))
+    p[strlen(p)-1] = (char)0;
   char *res = strdup (linebuf);
   if (!res)
     {
@@ -337,7 +344,7 @@ try_then_set_c_compiler (const char *cc)
   if (cc[0] != '/')
     {
       fprintf (stderr,
-	       "%s given non-absolute path for C compiler %s [%s:%d]\n",
+	       "%s given non-absolute path for C compiler '%s' [%s:%d]\n",
 	       prog_name, cc, __FILE__, __LINE__);
       failed = true;
       exit (EXIT_FAILURE);
@@ -346,7 +353,7 @@ try_then_set_c_compiler (const char *cc)
   if (access (cc, X_OK))
     {
       fprintf (stderr,
-	       "%s given non-executable path for C compiler %s [%s:%d] %s\n",
+	       "%s given non-executable path for C compiler '%s' [%s:%d] %s\n",
 	       prog_name, cc, __FILE__, __LINE__ - 1, strerror (errno));
       failed = true;
       exit (EXIT_FAILURE);
@@ -559,13 +566,14 @@ test_cxx_compiler (const char *cxx)
   }
 }				/* end test_cxx_compiler */
 
+
 void
 try_then_set_cxx_compiler (const char *cxx)
 {
   if (cxx[0] != '/')
     {
       fprintf (stderr,
-	       "%s given non-absolute path for C++ compiler %s [%s:%d]\n",
+	       "%s given non-absolute path for C++ compiler '%s' [%s:%d]\n",
 	       prog_name, cxx, __FILE__, __LINE__);
       failed = true;
       exit (EXIT_FAILURE);
@@ -573,7 +581,7 @@ try_then_set_cxx_compiler (const char *cxx)
   if (access (cxx, X_OK))
     {
       fprintf (stderr,
-	       "%s given non-executable path for C++ compiler %s [%s:%d]\n",
+	       "%s given non-executable path for C++ compiler '%s' [%s:%d]\n",
 	       prog_name, cxx, __FILE__, __LINE__);
       failed = true;
       exit (EXIT_FAILURE);
