@@ -29,6 +29,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <set>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -43,6 +44,7 @@ extern "C" {
   const char* bp_plugin_binary;
   std::string bp_base;
   std::string bp_temp_ninja;
+  std::set<std::string> bp_set_objects;
   FILE* bp_ninja_file;
 };
 
@@ -52,6 +54,8 @@ bp_version (void)
 {
   std::cerr << bp_progname << " version " << bp_git_id
             << " built " __DATE__ "@" << __TIME__ << " [refpersys.org]"
+            << std::endl
+            << " tool source <" << __FILE__ ":" << __LINE__ << ">"
             << std::endl;
   std::cerr << "\t using " << rps_ninja_builder << " " << rps_ninja_version << std::endl;
   std::cerr << "# run " << bp_progname <<" --help for details." << std::endl;
@@ -107,7 +111,8 @@ bp_complete_ninja(FILE*f, const std::string& src)
                   exit(EXIT_FAILURE);
                 };
               fgets(inpbuf, sizeof(inpbuf)-2, p);
-              fprintf(f, "# for package %s\n", pkgname);
+              fprintf(f, "# for package %s [%s:%d]\n", pkgname,
+                      __FILE__, __LINE__-1);
               fprintf(f, "cflags = $cflags %s\n", inpbuf);
               if (pclose(p))
                 {
@@ -127,7 +132,8 @@ bp_complete_ninja(FILE*f, const std::string& src)
                   exit(EXIT_FAILURE);
                 };
               fgets(inpbuf, sizeof(inpbuf)-2, p);
-              fprintf(f, "# for package %s\n", pkgname);
+              fprintf(f, "# for package %s [%s:%d]\n", pkgname,
+                      __FILE__, __LINE__-1);
               fprintf(f, "ldflags = $ldflags %s\n", inpbuf);
               if (pclose(p))
                 {
@@ -162,8 +168,8 @@ bp_complete_ninja(FILE*f, const std::string& src)
               char endline[80];
               memset (endline, 0, sizeof(endline));
               snprintf(endline, sizeof(endline), "@ENDNINJA.%s", name);
-              fprintf(f, "///@NINJA.%s at %s:%d\n",
-                      name, src.c_str(), lineno);
+              fprintf(f, "///@NINJA.%s at %s:%d [%s:%d]\n",
+                      name, src.c_str(), lineno, __FILE__, __LINE__-1);
               while (inp)
                 {
                   memset (linbuf, 0, sizeof(linbuf));
@@ -184,12 +190,28 @@ bp_complete_ninja(FILE*f, const std::string& src)
                         << " ["<< src << ":" << lineno << "]" << std::endl;
               exit(EXIT_FAILURE);
             }
+          continue;
         };
+      char*ob = strstr(linbuf, "@OBJECT");
+      if (ob)
+        {
+          char objpath[256];
+          memset (objpath, 0, sizeof(objpath));
+          if (sscanf(ob+strlen("@OBJECT"), " %200[a-zA-Z0-9./_+-]",
+                     objpath) >0
+              && objpath[0])
+            {
+              std::string objpstr{objpath};
+              bp_set_objects.insert(objpstr);
+            }
+
+        }
+
     }
   while (inp);
-  fprintf(f, "\n##/ final from %s:%d\n", __FILE__, __LINE__);
+  fprintf(f, "\n##/ final from [%s:%d]\n", __FILE__, __LINE__);
   fprintf(f, "build %s : LINKSHARED $object_files\n",
-	  bp_plugin_binary);
+          bp_plugin_binary);
 } // end bp_complete_ninja
 
 
@@ -197,8 +219,9 @@ void
 bp_write_prologue_ninja(const char*njpath)
 {
   fprintf(bp_ninja_file, "# generated ninja file %s\n", njpath);
-  fprintf(bp_ninja_file, "# for refpersys.org\n");
-  fprintf(bp_ninja_file, "# generator %s git %s\n", __FILE__, bp_git_id);
+  fprintf(bp_ninja_file, "# for refpersys.org to ninja-build.org\n");
+  fprintf(bp_ninja_file, "# generator <%s:%d> git %s\n",
+          __FILE__,  __LINE__-1, bp_git_id);
   fprintf(bp_ninja_file, "# refpersys source plugin %s\n",
           bp_plugin_source);
   fprintf(bp_ninja_file, "# refpersys generated plugin %s\n",
@@ -208,17 +231,19 @@ bp_write_prologue_ninja(const char*njpath)
   fprintf(bp_ninja_file, "refpersys_plugin_source = %s\n", bp_plugin_source);
   fprintf(bp_ninja_file, "refpersys_plugin_binary = %s\n", bp_plugin_binary);
   fprintf(bp_ninja_file, "cplusplus_sources = $refpersys_plugin_source\n");
-    char objbuf[128];
-    memset (objbuf, 0, sizeof(objbuf));
-    const char* lastdot = strrchr(bp_plugin_binary, '.');
-    if (lastdot) {
+  char objbuf[128];
+  memset (objbuf, 0, sizeof(objbuf));
+  const char* lastdot = strrchr(bp_plugin_binary, '.');
+  if (lastdot)
+    {
       int l= (int)(lastdot - bp_plugin_binary);
       int i=0;
       for (i=0; i<(int)sizeof(objbuf)-4 && i<l ; i++)
-	objbuf[i] = bp_plugin_binary[i];
+        objbuf[i] = bp_plugin_binary[i];
       objbuf[i++] = '.';
       objbuf[i++] = 'o';
       fprintf(bp_ninja_file, "object_files = %s\n", objbuf);
+      bp_set_objects.insert(std::string(objbuf));
     }
   fprintf(bp_ninja_file, "deps = gcc\n");
   fprintf(bp_ninja_file, "cxx = %s\n", rps_cxx_compiler_realpath);
@@ -233,8 +258,8 @@ bp_write_prologue_ninja(const char*njpath)
           "rule LINKSHARED\n"
           "  command = $cxx -rdynamic -shared $in -o $out\n");
   fprintf(bp_ninja_file, "\n"
-	  "build %s : CC %s\n",
-	  objbuf, bp_plugin_source);
+          "build %s : CC %s\n",
+          objbuf, bp_plugin_source);
 } // end bp_write_prologue_ninja
 
 int
