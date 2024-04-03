@@ -539,10 +539,16 @@ rps_event_loop(void)
             while (!rps_eventloopdata.eld_selfpipefifo.empty())
               {
                 unsigned char b = rps_eventloopdata.eld_selfpipefifo.back();
-                if (write(fd, &b, 1) > 0)
+                if (write(fd, &b, 1) > 0) {
+		  RPS_DEBUG_LOG(REPL, "eventloop wrote self pipe " << b
+				<< " to fd#" << fd);
                   rps_eventloopdata.eld_selfpipefifo.pop_back();
-                else
+		}
+                else {
+		  RPS_DEBUG_LOG(REPL, "eventloop failed to write self pipe " << b
+				<< " to fd#" << fd << ":" << strerror(errno));
                   break;
+		}
               };
           };
         };
