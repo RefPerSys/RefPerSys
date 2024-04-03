@@ -134,10 +134,17 @@ rps_full_evaluate_repl_expr(Rps_CallFrame*callframe, Rps_Value exprarg, Rps_Obje
       RPS_REPLEVAL_FAIL("*check-fail*","never happens no envob"
                         << _f.envob);
     };
+  std::lock_guard gu(*_f.envob->objmtxptr());
   if (!_f.envob->is_instance_of(RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a))) //environment∈class
     {
       RPS_REPLEVAL_FAIL("bad environment","The envob " << _f.envob << " of class "
                         << _f.envob->get_class() << " is not a valid environment");
+    };
+  auto envpayl = _f.envob->get_dynamic_payload<Rps_PayloadEnvironment>();
+  if (!envpayl)
+    {
+      RPS_REPLEVAL_FAIL("bad environment payload","The envob " << _f.envob << " of class "
+                        << _f.envob->get_class() << " without environment payload");
     };
   /* environments should have bindings, probably with Rps_PayloadEnvironment */
 #warning rps_full_evaluate_repl_expr should check that envob is an environment, with bindings and optional parent env....
