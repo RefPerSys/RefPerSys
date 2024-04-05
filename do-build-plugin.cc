@@ -58,7 +58,7 @@ bp_version (void)
             << std::endl
             << " tool source <" << __FILE__ ":" << __LINE__ << ">"
             << std::endl;
-  std::cerr << "\t using " << rps_ninja_builder << " " << rps_ninja_version << std::endl;
+  std::cerr << "\t using builder " << rps_ninja_builder << " " << rps_ninja_version << std::endl;
   std::cerr << "# run " << bp_progname <<" --help for details." << std::endl;
 } // end bp_version
 
