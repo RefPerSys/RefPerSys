@@ -65,6 +65,9 @@ REFPERSYS_GENERATED_CPP_SOURCES := $(wildcard generated/*.cc)
 ### corresponding object files
 REFPERSYS_GENERATED_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_GENERATED_CPP_SOURCES))
 
+## altredump is dumping into....
+RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
+
 ### required libraries not being known to pkg-config
 ## unistring is https://www.gnu.org/software/libunistring/
 ## backtrace is https://github.com/ianlancetaylor/libbacktrace (also inside GCC source)
