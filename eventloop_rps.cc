@@ -130,7 +130,8 @@ rps_self_pipe_write_byte(unsigned char b)
 } // end rps_self_pipe_write_byte
 
 
-int rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int npoll, Rps_CallFrame*)> fun)
+int
+rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int npoll, Rps_CallFrame*)> fun)
 {
   std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
@@ -149,7 +150,9 @@ int rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int np
   return rps_eventloopdata.eld_prepollvect.size();
 } // end rps_register_event_loop_prepoller
 
-void rps_unregister_event_loop_prepoller(int rank)
+
+void
+rps_unregister_event_loop_prepoller(int rank)
 {
   std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
@@ -250,6 +253,7 @@ rps_event_loop(void)
   double startelapsedtime=rps_elapsed_real_time();
   double startcputime=rps_process_cpu_time();
   std::array<std::function<void(Rps_CallFrame*, int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
+  ///
   /// check that rps_event_loop is called exactly once from main
   /// thread, and after rps_initialize_event_loop...
   {
