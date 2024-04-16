@@ -6,6 +6,7 @@ do-scan-pkgconfig
 refpersys
 tmp_*
 *.o
+*.orig
 *~
 *.BAK
 do-build-plugin
