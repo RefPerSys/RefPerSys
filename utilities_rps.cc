@@ -269,10 +269,6 @@ rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
   outs << linprefix
        << "This file is part of the Reflective Persistent System."
        << linsuffix << std::endl;
-  if (fil && lin>0 && fromfunc) {
-    outs << linprefix << " emitted from " << fil << ":" << lin << linsuffix << std::endl;
-    outs << linprefix << " by " << fromfunc << linsuffix << std::endl;
-  }
   {
     time_t nowtime = time(nullptr);
     struct tm nowtm = {};
@@ -317,6 +313,10 @@ rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
        << linsuffix << std::endl;
   outs << linprefix << "generated from git " << rps_shortgitid
        << " branch " << rps_gitbranch << linsuffix << std::endl;
+  if (fil && lin>0 && fromfunc) {
+    outs << linprefix << " emitted from " << fil << ":" << lin << linsuffix << std::endl;
+    outs << linprefix << " by " << fromfunc << linsuffix << std::endl;
+  }
 } // end rps_emit_gplv3_copyright_notice_AT
 
 
@@ -342,14 +342,6 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
        << linsuffix << std::endl;
   outs << linprefix << " team@refpersys.org ..."
        << linsuffix << std::endl;
-  if (fil && lin>0 && fromfunc) {
-    outs << linprefix
-	 << " emitted from " << fil << ":" << lin
-	 << linsuffix << std::endl;
-    outs << linprefix
-	 << " by " << fromfunc
-	 << linsuffix << std::endl;
-  };
   {
     time_t nowtime = time(nullptr);
     struct tm nowtm = {};
@@ -391,6 +383,14 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
        << linsuffix << std::endl;
   outs << linprefix << "generated from git " << rps_shortgitid
        << " branch " << rps_gitbranch << linsuffix << std::endl;
+  if (fil && lin>0 && fromfunc) {
+    outs << linprefix
+	 << " emitted from " << fil << ":" << lin
+	 << linsuffix << std::endl;
+    outs << linprefix
+	 << " by " << fromfunc
+	 << linsuffix << std::endl;
+  };
 } // end rps_emit_lgplv3_copyright_notice_AT
 
 
