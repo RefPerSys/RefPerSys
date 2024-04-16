@@ -1281,9 +1281,9 @@ Rps_Dumper::write_manifest_file(void)
                                   /*owner:*/"", /*reason:*/"");
   Json::Value jmanifest(Json::objectValue);
   jmanifest["format"] = Json::Value (RPS_MANIFEST_FORMAT);
-  jmanifest["jsoncpp-version"] = JSONCPP_VERSION_STRING;
-  jmanifest["short-git-id"] = rps_shortgitid;
-  jmanifest["git-branch"] = rps_gitbranch;
+  jmanifest["jsoncppversion"] = JSONCPP_VERSION_STRING;
+  jmanifest["shortgitid"] = rps_shortgitid;
+  jmanifest["gitbranch"] = rps_gitbranch;
   {
     int nbroots=0;
     Json::Value jglobalroots(Json::arrayValue);
@@ -1410,7 +1410,7 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     Json::Value jprologue(Json::objectValue);
     jprologue["format"] = Json::Value (RPS_MANIFEST_FORMAT);
     jprologue["spaceid"] = Json::Value (spacid.to_string());
-    jprologue["jsoncpp-version"] =  JSONCPP_VERSION_STRING;
+    jprologue["jsoncppversion"] =  JSONCPP_VERSION_STRING;
     jprologue["nbobjects"] = Json::Value ((int)(curspaset.size()));
     jsonwriter->write(jprologue, pouts.get());
     *pouts << std::endl;
