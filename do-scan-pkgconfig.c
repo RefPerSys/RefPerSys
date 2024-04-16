@@ -185,7 +185,7 @@ process_source_file (const char *origpath)
 	continue;
       memset (pkgbuf, 0, sizeof (pkgbuf));
       assert (sizeof (pkgbuf) > 64);
-      if (sscanf (linebuf, "//@@PKGCONFIG %64[A-Za-z0-9-]", pkgbuf) > 0
+      if (sscanf (linebuf, "//@@PKGCONFIG %64[A-Za-z.+0-9-]", pkgbuf) > 0
 	  && isalpha (pkgbuf[0]))
 	{
 	  assert (strlen (pkgbuf) < sizeof (pkgbuf) - 1);
