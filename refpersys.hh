@@ -4228,11 +4228,11 @@ template <unsigned WordSize> class Rps_SizedCallFrame
   void* cfram_word_data[WordSize];
 public:
   typedef Rps_SizedCallFrame<WordSize> This_frame;
-  Rps_SizedCallFrame<WordSize> (Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
+  Rps_SizedCallFrame (Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
     :  Rps_ProtoCallFrame(WordSize, cfram_word_data, obdescr, prev)
   {
   };
-  ~Rps_SizedCallFrame<WordSize>()
+  ~Rps_SizedCallFrame()
   {
   };
 };                              // end of Rps_SizedCallFrame template
@@ -4256,11 +4256,11 @@ public:
   {
     return cfram_fields;
   };
-  Rps_FieldedCallFrame<FrameFields>  (Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
+  Rps_FieldedCallFrame (Rps_ObjectRef obdescr=nullptr, Rps_CallFrame*prev=nullptr)
     :  Rps_ProtoCallFrame(sizeof(FrameFields)/sizeof(void*), &cfram_fields, obdescr, prev)
   {
   };
-  ~Rps_FieldedCallFrame<FrameFields> ()
+  ~Rps_FieldedCallFrame ()
   {
   };
 };                              // end of Rps_FieldedCallFrame template
