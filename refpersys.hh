@@ -442,9 +442,13 @@ extern "C" const char* rps_homedir(void);
 /// the refpersys load directory
 extern "C" const std::string& rps_get_loaddir(void);
 
-extern "C" void rps_emit_gplv3_copyright_notice(std::ostream&outs, std::string path, std::string linprefix, std::string linsuffix, std::string owner="", std::string reason="");
+extern "C" void rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, const char*fil, int lin, const char*fromfunc, std::string path, std::string linprefix, std::string linsuffix, std::string owner="", std::string reason="");
 
-extern "C" void rps_emit_lgplv3_copyright_notice(std::ostream&outs, std::string path, std::string linprefix, std::string linsuffix, std::string owner="", std::string reason="");
+#define rps_emit_gplv3_copyright_notice(Out,...) rps_emit_gplv3_copyright_notice_AT(Out,__FILE__,__LINE__,__PRETTY_FUNCTION__,##__VA_ARGS__)
+
+extern "C" void rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs, const char*fil, int lin, const char*fromfunc, std::string path, std::string linprefix, std::string linsuffix, std::string owner="", std::string reason="");
+
+#define rps_emit_lgplv3_copyright_notice(Out,...) rps_emit_gplv3_copyright_notice_AT(Out,__FILE__,__LINE__,__PRETTY_FUNCTION__,##__VA_ARGS__)
 
 extern "C" FILE*rps_debug_file;
 
