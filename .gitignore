@@ -12,3 +12,4 @@ do-build-plugin
 .ninja_deps
 .ninja_logs
 .ninja_log
+generated/rpsdata.h
