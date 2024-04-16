@@ -395,11 +395,11 @@ Rps_PayloadUnixProcess::do_on_active_process_queue(std::function<void(Rps_Object
       Rps_ObjectRef obown = paylup->owner();
       std::lock_guard<std::recursive_mutex> gu(*obown->objmtxptr());
       RPS_DEBUG_LOG(REPL,
-		    "Rps_PayloadUnixProcess::do_on_active_process_queue obown="
-		    << obown << std::endl
-		    << Rps_ShowCallFrame(callframe)
-		    << std::endl
-		    <<  RPS_FULL_BACKTRACE_HERE(1,"Rps_PayloadUnixProcess::do_on_active_process_queue"));
+                    "Rps_PayloadUnixProcess::do_on_active_process_queue obown="
+                    << obown << std::endl
+                    << Rps_ShowCallFrame(callframe)
+                    << std::endl
+                    <<  RPS_FULL_BACKTRACE_HERE(1,"Rps_PayloadUnixProcess::do_on_active_process_queue"));
       fun(obown,callframe,client_data);
     }
 } // end Rps_PayloadUnixProcess::do_on_active_process_queue
