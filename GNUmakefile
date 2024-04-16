@@ -214,7 +214,7 @@ indent:
 ## redump target
 redump: refpersys
 	./refpersys --dump=. --batch --run-name=$@
-	@if git diff -U1|grep '^[+-] ' | grep -v origitid ; then \
+	@if git diff -U1|grep '^[+-] ' | grep -v 'origitid|//: gen' ; then \
 	  printf "make redump changed in %s git %s\n" $$(pwd)  $(RPS_SHORTGIT_ID); \
           git diff ; \
         else \
