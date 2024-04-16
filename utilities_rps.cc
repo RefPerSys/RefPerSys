@@ -247,8 +247,8 @@ rps_get_extra_arg(const char*name)
 
 void
 rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
-				   const char*fil, int lin, const char*fromfunc,//
-				   std::string path, std::string linprefix, std::string linsuffix, std::string owner, std::string reason)
+                                   const char*fil, int lin, const char*fromfunc,//
+                                   std::string path, std::string linprefix, std::string linsuffix, std::string owner, std::string reason)
 {
   outs << linprefix << "SPDX-License-Identifier: GPL-3.0-or-later"
        << linsuffix << std::endl;
@@ -313,17 +313,18 @@ rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
        << linsuffix << std::endl;
   outs << linprefix << "generated from git " << rps_shortgitid
        << " branch " << rps_gitbranch << linsuffix << std::endl;
-  if (fil && lin>0 && fromfunc) {
-    outs << linprefix << " emitted from " << fil << ":" << lin << linsuffix << std::endl;
-    outs << linprefix << " by " << fromfunc << linsuffix << std::endl;
-  }
+  if (fil && lin>0 && fromfunc)
+    {
+      outs << linprefix << " emitted from " << fil << ":" << lin << linsuffix << std::endl;
+      outs << linprefix << " by " << fromfunc << linsuffix << std::endl;
+    }
 } // end rps_emit_gplv3_copyright_notice_AT
 
 
 void
 rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
-				    const char*fil, int lin, const char*fromfunc, //
-				    std::string path, std::string linprefix, std::string linsuffix, std::string owner, std::string reason)
+                                    const char*fil, int lin, const char*fromfunc, //
+                                    std::string path, std::string linprefix, std::string linsuffix, std::string owner, std::string reason)
 {
   outs << linprefix << "SPDX-License-Identifier: LGPL-3.0-or-later"
        << linsuffix << std::endl;
@@ -383,14 +384,15 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
        << linsuffix << std::endl;
   outs << linprefix << "generated from git " << rps_shortgitid
        << " branch " << rps_gitbranch << linsuffix << std::endl;
-  if (fil && lin>0 && fromfunc) {
-    outs << linprefix
-	 << " emitted from " << fil << ":" << lin
-	 << linsuffix << std::endl;
-    outs << linprefix
-	 << " by " << fromfunc
-	 << linsuffix << std::endl;
-  };
+  if (fil && lin>0 && fromfunc)
+    {
+      outs << linprefix
+           << " emitted from " << fil << ":" << lin
+           << linsuffix << std::endl;
+      outs << linprefix
+           << " by " << fromfunc
+           << linsuffix << std::endl;
+    };
 } // end rps_emit_lgplv3_copyright_notice_AT
 
 
