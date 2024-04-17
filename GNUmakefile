@@ -38,7 +38,10 @@ RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 RPS_MAKE:= $(MAKE)
 #                                                                
 .DEFAULT_GOAL: refpersys
-.PHONY: all config objects clean distclean gitpush gitpush2 print-plugin-settings indent redump plugins
+.PHONY: all config objects clean distclean gitpush gitpush2 \
+        print-plugin-settings indent redump plugins \
+        test00 test01 test01b test01c test01d test01e test01f \
+        test02 test03 test05 test06 test07 test07a test08 test09 test-load
 
 SYNC=/bin/sync
 
@@ -231,5 +234,86 @@ altredump:  ./refpersys
 	./refpersys --dump=$(RPS_ALTDUMPDIR_PREFIX)_$$$$ --batch --run-name=$@ 2>&1 | tee  $(RPS_ALTDUMPDIR_PREFIX).$$$$.out
 	$(SYNC)
 
+################################################################
+#### simple tests
+test00: ./refpersys
+	@printf '\n\n\n////test00 first\n'
+	./refpersys  -AREPL  --test-repl-lexer 'show help' -B --run-name=$@.1
+	@printf '\n\n\n////test00 second\n'
+	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B --run-name=$@.2
+	@printf '\n\n\n////test00 third\n'
+	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B --run-name=$@.3
+	@printf '\n\n\n////test00 help REPL command\n'
+	./refpersys -AREPL -c help -B
+	@printf '\n\n\n////test00 FINISHED¤\n'
+
+test01: ./refpersys
+	@echo test01 testing simple show help with a lot of debug
+	./refpersys -AREPL -c 'show help' -B --run-name=$@
+	@printf '\n\n\n////test01 FINISHED¤\n'
+
+test01b: debug
+	./refpersys -AREPL,LOW_REPL  -c 'show help' -B --run-name=$@
+	@printf '\n\n\n////test01b FINISHED¤\n'
+
+test01c: debug
+	@printf '\n\n\n//+ test01c !parse_sum 1 + 2\n'
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2' -B --run-name=$@
+	@printf '\n\n\n////test01c FINISHED¤\n'
+
+test01d: debug
+	@printf '\n\n\n//+ test01d !parse_sum 1 + 2 + 3\n'
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 + 3' -B --run-name=$@
+	@printf '\n\n\n////test01d FINISHED¤\n'
+
+test01e: debug
+	@printf '\n\n\n//+ test01e !parse_sum 1 + 2 * 3\n'
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 * 3' -B --run-name=$@
+	@printf '\n\n\n////test01e FINISHED¤\n'
+
+### notice the space after the 3 below
+test01f: debug
+	./refpersys -AREPL,LOW_REPL  -c '!parse_primary 3 ' -B --run-name=$@
+	@printf '\n\n\n////test01f FINISHED¤\n'
+
+
+test02: ./refpersys
+	./refpersys -AREPL  -c 'show RefPerSys_system' -B --run-name=$@
+	@printf '\n\n\n////test02 FINISHED¤\n'
+
+test03: ./refpersys
+	./refpersys -AREPL  -c 'show 1 + 2' -B --run-name=$@
+	@printf '\n\n\n////test03 FINISHED¤\n'
+
+test04: ./refpersys
+	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B --run-name=$@
+	@printf '\n\n\n////test04 FINISHED¤\n'
+
+test05: ./refpersys
+	./refpersys -AREPL  -c 'show (1 + 2) ' -B --run-name=$@
+	@printf '\n\n\n////test05 FINISHED¤\n'
+
+test06: ./refpersys
+	./refpersys -AREPL  -c 'show 1' -B --run-name=$@
+	@printf '\n\n\n////test06 FINISHED¤\n'
+
+test07: ./refpersys
+	./refpersys -AREPL -B -c '!parse_term 1' --run-name=$@.1
+	./refpersys -AREPL -B -c '!parse_sum 1 + 2' --run-name=$@.2
+	@printf '\n\n\n////test07 FINISHED¤\n'
+
+test07a: ./refpersys
+	./refpersys -AREPL -B -c '!parse_term 1' --run-name=$@
+	@printf '\n\n\n////test07a FINISHED¤\n'
+
+test08: ./refpersys
+	@echo missing test08 ; exit 1
+
+test09: ./refpersys
+	@echo missing test09 ; exit 1
+
+test-load: ./refpersys
+	./refpersys --batch
+	@printf '\n\n\n////test-load FINISHED¤\n'
 ## eof GNUmakefile
 
