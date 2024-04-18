@@ -236,6 +236,11 @@ extern "C" const char rps_lastgitcommit[];
 extern "C" const char rps_md5sum[];
 extern "C" const char*const rps_files[];
 extern "C" const char rps_gnumakefile[];
+extern "C" const char rps_gnu_make[];
+extern "C" const char rps_gnu_make_version[];
+extern "C" const char rps_gnu_bison[];
+extern "C" const char rps_gnu_bison_version[];
+
 extern "C" const char*const rps_subdirectories[];
 extern "C" const char rps_cxx_compiler_realpath[];
 extern "C" const char rps_cxx_compiler_version[];

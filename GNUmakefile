@@ -36,6 +36,8 @@ export
 RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 RPS_MAKE:= $(MAKE)
+RPS_BISON := /usr/bin/bison
+
 #                                                                
 .DEFAULT_GOAL: refpersys
 .PHONY: all config objects clean distclean gitpush gitpush2 \

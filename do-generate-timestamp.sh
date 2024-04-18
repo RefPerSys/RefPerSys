@@ -79,6 +79,10 @@ printf "const char rps_gnu_make[]=\"%s\";\n" $(/bin/which gmake)
 
 printf "const char rps_gnu_make_version[]=\"%s\";\n" "$(gmake --version | /bin/head -1)"
 
+printf "const char rps_gnu_bison[]=\"%s\";\n" $(/bin/which bison)
+
+printf "const char rps_gnu_bison_version[]=\"%s\";\n" "$(bison --version | /bin/head -1)"
+
 printf "const char rps_gui_script_executable[]=\"%s\";\n" $(realpath gui-script-refpersys.sh)
 
 printf "const char rps_building_user_name[]=\"%s\";\n" "$(git config user.name)"
