@@ -115,6 +115,8 @@ do-scan-pkgconfig: do-scan-pkgconfig.c |GNUmakefile do-generate-gitid.sh
 do-build-plugin: do-build-plugin.cc __timestamp.c
 	$(CXX) -Wall -Wextra  -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" -O -g $^ -o $@
 
+
+
 clean:
 	$(RM) tmp* *~ *.o do-configure-refpersys do-build-plugin refpersys
 	$(RM) *% %~
@@ -161,6 +163,19 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh build-plugin.sh |GNUmakefile
 	@printf "RefPerSys-gnumake building plugin %s from source %s in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	@printf "RefPerSys-gnumaking plugin %s MAKE is %s RPS_MAKE is %s\n" "$@" "$(MAKE)" "$(RPS_MAKE)"
 	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./build-plugin.sh $< $@
+
+plugins_dir/_rpsplug_gramrepl.yy: attic/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
+	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	$(REFPERSYS_GPP) -x -I generated/ -I . \
+            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_HOST=$(RPS_HOST) \
+            -DRPS_ARCH=$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+            -DRPS_GPP_INPUT="$<"    -DRPS_GPP_OUTPUT="$@"    \
+            -U  "@&"  "&@"  "("  "&,"  ")"  "("  ")"  "@#"   "\\"  \
+            -o $@ $<
+
+$(warning missing rule to build plugins_dir/_rpsplug_gramrepl.cc from plugins_dir/_rpsplug_gramrepl.yy)
 
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
