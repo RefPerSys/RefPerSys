@@ -40,7 +40,7 @@
 //     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // *****************************************************************************/
 
-/// Gpp input @&RPS_GPP_INPUT&@
+/// Gpp input @&RPS_GPP_INPUT&@ basename  @&RPS_GPP_INPUT_BASENAME&@
 /// Gpp output @&RPS_GPP_OUTPUT&@ done at @&date(%c %Z) on host @&RPS_HOST&@
 /// git @&RPS_SHORTGIT&@ arch @&RPS_ARCH&@ opersys @&RPS_OPERSYS&@
 /// from @&file&@:@&line&@
@@ -115,5 +115,14 @@ repl_expr: INTEGER /* from @&file&@:@&line&@ */
 
 %%
 /// the epilogue from @&file&@:@&line&@
+
+
+
+/****************
+ ** generated comment for Emacs (from  @&file&@:@&line&@)
+ ** Local Variables: ;;
+ ** compile-command: "make refpersys plugins_dir/_@&RPS_GPP_INPUT_BASENAME&@.so" ;;
+ ** End: ;;
+ ****************/
 
 /// end of generated file  @&RPS_GPP_OUTPUT&@ from @&file&@:@&line&@ input @&RPS_GPP_INPUT&@

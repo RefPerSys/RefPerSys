@@ -172,10 +172,13 @@ plugins_dir/_rpsplug_gramrepl.yy: attic/gramrepl_rps.yy.gpp refpersys.hh refpers
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
             -DRPS_GPP_INPUT="$<"    -DRPS_GPP_OUTPUT="$@"    \
+            -DRPS_GPP_INPUT_BASENAME="$(basename $<) \
             -U  "@&"  "&@"  "("  "&,"  ")"  "("  ")"  "@#"   "\\"  \
             -o $@ $<
 
 $(warning missing rule to build plugins_dir/_rpsplug_gramrepl.cc from plugins_dir/_rpsplug_gramrepl.yy)
+plugins_dir/_rpsplug_gramrepl.cc: plugins_dir/_rpsplug_gramrepl.yy
+	$(RPS_BISON) --verbose --no-lines --warnings=all --color=tty --language=c++ --debug  --locations --token-table --header=plugins_dir/_rpsplug_gramrepl.hh $<
 
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
