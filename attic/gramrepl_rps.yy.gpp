@@ -11,7 +11,7 @@
 //       Abhishek Chakravarti <abhishek@taranjali.org>
 //       Nimesh Neema <nimeshneema@gmail.com>
 // 
-//       © Copyright 2019 - 2023 The Reflective Persistent System Team
+//       © Copyright 2019 - 2024 The Reflective Persistent System Team
 //       team@refpersys.org & http://refpersys.org/
 // 
 //  You can consider RefPerSys as either GPLv3+ or LGPLv3+ licensed (at
@@ -43,19 +43,21 @@
 /// Gpp input @&RPS_GPP_INPUT&@
 /// Gpp output @&RPS_GPP_OUTPUT&@ done at @&date(%c %Z) on host @&RPS_HOST&@
 /// git @&RPS_SHORTGIT&@ arch @&RPS_ARCH&@ opersys @&RPS_OPERSYS&@
+/// from @&file&@:@&line&@
 /// 
 ////////////////////////////
 %{
-/** prologue of generated  @&RPS_GPP_OUTPUT&@
+/** prologue of generated  @&RPS_GPP_OUTPUT&@ from @&file&@:@&line&@
    done at @&date(%c %Z) on host @&RPS_HOST&@ */
 #include "refpersys.hh"
 
 #define RPSGRAM_DEBUG 1
-/** end prologue of generated @&RPS_GPP_OUTPUT&@ from  @&RPS_GPP_INPUT&@ */
+/** end prologue of generated @&RPS_GPP_OUTPUT&@ from  @&RPS_GPP_INPUT&@
+ ** from @&file&@:@&line&@ **/
 %}
 
 
-//// the Bison declarations
+//// the Bison declarations from @&file&@:@&line&@
 %require "3.8"
 %language "C++"
 %define api.pure full
@@ -63,51 +65,55 @@
 %define api.prefix {rpsgram_}
 %define api.value.type {Rps_Value}
 %define api.symbol.prefix {RPSGRAMSYMB_}
-%lex-param {Rps_CallFrame*callerframe, Rps_TokenSource*toksource, Rps_Value extralexv}
-%parse-param {Rps_CallFrame*callerframe, Rps_TokenSource*toksource, Rps_Value extraparsv}
+%lex-param {Rps_CallFrame*callerframe, Rps_TokenSource*toksource,
+            Rps_Value extralexv /*lexparam from @&file&@:@&line&@*/}
+%parse-param {Rps_CallFrame*callerframe, Rps_TokenSource*toksource,
+              Rps_Value extraparsv /*parseparam from @&file&@:@&line&@*/}
 %start repl_input;
 %type<void> repl_input;
 %type<void> repl_command;
 %%
-/* the lexical terminals */
+/* the lexical terminals from @&file&@:@&line&@  */
 %token INTEGER FLOAT STRING OBJID NAME CODE_CHUNK;
 
-/* the keywords */
+/* the keywords from @&file&@:@&line&@  */
 %token KW_SHOW;
 
 
-//// '(' and ')' parenthesis
+//// '(' and ')' parenthesis from @&file&@:@&line&@
 %token LEFT_PAREN RIGHT_PAREN;
 
-///  '{' and '}' brace
+///  '{' and '}' braces from @&file&@:@&line&@
 %token LEFT_BRACE RIGHT_BRACE;
 
-/// '[' and ']' square bracket
+/// '[' and ']' square brackets from @&file&@:@&line&@
 %token LEFT_SQBRA RIGHT_SQBRA;
 
 %token END_OF_INPUT;
 
 repl_input: %empty {
-      /* action for empty repl_input */
-#warning action for empty repl_input
+      /* action for empty repl_input from @&file&@:@&line&@ */
+#warning action for empty repl_input from @&file&@:@&line&@
     }
     | repl_command repl_input {
-      /* action for nonempty repl_input */
-#warning action for nonempty repl_input
+      /* action for nonempty repl_input from @&file&@:@&line&@ */
+#warning action for nonempty repl_input from @&file&@:@&line&@
     }
     ;
 
-repl_command: KW_SHOW repl_expr;
+repl_command: KW_SHOW repl_expr{
+      /* action for SHOW command from @&file&@:@&line&@ */
+#warning action for SHOW command from @&file&@:@&line&@
+    };
 
-repl_expr: INTEGER
-    | STRING
-    | FLOAT
-    | OBJID
-    | NAME
+repl_expr: INTEGER /* from @&file&@:@&line&@ */
+    | STRING /* from @&file&@:@&line&@ */
+    | FLOAT /* from @&file&@:@&line&@ */
+    | OBJID /* from @&file&@:@&line&@ */
+    | NAME /* from @&file&@:@&line&@ */
     ;
 
 %%
-/// the epilogue
+/// the epilogue from @&file&@:@&line&@
 
-
-/// end of generated file  @&RPS_GPP_OUTPUT&@ from input @&RPS_GPP_INPUT&@
+/// end of generated file  @&RPS_GPP_OUTPUT&@ from @&file&@:@&line&@ input @&RPS_GPP_INPUT&@
