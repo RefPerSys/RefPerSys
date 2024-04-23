@@ -40,7 +40,7 @@ RPS_BISON := /usr/bin/bison
 RPS_HOST := $(shell /bin/hostname -f)
 RPS_ARCH := $(shell /bin/uname -m)
 RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
-
+RPS_ATSHARP := $(shell printf '@#')
 #                                                                
 .DEFAULT_GOAL: refpersys
 .PHONY: all config objects clean distclean gitpush gitpush2 \
@@ -169,14 +169,15 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh build-plugin.sh |GNUmakefile
 
 plugins_dir/_rpsplug_gramrepl.yy: attic/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
 	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+	echo RPS_ATSHARP= '$(RPS_ATSHARP)'
 	$(REFPERSYS_GPP) -x -I generated/ -I . \
             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
             -DRPS_HOST=$(RPS_HOST) \
             -DRPS_ARCH=$(RPS_ARCH) \
             -DRPS_OPERSYS=$(RPS_OPERSYS) \
             -DRPS_GPP_INPUT="$<"    -DRPS_GPP_OUTPUT="$@"    \
-            -DRPS_GPP_INPUT_BASENAME="$(basename $<) \
-            -U  "@&"  "&@"  "("  "&,"  ")"  "("  ")"  "@#"   "\\"  \
+            -DRPS_GPP_INPUT_BASENAME="$(basename $<)" \
+            -U  '@&'  '&@'  '('  '&,'  ')'  '('  ')' '$(RPS_ATSHARP)'   '\\'  \
             -o $@ $<
 
 $(warning missing rule to build plugins_dir/_rpsplug_gramrepl.cc from plugins_dir/_rpsplug_gramrepl.yy)
