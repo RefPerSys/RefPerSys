@@ -37,6 +37,9 @@ RPS_GIT_ID:= $(shell ./do-generate-gitid.sh)
 RPS_SHORTGIT_ID:= $(shell ./do-generate-gitid.sh -s)
 RPS_MAKE:= $(MAKE)
 RPS_BISON := /usr/bin/bison
+RPS_HOST := $(shell /bin/hostname -f)
+RPS_ARCH := $(shell /bin/uname -m)
+RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
 
 #                                                                
 .DEFAULT_GOAL: refpersys
