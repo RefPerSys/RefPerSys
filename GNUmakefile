@@ -132,6 +132,7 @@ clean-plugins:
 	$(RM) -v plugins_dir/*.o
 	$(RM) -v plugins_dir/*.so
 	$(RM) -v plugins_dir/_*
+	$(RM) -v _rpsplug* */_rpsplug*
 
 distclean: clean
 	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __timestamp.*
@@ -187,8 +188,10 @@ plugins_dir/_rpsplug_gramrepl.yy: attic/gramrepl_rps.yy.gpp refpersys.hh refpers
 
 plugins_dir/_rpsplug_gramrepl.cc: plugins_dir/_rpsplug_gramrepl.yy
 	$(RPS_BISON) --verbose --no-lines --warnings=all --color=tty \
-                     --language=c++ --debug  --locations --token-table \
-                     --header=plugins_dir/_rpsplug_gramrepl.hh $<
+                     --language=c++ --debug  --token-table \
+                     --header=plugins_dir/_rpsplug_gramrepl.hh \
+                     --output=$@ \
+                   $<
 
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
