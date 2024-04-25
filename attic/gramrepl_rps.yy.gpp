@@ -65,10 +65,9 @@
 %define api.prefix {rpsgram_}
 %define api.value.type {Rps_Value}
 %define api.symbol.prefix {RPSGRAMSYMB_}
-%lex-param {Rps_CallFrame*callerframe, Rps_TokenSource*toksource,
-            Rps_Value extralexv /*lexparam from @&file&@:@&line&@*/}
-%parse-param {Rps_CallFrame*callerframe, Rps_TokenSource*toksource,
-              Rps_Value extraparsv /*parseparam from @&file&@:@&line&@*/}
+%param { /*param from @&file&@:@&line&@:*/ Rps_CallFrame*callerframe, Rps_TokenSource*toksource}
+%lex-param { /*lexparam from @&file&@:@&line&@:*/ Rps_Value extralexv}
+%parse-param { /*parseparam from @&file&@:@&line&@:*/ Rps_Value extraparsv}
 %start repl_input;
 %type<void> repl_input;
 %type<void> repl_command;
