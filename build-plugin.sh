@@ -31,7 +31,7 @@ curdate=$(date +%c);
 printf "start %s at %s: C++ file %s, plugin file %s in %s\n" $0 \
        "$curdate" $cppfile $pluginfile "$(/bin/pwd)" > /dev/stderr
 logger --id=$$ -s  -t "$0:" "starting" cppfile= $1 pluginfile= $2 curdate= $curdate
-eval $(make print-plugin-settings)
+eval $(gmake print-plugin-settings)
 
 ### plugincppflags contain compiler flags
 ### pluginlinkerflags contain linker flags
