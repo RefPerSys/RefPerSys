@@ -44,7 +44,7 @@ RPS_ATSHARP := $(shell printf '@#')
 #                                                                
 .DEFAULT_GOAL: refpersys
 .PHONY: all config objects clean distclean gitpush gitpush2 \
-        print-plugin-settings indent redump plugins \
+        print-plugin-settings indent redump clean-plugins plugins \
         test00 test01 test01b test01c test01d test01e test01f \
         test02 test03 test05 test06 test07 test07a test08 test09 test-load
 
@@ -128,6 +128,11 @@ clean:
 	$(RM) */*~ */*% */*.orig
 	$(RM) */*.so
 
+clean-plugins:
+	$(RM) plugins_dir/*.o
+	$(RM) plugins_dir/*.so
+	$(RM) plugins_dir/_o
+
 distclean: clean
 	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __timestamp.*
 -include _scanned-pkgconfig.mk
@@ -169,7 +174,6 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh build-plugin.sh |GNUmakefile
 
 plugins_dir/_rpsplug_gramrepl.yy: attic/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
 	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	echo RPS_ATSHARP= '$(RPS_ATSHARP)'
 	$(REFPERSYS_GPP) -x -I generated/ -I . \
             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
             -DRPS_HOST=$(RPS_HOST) \
@@ -180,9 +184,11 @@ plugins_dir/_rpsplug_gramrepl.yy: attic/gramrepl_rps.yy.gpp refpersys.hh refpers
             -U  '@&'  '&@'  '('  '&,'  ')'  '('  ')' '$(RPS_ATSHARP)'   '\\'  \
             -o $@ $<
 
-$(warning missing rule to build plugins_dir/_rpsplug_gramrepl.cc from plugins_dir/_rpsplug_gramrepl.yy)
+
 plugins_dir/_rpsplug_gramrepl.cc: plugins_dir/_rpsplug_gramrepl.yy
-	$(RPS_BISON) --verbose --no-lines --warnings=all --color=tty --language=c++ --debug  --locations --token-table --header=plugins_dir/_rpsplug_gramrepl.hh $<
+	$(RPS_BISON) --verbose --no-lines --warnings=all --color=tty \
+                     --language=c++ --debug  --locations --token-table \
+                     --header=plugins_dir/_rpsplug_gramrepl.hh $<
 
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
