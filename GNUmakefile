@@ -120,7 +120,7 @@ do-build-plugin: do-build-plugin.cc __timestamp.c
 
 
 
-clean:
+clean: clean-plugins
 	$(RM) tmp* *~ *.o do-configure-refpersys do-build-plugin refpersys
 	$(RM) *% %~
 	$(RM) *.gch
