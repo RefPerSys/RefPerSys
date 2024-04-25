@@ -60,7 +60,7 @@
 //// the Bison declarations from @&file&@:@&line&@
 %require "3.8"
 %language "C++"
-%define api.pure full
+// not needed since C++ %define api.pure full
 %header
 %define api.prefix {rpsgram_}
 %define api.value.type {Rps_Value}
