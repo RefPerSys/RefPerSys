@@ -129,9 +129,9 @@ clean:
 	$(RM) */*.so
 
 clean-plugins:
-	$(RM) plugins_dir/*.o
-	$(RM) plugins_dir/*.so
-	$(RM) plugins_dir/_*
+	$(RM) -v plugins_dir/*.o
+	$(RM) -v plugins_dir/*.so
+	$(RM) -v plugins_dir/_*
 
 distclean: clean
 	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __timestamp.*
