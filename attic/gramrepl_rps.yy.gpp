@@ -130,7 +130,7 @@ repl_expr: INTEGER /* from @&file&@:@&line&@ */
 /****************
  ** generated comment for Emacs (from  @&file&@:@&line&@)
  ** Local Variables: ;;
- ** compile-command: "make refpersys plugins_dir/_@&RPS_GPP_INPUT_BASENAME&@.so" ;;
+ ** compile-command: "make refpersys plugins_dir/_gramrepl_rps.so" ;;
  ** End: ;;
  ****************/
 
