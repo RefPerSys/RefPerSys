@@ -374,6 +374,8 @@ main(int argc, char**argv)
     fprintf (p, "/bin/rm -f '%s'", bp_temp_ninja.c_str());
     pclose(p);
   }
+  /// synchronize the disk
+  sync();
   return 0;
 } // end main
 
