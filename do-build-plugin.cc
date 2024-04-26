@@ -232,8 +232,8 @@ bp_complete_ninja(FILE*f, const std::string& src)
 void
 bp_write_prologue_ninja(const char*njpath)
 {
-  fprintf(bp_ninja_file, "# generated ninja file %s\n", njpath);
-  fprintf(bp_ninja_file, "# for refpersys.org to ninja-build.org\n");
+  fprintf(bp_ninja_file, "# generated ninja file %s for the ninja-build.org tool\n", njpath);
+  fprintf(bp_ninja_file, "# for the refpersys.org project\n");
   fprintf(bp_ninja_file, "# generator <%s:%d> git %s\n",
           __FILE__,  __LINE__-1, bp_git_id);
   fprintf(bp_ninja_file, "# refpersys source plugin %s\n",
@@ -342,6 +342,7 @@ main(int argc, char**argv)
   fprintf(bp_ninja_file, "\ndefault %s\n", bp_plugin_binary);
   fprintf(bp_ninja_file, "\n#end of generated ninja file %s\n", bp_temp_ninja.c_str());
   fclose(bp_ninja_file);
+  /// run the ninja command to build the plugin
   {
     char ninjacmd[256];
     memset (ninjacmd, 0, sizeof(ninjacmd));
@@ -358,6 +359,7 @@ main(int argc, char**argv)
     if (ex)
       return ex;
   }
+  /// temporary files should be removed using at utility in ten minutes
   {
     char atcmd[80];
     memset (atcmd, 0, sizeof(atcmd));
