@@ -127,8 +127,11 @@ rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
 {
 #warning TODO: we might want to wait half a second in rps_garbage_collect
   // e.g. in generated or hand-written plugins) since in some C++ code
-  // (e.g. called by graphical toolkits, external C++ library routines
-  // not designed to be RefPerSys-GC compatible
+  // (e.g. called by graphical toolkits or numerical routines),
+  // quickly running external C++ library routines incompatible with a
+  // moving garbage collector might want to allocate some RefPerSys
+  // data but would be forbidden to run its garbage collector for a
+  // short time.
   RPS_ASSERT(Rps_GarbageCollector::gc_this_.load() == nullptr);
   Rps_GarbageCollector the_gc([=](Rps_GarbageCollector*gc)
   {
