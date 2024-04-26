@@ -116,9 +116,19 @@ Rps_CallFrame::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
     cfram_prev->output(out, depth+1, maxdepth);
 } // end of Rps_CallFrame::output i.e. Rps_ProtoCallFrame::output
 
+
+
+/* The top level function to call the garbage collector; the optional
+   argument C++ std::function is marking more local data, e.g. calling
+   Rps_ObjectRef::gc_mark or Rps_Value::gc_mark or some
+   Rps_GarbageCollector::mark??? routine */
 void
 rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
 {
+#warning TODO: we might want to wait half a second in rps_garbage_collect
+  // e.g. in generated or hand-written plugins) since in some C++ code
+  // (e.g. called by graphical toolkits, external C++ library routines
+  // not designed to be RefPerSys-GC compatible
   RPS_ASSERT(Rps_GarbageCollector::gc_this_.load() == nullptr);
   Rps_GarbageCollector the_gc([=](Rps_GarbageCollector*gc)
   {
