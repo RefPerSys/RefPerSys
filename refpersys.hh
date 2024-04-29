@@ -2460,7 +2460,7 @@ public:
 
 
 ////////////////////////////////////////////////// file path utilities
-/** Given a shell pattern like foo/x*.h and a file path like
+/** Given a shell pattern like foo/x*.h and a directory path like
    /usr/include:/usr/local/include find a readable plain file path;
    tilde patterns ~joe are expanded and $XX are expanded but not command
    line substitution like $(ls -lt *foo|head -1); for example
