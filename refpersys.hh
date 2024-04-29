@@ -2455,6 +2455,21 @@ public:
     return h;
   };
 };                              // end of Rps_LazyHashedZoneValue
+
+
+
+
+////////////////////////////////////////////////// file path utilities
+/** Given a shell pattern like foo/x*.h and a file path like
+   /usr/include:/usr/local/include find a readable plain file path;
+   tilde patterns ~joe are expanded and $XX are expanded but not command
+   line substitution like $(ls -lt *foo|head -1); for example
+   rps_glob_plain_path("sys/stat.h",
+   "/usr/include/:/usr/include/x86-64-linux/gnu/") would return
+   "/usr/include/sys/stat.h" on my Linux desktop. If no file is found,
+   the empty string is returned. */
+std::string rps_glob_plain_file_path(const char*shellpat, const char*filpath);
+
 //////////////////////////////////////////////////////////// immutable strings
 
 // compute a long hash in ht[0] and ht[1]. Return the number of UTF-8
