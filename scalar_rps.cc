@@ -4,14 +4,14 @@
  *
  * Description:
  *      This file is part of the Reflective Persistent System.
- *      Implementation related to scalar values
+ *      Implementation related to scalar values (and strings)
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2020 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -361,5 +361,22 @@ rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen)
     }
 } // end rps_output_utf8_cjson
 
+
+/** Given a shell pattern like foo/x*.h and a file path like
+   /usr/include:/usr/local/include find a readable plain file path;
+   tilde patterns ~joe are expanded and $XX are expanded but not command
+   line substitution like $(ls -lt *foo|head -1); for example
+   rps_glob_plain_path("sys/stat.h",
+   "/usr/include/:/usr/include/x86-64-linux/gnu/") would return
+   "/usr/include/sys/stat.h" on my Linux desktop. If no file is found,
+   the empty string is returned. */
+std::string
+rps_glob_plain_file_path(const char*shellpat, const char*filpath)
+{
+  #warning unimplemented rps_glob_plain_file_path
+  RPS_FATAL_OUT("unimplemented rps_glob_plain_file_path "
+		<< " shellpat:" << Rps_QuotedC_String(shellpath)
+		<< " filpath:" << Rps_QuotedC_String(filpath));
+} // end rps_glob_plain_file_path
 
 //////////////////////////////////////////////// end of file scalar_rps.cc
