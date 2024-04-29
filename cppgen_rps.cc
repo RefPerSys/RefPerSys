@@ -117,14 +117,16 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
     {
       unsigned cardinclset = _f.vinclude.as_set()->cardinal();
 #warning  rps_generate_cplusplus_code should handle set of includes
-      throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code unimplemented set vinclude:" << _f.vinclude<< " obmodule=" << _f.obmodule
+      throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code unimplemented set vinclude:"
+                                  << _f.vinclude << " obmodule=" << _f.obmodule
                                   << " obgenerator=" << _f.obgenerator);
     }
   else if (_f.vinclude.is_tuple())
     {
       unsigned lenincltup = _f.vinclude.as_tuple()->size();
 #warning  rps_generate_cplusplus_code should handle tuple of includes
-      throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code unimplemented tuple vinclude:" << _f.vinclude<< " obmodule=" << _f.obmodule
+      throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code unimplemented tuple vinclude:"
+                                  << _f.vinclude<< " obmodule=" << _f.obmodule
                                   << " obgenerator=" << _f.obgenerator);
     }
   else
