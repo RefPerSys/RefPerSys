@@ -2468,7 +2468,7 @@ public:
    "/usr/include/:/usr/include/x86-64-linux/gnu/") would return
    "/usr/include/sys/stat.h" on my Linux desktop. If no file is found,
    the empty string is returned. */
-std::string rps_glob_plain_file_path(const char*shellpat, const char*filpath);
+std::string rps_glob_plain_file_path(const char*shellpat, const char*dirpath);
 
 //////////////////////////////////////////////////////////// immutable strings
 

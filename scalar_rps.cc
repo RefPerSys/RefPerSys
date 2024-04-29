@@ -362,7 +362,7 @@ rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen)
 } // end rps_output_utf8_cjson
 
 
-/** Given a shell pattern like foo/x*.h and a file path like
+/** Given a shell pattern like foo/x*.h and a directory path like
    /usr/include:/usr/local/include find a readable plain file path;
    tilde patterns ~joe are expanded and $XX are expanded but not command
    line substitution like $(ls -lt *foo|head -1); for example
@@ -371,7 +371,7 @@ rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen)
    "/usr/include/sys/stat.h" on my Linux desktop. If no file is found,
    the empty string is returned. */
 std::string
-rps_glob_plain_file_path(const char*shellpatt, const char*filpath)
+rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
 {
 #warning unimplemented rps_glob_plain_file_path
   if (!shellpatt || !shellpatt[0])
@@ -433,10 +433,14 @@ rps_glob_plain_file_path(const char*shellpatt, const char*filpath)
           return std::string(nullptr);
         };
       return std::string(rp);
-    }
+    };
+  if (!dirpath || !dirpath[0])
+    return std::string(nullptr);
+#warning rps_glob_plain_file_path incomplete
+  /** TODO: use the dirpath **/
   RPS_FATALOUT("unimplemented rps_glob_plain_file_path "
                << " shellpatt:" << Rps_QuotedC_String(shellpatt)
-               << " filpath:" << Rps_QuotedC_String(filpath));
+               << " dirpath:" << Rps_QuotedC_String(dirpath));
 } // end rps_glob_plain_file_path
 
 //////////////////////////////////////////////// end of file scalar_rps.cc
