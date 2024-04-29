@@ -119,6 +119,9 @@
 #include <sys/personality.h>
 #include <sys/signalfd.h>
 #include <sys/timerfd.h>
+#include <wordexp.h>
+#include <glob.h>
+
 
 /// libtar-dev package on Debian
 #include <libtar.h>
