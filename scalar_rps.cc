@@ -371,11 +371,37 @@ rps_output_utf8_cjson(std::ostream&out, const char*str, int bytlen)
    "/usr/include/sys/stat.h" on my Linux desktop. If no file is found,
    the empty string is returned. */
 std::string
-rps_glob_plain_file_path(const char*shellpat, const char*filpath)
+rps_glob_plain_file_path(const char*shellpatt, const char*filpath)
 {
-  #warning unimplemented rps_glob_plain_file_path
-  RPS_FATAL_OUT("unimplemented rps_glob_plain_file_path "
-		<< " shellpat:" << Rps_QuotedC_String(shellpath)
+#warning unimplemented rps_glob_plain_file_path
+  if (!shellpatt || !shellpatt[0])
+    return std::string(nullptr);
+  if (shellpatt[0] == '~') {
+    wordexp_t wx = {0};
+    int err = wordexp(shellpat, &wx, WRDE_NOCMD|WRDE_UNDEF);
+    if (err) {
+      wordfree(&wx);
+      return std::string(nullptr);
+    };
+    if (wx.we_wordc==0) {
+      wordfree(&wx);
+      return std::string(nullptr);
+    };
+    if (wx.we_wordc==1) {
+      char*rp = realpath(wx.we_wordv[0], nullptr);
+      struct stat rs={0};
+      wordfree(&wx);
+      if (stat(rp, &rs) || (rs.st_mode & S_IFMT)!=S_IFREG
+	  || access(rp, R_OK)) {
+	return std::string(nullptr);
+      };
+#warning missing code in rps_glob_plain_file_path
+    }
+  }
+  else if (shellpat[0] == '/') {
+  }
+  RPS_FATALOUT("unimplemented rps_glob_plain_file_path "
+		<< " shellpatt:" << Rps_QuotedC_String(shellpatt)
 		<< " filpath:" << Rps_QuotedC_String(filpath));
 } // end rps_glob_plain_file_path
 
