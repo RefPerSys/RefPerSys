@@ -436,8 +436,9 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
     };
   if (!dirpath || !dirpath[0])
     return std::string(nullptr);
+  std::string dirstr(dirpath);
 #warning rps_glob_plain_file_path incomplete
-  /** TODO: use the dirpath **/
+  /** TODO: use the dirstr and look for colons inside it **/
   RPS_FATALOUT("unimplemented rps_glob_plain_file_path "
                << " shellpatt:" << Rps_QuotedC_String(shellpatt)
                << " dirpath:" << Rps_QuotedC_String(dirpath));
