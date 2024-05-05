@@ -436,12 +436,42 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
     };
   if (!dirpath || !dirpath[0])
     return std::string(nullptr);
-  std::string dirstr(dirpath);
-#warning rps_glob_plain_file_path incomplete
-  /** TODO: use the dirstr and look for colons inside it **/
-  RPS_FATALOUT("unimplemented rps_glob_plain_file_path "
-               << " shellpatt:" << Rps_QuotedC_String(shellpatt)
-               << " dirpath:" << Rps_QuotedC_String(dirpath));
+  {
+    std::string dirstr(dirpath);
+    const char* pc=nullptr;
+    const char* colon=nullptr;
+    for (pc = dirstr.c_str(); pc && *pc; pc = (colon?(colon+1):nullptr))
+      {
+        colon = strchr(pc, ':');
+        std::string curdir;
+        if (colon) curdir=std::string(pc, colon-pc-1);
+        else curdir=std::string(pc);
+        /// absolute file path
+        glob_t g = {0};
+        std::string curpatt = curdir + "/" + shellpatt;
+        if (glob(curpatt.c_str(), GLOB_ERR|GLOB_MARK, nullptr, &g))
+          {
+            globfree(&g);
+            return std::string(nullptr);
+          };
+        if (g.gl_pathc != 1)
+          {
+            globfree(&g);
+            return std::string(nullptr);
+          }
+        char*rp = realpath(g.gl_pathv[0], nullptr);
+        struct stat rs= {0};
+        globfree(&g);
+        if (stat(rp, &rs) || (rs.st_mode & S_IFMT)!=S_IFREG
+            || access(rp, R_OK))
+          {
+            free (rp);
+            return std::string(nullptr);
+          };
+        return std::string(rp);
+      }
+  }
+  return std::string(nullptr);
 } // end rps_glob_plain_file_path
 
 //////////////////////////////////////////////// end of file scalar_rps.cc
