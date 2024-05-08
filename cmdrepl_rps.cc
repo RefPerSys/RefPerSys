@@ -1250,22 +1250,36 @@ rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe,
   static Rps_Id descoid;
   if (!descoid) descoid=Rps_Id("_2TZNwgyOdVd001uasl");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-		 callerframe,
-		 );
+                           callerframe,
+		 Rps_ObjectRef obdictcmd;
+		 Rps_Value curcmdv;
+                );
+  _f.obdictcmd = RPS_ROOT_OB(_5dkRQtwGUHs02MVQT0);
   RPS_DEBUG_LOG(CMD, "REPL command help start arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
                 << " arg1=" << arg1
                 << "∈" << arg1.compute_class(&_) << std::endl
+		<< " obdictcmd=" << _f.obdictcmd
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
-  if (!RPS_DEBUG_ENABLED(CMD)) {
-    RPS_DEBUG_LOG(REPL, "REPL command help° start arg0=" << arg0
-		  << "∈" << arg0.compute_class(&_)
-		  << " arg1=" << arg1
-		  << "∈" << arg1.compute_class(&_) << std::endl
-		  << " from " << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "REPL command help°"));
-  };
+  if (!RPS_DEBUG_ENABLED(CMD))
+    {
+      RPS_DEBUG_LOG(REPL, "REPL command help° start arg0=" << arg0
+                    << "∈" << arg0.compute_class(&_)
+                    << " arg1=" << arg1
+                    << "∈" << arg1.compute_class(&_) << std::endl
+                    << " arg2=" << arg2 << " arg3=" << arg3
+		    << " obdictcmd=" << _f.obdictcmd
+                    << (restargs?" restargs=":" no restargs:")
+                    << (restargs?(*restargs):std::vector<Rps_Value>())
+                    << " from " << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "REPL command help°"));
+    };
+  RPS_ASSERT(_f.obdictcmd);
+  std::lock_guard<std::recursive_mutex> gu(*_f.obdictcmd->objmtxptr());
+  auto payldict = _f.obdictcmd->get_dynamic_payload<Rps_PayloadStringDict>();
+  RPS_ASSERT(payldict);
+  /* TODO: iterate on payldict */
 #warning incomplete rpsapply_2TZNwgyOdVd001uasl for REPL command help
   RPS_WARNOUT("incomplete rpsapply_2TZNwgyOdVd001uasl for REPL command help from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_2TZNwgyOdVd001uasl for REPL command help"));
