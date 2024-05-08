@@ -1250,20 +1250,22 @@ rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe,
   static Rps_Id descoid;
   if (!descoid) descoid=Rps_Id("_2TZNwgyOdVd001uasl");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
-                           callerframe,
-                );
+		 callerframe,
+		 );
   RPS_DEBUG_LOG(CMD, "REPL command help start arg0=" << arg0
                 << "∈" << arg0.compute_class(&_)
                 << " arg1=" << arg1
                 << "∈" << arg1.compute_class(&_) << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
-  RPS_DEBUG_LOG(REPL, "REPL command help start arg0=" << arg0
-                << "∈" << arg0.compute_class(&_)
-                << " arg1=" << arg1
-                << "∈" << arg1.compute_class(&_) << std::endl
-                << " from " << std::endl
-                << Rps_ShowCallFrame(&_));
+  if (!RPS_DEBUG_ENABLED(CMD)) {
+    RPS_DEBUG_LOG(REPL, "REPL command help° start arg0=" << arg0
+		  << "∈" << arg0.compute_class(&_)
+		  << " arg1=" << arg1
+		  << "∈" << arg1.compute_class(&_) << std::endl
+		  << " from " << std::endl
+		  << RPS_FULL_BACKTRACE_HERE(1, "REPL command help°"));
+  };
 #warning incomplete rpsapply_2TZNwgyOdVd001uasl for REPL command help
   RPS_WARNOUT("incomplete rpsapply_2TZNwgyOdVd001uasl for REPL command help from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_2TZNwgyOdVd001uasl for REPL command help"));
