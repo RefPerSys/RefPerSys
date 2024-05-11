@@ -78,7 +78,21 @@ static pthread_t rps_main_thread_handle;
 
 extern "C" char*rps_pidfile_path;
 
-bool rps_is_main_thread(void)
+
+int
+rps_get_major_version(void)
+{
+  return RPS_MAJOR_VERSION_NUM;
+} // end rps_get_major_version
+
+int
+rps_get_minor_version(void)
+{
+  return RPS_MINOR_VERSION_NUM;
+} // end rps_get_minor_version
+
+bool
+rps_is_main_thread(void)
 {
   return pthread_self() == rps_main_thread_handle;
 } // end rps_is_main_thread
@@ -500,9 +514,19 @@ rps_show_version(void)
     nbfiles++;
   for (auto psubdirs=rps_subdirectories; *psubdirs; psubdirs++)
     nbsubdirs++;
-  std::cout << "RefPerSys, an open source Artificial Intelligence system" << std::endl;
-  std::cout << " symbolic inference engine - work in progress..." << std::endl;
+  char exepath[256];
+  memset (exepath, 0, sizeof(exepath));
+  static char realexepath[PATH_MAX];
+  memset (realexepath, 0, sizeof(realexepath));
+  readlink("/proc/self/exe", exepath, sizeof(exepath));
+  (void) realpath(exepath, realexepath);
+  std::cout << "RefPerSys "<< rps_get_major_version() << "."
+	    << rps_get_minor_version() //
+	    << ", an open source Artificial Intelligence system" << std::endl;
+  std::cout << "\t  symbolic inference engine - work in progress..." << std::endl;
   std::cout << "version information:\n"
+	    << " major version: " << RPS_MAJOR_VERSION_NUM << std::endl
+	    << " minor version: " << RPS_MINOR_VERSION_NUM << std::endl
             << " program name: " << rps_progname << std::endl
             << " build time: " << rps_timestamp << std::endl
             << " top directory: " << rps_topdirectory << std::endl
@@ -514,11 +538,15 @@ rps_show_version(void)
             << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
             << " with " << nbsubdirs << " subdirectories." << std::endl
             << " GNU glibc: " << gnu_get_libc_version() << std::endl
-            /* TODO: near commit 191d55e1b31c, march 2023; decide
-               which parser generator to really use... and drop the
-               other one.  Non technical considerations,
-               e.g. licensing, is important to some partners... */
-            << " Gnu multi-precision library version: " << gmp_version << std::endl
+	    << " executable: " << exepath;
+  if (strcmp(exepath, realexepath))
+    std::cout <<  " really " << realexepath;
+  std::cout << std::endl
+    /* TODO: near commit 191d55e1b31c, march 2023; decide
+       which parser generator to really use... and drop the
+       other one.  Non technical considerations,
+       e.g. licensing, is important to some partners... */
+            << " Gnu multi-precision library version: " << gmp_version 
             << std::endl
             << " default GUI script: " << rps_gui_script_executable << std::endl
             << " Read Eval Print Loop: " << rps_repl_version() << std::endl
@@ -528,16 +556,17 @@ rps_show_version(void)
             << " GPP preprocessor path: " << rps_gpp_preprocessor_realpath << std::endl
             << " GPP preprocessor version: " << rps_gpp_preprocessor_version << std::endl
             << " made with: " << rps_gnumakefile << std::endl
-            << " running on " << rps_hostname() << std::endl
+            << " running on: " << rps_hostname() << std::endl
             << "This executable was built by "
             << rps_building_user_name
-            << " of email " << rps_building_user_email
+            << " of email " << rps_building_user_email << std::endl
+	    << "See refpersys.org and code on github.com/RefPerSys/RefPerSys"
             << std::endl;
   {
     char cwdbuf[rps_path_byte_size+4];
     memset (cwdbuf, 0, sizeof(cwdbuf));
     if (getcwd(cwdbuf, rps_path_byte_size))
-      std::cout << " in " << cwdbuf;
+      std::cout << " in: " << cwdbuf;
   };
   std::cout << std::endl << " C++ compiler: " << rps_cxx_compiler_version << std::endl
             << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl

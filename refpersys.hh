@@ -165,6 +165,11 @@ constexpr unsigned rps_path_byte_size = 384;
 extern "C" char rps_bufpath_homedir[rps_path_byte_size];
 extern "C" char rps_debug_path[rps_path_byte_size];
 
+extern "C" int rps_get_major_version(void);
+extern "C" int rps_get_minor_version(void);
+#define RPS_MAJOR_VERSION_NUM 0
+#define RPS_MINOR_VERSION_NUM 5
+
 extern "C" std::map<std::string,std::string> rps_pluginargs_map;
 extern "C" std::string rps_cpluspluseditor_str;
 extern "C" std::string rps_cplusplusflags_str;
