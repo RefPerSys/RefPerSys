@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2023 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -362,6 +362,14 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
                 RPS_FATAL("spacefile %s should have spaceid: '%s' but got '%s'",
                           spacepath.c_str (), spacid.to_string().c_str(),
                           prologjson["spaceid"].asString().c_str());
+	      int majv = prologjson["rpsmajorversion"].asInt();
+	      int minv = prologjson["rpsminorversion"].asInt();
+	      if (majv != rps_get_major_version()
+		  || minv != rps_get_minor_version())
+		RPS_WARNOUT("space file " << spacepath
+			    << " was dumped by RefPerSys " << majv << "." << minv
+			    << " but is loaded by RefPerSys " << rps_get_major_version()
+			    << "." << rps_get_minor_version());
               Json::Value nbobjectsjson =  prologjson["nbobjects"];
               expectedcnt =nbobjectsjson.asInt();
             }
@@ -1184,6 +1192,15 @@ Rps_Loader::parse_manifest_file(void)
               "%s",
               manifpath.c_str (), RPS_MANIFEST_FORMAT, RPS_PREVIOUS_MANIFEST_FORMAT,
               manifjson["format"].toStyledString().c_str());
+  int majv = manifjson["rpsmajorversion"].asInt();
+  int minv = manifjson["rpsminorversion"].asInt();
+  if (majv != rps_get_major_version() || minv != rps_get_minor_version())
+    {
+      RPS_WARNOUT("manifest path " << manifpath.c_str()
+		  << " dumped by RefPerSys " << majv << "." << minv
+		  << " but loaded by "
+		  << rps_get_major_version() << "." << rps_get_minor_version());
+    };
   /// parse spaceset
   {
     auto spsetjson = manifjson["spaceset"];
@@ -1403,16 +1420,16 @@ void Rps_Loader::load_install_roots(void)
   int nbroots=0;
   {
     std::lock_guard<std::recursive_mutex> gu(ld_mtx);
-#define RPS_INSTALL_ROOT_OB(Oid)    {     \
-      const char *end##Oid = nullptr;     \
-      bool ok##Oid = false;       \
+#define RPS_INSTALL_ROOT_OB(Oid)    {                   \
+      const char *end##Oid = nullptr;                   \
+      bool ok##Oid = false;                             \
       auto id##Oid = Rps_Id(#Oid, &end##Oid, &ok##Oid); \
-      RPS_ASSERT(end##Oid && *end##Oid == (char)0); \
-      RPS_ASSERT(id##Oid && id##Oid.valid());   \
-      RPS_ROOT_OB(Oid) = find_object_by_oid(id##Oid); \
-      if (!RPS_ROOT_OB(Oid))        \
-  RPS_WARN("failed to install root " #Oid); \
-      nbroots++;          \
+      RPS_ASSERT(end##Oid && *end##Oid == (char)0);     \
+      RPS_ASSERT(id##Oid && id##Oid.valid());           \
+      RPS_ROOT_OB(Oid) = find_object_by_oid(id##Oid);   \
+      if (!RPS_ROOT_OB(Oid))                            \
+  RPS_WARN("failed to install root " #Oid);             \
+      nbroots++;                                        \
     }
   };
 #include "generated/rps-roots.hh"
@@ -1425,23 +1442,25 @@ void Rps_Loader::load_install_roots(void)
   int nbsymb=0;
   {
     std::lock_guard<std::recursive_mutex> gu(ld_mtx);
-#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name)    {  \
-      const char *end##Oid##Name = nullptr;   \
-      bool ok##Oid##Name = false;     \
-      auto id##Oid##Name = Rps_Id(#Oid,     \
-          &end##Oid##Name,  \
-          &ok##Oid##Name);  \
-      RPS_ASSERT(end##Oid##Name       \
-     && *end##Oid##Name == (char)0);  \
-      RPS_ASSERT(id##Oid##Name        \
-     && id##Oid##Name.valid());   \
-      RPS_SYMB_OB(Name) =       \
-  find_object_by_oid(id##Oid##Name);    \
-      if (!RPS_SYMB_OB(Name))       \
-  RPS_WARN("failed to install symbol "    \
-     #Oid " named " #Name);     \
-      nbsymb++;           \
+    //
+#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name)    {        \
+      const char *end##Oid##Name = nullptr;             \
+      bool ok##Oid##Name = false;                       \
+      auto id##Oid##Name = Rps_Id(#Oid,                 \
+          &end##Oid##Name,                              \
+          &ok##Oid##Name);                              \
+      RPS_ASSERT(end##Oid##Name                         \
+     && *end##Oid##Name == (char)0);                    \
+      RPS_ASSERT(id##Oid##Name                          \
+     && id##Oid##Name.valid());                         \
+      RPS_SYMB_OB(Name) =                               \
+  find_object_by_oid(id##Oid##Name);                    \
+      if (!RPS_SYMB_OB(Name))                           \
+  RPS_WARN("failed to install symbol "                  \
+     #Oid " named " #Name);                             \
+      nbsymb++;                                         \
     };
+    //
 #include "generated/rps-names.hh"
     RPS_ASSERT(nbsymb == RPS_NB_NAMED_ROOT_OB);
   }
