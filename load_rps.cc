@@ -362,14 +362,14 @@ Rps_Loader::first_pass_space(Rps_Id spacid)
                 RPS_FATAL("spacefile %s should have spaceid: '%s' but got '%s'",
                           spacepath.c_str (), spacid.to_string().c_str(),
                           prologjson["spaceid"].asString().c_str());
-	      int majv = prologjson["rpsmajorversion"].asInt();
-	      int minv = prologjson["rpsminorversion"].asInt();
-	      if (majv != rps_get_major_version()
-		  || minv != rps_get_minor_version())
-		RPS_WARNOUT("space file " << spacepath
-			    << " was dumped by RefPerSys " << majv << "." << minv
-			    << " but is loaded by RefPerSys " << rps_get_major_version()
-			    << "." << rps_get_minor_version());
+              int majv = prologjson["rpsmajorversion"].asInt();
+              int minv = prologjson["rpsminorversion"].asInt();
+              if (majv != rps_get_major_version()
+                  || minv != rps_get_minor_version())
+                RPS_WARNOUT("space file " << spacepath
+                            << " was dumped by RefPerSys " << majv << "." << minv
+                            << " but is loaded by RefPerSys " << rps_get_major_version()
+                            << "." << rps_get_minor_version());
               Json::Value nbobjectsjson =  prologjson["nbobjects"];
               expectedcnt =nbobjectsjson.asInt();
             }
@@ -1197,9 +1197,9 @@ Rps_Loader::parse_manifest_file(void)
   if (majv != rps_get_major_version() || minv != rps_get_minor_version())
     {
       RPS_WARNOUT("manifest path " << manifpath.c_str()
-		  << " dumped by RefPerSys " << majv << "." << minv
-		  << " but loaded by "
-		  << rps_get_major_version() << "." << rps_get_minor_version());
+                  << " dumped by RefPerSys " << majv << "." << minv
+                  << " but loaded by "
+                  << rps_get_major_version() << "." << rps_get_minor_version());
     };
   /// parse spaceset
   {
