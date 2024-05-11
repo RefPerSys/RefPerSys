@@ -1412,6 +1412,8 @@ Rps_Dumper::write_space_file(Rps_ObjectRef spacobr)
     jprologue["spaceid"] = Json::Value (spacid.to_string());
     jprologue["jsoncppversion"] =  JSONCPP_VERSION_STRING;
     jprologue["nbobjects"] = Json::Value ((int)(curspaset.size()));
+    jprologue["rpsmajorversion"] = Json::Value(rps_get_major_version());
+    jprologue["rpsminorversion"] = Json::Value(rps_get_minor_version());
     jsonwriter->write(jprologue, pouts.get());
     *pouts << std::endl;
   }
