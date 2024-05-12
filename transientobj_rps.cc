@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2023 The Reflective Persistent System Team
+ *      © Copyright 2023 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -274,7 +274,7 @@ Rps_PayloadUnixProcess::put_output_closure(Rps_ClosureValue closv)
   if (!closv || !closv.is_closure()) return;
   std::lock_guard<std::recursive_mutex> gu(*owner()->objmtxptr());
   _unixproc_outputclos = closv;
-} // end Rps_PayloadUnixProcess::put_input_closure
+} // end Rps_PayloadUnixProcess::put_output_closure
 
 
 
