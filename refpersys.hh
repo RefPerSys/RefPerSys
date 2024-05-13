@@ -2642,15 +2642,15 @@ struct Rps_ChunkData_st;
 
 extern "C" void rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const std::string&failstr);
 
-#define RPS_PARSREPL_FAILURE_AT(Fram,Out,Fil,Lin,Cnt) do {  \
-    std::ostringstream _failstream_##Lin;     \
-    _failstream_##Lin << Out << " ~#" << Cnt << std::endl;  \
-    Rps_Backtracer backtr##Lin(Rps_Backtracer::FullOut_Tag{}, \
-             (Fil),(Lin),1,         \
-             "ParsReplFailing",         \
-             &_failstream_##Lin);       \
-    rps_parsrepl_failing_at(Fil,Lin,Cnt,      \
-          _failstream_##Lin.str());       \
+#define RPS_PARSREPL_FAILURE_AT(Fram,Out,Fil,Lin,Cnt) do {	\
+    std::ostringstream _failstream_##Lin;			\
+    _failstream_##Lin << Out << " ~#" << Cnt << std::endl;	\
+    Rps_Backtracer backtr##Lin(Rps_Backtracer::FullOut_Tag{},	\
+             (Fil),(Lin),1,					\
+             "ParsReplFailing",					\
+             &_failstream_##Lin);				\
+    rps_parsrepl_failing_at(Fil,Lin,Cnt,			\
+          _failstream_##Lin.str());				\
 } while(0)
 
 #define RPS_PARSREPL_FAILURE(Fram,Out) \
