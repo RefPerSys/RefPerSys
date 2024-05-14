@@ -43,6 +43,8 @@
 // comment for our do-scan-pkgconfig.c utility
 //@@PKGCONFIG jsoncpp
 
+//@@PKGCONFIG gtkmm-4.0
+
 
 #ifndef REFPERSYS_INCLUDED
 #define REFPERSYS_INCLUDED
@@ -132,6 +134,9 @@
 /// libgmp-dev package on Debian (GNU multiprecision library, and its
 /// C++ wrapper)
 #include <gmpxx.h>
+
+/// libgtkmm-4.0 package on Debian
+#include <gtkmm.h>
 
 class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
