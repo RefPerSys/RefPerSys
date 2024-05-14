@@ -202,6 +202,13 @@ rps_initialize_event_loop(void)
   }
   if (rps_poll_delay_millisec==0)
     rps_poll_delay_millisec = RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC;
+  RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop eld_selfpipereadfd#"
+                << (rps_eventloopdata.eld_selfpipereadfd)
+                << " eld_selfpipewritefd#"
+                << (rps_eventloopdata.eld_selfpipewritefd)
+                << " rps_poll_delay_millisec=" << rps_poll_delay_millisec
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop"));
 } // end rps_initialize_event_loop
 
 
