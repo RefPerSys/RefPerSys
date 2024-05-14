@@ -227,7 +227,8 @@ endif
 %_rps.o: %_rps.cc refpersys.hh
 	echo dollar-less-F is $(<F)
 	echo basename-dollar-less-F is $(basename $(<F))
-	echo pkglist is $(PKGLIST_$(basename $(<F)))	
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
@@ -238,8 +239,8 @@ endif
 
 ## for plugins, see build-plugin.sh
 print-plugin-settings:
-	@printf "RPSPLUGIN_CXX='%s'\n" $(REFPERSYS_CXX)
-	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)"
+	@printf "RPSPLUGIN_CXX='%s'\n" "$(REFPERSYS_CXX)"
+	@printf "RPSPLUGIN_CXXFLAGS='%s'\n" "$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) $(shell pkg-config --cflags $(PKGLIST_refpersys))"
 	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"
 
 indent:
