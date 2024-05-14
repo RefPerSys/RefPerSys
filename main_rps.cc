@@ -441,13 +441,13 @@ rps_run_loaded_application(int &argc, char **argv)
       RPS_FATALOUT("rps_run_loaded_application failed to getcwd " << strerror(errno)
                    << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application"));
     RPS_INFORM("rps_run_loaded_application: start of %s (with %d args)\n"
-               ".. gitid %s\n"
+               ".. gitid %s version %d.%d\n"
                ".. build timestamp %s\n"
                ".. last git commit %s\n"
                ".. md5sum %s\n"
                ".. in %s\n"
                ".. on host %s pid %d\n",
-               argv[0], argc, rps_gitid,
+               argv[0], argc, rps_gitid, rps_get_major_version(), rps_get_minor_version(),
                rps_timestamp,
                rps_lastgitcommit,
                rps_md5sum,
@@ -461,7 +461,7 @@ rps_run_loaded_application(int &argc, char **argv)
       RPS_INFORMOUT("did set after load "
                     << " of RefPerSys process " << (int)getpid() << std::endl
                     << "… on " << rps_hostname()
-                    << " shortgit " << rps_shortgitid
+                    << " shortgit " << rps_shortgitid << " version " << rps_get_major_version() << "." << rps_get_minor_version()
                     << " debug to "
                     << Rps_Do_Output([&](std::ostream& out)
       {
@@ -567,16 +567,19 @@ rps_run_loaded_application(int &argc, char **argv)
   if (!rps_plugins_vector.empty())
     {
       int pluginix = 0;
+      std::string curplugname;
       try
         {
           for (auto& curplugin : rps_plugins_vector)
             {
-
+	      curplugname = curplugin.plugin_name;
               void* dopluginad = dlsym(curplugin.plugin_dlh, RPS_PLUGIN_INIT_NAME);
               if (!dopluginad)
-                RPS_FATALOUT("cannot find symbol " RPS_PLUGIN_INIT_NAME " in plugin " << curplugin.plugin_name << ":" << dlerror());
+                RPS_FATALOUT("cannot find symbol " RPS_PLUGIN_INIT_NAME " in plugin " << curplugname << ":" << dlerror());
               rps_plugin_init_sig_t* pluginit = reinterpret_cast<rps_plugin_init_sig_t*>(dopluginad);
               (*pluginit)(&curplugin);
+	      RPS_INFORMOUT("rps_run_loaded_application initialized plugin#" << pluginix << " " << curplugname);
+	      curplugname.erase();
               pluginix ++;
             };
         }
@@ -617,8 +620,11 @@ rps_run_loaded_application(int &argc, char **argv)
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application JSONRPC"));
       jsonrpc_initialize_rps();
     };
-  RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended");
+  RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended in thread " << rps_current_pthread_name()
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application ending"));
 } // end rps_run_loaded_application
+
 
 
 static long
