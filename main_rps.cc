@@ -1354,11 +1354,11 @@ main (int argc, char** argv)
   RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" //
              " %s process %d on host %s in %s build top dir %s\n" //
              "… (stdout %s, stderr %s) with %d arguments\n" //
-             "… gitid %.16s branch %s built %s, %s mode (%d jobs)\n" ///
-             "… executable %s\n" ///
-             "This is an open source inference engine software,\n"
-             ".... GPLv3+ licensed, no warranty !\n"
-             ".... See http://refpersys.org/ and https://www.gnu.org/licenses/gpl-3.0.en.html ....\n",
+             "… gitid %.16s branch %s built %s,\n… %s mode (%d jobs)\n" ///
+             "… executable %s version %d.%d\n" ///
+             "… This is an open source inference engine software,\n"
+             "…  GPLv3+ licensed, no warranty !\n"
+             "…  See http://refpersys.org/ and https://www.gnu.org/licenses/gpl-3.0.en.html ....\n",
              RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
              RPS_TERMINAL_NORMAL_ESCAPE,
              argv[0], (int)getpid(), rps_hostname(),
@@ -1370,7 +1370,8 @@ main (int argc, char** argv)
              rps_gitid, rps_gitbranch, rps_timestamp,
              (rps_batch?"batch":"interactive"),
              rps_nbjobs,
-             rps_progexe);
+             rps_progexe,
+             rps_get_major_version(), rps_get_minor_version());
   if (!mycwd)
     RPS_FATALOUT("getcwd failed for " << (sizeof(cwdbuf)-2) << " bytes.");
   if (rps_run_delay > 0 && rps_batch)
