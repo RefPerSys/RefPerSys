@@ -1293,10 +1293,11 @@ rps_exiting(void)
 {
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
-  syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s exiting (%d);\n"
+  syslog(LOG_INFO, "RefPerSys process %d on host %s in %s git %s version %d.%d exiting (%d);\n"
          "… elapsed %.3f sec, CPU %.3f sec;\n"
          "%s%s%s%s",
          (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
+	 rps_get_major_version(), rps_get_minor_version(),
          rps_exit_atomic_code.load(),
          rps_elapsed_real_time(), rps_process_cpu_time(),
          (rps_program_invocation?"invocation: ":""),
@@ -1305,9 +1306,10 @@ rps_exiting(void)
          rps_run_name.c_str());
   if (!rps_syslog_enabled)
     {
-      printf("RefPerSys process %d on host %s in %s git %s exiting (%d);\n"
+      printf("RefPerSys process %d on host %s in %s git %s version %d.%d exiting (%d);\n"
              " ... elapsed %.3f sec, CPU %.3f sec\n",
              (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
+	     rps_get_major_version(), rps_get_minor_version(),
              rps_exit_atomic_code.load(),
              rps_elapsed_real_time(), rps_process_cpu_time());
       if (rps_program_invocation)
