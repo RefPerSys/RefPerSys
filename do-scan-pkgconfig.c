@@ -60,7 +60,7 @@
 #endif
 
 #ifndef MY_HEAD_LINES_THRESHOLD
-#define MY_HEAD_LINES_THRESHOLD 256
+#define MY_HEAD_LINES_THRESHOLD 384
 #endif
 
 #ifndef MY_MAX_PACKAGE
