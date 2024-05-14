@@ -40,10 +40,6 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-// comment for our do-scan-pkgconfig.c utility
-//@@PKGCONFIG jsoncpp
-
-//@@PKGCONFIG gtkmm-4.0
 
 
 #ifndef REFPERSYS_INCLUDED
@@ -135,8 +131,6 @@
 /// C++ wrapper)
 #include <gmpxx.h>
 
-/// libgtkmm-4.0 package on Debian
-#include <gtkmm.h>
 
 class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
@@ -213,6 +207,8 @@ extern "C" {
 
 
 
+// comment for our do-scan-pkgconfig.c utility
+//@@PKGCONFIG jsoncpp
 // JsonCPP https://github.com/open-source-parsers/jsoncpp
 #include "json/json.h"
 
@@ -222,6 +218,14 @@ extern "C" {
 #include "unistr.h"
 
 #include "backtrace.h"
+
+// comment for our do-scan-pkgconfig.c utility
+//@@PKGCONFIG glibmm-2.68
+#include "glibmm.h"
+#include "glibmmconfig.h"
+
+//@@PKGCONFIG giomm-2.68
+#include <giomm.h>
 
 
 // mark unlikely conditions to help optimization
