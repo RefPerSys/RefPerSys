@@ -285,23 +285,32 @@ See also some files from [misc-basile](https://github.com/bstarynk/misc-basile)
 
 ### Build instructions
 
+You need a recent C99 compiler e.g. `gcc` (at least  [GCC
+12](https://gcc.gnu.org/gcc-12/)). Check with `gcc --version`.
+
 You need a recent C++17 compiler such as `g++` (We use
 [GCC](http://gcc.gnu.org/) version [GCC
-10](https://gcc.gnu.org/gcc-10/)) or [GCC
-11](https://gcc.gnu.org/gcc-11/) or
+12](https://gcc.gnu.org/gcc-12/)) or [GCC
+13](https://gcc.gnu.org/gcc-13/) or [GCC
+14](https://gcc.gnu.org/gcc-14/)
 [`clang++`](http://clang.llvm.org/) version [Clang
 11](https://releases.llvm.org/download.html). Look into, and perhaps
-improve, our `Makefile`. Build using `make -j 3` or more.
+improve, our `GNUmakefile`. Check with `g++ --version`. Build using `make -j 3` or more.
  
+You need the [ninja](https://ninja-build.org/) build utility.
+
+You need the `glibmm` from GTK suite. And some `gtkmm` for some RefPerSys plugins.
+
 You also should do a  `make clean` after any `git pull`
 
-You may want to edit your `$HOME/.refpersys.mk` file to contain
-definitions of GNU `make` variables for your particular C and C++ compiler,
-like e.g.
 
-     # file ~/.refpersys.mk
-     RPS_BUILD_CC= gcc-12
-     RPS_BUILD_CXX= g++-12
+Your Unix environment should contain a `REFPERSYS_TOPDIR` shell
+variable. The author has `env REFPERSYS_TOPDIR=$HOME/RefPerSys/` and
+did `git clone` this into that `$REFPERSYS_TOPDIR`.
+
+You need a Linux `pkg-config` utility.
+
+You first need to `make config`. I recommend having the *GNU readline* library.
 
 You then build with `make -j4 refpersys && make all`
 
