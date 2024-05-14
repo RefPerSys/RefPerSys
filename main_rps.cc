@@ -572,14 +572,14 @@ rps_run_loaded_application(int &argc, char **argv)
         {
           for (auto& curplugin : rps_plugins_vector)
             {
-	      curplugname = curplugin.plugin_name;
+              curplugname = curplugin.plugin_name;
               void* dopluginad = dlsym(curplugin.plugin_dlh, RPS_PLUGIN_INIT_NAME);
               if (!dopluginad)
                 RPS_FATALOUT("cannot find symbol " RPS_PLUGIN_INIT_NAME " in plugin " << curplugname << ":" << dlerror());
               rps_plugin_init_sig_t* pluginit = reinterpret_cast<rps_plugin_init_sig_t*>(dopluginad);
               (*pluginit)(&curplugin);
-	      RPS_INFORMOUT("rps_run_loaded_application initialized plugin#" << pluginix << " " << curplugname);
-	      curplugname.erase();
+              RPS_INFORMOUT("rps_run_loaded_application initialized plugin#" << pluginix << " " << curplugname);
+              curplugname.erase();
               pluginix ++;
             };
         }
@@ -621,8 +621,8 @@ rps_run_loaded_application(int &argc, char **argv)
       jsonrpc_initialize_rps();
     };
   RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended in thread " << rps_current_pthread_name()
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application ending"));
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application ending"));
 } // end rps_run_loaded_application
 
 
@@ -1081,14 +1081,18 @@ static void rps_close_debug_file(void)
 {
   if (rps_debug_file)
     {
+      fflush(rps_debug_file);
       if (rps_debug_path[0])
         fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug file %s ****\n", rps_debug_path);
       else
         fprintf(rps_debug_file, "\n\n*** end of RefPerSys debug ***\n");
-      fprintf(rps_debug_file, "gitid %s, built %s, on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
-              rps_gitid, rps_timestamp, rps_hostname(),  rps_md5sum,
+      fprintf(rps_debug_file, "gitid %s version %d.%d, built %s,\n"
+              " on host %s, md5sum %s, elapsed %.3f, process %.3f sec\n",
+              rps_gitid, rps_get_major_version(), rps_get_minor_version(),
+              rps_timestamp, rps_hostname(),  rps_md5sum,
               rps_elapsed_real_time(), rps_process_cpu_time());
       fflush(rps_debug_file);
+      fsync(fileno(rps_debug_file));
       fclose(rps_debug_file);
       rps_debug_file=nullptr;
     }
@@ -1111,11 +1115,13 @@ rps_set_debug_output_path(const char*filepath)
     RPS_FATAL("cannot open debug file %s - %m", filepath);
   fprintf(fdbg, "*@#*@#*@#* RefPerSys debug file %s *@#*@#*@#*\n"
           "See refpersys.org - built %s\n"
-          "On host %s pid %d gitid %s topdir %s\n"
+          "On host %s pid %d gitid %s version %d.%d topdir %s\n"
           "####################################\n\n",
           filepath,
           rps_timestamp,
-          rps_hostname(), (int)getpid(), rps_gitid, rps_topdirectory);
+          rps_hostname(), (int)getpid(), rps_gitid,
+          rps_get_major_version(), rps_get_minor_version(),
+          rps_topdirectory);
   fflush(fdbg);
   rps_debug_file = fdbg;
   strncpy(rps_debug_path, filepath, sizeof(rps_debug_path)-1);
