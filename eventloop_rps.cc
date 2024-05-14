@@ -207,6 +207,7 @@ rps_initialize_event_loop(void)
                 << " eld_selfpipewritefd#"
                 << (rps_eventloopdata.eld_selfpipewritefd)
                 << " rps_poll_delay_millisec=" << rps_poll_delay_millisec
+		<< " in thread " << rps_current_pthread_name()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop"));
 } // end rps_initialize_event_loop
