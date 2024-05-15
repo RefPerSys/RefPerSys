@@ -30,5 +30,8 @@ rps_do_plugin(const Rps_Plugin*plugin)
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   if (!plugarg || !plugarg[0])
     plugarg=":0.0";
+  static int plugargc=0;
+  static char* plugargv[4];
+  new Gtk::Main(&plugargc, plugargv);
   RPS_DEBUG_LOG(REPL, "minigtkmm plugin argument" << plugarg);
 } // end rps_do_plugin
