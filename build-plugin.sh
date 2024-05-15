@@ -33,7 +33,7 @@ declare curdate;
 curdate=$(date +%c);
 printf "start %s at %s: C++ file %s, plugin file %s in %s\n" $0 \
        "$curdate" $cppfile $pluginfile "$(/bin/pwd)" > /dev/stderr
-logger --id=$$ -s  -t "$0:" "starting" cppfile= $1 pluginfile= $2 curdate= $curdate
+/usr/bin/logger --id=$$ -s  -t "$0:" "starting" cppfile= $1 pluginfile= $2 curdate= $curdate
 eval $(gmake print-plugin-settings)
 
 ### plugincppflags contain compiler flags
@@ -80,4 +80,9 @@ fi
 ## run the compiler suitably
 logger --id=$$ -s  -t $0 running: "$RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS  $plugincppflags -Wall -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS  $pluginlinkerflags -o $pluginfile"
 ## 
-exec $RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS $plugincppflags -Wall -Wextra -I. -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS $pluginlinkerflags -o $pluginfile 
+$RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS $plugincppflags -Wall -Wextra -I. -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS \
+	       $pluginlinkerflags -o $pluginfile  || ( \
+						       printf "\n$0 failed to compile RefPerSys plugin %s\n" $0 $pluginfile > /dev/stderr; \
+						       /usr/bin/logger --id=$$ -s  -t $0 -puser.warning \
+								       "$0 failed to compile RefPerSys plugin $pluginfile\n" ; \
+						       exit 1)
