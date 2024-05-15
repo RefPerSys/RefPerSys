@@ -24,6 +24,9 @@
 ### invocation as
 ##     ./build-plugin.sh <C++-plugin-source> <plugin-sharedobject>
 
+## same as MY_HEAD_LINES_THRESHOLD in do-scan-pkgconfig.c
+MY_HEAD_LINES_THRESHOLD=384
+
 cppfile=$1
 pluginfile=$2
 declare curdate;
@@ -37,7 +40,7 @@ eval $(gmake print-plugin-settings)
 ### pluginlinkerflags contain linker flags
 
 if /usr/bin/fgrep -q '@RPSCOMPILEFLAGS=' $cppfile ; then
-    plugincppflags=$(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSCOMPILEFLAGS=/ { for (i=2; i<=NF; i++) print $i; }')
+    plugincppflags=$(/bin/head -$MY_HEAD_LINES_THRESHOLD $cppfile | /usr/bin/gawk --source '/@RPSCOMPILEFLAGS=/ { for (i=2; i<=NF; i++) print $i; }')
 else
     plugincppflags=()
 fi
@@ -49,7 +52,7 @@ if [ -f /usr/include/jsoncpp/json/json.h ]; then
 fi
 
 if /usr/bin/fgrep -q '@RPSLIBES=' $cppfile ; then
-    pluginlinkerflags=$(/bin/head -50 $cppfile | /usr/bin/gawk --source '/@RPSLIBES=/ { for (i=2; i<=NF; i++) print $i; }')
+    pluginlinkerflags=$(/bin/head -$MY_HEAD_LINES_THRESHOLD $cppfile | /usr/bin/gawk --source '/@RPSLIBES=/ { for (i=2; i<=NF; i++) print $i; }')
 else
     pluginlinkerflags=()
 fi
@@ -57,7 +60,7 @@ fi
 if  /usr/bin/fgrep -q '//@@PKGCONFIG' $cppfile ; then
     local pkglist=$(./do-scan-pkgconfig $cppfile)
     plugincppflags="$plugincppflags $(pkg-config --cflags $pkglist)"
-    pluginlinkerflags="$pluginlinkerflags $(pkg-config --libes $pkglist)"
+    pluginlinkerflags="$pluginlinkerflags $(pkg-config --libs $pkglist)"
 fi
 
 ## check that we have the necessary shell variables set in above eval

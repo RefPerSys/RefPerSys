@@ -59,6 +59,12 @@
 #define MY_LINE_MAXLEN 512
 #endif
 
+
+/// Caution, this MY_HEAD_LINES_THRESHOLD should also be in
+/// build-plugin.sh ... better yet, add a --print-head-lines-threshold
+/// argument to this program, or even inside refpersys heap and in some
+/// generated/*.h file.
+
 #ifndef MY_HEAD_LINES_THRESHOLD
 #define MY_HEAD_LINES_THRESHOLD 384
 #endif
