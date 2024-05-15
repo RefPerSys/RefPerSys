@@ -131,6 +131,7 @@
 /// C++ wrapper)
 #include <gmpxx.h>
 
+#define RPS_WITH_FLTK 1
 
 class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
@@ -167,7 +168,7 @@ extern "C" char rps_debug_path[rps_path_byte_size];
 extern "C" int rps_get_major_version(void);
 extern "C" int rps_get_minor_version(void);
 #define RPS_MAJOR_VERSION_NUM 0
-#define RPS_MINOR_VERSION_NUM 5
+#define RPS_MINOR_VERSION_NUM 6
 
 extern "C" std::map<std::string,std::string> rps_pluginargs_map;
 extern "C" std::string rps_cpluspluseditor_str;
@@ -1443,6 +1444,8 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
+  PaylFltkWidget = -23,
+  PaylFltkWindow = -22,
   PaylLightCodeGen = -21,    // for GNU lightning code generation
   PaylEnviron = -20,         // for environments
   PaylObjMap = -19,          // for object maps
