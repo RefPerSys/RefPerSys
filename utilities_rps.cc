@@ -438,11 +438,11 @@ rps_print_types_info(void)
    (int)sizeof(Ty1,Ty2,Ty3),                    \
    (int)alignof(Ty1,Ty2,Ty3))
   /////
-#define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4)    \
-  printf(TYPEFMT_rps " %5d %5d\n",    \
-   #Ty1 "," #Ty2 ",\n                " #Ty3 \
-   "," #Ty4,          \
-   (int)sizeof(Ty1,Ty2,Ty3,Ty4),    \
+#define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4)          \
+  printf(TYPEFMT_rps " %5d %5d\n",              \
+   #Ty1 "," #Ty2 ",\n                " #Ty3     \
+   "," #Ty4,                                    \
+   (int)sizeof(Ty1,Ty2,Ty3,Ty4),                \
    (int)alignof(Ty1,Ty2,Ty3,Ty4))
   /////
   EXPLAIN_TYPE(int);
