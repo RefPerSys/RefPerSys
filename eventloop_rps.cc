@@ -185,14 +185,16 @@ void
 rps_initialize_event_loop(void)
 {
   /// rps_initialize_event_loop should be called once, early, from the
-  /// main thread.
-  {
-    static int count;
-    if (!rps_is_main_thread())
-      RPS_FATALOUT("rps_initialize_event_loop should be called only from the main thread");
-    if (count++ > 0)
-      RPS_FATALOUT("rps_initialize_event_loop should be called once");
-  };
+  /// main thread.  It is called after the persistent heap load.
+
+  static int count;
+  if (!rps_is_main_thread())
+    RPS_FATALOUT("rps_initialize_event_loop should be called only from the main thread");
+  if (count++ > 0)
+    RPS_FATALOUT("rps_initialize_event_loop should be called once");
+  ///
+  RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop starting" << std::endl
+                RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop*start"));
   /**
    * create the pipe to self
    **/
