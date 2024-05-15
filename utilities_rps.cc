@@ -39,6 +39,9 @@
 //@@PKGCONFIG gmp
 //@@PKGCONFIG gmpxx
 //@@PKGCONFIG lightning
+//@@PKGCONFIG glib-2.0
+
+#include <glib/gmain.h>
 
 extern "C" const char rps_utilities_gitid[];
 const char rps_utilities_gitid[]= RPS_GITID;
@@ -449,6 +452,8 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(void*);
   EXPLAIN_TYPE(time_t);
   EXPLAIN_TYPE(pid_t);
+  //opaque in glib: EXPLAIN_TYPE(GMainLoop);
+  //opaque in glib: EXPLAIN_TYPE(GMainContext);
   EXPLAIN_TYPE(std::mutex);
   EXPLAIN_TYPE(std::shared_mutex);
   EXPLAIN_TYPE(std::recursive_mutex);
