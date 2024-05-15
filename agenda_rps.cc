@@ -204,7 +204,7 @@ Rps_Agenda::run_agenda_worker(int ix)
   {
     /// we sleep a different amount of time to help ensure other threads do
     /// start...
-    std::this_thread::sleep_for(30ms + ix * 10ms);
+    std::this_thread::sleep_for(32ms + ix * 16ms);
     int cnt=0;
     constexpr int maxloop = 100;
     for (cnt=0; cnt<=maxloop; cnt++)
@@ -217,6 +217,7 @@ Rps_Agenda::run_agenda_worker(int ix)
           }
         if (curthr->get_id() == std::this_thread::get_id())
           break;
+	RPS_POSSIBLE_BREAKPOINT();
         std::this_thread::sleep_for(2ms);
       }
     if (cnt>=maxloop) // won't happen in practice
