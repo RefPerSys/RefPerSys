@@ -82,7 +82,10 @@ logger --id=$$ -s  -t $0 running: "$RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS  $plugincp
 ## 
 $RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS $plugincppflags -Wall -Wextra -I. -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS \
 	       $pluginlinkerflags -o $pluginfile  || ( \
-						       printf "\n$0 failed to compile RefPerSys plugin %s\n" $0 $pluginfile > /dev/stderr; \
+						       printf "\n%s failed to compile RefPerSys plugin %s to %s \
+			   			       (cxxflags %s cppflags %s ldflags %s linkerflags %s)\n" \
+							      $0 $cppfile $pluginfile "$RPSPLUGIN_CXXFLAGS" "$plugincppflags" \
+							      "$RPSPLUGIN_LDFLAGS" "$pluginlinkerflags"> /dev/stderr; \
 						       /usr/bin/logger --id=$$ -s  -t $0 -puser.warning \
-								       "$0 failed to compile RefPerSys plugin $pluginfile\n" ; \
+								       "$0 failed to compile RefPerSys plugin $cppfile to $pluginfile\n" ; \
 						       exit 1)
