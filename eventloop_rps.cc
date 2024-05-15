@@ -35,6 +35,10 @@
 #include "refpersys.hh"
 
 
+// comment for our do-scan-pkgconfig.c utility
+//@@PKGCONFIG glib-2.0
+#include "glib/gmain.h"
+
 extern "C" const char rps_eventloop_gitid[];
 const char rps_eventloop_gitid[]= RPS_GITID;
 
