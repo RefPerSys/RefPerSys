@@ -30,7 +30,7 @@
 {
  "format" : "RefPerSysFormat2023A",
  "jsoncppversion" : "1.9.5",
- "nbobjects" : 213,
+ "nbobjects" : 215,
  "rpsmajorversion" : 0,
  "rpsminorversion" : 6,
  "spaceid" : "_8J6vNYtP5E800eCr5q"
@@ -1216,6 +1216,32 @@
 
 
 
+//+ob_22sA0A3tmFZ02Fedqj:fltk_widget/CLASS!
+//∈class
+{
+ "oid": "_22sA0A3tmFZ02Fedqj",
+ "mtime": 1715804620.61,
+ "attrs" : [
+  	{
+  		"at" : "_0jdbikGJFq100dgX1n",
+  		"va" : "an FLTK widget"
+  	},
+  	{
+  		"at" : "_1EBVGSfW2m200z18rx",
+  		"va" : "fltk_widget"
+  	}
+  ],
+ "class" : "_41OFI3r0S1t03qdB2E",
+ "class_methodict" : [],
+ "class_name" : "fltk_widget",
+ "class_super" : "_1uJuhQqxj9V02iZLNb",
+ "class_symb" : "_2gGSVZSIQkZ045mr6k",
+ "payload" : "classinfo"
+}
+//-ob_22sA0A3tmFZ02Fedqj:fltk_widget
+
+
+
 //+ob_28AK5czKyu701KF2lg!
 //∈symbol
 {
@@ -1271,6 +1297,20 @@
  "payload" : "classinfo"
 }
 //-ob_2dvQOlSMjOu02zWx1n:repl_commutative_operator
+
+
+
+//+ob_2gGSVZSIQkZ045mr6k!
+//∈symbol
+{
+ "oid": "_2gGSVZSIQkZ045mr6k",
+ "mtime": 1715804620.61,
+ "class" : "_36I1BY2NetN03WjrOv",
+ "payload" : "symbol",
+ "symb_name" : "fltk_widget",
+ "symb_val" : "_22sA0A3tmFZ02Fedqj"
+}
+//-ob_2gGSVZSIQkZ045mr6k
 
 
 
@@ -2272,6 +2312,7 @@
   	"_1NWEOIzo3WU03mE42Q",
   	"_1R1LKwGhoTr02e90bn",
   	"_21O0aRqBH0p030SV0R",
+  	"_22sA0A3tmFZ02Fedqj",
   	"_2dvQOlSMjOu02zWx1n",
   	"_2i66FFjmS7n03HNNBx",
   	"_2wdmxJecnFZ02VGGFK",
