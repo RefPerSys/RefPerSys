@@ -558,16 +558,16 @@ rps_show_version(void)
             << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
             << " Glibmm: " << GLIBMM_MAJOR_VERSION << "." << GLIBMM_MINOR_VERSION
             /* Glibmm:*/           << "." << GLIBMM_MICRO_VERSION << std::endl
-	    << " GPP preprocessor command: " << rps_gpp_preprocessor_command << std::endl
-	    << " GPP preprocessor path: " << rps_gpp_preprocessor_realpath << std::endl
-	    << " GPP preprocessor version: " << rps_gpp_preprocessor_version << std::endl
-	    << " made with: " << rps_gnumakefile << std::endl
-	    << " running on: " << rps_hostname() << std::endl
-	    << "This executable was built by "
-	    << rps_building_user_name
-	    << " of email " << rps_building_user_email << std::endl
-	    << "See refpersys.org and code on github.com/RefPerSys/RefPerSys"
-	    << std::endl;
+            << " GPP preprocessor command: " << rps_gpp_preprocessor_command << std::endl
+            << " GPP preprocessor path: " << rps_gpp_preprocessor_realpath << std::endl
+            << " GPP preprocessor version: " << rps_gpp_preprocessor_version << std::endl
+            << " made with: " << rps_gnumakefile << std::endl
+            << " running on: " << rps_hostname() << std::endl
+            << "This executable was built by "
+            << rps_building_user_name
+            << " of email " << rps_building_user_email << std::endl
+            << "See refpersys.org and code on github.com/RefPerSys/RefPerSys"
+            << std::endl;
   {
     char cwdbuf[rps_path_byte_size+4];
     memset (cwdbuf, 0, sizeof(cwdbuf));
