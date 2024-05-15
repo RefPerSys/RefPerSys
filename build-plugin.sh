@@ -43,7 +43,14 @@ declare pkglist;
 pkglist=""
 printf "start %s at %s: C++ file %s, plugin file %s in %s\n" $0 \
        "$curdate" $cppfile $pluginfile "$(/bin/pwd)" > /dev/stderr
-/usr/bin/logger --id=$$ -s  -t "$0:" "starting" cppfile= $1 pluginfile= $2 curdate= $curdate
+
+if [ -z "$REFPERSYS_TOPDIR" ]; then
+    printf "%s: missing REFPERSYS_TOPDIR\n" $0 > /dev/stderr
+    exit 1
+fi
+
+/usr/bin/logger --id=$$ -s  -t "$0:" "starting" cppfile= $1 pluginfile= $2 curdate= $curdate REFPERSYS_TOPDIR= $REFPERSYS_TOPDIR cwd $(/bin/pwd)
+
 eval $(gmake print-plugin-settings)
 
 ### plugincppflags contain compiler flags
@@ -68,7 +75,7 @@ else
 fi
 
 if  /usr/bin/fgrep -q '//@@PKGCONFIG' $cppfile ; then
-    pkglist=$(./do-scan-pkgconfig $cppfile)
+    pkglist=$($REFPERSYS_TOPDIR/do-scan-pkgconfig $cppfile)
     plugincppflags="$plugincppflags $(pkg-config --cflags $pkglist)"
     pluginlinkerflags="$pluginlinkerflags $(pkg-config --libs $pkglist)"
 fi
@@ -94,7 +101,7 @@ $RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS $plugincppflags -Wall -Wextra -I. -fPIC -shar
 	       $pluginlinkerflags -o $pluginfile  || \
     ( \
       printf "\n%s failed to compile RefPerSys plugin %s to %s\n \
-      	        (°cxxflags %s\n °cppflags %s\n °ldflags	%s\n °linkerflags %s\n °pkg-li	st %s)\n" \
+      	        (°cxxflags %s\n °cppflags %s\n °ldflags	%s\n °linkerflags %s\n °pkg-list %s)\n" \
 	     $0 $cppfile $pluginfile "$RPSPLUGIN_CXXFLAGS" "$plugincppflags" \
 	     "$RPSPLUGIN_LDFLAGS" "$pluginlinkerflags" "$pkglist" > /dev/stderr ; \
       /usr/bin/logger --id=$$ -s  -t $0 -puser.warning \
