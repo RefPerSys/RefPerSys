@@ -16,9 +16,11 @@
 #include "refpersys.hh"
 
 //@@PKGCONFIG gtkmm-4.0
-
 #include <gtkmm.h>
 
+extern "C" Gtk::Window* rpsminigtk_mainwin;
+
+extern "C" int rpsminigtk_prepoller(struct pollfd*, int npoll, Rps_CallFrame*);
 void
 rps_do_plugin(const Rps_Plugin*plugin)
 {
@@ -30,8 +32,19 @@ rps_do_plugin(const Rps_Plugin*plugin)
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   if (!plugarg || !plugarg[0])
     plugarg=":0.0";
-  static int plugargc=0;
-  static char* plugargv[4];
-  new Gtk::Main(&plugargc, plugargv);
   RPS_DEBUG_LOG(REPL, "minigtkmm plugin argument" << plugarg);
+  rpsminigtk_mainwin = new Gtk::Window;
+  
 } // end rps_do_plugin
+
+int
+rpsminigtk_prepoller(struct pollfd*pollarr, int npoll, Rps_CallFrame* cf)
+{
+  RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/cf,
+		 );
+  RPS_DEBUG_LOG(REPL, "rpsminigtk_prepoller npoll=" << npoll
+		<< " pollarr@" << (void*)pollarr);
+  return 0;
+} // end rpsminigtk_prepoller
+
+Gtk::Window* rpsminigtk_mainwin;

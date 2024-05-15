@@ -348,6 +348,10 @@ test08: refpersys
 test09: refpersys
 	@echo missing test09 ; exit 1
 
+test10: refpersys plugins_dir/rpsplug_minigtkmm.so
+	./refpersys -AREPL --run-name=$@ --run-delay=15s  \
+           --plugin-after-load=plugins_dir/rpsplug_minigtkmm.so
+	@printf '\n\n\n////test10 FINISHED¤\n'
 test-load: refpersys
 	./refpersys --batch
 	@printf '\n\n\n////test-load FINISHED¤\n'
