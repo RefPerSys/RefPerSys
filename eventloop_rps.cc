@@ -194,7 +194,7 @@ rps_initialize_event_loop(void)
     RPS_FATALOUT("rps_initialize_event_loop should be called once");
   ///
   RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop starting" << std::endl
-                RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop*start"));
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop*start"));
   /**
    * create the pipe to self
    **/
@@ -300,7 +300,10 @@ rps_event_loop(void)
   sigaddset(&msk, SIGALRM);
   sigaddset(&msk, SIGVTALRM);
   RPS_DEBUG_LOG(REPL, "starting rps_event_loop from "
+                << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/start")
+                << "agenda timeout:" << Rps_Agenda::agenda_timeout
+                << " start elapsed time:" << startelapsedtime
                );
   rps_eventloopdata.eld_sigfd = signalfd(-1, &msk, SFD_CLOEXEC);
   if (rps_eventloopdata.eld_sigfd<=0)
@@ -634,7 +637,8 @@ rps_event_loop(void)
         snprintf(elapsbuf, sizeof(elapsbuf), " elti: %.3fs", rps_elapsed_real_time());
       RPS_DEBUG_LOG(REPL, "rps_event_loop pollcount#"  << pollcount ///
                     << " respoll=" << respoll
-                    << " nbfdpoll=" << nbfdpoll);
+                    << " nbfdpoll=" << nbfdpoll
+                    << " elapsed time:" << rps_elapsed_real_time());
       if (respoll>0)
         {
           if (debugpoll)
