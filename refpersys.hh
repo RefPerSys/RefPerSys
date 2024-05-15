@@ -7,9 +7,9 @@
  *      It is almost its only public C++ header file.
  *
  * Author(s):
- *      Basile Starynkevitch <basile@starynkevitch.net>
- *      Abhishek Chakravarti <abhishek@taranjali.org>
- *      Nimesh Neema <nimeshneema@gmail.com>
+ *      Basile Starynkevitch, France   <basile@starynkevitch.net>
+ *      Abhishek Chakravarti, India    <abhishek@taranjali.org>
+ *      Nimesh Neema, India            <nimeshneema@gmail.com>
  *
  *      © Copyright 2019 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
@@ -406,7 +406,7 @@ extern "C" bool rps_disable_aslr;
 extern "C" bool rps_run_repl;
 
 
-extern "C" void jsonrpc_initialize_rps(void);
+extern "C" void rps_jsonrpc_initialize(void);
 
 /// our event loop can call C++ closures before the poll(2) system
 /// call in the event loop. return some index for the unregistering
@@ -2651,15 +2651,15 @@ struct Rps_ChunkData_st;
 
 extern "C" void rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const std::string&failstr);
 
-#define RPS_PARSREPL_FAILURE_AT(Fram,Out,Fil,Lin,Cnt) do {	\
-    std::ostringstream _failstream_##Lin;			\
-    _failstream_##Lin << Out << " ~#" << Cnt << std::endl;	\
-    Rps_Backtracer backtr##Lin(Rps_Backtracer::FullOut_Tag{},	\
-             (Fil),(Lin),1,					\
-             "ParsReplFailing",					\
-             &_failstream_##Lin);				\
-    rps_parsrepl_failing_at(Fil,Lin,Cnt,			\
-          _failstream_##Lin.str());				\
+#define RPS_PARSREPL_FAILURE_AT(Fram,Out,Fil,Lin,Cnt) do {     \
+    std::ostringstream _failstream_##Lin;                      \
+    _failstream_##Lin << Out << " ~#" << Cnt << std::endl;     \
+    Rps_Backtracer backtr##Lin(Rps_Backtracer::FullOut_Tag{},  \
+             (Fil),(Lin),1,                                    \
+             "ParsReplFailing",                                \
+             &_failstream_##Lin);                              \
+    rps_parsrepl_failing_at(Fil,Lin,Cnt,                       \
+          _failstream_##Lin.str());                            \
 } while(0)
 
 #define RPS_PARSREPL_FAILURE(Fram,Out) \

@@ -121,7 +121,7 @@ rps_do_stop_event_loop(void)
   rps_stop_event_loop_flag.store(true);
 } // end rps_do_stop_event_loop
 
-extern "C" void jsonrpc_initialize_rps(void);
+extern "C" void rps_jsonrpc_initialize(void);
 
 
 void
@@ -207,7 +207,7 @@ rps_initialize_event_loop(void)
                 << " eld_selfpipewritefd#"
                 << (rps_eventloopdata.eld_selfpipewritefd)
                 << " rps_poll_delay_millisec=" << rps_poll_delay_millisec
-		<< " in thread " << rps_current_pthread_name()
+                << " in thread " << rps_current_pthread_name()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop"));
 } // end rps_initialize_event_loop
@@ -215,12 +215,12 @@ rps_initialize_event_loop(void)
 
 
 /**
-   Function jsonrpc_initialize_rps is called once from main, when
+   Function rps_jsonrpc_initialize is called once from main, when
    rps_fifo_prefix is not empty. The FIFOs have been created in
    main_rps.cc...
 ***/
 void
-jsonrpc_initialize_rps(void)
+rps_jsonrpc_initialize(void)
 {
   RPS_ASSERT(!rps_get_fifo_prefix().empty());
   struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
@@ -230,13 +230,13 @@ jsonrpc_initialize_rps(void)
   if (fdp.fifo_ui_rout <= 0)
     RPS_FATALOUT("invalid output FIFO fd " << fdp.fifo_ui_rout
                  << " with FIFO prefix " << rps_get_fifo_prefix());
-  RPS_DEBUG_LOG(REPL, "jsonrpc_initialize_rps FIFO prefix "
+  RPS_DEBUG_LOG(REPL, "rps_jsonrpc_initialize FIFO prefix "
                 << rps_get_fifo_prefix()
                 << " wcmdfd#" << fdp.fifo_ui_wcmd
                 << " routfd#" << fdp.fifo_ui_rout
-                << RPS_FULL_BACKTRACE_HERE(1, "jsonrpc_initialize_rps")
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_jsonrpc_initialize")
                 << std::endl << " in thread " << rps_current_pthread_name());
-#warning incomplete?  jsonrpc_initialize_rps
+#warning maybe incomplete rps_jsonrpc_initialize
   /**
    *  TODO: we need to document the JSONRPC protocol between the GUI
    *  software and RefPerSys
@@ -244,11 +244,11 @@ jsonrpc_initialize_rps(void)
    *  A needed request is the _VERSION one....
    *
   **/
-  RPS_DEBUG_LOG(REPL, "ending jsonrpc_initialize_rps with fifo prefix "
+  RPS_DEBUG_LOG(REPL, "ending rps_jsonrpc_initialize with fifo prefix "
                 << rps_get_fifo_prefix() //
                 << " and wcmd.fd#" << fdp.fifo_ui_wcmd //
                 << " and rout.fd#" << fdp.fifo_ui_rout);
-} // end jsonrpc_initialize_rps
+} // end rps_jsonrpc_initialize
 
 
 

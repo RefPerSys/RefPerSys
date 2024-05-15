@@ -618,7 +618,7 @@ rps_run_loaded_application(int &argc, char **argv)
 #pragma message "main_rps.cc with RPSJSONRPC:" __DATE__ "@" __TIME__
       RPS_INFORMOUT("initialize JSONRPC with rps_fifo_prefix:" << rps_get_fifo_prefix() << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application JSONRPC"));
-      jsonrpc_initialize_rps();
+      rps_jsonrpc_initialize();
     };
   RPS_DEBUG_LOG(REPL, "rps_run_loaded_application ended in thread " << rps_current_pthread_name()
                 << std::endl
@@ -1297,7 +1297,7 @@ rps_exiting(void)
          "… elapsed %.3f sec, CPU %.3f sec;\n"
          "%s%s%s%s",
          (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
-	 rps_get_major_version(), rps_get_minor_version(),
+         rps_get_major_version(), rps_get_minor_version(),
          rps_exit_atomic_code.load(),
          rps_elapsed_real_time(), rps_process_cpu_time(),
          (rps_program_invocation?"invocation: ":""),
@@ -1309,7 +1309,7 @@ rps_exiting(void)
       printf("RefPerSys process %d on host %s in %s git %s version %d.%d exiting (%d);\n"
              " ... elapsed %.3f sec, CPU %.3f sec\n",
              (int)getpid(), rps_hostname(), mycwd, rps_shortgitid,
-	     rps_get_major_version(), rps_get_minor_version(),
+             rps_get_major_version(), rps_get_minor_version(),
              rps_exit_atomic_code.load(),
              rps_elapsed_real_time(), rps_process_cpu_time());
       if (rps_program_invocation)
