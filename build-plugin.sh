@@ -24,6 +24,14 @@
 ### invocation as
 ##     ./build-plugin.sh <C++-plugin-source> <plugin-sharedobject>
 
+## the C++ plugin source may contain comments driving this compilation.
+
+
+## TODO: in commit 3dc7163fa129 of May 15, 2024 this is a buggy
+## script. I (Basile S.) hope for some Python3 expert to replace it
+## with a more robust Python script which would scan the C++ source
+## code comments....
+
 ## same as MY_HEAD_LINES_THRESHOLD in do-scan-pkgconfig.c
 MY_HEAD_LINES_THRESHOLD=384
 
@@ -40,7 +48,7 @@ eval $(gmake print-plugin-settings)
 
 ### plugincppflags contain compiler flags
 ### pluginlinkerflags contain linker flags
-
+#### Scan the C++ source files for comments giving compiler and linker flags.
 if /usr/bin/fgrep -q '@RPSCOMPILEFLAGS=' $cppfile ; then
     plugincppflags=$(/bin/head -$MY_HEAD_LINES_THRESHOLD $cppfile | /usr/bin/gawk --source '/@RPSCOMPILEFLAGS=/ { for (i=2; i<=NF; i++) print $i; }')
 else
