@@ -96,6 +96,7 @@ all:
 	   exit 1 ; \
 	fi
 	$(MAKE) refpersys
+	@/usr/bin/printf "\n\n\nMaking RefPerSys plugins\n\n"
 	$(MAKE) plugins
 
 
