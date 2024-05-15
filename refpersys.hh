@@ -5359,9 +5359,10 @@ class Rps_Agenda   /// all member functions are static...
   friend rpsldpysig_t rpsldpy_agenda;
   friend void rps_run_agenda_mechanism(int nbjobs);
   friend void rps_stop_agenda_mechanism(void);
-  static double agenda_timeout; // elapsed real time when agenda
+  // elapsed real time when agenda
   // should stop running, related to
-  // --run-deplay option...
+  // --run-delay program option...
+  static double agenda_timeout;
 public:
   enum agenda_prio_en
   {
