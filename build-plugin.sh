@@ -31,6 +31,8 @@ cppfile=$1
 pluginfile=$2
 declare curdate;
 curdate=$(date +%c);
+declare pkglist;
+pkglist=""
 printf "start %s at %s: C++ file %s, plugin file %s in %s\n" $0 \
        "$curdate" $cppfile $pluginfile "$(/bin/pwd)" > /dev/stderr
 /usr/bin/logger --id=$$ -s  -t "$0:" "starting" cppfile= $1 pluginfile= $2 curdate= $curdate
@@ -58,7 +60,7 @@ else
 fi
 
 if  /usr/bin/fgrep -q '//@@PKGCONFIG' $cppfile ; then
-    local pkglist=$(./do-scan-pkgconfig $cppfile)
+    pkglist=$(./do-scan-pkgconfig $cppfile)
     plugincppflags="$plugincppflags $(pkg-config --cflags $pkglist)"
     pluginlinkerflags="$pluginlinkerflags $(pkg-config --libs $pkglist)"
 fi
