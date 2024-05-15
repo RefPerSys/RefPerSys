@@ -314,6 +314,19 @@ You first need to `make config`. I recommend having the *GNU readline* library.
 
 You then build with `make -j4 refpersys && make all`
 
+
+### GUI libraries
+
+Debugging them is painful (or my code using GUI libraries) because of
+lack of DWARF debugging information in many GUI libraries (and even
+for my bugs, it is easier to have GUI libraries compiled with `-O2
+-g`).  If you are familiar with [FLTK](https://www.fltk.org/) and able
+and allowed to download its source code and configure it using
+`'./configure' 'CFLAGS=-O2 -fPIC -g -Wall -Wextra' 'CXXFLAGS=-O2 -g
+-fPIC -Wall -Wextra' '--disable-static' '--enable-shared'
+'--enable-debug' '--with-abiversion' '--with-optim=-g -O2 -fPIC'
+'--sysconfdir=/etc/local/'` please send us an email.
+
 ## Garbage collection
 
 *RefPerSys* is a multi-threaded and garbage-collected system. We are
