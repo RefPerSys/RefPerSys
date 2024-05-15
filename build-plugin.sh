@@ -91,11 +91,12 @@ fi
 logger --id=$$ -s  -t $0 running: "$RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS  $plugincppflags -Wall -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS  $pluginlinkerflags -o $pluginfile"
 ## 
 $RPSPLUGIN_CXX $RPSPLUGIN_CXXFLAGS $plugincppflags -Wall -Wextra -I. -fPIC -shared $cppfile $RPSPLUGIN_LDFLAGS \
-	       $pluginlinkerflags -o $pluginfile  || ( \
-						       printf "\n%s failed to compile RefPerSys plugin %s to %s \
-			   			       (cxxflags %s cppflags %s ldflags %s linkerflags %s)\n" \
-							      $0 $cppfile $pluginfile "$RPSPLUGIN_CXXFLAGS" "$plugincppflags" \
-							      "$RPSPLUGIN_LDFLAGS" "$pluginlinkerflags"> /dev/stderr; \
-						       /usr/bin/logger --id=$$ -s  -t $0 -puser.warning \
-								       "$0 failed to compile RefPerSys plugin $cppfile to $pluginfile\n" ; \
-						       exit 1)
+	       $pluginlinkerflags -o $pluginfile  || \
+    ( \
+      printf "\n%s failed to compile RefPerSys plugin %s to %s\n \
+      	        (°cxxflags %s\n °cppflags %s\n °ldflags	%s\n °linkerflags %s\n °pkg-li	st %s)\n" \
+	     $0 $cppfile $pluginfile "$RPSPLUGIN_CXXFLAGS" "$plugincppflags" \
+	     "$RPSPLUGIN_LDFLAGS" "$pluginlinkerflags" "$pkglist" > /dev/stderr ; \
+      /usr/bin/logger --id=$$ -s  -t $0 -puser.warning \
+		      "$0 failed to compile RefPerSys plugin $cppfile to $pluginfile in $(/bin/pwd)\n" ; \
+      exit 1 )
