@@ -51,7 +51,7 @@ fi
 
 /usr/bin/logger --id=$$ -s  -t "$0:" "starting" cppfile= $1 pluginfile= $2 curdate= $curdate REFPERSYS_TOPDIR= $REFPERSYS_TOPDIR cwd $(/bin/pwd)
 
-eval $(gmake print-plugin-settings)
+eval $(/usr/bin/gmake print-plugin-settings)
 
 ### plugincppflags contain compiler flags
 ### pluginlinkerflags contain linker flags
@@ -75,7 +75,7 @@ else
 fi
 
 if  /usr/bin/fgrep -q '//@@PKGCONFIG' $cppfile ; then
-    pkglist=$($REFPERSYS_TOPDIR/do-scan-pkgconfig $cppfile)
+    pkglist=$($REFPERSYS_TOPDIR/do-scan-pkgconfig --raw $cppfile)
     plugincppflags="$plugincppflags $(pkg-config --cflags $pkglist)"
     pluginlinkerflags="$pluginlinkerflags $(pkg-config --libs $pkglist)"
 fi
