@@ -696,6 +696,14 @@ rps_event_loop(void)
             rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
                                 "poll interrupt loop%ld\n", event_nbloops.load());
         };
+      if (Rps_Agenda::agenda_timeout > 0
+          && rps_elapsed_real_time() >= Rps_Agenda::agenda_timeout + 2.0)
+        {
+          RPS_INFORMOUT("stopping event loop because of agenda timeout after "
+                        << pollcount << " polling." << std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/agenda-timeout"));
+	  rps_stop_event_loop_flag.store(true);
+        };
       fflush(nullptr);
     };       // end while not rps_stop_event_loop_flag
 
