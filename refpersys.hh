@@ -133,6 +133,14 @@
 
 #define RPS_WITH_FLTK 1
 
+#if RPS_WITH_FLTK
+extern "C" int rps_fltk_abi_version (void);
+extern "C" int rps_fltk_api_version (void);
+#else
+#define rps_fltk_abi_version() 0
+#define rps_fltk_api_version() 0
+#endif
+
 class Rps_QuasiZone; // GC-managed piece of memory
 class Rps_ZoneValue; // memory for values
 class Rps_ObjectZone; // memory for objects

@@ -42,4 +42,27 @@
 #error RefPerSys without FLTK toolkit
 #endif
 
+#include <FL/Fl.H>
+#include <FL/Fl_Window.H>
+#include <FL/Fl_Box.H>
+
+
+extern "C" const char rps_fltk_gitid[];
+const char rps_fltk_gitid[]= RPS_GITID;
+
+extern "C" const char rps_fltk_date[];
+const char rps_fltk_date[]= __DATE__;
+
+int
+rps_fltk_abi_version (void)
+{
+  return Fl::abi_version();
+} // end rps_fltk_abi_version
+
+int
+rps_fltk_api_version (void)
+{
+  return Fl::api_version ();
+} // end rps_fltk_api_version
+
 //// end of file fltk_rps.cc
