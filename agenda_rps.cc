@@ -217,7 +217,7 @@ Rps_Agenda::run_agenda_worker(int ix)
           }
         if (curthr->get_id() == std::this_thread::get_id())
           break;
-	RPS_POSSIBLE_BREAKPOINT();
+        RPS_POSSIBLE_BREAKPOINT();
         std::this_thread::sleep_for(2ms);
       }
     if (cnt>=maxloop) // won't happen in practice
