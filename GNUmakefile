@@ -164,7 +164,8 @@ refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __
              $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o \
 	      $(shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
-	      $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
+              $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
+              $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 	@/bin/mv -v --backup __timestamp.c __timestamp.c%
 	@/bin/rm -vf __timestamp.o
 
@@ -235,6 +236,26 @@ endif
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
                -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -c -o $@ $<
+	$(SYNC)
+
+
+fltk_rps.o: fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) \
+            $(REFPERSYS_COMPILER_FLAGS) \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_HOST=$(RPS_HOST) \
+            -DRPS_ARCH=$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+	    $(shell $(REFPERSYS_FLTKCONFIG) -g --cflags) \
 	       -c -o $@ $<
 	$(SYNC)
 
