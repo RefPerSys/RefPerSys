@@ -888,6 +888,60 @@ rps_repl_builtin_pmap_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, c
 
 
 void
+rps_repl_builtin_pfd_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                             Rps_TokenSource& intoksrc,
+                             const char*title)
+{
+  char pfdbuf[64];
+  char pathbuf[rps_path_byte_size];
+  char entbuf[rps_path_byte_size];
+  std::map<int, std::string> fdmap;
+  memset (pfdbuf, 0, sizeof(pfdbuf));
+  memset (entbuf, 0, sizeof(entbuf));
+  memset (pathbuf, 0, sizeof(pathbuf));
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                );
+  _f.obenv = obenvarg;
+  snprintf (pfdbuf, sizeof(pfdbuf), "/proc/%d/fd/", (int)getpid());
+  DIR* pfdir = opendir(pfdbuf);
+  struct dirent* de= nullptr;
+  if (!pfdir)
+    {
+      RPS_WARNOUT("failed opendir " << pfdbuf << ":" << strerror(errno));
+      return;
+    };
+  RPS_POSSIBLE_BREAKPOINT();
+  for (de=readdir(pfdir); de!=nullptr; de=readdir(pfdir))
+    {
+      if (!isdigit(de->d_name[0]))
+        continue;
+      int fdnum = atoi(de->d_name);
+      if (de->d_type == DT_LNK)
+        {
+          memset (pathbuf, 0, sizeof(pathbuf));
+          snprintf(pathbuf, sizeof(pathbuf), "/proc/%d/fd/%d", (int)getpid(), fdnum);
+          if (strlen(pathbuf) >= sizeof(pathbuf)-2)
+            continue;
+          if (readlink(pathbuf, entbuf, sizeof(entbuf)))
+            continue;
+          std::string entstr;
+          entstr.assign(entbuf);
+          fdmap.insert({fdnum,entstr});
+        };
+    }
+  closedir(pfdir), pfdir = nullptr;
+  RPS_INFORMOUT(std::endl << fdmap.size() << " file descriptors:");
+  for (auto it: fdmap)
+    {
+      std::cout << it.first << ":" << it.second << std::endl;
+    }
+} // end rps_repl_builtin_pfd_command
+
+
+
+void
 rps_repl_builtin_time_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
                               Rps_TokenSource& intoksrc,
                               const char*title)
@@ -1362,10 +1416,6 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
     {
       rps_repl_builtin_git_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
-  else if (!strcmp(builtincmd, "pmap"))
-    {
-      rps_repl_builtin_pmap_command(&_, _f.obenv, builtincmd, intoksrc, title);
-    }
   else if (!strcmp(builtincmd, "time"))
     {
       rps_repl_builtin_time_command(&_, _f.obenv, builtincmd, intoksrc, title);
@@ -1425,6 +1475,14 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
   else if (!strcmp(builtincmd, "parse_primary"))
     {
       rps_repl_builtin_parse_primary_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "pmap"))
+    {
+      rps_repl_builtin_pmap_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "pfd"))
+    {
+      rps_repl_builtin_pfd_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else
     RPS_WARNOUT("invalid builtin " << builtincmd << " in "
