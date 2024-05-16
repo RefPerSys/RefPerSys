@@ -924,7 +924,7 @@ rps_repl_builtin_pfd_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, co
           snprintf(pathbuf, sizeof(pathbuf), "/proc/%d/fd/%d", (int)getpid(), fdnum);
           if (strlen(pathbuf) >= sizeof(pathbuf)-2)
             continue;
-          if (readlink(pathbuf, entbuf, sizeof(entbuf)))
+          if (readlink(pathbuf, entbuf, sizeof(entbuf))<0)
             continue;
           std::string entstr;
           entstr.assign(entbuf);
@@ -932,11 +932,14 @@ rps_repl_builtin_pfd_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, co
         };
     }
   closedir(pfdir), pfdir = nullptr;
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_INFORMOUT(std::endl << fdmap.size() << " file descriptors:");
   for (auto it: fdmap)
     {
+      RPS_POSSIBLE_BREAKPOINT();
       std::cout << it.first << ":" << it.second << std::endl;
     }
+  RPS_POSSIBLE_BREAKPOINT();
 } // end rps_repl_builtin_pfd_command
 
 
@@ -1548,12 +1551,10 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
                     << "... intoksrc:" << intoksrc << " BUILTIN " << builtincmd
                     << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
       rps_do_builtin_repl_command(&_, _f.obenv, builtincmd, intoksrc, title);
-      RPS_WARNOUT("rps_do_one_repl_command: REPL command " << title
-                  << " " << _f.cmdob << " at " << commandpos << " unimplemented" << std::endl
-                  << "... builtin " << builtincmd << std::endl
-                  << "... at position " <<  intoksrc.position_str()
-                  << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
-                  <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_one_repl_command/unimplemented builtin"));
+      RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command " << title
+                    << Rps_Cjson_String(cmd)
+                    << "... intoksrc:" << intoksrc << " DONEBUILTIN " << builtincmd
+                    << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
       return;
     }
   _f.lextokv = intoksrc.get_token(&_);
