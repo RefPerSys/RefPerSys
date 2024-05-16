@@ -39,9 +39,6 @@
 //@@PKGCONFIG gmp
 //@@PKGCONFIG gmpxx
 //@@PKGCONFIG lightning
-//@@PKGCONFIG glib-2.0
-
-#include <glib/gmain.h>
 
 extern "C" const char rps_utilities_gitid[];
 const char rps_utilities_gitid[]= RPS_GITID;
@@ -565,8 +562,6 @@ rps_show_version(void)
             << " Read Eval Print Loop: " << rps_repl_version() << std::endl
             << " libCURL for web client: " << rps_curl_version() << std::endl
             << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
-            << " Glibmm: " << GLIBMM_MAJOR_VERSION << "." << GLIBMM_MINOR_VERSION
-            /* Glibmm:*/           << "." << GLIBMM_MICRO_VERSION << std::endl
             << " GPP preprocessor command: " << rps_gpp_preprocessor_command << std::endl
             << " GPP preprocessor path: " << rps_gpp_preprocessor_realpath << std::endl
             << " GPP preprocessor version: " << rps_gpp_preprocessor_version << std::endl
