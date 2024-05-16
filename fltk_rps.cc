@@ -65,4 +65,12 @@ rps_fltk_api_version (void)
   return Fl::api_version ();
 } // end rps_fltk_api_version
 
+
+void
+rps_fltk_initialize (void)
+{
+#warning missing code in rps_fltk_initialize
+  RPS_FATALOUT("unimplemented rps_fltk_initialize");
+} // end rps_fltk_initialize
+
 //// end of file fltk_rps.cc

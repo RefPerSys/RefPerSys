@@ -141,9 +141,11 @@
 #if RPS_WITH_FLTK
 extern "C" int rps_fltk_abi_version (void);
 extern "C" int rps_fltk_api_version (void);
+extern "C" void rps_fltk_initialize (void);
 #else
 #define rps_fltk_abi_version() 0
 #define rps_fltk_api_version() 0
+#define rps_fltk_initialize() do {}while(0)
 #endif
 
 class Rps_QuasiZone; // GC-managed piece of memory
