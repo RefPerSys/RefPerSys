@@ -747,6 +747,223 @@ Rps_LexTokenZone::less(Rps_ZoneValue const&zv) const
 
 
 void
+rps_repl_builtin_shell_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                               Rps_TokenSource& intoksrc,
+                               const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                );
+  _f.obenv = obenvarg;
+  RPS_INFORMOUT(std::endl << "running shell command " <<  Rps_QuotedC_String(intoksrc.curcptr()));
+  fflush(nullptr);
+  int ret = system(intoksrc.curcptr());
+  if (ret == 0)
+    RPS_INFORMOUT("successful shell command " <<  Rps_QuotedC_String(intoksrc.curcptr()));
+  else
+    RPS_WARNOUT("failed shell command " << Rps_QuotedC_String(intoksrc.curcptr()) << " exited " << ret);
+} // end rps_repl_builtin_shell_command
+
+
+void
+rps_repl_builtin_pwd_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                             Rps_TokenSource& intoksrc,
+                             const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                );
+  _f.obenv = obenvarg;
+  char cwdbuf[rps_path_byte_size+4];
+  memset(cwdbuf, 0, sizeof(cwdbuf));
+  char*cwd = getcwd(cwdbuf, rps_path_byte_size);
+  if (cwd)
+    RPS_INFORMOUT(std::endl << "working directory is " <<  cwdbuf);
+  else
+    RPS_WARNOUT("failed getcwd " << strerror(errno));
+  fflush(nullptr);
+} // end rps_repl_builtin_pwd_command
+
+
+void
+rps_repl_builtin_cd_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                            Rps_TokenSource& intoksrc,
+                            const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                );
+  _f.obenv = obenvarg;
+  char cwdbuf[rps_path_byte_size+4];
+  memset(cwdbuf, 0, sizeof(cwdbuf));
+  wordexp_t wx;
+  memset(&wx, 0, sizeof(wx));
+  char*cwd = getcwd(cwdbuf, rps_path_byte_size);
+  if (cwd)
+    RPS_INFORMOUT(std::endl << "old working directory is " <<  cwdbuf);
+  else
+    RPS_WARNOUT("failed getcwd " << strerror(errno));
+  const char*cp = intoksrc.curcptr();
+  while (cp && isspace(*cp))
+    cp++;
+  if (!cp)
+    RPS_WARNOUT("no path given to !cd builtin");
+  else
+    {
+      int failexp = wordexp(cp, &wx, WRDE_SHOWERR|WRDE_UNDEF);
+      if (failexp)
+        RPS_WARNOUT("!cd builtin failed to expand " << cp
+                    << ((failexp==WRDE_BADCHAR)?": bad char"
+                        : (failexp==WRDE_BADVAL)?": bad shell var"
+                        : (failexp==WRDE_NOSPACE)?": out of memory"
+                        : (failexp==WRDE_SYNTAX)?": shell syntax error"
+                        : ": other wordexp failure"));
+      if (wx.we_wordc == 0)
+        RPS_WARNOUT("!cd builtin cannot expand " << cp);
+      else if (wx.we_wordc > 1)
+        RPS_WARNOUT("!cd builtin ambiguous expand " << cp << " to "
+                    << wx.we_wordv[0] << " and " << wx.we_wordv[1]
+                    << ((wx.we_wordc > 2)?" etc.":""));
+      else
+        {
+          if (chdir(wx.we_wordv[0]))
+            {
+              const char*err = strerror(errno);
+              RPS_WARNOUT("!cd " << cp << " failed to chdir to " << wx.we_wordv[0] << " :" << err);
+            }
+          else
+            {
+              char*cwd = getcwd(cwdbuf, rps_path_byte_size);
+              if (cwd)
+                RPS_INFORMOUT(std::endl << "!cd " << cp << " changed to new working directory " <<  cwdbuf);
+              else
+                RPS_WARNOUT("failed getcwd " << strerror(errno));
+            }
+        };
+      wordfree(&wx);
+    }
+} // end rps_repl_builtin_cd_command
+
+void
+rps_repl_builtin_pid_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                             Rps_TokenSource& intoksrc,
+                             const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                );
+  _f.obenv = obenvarg;
+  RPS_INFORMOUT(std::endl << "process id is " <<  (int)getpid() << " on " << rps_hostname());
+  fflush(nullptr);
+} // end rps_repl_builtin_pid_command
+
+void
+rps_repl_builtin_git_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                             Rps_TokenSource& intoksrc,
+                             const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                );
+  _f.obenv = obenvarg;
+  RPS_INFORMOUT(std::endl << "gitid:" << rps_gitid
+                << std::endl << "topdir:" << rps_topdirectory);
+  fflush(nullptr);
+} // end rps_repl_builtin_git_command
+
+
+void
+rps_repl_builtin_pmap_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                              Rps_TokenSource& intoksrc,
+                              const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                );
+  _f.obenv = obenvarg;
+  char pmapbuf[64];
+  memset (pmapbuf, 0, sizeof(pmapbuf));
+  fflush(nullptr);
+  snprintf(pmapbuf, sizeof(pmapbuf)-2, "/usr/bin/pmap %d", (int)getpid());
+  if (system(pmapbuf))
+    RPS_WARNOUT("failed running " << pmapbuf << ":" << strerror(errno));
+} // end rps_repl_builtin_pmap_command
+
+
+
+void
+rps_repl_builtin_time_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                              Rps_TokenSource& intoksrc,
+                              const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                );
+  _f.obenv = obenvarg;
+  RPS_INFORMOUT(std::endl << "elapsed time (seconds): " <<  rps_elapsed_real_time()
+                << ", cpu time: " << rps_process_cpu_time());
+} // end rps_repl_builtin_time_command
+
+
+void
+rps_repl_builtin_gc_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                            Rps_TokenSource& intoksrc,
+                            const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                );
+  _f.obenv = obenvarg;
+  std::function<void(Rps_GarbageCollector*)> markall = [&](Rps_GarbageCollector*gc)
+  {
+    for (Rps_CallFrame* cf = &_; cf != nullptr; cf = cf->previous_call_frame())
+      cf->gc_mark_frame(gc);
+  };
+  rps_garbage_collect(&markall);
+} // end rps_repl_builtin_gc_command
+
+
+void
+rps_repl_builtin_typeinfo_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                                  Rps_TokenSource& intoksrc,
+                                  const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                );
+  _f.obenv = obenvarg;
+  rps_print_types_info();
+} // end rps_repl_builtin_typeinfo_command
+
+
+
+void
+rps_repl_builtin_version_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                                 Rps_TokenSource& intoksrc,
+                                 const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                );
+  _f.obenv = obenvarg;
+  rps_show_version();
+} // end rps_repl_builtin_version_command
+
+
+
+////////////////////////////////////////////////////////////////
+
+void
 rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
                             Rps_TokenSource& intoksrc,
                             const char*title)
@@ -765,117 +982,43 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
   if (!strcmp(builtincmd, "sh") || !strcmp(builtincmd, "shell"))
     {
-      RPS_INFORMOUT(std::endl << "running shell command " <<  Rps_QuotedC_String(intoksrc.curcptr()));
-      fflush(nullptr);
-      int ret = system(intoksrc.curcptr());
-      if (ret == 0)
-        RPS_INFORMOUT("successful shell command " <<  Rps_QuotedC_String(intoksrc.curcptr()));
-      else
-        RPS_WARNOUT("failed shell command " << Rps_QuotedC_String(intoksrc.curcptr()) << " exited " << ret);
+      rps_repl_builtin_shell_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else if (!strcmp(builtincmd, "pwd"))
     {
-      char cwdbuf[rps_path_byte_size+4];
-      memset(cwdbuf, 0, sizeof(cwdbuf));
-      char*cwd = getcwd(cwdbuf, rps_path_byte_size);
-      if (cwd)
-        RPS_INFORMOUT(std::endl << "working directory is " <<  cwdbuf);
-      else
-        RPS_WARNOUT("failed getcwd " << strerror(errno));
-      fflush(nullptr);
+      rps_repl_builtin_pwd_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else if (!strcmp(builtincmd, "cd"))
     {
-      char cwdbuf[rps_path_byte_size+4];
-      memset(cwdbuf, 0, sizeof(cwdbuf));
-      wordexp_t wx;
-      memset(&wx, 0, sizeof(wx));
-      char*cwd = getcwd(cwdbuf, rps_path_byte_size);
-      if (cwd)
-        RPS_INFORMOUT(std::endl << "old working directory is " <<  cwdbuf);
-      else
-        RPS_WARNOUT("failed getcwd " << strerror(errno));
-      const char*cp = intoksrc.curcptr();
-      while (cp && isspace(*cp))
-        cp++;
-      if (!cp)
-        RPS_WARNOUT("no path given to !cd builtin");
-      else
-        {
-          int failexp = wordexp(cp, &wx, WRDE_SHOWERR|WRDE_UNDEF);
-          if (failexp)
-            RPS_WARNOUT("!cd builtin failed to expand " << cp
-                        << ((failexp==WRDE_BADCHAR)?": bad char"
-                            : (failexp==WRDE_BADVAL)?": bad shell var"
-                            : (failexp==WRDE_NOSPACE)?": out of memory"
-                            : (failexp==WRDE_SYNTAX)?": shell syntax error"
-                            : ": other wordexp failure"));
-          if (wx.we_wordc == 0)
-            RPS_WARNOUT("!cd builtin cannot expand " << cp);
-          else if (wx.we_wordc > 1)
-            RPS_WARNOUT("!cd builtin ambiguous expand " << cp << " to "
-                        << wx.we_wordv[0] << " and " << wx.we_wordv[1]
-                        << ((wx.we_wordc > 2)?" etc.":""));
-          else
-            {
-              if (chdir(wx.we_wordv[0]))
-                {
-                  const char*err = strerror(errno);
-                  RPS_WARNOUT("!cd " << cp << " failed to chdir to " << wx.we_wordv[0] << " :" << err);
-                }
-              else
-                {
-                  char*cwd = getcwd(cwdbuf, rps_path_byte_size);
-                  if (cwd)
-                    RPS_INFORMOUT(std::endl << "!cd " << cp << " changed to new working directory " <<  cwdbuf);
-                  else
-                    RPS_WARNOUT("failed getcwd " << strerror(errno));
-                }
-            };
-          wordfree(&wx);
-        }
+      rps_repl_builtin_cd_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else if (!strcmp(builtincmd, "pid") || !strcmp(builtincmd, "getpid"))
     {
-      RPS_INFORMOUT(std::endl << "process id is " <<  (int)getpid() << " on " << rps_hostname());
-      fflush(nullptr);
+      rps_repl_builtin_pid_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else if (!strcmp(builtincmd, "git"))
     {
-      RPS_INFORMOUT(std::endl << "gitid:" << rps_gitid
-                    << std::endl << "topdir:" << rps_topdirectory);
-      fflush(nullptr);
+      rps_repl_builtin_git_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else if (!strcmp(builtincmd, "pmap"))
     {
-      char pmapbuf[64];
-      memset (pmapbuf, 0, sizeof(pmapbuf));
-      fflush(nullptr);
-      snprintf(pmapbuf, sizeof(pmapbuf)-2, "/usr/bin/pmap %d", (int)getpid());
-      if (system(pmapbuf))
-        RPS_WARNOUT("failed running " << pmapbuf << ":" << strerror(errno));
+      rps_repl_builtin_pmap_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else if (!strcmp(builtincmd, "time"))
     {
-      RPS_INFORMOUT(std::endl << "elapsed time (seconds): " <<  rps_elapsed_real_time()
-                    << ", cpu time: " << rps_process_cpu_time());
+      rps_repl_builtin_time_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else if (!strcmp(builtincmd, "gc"))
     {
-      std::function<void(Rps_GarbageCollector*)> markall = [&](Rps_GarbageCollector*gc)
-      {
-        for (Rps_CallFrame* cf = &_; cf != nullptr; cf = cf->previous_call_frame())
-          cf->gc_mark_frame(gc);
-      };
-      rps_garbage_collect(&markall);
+      rps_repl_builtin_gc_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else if (!strcmp(builtincmd, "typeinfo"))
     {
-      rps_print_types_info();
+      rps_repl_builtin_typeinfo_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else if (!strcmp(builtincmd, "version"))
     {
-      rps_show_version();
+      rps_repl_builtin_version_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else if (!strcmp(builtincmd, "env"))
     {
