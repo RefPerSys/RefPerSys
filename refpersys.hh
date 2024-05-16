@@ -233,15 +233,6 @@ extern "C" {
 
 #include "backtrace.h"
 
-// comment for our do-scan-pkgconfig.c utility
-//@@PKGCONFIG glibmm-2.68
-#include "glibmm.h"
-#include "glibmmconfig.h"
-
-//@@PKGCONFIG giomm-2.68
-#include <giomm.h>
-
-
 // mark unlikely conditions to help optimization
 #ifdef __GNUC__
 #define RPS_UNLIKELY(P) __builtin_expect(!!(P),0)
