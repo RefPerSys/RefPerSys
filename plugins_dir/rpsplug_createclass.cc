@@ -2,7 +2,7 @@
 // passed to commits after dd0c90db2992da (of Dec 28, 2022) of RefPerSys
 // with improvement after  9d1db4092 (of July 13, 2023)
 // GPLv3+ licensed
-// © Copyright 2023 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright 2023 - 2024 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys class
 /*****
   Once compiled, use it for example as:
@@ -122,6 +122,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./build-plugin.sh plugins/rpsplug_createclass.cc /tmp/rpsplug_createclass.so" ;;
+ ** compile-command: "cd ..; ./build-plugin.sh plugins_dir/rpsplug_createclass.cc /tmp/rpsplug_createclass.so" ;;
  ** End: ;;
  ****************/
