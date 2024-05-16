@@ -702,7 +702,7 @@ rps_event_loop(void)
           RPS_INFORMOUT("stopping event loop because of agenda timeout after "
                         << pollcount << " polling." << std::endl
                         << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/agenda-timeout"));
-	  rps_stop_event_loop_flag.store(true);
+          rps_stop_event_loop_flag.store(true);
         };
       fflush(nullptr);
     };       // end while not rps_stop_event_loop_flag
