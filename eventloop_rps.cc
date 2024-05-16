@@ -35,10 +35,6 @@
 #include "refpersys.hh"
 
 
-// comment for our do-scan-pkgconfig.c utility
-//@@PKGCONFIG glib-2.0
-#include "glib/gmain.h"
-
 extern "C" const char rps_eventloop_gitid[];
 const char rps_eventloop_gitid[]= RPS_GITID;
 
@@ -47,9 +43,6 @@ const char rps_eventloop_date[]= __DATE__;
 
 // default or initial delay to poll(2) in milliseconds.
 #define RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC 1600
-
-// comment for our do-scan-pkgconfig.c utility
-//@@PKGCONFIG glibmm-2.68
 
 enum self_pipe_code_en
 {
