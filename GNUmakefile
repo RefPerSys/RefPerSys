@@ -83,8 +83,8 @@ RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace -lgccjit
 
 ### desired plugins (their basename under plugins_dir/)
-REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_simpinterp rpsplug_minigtkmm
-################
+REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_simpinterp
+
 all:
 	@if [ -z "$(REFPERSYS_TOPDIR)" ]; then /usr/bin/printf "missing REFPERSYS_TOPDIR\n" > /dev/stderr; exit 1; fi
 	@/usr/bin/printf "make features: %s\n" "$(.FEATURES)" | $(FMT)
