@@ -86,6 +86,9 @@ int linker_argcount;
 const char *c_compiler;
 const char *cpp_compiler;
 
+/* absolute path to fltk-config utility */
+const char *fltk_config;
+
 
 /* absolute path to Miller&Auroux Generic preprocessor */
 const char *gpp;
@@ -114,6 +117,10 @@ void try_c_compiler (const char *cc);
 void try_then_set_cxx_compiler (const char *cxx);
 void should_remove_file (const char *path, int lineno);
 
+
+
+
+/// return a malloced path to a temporary textual file
 char *
 temporary_textual_file (const char *prefix, const char *suffix, int lineno)
 {
@@ -198,31 +205,63 @@ temporary_binary_file (const char *prefix, const char *suffix, int lineno)
 char *
 my_readline (const char *prompt)
 {
+  bool again = false;
 #ifndef WITHOUT_READLINE
-  {
-  char*lin = readline (prompt);
-  if (lin && isspace(lin[strlen(lin)-1]))
-    lin[strlen(lin)-1] = (char)0;
-  return lin;
-  }
-#else
-  char linebuf[512];
-  memset (linebuf, 0, linebuf);
-  puts (prompt);
-  fflush (stdout);
-  char *p = fgets (linebuf, sizeof (linebuf), stdin);
-  if (!p)
-    return NULL;
-  linebuf[sizeof (linebuf) - 1] = (char) 0;
-  if (isspace(p[strlen(p)-1]))
-    p[strlen(p)-1] = (char)0;
-  char *res = strdup (linebuf);
-  if (!res)
+  do
     {
-      perror ("my_readline");
-      failed = true;
-      exit (EXIT_FAILURE);
-    };
+      again = false;
+      char *lin = readline (prompt);
+      if (lin && isspace (lin[strlen (lin) - 1]))
+	lin[strlen (lin) - 1] = (char) 0;
+      if (lin && lin[0] == '!')
+	{
+	  printf ("*running %s\n", lin + 1);
+	  fflush (NULL);
+	  int cod = system (lin + 1);
+	  fflush (NULL);
+	  if (cod)
+	    printf ("*failed to run %s -> %d\n", lin + 1, cod);
+	  again = true;
+	  continue;
+	}
+      return lin;
+    }
+  while (again);
+  return NULL;
+#else
+  do
+    {
+      char linebuf[512];
+      memset (linebuf, 0, linebuf);
+      again = false;
+      puts (prompt);
+      fflush (stdout);
+      char *p = fgets (linebuf, sizeof (linebuf), stdin);
+      if (!p)
+	return NULL;
+      linebuf[sizeof (linebuf) - 1] = (char) 0;
+      if (isspace (p[strlen (p) - 1]))
+	p[strlen (p) - 1] = (char) 0;
+      if (linbuf[0] == '!')
+	{
+	  printf ("*running %s\n", linbuf + 1);
+	  fflush (nullptr);
+	  int cod = system (linbuf + 1);
+	  fflush (nullptr);
+	  if (cod)
+	    printf ("*failed to run %s -> %d\n", linbuf + 1, cod);
+	  again = true;
+	  continue;
+	}
+      char *res = strdup (linebuf);
+      if (!res)
+	{
+	  perror ("my_readline");
+	  failed = true;
+	  exit (EXIT_FAILURE);
+	};
+    }
+  while again;
   return res;
 #endif // WITHOUT_READLINE
 }				// end my_readline
@@ -753,6 +792,7 @@ usage (void)
   puts ("\t                         # e.g. CXX=/usr/bin/g++");
   puts ("\t NINJA=<ninja-builder>   # set builder from ninja-build.org");
   puts ("\t                         # e.g. NINJA=/usr/bin/ninja");
+  puts ("\t FLTKCONF=<fltk-config>  # set path of fltk-config, see fltk.org");
   puts ("\t -D<prepro>              # define a preprocessor thing,");
   puts ("\t                         # e.g. -DFOO=3");
   puts ("\t -U<prepro>              # undefine a preprocessor thing,");
@@ -811,6 +851,8 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     };
   atexit (remove_files);
+  printf ("%s: when asked for a file path, you can run a shell command ...\n"
+	  "... if your input starts with an exclamation point\n", prog_name);
   if (argc > MAX_PROG_ARGS)
     {
       fprintf (stderr,
@@ -922,5 +964,11 @@ main (int argc, char **argv)
   /// that hypothetical refpersys-config.h would be included by refpersys.hh
 }				/* end main */
 
+/****************
+ **                           for Emacs...
+ ** Local Variables: ;;
+ ** compile-command: "make do-configure-refpersys" ;;
+ ** End: ;;
+ ****************/
 
 /// end of file do-configure-refpersys.c
