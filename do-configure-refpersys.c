@@ -900,7 +900,8 @@ emit_configure_refpersys_mk (void)
   fprintf (f, "\n\n" "# ninja builder from ninja-build.org\n");
   fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (ninja_builder, NULL));
   //// emit the FLTK configurator
-  fprintf (f, "REFPERSYS_FLTKCONFIG=%s\n", fltk_config);
+  if (fltk_config)
+    fprintf (f, "REFPERSYS_FLTKCONFIG=%s\n", fltk_config);
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
@@ -1109,6 +1110,20 @@ main (int argc, char **argv)
 	  exit (EXIT_FAILURE);
 	}
     };
+  fltk_config = getenv ("FLTKCONFIG");
+  if (!fltk_config)
+    {
+      fltk_config = my_readline ("FLTK configurator:");
+      if (access (fltk_config, X_OK))
+	{
+	  fprintf (stderr,
+		   "%s bad FLTK configurator %s (%s) [%s:%d]\n",
+		   prog_name, fltk_config ? fltk_config : "???",
+		   strerror (errno), __FILE__, __LINE__ - 3);
+	  failed = true;
+	  exit (EXIT_FAILURE);
+	}
+    }
   ///emit file config-refpersys.mk to be included by GNU make 
   emit_configure_refpersys_mk ();
   fprintf (stderr,
