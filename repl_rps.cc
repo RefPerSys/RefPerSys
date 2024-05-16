@@ -730,21 +730,11 @@ Rps_LexTokenZone::less(Rps_ZoneValue const&zv) const
 
 ////////////////////////////////////////////////////////////////
 
-/// removed after commit 5b20c981b9e (Feb 2024) where XXXrepl was rpsrepl
 
-//§ char **
-//§ XXXrepl_name_or_oid_completion(const char *text, int start, int end)
-//§
-//§ char *
-//§ XXXrepl_name_or_oid_generator(const char *text, int state)
-//§
-//§
-
-//§ void
-//§ rps_read_eval_print_loop(int &argc, char **argv)
-
-////////////////////////////////////////////////////////////////
-
+/// TODO: in commit 5a785d82c41da of May 16, 2024 all the builtin
+/// commands are similarily implemented, the hope is this handwritten
+/// C++ code to be soon and easily generated from new RefPerSys
+/// objects....
 
 void
 rps_repl_builtin_shell_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
