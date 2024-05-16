@@ -629,6 +629,159 @@ try_then_set_cxx_compiler (const char *cxx)
   cpp_compiler = cxx;
 }				/* end try_then_set_cxx_compiler */
 
+
+void
+try_then_set_fltkconfig (const char *fc)
+{
+  FILE *pipf = NULL;
+  char fcflags[2048];
+  char fldflags[1024];
+  char cmdbuf[sizeof (fcflags) + sizeof (fldflags) + 256];
+  memset (cmdbuf, 0, sizeof (cmdbuf));
+  memset (fcflags, 0, sizeof (fcflags));
+  memset (fldflags, 0, sizeof (fldflags));
+  assert (fc);
+  if (strlen (fc) > sizeof (cmdbuf) - 16)
+    {
+      fprintf (stderr, "%s: too long fltk-config path %s (max is %d bytes)\n",
+	       prog_name, fc, (int) sizeof (cmdbuf) - 16);
+      failed = true;
+      exit (EXIT_FAILURE);
+    };
+  if (access (fc, R_OK | X_OK))
+    {
+      fprintf (stderr,
+	       "%s: cannot access FLTK configurator %s (%s) [%s:%d]\n",
+	       prog_name, fc, strerror (errno), __FILE__, __LINE__);
+      failed = true;
+      exit (EXIT_FAILURE);
+    }
+  /// run fltk-config -g --cflags
+  memset (cmdbuf, 0, sizeof (cmdbuf));
+  snprintf (cmdbuf, sizeof (cmdbuf), "%s -g --cflags", fc);
+  printf ("%s running %s [%s:%d]\n", prog_name, cmdbuf, __FILE__, __LINE__);
+  fflush (NULL);
+  pipf = popen (cmdbuf, "r");
+  if (!pipf)
+    {
+      fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n",
+	       prog_name, cmdbuf, strerror (errno), __FILE__, __LINE__);
+      failed = true;
+      exit (EXIT_FAILURE);
+    }
+  if (!fgets (fcflags, sizeof (fcflags), pipf))
+    {
+      fprintf (stderr, "%s: failed to get cflags using %s (%s) [%s:%d]\n",
+	       prog_name, cmdbuf, strerror (errno), __FILE__, __LINE__);
+      failed = true;
+      exit (EXIT_FAILURE);
+    }
+  if (pclose (pipf))
+    {
+      fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
+	       prog_name, cmdbuf, strerror (errno), __FILE__, __LINE__);
+      failed = true;
+      exit (EXIT_FAILURE);
+    }
+  fflush (NULL);
+  pipf = NULL;
+  /// run fltk-config -g --ldflags
+  memset (cmdbuf, 0, sizeof (cmdbuf));
+  snprintf (cmdbuf, sizeof (cmdbuf), "%s -g --ldlags", fc);
+  printf ("%s running %s [%s:%d]\n", prog_name, cmdbuf, __FILE__, __LINE__);
+  pipf = popen (cmdbuf, "r");
+  if (!pipf)
+    {
+      fprintf (stderr, "%s: failed to popen %s (%s) [%s:%d]\n",
+	       prog_name, cmdbuf, strerror (errno), __FILE__, __LINE__);
+      failed = true;
+      exit (EXIT_FAILURE);
+    }
+  if (!fgets (fldflags, sizeof (fldflags), pipf))
+    {
+      fprintf (stderr, "%s: failed to get ldflags using %s (%s) [%s:%d]\n",
+	       prog_name, cmdbuf, strerror (errno), __FILE__, __LINE__);
+      failed = true;
+      exit (EXIT_FAILURE);
+    }
+  if (pclose (pipf))
+    {
+      fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
+	       prog_name, cmdbuf, strerror (errno), __FILE__, __LINE__);
+      failed = true;
+      exit (EXIT_FAILURE);
+    }
+  fflush (NULL);
+  pipf = NULL;
+  const char *tmp_testfltk_src
+    = temporary_textual_file ("tmp_test_fltk", ".cc", __LINE__);
+  FILE *fltksrc = fopen (tmp_testfltk_src, "w");
+  if (!fltksrc)
+    {
+      fprintf (stderr,
+	       "%s: failed to fopen for FLTK testing %s (%s) [%s:%d]\n",
+	       prog_name, tmp_testfltk_src, strerror (errno), __FILE__,
+	       __LINE__ - 2);
+      failed = true;
+      exit (EXIT_FAILURE);
+    };
+  fprintf (fltksrc, "/// FLTK test file %s\n", tmp_testfltk_src);
+  fputs ("#include <FL/Fl.H>\n", fltksrc);
+  fputs ("#include <FL/Fl_Window.H>\n", fltksrc);
+  fputs ("#include <FL/Fl_Box.H>\n", fltksrc);
+  fputs ("\n", fltksrc);
+  fputs ("int main(int argc, char **argv) {\n", fltksrc);
+  fputs ("   Fl_Window *window = new Fl_Window(340, 180);\n", fltksrc);
+  fputs ("   Fl_Box *box = new Fl_Box(20, 40, 300, 100,\n", fltksrc);
+  fputs ("                            \"Hello, World!\");\n", fltksrc);
+  fputs ("   box->box(FL_UP_BOX);\n", fltksrc);
+  fputs ("   box->labelfont(FL_BOLD + FL_ITALIC);\n", fltksrc);
+  fputs ("   box->labelsize(36);\n", fltksrc);
+  fputs ("   box->labeltype(FL_SHADOW_LABEL);\n", fltksrc);
+  fputs ("   window->end();\n", fltksrc);
+  fputs ("   if (argc>1 && !strcmp(argv[1], \"--run\")) {\n", fltksrc);
+  fputs ("     argv[1] = argv[0];\n", fltksrc);
+  fputs ("     window->show(argc-1, argv+1);\n", fltksrc);
+  fputs ("     return Fl::run();\n", fltksrc);
+  fputs ("   };\n", fltksrc);
+  fputs ("  return 0;\n", fltksrc);
+  fputs ("}\n", fltksrc);
+  fprintf (fltksrc, "/// end of FLTK test file %s\n", tmp_testfltk_src);
+  if (fclose (fltksrc))
+    {
+      fprintf (stderr,
+	       "%s: failed to fclose for FLTK testing %s (%s) [%s:%d]\n",
+	       prog_name, tmp_testfltk_src, strerror (errno), __FILE__,
+	       __LINE__ - 2);
+      failed = true;
+      exit (EXIT_FAILURE);
+    };
+  fltksrc = NULL;
+  char *tmp_fltk_exe =
+    temporary_binary_file ("./tmp_fltkprog", ".bin", __LINE__);
+  memset (cmdbuf, 0, sizeof (cmdbuf));
+  snprintf (cmdbuf, sizeof (cmdbuf), "%s -g -O %s %s %s -o %s",
+	    cpp_compiler, fcflags, tmp_testfltk_src, fldflags, tmp_fltk_exe);
+  printf ("%s build test FLTK executable %s from %s with %s\n", prog_name,
+	  tmp_fltk_exe, tmp_testfltk_src, cpp_compiler);
+  fflush (NULL);
+  if (system (cmdbuf) > 0)
+    {
+      fprintf (stderr,
+	       "%s failed build test FLTK executable %s from %s [%s:%d]\n",
+	       prog_name, tmp_fltk_exe, tmp_testfltk_src, __FILE__,
+	       __LINE__ - 1);
+      fflush (stderr);
+      fprintf (stderr, "... using\n%s\n...[%s:%d]\n",
+	       cmdbuf, __FILE__, __LINE__);
+      fflush (NULL);
+      failed = true;
+      exit (EXIT_FAILURE);
+    }
+  should_remove_file (tmp_testfltk_src, __LINE__);
+  should_remove_file (tmp_fltk_exe, __LINE__);
+}				/* end try_then_set_fltkconfig */
+
 void
 remove_files (void)
 {
@@ -746,6 +899,8 @@ emit_configure_refpersys_mk (void)
   fprintf (f, "REFPERSYS_GPP=%s\n", realpath (gpp, NULL));
   fprintf (f, "\n\n" "# ninja builder from ninja-build.org\n");
   fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (ninja_builder, NULL));
+  //// emit the FLTK configurator
+  fprintf (f, "REFPERSYS_FLTKCONFIG=%s\n", fltk_config);
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
