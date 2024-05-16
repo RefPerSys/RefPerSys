@@ -145,6 +145,14 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Dump the persistent state to given DUMPDIR directory.\n", ///
     /*group:*/0 ///
   },
+  /* ======= FLTK GUI library ======= */
+  {/*name:*/ "fltk", ///
+    /*key:*/ RPSPROGOPT_FLTK, ///
+    /*arg:*/ "GUIOPTION", ///
+    /*flags:*/ OPTION_ARG_OPTIONAL, ///
+    /*doc:*/ "pass, if GUIOPTION is given, to FLTK graphical library; enable FLTK graphics.\n", ///
+    /*group:*/0 ///
+  },
   /* ======= extra argument ======= */
   {/*name:*/ "extra", ///
     /*key:*/ RPSPROGOPT_EXTRA_ARG, ///
