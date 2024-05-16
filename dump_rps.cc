@@ -1132,19 +1132,34 @@ Rps_Dumper::write_generated_data_file(void)
     *pouts << "#define RPS_OBJECTREF_IS_OBJECTPTR 1" << std::endl;
   else
     *pouts << "#define RPS_OBJECTREF_IS_OBJECTPTR 0" << std::endl;
-  if (rps_fltk_abi_version() > 0)
-    *pouts << "#define RPS_FLTK_ABI_VERSION " << rps_fltk_abi_version() << std::endl;
+  *pouts << std::endl << std::endl;
+  bool hasfltk = false;
+  if (rps_fltk_abi_version() > 0) {
+    *pouts << "#define RPS_FLTK_ABI_VERSION " << rps_fltk_abi_version()
+	   << std::endl;
+    hasfltk = true;
+  }
   else
     {
       *pouts << "#undef RPS_FLTK_ABI_VERSION" << std::endl;
       *pouts << "#define RPS_WITHOUT_FLTK_ABI 1" << std::endl;
     }
-  if (rps_fltk_api_version() > 0)
-    *pouts << "#define RPS_FLTK_API_VERSION " << rps_fltk_api_version() << std::endl;
-  else
+  if (rps_fltk_api_version() > 0) {
+    *pouts << "#define RPS_FLTK_API_VERSION " << rps_fltk_api_version()
+	   << std::endl;
+    hasfltk = true;
+  } else
     {
       *pouts << "#undef RPS_FLTK_API_VERSION" << std::endl;
       *pouts << "#define RPS_WITHOUT_FLTK_API 1" << std::endl;
+    }
+  if (hasfltk)
+    {
+      *pouts << "#define RPS_WITH_FLTK 1" << std::endl;
+    }
+  else
+    {
+      *pouts << "#undef RPS_WITH_FLTK" << std::endl;
     }
   *pouts << "///" << std::endl;
   *pouts << "#endif //RPS_DATA_INCLUDED\n" << std::endl;
