@@ -961,6 +961,378 @@ rps_repl_builtin_version_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg
 
 
 
+void
+rps_repl_builtin_env_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                             Rps_TokenSource& intoksrc,
+                             const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                 Rps_Value descrv;
+                );
+  _f.obenv = obenvarg;
+  auto paylenv = _f.obenv->get_dynamic_payload< Rps_PayloadEnvironment>();
+  RPS_INFORMOUT(std::endl << "environment object is " << _f.obenv
+                << Rps_Do_Output([&](std::ostream&outs)
+  {
+    if (paylenv)
+      {
+        outs << " with parent environment:" << paylenv->get_parent_environment() << std::endl;
+        _f.descrv = paylenv->get_descr();
+        if (_f.descrv)
+          outs << "descriptor:" << _f.descrv << std::endl;
+        std::function<bool(Rps_CallFrame*,Rps_ObjectRef,Rps_Value,void*)> outfun
+          = [&](Rps_CallFrame*cf,Rps_ObjectRef obvar,Rps_Value value,void*d)
+        {
+          outs << "*" << obvar << "::" << value << std::endl;
+          RPS_ASSERT(d == nullptr);
+          return false;
+        };
+        paylenv->do_each_entry(&_, outfun);
+      }
+    else
+      outs << " [without environment payload]";
+  })
+      << std::endl);
+  rps_show_version();
+} // end rps_repl_builtin_env_command
+
+
+
+
+void
+rps_repl_builtin_parse_expression_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+    Rps_TokenSource& intoksrc,
+    const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                 Rps_Value descrv;
+                 Rps_Value parvalv;
+                );
+  const char*cp = intoksrc.curcptr();
+  _f.obenv = obenvarg;
+  bool ok= false;
+  RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_expression_command " << title
+                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_expression_command")
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    intoksrc.display_current_line_with_cursor(out);
+  })
+      << std::endl);
+  _f.parvalv = intoksrc.parse_expression(&_, &ok);
+  if (ok)
+    RPS_INFORMOUT(std::endl << " parse_expression " << cp << " as " << _f.parvalv);
+  else
+    RPS_WARNOUT("failed parse_expression " << cp << " in " << intoksrc);
+} // end rps_repl_builtin_parse_expression_command
+
+
+void
+rps_repl_builtin_parse_disjunction_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+    Rps_TokenSource& intoksrc,
+    const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                 Rps_Value descrv;
+                 Rps_Value parvalv;
+                );
+  const char*cp = intoksrc.curcptr();
+  _f.obenv = obenvarg;
+  bool ok= false;
+  RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_disjunction_command " << title
+                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_disjunction_command")
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    intoksrc.display_current_line_with_cursor(out);
+  })
+      << std::endl);
+  _f.parvalv = intoksrc.parse_disjunction(&_, &ok);
+  if (ok)
+    RPS_INFORMOUT(std::endl << " parse_disjunction " << cp << " as " << _f.parvalv);
+  else
+    RPS_WARNOUT("failed parse_disjunction " << cp << " in " << intoksrc);
+} // end rps_repl_builtin_parse_disjunction_command
+
+
+
+void
+rps_repl_builtin_parse_conjunction_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+    Rps_TokenSource& intoksrc,
+    const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                 Rps_Value descrv;
+                 Rps_Value parvalv;
+                );
+  const char*cp = intoksrc.curcptr();
+  _f.obenv = obenvarg;
+  bool ok= false;
+  RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_conjunction_command " << title
+                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_conjunction_command")
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    intoksrc.display_current_line_with_cursor(out);
+  })
+      << std::endl);
+  _f.parvalv = intoksrc.parse_conjunction(&_, &ok);
+  if (ok)
+    RPS_INFORMOUT(std::endl << " parse_conjunction " << cp << " as " << _f.parvalv);
+  else
+    RPS_WARNOUT("failed parse_conjunction " << cp << " in " << intoksrc);
+} // end rps_repl_builtin_parse_conjunction_command
+
+
+
+void
+rps_repl_builtin_parse_comparison_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+    Rps_TokenSource& intoksrc,
+    const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                 Rps_Value descrv;
+                 Rps_Value parvalv;
+                );
+  const char*cp = intoksrc.curcptr();
+  _f.obenv = obenvarg;
+  bool ok= false;
+  RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_comparison_command " << title
+                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_comparison_command")
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    intoksrc.display_current_line_with_cursor(out);
+  })
+      << std::endl);
+  _f.parvalv = intoksrc.parse_comparison(&_, &ok);
+  if (ok)
+    RPS_INFORMOUT(std::endl << " parse_comparison " << cp << " as " << _f.parvalv);
+  else
+    RPS_WARNOUT("failed parse_comparison " << cp << " in " << intoksrc);
+} // end rps_repl_builtin_parse_comparison_command
+
+void
+rps_repl_builtin_parse_comparand_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+    Rps_TokenSource& intoksrc,
+    const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                 Rps_Value descrv;
+                 Rps_Value parvalv;
+                );
+  const char*cp = intoksrc.curcptr();
+  _f.obenv = obenvarg;
+  bool ok= false;
+  RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_comparand_command " << title
+                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_comparand_command")
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    intoksrc.display_current_line_with_cursor(out);
+  })
+      << std::endl);
+  _f.parvalv = intoksrc.parse_comparand(&_, &ok);
+  if (ok)
+    RPS_INFORMOUT(std::endl << " parse_comparand " << cp << " as " << _f.parvalv);
+  else
+    RPS_WARNOUT("failed parse_comparand " << cp << " in " << intoksrc);
+} // end rps_repl_builtin_parse_comparand_command
+
+
+
+void
+rps_repl_builtin_parse_sum_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                                   Rps_TokenSource& intoksrc,
+                                   const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                 Rps_Value descrv;
+                 Rps_Value parvalv;
+                );
+  const char*cp = intoksrc.curcptr();
+  _f.obenv = obenvarg;
+  bool ok= false;
+  RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_sum_command " << title
+                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_sum_command")
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    intoksrc.display_current_line_with_cursor(out);
+  })
+      << std::endl);
+  _f.parvalv = intoksrc.parse_sum(&_, &ok);
+  if (ok)
+    RPS_INFORMOUT(std::endl << " parse_sum " << cp << " as " << _f.parvalv);
+  else
+    RPS_WARNOUT("failed parse_sum " << cp << " in " << intoksrc);
+} // end rps_repl_builtin_parse_sum_command
+
+
+
+void
+rps_repl_builtin_parse_product_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                                       Rps_TokenSource& intoksrc,
+                                       const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                 Rps_Value descrv;
+                 Rps_Value parvalv;
+                );
+  const char*cp = intoksrc.curcptr();
+  _f.obenv = obenvarg;
+  bool ok= false;
+  RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_product_command " << title
+                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_product_command")
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    intoksrc.display_current_line_with_cursor(out);
+  })
+      << std::endl);
+  _f.parvalv = intoksrc.parse_product(&_, &ok);
+  if (ok)
+    RPS_INFORMOUT(std::endl << " parse_product " << cp << " as " << _f.parvalv);
+  else
+    RPS_WARNOUT("failed parse_product " << cp << " in " << intoksrc);
+} // end rps_repl_builtin_parse_product_command
+
+
+void
+rps_repl_builtin_parse_factor_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                                      Rps_TokenSource& intoksrc,
+                                      const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                 Rps_Value descrv;
+                 Rps_Value parvalv;
+                );
+  const char*cp = intoksrc.curcptr();
+  _f.obenv = obenvarg;
+  bool ok= false;
+  RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_factor_command " << title
+                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_factor_command")
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    intoksrc.display_current_line_with_cursor(out);
+  })
+      << std::endl);
+  _f.parvalv = intoksrc.parse_factor(&_, &ok);
+  if (ok)
+    RPS_INFORMOUT(std::endl << " parse_factor " << cp << " as " << _f.parvalv);
+  else
+    RPS_WARNOUT("failed parse_factor " << cp << " in " << intoksrc);
+} // end rps_repl_builtin_parse_factor_command
+
+
+void
+rps_repl_builtin_parse_term_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                                    Rps_TokenSource& intoksrc,
+                                    const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                 Rps_Value descrv;
+                 Rps_Value parvalv;
+                );
+  const char*cp = intoksrc.curcptr();
+  _f.obenv = obenvarg;
+  bool ok= false;
+  RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_term_command " << title
+                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_term_command")
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    intoksrc.display_current_line_with_cursor(out);
+  })
+      << std::endl);
+  _f.parvalv = intoksrc.parse_term(&_, &ok);
+  if (ok)
+    RPS_INFORMOUT(std::endl << " parse_term " << cp << " as " << _f.parvalv);
+  else
+    RPS_WARNOUT("failed parse_term " << cp << " in " << intoksrc);
+} // end rps_repl_builtin_parse_term_command
+
+
+void
+rps_repl_builtin_parse_primary_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                                       Rps_TokenSource& intoksrc,
+                                       const char*title)
+{
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/callframe,
+                 Rps_ObjectRef obenv;
+                 Rps_Value descrv;
+                 Rps_Value parvalv;
+                );
+  const char*cp = intoksrc.curcptr();
+  _f.obenv = obenvarg;
+  bool ok= false;
+  RPS_DEBUG_LOG(REPL, "rps_repl_builtin_parse_primary_command " << title
+                << "... intoksrc:" << intoksrc << " obenv=" << _f.obenv
+                << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
+                << std::endl
+                <<  RPS_FULL_BACKTRACE_HERE(1, "rps_repl_builtin_parse_primary_command")
+                << std::endl
+                << Rps_Do_Output([&](std::ostream& out)
+  {
+    intoksrc.display_current_line_with_cursor(out);
+  })
+      << std::endl);
+  _f.parvalv = intoksrc.parse_primary(&_, &ok);
+  if (ok)
+    RPS_INFORMOUT(std::endl << " parse_primary " << cp << " as " << _f.parvalv);
+  else
+    RPS_WARNOUT("failed parse_primary " << cp << " in " << intoksrc);
+} // end rps_repl_builtin_parse_primary_command
+
 ////////////////////////////////////////////////////////////////
 
 void
@@ -1022,140 +1394,47 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
     }
   else if (!strcmp(builtincmd, "env"))
     {
-      auto paylenv = _f.obenv->get_dynamic_payload< Rps_PayloadEnvironment>();
-      RPS_INFORMOUT(std::endl << "environment object is " << _f.obenv
-                    << Rps_Do_Output([&](std::ostream&outs)
-      {
-        if (paylenv)
-          {
-            outs << " with parent environment:" << paylenv->get_parent_environment() << std::endl;
-            _f.descrv = paylenv->get_descr();
-            if (_f.descrv)
-              outs << "descriptor:" << _f.descrv << std::endl;
-            std::function<bool(Rps_CallFrame*,Rps_ObjectRef,Rps_Value,void*)> outfun
-              = [&](Rps_CallFrame*cf,Rps_ObjectRef obvar,Rps_Value value,void*d)
-            {
-              outs << "*" << obvar << "::" << value << std::endl;
-              RPS_ASSERT(d == nullptr);
-              return false;
-            };
-            paylenv->do_each_entry(&_, outfun);
-          }
-        else
-          outs << " [without environment payload]";
-      })
-          << std::endl);
+      rps_repl_builtin_env_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
-  //// testing the parsers
-  else if (!strncmp(builtincmd, "parse_", sizeof("parse_")-1))
+  else if (!strcmp(builtincmd, "parse_expression") || !strcmp(builtincmd, "parse_expr"))
     {
-      bool ok= false;
-      const char*cp = intoksrc.curcptr();
-
-      RPS_DEBUG_LOG(REPL, "rps_do_builtin_repl_command " << title
-                    << "... intoksrc:" << intoksrc << " ParsingBUILTIN "
-                    << builtincmd << " obenv=" << _f.obenv
-                    << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())
-                    << std::endl
-                    <<  RPS_FULL_BACKTRACE_HERE(1, "rps_do_builtin_repl_command/Parsing-builtin")
-                    << std::endl
-                    << Rps_Do_Output([&](std::ostream& out)
-      {
-        intoksrc.display_current_line_with_cursor(out);
-      })
-          << std::endl);
-      if (!strcmp(builtincmd, "parse_expression") || !strcmp(builtincmd, "parse_expr"))
-        {
-          bool ok= false;
-          _f.parvalv = intoksrc.parse_expression(&_, &ok);
-          if (ok)
-            RPS_INFORMOUT(std::endl << " parse_expression " << cp << " as " << _f.parvalv);
-          else
-            RPS_WARNOUT("failed parse_expression " << cp << " in " << intoksrc);
-        }
-      else if (!strcmp(builtincmd, "parse_disjunction") || !strcmp(builtincmd, "parse_disj"))
-        {
-          bool ok= false;
-          _f.parvalv = intoksrc.parse_disjunction(&_, &ok);
-          if (ok)
-            RPS_INFORMOUT(std::endl << " parse_disjunction " << cp << " as " << _f.parvalv);
-          else
-            RPS_WARNOUT("failed parse_disjunction " << cp << " in " << intoksrc);
-        }
-      else if (!strcmp(builtincmd, "parse_conjunction") || !strcmp(builtincmd, "parse_conj"))
-        {
-          bool ok= false;
-          _f.parvalv = intoksrc.parse_conjunction(&_, &ok);
-          if (ok)
-            RPS_INFORMOUT(std::endl << " parse_conjunction " << cp << " as " << _f.parvalv);
-          else
-            RPS_WARNOUT("failed parse_conjunction " << cp << " in " << intoksrc);
-        }
-      else if (!strcmp(builtincmd, "parse_comparison"))
-        {
-          bool ok= false;
-          _f.parvalv = intoksrc.parse_comparison(&_, &ok);
-          if (ok)
-            RPS_INFORMOUT(std::endl << " parse_comparison " << cp << " as " << _f.parvalv);
-          else
-            RPS_WARNOUT("failed parse_comparison " << cp << " in " << intoksrc);
-        }
-      else if (!strcmp(builtincmd, "parse_comparand"))
-        {
-          bool ok= false;
-          _f.parvalv = intoksrc.parse_comparand(&_, &ok);
-          if (ok)
-            RPS_INFORMOUT(std::endl << " parse_comparand " << cp << " as " << _f.parvalv);
-          else
-            RPS_WARNOUT("failed parse_comparand " << cp << " in " << intoksrc);
-        }
-      else if (!strcmp(builtincmd, "parse_sum"))
-        {
-          bool ok= false;
-          _f.parvalv = intoksrc.parse_sum(&_, &ok);
-          if (ok)
-            RPS_INFORMOUT(std::endl << " parse_sum " << cp << " as " << _f.parvalv);
-          else
-            RPS_WARNOUT("failed parse_sum " << cp << " in " << intoksrc);
-        }
-      else if (!strcmp(builtincmd, "parse_product"))
-        {
-          bool ok= false;
-          _f.parvalv = intoksrc.parse_product(&_, &ok);
-          if (ok)
-            RPS_INFORMOUT(std::endl << " parse_product " << cp << " as " << _f.parvalv);
-          else
-            RPS_WARNOUT("failed parse_product " << cp << " in " << intoksrc);
-        }
-      else if (!strcmp(builtincmd, "parse_factor"))
-        {
-          bool ok= false;
-          _f.parvalv = intoksrc.parse_factor(&_, &ok);
-          if (ok)
-            RPS_INFORMOUT(std::endl << " parse_factor " << cp << " as " << _f.parvalv);
-          else
-            RPS_WARNOUT("failed parse_factor " << cp << " in " << intoksrc);
-        }
-      else if (!strcmp(builtincmd, "parse_term"))
-        {
-          bool ok= false;
-          _f.parvalv = intoksrc.parse_term(&_, &ok);
-          if (ok)
-            RPS_INFORMOUT(std::endl << " parse_term " << cp << " as " << _f.parvalv);
-          else
-            RPS_WARNOUT("failed parse_term " << cp << " in " << intoksrc);
-        }
-      else if (!strcmp(builtincmd, "parse_primary"))
-        {
-          bool ok= false;
-          _f.parvalv = intoksrc.parse_primary(&_, &ok);
-          if (ok)
-            RPS_INFORMOUT(std::endl << " parse_primary " << cp << " as " << _f.parvalv);
-          else
-            RPS_WARNOUT("failed parse_primary " << cp << " in " << intoksrc);
-        }
-      else
-        RPS_WARNOUT("unknown parsing command " << builtincmd << " in " << intoksrc);
+      rps_repl_builtin_parse_expression_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "parse_disjunction") || !strcmp(builtincmd, "parse_disj"))
+    {
+      rps_repl_builtin_parse_disjunction_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "parse_conjunction") || !strcmp(builtincmd, "parse_conj"))
+    {
+      rps_repl_builtin_parse_conjunction_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "parse_comparison"))
+    {
+      rps_repl_builtin_parse_comparison_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "parse_comparand"))
+    {
+      rps_repl_builtin_parse_comparand_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "parse_sum"))
+    {
+      rps_repl_builtin_parse_sum_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "parse_product"))
+    {
+      rps_repl_builtin_parse_product_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "parse_factor"))
+    {
+      rps_repl_builtin_parse_factor_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "parse_term"))
+    {
+      rps_repl_builtin_parse_term_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "parse_primary"))
+    {
+      rps_repl_builtin_parse_primary_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else
     RPS_WARNOUT("invalid builtin " << builtincmd << " in "
