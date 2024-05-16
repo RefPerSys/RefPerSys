@@ -133,6 +133,11 @@
 
 #define RPS_WITH_FLTK 1
 
+//// the generated/rpsdata.h contain only preprocessor #define-s and #undef
+//// it may undef RPS_WITH_FLTK
+
+#include "generated/rpsdata.h"
+
 #if RPS_WITH_FLTK
 extern "C" int rps_fltk_abi_version (void);
 extern "C" int rps_fltk_api_version (void);
