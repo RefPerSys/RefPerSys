@@ -65,6 +65,17 @@ rps_fltk_api_version (void)
   return Fl::api_version ();
 } // end rps_fltk_api_version
 
+void
+rps_fltk_progoption(char*arg, bool side_effect)
+{
+#warning missing code in rps_fltk_progoption
+  if (arg)
+    RPS_FATALOUT("unimplemented rps_fltk_progoption arg=" <<  Rps_Cjson_String(arg)
+		 << "' side_effect=" << (side_effect?"True":"False"));
+  else
+    RPS_FATALOUT("unimplemented rps_fltk_progoption noarg side_effect="
+		 << (side_effect?"True":"False"));
+} // end rps_fltk_progoption
 
 void
 rps_fltk_initialize (void)

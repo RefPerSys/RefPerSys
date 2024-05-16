@@ -142,10 +142,12 @@
 extern "C" int rps_fltk_abi_version (void);
 extern "C" int rps_fltk_api_version (void);
 extern "C" void rps_fltk_initialize (void);
+extern "C" void rps_fltk_progoption(char*arg, bool side_effect);
 #else
 #define rps_fltk_abi_version() 0
 #define rps_fltk_api_version() 0
 #define rps_fltk_initialize() do {}while(0)
+#define rps_fltk_progoption(Arg,SidEff) do {}while(0)
 #endif
 
 class Rps_QuasiZone; // GC-managed piece of memory

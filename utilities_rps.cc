@@ -873,6 +873,7 @@ error_t
 rps_parse1opt (int key, char *arg, struct argp_state *state)
 {
   bool side_effect = state && (void*)state != RPS_EMPTYSLOT;
+  RPS_POSSIBLE_BREAKPOINT();
   switch (key)
     {
     case RPSPROGOPT_DEBUG:
@@ -887,6 +888,11 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         rps_set_debug_output_path(arg);
     }
     return 0;
+    case RPSPROGOPT_FLTK:
+      {
+	rps_fltk_progoption(arg, side_effect);
+      }
+      return 0;
     case RPSPROGOPT_LOADDIR:
     {
       rps_my_load_dir = std::string(arg);
