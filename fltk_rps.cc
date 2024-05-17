@@ -53,6 +53,10 @@ const char rps_fltk_gitid[]= RPS_GITID;
 extern "C" const char rps_fltk_date[];
 const char rps_fltk_date[]= __DATE__;
 
+
+extern "C" bool rps_fltk_is_initialized;
+
+bool rps_fltk_is_initialized;
 int
 rps_fltk_abi_version (void)
 {
@@ -69,11 +73,12 @@ void
 rps_fltk_progoption(char*arg, bool side_effect)
 {
 #warning missing code in rps_fltk_progoption
-  if (arg)
-    RPS_FATALOUT("unimplemented rps_fltk_progoption arg=" <<  Rps_Cjson_String(arg)
+  if (arg) {
+    RPS_WARNOUT("unimplemented rps_fltk_progoption arg=" <<  Rps_Cjson_String(arg)
 		 << "' side_effect=" << (side_effect?"True":"False"));
+  }
   else
-    RPS_FATALOUT("unimplemented rps_fltk_progoption noarg side_effect="
+    RPS_WARNOUT("unimplemented rps_fltk_progoption noarg side_effect="
 		 << (side_effect?"True":"False"));
 } // end rps_fltk_progoption
 
@@ -83,5 +88,11 @@ rps_fltk_initialize (void)
 #warning missing code in rps_fltk_initialize
   RPS_FATALOUT("unimplemented rps_fltk_initialize");
 } // end rps_fltk_initialize
+
+bool
+rps_fltk_enabled (void)
+{
+  return rps_fltk_is_initialized;
+} // end rps_fltk_enabled
 
 //// end of file fltk_rps.cc
