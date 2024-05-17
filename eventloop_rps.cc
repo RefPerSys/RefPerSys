@@ -329,7 +329,16 @@ rps_event_loop(void)
 #define EXPLAIN_EVFD_ATBIS(Fil,Lin,Ix,Expl)  EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl)
 #define EXPLAIN_EVFD_RPS(Ix,Expl) EXPLAIN_EVFD_ATBIS(__FILE__,__LINE__,(Ix),Expl)
       int loopcnt=1+ event_nbloops.fetch_add(1);
-      RPS_DEBUG_LOG(REPL, "looping rps_event_loop #" << loopcnt);
+      if ((loopcnt-1) % 16 == 0)
+        {
+          RPS_DEBUG_LOG(REPL, "looping rps_event_loop #" << loopcnt
+                        << " thread:" << rps_current_pthread_name()
+                        << ((rps_fltk_enabled())?" with FLTK": " without-fltk")
+                        << std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/looping"));
+        }
+      else
+        RPS_DEBUG_LOG(REPL, "looping rps_event_loop #" << loopcnt);
       memset ((void*)&pollarr, 0, sizeof(pollarr));
       nbfdpoll=0;
       struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
