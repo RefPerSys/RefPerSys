@@ -6,7 +6,8 @@
  *      This file is part of the Reflective Persistent System.
  *
  *      It has the code for the FLTK 1.4 graphical interface.  See
- *      also https://fltk.org
+ *      also https://fltk.org - download FLTK source code and compile
+ *      it with debugging enabled, see our README.md for more.
  *
  * Author(s):
  *      Basile Starynkevitch <basile@starynkevitch.net>
@@ -44,6 +45,9 @@
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
+#include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Widget.H>
+#include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Box.H>
 
 
@@ -112,12 +116,20 @@ class Rps_PayloadFltkThing : public Rps_Payload
   virtual ~Rps_PayloadFltkThing();
 #warning rps-PayloadFltkThing need some FLTK pointer
 protected:
+  union
+  {
+    void*fltk_ptr;
+    // see https://github.com/fltk/fltk/issues/975
+    Fl_Widget*fltk_widget;
+    Fl_Window*fltk_window;
+    Fl_Text_Buffer*fltk_text_buffer;
+  };
   virtual void gc_mark(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
   inline Rps_PayloadFltkThing(Rps_ObjectZone*owner);
   Rps_PayloadFltkThing(Rps_ObjectRef obr) :
-    Rps_PayloadFltkThing(obr?obr.optr():nullptr) {};
+    Rps_Payload(Rps_Type::PaylFltkThing,obr?obr.optr():nullptr) {};
   virtual const std::string payload_type_name(void) const
   {
     return "FltkThing";
@@ -133,7 +145,7 @@ protected:
 };        // end class Rps_PayloadFltkThing
 
 Rps_PayloadFltkThing::Rps_PayloadFltkThing(Rps_ObjectZone*owner)
-  : Rps_Payload(Rps_Type::PaylFltkThing,owner)
+  : Rps_Payload(Rps_Type::PaylFltkThing,owner), fltk_ptr(nullptr)
 {
 #warning incomplete Rps_PayloadFltkThing::Rps_PayloadFltkThing
 } // end of Rps_PayloadFltkThing::Rps_PayloadFltkThing
