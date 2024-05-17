@@ -889,10 +889,10 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     }
     return 0;
     case RPSPROGOPT_FLTK:
-      {
-	rps_fltk_progoption(arg, side_effect);
-      }
-      return 0;
+    {
+      rps_fltk_progoption(arg, side_effect);
+    }
+    return 0;
     case RPSPROGOPT_LOADDIR:
     {
       rps_my_load_dir = std::string(arg);
