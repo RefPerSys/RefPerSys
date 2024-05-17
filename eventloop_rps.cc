@@ -115,6 +115,9 @@ static void handle_self_pipe_byte_rps(unsigned char b);
 void
 rps_do_stop_event_loop(void)
 {
+  RPS_DEBUG_LOG(REPL, "rps_do_stop_event_loop thread:"
+                <<  rps_current_pthread_name()
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_do_stop_event_loop"));
   rps_stop_event_loop_flag.store(true);
 } // end rps_do_stop_event_loop
 
@@ -246,7 +249,8 @@ rps_jsonrpc_initialize(void)
   RPS_DEBUG_LOG(REPL, "ending rps_jsonrpc_initialize with fifo prefix "
                 << rps_get_fifo_prefix() //
                 << " and wcmd.fd#" << fdp.fifo_ui_wcmd //
-                << " and rout.fd#" << fdp.fifo_ui_rout);
+                << " and rout.fd#" << fdp.fifo_ui_rout
+                << " thread:" << rps_current_pthread_name());
 } // end rps_jsonrpc_initialize
 
 
@@ -292,7 +296,8 @@ rps_event_loop(void)
   sigaddset(&msk, SIGXCPU);
   sigaddset(&msk, SIGALRM);
   sigaddset(&msk, SIGVTALRM);
-  RPS_DEBUG_LOG(REPL, "starting rps_event_loop from "
+  RPS_DEBUG_LOG(REPL, "starting rps_event_loop thread "
+                << rps_current_pthread_name()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/start")
                 << "agenda timeout:" << Rps_Agenda::agenda_timeout
@@ -324,6 +329,7 @@ rps_event_loop(void)
 #define EXPLAIN_EVFD_ATBIS(Fil,Lin,Ix,Expl)  EXPLAIN_EVFD_AT(Fil,Lin,Ix,Expl)
 #define EXPLAIN_EVFD_RPS(Ix,Expl) EXPLAIN_EVFD_ATBIS(__FILE__,__LINE__,(Ix),Expl)
       int loopcnt=1+ event_nbloops.fetch_add(1);
+      RPS_DEBUG_LOG(REPL, "looping rps_event_loop #" << loopcnt);
       memset ((void*)&pollarr, 0, sizeof(pollarr));
       nbfdpoll=0;
       struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
@@ -723,7 +729,9 @@ void
 handle_self_pipe_byte_rps(unsigned char b)
 {
   RPS_ASSERT(rps_is_main_thread());
-  RPS_DEBUG_LOG(REPL, "handle_self_pipe_byte_rps b=" << (char)b << "#" << (unsigned)b);
+  RPS_DEBUG_LOG(REPL, "handle_self_pipe_byte_rps b=" << (char)b
+                << "#" << (unsigned)b
+                << " thread:" << rps_current_pthread_name());
   switch (b)
     {
     case SelfPipe_Dump:
@@ -774,24 +782,32 @@ rps_event_loop_counter(void)
 void
 rps_postpone_dump(void)
 {
+  RPS_DEBUG_LOG(REPL, "rps_postpone_dump thread:"
+                << rps_current_pthread_name());
   rps_self_pipe_write_byte(SelfPipe_Dump);
 } // end rps_postpone_dump
 
 void
 rps_postpone_garbage_collection(void)
 {
+  RPS_DEBUG_LOG(REPL, "rps_postpone_garbage_collection thread:"
+                << rps_current_pthread_name());
   rps_self_pipe_write_byte(SelfPipe_GarbColl);
 } // end rps_postpone_garbage_collection
 
 void
 rps_postpone_quit(void)
 {
+  RPS_DEBUG_LOG(REPL, "rps_postpone_quit thread:"
+                << rps_current_pthread_name());
   rps_self_pipe_write_byte(SelfPipe_Quit);
 } // end rps_postpone_quit
 
 void
 rps_postpone_exit_with_dump(void)
 {
+  RPS_DEBUG_LOG(REPL, "rps_postpone_exit_with_dump thread:"
+                << rps_current_pthread_name());
   rps_self_pipe_write_byte(SelfPipe_Exit);
 } // end rps_postpone_exit_with_dump
 
@@ -799,6 +815,8 @@ rps_postpone_exit_with_dump(void)
 void
 rps_postpone_child_process(void)
 {
+  RPS_DEBUG_LOG(REPL, "rps_postpone_child_process thread:"
+                << rps_current_pthread_name());
   rps_self_pipe_write_byte(SelfPipe_Process);
 } // end rps_postpone_child_process
 
