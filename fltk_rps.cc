@@ -53,6 +53,9 @@ const char rps_fltk_gitid[]= RPS_GITID;
 extern "C" const char rps_fltk_date[];
 const char rps_fltk_date[]= __DATE__;
 
+class Rps_PayloadFltkThing;
+class Rps_PayloadFltkWidget;
+class Rps_PayloadFltkWindow;
 
 extern "C" bool rps_fltk_is_initialized;
 
@@ -100,5 +103,66 @@ rps_fltk_enabled (void)
 {
   return rps_fltk_is_initialized;
 } // end rps_fltk_enabled
+
+/// temporary payload for any FLTK object
+class Rps_PayloadFltkThing : public Rps_Payload
+{
+  friend Rps_PayloadFltkThing*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadFltkThing,Rps_ObjectZone*>(Rps_ObjectZone*);
+  virtual ~Rps_PayloadFltkThing();
+#warning rps-PayloadFltkThing need some FLTK pointer
+protected:
+  virtual void gc_mark(Rps_GarbageCollector&gc) const;
+  virtual void dump_scan(Rps_Dumper*du) const;
+  virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
+  inline Rps_PayloadFltkThing(Rps_ObjectZone*owner);
+  Rps_PayloadFltkThing(Rps_ObjectRef obr) :
+    Rps_PayloadFltkThing(obr?obr.optr():nullptr) {};
+  virtual const std::string payload_type_name(void) const
+  {
+    return "FltkThing";
+  };
+  virtual uint32_t wordsize(void) const
+  {
+    return sizeof(*this)/sizeof(void*);
+  };
+  virtual bool is_erasable(void) const
+  {
+    return false;
+  };
+};        // end class Rps_PayloadFltkThing
+
+Rps_PayloadFltkThing::Rps_PayloadFltkThing(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylFltkThing,owner)
+{
+#warning incomplete Rps_PayloadFltkThing::Rps_PayloadFltkThing
+} // end of Rps_PayloadFltkThing::Rps_PayloadFltkThing
+
+Rps_PayloadFltkThing::~Rps_PayloadFltkThing()
+{
+#warning incomplete Rps_PayloadFltkThing::~Rps_PayloadFltkThing
+} // end destructor Rps_PayloadFltkThing::~Rps_PayloadFltkThing
+
+void
+Rps_PayloadFltkThing::gc_mark(Rps_GarbageCollector&gc) const
+{
+#warning incomplete Rps_PayloadFltkThing::gc_mark
+} // end of Rps_PayloadFltkThing::gc_mark
+
+void
+Rps_PayloadFltkThing::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du);
+  RPS_POSSIBLE_BREAKPOINT();
+  // do nothing, since temporary payload
+} // end Rps_PayloadFltkThing::dump_scan
+
+void
+Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  RPS_ASSERT(du);
+  RPS_POSSIBLE_BREAKPOINT();
+  // do nothing, since temporary payload
+} // end Rps_PayloadFltkThing::dump_json_content
 
 //// end of file fltk_rps.cc
