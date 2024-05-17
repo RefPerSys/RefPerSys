@@ -169,6 +169,12 @@ class Rps_PayloadTasklet;
 class Rps_PayloadUnixProcess;   // transient payload for forked processes
 class Rps_PayloadPopenedFile;   // transient payload for popened command
 class Rps_PayloadCppStream;     // transient payload for C++ streams
+#if RPS_WITH_FLTK
+class Rps_PayloadFltkThing;
+class Rps_PayloadFltkWidget;
+class Rps_PayloadFltkWindow;
+//TODO: add perhaps Rps_PayloadFltkWindow?
+#endif
 class Rps_Loader;
 class Rps_Dumper;
 class Rps_ProtoCallFrame;
@@ -1455,8 +1461,9 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
-  PaylFltkWidget = -23,
-  PaylFltkWindow = -22,
+  PaylFltkWidget = -24,
+  PaylFltkWindow = -23,
+  PaylFltkThing = -22,
   PaylLightCodeGen = -21,    // for GNU lightning code generation
   PaylEnviron = -20,         // for environments
   PaylObjMap = -19,          // for object maps
