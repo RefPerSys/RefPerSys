@@ -170,7 +170,7 @@ rps_unregister_event_loop_prepoller(int rank)
 
 void
 rps_event_loop_add_input_fd_handler (int fd,
-                                     std::function<void(int /*fd*/, void* /*data*/)> f,
+                                     std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> f,
                                      const char* explanation,
                                      void*data)
 {
@@ -183,7 +183,7 @@ rps_event_loop_add_input_fd_handler (int fd,
 
 void
 rps_event_loop_add_output_fd_handler (int fd,
-                                      std::function<void(int /*fd*/, void* /*data*/)> f,
+                                      std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> f,
                                       const char* explanation,
                                       void*data)
 {
@@ -233,7 +233,9 @@ rps_initialize_event_loop(void)
   if (count++ > 0)
     RPS_FATALOUT("rps_initialize_event_loop should be called once");
   ///
-  RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop starting" << std::endl
+  RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop starting "
+		<< (rps_fltk_enabled()?"with FLTK":"without-fltk")
+		<< std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop*start"));
   /**
    * create the pipe to self
