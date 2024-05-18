@@ -81,6 +81,7 @@ void
 rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
 {
 #warning missing code in rps_fltk_progoption
+  /* TODO: we probably should call Fl::arg here, see https://www.fltk.org/doc-1.4/classFl.html#a1576b8c9ca3e900daaa5c36ca0e7ae48 */
   if (arg)
     {
       RPS_WARNOUT("unimplemented rps_fltk_progoption arg=" <<  Rps_Cjson_String(arg)
