@@ -92,6 +92,7 @@ rps_fltk_progoption(char*arg, bool side_effect)
                 << (side_effect?"True":"False")
                 << " thread:" << rps_current_pthread_name() << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
+  rps_fltk_is_initialized = true;
 } // end rps_fltk_progoption
 
 void
