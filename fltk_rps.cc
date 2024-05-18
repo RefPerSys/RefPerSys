@@ -44,6 +44,7 @@
 #endif
 
 #include <FL/Fl.H>
+#include <FL/platform.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Widget.H>
@@ -85,9 +86,10 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
       RPS_WARNOUT("unimplemented rps_fltk_progoption arg=" <<  Rps_Cjson_String(arg)
                   << "' side_effect=" << (side_effect?"True":"False")
                   << " thread:" << rps_current_pthread_name() << std::endl
-		  << " state.progargs:" << Rps_Do_Output([&](std::ostream&out) {
+		  << " state.progargs::" << Rps_Do_Output([&](std::ostream&out) {
 		    rps_output_program_arguments(out, state->argc, state->argv);
-		  }) << " argnum:" << state->arg_num
+		  }) << " state.argnum:" << state->arg_num << " state.next:" << state->next
+		  << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
     }
   else
@@ -96,7 +98,8 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
                 << " thread:" << rps_current_pthread_name() << std::endl
 		  << " state.progargs:" << Rps_Do_Output([&](std::ostream&out) {
 		    rps_output_program_arguments(out, state->argc, state->argv);
-		  }) << " argnum:" << state->arg_num
+		  }) << " argnum:" << state->arg_num << " state.next:" << state->next
+		  << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
   rps_fltk_is_initialized = true;
 } // end rps_fltk_progoption
@@ -105,6 +108,7 @@ void
 rps_fltk_initialize (int argc, char**argv)
 {
 #warning missing code in rps_fltk_initialize
+  fl_open_display();
   RPS_FATALOUT("unimplemented rps_fltk_initialize"
                << " thread:" << rps_current_pthread_name());
 } // end rps_fltk_initialize
