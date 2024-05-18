@@ -46,7 +46,8 @@ RPS_ATSHARP := $(shell printf '@#')
 .PHONY: all config objects clean distclean gitpush gitpush2 \
         print-plugin-settings indent redump clean-plugins plugins \
         test00 test01 test01b test01c test01d test01e test01f \
-        test02 test03 test05 test06 test07 test07a test08 test09 test-load
+        test02 test03 test05 test06 test07 test07a test08 test09 test-load \
+	testfltk1 
 
 SYNC=/bin/sync
 
@@ -379,5 +380,11 @@ test10: refpersys
 test-load: refpersys
 	./refpersys --batch
 	@printf '\n\n\n////test-load FINISHED¤\n'
+
+## testing the FLTK graphical interface
+testfltk1: refpersys
+	./refpersys -AREPL --run-name=$@ --run-delay=6s  --fltk
+	@printf '\n\n\n////testfltk1 FINISHED¤\n'
+
 ## eof GNUmakefile
 
