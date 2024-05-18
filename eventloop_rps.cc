@@ -168,6 +168,50 @@ rps_unregister_event_loop_prepoller(int rank)
 } // end rps_unregister_event_loop_prepoller
 
 
+void
+rps_event_loop_add_input_fd_handler (int fd,
+                                     std::function<void(int /*fd*/, void* /*data*/)> f,
+                                     const char* explanation,
+                                     void*data)
+{
+  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+#warning unimplemented rps_event_loop_add_input_fd_handler
+  RPS_FATALOUT("unimplemented rps_event_loop_add_input_fd_handler fd#" << fd
+               << ":" << (explanation?explanation:"..."));
+} // end rps_event_loop_add_input_fd_handler
+
+void
+rps_event_loop_add_output_fd_handler (int fd,
+                                      std::function<void(int /*fd*/, void* /*data*/)> f,
+                                      const char* explanation,
+                                      void*data)
+{
+  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+#warning unimplemented rps_event_loop_add_output_fd_handler
+  RPS_FATALOUT("unimplemented rps_event_loop_add_output_fd_handler fd#" << fd
+               << ":" << (explanation?explanation:"..."));
+} // end rps_event_loop_add_output_fd_handler
+
+void
+rps_event_loop_remove_input_fd_handler(int fd)
+{
+  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+#warning unimplemented rps_event_loop_remove_fd_handler
+  RPS_FATALOUT("unimplemented rps_event_loop_remove_input_fd_handler fd#" << fd);
+} // end rps_event_loop_remove_input_fd_handler
+
+void
+rps_event_loop_remove_output_fd_handler(int fd)
+{
+  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+#warning unimplemented rps_event_loop_remove_fd_handler
+  RPS_FATALOUT("unimplemented rps_event_loop_remove_output_fd_handler fd#" << fd);
+} // end rps_event_loop_remove_output_fd_handler
+
 bool
 rps_is_fifo(std::string path)
 {
@@ -198,7 +242,7 @@ rps_initialize_event_loop(void)
     int pipefdarr[2] = {-1, -1};
     if (pipe2(pipefdarr, O_CLOEXEC) <0)
       RPS_FATALOUT("rps_initialize_event_loop failed to create pipe to self:"
-		   << strerror(errno));
+                   << strerror(errno));
     rps_eventloopdata.eld_selfpipereadfd = pipefdarr[0];
     RPS_ASSERT(rps_eventloopdata.eld_selfpipereadfd > 0);
     rps_eventloopdata.eld_selfpipewritefd = pipefdarr[1];

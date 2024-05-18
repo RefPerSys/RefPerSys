@@ -431,11 +431,13 @@ extern "C" void rps_jsonrpc_initialize(void);
 extern "C" int rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int& npoll, Rps_CallFrame*)> fun);
 extern "C" void rps_unregister_event_loop_prepoller(int rank);
 extern "C" void rps_event_loop_add_input_fd_handler (int fd,
-						     std::function<void(int /*fd*/, void* /*data*/)> f,
-						     void*data = nullptr); 
+    std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> f,
+    const char* explanation = nullptr,
+    void*data = nullptr);
 extern "C" void rps_event_loop_add_output_fd_handler (int fd,
-						      std::function<void(int /*fd*/, void* /*data*/)> f,
-						      void*data = nullptr);
+    std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> f,
+    const char* explanation = nullptr,
+    void*data = nullptr);
 extern "C" void rps_event_loop_remove_input_fd_handler(int fd);
 extern "C" void rps_event_loop_remove_output_fd_handler(int fd);
 extern "C" void rps_initialize_event_loop(void);
