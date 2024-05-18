@@ -197,7 +197,8 @@ rps_initialize_event_loop(void)
   {
     int pipefdarr[2] = {-1, -1};
     if (pipe2(pipefdarr, O_CLOEXEC) <0)
-      RPS_FATALOUT("rps_initialize_event_loop failed to create pipe to self:" << strerror(errno));
+      RPS_FATALOUT("rps_initialize_event_loop failed to create pipe to self:"
+		   << strerror(errno));
     rps_eventloopdata.eld_selfpipereadfd = pipefdarr[0];
     RPS_ASSERT(rps_eventloopdata.eld_selfpipereadfd > 0);
     rps_eventloopdata.eld_selfpipewritefd = pipefdarr[1];

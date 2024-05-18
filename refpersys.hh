@@ -430,7 +430,15 @@ extern "C" void rps_jsonrpc_initialize(void);
 /// function.
 extern "C" int rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int& npoll, Rps_CallFrame*)> fun);
 extern "C" void rps_unregister_event_loop_prepoller(int rank);
-
+extern "C" void rps_event_loop_add_input_fd_handler (int fd,
+						     std::function<void(int /*fd*/, void* /*data*/)> f,
+						     void*data = nullptr); 
+extern "C" void rps_event_loop_add_output_fd_handler (int fd,
+						      std::function<void(int /*fd*/, void* /*data*/)> f,
+						      void*data = nullptr);
+extern "C" void rps_event_loop_remove_input_fd_handler(int fd);
+extern "C" void rps_event_loop_remove_output_fd_handler(int fd);
+extern "C" void rps_initialize_event_loop(void);
 extern "C" void rps_event_loop(void); // run the event loop
 extern "C" void rps_do_stop_event_loop(void);
 // in eventloop_rps.cc, tell if the event loop is running.
@@ -5360,7 +5368,6 @@ extern "C" void rps_run_agenda_mechanism(int nbjobs);
 /// stop the agenda mechanism
 extern "C" void rps_stop_agenda_mechanism(void);
 
-extern "C" void rps_initialize_event_loop(void);
 /****
  * The agenda is a unique and central data-structure (and RefPerSys
  * object `the_agenda` with a `Rps_PayloadAgenda` payload) managing
