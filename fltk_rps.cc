@@ -87,21 +87,23 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
       RPS_WARNOUT("unimplemented rps_fltk_progoption arg=" <<  Rps_Cjson_String(arg)
                   << "' side_effect=" << (side_effect?"True":"False")
                   << " thread:" << rps_current_pthread_name() << std::endl
-		  << " state.progargs::" << Rps_Do_Output([&](std::ostream&out) {
-		    rps_output_program_arguments(out, state->argc, state->argv);
-		  }) << " state.argnum:" << state->arg_num << " state.next:" << state->next
-		  << std::endl
-                  << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
+                  << " state.progargs::" << Rps_Do_Output([&](std::ostream&out)
+      {
+        rps_output_program_arguments(out, state->argc, state->argv);
+      }) << " state.argnum:" << state->arg_num << " state.next:" << state->next
+         << std::endl
+         << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
     }
   else
     RPS_WARNOUT("unimplemented rps_fltk_progoption noarg side_effect="
                 << (side_effect?"True":"False")
                 << " thread:" << rps_current_pthread_name() << std::endl
-		  << " state.progargs:" << Rps_Do_Output([&](std::ostream&out) {
-		    rps_output_program_arguments(out, state->argc, state->argv);
-		  }) << " argnum:" << state->arg_num << " state.next:" << state->next
-		  << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
+                << " state.progargs:" << Rps_Do_Output([&](std::ostream&out)
+    {
+      rps_output_program_arguments(out, state->argc, state->argv);
+    }) << " argnum:" << state->arg_num << " state.next:" << state->next
+     << std::endl
+     << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
   rps_fltk_is_initialized = true;
 } // end rps_fltk_progoption
 
@@ -125,8 +127,6 @@ class Rps_PayloadFltkThing : public Rps_Payload
 {
   friend Rps_PayloadFltkThing*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadFltkThing,Rps_ObjectZone*>(Rps_ObjectZone*);
-  virtual ~Rps_PayloadFltkThing();
-#warning rps-PayloadFltkThing need some FLTK pointer
 protected:
   union
   {
@@ -142,6 +142,13 @@ protected:
   inline Rps_PayloadFltkThing(Rps_ObjectZone*owner);
   Rps_PayloadFltkThing(Rps_ObjectRef obr) :
     Rps_Payload(Rps_Type::PaylFltkThing,obr?obr.optr():nullptr) {};
+  Rps_PayloadFltkThing(Rps_Type rty, Rps_ObjectRef obr) :
+    Rps_Payload(rty,obr?obr.optr():nullptr)
+  {
+    RPS_ASSERT(rty== Rps_Type::PaylFltkWidget
+               || rty==Rps_Type::PaylFltkWindow
+               || rty==Rps_Type::PaylFltkThing);
+  };
   virtual const std::string payload_type_name(void) const
   {
     return "FltkThing";
@@ -154,6 +161,8 @@ protected:
   {
     return false;
   };
+public:
+  virtual ~Rps_PayloadFltkThing();
 };        // end class Rps_PayloadFltkThing
 
 Rps_PayloadFltkThing::Rps_PayloadFltkThing(Rps_ObjectZone*owner)
@@ -188,5 +197,32 @@ Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   RPS_POSSIBLE_BREAKPOINT();
   // do nothing, since temporary payload
 } // end Rps_PayloadFltkThing::dump_json_content
+
+
+////////////////////////////////////////////////////////////////
+
+
+/// temporary payload for any FLTK object
+class Rps_PayloadFltkWidget : public Rps_PayloadFltkThing
+{
+  friend Rps_PayloadFltkWidget*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadFltkWidget,Rps_ObjectZone*>(Rps_ObjectZone*);
+  virtual ~Rps_PayloadFltkWidget();
+  inline Rps_PayloadFltkWidget(Rps_ObjectZone*owner);
+  Rps_PayloadFltkWidget(Rps_ObjectRef obr) :Rps_PayloadFltkThing(Rps_Type::PaylFltkWidget, obr) {};
+  virtual const std::string payload_type_name(void) const
+  {
+    return "FltkWidget";
+  };
+  virtual uint32_t wordsize(void) const
+  {
+    return sizeof(*this)/sizeof(void*);
+  };
+  virtual bool is_erasable(void) const
+  {
+    return false;
+  };
+};        // end class Rps_PayloadFltkWidget
+
 
 //// end of file fltk_rps.cc
