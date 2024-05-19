@@ -234,8 +234,8 @@ rps_initialize_event_loop(void)
     RPS_FATALOUT("rps_initialize_event_loop should be called once");
   ///
   RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop starting "
-		<< (rps_fltk_enabled()?"with FLTK":"without-fltk")
-		<< std::endl
+                << (rps_fltk_enabled()?"with FLTK":"without-fltk")
+                << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop*start"));
   /**
    * create the pipe to self
