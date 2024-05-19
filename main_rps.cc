@@ -571,10 +571,11 @@ rps_run_loaded_application(int &argc, char **argv)
       rps_edit_run_cplusplus_code (&_);
     }
   //// initialize the FLTK windows in --fltk mode
-  if (rps_fltk_enabled ()) {
-    RPS_DEBUG_LOG(REPL, "rps_run_loaded_application initializing FLTK");
-    rps_fltk_initialize (argc, argv);
-  };
+  if (rps_fltk_enabled ())
+    {
+      RPS_DEBUG_LOG(REPL, "rps_run_loaded_application initializing FLTK");
+      rps_fltk_initialize (argc, argv);
+    };
   //// running the given plugins after load - should happen after
   //// edition of C++ code
   if (!rps_plugins_vector.empty())
