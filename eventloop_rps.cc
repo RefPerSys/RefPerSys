@@ -74,7 +74,7 @@ struct event_loop_data_st
   std::mutex eld_mtx;
   double eld_startelapsedtime; // start real time of event loop
   double eld_startcputime; // start CPU time of event loop
-  std::array<std::function<Rps_EventHandler_sigt>,RPS_MAXPOLL_FD+1> eld_handlarr;
+  std::array<Rps_EventHandler_sigt*,RPS_MAXPOLL_FD+1> eld_handlarr;
   const char*eld_explarr[RPS_MAXPOLL_FD+1];
   struct pollfd eld_pollarr[RPS_MAXPOLL_FD+1];
   void* eld_datarr[RPS_MAXPOLL_FD+1];
@@ -171,15 +171,16 @@ rps_unregister_event_loop_prepoller(int rank)
 } // end rps_unregister_event_loop_prepoller
 
 bool rps_event_loop_get_entry(int ix,
-			      std::function<Rps_EventHandler_sigt> &fun,
-			      struct pollfd*po, const char**pexpl, void**pdata)
+                              std::function<Rps_EventHandler_sigt> &fun,
+                              struct pollfd*po, const char**pexpl, void**pdata)
 {
   std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   fun = nullptr;
-  if (po) {
-    *po =  pollfd {};
-  };
+  if (po)
+    {
+      *po =  pollfd {};
+    };
   if (pexpl)
     *pexpl = nullptr;
   if (pdata)
@@ -198,7 +199,7 @@ bool rps_event_loop_get_entry(int ix,
 
 void
 rps_event_loop_add_input_fd_handler (int fd,
-                                     std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> f,
+                                     Rps_EventHandler_sigt*f,
                                      const char* explanation,
                                      void*data)
 {
@@ -211,14 +212,15 @@ rps_event_loop_add_input_fd_handler (int fd,
   rps_eventloopdata.eld_explarr[lastfd] = explanation;
   rps_eventloopdata.eld_datarr[lastfd] = data;
   rps_eventloopdata.eld_lastfd = lastfd+1;
-  if (rps_fltk_enabled()) {
-    rps_fltk_add_input_fd(fd, f, explanation, (int)lastfd);
-  }
+  if (rps_fltk_enabled())
+    {
+      rps_fltk_add_input_fd(fd, f, explanation, (int)lastfd);
+    }
 } // end rps_event_loop_add_input_fd_handler
 
 void
 rps_event_loop_add_output_fd_handler (int fd,
-                                      std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> f,
+                                      Rps_EventHandler_sigt*f,
                                       const char* explanation,
                                       void*data)
 {

@@ -222,10 +222,11 @@ class Rps_PayloadFltkWidget : public Rps_PayloadFltkThing
     : Rps_PayloadFltkThing(Rps_Type::PaylFltkWidget, obr, wid) {};
   virtual const std::string payload_type_name(void) const
   {
-    if (fltk_widget) {
-      std::string typwidname = typeid(*fltk_widget).name();
-      return "FltkWidget/" + typwidname;
-    }
+    if (fltk_widget)
+      {
+        std::string typwidname = typeid(*fltk_widget).name();
+        return "FltkWidget/" + typwidname;
+      }
     else
       return "FltkWidget-nil";
   };
@@ -267,10 +268,11 @@ class Rps_PayloadFltkRefWidget : public Rps_PayloadFltkThing, Fl_Callback_User_D
   };
   virtual const std::string payload_type_name(void) const
   {
-    if (fltk_widget) {
-      std::string typwidname = typeid(*fltk_widget).name();
-      return "FltkRefWidget/" + typwidname;
-    }
+    if (fltk_widget)
+      {
+        std::string typwidname = typeid(*fltk_widget).name();
+        return "FltkRefWidget/" + typwidname;
+      }
     else
       return "FltkRefWidget-nil";
   };
@@ -308,22 +310,23 @@ Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget(Rps_ObjectZone*owner, Fl_Widg
 
 
 extern "C" void rps_fltk_add_input_fd(int fd,
-				      std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> f,
-				      const char* explanation,
-				      int ix);
+                                      Rps_EventHandler_sigt* f,
+                                      const char* explanation,
+                                      int ix);
 
 extern "C" void rps_fltk_input_fd_handler(FL_SOCKET fd, void *data);
 
 void rps_fltk_add_input_fd(int fd,
-			   std::function<Rps_EventHandler_sigt> f,
-			   const char* explanation,
-			   int ix)
+                           Rps_EventHandler_sigt* f,
+                           const char* explanation,
+                           int ix)
 {
   Fl::add_fd(fd, rps_fltk_input_fd_handler, (void*)(intptr_t)ix);
 } // end rps_fltk_add_input_fd
 
 void rps_fltk_input_fd_handler(FL_SOCKET fd, void *data)
 {
+  int ix=(int)(intptr_t)data;
 #warning unimplemented rps_fltk_input_fd_handler should use (int)data
   RPS_FATALOUT("unimplemented rps_fltk_input_fd_handler fd#" << fd << " ix#" << (int)(intptr_t)data);
 } // end rps_fltk_input_fd_handler

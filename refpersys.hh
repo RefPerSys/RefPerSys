@@ -155,9 +155,9 @@ extern "C" bool rps_fltk_enabled (void);
 /* TODO FIXME: we probably want to use C pointers (dlsym-able) instead
    of std::function<Rps_EventHandler_sigt> */
 extern "C" void rps_fltk_add_input_fd(int fd,
-				      std::function<Rps_EventHandler_sigt> f,
-				      const char* explanation,
-				      int ix);
+                                      Rps_EventHandler_sigt* f,
+                                      const char* explanation,
+                                      int ix);
 #else
 #define rps_fltk_abi_version() 0
 #define rps_fltk_api_version() 0
@@ -463,7 +463,7 @@ extern "C" bool rps_event_loop_is_running(void);
 /* return true, and fill the information, about entry#ix in event loop
    internal data, or else return false */
 extern "C" bool rps_event_loop_get_entry(int ix,
-					 std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> &fun, struct pollfd*po, const char**pexpl, void**pdata); 
+    std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> &fun, struct pollfd*po, const char**pexpl, void**pdata);
 // in eventloop_rps.cc, give the counter for the loop, or -1 if it is
 // not running.
 extern "C" long rps_event_loop_counter(void);
