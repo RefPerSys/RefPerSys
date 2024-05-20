@@ -141,13 +141,18 @@ protected:
   virtual void dump_json_content(Rps_Dumper*, Json::Value&) const;
   inline Rps_PayloadFltkThing(Rps_ObjectZone*owner);
   Rps_PayloadFltkThing(Rps_ObjectRef obr) :
-    Rps_Payload(Rps_Type::PaylFltkThing,obr?obr.optr():nullptr) {};
+    Rps_Payload(Rps_Type::PaylFltkThing,obr?obr.optr():nullptr), fltk_ptr(nullptr) {};
   Rps_PayloadFltkThing(Rps_Type rty, Rps_ObjectRef obr) :
-    Rps_Payload(rty,obr?obr.optr():nullptr)
+    Rps_Payload(rty,obr?obr.optr():nullptr), fltk_ptr(nullptr)
   {
     RPS_ASSERT(rty== Rps_Type::PaylFltkWidget
                || rty==Rps_Type::PaylFltkWindow
                || rty==Rps_Type::PaylFltkThing);
+  };
+  Rps_PayloadFltkThing(Rps_Type rty, Rps_ObjectRef obr, Fl_Widget*wid) :
+    Rps_Payload(rty,obr?obr.optr():nullptr), fltk_widget(wid)
+  {
+    RPS_ASSERT(rty== Rps_Type::PaylFltkWidget);
   };
   virtual const std::string payload_type_name(void) const
   {
@@ -162,7 +167,7 @@ protected:
     return false;
   };
 public:
-  virtual ~Rps_PayloadFltkThing();
+  virtual ~Rps_PayloadFltkThing() =0;
 };        // end class Rps_PayloadFltkThing
 
 Rps_PayloadFltkThing::Rps_PayloadFltkThing(Rps_ObjectZone*owner)
@@ -202,14 +207,18 @@ Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 ////////////////////////////////////////////////////////////////
 
 
-/// temporary payload for any FLTK object
+/// temporary payload for any FLTK widget
 class Rps_PayloadFltkWidget : public Rps_PayloadFltkThing
 {
   friend Rps_PayloadFltkWidget*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadFltkWidget,Rps_ObjectZone*>(Rps_ObjectZone*);
-  virtual ~Rps_PayloadFltkWidget();
-  inline Rps_PayloadFltkWidget(Rps_ObjectZone*owner);
-  Rps_PayloadFltkWidget(Rps_ObjectRef obr) :Rps_PayloadFltkThing(Rps_Type::PaylFltkWidget, obr) {};
+  friend Rps_PayloadFltkWidget*
+  Rps_QuasiZone::rps_allocate2<Rps_PayloadFltkWidget,Rps_ObjectZone*,Fl_Widget*>(Rps_ObjectZone*,Fl_Widget*);
+  inline Rps_PayloadFltkWidget(Rps_ObjectZone*owner, Fl_Widget*wid);
+  Rps_PayloadFltkWidget(Rps_ObjectRef obr)
+    : Rps_PayloadFltkThing(Rps_Type::PaylFltkWidget, obr, nullptr) {};
+  Rps_PayloadFltkWidget(Rps_ObjectRef obr, Fl_Widget*wid)
+    : Rps_PayloadFltkThing(Rps_Type::PaylFltkWidget, obr, wid) {};
   virtual const std::string payload_type_name(void) const
   {
     return "FltkWidget";
@@ -222,7 +231,13 @@ class Rps_PayloadFltkWidget : public Rps_PayloadFltkThing
   {
     return false;
   };
+  virtual ~Rps_PayloadFltkWidget() {
+    delete fltk_widget;
+  };
+  Fl_Widget* get_widget(void) const { return fltk_widget; };
 };        // end class Rps_PayloadFltkWidget
 
+Rps_PayloadFltkWidget::Rps_PayloadFltkWidget(Rps_ObjectZone*owner, Fl_Widget*wid)
+  : Rps_PayloadFltkWidget(Rps_ObjectRef(owner), wid) {};
 
 //// end of file fltk_rps.cc
