@@ -30,6 +30,48 @@
 #
 
 #
+# Print a timestamped and coloured success message on to stderr.
+#
+msg_ok()
+{
+        ts=$(date +'%b %d %H:%M:%S')
+        printf '[\033[0;32m OK \033[0m] \033[0;35m%s\033[0m: %s...\n' "$ts" "$1" 1>&2
+}
+
+#
+# Print a timestamped and coloured informational message on to stderr.
+#
+msg_info()
+{
+        ts=$(date +'%b %d %H:%M:%S')
+        printf '[\033[0;34mINFO\033[0m] \033[0;35m%s\033[0m: %s...\n' "$ts" "$1" 1>&2
+}
+
+#
+# Print a timestamped and coloured warning message on to stderr.
+#
+msg_warn()
+{
+        ts=$(date +'%b %d %H:%M:%S')
+        printf '[\033[1;33mWARN\033[0m] \033[0;35m%s\033[0m: %s...\n' "$ts" "$1" 1>&2
+}
+
+#
+# Print a timestamped and coloured error message on to stderr and exit with error code 1.
+#
+msg_fail()
+{
+        ts=$(date +'%b %d %H:%M:%S')
+        printf                                                          \
+            '[\033[1;31mFAIL\033[0m] \033[0;35m%s\033[0m: %s...\n'      \
+            "$ts"                                                       \
+            "$1"                                                        \
+            1>&2
+
+        exit 1
+}
+
+#
 # Ensure that we're running a supported Linux distribution.
 # As of now, we support only Debian/Ubuntu, but other Linux
 # distros are in the pipeline.
