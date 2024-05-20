@@ -60,6 +60,7 @@ const char rps_fltk_date[]= __DATE__;
 
 class Rps_PayloadFltkThing;
 class Rps_PayloadFltkWidget;
+class Rps_PayloadFltkRefWidget;
 class Rps_PayloadFltkWindow;
 
 extern "C" bool rps_fltk_is_initialized;
@@ -231,13 +232,65 @@ class Rps_PayloadFltkWidget : public Rps_PayloadFltkThing
   {
     return false;
   };
-  virtual ~Rps_PayloadFltkWidget() {
+  virtual ~Rps_PayloadFltkWidget()
+  {
     delete fltk_widget;
   };
-  Fl_Widget* get_widget(void) const { return fltk_widget; };
+  Fl_Widget* get_widget(void) const
+  {
+    return fltk_widget;
+  };
 };        // end class Rps_PayloadFltkWidget
 
 Rps_PayloadFltkWidget::Rps_PayloadFltkWidget(Rps_ObjectZone*owner, Fl_Widget*wid)
   : Rps_PayloadFltkWidget(Rps_ObjectRef(owner), wid) {};
 
+
+/// temporary payload for a reference to any FLTK widget
+class Rps_PayloadFltkRefWidget : public Rps_PayloadFltkThing, Fl_Callback_User_Data
+{
+  friend Rps_PayloadFltkRefWidget*
+  Rps_QuasiZone::rps_allocate1<Rps_PayloadFltkRefWidget,Rps_ObjectZone*>(Rps_ObjectZone*);
+  friend Rps_PayloadFltkRefWidget*
+  Rps_QuasiZone::rps_allocate2<Rps_PayloadFltkRefWidget,Rps_ObjectZone*,Fl_Widget*>(Rps_ObjectZone*,Fl_Widget*);
+  inline Rps_PayloadFltkRefWidget(Rps_ObjectZone*owner, Fl_Widget*wid);
+  Rps_PayloadFltkRefWidget(Rps_ObjectRef obr)
+    : Rps_PayloadFltkThing(Rps_Type::PaylFltkRefWidget, obr, nullptr) {};
+  Rps_PayloadFltkRefWidget(Rps_ObjectRef obr, Fl_Widget*wid)
+    : Rps_PayloadFltkThing(Rps_Type::PaylFltkRefWidget, obr, wid)
+  {
+  };
+  virtual const std::string payload_type_name(void) const
+  {
+    return "FltkRefWidget";
+  };
+  virtual uint32_t wordsize(void) const
+  {
+    return sizeof(*this)/sizeof(void*);
+  };
+  virtual bool is_erasable(void) const
+  {
+    return false;
+  };
+  virtual ~Rps_PayloadFltkRefWidget()
+  {
+    if (!owner()) return;
+    std::unique_lock<std::recursive_mutex> guown (*(owner()->objmtxptr()));
+    owner()->clear_payload();
+  };
+  Fl_Widget* get_widget(void) const
+  {
+    return fltk_widget;
+  };
+};        // end class Rps_PayloadFltkRefWidget
+
+Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget(Rps_ObjectZone*owner, Fl_Widget*wid)
+  : Rps_PayloadFltkRefWidget(Rps_ObjectRef(owner),wid)
+{
+  if (wid)
+    {
+      RPS_ASSERT(owner);
+      wid->user_data(this, /*auto_free=*/true);
+    }
+} // end Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget
 //// end of file fltk_rps.cc
