@@ -222,7 +222,12 @@ class Rps_PayloadFltkWidget : public Rps_PayloadFltkThing
     : Rps_PayloadFltkThing(Rps_Type::PaylFltkWidget, obr, wid) {};
   virtual const std::string payload_type_name(void) const
   {
-    return "FltkWidget";
+    if (fltk_widget) {
+      std::string typwidname = typeid(*fltk_widget).name();
+      return "FltkWidget/" + typwidname;
+    }
+    else
+      return "FltkWidget-nil";
   };
   virtual uint32_t wordsize(void) const
   {
@@ -262,7 +267,12 @@ class Rps_PayloadFltkRefWidget : public Rps_PayloadFltkThing, Fl_Callback_User_D
   };
   virtual const std::string payload_type_name(void) const
   {
-    return "FltkRefWidget";
+    if (fltk_widget) {
+      std::string typwidname = typeid(*fltk_widget).name();
+      return "FltkRefWidget/" + typwidname;
+    }
+    else
+      return "FltkRefWidget-nil";
   };
   virtual uint32_t wordsize(void) const
   {
