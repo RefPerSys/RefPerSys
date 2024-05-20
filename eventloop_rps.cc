@@ -70,11 +70,14 @@ struct event_loop_data_st
 {
   unsigned eld_magic;   // should be RPS_EVENTLOOPDATA_MAGIC
   int eld_polldelaymillisec;
+  unsigned eld_lastfd;
   std::mutex eld_mtx;
   double eld_startelapsedtime; // start real time of event loop
   double eld_startcputime; // start CPU time of event loop
-  std::array<std::function<void(Rps_CallFrame*, int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> eld_handlarr;
+  std::array<std::function<Rps_EventHandler_sigt>,RPS_MAXPOLL_FD+1> eld_handlarr;
   const char*eld_explarr[RPS_MAXPOLL_FD+1];
+  struct pollfd eld_pollarr[RPS_MAXPOLL_FD+1];
+  void* eld_datarr[RPS_MAXPOLL_FD+1];
   int eld_sigfd;  // file descriptor from signalfd(2)
   int eld_timfd;        // file descriptor from timerfd_create(2)
   int eld_selfpipereadfd; // self pipe, reading end
@@ -167,6 +170,31 @@ rps_unregister_event_loop_prepoller(int rank)
   rps_eventloopdata.eld_prepollvect[rank] = nullptr;
 } // end rps_unregister_event_loop_prepoller
 
+bool rps_event_loop_get_entry(int ix,
+			      std::function<Rps_EventHandler_sigt> &fun,
+			      struct pollfd*po, const char**pexpl, void**pdata)
+{
+  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  fun = nullptr;
+  if (po) {
+    *po =  pollfd {};
+  };
+  if (pexpl)
+    *pexpl = nullptr;
+  if (pdata)
+    *pdata = nullptr;
+  if (ix<0 || ix>rps_eventloopdata.eld_lastfd)
+    return false;
+  fun = rps_eventloopdata.eld_handlarr[ix];
+  if (po)
+    *po = rps_eventloopdata.eld_pollarr[ix];
+  if (pexpl)
+    *pexpl = rps_eventloopdata.eld_explarr[ix];
+  if (pdata)
+    *pdata = rps_eventloopdata.eld_datarr[ix];
+  return true;
+} // end rps_event_loop_get_entry
 
 void
 rps_event_loop_add_input_fd_handler (int fd,
@@ -176,9 +204,16 @@ rps_event_loop_add_input_fd_handler (int fd,
 {
   std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
-#warning unimplemented rps_event_loop_add_input_fd_handler
-  RPS_FATALOUT("unimplemented rps_event_loop_add_input_fd_handler fd#" << fd
-               << ":" << (explanation?explanation:"..."));
+  unsigned lastfd = rps_eventloopdata.eld_lastfd;
+  RPS_ASSERT(lastfd < RPS_MAXPOLL_FD);
+  rps_eventloopdata.eld_pollarr[lastfd].fd = fd;
+  rps_eventloopdata.eld_pollarr[lastfd].events = POLLIN;
+  rps_eventloopdata.eld_explarr[lastfd] = explanation;
+  rps_eventloopdata.eld_datarr[lastfd] = data;
+  rps_eventloopdata.eld_lastfd = lastfd+1;
+  if (rps_fltk_enabled()) {
+    rps_fltk_add_input_fd(fd, f, explanation, (int)lastfd);
+  }
 } // end rps_event_loop_add_input_fd_handler
 
 void

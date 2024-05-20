@@ -287,6 +287,7 @@ class Rps_PayloadFltkRefWidget : public Rps_PayloadFltkThing, Fl_Callback_User_D
     if (!owner()) return;
     std::unique_lock<std::recursive_mutex> guown (*(owner()->objmtxptr()));
     owner()->clear_payload();
+    //FIXME: should we call explicitly ~Callback_User_Data()?
   };
   Fl_Widget* get_widget(void) const
   {
@@ -303,4 +304,27 @@ Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget(Rps_ObjectZone*owner, Fl_Widg
       wid->user_data(this, /*auto_free=*/true);
     }
 } // end Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget
+
+
+
+extern "C" void rps_fltk_add_input_fd(int fd,
+				      std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> f,
+				      const char* explanation,
+				      int ix);
+
+extern "C" void rps_fltk_input_fd_handler(FL_SOCKET fd, void *data);
+
+void rps_fltk_add_input_fd(int fd,
+			   std::function<Rps_EventHandler_sigt> f,
+			   const char* explanation,
+			   int ix)
+{
+  Fl::add_fd(fd, rps_fltk_input_fd_handler, (void*)(intptr_t)ix);
+} // end rps_fltk_add_input_fd
+
+void rps_fltk_input_fd_handler(FL_SOCKET fd, void *data)
+{
+#warning unimplemented rps_fltk_input_fd_handler should use (int)data
+  RPS_FATALOUT("unimplemented rps_fltk_input_fd_handler fd#" << fd << " ix#" << (int)(intptr_t)data);
+} // end rps_fltk_input_fd_handler
 //// end of file fltk_rps.cc
