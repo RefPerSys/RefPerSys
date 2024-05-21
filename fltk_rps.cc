@@ -81,8 +81,19 @@ rps_fltk_api_version (void)
 void
 rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
 {
+  RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption arg:" << arg
+		<< " next:"
+		<< (side_effect?state->next:-1)
+		<< " arg_num:"
+		<< (side_effect?state->arg_num:-1));
+  if (side_effect) {
+  /* see https://www.fltk.org/doc-1.4/classFl.html#a1576b8c9ca3e900daaa5c36ca0e7ae48 */
+    int nw = Fl::arg(state->argc, state->argv, state->next);
+    RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption nw:" << nw
+		  <<  " next#" << state->next 
+		  <<  " argnum#" << state->arg_num); 
+  };
 #warning missing code in rps_fltk_progoption
-  /* TODO: we probably should call Fl::arg here, see https://www.fltk.org/doc-1.4/classFl.html#a1576b8c9ca3e900daaa5c36ca0e7ae48 */
   if (arg)
     {
       RPS_WARNOUT("unimplemented rps_fltk_progoption arg=" <<  Rps_Cjson_String(arg)
@@ -93,7 +104,7 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
         rps_output_program_arguments(out, state->argc, state->argv);
       }) << " state.argnum:" << state->arg_num << " state.next:" << state->next
          << std::endl
-         << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
+         << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/a"));
     }
   else
     RPS_WARNOUT("unimplemented rps_fltk_progoption noarg side_effect="
@@ -104,7 +115,7 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
       rps_output_program_arguments(out, state->argc, state->argv);
     }) << " argnum:" << state->arg_num << " state.next:" << state->next
      << std::endl
-     << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
+     << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/b"));
   rps_fltk_is_initialized = true;
 } // end rps_fltk_progoption
 
