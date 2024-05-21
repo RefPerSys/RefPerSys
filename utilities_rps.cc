@@ -874,12 +874,25 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
 {
   bool side_effect = state && (void*)state != RPS_EMPTYSLOT;
   RPS_POSSIBLE_BREAKPOINT();
+  bool letterkey = (key>0 && key<256 && isalpha((char)key));
+  RPS_DEBUG_LOG(PROGARG, "rps_parse1opt key#" << key
+		<< (letterkey?"'":"")
+		<< (letterkey? ((char)key) : ' ')
+		<< " arg:" << Rps_Cjson_String(arg)
+		<< (side_effect?".":"")
+		);
+  if (side_effect)
+    RPS_DEBUG_LOG(PROGARG, "rps_parse1opt "<< Rps_Do_Output([&](std::ostream&out)
+    {
+      rps_output_program_arguments(out, state->argc, state->argv);
+    }) << " argnum:" << state->arg_num << " state.next:" << state->next
+     << std::endl
+       << RPS_FULL_BACKTRACE_HERE(1,"rps_parse1opt"));
   switch (key)
     {
     case RPSPROGOPT_DEBUG:
     {
-      if (side_effect)
-        rps_set_debug(std::string(arg));
+      rps_set_debug(std::string(arg));
     }
     return 0;
     case RPSPROGOPT_DEBUG_PATH:
@@ -890,6 +903,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     return 0;
     case RPSPROGOPT_FLTK:
     {
+      RPS_DEBUG_LOG(PROGARG, "rps_parse1opt fltk arg=" << arg);
       rps_fltk_progoption(arg, state, side_effect);
     }
     return 0;
