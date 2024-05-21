@@ -387,7 +387,7 @@ testfltk1: refpersys
 	@printf '\n\n\n////testfltk1 FINISHED¤\n'
 
 testfltk2: refpersys
-	./refpersys -AREPL --run-name=$@ --run-delay=6s  --fltk -bg ivory
+	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=5s  --fltk -bg ivory
 	@printf '\n\n\n////testfltk2 FINISHED¤\n'
 
 ## eof GNUmakefile
