@@ -82,17 +82,18 @@ void
 rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
 {
   RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption arg:" << arg
-		<< " next:"
-		<< (side_effect?state->next:-1)
-		<< " arg_num:"
-		<< (side_effect?state->arg_num:-1));
-  if (side_effect) {
-  /* see https://www.fltk.org/doc-1.4/classFl.html#a1576b8c9ca3e900daaa5c36ca0e7ae48 */
-    int nw = Fl::arg(state->argc, state->argv, state->next);
-    RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption nw:" << nw
-		  <<  " next#" << state->next 
-		  <<  " argnum#" << state->arg_num); 
-  };
+                << " next:"
+                << (side_effect?state->next:-1)
+                << " arg_num:"
+                << (side_effect?state->arg_num:-1));
+  if (side_effect)
+    {
+      /* see https://www.fltk.org/doc-1.4/classFl.html#a1576b8c9ca3e900daaa5c36ca0e7ae48 */
+      int nw = Fl::arg(state->argc, state->argv, state->next);
+      RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption nw:" << nw
+                    <<  " next#" << state->next
+                    <<  " argnum#" << state->arg_num);
+    };
 #warning missing code in rps_fltk_progoption
   if (arg)
     {
@@ -122,10 +123,15 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
 void
 rps_fltk_initialize (int argc, char**argv)
 {
-#warning missing code in rps_fltk_initialize
+#warning missing code in rps_fltk_initialize to create FLTK windows
   fl_open_display();
   RPS_FATALOUT("unimplemented rps_fltk_initialize"
-               << " thread:" << rps_current_pthread_name());
+               << " thread:" << rps_current_pthread_name()
+               << " progargs "
+               <<  Rps_Do_Output([&](std::ostream&out)
+  {
+    rps_output_program_arguments(out, argc, argv);
+  }));
 } // end rps_fltk_initialize
 
 bool
