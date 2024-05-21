@@ -463,7 +463,7 @@ extern "C" bool rps_event_loop_is_running(void);
 /* return true, and fill the information, about entry#ix in event loop
    internal data, or else return false */
 extern "C" bool rps_event_loop_get_entry(int ix,
-    std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> &fun, struct pollfd*po, const char**pexpl, void**pdata);
+    Rps_EventHandler_sigt** pfun, struct pollfd*po, const char**pexpl, void**pdata);
 // in eventloop_rps.cc, give the counter for the loop, or -1 if it is
 // not running.
 extern "C" long rps_event_loop_counter(void);

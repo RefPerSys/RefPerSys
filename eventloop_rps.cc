@@ -171,12 +171,13 @@ rps_unregister_event_loop_prepoller(int rank)
 } // end rps_unregister_event_loop_prepoller
 
 bool rps_event_loop_get_entry(int ix,
-                              std::function<Rps_EventHandler_sigt> &fun,
+                              Rps_EventHandler_sigt**pfun,
                               struct pollfd*po, const char**pexpl, void**pdata)
 {
   std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
-  fun = nullptr;
+  if (pfun)
+    *pfun = nullptr;
   if (po)
     {
       *po =  pollfd {};
@@ -187,7 +188,8 @@ bool rps_event_loop_get_entry(int ix,
     *pdata = nullptr;
   if (ix<0 || ix>rps_eventloopdata.eld_lastfd)
     return false;
-  fun = rps_eventloopdata.eld_handlarr[ix];
+  if (pfun)
+    *pfun = rps_eventloopdata.eld_handlarr[ix];
   if (po)
     *po = rps_eventloopdata.eld_pollarr[ix];
   if (pexpl)
