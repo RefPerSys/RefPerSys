@@ -740,6 +740,7 @@ extern "C" void rps_output_debug_flags(std::ostream&out, unsigned flags=0);
   dbgmacro(MSGSEND)                 \
   dbgmacro(PARSE)                   \
   dbgmacro(PARSE_STRING)            \
+  dbgmacro(PROGARG)                 \
   dbgmacro(REPL)                    \
   /*end RPS_DEBUG_OPTIONS*/
 
