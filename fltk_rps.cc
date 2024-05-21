@@ -324,10 +324,42 @@ void rps_fltk_add_input_fd(int fd,
   Fl::add_fd(fd, rps_fltk_input_fd_handler, (void*)(intptr_t)ix);
 } // end rps_fltk_add_input_fd
 
-void rps_fltk_input_fd_handler(FL_SOCKET fd, void *data)
+void rps_fltk_input_fd_handler(FL_SOCKET fd, void *hdata)
 {
-  int ix=(int)(intptr_t)data;
-#warning unimplemented rps_fltk_input_fd_handler should use (int)data
-  RPS_FATALOUT("unimplemented rps_fltk_input_fd_handler fd#" << fd << " ix#" << (int)(intptr_t)data);
+  int ix=(int)(intptr_t)hdata;
+  Rps_EventHandler_sigt*funptr=nullptr;
+  struct pollfd pe={};
+  const char*expl=nullptr;
+  void*data=nullptr;
+  bool ok=rps_event_loop_get_entry(ix, &funptr, &pe, &expl, &data);
+  RPS_DEBUG_LOG(REPL, "rps_fltk_input_fd_handler fd#" << fd
+		<< " ix#" << ix
+		<< (ok?"OK":"BAD") << " funptr@" << (void*)funptr
+		<< (expl?" expl:": "NOEXPL")
+		<< (expl?expl:"")
+		<< " data@" << data
+		<< " thread:" << rps_current_pthread_name()
+                << std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_input_fd_handler")
+		);
+  if (!ok)
+    return;
+  if (pe.fd != fd)
+    return;
+  if (!funptr)
+    return;
+  /* NOTICE: think more about garbage collection interaction with FLTK
+     event loop. */
+#warning perhaps we need to find the refpersys call frame before fltk event loop?
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/RPS_NULL_CALL_FRAME, //
+                 /** locals **/
+		 Rps_Value v;
+		 );
+  _f.v = nullptr;
+  (*funptr) (&_, fd, data);
+  RPS_DEBUG_LOG(REPL, "rps_fltk_input_fd_handler done fd#" << fd
+		<< " ix#" << ix <<std::endl);
 } // end rps_fltk_input_fd_handler
+
 //// end of file fltk_rps.cc
