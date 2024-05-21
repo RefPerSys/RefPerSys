@@ -125,13 +125,15 @@ rps_fltk_initialize (int argc, char**argv)
 {
 #warning missing code in rps_fltk_initialize to create FLTK windows
   fl_open_display();
-  RPS_FATALOUT("unimplemented rps_fltk_initialize"
+  RPS_WARNOUT("unimplemented rps_fltk_initialize"
                << " thread:" << rps_current_pthread_name()
                << " progargs "
                <<  Rps_Do_Output([&](std::ostream&out)
-  {
-    rps_output_program_arguments(out, argc, argv);
-  }));
+	       {
+		 rps_output_program_arguments(out, argc, argv);
+	       })
+	      << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize"));
 } // end rps_fltk_initialize
 
 bool
