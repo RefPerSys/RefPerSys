@@ -78,7 +78,22 @@ msg_fail()
 #
 check_os()
 {
-	echo 'TODO'
+	emsg="only Debian/Ubuntu supported"
+
+	kernel=$(uname -s | tr '[:upper:]' '[:lower:]')
+	test "$kernel" = linux || msg_fail "$emsg"
+
+	test -f /etc/os-release || msg_fail "$emsg"
+	distro=$(grep 'NAME' /etc/os-release \
+	    | head -n 1                      \
+	    | cut -d '=' -f 2                \
+	    | tr -d '"'                      \
+	    | cut -d ' ' -f 1                \
+	    | tr '[:upper:]' '[:lower:]')
+
+	test "$distro" = debian        \
+	    || test "$distro" = ubuntu \
+	    || msg_fail "$emsg"
 }
 
 #
