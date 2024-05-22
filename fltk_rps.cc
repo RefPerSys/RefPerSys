@@ -1,5 +1,5 @@
 /****************************************************************
- * file lightgen_rps.cc
+ * file fltk_rps.cc
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Description:
@@ -51,96 +51,35 @@
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Box.H>
 
-
+/// conventional strings
 extern "C" const char rps_fltk_gitid[];
 const char rps_fltk_gitid[]= RPS_GITID;
 
 extern "C" const char rps_fltk_date[];
 const char rps_fltk_date[]= __DATE__;
 
+////////////////////////////////////////////////////////////////////////
+////// ******** DECLARATIONS ********
+
 class Rps_PayloadFltkThing;
 class Rps_PayloadFltkWidget;
 class Rps_PayloadFltkRefWidget;
 class Rps_PayloadFltkWindow;
+class Rps_FltkMainWindow;
+
+extern "C" Rps_FltkMainWindow* rps_fltk_mainwin;
+Rps_FltkMainWindow* rps_fltk_mainwin;
 
 extern "C" bool rps_fltk_is_initialized;
 
 bool rps_fltk_is_initialized;
-int
-rps_fltk_abi_version (void)
-{
-  return Fl::abi_version();
-} // end rps_fltk_abi_version
 
-int
-rps_fltk_api_version (void)
-{
-  return Fl::api_version ();
-} // end rps_fltk_api_version
+extern "C" void rps_fltk_add_input_fd(int fd,
+                                      Rps_EventHandler_sigt* f,
+                                      const char* explanation,
+                                      int ix);
 
-void
-rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
-{
-  RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption arg:" << arg
-                << " next:"
-                << (side_effect?state->next:-1)
-                << " arg_num:"
-                << (side_effect?state->arg_num:-1));
-  if (side_effect)
-    {
-      /* see https://www.fltk.org/doc-1.4/classFl.html#a1576b8c9ca3e900daaa5c36ca0e7ae48 */
-      int nw = Fl::arg(state->argc, state->argv, state->next);
-      RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption nw:" << nw
-                    <<  " next#" << state->next
-                    <<  " argnum#" << state->arg_num);
-    };
-#warning missing code in rps_fltk_progoption
-  if (arg)
-    {
-      RPS_WARNOUT("unimplemented rps_fltk_progoption arg=" <<  Rps_Cjson_String(arg)
-                  << "' side_effect=" << (side_effect?"True":"False")
-                  << " thread:" << rps_current_pthread_name() << std::endl
-                  << " state.progargs::" << Rps_Do_Output([&](std::ostream&out)
-      {
-        rps_output_program_arguments(out, state->argc, state->argv);
-      }) << " state.argnum:" << state->arg_num << " state.next:" << state->next
-         << std::endl
-         << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/a"));
-    }
-  else
-    RPS_WARNOUT("unimplemented rps_fltk_progoption noarg side_effect="
-                << (side_effect?"True":"False")
-                << " thread:" << rps_current_pthread_name() << std::endl
-                << " state.progargs:" << Rps_Do_Output([&](std::ostream&out)
-    {
-      rps_output_program_arguments(out, state->argc, state->argv);
-    }) << " argnum:" << state->arg_num << " state.next:" << state->next
-     << std::endl
-     << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/b"));
-  rps_fltk_is_initialized = true;
-} // end rps_fltk_progoption
-
-void
-rps_fltk_initialize (int argc, char**argv)
-{
-#warning missing code in rps_fltk_initialize to create FLTK windows
-  fl_open_display();
-  RPS_WARNOUT("unimplemented rps_fltk_initialize"
-               << " thread:" << rps_current_pthread_name()
-               << " progargs "
-               <<  Rps_Do_Output([&](std::ostream&out)
-	       {
-		 rps_output_program_arguments(out, argc, argv);
-	       })
-	      << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize"));
-} // end rps_fltk_initialize
-
-bool
-rps_fltk_enabled (void)
-{
-  return rps_fltk_is_initialized;
-} // end rps_fltk_enabled
+extern "C" void rps_fltk_input_fd_handler(FL_SOCKET fd, void *data);
 
 /// temporary payload for any FLTK object
 class Rps_PayloadFltkThing : public Rps_Payload
@@ -190,40 +129,6 @@ public:
   virtual ~Rps_PayloadFltkThing() =0;
 };        // end class Rps_PayloadFltkThing
 
-Rps_PayloadFltkThing::Rps_PayloadFltkThing(Rps_ObjectZone*owner)
-  : Rps_Payload(Rps_Type::PaylFltkThing,owner), fltk_ptr(nullptr)
-{
-#warning incomplete Rps_PayloadFltkThing::Rps_PayloadFltkThing
-} // end of Rps_PayloadFltkThing::Rps_PayloadFltkThing
-
-Rps_PayloadFltkThing::~Rps_PayloadFltkThing()
-{
-#warning incomplete Rps_PayloadFltkThing::~Rps_PayloadFltkThing
-} // end destructor Rps_PayloadFltkThing::~Rps_PayloadFltkThing
-
-void
-Rps_PayloadFltkThing::gc_mark(Rps_GarbageCollector&gc) const
-{
-#warning incomplete Rps_PayloadFltkThing::gc_mark
-} // end of Rps_PayloadFltkThing::gc_mark
-
-void
-Rps_PayloadFltkThing::dump_scan(Rps_Dumper*du) const
-{
-  RPS_ASSERT(du);
-  RPS_POSSIBLE_BREAKPOINT();
-  // do nothing, since temporary payload
-} // end Rps_PayloadFltkThing::dump_scan
-
-void
-Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
-{
-  RPS_ASSERT(du);
-  RPS_POSSIBLE_BREAKPOINT();
-  // do nothing, since temporary payload
-} // end Rps_PayloadFltkThing::dump_json_content
-
-
 ////////////////////////////////////////////////////////////////
 
 
@@ -266,9 +171,6 @@ class Rps_PayloadFltkWidget : public Rps_PayloadFltkThing
     return fltk_widget;
   };
 };        // end class Rps_PayloadFltkWidget
-
-Rps_PayloadFltkWidget::Rps_PayloadFltkWidget(Rps_ObjectZone*owner, Fl_Widget*wid)
-  : Rps_PayloadFltkWidget(Rps_ObjectRef(owner), wid) {};
 
 
 /// temporary payload for a reference to any FLTK widget
@@ -327,13 +229,26 @@ Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget(Rps_ObjectZone*owner, Fl_Widg
 } // end Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget
 
 
+////////////////
+class Rps_FltkMainWindow: public Fl_Window {
+public:
+  Rps_FltkMainWindow(int x, int y, int w, int h, const char*title);
+  Rps_FltkMainWindow(int w, int h, const char*title);
+  virtual ~Rps_FltkMainWindow();
+};				// end Rps_FltkMainWindow;
 
-extern "C" void rps_fltk_add_input_fd(int fd,
-                                      Rps_EventHandler_sigt* f,
-                                      const char* explanation,
-                                      int ix);
 
-extern "C" void rps_fltk_input_fd_handler(FL_SOCKET fd, void *data);
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+//////// ******* IMPLEMENTATION *******
+
+Rps_PayloadFltkWidget::Rps_PayloadFltkWidget(Rps_ObjectZone*owner, Fl_Widget*wid)
+  : Rps_PayloadFltkWidget(Rps_ObjectRef(owner), wid) {};
 
 void
 rps_fltk_add_input_fd(int fd,
@@ -388,5 +303,130 @@ rps_fltk_input_fd_handler(FL_SOCKET fd, void *hdata)
   RPS_DEBUG_LOG(REPL, "rps_fltk_input_fd_handler done fd#" << fd
                 << " ix#" << ix <<std::endl);
 } // end rps_fltk_input_fd_handler
+
+Rps_PayloadFltkThing::Rps_PayloadFltkThing(Rps_ObjectZone*owner)
+  : Rps_Payload(Rps_Type::PaylFltkThing,owner), fltk_ptr(nullptr)
+{
+#warning incomplete Rps_PayloadFltkThing::Rps_PayloadFltkThing
+} // end of Rps_PayloadFltkThing::Rps_PayloadFltkThing
+
+Rps_PayloadFltkThing::~Rps_PayloadFltkThing()
+{
+#warning incomplete Rps_PayloadFltkThing::~Rps_PayloadFltkThing
+} // end destructor Rps_PayloadFltkThing::~Rps_PayloadFltkThing
+
+void
+Rps_PayloadFltkThing::gc_mark(Rps_GarbageCollector&gc) const
+{
+#warning incomplete Rps_PayloadFltkThing::gc_mark
+} // end of Rps_PayloadFltkThing::gc_mark
+
+void
+Rps_PayloadFltkThing::dump_scan(Rps_Dumper*du) const
+{
+  RPS_ASSERT(du);
+  RPS_POSSIBLE_BREAKPOINT();
+  // do nothing, since temporary payload
+} // end Rps_PayloadFltkThing::dump_scan
+
+void
+Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
+{
+  RPS_ASSERT(du);
+  RPS_POSSIBLE_BREAKPOINT();
+  // do nothing, since temporary payload
+} // end Rps_PayloadFltkThing::dump_json_content
+
+
+
+
+////////////////
+#warning missing implementation of class Rps_FltkMainWindow
+
+
+
+
+
+
+////////////////
+int
+rps_fltk_abi_version (void)
+{
+  return Fl::abi_version();
+} // end rps_fltk_abi_version
+
+int
+rps_fltk_api_version (void)
+{
+  return Fl::api_version ();
+} // end rps_fltk_api_version
+
+void
+rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
+{
+  RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption arg:" << arg
+                << " next:"
+                << (side_effect?state->next:-1)
+                << " arg_num:"
+                << (side_effect?state->arg_num:-1));
+  if (side_effect)
+    {
+      /* see https://www.fltk.org/doc-1.4/classFl.html#a1576b8c9ca3e900daaa5c36ca0e7ae48 */
+      int nw = Fl::arg(state->argc, state->argv, state->next);
+      RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption nw:" << nw
+                    <<  " next#" << state->next
+                    <<  " argnum#" << state->arg_num);
+    };
+#warning missing code in rps_fltk_progoption
+  if (arg)
+    {
+      RPS_WARNOUT("unimplemented rps_fltk_progoption arg=" <<  Rps_Cjson_String(arg)
+                  << "' side_effect=" << (side_effect?"True":"False")
+                  << " thread:" << rps_current_pthread_name() << std::endl
+                  << " state.progargs::" << Rps_Do_Output([&](std::ostream&out)
+      {
+        rps_output_program_arguments(out, state->argc, state->argv);
+      }) << " state.argnum:" << state->arg_num << " state.next:" << state->next
+         << std::endl
+         << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/a"));
+    }
+  else
+    RPS_WARNOUT("unimplemented rps_fltk_progoption noarg side_effect="
+                << (side_effect?"True":"False")
+                << " thread:" << rps_current_pthread_name() << std::endl
+                << " state.progargs:" << Rps_Do_Output([&](std::ostream&out)
+    {
+      rps_output_program_arguments(out, state->argc, state->argv);
+    }) << " argnum:" << state->arg_num << " state.next:" << state->next
+     << std::endl
+     << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/b"));
+  rps_fltk_is_initialized = true;
+} // end rps_fltk_progoption
+
+bool
+rps_fltk_enabled (void)
+{
+  return rps_fltk_is_initialized;
+} // end rps_fltk_enabled
+void
+rps_fltk_initialize (int argc, char**argv)
+{
+#warning missing code in rps_fltk_initialize to create FLTK windows
+  char titlebuf[128];
+  memset (titlebuf, 0, sizeof(titlebuf));
+  snprintf(titlebuf, sizeof(titlebuf), "RefPerSys v%d.%d pid %d on %s",
+           rps_get_major_version(), rps_get_minor_version(), (int)getpid(),
+           rps_hostname());
+  fl_open_display();
+  RPS_WARNOUT("unimplemented rps_fltk_initialize " << titlebuf << std::endl
+              << " thread:" << rps_current_pthread_name()
+              << " progargs "
+              <<  Rps_Do_Output([&](std::ostream&out)
+  {
+    rps_output_program_arguments(out, argc, argv);
+  })
+      << std::endl
+      << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize"));
+} // end rps_fltk_initialize
 
 //// end of file fltk_rps.cc
