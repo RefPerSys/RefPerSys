@@ -357,6 +357,19 @@ rps_fltk_output_fd_handler(FL_SOCKET fd, void *hdata)
                 << " ix#" << ix <<std::endl);
 } // end rps_fltk_output_fd_handler
 
+
+void
+rps_fltk_remove_input_fd(int fd)
+{
+  Fl::remove_fd(fd, POLLIN);
+} // end rps_fltk_remove_input_fd
+
+void
+rps_fltk_remove_output_fd(int fd)
+{
+  Fl::remove_fd(fd, POLLOUT);
+} // end rps_fltk_remove_output_fd
+
 Rps_PayloadFltkThing::Rps_PayloadFltkThing(Rps_ObjectZone*owner)
   : Rps_Payload(Rps_Type::PaylFltkThing,owner), fltk_ptr(nullptr)
 {
