@@ -341,10 +341,31 @@ Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 
 
 ////////////////
-#warning missing implementation of class Rps_FltkMainWindow
+
+Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*title)
+  : Fl_Window(x,y,w,h,title) {
+  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow x=" << x << ",y=" << y
+		<< ",w=" << w << ",h=" << h
+		<< ",title=" << Rps_Cjson_String(title)
+		<< " @" << (void*)this);
+};
+
+Rps_FltkMainWindow::Rps_FltkMainWindow(int w, int h, const char*title)
+  : Rps_FltkMainWindow(10 + (Rps_Random::random_32u() % 32)*10,
+		       10 + (Rps_Random::random_32u() % 32)*10,
+		       w, h, title) {
+  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow w=" << w << ",h=" << h
+		<< ",title=" << Rps_Cjson_String(title)
+		<< " @" << (void*)this);
+}; // end Rps_FltkMainWindow::~Rps_FltkMainWindow
+
+Rps_FltkMainWindow::~Rps_FltkMainWindow() {
+  RPS_DEBUG_LOG(REPL, "~Rps_FltkMainWindow @" << (void*)this);
+}; // end Rps_FltkMainWindow::~Rps_FltkMainWindow
 
 
 
+#warning incomplete implementation of class Rps_FltkMainWindow
 
 
 
@@ -418,6 +439,9 @@ rps_fltk_initialize (int argc, char**argv)
            rps_get_major_version(), rps_get_minor_version(), (int)getpid(),
            rps_hostname());
   fl_open_display();
+  rps_fltk_mainwin = new Rps_FltkMainWindow(/*width=*/500, /*height=*/300,
+					    titlebuf);
+  rps_fltk_mainwin->show();
   RPS_WARNOUT("unimplemented rps_fltk_initialize " << titlebuf << std::endl
               << " thread:" << rps_current_pthread_name()
               << " progargs "
