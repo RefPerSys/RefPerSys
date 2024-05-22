@@ -299,6 +299,49 @@ rps_event_loop_remove_input_fd_handler(int fd)
     rps_fltk_remove_input_fd(fd);
 } // end rps_event_loop_remove_input_fd_handler
 
+void
+rps_self_pipe_read_handler(Rps_CallFrame*cf, int fd, void* data)
+{
+  RPS_ASSERT(rps_is_main_thread());
+  unsigned char buf[128];
+  RPS_ASSERT(fd == rps_eventloopdata.eld_selfpipereadfd);
+  RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
+  /* TODO: should read(2) */
+  memset(buf, 0, sizeof(buf));
+  int nbr = read(fd, buf, sizeof(buf));
+  RPS_DEBUG_LOG(REPL, "rps_self_pipe_read_handler fd#" << fd << " nbr=" << nbr
+                << " buf=" << buf << "." << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_self_pipe_read_handler"));
+  if (nbr > 0)
+    for (int i = 0; i<nbr; i++)
+      {
+        unsigned char b=buf[i];
+        switch (b)
+          {
+          case SelfPipe_Dump:
+            rps_dump_into (rps_get_loaddir());
+            break;
+          case SelfPipe_GarbColl:
+            rps_garbage_collect();
+            break;
+          case SelfPipe_Quit:
+            rps_stop_event_loop_flag.store(true);
+            break;
+          case SelfPipe_Exit:
+            rps_dump_into (rps_get_loaddir());
+            rps_stop_event_loop_flag.store(true);
+            break;
+          case SelfPipe_Process:
+#warning should call something from transientobj_rps.cc to perhaps fork a process related to some Rps_PayloadUnixProcess
+          /* TODO: see Rps_PayloadUnixProcess::queue_of_runnable_processes
+          in transientobj_rps.cc; the dormant processes should somehow
+          be started by fork/exec */
+          default:
+            RPS_FATALOUT("unexpected byte " << (char)b << "#" << (unsigned)b << " on self pipe");
+          };
+      };
+} // end rps_self_pipe_read_handler
+
 
 void
 rps_event_loop_remove_output_fd_handler(int fd)
@@ -368,7 +411,6 @@ rps_is_fifo(std::string path)
   return false;
 } // end rps_is_fifo
 
-extern "C" void rps_self_pipe_read_handler();
 
 void
 rps_initialize_event_loop(void)
