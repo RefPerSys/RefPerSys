@@ -162,6 +162,10 @@ extern "C" void rps_fltk_add_output_fd(int fd,
                                        Rps_EventHandler_sigt* f,
                                        const char* explanation,
                                        int ix);
+/* remove an input file descriptor event handler from FLTK event loop */
+extern "C" void rps_fltk_remove_input_fd(int fd);
+/* remove an output file descriptor event handler from FLTK event loop */
+extern "C" void rps_fltk_remove_output_fd(int fd);
 #else
 #define rps_fltk_abi_version() 0
 #define rps_fltk_api_version() 0
@@ -170,6 +174,8 @@ extern "C" void rps_fltk_add_output_fd(int fd,
 #define rps_fltk_enabled() false
 #define rps_fltk_add_input_fd(Fd,Fun,Expl,Ix) do {}while(0)
 #define rps_fltk_add_output_fd(Fd,Fun,Expl,Ix) do {}while(0)
+#define rps_fltk_remove_input_fd(Fd) do{}while(0)
+#define rps_fltk_remove_output_fd(Fd) do{}while(0)
 #endif
 
 class Rps_QuasiZone; // GC-managed piece of memory
