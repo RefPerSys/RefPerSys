@@ -277,7 +277,7 @@ rps_initialize_event_loop(void)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop*start"));
   /**
-   * create the pipe to self
+   * create the pipe to self and install handlers for it
    **/
   {
     int pipefdarr[2] = {-1, -1};
@@ -287,6 +287,7 @@ rps_initialize_event_loop(void)
     rps_eventloopdata.eld_selfpipereadfd = pipefdarr[0];
     RPS_ASSERT(rps_eventloopdata.eld_selfpipereadfd > 0);
     rps_eventloopdata.eld_selfpipewritefd = pipefdarr[1];
+    RPS_ASSERT(rps_eventloopdata.eld_selfpipewritefd > 0);
   }
   if (rps_poll_delay_millisec==0)
     rps_poll_delay_millisec = RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC;

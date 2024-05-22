@@ -440,19 +440,25 @@ extern "C" bool rps_run_repl;
 
 extern "C" void rps_jsonrpc_initialize(void);
 
-/// our event loop can call C++ closures before the poll(2) system
-/// call in the event loop. return some index for the unregistering
-/// function.
+/// Our event loop can call C++ closures before the poll(2) system
+/// call in the event loop. This C++ closure (or std::function) could
+/// add additional sources to the event loop. This
+/// rps_register_event_loop_prepoller function returns some index for
+/// the unregistering function.
 extern "C" int rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int& npoll, Rps_CallFrame*)> fun);
 extern "C" void rps_unregister_event_loop_prepoller(int rank);
-extern "C" void rps_event_loop_add_input_fd_handler (int fd,
-    std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> f,
-    const char* explanation = nullptr,
-    void*data = nullptr);
-extern "C" void rps_event_loop_add_output_fd_handler (int fd,
-    std::function<void(Rps_CallFrame*, int /*fd*/, void* /*data*/)> f,
-    const char* explanation = nullptr,
-    void*data = nullptr);
+
+/// register C function input handler
+extern "C" void rps_event_loop_add_input_fd_handler
+(int fd,
+ Rps_EventHandler_sigt*cfun,
+ const char* explanation = nullptr,
+ void*data = nullptr);
+extern "C" void rps_event_loop_add_output_fd_handler
+(int fd,
+ Rps_EventHandler_sigt*cfun,
+ const char* explanation = nullptr,
+ void*data = nullptr);
 extern "C" void rps_event_loop_remove_input_fd_handler(int fd);
 extern "C" void rps_event_loop_remove_output_fd_handler(int fd);
 extern "C" void rps_initialize_event_loop(void);
