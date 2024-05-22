@@ -217,7 +217,11 @@ rps_event_loop_add_input_fd_handler (int fd,
   if (rps_fltk_enabled())
     {
       rps_fltk_add_input_fd(fd, f, explanation, (int)lastfd);
-    }
+    };
+  RPS_DEBUG_LOG(REPL, "rps_event_loop_add_input_fd_handler fd#" << fd
+                << " f@" << (void*)f
+                << " expl:" << explanation
+                << " data@" << (void*)data);
 } // end rps_event_loop_add_input_fd_handler
 
 void
@@ -228,9 +232,21 @@ rps_event_loop_add_output_fd_handler (int fd,
 {
   std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
-#warning unimplemented rps_event_loop_add_output_fd_handler
-  RPS_FATALOUT("unimplemented rps_event_loop_add_output_fd_handler fd#" << fd
-               << ":" << (explanation?explanation:"..."));
+  unsigned lastfd = rps_eventloopdata.eld_lastfd;
+  RPS_ASSERT(lastfd < RPS_MAXPOLL_FD);
+  rps_eventloopdata.eld_pollarr[lastfd].fd = fd;
+  rps_eventloopdata.eld_pollarr[lastfd].events = POLLOUT;
+  rps_eventloopdata.eld_explarr[lastfd] = explanation;
+  rps_eventloopdata.eld_datarr[lastfd] = data;
+  rps_eventloopdata.eld_lastfd = lastfd+1;
+  if (rps_fltk_enabled())
+    {
+      rps_fltk_add_output_fd(fd, f, explanation, (int)lastfd);
+    }
+  RPS_DEBUG_LOG(REPL, "rps_event_loop_add_output_fd_handler fd#" << fd
+                << " f@" << (void*)f
+                << " expl:" << explanation
+                << " data@" << (void*)data);
 } // end rps_event_loop_add_output_fd_handler
 
 void
@@ -259,6 +275,8 @@ rps_is_fifo(std::string path)
     return (s.st_mode & S_IFMT) == S_IFIFO;
   return false;
 } // end rps_is_fifo
+
+extern "C" void rps_self_pipe_read_handler();
 
 void
 rps_initialize_event_loop(void)
@@ -304,7 +322,7 @@ rps_initialize_event_loop(void)
     RPS_FATALOUT("failed to call signalfd:" << strerror(errno));
   RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop thread "
                 << rps_current_pthread_name()
-		<< " sigfd#" << rps_eventloopdata.eld_sigfd
+                << " sigfd#" << rps_eventloopdata.eld_sigfd
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop/sig")
                );
@@ -314,7 +332,7 @@ rps_initialize_event_loop(void)
     RPS_FATALOUT("failed to call timerfd:" << strerror(errno));
   RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop thread "
                 << rps_current_pthread_name()
-		<< " timerfd#" << rps_eventloopdata.eld_timfd
+                << " timerfd#" << rps_eventloopdata.eld_timfd
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop/timer")
                );
