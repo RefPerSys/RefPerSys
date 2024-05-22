@@ -98,6 +98,12 @@ static std::stringbuf rps_jsonrpc_rspbuf; /// buffer for responses read from JSO
 static std::stringstream rps_jsonrpc_rspstream; // should be used
 #warning use rps_jsonrpc_rspstream below
 
+extern "C" void rps_sigfd_read_handler(Rps_CallFrame*cf, int fd, void* data);
+extern "C" void rps_timer_read_handler(Rps_CallFrame*cf, int fd, void* data);
+extern "C" void rps_fifo_read_handler(Rps_CallFrame*cf, int fd, void* data);
+extern "C" void rps_fifo_write_handler(Rps_CallFrame*cf, int fd, void* data);
+extern "C" void rps_self_pipe_read_handler(Rps_CallFrame*cf, int fd, void* data);
+extern "C" void rps_self_pipe_write_handler(Rps_CallFrame*cf, int fd, void* data);
 /**
  * We probably want to use the pipe to self trick.
  * https://www.sitepoint.com/the-self-pipe-trick-explained/
