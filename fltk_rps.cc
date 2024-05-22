@@ -74,12 +74,9 @@ extern "C" bool rps_fltk_is_initialized;
 
 bool rps_fltk_is_initialized;
 
-extern "C" void rps_fltk_add_input_fd(int fd,
-                                      Rps_EventHandler_sigt* f,
-                                      const char* explanation,
-                                      int ix);
 
 extern "C" void rps_fltk_input_fd_handler(FL_SOCKET fd, void *data);
+extern "C" void rps_fltk_output_fd_handler(FL_SOCKET fd, void *data);
 
 /// temporary payload for any FLTK object
 class Rps_PayloadFltkThing : public Rps_Payload
@@ -260,7 +257,20 @@ rps_fltk_add_input_fd(int fd,
   RPS_DEBUG_LOG(REPL, "rps_fltk_add_input_fd fd#" << fd
                 << (explanation?" ":"") << (explanation?explanation:"")
                 << " ix#" << ix);
-  Fl::add_fd(fd, rps_fltk_input_fd_handler, (void*)(intptr_t)ix);
+  Fl::add_fd(fd, POLLIN, rps_fltk_input_fd_handler, (void*)(intptr_t)ix);
+} // end rps_fltk_add_input_fd
+
+
+void
+rps_fltk_add_output_fd(int fd,
+                       Rps_EventHandler_sigt* f,
+                       const char* explanation,
+                       int ix)
+{
+  RPS_DEBUG_LOG(REPL, "rps_fltk_add_input_fd fd#" << fd
+                << (explanation?" ":"") << (explanation?explanation:"")
+                << " ix#" << ix);
+  Fl::add_fd(fd, POLLOUT, rps_fltk_output_fd_handler, (void*)(intptr_t)ix);
 } // end rps_fltk_add_input_fd
 
 
@@ -304,6 +314,48 @@ rps_fltk_input_fd_handler(FL_SOCKET fd, void *hdata)
   RPS_DEBUG_LOG(REPL, "rps_fltk_input_fd_handler done fd#" << fd
                 << " ix#" << ix <<std::endl);
 } // end rps_fltk_input_fd_handler
+
+
+/* this gets called by FLTK event loop when some input is readable on
+   fd */
+void
+rps_fltk_output_fd_handler(FL_SOCKET fd, void *hdata)
+{
+  int ix=(int)(intptr_t)hdata;
+  Rps_EventHandler_sigt*funptr=nullptr;
+  struct pollfd pe= {};
+  const char*expl=nullptr;
+  void*data=nullptr;
+  bool ok=rps_event_loop_get_entry(ix, &funptr, &pe, &expl, &data);
+  RPS_DEBUG_LOG(REPL, "rps_fltk_output_fd_handler fd#" << fd
+                << " ix#" << ix
+                << (ok?"OK":"BAD") << " funptr@" << (void*)funptr
+                << (expl?" expl:": "NOEXPL")
+                << (expl?expl:"")
+                << " data@" << data
+                << " thread:" << rps_current_pthread_name()
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_output_fd_handler")
+               );
+  if (!ok)
+    return;
+  if (pe.fd != fd)
+    return;
+  if (!funptr)
+    return;
+  /* NOTICE: think more about garbage collection interaction with FLTK
+     event loop. */
+#warning perhaps we need to find the refpersys call frame before fltk event loop?
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/RPS_NULL_CALL_FRAME, //
+                 /** locals **/
+                 Rps_Value v;
+                );
+  _f.v = nullptr;
+  (*funptr) (&_, fd, data);
+  RPS_DEBUG_LOG(REPL, "rps_fltk_output_fd_handler done fd#" << fd
+                << " ix#" << ix <<std::endl);
+} // end rps_fltk_output_fd_handler
 
 Rps_PayloadFltkThing::Rps_PayloadFltkThing(Rps_ObjectZone*owner)
   : Rps_Payload(Rps_Type::PaylFltkThing,owner), fltk_ptr(nullptr)
