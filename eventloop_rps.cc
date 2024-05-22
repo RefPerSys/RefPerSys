@@ -70,7 +70,7 @@ struct event_loop_data_st
 {
   unsigned eld_magic;   // should be RPS_EVENTLOOPDATA_MAGIC
   int eld_polldelaymillisec;
-  unsigned eld_lastfd;
+  unsigned eld_lastix;
   std::recursive_mutex eld_mtx;
   double eld_startelapsedtime; // start real time of event loop
   double eld_startcputime; // start CPU time of event loop
@@ -186,7 +186,7 @@ bool rps_event_loop_get_entry(int ix,
     *pexpl = nullptr;
   if (pdata)
     *pdata = nullptr;
-  if (ix<0 || ix>rps_eventloopdata.eld_lastfd)
+  if (ix<0 || ix>rps_eventloopdata.eld_lastix)
     return false;
   if (pfun)
     *pfun = rps_eventloopdata.eld_handlarr[ix];
@@ -207,13 +207,13 @@ rps_event_loop_add_input_fd_handler (int fd,
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
-  unsigned lastfd = rps_eventloopdata.eld_lastfd;
+  unsigned lastfd = rps_eventloopdata.eld_lastix;
   RPS_ASSERT(lastfd < RPS_MAXPOLL_FD);
   rps_eventloopdata.eld_pollarr[lastfd].fd = fd;
   rps_eventloopdata.eld_pollarr[lastfd].events = POLLIN;
   rps_eventloopdata.eld_explarr[lastfd] = explanation;
   rps_eventloopdata.eld_datarr[lastfd] = data;
-  rps_eventloopdata.eld_lastfd = lastfd+1;
+  rps_eventloopdata.eld_lastix = lastfd+1;
   if (rps_fltk_enabled())
     {
       rps_fltk_add_input_fd(fd, f, explanation, (int)lastfd);
@@ -232,13 +232,13 @@ rps_event_loop_add_output_fd_handler (int fd,
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
-  unsigned lastfd = rps_eventloopdata.eld_lastfd;
+  unsigned lastfd = rps_eventloopdata.eld_lastix;
   RPS_ASSERT(lastfd < RPS_MAXPOLL_FD);
   rps_eventloopdata.eld_pollarr[lastfd].fd = fd;
   rps_eventloopdata.eld_pollarr[lastfd].events = POLLOUT;
   rps_eventloopdata.eld_explarr[lastfd] = explanation;
   rps_eventloopdata.eld_datarr[lastfd] = data;
-  rps_eventloopdata.eld_lastfd = lastfd+1;
+  rps_eventloopdata.eld_lastix = lastfd+1;
   if (rps_fltk_enabled())
     {
       rps_fltk_add_output_fd(fd, f, explanation, (int)lastfd);
@@ -260,24 +260,103 @@ rps_event_loop_remove_input_fd_handler(int fd)
   memset (new_explarr, 0, sizeof(new_explarr));
   memset (new_pollarr, 0, sizeof(new_pollarr));
   memset (new_datarr, 0, sizeof(new_datarr));
+  unsigned new_lastfd=0;
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
-  unsigned lastfd = rps_eventloopdata.eld_lastfd;
-  unsigned newlastfd = 0;
-  for (int ix=0; ix<(int)lastfd; ix++) {
-  }
-#warning unimplemented rps_event_loop_remove_fd_handler
-  RPS_FATALOUT("unimplemented rps_event_loop_remove_input_fd_handler fd#" << fd);
+  unsigned lastix = rps_eventloopdata.eld_lastix;
+  unsigned newlastix = 0;
+  for (int ix=0; ix<(int)lastix; ix++)
+    {
+      Rps_EventHandler_sigt* curphdlr=nullptr;
+      struct pollfd curpfd= {0};
+      const char*curexpl=nullptr;
+      void*curdata = nullptr;
+      if (rps_event_loop_get_entry(ix, &curphdlr, &curpfd, &curexpl, &curdata))
+        {
+          if (curpfd.fd == fd && curpfd.events == POLLIN)
+            continue;
+          new_handlarr[newlastix] = curphdlr;
+          new_pollarr[newlastix] = curpfd;
+          new_explarr[newlastix] = curexpl;
+          new_datarr[newlastix] = curdata;
+          newlastix++;
+        }
+      else
+        continue;
+    };
+  // the erasing below is in theory useless...
+  memset (rps_eventloopdata.eld_handlarr, 0, sizeof(rps_eventloopdata.eld_handlarr));
+  memset (rps_eventloopdata.eld_explarr, 0, sizeof(rps_eventloopdata.eld_explarr));
+  memset (rps_eventloopdata.eld_pollarr, 0, sizeof(rps_eventloopdata.eld_pollarr));
+  memset (rps_eventloopdata.eld_datarr, 0, sizeof(rps_eventloopdata.eld_datarr));
+  // copy the new things
+  memcpy (rps_eventloopdata.eld_handlarr, new_handlarr, newlastix*sizeof(new_handlarr[0]));
+  memcpy (rps_eventloopdata.eld_explarr, new_explarr, newlastix*sizeof(new_explarr[0]));
+  memcpy (rps_eventloopdata.eld_pollarr, new_pollarr, newlastix*sizeof(new_pollarr[0]));
+  memcpy (rps_eventloopdata.eld_datarr, new_datarr, newlastix*sizeof(new_datarr[0]));
+  rps_eventloopdata.eld_lastix = newlastix;
+  if (rps_fltk_enabled())
+    rps_fltk_remove_input_fd(fd);
 } // end rps_event_loop_remove_input_fd_handler
+
 
 void
 rps_event_loop_remove_output_fd_handler(int fd)
 {
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
-  unsigned lastfd = rps_eventloopdata.eld_lastfd;
-#warning unimplemented rps_event_loop_remove_fd_handler
-  RPS_FATALOUT("unimplemented rps_event_loop_remove_output_fd_handler fd#" << fd);
+  unsigned lastfd = rps_eventloopdata.eld_lastix;
+  Rps_EventHandler_sigt* new_handlarr[RPS_MAXPOLL_FD+1];
+  const char*new_explarr[RPS_MAXPOLL_FD+1];
+  struct pollfd new_pollarr[RPS_MAXPOLL_FD+1];
+  void* new_datarr[RPS_MAXPOLL_FD+1];
+  memset (new_handlarr, 0, sizeof(new_handlarr));
+  memset (new_explarr, 0, sizeof(new_explarr));
+  memset (new_pollarr, 0, sizeof(new_pollarr));
+  memset (new_datarr, 0, sizeof(new_datarr));
+  unsigned new_lastfd=0;
+  unsigned lastix = rps_eventloopdata.eld_lastix;
+  unsigned newlastix = 0;
+  for (int ix=0; ix<(int)lastix; ix++)
+    {
+      Rps_EventHandler_sigt* curphdlr=nullptr;
+      struct pollfd curpfd= {0};
+      const char*curexpl=nullptr;
+      void*curdata = nullptr;
+      if (rps_event_loop_get_entry(ix, &curphdlr, &curpfd, &curexpl, &curdata))
+        {
+          if (curpfd.fd == fd && curpfd.events == POLLOUT)
+            continue;
+          new_handlarr[newlastix] = curphdlr;
+          new_pollarr[newlastix] = curpfd;
+          new_explarr[newlastix] = curexpl;
+          new_datarr[newlastix] = curdata;
+          newlastix++;
+        }
+      else
+        continue;
+    };
+  // the erasing below is in theory useless...
+  memset (rps_eventloopdata.eld_handlarr, 0,
+          sizeof(rps_eventloopdata.eld_handlarr));
+  memset (rps_eventloopdata.eld_explarr, 0,
+          sizeof(rps_eventloopdata.eld_explarr));
+  memset (rps_eventloopdata.eld_pollarr, 0,
+          sizeof(rps_eventloopdata.eld_pollarr));
+  memset (rps_eventloopdata.eld_datarr, 0,
+          sizeof(rps_eventloopdata.eld_datarr));
+  // copy the new things
+  memcpy (rps_eventloopdata.eld_handlarr, new_handlarr,
+          newlastix*sizeof(new_handlarr[0]));
+  memcpy (rps_eventloopdata.eld_explarr, new_explarr,
+          newlastix*sizeof(new_explarr[0]));
+  memcpy (rps_eventloopdata.eld_pollarr, new_pollarr,
+          newlastix*sizeof(new_pollarr[0]));
+  memcpy (rps_eventloopdata.eld_datarr, new_datarr,
+          newlastix*sizeof(new_datarr[0]));
+  rps_eventloopdata.eld_lastix = newlastix;
+  if (rps_fltk_enabled())
+    rps_fltk_remove_output_fd(fd);
 } // end rps_event_loop_remove_output_fd_handler
 
 bool
