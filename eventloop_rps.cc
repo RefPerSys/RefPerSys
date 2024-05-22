@@ -71,10 +71,10 @@ struct event_loop_data_st
   unsigned eld_magic;   // should be RPS_EVENTLOOPDATA_MAGIC
   int eld_polldelaymillisec;
   unsigned eld_lastfd;
-  std::mutex eld_mtx;
+  std::recursive_mutex eld_mtx;
   double eld_startelapsedtime; // start real time of event loop
   double eld_startcputime; // start CPU time of event loop
-  std::array<Rps_EventHandler_sigt*,RPS_MAXPOLL_FD+1> eld_handlarr;
+  Rps_EventHandler_sigt* eld_handlarr[RPS_MAXPOLL_FD+1];
   const char*eld_explarr[RPS_MAXPOLL_FD+1];
   struct pollfd eld_pollarr[RPS_MAXPOLL_FD+1];
   void* eld_datarr[RPS_MAXPOLL_FD+1];
@@ -131,7 +131,7 @@ void
 rps_self_pipe_write_byte(unsigned char b)
 {
   RPS_ASSERT(b != (char)0);
-  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   rps_eventloopdata.eld_selfpipefifo.push_back(b);
 } // end rps_self_pipe_write_byte
 
@@ -139,7 +139,7 @@ rps_self_pipe_write_byte(unsigned char b)
 int
 rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int npoll, Rps_CallFrame*)> fun)
 {
-  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   int ln = rps_eventloopdata.eld_prepollvect.size();
   if (ln > 1000)
@@ -160,7 +160,7 @@ rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int npoll,
 void
 rps_unregister_event_loop_prepoller(int rank)
 {
-  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   if (rank<0 || rank>rps_eventloopdata.eld_prepollvect.size())
     {
@@ -174,7 +174,7 @@ bool rps_event_loop_get_entry(int ix,
                               Rps_EventHandler_sigt**pfun,
                               struct pollfd*po, const char**pexpl, void**pdata)
 {
-  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   if (pfun)
     *pfun = nullptr;
@@ -205,7 +205,7 @@ rps_event_loop_add_input_fd_handler (int fd,
                                      const char* explanation,
                                      void*data)
 {
-  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   unsigned lastfd = rps_eventloopdata.eld_lastfd;
   RPS_ASSERT(lastfd < RPS_MAXPOLL_FD);
@@ -230,7 +230,7 @@ rps_event_loop_add_output_fd_handler (int fd,
                                       const char* explanation,
                                       void*data)
 {
-  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   unsigned lastfd = rps_eventloopdata.eld_lastfd;
   RPS_ASSERT(lastfd < RPS_MAXPOLL_FD);
@@ -252,8 +252,20 @@ rps_event_loop_add_output_fd_handler (int fd,
 void
 rps_event_loop_remove_input_fd_handler(int fd)
 {
-  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  Rps_EventHandler_sigt* new_handlarr[RPS_MAXPOLL_FD+1];
+  const char*new_explarr[RPS_MAXPOLL_FD+1];
+  struct pollfd new_pollarr[RPS_MAXPOLL_FD+1];
+  void* new_datarr[RPS_MAXPOLL_FD+1];
+  memset (new_handlarr, 0, sizeof(new_handlarr));
+  memset (new_explarr, 0, sizeof(new_explarr));
+  memset (new_pollarr, 0, sizeof(new_pollarr));
+  memset (new_datarr, 0, sizeof(new_datarr));
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  unsigned lastfd = rps_eventloopdata.eld_lastfd;
+  unsigned newlastfd = 0;
+  for (int ix=0; ix<(int)lastfd; ix++) {
+  }
 #warning unimplemented rps_event_loop_remove_fd_handler
   RPS_FATALOUT("unimplemented rps_event_loop_remove_input_fd_handler fd#" << fd);
 } // end rps_event_loop_remove_input_fd_handler
@@ -261,8 +273,9 @@ rps_event_loop_remove_input_fd_handler(int fd)
 void
 rps_event_loop_remove_output_fd_handler(int fd)
 {
-  std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  unsigned lastfd = rps_eventloopdata.eld_lastfd;
 #warning unimplemented rps_event_loop_remove_fd_handler
   RPS_FATALOUT("unimplemented rps_event_loop_remove_output_fd_handler fd#" << fd);
 } // end rps_event_loop_remove_output_fd_handler
@@ -666,7 +679,7 @@ rps_event_loop(void)
         };
       bool wantselfwrite = false;
       {
-        std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+        std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
         wantselfwrite = !rps_eventloopdata.eld_selfpipefifo.empty();
       }
       if (rps_eventloopdata.eld_selfpipewritefd>0 && wantselfwrite)
@@ -681,7 +694,7 @@ rps_event_loop(void)
             RPS_ASSERT(fd == rps_eventloopdata.eld_selfpipewritefd);
             RPS_ASSERT(rev == POLLOUT);
             RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
-            std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+            std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
             while (!rps_eventloopdata.eld_selfpipefifo.empty())
               {
                 unsigned char b = rps_eventloopdata.eld_selfpipefifo.back();
@@ -745,7 +758,7 @@ rps_event_loop(void)
       fflush(nullptr);
       // call the registered event prepoller
       {
-        std::lock_guard<std::mutex> gu(rps_eventloopdata.eld_mtx);
+        std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
         for (auto fun : rps_eventloopdata.eld_prepollvect)
           {
             if (fun)
