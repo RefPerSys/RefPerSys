@@ -42,6 +42,8 @@ const char rps_agenda_date[]= __DATE__;
 unsigned long rps_run_delay;
 
 double Rps_Agenda::agenda_timeout;
+thread_local int rps_curthread_ix;
+thread_local Rps_CallFrame* rps_curthread_callframe;
 
 std::recursive_mutex Rps_Agenda::agenda_mtx_;
 std::condition_variable_any Rps_Agenda::agenda_changed_condvar_;
@@ -51,6 +53,7 @@ std::deque<Rps_ObjectRef> Rps_Agenda::agenda_fifo_[Rps_Agenda::AgPrio__Last];
 std::atomic<unsigned long>  Rps_Agenda::agenda_add_counter_;
 std::atomic<bool> Rps_Agenda::agenda_is_running_;
 std::atomic<std::thread*> Rps_Agenda::agenda_thread_array_[RPS_NBJOBS_MAX+2];
+
 const char*
 Rps_Agenda::agenda_priority_names[Rps_Agenda::AgPrio__Last];
 std::atomic<Rps_Agenda::workthread_state_en>
@@ -58,7 +61,7 @@ Rps_Agenda::agenda_work_thread_state_[RPS_NBJOBS_MAX+2];
 std::atomic<bool> Rps_Agenda::agenda_needs_garbcoll_;
 std::atomic<uint64_t> Rps_Agenda::agenda_cumulw_gc_;
 std::atomic<Rps_CallFrame*> Rps_Agenda::agenda_work_gc_callframe_[RPS_NBJOBS_MAX+2];
-
+std::atomic<Rps_CallFrame**> Rps_Agenda::agenda_work_gc_current_callframe_ptr[RPS_NBJOBS_MAX+2];
 void
 Rps_Agenda::initialize(void)
 {
@@ -187,6 +190,9 @@ Rps_Agenda::run_agenda_worker(int ix)
   memset (pthname, 0, sizeof(pthname));
   snprintf(pthname, sizeof(pthname), "rps-agw#%hd", (short) ix);
   pthread_setname_np(pthread_self(), pthname);
+  rps_curthread_ix = ix;
+  rps_curthread_callframe = nullptr;
+  agenda_work_gc_current_callframe_ptr[ix].store(&rps_curthread_callframe);
   RPS_LOCALFRAME(RPS_ROOT_OB(_1aGtWm38Vw701jDhZn), //the_agenda,
                  RPS_NULL_CALL_FRAME, // no caller frame
                  Rps_ObjectRef obtasklet;
@@ -304,6 +310,7 @@ void
 Rps_Agenda::do_garbage_collect(int ix, Rps_CallFrame*callframe)
 {
   RPS_ASSERT(ix>=0 && ix<=RPS_NBJOBS_MAX);
+  RPS_ASSERT(ix == rps_curthread_ix);
   RPS_ASSERT(agenda_work_gc_callframe_[ix].load() == nullptr);
   agenda_work_thread_state_[ix].store(Rps_Agenda::WthrAg_GC);
   agenda_work_gc_callframe_[ix].store(callframe);
