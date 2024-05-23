@@ -1263,6 +1263,12 @@ extern "C" int64_t rps_prime_lessequal_ranked (int64_t n, int*prank);
 // give the name of the current pthread
 static inline std::string rps_current_pthread_name(void);
 
+// give its index
+static inline int rps_current_pthread_index(void);
+
+extern "C" thread_local int rps_curthread_ix;
+extern "C" thread_local Rps_CallFrame* rps_curthread_callframe;
+
 static constexpr unsigned rps_allocation_unit = 2*sizeof(void*);
 static_assert ((rps_allocation_unit & (rps_allocation_unit-1)) == 0,
                "rps_allocation_unit is not a power of two");
@@ -4183,6 +4189,7 @@ public:
             || (xdata != nullptr
                 && (((intptr_t)xdata & (alignof(intptr_t)-1)) == 0)));
     assert (size < _cfram_max_size_);
+    rps_curthread_callframe = this;
   }; // end Rps_ProtoCallFrame constructor
   ~Rps_ProtoCallFrame()
   {
@@ -4191,6 +4198,7 @@ public:
         assert (cfram_xtradata != nullptr);
         memset ((void*)cfram_xtradata, 0, cfram_size*sizeof(intptr_t));
       }
+    rps_curthread_callframe = cfram_prev;
     cfram_xtradata = nullptr;
     cfram_descr = nullptr;
     cfram_prev = nullptr;
