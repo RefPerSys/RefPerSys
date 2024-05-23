@@ -94,6 +94,12 @@ rps_current_pthread_name(void)
   return std::string{pthnam};
 } // end rps_current_pthread_name
 
+static inline int
+rps_current_pthread_index(void)
+{
+  return rps_curthread_ix;
+} // end rps_current_pthread_index
+
 //////////////////////////////////////////////////////////// objids
 std::string
 Rps_Id::to_string() const
