@@ -428,6 +428,8 @@ rps_is_fifo(std::string path)
 void
 rps_initialize_pipe_to_self_in_event_loop(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   /**
    * create the pipe to self and install handlers for it
    **/
@@ -442,20 +444,22 @@ rps_initialize_pipe_to_self_in_event_loop(void)
     rps_eventloopdata.eld_selfpipewritefd = pipefdarr[1];
     RPS_ASSERT(rps_eventloopdata.eld_selfpipewritefd > 0);
 #warning should call rps_event_loop_add_output_fd_handler for selfpipewritefd
-  RPS_DEBUG_LOG(REPL, "rps_initialize_pipe_to_self_in_event_loop eld_selfpipereadfd#"
-                << (rps_eventloopdata.eld_selfpipereadfd)
-                << " eld_selfpipewritefd#"
-                << (rps_eventloopdata.eld_selfpipewritefd)
-                << " rps_poll_delay_millisec=" << rps_poll_delay_millisec
-                << " in thread " << rps_current_pthread_name()
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_pipe_to_self_event_loop"));
+    RPS_DEBUG_LOG(REPL, "rps_initialize_pipe_to_self_in_event_loop eld_selfpipereadfd#"
+                  << (rps_eventloopdata.eld_selfpipereadfd)
+                  << " eld_selfpipewritefd#"
+                  << (rps_eventloopdata.eld_selfpipewritefd)
+                  << " rps_poll_delay_millisec=" << rps_poll_delay_millisec
+                  << " in thread " << rps_current_pthread_name()
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_pipe_to_self_event_loop"));
   }
 } // end rps_initialize_pipe_to_self_in_event_loop
 
 void
 rps_initialize_signalfd_in_event_loop(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   sigset_t msk= {};
   sigemptyset(&msk);
   sigaddset(&msk, SIGCHLD);
@@ -479,6 +483,8 @@ rps_initialize_signalfd_in_event_loop(void)
 void
 rps_initialize_timerfd_in_event_loop(void)
 {
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   rps_eventloopdata.eld_timfd = timerfd_create(CLOCK_REALTIME, TFD_CLOEXEC);
   if (rps_eventloopdata.eld_timfd<=0)
     RPS_FATALOUT("failed to call timerfd:" << strerror(errno));
@@ -497,12 +503,33 @@ rps_initialize_event_loop(void)
 {
   /// rps_initialize_event_loop should be called once, early, from the
   /// main thread.  It is called after the persistent heap load.
-
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
   static int count;
   if (!rps_is_main_thread())
     RPS_FATALOUT("rps_initialize_event_loop should be called only from the main thread");
   if (count++ > 0)
     RPS_FATALOUT("rps_initialize_event_loop should be called once");
+  rps_eventloopdata.eld_magic = RPS_EVENTLOOPDATA_MAGIC;
+  rps_eventloopdata.eld_polldelaymillisec = (rps_debug_flags != 0)?666:111;
+  rps_eventloopdata.eld_lastix = 0;
+  rps_eventloopdata.eld_startelapsedtime = -1.0/1024;
+  rps_eventloopdata.eld_startcputime =  -1.0/1024;
+  memset (rps_eventloopdata.eld_handlarr, 0,
+          sizeof(rps_eventloopdata.eld_handlarr));
+  memset (rps_eventloopdata.eld_explarr, 0,
+          sizeof(rps_eventloopdata.eld_explarr));
+  memset (rps_eventloopdata.eld_pollarr, 0,
+          sizeof(rps_eventloopdata.eld_pollarr));
+  memset (rps_eventloopdata.eld_datarr, 0,
+          sizeof(rps_eventloopdata.eld_datarr));
+  rps_eventloopdata.eld_sigfd = -1;
+  rps_eventloopdata.eld_timfd = -1;
+  rps_eventloopdata.eld_selfpipereadfd = -1;
+  rps_eventloopdata.eld_selfpipewritefd = -1;
+  rps_eventloopdata.eld_selfpipefifo.clear();
+  rps_eventloopdata.eld_eventloopisactive = false;
+  rps_eventloopdata.eld_nbloops = 0;
+  rps_eventloopdata.eld_prepollvect.clear();
   ///
   RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop starting "
                 << (rps_fltk_enabled()?"with FLTK":"without-fltk")
