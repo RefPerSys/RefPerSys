@@ -256,7 +256,8 @@ rps_fltk_add_input_fd(int fd,
 {
   RPS_DEBUG_LOG(REPL, "rps_fltk_add_input_fd fd#" << fd
                 << (explanation?" ":"") << (explanation?explanation:"")
-                << " ix#" << ix);
+                << " ix#" << ix << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_add_input_fd"));
   Fl::add_fd(fd, POLLIN, rps_fltk_input_fd_handler, (void*)(intptr_t)ix);
 } // end rps_fltk_add_input_fd
 
@@ -269,7 +270,8 @@ rps_fltk_add_output_fd(int fd,
 {
   RPS_DEBUG_LOG(REPL, "rps_fltk_add_input_fd fd#" << fd
                 << (explanation?" ":"") << (explanation?explanation:"")
-                << " ix#" << ix);
+                << " ix#" << ix << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_add_input_fd"));
   Fl::add_fd(fd, POLLOUT, rps_fltk_output_fd_handler, (void*)(intptr_t)ix);
 } // end rps_fltk_add_input_fd
 
@@ -303,9 +305,8 @@ rps_fltk_input_fd_handler(FL_SOCKET fd, void *hdata)
     return;
   /* NOTICE: think more about garbage collection interaction with FLTK
      event loop. */
-#warning perhaps we need to find the refpersys call frame before fltk event loop?
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-                 /*callerframe:*/RPS_NULL_CALL_FRAME, //
+                 /*callerframe:*/rps_curthread_callframe, //
                  /** locals **/
                  Rps_Value v;
                 );
@@ -345,9 +346,8 @@ rps_fltk_output_fd_handler(FL_SOCKET fd, void *hdata)
     return;
   /* NOTICE: think more about garbage collection interaction with FLTK
      event loop. */
-#warning perhaps we need to find the refpersys call frame before fltk event loop?
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-                 /*callerframe:*/RPS_NULL_CALL_FRAME, //
+                 /*callerframe:*/rps_curthread_callframe, //
                  /** locals **/
                  Rps_Value v;
                 );
@@ -362,12 +362,18 @@ void
 rps_fltk_remove_input_fd(int fd)
 {
   Fl::remove_fd(fd, POLLIN);
+  RPS_DEBUG_LOG(REPL, "rps_fltk_remove_input_fd fd#" << fd
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_remove_input_fd"));
 } // end rps_fltk_remove_input_fd
 
 void
 rps_fltk_remove_output_fd(int fd)
 {
   Fl::remove_fd(fd, POLLOUT);
+  RPS_DEBUG_LOG(REPL, "rps_fltk_remove_output_fd fd#" << fd
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_remove_output_fd"));
 } // end rps_fltk_remove_output_fd
 
 Rps_PayloadFltkThing::Rps_PayloadFltkThing(Rps_ObjectZone*owner)
@@ -414,7 +420,9 @@ Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*ti
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow x=" << x << ",y=" << y
                 << ",w=" << w << ",h=" << h
                 << ",title=" << Rps_Cjson_String(title)
-                << " @" << (void*)this);
+                << " @" << (void*)this
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow/xywh"));
 };
 
 Rps_FltkMainWindow::Rps_FltkMainWindow(int w, int h, const char*title)
@@ -424,12 +432,16 @@ Rps_FltkMainWindow::Rps_FltkMainWindow(int w, int h, const char*title)
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow w=" << w << ",h=" << h
                 << ",title=" << Rps_Cjson_String(title)
-                << " @" << (void*)this);
-}; // end Rps_FltkMainWindow::~Rps_FltkMainWindow
+                << " @" << (void*)this
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow/wh"));
+}; // end Rps_FltkMainWindow::Rps_FltkMainWindow
 
 Rps_FltkMainWindow::~Rps_FltkMainWindow()
 {
-  RPS_DEBUG_LOG(REPL, "~Rps_FltkMainWindow @" << (void*)this);
+  RPS_DEBUG_LOG(REPL, "~Rps_FltkMainWindow @" << (void*)this
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "~Rps_FltkMainWindow"));
 }; // end Rps_FltkMainWindow::~Rps_FltkMainWindow
 
 
@@ -458,7 +470,9 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
                 << " next:"
                 << (side_effect?state->next:-1)
                 << " arg_num:"
-                << (side_effect?state->arg_num:-1));
+                << (side_effect?state->arg_num:-1)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
   if (side_effect)
     {
       /* see https://www.fltk.org/doc-1.4/classFl.html#a1576b8c9ca3e900daaa5c36ca0e7ae48 */
