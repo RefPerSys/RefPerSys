@@ -128,6 +128,9 @@ rps_do_stop_event_loop(void)
                 <<  rps_current_pthread_name()
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_do_stop_event_loop"));
   rps_stop_event_loop_flag.store(true);
+  if (rps_fltk_enabled ()) {
+    rps_fltk_stop();
+  }
 } // end rps_do_stop_event_loop
 
 extern "C" void rps_jsonrpc_initialize(void);
@@ -1057,11 +1060,11 @@ handle_self_pipe_byte_rps(unsigned char b)
       rps_garbage_collect();
       break;
     case SelfPipe_Quit:
-      rps_stop_event_loop_flag.store(true);
+      rps_do_stop_event_loop();
       break;
     case SelfPipe_Exit:
       rps_dump_into (rps_get_loaddir());
-      rps_stop_event_loop_flag.store(true);
+      rps_do_stop_event_loop();
       break;
     case SelfPipe_Process:
 #warning should call something from transientobj_rps.cc to perhaps fork a process related to some Rps_PayloadUnixProcess
@@ -1076,8 +1079,6 @@ handle_self_pipe_byte_rps(unsigned char b)
 bool
 rps_event_loop_is_running(void)
 {
-  if (rps_stop_event_loop_flag.load())
-    return false;
   return event_loop_is_active.load();
 } // end rps_event_loop_is_running
 
