@@ -30,6 +30,11 @@
 #
 
 #
+# NOTE: Code adapted from the Fifth Estate cvs/01.src/build source tree,
+# which is released under the BSD 2-Clause License.
+#
+
+#
 # Print a timestamped and coloured success message on to stderr.
 #
 msg_ok()
@@ -101,7 +106,18 @@ check_os()
 #
 parse_flags()
 {
-	echo 'TODO'
+	while getopts ':v' opt; do
+		case $opt in
+			v)
+				OPT_VERBSE=$((OPT_VERBOSE+1))
+				;;
+			?)
+				msg_err "unknown option: -$OPTARG"
+				;;
+		esac
+	done
+
+	test "$OPT_VERBOSE" -gt 1 && msg_err '-v: excess count'
 }
 
 #
