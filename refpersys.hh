@@ -151,6 +151,7 @@ extern "C" int rps_fltk_api_version (void);
 extern "C" void rps_fltk_initialize (int argc, char**argv);
 extern "C" void rps_fltk_progoption(char*arg, struct argp_state*, bool side_effect);
 extern "C" bool rps_fltk_enabled (void);
+extern "C" void rps_fltk_stop (void);
 
 /* add an input file descriptor event handler to FLTK event loop */
 extern "C" void rps_fltk_add_input_fd(int fd,
@@ -176,6 +177,7 @@ extern "C" void rps_fltk_remove_output_fd(int fd);
 #define rps_fltk_add_output_fd(Fd,Fun,Expl,Ix) do {}while(0)
 #define rps_fltk_remove_input_fd(Fd) do{}while(0)
 #define rps_fltk_remove_output_fd(Fd) do{}while(0)
+#define rps_fltk_stop() do{}while(0)
 #endif
 
 class Rps_QuasiZone; // GC-managed piece of memory
