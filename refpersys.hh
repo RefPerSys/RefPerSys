@@ -1481,7 +1481,7 @@ static_assert(sizeof(Rps_ObjectRef) == sizeof(void*),
 static_assert(alignof(Rps_ObjectRef) == alignof(void*),
               "Rps_ObjectRef should have the alignment of a word");
 
-extern "C" void rps_print_objectref(Rps_ObjectRef ob);
+
 
 // we could code Rps_ObjectFromOidRef(&_,"_41OFI3r0S1t03qdB2E") instead of rpskob_41OFI3r0S1t03qdB2E
 class Rps_ObjectFromOidRef : public Rps_ObjectRef
@@ -1803,9 +1803,9 @@ public:
 
 
 /// printing routines likely to be called from GDB debugger
-extern "C" void rps_print_value(const Rps_Value val);
-extern "C" void rps_print_ptr_value(const void*v);
-
+extern "C" void rps_print_value(const Rps_Value val); // in values_rps.cc
+extern "C" void rps_print_objectref(Rps_ObjectRef ob); // in utilities_rps.cc
+extern "C" void rps_print_ptr_value(const void*v); // in values_rps.cc
 extern "C" void rps_limited_print_value(const Rps_Value val, unsigned depth, unsigned maxdepth);
 extern "C" void rps_limited_print_ptr_value(const void*v, unsigned depth, unsigned maxdepth);
 
