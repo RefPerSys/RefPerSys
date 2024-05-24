@@ -425,7 +425,73 @@ rps_is_fifo(std::string path)
   return false;
 } // end rps_is_fifo
 
+void
+rps_initialize_pipe_to_self_in_event_loop(void)
+{
+  /**
+   * create the pipe to self and install handlers for it
+   **/
+  {
+    int pipefdarr[2] = {-1, -1};
+    if (pipe2(pipefdarr, O_CLOEXEC) <0)
+      RPS_FATALOUT("rps_initialize_event_loop failed to create pipe to self:"
+                   << strerror(errno));
+    rps_eventloopdata.eld_selfpipereadfd = pipefdarr[0];
+    RPS_ASSERT(rps_eventloopdata.eld_selfpipereadfd > 0);
+#warning should call rps_event_loop_add_input_fd_handler for selfpipereadfd
+    rps_eventloopdata.eld_selfpipewritefd = pipefdarr[1];
+    RPS_ASSERT(rps_eventloopdata.eld_selfpipewritefd > 0);
+#warning should call rps_event_loop_add_output_fd_handler for selfpipewritefd
+  RPS_DEBUG_LOG(REPL, "rps_initialize_pipe_to_self_in_event_loop eld_selfpipereadfd#"
+                << (rps_eventloopdata.eld_selfpipereadfd)
+                << " eld_selfpipewritefd#"
+                << (rps_eventloopdata.eld_selfpipewritefd)
+                << " rps_poll_delay_millisec=" << rps_poll_delay_millisec
+                << " in thread " << rps_current_pthread_name()
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_pipe_to_self_event_loop"));
+  }
+} // end rps_initialize_pipe_to_self_in_event_loop
 
+void
+rps_initialize_signalfd_in_event_loop(void)
+{
+  sigset_t msk= {};
+  sigemptyset(&msk);
+  sigaddset(&msk, SIGCHLD);
+  sigaddset(&msk, SIGINT);
+  sigaddset(&msk, SIGTERM);
+  sigaddset(&msk, SIGXCPU);
+  sigaddset(&msk, SIGALRM);
+  sigaddset(&msk, SIGVTALRM);
+  rps_eventloopdata.eld_sigfd = signalfd(-1, &msk, SFD_CLOEXEC);
+  if (rps_eventloopdata.eld_sigfd<=0)
+    RPS_FATALOUT("failed to call signalfd:" << strerror(errno));
+  RPS_DEBUG_LOG(REPL, "rps_initialize_signalfd_in_event_loop thread "
+                << rps_current_pthread_name()
+                << " sigfd#" << rps_eventloopdata.eld_sigfd
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_signalfd_in_event_loop")
+               );
+#warning should call rps_event_loop_add_input_fd_handler for signalfd
+} // end rps_initialize_signalfd_in_event_loop
+
+void
+rps_initialize_timerfd_in_event_loop(void)
+{
+  rps_eventloopdata.eld_timfd = timerfd_create(CLOCK_REALTIME, TFD_CLOEXEC);
+  if (rps_eventloopdata.eld_timfd<=0)
+    RPS_FATALOUT("failed to call timerfd:" << strerror(errno));
+  RPS_DEBUG_LOG(REPL, "rps_initialize_timerfd_in_event_loop thread "
+                << rps_current_pthread_name()
+                << " timerfd#" << rps_eventloopdata.eld_timfd
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_timerfd_in_event_loop")
+               );
+#warning should call rps_event_loop_add_input_fd_handler for timerfd
+} // end rps_initialize_timerfd_in_event_loop
+
+/////////// the toplevel event loop initialization
 void
 rps_initialize_event_loop(void)
 {
@@ -442,59 +508,11 @@ rps_initialize_event_loop(void)
                 << (rps_fltk_enabled()?"with FLTK":"without-fltk")
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop*start"));
-  /**
-   * create the pipe to self and install handlers for it
-   **/
-  {
-    int pipefdarr[2] = {-1, -1};
-    if (pipe2(pipefdarr, O_CLOEXEC) <0)
-      RPS_FATALOUT("rps_initialize_event_loop failed to create pipe to self:"
-                   << strerror(errno));
-    rps_eventloopdata.eld_selfpipereadfd = pipefdarr[0];
-    RPS_ASSERT(rps_eventloopdata.eld_selfpipereadfd > 0);
-#warning should call rps_event_loop_add_input_fd_handler for selfpipereadfd
-    rps_eventloopdata.eld_selfpipewritefd = pipefdarr[1];
-    RPS_ASSERT(rps_eventloopdata.eld_selfpipewritefd > 0);
-#warning should call rps_event_loop_add_output_fd_handler for selfpipewritefd
-  }
-  sigset_t msk= {};
-  sigemptyset(&msk);
-  sigaddset(&msk, SIGCHLD);
-  sigaddset(&msk, SIGINT);
-  sigaddset(&msk, SIGTERM);
-  sigaddset(&msk, SIGXCPU);
-  sigaddset(&msk, SIGALRM);
-  sigaddset(&msk, SIGVTALRM);
-  rps_eventloopdata.eld_sigfd = signalfd(-1, &msk, SFD_CLOEXEC);
-  if (rps_eventloopdata.eld_sigfd<=0)
-    RPS_FATALOUT("failed to call signalfd:" << strerror(errno));
-  RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop thread "
-                << rps_current_pthread_name()
-                << " sigfd#" << rps_eventloopdata.eld_sigfd
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop/sig")
-               );
-#warning should call rps_event_loop_add_input_fd_handler for signalfd
-  rps_eventloopdata.eld_timfd = timerfd_create(CLOCK_REALTIME, TFD_CLOEXEC);
-  if (rps_eventloopdata.eld_timfd<=0)
-    RPS_FATALOUT("failed to call timerfd:" << strerror(errno));
-  RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop thread "
-                << rps_current_pthread_name()
-                << " timerfd#" << rps_eventloopdata.eld_timfd
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop/timer")
-               );
-#warning should call rps_event_loop_add_input_fd_handler for timerfd
+  rps_initialize_pipe_to_self_in_event_loop();
+  rps_initialize_signalfd_in_event_loop();
+  rps_initialize_timerfd_in_event_loop();
   if (rps_poll_delay_millisec==0)
     rps_poll_delay_millisec = RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC;
-  RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop eld_selfpipereadfd#"
-                << (rps_eventloopdata.eld_selfpipereadfd)
-                << " eld_selfpipewritefd#"
-                << (rps_eventloopdata.eld_selfpipewritefd)
-                << " rps_poll_delay_millisec=" << rps_poll_delay_millisec
-                << " in thread " << rps_current_pthread_name()
-                << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop"));
 } // end rps_initialize_event_loop
 
 
