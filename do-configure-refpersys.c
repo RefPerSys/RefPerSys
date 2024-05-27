@@ -86,6 +86,12 @@ int linker_argcount;
 const char *c_compiler;
 const char *cpp_compiler;
 
+/* strdup-ed string of the person building RefPerSys (or null): */
+const char *builder_person;
+
+/* strdup-ed string of the email of the person building RefPerSys (or null): */
+const char *builder_email;
+
 /* absolute path to fltk-config utility */
 const char *fltk_config;
 
@@ -899,11 +905,21 @@ emit_configure_refpersys_mk (void)
 	   "\n\n"
 	   "# the Generic Preprocessor for RefPerSys (see logological.org/gpp):\n");
   fprintf (f, "REFPERSYS_GPP=%s\n", realpath (gpp, NULL));
+  /// emit the ninja builder
   fprintf (f, "\n\n" "# ninja builder from ninja-build.org\n");
   fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (ninja_builder, NULL));
+  if (builder_person) {
+    fprintf(f, "## refpersys builder person and perhaps email\n");
+    fprintf(f, "REFPERSYS_BUILDER_PERSON='%s'\n", builder_person);
+    if (builder_email) {
+      fprintf(f, "REFPERSYS_BUILDER_EMAIL='%s'\n", builder_email);
+    }
+  }
   //// emit the FLTK configurator
-  if (fltk_config)
+  if (fltk_config) {
+    fprintf (f, "\n# FLTK (see fltk.org) configurator\n");
     fprintf (f, "REFPERSYS_FLTKCONFIG=%s\n", fltk_config);
+  }
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
@@ -951,6 +967,10 @@ usage (void)
   puts ("\t NINJA=<ninja-builder>   # set builder from ninja-build.org");
   puts ("\t                         # e.g. NINJA=/usr/bin/ninja");
   puts ("\t FLTKCONF=<fltk-config>  # set path of fltk-config, see fltk.org");
+  puts ("\t BUILDER_PERSON=<name>   # set the name of the person building");
+  puts ("\t                         # e.g. BUILDER_PERSON='Alan TURING");
+  puts ("\t BUILDER_EMAIL=<email>   # set the email of the person building");
+  puts ("\t                         # e.g. BUILDER_EMAIL=''");
   puts ("\t -D<prepro>              # define a preprocessor thing,");
   puts ("\t                         # e.g. -DFOO=3");
   puts ("\t -U<prepro>              # undefine a preprocessor thing,");
@@ -1078,7 +1098,45 @@ main (int argc, char **argv)
   if (!cxx)
     cxx = my_readline ("C++ compiler:");
   try_then_set_cxx_compiler (cxx);
-
+  builder_person =
+    my_readline ("person building RefPerSys (eg Alan TURING):");
+  if (builder_person && isspace (builder_person[0]))
+    {
+      free ((void *) builder_person);
+      builder_person = NULL;
+    };
+  if (builder_person)
+    {
+      builder_email =
+	my_readline
+	("email of person building (e.g. alan.turing@princeton.edu):");
+      bool goodemail = builder_email != NULL && isalnum (builder_email[0]);
+      const char *pc = builder_email;
+      for (pc = builder_email; *pc && goodemail && *pc != '@'; pc++)
+	{
+	  if (!isalnum (*pc) && *pc != '+' && *pc != '-' && *pc != '_'
+	      && *pc != '.')
+	    goodemail = false;
+	};
+      if (goodemail && *pc == '@')
+	pc++;
+      else
+	goodemail = false;
+      int nbdots = 0;
+      for (pc = pc;
+	   *pc && goodemail && (isalnum (*pc) || strchr ("+-_.:", *pc)); pc++)
+	{
+	  if (*pc == '.')
+	    nbdots++;
+	};
+      if (nbdots == 0)
+	goodemail = false;
+      if (!goodemail)
+	{
+	  free ((void *) builder_email);
+	  builder_email = NULL;
+	}
+    }
   errno = 0;
   gpp = getenv ("GPP");
   if (!gpp)
