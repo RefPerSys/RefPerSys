@@ -825,6 +825,7 @@ emit_configure_refpersys_mk (void)
   fprintf (f, "# see refpersys.org\n");
   fprintf (f, "# generated at %s## on %s git %s\n\n",
 	   ctime (&nowt), my_host_name, GIT_ID);
+  fprintf (f, "#  generated from %s:%d\n", __FILE__, __LINE__);
   fprintf (f, "REFPERSYS_CONFIGURED_GITID=%s\n\n", GIT_ID);
   //// emit C compiler
   fprintf (f, "\n\n" "# the C compiler for RefPerSys:\n");
