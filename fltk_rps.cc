@@ -47,6 +47,10 @@
 #include <FL/platform.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Menu_Button.H>
+#include <FL/Fl_Choice.H>
+#include <FL/Fl_Multi_Label.H>
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Box.H>
@@ -229,6 +233,9 @@ Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget(Rps_ObjectZone*owner, Fl_Widg
 ////////////////
 class Rps_FltkMainWindow: public Fl_Window
 {
+  Fl_Menu_Bar* _mainwin_menubar;
+protected:
+  void fill_main_window(void);
 public:
   Rps_FltkMainWindow(int x, int y, int w, int h, const char*title);
   Rps_FltkMainWindow(int w, int h, const char*title);
@@ -415,7 +422,8 @@ Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 ////////////////
 
 Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*title)
-  : Fl_Window(x,y,w,h,title)
+  : Fl_Window(x,y,w,h,title),
+    _mainwin_menubar(nullptr)
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow x=" << x << ",y=" << y
                 << ",w=" << w << ",h=" << h
@@ -423,6 +431,7 @@ Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*ti
                 << " @" << (void*)this
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow/xywh"));
+  fill_main_window();
 };
 
 Rps_FltkMainWindow::Rps_FltkMainWindow(int w, int h, const char*title)
@@ -435,7 +444,19 @@ Rps_FltkMainWindow::Rps_FltkMainWindow(int w, int h, const char*title)
                 << " @" << (void*)this
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow/wh"));
+  fill_main_window();
 }; // end Rps_FltkMainWindow::Rps_FltkMainWindow
+
+
+void
+Rps_FltkMainWindow::fill_main_window(void)
+{
+  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window w=" << w() << ",h=" << h());
+  this->begin();
+  _mainwin_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
+  this->end();
+  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window done w=" << w() << ",h=" << h());
+} // end Rps_FltkMainWindow::fill_main_window
 
 Rps_FltkMainWindow::~Rps_FltkMainWindow()
 {
