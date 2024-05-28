@@ -512,6 +512,15 @@ rps_fltk_enabled (void)
 {
   return rps_fltk_is_initialized;
 } // end rps_fltk_enabled
+
+
+// flush the pending X11 or wayland requests
+void
+rps_fltk_flush (void)
+{
+  Fl::flush();
+} // end rps_fltk_flush
+
 void
 rps_fltk_initialize (int argc, char**argv)
 {
@@ -525,6 +534,7 @@ rps_fltk_initialize (int argc, char**argv)
   rps_fltk_mainwin = new Rps_FltkMainWindow(/*width=*/500, /*height=*/300,
       titlebuf);
   rps_fltk_mainwin->show();
+  rps_fltk_flush ();
   RPS_DEBUG_LOG(REPL, "rps_fltk_initialize showing mainwin@"
                 << (void*)rps_fltk_mainwin
                 << std::endl
