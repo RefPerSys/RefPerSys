@@ -54,6 +54,8 @@
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Box.H>
+#include <FL/Fl_Pack.H>
+#include <FL/Fl_Flex.H>
 
 /// conventional strings
 extern "C" const char rps_fltk_gitid[];
@@ -234,6 +236,7 @@ Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget(Rps_ObjectZone*owner, Fl_Widg
 class Rps_FltkMainWindow: public Fl_Window
 {
   Fl_Menu_Bar* _mainwin_menubar;
+  Fl_Flex* _mainwin_vflex;
 protected:
   void fill_main_window(void);
   static void menu_cb(Fl_Widget*w, void*data);
@@ -424,7 +427,7 @@ Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 
 Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*title)
   : Fl_Window(x,y,w,h,title),
-    _mainwin_menubar(nullptr)
+    _mainwin_menubar(nullptr), _mainwin_vflex(nullptr)
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow x=" << x << ",y=" << y
                 << ",w=" << w << ",h=" << h
@@ -454,6 +457,7 @@ Rps_FltkMainWindow::fill_main_window(void)
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window w=" << w() << ",h=" << h());
   this->begin();
+  //////////// the menubar
   {
     _mainwin_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
     _mainwin_menubar->add("&App/e&Xit", "^x", menu_cb, (void*)"X");
@@ -471,6 +475,14 @@ Rps_FltkMainWindow::fill_main_window(void)
     RPS_DEBUG_OPTIONS(RPSFLTK_DEBUG);
 #undef RPSFLTK_DEBUG
   }
+  /////////////
+  _mainwin_vflex = new Fl_Flex(0, 25, w(), h()-26);
+  {
+    _mainwin_vflex->spacing(2);
+    _mainwin_vflex->begin();
+    _mainwin_vflex->end();
+    _mainwin_vflex->layout();
+  }
   this->end();
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window done w=" << w() << ",h=" << h());
 } // end Rps_FltkMainWindow::fill_main_window
@@ -486,6 +498,7 @@ void
 Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::menu_cb w@" << (void*)w
+		<< " of type:" << (unsigned)(w->type())
                 << " data@" << data << "=" << (const char*)data
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "~Rps_FltkMainWindow"));
