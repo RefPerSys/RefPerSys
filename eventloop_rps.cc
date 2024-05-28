@@ -1058,8 +1058,6 @@ rps_sigfd_read_handler(Rps_CallFrame*cf, int fd, void* data)
     default:
       RPS_FATALOUT("rps_sigfd_read_handler got unexpected signal#" << signum << ":" << strsignal(signum));
     };
-#warning unimplemented rps_sigfd_read_handler
-  RPS_FATALOUT("unimplemented rps_sigfd_read_handler fd#" << fd);
 } // end rps_sigfd_read_handler
 
 
