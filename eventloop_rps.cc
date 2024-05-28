@@ -359,6 +359,34 @@ rps_self_pipe_read_handler(Rps_CallFrame*cf, int fd, void* data)
     }
 } // end rps_self_pipe_read_handler
 
+void
+rps_self_pipe_write_handler(Rps_CallFrame*cf, int fd, void* data)
+{
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_DEBUG_LOG(REPL, "rps_self_pipe_write_handler fd#" << fd
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_self_pipe_write_handler"));
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  RPS_ASSERT(fd == rps_eventloopdata.eld_selfpipewritefd);
+  while (!rps_eventloopdata.eld_selfpipefifo.empty())
+    {
+      char buf[4] = {0,0,0,0};
+      char c = rps_eventloopdata.eld_selfpipefifo.back();
+      buf[0] = c;
+      errno = 0;
+      ssize_t nw = write(fd, buf, 1);
+      if (nw>0)
+        {
+          RPS_DEBUG_LOG(REPL, "rps_self_pipe_write_handler wrote " << buf << " to fd#" << fd);
+          rps_eventloopdata.eld_selfpipefifo.pop_back();
+        }
+      else
+        {
+          RPS_DEBUG_LOG(REPL, "rps_self_pipe_write_handler write-fail fd#" << fd << ":" << strerror(errno));
+          break;
+        }
+    }
+} // end rps_self_pipe_write_handler
 
 void
 rps_event_loop_remove_output_fd_handler(int fd)
@@ -443,10 +471,16 @@ rps_initialize_pipe_to_self_in_event_loop(void)
                    << strerror(errno));
     rps_eventloopdata.eld_selfpipereadfd = pipefdarr[0];
     RPS_ASSERT(rps_eventloopdata.eld_selfpipereadfd > 0);
-#warning should call rps_event_loop_add_input_fd_handler for selfpipereadfd
     rps_eventloopdata.eld_selfpipewritefd = pipefdarr[1];
     RPS_ASSERT(rps_eventloopdata.eld_selfpipewritefd > 0);
-#warning should call rps_event_loop_add_output_fd_handler for selfpipewritefd
+    rps_event_loop_add_input_fd_handler(rps_eventloopdata.eld_selfpipereadfd,
+                                        rps_self_pipe_read_handler,
+                                        "selfpiperead",
+                                        nullptr);;
+    rps_event_loop_add_input_fd_handler(rps_eventloopdata.eld_selfpipewritefd,
+                                        rps_self_pipe_write_handler,
+                                        "selfpipewrite",
+                                        nullptr);
     RPS_DEBUG_LOG(REPL, "rps_initialize_pipe_to_self_in_event_loop eld_selfpipereadfd#"
                   << (rps_eventloopdata.eld_selfpipereadfd)
                   << " eld_selfpipewritefd#"
