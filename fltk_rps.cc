@@ -571,7 +571,9 @@ rps_fltk_run (void)
   RPS_ASSERT(rps_is_main_thread());
   int fr = Fl::run();
   if (fr)
-    RPS_WARNOUT("rps_fltk_run ended with " << fr << " code");
+    RPS_WARNOUT("rps_fltk_run ended with " << fr << " code"
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run/end"));
   RPS_DEBUG_LOG(REPL, "rps_fltk_run ended thread:" << rps_current_pthread_name() << " fr=" << fr);
 } // end rps_fltk_run
 
