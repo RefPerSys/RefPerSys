@@ -662,8 +662,10 @@ rps_event_loop(void)
     if (rps_poll_delay_millisec<=0)
       RPS_FATALOUT("the poll event loop has not being properly initialized");
   };
+  if (rps_fltk_enabled ())
+    RPS_FATALOUT("rps_event_loop incompatible with FLTK");
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
-                 /*callerframe:*/RPS_NULL_CALL_FRAME, //
+                 /*callerframe:*/rps_curthread_callframe, //
                  /** locals **/
                  Rps_Value valarr[RPS_MAXPOLL_FD+1];
                  Rps_ClosureValue closarr[RPS_MAXPOLL_FD+1];
