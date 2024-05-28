@@ -99,7 +99,7 @@ static std::stringstream rps_jsonrpc_rspstream; // should be used
 #warning use rps_jsonrpc_rspstream below
 
 extern "C" void rps_sigfd_read_handler(Rps_CallFrame*cf, int fd, void* data);
-extern "C" void rps_timer_read_handler(Rps_CallFrame*cf, int fd, void* data);
+extern "C" void rps_timerfd_read_handler(Rps_CallFrame*cf, int fd, void* data);
 extern "C" void rps_fifo_read_handler(Rps_CallFrame*cf, int fd, void* data);
 extern "C" void rps_fifo_write_handler(Rps_CallFrame*cf, int fd, void* data);
 extern "C" void rps_self_pipe_read_handler(Rps_CallFrame*cf, int fd, void* data);
@@ -128,9 +128,10 @@ rps_do_stop_event_loop(void)
                 <<  rps_current_pthread_name()
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_do_stop_event_loop"));
   rps_stop_event_loop_flag.store(true);
-  if (rps_fltk_enabled ()) {
-    rps_fltk_stop();
-  }
+  if (rps_fltk_enabled ())
+    {
+      rps_fltk_stop();
+    }
 } // end rps_do_stop_event_loop
 
 extern "C" void rps_jsonrpc_initialize(void);
@@ -315,7 +316,6 @@ rps_self_pipe_read_handler(Rps_CallFrame*cf, int fd, void* data)
   unsigned char buf[128];
   RPS_ASSERT(fd == rps_eventloopdata.eld_selfpipereadfd);
   RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
-  /* TODO: should read(2) */
   memset(buf, 0, sizeof(buf));
   int nbr = read(fd, buf, sizeof(buf));
   RPS_DEBUG_LOG(REPL, "rps_self_pipe_read_handler fd#" << fd << " nbr=" << nbr
@@ -480,7 +480,8 @@ rps_initialize_signalfd_in_event_loop(void)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_signalfd_in_event_loop")
                );
-#warning should call rps_event_loop_add_input_fd_handler for signalfd
+  rps_event_loop_add_input_fd_handler(rps_eventloopdata.eld_sigfd, rps_sigfd_read_handler,
+                                      "signalfd", nullptr);
 } // end rps_initialize_signalfd_in_event_loop
 
 void
@@ -497,8 +498,21 @@ rps_initialize_timerfd_in_event_loop(void)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_timerfd_in_event_loop")
                );
-#warning should call rps_event_loop_add_input_fd_handler for timerfd
+  rps_event_loop_add_input_fd_handler(rps_eventloopdata.eld_sigfd, rps_timerfd_read_handler,
+                                      "timerfd", nullptr);
 } // end rps_initialize_timerfd_in_event_loop
+
+void
+rps_initialize_jsonfifo_in_event_loop(void)
+{
+  struct rps_fifo_fdpair_st fdp = rps_get_gui_fifo_fds();
+  if (fdp.fifo_ui_wcmd <= 0)
+    RPS_FATALOUT("invalid command FIFO fd " << fdp.fifo_ui_wcmd
+                 << " with FIFO prefix " << rps_get_fifo_prefix());
+  if (fdp.fifo_ui_rout <= 0)
+    RPS_FATALOUT("invalid output FIFO fd " << fdp.fifo_ui_rout
+                 << " with FIFO prefix " << rps_get_fifo_prefix());
+} // end rps_initialize_jsonfifo_in_event_loop
 
 /////////// the toplevel event loop initialization
 void
@@ -541,6 +555,8 @@ rps_initialize_event_loop(void)
   rps_initialize_pipe_to_self_in_event_loop();
   rps_initialize_signalfd_in_event_loop();
   rps_initialize_timerfd_in_event_loop();
+  if (!rps_get_fifo_prefix().empty())
+    rps_initialize_jsonfifo_in_event_loop();
   if (rps_poll_delay_millisec==0)
     rps_poll_delay_millisec = RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC;
 } // end rps_initialize_event_loop
@@ -1043,6 +1059,19 @@ rps_event_loop(void)
 } // end rps_event_loop
 
 
+void
+rps_sigfd_read_handler(Rps_CallFrame*cf, int fd, void* data)
+{
+#warning unimplemented rps_sigfd_read_handler
+  RPS_FATALOUT("unimplemented rps_sigfd_read_handler fd#" << fd);
+} // end rps_sigfd_read_handler
+
+void
+rps_timerfd_read_handler(Rps_CallFrame*cf, int fd, void* data)
+{
+#warning unimplemented rps_timerfd_read_handler
+  RPS_FATALOUT("unimplemented rps_timerfd_read_handler fd#" << fd);
+} // end rps_timerfd_read_handler
 
 void
 handle_self_pipe_byte_rps(unsigned char b)
