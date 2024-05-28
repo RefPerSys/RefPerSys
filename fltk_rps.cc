@@ -467,10 +467,10 @@ Rps_FltkMainWindow::fill_main_window(void)
     _mainwin_menubar->add("&Debug/Clear", "^c", menu_cb, (void*)"d_");
     _mainwin_menubar->add("&Debug/Sho&w", "^w", menu_cb, (void*)"d+");
     ///
-#define RPSFLTK_DEBUG(Name) do {			\
-    _mainwin_menubar->add("&Debug/" #Name, 0,   	\
-			  menu_cb, (void*)"d:" #Name,	\
-			  FL_MENU_TOGGLE);		\
+#define RPSFLTK_DEBUG(Name) do {      \
+    _mainwin_menubar->add("&Debug/" #Name, 0,     \
+        menu_cb, (void*)"d:" #Name, \
+        FL_MENU_TOGGLE);    \
   } while(0);
     RPS_DEBUG_OPTIONS(RPSFLTK_DEBUG);
 #undef RPSFLTK_DEBUG
@@ -498,10 +498,52 @@ void
 Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::menu_cb w@" << (void*)w
-		<< " of type:" << (unsigned)(w->type())
+                << " of type:" << (unsigned)(w->type())
                 << " data@" << data << "=" << (const char*)data
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "~Rps_FltkMainWindow"));
+  RPS_ASSERT(rps_is_main_thread());
+  RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
+                 /*callerframe:*/rps_curthread_callframe, //
+                 /** locals **/
+                 Rps_Value v;
+                );
+  if (!strcmp((const char*)data, "X")) // eXit
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::menu_cb eXit");
+      rps_dump_into(".", &_);
+      rps_fltk_stop();
+    }
+  else if (!strcmp((const char*)data, "Q")) // Quit
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::menu_cb Quit");
+      rps_fltk_stop();
+    }
+  else if (!strcmp((const char*)data, "D")) // Dump
+    {
+      RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::menu_cb Dump");
+      rps_dump_into(".", &_);
+    }
+  else if (!strcmp((const char*)data, "d-")) // debug stop
+    {
+#warning unimplemented debug stop
+      RPS_WARNOUT("unimplemented debug stop");
+    }
+  else if (!strcmp((const char*)data, "d+")) // debug show
+    {
+#warning unimplemented debug show
+      RPS_WARNOUT("unimplemented debug show");
+    }
+  else if (!strcmp((const char*)data, "d_")) // debug clear
+    {
+#warning unimplemented debug show
+      RPS_WARNOUT("unimplemented debug clear");
+    }
+  else
+    {
+#warning unimplemented menu_cb
+      RPS_WARNOUT("unimplemented menu_cb " << (const char*)data);
+    }
 } // end Rps_FltkMainWindow::menu_cb
 
 #warning incomplete implementation of class Rps_FltkMainWindow
