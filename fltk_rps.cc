@@ -462,12 +462,14 @@ Rps_FltkMainWindow::fill_main_window(void)
     _mainwin_menubar->add("&Debug/Stop", "^s", menu_cb, (void*)"d-");
     _mainwin_menubar->add("&Debug/Clear", "^c", menu_cb, (void*)"d_");
     _mainwin_menubar->add("&Debug/Sho&w", "^w", menu_cb, (void*)"d+");
+    ///
 #define RPSFLTK_DEBUG(Name) do {			\
-    _mainwin_menubar->add("&Debug/" #Name, nullptr,	\
+    _mainwin_menubar->add("&Debug/" #Name, 0,   	\
 			  menu_cb, (void*)"d:" #Name,	\
 			  FL_MENU_TOGGLE);		\
   } while(0);
-    RPS_DEBUG_OPTIONS(RPSFLTK_DEBUG)
+    RPS_DEBUG_OPTIONS(RPSFLTK_DEBUG);
+#undef RPSFLTK_DEBUG
   }
   this->end();
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window done w=" << w() << ",h=" << h());
