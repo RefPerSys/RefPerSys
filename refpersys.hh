@@ -151,6 +151,7 @@ extern "C" int rps_fltk_api_version (void);
 extern "C" void rps_fltk_initialize (int argc, char**argv);
 extern "C" void rps_fltk_progoption(char*arg, struct argp_state*, bool side_effect);
 extern "C" bool rps_fltk_enabled (void);
+extern "C" void rps_fltk_run (void);
 extern "C" void rps_fltk_stop (void);
 extern "C" void rps_fltk_flush (void);
 
@@ -179,6 +180,7 @@ extern "C" void rps_fltk_remove_output_fd(int fd);
 #define rps_fltk_remove_input_fd(Fd) do{}while(0)
 #define rps_fltk_remove_output_fd(Fd) do{}while(0)
 #define rps_fltk_stop() do{}while(0)
+#define rps_fltk_run() do{}while(0)
 #define rps_fltk_flush() do{}while(0)
 #endif
 
