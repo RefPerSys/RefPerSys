@@ -764,67 +764,7 @@ rps_event_loop(void)
                          << " did read " << nbr << " bytes");
           };
         };
-      if (rps_eventloopdata.eld_sigfd>0)
-        {
-          /// signals transformed to data with signalfd(2)
-          RPS_ASSERT(nbfdpoll<RPS_MAXPOLL_FD);
-          int pix = nbfdpoll++;
-          pollarr[pix].fd = rps_eventloopdata.eld_sigfd;
-          pollarr[pix].events = POLLIN;
-          EXPLAIN_EVFD_RPS(pix, "signalfd");
-          handlarr[pix] = [&](Rps_CallFrame* cf, int fd, short rev)
-          {
-            struct signalfd_siginfo infsig;
-            memset(&infsig, 0, sizeof(infsig));
-            RPS_ASSERT(fd ==  pollarr[pix].fd && fd == rps_eventloopdata.eld_sigfd);
-            RPS_ASSERT(rev == POLLIN);
-            RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
-            int nbr = read(fd, (void*)&infsig, sizeof(infsig));
-            if (nbr != sizeof(infsig))
-              RPS_FATALOUT("signalfd read failure on fd#" << fd << " pix#" << pix << " got " << nbr << " bytes, expecting " << sizeof(infsig)
-                           << ":" << strerror(errno));
-            std::int32_t scod= infsig.ssi_code;
-            pid_t origpid= infsig.ssi_pid;
-            std::int32_t status= infsig.ssi_status;
-            int signum= infsig.ssi_signo;
-            RPS_DEBUG_LOG(REPL, "eventloop sigfd signal#" << signum << ":" << strsignal(signum)
-                          << " scod:" << scod << " origpid:"<< origpid << " status:" << status);
-            switch (infsig.ssi_signo)
-              {
-              case SIGTERM:
-              {
-                RPS_INFORMOUT("event loop#"<< loopcnt
-                              << " got SIGTERM from pid " << origpid);
-                rps_stop_event_loop_flag.store(true);
-              };
-              break;
-              case SIGINT:
-              {
-                RPS_INFORMOUT("event loop#" << loopcnt
-                              << " got SIGINT from pid " << origpid);
-                rps_stop_event_loop_flag.store(true);
-              };
-              break;
-              case SIGQUIT:
-              {
-                RPS_INFORMOUT("event loop#" << loopcnt
-                              << " got SIGQUIT from pid " << origpid);
-                rps_stop_event_loop_flag.store(true);
-              };
-              break;
-              case SIGCHLD:
-              {
-                RPS_INFORMOUT("event loop#" << loopcnt
-                              << " got SIGCHLD from pid " << origpid << " status:" << status);
-              };
-              break;
-              default:
-                RPS_FATALOUT("event loop#" << loopcnt
-                             << " got unexpected signal#" << signum << ":" << strsignal(signum));
-              };
-#warning missing code to handle signalfd...
-          };
-        }
+
       if (rps_eventloopdata.eld_timfd>0)
         {
           /// timers transformed to data with timerfd_create(2)
@@ -1062,16 +1002,80 @@ rps_event_loop(void)
 void
 rps_sigfd_read_handler(Rps_CallFrame*cf, int fd, void* data)
 {
+  RPS_DEBUG_LOG (REPL, "rps_sigfd_read_handler fd#" << fd
+                 << " thread:" << rps_current_pthread_name()
+                 << " data:" << data
+                 << RPS_FULL_BACKTRACE_HERE(1, "rps_sigfd_read_handler"));
+  RPS_ASSERT (rps_eventloopdata.eld_sigfd>0);
+  struct signalfd_siginfo infsig;
+  memset(&infsig, 0, sizeof(infsig));
+  RPS_ASSERT(fd == rps_eventloopdata.eld_sigfd);
+  RPS_ASSERT(cf != nullptr && cf->is_good_call_frame());
+  int nbr = read(fd, (void*)&infsig, sizeof(infsig));
+  if (nbr != sizeof(infsig))
+    RPS_FATALOUT("rps_sigfd_read_handler read failure on fd#" << fd
+                 << " got " << nbr << " bytes, expecting " << sizeof(infsig)
+                 << ":" << strerror(errno));
+  std::int32_t scod= infsig.ssi_code;
+  pid_t origpid= infsig.ssi_pid;
+  std::int32_t status= infsig.ssi_status;
+  int signum= infsig.ssi_signo;
+  RPS_DEBUG_LOG(REPL, "rps_sigfd_read_handler signal#" << signum << ":" << strsignal(signum)
+                << " scod:" << scod << " origpid:"<< origpid << " status:" << status);
+  switch (infsig.ssi_signo)
+    {
+    case SIGTERM:
+    {
+      RPS_INFORMOUT("rps_sigfd_read_handler got SIGTERM from pid " << origpid);
+#warning on SIGTERM should schedule a final dump
+      rps_do_stop_event_loop();
+    };
+    break;
+    case SIGINT:
+    {
+      RPS_INFORMOUT("rps_sigfd_read_handler got SIGINT from pid " << origpid);
+      rps_do_stop_event_loop();
+    };
+    break;
+    case SIGQUIT:
+    {
+      RPS_INFORMOUT("rps_sigfd_read_handler got SIGQUIT from pid " << origpid);
+      rps_do_stop_event_loop();
+    };
+    break;
+    case SIGCHLD:
+    {
+      RPS_INFORMOUT("rps_sigfd_read_handler got SIGCHLD from pid " << origpid
+                    << " status:" << status);
+    };
+    break;
+    case SIGUSR1:
+    {
+      RPS_INFORMOUT("rps_sigfd_read_handler got SIGUSR1 from pid " << origpid);
+#warning on SIGUSR1 should schedule a temporary dump
+    };
+    break;
+    default:
+      RPS_FATALOUT("rps_sigfd_read_handler got unexpected signal#" << signum << ":" << strsignal(signum));
+    };
 #warning unimplemented rps_sigfd_read_handler
   RPS_FATALOUT("unimplemented rps_sigfd_read_handler fd#" << fd);
 } // end rps_sigfd_read_handler
 
+
+
 void
 rps_timerfd_read_handler(Rps_CallFrame*cf, int fd, void* data)
 {
+  RPS_DEBUG_LOG (REPL, "rps_timerfd_read_handler fd#" << fd
+                 << " data:" << data
+                 << " thread:" << rps_current_pthread_name() << std::endl
+                 << RPS_FULL_BACKTRACE_HERE(1, "rps_timerfd_read_handler"));
 #warning unimplemented rps_timerfd_read_handler
   RPS_FATALOUT("unimplemented rps_timerfd_read_handler fd#" << fd);
 } // end rps_timerfd_read_handler
+
+
 
 void
 handle_self_pipe_byte_rps(unsigned char b)
