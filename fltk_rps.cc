@@ -554,8 +554,8 @@ void
 rps_fltk_stop(void)
 {
   RPS_DEBUG_LOG(REPL, "rps_fltk_stop thread:" << rps_current_pthread_name()
-		<< std::endl
-      << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_stop"));
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_stop"));
   Fl::lock();
   Fl::program_should_quit(1);
   Fl::unlock();
