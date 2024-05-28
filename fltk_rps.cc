@@ -236,6 +236,7 @@ class Rps_FltkMainWindow: public Fl_Window
   Fl_Menu_Bar* _mainwin_menubar;
 protected:
   void fill_main_window(void);
+  static void menu_cb(Fl_Widget*w, void*data);
 public:
   Rps_FltkMainWindow(int x, int y, int w, int h, const char*title);
   Rps_FltkMainWindow(int w, int h, const char*title);
@@ -453,7 +454,21 @@ Rps_FltkMainWindow::fill_main_window(void)
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window w=" << w() << ",h=" << h());
   this->begin();
-  _mainwin_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
+  {
+    _mainwin_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
+    _mainwin_menubar->add("&App/e&Xit", "^x", menu_cb, (void*)"X");
+    _mainwin_menubar->add("&App/&Quit", "^q", menu_cb, (void*)"Q");
+    _mainwin_menubar->add("&App/&Dump", "^d", menu_cb, (void*)"D");
+    _mainwin_menubar->add("&Debug/Stop", "^s", menu_cb, (void*)"d-");
+    _mainwin_menubar->add("&Debug/Clear", "^c", menu_cb, (void*)"d_");
+    _mainwin_menubar->add("&Debug/Sho&w", "^w", menu_cb, (void*)"d+");
+#define RPSFLTK_DEBUG(Name) do {			\
+    _mainwin_menubar->add("&Debug/" #Name, nullptr,	\
+			  menu_cb, (void*)"d:" #Name,	\
+			  FL_MENU_TOGGLE);		\
+  } while(0);
+    RPS_DEBUG_OPTIONS(RPSFLTK_DEBUG)
+  }
   this->end();
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window done w=" << w() << ",h=" << h());
 } // end Rps_FltkMainWindow::fill_main_window
@@ -465,7 +480,14 @@ Rps_FltkMainWindow::~Rps_FltkMainWindow()
                 << RPS_FULL_BACKTRACE_HERE(1, "~Rps_FltkMainWindow"));
 }; // end Rps_FltkMainWindow::~Rps_FltkMainWindow
 
-
+void
+Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
+{
+  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::menu_cb w@" << (void*)w
+                << " data@" << data << "=" << (const char*)data
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "~Rps_FltkMainWindow"));
+} // end Rps_FltkMainWindow::menu_cb
 
 #warning incomplete implementation of class Rps_FltkMainWindow
 
