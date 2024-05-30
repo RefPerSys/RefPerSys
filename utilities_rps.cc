@@ -1719,9 +1719,9 @@ rps_initialize_symbols_after_loading(Rps_Loader*ld)
   std::lock_guard<std::recursive_mutex> gu(Rps_PayloadSymbol::symb_tablemtx);
   Rps_PayloadSymbol::symb_hardcoded_hashtable.max_load_factor(2.5);
   Rps_PayloadSymbol::symb_hardcoded_hashtable.reserve(5*rps_hardcoded_number_of_symbols()/4+3);
-#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name) {   \
+#define RPS_INSTALL_NAMED_ROOT_OB(Oid,Name) {           \
     Rps_PayloadSymbol::symb_hardcoded_hashtable[#Name]  \
-      = &RPS_SYMB_OB(Name);       \
+      = &RPS_SYMB_OB(Name);                             \
   };
 #include "generated/rps-names.hh"
 } // end of rps_initialize_symbols_after_loading
