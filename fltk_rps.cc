@@ -467,11 +467,11 @@ Rps_FltkMainWindow::fill_main_window(void)
     _mainwin_menubar->add("&Debug/Clear", "^c", menu_cb, (void*)"d_");
     _mainwin_menubar->add("&Debug/Sho&w", "^w", menu_cb, (void*)"d+");
     ///
-#define RPSFLTK_DEBUG(Name) do {      \
-    _mainwin_menubar->add("&Debug/" #Name, 0,     \
-        menu_cb, (void*)"d:" #Name, \
-        FL_MENU_TOGGLE);    \
-  } while(0);
+#define RPSFLTK_DEBUG(Name) do {    \
+    _mainwin_menubar->add("&Debug/" #Name, 0, \
+        menu_cb, (void*)"d:" #Name,   \
+        FL_MENU_TOGGLE);      \
+  } while(0);         \
     RPS_DEBUG_OPTIONS(RPSFLTK_DEBUG);
 #undef RPSFLTK_DEBUG
   }
@@ -671,22 +671,40 @@ rps_fltk_run (void)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run"));
   RPS_ASSERT(rps_is_main_thread());
-  while (!Fl::program_should_quit())
+  if (rps_run_delay > 0.0)
     {
-      loopcnt++;
-      RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name()
-                    << " loopcnt#" << loopcnt //
-		    << " elapsedrealtime:" << rps_elapsed_real_time() //
-		    << " processcputime:" << rps_process_cpu_time());
-      Fl::wait(10.0);
-    };
+      double finalrealtime = rps_elapsed_real_time()+rps_run_delay;
+      while (!Fl::program_should_quit())
+        {
+          loopcnt++;
+          RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name()
+                        << " loopcnt#" << loopcnt //
+                        << " elapsedrealtime:" << rps_elapsed_real_time() //
+                        << " processcputime:" << rps_process_cpu_time());
+          Fl::wait(rps_run_delay/16.0+0.02);
+          if (rps_elapsed_real_time() > finalrealtime)
+            Fl::program_should_quit(1);
+        };
+    }
+  else   // no rps_run_delay
+    {
+      while (!Fl::program_should_quit())
+        {
+          loopcnt++;
+          RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name()
+                        << " loopcnt#" << loopcnt //
+                        << " elapsedrealtime:" << rps_elapsed_real_time() //
+                        << " processcputime:" << rps_process_cpu_time());
+          Fl::wait(16.0);
+        };
+    }
   RPS_DEBUG_LOG(REPL, "rps_fltk_run ended thread:"
                 << rps_current_pthread_name()
                 << std::endl
-		<< " final loopcnt:" << loopcnt//
-		    << " elapsedrealtime:" << rps_elapsed_real_time() //
-		<< " processcputime:" << rps_process_cpu_time() //
-		<< std::endl
+                << " final loopcnt:" << loopcnt//
+                << " elapsedrealtime:" << rps_elapsed_real_time() //
+                << " processcputime:" << rps_process_cpu_time() //
+                << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run/end"));
 } // end rps_fltk_run
 
