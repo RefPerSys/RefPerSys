@@ -671,9 +671,15 @@ rps_fltk_run (void)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run"));
   RPS_ASSERT(rps_is_main_thread());
+  constexpr double minimal_wait_delay = 0.75;
+  constexpr double plain_wait_delay = 16.0;
   if (rps_run_delay > 0.0)
     {
       double finalrealtime = rps_elapsed_real_time()+rps_run_delay;
+      double waitdelay = rps_run_delay/16.0+0.02;
+      if (waitdelay < minimal_wait_delay)
+	waitdelay = minimal_wait_delay;
+      RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name() << " waitdelay=" << waitdelay);
       while (!Fl::program_should_quit())
         {
           loopcnt++;
@@ -681,7 +687,7 @@ rps_fltk_run (void)
                         << " loopcnt#" << loopcnt //
                         << " elapsedrealtime:" << rps_elapsed_real_time() //
                         << " processcputime:" << rps_process_cpu_time());
-          Fl::wait(rps_run_delay/16.0+0.02);
+          Fl::wait(waitdelay);
           if (rps_elapsed_real_time() > finalrealtime)
             Fl::program_should_quit(1);
         };
@@ -695,7 +701,7 @@ rps_fltk_run (void)
                         << " loopcnt#" << loopcnt //
                         << " elapsedrealtime:" << rps_elapsed_real_time() //
                         << " processcputime:" << rps_process_cpu_time());
-          Fl::wait(16.0);
+          Fl::wait(plain_wait_delay);
         };
     }
   RPS_DEBUG_LOG(REPL, "rps_fltk_run ended thread:"
