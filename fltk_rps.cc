@@ -666,16 +666,27 @@ rps_fltk_stop(void)
 void
 rps_fltk_run (void)
 {
+  long loopcnt = 0;
   RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name()
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run"));
   RPS_ASSERT(rps_is_main_thread());
-  while (!Fl::program_should_quit()) {
-    Fl::wait(10.0);
-  };
+  while (!Fl::program_should_quit())
+    {
+      loopcnt++;
+      RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name()
+                    << " loopcnt#" << loopcnt //
+		    << " elapsedrealtime:" << rps_elapsed_real_time() //
+		    << " processcputime:" << rps_process_cpu_time());
+      Fl::wait(10.0);
+    };
   RPS_DEBUG_LOG(REPL, "rps_fltk_run ended thread:"
-		<< rps_current_pthread_name() 
+                << rps_current_pthread_name()
                 << std::endl
+		<< " final loopcnt:" << loopcnt//
+		    << " elapsedrealtime:" << rps_elapsed_real_time() //
+		<< " processcputime:" << rps_process_cpu_time() //
+		<< std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run/end"));
 } // end rps_fltk_run
 
