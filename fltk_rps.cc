@@ -659,6 +659,7 @@ rps_fltk_stop(void)
   Fl::lock();
   Fl::program_should_quit(1);
   Fl::unlock();
+  RPS_DEBUG_LOG(REPL, "rps_fltk_stop done from thread:" << rps_current_pthread_name());
 } // end rps_fltk_stop
 
 
@@ -669,12 +670,13 @@ rps_fltk_run (void)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run"));
   RPS_ASSERT(rps_is_main_thread());
-  int fr = Fl::run();
-  if (fr)
-    RPS_WARNOUT("rps_fltk_run ended with " << fr << " code"
+  while (!Fl::program_should_quit()) {
+    Fl::wait(10.0);
+  };
+  RPS_DEBUG_LOG(REPL, "rps_fltk_run ended thread:"
+		<< rps_current_pthread_name() 
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run/end"));
-  RPS_DEBUG_LOG(REPL, "rps_fltk_run ended thread:" << rps_current_pthread_name() << " fr=" << fr);
 } // end rps_fltk_run
 
 //// end of file fltk_rps.cc
