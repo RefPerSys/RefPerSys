@@ -53,6 +53,7 @@
 #include <FL/Fl_Multi_Label.H>
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Text_Buffer.H>
+#include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Flex.H>
@@ -233,6 +234,14 @@ Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget(Rps_ObjectZone*owner, Fl_Widg
 
 
 ////////////////
+
+class Rps_FltkInputTextEditor : public  Fl_Text_Editor {
+  /* inspired by FLTK 1.4 examples/texteditor-with-dynamic-colors.cxx */
+    Fl_Text_Buffer *inptx_textbuf;      // text buffer
+    Fl_Text_Buffer *inptx_stylbuf;      // style buffer
+#warning Rps_FltkInputTextEditor need a lot more code
+};				      // end  Rps_FltkInputTextEditor
+
 class Rps_FltkMainWindow: public Fl_Window
 {
   Fl_Menu_Bar* _mainwin_menubar;
