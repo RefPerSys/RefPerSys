@@ -47,7 +47,7 @@ RPS_ATSHARP := $(shell printf '@#')
         print-plugin-settings indent redump clean-plugins plugins \
         test00 test01 test01b test01c test01d test01e test01f \
         test02 test03 test05 test06 test07 test07a test08 test09 test-load \
-	testfltk1 
+	testfltk1 testfltk2 testfltk3
 
 SYNC=/bin/sync
 
@@ -387,8 +387,12 @@ testfltk1: refpersys
 	@printf '\n\n\n////testfltk1 FINISHED¤\n'
 
 testfltk2: refpersys
-	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=5s  --fltk -bg ivory
+	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=9s  --fltk -bg ivory
 	@printf '\n\n\n////testfltk2 FINISHED¤\n'
+
+testfltk3: refpersys
+	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=29s  --fltk -bg lightpink
+	@printf '\n\n\n////testfltk3 FINISHED¤\n'
 
 ## eof GNUmakefile
 
