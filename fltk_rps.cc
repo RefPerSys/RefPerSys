@@ -688,9 +688,10 @@ rps_fltk_initialize (int argc, char**argv)
   rps_fltk_flush ();
   RPS_DEBUG_LOG(REPL, "rps_fltk_initialize showing mainwin@"
                 << (void*)rps_fltk_mainwin
+		<< " DISPLAY=" << Rps_Cjson_String(getenv("DISPLAY"))
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize"));
-  RPS_WARNOUT("unimplemented rps_fltk_initialize " << titlebuf << std::endl
+  RPS_WARNOUT("incomplete rps_fltk_initialize " << titlebuf << std::endl
               << " thread:" << rps_current_pthread_name()
               << " progargs "
               <<  Rps_Do_Output([&](std::ostream&out)
