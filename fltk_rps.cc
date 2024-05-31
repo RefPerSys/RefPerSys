@@ -235,13 +235,73 @@ Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget(Rps_ObjectZone*owner, Fl_Widg
 
 ////////////////
 
-class Rps_FltkInputTextEditor : public  Fl_Text_Editor
+class Rps_FltkInputTextEditor : public Fl_Text_Editor
+{
+  /* inspired by FLTK 1.4 examples/texteditor-with-dynamic-colors.cxx;
+     it contains two data pointers with a mutex */
+public:
+  typedef void datadestroyer_sigt(Rps_FltkInputTextEditor*,void*,void*);
+private:
+  mutable std::recursive_mutex inputx_mtx;
+  void* inputx_data1;
+  void* inputx_data2;
+  datadestroyer_sigt* destroy_datafunptr;
+  std::function<datadestroyer_sigt> destroy_clos;
+  Fl_Text_Buffer *inputx_textbuf;      // text buffer
+  Fl_Text_Buffer *inputx_stylbuf;      // style buffer
+public:
+  template<typename Ty> Ty* data1() const
+  {
+    std::lock_guard<std::recursive_mutex> gu(inputx_mtx);
+    return (Ty*)inputx_data1;
+  };
+  template<typename Ty> Ty* data2() const
+  {
+    std::lock_guard<std::recursive_mutex> gu(inputx_mtx);
+    return (Ty*)inputx_data2;
+  };
+  void set_data(datadestroyer_sigt*fun,void*p1,void*p2)
+  {
+    std::lock_guard<std::recursive_mutex> gu(inputx_mtx);
+    destroy_datafunptr = fun;
+    destroy_clos = nullptr;
+    inputx_data1 = p1;
+    inputx_data2 = p2;
+  };
+  void set_data_with_closure(std::function<datadestroyer_sigt> clos, void*p1, void*p2)
+  {
+    std::lock_guard<std::recursive_mutex> gu(inputx_mtx);
+    destroy_datafunptr = nullptr;
+    destroy_clos = clos;
+    inputx_data1 = p1;
+    inputx_data2 = p2;
+  };
+  void clear_data(void)
+  {
+    std::lock_guard<std::recursive_mutex> gu(inputx_mtx);
+    if (destroy_clos)
+      destroy_clos(this,inputx_data1,inputx_data2);
+    else if (destroy_datafunptr)
+      (*destroy_datafunptr)(this,inputx_data1,inputx_data2);
+    inputx_data1 = nullptr;
+    inputx_data2 = nullptr;
+    destroy_datafunptr = nullptr;
+    destroy_clos = nullptr;
+  };
+  Rps_FltkInputTextEditor(int x, int y, int w, int h);
+  virtual ~Rps_FltkInputTextEditor();
+};              // end  Rps_FltkInputTextEditor
+
+class Rps_FltkOutputTextDisplay : public  Fl_Text_Display
 {
   /* inspired by FLTK 1.4 examples/texteditor-with-dynamic-colors.cxx */
-  Fl_Text_Buffer *inptx_textbuf;      // text buffer
-  Fl_Text_Buffer *inptx_stylbuf;      // style buffer
-#warning Rps_FltkInputTextEditor need a lot more code
-};              // end  Rps_FltkInputTextEditor
+  Fl_Text_Buffer *outputx_textbuf;      // text buffer
+  Fl_Text_Buffer *outputx_stylbuf;      // style buffer
+#warning Rps_FltkOutputTextDisplay need a lot more code
+public:
+  Rps_FltkOutputTextDisplay(int x, int y, int w, int h);
+  virtual ~Rps_FltkOutputTextDisplay();
+};              // end  Rps_FltkOutputTextDisplay
 
 class Rps_FltkMainWindow: public Fl_Window
 {
@@ -688,7 +748,7 @@ rps_fltk_initialize (int argc, char**argv)
   rps_fltk_flush ();
   RPS_DEBUG_LOG(REPL, "rps_fltk_initialize showing mainwin@"
                 << (void*)rps_fltk_mainwin
-		<< " DISPLAY=" << Rps_Cjson_String(getenv("DISPLAY"))
+                << " DISPLAY=" << Rps_Cjson_String(getenv("DISPLAY"))
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize"));
   RPS_WARNOUT("incomplete rps_fltk_initialize " << titlebuf << std::endl
