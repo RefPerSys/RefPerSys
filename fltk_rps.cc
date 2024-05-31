@@ -569,7 +569,7 @@ Rps_FltkMainWindow::close_cb(Fl_Widget*wid, void*data)
     {
       char pmapcmd[128];
       memset(pmapcmd, 0, sizeof(pmapcmd));
-      snprintf(pmapcmd, sizeof(pmapcmd), "/usr/bin/pmap %d;  /usr/bin/ps -lw %d",
+      snprintf(pmapcmd, sizeof(pmapcmd), "/usr/bin/pmap %d; /usr/bin/ps -lw %d",
                (int)getpid(), (int)getpid());
       fflush (nullptr);
       std::clog << std::flush;
@@ -607,6 +607,14 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
                 << (side_effect?state->arg_num:-1)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
+  /// testfltk2 make target uses REPL debugging
+  RPS_DEBUG_LOG(REPL, "rps_fltk_progoption arg:" << arg
+                << " next:"
+                << (side_effect?state->next:-1)
+                << " arg_num:"
+                << (side_effect?state->arg_num:-1)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
   if (side_effect)
     {
       /* see https://www.fltk.org/doc-1.4/classFl.html#a1576b8c9ca3e900daaa5c36ca0e7ae48 */
@@ -614,6 +622,15 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
       RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption nw:" << nw
                     <<  " next#" << state->next
                     <<  " argnum#" << state->arg_num);
+      RPS_DEBUG_LOG(REPL, "rps_fltk_progoption nw:" << nw
+                    <<  " next#" << state->next
+                    <<  " argnum#" << state->arg_num
+                    << " state.progargs::" << Rps_Do_Output([&](std::ostream&out)
+      {
+        rps_output_program_arguments(out, state->argc, state->argv);
+      }) << " state.argnum:" << state->arg_num << " state.next:" << state->next
+         << std::endl
+         << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/a"));
     };
 #warning missing code in rps_fltk_progoption
   if (arg)
@@ -665,7 +682,7 @@ rps_fltk_initialize (int argc, char**argv)
            rps_get_major_version(), rps_get_minor_version(), (int)getpid(),
            rps_hostname());
   fl_open_display();
-  rps_fltk_mainwin = new Rps_FltkMainWindow(/*width=*/500, /*height=*/300,
+  rps_fltk_mainwin = new Rps_FltkMainWindow(/*width=*/750, /*height=*/550,
       titlebuf);
   rps_fltk_mainwin->show();
   rps_fltk_flush ();
