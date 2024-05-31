@@ -249,6 +249,7 @@ class Rps_FltkMainWindow: public Fl_Window
 protected:
   void fill_main_window(void);
   static void menu_cb(Fl_Widget*w, void*data);
+  static void close_cb(Fl_Widget*w, void*data);
 public:
   Rps_FltkMainWindow(int x, int y, int w, int h, const char*title);
   Rps_FltkMainWindow(int w, int h, const char*title);
@@ -493,6 +494,7 @@ Rps_FltkMainWindow::fill_main_window(void)
     _mainwin_vflex->layout();
   }
   this->end();
+  callback(close_cb, nullptr);
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window done w=" << w() << ",h=" << h());
 } // end Rps_FltkMainWindow::fill_main_window
 
@@ -555,6 +557,15 @@ Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
     }
 } // end Rps_FltkMainWindow::menu_cb
 
+void
+Rps_FltkMainWindow::close_cb(Fl_Widget*wid, void*data)
+{
+  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::close_cb wid@" << (void*)wid
+		<< " data@" << data
+		<< " elapsed:" << rps_elapsed_real_time()
+		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow::close_cb"));
+  rps_do_stop_event_loop();
+} // end Rps_FltkMainWindow::close_cb
 #warning incomplete implementation of class Rps_FltkMainWindow
 
 
