@@ -235,12 +235,13 @@ Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget(Rps_ObjectZone*owner, Fl_Widg
 
 ////////////////
 
-class Rps_FltkInputTextEditor : public  Fl_Text_Editor {
+class Rps_FltkInputTextEditor : public  Fl_Text_Editor
+{
   /* inspired by FLTK 1.4 examples/texteditor-with-dynamic-colors.cxx */
-    Fl_Text_Buffer *inptx_textbuf;      // text buffer
-    Fl_Text_Buffer *inptx_stylbuf;      // style buffer
+  Fl_Text_Buffer *inptx_textbuf;      // text buffer
+  Fl_Text_Buffer *inptx_stylbuf;      // style buffer
 #warning Rps_FltkInputTextEditor need a lot more code
-};				      // end  Rps_FltkInputTextEditor
+};              // end  Rps_FltkInputTextEditor
 
 class Rps_FltkMainWindow: public Fl_Window
 {
@@ -561,9 +562,22 @@ void
 Rps_FltkMainWindow::close_cb(Fl_Widget*wid, void*data)
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::close_cb wid@" << (void*)wid
-		<< " data@" << data
-		<< " elapsed:" << rps_elapsed_real_time()
-		<< RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow::close_cb"));
+                << " data@" << data
+                << " elapsed:" << rps_elapsed_real_time()
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow::close_cb"));
+  if (RPS_DEBUG_ENABLED(REPL))
+    {
+      char pmapcmd[128];
+      memset(pmapcmd, 0, sizeof(pmapcmd));
+      snprintf(pmapcmd, sizeof(pmapcmd), "/usr/bin/pmap %d;  /usr/bin/ps -lw %d",
+               (int)getpid(), (int)getpid());
+      fflush (nullptr);
+      std::clog << std::flush;
+      std::cerr << std::flush;
+      std::cout << std::flush;
+      (void) system(pmapcmd);
+    };
+
   rps_do_stop_event_loop();
 } // end Rps_FltkMainWindow::close_cb
 #warning incomplete implementation of class Rps_FltkMainWindow
@@ -698,7 +712,7 @@ rps_fltk_run (void)
       double finalrealtime = rps_elapsed_real_time()+rps_run_delay;
       double waitdelay = rps_run_delay/16.0+0.02;
       if (waitdelay < minimal_wait_delay)
-	waitdelay = minimal_wait_delay;
+        waitdelay = minimal_wait_delay;
       RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name() << " waitdelay=" << waitdelay);
       while (!Fl::program_should_quit())
         {
