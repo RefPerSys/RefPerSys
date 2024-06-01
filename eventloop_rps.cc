@@ -1065,6 +1065,7 @@ rps_sigfd_read_handler(Rps_CallFrame*cf, int fd, void* data)
       RPS_INFORMOUT("rps_sigfd_read_handler got SIGTERM from pid " << origpid);
 #warning on SIGTERM should schedule a final dump
       rps_do_stop_event_loop();
+      /* TODO: perhaps use rps_register_after_event_loop for the final dump? */
     };
     break;
     case SIGINT:
