@@ -1862,4 +1862,27 @@ rps_output_debug_flags(std::ostream&out,  unsigned flags)
 
 
 
+
+
+////////////////////////////////////////////////////////////////
+
+static std::recursive_mutex rps_aftevntloop_mtx;
+static std::vector<std::function<void(void)>> rps_aftevntloop_vec;
+
+void
+rps_register_after_event_loop(std::function<void(void)>f)
+{
+  std::lock_guard<std::recursive_mutex> gu(rps_aftevntloop_mtx);
+  rps_aftevntloop_vec.push_back(f);
+} // end rps_register_after_event_loop
+
+void
+rps_run_after_event_loop(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(rps_aftevntloop_mtx);
+  for (std::function<void(void)> f: rps_aftevntloop_vec)
+    f();
+  rps_aftevntloop_vec.clear();
+} // end rps_run_after_event_loop
+
 //// end of file utilities_rps.cc

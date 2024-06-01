@@ -480,6 +480,8 @@ extern "C" void rps_event_loop_remove_input_fd_handler(int fd);
 extern "C" void rps_event_loop_remove_output_fd_handler(int fd);
 extern "C" void rps_initialize_event_loop(void);
 extern "C" void rps_event_loop(void); // run the event loop
+extern "C" void rps_run_after_event_loop(void); // run after some event loop
+extern "C" void rps_register_after_event_loop(std::function<void(void)>f); // run after some event loop
 extern "C" void rps_do_stop_event_loop(void);
 // in eventloop_rps.cc, tell if the event loop is running.
 extern "C" bool rps_event_loop_is_running(void);
