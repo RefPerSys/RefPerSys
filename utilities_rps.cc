@@ -34,6 +34,19 @@
 #include "refpersys.hh"
 #include <lightning.h>
 
+#if RPS_WITH_FLTK
+#include <FL/Fl.H>
+#include <FL/platform.H>
+#include <FL/Fl_Window.H>
+#include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Multi_Label.H>
+#include <FL/Fl_Widget.H>
+#include <FL/Fl_Pack.H>
+#include <FL/Fl_Flex.H>
+#include <FL/Fl_Text_Buffer.H>
+#include <FL/Fl_Text_Editor.H>
+#include <FL/Fl_Box.H>
+#endif // RPS_WITH_FLTK
 
 // comment for our do-scan-pkgconfig.c utility
 //@@PKGCONFIG gmp
@@ -48,7 +61,7 @@ const char rps_utilities_date[]= __DATE__;
 
 
 extern "C" char*rps_chdir_path_after_load;
-extern "C" char*rps_chdir_path_after_load;
+
 
 std::string rps_run_name;
 
@@ -420,7 +433,8 @@ rps_print_types_info(void)
 {
 #define TYPEFMT_rps "%-58s:"
   printf(TYPEFMT_rps "   size  align   (bytes)\n", "**TYPE**");
-#define EXPLAIN_TYPE(Ty) printf(TYPEFMT_rps " %5d %5d\n", #Ty,    \
+  /////
+#define EXPLAIN_TYPE(Ty) printf(TYPEFMT_rps " %5d %5d\n", #Ty, \
         (int)sizeof(Ty), (int)alignof(Ty))
   /////
 #define EXPLAIN_TYPE2(Ty1,Ty2) printf(TYPEFMT_rps " %5d %5d\n", \
@@ -495,6 +509,19 @@ rps_print_types_info(void)
   EXPLAIN_TYPE(Rps_Type);
   EXPLAIN_TYPE(Rps_Value);
   EXPLAIN_TYPE(Rps_ZoneValue);
+  ////
+#if RPS_WITH_FLTK
+  printf("\n\n===== FLTK widgets from %s:%d ====\n", __FILE__, __LINE__);
+  EXPLAIN_TYPE(Fl_Box);
+  EXPLAIN_TYPE(Fl_Flex);
+  EXPLAIN_TYPE(Fl_Menu_Bar);
+  EXPLAIN_TYPE(Fl_Pack);
+  EXPLAIN_TYPE(Fl_Text_Buffer);
+  EXPLAIN_TYPE(Fl_Text_Editor);
+  EXPLAIN_TYPE(Fl_Widget);
+  EXPLAIN_TYPE(Fl_Window);
+#endif /*RPS_WITH_FLTK*/
+  ////
 #undef EXPLAIN_TYPE4
 #undef EXPLAIN_TYPE3
 #undef EXPLAIN_TYPE
