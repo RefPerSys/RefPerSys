@@ -1531,9 +1531,9 @@ main (int argc, char** argv)
   {
     int ex = rps_exit_atomic_code.load();
     if (ex==0)
-      out << " exiting normally";
+      out << rps_progexe << " exiting normally";
     else
-      out << " failing #" << ex;
+      out << rps_progexe << " failing #" << ex;
   })
       << std::flush
                );
