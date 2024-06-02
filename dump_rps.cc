@@ -1159,6 +1159,7 @@ Rps_Dumper::write_generated_data_file(void)
   if (hasfltk)
     {
       *pouts << "#define RPS_WITH_FLTK 1" << std::endl;
+      rps_fltk_emit_sizes(*pouts);
     }
   else
     {
@@ -1177,6 +1178,7 @@ Rps_Dumper::write_generated_data_file(void)
   }
   *pouts << std::endl << std::endl
          << "//// end of generated " << datapathstr
+	 << " by " << __FUNCTION__
          << " for shortgitid:" << rps_shortgitid << std::endl;
   (void) remove(gendatapathstr.c_str());
   /* FIXME: we need to add a symlink in the generated/ subdirectory,
