@@ -635,7 +635,8 @@ Rps_FltkMainWindow::close_cb(Fl_Widget*wid, void*data)
       std::clog << std::flush;
       std::cerr << std::flush;
       std::cout << std::flush;
-      (void) system(pmapcmd);
+      if (system(pmapcmd))
+	RPS_FATALOUT("failed to run " << pmapcmd);
     };
 
   rps_do_stop_event_loop();
