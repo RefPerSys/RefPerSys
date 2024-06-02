@@ -839,6 +839,7 @@ rps_fltk_emit_sizes(std::ostream&out) {
   out << "#define RPS_FLTK_SIZEOF_FL_WIDGET " << sizeof(Fl_Widget) << std::endl;
   out << "#define RPS_FLTK_SIZEOF_FL_BUTTON " << sizeof(FL_Button) << std::endl;
   out << "#define RPS_FLTK_SIZEOF_FL_MENU_BAR " << sizeof(Fl_Menu_Bar) << std::endl;
+  out << "#define RPS_FLTK_SIZEOF_FL_TEXT_BUFFER " << sizeof(Fl_Text_Buffer) << std::endl;
   out << "#define RPS_FLTK_SIZEOF_FL_TEXT_EDITOR " << sizeof(Fl_Text_Editor) << std::endl;
   out << std::endl;
   out << "#define RPS_FLTK_ALIGNOF_FL_WINDOW " << alignof(Fl_Window) << std::endl;
@@ -846,6 +847,7 @@ rps_fltk_emit_sizes(std::ostream&out) {
   out << "#define RPS_FLTK_ALIGNOF_FL_WIDGET " << alignof(Fl_Widget) << std::endl;
   out << "#define RPS_FLTK_ALIGNOF_FL_BUTTON " << alignof(FL_Button) << std::endl;
   out << "#define RPS_FLTK_ALIGNOF_FL_MENU_BAR " << alignof(Fl_Menu_Bar) << std::endl;
+  out << "#define RPS_FLTK_ALIGNOF_FL_TEXT_BUFFER " << alignof(Fl_Text_Buffer) << std::endl;
   out << "#define RPS_FLTK_ALIGNOF_FL_TEXT_EDITOR " << alignof(Fl_Text_Editor) << std::endl;
   out << "//// end of FLTK sizes and alignments for api "
       << Fl::api_version() << " abi " << Fl::abi_version() << std::endl;
