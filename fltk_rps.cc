@@ -636,7 +636,7 @@ Rps_FltkMainWindow::close_cb(Fl_Widget*wid, void*data)
       std::cerr << std::flush;
       std::cout << std::flush;
       if (system(pmapcmd))
-	RPS_FATALOUT("failed to run " << pmapcmd);
+        RPS_FATALOUT("failed to run " << pmapcmd);
     };
 
   rps_do_stop_event_loop();
@@ -829,7 +829,8 @@ rps_fltk_run (void)
 
 
 void
-rps_fltk_emit_sizes(std::ostream&out) {
+rps_fltk_emit_sizes(std::ostream&out)
+{
   out << std::endl
       << "/// FLTK related sizes and alignments from " << __FUNCTION__
       << std::endl;
