@@ -169,6 +169,8 @@ extern "C" void rps_fltk_add_output_fd(int fd,
 extern "C" void rps_fltk_remove_input_fd(int fd);
 /* remove an output file descriptor event handler from FLTK event loop */
 extern "C" void rps_fltk_remove_output_fd(int fd);
+/* emit the size and align */
+extern "C" void rps_fltk_emit_sizes(std::ostream&out);
 #else
 #define rps_fltk_abi_version() 0
 #define rps_fltk_api_version() 0
@@ -182,6 +184,7 @@ extern "C" void rps_fltk_remove_output_fd(int fd);
 #define rps_fltk_stop() do{}while(0)
 #define rps_fltk_run() do{}while(0)
 #define rps_fltk_flush() do{}while(0)
+#define rps_fltk_emit_sizes(Out) do{}while(0)
 #endif
 
 class Rps_QuasiZone; // GC-managed piece of memory

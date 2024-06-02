@@ -827,4 +827,28 @@ rps_fltk_run (void)
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run/end"));
 } // end rps_fltk_run
 
+
+void
+rps_fltk_emit_sizes(std::ostream&out) {
+  out << std::endl
+      << "/// FLTK related sizes and alignments from " << __FUNCTION__
+      << std::endl;
+  out << "/// for FLTK " << Fl::api_version() << std::endl;
+  out << "#define RPS_FLTK_SIZEOF_FL_WINDOW " << sizeof(Fl_Window) << std::endl;
+  out << "#define RPS_FLTK_SIZEOF_MAIN_WINDOW " << sizeof(Rps_FltkMainWindow) << std::endl;
+  out << "#define RPS_FLTK_SIZEOF_FL_WIDGET " << sizeof(Fl_Widget) << std::endl;
+  out << "#define RPS_FLTK_SIZEOF_FL_BUTTON " << sizeof(FL_Button) << std::endl;
+  out << "#define RPS_FLTK_SIZEOF_FL_MENU_BAR " << sizeof(Fl_Menu_Bar) << std::endl;
+  out << "#define RPS_FLTK_SIZEOF_FL_TEXT_EDITOR " << sizeof(Fl_Text_Editor) << std::endl;
+  out << std::endl;
+  out << "#define RPS_FLTK_ALIGNOF_FL_WINDOW " << alignof(Fl_Window) << std::endl;
+  out << "#define RPS_FLTK_ALIGNOF_MAIN_WINDOW " << alignof(Rps_FltkMainWindow) << std::endl;
+  out << "#define RPS_FLTK_ALIGNOF_FL_WIDGET " << alignof(Fl_Widget) << std::endl;
+  out << "#define RPS_FLTK_ALIGNOF_FL_BUTTON " << alignof(FL_Button) << std::endl;
+  out << "#define RPS_FLTK_ALIGNOF_FL_MENU_BAR " << alignof(Fl_Menu_Bar) << std::endl;
+  out << "#define RPS_FLTK_ALIGNOF_FL_TEXT_EDITOR " << alignof(Fl_Text_Editor) << std::endl;
+  out << "//// end of FLTK sizes and alignments for api "
+      << Fl::api_version() << " abi " << Fl::abi_version() << std::endl;
+} // end rps_fltk_emit_sizes
+
 //// end of file fltk_rps.cc
