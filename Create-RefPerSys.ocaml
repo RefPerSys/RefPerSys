@@ -25,4 +25,14 @@ Printf.printf "hello from Create-RefPerSys invocation\n%t\n"
       Sys.argv)
 ;;
 
+(**** notice to GNU emacs users
+      Install the ELPA caml-mode and tuareg and
+      add the following lines in your ~/.emacs file:
+
+           (add-to-list 'auto-mode-alist '("\\.ml[iylp]?$" . caml-mode))
+           (add-to-list 'auto-mode-alist '("\\.ocaml$" . caml-mode))
+           (if window-system (require 'caml-font))
+
+      
+ ****)
 (** end of file Create-RefPerSys.ocaml **)
