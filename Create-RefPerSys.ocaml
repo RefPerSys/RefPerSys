@@ -1,0 +1,28 @@
+#!/usr/bin/ocaml
+(** SPDX-License-Identifier: GPL-3.0-or-later -*- caml -*-
+* script file Create-RefPerSys.ocaml in RefPerSys - see http://refpersys.org/
+*
+*      © Copyright 2024 - 2024 The Reflective Persistent System Team
+*      team@refpersys.org & http://refpersys.org/
+*
+*    This program is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation, either version 3 of the License, or
+*    (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program.  If not, see <http://www.gnu.org/licenses/>
+**)
+let x = 1 in
+Printf.printf "hello from Create-RefPerSys invocation\n%t\n"
+  (fun out -> Array.iteri 
+      (fun i a -> Printf.fprintf out "[%d] %S\n" i a)
+      Sys.argv)
+;;
+
+(** end of file Create-RefPerSys.ocaml **)
