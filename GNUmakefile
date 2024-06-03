@@ -387,7 +387,7 @@ testfltk1: refpersys
 	@printf '\n\n\n////testfltk1 FINISHED¤\n'
 
 testfltk2: refpersys
-	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=9s  --fltk -bg ivory
+	./refpersys -dPROGARG -AREPL --run-delay=9s --fltk -bg ivory --run-name=$@
 	@printf '\n\n\n////testfltk2 FINISHED¤\n'
 
 testfltk3: refpersys
