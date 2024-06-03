@@ -28,13 +28,21 @@ let refpersys_topdir : string =
       Stdlib.exit 1
     end;;
 
-Printf.printf "hello from Create-RefPerSys (%s:%d) topdir %s invocation\n%t\n"
+let this_script_basename : string =
+  let res = ref "" in begin
+      List.iter (fun (s : string) -> res := s) (String.split_on_char '/' __FILE__);
+      !res
+  end
+;;
+
+Printf.printf "hello from Create-RefPerSys (%s:%d) topdir %s invocation\n%t\nthis script %s\n"
 __FILE__
 __LINE__
 refpersys_topdir
   (fun out -> Array.iteri 
       (fun i a -> Printf.fprintf out "[%d] %S\n" i a)
       Sys.argv)
+this_script_basename
 ;;
 
 (**** notice to GNU emacs users
