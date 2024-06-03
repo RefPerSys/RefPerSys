@@ -17,9 +17,21 @@
 *
 *    You should have received a copy of the GNU General Public License
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>
-**)
-let x = 1 in
-Printf.printf "hello from Create-RefPerSys invocation\n%t\n"
+ **)
+
+let refpersys_topdir : string =
+  try
+    Sys.getenv "REFPERSYS_TOPDIR"
+  with
+    Not_found -> begin
+      Printf.eprintf "Create-RefPerSys: missing REFPERSY_TOPDIR\n";
+      Stdlib.exit 1
+    end;;
+
+Printf.printf "hello from Create-RefPerSys (%s:%d) topdir %s invocation\n%t\n"
+__FILE__
+__LINE__
+refpersys_topdir
   (fun out -> Array.iteri 
       (fun i a -> Printf.fprintf out "[%d] %S\n" i a)
       Sys.argv)
