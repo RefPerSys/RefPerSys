@@ -52,7 +52,7 @@ A rewrite of RefPerSys in C was attempted on [refpersys-in-c](https://github.com
 We considered previously to use the garbage collector from [Ravenbrook
 MPS](https://github.com/Ravenbrook/mps).
 
-**Don't expect RefPerSys to be a mature project.** It is not in Feb 2024.
+**Don't expect RefPerSys to be a mature project.** It is not in June 2024.
 
 Some draft design ideas are written in the [RefPerSys design
 draft](http://starynkevitch.net/Basile/refpersys-design.pdf) which is
@@ -236,6 +236,9 @@ comment - @RPSCOMPILEFLAGS= that is used to compile the plugin. If
 they contain @RPSLIBES= that is used to link the plugin.
 
 ## Building and dependencies.
+
+A [transpiler](https://en.wikipedia.org/wiki/Source-to-source_compiler) for *RefPerSys* is being developed on https://github.com/bstarynk/misc-basile 
+files `transpiler-refpersys.{cc,hh}`
 
 The [build automation](https://en.wikipedia.org/wiki/Build_automation)
 tool used here is [GNU make](https://www.gnu.org/software/make/) since
