@@ -383,16 +383,19 @@ test-load: refpersys
 
 ## testing the FLTK graphical interface
 testfltk1: refpersys
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./refpersys -AREPL --run-name=$@ --run-delay=6s  --fltk
-	@printf '\n\n\n////testfltk1 FINISHED¤\n'
+	@printf '\n\n\n////testfltk1 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk2: refpersys
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./refpersys -dPROGARG -AREPL --run-delay=9s --fltk -bg ivory --run-name=$@
-	@printf '\n\n\n////testfltk2 FINISHED¤\n'
+	@printf '\n\n\n////testfltk2 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk3: refpersys
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=29s  --fltk -bg lightpink
-	@printf '\n\n\n////testfltk3 FINISHED¤\n'
+	@printf '\n\n\n////testfltk3 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 ## eof GNUmakefile
 
