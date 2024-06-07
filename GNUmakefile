@@ -389,7 +389,7 @@ testfltk1: refpersys
 
 testfltk2: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-delay=9s --fltk -bg ivory --run-name=$@
+	./refpersys -dPROGARG -AREPL --run-delay=14s --fltk -bg ivory --run-name=$@
 	@printf '\n\n\n////testfltk2 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk3: refpersys
