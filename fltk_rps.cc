@@ -550,13 +550,17 @@ Rps_FltkMainWindow::fill_main_window(void)
   _mainwin_vflex = new Fl_Flex(0, 25, w(), h()-26);
   {
     Fl_Widget*firstlabel = nullptr;
+    char*labelstr=nullptr;
     char labelbuf[80];
     memset(labelbuf, 0, sizeof(labelbuf));
     snprintf(labelbuf, sizeof(labelbuf), "refpersys-%s/p%d@%s",
-	     rps_shortgitid, (int)getpid(), rps_hostname());
+             rps_shortgitid, (int)getpid(), rps_hostname());
+    RPS_POSSIBLE_BREAKPOINT();
+    labelstr = strdup(labelbuf);
+    RPS_DEBUG_LOG(REPL, "fill_main_window labelstr:" << labelstr);
     _mainwin_vflex->spacing(2);
     _mainwin_vflex->begin();
-    firstlabel = new Fl_Box(0,0,0,0,strdup(labelbuf));
+    firstlabel = new Fl_Box(0,0,0,0,labelstr);
     _mainwin_vflex->end();
     _mainwin_vflex->layout();
   }
