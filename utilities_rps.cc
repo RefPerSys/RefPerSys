@@ -246,10 +246,11 @@ rps_get_loaddir(void)
   return rps_my_load_dir;
 } // end rps_get_loaddir
 
+
 const char*
 rps_hostname(void)
 {
-  static char hnambuf[64];
+  static char hnambuf[80];
   if (RPS_UNLIKELY(!hnambuf[0]))
     gethostname(hnambuf, sizeof(hnambuf)-1);
   return hnambuf;
