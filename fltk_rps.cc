@@ -553,7 +553,8 @@ Rps_FltkMainWindow::fill_main_window(void)
     char*labelstr=nullptr;
     char labelbuf[80];
     memset(labelbuf, 0, sizeof(labelbuf));
-    snprintf(labelbuf, sizeof(labelbuf), "refpersys-%s/p%d@%s",
+    /// in FLTK the @ is a magic char, seewww.fltk.org/doc-1.4/common.html#common_labels
+    snprintf(labelbuf, sizeof(labelbuf), "refpersys-%s/p%d@@%s",
              rps_shortgitid, (int)getpid(), rps_hostname());
     RPS_POSSIBLE_BREAKPOINT();
     labelstr = strdup(labelbuf);
