@@ -111,8 +111,12 @@ parse_flags()
 			v)
 				OPT_VERBSE=$((OPT_VERBOSE+1))
 				;;
+
+			:)	
+				msg_err "-OPTARG: missing argument"
+				;;
 			?)
-				msg_err "unknown option: -$OPTARG"
+				msg_err "-$OPTARG: unknown option"
 				;;
 		esac
 	done
@@ -125,7 +129,20 @@ parse_flags()
 #
 parse_args()
 {
-	echo 'TODO'
+	# Reset to allow next calls to getopts
+	shift $((OPTIND-1))
+	OPTIND=1
+
+	# Redirect control to the appropriate command handling function
+	case $1 in
+		help)   shift; run_help "$@";;
+		intro)  shift; run_intro "$@";;
+		config) shift; run_config "$@";;
+		check)  shift; run_check "$@";;
+		dist)   shift; run_dist "$@";;
+		clean)  shift; run clean "$@";;
+		*)      msg_err "$1: unknown argument";;
+	esac
 }
 
 #
