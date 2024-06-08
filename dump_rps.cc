@@ -1685,7 +1685,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
   //// dumpobject in Rps_Dumper.
 #warning we may want to make some temporary obdumper and keep it...
   Rps_Dumper dumper(realdirpath, &_);
-  RPS_INFORMOUT("start dumping into " << dumper.get_top_dir()
+  RPS_INFORMOUT("start dumping into " << dumper.get_top_dir() << " " << (dumper.is_dumping_into_topdir()?"loaded directory":"other directory")
                 << " with temporary suffix " << dumper.get_temporary_suffix());
   try
     {
