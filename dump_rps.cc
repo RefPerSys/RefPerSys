@@ -82,6 +82,7 @@ class Rps_Dumper
   std::deque<Rps_ObjectRef> du_scanque;
   std::string du_tempsuffix;
   long du_newobcount;   // counter for new dumped objects
+  bool du_is_dumping_into_topdir;
   double du_startelapsedtime;
   double du_startprocesstime;
   double du_startwallclockrealtime;
@@ -110,8 +111,6 @@ class Rps_Dumper
     return std::string(buf);
   };
 private:
-  // TODO: we may need a bool dumping_into_topdir() const member function
-#warning perhaps wanting dumping_into_topdir member function in Rps_Dumper?
   std::string temporary_opened_path(const std::string& relpath) const
   {
     RPS_ASSERT(relpath.size()>0 && relpath[0] != '/');
@@ -139,6 +138,7 @@ private:
   void rename_opened_files(void);
   void scan_code_addr(const void*);
 public:
+  bool is_dumping_into_topdir() const { return du_is_dumping_into_topdir; };
   std::string get_temporary_suffix(void) const
   {
     return du_tempsuffix;
@@ -180,6 +180,7 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
   du_topdir(), du_curworkdir(), du_jsonwriterbuilder(), du_mtx(), du_mapobjects(), du_scanque(),
   du_tempsuffix(make_temporary_suffix()),
   du_newobcount(0),
+  du_is_dumping_into_topdir(false),
   du_startelapsedtime(rps_elapsed_real_time()),
   du_startprocesstime(rps_process_cpu_time()),
   du_startwallclockrealtime(rps_wallclock_real_time()),
@@ -188,9 +189,13 @@ Rps_Dumper::Rps_Dumper(const std::string&topdir, Rps_CallFrame*callframe) :
 {
   {
     char topdirpath[PATH_MAX];
+    char loadirpath[PATH_MAX];
     memset(topdirpath, 0, sizeof(topdirpath));
+    memset(loadirpath, 0, sizeof(loadirpath));
     char *toprealpath = realpath(topdir.c_str(), topdirpath);
     du_topdir.assign(toprealpath);
+    char *realoadirpath = realpath(rps_topdirectory, loadirpath);
+    du_is_dumping_into_topdir = !strcmp(toprealpath, realoadirpath);
   }
   {
     char cwdbuf[rps_path_byte_size];
@@ -863,6 +868,8 @@ Rps_Dumper::copy_one_source_file(const std::string& relsrcpath)
   /// rps_topdirectory....
   /// See also the rps_files constant array.
   std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  if (is_dumping_into_topdir())
+    return;
 #warning unimplemented Rps_Dumper::copy_one_source_file
   RPS_FATALOUT("unimplemented Rps_Dumper::copy_one_source_file relsrcpath="
                << relsrcpath << " to dumpdir " << du_topdir);
@@ -877,6 +884,8 @@ Rps_Dumper::make_source_directory(const std::string& relsrcdir)
   /// anything if the dump directory is the source one
   /// rps_topdirectory....
   /// See also the rps_subdirectories constant array.
+  if (is_dumping_into_topdir())
+    return;
   RPS_FATALOUT("unimplemented Rps_Dumper::make_source_directory relsrcdir="
                << relsrcdir << " to dumpdir " << du_topdir);
 } // end Rps_Dumper::make_source_directory
