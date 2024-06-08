@@ -886,6 +886,7 @@ Rps_Dumper::make_source_directory(const std::string& relsrcdir)
   /// See also the rps_subdirectories constant array.
   if (is_dumping_into_topdir())
     return;
+#warning unimplemented  Rps_Dumper::make_source_directory
   RPS_FATALOUT("unimplemented Rps_Dumper::make_source_directory relsrcdir="
                << relsrcdir << " to dumpdir " << du_topdir);
 } // end Rps_Dumper::make_source_directory
