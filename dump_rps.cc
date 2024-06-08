@@ -110,6 +110,8 @@ class Rps_Dumper
     return std::string(buf);
   };
 private:
+  // TODO: we may need a bool dumping_into_topdir() const member function
+#warning perhaps wanting dumping_into_topdir member function in Rps_Dumper?
   std::string temporary_opened_path(const std::string& relpath) const
   {
     RPS_ASSERT(relpath.size()>0 && relpath[0] != '/');
@@ -120,6 +122,8 @@ private:
   void scan_loop_pass(void);
   void scan_cplusplus_source_file_for_constants(const std::string&relfilename);
   void scan_every_cplusplus_source_file_for_constants(void);
+  void copy_one_source_file(const std::string& relsrcpath);
+  void make_source_directory(const std::string&relsrcdir);
   void write_all_space_files(void);
   void write_all_generated_files(void);
   void write_generated_roots_file(void);
@@ -849,6 +853,33 @@ Rps_Dumper::scan_every_cplusplus_source_file_for_constants(void)
         };
     }
 } // end of scan_every_cplusplus_source_file_for_constants
+
+void
+Rps_Dumper::copy_one_source_file(const std::string& relsrcpath)
+{
+  /// This function should copy the given relative source path,
+  /// e.g. refpersys.hh to the dump directory. It should not do
+  /// anything if the dump directory is the source one
+  /// rps_topdirectory....
+  /// See also the rps_files constant array.
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+#warning unimplemented Rps_Dumper::copy_one_source_file
+  RPS_FATALOUT("unimplemented Rps_Dumper::copy_one_source_file relsrcpath="
+               << relsrcpath << " to dumpdir " << du_topdir);
+} // end Rps_Dumper::copy_one_source_file
+
+void
+Rps_Dumper::make_source_directory(const std::string& relsrcdir)
+{
+  std::lock_guard<std::recursive_mutex> gu(du_mtx);
+  /// This function should make a given source directory
+  /// e.g. refpersys.hh to the dump directory. It should not do
+  /// anything if the dump directory is the source one
+  /// rps_topdirectory....
+  /// See also the rps_subdirectories constant array.
+  RPS_FATALOUT("unimplemented Rps_Dumper::make_source_directory relsrcdir="
+               << relsrcdir << " to dumpdir " << du_topdir);
+} // end Rps_Dumper::make_source_directory
 
 void
 Rps_Dumper::write_all_space_files(void)
