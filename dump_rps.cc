@@ -138,7 +138,10 @@ private:
   void rename_opened_files(void);
   void scan_code_addr(const void*);
 public:
-  bool is_dumping_into_topdir() const { return du_is_dumping_into_topdir; };
+  bool is_dumping_into_topdir() const
+  {
+    return du_is_dumping_into_topdir;
+  };
   std::string get_temporary_suffix(void) const
   {
     return du_tempsuffix;
