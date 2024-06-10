@@ -1523,11 +1523,8 @@ main (int argc, char** argv)
                 << " elapsed " << rps_elapsed_real_time()
                 << ", cpu " << rps_process_cpu_time() << " seconds;"
                 << " invocation was:" << std::endl
+                << RPS_OUT_PROGARGS(argc, argv) << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
-  {
-    rps_output_program_arguments(out, argc, argv);
-  })
-      << Rps_Do_Output([&](std::ostream& out)
   {
     int ex = rps_exit_atomic_code.load();
     if (ex==0)

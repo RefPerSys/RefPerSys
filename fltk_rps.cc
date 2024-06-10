@@ -542,7 +542,8 @@ Rps_FltkMainWindow::fill_main_window(void)
     _mainwin_menubar->add("&Debug/" #Name, 0, \
         menu_cb, (void*)"d:" #Name,   \
         FL_MENU_TOGGLE);      \
-  } while(0);         \
+  } while(0);
+    ///
     RPS_DEBUG_OPTIONS(RPSFLTK_DEBUG);
 #undef RPSFLTK_DEBUG
   }
@@ -553,7 +554,7 @@ Rps_FltkMainWindow::fill_main_window(void)
     char*labelstr=nullptr;
     char labelbuf[80];
     memset(labelbuf, 0, sizeof(labelbuf));
-    /// in FLTK the @ is a magic char, seewww.fltk.org/doc-1.4/common.html#common_labels
+    /// in FLTK the @ is a magic escaping char, see www.fltk.org/doc-1.4/common.html#common_labels
     snprintf(labelbuf, sizeof(labelbuf), "refpersys-%s/p%d@@%s",
              rps_shortgitid, (int)getpid(), rps_hostname());
     RPS_POSSIBLE_BREAKPOINT();
@@ -697,12 +698,11 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
       RPS_DEBUG_LOG(REPL, "rps_fltk_progoption nw:" << nw
                     <<  " next#" << state->next
                     <<  " argnum#" << state->arg_num
-                    << " state.progargs::" << Rps_Do_Output([&](std::ostream&out)
-      {
-        rps_output_program_arguments(out, state->argc, state->argv);
-      }) << " state.argnum:" << state->arg_num << " state.next:" << state->next
-         << std::endl
-         << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/a"));
+                    << " state.progargs::"
+                    << RPS_OUT_PROGARGS(state->argc, state->argv)
+                    << " state.argnum:" << state->arg_num << " state.next:"
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/a"));
     };
 #warning missing code in rps_fltk_progoption
   if (arg)
@@ -710,23 +710,23 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
       RPS_WARNOUT("unimplemented rps_fltk_progoption arg=" <<  Rps_Cjson_String(arg)
                   << "' side_effect=" << (side_effect?"True":"False")
                   << " thread:" << rps_current_pthread_name() << std::endl
-                  << " state.progargs::" << Rps_Do_Output([&](std::ostream&out)
-      {
-        rps_output_program_arguments(out, state->argc, state->argv);
-      }) << " state.argnum:" << state->arg_num << " state.next:" << state->next
-         << std::endl
-         << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/a"));
+                  << " state.progargs::"
+                  << RPS_OUT_PROGARGS(state->argc, state->argv)
+                  << " state.argnum:" << state->arg_num
+                  << " state.next:" << state->next
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/a"));
     }
   else
     RPS_WARNOUT("unimplemented rps_fltk_progoption noarg side_effect="
                 << (side_effect?"True":"False")
                 << " thread:" << rps_current_pthread_name() << std::endl
-                << " state.progargs:" << Rps_Do_Output([&](std::ostream&out)
-    {
-      rps_output_program_arguments(out, state->argc, state->argv);
-    }) << " argnum:" << state->arg_num << " state.next:" << state->next
-     << std::endl
-     << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/b"));
+                << " state.progargs:"
+                << RPS_OUT_PROGARGS(state->argc, state->argv)
+                << " argnum:" << state->arg_num
+                << " state.next:" << state->next
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption/b"));
   rps_fltk_is_initialized = true;
 } // end rps_fltk_progoption
 
@@ -765,13 +765,9 @@ rps_fltk_initialize (int argc, char**argv)
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize"));
   RPS_WARNOUT("incomplete rps_fltk_initialize " << titlebuf << std::endl
               << " thread:" << rps_current_pthread_name()
-              << " progargs "
-              <<  Rps_Do_Output([&](std::ostream&out)
-  {
-    rps_output_program_arguments(out, argc, argv);
-  })
-      << std::endl
-      << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize"));
+              << " progargs " << RPS_OUT_PROGARGS(argc, argv)
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize"));
 } // end rps_fltk_initialize
 
 void

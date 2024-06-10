@@ -910,12 +910,12 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                 << (side_effect?".":"")
                );
   if (side_effect)
-    RPS_DEBUG_LOG(PROGARG, "rps_parse1opt "<< Rps_Do_Output([&](std::ostream&out)
-    {
-      rps_output_program_arguments(out, state->argc, state->argv);
-    }) << " argnum:" << state->arg_num << " state.next:" << state->next
-     << std::endl
-     << RPS_FULL_BACKTRACE_HERE(1,"rps_parse1opt"));
+    RPS_DEBUG_LOG(PROGARG, "rps_parse1opt "
+                  << RPS_OUT_PROGARGS(state->argc, state->argv)
+                  << " argnum:" << state->arg_num
+                  << " state.next:" << state->next
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1,"rps_parse1opt"));
   switch (key)
     {
     case RPSPROGOPT_DEBUG:
@@ -1373,6 +1373,8 @@ rps_parse_program_arguments(int &argc, char**argv)
 } // end rps_parse_program_arguments
 
 
+
+/// most of the time this function is used thru RPS_OUT_PROGARGS macro
 void
 rps_output_program_arguments(std::ostream& out, int argc, const char*const*argv)
 {
