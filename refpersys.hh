@@ -1238,10 +1238,10 @@ extern "C" std::string rps_json_to_string(const Json::Value&jv);
 extern "C" void rps_output_program_arguments(std::ostream& out,
     int argc, const char*const*argv);
 
-#define RPS_OUT_PROGARGS(Argc,Argv)     \
-  Rps_Do_Output([&](std::ostream&out)     \
-{             \
-  rps_output_program_arguments(out, (Argc), (Argv));  \
+#define RPS_OUT_PROGARGS(Argc,Argv)                     \
+  Rps_Do_Output([&](std::ostream&out)                   \
+{                                                       \
+  rps_output_program_arguments(out, (Argc), (Argv));    \
 })
 
 #define RPS_FLEXIBLE_DIM 0      /* for flexible array members */
