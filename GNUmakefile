@@ -134,6 +134,7 @@ clean: clean-plugins
 	$(RM) *.orig
 	$(RM) */*~ */*% */*.orig
 	$(RM) */*.so
+	$(RM) *.ii
 
 clean-plugins:
 	$(RM) -v plugins_dir/*.o
@@ -173,6 +174,8 @@ refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 	@/bin/mv -v --backup __timestamp.c __timestamp.c%
 	@/bin/rm -vf __timestamp.o
+
+%.ii: %.cc | refpersys.hh GNUmakefile
 
 plugins: refpersys $(patsubst %, plugins_dir/%.so, $(REFPERSYS_DESIRED_PLUGIN_BASENAMES)) |GNUmakefile build-plugin.sh do-scan-pkgconfig
 
@@ -244,8 +247,19 @@ endif
 	       -c -o $@ $<
 	$(SYNC)
 
+%_rps.ii:  %_rps.cc refpersys.hh $(wildcard generated/rps*.hh) | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
+	$(REFPERSYS_CXX) -C -E $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       $< | /bin/sed 's:^#://#:g' | $(ASTYLE) $(ASTYLEFLAGS)  > $@
 
-fltk_rps.o: fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | _config-refpersys.mk
+fltk_rps.o: fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakefile _config-refpersys.mk
 	echo dollar-less-F is $(<F)
 	echo basename-dollar-less-F is $(basename $(<F))
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
@@ -263,6 +277,24 @@ fltk_rps.o: fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | _config-re
 	    $(shell $(REFPERSYS_FLTKCONFIG) -g --cflags) \
 	       -c -o $@ $<
 	$(SYNC)
+
+fltk_rps.ii:  fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakefile _config-refpersys.mk
+	echo dollar-less-F is $(<F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
+	$(REFPERSYS_CXX) -C -E $(REFPERSYS_PREPRO_FLAGS) \
+            $(REFPERSYS_COMPILER_FLAGS) \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+            -DRPS_HOST=$(RPS_HOST) \
+            -DRPS_ARCH=$(RPS_ARCH) \
+            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+	    $(shell $(REFPERSYS_FLTKCONFIG) -g --cflags) \
+	       $< | /bin/sed 's:^#://#:g'| $(ASTYLE) $(ASTYLEFLAGS)  > $@
 
 ## for plugins, see build-plugin.sh
 print-plugin-settings:
