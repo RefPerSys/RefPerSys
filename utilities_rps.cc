@@ -1042,6 +1042,17 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       RPS_INFORMOUT("set RefPerSys run name to " <<  Rps_QuotedC_String(rps_run_name));
     }
     return 0;
+    case RPSPROGOPT_ECHO:
+      /// example argument: --echo='Hello here'
+    {
+      if (!rps_run_name.empty())
+        RPS_INFORMOUT(rps_run_name << " echo:" << std::string (arg)
+                      << " git:" << rps_shortgitid);
+      else
+        RPS_INFORMOUT("echo:" << std::string(arg)
+                      << " git:" << rps_shortgitid);
+    }
+    return 0;
     case RPSPROGOPT_RUN_DELAY:
     {
       int pos= -1;

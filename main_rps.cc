@@ -321,6 +321,14 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Set the name of this run to given RUN_NAME ...\n", //
     /*group:*/0 ///
   },
+  /* ======= naming the run ======= */
+  {/*name:*/ "echo", ///
+    /*key:*/ RPSPROGOPT_ECHO, ///
+    /*arg:*/ "MESSAGE", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Show the given MESSAGE when parsing program argument ...\n", //
+    /*group:*/0 ///
+  },
   /* ======= daemoning ======= */
   {/*name:*/ "daemon", ///
     /*key:*/ RPSPROGOPT_DAEMON, ///
