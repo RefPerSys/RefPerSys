@@ -673,21 +673,25 @@ Rps_FltkMainWindow::close_cb(Fl_Widget*wid, void*data)
 
 ////////////////////////////////////////////////////////////////
 //////// Debug window implementation
-Rps_FltkDebugWindow::Rps_FltkDebugWindow(int x, int y, int w, int h) :
-  Fl_Window(x,y,
-	    (w>min_width)?w:min_width, (h>min_height)?h:min_height,
+Rps_FltkDebugWindow::Rps_FltkDebugWindow(int xx, int yy, int ww, int hh) :
+  Fl_Window(xx,yy,
+            (ww>min_width)?ww:min_width, (hh>min_height)?hh:min_height,
             (snprintf((char*)memset(_dbgwin_labuf, 0, sizeof(_dbgwin_labuf)), sizeof(_dbgwin_labuf),
                       "refpersys-debug %s p%d@%s",
                       rps_shortgitid, (int)getpid(), rps_hostname()),
              _dbgwin_labuf))
 {
+  RPS_ASSERT(rps_fltk_debugwin == nullptr);
+  rps_fltk_debugwin = this;
+  RPS_DEBUG_LOG(REPL, "Rps_FltkDebugWindow@" << (void*)this
+                << " x=" << x() << ",y=" << y() << ",w=" << w() << "h=" << h() << " lab:" << _dbgwin_labuf);
 } // end Rps_FltkDebugWindow::Rps_FltkDebugWindow
 
 //////// Debug window implementation
-Rps_FltkDebugWindow::Rps_FltkDebugWindow(int w, int h)
-  : Fl_Window(7 + (Rps_Random::random_32u() % 32)*12,
-              8 + (Rps_Random::random_32u() % 32)*12,
-              (w>min_width)?w:min_width, (h>min_height)?h:min_height,
+Rps_FltkDebugWindow::Rps_FltkDebugWindow(int ww, int hh)
+  : Fl_Window(17 + (Rps_Random::random_32u() % 32)*12,
+              18 + (Rps_Random::random_32u() % 32)*12,
+              (ww>min_width)?ww:min_width, (hh>min_height)?hh:min_height,
               (snprintf((char*)memset(_dbgwin_labuf, 0, sizeof(_dbgwin_labuf)), sizeof(_dbgwin_labuf),
                         "refpersys-debug %s p%d@%s",
                         rps_shortgitid, (int)getpid(), rps_hostname()),
@@ -695,11 +699,14 @@ Rps_FltkDebugWindow::Rps_FltkDebugWindow(int w, int h)
 {
   RPS_ASSERT(rps_fltk_debugwin == nullptr);
   rps_fltk_debugwin = this;
+  RPS_DEBUG_LOG(REPL,  "Rps_FltkDebugWindow@" << (void*)this
+                << " x=" << x() << ",y=" << y() << ",w=" << w() << "h=" << h() << " lab:" << _dbgwin_labuf);
 } // end Rps_FltkDebugWindow::Rps_FltkDebugWindow
 
 Rps_FltkDebugWindow::~Rps_FltkDebugWindow()
 {
   RPS_ASSERT(rps_fltk_debugwin == this);
+  RPS_DEBUG_LOG(REPL, "Rps_FltkDebugWindow destroyed@" << (void*)this);
   rps_fltk_debugwin = nullptr;
 } // end Rps_FltkDebugWindow destructor
 ////////////////
