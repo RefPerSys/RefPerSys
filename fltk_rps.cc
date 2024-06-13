@@ -635,17 +635,20 @@ Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
   else if (!strcmp((const char*)data, "d-")) // debug stop
     {
 #warning unimplemented debug stop
-      RPS_WARNOUT("unimplemented debug stop");
+      RPS_WARNOUT("unimplemented debug stop rps_fltk_debugwin@" << (void*)rps_fltk_debugwin);
     }
   else if (!strcmp((const char*)data, "d+")) // debug show
     {
 #warning unimplemented debug show
-      RPS_WARNOUT("unimplemented debug show");
+      if (!rps_fltk_debugwin)
+        rps_fltk_debugwin = new Rps_FltkDebugWindow(600,400);
+      rps_fltk_debugwin->show();
+      RPS_WARNOUT("unimplemented debug show rps_fltk_debugwin@" << (void*)rps_fltk_debugwin);
     }
   else if (!strcmp((const char*)data, "d_")) // debug clear
     {
-#warning unimplemented debug show
-      RPS_WARNOUT("unimplemented debug clear");
+#warning unimplemented debug clear
+      RPS_WARNOUT("unimplemented debug clear rps_fltk_debugwin@" << (void*)rps_fltk_debugwin);
     }
   else if (!strncmp((const char*)data, "d:", 2)
            && isalpha(((const char*)data)[2])) // debug set
