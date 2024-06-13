@@ -73,9 +73,13 @@ class Rps_PayloadFltkWidget;
 class Rps_PayloadFltkRefWidget;
 class Rps_PayloadFltkWindow;
 class Rps_FltkMainWindow;
+class Rps_FltkDebugWindow;
 
 extern "C" Rps_FltkMainWindow* rps_fltk_mainwin;
 Rps_FltkMainWindow* rps_fltk_mainwin;
+
+extern "C" Rps_FltkDebugWindow* rps_fltk_debugwin;
+Rps_FltkDebugWindow* rps_fltk_debugwin;
 
 extern "C" bool rps_fltk_is_initialized;
 
@@ -318,7 +322,16 @@ public:
 };        // end Rps_FltkMainWindow;
 
 
-
+class Rps_FltkDebugWindow: public Fl_Window
+{
+  Fl_Menu_Bar* _dbgwin_menubar;
+  Fl_Flex* _dbgwin_flex;
+  char _dbgwin_labuf[80];
+public:
+  Rps_FltkDebugWindow(int x, int y, int w, int h);
+  Rps_FltkDebugWindow(int w, int h);
+  virtual ~Rps_FltkDebugWindow();
+};        // end Rps_FltkDebugWindow
 
 
 
@@ -656,7 +669,36 @@ Rps_FltkMainWindow::close_cb(Fl_Widget*wid, void*data)
 #warning incomplete implementation of class Rps_FltkMainWindow
 
 
+////////////////////////////////////////////////////////////////
+//////// Debug window implementation
+Rps_FltkDebugWindow::Rps_FltkDebugWindow(int x, int y, int w, int h) :
+  Fl_Window(x,y,w,h,
+            (snprintf((char*)memset(_dbgwin_labuf, 0, sizeof(_dbgwin_labuf)), sizeof(_dbgwin_labuf),
+                      "refpersys-debug %s p%d@%s",
+                      rps_shortgitid, (int)getpid(), rps_hostname()),
+             _dbgwin_labuf))
+{
+} // end Rps_FltkDebugWindow::Rps_FltkDebugWindow
 
+//////// Debug window implementation
+Rps_FltkDebugWindow::Rps_FltkDebugWindow(int w, int h)
+  : Fl_Window(7 + (Rps_Random::random_32u() % 32)*12,
+              8 + (Rps_Random::random_32u() % 32)*12,
+              w, h,
+              (snprintf((char*)memset(_dbgwin_labuf, 0, sizeof(_dbgwin_labuf)), sizeof(_dbgwin_labuf),
+                        "refpersys-debug %s p%d@%s",
+                        rps_shortgitid, (int)getpid(), rps_hostname()),
+               _dbgwin_labuf))
+{
+  RPS_ASSERT(rps_fltk_debugwin == nullptr);
+  rps_fltk_debugwin = this;
+} // end Rps_FltkDebugWindow::Rps_FltkDebugWindow
+
+Rps_FltkDebugWindow::~Rps_FltkDebugWindow()
+{
+  RPS_ASSERT(rps_fltk_debugwin == this);
+  rps_fltk_debugwin = nullptr;
+} // end Rps_FltkDebugWindow destructor
 ////////////////
 int
 rps_fltk_abi_version (void)
