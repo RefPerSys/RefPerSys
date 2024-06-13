@@ -328,6 +328,8 @@ class Rps_FltkDebugWindow: public Fl_Window
   Fl_Flex* _dbgwin_flex;
   char _dbgwin_labuf[80];
 public:
+  static constexpr int min_width=200;
+  static constexpr int min_height=100;
   Rps_FltkDebugWindow(int x, int y, int w, int h);
   Rps_FltkDebugWindow(int w, int h);
   virtual ~Rps_FltkDebugWindow();
@@ -672,7 +674,8 @@ Rps_FltkMainWindow::close_cb(Fl_Widget*wid, void*data)
 ////////////////////////////////////////////////////////////////
 //////// Debug window implementation
 Rps_FltkDebugWindow::Rps_FltkDebugWindow(int x, int y, int w, int h) :
-  Fl_Window(x,y,w,h,
+  Fl_Window(x,y,
+	    (w>min_width)?w:min_width, (h>min_height)?h:min_height,
             (snprintf((char*)memset(_dbgwin_labuf, 0, sizeof(_dbgwin_labuf)), sizeof(_dbgwin_labuf),
                       "refpersys-debug %s p%d@%s",
                       rps_shortgitid, (int)getpid(), rps_hostname()),
@@ -684,7 +687,7 @@ Rps_FltkDebugWindow::Rps_FltkDebugWindow(int x, int y, int w, int h) :
 Rps_FltkDebugWindow::Rps_FltkDebugWindow(int w, int h)
   : Fl_Window(7 + (Rps_Random::random_32u() % 32)*12,
               8 + (Rps_Random::random_32u() % 32)*12,
-              w, h,
+              (w>min_width)?w:min_width, (h>min_height)?h:min_height,
               (snprintf((char*)memset(_dbgwin_labuf, 0, sizeof(_dbgwin_labuf)), sizeof(_dbgwin_labuf),
                         "refpersys-debug %s p%d@%s",
                         rps_shortgitid, (int)getpid(), rps_hostname()),
