@@ -553,11 +553,20 @@ Rps_FltkMainWindow::fill_main_window(void)
     _mainwin_menubar->add("&Debug/Clear", "^c", menu_cb, (void*)"d_");
     _mainwin_menubar->add("&Debug/Sho&w", "^w", menu_cb, (void*)"d+");
     ///
-#define RPSFLTK_DEBUG(Name) do {    \
-    _mainwin_menubar->add("&Debug/" #Name, 0, \
-        menu_cb, (void*)"d:" #Name,   \
-        FL_MENU_TOGGLE);      \
-  } while(0);
+#define RPSFLTK_DEBUG(Dbgopt) do {                      \
+      int rk##Dbgopt =                                  \
+        _mainwin_menubar->add("&Debug/" #Dbgopt, 0,     \
+                              menu_cb,                  \
+                              (void*)"d:" #Dbgopt,      \
+                              FL_MENU_TOGGLE);          \
+      Fl_Menu_Item*item##Dbgopt =                       \
+        const_cast<Fl_Menu_Item*>                       \
+  (_mainwin_menubar->menu()+rk##Dbgopt);                \
+      if (RPS_DEBUG_ENABLED(Dbgopt))                    \
+        item##Dbgopt->set();                            \
+      else                                              \
+        item##Dbgopt->clear();                          \
+    } while(0);
     ///
     RPS_DEBUG_OPTIONS(RPSFLTK_DEBUG);
 #undef RPSFLTK_DEBUG
@@ -639,7 +648,7 @@ Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
       RPS_WARNOUT("unimplemented debug clear");
     }
   else if (!strncmp((const char*)data, "d:", 2)
-	   && isalpha(((const char*)data)[2])) // debug set
+           && isalpha(((const char*)data)[2])) // debug set
     {
 #warning unimplemented debug set
       RPS_WARNOUT("unimplemented debug set " << (const char*)data);
