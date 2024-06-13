@@ -47,7 +47,7 @@ RPS_ATSHARP := $(shell printf '@#')
         print-plugin-settings indent redump clean-plugins plugins \
         test00 test01 test01b test01c test01d test01e test01f \
         test02 test03 test05 test06 test07 test07a test08 test09 test-load \
-	testfltk1 testfltk2 testfltk3
+	testfltk1 testfltk2 testfltk3 testfltk4
 
 SYNC=/bin/sync
 
@@ -396,6 +396,11 @@ testfltk3: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=29s  --fltk -bg lightpink
 	@printf '\n\n\n////testfltk3 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
+
+testfltk4: refpersys
+	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
+	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=15m  --fltk -bg peachpuff
+	@printf '\n\n\n////testfltk4 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 ## eof GNUmakefile
 
