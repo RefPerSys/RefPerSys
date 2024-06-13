@@ -638,6 +638,12 @@ Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
 #warning unimplemented debug show
       RPS_WARNOUT("unimplemented debug clear");
     }
+  else if (!strncmp((const char*)data, "d:", 2)
+	   && isalpha(((const char*)data)[2])) // debug set
+    {
+#warning unimplemented debug set
+      RPS_WARNOUT("unimplemented debug set " << (const char*)data);
+    }
   else
     {
 #warning unimplemented menu_cb
