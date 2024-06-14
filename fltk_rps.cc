@@ -541,7 +541,8 @@ Rps_FltkMainWindow::Rps_FltkMainWindow(int w, int h, const char*title)
 void
 Rps_FltkMainWindow::fill_main_window(void)
 {
-  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window w=" << w() << ",h=" << h());
+  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window"
+		<< " w=" << w() << ",h=" << h());
   this->begin();
   //////////// the menubar
   {
@@ -826,7 +827,7 @@ rps_fltk_initialize (int argc, char**argv)
   fl_open_display();
   rps_fltk_mainwin = new Rps_FltkMainWindow(/*width=*/750, /*height=*/550,
       titlebuf);
-  rps_fltk_mainwin->show();
+  rps_fltk_mainwin->show(argc, argv);
   rps_fltk_flush ();
   RPS_DEBUG_LOG(REPL, "rps_fltk_initialize showing mainwin@"
                 << (void*)rps_fltk_mainwin
