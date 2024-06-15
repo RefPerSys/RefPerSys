@@ -67,10 +67,10 @@ msg_warn()
 msg_fail()
 {
         ts=$(date +'%b %d %H:%M:%S')
-        printf                                                          \
-            '[\033[1;31mFAIL\033[0m] \033[0;35m%s\033[0m: %s...\n'      \
-            "$ts"                                                       \
-            "$1"                                                        \
+        printf                                                  \
+            '[\033[1;31mFAIL\033[0m] \033[0;35m%s\033[0m: %s\n' \
+            "$ts"                                               \
+            "$1"                                                \
             1>&2
 
         exit 1
@@ -102,26 +102,45 @@ check_os()
 }
 
 #
+# Callback function to handle `make help`.
+#
+run_help()
+{
+	echo 'usage:'
+	printf '\t%s\t\t%s\n' '$ make help' 'Show this help message'
+	printf '\t%s\t\t%s\n' '$ make intro' 'Show introductory notes'
+	printf '\t%s\t\t%s\n' '$ make config' 'Generate config.mk file'
+	printf '\t%s\t\t%s\n' '$ make check' 'Check build prerequisites'
+	printf '\t%s\t\t%s\n' '$ make build' 'Build target objects'
+	printf '\t%s\t\t%s\n' '$ make test' 'Run regression tests'
+	printf '\t%s\t\t%s\n' '# make install' 'Install target objects'
+	printf '\t%s\t%s\n' '# make uninstall' 'Uninstall target objects'
+	printf '\t%s\t\t%s\n' '# make dist' 'Prepare release tarball'
+	printf '\t%s\t\t%s\n' '$ make clean' 'Remove build artefacts'
+}
+
+#
 # Parse the command line options passed to the configure script.
 #
 parse_flags()
 {
+	OPT_VERBOSE=0
 	while getopts ':v' opt; do
 		case $opt in
 			v)
-				OPT_VERBSE=$((OPT_VERBOSE+1))
+				OPT_VERBOSE=$((OPT_VERBOSE+1))
 				;;
 
 			:)	
-				msg_err "-OPTARG: missing argument"
+				msg_fail "-OPTARG: missing argument"
 				;;
 			?)
-				msg_err "-$OPTARG: unknown option"
+				msg_fail "-$OPTARG: unknown option"
 				;;
 		esac
 	done
 
-	test "$OPT_VERBOSE" -gt 1 && msg_err '-v: excess count'
+	test "$OPT_VERBOSE" -gt 1 && msg_fail '-v: excess count'
 }
 
 #
@@ -141,7 +160,7 @@ parse_args()
 		check)  shift; run_check "$@";;
 		dist)   shift; run_dist "$@";;
 		clean)  shift; run clean "$@";;
-		*)      msg_err "$1: unknown argument";;
+		*)      msg_fail "$1: unknown argument";;
 	esac
 }
 
