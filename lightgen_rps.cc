@@ -66,7 +66,6 @@ class Rps_PayloadLightningCodeGen : public Rps_Payload
   Rps_QuasiZone::rps_allocate1<Rps_PayloadLightningCodeGen,Rps_ObjectZone*>(Rps_ObjectZone*);
   virtual ~Rps_PayloadLightningCodeGen();
   jit_state_t* lightg_jist;
-#warning PayloadLightningCodeGen may need some jit_state_t* pointer
 protected:
   virtual void gc_mark(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
