@@ -821,7 +821,8 @@ rps_fltk_initialize (int argc, char**argv)
 #warning missing code in rps_fltk_initialize to create FLTK windows
   char titlebuf[128];
   memset (titlebuf, 0, sizeof(titlebuf));
-  snprintf(titlebuf, sizeof(titlebuf), "RefPerSys v%d.%d pid %d on %s",
+  snprintf(titlebuf, sizeof(titlebuf), "RefPerSys %.9s v%d.%d pid %d on %s",
+	   rps_shortgitid,
            rps_get_major_version(), rps_get_minor_version(), (int)getpid(),
            rps_hostname());
   fl_open_display();
