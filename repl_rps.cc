@@ -755,6 +755,13 @@ rps_repl_builtin_shell_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, 
     RPS_WARNOUT("failed shell command " << Rps_QuotedC_String(intoksrc.curcptr()) << " exited " << ret);
 } // end rps_repl_builtin_shell_command
 
+void
+rps_repl_builtin_sh_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                            Rps_TokenSource& intoksrc,
+                            const char*title)
+{
+  rps_repl_builtin_shell_command(callframe, obenvarg, builtincmd, intoksrc, title);
+} // end rps_repl_builtin_sh_command
 
 void
 rps_repl_builtin_pwd_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
@@ -850,6 +857,14 @@ rps_repl_builtin_pid_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, co
   RPS_INFORMOUT(std::endl << "process id is " <<  (int)getpid() << " on " << rps_hostname());
   fflush(nullptr);
 } // end rps_repl_builtin_pid_command
+
+void
+rps_repl_builtin_getpid_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                                Rps_TokenSource& intoksrc,
+                                const char*title)
+{
+  rps_repl_builtin_pid_command(callframe, obenvarg, builtincmd, intoksrc, title);
+} // end rps_repl_builtin_getpid_command
 
 void
 rps_repl_builtin_git_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
@@ -1080,6 +1095,13 @@ rps_repl_builtin_parse_expression_command(Rps_CallFrame*callframe, Rps_ObjectRef
     RPS_WARNOUT("failed parse_expression " << cp << " in " << intoksrc);
 } // end rps_repl_builtin_parse_expression_command
 
+void
+rps_repl_builtin_parse_expr_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                                    Rps_TokenSource& intoksrc,
+                                    const char*title)
+{
+  rps_repl_builtin_parse_expression_command(callframe, obenvarg, builtincmd, intoksrc, title);
+} // end rps_repl_builtin_parse_expr_command
 
 void
 rps_repl_builtin_parse_disjunction_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
@@ -1114,6 +1136,14 @@ rps_repl_builtin_parse_disjunction_command(Rps_CallFrame*callframe, Rps_ObjectRe
 } // end rps_repl_builtin_parse_disjunction_command
 
 
+void
+rps_repl_builtin_parse_disj_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                                    Rps_TokenSource& intoksrc,
+                                    const char*title)
+{
+  rps_repl_builtin_parse_disjunction_command(callframe, obenvarg, builtincmd, intoksrc, title);
+} // end rps_repl_builtin_parse_disj_command
+
 
 void
 rps_repl_builtin_parse_conjunction_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
@@ -1142,10 +1172,19 @@ rps_repl_builtin_parse_conjunction_command(Rps_CallFrame*callframe, Rps_ObjectRe
       << std::endl);
   _f.parvalv = intoksrc.parse_conjunction(&_, &ok);
   if (ok)
-    RPS_INFORMOUT(std::endl << " parse_conjunction " << cp << " as " << _f.parvalv);
+    RPS_INFORMOUT(std::endl << " parse_conj " << cp << " as " << _f.parvalv);
   else
     RPS_WARNOUT("failed parse_conjunction " << cp << " in " << intoksrc);
 } // end rps_repl_builtin_parse_conjunction_command
+
+
+void
+rps_repl_builtin_parse_conj_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const char*builtincmd,
+                                    Rps_TokenSource& intoksrc,
+                                    const char*title)
+{
+  rps_repl_builtin_parse_conjunction_command(callframe, obenvarg, builtincmd, intoksrc, title);
+} // end rps_repl_builtin_parse_conj_command
 
 
 
@@ -1399,7 +1438,11 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
   RPS_DEBUG_LOG(REPL, "rps_do_builtin_repl_command " << title
                 << "... intoksrc:" << intoksrc << " BUILTIN " << builtincmd
                 << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr()));
-  if (!strcmp(builtincmd, "sh") || !strcmp(builtincmd, "shell"))
+  if (!strcmp(builtincmd, "sh"))
+    {
+      rps_repl_builtin_sh_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "shell"))
     {
       rps_repl_builtin_shell_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
@@ -1411,9 +1454,13 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
     {
       rps_repl_builtin_cd_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
-  else if (!strcmp(builtincmd, "pid") || !strcmp(builtincmd, "getpid"))
+  else if (!strcmp(builtincmd, "pid"))
     {
       rps_repl_builtin_pid_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "getpid"))
+    {
+      rps_repl_builtin_getpid_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
   else if (!strcmp(builtincmd, "git"))
     {
@@ -1439,15 +1486,27 @@ rps_do_builtin_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, con
     {
       rps_repl_builtin_env_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
-  else if (!strcmp(builtincmd, "parse_expression") || !strcmp(builtincmd, "parse_expr"))
+  else if (!strcmp(builtincmd, "parse_expression"))
     {
       rps_repl_builtin_parse_expression_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
-  else if (!strcmp(builtincmd, "parse_disjunction") || !strcmp(builtincmd, "parse_disj"))
+  else if (!strcmp(builtincmd, "parse_expr"))
+    {
+      rps_repl_builtin_parse_expr_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "parse_disjunction"))
     {
       rps_repl_builtin_parse_disjunction_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
-  else if (!strcmp(builtincmd, "parse_conjunction") || !strcmp(builtincmd, "parse_conj"))
+  else if (!strcmp(builtincmd, "parse_disj"))
+    {
+      rps_repl_builtin_parse_disj_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "parse_conj"))
+    {
+      rps_repl_builtin_parse_conj_command(&_, _f.obenv, builtincmd, intoksrc, title);
+    }
+  else if (!strcmp(builtincmd, "parse_conjunction"))
     {
       rps_repl_builtin_parse_conjunction_command(&_, _f.obenv, builtincmd, intoksrc, title);
     }
