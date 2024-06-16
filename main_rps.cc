@@ -64,6 +64,14 @@ char*rps_pidfile_path;
 /// the … is unicode U+2026 HORIZONTAL ELLIPSIS in UTF8 \xe2\x80\xA6
 
 
+extern "C" std::atomic<long> rps_debug_atomic_counter;
+std::atomic<long> rps_debug_atomic_counter;
+
+long
+rps_incremented_debug_counter(void)
+{
+  return 1+rps_debug_atomic_counter.fetch_add(1);
+} // end rps_incremented_debug_counter
 
 static void rps_kill_wait_gui_process(void);
 
@@ -1202,11 +1210,10 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
   else
     msg = bfr;
   //
-  static long debug_count = 0;
 
   {
     pthread_mutex_lock(&rps_debug_mutex);
-    long ndbg = debug_count++;
+    long ndbg = rps_debug_atomic_counter.fetch_add(1);
     //
     char debugcntstr[32];
     memset (debugcntstr, 0, sizeof(debugcntstr));
@@ -1292,6 +1299,10 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
     free(bigbfr);
 } // end rps_debug_printf_at
 
+long
+rps_debug_incremented_counter(void)
+{
+} // end rps_debug_incremented_counter
 
 /// function called by atexit to kill then wait the GUI process
 void

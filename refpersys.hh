@@ -154,7 +154,11 @@ extern "C" bool rps_fltk_enabled (void);
 extern "C" void rps_fltk_run (void);
 extern "C" void rps_fltk_stop (void);
 extern "C" void rps_fltk_flush (void);
-extern "C" void rps_fltk_show_debug_message(const char*file, int line, int dbgopt, long dbgcount, const char*msg);
+extern "C" void rps_fltk_show_debug_message(const char*file, int line, int dbgopt, long dbgcount,
+    const char*msg);
+extern "C" void rps_fltk_printf_inform_message(const char*file, int line, const char*funcname, long dbgcount,
+    const char*fmt, ...)
+__attribute__ ((format (printf, 5, 6)));
 /* add an input file descriptor event handler to FLTK event loop */
 extern "C" void rps_fltk_add_input_fd(int fd,
                                       Rps_EventHandler_sigt* f,
@@ -185,6 +189,7 @@ extern "C" void rps_fltk_emit_sizes(std::ostream&out);
 #define rps_fltk_run() do{}while(0)
 #define rps_fltk_flush() do{}while(0)
 #define rps_fltk_emit_sizes(Out) do{}while(0)
+#define rps_fltk_printf_inform_message(File,Lin,Funcname,Count,Fmt,...) do{}while(0)
 #endif
 
 class Rps_QuasiZone; // GC-managed piece of memory
@@ -565,6 +570,10 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
               Fil, Lin, __PRETTY_FUNCTION__,                            \
               ##__VA_ARGS__);                                           \
   };                                                                    \
+    if (rps_fltk_enabled())           \
+  rps_fltk_printf_inform_message(Fil, Lin, __PRETTY_FUNCTION__,   \
+         rps_incremented_debug_counter(), \
+         "FATAL:" Fmt, ##__VA_ARGS__);    \
   if (rps_debug_file && rps_debug_file != stderr)                       \
     fprintf(rps_debug_file,                                             \
             "\n\n*°* RefPerSys °FATAL° %s:%d:%s " Fmt "*°*\n",          \
@@ -610,6 +619,8 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
 
 //////////////// warnings
 
+
+extern "C" long rps_incremented_debug_counter(void);
 
 extern "C" void rps_debug_warn_at(const char*file, int line);
 #define RPS_WARN_AT_BIS(Fil,Lin,Fmt,...) do {                   \
@@ -892,18 +903,18 @@ while (0)
   RPS_DEBUG_PRINTF_AT_BIS(__FILE__, -__LINE__, dbgopt, fmt, ##__VA_ARGS__)
 
 
-#define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)   do \
-  {               \
-    if (RPS_DEBUG_ENABLED(dbgopt))        \
-      {               \
-        std::ostringstream _logstream_##fline;      \
-        _logstream_##fline << logmsg << std::flush;   \
-        rps_debug_printf_at(fname, fline,     \
-          RPS_DEBUG_##dbgopt,     \
-          "%s",       \
-          _logstream_##fline.str().c_str());  \
-      }               \
-  }               \
+#define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)   do     \
+  {                                                             \
+    if (RPS_DEBUG_ENABLED(dbgopt))                              \
+      {                                                         \
+        std::ostringstream _logstream_##fline;                  \
+        _logstream_##fline << logmsg << std::flush;             \
+        rps_debug_printf_at(fname, fline,                       \
+          RPS_DEBUG_##dbgopt,                                   \
+          "%s",                                                 \
+          _logstream_##fline.str().c_str());                    \
+      }                                                         \
+  }                                                             \
 while (0)
 
 #define RPS_DEBUG_LOG_AT_BIS(fname, fline, dbgopt, logmsg)  \
@@ -938,11 +949,11 @@ while (0)
 
 #define RPS_INFORM_AT_BIS(Fil,Lin,Fmt,...) do {                 \
     bool ontty = rps_stdout_istty;                              \
-    if (rps_syslog_enabled) {         \
+    if (rps_syslog_enabled) {                                   \
       syslog(LOG_INFO, "RefPerSys INFORM %s:%d: %s " Fmt "\n",  \
-       Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__); \
-    } else              \
-      fprintf(stdout, "\n\n"          \
+       Fil, Lin, __PRETTY_FUNCTION__, ##__VA_ARGS__);           \
+    } else {                                                    \
+      fprintf(stdout, "\n\n"                                    \
             "%s*** RefPerSys INFORM:%s %s:%d: %s<%s>%s\n "      \
             Fmt "\n\n",                                         \
             ontty?RPS_TERMINAL_BOLD_ESCAPE:"",                  \
@@ -952,7 +963,15 @@ while (0)
             __PRETTY_FUNCTION__,                                \
             ontty?RPS_TERMINAL_NORMAL_ESCAPE:"",                \
             ##__VA_ARGS__);                                     \
-    fflush(stdout); } while(0)
+      fflush(stdout); };                                        \
+    if (rps_fltk_enabled())                                     \
+      rps_fltk_printf_inform_message                            \
+        (Fil,Lin,                                               \
+         __PRETTY_FUNCTION__,                                   \
+         rps_incremented_debug_counter(),                       \
+         Fmt,                                                   \
+         ##__VA_ARGS__);                                        \
+} while(0)
 
 #define RPS_INFORM_AT(Fil,Lin,Fmt,...) RPS_INFORM_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
 
@@ -961,12 +980,12 @@ while (0)
 
 #define RPS_INFORMOUT_AT_BIS(Fil,Lin,...) do {          \
     std::ostringstream outs_##Lin;                      \
-    if (rps_syslog_enabled) {       \
+    if (rps_syslog_enabled) {                           \
       outs_##Lin << __VA_ARGS__  << std::flush;         \
-      syslog(LOG_INFO, "%s:%d:%s %s\n",     \
-       (Fil), (Lin), __PRETTY_FUNCTION__,   \
-       outs_##Lin.str().c_str());     \
-    } else {            \
+      syslog(LOG_INFO, "%s:%d:%s %s\n",                 \
+       (Fil), (Lin), __PRETTY_FUNCTION__,               \
+       outs_##Lin.str().c_str());                       \
+    } else {                                            \
     bool ontty = rps_stdout_istty;                      \
     outs_##Lin                                          \
       << (ontty?RPS_TERMINAL_BOLD_ESCAPE:"")            \
@@ -980,7 +999,7 @@ while (0)
     fputs(outs_##Lin.str().c_str(), stdout);            \
     fputc('\n', stdout);                                \
     fflush(stdout);                                     \
-  }             \
+  }                                                     \
 } while(0)
 
 #define RPS_INFORMOUT_AT(Fil,Lin,...) RPS_INFORMOUT_AT_BIS(Fil,Lin,##__VA_ARGS__)

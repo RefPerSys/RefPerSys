@@ -143,7 +143,8 @@ rps_garbage_collect (std::function<void(Rps_GarbageCollector*)>* pfun)
              gcnt);
   the_gc.run_gc();
   auto nbroots = the_gc.nb_roots();
-  RPS_INFORM("rps_garbage_collect completed; count#%ld, %ld roots, %ld scans, %ld marks, %ld deletions, real %.3f, cpu %.3f sec",
+  RPS_INFORM("rps_garbage_collect completed; count#%ld, %ld roots, %ld scans,"
+             " %ld marks, %ld deletions, real %.3f, cpu %.3f sec",
              gcnt, (long) nbroots, (long)(the_gc.nb_scans()),  (long)(the_gc.nb_marks()),  (long)(the_gc.nb_deletions()),
              the_gc.elapsed_time(), the_gc.process_time());
 } // end of rps_garbage_collect

@@ -43,6 +43,7 @@
 #error RefPerSys without FLTK toolkit
 #endif
 
+#include <stdarg.h>
 #include <FL/Fl.H>
 #include <FL/platform.H>
 #include <FL/Fl_Window.H>
@@ -932,6 +933,33 @@ rps_fltk_emit_sizes(std::ostream&out)
   out << "//// end of FLTK sizes and alignments for api "
       << Fl::api_version() << " abi " << Fl::abi_version() << std::endl;
 } // end rps_fltk_emit_sizes
+
+void
+rps_fltk_printf_inform_message(const char*file, int line, const char*funcname, long count, const char*fmt, ...)
+{
+  va_list args;
+  char*msg = nullptr;
+  char buf[256];
+  memset(buf, 0, sizeof(buf));
+  va_start (args, fmt);
+  int l = vsnprintf(buf, sizeof(buf), fmt, args);
+  if (l>=sizeof(buf)-1)
+    {
+      l=(l|0xf)+1;
+      msg = (char*)malloc(l);
+      if (msg == nullptr)
+        RPS_FATAL("rps_fltk_printf_inform_message [%s:%d:%s/%s](#%ld) failed to malloc %d bytes",
+                  file, line, funcname, count, fmt, l);
+      memset (msg, 0, l);
+      (void)  vsnprintf(msg, l, fmt, args);
+      va_end (args);
+    }
+  else
+    msg = buf;
+#warning rps_fltk_printf_inform_message should show the msg
+  if (msg && msg != buf)
+    free(msg);
+} // end rps_fltk_printf_inform_message
 
 
 void
