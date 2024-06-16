@@ -956,14 +956,16 @@ rps_fltk_printf_inform_message(const char*file, int line, const char*funcname, l
     }
   else
     msg = buf;
-#warning rps_fltk_printf_inform_message should show the msg
+  rps_fltk_show_debug_message(file,line,funcname, RPS_INFORM_MSG_LEVEL,
+                              count,msg);
   if (msg && msg != buf)
     free(msg);
 } // end rps_fltk_printf_inform_message
 
 
 void
-rps_fltk_show_debug_message(const char*file, int line, int dbgopt, long dbgcount, const char*msg)
+rps_fltk_show_debug_message(const char*file, int line, const char*funcname,
+                            int dbgopt, long dbgcount, const char*msg)
 {
   RPS_ASSERT(file != nullptr);
   RPS_ASSERT(line != 0);

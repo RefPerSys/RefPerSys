@@ -914,7 +914,7 @@ rps_event_loop(void)
                 evstr += " POLLHUP";
               if (pollarr[pix].events & POLLNVAL)
                 evstr += " POLLNVAL";
-              rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+              rps_debug_printf_at(__FILE__,__LINE__,__FUNCTION__,RPS_DEBUG__EVERYTHING,
                                   "poll[%d] loop%ld:fd#%d:%s,%s%s\n",
                                   pix, event_nbloops.load(), pollarr[pix].fd,
                                   explarr[pix], evstr.c_str(), pidbuf);
@@ -952,7 +952,7 @@ rps_event_loop(void)
       if (respoll>0)
         {
           if (debugpoll)
-            rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+            rps_debug_printf_at(__FILE__,__LINE__,__FUNCTION__,RPS_DEBUG__EVERYTHING,
                                 "respoll=%d loop%ld%s\n", respoll, event_nbloops.load(), elapsbuf);
           int nbrev=0;
           for (int pix=0; pix<nbfdpoll; pix++)
@@ -977,7 +977,7 @@ rps_event_loop(void)
                         evstr += " POLLHUP";
                       if (pollarr[pix].revents & POLLNVAL)
                         evstr += " POLLNVAL";
-                      rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+                      rps_debug_printf_at(__FILE__,__LINE__,__FUNCTION__,RPS_DEBUG__EVERYTHING,
                                           "polled[%d]:fd#%d:%s>%s\n",
                                           pix, pollarr[pix].fd, explarr[pix], evstr.c_str());
                     }
@@ -988,14 +988,14 @@ rps_event_loop(void)
                 };
             };
           if (debugpoll)
-            rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+            rps_debug_printf_at(__FILE__,__LINE__,__FUNCTION__,RPS_DEBUG__EVERYTHING,
                                 "respoll=%d nbrev=%d event_nbloops=%ld\n",
                                 respoll, nbrev, event_nbloops.load());
         }
       else if (respoll==0)   // timed out poll
         {
           if (debugpoll)
-            rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+            rps_debug_printf_at(__FILE__,__LINE__,__FUNCTION__,RPS_DEBUG__EVERYTHING,
                                 "poll timeout loop%ld\n", event_nbloops.load());
         }
       else if (errno != EINTR)
@@ -1003,7 +1003,8 @@ rps_event_loop(void)
       else
         {
           if (debugpoll)
-            rps_debug_printf_at(__FILE__,__LINE__,RPS_DEBUG__EVERYTHING,
+            rps_debug_printf_at(__FILE__,__LINE__,__FUNCTION__,
+                                RPS_DEBUG__EVERYTHING,
                                 "poll interrupt loop%ld\n", event_nbloops.load());
         };
       if (Rps_Agenda::agenda_timeout > 0

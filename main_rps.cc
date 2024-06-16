@@ -1161,7 +1161,7 @@ rps_set_debug_output_path(const char*filepath)
 ////////////////////////////////////////////////////////////////
 // if fline is negative, print a newline before....
 void
-rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
+rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug dbgopt,
                     const char *fmt, ...)
 {
   char threadbfr[24];
@@ -1290,7 +1290,7 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
         fflush(nullptr);
       }
     if (rps_fltk_enabled())
-      rps_fltk_show_debug_message(fname, fline, (int)dbgopt, ndbg, msg);
+      rps_fltk_show_debug_message(fname, fline,funcname, (int)dbgopt, ndbg, msg);
     //
     pthread_mutex_unlock(&rps_debug_mutex);
   }
@@ -1299,10 +1299,6 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
     free(bigbfr);
 } // end rps_debug_printf_at
 
-long
-rps_debug_incremented_counter(void)
-{
-} // end rps_debug_incremented_counter
 
 /// function called by atexit to kill then wait the GUI process
 void

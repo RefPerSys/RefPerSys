@@ -154,7 +154,8 @@ extern "C" bool rps_fltk_enabled (void);
 extern "C" void rps_fltk_run (void);
 extern "C" void rps_fltk_stop (void);
 extern "C" void rps_fltk_flush (void);
-extern "C" void rps_fltk_show_debug_message(const char*file, int line, int dbgopt, long dbgcount,
+extern "C" void rps_fltk_show_debug_message(const char*file, int line, const char*funcname,
+    int dbgopt, long dbgcount,
     const char*msg);
 extern "C" void rps_fltk_printf_inform_message(const char*file, int line, const char*funcname, long dbgcount,
     const char*fmt, ...)
@@ -571,15 +572,16 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
               ##__VA_ARGS__);                                           \
   };                                                                    \
     if (rps_fltk_enabled())           \
-  rps_fltk_printf_inform_message(Fil, Lin, __PRETTY_FUNCTION__,   \
-         rps_incremented_debug_counter(), \
-         "FATAL:" Fmt, ##__VA_ARGS__);    \
+      rps_fltk_printf_inform_message(Fil, Lin, __PRETTY_FUNCTION__, \
+             rps_incremented_debug_counter(),       \
+             "FATAL:" Fmt, ##__VA_ARGS__);        \
   if (rps_debug_file && rps_debug_file != stderr)                       \
     fprintf(rps_debug_file,                                             \
             "\n\n*°* RefPerSys °FATAL° %s:%d:%s " Fmt "*°*\n",          \
             Fil, Lin, __PRETTY_FUNCTION__,                              \
             ##__VA_ARGS__);                                             \
   rps_fatal_stop_at (Fil,Lin); } while(0)
+
 #define RPS_FATAL_AT(Fil,Lin,Fmt,...) RPS_FATAL_AT_BIS(Fil,Lin,Fmt,##__VA_ARGS__)
 #define RPS_FATAL(Fmt,...) RPS_FATAL_AT(__FILE__,__LINE__,Fmt,##__VA_ARGS__)
 
@@ -878,16 +880,17 @@ void rps_set_debug_output_path(const char*filepath);
 /// rps_set_debug_output_path ....; if fline is negative, print a
 /// newline before....
 void
-rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
+rps_debug_printf_at(const char *fname, int fline,const char*funcname, Rps_Debug dbgopt,
                     const char *fmt, ...)
-__attribute__ ((format (printf, 4, 5)));
+__attribute__ ((format (printf, 5, 6)));
 
 
 #define RPS_DEBUG_PRINTF_AT(fname, fline, dbgopt, fmt, ...)      \
 do                                                               \
   {                                                              \
     if (RPS_DEBUG_ENABLED(dbgopt))                               \
-      rps_debug_printf_at(fname, fline, RPS_DEBUG_##dbgopt, fmt, \
+      rps_debug_printf_at(fname, fline,__FUNCTION__,     \
+        RPS_DEBUG_##dbgopt, fmt,     \
                           ##__VA_ARGS__);                        \
   }                                                              \
 while (0)
@@ -909,7 +912,7 @@ while (0)
       {                                                         \
         std::ostringstream _logstream_##fline;                  \
         _logstream_##fline << logmsg << std::flush;             \
-        rps_debug_printf_at(fname, fline,                       \
+        rps_debug_printf_at(fname, fline, __FUNCTION__,   \
           RPS_DEBUG_##dbgopt,                                   \
           "%s",                                                 \
           _logstream_##fline.str().c_str());                    \
@@ -930,7 +933,8 @@ while (0)
       {                                                         \
         std::ostringstream _logstream_##fline;                  \
         _logstream_##fline << logmsg << std::flush;             \
-        rps_debug_printf_at(fname, -fline, RPS_DEBUG_##dbgopt,  \
+        rps_debug_printf_at(fname, -fline, __FUNCTION__,  \
+          RPS_DEBUG_##dbgopt,     \
                             "%s",                               \
                             _logstream_##fline.str().c_str());  \
       }                                                         \
