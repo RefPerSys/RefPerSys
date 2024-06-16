@@ -774,6 +774,11 @@ extern "C" void rps_output_debug_flags(std::ostream&out, unsigned flags=0);
 
 #define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
 
+/// passed to rps_fltk_show_debug_message as the debug level for
+/// warning, inform, fatal
+constexpr int RPS_INFORM_MSG_LEVEL= -1;
+constexpr int RPS_WARNING_MSG_LEVEL= -2;
+constexpr int RPS_FATAL_MSG_LEVEL= -3;
 
 
 
