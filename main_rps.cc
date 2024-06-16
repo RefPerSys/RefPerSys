@@ -1179,7 +1179,7 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
   rps_now_strftime_centiseconds_nolen(tmbfr, "%H:%M:%S.__ ");
   //
   char *msg = nullptr, *bigbfr = nullptr;
-  char bfr[160];
+  char bfr[256];
   memset(bfr, 0, sizeof (bfr));
   //
   va_list arglst;
@@ -1282,6 +1282,8 @@ rps_debug_printf_at(const char *fname, int fline, Rps_Debug dbgopt,
         //
         fflush(nullptr);
       }
+    if (rps_fltk_enabled())
+      rps_fltk_show_debug_message(fname, fline, (int)dbgopt, ndbg, msg);
     //
     pthread_mutex_unlock(&rps_debug_mutex);
   }

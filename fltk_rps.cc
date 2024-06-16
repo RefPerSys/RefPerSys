@@ -933,4 +933,16 @@ rps_fltk_emit_sizes(std::ostream&out)
       << Fl::api_version() << " abi " << Fl::abi_version() << std::endl;
 } // end rps_fltk_emit_sizes
 
+
+void
+rps_fltk_show_debug_message(const char*file, int line, int dbgopt, long dbgcount, const char*msg)
+{
+  RPS_ASSERT(file != nullptr);
+  RPS_ASSERT(line != 0);
+  RPS_ASSERT((int)dbgopt != 0);
+  RPS_ASSERT(dbgcount>0);
+  RPS_ASSERT(msg != nullptr);
+#warning incomplete rps_fltk_show_debug_message
+} // end rps_fltk_show_debug_message
+
 //// end of file fltk_rps.cc

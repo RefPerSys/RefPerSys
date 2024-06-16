@@ -154,7 +154,7 @@ extern "C" bool rps_fltk_enabled (void);
 extern "C" void rps_fltk_run (void);
 extern "C" void rps_fltk_stop (void);
 extern "C" void rps_fltk_flush (void);
-
+extern "C" void rps_fltk_show_debug_message(const char*file, int line, int dbgopt, long dbgcount, const char*msg);
 /* add an input file descriptor event handler to FLTK event loop */
 extern "C" void rps_fltk_add_input_fd(int fd,
                                       Rps_EventHandler_sigt* f,
@@ -171,7 +171,7 @@ extern "C" void rps_fltk_remove_input_fd(int fd);
 extern "C" void rps_fltk_remove_output_fd(int fd);
 /* emit the size and align */
 extern "C" void rps_fltk_emit_sizes(std::ostream&out);
-#else
+#else /*not RPS_WITH_FLTK*/
 #define rps_fltk_abi_version() 0
 #define rps_fltk_api_version() 0
 #define rps_fltk_initialize() do {}while(0)
@@ -887,16 +887,18 @@ while (0)
   RPS_DEBUG_PRINTF_AT_BIS(__FILE__, -__LINE__, dbgopt, fmt, ##__VA_ARGS__)
 
 
-#define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)   do     \
-  {                                                                 \
-    if (RPS_DEBUG_ENABLED(dbgopt))                                  \
-      {                                                             \
-        std::ostringstream _logstream_##fline;                      \
-        _logstream_##fline << logmsg << std::flush;                 \
-        rps_debug_printf_at(fname, fline, RPS_DEBUG_##dbgopt, "%s", \
-                            _logstream_##fline.str().c_str());      \
-      }                                                             \
-  }                                                                 \
+#define RPS_DEBUG_LOG_AT(fname, fline, dbgopt, logmsg)   do \
+  {               \
+    if (RPS_DEBUG_ENABLED(dbgopt))        \
+      {               \
+        std::ostringstream _logstream_##fline;      \
+        _logstream_##fline << logmsg << std::flush;   \
+        rps_debug_printf_at(fname, fline,     \
+          RPS_DEBUG_##dbgopt,     \
+          "%s",       \
+          _logstream_##fline.str().c_str());  \
+      }               \
+  }               \
 while (0)
 
 #define RPS_DEBUG_LOG_AT_BIS(fname, fline, dbgopt, logmsg)  \
