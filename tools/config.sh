@@ -120,6 +120,17 @@ run_help()
 }
 
 #
+# Callback function to handle `make intro`.
+#
+run_intro()
+{
+	m4 -D VERSION=`git rev-parse --short HEAD` man/refpersys.7 \
+		| nroff -mdoc \
+		| less
+}
+
+
+#
 # Parse the command line options passed to the configure script.
 #
 parse_flags()
