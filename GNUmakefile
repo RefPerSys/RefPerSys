@@ -58,7 +58,7 @@ FMT=/usr/bin/fmt
 ASTYLE=/usr/bin/astyle
 ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
 
-CFLAGS= -O -g
+CFLAGS= -O -g -Wall
 
 -include _config-refpersys.mk
 
