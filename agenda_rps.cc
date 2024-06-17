@@ -461,12 +461,13 @@ rpsldpy_agenda(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id 
   RPS_ASSERT(jv.type() == Json::objectValue);
   RPS_ASSERT(spacid);
   RPS_ASSERT(lineno>0);
-  if (obz != RPS_ROOT_OB(_1aGtWm38Vw701jDhZn)) { // the agenda rps_rootob_1aGtWm38Vw701jDhZn
-    RPS_POSSIBLE_BREAKPOINT();
-    RPS_FATALOUT("in space " << spacid << " line " << lineno
-		 << " obz=" << Rps_ObjectRef(obz)
-                 << " the_agenda is RPS_ROOT_OB(_1aGtWm38Vw701jDhZn)");
-  }
+  if (obz != RPS_ROOT_OB(_1aGtWm38Vw701jDhZn))   // the agenda rps_rootob_1aGtWm38Vw701jDhZn
+    {
+      RPS_POSSIBLE_BREAKPOINT();
+      RPS_FATALOUT("in space " << spacid << " line " << lineno
+                   << " obz=" << Rps_ObjectRef(obz)
+                   << " the_agenda is RPS_ROOT_OB(_1aGtWm38Vw701jDhZn)");
+    }
   auto paylagenda = obz->put_new_plain_payload<Rps_PayloadAgenda>();
   RPS_ASSERT(paylagenda);
   for (int  ix= Rps_Agenda::AgPrio_Low; ix< Rps_Agenda::AgPrio__Last; ix++)
