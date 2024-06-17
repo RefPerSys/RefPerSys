@@ -1076,7 +1076,7 @@ void rps_show_object_for_repl(Rps_CallFrame*callerframe,
 /* C++ function _7WsQyJK6lty02uz5KT for REPL command show*/
 extern "C" rps_applyingfun_t rpsapply_7WsQyJK6lty02uz5KT;
 Rps_TwoValues
-rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
+rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
                             const Rps_Value arg0,
                             const Rps_Value arg1,
                             [[maybe_unused]] const Rps_Value arg2,
@@ -1087,6 +1087,8 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
   if (!descoid) descoid=Rps_Id("_7WsQyJK6lty02uz5KT");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
                            callerframe,
+                           Rps_Value a0;
+                           Rps_Value a1;
                            Rps_ObjectRef replcmdob;
                            Rps_ObjectRef evalenvob;
                            Rps_ObjectRef shownob;
@@ -1100,25 +1102,20 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe,
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
   });
-  RPS_DEBUG_LOG(CMD, "REPL command show start arg0=" << arg0
-                << "∈" << arg0.compute_class(&_)
-                << ";  arg1=" << arg1
-                << "∈" << arg1.compute_class(&_) <<std::endl
-                << ";  arg2=" << arg2
-                << "∈" << arg2.compute_class(&_)
+  _f.a0 = arg0;
+  _f.a1 = arg1;
+  RPS_DEBUG_LOG(CMD, "REPL command show start a0=" << _f.a0
+                << "∈" << _f.a0.compute_class(&_)
+                << ";  a1=" << _f.a1
+                << "∈" << _f.a1.compute_class(&_) <<std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
-  RPS_DEBUG_LOG(REPL, "REPL command show start arg0=" << arg0
-                << "∈" << arg0.compute_class(&_)
-                << ";  arg1=" << arg1
-                << "∈" << arg1.compute_class(&_) <<std::endl
-                << ";  arg2=" << arg2
-                << "∈" << arg2.compute_class(&_)
-                << " from " << std::endl
+  RPS_DEBUG_LOG(REPL, "REPL command show start a0=" << _f.a0
+                << "∈" << _f.a0.compute_class(&_)
+                << ";  a1=" << _f.a1
+                << "∈" << _f.a1.compute_class(&_) <<std::endl
                 << Rps_ShowCallFrame(&_));
 #warning REPL command show may need some local Rps_TokenSource
-  _f.replcmdob = arg0.to_object();
-  _f.lextokv = arg1;
   RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/started replcmdob:" << _f.replcmdob << " lextokv:" << _f.lextokv
                 << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT"));
   RPS_ASSERT(_.call_frame_depth() < 7);
