@@ -2932,7 +2932,7 @@ public:
   {
     if (depth > maxdepth && &out != &std::cout && &out != &std::cerr && &out != &std::clog)
       RPS_WARNOUT("Rps_CinTokenSource " << name()
-		  << " depth=" << depth << " greater than maxdepth=" << maxdepth);
+                  << " depth=" << depth << " greater than maxdepth=" << maxdepth);
     out << "CinTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count();
   };
   Rps_CinTokenSource();
@@ -2951,7 +2951,7 @@ public:
   {
     if (depth > maxdepth)
       RPS_WARNOUT("Rps_StreamTokenSource " << name()
-		  << " depth=" << depth << " greater than maxdepth=" << maxdepth);
+                  << " depth=" << depth << " greater than maxdepth=" << maxdepth);
     out << "StreamTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count();
   };
   virtual ~Rps_StreamTokenSource();
@@ -3283,10 +3283,13 @@ public:
   void append_comp2(Rps_Value comp0, Rps_Value comp1);
   void append_comp3(Rps_Value comp0, Rps_Value comp1, Rps_Value comp2);
   void append_comp4(Rps_Value comp0, Rps_Value comp1, Rps_Value comp2, Rps_Value comp4);
+  /// return the old value, don't grow the component vector
+  Rps_Value replace_comp_at(Rps_CallFrame*stkf, int rk, Rps_Value comp0, bool dontfail=false);
   void append_components(const std::initializer_list<Rps_Value>&compil);
   void append_components(const std::vector<Rps_Value>&compvec);
   unsigned nb_components(Rps_CallFrame*stkf) const;
   Rps_Value component_at (Rps_CallFrame*stkf, int rk, bool dontfail=false) const;
+  Rps_Value replace_component_at ([[maybe_unused]] Rps_CallFrame*stkf, int rk,  Rps_Value comp0, bool dontfail=false);
   Rps_Value instance_from_components(Rps_CallFrame*stkf, Rps_ObjectRef obinstclass) const;
   // get atomic fields
   inline double get_mtime(void) const;
@@ -4285,7 +4288,7 @@ public:
     for (Rps_CallFrame const*curf = this; curf && is_good_call_frame(curf); curf=curf->cfram_prev) d++;
     return d;
   };
-  /// TODO: implement fully in cmldrepl_rps.cc file some
+  /// TODO: implement fully in cmdrepl_rps.cc file some
   /// evaluate_repl_expr(Rps_Value expr,Rps_ObjectRef envob) member
   /// function here.  can throw some runtime exception on failure...
   Rps_TwoValues evaluate_repl_expr(Rps_Value expr,Rps_ObjectRef envob);

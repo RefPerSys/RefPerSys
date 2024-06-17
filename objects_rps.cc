@@ -957,6 +957,23 @@ Rps_ObjectZone::component_at ([[maybe_unused]] Rps_CallFrame*stkf, int rk, bool 
   throw std::range_error("Rps_ObjectZone::component_at index out of range");
 } // end Rps_ObjectZone::component_at
 
+Rps_Value
+Rps_ObjectZone::replace_component_at ([[maybe_unused]] Rps_CallFrame*stkf, int rk,  Rps_Value comp0, bool dontfail)
+{
+  std::lock_guard<std::recursive_mutex> gu(ob_mtx);
+  unsigned nbcomp = ob_comps.size();
+  if (rk<0) rk += nbcomp;
+  if (rk>=0 && rk<(int)nbcomp)
+    {
+      Rps_Value oldv =  ob_comps[rk];
+      ob_comps[rk] = comp0;
+      touch_now();
+      return oldv;
+    }
+  if (dontfail)
+    throw std::range_error("Rps_ObjectZone::component_at index out of range");
+} // end Rps_ObjectZone::replace_component_at
+
 void
 Rps_ObjectZone::append_comp1(Rps_Value comp0)
 {
