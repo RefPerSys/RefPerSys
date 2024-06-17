@@ -361,62 +361,6 @@ extern "C" bool rps_syslog_enabled; /// --syslog option
 ///////////////////////////////////////////////////////////////////////////////
 /// Provides miscellaneous runtime information for RefPerSys.
 ///
-/// The RpsColophon class is a convenience C++ wrapper around the extern
-/// constants generated at runtime in the _timestamp_rps.c file. This class
-/// allows for a cleaner and more idiomatic way to reference the runtime
-/// generated constants.
-#warning RpsColophon is never used, should be removed.
-class RpsColophon
-{
-public:
-
-  /// Gets the current timestamp.
-  ///
-  /// @see rps_timestamp[]
-  static inline std::string timestamp()
-  {
-    return std::string (rps_timestamp);
-  }
-
-  /// Gets the current Git ID.
-  ///
-  /// @see rps_gitid[]
-  static inline std::string git_id()
-  {
-    return std::string (rps_gitid);
-  }
-
-  /// Gets the MD5 sum of the source.
-  ///
-  /// @see rps_md5sum
-  static inline std::string source_md5()
-  {
-    return std::string (rps_md5sum);
-  }
-
-  /// Gets the last Git commit details.
-  ///
-  /// @see rps_lastgitcommit
-  static inline std::string last_git_commit()
-  {
-    return std::string (rps_lastgitcommit);
-  }
-
-  /// Gets the top level directory.
-  ///
-  /// rps_topdirectory
-  static inline std::string top_directory()
-  {
-    return std::string (rps_topdirectory);
-  }
-
-  /// Gets the URL of the RefPerSys website.
-  static inline std::string website()
-  {
-    return std::string ("http://refpersys.org/");
-  }
-};                              // end class RpsColophon
-
 
 extern "C" pid_t rps_gui_pid;
 
@@ -3824,7 +3768,10 @@ public:
   {
     return cnt();
   };
-#warning Rps_TupleOb very incomplete
+#pragma message perhaps Rps_TupleOb is incomplete
+  /// maybe we might need specialized and faster
+  /// make1(Rps_ObjectRef) make2(Rps_ObjectRef,Rps_ObjectRef)
+  /// and make3(Rps_ObjectRef,Rps_ObjectRef,Rps_ObjectRef) etc etc
 };// end of Rps_TupleOb
 
 
@@ -5544,6 +5491,10 @@ class Rps_PayloadAgenda : public Rps_Payload
 {
   friend class Rps_Agenda;
   friend rpsldpysig_t rpsldpy_agenda;
+  /// What is really used is the attributes in the_agenda singleton
+  /// object.  Conceptually the values inside Rps_Agenda above are the
+  /// fields of the unique Rps_PayloadAgenda tied to the_agenda root object
+  /// of objid _1aGtWm38Vw701jDhZn "the_agenda"∈agenda
 public:
   inline Rps_PayloadAgenda(Rps_ObjectZone*owner);
   inline Rps_PayloadAgenda(Rps_ObjectZone*owner, Rps_Loader*ld);
