@@ -877,7 +877,8 @@ emit_configure_refpersys_mk (void)
       fprintf (f, "\n\n"
 	       "# default compiler flags for RefPerSys [%s:%d]:\n",
 	       __FILE__, __LINE__ - 1);
-      fprintf (f, "REFPERSYS_COMPILER_FLAGS= -O -g -fPIC\n");
+      /// most Linux compilers accept -Wall (but intel proprietary compiler might reject -Wextra)
+      fprintf (f, "REFPERSYS_COMPILER_FLAGS= -O -g -fPIC -Wall -Wextra\n");
     }
   //// emit linker flags
   if (linker_argcount > 0)
