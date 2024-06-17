@@ -24,6 +24,14 @@
 ### invocation as
 ##     ./build-plugin.sh <C++-plugin-source> <plugin-sharedobject>
 
+### example
+##  To compile the C++ plugin source in file  plugins_dir/rpsplug_createclass.cc
+##  into the dlopen-able shared object /tmp/rpsplug_createclass.so
+##  run the following command
+##     ./build-plugin.sh plugins_dir/rpsplug_createclass.cc \
+##                       /tmp/rpsplug_createclass.so
+##  a later invocation of refpersys is explained in a C++ comment in
+##  this C++ plugin file plugins_dir/rpsplug_createclass.cc
 ## the C++ plugin source may contain comments driving this compilation.
 
 
