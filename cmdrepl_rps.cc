@@ -1305,7 +1305,7 @@ Rps_TwoValues
 rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe,
                             const Rps_Value arg0,
                             const Rps_Value arg1,
-                            [[maybe_unused]] const Rps_Value arg2,
+                            const Rps_Value arg2,
                             [[maybe_unused]] const Rps_Value arg3,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs)
 {
@@ -1313,20 +1313,84 @@ rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe,
   if (!descoid) descoid=Rps_Id("_28DGtmXCyOX02AuPLd");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
                            callerframe,
+                           Rps_Value a0;
+                           Rps_Value a1;
+                           Rps_Value a2;
+                           Rps_ObjectRef ob0;
+                           Rps_ObjectRef ob1;
+                           Rps_ObjectRef obenv;
+                           Rps_ObjectRef obdest;
+                           Rps_ObjectRef obindex;
+                           Rps_Value vdest;
+                           Rps_Value vindex;
+                           Rps_Value vnewval;
+                           Rps_Value voldval;
                 );
-  RPS_DEBUG_LOG(CMD, "REPL command put start arg0=" << arg0
-                << "∈" << arg0.compute_class(&_)
-                << " arg1=" << arg1
-                << "∈" << arg1.compute_class(&_) << std::endl
+  _f.a0 = arg0;
+  _f.a1 = arg1;
+  _f.a2 = arg2;
+  _f.obenv = rps_get_first_repl_environment();
+  RPS_DEBUG_LOG(CMD, "REPL command put start arg0=" << _f.a0
+                << "∈" << _f.a0.compute_class(&_)
+                << " arg1=" << _f.a1
+                << "∈" << _f.a1.compute_class(&_) << std::endl
+                << " arg2=" << _f.a2
+                << "∈" << _f.a2.compute_class(&_) << std::endl
+                << " obenv:" << _f.obenv
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
-  RPS_DEBUG_LOG(REPL, "REPL command put start arg0=" << arg0
-                << "∈" << arg0.compute_class(&_)
-                << " arg1=" << arg1
-                << "∈" << arg1.compute_class(&_) << std::endl
+  RPS_DEBUG_LOG(REPL, "REPL command put start arg0=" << _f.a0
+                << "∈" << _f.a0.compute_class(&_)
+                << " arg1=" << _f.a1
+                << "∈" << _f.a1.compute_class(&_) << std::endl
+                << " arg2=" << _f.a2
+                << "∈" << _f.a2.compute_class(&_) << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
-
+  _f.vdest = rps_simple_evaluate_repl_expr(&_, _f.a0, _f.obenv);
+  RPS_DEBUG_LOG(REPL, "REPL command put destination vdest=" << _f.vdest);
+  _f.obdest = _f.vdest.as_object();
+  if (!_f.obdest)
+    {
+      RPS_WARNOUT("in REPL command put the destination vdest=" << _f.vdest << " is not an object" << std::endl
+                  << "index expression being a1=" << _f.a1);
+      return {nullptr,nullptr};
+    }
+  std::lock_guard<std::recursive_mutex> guobdest(*_f.obdest->objmtxptr());
+  _f.vindex = rps_simple_evaluate_repl_expr(&_, _f.a1, _f.obenv);
+  RPS_DEBUG_LOG(REPL, "REPL command put destination vdest=" << _f.vdest << " index vindex=" << _f.vindex);
+  _f.vnewval = rps_simple_evaluate_repl_expr(&_, _f.a2, _f.obenv);
+  RPS_DEBUG_LOG(REPL, "REPL command put destination vdest=" << _f.vdest  << " index vindex=" << _f.vindex
+                << " newvalue vnewval=" << _f.vnewval);
+  if (_f.vindex.is_object())
+    {
+      _f.obindex = _f.vindex.as_object();
+      if (_f.vnewval)
+        {
+          _f.obdest->put_attr(_f.obindex, _f.vnewval);
+          RPS_INFORMOUT("REPL command put obdest=" << _f.obdest << " attribute:" << _f.obindex
+                        << " new value:" << _f.vnewval);
+          return {_f.obdest, _f.vnewval};
+        }
+      else
+        {
+          _f.voldval = _f.obdest->get_attr1(&_, _f.obindex);
+          _f.obdest->remove_attr(_f.obindex);
+          RPS_INFORMOUT("REPL command put obdest=" << _f.obdest
+                        << " removed attribute:" << _f.obindex
+                        << " old value was:" << _f.voldval);
+          return {_f.obdest, _f.voldval};
+        }
+    }
+  else if (_f.vindex.is_int())
+    {
+    }
+  else
+    {
+      RPS_WARNOUT("in REPL command put obdest=" << _f.obdest  << std::endl
+                  << "with invalid index (not object or integer) being vindex=" << _f.vindex);
+      return {nullptr,nullptr};
+    }
 #warning incomplete rpsapply_28DGtmXCyOX02AuPLd for REPL command put
   RPS_WARNOUT("incomplete rpsapply_28DGtmXCyOX02AuPLd for REPL command put from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_28DGtmXCyOX02AuPLd for REPL command put"));
@@ -1349,17 +1413,27 @@ rpsapply_09ehnxiXQKo006cZer(Rps_CallFrame*callerframe,
   if (!descoid) descoid=Rps_Id("_09ehnxiXQKo006cZer");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
                            callerframe,
+                           Rps_Value a0;
+                           Rps_Value a1;
+                           Rps_Value destv;
+                           Rps_Value indexv;
+                           Rps_ObjectRef obenv;
+                           Rps_ObjectRef obdest;
+                           Rps_ObjectRef obattr;
                 );
-  RPS_DEBUG_LOG(CMD, "REPL command remove start arg0=" << arg0
-                << "∈" << arg0.compute_class(&_)
-                << " arg1=" << arg1
-                << "∈" << arg1.compute_class(&_) << std::endl
+  _f.a0 = arg0;
+  _f.a1 = arg1;
+  _f.obenv = rps_get_first_repl_environment();
+  RPS_DEBUG_LOG(CMD, "REPL command remove start arg0=" << _f.a0
+                << "∈" << _f.a0.compute_class(&_)
+                << " arg1=" << _f.a1
+                << "∈" << _f.a1.compute_class(&_) << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
-  RPS_DEBUG_LOG(REPL, "REPL command remove start arg0=" << arg0
-                << "∈" << arg0.compute_class(&_)
-                << " arg1=" << arg1
-                << "∈" << arg1.compute_class(&_) << std::endl
+  RPS_DEBUG_LOG(REPL, "REPL command remove start arg0=" << _f.a0
+                << "∈" << _f.a0.compute_class(&_)
+                << " arg1=" << _f.a1
+                << "∈" << _f.a1.compute_class(&_) << std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
 #warning incomplete rpsapply_09ehnxiXQKo006cZer for REPL command remove
