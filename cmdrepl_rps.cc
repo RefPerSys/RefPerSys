@@ -1240,7 +1240,7 @@ rps_get_first_repl_environment(void)
 /* C++ function _2TZNwgyOdVd001uasl for REPL command help*/
 extern "C" rps_applyingfun_t rpsapply_2TZNwgyOdVd001uasl;
 Rps_TwoValues
-rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe,
+rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe, /// REPL command help
                             const Rps_Value arg0,
                             const Rps_Value arg1,
                             [[maybe_unused]] const Rps_Value arg2,
@@ -1302,7 +1302,7 @@ rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe,
 /* C++ function _28DGtmXCyOX02AuPLd for REPL command put*/
 extern "C" rps_applyingfun_t rpsapply_28DGtmXCyOX02AuPLd;
 Rps_TwoValues
-rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe,
+rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe, // REPL command put dest index newval
                             const Rps_Value arg0,
                             const Rps_Value arg1,
                             const Rps_Value arg2,
@@ -1402,7 +1402,7 @@ rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe,
 /* C++ function _09ehnxiXQKo006cZer for REPL command remove*/
 extern "C" rps_applyingfun_t rpsapply_09ehnxiXQKo006cZer;
 Rps_TwoValues
-rpsapply_09ehnxiXQKo006cZer(Rps_CallFrame*callerframe,
+rpsapply_09ehnxiXQKo006cZer(Rps_CallFrame*callerframe, // REPL command remove dest index
                             const Rps_Value arg0,
                             const Rps_Value arg1,
                             [[maybe_unused]] const Rps_Value arg2,
@@ -1428,14 +1428,29 @@ rpsapply_09ehnxiXQKo006cZer(Rps_CallFrame*callerframe,
                 << "∈" << _f.a0.compute_class(&_)
                 << " arg1=" << _f.a1
                 << "∈" << _f.a1.compute_class(&_) << std::endl
+                << " obenv="<< _f.obenv
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
   RPS_DEBUG_LOG(REPL, "REPL command remove start arg0=" << _f.a0
                 << "∈" << _f.a0.compute_class(&_)
                 << " arg1=" << _f.a1
                 << "∈" << _f.a1.compute_class(&_) << std::endl
+                << " obenv="<< _f.obenv
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
+  _f.destv = rps_simple_evaluate_repl_expr(&_, _f.a0, _f.obenv);
+  RPS_DEBUG_LOG(REPL, "REPL command remove destination destv=" << _f.destv);
+  _f.obdest = _f.destv.as_object();
+  if (!_f.obdest)
+    {
+      RPS_WARNOUT("in REPL command remove the destination destv="
+                  << _f.destv << " is not an object" << std::endl
+                  << "index expression being a1=" << _f.a1);
+      return {nullptr,nullptr};
+    }
+  std::lock_guard<std::recursive_mutex> guobdest(*_f.obdest->objmtxptr());
+  _f.indexv = rps_simple_evaluate_repl_expr(&_, _f.a1, _f.obenv);
+  RPS_DEBUG_LOG(REPL, "REPL command remove destination destv=" << _f.destv << " indexv=" << _f.indexv);
 #warning incomplete rpsapply_09ehnxiXQKo006cZer for REPL command remove
   RPS_WARNOUT("incomplete rpsapply_09ehnxiXQKo006cZer for REPL command remove from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_09ehnxiXQKo006cZer for REPL command remove"));
@@ -1447,7 +1462,7 @@ rpsapply_09ehnxiXQKo006cZer(Rps_CallFrame*callerframe,
 /* C++ function _9LCCu7TQI0Z0166mw3 for REPL command append*/
 extern "C" rps_applyingfun_t rpsapply_9LCCu7TQI0Z0166mw3;
 Rps_TwoValues
-rpsapply_9LCCu7TQI0Z0166mw3(Rps_CallFrame*callerframe,
+rpsapply_9LCCu7TQI0Z0166mw3(Rps_CallFrame*callerframe, /// REPL command append dest comp
                             const Rps_Value arg0,
                             const Rps_Value arg1,
                             [[maybe_unused]] const Rps_Value arg2,
@@ -1484,7 +1499,7 @@ rpsapply_9LCCu7TQI0Z0166mw3(Rps_CallFrame*callerframe,
 /* C++ function _982LHCTfHdC02o4a6Q for REPL command add_root*/
 extern "C" rps_applyingfun_t rpsapply_982LHCTfHdC02o4a6Q;
 Rps_TwoValues
-rpsapply_982LHCTfHdC02o4a6Q(Rps_CallFrame*callerframe,
+rpsapply_982LHCTfHdC02o4a6Q(Rps_CallFrame*callerframe, /// REPL command add_root
                             const Rps_Value arg0,
                             const Rps_Value arg1,
                             [[maybe_unused]] const Rps_Value arg2,
@@ -1518,7 +1533,7 @@ rpsapply_982LHCTfHdC02o4a6Q(Rps_CallFrame*callerframe,
 /* C++ function _2G5DNSyfWoP002Vv6X for REPL command remove_root*/
 extern "C" rps_applyingfun_t rpsapply_2G5DNSyfWoP002Vv6X;
 Rps_TwoValues
-rpsapply_2G5DNSyfWoP002Vv6X(Rps_CallFrame*callerframe,
+rpsapply_2G5DNSyfWoP002Vv6X(Rps_CallFrame*callerframe, // REPL command remove_root
                             const Rps_Value arg0,
                             const Rps_Value arg1,
                             [[maybe_unused]] const Rps_Value arg2,
