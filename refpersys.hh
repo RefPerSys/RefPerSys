@@ -2930,6 +2930,9 @@ class Rps_CinTokenSource : public Rps_TokenSource
 public:
   virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
   {
+    if (depth > maxdepth && &out != &std::cout && &out != &std::cerr && &out != &std::clog)
+      RPS_WARNOUT("Rps_CinTokenSource " << name()
+		  << " depth=" << depth << " greater than maxdepth=" << maxdepth);
     out << "CinTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count();
   };
   Rps_CinTokenSource();
@@ -2946,6 +2949,9 @@ public:
   Rps_StreamTokenSource(std::string path);
   virtual void output(std::ostream&out, unsigned depth, unsigned maxdepth) const
   {
+    if (depth > maxdepth)
+      RPS_WARNOUT("Rps_StreamTokenSource " << name()
+		  << " depth=" << depth << " greater than maxdepth=" << maxdepth);
     out << "StreamTokenSource" << name() << '@' << position_str() << " tok.cnt:" << token_count();
   };
   virtual ~Rps_StreamTokenSource();
@@ -3070,7 +3076,7 @@ public:
   };
   virtual bool equal(const Rps_ZoneValue&zv) const;
   virtual bool less(const Rps_ZoneValue&zv) const;
-#warning probably obsolete Rps_LexTokenZone::{lexical_line_getter_fun,tokenize} functions
+#pragma message "probably obsolete Rps_LexTokenZone::{lexical_line_getter_fun,tokenize} functions"
   /// The signature of a function to retrieve the next line....  on
   /// purpose close to existing rps_repl_get_next_line in our C++ file
   /// repl_rps.cc...
@@ -3768,7 +3774,7 @@ public:
   {
     return cnt();
   };
-#pragma message perhaps Rps_TupleOb is incomplete
+#pragma message "perhaps Rps_TupleOb is incomplete"
   /// maybe we might need specialized and faster
   /// make1(Rps_ObjectRef) make2(Rps_ObjectRef,Rps_ObjectRef)
   /// and make3(Rps_ObjectRef,Rps_ObjectRef,Rps_ObjectRef) etc etc
