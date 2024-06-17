@@ -43,12 +43,23 @@
 ## same as MY_HEAD_LINES_THRESHOLD in do-scan-pkgconfig.c
 MY_HEAD_LINES_THRESHOLD=384
 
+if [ "$1" = '--help' ]; then
+    echo $0 usage to compile a RefPerSys plugin C++ code on Linux:
+    echo $0 "<plugin-C++-source-file>" "<output-shared-object>"
+    echo for example: $0 plugins_dir/rpsplug_createclass.cc /tmp/rpsplug_createclass.so
+    echo a later execution is: ./refpersys --plugin-after-load=/tmp/rpsplug_createclass.so
+    echo and is given in that plugins_dir/rpsplug_createclass.cc file :
+    /bin/head -20 plugins_dir/rpsplug_createclass.cc
+    exit
+fi
+
 cppfile=$1
 pluginfile=$2
 declare curdate;
 curdate=$(date +%c);
 declare pkglist;
 pkglist=""
+
 printf "start %s at %s: C++ file %s, plugin file %s in %s\n" $0 \
        "$curdate" $cppfile $pluginfile "$(/bin/pwd)" > /dev/stderr
 
