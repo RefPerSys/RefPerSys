@@ -106,6 +106,7 @@ public:
   void parse_manifest_file(void);
   void parse_user_manifest(const std::string&path);
   void first_pass_space(Rps_Id spacid);
+  void initialize_root_objects(void);
   void initialize_constant_objects(void);
   void second_pass_space(Rps_Id spacid);
   std::string string_of_loaded_file(const std::string& relpath);
@@ -466,6 +467,22 @@ rps_load_add_todo(Rps_Loader*ld,const std::function<void(Rps_Loader*)>& todofun)
 } // end rps_load_add_todo
 
 void
+Rps_Loader::initialize_root_objects(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+#define RPS_INSTALL_ROOT_OB(Oid) do {   \
+    if (!RPS_ROOT_OB(Oid))      \
+      RPS_ROOT_OB(Oid)        \
+  = find_object_by_oid(Rps_Id(#Oid)); \
+    RPS_ASSERT(RPS_ROOT_OB(Oid));   \
+  } while(0);
+#include "generated/rps-roots.hh"
+} // end Rps_Loader::initialize_root_objects
+
+
+
+
+void
 Rps_Loader::initialize_constant_objects(void)
 {
   std::lock_guard<std::recursive_mutex> gu(ld_mtx);
@@ -783,13 +800,18 @@ Rps_Loader::load_all_state_files(void)
   RPS_DEBUG_LOG(LOAD, "Rps_Loader::load_all_state_files start this@" << (void*)this
                 << std::endl << RPS_FULL_BACKTRACE_HERE(0, "RpsLoader::load_all_state_files"));
   int spacecnt1 = 0, spacecnt2 = 0;
+  Rps_Id initialspaceid("_8J6vNYtP5E800eCr5q"); //"initial_space"∈space
+  first_pass_space(initialspaceid);
+  spacecnt1++;
+  initialize_root_objects();
   int todocount = 0;
   for (Rps_Id spacid: ld_spaceset)
     {
-      first_pass_space(spacid);
+      if (spacid != initialspaceid)
+        first_pass_space(spacid);
       spacecnt1++;
     }
-  RPS_NOPRINTOUT("loaded " << spacecnt1 << " space files in first pass");
+  RPS_INFORMOUT("loaded " << spacecnt1 << " space files in first pass");
   initialize_constant_objects();
   /// conceptually, the second pass might be done in parallel
   /// (multi-threaded, with different threads working on different
