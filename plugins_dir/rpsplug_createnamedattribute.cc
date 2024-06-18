@@ -1,7 +1,7 @@
 // see http://refpersys.org/
 // passed to commits after  9d1db4092 (of July 13, 2023)
 // GPLv3+ licensed
-// © Copyright 2023 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright 2023 - 2024 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys named attribute
 /*****
 
@@ -96,6 +96,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./build-plugin.sh plugins/rpsplug_createnamedattribute.cc /tmp/rpsplug_createnamedattribute.so" ;;
+ ** compile-command: "cd ..; ./build-plugin.sh plugins_dir/rpsplug_createnamedattribute.cc /tmp/rpsplug_createnamedattribute.so" ;;
  ** End: ;;
  ****************/
