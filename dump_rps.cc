@@ -6,7 +6,7 @@
  *      This file is part of the Reflective Persistent System.
  *
  *      It has the code for dumping the persistent store, in JSON
- *      format.  See also http://json.org/ &
+ *      format, and also emit some C++ files.  See also http://json.org/ &
  *      https://github.com/open-source-parsers/jsoncpp/
  *
  * Author(s):

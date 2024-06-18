@@ -47,11 +47,13 @@ const char rps_cppgen_date[]= __DATE__;
 //// return true on successful C++ code generation
 bool
 rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
-                            Rps_ObjectRef obmodule)
+                            Rps_ObjectRef argobmodule,
+                            Rps_Value arggenparam)
 {
   RPS_LOCALFRAME(nullptr,
                  callerframe,
                  Rps_ObjectRef obmodule;
+                 Rps_Value vgenparam;
                  Rps_ObjectRef obgenerator;
                  Rps_ObjectRef obincludeset;
                  Rps_ObjectRef obcurinclude;
@@ -63,9 +65,10 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  Rps_Value vtype;
                 );
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
-  RPS_ASSERT(obmodule);
-  _f.obmodule = obmodule;
-  std::lock_guard<std::recursive_mutex> gumodule(*obmodule->objmtxptr());
+  RPS_ASSERT(argobmodule);
+  _f.obmodule = argobmodule;
+  _f.vgenparam = arggenparam;
+  std::lock_guard<std::recursive_mutex> gumodule(*_f.obmodule->objmtxptr());
   _f.obgenerator =
     Rps_ObjectRef::make_object(&_,
                                RPS_ROOT_OB(_2yzD3HZ6VQc038ekBU)//midend_cplusplus_code_generator∈class
@@ -131,7 +134,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
     }
   else
     RPS_FATALOUT("in rps_generate_cplusplus_code obmodule="
-                 << obmodule << " obgenerator=" << _f.obgenerator
+                 << _f.obmodule << " obgenerator=" << _f.obgenerator
                  << "unexpected include=" << _f.vinclude);
 #warning missing code in rps_generate_cplusplus_code
 } // end rps_generate_cplusplus_code

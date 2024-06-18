@@ -5263,9 +5263,11 @@ extern "C" void rps_garbcoll_application(Rps_GarbageCollector&gc);
 
 /// approved on Whatsapp by Abishek Chakravarti on July, 24, 2023
 extern "C" bool rps_generate_lightning_code(Rps_CallFrame*callerframe,
-    Rps_ObjectRef obmodule);
+    Rps_ObjectRef obmodule,
+    Rps_Value genparamv=nullptr);
 extern "C" bool rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
-    Rps_ObjectRef obmodule);
+    Rps_ObjectRef obmodule,
+    Rps_Value genparamv=nullptr);
 
 
 ////................................................................
