@@ -989,7 +989,7 @@
 //∈the_system_class
 {
  "oid": "_1Io89yIORqn02SXx4p",
- "mtime": 1684953174.83,
+    "mtime": 1718709791.50,
  "attrs" : [
   	{
   		"at" : "_1EBVGSfW2m200z18rx",
@@ -998,7 +998,12 @@
   	{
   		"at" : "_5LMLyzRp6kq04AMM8a",
   		"va" : "_1QftoFojCHM00P7pQU"
-  	}
+  	},
+     //// handwritten
+     { "at" : "_2aNcYqKwdDR01zp0Xp", //"constant"∈named_attribute
+       "va" : { "vtype" : "set",
+		"elem" : [ "_41OFI3r0S1t03qdB2E", "_9uwZtDshW4401x6MsY" ]
+       }}
   ],
  "class" : "_10YXWeY7lYc01RpQTA",
  "payload" : "symbol",
