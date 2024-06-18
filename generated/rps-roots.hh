@@ -140,8 +140,10 @@ RPS_INSTALL_ROOT_OB(_9uwZtDshW4401x6MsY) //space∈symbol
 RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
 
+
+	RPS_INSTALL_ROOT_OB(_2aNcYqKwdDR01zp0Xpr) //"constant"∈named_attribute
 #undef RPS_NB_ROOT_OB
-#define RPS_NB_ROOT_OB 109
+#define RPS_NB_ROOT_OB 110
 
 #undef RPS_INSTALL_ROOT_OB
 /// end of RefPerSys roots file generated/rps-roots.hh

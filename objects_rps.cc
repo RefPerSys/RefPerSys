@@ -972,6 +972,7 @@ Rps_ObjectZone::replace_component_at ([[maybe_unused]] Rps_CallFrame*stkf, int r
     }
   if (dontfail)
     throw std::range_error("Rps_ObjectZone::component_at index out of range");
+  return nullptr;
 } // end Rps_ObjectZone::replace_component_at
 
 void
