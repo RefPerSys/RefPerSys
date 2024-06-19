@@ -971,9 +971,21 @@ Rps_Dumper::write_generated_roots_file(void)
           (*pouts) << '"' << Rps_Cjson_String(nameval.to_cppstring()) << '"';
         (*pouts) << "∈" << claclapayl->class_name_str();
       };
+    if (rootcnt % 10 == 0) {
+      char cntbuf[6];
+      memset (cntbuf, 0, sizeof(cntbuf));
+      snprintf(cntbuf, sizeof(cntbuf), "⁑%04d", rootcnt);
+      (*pouts) << ' ' << cntbuf;
+    }
     (*pouts) << std::endl;
     rootcnt++;
   });
+  /// output a 100 star comments to ease GNU emacs rectangle facilities
+  {
+    *pouts << "/";
+    for (int k=0; k<100; k++) *pouts << "*";
+    *pouts << "/" << std::endl;
+  }
   *pouts << std::endl
          << "#undef RPS_NB_ROOT_OB" << std::endl
          << "#define RPS_NB_ROOT_OB " << rootcnt << std::endl;
