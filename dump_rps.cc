@@ -937,7 +937,7 @@ Rps_Dumper::write_generated_roots_file(void)
         char cntbuf[32];
         memset (cntbuf, 0, sizeof(cntbuf));
         snprintf(cntbuf, sizeof(cntbuf), "~#°%04d", rootcnt);
-	(*pouts) << std::endl << "///" << cntbuf << std::endl;
+        (*pouts) << std::endl << "///" << cntbuf << std::endl;
       };
     RPS_ASSERT(obr);
     (*pouts) << "RPS_INSTALL_ROOT_OB(" << obr->oid() << ") //";
