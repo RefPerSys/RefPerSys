@@ -971,15 +971,15 @@ Rps_Dumper::write_generated_roots_file(void)
           (*pouts) << '"' << Rps_Cjson_String(nameval.to_cppstring()) << '"';
         (*pouts) << "∈" << claclapayl->class_name_str();
       };
+    rootcnt++;
     if (rootcnt % 10 == 0)
       {
         char cntbuf[32];
         memset (cntbuf, 0, sizeof(cntbuf));
-        snprintf(cntbuf, sizeof(cntbuf), "⁑%04d", rootcnt);
+        snprintf(cntbuf, sizeof(cntbuf), "~#°%04d", rootcnt);
         (*pouts) << ' ' << cntbuf;
-      }
+      };
     (*pouts) << std::endl;
-    rootcnt++;
   });
   /// output a 100 star comments to ease GNU emacs rectangle facilities
   {
