@@ -378,7 +378,7 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
     return std::string(nullptr);
   if (shellpatt[0] == '~')
     {
-      wordexp_t wx = {0};
+      wordexp_t wx = {};
       int err = wordexp(shellpatt, &wx, WRDE_NOCMD|WRDE_UNDEF);
       if (err)
         {
@@ -393,7 +393,7 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
       if (wx.we_wordc==1)
         {
           char*rp = realpath(wx.we_wordv[0], nullptr);
-          struct stat rs= {0};
+          struct stat rs= {};
           wordfree(&wx);
           if (stat(rp, &rs) || (rs.st_mode & S_IFMT)!=S_IFREG
               || access(rp, R_OK))
@@ -412,7 +412,7 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
   else if (shellpatt[0] == '/')
     {
       /// absolute file path
-      glob_t g = {0};
+      glob_t g = {};
       if (glob(shellpatt, GLOB_ERR|GLOB_MARK|GLOB_TILDE_CHECK, nullptr, &g))
         {
           globfree(&g);
@@ -424,7 +424,7 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
           return std::string(nullptr);
         }
       char*rp = realpath(g.gl_pathv[0], nullptr);
-      struct stat rs= {0};
+      struct stat rs= {};
       globfree(&g);
       if (stat(rp, &rs) || (rs.st_mode & S_IFMT)!=S_IFREG
           || access(rp, R_OK))
@@ -447,7 +447,7 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
         if (colon) curdir=std::string(pc, colon-pc-1);
         else curdir=std::string(pc);
         /// absolute file path
-        glob_t g = {0};
+        glob_t g = {};
         std::string curpatt = curdir + "/" + shellpatt;
         if (glob(curpatt.c_str(), GLOB_ERR|GLOB_MARK, nullptr, &g))
           {
@@ -460,7 +460,7 @@ rps_glob_plain_file_path(const char*shellpatt, const char*dirpath)
             return std::string(nullptr);
           }
         char*rp = realpath(g.gl_pathv[0], nullptr);
-        struct stat rs= {0};
+        struct stat rs= {};
         globfree(&g);
         if (stat(rp, &rs) || (rs.st_mode & S_IFMT)!=S_IFREG
             || access(rp, R_OK))
