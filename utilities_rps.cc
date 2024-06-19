@@ -802,17 +802,17 @@ rps_early_initialization(int argc, char** argv)
   if (argc > 1
       && !strncmp(argv[1], "--debug=", strlen("--debug=")))
     {
-      rps_set_debug(argv[1]+strlen("--debug="));
+      rps_add_debug_cstr(argv[1]+strlen("--debug="));
     }
   else if (argc > 1 && argv[1][0]=='-' && argv[1][1]==RPSPROGOPT_DEBUG)
     {
-      rps_set_debug(argv[1]+2);
+      rps_add_debug_cstr(argv[1]+2);
     };
   // also use REFPERSYS_DEBUG
   {
     const char*debugenv = getenv("REFPERSYS_DEBUG");
     if (debugenv)
-      rps_set_debug(debugenv);
+      rps_add_debug_cstr(debugenv);
   }
   // For weird reasons, the program arguments are parsed more than
   // once... We don't care that much in practice...
@@ -883,9 +883,9 @@ rps_early_initialization(int argc, char** argv)
   pthread_setname_np(pthread_self(), "rps-main");
   // hack to handle debug flag as first program argument
   if (argc>1 && !strncmp(argv[1], "--debug=", strlen("--debug=")))
-    rps_set_debug(std::string(argv[1]+strlen("--debug=")));
+    rps_add_debug_cstr((argv[1]+strlen("--debug=")));
   if (argc>1 && !strncmp(argv[1], "-d", strlen("-d")))
-    rps_set_debug(std::string(argv[1]+strlen("-d")));
+    rps_add_debug_cstr((argv[1]+strlen("-d")));
   ///
   if (rps_syslog_enabled && rps_debug_flags != 0)
     openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
@@ -920,7 +920,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     {
     case RPSPROGOPT_DEBUG:
     {
-      rps_set_debug(std::string(arg));
+      rps_add_debug_cstr(arg);
     }
     return 0;
     case RPSPROGOPT_DEBUG_PATH:
@@ -1768,7 +1768,29 @@ rps_initialize_symbols_after_loading(Rps_Loader*ld)
 } // end of rps_initialize_symbols_after_loading
 
 ///////////////////////////////////////////////////////// debugging support
-/// X macro tricks used twice below... see en.wikipedia.org/wiki/X_Macro
+/// X macro tricks used below... see en.wikipedia.org/wiki/X_Macro
+
+bool
+rps_is_set_debug(const std::string &curlev)
+{
+  if (curlev.empty()) return false;
+#define Rps_IS_SET_DEBUG(Opt) else if (curlev == #Opt) \
+    return  rps_debug_flags & (1 << RPS_DEBUG_##Opt);
+  RPS_DEBUG_OPTIONS(Rps_IS_SET_DEBUG);
+#undef Rps_IS_SET_DEBUG
+  return false;
+} // end rps_is_set_debug
+
+Rps_Debug
+rps_debug_of_string(const std::string &deblev)
+{
+  if (deblev.empty()) return RPS_DEBUG__NONE;
+#define Rps_TEST_DEBUG(Opt) else if (deblev == #Opt) return RPS_DEBUG_##Opt;
+  RPS_DEBUG_OPTIONS(Rps_TEST_DEBUG);
+#undef Rps_TEST_DEBUG
+  return RPS_DEBUG__NONE;
+} // end rps_debug_of_string
+
 bool
 rps_set_debug_flag(const std::string &curlev)
 {
@@ -1850,6 +1872,12 @@ rps_set_debug(const std::string &deblev)
 
   RPS_DEBUG_LOG(MISC, "rps_debug_flags=" << rps_debug_flags);
 } // end rps_set_debug
+
+void
+rps_add_debug_cstr(const char*d)
+{
+  rps_set_debug(std::string(d));
+} // end rps_add_debug_cstr
 
 void
 rps_output_debug_flags(std::ostream&out,  unsigned flags)
