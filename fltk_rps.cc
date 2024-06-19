@@ -567,9 +567,9 @@ Rps_FltkMainWindow::fill_main_window(void)
                               FL_MENU_TOGGLE);          \
       Fl_Menu_Item*item##Dbgopt =                       \
         const_cast<Fl_Menu_Item*>                       \
-	(_mainwin_menubar->menu()+rk##Dbgopt);		\
-      _mainwin_rank_dbgopt[(int)RPS_DEBUG_##Dbgopt] =	\
-	rk##Dbgopt;					\
+  (_mainwin_menubar->menu()+rk##Dbgopt);    \
+      _mainwin_rank_dbgopt[(int)RPS_DEBUG_##Dbgopt] = \
+  rk##Dbgopt;         \
       if (RPS_DEBUG_ENABLED(Dbgopt))                    \
         item##Dbgopt->set();                            \
       else                                              \
