@@ -656,12 +656,17 @@ Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
   else if (!strcmp((const char*)data, "d_")) // debug clear
     {
 #warning unimplemented debug clear
-      RPS_WARNOUT("unimplemented debug clear rps_fltk_debugwin@" << (void*)rps_fltk_debugwin);
+      RPS_WARNOUT("unimplemented debug clear rps_fltk_debugwin@"
+                  << (void*)rps_fltk_debugwin << " data=" << (const char*)data);
     }
   else if (!strncmp((const char*)data, "d:", 2)
            && isalpha(((const char*)data)[2])) // debug set
     {
-      RPS_WARNOUT("unimplemented debug set " << (const char*)data);
+      Rps_Debug dbgopt = rps_debug_of_string(std::string{(const char*)data+2});
+      RPS_WARNOUT("unimplemented debug set " << (const char*)data << " dbgopt#" << (int)dbgopt
+                  << "=" << rps_cstr_of_debug(dbgopt)
+                  << " menitem#"
+                  << rps_fltk_mainwin->_mainwin_rank_dbgopt[(int)dbgopt]);
     }
   else
     {
