@@ -1385,7 +1385,7 @@ rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe, // REPL command put dest 
       _f.voldval = _f.obdest->component_at (&_, (int)ix);
       _f.obdest->replace_component_at(&_, (int)ix, _f.vnewval);
       RPS_INFORMOUT("REPL command replaced in obdest=" << _f.obdest << " at index " << ix
-		    << " component by " << _f.vnewval << " old value was " << _f.voldval);
+                    << " component by " << _f.vnewval << " old value was " << _f.voldval);
       return {_f.obdest, _f.voldval};
     }
   else
@@ -1396,8 +1396,8 @@ rpsapply_28DGtmXCyOX02AuPLd(Rps_CallFrame*callerframe, // REPL command put dest 
     }
 #warning incomplete rpsapply_28DGtmXCyOX02AuPLd for REPL command put
   RPS_WARNOUT("rpsapply_28DGtmXCyOX02AuPLd for REPL command put obdest=" << _f.obdest
-	      << " index=" << _f.vindex
-	      << " called from " << std::endl
+              << " index=" << _f.vindex
+              << " called from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_28DGtmXCyOX02AuPLd for REPL command put"));
   return {nullptr,nullptr};
 } //end of rpsapply_28DGtmXCyOX02AuPLd for REPL command put
@@ -1478,8 +1478,8 @@ rpsapply_9LCCu7TQI0Z0166mw3(Rps_CallFrame*callerframe, /// REPL command append d
   if (!descoid) descoid=Rps_Id("_9LCCu7TQI0Z0166mw3");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
                            callerframe,
-		 Rps_Value a0dest;
-		 Rps_Value a1comp;
+                           Rps_Value a0dest;
+                           Rps_Value a1comp;
                 );
   _f.a0dest = arg0;
   _f.a1comp = arg1;

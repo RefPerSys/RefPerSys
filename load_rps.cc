@@ -609,9 +609,9 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                  )
                 {
                   auto atobr =  Rps_ObjectRef(entjson["at"], this);
-		  RPS_ASSERT(atobr);
+                  RPS_ASSERT(atobr);
                   auto atval = Rps_Value(entjson["va"], this);
-		  RPS_ASSERT(atval);
+                  RPS_ASSERT(atval);
                   obz->loader_put_attr(this, atobr, atval);
                 }
             }
@@ -911,7 +911,7 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
         }))
       {
         *this = Rps_ObjectValue(Rps_ObjectRef(jv, ld));
-	RPS_ASSERT(*this);
+        RPS_ASSERT(*this);
         return;
       }
       *this = Rps_StringValue(str);
@@ -933,7 +933,7 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
       if (str == "set" && siz==2 && jv.isMember("elem")
           && (jcomp=jv["elem"]).isArray())
         {
-	  subsiz = jcomp.size();
+          subsiz = jcomp.size();
           std::set<Rps_ObjectRef> setobr;
           for (int ix=0; ix<(int)subsiz; ix++)
             {
@@ -947,7 +947,7 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
       else if (str == "tuple" && siz==2 && jv.isMember("elem")
                && (jcomp=jv["comp"]).isArray())
         {
-	  subsiz = jcomp.size();
+          subsiz = jcomp.size();
           std::vector<Rps_ObjectRef> vecobr;
           vecobr.reserve(subsiz);
           for (int ix=0; ix<(int)siz; ix++)
