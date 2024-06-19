@@ -609,7 +609,9 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                  )
                 {
                   auto atobr =  Rps_ObjectRef(entjson["at"], this);
+		  RPS_ASSERT(atobr);
                   auto atval = Rps_Value(entjson["va"], this);
+		  RPS_ASSERT(atval);
                   obz->loader_put_attr(this, atobr, atval);
                 }
             }
@@ -877,6 +879,7 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
   std::int64_t i=0;
   std::string str = "";
   std::size_t siz=0;
+  std::size_t subsiz=0;
   Json::Value jcomp;
   Json::Value jvtype;
   if (jv.isInt64())
@@ -900,7 +903,7 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
   else if (jv.isString())
     {
       str = jv.asString();
-      if (str.size() == Rps_Id::nbchars && str[0] == '_'
+      if (str.size() == Rps_Id::nbchars && str[0] == '_' && isalnum(str[1])
           && std::all_of(str.begin()+1, str.end(),
                          [](char c)
       {
@@ -908,6 +911,7 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
         }))
       {
         *this = Rps_ObjectValue(Rps_ObjectRef(jv, ld));
+	RPS_ASSERT(*this);
         return;
       }
       *this = Rps_StringValue(str);
@@ -924,12 +928,14 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
            && ((jvtype=jv["vtype"]).isString())
            && !(str=jvtype.asString()).empty())
     {
+      siz = jv.size();
+      RPS_POSSIBLE_BREAKPOINT();
       if (str == "set" && siz==2 && jv.isMember("elem")
-          && (jcomp=jv["elem"]).isArray()
-          && (siz=jcomp.size()))
+          && (jcomp=jv["elem"]).isArray())
         {
+	  subsiz = jcomp.size();
           std::set<Rps_ObjectRef> setobr;
-          for (int ix=0; ix<(int)siz; ix++)
+          for (int ix=0; ix<(int)subsiz; ix++)
             {
               auto obrelem = Rps_ObjectRef(jcomp[ix], ld);
               if (obrelem)
@@ -939,11 +945,11 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
           return;
         }
       else if (str == "tuple" && siz==2 && jv.isMember("elem")
-               && (jcomp=jv["comp"]).isArray()
-               && (siz=jcomp.size()))
+               && (jcomp=jv["comp"]).isArray())
         {
+	  subsiz = jcomp.size();
           std::vector<Rps_ObjectRef> vecobr;
-          vecobr.reserve(siz);
+          vecobr.reserve(subsiz);
           for (int ix=0; ix<(int)siz; ix++)
             {
               auto obrcomp = Rps_ObjectRef(jcomp[ix], ld);
@@ -974,10 +980,10 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
           RPS_NOPRINTOUT("closure funobr=" << funobr);
           if (jenv.isArray())
             {
-              auto siz = jenv.size();
+              subsiz = jenv.size();
               std::vector<Rps_Value> vecenv;
-              vecenv.reserve(siz+1);
-              for (int ix=0; ix <(int)siz; ix++)
+              vecenv.reserve(subsiz+1);
+              for (int ix=0; ix <(int)subsiz; ix++)
                 {
                   auto curval = Rps_Value(jenv[ix], ld);
                   vecenv.push_back(curval);
@@ -997,10 +1003,10 @@ Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)
               return;
             }
           else
-            RPS_WARNOUT("Rps_Value::Rps_Value bad closure funobr=" << funobr);
+            RPS_WARNOUT("Rps_Value::Rps_Value bad closure funobr=" << funobr << " jv=" << jv);
         }
       else
-        RPS_WARNOUT("strange Rps_Value::Rps_Value str=" << str);
+        RPS_WARNOUT("strange Rps_Value::Rps_Value siz=" << siz << " str=" << str << " jv=" << jv);
     }
 #warning Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld) unimplemented
   RPS_WARNOUT("unimplemented Rps_Value::Rps_Value(const Json::Value &jv, Rps_Loader*ld)" << std::endl
