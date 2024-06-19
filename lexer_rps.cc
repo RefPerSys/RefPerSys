@@ -387,7 +387,7 @@ Rps_MemoryFileTokenSource::Rps_MemoryFileTokenSource(const std::string path)
   RPS_ASSERT(pgsiz == 1L<<logpgsiz);
   size_t mappedsize = fsiz;
   if (mappedsize & (( 1L<<logpgsiz)-1))
-    mappedsize = (mappedsize | ( 1L<<logpgsiz)-1) + 1;
+    mappedsize = (mappedsize | ((1L<<logpgsiz)-1)) + 1;
   RPS_ASSERT(mappedsize % pgsiz == 0);
   void* ad = mmap(nullptr, mappedsize, PROT_READ, MAP_PRIVATE, fd, mappedsize);
   if (ad == MAP_FAILED)
@@ -431,8 +431,10 @@ Rps_MemoryFileTokenSource::get_line(void)
 void
 Rps_MemoryFileTokenSource::output(std::ostream&out, unsigned depth, unsigned maxdepth) const
 {
-#warning unimplemented Rps_MemoryFileTokenSource::output
-  out << "Rps_MemoryFileTokenSource@" << (void*)this << " path:" << toksrcmfil_path
+#warning incomplete Rps_MemoryFileTokenSource::output
+  out << "Rps_MemoryFileTokenSource@" << (void*)this
+      << "(" << Rps_Cjson_String(name()) << ")"
+      << " path:" << Rps_Cjson_String(toksrcmfil_path)
       // << " offset:" <<
       << std::endl;
 } // end Rps_MemoryFileTokenSource::output
