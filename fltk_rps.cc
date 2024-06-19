@@ -317,6 +317,7 @@ protected:
   static void menu_cb(Fl_Widget*w, void*data);
   static void close_cb(Fl_Widget*w, void*data);
 public:
+  int _mainwin_rank_dbgopt[(int)RPS_DEBUG__LAST+2];
   Rps_FltkMainWindow(int x, int y, int w, int h, const char*title);
   Rps_FltkMainWindow(int w, int h, const char*title);
   virtual ~Rps_FltkMainWindow();
@@ -544,6 +545,9 @@ Rps_FltkMainWindow::fill_main_window(void)
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window"
                 << " w=" << w() << ",h=" << h());
+  for (int ix=0;
+       ix<sizeof(_mainwin_rank_dbgopt)/sizeof(_mainwin_rank_dbgopt[0]); ix++)
+    _mainwin_rank_dbgopt[ix] = -1;
   this->begin();
   //////////// the menubar
   {
@@ -563,7 +567,9 @@ Rps_FltkMainWindow::fill_main_window(void)
                               FL_MENU_TOGGLE);          \
       Fl_Menu_Item*item##Dbgopt =                       \
         const_cast<Fl_Menu_Item*>                       \
-  (_mainwin_menubar->menu()+rk##Dbgopt);                \
+	(_mainwin_menubar->menu()+rk##Dbgopt);		\
+      _mainwin_rank_dbgopt[(int)RPS_DEBUG_##Dbgopt] =	\
+	rk##Dbgopt;					\
       if (RPS_DEBUG_ENABLED(Dbgopt))                    \
         item##Dbgopt->set();                            \
       else                                              \
@@ -655,7 +661,6 @@ Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
   else if (!strncmp((const char*)data, "d:", 2)
            && isalpha(((const char*)data)[2])) // debug set
     {
-#warning unimplemented debug set
       RPS_WARNOUT("unimplemented debug set " << (const char*)data);
     }
   else
@@ -864,7 +869,7 @@ rps_fltk_run (void)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run"));
   RPS_ASSERT(rps_is_main_thread());
-  constexpr double minimal_wait_delay = 0.75;
+  constexpr double minimal_wait_delay = 1.25;;
   constexpr double plain_wait_delay = 16.0;
   if (rps_run_delay > 0.0)
     {
@@ -939,16 +944,16 @@ rps_fltk_printf_inform_message(const char*file, int line, const char*funcname, l
 {
   va_list args;
   char*msg = nullptr;
-  char buf[256];
+  char buf[512];
   memset(buf, 0, sizeof(buf));
   va_start (args, fmt);
   int l = vsnprintf(buf, sizeof(buf), fmt, args);
-  if (l>=sizeof(buf)-1)
+  if (l>=(int)sizeof(buf)-1)
     {
-      l=(l|0xf)+1;
+      l=((l+7)|0xf)+1;
       msg = (char*)malloc(l);
       if (msg == nullptr)
-        RPS_FATAL("rps_fltk_printf_inform_message [%s:%d:%s/%s](#%ld) failed to malloc %d bytes",
+        RPS_FATAL("rps_fltk_printf_inform_message [%s:%d:%s](#%ld) <%s> failed to malloc %d bytes",
                   file, line, funcname, count, fmt, l);
       memset (msg, 0, l);
       (void)  vsnprintf(msg, l, fmt, args);
@@ -956,16 +961,17 @@ rps_fltk_printf_inform_message(const char*file, int line, const char*funcname, l
     }
   else
     msg = buf;
-  rps_fltk_show_debug_message(file,line,funcname, RPS_INFORM_MSG_LEVEL,
+  rps_fltk_show_debug_message(file,line,funcname,
+                              (Rps_Debug)RPS_INFORM_MSG_LEVEL,
                               count,msg);
-  if (msg && msg != buf)
+  if (msg != buf)
     free(msg);
 } // end rps_fltk_printf_inform_message
 
 
 void
 rps_fltk_show_debug_message(const char*file, int line, const char*funcname,
-                            int dbgopt, long dbgcount, const char*msg)
+                            Rps_Debug dbgopt, long dbgcount, const char*msg)
 {
   RPS_ASSERT(file != nullptr);
   RPS_ASSERT(line != 0);
