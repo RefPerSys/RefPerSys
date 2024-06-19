@@ -234,6 +234,21 @@ else
 	git push $(RPS_GIT_MIRROR) master
 endif
 	$(SYNC)
+
+load_rps.o: load_rps.cc refpersys.hh \
+            generated/rps-constants.hh  generated/rps-names.hh generated/rps-roots.hh |GNUmakefile
+	echo dollar-less-F is $(<F)
+	echo basename-dollar-less-F is $(basename $(<F))
+	echo pkglist-refpersys is $(PKGLIST_refpersys)
+	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
+	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
+               $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
+               -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
+               -DRPS_SHORTGITID=\"$(RPS_SHORTGIT_ID)\" \
+	       -c -o $@ $<
+	$(SYNC)
+
 %_rps.o: %_rps.cc refpersys.hh
 	echo dollar-less-F is $(<F)
 	echo basename-dollar-less-F is $(basename $(<F))
