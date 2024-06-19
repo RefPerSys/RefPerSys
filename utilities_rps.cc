@@ -1879,6 +1879,19 @@ rps_add_debug_cstr(const char*d)
   rps_set_debug(std::string(d));
 } // end rps_add_debug_cstr
 
+
+const char*
+rps_cstr_of_debug(Rps_Debug dbglev)
+{
+  switch (dbglev) {
+#define Rps_CSTR_DEBUG(Lev) case RPS_DEBUG_##Lev: return #Lev;
+    RPS_DEBUG_OPTIONS(Rps_CSTR_DEBUG);
+#undef Rps_CSTR_DEBUG
+  default:;
+  }
+   return nullptr;
+} // end rps_cstr_of_debug
+
 void
 rps_output_debug_flags(std::ostream&out,  unsigned flags)
 {
