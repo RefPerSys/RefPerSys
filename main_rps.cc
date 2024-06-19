@@ -481,7 +481,7 @@ rps_run_loaded_application(int &argc, char **argv)
   /// if told, enable extra debugging after load
   if (rps_debugflags_after_load)
     {
-      rps_set_debug(rps_debugflags_after_load);
+      rps_add_debug_cstr(rps_debugflags_after_load);
       RPS_INFORMOUT("did set after load "
                     << " of RefPerSys process " << (int)getpid() << std::endl
                     << "… on " << rps_hostname()
@@ -1290,7 +1290,7 @@ rps_debug_printf_at(const char *fname, int fline, const char*funcname, Rps_Debug
         fflush(nullptr);
       }
     if (rps_fltk_enabled())
-      rps_fltk_show_debug_message(fname, fline,funcname, (int)dbgopt, ndbg, msg);
+      rps_fltk_show_debug_message(fname, fline,funcname, dbgopt, ndbg, msg);
     //
     pthread_mutex_unlock(&rps_debug_mutex);
   }
@@ -1362,6 +1362,7 @@ main (int argc, char** argv)
     helpwanted = true;
   if (argc>1 && !strcmp(argv[1], "--version"))
     versionwanted = true;
+  rps_stdout_istty = isatty(STDOUT_FILENO);
   static_assert(sizeof(rps_progexe) > 80);
   {
     memset(rps_progexe, 0, sizeof(rps_progexe));
@@ -1396,27 +1397,33 @@ main (int argc, char** argv)
   ///
   static char cwdbuf[rps_path_byte_size];
   char *mycwd = getcwd(cwdbuf, sizeof(cwdbuf)-2);
-  RPS_INFORM("%s%s" "!-!-! starting RefPerSys !-!-!" "%s" //
-             " %s process %d on host %s in %s build top dir %s\n" //
-             "… (stdout %s, stderr %s) with %d arguments\n" //
-             "… gitid %.16s branch %s built %s,\n… %s mode (%d jobs)\n" ///
-             "… executable %s version %d.%d\n" ///
-             "… This is an open source inference engine software,\n"
-             "…  GPLv3+ licensed, no warranty !\n"
-             "…  See http://refpersys.org/ and https://www.gnu.org/licenses/gpl-3.0.en.html ....\n",
-             RPS_TERMINAL_BOLD_ESCAPE, RPS_TERMINAL_BLINK_ESCAPE,
-             RPS_TERMINAL_NORMAL_ESCAPE,
-             argv[0], (int)getpid(), rps_hostname(),
-             (mycwd?mycwd:"./"),
-             rps_topdirectory,
-             rps_stdout_istty?"tty":"plain",
-             rps_stderr_istty?"tty":"plain",
-             argc,
-             rps_gitid, rps_gitbranch, rps_timestamp,
-             (rps_batch?"batch":"interactive"),
-             rps_nbjobs,
-             rps_progexe,
-             rps_get_major_version(), rps_get_minor_version());
+  if (rps_stdout_istty)
+    {
+      std::cout << std::endl
+                << RPS_TERMINAL_BOLD_ESCAPE << RPS_TERMINAL_BLINK_ESCAPE
+                << "!-!-! starting RefPerSys !-!-!"
+                << RPS_TERMINAL_NORMAL_ESCAPE << std::endl;
+    }
+  else
+    {
+      std::cout << std::endl
+                << "!-!-! starting RefPerSys !-!-!" << std::endl;
+    };
+  RPS_INFORMOUT(argv[0] << " process " <<  (int)getpid() << " on " << rps_hostname()
+                << " in " << Rps_Cjson_String(mycwd?mycwd:"./") <<std::endl
+                << "executable " << rps_progexe << " git " << rps_shortgitid
+                << " version " << rps_get_major_version()
+                << "." << rps_get_minor_version()
+                << std::endl
+                << "built " << rps_timestamp << std::endl
+                << (rps_batch?"batch":"interactive")
+                << " (" << rps_nbjobs << " jobs)" << std::endl
+                <<             "… This is an open source inference engine software,\n"
+                "…  GPLv3+ licensed, no warranty !\n"
+                "…  See refpersys.org and https://www.gnu.org/licenses/ ....\n"
+                << "fullgit " << rps_gitid << " branch " << rps_gitbranch
+                << std::endl
+                << RPS_OUT_PROGARGS(argc, argv) << std::endl);
   if (!mycwd)
     RPS_FATALOUT("getcwd failed for " << (sizeof(cwdbuf)-2) << " bytes.");
   if (rps_run_delay > 0 && rps_batch)
