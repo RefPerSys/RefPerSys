@@ -555,6 +555,7 @@ Rps_FltkMainWindow::fill_main_window(void)
   //////////// the menubar
   {
     _mainwin_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
+    RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window _mainwin_menubar@" << (void*)_mainwin_menubar);
     _mainwin_menubar->add("&App/e&Xit", "^x", menu_cb, (void*)"X");
     _mainwin_menubar->add("&App/&Quit", "^q", menu_cb, (void*)"Q");
     _mainwin_menubar->add("&App/&Dump", "^d", menu_cb, (void*)"D");
@@ -574,6 +575,7 @@ Rps_FltkMainWindow::fill_main_window(void)
       _mainwin_rank_dbgopt[(int)RPS_DEBUG_##Dbgopt] =	\
 	rk##Dbgopt;					\
       RPS_DEBUG_LOG(REPL, "Rpsfltk_debug " #Dbgopt	\
+		    << "#" << (int)RPS_DEBUG_##Dbgopt   \
                     << " rk#" << rk##Dbgopt		\
 		    << " menitm@"			\
 		    << (void*)item##Dbgopt);		\
