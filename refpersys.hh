@@ -3283,8 +3283,6 @@ public:
   void append_comp2(Rps_Value comp0, Rps_Value comp1);
   void append_comp3(Rps_Value comp0, Rps_Value comp1, Rps_Value comp2);
   void append_comp4(Rps_Value comp0, Rps_Value comp1, Rps_Value comp2, Rps_Value comp4);
-  /// return the old value, don't grow the component vector
-  Rps_Value replace_comp_at(Rps_CallFrame*stkf, int rk, Rps_Value comp0, bool dontfail=false);
   void append_components(const std::initializer_list<Rps_Value>&compil);
   void append_components(const std::vector<Rps_Value>&compvec);
   unsigned nb_components(Rps_CallFrame*stkf) const;
