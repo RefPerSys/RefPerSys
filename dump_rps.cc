@@ -973,7 +973,7 @@ Rps_Dumper::write_generated_roots_file(void)
       };
     if (rootcnt % 10 == 0)
       {
-        char cntbuf[6];
+        char cntbuf[32];
         memset (cntbuf, 0, sizeof(cntbuf));
         snprintf(cntbuf, sizeof(cntbuf), "⁑%04d", rootcnt);
         (*pouts) << ' ' << cntbuf;
