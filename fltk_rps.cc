@@ -544,9 +544,12 @@ void
 Rps_FltkMainWindow::fill_main_window(void)
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window"
-                << " w=" << w() << ",h=" << h());
+                << " w=" << w() << ",h=" << h() << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow/fill_main_window"));
+  constexpr int nbopt = sizeof(_mainwin_rank_dbgopt)/sizeof(_mainwin_rank_dbgopt[0]);
   for (int ix=0;
-       ix<sizeof(_mainwin_rank_dbgopt)/sizeof(_mainwin_rank_dbgopt[0]); ix++)
+       ix<nbopt;
+       ix++)
     _mainwin_rank_dbgopt[ix] = -1;
   this->begin();
   //////////// the menubar
@@ -567,9 +570,13 @@ Rps_FltkMainWindow::fill_main_window(void)
                               FL_MENU_TOGGLE);          \
       Fl_Menu_Item*item##Dbgopt =                       \
         const_cast<Fl_Menu_Item*>                       \
-  (_mainwin_menubar->menu()+rk##Dbgopt);    \
-      _mainwin_rank_dbgopt[(int)RPS_DEBUG_##Dbgopt] = \
-  rk##Dbgopt;         \
+  (_mainwin_menubar->menu()+rk##Dbgopt);		\
+      _mainwin_rank_dbgopt[(int)RPS_DEBUG_##Dbgopt] =	\
+	rk##Dbgopt;					\
+      RPS_DEBUG_LOG(REPL, "Rpsfltk_debug " #Dbgopt	\
+                    << " rk#" << rk##Dbgopt		\
+		    << " menitm@"			\
+		    << (void*)item##Dbgopt);		\
       if (RPS_DEBUG_ENABLED(Dbgopt))                    \
         item##Dbgopt->set();                            \
       else                                              \
@@ -578,7 +585,7 @@ Rps_FltkMainWindow::fill_main_window(void)
     ///
     RPS_DEBUG_OPTIONS(RPSFLTK_DEBUG);
 #undef RPSFLTK_DEBUG
-  }
+  };
   /////////////
   _mainwin_vflex = new Fl_Flex(0, 25, w(), h()-26);
   {
