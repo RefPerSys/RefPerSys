@@ -931,6 +931,14 @@ Rps_Dumper::write_generated_roots_file(void)
   //  std::ofstream& out = *pouts;
   rps_each_root_object([=, &pouts, &rootcnt](Rps_ObjectRef obr)
   {
+    rootcnt++;
+    if (rootcnt % 10 == 0)
+      {
+        char cntbuf[32];
+        memset (cntbuf, 0, sizeof(cntbuf));
+        snprintf(cntbuf, sizeof(cntbuf), "~#°%04d", rootcnt);
+	(*pouts) << std::endl << "///" << cntbuf << std::endl;
+      };
     RPS_ASSERT(obr);
     (*pouts) << "RPS_INSTALL_ROOT_OB(" << obr->oid() << ") //";
     std::lock_guard<std::recursive_mutex> guobr(*(obr->objmtxptr()));
@@ -970,14 +978,6 @@ Rps_Dumper::write_generated_roots_file(void)
         if (nameval.is_string())
           (*pouts) << '"' << Rps_Cjson_String(nameval.to_cppstring()) << '"';
         (*pouts) << "∈" << claclapayl->class_name_str();
-      };
-    rootcnt++;
-    if (rootcnt % 10 == 0)
-      {
-        char cntbuf[32];
-        memset (cntbuf, 0, sizeof(cntbuf));
-        snprintf(cntbuf, sizeof(cntbuf), "~#°%04d", rootcnt);
-        (*pouts) << ' ' << cntbuf;
       };
     (*pouts) << std::endl;
   });
