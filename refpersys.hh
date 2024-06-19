@@ -139,6 +139,48 @@
 #include "generated/rpsdata.h"
 
 
+/// keep the debug options in alphabetical order
+#define RPS_DEBUG_OPTIONS(dbgmacro) \
+  dbgmacro(CMD)                     \
+  dbgmacro(CODEGEN)                 \
+  dbgmacro(COMPL_REPL)              \
+  dbgmacro(DUMP)                    \
+  dbgmacro(EVENT_LOOP)              \
+  dbgmacro(GARBAGE_COLLECTOR)       \
+  dbgmacro(GUI)                     \
+  dbgmacro(LOAD)                    \
+  dbgmacro(LOWREP)                  \
+  dbgmacro(LOW_REPL)                \
+  dbgmacro(MISC)                    \
+  dbgmacro(MSGSEND)                 \
+  dbgmacro(PARSE)                   \
+  dbgmacro(PARSE_STRING)            \
+  dbgmacro(PROGARG)                 \
+  dbgmacro(REPL)                    \
+  /*end RPS_DEBUG_OPTIONS*/
+
+#define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
+
+/// passed to rps_fltk_show_debug_message as the debug level for
+/// warning, inform, fatal
+constexpr int RPS_INFORM_MSG_LEVEL= -1;
+constexpr int RPS_WARNING_MSG_LEVEL= -2;
+constexpr int RPS_FATAL_MSG_LEVEL= -3;
+
+
+
+enum Rps_Debug
+{
+  RPS_DEBUG__FATAL_MSG_LEVEL=  RPS_FATAL_MSG_LEVEL /*ie -3*/,
+  RPS_DEBUG__WARNING_MSG_LEVEL=  RPS_WARNING_MSG_LEVEL /*ie -2*/,
+  RPS_DEBUG__INFORM_MSG_LEVEL= RPS_INFORM_MSG_LEVEL /*ie -1*/,
+  RPS_DEBUG__NONE= 0,
+  // expands to RPS_DEBUG_CMD, RPS_DEBUG_DUMP, RPS_DEBUG_GARBAGE_COLLECTOR...
+  RPS_DEBUG_OPTIONS(RPS_DEBUG_OPTION_DEFINE)
+  RPS_DEBUG__LAST,
+  RPS_DEBUG__EVERYTHING=0xffff,
+};
+
 // forward declaration
 class Rps_ProtoCallFrame;
 typedef Rps_ProtoCallFrame Rps_CallFrame;
@@ -155,7 +197,7 @@ extern "C" void rps_fltk_run (void);
 extern "C" void rps_fltk_stop (void);
 extern "C" void rps_fltk_flush (void);
 extern "C" void rps_fltk_show_debug_message(const char*file, int line, const char*funcname,
-    int dbgopt, long dbgcount,
+    Rps_Debug dbgopt, long dbgcount,
     const char*msg);
 extern "C" void rps_fltk_printf_inform_message(const char*file, int line, const char*funcname, long dbgcount,
     const char*fmt, ...)
@@ -708,45 +750,6 @@ extern "C" void rps_set_debug(const std::string &deblev);
 
 // output a set of debug flags, or rps_debug_flags if flag is zero...
 extern "C" void rps_output_debug_flags(std::ostream&out, unsigned flags=0);
-
-/// keep the debug options in alphabetical order
-#define RPS_DEBUG_OPTIONS(dbgmacro) \
-  dbgmacro(CMD)                     \
-  dbgmacro(CODEGEN)                 \
-  dbgmacro(COMPL_REPL)              \
-  dbgmacro(DUMP)                    \
-  dbgmacro(EVENT_LOOP)              \
-  dbgmacro(GARBAGE_COLLECTOR)       \
-  dbgmacro(GUI)                     \
-  dbgmacro(LOAD)                    \
-  dbgmacro(LOWREP)                  \
-  dbgmacro(LOW_REPL)                \
-  dbgmacro(MISC)                    \
-  dbgmacro(MSGSEND)                 \
-  dbgmacro(PARSE)                   \
-  dbgmacro(PARSE_STRING)            \
-  dbgmacro(PROGARG)                 \
-  dbgmacro(REPL)                    \
-  /*end RPS_DEBUG_OPTIONS*/
-
-#define RPS_DEBUG_OPTION_DEFINE(dbgopt) RPS_DEBUG_##dbgopt,
-
-/// passed to rps_fltk_show_debug_message as the debug level for
-/// warning, inform, fatal
-constexpr int RPS_INFORM_MSG_LEVEL= -1;
-constexpr int RPS_WARNING_MSG_LEVEL= -2;
-constexpr int RPS_FATAL_MSG_LEVEL= -3;
-
-
-
-enum Rps_Debug
-{
-  RPS_DEBUG__NONE,
-  // expands to RPS_DEBUG_CMD, RPS_DEBUG_DUMP, RPS_DEBUG_GARBAGE_COLLECTOR...
-  RPS_DEBUG_OPTIONS(RPS_DEBUG_OPTION_DEFINE)
-  RPS_DEBUG__LAST,
-  RPS_DEBUG__EVERYTHING=0xffff,
-};
 
 /// add or remove a comma or space separated list of debug flags
 extern "C" void rps_add_debug_cstr(const char*);
