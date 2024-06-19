@@ -1806,12 +1806,12 @@ rps_set_debug_flag(const std::string &curlev)
   ///
   /* second X macro trick for processing several comma-separated debug flags, in all cases as else if branch  */
   ///
-#define Rps_SET_DEBUG(Opt)            \
-  else if (curlev == #Opt) {            \
-    bool alreadygiven = rps_debug_flags & (1 << RPS_DEBUG_##Opt); \
-    rps_debug_flags |= (1 << RPS_DEBUG_##Opt);        \
-    goodflag = true;              \
-    if (!alreadygiven)              \
+#define Rps_SET_DEBUG(Opt)						\
+  else if (curlev == #Opt) {						\
+    bool alreadygiven = rps_debug_flags & (1 << RPS_DEBUG_##Opt);	\
+    rps_debug_flags |= (1 << RPS_DEBUG_##Opt);				\
+    goodflag = true;							\
+    if (!alreadygiven)							\
       RPS_INFORMOUT("setting debugging flag " << #Opt);  }
   ///
   RPS_DEBUG_OPTIONS(Rps_SET_DEBUG);
