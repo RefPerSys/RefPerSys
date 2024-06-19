@@ -139,9 +139,10 @@ RPS_INSTALL_ROOT_OB(_9j12Nhm4itk00YYUW7) //repl_operator∈class
 RPS_INSTALL_ROOT_OB(_9uwZtDshW4401x6MsY) //space∈symbol
 RPS_INSTALL_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
 RPS_INSTALL_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
+/// added manually:
+RPS_INSTALL_ROOT_OB(_2aNcYqKwdDR01zp0Xpr) //"constant"∈named_attribute
 
 
-	RPS_INSTALL_ROOT_OB(_2aNcYqKwdDR01zp0Xpr) //"constant"∈named_attribute
 #undef RPS_NB_ROOT_OB
 #define RPS_NB_ROOT_OB 110
 
