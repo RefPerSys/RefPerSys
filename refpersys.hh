@@ -746,8 +746,8 @@ extern "C" void rps_publish_me(const char*url);
 // https://github.com/bstarynk/melt-monitor/blob/master/meltmoni.hh#L278
 ///////////////////////////////////////////////////////////////////////////////
 
-extern "C" void rps_set_debug(const std::string &deblev);
-
+extern "C" bool rps_is_set_debug(const std::string &deblev);
+extern "C" Rps_Debug rps_debug_of_string(const std::string &deblev);
 // output a set of debug flags, or rps_debug_flags if flag is zero...
 extern "C" void rps_output_debug_flags(std::ostream&out, unsigned flags=0);
 
@@ -832,14 +832,14 @@ rps_debug_printf_at(const char *fname, int fline,const char*funcname, Rps_Debug 
 __attribute__ ((format (printf, 5, 6)));
 
 
-#define RPS_DEBUG_PRINTF_AT(fname, fline, dbgopt, fmt, ...)      \
-do                                                               \
-  {                                                              \
-    if (RPS_DEBUG_ENABLED(dbgopt))                               \
-      rps_debug_printf_at(fname, fline,__FUNCTION__,     \
-        RPS_DEBUG_##dbgopt, fmt,     \
-                          ##__VA_ARGS__);                        \
-  }                                                              \
+#define RPS_DEBUG_PRINTF_AT(fname, fline, dbgopt, fmt, ...)	\
+do								\
+  {								\
+    if (RPS_DEBUG_ENABLED(dbgopt))				\
+      rps_debug_printf_at(fname, fline,__FUNCTION__,		\
+        RPS_DEBUG_##dbgopt, fmt,				\
+                          ##__VA_ARGS__);			\
+  }								\
 while (0)
 
 
