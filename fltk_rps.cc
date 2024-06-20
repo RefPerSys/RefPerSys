@@ -315,7 +315,8 @@ class Rps_FltkMainWindow: public Fl_Window
   std::array<std::shared_ptr<Fl_Menu_Item>,
       (std::size_t)(2+(int)RPS_DEBUG__LAST)>
       _mainwin_dbgmenuarr;
-  std::vector<std::string> _mainwin_strvect;
+  std::vector<std::string> _mainwin_stringvect;
+  std::vector<char*> _mainwin_cstrvect;
   void add_menu_item_for_debug_option(Rps_Debug dbg);
 protected:
   void fill_main_window(void);
@@ -325,6 +326,8 @@ protected:
 public:
   Rps_FltkMainWindow(int x, int y, int w, int h, const char*title);
   Rps_FltkMainWindow(int w, int h, const char*title);
+  const char* asprintf_mainwin(const char*fmt, ...)
+  __attribute__((format(printf, 2, 3))); /// since first arg is this
   virtual ~Rps_FltkMainWindow();
 };        // end Rps_FltkMainWindow;
 
@@ -520,10 +523,12 @@ Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 
 Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*title)
   : Fl_Window(x,y,w,h,title),
-    _mainwin_menubar(nullptr), _mainwin_vflex(nullptr), _mainwin_dbgmenuarr(), _mainwin_strvect()
+    _mainwin_menubar(nullptr), _mainwin_vflex(nullptr), _mainwin_dbgmenuarr(), _mainwin_stringvect(), _mainwin_cstrvect()
 {
-  constexpr int estimatenbstr = 32;
-  _mainwin_strvect.reserve(estimatenbstr);
+  constexpr int estimatenbstring = 20;
+  _mainwin_stringvect.reserve(estimatenbstring);
+  constexpr int estimatenbcstr = 32;
+  _mainwin_cstrvect.reserve(estimatenbcstr);
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow x=" << x << ",y=" << y
                 << ",w=" << w << ",h=" << h
                 << ",title=" << Rps_Cjson_String(title)
@@ -551,8 +556,26 @@ Rps_FltkMainWindow::Rps_FltkMainWindow(int w, int h, const char*title)
 void
 Rps_FltkMainWindow::register_mainwin_string(const std::string&s)
 {
-  _mainwin_strvect.push_back(s);
+  _mainwin_stringvect.push_back(s);
 } // end Rps_FltkMainWindow::register_mainwin_string
+
+const char*
+Rps_FltkMainWindow::asprintf_mainwin(const char*fmt, ...)
+{
+  char*res = nullptr;
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERT(fmt);
+  va_list args;
+  va_start (args, fmt);
+  int l = vasprintf(&res, fmt, args);
+  va_end (args);
+  if (l >= 0 && res)
+    {
+      _mainwin_cstrvect.push_back(res);
+      return res;
+    }
+  RPS_FATALOUT("Rps_FltkMainWindow::asprintf_mainwin fmt=\'" << Rps_Cjson_String(fmt) << "\' failed %m");
+} // end Rps_FltkMainWindow::asprintf_mainwin
 
 void
 Rps_FltkMainWindow::add_menu_item_for_debug_option(Rps_Debug dbglev)
@@ -617,14 +640,29 @@ Rps_FltkMainWindow::fill_main_window(void)
   }
   this->end();
   callback(close_cb, nullptr);
+  RPS_POSSIBLE_BREAKPOINT();
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window done w=" << w() << ",h=" << h());
 } // end Rps_FltkMainWindow::fill_main_window
 
 Rps_FltkMainWindow::~Rps_FltkMainWindow()
 {
+  RPS_POSSIBLE_BREAKPOINT();
+  size_t nbstring = _mainwin_stringvect.size();
+  _mainwin_stringvect.clear();
+  size_t nbcstr = _mainwin_cstrvect.size();
+  for (int i=0; i<(int)nbcstr; i++)
+    {
+      RPS_ASSERT(_mainwin_cstrvect[i]);
+      _mainwin_cstrvect[i][0] = (char)0;
+      free (_mainwin_cstrvect[i]);
+      _mainwin_cstrvect[i] = nullptr;
+    };
+  _mainwin_cstrvect.clear();
   RPS_DEBUG_LOG(REPL, "~Rps_FltkMainWindow @" << (void*)this
+                << " nbstring=" << nbstring << " nbcstr=" << nbcstr
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "~Rps_FltkMainWindow"));
+  RPS_POSSIBLE_BREAKPOINT();
 }; // end Rps_FltkMainWindow::~Rps_FltkMainWindow
 
 void
