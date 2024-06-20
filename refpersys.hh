@@ -271,6 +271,7 @@ typedef Rps_ProtoCallFrame Rps_CallFrame;
 
 constexpr unsigned rps_path_byte_size = 384;
 extern "C" char rps_bufpath_homedir[rps_path_byte_size];
+extern "C" char rps_loaded_directory[rps_path_byte_size];
 extern "C" char rps_debug_path[rps_path_byte_size];
 
 extern "C" int rps_get_major_version(void);

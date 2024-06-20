@@ -45,6 +45,9 @@ const char rps_load_gitid[]= RPS_GITID;
 extern "C" const char rps_load_date[];
 const char rps_load_date[]= __DATE__;
 
+extern "C" char rps_loaded_directory[rps_path_byte_size];
+char rps_loaded_directory[rps_path_byte_size];
+
 Json::Value
 rps_load_string_to_json(const std::string&str, const char*filnam, int lineno)
 {
@@ -1560,6 +1563,7 @@ void rps_load_from (const std::string& dirpath)
   snprintf(cputbuf, sizeof(cputbuf), "%.3f", cput);
   snprintf(realmicrobuf, sizeof(realmicrobuf), "%.3f", (realt*1.0e6)/nbloaded);
   snprintf(cpumicrobuf, sizeof(cpumicrobuf), "%.3f", (cput*1.0e6)/nbloaded);
+  strncpy(rps_loaded_directory, dirpath.c_str(), sizeof(rps_loaded_directory)-1);
   RPS_INFORMOUT("rps_load_from completed" << std::endl
                 << "... from directory " << dirpath
                 << " with RefPerSys built " << rps_timestamp << std::endl
