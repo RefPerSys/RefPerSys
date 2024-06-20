@@ -1942,4 +1942,39 @@ rps_run_after_event_loop(void)
   rps_aftevntloop_vec.clear();
 } // end rps_run_after_event_loop
 
+
+
+////////////////////////////////////////////////////////////////
+std::string
+rps_stringprintf(const char*fmt, ...)
+{
+  va_list args;
+  char smallbuf[128];
+  memset (smallbuf, 0, sizeof(smallbuf));
+  RPS_ASSERT(fmt);
+  va_start(args, fmt);
+  size_t l = vsnprintf(smallbuf, sizeof(smallbuf), fmt, args);
+  va_end(args);
+  if (l < sizeof(smallbuf)-4)
+    {
+      return std::string{smallbuf};
+    }
+  else
+    {
+      std::string res;
+      size_t ml = ((l+4)|0xf)+1;
+      char*buf = (char*)calloc(1, ml);
+      if (!buf)
+        RPS_FATALOUT("rps_stringprintf fmt " << fmt
+                     << " fail to calloc " << ml << " bytes");
+      va_start(args, fmt);
+      size_t ll =  vsnprintf(buf, ml, fmt, args);
+      RPS_ASSERT(ll == l);
+      va_end(args);
+      res=std::string(buf);
+      free(buf);
+      return res;
+    }
+} // end rps_stringprintf
+
 //// end of file utilities_rps.cc

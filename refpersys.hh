@@ -278,6 +278,7 @@ extern "C" int rps_get_minor_version(void);
 #define RPS_MAJOR_VERSION_NUM 0
 #define RPS_MINOR_VERSION_NUM 6
 
+
 extern "C" std::map<std::string,std::string> rps_pluginargs_map;
 extern "C" std::string rps_cpluspluseditor_str;
 extern "C" std::string rps_cplusplusflags_str;
@@ -291,6 +292,9 @@ extern "C" char* rps_run_command_after_load;
 extern "C" char* rps_debugflags_after_load;
 
 extern "C" std::string rps_run_name;
+
+extern "C" std::string rps_stringprintf(const char*fmt, ...)
+__attribute__((format (printf, 1, 2))); // in utilities_rps.cc
 
 extern "C" {
 
