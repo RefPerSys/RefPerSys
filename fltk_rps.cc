@@ -564,13 +564,14 @@ Rps_FltkMainWindow::add_menu_item_for_debug_option(Rps_Debug dbglev)
   register_mainwin_string(datastr);
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::add_menu_item_for_debug_option dbglev#"
                 << (int)dbglev << ":" << rps_cstr_of_debug(dbglev)
-                << " dbgitstr:" << dbgitstr
-                << " datastr:" << datastr
+                << " dbgitstr:" << dbgitstr << "@" << ((void*)(dbgitstr.c_str()))
+                << " datastr:" << datastr << "@" << ((void*)(datastr.c_str()))
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,
                     "Rps_FltkMainWindow::add_menu_item_for_debug_option"));
   _mainwin_menubar->add(dbgitstr.c_str(),
                         nullptr, menu_cb, (void*) datastr.c_str());
+  RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_FltkMainWindow::add_menu_item_for_debug_option
 
 void
