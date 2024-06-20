@@ -315,9 +315,11 @@ class Rps_FltkMainWindow: public Fl_Window
   std::array<std::shared_ptr<Fl_Menu_Item>,
       (std::size_t)(2+(int)RPS_DEBUG__LAST)>
       _mainwin_dbgmenuarr;
+  std::vector<std::string> _mainwin_strvect;
   void add_menu_item_for_debug_option(Rps_Debug dbg);
 protected:
   void fill_main_window(void);
+  void register_mainwin_string(const std::string&str);
   static void menu_cb(Fl_Widget*w, void*data);
   static void close_cb(Fl_Widget*w, void*data);
 public:
@@ -518,8 +520,10 @@ Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 
 Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*title)
   : Fl_Window(x,y,w,h,title),
-    _mainwin_menubar(nullptr), _mainwin_vflex(nullptr), _mainwin_dbgmenuarr()
+    _mainwin_menubar(nullptr), _mainwin_vflex(nullptr), _mainwin_dbgmenuarr(), _mainwin_strvect()
 {
+  constexpr int estimatenbstr = 32;
+  _mainwin_strvect.reserve(estimatenbstr);
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow x=" << x << ",y=" << y
                 << ",w=" << w << ",h=" << h
                 << ",title=" << Rps_Cjson_String(title)
@@ -541,27 +545,32 @@ Rps_FltkMainWindow::Rps_FltkMainWindow(int w, int h, const char*title)
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow/wh"));
 }; // end Rps_FltkMainWindow::Rps_FltkMainWindow
 
+
+// This internal function is needed for memory management purposes, to
+// be sure the data inside the strings is kept allocated
+void
+Rps_FltkMainWindow::register_mainwin_string(const std::string&s)
+{
+  _mainwin_strvect.push_back(s);
+} // end Rps_FltkMainWindow::register_mainwin_string
+
 void
 Rps_FltkMainWindow::add_menu_item_for_debug_option(Rps_Debug dbglev)
 {
-  char dbgtitbuf[80];
-  char databuf[64];
-  memset (dbgtitbuf, 0, sizeof(dbgtitbuf));
-  memset (databuf, 0, sizeof(databuf));
   RPS_POSSIBLE_BREAKPOINT();
-  snprintf(dbgtitbuf, sizeof(dbgtitbuf), "Debug/%s", rps_cstr_of_debug(dbglev));
-  snprintf(databuf, sizeof(databuf), "d:%s", rps_cstr_of_debug(dbglev));
+  std::string dbgitstr = rps_stringprintf("Debug/%s", rps_cstr_of_debug(dbglev));
+  std::string datastr = rps_stringprintf("d:%s", rps_cstr_of_debug(dbglev));
+  register_mainwin_string(dbgitstr);
+  register_mainwin_string(datastr);
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::add_menu_item_for_debug_option dbglev#"
                 << (int)dbglev << ":" << rps_cstr_of_debug(dbglev)
-                << " dbgtitbuf:" << dbgtitbuf
-                << " databuf:" << databuf
+                << " dbgitstr:" << dbgitstr
+                << " datastr:" << datastr
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,
                     "Rps_FltkMainWindow::add_menu_item_for_debug_option"));
-  /// NB: both dbgtitbuf and databuf are strdup-ed and we hope strdup
-  /// succeeds and we don't care about the memory leak...
-  _mainwin_menubar->add(strdup(dbgtitbuf),
-                        nullptr, menu_cb, strdup(databuf));
+  _mainwin_menubar->add(dbgitstr.c_str(),
+                        nullptr, menu_cb, (void*) datastr.c_str());
 } // end Rps_FltkMainWindow::add_menu_item_for_debug_option
 
 void
