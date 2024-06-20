@@ -1545,7 +1545,12 @@ main (int argc, char** argv)
                 << "… built " << rps_timestamp
                 << " loaded state " << rps_my_load_dir << std::endl
                 << " elapsed " << rps_elapsed_real_time()
-                << ", cpu " << rps_process_cpu_time() << " seconds;"
+                << ", cpu " << rps_process_cpu_time() << " seconds;" << std::endl
+		<< "Final debug flags:" 
+                << Rps_Do_Output([&](std::ostream& out)
+		{
+		  rps_output_debug_flags(out);
+		}) << std::endl
                 << " invocation was:" << std::endl
                 << RPS_OUT_PROGARGS(argc, argv) << std::endl
                 << Rps_Do_Output([&](std::ostream& out)
