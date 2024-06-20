@@ -312,13 +312,15 @@ class Rps_FltkMainWindow: public Fl_Window
 {
   Fl_Menu_Bar* _mainwin_menubar;
   Fl_Flex* _mainwin_vflex;
+  std::array<std::shared_ptr<Fl_Menu_Item>,
+      (std::size_t)(2+(int)RPS_DEBUG__LAST)>
+      _mainwin_dbgmenuarr;
   void add_menu_item_for_debug_option(Rps_Debug dbg);
 protected:
   void fill_main_window(void);
   static void menu_cb(Fl_Widget*w, void*data);
   static void close_cb(Fl_Widget*w, void*data);
 public:
-  int _mainwin_rank_dbgopt[(int)RPS_DEBUG__LAST+2];
   Rps_FltkMainWindow(int x, int y, int w, int h, const char*title);
   Rps_FltkMainWindow(int w, int h, const char*title);
   virtual ~Rps_FltkMainWindow();
@@ -516,7 +518,7 @@ Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 
 Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*title)
   : Fl_Window(x,y,w,h,title),
-    _mainwin_menubar(nullptr), _mainwin_vflex(nullptr)
+    _mainwin_menubar(nullptr), _mainwin_vflex(nullptr), _mainwin_dbgmenuarr()
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow x=" << x << ",y=" << y
                 << ",w=" << w << ",h=" << h
@@ -537,7 +539,6 @@ Rps_FltkMainWindow::Rps_FltkMainWindow(int w, int h, const char*title)
                 << " @" << (void*)this
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow/wh"));
-  fill_main_window();
 }; // end Rps_FltkMainWindow::Rps_FltkMainWindow
 
 void
@@ -552,15 +553,15 @@ Rps_FltkMainWindow::add_menu_item_for_debug_option(Rps_Debug dbglev)
   snprintf(databuf, sizeof(databuf), "d:%s", rps_cstr_of_debug(dbglev));
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::add_menu_item_for_debug_option dbglev#"
                 << (int)dbglev << ":" << rps_cstr_of_debug(dbglev)
-		<< " dbgtitbuf:" << dbgtitbuf
-		<< " databuf:" << databuf
+                << " dbgtitbuf:" << dbgtitbuf
+                << " databuf:" << databuf
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,
                     "Rps_FltkMainWindow::add_menu_item_for_debug_option"));
   /// NB: both dbgtitbuf and databuf are strdup-ed and we hope strdup
   /// succeeds and we don't care about the memory leak...
-  _mainwin_menubar->add(strdup(dbgtitbuf), 
-			nullptr, menu_cb, strdup(databuf));
+  _mainwin_menubar->add(strdup(dbgtitbuf),
+                        nullptr, menu_cb, strdup(databuf));
 } // end Rps_FltkMainWindow::add_menu_item_for_debug_option
 
 void
@@ -569,11 +570,6 @@ Rps_FltkMainWindow::fill_main_window(void)
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window"
                 << " w=" << w() << ",h=" << h() << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow/fill_main_window"));
-  constexpr int nbopt = sizeof(_mainwin_rank_dbgopt)/sizeof(_mainwin_rank_dbgopt[0]);
-  for (int ix=0;
-       ix<nbopt;
-       ix++)
-    _mainwin_rank_dbgopt[ix] = -1;
   this->begin();
   //////////// the menubar
   {
@@ -681,14 +677,10 @@ Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
            && isalpha(((const char*)data)[2])) // debug set
     {
       Rps_Debug dbgopt = rps_debug_of_string(std::string{(const char*)data+2});
-      int itemrk = rps_fltk_mainwin->_mainwin_rank_dbgopt[(int)dbgopt];
-      RPS_ASSERT(itemrk>=0 && itemrk<logicalsize);
-      Fl_Menu_Item*menuitem = const_cast<Fl_Menu_Item*>(rps_fltk_mainwin->_mainwin_menubar->menu()+itemrk);
-      RPS_WARNOUT("unimplemented debug set " << (const char*)data
-                  << " dbgopt#" << (int)dbgopt
-                  << "=" << rps_cstr_of_debug(dbgopt)
-                  << " menuitem#" << itemrk << "@" << (void*)menuitem
-                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow::menu_cb/dbgopt"));
+      if (dbgopt > RPS_DEBUG__NONE)
+        {
+#warning unimplemented menu_cb to set or clear debug option
+        }
     }
   else
     {
