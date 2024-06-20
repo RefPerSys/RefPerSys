@@ -572,28 +572,37 @@ Rps_FltkMainWindow::asprintf_mainwin(const char*fmt, ...)
   if (l >= 0 && res)
     {
       _mainwin_cstrvect.push_back(res);
+      RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::asprintf_mainwin #"
+                    << _mainwin_cstrvect.size()-1 << "@" << (void*)res
+                    << '"' << Rps_Cjson_String(res) << '"' << std::endl);
       return res;
     }
-  RPS_FATALOUT("Rps_FltkMainWindow::asprintf_mainwin fmt=\'" << Rps_Cjson_String(fmt) << "\' failed %m");
+  RPS_FATALOUT("Rps_FltkMainWindow::asprintf_mainwin fmt="
+               << "\'" << Rps_Cjson_String(fmt) << "\' failed %m");
 } // end Rps_FltkMainWindow::asprintf_mainwin
 
 void
 Rps_FltkMainWindow::add_menu_item_for_debug_option(Rps_Debug dbglev)
 {
   RPS_POSSIBLE_BREAKPOINT();
-  std::string dbgitstr = rps_stringprintf("Debug/%s", rps_cstr_of_debug(dbglev));
-  std::string datastr = rps_stringprintf("d:%s", rps_cstr_of_debug(dbglev));
-  register_mainwin_string(dbgitstr);
-  register_mainwin_string(datastr);
+  const char* dbgitcstr = asprintf_mainwin("Debug/%s", rps_cstr_of_debug(dbglev));
+  const char* datacstr = asprintf_mainwin("d:%s", rps_cstr_of_debug(dbglev));
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::add_menu_item_for_debug_option dbglev#"
                 << (int)dbglev << ":" << rps_cstr_of_debug(dbglev)
-                << " dbgitstr:" << dbgitstr << "@" << ((void*)(dbgitstr.c_str()))
-                << " datastr:" << datastr << "@" << ((void*)(datastr.c_str()))
+                << " dbgitcstr:" << dbgitcstr << "@" << ((void*)(dbgitcstr))
+                << " datacstr:" << datacstr << "@" << ((void*)(datacstr))
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1,
                     "Rps_FltkMainWindow::add_menu_item_for_debug_option"));
-  _mainwin_menubar->add(dbgitstr.c_str(),
-                        nullptr, menu_cb, (void*) datastr.c_str());
+  int rk = _mainwin_menubar->add(dbgitcstr,
+                                 nullptr, menu_cb, (void*) datacstr,
+                                 FL_MENU_TOGGLE);
+  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::add_menu_item_for_debug_option rk="
+                << rk);
+  Fl_Menu_Item*mitem = const_cast<Fl_Menu_Item*>(_mainwin_menubar->menu()+rk);
+  RPS_ASSERT(mitem != nullptr);
+  if (rps_debug_flags & (1 << unsigned(dbglev)))
+    mitem->value(1);
   RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_FltkMainWindow::add_menu_item_for_debug_option
 
