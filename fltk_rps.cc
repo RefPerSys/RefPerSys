@@ -48,6 +48,7 @@
 #include <FL/platform.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Tile.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_Choice.H>
@@ -335,8 +336,12 @@ public:
 class Rps_FltkDebugWindow: public Fl_Window
 {
   Fl_Menu_Bar* _dbgwin_menubar;
-  Fl_Flex* _dbgwin_flex;
+  Fl_Tile* _dbgwin_tile;
+  Fl_Text_Buffer* _dbgwin_text_buffer;
+  Fl_Text_Display* _dbgwin_top_text_display;
+  Fl_Text_Display* _dbgwin_bottom_text_display;
   char _dbgwin_labuf[80];
+  void fill_debug_window(void);
 public:
   static constexpr int min_width=200;
   static constexpr int min_height=100;
@@ -781,29 +786,39 @@ Rps_FltkDebugWindow::Rps_FltkDebugWindow(int xx, int yy, int ww, int hh) :
             (snprintf((char*)memset(_dbgwin_labuf, 0, sizeof(_dbgwin_labuf)), sizeof(_dbgwin_labuf),
                       "refpersys-debug %s p%d@%s",
                       rps_shortgitid, (int)getpid(), rps_hostname()),
-             _dbgwin_labuf))
+             _dbgwin_labuf)),
+  _dbgwin_menubar(nullptr),
+  _dbgwin_tile(nullptr),
+  _dbgwin_text_buffer(nullptr),
+  _dbgwin_top_text_display(nullptr),
+  _dbgwin_bottom_text_display(nullptr)
 {
   RPS_ASSERT(rps_fltk_debugwin == nullptr);
   rps_fltk_debugwin = this;
   RPS_DEBUG_LOG(REPL, "Rps_FltkDebugWindow@" << (void*)this
                 << " x=" << x() << ",y=" << y() << ",w=" << w() << "h=" << h() << " lab:" << _dbgwin_labuf);
+  fill_debug_window();
 } // end Rps_FltkDebugWindow::Rps_FltkDebugWindow
 
 //////// Debug window implementation
 Rps_FltkDebugWindow::Rps_FltkDebugWindow(int ww, int hh)
-  : Fl_Window(17 + (Rps_Random::random_32u() % 32)*12,
-              18 + (Rps_Random::random_32u() % 32)*12,
-              (ww>min_width)?ww:min_width, (hh>min_height)?hh:min_height,
-              (snprintf((char*)memset(_dbgwin_labuf, 0, sizeof(_dbgwin_labuf)), sizeof(_dbgwin_labuf),
-                        "refpersys-debug %s p%d@%s",
-                        rps_shortgitid, (int)getpid(), rps_hostname()),
-               _dbgwin_labuf))
+  : Rps_FltkDebugWindow(17 + (Rps_Random::random_32u() % 32)*12,
+                        18 + (Rps_Random::random_32u() % 32)*12, ww, hh)
 {
   RPS_ASSERT(rps_fltk_debugwin == nullptr);
   rps_fltk_debugwin = this;
   RPS_DEBUG_LOG(REPL,  "Rps_FltkDebugWindow@" << (void*)this
                 << " x=" << x() << ",y=" << y() << ",w=" << w() << "h=" << h() << " lab:" << _dbgwin_labuf);
 } // end Rps_FltkDebugWindow::Rps_FltkDebugWindow
+
+void
+Rps_FltkDebugWindow::fill_debug_window(void)
+{
+  RPS_DEBUG_LOG(REPL, "Rps_FltkDebugWindow::fill_debug_window @"
+                << (void*)this);
+#warning unimplemented Rps_FltkDebugWindow::fill_debug_window
+  RPS_WARNOUT("unimplemented FltkDebugWindow::fill_debug_window");
+} // end Rps_FltkDebugWindow::fill_debug_window
 
 Rps_FltkDebugWindow::~Rps_FltkDebugWindow()
 {
