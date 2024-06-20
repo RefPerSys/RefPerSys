@@ -724,8 +724,10 @@ Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
   else if (!strcmp((const char*)data, "d+")) // debug show
     {
 #warning unimplemented debug show
+      RPS_DEBUG_LOG(REPL, "menu_cb debug show rps_fltk_debugwin@"
+		    << (void*)rps_fltk_debugwin);
       if (!rps_fltk_debugwin)
-        rps_fltk_debugwin = new Rps_FltkDebugWindow(600,400);
+        rps_fltk_debugwin = new Rps_FltkDebugWindow(670,480);
       rps_fltk_debugwin->show();
       RPS_WARNOUT("unimplemented debug show rps_fltk_debugwin@" << (void*)rps_fltk_debugwin);
     }
