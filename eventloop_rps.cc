@@ -305,6 +305,7 @@ rps_event_loop_remove_input_fd_handler(int fd)
   memcpy (rps_eventloopdata.eld_pollarr, new_pollarr, newlastix*sizeof(new_pollarr[0]));
   memcpy (rps_eventloopdata.eld_datarr, new_datarr, newlastix*sizeof(new_datarr[0]));
   rps_eventloopdata.eld_lastix = newlastix;
+  RPS_DEBUG_LOG(REPL, "rps_event_loop_remove_input_fd_handler fd#" << fd);
   if (rps_fltk_enabled())
     rps_fltk_remove_input_fd(fd);
 } // end rps_event_loop_remove_input_fd_handler
@@ -443,6 +444,7 @@ rps_event_loop_remove_output_fd_handler(int fd)
   memcpy (rps_eventloopdata.eld_datarr, new_datarr,
           newlastix*sizeof(new_datarr[0]));
   rps_eventloopdata.eld_lastix = newlastix;
+  RPS_DEBUG_LOG(REPL, "rps_event_loop_remove_output_fd_handler fd#" << fd);
   if (rps_fltk_enabled())
     rps_fltk_remove_output_fd(fd);
 } // end rps_event_loop_remove_output_fd_handler
@@ -593,6 +595,11 @@ rps_initialize_event_loop(void)
     rps_initialize_jsonfifo_in_event_loop();
   if (rps_poll_delay_millisec==0)
     rps_poll_delay_millisec = RPS_EVENT_DEFAULT_POLL_DELAY_MILLISEC;
+  RPS_DEBUG_LOG(REPL, "rps_initialize_event_loop ended "
+                << (rps_fltk_enabled()?"with FLTK":"without-fltk")
+                << " polldelay=" << rps_poll_delay_millisec << " ms"
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_initialize_event_loop*ended"));
 } // end rps_initialize_event_loop
 
 
@@ -647,6 +654,10 @@ rps_event_loop(void)
   long pollcount=0;
   double startelapsedtime=rps_elapsed_real_time();
   double startcputime=rps_process_cpu_time();
+  RPS_DEBUG_LOG(REPL, "rps_event_loop starting elapsedtime=" << startelapsedtime
+                << " cputime=" << startcputime
+                << " thread:" << rps_current_pthread_name() << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/start"));
   std::array<std::function<void(Rps_CallFrame*, int/*fd*/, short /*revents*/)>,RPS_MAXPOLL_FD+1> handlarr;
   ///
   /// check that rps_event_loop is called exactly once from main
@@ -1030,6 +1041,10 @@ rps_event_loop(void)
                 << " git " << rps_shortgitid << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop")
                );
+  RPS_DEBUG_LOG(REPL, "rps_event_loop ended elapsedtime=" << startelapsedtime
+                << " cputime=" << startcputime
+                << " thread:" << rps_current_pthread_name() << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_event_loop/ended"));
 #undef EXPLAIN_EVFD_AT
 #undef EXPLAIN_EVFD_ATBIS
 #undef EXPLAIN_EVFD_RPS
