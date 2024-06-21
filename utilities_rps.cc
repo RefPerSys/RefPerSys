@@ -564,19 +564,34 @@ rps_show_version_handwritten_cplusplus_files(void)
         continue;
       const char* symgit = nullptr;
       const char* symdat = nullptr;
+      const char* symshortgit = nullptr;
       {
-        char cursymgit[80];
-        char cursymdat[80];
+        char cursymgit[64];
+        char cursymdat[64];
+        char cursymshortgit[80];
         memset (cursymgit, 0, sizeof(cursymgit));
         memset (cursymdat, 0, sizeof(cursymdat));
-        snprintf (cursymgit, sizeof(cursymgit), "rps_%s_shortgitid", curbase);
+        memset (cursymshortgit, 0, sizeof(cursymshortgit));
+        snprintf (cursymgit, sizeof(cursymgit), "rps_%s_gitid", curbase);
+        snprintf (cursymshortgit, sizeof(cursymgit), "rps_%s_shortgitid", curbase);
         snprintf (cursymdat, sizeof(cursymdat), "rps_%s_date", curbase);
         symgit = (const char*)dlsym(rps_proghdl, cursymgit);
         if (!symgit || !isalnum(symgit[0]))
           continue;
+        symshortgit = (const char*)dlsym(rps_proghdl, cursymshortgit);
+        if (!symshortgit || !isalnum(symgit[0]))
+          continue;
         symdat = (const char*)dlsym(rps_proghdl, cursymdat);
         if (!symdat || !isalnum(symdat[0]))
           continue;
+	if (symgit && symshortgit
+	    && strncmp(symgit, symshortgit, sizeof(rps_utilities_shortgitid)-2)) {
+	  /// this should not happen and is likely a bug in C++ files or build procedure
+	  RPS_POSSIBLE_BREAKPOINT();
+	  RPS_WARNOUT("perhaps corrupted " << curfile << " in topdir " << rps_topdirectory
+		      << " with " << cursymgit << "=" << symgit
+		      << " and " << cursymshortgit << "=" << symshortgit);
+	}
       };
       if (symgit && isalnum(symgit[0]) && symdat && isalnum(symdat[0]))
         {
