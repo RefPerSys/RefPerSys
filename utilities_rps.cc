@@ -337,7 +337,7 @@ rps_emit_gplv3_copyright_notice_AT(std::ostream&outs, //
   outs << linprefix << "_"
        << linsuffix << std::endl;
   outs << linprefix << "You should have received a copy of the GNU "
-       "General Public License"
+    "General Public License"
        << linsuffix << std::endl;
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
@@ -410,7 +410,7 @@ rps_emit_lgplv3_copyright_notice_AT(std::ostream&outs,//
   outs << linprefix << "_"
        << linsuffix << std::endl;
   outs << linprefix << "You should have received a copy of the GNU "
-       "Lesser General Public License"
+    "Lesser General Public License"
        << linsuffix << std::endl;
   outs << linprefix << "along with this program.  If not, see <http://www.gnu.org/licenses/>."
        << linsuffix << std::endl;
@@ -435,27 +435,27 @@ rps_print_types_info(void)
 #define TYPEFMT_rps "%-58s:"
   printf(TYPEFMT_rps "   size  align   (bytes)\n", "**TYPE**");
   /////
-#define EXPLAIN_TYPE(Ty) printf(TYPEFMT_rps " %5d %5d\n", #Ty, \
-        (int)sizeof(Ty), (int)alignof(Ty))
+#define EXPLAIN_TYPE(Ty) printf(TYPEFMT_rps " %5d %5d\n", #Ty,		\
+				(int)sizeof(Ty), (int)alignof(Ty))
   /////
 #define EXPLAIN_TYPE2(Ty1,Ty2) printf(TYPEFMT_rps " %5d %5d\n", \
-              #Ty1 "," #Ty2,                                    \
-              (int)sizeof(Ty1,Ty2),                             \
-              (int)alignof(Ty1,Ty2))
+				      #Ty1 "," #Ty2,		\
+				      (int)sizeof(Ty1,Ty2),	\
+				      (int)alignof(Ty1,Ty2))
   /////
 #define EXPLAIN_TYPE3(Ty1,Ty2,Ty3)              \
   printf(TYPEFMT_rps " %5d %5d\n",              \
-   #Ty1 "," #Ty2 ",\n"                          \
-   "                     "#Ty3,                 \
-   (int)sizeof(Ty1,Ty2,Ty3),                    \
-   (int)alignof(Ty1,Ty2,Ty3))
+	 #Ty1 "," #Ty2 ",\n"			\
+	 "                     "#Ty3,		\
+	 (int)sizeof(Ty1,Ty2,Ty3),		\
+	 (int)alignof(Ty1,Ty2,Ty3))
   /////
-#define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4)          \
-  printf(TYPEFMT_rps " %5d %5d\n",              \
-   #Ty1 "," #Ty2 ",\n                " #Ty3     \
-   "," #Ty4,                                    \
-   (int)sizeof(Ty1,Ty2,Ty3,Ty4),                \
-   (int)alignof(Ty1,Ty2,Ty3,Ty4))
+#define EXPLAIN_TYPE4(Ty1,Ty2,Ty3,Ty4)			\
+  printf(TYPEFMT_rps " %5d %5d\n",			\
+	 #Ty1 "," #Ty2 ",\n                " #Ty3	\
+	 "," #Ty4,					\
+	 (int)sizeof(Ty1,Ty2,Ty3,Ty4),			\
+	 (int)alignof(Ty1,Ty2,Ty3,Ty4))
   /////
   EXPLAIN_TYPE(int);
   EXPLAIN_TYPE(double);
@@ -538,6 +538,56 @@ rps_print_types_info(void)
 } // end rps_print_types_info
 
 
+static void
+rps_show_version_handwritten_cplusplus_files(void)
+{
+  //// show gitid and date of individual handwritten *cc files, using dlsym
+  //// since every file like utilities_rps.cc has rps_utilities_gitid and rps_utilities_date
+  for (const char*const*curfileptr = rps_files;
+       curfileptr && *curfileptr; curfileptr++) {
+    char curbase[64];
+    memset (curbase, 0, sizeof(curbase));
+    int endpos = -1;
+    const char*curfile = *curfileptr;
+    if (!curfile)
+      break;
+    if (!isalpha(curfile[0]))
+      continue;
+    if (strchr(curfile, '/'))
+      continue;
+    if ((sscanf(curfile, "%60[a-zA-Z]_rps.cc%n", curbase, &endpos))<1
+	|| endpos<2 || curfile[endpos]!=(char)0)
+      continue;
+    const char* symgit = nullptr;
+    const char* symdat = nullptr;
+    {
+      char cursymgit[80];
+      char cursymdat[80];
+      memset (cursymgit, 0, sizeof(cursymgit));
+      memset (cursymdat, 0, sizeof(cursymdat));
+      snprintf (cursymgit, sizeof(cursymgit), "rps_%s_gitid", curbase);
+      snprintf (cursymdat, sizeof(cursymdat), "rps_%s_date", curbase);
+      symgit = (const char*)dlsym(rps_proghdl, cursymgit);
+      if (!symgit || !isalnum(symgit[0]))
+	continue;
+      symdat = (const char*)dlsym(rps_proghdl, cursymdat);
+      if (!symdat || !isalnum(symdat[0]))
+	continue;
+    };
+    if (symgit && isalnum(symgit[0]) && symdat && isalnum(symdat[0])) {
+      char msgbuf[80];
+      memset (msgbuf, 0, sizeof(msgbuf));
+      char endgit = (char)0;
+      if (strchr(symgit, '+') != nullptr)
+	endgit = '+';
+      else
+	endgit = symgit[16];
+      if (snprintf(msgbuf, sizeof(msgbuf)-1, "%-20s git %.15s%c built %s",
+		   curfile, symgit, endgit, symdat)>0)
+	std::cout << "#" << msgbuf << std::endl;
+    }
+  }
+} // end rps_show_version_handwritten_cplusplus_files
 
 void
 rps_show_version(void)
@@ -580,10 +630,10 @@ rps_show_version(void)
   std::cout << " FLTK API version:" << rps_fltk_api_version()
             << std::endl;
   std::cout << std::endl
-            /* TODO: near commit 191d55e1b31c, march 2023; decide
-               which parser generator to really use... and drop the
-               other one.  Non technical considerations,
-               e.g. licensing, is important to some partners... */
+    /* TODO: near commit 191d55e1b31c, march 2023; decide
+       which parser generator to really use... and drop the
+       other one.  Non technical considerations,
+       e.g. licensing, is important to some partners... */
             << " Gnu multi-precision library version: " << gmp_version
             << std::endl
             << " default GUI script: " << rps_gui_script_executable << std::endl
@@ -600,6 +650,9 @@ rps_show_version(void)
             << " of email " << rps_building_user_email << std::endl
             << "See refpersys.org and code on github.com/RefPerSys/RefPerSys"
             << std::endl;
+  /////
+  rps_show_version_handwritten_cplusplus_files();
+  /////
   {
     char cwdbuf[rps_path_byte_size+4];
     memset (cwdbuf, 0, sizeof(cwdbuf));
@@ -908,7 +961,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                 << (letterkey? ((char)key) : ' ')
                 << " arg:" << Rps_Cjson_String(arg)
                 << (side_effect?".":"")
-               );
+		);
   if (side_effect)
     RPS_DEBUG_LOG(PROGARG, "rps_parse1opt "
                   << RPS_OUT_PROGARGS(state->argc, state->argv)
@@ -919,430 +972,430 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
   switch (key)
     {
     case RPSPROGOPT_DEBUG:
-    {
-      rps_add_debug_cstr(arg);
-    }
-    return 0;
+      {
+	rps_add_debug_cstr(arg);
+      }
+      return 0;
     case RPSPROGOPT_DEBUG_PATH:
-    {
-      if (side_effect)
-        rps_set_debug_output_path(arg);
-    }
-    return 0;
+      {
+	if (side_effect)
+	  rps_set_debug_output_path(arg);
+      }
+      return 0;
     case RPSPROGOPT_FLTK:
-    {
-      RPS_DEBUG_LOG(PROGARG, "rps_parse1opt fltk arg=" << arg);
-      rps_fltk_progoption(arg, state, side_effect);
-    }
-    return 0;
+      {
+	RPS_DEBUG_LOG(PROGARG, "rps_parse1opt fltk arg=" << arg);
+	rps_fltk_progoption(arg, state, side_effect);
+      }
+      return 0;
     case RPSPROGOPT_LOADDIR:
-    {
-      rps_my_load_dir = std::string(arg);
-    }
-    return 0;
+      {
+	rps_my_load_dir = std::string(arg);
+      }
+      return 0;
     case RPSPROGOPT_COMMAND:
-    {
-      rps_command_vec.push_back(std::string(arg));
-    }
-    return 0;
+      {
+	rps_command_vec.push_back(std::string(arg));
+      }
+      return 0;
     case RPSPROGOPT_INTERFACEFIFO:
-    {
-      rps_put_fifo_prefix(arg);
-    }
-    return 0;
+      {
+	rps_put_fifo_prefix(arg);
+      }
+      return 0;
     case RPSPROGOPT_BATCH:
-    {
-      rps_batch = true;
-    }
-    return 0;
+      {
+	rps_batch = true;
+      }
+      return 0;
     case RPSPROGOPT_JOBS:
-    {
-      int nbjobs = atoi(arg);
-      if (nbjobs <= RPS_NBJOBS_MIN)
-        nbjobs = RPS_NBJOBS_MIN;
-      else if (nbjobs > RPS_NBJOBS_MAX)
-        nbjobs = RPS_NBJOBS_MAX;
-      rps_nbjobs = nbjobs;
-    }
-    return 0;
+      {
+	int nbjobs = atoi(arg);
+	if (nbjobs <= RPS_NBJOBS_MIN)
+	  nbjobs = RPS_NBJOBS_MIN;
+	else if (nbjobs > RPS_NBJOBS_MAX)
+	  nbjobs = RPS_NBJOBS_MAX;
+	rps_nbjobs = nbjobs;
+      }
+      return 0;
     case RPSPROGOPT_PUBLISH_ME:
-    {
-      if (!rps_publisher_url_str.empty())
-        RPS_FATAL("cannot give twice the --publish-me <URL> option");
-      rps_publisher_url_str = arg;
-    }
-    return 0;
+      {
+	if (!rps_publisher_url_str.empty())
+	  RPS_FATAL("cannot give twice the --publish-me <URL> option");
+	rps_publisher_url_str = arg;
+      }
+      return 0;
     case RPSPROGOPT_DUMP:
-    {
-      if (side_effect)
-        rps_dumpdir_str = std::string(arg);
-    }
-    return 0;
+      {
+	if (side_effect)
+	  rps_dumpdir_str = std::string(arg);
+      }
+      return 0;
     case RPSPROGOPT_CHDIR_BEFORE_LOAD:
-    {
-      char cwdbuf[rps_path_byte_size+4];
-      memset(cwdbuf, 0, sizeof(cwdbuf));
-      if (side_effect)
-        {
-          if (chdir(arg))
-            {
-              RPS_FATALOUT("failed to chdir before loading to " << arg
-                           << ":" << strerror(errno));
-              char*cwd = getcwd(cwdbuf, rps_path_byte_size);
-              if (!cwd)
-                RPS_FATALOUT("failed to getcwd after chdir to " << arg);
-              RPS_INFORMOUT("changed current directory before loading to "
-                            << cwd);
-            };
-        }
-      return 0;
-    }
+      {
+	char cwdbuf[rps_path_byte_size+4];
+	memset(cwdbuf, 0, sizeof(cwdbuf));
+	if (side_effect)
+	  {
+	    if (chdir(arg))
+	      {
+		RPS_FATALOUT("failed to chdir before loading to " << arg
+			     << ":" << strerror(errno));
+		char*cwd = getcwd(cwdbuf, rps_path_byte_size);
+		if (!cwd)
+		  RPS_FATALOUT("failed to getcwd after chdir to " << arg);
+		RPS_INFORMOUT("changed current directory before loading to "
+			      << cwd);
+	      };
+	  }
+	return 0;
+      }
     case RPSPROGOPT_CHDIR_AFTER_LOAD:
-    {
-      if (side_effect)
-        {
-          rps_chdir_path_after_load = arg;
-        }
-      return 0;
-    }
+      {
+	if (side_effect)
+	  {
+	    rps_chdir_path_after_load = arg;
+	  }
+	return 0;
+      }
     case RPSPROGOPT_HOMEDIR:
-    {
-      struct stat rhomstat;
-      memset (&rhomstat, 0, sizeof(rhomstat));
-      if (stat(arg, &rhomstat))
-        RPS_FATAL("failed to stat --refpersys-home %s: %m",
-                  arg);
-      if (!S_ISDIR(rhomstat.st_mode))
-        RPS_FATAL("given --refpersys-home %s is not a directory",
-                  arg);
-      if ((rhomstat.st_mode & (S_IRUSR|S_IXUSR)) !=  (S_IRUSR|S_IXUSR))
-        RPS_FATAL("given --refpersys-home %s is not user readable and executable",
-                  arg);
-      if (side_effect)
-        {
-          char*rhomrp = realpath(arg, nullptr);
-          if (!rhomrp)
-            RPS_FATAL("realpath failed on given --refpersys-home %s - %m",
-                      arg);
-          if (strlen(rhomrp) >= rps_path_byte_size -1)
-            RPS_FATAL("too long realpath %s on given --refpersys-home %s - %m",
-                      rhomrp, arg);
-          strncpy(rps_bufpath_homedir, rhomrp, rps_path_byte_size -1);
-          free (rhomrp), rhomrp = nullptr;
-          RPS_INFORMOUT("set RefPerSys home directory to " << rps_bufpath_homedir);
-        };
-    }
-    return 0;
+      {
+	struct stat rhomstat;
+	memset (&rhomstat, 0, sizeof(rhomstat));
+	if (stat(arg, &rhomstat))
+	  RPS_FATAL("failed to stat --refpersys-home %s: %m",
+		    arg);
+	if (!S_ISDIR(rhomstat.st_mode))
+	  RPS_FATAL("given --refpersys-home %s is not a directory",
+		    arg);
+	if ((rhomstat.st_mode & (S_IRUSR|S_IXUSR)) !=  (S_IRUSR|S_IXUSR))
+	  RPS_FATAL("given --refpersys-home %s is not user readable and executable",
+		    arg);
+	if (side_effect)
+	  {
+	    char*rhomrp = realpath(arg, nullptr);
+	    if (!rhomrp)
+	      RPS_FATAL("realpath failed on given --refpersys-home %s - %m",
+			arg);
+	    if (strlen(rhomrp) >= rps_path_byte_size -1)
+	      RPS_FATAL("too long realpath %s on given --refpersys-home %s - %m",
+			rhomrp, arg);
+	    strncpy(rps_bufpath_homedir, rhomrp, rps_path_byte_size -1);
+	    free (rhomrp), rhomrp = nullptr;
+	    RPS_INFORMOUT("set RefPerSys home directory to " << rps_bufpath_homedir);
+	  };
+      }
+      return 0;
     case RPSPROGOPT_RUN_NAME:
-    {
+      {
 
-      if (!rps_run_name.empty())
-        RPS_FATALOUT("duplicate RefPerSys run name " << rps_run_name << " and " << std::string(arg));
-      rps_run_name.assign(std::string(arg));
-      RPS_INFORMOUT("set RefPerSys run name to " <<  Rps_QuotedC_String(rps_run_name));
-    }
-    return 0;
+	if (!rps_run_name.empty())
+	  RPS_FATALOUT("duplicate RefPerSys run name " << rps_run_name << " and " << std::string(arg));
+	rps_run_name.assign(std::string(arg));
+	RPS_INFORMOUT("set RefPerSys run name to " <<  Rps_QuotedC_String(rps_run_name));
+      }
+      return 0;
     case RPSPROGOPT_ECHO:
       /// example argument: --echo='Hello here'
-    {
-      if (!rps_run_name.empty())
-        RPS_INFORMOUT(rps_run_name << " echo:" << std::string (arg)
-                      << " git:" << rps_shortgitid);
-      else
-        RPS_INFORMOUT("echo:" << std::string(arg)
-                      << " git:" << rps_shortgitid);
-    }
-    return 0;
+      {
+	if (!rps_run_name.empty())
+	  RPS_INFORMOUT(rps_run_name << " echo:" << std::string (arg)
+			<< " git:" << rps_shortgitid);
+	else
+	  RPS_INFORMOUT("echo:" << std::string(arg)
+			<< " git:" << rps_shortgitid);
+      }
+      return 0;
     case RPSPROGOPT_RUN_DELAY:
-    {
-      int pos= -1;
-      long dl= -1;
-      /// example argument: --run-delay=45s for elapsed seconds
-      if ((pos= -1), sscanf(arg, "%li s%n", &rps_run_delay, &pos) > 0
-          && rps_run_delay>0 && pos>0)
-        RPS_INFORMOUT("RefPerSys will run its agenda for "
-                      <<  rps_run_delay
-                      << " elapsed seconds.");
-      ///
-      /// example argument: --run-delay=10m for elapsed minutes
-      else if ( ((pos= -1), (dl=0)),
-                sscanf(arg, "%li m%n", &dl, &pos) > 0
-                && dl>0 && pos>0)
-        {
-          rps_run_delay = dl*60;
-          RPS_INFORMOUT("RefPerSys will run its agenda for "
-                        << dl << " minutes so "
-                        << rps_run_delay << " elapsed seconds");
-        }
+      {
+	int pos= -1;
+	long dl= -1;
+	/// example argument: --run-delay=45s for elapsed seconds
+	if ((pos= -1), sscanf(arg, "%li s%n", &rps_run_delay, &pos) > 0
+	    && rps_run_delay>0 && pos>0)
+	  RPS_INFORMOUT("RefPerSys will run its agenda for "
+			<<  rps_run_delay
+			<< " elapsed seconds.");
+	///
+	/// example argument: --run-delay=10m for elapsed minutes
+	else if ( ((pos= -1), (dl=0)),
+		  sscanf(arg, "%li m%n", &dl, &pos) > 0
+		  && dl>0 && pos>0)
+	  {
+	    rps_run_delay = dl*60;
+	    RPS_INFORMOUT("RefPerSys will run its agenda for "
+			  << dl << " minutes so "
+			  << rps_run_delay << " elapsed seconds");
+	  }
 
-      ///
-      /// example argument: --run-delay=3h for elapsed hours
-      else if ( ((pos= -1), (dl=0)),
-                sscanf(arg, "%li h%n", &dl, &pos) > 0
-                && dl>0 && pos>0)
-        {
-          rps_run_delay = dl*3600;
-          RPS_INFORMOUT("RefPerSys will run its agenda for "
-                        << dl << " hours so " << rps_run_delay
-                        << " elapsed seconds");
-        }
-      else
-        RPS_FATAL("invalid --run-delay=%s argument.\n"
-                  "\t (should be like 90s or 20m or 2h)",
-                  arg);
-    }
-    return 0;
+	///
+	/// example argument: --run-delay=3h for elapsed hours
+	else if ( ((pos= -1), (dl=0)),
+		  sscanf(arg, "%li h%n", &dl, &pos) > 0
+		  && dl>0 && pos>0)
+	  {
+	    rps_run_delay = dl*3600;
+	    RPS_INFORMOUT("RefPerSys will run its agenda for "
+			  << dl << " hours so " << rps_run_delay
+			  << " elapsed seconds");
+	  }
+	else
+	  RPS_FATAL("invalid --run-delay=%s argument.\n"
+		    "\t (should be like 90s or 20m or 2h)",
+		    arg);
+      }
+      return 0;
     case RPSPROGOPT_RANDOMOID:
-    {
-      int nbrand = atoi(arg);
-      if (nbrand <= 0) nbrand = 2;
-      else if (nbrand > 100) nbrand = 100;
-      if (side_effect)
-        {
-          RPS_INFORM("output of %d random objids generated on %.2f\n", nbrand,
-                     rps_wallclock_real_time());
-          printf("*    %-20s" "\t  %-19s" "   %-12s" "\t %-10s\n",
-                 " objid", "hi", "lo", "hash");
-          printf("========================================================"
-                 "===========================\n");
-          for (int ix = 0; ix<nbrand; ix++)
-            {
-              auto rid = Rps_Id::random();
-              printf("! %22s" "\t  %19lld" " %12lld" "\t %10u\n",
-                     rid.to_string().c_str(),
-                     (long long) rid.hi(),
-                     (long long) rid.lo(),
-                     (unsigned) rid.hash());
-            }
-          printf("--------------------------------------------------------"
-                 "---------------------------\n");
-          fflush(nullptr);
-        }
-    }
-    return 0;
+      {
+	int nbrand = atoi(arg);
+	if (nbrand <= 0) nbrand = 2;
+	else if (nbrand > 100) nbrand = 100;
+	if (side_effect)
+	  {
+	    RPS_INFORM("output of %d random objids generated on %.2f\n", nbrand,
+		       rps_wallclock_real_time());
+	    printf("*    %-20s" "\t  %-19s" "   %-12s" "\t %-10s\n",
+		   " objid", "hi", "lo", "hash");
+	    printf("========================================================"
+		   "===========================\n");
+	    for (int ix = 0; ix<nbrand; ix++)
+	      {
+		auto rid = Rps_Id::random();
+		printf("! %22s" "\t  %19lld" " %12lld" "\t %10u\n",
+		       rid.to_string().c_str(),
+		       (long long) rid.hi(),
+		       (long long) rid.lo(),
+		       (unsigned) rid.hash());
+	      }
+	    printf("--------------------------------------------------------"
+		   "---------------------------\n");
+	    fflush(nullptr);
+	  }
+      }
+      return 0;
     case RPSPROGOPT_TYPEINFO:
-    {
-      if (side_effect)
-        rps_print_types_info ();
-      rps_batch = true;
-    }
-    return 0;
+      {
+	if (side_effect)
+	  rps_print_types_info ();
+	rps_batch = true;
+      }
+      return 0;
     case RPSPROGOPT_SYSLOG:
-    {
-      if (side_effect && !rps_syslog_enabled)
-        {
-          rps_syslog_enabled = true;
-          openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
-          RPS_INFORM("using syslog");
-        }
-    }
-    return 0;
+      {
+	if (side_effect && !rps_syslog_enabled)
+	  {
+	    rps_syslog_enabled = true;
+	    openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
+	    RPS_INFORM("using syslog");
+	  }
+      }
+      return 0;
     case RPSPROGOPT_NO_TERMINAL:
-    {
-      rps_without_terminal_escape = true;
-    }
-    return 0;
+      {
+	rps_without_terminal_escape = true;
+      }
+      return 0;
     case RPSPROGOPT_DAEMON:
-    {
-      rps_without_terminal_escape = true;
-      char cwdbuf[rps_path_byte_size];
-      memset(cwdbuf, 0, sizeof(cwdbuf));
-      if (side_effect)
-        {
-          if (!rps_syslog_enabled)
-            {
-              rps_syslog_enabled = true;
-              openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
-            };
-          RPS_INFORM("using syslog with daemon");
-          if (daemon(/*nochdir:*/1,
-                                 /*noclose:*/0))
-            RPS_FATAL("failed to daemon");
-          rps_daemonized = true;
-          const char*cw = getcwd(cwdbuf, sizeof(cwdbuf)-1);
-          RPS_INFORM("daemonized pid %d in dir %s git %s",
-                     (int)getpid(), cw, rps_shortgitid);
-        };
-    }
-    return 0;
+      {
+	rps_without_terminal_escape = true;
+	char cwdbuf[rps_path_byte_size];
+	memset(cwdbuf, 0, sizeof(cwdbuf));
+	if (side_effect)
+	  {
+	    if (!rps_syslog_enabled)
+	      {
+		rps_syslog_enabled = true;
+		openlog("RefPerSys", LOG_PERROR|LOG_PID, LOG_USER);
+	      };
+	    RPS_INFORM("using syslog with daemon");
+	    if (daemon(/*nochdir:*/1,
+		       /*noclose:*/0))
+	      RPS_FATAL("failed to daemon");
+	    rps_daemonized = true;
+	    const char*cw = getcwd(cwdbuf, sizeof(cwdbuf)-1);
+	    RPS_INFORM("daemonized pid %d in dir %s git %s",
+		       (int)getpid(), cw, rps_shortgitid);
+	  };
+      }
+      return 0;
     case RPSPROGOPT_PID_FILE:
-    {
-      if (side_effect)
-        rps_pidfile_path = arg;
-    }
-    return 0;
+      {
+	if (side_effect)
+	  rps_pidfile_path = arg;
+      }
+      return 0;
     case RPSPROGOPT_NO_ASLR:
-    {
-      // was already handled
-      RPS_ASSERT(rps_disable_aslr);
-    }
-    return 0;
+      {
+	// was already handled
+	RPS_ASSERT(rps_disable_aslr);
+      }
+      return 0;
     case RPSPROGOPT_NO_QUICK_TESTS:
-    {
-      rps_without_quick_tests = true;
-    }
-    return 0;
+      {
+	rps_without_quick_tests = true;
+      }
+      return 0;
     case RPSPROGOPT_TEST_REPL_LEXER:
-    {
-      if (side_effect)
-        {
-          if (!rps_test_repl_string.empty())
-            RPS_FATALOUT("only one --test-repl-lexer=TESTLEXSTRING can"
-                         " be given, but already got "
-                         << rps_test_repl_string);
-          rps_test_repl_string = arg;
-          RPS_INFORMOUT("will test the REPL lexer on:" << rps_test_repl_string
-                        << std::endl << "... that is the " << rps_test_repl_string.size()
-                        << " bytes string " << Rps_QuotedC_String(rps_test_repl_string));
-        }
-    }
-    return 0;
+      {
+	if (side_effect)
+	  {
+	    if (!rps_test_repl_string.empty())
+	      RPS_FATALOUT("only one --test-repl-lexer=TESTLEXSTRING can"
+			   " be given, but already got "
+			   << rps_test_repl_string);
+	    rps_test_repl_string = arg;
+	    RPS_INFORMOUT("will test the REPL lexer on:" << rps_test_repl_string
+			  << std::endl << "... that is the " << rps_test_repl_string.size()
+			  << " bytes string " << Rps_QuotedC_String(rps_test_repl_string));
+	  }
+      }
+      return 0;
     case RPSPROGOPT_DEBUG_AFTER_LOAD:
-    {
-      if (!rps_debugflags_after_load || side_effect)
-        rps_debugflags_after_load = arg;
-    }
-    return 0;
+      {
+	if (!rps_debugflags_after_load || side_effect)
+	  rps_debugflags_after_load = arg;
+      }
+      return 0;
     case RPSPROGOPT_EXTRA_ARG:
-    {
-      int eqnextpos= -1;
-      char extraname[64];
-      memset (extraname, 0, sizeof(extraname));
-      if (sscanf(arg, "%60[A-Za-z0-9]=%n", extraname, &eqnextpos) >= 1
-          && isalpha(extraname[0])
-          && eqnextpos > 1 && arg[eqnextpos-1] == '='
-          && isalpha(extraname[0]))
-        {
-          for (const char*n = extraname; *n; n++)
-            if (!isalnum(*n) && *n != '_')
-              RPS_FATALOUT("invalid extra named argument " << extraname);
-          if (rps_dict_extra_arg.find(extraname) != rps_dict_extra_arg.end())
-            RPS_FATALOUT("extra named argument " << extraname
-                         << " cannot be set more than once");
-          std::string extraval{arg+eqnextpos};
-          rps_dict_extra_arg.insert({extraname, extraval});
-          RPS_INFORMOUT("set extra argument " << extraname
-                        << " to " << Rps_QuotedC_String(extraval));
-        }
-      else
-        RPS_FATALOUT("bad extra named argument " << arg
-                     << " that is " << Rps_QuotedC_String(arg)
-                     << " extra name is " << Rps_QuotedC_String(extraname)
-                    );
-    }
-    return 0;
+      {
+	int eqnextpos= -1;
+	char extraname[64];
+	memset (extraname, 0, sizeof(extraname));
+	if (sscanf(arg, "%60[A-Za-z0-9]=%n", extraname, &eqnextpos) >= 1
+	    && isalpha(extraname[0])
+	    && eqnextpos > 1 && arg[eqnextpos-1] == '='
+	    && isalpha(extraname[0]))
+	  {
+	    for (const char*n = extraname; *n; n++)
+	      if (!isalnum(*n) && *n != '_')
+		RPS_FATALOUT("invalid extra named argument " << extraname);
+	    if (rps_dict_extra_arg.find(extraname) != rps_dict_extra_arg.end())
+	      RPS_FATALOUT("extra named argument " << extraname
+			   << " cannot be set more than once");
+	    std::string extraval{arg+eqnextpos};
+	    rps_dict_extra_arg.insert({extraname, extraval});
+	    RPS_INFORMOUT("set extra argument " << extraname
+			  << " to " << Rps_QuotedC_String(extraval));
+	  }
+	else
+	  RPS_FATALOUT("bad extra named argument " << arg
+		       << " that is " << Rps_QuotedC_String(arg)
+		       << " extra name is " << Rps_QuotedC_String(extraname)
+		       );
+      }
+      return 0;
     case RPSPROGOPT_RUN_AFTER_LOAD:
-    {
-      if (rps_run_command_after_load)
-        RPS_FATALOUT("only one --run-after-load command can be given, not both " << rps_run_command_after_load
-                     << " and " << arg);
-      rps_run_command_after_load = arg;
-    }
-    return 0;
+      {
+	if (rps_run_command_after_load)
+	  RPS_FATALOUT("only one --run-after-load command can be given, not both " << rps_run_command_after_load
+		       << " and " << arg);
+	rps_run_command_after_load = arg;
+      }
+      return 0;
     case RPSPROGOPT_PLUGIN_AFTER_LOAD:
-    {
-      void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
-      if (!dlh)
-        RPS_FATALOUT("failed to dlopen plugin " << arg << " : " << dlerror());
-      const char* bnplug = basename(arg);
-      Rps_Plugin curplugin(bnplug, dlh);
-      RPS_INFORMOUT("loaded plugin#" << rps_plugins_vector.size() << " from " << arg << " from process pid#" << (int)getpid()
-                    << " basenamed " << Rps_QuotedC_String(bnplug));
-      rps_plugins_vector.push_back(curplugin);
-    }
-    return 0;
+      {
+	void* dlh = dlopen(arg, RTLD_NOW|RTLD_GLOBAL);
+	if (!dlh)
+	  RPS_FATALOUT("failed to dlopen plugin " << arg << " : " << dlerror());
+	const char* bnplug = basename(arg);
+	Rps_Plugin curplugin(bnplug, dlh);
+	RPS_INFORMOUT("loaded plugin#" << rps_plugins_vector.size() << " from " << arg << " from process pid#" << (int)getpid()
+		      << " basenamed " << Rps_QuotedC_String(bnplug));
+	rps_plugins_vector.push_back(curplugin);
+      }
+      return 0;
     case RPSPROGOPT_PLUGIN_ARG:
-    {
-      char plugname[80];
-      char plugarg[128];
-      memset (plugname, 0, sizeof(plugname));
-      memset (plugarg, 0, sizeof(plugarg));
-      if (!arg)
-        RPS_FATALOUT("missing --plugin-arg");
-      if (strlen(arg) >= sizeof(plugname) + sizeof(plugarg) - 1)
-        RPS_FATALOUT("too long --plugin-arg" << arg
-                     << " should be shorter than " << ( sizeof(plugname) + sizeof(plugarg)) << " bytes");
-      if (sscanf(arg, "%78[a-zA-Z0-9_]:%126s", plugname, plugarg) < 2)
-        RPS_FATALOUT("expecting --plugin-arg=<plugin-name>:<plugin-arg-string but got " << arg);
-      int pluginix= -1;
-      int plugcnt = 0;
-      for (Rps_Plugin curplugin: rps_plugins_vector)
-        {
-          std::string curplugname = curplugin.plugin_name;
-          int pluglenam= curplugname.length();
-          if (pluglenam > 4 && curplugname.substr(pluglenam-3) == ".so")
-            curplugname.erase(pluglenam-3);
-          RPS_DEBUG_LOG (REPL, "plugin#" << plugcnt << " is named " << Rps_QuotedC_String(curplugname));
-          if (curplugname == plugname)
-            {
-              pluginix = plugcnt;
-              break;
-            };
-          plugcnt++;
-        }
-      if (pluginix<0)
-        RPS_FATALOUT("--plugin-arg=" << plugname << ":" << plugarg
-                     << " without such loaded plugin (loaded " << plugcnt << " plugins)");
-      Rps_Plugin thisplugin = rps_plugins_vector[pluginix];
-      rps_pluginargs_map[plugname] = std::string{plugarg};
-      RPS_INFORMOUT("registering plugin argument of --plugin-arg " << arg
-                    << " plugname=" << Rps_QuotedC_String(plugname)
-                    << " plugarg=" << Rps_QuotedC_String(plugarg)
-                    << std::endl
-                    << RPS_FULL_BACKTRACE_HERE(1, "--plugin-arg processing"));
-    }
-    return 0;
+      {
+	char plugname[80];
+	char plugarg[128];
+	memset (plugname, 0, sizeof(plugname));
+	memset (plugarg, 0, sizeof(plugarg));
+	if (!arg)
+	  RPS_FATALOUT("missing --plugin-arg");
+	if (strlen(arg) >= sizeof(plugname) + sizeof(plugarg) - 1)
+	  RPS_FATALOUT("too long --plugin-arg" << arg
+		       << " should be shorter than " << ( sizeof(plugname) + sizeof(plugarg)) << " bytes");
+	if (sscanf(arg, "%78[a-zA-Z0-9_]:%126s", plugname, plugarg) < 2)
+	  RPS_FATALOUT("expecting --plugin-arg=<plugin-name>:<plugin-arg-string but got " << arg);
+	int pluginix= -1;
+	int plugcnt = 0;
+	for (Rps_Plugin curplugin: rps_plugins_vector)
+	  {
+	    std::string curplugname = curplugin.plugin_name;
+	    int pluglenam= curplugname.length();
+	    if (pluglenam > 4 && curplugname.substr(pluglenam-3) == ".so")
+	      curplugname.erase(pluglenam-3);
+	    RPS_DEBUG_LOG (REPL, "plugin#" << plugcnt << " is named " << Rps_QuotedC_String(curplugname));
+	    if (curplugname == plugname)
+	      {
+		pluginix = plugcnt;
+		break;
+	      };
+	    plugcnt++;
+	  }
+	if (pluginix<0)
+	  RPS_FATALOUT("--plugin-arg=" << plugname << ":" << plugarg
+		       << " without such loaded plugin (loaded " << plugcnt << " plugins)");
+	Rps_Plugin thisplugin = rps_plugins_vector[pluginix];
+	rps_pluginargs_map[plugname] = std::string{plugarg};
+	RPS_INFORMOUT("registering plugin argument of --plugin-arg " << arg
+		      << " plugname=" << Rps_QuotedC_String(plugname)
+		      << " plugarg=" << Rps_QuotedC_String(plugarg)
+		      << std::endl
+		      << RPS_FULL_BACKTRACE_HERE(1, "--plugin-arg processing"));
+      }
+      return 0;
     case RPSPROGOPT_CPLUSPLUSEDITOR_AFTER_LOAD:
-    {
-      RPS_DEBUG_LOG(CMD, "option --cplusplus-editor "
-                    << (arg?" with '":" without ")
-                    << (arg?arg:" argument")
-                    << (arg?"'":" !!!")
-                    << (side_effect?" side-effecting"
-                        :" without side effect"));
-      if (side_effect)
-        {
-          if (!arg || !arg[0])
-            {
-              char* editor = getenv("EDITOR");
-              if (editor && editor[0])
-                {
-                  arg = editor;
-                  RPS_INFORMOUT("using $EDITOR variable " << editor << " as C++ editor");
-                }
-            };
-          if (!arg || !arg[0])
-            RPS_FATALOUT("program option --cplusplus-editor-after-load"
-                         " without explicit editor,\n"
-                         "... and no $EDITOR environment variable");
-          if (!rps_cpluspluseditor_str.empty())
-            RPS_FATALOUT("program option --cplusplus-editor-after-load"
-                         " given twice with "
-                         << rps_cpluspluseditor_str << " and " << arg);
-          rps_cpluspluseditor_str.assign(arg);
-        };
-    }
-    return 0;
+      {
+	RPS_DEBUG_LOG(CMD, "option --cplusplus-editor "
+		      << (arg?" with '":" without ")
+		      << (arg?arg:" argument")
+		      << (arg?"'":" !!!")
+		      << (side_effect?" side-effecting"
+			  :" without side effect"));
+	if (side_effect)
+	  {
+	    if (!arg || !arg[0])
+	      {
+		char* editor = getenv("EDITOR");
+		if (editor && editor[0])
+		  {
+		    arg = editor;
+		    RPS_INFORMOUT("using $EDITOR variable " << editor << " as C++ editor");
+		  }
+	      };
+	    if (!arg || !arg[0])
+	      RPS_FATALOUT("program option --cplusplus-editor-after-load"
+			   " without explicit editor,\n"
+			   "... and no $EDITOR environment variable");
+	    if (!rps_cpluspluseditor_str.empty())
+	      RPS_FATALOUT("program option --cplusplus-editor-after-load"
+			   " given twice with "
+			   << rps_cpluspluseditor_str << " and " << arg);
+	    rps_cpluspluseditor_str.assign(arg);
+	  };
+      }
+      return 0;
     case RPSPROGOPT_CPLUSPLUSFLAGS_AFTER_LOAD:
-    {
-      if (side_effect)
-        {
-          if (!rps_cplusplusflags_str.empty())
-            RPS_FATALOUT("program option --cplusplus-flags-after-load given twice with "
-                         << rps_cplusplusflags_str << " and " << arg);
-          rps_cplusplusflags_str.assign(arg);
-        }
-    }
-    return 0;
+      {
+	if (side_effect)
+	  {
+	    if (!rps_cplusplusflags_str.empty())
+	      RPS_FATALOUT("program option --cplusplus-flags-after-load given twice with "
+			   << rps_cplusplusflags_str << " and " << arg);
+	    rps_cplusplusflags_str.assign(arg);
+	  }
+      }
+      return 0;
     case RPSPROGOPT_VERSION:
-    {
-      if (side_effect)
-        {
-          rps_show_version();
-          exit(EXIT_SUCCESS);
-        }
-    }
-    return 0;
+      {
+	if (side_effect)
+	  {
+	    rps_show_version();
+	    exit(EXIT_SUCCESS);
+	  }
+      }
+      return 0;
     };        // end switch key
   return ARGP_ERR_UNKNOWN;
 } // end rps_parse1opt
@@ -1532,12 +1585,12 @@ rps_fatal_stop_at (const char *filnam, int lin)
           fputc(' ', rps_debug_file);
           const char*curarg = rps_argv[aix];
           bool isplainarg = isalnum(curarg[0]) || curarg[0]=='/'
-                            || curarg[0]=='_' || curarg[0]=='.'
-                            || curarg[0]=='-' || curarg[0]=='=' || curarg[0]=='@';
+	    || curarg[0]=='_' || curarg[0]=='.'
+	    || curarg[0]=='-' || curarg[0]=='=' || curarg[0]=='@';
           for (const char*pc = curarg; *pc != (char)0 && isplainarg; pc++)
             isplainarg = *pc>' ' && *pc<(char)127
-                         && *pc != '\'' && *pc != '\\' && *pc != '\"'
-                         && isprint(*pc);
+	      && *pc != '\'' && *pc != '\\' && *pc != '\"'
+	      && isprint(*pc);
           if (isplainarg)
             fputs(curarg, rps_debug_file);
           else
@@ -1567,12 +1620,12 @@ rps_fatal_stop_at (const char *filnam, int lin)
         {
           const char*curarg = rps_argv[aix];
           bool isplainarg = isalnum(curarg[0]) || curarg[0]=='/'
-                            || curarg[0]=='_' || curarg[0]=='.'
-                            || curarg[0]=='-' || curarg[0]=='=' || curarg[0]=='@';
+	    || curarg[0]=='_' || curarg[0]=='.'
+	    || curarg[0]=='-' || curarg[0]=='=' || curarg[0]=='@';
           for (const char*pc = curarg; *pc != (char)0 && isplainarg; pc++)
             isplainarg = *pc>' ' && *pc<(char)127
-                         && *pc != '\'' && *pc != '\\' && *pc != '\"'
-                         && isprint(*pc);
+	      && *pc != '\'' && *pc != '\\' && *pc != '\"'
+	      && isprint(*pc);
           if (isplainarg)
             outl << ' ' << curarg;
           else
@@ -1598,11 +1651,11 @@ rps_fatal_stop_at (const char *filnam, int lin)
         {
           const char*curarg = rps_argv[aix];
           bool isplainarg = isalnum(curarg[0]) || curarg[0]=='/'
-                            || curarg[0]=='_' || curarg[0]=='.'  || curarg[0]=='-';
+	    || curarg[0]=='_' || curarg[0]=='.'  || curarg[0]=='-';
           for (const char*pc = curarg; *pc != (char)0 && isplainarg; pc++)
             isplainarg = *pc>' ' && *pc<(char)127
-                         && *pc != '\'' && *pc != '\\' && *pc != '\"'
-                         && isprint(*pc);
+	      && *pc != '\'' && *pc != '\\' && *pc != '\"'
+	      && isprint(*pc);
           if (isplainarg)
             std::clog << ' ' << curarg;
           else
@@ -1711,15 +1764,15 @@ rps_initialize_roots_after_loading (Rps_Loader*ld)
   std::lock_guard<std::mutex> gu(rps_object_root_mtx);
   rps_object_global_root_hashtable.max_load_factor(3.5);
   rps_object_global_root_hashtable.reserve(5*rps_hardcoded_number_of_roots()/4+3);
-#define RPS_INSTALL_ROOT_OB(Oid) {    \
-    const char*end##Oid = nullptr;    \
-    bool ok##Oid = false;     \
+#define RPS_INSTALL_ROOT_OB(Oid) {		\
+    const char*end##Oid = nullptr;		\
+    bool ok##Oid = false;			\
     Rps_Id id##Oid(#Oid, &end##Oid, &ok##Oid);  \
-    RPS_ASSERT (end##Oid && !*end##Oid);  \
-    RPS_ASSERT (ok##Oid);     \
-    RPS_ASSERT (id##Oid.valid());   \
-    rps_object_global_root_hashtable[id##Oid] \
-      = &RPS_ROOT_OB(Oid);      \
+    RPS_ASSERT (end##Oid && !*end##Oid);	\
+    RPS_ASSERT (ok##Oid);			\
+    RPS_ASSERT (id##Oid.valid());		\
+    rps_object_global_root_hashtable[id##Oid]	\
+      = &RPS_ROOT_OB(Oid);			\
   };
 #include "generated/rps-roots.hh"
 } // end of rps_initialize_roots_after_loading
@@ -1774,7 +1827,7 @@ bool
 rps_is_set_debug(const std::string &curlev)
 {
   if (curlev.empty()) return false;
-#define Rps_IS_SET_DEBUG(Opt) else if (curlev == #Opt) \
+#define Rps_IS_SET_DEBUG(Opt) else if (curlev == #Opt)	\
     return  rps_debug_flags & (1 << RPS_DEBUG_##Opt);
   RPS_DEBUG_OPTIONS(Rps_IS_SET_DEBUG);
 #undef Rps_IS_SET_DEBUG
@@ -1806,12 +1859,12 @@ rps_set_debug_flag(const std::string &curlev)
   ///
   /* second X macro trick for processing several comma-separated debug flags, in all cases as else if branch  */
   ///
-#define Rps_SET_DEBUG(Opt)                                             \
-  else if (curlev == #Opt) {                                           \
-    bool alreadygiven = rps_debug_flags & (1 << RPS_DEBUG_##Opt);      \
-    rps_debug_flags |= (1 << RPS_DEBUG_##Opt);                         \
-    goodflag = true;                                                   \
-    if (!alreadygiven)                                                 \
+#define Rps_SET_DEBUG(Opt)						\
+  else if (curlev == #Opt) {						\
+    bool alreadygiven = rps_debug_flags & (1 << RPS_DEBUG_##Opt);	\
+    rps_debug_flags |= (1 << RPS_DEBUG_##Opt);				\
+    goodflag = true;							\
+    if (!alreadygiven)							\
       RPS_INFORMOUT("setting debugging flag " << #Opt);  }
   ///
   RPS_DEBUG_OPTIONS(Rps_SET_DEBUG);
@@ -1906,7 +1959,7 @@ rps_output_debug_flags(std::ostream&out,  unsigned flags)
   do {                                          \
     if (flags & (1<< RPS_DEBUG_##Lev)) {        \
       if (nbf > 0)                              \
-  out << ',';                                   \
+	out << ',';				\
       out << #Lev;                              \
       nbf++;                                    \
     }                                           \
