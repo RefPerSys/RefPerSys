@@ -39,6 +39,9 @@ const char rps_repl_gitid[]= RPS_GITID;
 extern "C" const char rps_cmdrepl_date[];
 const char rps_cmdrepl_date[]= __DATE__;
 
+extern "C" const char rps_cmdrepl_shortgitid[];
+const char rps_repl_shortgitid[]= RPS_SHORTGITID;
+
 // internal code to evaluate composite expressions like arithmetic, conditionals, etc...
 static Rps_TwoValues
 rps_full_evaluate_repl_composite_object(Rps_CallFrame*callframe, unsigned long count, Rps_ObjectRef exprobarg, Rps_ObjectRef envobarg,  unsigned depth=0);

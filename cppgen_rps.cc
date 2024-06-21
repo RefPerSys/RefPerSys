@@ -44,6 +44,10 @@ const char rps_cppgen_gitid[]= RPS_GITID;
 extern "C" const char rps_cppgen_date[];
 const char rps_cppgen_date[]= __DATE__;
 
+
+extern "C" const char rps_cppgen_shortgitid[];
+const char rps_cppgen_shortgitid[]= RPS_GITID;
+
 //// return true on successful C++ code generation
 bool
 rps_generate_cplusplus_code(Rps_CallFrame*callerframe,

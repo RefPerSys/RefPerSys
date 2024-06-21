@@ -45,6 +45,10 @@ const char rps_dump_gitid[]= RPS_GITID;
 extern "C" const char rps_dump_date[];
 const char rps_dump_date[]= __DATE__;
 
+extern "C" const char rps_dump_shortgitid[];
+const char rps_dump_shortgitid[]= RPS_SHORTGITID;
+
+
 // comment for our do-scan-pkgconfig.c utility
 //@@PKGCONFIG jsoncpp
 
