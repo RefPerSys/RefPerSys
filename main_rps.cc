@@ -41,6 +41,10 @@ const char rps_main_gitid[]= RPS_GITID;
 extern "C" const char rps_main_date[];
 const char rps_main_date[]= __DATE__;
 
+extern "C" const char rps_main_shortgitid[];
+const char rps_main_shortgitid[]= RPS_SHORTGITID;
+
+
 struct utsname rps_utsname;
 
 char rps_progexe[rps_path_byte_size];

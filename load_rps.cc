@@ -45,6 +45,9 @@ const char rps_load_gitid[]= RPS_GITID;
 extern "C" const char rps_load_date[];
 const char rps_load_date[]= __DATE__;
 
+extern "C" const char rps_load_shortgitid[];
+const char rps_load_shortgitid[]= RPS_SHORTGITID;
+
 extern "C" char rps_loaded_directory[rps_path_byte_size];
 char rps_loaded_directory[rps_path_byte_size];
 

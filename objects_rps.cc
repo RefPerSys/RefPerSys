@@ -39,6 +39,9 @@ const char rps_objects_gitid[]= RPS_GITID;
 extern "C" const char rps_objects_date[];
 const char rps_objects_date[]= __DATE__;
 
+extern "C" const char rps_objects_shortgitid[];
+const char rps_objects_shortgitid[]= RPS_SHORTGITID;
+
 
 std::unordered_map<Rps_Id,Rps_ObjectZone*,Rps_Id::Hasher> Rps_ObjectZone::ob_idmap_(50777);
 

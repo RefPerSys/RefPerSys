@@ -67,6 +67,10 @@ const char rps_fltk_gitid[]= RPS_GITID;
 extern "C" const char rps_fltk_date[];
 const char rps_fltk_date[]= __DATE__;
 
+extern "C" const char rps_fltk_shortgitid[];
+const char rps_fltk_shortgitid[]= RPS_GITID;
+
+
 ////////////////////////////////////////////////////////////////////////
 ////// ******** DECLARATIONS ********
 

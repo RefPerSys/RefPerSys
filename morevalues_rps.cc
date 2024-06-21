@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2020 - 2023 The Reflective Persistent System Team
+ *      © Copyright 2020 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -38,6 +38,8 @@ const char rps_morevalues_gitid[]= RPS_GITID;
 extern "C" const char rps_morevalues_date[];
 const char rps_morevalues_date[]= __DATE__;
 
+extern "C" const char rps_morevalues_shortgitid[];
+const char rps_morevalues_shortgitid[]= RPS_SHORTGITID;
 
 /////////////////////////////////////////////////////// instances
 Rps_InstanceZone*

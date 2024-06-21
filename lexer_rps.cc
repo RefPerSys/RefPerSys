@@ -47,6 +47,10 @@ const char rps_lexer_gitid[]= RPS_GITID;
 extern "C" const char rps_lexer_date[];
 const char rps_lexer_date[]= __DATE__;
 
+extern "C" const char rps_lexer_shortgitid[];
+const char rps_lexer_shortgitid[]= RPS_SHORTGITID;
+
+
 extern "C" Rps_StringValue rps_lexer_token_name_str_val;
 Rps_StringValue rps_lexer_token_name_str_val(nullptr);
 

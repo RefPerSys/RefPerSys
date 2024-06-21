@@ -37,6 +37,10 @@ const char rps_magicattrs_gitid[]= RPS_GITID;
 extern "C" const char rps_magicattrs_date[];
 const char rps_magicattrs_date[]= __DATE__;
 
+extern "C" const char rps_magicattrs_shortgitid[];
+const char rps_magicattrs_shortgitid[]= RPS_SHORTGITID;
+
+
 /// the `class` magic attribute and class _41OFI3r0S1t03qdB2E
 extern "C" Rps_Value
 rpsget_41OFI3r0S1t03qdB2E(const Rps_Value valarg, const Rps_ObjectRef obattrarg,
