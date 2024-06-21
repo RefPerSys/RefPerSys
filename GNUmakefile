@@ -43,7 +43,7 @@ RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
 RPS_ATSHARP := $(shell printf '@#')
 #                                                                
 .DEFAULT_GOAL: refpersys
-.PHONY: all config objects clean distclean gitpush gitpush2 \
+.PHONY: all config objects showtests clean distclean gitpush gitpush2 \
         print-plugin-settings indent redump clean-plugins plugins \
         test00 test01 test01b test01c test01d test01e test01f \
         test02 test03 test05 test06 test07 test07a test08 test09 test-load \
@@ -351,71 +351,71 @@ altredump:  ./refpersys
 	$(SYNC)
 
 ################################################################
-#### simple tests
+#### simple tests; the --run-name should start with test and not use $@ because of showtests target
 test00: refpersys
 	@printf '\n\n\n////test00 first\n'
-	./refpersys  -AREPL  --test-repl-lexer 'show help' -B --run-name=$@.1
+	./refpersys  -AREPL  --test-repl-lexer 'show help' -B --run-name=test00.1
 	@printf '\n\n\n////test00 second\n'
-	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B --run-name=$@.2
+	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B --run-name=test00.2
 	@printf '\n\n\n////test00 third\n'
-	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B --run-name=$@.3
+	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B --run-name=test00.3
 	@printf '\n\n\n////test00 help REPL command\n'
-	./refpersys -AREPL -c help -B
+	./refpersys -AREPL -c help -B --run-name=test00.help
 	@printf '\n\n\n////test00 FINISHED¤\n'
 
 test01: refpersys
 	@echo test01 testing simple show help with a lot of debug
-	./refpersys -AREPL -c 'show help' -B --run-name=$@
+	./refpersys -AREPL -c 'show help' -B --run-name=test01
 	@printf '\n\n\n////test01 FINISHED¤\n'
 
 test01b: refpersys
-	./refpersys -AREPL,LOW_REPL  -c 'show help' -B --run-name=$@
+	./refpersys -AREPL,LOW_REPL  -c 'show help' -B --run-name=test01b
 	@printf '\n\n\n////test01b FINISHED¤\n'
 
 test01c: refpersys
 	@printf '\n\n\n//+ test01c !parse_sum 1 + 2\n'
-	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2' -B --run-name=$@
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2' -B --run-name=test01c
 	@printf '\n\n\n////test01c FINISHED¤\n'
 
 test01d: refpersys
 	@printf '\n\n\n//+ test01d !parse_sum 1 + 2 + 3\n'
-	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 + 3' -B --run-name=$@
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 + 3' -B --run-name=test01d
 	@printf '\n\n\n////test01d FINISHED¤\n'
 
 test01e: refpersys
 	@printf '\n\n\n//+ test01e !parse_sum 1 + 2 * 3\n'
-	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 * 3' -B --run-name=$@
+	./refpersys -AREPL,LOW_REPL  -c '!parse_sum 1 + 2 * 3' -B --run-name=test01e
 	@printf '\n\n\n////test01e FINISHED¤\n'
 
 ### notice the space after the 3 below
 test01f: refpersys
-	./refpersys -AREPL,LOW_REPL  -c '!parse_primary 3 ' -B --run-name=$@
+	./refpersys -AREPL,LOW_REPL  -c '!parse_primary 3 ' -B --run-name=test01f
 	@printf '\n\n\n////test01f FINISHED¤\n'
 
 
 test02: refpersys
-	./refpersys -AREPL  -c 'show RefPerSys_system' -B --run-name=$@
+	./refpersys -AREPL  -c 'show RefPerSys_system' -B --run-name=test02
 	@printf '\n\n\n////test02 FINISHED¤\n'
 
 test03: refpersys
-	./refpersys -AREPL  -c 'show 1 + 2' -B --run-name=$@
+	./refpersys -AREPL  -c 'show 1 + 2' -B --run-name=test03
 	@printf '\n\n\n////test03 FINISHED¤\n'
 
 test04: refpersys
-	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B --run-name=$@
+	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B --run-name=test04
 	@printf '\n\n\n////test04 FINISHED¤\n'
 
 test05: refpersys
-	./refpersys -AREPL  -c 'show (1 + 2) ' -B --run-name=$@
+	./refpersys -AREPL  -c 'show (1 + 2) ' -B --run-name=test05
 	@printf '\n\n\n////test05 FINISHED¤\n'
 
 test06: refpersys
-	./refpersys -AREPL  -c 'show 1' -B --run-name=$@
+	./refpersys -AREPL  -c 'show 1' -B --run-name=test06
 	@printf '\n\n\n////test06 FINISHED¤\n'
 
 test07: refpersys
-	./refpersys -AREPL -B -c '!parse_term 1' --run-name=$@.1
-	./refpersys -AREPL -B -c '!parse_sum 1 + 2' --run-name=$@.2
+	./refpersys -AREPL -B -c '!parse_term 1' --run-name=test07.1
+	./refpersys -AREPL -B -c '!parse_sum 1 + 2' --run-name=test07.2
 	@printf '\n\n\n////test07 FINISHED¤\n'
 
 test07a: refpersys
@@ -429,32 +429,37 @@ test09: refpersys
 	@echo missing test09 ; exit 1
 
 test10: refpersys 
-	./refpersys -AREPL --run-name=$@ --run-delay=6s
+	./refpersys -AREPL --run-name=test10 --run-delay=6s
 	@printf '\n\n\n////test10 FINISHED¤\n'
 test-load: refpersys
-	./refpersys --batch
+	./refpersys --batch --run-name=test-load
 	@printf '\n\n\n////test-load FINISHED¤\n'
 
 ## testing the FLTK graphical interface
 testfltk1: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -AREPL --run-name=$@ --run-delay=6s  --fltk --pid-file=$$HOME/tmp/refpersys.pid
+	./refpersys -AREPL --run-name=testfltk1 --run-delay=6s  --fltk --pid-file=$$HOME/tmp/refpersys.pid
 	@printf '\n\n\n////testfltk1 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk2: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-delay=14s --fltk -bg ivory --run-name=$@ --pid-file=$$HOME/tmp/refpersys.pid
+	./refpersys -dPROGARG -AREPL --run-delay=14s --fltk -bg ivory --run-name=testfltk2 --pid-file=$$HOME/tmp/refpersys.pid
 	@printf '\n\n\n////testfltk2 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk3: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=29s  --fltk -bg lightpink --pid-file=$$HOME/tmp/refpersys.pid
+	./refpersys -dPROGARG -AREPL --run-name=testfltk3 --run-delay=29s  --fltk -bg lightpink --pid-file=$$HOME/tmp/refpersys.pid
 	@printf '\n\n\n////testfltk3 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk4: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=15m  --fltk -bg peachpuff --echo="hello from $@"
+	./refpersys -dPROGARG -AREPL --run-name=testfltk4 --run-delay=15m  --fltk -bg peachpuff --echo="hello from $@"
 	@printf '\n\n\n////testfltk4 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
+########### show the testing commands
+showtests:
+	@printf '\nRefPerSys has %d testing commands\n' $(shell /bin/grep 'run-name=test' GNUmakefile | /bin/grep -v '@' | /bin/wc -l)
+	@/bin/grep 'run-name=test' GNUmakefile | /bin/grep -v '@' | /bin/tr -d '\t'
+	@printf 'showtests¤ done git %s in %s\n\n' $(RPS_SHORTGIT_ID) $(shell /bin/pwd)
 ## eof GNUmakefile
 
