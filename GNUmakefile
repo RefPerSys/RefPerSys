@@ -41,6 +41,7 @@ RPS_HOST := $(shell /bin/hostname -f)
 RPS_ARCH := $(shell /bin/uname -m)
 RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
 RPS_ATSHARP := $(shell printf '@#')
+RPS_HOMETMP := $(shell echo '$$HOME/tmp')
 #                                                                
 .DEFAULT_GOAL: refpersys
 .PHONY: all config objects showtests clean distclean gitpush gitpush2 \
@@ -91,7 +92,7 @@ all:
 		REFPERSYS_TOPDIR="$(pwd)"; \
 		/usr/bin/printf "missing REFPERSYS_TOPDIR, using default\n" > /dev/stderr; \
 	fi
-
+	@/usr/bin/printf 'RPS_HOMETMP is %s\n' "$(RPS_HOMETMP)"
 	@/usr/bin/printf "make features: %s\n" "$(.FEATURES)" | $(FMT)
 	$(MAKE) do-configure-refpersys
 	@/usr/bin/printf "hand-written C++ code: %s\n" "$(REFPERSYS_HUMAN_CPP_SOURCES)" | $(FMT)
@@ -438,17 +439,17 @@ test-load: refpersys
 ## testing the FLTK graphical interface
 testfltk1: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -AREPL --run-name=testfltk1 --run-delay=6s  --fltk --pid-file=$$HOME/tmp/refpersys.pid
+	./refpersys -AREPL --run-name=testfltk1 --run-delay=6s  --fltk --pid-file=$(RPS_HOMETMP)/refpersys.pid
 	@printf '\n\n\n////testfltk1 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk2: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-delay=14s --fltk -bg ivory --run-name=testfltk2 --pid-file=$$HOME/tmp/refpersys.pid
+	./refpersys -dPROGARG -AREPL --run-delay=14s --fltk -bg ivory --run-name=testfltk2 --pid-file=$(RPS_HOMETMP)/refpersys.pid
 	@printf '\n\n\n////testfltk2 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk3: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-name=testfltk3 --run-delay=29s  --fltk -bg lightpink --pid-file=$$HOME/tmp/refpersys.pid
+	./refpersys -dPROGARG -AREPL --run-name=testfltk3 --run-delay=29s  --fltk -bg lightpink --pid-file=$(RPS_HOMETMP)/refpersys.pid
 	@printf '\n\n\n////testfltk3 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk4: refpersys
