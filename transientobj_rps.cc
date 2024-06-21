@@ -39,7 +39,8 @@ const char rps_transientobj_gitid[]= RPS_GITID;
 extern "C" const char rps_transientobj_date[];
 const char rps_transientobj_date[]= __DATE__;
 
-
+extern "C" const char rps_transientobj_shortgitid[];
+const char rps_transientobj_shortgitid[]= RPS_SHORTGITID;
 
 ////////////////////////////////////////////////////////////////
 ////// trensient unix process payload

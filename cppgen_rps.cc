@@ -46,7 +46,7 @@ const char rps_cppgen_date[]= __DATE__;
 
 
 extern "C" const char rps_cppgen_shortgitid[];
-const char rps_cppgen_shortgitid[]= RPS_GITID;
+const char rps_cppgen_shortgitid[]= RPS_SHORTGITID;
 
 //// return true on successful C++ code generation
 bool
