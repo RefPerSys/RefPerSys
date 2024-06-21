@@ -14,7 +14,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2023 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -39,6 +39,9 @@ const char rps_suparsrepl_gitid[]= RPS_GITID;
 
 extern "C" const char rps_suparsrepl_date[];
 const char rps_suparsrepl_date[]= __DATE__;
+
+extern "C" const char rps_suparsrepl_shortgitid[];
+const char rps_suparsrepl_shortgitid[]= RPS_SHORTGITID;
 
 void
 rps_parsrepl_failing_at(const char*fil, int lin, int cnt, const std::string&failstr)

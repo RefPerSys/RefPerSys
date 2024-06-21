@@ -37,6 +37,9 @@ const char rps_scalar_gitid[]= RPS_GITID;
 extern "C" const char rps_scalar_date[];
 const char rps_scalar_date[]= __DATE__;
 
+extern "C" const char rps_scalar_shortgitid[];
+const char rps_scalar_shortgitid[]= RPS_SHORTGITID;
+
 /** important NOTICE
  *
  * Don't change the code of the below function
