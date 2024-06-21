@@ -12,8 +12,8 @@
  *      Basile Starynkevitch <basile@starynkevitch.net>
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *
- *      © Copyright 2019 The Reflective Persistent System Team
- *      <https://refpersys.gitlab.io>
+ *      © Copyright 2019 - 2024 The Reflective Persistent System Team
+ *      <https://refpersys.gitlab.io> and refpersys.org
  *
  * License:
  *    This program is free software: you can redistribute it and/or modify
@@ -37,6 +37,9 @@ const char rps_primes_gitid[]= RPS_GITID;
 
 extern "C" const char rps_primes_date[];
 const char rps_primes_date[]= __DATE__;
+
+extern "C" const char rps_primes_shortgitid[];
+const char rps_primes_shortgitid[]= RPS_SHORTGITID;
 
 extern "C" int64_t rps_prime_above (int64_t n);
 extern "C" int64_t rps_prime_below (int64_t n);

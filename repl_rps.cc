@@ -42,6 +42,9 @@ const char rps_repl_gitid[]= RPS_GITID;
 extern "C" const char rps_repl_date[];
 const char rps_repl_date[]= __DATE__;
 
+extern "C" const char rps_repl_shortgitid[];
+const char rps_repl_shortgitid[]= RPS_SHORTGITID;
+
 
 std::vector<std::string> rps_completion_vect;
 
