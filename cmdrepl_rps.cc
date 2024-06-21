@@ -465,7 +465,6 @@ rps_environment_get_shallow_bound_value(Rps_ObjectRef envob, Rps_ObjectRef varob
         *pmissing = true;
       return nullptr;
     };
-  bool missing= false;
   return paylenv->get_obmap(varob, nullptr, pmissing);
 } // end rps_environment_get_shallow_bound_value
 
@@ -499,7 +498,6 @@ rps_environment_find_binding_depth(Rps_ObjectRef envob, Rps_ObjectRef varob)
         isgoodenv = true;
       if (!isgoodenv)
         return -1;
-      bool missing = true;
       auto paylenv = envob->get_dynamic_payload<Rps_PayloadEnvironment>();
       if (!paylenv)
         return -1;
@@ -1513,7 +1511,7 @@ extern "C" rps_applyingfun_t rpsapply_982LHCTfHdC02o4a6Q;
 Rps_TwoValues
 rpsapply_982LHCTfHdC02o4a6Q(Rps_CallFrame*callerframe, /// REPL command add_root
                             const Rps_Value arg0,
-                            const Rps_Value arg1,
+                            [[maybe_unused]] const Rps_Value arg1,
                             [[maybe_unused]] const Rps_Value arg2,
                             [[maybe_unused]] const Rps_Value arg3,
                             [[maybe_unused]] const std::vector<Rps_Value>* restargs)
@@ -1522,23 +1520,36 @@ rpsapply_982LHCTfHdC02o4a6Q(Rps_CallFrame*callerframe, /// REPL command add_root
   if (!descoid) descoid=Rps_Id("_982LHCTfHdC02o4a6Q");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
                            callerframe,
+                           Rps_Value a0rootexp;
+                           Rps_Value rootv;
+                           Rps_ObjectRef obenv;
+                           Rps_ObjectRef obroot;
                 );
-  RPS_DEBUG_LOG(CMD, "REPL command add_root start arg0=" << arg0
-                << "∈" << arg0.compute_class(&_)
-                << " arg1=" << arg1
-                << "∈" << arg1.compute_class(&_) << std::endl
+  _f.a0rootexp = arg0;
+  _f.obenv = rps_get_first_repl_environment();
+  RPS_DEBUG_LOG(CMD, "REPL command add_root start a0rootexp=" << _f.a0rootexp
+                << "∈" <<_f.a0rootexp.compute_class(&_)
+                << " obenv=" << _f.obenv
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
-  RPS_DEBUG_LOG(REPL, "REPL command add_root start arg0=" << arg0
-                << "∈" << arg0.compute_class(&_)
-                << " arg1=" << arg1
-                << "∈" << arg1.compute_class(&_) << std::endl
+  RPS_DEBUG_LOG(REPL, "REPL command add_root start a0rootexp=" << _f.a0rootexp
+                << "∈" << _f.a0rootexp.compute_class(&_)
+                << " obenv=" << _f.obenv
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
-#warning incomplete rpsapply_982LHCTfHdC02o4a6Q for REPL command add_root
-  RPS_WARNOUT("incomplete rpsapply_982LHCTfHdC02o4a6Q for REPL command add_root from " << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsapply_982LHCTfHdC02o4a6Q for REPL command add_root"));
-  return {nullptr,nullptr};
+  _f.rootv = rps_simple_evaluate_repl_expr(&_, _f.a0rootexp, _f.obenv);
+  RPS_DEBUG_LOG(REPL, "REPL command add_root rootv=" << _f.rootv);
+  _f.obroot = _f.rootv.as_object();
+  if (!_f.obroot)
+    {
+      RPS_WARNOUT("in REPL command add_root the evaluated rootv="
+                  << _f.rootv << " is not an object" << std::endl);
+      return {nullptr,nullptr};
+    }
+  std::lock_guard<std::recursive_mutex> guobdest(*_f.obroot->objmtxptr());
+  rps_add_root_object(_f.obroot);
+  RPS_INFORMOUT("successfully added new root object " << _f.obroot);
+  return {_f.rootv,nullptr};
 } //end of rpsapply_982LHCTfHdC02o4a6Q for REPL command add_root
 
 
