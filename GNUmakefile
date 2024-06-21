@@ -438,17 +438,17 @@ test-load: refpersys
 ## testing the FLTK graphical interface
 testfltk1: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -AREPL --run-name=$@ --run-delay=6s  --fltk
+	./refpersys -AREPL --run-name=$@ --run-delay=6s  --fltk --pid-file=$$HOME/tmp/refpersys.pid
 	@printf '\n\n\n////testfltk1 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk2: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-delay=14s --fltk -bg ivory --run-name=$@
+	./refpersys -dPROGARG -AREPL --run-delay=14s --fltk -bg ivory --run-name=$@ --pid-file=$$HOME/tmp/refpersys.pid
 	@printf '\n\n\n////testfltk2 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk3: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=29s  --fltk -bg lightpink
+	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=29s  --fltk -bg lightpink --pid-file=$$HOME/tmp/refpersys.pid
 	@printf '\n\n\n////testfltk3 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk4: refpersys
