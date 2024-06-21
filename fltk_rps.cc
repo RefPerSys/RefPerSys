@@ -725,7 +725,7 @@ Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
     {
 #warning unimplemented debug show
       RPS_DEBUG_LOG(REPL, "menu_cb debug show rps_fltk_debugwin@"
-		    << (void*)rps_fltk_debugwin);
+                    << (void*)rps_fltk_debugwin);
       if (!rps_fltk_debugwin)
         rps_fltk_debugwin = new Rps_FltkDebugWindow(670,480);
       rps_fltk_debugwin->show();
