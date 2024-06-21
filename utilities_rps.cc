@@ -584,14 +584,15 @@ rps_show_version_handwritten_cplusplus_files(void)
         symdat = (const char*)dlsym(rps_proghdl, cursymdat);
         if (!symdat || !isalnum(symdat[0]))
           continue;
-	if (symgit && symshortgit
-	    && strncmp(symgit, symshortgit, sizeof(rps_utilities_shortgitid)-2)) {
-	  /// this should not happen and is likely a bug in C++ files or build procedure
-	  RPS_POSSIBLE_BREAKPOINT();
-	  RPS_WARNOUT("perhaps corrupted " << curfile << " in topdir " << rps_topdirectory
-		      << " with " << cursymgit << "=" << symgit
-		      << " and " << cursymshortgit << "=" << symshortgit);
-	}
+        if (symgit && symshortgit
+            && strncmp(symgit, symshortgit, sizeof(rps_utilities_shortgitid)-2))
+          {
+            /// this should not happen and is likely a bug in C++ files or build procedure
+            RPS_POSSIBLE_BREAKPOINT();
+            RPS_WARNOUT("perhaps corrupted " << curfile << " in topdir " << rps_topdirectory
+                        << " with " << cursymgit << "=" << symgit
+                        << " and " << cursymshortgit << "=" << symshortgit);
+          }
       };
       if (symgit && isalnum(symgit[0]) && symdat && isalnum(symdat[0]))
         {
