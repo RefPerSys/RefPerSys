@@ -21,10 +21,13 @@ rps_do_plugin(const Rps_Plugin* plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
 		 Rps_ObjectRef obsymbol;
+		 Rps_ObjectRef obsystem;
 		 Rps_ObjectRef obnamedattr;
 		 Rps_ObjectRef oboldroot;
 		 Rps_Value namestr; // a string
 		 Rps_Value commentstr;
+		 Rps_Value oldsetv;
+		 Rps_Value newsetv;
 		 );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*comment = rps_get_extra_arg("comment");
@@ -90,10 +93,19 @@ rps_do_plugin(const Rps_Plugin* plugin)
 		 << std::endl
 		 << "Please edit " << __FILE__);
   };
-#warning TODO: add the _f.oboldroot to the _2aNcYqKwdDR01zp0Xp "constant∈named_attribute" set in _1Io89yIORqn02SXx4p:RefPerSys_system
+  _f.obsystem = RPS_ROOT_OB(_1Io89yIORqn02SXx4p); //RefPerSys_system∈the_system_class
+  std::lock_guard<std::recursive_mutex> gu(*_f.obsystem->objmtxptr());
+  _f.oldsetv = _f.obsystem->get_physical_attr(RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp)); // //"constant"∈named_attribute
+  RPS_ASSERT(_f.oldsetv.is_set());
+  _f.newsetv = Rps_SetValue{_f.oldsetv, Rps_Value(_f.oboldroot)};
+  RPS_ASSERT(_f.newsetv.as_set()->cardinal() >= _f.oldsetv.as_set()->cardinal());
+#warning TODO: add more code in plugins_dir/rpsplug_root2const.cc
+  // should put the _f.newsetv in RefPerSys_system as "constant"∈named_attribute
+  // should remove the old root using rps_remove_root_object
   RPS_WARNOUT("plugin " << plugin->plugin_name
 	      << " is incomplete and should move old root " << _f.oboldroot
-	      << " in attribute " << RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp) << " of " << RPS_ROOT_OB(_1Io89yIORqn02SXx4p));
+	      << " in attribute " << RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp) << " of " << RPS_ROOT_OB(_1Io89yIORqn02SXx4p)
+	      << " new constant set newsetv=" << _f.newsetv);
 } // end rps_do_plugin
 
 
