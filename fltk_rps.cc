@@ -315,6 +315,7 @@ public:
 
 class Rps_FltkMainWindow: public Fl_Window
 {
+  friend class Rps_FltkDebugWindow;
   Fl_Menu_Bar* _mainwin_menubar;
   Fl_Flex* _mainwin_vflex;
   std::array<std::shared_ptr<Fl_Menu_Item>,
@@ -326,7 +327,7 @@ class Rps_FltkMainWindow: public Fl_Window
 protected:
   void fill_main_window(void);
   void register_mainwin_string(const std::string&str);
-  static void menu_cb(Fl_Widget*w, void*data);
+  static void main_menu_cb(Fl_Widget*w, void*data);
   static void close_cb(Fl_Widget*w, void*data);
 public:
   Rps_FltkMainWindow(int x, int y, int w, int h, const char*title);
@@ -339,6 +340,7 @@ public:
 
 class Rps_FltkDebugWindow: public Fl_Window
 {
+  friend class Rps_FltkMainWindow;
   Fl_Menu_Bar* _dbgwin_menubar;
   Fl_Tile* _dbgwin_tile;
   Fl_Text_Buffer* _dbgwin_text_buffer;
@@ -346,6 +348,7 @@ class Rps_FltkDebugWindow: public Fl_Window
   Fl_Text_Display* _dbgwin_bottom_text_display;
   char _dbgwin_labuf[80];
   void fill_debug_window(void);
+  static void debug_menu_cb(Fl_Widget*w, void*data);
 public:
   static constexpr int min_width=200;
   static constexpr int min_height=100;
@@ -604,7 +607,7 @@ Rps_FltkMainWindow::add_menu_item_for_debug_option(Rps_Debug dbglev)
                 << RPS_FULL_BACKTRACE_HERE(1,
                     "Rps_FltkMainWindow::add_menu_item_for_debug_option"));
   int rk = _mainwin_menubar->add(dbgitcstr,
-                                 nullptr, menu_cb, (void*) datacstr,
+                                 nullptr, main_menu_cb, (void*) datacstr,
                                  FL_MENU_TOGGLE);
   RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::add_menu_item_for_debug_option rk="
                 << rk);
@@ -626,12 +629,12 @@ Rps_FltkMainWindow::fill_main_window(void)
   {
     _mainwin_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
     RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window _mainwin_menubar@" << (void*)_mainwin_menubar);
-    _mainwin_menubar->add("&App/e&Xit", "^x", menu_cb, (void*)"X");
-    _mainwin_menubar->add("&App/&Quit", "^q", menu_cb, (void*)"Q");
-    _mainwin_menubar->add("&App/&Dump", "^d", menu_cb, (void*)"D");
-    _mainwin_menubar->add("&Debug/Stop", "^s", menu_cb, (void*)"d-");
-    _mainwin_menubar->add("&Debug/Clear", "^c", menu_cb, (void*)"d_");
-    _mainwin_menubar->add("&Debug/Sho&w", "^w", menu_cb, (void*)"d+");
+    _mainwin_menubar->add("&App/e&Xit", "^x", main_menu_cb, (void*)"X");
+    _mainwin_menubar->add("&App/&Quit", "^q", main_menu_cb, (void*)"Q");
+    _mainwin_menubar->add("&App/&Dump", "^d", main_menu_cb, (void*)"D");
+    _mainwin_menubar->add("&Debug/Stop", "^s", main_menu_cb, (void*)"d-");
+    _mainwin_menubar->add("&Debug/Clear", "^c", main_menu_cb, (void*)"d_");
+    _mainwin_menubar->add("&Debug/Sho&w", "^w", main_menu_cb, (void*)"d+");
     ///
 #define Rps_FLTK_debug_option(Dbgopt) add_menu_item_for_debug_option(RPS_DEBUG_##Dbgopt);
     RPS_DEBUG_OPTIONS(Rps_FLTK_debug_option);
@@ -684,20 +687,20 @@ Rps_FltkMainWindow::~Rps_FltkMainWindow()
 }; // end Rps_FltkMainWindow::~Rps_FltkMainWindow
 
 void
-Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
+Rps_FltkMainWindow::main_menu_cb(Fl_Widget*w, void*data)
 {
   /// the widget w is the menu bar
   RPS_ASSERT((void*)rps_fltk_mainwin);
   RPS_ASSERT(rps_fltk_mainwin->_mainwin_menubar != nullptr);
   RPS_ASSERT((void*)w == (void*)rps_fltk_mainwin->_mainwin_menubar);
   int logicalsize = rps_fltk_mainwin->_mainwin_menubar->size();
-  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::menu_cb w@" << (void*)w
+  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::main_menu_cb w@" << (void*)w
                 << " _mainwin_menubar@" << (void*)rps_fltk_mainwin->_mainwin_menubar
                 << " of type:" << (unsigned)(w->type())
                 << " data@" << data << "=" << (const char*)data
                 << " logicalsize=" << logicalsize
                 << std::endl
-                << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow::menu_cb"));
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow::main_menu_cb"));
   RPS_ASSERT(rps_is_main_thread());
   RPS_LOCALFRAME(RPS_CALL_FRAME_UNDESCRIBED,
                  /*callerframe:*/rps_curthread_callframe, //
@@ -706,18 +709,18 @@ Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
                 );
   if (!strcmp((const char*)data, "X")) // eXit
     {
-      RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::menu_cb eXit");
+      RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::main_menu_cb eXit");
       rps_dump_into(".", &_);
       rps_fltk_stop();
     }
   else if (!strcmp((const char*)data, "Q")) // Quit
     {
-      RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::menu_cb Quit");
+      RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::main_menu_cb Quit");
       rps_fltk_stop();
     }
   else if (!strcmp((const char*)data, "D")) // Dump
     {
-      RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::menu_cb Dump");
+      RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::main_menu_cb Dump");
       rps_dump_into(".", &_);
     }
   else if (!strcmp((const char*)data, "d-")) // debug stop
@@ -728,7 +731,7 @@ Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
   else if (!strcmp((const char*)data, "d+")) // debug show
     {
 #warning unimplemented debug show
-      RPS_DEBUG_LOG(REPL, "menu_cb debug show rps_fltk_debugwin@"
+      RPS_DEBUG_LOG(REPL, "main_menu_cb debug show rps_fltk_debugwin@"
                     << (void*)rps_fltk_debugwin);
       if (!rps_fltk_debugwin)
         rps_fltk_debugwin = new Rps_FltkDebugWindow(670,480);
@@ -747,16 +750,16 @@ Rps_FltkMainWindow::menu_cb(Fl_Widget*w, void*data)
       Rps_Debug dbgopt = rps_debug_of_string(std::string{(const char*)data+2});
       if (dbgopt > RPS_DEBUG__NONE)
         {
-#warning unimplemented menu_cb to set or clear debug option
+#warning unimplemented main_menu_cb to set or clear debug option
         }
     }
   else
     {
-#warning unimplemented menu_cb
-      RPS_WARNOUT("unimplemented menu_cb " << (const char*)data
-                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow::menu_cb strange"));
+#warning unimplemented main_menu_cb
+      RPS_WARNOUT("unimplemented main_menu_cb " << (const char*)data
+                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow::main_menu_cb strange"));
     }
-} // end Rps_FltkMainWindow::menu_cb
+} // end Rps_FltkMainWindow::main_menu_cb
 
 void
 Rps_FltkMainWindow::close_cb(Fl_Widget*wid, void*data)
@@ -822,9 +825,31 @@ Rps_FltkDebugWindow::fill_debug_window(void)
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkDebugWindow::fill_debug_window @"
                 << (void*)this);
+  _dbgwin_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
+  RPS_DEBUG_LOG(REPL, "Rps_FltkkDebugWindow::fill_debug_window _dbgwin_menubar@" << _dbgwin_menubar);
+  _dbgwin_menubar->add("Clear", "^c", Rps_FltkDebugWindow::debug_menu_cb, (void*)"d_");
+  // create _dbgwin_tile
+  // create _dbgwin_text_buffer
+  // create _dbgwin_top_text_display
+  // create _dbgwin_bottom_text_display
 #warning unimplemented Rps_FltkDebugWindow::fill_debug_window
-  RPS_WARNOUT("unimplemented FltkDebugWindow::fill_debug_window");
+  RPS_WARNOUT("unimplemented FltkDebugWindow::fill_debug_window" << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "FltkDebugWindow::fill_debug_window"));
 } // end Rps_FltkDebugWindow::fill_debug_window
+
+void
+Rps_FltkDebugWindow::debug_menu_cb(Fl_Widget*w, void*data)
+{
+  /// the widget w is the menu bar
+  RPS_ASSERT((void*)rps_fltk_debugwin);
+  RPS_ASSERT(rps_fltk_debugwin->_dbgwin_menubar != nullptr);
+  RPS_ASSERT((void*)w == (void*)rps_fltk_debugwin->_dbgwin_menubar);
+  RPS_DEBUG_LOG(REPL, "Rps_FltkDebugWindow::debug_menu_cb w@" << (void*)w
+                << " data@" << data << "=" << (const char*)data);
+  RPS_WARNOUT("unimplemented FltkDebugWindow::debug_menu_cb" << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "FltkDebugWindow::debug_menu_cb"));
+#warning unimplemented Rps_FltkDebugWindow::debug_menu_cb
+} // end Rps_FltkDebugWindow::debug_menu_cb
 
 Rps_FltkDebugWindow::~Rps_FltkDebugWindow()
 {
