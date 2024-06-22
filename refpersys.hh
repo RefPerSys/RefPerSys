@@ -5224,6 +5224,9 @@ public:
 /// the called function cannot add, remove or query the global root set
 extern "C" void rps_each_root_object (const std::function<void(Rps_ObjectRef)>&fun);
 extern "C" void rps_add_root_object (const Rps_ObjectRef);
+/// Both rps_remove_root_object and rps_is_root_object return false if
+/// argument is not a root object.  Of course rps_remove_root_object
+/// also removes it.
 extern "C" bool rps_remove_root_object (const Rps_ObjectRef);
 extern "C" bool rps_is_root_object (const Rps_ObjectRef);
 extern "C" std::set<Rps_ObjectRef> rps_set_root_objects(void);
