@@ -115,9 +115,11 @@ rps_do_plugin(const Rps_Plugin* plugin)
     RPS_WARNOUT("plugin " << plugin->plugin_name
 		<< " failed to remove non-root object " << _f.oboldroot
 		<< std::endl << " but did register it as a constant");
-  RPS_WARNOUT("plugin " << plugin->plugin_name
-	      << " is incomplete and should move old root " << _f.oboldroot
-	      << " in attribute " << RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp) << " of " << RPS_ROOT_OB(_1Io89yIORqn02SXx4p)
+  RPS_INFORMOUT("plugin " << plugin->plugin_name
+		<< " had old constant set " << _f.oldsetv
+		<< " did move old root " << _f.oboldroot
+		<< " in attribute " << RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp)
+		<< " of " << RPS_ROOT_OB(_1Io89yIORqn02SXx4p) << std::endl
 	      << " new constant set newsetv=" << _f.newsetv);
 } // end rps_do_plugin
 
