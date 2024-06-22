@@ -24,8 +24,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
 		 Rps_ObjectRef obsystem;
 		 Rps_ObjectRef obnamedattr;
 		 Rps_ObjectRef oboldroot;
+		 Rps_ObjectRef obcomment;
 		 Rps_Value namestr; // a string
-		 Rps_Value commentstr;
+		 Rps_Value commentstrv;
 		 Rps_Value oldsetv;
 		 Rps_Value newsetv;
 		 );
@@ -99,9 +100,21 @@ rps_do_plugin(const Rps_Plugin* plugin)
   RPS_ASSERT(_f.oldsetv.is_set());
   _f.newsetv = Rps_SetValue{_f.oldsetv, Rps_Value(_f.oboldroot)};
   RPS_ASSERT(_f.newsetv.as_set()->cardinal() >= _f.oldsetv.as_set()->cardinal());
-#warning TODO: add more code in plugins_dir/rpsplug_root2const.cc
-  // should put the _f.newsetv in RefPerSys_system as "constant"∈named_attribute
-  // should remove the old root using rps_remove_root_object
+  if (comment && comment[0]) { ///if some comment is given put it
+    _f.commentstrv = Rps_StringValue(comment);
+    std::lock_guard<std::recursive_mutex> gu(*_f.oboldroot->objmtxptr());
+    _f.oboldroot->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
+			   _f.commentstrv);
+    _f.oboldroot->touch_now();
+  };
+  /// update the set of contants
+  _f.obsystem->put_attr(RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp), // //"constant"∈named_attribute
+			_f.newsetv);
+  /// remove the root object
+  if (!rps_remove_root_object(_f.oboldroot))
+    RPS_WARNOUT("plugin " << plugin->plugin_name
+		<< " failed to remove non-root object " << _f.oboldroot
+		<< std::endl << " but did register it as a constant");
   RPS_WARNOUT("plugin " << plugin->plugin_name
 	      << " is incomplete and should move old root " << _f.oboldroot
 	      << " in attribute " << RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp) << " of " << RPS_ROOT_OB(_1Io89yIORqn02SXx4p)
