@@ -811,10 +811,10 @@ Rps_FltkDebugWindow::Rps_FltkDebugWindow(int ww, int hh)
   : Rps_FltkDebugWindow(17 + (Rps_Random::random_32u() % 32)*12,
                         18 + (Rps_Random::random_32u() % 32)*12, ww, hh)
 {
-  RPS_ASSERT(rps_fltk_debugwin == nullptr);
-  rps_fltk_debugwin = this;
   RPS_DEBUG_LOG(REPL,  "Rps_FltkDebugWindow@" << (void*)this
-                << " x=" << x() << ",y=" << y() << ",w=" << w() << "h=" << h() << " lab:" << _dbgwin_labuf);
+                << " x=" << x() << ",y=" << y() << ",w=" << w()
+                << "h=" << h() << " lab:" << _dbgwin_labuf
+                << " rps_fltk_debugwin=" << (void*)rps_fltk_debugwin);
 } // end Rps_FltkDebugWindow::Rps_FltkDebugWindow
 
 void
