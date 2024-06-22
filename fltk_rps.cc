@@ -56,6 +56,7 @@
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Text_Editor.H>
+#include <FL/Fl_Text_Display.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Flex.H>
@@ -825,13 +826,33 @@ Rps_FltkDebugWindow::fill_debug_window(void)
 {
   RPS_DEBUG_LOG(REPL, "Rps_FltkDebugWindow::fill_debug_window @"
                 << (void*)this);
-  _dbgwin_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
+  begin();
+  _dbgwin_menubar = new Fl_Menu_Bar(1, 1, w(), 25);
   RPS_DEBUG_LOG(REPL, "Rps_FltkkDebugWindow::fill_debug_window _dbgwin_menubar@" << _dbgwin_menubar);
   _dbgwin_menubar->add("Clear", "^c", Rps_FltkDebugWindow::debug_menu_cb, (void*)"d_");
-  // create _dbgwin_tile
-  // create _dbgwin_text_buffer
+  _dbgwin_tile = new Fl_Tile(1, _dbgwin_menubar->y()+2,  w(), h()-(_dbgwin_menubar->h()+3));
+  constexpr int debug_text_initial_size=4096;
+  constexpr int debug_text_gap_size=2000;
+  _dbgwin_text_buffer = new  Fl_Text_Buffer(debug_text_initial_size, debug_text_gap_size);
+  {
+    char dbgbuf[128];
+    memset(dbgbuf, 0, sizeof(dbgbuf));
+    snprintf(dbgbuf, sizeof(dbgbuf), "RefPerSys p%d@%s debug\n", (int)getpid(), rps_hostname());
+    _dbgwin_text_buffer->append(dbgbuf);
+  }
+  _dbgwin_tile->begin();
   // create _dbgwin_top_text_display
+  _dbgwin_top_text_display = new Fl_Text_Display(1, 1,  _dbgwin_tile->w()-2, _dbgwin_tile->h()/2, "top");
+  _dbgwin_top_text_display->buffer(_dbgwin_text_buffer);
+  _dbgwin_top_text_display->show();
   // create _dbgwin_bottom_text_display
+  _dbgwin_bottom_text_display = new Fl_Text_Display(1, _dbgwin_tile->h()/2,  _dbgwin_tile->w()-2, _dbgwin_tile->h()/2, "bottom");
+  _dbgwin_bottom_text_display->buffer(_dbgwin_text_buffer);
+  _dbgwin_bottom_text_display->show();
+  _dbgwin_tile->end();
+  _dbgwin_tile->show();
+  /// TODO fixme: when the separator between top & bottom text display is moved, the entire tile should be redrawn...
+  end();
 #warning unimplemented Rps_FltkDebugWindow::fill_debug_window
   RPS_WARNOUT("unimplemented FltkDebugWindow::fill_debug_window" << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "FltkDebugWindow::fill_debug_window"));
