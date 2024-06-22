@@ -315,6 +315,33 @@ Rps_SetOb::collect(const std::vector<Rps_Value>&vecval)
 
 
 
+const Rps_SetOb*
+Rps_SetOb::collect(const std::initializer_list<Rps_Value>&ilval)
+{
+  std::set<Rps_ObjectRef>elemset;
+  for (auto val: ilval)
+    {
+      if (val.is_object())
+        elemset.insert(Rps_ObjectRef(val.as_object()));
+      else if (val.is_tuple())
+        {
+          auto tup = val.as_tuple();
+          for (auto ob: *tup)
+            if (ob)
+              elemset.insert(ob);
+        }
+      else if (val.is_set())
+        {
+          auto set = val.as_set();
+          for (auto ob: *set)
+            elemset.insert(ob);
+        }
+    }
+  return make(elemset);
+} // end of Rps_SetOb::collect with initializer_list
+
+
+
 
 
 void
