@@ -566,8 +566,8 @@ rps_show_version_handwritten_cplusplus_files(void)
       const char* symdat = nullptr;
       const char* symshortgit = nullptr;
       {
-        char cursymgit[64];
-        char cursymdat[64];
+        char cursymgit[80];
+        char cursymdat[80];
         char cursymshortgit[80];
         memset (cursymgit, 0, sizeof(cursymgit));
         memset (cursymdat, 0, sizeof(cursymdat));
