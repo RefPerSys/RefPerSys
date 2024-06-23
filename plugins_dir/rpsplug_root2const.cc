@@ -32,6 +32,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
 		 );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*comment = rps_get_extra_arg("comment");
+  const char*dumpdir = rps_get_extra_arg("dump");
   if (!plugarg || plugarg[0]==(char)0)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " without argument; should be some name or root objectid");
@@ -121,6 +122,11 @@ rps_do_plugin(const Rps_Plugin* plugin)
 		<< " in attribute " << RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp)
 		<< " of " << RPS_ROOT_OB(_1Io89yIORqn02SXx4p) << std::endl
 	      << " new constant set newsetv=" << _f.newsetv);
+  if (dumpdir) {
+    RPS_INFORMOUT("plugin " << plugin->plugin_name << " dumping to " << dumpdir);
+    rps_dump_into (std::string(dumpdir), &_);
+    RPS_INFORMOUT("plugin " << plugin->plugin_name << " dumped to " << dumpdir);
+  }
 } // end rps_do_plugin
 
 
