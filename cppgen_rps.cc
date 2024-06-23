@@ -63,6 +63,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  Rps_ObjectRef obcurinclude;
                  Rps_ClosureValue vclos;
                  Rps_Value vinclude;
+                 Rps_Value vincludeset;
                  Rps_Value vold;
                  Rps_Value vmainres;
                  Rps_Value vxtrares;
@@ -122,7 +123,11 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                   << " obgenerator=" << _f.obgenerator);
   if (_f.vinclude.is_set())
     {
+      _f.vincludeset = _f.vinclude;
       unsigned cardinclset = _f.vinclude.as_set()->cardinal();
+      /// TODO: we need to sort the set of includes.  Perhaps using
+      /// some new constant attributes, maybe include_priority and
+      /// cxx_include_dependencies
 #warning  rps_generate_cplusplus_code should handle set of includes
       throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code unimplemented set vinclude:"
                                   << _f.vinclude << " obmodule=" << _f.obmodule
