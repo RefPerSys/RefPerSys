@@ -81,8 +81,9 @@ RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 ### required libraries not being known to pkg-config
 ## unistring is https://www.gnu.org/software/libunistring/
 ## backtrace is https://github.com/ianlancetaylor/libbacktrace (also inside GCC source)
-## libgccjit is https://gcc.gnu.org/onlinedocs/jit/
-REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace -lgccjit
+## libgccjit is https://gcc.gnu.org/onlinedocs/jit/ but not useful yet
+REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace
+## TODO after june 2024, add the libgccjit...
 
 ### desired plugins (their basename under plugins_dir/)
 REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_simpinterp
