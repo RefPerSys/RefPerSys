@@ -12,7 +12,7 @@
  *      Abhishek Chakravarti <abhishek@taranjali.org>
  *      Nimesh Neema <nimeshneema@gmail.com>
  *
- *      © Copyright 2019 - 2023 The Reflective Persistent System Team
+ *      © Copyright 2019 - 2024 The Reflective Persistent System Team
  *      team@refpersys.org & http://refpersys.org/
  *
  * License:
@@ -141,9 +141,9 @@ Rps_ObjectRef::as_string(void) const
       if (!clana.empty())
         return std::string{"∋" /*U+220B CONTAINS AS MEMBER*/} + clana;
     }
-  /** Up to commit 44bdcf1b86b983 dated Jul 16, 2023 we incorrectly
-      used the _4FBkYDlynyC02QtkfG "name"∈named_attribute instead of
-      the _1EBVGSfW2m200z18rx name∈named_attribute **/
+  /** Up to commit 44bdcf1b86b983 dated Jul 16, 2023 we did
+   ** incorrectly used the _4FBkYDlynyC02QtkfG "name"∈named_attribute
+   ** instead of the _1EBVGSfW2m200z18rx name∈named_attribute **/
   else if (const Rps_Value namval
            = _optr->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)) /*name∈named_attribute*/)
     {
