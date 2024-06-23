@@ -1,7 +1,7 @@
 // see http://refpersys.org/
 // passed to commits after  9d1db4092 (of July 13, 2023)
 // GPLv3+ licensed
-// © Copyright 2023 Basile Starynkevitch <basile@starynkevitch.net>
+// © Copyright 2023 - 2024 Basile Starynkevitch <basile@starynkevitch.net>
 // This plugin creates a new RefPerSys symbol
 /*****
  * Once compiled, use it for example as:
@@ -10,6 +10,7 @@
               --plugin-arg=rpsplug_createsymbol:new_symbol_name \
               --extra=comment='some comment' \
               --extra=rooted=0 \
+              --extra=constant=1 \
               --batch --dump=.
 
  ****/
@@ -26,7 +27,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*comment = rps_get_extra_arg("comment");
   const char*rooted = rps_get_extra_arg("rooted");
+  const char*constant = rps_get_extra_arg("constant");
   bool isrooted = false;
+  bool isconstant = false;
   if (!plugarg || plugarg[0]==(char)0)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " without argument; should be some non-empty name");
@@ -40,10 +43,19 @@ rps_do_plugin(const Rps_Plugin* plugin)
       RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                    << " with bad name " << Rps_QuotedC_String(plugarg));
   }
-  if (rooted)
+  if (rooted && rooted[0])
     {
-      if (!strcmp(rooted, "true")) isrooted = true;
-      if (atoi(rooted) > 0) isrooted = true;
+      if (!strcmp(rooted, "true"))
+	isrooted = true;
+      else if (atoi(rooted) > 0)
+	isrooted = true;
+    };
+  if (constant && constant[0])
+    {
+      if (!strcmp(constant, "true"))
+	isconstant = true;
+      else if (atoi(constant) > 0)
+	isconstant = true;
     };
   /* Check that plugarg is some new name */
   if (auto nob = Rps_ObjectRef::find_object_or_null_by_string(&_, std::string(plugarg)))
@@ -58,7 +70,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   RPS_ASSERT (paylsymb != nullptr);
   _f.namestr = Rps_Value{std::string(plugarg)};
   /// avoid using bad _4FBkYDlynyC02QtkfG //"name"∈named_attribute
-  _f.obsymbol->put_attr(RPS_ROOT_OB(_EBVGSfW2m200z18rx) //name∈named_attribute
+  _f.obsymbol->put_attr(RPS_ROOT_OB(_EBVGSfW2m200z18rx), //name∈named_attribute
                         _f.namestr);
   if (isrooted)
     {
@@ -66,6 +78,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
       RPS_INFORMOUT("rpsplug_createsymbol added new root symbol " << _f.obsymbol
                     << " named " << plugarg );
     }
+  else if (isconstant) {
+  }
   else
     {
       RPS_INFORMOUT("rpsplug_createsymbol added new symbol " << _f.obsymbol
@@ -77,6 +91,6 @@ rps_do_plugin(const Rps_Plugin* plugin)
 /****************
  **                           for Emacs...
  ** Local Variables: ;;
- ** compile-command: "cd ..; ./build-plugin.sh plugins/rpsplug_createsymbol.cc /tmp/rpsplug_createsymbol.so" ;;
+ ** compile-command: "cd ..; ./build-plugin.sh plugins_dir/rpsplug_createsymbol.cc /tmp/rpsplug_createsymbol.so" ;;
  ** End: ;;
  ****************/
