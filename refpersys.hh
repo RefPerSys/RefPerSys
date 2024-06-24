@@ -5227,7 +5227,7 @@ public:
  * collection.  They are listed in generated/rps-roots.hh which is
  * written at dump time and contains one RPS_INSTALL_ROOT_OB macro
  * invocation line per root object. For example the agenda object of
- * oid _1aGtWm38Vw701jDhZn has a line like
+ * oid _1aGtWm38Vw701jDhZn is installed by a C++ line like
  * rps_install_root_ob(_1aGtWm38Vw701jDhZn) with the C++ macro name in
  * capital.
  *
