@@ -5220,6 +5220,28 @@ public:
 // so using $REFPERSYS_HOME or $HOME
 #define RPS_USER_MANIFEST_JSON ".refpersys.json"
 
+/***************************************************************
+ * ROOT OBJECTS
+ *
+ * The root objects are GC-scanned and GC-marked at every garbage
+ * collection.  They are listed in generated/rps-roots.hh which is
+ * written at dump time and contains one RPS_INSTALL_ROOT_OB macro
+ * invocation line per root object. For example the agenda object of
+ * oid _1aGtWm38Vw701jDhZn has a line like
+ * rps_install_root_ob(_1aGtWm38Vw701jDhZn) with the C++ macro name in
+ * capital.
+ *
+ * Each root object is pointed by an extern "C" global C++ variable
+ * whose prefix is rps_rootob. For example
+ * rps_rootob_1aGtWm38Vw701jDhZn is the_agenda root object, and should
+ * be refered by RPS_ROOTOB(_1aGtWm38Vw701jDhZn) in C++ code (it is an
+ * Rps_ObjectRef with a _optr inside).  The actual root object is
+ * allocated early at load time in Rps_Loader::initialize_root_objects
+ * Adding a root object means registering it in some global internal
+ * structure, and removing it means unregistering it (but the object
+ * itself remains in memory).  We want to avoid having too many root
+ * objects.
+ ***************************************************************/
 //// global roots for garbage collection and persistence
 /// the called function cannot add, remove or query the global root set
 extern "C" void rps_each_root_object (const std::function<void(Rps_ObjectRef)>&fun);
@@ -5232,9 +5254,12 @@ extern "C" bool rps_is_root_object (const Rps_ObjectRef);
 extern "C" std::set<Rps_ObjectRef> rps_set_root_objects(void);
 extern "C" unsigned rps_nb_root_objects(void);
 extern "C" void rps_initialize_roots_after_loading (Rps_Loader*ld);
+extern "C" unsigned rps_hardcoded_number_of_roots(void);
+
+
 extern "C" void rps_initialize_symbols_after_loading (Rps_Loader*ld);
 
-extern "C" unsigned rps_hardcoded_number_of_roots(void);
+
 extern "C" unsigned rps_hardcoded_number_of_symbols(void);
 extern "C" unsigned rps_hardcoded_number_of_constants(void);
 
