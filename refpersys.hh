@@ -5256,7 +5256,8 @@ extern "C" unsigned rps_nb_root_objects(void);
 extern "C" void rps_initialize_roots_after_loading (Rps_Loader*ld);
 extern "C" unsigned rps_hardcoded_number_of_roots(void);
 
-
+extern "C" void rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef obconst);
+extern "C" void rps_remove_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef obconst);
 extern "C" void rps_initialize_symbols_after_loading (Rps_Loader*ld);
 
 
