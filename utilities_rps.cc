@@ -1893,10 +1893,61 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
 } // end rps_add_constant_object
 
 void
-rps_remove_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef obconst)
+rps_remove_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argobconst)
 {
+  RPS_LOCALFRAME(/*descr:*/RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp), //"constant"∈named_attribute
+                           /*callerframe:*/callframe,
+                           Rps_ObjectRef obconst;
+                           Rps_ObjectRef obsystem;
+                           Rps_ObjectRef obnamedattr;
+                           Rps_ObjectRef oboldroot;
+                           Rps_Value oldsetv;
+                           Rps_Value newsetv;
+                );
+  _f.obconst = argobconst;
+  if (false
+      || _f.obconst == RPS_ROOT_OB(_2i66FFjmS7n03HNNBx) //space∈class
+      || _f.obconst == RPS_ROOT_OB(_10YXWeY7lYc01RpQTA) //the_system_class∈class
+      || _f.obconst == RPS_ROOT_OB(_1Io89yIORqn02SXx4p) //RefPerSys_system∈the_system_class
+      || _f.obconst == RPS_ROOT_OB(_2i66FFjmS7n03HNNBx) //space∈class
+      || _f.obconst == RPS_ROOT_OB(_2A2mrPpR3Qf03p6o5b) //int∈class
+      || _f.obconst == RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC) //"code_module"∈named_attribute
+      || _f.obconst == RPS_ROOT_OB(_3rXxMck40kz03RxRLM) //code_chunk∈class
+      || _f.obconst == RPS_ROOT_OB(_3s7ztCCoJsj04puTdQ) //agenda∈class
+      || _f.obconst == RPS_ROOT_OB(_3GHJQW0IIqS01QY8qD) //json∈class
+      || _f.obconst == RPS_ROOT_OB(_3Q3hJsSgCDN03GTYW5) //symbol∈symbol
+      || _f.obconst == RPS_ROOT_OB(_41OFI3r0S1t03qdB2E) //class∈class
+      || _f.obconst == RPS_ROOT_OB(_4jISxMJ4PYU0050nUl) //closure∈class
+      || _f.obconst == RPS_ROOT_OB(_4pSwobFHGf301Qgwzh) //named_attribute∈class
+      || _f.obconst == RPS_ROOT_OB(_5yhJGgxLwLp00X0xEQ) //object∈class
+      || _f.obconst == RPS_ROOT_OB(_5CYWxcChKN002rw1fI) //contributor_to_RefPerSys∈class
+      || _f.obconst == RPS_ROOT_OB(_5LMLyzRp6kq04AMM8a) //environment∈class
+      || _f.obconst == RPS_ROOT_OB(_62LTwxwKpQ802SsmjE) //string∈class
+      || _f.obconst == RPS_ROOT_OB(_6fmq7pZkmNd03UyPuO) //class∈symbol
+      || _f.obconst == RPS_ROOT_OB(_6gxiw0snqrX01tZWW9) //"set_of_core_functions"∈mutable_set
+      || _f.obconst == RPS_ROOT_OB(_6ulDdOP2ZNr001cqVZ) //immutable_instance∈class
+      || _f.obconst == RPS_ROOT_OB(_6JYterg6iAu00cV9Ye) //set∈class
+      || _f.obconst == RPS_ROOT_OB(_6NVM7sMcITg01ug5TC) //tuple∈class
+      || _f.obconst == RPS_ROOT_OB(_6XLY6QfcDre02922jz) //value∈class
+      || _f.obconst == RPS_ROOT_OB(_7OrPRWQEg2o043XvK2) //rps_routine∈class
+      || _f.obconst == RPS_ROOT_OB(_7Y3AyF9gNx700bQJXc) //string_buffer∈class
+      || _f.obconst == RPS_ROOT_OB(_8fYqEw8vTED03wsznt) //tasklet∈class
+      || _f.obconst == RPS_ROOT_OB(_8J6vNYtP5E800eCr5q) //"initial_space"∈space
+      || _f.obconst == RPS_ROOT_OB(_98sc8kSOXV003i86w5) //double∈class
+      || _f.obconst == RPS_ROOT_OB(_9uwZtDshW4401x6MsY) //space∈symbol
+      || _f.obconst == RPS_ROOT_OB(_9BnrMLXUhfG00llx8X) //function∈class
+      || _f.obconst == RPS_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
+     )
+    {
+      RPS_WARNOUT("cannot remove core sacred root object as constant " << _f.obconst
+                  << " thread " << rps_current_pthread_name()
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_remove_constant_object")
+                 );
+      return;
+    };
 #pragma message "rps_remove_constant_object unimplemented"
-  RPS_FATALOUT("rps_remove_constant_object unimplemented obconst=" << obconst);
+  RPS_FATALOUT("rps_remove_constant_object unimplemented obconst=" << _f.obconst);
 } // end rps_remove_constant_object
 
 void
