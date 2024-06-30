@@ -820,11 +820,20 @@ static double rps_start_wallclock_real_time;
 static void
 rps_early_initialization(int argc, char** argv)
 {
+  char*inside_emacs = getenv("INSIDE_EMACS"); /// GNU emacs is setting this
   rps_argc = argc;
   rps_argv = argv;
   rps_progname = argv[0];
-  rps_stderr_istty = isatty(STDERR_FILENO);
-  rps_stdout_istty = isatty(STDOUT_FILENO);
+  if (!inside_emacs)
+    {
+      rps_stderr_istty = isatty(STDERR_FILENO);
+      rps_stdout_istty = isatty(STDOUT_FILENO);
+    }
+  else   ////// called inside emacs
+    {
+      rps_stderr_istty = false;
+      rps_stdout_istty = false;
+    };
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
   if (uname (&rps_utsname))
