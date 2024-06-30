@@ -1690,12 +1690,15 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
       _f.cmdparserv = //
         _f.cmdob->get_attr1(&_,RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd)); //repl_command_parser∈symbol
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command cmdob=" << _f.cmdob
-                    << " is repl_command of repl_command_parser: " << _f.cmdparserv
+                    << " is repl_command" << std::endl
+                    "of repl_command_parser: " << _f.cmdparserv
                     << " lextokv=" << _f.lextokv);
       if (_f.cmdparserv.is_closure())
         {
           RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command cmdob=" << _f.cmdob
-                        << " before applying cmdparserv=" << _f.cmdparserv << " with lextokv=" << _f.lextokv
+                        << " before applying cmdparserv="
+                        << _f.cmdparserv  << std::endl
+                        << " with lextokv=" << _f.lextokv
                         << " command at " << commandpos
                         << " ... at position " <<  intoksrc.position_str()
                         << " curptr:" << Rps_QuotedC_String(intoksrc.curcptr()) << std::endl
@@ -1703,7 +1706,8 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
           Rps_TwoValues parspair = Rps_ClosureValue(_f.cmdparserv.to_closure()).apply2 (&_, _f.cmdob, _f.lextokv);
           _f.parsmainv = parspair.main();
           _f.parsextrav = parspair.xtra();
-          RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command applied " << _f.cmdparserv << " to cmd "
+          RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command applied "
+                        << _f.cmdparserv << " to cmd "
                         << title << " "<< std::endl
                         << "... intoksrc:" << intoksrc
                         << " curcptr:" << Rps_QuotedC_String(intoksrc.curcptr())

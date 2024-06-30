@@ -1117,8 +1117,10 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
                 << "∈" << _f.a1.compute_class(&_) <<std::endl
                 << Rps_ShowCallFrame(&_));
 #warning REPL command show may need some local Rps_TokenSource
-  RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/started replcmdob:" << _f.replcmdob << " lextokv:" << _f.lextokv
-                << std::endl << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT"));
+  RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/started replcmdob:"
+                << _f.replcmdob << " lextokv:" << _f.lextokv
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT"));
   RPS_ASSERT(_.call_frame_depth() < 7);
   RPS_DEBUG_LOG(CMD, "REPL command show framedepth=" << _.call_frame_depth()
                 << " lextokv=" << _f.lextokv
