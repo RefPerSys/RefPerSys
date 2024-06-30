@@ -64,7 +64,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  Rps_ClosureValue vclos;
                  Rps_Value vinclude;
                  Rps_Value vincludeset;
-                 Rps_Value vold;
+                 Rps_Value voldval;
                  Rps_Value vmainres;
                  Rps_Value vxtrares;
                  Rps_Value vtype;
@@ -104,7 +104,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   **/
   if (_f.vinclude.is_closure())
     {
-      _f.vold = _f.vinclude;
+      _f.voldval = _f.vinclude;
       _f.vclos = Rps_ClosureValue(_f.vinclude);
       Rps_TwoValues tv = //
         _f.vclos.apply2(&_, _f.obmodule, _f.obgenerator);
@@ -112,7 +112,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
       _f.vxtrares = tv.xtra();
       RPS_DEBUG_LOG(CODEGEN,
                     "rps_generate_cplusplus_code computed include "
-                    << _f.vinclude << " with closure=" << _f.vold
+                    << _f.vinclude << " with closure=" << _f.voldval
                     << " obmodule=" << _f.obmodule
                     << " obgenerator=" << _f.obgenerator);
     }
