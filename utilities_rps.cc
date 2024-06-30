@@ -831,8 +831,8 @@ rps_early_initialization(int argc, char** argv)
     }
   else   ////// called inside emacs
     {
-      rps_stderr_istty = false;
-      rps_stdout_istty = false;
+      rps_stderr_istty = false; // INSIDE_EMACS
+      rps_stdout_istty = false; // INSIDE_EMACS
     };
   rps_start_monotonic_time = rps_monotonic_real_time();
   rps_start_wallclock_real_time = rps_wallclock_real_time();
