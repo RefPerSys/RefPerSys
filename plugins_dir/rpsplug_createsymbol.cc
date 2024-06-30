@@ -17,6 +17,13 @@
 
 #include "refpersys.hh"
 
+#warning "is buggy at commit  80608c7722cf"
+/*** buggy invocation at commit 80608c7722cf Sun Jun 30 06:22 PM CEST 2024
+./refpersys --plugin-after-load=/tmp/rpsplug_createsymbol.so \
+  --plugin-arg=rpsplug_createsymbol:include_priority \
+  --extra=comment='attribute for C++ include priority (an integer)' \
+  --extra=rooted=0  --extra=constant=1  --batch --dump=.
+***/
 void
 rps_do_plugin(const Rps_Plugin* plugin)
 {
