@@ -824,28 +824,6 @@ rps_early_initialization(int argc, char** argv)
   rps_argc = argc;
   rps_argv = argv;
   rps_progname = argv[0];
-  if (!inside_emacs)
-    {
-      rps_stderr_istty = isatty(STDERR_FILENO);
-      rps_stdout_istty = isatty(STDOUT_FILENO);
-    }
-  else   ////// called inside emacs
-    {
-      rps_stderr_istty = false; // INSIDE_EMACS
-      rps_stdout_istty = false; // INSIDE_EMACS
-    };
-  rps_start_monotonic_time = rps_monotonic_real_time();
-  rps_start_wallclock_real_time = rps_wallclock_real_time();
-  if (uname (&rps_utsname))
-    {
-      fprintf(stderr, "%s: pid %d on %s failed to uname (%s:%d git %s): %s\n", rps_progname,
-              (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
-              strerror(errno));
-      syslog(LOG_ERR,  "%s: pid %d on %s failed to uname (%s:%d git %s): %s\n", rps_progname,
-             (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
-             strerror(errno));
-      exit(EXIT_FAILURE);
-    };
   /// dlopen to self
   rps_proghdl = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
   if (!rps_proghdl)
@@ -855,6 +833,36 @@ rps_early_initialization(int argc, char** argv)
               err);
       syslog(LOG_ERR, "%s failed to dlopen whole program (%s)\n", rps_progname,
              err);
+      exit(EXIT_FAILURE);
+    };
+  rps_start_monotonic_time = rps_monotonic_real_time();
+  rps_start_wallclock_real_time = rps_wallclock_real_time();
+  if (!inside_emacs)
+    {
+      rps_stderr_istty = isatty(STDERR_FILENO);
+      rps_stdout_istty = isatty(STDOUT_FILENO);
+      std::cout << "RefPerSys outside of EMACS git " << RPS_SHORTGITID
+		<< " "<< (rps_stderr_istty?"tty stderr":"plain stderr")
+		<< " "<< (rps_stdout_istty?"tty stdout":"plain stdout")
+		<< " " << __FILE__ << ":" << __LINE__ << std::endl;
+    }
+  else   ////// called inside emacs
+    {
+      rps_stderr_istty = false; // INSIDE_EMACS
+      rps_stdout_istty = false; // INSIDE_EMACS
+      std::cout << "since INSIDE_EMACS is " << inside_emacs
+		<< " at " __FILE__ ":" << __LINE__ << std::endl
+		<< " disabling ANSI escapes from " << __FUNCTION__
+		<< " git " << RPS_SHORTGITID << std::endl;
+    };
+  if (uname (&rps_utsname))
+    {
+      fprintf(stderr, "%s: pid %d on %s failed to uname (%s:%d git %s): %s\n", rps_progname,
+              (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
+              strerror(errno));
+      syslog(LOG_ERR,  "%s: pid %d on %s failed to uname (%s:%d git %s): %s\n", rps_progname,
+             (int) getpid(), rps_hostname(), __FILE__, __LINE__, RPS_SHORTGITID,
+             strerror(errno));
       exit(EXIT_FAILURE);
     };
   // initialize GNU lightning see
