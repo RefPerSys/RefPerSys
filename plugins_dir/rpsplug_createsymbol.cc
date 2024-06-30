@@ -6,14 +6,14 @@
 /*****
  * Once compiled, use it for example as:
 
-  ./refpersys --plugin-after-load=/tmp/rpsplug_createsymbol.so \
-              --plugin-arg=rpsplug_createsymbol:new_symbol_name \
-              --extra=comment='some comment' \
-              --extra=rooted=0 \
-              --extra=constant=1 \
-              --batch --dump=.
+ ./refpersys --plugin-after-load=/tmp/rpsplug_createsymbol.so \
+ --plugin-arg=rpsplug_createsymbol:new_symbol_name \
+ --extra=comment='some comment' \
+ --extra=rooted=0 \
+ --extra=constant=1 \
+ --batch --dump=.
 
- ****/
+****/
 
 #include "refpersys.hh"
 
@@ -21,9 +21,10 @@ void
 rps_do_plugin(const Rps_Plugin* plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
-                           Rps_ObjectRef obsymbol;
-                           Rps_Value namestr; // a string
-                );
+		 Rps_ObjectRef obsymbol;
+		 Rps_Value namestr; // a string
+		 Rps_Value commentstr; // a string
+		 );
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*comment = rps_get_extra_arg("comment");
   const char*rooted = rps_get_extra_arg("rooted");
@@ -70,19 +71,32 @@ rps_do_plugin(const Rps_Plugin* plugin)
   RPS_ASSERT (paylsymb != nullptr);
   _f.namestr = Rps_Value{std::string(plugarg)};
   /// avoid using bad _4FBkYDlynyC02QtkfG //"name"∈named_attribute
-  _f.obsymbol->put_attr(RPS_ROOT_OB(_EBVGSfW2m200z18rx), //name∈named_attribute
+  _f.obsymbol->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
                         _f.namestr);
+  if (comment && comment[0]) {
+    _f.commentstr = Rps_Value{std::string(comment)};
+    _f.obsymbol->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
+			  _f.commentstr);
+    RPS_INFORMOUT("rpsplug_createsymbol put comment " << _f.commentstr
+		  << " in created symbol " << _f.obsymbol);
+  }
   if (isrooted)
     {
       rps_add_root_object(_f.obsymbol);
-      RPS_INFORMOUT("rpsplug_createsymbol added new root symbol " << _f.obsymbol
-                    << " named " << plugarg );
+      RPS_INFORMOUT("rpsplug_createsymbol added new root symbol "
+		    << _f.obsymbol
+                    << " named " << plugarg);
     }
   else if (isconstant) {
+    rps_add_constant_object(&_, _f.obsymbol);
+    RPS_INFORMOUT("rpsplug_createsymbol added new constant symbol "
+		  << _f.obsymbol
+		  << " named " << plugarg);
   }
   else
     {
-      RPS_INFORMOUT("rpsplug_createsymbol added new symbol " << _f.obsymbol
+      RPS_INFORMOUT("rpsplug_createsymbol added new plain symbol "
+		    << _f.obsymbol
                     << " named " << plugarg);
     }
 } // end rps_do_plugin
