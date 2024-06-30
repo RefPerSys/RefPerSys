@@ -46,7 +46,7 @@ RPS_HOMETMP := $(shell echo '$$HOME/tmp')
 .DEFAULT_GOAL: refpersys
 .PHONY: all config objects showtests clean distclean gitpush gitpush2 \
         print-plugin-settings indent redump clean-plugins plugins \
-        test00 test01 test01b test01c test01d test01e test01f \
+        test00 test01 test01a test01b test01c test01d test01e test01f \
         test02 test03 test05 test06 test07 test07a test08 test09 test-load \
 	testfltk1 testfltk2 testfltk3 testfltk4
 
@@ -370,6 +370,11 @@ test01: refpersys
 	./refpersys -AREPL -c 'show help' -B --run-name=test01
 	@printf '\n\n\n////test01 FINISHED¤\n'
 
+test01a:  refpersys
+	@echo test01a testing simple show class with a lot of debug
+	./refpersys -AREPL -c 'show class' -B --run-name=test01a
+
+	@printf '\n\n\n////test01 FINISHED¤\n'
 test01b: refpersys
 	./refpersys -AREPL,LOW_REPL  -c 'show help' -B --run-name=test01b
 	@printf '\n\n\n////test01b FINISHED¤\n'
