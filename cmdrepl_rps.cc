@@ -1105,9 +1105,9 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
   });
   _f.a0 = arg0;
   _f.a1 = arg1;
-  RPS_DEBUG_LOG(CMD, "REPL command show start a0=" << _f.a0
+  RPS_DEBUG_LOG(CMD, "CMD command show start a0=" << _f.a0
                 << "∈" << _f.a0.compute_class(&_)
-                << ";  a1=" << _f.a1
+                << ";" << std::endl << " a1=" << _f.a1
                 << "∈" << _f.a1.compute_class(&_) <<std::endl
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
@@ -1115,7 +1115,11 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
                 << "∈" << _f.a0.compute_class(&_)
                 << ";  a1=" << _f.a1
                 << "∈" << _f.a1.compute_class(&_) <<std::endl
-                << Rps_ShowCallFrame(&_));
+                << Rps_ShowCallFrame(&_)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "%command show°_7WsQyJK6lty02uz5KT"));
+  _f.replcmdob = _f.a0.as_object();
+  _f.lextokv = _f.a1;
 #warning REPL command show may need some local Rps_TokenSource
   RPS_DEBUG_LOG(REPL, "REPL command show°_7WsQyJK6/started replcmdob:"
                 << _f.replcmdob << " lextokv:" << _f.lextokv
@@ -1251,23 +1255,29 @@ rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe, /// REPL command help
   if (!descoid) descoid=Rps_Id("_2TZNwgyOdVd001uasl");
   RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(descoid),
                            callerframe,
+                           Rps_Value a0;
+                           Rps_Value a1;
+                           Rps_ObjectRef cmdob;
+                           Rps_Value tokenv;
                            Rps_ObjectRef obdictcmd;
                            Rps_Value curcmdv;
                 );
+  _f.a0 = arg0;
+  _f.a1 = arg1;
   _f.obdictcmd = RPS_ROOT_OB(_5dkRQtwGUHs02MVQT0);
-  RPS_DEBUG_LOG(CMD, "REPL command help start arg0=" << arg0
-                << "∈" << arg0.compute_class(&_)
-                << " arg1=" << arg1
-                << "∈" << arg1.compute_class(&_) << std::endl
+  RPS_DEBUG_LOG(CMD, "REPL command help start a0=" << _f.a0
+                << "∈" << _f.a0.compute_class(&_)
+                << " a1=" << _f.a1
+                << "∈" << _f.a1.compute_class(&_) << std::endl
                 << " obdictcmd=" << _f.obdictcmd
                 << " from " << std::endl
                 << Rps_ShowCallFrame(&_));
   if (!RPS_DEBUG_ENABLED(CMD))
     {
-      RPS_DEBUG_LOG(REPL, "REPL command help° start arg0=" << arg0
-                    << "∈" << arg0.compute_class(&_)
-                    << " arg1=" << arg1
-                    << "∈" << arg1.compute_class(&_) << std::endl
+      RPS_DEBUG_LOG(REPL, "REPL command help° start 0=" << _f.a0
+                    << "∈" << _f.a0.compute_class(&_)
+                    << " a1=" << _f.a1
+                    << "∈" << _f.a1.compute_class(&_) << std::endl
                     << " arg2=" << arg2 << " arg3=" << arg3
                     << " obdictcmd=" << _f.obdictcmd
                     << (restargs?" restargs=":" no restargs:")
@@ -1275,6 +1285,7 @@ rpsapply_2TZNwgyOdVd001uasl(Rps_CallFrame*callerframe, /// REPL command help
                     << " from " << std::endl
                     << RPS_FULL_BACKTRACE_HERE(1, "REPL command help°"));
     };
+  _f.cmdob = _f.a0.as_object();
   RPS_ASSERT(_f.obdictcmd);
   std::lock_guard<std::recursive_mutex> gu(*_f.obdictcmd->objmtxptr());
   auto payldict = _f.obdictcmd->get_dynamic_payload<Rps_PayloadStringDict>();
