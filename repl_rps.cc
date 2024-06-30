@@ -1691,7 +1691,7 @@ rps_do_one_repl_command(Rps_CallFrame*callframe, Rps_ObjectRef obenvarg, const s
         _f.cmdob->get_attr1(&_,RPS_ROOT_OB(_4I8GwXXfO3P01cdzyd)); //repl_command_parser∈symbol
       RPS_DEBUG_LOG(REPL, "rps_do_one_repl_command cmdob=" << _f.cmdob
                     << " is repl_command" << std::endl
-                    "of repl_command_parser: " << _f.cmdparserv
+                    << "of repl_command_parser: " << _f.cmdparserv
                     << " lextokv=" << _f.lextokv);
       if (_f.cmdparserv.is_closure())
         {
