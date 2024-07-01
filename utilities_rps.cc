@@ -1854,6 +1854,10 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
                            Rps_Value newsetv;
                 );
   _f.obconst = argob;
+  RPS_DEBUG_LOG(REPL, "rps_add_constant_object start adding " << _f.obconst
+                << " of class " <<  _f.obconst->get_class()
+                << " in space " << _f.obconst->get_space() << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/start"));
   if (false
       || _f.obconst == RPS_ROOT_OB(_2i66FFjmS7n03HNNBx) //space∈class
       || _f.obconst == RPS_ROOT_OB(_10YXWeY7lYc01RpQTA) //the_system_class∈class
