@@ -119,6 +119,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
   paylsymb->symbol_put_value(_f.obnamedattr);
   if (isrooted)
     {
+      RPS_DEBUG_LOG(REPL, "rpsplug_createnamedattribute adding new root namedattr " << _f.obnamedattr
+		    << " of class " << _f.obnamedattr->get_class(&_) << " space " << _f.obnamedattr->get_space());
       rps_add_root_object(_f.obnamedattr);
       RPS_INFORMOUT("rpsplug_createnamedattribute added new root named attribute "
 		    << _f.obnamedattr
@@ -126,6 +128,8 @@ rps_do_plugin(const Rps_Plugin* plugin)
                     << " with symbol " << _f.obsymbol);
     }
   else if (isconstant) {
+      RPS_DEBUG_LOG(REPL, "rpsplug_createnamedattribute adding new constant namedattr " << _f.obnamedattr
+		    << " of class " << _f.obnamedattr->get_class(&_) << " space " << _f.obnamedattr->get_space());
     rps_add_constant_object(&_, _f.obnamedattr);
     RPS_INFORMOUT("rpsplug_createnamedattribute added new constant named attribute "
 		  << _f.obnamedattr
@@ -135,6 +139,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   else
     {
       RPS_INFORMOUT("rpsplug_createnamedattribute added new named attribute " << _f.obnamedattr
+		    << " of class " << _f.obnamedattr->get_class(&_) << " space " << _f.obnamedattr->get_space()
                     << " named " << plugarg
                     << " with symbol " << _f.obsymbol);
     }
