@@ -80,6 +80,7 @@ rps_do_plugin(const Rps_Plugin* plugin)
   /// avoid using bad _4FBkYDlynyC02QtkfG //"name"∈named_attribute
   _f.obsymbol->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
                         _f.namestr);
+  _f.obsymbol->put_space(Rps_ObjectRef::root_space());
   if (comment && comment[0]) {
     _f.commentstr = Rps_Value{std::string(comment)};
     _f.obsymbol->put_attr(RPS_ROOT_OB(_0jdbikGJFq100dgX1n), //comment∈symbol
