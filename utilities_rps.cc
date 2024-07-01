@@ -1892,7 +1892,7 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
       || _f.obconst == RPS_ROOT_OB(_9Gz1oNPCnkB00I6VRS) //core_function∈class
      )
     {
-      RPS_WARNOUT("cannot add core sacred root object as constant " << _f.obconst
+      RPS_WARNOUT("cannot add core sacred root object as constant " << _f.obconst << " of class " << _f.obconst->get_class()
                   << " thread " << rps_current_pthread_name()
                   << std::endl
                   << RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object")
@@ -1910,6 +1910,11 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
   /// update the set of contants
   _f.obsystem->put_attr(RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp), // //"constant"∈named_attribute
                         _f.newsetv);
+  RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst=" << _f.obconst
+		<< " of class " << _f.obconst->get_class() << " space " << _f.obconst->get_space()
+		<< std::endl
+		<< "... oldfsetv=" << _f.oldsetv << " newsetv=" << _f.newsetv << " in " << _f.obsystem
+		<< RPS_FULL_BACKTRACE_HERE(1, "rps_add_constant_object/ending"));
 #pragma message "perhaps rps_add_constant_object should remove obconst from the set of roots?"
 } // end rps_add_constant_object
 
