@@ -87,6 +87,11 @@ rps_do_plugin(const Rps_Plugin* plugin)
       RPS_FATALOUT("failure: plugin " << plugin->plugin_name << " argument " << plugarg
                    << " is naming an existing object " << nob);
     };
+  RPS_INFORMOUT("plugin " << plugin->plugin_name
+		<< " should create a symbol named " << Rps_Cjson_String(plugarg)
+		<< " " << (isrooted?"root":"non-root")
+		<< " " << (isconstant?"constant":"non-constant")
+		);
   /* Create a symbol for the new class name. */
   _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, std::string{plugarg});
   std::lock_guard<std::recursive_mutex> gusymbol(*(_f.obsymbol->objmtxptr()));
