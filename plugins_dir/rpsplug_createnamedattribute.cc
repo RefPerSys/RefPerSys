@@ -11,6 +11,7 @@
               --plugin-arg=rpsplug_createnamedattribute:new_attr_name \
               --extra=comment='some comment' \
               --extra=rooted=0 \
+              --extra=constant=0 \
               --batch --dump=.
 
  ****/
@@ -29,7 +30,9 @@ rps_do_plugin(const Rps_Plugin* plugin)
   const char*plugarg = rps_get_plugin_cstr_argument(plugin);
   const char*comment = rps_get_extra_arg("comment");
   const char*rooted = rps_get_extra_arg("rooted");
+  const char*constant = rps_get_extra_arg("constant");
   bool isrooted = false;
+  bool isconstant = false;
   if (!plugarg || plugarg[0]==(char)0)
     RPS_FATALOUT("failure: plugin " << plugin->plugin_name
                  << " without argument; should be some non-empty name");
@@ -45,8 +48,38 @@ rps_do_plugin(const Rps_Plugin* plugin)
   }
   if (rooted)
     {
-      if (!strcmp(rooted, "true")) isrooted = true;
-      if (atoi(rooted) > 0) isrooted = true;
+      if (!strcmp(rooted, "true"))
+	isrooted = true;
+      else if (!strcmp(rooted, "false"))
+	isrooted = false;
+      else if (rooted[0]=='Y' || rooted[0]=='y')
+	isrooted = true;
+      else if (rooted[0]=='N' || rooted[0]=='n')
+	isrooted = false;
+      else if (isdigit(rooted[0])) 
+	isrooted = atoi(rooted)>0;
+      else RPS_WARNOUT(" plugin " << plugin->plugin_name
+		       << " is ignoring rooted=" << Rps_QuotedC_String(rooted)
+		       << " extra argument."
+		       << std::endl << "(expecting true/false or yes/no or a digit)");
+    };
+  if (constant)
+    {
+      if (!strcmp(constant, "true"))
+	isconstant = true;
+      else if (!strcmp(constant, "false"))
+	isconstant = false;
+      else if (constant[0]=='Y' || constant[0]=='y')
+	isconstant = true;
+      else if (constant[0]=='N' || constant[0]=='n')
+	isconstant = false;
+      else if (isdigit(constant[0]))
+	isconstant = atoi(constant)>0;
+      else RPS_WARNOUT(" plugin " << plugin->plugin_name
+		       << " is ignoring constant=" << Rps_QuotedC_String(constant)
+		       << " extra argument."
+		       << std::endl
+		       << "(expecting true/false or yes/no or a digit)");
     };
   /* Check that plugarg is some new name */
   if (auto nob = Rps_ObjectRef::find_object_or_null_by_string(&_, std::string(plugarg)))
@@ -80,10 +113,18 @@ rps_do_plugin(const Rps_Plugin* plugin)
   if (isrooted)
     {
       rps_add_root_object(_f.obnamedattr);
-      RPS_INFORMOUT("rpsplug_createnamedattribute added new root named attribute " << _f.obnamedattr
+      RPS_INFORMOUT("rpsplug_createnamedattribute added new root named attribute "
+		    << _f.obnamedattr
                     << " named " << plugarg
                     << " with symbol " << _f.obsymbol);
     }
+  else if (isconstant) {
+    rps_add_constant_object(&_, _f.obnamedattr);
+    RPS_INFORMOUT("rpsplug_createnamedattribute added new constant named attribute "
+		  << _f.obnamedattr
+		  << " named " << plugarg
+		  << " with symbol " << _f.obsymbol);
+  }
   else
     {
       RPS_INFORMOUT("rpsplug_createnamedattribute added new named attribute " << _f.obnamedattr
