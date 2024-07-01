@@ -842,18 +842,18 @@ rps_early_initialization(int argc, char** argv)
       rps_stderr_istty = isatty(STDERR_FILENO);
       rps_stdout_istty = isatty(STDOUT_FILENO);
       std::cout << "RefPerSys outside of EMACS git " << RPS_SHORTGITID
-		<< " "<< (rps_stderr_istty?"tty stderr":"plain stderr")
-		<< " "<< (rps_stdout_istty?"tty stdout":"plain stdout")
-		<< " " << __FILE__ << ":" << __LINE__ << std::endl;
+                << " "<< (rps_stderr_istty?"tty stderr":"plain stderr")
+                << " "<< (rps_stdout_istty?"tty stdout":"plain stdout")
+                << " " << __FILE__ << ":" << __LINE__ << std::endl;
     }
   else   ////// called inside emacs
     {
       rps_stderr_istty = false; // INSIDE_EMACS
       rps_stdout_istty = false; // INSIDE_EMACS
       std::cout << "since INSIDE_EMACS is " << inside_emacs
-		<< " at " __FILE__ ":" << __LINE__ << std::endl
-		<< " disabling ANSI escapes from " << __FUNCTION__
-		<< " git " << RPS_SHORTGITID << std::endl;
+                << " at " __FILE__ ":" << __LINE__ << std::endl
+                << " disabling ANSI escapes from " << __FUNCTION__
+                << " git " << RPS_SHORTGITID << std::endl;
     };
   if (uname (&rps_utsname))
     {
