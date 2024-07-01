@@ -95,8 +95,10 @@ rps_do_plugin(const Rps_Plugin* plugin)
   /* Create a symbol for the new class name. */
   _f.obsymbol = Rps_ObjectRef::make_new_strong_symbol(&_, std::string{plugarg});
   std::lock_guard<std::recursive_mutex> gusymbol(*(_f.obsymbol->objmtxptr()));
+  _f.obsymbol->put_space(Rps_ObjectRef::root_space());
   Rps_PayloadSymbol* paylsymb = _f.obsymbol->get_dynamic_payload<Rps_PayloadSymbol>();
   RPS_ASSERT (paylsymb != nullptr);
+  paylsymb->symbol_put_value(_f.obnamedattr);
   _f.namestr = Rps_Value{std::string(plugarg)};
   _f.obsymbol->put_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx), //name∈named_attribute
                         _f.namestr);
