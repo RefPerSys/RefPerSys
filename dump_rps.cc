@@ -445,20 +445,30 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
 } // end Rps_Dumper::scan_cplusplus_source_file_for_constants
 
 void
-Rps_Dumper::add_constants_known_from_RefPerSys_system()
+Rps_Dumper::add_constants_known_from_RefPerSys_system(void)
 {
   Rps_ObjectRef obsystem = RPS_ROOT_OB(_1Io89yIORqn02SXx4p); //RefPerSys_system∈the_system_class);
   //RPS_ASSERT(obsystem == rpskob_1Io89yIORqn02SXx4p);
   std::lock_guard<std::recursive_mutex> gudump(du_mtx);
+  std::set<Rps_ObjectRef> constset;
   std::lock_guard<std::recursive_mutex> gusystem(*obsystem->objmtxptr());
   /// see code of rps_add_constant_object in utilities_rps.cc
   Rps_Value oldset = obsystem->get_physical_attr
-               (RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp)); // //"constant"∈named_attribute
+                     (RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp)); // //"constant"∈named_attribute
   RPS_ASSERT(oldset.is_set());
-#warning incomplete Rps_Dumper::add_constants_known_from_RefPerSys_system
-  /* TODO: add every object of oldset as a constant using du->du_constantobset.insert*/
+  const Rps_SetOb* constoldset = oldset.as_set();
+  /// TODO: please code review; Basile S. consider in start of july
+  /// 2024 that in rare cases the garbage collector might move
+  /// constoldset in the below for loop.
+  for (auto it : *constoldset)
+    {
+      Rps_ObjectRef oldelem = *it;
+      RPS_ASSERT(oldelem);
+      RPS_DEBUG_LOG(DUMP, "add_constants_known_from_RefPerSys_system with oldelem=" << oldelem);
+      this->du_constantobset.insert(oldelem);
+    };
 } // end Rps_Dumper::add_constants_known_from_RefPerSys_system
-    
+
 void
 Rps_Dumper::scan_code_addr(const void*ad)
 {
@@ -1750,6 +1760,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
                           << "/generated");
         }
       dumper.scan_roots();
+      dumper.add_constants_known_from_RefPerSys_system();
       dumper.scan_every_cplusplus_source_file_for_constants();
       dumper.scan_loop_pass();
       RPS_DEBUG_LOG(DUMP, "rps_dump_into realdirpath=" << realdirpath << " start writing "
