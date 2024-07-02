@@ -1905,7 +1905,14 @@ rps_add_constant_object(Rps_CallFrame*callframe, const Rps_ObjectRef argob)
   _f.oldsetv = _f.obsystem->get_physical_attr
                (RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp)); // //"constant"∈named_attribute
   RPS_ASSERT(_f.oldsetv.is_set());
-  _f.newsetv = Rps_SetValue({_f.oldsetv, Rps_Value(_f.oboldroot)});
+  RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst="
+		<< _f.obconst << " oldset=" << _f.oldsetv);
+  RPS_POSSIBLE_BREAKPOINT();
+  _f.newsetv = Rps_SetValue({_f.oldsetv, Rps_Value(_f.obconst)});
+  RPS_DEBUG_LOG(REPL, "rps_add_constant_object obconst="
+		<< _f.obconst << " oldset=" << _f.oldsetv
+		<< " newset=" << _f.newsetv);
+  RPS_ASSERT(_f.newsetv.is_set() && _f.newsetv.as_set()->cardinal() > 0);
   RPS_ASSERT(_f.newsetv.as_set()->cardinal() >= _f.oldsetv.as_set()->cardinal());
   /// update the set of contants
   _f.obsystem->put_attr(RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp), // //"constant"∈named_attribute
