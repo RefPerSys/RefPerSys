@@ -123,6 +123,7 @@ private:
   void scan_roots(void);
   Rps_ObjectRef pop_object_to_scan(void);
   void scan_loop_pass(void);
+  void add_constants_known_from_RefPerSys_system(void);
   void scan_cplusplus_source_file_for_constants(const std::string&relfilename);
   void scan_every_cplusplus_source_file_for_constants(void);
   void copy_one_source_file(const std::string& relsrcpath);
@@ -443,7 +444,21 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
     RPS_DEBUG_LOG(DUMP, "scan_cplusplus_source_file_for_constants no constants in " << fullpath);
 } // end Rps_Dumper::scan_cplusplus_source_file_for_constants
 
-
+void
+Rps_Dumper::add_constants_known_from_RefPerSys_system()
+{
+  Rps_ObjectRef obsystem = RPS_ROOT_OB(_1Io89yIORqn02SXx4p); //RefPerSys_system∈the_system_class);
+  //RPS_ASSERT(obsystem == rpskob_1Io89yIORqn02SXx4p);
+  std::lock_guard<std::recursive_mutex> gudump(du_mtx);
+  std::lock_guard<std::recursive_mutex> gusystem(*obsystem->objmtxptr());
+  /// see code of rps_add_constant_object in utilities_rps.cc
+  Rps_Value oldset = obsystem->get_physical_attr
+               (RPS_ROOT_OB(_2aNcYqKwdDR01zp0Xp)); // //"constant"∈named_attribute
+  RPS_ASSERT(oldset.is_set());
+#warning incomplete Rps_Dumper::add_constants_known_from_RefPerSys_system
+  /* TODO: add every object of oldset as a constant using du->du_constantobset.insert*/
+} // end Rps_Dumper::add_constants_known_from_RefPerSys_system
+    
 void
 Rps_Dumper::scan_code_addr(const void*ad)
 {
