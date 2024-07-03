@@ -448,7 +448,7 @@ void
 Rps_Dumper::add_constants_known_from_RefPerSys_system(void)
 {
   Rps_ObjectRef obsystem = RPS_ROOT_OB(_1Io89yIORqn02SXx4p); //RefPerSys_system∈the_system_class);
-  //RPS_ASSERT(obsystem == rpskob_1Io89yIORqn02SXx4p);
+  //RPS_ASSERT(obsystem == rpsKob_1Io89yIORqn02SXx4p);
   std::lock_guard<std::recursive_mutex> gudump(du_mtx);
   std::set<Rps_ObjectRef> constset;
   std::lock_guard<std::recursive_mutex> gusystem(*obsystem->objmtxptr());
