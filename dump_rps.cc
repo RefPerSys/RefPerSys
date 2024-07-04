@@ -1088,9 +1088,13 @@ Rps_Dumper::write_generated_constants_file(void)
   for (Rps_ObjectRef constobr : du_constantobset)
     {
       RPS_ASSERT(constobr);
+      std::lock_guard<std::recursive_mutex> guconstobr(*(constobr->objmtxptr()));
       if (constcnt % 10 == 0)
         *pouts << std::endl;
-      *pouts << "RPS_INSTALL_CONSTANT_OB(" << constobr->oid() << ")" << std::endl;
+      Rps_ObjectRef obclass = constobr->get_class();
+      RPS_ASSERT(obclass);
+      *pouts << "RPS_INSTALL_CONSTANT_OB(" << constobr->oid() << ")"
+	     << std::endl;
       constcnt ++;
     }
   *pouts << std::endl << "#undef RPS_INSTALL_CONSTANT_OB" << std::endl << std::endl;
