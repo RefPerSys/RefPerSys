@@ -129,7 +129,7 @@ Rps_PayloadCplusplusGen::check_size(int lineno)
   char linbuf[16];
   memset(linbuf, 0, sizeof(linbuf));
   if (lineno > 0) snprintf(linbuf, sizeof(linbuf), ":%d", lineno);
-  if (cppgen_outcod.tellp() > maximal_size)
+  if (cppgen_outcod.tellp() > (size_t)maximal_size)
     {
       RPS_WARNOUT("in C++ generator " << owner()
                   << (cppgen_path.empty()?"":" for path ")
@@ -190,20 +190,49 @@ Rps_PayloadCplusplusGen::add_cplusplus_include(Rps_CallFrame*callerframe,
                                   << " obgenerator=" << _f.obgenerator);
     };
   cppgen_includeset.insert(_f.obcurinclude);
-  vincldep = _f.obgenerator->get_attr1(&_,
-                                       RPS_ROOT_OB(_658gwjgB3oq02ZBhYJ)); //cxx_dependencies∈symbol
-  if (vincldep.is_object())
+  _f.vincldep = _f.obgenerator->get_attr1(&_,
+                                          RPS_ROOT_OB(_658gwjgB3oq02ZBhYJ)); //cxx_dependencies∈symbol
+  if (!_f.vincldep)
+    return;
+  if (_f.vincldep.is_object())
     {
-      _f.obincludedep = vincldep.to_object();
-      if (!cppgen_includeset.contains(_f.obincludedep))
+      _f.obincludedep = _f.vincldep.to_object();
+      if (cppgen_includeset.find(_f.obincludedep) != cppgen_includeset.end())
         add_cplusplus_include(&_, _f.obincludedep);
     }
-#warning incomplete code Rps_PayloadCplusplusGen::add_cplusplus_include
-  else if (vincldep.is_set())
+  else if (_f.vincldep.is_set())
     {
+      int nbdep = _f.vincldep.as_set()->cardinal();
+      for (int nix = 0; nix < nbdep; nix++)
+        {
+          _f.obincludedep = _f.vincldep.as_set()->at(nix);
+          RPS_ASSERT(_f.obincludedep);
+          if (cppgen_includeset.find(_f.obincludedep) != cppgen_includeset.end())
+            add_cplusplus_include(&_, _f.obincludedep);
+        }
     }
-  else if (vincldep.is_tuple())
+  else if (_f.vincldep.is_tuple())
     {
+      int nbdep = _f.vincldep.as_tuple()->size();
+      for (int nix = 0; nix < nbdep; nix++)
+        {
+          _f.obincludedep = _f.vincldep.as_tuple()->at(nix);
+          if (!_f.obincludedep)
+            continue;
+          if (cppgen_includeset.find(_f.obincludedep) != cppgen_includeset.end())
+            add_cplusplus_include(&_, _f.obincludedep);
+        }
+    }
+  else
+    {
+      RPS_WARNOUT("in C++ generated module " << _f.obmodule
+                  << " with generator " << _f.obgenerator
+                  << " include " << _f.obcurinclude
+                  << " has unexpected cxx_dependencies " << _f.vincldep);
+      throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code bad cxx_dependencies "
+                                  <<  _f.vincldep
+                                  << "  obmodule=" << _f.obmodule
+                                  << " obgenerator=" << _f.obgenerator);
     }
 } // end Rps_PayloadCplusplusGen::add_cplusplus_include
 
