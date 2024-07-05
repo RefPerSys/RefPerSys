@@ -248,7 +248,7 @@ Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment(Rps_ProtoCallFrame*calle
                  Rps_ObjectRef obmodule;
                 );
   _f.obmodule = argobmodule;
-  _f.generator = owner();
+  _f.obgenerator = owner();
 #warning missing code in Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment
 } // end Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment
 
