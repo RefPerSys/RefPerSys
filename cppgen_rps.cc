@@ -246,9 +246,19 @@ Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment(Rps_ProtoCallFrame*calle
                  callerframe,
                  Rps_ObjectRef obgenerator;
                  Rps_ObjectRef obmodule;
+                 Rps_Value initcppcomv;
                 );
   _f.obmodule = argobmodule;
   _f.obgenerator = owner();
+  _f.initcppcomv = _f.obmodule->get_attr1(&_,
+                                          RPS_ROOT_OB(_6QhoB1m97HC03kkKTa)  //"initial_cpp_comment"∈named_attribute
+                                         );
+  if (_f.initcppcomv.is_closure())
+    {
+    }
+  else if (_f.initcppcomv.is_string())
+    {
+    }
 #warning missing code in Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment
 } // end Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment
 
