@@ -1517,10 +1517,11 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
-  PaylFltkRefWidget = -25,
-  PaylFltkWidget = -24,
-  PaylFltkWindow = -23,
-  PaylFltkThing = -22,
+  PaylFltkRefWidget = -26,
+  PaylFltkWidget = -25,
+  PaylFltkWindow = -24,
+  PaylFltkThing = -23,
+  PaylCplusplusGen = -22,    // for C++ code generation
   PaylLightCodeGen = -21,    // for GNU lightning code generation
   PaylEnviron = -20,         // for environments
   PaylObjMap = -19,          // for object maps
