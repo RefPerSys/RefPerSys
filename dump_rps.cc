@@ -1810,7 +1810,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
 extern "C" rps_applyingfun_t rpsapply_5Q5E0Lw9v4f046uAKZ;
 /// method generate_code°the_system_class
 Rps_TwoValues
-rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe,
+rpsapply_5Q5E0Lw9v4f046uAKZ(Rps_CallFrame*callerframe, /// "generate_code°the_system_class"
                             const Rps_Value arg0,
                             const Rps_Value arg1,
                             const Rps_Value arg2,
