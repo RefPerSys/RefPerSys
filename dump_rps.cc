@@ -1094,7 +1094,7 @@ Rps_Dumper::write_generated_constants_file(void)
       Rps_ObjectRef obclass = constobr->get_class();
       RPS_ASSERT(obclass);
       *pouts << "RPS_INSTALL_CONSTANT_OB(" << constobr->oid() << ")"
-	     << std::endl;
+             << std::endl;
       constcnt ++;
     }
   *pouts << std::endl << "#undef RPS_INSTALL_CONSTANT_OB" << std::endl << std::endl;
