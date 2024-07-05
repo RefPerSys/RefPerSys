@@ -69,6 +69,16 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  Rps_Value vxtrares;
                  Rps_Value vtype;
                 );
+  std::set<Rps_ObjectRef> includeset;
+  std::vector<Rps_ObjectRef> includevect;
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
+  {
+    RPS_ASSERT(gc != nullptr);
+    for (auto incob: includeset)
+      gc->mark_obj(incob);
+    for (auto incob: includevect)
+      gc->mark_obj(incob);
+  });
   RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
   RPS_ASSERT(argobmodule);
   _f.obmodule = argobmodule;
@@ -128,6 +138,23 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
       /// TODO: we need to sort the set of includes.  Perhaps using
       /// some new constant attributes, maybe include_priority and
       /// cxx_include_dependencies
+      for (int nix=0; nix<(int)cardinclset; nix++) {
+	_f.obcurinclude = _f.vincludeset.as_set()->at(nix);
+	RPS_ASSERT(_f.obcurinclude);
+	if (!_f.obcurinclude->is_instance_of(RPS_ROOT_OB(_0CQWWIMNvTH01h1bE0))) //cpp_include_file∈class
+	  {
+	    RPS_WARNOUT("in C++ generated module " << _f.obmodule
+			<< " with generator " << _f.obgenerator
+			<< " include " << _f.obcurinclude
+			<< " is not a cpp_include_file");
+	    throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code bad include "
+					<< _f.obcurinclude
+					<< "  obmodule=" << _f.obmodule
+                                  << " obgenerator=" << _f.obgenerator);
+	  };
+	std::lock_guard<std::recursive_mutex> gucurinclude(*_f.obcurinclude->objmtxptr());
+	includeset.insert(_f.obcurinclude);
+      }
 #warning  rps_generate_cplusplus_code should handle set of includes
       throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code unimplemented set vinclude:"
                                   << _f.vinclude << " obmodule=" << _f.obmodule
