@@ -807,7 +807,7 @@ Rps_CallFrame::evaluate_repl_expr1(Rps_Value expr, Rps_ObjectRef envob)
 /* C++ closure _61pgHb5KRq600RLnKD for REPL command dump parsing*/
 extern "C" rps_applyingfun_t rpsapply_61pgHb5KRq600RLnKD;
 Rps_TwoValues
-rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe,
+rpsapply_61pgHb5KRq600RLnKD(Rps_CallFrame*callerframe, // REPL dump command
                             const Rps_Value arg0,
                             [[maybe_unused]] const Rps_Value arg1,
                             [[maybe_unused]] const Rps_Value arg2,
@@ -1603,7 +1603,7 @@ rpsapply_2G5DNSyfWoP002Vv6X(Rps_CallFrame*callerframe, // REPL command remove_ro
 /* C++ function _55RPnvwSLXz028jyDk for REPL command make_symbol*/
 extern "C" rps_applyingfun_t rpsapply_55RPnvwSLXz028jyDk;
 Rps_TwoValues
-rpsapply_55RPnvwSLXz028jyDk(Rps_CallFrame*callerframe,
+rpsapply_55RPnvwSLXz028jyDk(Rps_CallFrame*callerframe, // REPL make_symbol
                             const Rps_Value arg0,
                             [[maybe_unused]] const Rps_Value arg1,
                             [[maybe_unused]] const Rps_Value arg2,
