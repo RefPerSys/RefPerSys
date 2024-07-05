@@ -1776,6 +1776,7 @@ void rps_dump_into (std::string dirpath, Rps_CallFrame* callframe)
       dumper.write_all_generated_files();
       dumper.write_manifest_file();
       dumper.rename_opened_files();
+      sync();
       double endelapsed = rps_elapsed_real_time();
       double endcputime = rps_process_cpu_time();
       RPS_INFORMOUT("dump into " << dumper.get_top_dir()
