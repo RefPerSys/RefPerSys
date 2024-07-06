@@ -440,15 +440,25 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
                  Rps_ObjectRef obgenerator;
                  Rps_ObjectRef obmodule;
                  Rps_Value vcomp;
+                 Rps_ObjectRef obcomp;
                 );
   _f.obgenerator = owner();
   _f.obmodule = argmodule;
-
+  // TODO: we probably need a selector to send some message related to C++ declaration emission
+  //
+  // it could happen that the components number of the module is changing during the loop
   for (int cix=0; cix<_f.obmodule->nb_components(&_); cix++)
     {
+      _f.obcomp = nullptr;
+      std::lock_guard<std::recursive_mutex> gugenerator(*_f.obgenerator->objmtxptr());
       _f.vcomp = _f.obmodule->component_at(&_, cix, /*dontfail=*/true);
       if (!_f.vcomp)
         continue;
+      if (_f.vcomp.is_object())
+        {
+          _f.obcomp = _f.vcomp.as_object();
+          std::lock_guard<std::recursive_mutex> guobcomp(*_f.obcomp->objmtxptr());
+        }
     };
 #warning incomplete PayloadCplusplusGen::emit_cplusplus_declarations
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_declarations
@@ -461,14 +471,24 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
                  Rps_ObjectRef obgenerator;
                  Rps_ObjectRef obmodule;
                  Rps_Value vcomp;
+                 Rps_ObjectRef obcomp;
                 );
   _f.obgenerator = owner();
   _f.obmodule = argmodule;
+  // TODO: we probably need a selector to send some message related to C++ definition emission
+  //
+  // It could happen that the components number of the module is changing during the loop
   for (int cix=0; cix<_f.obmodule->nb_components(&_); cix++)
     {
+      _f.obcomp = nullptr;
       _f.vcomp = _f.obmodule->component_at(&_, cix, /*dontfail=*/true);
       if (!_f.vcomp)
         continue;
+      if (_f.vcomp.is_object())
+        {
+          _f.obcomp = _f.vcomp.as_object();
+          std::lock_guard<std::recursive_mutex> guobcomp(*_f.obcomp->objmtxptr());
+        }
     };
 #warning incomplete PayloadCplusplusGen::emit_cplusplus_definitions
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_definitions
