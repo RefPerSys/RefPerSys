@@ -51,6 +51,14 @@ const char rps_cppgen_shortgitid[]= RPS_SHORTGITID;
 
 class Rps_PayloadCplusplusGen : public Rps_Payload
 {
+public:
+  struct cppgen_data_st   /// internal data for C++ code generation
+  {
+    Rps_ObjectRef cppg_object;
+    Rps_Value cppg_data;
+    intptr_t cppg_num;
+  };
+  static void mark_gc_cppgen_data(Rps_GarbageCollector&gc, struct cppgen_data_st*d, unsigned depth=0);
   friend class Rps_ObjectRef;
   friend class Rps_ObjectZone;
   friend Rps_PayloadCplusplusGen*
@@ -58,6 +66,7 @@ class Rps_PayloadCplusplusGen : public Rps_Payload
   Rps_PayloadCplusplusGen (Rps_ObjectZone*owner);
   Rps_PayloadCplusplusGen(Rps_ObjectRef obr) :
     Rps_PayloadCplusplusGen(obr?obr.optr():nullptr) {};
+protected:
   std::ostringstream cppgen_outcod;
   int cppgen_indentation;
   std::string cppgen_path;
@@ -108,6 +117,8 @@ public:
   void add_cplusplus_include(Rps_CallFrame*callerframe,  Rps_ObjectRef argcurinclude);
   void emit_initial_cplusplus_comment(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule);
   void emit_cplusplus_includes(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule);
+  void emit_cplusplus_declarations(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule);
+  void emit_cplusplus_definitions(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule);
   virtual const std::string payload_type_name(void) const
   {
     return "cplusplusgen";
@@ -119,6 +130,17 @@ Rps_PayloadCplusplusGen::Rps_PayloadCplusplusGen(Rps_ObjectZone*ob)
     cppgen_indentation(0), cppgen_path()
 {
 } // end Rps_PayloadCplusplusGen::Rps_PayloadCplusplusGen
+
+void
+Rps_PayloadCplusplusGen::mark_gc_cppgen_data(Rps_GarbageCollector&gc, struct cppgen_data_st*d, unsigned depth)
+{
+  if (!d)
+    return;
+  if (d->cppg_object)
+    d->cppg_object.gc_mark(gc);
+  if (d->cppg_data)
+    d->cppg_data.gc_mark(gc, depth);
+} // end Rps_PayloadCplusplusGen::mark_gc_cppgen_data
 
 void
 Rps_PayloadCplusplusGen::check_size(int lineno)
@@ -314,6 +336,15 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
                  Rps_Value vxtrares;
                  Rps_Value vmain;
                 );
+  std::vector<cppgen_data_st> cppgen_data;
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
+  {
+    for (cppgen_data_st curdat : cppgen_data)
+      {
+        gc->mark_obj(curdat.cppg_object);
+        gc->mark_value(curdat.cppg_data);
+      }
+  });
   _f.obmodule = argobmodule;
   _f.obgenerator = owner();
   /**
