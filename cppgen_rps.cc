@@ -77,18 +77,13 @@ protected:
 public:
   static constexpr size_t maximal_size = 512*1024;
   void check_size(int lineno=0);
-  std::ostringstream& endl_indent(std::ostringstream& out)
+
+  std::string eol_indent(void)
   {
-    out << std::endl;
-    for (int i=0; i<cppgen_indentation; i++) out << ' ';
+    std::string s="\n";
+    for (int i=0; i<cppgen_indentation; i++) s += ' ';
     check_size();
-    return out;
-  };
-  std::ostringstream& checked_endl(std::ostringstream& out)
-  {
-    out << std::endl;
-    check_size();
-    return out;
+    return s;
   };
   void indent_more(void)
   {
@@ -131,7 +126,7 @@ Rps_PayloadCplusplusGen::check_size(int lineno)
   char linbuf[16];
   memset(linbuf, 0, sizeof(linbuf));
   if (lineno > 0) snprintf(linbuf, sizeof(linbuf), ":%d", lineno);
-  if (cppgen_outcod.tellp() > (size_t)maximal_size)
+  if ((size_t)cppgen_outcod.tellp() > (size_t)maximal_size)
     {
       RPS_WARNOUT("in C++ generator " << owner()
                   << (cppgen_path.empty()?"":" for path ")
@@ -247,6 +242,9 @@ Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment(Rps_ProtoCallFrame*calle
                  Rps_ObjectRef obgenerator;
                  Rps_ObjectRef obmodule;
                  Rps_Value initcppcomv;
+                 Rps_ClosureValue closv;
+                 Rps_Value mainresv;
+                 Rps_Value xtraresv;
                 );
   _f.obmodule = argobmodule;
   _f.obgenerator = owner();
@@ -255,11 +253,50 @@ Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment(Rps_ProtoCallFrame*calle
                                          );
   if (_f.initcppcomv.is_closure())
     {
+      _f.closv = Rps_ClosureValue(_f.initcppcomv);
+      check_size(__LINE__);
+      RPS_DEBUG_LOG(CODEGEN,
+                    "Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment closv=" << _f.closv << " obmodule=" << _f.obmodule
+                    << " obgenerator=" << _f.obgenerator);
+      Rps_TwoValues tv = //
+        _f.closv.apply2(&_, _f.obmodule, _f.obgenerator);
+      _f.mainresv = tv.main();
+      _f.xtraresv = tv.xtra();
+      RPS_DEBUG_LOG(CODEGEN,
+                    "Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment applied closv=" << _f.closv
+                    << std::endl
+                    << "to module=" << _f.obmodule
+                    << " obgenerator=" << _f.obgenerator
+                    << " mainresv=" << _f.mainresv
+                    << " xtraresv=" << _f.xtraresv);
+      check_size(__LINE__);
     }
   else if (_f.initcppcomv.is_string())
     {
+      check_size(__LINE__);
+      std::string comstr = _f.initcppcomv.to_cppstring();
+      cppgen_outcod << "//@" ;
+      for (char c: comstr)
+        {
+          if (c=='\n'||c=='\r'||c=='\f'||c=='\v'||c==(char)0)
+            cppgen_outcod << eol_indent() << "//@";
+          else
+            cppgen_outcod << c;
+        };
+      cppgen_outcod << eol_indent() << std::flush;
     }
-#warning missing code in Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment
+  else
+    {
+      if (!cppgen_path.empty())
+        cppgen_outcod << "//!! generated " << cppgen_path
+                      << " from " <<  _f.obmodule
+                      << " by " << _f.obgenerator
+                      << eol_indent() << std::flush;
+      else
+        cppgen_outcod << "//-- generated from " <<  _f.obmodule
+                      << " by " << _f.obgenerator
+                      << eol_indent() << std::flush;
+    }
 } // end Rps_PayloadCplusplusGen::emit_initial_cplusplus_comment
 
 void
@@ -275,6 +312,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
                  Rps_Value voldval;
                  Rps_ClosureValue vclos;
                  Rps_Value vxtrares;
+                 Rps_Value vmain;
                 );
   _f.obmodule = argobmodule;
   _f.obgenerator = owner();
