@@ -75,6 +75,8 @@ protected:
   virtual ~Rps_PayloadCplusplusGen()
   {
     cppgen_outcod.clear();
+    cppgen_includeset.clear();
+    cppgen_datavect.clear();
   };
 protected:
   virtual uint32_t wordsize() const
