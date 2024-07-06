@@ -71,6 +71,7 @@ protected:
   int cppgen_indentation;
   std::string cppgen_path;
   std::set<Rps_ObjectRef> cppgen_includeset;
+  std::vector<struct cppgen_data_st> cppgen_datavect;
   virtual ~Rps_PayloadCplusplusGen()
   {
     cppgen_outcod.clear();
@@ -165,6 +166,9 @@ Rps_PayloadCplusplusGen::gc_mark(Rps_GarbageCollector&gc) const
 {
   for (Rps_ObjectRef obinc: cppgen_includeset)
     gc.mark_obj(obinc);
+  if (!cppgen_datavect.empty())
+    for (auto it : cppgen_datavect)
+      mark_gc_cppgen_data(gc, &it);
 } // end Rps_PayloadCplusplusGen::gc_mark
 
 void
