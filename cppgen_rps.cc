@@ -432,6 +432,46 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
 #warning incomplete PayloadCplusplusGen::emit_cplusplus_includes
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_includes
 
+void
+Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule)
+{
+  RPS_LOCALFRAME(nullptr,
+                 callerframe,
+                 Rps_ObjectRef obgenerator;
+                 Rps_ObjectRef obmodule;
+                 Rps_Value vcomp;
+                );
+  _f.obgenerator = owner();
+  _f.obmodule = argmodule;
+
+  for (int cix=0; cix<_f.obmodule->nb_components(&_); cix++)
+    {
+      _f.vcomp = _f.obmodule->component_at(&_, cix, /*dontfail=*/true);
+      if (!_f.vcomp)
+        continue;
+    };
+#warning incomplete PayloadCplusplusGen::emit_cplusplus_declarations
+} // end Rps_PayloadCplusplusGen::emit_cplusplus_declarations
+
+void
+Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule)
+{
+  RPS_LOCALFRAME(nullptr,
+                 callerframe,
+                 Rps_ObjectRef obgenerator;
+                 Rps_ObjectRef obmodule;
+                 Rps_Value vcomp;
+                );
+  _f.obgenerator = owner();
+  _f.obmodule = argmodule;
+  for (int cix=0; cix<_f.obmodule->nb_components(&_); cix++)
+    {
+      _f.vcomp = _f.obmodule->component_at(&_, cix, /*dontfail=*/true);
+      if (!_f.vcomp)
+        continue;
+    };
+#warning incomplete PayloadCplusplusGen::emit_cplusplus_definitions
+} // end Rps_PayloadCplusplusGen::emit_cplusplus_definitions
 
 //// return true on successful C++ code generation
 bool
@@ -453,6 +493,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
                  Rps_Value vmainres;
                  Rps_Value vxtrares;
                  Rps_Value vtype;
+                 Rps_Value vcomp;
                 );
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
