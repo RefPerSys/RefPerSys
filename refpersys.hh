@@ -1903,6 +1903,7 @@ public:
   inline Rps_StringValue(const Rps_Value val);
   inline Rps_StringValue(const Rps_String* strv);
   inline Rps_StringValue(std::nullptr_t);
+  inline Rps_StringValue() : Rps_StringValue(nullptr) {};
 }; // end class Rps_StringValue
 
 class Rps_DoubleValue : public Rps_Value
