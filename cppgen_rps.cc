@@ -417,6 +417,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
                  Rps_Value vinclude;
                  Rps_Value vincludeset;
                  Rps_Value voldval;
+                 Rps_StringValue vstrpath;
                  Rps_ClosureValue vclos;
                  Rps_Value vxtrares;
                  Rps_Value vmain;
@@ -531,6 +532,41 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
     };
   _f.obcurinclude = nullptr;
   /// now sort the cppgen_datavect according to its cppg_num
+  std::sort(cppgen_datavect.begin(), cppgen_datavect.end(),
+            [&](const struct cppgen_data_st&x, const struct cppgen_data_st&y)
+  {
+    if (x.cppg_num < y.cppg_num)
+      return true;
+    else
+      return false;
+  });
+  int nbinc = cppgen_datavect.size();
+  cppgen_outcod << "///++ " << nbinc << " includes:" << std::endl;
+  for (int ix=0; ix<nbinc; ix++)
+    {
+      _f.obcurinclude = cppgen_datavect[ix].cppg_object;
+      RPS_ASSERT(_f.obcurinclude);
+      std::lock_guard<std::recursive_mutex>
+      guobcurincl(*_f.obcurinclude->objmtxptr());
+      _f.vstrpath =
+        _f.obcurinclude->get_attr1(&_,
+                                   RPS_ROOT_OB(_2774WA6lAq504yCPWa) //"file_path"∈named_attribute
+                                  ).as_string();
+      if (!_f.vstrpath)
+        {
+          RPS_WARNOUT("in Rps_PayloadCplusplusGen::emit_cplusplus_includes C++ generated module "
+                      << _f.obmodule
+                      << " with generator " << _f.obgenerator
+                      << " include " << _f.obcurinclude << " without file_path=_2774WA6lAq504yCPWa");
+          throw RPS_RUNTIME_ERROR_OUT("in Rps_PayloadCplusplusGen::emit_cplusplus_includes obmodule="
+                                      << _f.obmodule << " obgenerator=" << _f.obgenerator
+                                      << " include=" << _f.obcurinclude
+                                      << " without file_path=_2774WA6lAq504yCPWa");
+        }
+      cppgen_outcod << "#include \""
+                    << Rps_Cjson_String(_f.vstrpath.to_cppstring())
+                    << "\"" << std::endl;
+    }
 #warning incomplete PayloadCplusplusGen::emit_cplusplus_includes
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_includes
 
