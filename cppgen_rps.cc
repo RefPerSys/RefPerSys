@@ -71,6 +71,7 @@ protected:
   int cppgen_indentation;
   std::string cppgen_path;
   std::set<Rps_ObjectRef> cppgen_includeset;
+  std::map<Rps_ObjectRef,long> cppgen_includepriomap;
   std::vector<struct cppgen_data_st> cppgen_datavect;
   virtual ~Rps_PayloadCplusplusGen()
   {
@@ -117,6 +118,7 @@ public:
   {
     cppgen_path = p;
   };
+  long compute_include_priority(Rps_CallFrame*callerframe,  Rps_ObjectRef argcurinclude);
   void add_cplusplus_include(Rps_CallFrame*callerframe,  Rps_ObjectRef argcurinclude);
   void emit_initial_cplusplus_comment(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule);
   void emit_cplusplus_includes(Rps_CallFrame*callerframe, Rps_ObjectRef argmodule);
@@ -162,6 +164,30 @@ Rps_PayloadCplusplusGen::check_size(int lineno)
       throw std::runtime_error("too big C++ generated code");
     }
 } // end check_size
+
+long
+Rps_PayloadCplusplusGen::compute_include_priority(Rps_CallFrame*callerframe,
+    Rps_ObjectRef obincl)
+{
+  RPS_LOCALFRAME(nullptr,
+                 callerframe,
+                 Rps_ObjectRef obcurinclude;
+                 Rps_ObjectRef obincludedep;
+                 Rps_ObjectRef obgenerator;
+                 Rps_ObjectRef obmodule;
+                 Rps_Value priov;
+                );
+  _f.obcurinclude = obincl;
+  RPS_ASSERT(_f.obcurinclude);
+  std::lock_guard<std::recursive_mutex> gucurinclude(*_f.obcurinclude->objmtxptr());
+  _f.obgenerator = owner();
+  std::lock_guard<std::recursive_mutex> gugen(*_f.obgenerator->objmtxptr());
+#warning unimplemented Rps_PayloadCplusplusGen::compute_include_priority
+  RPS_FATALOUT("PayloadCplusplusGen::compute_include_priority unimplemented:"
+	       << " obcurinclude=" << _f.obcurinclude
+	       << " obgenerator=" << _f.obgenerator);
+  //priov = _f.obcurinclude->get_attr(&_, RPS_ROOT_OB())
+} // end Rps_PayloadCplusplusGen::compute_include_priority
 
 void
 Rps_PayloadCplusplusGen::gc_mark(Rps_GarbageCollector&gc) const
@@ -405,6 +431,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
         {
           _f.obcurinclude = _f.vincludeset.as_set()->at(nix);
           RPS_ASSERT(_f.obcurinclude);
+          std::lock_guard<std::recursive_mutex> guobcurincl(*_f.obcurinclude->objmtxptr());
           _f.obgenerator->get_dynamic_payload<Rps_PayloadCplusplusGen>()->add_cplusplus_include(&_,_f.obcurinclude);
         }
     }
@@ -415,6 +442,7 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
         {
           _f.obcurinclude = _f.vinclude.as_tuple()->at(nix);
           RPS_ASSERT(_f.obcurinclude);
+          std::lock_guard<std::recursive_mutex> guobcurincl(*_f.obcurinclude->objmtxptr());
           _f.obgenerator->get_dynamic_payload<Rps_PayloadCplusplusGen>()->add_cplusplus_include(&_,_f.obcurinclude);
         }
     }
@@ -429,6 +457,26 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
                                   << "unexpected include=" << _f.vinclude);
     }
   ///TODO: sort cleverly the cppgen_includeset and emit the #include
+  for (Rps_ObjectRef thecurinclob : cppgen_includeset)
+    {
+      _f.obcurinclude = thecurinclob;
+      RPS_ASSERT(_f.obcurinclude);
+      std::lock_guard<std::recursive_mutex> guobcurincl(*_f.obcurinclude->objmtxptr());
+      int inclix = (int) cppgen_datavect.size();
+      long inclprio = 0;
+      auto it = cppgen_includepriomap.find(_f.obcurinclude);
+      if (it != cppgen_includepriomap.end())
+        inclprio = it->second;
+      else
+        inclprio = compute_include_priority(&_, _f.obcurinclude);
+      cppgen_datavect.push_back(cppgen_data_st
+      {
+        .cppg_object=_f.obcurinclude,
+        .cppg_data=nullptr,
+        .cppg_num=inclprio});
+      continue;
+    }
+  _f.obcurinclude = nullptr;
 #warning incomplete PayloadCplusplusGen::emit_cplusplus_includes
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_includes
 
