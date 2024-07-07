@@ -528,8 +528,9 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
         .cppg_data=nullptr,
         .cppg_num=inclprio});
       continue;
-    }
+    };
   _f.obcurinclude = nullptr;
+  /// now sort the cppgen_datavect according to its cppg_num
 #warning incomplete PayloadCplusplusGen::emit_cplusplus_includes
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_includes
 
