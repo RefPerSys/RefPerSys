@@ -176,12 +176,23 @@ Rps_PayloadCplusplusGen::compute_include_priority(Rps_CallFrame*callerframe,
                  Rps_ObjectRef obgenerator;
                  Rps_ObjectRef obmodule;
                  Rps_Value priov;
+		 Rps_Value dependv;
                 );
   _f.obcurinclude = obincl;
   RPS_ASSERT(_f.obcurinclude);
   std::lock_guard<std::recursive_mutex> gucurinclude(*_f.obcurinclude->objmtxptr());
   _f.obgenerator = owner();
   std::lock_guard<std::recursive_mutex> gugen(*_f.obgenerator->objmtxptr());
+  _f.priov = _f.obcurinclude->get_attr1(&_,
+				       RPS_ROOT_OB(_6yJysqz6dYF007I4Y5) //"include_priority"∈named_attribute
+				       );
+  if (_f.priov.is_int()) {
+    intptr_t prionum = _f.priov.as_int();
+    if (prionum>0) {
+      cppgen_includepriomap.insert({_f.obcurinclude, prionum});
+    }
+  }
+  /* TODO: if we have include dependencies add their priority recursively */
 #warning unimplemented Rps_PayloadCplusplusGen::compute_include_priority
   RPS_FATALOUT("PayloadCplusplusGen::compute_include_priority unimplemented:"
 	       << " obcurinclude=" << _f.obcurinclude
