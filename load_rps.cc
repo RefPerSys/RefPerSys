@@ -718,6 +718,27 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
                        << std::endl);
         }
     }
+  if (obz->is_instance_of(RPS_ROOT_OB(_3O1QUNKZ4bU02amQus) //∈rps_routine
+                         ))
+    {
+      std::lock_guard<std::recursive_mutex> gu(ld_mtx);
+      char appfunambuf[sizeof(RPS_APPLYINGFUN_PREFIX)+8+Rps_Id::nbchars];
+      memset(appfunambuf, 0, sizeof(appfunambuf));
+      char obidbuf[32];
+      memset (obidbuf, 0, sizeof(obidbuf));
+      obz->oid().to_cbuf24(obidbuf);
+      strcpy(appfunambuf, RPS_APPLYINGFUN_PREFIX);
+      strcat(appfunambuf+strlen(RPS_APPLYINGFUN_PREFIX), obidbuf);
+      RPS_ASSERT(strlen(appfunambuf)<sizeof(appfunambuf)-4);
+      void*funad = dlsym(rps_proghdl, appfunambuf);
+      if (!funad)
+        RPS_WARNOUT("cannot dlsym " << appfunambuf << " for applying function of objid:" <<  objid
+		    << Rps_ObjectRef(obz)
+                    << " lineno:" << lineno << ", spacid:" << spacid
+                    << ":: " << dlerror());
+      else
+        obz->loader_put_applyingfunction(this, reinterpret_cast<rps_applyingfun_t*>(funad));
+    }
   RPS_DEBUG_LOG(LOAD, "parse_json_buffer_second_pass end objid=" << objid << " #" << count
                 << std::endl);
 } // end of Rps_Loader::parse_json_buffer_second_pass
