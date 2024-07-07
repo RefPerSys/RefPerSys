@@ -176,28 +176,70 @@ Rps_PayloadCplusplusGen::compute_include_priority(Rps_CallFrame*callerframe,
                  Rps_ObjectRef obgenerator;
                  Rps_ObjectRef obmodule;
                  Rps_Value priov;
-		 Rps_Value dependv;
+                 Rps_Value dependv;
                 );
+  intptr_t prionum =0;
   _f.obcurinclude = obincl;
   RPS_ASSERT(_f.obcurinclude);
   std::lock_guard<std::recursive_mutex> gucurinclude(*_f.obcurinclude->objmtxptr());
   _f.obgenerator = owner();
   std::lock_guard<std::recursive_mutex> gugen(*_f.obgenerator->objmtxptr());
-  _f.priov = _f.obcurinclude->get_attr1(&_,
-				       RPS_ROOT_OB(_6yJysqz6dYF007I4Y5) //"include_priority"∈named_attribute
-				       );
-  if (_f.priov.is_int()) {
-    intptr_t prionum = _f.priov.as_int();
-    if (prionum>0) {
-      cppgen_includepriomap.insert({_f.obcurinclude, prionum});
-    }
+  {
+    auto it = cppgen_includepriomap.find(_f.obcurinclude);
+    if (it != cppgen_includepriomap.end())
+      return it->second;
   }
-  /* TODO: if we have include dependencies add their priority recursively */
-#warning unimplemented Rps_PayloadCplusplusGen::compute_include_priority
-  RPS_FATALOUT("PayloadCplusplusGen::compute_include_priority unimplemented:"
-	       << " obcurinclude=" << _f.obcurinclude
-	       << " obgenerator=" << _f.obgenerator);
-  //priov = _f.obcurinclude->get_attr(&_, RPS_ROOT_OB())
+  _f.priov = //
+    _f.obcurinclude->get_attr1(&_,
+                               RPS_ROOT_OB(_6yJysqz6dYF007I4Y5) //"include_priority"∈named_attribute
+                              );
+  if (_f.priov.is_int())
+    {
+      prionum = _f.priov.as_int();
+      if (prionum>0)
+        {
+          cppgen_includepriomap.insert({_f.obcurinclude, prionum});
+        }
+      else
+        {
+          cppgen_includepriomap.insert({_f.obcurinclude, 1});
+        }
+    }
+  _f.dependv = //
+    _f.obcurinclude->get_attr1(&_,
+                               RPS_ROOT_OB(_658gwjgB3oq02ZBhYJ) //cxx_dependencies∈symbol
+                              );
+  if (_f.dependv.is_set())
+    {
+      int nbdep = _f.dependv.as_set()->cardinal();
+      for (int dix=0; dix<nbdep; dix++)
+        {
+          _f.obincludedep = _f.dependv.as_set()->at(dix);
+          long priodep = compute_include_priority(&_, _f.obincludedep);
+          if (priodep>0)
+            {
+              prionum += priodep;
+              cppgen_includepriomap.insert({_f.obcurinclude, prionum});
+            }
+        }
+    }
+  else if (_f.dependv.is_tuple())
+    {
+      int nbdep = _f.dependv.as_tuple()->size();
+      for (int dix=0; dix<nbdep; dix++)
+        {
+          _f.obincludedep = _f.dependv.as_tuple()->at(dix);
+          if (!_f.obincludedep)
+            continue;
+          long priodep = compute_include_priority(&_, _f.obincludedep);
+          if (priodep>0)
+            {
+              prionum += priodep;
+              cppgen_includepriomap.insert({_f.obcurinclude, prionum});
+            }
+        }
+    }
+  return prionum;
 } // end Rps_PayloadCplusplusGen::compute_include_priority
 
 void
