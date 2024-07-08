@@ -124,7 +124,8 @@ private:
   Rps_ObjectRef pop_object_to_scan(void);
   void scan_loop_pass(void);
   void add_constants_known_from_RefPerSys_system(void);
-  void scan_cplusplus_source_file_for_constants(const std::string&relfilename);
+  /// returned number of found constants
+  int scan_cplusplus_source_file_for_constants(const std::string&relfilename);
   void scan_every_cplusplus_source_file_for_constants(void);
   void copy_one_source_file(const std::string& relsrcpath);
   void make_source_directory(const std::string&relsrcdir);
@@ -385,7 +386,7 @@ Rps_Dumper::open_output_file(const std::string& relpath)
 } // end Rps_Dumper::open_output_file
 
 
-void
+int
 Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilename)
 {
   int nbconst = 0;
@@ -442,6 +443,7 @@ Rps_Dumper::scan_cplusplus_source_file_for_constants(const std::string&relfilena
                   << " of " << lincnt << " lines.");
   else
     RPS_DEBUG_LOG(DUMP, "scan_cplusplus_source_file_for_constants no constants in " << fullpath);
+  return nbconst;
 } // end Rps_Dumper::scan_cplusplus_source_file_for_constants
 
 void
@@ -874,6 +876,8 @@ Rps_Dumper::scan_object_contents(Rps_ObjectRef obr)
 void
 Rps_Dumper::scan_every_cplusplus_source_file_for_constants(void)
 {
+  int nbscanedfiles = 0;
+  int nbtotconsts = 0;
   for (const char*const*pcurfilename = rps_files; *pcurfilename; pcurfilename++)
     {
       const char*curpath = *pcurfilename;
@@ -885,9 +889,12 @@ Rps_Dumper::scan_every_cplusplus_source_file_for_constants(void)
           || (curpath[lencurpath-2] == 'c' && curpath[lencurpath-1] == 'c'))
         {
           std::string relfilname = curpath;
-          scan_cplusplus_source_file_for_constants(relfilname);
+          nbtotconsts += scan_cplusplus_source_file_for_constants(relfilname);
+          nbscanedfiles++;
         };
-    }
+    };
+  RPS_INFORMOUT("scanned " << nbscanedfiles << " source files for constants." << std::endl
+                << "found " << nbtotconsts << " occurrences.");
 } // end of scan_every_cplusplus_source_file_for_constants
 
 void
