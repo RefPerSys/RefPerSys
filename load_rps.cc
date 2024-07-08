@@ -733,7 +733,7 @@ Rps_Loader::parse_json_buffer_second_pass (Rps_Id spacid, unsigned lineno,
       void*funad = dlsym(rps_proghdl, appfunambuf);
       if (!funad)
         RPS_WARNOUT("cannot dlsym " << appfunambuf << " for applying function of objid:" <<  objid
-		    << Rps_ObjectRef(obz)
+                    << Rps_ObjectRef(obz)
                     << " lineno:" << lineno << ", spacid:" << spacid
                     << ":: " << dlerror());
       else
