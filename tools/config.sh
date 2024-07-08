@@ -129,6 +129,15 @@ run_intro()
 		| less
 }
 
+#
+# Callback function to handle `make check`.
+#
+run_check()
+{
+	test -f /usr/include/readline/readline.h \
+		|| msg_fail "readline not found; run 'apt install libreadline-dev' as root"
+}
+
 
 #
 # Parse the command line options passed to the configure script.
