@@ -601,7 +601,7 @@ test_cxx_compiler (const char *cxx)
       if (!gothello || !gotfilename)
 	{
 	  fprintf (stderr,
-		   "%s no hello or file nnme from C++ test popen %s [%s:%d]\n",
+		   "%s no hello or file name from C++ test popen %s [%s:%d]\n",
 		   prog_name, cmdbuf, __FILE__, __LINE__ - 1);
 	  failed = true;
 	  exit (EXIT_FAILURE);
