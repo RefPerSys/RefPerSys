@@ -1096,6 +1096,7 @@ main (int argc, char **argv)
 
 /*
  * Function: rps_conf_try_compile_run_hello_world_in_c
+ *   Attempts to compile and run a simple "Hello, world" C program.
  *
  * Inputs:
  *   cc - absolute path to C compiler
@@ -1205,6 +1206,7 @@ rps_conf_try_compile_run_hello_world_in_c (const char *cc)
 
 /*
  * Function: rps_conf_try_then_set_c_compiler
+ *   Sets the path to the C compiler after checking that it works.
  *
  * Inputs:
  *   cc - absolute path to C compiler
