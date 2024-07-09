@@ -118,6 +118,7 @@ char *temporary_binary_file (const char *prefix, const char *suffix,
 void emit_configure_refpersys_mk (void);
 
 static void rps_conf_try_then_set_c_compiler (const char *);
+void try_compile_run_hello_world_in_c (const char *);
 
 void try_then_set_cxx_compiler (const char *cxx);
 void should_remove_file (const char *path, int lineno);
