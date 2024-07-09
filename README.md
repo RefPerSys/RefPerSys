@@ -141,12 +141,12 @@ copyrighted by the RefPerSys team, currently made of:
         homepage http://starynkevitch.net/Basile/
 		near Paris, France. So usual timezone `TZ=MEST`
 		
- *      Abhishek Chakravarti <abhishek@taranjali.org>
-        Kolkotta, India
+ *      Abhishek Chakravarti <abhishek@fifthestate.co.in>
+        Kolkata, India
 	
  *      Nimesh Neema <nimeshneema@gmail.com>
  
- *      Niklaus Rozencrantz in Sweden.
+ *      Niklas Rozencrantz in Stockholm, Sweden.
 
 Some files might be "borrowed" from other similar GPLv3+ licensed
 projects (notably from [Bismon](http://github.com/bstarynk/bismon)...)
