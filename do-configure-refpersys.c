@@ -1211,14 +1211,15 @@ rps_conf_cc_test(const char *cc)
 
 
 /*
- * Function: rps_conf_try_then_set_c_compiler
+ * Function: rps_conf_cc_set
  *   Sets the path to the C compiler after checking that it works.
  *
  * Inputs:
  *   - cc: absolute path to C compiler
  *
  * Outputs:
- *   None
+ *   - RPS_CONF_OK:   function succeeded
+ *   - RPS_CONF_FAIL: function failed
  *
  * Preconditions:
  *   - cc is not null
