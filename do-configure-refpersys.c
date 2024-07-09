@@ -1099,13 +1099,13 @@ main (int argc, char **argv)
  *   Attempts to compile and run a simple "Hello, world" C program.
  *
  * Inputs:
- *   cc - absolute path to C compiler
+ *   - cc: absolute path to C compiler
  *
  * Outputs:
  *   None
  *
  * Preconditions:
- *   1. cc is not null
+ *   - cc is not null
  *
  * Postconditions:
  *   None
@@ -1209,13 +1209,13 @@ rps_conf_cc_test(const char *cc)
  *   Sets the path to the C compiler after checking that it works.
  *
  * Inputs:
- *   cc - absolute path to C compiler
+ *   - cc: absolute path to C compiler
  *
  * Outputs:
  *   None
  *
  * Preconditions:
- *   1. cc is not null
+ *   - cc is not null
  *
  * Postconditions:
  *   None
