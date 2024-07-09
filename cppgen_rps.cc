@@ -597,6 +597,19 @@ Rps_PayloadCplusplusGen::emit_cplusplus_declarations(Rps_CallFrame*callerframe, 
           _f.obcomp = _f.vcomp.as_object();
           std::lock_guard<std::recursive_mutex> guobcomp(*_f.obcomp->objmtxptr());
         }
+      else
+        {
+          RPS_WARNOUT("in module " << _f.obmodule
+                      << " component#" << cix
+                      << " = " << _f.vcomp
+                      << " is not an object," << std::endl
+                      << "...so cannot be translated to C++ declaration.");
+          throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code bad component#" << cix
+                                      << " = " << _f.vcomp
+                                      << " cannot be declared"
+                                      << " in obmodule=" << _f.obmodule
+                                      << " obgenerator=" << _f.obgenerator);
+        }
     };
 #warning incomplete PayloadCplusplusGen::emit_cplusplus_declarations
 } // end Rps_PayloadCplusplusGen::emit_cplusplus_declarations
@@ -626,6 +639,18 @@ Rps_PayloadCplusplusGen::emit_cplusplus_definitions(Rps_CallFrame*callerframe, R
         {
           _f.obcomp = _f.vcomp.as_object();
           std::lock_guard<std::recursive_mutex> guobcomp(*_f.obcomp->objmtxptr());
+        }
+      else
+        {
+          RPS_WARNOUT("in module " << _f.obmodule
+                      << " component#" << cix
+                      << " = " << _f.vcomp
+                      << " is not an object so cannot be translated to C++ definition.");
+          throw RPS_RUNTIME_ERROR_OUT("rps_generate_cplusplus_code bad component#" << cix
+                                      << " = " << _f.vcomp
+                                      << " cannot be defined"
+                                      << " in obmodule=" << _f.obmodule
+                                      << " obgenerator=" << _f.obgenerator);
         }
     };
 #warning incomplete PayloadCplusplusGen::emit_cplusplus_definitions
