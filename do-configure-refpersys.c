@@ -117,7 +117,7 @@ char *temporary_binary_file (const char *prefix, const char *suffix,
 /// emit the configure-refperys.mk file to be included in GNUmakefile 
 void emit_configure_refpersys_mk (void);
 
-static void rps_conf_cc_set(const char *);
+static int rps_conf_cc_set(const char *);
 static void rps_conf_cc_test(const char *);
 
 void try_then_set_cxx_compiler (const char *cxx);
@@ -989,7 +989,10 @@ main (int argc, char **argv)
     cc = my_readline ("C compiler, preferably gcc:");
   if (!cc)
     cc = "/usr/bin/gcc";
-  rps_conf_cc_set(cc);
+
+  if (rps_conf_cc_set(cc) == -1)
+    exit(EXIT_FAILURE);
+
   char *cxx = getenv ("CXX");
   if (!cxx)
     cxx = my_readline ("C++ compiler:");
@@ -1220,7 +1223,7 @@ rps_conf_cc_test(const char *cc)
  * Postconditions:
  *   None
  */
-void
+int
 rps_conf_cc_set(const char *cc)
 {
   assert(cc != NULL);
@@ -1233,18 +1236,17 @@ rps_conf_cc_set(const char *cc)
 
   rps_conf_cc_test(cc);
   c_compiler = cc;
+  return 0;
 
 fail:
   fprintf(stderr, "%s given non-absolute path for C compiler '%s' [%s:%d]\n",
 	  prog_name, cc, __FILE__, __LINE__);
-  failed = true;
-  exit (EXIT_FAILURE);
+  return -1;
 
 fail2:
   fprintf(stderr, "%s given non-executable path for C compiler '%s' [%s:%d] %s\n",
 	  prog_name, cc, __FILE__, __LINE__ - 1, strerror (errno));
-  failed = true;
-  exit (EXIT_FAILURE);
+  return -1;
 }				/* end rps_conf_cc_set */
 
 
