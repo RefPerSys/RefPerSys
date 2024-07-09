@@ -1224,16 +1224,13 @@ void
 rps_conf_cc_set(const char *cc)
 {
   assert(cc != NULL);
-
   errno = 0;
   if (cc[0] != '/')
     goto fail;
 
-  errno = 0;
   if (access (cc, X_OK))
     goto fail2;
 
-  errno = 0;
   rps_conf_cc_test(cc);
   c_compiler = cc;
 
