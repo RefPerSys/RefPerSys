@@ -1227,25 +1227,27 @@ rps_conf_cc_set(const char *cc)
 
   errno = 0;
   if (cc[0] != '/')
-    {
-      fprintf (stderr,
-	       "%s given non-absolute path for C compiler '%s' [%s:%d]\n",
-	       prog_name, cc, __FILE__, __LINE__);
-      failed = true;
-      exit (EXIT_FAILURE);
-    };
+    goto fail;
+
   errno = 0;
   if (access (cc, X_OK))
-    {
-      fprintf (stderr,
-	       "%s given non-executable path for C compiler '%s' [%s:%d] %s\n",
-	       prog_name, cc, __FILE__, __LINE__ - 1, strerror (errno));
-      failed = true;
-      exit (EXIT_FAILURE);
-    }
+    goto fail2;
+
   errno = 0;
   rps_conf_cc_test(cc);
   c_compiler = cc;
+
+fail:
+  fprintf(stderr, "%s given non-absolute path for C compiler '%s' [%s:%d]\n",
+	  prog_name, cc, __FILE__, __LINE__);
+  failed = true;
+  exit (EXIT_FAILURE);
+
+fail2:
+  fprintf(stderr, "%s given non-executable path for C compiler '%s' [%s:%d] %s\n",
+	  prog_name, cc, __FILE__, __LINE__ - 1, strerror (errno));
+  failed = true;
+  exit (EXIT_FAILURE);
 }				/* end rps_conf_cc_set */
 
 
