@@ -1223,6 +1223,8 @@ rps_conf_cc_test(const char *cc)
  *
  * Preconditions:
  *   - cc is not null
+ *   - cc is not an empty string
+ *   - cc is an absolute path
  *
  * Postconditions:
  *   None
