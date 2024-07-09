@@ -61,6 +61,9 @@
 #error GIT_ID should be defined at compilation time
 #endif
 
+#define RPS_CONF_OK 0
+#define RPS_CONF_FAIL -1
+
 const char *prog_name;
 bool failed;
 
@@ -990,7 +993,7 @@ main (int argc, char **argv)
   if (!cc)
     cc = "/usr/bin/gcc";
 
-  if (rps_conf_cc_set(cc) == -1)
+  if (rps_conf_cc_set(cc) == RPS_CONF_FAIL)
     exit(EXIT_FAILURE);
 
   char *cxx = getenv ("CXX");
@@ -1236,17 +1239,17 @@ rps_conf_cc_set(const char *cc)
 
   rps_conf_cc_test(cc);
   c_compiler = cc;
-  return 0;
+  return RPS_CONF_OK;
 
 fail:
   fprintf(stderr, "%s given non-absolute path for C compiler '%s' [%s:%d]\n",
 	  prog_name, cc, __FILE__, __LINE__);
-  return -1;
+  return RPS_CONF_FAIL;
 
 fail2:
   fprintf(stderr, "%s given non-executable path for C compiler '%s' [%s:%d] %s\n",
 	  prog_name, cc, __FILE__, __LINE__ - 1, strerror (errno));
-  return -1;
+  return RPS_CONF_FAIL;
 }				/* end rps_conf_cc_set */
 
 
