@@ -118,7 +118,7 @@ char *temporary_binary_file (const char *prefix, const char *suffix,
 void emit_configure_refpersys_mk (void);
 
 static void rps_conf_try_then_set_c_compiler (const char *);
-void try_compile_run_hello_world_in_c (const char *);
+static void try_compile_run_hello_world_in_c (const char *);
 
 void try_then_set_cxx_compiler (const char *cxx);
 void should_remove_file (const char *path, int lineno);
@@ -287,99 +287,6 @@ should_remove_file (const char *path, int lineno)
     }
   files_to_remove_at_exit[removedfiles_count++] = path;
 }				/* end should_remove_file */
-
-void
-try_compile_run_hello_world_in_c (const char *cc)
-{
-  char *helloworldsrc = NULL;
-  char helloworldbin[128];
-  memset (helloworldbin, 0, sizeof (helloworldbin));
-  helloworldsrc = temporary_textual_file ("tmp_helloworld_", ".c", __LINE__);
-  FILE *hwf = fopen (helloworldsrc, "w");
-  if (!hwf)
-    {
-      fprintf (stderr,
-	       "%s failed to create temporary hello world C %s (%m)\n",
-	       prog_name, helloworldsrc);
-    }
-  fprintf (hwf, "/// temporary hello world C file %s\n", helloworldsrc);
-  fprintf (hwf, "#include <stdio.h>\n");
-  fprintf (hwf, "void say_hello(const char*c) {\n");
-  fprintf (hwf, " printf(\"hello from %%s in %%s:%%d\\n\",\n");
-  fprintf (hwf, "        c, __FILE__, __LINE__);\n");
-  fprintf (hwf, "} //end say_hello\n");
-  fprintf (hwf, "\n\n");
-  fprintf (hwf, "int main(int argc,char**argv) { say_hello(argv[0]); }\n");
-  fclose (hwf);
-  snprintf (helloworldbin, sizeof (helloworldbin), "./%s",
-	    basename (helloworldsrc));
-  char *lastdot = strrchr (helloworldbin, '.');
-  if (lastdot)
-    strcpy (lastdot, ".bin");
-  else
-    strcat (helloworldbin, ".bin");
-  assert (lastdot);
-  {
-    char helloworldcompile[512];
-    memset (helloworldcompile, 0, sizeof (helloworldcompile));
-    snprintf (helloworldcompile, sizeof (helloworldcompile),
-	      "%s -Wall -O %s -o %s", cc, helloworldsrc, helloworldbin);
-    printf ("trying %s\n", helloworldcompile);
-    fflush (NULL);
-    int e = system (helloworldcompile);
-    if (e)
-      {
-	fprintf (stderr,
-		 "%s failed to compile hello world in C : %s exited %d\n",
-		 prog_name, helloworldcompile, e);
-	failed = true;
-	exit (EXIT_FAILURE);
-      };
-    should_remove_file (helloworldsrc, __LINE__);
-    should_remove_file (helloworldbin, __LINE__);
-    printf ("popen-eing %s\n", helloworldbin);
-    fflush (NULL);
-    FILE *pf = popen (helloworldbin, "r");
-    if (!pf)
-      {
-	fprintf (stderr, "%s failed to popen hello world in C %s (%m)\n",
-		 prog_name, helloworldbin);
-	failed = true;
-	exit (EXIT_FAILURE);
-      };
-    bool gothello = false;
-    int nblin = 0;
-    do
-      {
-	char hwline[128];
-	memset (hwline, 0, sizeof (hwline));
-	if (!fgets (hwline, sizeof (hwline), pf))
-	  break;
-	nblin++;
-	if (strstr (hwline, "hello"))
-	  gothello = true;
-      }
-    while (!feof (pf));
-    if (!gothello)
-      {
-	fprintf (stderr,
-		 "%s popen %s without hello but read %d lines from popen [%s:%d]\n",
-		 prog_name, helloworldbin, nblin, __FILE__, __LINE__ - 1);
-	failed = true;
-	exit (EXIT_FAILURE);
-      }
-    int ehw = pclose (pf);
-    if (ehw)
-      {
-	fprintf (stderr, "%s bad pclose %s (%d)\n",
-		 prog_name, helloworldbin, ehw);
-	failed = true;
-	exit (EXIT_FAILURE);
-      };
-    printf ("%s: tested hello world C compilation and run [%s:%d]\n",
-	    prog_name, __FILE__, __LINE__);
-  }
-}				/* end try_compile_run_hello_world_in_c */
 
 
 
@@ -1186,6 +1093,100 @@ main (int argc, char **argv)
 /*
  * Helper Functions
  */
+
+	void
+try_compile_run_hello_world_in_c (const char *cc)
+{
+  char *helloworldsrc = NULL;
+  char helloworldbin[128];
+  memset (helloworldbin, 0, sizeof (helloworldbin));
+  helloworldsrc = temporary_textual_file ("tmp_helloworld_", ".c", __LINE__);
+  FILE *hwf = fopen (helloworldsrc, "w");
+  if (!hwf)
+    {
+      fprintf (stderr,
+	       "%s failed to create temporary hello world C %s (%m)\n",
+	       prog_name, helloworldsrc);
+    }
+  fprintf (hwf, "/// temporary hello world C file %s\n", helloworldsrc);
+  fprintf (hwf, "#include <stdio.h>\n");
+  fprintf (hwf, "void say_hello(const char*c) {\n");
+  fprintf (hwf, " printf(\"hello from %%s in %%s:%%d\\n\",\n");
+  fprintf (hwf, "        c, __FILE__, __LINE__);\n");
+  fprintf (hwf, "} //end say_hello\n");
+  fprintf (hwf, "\n\n");
+  fprintf (hwf, "int main(int argc,char**argv) { say_hello(argv[0]); }\n");
+  fclose (hwf);
+  snprintf (helloworldbin, sizeof (helloworldbin), "./%s",
+	    basename (helloworldsrc));
+  char *lastdot = strrchr (helloworldbin, '.');
+  if (lastdot)
+    strcpy (lastdot, ".bin");
+  else
+    strcat (helloworldbin, ".bin");
+  assert (lastdot);
+  {
+    char helloworldcompile[512];
+    memset (helloworldcompile, 0, sizeof (helloworldcompile));
+    snprintf (helloworldcompile, sizeof (helloworldcompile),
+	      "%s -Wall -O %s -o %s", cc, helloworldsrc, helloworldbin);
+    printf ("trying %s\n", helloworldcompile);
+    fflush (NULL);
+    int e = system (helloworldcompile);
+    if (e)
+      {
+	fprintf (stderr,
+		 "%s failed to compile hello world in C : %s exited %d\n",
+		 prog_name, helloworldcompile, e);
+	failed = true;
+	exit (EXIT_FAILURE);
+      };
+    should_remove_file (helloworldsrc, __LINE__);
+    should_remove_file (helloworldbin, __LINE__);
+    printf ("popen-eing %s\n", helloworldbin);
+    fflush (NULL);
+    FILE *pf = popen (helloworldbin, "r");
+    if (!pf)
+      {
+	fprintf (stderr, "%s failed to popen hello world in C %s (%m)\n",
+		 prog_name, helloworldbin);
+	failed = true;
+	exit (EXIT_FAILURE);
+      };
+    bool gothello = false;
+    int nblin = 0;
+    do
+      {
+	char hwline[128];
+	memset (hwline, 0, sizeof (hwline));
+	if (!fgets (hwline, sizeof (hwline), pf))
+	  break;
+	nblin++;
+	if (strstr (hwline, "hello"))
+	  gothello = true;
+      }
+    while (!feof (pf));
+    if (!gothello)
+      {
+	fprintf (stderr,
+		 "%s popen %s without hello but read %d lines from popen [%s:%d]\n",
+		 prog_name, helloworldbin, nblin, __FILE__, __LINE__ - 1);
+	failed = true;
+	exit (EXIT_FAILURE);
+      }
+    int ehw = pclose (pf);
+    if (ehw)
+      {
+	fprintf (stderr, "%s bad pclose %s (%d)\n",
+		 prog_name, helloworldbin, ehw);
+	failed = true;
+	exit (EXIT_FAILURE);
+      };
+    printf ("%s: tested hello world C compilation and run [%s:%d]\n",
+	    prog_name, __FILE__, __LINE__);
+  }
+}				/* end try_compile_run_hello_world_in_c */
+
 
 void
 rps_conf_try_then_set_c_compiler (const char *cc)
