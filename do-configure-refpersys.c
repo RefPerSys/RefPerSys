@@ -117,7 +117,7 @@ char *temporary_binary_file (const char *prefix, const char *suffix,
 /// emit the configure-refperys.mk file to be included in GNUmakefile 
 void emit_configure_refpersys_mk (void);
 
-static void rps_conf_try_then_set_c_compiler (const char *);
+static void rps_conf_cc_set(const char *);
 static void rps_conf_try_compile_run_hello_world_in_c (const char *);
 
 void try_then_set_cxx_compiler (const char *cxx);
@@ -989,7 +989,7 @@ main (int argc, char **argv)
     cc = my_readline ("C compiler, preferably gcc:");
   if (!cc)
     cc = "/usr/bin/gcc";
-  rps_conf_try_then_set_c_compiler (cc);
+  rps_conf_cc_set(cc);
   char *cxx = getenv ("CXX");
   if (!cxx)
     cxx = my_readline ("C++ compiler:");
@@ -1221,7 +1221,7 @@ rps_conf_try_compile_run_hello_world_in_c (const char *cc)
  *   None
  */
 void
-rps_conf_try_then_set_c_compiler (const char *cc)
+rps_conf_cc_set(const char *cc)
 {
   assert(cc != NULL);
 
