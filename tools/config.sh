@@ -135,7 +135,13 @@ run_intro()
 run_check()
 {
 	test -f /usr/include/readline/readline.h \
-		|| msg_fail "readline not found; run 'apt install libreadline-dev' as root"
+		|| msg_fail "readline(3) not found; run 'apt install libreadline-dev' as root"
+
+	test -f /usr/bin/gcc \
+		|| msg_fail "gcc(1) not found; run 'apt install gcc' as root"
+	
+	test -f /usr/bin/g++ \
+		|| msg_fail "g++(1) not found; run 'apt install g++' as root"
 }
 
 
