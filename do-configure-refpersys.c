@@ -1232,36 +1232,34 @@ rps_conf_cc_test(const char *cc)
 int
 rps_conf_cc_set(const char *cc)
 {
-  const char *diag  = "%s: error: missing path\n";
-  const char *diag2 = "%s: error: %s: not an absolute path\n";
-  const char *diag3 = "%s: error: %s: not executable: %s\n";
+  /// DO NOT put format strings in variables! avoid gotos
 
   assert(cc != NULL);
-  if (*cc == '\0')
-    goto fail;
+  if (*cc == '\0') {
+    fprintf(stderr, "%s: error: missing C compiler path\n",
+	    prog_name);
+    exit (EXIT_FAILURE);
+    return RPS_CONF_FAIL; /// not reached!
+  };
 
-  if (*cc != '/')
-    goto fail2;
+  if (*cc != '/') {
+    fprintf(stderr, "%s: error: C compiler path %s is not absolute path\n",
+	    prog_name, cc);
+    exit (EXIT_FAILURE);
+    return RPS_CONF_FAIL; /// not reached!
+  };
 
   errno = 0;
-  if (access (cc, X_OK))
-    goto fail3;
+  if (access (cc, X_OK)) {
+    fprintf(stderr, "%s: error: C compiler path %s is not executable (%s)\n",
+	    prog_name, cc, strerror(errno));
+    exit (EXIT_FAILURE);
+    return RPS_CONF_FAIL;
+  };
 
   rps_conf_cc_test(cc);
   c_compiler = cc;
   return RPS_CONF_OK;
-
-fail:
-  fprintf(stderr, diag, prog_name, cc);
-  return RPS_CONF_FAIL;
-
-fail2:
-  fprintf(stderr, diag2, prog_name, cc);
-  return RPS_CONF_FAIL;
-
-fail3:
-  fprintf(stderr, diag3, prog_name, cc, strerror (errno));
-  return RPS_CONF_FAIL;
 }				/* end rps_conf_cc_set */
 
 
