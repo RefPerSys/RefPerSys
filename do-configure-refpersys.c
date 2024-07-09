@@ -44,7 +44,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <dlfcn.h>
 
 #ifndef WITHOUT_READLINE
 #include "readline/readline.h"
