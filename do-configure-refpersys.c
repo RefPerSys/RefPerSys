@@ -381,31 +381,6 @@ try_compile_run_hello_world_in_c (const char *cc)
 }				/* end try_compile_run_hello_world_in_c */
 
 
-void
-rps_conf_try_then_set_c_compiler (const char *cc)
-{
-  errno = 0;
-  if (cc[0] != '/')
-    {
-      fprintf (stderr,
-	       "%s given non-absolute path for C compiler '%s' [%s:%d]\n",
-	       prog_name, cc, __FILE__, __LINE__);
-      failed = true;
-      exit (EXIT_FAILURE);
-    };
-  errno = 0;
-  if (access (cc, X_OK))
-    {
-      fprintf (stderr,
-	       "%s given non-executable path for C compiler '%s' [%s:%d] %s\n",
-	       prog_name, cc, __FILE__, __LINE__ - 1, strerror (errno));
-      failed = true;
-      exit (EXIT_FAILURE);
-    }
-  errno = 0;
-  try_compile_run_hello_world_in_c (cc);
-  c_compiler = cc;
-}				/* end rps_conf_try_then_set_c_compiler */
 
 void
 test_cxx_compiler (const char *cxx)
@@ -1206,6 +1181,37 @@ main (int argc, char **argv)
 #warning TODO perhaps we should emit also a refpersys-config.h file
   /// that hypothetical refpersys-config.h would be included by refpersys.hh
 }				/* end main */
+
+/*
+ * Helper Functions
+ */
+
+void
+rps_conf_try_then_set_c_compiler (const char *cc)
+{
+  errno = 0;
+  if (cc[0] != '/')
+    {
+      fprintf (stderr,
+	       "%s given non-absolute path for C compiler '%s' [%s:%d]\n",
+	       prog_name, cc, __FILE__, __LINE__);
+      failed = true;
+      exit (EXIT_FAILURE);
+    };
+  errno = 0;
+  if (access (cc, X_OK))
+    {
+      fprintf (stderr,
+	       "%s given non-executable path for C compiler '%s' [%s:%d] %s\n",
+	       prog_name, cc, __FILE__, __LINE__ - 1, strerror (errno));
+      failed = true;
+      exit (EXIT_FAILURE);
+    }
+  errno = 0;
+  try_compile_run_hello_world_in_c (cc);
+  c_compiler = cc;
+}				/* end rps_conf_try_then_set_c_compiler */
+
 
 /****************
  **                           for Emacs...
