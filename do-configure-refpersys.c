@@ -1230,16 +1230,20 @@ rps_conf_cc_test(const char *cc)
 int
 rps_conf_cc_set(const char *cc)
 {
-  const char *diag = "%s: error: %s: not an absolute path\n";
-  const char *diag2 = "%s: error: %s: not executable: %s\n";
+  const char *diag  = "%s: error: missing path\n";
+  const char *diag2 = "%s: error: %s: not an absolute path\n";
+  const char *diag3 = "%s: error: %s: not executable: %s\n";
 
   assert(cc != NULL);
-  if (cc[0] != '/')
+  if (*cc == '\0')
     goto fail;
+
+  if (*cc != '/')
+    goto fail2;
 
   errno = 0;
   if (access (cc, X_OK))
-    goto fail2;
+    goto fail3;
 
   rps_conf_cc_test(cc);
   c_compiler = cc;
@@ -1250,7 +1254,11 @@ fail:
   return RPS_CONF_FAIL;
 
 fail2:
-  fprintf(stderr, diag2, prog_name, cc, strerror (errno));
+  fprintf(stderr, diag2, prog_name, cc);
+  return RPS_CONF_FAIL;
+
+fail3:
+  fprintf(stderr, diag3, prog_name, cc, strerror (errno));
   return RPS_CONF_FAIL;
 }				/* end rps_conf_cc_set */
 
