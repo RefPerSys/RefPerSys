@@ -118,7 +118,7 @@ char *temporary_binary_file (const char *prefix, const char *suffix,
 void emit_configure_refpersys_mk (void);
 
 static void rps_conf_cc_set(const char *);
-static void rps_conf_try_compile_run_hello_world_in_c (const char *);
+static void rps_conf_cc_test(const char *);
 
 void try_then_set_cxx_compiler (const char *cxx);
 void should_remove_file (const char *path, int lineno);
@@ -1095,7 +1095,7 @@ main (int argc, char **argv)
  */
 
 /*
- * Function: rps_conf_try_compile_run_hello_world_in_c
+ * Function: rps_conf_cc_test
  *   Attempts to compile and run a simple "Hello, world" C program.
  *
  * Inputs:
@@ -1111,7 +1111,7 @@ main (int argc, char **argv)
  *   None
  */
 void
-rps_conf_try_compile_run_hello_world_in_c (const char *cc)
+rps_conf_cc_test(const char *cc)
 {
   char *helloworldsrc = NULL;
   char helloworldbin[128];
@@ -1201,7 +1201,7 @@ rps_conf_try_compile_run_hello_world_in_c (const char *cc)
     printf ("%s: tested hello world C compilation and run [%s:%d]\n",
 	    prog_name, __FILE__, __LINE__);
   }
-}				/* end rps_conf_try_compile_run_hello_world_in_c */
+}				/* end rps_conf_cc_test */
 
 
 /*
@@ -1244,9 +1244,9 @@ rps_conf_cc_set(const char *cc)
       exit (EXIT_FAILURE);
     }
   errno = 0;
-  rps_conf_try_compile_run_hello_world_in_c (cc);
+  rps_conf_cc_test(cc);
   c_compiler = cc;
-}				/* end rps_conf_try_then_set_c_compiler */
+}				/* end rps_conf_cc_set */
 
 
 /****************
