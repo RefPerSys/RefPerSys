@@ -1094,6 +1094,21 @@ main (int argc, char **argv)
  * Helper Functions
  */
 
+/*
+ * Function: rps_conf_try_compile_run_hello_world_in_c
+ *
+ * Inputs:
+ *   cc - absolute path to C compiler
+ *
+ * Outputs:
+ *   None
+ *
+ * Preconditions:
+ *   1. cc is not null
+ *
+ * Postconditions:
+ *   None
+ */
 void
 rps_conf_try_compile_run_hello_world_in_c (const char *cc)
 {
