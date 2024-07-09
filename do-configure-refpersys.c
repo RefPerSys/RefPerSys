@@ -1191,6 +1191,8 @@ rps_conf_try_compile_run_hello_world_in_c (const char *cc)
 void
 rps_conf_try_then_set_c_compiler (const char *cc)
 {
+  assert(cc != NULL);
+
   errno = 0;
   if (cc[0] != '/')
     {
