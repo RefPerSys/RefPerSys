@@ -37,6 +37,7 @@
 #include <sys/utsname.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdarg.h>
 #include <string.h>
 #include <errno.h>
 #include <time.h>
@@ -65,6 +66,7 @@
 #define RPS_CONF_FAIL -1
 
 const char *prog_name;
+bool rps_conf_verbose = 1; /* will be set later with command line flag */
 bool failed;
 
 //// working directory
@@ -120,12 +122,17 @@ char *temporary_binary_file (const char *prefix, const char *suffix,
 /// emit the configure-refperys.mk file to be included in GNUmakefile 
 void emit_configure_refpersys_mk (void);
 
+static void rps_conf_diag__(const char *, int, const char *, ...);
 static int rps_conf_cc_set(const char *);
 static void rps_conf_cc_test(const char *);
 
 void try_then_set_cxx_compiler (const char *cxx);
 void should_remove_file (const char *path, int lineno);
 
+
+/* Wrapper macro around rps_conf_diag__() */
+#define rps_conf_diag(msg, ...) \
+	rps_conf_diag__(__FILE__, __LINE__, msg, ##__VA_ARGS__)
 
 
 
@@ -1101,6 +1108,49 @@ main (int argc, char **argv)
  */
 
 /*
+ * Function: rps_conf_diag__
+ *   Prints a diagnostic message to stderr, with optional verbosity.
+ *
+ * Inputs:
+ *   - file: source file path, provided by __FILE__
+ *   - line: source file line number, provided by __LINE__
+ *   - fmt: formatted message string
+ *
+ * Outputs:
+ *   Prints diagnostic message on to stderr
+ *
+ * Preconditions:
+ *   - file is not null
+ *   - file is not an empty string
+ *   - line > 0
+ *   - fmt is not null
+ *   - fmt is not an empty string
+ *
+ * Postconditions:
+ *   None
+ */
+void
+rps_conf_diag__(const char *file, int line, const char *fmt, ...)
+{
+	va_list ap;
+
+	assert(file != NULL && *file != '\0');
+	assert(line > 0);
+	assert(fmt != NULL && *fmt != '\0');
+
+	va_start(ap, fmt);
+	(void)fprintf(stderr, "%s: error: ", prog_name);
+        (void)vfprintf(stderr, fmt, ap);
+
+	if (rps_conf_verbose)
+		(void)fprintf(stderr, " [%s:%d]\n", file, line);
+	else
+		(void)fputs("\n", stderr);
+
+	va_end(ap);
+}
+
+/*
  * Function: rps_conf_cc_test
  *   Attempts to compile and run a simple "Hello, world" C program.
  *
@@ -1232,28 +1282,20 @@ rps_conf_cc_test(const char *cc)
 int
 rps_conf_cc_set(const char *cc)
 {
-  /// DO NOT put format strings in variables! avoid gotos
-
   assert(cc != NULL);
   if (*cc == '\0') {
-    fprintf(stderr, "%s: error: missing C compiler path\n",
-	    prog_name);
-    exit (EXIT_FAILURE);
-    return RPS_CONF_FAIL; /// not reached!
+    rps_conf_diag("missing C compiler path");
+    return RPS_CONF_FAIL;
   };
 
   if (*cc != '/') {
-    fprintf(stderr, "%s: error: C compiler path %s is not absolute path\n",
-	    prog_name, cc);
-    exit (EXIT_FAILURE);
-    return RPS_CONF_FAIL; /// not reached!
+    rps_conf_diag("%s: C compiler path not absolute", cc);
+    return RPS_CONF_FAIL;
   };
 
   errno = 0;
   if (access (cc, X_OK)) {
-    fprintf(stderr, "%s: error: C compiler path %s is not executable (%s)\n",
-	    prog_name, cc, strerror(errno));
-    exit (EXIT_FAILURE);
+    rps_conf_diag("%s: C compiler path not executable", cc);
     return RPS_CONF_FAIL;
   };
 
