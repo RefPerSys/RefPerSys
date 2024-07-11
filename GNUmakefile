@@ -147,6 +147,8 @@ clean-plugins:
 distclean: clean
 	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __timestamp.*
 	$(RM) __*.mkdep
+	$(RM) do-scan-pkgconfig
+
 -include _scanned-pkgconfig.mk
 
 -include $(wildcard __*.mkdep)
