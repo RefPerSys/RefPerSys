@@ -122,7 +122,12 @@ char *temporary_binary_file (const char *prefix, const char *suffix,
 /// emit the configure-refperys.mk file to be included in GNUmakefile 
 void emit_configure_refpersys_mk (void);
 
-static void rps_conf_diag__(const char *, int, const char *, ...);
+static void rps_conf_diag__(const char *, int, const char *, ...)
+#ifdef __GNUC__
+// see gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html
+  __attribute__((format(printf, 3, 4)))
+#endif /*__GNUC__*/
+  ;
 static int rps_conf_cc_set(const char *);
 static void rps_conf_cc_test(const char *);
 
