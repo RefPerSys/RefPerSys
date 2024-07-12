@@ -1031,7 +1031,13 @@ rps_fltk_run (void)
                         << " processcputime:" << rps_process_cpu_time());
           Fl::wait(waitdelay);
           if (rps_elapsed_real_time() > finalrealtime)
-            Fl::program_should_quit(1);
+            {
+              RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name()
+                            << " loopcnt#" << loopcnt
+                            << " quit after "
+                            << rps_run_delay << " elapsed sec.");
+              Fl::program_should_quit(1);
+            }
         };
     }
   else   // no rps_run_delay
@@ -1045,6 +1051,9 @@ rps_fltk_run (void)
                         << " processcputime:" << rps_process_cpu_time());
           Fl::wait(plain_wait_delay);
         };
+      RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name()
+                    << " loopcnt#" << loopcnt
+                    << " quit per request");
     }
   RPS_DEBUG_LOG(REPL, "rps_fltk_run ended thread:"
                 << rps_current_pthread_name()
