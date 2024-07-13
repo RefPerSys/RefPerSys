@@ -116,6 +116,9 @@ config: do-configure-refpersys do-scan-pkgconfig GNUmakefile
 
 do-configure-refpersys: do-configure-refpersys.c |GNUmakefile do-generate-gitid.sh
 	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
+              -DOPERSYS=\"$(RPS_OPERSYS)\" \
+              -DARCH=\"$(RPS_ARCH)\" \
+              -DHOST=\"$(RPS_HOST)\" \
               $(CFLAGS) $^ -o $@ -lreadline
 ## if GNU readline library is unavailable add -DWITHOUT_READLINE above
 ## and remove the -lreadline above
