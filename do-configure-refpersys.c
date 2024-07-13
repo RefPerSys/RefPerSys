@@ -59,10 +59,30 @@
 #endif
 
 #ifndef GIT_ID
-#error GIT_ID should be defined at compilation time
+// fictional GIT_ID could be "b32bcbf69070+"
+#error GIT_ID should be defined thru compilation command "short git id"
+#endif
+
+#ifndef OPERSYS
+// usually OPERSYS would be "GNU_Linux" given by:
+/////  /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g
+#error OPERSYS should be defined thru compilation command "operating system"
+#endif
+
+#ifndef ARCH
+// example ARCH could be "aarch64" or "x86_64" given by /bin/uname -m
+#error ARCH should be defined thru compilation command "machine architecture"
+#endif
+
+#ifndef HOST
+// possible HOST might be "refpersys.com" given by /bin/hostname -f
+#error HOST should be defined thru compilation command "hostname"
 #endif
 
 const char rpsconf_gitid[] = GIT_ID;
+const char rpsconf_opersys[] = OPERSYS;
+const char rpsconf_arch[] = ARCH;
+const char rpsconf_host[] = HOST;
 
 #define RPS_CONF_OK 0
 #define RPS_CONF_FAIL -1
@@ -837,6 +857,13 @@ emit_configure_refpersys_mk (void)
       fprintf (f, "\n# FLTK (see fltk.org) configurator\n");
       fprintf (f, "REFPERSYS_FLTKCONFIG=%s\n", fltk_config);
     }
+  ////
+  fprintf (f, "\n### machine architecture\n");
+  fprintf (f, "REFPERSYS_ARCH=%s\n", rpsconf_arch);
+  fprintf (f, "\n### operating system\n");
+  fprintf (f, "REFPERSYS_OPERSYS=%s\n", rpsconf_opersys);
+  fprintf (f, "\n### building hostname\n");
+  fprintf (f, "REFPERSYS_BUILDHOST=%s\n", rpsconf_host);
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
