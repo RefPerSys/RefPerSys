@@ -62,11 +62,13 @@
 #error GIT_ID should be defined at compilation time
 #endif
 
+const char rpsconf_gitid[] = GIT_ID;
+
 #define RPS_CONF_OK 0
 #define RPS_CONF_FAIL -1
 
 const char *prog_name;
-bool rps_conf_verbose = 1; /* will be set later with command line flag */
+bool rps_conf_verbose = 1;	/* will be set later with command line flag */
 bool failed;
 
 //// working directory
@@ -122,17 +124,18 @@ char *temporary_binary_file (const char *prefix, const char *suffix,
 /// emit the configure-refperys.mk file to be included in GNUmakefile 
 void emit_configure_refpersys_mk (void);
 
-static void rps_conf_diag__(const char *, int, const char *, ...)
+static void
+rps_conf_diag__ (const char *, int, const char *, ...)
 #ifdef __GNUC__
 // see gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html
-  __attribute__((format(printf, 3, 4)))
+  __attribute__((format (printf, 3, 4)))
 #endif /*__GNUC__*/
   ;
-static int rps_conf_cc_set(const char *);
-static void rps_conf_cc_test(const char *);
+     static int rps_conf_cc_set (const char *);
+     static void rps_conf_cc_test (const char *);
 
-void try_then_set_cxx_compiler (const char *cxx);
-void should_remove_file (const char *path, int lineno);
+     void try_then_set_cxx_compiler (const char *cxx);
+     void should_remove_file (const char *path, int lineno);
 
 
 /* Wrapper macro around rps_conf_diag__() */
@@ -142,8 +145,8 @@ void should_remove_file (const char *path, int lineno);
 
 
 /// return a malloced path to a temporary textual file
-char *
-temporary_textual_file (const char *prefix, const char *suffix, int lineno)
+     char *temporary_textual_file (const char *prefix, const char *suffix,
+				   int lineno)
 {
   char buf[256];
   memset (buf, 0, sizeof (buf));
@@ -782,12 +785,12 @@ emit_configure_refpersys_mk (void)
       fprintf (f, "## see stackoverflow.com/q/2224334/841108\n");
       fprintf (f, "#GNU compiler from %s:%d\n"
 	       "REFPERSYS_COMPILER_FLAGS= -Og -g -fPIC -Wall -Wextra\n",
-	       __FILE__, __LINE__-2);
+	       __FILE__, __LINE__ - 2);
 #else
       fprintf (f, "#nonGNU compiler from %s:%d\n"
 	       "## see stackoverflow.com/questions/2224334/\n"
 	       "REFPERSYS_COMPILER_FLAGS= -O0 -g -fPIC -Wall",
-	       __FILE__, __LINE__-3);
+	       __FILE__, __LINE__ - 3);
 #endif
     }
   //// emit linker flags
@@ -819,25 +822,29 @@ emit_configure_refpersys_mk (void)
   /// emit the ninja builder
   fprintf (f, "\n\n" "# ninja builder from ninja-build.org\n");
   fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (ninja_builder, NULL));
-  if (builder_person) {
-    fprintf(f, "## refpersys builder person and perhaps email\n");
-    fprintf(f, "REFPERSYS_BUILDER_PERSON='%s'\n", builder_person);
-    if (builder_email) {
-      fprintf(f, "REFPERSYS_BUILDER_EMAIL='%s'\n", builder_email);
+  if (builder_person)
+    {
+      fprintf (f, "## refpersys builder person and perhaps email\n");
+      fprintf (f, "REFPERSYS_BUILDER_PERSON='%s'\n", builder_person);
+      if (builder_email)
+	{
+	  fprintf (f, "REFPERSYS_BUILDER_EMAIL='%s'\n", builder_email);
+	}
     }
-  }
   //// emit the FLTK configurator
-  if (fltk_config) {
-    fprintf (f, "\n# FLTK (see fltk.org) configurator\n");
-    fprintf (f, "REFPERSYS_FLTKCONFIG=%s\n", fltk_config);
-  }
+  if (fltk_config)
+    {
+      fprintf (f, "\n# FLTK (see fltk.org) configurator\n");
+      fprintf (f, "REFPERSYS_FLTKCONFIG=%s\n", fltk_config);
+    }
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
-  if (!link (tmp_conf, "_config-refpersys.mk"))
+  if (link (tmp_conf, "_config-refpersys.mk"))
     {
-      fprintf (stderr, "%s failed to link %s to _config-refpersys.mk (%m)\n",
-	       prog_name, tmp_conf);
+      fprintf (stderr, "%s failed to hardlink %s to _config-refpersys.mk\n"
+	       " (%s, %s:%d, git " GIT_ID ")\n",
+	       prog_name, tmp_conf, strerror (errno), __FILE__, __LINE__);
       failed = true;
       exit (EXIT_FAILURE);
     };
@@ -1005,8 +1012,8 @@ main (int argc, char **argv)
   if (!cc)
     cc = "/usr/bin/gcc";
 
-  if (rps_conf_cc_set(cc) == RPS_CONF_FAIL)
-    exit(EXIT_FAILURE);
+  if (rps_conf_cc_set (cc) == RPS_CONF_FAIL)
+    exit (EXIT_FAILURE);
 
   char *cxx = getenv ("CXX");
   if (!cxx)
@@ -1135,24 +1142,24 @@ main (int argc, char **argv)
  *   None
  */
 void
-rps_conf_diag__(const char *file, int line, const char *fmt, ...)
+rps_conf_diag__ (const char *file, int line, const char *fmt, ...)
 {
-	va_list ap;
+  va_list ap;
 
-	assert(file != NULL && *file != '\0');
-	assert(line > 0);
-	assert(fmt != NULL && *fmt != '\0');
+  assert (file != NULL && *file != '\0');
+  assert (line > 0);
+  assert (fmt != NULL && *fmt != '\0');
 
-	va_start(ap, fmt);
-	(void)fprintf(stderr, "%s: error: ", prog_name);
-        (void)vfprintf(stderr, fmt, ap);
+  va_start (ap, fmt);
+  (void) fprintf (stderr, "%s: error: ", prog_name);
+  (void) vfprintf (stderr, fmt, ap);
 
-	if (rps_conf_verbose)
-		(void)fprintf(stderr, " [%s:%d]\n", file, line);
-	else
-		(void)fputs("\n", stderr);
+  if (rps_conf_verbose)
+    (void) fprintf (stderr, " [%s:%d]\n", file, line);
+  else
+    (void) fputs ("\n", stderr);
 
-	va_end(ap);
+  va_end (ap);
 }
 
 /*
@@ -1172,7 +1179,7 @@ rps_conf_diag__(const char *file, int line, const char *fmt, ...)
  *   None
  */
 void
-rps_conf_cc_test(const char *cc)
+rps_conf_cc_test (const char *cc)
 {
   char *helloworldsrc = NULL;
   char helloworldbin[128];
@@ -1285,26 +1292,29 @@ rps_conf_cc_test(const char *cc)
  *   None
  */
 int
-rps_conf_cc_set(const char *cc)
+rps_conf_cc_set (const char *cc)
 {
-  assert(cc != NULL);
-  if (*cc == '\0') {
-    rps_conf_diag("missing C compiler path");
-    return RPS_CONF_FAIL;
-  };
+  assert (cc != NULL);
+  if (*cc == '\0')
+    {
+      rps_conf_diag ("missing C compiler path");
+      return RPS_CONF_FAIL;
+    };
 
-  if (*cc != '/') {
-    rps_conf_diag("%s: C compiler path not absolute", cc);
-    return RPS_CONF_FAIL;
-  };
+  if (*cc != '/')
+    {
+      rps_conf_diag ("%s: C compiler path not absolute", cc);
+      return RPS_CONF_FAIL;
+    };
 
   errno = 0;
-  if (access (cc, X_OK)) {
-    rps_conf_diag("%s: C compiler path not executable", cc);
-    return RPS_CONF_FAIL;
-  };
+  if (access (cc, X_OK))
+    {
+      rps_conf_diag ("%s: C compiler path not executable", cc);
+      return RPS_CONF_FAIL;
+    };
 
-  rps_conf_cc_test(cc);
+  rps_conf_cc_test (cc);
   c_compiler = cc;
   return RPS_CONF_OK;
 }				/* end rps_conf_cc_set */
