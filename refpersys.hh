@@ -135,8 +135,11 @@
 
 //// the generated/rpsdata.h contain only preprocessor #define-s and #undef
 //// it may undef RPS_WITH_FLTK
-
+//// it is simpler to not use it...
+#ifdef RPS_WITH_DATA
 #include "generated/rpsdata.h"
+#endif //RPS_WITH_DATA
+
 
 
 /// keep the debug options in alphabetical order
