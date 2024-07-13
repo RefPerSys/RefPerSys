@@ -9,7 +9,7 @@
 ///
 
 ///
-/// Purpose: scan C++ code for //@PKGCONFIG comments
+/// Purpose: utility to scan C++ code for //@PKGCONFIG comments
 
 /// Caveat: this program should run quickly and consume few memory. So
 /// we never call free here!
