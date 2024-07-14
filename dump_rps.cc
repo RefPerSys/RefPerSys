@@ -1216,7 +1216,7 @@ Rps_Dumper::write_generated_data_file(void)
   *pouts << "#define RPS_ALIGNOF_STDMUTEX " << alignof(std::mutex) << std::endl;
   *pouts << "#define RPS_ALIGNOF_STDRECURSIVEMUTEX " << alignof(std::recursive_mutex) << std::endl;
   *pouts << "#define RPS_ALIGNOF_STDSTRING " << alignof(std::string) << std::endl;
-  *pouts << "/// c++ size std::lock_guard<std::recursive_mutex> & std::map<std::string,void*>" << std::endl;
+  *pouts << "/// c++ align std::lock_guard<std::recursive_mutex> & std::map<std::string,void*>" << std::endl;
   *pouts << "#define RPS_ALIGNOF_LOCKGURECMTX " << alignof(std::lock_guard<std::recursive_mutex>) << std::endl;
   *pouts << "#define RPS_ALIGNOF_MAPSTR2PTR " << alignof(std::map<std::string,void*>) << std::endl;
   *pouts << "#define RPS_ALIGNOF_FILE " << alignof(FILE) << std::endl;
