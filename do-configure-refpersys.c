@@ -79,10 +79,10 @@
 #error HOST should be defined thru compilation command "hostname"
 #endif
 
-const char rpsconf_gitid[] = GIT_ID;
-const char rpsconf_opersys[] = OPERSYS;
-const char rpsconf_arch[] = ARCH;
-const char rpsconf_host[] = HOST;
+const char rps_conf_gitid[] = GIT_ID;
+const char rps_conf_opersys[] = OPERSYS;
+const char rps_conf_arch[] = ARCH;
+const char rps_conf_host[] = HOST;
 
 #define RPS_CONF_OK 0
 #define RPS_CONF_FAIL -1
@@ -859,11 +859,11 @@ emit_configure_refpersys_mk (void)
     }
   ////
   fprintf (f, "\n### machine architecture\n");
-  fprintf (f, "REFPERSYS_ARCH=%s\n", rpsconf_arch);
+  fprintf (f, "REFPERSYS_ARCH=%s\n", rps_conf_arch);
   fprintf (f, "\n### operating system\n");
-  fprintf (f, "REFPERSYS_OPERSYS=%s\n", rpsconf_opersys);
+  fprintf (f, "REFPERSYS_OPERSYS=%s\n", rps_conf_opersys);
   fprintf (f, "\n### building hostname\n");
-  fprintf (f, "REFPERSYS_BUILDHOST=%s\n", rpsconf_host);
+  fprintf (f, "REFPERSYS_BUILDHOST=%s\n", rps_conf_host);
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
