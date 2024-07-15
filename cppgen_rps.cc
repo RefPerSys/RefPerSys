@@ -31,7 +31,8 @@
  *
  * Notice:
  *    See also companion file lightgen_rps.cc for GNU lightning
- *    code generation.
+ *    code generation and the GCC MELT paper on
+ *    https://arxiv.org/abs/1109.0779
  ******************************************************************************/
 
 #include "refpersys.hh"
