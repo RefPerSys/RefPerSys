@@ -144,18 +144,20 @@ char *temporary_binary_file (const char *prefix, const char *suffix,
 /// emit the configure-refperys.mk file to be included in GNUmakefile 
 void emit_configure_refpersys_mk (void);
 
-static void
-rps_conf_diag__ (const char *, int, const char *, ...)
+/* see gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html */
 #ifdef __GNUC__
-// see gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html
-  __attribute__((format (printf, 3, 4)))
-#endif /*__GNUC__*/
-  ;
-     static int rps_conf_cc_set (const char *);
-     static void rps_conf_cc_test (const char *);
+#	define RPS_CONF_ATTR_PRINTF(x, y) __attribute__((format(printf, 3, 4)))
+#else
+#	define RPS_CONF_ATTR_PRINTF(x, y)
+#endif
 
-     void try_then_set_cxx_compiler (const char *cxx);
-     void should_remove_file (const char *path, int lineno);
+static void RPS_CONF_ATTR_PRINTF(3, 4)
+       rps_conf_diag__(const char *, int, const char *, ...);
+static int rps_conf_cc_set (const char *);
+static void rps_conf_cc_test (const char *);
+
+void try_then_set_cxx_compiler (const char *cxx);
+void should_remove_file (const char *path, int lineno);
 
 
 /* Wrapper macro around rps_conf_diag__() */
