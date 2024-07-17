@@ -222,7 +222,8 @@ ifeq ($(shell git remote | grep github), github)
 	@git push github
 else
 	@echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
-	@printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
+
+@printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
 endif
 	@printf "\n%s git-pushed commit %s of RefPerSys, branch %s ...\n" \
 	        "$$(git config --get user.email)" "$$(./do-generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
@@ -373,9 +374,11 @@ test00: refpersys
 	@printf '\n\n\n////test00 second\n'
 	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B --run-name=test00.2
 	@printf '\n\n\n////test00 third\n'
-	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B --run-name=test00.3
+	./refpersys  -AREPL  --test-repl-lexer '@show put' -B --run-name=test00.3
+	@printf '\n\n\n////test00 fourth\n'
+	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B --run-name=test00.4
 	@printf '\n\n\n////test00 help REPL command\n'
-	./refpersys -AREPL -c help -B --run-name=test00.help
+	./refpersys -AREPL -c help -B --run-name=test00.4
 	@printf '\n\n\n////test00 FINISHED¤\n'
 
 test01: refpersys
