@@ -992,7 +992,8 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
       unsigned curlen = delimstr.size();
       unsigned prevlen = (delimstr.c_str()+delimstr.size() - (const char*)prevu8) +1;
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter for delimstr='" << delimstr <<"' curlen=" << curlen
-                    << " prevlen=" << prevlen);
+                    << " prevlen=" << prevlen
+		    << " prevu8=" << Rps_Cjson_String((const char*)prevu8));
       if (prevlen==0 || prevlen > delimstr.size())
         break;
       delimstr[prevlen] = (char)0; /// facilitates debugging, in principle useless
