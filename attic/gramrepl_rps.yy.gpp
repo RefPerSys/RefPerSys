@@ -86,7 +86,7 @@
 %token INTEGER FLOAT STRING OBJID NAME CODE_CHUNK;
 
 /* the keywords from @&file&@:@&line&@  */
-%token KW_SHOW;
+%token KW_SHOW; /* \show */
 
 
 //// '(' and ')' parenthesis from @&file&@:@&line&@
@@ -94,6 +94,9 @@
 
 ///  '{' and '}' braces from @&file&@:@&line&@
 %token LEFT_BRACE RIGHT_BRACE;
+
+///  single quote from @&file&@:@&line&@
+%token QUOTE;
 
 /// '[' and ']' square brackets from @&file&@:@&line&@
 %token LEFT_SQBRA RIGHT_SQBRA;
@@ -115,11 +118,15 @@ repl_command: KW_SHOW repl_expr{
 #warning action for SHOW command from @&file&@:@&line&@
     };
 
+repl_objexpr :
+     OBJID /* from @&file&@:@&line&@ */
+     | NAME /* from @&file&@:@&line&@ */
+;
+
 repl_expr: INTEGER /* from @&file&@:@&line&@ */
     | STRING /* from @&file&@:@&line&@ */
     | FLOAT /* from @&file&@:@&line&@ */
-    | OBJID /* from @&file&@:@&line&@ */
-    | NAME /* from @&file&@:@&line&@ */
+    | repl_objexpr /* from @&file&@:@&line&@ */
     ;
 
 %%
