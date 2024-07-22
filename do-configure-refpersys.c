@@ -131,6 +131,10 @@ const char *ninja_builder;
 #define MAX_REMOVED_FILES 4096
 #endif
 
+#ifndef MY_BUFFER_SIZE
+#define MY_BUFFER_SIZE 1024
+#endif /*MY_BUFFER_SIZE */
+
 const char *files_to_remove_at_exit[MAX_REMOVED_FILES];
 int removedfiles_count;
 
@@ -151,18 +155,19 @@ void emit_configure_refpersys_mk (void);
 #	define RPS_CONF_ATTR_PRINTF(x, y)
 #endif
 
-static void RPS_CONF_ATTR_PRINTF(3, 4)
-       rps_conf_diag__(const char *, int, const char *, ...);
-static int rps_conf_cc_set (const char *);
-static void rps_conf_cc_test (const char *);
+static void
+RPS_CONF_ATTR_PRINTF (3, 4)
+rps_conf_diag__ (const char *, int, const char *, ...);
+     static int rps_conf_cc_set (const char *);
+     static void rps_conf_cc_test (const char *);
 
-void try_then_set_cxx_compiler (const char *cxx);
-void should_remove_file (const char *path, int lineno);
+     void try_then_set_cxx_compiler (const char *cxx);
+     void should_remove_file (const char *path, int lineno);
 
 
 /* Wrapper macro around rps_conf_diag__() */
-#define rps_conf_diag(msg, ...) \
-	rps_conf_diag__(__FILE__, __LINE__, msg, ##__VA_ARGS__)
+#define rps_conf_diag(msg, ...)					\
+  rps_conf_diag__(__FILE__, __LINE__, msg, ##__VA_ARGS__)
 
 
 
@@ -871,13 +876,79 @@ emit_configure_refpersys_mk (void)
   fflush (f);
   if (link (tmp_conf, "_config-refpersys.mk"))
     {
-      fprintf (stderr, "%s failed to hardlink %s to _config-refpersys.mk\n"
-	       " (%s, %s:%d, git " GIT_ID ")\n",
-	       prog_name, tmp_conf, strerror (errno), __FILE__, __LINE__);
-      failed = true;
-      exit (EXIT_FAILURE);
+      int lnkerrno = errno;
+      if (lnkerrno == EXDEV)	/// Invalid cross-device link
+	{		
+	  /// if tmp_conf and _config-refpersys.mk are on different
+	  /// file systems e.g. if /tmp/ is a tmpfs on Linux, we copy
+	  /// it.
+	  static char cbuf[MY_BUFFER_SIZE + 4];
+	  fclose (f);
+	  f = NULL;
+	  (void) rename ("_config-refpersys.mk", "_config-refpersys.mk~");
+	  FILE *fsrctmpconf = fopen (tmp_conf, "r");
+	  if (!fsrctmpconf)
+	    {
+	      fprintf (stderr,
+		       "%s failed to fopen read %s  (%s, %s:%d, git " GIT_ID
+		       ")\n", prog_name, tmp_conf, strerror (errno), __FILE__,
+		       __LINE__);
+	      failed = true;
+	      exit (EXIT_FAILURE);
+	    };
+	  FILE *fdstconf = fopen ("_config-refpersys.mk", "w");
+	  if (!fdstconf)
+	    {
+	      fprintf (stderr,
+		       "%s failed to fopen write _config-refpersys.mk in %s (%s, %s:%d, git "
+		       GIT_ID ")\n", prog_name, strerror (errno), my_cwd_buf,
+		       __FILE__, __LINE__);
+	      failed = true;
+	      exit (EXIT_FAILURE);
+	    };
+	  while (!feof(fsrctmpconf)) {
+	    memset (cbuf, 0, sizeof(cbuf));
+	    size_t nbrd = fread(cbuf, MY_BUFFER_SIZE, 1, fsrctmpconf);
+	    if (nbrd==0) {
+	      if (feof(fsrctmpconf))
+		break;
+	      fprintf (stderr,
+		       "%s failed to fread %s  (%s, %s:%d, git " GIT_ID
+		       ")\n", prog_name, tmp_conf, strerror (errno), __FILE__,
+		       __LINE__);
+	      failed = true;
+	      exit (EXIT_FAILURE);
+	    };
+	    if (fputs(cbuf, fdstconf)) {
+	      fprintf (stderr,
+		       "%s failed to fputs to _config-refpersys.mk in %s  (%s, %s:%d, git " GIT_ID
+		       ")\n", prog_name, my_cwd_buf, strerror (errno),
+		       __FILE__, __LINE__);
+	      failed = true;
+	      exit (EXIT_FAILURE);
+	    };
+	  }; /// end while !feof fsrctmpconf
+	  if (fclose(fdstconf)) {
+	      fprintf (stderr,
+		       "%s failed to fclose _config-refpersys.mk in  %s  (%s, %s:%d, git " GIT_ID
+		       ")\n", prog_name, my_cwd_buf, strerror (errno), __FILE__,
+		       __LINE__);
+	      failed = true;
+	      exit (EXIT_FAILURE);
+	  }
+	}
+      else
+	{
+	  fprintf (stderr,
+		   "%s failed to hardlink %s to _config-refpersys.mk\n"
+		   " (%s, %s:%d, git " GIT_ID ")\n", prog_name, tmp_conf,
+		   strerror (lnkerrno), __FILE__, __LINE__);
+	  failed = true;
+	  exit (EXIT_FAILURE);
+	};
     };
-  fclose (f);
+  if (f)
+    fclose (f);
   fflush (NULL);
   {
     char mvcmdbuf[256];
