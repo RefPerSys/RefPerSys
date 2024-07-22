@@ -222,8 +222,7 @@ ifeq ($(shell git remote | grep github), github)
 	@git push github
 else
 	@echo "Add github remote as git@github.com:RefPerSys/RefPerSys.git"
-
-@printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
+	@printf "using: %s\n" 'git remote add --mirror=push github git@github.com:RefPerSys/RefPerSys.git'
 endif
 	@printf "\n%s git-pushed commit %s of RefPerSys, branch %s ...\n" \
 	        "$$(git config --get user.email)" "$$(./do-generate-gitid.sh -s)" "$$(git branch | fgrep '*')"
