@@ -849,6 +849,9 @@ emit_configure_refpersys_mk (void)
   /// emit the ninja builder
   fprintf (f, "\n\n" "# ninja builder from ninja-build.org\n");
   fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (ninja_builder, NULL));
+  fprintf (f, "# generated from %s:%d git %s\n\n", __FILE__, __LINE__,
+	   rps_conf_gitid);
+  fflush (f);
   if (builder_person)
     {
       fprintf (f, "## refpersys builder person and perhaps email\n");
@@ -919,11 +922,11 @@ emit_configure_refpersys_mk (void)
 	      failed = true;
 	      exit (EXIT_FAILURE);
 	    };
-	    if (fputs(cbuf, fdstconf)) {
+	    if (fputs(cbuf, fdstconf)<0) {
 	      fprintf (stderr,
 		       "%s failed to fputs to _config-refpersys.mk in %s  (%s, %s:%d, git " GIT_ID
 		       ")\n", prog_name, my_cwd_buf, strerror (errno),
-		       __FILE__, __LINE__);
+		       __FILE__, __LINE__-3);
 	      failed = true;
 	      exit (EXIT_FAILURE);
 	    };
