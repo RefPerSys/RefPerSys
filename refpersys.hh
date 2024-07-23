@@ -121,8 +121,6 @@
 #include <glob.h>
 
 
-/// libtar-dev package on Debian
-#include <libtar.h>
 
 /// libssh2-1-dev package on Debian
 #include <libssh2.h>
