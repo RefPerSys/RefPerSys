@@ -86,7 +86,7 @@
 %token INTEGER FLOAT STRING OBJID NAME CODE_CHUNK;
 
 /* the keywords from @&file&@:@&line&@  */
-%token KW_SHOW; /* \show */
+%token KW_SHOW; /* @show */
 
 
 //// '(' and ')' parenthesis from @&file&@:@&line&@

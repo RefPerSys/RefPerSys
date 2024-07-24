@@ -86,7 +86,7 @@ REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace
 ## TODO after june 2024, add the libgccjit...
 
 ### desired plugins (their basename under plugins_dir/)
-REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_simpinterp
+REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_simpinterp _rpsplug_gramrepl
 
 all:
 	@if [ -z "$(REFPERSYS_TOPDIR)" ]; then \
@@ -107,7 +107,7 @@ all:
 	$(MAKE) plugins
 
 
-.SECONDARY:  __timestamp.c  #gramrepl_rps.yy gramrepl_rps.cc  gramrepl_rps.hh
+.SECONDARY:  __timestamp.c 
 	$(SYNC)
 
 config: do-configure-refpersys do-scan-pkgconfig GNUmakefile
@@ -194,7 +194,7 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh build-plugin.sh |GNUmakefile
 	@printf "RefPerSys-gnumaking plugin %s MAKE is %s RPS_MAKE is %s\n" "$@" "$(MAKE)" "$(RPS_MAKE)"
 	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./build-plugin.sh $< $@
 
-plugins_dir/_rpsplug_gramrepl.yy: attic/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
+plugins_dir/_rpsplug_gramrepl.yy: plugins_dir/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
 	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
 	$(REFPERSYS_GPP) -x -I generated/ -I . \
             -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
