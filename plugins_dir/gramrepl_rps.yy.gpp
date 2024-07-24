@@ -67,15 +67,15 @@
 %define api.symbol.prefix {RPSGRAMSYMB_}
 
 %param { /*param from @&file&@:@&line&@:*/ Rps_CallFrame*callerframe,
-          Rps_TokenSource*toksource, /*endparam from @&file&@:@&line&@*/
+          Rps_TokenSource*toksource /*:endparam from @&file&@:@&line&@*/
 }
 
 %lex-param { /*lexparam from @&file&@:@&line&@:*/
-             Rps_Value extralexv /*endlexparam from @&file&@:@&line&@:*/
+             Rps_Value extralexv /*:endlexparam from @&file&@:@&line&@*/
 }
 
 %parse-param { /*parseparam from @&file&@:@&line&@:*/ Rps_Value extraparsv
-              /*endparseparam from @&file&@:@&line&@:*/
+              /*:endparseparam from @&file&@:@&line&@*/
 }
 
 %start repl_input;
