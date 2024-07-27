@@ -1239,7 +1239,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
       }
     else if (_f.evalshowv.is_instance())
       {
-        _f.showninstv = _f.evalshowv.as_instance();
+        _f.showninstv = Rps_InstanceValue(_f.evalshowv.as_instance());
         rps_show_instance_for_repl(&_, _f.showninstv, &std::cout, 0);
       }
     if (_f.showv || _f.evalshowv)
