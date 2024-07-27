@@ -1073,6 +1073,26 @@ void rps_show_object_for_repl(Rps_CallFrame*callerframe,
     }
 } // end rps_show_object_for_repl
 
+extern "C"
+void rps_show_instance_for_repl(Rps_CallFrame*callerframe,
+                                const Rps_InstanceValue arginst,
+                                std::ostream* pout,
+                                unsigned depth)
+{
+  RPS_ASSERT(callerframe && callerframe->is_good_call_frame());
+  RPS_ASSERT(pout != nullptr);
+  static Rps_Id showdescoid;
+  if (!showdescoid)
+    showdescoid=Rps_Id("_2wi3wsd8tVF01MBeeF"); // for the show∈symbol
+  RPS_LOCALFRAME(/*descr:*/Rps_ObjectRef::really_find_object_by_oid(showdescoid),
+                           callerframe,
+                           Rps_InstanceValue inst;
+                );
+  _f.inst = arginst;
+#warning rps_show_instance_for_repl unimplemented
+  RPS_FATALOUT("rps_show_instance_for_repl unimplemented inst=" << _f.inst);
+} // end rps_show_instance_for_repl
+
 ////////////////
 /* C++ function _7WsQyJK6lty02uz5KT for REPL command show*/
 extern "C" rps_applyingfun_t rpsapply_7WsQyJK6lty02uz5KT;
@@ -1096,6 +1116,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
                            Rps_ObjectRef curattrob;
                            Rps_Value lextokv;
                            Rps_Value showv;
+                           Rps_InstanceValue showninstv;
                            Rps_Value evalshowv;
                            Rps_SetValue attrsetv;
                            Rps_Value subvalv;
@@ -1209,7 +1230,7 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
     std::cout << std::endl
               << "¤¤¤¤¤¤ SHOW expr. " << _f.showv << std::endl
               << " in environment " << _f.evalenvob << std::endl
-              << " evaluated to " << _f.evalshowv;
+              << " evaluated to " << _f.evalshowv << std::endl;
     if (_f.evalshowv.is_object())
       {
 #warning this code should be moved into  rps_show_object_for_repl above
@@ -1218,8 +1239,8 @@ rpsapply_7WsQyJK6lty02uz5KT(Rps_CallFrame*callerframe, // REPL command show expr
       }
     else if (_f.evalshowv.is_instance())
       {
-#warning incomplete rpsapply_7WsQyJK6lty02uz5KT should define and call rps_show_instance_for_repl
-        RPS_FATALOUT("rpsapply_7WsQyJK6lty02uz5KT for REPL command show should call rps_show_instance_for_repl for evalshowv=" << _f.evalshowv);
+        _f.showninstv = _f.evalshowv.as_instance();
+        rps_show_instance_for_repl(&_, _f.showninstv, &std::cout, 0);
       }
     if (_f.showv || _f.evalshowv)
       return {_f.evalshowv, _f.showv};
