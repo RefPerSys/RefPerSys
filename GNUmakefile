@@ -47,7 +47,9 @@ RPS_HOMETMP := $(shell echo '$$HOME/tmp')
 .PHONY: all config objects showtests clean distclean gitpush gitpush2 \
         print-plugin-settings indent redump clean-plugins plugins \
         test00 test01 test01a test01b test01c test01d test01e test01f \
-        test02 test03 test05 test06 test07 test07a test08 test09 test-load \
+        test02 test03 test03nt test04 \
+        test05 test06 test07 test07a \
+        test08 test09 test-load \
 	testfltk1 testfltk2 testfltk3 testfltk4
 
 SYNC=/bin/sync
@@ -422,6 +424,10 @@ test02: refpersys
 test03: refpersys
 	./refpersys -AREPL  -c 'show 1 + 2' -B --run-name=test03
 	@printf '\n\n\n////test03 FINISHED¤\n'
+
+test03nt: refpersys
+	./refpersys --no-terminal -AREPL  -c 'show 1 + 2' -B --run-name=test03
+	@printf '\n\n\n////test03nt FINISHED¤\n'
 
 test04: refpersys
 	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B --run-name=test04
