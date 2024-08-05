@@ -1339,7 +1339,8 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                             << Rps_Do_Output([&](std::ostream& out)
               {
                 this->display_current_line_with_cursor(out);
-              }));
+              })
+                  << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_sum/p"));
               continue;
             };
           //// reached when okleft is false (see previous parse_term)....
@@ -1381,7 +1382,8 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                      << Rps_Do_Output([&](std::ostream& out)
       {
         this->display_current_line_with_cursor(out);
-      }));
+      })
+          << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::parse_sum/q"));
     };        // end if
   /***
    * We probably should loop and collect all terms if they are
