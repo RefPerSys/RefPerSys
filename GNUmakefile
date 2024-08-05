@@ -425,8 +425,9 @@ test03: refpersys
 	./refpersys -AREPL  -c 'show 1 + 2' -B --run-name=test03
 	@printf '\n\n\n////test03 FINISHED¤\n'
 
+## test03 no tty
 test03nt: refpersys
-	./refpersys --no-terminal -AREPL  -c 'show 1 + 2' -B --run-name=test03
+	./refpersys --no-terminal -AREPL  -c 'show 1 + 2' -B --run-name=test03nt
 	@printf '\n\n\n////test03nt FINISHED¤\n'
 
 test04: refpersys
