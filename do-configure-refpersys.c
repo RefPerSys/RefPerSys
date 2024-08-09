@@ -880,6 +880,9 @@ emit_configure_refpersys_mk (void)
   if (link (tmp_conf, "_config-refpersys.mk"))
     {
       int lnkerrno = errno;
+      fprintf(stderr, "%s failed to link %s to _config-refpersys.mk: %s (git %s)\n",
+	      prog_name, tmp_conf, strerror(lnkerrno), rps_conf_gitid);
+      fflush(stderr);
       if (lnkerrno == EXDEV)	/// Invalid cross-device link
 	{		
 	  /// if tmp_conf and _config-refpersys.mk are on different
