@@ -59,6 +59,7 @@
 #include <FL/Fl_Text_Display.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Pack.H>
+/// Fl_Flex.h is only in FLTK 1.4 not FLTK 1.3
 #include <FL/Fl_Flex.H>
 
 /// conventional strings
