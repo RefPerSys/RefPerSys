@@ -60,7 +60,9 @@
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Pack.H>
 /// Fl_Flex.h is only in FLTK 1.4 not FLTK 1.3
+#if FL_API_VERSION >= 10400
 #include <FL/Fl_Flex.H>
+#endif
 
 /// conventional strings
 extern "C" const char rps_fltk_gitid[];
@@ -72,6 +74,8 @@ const char rps_fltk_date[]= __DATE__;
 extern "C" const char rps_fltk_shortgitid[];
 const char rps_fltk_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" const int rps_fltk_api_version;
+const int rps_fltk_api_version = FL_API_VERSION;
 
 ////////////////////////////////////////////////////////////////////////
 ////// ******** DECLARATIONS ********
@@ -319,7 +323,9 @@ class Rps_FltkMainWindow: public Fl_Window
 {
   friend class Rps_FltkDebugWindow;
   Fl_Menu_Bar* _mainwin_menubar;
+#if FL_API_VERSION>=10400
   Fl_Flex* _mainwin_vflex;
+#endif
   std::array<std::shared_ptr<Fl_Menu_Item>,
       (std::size_t)(2+(int)RPS_DEBUG__LAST)>
       _mainwin_dbgmenuarr;
@@ -537,7 +543,11 @@ Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 
 Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*title)
   : Fl_Window(x,y,w,h,title),
-    _mainwin_menubar(nullptr), _mainwin_vflex(nullptr), _mainwin_dbgmenuarr(), _mainwin_stringvect(), _mainwin_cstrvect()
+    _mainwin_menubar(nullptr),
+#if FL_API_VERSION >= 10400
+    _mainwin_vflex(nullptr),
+#endif
+    _mainwin_dbgmenuarr(), _mainwin_stringvect(), _mainwin_cstrvect()
 {
   constexpr int estimatenbstring = 20;
   _mainwin_stringvect.reserve(estimatenbstring);
@@ -643,7 +653,9 @@ Rps_FltkMainWindow::fill_main_window(void)
 #undef Rps_FLTK_debug_option
   };
   /////////////
+#if FL_API_VERSION >= 10400
   _mainwin_vflex = new Fl_Flex(0, 25, w(), h()-26);
+#endif
   {
     Fl_Widget*firstlabel = nullptr;
     char*labelstr=nullptr;
@@ -655,11 +667,13 @@ Rps_FltkMainWindow::fill_main_window(void)
     RPS_POSSIBLE_BREAKPOINT();
     labelstr = strdup(labelbuf);
     RPS_DEBUG_LOG(REPL, "fill_main_window labelstr:" << labelstr);
+#if FL_API_VERSION >= 10400
     _mainwin_vflex->spacing(2);
     _mainwin_vflex->begin();
     firstlabel = new Fl_Box(0,0,0,0,labelstr);
     _mainwin_vflex->end();
     _mainwin_vflex->layout();
+#endif
   }
   this->end();
   callback(close_cb, nullptr);
