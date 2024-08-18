@@ -140,7 +140,7 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
 #warning probably needs more GC-ed data in rps_generate_lightning_code
-  };
+  });
   _f.obmodule = argobmodule;
                 _f.genparamv = arggenparam;
                 std::lock_guard<std::recursive_mutex> gumodule(*_f.obmodule->objmtxptr());

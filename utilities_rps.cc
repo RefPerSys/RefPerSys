@@ -641,9 +641,9 @@ rps_show_version(void)
             << " executable: " << exepath;
   if (strcmp(exepath, realexepath))
     std::cout <<  " really " << realexepath;
-  std::cout << " FLTK (see fltk.org) ABI version:" << rps_fltk_abi_version()
+  std::cout << " FLTK (see fltk.org) ABI version:" << rps_fltk_get_abi_version()
             << std::endl;
-  std::cout << " FLTK API version:" << rps_fltk_api_version()
+  std::cout << " FLTK API version:" << rps_fltk_get_api_version()
             << std::endl;
   std::cout << std::endl
             /* TODO: near commit 191d55e1b31c, march 2023; decide

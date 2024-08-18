@@ -189,8 +189,8 @@ typedef Rps_ProtoCallFrame Rps_CallFrame;
 typedef void Rps_EventHandler_sigt(Rps_CallFrame*, int /*fd*/, void* /*data*/);
 
 #if RPS_WITH_FLTK
-extern "C" int rps_fltk_abi_version (void);
-extern "C" int rps_fltk_api_version (void);
+extern "C" int rps_fltk_get_abi_version (void);
+extern "C" int rps_fltk_get_api_version (void);
 extern "C" void rps_fltk_initialize (int argc, char**argv);
 extern "C" void rps_fltk_progoption(char*arg, struct argp_state*, bool side_effect);
 extern "C" bool rps_fltk_enabled (void);
@@ -220,8 +220,8 @@ extern "C" void rps_fltk_remove_output_fd(int fd);
 /* emit the size and align */
 extern "C" void rps_fltk_emit_sizes(std::ostream&out);
 #else /*not RPS_WITH_FLTK*/
-#define rps_fltk_abi_version() 0
-#define rps_fltk_api_version() 0
+#define rps_fltk_get_abi_version() 0
+#define rps_fltk_get_api_version() 0
 #define rps_fltk_initialize() do {}while(0)
 #define rps_fltk_progoption(Arg,State,SidEff) do {}while(0)
 #define rps_fltk_enabled() false

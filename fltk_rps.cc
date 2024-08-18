@@ -895,16 +895,16 @@ Rps_FltkDebugWindow::~Rps_FltkDebugWindow()
 } // end Rps_FltkDebugWindow destructor
 ////////////////
 int
-rps_fltk_abi_version (void)
+rps_fltk_get_abi_version (void)
 {
   return Fl::abi_version();
-} // end rps_fltk_abi_version
+} // end rps_fltk_get_abi_version
 
 int
-rps_fltk_api_version (void)
+rps_fltk_get_api_version (void)
 {
   return Fl::api_version ();
-} // end rps_fltk_api_version
+} // end rps_fltk_get_api_version
 
 void
 rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
