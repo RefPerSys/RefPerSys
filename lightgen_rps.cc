@@ -121,7 +121,9 @@ Rps_PayloadLightningCodeGen::dump_json_content(Rps_Dumper*du, Json::Value&jv) co
   RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_PayloadLightningCodeGen::dump_json_content
 
-//// return true on successful code generation
+
+////////////////////////////////////////////////////////////////
+//// Returns true on successful code generation
 bool
 rps_generate_lightning_code(Rps_CallFrame*callerframe,
                             Rps_ObjectRef argobmodule,
@@ -135,21 +137,25 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
                  Rps_ObjectRef obgenerator;
                  Rps_Value genparamv;
                 );
+  _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
+  {
+#warning probably needs more GC-ed data in rps_generate_lightning_code
+  };
   _f.obmodule = argobmodule;
-  _f.genparamv = arggenparam;
-  std::lock_guard<std::recursive_mutex> gumodule(*_f.obmodule->objmtxptr());
-  _f.obgenerator =
-    Rps_ObjectRef::make_object(&_,
-                               RPS_ROOT_OB(_6SM7PykipQW01HVClH) //midend_lightning_code_generator∈class
-                              );
-  std::lock_guard<std::recursive_mutex> gugenerator(*_f.obgenerator->objmtxptr());
-  _f.obgenerator->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
-  _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
-                           _f.obmodule);
-  RPS_DEBUG_LOG (CODEGEN, "GNU lightning generator " << _f.obgenerator
-                 << " for module " << _f.obmodule);
-  RPS_FATALOUT("unimplemented rps_generate_lightning_code obmodule="
-               << _f.obmodule << " _f.obgenerator=" << _f.obgenerator);
+                _f.genparamv = arggenparam;
+                std::lock_guard<std::recursive_mutex> gumodule(*_f.obmodule->objmtxptr());
+                _f.obgenerator =
+                  Rps_ObjectRef::make_object(&_,
+                      RPS_ROOT_OB(_6SM7PykipQW01HVClH) //midend_lightning_code_generator∈class
+                                            );
+                std::lock_guard<std::recursive_mutex> gugenerator(*_f.obgenerator->objmtxptr());
+                _f.obgenerator->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
+                _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
+                                         _f.obmodule);
+                RPS_DEBUG_LOG (CODEGEN, "GNU lightning generator " << _f.obgenerator
+                               << " for module " << _f.obmodule);
+                RPS_FATALOUT("unimplemented rps_generate_lightning_code obmodule="
+                             << _f.obmodule << " _f.obgenerator=" << _f.obgenerator);
 #warning unimplemented rps_generate_lightning_code
 } // end rps_generate_lightning_code
 
