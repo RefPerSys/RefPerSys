@@ -175,14 +175,16 @@ refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __
 	@echo RefPerSys generated C++ files $(REFPERSYS_GENERATED_CPP_SOURCES)
 #	@echo RefPerSys generated C++ object files $(REFPERSYS_GENERATED_CPP_OBJECTS)
 	@echo PACKAGES_LIST is $(PACKAGES_LIST)
+	@echo FLTKconfig is  $(REFPERSYS_FLTKCONFIG)
+	@echo FLTK stuff is  $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags)
 	$(MAKE) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
 	$(REFPERSYS_CXX) -rdynamic -o $@ \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
              $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o \
 	      $(shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a) \
-              -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
               $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
+              -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 	@/bin/mv -v --backup __timestamp.c __timestamp.c%
 	@/bin/rm -vf __timestamp.o
