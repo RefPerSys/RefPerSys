@@ -894,12 +894,14 @@ Rps_FltkDebugWindow::~Rps_FltkDebugWindow()
   rps_fltk_debugwin = nullptr;
 } // end Rps_FltkDebugWindow destructor
 ////////////////
+#undef rps_fltk_get_abi_version
 int
 rps_fltk_get_abi_version (void)
 {
   return Fl::abi_version();
 } // end rps_fltk_get_abi_version
 
+#undef rps_fltk_get_api_version
 int
 rps_fltk_get_api_version (void)
 {
