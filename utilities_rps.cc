@@ -41,8 +41,10 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Multi_Label.H>
 #include <FL/Fl_Widget.H>
+#if FLTK_API_VERSION >= 10400
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Flex.H>
+#endif
 #include <FL/Fl_Text_Buffer.H>
 #include <FL/Fl_Text_Editor.H>
 #include <FL/Fl_Box.H>
@@ -517,9 +519,11 @@ rps_print_types_info(void)
 #if RPS_WITH_FLTK
   printf("\n\n===== FLTK widgets from %s:%d ====\n", __FILE__, __LINE__);
   EXPLAIN_TYPE(Fl_Box);
+#if FLTK_API_VERSION >= 10400
   EXPLAIN_TYPE(Fl_Flex);
-  EXPLAIN_TYPE(Fl_Menu_Bar);
   EXPLAIN_TYPE(Fl_Pack);
+#endif
+  EXPLAIN_TYPE(Fl_Menu_Bar);
   EXPLAIN_TYPE(Fl_Text_Buffer);
   EXPLAIN_TYPE(Fl_Text_Editor);
   EXPLAIN_TYPE(Fl_Widget);

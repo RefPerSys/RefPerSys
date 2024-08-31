@@ -129,7 +129,7 @@
 /// C++ wrapper)
 #include <gmpxx.h>
 
-#define RPS_WITH_FLTK 0 /* could be 1 if using fltk.org graphical toolkit */
+#define RPS_WITH_FLTK 1 /* could be 1 if using fltk.org graphical toolkit */
 
 //// the generated/rpsdata.h contain only preprocessor #define-s and #undef
 //// it may undef RPS_WITH_FLTK

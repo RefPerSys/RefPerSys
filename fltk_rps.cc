@@ -5,7 +5,7 @@
  * Description:
  *      This file is part of the Reflective Persistent System.
  *
- *      It has the code for the FLTK 1.4 graphical interface.  See
+ *      It has the code for the FLTK 1.3 graphical interface.  See
  *      also https://fltk.org - download FLTK source code and compile
  *      it with debugging enabled, see our README.md for more.
  *
@@ -42,6 +42,8 @@
 #if !RPS_WITH_FLTK
 #error RefPerSys without FLTK toolkit
 #endif
+
+#warning fltk_rps.cc should be backported to FLTK 1.3
 
 #include <stdarg.h>
 #include <FL/Fl.H>
@@ -194,7 +196,8 @@ class Rps_PayloadFltkWidget : public Rps_PayloadFltkThing
 
 
 /// temporary payload for a reference to any FLTK widget
-class Rps_PayloadFltkRefWidget : public Rps_PayloadFltkThing, Fl_Callback_User_Data
+class Rps_PayloadFltkRefWidget :
+  public Rps_PayloadFltkThing
 {
   friend Rps_PayloadFltkRefWidget*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadFltkRefWidget,Rps_ObjectZone*>(Rps_ObjectZone*);
@@ -244,7 +247,7 @@ Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget(Rps_ObjectZone*owner, Fl_Widg
   if (wid)
     {
       RPS_ASSERT(owner);
-      wid->user_data(this, /*auto_free=*/true);
+      wid->user_data(this);
     }
 } // end Rps_PayloadFltkRefWidget::Rps_PayloadFltkRefWidget
 
@@ -626,7 +629,9 @@ Rps_FltkMainWindow::add_menu_item_for_debug_option(Rps_Debug dbglev)
   Fl_Menu_Item*mitem = const_cast<Fl_Menu_Item*>(_mainwin_menubar->menu()+rk);
   RPS_ASSERT(mitem != nullptr);
   if (rps_debug_flags & (1 << unsigned(dbglev)))
-    mitem->value(1);
+    mitem->set();
+  else
+    mitem->clear();
   RPS_POSSIBLE_BREAKPOINT();
 } // end Rps_FltkMainWindow::add_menu_item_for_debug_option
 
@@ -1009,6 +1014,23 @@ rps_fltk_initialize (int argc, char**argv)
               << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize"));
 } // end rps_fltk_initialize
 
+extern "C" bool rps_fltk_program_is_quitting(void);
+bool
+rps_fltk_program_is_quitting(void)
+{
+#ifdef FLTK_API_VERSION > 10399
+  return Fl::program_should_quit();
+#else
+#warning incomplete rps_fltk_program_is_quitting
+  RPS_WARNOUT("incomplete rps_fltk_program_is_quitting" << std::endl
+              << " thread:" << rps_current_pthread_name()
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_program_is_quitting"));
+#endif
+  return true;
+} // end rps_fltk_program_is_quitting
+
+
 void
 rps_fltk_stop(void)
 {
@@ -1016,7 +1038,11 @@ rps_fltk_stop(void)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_stop"));
   Fl::lock();
-  Fl::program_should_quit(1);
+  /// in FLTK1.4 only Fl::program_should_quit(1);
+#warning use Fl::program_should_quit
+  RPS_WARNOUT("rps_fltk_stop called from " << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_stop")
+              << std::endl << " should quit FLTK event loop");
   Fl::unlock();
   RPS_DEBUG_LOG(REPL, "rps_fltk_stop done from thread:" << rps_current_pthread_name());
 } // end rps_fltk_stop
@@ -1039,7 +1065,7 @@ rps_fltk_run (void)
       if (waitdelay < minimal_wait_delay)
         waitdelay = minimal_wait_delay;
       RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name() << " waitdelay=" << waitdelay);
-      while (!Fl::program_should_quit())
+      while (!rps_fltk_program_is_quitting())
         {
           loopcnt++;
           RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name()
@@ -1053,13 +1079,14 @@ rps_fltk_run (void)
                             << " loopcnt#" << loopcnt
                             << " quit after "
                             << rps_run_delay << " elapsed sec.");
-              Fl::program_should_quit(1);
+              // TODO: code review for FLTK1.3
+              rps_fltk_stop();
             }
         };
     }
   else   // no rps_run_delay
     {
-      while (!Fl::program_should_quit())
+      while (!rps_fltk_program_is_quitting())
         {
           loopcnt++;
           RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name()
