@@ -11,11 +11,14 @@ intelligence system or [inference
 engine](https://en.wikipedia.org/wiki/Inference_engine), e.g. an
 alternative to [CLIPSrules](https://clipsrules.net/).
 
-Contributions to *RefPerSys* are welcome. Contact by email [Basile
-Starynkevitch](http://starynkevitch.net/Basile/) (near Paris, France)
-at `basile@starynkevitch.net` or Abhishek Chakravarti (Kolkata,
-India) at `chakravarti.avishek@gmail.com`. Basile can also be contacted
-by snail mail (8 rue de la Faïencerie, 92340 Bourg-la-Reine, France).
+Contributions to *RefPerSys* are welcome. Contact by email
+[Basile STARYNKEVITCH](http://starynkevitch.net/Basile/) (near Paris, France)
+at `basile@starynkevitch.net` and `b.starynkevitch@gmail.com`
+or Abhishek Chakravarti (Kolkata, India) at `chakravarti.avishek@gmail.com`.
+Basile can also be contacted
+by snail mail (8 rue de la Faïencerie, 92340 Bourg-la-Reine, France)
+or (on French office hours) by Whatapp to +33 6 8501 followed by
+the four digits product of seven and 337.
 
 [HorizonEurope](https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/programmes/horizon)
 or [ITEA](https://itea4.org/) consortia interested by
