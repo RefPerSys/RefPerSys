@@ -20,8 +20,12 @@ For *RefPerSys* near commit [d53653c37f7a](https://github.com/RefPerSys/RefPerSy
 or at least contact [Basile
 Starynkevitch](http://starynkevitch.net/Basile/) by SMS, WhatsApp, or
 private email to
-[basile@starynkevitch.net](mailto:basile@starynkevitch.net) if you
+[basile@starynkevitch.net](mailto:basile@starynkevitch.net)
+and [b.starynkevitch@gmail.com](mailto:b.starynkevitch@gmail.com) if you
 want to contribute.
+
+(I Basile can also be reached during French office hours by Whatapp
+ to +33 6 8501 followed by the four digits product of 7 and 337)
 
 
 Please mention *RefPerSys* and the http://refpersys.org/ URL to colleagues, students, teachers et al...
