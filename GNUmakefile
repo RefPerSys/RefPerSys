@@ -88,7 +88,8 @@ REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace
 ## TODO after june 2024, add the libgccjit...
 
 ### desired plugins (their basename under plugins_dir/)
-REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_simpinterp _rpsplug_gramrepl
+### Basile removed _rpsplug_gramrepl in sept. 2024
+REFPERSYS_DESIRED_PLUGIN_BASENAMES= rpsplug_simpinterp 
 
 all:
 	@if [ -z "$(REFPERSYS_TOPDIR)" ]; then \
@@ -198,25 +199,29 @@ plugins_dir/%.so: plugins_dir/%.cc refpersys.hh build-plugin.sh |GNUmakefile
 	@printf "RefPerSys-gnumaking plugin %s MAKE is %s RPS_MAKE is %s\n" "$@" "$(MAKE)" "$(RPS_MAKE)"
 	env PATH=$$PATH $(shell $(RPS_MAKE) -s print-plugin-settings) ./build-plugin.sh $< $@
 
-plugins_dir/_rpsplug_gramrepl.yy: plugins_dir/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
-	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
-	$(REFPERSYS_GPP) -x -I generated/ -I . \
-            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
-            -DRPS_HOST=$(RPS_HOST) \
-            -DRPS_ARCH=$(RPS_ARCH) \
-            -DRPS_OPERSYS=$(RPS_OPERSYS) \
-            -DRPS_GPP_INPUT="$<"    -DRPS_GPP_OUTPUT="$@"    \
-            -DRPS_GPP_INPUT_BASENAME="$(basename $<)" \
-            -U  '@&'  '&@'  '('  '&,'  ')'  '('  ')' '$(RPS_ATSHARP)'   '\\'  \
-            -o $@ $<
 
 
-plugins_dir/_rpsplug_gramrepl.cc: plugins_dir/_rpsplug_gramrepl.yy
-	$(RPS_BISON) --verbose --no-lines --warnings=all --color=tty \
-                     --language=c++ --debug  --token-table \
-                     --header=plugins_dir/_rpsplug_gramrepl.hh \
-                     --output=$@ \
-                   $<
+################################# obsolete stuff
+#plugins_dir/_rpsplug_gramrepl.yy: plugins_dir/gramrepl_rps.yy.gpp refpersys.hh refpersys |GNUmakefile _config-refpersys.mk  _scanned-pkgconfig.mk
+#	@printf "RefPerSys-gnumake building plugin GNU bison code %s from %s using $(REFPERSYS_GPP) in %s\n" "$@"  "$<"  "$$(/bin/pwd)"
+#	$(REFPERSYS_GPP) -x -I generated/ -I . \
+#            -DRPS_SHORTGIT="$(RPS_SHORTGIT_ID)" \
+#            -DRPS_HOST=$(RPS_HOST) \
+#            -DRPS_ARCH=$(RPS_ARCH) \
+#            -DRPS_OPERSYS=$(RPS_OPERSYS) \
+#            -DRPS_GPP_INPUT="$<"    -DRPS_GPP_OUTPUT="$@"    \
+#            -DRPS_GPP_INPUT_BASENAME="$(basename $<)" \
+#            -U  '@&'  '&@'  '('  '&,'  ')'  '('  ')' '$(RPS_ATSHARP)'   '\\'  \
+#            -o $@ $<
+#
+#
+#plugins_dir/_rpsplug_gramrepl.cc: plugins_dir/_rpsplug_gramrepl.yy
+#	$(RPS_BISON) --verbose --no-lines --warnings=all --color=tty \
+#                     --language=c++ --debug  --token-table \
+#                     --header=plugins_dir/_rpsplug_gramrepl.hh \
+#                     --output=$@ \
+#                   $<
+################################
 
 # Target to facilitate git push to both origin and GitHub mirrors
 gitpush:
