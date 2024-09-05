@@ -50,8 +50,9 @@ rps_parsrepl_termvect_stammering(std::vector<Rps_Value>& termvect, int line)
   if  (sz>1 && termvect[sz-1] == termvect[sz-2])
     {
       RPS_POSSIBLE_BREAKPOINT();
-      RPS_DEBUG_LOG_AT(__FILE__,line,REPL, "termvect_stammering " << termvect
+      RPS_DEBUG_LOG_AT(__FILE__,line,REPL, "@termvect_stammering " << termvect << std::endl
                        << RPS_FULL_BACKTRACE_HERE(1,"rps_parsrepl_termvect_stammering"));
+      RPS_POSSIBLE_BREAKPOINT();
       return true;
     }
   else
@@ -1246,6 +1247,19 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
         this->display_current_line_with_cursor(out);
       }));
       ///////////
+      RPS_DEBUGNL_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+		      << " BEFORELOOP loopcnt#" << loopcnt
+		      << " termvect:" << termvect<< " "
+		      << " leftv:" << _f.leftv
+		      << std::endl
+		      << "… lextokv=" << _f.lextokv
+		      << " delimob=" << _f.delimob
+		      << " pastdelimob=" << _f.pastdelimob << (again?", again":"; stop")
+		      << std::endl
+		      << "… curcptr:" << Rps_QuotedC_String(curcptr())
+		      << (again?"again":"NOTAGAIN")
+		      << " token_deq:" << toksrc_token_deq << std::endl);
+      ///////
       while (again)
         {
           loopcnt++;
