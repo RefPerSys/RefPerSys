@@ -293,6 +293,8 @@ extern "C" bool rps_without_quick_tests;
 extern "C" char* rps_run_command_after_load;
 extern "C" char* rps_debugflags_after_load;
 
+extern "C" const char* rps_get_proc_version(void);
+
 extern "C" std::string rps_run_name;
 
 extern "C" std::string rps_stringprintf(const char*fmt, ...)

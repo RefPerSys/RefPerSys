@@ -44,6 +44,8 @@ const char rps_main_date[]= __DATE__;
 extern "C" const char rps_main_shortgitid[];
 const char rps_main_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" char rps_buffer_proc_version[];
+char rps_buffer_proc_version[rps_path_byte_size];
 
 struct utsname rps_utsname;
 
@@ -70,6 +72,11 @@ char*rps_pidfile_path;
 
 extern "C" std::atomic<long> rps_debug_atomic_counter;
 std::atomic<long> rps_debug_atomic_counter;
+
+const char* rps_get_proc_version(void)
+{
+  return rps_buffer_proc_version;
+} // end rps_get_proc_version
 
 long
 rps_incremented_debug_counter(void)
@@ -1323,6 +1330,7 @@ rps_kill_wait_gui_process(void)
 /// registered to atexit....
 extern "C" void rps_exiting(void);
 
+
 void
 rps_exiting(void)
 {
@@ -1368,6 +1376,16 @@ main (int argc, char** argv)
     versionwanted = true;
   rps_stdout_istty = isatty(STDOUT_FILENO);
   static_assert(sizeof(rps_progexe) > 80);
+  ///// read /proc/version which hopefully is GNU/Linux specific
+  {
+    FILE* procversf = fopen("/proc/version", "r");
+    if (!procversf)
+      RPS_FATALOUT("failed to fopen /proc/version " << strerror(errno));
+    if (!fgets(rps_buffer_proc_version, rps_path_byte_size-2, procversf))
+      RPS_FATALOUT("failed to fgets /proc/version (fd#"
+		   << fileno(procversf) << ") " << strerror(errno));
+    fclose(procversf);
+  }
   {
     memset(rps_progexe, 0, sizeof(rps_progexe));
     ssize_t pxl = readlink("/proc/self/exe",
@@ -1549,7 +1567,10 @@ main (int argc, char** argv)
                 << "… built " << rps_timestamp
                 << " loaded state " << rps_my_load_dir << std::endl
                 << " elapsed " << rps_elapsed_real_time()
-                << ", cpu " << rps_process_cpu_time() << " seconds;" << std::endl
+                << ", cpu " << rps_process_cpu_time() << " seconds;"
+		<< std::endl
+		<< "… /proc/version " << rps_get_proc_version()
+		<< std::endl
                 << "Final debug flags:"
                 << Rps_Do_Output([&](std::ostream& out)
   {
