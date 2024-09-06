@@ -663,10 +663,11 @@ rps_run_loaded_application(int &argc, char **argv)
           {
             for (int cix=0; cix<nbcmd; cix++)
               {
-                out << std::endl << rps_command_vec[cix]
+                out << std::endl << rps_command_vec[cix];
               }
-          } << std::endl
-            << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application/exc")));
+          })
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application/exc"));
         };
     }
   if (access(rps_gui_script_executable, X_OK))
