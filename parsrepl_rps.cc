@@ -1248,17 +1248,17 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
       }));
       ///////////
       RPS_DEBUGNL_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
-		      << " BEFORELOOP loopcnt#" << loopcnt
-		      << " termvect:" << termvect<< " "
-		      << " leftv:" << _f.leftv
-		      << std::endl
-		      << "… lextokv=" << _f.lextokv
-		      << " delimob=" << _f.delimob
-		      << " pastdelimob=" << _f.pastdelimob << (again?", again":"; stop")
-		      << std::endl
-		      << "… curcptr:" << Rps_QuotedC_String(curcptr())
-		      << (again?"again":"NOTAGAIN")
-		      << " token_deq:" << toksrc_token_deq << std::endl);
+                      << " BEFORELOOP loopcnt#" << loopcnt
+                      << " termvect:" << termvect<< " "
+                      << " leftv:" << _f.leftv
+                      << std::endl
+                      << "… lextokv=" << _f.lextokv
+                      << " delimob=" << _f.delimob
+                      << " pastdelimob=" << _f.pastdelimob << (again?", again":"; stop")
+                      << std::endl
+                      << "… curcptr:" << Rps_QuotedC_String(curcptr())
+                      << (again?"again":"NOTAGAIN")
+                      << " token_deq:" << toksrc_token_deq << std::endl);
       ///////
       while (again)
         {
@@ -1293,9 +1293,9 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           }));
           bool succeeded=false;
           consume_front_token(&_, &succeeded);
-	  /// following two lines added in Sept 2024 near 2759775144
-	  _f.leftv = nullptr;
-	  _f.rightv = nullptr;
+          /// following two lines added in Sept 2024 near 2759775144
+          _f.leftv = nullptr;
+          _f.rightv = nullptr;
           if (!succeeded)
             {
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
