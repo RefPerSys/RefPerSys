@@ -70,7 +70,7 @@ fi
 
 /usr/bin/logger --id=$$ -s  -t "$0:" "starting" cppfile= $1 pluginfile= $2 curdate= $curdate REFPERSYS_TOPDIR= $REFPERSYS_TOPDIR cwd $(/bin/pwd)
 
-eval $(/usr/bin/gmake print-plugin-settings)
+eval $(/usr/bin/make print-plugin-settings)
 
 ### plugincppflags contain compiler flags
 ### pluginlinkerflags contain linker flags
