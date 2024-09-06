@@ -1008,7 +1008,12 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
       usleep (250000);
     }
   RPS_WARNOUT("Rps_TokenSource::get_delimiter failing at " << startpos
-              << " for " << startp << " in " << *this);
+              << " for " << startp << " in " << *this
+              << " git " << rps_gitid << " timestamp " << rps_timestamp
+              << std::endl << " host:" << rps_hostname()
+              << std::endl << " procversion:" << rps_get_proc_version()
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "Rps_TokenSource::get_delimiter-fail"));
   std::string failmsg {"Rps_TokenSource::get_delimiter failing at "};
   failmsg += startpos;
   throw std::runtime_error{failmsg};
