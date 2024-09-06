@@ -636,7 +636,23 @@ rps_run_loaded_application(int &argc, char **argv)
   ///// testing the REPL lexer
   if (!rps_test_repl_string.empty())
     {
-      rps_run_test_repl_lexer(rps_test_repl_string);
+      RPS_DEBUG_LOG(REPL, "running test repl string "
+                    << rps_test_repl_string);
+      try
+        {
+          rps_run_test_repl_lexer(rps_test_repl_string);
+          RPS_INFORMOUT("successfully done rps_run_test_repl_lexer on "
+                        << Rps_Cjson_String(rps_test_repl_string));
+        }
+      catch (std::exception& exc)
+        {
+          RPS_WARNOUT("rps_run_test_repl_lexer in rps_run_loaded_application failed on "
+                      << Rps_Cjson_String(rps_test_repl_string)
+                      << " with exception " << exc.what()
+                      << std::endl
+                      << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application/testrepl"));
+          return;
+        };
     }
   /////
   /// publish using web techniques information about this process
