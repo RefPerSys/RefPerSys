@@ -437,6 +437,10 @@ test03nt: refpersys
 	./refpersys --no-terminal -AREPL  -c 'show 1 + 2' -B --run-name=test03nt
 	@printf '\n\n\n////test03nt FINISHED¤\n'
 
+test03bis: refpersys
+	./refpersys -AREPL  -c 'show 1 + 2 + 3' -B --run-name=test03bis
+	@printf '\n\n\n////test03bis FINISHED¤\n'
+
 test04: refpersys
 	./refpersys -AREPL  -c 'show  1 * 2 + 3 * 4' -B --run-name=test04
 	@printf '\n\n\n////test04 FINISHED¤\n'
