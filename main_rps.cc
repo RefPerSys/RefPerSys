@@ -647,8 +647,27 @@ rps_run_loaded_application(int &argc, char **argv)
   if (!rps_command_vec.empty())
     {
       RPS_INFORMOUT("before running " << rps_command_vec.size() << " command[s]");
-      rps_do_repl_commands_vec(rps_command_vec);
-      RPS_INFORMOUT("after running " << rps_command_vec.size() << " commands");
+      int nbcmd = (int)rps_command_vec.size();
+      try
+        {
+          rps_do_repl_commands_vec(rps_command_vec);
+          RPS_INFORMOUT("after running successfully "
+                        << nbcmd << " commands");
+        }
+      catch (std::exception& exc)
+        {
+          RPS_WARNOUT("rps_run_loaded_application got exception "
+                      << exc.what()
+                      << " when running " << nbcmd << " commands:"
+                      << Rps_Do_Output([&](std::ostream& out)
+          {
+            for (int cix=0; cix<nbcmd; cix++)
+              {
+                out << std::endl << rps_command_vec[cix]
+              }
+          } << std::endl
+            << RPS_FULL_BACKTRACE_HERE(1, "rps_run_loaded_application/exc")));
+        };
     }
   if (access(rps_gui_script_executable, X_OK))
     RPS_WARNOUT("default GUI script " << rps_gui_script_executable << " is not executable");
