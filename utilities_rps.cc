@@ -665,6 +665,8 @@ rps_show_version(void)
             << " GPP preprocessor version: " << rps_gpp_preprocessor_version << std::endl
             << " made with: " << rps_gnumakefile << std::endl
             << " running on: " << rps_hostname() << std::endl
+	    << " /proc/version:" << std::endl
+	    << " " << rps_get_proc_version() << std::endl
             << "This executable was built by "
             << rps_building_user_name
             << " of email " << rps_building_user_email << std::endl
