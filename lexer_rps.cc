@@ -956,7 +956,7 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
       RPS_DEBUG_LOG(REPL, "Rps_TokenSource::get_delimiter punctuation delimv=" << _f.delimv << " for delimstr='"
                     << Rps_Cjson_String(delimstr)
                     << "' loopcnt#" << loopcnt
-                    << " dict*" << paylstrdict->owner());
+                    << " dict@*" << *(paylstrdict->owner()));
       if (_f.delimv)
         {
           _f.lexkindob = RPS_ROOT_OB(_2wdmxJecnFZ02VGGFK); //repl_delimiter∈class
