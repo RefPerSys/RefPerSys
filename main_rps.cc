@@ -1383,7 +1383,7 @@ main (int argc, char** argv)
       RPS_FATALOUT("failed to fopen /proc/version " << strerror(errno));
     if (!fgets(rps_buffer_proc_version, rps_path_byte_size-2, procversf))
       RPS_FATALOUT("failed to fgets /proc/version (fd#"
-		   << fileno(procversf) << ") " << strerror(errno));
+                   << fileno(procversf) << ") " << strerror(errno));
     fclose(procversf);
   }
   {
@@ -1568,9 +1568,9 @@ main (int argc, char** argv)
                 << " loaded state " << rps_my_load_dir << std::endl
                 << " elapsed " << rps_elapsed_real_time()
                 << ", cpu " << rps_process_cpu_time() << " seconds;"
-		<< std::endl
-		<< "… /proc/version " << rps_get_proc_version()
-		<< std::endl
+                << std::endl
+                << "… /proc/version " << rps_get_proc_version()
+                << std::endl
                 << "Final debug flags:"
                 << Rps_Do_Output([&](std::ostream& out)
   {
