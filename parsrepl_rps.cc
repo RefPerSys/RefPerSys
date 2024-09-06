@@ -1293,6 +1293,9 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           }));
           bool succeeded=false;
           consume_front_token(&_, &succeeded);
+	  /// following two lines added in Sept 2024 near 2759775144
+	  _f.leftv = nullptr;
+	  _f.rightv = nullptr;
           if (!succeeded)
             {
               RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
