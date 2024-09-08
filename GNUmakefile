@@ -152,12 +152,12 @@ clean-plugins:
 
 distclean: clean
 	$(RM) build.time  _config-refpersys.mk  _scanned-pkgconfig.mk  __timestamp.*
-	$(RM) __*.mkdep
+	$(RM) __*.mkdep Make-dependencies/__*.mkdep
 	$(RM) do-scan-pkgconfig
 
 -include _scanned-pkgconfig.mk
 
--include $(wildcard __*.mkdep)
+-include $(wildcard Make-dependencies/__*.mkdep)
 
 _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgconfig
 	./do-scan-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
