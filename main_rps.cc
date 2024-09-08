@@ -1534,9 +1534,12 @@ main (int argc, char** argv)
       if (rps_fltk_enabled())
         {
           RPS_DEBUG_LOG(REPL, "main before calling rps_fltk_run"
-                        << RPS_FULL_BACKTRACE_HERE(1, "main/fltk"));
+			<< std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "main/fltk-run+"));
           rps_fltk_run();
-          RPS_DEBUG_LOG(REPL, "main after calling rps_fltk_run");
+          RPS_DEBUG_LOG(REPL, "main rps_fltk_run ended"
+			<< std::endl
+                        << RPS_FULL_BACKTRACE_HERE(1, "main/fltk-run-"));
         }
       else
         {
