@@ -377,17 +377,17 @@ altredump:  ./refpersys
 ################################################################
 #### simple tests; the --run-name should start with test and not use $@ because of showtests target
 test00: refpersys
-	@printf '\n\n\n////test00 first\n'
+	@printf '\f\n\n\n\n////test00 first *****\n'
 	./refpersys  -AREPL  --test-repl-lexer 'show help' -B --run-name=test00.1
-	@printf '\n\n\n////test00 second\n'
+	@printf '\f\n\n\n\n////test00 second *****\n'
 	./refpersys  -AREPL  --test-repl-lexer 'show RefPerSys_system' -B --run-name=test00.2
-	@printf '\n\n\n////test00 third\n'
+	@printf '\f\n\n\n////test00 third *****\n'
 	./refpersys  -AREPL  --test-repl-lexer '@show put' -B --run-name=test00.3
-	@printf '\n\n\n////test00 fourth\n'
+	@printf '\f\n\n\n////test00 fourth *****\n'
 	./refpersys  -AREPL  --test-repl-lexer 'show (1 + 2)' -B --run-name=test00.4
-	@printf '\n\n\n////test00 help REPL command\n'
-	./refpersys -AREPL -c help -B --run-name=test00.4
-	@printf '\n\n\n////test00 FINISHED¤\n'
+	@printf '\f\n\n\n////test00 help REPL command (fifth) ****\n'
+	./refpersys -AREPL -c help -B --run-name=test00.5
+	@printf '\n\n\n////test00 FINISHED¤\n\n'
 
 test01: refpersys
 	@echo test01 testing simple show help with a lot of debug
