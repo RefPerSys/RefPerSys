@@ -334,6 +334,7 @@ class Rps_FltkMainWindow: public Fl_Window
       _mainwin_dbgmenuarr;
   std::vector<std::string> _mainwin_stringvect;
   std::vector<char*> _mainwin_cstrvect;
+  bool _mainwin_closing;
   void add_menu_item_for_debug_option(Rps_Debug dbg);
 protected:
   void fill_main_window(void);
@@ -341,6 +342,10 @@ protected:
   static void main_menu_cb(Fl_Widget*w, void*data);
   static void close_cb(Fl_Widget*w, void*data);
 public:
+  bool is_closing() const
+  {
+    return _mainwin_closing;
+  };
   Rps_FltkMainWindow(int x, int y, int w, int h, const char*title);
   Rps_FltkMainWindow(int w, int h, const char*title);
   const char* asprintf_mainwin(const char*fmt, ...)
@@ -550,7 +555,8 @@ Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*ti
 #if FL_API_VERSION >= 10400
     _mainwin_vflex(nullptr),
 #endif
-    _mainwin_dbgmenuarr(), _mainwin_stringvect(), _mainwin_cstrvect()
+    _mainwin_dbgmenuarr(), _mainwin_stringvect(), _mainwin_cstrvect(),
+    _mainwin_closing(false)
 {
   constexpr int estimatenbstring = 20;
   _mainwin_stringvect.reserve(estimatenbstring);
@@ -802,7 +808,7 @@ Rps_FltkMainWindow::close_cb(Fl_Widget*wid, void*data)
       if (system(pmapcmd))
         RPS_FATALOUT("failed to run " << pmapcmd);
     };
-
+  rps_fltk_mainwin->_mainwin_closing = true;
   rps_do_stop_event_loop();
 } // end Rps_FltkMainWindow::close_cb
 #warning incomplete implementation of class Rps_FltkMainWindow
@@ -990,7 +996,6 @@ rps_fltk_flush (void)
 void
 rps_fltk_initialize (int argc, char**argv)
 {
-#warning missing code in rps_fltk_initialize to create FLTK windows
   char titlebuf[128];
   memset (titlebuf, 0, sizeof(titlebuf));
   snprintf(titlebuf, sizeof(titlebuf), "RefPerSys %.9s v%d.%d pid %d on %s",
@@ -1018,16 +1023,32 @@ extern "C" bool rps_fltk_program_is_quitting(void);
 bool
 rps_fltk_program_is_quitting(void)
 {
-#ifdef FLTK_API_VERSION > 10399
+#ifdef FLTK_API_VERSION >= 10400 ///FLTK 1.4
+  RPS_DEBUG_LOG(REPL, "rps_fltk_program_is_quitting program_should_quit="
+                << (Fl::program_should_quit())?"True":"false"
+                << std::endl
+                << " thread:" << rps_current_pthread_name()
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_program_is_quitting"));
   return Fl::program_should_quit();
 #else
-#warning incomplete rps_fltk_program_is_quitting
-  RPS_WARNOUT("incomplete rps_fltk_program_is_quitting" << std::endl
-              << " thread:" << rps_current_pthread_name()
-              << std::endl
-              << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_program_is_quitting"));
-#endif
-  return true;
+  if (!rps_fltk_mainwin)
+    {
+      RPS_DEBUG_LOG(REPL, "rps_fltk_program_is_quitting no mainwin"
+                    << std::endl
+                    << " thread:" << rps_current_pthread_name()
+                    << std::endl
+                    << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_program_is_quitting"));
+      return true;
+    }
+  RPS_DEBUG_LOG(REPL, "rps_fltk_program_is_quitting mainwin "
+                << ((rps_fltk_mainwin->is_closing())?"closing":"not-closing")
+                << std::endl
+                << " thread:" << rps_current_pthread_name()
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_program_is_quitting"));
+  return rps_fltk_mainwin->is_closing();
+#endif  // FLTK 1.3
 } // end rps_fltk_program_is_quitting
 
 
@@ -1038,11 +1059,14 @@ rps_fltk_stop(void)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_stop"));
   Fl::lock();
+#if FLTK_API_VERSION >= 10400 // FLTK 1.4
   /// in FLTK1.4 only Fl::program_should_quit(1);
-#warning use Fl::program_should_quit
+  Fl::program_should_quit(1);
+#else // FLTKI 1.3
   RPS_WARNOUT("rps_fltk_stop called from " << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_stop")
               << std::endl << " should quit FLTK event loop");
+#endif
   Fl::unlock();
   RPS_DEBUG_LOG(REPL, "rps_fltk_stop done from thread:" << rps_current_pthread_name());
 } // end rps_fltk_stop
