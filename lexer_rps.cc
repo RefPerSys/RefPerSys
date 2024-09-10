@@ -1010,6 +1010,8 @@ Rps_TokenSource::get_delimiter(Rps_CallFrame*callframe)
   RPS_WARNOUT("Rps_TokenSource::get_delimiter failing at " << startpos
               << " for " << startp << " in " << *this << std::endl
               << " git " << rps_gitid << " timestamp " << rps_timestamp
+              << " delimstr='"  << Rps_Cjson_String(delimstr)
+              << "'"
               << std::endl << " host:" << rps_hostname()
               << std::endl << " procversion:" << rps_get_proc_version()
               << std::endl
