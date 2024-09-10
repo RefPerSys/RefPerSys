@@ -685,8 +685,8 @@ rps_show_version(void)
             << " free software license: GPLv3+, see https://gnu.org/licenses/gpl.html" << std::endl
             << "+++++ there is no WARRANTY, to the extent permitted by law ++++" << std::endl
             << "***** see also refpersys.org *****" << std::endl
-	    << "and github.com/RefPerSys/RefPerSys commit "
-	    << rps_shortgitid
+            << "and github.com/RefPerSys/RefPerSys commit "
+            << rps_shortgitid
             << std::endl << std::endl;
 } // end rps_show_version
 
