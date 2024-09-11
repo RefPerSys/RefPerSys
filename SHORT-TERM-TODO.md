@@ -35,6 +35,8 @@ Please mention *RefPerSys* and the http://refpersys.org/ URL to colleagues, stud
 Improve the REPL parsing so that `make test03` works
 
 
+Add a file `machlearn_rps.cc` including `mlpack.hpp` from https://www.mlpack.org/
+
 In commit c4935a77e45f3 (June 14, 2023) the `make test01`
 fails. Probably `Rps_ObjectZone::is_instance_of` and or
 `Rps_ObjectZone::is_subclass_of` are buggy. This is corrected in
@@ -70,7 +72,7 @@ both processes and file descriptors handled by that event loop. These
 file descriptors may be related to JSONRPC service, etc...
 
 
-Consider linking [GNU
+Improve linking [GNU
 lightning](https://www.gnu.org/software/lightning) machine code
 generation library.
 
