@@ -1102,9 +1102,12 @@ rps_fltk_run (void)
               RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name()
                             << " loopcnt#" << loopcnt
                             << " quit after "
-                            << rps_run_delay << " elapsed sec.");
+                            << rps_run_delay << " elapsed sec."
+			    << std::endl
+			    << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run/stop"));
               // TODO: code review for FLTK1.3
               rps_fltk_stop();
+	      break;
             }
         };
     }
