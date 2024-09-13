@@ -998,13 +998,26 @@ rps_fltk_initialize (int argc, char**argv)
 {
   char titlebuf[128];
   memset (titlebuf, 0, sizeof(titlebuf));
-  snprintf(titlebuf, sizeof(titlebuf), "RefPerSys %.9s v%d.%d pid %d on %s",
-           rps_shortgitid,
-           rps_get_major_version(), rps_get_minor_version(), (int)getpid(),
-           rps_hostname());
+  if (!rps_run_name.empty())
+    snprintf(titlebuf, sizeof(titlebuf),
+             "RefPerSys/%.20s %.9s v%d.%d pid %d on %s",
+             rps_run_name.c_str(),
+             rps_shortgitid,
+             rps_get_major_version(), rps_get_minor_version(),
+             (int)getpid(),
+             rps_hostname());
+  else
+    snprintf(titlebuf, sizeof(titlebuf),
+             "RefPerSys %.9s v%d.%d pid %d on %s",
+             rps_shortgitid,
+             rps_get_major_version(), rps_get_minor_version(),
+             (int)getpid(),
+             rps_hostname());
+
   fl_open_display();
-  rps_fltk_mainwin = new Rps_FltkMainWindow(/*width=*/750, /*height=*/550,
-      titlebuf);
+  rps_fltk_mainwin =
+    new Rps_FltkMainWindow(/*width=*/770, /*height=*/550,
+                                     titlebuf);
   rps_fltk_mainwin->show(argc, argv);
   rps_fltk_flush ();
   RPS_DEBUG_LOG(REPL, "rps_fltk_initialize showing mainwin@"
@@ -1103,11 +1116,11 @@ rps_fltk_run (void)
                             << " loopcnt#" << loopcnt
                             << " quit after "
                             << rps_run_delay << " elapsed sec."
-			    << std::endl
-			    << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run/stop"));
+                            << std::endl
+                            << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_run/stop"));
               // TODO: code review for FLTK1.3
               rps_fltk_stop();
-	      break;
+              break;
             }
         };
     }
