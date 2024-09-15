@@ -66,7 +66,7 @@
 /// generated/*.h file.
 
 #ifndef MY_HEAD_LINES_THRESHOLD
-#define MY_HEAD_LINES_THRESHOLD 384
+#define MY_HEAD_LINES_THRESHOLD 512
 #endif
 
 #ifndef MY_MAX_PACKAGE
