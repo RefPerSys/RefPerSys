@@ -689,7 +689,10 @@ Rps_FltkMainWindow::fill_main_window(void)
   this->end();
   callback(close_cb, nullptr);
   RPS_POSSIBLE_BREAKPOINT();
-  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window done w=" << w() << ",h=" << h());
+  RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window done w="
+                << w() << ",h=" << h()
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow::fill_main_window-"));
 } // end Rps_FltkMainWindow::fill_main_window
 
 Rps_FltkMainWindow::~Rps_FltkMainWindow()
@@ -754,9 +757,9 @@ Rps_FltkMainWindow::main_menu_cb(Fl_Widget*w, void*data)
     {
 #warning unimplemented debug stop
       RPS_WARNOUT("unimplemented debug stop rps_fltk_debugwin@"
-		  << (void*)rps_fltk_debugwin
-		  << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "main_menu_cb debug stop"));
+                  << (void*)rps_fltk_debugwin
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "main_menu_cb debug stop"));
     }
   else if (!strcmp((const char*)data, "d+")) // debug show
     {
@@ -767,8 +770,8 @@ Rps_FltkMainWindow::main_menu_cb(Fl_Widget*w, void*data)
         rps_fltk_debugwin = new Rps_FltkDebugWindow(670,480);
       rps_fltk_debugwin->show();
       RPS_WARNOUT("unimplemented debug show rps_fltk_debugwin@" << (void*)rps_fltk_debugwin
-		  << std::endl
-		  << RPS_FULL_BACKTRACE_HERE(1, "main_menu_cb debug show"));
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "main_menu_cb debug show"));
     }
   else if (!strcmp((const char*)data, "d_")) // debug clear
     {
