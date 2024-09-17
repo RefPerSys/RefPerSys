@@ -681,7 +681,10 @@ Rps_FltkMainWindow::fill_main_window(void)
 #if FL_API_VERSION >= 10400
     _mainwin_vflex->spacing(2);
     _mainwin_vflex->begin();
+#endif
     firstlabel = new Fl_Box(0,0,0,0,labelstr);
+    firstlabel->show();
+#if FL_API_VERSION >= 10400
     _mainwin_vflex->end();
     _mainwin_vflex->layout();
 #endif
@@ -1109,6 +1112,12 @@ rps_fltk_run (void)
       double waitdelay = rps_run_delay/16.0+0.02;
       if (waitdelay < minimal_wait_delay)
         waitdelay = minimal_wait_delay;
+      if (RPS_DEBUG_ENABLED(GUI) || RPS_DEBUG_ENABLED(REPL)
+          || RPS_DEBUG_ENABLED(EVENT_LOOP))
+        {
+          waitdelay += 2.5;
+          RPS_INFORMOUT("rps_fltk_run increased waitdelay to " << waitdelay);
+        };
       RPS_DEBUG_LOG(REPL, "rps_fltk_run thread:" << rps_current_pthread_name() << " waitdelay=" << waitdelay);
       while (!rps_fltk_program_is_quitting())
         {
