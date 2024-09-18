@@ -152,10 +152,17 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
   _f.obgenerator->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
   _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
                            _f.obmodule);
+  ///TODO: perhaps a better attribute is needed
+  _f.obgenerator->put_attr(RPS_ROOT_OB(_5VC4IuJ0dyr01b8lA0), //generate_code∈named_selector
+                           _f.genparamv);
   RPS_DEBUG_LOG (CODEGEN, "GNU lightning generator " << _f.obgenerator
-                 << " for module " << _f.obmodule);
+                 << " for module " << _f.obmodule
+                 << " generation params " << _f.genparamv << std::endl
+                 << " thread=" << rps_current_pthread_name());
   RPS_FATALOUT("unimplemented rps_generate_lightning_code obmodule="
-               << _f.obmodule << " _f.obgenerator=" << _f.obgenerator);
+               << _f.obmodule << " obgenerator=" << _f.obgenerator
+               << " genparamv=" << _f.genparamv << std::endl
+               << " thread=" << rps_current_pthread_name());
 #warning unimplemented rps_generate_lightning_code
 } // end rps_generate_lightning_code
 
