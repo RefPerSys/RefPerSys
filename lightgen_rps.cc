@@ -65,10 +65,18 @@ const char rps_lightgen_shortgitid[]= RPS_SHORTGITID;
 /// temporary payload for GNU lightning code generation:
 class Rps_PayloadLightningCodeGen : public Rps_Payload
 {
+public:
+  typedef long lightnodenum_t;
   friend Rps_PayloadLightningCodeGen*
   Rps_QuasiZone::rps_allocate1<Rps_PayloadLightningCodeGen,Rps_ObjectZone*>(Rps_ObjectZone*);
   virtual ~Rps_PayloadLightningCodeGen();
   jit_state_t* lightg_jist;
+  std::map<jit_node*,lightnodenum_t> lightg_nod2num_map;
+  std::map<lightnodenum_t,jit_node*> lightg_num2nod_map;
+#define _jit this->lightg_jist
+#define RPSJITLIGHTPAYLOAD_LOCKGUARD_AT(Lin) \
+  std::lock_guard<std::recursive_mutex> gu##Lin(*(this->owner()->objmtxptr()));
+#define RPSJITLIGHTPAYLOAD_LOCKGUARD() RPSJITLIGHTPAYLOAD_LOCKGUARD_AT(__LINE__)
 protected:
   virtual void gc_mark(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
@@ -88,16 +96,93 @@ protected:
   {
     return false;
   };
+public:
+  void rpsjit_prolog(void)
+  {
+    RPSJITLIGHTPAYLOAD_LOCKGUARD();
+    jit_prolog();
+  };
+  void rpsjit_epilog(void)
+  {
+    RPSJITLIGHTPAYLOAD_LOCKGUARD();
+    jit_epilog();
+  };
+  void rpsjit_realize(void)
+  {
+    RPSJITLIGHTPAYLOAD_LOCKGUARD();
+    jit_realize();
+  };
+  lightnodenum_t rpsjit_register_node(jit_node_t  *jn)
+  {
+    lightnodenum_t num=0;
+    RPSJITLIGHTPAYLOAD_LOCKGUARD();
+    RPS_ASSERT(jn != nullptr);
+    size_t nbnod = lightg_nod2num_map.size();
+    RPS_ASSERT(nbnod == lightg_num2nod_map.size());
+    auto numit = lightg_nod2num_map.find(jn);
+    if (numit != lightg_nod2num_map.end())
+      {
+        num = numit->second;
+        RPS_ASSERT(num>0);
+        RPS_ASSERT(lightg_num2nod_map.find(num) != lightg_num2nod_map.end());
+        return num;
+      };
+    num = (lightnodenum_t)(nbnod+1);
+    lightg_nod2num_map.insert({jn,num});
+    lightg_num2nod_map.insert({num,jn});
+    return num;
+  };// end member function rpsjit_register_node
+  jit_node_t* rpsjit_node_of_num(lightnodenum_t num) const
+  {
+    if (num==0)
+      return nullptr;
+    jit_node_t* nd=nullptr;
+    RPSJITLIGHTPAYLOAD_LOCKGUARD();
+    auto numit = lightg_num2nod_map.find(num);
+    if (numit != lightg_num2nod_map.end())
+      {
+        nd = numit->second;
+        RPS_ASSERT(lightg_nod2num_map.find(nd) != lightg_nod2num_map.end());
+      }
+    return nd;
+  };            // end rpsjit_node_of_num
+  lightnodenum_t rpsjit_num_of_node(jit_node_t* nd) const
+  {
+    if (nd == nullptr)
+      return 0;
+    RPSJITLIGHTPAYLOAD_LOCKGUARD();
+    lightnodenum_t num=0;;
+    auto nodit = lightg_nod2num_map.find(nd);
+    if (nodit != lightg_nod2num_map.end())
+      {
+        num = nodit->second;
+        RPS_ASSERT(lightg_num2nod_map.find(num) != lightg_num2nod_map.end());
+      }
+    return num;
+  };
 };        // end class Rps_PayloadLightningCodeGen
 
 Rps_PayloadLightningCodeGen::Rps_PayloadLightningCodeGen(Rps_ObjectZone*owner)
-  : Rps_Payload(Rps_Type::PaylLightCodeGen,owner), lightg_jist(nullptr)
+  : Rps_Payload(Rps_Type::PaylLightCodeGen,owner), lightg_jist(nullptr),
+    lightg_nod2num_map(), lightg_num2nod_map()
 {
   lightg_jist = jit_new_state();
+  RPSJITLIGHTPAYLOAD_LOCKGUARD();
 } // end of Rps_PayloadLightningCodeGen::Rps_PayloadLightningCodeGen
 
 Rps_PayloadLightningCodeGen::~Rps_PayloadLightningCodeGen()
 {
+  RPSJITLIGHTPAYLOAD_LOCKGUARD();
+  for (auto itnod: lightg_nod2num_map)
+    {
+      jit_node_t*curnod = itnod.first;
+      lightnodenum_t curnum= itnod.second;
+      RPS_ASSERT(curnod != nullptr);
+      RPS_ASSERT(curnum > 0);
+      RPS_ASSERT(lightg_num2nod_map.find(curnum) != lightg_num2nod_map.end());
+    };
+  lightg_nod2num_map.clear();
+  lightg_num2nod_map.clear();
   _jit_destroy_state(lightg_jist);
   lightg_jist = nullptr;
 } // end destructor Rps_PayloadLightningCodeGen::~Rps_PayloadLightningCodeGen
@@ -149,7 +234,8 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
                                RPS_ROOT_OB(_6SM7PykipQW01HVClH) //midend_lightning_code_generator∈class
                               );
   std::lock_guard<std::recursive_mutex> gugenerator(*_f.obgenerator->objmtxptr());
-  _f.obgenerator->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
+  Rps_PayloadLightningCodeGen*paylgen = _f.obgenerator->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
+  RPS_ASSERT(paylgen != nullptr);
   _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
                            _f.obmodule);
   ///TODO: perhaps a better attribute is needed
