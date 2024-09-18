@@ -261,6 +261,7 @@ load_rps.o: load_rps.cc refpersys.hh \
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
@@ -275,7 +276,7 @@ load_rps.o: load_rps.cc refpersys.hh \
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))	
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
-               -MD -MF__$(basename $(@F)).mkdep \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
@@ -289,7 +290,7 @@ load_rps.o: load_rps.cc refpersys.hh \
 	echo pkglist-refpersys is $(PKGLIST_refpersys)
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
 	$(REFPERSYS_CXX) -C -E $(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS) \
-               -MD -MF__$(basename $(@F)).ii.mkdep \
+               -MD -MFMake-dependencies/__$(basename $(@F)).ii.mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
@@ -303,7 +304,7 @@ fltk_rps.o: fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakefil
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
 	$(REFPERSYS_CXX) $(REFPERSYS_PREPRO_FLAGS) \
             $(REFPERSYS_COMPILER_FLAGS) \
-               -MD -MF__$(basename $(@F)).mkdep \
+               -MD -MFMake-dependencies/__$(basename $(@F)).mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
@@ -323,7 +324,7 @@ fltk_rps.ii:  fltk_rps.cc refpersys.hh  $(wildcard generated/rps*.hh) | GNUmakef
 	echo pkglist-$(basename $(<F)) is $(PKGLIST_$(basename $(<F)))
 	$(REFPERSYS_CXX) -C -E $(REFPERSYS_PREPRO_FLAGS) \
             $(REFPERSYS_COMPILER_FLAGS) \
-               -MD -MF__$(basename $(@F)).ii.mkdep \
+               -MD -MFMake-dependencies/__$(basename $(@F)).ii.mkdep \
 	       $(shell pkg-config --cflags $(PKGLIST_refpersys)) \
                $(shell pkg-config --cflags $(PKGLIST_$(basename $(<F)))) \
                -DRPS_THIS_SOURCE=\"$<\" -DRPS_GITID=\"$(RPS_GIT_ID)\"  \
