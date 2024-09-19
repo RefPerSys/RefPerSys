@@ -183,7 +183,7 @@ Rps_PayloadLightningCodeGen::~Rps_PayloadLightningCodeGen()
     };
   lightg_nod2num_map.clear();
   lightg_num2nod_map.clear();
-  _jit_destroy_state(lightg_jist);
+  _jit_destroy_state(lightg_jist); /// all nodes get destroyed!
   lightg_jist = nullptr;
 } // end destructor Rps_PayloadLightningCodeGen::~Rps_PayloadLightningCodeGen
 
