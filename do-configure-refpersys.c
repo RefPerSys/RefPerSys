@@ -1012,6 +1012,8 @@ usage (void)
   puts ("# GPLv3+ licensed, so no warranty");
 }				/* end usage */
 
+
+
 int
 main (int argc, char **argv)
 {
@@ -1055,6 +1057,11 @@ main (int argc, char **argv)
   atexit (remove_files);
   printf ("%s: when asked for a file path, you can run a shell command ...\n"
 	  "... if your input starts with an exclamation point\n", prog_name);
+  printf ("\t When asked for file paths, you are expected to enter an absolute one,\n"
+	  "\t for example /etc/passwd\n"
+	  "\t if you enter something starting with ! it is a shell command\n"
+	  "\t which is run and the question is repeated.\n");
+  fflush(NULL);
   if (argc > MAX_PROG_ARGS)
     {
       fprintf (stderr,
