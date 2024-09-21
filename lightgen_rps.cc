@@ -222,7 +222,9 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
                  Rps_ObjectRef obgenerator;
                  Rps_Value genparamv;
                  Rps_Value elemv;
-                 Rps_ObjectRef obelem;
+                 Rps_Value mainv;
+                 Rps_Value xtrav;
+
                 );
   _.set_additional_gc_marker([&](Rps_GarbageCollector*gc)
   {
@@ -249,18 +251,37 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
                  << " thread=" << rps_current_pthread_name());
   /// iterate on every component of the module
   int mix = -1;
-  for (mix = 0; mix < _f.obmodule->nb_components(&_); mix++)
+  for (mix = 0; (unsigned)mix < _f.obmodule->nb_components(&_); mix++)
     {
       _f.elemv = _f.obmodule->component_at(&_, mix);
-      if (!_f.elemv.is_object())
+      if (!_f.elemv)
         continue;
-      _f.obelem = _f.elemv.as_object();
       RPS_DEBUG_LOG (CODEGEN, "GNU lightning generator " << _f.obgenerator
-                     << " obelem=" << _f.obelem
+                     << " elemv=" << _f.elemv
                      << " mix#" << mix
                      << " for module " << _f.obmodule
                      << " generation params " << _f.genparamv << std::endl
                      << " thread=" << rps_current_pthread_name());
+      if (_f.elemv.is_closure())
+        {
+          // if the element is a closure, we apply it, and that could
+          // add more elements to the module...
+          Rps_TwoValues apres =
+            Rps_ClosureValue(_f.elemv).apply4(&_,
+                                              _f.obgenerator,
+                                              _f.genparamv,
+                                              _f.obmodule,
+                                              Rps_Value::make_tagged_int(mix));
+          /// make the GC happy
+          _f.mainv = apres.main();
+          _f.xtrav = apres.xtra();
+          if (!_f.mainv && !_f.xtrav)
+            RPS_WARNOUT("rps_generate_lightning_code failed to apply element#" << mix
+                        << "=" << _f.elemv
+                        << " to generator " << _f.obgenerator
+                        << " with parameters " << _f.genparamv
+                        << " of module " << _f.obmodule);
+        }
 #warning rps_generate_lightning_code needs to send a RefPerSys message, should we use (_5VC4IuJ0dyr01b8lA0) //generate_code∈named_selector
     };
   RPS_FATALOUT("unimplemented rps_generate_lightning_code obmodule="
