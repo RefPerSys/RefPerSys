@@ -253,6 +253,8 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
   int mix = -1;
   for (mix = 0; (unsigned)mix < _f.obmodule->nb_components(&_); mix++)
     {
+      _f.mainv = nullptr;
+      _f.xtrav = nullptr;
       _f.elemv = _f.obmodule->component_at(&_, mix);
       if (!_f.elemv)
         continue;
@@ -281,13 +283,35 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
                         << " to generator " << _f.obgenerator
                         << " with parameters " << _f.genparamv
                         << " of module " << _f.obmodule);
+          continue; /// the for loop in the module
         }
-#warning rps_generate_lightning_code needs to send a RefPerSys message, should we use (_5VC4IuJ0dyr01b8lA0) //generate_code∈named_selector
+      else
+        {
+          Rps_TwoValues snres =
+            _f.elemv.send4(&_,
+                           //lightning_generate_code∈named_selector:
+                           RPS_ROOT_OB(_6GiKCsHJDCi04m74XV),
+                           _f.obgenerator,
+                           _f.genparamv,
+                           _f.obmodule,
+                           Rps_Value::make_tagged_int(mix));
+          _f.mainv = snres.main();
+          _f.xtrav = snres.xtra();
+          if (!_f.mainv && !_f.xtrav)
+            RPS_WARNOUT("rps_generate_lightning_code failed to send lightning_generate_code to element#" << mix
+                        << "=" << _f.elemv
+                        << " and generator " << _f.obgenerator
+                        << " with parameters " << _f.genparamv
+                        << " of module " << _f.obmodule);
+
+        };
     };
-  RPS_FATALOUT("unimplemented rps_generate_lightning_code obmodule="
-               << _f.obmodule << " obgenerator=" << _f.obgenerator
-               << " genparamv=" << _f.genparamv << std::endl
-               << " thread=" << rps_current_pthread_name());
+  RPS_WARNOUT("unimplemented rps_generate_lightning_code obmodule="
+              << _f.obmodule << " obgenerator=" << _f.obgenerator
+              << " genparamv=" << _f.genparamv << std::endl
+              << " thread=" << rps_current_pthread_name()
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_generate_lightning_code/end-incomplete"));
 #warning unimplemented rps_generate_lightning_code
 } // end rps_generate_lightning_code
 
