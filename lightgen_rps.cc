@@ -238,7 +238,8 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
                                RPS_ROOT_OB(_6SM7PykipQW01HVClH) //midend_lightning_code_generator∈class
                               );
   std::lock_guard<std::recursive_mutex> gugenerator(*_f.obgenerator->objmtxptr());
-  Rps_PayloadLightningCodeGen*paylgen = _f.obgenerator->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
+  Rps_PayloadLightningCodeGen*paylgen =
+    _f.obgenerator->put_new_plain_payload<Rps_PayloadLightningCodeGen>();
   RPS_ASSERT(paylgen != nullptr);
   _f.obgenerator->put_attr(RPS_ROOT_OB(_2Xfl3YNgZg900K6zdC), //"code_module"∈named_attribute
                            _f.obmodule);
@@ -298,7 +299,8 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
           _f.mainv = snres.main();
           _f.xtrav = snres.xtra();
           if (!_f.mainv && !_f.xtrav)
-            RPS_WARNOUT("rps_generate_lightning_code failed to send lightning_generate_code to element#" << mix
+            RPS_WARNOUT("rps_generate_lightning_code failed to send"
+			" lightning_generate_code to element#" << mix
                         << "=" << _f.elemv
                         << " and generator " << _f.obgenerator
                         << " with parameters " << _f.genparamv
