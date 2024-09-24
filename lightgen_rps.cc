@@ -300,7 +300,7 @@ rps_generate_lightning_code(Rps_CallFrame*callerframe,
           _f.xtrav = snres.xtra();
           if (!_f.mainv && !_f.xtrav)
             RPS_WARNOUT("rps_generate_lightning_code failed to send"
-			" lightning_generate_code to element#" << mix
+                        " lightning_generate_code to element#" << mix
                         << "=" << _f.elemv
                         << " and generator " << _f.obgenerator
                         << " with parameters " << _f.genparamv
