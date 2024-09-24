@@ -32,6 +32,7 @@
  *
  * Notice:
  *    See also companion file cppgen_rps.cc for C++ code generation.
+ *    See https://lists.gnu.org/archive/html/lightning/2024-09/msg00010.html
  ************************************************************************/
 
 #include "refpersys.hh"
