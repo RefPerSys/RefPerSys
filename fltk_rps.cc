@@ -649,8 +649,10 @@ Rps_FltkMainWindow::fill_main_window(void)
                 << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkMainWindow/fill_main_window"));
   this->begin();
   //////////// the menubar
+  int menubar_w = w();
+  int menubar_h = 25;
   {
-    _mainwin_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
+    _mainwin_menubar = new Fl_Menu_Bar(0, 0, menubar_w, menubar_h);
     RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window _mainwin_menubar@" << (void*)_mainwin_menubar);
     _mainwin_menubar->add("&App/e&Xit", "^x", main_menu_cb, (void*)"X");
     _mainwin_menubar->add("&App/&Quit", "^q", main_menu_cb, (void*)"Q");
@@ -665,7 +667,7 @@ Rps_FltkMainWindow::fill_main_window(void)
   };
   /////////////
 #if FL_API_VERSION >= 10400
-  _mainwin_vflex = new Fl_Flex(0, 25, w(), h()-26);
+  _mainwin_vflex = new Fl_Flex(0, menubar_h, w(), h()-menubar_h-1);
 #endif
   {
     Fl_Widget*firstlabel = nullptr;
@@ -682,7 +684,9 @@ Rps_FltkMainWindow::fill_main_window(void)
     _mainwin_vflex->spacing(2);
     _mainwin_vflex->begin();
 #endif
-    firstlabel = new Fl_Box(0,0,0,0,labelstr);
+    firstlabel = new Fl_Box(/*x:*/0,/*y:*/menubar_h,
+			    /*w:*/w(),/*h:*/h()-menubar_h-1,
+			    labelstr);
     firstlabel->show();
 #if FL_API_VERSION >= 10400
     _mainwin_vflex->end();
