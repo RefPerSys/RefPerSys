@@ -1078,6 +1078,8 @@ main (int argc, char **argv)
       failed = true;
       exit (EXIT_FAILURE);
     };
+  if (!access("_config-refpersys.mk", F_OK))
+    rename("_config-refpersys.mk", "_config-refpersys.mk~");
   /// Any program argument like VAR=something is putenv-ed. And
   /// program arguments like -I... -D... -U... are passed to
   /// preprocessor. Those like -O... -g... -W... to
