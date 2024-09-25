@@ -116,7 +116,7 @@ Rps_PayloadMachLearn::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 #warning incomplete Rps_PayloadMachLearn::dump_json_content
 } // end Rps_PayloadMachLearn::dump_json_content
 
-//// loading of Rps_PayloadStrBuf; see above Rps_PayloadStrBuf::dump_json_content
+//// loading of Rps_PayloadMachLearn; see above Rps_PayloadMachLearn::dump_json_content
 void
 rpsldpy_machlearn(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_Id spacid, unsigned lineno)
 {
