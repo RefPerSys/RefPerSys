@@ -1055,6 +1055,13 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     };
   atexit (remove_files);
+  printf ("%s: configurator program for RefPerSys inference engine\n",  prog_name);
+  printf ("%s: [FRENCH] programme de configuration du moteur d'inférences RefPerSys\n",
+	  prog_name);
+  printf ("\t cf refpersys.org & github.com/RefPerSys/RefPerSys\n");
+  printf ("\t   REFlexive PERsistent SYStem\n");
+  printf ("\t Contact: Basile STARYNKEVITCH, 8 rue de la Faïencerie, 92340 Bourg-la-Reine\n");
+  fflush(NULL);
   printf ("%s: when asked for a file path, you can run a shell command ...\n"
 	  "... if your input starts with an exclamation point\n", prog_name);
   printf ("\t When asked for file paths, you are expected to enter an absolute one,\n"
