@@ -1520,6 +1520,7 @@ enum class Rps_Type : std::int16_t
   CallFrame = std::numeric_limits<std::int16_t>::min(),
   ////////////////
   /// payloads are negative, below -1
+  PaylMachlearn = -27,
   PaylFltkRefWidget = -26,
   PaylFltkWidget = -25,
   PaylFltkWindow = -24,

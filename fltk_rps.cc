@@ -685,8 +685,8 @@ Rps_FltkMainWindow::fill_main_window(void)
     _mainwin_vflex->begin();
 #endif
     firstlabel = new Fl_Box(/*x:*/0,/*y:*/menubar_h,
-			    /*w:*/w(),/*h:*/h()-menubar_h-1,
-			    labelstr);
+                                  /*w:*/w(),/*h:*/h()-menubar_h-1,
+                                  labelstr);
     firstlabel->show();
 #if FL_API_VERSION >= 10400
     _mainwin_vflex->end();
