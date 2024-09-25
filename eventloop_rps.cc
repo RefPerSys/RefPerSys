@@ -94,6 +94,9 @@ struct event_loop_data_st
 extern "C" struct event_loop_data_st rps_eventloopdata;
 struct event_loop_data_st rps_eventloopdata;
 
+/// for debugging purposes, a string explaining the rps_eventloopdata
+extern "C" std::string rps_eventloop_explstring(void);
+
 static std::mutex rps_jsonrpc_mtx; /// common mutex for below buffers
 #warning TODO: maybe command and response should use std::stringstream?
 static std::stringbuf rps_jsonrpc_cmdbuf; /// buffer for commands written to JSONRPC GUI process
@@ -644,8 +647,29 @@ rps_jsonrpc_initialize(void)
                 << " thread:" << rps_current_pthread_name());
 } // end rps_jsonrpc_initialize
 
+std::string
+rps_eventloop_explstring(void)
+{
+  std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  char numbuf[32];
+  memset(numbuf, 0, sizeof(numbuf));
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
+  std::ostringstream out;
+  double elapsed_age = rps_elapsed_real_time() - rps_eventloopdata.eld_startelapsedtime;
+  double cpu_age = rps_process_cpu_time() - rps_eventloopdata.eld_startcputime;
+  snprintf(numbuf, sizeof(numbuf), "%.2f", elapsed_age);
+  out << numbuf << " elap";
+  snprintf(numbuf, sizeof(numbuf), "%.3f", cpu_age);
+  out << "," << numbuf << " cpu.";
+#warning rps_eventloop_explstring very incomplete
+  out << std::flush;
+  return out.str();
+} // end rps_eventloop_explstring
 
 
+
+
+////////////////////////////////////////////////////////////////
 /* TODO: an event loop using poll(2) and also handling SIGCHLD using
    https://man7.org/linux/man-pages/man2/signalfd.2.html
  */
@@ -653,10 +677,10 @@ void
 rps_event_loop(void)
 {
   /// see https://man7.org/linux/man-pages/man2/poll.2.html
-  int nbfdpoll=0; /// number of polled file descriptors, second argument to poll(2)
-  long pollcount=0;
-  double startelapsedtime=rps_elapsed_real_time();
-  double startcputime=rps_process_cpu_time();
+  int nbfdpoll = 0; /// number of polled file descriptors, second argument to poll(2)
+  long pollcount = 0;
+  double startelapsedtime = rps_elapsed_real_time();
+  double startcputime = rps_process_cpu_time();
   RPS_DEBUG_LOG(REPL, "rps_event_loop starting elapsedtime=" << startelapsedtime
                 << " cputime=" << startcputime
                 << " thread:" << rps_current_pthread_name() << std::endl
