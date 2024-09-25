@@ -66,6 +66,9 @@ class Rps_PayloadMachLearn : public Rps_Payload
   Rps_PayloadMachLearn(Rps_ObjectRef obr) :
     Rps_PayloadMachLearn(obr?obr.optr():nullptr) {};
   virtual ~Rps_PayloadMachLearn();
+  ///TODO: figure out how to use these....
+  arma::mat _machlearn_matrix;
+  arma::Row<size_t> _machlearn_labels;
 protected:
   virtual void gc_mark(Rps_GarbageCollector&gc) const;
   virtual void dump_scan(Rps_Dumper*du) const;
@@ -113,6 +116,7 @@ Rps_PayloadMachLearn::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   /// see function rpsldpy_machlearn
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
+  ///TODO: dump somewhere the _machlearn_matrix & _machlearn_labels
 #warning incomplete Rps_PayloadMachLearn::dump_json_content
 } // end Rps_PayloadMachLearn::dump_json_content
 
@@ -130,6 +134,7 @@ rpsldpy_machlearn(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_
                 << " lineno=" << lineno);
   auto paylmachlearn = obz->put_new_plain_payload<Rps_PayloadMachLearn>();
   RPS_ASSERT(paylmachlearn);
+  ///TODO: load somehow the _machlearn_matrix & _machlearn_labels
   RPS_WARNOUT("incomplete rpsldpy_machlearn obz=" << obz
               << " jv=" << jv
               << " spacid=" << spacid
