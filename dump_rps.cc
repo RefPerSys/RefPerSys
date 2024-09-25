@@ -1094,14 +1094,33 @@ Rps_Dumper::write_generated_constants_file(void)
          << "#endif /*undefined RPS_INSTALL_CONSTANT_OB*/" << std::endl << std::endl;
   for (Rps_ObjectRef constobr : du_constantobset)
     {
-      RPS_ASSERT(constobr);
-      std::lock_guard<std::recursive_mutex> guconstobr(*(constobr->objmtxptr()));
       if (constcnt % 10 == 0)
         *pouts << std::endl;
+      std::string constname;
+      RPS_ASSERT(constobr);
+      std::lock_guard<std::recursive_mutex> guconstobr(*(constobr->objmtxptr()));
+      Rps_Value constnamev =
+	constobr->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name
+      if (constnamev.is_string())
+	constname = constnamev.as_string()->cstr();
       Rps_ObjectRef obclass = constobr->get_class();
+      std::string klassname;
       RPS_ASSERT(obclass);
-      *pouts << "RPS_INSTALL_CONSTANT_OB(" << constobr->oid() << ")"
-             << std::endl;
+      std::lock_guard<std::recursive_mutex> guclassobr(*(obclass->objmtxptr()));
+      Rps_Value classnamev =
+	obclass->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name
+      if (classnamev.is_string())
+	klassname = constnamev.as_string()->cstr();
+      *pouts << "RPS_INSTALL_CONSTANT_OB(" << constobr->oid() << ")";
+      if (!constname.empty() && !klassname.empty())
+	*pouts << " //." << constname << "∈"// U+2208 ELEMENT OF
+	       << klassname;
+      else if (!constname.empty())
+	*pouts << " //:" << constname;
+      else if (!klassname.empty())
+	*pouts << " //-∈" // U+2208 ELEMENT OF
+	       << klassname;	
+      *pouts << std::endl;
       constcnt ++;
     }
   *pouts << std::endl << "#undef RPS_INSTALL_CONSTANT_OB" << std::endl << std::endl;
