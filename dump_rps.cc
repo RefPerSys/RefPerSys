@@ -1122,7 +1122,7 @@ Rps_Dumper::write_generated_constants_file(void)
 	klassname = classnamev.to_cppstring();
       *pouts << "RPS_INSTALL_CONSTANT_OB(" << constobr->oid() << ")";
       if (!constname.empty() && !klassname.empty())
-	*pouts << " //." << constname << "∈"// U+2208 ELEMENT OF
+	*pouts << " //" << (constissymb?"€":"!") << constname << "∈"// U+2208 ELEMENT OF
 	       << klassname;
       else if (!constname.empty()) {
 	if (constissymb)
