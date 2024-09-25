@@ -1102,7 +1102,7 @@ Rps_Dumper::write_generated_constants_file(void)
       Rps_Value constnamev =
 	constobr->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name
       if (constnamev.is_string())
-	constname = constnamev.as_string()->cstr();
+	constname = constnamev.as_string()->cppstring();
       Rps_ObjectRef obclass = constobr->get_class();
       std::string klassname;
       RPS_ASSERT(obclass);
@@ -1110,7 +1110,7 @@ Rps_Dumper::write_generated_constants_file(void)
       Rps_Value classnamev =
 	obclass->get_physical_attr(RPS_ROOT_OB(_1EBVGSfW2m200z18rx)); //name
       if (classnamev.is_string())
-	klassname = constnamev.as_string()->cstr();
+	klassname = constnamev.as_string()->cppstring();
       *pouts << "RPS_INSTALL_CONSTANT_OB(" << constobr->oid() << ")";
       if (!constname.empty() && !klassname.empty())
 	*pouts << " //." << constname << "∈"// U+2208 ELEMENT OF
