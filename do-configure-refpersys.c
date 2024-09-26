@@ -798,6 +798,7 @@ emit_configure_refpersys_mk (void)
 	    fputc (' ', f);
 	  fputs (compiler_args[i], f);
 	};
+      fprintf(f, "$(REFPERSYS_LTO)");
     }
   else
     {
@@ -811,12 +812,12 @@ emit_configure_refpersys_mk (void)
 #ifdef __GNUC__
       fprintf (f, "## see stackoverflow.com/q/2224334/841108\n");
       fprintf (f, "#GNU compiler from %s:%d\n"
-	       "REFPERSYS_COMPILER_FLAGS= -Og -g -fPIC -Wall -Wextra\n",
+	       "REFPERSYS_COMPILER_FLAGS= -Og -g -fPIC -Wall -Wextra $(REFPERSYS_LTO)\n",
 	       __FILE__, __LINE__ - 2);
 #else
       fprintf (f, "#nonGNU compiler from %s:%d\n"
 	       "## see stackoverflow.com/questions/2224334/\n"
-	       "REFPERSYS_COMPILER_FLAGS= -O0 -g -fPIC -Wall",
+	       "REFPERSYS_COMPILER_FLAGS= -O0 -g -fPIC -Wall $(REFPERSYS_LTO) ",
 	       __FILE__, __LINE__ - 3);
 #endif
     }
@@ -833,13 +834,16 @@ emit_configure_refpersys_mk (void)
 	    fputc (' ', f);
 	  fputs (linker_args[i], f);
 	};
+      fputs( " $(REFPERSYS_LTO)", f);
     }
   else
     {
       fprintf (f, "# default linker flags for RefPerSys [%s:%d]:\n",
 	       __FILE__, __LINE__ - 1);
-      fprintf (f,
-	       "REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl\n");
+      fputs(
+	    "REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl"
+	    " $(REFPERSYS_LTO)\n"
+	    f);
     }
   //// emit the generic preprocessor
   fprintf (f,
