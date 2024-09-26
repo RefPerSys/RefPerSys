@@ -827,7 +827,7 @@ emit_configure_refpersys_mk (void)
       fprintf (f, "\n\n"
 	       "# the given %d linker flags for RefPerSys:\n",
 	       linker_argcount);
-      fprintf (f, "REFPERSYS_LINKER_FLAGS=");
+      fputs ("REFPERSYS_LINKER_FLAGS=", f);
       for (int i = 0; i < linker_argcount; i++)
 	{
 	  if (i > 0)
@@ -840,9 +840,8 @@ emit_configure_refpersys_mk (void)
     {
       fprintf (f, "# default linker flags for RefPerSys [%s:%d]:\n",
 	       __FILE__, __LINE__ - 1);
-      fputs(
-	    "REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl"
-	    " $(REFPERSYS_LTO)\n"
+      fputs("REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl"
+	    " $(REFPERSYS_LTO)\n",
 	    f);
     }
   //// emit the generic preprocessor
