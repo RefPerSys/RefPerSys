@@ -42,10 +42,15 @@ RPS_ARCH := $(shell /bin/uname -m)
 RPS_OPERSYS := $(shell /bin/uname -o | /bin/sed 1s/[^a-zA-Z0-9_]/_/g )
 RPS_ATSHARP := $(shell printf '@#')
 RPS_HOMETMP := $(shell echo '$$HOME/tmp')
+
+
+## REFPERSYS_LTO is by convention for link-time optimization flags
+
 #                                                                
 .DEFAULT_GOAL: refpersys
 .PHONY: all config objects showtests clean distclean gitpush gitpush2 \
         print-plugin-settings indent redump clean-plugins plugins \
+        lto-refpersys \
         test00 test01 test01a test01b test01c test01d test01e test01f \
         test02 test03 test03nt test04 \
         test05 test06 test07 test07a \
@@ -61,7 +66,7 @@ FMT=/usr/bin/fmt
 ASTYLE=/usr/bin/astyle
 ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
 
-CFLAGS= -O -g -Wall
+CFLAGS= -O -g -Wall $(RPS_LTO)
 
 -include _config-refpersys.mk
 
@@ -84,6 +89,7 @@ RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 ## unistring is https://www.gnu.org/software/libunistring/
 ## backtrace is https://github.com/ianlancetaylor/libbacktrace (also inside GCC source)
 ## libgccjit is https://gcc.gnu.org/onlinedocs/jit/ but not useful yet
+## GNU lightning is from https://www.gnu.org/software/lightning/ (for machine code generation)
 REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace
 ## TODO after june 2024, add the libgccjit...
 
@@ -112,6 +118,11 @@ all:
 
 .SECONDARY:  __timestamp.c 
 	$(SYNC)
+
+lto-refpersys:
+	$(MAKE) clean
+	$(MAKE) REFPERSYS_LTO=-flto refpersys
+	/bin/mv -v refpersys $@
 
 config: do-configure-refpersys do-scan-pkgconfig GNUmakefile
 	./do-configure-refpersys
@@ -180,7 +191,7 @@ refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __
 	@echo FLTK stuff is  $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags)
 	$(MAKE) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
-	$(REFPERSYS_CXX) -rdynamic -o $@ \
+	$(REFPERSYS_CXX) $(RPS_LTO) -rdynamic -o $@ \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
              $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o \
 	      $(shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a) \
