@@ -200,6 +200,7 @@ refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __
 	@echo RPS_LTO is $(RPS_LTO)
 	@echo FLTKconfig is  $(REFPERSYS_FLTKCONFIG)
 	@echo FLTK stuff is  $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags)
+	@echo REFPERSYS_NEEDED_LIBRARIES is $(REFPERSYS_NEEDED_LIBRARIES)
 	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
 	$(REFPERSYS_CXX) $(RPS_LTO) -rdynamic -o $@ \
