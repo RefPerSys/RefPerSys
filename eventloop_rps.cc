@@ -660,7 +660,7 @@ rps_eventloop_explstring(void)
   snprintf(numbuf, sizeof(numbuf), "%.2f", elapsed_age);
   out << numbuf << " elap";
   snprintf(numbuf, sizeof(numbuf), "%.3f", cpu_age);
-  out << "," << numbuf << " cpu.";
+  out << "," << numbuf << " cpu time";
 #warning rps_eventloop_explstring very incomplete
   out << std::flush;
   return out.str();
