@@ -115,14 +115,24 @@ all:
 	@/usr/bin/printf "\n\n\nMaking RefPerSys plugins\n\n"
 	$(MAKE) plugins
 
+objects: $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS)  __timestamp.o
 
 .SECONDARY:  __timestamp.c 
 	$(SYNC)
 
 lto-refpersys:
 	$(MAKE) clean
-	$(MAKE) REFPERSYS_LTO=-flto refpersys
-	/bin/mv -v refpersys $@
+	$(MAKE) -j3 REFPERSYS_LTO=-flto objects
+	$(REFPERSYS_CXX) -flto -rdynamic \
+             $(REFPERSYS_COMPILER_FLAGS) \
+             $(REFPERSYS_LINKER_FLAGS) \
+             -o $@ \
+             $(REFPERSYS_HUMAN_CPP_OBJECTS) \
+             $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o \
+	      $(shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a) \
+              $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
+              -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
+              $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 
 config: do-configure-refpersys do-scan-pkgconfig GNUmakefile
 	./do-configure-refpersys
@@ -187,9 +197,10 @@ refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __
 	@echo RefPerSys generated C++ files $(REFPERSYS_GENERATED_CPP_SOURCES)
 #	@echo RefPerSys generated C++ object files $(REFPERSYS_GENERATED_CPP_OBJECTS)
 	@echo PACKAGES_LIST is $(PACKAGES_LIST)
+	@echo RPS_LTO is $(RPS_LTO)
 	@echo FLTKconfig is  $(REFPERSYS_FLTKCONFIG)
 	@echo FLTK stuff is  $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags)
-	$(MAKE) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
+	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
 	$(REFPERSYS_CXX) $(RPS_LTO) -rdynamic -o $@ \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
