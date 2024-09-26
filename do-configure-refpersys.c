@@ -812,7 +812,7 @@ emit_configure_refpersys_mk (void)
 #ifdef __GNUC__
       fprintf (f, "## see stackoverflow.com/q/2224334/841108\n");
       fprintf (f, "#GNU compiler from %s:%d\n"
-	       "REFPERSYS_COMPILER_FLAGS= -Og -g -fPIC -Wall -Wextra $(REFPERSYS_LTO)\n",
+	       "REFPERSYS_COMPILER_FLAGS= -O1 -g -fPIC -Wall -Wextra $(REFPERSYS_LTO)\n",
 	       __FILE__, __LINE__ - 2);
 #else
       fprintf (f, "#nonGNU compiler from %s:%d\n"
