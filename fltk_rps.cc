@@ -61,6 +61,7 @@
 #include <FL/Fl_Text_Display.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Pack.H>
+#include <FL/Fl_Input.H>
 /// Fl_Flex.h is only in FLTK 1.4 not FLTK 1.3
 #if FL_API_VERSION >= 10400
 #include <FL/Fl_Flex.H>
@@ -88,6 +89,7 @@ class Rps_PayloadFltkRefWidget;
 class Rps_PayloadFltkWindow;
 class Rps_FltkMainWindow;
 class Rps_FltkDebugWindow;
+class Rps_FltkInputTextEditor;
 
 extern "C" Rps_FltkMainWindow* rps_fltk_mainwin;
 Rps_FltkMainWindow* rps_fltk_mainwin;
@@ -326,14 +328,13 @@ class Rps_FltkMainWindow: public Fl_Window
 {
   friend class Rps_FltkDebugWindow;
   Fl_Menu_Bar* _mainwin_menubar;
-#if FL_API_VERSION>=10400
-  Fl_Flex* _mainwin_vflex;
-#endif
   std::array<std::shared_ptr<Fl_Menu_Item>,
       (std::size_t)(2+(int)RPS_DEBUG__LAST)>
       _mainwin_dbgmenuarr;
   std::vector<std::string> _mainwin_stringvect;
   std::vector<char*> _mainwin_cstrvect;
+  Fl_Pack*_mainwin_vpack;
+  Rps_FltkInputTextEditor* _mainwin_inptextedit;
   bool _mainwin_closing;
   void add_menu_item_for_debug_option(Rps_Debug dbg);
 protected:
@@ -374,8 +375,19 @@ public:
 };        // end Rps_FltkDebugWindow
 
 
+Rps_FltkInputTextEditor::Rps_FltkInputTextEditor(int x, int y, int w, int h)
+  :  Fl_Text_Editor(x,y,w,h)
+
+{
+  RPS_DEBUG_LOG(REPL, "this @" << (void*)this << " x=" << x
+		<< ",y=" << y << ",w=" << w << " h="<< h);
+}; // end Rps_FltkInputTextEditor::Rps_FltkInputTextEditor
 
 
+Rps_FltkInputTextEditor::~Rps_FltkInputTextEditor()
+{
+  RPS_DEBUG_LOG(REPL, "destr this @" << (void*)this);
+} // end Rps_FltkInputTextEditor destructor
 
 ////////////////////////////////////////////////////////////////
 //////// ******* IMPLEMENTATION *******
@@ -552,10 +564,9 @@ Rps_PayloadFltkThing::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
 Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*title)
   : Fl_Window(x,y,w,h,title),
     _mainwin_menubar(nullptr),
-#if FL_API_VERSION >= 10400
-    _mainwin_vflex(nullptr),
-#endif
     _mainwin_dbgmenuarr(), _mainwin_stringvect(), _mainwin_cstrvect(),
+    _mainwin_vpack(nullptr),
+    _mainwin_inptextedit(nullptr),
     _mainwin_closing(false)
 {
   constexpr int estimatenbstring = 20;
@@ -666,9 +677,10 @@ Rps_FltkMainWindow::fill_main_window(void)
 #undef Rps_FLTK_debug_option
   };
   /////////////
-#if FL_API_VERSION >= 10400
-  _mainwin_vflex = new Fl_Flex(0, menubar_h, w(), h()-menubar_h-1);
-#endif
+  _mainwin_vpack = new Fl_Pack(/*x:*/0, /*y:*/menubar_h+1,
+			       /*w:*/w(), /*h:*/h()-(menubar_h+1));
+  _mainwin_vpack->begin();
+  int label_h = 13;
   {
     Fl_Widget*firstlabel = nullptr;
     char*labelstr=nullptr;
@@ -680,19 +692,18 @@ Rps_FltkMainWindow::fill_main_window(void)
     RPS_POSSIBLE_BREAKPOINT();
     labelstr = strdup(labelbuf);
     RPS_DEBUG_LOG(REPL, "fill_main_window labelstr:" << labelstr);
-#if FL_API_VERSION >= 10400
-    _mainwin_vflex->spacing(2);
-    _mainwin_vflex->begin();
-#endif
     firstlabel = new Fl_Box(/*x:*/0,/*y:*/menubar_h,
-                                  /*w:*/w(),/*h:*/h()-menubar_h-1,
+                                  /*w:*/w(),/*h:*/h()-label_h-1,
                                   labelstr);
     firstlabel->show();
-#if FL_API_VERSION >= 10400
-    _mainwin_vflex->end();
-    _mainwin_vflex->layout();
-#endif
   }
+  _mainwin_inptextedit
+    = new Rps_FltkInputTextEditor(/*x:*/0,/*y:*/menubar_h+label_h+1,
+				  /*w:*/w(), /*h:*/h()-(menubar_h+label_h+1));
+  _mainwin_vpack->add(_mainwin_inptextedit);
+  _mainwin_vpack->end();
+  _mainwin_inptextedit->show();
+  _mainwin_vpack->show();
   this->end();
   callback(close_cb, nullptr);
   RPS_POSSIBLE_BREAKPOINT();
