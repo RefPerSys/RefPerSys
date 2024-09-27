@@ -290,6 +290,11 @@ extern "C" std::string rps_test_repl_string;
 extern "C" std::string rps_publisher_url_str;
 extern "C" bool rps_without_quick_tests;
 
+/// Given some SHORTPATH like "foo123.xyz" return a temporary unique
+/// full path in the dump directory which would be renamed at end of
+/// dump to the SHORTPATH...
+extern "C" std::string rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath);
+
 extern "C" char* rps_run_command_after_load;
 extern "C" char* rps_debugflags_after_load;
 
@@ -565,10 +570,10 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
               Fil, Lin, __PRETTY_FUNCTION__,                            \
               ##__VA_ARGS__);                                           \
   };                                                                    \
-    if (rps_fltk_enabled())           \
-      rps_fltk_printf_inform_message(Fil, Lin, __PRETTY_FUNCTION__, \
-             rps_incremented_debug_counter(),       \
-             "FATAL:" Fmt, ##__VA_ARGS__);        \
+    if (rps_fltk_enabled())						\
+      rps_fltk_printf_inform_message(Fil, Lin, __PRETTY_FUNCTION__,	\
+             rps_incremented_debug_counter(),				\
+             "FATAL:" Fmt, ##__VA_ARGS__);				\
   if (rps_debug_file && rps_debug_file != stderr)                       \
     fprintf(rps_debug_file,                                             \
             "\n\n*°* RefPerSys °FATAL° %s:%d:%s " Fmt "*°*\n",          \
@@ -870,7 +875,7 @@ while (0)
       {                                                         \
         std::ostringstream _logstream_##fline;                  \
         _logstream_##fline << logmsg << std::flush;             \
-        rps_debug_printf_at(fname, fline, __FUNCTION__,   \
+        rps_debug_printf_at(fname, fline, __FUNCTION__,         \
           RPS_DEBUG_##dbgopt,                                   \
           "%s",                                                 \
           _logstream_##fline.str().c_str());                    \
@@ -891,8 +896,8 @@ while (0)
       {                                                         \
         std::ostringstream _logstream_##fline;                  \
         _logstream_##fline << logmsg << std::flush;             \
-        rps_debug_printf_at(fname, -fline, __FUNCTION__,  \
-          RPS_DEBUG_##dbgopt,     \
+        rps_debug_printf_at(fname, -fline, __FUNCTION__,        \
+          RPS_DEBUG_##dbgopt,                                   \
                             "%s",                               \
                             _logstream_##fline.str().c_str());  \
       }                                                         \
@@ -5055,7 +5060,7 @@ public:
   // every possible object ref and completed name, till that closure
   // returns true. Return the number of matches, or else 0
   static int autocomplete_name(const char*prefix,
-			       const std::function<bool(const Rps_ObjectZone*,const std::string&)>&stopfun);
+                               const std::function<bool(const Rps_ObjectZone*,const std::string&)>&stopfun);
 };                              // end Rps_PayloadSymbol
 
 
