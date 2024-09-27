@@ -54,7 +54,7 @@ const char rps_machlearn_shortgitid[]= RPS_SHORTGITID;
 
 /// we require mlpack.org version 4.5 since 4.4 won't build
 /// see freelists.org/post/mlpack-git/MLPACK-version-checking-in-preprocessing,1
-#if MLPACK_VERSION_MAJOR != 4 && MLPACK_VERSION_MINOR != 5
+#if MLPACK_VERSION_MAJOR != 4 || MLPACK_VERSION_MINOR != 5
 #error mlpack.org version 4.5 is required
 #endif /* not mlpack 4.5 */
 
