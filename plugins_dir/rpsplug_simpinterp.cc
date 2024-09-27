@@ -1,4 +1,4 @@
-// file RefPerSys/plugins/rpsplug_simpinterp.cc
+// file RefPerSys/plugins_dir/rpsplug_simpinterp.cc
 // SPDX-License-Identifier: GPL-3.0-or-later
 // see http://refpersys.org/
 // GPLv3+ licensed
@@ -9,11 +9,11 @@
 
     Once compiled use it as
 
-  ./refpersys --plugin-after-load=plugins_dir/rpsplug_simpinterp.so \
-              --plugin-arg=rpsplug_simpinterp:$SCRIPT_FILE
+    ./refpersys --plugin-after-load=plugins_dir/rpsplug_simpinterp.so \
+    --plugin-arg=rpsplug_simpinterp:$SCRIPT_FILE
 
-  ... and probably other program arguments (e.g. -AREPL)
- ***/
+    ... and probably other program arguments (e.g. -AREPL)
+***/
 
 #include "refpersys.hh"
 
@@ -28,14 +28,28 @@ extern "C" int rpsint_lineno;
 extern "C" void rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef ob);
 extern "C" void rpsint_skip_spaces(void);
 extern "C" bool rpsint_has_keyword(const char*kw);
+extern "C" bool rpsint_has_intp(intptr_t* ii);
+extern "C" bool rpsint_has_doublep(double* pd);
+extern "C" bool rpsint_has_refint(intptr_t& r);
+extern "C" bool rpsint_has_refdouble(double& r);
+
+bool
+rpsint_has_refint(intptr_t& r) {
+  return rpsint_has_intp(&r);
+} // end rpsint_has_refint
+
+bool
+rpsint_has_refdouble(double& r) {
+  return rpsint_has_doublep(&r);
+} // end rpsint_has_refdouble
 
 void
 rps_do_plugin(const Rps_Plugin*plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
-                           Rps_ObjectRef ob;
-                           Rps_Value v1;
-                );
+		 Rps_ObjectRef ob;
+		 Rps_Value v1;
+		 );
   int file_fd = -1;
   size_t file_len = 0;
   _f.ob = nullptr;
@@ -104,8 +118,8 @@ void
 rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef obint)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/cf,
-                           Rps_ObjectRef obint;
-                );
+		 Rps_ObjectRef obint;
+		 );
   _f.obint = obint;
   rpsint_skip_spaces();
 #warning empty rpsint_parse_script
@@ -129,10 +143,53 @@ rpsint_has_keyword(const char*kw)
   return true;
 } // end rpsint_has_keyword
 
+bool
+rpsint_has_intp(intptr_t* pi)
+{
+  if (!pi) return false;
+  rpsint_skip_spaces();
+  if (rpsint_cur>rpsint_end)
+    return false;
+  long l= 0;
+  char*end=nullptr;
+  l = strtol(rpsint_cur,&end,0);
+  if (end>rpsint_cur) {
+    rpsint_cur += (end-rpsint_cur);
+    *pi = (intptr_t)l;
+    return true;
+  };
+  return false;
+} // end rpsint_has_intp
+  
+bool
+rpsint_has_doublep(double* pd)
+{
+  if (!pd) return false;
+  rpsint_skip_spaces();
+  if (rpsint_cur>rpsint_end)
+    return false;
+  double d= 0;
+  char*end=nullptr;
+  d = strtod(rpsint_cur,&end);
+  if (end>rpsint_cur) {
+    rpsint_cur += (end-rpsint_cur);
+    *pd = d;
+    return true;
+  };
+  return false;
+} // end rpsint_has_doublep
+  
 char *rpsint_start;
 char *rpsint_cur;
 char *rpsint_end;
 int rpsint_lineno;
 
+/****************
+ **                           for Emacs...
+ ** Local Variables: ;;
+ ** compile-command: "cd ..; ./build-plugin.sh plugins_dir/rpsplug_simpinterp.cc /tmp/rpsplug_simpinterp.so" ;;
+ ** End: ;;
+ ****************/
 
-////////////////////////////// end of file RefPerSys/plugins/rpsplug_simpinterp.cc
+
+////////////////////////////// end of file RefPerSys/plugins_dir/rpsplug_simpinterp.cc
