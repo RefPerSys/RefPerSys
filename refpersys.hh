@@ -5275,6 +5275,8 @@ extern "C" unsigned rps_hardcoded_number_of_constants(void);
 //////////////// initial Read-Eval-Print-Loop using GNU readline
 
 extern "C" std::string rps_repl_version(void); // in repl_rps.cc
+extern "C" std::string rps_mlpack_get_version(void); // in machlearn_rps.cc
+
 /// Interpret from either a given input stream,
 /// or using readline if inp is null. In repl_rps.cc
 extern "C" void rps_repl_interpret(Rps_CallFrame*callframe, std::istream*inp, const char*input_name, int& lineno);
