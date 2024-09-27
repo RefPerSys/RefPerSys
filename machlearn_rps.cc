@@ -129,6 +129,26 @@ Rps_PayloadMachLearn::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   /// see function rpsldpy_machlearn
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
+  std::string matrixpath;
+  {
+    char buf[80];
+    memset(buf, 0, sizeof(buf));
+    snprintf(buf, sizeof(buf), "%s_machlearn_mat.json",
+	     owner()->string_oid().c_str());
+    matrixpath.assign(buf);
+  }
+#warning should write the JSON file matrixpath
+  std::string labelspath;
+  {
+    char buf[80];
+    memset(buf, 0, sizeof(buf));
+    snprintf(buf, sizeof(buf), "%s_machlearn_lab.json",
+	     owner()->string_oid().c_str());
+    labelspath.assign(buf);
+  }
+#warning should write the JSON file labelspath
+  jv["machlearn_matrix"] = matrixpath;
+  jv["machlearn_labels"] = labelspath;
   ///TODO: dump somewhere the _machlearn_matrix & _machlearn_labels
 #warning incomplete Rps_PayloadMachLearn::dump_json_content
 } // end Rps_PayloadMachLearn::dump_json_content
