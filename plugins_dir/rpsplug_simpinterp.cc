@@ -34,12 +34,14 @@ extern "C" bool rpsint_has_refint(intptr_t& r);
 extern "C" bool rpsint_has_refdouble(double& r);
 
 bool
-rpsint_has_refint(intptr_t& r) {
+rpsint_has_refint(intptr_t& r)
+{
   return rpsint_has_intp(&r);
 } // end rpsint_has_refint
 
 bool
-rpsint_has_refdouble(double& r) {
+rpsint_has_refdouble(double& r)
+{
   return rpsint_has_doublep(&r);
 } // end rpsint_has_refdouble
 
@@ -47,9 +49,9 @@ void
 rps_do_plugin(const Rps_Plugin*plugin)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/nullptr,
-		 Rps_ObjectRef ob;
-		 Rps_Value v1;
-		 );
+                           Rps_ObjectRef ob;
+                           Rps_Value v1;
+                );
   int file_fd = -1;
   size_t file_len = 0;
   _f.ob = nullptr;
@@ -118,8 +120,8 @@ void
 rpsint_parse_script(Rps_CallFrame*cf, Rps_ObjectRef obint)
 {
   RPS_LOCALFRAME(/*descr:*/nullptr, /*callerframe:*/cf,
-		 Rps_ObjectRef obint;
-		 );
+                           Rps_ObjectRef obint;
+                );
   _f.obint = obint;
   rpsint_skip_spaces();
 #warning empty rpsint_parse_script
@@ -153,14 +155,15 @@ rpsint_has_intp(intptr_t* pi)
   long l= 0;
   char*end=nullptr;
   l = strtol(rpsint_cur,&end,0);
-  if (end>rpsint_cur) {
-    rpsint_cur += (end-rpsint_cur);
-    *pi = (intptr_t)l;
-    return true;
-  };
+  if (end>rpsint_cur)
+    {
+      rpsint_cur += (end-rpsint_cur);
+      *pi = (intptr_t)l;
+      return true;
+    };
   return false;
 } // end rpsint_has_intp
-  
+
 bool
 rpsint_has_doublep(double* pd)
 {
@@ -171,14 +174,15 @@ rpsint_has_doublep(double* pd)
   double d= 0;
   char*end=nullptr;
   d = strtod(rpsint_cur,&end);
-  if (end>rpsint_cur) {
-    rpsint_cur += (end-rpsint_cur);
-    *pd = d;
-    return true;
-  };
+  if (end>rpsint_cur)
+    {
+      rpsint_cur += (end-rpsint_cur);
+      *pd = d;
+      return true;
+    };
   return false;
 } // end rpsint_has_doublep
-  
+
 char *rpsint_start;
 char *rpsint_cur;
 char *rpsint_end;

@@ -570,10 +570,10 @@ extern "C" void rps_fatal_stop_at (const char *, int) __attribute__((noreturn));
               Fil, Lin, __PRETTY_FUNCTION__,                            \
               ##__VA_ARGS__);                                           \
   };                                                                    \
-    if (rps_fltk_enabled())						\
-      rps_fltk_printf_inform_message(Fil, Lin, __PRETTY_FUNCTION__,	\
-             rps_incremented_debug_counter(),				\
-             "FATAL:" Fmt, ##__VA_ARGS__);				\
+    if (rps_fltk_enabled())           \
+      rps_fltk_printf_inform_message(Fil, Lin, __PRETTY_FUNCTION__, \
+             rps_incremented_debug_counter(),       \
+             "FATAL:" Fmt, ##__VA_ARGS__);        \
   if (rps_debug_file && rps_debug_file != stderr)                       \
     fprintf(rps_debug_file,                                             \
             "\n\n*°* RefPerSys °FATAL° %s:%d:%s " Fmt "*°*\n",          \

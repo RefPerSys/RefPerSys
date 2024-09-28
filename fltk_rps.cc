@@ -380,7 +380,7 @@ Rps_FltkInputTextEditor::Rps_FltkInputTextEditor(int x, int y, int w, int h)
 
 {
   RPS_DEBUG_LOG(REPL, "this @" << (void*)this << " x=" << x
-		<< ",y=" << y << ",w=" << w << " h="<< h);
+                << ",y=" << y << ",w=" << w << " h="<< h);
 }; // end Rps_FltkInputTextEditor::Rps_FltkInputTextEditor
 
 
@@ -678,7 +678,7 @@ Rps_FltkMainWindow::fill_main_window(void)
   };
   /////////////
   _mainwin_vpack = new Fl_Pack(/*x:*/0, /*y:*/menubar_h+1,
-			       /*w:*/w(), /*h:*/h()-(menubar_h+1));
+                                     /*w:*/w(), /*h:*/h()-(menubar_h+1));
   _mainwin_vpack->begin();
   int label_h = 13;
   {
@@ -699,7 +699,7 @@ Rps_FltkMainWindow::fill_main_window(void)
   }
   _mainwin_inptextedit
     = new Rps_FltkInputTextEditor(/*x:*/0,/*y:*/menubar_h+label_h+1,
-				  /*w:*/w(), /*h:*/h()-(menubar_h+label_h+1));
+                                        /*w:*/w(), /*h:*/h()-(menubar_h+label_h+1));
   _mainwin_vpack->add(_mainwin_inptextedit);
   _mainwin_vpack->end();
   _mainwin_inptextedit->show();

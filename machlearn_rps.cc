@@ -97,7 +97,34 @@ public:
     return "machlearn";
   };
   inline Rps_PayloadMachLearn(Rps_ObjectZone*obz, Rps_Loader*ld);
+  std::string matrix_file_path(void) const;
+  std::string labels_file_path(void) const;
 };        // end Rps_PayloadMachLearn
+
+std::string
+Rps_PayloadMachLearn::matrix_file_path(void) const
+{
+  std::string matrixpath;
+  char buf[80];
+  memset(buf, 0, sizeof(buf));
+  snprintf(buf, sizeof(buf), "%s_machlearn_mat.csv",
+           owner()->string_oid().c_str());
+  matrixpath.assign(buf);
+  return matrixpath;
+} // end Rps_PayloadMachLearn::matrix_file_path
+
+std::string
+Rps_PayloadMachLearn::labels_file_path(void) const
+{
+  std::string labelspath;
+  char buf[80];
+  memset(buf, 0, sizeof(buf));
+  snprintf(buf, sizeof(buf), "%s_machlearn_lab.csv",
+           owner()->string_oid().c_str());
+  labelspath.assign(buf);
+  return labelspath;
+} // end Rps_PayloadMachLearn::matrix_file_path
+
 
 Rps_PayloadMachLearn::~Rps_PayloadMachLearn()
 {
@@ -129,14 +156,7 @@ Rps_PayloadMachLearn::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   /// see function rpsldpy_machlearn
   RPS_ASSERT(du != nullptr);
   RPS_ASSERT(jv.type() == Json::objectValue);
-  std::string matrixpath;
-  {
-    char buf[80];
-    memset(buf, 0, sizeof(buf));
-    snprintf(buf, sizeof(buf), "%s_machlearn_mat.csv",
-             owner()->string_oid().c_str());
-    matrixpath.assign(buf);
-  }
+  std::string matrixpath = matrix_file_path();
   if (!access(matrixpath.c_str(), F_OK))
     {
       std::string backupmatrixpath = matrixpath+"~";
@@ -151,14 +171,7 @@ Rps_PayloadMachLearn::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
     RPS_FATALOUT("failed to dump machine learning matrix "
                  << matrixpath << " for object " << this
                  << " in " << tempmatrix);
-  std::string labelspath;
-  {
-    char buf[80];
-    memset(buf, 0, sizeof(buf));
-    snprintf(buf, sizeof(buf), "%s_machlearn_lab.csv",
-             owner()->string_oid().c_str());
-    labelspath.assign(buf);
-  }
+  std::string labelspath = labels_file_path();
   if (!access(labelspath.c_str(), F_OK))
     {
       std::string backuplabelspath = labelspath+"~";
@@ -166,7 +179,7 @@ Rps_PayloadMachLearn::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
     }
   std::string templabels = rps_dumper_temporary_path(du, labelspath);
   bool labelsok=
-    mlpack::data::Save(tempmatrix, _machlearn_labels, /*fatal:*/true,
+    mlpack::data::Save(templabels, _machlearn_labels, /*fatal:*/true,
                        /*transpose:*/false,
                        /*format:*/mlpack::data::FileType::CSVASCII);
   if (!labelsok)
@@ -191,13 +204,24 @@ rpsldpy_machlearn(Rps_ObjectZone*obz, Rps_Loader*ld, const Json::Value& jv, Rps_
                 << " lineno=" << lineno);
   auto paylmachlearn = obz->put_new_plain_payload<Rps_PayloadMachLearn>();
   RPS_ASSERT(paylmachlearn);
-  ///TODO: load somehow the _machlearn_matrix & _machlearn_labels
-  RPS_WARNOUT("incomplete rpsldpy_machlearn obz=" << obz
-              << " jv=" << jv
-              << " spacid=" << spacid
-              << " lineno=" << lineno
-              << RPS_FULL_BACKTRACE_HERE(1, "rpsldpy_machlearn"));
-#warning incomplete rpsldpy_machlearn
+  std::string matrixpath = paylmachlearn->matrix_file_path();
+  bool matrixok=
+    mlpack::data::Load(matrixpath, paylmachlearn->_machlearn_matrix,
+                       /*fatal:*/true,
+                       /*transpose:*/false,
+                       /*format:*/mlpack::data::FileType::CSVASCII);
+  if (!matrixok)
+    RPS_FATALOUT("failed to load machine learning matrix "
+                 << matrixpath  << " for object " << obz);
+  std::string labelspath = paylmachlearn->labels_file_path();
+  bool labelsok=
+    mlpack::data::Load(matrixpath, paylmachlearn->_machlearn_labels,
+                       /*fatal:*/true,
+                       /*transpose:*/false,
+                       /*format:*/mlpack::data::FileType::CSVASCII);
+  if (!labelsok)
+    RPS_FATALOUT("failed to load machine learning labels "
+                 << labelspath  << " for object " << obz);
 } // end rpsldpy_machlearn
 
 #warning very incomplete file machlearn_rps.cc

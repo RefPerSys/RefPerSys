@@ -272,36 +272,40 @@ rps_dumper_temporary_path(Rps_Dumper*du, std::string shortpath)
   RPS_ASSERT(du != nullptr);
   std::string restemp;
   std::lock_guard<std::recursive_mutex> gu(du->du_mtx);
-  if (shortpath.empty()) {
-    RPS_WARNOUT("empty shortpath"
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_dumper_temporary_path/E"));
-    throw RPS_RUNTIME_ERROR_OUT("empty shortpath");
-  }
+  if (shortpath.empty())
+    {
+      RPS_WARNOUT("empty shortpath"
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_dumper_temporary_path/E"));
+      throw RPS_RUNTIME_ERROR_OUT("empty shortpath");
+    }
   int splen = shortpath.length();
-  if (splen<4) {
-    RPS_WARNOUT("too small shortpath=" << Rps_Cjson_String(shortpath)
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_dumper_temporary_path/S"));
-    throw RPS_RUNTIME_ERROR_OUT("too small shortpath");
-  };
+  if (splen<4)
+    {
+      RPS_WARNOUT("too small shortpath=" << Rps_Cjson_String(shortpath)
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_dumper_temporary_path/S"));
+      throw RPS_RUNTIME_ERROR_OUT("too small shortpath");
+    };
   bool goodshortpath = true;
   if (shortpath[0] == '.'
-      && !(isalnum(shortpath[1]) || shortpath[1]=='_')) 
+      && !(isalnum(shortpath[1]) || shortpath[1]=='_'))
     goodshortpath = false;
-  for (int i=0; goodshortpath && i<splen; i++) {
-    if (i>0 && shortpath[i]=='.' && shortpath[i-1]=='.')
-      goodshortpath= false;
-    else if (isalnum(shortpath[i]) || shortpath[i]=='_')
-      continue;
-    else
-      goodshortpath= false;
-  };
-  if (!goodshortpath) {
-    RPS_WARNOUT("bad shortpath=" << Rps_Cjson_String(shortpath)
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1, "rps_dumper_temporary_path/D"));
-    throw RPS_RUNTIME_ERROR_OUT("bad shortpath");
-  };
+  for (int i=0; goodshortpath && i<splen; i++)
+    {
+      if (i>0 && shortpath[i]=='.' && shortpath[i-1]=='.')
+        goodshortpath= false;
+      else if (isalnum(shortpath[i]) || shortpath[i]=='_')
+        continue;
+      else
+        goodshortpath= false;
+    };
+  if (!goodshortpath)
+    {
+      RPS_WARNOUT("bad shortpath=" << Rps_Cjson_String(shortpath)
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1, "rps_dumper_temporary_path/D"));
+      throw RPS_RUNTIME_ERROR_OUT("bad shortpath");
+    };
   restemp = du->temporary_opened_path(shortpath);
   return restemp;
 } // end rps_dumper_temporary_path
