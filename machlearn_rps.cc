@@ -119,7 +119,7 @@ void
 Rps_PayloadMachLearn::dump_scan(Rps_Dumper*du) const
 {
   RPS_ASSERT(du != nullptr);
-#warning incomplete Rps_PayloadMachLearn::dump_scan
+  // the payload contains no RefPerSys values so the scan is empty
   return;
 } // end Rps_PayloadMachLearn::dump_scan
 
@@ -133,24 +133,48 @@ Rps_PayloadMachLearn::dump_json_content(Rps_Dumper*du, Json::Value&jv) const
   {
     char buf[80];
     memset(buf, 0, sizeof(buf));
-    snprintf(buf, sizeof(buf), "%s_machlearn_mat.json",
-	     owner()->string_oid().c_str());
+    snprintf(buf, sizeof(buf), "%s_machlearn_mat.csv",
+             owner()->string_oid().c_str());
     matrixpath.assign(buf);
   }
-#warning should write the JSON file matrixpath
+  if (!access(matrixpath.c_str(), F_OK))
+    {
+      std::string backupmatrixpath = matrixpath+"~";
+      rename(matrixpath.c_str(), backupmatrixpath.c_str());
+    }
+  std::string tempmatrix = rps_dumper_temporary_path(du, matrixpath);
+  bool matrixok=
+    mlpack::data::Save(tempmatrix, _machlearn_matrix, /*fatal:*/true,
+                       /*transpose:*/false,
+                       /*format:*/mlpack::data::FileType::CSVASCII);
+  if (!matrixok)
+    RPS_FATALOUT("failed to dump machine learning matrix "
+                 << matrixpath << " for object " << this
+                 << " in " << tempmatrix);
   std::string labelspath;
   {
     char buf[80];
     memset(buf, 0, sizeof(buf));
-    snprintf(buf, sizeof(buf), "%s_machlearn_lab.json",
-	     owner()->string_oid().c_str());
+    snprintf(buf, sizeof(buf), "%s_machlearn_lab.csv",
+             owner()->string_oid().c_str());
     labelspath.assign(buf);
   }
-#warning should write the JSON file labelspath
+  if (!access(labelspath.c_str(), F_OK))
+    {
+      std::string backuplabelspath = labelspath+"~";
+      rename(labelspath.c_str(), backuplabelspath.c_str());
+    }
+  std::string templabels = rps_dumper_temporary_path(du, labelspath);
+  bool labelsok=
+    mlpack::data::Save(tempmatrix, _machlearn_labels, /*fatal:*/true,
+                       /*transpose:*/false,
+                       /*format:*/mlpack::data::FileType::CSVASCII);
+  if (!labelsok)
+    RPS_FATALOUT("failed to dump machine learning labels "
+                 << labelspath << " for object " << this
+                 << " in " << templabels);
   jv["machlearn_matrix"] = matrixpath;
   jv["machlearn_labels"] = labelspath;
-  ///TODO: dump somewhere the _machlearn_matrix & _machlearn_labels
-#warning incomplete Rps_PayloadMachLearn::dump_json_content
 } // end Rps_PayloadMachLearn::dump_json_content
 
 //// loading of Rps_PayloadMachLearn; see above Rps_PayloadMachLearn::dump_json_content
