@@ -655,10 +655,12 @@ rps_run_loaded_application(int &argc, char **argv)
         };
     }
   /////
+#if RPS_USE_CURL
   /// publish using web techniques information about this process
+  /// see bugs.gentoo.org/939581,
   if (!rps_publisher_url_str.empty())
-    rps_publish_me(rps_publisher_url_str.c_str());
-
+    rps_curl_publish_me(rps_publisher_url_str.c_str());
+#endif /*RPS_USE_CURL*/
   ////  command vectors
   if (!rps_command_vec.empty())
     {
@@ -1498,7 +1500,9 @@ main (int argc, char** argv)
   ////
   Rps_QuasiZone::initialize();
   rps_check_mtime_files();
+#if RPS_USE_CURL
   rps_initialize_curl();
+#endif /*RPS_USE_CURL*/
   if (rps_my_load_dir.empty())
     {
       const char* rpld = realpath(rps_topdirectory, nullptr);

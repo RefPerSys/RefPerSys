@@ -305,11 +305,15 @@ extern "C" std::string rps_run_name;
 extern "C" std::string rps_stringprintf(const char*fmt, ...)
 __attribute__((format (printf, 1, 2))); // in utilities_rps.cc
 
+
 extern "C" {
 
+#define RPS_USE_CURL 0 // temporary, see https://bugs.gentoo.org/939581 Invalid conversion from int to CURLoption 
 
+#if RPS_USE_CURL
   // https://curl.se/libcurl/ is a web client library
 #include "curl/curl.h"
+#endif /*RPS_USE_CURL*/
 
   // GNU lightning on https://www.gnu.org/software/lightning/ for
   // machine code generation
@@ -748,11 +752,13 @@ inline std::ostream& operator << (std::ostream&out, const Rps_Status& rst)
 };                              // end operator << for Rps_Status
 
 
+#if RPS_USE_CURL
 //// a function to interact with some web service, usually on
 //// http://refpersys.org/ to transmit information about this
 //// RefPerSys process.. This is related to the --publish-me <URL>
 //// program option in main_rps.cc
-extern "C" void rps_publish_me(const char*url);
+extern "C" void rps_curl_publish_me(const char*url);
+#endif /*RPS_USE_CURL*/
 ///////////////////////////////////////////////////////////////////////////////
 // DEBUGGING MACROS
 // Adapted from MELT Monitor project

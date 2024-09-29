@@ -43,7 +43,7 @@ fails. Probably `Rps_ObjectZone::is_instance_of` and or
 commit 889f895c0b (Jan 17, 2024)
 
 Improve *RefPerSys* so that its `--publish-me=http://localhost:8086/`
-program option works. See function `rps_publish_me` in file
+program option works. See function `rps_curl_publish_me` in file
 `curl_rps.cc`
 
 Review file `refpersys.hh` for spelling mistakes in comments.

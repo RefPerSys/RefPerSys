@@ -82,20 +82,20 @@ rps_initialize_curl(void)
 } // end rps_initialize_curl
 
 void
-rps_publish_me(const char*url)
+rps_curl_publish_me(const char*url)
 {
   RPS_ASSERT(url != nullptr);
   const char* homedir=getenv("HOME");
   const char* repldb = RPS_DEBUG_ENABLED(REPL)?"REPL debugging":"no repldbg";
-  RPS_INFORMOUT("rps_publish_me start top url " << Rps_QuotedC_String(url)
+  RPS_INFORMOUT("rps_curl_publish_me start top url " << Rps_QuotedC_String(url)
                 << " HOME=" << homedir << " " << repldb);
-  RPS_DEBUG_LOG(REPL, "rps_publish_me pid:" << (int)getpid());
+  RPS_DEBUG_LOG(REPL, "rps_curl_publish_me pid:" << (int)getpid());
   std::string gitname;
   std::string gitemail;
   /// parse our $HOME/.gitconfig for name and email
   {
     std::string path_gitconf= std::string(homedir) + "/.gitconfig";
-    RPS_DEBUG_LOG(REPL, "rps_publish_me path_gitconf=" << path_gitconf);
+    RPS_DEBUG_LOG(REPL, "rps_curl_publish_me path_gitconf=" << path_gitconf);
     FILE* fgitconf = fopen(path_gitconf.c_str(),  "r");
     if (!fgitconf)
       RPS_FATALOUT("failed to fopen git configure file " << path_gitconf.c_str() << ':' << strerror(errno));
@@ -119,11 +119,11 @@ rps_publish_me(const char*url)
     while (!feof(fgitconf));
     fclose(fgitconf);
   };
-  RPS_DEBUG_LOG(REPL, "rps_publish_me gitname " << Rps_QuotedC_String(gitname)
+  RPS_DEBUG_LOG(REPL, "rps_curl_publish_me gitname " << Rps_QuotedC_String(gitname)
                 << " gitemail " << Rps_QuotedC_String(gitemail));
   /// first HTTP interaction GET - obtain the status as JSON
   std::string topurlstr {url};
-  RPS_DEBUG_LOG(REPL, "rps_publish_me topurlstr: " << topurlstr);
+  RPS_DEBUG_LOG(REPL, "rps_curl_publish_me topurlstr: " << topurlstr);
   std::string statusurlstr = topurlstr;
   int statuslen = statusurlstr.size();
   if (statuslen>0 && statusurlstr[statuslen-1]=='/')
@@ -171,7 +171,7 @@ rps_publish_me(const char*url)
   ///
   /// should do an HTTP interaction POST sending our data and the
   /// obtained git of the web service
-#warning missing C++ code in rps_publish_me
+#warning missing C++ code in rps_curl_publish_me
   /** TODO:
    * This function should do one or a few HTTP requests to the web service running at given url.
    * Initially on http://refpersys.org:8080/ probably (or when debugging on
@@ -179,8 +179,8 @@ rps_publish_me(const char*url)
    * Sending there the various public data in __timestamp.c probably as HTTP POST parameters
    * and probably the owner of the git, e.g. parse the .git/config file for its name and email in section user.
    **/
-  RPS_FATALOUT("unimplemented rps_publish_me function for " << url);
-#warning rps_publish_me incomplete, using CURL easy interface
-} // end rps_publish_me
+  RPS_FATALOUT("unimplemented rps_curl_publish_me function for " << url);
+#warning rps_curl_publish_me incomplete, using CURL easy interface
+} // end rps_curl_publish_me
 
 /// end of file curl_rps.cc

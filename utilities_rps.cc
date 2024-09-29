@@ -658,7 +658,9 @@ rps_show_version(void)
             << std::endl
             << " default GUI script: " << rps_gui_script_executable << std::endl
             << " Read Eval Print Loop: " << rps_repl_version() << std::endl
+#if RPS_USE_CURL
             << " libCURL for web client: " << rps_curl_version() << std::endl
+#endif /*RPS_USE_CURL*/
             << " mlpack for machine learning: " << rps_mlpack_get_version() << std::endl
             << " JSONCPP: " << JSONCPP_VERSION_STRING << std::endl
             << " GPP preprocessor command: " << rps_gpp_preprocessor_command << std::endl
