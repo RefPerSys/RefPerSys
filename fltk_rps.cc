@@ -335,6 +335,7 @@ class Rps_FltkMainWindow: public Fl_Window
   std::vector<char*> _mainwin_cstrvect;
   Fl_Pack*_mainwin_vpack;
   Rps_FltkInputTextEditor* _mainwin_inptextedit;
+  Rps_FltkOutputTextDisplay* _mainwin_outputdisp;
   bool _mainwin_closing;
   void add_menu_item_for_debug_option(Rps_Debug dbg);
 protected:
@@ -354,6 +355,21 @@ public:
   virtual ~Rps_FltkMainWindow();
 };        // end Rps_FltkMainWindow;
 
+
+Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay(int x, int y, int w, int h)
+  : Fl_Text_Display(x,y,w,h)
+{
+  RPS_FATALOUT("unimplemented Rps_FltkOutputTextDisplay this@" << (void*)this
+               <<" x=" << x << ", y=" << y
+               << ", w=" << ", h=" << h);
+#warning unimplemented Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay
+} // end Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay
+
+Rps_FltkOutputTextDisplay::~Rps_FltkOutputTextDisplay()
+{
+  RPS_FATALOUT("unimplemented ~Rps_FltkOutputTextDisplay this@" << (void*)this);
+#warning unimplemented Rps_FltkOutputTextDisplay::~Rps_FltkOutputTextDisplay
+} // end Rps_FltkOutputTextDisplay::~Rps_FltkOutputTextDisplay
 
 class Rps_FltkDebugWindow: public Fl_Window
 {
@@ -567,6 +583,7 @@ Rps_FltkMainWindow::Rps_FltkMainWindow(int x, int y, int w, int h, const char*ti
     _mainwin_dbgmenuarr(), _mainwin_stringvect(), _mainwin_cstrvect(),
     _mainwin_vpack(nullptr),
     _mainwin_inptextedit(nullptr),
+    _mainwin_outputdisp(nullptr),
     _mainwin_closing(false)
 {
   constexpr int estimatenbstring = 20;
@@ -697,10 +714,17 @@ Rps_FltkMainWindow::fill_main_window(void)
                                   labelstr);
     firstlabel->show();
   }
+  int texteditheight = h()/2-(menubar_h+label_h+1);
+  int textedity = menubar_h+label_h+1;
   _mainwin_inptextedit
-    = new Rps_FltkInputTextEditor(/*x:*/0,/*y:*/menubar_h+label_h+1,
-                                        /*w:*/w(), /*h:*/h()-(menubar_h+label_h+1));
+    = new Rps_FltkInputTextEditor(/*x:*/0,/*y:*/textedity,
+                                        /*w:*/w(), /*h:*/texteditheight);
+#warning _mainwin_inptextedit should have a different background color
   _mainwin_vpack->add(_mainwin_inptextedit);
+  _mainwin_outputdisp =
+    new Rps_FltkOutputTextDisplay(/*x:*/0, textedity+texteditheight+1,
+                                        /*w:*/w(), /*h:*/h()-( textedity+texteditheight+1));
+  _mainwin_vpack->add(_mainwin_outputdisp);
   _mainwin_vpack->end();
   _mainwin_inptextedit->show();
   _mainwin_vpack->show();
