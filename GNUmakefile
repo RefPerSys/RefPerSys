@@ -191,7 +191,10 @@ __timestamp.c: do-generate-timestamp.sh GNUmakefile
 __timestamp.o: __timestamp.c |GNUmakefile
 	$(CC) -fPIC $(RPS_LTO) -c -O -g -Wall -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $^ -o $@
 
-#was refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.c |  GNUmakefile
+#was
+#refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS) \
+#               $(REFPERSYS_GENERATED_CPP_OBJECTS) \
+#                   __timestamp.c |  GNUmakefile
 refpersys: objects |  GNUmakefile
 	$(RM) __timestamp.o
 	$(MAKE) __timestamp.o
