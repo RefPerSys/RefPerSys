@@ -190,7 +190,8 @@ __timestamp.c: do-generate-timestamp.sh GNUmakefile
 __timestamp.o: __timestamp.c |GNUmakefile
 	$(CC) -fPIC -c -O -g -Wall -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" $^ -o $@
 
-refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.c |  GNUmakefile
+#was refpersys: $(REFPERSYS_HUMAN_CPP_OBJECTS)  $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.c |  GNUmakefile
+refpersys: objects |  GNUmakefile
 	@if [ -z "$(REFPERSYS_CXX)" ]; then echo should make config ; exit 1; fi
 	@echo RefPerSys human C++ source files $(REFPERSYS_HUMAN_CPP_SOURCES)
 #       @echo RefPerSys human C++ object files $(REFPERSYS_HUMAN_CPP_OBJECTS)
