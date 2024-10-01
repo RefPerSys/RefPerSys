@@ -361,7 +361,7 @@ Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay(int x, int y, int w, int h)
 {
   RPS_FATALOUT("unimplemented Rps_FltkOutputTextDisplay this@" << (void*)this
                <<" x=" << x << ", y=" << y
-               << ", w=" << ", h=" << h);
+               << ", w=" << w << ", h=" << h);
 #warning unimplemented Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay
 } // end Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay
 
