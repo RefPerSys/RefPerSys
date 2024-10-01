@@ -269,7 +269,7 @@ rps_get_extra_arg(const char*name)
   bool is_good_name=isalpha(name[0]);
   for (const char*pc = name; is_good_name && *pc; pc++)
     is_good_name = isalnum(*pc) || *pc == '_';
-  if (!is_good_name)
+  if (RPS_UNLIKELY(!is_good_name))
     return nullptr;
   std::string goodstr{name};
   auto it = rps_dict_extra_arg.find(goodstr);
@@ -1323,8 +1323,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
         }
       else
         RPS_FATALOUT("bad extra named argument " << arg
-                     << " that is " << Rps_QuotedC_String(arg)
-                     << " extra name is " << Rps_QuotedC_String(extraname)
+                     << " that is '" << Rps_QuotedC_String(arg)
+                     << "' extra name is '" << Rps_QuotedC_String(extraname) << '"'
                     );
     }
     return 0;
