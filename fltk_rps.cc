@@ -83,6 +83,9 @@ const int rps_fltk_api_version = FL_API_VERSION;
 ////////////////////////////////////////////////////////////////////////
 ////// ******** DECLARATIONS ********
 
+/// Fl_Color is an unsigned int (32 bits)
+extern "C" Fl_Color rps_fltk_color_of_name(const char*colorname);
+
 class Rps_PayloadFltkThing;
 class Rps_PayloadFltkWidget;
 class Rps_PayloadFltkRefWidget;
@@ -104,7 +107,7 @@ bool rps_fltk_is_initialized;
 
 extern "C" void rps_fltk_input_fd_handler(FL_SOCKET fd, void *data);
 extern "C" void rps_fltk_output_fd_handler(FL_SOCKET fd, void *data);
-
+extern "C" 
 /// temporary payload for any FLTK object
 class Rps_PayloadFltkThing : public Rps_Payload
 {
@@ -1092,6 +1095,38 @@ rps_fltk_initialize (int argc, char**argv)
               << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize"));
 } // end rps_fltk_initialize
+
+
+Fl_Color /// some internal unsigned 32 bits int
+rps_fltk_color_of_name(const char*colorname)
+{
+  RPS_ASSERT(rps_fltk_is_initialized);
+  if (!colorname) {
+    RPS_WARNOUT("no colorname to rps_fltk_color_of_name"
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1,
+					   "rps_fltk_color_of_name/nil"));
+    return FL_BACKGROUND_COLOR;
+  }
+#define RPS_TEST_COLOR(Name,Flcol) else if (!strcmp(colorname, #Name)) \
+    return Flcol
+  RPS_TEST_COLOR("white",fl_rgb_color(255,255,255));
+  RPS_TEST_COLOR("black",fl_rgb_color(0,0,0));
+  RPS_TEST_COLOR("red",fl_rgb_color(255,0,0));
+  RPS_TEST_COLOR("green",fl_rgb_color(0,255,0));
+  RPS_TEST_COLOR("blue",fl_rgb_color(0,0,255));
+  /*TODO: improve GNUmakefile to generate some included file here from
+    /etc/X11/rgb.txt file*/
+#undef RPS_TEST_COLOR
+  else {
+    RPS_WARNOUT("bad colorname '" << Rps_Cjson_String(colorname)
+		<< "' to rps_fltk_color_of_name"
+		<< std::endl
+		<< RPS_FULL_BACKTRACE_HERE(1,
+					   "rps_fltk_color_of_name/nil"));
+    return FL_BACKGROUND_COLOR;
+  }
+} // end rps_fltk_color_of_name
 
 extern "C" bool rps_fltk_program_is_quitting(void);
 bool
