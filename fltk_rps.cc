@@ -359,15 +359,18 @@ public:
 Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay(int x, int y, int w, int h)
   : Fl_Text_Display(x,y,w,h)
 {
-  RPS_FATALOUT("unimplemented Rps_FltkOutputTextDisplay this@" << (void*)this
+  RPS_WARNOUT("unimplemented Rps_FltkOutputTextDisplay this@" << (void*)this
                <<" x=" << x << ", y=" << y
-               << ", w=" << w << ", h=" << h);
+	      << ", w=" << w << ", h=" << h << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay"));
 #warning unimplemented Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay
 } // end Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay
 
 Rps_FltkOutputTextDisplay::~Rps_FltkOutputTextDisplay()
 {
-  RPS_FATALOUT("unimplemented ~Rps_FltkOutputTextDisplay this@" << (void*)this);
+  RPS_WARNOUT("unimplemented ~Rps_FltkOutputTextDisplay this@" << (void*)this
+	      << std::endl
+	      << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay"));
 #warning unimplemented Rps_FltkOutputTextDisplay::~Rps_FltkOutputTextDisplay
 } // end Rps_FltkOutputTextDisplay::~Rps_FltkOutputTextDisplay
 
