@@ -76,7 +76,7 @@ REFPERSYS_HUMAN_CPP_SOURCES=$(wildcard *_rps.cc)
 ### corresponding object files
 REFPERSYS_HUMAN_CPP_OBJECTS=$(patsubst %.cc, %.o, $(REFPERSYS_HUMAN_CPP_SOURCES))
 
-### Generated C++ sources
+### Generated C++ sources which are written at dump time and needs to be git managed
 REFPERSYS_GENERATED_CPP_SOURCES := $(wildcard generated/*.cc)
 
 ### corresponding object files
