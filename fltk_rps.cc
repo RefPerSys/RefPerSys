@@ -360,17 +360,17 @@ Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay(int x, int y, int w, int h)
   : Fl_Text_Display(x,y,w,h)
 {
   RPS_WARNOUT("unimplemented Rps_FltkOutputTextDisplay this@" << (void*)this
-               <<" x=" << x << ", y=" << y
-	      << ", w=" << w << ", h=" << h << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay"));
+              <<" x=" << x << ", y=" << y
+              << ", w=" << w << ", h=" << h << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay"));
 #warning unimplemented Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay
 } // end Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay
 
 Rps_FltkOutputTextDisplay::~Rps_FltkOutputTextDisplay()
 {
   RPS_WARNOUT("unimplemented ~Rps_FltkOutputTextDisplay this@" << (void*)this
-	      << std::endl
-	      << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay"));
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "Rps_FltkOutputTextDisplay::Rps_FltkOutputTextDisplay"));
 #warning unimplemented Rps_FltkOutputTextDisplay::~Rps_FltkOutputTextDisplay
 } // end Rps_FltkOutputTextDisplay::~Rps_FltkOutputTextDisplay
 
@@ -972,19 +972,22 @@ rps_fltk_get_api_version (void)
   return Fl::api_version ();
 } // end rps_fltk_get_api_version
 
+
 void
 rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
 {
-  RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption arg:" << arg
-                << " next:"
+  RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption arg:'"
+                <<  Rps_Cjson_String (arg)
+                << "' next:"
                 << (side_effect?state->next:-1)
                 << " arg_num:"
                 << (side_effect?state->arg_num:-1)
                 << std::endl
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_progoption"));
   /// testfltk2 make target uses REPL debugging
-  RPS_DEBUG_LOG(REPL, "rps_fltk_progoption arg:" << arg
-                << " next:"
+  RPS_DEBUG_LOG(REPL, "rps_fltk_progoption arg:'"
+                <<  Rps_Cjson_String (arg)
+                << "' next:"
                 << (side_effect?state->next:-1)
                 << " arg_num:"
                 << (side_effect?state->arg_num:-1)
@@ -996,10 +999,14 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
       int nw = Fl::arg(state->argc, state->argv, state->next);
       RPS_DEBUG_LOG(PROGARG, "rps_fltk_progoption nw:" << nw
                     <<  " next#" << state->next
-                    <<  " argnum#" << state->arg_num);
+                    << " arg:'"
+                    <<  Rps_Cjson_String (arg)
+                    <<  "' argnum#" << state->arg_num);
       RPS_DEBUG_LOG(REPL, "rps_fltk_progoption nw:" << nw
                     <<  " next#" << state->next
-                    <<  " argnum#" << state->arg_num
+                    << " arg:'"
+                    <<  Rps_Cjson_String (arg)
+                    <<  "' argnum#" << state->arg_num
                     << " state.progargs::"
                     << RPS_OUT_PROGARGS(state->argc, state->argv)
                     << " state.argnum:" << state->arg_num << " state.next:"
@@ -1009,7 +1016,8 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
 #warning missing code in rps_fltk_progoption
   if (arg)
     {
-      RPS_WARNOUT("unimplemented rps_fltk_progoption arg=" <<  Rps_Cjson_String(arg)
+      RPS_WARNOUT("unimplemented rps_fltk_progoption arg='"
+                  <<  Rps_Cjson_String(arg)
                   << "' side_effect=" << (side_effect?"True":"False")
                   << " thread:" << rps_current_pthread_name() << std::endl
                   << " state.progargs::"
