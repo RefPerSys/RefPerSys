@@ -825,6 +825,8 @@ enum rps_progoption_en
 extern "C" error_t rps_parse1opt (int key, char *arg, struct argp_state *state);
 extern "C" struct argp_option rps_progoptions[];
 
+/// The program arguments can contain --extra NAME=VALUE
+/// if the NAME is unknown return nullptr...
 extern "C" const char*rps_get_extra_arg(const char*name);
 
 extern "C" void rps_do_create_fifos_from_prefix(void);
