@@ -1282,6 +1282,11 @@ rps_fltk_show_debug_message(const char*file, int line, const char*funcname,
   RPS_ASSERT((int)dbgopt != 0);
   RPS_ASSERT(dbgcount>0);
   RPS_ASSERT(msg != nullptr);
+  RPS_WARNOUT("incomplete rps_fltk_show_debug_message "
+              << file << ":" << line << ":" << funcname << "'"
+              << Rps_Cjson_String(msg) << "'"
+              << std::endl
+              << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_show_debug_message"));
 #warning incomplete rps_fltk_show_debug_message
 } // end rps_fltk_show_debug_message
 
