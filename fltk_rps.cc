@@ -776,7 +776,7 @@ Rps_FltkMainWindow::fill_main_window(void)
     labelstr = strdup(labelbuf);
     RPS_DEBUG_LOG(REPL, "fill_main_window labelstr:" << labelstr);
     firstlabel = new Fl_Box(/*x:*/0,/*y:*/menubar_h,
-                                  /*w:*/w(),/*h:*/h()-label_h-1,
+			    /*w:*/w(),/*h:*/label_h,
                                   labelstr);
     const char*labelcolor = rps_get_extra_arg("fltk_label_color");
     if (labelcolor)
