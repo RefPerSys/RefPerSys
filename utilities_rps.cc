@@ -1305,7 +1305,7 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
       int eqnextpos= -1;
       char extraname[80];
       memset (extraname, 0, sizeof(extraname));
-      if (sscanf(arg, "%72[A-Za-z0-9]=%n", extraname, &eqnextpos) >= 1
+      if (sscanf(arg, "%72[A-Za-z0-9_]=%n", extraname, &eqnextpos) >= 1
           && isalpha(extraname[0])
           && eqnextpos > 1 && arg[eqnextpos-1] == '='
           && isalpha(extraname[0]))
