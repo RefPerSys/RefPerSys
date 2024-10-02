@@ -158,7 +158,8 @@ do-build-plugin: do-build-plugin.cc __timestamp.c
 
 
 clean: clean-plugins
-	$(RM) tmp* *~ *.o do-configure-refpersys do-build-plugin refpersys lto-refpersys 
+	$(RM) tmp* *~ *.o do-configure-refpersys do-build-plugin
+	$(RM) refpersys lto-refpersys
 	$(RM) *% %~
 	$(RM) *.gch
 	$(RM) *.orig
@@ -509,22 +510,27 @@ test-load: refpersys
 ## testing the FLTK graphical interface
 testfltk1: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -AREPL --run-name=testfltk1 --run-delay=9s  --fltk --pid-file=$(RPS_HOMETMP)/refpersys.pid
+	./refpersys -AREPL --run-name=$@ --run-delay=9s  --fltk \
+                    --extra=fltk_main_menu_color=ivory \
+                    --extra=fltk_label_color=peachpuff \
+                    --extra=fltk_input_color=lightcyan \
+                    --pid-file=$(RPS_HOMETMP)/refpersys.pid
 	@printf '\n\n\n////testfltk1 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk2: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-delay=14s --fltk -bg ivory --run-name=testfltk2 --pid-file=$(RPS_HOMETMP)/refpersys.pid
+	./refpersys -dPROGARG -AREPL --run-delay=14s --fltk -bg ivory \
+                    --run-name=$@ --pid-file=$(RPS_HOMETMP)/refpersys.pid
 	@printf '\n\n\n////testfltk2 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk3: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-name=testfltk3 --run-delay=29s  --fltk -bg lightpink --pid-file=$(RPS_HOMETMP)/refpersys.pid
+	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=29s  --fltk -bg lightpink --pid-file=$(RPS_HOMETMP)/refpersys.pid
 	@printf '\n\n\n////testfltk3 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 testfltk4: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -dPROGARG -AREPL --run-name=testfltk4 --run-delay=15m  --fltk -bg peachpuff --echo="hello from $@"
+	./refpersys -dPROGARG -AREPL --run-name=$@ --run-delay=15m  --fltk -bg peachpuff --echo="hello from $@"
 	@printf '\n\n\n////testfltk4 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
 ########### show the testing commands

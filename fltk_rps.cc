@@ -112,7 +112,7 @@ extern "C" Fl_Color rps_fltk_color_by_name (const char*name, bool*ok=nullptr);
 extern "C" void rps_fltk_input_fd_handler(FL_SOCKET fd, void *data);
 extern "C" void rps_fltk_output_fd_handler(FL_SOCKET fd, void *data);
 
-extern "C" 
+extern "C"
 /// temporary payload for any FLTK object
 class Rps_PayloadFltkThing : public Rps_Payload
 {
@@ -441,31 +441,33 @@ rps_fltk_color_by_name (const char*name, bool*ok)
   Fl_Color color= FL_BLACK;
   if (!name)
     goto failure;
-  if (name[0]=='#') {
-    int red= -1, green= -1, blue= -1;
-    int pos= -1;
-    if (sscanf(name, "#%02x%02x%02x%n", &red, &green, &blue, &pos)>=3
-	&& red>=0 && red<256 && green>=0 && green<256 && blue>=0
-	&& blue<256 && pos>4) {
-      color = fl_rgb_color(red,green,blue);
-      goto success;
+  if (name[0]=='#')
+    {
+      int red= -1, green= -1, blue= -1;
+      int pos= -1;
+      if (sscanf(name, "#%02x%02x%02x%n", &red, &green, &blue, &pos)>=3
+          && red>=0 && red<256 && green>=0 && green<256 && blue>=0
+          && blue<256 && pos>4)
+        {
+          color = fl_rgb_color(red,green,blue);
+          goto success;
+        }
     }
-  }
   else if (!isalpha(name[0]))
     goto failure;
-#define RPS_RGB_COLOR(Red,Green,Blue,Name)			\
-  else if (!strcmp(name,Name))					\
+#define RPS_RGB_COLOR(Red,Green,Blue,Name)      \
+  else if (!strcmp(name,Name))          \
     { color = fl_rgb_color(Red,Green,Blue); goto success; }
 #include "generated/rps-rgb-colors.hh"
 #undef RPS_RGB_COLOR
 #undef RPS_NB_RGB_COLORS
 #undef RPS_WIDEST_RGB_COLOR
   goto failure;
- success:
+success:
   if (ok)
     *ok = true;
   return color;
- failure:
+failure:
   if (ok)
     *ok = false;
   return FL_BLACK;
@@ -726,8 +728,26 @@ Rps_FltkMainWindow::fill_main_window(void)
   int menubar_w = w();
   int menubar_h = 25;
   {
+
+    const char*mainmenucolor = rps_get_extra_arg("fltk_main_menu_color");
     _mainwin_menubar = new Fl_Menu_Bar(0, 0, menubar_w, menubar_h);
-    RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window _mainwin_menubar@" << (void*)_mainwin_menubar);
+
+    RPS_DEBUG_LOG(REPL, "Rps_FltkMainWindow::fill_main_window _mainwin_menubar@" << (void*)_mainwin_menubar
+                  << " mainmenucolor=" << Rps_Cjson_String(mainmenucolor)
+                  << " w=" << w() << " h=" << h()
+                  << " menubar_w=" << menubar_w
+                  << " menubar_h=" << menubar_h);
+    if (mainmenucolor)
+      {
+        bool ok=false;
+        Fl_Color col = rps_fltk_color_by_name(mainmenucolor, &ok);
+        if (ok && col != FL_BLACK)
+          {
+            RPS_DEBUG_LOG(REPL, "mainwinmenucolor:" << mainmenucolor
+                          << "=" << (long)col);
+            _mainwin_menubar->color(col);
+          }
+      }
     _mainwin_menubar->add("&App/e&Xit", "^x", main_menu_cb, (void*)"X");
     _mainwin_menubar->add("&App/&Quit", "^q", main_menu_cb, (void*)"Q");
     _mainwin_menubar->add("&App/&Dump", "^d", main_menu_cb, (void*)"D");
@@ -758,13 +778,38 @@ Rps_FltkMainWindow::fill_main_window(void)
     firstlabel = new Fl_Box(/*x:*/0,/*y:*/menubar_h,
                                   /*w:*/w(),/*h:*/h()-label_h-1,
                                   labelstr);
+    const char*labelcolor = rps_get_extra_arg("fltk_label_color");
+    if (labelcolor)
+      {
+        bool ok=false;
+        Fl_Color col = rps_fltk_color_by_name(labelcolor, &ok);
+        if (ok && col != FL_BLACK)
+          {
+            RPS_DEBUG_LOG(REPL, "fill_main_window labelcolor=" << labelcolor
+                          << "=" << col);
+            firstlabel->color(col);
+          }
+      }
     firstlabel->show();
   }
   int texteditheight = h()/2-(menubar_h+label_h+1);
   int textedity = menubar_h+label_h+1;
+  const char*inputcolor = rps_get_extra_arg("fltk_input_color");
   _mainwin_inptextedit
     = new Rps_FltkInputTextEditor(/*x:*/0,/*y:*/textedity,
                                         /*w:*/w(), /*h:*/texteditheight);
+  if (inputcolor)
+    {
+      bool ok=false;
+      Fl_Color col = rps_fltk_color_by_name(inputcolor, &ok);
+      if (ok && col != FL_BLACK)
+        {
+          RPS_DEBUG_LOG(REPL, "fill_main_window inputcolor=" << inputcolor
+                        << "=" << col);
+          _mainwin_inptextedit->color(col);
+        }
+
+    }
 #warning _mainwin_inptextedit should have a different background color
   _mainwin_vpack->add(_mainwin_inptextedit);
   _mainwin_outputdisp =
@@ -1141,13 +1186,14 @@ Fl_Color /// some internal unsigned 32 bits int
 rps_fltk_color_of_name(const char*colorname)
 {
   RPS_ASSERT(rps_fltk_is_initialized);
-  if (!colorname) {
-    RPS_WARNOUT("no colorname to rps_fltk_color_of_name"
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1,
-					   "rps_fltk_color_of_name/nil"));
-    return FL_BACKGROUND_COLOR;
-  }
+  if (!colorname)
+    {
+      RPS_WARNOUT("no colorname to rps_fltk_color_of_name"
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1,
+                                             "rps_fltk_color_of_name/nil"));
+      return FL_BACKGROUND_COLOR;
+    }
 #define RPS_TEST_COLOR(Name,Flcol) else if (!strcmp(colorname, #Name)) \
     return Flcol
   RPS_TEST_COLOR("white",fl_rgb_color(255,255,255));
@@ -1158,21 +1204,23 @@ rps_fltk_color_of_name(const char*colorname)
   /*TODO: improve GNUmakefile to generate some included file here from
     /etc/X11/rgb.txt file*/
 #undef RPS_TEST_COLOR
-  else {
-    RPS_WARNOUT("bad colorname '" << Rps_Cjson_String(colorname)
-		<< "' to rps_fltk_color_of_name"
-		<< std::endl
-		<< RPS_FULL_BACKTRACE_HERE(1,
-					   "rps_fltk_color_of_name/nil"));
-    return FL_BACKGROUND_COLOR;
-  }
+  else
+    {
+      RPS_WARNOUT("bad colorname '" << Rps_Cjson_String(colorname)
+                  << "' to rps_fltk_color_of_name"
+                  << std::endl
+                  << RPS_FULL_BACKTRACE_HERE(1,
+                                             "rps_fltk_color_of_name/nil"));
+      return FL_BACKGROUND_COLOR;
+    }
 } // end rps_fltk_color_of_name
 
 extern "C" bool rps_fltk_program_is_quitting(void);
 bool
 rps_fltk_program_is_quitting(void)
 {
-#ifdef FLTK_API_VERSION >= 10400 ///FLTK 1.4
+#ifdef FLTK_API_VERSION >= 10400
+  ///FLTK 1.4
   RPS_DEBUG_LOG(REPL, "rps_fltk_program_is_quitting program_should_quit="
                 << (Fl::program_should_quit())?"True":"false"
                 << std::endl
