@@ -1303,9 +1303,9 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     case RPSPROGOPT_EXTRA_ARG:
     {
       int eqnextpos= -1;
-      char extraname[64];
+      char extraname[80];
       memset (extraname, 0, sizeof(extraname));
-      if (sscanf(arg, "%60[A-Za-z0-9]=%n", extraname, &eqnextpos) >= 1
+      if (sscanf(arg, "%72[A-Za-z0-9]=%n", extraname, &eqnextpos) >= 1
           && isalpha(extraname[0])
           && eqnextpos > 1 && arg[eqnextpos-1] == '='
           && isalpha(extraname[0]))
@@ -1319,7 +1319,8 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
           std::string extraval{arg+eqnextpos};
           rps_dict_extra_arg.insert({extraname, extraval});
           RPS_INFORMOUT("set extra argument " << extraname
-                        << " to " << Rps_QuotedC_String(extraval));
+                        << " to '" << Rps_QuotedC_String(extraval)
+                        << "'");
         }
       else
         RPS_FATALOUT("bad extra named argument " << arg
