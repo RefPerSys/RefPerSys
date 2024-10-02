@@ -104,9 +104,14 @@ extern "C" bool rps_fltk_is_initialized;
 
 bool rps_fltk_is_initialized;
 
+// Convert a string naming a color...
+// if the color is not found, return black; on success set *ok to true
+// accept numerical colors like #102030 for red=0x10 green=0x20 blue=0x30
+extern "C" Fl_Color rps_fltk_color_by_name (const char*name, bool*ok=nullptr);
 
 extern "C" void rps_fltk_input_fd_handler(FL_SOCKET fd, void *data);
 extern "C" void rps_fltk_output_fd_handler(FL_SOCKET fd, void *data);
+
 extern "C" 
 /// temporary payload for any FLTK object
 class Rps_PayloadFltkThing : public Rps_Payload
@@ -430,6 +435,41 @@ rps_fltk_add_input_fd(int fd,
   Fl::add_fd(fd, POLLIN, rps_fltk_input_fd_handler, (void*)(intptr_t)ix);
 } // end rps_fltk_add_input_fd
 
+Fl_Color
+rps_fltk_color_by_name (const char*name, bool*ok)
+{
+  Fl_Color color= FL_BLACK;
+  if (!name)
+    goto failure;
+  if (name[0]=='#') {
+    int red= -1, green= -1, blue= -1;
+    int pos= -1;
+    if (sscanf(name, "#%02x%02x%02x%n", &red, &green, &blue, &pos)>=3
+	&& red>=0 && red<256 && green>=0 && green<256 && blue>=0
+	&& blue<256 && pos>4) {
+      color = fl_rgb_color(red,green,blue);
+      goto success;
+    }
+  }
+  else if (!isalpha(name[0]))
+    goto failure;
+#define RPS_RGB_COLOR(Red,Green,Blue,Name)			\
+  else if (!strcmp(name,Name))					\
+    { color = fl_rgb_color(Red,Green,Blue); goto success; }
+#include "generated/rps-rgb-colors.hh"
+#undef RPS_RGB_COLOR
+#undef RPS_NB_RGB_COLORS
+#undef RPS_WIDEST_RGB_COLOR
+  goto failure;
+ success:
+  if (ok)
+    *ok = true;
+  return color;
+ failure:
+  if (ok)
+    *ok = false;
+  return FL_BLACK;
+} // end rps_fltk_color_by_name
 
 void
 rps_fltk_add_output_fd(int fd,
