@@ -509,10 +509,8 @@ test-load: refpersys
 ## testing the FLTK graphical interface
 testfltk1: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
-	./refpersys -AREPL --run-name=$@ --run-delay=19s  --fltk \
-                    --extra=fltk_main_menu_color=ivory \
-                    --extra=fltk_label_color=peachpuff \
-                    --extra=fltk_input_color=lightcyan \
+	./refpersys -AREPL --run-name=$@ --run-delay=29s  \
+                    --fltk=fltk1pref \
                     --pid-file=$(RPS_HOMETMP)/refpersys.pid
 	@printf '\n\n\n////testfltk1 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
