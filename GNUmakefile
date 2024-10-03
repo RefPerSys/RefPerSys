@@ -185,7 +185,7 @@ distclean: clean
 _scanned-pkgconfig.mk: $(REFPERSYS_HUMAN_CPP_SOURCES) |GNUmakefile do-scan-pkgconfig
 	./do-scan-pkgconfig refpersys.hh $(REFPERSYS_HUMAN_CPP_SOURCES) > $@
 
-__timestamp.c: do-generate-timestamp.sh GNUmakefile
+__timestamp.c: do-generate-timestamp.sh GNUmakefile $(wildcard *.cc *.hh generated/*.cc generated *.hh)
 	@echo MAKE is "$(MAKE)" CXX is "$(REFPERSYS_CXX)" GPP is "$(REFPERSYS_GPP)" and "$(GPP)"
 	+env "MAKE=$(shell /bin/which gmake)" "CXX=$(REFPERSYS_CXX)" "GPP=$(REFPERSYS_GPP)" "CXXFLAGS=$(REFPERSYS_PREPRO_FLAGS) $(REFPERSYS_COMPILER_FLAGS)" ./do-generate-timestamp.sh $@ > $@
 
@@ -218,7 +218,6 @@ refpersys: objects |  GNUmakefile
               $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
-	@/bin/mv -v --backup __timestamp.c __timestamp.c%
 	@/bin/rm -vf __timestamp.o
 
 %.ii: %.cc | refpersys.hh GNUmakefile
