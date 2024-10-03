@@ -80,6 +80,12 @@ const char rps_fltk_shortgitid[]= RPS_SHORTGITID;
 extern "C" const int rps_fltk_api_version;
 const int rps_fltk_api_version = FL_API_VERSION;
 
+
+extern "C" char* rps_fltk_prefpath;
+char* rps_fltk_prefpath;
+
+extern "C" Fl_Preferences* rps_fltk_preferences;
+Fl_Preferences* rps_fltk_preferences;
 ////////////////////////////////////////////////////////////////////////
 ////// ******** DECLARATIONS ********
 
@@ -788,7 +794,7 @@ Rps_FltkMainWindow::fill_main_window(void)
     labelstr = strdup(labelbuf);
     RPS_DEBUG_LOG(REPL, "fill_main_window labelstr:" << labelstr);
     firstlabel = new Fl_Box(/*x:*/0,/*y:*/menubar_h,
-			    /*w:*/w(),/*h:*/label_h,
+                                  /*w:*/w(),/*h:*/label_h,
                                   labelstr);
     const char*labelcolor = rps_get_extra_arg("fltk_label_color");
     if (labelcolor)
@@ -1116,6 +1122,7 @@ rps_fltk_progoption(char*arg, struct argp_state*state, bool side_effect)
 #warning missing code in rps_fltk_progoption
   if (arg)
     {
+      rps_fltk_prefpath = arg;
       RPS_WARNOUT("unimplemented rps_fltk_progoption arg='"
                   <<  Rps_Cjson_String(arg)
                   << "' side_effect=" << (side_effect?"True":"False")
@@ -1159,6 +1166,35 @@ rps_fltk_initialize (int argc, char**argv)
 {
   char titlebuf[128];
   memset (titlebuf, 0, sizeof(titlebuf));
+  RPS_DEBUG_LOG(REPL, "rps_fltk_initialize start thread="
+                << rps_current_pthread_name()
+                << " pid#" << (int)getpid()
+                << " argc=" << argc
+                << " argv=" << RPS_OUT_PROGARGS(argc, argv)
+                << " rps_fltk_prefpath=" << Rps_Cjson_String(rps_fltk_prefpath)
+                << std::endl
+                << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_initialize start"));
+  RPS_POSSIBLE_BREAKPOINT();
+  RPS_ASSERT(argc>0 && argv[0] != nullptr);
+  if (rps_fltk_prefpath)
+    {
+      rps_fltk_preferences = //
+        new Fl_Preferences(rps_fltk_prefpath,
+                           "refpersys.org",
+                           "RefPerSys*");
+      RPS_INFORMOUT("using explicit FLTK preferences from "
+                    << rps_fltk_prefpath
+                    << " on " << rps_fltk_preferences->path());
+    }
+  else
+    {
+      rps_fltk_preferences = //
+        new Fl_Preferences(Fl_Preferences::USER,
+                           "refpersys.org",
+                           "RefPerSys!");
+      RPS_INFORMOUT("using FLTK user preferences on "
+                    << rps_fltk_preferences->path());
+    };
   if (!rps_run_name.empty())
     snprintf(titlebuf, sizeof(titlebuf),
              "RefPerSys/%.20s %.9s v%d.%d pid %d on %s",
