@@ -1181,7 +1181,7 @@ rps_fltk_initialize (int argc, char**argv)
       rps_fltk_preferences = //
         new Fl_Preferences(rps_fltk_prefpath,
                            "refpersys.org",
-                           "RefPerSys*");
+                           "RefPerSys");
       RPS_INFORMOUT("using explicit FLTK preferences from "
                     << rps_fltk_prefpath
                     << " on " << rps_fltk_preferences->path());
@@ -1191,8 +1191,8 @@ rps_fltk_initialize (int argc, char**argv)
       rps_fltk_preferences = //
         new Fl_Preferences(Fl_Preferences::USER,
                            "refpersys.org",
-                           "RefPerSys!");
-      RPS_INFORMOUT("using FLTK user preferences on "
+                           "refpersys");
+      RPS_INFORMOUT("using user FLTK preferences on "
                     << rps_fltk_preferences->path());
     };
   if (!rps_run_name.empty())
@@ -1212,8 +1212,12 @@ rps_fltk_initialize (int argc, char**argv)
              rps_hostname());
 
   fl_open_display();
+  /// FIXME: should use preferences
+#warning rps_fltk_initialize should use preferences
+  int mainwin_w = 770;
+  int mainwin_h = 550;
   rps_fltk_mainwin =
-    new Rps_FltkMainWindow(/*width=*/770, /*height=*/550,
+    new Rps_FltkMainWindow(/*width=*/mainwin_w, /*height=*/mainwin_h,
                                      titlebuf);
   rps_fltk_mainwin->show(argc, argv);
   rps_fltk_flush ();
