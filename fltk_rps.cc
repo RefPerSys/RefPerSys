@@ -321,6 +321,9 @@ public:
   virtual ~Rps_FltkInputTextEditor();
 };              // end  Rps_FltkInputTextEditor
 
+
+
+////////////////
 class Rps_FltkOutputTextDisplay : public  Fl_Text_Display
 {
   /* inspired by FLTK 1.4 examples/texteditor-with-dynamic-colors.cxx */
@@ -332,6 +335,9 @@ public:
   virtual ~Rps_FltkOutputTextDisplay();
 };              // end  Rps_FltkOutputTextDisplay
 
+
+
+////////////////
 class Rps_FltkMainWindow: public Fl_Window
 {
   friend class Rps_FltkDebugWindow;
@@ -402,9 +408,16 @@ public:
 };        // end Rps_FltkDebugWindow
 
 
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+//////// ******* IMPLEMENTATION *******
 Rps_FltkInputTextEditor::Rps_FltkInputTextEditor(int x, int y, int w, int h)
   :  Fl_Text_Editor(x,y,w,h)
-
 {
   RPS_DEBUG_LOG(REPL, "this @" << (void*)this << " x=" << x
                 << ",y=" << y << ",w=" << w << " h="<< h);
@@ -417,7 +430,6 @@ Rps_FltkInputTextEditor::~Rps_FltkInputTextEditor()
 } // end Rps_FltkInputTextEditor destructor
 
 ////////////////////////////////////////////////////////////////
-//////// ******* IMPLEMENTATION *******
 
 Rps_PayloadFltkWidget::Rps_PayloadFltkWidget(Rps_ObjectZone*owner, Fl_Widget*wid)
   : Rps_PayloadFltkWidget(Rps_ObjectRef(owner), wid) {};
