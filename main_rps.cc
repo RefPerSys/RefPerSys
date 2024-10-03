@@ -167,9 +167,11 @@ struct argp_option rps_progoptions[] =
   /* ======= FLTK GUI library ======= */
   {/*name:*/ "fltk", ///
     /*key:*/ RPSPROGOPT_FLTK, ///
-    /*arg:*/ "GUIOPTION", ///
+    /*arg:*/ "GUIPREFERENCES", ///
     /*flags:*/ OPTION_ARG_OPTIONAL, ///
-    /*doc:*/ "pass, if GUIOPTION is given, to FLTK graphical library; enable FLTK graphics.\n", ///
+    /*doc:*/ "pass, if GUIPREFERENCES is given,"
+    " to FLTK graphical library; enable FLTK graphics.\n"
+    "\t see fltk.org for details\n", ///
     /*group:*/0 ///
   },
   /* ======= extra argument ======= */
