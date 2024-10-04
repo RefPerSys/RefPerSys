@@ -510,7 +510,7 @@ test-load: refpersys
 testfltk1: refpersys
 	@printf '%s git %s\n' $@ $(RPS_SHORTGIT_ID)
 	./refpersys -AREPL --run-name=$@ --run-delay=29s  \
-                    --fltk=fltk1pref \
+                    --fltk=$$HOME/fltk1-refpersys-pref \
                     --pid-file=$(RPS_HOMETMP)/refpersys.pid
 	@printf '\n\n\n////testfltk1 FINISHED git %s¤\n' $(RPS_SHORTGIT_ID)
 
