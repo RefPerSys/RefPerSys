@@ -45,6 +45,8 @@
 
 #warning fltk_rps.cc should be backported to FLTK 1.3
 
+#warning perhaps we should use FOX-toolkit from "https://fox-toolkit.org"
+
 #include <stdarg.h>
 #include <FL/Fl.H>
 #include <FL/platform.H>
