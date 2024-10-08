@@ -1180,6 +1180,8 @@ rps_fltk_initialize (int argc, char**argv)
   RPS_ASSERT(argc>0 && argv[0] != nullptr);
   if (rps_fltk_prefpath)
     {
+      RPS_DEBUG_LOG(REPL, "rps_fltk_initialize rps_fltk_prefpath=" << rps_fltk_prefpath);
+      RPS_POSSIBLE_BREAKPOINT();
       rps_fltk_preferences = //
         new Fl_Preferences(rps_fltk_prefpath,
                            "refpersys.org",
@@ -1214,10 +1216,21 @@ rps_fltk_initialize (int argc, char**argv)
              rps_hostname());
 
   fl_open_display();
+  RPS_ASSERT (rps_fltk_preferences != nullptr);
   /// FIXME: should use preferences
 #warning rps_fltk_initialize should use preferences
-  int mainwin_w = 770;
-  int mainwin_h = 550;
+  int mainwin_w = -1;
+  int mainwin_h = -1;
+  {
+    Fl_Preferences mainwinpref(rps_fltk_preferences, "MainWindow");
+    bool goth = (bool)mainwinpref.get("height", mainwin_h, 777);
+    bool gotw = (bool)mainwinpref.get("width", mainwin_w, 555);
+    RPS_DEBUG_LOG(REPL, "for mainwin "
+                  << (goth?"got":"default") << " h=" << mainwin_h
+                  << " & "
+                  << (gotw?"got":"default") << " w=" << mainwin_w
+                 );
+  }
   rps_fltk_mainwin =
     new Rps_FltkMainWindow(/*width=*/mainwin_w, /*height=*/mainwin_h,
                                      titlebuf);
@@ -1461,7 +1474,7 @@ rps_fltk_show_debug_message(const char*file, int line, const char*funcname,
   RPS_ASSERT(msg != nullptr);
   RPS_WARNOUT("incomplete rps_fltk_show_debug_message "
               << file << ":" << line << ":" << funcname << "::"
-	      << std::endl
+              << std::endl
               << msg
               << std::endl
               << RPS_FULL_BACKTRACE_HERE(1, "rps_fltk_show_debug_message"));
