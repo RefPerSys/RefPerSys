@@ -32,6 +32,13 @@
  ******************************************************************************/
 
 #include "refpersys.hh"
+
+// comment for our do-scan-pkgconfig.c utility
+//@@PKGCONFIG gmp
+//@@PKGCONFIG gmpxx
+//@@PKGCONFIG lightning
+//@@PKGCONFIG glib-2.0
+
 #include <lightning.h>
 
 #if RPS_WITH_FLTK
@@ -50,10 +57,7 @@
 #include <FL/Fl_Box.H>
 #endif // RPS_WITH_FLTK
 
-// comment for our do-scan-pkgconfig.c utility
-//@@PKGCONFIG gmp
-//@@PKGCONFIG gmpxx
-//@@PKGCONFIG lightning
+#include "glib.h"
 
 extern "C" const char rps_utilities_gitid[];
 const char rps_utilities_gitid[]= RPS_GITID;
@@ -642,6 +646,9 @@ rps_show_version(void)
             << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
             << " with " << nbsubdirs << " subdirectories." << std::endl
             << " GNU glibc: " << gnu_get_libc_version() << std::endl
+	    << " Glib: " << glib_major_version
+	    << "." << glib_minor_version
+	    << "." << glib_micro_version << std::endl
             << " executable: " << exepath;
   if (strcmp(exepath, realexepath))
     std::cout <<  " really " << realexepath;

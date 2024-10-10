@@ -35,6 +35,11 @@
 
 #include "refpersys.hh"
 
+
+//@@PKGCONFIG glib-2.0
+
+#include "glib.h"
+
 #ifndef RPS_WITH_FLTK
 #error RefPerSys without FLTK
 #endif
