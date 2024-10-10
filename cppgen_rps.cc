@@ -701,6 +701,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   auto cppgenpayl = _f.obgenerator->put_new_plain_payload<Rps_PayloadCplusplusGen>();
   cppgenpayl->emit_initial_cplusplus_comment(&_, _f.obmodule);
   cppgenpayl->emit_cplusplus_includes(&_,  _f.obmodule);
+  cppgenpayl->emit_cplusplus_definitions(&_,  _f.obmodule);
 #warning missing code in rps_generate_cplusplus_code
   RPS_FATALOUT("missing code in rps_generate_cplusplus_code obmodule="
                << _f.obmodule);
