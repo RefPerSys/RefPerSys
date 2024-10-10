@@ -129,13 +129,44 @@ public:
   {
     return "cplusplusgen";
   };
-};
+  void output(std::function<void(std::ostringstream&out)>&fun, bool raw=false);
+  void raw_output(std::function<void(std::ostringstream&out)>&fun)
+  {
+    output (fun, /*raw:*/true);
+  };
+};        // end class  Rps_PayloadCplusplusGen
+
 
 Rps_PayloadCplusplusGen::Rps_PayloadCplusplusGen(Rps_ObjectZone*ob)
   : Rps_Payload(Rps_Type::PaylCplusplusGen,ob), cppgen_outcod(),
     cppgen_indentation(0), cppgen_path()
 {
 } // end Rps_PayloadCplusplusGen::Rps_PayloadCplusplusGen
+
+
+void
+Rps_PayloadCplusplusGen::output(std::function<void(std::ostringstream&out)>&fun,
+                                bool raw)
+{
+  std::string buf;
+  std::ostringstream out(buf);
+  fun(out);
+  if (raw)
+    {
+      cppgen_outcod << buf;
+    }
+  else
+    {
+      for (char c: buf)
+        {
+          if (c=='\n')
+            cppgen_outcod << eol_indent();
+          else
+            cppgen_outcod << c;
+        };
+    }
+  cppgen_outcod.flush();
+} // end Rps_PayloadCplusplusGen::output
 
 void
 Rps_PayloadCplusplusGen::mark_gc_cppgen_data(Rps_GarbageCollector&gc, struct cppgen_data_st*d, unsigned depth)
@@ -153,7 +184,8 @@ Rps_PayloadCplusplusGen::check_size(int lineno)
 {
   char linbuf[16];
   memset(linbuf, 0, sizeof(linbuf));
-  if (lineno > 0) snprintf(linbuf, sizeof(linbuf), ":%d", lineno);
+  if (lineno > 0)
+    snprintf(linbuf, sizeof(linbuf), ":%d", lineno);
   if ((size_t)cppgen_outcod.tellp() > (size_t)maximal_size)
     {
       RPS_WARNOUT("in C++ generator " << owner()
@@ -701,6 +733,7 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   auto cppgenpayl = _f.obgenerator->put_new_plain_payload<Rps_PayloadCplusplusGen>();
   cppgenpayl->emit_initial_cplusplus_comment(&_, _f.obmodule);
   cppgenpayl->emit_cplusplus_includes(&_,  _f.obmodule);
+  cppgenpayl->emit_cplusplus_declarations(&_,  _f.obmodule);
   cppgenpayl->emit_cplusplus_definitions(&_,  _f.obmodule);
 #warning missing code in rps_generate_cplusplus_code
   RPS_FATALOUT("missing code in rps_generate_cplusplus_code obmodule="
