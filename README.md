@@ -1,4 +1,4 @@
-# RefPerSys
+# RefPerSys inference engine
 
 
 This [free software](https://en.wikipedia.org/wiki/Free_software)
@@ -8,7 +8,7 @@ on http://refpersys.org/ where more details are given.
 
 *RefPerSys* is aiming to become a free software symbolic artificial
 intelligence system or [inference
-engine](https://en.wikipedia.org/wiki/Inference_engine), e.g. an
+engine](https://en.wikipedia.org/wiki/Inference_engine), e.g. a better
 alternative to [CLIPSrules](https://clipsrules.net/).
 
 Contributions to *RefPerSys* are welcome. Contact by email
@@ -55,7 +55,7 @@ A rewrite of RefPerSys in C was attempted on [refpersys-in-c](https://github.com
 We considered previously to use the garbage collector from [Ravenbrook
 MPS](https://github.com/Ravenbrook/mps).
 
-**Don't expect RefPerSys to be a mature project.** It is not in June 2024.
+**Don't expect RefPerSys to be a mature project.** It is not in October 2024.
 
 Some draft design ideas are written in the [RefPerSys design
 draft](http://starynkevitch.net/Basile/refpersys-design.pdf) which is
@@ -139,14 +139,14 @@ copyrighted by the RefPerSys team, currently made of:
 
  *      Basile Starynkevitch <basile@starynkevitch.net>,
         8 rue de la Faïencerie
-	92340 Bourg-la-Reine
-	France
+        92340 Bourg-la-Reine
+        France
         homepage http://starynkevitch.net/Basile/
-		near Paris, France. So usual timezone `TZ=MEST`
-		
+                near Paris, France. So usual timezone `TZ=MEST`
+
  *      Abhishek Chakravarti <ack@fifthestate.co.in>
         Kolkata, India
-	
+
  *      Nimesh Neema <nimeshneema@gmail.com>
  
  *      Niklas Rozencrantz in Stockholm, Sweden.
@@ -171,7 +171,7 @@ RefPerSys could be patched and extended to generate proprietary code
 or data. In 2023 some authors (including Basile Starynkevitch) are not
 interested to add such a features. Others authors (in India) are
 interested to add that. Their contributions are pending (in
-sept. 2023).
+october 2024).
 
 ## File conventions
 
@@ -183,8 +183,8 @@ just want our runtime to work, not to serve as an example of well
 written C++17 code.
 
 The prefered C++ compiler (in 2023Q2) for *RefPerSys* is
-[GCC](http://gcc.gnu.org/) version [12](https://gcc.gnu.org/gcc-12/) or
-[13](https://gcc.gnu.org/gcc-13).
+[GCC](http://gcc.gnu.org/) version [13](https://gcc.gnu.org/gcc-13/) or
+[14](https://gcc.gnu.org/gcc-14).
 
 It could be worthwhile to sometimes compile *RefPerSys* with `clang++`
 (see http://clang.llvm.org/ for more). In practice `make clean` then
