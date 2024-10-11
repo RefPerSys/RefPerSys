@@ -383,6 +383,18 @@ struct argp_option rps_progoptions[] =
     /*doc:*/ "Write the pid of the running process into given PID_FILE.\n", //
     /*group:*/0 ///
   },
+  /* ======= user preferences ======= */
+  {/*name:*/ "user-pref", ///
+    /*key:*/ RPSPROGOPT_USER_PREFERENCES, ///
+    /*arg:*/ "USER_PREFERENCES", ///
+    /*flags:*/ 0, ///
+    /*doc:*/ "Set the user preferences to given file USER_PREFERENCES;\n"
+    "Lines starting with # are comments.\n"
+    "Lines before the first *REFPERSYS_USER_PREFERENCES are ignored.\n"
+    "\t So they could be some shell script....\n"
+    "Others are <name>=<value>, e.g. color='black' or height=345 ", //
+    /*group:*/0 ///
+  },
   /* ======= version info ======= */
   {/*name:*/ "version", ///
     /*key:*/ RPSPROGOPT_VERSION, ///

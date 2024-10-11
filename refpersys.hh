@@ -794,6 +794,7 @@ enum rps_progoption_en
   RPSPROGOPT_INTERFACEFIFO='i',
   /// see also github.com/bstarynk/misc-basile/blob/master/mini-edit-JSONRPC.md
   RPSPROGOPT_JOBS='j',
+  RPSPROGOPT_USER_PREFERENCES='U',
   RPSPROGOPT_HOMEDIR=1000,
   RPSPROGOPT_CHDIR_BEFORE_LOAD,
   RPSPROGOPT_CHDIR_AFTER_LOAD,
@@ -820,6 +821,7 @@ enum rps_progoption_en
   RPSPROGOPT_PUBLISH_ME,
 };
 
+extern "C" std::string rps_user_preferences_path(void);
 
 /// if state is RPS_EMPTYSLOT no serious side-effect happens
 extern "C" error_t rps_parse1opt (int key, char *arg, struct argp_state *state);

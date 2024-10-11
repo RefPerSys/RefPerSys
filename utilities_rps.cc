@@ -68,6 +68,7 @@ const char rps_utilities_date[]= __DATE__;
 extern "C" const char rps_utilities_shortgitid[];
 const char rps_utilities_shortgitid[]= RPS_SHORTGITID;
 
+extern "C" void rps_set_user_preferences(const char*path);
 
 extern "C" char*rps_chdir_path_after_load;
 
@@ -1157,6 +1158,17 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
                       << " git:" << rps_shortgitid);
     }
     return 0;
+    case RPSPROGOPT_USER_PREFERENCES:
+      /// example argument: -U ~/myrefpersys.pref
+      /// other example: --user-pref=$HOME/myrps.pref 
+      {
+	if (access(arg, R_OK))
+	  rps_set_user_preferences(arg);
+	else
+	  RPS_FATALOUT("missing user preferences file " << arg
+		       << ":" << strerror(errno));
+      }
+      return 0;
     case RPSPROGOPT_RUN_DELAY:
     {
       int pos= -1;
