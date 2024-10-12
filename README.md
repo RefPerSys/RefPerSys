@@ -64,11 +64,26 @@ Your `$EDITOR` should give a valid editor path (e.g. `/usr/bin/emacsclient` or `
 
 Your `$HOME` should be valid.
 
-*The `$REFPERSYS_TOPDIR` should contain the path of the RefPerSys
-source directory*. So if you did `git clone
+Your `$PATH` should be valid and give access to your `refpersys` and
+`lto-refpersys` executables. A possibility could be to have (or
+create) your `$HOME/bin/` directory (appearing in your `$PATH`) and
+symbolic links inside it. Your `$PATH` should give access to [GNU
+make](https://www.gnu.org/software/make/) as `make` (a simpler make
+utility, including BSD make, is not ok). the
+[`git`](http://git-scm.com/) version control command should be
+accessible and likewise for other [GNU](https://www.gnu.org/software/)
+utilities.
+
+
+Conventionally any *RefPerSys* specific environment variable (outside
+of the usual environment variables mentioned above) is starting with
+`REFPERSYS_`
+
+**The `$REFPERSYS_TOPDIR` should contain the path of the RefPerSys
+source directory**. So if you did `git clone
 https://github.com/RefPerSys/RefPerSys` in your `$HOME/work/`
 directory you need to `export REFPERSYS_TOPDIR=$HOME/work/RefPerSys`
-...
+(probably in your ̀ ~/.bashrc` or `~/.zshrc` or `~/.zshenv`) ...
 
 ## design ideas
 
