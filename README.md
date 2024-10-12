@@ -81,10 +81,11 @@ of the usual environment variables mentioned above) is starting with
 
 
 **The `$REFPERSYS_TOPDIR` should contain the path of the RefPerSys
-source directory**. So if you did `git clone
+source directory**. So if you did some command like `git clone
 https://github.com/RefPerSys/RefPerSys` in your `$HOME/work/`
 directory you need to `export REFPERSYS_TOPDIR=$HOME/work/RefPerSys`
-(probably in your ̀ ~/.bashrc` or `~/.zshrc` or `~/.zshenv`) ...
+(probably in your ̀ $HOME/.bashrc` or `$HOME/.zshrc` or `$HOME/.zshenv`
+shell files) ...
 
 ### internally set environment variables.
 
@@ -95,10 +96,13 @@ command, the following environment variables have been set (by its
 * `REFPERSYS_TOPDIR` to the top directory e.g. `$HOME/work/RefPerSys`
 * `REFPERSYS_RUN_NAME` to the run name (if given with `--run-name=NAME`)
 * `REFPERSYS_GITID` to the complete git id
-  (e.g. `d65f8c47aed61d31454b3612a33a30a308660d31+`). The suffix `+`
-  indicates that the source has been modified locally.
+  (e.g. `d65f8c47aed61d31454b3612a33a30a308660d31+`).<br/>
+  The suffix `+` indicates that your *RefPerSys source code*
+  has been *modified locally*
+  and is newer that what you are reading on this
+  https://github.com/RefPerSys/RefPerSys webpage.
 * `REFPERSYS_PID` to the process id e.g. `1653963`
-* REFPERSYS_SHORTGITID to a shortenned git id e.g. `d65f8c47aed6+`
+* `REFPERSYS_SHORTGITID` to a shortened git id e.g. `d65f8c47aed6+`
 
 
 ## design ideas
