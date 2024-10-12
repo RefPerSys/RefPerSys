@@ -77,7 +77,8 @@ utilities.
 
 Conventionally any *RefPerSys* specific environment variable (outside
 of the usual environment variables mentioned above) is starting with
-`REFPERSYS_`
+`REFPERSYS_` .... Some of them are set by the `refpersys` executable before forking any command:
+
 
 **The `$REFPERSYS_TOPDIR` should contain the path of the RefPerSys
 source directory**. So if you did `git clone
@@ -85,6 +86,7 @@ https://github.com/RefPerSys/RefPerSys` in your `$HOME/work/`
 directory you need to `export REFPERSYS_TOPDIR=$HOME/work/RefPerSys`
 (probably in your ̀ ~/.bashrc` or `~/.zshrc` or `~/.zshenv`) ...
 
+When the 
 ## design ideas
 
 Some draft design ideas are written in the [RefPerSys design

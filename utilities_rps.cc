@@ -745,8 +745,9 @@ rps_strftime_centiseconds(char *bfr, size_t len, const char *fmt, double tm)
 
 
 
-/// this rps_extend_env is called early from main.  It is extending
+/// This rps_extend_env is called early from main.  It is extending
 /// the Unix environment.
+/// Try running ./refpersys "--run-after-load=env|grep REFPERSYS" --batch
 void
 rps_extend_env(void)
 {
@@ -756,13 +757,16 @@ rps_extend_env(void)
   extended = true;
   static char pidenv[64];
   snprintf(pidenv, sizeof(pidenv), "REFPERSYS_PID=%d", (int)getpid());
-  putenv(pidenv);
-  static char gitenv[64];
+  putenv(pidenv); 		// e.g. REFPERSYS_PID=2345
+  static char shortgitenv[64];
+  snprintf(shortgitenv, sizeof(shortgitenv), "REFPERSYS_SHORTGITID=%s", rps_shortgitid);
+  putenv(shortgitenv);  // e.g. REFPERSYS_SHORTGITID=49466057bf7d+
+  static char gitenv[128];
   snprintf(gitenv, sizeof(gitenv), "REFPERSYS_GITID=%s", rps_gitid);
-  putenv(gitenv);
-  static char topdirenv[384];
+  putenv(gitenv);  // e.g. REFPERSYS_GITID=494...90+ with 40 hexdigit
+  static char topdirenv[384]; 
   snprintf(topdirenv, sizeof(topdirenv), "REFPERSYS_TOPDIR=%s", rps_topdirectory);
-  putenv(topdirenv);
+  putenv(topdirenv); // e.g. REFPERSYS_TOPDIR=$HOME/work/RefPerSys/
   static char fifoenv[256];
   if (!rps_fifo_prefix.empty())
     {
