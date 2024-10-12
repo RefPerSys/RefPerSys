@@ -86,7 +86,21 @@ https://github.com/RefPerSys/RefPerSys` in your `$HOME/work/`
 directory you need to `export REFPERSYS_TOPDIR=$HOME/work/RefPerSys`
 (probably in your ̀ ~/.bashrc` or `~/.zshrc` or `~/.zshenv`) ...
 
-When the 
+### internally set environment variables.
+
+When the `refpersys` executable is forking a process or running a
+command, the following environment variables have been set (by its
+`rps_extend_env` C++ function):
+
+* `REFPERSYS_TOPDIR` to the top directory e.g. `$HOME/work/RefPerSys`
+* `REFPERSYS_RUN_NAME` to the run name (if given with `--run-name=NAME`)
+* `REFPERSYS_GITID` to the complete git id
+  (e.g. `d65f8c47aed61d31454b3612a33a30a308660d31+`). The suffix `+`
+  indicates that the source has been modified locally.
+* `REFPERSYS_PID` to the process id e.g. `1653963`
+* REFPERSYS_SHORTGITID to a shortenned git id e.g. `d65f8c47aed6+`
+
+
 ## design ideas
 
 Some draft design ideas are written in the [RefPerSys design
