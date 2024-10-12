@@ -767,12 +767,18 @@ rps_extend_env(void)
   static char topdirenv[384]; 
   snprintf(topdirenv, sizeof(topdirenv), "REFPERSYS_TOPDIR=%s", rps_topdirectory);
   putenv(topdirenv); // e.g. REFPERSYS_TOPDIR=$HOME/work/RefPerSys/
-  static char fifoenv[256];
   if (!rps_fifo_prefix.empty())
     {
+      static char fifoenv[256];
       snprintf(fifoenv, sizeof(fifoenv), "REFPERSYS_FIFO_PREFIX=%s", rps_fifo_prefix.c_str());
-      putenv(fifoenv);
-    }
+      putenv(fifoenv); // e.g. REFPERSYS_FIFO_PREFIX=$HOME/tmp/rpsfifo
+    };
+  if (!rps_run_name.empty())
+    {
+      static char runamenv[256];
+      snprintf(runamenv, sizeof(runamenv), "REFPERSYS_RUN_NAME=%s", rps_run_name.c_str());
+      putenv(runamenv); 	// e.g. REFPERSYS_RUN_NAME=testflk3.x
+    };
 } // end rps_extend_env
 
 
