@@ -2,9 +2,10 @@
 
 
 This [free software](https://en.wikipedia.org/wiki/Free_software)
-project has its source code on https://gitlab.com/bstarynk/refpersys/
-and on https://github.com/RefPerSys/RefPerSys . It is its own web site
-on http://refpersys.org/ where more details are given.
+project has its source code on https://github.com/RefPerSys/RefPerSys
+with an obsolete variant on https://gitlab.com/bstarynk/refpersys/
+which is not maintained in 2024. It is its own web site on
+http://refpersys.org/ where more details are given.
 
 *RefPerSys* is aiming to become a free software symbolic artificial
 intelligence system or [inference
@@ -56,6 +57,20 @@ We considered previously to use the garbage collector from [Ravenbrook
 MPS](https://github.com/Ravenbrook/mps).
 
 **Don't expect RefPerSys to be a mature project.** It is not in October 2024.
+
+## environment variables
+
+Your `$EDITOR` should give a valid editor path (e.g. `/usr/bin/emacsclient` or `/usr/bin/gedit` ...)
+
+Your `$HOME` should be valid.
+
+*The `$REFPERSYS_TOPDIR` should contain the path of the RefPerSys
+source directory*. So if you did `git clone
+https://github.com/RefPerSys/RefPerSys` in your `$HOME/work/`
+directory you need to `export REFPERSYS_TOPDIR=$HOME/work/RefPerSys`
+...
+
+## design ideas
 
 Some draft design ideas are written in the [RefPerSys design
 draft](http://starynkevitch.net/Basile/refpersys-design.pdf) which is
