@@ -46,8 +46,36 @@ const char rps_userpref_shortgitid[]= RPS_SHORTGITID;
 
 extern "C" void rps_set_user_preferences(char*);
 
+#define RPS_USER_PREFERENCE_MAGIC "*REFPERSYS_USER_PREFERENCES"
+static Rps_MemoryFileTokenSource* rps_userpref_mts;
+
+static void     // passed to atexit
+rps_delete_user_preferences(void)
+{
+  if (rps_userpref_mts)
+    delete rps_userpref_mts;
+  rps_userpref_mts = nullptr;
+} // end rps_delete_user_preferences
+
 void rps_set_user_preferences(char*path)
 {
+  RPS_ASSERT(!access(path, R_OK));
+  RPS_ASSERT(rps_is_main_thread());
+  if (rps_userpref_mts)
+    RPS_FATALOUT("cannot set user preferences more than once, here to "
+                 << path << " but previously to "
+                 << rps_userpref_mts->path());
+  rps_userpref_mts = new  Rps_MemoryFileTokenSource(path);
+  while (rps_userpref_mts->get_line())
+    {
+      const char*clp = rps_userpref_mts->curcptr();
+      if (!clp)
+        break;
+      else if (!strncmp(clp, RPS_USER_PREFERENCE_MAGIC,
+                        strlen(RPS_USER_PREFERENCE_MAGIC)))
+        break;
+    };
+  atexit(rps_delete_user_preferences);
 #warning unimplemented rps_set_user_preferences
   RPS_FATALOUT("unimplemented user preferences file '"
                << Rps_Cjson_String(path) << "'");
