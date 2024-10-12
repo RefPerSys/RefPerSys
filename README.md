@@ -84,7 +84,7 @@ of the usual environment variables mentioned above) is starting with
 source directory**. So if you did some command like `git clone
 https://github.com/RefPerSys/RefPerSys` in your `$HOME/work/`
 directory you need to `export REFPERSYS_TOPDIR=$HOME/work/RefPerSys`
-(probably in your ̀ $HOME/.bashrc` or `$HOME/.zshrc` or `$HOME/.zshenv`
+(probably in your ̀`$HOME/.bashrc` or `$HOME/.zshrc` or `$HOME/.zshenv`
 shell files) ...
 
 ### internally set environment variables.
