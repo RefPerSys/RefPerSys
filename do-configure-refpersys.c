@@ -1021,6 +1021,9 @@ int
 main (int argc, char **argv)
 {
   prog_name = argv[0];
+#ifndef WITHOUT_READLINE
+  rl_readline_name = argv[0];
+#endif //WITHOUT_READLINE
   if (argc == 2 && !strcmp (argv[1], "--help"))
     {
       usage ();
@@ -1030,6 +1033,14 @@ main (int argc, char **argv)
     {
       printf ("%s version gitid %s built on %s:%s\n",
 	      prog_name, GIT_ID, __DATE__, __TIME__);
+#ifdef WITHOUT_READLINE
+      printf ("\t not using GNU readline\n");
+#else
+      printf ("\t using GNU readline %d.%d\n",
+	      (rl_readline_version)>>8,
+	      (rl_readline_version)&0xff);
+#endif
+      fflush(NULL);
     };
   memset (my_cwd_buf, 0, sizeof (my_cwd_buf));
   if (!getcwd (my_cwd_buf, sizeof (my_cwd_buf)))

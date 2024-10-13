@@ -647,9 +647,9 @@ rps_show_version(void)
             << " md5sum of " << nbfiles << " source files: " << rps_md5sum << std::endl
             << " with " << nbsubdirs << " subdirectories." << std::endl
             << " GNU glibc: " << gnu_get_libc_version() << std::endl
-	    << " Glib: " << glib_major_version
-	    << "." << glib_minor_version
-	    << "." << glib_micro_version << std::endl
+            << " Glib: " << glib_major_version
+            << "." << glib_minor_version
+            << "." << glib_micro_version << std::endl
             << " executable: " << exepath;
   if (strcmp(exepath, realexepath))
     std::cout <<  " really " << realexepath;
@@ -757,14 +757,14 @@ rps_extend_env(void)
   extended = true;
   static char pidenv[64];
   snprintf(pidenv, sizeof(pidenv), "REFPERSYS_PID=%d", (int)getpid());
-  putenv(pidenv); 		// e.g. REFPERSYS_PID=2345
+  putenv(pidenv);     // e.g. REFPERSYS_PID=2345
   static char shortgitenv[64];
   snprintf(shortgitenv, sizeof(shortgitenv), "REFPERSYS_SHORTGITID=%s", rps_shortgitid);
   putenv(shortgitenv);  // e.g. REFPERSYS_SHORTGITID=49466057bf7d+
   static char gitenv[128];
   snprintf(gitenv, sizeof(gitenv), "REFPERSYS_GITID=%s", rps_gitid);
   putenv(gitenv);  // e.g. REFPERSYS_GITID=494...90+ with 40 hexdigit
-  static char topdirenv[384]; 
+  static char topdirenv[384];
   snprintf(topdirenv, sizeof(topdirenv), "REFPERSYS_TOPDIR=%s", rps_topdirectory);
   putenv(topdirenv); // e.g. REFPERSYS_TOPDIR=$HOME/work/RefPerSys/
   if (!rps_fifo_prefix.empty())
@@ -777,7 +777,7 @@ rps_extend_env(void)
     {
       static char runamenv[256];
       snprintf(runamenv, sizeof(runamenv), "REFPERSYS_RUN_NAME=%s", rps_run_name.c_str());
-      putenv(runamenv); 	// e.g. REFPERSYS_RUN_NAME=testflk3.x
+      putenv(runamenv);   // e.g. REFPERSYS_RUN_NAME=testflk3.x
     };
 } // end rps_extend_env
 
@@ -1170,15 +1170,15 @@ rps_parse1opt (int key, char *arg, struct argp_state *state)
     return 0;
     case RPSPROGOPT_USER_PREFERENCES:
       /// example argument: -U ~/myrefpersys.pref
-      /// other example: --user-pref=$HOME/myrps.pref 
-      {
-	if (access(arg, R_OK))
-	  rps_set_user_preferences(arg);
-	else
-	  RPS_FATALOUT("missing user preferences file " << arg
-		       << ":" << strerror(errno));
-      }
-      return 0;
+      /// other example: --user-pref=$HOME/myrps.pref
+    {
+      if (access(arg, R_OK))
+        rps_set_user_preferences(arg);
+      else
+        RPS_FATALOUT("missing user preferences file " << arg
+                     << ":" << strerror(errno));
+    }
+    return 0;
     case RPSPROGOPT_RUN_DELAY:
     {
       int pos= -1;
