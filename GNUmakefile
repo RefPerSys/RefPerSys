@@ -62,7 +62,7 @@ SYNC=/bin/sync
 ## a formatter to restrict width to 75 columns
 FMT=/usr/bin/fmt
 
-## a C++ indenter and its flags
+## a C and C++ indenter and its flags
 ASTYLE=/usr/bin/astyle
 ASTYLEFLAGS= --verbose --style=gnu  --indent=spaces=2  --convert-tabs
 
@@ -380,6 +380,8 @@ print-plugin-settings:
 	@printf "RPSPLUGIN_LDFLAGS='%s'\n"  "-rdynamic -pthread -L /usr/local/lib -L /usr/lib $(LIBES)"
 
 indent:
+	$(ASTYLE) $(ASTYLEFLAGS) do-configure-refpersys.c
+	$(ASTYLE) $(ASTYLEFLAGS) do-scan-pkgconfig.c
 	$(ASTYLE) $(ASTYLEFLAGS) refpersys.hh
 	$(ASTYLE) $(ASTYLEFLAGS) oid_rps.hh
 	$(ASTYLE) $(ASTYLEFLAGS) inline_rps.hh

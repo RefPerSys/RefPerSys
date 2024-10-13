@@ -94,21 +94,21 @@ usage (void)
 {
   puts ("# C++ scanning utility program for refpersys.org");
   printf ("%s usage:              #from [%s:%d]\n", prog_name,
-	  __FILE__, __LINE__ - 1);
+          __FILE__, __LINE__ - 1);
   puts ("\t --version             # show version");
   puts ("\t --help                # this help");
   puts ("\t --raw                 # generate the list of packages only\n"
-	"\t                       # one per line");
+        "\t                       # one per line");
   puts ("\t <C++-files>           # sequence of *.cc files to scan");
   puts ("# a file foo.cc is scanned for //!PKGCONFIG <package-name> lines");
   puts ("# a _foo_pkgconfig.mk textual file is generated for GNU make");
   puts ("# that file defines a foo_PKGCONFIG variable for GNU make");
   puts ("# GPLv3+ licensed, so no warranty");
   printf ("# scanning first %d lines in given files\n",
-	  MY_HEAD_LINES_THRESHOLD);
+          MY_HEAD_LINES_THRESHOLD);
   printf ("# lines of at most %d bytes\n", MY_LINE_MAXLEN);
   printf ("# at most %d packages per scanned source file\n", MY_MAX_PACKAGE);
-}				/* end usage */
+}       /* end usage */
 
 
 void
@@ -130,7 +130,7 @@ process_source_file (const char *origpath)
   if (strlen (origpath) >= MY_PATH_MAXLEN)
     {
       fprintf (stderr, "%s given too long path %s (max is %d) [%s:%d]\n",
-	       prog_name, origpath, MY_PATH_MAXLEN, __FILE__, __LINE__ - 2);
+               prog_name, origpath, MY_PATH_MAXLEN, __FILE__, __LINE__ - 2);
       fflush (NULL);
       exit (EXIT_FAILURE);
     };
@@ -139,12 +139,12 @@ process_source_file (const char *origpath)
   if (!f)
     {
       fprintf (stderr, "%s failed to open %s: %m [%s:%d]\n",
-	       prog_name, pathbuf, __FILE__, __LINE__ - 2);
+               prog_name, pathbuf, __FILE__, __LINE__ - 2);
       fflush (NULL);
       exit (EXIT_FAILURE);
     }
   noprintf ("# [%s:%d] reading pathbuf=%s git %s\n",
-	    __FILE__, __LINE__ - 1, pathbuf, GIT_ID);
+            __FILE__, __LINE__ - 1, pathbuf, GIT_ID);
   char *lastdot = strrchr (pathbuf, '.');
   char *lastslash = strrchr (pathbuf, '/');
   /// the asm volatile is to ease debugging and gdb breakpoints
@@ -153,106 +153,106 @@ process_source_file (const char *origpath)
     {
       strncpy (my_naked_basename, lastslash + 1, lastdot - lastslash - 1);
       noprintf ("# [%s:%d] pathbuf=%s lastdot=%s lastslash=%s nakedbase=%s\n",
-		__FILE__, __LINE__ - 1, pathbuf, lastdot, lastslash,
-		my_naked_basename);
+                __FILE__, __LINE__ - 1, pathbuf, lastdot, lastslash,
+                my_naked_basename);
     }
   else if (!lastslash && lastdot)
     {
       assert (lastdot > pathbuf && lastdot < pathbuf + MY_PATH_MAXLEN);
       strncpy (my_naked_basename, pathbuf, lastdot - pathbuf);
       noprintf ("# [%s:%d] pathbuf=%s NOlastslash lastdot=%s nakedbase=%s\n",
-		__FILE__, __LINE__ - 1, pathbuf, lastdot, my_naked_basename);
+                __FILE__, __LINE__ - 1, pathbuf, lastdot, my_naked_basename);
     };
   if (!my_naked_basename[0])
     {
       fprintf (stderr,
-	       "%s failed to compute naked basename for %s [%s:%d git %s]\n",
-	       prog_name, pathbuf, __FILE__, __LINE__ - 1, GIT_ID);
+               "%s failed to compute naked basename for %s [%s:%d git %s]\n",
+               prog_name, pathbuf, __FILE__, __LINE__ - 1, GIT_ID);
       exit (EXIT_FAILURE);
     };
   for (const char *pc = my_naked_basename; *pc; pc++)
     {
       if (!isalnum (*pc) && *pc != '_')
-	{
-	  fprintf (stderr,
-		   "%s for file %s has naked basename with invalid char %c\n",
-		   prog_name, pathbuf, *pc);
-	  fprintf (stderr,
-		   "the naked basename %s should be a valid C identifier\n",
-		   my_naked_basename);
-	  exit (EXIT_FAILURE);
-	}
+        {
+          fprintf (stderr,
+                   "%s for file %s has naked basename with invalid char %c\n",
+                   prog_name, pathbuf, *pc);
+          fprintf (stderr,
+                   "the naked basename %s should be a valid C identifier\n",
+                   my_naked_basename);
+          exit (EXIT_FAILURE);
+        }
     }
   int linenum = 0;
   do
     {
       memset (linebuf, 0, sizeof (linebuf));
       if (!fgets (linebuf, MY_LINE_MAXLEN, f))
-	break;
+        break;
       linenum++;
       if (linenum > MY_HEAD_LINES_THRESHOLD)
-	break;
+        break;
       if (linebuf[0] != '/' && linebuf[1] != '/')
-	continue;
+        continue;
       memset (pkgbuf, 0, sizeof (pkgbuf));
       assert (sizeof (pkgbuf) > 64);
       if (sscanf (linebuf, "//@@PKGCONFIG %64[A-Za-z.+0-9-]", pkgbuf) > 0
-	  && isalpha (pkgbuf[0]))
-	{
-	  assert (strlen (pkgbuf) < sizeof (pkgbuf) - 1);
-	  if (nbpkg > MY_MAX_PACKAGE)
-	    {
-	      fprintf (stderr,
-		       "%s: too many (%d) packages in source file %s [%s:%d git %s]\n",
-		       prog_name, nbpkg, pathbuf,
-		       __FILE__, __LINE__ - 2, GIT_ID);
-	      exit (EXIT_FAILURE);
-	    };
-	  char *pkgname = strdup (pkgbuf);
-	  if (!pkgname)
-	    {
-	      fprintf (stderr,
-		       "%s: failed to strdup %s (%m) [%s:%d git %s]\n",
-		       prog_name, pkgbuf, __FILE__, __LINE__ - 1, GIT_ID);
-	      exit (EXIT_FAILURE);
-	    };
-	  pkgarr[nbpkg++] = pkgname;
-	}
+          && isalpha (pkgbuf[0]))
+        {
+          assert (strlen (pkgbuf) < sizeof (pkgbuf) - 1);
+          if (nbpkg > MY_MAX_PACKAGE)
+            {
+              fprintf (stderr,
+                       "%s: too many (%d) packages in source file %s [%s:%d git %s]\n",
+                       prog_name, nbpkg, pathbuf,
+                       __FILE__, __LINE__ - 2, GIT_ID);
+              exit (EXIT_FAILURE);
+            };
+          char *pkgname = strdup (pkgbuf);
+          if (!pkgname)
+            {
+              fprintf (stderr,
+                       "%s: failed to strdup %s (%m) [%s:%d git %s]\n",
+                       prog_name, pkgbuf, __FILE__, __LINE__ - 1, GIT_ID);
+              exit (EXIT_FAILURE);
+            };
+          pkgarr[nbpkg++] = pkgname;
+        }
     }
   while (!feof (f));
   fclose (f);
   if (nbpkg == 0)
     {
       if (!my_raw_mode)
-	printf ("# source file %s without //@@PKGCONFIG comments\n", pathbuf);
+        printf ("# source file %s without //@@PKGCONFIG comments\n", pathbuf);
     }
   else
     {
       if (!my_raw_mode)
-	{
-	  printf ("# source file %s with %d //@@PKGCONFIG comment lines\n",
-		  pathbuf, nbpkg);
-	  printf ("PKGLIST_%s=", my_naked_basename);
-	  for (int i = 0; i < nbpkg; i++)
-	    {
-	      if (i > 0)
-		putchar (' ');
-	      fputs (pkgarr[i], stdout);
-	    }
-	  putchar ('\n');
-	};
+        {
+          printf ("# source file %s with %d //@@PKGCONFIG comment lines\n",
+                  pathbuf, nbpkg);
+          printf ("PKGLIST_%s=", my_naked_basename);
+          for (int i = 0; i < nbpkg; i++)
+            {
+              if (i > 0)
+                putchar (' ');
+              fputs (pkgarr[i], stdout);
+            }
+          putchar ('\n');
+        };
       for (int i = 0; i < nbpkg; i++)
-	{
-	  if (my_raw_mode)
-	    printf ("%s\n", pkgarr[i]);
-	  else
-	    printf ("PACKAGES_LIST += %s\n", pkgarr[i]);
-	}
+        {
+          if (my_raw_mode)
+            printf ("%s\n", pkgarr[i]);
+          else
+            printf ("PACKAGES_LIST += %s\n", pkgarr[i]);
+        }
       putchar ('\n');
       putchar ('\n');
     };
   fflush (NULL);
-}				/* end process_source_file */
+}       /* end process_source_file */
 
 int
 main (int argc, char **argv)
@@ -266,7 +266,7 @@ main (int argc, char **argv)
   if (argc >= 2 && !strcmp (argv[1], "--version"))
     {
       printf ("%s version gitid %s built on %s:%s\n",
-	      prog_name, GIT_ID, __DATE__, __TIME__);
+              prog_name, GIT_ID, __DATE__, __TIME__);
       return 0;
     };
   if (argc >= 2 && !strcmp (argv[1], "--raw"))
@@ -275,14 +275,14 @@ main (int argc, char **argv)
   if (!getcwd (my_cwd_buf, sizeof (my_cwd_buf)))
     {
       fprintf (stderr, "%s failed to getcwd (%m) [%s:%d]\n",
-	       prog_name, __FILE__, __LINE__ - 1);
+               prog_name, __FILE__, __LINE__ - 1);
       exit (EXIT_FAILURE);
     };
   memset (my_host_name, 0, sizeof (my_host_name));
   if (gethostname (my_host_name, sizeof (my_host_name) - 1))
     {
       fprintf (stderr, "%s failed to gethostname (%m) [%s:%d]\n",
-	       prog_name, __FILE__, __LINE__ - 1);
+               prog_name, __FILE__, __LINE__ - 1);
       exit (EXIT_FAILURE);
     };
   assert (sizeof (my_cwd_buf) == MY_PATH_MAXLEN);
@@ -290,39 +290,39 @@ main (int argc, char **argv)
     {
       my_cwd_buf[MY_PATH_MAXLEN - 1] = (char) 0;
       fprintf (stderr,
-	       "%s failed too long current working directory %s [%s:%d]\n",
-	       prog_name, my_cwd_buf, __FILE__, __LINE__ - 1);
+               "%s failed too long current working directory %s [%s:%d]\n",
+               prog_name, my_cwd_buf, __FILE__, __LINE__ - 1);
       exit (EXIT_FAILURE);
     };
   if (argc > MAX_PROG_ARGS)
     {
       fprintf (stderr,
-	       "%s (from C file %s) limits MAX_PROG_ARGS to %d\n"
-	       "... but %d are given! Edit it and recompile!\n", argv[0],
-	       __FILE__, MAX_PROG_ARGS, argc);
+               "%s (from C file %s) limits MAX_PROG_ARGS to %d\n"
+               "... but %d are given! Edit it and recompile!\n", argv[0],
+               __FILE__, MAX_PROG_ARGS, argc);
       exit (EXIT_FAILURE);
     };
   if (!my_raw_mode)
     {
       printf ("# generated by %s on %s from %d files git %s [%s:%d]\n",
-	      prog_name, my_host_name, argc - 1, GIT_ID, __FILE__,
-	      __LINE__ - 2);
+              prog_name, my_host_name, argc - 1, GIT_ID, __FILE__,
+              __LINE__ - 2);
       {
-	time_t nowt = 0;
-	time (&nowt);
-	char timbuf[MY_HEAD_LINES_THRESHOLD];
-	memset (timbuf, 0, sizeof (timbuf));
-	strftime (timbuf, sizeof (timbuf), "%Y-%b-%d %H:%M:%S %Z",
-		  localtime (&nowt));
-	printf ("# generated at %s\n", timbuf);
-	printf ("PACKAGES_LIST=\n");
+        time_t nowt = 0;
+        time (&nowt);
+        char timbuf[MY_HEAD_LINES_THRESHOLD];
+        memset (timbuf, 0, sizeof (timbuf));
+        strftime (timbuf, sizeof (timbuf), "%Y-%b-%d %H:%M:%S %Z",
+                  localtime (&nowt));
+        printf ("# generated at %s\n", timbuf);
+        printf ("PACKAGES_LIST=\n");
       }
     };
   for (int i = (my_raw_mode?2:1); i < argc; i++)
     process_source_file (argv[i]);
   fflush (NULL);
   return 0;
-}				/* end function main */
+}       /* end function main */
 
 
 /// end of file do-scan-pkgconfig.c
