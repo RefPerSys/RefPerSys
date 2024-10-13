@@ -144,7 +144,7 @@ do-configure-refpersys: do-configure-refpersys.c |GNUmakefile do-generate-gitid.
               -DOPERSYS=\"$(RPS_OPERSYS)\" \
               -DARCH=\"$(RPS_ARCH)\" \
               -DHOST=\"$(RPS_HOST)\" \
-              $(CFLAGS) $^ -o $@ -lreadline
+              $(CFLAGS) $^ -o $@ -lreadline -lncurses
 ## if GNU readline library is unavailable add -DWITHOUT_READLINE above
 ## and remove the -lreadline above
 

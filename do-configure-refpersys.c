@@ -317,6 +317,76 @@ return res;
 #endif // WITHOUT_READLINE
 }       // end my_readline
 
+char *
+my_defaulted_readline (const char *prompt, const char*defstr)
+{
+  bool again = false;
+  int deflen = defstr?strlen(defstr):0;
+#ifndef WITHOUT_READLINE
+  if (deflen)
+    {
+      rl_extend_line_buffer (((10+deflen)|0xf)+1);
+      rl_replace_line(defstr,  /*clear_undo:*/1);
+    };
+  do
+    {
+      again = false;
+      char *lin = readline (prompt);
+      if (lin && isspace (lin[strlen (lin) - 1]))
+        lin[strlen (lin) - 1] = (char) 0;
+      if (lin && lin[0] == '!')
+        {
+          printf ("*running %s\n", lin + 1);
+          fflush (NULL);
+          int cod = system (lin + 1);
+          fflush (NULL);
+          if (cod)
+            printf ("*failed to run %s -> %d\n", lin + 1, cod);
+          again = true;
+          continue;
+        }
+      return lin;
+    }
+  while (again);
+  return NULL;
+#else
+  do
+    {
+      char linebuf[512];
+      memset (linebuf, 0, linebuf);
+      again = false;
+      puts (prompt);
+      fflush (stdout);
+      char *p = fgets (linebuf, sizeof (linebuf), stdin);
+      if (!p)
+        return NULL;
+      linebuf[sizeof (linebuf) - 1] = (char) 0;
+      if (isspace (p[strlen (p) - 1]))
+        p[strlen (p) - 1] = (char) 0;
+      if (linbuf[0] == '!')
+        {
+          printf ("*running %s\n", linbuf + 1);
+          fflush (nullptr);
+          int cod = system (linbuf + 1);
+          fflush (nullptr);
+          if (cod)
+            printf ("*failed to run %s -> %d\n", linbuf + 1, cod);
+          again = true;
+          continue;
+        }
+      char *res = strdup (linebuf);
+      if (!res)
+        {
+          perror ("my_readline");
+          failed = true;
+          exit (EXIT_FAILURE);
+        };
+    }
+  while again;
+return res;
+#endif // WITHOUT_READLINE
+}       // end my_readline
+
 void
 should_remove_file (const char *path, int lineno)
 {
@@ -1027,6 +1097,7 @@ main (int argc, char **argv)
   prog_name = argv[0];
 #ifndef WITHOUT_READLINE
   rl_readline_name = argv[0];
+  rl_initialize ();
 #endif //WITHOUT_READLINE
   if (argc == 2 && !strcmp (argv[1], "--help"))
     {
@@ -1148,7 +1219,13 @@ main (int argc, char **argv)
     };
   char *cc = getenv ("CC");
   if (!cc)
-    cc = my_readline ("C compiler, preferably gcc:");
+    {
+      if (!access("/usr/bin/gcc", F_OK))
+        cc = my_defaulted_readline("C compiler, preferably gcc:",
+                                   "/usr/bin/gcc");
+      else
+        cc = my_readline ("C compiler, preferably gcc:");
+    };
   if (!cc)
     cc = "/usr/bin/gcc";
 
@@ -1157,7 +1234,13 @@ main (int argc, char **argv)
 
   char *cxx = getenv ("CXX");
   if (!cxx)
-    cxx = my_readline ("C++ compiler:");
+    {
+      if (!access("/usr/bin/g++", F_OK))
+        cc = my_defaulted_readline("C++ compiler, preferably g++:",
+                                   "/usr/bin/g++");
+      else
+        cxx = my_readline ("C++ compiler:");
+    };
   try_then_set_cxx_compiler (cxx);
   builder_person =
     my_readline ("person building RefPerSys (eg Alan TURING):");
