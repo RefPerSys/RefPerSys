@@ -612,6 +612,7 @@ test_cxx_compiler (const char *cxx)
 void
 try_then_set_cxx_compiler (const char *cxx)
 {
+  assert(cxx != NULL);
   if (cxx[0] != '/')
     {
       fprintf (stderr,
@@ -1236,8 +1237,8 @@ main (int argc, char **argv)
   if (!cxx)
     {
       if (!access("/usr/bin/g++", F_OK))
-        cc = my_defaulted_readline("C++ compiler, preferably g++:",
-                                   "/usr/bin/g++");
+        cxx = my_defaulted_readline("C++ compiler, preferably g++:",
+				    "/usr/bin/g++");
       else
         cxx = my_readline ("C++ compiler:");
     };
