@@ -150,9 +150,9 @@ void emit_configure_refpersys_mk (void);
 
 /* see gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html */
 #ifdef __GNUC__
-# define RPS_CONF_ATTR_PRINTF(x, y) __attribute__((format(printf, 3, 4)))
+#define RPS_CONF_ATTR_PRINTF(x, y) __attribute__((format(printf, 3, 4)))
 #else
-# define RPS_CONF_ATTR_PRINTF(x, y)
+#define RPS_CONF_ATTR_PRINTF(x, y)
 #endif
 
 static void
@@ -317,17 +317,30 @@ return res;
 #endif // WITHOUT_READLINE
 }       // end my_readline
 
+static const char *my_readline_default_buffer;
+
+int
+my_readline_startup_hook (void)
+{
+  int res = 0;
+  if (my_readline_default_buffer)
+    res = rl_insert_text (my_readline_default_buffer);
+  return res;
+}       /* end my_readline_startup_hook */
+
 char *
-my_defaulted_readline (const char *prompt, const char*defstr)
+my_defaulted_readline (const char *prompt, const char *defstr)
 {
   bool again = false;
-  int deflen = defstr?strlen(defstr):0;
+  int deflen = defstr ? strlen (defstr) : 0;
 #ifndef WITHOUT_READLINE
+  /// lists.gnu.org/archive/html/bug-readline/2024-10/msg00001.html
   if (deflen)
     {
-      rl_extend_line_buffer (((10+deflen)|0xf)+1);
-      rl_replace_line(defstr,  /*clear_undo:*/1);
-    };
+      my_readline_default_buffer = defstr;
+    }
+  else
+    my_readline_default_buffer = NULL;
   do
     {
       again = false;
@@ -348,6 +361,7 @@ my_defaulted_readline (const char *prompt, const char*defstr)
       return lin;
     }
   while (again);
+  rl_startup_hook = NULL;
   return NULL;
 #else
   do
@@ -612,7 +626,7 @@ test_cxx_compiler (const char *cxx)
 void
 try_then_set_cxx_compiler (const char *cxx)
 {
-  assert(cxx != NULL);
+  assert (cxx != NULL);
   if (cxx[0] != '/')
     {
       fprintf (stderr,
@@ -869,7 +883,7 @@ emit_configure_refpersys_mk (void)
             fputc (' ', f);
           fputs (compiler_args[i], f);
         };
-      fprintf(f, "$(REFPERSYS_LTO)");
+      fprintf (f, "$(REFPERSYS_LTO)");
     }
   else
     {
@@ -905,15 +919,14 @@ emit_configure_refpersys_mk (void)
             fputc (' ', f);
           fputs (linker_args[i], f);
         };
-      fputs( " $(REFPERSYS_LTO)", f);
+      fputs (" $(REFPERSYS_LTO)", f);
     }
   else
     {
       fprintf (f, "# default linker flags for RefPerSys [%s:%d]:\n",
                __FILE__, __LINE__ - 1);
-      fputs("REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl"
-            " $(REFPERSYS_LTO)\n",
-            f);
+      fputs ("REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl"
+             " $(REFPERSYS_LTO)\n", f);
     }
   //// emit the generic preprocessor
   fprintf (f,
@@ -954,9 +967,10 @@ emit_configure_refpersys_mk (void)
   if (link (tmp_conf, "_config-refpersys.mk"))
     {
       int lnkerrno = errno;
-      fprintf(stderr, "%s failed to link %s to _config-refpersys.mk: %s (git %s)\n",
-              prog_name, tmp_conf, strerror(lnkerrno), rps_conf_gitid);
-      fflush(stderr);
+      fprintf (stderr,
+               "%s failed to link %s to _config-refpersys.mk: %s (git %s)\n",
+               prog_name, tmp_conf, strerror (lnkerrno), rps_conf_gitid);
+      fflush (stderr);
       if (lnkerrno == EXDEV)  /// Invalid cross-device link
         {
           /// if tmp_conf and _config-refpersys.mk are on different
@@ -986,37 +1000,37 @@ emit_configure_refpersys_mk (void)
               failed = true;
               exit (EXIT_FAILURE);
             };
-          while (!feof(fsrctmpconf))
+          while (!feof (fsrctmpconf))
             {
-              memset (cbuf, 0, sizeof(cbuf));
-              size_t nbrd = fread(cbuf, MY_BUFFER_SIZE, 1, fsrctmpconf);
-              if (nbrd==0)
+              memset (cbuf, 0, sizeof (cbuf));
+              size_t nbrd = fread (cbuf, MY_BUFFER_SIZE, 1, fsrctmpconf);
+              if (nbrd == 0)
                 {
-                  if (feof(fsrctmpconf))
+                  if (feof (fsrctmpconf))
                     break;
                   fprintf (stderr,
                            "%s failed to fread %s  (%s, %s:%d, git " GIT_ID
-                           ")\n", prog_name, tmp_conf, strerror (errno), __FILE__,
-                           __LINE__);
+                           ")\n", prog_name, tmp_conf, strerror (errno),
+                           __FILE__, __LINE__);
                   failed = true;
                   exit (EXIT_FAILURE);
                 };
-              if (fputs(cbuf, fdstconf)<0)
+              if (fputs (cbuf, fdstconf) < 0)
                 {
                   fprintf (stderr,
-                           "%s failed to fputs to _config-refpersys.mk in %s  (%s, %s:%d, git " GIT_ID
-                           ")\n", prog_name, my_cwd_buf, strerror (errno),
-                           __FILE__, __LINE__-3);
+                           "%s failed to fputs to _config-refpersys.mk in %s  (%s, %s:%d, git "
+                           GIT_ID ")\n", prog_name, my_cwd_buf,
+                           strerror (errno), __FILE__, __LINE__ - 3);
                   failed = true;
                   exit (EXIT_FAILURE);
                 };
-            }; /// end while !feof fsrctmpconf
-          if (fclose(fdstconf))
+            };      /// end while !feof fsrctmpconf
+          if (fclose (fdstconf))
             {
               fprintf (stderr,
-                       "%s failed to fclose _config-refpersys.mk in  %s  (%s, %s:%d, git " GIT_ID
-                       ")\n", prog_name, my_cwd_buf, strerror (errno), __FILE__,
-                       __LINE__);
+                       "%s failed to fclose _config-refpersys.mk in  %s  (%s, %s:%d, git "
+                       GIT_ID ")\n", prog_name, my_cwd_buf, strerror (errno),
+                       __FILE__, __LINE__);
               failed = true;
               exit (EXIT_FAILURE);
             }
@@ -1113,10 +1127,9 @@ main (int argc, char **argv)
       printf ("\t not using GNU readline\n");
 #else
       printf ("\t using GNU readline %d.%d\n",
-              (rl_readline_version)>>8,
-              (rl_readline_version)&0xff);
+              (rl_readline_version) >> 8, (rl_readline_version) & 0xff);
 #endif
-      fflush(NULL);
+      fflush (NULL);
     };
   memset (my_cwd_buf, 0, sizeof (my_cwd_buf));
   if (!getcwd (my_cwd_buf, sizeof (my_cwd_buf)))
@@ -1145,20 +1158,24 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     };
   atexit (remove_files);
-  printf ("%s: configurator program for RefPerSys inference engine\n",  prog_name);
-  printf ("%s: [FRENCH] programme de configuration du moteur d'inférences RefPerSys\n",
+  printf ("%s: configurator program for RefPerSys inference engine\n",
           prog_name);
+  printf
+  ("%s: [FRENCH] programme de configuration du moteur d'inférences RefPerSys\n",
+   prog_name);
   printf ("\t cf refpersys.org & github.com/RefPerSys/RefPerSys\n");
   printf ("\t   REFlexive PERsistent SYStem\n");
-  printf ("\t Contact: Basile STARYNKEVITCH, 8 rue de la Faïencerie, 92340 Bourg-la-Reine\n");
-  fflush(NULL);
+  printf
+  ("\t Contact: Basile STARYNKEVITCH, 8 rue de la Faïencerie, 92340 Bourg-la-Reine\n");
+  fflush (NULL);
   printf ("%s: when asked for a file path, you can run a shell command ...\n"
           "... if your input starts with an exclamation point\n", prog_name);
-  printf ("\t When asked for file paths, you are expected to enter an absolute one,\n"
-          "\t for example /etc/passwd\n"
-          "\t if you enter something starting with ! it is a shell command\n"
-          "\t which is run and the question is repeated.\n");
-  fflush(NULL);
+  printf
+  ("\t When asked for file paths, you are expected to enter an absolute one,\n"
+   "\t for example /etc/passwd\n"
+   "\t if you enter something starting with ! it is a shell command\n"
+   "\t which is run and the question is repeated.\n");
+  fflush (NULL);
   if (argc > MAX_PROG_ARGS)
     {
       fprintf (stderr,
@@ -1168,8 +1185,8 @@ main (int argc, char **argv)
       failed = true;
       exit (EXIT_FAILURE);
     };
-  if (!access("_config-refpersys.mk", F_OK))
-    rename("_config-refpersys.mk", "_config-refpersys.mk~");
+  if (!access ("_config-refpersys.mk", F_OK))
+    rename ("_config-refpersys.mk", "_config-refpersys.mk~");
   /// Any program argument like VAR=something is putenv-ed. And
   /// program arguments like -I... -D... -U... are passed to
   /// preprocessor. Those like -O... -g... -W... to
@@ -1221,9 +1238,9 @@ main (int argc, char **argv)
   char *cc = getenv ("CC");
   if (!cc)
     {
-      if (!access("/usr/bin/gcc", F_OK))
-        cc = my_defaulted_readline("C compiler, preferably gcc:",
-                                   "/usr/bin/gcc");
+      if (!access ("/usr/bin/gcc", F_OK))
+        cc = my_defaulted_readline ("C compiler, preferably gcc:",
+                                    "/usr/bin/gcc");
       else
         cc = my_readline ("C compiler, preferably gcc:");
     };
@@ -1236,9 +1253,9 @@ main (int argc, char **argv)
   char *cxx = getenv ("CXX");
   if (!cxx)
     {
-      if (!access("/usr/bin/g++", F_OK))
-        cxx = my_defaulted_readline("C++ compiler, preferably g++:",
-				    "/usr/bin/g++");
+      if (!access ("/usr/bin/g++", F_OK))
+        cxx = my_defaulted_readline ("C++ compiler, preferably g++:",
+                                     "/usr/bin/g++");
       else
         cxx = my_readline ("C++ compiler:");
     };
