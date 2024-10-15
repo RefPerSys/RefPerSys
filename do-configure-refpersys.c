@@ -129,10 +129,10 @@ const char *rpsconf_fltk_config;
 
 
 /* absolute path to Miller&Auroux Generic preprocessor */
-const char *gpp;
+const char *rpsconf_gpp;
 
 /* absolute path to ninja builder (see ninja-build.org) */
-const char *ninja_builder;
+const char *rpsconf_ninja_builder;
 
 #ifndef MAX_REMOVED_FILES
 #define MAX_REMOVED_FILES 4096
@@ -948,10 +948,10 @@ rpsconf_emit_configure_refpersys_mk (void)
   fprintf (f,
 	   "\n\n"
 	   "# the Generic Preprocessor for RefPerSys (see logological.org/gpp):\n");
-  fprintf (f, "REFPERSYS_GPP=%s\n", realpath (gpp, NULL));
+  fprintf (f, "REFPERSYS_GPP=%s\n", realpath (rpsconf_gpp, NULL));
   /// emit the ninja builder
   fprintf (f, "\n\n" "# ninja builder from ninja-build.org\n");
-  fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (ninja_builder, NULL));
+  fprintf (f, "REFPERSYS_NINJA=%s\n", realpath (rpsconf_ninja_builder, NULL));
   fprintf (f, "# generated from %s:%d git %s\n\n", __FILE__, __LINE__,
 	   rpsconf_gitid);
   fflush (f);
@@ -1324,33 +1324,33 @@ main (int argc, char **argv)
 	}
     }
   errno = 0;
-  gpp = getenv ("GPP");
-  if (!gpp)
+  rpsconf_gpp = getenv ("GPP");
+  if (!rpsconf_gpp)
     {
       puts
 	("Generic Preprocessor (by Tristan Miller and Denis Auroux, see logological.org/gpp ...)");
-      gpp = rpsconf_readline ("Generic Preprocessor full path:");
-      if (access (gpp, X_OK))
+      rpsconf_gpp = rpsconf_readline ("Generic Preprocessor full path:");
+      if (access (rpsconf_gpp, X_OK))
 	{
 	  fprintf (stderr,
 		   "%s bad Generic Preprocessor %s (%s) [%s:%d]\n",
-		   rpsconf_prog_name, gpp ? gpp : "???", strerror (errno),
+		   rpsconf_prog_name, rpsconf_gpp ? rpsconf_gpp : "???", strerror (errno),
 		   __FILE__, __LINE__ - 3);
 	  rpsconf_failed = true;
 	  exit (EXIT_FAILURE);
 	}
     };
-  assert (gpp != NULL);
+  assert (rpsconf_gpp != NULL);
 
-  ninja_builder = getenv ("NINJA");
-  if (!ninja_builder)
+  rpsconf_ninja_builder = getenv ("NINJA");
+  if (!rpsconf_ninja_builder)
     {
-      ninja_builder = rpsconf_readline ("ninja builder:");
-      if (access (ninja_builder, X_OK))
+      rpsconf_ninja_builder = rpsconf_readline ("ninja builder:");
+      if (access (rpsconf_ninja_builder, X_OK))
 	{
 	  fprintf (stderr,
 		   "%s bad ninja builder %s (%s) [%s:%d]\n",
-		   rpsconf_prog_name, ninja_builder ? ninja_builder : "???",
+		   rpsconf_prog_name, rpsconf_ninja_builder ? rpsconf_ninja_builder : "???",
 		   strerror (errno), __FILE__, __LINE__ - 3);
 	  rpsconf_failed = true;
 	  exit (EXIT_FAILURE);
