@@ -140,13 +140,15 @@ config: do-configure-refpersys do-scan-pkgconfig GNUmakefile
 	$(MAKE) _scanned-pkgconfig.mk
 
 do-configure-refpersys: do-configure-refpersys.c |GNUmakefile do-generate-gitid.sh
-	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
-              -DOPERSYS=\"$(RPS_OPERSYS)\" \
-              -DARCH=\"$(RPS_ARCH)\" \
-              -DHOST=\"$(RPS_HOST)\" \
+	$(CC) -Wall -Wextra -DRPSCONF_GIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \
+              -DRPSCONF_OPERSYS=\"$(RPS_OPERSYS)\" \
+              -DRPSCONF_ARCH=\"$(RPS_ARCH)\" \
+              -DRPSCONF_HOST=\"$(RPS_HOST)\" \
               $(CFLAGS) $^ -o $@ -lreadline -lncurses
-## if GNU readline library is unavailable add -DWITHOUT_READLINE above
-## and remove the -lreadline above
+## if GNU readline library is unavailable add
+## -DRPSCONF_WITHOUT_READLINE above and remove the -lreadline above
+## if GNU ncurses library is unavailable add
+## -DRPSCONF_WITHOUT_NCURSES above and remove the -lncurses above
 
 do-scan-pkgconfig: do-scan-pkgconfig.c |GNUmakefile do-generate-gitid.sh
 	$(CC) -Wall -Wextra -DGIT_ID=\"$(shell ./do-generate-gitid.sh -s)\" \

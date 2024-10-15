@@ -115,17 +115,17 @@ char *rpsconf_linker_args[RPSCONF_MAX_PROG_ARGS];
 int rpsconf_linker_argcount;
 
 /* absolute path to C and C++ compiler */
-const char *c_compiler;
-const char *cpp_compiler;
+const char *rpsconf_c_compiler;
+const char *rpsconf_cpp_compiler;
 
 /* strdup-ed string of the person building RefPerSys (or null): */
-const char *builder_person;
+const char *rpsconf_builder_person;
 
 /* strdup-ed string of the email of the person building RefPerSys (or null): */
-const char *builder_email;
+const char *rpsconf_builder_email;
 
 /* absolute path to fltk-config utility */
-const char *fltk_config;
+const char *rpsconf_fltk_config;
 
 
 /* absolute path to Miller&Auroux Generic preprocessor */
@@ -142,18 +142,18 @@ const char *ninja_builder;
 #define RPSCONF_BUFFER_SIZE 1024
 #endif /*RPSCONF_BUFFER_SIZE */
 
-const char *files_to_remove_at_exit[MAX_REMOVED_FILES];
+const char *rpsconf_files_to_remove_at_exit[MAX_REMOVED_FILES];
 int removedfiles_count;
 
 /// return a malloced path to a temporary textual file inside /tmp
-char *temporary_textual_file (const char *prefix, const char *suffix,
+char *rpsconf_temporary_textual_file (const char *prefix, const char *suffix,
 			      int lineno);
 /// return a malloced path to a temporary binary file in the current directory
 char *temporary_binary_file (const char *prefix, const char *suffix,
 			     int lineno);
 
 /// emit the configure-refperys.mk file to be included in GNUmakefile
-void emit_configure_refpersys_mk (void);
+void rpsconf_emit_configure_refpersys_mk (void);
 
 /* see gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html */
 #ifdef __GNUC__
@@ -179,7 +179,7 @@ rpsconf_diag__ (const char *, int, const char *, ...);
 
 
 /// return a malloced path to a temporary textual file
-     char *temporary_textual_file (const char *prefix, const char *suffix,
+char *rpsconf_temporary_textual_file (const char *prefix, const char *suffix,
 				   int lineno)
 {
   char buf[256];
@@ -217,7 +217,7 @@ rpsconf_diag__ (const char *, int, const char *, ...);
   printf ("%s temporary textual file is %s [%s:%d]\n",
 	  rpsconf_prog_name, res, __FILE__, lineno);
   return res;
-}				/* end temporary_textual_file */
+}				/* end rpsconf_temporary_textual_file */
 
 /// return a malloced path to a temporary binary file in the current directory
 char *
@@ -261,7 +261,7 @@ temporary_binary_file (const char *prefix, const char *suffix, int lineno)
 }				/* end temporary_binary_file */
 
 char *
-my_readline (const char *prompt)
+rpsconf_readline (const char *prompt)
 {
   bool again = false;
 #ifndef RPSCONF_WITHOUT_READLINE
@@ -314,7 +314,7 @@ my_readline (const char *prompt)
       char *res = strdup (linebuf);
       if (!res)
 	{
-	  perror ("my_readline");
+	  perror ("rpsconf_readline");
 	  rpsconf_failed = true;
 	  exit (EXIT_FAILURE);
 	};
@@ -322,21 +322,21 @@ my_readline (const char *prompt)
   while again;
   return res;
 #endif // RPSCONF_WITHOUT_READLINE
-}				// end my_readline
+}				// end rpsconf_readline
 
-static const char *my_readline_default_buffer;
+static const char *rpsconf_readline_default_buffer;
 
 int
-my_readline_startup_hook (void)
+rpsconf_readline_startup_hook (void)
 {
   int res = 0;
-  if (my_readline_default_buffer)
-    res = rl_insert_text (my_readline_default_buffer);
+  if (rpsconf_readline_default_buffer)
+    res = rl_insert_text (rpsconf_readline_default_buffer);
   return res;
-}				/* end my_readline_startup_hook */
+}				/* end rpsconf_readline_startup_hook */
 
 char *
-my_defaulted_readline (const char *prompt, const char *defstr)
+rpsconf_defaulted_readline (const char *prompt, const char *defstr)
 {
   bool again = false;
   int deflen = defstr ? strlen (defstr) : 0;
@@ -344,10 +344,10 @@ my_defaulted_readline (const char *prompt, const char *defstr)
   /// lists.gnu.org/archive/html/bug-readline/2024-10/msg00001.html
   if (deflen)
     {
-      my_readline_default_buffer = defstr;
+      rpsconf_readline_default_buffer = defstr;
     }
   else
-    my_readline_default_buffer = NULL;
+    rpsconf_readline_default_buffer = NULL;
   do
     {
       again = false;
@@ -398,7 +398,7 @@ my_defaulted_readline (const char *prompt, const char *defstr)
       char *res = strdup (linebuf);
       if (!res)
 	{
-	  perror ("my_readline");
+	  perror ("rpsconf_readline");
 	  rpsconf_failed = true;
 	  exit (EXIT_FAILURE);
 	};
@@ -406,7 +406,7 @@ my_defaulted_readline (const char *prompt, const char *defstr)
   while again;
   return res;
 #endif // RPSCONF_WITHOUT_READLINE
-}				// end my_readline
+}				// end rpsconf_readline
 
 void
 should_remove_file (const char *path, int lineno)
@@ -421,7 +421,7 @@ should_remove_file (const char *path, int lineno)
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
-  files_to_remove_at_exit[removedfiles_count++] = path;
+  rpsconf_files_to_remove_at_exit[removedfiles_count++] = path;
 }				/* end should_remove_file */
 
 
@@ -437,8 +437,8 @@ test_cxx_compiler (const char *cxx)
   char showvectobj[128];
   char maincxxobj[128];
   errno = 0;
-  showvectsrc = temporary_textual_file ("tmp_showvect", ".cxx", __LINE__);
-  maincxxsrc = temporary_textual_file ("tmp_maincxx", ".cxx", __LINE__);
+  showvectsrc = rpsconf_temporary_textual_file ("tmp_showvect", ".cxx", __LINE__);
+  maincxxsrc = rpsconf_temporary_textual_file ("tmp_maincxx", ".cxx", __LINE__);
   errno = 0;
   /// write the show vector C++ file
   {
@@ -652,7 +652,7 @@ try_then_set_cxx_compiler (const char *cxx)
       exit (EXIT_FAILURE);
     }
   test_cxx_compiler (cxx);
-  cpp_compiler = cxx;
+  rpsconf_cpp_compiler = cxx;
 }				/* end try_then_set_cxx_compiler */
 
 
@@ -748,7 +748,7 @@ try_then_set_fltkconfig (const char *fc)
   fflush (NULL);
   pipf = NULL;
   const char *tmp_testfltk_src
-    = temporary_textual_file ("tmp_test_fltk", ".cc", __LINE__);
+    = rpsconf_temporary_textual_file ("tmp_test_fltk", ".cc", __LINE__);
   FILE *fltksrc = fopen (tmp_testfltk_src, "w");
   if (!fltksrc)
     {
@@ -795,9 +795,9 @@ try_then_set_fltkconfig (const char *fc)
     temporary_binary_file ("./tmp_fltkprog", ".bin", __LINE__);
   memset (cmdbuf, 0, sizeof (cmdbuf));
   snprintf (cmdbuf, sizeof (cmdbuf), "%s -g -O %s %s %s -o %s",
-	    cpp_compiler, fcflags, tmp_testfltk_src, fldflags, tmp_fltk_exe);
+	    rpsconf_cpp_compiler, fcflags, tmp_testfltk_src, fldflags, tmp_fltk_exe);
   printf ("%s build test FLTK executable %s from %s with %s\n",
-	  rpsconf_prog_name, tmp_fltk_exe, tmp_testfltk_src, cpp_compiler);
+	  rpsconf_prog_name, tmp_fltk_exe, tmp_testfltk_src, rpsconf_cpp_compiler);
   fflush (NULL);
   if (system (cmdbuf) > 0)
     {
@@ -830,7 +830,7 @@ rpsconf_remove_files (void)
       printf ("%s: removing %d files at exit [%s:%d]\n",
 	      rpsconf_prog_name, removedfiles_count, __FILE__, __LINE__);
       for (int i = 0; i < removedfiles_count; i++)
-	unlink (files_to_remove_at_exit[i]);
+	unlink (rpsconf_files_to_remove_at_exit[i]);
     }
 }				/* end rpsconf_remove_files */
 
@@ -838,10 +838,10 @@ rpsconf_remove_files (void)
 
 
 void
-emit_configure_refpersys_mk (void)
+rpsconf_emit_configure_refpersys_mk (void)
 {
   const char *tmp_conf
-    = temporary_textual_file ("tmp_config_refpersys", ".mk", __LINE__);
+    = rpsconf_temporary_textual_file ("tmp_config_refpersys", ".mk", __LINE__);
   FILE *f = fopen (tmp_conf, "w");
   if (!f)
     {
@@ -863,10 +863,10 @@ emit_configure_refpersys_mk (void)
   fprintf (f, "REFPERSYS_CONFIGURED_GITID=%s\n\n", RPSCONF_GIT_ID);
   //// emit C compiler
   fprintf (f, "\n\n" "# the C compiler for RefPerSys:\n");
-  fprintf (f, "REFPERSYS_CC=%s\n", c_compiler);
+  fprintf (f, "REFPERSYS_CC=%s\n", rpsconf_c_compiler);
   //// emit C++ compiler
   fprintf (f, "\n\n" "# the C++ compiler for RefPerSys:\n");
-  fprintf (f, "REFPERSYS_CXX=%s\n", cpp_compiler);
+  fprintf (f, "REFPERSYS_CXX=%s\n", rpsconf_cpp_compiler);
   //// emit preprocessor flags
   if (rpsconf_preprocessor_argcount)
     {
@@ -955,20 +955,20 @@ emit_configure_refpersys_mk (void)
   fprintf (f, "# generated from %s:%d git %s\n\n", __FILE__, __LINE__,
 	   rpsconf_gitid);
   fflush (f);
-  if (builder_person)
+  if (rpsconf_builder_person)
     {
       fprintf (f, "## refpersys builder person and perhaps email\n");
-      fprintf (f, "REFPERSYS_BUILDER_PERSON='%s'\n", builder_person);
-      if (builder_email)
+      fprintf (f, "REFPERSYS_BUILDER_PERSON='%s'\n", rpsconf_builder_person);
+      if (rpsconf_builder_email)
 	{
-	  fprintf (f, "REFPERSYS_BUILDER_EMAIL='%s'\n", builder_email);
+	  fprintf (f, "REFPERSYS_BUILDER_EMAIL='%s'\n", rpsconf_builder_email);
 	}
     }
   //// emit the FLTK configurator
-  if (fltk_config)
+  if (rpsconf_fltk_config)
     {
       fprintf (f, "\n# FLTK (see fltk.org) configurator\n");
-      fprintf (f, "REFPERSYS_FLTKCONFIG=%s\n", fltk_config);
+      fprintf (f, "REFPERSYS_FLTKCONFIG=%s\n", rpsconf_fltk_config);
     }
   ////
   fprintf (f, "\n### machine architecture\n");
@@ -1083,7 +1083,7 @@ emit_configure_refpersys_mk (void)
       }
     sync ();
   }
-}				/* end emit_configure_refpersys_mk */
+}				/* end rpsconf_emit_configure_refpersys_mk */
 
 
 void
@@ -1263,10 +1263,10 @@ main (int argc, char **argv)
   if (!cc)
     {
       if (!access ("/usr/bin/gcc", F_OK))
-	cc = my_defaulted_readline ("C compiler, preferably gcc:",
+	cc = rpsconf_defaulted_readline ("C compiler, preferably gcc:",
 				    "/usr/bin/gcc");
       else
-	cc = my_readline ("C compiler, preferably gcc:");
+	cc = rpsconf_readline ("C compiler, preferably gcc:");
     };
   if (!cc)
     cc = "/usr/bin/gcc";
@@ -1278,27 +1278,27 @@ main (int argc, char **argv)
   if (!cxx)
     {
       if (!access ("/usr/bin/g++", F_OK))
-	cxx = my_defaulted_readline ("C++ compiler, preferably g++:",
+	cxx = rpsconf_defaulted_readline ("C++ compiler, preferably g++:",
 				     "/usr/bin/g++");
       else
-	cxx = my_readline ("C++ compiler:");
+	cxx = rpsconf_readline ("C++ compiler:");
     };
   try_then_set_cxx_compiler (cxx);
-  builder_person =
-    my_readline ("person building RefPerSys (eg Alan TURING):");
-  if (builder_person && isspace (builder_person[0]))
+  rpsconf_builder_person =
+    rpsconf_readline ("person building RefPerSys (eg Alan TURING):");
+  if (rpsconf_builder_person && isspace (rpsconf_builder_person[0]))
     {
-      free ((void *) builder_person);
-      builder_person = NULL;
+      free ((void *) rpsconf_builder_person);
+      rpsconf_builder_person = NULL;
     };
-  if (builder_person)
+  if (rpsconf_builder_person)
     {
-      builder_email =
-	my_readline
+      rpsconf_builder_email =
+	rpsconf_readline
 	("email of person building (e.g. alan.turing@princeton.edu):");
-      bool goodemail = builder_email != NULL && isalnum (builder_email[0]);
-      const char *pc = builder_email;
-      for (pc = builder_email; *pc && goodemail && *pc != '@'; pc++)
+      bool goodemail = rpsconf_builder_email != NULL && isalnum (rpsconf_builder_email[0]);
+      const char *pc = rpsconf_builder_email;
+      for (pc = rpsconf_builder_email; *pc && goodemail && *pc != '@'; pc++)
 	{
 	  if (!isalnum (*pc) && *pc != '+' && *pc != '-' && *pc != '_'
 	      && *pc != '.')
@@ -1319,8 +1319,8 @@ main (int argc, char **argv)
 	goodemail = false;
       if (!goodemail)
 	{
-	  free ((void *) builder_email);
-	  builder_email = NULL;
+	  free ((void *) rpsconf_builder_email);
+	  rpsconf_builder_email = NULL;
 	}
     }
   errno = 0;
@@ -1329,7 +1329,7 @@ main (int argc, char **argv)
     {
       puts
 	("Generic Preprocessor (by Tristan Miller and Denis Auroux, see logological.org/gpp ...)");
-      gpp = my_readline ("Generic Preprocessor full path:");
+      gpp = rpsconf_readline ("Generic Preprocessor full path:");
       if (access (gpp, X_OK))
 	{
 	  fprintf (stderr,
@@ -1345,7 +1345,7 @@ main (int argc, char **argv)
   ninja_builder = getenv ("NINJA");
   if (!ninja_builder)
     {
-      ninja_builder = my_readline ("ninja builder:");
+      ninja_builder = rpsconf_readline ("ninja builder:");
       if (access (ninja_builder, X_OK))
 	{
 	  fprintf (stderr,
@@ -1356,22 +1356,22 @@ main (int argc, char **argv)
 	  exit (EXIT_FAILURE);
 	}
     };
-  fltk_config = getenv ("FLTKCONFIG");
-  if (!fltk_config)
+  rpsconf_fltk_config = getenv ("FLTKCONFIG");
+  if (!rpsconf_fltk_config)
     {
-      fltk_config = my_readline ("FLTK configurator:");
-      if (access (fltk_config, X_OK))
+      rpsconf_fltk_config = rpsconf_readline ("FLTK configurator:");
+      if (access (rpsconf_fltk_config, X_OK))
 	{
 	  fprintf (stderr,
 		   "%s bad FLTK configurator %s (%s) [%s:%d]\n",
-		   rpsconf_prog_name, fltk_config ? fltk_config : "???",
+		   rpsconf_prog_name, rpsconf_fltk_config ? rpsconf_fltk_config : "???",
 		   strerror (errno), __FILE__, __LINE__ - 3);
 	  rpsconf_failed = true;
 	  exit (EXIT_FAILURE);
 	}
     }
   ///emit file config-refpersys.mk to be included by GNU make
-  emit_configure_refpersys_mk ();
+  rpsconf_emit_configure_refpersys_mk ();
   fprintf (stderr,
 	   "[%s:%d] perhaps missing code to emit some refpersys-config.h....\n",
 	   __FILE__, __LINE__);
@@ -1449,7 +1449,7 @@ rpsconf_cc_test (const char *cc)
   char *helloworldsrc = NULL;
   char helloworldbin[128];
   memset (helloworldbin, 0, sizeof (helloworldbin));
-  helloworldsrc = temporary_textual_file ("tmp_helloworld_", ".c", __LINE__);
+  helloworldsrc = rpsconf_temporary_textual_file ("tmp_helloworld_", ".c", __LINE__);
   FILE *hwf = fopen (helloworldsrc, "w");
   if (!hwf)
     {
@@ -1581,7 +1581,7 @@ rpsconf_cc_set (const char *cc)
     };
 
   rpsconf_cc_test (cc);
-  c_compiler = cc;
+  rpsconf_c_compiler = cc;
   return RPSCONF_OK;
 }				/* end rpsconf_cc_set */
 
