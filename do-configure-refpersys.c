@@ -143,7 +143,7 @@ const char *rpsconf_ninja_builder;
 #endif /*RPSCONF_BUFFER_SIZE */
 
 const char *rpsconf_files_to_remove_at_exit[MAX_REMOVED_FILES];
-int removedfiles_count;
+int rpsconf_removed_files_count;
 
 /// return a malloced path to a temporary textual file inside /tmp
 char *rpsconf_temporary_textual_file (const char *prefix, const char *suffix,
@@ -163,13 +163,13 @@ void rpsconf_emit_configure_refpersys_mk (void);
 #endif
 
 static void
-RPSCONF_ATTR_PRINTF (3, 4)
-rpsconf_diag__ (const char *, int, const char *, ...);
-     static int rpsconf_cc_set (const char *);
-     static void rpsconf_cc_test (const char *);
+rpsconf_diag__ (const char *, int, const char *, ...) RPSCONF_ATTR_PRINTF (3, 4)
+;
+static int rpsconf_cc_set (const char *);
+static void rpsconf_cc_test (const char *);
 
-     void try_then_set_cxx_compiler (const char *cxx);
-     void should_remove_file (const char *path, int lineno);
+void rpsconf_try_then_set_cxx_compiler (const char *cxx);
+void rpsconf_should_remove_file (const char *path, int lineno);
 
 
 /* Wrapper macro around rpsconf_diag__() */
@@ -409,11 +409,11 @@ rpsconf_defaulted_readline (const char *prompt, const char *defstr)
 }				// end rpsconf_readline
 
 void
-should_remove_file (const char *path, int lineno)
+rpsconf_should_remove_file (const char *path, int lineno)
 {
   if (access (path, F_OK))
     return;
-  if (removedfiles_count >= MAX_REMOVED_FILES - 1)
+  if (rpsconf_removed_files_count >= MAX_REMOVED_FILES - 1)
     {
       fprintf (stderr,
 	       "%s too many files to remove (%s) from %s:%d\n",
@@ -421,8 +421,8 @@ should_remove_file (const char *path, int lineno)
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
-  rpsconf_files_to_remove_at_exit[removedfiles_count++] = path;
-}				/* end should_remove_file */
+  rpsconf_files_to_remove_at_exit[rpsconf_removed_files_count++] = path;
+}				/* end rpsconf_should_remove_file */
 
 
 
@@ -488,7 +488,7 @@ test_cxx_compiler (const char *cxx)
 	rpsconf_failed = true;
 	exit (EXIT_FAILURE);
       };
-    should_remove_file (showvectsrc, __LINE__);
+    rpsconf_should_remove_file (showvectsrc, __LINE__);
   }
   /// write the main C++ file
   {
@@ -561,10 +561,10 @@ test_cxx_compiler (const char *cxx)
     memset (linkmaincxx, 0, sizeof (linkmaincxx));
     snprintf (linkmaincxx, sizeof (linkmaincxx),
 	      "%s %s  %s -o %s", cxx, maincxxobj, showvectobj, cxxexe);
-    should_remove_file (maincxxsrc, __LINE__);
-    should_remove_file (maincxxobj, __LINE__);
-    should_remove_file (showvectsrc, __LINE__);
-    should_remove_file (showvectobj, __LINE__);
+    rpsconf_should_remove_file (maincxxsrc, __LINE__);
+    rpsconf_should_remove_file (maincxxobj, __LINE__);
+    rpsconf_should_remove_file (showvectsrc, __LINE__);
+    rpsconf_should_remove_file (showvectobj, __LINE__);
     printf ("%s running C++ link %s [%s:%d]\n",
 	    rpsconf_prog_name, linkmaincxx, __FILE__, __LINE__ - 1);
     fflush (NULL);
@@ -578,7 +578,7 @@ test_cxx_compiler (const char *cxx)
       };
   }
   /// run the C++ exe
-  should_remove_file (cxxexe, __LINE__);
+  rpsconf_should_remove_file (cxxexe, __LINE__);
   {
     char cmdbuf[256];
     memset (cmdbuf, 0, sizeof (cmdbuf));
@@ -632,7 +632,7 @@ test_cxx_compiler (const char *cxx)
 
 
 void
-try_then_set_cxx_compiler (const char *cxx)
+rpsconf_try_then_set_cxx_compiler (const char *cxx)
 {
   assert (cxx != NULL);
   if (cxx[0] != '/')
@@ -653,11 +653,11 @@ try_then_set_cxx_compiler (const char *cxx)
     }
   test_cxx_compiler (cxx);
   rpsconf_cpp_compiler = cxx;
-}				/* end try_then_set_cxx_compiler */
+}				/* end rpsconf_try_then_set_cxx_compiler */
 
 
 void
-try_then_set_fltkconfig (const char *fc)
+rpsconf_try_then_set_fltkconfig (const char *fc)
 {
   FILE *pipf = NULL;
   char fcflags[2048];
@@ -812,9 +812,9 @@ try_then_set_fltkconfig (const char *fc)
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
-  should_remove_file (tmp_testfltk_src, __LINE__);
-  should_remove_file (tmp_fltk_exe, __LINE__);
-}				/* end try_then_set_fltkconfig */
+  rpsconf_should_remove_file (tmp_testfltk_src, __LINE__);
+  rpsconf_should_remove_file (tmp_fltk_exe, __LINE__);
+}				/* end rpsconf_try_then_set_fltkconfig */
 
 void
 rpsconf_remove_files (void)
@@ -822,14 +822,14 @@ rpsconf_remove_files (void)
   if (rpsconf_failed)
     {
       printf ("%s: not removing %d files since failed at exit [%s:%d]\n",
-	      rpsconf_prog_name, removedfiles_count, __FILE__, __LINE__);
+	      rpsconf_prog_name, rpsconf_removed_files_count, __FILE__, __LINE__);
       return;
     }
   else
     {
       printf ("%s: removing %d files at exit [%s:%d]\n",
-	      rpsconf_prog_name, removedfiles_count, __FILE__, __LINE__);
-      for (int i = 0; i < removedfiles_count; i++)
+	      rpsconf_prog_name, rpsconf_removed_files_count, __FILE__, __LINE__);
+      for (int i = 0; i < rpsconf_removed_files_count; i++)
 	unlink (rpsconf_files_to_remove_at_exit[i]);
     }
 }				/* end rpsconf_remove_files */
@@ -1087,7 +1087,7 @@ rpsconf_emit_configure_refpersys_mk (void)
 
 
 void
-usage (void)
+rpsconf_usage (void)
 {
   puts ("# configuration utility program for refpersys.org");
   printf ("%s usage:\n", rpsconf_prog_name);
@@ -1121,7 +1121,7 @@ usage (void)
   puts ("# generate the _configure-refpersys.mk file");
   puts ("# for inclusion by GNU make");
   puts ("# GPLv3+ licensed, so no warranty");
-}				/* end usage */
+}				/* end rpsconf_usage */
 
 
 
@@ -1137,7 +1137,7 @@ main (int argc, char **argv)
 #endif /*RPSCONF_WITHOUT_NCURSES */
   if (argc == 2 && !strcmp (argv[1], "--help"))
     {
-      usage ();
+      rpsconf_usage ();
       return 0;
     };
   if (argc == 2 && !strcmp (argv[1], "--version"))
@@ -1283,7 +1283,7 @@ main (int argc, char **argv)
       else
 	cxx = rpsconf_readline ("C++ compiler:");
     };
-  try_then_set_cxx_compiler (cxx);
+  rpsconf_try_then_set_cxx_compiler (cxx);
   rpsconf_builder_person =
     rpsconf_readline ("person building RefPerSys (eg Alan TURING):");
   if (rpsconf_builder_person && isspace (rpsconf_builder_person[0]))
@@ -1490,8 +1490,8 @@ rpsconf_cc_test (const char *cc)
 	rpsconf_failed = true;
 	exit (EXIT_FAILURE);
       };
-    should_remove_file (helloworldsrc, __LINE__);
-    should_remove_file (helloworldbin, __LINE__);
+    rpsconf_should_remove_file (helloworldsrc, __LINE__);
+    rpsconf_should_remove_file (helloworldbin, __LINE__);
     printf ("popen-eing %s\n", helloworldbin);
     fflush (NULL);
     FILE *pf = popen (helloworldbin, "r");
