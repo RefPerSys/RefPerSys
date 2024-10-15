@@ -149,7 +149,7 @@ int rpsconf_removed_files_count;
 char *rpsconf_temporary_textual_file (const char *prefix, const char *suffix,
 			      int lineno);
 /// return a malloced path to a temporary binary file in the current directory
-char *temporary_binary_file (const char *prefix, const char *suffix,
+char *rpsconf_temporary_binary_file (const char *prefix, const char *suffix,
 			     int lineno);
 
 /// emit the configure-refperys.mk file to be included in GNUmakefile
@@ -221,7 +221,7 @@ char *rpsconf_temporary_textual_file (const char *prefix, const char *suffix,
 
 /// return a malloced path to a temporary binary file in the current directory
 char *
-temporary_binary_file (const char *prefix, const char *suffix, int lineno)
+rpsconf_temporary_binary_file (const char *prefix, const char *suffix, int lineno)
 {
   char buf[256];
   memset (buf, 0, sizeof (buf));
@@ -258,7 +258,7 @@ temporary_binary_file (const char *prefix, const char *suffix, int lineno)
   printf ("%s temporary binary file is %s [%s:%d]\n",
 	  rpsconf_prog_name, res, __FILE__, lineno);
   return res;
-}				/* end temporary_binary_file */
+}				/* end rpsconf_temporary_binary_file */
 
 char *
 rpsconf_readline (const char *prompt)
@@ -427,7 +427,7 @@ rpsconf_should_remove_file (const char *path, int lineno)
 
 
 void
-test_cxx_compiler (const char *cxx)
+rpsconf_test_cxx_compiler (const char *cxx)
 {
   /* Generate two temporary simple C++ files, compile both of them in
      two commands, link the object files, and run the temporary
@@ -555,7 +555,7 @@ test_cxx_compiler (const char *cxx)
       };
   }
   /// link the two objects
-  char *cxxexe = temporary_binary_file ("./tmp_cxxprog", ".bin", __LINE__);
+  char *cxxexe = rpsconf_temporary_binary_file ("./tmp_cxxprog", ".bin", __LINE__);
   {
     char linkmaincxx[3 * 128];
     memset (linkmaincxx, 0, sizeof (linkmaincxx));
@@ -628,7 +628,7 @@ test_cxx_compiler (const char *cxx)
 	};
     }
   }
-}				/* end test_cxx_compiler */
+}				/* end rpsconf_test_cxx_compiler */
 
 
 void
@@ -651,7 +651,7 @@ rpsconf_try_then_set_cxx_compiler (const char *cxx)
       rpsconf_failed = true;
       exit (EXIT_FAILURE);
     }
-  test_cxx_compiler (cxx);
+  rpsconf_test_cxx_compiler (cxx);
   rpsconf_cpp_compiler = cxx;
 }				/* end rpsconf_try_then_set_cxx_compiler */
 
@@ -792,12 +792,14 @@ rpsconf_try_then_set_fltkconfig (const char *fc)
     };
   fltksrc = NULL;
   char *tmp_fltk_exe =
-    temporary_binary_file ("./tmp_fltkprog", ".bin", __LINE__);
+    rpsconf_temporary_binary_file ("./tmp_fltkprog", ".bin", __LINE__);
   memset (cmdbuf, 0, sizeof (cmdbuf));
   snprintf (cmdbuf, sizeof (cmdbuf), "%s -g -O %s %s %s -o %s",
-	    rpsconf_cpp_compiler, fcflags, tmp_testfltk_src, fldflags, tmp_fltk_exe);
+	    rpsconf_cpp_compiler, fcflags, tmp_testfltk_src,
+	    fldflags, tmp_fltk_exe);
   printf ("%s build test FLTK executable %s from %s with %s\n",
-	  rpsconf_prog_name, tmp_fltk_exe, tmp_testfltk_src, rpsconf_cpp_compiler);
+	  rpsconf_prog_name, tmp_fltk_exe, tmp_testfltk_src,
+	  rpsconf_cpp_compiler);
   fflush (NULL);
   if (system (cmdbuf) > 0)
     {
