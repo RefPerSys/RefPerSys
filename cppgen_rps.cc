@@ -574,7 +574,9 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
       return false;
   });
   int nbinc = cppgen_datavect.size();
-  cppgen_outcod << "///++ " << nbinc << " includes:" << std::endl;
+  cppgen_outcod << "///++ " << nbinc << " includes in obmodule "
+		<< _f.obmodule
+		<< std::endl;
   for (int ix=0; ix<nbinc; ix++)
     {
       _f.obcurinclude = cppgen_datavect[ix].cppg_object;
