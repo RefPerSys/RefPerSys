@@ -5439,9 +5439,10 @@ inline std::ostream&operator << (std::ostream&out, const Rps_Cjson_String&hstr)
 };  // end << Rps_Cjson_String
 
 
-/// for output a string quoted like for C
+/// for output a string double-quoted like for C
 class Rps_QuotedC_String : public std::string
 {
+protected:
   bool qtc_empty;
 public:
   Rps_QuotedC_String(const char*str, int len= -1) :
@@ -5474,6 +5475,35 @@ inline std::ostream&operator << (std::ostream&out, const Rps_QuotedC_String&hstr
   hstr.output(out);
   return out;
 };  // end << Rps_QuotedC_String
+
+/// for output a string single-quoted like for the GNU bash shell
+class Rps_SingleQuotedC_String : public Rps_QuotedC_String
+{
+public:
+  Rps_SingleQuotedC_String(const char*str, int len= -1) : Rps_QuotedC_String(str,len) {};
+  Rps_SingleQuotedC_String(const std::string&str)
+    : Rps_QuotedC_String(str) {};
+  Rps_SingleQuotedC_String(const Rps_SingleQuotedC_String&) = default;
+  Rps_SingleQuotedC_String(Rps_SingleQuotedC_String&&) = default;
+  ~Rps_SingleQuotedC_String() = default;
+  void output(std::ostream&out) const
+  {
+    if (qtc_empty)
+      out << "*null*";
+    else
+      {
+        out << "'";
+        rps_output_utf8_cjson(out, c_str(), (int)size());
+        out << "'";
+      }
+  };
+};        // end class Rps_SingleQuotedC_String
+
+inline std::ostream&operator << (std::ostream&out, const Rps_SingleQuotedC_String&hstr)
+{
+  hstr.output(out);
+  return out;
+};  // end << Rps_SingleQuotedC_String
 
 //////////////////////////////////////////////////////////////////
 /// initial agenda machinery;
