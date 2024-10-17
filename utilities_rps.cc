@@ -1596,10 +1596,10 @@ rps_schedule_files_postponed_removal(void)
   for  (auto rf: rps_postponed_removed_files_vector)
     {
       if (rps_syslog_enabled)
-        syslog(LOG_NOTICE, "*rm  %s",  Rps_QuotedC_String(rf).c_str());
+        syslog(LOG_NOTICE, "*rm  %s",  Rps_SingleQuotedC_String(rf).c_str());
       else
-        printf(" *rm %s\n", Rps_QuotedC_String(rf).c_str());
-      fprintf(pat, "/bin/rm -f %s\n", Rps_QuotedC_String(rf).c_str());
+        printf(" *rm %s\n", Rps_SingleQuotedC_String(rf).c_str());
+      fprintf(pat, "/bin/rm -f %s\n", Rps_SingleQuotedC_String(rf).c_str());
     }
   rps_postponed_removed_files_vector.clear();
   pclose(pat);
@@ -1703,7 +1703,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
           if (isplainarg)
             outl << ' ' << curarg;
           else
-            outl << ' ' << Rps_QuotedC_String(curarg);
+            outl << ' ' << Rps_SingleQuotedC_String(curarg);
         }
       outl << std::endl << std::flush;
       syslog(LOG_EMERG, "RefPerSys fatal from %s", outl.str().c_str());
@@ -1733,7 +1733,7 @@ rps_fatal_stop_at (const char *filnam, int lin)
           if (isplainarg)
             std::clog << ' ' << curarg;
           else
-            std::clog << ' ' << Rps_QuotedC_String(curarg);
+            std::clog << ' ' << Rps_SingleQuotedC_String(curarg);
         }
       std::clog << std::endl << std::flush;
     }
