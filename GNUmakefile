@@ -211,11 +211,14 @@ refpersys: objects |  GNUmakefile
 	@echo FLTKconfig is  $(REFPERSYS_FLTKCONFIG)
 	@echo FLTK stuff is  $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags)
 	@echo REFPERSYS_NEEDED_LIBRARIES is $(REFPERSYS_NEEDED_LIBRARIES)
+	@echo REFPERSYS_HUMAN_CPP_OBJECTS is $(REFPERSYS_HUMAN_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
+	@echo REFPERSYS_GENERATED_CPP_OBJECTS is $(REFPERSYS_GENERATED_CPP_OBJECTS) | /usr/bin/fmt | /bin/sed '2,$$s/^/ /'
 	$(MAKE) RPS_LTO=$(RPS_LTO) $(REFPERSYS_HUMAN_CPP_OBJECTS) $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o
 	@if [ -x $@ ]; then /bin/mv -v --backup $@ $@~ ; fi
 	$(REFPERSYS_CXX) $(RPS_LTO) -rdynamic -o $@ \
              $(REFPERSYS_HUMAN_CPP_OBJECTS) \
-             $(REFPERSYS_GENERATED_CPP_OBJECTS) __timestamp.o \
+             $(REFPERSYS_GENERATED_CPP_OBJECTS) \
+             __timestamp.o \
 	      $(shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a) \
               $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
