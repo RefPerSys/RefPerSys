@@ -1293,6 +1293,7 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
                           << " token_deq:" << toksrc_token_deq
 			  << " termvect=" << termvect << " leftv=" << _f.leftv
 			  << RPS_FULL_BACKTRACE_HERE(1,"Rps_TokenSource::parse_sum/Test01c-bug"));
+	    RPS_POSSIBLE_BREAKPOINT();
 	  };
 	  /// end of temporary code to catch make test01c bug in commit e78fd8f9b3 at mid Oct. 2024
 #endif
