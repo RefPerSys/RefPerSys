@@ -575,8 +575,8 @@ Rps_PayloadCplusplusGen::emit_cplusplus_includes(Rps_ProtoCallFrame*callerframe,
   });
   int nbinc = cppgen_datavect.size();
   cppgen_outcod << "///++ " << nbinc << " includes in obmodule "
-		<< _f.obmodule
-		<< std::endl;
+                << _f.obmodule
+                << std::endl;
   for (int ix=0; ix<nbinc; ix++)
     {
       _f.obcurinclude = cppgen_datavect[ix].cppg_object;
@@ -735,29 +735,33 @@ rps_generate_cplusplus_code(Rps_CallFrame*callerframe,
   auto cppgenpayl = _f.obgenerator->put_new_plain_payload<Rps_PayloadCplusplusGen>();
   cppgenpayl->emit_initial_cplusplus_comment(&_, _f.obmodule);
   cppgenpayl->clear_indentation();
-  cppgenpayl->output([&](std::ostringstream&out) {
+  cppgenpayl->output([&](std::ostringstream&out)
+  {
     out << std::endl << std::endl;
     out << "//// include files from " << _f.obmodule << std::endl;
   });
   cppgenpayl->emit_cplusplus_includes(&_,  _f.obmodule);
   cppgenpayl->clear_indentation();
-  cppgenpayl->output([&](std::ostringstream&out) {
+  cppgenpayl->output([&](std::ostringstream&out)
+  {
     out << std::endl << std::endl;
     out << "//// C++ declarations from " << _f.obmodule << std::endl;
   });
   cppgenpayl->emit_cplusplus_declarations(&_,  _f.obmodule);
   cppgenpayl->clear_indentation();
-  cppgenpayl->output([&](std::ostringstream&out) {
+  cppgenpayl->output([&](std::ostringstream&out)
+  {
     out << std::endl << std::endl;
     out << "//// C++ definitions from " << _f.obmodule << std::endl;
   });
   cppgenpayl->emit_cplusplus_definitions(&_,  _f.obmodule);
   cppgenpayl->clear_indentation();
-  cppgenpayl->output([&](std::ostringstream&out) {
+  cppgenpayl->output([&](std::ostringstream&out)
+  {
     out << std::endl << std::endl;
     out << "//// end of generated C++ from module " << _f.obmodule << " using generator "
-	<< _f.obgenerator << " in refpersys git " <<  rps_cppgen_shortgitid
-	<< " {<" __FILE__ ":" << __LINE__ << ">}" << std::endl;
+        << _f.obgenerator << " in refpersys git " <<  rps_cppgen_shortgitid
+        << " {<" __FILE__ ":" << __LINE__ << ">}" << std::endl;
     out << std::flush;
   });
 } // end rps_generate_cplusplus_code
