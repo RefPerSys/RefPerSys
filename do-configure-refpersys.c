@@ -10,8 +10,8 @@
 /// Purpose: build-time configuration of the RefPerSys inference
 /// engine.
 ///
-/// Caveat: this program should run quickly and consume few memory. So
-/// we never call free here!
+/// Caveat: this program should run quickly and consumes and leaks a
+/// few memory. So we never call free here!
 ///
 /// Convention: global names are prefixed with rpsconf_
 ///
@@ -114,7 +114,7 @@ int rpsconf_compiler_argcount;
 char *rpsconf_linker_args[RPSCONF_MAX_PROG_ARGS];
 int rpsconf_linker_argcount;
 
-/* absolute path to C and C++ compiler */
+/* absolute path to C and C++ GCC compilers */
 const char *rpsconf_c_compiler;
 const char *rpsconf_cpp_compiler;
 
@@ -655,6 +655,43 @@ rpsconf_try_then_set_cxx_compiler (const char *cxx)
   rpsconf_cpp_compiler = cxx;
 }				/* end rpsconf_try_then_set_cxx_compiler */
 
+void
+rpsconf_try_cxx_compiler_for_libgccjit(const char*cxx)
+{
+  char cmdbuf[1024];
+  memset (cmdbuf, 0, sizeof(cmdbuf));
+  char includir[512];
+  memset (includir, 0, sizeof(includir));
+  snprintf(cmdbuf, sizeof(cmdbuf), "%s -print-file-name=include", cxx);
+  printf ("%s running %s to query GCC include: %s [%s:%d]\n",
+	  rpsconf_prog_name, cxx, cmdbuf, __FILE__, __LINE__ - 1);
+  FILE *pipf = popen(cmdbuf, "r");
+  if (!pipf) {
+    fprintf (stderr,
+	     "%s fail to popen '%s' [%s:%d]\n",
+	     rpsconf_prog_name, cmdbuf, __FILE__, __LINE__ - 2);
+    rpsconf_failed = true;
+    exit (EXIT_FAILURE);
+  };
+  if (!fgets (includir, sizeof (includir), pipf) )
+    {
+      fprintf (stderr, "%s: failed to get includir using %s (%s) [%s:%d]\n",
+	       rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+	       __LINE__);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    }
+  if (pclose (pipf))
+    {
+      fprintf (stderr, "%s: failed to pclose %s (%s) [%s:%d]\n",
+	       rpsconf_prog_name, cmdbuf, strerror (errno), __FILE__,
+	       __LINE__);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    }
+  fflush (NULL);
+#warning rpsconf_try_cxx_compiler_for_libgccjit is incomplete
+} /* end  rpsconf_try_cxx_compiler_for_libgccjit*/
 
 void
 rpsconf_try_then_set_fltkconfig (const char *fc)
