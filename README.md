@@ -435,6 +435,7 @@ than MPS), with the following ideas:
   code when the caller frame argument of invocation of C++ macro
   `RPS_LOCALFRAME` is statically null, and
   `RPS_CALL_FRAME_UNDESCRIBED` when its descriptor is not given.
+  
 
 * our garbage collector manages *memory zones* inside a set of
   `mmap`-ed *memory blocks* : either small blocks of a megaword that

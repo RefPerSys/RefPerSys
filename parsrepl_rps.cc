@@ -1279,6 +1279,11 @@ Rps_TokenSource::parse_sum(Rps_CallFrame*callframe, bool*pokparse)
           {
             this->display_current_line_with_cursor(out);
           }));
+	  if (!curcptr()) {
+	    RPS_DEBUG_LOG(REPL, "Rps_TokenSource::parse_sum¤" << callnum
+			  << " STOPLOOP loopcnt#" << loopcnt);
+	    break;
+	  };
 	  //////////////// for test01c bug in mid october 2024, e.g. commit 8aaec2fc59cb
 #if 1				// once test01c is good make that #if 0
 	  /// temporary code to catch make test01c bug in commit e78fd8f9b3 at mid Oct. 2024

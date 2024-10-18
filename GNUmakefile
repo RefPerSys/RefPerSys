@@ -168,6 +168,7 @@ clean: clean-plugins
 	$(RM) */*~ */*% */*.orig
 	$(RM) */*.so
 	$(RM) *.ii
+	$(RM) core*
 
 clean-plugins:
 	$(RM) -v plugins_dir/*.o
