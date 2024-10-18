@@ -1105,8 +1105,8 @@ Rps_Dumper::write_generated_names_file(void)
     std::lock_guard<std::recursive_mutex> gucla(*(obr->get_class()->objmtxptr()));
     (*pouts) << "RPS_INSTALL_NAMED_ROOT_OB(" << obr->oid()
              << "," << (cursym->symbol_name()) << ")"
-	     << " //∈" << obr->get_class()
-	     << std::endl;
+             << " //∈" << obr->get_class()
+             << std::endl;
     namecnt++;
   });
   *pouts << std::endl
