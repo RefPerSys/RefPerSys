@@ -160,7 +160,8 @@ do-build-plugin: do-build-plugin.cc __timestamp.c
 
 
 clean: clean-plugins
-	$(RM) tmp* *~ *.o do-configure-refpersys do-build-plugin
+	$(RM) tmp* *~ *.o
+	$(RM) do-scan-pkgconfig do-configure-refpersys do-build-plugin 
 	$(RM) refpersys lto-refpersys
 	$(RM) *% %~
 	$(RM) *.gch
@@ -169,6 +170,8 @@ clean: clean-plugins
 	$(RM) */*.so
 	$(RM) *.ii
 	$(RM) core*
+	$(RM) Make-dependencies/__*
+
 
 clean-plugins:
 	$(RM) -v plugins_dir/*.o
