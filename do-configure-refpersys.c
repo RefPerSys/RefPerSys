@@ -118,6 +118,9 @@ int rpsconf_linker_argcount;
 const char *rpsconf_c_compiler;
 const char *rpsconf_cpp_compiler;
 
+/* absolute path to libgccjit include directory */
+const char* rpsconf_libgccjit_include_dir;
+
 /* strdup-ed string of the person building RefPerSys (or null): */
 const char *rpsconf_builder_person;
 
@@ -126,6 +129,8 @@ const char *rpsconf_builder_email;
 
 /* absolute path to fltk-config utility */
 const char *rpsconf_fltk_config;
+
+
 
 
 /* absolute path to Miller&Auroux Generic preprocessor */
@@ -758,6 +763,14 @@ rpsconf_check_libgccjitplusplus_header (const char *jitpppath)
 }       /* end rpsconf_check_libgccjitplusplus_header */
 
 void
+rpsconf_test_libgccjit_compilation(const char *cc)
+{
+#warning unimplemented rpsconf_test_libgccjit_compilation
+  /* We should write a temporary C file similar to
+     https://gcc.gnu.org/onlinedocs/jit/intro/tutorial01.html */
+} /* end rpsconf_test_libgccjit_compilation */
+
+void
 rpsconf_try_cxx_compiler_for_libgccjit (const char *cxx)
 {
   char cmdbuf[1024];
@@ -814,6 +827,14 @@ rpsconf_try_cxx_compiler_for_libgccjit (const char *cxx)
     memset (jitpppath, 0, sizeof (jitpppath));
     snprintf (jitpppath, sizeof (jitpppath), "%s/libgccjit++.h", includir);
     rpsconf_check_libgccjitplusplus_header (jitpppath);
+  }
+  rpsconf_libgccjit_include_dir = strdup(includir);
+  if (!rpsconf_libgccjit_include_dir) {
+        fprintf (stderr, "%s: failed to duplicate libgccjit include directory %s (%s) [%s:%d]\n",
+                 rpsconf_prog_name, includir, strerror (errno), __FILE__,
+                 __LINE__);
+        rpsconf_failed = true;
+        exit (EXIT_FAILURE);
   }
 #warning rpsconf_try_cxx_compiler_for_libgccjit is incomplete
 }       /* end  rpsconf_try_cxx_compiler_for_libgccjit */
