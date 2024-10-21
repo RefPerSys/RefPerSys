@@ -1290,7 +1290,7 @@ extern "C" bool rps_fltk_program_is_quitting(void);
 bool
 rps_fltk_program_is_quitting(void)
 {
-#ifdef FLTK_API_VERSION >= 10400
+#if FLTK_API_VERSION >= 10400
   ///FLTK 1.4
   RPS_DEBUG_LOG(REPL, "rps_fltk_program_is_quitting program_should_quit="
                 << (Fl::program_should_quit())?"True":"false"
