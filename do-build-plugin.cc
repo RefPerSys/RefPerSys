@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <unistd.h>
+#include <argp.h>
 
 extern "C" {
 #include "__timestamp.c"
@@ -47,6 +48,33 @@ extern "C" {
   std::string bp_temp_ninja;
   std::set<std::string> bp_set_objects;
   FILE* bp_ninja_file;
+  struct argp_option bp_options[] =
+  {
+    {
+      .name= "verbose",
+      .key= 'v',
+      .arg= 0,
+      .flags= 0,
+      .doc= "Produce verbose output",
+      .group= 0
+    },
+    {
+      .name= "version",
+      .key= 0,
+      .arg= 0,
+      .flags= 0,
+      .doc= "Give version information",
+      .group = 0
+    },
+    {
+      .name= nullptr,
+      .key= (char)0,
+      .arg= 0,
+      .flags= 0,
+      .doc= nullptr,
+      .group= 0
+    },
+  };
 };
 
 
@@ -274,6 +302,7 @@ bp_write_prologue_ninja(const char*njpath)
   fprintf(bp_ninja_file, "\n""#end prologue from <%s:%d>\n\n",
           __FILE__, __LINE__-1);
 } // end bp_write_prologue_ninja
+
 
 int
 main(int argc, char**argv)
