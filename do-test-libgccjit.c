@@ -64,16 +64,26 @@ extern const char rpsconf_gitid[];
 #endif /* LIBGCCJIT_HAVE_REFLECTION */
 
 void
+rpsjit_test (void)
+{
+#warning rpsjit_test incomplete
+  fprintf (stderr, "rpsjit_test incomplete at %s:%d\n", __FILE__, __LINE__);
+  exit (EXIT_FAILURE);
+}				/* end rpsjit_test */
+
+
+
+void
 rpsjit_initialize (void)
 {
 #warning unimplemented rpsjit_initialize
-}       /* end rpsjit_initialize */
+}				/* end rpsjit_initialize */
 
 void
 rpsjit_finalize (void)
 {
 #warning unimplemented rpsjit_finalize
-}       /* end rpsjit_finalize */
+}				/* end rpsjit_finalize */
 
 const char *
 rpsjit_get_version_string (void)
@@ -81,7 +91,7 @@ rpsjit_get_version_string (void)
   static char buf[128];
   memset (buf, 0, sizeof (buf));
   snprintf (buf, sizeof (buf), "%d.%d.%d",
-            gcc_jit_version_major (), gcc_jit_version_minor (),
-            gcc_jit_version_patchlevel ());
+	    gcc_jit_version_major (), gcc_jit_version_minor (),
+	    gcc_jit_version_patchlevel ());
   return buf;
-}       /* end rpsjit_version_string */
+}				/* end rpsjit_version_string */
