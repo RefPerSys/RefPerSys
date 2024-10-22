@@ -50,8 +50,8 @@
 
 #include "libgccjit.h"
 
-#ifndef RPSJIT_GIT_ID
-#error RPSJIT_GIT_ID should be set at compilation time
+#ifndef RPSJIT_GITID
+#error RPSJIT_GITID should be set at compilation time
 #endif
 
 const char rpsjit_gitid[] = RPSJIT_GITID;
@@ -59,9 +59,9 @@ const char rpsjit_build[] = __DATE__ "@" __TIME__;
 
 extern const char rpsconf_gitid[];
 
-#ifndef LIBGCCJIT_ABI_16
-#error libgccjit is required to have LIBGCCJIT_ABI_16 provided in GCC 12
-#endif
+#ifndef LIBGCCJIT_HAVE_REFLECTION
+#error libgccjit is required to have LIBGCCJIT_HAVE_REFLECTION provided in GCC 12
+#endif /* LIBGCCJIT_HAVE_REFLECTION */
 
 void
 rpsjit_initialize (void)
