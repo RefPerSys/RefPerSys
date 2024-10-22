@@ -178,7 +178,7 @@ void rpsconf_should_remove_file (const char *path, int lineno);
 
 
 /* Wrapper macro around rpsconf_diag__() */
-#define rpsconf_diag(msg, ...)         \
+#define RPSCONF_DIAG(msg, ...)         \
   rpsconf_diag__(__FILE__, __LINE__, msg, ##__VA_ARGS__)
 
 
@@ -1166,6 +1166,15 @@ rpsconf_emit_configure_refpersys_mk (void)
   fprintf (f, "REFPERSYS_OPERSYS=%s\n", rpsconf_opersys);
   fprintf (f, "\n### building hostname\n");
   fprintf (f, "REFPERSYS_BUILDHOST=%s\n", rpsconf_host);
+
+  /// emit the libgccjit if found
+  if (rpsconf_libgccjit_include_dir) {
+    fprintf(f, "\n### libgccjit include directory\n");
+    fprintf(f, "REFPERSYS_LIBGCCJIT_INCLUDE_DIR=%s\n", rpsconf_libgccjit_include_dir);
+  }
+  else {
+    fprintf(f, "\n### no libgccjit include directory\n");
+  }
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
@@ -1756,20 +1765,20 @@ rpsconf_cc_set (const char *cc)
   assert (cc != NULL);
   if (*cc == '\0')
     {
-      rpsconf_diag ("missing C compiler path");
+      RPSCONF_DIAG ("missing C compiler path");
       return RPSCONF_FAIL;
     };
 
   if (*cc != '/')
     {
-      rpsconf_diag ("%s: C compiler path not absolute", cc);
+      RPSCONF_DIAG ("%s: C compiler path not absolute", cc);
       return RPSCONF_FAIL;
     };
 
   errno = 0;
   if (access (cc, X_OK))
     {
-      rpsconf_diag ("%s: C compiler path not executable", cc);
+      RPSCONF_DIAG ("%s: C compiler path not executable", cc);
       return RPSCONF_FAIL;
     };
 
