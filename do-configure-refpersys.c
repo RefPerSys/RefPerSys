@@ -46,6 +46,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <dlfcn.h>
 #include <stdlib.h>
 
 #ifndef RPSCONF_WITHOUT_NCURSES
@@ -762,9 +763,91 @@ rpsconf_check_libgccjitplusplus_header (const char *jitpppath)
   fclose (jithf);
 }       /* end rpsconf_check_libgccjitplusplus_header */
 
+typedef void rpsconf_voidfun_t(void);
+typedef const char* rpsconf_strfun_t(void);
+
 void
 rpsconf_test_libgccjit_compilation(const char *cc)
 {
+  /* See the do-test-libgccjit.c file, which is doing some libgccjit
+     things. We first compile that file as a plugin. */
+  char cmdbuf[256];
+  memset (cmdbuf, 0, sizeof(cmdbuf));
+  char *test_so =
+    rpsconf_temporary_binary_file ("./tmp_test-libgccjit", ".so", __LINE__);
+  snprintf(cmdbuf, sizeof(cmdbuf),
+           "%s -fPIC -g -O -shared -DRPSJIT_GITID=\"%s\" -I%s do-test-libgccjit.c -o %s",
+           cc, rpsconf_gitid, rpsconf_libgccjit_include_dir, test_so);
+  printf("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, //
+         __FILE__, __LINE__-1);
+  fflush(NULL);
+  int ex = system(cmdbuf);
+  if (ex)
+    {
+      fprintf (stderr, "%s: failed to run %s (exit %d)\n",
+               rpsconf_prog_name, cmdbuf, ex);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+  rpsconf_should_remove_file(test_so, __LINE__);
+  void* dlhtestso= dlopen(test_so, RTLD_NOW);
+  if (!dlhtestso)
+    {
+      fprintf (stderr, "%s: failed to dlopen %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, test_so, dlerror(), __FILE__, __LINE__);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+  rpsconf_voidfun_t*initfun = dlsym(dlhtestso, "rpsjit_initialize");
+  if (!initfun)
+    {
+      fprintf (stderr, "%s: failed to dlsym rpsjit_initialize in %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, test_so, dlerror(), __FILE__, __LINE__);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+  rpsconf_voidfun_t*finalfun =  dlsym(dlhtestso, "rpsjit_finalize");
+  if (!finalfun)
+    {
+      fprintf (stderr, "%s: failed to dlsym rpsjit_finalize in %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, test_so, dlerror(), __FILE__, __LINE__);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+  const char*jitid= dlsym(dlhtestso, "rpsjit_gitid");
+  if (!jitid)
+    {
+      fprintf (stderr, "%s: failed to dlsym rpsjit_gitid in %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, test_so, dlerror(), __FILE__, __LINE__);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+  if (strcmp(jitid, rpsconf_gitid))
+    {
+      fprintf(stderr, "%s: git mismatch - %s in %s but %s in %s:%d\n",
+              rpsconf_prog_name, jitid, test_so, rpsconf_gitid, __FILE__, __LINE__-1);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+  rpsconf_strfun_t*getversfunptr = dlsym(dlhtestso, "rpsjit_get_version_string");
+  if (!getversfunptr)
+    {
+      fprintf (stderr, "%s: failed to dlsym rpsjit_get_version_string in %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, test_so, dlerror(), __FILE__, __LINE__);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    };
+  const char*versionstr = (*getversfunptr) ();
+  if (!versionstr)
+    {
+      fprintf (stderr, "%s: failed call rpsjit_get_version_string in %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, test_so, dlerror(), __FILE__, __LINE__);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    }
+  printf ("%s dlopened %s with gccjit version %s [%s:%d]\n",
+          rpsconf_prog_name, test_so, versionstr, __FILE__, __LINE__);
+  fflush(NULL);
 #warning unimplemented rpsconf_test_libgccjit_compilation
   /* We should write a temporary C file similar to
      https://gcc.gnu.org/onlinedocs/jit/intro/tutorial01.html */
@@ -1485,6 +1568,7 @@ main (int argc, char **argv)
         cxx = rpsconf_readline ("C++ compiler:");
     };
   rpsconf_try_then_set_cxx_compiler (cxx);
+  rpsconf_try_cxx_compiler_for_libgccjit(cc);
   rpsconf_builder_person =
     rpsconf_readline ("person building RefPerSys (eg Alan TURING):");
   if (rpsconf_builder_person && isspace (rpsconf_builder_person[0]))
