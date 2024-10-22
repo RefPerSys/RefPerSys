@@ -776,7 +776,7 @@ rpsconf_test_libgccjit_compilation(const char *cc)
   char *test_so =
     rpsconf_temporary_binary_file ("./tmp_test-libgccjit", ".so", __LINE__);
   snprintf(cmdbuf, sizeof(cmdbuf),
-           "%s -fPIC -g -O -shared -DRPSJIT_GITID=\"%s\" -I%s do-test-libgccjit.c -o %s",
+           "%s -fPIC -g -O -shared -DRPSJIT_GITID='\"%s\"' -I%s do-test-libgccjit.c -o %s",
            cc, rpsconf_gitid, rpsconf_libgccjit_include_dir, test_so);
   printf("%s running %s [%s:%d]\n", rpsconf_prog_name, cmdbuf, //
          __FILE__, __LINE__-1);
