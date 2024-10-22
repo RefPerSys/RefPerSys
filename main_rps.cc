@@ -1610,9 +1610,6 @@ main (int argc, char** argv)
                 " nop; nop; nop; nop; nop; nop; nop; nop; nop");
   if (rps_debug_file)
     fflush(rps_debug_file);
-  /// Finalize GNU lightning for machine code generation; see
-  /// https://www.gnu.org/software/lightning/
-  finish_jit();
   fflush(nullptr);
   RPS_POSSIBLE_BREAKPOINT();
   RPS_INFORMOUT("end of RefPerSys process "

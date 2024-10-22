@@ -36,10 +36,8 @@
 // comment for our do-scan-pkgconfig.c utility
 //@@PKGCONFIG gmp
 //@@PKGCONFIG gmpxx
-//@@PKGCONFIG lightning
 //@@PKGCONFIG glib-2.0
 
-#include <lightning.h>
 
 #if RPS_WITH_FLTK
 #include <FL/Fl.H>
@@ -894,11 +892,6 @@ rps_early_initialization(int argc, char** argv)
              strerror(errno));
       exit(EXIT_FAILURE);
     };
-  // initialize GNU lightning see
-  // lists.gnu.org/archive/html/lightning/2023-10/msg00020.html
-  // ... Notice that a recent GNU lightning is required, see
-  // https://lists.gnu.org/archive/html/lightning/2023-11/msg00012.html
-  init_jit (rps_progname);
   // compute the program invocation string
   rps_compute_program_invocation(argc, argv);
   rps_main_thread_handle = pthread_self();

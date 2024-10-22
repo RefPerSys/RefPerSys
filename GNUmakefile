@@ -89,7 +89,7 @@ RPS_ALTDUMPDIR_PREFIX?= /tmp/refpersys-$(RPS_SHORTGIT_ID)
 ## unistring is https://www.gnu.org/software/libunistring/
 ## backtrace is https://github.com/ianlancetaylor/libbacktrace (also inside GCC source)
 ## libgccjit is https://gcc.gnu.org/onlinedocs/jit/ but not useful yet
-## GNU lightning is from https://www.gnu.org/software/lightning/ (for machine code generation)
+## not using GNU lightning is from https://www.gnu.org/software/lightning/ (for machine code generation)
 REFPERSYS_NEEDED_LIBRARIES= -lunistring -lbacktrace
 ## TODO after june 2024, add the libgccjit...
 
