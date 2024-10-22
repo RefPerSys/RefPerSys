@@ -71,10 +71,7 @@ call. It should cooperate with `Rps_PayloadUnixProcess` and manage
 both processes and file descriptors handled by that event loop. These
 file descriptors may be related to JSONRPC service, etc...
 
-
-Improve linking [GNU
-lightning](https://www.gnu.org/software/lightning) machine code
-generation library.
+Use [libgccjit](https://gcc.gnu.org/onlinedocs/jit/)
 
 ## DONE  List
 

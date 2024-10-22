@@ -829,13 +829,14 @@ rpsconf_try_cxx_compiler_for_libgccjit (const char *cxx)
     rpsconf_check_libgccjitplusplus_header (jitpppath);
   }
   rpsconf_libgccjit_include_dir = strdup(includir);
-  if (!rpsconf_libgccjit_include_dir) {
-        fprintf (stderr, "%s: failed to duplicate libgccjit include directory %s (%s) [%s:%d]\n",
-                 rpsconf_prog_name, includir, strerror (errno), __FILE__,
-                 __LINE__);
-        rpsconf_failed = true;
-        exit (EXIT_FAILURE);
-  }
+  if (!rpsconf_libgccjit_include_dir)
+    {
+      fprintf (stderr, "%s: failed to duplicate libgccjit include directory %s (%s) [%s:%d]\n",
+               rpsconf_prog_name, includir, strerror (errno), __FILE__,
+               __LINE__);
+      rpsconf_failed = true;
+      exit (EXIT_FAILURE);
+    }
 #warning rpsconf_try_cxx_compiler_for_libgccjit is incomplete
 }       /* end  rpsconf_try_cxx_compiler_for_libgccjit */
 
@@ -1168,13 +1169,15 @@ rpsconf_emit_configure_refpersys_mk (void)
   fprintf (f, "REFPERSYS_BUILDHOST=%s\n", rpsconf_host);
 
   /// emit the libgccjit if found
-  if (rpsconf_libgccjit_include_dir) {
-    fprintf(f, "\n### libgccjit include directory\n");
-    fprintf(f, "REFPERSYS_LIBGCCJIT_INCLUDE_DIR=%s\n", rpsconf_libgccjit_include_dir);
-  }
-  else {
-    fprintf(f, "\n### no libgccjit include directory\n");
-  }
+  if (rpsconf_libgccjit_include_dir)
+    {
+      fprintf(f, "\n### libgccjit include directory\n");
+      fprintf(f, "REFPERSYS_LIBGCCJIT_INCLUDE_DIR=%s\n", rpsconf_libgccjit_include_dir);
+    }
+  else
+    {
+      fprintf(f, "\n### no libgccjit include directory\n");
+    }
   ////
   fprintf (f, "\n\n### end of generated _config-refpersys.mk file\n");
   fflush (f);
