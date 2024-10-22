@@ -1569,6 +1569,7 @@ main (int argc, char **argv)
     };
   rpsconf_try_then_set_cxx_compiler (cxx);
   rpsconf_try_cxx_compiler_for_libgccjit(cc);
+  rpsconf_test_libgccjit_compilation(cc);
   rpsconf_builder_person =
     rpsconf_readline ("person building RefPerSys (eg Alan TURING):");
   if (rpsconf_builder_person && isspace (rpsconf_builder_person[0]))
