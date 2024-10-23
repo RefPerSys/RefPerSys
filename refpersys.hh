@@ -384,7 +384,7 @@ extern "C" const char rps_gpp_preprocessor_version[];
 extern "C" const char rps_ninja_builder[];
 extern "C" const char rps_ninja_version[];
 
-extern "C" const char rps_plugin_builder_script[];
+extern "C" const char rps_plugin_builder[];
 
 /// In commit 92c6e6b70d2 of Feb, 8, 2024 we used to mention GNU bison and GPP
 /// GNU bison is a parser generator, see www.gnu.org/software/bison/

@@ -112,6 +112,7 @@ all:
 	   exit 1 ; \
 	fi
 	$(MAKE) refpersys
+	$(MAKE) do-build-plugin
 	@/usr/bin/printf "\n\n\nMaking RefPerSys plugins\n\n"
 	$(MAKE) plugins
 

@@ -771,7 +771,7 @@ rps_fill_cplusplus_temporary_code(Rps_CallFrame*callerframe, Rps_ObjectRef tempo
            " **                 for Emacs...\n" //
            " ** Local-Variables: ;;\n" //
            " ** compile-command: \"cd %s; %s %s /tmp/rpsplug_%s.so\" ;;",
-           rps_topdirectory, rps_plugin_builder_script, tempcppfilename, _f.tempob->oid().to_string().c_str());
+           rps_topdirectory, rps_plugin_builder, tempcppfilename, _f.tempob->oid().to_string().c_str());
   fprintf (tfil, //
            " ** End: ;;\n" //
            " ********/\n");

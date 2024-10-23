@@ -67,6 +67,14 @@ extern "C" {
       .group = 0
     },
     {
+      .name= "output",
+      .key= 'o',
+      .arg= "PLUGIN",
+      .flags= 0,
+      .doc= "Set the generated plugin to PLUGIN e.g. -o /tmp/foorps.so",
+      .group = 0
+    },
+    {
       .name= nullptr,
       .key= (char)0,
       .arg= 0,
@@ -87,7 +95,13 @@ bp_version (void)
             << " tool source <" << __FILE__ ":" << __LINE__ << ">"
             << std::endl;
   std::cerr << "\t using builder " << rps_ninja_builder << " " << rps_ninja_version << std::endl;
-  std::cerr << "# run " << bp_progname <<" --help for details." << std::endl;
+  std::cerr << "\t top directory " << rps_topdirectory << std::endl;
+  std::cerr << "\t GNUmakefile " << rps_gnumakefile << std::endl;
+  std::cerr << "\t timestamp: " << rps_timestamp  <<std::endl;
+  std::cerr << "\t gnu-make is " << rps_gnu_make
+	    << "::" << rps_gnu_make_version  << std::endl;
+  std::cerr << "\t ninja is " << rps_ninja_builder << "::" << rps_ninja_version << std::endl;
+    std::cerr << "# run " << bp_progname  <<" --help for details." << std::endl;
 } // end bp_version
 
 
@@ -97,8 +111,8 @@ void
 bp_usage(void)
 {
   std::cerr << "usage: " << bp_progname
-            << " <plugin-source-code> <plugin-shared-object>" << std::endl;
-  std::cerr << bp_progname << " --version" << std::endl;
+            << " <plugin-source-code> ... -o <plugin-shared-object>" << std::endl;
+  std::cerr << bp_progname << " --version #give also defaults" << std::endl;
   std::cerr << bp_progname << " --help" << std::endl;
 } // end bp_usage
 

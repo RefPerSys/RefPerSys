@@ -99,7 +99,7 @@ printf "const char rps_building_machine[]=\"%s\";\n" $(/bin/uname -m)
 
 printf "const char rps_building_machname[]=\"%s\";\n" $(/bin/uname -m | /bin/sed 's/[^A-Za-z0-9]/_/')
 
-printf "const char rps_plugin_builder_script[]=\"%s\";\n" $(realpath ./build-plugin.sh)
+printf "const char rps_plugin_builder[]=\"%s\";\n" $(realpath do-build-plugin)
 
 printf "const char rps_cxx_compiler_realpath[]=\"%s\";\n" $(realpath $CXX)
 
