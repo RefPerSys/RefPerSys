@@ -60,7 +60,7 @@ extern "C" {
     },
     {
       .name= "version",
-      .key= 0,
+      .key= 'V',
       .arg= 0,
       .flags= 0,
       .doc= "Give version information",
@@ -82,9 +82,26 @@ extern "C" {
       .doc= nullptr,
       .group= 0
     },
-  };
+  };				// end bp_options
+  
 };
 
+error_t
+bp_parseopt(int key, char*arg, struct argp_state* astate)
+{
+#warning incomplete bp_parseopt
+  switch (key) {
+  case 'o':			// --output name
+    break;
+  case 'V':			// --version
+    break;
+  case 'v':			//  --verbose
+    break;
+  default:
+    break;
+  }
+  return ARGP_ERR_UNKNOWN;
+} // end bp_parse_opt
 
 void
 bp_version (void)
@@ -254,6 +271,9 @@ bp_complete_ninja(FILE*f, const std::string& src)
   while (inp);
   fprintf(f, "\n\n##/ %d objects from [%s:%d]\n", (int)bp_set_objects.size(),
           __FILE__, __LINE__-1);
+#warning incomplete function bp_complete_ninja
+  /* TODO: improve this thng to maintain a set of source files and
+     generate a better ninja file */
   for (std::string ob: bp_set_objects)
     {
       std::string src = ob;
@@ -321,6 +341,9 @@ bp_write_prologue_ninja(const char*njpath)
 int
 main(int argc, char**argv)
 {
+#warning do-build-plugin should be much improved
+  ///TODO to accept secondary source files for the plugin and more
+  ///program options and improve GNUmakefile
   bp_progname = argv[0];
   if (argc<2)
     {
