@@ -21,6 +21,12 @@ by snail mail (8 rue de la Faïencerie, 92340 Bourg-la-Reine, France)
 or (on French office hours) by Whatapp to +33 6 8501 followed by
 the four digits product of seven and 337.
 
+There are several variants of [RefPerSys](http://refpersys.org/)
+including
+[gccjit-refpersys](https://github.com/RefPerSys/gccjit-refpersys)
+using [libgccjit](https://gcc.gnu.org/onlinedocs/jit/) for code
+generation.
+
 [HorizonEurope](https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/programmes/horizon)
 or [ITEA](https://itea4.org/) consortia interested by
 [RefPerSys](http://refpersys.org/) are welcome to contact us.
