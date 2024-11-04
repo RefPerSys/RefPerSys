@@ -848,7 +848,7 @@ rpsconf_test_libgccjit_compilation(const char *cc)
   printf ("%s dlopened %s with gccjit version %s [%s:%d]\n",
           rpsconf_prog_name, test_so, versionstr, __FILE__, __LINE__);
   fflush(NULL);
-#warning unimplemented rpsconf_test_libgccjit_compilation
+#warning incomplete rpsconf_test_libgccjit_compilation
   /* We should write a temporary C file similar to
      https://gcc.gnu.org/onlinedocs/jit/intro/tutorial01.html */
 } /* end rpsconf_test_libgccjit_compilation */
@@ -1213,7 +1213,7 @@ rpsconf_emit_configure_refpersys_mk (void)
     {
       fprintf (f, "# default linker flags for RefPerSys [%s:%d]:\n",
                __FILE__, __LINE__ - 1);
-      fputs ("REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -ldl"
+      fputs ("REFPERSYS_LINKER_FLAGS= -L/usr/local/lib -rdynamic -lgccjit -ldl"
              " $(REFPERSYS_LTO)\n", f);
     }
   //// emit the generic preprocessor
