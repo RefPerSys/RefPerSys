@@ -134,6 +134,7 @@ lto-refpersys:
 	      $(shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a) \
               $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
+               $(REFPERSYS_LINKER_FLAGS) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 
 config: do-configure-refpersys do-scan-pkgconfig GNUmakefile
@@ -227,6 +228,7 @@ refpersys: objects |  GNUmakefile
 	      $(shell $(REFPERSYS_CXX) -print-file-name=libbacktrace.a) \
               $(shell $(REFPERSYS_FLTKCONFIG) -g --ldflags) \
               -L/usr/local/lib $(REFPERSYS_NEEDED_LIBRARIES) \
+              $(REFPERSYS_LINKER_FLAGS) \
               $(shell pkg-config --libs $(sort $(PACKAGES_LIST))) -ldl
 	@/bin/rm -vf __timestamp.o
 

@@ -705,6 +705,7 @@ rps_run_loaded_application(int &argc, char **argv)
   if (access(rps_gui_script_executable, X_OK))
     RPS_WARNOUT("default GUI script " << rps_gui_script_executable << " is not executable");
   ////
+  //// 
   ////
   if (!rps_get_fifo_prefix().empty())
     {
@@ -1517,6 +1518,8 @@ main (int argc, char** argv)
 #if RPS_USE_CURL
   rps_initialize_curl();
 #endif /*RPS_USE_CURL*/
+//// initialize the gccjit
+  rps_gccjit_initialize ();
   if (rps_my_load_dir.empty())
     {
       const char* rpld = realpath(rps_topdirectory, nullptr);

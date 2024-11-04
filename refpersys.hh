@@ -253,6 +253,8 @@ class Rps_PayloadTasklet;
 class Rps_PayloadUnixProcess;   // transient payload for forked processes
 class Rps_PayloadPopenedFile;   // transient payload for popened command
 class Rps_PayloadCppStream;     // transient payload for C++ streams
+class Rps_PayloadGccJit;	// transient payload for libgccjit
+				// code generation
 #if RPS_WITH_FLTK
 class Rps_PayloadFltkThing;
 class Rps_PayloadFltkWidget;
@@ -468,6 +470,7 @@ extern "C" bool rps_run_repl;
 
 
 extern "C" void rps_jsonrpc_initialize(void);
+extern "C" void rps_gccjit_initialize(void);
 
 /// Our event loop can call C++ closures before the poll(2) system
 /// call in the event loop. This C++ closure (or std::function) could
