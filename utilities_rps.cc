@@ -56,6 +56,7 @@
 #endif // RPS_WITH_FLTK
 
 #include "glib.h"
+#include "libgccjit++.h"
 
 extern "C" const char rps_utilities_gitid[];
 const char rps_utilities_gitid[]= RPS_GITID;
@@ -651,10 +652,14 @@ rps_show_version(void)
             << " executable: " << exepath;
   if (strcmp(exepath, realexepath))
     std::cout <<  " really " << realexepath;
+#if RPS_WITH_FLTK
   std::cout << " FLTK (see fltk.org) ABI version:" << rps_fltk_get_abi_version()
             << std::endl;
   std::cout << " FLTK API version:" << rps_fltk_get_api_version()
             << std::endl;
+#endif
+  std::cout << " GCCJIT version:" << gcc_jit_version_major()
+	    << "." << gcc_jit_version_minor() << "." << gcc_jit_version_patchlevel << std::endl;
   std::cout << std::endl
             /* TODO: near commit 191d55e1b31c, march 2023; decide
                which parser generator to really use... and drop the
