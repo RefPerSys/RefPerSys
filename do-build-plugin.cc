@@ -92,8 +92,11 @@ bp_parseopt(int key, char*arg, struct argp_state* astate)
 #warning incomplete bp_parseopt
   switch (key) {
   case 'o':			// --output name
+    bp_plugin_binary = arg;
     break;
   case 'V':			// --version
+    printf("%s version git %s built on %s\n",
+	   bp_progname, bp_git_id, __DATE__ "@" __TIME__);
     break;
   case 'v':			//  --verbose
     break;
