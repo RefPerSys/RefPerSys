@@ -1,0 +1,8 @@
+### file etc/user-preferences-refpersys.txt
+### an example of user preferences file for http://refpersys.org/
+### copy it and edit the copy before using ....
+### see file userpref_rps.cc parsing this
+
+### every line up to one with *REFPERSYS_USER_PREFERENCES is skipped.
+
+*REFPERSYS_USER_PREFERENCES
