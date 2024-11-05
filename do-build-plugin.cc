@@ -129,8 +129,8 @@ bp_usage(void)
 {
   std::cerr << "usage: " << bp_progname
             << " <plugin-source-code> ... -o <plugin-shared-object>" << std::endl;
-  std::cerr << bp_progname << " --version #give also defaults" << std::endl;
-  std::cerr << bp_progname << " --help" << std::endl;
+  std::cerr << '\t' << bp_progname << " --version #give also defaults" << std::endl;
+  std::cerr << '\t' << bp_progname << " --help" << std::endl;
 } // end bp_usage
 
 
@@ -288,6 +288,7 @@ bp_complete_ninja(FILE*f, const std::string& src)
   fprintf(f, "\n\n##/ final from [%s:%d]\n", __FILE__, __LINE__);
   fprintf(f, "build %s : LINKSHARED $object_files\n",
           bp_plugin_binary);
+  fflush (f);
 } // end bp_complete_ninja
 
 
