@@ -46,6 +46,8 @@ const char rps_userpref_shortgitid[]= RPS_SHORTGITID;
 
 extern "C" void rps_set_user_preferences(char*);
 
+extern "C" void rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts);
+
 #define RPS_USER_PREFERENCE_MAGIC "*REFPERSYS_USER_PREFERENCES"
 static Rps_MemoryFileTokenSource* rps_userpref_mts;
 
@@ -57,7 +59,8 @@ rps_delete_user_preferences(void)
   rps_userpref_mts = nullptr;
 } // end rps_delete_user_preferences
 
-void rps_set_user_preferences(char*path)
+void
+rps_set_user_preferences(char*path)
 {
   RPS_ASSERT(!access(path, R_OK));
   RPS_ASSERT(rps_is_main_thread());
@@ -75,11 +78,20 @@ void rps_set_user_preferences(char*path)
                         strlen(RPS_USER_PREFERENCE_MAGIC)))
         break;
     };
+  rps_parse_user_preferences(rps_userpref_mts);
   atexit(rps_delete_user_preferences);
 #warning unimplemented rps_set_user_preferences
   RPS_FATALOUT("unimplemented user preferences file '"
                << Rps_Cjson_String(path) << "'");
 } // end  rps_set_user_preferences
 
+
+void
+rps_parse_user_preferences(Rps_MemoryFileTokenSource*mts)
+{
+  RPS_ASSERT(mts);
+#warning unimplemented rps_parse_user_preferences
+  /// see also file etc/user-preferences-refpersys.txt as example
+} // end rps_parse_user_preferences
 
 ////// end of file userpref_rps.cc
