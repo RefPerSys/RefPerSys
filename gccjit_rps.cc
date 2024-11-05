@@ -61,4 +61,14 @@ rps_gccjit_initialize(void)
   rps_gccjit_top_ctxt = gccjit::context::acquire();
 } // end rps_gccjit_initialize
 
+static volatile std::atomic_flag rps_gccjit_finalized = ATOMIC_FLAG_INIT;
+
+/// the finalize routine is called thru at exit
+void rps_gccjit_finalize(void)
+{
+  if (std::atomic_flag_test_and_set(&rps_gccjit_finalized))
+    return;
+#warning rps_gccjit_finalize unimplemented
+} // end rps_gccjit_finalize
+
 // end of file gccjit_rps.cc

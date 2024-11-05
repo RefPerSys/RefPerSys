@@ -1057,7 +1057,10 @@ rps_event_loop(void)
         };
       fflush(nullptr);
     };       // end while not rps_stop_event_loop_flag
-
+  {
+    std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+    rps_eventloopdata.eld_eventloopisactive.store(true);
+  }
   /*TODO: cooperation with transientobj_rps.cc ... */
 #warning incomplete rps_event_loop see related file transientobj_rps.cc, missing code
   /*TODO: use Rps_PayloadUnixProcess::do_on_active_process_queue to collect file descriptors inside such payloads */
@@ -1079,6 +1082,12 @@ rps_event_loop(void)
 #undef EXPLAIN_EVFD_RPS
 } // end rps_event_loop
 
+
+volatile bool
+rps_is_active_event_loop(void)
+{
+  return rps_eventloopdata.eld_eventloopisactive.load();
+} // end rps_is_active_event_loop
 
 void
 rps_sigfd_read_handler(Rps_CallFrame*cf, int fd, void* data)

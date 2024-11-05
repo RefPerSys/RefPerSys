@@ -659,7 +659,7 @@ rps_show_version(void)
             << std::endl;
 #endif
   std::cout << " GCCJIT version:" << gcc_jit_version_major()
-	    << "." << gcc_jit_version_minor() << "." << gcc_jit_version_patchlevel << std::endl;
+            << "." << gcc_jit_version_minor() << "." << gcc_jit_version_patchlevel << std::endl;
   std::cout << std::endl
             /* TODO: near commit 191d55e1b31c, march 2023; decide
                which parser generator to really use... and drop the
