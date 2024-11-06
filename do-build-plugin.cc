@@ -11,8 +11,8 @@
 ///
 /// Caveat: this program should run quickly and uses ninja.
 ///
-/// invocation: do-build-plugin <plugin-c++-source> <plugin-shared-object>
-/// e.g. do-build-plugin plugins_dir/foo.cc /tmp/foo.so
+/// invocation: do-build-plugin <plugin-c++-source> -o <plugin-shared-object>
+/// e.g. do-build-plugin plugins_dir/foo.cc -o /tmp/foo.so
 ///
 /// Author(s):
 ///      Basile Starynkevitch <basile@starynkevitch.net>
@@ -47,7 +47,9 @@ extern "C" {
   std::string bp_base;
   std::string bp_temp_ninja;
   std::set<std::string> bp_set_objects;
+  bool bp_verbose;
   FILE* bp_ninja_file;
+  std::vector<std::string> bp_vect_ninja;
   struct argp_option bp_options[] =
   {
     {
@@ -75,6 +77,14 @@ extern "C" {
       .group = 0
     },
     {
+      .name= "ninja",
+      .key= 'N',
+      .arg= "NINJAFILE",
+      .flags= 0,
+      .doc= "Append the given file (for ninja-build.org)",
+      .group = 0
+    },
+    {
       .name= nullptr,
       .key= (char)0,
       .arg= 0,
@@ -99,6 +109,16 @@ bp_parseopt(int key, char*arg, struct argp_state* astate)
 	   bp_progname, bp_git_id, __DATE__ "@" __TIME__);
     break;
   case 'v':			//  --verbose
+    bp_verbose = true;
+    break;
+  case 'N':			// --ninja=NINJAFILE
+    if (access(arg, R_OK))
+      {
+	fprintf(stderr, "%s failed to access ninja file %s [%s:%d]\n",
+		bp_progname, arg, __FILE__, __LINE__-1);
+	exit(EXIT_FAILURE);
+      };
+    bp_vect_ninja.push_back(std::string(arg));
     break;
   default:
     break;
@@ -342,6 +362,32 @@ bp_write_prologue_ninja(const char*njpath)
 } // end bp_write_prologue_ninja
 
 
+void
+bp_include_ninja(FILE*njf)
+{
+  char linbuf[512];
+  for (std::string&str : bp_vect_ninja) {
+    fprintf(njf, "##included NINJA file %s\n", str.c_str());
+    FILE*inf = fopen(str.c_str(), "r");
+    int lincnt=0;
+    do {
+      memset(linbuf, 0, sizeof(linbuf));
+      if (!fgets(linbuf, sizeof(linbuf)-1, inf))
+	break;
+      lincnt++;
+      if (fputs(linbuf, njf)==EOF)
+	{
+	  fprintf(stderr,
+		  "%s failed to copy line#%d of ninja file %s (%s)\n",
+		  bp_progname, lincnt, str.c_str(), strerror(errno));
+	  exit(EXIT_FAILURE);
+	}
+    } while(!feof(inf));
+    fprintf(njf, "##end of included NINJA file %s\n\n", str.c_str());
+    fflush(njf);
+  }
+} // end bp_include_ninja
+
 int
 main(int argc, char**argv)
 {
@@ -407,6 +453,8 @@ main(int argc, char**argv)
         exit(EXIT_FAILURE);
       }
     bp_write_prologue_ninja(temp);
+    if (!bp_vect_ninja.empty())
+      bp_include_ninja(bp_ninja_file);
     bp_complete_ninja(bp_ninja_file, bp_plugin_source);
   }
   fprintf(bp_ninja_file, "\ndefault %s\n", bp_plugin_binary);
