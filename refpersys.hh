@@ -480,7 +480,7 @@ extern "C" void rps_gccjit_finalize(void); // passed to atexit(3)
 /// the unregistering function.
 extern "C" int rps_register_event_loop_prepoller(std::function<void (struct pollfd*, int& npoll, Rps_CallFrame*)> fun);
 extern "C" void rps_unregister_event_loop_prepoller(int rank);
-extern "C" volatile bool rps_is_active_event_loop(void);
+extern "C" bool rps_is_active_event_loop(void);
 
 /// register C function input handler
 extern "C" void rps_event_loop_add_input_fd_handler

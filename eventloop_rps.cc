@@ -133,6 +133,7 @@ rps_do_stop_event_loop(void)
   RPS_DEBUG_LOG(REPL, "rps_do_stop_event_loop thread:"
                 <<  rps_current_pthread_name()
                 << RPS_FULL_BACKTRACE_HERE(1, "rps_do_stop_event_loop"));
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   rps_stop_event_loop_flag.store(true);
   if (rps_fltk_enabled ())
     {
@@ -148,6 +149,7 @@ rps_self_pipe_write_byte(unsigned char b)
 {
   RPS_ASSERT(b != (char)0);
   std::lock_guard<std::recursive_mutex> gu(rps_eventloopdata.eld_mtx);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   rps_eventloopdata.eld_selfpipefifo.push_back(b);
 } // end rps_self_pipe_write_byte
 
@@ -1083,9 +1085,10 @@ rps_event_loop(void)
 } // end rps_event_loop
 
 
-volatile bool
+bool
 rps_is_active_event_loop(void)
 {
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   return rps_eventloopdata.eld_eventloopisactive.load();
 } // end rps_is_active_event_loop
 
@@ -1097,6 +1100,7 @@ rps_sigfd_read_handler(Rps_CallFrame*cf, int fd, void* data)
                  << " data:" << data
                  << RPS_FULL_BACKTRACE_HERE(1, "rps_sigfd_read_handler"));
   RPS_ASSERT (rps_eventloopdata.eld_sigfd>0);
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
   struct signalfd_siginfo infsig;
   memset(&infsig, 0, sizeof(infsig));
   RPS_ASSERT(fd == rps_eventloopdata.eld_sigfd);
@@ -1160,6 +1164,7 @@ rps_timerfd_read_handler(Rps_CallFrame*cf, int fd, void* data)
                  << " data:" << data
                  << " thread:" << rps_current_pthread_name() << std::endl
                  << RPS_FULL_BACKTRACE_HERE(1, "rps_timerfd_read_handler"));
+  RPS_ASSERT(rps_eventloopdata.eld_magic == RPS_EVENTLOOPDATA_MAGIC);
 #warning unimplemented rps_timerfd_read_handler
   RPS_FATALOUT("unimplemented rps_timerfd_read_handler fd#" << fd);
 } // end rps_timerfd_read_handler
