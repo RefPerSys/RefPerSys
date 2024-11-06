@@ -112,6 +112,7 @@
 #include <dirent.h>
 #include <pthread.h>
 #include <limits.h>
+#include <locale.h>
 #include <stdlib.h>
 #include <sys/poll.h>
 #include <sys/personality.h>
@@ -138,6 +139,7 @@
 #include "generated/rpsdata.h"
 #endif //RPS_WITH_DATA
 
+extern "C" const char*const rps_locale(void);
 
 
 /// keep the debug options in alphabetical order

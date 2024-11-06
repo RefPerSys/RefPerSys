@@ -1417,9 +1417,18 @@ rps_exiting(void)
 } // end rps_exiting
 
 
+static char*rps_stored_locale;
+
+const char*const
+rps_locale(void)
+{
+  return rps_stored_locale;
+} // end rps_locale
+
 int
 main (int argc, char** argv)
 {
+  char*mylocale = nullptr;
   rps_progname = argv[0];
   bool helpwanted = false;
   bool versionwanted = false;
@@ -1427,6 +1436,22 @@ main (int argc, char** argv)
     helpwanted = true;
   if (argc>1 && !strcmp(argv[1], "--version"))
     versionwanted = true;
+  //// if --locale is given then process it quicky
+  for (int lix=1; lix<argc; lix++) {
+    if (!strcmp(argv[lix], "--locale") && lix+1<argc)
+      mylocale = argv[lix+1];
+    else if (!strncmp(argv[lix], "--locale=", strlen("--locale=")))
+      mylocale = argv[lix]+strlen("--locale=");
+  }
+  if (mylocale) {
+    char*l = setlocale(LC_ALL, mylocale);
+    if (!l)
+      RPS_FATALOUT("failed to set locale to " << mylocale);
+    rps_stored_locale = l;
+  }
+  else
+    rps_stored_locale = setlocale(LC_ALL, nullptr);
+  RPS_ASSERT(rps_stored_locale != nullptr);
   rps_stdout_istty = isatty(STDOUT_FILENO);
   static_assert(sizeof(rps_progexe) > 80);
   ///// read /proc/version which hopefully is GNU/Linux specific
