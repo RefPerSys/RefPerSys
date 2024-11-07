@@ -162,6 +162,7 @@ bp_usage(void)
             << " <plugin-source-code> ... -o <plugin-shared-object>" << std::endl;
   std::cerr << '\t' << bp_progname << " --version #give also defaults" << std::endl;
   std::cerr << '\t' << bp_progname << " --help" << std::endl;
+  std::cerr << "\t\t from " << __FILE__ << " git " << bp_git_id << std::endl;
 } // end bp_usage
 
 
@@ -201,7 +202,13 @@ bp_complete_ninja(FILE*f, const std::string& src)
                             << " ["<< src << ":" << lineno << "]" << std::endl;
                   exit(EXIT_FAILURE);
                 };
-              fgets(inpbuf, sizeof(inpbuf)-2, p);
+              if (!fgets(inpbuf, sizeof(inpbuf)-2, p))
+		{
+                  std::cerr << bp_progname << " : failed to get line ("
+                            << strerror(errno)
+                            << ") ["<< src << ":" << lineno << "]" << std::endl;
+                  exit(EXIT_FAILURE);
+		}
               fprintf(f, "# for package %s [%s:%d]\n", pkgname,
                       __FILE__, __LINE__-1);
               fprintf(f, "cflags = $cflags %s\n", inpbuf);
@@ -222,7 +229,12 @@ bp_complete_ninja(FILE*f, const std::string& src)
                             << " ["<< src << ":" << lineno << "]" << std::endl;
                   exit(EXIT_FAILURE);
                 };
-              fgets(inpbuf, sizeof(inpbuf)-2, p);
+              if (!fgets(inpbuf, sizeof(inpbuf)-2, p)) {
+                  std::cerr << bp_progname << " : failed to get line from command "
+                            << cmd << " (" << strerror(errno) << ")"
+                            << " in "<< src << ":" << lineno << std::endl;
+                  exit(EXIT_FAILURE);
+	      }
               fprintf(f, "# for package %s [%s:%d]\n", pkgname,
                       __FILE__, __LINE__-1);
               fprintf(f, "ldflags = $ldflags %s\n", inpbuf);
