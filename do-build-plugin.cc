@@ -40,17 +40,17 @@
 
 extern "C" {
 #include "__timestamp.c"
-    const char bp_git_id[]=GIT_ID;
-    const char* bp_progname;
-    const char* bp_plugin_source;
-    const char* bp_plugin_binary;
-    std::string bp_base;
-    std::string bp_temp_ninja;	// temporary generated file for ninja-build.org
-    std::set<std::string> bp_set_objects;
-    bool bp_verbose;
-    FILE* bp_ninja_file;
-    std::vector<std::string> bp_vect_ninja;
-    struct option bp_options[] =
+  const char bp_git_id[]=GIT_ID;
+  const char* bp_progname;
+  std::vector<std::string> bp_vect_cpp_sources;
+  const char* bp_plugin_binary;
+  std::string bp_base;
+  std::string bp_temp_ninja;	// temporary generated file for ninja-build.org
+  std::set<std::string> bp_set_objects;
+  bool bp_verbose;
+  FILE* bp_ninja_file;
+  std::vector<std::string> bp_vect_ninja;
+  struct option bp_options[] =
     {
         {
             .name= "verbose",	// --verbose | -v
@@ -348,15 +348,18 @@ bp_write_prologue_ninja(const char*njpath)
     fprintf(bp_ninja_file, "# for the refpersys.org project\n");
     fprintf(bp_ninja_file, "# generator <%s:%d> git %s\n",
             __FILE__,  __LINE__-1, bp_git_id);
-    fprintf(bp_ninja_file, "# refpersys source plugin %s\n",
-            bp_plugin_source);
+    fprintf(bp_ninja_file, "# %d refpersys C++ source plugin files\n",
+            (int) bp_vect_cpp_sources.size());
     fprintf(bp_ninja_file, "# refpersys generated plugin %s\n",
             bp_plugin_binary);
     fprintf(bp_ninja_file, "ninja_required_version = 1.10\n");
     fflush(bp_ninja_file);
-    fprintf(bp_ninja_file, "refpersys_plugin_source = %s\n", bp_plugin_source);
+    fprintf(bp_ninja_file, "refpersys_plugin_sources =");
+    for (std::string& src: bp_vect_cpp_sources)
+      fprintf(bp_ninja_file, " %s", src.c_str());
+    fputc('\n', bp_ninja_file);
     fprintf(bp_ninja_file, "refpersys_plugin_binary = %s\n", bp_plugin_binary);
-    fprintf(bp_ninja_file, "cplusplus_sources = $refpersys_plugin_source\n");
+    fprintf(bp_ninja_file, "cplusplus_sources = $refpersys_plugin_sources\n");
     char objbuf[128];
     memset (objbuf, 0, sizeof(objbuf));
     const char* lastdot = strrchr(bp_plugin_binary, '.');
@@ -450,7 +453,31 @@ bp_prog_options(int argc, char**argv)
     while (opt);
     while (optind < argc)
     {
-        bp_vect_ninja.push_back(std::string(argv[optind++]));
+      std::string curarg=argv[optind];
+      int srcix=1+(int)bp_vect_cpp_sources.size();
+      if (access(curarg.c_str(), R_OK)) {
+                fprintf(stderr,
+                        "%s failed to access plugin source#%d %s (%s) [%s:%d]\n",
+			bp_progname, srcix, curarg.c_str(),
+			strerror(errno), __FILE__, __LINE__-2);
+		exit(EXIT_FAILURE);
+      };
+      for (char c: curarg) {
+	if (isspace(c) || !isprint(c))  {
+	  fprintf(stderr,
+		  "%s bad plugin source#%d %s (%s) [%s:%d]\n",
+		  bp_progname, srcix, curarg.c_str(),
+		  strerror(errno), __FILE__, __LINE__-2);
+	  exit(EXIT_FAILURE);
+	};
+      }
+      if (bp_verbose) {
+	printf("%s adding plugin C++ source file#%d %s\n",
+	       bp_progname, srcix, curarg.c_str());
+	fflush(nullptr);
+      };
+      bp_vect_cpp_sources.push_back(curarg);
+      optind++;
     };
 } // end bp_prog_options
 
@@ -477,17 +504,18 @@ main(int argc, char**argv)
         return 0;
     };
     bp_prog_options(argc, argv);
+    for (std::string cursrc: bp_vect_cpp_sources) 
     {
         const char*lastslash = nullptr;
         char buf[128];
         memset (buf, 0, sizeof(buf));
-        lastslash = strrchr(bp_plugin_source, (int) '/');
+        lastslash = strrchr(cursrc.c_str(), (int) '/');
         if (lastslash)
         {
             sscanf(lastslash+1, "%100[A-Za-z0-9_+-]", buf);
         }
         else
-            sscanf(bp_plugin_source, "%100[A-Za-z0-9_+-]", buf);
+	  sscanf(cursrc.c_str(), "%100[A-Za-z0-9_+-]", buf);
         bp_base.assign(buf);
     }
     {
@@ -501,14 +529,14 @@ main(int argc, char**argv)
         {
             std::cerr << bp_progname << " cannot open generated ninja file " << temp
                       << " fd#" << fd
-                      << " for plugin source " << bp_plugin_source
+                      << " for plugin  " << bp_plugin_binary
                       << " : " << strerror(errno) << std::endl;
             exit(EXIT_FAILURE);
         }
         bp_write_prologue_ninja(temp);
         if (!bp_vect_ninja.empty())
             bp_include_ninja(bp_ninja_file);
-        bp_complete_ninja(bp_ninja_file, bp_plugin_source);
+        bp_complete_ninja(bp_ninja_file, bp_plugin_binary);
     }
     fprintf(bp_ninja_file, "\ndefault %s\n", bp_plugin_binary);
     fprintf(bp_ninja_file, "\n#end of generated ninja file %s\n", bp_temp_ninja.c_str());
@@ -522,8 +550,8 @@ main(int argc, char**argv)
                   rps_topdirectory,
                   bp_temp_ninja.c_str(),
                   bp_plugin_binary);
-        printf("%s running\n  %s\n (source %s)\n", bp_progname, ninjacmd,
-               bp_plugin_source);
+        printf("%s running\n  %s\n (plugin binary %s)\n", bp_progname, ninjacmd,
+               bp_plugin_binary);
         fflush (nullptr);
         int ex = system(ninjacmd);
         sync ();
